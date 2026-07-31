@@ -84,14 +84,50 @@ export interface ResolvedV21ParentSession {
   adultId: string;
   normalizedEmail: string;
   ownerDisplayName: string;
+  ownedHouseholdCount: number;
   session: AdultSession;
   household: SafeHouseholdContext;
+}
+
+export interface V21AdultLoginIdentity {
+  adultId: string;
+  normalizedEmail: string;
+  ownerDisplayName: string;
+  adultState: AdultIdentity['state'];
+  humanAccountId: string | null;
+  accountState: HumanAccount['state'] | null;
+  securityVersion: number | null;
+  parentMembershipActive: boolean;
+  passwordHash: string | null;
+  credentialState: 'active' | 'reset_required' | 'disabled' | null;
+  credentialVersion: number | null;
+  activeOwnedHouseholdCount: number;
+  ownedHouseholds: readonly SafeHouseholdContext[];
+}
+
+export interface FindV21AdultLoginIdentityInput {
+  normalizedEmail: string;
+  runtimeTier: RuntimeTier;
+  verificationEnvironmentId: VerificationEnvironmentId;
+}
+
+export interface UpgradeV21AdultCredentialInput {
+  humanAccountId: string;
+  adultId: string;
+  runtimeTier: RuntimeTier;
+  verificationEnvironmentId: VerificationEnvironmentId;
+  expectedCredentialVersion: number;
+  expectedPasswordHash: string;
+  replacementPasswordHash: string;
+  now: Date;
 }
 
 export interface V21AdultSessionRepository {
   create(input: CreateV21ParentSessionInput): Promise<ResolvedV21ParentSession>;
   resolve(input: ResolveV21ParentSessionInput): Promise<ResolvedV21ParentSession | null>;
   revoke(input: RevokeV21ParentSessionInput): Promise<boolean>;
+  findLoginIdentity(input: FindV21AdultLoginIdentityInput): Promise<V21AdultLoginIdentity | null>;
+  upgradeCredentialPasswordHash(input: UpgradeV21AdultCredentialInput): Promise<boolean>;
 }
 
 /**
@@ -106,6 +142,8 @@ export function createPostgresV21AdultSessionRepository(db: Queryable): V21Adult
     create: (input) => createV21ParentSession(db, input),
     resolve: (input) => resolveV21ParentSession(db, input),
     revoke: (input) => revokeV21ParentSession(db, input),
+    findLoginIdentity: (input) => findV21AdultLoginIdentity(db, input),
+    upgradeCredentialPasswordHash: (input) => upgradeV21AdultCredentialPasswordHash(db, input),
   };
 }
 
@@ -138,7 +176,18 @@ export async function createV21ParentSession(
               adult.display_name AS owner_display_name,
               household.household_id,
               household.classification,
-              access.current_state AS access_state
+              access.current_state AS access_state,
+              (
+                SELECT count(*)::integer
+                  FROM onetime.v21_households AS owned_household
+                 WHERE owned_household.owner_human_account_id = account.human_account_id
+                   AND owned_household.owner_adult_id = adult.adult_id
+                   AND owned_household.product_key = account.product_key
+                   AND owned_household.runtime_tier = account.runtime_tier
+                   AND owned_household.verification_environment_id =
+                       account.verification_environment_id
+                   AND owned_household.state = 'active'
+              ) AS owned_household_count
          FROM onetime.v21_human_accounts AS account
          JOIN onetime.v21_adult_identities AS adult
            ON adult.adult_id = account.adult_id
@@ -176,6 +225,17 @@ export async function createV21ParentSession(
           AND account.product_key = '${ONE_TIME_PRODUCT_SCOPE}'
           AND account.runtime_tier = $5
           AND account.verification_environment_id = $6
+          AND (
+            SELECT count(*)
+              FROM onetime.v21_households AS sole_household
+             WHERE sole_household.owner_human_account_id = account.human_account_id
+               AND sole_household.owner_adult_id = adult.adult_id
+               AND sole_household.product_key = account.product_key
+               AND sole_household.runtime_tier = account.runtime_tier
+               AND sole_household.verification_environment_id =
+                   account.verification_environment_id
+               AND sole_household.state = 'active'
+          ) = 1
      ),
      inserted AS (
        INSERT INTO onetime.v21_adult_sessions
@@ -194,7 +254,8 @@ export async function createV21ParentSession(
             eligible.normalized_email,
             eligible.owner_display_name,
             eligible.classification,
-            eligible.access_state
+            eligible.access_state,
+            eligible.owned_household_count
        FROM inserted
        JOIN eligible
          ON eligible.human_account_id = inserted.human_account_id
@@ -238,7 +299,18 @@ export async function resolveV21ParentSession(
             adult.normalized_email,
             adult.display_name AS owner_display_name,
             household.classification,
-            access.current_state AS access_state
+            access.current_state AS access_state,
+            (
+              SELECT count(*)::integer
+                FROM onetime.v21_households AS owned_household
+               WHERE owned_household.owner_human_account_id = account.human_account_id
+                 AND owned_household.owner_adult_id = adult.adult_id
+                 AND owned_household.product_key = account.product_key
+                 AND owned_household.runtime_tier = account.runtime_tier
+                 AND owned_household.verification_environment_id =
+                     account.verification_environment_id
+                 AND owned_household.state = 'active'
+            ) AS owned_household_count
        FROM onetime.v21_adult_sessions AS session
        JOIN onetime.v21_human_accounts AS account
          ON account.human_account_id = session.human_account_id
@@ -399,6 +471,210 @@ export async function revokeV21ParentSession(
       input.tokenDigest,
       now,
       input.reason,
+    ],
+  );
+  return result.rowCount === 1;
+}
+
+export async function findV21AdultLoginIdentity(
+  db: Queryable,
+  input: FindV21AdultLoginIdentityInput,
+): Promise<V21AdultLoginIdentity | null> {
+  if (
+    typeof input.normalizedEmail !== 'string' ||
+    input.normalizedEmail.length < 3 ||
+    input.normalizedEmail.length > 254 ||
+    input.normalizedEmail !== input.normalizedEmail.trim().toLowerCase()
+  ) {
+    throw new HouseholdIdentityRepositoryError(
+      'invalid_session_input',
+      'The adult login identifier must be an exact normalized email.',
+    );
+  }
+  assertRuntimeBinding(input.runtimeTier, input.verificationEnvironmentId);
+  const result = await db.query(
+    `SELECT adult.adult_id,
+            adult.normalized_email,
+            adult.display_name AS owner_display_name,
+            adult.state AS adult_state,
+            account.human_account_id,
+            account.state AS account_state,
+            account.security_version,
+            credential.password_hash,
+            credential.credential_state,
+            credential.credential_version,
+            (membership.human_account_id IS NOT NULL) AS parent_membership_active,
+            household.household_id,
+            household.classification,
+            access.current_state AS access_state
+       FROM onetime.v21_adult_identities AS adult
+       LEFT JOIN onetime.v21_human_accounts AS account
+         ON account.adult_id = adult.adult_id
+        AND account.product_key = adult.product_key
+        AND account.runtime_tier = adult.runtime_tier
+        AND account.verification_environment_id = adult.verification_environment_id
+       LEFT JOIN onetime.v21_adult_credentials AS credential
+         ON credential.human_account_id = account.human_account_id
+        AND credential.adult_id = adult.adult_id
+        AND credential.product_key = adult.product_key
+        AND credential.runtime_tier = adult.runtime_tier
+        AND credential.verification_environment_id = adult.verification_environment_id
+       LEFT JOIN onetime.v21_human_account_role_memberships AS membership
+         ON membership.human_account_id = account.human_account_id
+        AND membership.role = 'parent'
+        AND membership.revoked_at IS NULL
+        AND membership.product_key = adult.product_key
+        AND membership.runtime_tier = adult.runtime_tier
+        AND membership.verification_environment_id = adult.verification_environment_id
+       LEFT JOIN onetime.v21_households AS household
+         ON household.owner_human_account_id = account.human_account_id
+        AND household.owner_adult_id = adult.adult_id
+        AND household.product_key = adult.product_key
+        AND household.runtime_tier = adult.runtime_tier
+        AND household.verification_environment_id = adult.verification_environment_id
+        AND household.state = 'active'
+       LEFT JOIN onetime.canonical_aggregate_states AS access
+         ON access.aggregate_kind = 'access'
+        AND access.aggregate_key = household.household_id
+        AND access.product_key = household.product_key
+        AND access.runtime_tier = household.runtime_tier
+        AND access.verification_environment_id = household.verification_environment_id
+        AND access.current_state IN ('free', 'active', 'grace', 'inactive')
+        AND access.archived_at IS NULL
+      WHERE adult.normalized_email = $1
+        AND adult.product_key = '${ONE_TIME_PRODUCT_SCOPE}'
+        AND adult.runtime_tier = $2
+        AND adult.verification_environment_id = $3
+      ORDER BY household.created_at NULLS LAST, household.household_id NULLS LAST`,
+    [input.normalizedEmail, input.runtimeTier, input.verificationEnvironmentId],
+  );
+  const first = result.rows[0] as Record<string, unknown> | undefined;
+  if (!first) return null;
+
+  const adultId = text(first.adult_id);
+  const humanAccountId = nullableText(first.human_account_id);
+  const ownedHouseholds = result.rows.flatMap((candidate) => {
+    const row = candidate as Record<string, unknown>;
+    if (
+      text(row.adult_id) !== adultId ||
+      nullableText(row.human_account_id) !== humanAccountId ||
+      row.household_id === null ||
+      row.household_id === undefined ||
+      row.access_state === null ||
+      row.access_state === undefined
+    ) {
+      return [];
+    }
+    const classification = enumValue(row.classification, ['family', 'school']);
+    return [
+      {
+        householdId: text(row.household_id),
+        displayName: householdDisplayName(first.owner_display_name, classification),
+        classification,
+        accessState: enumValue(row.access_state, ['free', 'active', 'grace', 'inactive']),
+        ownerRelationship: 'account_owner' as const,
+      },
+    ];
+  });
+  if (
+    new Set(ownedHouseholds.map((household) => household.householdId)).size !==
+    ownedHouseholds.length
+  ) {
+    throw new HouseholdIdentityRepositoryError(
+      'persistence_invariant',
+      'The adult login identity resolved duplicate owned households.',
+    );
+  }
+  return {
+    adultId,
+    normalizedEmail: text(first.normalized_email),
+    ownerDisplayName: ownerName(first.owner_display_name),
+    adultState: enumValue(first.adult_state, ['active', 'archived']),
+    humanAccountId,
+    accountState:
+      first.account_state === null || first.account_state === undefined
+        ? null
+        : enumValue(first.account_state, ['invited', 'active', 'disabled', 'archived']),
+    securityVersion:
+      first.security_version === null || first.security_version === undefined
+        ? null
+        : integer(first.security_version),
+    parentMembershipActive: first.parent_membership_active === true,
+    passwordHash: nullableText(first.password_hash),
+    credentialState:
+      first.credential_state === null || first.credential_state === undefined
+        ? null
+        : enumValue(first.credential_state, ['active', 'reset_required', 'disabled']),
+    credentialVersion:
+      first.credential_version === null || first.credential_version === undefined
+        ? null
+        : integer(first.credential_version),
+    activeOwnedHouseholdCount: result.rows.filter((candidate) => {
+      const row = candidate as Record<string, unknown>;
+      return row.household_id !== null && row.household_id !== undefined;
+    }).length,
+    ownedHouseholds,
+  };
+}
+
+export async function upgradeV21AdultCredentialPasswordHash(
+  db: Queryable,
+  input: UpgradeV21AdultCredentialInput,
+): Promise<boolean> {
+  inputIdentifier(input.humanAccountId, 'HumanAccount');
+  inputIdentifier(input.adultId, 'adult');
+  assertRuntimeBinding(input.runtimeTier, input.verificationEnvironmentId);
+  if (
+    !Number.isSafeInteger(input.expectedCredentialVersion) ||
+    input.expectedCredentialVersion < 1
+  ) {
+    throw new HouseholdIdentityRepositoryError(
+      'invalid_session_input',
+      'The expected adult credential version must be a positive integer.',
+    );
+  }
+  if (
+    !input.expectedPasswordHash.startsWith('argon2id') &&
+    !input.expectedPasswordHash.startsWith('$argon2id')
+  ) {
+    throw new HouseholdIdentityRepositoryError(
+      'invalid_session_input',
+      'The expected adult credential hash is outside the bounded format.',
+    );
+  }
+  if (
+    !input.replacementPasswordHash.startsWith('argon2id') &&
+    !input.replacementPasswordHash.startsWith('$argon2id')
+  ) {
+    throw new HouseholdIdentityRepositoryError(
+      'invalid_session_input',
+      'The replacement adult credential hash is outside the bounded format.',
+    );
+  }
+  const now = inputInstant(input.now);
+  const result = await db.query(
+    `UPDATE onetime.v21_adult_credentials
+        SET password_hash = $3,
+            credential_version = credential_version + 1,
+            updated_at = $4
+      WHERE human_account_id = $1
+        AND adult_id = $2
+        AND password_hash = $5
+        AND credential_version = $6
+        AND credential_state = 'active'
+        AND product_key = '${ONE_TIME_PRODUCT_SCOPE}'
+        AND runtime_tier = $7
+        AND verification_environment_id = $8
+      RETURNING human_account_id`,
+    [
+      input.humanAccountId,
+      input.adultId,
+      input.replacementPasswordHash,
+      now,
+      input.expectedPasswordHash,
+      input.expectedCredentialVersion,
+      input.runtimeTier,
+      input.verificationEnvironmentId,
     ],
   );
   return result.rowCount === 1;
@@ -712,6 +988,7 @@ function resolvedParentSession(row: Record<string, unknown>): ResolvedV21ParentS
     adultId: text(row.adult_id),
     normalizedEmail: text(row.normalized_email),
     ownerDisplayName,
+    ownedHouseholdCount: integer(row.owned_household_count),
     session: {
       sessionId: text(row.session_id),
       product: enumValue(row.product_key, [ONE_TIME_PRODUCT_SCOPE]),
@@ -761,6 +1038,18 @@ function assertParentSessionBinding(input: V21ParentSessionBinding & { sessionId
     throw new HouseholdIdentityRepositoryError(
       'invalid_session_input',
       'Adult session security version must be a positive integer.',
+    );
+  }
+}
+
+function assertRuntimeBinding(
+  runtimeTier: RuntimeTier,
+  verificationEnvironmentId: VerificationEnvironmentId,
+) {
+  if (VERIFICATION_RUNTIME_TIER[verificationEnvironmentId] !== runtimeTier) {
+    throw new HouseholdIdentityRepositoryError(
+      'invalid_session_input',
+      'Runtime tier and verification environment do not match.',
     );
   }
 }

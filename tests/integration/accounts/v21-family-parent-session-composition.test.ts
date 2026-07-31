@@ -1,9 +1,13 @@
 import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
+import pg from 'pg';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { createApp } from '../../../apps/web/src/server/app.ts';
-import { createV21AdultSessionRuntime } from '../../../apps/web/src/server/features/auth/v21-adult-session.ts';
+import {
+  createPostgresV21AdultSessionRuntime,
+  createV21AdultSessionRuntime,
+} from '../../../apps/web/src/server/features/auth/v21-adult-session.ts';
 import { loadConfig, type AppConfig } from '../../../packages/config/src/index.ts';
 import { ADULT_SESSION_POLICY } from '../../../packages/contracts/src/accounts/v21-household-identity.ts';
 import { createMemoryPool, runMigrations, type DbPool } from '../../../packages/db/src/index.ts';
@@ -11,6 +15,7 @@ import type {
   ResolvedV21ParentSession,
   V21AdultSessionRepository,
 } from '../../../packages/db/src/accounts/v21-household-identity-repository.ts';
+import { createPostgresV21AdultSessionRepository } from '../../../packages/db/src/accounts/v21-household-identity-repository.ts';
 import {
   createAccountUser,
   createSession,
@@ -222,6 +227,400 @@ describe('I36 central Family-signup and Parent-session composition', () => {
   });
 });
 
+const nativeDatabaseUrl = process.env.I36_NATIVE_DATABASE_URL;
+const nativeProofEnabled =
+  process.env.I36_NATIVE_POSTGRES_DISPOSABLE === 'true' && Boolean(nativeDatabaseUrl);
+
+describe.runIf(nativeProofEnabled)(
+  'I36 full-migration native PostgreSQL Parent-session composition',
+  () => {
+    it('uses the production repository/runtime for signup, bootstrap, logout, login, cutoff, and invalid-cookie recovery', async () => {
+      const nativePool = new pg.Pool({ connectionString: nativeDatabaseUrl!, max: 2 });
+      let nativeServer: ReturnType<ReturnType<typeof createApp>['listen']> | undefined;
+      let nativeDistDir: string | undefined;
+      let ownsNativeSchema = false;
+      try {
+        const database = await nativePool.query(
+          `SELECT current_database() AS database_name,
+                    current_setting('server_version') AS server_version`,
+        );
+        expect(database.rows[0]?.database_name).toBe('ot_i36');
+        expect(String(database.rows[0]?.server_version)).toMatch(/^18\./u);
+        const blank = await nativePool.query(
+          `SELECT count(*)::integer AS table_count
+               FROM information_schema.tables
+              WHERE table_schema NOT IN ('pg_catalog', 'information_schema')`,
+        );
+        expect(Number(blank.rows[0]?.table_count)).toBe(0);
+        const unexpectedSchemas = await nativePool.query(
+          `SELECT schema_name
+             FROM information_schema.schemata
+            WHERE schema_name NOT IN ('pg_catalog', 'information_schema', 'public', 'pg_toast')
+            ORDER BY schema_name`,
+        );
+        expect(unexpectedSchemas.rows).toEqual([]);
+
+        ownsNativeSchema = true;
+        const migrations = await runMigrations(nativePool);
+        expect(migrations.length).toBeGreaterThan(0);
+        expect(
+          migrations.some(
+            (migration) =>
+              migration.id === '2248_v21_family_signup' && migration.status === 'applied',
+          ),
+        ).toBe(true);
+
+        const nativeConfig = loadConfig({
+          NODE_ENV: 'test',
+          PUBLIC_BASE_URL: 'https://join.onetimeonetime.com',
+          APP_VERSION: 'test',
+          COMMIT_SHA: 'test',
+          OUTBOX_TRANSPORT_MODE: 'sink',
+          AUTH_CSRF_SECRET: 'i36-native-parent-session-test-secret',
+        });
+        let nativeNow = new Date('2026-09-13T16:23:59.000Z');
+        nativeDistDir = await mkdtemp(path.join(tmpdir(), 'i36-native-parent-session-'));
+        await mkdir(path.join(nativeDistDir, 'app'), { recursive: true });
+        await writeFile(
+          path.join(nativeDistDir, 'app', 'parent.html'),
+          '<!doctype html><html><body>I36_NATIVE_PARENT_SHELL</body></html>',
+          'utf8',
+        );
+        const productionRuntime = createPostgresV21AdultSessionRuntime({
+          db: nativePool,
+          hmacSecret: nativeConfig.authCsrfSecret,
+          clock: () => new Date(nativeNow),
+        });
+        const nativeApp = createApp({
+          config: nativeConfig,
+          pool: nativePool,
+          distDir: nativeDistDir,
+          clock: () => new Date(nativeNow),
+          v21AdultSessionRuntime: productionRuntime,
+        });
+        const listeningServer = await new Promise<NonNullable<typeof nativeServer>>(
+          (resolve, reject) => {
+            const listening = nativeApp.listen(0, '127.0.0.1', (error?: Error) => {
+              if (error) reject(error);
+              else resolve(listening);
+            });
+          },
+        );
+        nativeServer = listeningServer;
+        const nativeAddress = listeningServer.address();
+        if (typeof nativeAddress !== 'object' || !nativeAddress) {
+          throw new Error('missing native test server address');
+        }
+        const nativeBaseUrl = `http://127.0.0.1:${nativeAddress.port}`;
+
+        const submitNativeFamily = async (email: string) => {
+          const bootstrapResponse = await fetch(`${nativeBaseUrl}/api/v1/signup/family/bootstrap`);
+          const bootstrap = (await bootstrapResponse.json()) as {
+            idempotency_key: string;
+            csrf_token: string;
+          };
+          const signupCsrfCookie = bootstrapResponse.headers
+            .getSetCookie()
+            .find((value) => value.startsWith('ot_family_signup_csrf='))
+            ?.split(';')[0];
+          if (!signupCsrfCookie) throw new Error('missing native signup CSRF cookie');
+          const response = await fetch(`${nativeBaseUrl}/api/v1/signup/family`, {
+            method: 'POST',
+            headers: {
+              'content-type': 'application/json',
+              cookie: signupCsrfCookie,
+              origin: nativeConfig.publicBaseUrl,
+              'x-csrf-token': bootstrap.csrf_token,
+            },
+            body: JSON.stringify({
+              classification: 'family',
+              idempotency_key: bootstrap.idempotency_key,
+              first_name: 'Native',
+              last_name: 'Parent',
+              email,
+              password: 'correct horse battery staple',
+              password_confirmation: 'correct horse battery staple',
+              timezone: 'Asia/Jerusalem',
+              terms_accepted: true,
+              privacy_accepted: true,
+              general_marketing_consent: false,
+              parent_newsletter_consent: false,
+            }),
+          });
+          const body = (await response.json()) as Record<string, unknown>;
+          const hostCookie = response.headers
+            .getSetCookie()
+            .find((value) => value.startsWith('__Host-onetime-session='))
+            ?.split(';')[0];
+          if (!hostCookie) throw new Error(`missing native host cookie: ${JSON.stringify(body)}`);
+          return { response, body, hostCookie };
+        };
+
+        const signup = await submitNativeFamily('native-parent@example.test');
+        expect(signup.response.status).toBe(201);
+        expect(signup.body).toMatchObject({
+          session_established: true,
+          local_access_state: 'free',
+        });
+
+        const firstBootstrapResponse = await fetch(`${nativeBaseUrl}/api/v2.1/auth/session`, {
+          headers: { cookie: signup.hostCookie },
+        });
+        const firstBootstrap = (await firstBootstrapResponse.json()) as {
+          session_model: string;
+          csrf_token: string;
+          parent_context: { owned_household_count: number };
+        };
+        expect(firstBootstrapResponse.status).toBe(200);
+        expect(firstBootstrap).toMatchObject({
+          session_model: 'v21',
+          parent_context: { owned_household_count: 1 },
+        });
+        const secondBootstrapResponse = await fetch(`${nativeBaseUrl}/api/v2.1/auth/session`, {
+          headers: { cookie: signup.hostCookie },
+        });
+        const secondBootstrap = (await secondBootstrapResponse.json()) as {
+          csrf_token: string;
+        };
+        expect(secondBootstrap.csrf_token).not.toBe(firstBootstrap.csrf_token);
+
+        const selection = await fetch(`${nativeBaseUrl}/select-household`, {
+          redirect: 'manual',
+          headers: { cookie: signup.hostCookie },
+        });
+        expect(selection.status).toBe(302);
+        expect(selection.headers.get('location')).toBe('/app/parent');
+
+        const logout = await fetch(`${nativeBaseUrl}/api/v2.1/auth/logout`, {
+          method: 'POST',
+          headers: {
+            cookie: signup.hostCookie,
+            'x-csrf-token': secondBootstrap.csrf_token,
+          },
+        });
+        expect(logout.status).toBe(200);
+        expect(logout.headers.getSetCookie()).toEqual(
+          expect.arrayContaining([
+            expect.stringContaining('otcrm_session='),
+            expect.stringContaining('otcrm_csrf='),
+            expect.stringContaining('__Host-onetime-session='),
+          ]),
+        );
+        const revoked = await nativePool.query(
+          `SELECT revoke_reason, revoked_at
+               FROM onetime.v21_adult_sessions
+              ORDER BY created_at
+              LIMIT 1`,
+        );
+        expect(revoked.rows[0]).toMatchObject({
+          revoke_reason: 'adult_logout',
+          revoked_at: expect.any(Date),
+        });
+        const revokedReplay = await fetch(`${nativeBaseUrl}/api/v2.1/auth/session`, {
+          headers: { cookie: signup.hostCookie },
+        });
+        expect(revokedReplay.status).toBe(401);
+        expect(revokedReplay.headers.getSetCookie()).toEqual(
+          expect.arrayContaining([
+            expect.stringContaining('__Host-onetime-session='),
+            expect.stringContaining('otcrm_session='),
+          ]),
+        );
+
+        const loginPage = await fetch(`${nativeBaseUrl}/login`);
+        const loginCookie = loginPage.headers
+          .getSetCookie()
+          .find((value) => value.startsWith('otcrm_csrf='))
+          ?.split(';')[0];
+        const loginHtml = await loginPage.text();
+        const loginCsrf = /name="csrf_token" value="([^"]+)"/u.exec(loginHtml)?.[1];
+        if (!loginCookie || !loginCsrf) throw new Error('missing native login CSRF binding');
+        const deniedLogin = await fetch(`${nativeBaseUrl}/api/v1/auth/login`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json', cookie: loginCookie },
+          body: JSON.stringify({
+            identifier: 'native-parent@example.test',
+            password: 'wrong password value',
+            csrf_token: loginCsrf,
+          }),
+        });
+        expect(deniedLogin.status).toBe(401);
+        await expect(deniedLogin.json()).resolves.toMatchObject({
+          code: 'INVALID_CREDENTIALS',
+        });
+        const acceptedLogin = await fetch(`${nativeBaseUrl}/api/v1/auth/login`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json', cookie: loginCookie },
+          body: JSON.stringify({
+            identifier: 'native-parent@example.test',
+            password: 'correct horse battery staple',
+            csrf_token: loginCsrf,
+            return_to: '/app/parent/account',
+          }),
+        });
+        const acceptedLoginBody = (await acceptedLogin.json()) as Record<string, unknown>;
+        expect(acceptedLogin.status).toBe(200);
+        expect(acceptedLoginBody).toMatchObject({
+          success: true,
+          session_model: 'v21',
+          return_to: '/app/parent/account',
+        });
+        const acceptedHostCookie = acceptedLogin.headers
+          .getSetCookie()
+          .find(
+            (value) => value.startsWith('__Host-onetime-session=') && !value.includes('Max-Age=0'),
+          )
+          ?.split(';')[0];
+        if (!acceptedHostCookie) throw new Error('missing re-login host cookie');
+
+        const legacyUserKey = await createAccountUser({
+          pool: nativePool,
+          config: nativeConfig,
+          email: 'native-legacy-parent@example.test',
+          password: 'LegacyParentPassword!234',
+          displayName: 'Native Legacy Parent',
+          role: 'parent',
+        });
+        const legacyUser = await getSessionUserByKey({
+          pool: nativePool,
+          config: nativeConfig,
+          userKey: legacyUserKey,
+        });
+        if (!legacyUser) throw new Error('missing native legacy Parent');
+        const legacySession = await createSession({
+          pool: nativePool,
+          config: nativeConfig,
+          user: legacyUser,
+          assuranceMethod: 'password',
+        });
+        const mixedBootstrapResponse = await fetch(`${nativeBaseUrl}/api/v2.1/auth/session`, {
+          headers: {
+            cookie: `${acceptedHostCookie}; otcrm_session=${encodeURIComponent(
+              legacySession.session_token,
+            )}`,
+          },
+        });
+        const mixedBootstrap = (await mixedBootstrapResponse.json()) as {
+          csrf_token: string;
+        };
+        const mixedLogout = await fetch(`${nativeBaseUrl}/api/v2.1/auth/logout`, {
+          method: 'POST',
+          headers: {
+            cookie: `${acceptedHostCookie}; otcrm_session=${encodeURIComponent(
+              legacySession.session_token,
+            )}`,
+            'x-csrf-token': mixedBootstrap.csrf_token,
+          },
+        });
+        expect(mixedLogout.status).toBe(200);
+        const legacyReadback = await nativePool.query(
+          `SELECT revoked_at
+               FROM onetime.user_sessions
+              WHERE session_key = $1`,
+          [legacySession.session_key],
+        );
+        expect(legacyReadback.rows[0]?.revoked_at).toBeInstanceOf(Date);
+        const invalidRecovery = await fetch(`${nativeBaseUrl}/api/v1/auth/session`, {
+          headers: {
+            cookie: `__Host-onetime-session=malformed; otcrm_session=${encodeURIComponent(
+              legacySession.session_token,
+            )}`,
+          },
+        });
+        expect(invalidRecovery.status).toBe(401);
+        expect(invalidRecovery.headers.getSetCookie()).toEqual(
+          expect.arrayContaining([
+            expect.stringContaining('__Host-onetime-session='),
+            expect.stringContaining('otcrm_session='),
+          ]),
+        );
+
+        const cardinality = await submitNativeFamily('native-cardinality-parent@example.test');
+        const cardinalityBinding = await nativePool.query(
+          `SELECT adult.adult_id,
+                  account.human_account_id,
+                  account.security_version,
+                  household.household_id
+             FROM onetime.v21_adult_identities AS adult
+             JOIN onetime.v21_human_accounts AS account
+               ON account.adult_id = adult.adult_id
+             JOIN onetime.v21_households AS household
+               ON household.owner_adult_id = adult.adult_id
+              AND household.owner_human_account_id = account.human_account_id
+            WHERE adult.normalized_email = $1`,
+          ['native-cardinality-parent@example.test'],
+        );
+        const cardinalityRow = cardinalityBinding.rows[0] as
+          | {
+              adult_id: string;
+              human_account_id: string;
+              security_version: number;
+              household_id: string;
+            }
+          | undefined;
+        if (!cardinalityRow) throw new Error('missing native cardinality binding');
+        await nativePool.query(
+          `INSERT INTO onetime.v21_households
+             (household_id, owner_adult_id, owner_human_account_id, classification,
+              state, seat_limit, active_seat_count, access_aggregate_ref,
+              product_key, runtime_tier, verification_environment_id, created_at, updated_at)
+           VALUES
+             ('native_missing_access_household', $1, $2, 'family',
+              'active', 3, 0, 'native_missing_access_household',
+              'one_time_mishnayos', 'isolated_staging', 'ci', $3, $3)`,
+          [cardinalityRow.adult_id, cardinalityRow.human_account_id, nativeNow],
+        );
+        const cardinalityReadback = await fetch(`${nativeBaseUrl}/api/v2.1/auth/session`, {
+          headers: { cookie: cardinality.hostCookie },
+        });
+        expect(cardinalityReadback.status).toBe(401);
+        const productionRepository = createPostgresV21AdultSessionRepository(nativePool);
+        await expect(
+          productionRepository.create({
+            sessionId: 'native_cardinality_race_session',
+            adultId: cardinalityRow.adult_id,
+            humanAccountId: cardinalityRow.human_account_id,
+            householdId: cardinalityRow.household_id,
+            runtimeTier: 'isolated_staging',
+            verificationEnvironmentId: 'ci',
+            securityVersion: Number(cardinalityRow.security_version),
+            accessTokenDigest: 'a'.repeat(64),
+            refreshTokenDigest: 'b'.repeat(64),
+            issuedAt: nativeNow,
+          }),
+        ).rejects.toMatchObject({ code: 'session_not_created' });
+
+        nativeNow = new Date('2026-09-13T16:24:00.000Z');
+        const cutoff = await submitNativeFamily('native-cutoff-parent@example.test');
+        expect(cutoff.response.status).toBe(202);
+        expect(cutoff.body).toMatchObject({
+          local_access_state: 'inactive',
+          session_established: true,
+        });
+
+        const storedCredentials = await nativePool.query(
+          `SELECT count(*)::integer AS credential_count,
+                    bool_and(password_hash NOT LIKE '%correct horse%') AS plaintext_absent
+               FROM onetime.v21_adult_credentials`,
+        );
+        expect(storedCredentials.rows[0]).toEqual({
+          credential_count: 3,
+          plaintext_absent: true,
+        });
+      } finally {
+        if (nativeServer) {
+          await new Promise<void>((resolve) => nativeServer!.close(() => resolve()));
+        }
+        if (nativeDistDir) await rm(nativeDistDir, { recursive: true, force: true });
+        if (ownsNativeSchema) {
+          await nativePool.query('DROP SCHEMA IF EXISTS onetime CASCADE');
+        }
+        await nativePool.end();
+      }
+    }, 60_000);
+  },
+);
+
 async function submitFamily(
   email: string,
   firstName: string,
@@ -394,6 +793,7 @@ function rewritePgMemLockClause(statement: string): string {
 }
 
 function createDbBackedTestAdultSessionRepository(db: DbPool): V21AdultSessionRepository {
+  const productionRepository = createPostgresV21AdultSessionRepository(db);
   return {
     create: async (input) => {
       const identity = await readExactParentIdentity(db, input);
@@ -497,6 +897,9 @@ function createDbBackedTestAdultSessionRepository(db: DbPool): V21AdultSessionRe
       );
       return result.rowCount === 1;
     },
+    findLoginIdentity: (input) => productionRepository.findLoginIdentity(input),
+    upgradeCredentialPasswordHash: (input) =>
+      productionRepository.upgradeCredentialPasswordHash(input),
   };
 }
 
@@ -682,6 +1085,7 @@ function resolvedParentSession(
     adultId,
     normalizedEmail: identity.normalizedEmail,
     ownerDisplayName: identity.ownerDisplayName,
+    ownedHouseholdCount: 1,
     session: {
       sessionId: String(session.session_id),
       product: 'one_time_mishnayos',

@@ -622,6 +622,7 @@ function sessionRow(overrides: Record<string, unknown> = {}): Record<string, unk
     owner_display_name: 'Owner One',
     classification: 'family',
     access_state: 'active',
+    owned_household_count: 1,
     ...overrides,
   };
 }

@@ -11,6 +11,8 @@ import {
   createPostgresV21AdultSessionRepository,
   type V21AdultSessionRepository,
 } from '../../../../../../packages/db/src/accounts/v21-household-identity-repository.ts';
+import { verifyAuthPasswordWithUpgrade } from '../../../../../../packages/domain/src/auth/policy.ts';
+import { normalizeAdultEmail } from '../../../../../../packages/domain/src/accounts/v21-household-identity.ts';
 
 const BROWSER_TOKEN_VERSION = 'v1';
 const BROWSER_TOKEN_DOMAIN = 'one-time-v21-parent-session-envelope-v1';
@@ -107,12 +109,85 @@ export type V21ParentSessionEstablishmentInput = {
 export type V21ParentRouteAuthorization =
   { allowed: true } | { allowed: false; reason: 'inactive_household' };
 
+export type V21AdultLoginOutcome =
+  | { handled: false }
+  | {
+      handled: true;
+      authenticated: false;
+      failure: 'invalid_credentials' | 'unavailable' | 'recovery_required';
+      session_mutated?: true;
+    }
+  | {
+      handled: true;
+      authenticated: true;
+      browser_session_token: string;
+      csrf_token: string;
+      expires_at: string;
+      user: {
+        adult_id: string;
+        human_account_id: string;
+        email: string;
+        display_name: string;
+      };
+      household: V21ParentSessionContext['household'];
+    };
+
+export type V21SessionRevocationOutcome =
+  | { revoked: true }
+  | {
+      revoked: false;
+      reason: 'invalid_session' | 'invalid_csrf' | 'revocation_unverified';
+    };
+
+export type V21SessionResolutionOutcome =
+  | { status: 'resolved'; context: V21ParentSessionContext }
+  | { status: 'invalid' }
+  | { status: 'unavailable' };
+
+export type V21SessionBootstrapOutcome =
+  | {
+      status: 'resolved';
+      context: V21ParentSessionContext;
+      csrf_token: string;
+      expires_at: string;
+    }
+  | { status: 'invalid' }
+  | { status: 'unavailable' };
+
 export interface V21AdultSessionRuntime {
   establish(input: V21ParentSessionEstablishmentInput): Promise<V21ParentSessionEstablishment>;
+  recognizedLoginEmail(input: {
+    scope: V21ParentSessionEstablishmentInput['scope'];
+    email: string;
+  }): Promise<
+    | { status: 'recognized'; normalized_email: string }
+    | { status: 'absent' }
+    | { status: 'unavailable' }
+  >;
+  login(input: {
+    scope: V21ParentSessionEstablishmentInput['scope'];
+    email: string;
+    password: string;
+    cookie_header?: string | null | undefined;
+    now?: Date | undefined;
+  }): Promise<V21AdultLoginOutcome>;
+  bootstrapCookieHeader(input: {
+    cookie_header?: string | null | undefined;
+    now?: Date | undefined;
+  }): Promise<V21SessionBootstrapOutcome>;
+  logoutCookieHeader(input: {
+    cookie_header?: string | null | undefined;
+    csrf_token?: string | null | undefined;
+    now?: Date | undefined;
+  }): Promise<V21SessionRevocationOutcome>;
+  rotateCookieHeader(input: {
+    cookie_header?: string | null | undefined;
+    now?: Date | undefined;
+  }): Promise<V21SessionRevocationOutcome>;
   resolveCookieHeader(input: {
     cookie_header?: string | null | undefined;
     now?: Date | undefined;
-  }): Promise<V21ParentSessionContext | null>;
+  }): Promise<V21SessionResolutionOutcome>;
   verifyCsrf(input: {
     cookie_header?: string | null | undefined;
     csrf_token?: string | null | undefined;
@@ -142,8 +217,8 @@ export function createV21AdultSessionRuntime(
   const resolveEnvelope = async (
     parsed: ParsedBrowserEnvelope,
     now: Date,
-  ): Promise<V21ParentSessionContext | null> => {
-    if (!validInstant(now)) return null;
+  ): Promise<V21SessionResolutionOutcome> => {
+    if (!validInstant(now)) return { status: 'invalid' };
     try {
       const resolved = await input.repository.resolve({
         ...repositoryBinding(parsed.claims),
@@ -151,85 +226,349 @@ export function createV21AdultSessionRuntime(
         tokenDigest: domainDigest(ACCESS_TOKEN_DOMAIN, parsed.claims.access_material),
         now,
       });
-      return resolved && exactReadback(resolved, parsed.claims, now) ? resolved : null;
+      return resolved && exactReadback(resolved, parsed.claims, now)
+        ? { status: 'resolved', context: resolved }
+        : { status: 'invalid' };
     } catch {
-      return null;
+      return { status: 'unavailable' };
+    }
+  };
+
+  const establish = async (
+    establishmentInput: V21ParentSessionEstablishmentInput,
+  ): Promise<V21ParentSessionEstablishment> => {
+    let createAttempted = false;
+    let claims: BrowserEnvelope | null = null;
+    try {
+      assertEstablishmentInput(establishmentInput);
+      const material = [
+        randomMaterial(randomSource),
+        randomMaterial(randomSource),
+        randomMaterial(randomSource),
+        randomMaterial(randomSource),
+      ];
+      if (new Set(material).size !== material.length) {
+        throw new Error('Parent-session random material must be independent.');
+      }
+      claims = browserEnvelopeSchema.parse({
+        session_id: `session_${material[0]}`,
+        adult_id: establishmentInput.adult_id,
+        human_account_id: establishmentInput.human_account_id,
+        household_id: establishmentInput.household_id,
+        runtime_tier: establishmentInput.scope.runtime_tier,
+        verification_environment_id: establishmentInput.scope.verification_environment_id,
+        security_version: establishmentInput.security_version,
+        access_material: material[1],
+        refresh_material: material[2],
+      });
+      createAttempted = true;
+      const createdSession = await input.repository.create({
+        ...repositoryBinding(claims),
+        accessTokenDigest: domainDigest(ACCESS_TOKEN_DOMAIN, claims.access_material),
+        refreshTokenDigest: domainDigest(REFRESH_TOKEN_DOMAIN, claims.refresh_material),
+        issuedAt: establishmentInput.now,
+      });
+      if (!exactReadback(createdSession, claims, establishmentInput.now)) {
+        throw new Error('Created Parent session did not match its exact binding.');
+      }
+
+      const signedBrowserToken = signBrowserEnvelope(claims, input.hmacSecret);
+      const parsedReadback = parseCookie(
+        `${AUTH_SESSION_COOKIE.name}=${encodeURIComponent(signedBrowserToken)}`,
+      );
+      if (!parsedReadback) {
+        throw new Error('Issued Parent session was not readable through the host-cookie parser.');
+      }
+      const middlewareReadback = await resolveEnvelope(parsedReadback, establishmentInput.now);
+      if (middlewareReadback.status !== 'resolved') {
+        throw new Error('Issued Parent session failed middleware repository readback.');
+      }
+      const expiresAt = currentExpiry(middlewareReadback.context);
+      if (Date.parse(expiresAt) <= establishmentInput.now.getTime()) {
+        throw new Error('Issued Parent session is already expired.');
+      }
+      return {
+        established: true,
+        browser_session_token: signedBrowserToken,
+        csrf_token: signCsrf(parsedReadback.payloadSegment, material[3]!, input.hmacSecret),
+        expires_at: expiresAt,
+        middleware_readback_verified: true,
+      };
+    } catch {
+      if (createAttempted && claims) {
+        await bestEffortRevoke(input.repository, claims, establishmentInput.now);
+      }
+      return {
+        established: false,
+        safe_reason: 'session_creation_failed',
+      };
+    }
+  };
+
+  const exactRevoke = async (
+    parsed: ParsedBrowserEnvelope,
+    now: Date,
+    reason: 'adult_logout' | 'session_rotation' | 'explicit_revocation',
+  ): Promise<'revoked' | 'invalid' | 'unavailable' | 'revocation_unverified'> => {
+    const resolution = await resolveEnvelope(parsed, now);
+    if (resolution.status !== 'resolved') return resolution.status;
+    try {
+      const revoked = await input.repository.revoke({
+        ...repositoryBinding(parsed.claims),
+        tokenKind: 'access',
+        tokenDigest: domainDigest(ACCESS_TOKEN_DOMAIN, parsed.claims.access_material),
+        now,
+        reason,
+      });
+      if (!revoked) return 'revocation_unverified';
+      const readback = await input.repository.resolve({
+        ...repositoryBinding(parsed.claims),
+        tokenKind: 'access',
+        tokenDigest: domainDigest(ACCESS_TOKEN_DOMAIN, parsed.claims.access_material),
+        now,
+      });
+      return readback === null ? 'revoked' : 'revocation_unverified';
+    } catch {
+      return 'unavailable';
     }
   };
 
   return {
-    establish: async (establishmentInput) => {
-      let createAttempted = false;
-      let claims: BrowserEnvelope | null = null;
-      try {
-        assertEstablishmentInput(establishmentInput);
-        const material = [
-          randomMaterial(randomSource),
-          randomMaterial(randomSource),
-          randomMaterial(randomSource),
-          randomMaterial(randomSource),
-        ];
-        if (new Set(material).size !== material.length) {
-          throw new Error('Parent-session random material must be independent.');
-        }
-        claims = browserEnvelopeSchema.parse({
-          session_id: `session_${material[0]}`,
-          adult_id: establishmentInput.adult_id,
-          human_account_id: establishmentInput.human_account_id,
-          household_id: establishmentInput.household_id,
-          runtime_tier: establishmentInput.scope.runtime_tier,
-          verification_environment_id: establishmentInput.scope.verification_environment_id,
-          security_version: establishmentInput.security_version,
-          access_material: material[1],
-          refresh_material: material[2],
-        });
-        createAttempted = true;
-        const createdSession = await input.repository.create({
-          ...repositoryBinding(claims),
-          accessTokenDigest: domainDigest(ACCESS_TOKEN_DOMAIN, claims.access_material),
-          refreshTokenDigest: domainDigest(REFRESH_TOKEN_DOMAIN, claims.refresh_material),
-          issuedAt: establishmentInput.now,
-        });
-        if (!exactReadback(createdSession, claims, establishmentInput.now)) {
-          throw new Error('Created Parent session did not match its exact binding.');
-        }
+    establish,
 
-        const signedBrowserToken = signBrowserEnvelope(claims, input.hmacSecret);
-        const parsedReadback = parseCookie(
-          `${AUTH_SESSION_COOKIE.name}=${encodeURIComponent(signedBrowserToken)}`,
-        );
-        if (!parsedReadback) {
-          throw new Error('Issued Parent session was not readable through the host-cookie parser.');
+    recognizedLoginEmail: async ({ scope, email }) => {
+      const normalizedEmail = canonicalAdultEmail(email);
+      if (!normalizedEmail) return { status: 'absent' };
+      try {
+        const identity = await input.repository.findLoginIdentity({
+          normalizedEmail,
+          runtimeTier: scope.runtime_tier,
+          verificationEnvironmentId: scope.verification_environment_id,
+        });
+        return identity
+          ? { status: 'recognized', normalized_email: normalizedEmail }
+          : { status: 'absent' };
+      } catch {
+        return { status: 'unavailable' };
+      }
+    },
+
+    login: async ({
+      scope,
+      email,
+      password,
+      cookie_header: cookieHeader,
+      now = clock(),
+    }): Promise<V21AdultLoginOutcome> => {
+      const normalizedEmail = canonicalAdultEmail(email);
+      if (!normalizedEmail) return { handled: false };
+      let establishedBrowserToken: string | null = null;
+      let sessionMutated = false;
+      try {
+        const identity = await input.repository.findLoginIdentity({
+          normalizedEmail,
+          runtimeTier: scope.runtime_tier,
+          verificationEnvironmentId: scope.verification_environment_id,
+        });
+        const proof = verifyAuthPasswordWithUpgrade(password, identity?.passwordHash ?? '');
+        if (!identity) return { handled: false };
+        if (
+          !proof.valid ||
+          identity.adultState !== 'active' ||
+          identity.humanAccountId === null ||
+          identity.accountState !== 'active' ||
+          identity.securityVersion === null ||
+          !identity.parentMembershipActive ||
+          identity.credentialState !== 'active' ||
+          identity.credentialVersion === null ||
+          identity.passwordHash === null ||
+          identity.activeOwnedHouseholdCount !== 1 ||
+          identity.ownedHouseholds.length !== 1
+        ) {
+          return {
+            handled: true,
+            authenticated: false,
+            failure: 'invalid_credentials',
+          };
         }
-        const middlewareReadback = await resolveEnvelope(parsedReadback, establishmentInput.now);
-        if (!middlewareReadback) {
-          throw new Error('Issued Parent session failed middleware repository readback.');
+        const humanAccountId = identity.humanAccountId;
+        const securityVersion = identity.securityVersion;
+        const credentialVersion = identity.credentialVersion;
+        const passwordHash = identity.passwordHash;
+        if (cookieHeader) {
+          const current = parseCookie(cookieHeader);
+          if (!current) {
+            return {
+              handled: true,
+              authenticated: false,
+              failure: 'unavailable',
+            };
+          }
+          const rotation = await exactRevoke(current, now, 'session_rotation');
+          if (rotation !== 'revoked') {
+            return {
+              handled: true,
+              authenticated: false,
+              failure: rotation === 'revocation_unverified' ? 'recovery_required' : 'unavailable',
+            };
+          }
+          sessionMutated = true;
         }
-        const expiresAt = currentExpiry(middlewareReadback);
-        if (Date.parse(expiresAt) <= establishmentInput.now.getTime()) {
-          throw new Error('Issued Parent session is already expired.');
+        const household = identity.ownedHouseholds[0]!;
+        const established = await establish({
+          scope,
+          adult_id: identity.adultId,
+          human_account_id: humanAccountId,
+          household_id: household.householdId,
+          active_role: 'parent',
+          security_version: securityVersion,
+          now,
+        });
+        if (!established.established) {
+          return {
+            handled: true,
+            authenticated: false,
+            failure: 'unavailable',
+            ...(sessionMutated ? { session_mutated: true as const } : {}),
+          };
+        }
+        establishedBrowserToken = established.browser_session_token;
+        if (proof.replacement_hash) {
+          let credentialUpgradeVerified = await input.repository.upgradeCredentialPasswordHash({
+            humanAccountId,
+            adultId: identity.adultId,
+            runtimeTier: scope.runtime_tier,
+            verificationEnvironmentId: scope.verification_environment_id,
+            expectedCredentialVersion: credentialVersion,
+            expectedPasswordHash: passwordHash,
+            replacementPasswordHash: proof.replacement_hash,
+            now,
+          });
+          if (!credentialUpgradeVerified) {
+            const currentIdentity = await input.repository.findLoginIdentity({
+              normalizedEmail,
+              runtimeTier: scope.runtime_tier,
+              verificationEnvironmentId: scope.verification_environment_id,
+            });
+            const currentProof = verifyAuthPasswordWithUpgrade(
+              password,
+              currentIdentity?.passwordHash ?? '',
+            );
+            credentialUpgradeVerified = Boolean(
+              currentIdentity &&
+              currentIdentity.adultId === identity.adultId &&
+              currentIdentity.normalizedEmail === identity.normalizedEmail &&
+              currentIdentity.adultState === 'active' &&
+              currentIdentity.humanAccountId === humanAccountId &&
+              currentIdentity.accountState === 'active' &&
+              currentIdentity.securityVersion === securityVersion &&
+              currentIdentity.parentMembershipActive &&
+              currentIdentity.credentialState === 'active' &&
+              currentIdentity.credentialVersion !== null &&
+              currentIdentity.credentialVersion > credentialVersion &&
+              currentIdentity.passwordHash !== null &&
+              currentIdentity.passwordHash !== passwordHash &&
+              currentIdentity.activeOwnedHouseholdCount === 1 &&
+              currentIdentity.ownedHouseholds.length === 1 &&
+              currentIdentity.ownedHouseholds[0]?.householdId === household.householdId &&
+              currentProof.valid &&
+              currentProof.replacement_hash === null,
+            );
+          }
+          if (!credentialUpgradeVerified) {
+            const establishedCookie = parseCookie(
+              `${AUTH_SESSION_COOKIE.name}=${encodeURIComponent(establishedBrowserToken)}`,
+            );
+            const cleanup = establishedCookie
+              ? await exactRevoke(establishedCookie, now, 'explicit_revocation')
+              : 'revocation_unverified';
+            return {
+              handled: true,
+              authenticated: false,
+              failure: cleanup === 'revoked' ? 'unavailable' : 'recovery_required',
+              ...(sessionMutated ? { session_mutated: true as const } : {}),
+            };
+          }
         }
         return {
-          established: true,
-          browser_session_token: signedBrowserToken,
-          csrf_token: signCsrf(parsedReadback.payloadSegment, material[3]!, input.hmacSecret),
-          expires_at: expiresAt,
-          middleware_readback_verified: true,
+          handled: true,
+          authenticated: true,
+          browser_session_token: established.browser_session_token,
+          csrf_token: established.csrf_token,
+          expires_at: established.expires_at,
+          user: {
+            adult_id: identity.adultId,
+            human_account_id: humanAccountId,
+            email: identity.normalizedEmail,
+            display_name: identity.ownerDisplayName,
+          },
+          household,
         };
       } catch {
-        if (createAttempted && claims) {
-          await bestEffortRevoke(input.repository, claims, establishmentInput.now);
+        let cleanup: 'revoked' | 'invalid' | 'unavailable' | 'revocation_unverified' | null = null;
+        if (establishedBrowserToken) {
+          const establishedCookie = parseCookie(
+            `${AUTH_SESSION_COOKIE.name}=${encodeURIComponent(establishedBrowserToken)}`,
+          );
+          cleanup = establishedCookie
+            ? await exactRevoke(establishedCookie, now, 'explicit_revocation')
+            : 'revocation_unverified';
         }
         return {
-          established: false,
-          safe_reason: 'session_creation_failed',
+          handled: true,
+          authenticated: false,
+          failure: cleanup === null || cleanup === 'revoked' ? 'unavailable' : 'recovery_required',
+          ...(sessionMutated ? { session_mutated: true as const } : {}),
         };
       }
     },
 
+    bootstrapCookieHeader: async ({ cookie_header: cookieHeader, now = clock() }) => {
+      const parsed = parseCookie(cookieHeader);
+      if (!parsed) return { status: 'invalid' };
+      const resolution = await resolveEnvelope(parsed, now);
+      if (resolution.status !== 'resolved') return resolution;
+      return {
+        status: 'resolved',
+        context: resolution.context,
+        csrf_token: signCsrf(parsed.payloadSegment, randomMaterial(randomSource), input.hmacSecret),
+        expires_at: currentExpiry(resolution.context),
+      };
+    },
+
+    logoutCookieHeader: async ({
+      cookie_header: cookieHeader,
+      csrf_token: csrfToken,
+      now = clock(),
+    }) => {
+      const parsed = parseCookie(cookieHeader);
+      if (!parsed) return { revoked: false, reason: 'invalid_session' };
+      if (!verifyCsrfProof(parsed.payloadSegment, csrfToken, input.hmacSecret)) {
+        return { revoked: false, reason: 'invalid_csrf' };
+      }
+      const outcome = await exactRevoke(parsed, now, 'adult_logout');
+      if (outcome === 'revoked') return { revoked: true };
+      return {
+        revoked: false,
+        reason: outcome === 'invalid' ? 'invalid_session' : 'revocation_unverified',
+      };
+    },
+
+    rotateCookieHeader: async ({ cookie_header: cookieHeader, now = clock() }) => {
+      const parsed = parseCookie(cookieHeader);
+      if (!parsed) return { revoked: false, reason: 'invalid_session' };
+      const outcome = await exactRevoke(parsed, now, 'session_rotation');
+      return outcome === 'revoked'
+        ? { revoked: true }
+        : {
+            revoked: false,
+            reason: outcome === 'invalid' ? 'invalid_session' : 'revocation_unverified',
+          };
+    },
+
     resolveCookieHeader: async ({ cookie_header: cookieHeader, now = clock() }) => {
       const parsed = parseCookie(cookieHeader);
-      return parsed ? resolveEnvelope(parsed, now) : null;
+      return parsed ? resolveEnvelope(parsed, now) : { status: 'invalid' };
     },
 
     verifyCsrf: async ({ cookie_header: cookieHeader, csrf_token: csrfToken, now = clock() }) => {
@@ -237,7 +576,8 @@ export function createV21AdultSessionRuntime(
       if (!parsed || !verifyCsrfProof(parsed.payloadSegment, csrfToken, input.hmacSecret)) {
         return null;
       }
-      return resolveEnvelope(parsed, now);
+      const resolution = await resolveEnvelope(parsed, now);
+      return resolution.status === 'resolved' ? resolution.context : null;
     },
   };
 }
@@ -318,6 +658,8 @@ function exactReadback(
   const absoluteExpiry = Date.parse(resolved.session.absoluteExpiresAt);
   return (
     resolved.adultId === claims.adult_id &&
+    Number.isSafeInteger(resolved.ownedHouseholdCount) &&
+    resolved.ownedHouseholdCount === 1 &&
     resolved.session.sessionId === claims.session_id &&
     resolved.session.humanAccountId === claims.human_account_id &&
     resolved.session.activeRole === 'parent' &&
@@ -334,6 +676,14 @@ function exactReadback(
     absoluteExpiry > now.getTime() &&
     idleExpiry <= absoluteExpiry
   );
+}
+
+function canonicalAdultEmail(value: string): string | null {
+  try {
+    return normalizeAdultEmail(value);
+  } catch {
+    return null;
+  }
 }
 
 function currentExpiry(resolved: V21ParentSessionContext): string {

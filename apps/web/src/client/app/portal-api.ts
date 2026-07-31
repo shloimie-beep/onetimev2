@@ -26,12 +26,36 @@ type ParentAccessShell = {
   support_available: true;
 };
 
-export type ApiSession = {
+type LegacyApiSession = {
   authenticated: true;
   user: SessionUser;
   csrf_token: string;
   expires_at: string;
+  session_model?: undefined;
 };
+
+export type V21ApiSession = {
+  success: true;
+  authenticated: true;
+  session_model: 'v21';
+  user: SessionUser;
+  csrf_token: string;
+  expires_at: string;
+  parent_context: {
+    adult_id: string;
+    human_account_id: string;
+    owned_household_count: number;
+    household: {
+      household_id: string;
+      display_name: string;
+      classification: 'family' | 'school';
+      access_state: 'free' | 'active' | 'grace' | 'inactive';
+      owner_relationship: 'account_owner';
+    };
+  };
+};
+
+export type ApiSession = LegacyApiSession | V21ApiSession;
 
 export class PortalApiError extends Error {
   readonly status: number;
@@ -45,7 +69,28 @@ export class PortalApiError extends Error {
 }
 
 export async function getSession() {
-  return api<ApiSession>('/api/v1/auth/session');
+  try {
+    return await api<V21ApiSession>('/api/v2.1/auth/session');
+  } catch (error) {
+    if (
+      !(error instanceof PortalApiError) ||
+      error.status !== 404 ||
+      error.code !== 'V21_SESSION_NOT_PRESENT'
+    ) {
+      throw error;
+    }
+  }
+  return api<LegacyApiSession>('/api/v1/auth/session');
+}
+
+export async function logoutSession(session: ApiSession) {
+  return api<{ success: true }>(
+    session.session_model === 'v21' ? '/api/v2.1/auth/logout' : '/api/v1/auth/logout',
+    {
+      method: 'POST',
+      headers: { 'x-csrf-token': session.csrf_token },
+    },
+  );
 }
 
 export async function changeOwnPassword(input: {

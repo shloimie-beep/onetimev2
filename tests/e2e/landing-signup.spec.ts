@@ -197,6 +197,153 @@ test('Family submission uses the P08 bootstrap, exact CSRF binding, and no Stude
   expect(serialized).not.toMatch(/student|phone|whatsapp|card|payment_method/i);
 });
 
+test('verified Family signup follows only an allowlisted same-origin Parent continuation', async ({
+  page,
+}) => {
+  await useServerDate(page, '2026-08-01T12:00:00.000Z');
+  await page.route('**/api/v1/signup/family/bootstrap', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(bootstrap),
+    }),
+  );
+  await page.route('**/api/v1/signup/family', (route) =>
+    route.fulfill({
+      status: 201,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        success: true,
+        code: 'FAMILY_SIGNUP_COMPLETE',
+        session_established: true,
+        continue_to: '/app/parent',
+        message: 'Your family account and free access are ready.',
+      }),
+    }),
+  );
+  await page.route('**/app/parent/account', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'text/html',
+      body: '<!doctype html><title>Parent account</title><h1>Parent account</h1>',
+    }),
+  );
+
+  await page.goto('/signup?entry=family&continue_to=%2Fapp%2Fparent%2Faccount');
+  await completeFamilySignupForm(page, 'continued-family@example.test');
+  await expect(page).toHaveURL(`${testBaseUrl}/app/parent/account`);
+
+  await page.goto('/signup?entry=family&continue_to=%252F%252Fevil.example%252Fapp%252Fparent');
+  await completeFamilySignupForm(page, 'rejected-continuation@example.test');
+  await expect(page).toHaveURL(
+    `${testBaseUrl}/signup?entry=family&continue_to=%252F%252Fevil.example%252Fapp%252Fparent`,
+  );
+  await expect(page.getByRole('heading', { name: 'Your Family account was saved.' })).toBeVisible();
+
+  const encodedTraversal =
+    '/signup?entry=family&continue_to=%2Fapp%2Fparent%2F%25252e%25252e%2Fcrm';
+  await page.goto(encodedTraversal);
+  await completeFamilySignupForm(page, 'rejected-traversal@example.test');
+  await expect(page).toHaveURL(`${testBaseUrl}${encodedTraversal}`);
+  await expect(page.getByRole('heading', { name: 'Your Family account was saved.' })).toBeVisible();
+});
+
+test('the real Parent bundle keeps a v2.1 session isolated from every legacy Parent API', async ({
+  page,
+}) => {
+  const legacyRequests: string[] = [];
+  let bootstrapCalls = 0;
+  let logoutCalls = 0;
+  page.on('request', (request) => {
+    const pathname = new URL(request.url()).pathname;
+    if (
+      pathname === '/api/v1/auth/session' ||
+      pathname.startsWith('/api/v1/portals/parent/') ||
+      pathname.startsWith('/api/v1/contact-operations/')
+    ) {
+      legacyRequests.push(pathname);
+    }
+  });
+  await page.route('**/app/parent', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'text/html',
+      body: [
+        '<!doctype html><html><head>',
+        '<link rel="stylesheet" href="/assets/app-crm.css">',
+        '</head><body><div id="portal-root"></div>',
+        '<script type="module" src="/assets/app-portal.js"></script>',
+        '</body></html>',
+      ].join(''),
+    }),
+  );
+  await page.route('**/api/v2.1/auth/session', (route) => {
+    bootstrapCalls += 1;
+    return route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        success: true,
+        authenticated: true,
+        session_model: 'v21',
+        user: {
+          user_key: 'account_parent_bundle',
+          email: 'parent-bundle@example.test',
+          display_name: 'Bundle Parent',
+          role: 'parent',
+          role_label: 'Parent',
+          mfa_capable: false,
+        },
+        csrf_token: `c1.${'d'.repeat(43)}.${'e'.repeat(43)}`,
+        expires_at: '2026-08-02T12:00:00.000Z',
+        parent_context: {
+          adult_id: 'adult_parent_bundle',
+          human_account_id: 'account_parent_bundle',
+          owned_household_count: 1,
+          household: {
+            household_id: 'household_parent_bundle',
+            display_name: 'Bundle Parent family',
+            classification: 'family',
+            access_state: 'free',
+            owner_relationship: 'account_owner',
+          },
+        },
+      }),
+    });
+  });
+  await page.route('**/api/v2.1/auth/logout', async (route) => {
+    logoutCalls += 1;
+    expect(route.request().headers()['x-csrf-token']).toBe(
+      `c1.${'d'.repeat(43)}.${'e'.repeat(43)}`,
+    );
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ success: true, session_model: 'v21' }),
+    });
+  });
+  await page.route('**/login', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'text/html',
+      body: '<!doctype html><title>Signed out</title><h1>Signed out</h1>',
+    }),
+  );
+
+  await page.goto('/app/parent');
+  await expect(page.getByRole('heading', { name: 'Bundle Parent family' })).toBeVisible();
+  await expect(page.getByText('Free learning access is active.')).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole('heading', { name: 'Bundle Parent family' })).toBeVisible();
+  expect(bootstrapCalls).toBe(2);
+  expect(legacyRequests).toEqual([]);
+
+  await page.getByRole('button', { name: 'Logout' }).click();
+  await expect(page.getByRole('heading', { name: 'Signed out' })).toBeVisible();
+  expect(logoutCalls).toBe(1);
+  expect(legacyRequests).toEqual([]);
+});
+
 test('School uses the exact P09 manual-inquiry route and payload with no nurture fields', async ({
   page,
 }) => {
@@ -349,4 +496,15 @@ async function useServerDate(page: Page, value: string) {
     }
     return route.continue();
   });
+}
+
+async function completeFamilySignupForm(page: Page, email: string) {
+  await page.getByLabel('First name', { exact: true }).fill('Playwright');
+  await page.getByLabel('Last name', { exact: true }).fill('Parent');
+  await page.getByLabel('Adult account email').fill(email);
+  await page.getByLabel('Password', { exact: true }).fill('StrongPassword!234');
+  await page.getByLabel('Confirm password').fill('StrongPassword!234');
+  await page.getByLabel(/I agree to the Terms/).check();
+  await page.getByLabel(/I acknowledge the Privacy Notice/).check();
+  await page.getByRole('button', { name: 'Create my free family account' }).click();
 }

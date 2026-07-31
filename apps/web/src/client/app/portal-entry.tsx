@@ -30,6 +30,7 @@ import {
   getSession,
   getStudentDashboard,
   invokeProtectedAction,
+  logoutSession,
   markLiveClassQuestionReady,
   runStudentAccessOperation,
   requestParentRecovery,
@@ -37,6 +38,7 @@ import {
   submitClassroomQuestion,
   submitStudentQuestion,
   updateParentLearner,
+  type V21ApiSession,
 } from './portal-api.js';
 import './crm.css';
 
@@ -87,6 +89,7 @@ function PortalApp() {
     () => portalSectionFromLocation(portalRole),
   );
   const [session, setSession] = useState<Awaited<ReturnType<typeof getSession>> | null>(null);
+  const [v21ParentSession, setV21ParentSession] = useState<V21ApiSession | null>(null);
   const [sessionExpired, setSessionExpired] = useState(false);
   const [viewState, setViewState] = useState<PortalViewState>('loading');
   const [parentDashboard, setParentDashboard] = useState<ParentPortalDashboard | null>(null);
@@ -144,9 +147,19 @@ function PortalApp() {
       setSession(nextSession);
       setSessionExpired(false);
       if (nextSession.user.role !== portalRole) {
+        setV21ParentSession(null);
         setViewState('permission');
         return;
       }
+      if (nextSession.session_model === 'v21') {
+        setV21ParentSession(nextSession);
+        setParentAccessShell(null);
+        setParentDashboard(null);
+        setSelectedLearnerKey(null);
+        setViewState('ready');
+        return;
+      }
+      setV21ParentSession(null);
       if (portalRole === 'parent') {
         const shell = await getParentAccessShell();
         setParentAccessShell(shell);
@@ -469,6 +482,7 @@ function PortalApp() {
     if (error instanceof PortalApiError && error.status === 401) {
       setSessionExpired(true);
       setSession(null);
+      setV21ParentSession(null);
       setParentDashboard(null);
       setStudentDashboard(null);
       setDialog(null);
@@ -486,17 +500,36 @@ function PortalApp() {
 
   async function logout() {
     if (!session) return;
-    setSessionExpired(true);
-    setSession(null);
-    await fetch('/api/v1/auth/logout', {
-      method: 'POST',
-      credentials: 'same-origin',
-      headers: { 'x-csrf-token': session.csrf_token },
-    }).catch(() => undefined);
-    window.location.assign('/login');
+    const currentSession = session;
+    setNotice({ kind: 'info', message: 'Signing out securely...' });
+    try {
+      await logoutSession(currentSession);
+      setSessionExpired(true);
+      setSession(null);
+      setV21ParentSession(null);
+      window.location.assign('/login');
+    } catch (error) {
+      setNotice({
+        kind: 'error',
+        message: errorMessage(
+          error,
+          'Sign out could not be verified. Check your connection and try again.',
+        ),
+      });
+    }
   }
 
   const navItems = useMemo<ShellNavItem[]>(() => {
+    if (v21ParentSession) {
+      return [
+        {
+          id: 'v21-parent-overview',
+          label: 'Overview',
+          href: '/app/parent',
+          current: true,
+        },
+      ];
+    }
     const sections = portalRole === 'parent' ? PARENT_PORTAL_SECTIONS : STUDENT_PORTAL_SECTIONS;
     const route = portalRole === 'parent' ? '/app/parent' : '/app/student';
     return sections.map((section) => ({
@@ -505,11 +538,13 @@ function PortalApp() {
       href: `${route}?section=${section.id}`,
       current: activeSection === section.id,
     }));
-  }, [activeSection, portalRole]);
+  }, [activeSection, portalRole, v21ParentSession]);
   const title = portalRole === 'parent' ? 'Parent Portal' : 'Student Portal';
   const description =
     portalRole === 'parent'
-      ? (parentDashboard?.household.display_name ?? 'Household')
+      ? (v21ParentSession?.parent_context.household.display_name ??
+        parentDashboard?.household.display_name ??
+        'Household')
       : (studentDashboard?.learner.display_name ?? 'Learner');
 
   return (
@@ -545,7 +580,9 @@ function PortalApp() {
       onSignIn={signIn}
     >
       {portalRole === 'parent' ? (
-        parentAccessShell?.mode === 'paused' ? (
+        v21ParentSession ? (
+          <V21ParentBootstrap session={v21ParentSession} />
+        ) : parentAccessShell?.mode === 'paused' ? (
           <ParentPausedShell
             displayName={parentAccessShell.display_name}
             activeSection={activeSection as ParentPortalSection}
@@ -664,6 +701,45 @@ function PortalApp() {
         onSubmitStudentAccessConfirm={() => void submitStudentAccessConfirm()}
       />
     </AppShell>
+  );
+}
+
+function V21ParentBootstrap({ session }: { session: V21ApiSession }) {
+  const household = session.parent_context.household;
+  const accessLabel =
+    household.access_state === 'inactive'
+      ? 'Learning access is inactive'
+      : household.access_state === 'free'
+        ? 'Free learning access is active'
+        : household.access_state === 'grace'
+          ? 'Learning access is in its grace period'
+          : 'Learning access is active';
+  return (
+    <section className="ot-portal-feature" aria-labelledby="v21-parent-title">
+      <div className="ot-panel">
+        <p className="ot-eyebrow">Parent account</p>
+        <h2 id="v21-parent-title">{household.display_name}</h2>
+        <p>{accessLabel}.</p>
+        <dl className="ot-mini-metrics">
+          <div>
+            <dt>Signed in as</dt>
+            <dd>{session.user.email}</dd>
+          </div>
+          <div>
+            <dt>Household</dt>
+            <dd>{household.classification === 'family' ? 'Family' : 'School'}</dd>
+          </div>
+          <div>
+            <dt>Session</dt>
+            <dd>Secure and active</dd>
+          </div>
+        </dl>
+        <p className="ot-muted">
+          Learner, class, billing, and support tools will appear here only after their v2.1
+          registrations are complete.
+        </p>
+      </div>
+    </section>
   );
 }
 

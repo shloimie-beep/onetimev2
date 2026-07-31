@@ -1,6 +1,10 @@
-import { createHash, createHmac } from 'node:crypto';
+import { argon2Sync, createHash, createHmac } from 'node:crypto';
 import { describe, expect, it, vi } from 'vitest';
-import type { V21AdultSessionRepository } from '../../../../../../packages/db/src/accounts/v21-household-identity-repository.ts';
+import type {
+  V21AdultLoginIdentity,
+  V21AdultSessionRepository,
+} from '../../../../../../packages/db/src/accounts/v21-household-identity-repository.ts';
+import { hashAuthPassword } from '../../../../../../packages/domain/src/auth/policy.ts';
 import { sessionCookieHeader } from './http-security.ts';
 import {
   authorizeV21ParentRoute,
@@ -169,14 +173,17 @@ describe('F03 v2.1 Parent host-cookie session runtime', () => {
     await expect(
       runtime.resolveCookieHeader({ cookie_header: cookie, now }),
     ).resolves.toMatchObject({
-      adultId: 'adult_one',
-      session: {
-        activeRole: 'parent',
-        activeHouseholdId: 'household_one',
-      },
-      household: {
-        householdId: 'household_one',
-        accessState: 'inactive',
+      status: 'resolved',
+      context: {
+        adultId: 'adult_one',
+        session: {
+          activeRole: 'parent',
+          activeHouseholdId: 'household_one',
+        },
+        household: {
+          householdId: 'household_one',
+          accessState: 'inactive',
+        },
       },
     });
 
@@ -201,9 +208,9 @@ describe('F03 v2.1 Parent host-cookie session runtime', () => {
       ),
     ];
     for (const rejected of rejectedBeforeRepository) {
-      await expect(
-        runtime.resolveCookieHeader({ cookie_header: rejected, now }),
-      ).resolves.toBeNull();
+      await expect(runtime.resolveCookieHeader({ cookie_header: rejected, now })).resolves.toEqual({
+        status: 'invalid',
+      });
     }
     expect(harness.resolve).toHaveBeenCalledTimes(callsAfterValid);
 
@@ -216,7 +223,7 @@ describe('F03 v2.1 Parent host-cookie session runtime', () => {
         cookie_header: hostCookie(wrongHousehold),
         now,
       }),
-    ).resolves.toBeNull();
+    ).resolves.toEqual({ status: 'invalid' });
     const staleSecurity = rewriteSignedEnvelope(established.browser_session_token, (claims) => ({
       ...claims,
       security_version: 2,
@@ -226,7 +233,7 @@ describe('F03 v2.1 Parent host-cookie session runtime', () => {
         cookie_header: hostCookie(staleSecurity),
         now,
       }),
-    ).resolves.toBeNull();
+    ).resolves.toEqual({ status: 'invalid' });
   });
 
   it('rejects null, revoked, expired, and mismatched repository readback', async () => {
@@ -257,8 +264,14 @@ describe('F03 v2.1 Parent host-cookie session runtime', () => {
     ];
     for (const readback of cases) {
       harness.resolve.mockResolvedValueOnce(readback);
-      await expect(runtime.resolveCookieHeader({ cookie_header: cookie, now })).resolves.toBeNull();
+      await expect(runtime.resolveCookieHeader({ cookie_header: cookie, now })).resolves.toEqual({
+        status: 'invalid',
+      });
     }
+    harness.resolve.mockRejectedValueOnce(new Error('database unavailable'));
+    await expect(runtime.resolveCookieHeader({ cookie_header: cookie, now })).resolves.toEqual({
+      status: 'unavailable',
+    });
   });
 
   it('binds CSRF proof to the exact signed session and verifies it timing-safely', async () => {
@@ -302,6 +315,197 @@ describe('F03 v2.1 Parent host-cookie session runtime', () => {
       }),
     ).resolves.toBeNull();
     expect(harness.resolve).toHaveBeenCalledTimes(callsAfterValid);
+  });
+
+  it('upgrades an outdated credential only after the new session passes exact readback', async () => {
+    const harness = repositoryHarness();
+    const password = 'correct horse battery staple';
+    const passwordHash = outdatedPasswordHash(password);
+    harness.findLoginIdentity.mockResolvedValueOnce(
+      loginIdentity({ passwordHash, credentialVersion: 4 }),
+    );
+    const runtime = createV21AdultSessionRuntime({
+      repository: harness.repository,
+      hmacSecret,
+      randomBytes: deterministicRandom(),
+    });
+
+    const result = await runtime.login({
+      scope: establishmentInput().scope,
+      email: 'parent@example.test',
+      password,
+      now,
+    });
+
+    expect(result).toMatchObject({ handled: true, authenticated: true });
+    expect(harness.upgradeCredentialPasswordHash).toHaveBeenCalledWith({
+      humanAccountId: 'account_one',
+      adultId: 'adult_one',
+      runtimeTier: 'isolated_staging',
+      verificationEnvironmentId: 'ci',
+      expectedCredentialVersion: 4,
+      expectedPasswordHash: passwordHash,
+      replacementPasswordHash: expect.stringMatching(/^argon2id-v1\$v=19\$m=19456,t=2,p=1\$/u),
+      now,
+    });
+    expect(harness.upgradeCredentialPasswordHash.mock.invocationCallOrder[0]).toBeGreaterThan(
+      harness.resolve.mock.invocationCallOrder.at(-1)!,
+    );
+  });
+
+  it('accepts a concurrent verified credential upgrade and rejects an unverified CAS miss', async () => {
+    const password = 'correct horse battery staple';
+    const passwordHash = outdatedPasswordHash(password);
+    const concurrent = repositoryHarness();
+    concurrent.findLoginIdentity
+      .mockResolvedValueOnce(loginIdentity({ passwordHash, credentialVersion: 4 }))
+      .mockResolvedValueOnce(
+        loginIdentity({
+          passwordHash: hashAuthPassword(password),
+          credentialVersion: 5,
+        }),
+      );
+    concurrent.upgradeCredentialPasswordHash.mockResolvedValueOnce(false);
+    const concurrentRuntime = createV21AdultSessionRuntime({
+      repository: concurrent.repository,
+      hmacSecret,
+      randomBytes: deterministicRandom(),
+    });
+
+    await expect(
+      concurrentRuntime.login({
+        scope: establishmentInput().scope,
+        email: 'parent@example.test',
+        password,
+        now,
+      }),
+    ).resolves.toMatchObject({ handled: true, authenticated: true });
+    expect(concurrent.revoke).not.toHaveBeenCalled();
+
+    const rejected = repositoryHarness();
+    rejected.findLoginIdentity.mockResolvedValue(
+      loginIdentity({ passwordHash, credentialVersion: 4 }),
+    );
+    rejected.upgradeCredentialPasswordHash.mockResolvedValueOnce(false);
+    let revoked = false;
+    rejected.revoke.mockImplementation(async () => {
+      revoked = true;
+      return true;
+    });
+    rejected.resolve.mockImplementation(async () =>
+      revoked ? null : sessionResult(rejected.lastCreate()),
+    );
+    const rejectedRuntime = createV21AdultSessionRuntime({
+      repository: rejected.repository,
+      hmacSecret,
+      randomBytes: deterministicRandom(),
+    });
+
+    await expect(
+      rejectedRuntime.login({
+        scope: establishmentInput().scope,
+        email: 'parent@example.test',
+        password,
+        now,
+      }),
+    ).resolves.toEqual({
+      handled: true,
+      authenticated: false,
+      failure: 'unavailable',
+    });
+    expect(rejected.revoke).toHaveBeenCalledWith(
+      expect.objectContaining({ reason: 'explicit_revocation' }),
+    );
+    await expect(rejected.resolve.mock.results.at(-1)?.value).resolves.toBeNull();
+  });
+
+  it('classifies repository failure as unavailable instead of a credential failure', async () => {
+    const harness = repositoryHarness();
+    harness.findLoginIdentity.mockRejectedValueOnce(new Error('database unavailable'));
+    const runtime = createV21AdultSessionRuntime({
+      repository: harness.repository,
+      hmacSecret,
+    });
+
+    await expect(
+      runtime.login({
+        scope: establishmentInput().scope,
+        email: 'parent@example.test',
+        password: 'correct horse battery staple',
+        now,
+      }),
+    ).resolves.toEqual({
+      handled: true,
+      authenticated: false,
+      failure: 'unavailable',
+    });
+  });
+
+  it('uses signup-compatible NFKC email normalization before v2 identity recognition', async () => {
+    const harness = repositoryHarness();
+    harness.findLoginIdentity.mockResolvedValueOnce({
+      adultId: 'adult_one',
+      normalizedEmail: 'parent@example.test',
+      ownerDisplayName: 'Parent One',
+      adultState: 'active',
+      humanAccountId: 'account_one',
+      accountState: 'active',
+      securityVersion: 1,
+      parentMembershipActive: true,
+      passwordHash: 'argon2id-placeholder',
+      credentialState: 'active',
+      credentialVersion: 1,
+      activeOwnedHouseholdCount: 1,
+      ownedHouseholds: [],
+    });
+    const runtime = createV21AdultSessionRuntime({
+      repository: harness.repository,
+      hmacSecret,
+    });
+
+    await expect(
+      runtime.recognizedLoginEmail({
+        scope: establishmentInput().scope,
+        email: '  Parent＠Example.Test  ',
+      }),
+    ).resolves.toEqual({
+      status: 'recognized',
+      normalized_email: 'parent@example.test',
+    });
+    expect(harness.findLoginIdentity).toHaveBeenCalledWith({
+      normalizedEmail: 'parent@example.test',
+      runtimeTier: 'isolated_staging',
+      verificationEnvironmentId: 'ci',
+    });
+  });
+
+  it('issues fresh bootstrap CSRF and reports logout failure when revocation readback stays live', async () => {
+    const harness = repositoryHarness();
+    const runtime = createV21AdultSessionRuntime({
+      repository: harness.repository,
+      hmacSecret,
+      randomBytes: deterministicRandom(),
+    });
+    const established = await runtime.establish(establishmentInput());
+    if (!established.established) throw new Error('Expected an established session.');
+    const cookie = hostCookie(established.browser_session_token);
+    const first = await runtime.bootstrapCookieHeader({ cookie_header: cookie, now });
+    const second = await runtime.bootstrapCookieHeader({ cookie_header: cookie, now });
+    if (first.status !== 'resolved' || second.status !== 'resolved') {
+      throw new Error('Expected two resolved bootstrap results.');
+    }
+    expect(first.csrf_token).not.toBe(second.csrf_token);
+
+    await expect(
+      runtime.logoutCookieHeader({
+        cookie_header: cookie,
+        csrf_token: second.csrf_token,
+        now,
+      }),
+    ).resolves.toEqual({
+      revoked: false,
+      reason: 'revocation_unverified',
+    });
   });
 
   it('enforces the exact segment-safe inactive-Parent route allowlist', () => {
@@ -386,6 +590,52 @@ function establishmentInput() {
   };
 }
 
+function loginIdentity(overrides: Partial<V21AdultLoginIdentity> = {}): V21AdultLoginIdentity {
+  return {
+    adultId: 'adult_one',
+    normalizedEmail: 'parent@example.test',
+    ownerDisplayName: 'Parent One',
+    adultState: 'active',
+    humanAccountId: 'account_one',
+    accountState: 'active',
+    securityVersion: 1,
+    parentMembershipActive: true,
+    passwordHash: hashAuthPassword('correct horse battery staple'),
+    credentialState: 'active',
+    credentialVersion: 1,
+    activeOwnedHouseholdCount: 1,
+    ownedHouseholds: [
+      {
+        householdId: 'household_one',
+        displayName: 'Parent One family',
+        classification: 'family',
+        accessState: 'free',
+        ownerRelationship: 'account_owner',
+      },
+    ],
+    ...overrides,
+  };
+}
+
+function outdatedPasswordHash(password: string): string {
+  const salt = Buffer.alloc(16, 23);
+  const hash = argon2Sync('argon2id', {
+    message: Buffer.from(password),
+    nonce: salt,
+    memory: 12_288,
+    passes: 1,
+    parallelism: 1,
+    tagLength: 32,
+  });
+  return [
+    'argon2id-v1',
+    'v=19',
+    'm=12288,t=1,p=1',
+    salt.toString('base64url'),
+    hash.toString('base64url'),
+  ].join('$');
+}
+
 function repositoryHarness(input: { accessState?: 'free' | 'inactive' } = {}) {
   let createInput: Parameters<V21AdultSessionRepository['create']>[0] | undefined;
   const create = vi.fn(async (value: Parameters<V21AdultSessionRepository['create']>[0]) => {
@@ -396,12 +646,22 @@ function repositoryHarness(input: { accessState?: 'free' | 'inactive' } = {}) {
     createInput ? sessionResult(createInput, { accessState: input.accessState ?? 'free' }) : null,
   );
   const revoke = vi.fn(async () => true);
-  const repository = { create, resolve, revoke } satisfies V21AdultSessionRepository;
+  const findLoginIdentity = vi.fn(async (): Promise<V21AdultLoginIdentity | null> => null);
+  const upgradeCredentialPasswordHash = vi.fn(async () => true);
+  const repository = {
+    create,
+    resolve,
+    revoke,
+    findLoginIdentity,
+    upgradeCredentialPasswordHash,
+  } satisfies V21AdultSessionRepository;
   return {
     repository,
     create,
     resolve,
     revoke,
+    findLoginIdentity,
+    upgradeCredentialPasswordHash,
     lastCreate: () => {
       if (!createInput) throw new Error('No Parent session was created.');
       return createInput;
@@ -437,6 +697,7 @@ function sessionResult(
     adultId: input.adultId,
     normalizedEmail: 'owner@example.test',
     ownerDisplayName: 'Owner One',
+    ownedHouseholdCount: 1,
     session: {
       sessionId: input.sessionId,
       humanAccountId: input.humanAccountId,

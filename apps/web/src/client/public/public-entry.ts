@@ -562,6 +562,8 @@ if (form) {
         message?: string | { heading?: string; body?: string };
         field_errors?: Record<string, string>;
         code?: string;
+        session_established?: boolean;
+        continue_to?: string;
       };
       if (!response.ok || !json.success) {
         if (json.field_errors) {
@@ -574,6 +576,17 @@ if (form) {
               : (json.code ?? 'We could not save that request yet.');
         }
         return;
+      }
+      if (entry === 'family' && json.session_established === true) {
+        const search = new URLSearchParams(window.location.search);
+        const requestedContinueTo = search.get('continue_to');
+        const continuation = search.has('continue_to')
+          ? safeParentContinueTo(requestedContinueTo)
+          : safeParentContinueTo(json.continue_to);
+        if (continuation) {
+          window.location.assign(continuation);
+          return;
+        }
       }
       form.hidden = true;
       if (success) {
@@ -610,6 +623,52 @@ if (form) {
       }
     }
   });
+}
+
+function safeParentContinueTo(value: string | null | undefined): string | null {
+  if (!value || !value.startsWith('/') || value.startsWith('//')) return null;
+  let decoded = value;
+  for (let pass = 0; pass < 3; pass += 1) {
+    if (unsafeContinuationText(decoded)) return null;
+    try {
+      const next = decodeURIComponent(decoded);
+      if (next === decoded) break;
+      decoded = next;
+    } catch {
+      return null;
+    }
+  }
+  if (unsafeContinuationText(decoded)) return null;
+  try {
+    if (decodeURIComponent(decoded) !== decoded) return null;
+  } catch {
+    return null;
+  }
+  try {
+    const target = new URL(decoded, window.location.origin);
+    if (
+      target.origin !== window.location.origin ||
+      target.username ||
+      target.password ||
+      (target.pathname !== '/app/parent' && !target.pathname.startsWith('/app/parent/'))
+    ) {
+      return null;
+    }
+    return `${target.pathname}${target.search}${target.hash}`;
+  } catch {
+    return null;
+  }
+}
+
+function unsafeContinuationText(value: string) {
+  return (
+    value.startsWith('//') ||
+    value.includes('\\') ||
+    [...value].some((character) => {
+      const codePoint = character.codePointAt(0);
+      return codePoint !== undefined && (codePoint <= 31 || codePoint === 127);
+    })
+  );
 }
 
 const eventRegistrationForm = document.querySelector<HTMLFormElement>(

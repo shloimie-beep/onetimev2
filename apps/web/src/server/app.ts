@@ -222,6 +222,7 @@ import {
   attachRecordingToClass,
   enrollLearnerInClass,
   setClassRecordingLearnerAccess,
+  stableKey,
   unenrollLearnerFromClass,
   updateManagedClassOccurrence,
   updateManagedClassSeries,
@@ -285,7 +286,9 @@ import {
 import {
   createFamilySignupRouter,
   familySignupFeatureRegistration,
+  resolveFamilySignupScope,
 } from './features/signup/family/router.ts';
+import { clearSessionCookieHeader, sessionCookieHeader } from './features/auth/http-security.ts';
 import {
   installServerFeatureRouters,
   type ServerFeatureRegistration,
@@ -1024,11 +1027,288 @@ export function createApp({
           .json(publicError('CSRF_REQUIRED', 'Refresh the login page and try again.', req.traceId));
         return;
       }
+      const cookieHeader = req.header('cookie');
+      const hostCookiePresent = cookieHeaderHasName(cookieHeader, AUTH_SESSION_COOKIE.name);
+      if (hostCookiePresent) {
+        const existingV21Session = await v21AdultSessionRuntime.resolveCookieHeader({
+          cookie_header: cookieHeader,
+          ...(clock ? { now: clock() } : {}),
+        });
+        if (existingV21Session.status === 'unavailable') {
+          res
+            .status(503)
+            .json(publicError('SERVER_ERROR', 'Login is unavailable right now.', req.traceId));
+          return;
+        }
+        if (existingV21Session.status === 'invalid') {
+          clearAuthCookies(res, config);
+          res.status(401).json({
+            success: false,
+            code: 'INVALID_CREDENTIALS',
+            message:
+              'Email/username or password is not correct. If access was revoked, ask your Parent or an Administrator to restore it.',
+            request_id: req.traceId,
+          });
+          return;
+        }
+      }
+      const identifier = payload.identifier ?? payload.email ?? '';
+      const v21Scope = resolveFamilySignupScope(config);
+      const v21Recognition = await withTiming(req, 'db', () =>
+        v21AdultSessionRuntime.recognizedLoginEmail({
+          scope: v21Scope,
+          email: identifier,
+        }),
+      );
+      if (v21Recognition.status === 'unavailable') {
+        res
+          .status(503)
+          .json(publicError('SERVER_ERROR', 'Login is unavailable right now.', req.traceId));
+        return;
+      }
+      if (v21Recognition.status === 'recognized') {
+        const identifierHash = stableKey('login_identifier', [v21Recognition.normalized_email]);
+        const attemptNow = clock ? clock() : new Date();
+        const attemptIp = req.ip ?? 'unknown';
+        const v21LoginBudgets = [
+          {
+            scope: 'login_account_ip',
+            subject: stableKey('login_account_ip_subject', [
+              v21Recognition.normalized_email,
+              attemptIp,
+            ]),
+            limit: 5,
+            windowMs: config.loginRateLimitWindowMs,
+          },
+          {
+            scope: 'login_ip',
+            subject: attemptIp,
+            limit: 50,
+            windowMs: config.loginRateLimitWindowMs,
+          },
+          {
+            scope: 'login_account_product',
+            subject: `${config.accountKey}:${config.productKey}`,
+            limit: config.loginAccountRateLimitMax,
+            windowMs: config.loginRateLimitWindowMs,
+          },
+          {
+            scope: 'login_global',
+            subject: 'all',
+            limit: config.loginGlobalRateLimitMax,
+            windowMs: config.loginRateLimitWindowMs,
+          },
+        ];
+        let reservation: V21LoginAttemptReservation;
+        try {
+          reservation = await reserveV21LoginAttempt({
+            pool,
+            config,
+            budgets: v21LoginBudgets,
+            now: attemptNow,
+          });
+        } catch {
+          res
+            .status(503)
+            .json(publicError('SERVER_ERROR', 'Login is unavailable right now.', req.traceId));
+          return;
+        }
+        if (!reservation.allowed) {
+          await insertV21AuthAudit(pool, config, {
+            eventType: 'login_rate_limited',
+            success: false,
+            reason: 'RATE_LIMITED',
+            ip: req.ip,
+            userAgent: req.header('user-agent') ?? undefined,
+            metadata: {
+              identifier_hash: identifierHash,
+              budget_scope: reservation.scope ?? null,
+            },
+          });
+          if (reservation.retryAfterSeconds) {
+            res.setHeader('retry-after', String(reservation.retryAfterSeconds));
+          }
+          res.status(429).json({
+            success: false,
+            code: 'RATE_LIMITED',
+            message:
+              'Email/username or password is not correct. If access was revoked, ask your Parent or an Administrator to restore it.',
+            request_id: req.traceId,
+          });
+          return;
+        }
+        let v21Login: Awaited<ReturnType<V21AdultSessionRuntime['login']>>;
+        try {
+          v21Login = await withTiming(req, 'db', () =>
+            v21AdultSessionRuntime.login({
+              scope: v21Scope,
+              email: identifier,
+              password: payload.password,
+              ...(hostCookiePresent ? { cookie_header: cookieHeader } : {}),
+              now: attemptNow,
+            }),
+          );
+        } catch {
+          try {
+            await releaseV21LoginReservations(pool, reservation.reservations, attemptNow);
+          } catch {
+            // Login remains unavailable; no credential outcome was accepted.
+          }
+          res
+            .status(503)
+            .json(publicError('SERVER_ERROR', 'Login is unavailable right now.', req.traceId));
+          return;
+        }
+        if (!v21Login.handled || !v21Login.authenticated) {
+          if (
+            v21Login.handled &&
+            (v21Login.failure === 'unavailable' || v21Login.failure === 'recovery_required')
+          ) {
+            try {
+              await releaseV21LoginReservations(pool, reservation.reservations, attemptNow);
+            } catch {
+              // The response remains fail-closed and does not classify this as a bad credential.
+            }
+            if (v21Login.session_mutated) {
+              clearAuthCookies(res, config);
+            }
+            res
+              .status(503)
+              .json(
+                publicError(
+                  v21Login.failure === 'recovery_required'
+                    ? 'SESSION_RECOVERY_REQUIRED'
+                    : 'SERVER_ERROR',
+                  'Login is unavailable right now.',
+                  req.traceId,
+                ),
+              );
+            return;
+          }
+          await insertV21AuthAudit(pool, config, {
+            eventType: 'login_failed',
+            success: false,
+            reason: 'INVALID_CREDENTIALS',
+            ip: req.ip,
+            userAgent: req.header('user-agent') ?? undefined,
+            metadata: { identifier_hash: identifierHash, session_model: 'v21' },
+          });
+          if (v21Login.handled && v21Login.session_mutated) {
+            clearAuthCookies(res, config);
+          }
+          res.status(401).json({
+            success: false,
+            code: 'INVALID_CREDENTIALS',
+            message:
+              'Email/username or password is not correct. If access was revoked, ask your Parent or an Administrator to restore it.',
+            request_id: req.traceId,
+          });
+          return;
+        }
+        try {
+          await releaseV21LoginReservations(pool, reservation.reservations, attemptNow);
+        } catch {
+          const recoveryVerified = await revokeIssuedV21LoginSession(
+            v21AdultSessionRuntime,
+            v21Login.browser_session_token,
+            attemptNow,
+          );
+          clearAuthCookies(res, config);
+          res
+            .status(503)
+            .json(
+              publicError(
+                recoveryVerified ? 'SERVER_ERROR' : 'SESSION_RECOVERY_REQUIRED',
+                'Login is unavailable right now.',
+                req.traceId,
+              ),
+            );
+          return;
+        }
+        let legacyRotationVerified = false;
+        try {
+          legacyRotationVerified = await revokePresentedLegacySession(
+            req,
+            pool,
+            config,
+            'login_rotation',
+          );
+        } catch {
+          legacyRotationVerified = false;
+        }
+        if (!legacyRotationVerified) {
+          const recoveryVerified = await revokeIssuedV21LoginSession(
+            v21AdultSessionRuntime,
+            v21Login.browser_session_token,
+            attemptNow,
+          );
+          clearAuthCookies(res, config);
+          res
+            .status(503)
+            .json(
+              publicError(
+                recoveryVerified ? 'SERVER_ERROR' : 'SESSION_RECOVERY_REQUIRED',
+                'Login is unavailable right now.',
+                req.traceId,
+              ),
+            );
+          return;
+        }
+        try {
+          await insertV21AuthAudit(pool, config, {
+            eventType: 'login_succeeded',
+            userKey: v21Login.user.human_account_id,
+            success: true,
+            ip: req.ip,
+            userAgent: req.header('user-agent') ?? undefined,
+            metadata: { session_model: 'v21' },
+          });
+        } catch {
+          const recoveryVerified = await revokeIssuedV21LoginSession(
+            v21AdultSessionRuntime,
+            v21Login.browser_session_token,
+            attemptNow,
+          );
+          clearAuthCookies(res, config);
+          res
+            .status(503)
+            .json(
+              publicError(
+                recoveryVerified ? 'SERVER_ERROR' : 'SESSION_RECOVERY_REQUIRED',
+                'Login is unavailable right now.',
+                req.traceId,
+              ),
+            );
+          return;
+        }
+        clearAuthCookies(res, config);
+        res.append(
+          'Set-Cookie',
+          sessionCookieHeader({
+            token: v21Login.browser_session_token,
+            max_age_seconds: Math.max(
+              0,
+              Math.floor(
+                (Date.parse(v21Login.expires_at) - (clock ? clock().getTime() : Date.now())) / 1000,
+              ),
+            ),
+          }),
+        );
+        res.status(200).json({
+          success: true,
+          session_model: 'v21',
+          user: v21ClientUser(v21Login.user),
+          csrf_token: v21Login.csrf_token,
+          expires_at: v21Login.expires_at,
+          return_to: returnPathForRole(payload.return_to, 'parent', config),
+        });
+        return;
+      }
       const login = await withTiming(req, 'db', () =>
         authenticateUser({
           pool,
           config,
-          identifier: payload.identifier ?? payload.email ?? '',
+          identifier,
           password: payload.password,
           ip: req.ip,
           userAgent: req.header('user-agent') ?? undefined,
@@ -1051,6 +1331,19 @@ export function createApp({
         return;
       }
 
+      if (hostCookiePresent) {
+        const rotation = await v21AdultSessionRuntime.rotateCookieHeader({
+          cookie_header: cookieHeader,
+          ...(clock ? { now: clock() } : {}),
+        });
+        if (!rotation.revoked) {
+          clearAuthCookies(res, config);
+          res
+            .status(503)
+            .json(publicError('SERVER_ERROR', 'Login is unavailable right now.', req.traceId));
+          return;
+        }
+      }
       const rotatedFromSessionKey = await revokeSession({
         pool,
         config,
@@ -1086,6 +1379,7 @@ export function createApp({
           .json(publicError('FORBIDDEN', 'This account role is not available.', req.traceId));
         return;
       }
+      clearAuthCookies(res, config);
       setAuthCookies(res, config, session.session_token, session.csrf_token);
       res.status(200).json({
         success: true,
@@ -1182,8 +1476,160 @@ export function createApp({
     }
   });
 
+  const sendV21Logout = async (req: RequestWithTrace, res: Response, requireHost: boolean) => {
+    setPrivateNoStore(res);
+    const cookieHeader = req.header('cookie');
+    if (!cookieHeaderHasName(cookieHeader, AUTH_SESSION_COOKIE.name)) {
+      if (requireHost) {
+        res
+          .status(404)
+          .json(publicError('V21_SESSION_NOT_PRESENT', 'No v2.1 session is active.', req.traceId));
+      }
+      return false;
+    }
+    const outcome = await v21AdultSessionRuntime.logoutCookieHeader({
+      cookie_header: cookieHeader,
+      csrf_token: req.header('x-csrf-token'),
+      ...(clock ? { now: clock() } : {}),
+    });
+    if (outcome.revoked) {
+      let legacyRevocationVerified = false;
+      try {
+        legacyRevocationVerified = await revokePresentedLegacySession(req, pool, config, 'logout');
+      } catch {
+        legacyRevocationVerified = false;
+      }
+      if (!legacyRevocationVerified) {
+        clearAuthCookies(res, config);
+        res
+          .status(503)
+          .json(
+            publicError(
+              'SESSION_RECOVERY_REQUIRED',
+              'Sign out could not be verified. Sign in again before continuing.',
+              req.traceId,
+            ),
+          );
+        return true;
+      }
+      try {
+        await insertV21AuthAudit(pool, config, {
+          eventType: 'logout_succeeded',
+          success: true,
+          ip: req.ip,
+          userAgent: req.header('user-agent') ?? undefined,
+          metadata: { session_model: 'v21' },
+        });
+      } catch {
+        clearAuthCookies(res, config);
+        res
+          .status(503)
+          .json(
+            publicError(
+              'SERVER_ERROR',
+              'Sign out completed, but its audit readback is unavailable.',
+              req.traceId,
+            ),
+          );
+        return true;
+      }
+      clearAuthCookies(res, config);
+      res.status(200).json({ success: true, session_model: 'v21' });
+      return true;
+    }
+    const invalidCsrf = outcome.reason === 'invalid_csrf';
+    if (outcome.reason === 'invalid_session') {
+      clearAuthCookies(res, config);
+    }
+    res
+      .status(invalidCsrf ? 403 : outcome.reason === 'revocation_unverified' ? 503 : 401)
+      .json(
+        publicError(
+          invalidCsrf
+            ? 'CSRF_REQUIRED'
+            : outcome.reason === 'revocation_unverified'
+              ? 'SERVER_ERROR'
+              : 'UNAUTHENTICATED',
+          invalidCsrf
+            ? 'Refresh the page and try again.'
+            : outcome.reason === 'revocation_unverified'
+              ? 'Sign out could not be verified. Sign in again before continuing.'
+              : 'Sign in to continue.',
+          req.traceId,
+        ),
+      );
+    return true;
+  };
+
+  const sendV21SessionBootstrap = async (
+    req: RequestWithTrace,
+    res: Response,
+    requireHost: boolean,
+  ) => {
+    setPrivateNoStore(res);
+    const cookieHeader = req.header('cookie');
+    if (!cookieHeaderHasName(cookieHeader, AUTH_SESSION_COOKIE.name)) {
+      if (requireHost) {
+        res
+          .status(404)
+          .json(publicError('V21_SESSION_NOT_PRESENT', 'No v2.1 session is active.', req.traceId));
+      }
+      return false;
+    }
+    const bootstrap = await v21AdultSessionRuntime.bootstrapCookieHeader({
+      cookie_header: cookieHeader,
+      ...(clock ? { now: clock() } : {}),
+    });
+    if (bootstrap.status === 'unavailable') {
+      res
+        .status(503)
+        .json(publicError('SERVER_ERROR', 'Session readback is unavailable.', req.traceId));
+      return true;
+    }
+    if (bootstrap.status === 'invalid') {
+      clearAuthCookies(res, config);
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Sign in to continue.', req.traceId));
+      return true;
+    }
+    res.status(200).json({
+      success: true,
+      authenticated: true,
+      session_model: 'v21',
+      user: v21ClientUser({
+        human_account_id: bootstrap.context.session.humanAccountId,
+        adult_id: bootstrap.context.adultId,
+        email: bootstrap.context.normalizedEmail,
+        display_name: bootstrap.context.ownerDisplayName,
+      }),
+      csrf_token: bootstrap.csrf_token,
+      expires_at: bootstrap.expires_at,
+      parent_context: {
+        adult_id: bootstrap.context.adultId,
+        human_account_id: bootstrap.context.session.humanAccountId,
+        owned_household_count: bootstrap.context.ownedHouseholdCount,
+        household: {
+          household_id: bootstrap.context.household.householdId,
+          display_name: bootstrap.context.household.displayName,
+          classification: bootstrap.context.household.classification,
+          access_state: bootstrap.context.household.accessState,
+          owner_relationship: bootstrap.context.household.ownerRelationship,
+        },
+      },
+    });
+    return true;
+  };
+
+  app.post('/api/v2.1/auth/logout', async (req: RequestWithTrace, res) => {
+    await sendV21Logout(req, res, true);
+  });
+
+  app.get('/api/v2.1/auth/session', async (req: RequestWithTrace, res) => {
+    await sendV21SessionBootstrap(req, res, true);
+  });
+
   app.post('/api/v1/auth/logout', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
+    if (await sendV21Logout(req, res, false)) return;
     const session = await requireApiSession(req, res, pool, config);
     if (!session) return;
     if (!(await requireSessionCsrf(req, res, pool, session))) return;
@@ -1201,6 +1647,7 @@ export function createApp({
 
   app.get('/api/v1/auth/session', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
+    if (await sendV21SessionBootstrap(req, res, false)) return;
     const session = await requireApiSession(req, res, pool, config);
     if (!session) return;
     const csrfToken = await ensureSessionCsrfCookie(req, res, pool, config, session);
@@ -4015,10 +4462,16 @@ async function serveV21CompatibleParentAppShell(
     return;
   }
 
-  const context = await input.v21AdultSessionRuntime.resolveCookieHeader({
+  const resolution = await input.v21AdultSessionRuntime.resolveCookieHeader({
     cookie_header: cookieHeader,
     ...(input.clock ? { now: input.clock() } : {}),
   });
+  if (resolution.status === 'unavailable') {
+    setPrivateNoStore(res);
+    res.status(503).type('text').send('Parent access is temporarily unavailable.');
+    return;
+  }
+  const context = resolution.status === 'resolved' ? resolution.context : null;
   const authorization = context
     ? authorizeV21ParentRoute({
         context,
@@ -4026,8 +4479,19 @@ async function serveV21CompatibleParentAppShell(
       })
     : null;
   if (!context || !authorization?.allowed) {
+    if (!context) clearAuthCookies(res, input.config);
     setPrivateNoStore(res);
     res.status(403).type('html').send(forbiddenAppHtml('parent'));
+    return;
+  }
+
+  if (req.path === '/select-household') {
+    setPrivateNoStore(res);
+    if (context.ownedHouseholdCount === 1) {
+      res.redirect(302, '/app/parent');
+      return;
+    }
+    res.status(409).type('html').send(forbiddenAppHtml('parent'));
     return;
   }
 
@@ -4602,6 +5066,208 @@ function currentClientUser(user: SessionUser): SessionUser | null {
   return null;
 }
 
+function v21ClientUser(input: {
+  human_account_id: string;
+  adult_id: string;
+  email: string;
+  display_name: string;
+}): SessionUser {
+  return {
+    user_key: input.human_account_id,
+    email: input.email,
+    display_name: input.display_name,
+    role: 'parent',
+    role_label: 'Parent',
+    mfa_capable: false,
+  };
+}
+
+async function insertV21AuthAudit(
+  pool: DbPool,
+  config: AppConfig,
+  event: {
+    eventType: 'login_rate_limited' | 'login_failed' | 'login_succeeded' | 'logout_succeeded';
+    userKey?: string | undefined;
+    success: boolean;
+    reason?: string | undefined;
+    ip?: string | undefined;
+    userAgent?: string | undefined;
+    metadata?: Record<string, unknown> | undefined;
+  },
+) {
+  const eventKey = stableKey('auth_audit', [
+    config.accountKey,
+    config.productKey,
+    event.eventType,
+    event.userKey ?? 'anonymous',
+    randomUUID(),
+  ]);
+  const ipHash = event.ip ? createHash('sha256').update(event.ip).digest('hex') : null;
+  const userAgentHash = event.userAgent
+    ? createHash('sha256').update(event.userAgent).digest('hex')
+    : null;
+  await pool.query(
+    `INSERT INTO onetime.auth_audit_events
+       (event_key, account_key, product_key, user_key, event_type, success, reason,
+        ip_hash, user_agent_hash, metadata)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10::jsonb)`,
+    [
+      eventKey,
+      config.accountKey,
+      config.productKey,
+      event.userKey ?? null,
+      event.eventType,
+      event.success,
+      event.reason ?? null,
+      ipHash,
+      userAgentHash,
+      JSON.stringify(event.metadata ?? {}),
+    ],
+  );
+  const readback = await pool.query(
+    `SELECT event_type, success, reason, ip_hash, user_agent_hash
+       FROM onetime.auth_audit_events
+      WHERE event_key = $1
+        AND account_key = $2
+        AND product_key = $3
+      LIMIT 1`,
+    [eventKey, config.accountKey, config.productKey],
+  );
+  const row = readback.rows[0];
+  if (
+    readback.rowCount !== 1 ||
+    row?.event_type !== event.eventType ||
+    row?.success !== event.success ||
+    (row?.reason ?? null) !== (event.reason ?? null) ||
+    (row?.ip_hash ?? null) !== ipHash ||
+    (row?.user_agent_hash ?? null) !== userAgentHash
+  ) {
+    throw new Error('The v2.1 auth-audit event failed exact redacted readback.');
+  }
+}
+
+type V21LoginBudget = {
+  scope: string;
+  subject: string;
+  limit: number;
+  windowMs: number;
+};
+
+type V21LoginReservation = {
+  key: string;
+  resetAt: Date;
+};
+
+type V21LoginAttemptReservation =
+  | { allowed: true; reservations: V21LoginReservation[] }
+  | {
+      allowed: false;
+      reservations: [];
+      scope?: string;
+      retryAfterSeconds?: number;
+    };
+
+async function reserveV21LoginAttempt(input: {
+  pool: DbPool;
+  config: AppConfig;
+  budgets: V21LoginBudget[];
+  now: Date;
+}): Promise<V21LoginAttemptReservation> {
+  const reservations: V21LoginReservation[] = [];
+  try {
+    for (const budget of input.budgets) {
+      if (budget.limit <= 0) continue;
+      const key = v21LoginBudgetKey(input.config, budget);
+      const resetAt = new Date(input.now.getTime() + budget.windowMs);
+      const expiresAt = new Date(resetAt.getTime() + budget.windowMs);
+      const result = await input.pool.query(
+        `INSERT INTO onetime.rate_limit_buckets
+           (budget_key, account_key, product_key, scope, count, reset_at, expires_at)
+         VALUES ($1,$2,$3,$4,1,$5,$6)
+         ON CONFLICT (budget_key)
+         DO UPDATE SET
+           count = CASE
+             WHEN onetime.rate_limit_buckets.reset_at <= $7 THEN 1
+             ELSE onetime.rate_limit_buckets.count + 1
+           END,
+           reset_at = CASE
+             WHEN onetime.rate_limit_buckets.reset_at <= $7 THEN $5
+             ELSE onetime.rate_limit_buckets.reset_at
+           END,
+           expires_at = CASE
+             WHEN onetime.rate_limit_buckets.reset_at <= $7 THEN $6
+             ELSE onetime.rate_limit_buckets.expires_at
+           END,
+           updated_at = $7
+         RETURNING count, reset_at`,
+        [
+          key,
+          input.config.accountKey,
+          input.config.productKey,
+          budget.scope,
+          resetAt,
+          expiresAt,
+          input.now,
+        ],
+      );
+      const row = result.rows[0];
+      const reservedResetAt = new Date(String(row?.reset_at));
+      if (!Number.isFinite(reservedResetAt.getTime())) {
+        throw new Error('The login-attempt reservation returned an invalid reset time.');
+      }
+      reservations.push({ key, resetAt: reservedResetAt });
+      if (Number(row?.count ?? 0) <= budget.limit) continue;
+      await releaseV21LoginReservations(input.pool, reservations, input.now);
+      return {
+        allowed: false,
+        reservations: [],
+        scope: budget.scope,
+        retryAfterSeconds: Math.max(
+          1,
+          Math.ceil((reservedResetAt.getTime() - input.now.getTime()) / 1000),
+        ),
+      };
+    }
+    return { allowed: true, reservations };
+  } catch (error) {
+    if (reservations.length > 0) {
+      try {
+        await releaseV21LoginReservations(input.pool, reservations, input.now);
+      } catch {
+        // The caller still fails closed when reservation rollback cannot be verified.
+      }
+    }
+    throw error;
+  }
+}
+
+async function releaseV21LoginReservations(
+  pool: DbPool,
+  reservations: readonly V21LoginReservation[],
+  now: Date,
+): Promise<void> {
+  if (reservations.length === 0) return;
+  const values: unknown[] = [now];
+  const predicates = reservations.map((reservation, index) => {
+    values.push(reservation.key, reservation.resetAt);
+    const keyParameter = index * 2 + 2;
+    return `(budget_key = $${keyParameter} AND reset_at = $${keyParameter + 1})`;
+  });
+  await pool.query(
+    `UPDATE onetime.rate_limit_buckets
+        SET count = GREATEST(count - 1, 0),
+            updated_at = $1
+      WHERE ${predicates.join(' OR ')}`,
+    values,
+  );
+}
+
+function v21LoginBudgetKey(config: AppConfig, budget: V21LoginBudget): string {
+  return createHash('sha256')
+    .update([config.accountKey, config.productKey, budget.scope, budget.subject].join('\0'))
+    .digest('hex');
+}
+
 function isContentFactoryAdmin(session: AuthenticatedSession) {
   return session.user.role === 'owner' || session.user.role === 'admin';
 }
@@ -4642,13 +5308,29 @@ function hashCookieValue(value: string) {
 }
 
 function getCookie(req: Request, name: string) {
+  const result = readCookie(req, name);
+  return result.status === 'value' ? result.value : undefined;
+}
+
+function readCookie(
+  req: Request,
+  name: string,
+): { status: 'absent' } | { status: 'invalid' } | { status: 'value'; value: string } {
   const header = req.header('cookie');
-  if (!header) return undefined;
+  if (!header) return { status: 'absent' };
+  const encodedValues: string[] = [];
   for (const part of header.split(';')) {
     const [rawName, ...rawValue] = part.trim().split('=');
-    if (rawName === name) return decodeURIComponent(rawValue.join('='));
+    if (rawName === name) encodedValues.push(rawValue.join('='));
   }
-  return undefined;
+  if (encodedValues.length === 0) return { status: 'absent' };
+  if (encodedValues.length !== 1 || !encodedValues[0]) return { status: 'invalid' };
+  try {
+    const value = decodeURIComponent(encodedValues[0]);
+    return value ? { status: 'value', value } : { status: 'invalid' };
+  } catch {
+    return { status: 'invalid' };
+  }
 }
 
 function cookieHeaderHasName(header: string | undefined, name: string) {
@@ -4657,6 +5339,53 @@ function cookieHeaderHasName(header: string | undefined, name: string) {
     const separator = part.indexOf('=');
     return separator >= 0 && part.slice(0, separator).trim() === name;
   });
+}
+
+async function revokePresentedLegacySession(
+  req: Request,
+  pool: DbPool,
+  config: AppConfig,
+  reason: 'login_rotation' | 'logout',
+) {
+  const presented = readCookie(req, SESSION_COOKIE);
+  if (presented.status === 'invalid') return false;
+  if (presented.status === 'absent') return true;
+  const sessionToken = presented.value;
+  await revokeSession({
+    pool,
+    config,
+    sessionToken,
+    reason,
+    ip: req.ip,
+    userAgent: req.header('user-agent') ?? undefined,
+  });
+  const readback = await pool.query(
+    `SELECT 1
+       FROM onetime.user_sessions
+      WHERE account_key = $1
+        AND product_key = $2
+        AND token_hash = $3
+        AND revoked_at IS NULL
+      LIMIT 1`,
+    [config.accountKey, config.productKey, createHash('sha256').update(sessionToken).digest('hex')],
+  );
+  return readback.rowCount === 0;
+}
+
+async function revokeIssuedV21LoginSession(
+  runtime: V21AdultSessionRuntime,
+  browserSessionToken: string,
+  now: Date,
+): Promise<boolean> {
+  try {
+    const outcome = await runtime.rotateCookieHeader({
+      cookie_header: `${AUTH_SESSION_COOKIE.name}=${encodeURIComponent(browserSessionToken)}`,
+      now,
+    });
+    return outcome.revoked;
+  } catch {
+    return false;
+  }
 }
 
 function setAuthCookies(res: Response, config: AppConfig, sessionToken: string, csrfToken: string) {
@@ -4693,6 +5422,7 @@ function clearAuthCookies(res: Response, config: AppConfig) {
     sameSite: 'strict',
     path: '/',
   });
+  res.append('Set-Cookie', clearSessionCookieHeader());
 }
 
 function setPrivateNoStore(res: Response) {
