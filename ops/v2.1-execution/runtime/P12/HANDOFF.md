@@ -1,117 +1,103 @@
-# P12 Concrete Parent-Household Terminal Handoff
+# P12 Replay and Concealment Correction Terminal
 
-## Authority and ancestry
+## Authority
 
 - Branch: `codex/v21-p12-parent-household-concrete`
-- Containing control: `48f27d399d4ed714f6219487629c406af1fbb49f`
-- Control parent and READY basis:
-  `cc03a0c8f73339c05e3fbe0179661882169b32d9`
-- READY digest:
-  `3be08e42202e106064ba7b1c092615117ca3b7de60e4b4e07f8f872d7c1d9c61`
-- Claim: `77d55d69-8496-4f7e-b441-6bed1e83f819`
-- Writer: `codex-p12-concrete-correction-77d55d69`
-- Sole PARENT_HOUSEHOLD_UI lease:
-  `302b8602-ec7c-4e81-9562-f792c6fb6e4c`, released task-locally at
-  `2026-07-31T15:08:37Z` before its `2026-07-31T16:52:38Z` expiry
-- First parent: integration `ae3ced8a9daa11044d4278968c14cb6baa12a480`
-- Required second parent: P12 source
-  `9ada912c3238421e661f89e590c07c042dd6424b`
-- The pre-correction merge tree matched
-  `4e920e58567de5cdd18e8515e30edc0699c74315`; history was neither rewritten
-  nor squashed.
-- Derive the exact terminal merge commit and tree from the pushed remote and
-  record them in control.
+- Authorized live control: `f8d9059b53d0e62cefa0bdb3bced312f3d2e3dd5`
+- READY state basis: `321fd3482d5ee54bbad19d97205b54845d0d0aac`
+- READY entry digest: `538a416e944278120e5e490b3e3e102134ae01c205478e177047a509fc8aabe0`
+- Resumed start: `153c52e97123bb8723c8671873bf96d01444584c`
+- Claim: `c2fee1f8-2f7f-4cc7-bec9-cc0695ec3cb4`
+- Writer: `codex-p12-replay-concealment-c2fee1f8`
+- PARENT_HOUSEHOLD_UI lease: `1d841d45-043c-4e33-8f3d-0c635faa68d0`, released at
+  `2026-07-31T16:11:11Z` before its `2026-07-31T17:38:16Z` expiry
+- Authorized path count: 10; inventory digest:
+  `c816e5a6cc91f4326ee8552142e747b196b4ec3c454a4cee424c4ad16bc1dcee`
 
-Effect locks were empty. External effects are `0/0/0`.
+The existing ordered merge parents remain:
 
-## Completed implementation
+1. `ae3ced8a9daa11044d4278968c14cb6baa12a480`
+2. `9ada912c3238421e661f89e590c07c042dd6424b`
 
-P12 now has a concrete PostgreSQL repository, service, authenticated HTTP
-router, same-origin client API, and persisted Parent forms. Adult identity,
-Parent role, session, and household ownership come only from the authenticated
-server session. Bodies cannot choose household or adult scope, and sibling or
-wrong-role targets remain concealed.
+History was neither rewritten nor squashed. Derive the new terminal commit and
+tree from the pushed remote. Effect locks remained empty and external effects
+are `0/0/0`.
 
-The repository locks the household revision and enforces the hard three-active-
-Student limit under concurrent final-seat attempts. It atomically persists the
-Student profile, service-account acceptance, canonical enrollment, canonical
-audit, credential evidence, credential-version/session and classroom-access
-revocation, revocation readback, household revision, and idempotency receipt.
-An injected mid-transaction failure rolls every staged row back.
+## Correction completed
 
-Idempotency distinguishes exact replay from changed-hash conflict. Both
-preflight and commit-race replay write nothing, allocate no new Student, perform
-no Argon2 work, and return `credential_handoff: null`, including replay after a
-later credential reset. Receipt/audit hashing substitutes a domain-separated,
-server-keyed HMAC-SHA256 password fingerprint for plaintext credentials, so
-persisted request evidence is not an offline password oracle.
+The repository contract now receives `password_hash_factory`, a lazy async
+factory, instead of an eager hash. The PostgreSQL repository invokes it exactly
+once only after:
 
-Create and edit persist required Unicode actual name plus optional display
-name, relationship `self` or `dependent`, and a globally scoped human-readable
-username. The forms include the exact **Myself** / **Someone I manage** choices
-and exact Rabbi Eli actual-name guidance. They contain no date of birth, age,
-age band, grade, Hebrew-specific name, Student email, or provider identity.
+- the transaction and household/idempotency advisory lock;
+- authenticated adult/session/role/owned-household resolution;
+- production-read-only and inactive-access denial;
+- a locked exact-receipt miss;
+- mutation shape, revision, seat, lifecycle, target, and unchanged-row checks;
+- normalized runtime-scoped username availability.
 
-Only a newly committed create/reset may return the just-entered password in a
-copy/print handoff. It is never persisted, audited, logged, emailed, or returned
-by replay. Inactive households receive a status-only overview with no Student
-rows; all mutation and replay paths fail closed, and the client renders no
-Student rows, forms, controls, or credential handoff.
+An exact or racing replay returns before the factory. Native same-key create and
+reset races each produced one hash, one committed credential handoff, one
+null-handoff replay, and one canonical Student/receipt state. Sequential and
+later-state replay performed no additional hash or write.
+
+Create and reset now compare `new_password` and `password_confirmation` before
+any receipt lookup. A mismatch fails before household load, hash, Student-ID
+allocation, persistence, or credential response, even when a matching receipt
+already exists.
+
+Update now constructs and validates the owned target mutation before global
+username availability. The lookup receives only the normalized username and
+Student ID from that validated target. Focused service and concrete-repository
+tests prove a wrong-household Student receives the same concealed
+`parent_student_missing` result whether its proposed username is globally taken
+or available; no availability query or mutation follows the failed ownership
+proof.
 
 ## Interface and immutable requests
 
-Semantic interface `1.1.0` is ready. Its documented UTF-8/LF/no-final-newline
-preimage is 515 bytes and hashes to
-`778488b8ed4f8db8dacb24788ac88e44c2084e1f2b4523dc6370f1664c967c20`.
+Semantic interface `1.2.0` is ready for correction review. Its canonical
+UTF-8/LF/no-final-newline digest is
+`f9c323080c32925864f780fb05981850644ba3a91a2303fa3f282bc7461378d9`.
 
 Normalized export hashes are:
 
 - client index: `4aa586c1c19baf635e59c5043a834f8acb60c844b8354aac885dd05fcfbdbf19`
 - server index: `05bde767efa55936e77d0efc73a73f884bb2310b532e7c5277e1917dc7ff99b9`
-- contract index: `f3bde4279ea71f28bdf6b745aa672e0a243746a89706a476911500964c2036e6`
+- contract index: `f33bbfa6d46b933540493c8895b08e86aad7eeef2a50deaa3e68ed523dd8d7ed`
 - domain index: `51c640862c1ca76639bdb528bc04cbd84ec9e2689ab41018414ddfef59f85962`
 
-Immutable request inventory:
+Immutable `P12-server-registration-002` and `P12-client-route-002` remain valid
+and byte-identical. Immutable `P12-barrel-export-002` also remains byte-identical
+but is now stale and must never be applied. The only new successor is:
 
-- `P12-registration-001` — superseded evidence only; never edit or apply;
-  SHA-256 `501ae46b1ad26e933d2e15b4f13760f4c3c8ec93d2672dc7be0d7e372046e733`
-- `P12-migration-001` — byte-identical carry from the second parent; fulfilled
-  by integrated migration 2255; SHA-256
-  `6f76b024f756b89ef430a21c0744b4dd43114c5d5e9213bd76582e2534d3bc17`
-- `P12-server-registration-002` — pending I36; SHA-256
-  `7613a0c268faca7cb1fac830b3f4f97f502677e0fe2254360f9342820cc1c00f`
-- `P12-client-route-002` — pending I36; SHA-256
-  `0731b9cc4dad55f26d26d9080b3eeba2b6e18739954de49b6a1d6c87d0e163c8`
-- `P12-barrel-export-002` — pending I36; SHA-256
-  `2a82d0963bff76d05e9290f8648c232468fb1d9f0078c958657bb44e1621322d`
+- `P12-barrel-export-003` — raw SHA-256
+  `d3a72cb8cd794e548d06e1602582370f1aeda2889431dd7104e02d7adc5e40b6`
 
-Migration 2255 was integrated upstream and was not changed. Its raw SHA-256 is
-`7f647a55f26b732bdb8b95771dbb0c43fe6c9a5833389d5dba0888f7f55aab32`.
+It retains all seven requirement IDs and seven AC01 IDs, binds the barrel to
+interface 1.2.0, and solely supersedes `P12-barrel-export-002`. No other
+successor was created. `P12-registration-001` remains immutable superseded
+evidence, and `P12-migration-001` remains immutable fulfilled evidence.
 
 ## Verification
 
-- Focused validation: 5 files, 28 tests passed; the 2 opt-in native cases were
-  skipped in that invocation.
-- Native PostgreSQL 16.14 through migration 2255: all 6 repository tests
-  passed, including concurrent final-seat serialization and true rollback.
-- Focused ESLint passed.
-- The three successor requests passed strict YAML and canonical steward-request
-  schema/traceability checks.
-- Interface digest, normalized export hashes, immutable request bytes,
-  migration checksum, two-parent scope, Prettier, diff hygiene, and repository
-  secret checks passed.
-- Workspace typecheck has no P12 diagnostic. It remains baseline-blocked by the
-  existing Stripe `Status` widening diagnostic and duplicate Playwright type
-  installations in `ot-52`, `ot-83`, and `w12-09`.
-
-The disposable native database and login role contained only test fixtures and
-were dropped after verification; they are not recoverable.
+- Focused five-file suite: 31 tests passed; 3 declared native-only cases skipped.
+- Fresh disposable PostgreSQL 18.4, UTF-8, through migration 2255: all 8
+  repository tests passed, including final-seat serialization, same-key create
+  and reset serialization, and injected rollback.
+- Focused ESLint and Prettier: passed.
+- Interface preimage/export hashes, new request schema and traceability,
+  immutable `-002` bytes, exact ten-path scope, diff hygiene, and secret checks:
+  passed.
+- The first native harness attempt used the Windows default database encoding
+  and was discarded before semantic tests; the explicit UTF-8 rerun above is
+  the authoritative proof. The exact disposable database cluster was removed.
 
 ## Next action
 
-C00 should review the exact pushed two-parent terminal merge and record its
-commit/tree/interface bindings. I36 should disposition exactly the three `-002`
-successor requests, compose P08/P12 centrally, and then run the full mounted
-Parent refresh/logout/re-login persistence journey. Do not revive either
-immutable `-001` request or edit migration, package, central composer, root
-barrel, control, provider, or integration artifacts from this P12 branch.
+C00 should perform exactly one independent review of this pushed correction
+terminal. On PASS, it should dispatch the single ordered P12-then-P09 I36 source
+microbatch. I36 applies `P12-server-registration-002`,
+`P12-client-route-002`, and `P12-barrel-export-003`, while rejecting and
+withholding `P12-barrel-export-002`. It must not revive
+`P12-registration-001` or edit any immutable request.

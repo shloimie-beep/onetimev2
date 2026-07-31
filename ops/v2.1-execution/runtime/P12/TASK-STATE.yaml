@@ -6,47 +6,49 @@ task_context_digest: 1b1bc9f0a0624836ba69e7c35acb2d70ea43f71347cb434be9796b307e4
 spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
 package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
 branch: codex/v21-p12-parent-household-concrete
-start_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
+start_sha: 153c52e97123bb8723c8671873bf96d01444584c
 status: ready_for_review
-phase: parent_household_concrete_persistence_route_and_forms_correction_complete
-claim_mode: create_new_branch
-claimed_by: codex-p12-concrete-correction-77d55d69
-claim_time: '2026-07-31T13:52:38Z'
-claim_id: 77d55d69-8496-4f7e-b441-6bed1e83f819
-controller_authorization_sha: 48f27d399d4ed714f6219487629c406af1fbb49f
-ready_entry_state_based_on_control_head_sha: cc03a0c8f73339c05e3fbe0179661882169b32d9
-ready_entry_payload_digest: 3be08e42202e106064ba7b1c092615117ca3b7de60e4b4e07f8f872d7c1d9c61
-state_based_on_head_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
+phase: parent_household_replay_concealment_correction_complete
+claim_mode: resume_existing
+claimed_by: codex-p12-replay-concealment-c2fee1f8
+claim_time: '2026-07-31T15:38:16Z'
+claim_id: c2fee1f8-2f7f-4cc7-bec9-cc0695ec3cb4
+controller_authorization_sha: f8d9059b53d0e62cefa0bdb3bced312f3d2e3dd5
+ready_entry_state_based_on_control_head_sha: 321fd3482d5ee54bbad19d97205b54845d0d0aac
+ready_entry_payload_digest: 538a416e944278120e5e490b3e3e102134ae01c205478e177047a509fc8aabe0
+state_based_on_head_sha: 153c52e97123bb8723c8671873bf96d01444584c
 last_implementation_commit_sha: derive_from_git_and_record_in_control_registry
 terminal_commit_sha: derive_from_git_and_record_in_control_registry
 terminal_tree_sha: derive_from_git_and_record_in_control_registry
 writer_slot_leases:
   - slot: PARENT_HOUSEHOLD_UI
-    lease_id: 302b8602-ec7c-4e81-9562-f792c6fb6e4c
-    lease_issued_at: '2026-07-31T13:52:38Z'
-    lease_expires_at: '2026-07-31T16:52:38Z'
-    state_based_on_control_head_sha: cc03a0c8f73339c05e3fbe0179661882169b32d9
-    phase_scope: parent_household_concrete_persistence_route_and_forms_correction
+    lease_id: 1d841d45-043c-4e33-8f3d-0c635faa68d0
+    lease_issued_at: '2026-07-31T15:38:16Z'
+    lease_expires_at: '2026-07-31T17:38:16Z'
+    state_based_on_control_head_sha: 321fd3482d5ee54bbad19d97205b54845d0d0aac
+    phase_scope: parent_household_replay_concealment_correction
     state: released
-    released_at: '2026-07-31T15:08:37Z'
-    release_reason: concrete_correction_terminal_ready_for_review
-lease_expires_at: '2026-07-31T16:52:38Z'
-lease_released_at: '2026-07-31T15:08:37Z'
-last_heartbeat_at: '2026-07-31T15:08:37Z'
+    released_at: '2026-07-31T16:11:11Z'
+    release_reason: replay_concealment_correction_terminal_ready_for_review
+lease_expires_at: '2026-07-31T17:38:16Z'
+lease_released_at: '2026-07-31T16:11:11Z'
+last_heartbeat_at: '2026-07-31T16:11:11Z'
 merge_contract:
+  preserved_merge_commit_sha: 153c52e97123bb8723c8671873bf96d01444584c
   first_parent_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
   second_parent_sha: 9ada912c3238421e661f89e590c07c042dd6424b
   second_parent_required: true
   pre_correction_merge_tree_sha: 4e920e58567de5cdd18e8515e30edc0699c74315
-  terminal_parent_count: 2
+  preserved_merge_parent_count: 2
+  correction_terminal_parent_count: 1
   history_rewritten_or_squashed: false
 dependency_heads:
   C00:
-    required_state: operational
-    observed_state: operational
-    observed_control_head_sha: cc03a0c8f73339c05e3fbe0179661882169b32d9
-    containing_authorization_sha: 48f27d399d4ed714f6219487629c406af1fbb49f
-    control_state_canonical_digest: ec0f9f772bc2fc82459682b1218d41247a21d366fe001080ac9c0001b5fad3c7
+    required_state: immediate_lean_completion_mode
+    observed_state: immediate_lean_completion_mode
+    ready_state_basis_sha: 321fd3482d5ee54bbad19d97205b54845d0d0aac
+    containing_authorization_sha: f8d9059b53d0e62cefa0bdb3bced312f3d2e3dd5
+    control_state_canonical_digest: fe4d241354905afd200e05139a684dd226ea4320af744200827a68e00cf3ba01
   I36:
     required_state: F02_then_P18_lean_source_microbatch_accepted
     observed_state: F02_then_P18_lean_source_microbatch_accepted
@@ -54,100 +56,77 @@ dependency_heads:
     terminal_tree_sha: 2501433f286dba71778d1abe2e60f0fa10de57f9
     independent_review: passed_no_P1_or_P2
     external_effects: 0/0/0
-  P12_source:
-    required_state: migration_request_complete_ready_for_concrete_correction
-    observed_state: migration_request_complete_ready_for_concrete_correction
-    observed_task_head_sha: 9ada912c3238421e661f89e590c07c042dd6424b
-    terminal_tree_sha: 003921b0730b400621d50722c4268a4f9bd0cfd5
-    immutable_migration_request: P12-migration-001
+  P12_prior_terminal:
+    required_state: independently_held_three_P2
+    observed_state: independently_held_three_P2
+    terminal_head_sha: 153c52e97123bb8723c8671873bf96d01444584c
+    terminal_tree_sha: 79dc9649b944ca0da4d854895f128b58667261f4
+    interface_version: 1.1.0
+    interface_digest: 778488b8ed4f8db8dacb24788ac88e44c2084e1f2b4523dc6370f1664c967c20
   F02:
     required_state: migration_2255_integrated
     observed_state: migration_2255_integrated
-    source_head_sha: 3ee2f651528f5170dd714b921500235d4e015c5b
-    integration_merge_sha: 614c723681cff39db2ebd8988017d4b389d1adc1
     integration_release_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
     migration_file: packages/db/migrations/2255_v21_student_actual_name.sql
     checksum_sha256: 7f647a55f26b732bdb8b95771dbb0c43fe6c9a5833389d5dba0888f7f55aab32
 active_interface:
-  status: interface_ready
-  semantic_contract_version: 1.1.0
+  status: interface_ready_for_correction_review
+  semantic_contract_version: 1.2.0
   interface_implementation_head_sha: derive_from_git_and_record_in_control_registry
   interface_checkpoint_sha: derive_from_git_and_record_in_control_registry
-  interface_checkpoint_digest: 778488b8ed4f8db8dacb24788ac88e44c2084e1f2b4523dc6370f1664c967c20
+  interface_checkpoint_digest: f9c323080c32925864f780fb05981850644ba3a91a2303fa3f282bc7461378d9
 completed_steps:
-  - Verified exact containing control 48f27d399d, sole parent/state basis cc03a0c8f7, READY digest 3be08e4220, claim 77d55d69, sole PARENT_HOUSEHOLD_UI lease 302b8602, and zero effect locks.
-  - Created the new task branch at exact integration ae3ced8a and merged exact P12 source 9ada912c as the second parent before correction; the unmodified merge tree matched 4e920e58567de5cdd18e8515e30edc0699c74315.
-  - Preserved immutable P12-migration-001 byte-for-byte with raw SHA-256 6f76b024 and Git blob 92c17650; P12-registration-001 remains immutable and unapplied.
-  - Implemented a concrete PostgreSQL repository with authenticated owner/session scope, optimistic household and Student versions, globally unique usernames, hard three-active-Student enforcement, and production_read_only denial.
-  - Persisted Student profile, service-account acceptance, canonical enrollment, audit, credential evidence, access revocation/readback, household revision, and idempotency receipt in one transaction with rollback.
-  - Added exact receipt replay and changed-hash conflict handling; every preflight or race replay writes nothing, never Argon2-rehashes, and returns no credential handoff, including replay after later state.
-  - Added an authenticated no-store/CSRF Parent router whose canonical receipt hash replaces plaintext credentials with a domain-separated server-keyed HMAC-SHA256 fingerprint.
-  - Added the same-origin client API plus concrete overview, create, edit, archive, restore, reset, exact relationship/name guidance, and one-time credential-handoff forms without legacy Student identity fields.
-  - Made inactive access status-only: the server returns no Student rows, mutation and receipt replay fail closed, and the client renders no Student rows, forms, controls, or credential handoff.
-  - Published semantic interface 1.1.0 with canonical LF/no-final-newline digest 778488b8 and three schema-valid immutable -002 successor requests that supersede but never edit P12-registration-001.
-  - Passed focused tests, native PostgreSQL through migration 2255, focused lint/formatting, request schema, immutable byte, exact scope, diff, and secret checks; workspace typecheck has no P12 diagnostic.
-  - Released the sole PARENT_HOUSEHOLD_UI lease at 2026-07-31T15:08:37Z with external effects 0/0/0.
+  - Verified live control f8d9059b, READY digest 538a416e, resumed claim c2fee1f8, sole PARENT_HOUSEHOLD_UI lease 1d841d45, exact P12 start 153c52e, clean local/tracking/live equality, and zero effect locks.
+  - Preserved the existing ordered two-parent ancestry and every non-authorized byte, including all immutable -002 requests.
+  - Replaced the eager repository password_hash input with a lazy async password_hash_factory and invoke it only after the transaction advisory lock, authenticated owned-household/read-only/inactive gates, locked receipt miss, mutation validation, and normalized username availability check.
+  - Proved same-key concurrent create and reset each perform one hash and one commit, return one one-time handoff plus one null-handoff replay, and leave one canonical Student/receipt state; sequential and later-state replay hash and write zero times.
+  - Rejected mismatched create/reset password confirmation before receipt lookup, household load, hash, ID allocation, write, or credential response, including when a receipt already exists.
+  - Validated and constructed an owned update mutation before global username availability, querying only its normalized validated target username and concealing wrong-household targets uniformly for globally taken and available usernames.
+  - Bumped the semantic interface from 1.1.0 to 1.2.0 with canonical LF/no-final-newline digest f9c32308 and published only P12-barrel-export-003 to supersede immutable stale P12-barrel-export-002.
+  - Passed the five-file focused suite, focused ESLint/Prettier, disposable native PostgreSQL 18.4 same-key races/final-seat/rollback proof, interface digest, successor schema/traceability, immutable-byte, exact-scope, diff, and secret checks.
+  - Released the sole PARENT_HOUSEHOLD_UI lease at 2026-07-31T16:11:11Z with external effects 0/0/0.
 remaining_steps:
-  - C00 must review the pushed two-parent terminal merge and record its exact commit/tree and semantic interface bindings.
-  - I36 must disposition and implement the three exact -002 successor requests in steward-owned central composers and barrels without reviving P12-registration-001.
-  - I36 must run the full mounted Parent refresh/logout/re-login persistence journey after the central P08/P12 registrations are composed.
+  - C00 performs exactly one independent correction review and records the pushed terminal commit/tree and 1.2.0 interface bindings.
+  - After correction acceptance, I36 integrates P12 then P09 in the authorized ordered source microbatch; it applies P12 server/client -002 plus barrel -003 and rejects stale barrel -002 without reviving P12-registration-001.
+  - I36 runs the composed Parent persistence journey after central P08/P12 registration.
 next_action: >-
-  C00 should review the pushed terminal merge. I36 should admit and disposition
-  exactly P12-server-registration-002, P12-client-route-002, and
-  P12-barrel-export-002, then run the composed Parent browser persistence
-  journey. The two immutable -001 requests remain evidence only.
+  C00 should independently review this exact pushed correction terminal. On
+  PASS, dispatch the single ordered P12-then-P09 I36 source microbatch with
+  P12-server-registration-002, P12-client-route-002, and
+  P12-barrel-export-003; P12-barrel-export-002 remains immutable and withheld.
 requirements:
-  OTV2-PARENT-031: implementation_verified
-  OTV2-PARENT-032: implementation_verified
-  OTV2-PARENT-033: implementation_verified
-  OTV2-PARENT-034: implementation_verified
-  OTV2-PARENT-035: implementation_verified
-  OTV2-PARENT-036: implementation_verified
-  OTV2-PARENT-040: implementation_verified
+  OTV2-PARENT-031: implementation_verified_pending_correction_review
+  OTV2-PARENT-032: implementation_verified_pending_correction_review
+  OTV2-PARENT-033: implementation_verified_pending_correction_review
+  OTV2-PARENT-034: implementation_verified_pending_correction_review
+  OTV2-PARENT-035: implementation_verified_pending_correction_review
+  OTV2-PARENT-036: implementation_verified_pending_correction_review
+  OTV2-PARENT-040: implementation_verified_pending_correction_review
 acceptance_cases:
-  OTV2-PARENT-031-AC01: task_owned_assertions_passed_composed_browser_deferred_to_I36
-  OTV2-PARENT-032-AC01: task_owned_concurrency_assertions_passed_composed_browser_deferred_to_I36
+  OTV2-PARENT-031-AC01: focused_and_native_assertions_passed_composed_browser_deferred_to_I36
+  OTV2-PARENT-032-AC01: same_key_create_and_reset_native_races_passed_composed_browser_deferred_to_I36
   OTV2-PARENT-033-AC01: task_owned_assertions_passed_composed_browser_deferred_to_I36
   OTV2-PARENT-034-AC01: task_owned_assertions_passed_composed_browser_deferred_to_I36
   OTV2-PARENT-035-AC01: task_owned_assertions_passed_composed_browser_deferred_to_I36
   OTV2-PARENT-036-AC01: task_owned_assertions_passed_composed_browser_deferred_to_I36
-  OTV2-PARENT-040-AC01: task_owned_negative_assertions_passed_composed_browser_deferred_to_I36
+  OTV2-PARENT-040-AC01: confirmation_and_wrong_household_negative_assertions_passed_composed_browser_deferred_to_I36
 changed_paths:
   - packages/contracts/src/portals/parent-household/index.ts
   - apps/web/src/server/features/portals/parent-household/service.ts
   - apps/web/src/server/features/portals/parent-household/service.test.ts
   - apps/web/src/server/features/portals/parent-household/postgres-repository.ts
   - apps/web/src/server/features/portals/parent-household/postgres-repository.test.ts
-  - apps/web/src/server/features/portals/parent-household/router.ts
-  - apps/web/src/server/features/portals/parent-household/router.test.ts
-  - apps/web/src/server/features/portals/parent-household/index.ts
-  - apps/web/src/client/app/parent/household/api.ts
-  - apps/web/src/client/app/parent/household/ParentHouseholdWorkspace.tsx
-  - apps/web/src/client/app/parent/household/ParentHouseholdWorkspace.test.tsx
-  - apps/web/src/client/app/parent/household/index.ts
   - ops/v2.1-execution/runtime/P12/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/P12/steward-requests/P12-barrel-export-003.yaml
   - ops/v2.1-execution/runtime/P12/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/P12/HANDOFF.md
   - ops/v2.1-execution/runtime/P12/NEXT-PROMPT.md
-  - ops/v2.1-execution/runtime/P12/steward-requests/P12-server-registration-002.yaml
-  - ops/v2.1-execution/runtime/P12/steward-requests/P12-client-route-002.yaml
-  - ops/v2.1-execution/runtime/P12/steward-requests/P12-barrel-export-002.yaml
-carried_paths:
-  - path: ops/v2.1-execution/runtime/P12/steward-requests/P12-migration-001.yaml
-    source_head_sha: 9ada912c3238421e661f89e590c07c042dd6424b
-    byte_identical: true
-    raw_sha256: 6f76b024f756b89ef430a21c0744b4dd43114c5d5e9213bd76582e2534d3bc17
-    git_blob: 92c1765089dc227f44e852857a404ab11a0e7fe2
-migrations:
-  - path: packages/db/migrations/2255_v21_student_actual_name.sql
-    disposition: integrated_upstream_not_changed
-    checksum_sha256: 7f647a55f26b732bdb8b95771dbb0c43fe6c9a5833389d5dba0888f7f55aab32
 steward_requests:
   - id: P12-registration-001
     disposition: immutable_superseded_evidence_only_never_edit_or_apply
     sha256: 501ae46b1ad26e933d2e15b4f13760f4c3c8ec93d2672dc7be0d7e372046e733
   - id: P12-migration-001
-    disposition: immutable_fulfilled_evidence_only_carried_from_second_parent
+    disposition: immutable_fulfilled_evidence_only
     sha256: 6f76b024f756b89ef430a21c0744b4dd43114c5d5e9213bd76582e2534d3bc17
   - id: P12-server-registration-002
     disposition: immutable_successor_pending_I36
@@ -156,27 +135,24 @@ steward_requests:
     disposition: immutable_successor_pending_I36
     sha256: 0731b9cc4dad55f26d26d9080b3eeba2b6e18739954de49b6a1d6c87d0e163c8
   - id: P12-barrel-export-002
-    disposition: immutable_successor_pending_I36
+    disposition: immutable_superseded_by_P12-barrel-export-003_never_edit_or_apply
     sha256: 2a82d0963bff76d05e9290f8648c232468fb1d9f0078c958657bb44e1621322d
+  - id: P12-barrel-export-003
+    disposition: correction_successor_pending_I36
+    sha256: d3a72cb8cd794e548d06e1602582370f1aeda2889431dd7104e02d7adc5e40b6
 verification:
   commands_run:
-    - command: exact control, READY digest, claim, lease, integration start, source head, merge-parent, and unmodified merge-tree verification
-      result: passed; control 48f27d39, READY 3be08e42, claim 77d55d69, lease 302b8602, start ae3ced8a, second parent 9ada912c, merge tree 4e920e58
+    - command: live control READY/claim/lease and local/tracking/live P12 identity verification
+      result: passed; control f8d9059b, READY 538a416e, claim c2fee1f8, lease 1d841d45, P12 153c52e
     - command: npx vitest run packages/domain/src/portals/parent-household/parent-household.test.ts apps/web/src/server/features/portals/parent-household/service.test.ts apps/web/src/server/features/portals/parent-household/postgres-repository.test.ts apps/web/src/server/features/portals/parent-household/router.test.ts apps/web/src/client/app/parent/household/ParentHouseholdWorkspace.test.tsx
-      result: passed; 5 files, 28 tests passed, 2 opt-in native tests skipped
-    - command: P12_NATIVE_POSTGRES_DISPOSABLE=true npx vitest run apps/web/src/server/features/portals/parent-household/postgres-repository.test.ts against disposable PostgreSQL 16.14 through migration 2255
-      result: passed; 6 tests including concurrent final-seat winner and true injected transaction rollback
-    - command: npx eslint apps/web/src/client/app/parent/household apps/web/src/server/features/portals/parent-household packages/contracts/src/portals/parent-household packages/domain/src/portals/parent-household
+      result: passed; 5 files and 31 tests passed, 3 declared native-only tests skipped
+    - command: P12_NATIVE_POSTGRES_DISPOSABLE=true focused repository suite against fresh disposable PostgreSQL 18.4 UTF-8 through migration 2255
+      result: passed; 8 tests including concurrent final-seat, same-key create/reset lazy-hash serialization, and injected transaction rollback
+    - command: focused ESLint and Prettier over the five changed product/test paths
       result: passed
-    - command: npm run typecheck -- --pretty false
-      result: baseline blocked; no P12 diagnostic
-    - command: three -002 steward-request strict YAML and canonical JSON-schema validation
-      result: passed; all seven requirements and all seven canonical AC01 identifiers are present in each request
-    - command: immutable request, interface preimage, normalized export blob, migration checksum, two-parent scope, Prettier, diff, and repository secret validation
+    - command: interface preimage, barrel -003 strict schema/traceability, immutable -002 bytes, exact 10-path scope, diff, and repository secret validation
       result: passed
-  known_baseline_failures:
-    - pre-existing Stripe SDK Status/OtherString widening diagnostic in packages/domain/src/billing/stripe-official-client.ts
-    - pre-existing duplicated Playwright type installations affecting tests/ot-52, tests/ot-83, and tests/w12-09 in the shared dependency junction
+  known_baseline_failures: []
 external_effects:
   authority: none
   effect_lock_count: 0

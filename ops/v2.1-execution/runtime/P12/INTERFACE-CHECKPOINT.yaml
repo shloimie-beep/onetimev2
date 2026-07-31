@@ -4,14 +4,14 @@ task_id: P12
 interface_implementation_head_sha: derive_from_git_and_record_in_control_registry
 metadata_commit_sha: derive_from_git_and_record_in_control_registry
 task_packet_digest: 37a367f92ac2af2a1e9ef17ae97ec2caed3d80ea608d7bcbbeeb6ecc64a0c2bd
-contract_digest: 778488b8ed4f8db8dacb24788ac88e44c2084e1f2b4523dc6370f1664c967c20
+contract_digest: f9c323080c32925864f780fb05981850644ba3a91a2303fa3f282bc7461378d9
 contract_digest_algorithm: >-
   SHA-256 over UTF-8 lines containing semantic_contract_version=<version>
   followed by exact path=<artifact SHA-256> lines sorted lexicographically by
   path, with LF separators and no final newline. Artifact hashes are computed
   from the exact normalized Git blob bytes in the terminal merge tree.
 contract_schema_version: 1
-semantic_contract_version: 1.1.0
+semantic_contract_version: 1.2.0
 state: interface_ready
 exports:
   - path: apps/web/src/client/app/parent/household/index.ts
@@ -60,7 +60,7 @@ exports:
       - ParentStudentPasswordPort
       - ParentStudentIdPort
       - PARENT_HOUSEHOLD_ERROR_CODES
-    sha256: f3bde4279ea71f28bdf6b745aa672e0a243746a89706a476911500964c2036e6
+    sha256: f33bbfa6d46b933540493c8895b08e86aad7eeef2a50deaa3e68ed523dd8d7ed
   - path: packages/domain/src/portals/parent-household/index.ts
     symbols:
       - ParentHouseholdError
@@ -77,11 +77,13 @@ compatibility_invariants:
   - An inactive household receives a status-only overview with no Student rows, forms, handoff, or mutation replay; every Student mutation fails closed.
   - Standard Family creation and restoration enforce at most three active Students under a locked household revision, including concurrent final-seat attempts.
   - Student identity stores required Unicode-nonblank actual_name, optional Unicode-nonblank display_name, and relationship self or dependent without date, age, grade, Hebrew-specific, email, or provider identity fields.
-  - Usernames are globally unique within exact runtime scope; credentials persist only as the canonical versioned Argon2id hash and credential-version change invalidates prior Student authentication.
-  - Persisted idempotency evidence uses a server-keyed password fingerprint rather than plaintext-derived request hashing; exact replay writes nothing and returns credential_handoff null even after later state changes.
+  - Usernames are globally unique within exact runtime scope; update ownership and normalized target validation precede global availability lookup, and wrong-household targets remain uniformly concealed.
+  - Credentials persist only as the canonical versioned Argon2id hash; its lazy async factory runs once only after the locked receipt miss and mutation validation, and credential-version change invalidates prior Student authentication.
+  - Persisted idempotency evidence uses a server-keyed password fingerprint rather than plaintext-derived request hashing; exact replay writes and hashes nothing and returns credential_handoff null even after later state changes.
+  - Mismatched password confirmation fails before any create/reset receipt lookup, hash, ID allocation, write, or credential response, including when a matching receipt already exists.
   - Only a newly committed create or credential reset may display the submitted password once; plaintext never crosses persistence, audit, logs, email, or a replay response.
   - Student profile, household revision, service acceptance, canonical enrollment, audit, credential evidence, launch/session revocation, revocation readback, and receipt changes share one transaction.
-  - Immutable P12-registration-001 is superseded and must never be edited or applied; central server, client-route, and barrel composition remain gated by the three schema-valid -002 successor requests.
+  - Immutable P12-registration-001 is superseded and must never be edited or applied; central server/client registration remains gated by their schema-valid -002 requests, while P12-barrel-export-003 solely supersedes stale P12-barrel-export-002 for interface 1.2.0.
 downstream_tasks:
   - P13
   - I36

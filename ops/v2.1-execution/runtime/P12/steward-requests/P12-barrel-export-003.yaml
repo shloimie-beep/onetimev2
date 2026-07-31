@@ -1,0 +1,57 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P12-barrel-export-003
+task_id: P12
+kind: barrel_export
+requirement_ids:
+  - OTV2-PARENT-031
+  - OTV2-PARENT-032
+  - OTV2-PARENT-033
+  - OTV2-PARENT-034
+  - OTV2-PARENT-035
+  - OTV2-PARENT-036
+  - OTV2-PARENT-040
+acceptance_case_ids:
+  - OTV2-PARENT-031-AC01
+  - OTV2-PARENT-032-AC01
+  - OTV2-PARENT-033-AC01
+  - OTV2-PARENT-034-AC01
+  - OTV2-PARENT-035-AC01
+  - OTV2-PARENT-036-AC01
+  - OTV2-PARENT-040-AC01
+rationale: >-
+  P12 owns corrected contract, domain, server-feature, and client-feature index
+  modules, while their central package and application barrels are steward-owned.
+  This request supersedes immutable P12-barrel-export-002 because its semantic
+  interface binding predates the lazy credential-hash repository contract.
+desired_semantic_change: >-
+  Supersede immutable P12-barrel-export-002 and never edit or apply that stale
+  predecessor. Re-export the semantic 1.2.0 Parent-household contract and its
+  domain functions from the canonical contract/domain portal roots, and
+  re-export the concrete client API/workspace and server repository/service/router
+  from the appropriate application feature roots. Preserve symbol semantics and
+  do not restore predecessor contract aliases, legacy Student fields, an in-memory
+  production repository, an eager password-hash input, or a plaintext credential
+  persistence surface.
+proposed_symbols_routes_keys_or_dependencies:
+  - PARENT_HOUSEHOLD_CONTRACT_VERSION 1.2.0 contract root
+  - ParentHouseholdRepository with lazy async password_hash_factory
+  - Parent household domain aggregate and ParentHouseholdError
+  - createPostgresParentHouseholdRepository
+  - createParentHouseholdService
+  - createParentHouseholdRouter
+  - createParentHouseholdApi
+  - ParentHouseholdWorkspace
+compatibility_assumptions:
+  - The 1.2.0 contract is the only active P12 contract and retains no request-selected scope.
+  - P12-barrel-export-002 remains immutable, unapplied, and completely superseded by this request.
+  - Central server and client composition remain governed by their separate immutable -002 registration requests.
+  - Existing importers can continue using the module-local index paths until stewarded barrels are integrated.
+verification_performed:
+  - TypeScript resolved all corrected module-local imports in the focused tests.
+  - The 1.2.0 interface export hashes were recomputed from the final formatted contract, domain, client, and server index files.
+  - Focused tests proved lazy locked hashing, no legacy Student field, and no credential replay surface is required by the exported API.
+conflicts_or_risks:
+  - Do not edit, re-admit, or implement P12-registration-001 or P12-barrel-export-002; this schema-valid request supersedes only the stale barrel request.
+  - Do not re-export legacy date/age/grade/Hebrew-name/email/provider fields, an eager password hash, or a plaintext-password persistence port.
+contains_secret_or_private_data: false

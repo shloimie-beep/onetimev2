@@ -5,6 +5,7 @@ import {
   type ParentHouseholdMutationReceipt,
   type ParentHouseholdPrincipal,
   type ParentHouseholdRecord,
+  type ParentHouseholdRepository,
 } from '../../../../../../../packages/contracts/src/portals/parent-household/index.ts';
 import { createParentHouseholdService } from './service.ts';
 
@@ -48,13 +49,21 @@ function setup(overrides?: {
   usernameAvailable?: boolean;
   household?: ParentHouseholdRecord;
   receipt?: ParentHouseholdMutationReceipt | null;
+  commitReceipt?: ParentHouseholdMutationReceipt;
 }) {
-  const commitMutation = vi.fn().mockResolvedValue({
-    disposition: 'committed',
-    operation: 'student_created',
-    student_id: 'student-new',
-    household_revision: 5,
-  });
+  const commitMutation = vi.fn(
+    async (input: Parameters<ParentHouseholdRepository['commitMutation']>[0]) => {
+      await input.password_hash_factory?.();
+      return (
+        overrides?.commitReceipt ?? {
+          disposition: 'committed',
+          operation: input.audit.action,
+          student_id: input.audit.student_id,
+          household_revision: input.next.revision,
+        }
+      );
+    },
+  );
   const loadOwnedHousehold = vi.fn().mockResolvedValue({
     ...(overrides?.household ?? household),
     owner_adult_id: overrides?.owner ?? 'adult-1',
@@ -91,7 +100,7 @@ describe('P12 Parent household server service', () => {
     );
   });
 
-  it('hashes a new password and sends only hash plus server request binding to persistence', async () => {
+  it('passes a lazy password hash factory plus server request binding to persistence', async () => {
     const { service, hash, commitMutation } = setup();
     const result = await service.createStudent(
       principal,
@@ -112,13 +121,70 @@ describe('P12 Parent household server service', () => {
         principal,
         context,
         expected_revision: 4,
-        password_hash: 'argon2id-redacted-hash',
+        password_hash_factory: expect.any(Function),
         revoke_student_sessions: false,
         canonical_enrollment: 'enroll',
       }),
     );
     expect(result.credential_handoff?.new_password).toBe('secure-password');
     expect(JSON.stringify(commitMutation.mock.calls[0]![0])).not.toContain('secure-password');
+  });
+
+  it('rejects mismatched create and reset confirmation before receipt lookup or credential work', async () => {
+    const create = setup({
+      household: { ...household, revision: 5, students: [student] },
+      receipt: {
+        disposition: 'replayed',
+        operation: 'student_created',
+        student_id: 'student-1',
+        household_revision: 5,
+      },
+    });
+    await expect(
+      create.service.createStudent(
+        principal,
+        {
+          expected_revision: 4,
+          actual_name: 'Student One',
+          username: 'student.one',
+          relationship: 'dependent',
+          new_password: 'secure-password',
+          password_confirmation: 'different-password',
+        },
+        context,
+      ),
+    ).rejects.toMatchObject({ code: PARENT_HOUSEHOLD_ERROR_CODES.invalidInput });
+    expect(create.findMutation).not.toHaveBeenCalled();
+    expect(create.loadOwnedHousehold).not.toHaveBeenCalled();
+    expect(create.hash).not.toHaveBeenCalled();
+    expect(create.nextStudentId).not.toHaveBeenCalled();
+    expect(create.commitMutation).not.toHaveBeenCalled();
+
+    const reset = setup({
+      household: { ...household, revision: 5, students: [student] },
+      receipt: {
+        disposition: 'replayed',
+        operation: 'student_credential_reset',
+        student_id: 'student-1',
+        household_revision: 5,
+      },
+    });
+    await expect(
+      reset.service.resetStudentCredential(
+        principal,
+        {
+          expected_revision: 4,
+          student_id: 'student-1',
+          new_password: 'secure-password',
+          password_confirmation: 'different-password',
+        },
+        { ...context, idempotency_key: 'parent-reset-0001' },
+      ),
+    ).rejects.toMatchObject({ code: PARENT_HOUSEHOLD_ERROR_CODES.invalidInput });
+    expect(reset.findMutation).not.toHaveBeenCalled();
+    expect(reset.loadOwnedHousehold).not.toHaveBeenCalled();
+    expect(reset.hash).not.toHaveBeenCalled();
+    expect(reset.commitMutation).not.toHaveBeenCalled();
   });
 
   it('returns an exact committed replay without credential redisclosure, hashing, ID allocation, or a second commit', async () => {
@@ -207,6 +273,48 @@ describe('P12 Parent household server service', () => {
     const crossOwner = setup({ owner: 'adult-2' });
     await expect(crossOwner.service.overview(principal)).rejects.toThrow(/unavailable/);
     expect(crossOwner.commitMutation).not.toHaveBeenCalled();
+  });
+
+  it('proves the owned update target before checking its normalized username', async () => {
+    const owned = setup({ household: { ...household, students: [student] } });
+    await owned.service.updateStudent(
+      principal,
+      {
+        expected_revision: 4,
+        student_id: 'student-1',
+        actual_name: 'Student One',
+        display_name: null,
+        username: ' Updated.Student ',
+      },
+      { ...context, idempotency_key: 'parent-update-0001' },
+    );
+    expect(owned.isUsernameAvailable).toHaveBeenCalledWith({
+      principal,
+      username: 'updated.student',
+      except_student_id: 'student-1',
+    });
+
+    for (const usernameAvailable of [true, false]) {
+      const concealed = setup({
+        household: { ...household, students: [student] },
+        usernameAvailable,
+      });
+      await expect(
+        concealed.service.updateStudent(
+          principal,
+          {
+            expected_revision: 4,
+            student_id: 'student-from-another-household',
+            actual_name: 'Hidden Student',
+            display_name: null,
+            username: usernameAvailable ? 'unused.student' : 'globally.taken',
+          },
+          { ...context, idempotency_key: `parent-conceal-${String(usernameAvailable)}-0001` },
+        ),
+      ).rejects.toMatchObject({ code: PARENT_HOUSEHOLD_ERROR_CODES.studentMissing });
+      expect(concealed.isUsernameAvailable).not.toHaveBeenCalled();
+      expect(concealed.commitMutation).not.toHaveBeenCalled();
+    }
   });
 
   it('does not commit or emit audit effects for same-state lifecycle resubmits', async () => {

@@ -120,6 +120,10 @@ export function createPostgresParentHouseholdRepository(
           (student) => student.student_id === input.audit.student_id,
         );
         await assertUsernameAvailable(client, loaded.scope, target.username, target.student_id);
+        const passwordHash = input.password_hash_factory
+          ? await input.password_hash_factory()
+          : null;
+        validatePasswordHash(passwordHash);
 
         const auditId = stableId('parent_audit', input.context.idempotency_key);
         const acceptanceId = stableId(
@@ -131,13 +135,7 @@ export function createPostgresParentHouseholdRepository(
         const enrollmentId = stableId('student_enrollment', target.student_id);
 
         if (input.audit.action === 'student_created') {
-          await insertStudent(
-            client,
-            loaded,
-            target,
-            input.password_hash!,
-            input.context.occurred_at,
-          );
+          await insertStudent(client, loaded, target, passwordHash!, input.context.occurred_at);
           await insertServiceAcceptance(client, {
             loaded,
             target,
@@ -153,7 +151,7 @@ export function createPostgresParentHouseholdRepository(
             occurredAt: input.context.occurred_at,
           });
         } else {
-          await updateStudent(client, loaded, current!, target, input);
+          await updateStudent(client, loaded, current!, target, input, passwordHash);
           if (input.canonical_enrollment !== 'unchanged') {
             await transitionEnrollment(client, {
               loaded,
@@ -170,11 +168,11 @@ export function createPostgresParentHouseholdRepository(
           ? await revokeStudentAccess(client, loaded, target, enrollmentId, auditId, input)
           : null;
 
-        if (input.password_hash) {
+        if (passwordHash) {
           await insertCredentialEvidence(client, {
             loaded,
             target,
-            passwordHash: input.password_hash,
+            passwordHash,
             kind: input.audit.action === 'student_created' ? 'initial_activation' : 'reset',
             readbackId,
             context: input.context,
@@ -437,7 +435,7 @@ function validateMutation(
         input.next.students.length !== current.students.length + 1 ||
         activeSeats !==
           current.students.filter((student) => student.state === 'active').length + 1 ||
-        !input.password_hash ||
+        !input.password_hash_factory ||
         input.revoke_student_sessions ||
         input.canonical_enrollment !== 'enroll'
       ) {
@@ -449,7 +447,7 @@ function validateMutation(
         !previous ||
         target.state !== previous.state ||
         input.next.students.length !== current.students.length ||
-        input.password_hash !== null ||
+        input.password_hash_factory !== null ||
         input.canonical_enrollment !== 'unchanged' ||
         input.revoke_student_sessions !== (target.username !== previous.username)
       ) {
@@ -461,7 +459,7 @@ function validateMutation(
         !previous ||
         previous.state !== 'active' ||
         target.state !== 'archived' ||
-        input.password_hash !== null ||
+        input.password_hash_factory !== null ||
         !input.revoke_student_sessions ||
         input.canonical_enrollment !== 'disable'
       ) {
@@ -473,7 +471,7 @@ function validateMutation(
         !previous ||
         previous.state !== 'archived' ||
         target.state !== 'active' ||
-        input.password_hash !== null ||
+        input.password_hash_factory !== null ||
         input.revoke_student_sessions ||
         input.canonical_enrollment !== 'enroll'
       ) {
@@ -485,7 +483,7 @@ function validateMutation(
         !previous ||
         previous.state !== 'active' ||
         target.state !== 'active' ||
-        !input.password_hash ||
+        !input.password_hash_factory ||
         !input.revoke_student_sessions ||
         input.canonical_enrollment !== 'unchanged'
       ) {
@@ -493,7 +491,10 @@ function validateMutation(
       }
       break;
   }
-  if (input.password_hash && !ARGON2ID.test(input.password_hash)) {
+}
+
+function validatePasswordHash(passwordHash: string | null) {
+  if (passwordHash !== null && !ARGON2ID.test(passwordHash)) {
     throw invariant('The replacement credential hash violates the Argon2id policy.');
   }
 }
@@ -597,6 +598,7 @@ async function updateStudent(
   current: ParentManagedStudent,
   target: ParentManagedStudent,
   input: Parameters<ParentHouseholdRepository['commitMutation']>[0],
+  passwordHash: string | null,
 ) {
   const credentialState = target.state === 'archived' ? 'disabled' : 'active';
   const result = await db.query(
@@ -622,7 +624,7 @@ async function updateStudent(
       target.display_name,
       target.username,
       target.state,
-      input.password_hash,
+      passwordHash,
       target.credential_version,
       credentialState,
       target.version,

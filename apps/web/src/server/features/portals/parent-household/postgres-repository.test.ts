@@ -38,7 +38,11 @@ describe('P12 concrete PostgreSQL Parent household repository', () => {
 
   it('persists actual/display names, hash, acceptance, enrollment, audit and receipt atomically', async () => {
     const fixture = await seedParent(pool, 'create', 0);
-    const service = concreteService(pool, 'student-create');
+    let hashCount = 0;
+    const service = concreteService(pool, 'student-create', async () => {
+      hashCount += 1;
+      return passwordHash;
+    });
     const context = mutationContext('create', 'a');
     const command = {
       expected_revision: 1,
@@ -53,6 +57,7 @@ describe('P12 concrete PostgreSQL Parent household repository', () => {
     const result = await service.createStudent(fixture.principal, command, context);
     expect(result.snapshot).toMatchObject({ revision: 2, active_student_count: 1 });
     expect(result.credential_handoff?.new_password).toBe('safe-password-123');
+    expect(hashCount).toBe(1);
 
     const persisted = await pool.query(
       `SELECT actual_name, display_name, normalized_username, credential_hash
@@ -75,6 +80,7 @@ describe('P12 concrete PostgreSQL Parent household repository', () => {
     const replay = await service.createStudent(fixture.principal, command, context);
     expect(replay.snapshot.revision).toBe(2);
     expect(replay.credential_handoff).toBeNull();
+    expect(hashCount).toBe(1);
     await expect(count(pool, 'v21_student_profiles')).resolves.toBe(1);
     await expect(count(pool, 'admin_directory_audit_events')).resolves.toBe(1);
 
@@ -90,6 +96,7 @@ describe('P12 concrete PostgreSQL Parent household repository', () => {
     );
     expect(reset.snapshot.revision).toBe(3);
     expect(reset.credential_handoff?.new_password).toBe('different-safe-password');
+    expect(hashCount).toBe(2);
 
     const replayAfterLaterMutation = await service.createStudent(
       fixture.principal,
@@ -98,6 +105,7 @@ describe('P12 concrete PostgreSQL Parent household repository', () => {
     );
     expect(replayAfterLaterMutation.snapshot.revision).toBe(3);
     expect(replayAfterLaterMutation.credential_handoff).toBeNull();
+    expect(hashCount).toBe(2);
     await expect(count(pool, 'v21_student_profiles')).resolves.toBe(1);
     await expect(count(pool, 'admin_directory_audit_events')).resolves.toBe(2);
 
@@ -107,6 +115,40 @@ describe('P12 concrete PostgreSQL Parent household repository', () => {
         canonical_request_hash: 'b'.repeat(64),
       }),
     ).rejects.toMatchObject({ code: 'parent_household_idempotency_conflict' });
+  });
+
+  it('conceals wrong-household update targets before global username availability', async () => {
+    const owner = await seedParent(pool, 'conceal-owner', 1);
+    const hidden = await seedParent(pool, 'conceal-hidden', 1);
+    const service = concreteService(pool, 'student-unused');
+
+    for (const [suffix, username] of [
+      ['taken', 'conceal.hidden.student.1'],
+      ['available', 'unused.global.username'],
+    ] as const) {
+      await expect(
+        service.updateStudent(
+          owner.principal,
+          {
+            expected_revision: 1,
+            student_id: 'student-conceal-hidden-1',
+            actual_name: 'Hidden Student',
+            display_name: null,
+            username,
+          },
+          mutationContext(`conceal-${suffix}`, suffix === 'taken' ? '8' : '9'),
+        ),
+      ).rejects.toMatchObject({ code: 'parent_student_missing' });
+    }
+    await expect(
+      countWhere(pool, 'v21_student_profiles', 'household_id', owner.householdId),
+    ).resolves.toBe(1);
+    await expect(
+      countWhere(pool, 'v21_student_profiles', 'household_id', hidden.householdId),
+    ).resolves.toBe(1);
+    await expect(
+      countWhere(pool, 'admin_directory_receipts', 'result_ref', 'student-conceal-hidden-1'),
+    ).resolves.toBe(0);
   });
 
   it('conceals a sibling household and rejects a stale fourth-seat write', async () => {
@@ -255,6 +297,87 @@ describe.runIf(nativeEnabled)('P12 native PostgreSQL through migration 2255', ()
     ).resolves.toBe(1);
   });
 
+  it('serializes same-key create and reset races before lazy credential hashing', async () => {
+    const fixture = await seedParent(pool as DbPool, 'native-replay-race', 0);
+    let createHashCount = 0;
+    const createService = concreteService(
+      pool as DbPool,
+      'student-native-replay-race',
+      async () => {
+        createHashCount += 1;
+        await new Promise((resolve) => setTimeout(resolve, 25));
+        return passwordHash;
+      },
+    );
+    const createCommand = {
+      expected_revision: 1,
+      actual_name: 'Native Replay Student',
+      display_name: null,
+      username: 'native.replay.student',
+      relationship: 'dependent' as const,
+      new_password: 'safe-password-123',
+      password_confirmation: 'safe-password-123',
+    };
+    const createContext = mutationContext('native-replay-create', '4');
+    const createResults = await Promise.all([
+      createService.createStudent(fixture.principal, createCommand, createContext),
+      createService.createStudent(fixture.principal, createCommand, createContext),
+    ]);
+    expect(createHashCount).toBe(1);
+    expect(createResults.filter((result) => result.credential_handoff !== null)).toHaveLength(1);
+    expect(createResults.filter((result) => result.credential_handoff === null)).toHaveLength(1);
+    expect(createResults.every((result) => result.snapshot.revision === 2)).toBe(true);
+    await expect(
+      countWhere(pool as DbPool, 'v21_student_profiles', 'household_id', fixture.householdId),
+    ).resolves.toBe(1);
+    await expect(
+      countWhere(
+        pool as DbPool,
+        'admin_directory_receipts',
+        'result_ref',
+        'student_created:student-native-replay-race',
+      ),
+    ).resolves.toBe(1);
+
+    let resetHashCount = 0;
+    const resetService = concreteService(pool as DbPool, 'student-native-replay-race', async () => {
+      resetHashCount += 1;
+      await new Promise((resolve) => setTimeout(resolve, 25));
+      return passwordHash;
+    });
+    const resetCommand = {
+      expected_revision: 2,
+      student_id: 'student-native-replay-race',
+      new_password: 'different-safe-password',
+      password_confirmation: 'different-safe-password',
+    };
+    const resetContext = mutationContext('native-replay-reset', '5');
+    const resetResults = await Promise.all([
+      resetService.resetStudentCredential(fixture.principal, resetCommand, resetContext),
+      resetService.resetStudentCredential(fixture.principal, resetCommand, resetContext),
+    ]);
+    expect(resetHashCount).toBe(1);
+    expect(resetResults.filter((result) => result.credential_handoff !== null)).toHaveLength(1);
+    expect(resetResults.filter((result) => result.credential_handoff === null)).toHaveLength(1);
+    expect(resetResults.every((result) => result.snapshot.revision === 3)).toBe(true);
+    await expect(
+      countWhere(
+        pool as DbPool,
+        'admin_directory_receipts',
+        'result_ref',
+        'student_credential_reset:student-native-replay-race',
+      ),
+    ).resolves.toBe(1);
+    const canonical = await pool.query(
+      `SELECT credential_version, version
+         FROM onetime.v21_student_profiles
+        WHERE student_id = 'student-native-replay-race'`,
+    );
+    expect(canonical.rows).toHaveLength(1);
+    expect(Number(canonical.rows[0]?.credential_version)).toBe(2);
+    expect(Number(canonical.rows[0]?.version)).toBe(2);
+  });
+
   it('rolls every staged row back on an injected mid-transaction failure', async () => {
     const fixture = await seedParent(pool as DbPool, 'native-rollback', 0);
     const faultPool = failOn(
@@ -305,10 +428,14 @@ function concreteRepository(pool: DbPool) {
   });
 }
 
-function concreteService(pool: DbPool, studentId: string) {
+function concreteService(
+  pool: DbPool,
+  studentId: string,
+  hash: (password: string) => Promise<string> = async () => passwordHash,
+) {
   return createParentHouseholdService({
     repository: concreteRepository(pool),
-    passwords: { hash: async () => passwordHash },
+    passwords: { hash },
     ids: { nextStudentId: () => studentId },
   });
 }

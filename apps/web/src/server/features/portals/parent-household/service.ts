@@ -70,7 +70,7 @@ export function createParentHouseholdService(dependencies: {
     context: ParentHouseholdMutationContext,
     expectedRevision: number,
     mutation: ReturnType<typeof createParentStudent>,
-    passwordHash: string | null,
+    passwordHashFactory: (() => Promise<string>) | null,
   ) {
     assertMutationContext(context);
     const receipt = await dependencies.repository.commitMutation({
@@ -79,7 +79,7 @@ export function createParentHouseholdService(dependencies: {
       expected_revision: expectedRevision,
       next: mutation.next,
       audit: mutation.result.audit,
-      password_hash: passwordHash,
+      password_hash_factory: passwordHashFactory,
       revoke_student_sessions: mutation.result.revoke_student_sessions,
       canonical_enrollment: mutation.result.canonical_enrollment,
     });
@@ -103,6 +103,7 @@ export function createParentHouseholdService(dependencies: {
       command: CreateParentStudentCommand,
       context: ParentHouseholdMutationContext,
     ) {
+      assertMatchingPasswords(command.new_password, command.password_confirmation);
       const replay = await exactReplay(principal, 'student_created', context);
       if (replay) return replay;
       const household = await loadMutable(principal);
@@ -123,8 +124,9 @@ export function createParentHouseholdService(dependencies: {
         student_id: dependencies.ids.nextStudentId(),
         ...command,
       });
-      const passwordHash = await dependencies.passwords.hash(command.new_password);
-      return commit(principal, context, command.expected_revision, mutation, passwordHash);
+      return commit(principal, context, command.expected_revision, mutation, () =>
+        dependencies.passwords.hash(command.new_password),
+      );
     },
 
     async updateStudent(
@@ -135,11 +137,15 @@ export function createParentHouseholdService(dependencies: {
       const replay = await exactReplay(principal, 'student_profile_updated', context);
       if (replay) return replay;
       const household = await loadMutable(principal);
+      const mutation = updateParentStudent({ principal, household, ...command });
+      const target = mutation.next.students.find(
+        (student) => student.student_id === command.student_id,
+      )!;
       if (
         !(await dependencies.repository.isUsernameAvailable({
           principal,
-          username: command.username,
-          except_student_id: command.student_id,
+          username: target.username,
+          except_student_id: target.student_id,
         }))
       ) {
         throw new ParentHouseholdError(
@@ -147,13 +153,7 @@ export function createParentHouseholdService(dependencies: {
           'Choose another Student username.',
         );
       }
-      return commit(
-        principal,
-        context,
-        command.expected_revision,
-        updateParentStudent({ principal, household, ...command }),
-        null,
-      );
+      return commit(principal, context, command.expected_revision, mutation, null);
     },
 
     async archiveStudent(
@@ -193,14 +193,25 @@ export function createParentHouseholdService(dependencies: {
       command: ResetParentStudentCredentialCommand,
       context: ParentHouseholdMutationContext,
     ) {
+      assertMatchingPasswords(command.new_password, command.password_confirmation);
       const replay = await exactReplay(principal, 'student_credential_reset', context);
       if (replay) return replay;
       const household = await loadMutable(principal);
       const mutation = resetParentStudentCredential({ principal, household, ...command });
-      const passwordHash = await dependencies.passwords.hash(command.new_password);
-      return commit(principal, context, command.expected_revision, mutation, passwordHash);
+      return commit(principal, context, command.expected_revision, mutation, () =>
+        dependencies.passwords.hash(command.new_password),
+      );
     },
   };
+}
+
+function assertMatchingPasswords(password: string, confirmation: string) {
+  if (password !== confirmation) {
+    throw new ParentHouseholdError(
+      PARENT_HOUSEHOLD_ERROR_CODES.invalidInput,
+      'Passwords must match and contain 12 to 128 characters.',
+    );
+  }
 }
 
 export type ParentHouseholdService = ReturnType<typeof createParentHouseholdService>;

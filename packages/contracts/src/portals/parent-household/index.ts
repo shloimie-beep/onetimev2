@@ -1,4 +1,4 @@
-export const PARENT_HOUSEHOLD_CONTRACT_VERSION = '1.1.0' as const;
+export const PARENT_HOUSEHOLD_CONTRACT_VERSION = '1.2.0' as const;
 export const STANDARD_FAMILY_STUDENT_ALLOWANCE = 3 as const;
 
 export const STUDENT_ACTUAL_NAME_INSTRUCTIONS = {
@@ -159,7 +159,7 @@ export interface ParentHouseholdRepository {
     expected_revision: number;
     next: ParentHouseholdRecord;
     audit: ParentHouseholdAuditEvent;
-    password_hash: string | null;
+    password_hash_factory: (() => Promise<string>) | null;
     revoke_student_sessions: boolean;
     canonical_enrollment: 'enroll' | 'disable' | 'unchanged';
   }): Promise<ParentHouseholdMutationReceipt>;

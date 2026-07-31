@@ -3,59 +3,64 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: REVIEW
 
-Review the pushed P12 two-parent terminal merge on
+Perform exactly one independent correction review of the pushed terminal on
 `codex/v21-p12-parent-household-concrete`.
 
-Authority is containing control
-`48f27d399d4ed714f6219487629c406af1fbb49f`, state basis
-`cc03a0c8f73339c05e3fbe0179661882169b32d9`, READY digest
-`3be08e42202e106064ba7b1c092615117ca3b7de60e4b4e07f8f872d7c1d9c61`,
-claim `77d55d69-8496-4f7e-b441-6bed1e83f819`, and writer
-`codex-p12-concrete-correction-77d55d69`. The sole PARENT_HOUSEHOLD_UI lease
-`302b8602-ec7c-4e81-9562-f792c6fb6e4c` was task-locally released at
-`2026-07-31T15:08:37Z`; effect locks are empty and effects are `0/0/0`.
+Authority is live control
+`f8d9059b53d0e62cefa0bdb3bced312f3d2e3dd5`, READY basis
+`321fd3482d5ee54bbad19d97205b54845d0d0aac`, READY digest
+`538a416e944278120e5e490b3e3e102134ae01c205478e177047a509fc8aabe0`,
+claim `c2fee1f8-2f7f-4cc7-bec9-cc0695ec3cb4`, writer
+`codex-p12-replay-concealment-c2fee1f8`, and released lease
+`1d841d45-043c-4e33-8f3d-0c635faa68d0`. Effects are `0/0/0`.
 
-Require exact ordered parents:
+Require clean local/tracking/live equality and exact preservation of the
+existing ordered parents:
 
 1. `ae3ced8a9daa11044d4278968c14cb6baa12a480`
 2. `9ada912c3238421e661f89e590c07c042dd6424b`
 
-The original merge tree before correction was
-`4e920e58567de5cdd18e8515e30edc0699c74315`. Require clean
-local/tracking/live equality and derive the exact terminal commit/tree from the
-remote. Verify exactly 19 authored authorized paths plus byte-identical carried
-`P12-migration-001`; reject history rewrite or squash.
+Review exactly the ten authorized paths with inventory digest
+`c816e5a6cc91f4326ee8552142e747b196b4ec3c454a4cee424c4ad16bc1dcee`.
+Reject any other authored path, history rewrite, external effect, or mutation of
+an existing immutable steward request.
 
-Review the concrete PostgreSQL repository, authenticated Parent router,
-same-origin client API, and persisted forms. Preserve server-derived
-adult/role/session/household scope, CSRF, status-only inactive overview,
-inactive replay denial, optimistic revision, concurrent three-seat cap,
-required actual name and optional display name, globally unique username,
-Argon2id credential hashing, server-keyed password fingerprinting for receipt
-hashes, atomic enrollment/audit/revocation/readback/receipt persistence, exact
-replay versus mismatch, no replayed credential handoff, wrong-household
-concealment, and full rollback.
+Verify the three held P2s are closed:
 
-Semantic interface `1.1.0` digest is
-`778488b8ed4f8db8dacb24788ac88e44c2084e1f2b4523dc6370f1664c967c20`.
-Record the terminal merge SHA as both interface implementation and metadata
-checkpoint in control.
+1. `password_hash_factory` is lazy across the exported repository contract,
+   service, and PostgreSQL repository. It executes exactly once only after the
+   advisory lock, authenticated scope/read-only/inactive gates, locked receipt
+   miss, mutation validation, and normalized username availability. Racing or
+   sequential exact replay hashes and writes zero times and returns no
+   credential handoff.
+2. Mismatched create/reset confirmation fails before any receipt lookup,
+   household load, hash, ID allocation, write, or credential response, including
+   when a matching receipt exists.
+3. Update constructs and validates its owned target before username
+   availability and queries only the normalized validated target. A
+   wrong-household target remains uniformly concealed regardless of global
+   username state or attacker-supplied Student ID.
 
-I36 should admit and disposition exactly:
+Require the focused 31-test result, disposable native PostgreSQL 18.4 eight-test
+race/rollback result, focused lint/format, exact interface preimage, immutable
+request bytes, scope, and diff hygiene.
 
-- `P12-server-registration-002` —
-  `7613a0c268faca7cb1fac830b3f4f97f502677e0fe2254360f9342820cc1c00f`
-- `P12-client-route-002` —
-  `0731b9cc4dad55f26d26d9080b3eeba2b6e18739954de49b6a1d6c87d0e163c8`
-- `P12-barrel-export-002` —
-  `2a82d0963bff76d05e9290f8648c232468fb1d9f0078c958657bb44e1621322d`
+Semantic interface `1.2.0` digest is
+`f9c323080c32925864f780fb05981850644ba3a91a2303fa3f282bc7461378d9`.
+Record the new terminal commit as its implementation and metadata checkpoint.
 
-`P12-registration-001` is immutable superseded evidence only and must never be
-edited or applied. `P12-migration-001` is immutable fulfilled evidence carried
-byte-for-byte from the second parent. Migration 2255 is already integrated and
-must not be edited.
+Steward disposition after PASS:
 
-After central P08/P12 composition, I36 runs the full mounted Parent
-refresh/logout/re-login persistence journey. Do not broaden P12 to edit central
-composer, app, root barrel, migration, package, global style, control, queue,
-provider, candidate, or integration files, and perform no external effect.
+- retain and apply `P12-server-registration-002` raw SHA-256
+  `7613a0c268faca7cb1fac830b3f4f97f502677e0fe2254360f9342820cc1c00f`;
+- retain and apply `P12-client-route-002` raw SHA-256
+  `0731b9cc4dad55f26d26d9080b3eeba2b6e18739954de49b6a1d6c87d0e163c8`;
+- reject and withhold immutable stale `P12-barrel-export-002` raw SHA-256
+  `2a82d0963bff76d05e9290f8648c232468fb1d9f0078c958657bb44e1621322d`;
+- admit and apply only `P12-barrel-export-003` raw SHA-256
+  `d3a72cb8cd794e548d06e1602582370f1aeda2889431dd7104e02d7adc5e40b6`.
+
+On PASS, C00 dispatches one ordered P12-then-P09 I36 source microbatch. Do not
+begin I36 integration from this P12 branch. Do not edit control, integration,
+central composers/barrels, migrations, providers, candidate, deployment, DNS,
+send, charge, or customer state, and perform no external effect.
