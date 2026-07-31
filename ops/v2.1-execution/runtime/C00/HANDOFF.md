@@ -1,5 +1,23 @@
 # Parent auth/client successor — current handoff
 
+Fresh-claim checkpoint `0389fe344f27bcd44c1640e7f6ebcb90d485b213`
+is the exact clean remote-equal runtime-triplet-only child of `0d834c0c`.
+Mechanical authority, scope, blob-preservation, canonical pair/triplet
+`f4ce12d6`/`430c4ede`, and effects `0/0/0` gates pass. It is held from
+product authorization because canonical top-level `TASK-STATE.next_action`
+still describes the obsolete five-path Parent-session release and
+`remaining_steps` is empty.
+
+Under unchanged claim `5deb22c5`, writer
+`codex-i36-parent-session-successor-5deb22c5`, and lease `87280cec` through
+`2026-07-31T02:28:50Z`, I36 may change only its runtime triplet to replace
+those stale fields with the six bounded security closeouts and an explicit
+stop for C00 correction reconciliation. It must preserve all product/test
+bytes, push normally, verify remote equality, and stop. No security/product
+edit or external effect is authorized before that correction is accepted.
+
+## Superseded renewal-claim dispatch
+
 Control parent `50ebdcdb345bf13bd76d9af013c25855bc369836` independently
 reconciles final I36 renewal checkpoint
 `0d834c0c0b0e1fd9db8b5a54076631cf1f2fe857`. Bind only that final

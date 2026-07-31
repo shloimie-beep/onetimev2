@@ -13,22 +13,22 @@ tasks:
     source_microbatch_3_reconciliation_authorized_start: 1d0fb443cde2ab992215a52f09c35ae56a97458f
     parent_session_partial_reconciliation_authorized_start: 90e70b07e5b10a16342e80c4f8b537a8ea21263c
   authorized_start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
-  last_known_remote_head: 50ebdcdb345bf13bd76d9af013c25855bc369836
+  last_known_remote_head: f0a73d35937a1366289ab7f733da354e65e0532b
   active_claim_id: 782440c2-46a7-42c5-b7bc-7138685e95e6
   active_writer_id: codex-c00-orchestrator-782440c2
-  lease_expires_at: '2026-07-31T02:58:50Z'
-  last_heartbeat_at: '2026-07-31T00:58:50Z'
-  controller_authorization_sha: 50ebdcdb345bf13bd76d9af013c25855bc369836
+  lease_expires_at: '2026-07-31T03:15:55Z'
+  last_heartbeat_at: '2026-07-31T01:15:55Z'
+  controller_authorization_sha: f0a73d35937a1366289ab7f733da354e65e0532b
   ready_entry_payload_digest: null
   interface_checkpoint_sha: null
   implementation_head_sha: null
   status_proof:
     state: operational
     producer_task_id: C00
-    producer_head_sha: 50ebdcdb345bf13bd76d9af013c25855bc369836
+    producer_head_sha: f0a73d35937a1366289ab7f733da354e65e0532b
     canonical_candidate_digest: null
     interface_checkpoint_digest: null
-    integration_or_evidence_head_sha: 0d834c0c0b0e1fd9db8b5a54076631cf1f2fe857
+    integration_or_evidence_head_sha: 0389fe344f27bcd44c1640e7f6ebcb90d485b213
     candidate_manifest_digest: null
     result_index_digest: null
     case_counts:
@@ -39,8 +39,8 @@ tasks:
       stale: 0
       waived: 0
     external_effects_reconciled: true
-    state_based_on_control_head_sha: 50ebdcdb345bf13bd76d9af013c25855bc369836
-    transitioned_at: '2026-07-31T00:58:50Z'
+    state_based_on_control_head_sha: f0a73d35937a1366289ab7f733da354e65e0532b
+    transitioned_at: '2026-07-31T01:15:55Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/C00/status_proof
 - task_id: F01
   status: ready_for_review
@@ -417,8 +417,8 @@ tasks:
     transitioned_at: '2026-07-30T19:30:53Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/F07/status_proof
 - task_id: I36
-  status: ready
-  active_phase: parent_session_auth_client_successor_lease_renewal
+  status: claimed
+  active_phase: parent_session_auth_client_successor_atomic_claim_metadata_correction
   branch: codex/v21-integration
   phase_branches:
     integration: codex/v21-integration
@@ -464,36 +464,37 @@ tasks:
     family_parent_session_composition_partial_checkpoint: a5a2ad94b77eaf596930609d4d5abe4fa672439b
     parent_session_auth_client_successor_authorized_start: a5a2ad94b77eaf596930609d4d5abe4fa672439b
     parent_session_auth_client_successor_renewal_requested: 0d834c0c0b0e1fd9db8b5a54076631cf1f2fe857
+    parent_session_auth_client_successor_renewal_atomic_claim: 0389fe344f27bcd44c1640e7f6ebcb90d485b213
   authorized_start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
-  last_known_remote_head: 0d834c0c0b0e1fd9db8b5a54076631cf1f2fe857
+  last_known_remote_head: 0389fe344f27bcd44c1640e7f6ebcb90d485b213
   active_claim_id: 5deb22c5-dc93-4946-98f1-dd7db19ee164
-  active_writer_id: null
+  active_writer_id: codex-i36-parent-session-successor-5deb22c5
   lease_expires_at: '2026-07-31T02:28:50Z'
   active_writer_leases:
   - slot: SERVER_COMPOSER
     lease_id: 87280cec-f71e-4dbd-91dd-38f54d0c7b93
-    phase_scope: parent_session_auth_client_successor_renewal_atomic_claim_only
+    phase_scope: parent_session_auth_client_successor_runtime_metadata_correction_only_then_stop
   - slot: CLIENT_COMPOSER
     lease_id: 87280cec-f71e-4dbd-91dd-38f54d0c7b93
-    phase_scope: parent_session_auth_client_successor_renewal_atomic_claim_only
+    phase_scope: parent_session_auth_client_successor_runtime_metadata_correction_only_then_stop
   - slot: IDENTITY_AUTH_ACCESS
     lease_id: 87280cec-f71e-4dbd-91dd-38f54d0c7b93
-    phase_scope: parent_session_auth_client_successor_renewal_atomic_claim_only
+    phase_scope: parent_session_auth_client_successor_runtime_metadata_correction_only_then_stop
   - slot: ACCOUNT_HOUSEHOLD_IDENTITY
     lease_id: 87280cec-f71e-4dbd-91dd-38f54d0c7b93
-    phase_scope: parent_session_auth_client_successor_renewal_atomic_claim_only
-  last_heartbeat_at: '2026-07-31T00:54:34Z'
-  controller_authorization_sha: 50ebdcdb345bf13bd76d9af013c25855bc369836
-  ready_entry_payload_digest: 010c6e951a95840de997ec93136b5ba1f28468b8fc35498ab008a81457cc5c1f
+    phase_scope: parent_session_auth_client_successor_runtime_metadata_correction_only_then_stop
+  last_heartbeat_at: '2026-07-31T01:11:58Z'
+  controller_authorization_sha: f0a73d35937a1366289ab7f733da354e65e0532b
+  ready_entry_payload_digest: null
   interface_checkpoint_sha: null
   implementation_head_sha: null
   status_proof:
-    state: ready
-    producer_task_id: C00
-    producer_head_sha: 50ebdcdb345bf13bd76d9af013c25855bc369836
+    state: claimed
+    producer_task_id: I36
+    producer_head_sha: 0389fe344f27bcd44c1640e7f6ebcb90d485b213
     canonical_candidate_digest: null
     interface_checkpoint_digest: null
-    integration_or_evidence_head_sha: 0d834c0c0b0e1fd9db8b5a54076631cf1f2fe857
+    integration_or_evidence_head_sha: 0389fe344f27bcd44c1640e7f6ebcb90d485b213
     candidate_manifest_digest: null
     result_index_digest: null
     case_counts:
@@ -504,8 +505,8 @@ tasks:
       stale: 0
       waived: 0
     external_effects_reconciled: true
-    state_based_on_control_head_sha: 50ebdcdb345bf13bd76d9af013c25855bc369836
-    transitioned_at: '2026-07-31T00:58:50Z'
+    state_based_on_control_head_sha: f0a73d35937a1366289ab7f733da354e65e0532b
+    transitioned_at: '2026-07-31T01:15:55Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/I36/status_proof
 - task_id: P08
   status: ready_for_review

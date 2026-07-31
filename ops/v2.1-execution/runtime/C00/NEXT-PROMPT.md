@@ -3,7 +3,29 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
-# Latest I36 Parent auth/client successor renewal dispatch
+# Latest I36 runtime-metadata correction
+
+Resume only from exact clean remote-equal
+`0389fe344f27bcd44c1640e7f6ebcb90d485b213` under unchanged claim
+`5deb22c5-dc93-4946-98f1-dd7db19ee164`, writer
+`codex-i36-parent-session-successor-5deb22c5`, and shared four-slot lease
+`87280cec-f71e-4dbd-91dd-38f54d0c7b93` through
+`2026-07-31T02:28:50Z`.
+
+Change exactly the I36 runtime triplet. Replace canonical top-level
+`remaining_steps: []` with the six bounded security closeouts plus terminal
+native/browser validation, and replace the obsolete five-path
+`next_action` with an explicit instruction to stop for C00 correction
+reconciliation before product work. Preserve all ten product/test blobs,
+fresh authority fields, historical authority, raw hashes, effects `0/0/0`,
+and the nested checkpoint evidence. Push normally, verify local/tracking/live
+equality, and stop.
+
+Do not edit product/test code, run the six closeouts, stop the disposable
+PostgreSQL server, touch a migration/steward/provider/candidate/deployment,
+or perform any external effect in this metadata-correction phase.
+
+# Superseded I36 Parent auth/client successor renewal dispatch
 
 Use only final clean pushed integration
 `0d834c0c0b0e1fd9db8b5a54076631cf1f2fe857`, a normal three-commit
