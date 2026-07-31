@@ -38,8 +38,14 @@ desired_semantic_change: >-
   adapter, plus LearningReviewItemReadPort for class-bound canonical
   Admin-published review proof from the exactly-one approved review_material
   artifact on the occurrence-keyed content publication, and the server-side
-  alias HMAC key. Bind P18 reasoned Admin attendance-correction events to an
-  explicit audited badge-projection recalculation invocation. Expose no
+  alias HMAC key. Bind every committed canonical P18 attendance-projection
+  change to recalculateBadgesAfterAttendanceProjectionChange: ordinary
+  attendance changes invoke non-revoking recalculation so Consistency can be
+  earned, while reasoned Admin corrections invoke audited correction mode.
+  Source-event exact replay must re-invoke the digest-idempotent badge
+  recalculation: an already-complete projection writes nothing, while a prior
+  post-commit projection failure is repaired.
+  Expose no
   attendance record or correction route and no recognition-consent mutation route.
 proposed_symbols_routes_keys_or_dependencies:
   - createLearningEngagementService
@@ -48,11 +54,12 @@ proposed_symbols_routes_keys_or_dependencies:
   - LearningRecognitionConsentReadPort
   - LearningReviewItemReadPort
   - canonical_aggregate_states content writer keyed by content_publications.content_id
-  - P18 attendance Admin-correction event to P22 badge recalculation callback
+  - P18 attendance projection change to P22 badge recalculation callback
   - authenticated /api/app/learning feature registration
 compatibility_assumptions:
   - Request bodies cannot select or override any LearningScope dimension.
   - The P18 adapter reads classroom_attendance_projection_v21 and proves canonical enrollment binding.
+  - Ordinary P18 projection changes may award but never revoke; audited Admin corrections may revoke or restore.
   - Consent and identity adapters are read-only and identity-bound.
   - >-
     Registration remains fail-closed until I36 provides the upstream

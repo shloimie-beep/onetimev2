@@ -179,6 +179,26 @@ describe('P22 four-scope private questions and append-only plans', () => {
     ).toThrow(/Reload/);
   });
 
+  it('rejects blank question evidence keys and invalid occurrence timestamps', () => {
+    const command = {
+      actor: student,
+      id: 'question-invalid',
+      classId: 'class-a',
+      body: 'Why?',
+      idempotencyKey: 'submit-invalid',
+      requestHash: 'hash-invalid',
+      auditRef: 'audit-invalid',
+      occurredAt: '2026-07-01T10:00:00.000Z',
+    };
+    expect(() => submitQuestion({ ...command, idempotencyKey: '   ' })).toThrow(/Idempotency key/);
+    expect(() => submitQuestion({ ...command, auditRef: '   ' })).toThrow(
+      /Question audit reference/,
+    );
+    expect(() => submitQuestion({ ...command, occurredAt: 'not-an-instant' })).toThrow(
+      /valid timestamp/,
+    );
+  });
+
   it.each([
     ['accountKey', 'account-2'],
     ['productKey', 'other-product'],
@@ -419,6 +439,46 @@ describe('P22 recognition-safe leaderboard labels', () => {
     asOf: '2026-07-20T10:00:00.000Z',
     aliasHmacKey: 'test-only-hmac-key',
   };
+
+  it('counts approvals by first approved/published transition time, not private qualification time', () => {
+    const recognitionFact = {
+      ...scope,
+      questionId: 'question-1',
+      studentId: 'student-2',
+      householdId: 'household-2',
+      classId: 'class-a',
+      state: 'answered_private' as const,
+      eligible: true,
+      qualifiedAt: '2026-07-10T10:00:00.000Z',
+      approvedAt: null,
+      latestSequence: 1,
+      latestSource: 'admin_transition' as const,
+      latestAuditRef: 'audit-answer-1',
+      latestReason: null,
+      latestActorId: 'admin-1',
+    };
+    const privateOnly = buildLeaderboard({
+      ...base,
+      questionRecognitionFacts: [recognitionFact],
+    });
+    expect(
+      privateOnly.categories.approvedQuestionCount.find((entry) => entry.displayName !== 'You')
+        ?.value,
+    ).toBe(0);
+    const approved = buildLeaderboard({
+      ...base,
+      questionRecognitionFacts: [
+        {
+          ...recognitionFact,
+          state: 'approved_for_class',
+          approvedAt: '2026-07-12T10:00:00.000Z',
+        },
+      ],
+    });
+    expect(
+      approved.categories.approvedQuestionCount.find((entry) => entry.displayName !== 'You')?.value,
+    ).toBe(1);
+  });
 
   it('uses actualName only for Admin, You for self, and displayName only for granted peers', () => {
     const off = buildLeaderboard(base);

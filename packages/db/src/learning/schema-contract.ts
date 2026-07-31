@@ -18,6 +18,7 @@ export const LEARNING_ENGAGEMENT_REQUIRED_SCHEMA = {
     invariants: [
       FOUR_DIMENSION_FENCE,
       'append-only: UPDATE and DELETE are rejected',
+      'transition_event_id is immutable and equals idempotency_key plus the transition suffix',
       'scoped idempotency key stores canonical request hash',
       'projection update and transition append occur in one transaction',
     ],
@@ -27,6 +28,7 @@ export const LEARNING_ENGAGEMENT_REQUIRED_SCHEMA = {
     invariants: [
       FOUR_DIMENSION_FENCE,
       'append-only: UPDATE and DELETE are rejected',
+      'recognition_event_id is immutable and equals idempotency_key plus the recognition suffix',
       'qualification is unique per scoped question and corrections append evidence',
       'immutable recognition_sequence is unique and monotonic per scoped question',
       'optional recognition append shares the projection-and-transition transaction',
@@ -46,6 +48,7 @@ export const LEARNING_ENGAGEMENT_REQUIRED_SCHEMA = {
     invariants: [
       FOUR_DIMENSION_FENCE,
       'append-only Student completion and reasoned Admin revoke/restore event ledger; UPDATE and DELETE are rejected',
+      'review_event_id is immutable and equals idempotency_key plus the review suffix',
       'event_action, completion_source, audit_ref, publication_audit_ref, and monotonic event_sequence are immutable',
       'effective completion is the latest append sequence per scoped Student and Admin-published review item',
       'authenticated Student ingestion is idempotent by scoped key and canonical request hash',
@@ -56,9 +59,11 @@ export const LEARNING_ENGAGEMENT_REQUIRED_SCHEMA = {
     invariants: [
       FOUR_DIMENSION_FENCE,
       'unique scoped Student, class, badge family, and badge level projection',
-      'deterministic source digest makes exact recalculation replay a no-write result',
-      'changed canonical attendance, question, or review evidence atomically recalculates award/revoked state and increments version',
-      'qualifying count, source keys, recalculated_at, and correction audit reference remain auditable',
+      'all nine fixed family/level rows begin unawarded and use an immutable rule version',
+      'per-family deterministic source digest and audit references make exact recalculation replay a no-write result without versioning unrelated families',
+      'ordinary evidence changes can award but never revoke an earned badge',
+      'revocation or restoration requires explicit service-authorized Admin correction_audit_ref, correction_reason, and corrected_by_admin_id evidence',
+      'qualifying count, source keys, awarded_at, revoked_at, recalculated_at, and correction evidence remain auditable',
     ],
   },
   canonicalReadSeams: {

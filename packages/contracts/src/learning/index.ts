@@ -117,6 +117,7 @@ export type QuestionRecognitionFact = LearningScope & {
   state: QuestionState;
   eligible: boolean;
   qualifiedAt: string | null;
+  approvedAt: string | null;
   latestSequence: number | null;
   latestSource: QuestionRecognitionLedgerEntry['source'] | null;
   latestAuditRef: string | null;
@@ -295,10 +296,8 @@ export type BadgeProjectionRecalculation = {
   scope: LearningScope;
   studentId: string;
   classId: string;
-  sourceDigest: string;
   familySourceDigests: Readonly<Record<BadgeFamily, string>>;
   ruleVersion: string;
-  sourceAuditRefs: readonly string[];
   familySourceAuditRefs: Readonly<Record<BadgeFamily, readonly string[]>>;
   progress: Readonly<
     Record<BadgeFamily, { qualifyingCount: number; sourceKeys: readonly string[] }>
@@ -380,10 +379,17 @@ export interface LearningEngagementRepository {
   applyBadgeRecalculation(
     recalculation: BadgeProjectionRecalculation,
   ): Promise<{ awards: readonly LearningBadgeAwardProjection[]; replay: boolean }>;
+  listBadgeAwardProjections(
+    scope: LearningScope,
+    classId: string,
+    studentId: string,
+  ): Promise<readonly LearningBadgeAwardProjection[]>;
   listReviewCompletionEvents(
     scope: LearningScope,
     reviewItemId: string,
     studentId: string,
+    classId: string,
+    householdId: string,
   ): Promise<readonly ReviewCompletion[]>;
   listQuestions(
     scope: LearningScope,

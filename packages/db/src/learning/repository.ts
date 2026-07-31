@@ -33,6 +33,8 @@ export function createLearningEngagementRepository(pool: DbPool): LearningEngage
       inTransaction(pool, (db) => applyReviewCompletion(db, completion)),
     applyBadgeRecalculation: (recalculation) =>
       inTransaction(pool, (db) => applyBadgeRecalculation(db, recalculation)),
+    listBadgeAwardProjections: (scope, classId, studentId) =>
+      listBadgeProjections(pool, scope, classId, studentId),
   };
 }
 
@@ -98,6 +100,9 @@ export function createLearningCanonicalReadPorts(pool: DbPool): {
               AND attendance.product = $2
               AND attendance.runtime_tier = $3
               AND attendance.verification_environment_id = $4
+              AND attendance.reconciliation_state IN (
+                'provisional', 'provider_verified', 'provider_mismatch', 'admin_corrected'
+              )
               AND (
                 attendance.reconciliation_state <> 'admin_corrected'
                 OR correction.audit_ref IS NOT NULL
@@ -305,7 +310,10 @@ function createUnit(
   db: Queryable,
 ): Omit<
   LearningEngagementRepository,
-  'applyQuestionMutation' | 'applyReviewCompletion' | 'applyBadgeRecalculation'
+  | 'applyQuestionMutation'
+  | 'applyReviewCompletion'
+  | 'applyBadgeRecalculation'
+  | 'listBadgeAwardProjections'
 > {
   return {
     getQuestion: async (scope, questionId, authorizedClassIds) =>
@@ -364,7 +372,7 @@ function createUnit(
                 question.question_state, COALESCE(recognition.eligible, FALSE) AS eligible,
                 recognition.recognition_sequence, recognition.event_source,
                 recognition.audit_ref, recognition.reason, recognition.actor_key,
-                qualification.qualified_at
+                qualification.qualified_at, approval.approved_at
            FROM onetime.learning_question_projection AS question
            LEFT JOIN LATERAL (
              SELECT event.eligible, event.recognition_sequence,
@@ -391,6 +399,17 @@ function createUnit(
                 AND event.question_key = question.question_key
                 AND event.action = 'qualified'
            ) AS qualification ON TRUE
+           LEFT JOIN LATERAL (
+             SELECT MIN(event.occurred_at) AS approved_at
+               FROM onetime.learning_question_transition_ledger AS event
+              WHERE event.account_key = question.account_key
+                AND event.product_key = question.product_key
+                AND event.runtime_tier = question.runtime_tier
+                AND event.verification_environment_id =
+                    question.verification_environment_id
+                AND event.question_key = question.question_key
+                AND event.to_state IN ('approved_for_class', 'published')
+           ) AS approval ON TRUE
           WHERE question.account_key = $1 AND question.product_key = $2
             AND question.runtime_tier = $3
             AND question.verification_environment_id = $4
@@ -474,14 +493,15 @@ function createUnit(
       );
       return result.rows.map((row) => mapReview(row as Record<string, unknown>));
     },
-    listReviewCompletionEvents: async (scope, reviewItemId, studentId) => {
+    listReviewCompletionEvents: async (scope, reviewItemId, studentId, classId, householdId) => {
       const result = await db.query(
         `SELECT * FROM onetime.learning_review_completions
           WHERE account_key = $1 AND product_key = $2
             AND runtime_tier = $3 AND verification_environment_id = $4
             AND review_item_key = $5 AND learner_key = $6
+            AND class_key = $7 AND household_key = $8
           ORDER BY event_sequence`,
-        [...scopeValues(scope), reviewItemId, studentId],
+        [...scopeValues(scope), reviewItemId, studentId, classId, householdId],
       );
       return result.rows.map((row) => mapReview(row as Record<string, unknown>));
     },
@@ -960,14 +980,12 @@ function mapQuestionRecognitionFact(row: Record<string, unknown>): QuestionRecog
     state: questionState(row.question_state),
     eligible: Boolean(row.eligible),
     qualifiedAt: nullableInstant(row.qualified_at),
+    approvedAt: nullableInstant(row.approved_at),
     latestSequence:
       row.recognition_sequence === null || row.recognition_sequence === undefined
         ? null
         : Number(row.recognition_sequence),
-    latestSource:
-      row.event_source === null
-        ? null
-        : (row.event_source as QuestionRecognitionFact['latestSource']),
+    latestSource: row.event_source === null ? null : recognitionSource(row.event_source),
     latestAuditRef: nullableString(row.audit_ref),
     latestReason: nullableString(row.reason),
     latestActorId: nullableString(row.actor_key),
@@ -988,6 +1006,62 @@ function questionState(value: unknown): LearningQuestion['state'] {
   throw new Error('learning_unknown_question_state');
 }
 
+function transitionSource(value: unknown): QuestionTransitionLedgerEntry['source'] {
+  if (
+    value === 'authenticated_student_submit' ||
+    value === 'admin_transition' ||
+    value === 'admin_correction'
+  ) {
+    return value;
+  }
+  throw new Error('learning_unknown_question_transition_source');
+}
+
+function recognitionSource(value: unknown): QuestionRecognitionLedgerEntry['source'] {
+  if (value === 'admin_transition' || value === 'admin_correction') return value;
+  throw new Error('learning_unknown_question_recognition_source');
+}
+
+function recognitionAction(value: unknown): QuestionRecognitionLedgerEntry['action'] {
+  if (value === 'qualified' || value === 'correction_enabled' || value === 'correction_disabled') {
+    return value;
+  }
+  throw new Error('learning_unknown_question_recognition_action');
+}
+
+function reviewAction(value: unknown): ReviewCompletion['action'] {
+  if (value === 'completed' || value === 'revoked' || value === 'restored') return value;
+  throw new Error('learning_unknown_review_action');
+}
+
+function reviewSource(value: unknown): ReviewCompletion['source'] {
+  if (
+    value === 'authenticated_submit' ||
+    value === 'authenticated_mark_complete' ||
+    value === 'admin_correction'
+  ) {
+    return value;
+  }
+  throw new Error('learning_unknown_review_source');
+}
+
+function badgeFamily(value: unknown): LearningBadgeAwardProjection['family'] {
+  if (value === 'consistency' || value === 'curious_learner' || value === 'review_ready') {
+    return value;
+  }
+  throw new Error('learning_unknown_badge_family');
+}
+
+function badgeLevel(value: unknown): LearningBadgeAwardProjection['level'] {
+  if (value === 'I' || value === 'II' || value === 'III') return value;
+  throw new Error('learning_unknown_badge_level');
+}
+
+function badgeState(value: unknown): LearningBadgeAwardProjection['state'] {
+  if (value === 'unawarded' || value === 'awarded' || value === 'revoked') return value;
+  throw new Error('learning_unknown_badge_state');
+}
+
 function mapTransition(row: Record<string, unknown>): QuestionTransitionLedgerEntry {
   return {
     ...scope(row),
@@ -999,11 +1073,10 @@ function mapTransition(row: Record<string, unknown>): QuestionTransitionLedgerEn
     idempotencyKey: String(row.idempotency_key),
     requestHash: String(row.request_hash),
     actorId: String(row.actor_key),
-    source: row.event_source as QuestionTransitionLedgerEntry['source'],
+    source: transitionSource(row.event_source),
     auditRef: String(row.audit_ref),
-    from:
-      row.from_state === null ? null : (row.from_state as QuestionTransitionLedgerEntry['from']),
-    to: row.to_state as QuestionTransitionLedgerEntry['to'],
+    from: row.from_state === null ? null : questionState(row.from_state),
+    to: questionState(row.to_state),
     reason: nullableString(row.reason),
     occurredAt: instant(row.occurred_at),
   };
@@ -1021,9 +1094,9 @@ function mapRecognition(row: Record<string, unknown>): QuestionRecognitionLedger
     idempotencyKey: String(row.idempotency_key),
     requestHash: String(row.request_hash),
     actorId: String(row.actor_key),
-    source: row.event_source as QuestionRecognitionLedgerEntry['source'],
+    source: recognitionSource(row.event_source),
     auditRef: String(row.audit_ref),
-    action: row.action as QuestionRecognitionLedgerEntry['action'],
+    action: recognitionAction(row.action),
     eligible: Boolean(row.eligible),
     reason: nullableString(row.reason),
     occurredAt: instant(row.occurred_at),
@@ -1075,12 +1148,12 @@ function mapReview(row: Record<string, unknown>): ReviewCompletion {
     studentId: String(row.learner_key),
     householdId: String(row.household_key),
     adminPublished: Boolean(row.admin_published),
-    action: row.event_action as ReviewCompletion['action'],
+    action: reviewAction(row.event_action),
     sequence: Number(row.event_sequence),
     idempotencyKey: String(row.idempotency_key),
     requestHash: String(row.request_hash),
     completedBy: String(row.completed_by),
-    source: row.completion_source as ReviewCompletion['source'],
+    source: reviewSource(row.completion_source),
     reason: nullableString(row.reason),
     auditRef: String(row.audit_ref),
     publicationAuditRef: String(row.publication_audit_ref),
@@ -1095,14 +1168,14 @@ function mapBadgeProjection(row: Record<string, unknown>): LearningBadgeAwardPro
     studentId: String(row.learner_key),
     classId: String(row.class_key),
     key: `${String(row.badge_family)}:${ordinal}` as LearningBadgeAwardProjection['key'],
-    family: row.badge_family as LearningBadgeAwardProjection['family'],
-    level: row.badge_level as LearningBadgeAwardProjection['level'],
+    family: badgeFamily(row.badge_family),
+    level: badgeLevel(row.badge_level),
     threshold: Number(row.threshold),
     qualifyingCount: Number(row.qualifying_count),
     sourceKeys: stringArray(row.source_keys),
     sourceDigest: String(row.source_digest),
     version: Number(row.version),
-    state: row.award_state as LearningBadgeAwardProjection['state'],
+    state: badgeState(row.award_state),
     ruleVersion: String(row.rule_version),
     sourceAuditRefs: stringArray(row.source_audit_refs),
     awardedAt: nullableInstant(row.awarded_at),

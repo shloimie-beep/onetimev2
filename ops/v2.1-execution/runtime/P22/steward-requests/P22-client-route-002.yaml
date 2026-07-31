@@ -34,15 +34,20 @@ desired_semantic_change: >-
   application shell. Bind leaderboard rows to the new opaque entryKey. During
   compatibility transition, treat retained LeaderboardEntry.studentId as the
   same opaque full-scope entry key, never as a canonical peer Student ID.
-  Render only the server-provided safe displayName label.
+  Render only the server-provided safe displayName label. Bind the moderated
+  class publication feed to PublishedClassQuestion and render its consent-safe
+  authorDisplayName/authorEntryKey without exposing private or unpublished
+  questions or canonical peer identity.
 proposed_symbols_routes_keys_or_dependencies:
   - AdminLearningWorkspace authenticated route
   - StudentLearningOverview authenticated route
   - LeaderboardEntry.entryKey
   - opaque compatibility LeaderboardEntry.studentId
+  - PublishedClassQuestion moderated class feed
 compatibility_assumptions:
   - The client never receives canonical peer Student IDs or actual names.
   - Self is labelled You and peer labels are already consent-safe server projections.
+  - Published question author attribution is server-projected with the same class-safe aliases.
 verification_performed:
   - Verified corrected contract provides entryKey and opaque compatibility studentId.
   - Verified displayName remains the safe rendered label consumed by the existing client.

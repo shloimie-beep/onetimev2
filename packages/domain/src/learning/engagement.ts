@@ -68,14 +68,15 @@ export function submitQuestion(command: SubmitQuestionCommand): PlannedQuestionM
   if (command.actor.role !== 'student' || !command.actor.classIds.includes(command.classId)) {
     denied('Only the enrolled Student may submit a private class question.');
   }
+  assertQuestionCommand(command);
   const body = requiredText(command.body, 'Question text', 4_000);
   if (body.length < 2) invalid('Question text must contain 2 to 4,000 characters.');
   const projection: LearningQuestion = {
     ...scopeOf(command.actor),
-    id: command.id,
+    id: requiredText(command.id, 'Question ID', 512),
     studentId: command.actor.studentId,
     householdId: command.actor.householdId,
-    classId: command.classId,
+    classId: requiredText(command.classId, 'Question class', 512),
     body,
     answer: null,
     state: 'submitted',
@@ -108,6 +109,7 @@ export function transitionQuestion(
   command: TransitionQuestionCommand,
 ): PlannedQuestionMutation {
   requireAdmin(command.actor, current);
+  assertQuestionCommand(command);
   if (isReplay(history.transitions, command.idempotencyKey, command.requestHash)) {
     return { mutation: null, replay: true, effects: NO_LEARNING_EXTERNAL_EFFECTS };
   }
@@ -164,6 +166,7 @@ export function correctQuestionRecognition(
   command: CorrectQuestionRecognitionCommand,
 ): PlannedQuestionMutation {
   requireAdmin(command.actor, current);
+  assertQuestionCommand(command);
   if (isReplay(history.transitions, command.idempotencyKey, command.requestHash)) {
     return { mutation: null, replay: true, effects: NO_LEARNING_EXTERNAL_EFFECTS };
   }
@@ -541,8 +544,8 @@ export function buildLeaderboard(input: {
       fact.classId === input.classId &&
       (fact.state === 'approved_for_class' || fact.state === 'published') &&
       fact.eligible &&
-      fact.qualifiedAt &&
-      inWindow(fact.qualifiedAt, windowStarts, windowEnds)
+      fact.approvedAt &&
+      inWindow(fact.approvedAt, windowStarts, windowEnds)
     ) {
       approvedQuestionCount.set(
         fact.studentId,
@@ -615,15 +618,15 @@ function transitionEntry(
     studentId: question.studentId,
     householdId: question.householdId,
     classId: question.classId,
-    idempotencyKey: command.idempotencyKey,
+    idempotencyKey: requiredText(command.idempotencyKey, 'Idempotency key', 512),
     requestHash: command.requestHash,
     actorId: command.actor.principalId,
     source,
-    auditRef: command.auditRef,
+    auditRef: requiredText(command.auditRef, 'Question audit reference', 512),
     from,
     to,
     reason,
-    occurredAt: command.occurredAt,
+    occurredAt: validInstant(command.occurredAt, 'Question occurrence time'),
   };
 }
 
@@ -644,15 +647,15 @@ function recognitionEntry(
     householdId: question.householdId,
     classId: question.classId,
     sequence,
-    idempotencyKey: command.idempotencyKey,
+    idempotencyKey: requiredText(command.idempotencyKey, 'Idempotency key', 512),
     requestHash: command.requestHash,
     actorId: command.actor.principalId,
     source,
-    auditRef: command.auditRef,
+    auditRef: requiredText(command.auditRef, 'Question audit reference', 512),
     action,
     eligible,
     reason,
-    occurredAt: command.occurredAt,
+    occurredAt: validInstant(command.occurredAt, 'Question occurrence time'),
   };
 }
 
@@ -900,6 +903,21 @@ function requiredText(value: string, label: string, maximum: number) {
     invalid(`${label} must contain 1 to ${maximum} characters.`);
   }
   return normalized;
+}
+
+function assertQuestionCommand(command: {
+  idempotencyKey: string;
+  auditRef: string;
+  occurredAt: string;
+}) {
+  requiredText(command.idempotencyKey, 'Idempotency key', 512);
+  requiredText(command.auditRef, 'Question audit reference', 512);
+  validInstant(command.occurredAt, 'Question occurrence time');
+}
+
+function validInstant(value: string, label: string) {
+  if (!Number.isFinite(Date.parse(value))) invalid(`${label} must be a valid timestamp.`);
+  return value;
 }
 
 function invalid(message: string): never {

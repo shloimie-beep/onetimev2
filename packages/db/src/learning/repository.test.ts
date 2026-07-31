@@ -109,6 +109,12 @@ describe('P22 PostgreSQL repository', () => {
     expect(source).toContain('student.actual_name, student.display_name');
     expect(source).toContain('listScheduledOccurrenceCoverage');
     expect(source).toContain('occurrence.starts_at >= enrollment.effective_at');
+    expect(source).toContain('question.learner_key, question.household_key');
+    expect(source).toContain("event.to_state IN ('approved_for_class', 'published')");
+    expect(source).toContain('AND class_key = $7 AND household_key = $8');
+    expect(source).toContain(
+      "attendance.reconciliation_state IN (\n                'provisional', 'provider_verified', 'provider_mismatch', 'admin_corrected'",
+    );
   });
 
   it('proves review publication from the canonical occurrence and approved review artifact', () => {

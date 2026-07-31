@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import type {
   AnnouncementRead,
+  BadgeFamily,
   CorrectReviewCompletionCommand,
   CorrectQuestionRecognitionCommand,
   LearningActor,
@@ -42,7 +43,7 @@ export function createLearningEngagementService(input: {
   clock?: () => Date;
 }) {
   const now = input.clock ?? (() => new Date());
-  return {
+  const service = {
     async submitQuestion(command: SubmitQuestionCommand) {
       const trustedCommand = withCanonicalRequestHash(command);
       const planned = submitQuestion(trustedCommand);
@@ -63,10 +64,23 @@ export function createLearningEngagementService(input: {
         trustedCommand.questionId,
       );
       const planned = transitionQuestion(current, history, trustedCommand);
-      if (planned.replay) return { question: current, replay: true, effects: planned.effects };
+      if (planned.replay) {
+        await service.recalculateBadgeProjection(
+          trustedCommand.actor,
+          current.studentId,
+          current.classId,
+        );
+        return { question: current, replay: true, effects: planned.effects };
+      }
       if (!planned.mutation) throw new Error('learning_transition_plan_missing');
+      const persisted = await input.repository.applyQuestionMutation(planned.mutation);
+      await service.recalculateBadgeProjection(
+        trustedCommand.actor,
+        current.studentId,
+        current.classId,
+      );
       return {
-        ...(await input.repository.applyQuestionMutation(planned.mutation)),
+        ...persisted,
         effects: planned.effects,
       };
     },
@@ -83,10 +97,33 @@ export function createLearningEngagementService(input: {
         trustedCommand.questionId,
       );
       const planned = correctQuestionRecognition(current, history, trustedCommand);
-      if (planned.replay) return { question: current, replay: true, effects: planned.effects };
+      if (planned.replay) {
+        await service.recalculateBadgeProjection(
+          trustedCommand.actor,
+          current.studentId,
+          current.classId,
+          {
+            family: 'curious_learner',
+            auditRef: trustedCommand.auditRef,
+            reason: trustedCommand.reason,
+          },
+        );
+        return { question: current, replay: true, effects: planned.effects };
+      }
       if (!planned.mutation) throw new Error('learning_recognition_plan_missing');
+      const persisted = await input.repository.applyQuestionMutation(planned.mutation);
+      await service.recalculateBadgeProjection(
+        trustedCommand.actor,
+        current.studentId,
+        current.classId,
+        {
+          family: 'curious_learner',
+          auditRef: trustedCommand.auditRef,
+          reason: trustedCommand.reason,
+        },
+      );
       return {
-        ...(await input.repository.applyQuestionMutation(planned.mutation)),
+        ...persisted,
         effects: planned.effects,
       };
     },
@@ -128,6 +165,40 @@ export function createLearningEngagementService(input: {
     async badges(actor: LearningActor, studentId: string, classId: string) {
       if (!actor.classIds.includes(classId)) {
         denied('Badge reads require assignment to the requested class.');
+      }
+      const learners = await input.identity.listLearners(actor, classId);
+      const learner = learners.find(
+        (candidate) => candidate.studentId === studentId && candidate.classId === classId,
+      );
+      if (
+        !learner ||
+        (actor.role === 'student' &&
+          (actor.studentId !== studentId || actor.householdId !== learner.householdId)) ||
+        (actor.role === 'parent' && !actor.householdIds.includes(learner.householdId))
+      ) {
+        denied('The Student is outside the canonical class enrollment.');
+      }
+      return (await input.repository.listBadgeAwardProjections(actor, classId, studentId))
+        .filter((award) => award.state === 'awarded')
+        .map(({ studentId: _studentId, classId: _classId, ...award }) => award);
+    },
+    async recalculateBadgeProjection(
+      actor: LearningActor,
+      studentId: string,
+      classId: string,
+      correction?: { family: BadgeFamily; auditRef: string; reason: string },
+    ) {
+      if (!actor.classIds.includes(classId)) {
+        denied('Badge reads require assignment to the requested class.');
+      }
+      if (correction && actor.role !== 'admin') {
+        denied('Only an assigned Admin may apply a badge correction.');
+      }
+      if (
+        correction &&
+        (correction.auditRef.trim().length === 0 || correction.reason.trim().length < 3)
+      ) {
+        denied('Badge correction requires a reason and canonical audit reference.');
       }
       const asOf = now().toISOString();
       const learners = await input.identity.listLearners(actor, classId);
@@ -222,18 +293,6 @@ export function createLearningEngagementService(input: {
               left.reviewItemId.localeCompare(right.reviewItemId) || left.sequence - right.sequence,
           ),
       };
-      const sourceDigest = createHash('sha256')
-        .update(canonicalJson(canonicalSources), 'utf8')
-        .digest('hex');
-      const sourceAuditRefs = [
-        ...badgeInput.attendance.flatMap((event) =>
-          event.correctionAuditRef ? [event.correctionAuditRef] : [],
-        ),
-        ...questionRecognitionFacts.flatMap((fact) =>
-          fact.latestAuditRef ? [fact.latestAuditRef] : [],
-        ),
-        ...badgeInput.reviews.flatMap((event) => [event.auditRef, event.publicationAuditRef]),
-      ].sort();
       const familySourceDigests = {
         consistency: digest({
           schedule: canonicalSources.schedule,
@@ -243,34 +302,38 @@ export function createLearningEngagementService(input: {
         review_ready: digest(canonicalSources.reviews),
       } as const;
       const familySourceAuditRefs = {
-        consistency: badgeInput.attendance.flatMap((event) =>
-          event.correctionAuditRef ? [event.correctionAuditRef] : [],
+        consistency: sortedUnique(
+          badgeInput.attendance.flatMap((event) =>
+            event.correctionAuditRef ? [event.correctionAuditRef] : [],
+          ),
         ),
-        curious_learner: questionRecognitionFacts.flatMap((fact) =>
-          fact.latestAuditRef ? [fact.latestAuditRef] : [],
+        curious_learner: sortedUnique(
+          questionRecognitionFacts.flatMap((fact) =>
+            fact.latestAuditRef ? [fact.latestAuditRef] : [],
+          ),
         ),
-        review_ready: badgeInput.reviews.flatMap((event) => [
-          event.auditRef,
-          event.publicationAuditRef,
-        ]),
+        review_ready: sortedUnique(
+          badgeInput.reviews.flatMap((event) => [event.auditRef, event.publicationAuditRef]),
+        ),
       } as const;
+      if (correction && !familySourceAuditRefs[correction.family].includes(correction.auditRef)) {
+        denied('Badge correction requires matching canonical source audit evidence.');
+      }
       const persisted = await input.repository.applyBadgeRecalculation({
         scope: scopeOf(actor),
         studentId,
         classId,
-        sourceDigest,
         familySourceDigests,
         ruleVersion: 'P22-BADGES-1',
-        sourceAuditRefs,
         familySourceAuditRefs,
         progress,
         awards,
         recalculatedAt: asOf,
-        correctionAuditRef: null,
-        correctionReason: null,
-        correctedByAdminId: null,
-        correctionFamily: null,
-        allowRevocation: false,
+        correctionAuditRef: correction?.auditRef ?? null,
+        correctionReason: correction?.reason ?? null,
+        correctedByAdminId: correction && actor.role === 'admin' ? actor.principalId : null,
+        correctionFamily: correction?.family ?? null,
+        allowRevocation: correction !== undefined,
       });
       return persisted.awards
         .filter((award) => award.state === 'awarded')
@@ -325,7 +388,13 @@ export function createLearningEngagementService(input: {
         denied('Review completion requires an enrolled Student and Admin-published review item.');
       }
       const completion = recordReviewCompletion(trustedCommand, publishedItem);
-      return input.repository.applyReviewCompletion(completion);
+      const persisted = await input.repository.applyReviewCompletion(completion);
+      await service.recalculateBadgeProjection(
+        trustedCommand.actor,
+        trustedCommand.actor.studentId,
+        trustedCommand.classId,
+      );
+      return persisted;
     },
     async correctReviewCompletion(command: CorrectReviewCompletionCommand) {
       const trustedCommand = withCanonicalRequestHash(command);
@@ -335,18 +404,10 @@ export function createLearningEngagementService(input: {
       ) {
         denied('Only an assigned Admin may correct review-completion evidence.');
       }
-      const [learners, publishedItem, history] = await Promise.all([
-        input.identity.listLearners(trustedCommand.actor, trustedCommand.classId),
-        input.reviewItems.getAdminPublishedReviewItem(
-          trustedCommand.actor,
-          trustedCommand.reviewItemId,
-        ),
-        input.repository.listReviewCompletionEvents(
-          trustedCommand.actor,
-          trustedCommand.reviewItemId,
-          trustedCommand.studentId,
-        ),
-      ]);
+      const learners = await input.identity.listLearners(
+        trustedCommand.actor,
+        trustedCommand.classId,
+      );
       const rosterBound = learners.some(
         (learner) =>
           learner.classId === trustedCommand.classId &&
@@ -356,6 +417,19 @@ export function createLearningEngagementService(input: {
       if (!rosterBound) {
         denied('Review correction requires exact roster evidence.');
       }
+      const [publishedItem, history] = await Promise.all([
+        input.reviewItems.getAdminPublishedReviewItem(
+          trustedCommand.actor,
+          trustedCommand.reviewItemId,
+        ),
+        input.repository.listReviewCompletionEvents(
+          trustedCommand.actor,
+          trustedCommand.reviewItemId,
+          trustedCommand.studentId,
+          trustedCommand.classId,
+          trustedCommand.householdId,
+        ),
+      ]);
       const replay = history.find(
         (event) => event.idempotencyKey === trustedCommand.idempotencyKey,
       );
@@ -366,6 +440,16 @@ export function createLearningEngagementService(input: {
             'This scoped idempotency key was used with a different request hash.',
           );
         }
+        await service.recalculateBadgeProjection(
+          trustedCommand.actor,
+          trustedCommand.studentId,
+          trustedCommand.classId,
+          {
+            family: 'review_ready',
+            auditRef: trustedCommand.auditRef,
+            reason: trustedCommand.reason,
+          },
+        );
         return { completion: replay, replay: true };
       }
       const latest = [...history].sort((left, right) => right.sequence - left.sequence)[0];
@@ -385,8 +469,41 @@ export function createLearningEngagementService(input: {
       if (!correctionEvidence || !rosterBound) {
         denied('Review correction requires exact roster and publication evidence.');
       }
-      return input.repository.applyReviewCompletion(
+      const persisted = await input.repository.applyReviewCompletion(
         correctReviewCompletion(history, trustedCommand, correctionEvidence),
+      );
+      await service.recalculateBadgeProjection(
+        trustedCommand.actor,
+        trustedCommand.studentId,
+        trustedCommand.classId,
+        {
+          family: 'review_ready',
+          auditRef: trustedCommand.auditRef,
+          reason: trustedCommand.reason,
+        },
+      );
+      return persisted;
+    },
+    async recalculateBadgesAfterAttendanceProjectionChange(
+      actor: LearningActor,
+      studentId: string,
+      classId: string,
+      correction?: { auditRef: string; reason: string },
+    ) {
+      if (actor.role !== 'admin' || !actor.classIds.includes(classId)) {
+        denied('Only an assigned Admin service context may project attendance-driven badges.');
+      }
+      return service.recalculateBadgeProjection(
+        actor,
+        studentId,
+        classId,
+        correction
+          ? {
+              family: 'consistency',
+              auditRef: correction.auditRef,
+              reason: correction.reason,
+            }
+          : undefined,
       );
     },
     async announcements(actor: LearningActor) {
@@ -459,6 +576,7 @@ export function createLearningEngagementService(input: {
       });
     },
   };
+  return service;
 }
 
 async function requireQuestion(
@@ -502,6 +620,10 @@ function canonicalJson(value: unknown): string {
 
 function digest(value: unknown): string {
   return createHash('sha256').update(canonicalJson(value), 'utf8').digest('hex');
+}
+
+function sortedUnique(values: readonly string[]): readonly string[] {
+  return [...new Set(values)].sort();
 }
 
 function denied(message: string): never {
