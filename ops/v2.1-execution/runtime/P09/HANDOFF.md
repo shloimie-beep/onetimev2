@@ -1,113 +1,79 @@
-# P09 School Inquiry Repository and Route — Ready for Review
+# P09 Concrete School Authority Correction — Ready for Review
 
-## Exact identity
+## Authority and topology
 
-- Branch: `codex/v21-p09-school-inquiry`
-- Current control authorization:
-  `26f29aeb6734948dd8b80ab85a342831defaecc9`
-- READY state base: `f2b4a9faefdb5f780c9b620fedb413d408d27a19`
-- Expected pre-resume branch head:
-  `33a21a45005271f1bbe09c8587df1e52fac1a95a`
-- Authorized integration base:
-  `c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a`
-- Substantive implementation:
-  `05488497a7ca96841c235118c1e5da0bf9270ca1`
-- Substantive parent: exact authorized integration base `c0a1e04b`
-- Claim: `c18bb60c-98f2-4448-b768-67fcafed9438`
-- PUBLIC_SIGNUP lease:
-  `45e4c80f-b3a7-445b-a888-0dbed3c3429e`
-- Lease released task-locally at `2026-07-30T18:31:32Z`, before
-  `2026-07-30T20:01:13Z` expiry.
-- Final metadata head: derive with `git rev-parse HEAD`; C00 records the exact
-  remote value after independent readback.
+- Branch: `codex/v21-p09-school-inquiry-concrete`
+- First parent / authorized integration: `ae3ced8a9daa11044d4278968c14cb6baa12a480`
+- Required second parent / P09 source: `d9a4ce8082a028be81e234999deb43f659072a6d`
+- Verified pre-edit merge tree: `b97677a9e48bb299db59c83ae12df269a7b18e22`
+- Live amended control: `321fd3482d5ee54bbad19d97205b54845d0d0aac`
+- READY state basis: `48f27d399d4ed714f6219487629c406af1fbb49f`
+- Amended READY digest: `6c1e0bd137ee03d0d816ee21cf2a23322a71ed485373b9b1e165533aee3a1be1`
+- Claim: `b7495ee7-55e6-4311-b31a-39d699643e50`
+- SCHOOL_INQUIRY lease: `af63b680-b00d-437e-aded-fdbe14e8686f`, released at `2026-07-31T15:23:08Z`
+- Effect locks and external effects: none; `0/0/0`
 
-## Implemented behavior
+This terminal is one substantive merge commit. The source merge was opened with
+`--no-ff --no-commit` before any correction, so the branch tip must retain the
+two exact parents above.
 
-The branch now contains a concrete PostgreSQL School-signup repository. It
-uses a transaction-scoped advisory lock over the exact
-product/runtime/environment/operation/normalized-email key, then reads or
-atomically creates one `school_inquiries_v21` record and one
-`school_inquiry_acknowledgments_v21` intent. The normalized-email unique key
-and `ON CONFLICT ... DO NOTHING` recovery preserve one durable winner; replay
-returns that exact receipt and canonical drift fails closed.
+## Completed implementation
 
-The repository reconstructs the receipt from durable rows and rejects any
-drift in:
+The existing public `POST /api/v2.1/signup/school-inquiry` router and its test
+remain byte-identical. The signed-out `/school` model now publishes its exact
+strict POST binding while retaining exactly four required and two optional
+fields and no account, credentials, Student, access, subscription, consent,
+nurture, provider, School-role, portal, or roster surface.
 
-- request scope, operation, normalized email, or canonical request digest;
-- adult-only manual-follow-up state;
-- zero account, login, household, Student, subscription, access, nurture, and
-  provider-identity effects; or
-- the locked `OT-01.school_acknowledgment` version `2.1.0`, sender `office`,
-  approved subject/body, and content digest
-  `ee97274c3fbe2bae470da87aa15b7049fddc2677dc794dc5e94a42e78b7de4fb`.
+The new dependency-injected Admin router derives scope and Admin identity from
+trusted server dependencies, requires CSRF for mutations, derives authorization
+time and a stable audit reference server-side, rejects body-controlled authority
+fields, denies `production_read_only` before the service, and provides
+Admin-only canonical readback.
 
-Approved-School configuration uses the existing Parent/Student model. It reads
-the exact approved row `FOR UPDATE` and commits only an optimistic
-version-step update. It creates no School role, portal, bulk roster, or
-automated nurture.
+Contracts, policy, service, and PostgreSQL repository now implement migration
+2256's explicit contract and authorization evidence, durable exact idempotency
+replay versus hash mismatch, optimistic create/update, exact readback, and zero
+inline effects. Writes target only
+`onetime.approved_school_configuration_authority_v21`. The amended authority
+permits an exact product/runtime/environment/idempotency SELECT from the
+append-only history table solely for superseded committed replay, joined to
+current authority only for immutable `created_at`. Production repository code
+never inserts, updates, or deletes history directly, and both prohibited legacy
+table names are absent.
 
-The task-owned feature descriptor mounts exactly:
-
-`POST /api/v2.1/signup/school-inquiry`
-
-Its strict payload accepts required `school_name`, `contact_first_name`,
-`contact_last_name`, and `email`, plus only optional `phone` and `note`.
-Account, role, access, portal, consent, campaign, nurture, Student, WhatsApp,
-Stripe, and arbitrary extra fields fail before service/repository submission.
-`production_read_only` fails before submission. The successful response claims
-only a committed local inquiry, pending acknowledgment intent, and manual
-follow-up; inline provider effects remain zero.
-
-## Scope
-
-The substantive commit adds exactly four authorized paths:
-
-- `apps/web/src/server/features/signup/school/router.ts`
-- `apps/web/src/server/features/signup/school/router.test.ts`
-- `packages/db/src/signup/school/repository.ts`
-- `packages/db/src/signup/school/repository.test.ts`
-
-The terminal commit changes only the P09 runtime triplet. No central composer,
-config, landing page, migration, integration/control file, provider registry,
-worker, deployment, DNS, billing, or other task path changed.
-
-The descriptor is intentionally not centrally installed here. I36 owns that
-separate registration checkpoint.
+The repository intentionally relies on migration 2256's database guards for an
+active exact-scope School household, its active Parent account manager, active
+scoped Admin authorization, unresolved-quarantine denial, immutable household
+and contract identity, optimistic versioning, and append-only history.
 
 ## Verification
 
-- Five focused files: 26/26 tests passed.
-- The repository harness applies the exact immutable
-  `2249_v21_school_inquiry.sql` bytes after omitting only its explicitly marked
-  PostgreSQL trigger block for pg-mem.
-- Durable inquiry/acknowledgment replay, canonical conflict, transactional
-  rollback, `production_read_only`, and optimistic approved-School
-  configuration all passed locally.
-- Existing service, domain, and contract tests remain green, including the
-  concurrent same-email winner behavior.
-- Workspace typecheck passed.
-- Focused ESLint and Prettier passed.
-- Secret scan passed across 3,095 repository text files.
-- Exact scope and diff hygiene passed.
-- Four-artifact raw Git-blob aggregate:
-  `cfd846747005ecfaf86a78ee1f958ddab8b5a252e5f5efe7e06b45014d22398a`.
-- Immutable migration 2249 raw Git-blob SHA-256:
-  `eb5a6ba248ebcd080b1a17b8eec0ca0ee0f4c2d79c5d440e6f6c16d1dfebf914`.
+- Exact focused Vitest: 7 files, 36 tests, all passed.
+- Exact TypeScript product-file compile probe: passed.
+- Exact-file ESLint and Prettier: passed.
+- Three successor request schemas and traceability: passed, 3/3.
+- Exact 18 authored-path ceiling plus the required byte-identical carried
+  migration request, immutable request/public-router checks, history mutation
+  absence, legacy SQL absence, `git diff --check`, YAML parsing, and secret
+  scan: passed.
+- Secret scan covered 3,126 repository text files.
+- Native PostgreSQL and broad suites were not repeated in this lane, as the
+  READY directs.
 
-No native PostgreSQL binary is installed in this worktree. I36's native
-migration verification remains the candidate gate; no migration bytes were
-changed.
+## Immutable and successor requests
 
-## External effects
+- `P09-migration-002` is carried byte-identically from the required source
+  parent; Git blob `75cd8bb242eaaa59d7ebb215ea4d8881fb5354e1`.
+- `P09-registration-001` remains unchanged; Git blob
+  `042bb0b080703002a1743e725daa9deb3b590796`.
+- New exact successors pending I36 disposition:
+  `P09-server-registration-002`, `P09-client-route-002`, and
+  `P09-barrel-export-002`.
 
-Authority `none`; attempted `0`, succeeded `0`, reconciled `0`. No provider
-inspection or mutation, message or acknowledgment send, Student contact,
-campaign enrollment, WhatsApp action, Stripe action, migration execution
-outside the local ephemeral harness, deployment, or DNS action occurred.
+## Next action
 
-## Exact next action
-
-C00 should independently audit the final remote head and authorize I36 to
-preserve this ancestry, merge the four implementation paths, and centrally
-register `schoolInquiryFeatureRegistration`.
+I36 should independently disposition the three exact `-002` successors, apply
+only those accepted shared registrations, and run its touched-graph
+typecheck/build/static signed-out `/school` composition test. C00 should review
+and admit this two-parent terminal. P09 must stop.

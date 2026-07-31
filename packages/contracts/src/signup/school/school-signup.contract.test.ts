@@ -83,7 +83,11 @@ describe('P09 School signup contract', () => {
       'currency',
       'billing_starts_at',
       'terms_reference',
+      'immutable_contract_reference',
+      'authorization_reason',
+      'idempotency_key',
       'expected_configuration_version',
+      'audit_ref',
     ]);
     expect(APPROVED_SCHOOL_EXPERIENCE).toEqual({
       account_model: 'parent_student',

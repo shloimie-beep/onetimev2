@@ -1,0 +1,118 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P09-migration-002
+task_id: P09
+kind: migration
+requirement_ids:
+  - OTV2-SCHOOL-200
+  - OTV2-SCHOOL-214
+acceptance_case_ids:
+  - OTV2-SCHOOL-200-AC01
+  - OTV2-SCHOOL-214-AC01
+rationale: >-
+  Immutable P09-migration-001 and P10-MIGRATION-001 both requested writable
+  approved-School seat/configuration authority. Applied migrations 2249 and
+  2241 consequently expose overlapping configurations with different field
+  sets and no safe precedence rule. Only the migration steward may allocate a
+  forward-only successor that makes one fully scoped contract/configuration
+  aggregate authoritative while preserving both predecessors as immutable
+  evidence.
+desired_semantic_change: >-
+  Allocate a future safe migration ordinal and add one product-, runtime-tier-,
+  and verification-environment-scoped, optimistic-versioned approved-School
+  contract/configuration authority. It must bind the exact School household,
+  active adult account manager, seat allowance, price in USD minor units,
+  billing start, terms, immutable contract reference, reason, authorizer,
+  authorized time, canonical request evidence, audit history, and configuration
+  version in one transaction. Family households remain exactly three seats.
+  The 2241 allowance and 2249 approved-configuration rows become compatibility
+  evidence/projections only; contradictory or incomplete predecessor evidence
+  must stop or quarantine the affected scope and must never win by table,
+  ordinal, timestamp, or last-write precedence.
+proposed_symbols_routes_keys_or_dependencies:
+  - >-
+    Use one canonical identity containing product_key, runtime_tier,
+    verification_environment_id, approved_school_id, and household_id; permit
+    at most one effective current approved-School configuration per exact
+    scoped household.
+  - >-
+    Require the locked household to have classification school and remain in
+    the same exact scope. Reject Family households and preserve the immutable
+    Family seat limit of exactly three without an override or compatibility
+    exception.
+  - >-
+    Bind adult_account_manager_id to an existing active adult identity and its
+    active Parent HumanAccount relationship for the same household and exact
+    scope. Do not introduce a School role, School portal, bulk roster, or
+    organization-administration role.
+  - >-
+    Persist seat_allowance greater than zero, price_minor_units greater than or
+    equal to zero, currency fixed to USD, billing_starts_at, nonblank
+    terms_reference, nonblank immutable_contract_reference, and nonblank
+    authorization_reason as one indivisible commercial configuration.
+  - >-
+    Require authorized_by_human_account_id to resolve to a currently active
+    scoped Admin, authorized_at to be immutable, and every accepted version to
+    carry an append-only audit event, canonical request hash, idempotency key,
+    expected prior version, committed configuration_version, and exact durable
+    readback.
+  - >-
+    Lock the household, adult account manager relationship, authorizing Admin,
+    current canonical configuration, and any matching 2241/2249 predecessor
+    evidence before a create or optimistic version-step update. Any stale
+    version, scope, classification, relationship, contract, authorizer, or
+    canonical-hash mismatch produces zero writes.
+  - >-
+    Preserve immutable configuration history. An exact idempotency replay
+    returns the committed version; the same key with a different canonical
+    request hash conflicts; concurrent equivalent writes produce one winner.
+  - >-
+    Treat onetime.admin_school_seat_allowances from migration 2241 and
+    onetime.approved_school_configurations_v21 from migration 2249 as
+    compatibility evidence/projections of the canonical authority, never as
+    independently writable effective seat sources.
+  - >-
+    Backfill a canonical row only when the complete combined predecessor
+    evidence agrees on exact scope, School household, adult account manager,
+    seats, price, USD currency, billing start, terms, immutable contract
+    reference, reason, authorizer/time evidence, and version lineage.
+    Otherwise abort before authority creation or persist an immutable
+    non-effective quarantine record and make all reads/writes for that scope
+    fail closed until an explicitly authorized resolution exists.
+  - >-
+    Keep all P09-migration-001 School-inquiry, adult manual-follow-up, and
+    acknowledgment semantics unchanged. Keep all P10-MIGRATION-001 identity,
+    credential, enrollment, revocation, ownership-transfer, receipt, and audit
+    semantics unchanged. Supersede only their overlapping approved-School
+    seat/configuration authority.
+  - >-
+    Store no Student email or provider/GHL identity, credential or plaintext
+    secret, direct Stripe mutation instruction, nurture enrollment, product
+    access grant, or browser-transferable provider reference in this
+    configuration authority.
+compatibility_assumptions:
+  - Migrations 2241 and 2249 are applied, immutable prerequisites and remain
+    byte-identical.
+  - F03 and F04 supply the canonical active Admin, adult, HumanAccount,
+    household, Parent membership, and exact-scope identities.
+  - P09 public inquiry and acknowledgment persistence remains owned by
+    migration 2249 and is outside this successor's supersession boundary.
+  - P10 Admin-directory persistence outside School seat/configuration remains
+    owned by migration 2241 and is outside this successor's supersession
+    boundary.
+  - GHL-managed Stripe may execute separately authorized billing workflows,
+    while the One Time application stores contract/configuration evidence and
+    never mutates Stripe financial objects directly.
+verification_performed:
+  - inspected immutable P09-migration-001 and P10-MIGRATION-001 predecessor requests
+  - inspected exact migration 2241 and 2249 Git bytes, checksums, and overlapping tables
+  - verified current P09 source ancestry, control authorization, claim, lease, and zero effect locks
+  - validated request YAML, exact four-path phase scope, predecessor preservation, and secret absence
+conflicts_or_risks:
+  - Do not edit migrations 2241 or 2249 or silently choose one predecessor as authoritative.
+  - Do not allocate an ordinal from P09; F02 must allocate only after independent request admission.
+  - Do not infer missing authorizer, contract, price, billing, terms, scope, or version evidence during backfill.
+  - Do not permit a Family allowance other than exactly three or reinterpret a Family household as School.
+  - Do not allow a compatibility projection write to bypass canonical optimistic version and audit checks.
+  - Contradictory predecessor rows must abort or remain quarantined and non-effective; they must never be merged by precedence.
+contains_secret_or_private_data: false
