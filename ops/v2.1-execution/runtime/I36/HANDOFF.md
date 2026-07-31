@@ -781,3 +781,38 @@ No provider, customer, migration, candidate, deployment, DNS, send, billing,
 or other external effect occurred. Effects remain `0/0/0`. C00 must verify
 the exact pushed renewal checkpoint and issue a fresh claim and new lease
 against that remote head before I36 resumes those six bounded items.
+
+## Parent auth/client successor fresh atomic claim
+
+Containing control `f0a73d35937a1366289ab7f733da354e65e0532b`, based on
+state-basis control `50ebdcdb345bf13bd76d9af013c25855bc369836`,
+authorizes one runtime-triplet-only atomic claim checkpoint from exact clean,
+remote-equal integration parent
+`0d834c0c0b0e1fd9db8b5a54076631cf1f2fe857`. Canonical READY is
+`010c6e951a95840de997ec93136b5ba1f28468b8fc35498ab008a81457cc5c1f`.
+
+Fresh claim `5deb22c5-dc93-4946-98f1-dd7db19ee164`, writer
+`codex-i36-parent-session-successor-5deb22c5`, and shared lease
+`87280cec-f71e-4dbd-91dd-38f54d0c7b93` bind SERVER_COMPOSER,
+CLIENT_COMPOSER, IDENTITY_AUTH_ACCESS, and ACCOUNT_HOUSEHOLD_IDENTITY. The
+lease was issued at `2026-07-31T00:58:50Z`, expires at
+`2026-07-31T02:28:50Z`, and had an actual checkpoint heartbeat at
+`2026-07-31T01:11:58Z`.
+
+Prior claim `ef14f276-f6a2-45a5-b35d-d45d37572ca5`, writer
+`codex-i36-parent-session-successor-ef14f276`, and lease
+`21315060-463e-49a8-a246-20057483ec20` remain historical, released, and
+superseded. Product checkpoint
+`5285a71e86ebf80bab3332f6cc3490a380bc7890` and all product/test bytes are
+unchanged by this atomic claim.
+
+All six renewal-checkpoint security closeout items remain preserved. No
+security implementation, validation rerun, destructive cleanup, PostgreSQL
+shutdown, provider call, customer mutation, candidate action, deployment,
+DNS change, send, billing action, or other external effect occurred. Effects
+remain `0/0/0`.
+
+I36 must stop after pushing this exact three-runtime-path checkpoint. C00 must
+independently reconcile its exact parent, path inventory, fresh authority
+bindings, digests, heartbeat, clean remote equality, and zero effects before
+I36 resumes product or test work.
