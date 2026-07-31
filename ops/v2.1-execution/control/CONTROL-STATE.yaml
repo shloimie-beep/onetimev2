@@ -16,16 +16,16 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: 48f27d399d4ed714f6219487629c406af1fbb49f
+controller_authorization_sha: 321fd3482d5ee54bbad19d97205b54845d0d0aac
 next_action: >-
-  Continue the same uncommitted P12 and P09 concrete correction terminals from exact accepted integration ae3ced8a. P09
-  must close the independently found durable-replay P2 by using SELECT-only access to migration 2256's append-only history
-  table; the trigger remains the only history writer and both legacy School authority tables remain prohibited. The P09
-  branch, claim, lease, two repository path exceptions, full 18-path writable ceiling, and second-parent ancestry remain
-  unchanged. P12 continues independently inside its exact 19-path writable ceiling. Each lane publishes one substantive
-  terminal with three schema-valid successor requests. No claim-only checkpoint, central composition, broad suite,
-  duplicated native proof, candidate freeze, steward application, provider effect, deployment, DNS change, send, charge,
-  customer activation, or other external effect is authorized.
+  Resume P12 only from exact clean terminal 153c52e9 under its fresh ten-path replay/concealment correction authority.
+  Fix the three independently reproduced P2s: defer password hashing until after the locked receipt miss, validate
+  password confirmation before replay, and prove target ownership before global username availability. Refresh interface
+  1.2.0 and the P12 runtime triplet once, preserve all three immutable -002 successors, publish only the replacement
+  1.2.0 barrel -003 request, and publish one substantive terminal.
+  P09 terminal ce8df6e6 is independently accepted and its three successors are assigned to I36, but neither producer is
+  authorized for source integration until corrected P12 passes one review. Candidate freeze, steward application,
+  provider effect, deployment, DNS change, send, charge, customer activation, and every external effect remain prohibited.
 production_completion_lanes:
 - lane: A
   owner: F02
@@ -287,7 +287,7 @@ production_completion_lanes:
   scope: ancestry_preserving_P21_then_P22_source_only_plus_I36_runtime_triplet
   provider_effects: prohibited
 successor_dispatch:
-  state_based_on_control_head_sha: 48f27d399d4ed714f6219487629c406af1fbb49f
+  state_based_on_control_head_sha: 321fd3482d5ee54bbad19d97205b54845d0d0aac
   authorized_start_integration_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
   terminal_claims_reconciled_at: '2026-07-31T05:06:00Z'
   P22_atomic_and_P10_terminal_reconciled_at: '2026-07-31T05:50:50Z'
@@ -313,8 +313,10 @@ successor_dispatch:
   F02_then_P18_microbatch_accepted_at: '2026-07-31T13:52:38Z'
   P12_P09_concrete_corrections_dispatched_at: '2026-07-31T13:52:38Z'
   P09_durable_replay_authority_amended_at: '2026-07-31T14:52:08Z'
-  lease_issued_at: '2026-07-31T13:52:38Z'
-  lease_expires_at: '2026-07-31T16:52:38Z'
+  P09_terminal_accepted_at: '2026-07-31T15:38:16Z'
+  P12_terminal_held_and_replay_concealment_correction_dispatched_at: '2026-07-31T15:38:16Z'
+  lease_issued_at: '2026-07-31T15:38:16Z'
+  lease_expires_at: '2026-07-31T17:38:16Z'
   ready_queue_published: true
   F02:
     status: integrated_and_reconciled
@@ -383,56 +385,81 @@ successor_dispatch:
     effect_locks: []
     external_effects: 0/0/0
   P12:
-    status: claimed
-    phase: parent_household_concrete_persistence_route_and_forms_correction
+    status: resume_ready
+    phase: parent_household_replay_concealment_correction
     branch: codex/v21-p12-parent-household-concrete
-    authorized_start_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
+    authorized_start_sha: 153c52e97123bb8723c8671873bf96d01444584c
+    expected_existing_head_sha: 153c52e97123bb8723c8671873bf96d01444584c
     predecessor_source_head_sha: 9ada912c3238421e661f89e590c07c042dd6424b
-    terminal_head_sha: 9ada912c3238421e661f89e590c07c042dd6424b
-    terminal_parent_sha: 8f6eacf8bc471009747225ecb1aa9c117955578b
-    terminal_tree_sha: 003921b0730b400621d50722c4268a4f9bd0cfd5
+    held_terminal_head_sha: 153c52e97123bb8723c8671873bf96d01444584c
+    held_terminal_first_parent_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
+    held_terminal_second_parent_sha: 9ada912c3238421e661f89e590c07c042dd6424b
+    held_terminal_tree_sha: 79dc9649b944ca0da4d854895f128b58667261f4
+    held_terminal_task_raw_sha256: 4bb0cdfeab3f09213a9893a0177847bc0d0993fcc13f25fc68d508dd7f7b7e69
+    held_terminal_handoff_raw_sha256: 43faaa6a72034dd78f3deced34b1b2dbf4d40c9f04f6f83ba8c9872e06b7b385
+    held_terminal_next_raw_sha256: b6a8183156ed6a39b345e3daba59ded6e43f015052dd7c31f4d56d25a94ea504
+    held_terminal_state_handoff_digest: 07a718f942807195261c3ad6e64fd42f5ba9db4c6e6e80c8be43cad2dae2cbb9
+    held_terminal_runtime_triplet_digest: a212c1c69ece74fce0d4eb49cf78d13a4f929dde67b85f1e1e8e3290a20b0874
+    held_terminal_path_count: 20
+    held_terminal_path_inventory_digest: a417563cf690d6703ac9ce100d1949a71dd68d3484fab25383b1a901c6806990
+    held_terminal_manifest_digest: 2b3de52832e41e24d618f75f5e4ff672ef0af5a49563cdcd36128dd9c75ddf53
+    held_interface_version: 1.1.0
+    held_interface_digest: 778488b8ed4f8db8dacb24788ac88e44c2084e1f2b4523dc6370f1664c967c20
+    held_terminal_review_status: held_three_P2
+    held_terminal_lease_released_at: '2026-07-31T15:08:37Z'
     request_id: P12-migration-001
     request_raw_sha256: 6f76b024f756b89ef430a21c0744b4dd43114c5d5e9213bd76582e2534d3bc17
     request_git_blob: 92c1765089dc227f44e852857a404ab11a0e7fe2
-    terminal_runtime_triplet_digest: a1e0e07f74dc805b2db4cc9edae90e0df51ee68c96da7fa15dea15875e2f0c24
-    lease_released_at: '2026-07-31T04:52:40Z'
-    claim_id: 77d55d69-8496-4f7e-b441-6bed1e83f819
-    writer_id: codex-p12-concrete-correction-77d55d69
+    claim_id: c2fee1f8-2f7f-4cc7-bec9-cc0695ec3cb4
+    writer_id: codex-p12-replay-concealment-c2fee1f8
     writer_slot: PARENT_HOUSEHOLD_UI
-    writer_lease_id: 302b8602-ec7c-4e81-9562-f792c6fb6e4c
-    writer_lease_expires_at: '2026-07-31T16:52:38Z'
-    ready_entry_payload_digest: 3be08e42202e106064ba7b1c092615117ca3b7de60e4b4e07f8f872d7c1d9c61
-    exact_writable_path_count: 19
-    source_merge_as_second_parent: true
+    writer_lease_id: 1d841d45-043c-4e33-8f3d-0c635faa68d0
+    writer_lease_expires_at: '2026-07-31T17:38:16Z'
+    ready_entry_payload_digest: 538a416e944278120e5e490b3e3e102134ae01c205478e177047a509fc8aabe0
+    exact_writable_path_count: 10
+    authorized_path_inventory_digest: c816e5a6cc91f4326ee8552142e747b196b4ec3c454a4cee424c4ad16bc1dcee
+    source_ancestry_preserved: true
     effect_locks: []
     external_effects: 0/0/0
   P09:
-    status: claimed
-    phase: school_inquiry_and_approved_school_authority_correction
+    status: accepted_held_for_ordered_source_microbatch
+    phase: school_inquiry_and_approved_school_authority_correction_complete
     branch: codex/v21-p09-school-inquiry-concrete
     authorized_start_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
     predecessor_source_head_sha: d9a4ce8082a028be81e234999deb43f659072a6d
-    terminal_head_sha: d9a4ce8082a028be81e234999deb43f659072a6d
-    terminal_parent_sha: 989b7fa979b62f4f78ae76900a73d0011b36f5e6
-    terminal_tree_sha: 13e62c1af4a660c86f3087c978e43065e909bdac
+    terminal_head_sha: ce8df6e6d612dc935cb204fb7f7803489e90d740
+    terminal_first_parent_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
+    terminal_second_parent_sha: d9a4ce8082a028be81e234999deb43f659072a6d
+    terminal_tree_sha: 35e5155d2495a42f5b6b930506e753b9c1d80303
+    terminal_task_raw_sha256: 190ae1c9d248058d1eb63fb8a2af341cbe53b10129273fc6b6f5126224bd355b
+    terminal_handoff_raw_sha256: ae08f3cac0f8ceffbd58701083e22c8688a1ef8612fd3daec0b5b2d6e64c81ed
+    terminal_next_raw_sha256: 32e7cbf83e7b987851295325106b3889bcec56f4af3c760bd55f33d067c812cd
+    terminal_state_handoff_digest: 28346d16fb88c119355ea7a86e9758dcce1b616aaa6198468d04577e85c1cdb9
+    terminal_runtime_triplet_digest: fe3059a753d7804ad145d77890a3851d49924b8c0ccc6417bf2917ffe7b7e79e
+    source_path_count: 19
+    source_path_inventory_digest: 45e30afa6a8b4314407c89e58edd913065762f9da9486ab445cb32316ede39d3
+    source_manifest_digest: 818556a6ff73a60e0c6d7de797c86f36939f367081750b0bef10fe8f1ddf6458
     request_id: P09-migration-002
     request_raw_sha256: 538d6509a5170efc5c164f577d2054005edcd74c17d95e6128cb84ecb37c1a62
     request_canonical_payload_sha256: d9958a9def7fa6d41f5c457a20ff44df8ba265f532e76dd397532ccfcf570dbb
     request_git_blob: 75cd8bb242eaaa59d7ebb215ea4d8881fb5354e1
-    terminal_runtime_triplet_digest: e05fc349c2ae5a2d1c1139778ec24e838a60c72a85b6ad502f99c0681e141fe5
-    lease_released_at: '2026-07-31T04:51:04Z'
-    claim_id: b7495ee7-55e6-4311-b31a-39d699643e50
-    writer_id: codex-p09-concrete-correction-b7495ee7
-    writer_slot: SCHOOL_INQUIRY
-    writer_lease_id: af63b680-b00d-437e-aded-fdbe14e8686f
-    writer_lease_expires_at: '2026-07-31T16:52:38Z'
-    ready_entry_payload_digest: 6c1e0bd137ee03d0d816ee21cf2a23322a71ed485373b9b1e165533aee3a1be1
-    independent_review_status: held_one_P2_durable_history_replay
+    lease_released_at: '2026-07-31T15:23:08Z'
+    claim_id: null
+    writer_id: null
+    writer_slot: null
+    writer_lease_id: null
+    writer_lease_expires_at: null
+    ready_entry_payload_digest: null
+    independent_review_status: passed_no_P1_or_P2
     durable_replay_authority: select_only_approved_school_configuration_history_v21
     history_writer: migration_2256_trigger_only
     exact_writable_path_count: 18
     exact_repository_ownership_exception_path_count: 2
     source_merge_as_second_parent: true
+    successor_request_digests:
+      P09-server-registration-002: 1333935868c346eb3f2cd8eee1be49bdbfff9fe0ac94e350b32a9e606b7ba05a
+      P09-client-route-002: 965fbeccfd9c29ae35fc4066dd406c057ba25b3e50e58d3b8faf1ecf88608695
+      P09-barrel-export-002: 3a03a600a9872f05e48024d46306ef3f02d4d55ae37d3d6a0860279fe18c9fac
     effect_locks: []
     external_effects: 0/0/0
   I36:

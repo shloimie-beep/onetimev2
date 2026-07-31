@@ -122,13 +122,17 @@ blockers:
     real Chromium reload/logout coverage, build, typecheck, format, lint, and effects 0/0/0. P12 terminal
     9ada912c created immutable P12-migration-001 at raw digest
     6f76b024f756b89ef430a21c0744b4dd43114c5d5e9213bd76582e2534d3bc17. I36 release ae3ced8a integrated
-    forward-only migration 2255 with native PostgreSQL 18.4 apply/replay/ledger 87/87; C00 dispatched the exact
-    19-writable-path concrete P12 correction under a fresh PARENT_HOUSEHOLD_UI lease.
+    forward-only migration 2255 with native PostgreSQL 18.4 apply/replay/ledger 87/87. P12 terminal 153c52e9 then
+    completed the concrete repository/router/forms surface with 28 focused and six native PostgreSQL assertions, exact
+    two-parent ancestry, immutable migration and successor bytes, released lease, and effects 0/0/0. One independent
+    product review held three P2s: a commit-race replay may rehash, update ordering leaks a cross-household ID/username
+    distinction, and a same-key replay can accept mismatched password confirmation. C00 dispatched only the exact
+    ten-path replay/concealment correction plus a replacement 1.2.0 barrel request under a fresh lease.
   required_authority_or_input:
-  - Implement the P12 concrete PostgreSQL repository/router/forms, service-account acceptance, canonical enrollment,
-    audit/idempotency, and persistent Student-creation browser proof
-  - Replace immutable legacy-kind P12-registration-001 with schema-valid P12 server, client, and barrel successors
-    before any I36 shared registration
+  - Correct the three bounded P12 P2s and refresh the repository interface to 1.2.0 with focused concurrency,
+    confirmation, concealment, and native PostgreSQL proof
+  - Preserve the immutable server/client successors, supersede the stale 1.1.0 barrel successor with the authorized
+    1.2.0 barrel successor, and admit only the corrected set before I36 shared registration
   - Pass real signup, reload, logout, re-login, pre/post-expiry, household, inactive-route, wrong-household,
     stale-security, expired, revoked, no-legacy-fallback, and Student create/manage verification
   protection: >-
@@ -136,9 +140,9 @@ blockers:
     session establishment from row insertion alone, expose raw token material, rewrite migrations 2235/2241, fabricate a
     multi-household selector, or treat inactive access as an unauthenticated Parent.
   next_check: >-
-    Re-evaluate after the active P12 concrete terminal, its single independent review, I36 shared registration, and the
-    mounted persistence/route/browser checkpoint. Preserve the recovery-capable post-commit session boundary without
-    claiming stricter cross-transaction atomicity.
+    Re-evaluate after the bounded P12 correction terminal passes one correction review, then after ordered P12/P09 source
+    integration, shared registration, and the mounted persistence/route/browser checkpoint. Preserve the recovery-capable
+    post-commit session boundary without claiming stricter cross-transaction atomicity.
 - blocker_id: P09-SCHOOL-INQUIRY-ROUTE-COMPOSITION
   status: open
   scope: controlled_launch_candidate
@@ -164,16 +168,16 @@ blockers:
     native PostgreSQL 18.4 apply/replay/ledger 87/87; C00 dispatched the exact 18-writable-path P09 correction with only
     two explicit repository ownership exceptions. Its independent pre-terminal review found one P2: current-authority
     replay works, but a later configuration version hides the prior idempotency key even though migration 2256 preserves
-    it in append-only history. C00 amended the same live claim and lease to permit SELECT-only history readback for
-    durable exact replay; the trigger remains the sole history writer and both legacy authority tables remain prohibited.
+    it in append-only history. C00 amended the same claim to permit SELECT-only history readback. Corrected terminal
+    ce8df6e6 then passed one independent review with no P1/P2: 36 focused tests, exact 19-path source, durable scoped
+    history replay, immutable migration and legacy-request bytes, released lease, and effects 0/0/0. C00 withheld and
+    acknowledged the obsolete monolithic P09-registration-001 and admitted the three schema-valid split successors to
+    I36 without applying them.
   required_authority_or_input:
-  - Complete the active bounded P09 producer correction, including durable exact replay from SELECT-only migration-2256
-    history, signed-out GET /school, and the Admin-authorized configuration surface
-  - Replace immutable P09-registration-001 with schema-valid split shared requests; preserve its requirement IDs and
-    omit, without inventing replacements for, its two malformed non-ACNN acceptance IDs
-  - Register the complete reviewed surface in an I36 central checkpoint and rerun the static production landing test
+  - After corrected P12 acceptance, integrate P12 then P09 in one ancestry-preserving I36 source microbatch
+  - Apply the three admitted P09 split successors in dependency order and rerun the focused static production /school test
   protection: School inquiry must create no product account, access, Student contact, nurture enrollment, WhatsApp send, or direct provider/billing mutation.
-  next_check: Re-evaluate after the amended P09 terminal passes focused replay review and the complete request surface is admitted for I36 route registration.
+  next_check: Re-evaluate after ordered P12-then-P09 source integration and dependency-ordered I36 route registration.
 - blocker_id: P22-LEARNING-ENGAGEMENT-AUTHORITY-CONVERGENCE
   status: open
   scope: controlled_launch_candidate

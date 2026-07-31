@@ -934,17 +934,22 @@ items:
   request_digest: f78ab4076227222509f61b5d430188cbdaee369adf0bd6ebe82703482171fef1
   requesting_task_id: P09
   kind: registration
-  status: assigned
+  status: rejected
   assigned_steward: I36
-  target_checkpoint: I36_next_shared_registration_checkpoint
-  acknowledged_by_task: false
-  acknowledgment_head_sha: null
-  acknowledgment_state_handoff_digest: null
+  target_checkpoint: superseded_withheld_by_split_P09_002_successors
+  acknowledged_by_task: true
+  acknowledgment_head_sha: ce8df6e6d612dc935cb204fb7f7803489e90d740
+  acknowledgment_state_handoff_digest: 28346d16fb88c119355ea7a86e9758dcce1b616aaa6198468d04577e85c1cdb9
   applied_commit_sha: null
   result_record_head_sha: null
   evaluated_target_head_sha: null
   result_digest: null
-  rejection_reason: null
+  rejection_reason: >-
+    Immutable P09-registration-001 is superseded and withheld because it bundles the public, Admin/server, and barrel
+    surfaces and contains two malformed non-ACNN acceptance identifiers. Its immutable canonical request digest
+    f78ab4076227222509f61b5d430188cbdaee369adf0bd6ebe82703482171fef1 and Git blob
+    042bb0b080703002a1743e725daa9deb3b590796 remain evidence; only the three schema-valid split -002 successors may be
+    dispositioned after ordered P12-then-P09 source integration.
 - request_id: P21-registration-001
   request_digest: b47894b8827ba9e098725355215dda28b408f8668ab5cc3ad8d0a47019d3b61a
   requesting_task_id: P21
@@ -1257,6 +1262,51 @@ items:
   result_record_head_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
   evaluated_target_head_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
   result_digest: 74ecf8e801fc1c0d5a123b2ea275b411071ba01e4e69e7cc84e0699bcb21e359
+  rejection_reason: null
+- request_id: P09-barrel-export-002
+  request_digest: 3a03a600a9872f05e48024d46306ef3f02d4d55ae37d3d6a0860279fe18c9fac
+  requesting_task_id: P09
+  kind: barrel_export
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_P09_barrel_after_P12_then_P09_source_microbatch
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
+- request_id: P09-client-route-002
+  request_digest: 965fbeccfd9c29ae35fc4066dd406c057ba25b3e50e58d3b8faf1ecf88608695
+  requesting_task_id: P09
+  kind: client_route_registration
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_P09_signed_out_school_route_after_server_registration
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
+- request_id: P09-server-registration-002
+  request_digest: 1333935868c346eb3f2cd8eee1be49bdbfff9fe0ac94e350b32a9e606b7ba05a
+  requesting_task_id: P09
+  kind: server_feature_registration
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_P09_server_after_source_microbatch_and_barrel
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
   rejection_reason: null
 entry_schema:
   request_id: null
