@@ -3387,3 +3387,49 @@ The concrete P18 adapter, shared server/client composition, config key, and
 barrel work remain steward-controlled future integration. No SQL, allocation,
 steward application, integration, candidate, provider, deployment, DNS, send,
 charge, customer activation, or external effect is authorized.
+
+# P22 terminal held; P22 and P21 narrow successors dispatched
+
+P22 pushed terminal `a5ebe504b464f0ad140f3ab235d682ae79b54822`
+over implementation `5c7439fa6bc7600fb62e6eac5b118affeba7704a`.
+It is clean, remotely equal, limited to the authorized 16 paths, passed 34
+focused assertions and scoped static/request/secret gates, released
+LEARNING_ENGAGEMENT lease `706d5e11-9ba4-4a1b-83b8-4beba9779aeb` at
+`2026-07-31T07:56:00Z`, and has effects `0/0/0`. It is not admitted.
+
+Independent terminal review reproduced one P1 and eight P2 gaps: latest
+revoked review evidence is omitted before badge recalculation; ordinary P18
+callbacks require a fabricated Admin; correction reason/actor are not bound to
+canonical source evidence; an older exact correction replay fails after a
+successor; review proof permits a cross-class existence oracle; badge GET
+leaks persistence/audit internals; idempotency normalization is inconsistent;
+repository badge semantics are not proved; and the client successor retains
+incorrect approved/published wording. No other P1/P2 remains.
+
+C00 therefore publishes P22 READY
+`e49a160d367d64be1f158009d21918fd68c3d63ad2ba2c91edf9abe89f39304c`,
+claim `4fde7d30-26be-4792-8406-da4ab8d6cd80`, writer
+`codex-p22-terminal-correction-4fde7d30`, and sole LEARNING_ENGAGEMENT lease
+`e0f2587b-0d2e-4900-966d-56b0fae8dee0` through
+`2026-07-31T10:08:00Z`. The exact 16-path ceiling and inventory digest
+`d153ca704b5275a3ccc95518b8e8a95ef08fbcc5c35177376447ac94bebf14c3`
+remain unchanged.
+
+In parallel, C00 publishes P21 READY
+`84a384576cab6258cff4095bade7f3d2553288516523d6251f077c2282131e49`,
+claim `06848315-08fd-40aa-8ff1-3c5cda4c42e4`, writer
+`codex-p21-content-state-writer-06848315`, and sole CONTENT_PUBLICATION lease
+`030212ad-7da5-4877-b29b-85de75a4380c` through
+`2026-07-31T10:08:00Z`. P21 must start from clean remote head `705030f2`,
+fast-forward to integration `d89a0f38`, and change exactly nine paths with
+inventory digest
+`c8bd8ec1db6b04cdfaa01f501224a357996b520b8034672825682a85139335a8`.
+It adds the production canonical content-state event writer and
+`P21-registration-003`; writer integration must precede both P21 and P22
+server registration.
+
+Candidate remains null. READY contains exactly P22 and P21. Provider/effect
+locks remain empty and effects remain `0/0/0`. No migration SQL, allocation,
+steward application, integration, provider action, deployment, DNS, send,
+charge, or customer activation is authorized. The legal bundle still gates
+only `production_broad`.

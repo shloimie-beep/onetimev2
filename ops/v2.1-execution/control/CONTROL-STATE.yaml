@@ -16,21 +16,20 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: 1fe3b53d26e9ae4dcc349f22318195dabdd804a8
+controller_authorization_sha: 55ecbdc41e3ea7b341e000c6aeb74c7e1f8f8c49
 next_action: >-
-  Independently reconciled P22 renewal atomic claim 9723a32f as the exact sole child of renewal checkpoint ef3eb135
-  with only the runtime triplet changed, canonical READY/claim/lease bindings, raw-concatenation digests, unchanged
-  product/request bytes, clean live remote equality, and effects 0/0/0. The consumed READY queue is empty. Continue P22
-  directly under the fresh claim and LEARNING_ENGAGEMENT lease across exactly 16 paths: eight product/test files, five
-  schema-valid successor requests, and the P22 runtime triplet. Preserve migration 2251 as sole attendance-write
-  authority; consume P18 attendance, canonical privacy consent, and P12 identity read-only; suppress peer actual names;
-  preserve safe client compatibility without exposing canonical peer Student IDs; and make question-transition and
-  recognition ledgers append-only and atomic. No SQL, allocation, steward application, integration, candidate,
-  provider, deployment, DNS, send, charge, customer activation, or external effect is authorized.
+  P22 terminal a5ebe504 is held, not admitted: independent review reproduced one P1 and eight P2 correctness/privacy
+  gaps despite 34 focused passes. Consume READY e49a160d from exact clean head a5ebe504 under claim 4fde7d30 and sole
+  LEARNING_ENGAGEMENT lease e0f2587b to correct only the exact 16 authorized paths. In parallel, consume P21 READY
+  84a38457 from clean head 705030f2, adopt integration d89a0f38, and implement the exact nine-path canonical content
+  aggregate-state writer under claim 06848315 and sole CONTENT_PUBLICATION lease 030212ad. Both workers must push one
+  bounded terminal, release their task lease, preserve null candidate and effects 0/0/0, and stop for independent C00
+  review. No SQL migration, steward application, integration, provider effect, deployment, DNS, send, charge, or
+  customer activation is authorized.
 production_completion_lanes:
 - lane: A
   owner: F02
-  status: held_pending_P22_learning_engagement_authority_successor
+  status: held_pending_corrected_P22_learning_engagement_terminal
   branch: codex/v21-lane1-migration-correction
   source_head_sha: 26234c47e5bc92f4d3392d77d98bc3a758d25189
   admitted_acknowledgment_head_sha: 9754f2ae0736ace4bbf7d2a88c73f1d28b0b5a20
@@ -69,7 +68,8 @@ production_completion_lanes:
   scope: immutable_2250_2253_plus_immutable_P22_request_preserved_no_2254_write
   conflict_gate: >-
     P22-migration-001 would create a competing writable attendance authority beside canonical migration 2251 and lacks
-    required product/runtime-tier/verification-environment isolation; a P22 successor is required before allocation.
+    required product/runtime-tier/verification-environment isolation; held P22 terminal a5ebe504 also has one P1 and
+    eight P2 residuals, so corrected successor admission is required before allocation.
   provider_effects: prohibited
 - lane: B
   owner: F07_with_P08_public_entry
@@ -198,15 +198,17 @@ production_completion_lanes:
   scope: exact_v21_auth_client_lifecycle_successor_plus_native_proof_and_I36_runtime_triplet
   provider_effects: prohibited
 successor_dispatch:
-  state_based_on_control_head_sha: 1fe3b53d26e9ae4dcc349f22318195dabdd804a8
+  state_based_on_control_head_sha: 55ecbdc41e3ea7b341e000c6aeb74c7e1f8f8c49
   authorized_start_integration_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
   terminal_claims_reconciled_at: '2026-07-31T05:06:00Z'
   P22_atomic_and_P10_terminal_reconciled_at: '2026-07-31T05:50:50Z'
   P22_renewal_checkpoint_reconciled_at: '2026-07-31T06:20:00Z'
   P22_renewal_atomic_claim_reconciled_at: '2026-07-31T06:31:00Z'
-  lease_issued_at: '2026-07-31T06:20:00Z'
-  lease_expires_at: '2026-07-31T08:20:00Z'
-  ready_queue_published: false
+  P22_terminal_held_at: '2026-07-31T08:08:00Z'
+  P21_P22_correction_dispatch_issued_at: '2026-07-31T08:08:00Z'
+  lease_issued_at: '2026-07-31T08:08:00Z'
+  lease_expires_at: '2026-07-31T10:08:00Z'
+  ready_queue_published: true
   F02:
     status: blocked
     phase: migration_2254_P22_learning_engagement_held_not_admissible
@@ -241,8 +243,8 @@ successor_dispatch:
     terminal_runtime_triplet_digest: e05fc349529b75cf820db40066b677764136360e2f1d1807982205cda7702e99
     lease_released_at: '2026-07-31T04:51:04Z'
   P22:
-    status: claimed
-    phase: P22_learning_engagement_authority_successor_product_and_request_correction
+    status: resume_ready
+    phase: P22_terminal_residual_correctness_privacy_correction
     atomic_claim_head_sha: 7988604c2e37850aa51dbfc31138398468dd1493
     atomic_claim_parent_sha: 4d1b6dfc31d2b46f6cd530792816953d2a767fc2
     atomic_claim_tree_sha: 439392091838230e2b03cbbd49ab1517939bb404
@@ -277,10 +279,10 @@ successor_dispatch:
     prior_claim_id: a54f8667-d95d-415c-89ac-a6ac824775aa
     prior_writer_id: codex-p22-authority-successor-a54f8667
     prior_writer_lease_id: d20c0e9b-03a0-4ca1-a555-394fad6b2df2
-    claim_id: d8a3ff1d-edfd-4327-9047-3788d765f7bd
-    writer_id: codex-p22-authority-successor-renewal-d8a3ff1d
-    writer_lease_id: 706d5e11-9ba4-4a1b-83b8-4beba9779aeb
-    writer_lease_expires_at: '2026-07-31T08:20:00Z'
+    terminal_claim_id: d8a3ff1d-edfd-4327-9047-3788d765f7bd
+    terminal_writer_id: codex-p22-authority-successor-renewal-d8a3ff1d
+    terminal_writer_lease_id: 706d5e11-9ba4-4a1b-83b8-4beba9779aeb
+    terminal_writer_lease_released_at: '2026-07-31T07:56:00Z'
     renewal_ready_entry_payload_digest: fb370deb9cc3e49470b3259003817644828fa1adf8ce4e52ce254411925b69be
     authorized_path_inventory_digest: d153ca704b5275a3ccc95518b8e8a95ef08fbcc5c35177376447ac94bebf14c3
     product_base_manifest_digest: 8077e667a05bc1f2817f36d11746255c48b9345e9a849d5131444fecabf5d4c4
@@ -315,6 +317,40 @@ successor_dispatch:
     - packages/domain/src/learning/engagement.test.ts
     - packages/domain/src/learning/engagement.ts
     substantive_path_ceiling: 16
+    terminal_head_sha: a5ebe504b464f0ad140f3ab235d682ae79b54822
+    terminal_parent_sha: 5c7439fa6bc7600fb62e6eac5b118affeba7704a
+    terminal_tree_sha: 4d3be924dd625e211631e58c3b943262755d9611
+    terminal_implementation_head_sha: 5c7439fa6bc7600fb62e6eac5b118affeba7704a
+    terminal_implementation_artifact_digest: 2271b1e71d05f32c48d0e9a13e6b79a9819d0ffcb5d0c7748fb64a25ae8e3b98
+    terminal_state_handoff_digest: 917841062c79f1dce0b9c3183fce81e6f2d49d6b20c3ec7a781a2ffb024383a0
+    terminal_runtime_triplet_digest: c617c42b3bd74db0681efadc34cdfe4b46f8068bc92200918ba08f91b0a8217e
+    terminal_review_status: held_one_P1_eight_P2
+    correction_ready_entry_payload_digest: e49a160d367d64be1f158009d21918fd68c3d63ad2ba2c91edf9abe89f39304c
+    correction_claim_id: 4fde7d30-26be-4792-8406-da4ab8d6cd80
+    correction_writer_id: codex-p22-terminal-correction-4fde7d30
+    correction_writer_lease_id: e0f2587b-0d2e-4900-966d-56b0fae8dee0
+    correction_writer_lease_expires_at: '2026-07-31T10:08:00Z'
+    effect_locks: []
+    external_effects: 0/0/0
+  P21:
+    status: resume_ready
+    phase: P21_canonical_content_state_writer
+    branch: codex/v21-p21-publication-scope-correction
+    expected_existing_head_sha: 705030f2d5163f95340a19dc42efd0f167259869
+    expected_existing_parent_sha: 7b51bae186728351ff1cf93b1c02fcba893b1051
+    expected_existing_tree_sha: bad9032edf0954df39abfd3996fb7823e2eef1dd
+    adopt_integration_head_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
+    integrated_migration_2253_path: packages/db/migrations/2253_v21_content_publication_projection_v2.sql
+    integrated_migration_2253_raw_sha256: b96fae17a3ab9a13444787f7419366b0cd997e7a2754167b3c759d7074ff2c81
+    ready_entry_payload_digest: 84a384576cab6258cff4095bade7f3d2553288516523d6251f077c2282131e49
+    claim_id: 06848315-08fd-40aa-8ff1-3c5cda4c42e4
+    writer_id: codex-p21-content-state-writer-06848315
+    writer_lease_id: 030212ad-7da5-4877-b29b-85de75a4380c
+    writer_lease_expires_at: '2026-07-31T10:08:00Z'
+    authorized_path_inventory_digest: c8bd8ec1db6b04cdfaa01f501224a357996b520b8034672825682a85139335a8
+    exact_path_ceiling: 9
+    registration_successor: P21-registration-003
+    merge_order: P21_writer_before_P21_and_P22_server_registration
     effect_locks: []
     external_effects: 0/0/0
   P10:

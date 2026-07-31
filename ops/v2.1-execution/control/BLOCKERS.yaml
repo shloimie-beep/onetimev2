@@ -183,16 +183,21 @@ blockers:
   - R44
   safe_work_completed: >-
     F02 terminal 22ada24a preserved migration 2251 as the sole attendance write authority, wrote no SQL or allocation,
-    released both leases before expiry, and recorded effects 0/0/0. Independent preflight proved immutable
-    P22-migration-001 would create a competing writable attendance authority and omits product/runtime-tier and
-    verification-environment isolation. Both immutable predecessor requests carry two malformed acceptance IDs, and
-    P22-registration-001 additionally combines four shared-change classes under legacy kind registration. Both
-    predecessor requests remain preserved, assigned, unapplied, and held at successor-specific checkpoints.
+    released both leases before expiry, and recorded effects 0/0/0. P22 terminal a5ebe504, implementation 5c7439fa,
+    changed exactly the authorized 16 paths, preserved both predecessor requests, passed 34 focused tests and scoped
+    static/secret/request gates, released lease 706d5e11 at 2026-07-31T07:56:00Z, and recorded effects 0/0/0. Independent
+    terminal review held admission after reproducing one P1 and eight P2 findings: latest revoked review evidence is
+    excluded before badge recalculation; ordinary P18 callbacks require a fabricated Admin; correction actor/reason
+    metadata is not source-bound; older exact correction replay fails after a successor; review proof is cross-class
+    probeable; badge GET leaks persistence/audit internals; idempotency normalization is inconsistent; repository badge
+    semantics are unproved; and the client request retains incorrect approved/published leaderboard wording.
   required_authority_or_input:
-  - Complete the P22 runtime-only atomic claim, then separately authorize and implement the exact eight product/test
-    paths plus five schema-valid migration, server, client, config, and barrel successor requests
-  - Preserve migration 2251 as sole attendance authority; add runtime-tier and verification-environment isolation,
-    P12 actual/display-name dependency, append-only question-transition audit, and append-only recognition-consent audit
+  - Complete the exact 16-path residual correctness/privacy correction under the fresh P22 claim and sole
+    LEARNING_ENGAGEMENT lease; preserve both immutable predecessor requests and effects 0/0/0
+  - Prove latest-revoked recalculation, internal ordinary attendance context, canonical correction metadata binding,
+    old-correction replay after successor, class-bound review proof, privacy-safe badge DTO, canonical idempotency,
+    persisted badge semantics, and corrected approved/published client request wording
+  - Independently review the corrected terminal and admit all five successor requests only if every P1/P2 is closed
   - After independent P22 admission, apply only the corrected migration successor as forward-only migration 2254
     through F02 with clean native PostgreSQL replay and focused positive/negative proof
   - Apply the remaining four corrected shared requests through their exact I36 checkpoints and re-run merged registration checks
@@ -200,7 +205,36 @@ blockers:
     Do not apply P22-migration-001 or P22-registration-001, create a second attendance write authority, parse a display
     name into identity fields, mutate audit history, write SQL before the successor is admitted, or advance candidate,
     provider, deployment, DNS, live-database, send, charge, or customer activation gates.
-  next_check: Re-evaluate after the P22 atomic claim is reconciled and the exact 16-path correction terminal is independently admitted.
+  next_check: Re-evaluate only after the fresh exact-16-path P22 correction terminal passes independent review.
+- blocker_id: P21-CANONICAL-CONTENT-STATE-WRITER
+  status: open
+  scope: controlled_launch_candidate
+  owner: P21_I36_C00
+  affected_tasks:
+  - P21
+  - P22
+  - I36
+  - V40
+  - R44
+  safe_work_completed: >-
+    Integration d89a0f38 contains migration 2234 canonical aggregate-state schema/reconciler, forward-only publication
+    migration 2253, and corrected P21 source head 705030f2 as an ancestor. Read-only seam inspection found no production
+    content writer: only family signup writes human_account/access aggregates. The P22 canonical review proof query is
+    correctly fail-closed on an exact published content occurrence, so it cannot be admitted until production
+    publication commands populate canonical content state. P21 and integration worktrees were clean; effects are 0/0/0.
+  required_authority_or_input:
+  - Complete the exact nine-path P21 canonical content-state writer from integration d89a0f38 under the sole
+    CONTENT_PUBLICATION lease
+  - Append canonical aggregate events only; bootstrap fresh needs_review sequentially; make publication CAS and event
+    append one database transaction; derive exact product/runtime/environment scope; prove replay, rollback, and mismatch
+  - Publish schema-valid P21-registration-003 superseding registration-002 and bind I36 to migration 2253 plus the
+    canonical writer
+  - Integrate the writer before applying either the P21 or P22 server registration
+  protection: >-
+    Do not directly mutate canonical_aggregate_states, add a second reconciler, write a new migration, emit same-state
+    events, split the publication CAS from the canonical event transaction, apply registration before the writer, or
+    advance candidate/provider/release gates while canonical content state is absent.
+  next_check: Re-evaluate after the P21 writer terminal is independently admitted, integrated, and registration-003 is dispositioned in writer-before-registration order.
 - blocker_id: F04-OWNERSHIP-TRANSFER-REVOCATION-COLUMNS
   status: closed
   scope: controlled_launch_candidate

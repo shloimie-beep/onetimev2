@@ -2898,3 +2898,50 @@ clean worktree, then stop for C00. Do not write SQL, allocate or apply a
 migration, edit shared registration/barrels/configuration, integrate, freeze a
 candidate, inspect or mutate a provider, deploy, change DNS, send, charge,
 activate a customer, or perform any external effect.
+
+# Current instruction: run the P22 residual correction and P21 content-state writer
+
+Resolve the exact pushed control commit containing this instruction from
+control basis `55ecbdc41e3ea7b341e000c6aeb74c7e1f8f8c49`. Verify the two canonical
+READY payload digests, exact clean task heads, claims, task-bound leases,
+integration `d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9`, null candidate, empty
+effect locks, and effects `0/0/0`.
+
+Run these two disjoint workers concurrently:
+
+1. P22 from exact clean local/tracking/live head
+   `a5ebe504b464f0ad140f3ab235d682ae79b54822`, READY
+   `e49a160d367d64be1f158009d21918fd68c3d63ad2ba2c91edf9abe89f39304c`,
+   claim `4fde7d30-26be-4792-8406-da4ab8d6cd80`, writer
+   `codex-p22-terminal-correction-4fde7d30`, and LEARNING_ENGAGEMENT lease
+   `e0f2587b-0d2e-4900-966d-56b0fae8dee0`: correct the independently
+   reproduced one P1, eight P2, and reviewed P3 cleanup within the unchanged
+   exact 16 paths and inventory digest
+   `d153ca704b5275a3ccc95518b8e8a95ef08fbcc5c35177376447ac94bebf14c3`.
+   Preserve both immutable predecessor requests and migration 2251 as sole
+   attendance writer. Run focused domain/service/repository proof, scoped
+   lint/format/typecheck, request/YAML, exact-scope, immutable-byte, diff, and
+   secret gates. Update the runtime triplet, release the lease, push one
+   bounded terminal normally, verify live equality and a clean worktree, then
+   stop for independent C00 review.
+2. P21 from exact clean local/tracking/live head
+   `705030f2d5163f95340a19dc42efd0f167259869`, READY
+   `84a384576cab6258cff4095bade7f3d2553288516523d6251f077c2282131e49`,
+   claim `06848315-08fd-40aa-8ff1-3c5cda4c42e4`, writer
+   `codex-p21-content-state-writer-06848315`, and CONTENT_PUBLICATION lease
+   `030212ad-7da5-4877-b29b-85de75a4380c`: fast-forward to exact integration
+   `d89a0f38` before editing, then change only the five named publication
+   product/tests, `P21-registration-003`, and the P21 runtime triplet. Append
+   canonical aggregate events only; bootstrap fresh needs_review sequentially;
+   make publication CAS and event append one transaction; derive exact
+   product/runtime/environment scope; prove replay, rollback, mismatch, and
+   production-writer behavior. Supersede registration-002 without applying
+   either request. Release the lease, push one bounded terminal normally,
+   verify live equality and a clean worktree, then stop for independent C00
+   review.
+
+No worker may write migration SQL, allocate or apply a migration, apply a
+steward result, edit shared registration/configuration/barrels, integrate,
+freeze a candidate, inspect or mutate a provider, deploy, change DNS, send,
+charge, activate a customer, or perform any external effect. Legal gates only
+`production_broad`.
