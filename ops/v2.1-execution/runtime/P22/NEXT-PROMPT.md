@@ -4,15 +4,15 @@ SERVICE TIER: PRIORITY
 MODE: REVIEW
 
 Review P22 from the pushed terminal-correction checkpoint under claim
-4fde7d30-26be-4792-8406-da4ab8d6cd80, writer
-codex-p22-terminal-correction-4fde7d30. Its sole LEARNING_ENGAGEMENT lease
-e0f2587b-0d2e-4900-966d-56b0fae8dee0 was task-locally released at
-2026-07-31T08:43:00Z. The implementation head is
-d08c113f859c69691110aea8f1621e6f2b1082ba.
+61df7589-d694-4647-842c-ba2b02ec1911, writer
+codex-p22-attendance-replay-61df7589. Its sole LEARNING_ENGAGEMENT lease
+0ae4f2d7-c79c-4933-9d5e-c6d7c799a246 was task-locally released at
+2026-07-31T09:20:00Z. The implementation head is
+e185e45a2fa8900ef4b1bb3f3a5c021832bcd9e6.
 
 Fetch control and the canonical P22 branch, require clean local/tracking/live
 equality, and derive the terminal head from the remote. Preserve the exact
-16-path ceiling and immutable P22-migration-001/P22-registration-001 bytes.
+eight-path correction ceiling and every P22 steward-request byte.
 
 The product/test corrections, canonical read seams, successor requests,
 deterministic ledger event identities, seven-table event-driven badge

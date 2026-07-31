@@ -43,29 +43,31 @@ dependency_heads:
 status: ready_for_review
 phase: complete
 claim_mode: resume_existing_branch
-claimed_by: codex-p22-terminal-correction-4fde7d30
-claim_time: '2026-07-31T08:08:00Z'
-claim_id: 4fde7d30-26be-4792-8406-da4ab8d6cd80
+claimed_by: codex-p22-attendance-replay-61df7589
+claim_time: '2026-07-31T08:55:00Z'
+claim_id: 61df7589-d694-4647-842c-ba2b02ec1911
 writer_slot_leases:
   - slot: LEARNING_ENGAGEMENT
-    lease_id: e0f2587b-0d2e-4900-966d-56b0fae8dee0
-    lease_issued_at: '2026-07-31T08:08:00Z'
-    lease_expires_at: '2026-07-31T10:08:00Z'
-    released_at: '2026-07-31T08:43:00Z'
+    lease_id: 0ae4f2d7-c79c-4933-9d5e-c6d7c799a246
+    lease_issued_at: '2026-07-31T08:55:00Z'
+    lease_expires_at: '2026-07-31T10:55:00Z'
+    released_at: '2026-07-31T09:20:00Z'
     state_based_on_control_head_sha: c22354f184f046a1cb817e0c9cd415aec7c37449
-    phase_scope: P22_terminal_correction
-lease_expires_at: '2026-07-31T10:08:00Z'
-lease_released_at: '2026-07-31T08:43:00Z'
-last_heartbeat_at: '2026-07-31T08:43:00Z'
-controller_authorization_sha: c22354f184f046a1cb817e0c9cd415aec7c37449
-resume_containing_control_sha: c22354f184f046a1cb817e0c9cd415aec7c37449
-reconciled_control_sha: c22354f184f046a1cb817e0c9cd415aec7c37449
+    phase_scope: P22_canonical_correction_identity_and_old_replay_fix
+lease_expires_at: '2026-07-31T10:55:00Z'
+lease_released_at: '2026-07-31T09:20:00Z'
+last_heartbeat_at: '2026-07-31T09:20:00Z'
+controller_authorization_sha: 45a6f2f589fc2fffe7c5dbd16c137282c4918185
+resume_containing_control_sha: 45a6f2f589fc2fffe7c5dbd16c137282c4918185
+reconciled_control_sha: 45a6f2f589fc2fffe7c5dbd16c137282c4918185
 ready_entry_state_based_on_control_head_sha: c22354f184f046a1cb817e0c9cd415aec7c37449
-ready_entry_payload_digest: e49a160d367d64be1f158009d21918fd68c3d63ad2ba2c91edf9abe89f39304c
-state_based_on_head_sha: d08c113f859c69691110aea8f1621e6f2b1082ba
-last_implementation_commit_sha: d08c113f859c69691110aea8f1621e6f2b1082ba
-implementation_artifact_digest: fcb3f82bcaea5b510e837280bcd3c779794265fb360972cfafc9e5742f0470c5
+ready_entry_payload_digest: 1566b95c9919c7e932c0765979881ac660dfea0120486035dfc5adb1faf322ea
+state_based_on_head_sha: e185e45a2fa8900ef4b1bb3f3a5c021832bcd9e6
+last_implementation_commit_sha: e185e45a2fa8900ef4b1bb3f3a5c021832bcd9e6
+implementation_artifact_digest: 19a33cf409f66b99071b4686613ed495b76ef4b9eaed8d344b2beb67446ef18b
 completed_steps:
+  - Completed the canonical correction-identity and old-attendance-replay fix at implementation head e185e45a2fa8900ef4b1bb3f3a5c021832bcd9e6 and released the sole LEARNING_ENGAGEMENT lease at 2026-07-31T09:20:00Z.
+  - Passed 44 focused assertions proving latest source-event repair, verified older attendance correction no-write success, forged/mismatched/cross-aggregate denial, same-metadata identity separation, and canonical P18 source ordering.
   - Completed the fresh terminal correction at implementation head d08c113f859c69691110aea8f1621e6f2b1082ba and released the sole LEARNING_ENGAGEMENT lease at 2026-07-31T08:43:00Z.
   - Passed 40 focused assertions covering latest revoked-review repair, older exact correction replay, internal ordinary attendance context, exact correction source binding, class-bound review reads, privacy-safe badge DTOs, padded-key rejection, and the nine-row badge repository matrix.
   - Heartbeat checkpoint under fresh terminal-correction claim 4fde7d30-26be-4792-8406-da4ab8d6cd80: implemented canonical latest-event review recalculation, internal ordinary attendance context, exact correction evidence binding, class-bound review reads, privacy-safe badge DTOs, and canonical idempotency validation; focused verification is in progress.
@@ -111,7 +113,7 @@ completed_steps:
 remaining_steps:
   - I36 must disposition the five exact -002 successor requests and provide the fail-closed canonical content-state writer/populator before registering the review-material proof seam.
   - C00 must review this terminal branch; the two immutable predecessor requests remain evidence only and must not be applied.
-next_action: C00 should review implementation head d08c113f859c69691110aea8f1621e6f2b1082ba and I36 should disposition the five exact successor requests without reviving either immutable predecessor.
+next_action: C00 should review implementation head e185e45a2fa8900ef4b1bb3f3a5c021832bcd9e6 and I36 should disposition the five exact successor requests without reviving either immutable predecessor.
 requirements:
   OTV2-LEARNING-093: implementation_verified
   OTV2-LEARNING-094: implementation_verified
@@ -163,6 +165,16 @@ steward_requests:
   - P22-server-registration-002
 verification:
   commands_run:
+    - command: canonical correction-identity authority, clean head, READY digest, claim, and lease verification
+      result: passed; control 45a6f2f5, basis 7730bcc2, READY 1566b95c, claim 61df7589, writer codex-p22-attendance-replay-61df7589, and sole lease 0ae4f2d7
+    - command: focused P22 domain, service, and repository Vitest suites after correction-identity fix
+      result: passed; 3 files and 44 tests cover latest repair, older attendance no-write replay, exact source identity, metadata/digest/scope/aggregate denial, and canonical SQL ordering
+    - command: focused ESLint, Prettier, diff hygiene, and repository secret scan
+      result: passed; no diff errors and secret scan passed across 2754 repository text files
+    - command: workspace typecheck delta after correction-identity fix
+      result: baseline blocked; no P22 diagnostic, existing Stripe Status widening and missing Playwright dependency diagnostics remain
+    - command: authorized path and steward-request byte verification
+      result: passed; correction changed only the exact five product/test paths before the runtime triplet and all seven present P22 steward-request files remained byte-identical
     - command: fresh terminal-correction authority, head, READY digest, claim, and lease verification
       result: passed; control c22354f1, basis a5ebe504, READY e49a160d, claim 4fde7d30, writer codex-p22-terminal-correction-4fde7d30, and sole lease e0f2587b
     - command: focused P22 domain, service, and repository Vitest suites after terminal correction

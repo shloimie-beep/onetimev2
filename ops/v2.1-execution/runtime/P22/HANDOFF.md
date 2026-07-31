@@ -1,18 +1,34 @@
-# P22 Terminal-Correction Handoff
+# P22 Canonical Correction-Identity Terminal Handoff
 
 ## Authority
 
-- Branch basis: `a5ebe504b464f0ad140f3ab235d682ae79b54822`
-- Reconciled control: `c22354f184f046a1cb817e0c9cd415aec7c37449`
-- Claim: `4fde7d30-26be-4792-8406-da4ab8d6cd80`
-- Writer: `codex-p22-terminal-correction-4fde7d30`
+- Branch basis: `7730bcc2977d4e1317e7af0757be95afc0e9f47e`
+- Reconciled control: `45a6f2f589fc2fffe7c5dbd16c137282c4918185`
+- Claim: `61df7589-d694-4647-842c-ba2b02ec1911`
+- Writer: `codex-p22-attendance-replay-61df7589`
 - LEARNING_ENGAGEMENT lease:
-  `e0f2587b-0d2e-4900-966d-56b0fae8dee0`, released task-locally at
-  `2026-07-31T08:43:00Z`
-- Implementation head: `d08c113f859c69691110aea8f1621e6f2b1082ba`
+  `0ae4f2d7-c79c-4933-9d5e-c6d7c799a246`, released task-locally at
+  `2026-07-31T09:20:00Z`
+- Implementation head: `e185e45a2fa8900ef4b1bb3f3a5c021832bcd9e6`
 - Effects: `0/0/0`
 
-## Terminal correction
+## Canonical correction identity
+
+Every audited correction callback now carries an immutable server-derived
+source identity: the exact P18 attendance correction event, recognition event,
+or review event plus full-scope aggregate digest. Canonical read seams bind
+that identity to exact scope, Student, class, household, family, audit
+reference, reason, Admin, and source aggregate before any badge write.
+
+The P18 seam derives latest status from later Admin manual-correction events
+only, with the canonical observed-time/event-ID tie break. A verified latest
+event can repair a failed post-commit projection; a verified older correction
+after a successor returns current awards without a write. Unknown identities,
+current-projection digest mismatch, reused metadata, and cross-aggregate
+identity combinations fail closed. Source event identities are also included
+in family digest preimages.
+
+## Prior terminal correction
 
 The fresh terminal correction makes
 latest revoked review events canonical for badge recalculation, separates
@@ -73,12 +89,11 @@ server projection routed only through the client-route successor request.
 
 ## Verification
 
-Focused domain, service, and repository suites pass: 3 files, 40 tests.
+Focused domain, service, and repository suites pass: 3 files, 44 tests.
 Workspace typecheck reports only pre-existing Stripe Status widening and
 missing Playwright dependency diagnostics; no P22 diagnostic is present.
-Focused ESLint, Prettier, diff hygiene, exact 16-path scope, immutable
-predecessor hashes, and all five successor-request schema/11-requirement/
-10-AC01 checks pass.
+Focused ESLint, Prettier, diff hygiene, exact eight-path correction scope,
+secret scan, and steward-request byte-preservation checks pass.
 
 ## Next action
 
