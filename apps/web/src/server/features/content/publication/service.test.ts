@@ -137,6 +137,7 @@ describe('P21 content publication service', () => {
         binding: command(2, 'attach.invented.key', '8'),
       }),
     ).rejects.toThrowError(/governed occurrence is unavailable/i);
+    expect(memory.canonicalEvents).toHaveLength(0);
   });
 
   it('atomically applies a fenced worker readback and materializes protected Student access', async () => {
@@ -175,6 +176,18 @@ describe('P21 content publication service', () => {
         contentVersionId: 'content_version_one',
       }),
     ).resolves.toMatchObject({ replay: true, record: { state: 'needs_review', version: 1 } });
+    expect(
+      memory.canonicalEvents.map(({ previousState, nextState }) => [previousState, nextState]),
+    ).toEqual([
+      [null, 'received'],
+      ['received', 'validating'],
+      ['validating', 'processing'],
+      ['processing', 'needs_review'],
+    ]);
+    expect(memory.canonicalStates.get('content_one')).toMatchObject({
+      state: 'needs_review',
+      version: 4,
+    });
 
     const approved = await service.approve({
       principal: admin,
@@ -364,7 +377,7 @@ describe('P21 content publication service', () => {
     await service.unpublish({
       principal: admin,
       contentId: 'content_one',
-      binding: command(4, 'unpublish.key', 'e'),
+      binding: command(4, 'publish.key', 'e'),
     });
     expect(memory.records.get('content_one')).toMatchObject({
       state: 'approved',
@@ -382,6 +395,7 @@ describe('P21 content publication service', () => {
     ).rejects.toThrowError(/unavailable/i);
 
     const revoking = memory.records.get('content_one')!;
+    expect(memory.canonicalEvents).toHaveLength(8);
     memory.acceptProviderOperation(revoking.pendingProviderOperationId!);
     await service.applyPrivateRevocationReadback({
       scope,
@@ -396,6 +410,7 @@ describe('P21 content publication service', () => {
       opaqueProviderAssetRef: null,
     });
     expect(memory.intentStates.get(memory.intents[1]!.intentId)).toBe('complete');
+    expect(memory.canonicalEvents).toHaveLength(8);
     expect(memory.readbackCalls).toEqual([
       publishing.pendingProviderOperationId,
       revoking.pendingProviderOperationId,
@@ -415,6 +430,343 @@ describe('P21 content publication service', () => {
       'publish_private',
       'revoke_private',
     ]);
+    expect(memory.canonicalStates.get('content_one')).toMatchObject({
+      state: 'archived',
+      version: 9,
+    });
+    expect(memory.canonicalEvents).toHaveLength(9);
+    expect(memory.canonicalEvents.map(({ idempotencyKey }) => idempotencyKey)).toEqual(
+      expect.arrayContaining([
+        'content:request_publish:publish.key',
+        'content:unpublish:publish.key',
+      ]),
+    );
+    expect(
+      memory.canonicalEvents
+        .filter(({ operation }) => operation !== 'bootstrap')
+        .map(({ operation, actorKind }) => [operation, actorKind]),
+    ).toEqual([
+      ['approve', 'admin'],
+      ['request_publish', 'admin'],
+      ['record_published', 'reconciler'],
+      ['unpublish', 'admin'],
+      ['archive', 'admin'],
+    ]);
+  });
+
+  it('keeps canonical versions independent when occurrence attachment advances publication only', async () => {
+    const memory = new MemoryPublicationRepository();
+    memory.canonicalOccurrences.set(
+      'one_time_mishnayos:content_one',
+      canonicalOccurrence('content_one', 1),
+    );
+    memory.canonicalOccurrences.set(
+      'one_time_mishnayos:occurrence_two',
+      canonicalOccurrence('occurrence_two', 2),
+    );
+    memory.canonicalOccurrences.set(
+      'one_time_mishnayos:occurrence_three',
+      canonicalOccurrence('occurrence_three', 3),
+    );
+    const service = createContentPublicationService({
+      repository: memory,
+      approvedProjectionRepository: memory,
+      vimeoProviderBinding,
+      vimeoReadbackAdapter: memory,
+      createId: () => 'playback_session_001',
+    });
+    await service.registerApprovedProjection({
+      principal: admin,
+      contentVersionId: 'content_version_one',
+    });
+    await service.attachOccurrence({
+      principal: admin,
+      contentId: 'content_one',
+      relation: {
+        relationId: 'relation_occurrence_two',
+        occurrenceId: 'occurrence_two',
+        occurrenceVersion: 2,
+        canonicalSeriesId: 'canonical_series_one',
+      },
+      binding: command(1, 'attach.before.approve', '1'),
+    });
+    expect(memory.records.get('content_one')).toMatchObject({ version: 2, state: 'needs_review' });
+    expect(memory.canonicalStates.get('content_one')).toMatchObject({
+      version: 4,
+      state: 'needs_review',
+    });
+    expect(memory.canonicalEvents).toHaveLength(4);
+
+    await service.approve({
+      principal: admin,
+      contentId: 'content_one',
+      approvalId: 'approval_one',
+      policyVersion: 'content-publication-v2',
+      binding: command(2, 'approve.after.attach', '2'),
+    });
+    expect(memory.records.get('content_one')).toMatchObject({ version: 3, state: 'approved' });
+    expect(memory.canonicalStates.get('content_one')).toMatchObject({
+      version: 5,
+      state: 'approved',
+    });
+    await service.attachOccurrence({
+      principal: admin,
+      contentId: 'content_one',
+      relation: {
+        relationId: 'relation_occurrence_three',
+        occurrenceId: 'occurrence_three',
+        occurrenceVersion: 3,
+        canonicalSeriesId: 'canonical_series_one',
+      },
+      binding: command(3, 'attach.after.approve', '3'),
+    });
+    expect(memory.records.get('content_one')).toMatchObject({ version: 4, state: 'approved' });
+    expect(memory.canonicalStates.get('content_one')).toMatchObject({
+      version: 5,
+      state: 'approved',
+    });
+    expect(memory.canonicalEvents).toHaveLength(5);
+  });
+
+  it('rolls back every publication-side effect when a canonical append fails', async () => {
+    const memory = new MemoryPublicationRepository();
+    memory.canonicalOccurrences.set(
+      'one_time_mishnayos:content_one',
+      canonicalOccurrence('content_one', 1),
+    );
+    const service = createContentPublicationService({
+      repository: memory,
+      approvedProjectionRepository: memory,
+      vimeoProviderBinding,
+      vimeoReadbackAdapter: memory,
+      createId: () => 'playback_session_001',
+    });
+    await service.registerApprovedProjection({
+      principal: admin,
+      contentVersionId: 'content_version_one',
+    });
+
+    memory.failCanonicalOperation = 'approve';
+    await expect(
+      service.approve({
+        principal: admin,
+        contentId: 'content_one',
+        approvalId: 'approval_one',
+        policyVersion: 'content-publication-v2',
+        binding: command(1, 'rollback.approve', '1'),
+      }),
+    ).rejects.toThrowError(/forced_canonical_approve_failure/);
+    expect(memory.records.get('content_one')).toMatchObject({ state: 'needs_review', version: 1 });
+    expect(memory.receipts.has('approve:rollback.approve')).toBe(false);
+    expect(memory.canonicalStates.get('content_one')).toMatchObject({ version: 4 });
+
+    memory.failCanonicalOperation = null;
+    await service.approve({
+      principal: admin,
+      contentId: 'content_one',
+      approvalId: 'approval_one',
+      policyVersion: 'content-publication-v2',
+      binding: command(1, 'approve.ok', '2'),
+    });
+    memory.failCanonicalOperation = 'request_publish';
+    await expect(
+      service.requestPublish({
+        principal: admin,
+        contentId: 'content_one',
+        binding: command(2, 'rollback.request', '3'),
+      }),
+    ).rejects.toThrowError(/forced_canonical_request_publish_failure/);
+    expect(memory.records.get('content_one')).toMatchObject({ state: 'approved', version: 2 });
+    expect(memory.providerOperations.size).toBe(0);
+    expect(memory.intents).toHaveLength(0);
+    expect(memory.receipts.has('request_publish:rollback.request')).toBe(false);
+    expect(memory.canonicalStates.get('content_one')).toMatchObject({ version: 5 });
+
+    memory.failCanonicalOperation = null;
+    await service.requestPublish({
+      principal: admin,
+      contentId: 'content_one',
+      binding: command(2, 'request.ok', '4'),
+    });
+    const publishing = memory.records.get('content_one')!;
+    memory.acceptProviderOperation(publishing.pendingProviderOperationId!);
+    memory.eligibilities.set(
+      'student_one:content_one:content_one',
+      eligibility({ occurrenceId: 'content_one' }),
+    );
+    const publicationReadback = command(3, 'rollback.readback', '5');
+    memory.failCanonicalOperation = 'record_published';
+    await expect(
+      service.applyPrivatePublicationReadback({
+        scope,
+        contentId: 'content_one',
+        providerOperationId: publishing.pendingProviderOperationId!,
+        audience: [audience({ occurrenceId: 'content_one' })],
+        binding: publicationReadback,
+      }),
+    ).rejects.toThrowError(/forced_canonical_record_published_failure/);
+    expect(memory.records.get('content_one')).toMatchObject({ state: 'publishing', version: 3 });
+    expect(memory.materializations).toHaveLength(0);
+    expect(memory.completedProviderOperations.size).toBe(0);
+    expect(memory.intentStates.get(memory.intents[0]!.intentId)).toBe('pending');
+    expect(memory.receipts.has('record_published:rollback.readback')).toBe(false);
+    expect(memory.canonicalStates.get('content_one')).toMatchObject({ version: 6 });
+
+    memory.failCanonicalOperation = null;
+    await service.applyPrivatePublicationReadback({
+      scope,
+      contentId: 'content_one',
+      providerOperationId: publishing.pendingProviderOperationId!,
+      audience: [audience({ occurrenceId: 'content_one' })],
+      binding: publicationReadback,
+    });
+    memory.failCanonicalOperation = 'unpublish';
+    await expect(
+      service.unpublish({
+        principal: admin,
+        contentId: 'content_one',
+        binding: command(4, 'rollback.unpublish', '6'),
+      }),
+    ).rejects.toThrowError(/forced_canonical_unpublish_failure/);
+    expect(memory.records.get('content_one')).toMatchObject({ state: 'published', version: 4 });
+    expect(memory.intents).toHaveLength(1);
+    expect(memory.receipts.has('unpublish:rollback.unpublish')).toBe(false);
+    expect(memory.canonicalStates.get('content_one')).toMatchObject({ version: 7 });
+
+    memory.failCanonicalOperation = null;
+    await service.unpublish({
+      principal: admin,
+      contentId: 'content_one',
+      binding: command(4, 'unpublish.ok', '7'),
+    });
+    const revoking = memory.records.get('content_one')!;
+    memory.acceptProviderOperation(revoking.pendingProviderOperationId!);
+    await service.applyPrivateRevocationReadback({
+      scope,
+      contentId: 'content_one',
+      providerOperationId: revoking.pendingProviderOperationId!,
+      binding: command(5, 'revoke.ok', '8'),
+    });
+    expect(memory.canonicalStates.get('content_one')).toMatchObject({ version: 8 });
+
+    memory.failCanonicalOperation = 'archive';
+    await expect(
+      service.archive({
+        principal: admin,
+        contentId: 'content_one',
+        binding: command(6, 'rollback.archive', '9'),
+      }),
+    ).rejects.toThrowError(/forced_canonical_archive_failure/);
+    expect(memory.records.get('content_one')).toMatchObject({ state: 'approved', version: 6 });
+    expect(memory.receipts.has('archive:rollback.archive')).toBe(false);
+    expect(memory.canonicalStates.get('content_one')).toMatchObject({ version: 8 });
+
+    memory.failCanonicalOperation = null;
+    await service.archive({
+      principal: admin,
+      contentId: 'content_one',
+      binding: command(6, 'archive.ok', 'a'),
+    });
+    expect(memory.canonicalStates.get('content_one')).toMatchObject({
+      state: 'archived',
+      version: 9,
+    });
+  });
+
+  it('rejects source-derived Vimeo binding and locked pending-job scope mismatches before writes', async () => {
+    const bindingMemory = new MemoryPublicationRepository();
+    bindingMemory.canonicalOccurrences.set(
+      'one_time_mishnayos:content_one',
+      canonicalOccurrence('content_one', 1),
+    );
+    const bindingService = createContentPublicationService({
+      repository: bindingMemory,
+      approvedProjectionRepository: bindingMemory,
+      vimeoProviderBinding,
+      vimeoReadbackAdapter: bindingMemory,
+      createId: () => 'playback_session_001',
+    });
+    await bindingService.registerApprovedProjection({
+      principal: admin,
+      contentVersionId: 'content_version_one',
+    });
+    await bindingService.approve({
+      principal: admin,
+      contentId: 'content_one',
+      approvalId: 'approval_one',
+      policyVersion: 'content-publication-v2',
+      binding: command(1, 'scope.approve', '1'),
+    });
+    bindingMemory.executionScope = {
+      product: 'one_time_mishnayos',
+      runtime_tier: 'production',
+      verification_environment_id: 'production_operator_canary',
+    };
+    await expect(
+      bindingService.requestPublish({
+        principal: admin,
+        contentId: 'content_one',
+        binding: command(2, 'scope.request', '2'),
+      }),
+    ).rejects.toThrowError(ContentPublicationError);
+    expect(bindingMemory.records.get('content_one')).toMatchObject({
+      state: 'approved',
+      version: 2,
+    });
+    expect(bindingMemory.providerOperations.size).toBe(0);
+    expect(bindingMemory.intents).toHaveLength(0);
+    expect(bindingMemory.receipts.has('request_publish:scope.request')).toBe(false);
+
+    const readbackMemory = new MemoryPublicationRepository();
+    readbackMemory.canonicalOccurrences.set(
+      'one_time_mishnayos:content_one',
+      canonicalOccurrence('content_one', 1),
+    );
+    const readbackService = createContentPublicationService({
+      repository: readbackMemory,
+      approvedProjectionRepository: readbackMemory,
+      vimeoProviderBinding,
+      vimeoReadbackAdapter: readbackMemory,
+      createId: () => 'playback_session_001',
+    });
+    await readbackService.registerApprovedProjection({
+      principal: admin,
+      contentVersionId: 'content_version_one',
+    });
+    await readbackService.approve({
+      principal: admin,
+      contentId: 'content_one',
+      approvalId: 'approval_one',
+      policyVersion: 'content-publication-v2',
+      binding: command(1, 'readback.approve', '3'),
+    });
+    await readbackService.requestPublish({
+      principal: admin,
+      contentId: 'content_one',
+      binding: command(2, 'readback.request', '4'),
+    });
+    const publishing = readbackMemory.records.get('content_one')!;
+    readbackMemory.acceptProviderOperation(publishing.pendingProviderOperationId!);
+    readbackMemory.providerContexts.get(publishing.pendingProviderOperationId!)!.executionScope = {
+      product: 'one_time_mishnayos',
+      runtime_tier: 'production',
+      verification_environment_id: 'production_operator_canary',
+    };
+    await expect(
+      readbackService.applyPrivatePublicationReadback({
+        scope,
+        contentId: 'content_one',
+        providerOperationId: publishing.pendingProviderOperationId!,
+        audience: [audience({ occurrenceId: 'content_one' })],
+        binding: command(3, 'readback.complete', '5'),
+      }),
+    ).rejects.toThrowError(ContentPublicationError);
+    expect(readbackMemory.readbackCalls).toHaveLength(0);
+    expect(readbackMemory.records.get('content_one')).toMatchObject({
+      state: 'publishing',
+      version: 3,
+    });
+    expect(readbackMemory.materializations).toHaveLength(0);
   });
 
   it('fails closed for stale approval evidence, ambiguous readback, and assignment versions', async () => {

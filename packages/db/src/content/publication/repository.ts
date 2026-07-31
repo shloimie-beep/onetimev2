@@ -1284,19 +1284,19 @@ function canonicalEventMatches(
 ) {
   return Boolean(
     actual &&
-      actual.previous_state === expected.previousState &&
-      actual.next_state === expected.nextState &&
-      canonicalVersion(actual.expected_version, 'content_canonical_event_version_invalid') ===
-        expected.expectedVersion &&
-      canonicalVersion(actual.resulting_version, 'content_canonical_event_version_invalid') ===
-        expected.resultingVersion &&
-      actual.product_key === expected.scope.product &&
-      actual.runtime_tier === expected.scope.runtime_tier &&
-      actual.verification_environment_id === expected.scope.verification_environment_id &&
-      actual.actor_kind === expected.actorKind &&
-      actual.actor_key === expected.actorKey &&
-      actual.idempotency_key === expected.idempotencyKey &&
-      actual.canonical_request_hash === expected.canonicalRequestHash,
+    actual.previous_state === expected.previousState &&
+    actual.next_state === expected.nextState &&
+    canonicalVersion(actual.expected_version, 'content_canonical_event_version_invalid') ===
+      expected.expectedVersion &&
+    canonicalVersion(actual.resulting_version, 'content_canonical_event_version_invalid') ===
+      expected.resultingVersion &&
+    actual.product_key === expected.scope.product &&
+    actual.runtime_tier === expected.scope.runtime_tier &&
+    actual.verification_environment_id === expected.scope.verification_environment_id &&
+    actual.actor_kind === expected.actorKind &&
+    actual.actor_key === expected.actorKey &&
+    actual.idempotency_key === expected.idempotencyKey &&
+    actual.canonical_request_hash === expected.canonicalRequestHash,
   );
 }
 
@@ -1322,11 +1322,9 @@ function canonicalExecutionScopeIsValid(
     (runtimeTier === 'isolated_staging' &&
       ['ci', 'provider_sandbox', 'persistent_staging'].includes(verificationEnvironmentId)) ||
     (runtimeTier === 'production' &&
-      [
-        'production_read_only',
-        'production_operator_canary',
-        'production_broad',
-      ].includes(verificationEnvironmentId))
+      ['production_read_only', 'production_operator_canary', 'production_broad'].includes(
+        verificationEnvironmentId,
+      ))
   );
 }
 

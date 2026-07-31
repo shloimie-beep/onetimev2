@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
   createPostgresContentPublicationRepository,
@@ -72,6 +73,367 @@ describe('P21 PostgreSQL publication repository', () => {
       0,
       1,
     ]);
+  });
+
+  it('bootstraps four ordered canonical events and exact replay performs no write', async () => {
+    const record = reviewReadyRecord();
+    const events: Record<string, unknown>[] = [];
+    let canonicalReady = false;
+    const client = new CapturingClient(false, undefined, (text, values) => {
+      if (text.includes('FROM onetime.content_processing_versions AS version_row')) {
+        return [canonicalScopeRow()];
+      }
+      if (text.includes('FROM onetime.canonical_aggregate_states')) {
+        return canonicalReady
+          ? [
+              {
+                aggregate_kind: 'content',
+                aggregate_key: record.contentId,
+                current_state: 'needs_review',
+                version: 4,
+                product_key: 'one_time_mishnayos',
+                runtime_tier: 'isolated_staging',
+                verification_environment_id: 'ci',
+              },
+            ]
+          : [];
+      }
+      if (text.includes('INSERT INTO onetime.canonical_state_transition_events')) {
+        const event = {
+          transition_key: values?.[0],
+          previous_state: values?.[2],
+          next_state: values?.[3],
+          expected_version: values?.[4],
+          resulting_version: values?.[5],
+          product_key: values?.[6],
+          runtime_tier: values?.[7],
+          verification_environment_id: values?.[8],
+          actor_kind: values?.[9],
+          actor_key: values?.[10],
+          idempotency_key: values?.[11],
+          canonical_request_hash: values?.[12],
+        };
+        events.push(event);
+        canonicalReady = events.length === 4;
+        return [{ resulting_version: values?.[5] }];
+      }
+      if (
+        text.includes('FROM onetime.canonical_state_transition_events') &&
+        text.includes('ANY($2::text[])')
+      ) {
+        return events;
+      }
+      return undefined;
+    });
+    const repository = createPostgresContentPublicationRepository({
+      connect: async () => client,
+    });
+
+    await expect(
+      repository.inTransaction((unit) =>
+        unit.bootstrapCanonicalContentState(record, approvalEvidence),
+      ),
+    ).resolves.toEqual({ replay: false, resultingVersion: 4 });
+    const firstWriteCount = client.queries.filter((query) =>
+      query.text.includes('INSERT INTO onetime.canonical_state_transition_events'),
+    ).length;
+    await expect(
+      repository.inTransaction((unit) =>
+        unit.bootstrapCanonicalContentState(record, approvalEvidence),
+      ),
+    ).resolves.toEqual({ replay: true, resultingVersion: 4 });
+
+    expect(firstWriteCount).toBe(4);
+    expect(
+      client.queries.filter((query) =>
+        query.text.includes('INSERT INTO onetime.canonical_state_transition_events'),
+      ),
+    ).toHaveLength(4);
+    expect(events.map((event) => [event.previous_state, event.next_state])).toEqual([
+      [null, 'received'],
+      ['received', 'validating'],
+      ['validating', 'processing'],
+      ['processing', 'needs_review'],
+    ]);
+    expect(events.map((event) => event.expected_version)).toEqual([0, 1, 2, 3]);
+    expect(events.map((event) => event.actor_kind)).toEqual([
+      'reconciler',
+      'reconciler',
+      'reconciler',
+      'reconciler',
+    ]);
+    expect(events.map((event) => event.idempotency_key)).toEqual([
+      'content:bootstrap:1:received',
+      'content:bootstrap:2:validating',
+      'content:bootstrap:3:processing',
+      'content:bootstrap:4:needs_review',
+    ]);
+    const sql = client.queries.map((query) => query.text).join('\n');
+    expect(sql).toContain('JOIN onetime.content_sources_v21 AS source_row');
+    expect(sql).toContain('source_row.source_sha256 = version_row.source_sha256');
+    expect(sql).toContain('FOR SHARE OF version_row, source_row');
+    expect(sql).toContain('FROM onetime.canonical_aggregate_states');
+    expect(sql).toContain('FOR UPDATE');
+    expect(sql).not.toMatch(
+      /(?:INSERT\s+INTO|UPDATE|DELETE\s+FROM)\s+onetime\.canonical_aggregate_states/i,
+    );
+    expect(readFileSync(new URL('./repository.ts', import.meta.url), 'utf8')).not.toMatch(
+      /(?:INSERT\s+INTO|UPDATE|DELETE\s+FROM)\s+onetime\.canonical_aggregate_states/i,
+    );
+  });
+
+  it('uses the locked canonical version and operation-namespaces raw idempotency', async () => {
+    const next = {
+      ...reviewReadyRecord(),
+      version: 3,
+      state: 'publishing' as const,
+      approval: {
+        approvalId: 'approval_one',
+        approvedByAdminId: 'admin_one',
+        approvedAt: approvalEvidence.approvedAt,
+        policyVersion: 'content-publication-v2',
+        evidence: approvalEvidence,
+      },
+    };
+    const client = new CapturingClient(false, undefined, (text, values) => {
+      if (text.includes('FROM onetime.content_processing_versions AS version_row')) {
+        return [canonicalScopeRow()];
+      }
+      if (text.includes('FROM onetime.canonical_aggregate_states')) {
+        return [
+          {
+            aggregate_kind: 'content',
+            aggregate_key: next.contentId,
+            current_state: 'approved',
+            version: 11,
+            product_key: 'one_time_mishnayos',
+            runtime_tier: 'isolated_staging',
+            verification_environment_id: 'ci',
+          },
+        ];
+      }
+      if (text.includes('INSERT INTO onetime.canonical_state_transition_events')) {
+        return [{ resulting_version: values?.[5] }];
+      }
+      return undefined;
+    });
+    const repository = createPostgresContentPublicationRepository({
+      connect: async () => client,
+    });
+
+    await expect(
+      repository.inTransaction((unit) =>
+        unit.appendCanonicalContentStateTransition({
+          record: next,
+          operation: 'request_publish',
+          previousState: 'approved',
+          nextState: 'publishing',
+          actorKind: 'admin',
+          actorKey: 'admin_one',
+          idempotencyKey: 'same.raw.key',
+          requestHash: 'a'.repeat(64),
+          occurredAt: '2026-07-29T10:44:00.000Z',
+        }),
+      ),
+    ).resolves.toEqual({ replay: false, resultingVersion: 12 });
+
+    const insert = client.queries.find((query) =>
+      query.text.includes('INSERT INTO onetime.canonical_state_transition_events'),
+    );
+    expect(insert?.values?.slice(1, 13)).toEqual([
+      'content_one',
+      'approved',
+      'publishing',
+      11,
+      12,
+      'one_time_mishnayos',
+      'isolated_staging',
+      'ci',
+      'admin',
+      'admin_one',
+      'content:request_publish:same.raw.key',
+      expect.stringMatching(/^[a-f0-9]{64}$/),
+    ]);
+    expect(next.version).toBe(3);
+  });
+
+  it('rolls back source and canonical event conflicts before commit', async () => {
+    const record = {
+      ...reviewReadyRecord(),
+      version: 2,
+      state: 'approved' as const,
+      approval: {
+        approvalId: 'approval_one',
+        approvedByAdminId: 'admin_one',
+        approvedAt: approvalEvidence.approvedAt,
+        policyVersion: 'content-publication-v2',
+        evidence: approvalEvidence,
+      },
+    };
+    const sourceMissing = new CapturingClient();
+    const sourceRepository = createPostgresContentPublicationRepository({
+      connect: async () => sourceMissing,
+    });
+    await expect(
+      sourceRepository.inTransaction((unit) =>
+        unit.appendCanonicalContentStateTransition({
+          record,
+          operation: 'approve',
+          previousState: 'needs_review',
+          nextState: 'approved',
+          actorKind: 'admin',
+          actorKey: 'admin_one',
+          idempotencyKey: 'approve.key',
+          requestHash: 'a'.repeat(64),
+          occurredAt: '2026-07-29T10:44:00.000Z',
+        }),
+      ),
+    ).rejects.toThrowError('content_canonical_source_scope_unavailable');
+    expect(sourceMissing.queries.at(-1)?.text).toBe('ROLLBACK');
+    expect(
+      sourceMissing.queries.some((query) =>
+        query.text.includes('INSERT INTO onetime.canonical_state_transition_events'),
+      ),
+    ).toBe(false);
+
+    const sourceMismatch = new CapturingClient(false, undefined, (text) =>
+      text.includes('FROM onetime.content_processing_versions AS version_row')
+        ? [{ ...canonicalScopeRow(), source_key: 'source_other' }]
+        : undefined,
+    );
+    const sourceMismatchRepository = createPostgresContentPublicationRepository({
+      connect: async () => sourceMismatch,
+    });
+    await expect(
+      sourceMismatchRepository.inTransaction((unit) =>
+        unit.appendCanonicalContentStateTransition({
+          record,
+          operation: 'approve',
+          previousState: 'needs_review',
+          nextState: 'approved',
+          actorKind: 'admin',
+          actorKey: 'admin_one',
+          idempotencyKey: 'approve.key',
+          requestHash: 'a'.repeat(64),
+          occurredAt: '2026-07-29T10:44:00.000Z',
+        }),
+      ),
+    ).rejects.toThrowError('content_canonical_source_binding_conflict');
+    expect(sourceMismatch.queries.at(-1)?.text).toBe('ROLLBACK');
+    expect(
+      sourceMismatch.queries.some((query) =>
+        query.text.includes('FROM onetime.canonical_aggregate_states'),
+      ),
+    ).toBe(false);
+
+    const eventConflict = new CapturingClient(
+      false,
+      'INSERT INTO onetime.canonical_state_transition_events',
+      (text) => {
+        if (text.includes('FROM onetime.content_processing_versions AS version_row')) {
+          return [canonicalScopeRow()];
+        }
+        if (text.includes('FROM onetime.canonical_aggregate_states')) {
+          return [
+            {
+              aggregate_kind: 'content',
+              aggregate_key: record.contentId,
+              current_state: 'needs_review',
+              version: 4,
+              product_key: 'one_time_mishnayos',
+              runtime_tier: 'isolated_staging',
+              verification_environment_id: 'ci',
+            },
+          ];
+        }
+        return undefined;
+      },
+    );
+    const eventRepository = createPostgresContentPublicationRepository({
+      connect: async () => eventConflict,
+    });
+    await expect(
+      eventRepository.inTransaction((unit) =>
+        unit.appendCanonicalContentStateTransition({
+          record,
+          operation: 'approve',
+          previousState: 'needs_review',
+          nextState: 'approved',
+          actorKind: 'admin',
+          actorKey: 'admin_one',
+          idempotencyKey: 'approve.key',
+          requestHash: 'a'.repeat(64),
+          occurredAt: '2026-07-29T10:44:00.000Z',
+        }),
+      ),
+    ).rejects.toThrowError('content_canonical_state_event_conflict');
+    expect(eventConflict.queries.at(-1)?.text).toBe('ROLLBACK');
+    expect(eventConflict.queries.some((query) => query.text === 'COMMIT')).toBe(false);
+
+    const changedReplay = new CapturingClient(false, undefined, (text) => {
+      if (text.includes('FROM onetime.content_processing_versions AS version_row')) {
+        return [canonicalScopeRow()];
+      }
+      if (text.includes('FROM onetime.canonical_aggregate_states')) {
+        return [
+          {
+            aggregate_kind: 'content',
+            aggregate_key: record.contentId,
+            current_state: 'approved',
+            version: 5,
+            product_key: 'one_time_mishnayos',
+            runtime_tier: 'isolated_staging',
+            verification_environment_id: 'ci',
+          },
+        ];
+      }
+      if (
+        text.includes('FROM onetime.canonical_state_transition_events') &&
+        text.includes('idempotency_key = $2')
+      ) {
+        return [
+          {
+            transition_key: 'f'.repeat(64),
+            previous_state: 'needs_review',
+            next_state: 'approved',
+            expected_version: 4,
+            resulting_version: 5,
+            product_key: 'one_time_mishnayos',
+            runtime_tier: 'isolated_staging',
+            verification_environment_id: 'ci',
+            actor_kind: 'admin',
+            actor_key: 'admin_one',
+            idempotency_key: 'content:approve:approve.key',
+            canonical_request_hash: '0'.repeat(64),
+          },
+        ];
+      }
+      return undefined;
+    });
+    const changedReplayRepository = createPostgresContentPublicationRepository({
+      connect: async () => changedReplay,
+    });
+    await expect(
+      changedReplayRepository.inTransaction((unit) =>
+        unit.appendCanonicalContentStateTransition({
+          record,
+          operation: 'approve',
+          previousState: 'needs_review',
+          nextState: 'approved',
+          actorKind: 'admin',
+          actorKey: 'admin_one',
+          idempotencyKey: 'approve.key',
+          requestHash: 'a'.repeat(64),
+          occurredAt: '2026-07-29T10:44:00.000Z',
+        }),
+      ),
+    ).rejects.toThrowError('content_canonical_state_idempotency_conflict');
+    expect(changedReplay.queries.at(-1)?.text).toBe('ROLLBACK');
+    expect(
+      changedReplay.queries.some((query) =>
+        query.text.includes('INSERT INTO onetime.canonical_state_transition_events'),
+      ),
+    ).toBe(false);
   });
 
   it('uses a transaction and parameterized Student-scoped resume insert', async () => {
@@ -600,6 +962,17 @@ function reviewReadyRecord(): ContentPublicationRecord {
     publishedAt: null,
     archivedAt: null,
     occurrenceRelations: [],
+  };
+}
+
+function canonicalScopeRow() {
+  return {
+    product_key: 'one_time_mishnayos',
+    runtime_tier: 'isolated_staging',
+    verification_environment_id: 'ci',
+    source_key: approvalEvidence.sourceId,
+    source_sha256: approvalEvidence.sourceSha256,
+    source_object_version_id: approvalEvidence.sourceObjectVersionId,
   };
 }
 

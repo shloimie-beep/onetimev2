@@ -621,11 +621,11 @@ async function mutate(input: {
       assertReceiptReplay(priorReceipt, input.operation, binding.requestHash, current);
       return { record: current, replay: true as const };
     }
-    const executionScope = await unit.resolveCanonicalContentExecutionScope(current);
-    assertProviderExecutionScope(executionScope, input.vimeoProviderBinding.scope);
     const applied = input.apply(current, binding);
     const next = 'record' in applied ? applied.record : applied;
     if ('outboxIntent' in applied) {
+      const executionScope = await unit.resolveCanonicalContentExecutionScope(current);
+      assertProviderExecutionScope(executionScope, input.vimeoProviderBinding.scope);
       const providerOperation = createContentPublicationProviderOperation({
         intent: applied.outboxIntent,
         binding: input.vimeoProviderBinding,
