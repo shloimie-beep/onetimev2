@@ -307,3 +307,35 @@ C00 must independently verify the exact four-path scope, proposal-authority
 parity, immutable allocation/request/migration/checksum bytes, released sole
 lease, clean local/tracking/live equality, and effects `0/0/0` before
 integration. Do not apply a central steward result from this checkpoint.
+
+# F02 Migration 2254 P22 Learning-Engagement Atomic Claim
+
+- Claim parent: `9754f2ae0736ace4bbf7d2a88c73f1d28b0b5a20`
+- Containing control: `fdcba89094f6b8f9460db3d41f3602be2d476990`
+- READY parent/controller: `ce71f41af1c70f689db9b3346ae5dfc643a1344f`
+- Authorized integration start: `d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9`
+- READY digest: `d227353928ba2c492ad7b0e21468bf6198634e9e800f96da507369c48ea640ce`
+- Claim: `8041cc43-6a31-443b-87be-ef663f767c80`
+- Writer: `codex-f02-migration-2254-8041cc43`
+- MIGRATION_AUTHORITY lease: `55139366-ce78-4536-8cd3-33c08a1aba38`
+- SCHEMA_CONTRACT lease: `0669b0a0-ef3e-44cd-a9d9-2cb61b9b5e49`
+- Lease expiry: `2026-07-31T05:48:00Z`
+- Prior state/handoff digest:
+  `e0b2ede55c202a8701905fbf7468f1a33ff09ae3a9f4fec5f5926a018f107616`
+- Prior runtime-triplet digest:
+  `4059e319ef6bf2fc82f0a7243c20b461060e63d0b16525777b5cc81fa38075b9`
+- Effects: `0/0/0`
+
+The live F02, control, integration, proposal, and immutable
+`P22-migration-001` source bindings all matched the pushed READY. The protected
+pre-existing untracked `.codex-lane1-pglite.mjs` remains excluded at exactly
+1597 bytes and SHA-256
+`11117a9144f8d2838466619ba0f3255ab18d0c164793c340fe3badb453206f17`.
+
+This first checkpoint changes only the F02 runtime triplet. It does not read
+the request body for implementation, edit the allocation proposal, author SQL,
+or change product, shared control, provider, deployment, send, charge, or
+external-effect bytes.
+
+Stop for independent C00 reconciliation. No migration-2254 or proposal
+authority is latent; a separate later C00 control commit is mandatory.

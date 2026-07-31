@@ -103,3 +103,40 @@ four-path scope, and effects `0/0/0`. Do not rerun product or workspace suites
 for metadata-only bytes. Do not apply a central result, merge, execute a
 migration, inspect providers, deploy, send, charge, freeze a candidate, or
 perform any external effect. Stop for C00 admission.
+
+# Audit the Migration 2254 P22 Learning-Engagement Atomic Claim
+
+Audit the exact sole-parent successor of
+`9754f2ae0736ace4bbf7d2a88c73f1d28b0b5a20` under containing control
+`fdcba89094f6b8f9460db3d41f3602be2d476990`, READY parent/controller
+`ce71f41af1c70f689db9b3346ae5dfc643a1344f`, and authorized integration start
+`d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9`.
+
+Require canonical READY digest
+`d227353928ba2c492ad7b0e21468bf6198634e9e800f96da507369c48ea640ce`,
+claim `8041cc43-6a31-443b-87be-ef663f767c80`, writer
+`codex-f02-migration-2254-8041cc43`, MIGRATION_AUTHORITY lease
+`55139366-ce78-4536-8cd3-33c08a1aba38`, and SCHEMA_CONTRACT lease
+`0669b0a0-ef3e-44cd-a9d9-2cb61b9b5e49`, both expiring
+`2026-07-31T05:48:00Z`.
+
+Verify exactly the F02 runtime triplet changed. Reproduce the prior raw Git-byte
+state/handoff digest
+`e0b2ede55c202a8701905fbf7468f1a33ff09ae3a9f4fec5f5926a018f107616`
+and triplet digest
+`4059e319ef6bf2fc82f0a7243c20b461060e63d0b16525777b5cc81fa38075b9`.
+Confirm the proposal remains raw SHA-256
+`f1c23180b49e21149e173a812b561813d0bc9e36adc5ea411721027b753ca643`,
+Git blob `d7c35dd21ffb5f688346d624627a58708be68a7c`, and next ordinal 2254.
+Confirm immutable `P22-migration-001` at source `4d1b6dfc...` remains raw
+SHA-256 `e6c02f0e...` and Git blob `527b85c9...`.
+
+Preserve the pre-existing untracked `.codex-lane1-pglite.mjs` at exactly 1597
+bytes and SHA-256
+`11117a9144f8d2838466619ba0f3255ab18d0c164793c340fe3badb453206f17`.
+Confirm YAML, formatting, exact scope, diff hygiene, secret scan, clean
+local/tracking/live equality, active lease bindings, and effects `0/0/0`.
+
+Stop for C00 reconciliation. No request-body, proposal, SQL, migration,
+product, shared-control, provider, deployment, send, charge, or external-effect
+authority is latent. A separate later C00 control commit is mandatory.
