@@ -16,17 +16,17 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: 8b4d83ae15ebd5ddfc95d01e163f73d4865f4c73
+controller_authorization_sha: 2d82c15a7af7284cacb7688b8a719da8f4f530a8
 next_action: >-
-  Independently reconciled P22 atomic claim 7988604c and P10 acknowledgment terminal b5dd0edb with exact sole-parent
-  three-path scope, canonical raw-concatenation digests, immutable product/request bytes, clean live remote equality,
-  lease truth, and effects 0/0/0. The consumed READY queue is empty. Continue P22 under its already-claimed
-  LEARNING_ENGAGEMENT lease only across the exact 16 authorized paths: eight product/test files, five schema-valid
-  successor requests, and the P22 runtime triplet. Preserve migration 2251 as sole attendance-write authority, consume
-  canonical privacy consent and P12 identity read-only, and make question-transition and recognition history
-  append-only. P10 is returned to review with its lease released. No SQL, allocation, steward application,
-  integration, candidate, provider, deployment, DNS, send, charge, customer activation, or external effect is
-  authorized.
+  Independently reconciled P22 renewal checkpoint ef3eb135 as the exact sole child of atomic claim 7988604c with only
+  the runtime triplet changed, canonical raw-concatenation digests, unchanged product/request bytes, clean live remote
+  equality, a timely renewal_requested pause, and effects 0/0/0. Publish one fresh runtime-triplet-only resume claim
+  against ef3eb135. After C00 reconciles that atomic winner, continue the previously approved exact 16-path substantive
+  correction under the fresh LEARNING_ENGAGEMENT lease. Preserve migration 2251 as sole attendance-write authority,
+  consume P18 attendance, canonical privacy consent, and P12 identity read-only, suppress peer actual names, and make
+  question-transition and recognition ledgers append-only and atomic. No product or request change is authorized by
+  this READY entry; no SQL, allocation, steward application, integration, candidate, provider, deployment, DNS, send,
+  charge, customer activation, or external effect is authorized.
 production_completion_lanes:
 - lane: A
   owner: F02
@@ -198,13 +198,14 @@ production_completion_lanes:
   scope: exact_v21_auth_client_lifecycle_successor_plus_native_proof_and_I36_runtime_triplet
   provider_effects: prohibited
 successor_dispatch:
-  state_based_on_control_head_sha: 8b4d83ae15ebd5ddfc95d01e163f73d4865f4c73
+  state_based_on_control_head_sha: 2d82c15a7af7284cacb7688b8a719da8f4f530a8
   authorized_start_integration_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
   terminal_claims_reconciled_at: '2026-07-31T05:06:00Z'
   P22_atomic_and_P10_terminal_reconciled_at: '2026-07-31T05:50:50Z'
-  lease_issued_at: '2026-07-31T05:06:00Z'
-  lease_expires_at: '2026-07-31T07:06:00Z'
-  ready_queue_published: false
+  P22_renewal_checkpoint_reconciled_at: '2026-07-31T06:20:00Z'
+  lease_issued_at: '2026-07-31T06:20:00Z'
+  lease_expires_at: '2026-07-31T08:20:00Z'
+  ready_queue_published: true
   F02:
     status: blocked
     phase: migration_2254_P22_learning_engagement_held_not_admissible
@@ -239,8 +240,8 @@ successor_dispatch:
     terminal_runtime_triplet_digest: e05fc349529b75cf820db40066b677764136360e2f1d1807982205cda7702e99
     lease_released_at: '2026-07-31T04:51:04Z'
   P22:
-    status: claimed
-    phase: P22_learning_engagement_authority_successor_product_and_request_correction
+    status: resume_ready
+    phase: P22_learning_engagement_authority_successor_renewal_atomic_claim_only
     atomic_claim_head_sha: 7988604c2e37850aa51dbfc31138398468dd1493
     atomic_claim_parent_sha: 4d1b6dfc31d2b46f6cd530792816953d2a767fc2
     atomic_claim_tree_sha: 439392091838230e2b03cbbd49ab1517939bb404
@@ -251,10 +252,24 @@ successor_dispatch:
     atomic_claim_runtime_triplet_digest: 92253e8e8872aab09f376198d0081f7862bfae27a5bb0deab82b95a0215c360d
     atomic_claim_path_inventory_digest: 98d6da552ccf6572ee6d9c7386ace10f1522db3e76c595579d60a2f97476892f
     prior_ready_entry_payload_digest: 49d6cfb5f77707dfae008065588d720bc32093e83aad982e8c0d71861cb40051
-    claim_id: a54f8667-d95d-415c-89ac-a6ac824775aa
-    writer_id: codex-p22-authority-successor-a54f8667
-    writer_lease_id: d20c0e9b-03a0-4ca1-a555-394fad6b2df2
-    writer_lease_expires_at: '2026-07-31T07:06:00Z'
+    renewal_checkpoint_head_sha: ef3eb1356ebff095f3ba3b08afd0e54216844ed1
+    renewal_checkpoint_parent_sha: 7988604c2e37850aa51dbfc31138398468dd1493
+    renewal_checkpoint_tree_sha: c373fefa0de90ef8333de21636e5070e882f42c0
+    renewal_checkpoint_task_raw_sha256: 80a16006c9ebd7592af8836f30c8688a2cf0004d11b74255ac67de9e82bb1be7
+    renewal_checkpoint_handoff_raw_sha256: 0dd5c29a58bea1b633bbc70353901a597d4d225078e12b62eb611eb46abf83ec
+    renewal_checkpoint_next_raw_sha256: bef7268ee1557ac7169026da722021c27136f4cdd9486ae41b9798ebd4d9588d
+    renewal_checkpoint_state_handoff_digest: ad117494ff49911a727b604077b6674489f2a9870b99d2c016cf21b82a06c85e
+    renewal_checkpoint_runtime_triplet_digest: 28e4f9495d0891954c66c07fe4ae1efff5827ae8870953c00c262683081050d6
+    renewal_checkpoint_path_inventory_digest: 98d6da552ccf6572ee6d9c7386ace10f1522db3e76c595579d60a2f97476892f
+    renewal_checkpoint_last_heartbeat_at: '2026-07-31T06:13:53Z'
+    prior_claim_id: a54f8667-d95d-415c-89ac-a6ac824775aa
+    prior_writer_id: codex-p22-authority-successor-a54f8667
+    prior_writer_lease_id: d20c0e9b-03a0-4ca1-a555-394fad6b2df2
+    claim_id: d8a3ff1d-edfd-4327-9047-3788d765f7bd
+    writer_id: codex-p22-authority-successor-renewal-d8a3ff1d
+    writer_lease_id: 706d5e11-9ba4-4a1b-83b8-4beba9779aeb
+    writer_lease_expires_at: '2026-07-31T08:20:00Z'
+    renewal_ready_entry_payload_digest: fb370deb9cc3e49470b3259003817644828fa1adf8ce4e52ce254411925b69be
     authorized_path_inventory_digest: d153ca704b5275a3ccc95518b8e8a95ef08fbcc5c35177376447ac94bebf14c3
     product_base_manifest_digest: 8077e667a05bc1f2817f36d11746255c48b9345e9a849d5131444fecabf5d4c4
     product_base_raw_sha256:
@@ -266,7 +281,11 @@ successor_dispatch:
       packages/db/src/learning/schema-contract.ts: 3fe6ce90d90273af07a728e2d57dbdfa392238044c8c3cacd6a47d5aa7ce48e8
       packages/domain/src/learning/engagement.test.ts: b0608eeeef340b4cfa103322a4ab529d40ccf053610670cd1feba54778351eb9
       packages/domain/src/learning/engagement.ts: 9040cde5161ed28fbfa7fb18c93e18b4d7bbf36677703866aad27c0ba8a4c7f7
-    authorized_paths:
+    current_atomic_authorized_paths:
+    - ops/v2.1-execution/runtime/P22/HANDOFF.md
+    - ops/v2.1-execution/runtime/P22/NEXT-PROMPT.md
+    - ops/v2.1-execution/runtime/P22/TASK-STATE.yaml
+    subsequent_substantive_paths_after_resume_claim_reconciliation:
     - apps/web/src/server/features/learning/service.test.ts
     - apps/web/src/server/features/learning/service.ts
     - ops/v2.1-execution/runtime/P22/HANDOFF.md

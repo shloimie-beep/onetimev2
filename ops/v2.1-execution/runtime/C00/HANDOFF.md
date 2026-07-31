@@ -3297,3 +3297,46 @@ attendance, consent, and name tables. No SQL, allocation, steward application,
 integration, candidate, provider, deployment, DNS, send, charge, customer
 activation, or external effect is authorized. Legal continues to gate only
 `production_broad`.
+
+# P22 lease-renewal checkpoint and fresh resume authority
+
+P22 stopped substantive work and pushed exact renewal checkpoint
+`ef3eb1356ebff095f3ba3b08afd0e54216844ed1`, sole parent
+`7988604c2e37850aa51dbfc31138398468dd1493`, tree
+`c373fefa0de90ef8333de21636e5070e882f42c0`, at
+`2026-07-31T09:14:44+03:00`. It changes exactly the P22 runtime triplet and
+records `renewal_requested` with heartbeat `2026-07-31T06:13:53Z`; local,
+tracking, and live remote refs are equal and the worktree is clean.
+
+Canonical committed-byte evidence is TASK/HANDOFF/NEXT SHA-256
+`80a16006c9ebd7592af8836f30c8688a2cf0004d11b74255ac67de9e82bb1be7`,
+`0dd5c29a58bea1b633bbc70353901a597d4d225078e12b62eb611eb46abf83ec`,
+and `bef7268ee1557ac7169026da722021c27136f4cdd9486ae41b9798ebd4d9588d`;
+TASK+HANDOFF is
+`ad117494ff49911a727b604077b6674489f2a9870b99d2c016cf21b82a06c85e`,
+the runtime triplet is
+`28e4f9495d0891954c66c07fe4ae1efff5827ae8870953c00c262683081050d6`,
+and the canonical three-path inventory remains
+`98d6da552ccf6572ee6d9c7386ace10f1522db3e76c595579d60a2f97476892f`.
+Every product, test, predecessor request, and successor-request byte remains
+unchanged or absent as applicable. Effects remain `0/0/0`.
+
+From control basis `2d82c15a7af7284cacb7688b8a719da8f4f530a8`, C00 publishes one
+fresh runtime-triplet-only resume authority against `ef3eb135...`:
+
+- READY digest
+  `fb370deb9cc3e49470b3259003817644828fa1adf8ce4e52ce254411925b69be`;
+- claim `d8a3ff1d-edfd-4327-9047-3788d765f7bd`;
+- writer `codex-p22-authority-successor-renewal-d8a3ff1d`;
+- LEARNING_ENGAGEMENT lease `706d5e11-9ba4-4a1b-83b8-4beba9779aeb`,
+  issued `2026-07-31T06:20:00Z` and expiring
+  `2026-07-31T08:20:00Z`.
+
+The first renewed push must change only P22 `TASK-STATE.yaml`, `HANDOFF.md`,
+and `NEXT-PROMPT.md`, record the fresh claim/lease/READY identities, preserve
+all product/test/request bytes, push normally, verify clean live equality, and
+stop. This READY does not authorize substantive work. C00 must reconcile the
+atomic resume winner before direct continuation of the previously approved
+exact 16-path correction. No SQL, allocation, steward application,
+integration, candidate, provider, deployment, DNS, send, charge, customer
+activation, or external effect is authorized.

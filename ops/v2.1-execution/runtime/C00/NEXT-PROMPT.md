@@ -2814,3 +2814,42 @@ then stop for C00. Do not write SQL, allocate or apply a migration, edit shared
 registration/barrels/configuration, integrate, freeze a candidate, inspect or
 mutate a provider, deploy, change DNS, send, charge, activate a customer, or
 perform any external effect.
+
+# Current instruction: claim the fresh P22 renewal authority only
+
+The prior direct-continuation instruction is paused by the protocol-required
+renewal checkpoint. Resolve the exact pushed control commit containing this
+instruction from control basis
+`2d82c15a7af7284cacb7688b8a719da8f4f530a8`. Verify:
+
+- P22 local/tracking/live head
+  `ef3eb1356ebff095f3ba3b08afd0e54216844ed1`, sole parent
+  `7988604c2e37850aa51dbfc31138398468dd1493`, clean worktree;
+- READY digest
+  `fb370deb9cc3e49470b3259003817644828fa1adf8ce4e52ce254411925b69be`;
+- fresh claim `d8a3ff1d-edfd-4327-9047-3788d765f7bd`, writer
+  `codex-p22-authority-successor-renewal-d8a3ff1d`, and sole
+  LEARNING_ENGAGEMENT lease `706d5e11-9ba4-4a1b-83b8-4beba9779aeb`
+  through `2026-07-31T08:20:00Z`;
+- integration `d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9`, null candidate,
+  empty effect locks, and effects `0/0/0`.
+
+Make exactly one atomic resume-claim commit changing only:
+
+1. `ops/v2.1-execution/runtime/P22/TASK-STATE.yaml`
+2. `ops/v2.1-execution/runtime/P22/HANDOFF.md`
+3. `ops/v2.1-execution/runtime/P22/NEXT-PROMPT.md`
+
+Record the fresh claim, writer, lease, containing control SHA, READY digest,
+expected head, and safe next action. Preserve every product, test, predecessor
+request, successor-request absence, migration, shared registration, barrel,
+configuration, and control byte. Push normally without force, verify
+local/tracking/live equality and a clean worktree, then stop for C00
+reconciliation.
+
+This entry does not authorize the 16-path substantive correction. C00 will
+restore that authority directly under the fresh claim only after reconciling
+the atomic resume winner. Do not write SQL, allocate or apply a migration,
+apply a steward request, integrate, freeze a candidate, inspect or mutate a
+provider, deploy, change DNS, send, charge, activate a customer, or perform
+any external effect.
