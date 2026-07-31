@@ -1,82 +1,93 @@
-# P21 Source-Complete Projection — Migration Successor Handoff
+# P21 replay/archive correction — terminal handoff
 
-## Exact identity
+P21 is `ready_for_review` at the containing commit on
+`codex/v21-p21-publication-scope-correction`. This is a source checkpoint, not
+candidate readiness, operator acceptance, or production release.
 
-- Branch: `codex/v21-p20-publication-seed-enrichment`
-- Source-complete implementation head:
-  `38156528c1c022a0575db71426ce2cc8f2e20ab8`
-- Remote source equality: verified before this metadata checkpoint
-- Current 17-artifact aggregate:
-  `94689409b4eb4dacaddf24335c95669384ed9002df16989fbdb186703a36ab35`
-- Exact eight-artifact P21 companion aggregate:
-  `55070ee51ae052e07d655faf404ea25a3a5116b38d18a14573e7bf57dfdeddb2`
-- Metadata checkpoint scope: this handoff, `NEXT-PROMPT.md`,
-  `TASK-STATE.yaml`, and new immutable request `P21-MIGRATION-003.yaml`
+## Authority and scope
 
-## Source correction complete
+- Clean start/local/tracking/live head:
+  `3250bb761aa0d6fb84db77f637bc05eb5f1c444d`
+- Live control: `0a2e8c390d48da157be35a2f9d06f876a70b5e62`
+- Controller authorization:
+  `45a6f2f589fc2fffe7c5dbd16c137282c4918185`
+- READY digest:
+  `ccad2b56eb4b33fc7a35cfc61625dad9d9de14863823d1c0e96242924306fec5`
+- Claim: `cbec9b83-9d44-4d00-a797-fed83be43059`
+- Writer: `codex-p21-replay-archive-cbec9b83`
+- Released CONTENT_PUBLICATION lease:
+  `f03e8f5d-10fc-40f1-8720-e39086b4a799`
+- Exact eight-path inventory digest:
+  `5b93f48fdc9d709b450316ac4423f5077d39a253ca317424263433eb444e6b19`
 
-P20 now emits and P21 now consumes the exact source-complete publication
-projection. The contract has 27 top-level fields, seven canonically ordered
-artifacts, and exactly eight fields per artifact. P21 validates the exact
-projection/digest, constructs and idempotently registers the review-ready
-publication record, refetches P20 evidence server-side for approval, and keeps
-the publication seed bound to exact source evidence.
+Control-plane note: the exact listed eight-path set matches READY, but its
+stated LF-joined, no-final-newline recomputation is
+`d3a605c5bd24812fc87d3795b76f3b1ee92eca60f3a4595434df747d32593829`,
+not the control-recorded `5b93f48f…`. No path was added or omitted. The latter
+is preserved as the authority value, not claimed as reproduced, and requires
+C00/I36 metadata disposition during independent review.
 
-Focused verification at the source head passed five files and 23 tests,
-focused ESLint, and focused Prettier. The full TypeScript run has no P21 error;
-its remaining failures are the existing missing local Playwright declarations
-in historical browser harnesses.
+## Corrected behavior
 
-This is source completion only. It is not acceptance passed, candidate ready,
-operator accepted, or production released.
+Pre-approval `needs_review -> archived` now uses a command-level scope
+derivation discriminator. Only that exact transition, with `approval: null`,
+may derive product, runtime tier, verification environment, and source identity
+from the locked approved `content_processing_versions` / `content_sources_v21`
+join. The repository rejects that derivation mode for every other transition.
+Approved and post-approval transitions still require the exact approval
+evidence and source binding.
 
-## Immutable migration boundary
+Registration replay now always re-resolves the exact source, locks the
+canonical aggregate, and verifies all four immutable ordered bootstrap events.
+It then permits a write-free replay when the persisted publication and
+canonical states agree at `needs_review` version 4 or at a valid canonical
+successor after version 4. Incompatible state, changed source/hash/scope,
+missing or changed bootstrap events, and invalid versions still fail closed.
 
-Integrated
-`packages/db/migrations/2252_v21_content_publication.sql` remains byte-identical
-at raw SHA-256
-`7981b9cf9805ec9bfba7005e7688034bacb90f5e730d0e593c43202c68afeafc`.
-It still implements the superseded 13-field projection and 4-field artifact
-validator. It must never be edited or amended.
+No direct `canonical_aggregate_states` DML was added. Canonical changes remain
+event-only and transactionally coupled to publication changes.
 
-`P21-MIGRATION-002` remains immutable historical request evidence at raw
-Git-blob SHA-256
-`aab270cb40f12885ea89acbdc4308e0d1ffa9cf89ae48d7e0cca6c5445985a45`.
-It was not repurposed.
+## Proof
 
-The new forward-only successor request is:
+The five focused files pass with 31 tests, retaining all prior 29 assertions.
+The new service proof covers:
 
-- Request: `P21-MIGRATION-003`
-- Canonical sorted-JSON payload SHA-256:
-  `4c102308b097a26a1a25b3f37a894ab1222acbbc09421502d77fc0a5d880e4a9`
-- Raw Git-blob SHA-256:
-  `4ab2d70eff1a64fe70d3f7d2b076c9852dd27374367f9e8b683ed68c4cbd3a33`
-- Four-request aggregate:
-  `b0bcabe474905f4a0529fb9a7b8d091de3007949cba2cf68b622430053541f01`
-- Requested steward: `F02`
-- Exact requested allocation:
-  `packages/db/migrations/2253_v21_content_publication_projection_v2.sql`
+- register then archive before approval -> publication archived/version 2,
+  canonical archived/version 5, and zero provider-operation or outbox work;
+- register, approve, then exact register retry -> no new canonical event;
+- exact retry after publication-only version divergence -> no canonical write.
 
-The request binds F02 to source head `38156528...`, immutable migration-2252
-checksum `7981b9cf...`, the exact 27/8 contract, both publication-binding
-validator calls plus outbox, assignment, and library call sites, and native
-PostgreSQL acceptance/rejection probes. The successor may supersede 2252 only
-through forward-only `CREATE OR REPLACE` functions.
+The repository proof covers the exact approved processing/source join,
+pre-approval archive derivation, invalid derivation rejection, compatible
+successor replay, and publication/canonical version independence.
 
-## Effects and readiness
+A disposable native PGlite run applied real migrations 2234, 2245, and 2246.
+It reproduced canonical archived/version 5 with five events, zero writes for
+both replay cases, and append-only deletion rejection.
 
-No migration was authored or applied. No backfill, provider inspection or
-mutation, deployment, send, publication, control-ledger edit, central
-registration, or external effect occurred. Effects remain `0/0/0`.
+Workspace typecheck, focused ESLint, focused Prettier, steward-request schema,
+secret scan, static event-only DML, exact scope, diff, and artifact/hash gates
+all pass. Implementation artifact digest:
+`0e512a204943046e3710a44cdd514f690d54e2665a02c381f36909ab84a95e97`.
 
-P21 status is `implementation_complete_steward_successor_pending`. Candidate
-preparation and final acceptance remain blocked on the authored, probed, and
-integrated 2253 successor plus later candidate-bound evidence.
+## Immutable dependencies and effects
+
+`P21-registration-003` remains byte-identical at raw SHA-256
+`0100943c4acb2104fd1e5d755f860a675944ce19b1a0b92188dcac84ac19ed16`.
+It remains proposed, unapplied, and pending C00/I36 disposition. No migration,
+steward application, shared registration, integration, candidate, provider,
+deployment, DNS, send, charge, customer activation, or external effect was
+performed. Effects are `0/0/0`.
+
+The P21 branch inherits the earlier migration-2253 bytes; the canonical
+downstream integrated migration dependency remains the immutable corrected
+raw SHA-256
+`b96fae17a3ab9a13444787f7419366b0cd997e7a2754167b3c759d7074ff2c81`.
+P21 did not touch either migration lineage.
 
 ## Exact next action
 
-F02 consumes immutable request `P21-MIGRATION-003`, allocates and authors exact
-forward-only `2253_v21_content_publication_projection_v2.sql`, runs the
-requested native PostgreSQL probes, and publishes an immutable steward result.
-I36 then independently validates and integrates that result before any claim
-of P21 candidate readiness.
+C00 or I36 verifies local/tracking/live equality, the exact eight-path delta,
+the implementation digest, focused/native/static evidence, and immutable
+registration-003. It then integrates the exact terminal head and dispositions
+the request, or returns one bounded evidence-backed rejection.

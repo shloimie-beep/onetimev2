@@ -1,0 +1,98 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P21-registration-003
+task_id: P21
+kind: server_feature_registration
+requirement_ids:
+  - OTV2-CONTENT-087
+  - OTV2-CONTENT-088
+  - OTV2-CONTENT-089
+  - OTV2-CONTENT-090
+  - OTV2-CONTENT-091
+  - OTV2-CONTENT-092
+  - OTV2-CONTENT-194
+  - OTV2-CONTENT-195
+acceptance_case_ids:
+  - OTV2-CONTENT-087-AC01
+  - OTV2-CONTENT-088-AC01
+  - OTV2-CONTENT-090-AC01
+  - OTV2-CONTENT-091-AC01
+  - OTV2-CONTENT-092-AC01
+  - OTV2-CONTENT-194-AC01
+  - OTV2-CONTENT-195-AC01
+rationale: >-
+  P21 owns the isolated publication service and repository but not the central
+  server composer. This request supersedes the stale P21-registration-002
+  request and binds the registration to integrated migration 2253 plus the
+  canonical content aggregate-state event writer.
+desired_semantic_change: >-
+  Register P21 publication commands, protected Student publication reads, and
+  reconciled Vimeo readback only when the locked publication, migration-2253
+  projection, source-derived product/runtime/environment, canonical content
+  aggregate, and exact provider-operation scope all converge.
+proposed_symbols_routes_keys_or_dependencies:
+  - >-
+    Register createContentPublicationService and
+    createPostgresContentPublicationRepository from their isolated P21 seams;
+    do not duplicate lifecycle logic in the central composer.
+  - >-
+    Require packages/db/migrations/2253_v21_content_publication_projection_v2.sql
+    and the P20 approved projection repository before enabling registration.
+  - >-
+    Derive product, runtime tier, and verification environment by joining the
+    exact content_processing_versions row to content_sources_v21 on account,
+    product, source key, source digest, and object version.
+  - >-
+    Bootstrap fresh needs_review content by appending exactly
+    null-to-received-to-validating-to-processing-to-needs_review canonical
+    events. Exact registration replay must perform no event or aggregate write.
+  - >-
+    Append approve, request_publish, record_published, unpublish, and archive
+    canonical events in the same transaction as publication CAS, provider job,
+    outbox, materialization, completion, and receipt writes.
+  - >-
+    Use raw content_id as the canonical aggregate key, the independently locked
+    canonical aggregate version as expected_version, operation-namespaced
+    idempotency, and event inserts as the only aggregate mutation path.
+  - >-
+    Fence the configured Vimeo binding and every locked pending provider job to
+    the source-derived product/runtime/environment before any publication,
+    provider, outbox, materialization, completion, or receipt write.
+  - >-
+    Emit no canonical state event for attach_occurrence or record_revoked;
+    those operations may advance publication versions without changing the
+    canonical content state.
+compatibility_assumptions:
+  - >-
+    P21-registration-002 remains immutable and unapplied and is superseded by
+    this request; its malformed non-AC acceptance identifiers are not copied.
+  - >-
+    Migration 2253 is integrated and is the canonical replacement projection
+    for the immutable migration-2252 publication functions.
+  - >-
+    P20 approval projection, F05 provider operation, and F06 provider binding
+    remain mandatory and fail closed.
+  - >-
+    Central barrels, routes, deployment manifests, provider accounts, and
+    migrations are outside this request.
+verification_performed:
+  - Focused P21 service and PostgreSQL repository suites.
+  - Workspace TypeScript typecheck.
+  - Canonical bootstrap order, exact no-write replay, and independent-version tests.
+  - Source join, scope mismatch, namespaced idempotency, and no-direct-DML tests.
+  - Atomic rollback tests for every P21 state-changing command.
+  - Focused ESLint, Prettier, YAML schema, secret, scope, and diff checks.
+conflicts_or_risks:
+  - >-
+    Never infer canonical expected_version from content_publications.version;
+    attachment and revocation cleanup intentionally diverge those versions.
+  - >-
+    Never default or accept caller-supplied product, runtime tier,
+    verification environment, approval evidence, or provider scope.
+  - >-
+    Do not register a Parent playback route or expose Vimeo references,
+    provider credentials, signed media URLs, or approval evidence to clients.
+  - >-
+    Do not mutate a provider, deploy, send, edit a migration or domain file, or
+    perform any external effect from this request.
+contains_secret_or_private_data: false

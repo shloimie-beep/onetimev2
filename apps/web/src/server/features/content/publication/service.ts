@@ -78,6 +78,7 @@ export function createContentPublicationService(deps: {
         });
         const registration = await unit.registerContent(proposed);
         assertRegisteredProjectionReplay(registration.record, evidence, canonicalOccurrence);
+        await unit.bootstrapCanonicalContentState(registration.record, evidence);
         return {
           record: registration.record,
           replay: !registration.inserted,
@@ -127,6 +128,18 @@ export function createContentPublicationService(deps: {
           binding,
         });
         await unit.saveContent(next, current.version);
+        await unit.appendCanonicalContentStateTransition({
+          record: next,
+          operation: 'approve',
+          scopeDerivation: 'approved_projection',
+          previousState: current.state,
+          nextState: next.state,
+          actorKind: 'admin',
+          actorKey: input.principal.actorId,
+          idempotencyKey: binding.idempotencyKey,
+          requestHash: binding.requestHash,
+          occurredAt: binding.occurredAt,
+        });
         await unit.saveReceipt(receipt('approve', next, binding));
         return { record: next, replay: false as const };
       });
@@ -191,6 +204,8 @@ export function createContentPublicationService(deps: {
               )
             : null;
         if (!pendingProviderContext) return providerConflict();
+        const executionScope = await unit.resolveCanonicalContentExecutionScope(current);
+        assertProviderExecutionScope(executionScope, pendingProviderContext.executionScope);
         return { pendingProviderContext };
       });
       if ('replayResult' in prepared) return prepared.replayResult;
@@ -233,6 +248,8 @@ export function createContentPublicationService(deps: {
         ) {
           return providerConflict();
         }
+        const executionScope = await unit.resolveCanonicalContentExecutionScope(current);
+        assertProviderExecutionScope(executionScope, pendingProviderContext.executionScope);
         const eligibility = await Promise.all(
           audience.map((member) =>
             unit.getCurrentPublicationEligibility(
@@ -255,6 +272,18 @@ export function createContentPublicationService(deps: {
         await unit.saveContent(result.record, current.version);
         await unit.savePublicationMaterialization(result.materialization);
         await unit.completeProviderOperation(result.providerCompletion);
+        await unit.appendCanonicalContentStateTransition({
+          record: result.record,
+          operation: 'record_published',
+          scopeDerivation: 'approved_projection',
+          previousState: current.state,
+          nextState: result.record.state,
+          actorKind: 'reconciler',
+          actorKey: 'content-publication-vimeo-readback',
+          idempotencyKey: binding.idempotencyKey,
+          requestHash: binding.requestHash,
+          occurredAt: binding.occurredAt,
+        });
         await unit.saveReceipt(receipt('record_published', result.record, binding));
         return { record: result.record, replay: false as const };
       });
@@ -289,6 +318,8 @@ export function createContentPublicationService(deps: {
               )
             : null;
         if (!pendingProviderContext) return providerConflict();
+        const executionScope = await unit.resolveCanonicalContentExecutionScope(current);
+        assertProviderExecutionScope(executionScope, pendingProviderContext.executionScope);
         return { pendingProviderContext };
       });
       if ('replayResult' in prepared) return prepared.replayResult;
@@ -326,6 +357,8 @@ export function createContentPublicationService(deps: {
         ) {
           return providerConflict();
         }
+        const executionScope = await unit.resolveCanonicalContentExecutionScope(current);
+        assertProviderExecutionScope(executionScope, pendingProviderContext.executionScope);
         const result = recordPrivateRevocation({
           record: current,
           observation,
@@ -562,7 +595,7 @@ async function mutate(input: {
   vimeoProviderBinding: ProviderRegistryBinding;
   principal: ContentPublicationPrincipal;
   contentId: string;
-  operation: Exclude<ContentPublicationOperation, 'save_resume'>;
+  operation: 'request_publish' | 'unpublish' | 'archive';
   binding: ContentPublicationCommandBinding;
   requestPayload: unknown;
   apply: (
@@ -593,6 +626,8 @@ async function mutate(input: {
     const applied = input.apply(current, binding);
     const next = 'record' in applied ? applied.record : applied;
     if ('outboxIntent' in applied) {
+      const executionScope = await unit.resolveCanonicalContentExecutionScope(current);
+      assertProviderExecutionScope(executionScope, input.vimeoProviderBinding.scope);
       const providerOperation = createContentPublicationProviderOperation({
         intent: applied.outboxIntent,
         binding: input.vimeoProviderBinding,
@@ -601,6 +636,24 @@ async function mutate(input: {
     }
     await unit.saveContent(next, current.version);
     if ('outboxIntent' in applied) await unit.saveOutboxIntent(applied.outboxIntent);
+    await unit.appendCanonicalContentStateTransition({
+      record: next,
+      operation: input.operation,
+      scopeDerivation:
+        input.operation === 'archive' &&
+        current.state === 'needs_review' &&
+        next.state === 'archived' &&
+        next.approval === null
+          ? 'approved_processing_source'
+          : 'approved_projection',
+      previousState: current.state,
+      nextState: next.state,
+      actorKind: 'admin',
+      actorKey: input.principal.actorId,
+      idempotencyKey: binding.idempotencyKey,
+      requestHash: binding.requestHash,
+      occurredAt: binding.occurredAt,
+    });
     await unit.saveReceipt(receipt(input.operation, next, binding));
     return { record: next, replay: false as const };
   });
@@ -642,6 +695,20 @@ async function requiredContent(
 
 function principalScope(principal: ContentPublicationPrincipal): ContentPublicationScope {
   return { accountKey: principal.accountKey, productKey: principal.productKey };
+}
+
+function assertProviderExecutionScope(
+  expected: ProviderRegistryBinding['scope'],
+  actual: ProviderRegistryBinding['scope'] | undefined,
+) {
+  if (
+    !actual ||
+    actual.product !== expected.product ||
+    actual.runtime_tier !== expected.runtime_tier ||
+    actual.verification_environment_id !== expected.verification_environment_id
+  ) {
+    return providerConflict();
+  }
 }
 
 function authoritativeBinding(

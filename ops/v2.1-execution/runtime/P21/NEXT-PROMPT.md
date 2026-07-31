@@ -1,50 +1,56 @@
-MODEL: GPT-5.6-SOL
+MODEL: GPT-5.6 SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
-P21 source correction is complete on
-`codex/v21-p20-publication-seed-enrichment` at exact source head
-`38156528c1c022a0575db71426ce2cc8f2e20ab8`.
+Review the containing terminal commit on
+`codex/v21-p21-publication-scope-correction` under live control
+`0a2e8c390d48da157be35a2f9d06f876a70b5e62`.
 
-Resume from `TASK-STATE.yaml` and `HANDOFF.md`. Verify the containing metadata
-checkpoint is the normal pushed child of source head `38156528...`, the remote
-branch equals that checkpoint, and its delta is exactly:
+First verify:
 
-- `ops/v2.1-execution/runtime/P21/HANDOFF.md`
-- `ops/v2.1-execution/runtime/P21/NEXT-PROMPT.md`
-- `ops/v2.1-execution/runtime/P21/TASK-STATE.yaml`
-- `ops/v2.1-execution/runtime/P21/steward-requests/P21-MIGRATION-003.yaml`
+- the branch descends directly from clean start
+  `3250bb761aa0d6fb84db77f637bc05eb5f1c444d`;
+- local, tracking, and live remote terminal heads are equal;
+- READY
+  `ccad2b56eb4b33fc7a35cfc61625dad9d9de14863823d1c0e96242924306fec5`
+  authorized claim `cbec9b83-9d44-4d00-a797-fed83be43059` and exact eight-path
+  inventory digest
+  `5b93f48fdc9d709b450316ac4423f5077d39a253ca317424263433eb444e6b19`;
+- CONTENT_PUBLICATION lease `f03e8f5d-10fc-40f1-8720-e39086b4a799` is
+  released in the terminal runtime state;
+- external effects remain `0/0/0`.
 
-The source-complete projection has exactly 27 top-level fields and eight fields
-per artifact. The current 17-artifact aggregate is
-`94689409b4eb4dacaddf24335c95669384ed9002df16989fbdb186703a36ab35`;
-the exact eight-artifact companion aggregate is
-`55070ee51ae052e07d655faf404ea25a3a5116b38d18a14573e7bf57dfdeddb2`.
+The exact eight-path set matches READY, but the stated LF/no-final-newline
+recomputation is
+`d3a605c5bd24812fc87d3795b76f3b1ee92eca60f3a4595434df747d32593829`,
+not the control-recorded `5b93f48f…`. Do not fabricate reproduction; verify the
+path set directly and disposition the control metadata mismatch explicitly.
 
-Integrated migration 2252 is immutable at raw SHA-256
-`7981b9cf9805ec9bfba7005e7688034bacb90f5e730d0e593c43202c68afeafc`.
-Never edit or amend it. Never repurpose `P21-MIGRATION-002`, whose immutable
-raw Git-blob SHA-256 is
-`aab270cb40f12885ea89acbdc4308e0d1ffa9cf89ae48d7e0cca6c5445985a45`.
+Independently inspect and reproduce these two corrections only:
 
-The current successor request is `P21-MIGRATION-003` at canonical sorted-JSON
-payload SHA-256
-`4c102308b097a26a1a25b3f37a894ab1222acbbc09421502d77fc0a5d880e4a9`
-and exact raw Git-blob SHA-256
-`4ab2d70eff1a64fe70d3f7d2b076c9852dd27374367f9e8b683ed68c4cbd3a33`.
-It requests F02 allocation of exact forward-only
-`packages/db/migrations/2253_v21_content_publication_projection_v2.sql`,
-limited to `CREATE OR REPLACE` function successors, all five validator call
-sites, and native PostgreSQL exact accept/reject probes. The four-request
-aggregate is
-`b0bcabe474905f4a0529fb9a7b8d091de3007949cba2cf68b622430053541f01`.
+1. Exact pre-approval `needs_review -> archived` derives canonical scope and
+   source identity from the locked approved processing-version/source join,
+   reaches canonical version 5, creates no provider/outbox work, and rejects
+   use of that derivation mode for any other transition.
+2. Exact registration retry verifies source binding, canonical scope, and all
+   four bootstrap events before accepting a compatible canonical successor
+   without an event or aggregate write. Incompatible state, changed
+   source/hash/scope, missing events, invalid version, and rollback must still
+   fail closed.
 
-Next action: F02 consumes the immutable request, authors and probes 2253, and
-publishes an immutable steward result. I36 independently validates and
-integrates that result. Until then, P21 is source-complete but migration
-successor pending; do not mark acceptance passed, candidate ready, operator
-accepted, or released.
+Rerun the five focused files and require 31 passing tests, workspace typecheck,
+focused ESLint/Prettier, the native PostgreSQL proof, steward-request schema,
+secret, static event-only DML, diff, exact scope, and artifact-digest gates.
 
-No migration application, provider action, backfill, deployment, send, control
-edit, or external effect is authorized by this checkpoint.
+Verify `P21-registration-003` remains byte-identical at raw SHA-256
+`0100943c4acb2104fd1e5d755f860a675944ce19b1a0b92188dcac84ac19ed16`
+and remains unapplied. Verify implementation artifact digest
+`0e512a204943046e3710a44cdd514f690d54e2665a02c381f36909ab84a95e97`.
+
+If all evidence passes, C00 or I36 integrates the exact terminal head and
+dispositions registration-003. Otherwise return one bounded rejection tied to
+a reproduced failure. Do not edit a migration or shared registration from the
+P21 branch, weaken source/provider fencing, mutate a provider, deploy, change
+DNS, send, charge, activate a customer, or claim candidate/operator/production
+completion from this source checkpoint.

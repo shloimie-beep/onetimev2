@@ -1,5 +1,10 @@
+import { createHash } from 'node:crypto';
+
 import type {
+  CanonicalContentStateTransitionCommand,
   CanonicalGovernedOccurrence,
+  ContentApprovalEvidence,
+  ContentPublicationState,
   ContentPublicationOutboxIntent,
   ContentPublicationMaterialization,
   ContentPublicationPrincipal,
@@ -14,6 +19,7 @@ import type {
   StudentPublicationEligibility,
   StudentContentResume,
 } from '../../../../contracts/src/content/publication/index.ts';
+import type { JobScope } from '../../../../contracts/src/jobs/index.ts';
 
 export interface ContentPublicationSqlClient {
   query<Row extends Record<string, unknown> = Record<string, unknown>>(
@@ -55,6 +61,8 @@ interface PendingProviderContextRow extends Record<string, unknown> {
   provider: 'vimeo';
   operation: 'publish_private' | 'revoke_private';
   product_key: 'one_time_mishnayos';
+  runtime_tier: JobScope['runtime_tier'];
+  verification_environment_id: JobScope['verification_environment_id'];
   content_id: string;
   content_version_id: string;
   publication_generation: number;
@@ -96,6 +104,59 @@ interface CompletedProviderOperationRow extends Record<string, unknown> {
     | 'production_operator_canary'
     | 'production_broad';
   reconciliation_digest: string | null;
+}
+
+interface CanonicalContentScopeRow extends Record<string, unknown> {
+  product_key: JobScope['product'];
+  runtime_tier: JobScope['runtime_tier'];
+  verification_environment_id: JobScope['verification_environment_id'];
+  source_key: string;
+  source_sha256: string;
+  source_object_version_id: string;
+}
+
+interface ResolvedCanonicalContentScope extends JobScope {
+  sourceKey: string;
+  sourceSha256: string;
+  sourceObjectVersionId: string;
+}
+
+interface CanonicalContentStateRow extends Record<string, unknown> {
+  aggregate_kind: 'content';
+  aggregate_key: string;
+  current_state: ContentPublicationState;
+  version: string | number;
+  product_key: JobScope['product'];
+  runtime_tier: JobScope['runtime_tier'];
+  verification_environment_id: JobScope['verification_environment_id'];
+}
+
+interface CanonicalContentEventRow extends Record<string, unknown> {
+  transition_key: string;
+  previous_state: ContentPublicationState | null;
+  next_state: ContentPublicationState;
+  expected_version: string | number;
+  resulting_version: string | number;
+  product_key: JobScope['product'];
+  runtime_tier: JobScope['runtime_tier'];
+  verification_environment_id: JobScope['verification_environment_id'];
+  actor_kind: string;
+  actor_key: string;
+  idempotency_key: string;
+  canonical_request_hash: string;
+}
+
+interface CanonicalContentEvent {
+  previousState: ContentPublicationState | null;
+  nextState: ContentPublicationState;
+  expectedVersion: number;
+  resultingVersion: number;
+  actorKind: 'admin' | 'worker' | 'reconciler';
+  actorKey: string;
+  idempotencyKey: string;
+  canonicalRequestHash: string;
+  occurredAt: string;
+  scope: JobScope;
 }
 
 export function createPostgresContentPublicationRepository(
@@ -177,6 +238,119 @@ function createUnit(client: ContentPublicationSqlClient): ContentPublicationUnit
       const persisted = existing.rows[0]?.record_json;
       if (!persisted) throw new Error('content_publication_registration_conflict');
       return { record: persisted, inserted: false };
+    },
+
+    async bootstrapCanonicalContentState(record, evidence) {
+      const scope = await resolveCanonicalContentExecutionScope(client, record, evidence);
+      const current = await lockCanonicalContentState(client, record.contentId);
+      const bootstrap = canonicalBootstrapEvents(record, scope);
+      if (current) {
+        assertCanonicalStateScope(current, record, scope);
+        const currentVersion = canonicalVersion(
+          current.version,
+          'content_canonical_state_version_invalid',
+        );
+        const persisted = await client.query<CanonicalContentEventRow>(
+          `SELECT transition_key, previous_state, next_state, expected_version,
+                  resulting_version, product_key, runtime_tier,
+                  verification_environment_id, actor_kind, actor_key,
+                  idempotency_key, canonical_request_hash
+             FROM onetime.canonical_state_transition_events
+            WHERE aggregate_kind = 'content'
+              AND aggregate_key = $1
+              AND idempotency_key = ANY($2::text[])
+            ORDER BY expected_version`,
+          [record.contentId, bootstrap.map((event) => event.idempotencyKey)],
+        );
+        if (
+          persisted.rows.length !== bootstrap.length ||
+          !bootstrap.every((expected, index) =>
+            canonicalEventMatches(persisted.rows[index], expected),
+          )
+        ) {
+          throw new Error('content_canonical_bootstrap_replay_conflict');
+        }
+        if (!canonicalBootstrapReplayIsCompatible(record.state, current, currentVersion)) {
+          throw new Error('content_canonical_bootstrap_state_conflict');
+        }
+        return {
+          replay: true,
+          resultingVersion: currentVersion,
+        };
+      }
+      if (record.state !== 'needs_review' || record.version !== 1) {
+        throw new Error('content_canonical_bootstrap_fresh_record_required');
+      }
+      for (const event of bootstrap) {
+        await insertCanonicalContentEvent(client, record.contentId, scope, event);
+      }
+      return { replay: false, resultingVersion: 4 };
+    },
+
+    async resolveCanonicalContentExecutionScope(record) {
+      return resolveCanonicalContentExecutionScope(client, record);
+    },
+
+    async appendCanonicalContentStateTransition(command) {
+      const deriveFromApprovedProcessingSource = assertCanonicalScopeDerivation(command);
+      const scope = await resolveCanonicalContentExecutionScope(
+        client,
+        command.record,
+        undefined,
+        deriveFromApprovedProcessingSource,
+      );
+      const current = await lockCanonicalContentState(client, command.record.contentId);
+      if (!current) throw new Error('content_canonical_state_unavailable');
+      assertCanonicalStateScope(current, command.record, scope);
+      const idempotencyKey = canonicalOperationIdempotencyKey(
+        command.operation,
+        command.idempotencyKey,
+      );
+      const prior = await client.query<CanonicalContentEventRow>(
+        `SELECT transition_key, previous_state, next_state, expected_version,
+                resulting_version, product_key, runtime_tier,
+                verification_environment_id, actor_kind, actor_key,
+                idempotency_key, canonical_request_hash
+           FROM onetime.canonical_state_transition_events
+          WHERE aggregate_kind = 'content'
+            AND aggregate_key = $1
+            AND idempotency_key = $2
+          LIMIT 1`,
+        [command.record.contentId, idempotencyKey],
+      );
+      const priorEvent = prior.rows[0];
+      if (priorEvent) {
+        const expectedVersion = canonicalVersion(
+          priorEvent.expected_version,
+          'content_canonical_event_version_invalid',
+        );
+        const expected = canonicalCommandEvent(command, scope, expectedVersion);
+        if (!canonicalEventMatches(priorEvent, expected)) {
+          throw new Error('content_canonical_state_idempotency_conflict');
+        }
+        return {
+          replay: true,
+          resultingVersion: canonicalVersion(
+            priorEvent.resulting_version,
+            'content_canonical_event_version_invalid',
+          ),
+        };
+      }
+      const expectedVersion = canonicalVersion(
+        current.version,
+        'content_canonical_state_version_invalid',
+      );
+      if (current.current_state !== command.previousState) {
+        throw new Error('content_canonical_state_transition_conflict');
+      }
+      const event = canonicalCommandEvent(command, scope, expectedVersion);
+      const resultingVersion = await insertCanonicalContentEvent(
+        client,
+        command.record.contentId,
+        scope,
+        event,
+      );
+      return { replay: false, resultingVersion };
     },
 
     async saveContent(record, expectedVersion) {
@@ -360,6 +534,8 @@ function createUnit(client: ContentPublicationSqlClient): ContentPublicationUnit
                 j.provider,
                 j.operation_type AS operation,
                 j.product AS product_key,
+                j.runtime_tier,
+                j.verification_environment_id,
                 j.aggregate_ref AS content_id,
                 j.payload_ref AS content_version_id,
                 j.source_version AS publication_generation,
@@ -855,6 +1031,343 @@ function createUnit(client: ContentPublicationSqlClient): ContentPublicationUnit
   };
 }
 
+async function resolveCanonicalContentExecutionScope(
+  client: ContentPublicationSqlClient,
+  record: ContentPublicationRecord,
+  suppliedEvidence?: ContentApprovalEvidence,
+  allowApprovedProcessingSourceOnly = false,
+): Promise<ResolvedCanonicalContentScope> {
+  const evidence = suppliedEvidence ?? record.approval?.evidence;
+  if (
+    (!evidence && !allowApprovedProcessingSourceOnly) ||
+    (evidence &&
+      (evidence.accountKey !== record.accountKey ||
+        evidence.productKey !== record.productKey ||
+        evidence.contentId !== record.contentId ||
+        evidence.contentVersionId !== record.contentVersionId ||
+        evidence.contentVersionDigest !== record.contentVersionDigest))
+  ) {
+    throw new Error('content_canonical_projection_binding_unavailable');
+  }
+  const result = await client.query<CanonicalContentScopeRow>(
+    `SELECT version_row.product_key,
+            version_row.record_json ->> 'runtimeTier' AS runtime_tier,
+            source_row.record_json ->> 'verificationEnvironmentId'
+              AS verification_environment_id,
+            version_row.source_key,
+            version_row.source_sha256,
+            version_row.source_object_version_id
+       FROM onetime.content_processing_versions AS version_row
+       JOIN onetime.content_sources_v21 AS source_row
+         ON source_row.account_key = version_row.account_key
+        AND source_row.product_key = version_row.product_key
+        AND source_row.source_key = version_row.source_key
+        AND source_row.source_sha256 = version_row.source_sha256
+        AND source_row.object_version_id = version_row.source_object_version_id
+      WHERE version_row.account_key = $1
+        AND version_row.product_key = $2
+        AND version_row.content_version_key = $3
+        AND version_row.processing_state = 'approved'
+        AND version_row.record_json ->> 'contentId' = $4
+        AND version_row.record_json -> 'publicationApproval'
+              ->> 'contentVersionDigest' = $5
+        AND version_row.record_json ->> 'runtimeTier' =
+              source_row.record_json ->> 'runtimeTier'
+      LIMIT 2
+      FOR SHARE OF version_row, source_row`,
+    [
+      record.accountKey,
+      record.productKey,
+      record.contentVersionId,
+      record.contentId,
+      record.contentVersionDigest,
+    ],
+  );
+  if (result.rows.length !== 1) throw new Error('content_canonical_source_scope_unavailable');
+  const row = result.rows[0]!;
+  if (
+    row.product_key !== record.productKey ||
+    !canonicalExecutionScopeIsValid(row.runtime_tier, row.verification_environment_id)
+  ) {
+    throw new Error('content_canonical_source_scope_conflict');
+  }
+  if (
+    evidence &&
+    (row.source_key !== evidence.sourceId ||
+      row.source_sha256 !== evidence.sourceSha256 ||
+      row.source_object_version_id !== evidence.sourceObjectVersionId)
+  ) {
+    throw new Error('content_canonical_source_binding_conflict');
+  }
+  return {
+    product: row.product_key,
+    runtime_tier: row.runtime_tier,
+    verification_environment_id: row.verification_environment_id,
+    sourceKey: row.source_key,
+    sourceSha256: row.source_sha256,
+    sourceObjectVersionId: row.source_object_version_id,
+  };
+}
+
+async function lockCanonicalContentState(
+  client: ContentPublicationSqlClient,
+  contentId: string,
+): Promise<CanonicalContentStateRow | null> {
+  const result = await client.query<CanonicalContentStateRow>(
+    `SELECT aggregate_kind, aggregate_key, current_state, version,
+            product_key, runtime_tier, verification_environment_id
+       FROM onetime.canonical_aggregate_states
+      WHERE aggregate_kind = 'content'
+        AND aggregate_key = $1
+      LIMIT 1
+      FOR UPDATE`,
+    [contentId],
+  );
+  return result.rows[0] ?? null;
+}
+
+function assertCanonicalStateScope(
+  current: CanonicalContentStateRow,
+  record: ContentPublicationRecord,
+  scope: JobScope,
+) {
+  if (
+    current.aggregate_kind !== 'content' ||
+    current.aggregate_key !== record.contentId ||
+    current.product_key !== scope.product ||
+    current.runtime_tier !== scope.runtime_tier ||
+    current.verification_environment_id !== scope.verification_environment_id
+  ) {
+    throw new Error('content_canonical_state_scope_conflict');
+  }
+}
+
+function assertCanonicalScopeDerivation(command: CanonicalContentStateTransitionCommand) {
+  const preApprovalArchive =
+    command.operation === 'archive' &&
+    command.previousState === 'needs_review' &&
+    command.nextState === 'archived' &&
+    command.record.state === 'archived' &&
+    command.record.approval === null;
+  if (command.scopeDerivation === 'approved_processing_source') {
+    if (!preApprovalArchive) throw new Error('content_canonical_scope_derivation_conflict');
+    return true;
+  }
+  if (command.scopeDerivation !== 'approved_projection' || !command.record.approval) {
+    throw new Error('content_canonical_scope_derivation_conflict');
+  }
+  return false;
+}
+
+function canonicalBootstrapReplayIsCompatible(
+  recordState: ContentPublicationState,
+  current: CanonicalContentStateRow,
+  currentVersion: number,
+) {
+  if (current.current_state !== recordState) return false;
+  if (recordState === 'needs_review') return currentVersion === 4;
+  return (
+    currentVersion > 4 &&
+    (recordState === 'approved' ||
+      recordState === 'publishing' ||
+      recordState === 'published' ||
+      recordState === 'failed' ||
+      recordState === 'archived')
+  );
+}
+
+function canonicalBootstrapEvents(
+  record: ContentPublicationRecord,
+  scope: ResolvedCanonicalContentScope,
+): readonly CanonicalContentEvent[] {
+  const states: readonly ContentPublicationState[] = [
+    'received',
+    'validating',
+    'processing',
+    'needs_review',
+  ];
+  return states.map((nextState, index) => {
+    const previousState = index === 0 ? null : states[index - 1]!;
+    const expectedVersion = index;
+    const idempotencyKey = `content:bootstrap:${index + 1}:${nextState}`;
+    return {
+      previousState,
+      nextState,
+      expectedVersion,
+      resultingVersion: expectedVersion + 1,
+      actorKind: 'reconciler',
+      actorKey: 'content-publication-bootstrap',
+      idempotencyKey,
+      canonicalRequestHash: canonicalHash({
+        operation: `bootstrap_${nextState}`,
+        accountKey: record.accountKey,
+        productKey: scope.product,
+        runtimeTier: scope.runtime_tier,
+        verificationEnvironmentId: scope.verification_environment_id,
+        sourceKey: scope.sourceKey,
+        sourceSha256: scope.sourceSha256,
+        sourceObjectVersionId: scope.sourceObjectVersionId,
+        contentId: record.contentId,
+        contentVersionId: record.contentVersionId,
+        contentVersionDigest: record.contentVersionDigest,
+        previousState,
+        nextState,
+        expectedVersion,
+        actorKind: 'reconciler',
+        actorKey: 'content-publication-bootstrap',
+        authoritativePublicationRequestHash: canonicalHash({
+          contentId: record.contentId,
+          contentVersionId: record.contentVersionId,
+          contentVersionDigest: record.contentVersionDigest,
+          participantSetVersion: record.participantSetVersion,
+          participantSnapshotSetDigest: record.participantSnapshotSetDigest,
+          redactionReviewDigest: record.redactionReviewDigest,
+        }),
+      }),
+      occurredAt: record.updatedAt,
+      scope,
+    };
+  });
+}
+
+function canonicalCommandEvent(
+  command: CanonicalContentStateTransitionCommand,
+  scope: ResolvedCanonicalContentScope,
+  expectedVersion: number,
+): CanonicalContentEvent {
+  const idempotencyKey = canonicalOperationIdempotencyKey(
+    command.operation,
+    command.idempotencyKey,
+  );
+  return {
+    previousState: command.previousState,
+    nextState: command.nextState,
+    expectedVersion,
+    resultingVersion: expectedVersion + 1,
+    actorKind: command.actorKind,
+    actorKey: command.actorKey,
+    idempotencyKey,
+    canonicalRequestHash: canonicalHash({
+      operation: command.operation,
+      accountKey: command.record.accountKey,
+      productKey: scope.product,
+      runtimeTier: scope.runtime_tier,
+      verificationEnvironmentId: scope.verification_environment_id,
+      sourceKey: scope.sourceKey,
+      sourceSha256: scope.sourceSha256,
+      sourceObjectVersionId: scope.sourceObjectVersionId,
+      contentId: command.record.contentId,
+      contentVersionId: command.record.contentVersionId,
+      contentVersionDigest: command.record.contentVersionDigest,
+      previousState: command.previousState,
+      nextState: command.nextState,
+      expectedVersion,
+      actorKind: command.actorKind,
+      actorKey: command.actorKey,
+      authoritativePublicationRequestHash: command.requestHash,
+    }),
+    occurredAt: command.occurredAt,
+    scope,
+  };
+}
+
+async function insertCanonicalContentEvent(
+  client: ContentPublicationSqlClient,
+  contentId: string,
+  scope: JobScope,
+  event: CanonicalContentEvent,
+): Promise<number> {
+  const transitionKey = canonicalHash({
+    aggregateKind: 'content',
+    aggregateKey: contentId,
+    idempotencyKey: event.idempotencyKey,
+    canonicalRequestHash: event.canonicalRequestHash,
+  });
+  const result = await client.query<{ resulting_version: string | number }>(
+    `INSERT INTO onetime.canonical_state_transition_events (
+       transition_key, aggregate_kind, aggregate_key, previous_state, next_state,
+       expected_version, resulting_version, product_key, runtime_tier,
+       verification_environment_id, actor_kind, actor_key, idempotency_key,
+       canonical_request_hash, created_at
+     ) VALUES (
+       $1, 'content', $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13,
+       $14::timestamptz
+     )
+     RETURNING resulting_version`,
+    [
+      transitionKey,
+      contentId,
+      event.previousState,
+      event.nextState,
+      event.expectedVersion,
+      event.resultingVersion,
+      scope.product,
+      scope.runtime_tier,
+      scope.verification_environment_id,
+      event.actorKind,
+      event.actorKey,
+      event.idempotencyKey,
+      event.canonicalRequestHash,
+      event.occurredAt,
+    ],
+  );
+  requireOne(result.rowCount, 'content_canonical_state_event_conflict');
+  return canonicalVersion(
+    result.rows[0]?.resulting_version,
+    'content_canonical_state_event_result_invalid',
+  );
+}
+
+function canonicalEventMatches(
+  actual: CanonicalContentEventRow | undefined,
+  expected: CanonicalContentEvent,
+) {
+  return Boolean(
+    actual &&
+    actual.previous_state === expected.previousState &&
+    actual.next_state === expected.nextState &&
+    canonicalVersion(actual.expected_version, 'content_canonical_event_version_invalid') ===
+      expected.expectedVersion &&
+    canonicalVersion(actual.resulting_version, 'content_canonical_event_version_invalid') ===
+      expected.resultingVersion &&
+    actual.product_key === expected.scope.product &&
+    actual.runtime_tier === expected.scope.runtime_tier &&
+    actual.verification_environment_id === expected.scope.verification_environment_id &&
+    actual.actor_kind === expected.actorKind &&
+    actual.actor_key === expected.actorKey &&
+    actual.idempotency_key === expected.idempotencyKey &&
+    actual.canonical_request_hash === expected.canonicalRequestHash,
+  );
+}
+
+function canonicalOperationIdempotencyKey(operation: string, idempotencyKey: string) {
+  return `content:${operation}:${idempotencyKey}`;
+}
+
+function canonicalHash(value: unknown) {
+  return createHash('sha256').update(JSON.stringify(value)).digest('hex');
+}
+
+function canonicalVersion(value: unknown, code: string) {
+  const version = Number(value);
+  if (!Number.isSafeInteger(version) || version < 0) throw new Error(code);
+  return version;
+}
+
+function canonicalExecutionScopeIsValid(
+  runtimeTier: string,
+  verificationEnvironmentId: string,
+): runtimeTier is JobScope['runtime_tier'] {
+  return (
+    (runtimeTier === 'isolated_staging' &&
+      ['ci', 'provider_sandbox', 'persistent_staging'].includes(verificationEnvironmentId)) ||
+    (runtimeTier === 'production' &&
+      ['production_read_only', 'production_operator_canary', 'production_broad'].includes(
+        verificationEnvironmentId,
+      ))
+  );
+}
+
 async function buildCurrentPlaybackFacts(
   client: ContentPublicationSqlClient,
   scope: ContentPublicationScope,
@@ -1024,6 +1537,11 @@ function mapPendingProviderContext(
 ): PendingContentPublicationProviderContext {
   return {
     intent: row.intent_json,
+    executionScope: {
+      product: row.product_key,
+      runtime_tier: row.runtime_tier,
+      verification_environment_id: row.verification_environment_id,
+    },
     providerOperation: {
       accountKey: row.account_key,
       providerOperationId: row.provider_operation_id,

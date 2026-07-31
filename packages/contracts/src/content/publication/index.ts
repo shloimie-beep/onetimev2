@@ -2,6 +2,7 @@ import type {
   ApprovedForPublicationProjectionParams,
   SourceCompleteApprovedForPublicationProjection,
 } from '../processing/index.ts';
+import type { JobScope } from '../../jobs/index.ts';
 import type { ProviderOperation } from '../../providers/v21-provider-core.ts';
 
 export const CONTENT_PUBLICATION_CONTRACT_VERSION = '2.1.0';
@@ -20,6 +21,29 @@ export const CONTENT_PUBLICATION_STATES = [
   'archived',
 ] as const;
 export type ContentPublicationState = (typeof CONTENT_PUBLICATION_STATES)[number];
+
+export type CanonicalContentStateActorKind = 'admin' | 'worker' | 'reconciler';
+export type CanonicalContentStateOperation =
+  'approve' | 'request_publish' | 'record_published' | 'unpublish' | 'archive';
+export type CanonicalContentScopeDerivation = 'approved_projection' | 'approved_processing_source';
+
+export interface CanonicalContentStateTransitionCommand {
+  record: ContentPublicationRecord;
+  operation: CanonicalContentStateOperation;
+  scopeDerivation: CanonicalContentScopeDerivation;
+  previousState: ContentPublicationState;
+  nextState: ContentPublicationState;
+  actorKind: CanonicalContentStateActorKind;
+  actorKey: string;
+  idempotencyKey: string;
+  requestHash: string;
+  occurredAt: string;
+}
+
+export interface CanonicalContentStateTransitionResult {
+  replay: boolean;
+  resultingVersion: number;
+}
 
 export type ContentPublicationScope = Pick<
   SourceCompleteApprovedForPublicationProjection,
@@ -286,6 +310,7 @@ export interface ContentPublicationProviderOperation extends ContentPublicationS
 export interface PendingContentPublicationProviderContext {
   intent: ContentPublicationOutboxIntent;
   providerOperation: ContentPublicationProviderOperation;
+  executionScope?: JobScope;
 }
 
 export interface ContentPublicationProviderCompletion extends ContentPublicationScope {
@@ -441,6 +466,14 @@ export interface ContentPublicationUnitOfWork {
   registerContent(
     record: ContentPublicationRecord,
   ): Promise<{ record: ContentPublicationRecord; inserted: boolean }>;
+  bootstrapCanonicalContentState(
+    record: ContentPublicationRecord,
+    evidence: ContentApprovalEvidence,
+  ): Promise<CanonicalContentStateTransitionResult>;
+  resolveCanonicalContentExecutionScope(record: ContentPublicationRecord): Promise<JobScope>;
+  appendCanonicalContentStateTransition(
+    command: CanonicalContentStateTransitionCommand,
+  ): Promise<CanonicalContentStateTransitionResult>;
   saveContent(record: ContentPublicationRecord, expectedVersion: number): Promise<void>;
   findReceipt(
     scope: ContentPublicationScope,
