@@ -3,87 +3,88 @@ execution_id: OT-V21-PRODUCTION
 generated_by: C00
 status: operational
 ready:
-  - task_id: I36
+  - task_id: P12
     status: resume_ready
-    phase: P12_then_P09_source_microbatch
-    branch: codex/v21-integration
+    phase: parent_household_integration_type_contract_correction
+    branch: codex/v21-p12-parent-household-concrete
     claim_mode: resume_existing
-    state_based_on_control_head_sha: f8d9059b53d0e62cefa0bdb3bced312f3d2e3dd5
-    authorized_start_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
-    expected_existing_head: ae3ced8a9daa11044d4278968c14cb6baa12a480
+    state_based_on_control_head_sha: f0d144154927a47bffd7939d815a510fbed3adf2
+    authorized_start_sha: 71fb96d60ea08e5947681e1ea1c704606ff215cc
+    expected_existing_head: 71fb96d60ea08e5947681e1ea1c704606ff215cc
     package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
     source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
-    task_packet_digest: 55e261760baac780e9a4db48c328480c6f98172261ef990e563a00b25c467fc7
-    task_context_digest: 7f47da82267dec5dafe9ad53da7ece7618c331645f0591982851c47987d06813
+    task_packet_digest: 37a367f92ac2af2a1e9ef17ae97ec2caed3d80ea608d7bcbbeeb6ecc64a0c2bd
+    task_context_digest: 1b1bc9f0a0624836ba69e7c35acb2d70ea43f71347cb434be9796b307e418b73
     dependency_heads_and_digests:
       C00:
         required_state: immediate_lean_completion_mode
         observed_state: immediate_lean_completion_mode
-        observed_control_head_sha: f8d9059b53d0e62cefa0bdb3bced312f3d2e3dd5
-        control_state_canonical_digest: aa2019dd34c4017dd552db4200f3e14aab625bdf55b33b4689ccf789475526b5
+        observed_control_head_sha: f0d144154927a47bffd7939d815a510fbed3adf2
+        control_state_canonical_digest: d8ba196ad39bcb2dc0372fcb2dcbde96054773463e16098cf47aae4fa4097d6d
+      I36:
+        required_state: source_microbatch_local_merges_held_for_test_contract_correction
+        observed_state: source_microbatch_local_merges_held_for_test_contract_correction
+        authorized_start_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
+        P12_local_merge_sha: a6929cdddbde5282f37c10a60a5cc602cff44866
+        P09_local_merge_sha: 08e26cfd9958da54b3fff95942d81f08ac7a5e09
+        focused_merged_tests: 67_passed_3_declared_native_skips
+        relevant_web_builds: passed
+        external_effects: 0/0/0
       P12:
         required_state: implementation_ready
         observed_state: implementation_ready
         observed_task_head_sha: 71fb96d60ea08e5947681e1ea1c704606ff215cc
         terminal_parent_sha: 153c52e97123bb8723c8671873bf96d01444584c
         terminal_tree_sha: 5d36cf0a62b3e49bff3bbd6cfaca809a1cba1c56
-        source_delta_base_head_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
-        source_path_inventory_digest: 9c4fc65510c30ecfc112bcbd6956ec567c48d5ed2ce2027cf3a1452c5a63f268
-        source_manifest_digest: cb8f6f1f51bc58b4e1bc49794e8620df69447e8240f7a02810caf128cadb35ff
-        correction_path_inventory_digest: c816e5a6cc91f4326ee8552142e747b196b4ec3c454a4cee424c4ad16bc1dcee
-        correction_manifest_digest: 5bf0b524a43f605b0e456eb9e56e3ead50671c3349ce732e1a1449423df6dc29
-        state_handoff_digest: f959f8617737840dbb4fd12a0a704d3e84f24cfbe98ba75ac1dab039f704e920
-        runtime_triplet_digest: 29f701f662d57b7c02a574159b848097c3d7fb8fad4c0c2f77a22ed6c8346f41
         interface_version: 1.2.0
         interface_digest: f9c323080c32925864f780fb05981850644ba3a91a2303fa3f282bc7461378d9
-        lease_released_at: '2026-07-31T16:11:11Z'
-        independent_review: passed_no_P1_or_P2
-        external_effects: 0/0/0
-      P09:
-        required_state: implementation_ready
-        observed_state: implementation_ready
-        observed_task_head_sha: ce8df6e6d612dc935cb204fb7f7803489e90d740
-        terminal_first_parent_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
-        terminal_second_parent_sha: d9a4ce8082a028be81e234999deb43f659072a6d
-        terminal_tree_sha: 35e5155d2495a42f5b6b930506e753b9c1d80303
-        source_delta_base_head_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
-        source_path_inventory_digest: 45e30afa6a8b4314407c89e58edd913065762f9da9486ab445cb32316ede39d3
-        source_manifest_digest: 818556a6ff73a60e0c6d7de797c86f36939f367081750b0bef10fe8f1ddf6458
-        state_handoff_digest: 28346d16fb88c119355ea7a86e9758dcce1b616aaa6198468d04577e85c1cdb9
-        runtime_triplet_digest: fe3059a753d7804ad145d77890a3851d49924b8c0ccc6417bf2917ffe7b7e79e
-        lease_released_at: '2026-07-31T15:23:08Z'
         independent_review: passed_no_P1_or_P2
         external_effects: 0/0/0
     authorized_paths:
-      - ops/v2.1-execution/runtime/I36/HANDOFF.md
-      - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
-      - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
+      - apps/web/src/client/app/parent/household/ParentHouseholdWorkspace.test.tsx
+      - apps/web/src/server/features/portals/parent-household/router.test.ts
+      - apps/web/src/server/features/portals/parent-household/service.test.ts
+      - ops/v2.1-execution/runtime/P12/HANDOFF.md
+      - ops/v2.1-execution/runtime/P12/NEXT-PROMPT.md
+      - ops/v2.1-execution/runtime/P12/TASK-STATE.yaml
+    authorized_path_inventory_digest: 2301a50c11726d06a901b65fe86f67f79d0d9f4a3918d44a32c63426d81d8656
     correction_directives:
-      - Merge P12 terminal 71fb96d6 first and P09 terminal ce8df6e6 second, preserving each accepted source head as an ancestor and using only the two canonical MERGE-QUEUE items.
-      - This is a source-only microbatch. Preserve every steward request byte and do not edit shared server/client/worker registrations, routes, barrels, configuration, lockfiles, provider/workflow registries, deployment, branding, or public assets.
-      - Run only merged changed-source checks: the focused P12 and P09 suites, changed-package lint/format/typecheck, and the relevant web/package build. Do not repeat a repository-wide audit or full canonical suite.
-      - Update the I36 runtime triplet once at the substantive terminal, release the lease, push normally, verify live equality, and stop for one independent source-microbatch review.
-      - No steward application, candidate freeze, provider inspection or effect, persistent production database write, deployment, DNS change, send, charge, customer activation, or other external effect is authorized.
+      - >-
+        Change only the three test contracts found by the already-run merged typecheck: update the stale
+        contract_version fixtures at ParentHouseholdWorkspace.test.tsx:12 and router.test.ts:11 from 1.1.0
+        to exact 1.2.0, and preserve the receipt disposition literal type at service.test.ts:83 so the mock satisfies
+        the mutation port's 'replayed' | 'committed' contract. Do not change product or runtime source behavior.
+      - >-
+        Run the three exact focused test files, changed-package typecheck, and exact-file format/lint. The unchanged-base
+        billing official-client and Playwright harness typecheck failures may be reported as pre-existing only after
+        proving that no P12 or P09 type error remains. Do not rerun a repository-wide audit or full canonical suite.
+      - >-
+        Update the P12 runtime triplet once at the substantive terminal, release the lease, push one normal descendant of
+        71fb96d6, verify local/tracking/live equality and a clean worktree, then stop for one independent correction review.
+      - >-
+        Preserve every interface, migration, steward request, central composer, route, barrel, package, configuration,
+        provider, integration and candidate byte. No provider inspection or effect, database write, deployment, DNS
+        change, send, charge, customer activation or other external effect is authorized.
     writer_slot_leases:
-      - slot: RELEASE_INTEGRATOR
-        lease_id: 04dfa82c-4b04-4083-8255-1b78f20f59ff
-        holder_task_id: I36
-        holder_claim_id: 586989e0-52cd-4470-9ba3-ebb5689f5f14
-        holder_writer_id: codex-i36-p12-p09-source-586989e0
-        state_based_on_control_head_sha: f8d9059b53d0e62cefa0bdb3bced312f3d2e3dd5
-        lease_issued_at: '2026-07-31T16:23:33Z'
+      - slot: PARENT_HOUSEHOLD_UI
+        lease_id: 6e355e1f-ef06-4a44-87c4-f51f9f039dd0
+        holder_task_id: P12
+        holder_claim_id: 8a7c03c1-af56-43ad-ba0a-ce2f3c764845
+        holder_writer_id: codex-p12-type-contract-8a7c03c1
+        state_based_on_control_head_sha: f0d144154927a47bffd7939d815a510fbed3adf2
+        lease_issued_at: '2026-07-31T16:49:03Z'
         lease_expires_at: '2026-07-31T18:23:33Z'
-        phase_scope: P12_then_P09_source_microbatch_only
+        phase_scope: parent_household_integration_type_contract_correction
     effect_lock_leases: []
-    claim_id: 586989e0-52cd-4470-9ba3-ebb5689f5f14
-    lease_issued_at: '2026-07-31T16:23:33Z'
+    claim_id: 8a7c03c1-af56-43ad-ba0a-ce2f3c764845
+    lease_issued_at: '2026-07-31T16:49:03Z'
     lease_expires_at: '2026-07-31T18:23:33Z'
     heartbeat_interval_minutes: 30
-    prompt_path: ops/v2.1-execution/prompts/I36-START-OR-RESUME.md
+    prompt_path: ops/v2.1-execution/prompts/P12-START-OR-RESUME.md
     model: GPT-5.6-SOL
     reasoning: XHIGH
 entry_payload_digests:
-  I36: 701a0990cef5e978589d874988207a38680c275c84f83594d41ea6f187cbdd12
+  P12: 1d7f2c81fa9522d0e0d66001053938c43fe1bb72040341fceef9e9cd0f0dfc7e
 digest_algorithm: >-
   For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively, separators ','
   and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives in this sibling map,

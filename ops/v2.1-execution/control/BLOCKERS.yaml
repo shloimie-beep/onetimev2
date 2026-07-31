@@ -132,10 +132,14 @@ blockers:
     confirmation rejection before replay, uniform wrong-household concealment, 31 focused assertions, disposable native
     PostgreSQL 18.4 8/8, semantic interface 1.2.0, released lease, and effects 0/0/0. C00 rejected and acknowledged
     obsolete P12-registration-001 and stale barrel -002, admitted only server/client -002 plus barrel -003, and dispatched
-    the source-only P12-then-P09 microbatch without applying shared paths.
+    the source-only P12-then-P09 microbatch without applying shared paths. I36 preserved exact source ancestry in clean
+    local merges a6929cdd then 08e26cfd; 67 focused assertions and the relevant web builds passed. Changed-package
+    typecheck found exactly three P12 test-only contract errors: two stale 1.1.0 semantic fixtures and one widened receipt
+    disposition mock. C00 held the safe local merges and dispatched one exact six-path P12 correction; no runtime product
+    defect, shared-path application, remote integration push, or external effect occurred.
   required_authority_or_input:
-  - Integrate accepted P12 terminal 71fb96d6 then accepted P09 terminal ce8df6e6 in the ancestry-preserving source-only
-    I36 microbatch
+  - Complete and independently review the exact six-path P12 integration type-contract correction, append its accepted
+    child to the held ancestry-preserving I36 microbatch, and complete the affected merged checks
   - Apply admitted P12 server/client -002 plus barrel -003 during dependency-ordered Batch A; never apply either
     superseded predecessor
   - Pass real signup, reload, logout, re-login, pre/post-expiry, household, inactive-route, wrong-household,
@@ -179,9 +183,10 @@ blockers:
     acknowledged the obsolete monolithic P09-registration-001 and admitted the three schema-valid split successors to
     I36 without applying them. Accepted P12 correction 71fb96d6 passed its one correction review, and C00 dispatched the
     ordered source-only P12-then-P09 I36 microbatch from exact integration ae3ced8a; the three P09 successors remain
-    assigned and unapplied.
+    assigned and unapplied. I36's clean local source merges passed all 67 focused assertions and relevant web builds but
+    are held before terminal/push for the exact three P12 test-only type-contract errors now under bounded correction.
   required_authority_or_input:
-  - Complete the dispatched P12-then-P09 ancestry-preserving I36 source microbatch
+  - Complete the bounded P12 test-contract correction and then terminalize the held ancestry-preserving I36 source microbatch
   - Apply the three admitted P09 split successors in dependency order and rerun the focused static production /school test
   protection: School inquiry must create no product account, access, Student contact, nurture enrollment, WhatsApp send, or direct provider/billing mutation.
   next_check: Re-evaluate after ordered P12-then-P09 source integration and dependency-ordered I36 route registration.
