@@ -175,6 +175,30 @@ describe('P22 learning service', () => {
     expect(hashes).not.toContain(base.requestHash);
   });
 
+  it('rejects padded idempotency keys before hashing or writing', async () => {
+    const apply = vi.fn<LearningEngagementRepository['applyQuestionMutation']>();
+    await expect(
+      service(repository({ applyQuestionMutation: apply })).submitQuestion({
+        actor: {
+          ...scope,
+          role: 'student',
+          principalId: 'login-1',
+          studentId: 'student-1',
+          householdId: 'household-1',
+          classIds: ['class-a'],
+        },
+        id: 'question-1',
+        classId: 'class-a',
+        body: 'Why?',
+        idempotencyKey: ' submit-1 ',
+        requestHash: 'caller-hash',
+        auditRef: 'audit-submit-1',
+        occurredAt: '2026-07-01T10:00:00.000Z',
+      }),
+    ).rejects.toThrow(/surrounding whitespace/);
+    expect(apply).not.toHaveBeenCalled();
+  });
+
   it('has read-only attendance and consent seams with no mutation methods', () => {
     const instance = service(repository()) as unknown as Record<string, unknown>;
     expect(instance.attendance).toBeTypeOf('function');
@@ -186,7 +210,30 @@ describe('P22 learning service', () => {
   it('reads only persisted active badges and performs no evidence scan or recalculation', async () => {
     const apply = vi.fn<LearningEngagementRepository['applyBadgeRecalculation']>();
     const facts = vi.fn<LearningEngagementRepository['listQuestionRecognitionFacts']>();
-    const awards = vi.fn<LearningEngagementRepository['listBadgeAwardProjections']>(async () => []);
+    const awards = vi.fn<LearningEngagementRepository['listBadgeAwardProjections']>(async () => [
+      {
+        ...scope,
+        key: 'consistency:1',
+        family: 'consistency',
+        level: 'I',
+        threshold: 5,
+        qualifyingCount: 5,
+        sourceKeys: ['occurrence-private'],
+        studentId: 'student-1',
+        classId: 'class-a',
+        sourceDigest: 'private-digest',
+        version: 7,
+        state: 'awarded',
+        ruleVersion: 'private-rule',
+        sourceAuditRefs: ['private-audit'],
+        awardedAt: '2026-07-01T10:00:00.000Z',
+        revokedAt: null,
+        recalculatedAt: '2026-07-01T10:00:00.000Z',
+        correctionAuditRef: null,
+        correctionReason: null,
+        correctedByAdminId: null,
+      },
+    ]);
     const instance = createLearningEngagementService({
       repository: repository({
         applyBadgeRecalculation: apply,
@@ -214,7 +261,27 @@ describe('P22 learning service', () => {
       reviewItems: { getAdminPublishedReviewItem: async () => null },
       aliasHmacKey: 'test-only-hmac-key',
     });
-    await expect(instance.badges(admin, 'student-1', 'class-a')).resolves.toEqual([]);
+    const student: LearningActor = {
+      ...scope,
+      role: 'student',
+      principalId: 'login-1',
+      studentId: 'student-1',
+      householdId: 'household-1',
+      classIds: ['class-a'],
+    };
+    const parent: LearningActor = {
+      ...scope,
+      role: 'parent',
+      principalId: 'adult-1',
+      householdIds: ['household-1'],
+      classIds: ['class-a'],
+    };
+    await expect(instance.badges(student, 'student-1', 'class-a')).resolves.toEqual([
+      { key: 'consistency:1', family: 'consistency', level: 'I' },
+    ]);
+    await expect(instance.badges(parent, 'student-1', 'class-a')).resolves.toEqual([
+      { key: 'consistency:1', family: 'consistency', level: 'I' },
+    ]);
     expect(awards).toHaveBeenCalledOnce();
     expect(facts).not.toHaveBeenCalled();
     expect(apply).not.toHaveBeenCalled();
@@ -285,6 +352,14 @@ describe('P22 learning service', () => {
         }),
       }),
     );
+    await expect(
+      instance.recalculateBadgeProjection(admin, 'student-1', 'class-a', {
+        family: 'curious_learner',
+        auditRef: 'audit-disable-1',
+        reason: 'A different reason',
+      }),
+    ).rejects.toThrow(/latest canonical source evidence/);
+    expect(apply).toHaveBeenCalledOnce();
   });
 
   it('projects an ordinary P18 attendance change in non-revoking award mode', async () => {
@@ -343,7 +418,18 @@ describe('P22 learning service', () => {
       reviewItems: { getAdminPublishedReviewItem: async () => null },
       aliasHmacKey: 'test-only-hmac-key',
     });
-    await instance.recalculateBadgesAfterAttendanceProjectionChange(admin, 'student-1', 'class-a');
+    await expect(
+      instance.recalculateBadgesAfterAttendanceProjectionChange(admin, 'student-1', 'class-a'),
+    ).rejects.toThrow(/canonical internal change context/);
+    await instance.recalculateBadgesAfterAttendanceProjectionChange(
+      {
+        ...scope,
+        kind: 'canonical_attendance_projection_change',
+        classId: 'class-a',
+      },
+      'student-1',
+      'class-a',
+    );
     expect(apply).toHaveBeenCalledWith(
       expect.objectContaining({
         allowRevocation: false,
@@ -414,6 +500,97 @@ describe('P22 learning service', () => {
     );
     await expect(instance.transitionQuestion(command)).resolves.toMatchObject({ replay: true });
     expect(applyQuestion).toHaveBeenCalledOnce();
+    expect(applyBadge).toHaveBeenCalledTimes(2);
+  });
+
+  it('keeps the latest revoked review event canonical and repairs its badge projection on replay', async () => {
+    const original = {
+      ...scope,
+      eventId: 'complete-1:review',
+      reviewItemId: 'review-1',
+      classId: 'class-a',
+      studentId: 'student-1',
+      householdId: 'household-1',
+      adminPublished: true,
+      action: 'completed' as const,
+      sequence: 1,
+      idempotencyKey: 'complete-1',
+      requestHash: 'hash-complete-1',
+      completedBy: 'login-1',
+      source: 'authenticated_submit' as const,
+      reason: null,
+      auditRef: 'audit-complete-1',
+      publicationAuditRef: 'revision-1',
+      completedAt: '2026-07-01T10:00:00.000Z',
+    };
+    let correction: typeof original | undefined;
+    const applyReview = vi.fn<LearningEngagementRepository['applyReviewCompletion']>(
+      async (completion) => {
+        correction = completion as typeof original;
+        return { completion, replay: false };
+      },
+    );
+    const applyBadge = vi
+      .fn<LearningEngagementRepository['applyBadgeRecalculation']>()
+      .mockRejectedValueOnce(new Error('badge_projection_temporarily_unavailable'))
+      .mockResolvedValue({ awards: [], replay: false });
+    const instance = createLearningEngagementService({
+      repository: repository({
+        applyReviewCompletion: applyReview,
+        applyBadgeRecalculation: applyBadge,
+        listReviewCompletionEvents: async () =>
+          correction ? [original, correction] : [original],
+        listReviewCompletions: async () => (correction ? [correction] : [original]),
+      }),
+      attendance: {
+        listAttendance: async () => [],
+        listScheduledOccurrenceCoverage: async () => [],
+      },
+      identity: {
+        listLearners: async () => [
+          {
+            ...scope,
+            studentId: 'student-1',
+            householdId: 'household-1',
+            classId: 'class-a',
+            enrollmentId: 'enrollment-1',
+            actualName: 'Student One',
+            displayName: null,
+          },
+        ],
+      },
+      recognitionConsent: { listRecognitionConsent: async () => [] },
+      reviewItems: {
+        getAdminPublishedReviewItem: async () => ({
+          ...scope,
+          reviewItemId: 'review-1',
+          classId: 'class-a',
+          publicationAuditRef: 'revision-1',
+        }),
+      },
+      aliasHmacKey: 'test-only-hmac-key',
+    });
+    const command = {
+      actor: admin,
+      reviewItemId: 'review-1',
+      classId: 'class-a',
+      studentId: 'student-1',
+      householdId: 'household-1',
+      action: 'revoked' as const,
+      reason: 'Completion was recorded in error',
+      auditRef: 'audit-revoke-1',
+      idempotencyKey: 'revoke-1',
+      requestHash: 'caller-hash',
+      occurredAt: '2026-07-03T10:00:00.000Z',
+    };
+    await expect(instance.correctReviewCompletion(command)).rejects.toThrow(
+      /badge_projection_temporarily_unavailable/,
+    );
+    await expect(instance.correctReviewCompletion(command)).resolves.toMatchObject({
+      replay: true,
+      completion: { action: 'revoked' },
+    });
+    expect(applyReview).toHaveBeenCalledOnce();
     expect(applyBadge).toHaveBeenCalledTimes(2);
   });
 
@@ -507,6 +684,7 @@ describe('P22 learning service', () => {
     });
     expect(apply).toHaveBeenCalledOnce();
 
+    const deniedPublication = vi.fn(async () => null);
     const deniedInstance = createLearningEngagementService({
       repository: repository({ applyReviewCompletion: apply }),
       attendance: {
@@ -515,11 +693,12 @@ describe('P22 learning service', () => {
       },
       identity: { listLearners: async () => [] },
       recognitionConsent: { listRecognitionConsent: async () => [] },
-      reviewItems: { getAdminPublishedReviewItem: async () => null },
+      reviewItems: { getAdminPublishedReviewItem: deniedPublication },
       aliasHmacKey: 'test-only-hmac-key',
     });
     await expect(deniedInstance.recordReviewCompletion(command)).rejects.toThrow(
       /Admin-published review item/,
     );
+    expect(deniedPublication).not.toHaveBeenCalled();
   });
 });

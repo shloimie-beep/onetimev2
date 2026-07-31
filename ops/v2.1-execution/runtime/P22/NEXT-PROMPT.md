@@ -1,12 +1,13 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
-MODE: REVIEW
+MODE: IMPLEMENT
 
-Review P22 from the pushed terminal successor-correction checkpoint under claim
-d8a3ff1d-edfd-4327-9047-3788d765f7bd, writer
-codex-p22-authority-successor-renewal-d8a3ff1d. Its LEARNING_ENGAGEMENT lease
-706d5e11-9ba4-4a1b-83b8-4beba9779aeb is task-locally released.
+Continue P22 terminal correction under claim
+4fde7d30-26be-4792-8406-da4ab8d6cd80, writer
+codex-p22-terminal-correction-4fde7d30. Its sole LEARNING_ENGAGEMENT lease
+e0f2587b-0d2e-4900-966d-56b0fae8dee0 is active through
+2026-07-31T10:08:00Z; the latest substantive heartbeat is 2026-07-31T08:36:00Z.
 
 Fetch control and the canonical P22 branch, require clean local/tracking/live
 equality, and derive the terminal head from the remote. Preserve the exact

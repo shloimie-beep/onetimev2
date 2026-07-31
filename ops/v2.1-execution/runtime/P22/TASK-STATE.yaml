@@ -40,32 +40,31 @@ dependency_heads:
     interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
     task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
     task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
-status: ready_for_review
-phase: complete
+status: in_progress
+phase: terminal_correction
 claim_mode: resume_existing_branch
-claimed_by: codex-p22-authority-successor-renewal-d8a3ff1d
-claim_time: '2026-07-31T06:27:22Z'
-claim_id: d8a3ff1d-edfd-4327-9047-3788d765f7bd
+claimed_by: codex-p22-terminal-correction-4fde7d30
+claim_time: '2026-07-31T08:08:00Z'
+claim_id: 4fde7d30-26be-4792-8406-da4ab8d6cd80
 writer_slot_leases:
   - slot: LEARNING_ENGAGEMENT
-    lease_id: 706d5e11-9ba4-4a1b-83b8-4beba9779aeb
-    lease_issued_at: '2026-07-31T06:20:00Z'
-    lease_expires_at: '2026-07-31T08:20:00Z'
-    released_at: '2026-07-31T07:56:00Z'
-    state_based_on_control_head_sha: 2d82c15a7af7284cacb7688b8a719da8f4f530a8
-    phase_scope: P22_learning_engagement_authority_successor_renewal_atomic_claim_only
-lease_expires_at: '2026-07-31T08:20:00Z'
-lease_released_at: '2026-07-31T07:56:00Z'
-last_heartbeat_at: '2026-07-31T07:56:00Z'
-controller_authorization_sha: 55ecbdc41e3ea7b341e000c6aeb74c7e1f8f8c49
-resume_containing_control_sha: 55ecbdc41e3ea7b341e000c6aeb74c7e1f8f8c49
-reconciled_control_sha: 55ecbdc41e3ea7b341e000c6aeb74c7e1f8f8c49
-ready_entry_state_based_on_control_head_sha: 2d82c15a7af7284cacb7688b8a719da8f4f530a8
-ready_entry_payload_digest: fb370deb9cc3e49470b3259003817644828fa1adf8ce4e52ce254411925b69be
-state_based_on_head_sha: 5c7439fa6bc7600fb62e6eac5b118affeba7704a
+    lease_id: e0f2587b-0d2e-4900-966d-56b0fae8dee0
+    lease_issued_at: '2026-07-31T08:08:00Z'
+    lease_expires_at: '2026-07-31T10:08:00Z'
+    state_based_on_control_head_sha: c22354f184f046a1cb817e0c9cd415aec7c37449
+    phase_scope: P22_terminal_correction
+lease_expires_at: '2026-07-31T10:08:00Z'
+last_heartbeat_at: '2026-07-31T08:36:00Z'
+controller_authorization_sha: c22354f184f046a1cb817e0c9cd415aec7c37449
+resume_containing_control_sha: c22354f184f046a1cb817e0c9cd415aec7c37449
+reconciled_control_sha: c22354f184f046a1cb817e0c9cd415aec7c37449
+ready_entry_state_based_on_control_head_sha: c22354f184f046a1cb817e0c9cd415aec7c37449
+ready_entry_payload_digest: e49a160d367d64be1f158009d21918fd68c3d63ad2ba2c91edf9abe89f39304c
+state_based_on_head_sha: a5ebe504b464f0ad140f3ab235d682ae79b54822
 last_implementation_commit_sha: 5c7439fa6bc7600fb62e6eac5b118affeba7704a
 implementation_artifact_digest: 2271b1e71d05f32c48d0e9a13e6b79a9819d0ffcb5d0c7748fb64a25ae8e3b98
 completed_steps:
+  - Heartbeat checkpoint under fresh terminal-correction claim 4fde7d30-26be-4792-8406-da4ab8d6cd80: implemented canonical latest-event review recalculation, internal ordinary attendance context, exact correction evidence binding, class-bound review reads, privacy-safe badge DTOs, and canonical idempotency validation; focused verification is in progress.
   - Completed the authorized successor correction at implementation head 5c7439fa6bc7600fb62e6eac5b118affeba7704a and released the task-local LEARNING_ENGAGEMENT lease.
   - Passed 34 focused domain/service/repository assertions, focused ESLint and Prettier, exact 16-path scope, diff hygiene, five successor-request schema/count validation, immutable predecessor blob/raw-hash proof, and zero-effect checks.
   - Added durable event-driven badge projection for ordinary attendance, question recognition, and review events; source-event replay repairs a failed post-commit projection while exact digest replay remains no-write.

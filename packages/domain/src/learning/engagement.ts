@@ -401,9 +401,11 @@ export function recordReviewCompletion(
   ) {
     denied('Review completion requires canonical Admin-published item evidence.');
   }
+  const idempotencyKey = canonicalIdempotencyKey(command.idempotencyKey);
+  const completedAt = validInstant(command.completedAt, 'Review completion time');
   return {
     ...scopeOf(command.actor),
-    eventId: `${command.idempotencyKey}:review`,
+    eventId: `${idempotencyKey}:review`,
     reviewItemId: requiredText(command.reviewItemId, 'Review item', 512),
     classId: requiredText(command.classId, 'Class', 512),
     studentId: command.actor.studentId,
@@ -411,7 +413,7 @@ export function recordReviewCompletion(
     adminPublished: true,
     action: 'completed',
     sequence: 1,
-    idempotencyKey: requiredText(command.idempotencyKey, 'Idempotency key', 512),
+    idempotencyKey,
     requestHash: requiredText(command.requestHash, 'Request hash', 512),
     completedBy: command.actor.principalId,
     source: command.source,
@@ -422,7 +424,7 @@ export function recordReviewCompletion(
       'Review publication audit reference',
       512,
     ),
-    completedAt: command.completedAt,
+    completedAt,
   };
 }
 
@@ -462,9 +464,11 @@ export function correctReviewCompletion(
   }
   const reason = requiredText(command.reason, 'Review correction reason', 1_000);
   if (reason.length < 3) invalid('Review correction requires an audited reason.');
+  const idempotencyKey = canonicalIdempotencyKey(command.idempotencyKey);
+  const occurredAt = validInstant(command.occurredAt, 'Review correction time');
   return {
     ...scopeOf(command.actor),
-    eventId: `${command.idempotencyKey}:review`,
+    eventId: `${idempotencyKey}:review`,
     reviewItemId: command.reviewItemId,
     classId: command.classId,
     studentId: command.studentId,
@@ -472,14 +476,14 @@ export function correctReviewCompletion(
     adminPublished: true,
     action: command.action,
     sequence: latest.sequence + 1,
-    idempotencyKey: command.idempotencyKey,
-    requestHash: command.requestHash,
+    idempotencyKey,
+    requestHash: requiredText(command.requestHash, 'Request hash', 512),
     completedBy: command.actor.principalId,
     source: 'admin_correction',
     reason,
     auditRef: requiredText(command.auditRef, 'Review correction audit reference', 512),
     publicationAuditRef: publishedItem.publicationAuditRef,
-    completedAt: command.occurredAt,
+    completedAt: occurredAt,
   };
 }
 
@@ -611,14 +615,15 @@ function transitionEntry(
   to: QuestionState,
   reason: string | null,
 ): QuestionTransitionLedgerEntry {
+  const idempotencyKey = canonicalIdempotencyKey(command.idempotencyKey);
   return {
     ...scopeOf(question),
-    eventId: `${command.idempotencyKey}:transition`,
+    eventId: `${idempotencyKey}:transition`,
     questionId: question.id,
     studentId: question.studentId,
     householdId: question.householdId,
     classId: question.classId,
-    idempotencyKey: requiredText(command.idempotencyKey, 'Idempotency key', 512),
+    idempotencyKey,
     requestHash: command.requestHash,
     actorId: command.actor.principalId,
     source,
@@ -639,15 +644,16 @@ function recognitionEntry(
   eligible: boolean,
   reason: string | null,
 ): QuestionRecognitionLedgerEntry {
+  const idempotencyKey = canonicalIdempotencyKey(command.idempotencyKey);
   return {
     ...scopeOf(question),
-    eventId: `${command.idempotencyKey}:recognition`,
+    eventId: `${idempotencyKey}:recognition`,
     questionId: question.id,
     studentId: question.studentId,
     householdId: question.householdId,
     classId: question.classId,
     sequence,
-    idempotencyKey: requiredText(command.idempotencyKey, 'Idempotency key', 512),
+    idempotencyKey,
     requestHash: command.requestHash,
     actorId: command.actor.principalId,
     source,
@@ -722,12 +728,6 @@ function leaderboardLabels(
       ] as const;
     }),
   );
-  /*
-  if (actor.role === 'admin') return learner.actualName;
-  if (actor.studentId === learner.studentId) return 'You';
-  if (consent?.choice === 'granted' && learner.displayName !== null) return learner.displayName;
-  return `Anonymous Student • ${opaqueKey('alias', key, learner).slice(0, 8).toUpperCase()}`;
-  */
 }
 
 function opaqueKey(domain: 'alias' | 'entry', key: string, learner: CanonicalLearnerIdentity) {
@@ -910,9 +910,17 @@ function assertQuestionCommand(command: {
   auditRef: string;
   occurredAt: string;
 }) {
-  requiredText(command.idempotencyKey, 'Idempotency key', 512);
+  canonicalIdempotencyKey(command.idempotencyKey);
   requiredText(command.auditRef, 'Question audit reference', 512);
   validInstant(command.occurredAt, 'Question occurrence time');
+}
+
+function canonicalIdempotencyKey(value: string) {
+  const normalized = requiredText(value, 'Idempotency key', 512);
+  if (normalized !== value) {
+    invalid('Idempotency key must not contain leading or trailing whitespace.');
+  }
+  return normalized;
 }
 
 function validInstant(value: string, label: string) {

@@ -22,6 +22,11 @@ export type LearningActor =
       householdId: string;
     });
 
+export type LearningProjectionChangeContext = LearningScope & {
+  kind: 'canonical_attendance_projection_change';
+  classId: string;
+};
+
 export type QuestionState =
   'submitted' | 'answered_private' | 'approved_for_class' | 'published' | 'closed' | 'declined';
 
@@ -275,6 +280,8 @@ export type LearningBadgeAward = {
   sourceKeys: readonly string[];
 };
 
+export type PublicLearningBadge = Pick<LearningBadgeAward, 'key' | 'family' | 'level'>;
+
 export type LearningBadgeAwardProjection = LearningScope &
   LearningBadgeAward & {
     studentId: string;
@@ -444,6 +451,7 @@ export interface LearningReviewItemReadPort {
   getAdminPublishedReviewItem(
     scope: LearningScope,
     reviewItemId: string,
+    classId: string,
   ): Promise<
     | (LearningScope & {
         reviewItemId: string;

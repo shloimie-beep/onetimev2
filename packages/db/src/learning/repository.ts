@@ -255,7 +255,7 @@ export function createLearningCanonicalReadPorts(pool: DbPool): {
       },
     },
     reviewItems: {
-      getAdminPublishedReviewItem: async (readScope, reviewItemId) => {
+      getAdminPublishedReviewItem: async (readScope, reviewItemId, classId) => {
         const result = await pool.query(
           `SELECT publication.account_key, state.product_key, state.runtime_tier,
                   state.verification_environment_id,
@@ -289,8 +289,9 @@ export function createLearningCanonicalReadPorts(pool: DbPool): {
               AND publication.approval_projection_json->>'approvedByAdminId' <> ''
               AND publication.approval_projection_json->>'approvedAt' <> ''
               AND artifact.value->>'kind' = 'review_material'
-              AND artifact.value->>'artifactId' = $5`,
-          [...scopeValues(readScope), reviewItemId],
+              AND artifact.value->>'artifactId' = $5
+              AND occurrence.class_series_key = $6`,
+          [...scopeValues(readScope), reviewItemId, classId],
         );
         const row = result.rows[0] as Record<string, unknown> | undefined;
         return row
@@ -482,14 +483,15 @@ function createUnit(
            SELECT event.*,
                   ROW_NUMBER() OVER (
                     PARTITION BY account_key, product_key, runtime_tier,
-                                 verification_environment_id, review_item_key, learner_key
+                                 verification_environment_id, review_item_key,
+                                 learner_key, class_key, household_key
                     ORDER BY event_sequence DESC
                   ) AS event_rank
              FROM onetime.learning_review_completions AS event
             WHERE account_key = $1 AND product_key = $2
               AND runtime_tier = $3 AND verification_environment_id = $4
          ) AS latest
-         WHERE event_rank = 1 AND event_action IN ('completed', 'restored')`,
+         WHERE event_rank = 1`,
         scopeValues(scope),
       );
       return result.rows.map((row) => mapReview(row as Record<string, unknown>));
@@ -545,6 +547,9 @@ async function applyBadgeRecalculation(
       !recalculation.correctedByAdminId?.trim())
   ) {
     throw new Error('learning_badge_revocation_requires_admin_audit');
+  }
+  if (existing.some((projection) => projection.ruleVersion !== recalculation.ruleVersion)) {
+    throw new Error('learning_badge_rule_version_mismatch');
   }
   if (
     existing.length === BADGE_LEVELS.length &&
@@ -633,7 +638,7 @@ async function applyBadgeRecalculation(
         recalculation.classId,
         family,
         level,
-        award?.threshold ?? threshold,
+        threshold,
         progress.qualifyingCount,
         JSON.stringify(progress.sourceKeys),
         familyDigest,

@@ -1,16 +1,27 @@
-# P22 Terminal Successor-Correction Handoff
+# P22 Active Terminal-Correction Handoff
 
 ## Authority
 
-- Branch basis: `9723a32f028db1791048549d9661d64bf36bc644`
-- Reconciled control: `55ecbdc41e3ea7b341e000c6aeb74c7e1f8f8c49`
-- Claim: `d8a3ff1d-edfd-4327-9047-3788d765f7bd`
-- Writer: `codex-p22-authority-successor-renewal-d8a3ff1d`
+- Branch basis: `a5ebe504b464f0ad140f3ab235d682ae79b54822`
+- Reconciled control: `c22354f184f046a1cb817e0c9cd415aec7c37449`
+- Claim: `4fde7d30-26be-4792-8406-da4ab8d6cd80`
+- Writer: `codex-p22-terminal-correction-4fde7d30`
 - LEARNING_ENGAGEMENT lease:
-  `706d5e11-9ba4-4a1b-83b8-4beba9779aeb`, released task-locally at
-  `2026-07-31T07:56:00Z`
-- Implementation head: `5c7439fa6bc7600fb62e6eac5b118affeba7704a`
+  `e0f2587b-0d2e-4900-966d-56b0fae8dee0`, active through
+  `2026-07-31T10:08:00Z`; heartbeat `2026-07-31T08:36:00Z`
+- Implementation basis: `a5ebe504b464f0ad140f3ab235d682ae79b54822`
 - Effects: `0/0/0`
+
+## Active correction
+
+The fresh terminal correction is in progress. The current checkpoint makes
+latest revoked review events canonical for badge recalculation, separates
+ordinary internal attendance projection context from audited Admin
+corrections, binds correction actor/reason/audit metadata to the latest source
+event, class-binds review-material reads after roster authorization, returns
+an explicit privacy-safe badge DTO, and rejects padded idempotency keys before
+server hashing. Focused verification and the successor-request wording update
+remain in progress.
 
 ## Completed correction
 
