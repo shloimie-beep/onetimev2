@@ -4,6 +4,10 @@ import type { QuestionMutation } from '../../../contracts/src/learning/index.ts'
 import { createLearningEngagementRepository } from './repository.ts';
 
 const source = readFileSync(new URL('./repository.ts', import.meta.url), 'utf8');
+const recognitionFactQuery = source.slice(
+  source.indexOf('listQuestionRecognitionFacts: async'),
+  source.indexOf('listQuestionTransitions:'),
+);
 const scope = {
   accountKey: 'account-1',
   productKey: 'one_time_mishnayos',
@@ -109,8 +113,9 @@ describe('P22 PostgreSQL repository', () => {
     expect(source).toContain('student.actual_name, student.display_name');
     expect(source).toContain('listScheduledOccurrenceCoverage');
     expect(source).toContain('occurrence.starts_at >= enrollment.effective_at');
-    expect(source).toContain('question.learner_key, question.household_key');
-    expect(source).toContain("event.to_state IN ('approved_for_class', 'published')");
+    expect(recognitionFactQuery).toContain('question.learner_key, question.household_key');
+    expect(recognitionFactQuery).toContain("event.to_state IN ('approved_for_class', 'published')");
+    expect(recognitionFactQuery).toContain('qualification.qualified_at, approval.approved_at');
     expect(source).toContain('AND class_key = $7 AND household_key = $8');
     expect(source).toContain(
       "attendance.reconciliation_state IN (\n                'provisional', 'provider_verified', 'provider_mismatch', 'admin_corrected'",

@@ -368,7 +368,8 @@ function createUnit(
       const result = await db.query(
         `SELECT question.account_key, question.product_key, question.runtime_tier,
                 question.verification_environment_id,
-                question.question_key, question.learner_key, question.class_key,
+                question.question_key, question.learner_key, question.household_key,
+                question.class_key,
                 question.question_state, COALESCE(recognition.eligible, FALSE) AS eligible,
                 recognition.recognition_sequence, recognition.event_source,
                 recognition.audit_ref, recognition.reason, recognition.actor_key,
