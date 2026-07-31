@@ -40,8 +40,8 @@ dependency_heads:
     interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
     task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
     task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
-status: in_progress
-phase: terminal_correction
+status: ready_for_review
+phase: complete
 claim_mode: resume_existing_branch
 claimed_by: codex-p22-terminal-correction-4fde7d30
 claim_time: '2026-07-31T08:08:00Z'
@@ -51,19 +51,23 @@ writer_slot_leases:
     lease_id: e0f2587b-0d2e-4900-966d-56b0fae8dee0
     lease_issued_at: '2026-07-31T08:08:00Z'
     lease_expires_at: '2026-07-31T10:08:00Z'
+    released_at: '2026-07-31T08:43:00Z'
     state_based_on_control_head_sha: c22354f184f046a1cb817e0c9cd415aec7c37449
     phase_scope: P22_terminal_correction
 lease_expires_at: '2026-07-31T10:08:00Z'
-last_heartbeat_at: '2026-07-31T08:36:00Z'
+lease_released_at: '2026-07-31T08:43:00Z'
+last_heartbeat_at: '2026-07-31T08:43:00Z'
 controller_authorization_sha: c22354f184f046a1cb817e0c9cd415aec7c37449
 resume_containing_control_sha: c22354f184f046a1cb817e0c9cd415aec7c37449
 reconciled_control_sha: c22354f184f046a1cb817e0c9cd415aec7c37449
 ready_entry_state_based_on_control_head_sha: c22354f184f046a1cb817e0c9cd415aec7c37449
 ready_entry_payload_digest: e49a160d367d64be1f158009d21918fd68c3d63ad2ba2c91edf9abe89f39304c
-state_based_on_head_sha: a5ebe504b464f0ad140f3ab235d682ae79b54822
-last_implementation_commit_sha: 5c7439fa6bc7600fb62e6eac5b118affeba7704a
-implementation_artifact_digest: 2271b1e71d05f32c48d0e9a13e6b79a9819d0ffcb5d0c7748fb64a25ae8e3b98
+state_based_on_head_sha: d08c113f859c69691110aea8f1621e6f2b1082ba
+last_implementation_commit_sha: d08c113f859c69691110aea8f1621e6f2b1082ba
+implementation_artifact_digest: fcb3f82bcaea5b510e837280bcd3c779794265fb360972cfafc9e5742f0470c5
 completed_steps:
+  - Completed the fresh terminal correction at implementation head d08c113f859c69691110aea8f1621e6f2b1082ba and released the sole LEARNING_ENGAGEMENT lease at 2026-07-31T08:43:00Z.
+  - Passed 40 focused assertions covering latest revoked-review repair, older exact correction replay, internal ordinary attendance context, exact correction source binding, class-bound review reads, privacy-safe badge DTOs, padded-key rejection, and the nine-row badge repository matrix.
   - Heartbeat checkpoint under fresh terminal-correction claim 4fde7d30-26be-4792-8406-da4ab8d6cd80: implemented canonical latest-event review recalculation, internal ordinary attendance context, exact correction evidence binding, class-bound review reads, privacy-safe badge DTOs, and canonical idempotency validation; focused verification is in progress.
   - Completed the authorized successor correction at implementation head 5c7439fa6bc7600fb62e6eac5b118affeba7704a and released the task-local LEARNING_ENGAGEMENT lease.
   - Passed 34 focused domain/service/repository assertions, focused ESLint and Prettier, exact 16-path scope, diff hygiene, five successor-request schema/count validation, immutable predecessor blob/raw-hash proof, and zero-effect checks.
@@ -107,7 +111,7 @@ completed_steps:
 remaining_steps:
   - I36 must disposition the five exact -002 successor requests and provide the fail-closed canonical content-state writer/populator before registering the review-material proof seam.
   - C00 must review this terminal branch; the two immutable predecessor requests remain evidence only and must not be applied.
-next_action: C00 should review implementation head 5c7439fa6bc7600fb62e6eac5b118affeba7704a and I36 should disposition the five exact successor requests without reviving either immutable predecessor.
+next_action: C00 should review implementation head d08c113f859c69691110aea8f1621e6f2b1082ba and I36 should disposition the five exact successor requests without reviving either immutable predecessor.
 requirements:
   OTV2-LEARNING-093: implementation_verified
   OTV2-LEARNING-094: implementation_verified
@@ -159,6 +163,16 @@ steward_requests:
   - P22-server-registration-002
 verification:
   commands_run:
+    - command: fresh terminal-correction authority, head, READY digest, claim, and lease verification
+      result: passed; control c22354f1, basis a5ebe504, READY e49a160d, claim 4fde7d30, writer codex-p22-terminal-correction-4fde7d30, and sole lease e0f2587b
+    - command: focused P22 domain, service, and repository Vitest suites after terminal correction
+      result: passed; 3 files and 40 tests cover latest revoked-review repair, older replay, public DTO isolation, source binding, class fencing, and the badge repository matrix
+    - command: terminal focused ESLint, Prettier, diff hygiene, and repository secret scan
+      result: passed; exact authorized 16-path cumulative ceiling, no diff errors, and secret scan passed across 2754 text files
+    - command: terminal five-request schema/traceability and immutable predecessor verification
+      result: passed; five -002 requests each carry 11 unique requirements and 10 AC01 cases; immutable -001 blobs/raw hashes remain exact
+    - command: workspace typecheck after terminal correction
+      result: baseline blocked; no P22 diagnostic, existing Stripe Status widening and missing Playwright dependency diagnostics remain
     - command: exact fetched control and task-branch head verification
       result: passed; control 8b4d83ae and local/remote P22 head 4d1b6dfc match the dispatch
     - command: canonical P22 READY payload digest recomputation

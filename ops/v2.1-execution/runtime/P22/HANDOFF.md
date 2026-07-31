@@ -1,4 +1,4 @@
-# P22 Active Terminal-Correction Handoff
+# P22 Terminal-Correction Handoff
 
 ## Authority
 
@@ -7,21 +7,23 @@
 - Claim: `4fde7d30-26be-4792-8406-da4ab8d6cd80`
 - Writer: `codex-p22-terminal-correction-4fde7d30`
 - LEARNING_ENGAGEMENT lease:
-  `e0f2587b-0d2e-4900-966d-56b0fae8dee0`, active through
-  `2026-07-31T10:08:00Z`; heartbeat `2026-07-31T08:36:00Z`
-- Implementation basis: `a5ebe504b464f0ad140f3ab235d682ae79b54822`
+  `e0f2587b-0d2e-4900-966d-56b0fae8dee0`, released task-locally at
+  `2026-07-31T08:43:00Z`
+- Implementation head: `d08c113f859c69691110aea8f1621e6f2b1082ba`
 - Effects: `0/0/0`
 
-## Active correction
+## Terminal correction
 
-The fresh terminal correction is in progress. The current checkpoint makes
+The fresh terminal correction makes
 latest revoked review events canonical for badge recalculation, separates
 ordinary internal attendance projection context from audited Admin
 corrections, binds correction actor/reason/audit metadata to the latest source
 event, class-binds review-material reads after roster authorization, returns
 an explicit privacy-safe badge DTO, and rejects padded idempotency keys before
-server hashing. Focused verification and the successor-request wording update
-remain in progress.
+server hashing. Older exact correction replay after a successor is a no-write
+success, and the badge repository now proves nine-row initialization,
+ordinary award preservation, audited revoke/restore, stable timestamps,
+immutable rule version, exact replay, and per-family version isolation.
 
 ## Completed correction
 
@@ -71,7 +73,7 @@ server projection routed only through the client-route successor request.
 
 ## Verification
 
-Focused domain, service, and repository suites pass: 3 files, 34 tests.
+Focused domain, service, and repository suites pass: 3 files, 40 tests.
 Workspace typecheck reports only pre-existing Stripe Status widening and
 missing Playwright dependency diagnostics; no P22 diagnostic is present.
 Focused ESLint, Prettier, diff hygiene, exact 16-path scope, immutable
