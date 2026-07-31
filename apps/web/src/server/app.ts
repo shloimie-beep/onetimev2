@@ -7,11 +7,7 @@ import helmet from 'helmet';
 import { z, ZodError } from 'zod';
 import type { AppConfig } from '../../../../packages/config/src/index.ts';
 import { asBotKey } from '../../../../packages/contracts/src/telegram/types.ts';
-import {
-  inTransaction,
-  type DbPool,
-  type Queryable,
-} from '../../../../packages/db/src/index.ts';
+import { inTransaction, type DbPool, type Queryable } from '../../../../packages/db/src/index.ts';
 import { createPostgresBillingRepositories } from '../../../../packages/db/src/billing/repository.ts';
 import { createClassroomRepository } from '../../../../packages/db/src/classroom/repository.ts';
 import { createZoomClassOccurrenceRepository } from '../../../../packages/db/src/classroom/zoom-occurrence-repository.ts';

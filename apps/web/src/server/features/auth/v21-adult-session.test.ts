@@ -631,9 +631,9 @@ describe('F03 v2.1 Parent host-cookie session runtime', () => {
       }),
     ).resolves.toEqual({ revoked: false, reason: 'invalid_csrf' });
     expect(harness.revoke).toHaveBeenCalledTimes(revokeCallsBeforeInvalidCsrf);
-    await expect(runtime.bootstrapCookieHeader({ cookie_header: cookie, now })).resolves.toMatchObject(
-      { status: 'resolved' },
-    );
+    await expect(
+      runtime.bootstrapCookieHeader({ cookie_header: cookie, now }),
+    ).resolves.toMatchObject({ status: 'resolved' });
 
     let revoked = false;
     harness.revoke.mockImplementation(async () => {

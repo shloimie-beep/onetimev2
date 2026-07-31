@@ -39,18 +39,18 @@ dependency_heads:
   P17: 7f8a41bc09c81c53a276a32bbb667aeb1f0ee69c
   P18: 3be7bf4930a02ea5559db057ceedd6bb11a1b543
   P21: 705030f2d5163f95340a19dc42efd0f167259869
-status: claimed
-phase: parent_session_auth_client_successor_terminal_validation_renewal_atomic_claim_only
+status: ready_for_review
+phase: parent_session_auth_client_successor_terminal_validation_complete
 claimed_by: codex-i36-parent-session-successor-8d8f5bb9
 claim_time: '2026-07-31T02:21:40Z'
 claim_id: 8d8f5bb9-c439-48b6-9c19-b3e8f809a7ee
 lease_id: 49ae7724-b77a-4cc5-81f6-d16b6e1f5457
 lease_issued_at: '2026-07-31T02:21:40Z'
 lease_expires_at: '2026-07-31T04:21:40Z'
-lease_released_at: null
-last_heartbeat_at: '2026-07-31T02:44:38Z'
-controller_authorization_sha: 52793910c1a8d899ae4cffc50a63bcb38a137090
-latest_valid_observed_control_head_sha: 52793910c1a8d899ae4cffc50a63bcb38a137090
+lease_released_at: '2026-07-31T03:31:32Z'
+last_heartbeat_at: '2026-07-31T03:31:32Z'
+controller_authorization_sha: ce71f41af1c70f689db9b3346ae5dfc643a1344f
+latest_valid_observed_control_head_sha: ce71f41af1c70f689db9b3346ae5dfc643a1344f
 reconciled_state_based_on_control_head_sha: 11d05d1f5d05d8817139c26890b78b1aadd8faad
 ready_consumed_by_control_head_sha: 52793910c1a8d899ae4cffc50a63bcb38a137090
 ready_consumed_state_based_on_control_head_sha: 11d05d1f5d05d8817139c26890b78b1aadd8faad
@@ -58,8 +58,8 @@ ready_authorization_control_head_sha: 52793910c1a8d899ae4cffc50a63bcb38a137090
 ready_entry_state_based_on_control_head_sha: 11d05d1f5d05d8817139c26890b78b1aadd8faad
 ready_entry_payload_digest: d0b0dea5b12a09f8b37c3d1ff28dfc5290bd9ab549e01e3afbd0e583cc648695
 claim_mode: resume_existing
-expected_existing_head_sha: 889557800bb3344392f9defc4f6e38d4c049cd0f
-lease_phase_scope: parent_session_auth_client_successor_terminal_validation_renewal_atomic_claim_only
+expected_existing_head_sha: 2e62d79d0122360155dd10da9c2b2c13892eff89
+lease_phase_scope: parent_session_auth_client_successor_three_file_prettier_correction_and_terminal_validation
 P21_publication_scope_correction_integration_binding:
   containing_control_head_sha: a58965e989a9dab81d079a8d02afe23aab146fb8
   authorized_start_sha: 7185d45b2dbcf157aa9e4f7cbcea02cc516ecf7d
@@ -1610,25 +1610,19 @@ family_parent_session_composition_binding:
       unavailable, missing production PROTECTED_PAYLOAD_ENCRYPTION_KEY test
       fixture, and stale login email-link-confirm markup expectation.
   external_effects: 0/0/0
-remaining_steps:
-  - Under a fresh claim and lease, pass terminal native PostgreSQL 18.4 session,
-    revocation, cleanup, redacted-audit, simultaneous greater-than-five
-    same-budget reservation, and exact bucket readback/release verification.
-  - Pass terminal real-browser Parent reload and logout verification.
-  - Pass the production build.
-  - Pass changed-file lint with zero findings.
-  - Pass focused formatting checks.
-  - Pass the repository secret scan without exposing credential material.
-  - Pass exact authorized-scope, diff-hygiene, and immutable-product-blob gates.
+remaining_steps: []
 next_action: >-
-  STOP. C00 must independently reconcile this runtime-triplet-only atomic claim
-  checkpoint, its exact parent 889557800bb3344392f9defc4f6e38d4c049cd0f,
-  canonical READY, fresh claim and live four-slot lease, preserved product/test
-  blobs and completed evidence, clean remote equality, and effects 0/0/0
-  before I36 runs any pending terminal gate.
+  STOP. C00 must independently audit the exact pushed six-path terminal
+  checkpoint, its sole parent 2e62d79d0122360155dd10da9c2b2c13892eff89,
+  controller-bound formatted blobs, complete terminal evidence, simultaneous
+  four-slot release, clean remote equality, and effects 0/0/0 before any
+  candidate, provider, deployment, or other successor action.
 requirements: {}
 acceptance_cases: {}
 current_checkpoint_changed_paths:
+  - apps/web/src/server/app.ts
+  - apps/web/src/server/features/auth/v21-adult-session.test.ts
+  - tests/integration/accounts/v21-family-parent-session-composition.test.ts
   - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/I36/HANDOFF.md
   - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
@@ -2856,9 +2850,7 @@ external_effects:
   attempted: 0
   succeeded: 0
   reconciled: 0
-blockers:
-  - C00 must reconcile this atomic runtime-only claim checkpoint before I36
-    uses the live fresh lease to run any pending terminal gate.
+blockers: []
 out_of_scope_findings: []
 renewal_checkpoint:
   checkpointed_at: '2026-07-31T00:54:34Z'
@@ -3081,3 +3073,103 @@ terminal_validation_renewal_atomic_claim_checkpoint:
     authority, preserved ten blobs and completed evidence, live unreleased
     four-slot lease, clean remote equality, and effects 0/0/0 before directing
     any terminal validation.
+terminal_validation_completion_checkpoint:
+  containing_control_head_sha: ce71f41af1c70f689db9b3346ae5dfc643a1344f
+  state_basis_control_head_sha: e621f71396b7d0a42eaead5b443eef03fadf84f2
+  exact_parent_integration_head_sha: 2e62d79d0122360155dd10da9c2b2c13892eff89
+  claim_id: 8d8f5bb9-c439-48b6-9c19-b3e8f809a7ee
+  writer_id: codex-i36-parent-session-successor-8d8f5bb9
+  lease_id: 49ae7724-b77a-4cc5-81f6-d16b6e1f5457
+  lease_issued_at: '2026-07-31T02:21:40Z'
+  lease_expires_at: '2026-07-31T04:21:40Z'
+  lease_released_at: '2026-07-31T03:31:32Z'
+  last_heartbeat_at: '2026-07-31T03:31:32Z'
+  lease_phase_scope: parent_session_auth_client_successor_three_file_prettier_correction_and_terminal_validation
+  writer_slots_released_together:
+    - SERVER_COMPOSER
+    - CLIENT_COMPOSER
+    - IDENTITY_AUTH_ACCESS
+    - ACCOUNT_HOUSEHOLD_IDENTITY
+  controller_bound_prettier_corrections:
+    apps/web/src/server/app.ts:
+      input_raw_sha256: ffaca0a996bbbd8538e8c319a602a0f613e00e870de000c0f64a5a30fc2a34d7
+      output_raw_sha256: e7359091cd01372177bf99aacce1e4902d4e179793eaa1ad7b7f432886536f5a
+      output_git_blob_sha1: f94f9e8ea0a376ba90fd07baa1aa8002d0cd63c3
+    apps/web/src/server/features/auth/v21-adult-session.test.ts:
+      input_raw_sha256: 41037442b1b3a7087815ba06510ab4a77ef5d431d101935f5982ee7b30b96a4c
+      output_raw_sha256: 36dd959dfb1f88fd756cc01e3aca4ef6d26b3929638f137ad9a7bf2eb796d6ac
+      output_git_blob_sha1: 347c7998065ae323fc7eb71a81cb0cb3a105ea41
+    tests/integration/accounts/v21-family-parent-session-composition.test.ts:
+      input_raw_sha256: cbada21f40c29f02914c3544e691307b27830a80653e4d0aa316df1678e7fcf9
+      output_raw_sha256: 8a249afac0d0d6b9771444244385b3aba9d3e6ce2551efe7c0b597cb5c714f14
+      output_git_blob_sha1: bf5e6f340ece3c66df12ef3a5b0f3736d59e78c1
+  unchanged_product_and_test_raw_sha256:
+    apps/web/src/client/app/portal-api.ts: e73e34711b44414c94033428e0c6274ba81dfcedd1a7da982b7cd3cbb0057afc
+    apps/web/src/client/app/portal-entry.tsx: 6bccdf9b82db8e0509c87840df0c4f9d4d447f6acc4ec6f567bd6254f6f45670
+    apps/web/src/client/public/public-entry.ts: 880107d865fa59f72c1650b1ff5466ccb92165bc85ee5aeca6ba5d906a2a329f
+    apps/web/src/server/features/auth/v21-adult-session.ts: 855df2a30af3c7d638ef2fa9496bc14f2b4adf244ff07f0baa34c0dd9fea8a04
+    packages/db/src/accounts/v21-household-identity-repository.test.ts: a38c25267f8168e44c3affb7fb210ead151bf03746ae4e09b0f02724e19964cd
+    packages/db/src/accounts/v21-household-identity-repository.ts: 1347c9ef8de6e83a1b30aee8180fa7be900624de9e76f41a251408b718f6d0bd
+    tests/e2e/landing-signup.spec.ts: ee41740bba4aef72637656dca03fc91f658ba00a2354da289173228821100ca2
+  completed_validation:
+    workspace_typecheck: passed
+    focused_auth_and_repository: 2_files_26_passed_3_declared_native_skips
+    pg_mem_parent_composition: 3_passed_1_declared_native_skip
+    native_postgresql_18_4_lifecycle: 1_passed_3_filtered
+    native_postgresql_production_runtime_concurrency:
+      result: passed
+      simultaneous_login_attempts: 6
+      response_statuses:
+        - 401
+        - 401
+        - 401
+        - 401
+        - 401
+        - 429
+      denied_exact_bucket_counts:
+        - 5
+        - 5
+        - 5
+        - 5
+      successful_login_release_bucket_counts:
+        - 0
+        - 5
+        - 5
+        - 5
+        - 5
+      ineligible_exact_readback_preserved: true
+    real_chromium_parent_reload_logout_zero_legacy_calls: 1_passed
+    production_client_and_pages_build: passed
+    configured_prettier_all_ten_product_and_test_paths: passed
+    changed_file_eslint_all_ten_product_and_test_paths: passed_zero_findings
+    repository_secret_scan: passed_3110_text_files
+    task_state_yaml_parse: passed
+    runtime_triplet_prettier: passed
+    diff_check: passed_after_final_metadata_write
+    exact_six_path_scope: passed_precommit
+    sole_parent_gate: exact_2e62d79d
+    post_push_remote_equality: required_out_of_band_after_terminal_commit
+  checkpoint_scope:
+    formatted_product_and_test_paths: 3
+    runtime_paths: 3
+    total_paths: 6
+    migration_bytes_changed: false
+    control_or_steward_bytes_changed: false
+    provider_or_candidate_action: false
+  disposable_postgresql_fixture:
+    database: ot_i36
+    server_version: '18.4'
+    original_session_identifier: 51752
+    original_session_identifier_process_present_at_final_readback: false
+    live_listener_pid: 8156
+    live_listener_preserved: true
+    stopped_by_I36: false
+    exact_owned_test_schema_dropped_after_verification: true
+  semantic_drift: none_controller_bound_prettier_only
+  external_effects: 0/0/0
+  safe_next_action: >-
+    Stop after the exact six-path terminal commit is pushed and local, tracking,
+    and live remote equality is proved. C00 must independently audit the sole
+    parent, controller-bound blobs, terminal evidence, simultaneous slot
+    release, exact scope, runtime digests, fixture preservation, and zero
+    effects before any candidate or external action.

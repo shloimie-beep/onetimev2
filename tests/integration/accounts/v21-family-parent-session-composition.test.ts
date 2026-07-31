@@ -249,7 +249,11 @@ describe('I36 central Family-signup and Parent-session composition', () => {
   });
 
   it('keeps outage cookies retryable and clears only after exact CSRF-bound logout', async () => {
-    const signup = await submitFamily('retryable-session-parent@example.test', 'Retryable', 'Parent');
+    const signup = await submitFamily(
+      'retryable-session-parent@example.test',
+      'Retryable',
+      'Parent',
+    );
     const firstBootstrapResponse = await fetch(`${baseUrl}/api/v2.1/auth/session`, {
       headers: { cookie: signup.hostCookie },
     });

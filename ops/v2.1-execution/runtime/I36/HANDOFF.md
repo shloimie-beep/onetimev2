@@ -926,3 +926,56 @@ charge, customer state, or other external effect changed. Effects remain
 I36 must stop after a normal push and clean local/tracking/live equality.
 C00 must independently reconcile the exact pushed runtime-only child before
 any pending terminal gate runs.
+
+## Parent auth/client successor terminal completion
+
+Live control `ce71f41af1c70f689db9b3346ae5dfc643a1344f` authorized the
+repository-configured Prettier output for exactly three product/test paths and
+completion of the already-bounded terminal validation from clean,
+remote-equal parent `2e62d79d0122360155dd10da9c2b2c13892eff89`. The unchanged
+claim is `8d8f5bb9-c439-48b6-9c19-b3e8f809a7ee`, writer is
+`codex-i36-parent-session-successor-8d8f5bb9`, and shared lease is
+`49ae7724-b77a-4cc5-81f6-d16b6e1f5457`.
+
+The three formatting corrections exactly match the controller-bound raw
+SHA-256 and Git blob IDs:
+
+- `apps/web/src/server/app.ts`:
+  `e7359091cd01372177bf99aacce1e4902d4e179793eaa1ad7b7f432886536f5a`,
+  blob `f94f9e8ea0a376ba90fd07baa1aa8002d0cd63c3`;
+- `apps/web/src/server/features/auth/v21-adult-session.test.ts`:
+  `36dd959dfb1f88fd756cc01e3aca4ef6d26b3929638f137ad9a7bf2eb796d6ac`,
+  blob `347c7998065ae323fc7eb71a81cb0cb3a105ea41`; and
+- `tests/integration/accounts/v21-family-parent-session-composition.test.ts`:
+  `8a249afac0d0d6b9771444244385b3aba9d3e6ce2551efe7c0b597cb5c714f14`,
+  blob `bf5e6f340ece3c66df12ef3a5b0f3736d59e78c1`.
+
+Terminal verification passed workspace typecheck; two focused auth/repository
+files with 26 passing tests and three declared native skips; pg-mem Parent
+composition with three passes and one declared native skip; native PostgreSQL
+18.4 lifecycle; a separate production-runtime six-way simultaneous login
+proof yielding exactly five 401 responses and one 429 with denied bucket
+counts `[5,5,5,5]`, successful-login release counts `[0,5,5,5,5]`, and
+unchanged ineligible readback; one real-Chromium Parent reload/logout case
+with zero legacy calls; the production client/pages build; all-ten configured
+Prettier; all-ten changed-file ESLint with zero findings; the 3,110-file
+secret scan; and exact scope, diff, ancestry, hash, and immutable-byte checks.
+
+The disposable `ot_i36` PostgreSQL 18.4 listener remains live on its existing
+port under PID 8156 and was not stopped or reconfigured by I36. The original
+wrapper/session identifier 51752 was already absent when terminal readback
+began. Only the exact owned test schema was dropped after the native proof.
+
+All four slots—SERVER_COMPOSER, CLIENT_COMPOSER, IDENTITY_AUTH_ACCESS, and
+ACCOUNT_HOUSEHOLD_IDENTITY—were released together at
+`2026-07-31T03:31:32Z`, before the `2026-07-31T04:21:40Z` expiry. The terminal
+checkpoint changes exactly the three controller-bound formatting paths and
+the I36 runtime triplet. It changes no migration, central queue, provider,
+candidate, deployment, DNS, send, billing, or customer state. Effects remain
+`0/0/0`.
+
+I36 must stop after normal push and clean local/tracking/live equality. C00
+must independently audit the exact sole parent, six-path scope, formatted
+blob IDs, complete terminal evidence, simultaneous lease release, runtime
+digests, preserved PostgreSQL listener, and zero effects before any candidate
+or external action.
