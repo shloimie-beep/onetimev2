@@ -1,7 +1,7 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
-MODE: PAUSE_FOR_C00_P21_P22_TERMINAL_AUDIT
+MODE: PAUSE_FOR_C00_F02_P18_TERMINAL_AUDIT
 
 Audit the exact pushed I36 P21-then-P22 accepted-source microbatch terminal.
 Do not perform steward, registration, SQL, candidate, provider, deployment, or
@@ -59,3 +59,57 @@ PostgreSQL-server replay remains mandatory before candidate freeze.
 
 C00 must independently consume both merge items and reconcile the terminal,
 lease release, and zero effects before issuing any successor authority. Stop.
+
+## Current audit target: F02 then P18 lean source microbatch
+
+Audit the exact pushed I36 F02-then-P18 terminal. Do not perform steward,
+registration, SQL, candidate, provider, deployment, or external successor
+work from this prompt.
+
+Repository: shloimie-beep/onetimev2
+Branch: codex/v21-integration
+Authorized start: `392cc119b2df65f9bd38da8c4db36113f1add967`
+Containing control: `cc03a0c8f73339c05e3fbe0179661882169b32d9`
+Authority/control basis: `4105c365a90ecb27fb930077ecaf02a9125edb38`
+READY: `e4a0f3e3dcf06750bf28a4029f38ee9c0d03b74f00d3eb3e409b5bb30e246512`
+Claim: `05827ada-e374-43a1-b606-9fa8ace0d171`
+Writer: `codex-i36-f02-p18-source-05827ada`
+RELEASE_INTEGRATOR lease: `e5ba5eae-272b-481d-b66b-1f4957840e10`
+Lease issued: `2026-07-31T13:03:39Z`
+Lease expiry: `2026-07-31T16:03:39Z`
+Lease release: `2026-07-31T13:38:40Z`
+Effects: `0/0/0`
+
+Confirm canonical queue payloads F02
+`e173c6b19150ed26b0bccbda36dcdd94b7111044b2476985042d3960611006b3`
+and P18
+`e83044cbb1f6b381da07521e6fd36c17418e1d820cbf371805a3feb4cab3c2ee`.
+
+Confirm F02 source `3ee2f651528f5170dd714b921500235d4e015c5b` was merged first at
+`614c723681cff39db2ebd8988017d4b389d1adc1`, with exact parents
+`392cc119b2df65f9bd38da8c4db36113f1add967` and
+`3ee2f651528f5170dd714b921500235d4e015c5b`, and tree
+`597f7aaa16ba5f46cd58404079cf413c19a6bd19`.
+
+Confirm P18 source `1926e61c793ce29d7240c1ee05d2a4879b52770b` was merged second at
+`4efab9fe2e9d6f34850e93b0ea434d3ed00dd8b3`, with exact parents
+`614c723681cff39db2ebd8988017d4b389d1adc1` and
+`1926e61c793ce29d7240c1ee05d2a4879b52770b`, and tree
+`6f3a3e8d4d9fdd6e0cb1f1ad185a107a9b3fa5f1`.
+
+Confirm both sources are ancestors, exact first-parent scopes are 7 and 8
+disjoint paths, and the terminal child adds only the I36 runtime triplet for
+an exact 18-path release from the authorized start. Confirm no producer edits,
+merge conflicts, steward applications, or shared registrations.
+
+Confirm 35/35 focused P18 assertions; the exact 87-file migration inventory;
+20/20 protected migrations 2234 through 2253 byte-identical to the authorized
+start; and native PostgreSQL 18.4 fresh apply 87/87, replay 87/87, ledger
+87/87, pending 0, issues 0. Confirm the disposable loopback server was stopped
+and exact runtime removed.
+
+Confirm the lease was released before expiry, local/tracking/live integration
+refs equal the terminal head, and no provider, candidate, deployment, DNS,
+send, charge, customer, persistent-database, or external effect occurred.
+C00 must reconcile and consume both merge items before issuing successor
+authority. Stop.

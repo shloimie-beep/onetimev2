@@ -8,8 +8,8 @@ package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a
 branch: codex/v21-integration
 start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 dependency_heads:
-  C00: a58965e989a9dab81d079a8d02afe23aab146fb8
-  F02: 9754f2ae0736ace4bbf7d2a88c73f1d28b0b5a20
+  C00: cc03a0c8f73339c05e3fbe0179661882169b32d9
+  F02: 3ee2f651528f5170dd714b921500235d4e015c5b
   F03: 3947c9887f3c6914a8247c70ac816a4ae94c76d0
   F06: 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
   P14: 3393169e2284d65ff0a970d797aa1f83ebf9d895
@@ -37,29 +37,29 @@ dependency_heads:
   P31: f50d95ba82c7bbf6c21b88bd3ea5a85e116ab671
   P20: 75137bf476b4a1773f29bb41a6a149148df2623d
   P17: 7f8a41bc09c81c53a276a32bbb667aeb1f0ee69c
-  P18: 3be7bf4930a02ea5559db057ceedd6bb11a1b543
+  P18: 1926e61c793ce29d7240c1ee05d2a4879b52770b
   P21: c11dec418fa3de896e96c348f87928c92c9f86b9
 status: ready_for_review
-phase: P21_then_P22_accepted_source_microbatch_complete
-claimed_by: codex-i36-p21-p22-source-f7a26569
-claim_time: '2026-07-31T10:20:00Z'
-claim_id: f7a26569-d4d1-4b42-9d5c-7b98377bd235
-lease_id: 5e0cd656-e4eb-492d-88d8-50c792fa1a20
-lease_issued_at: '2026-07-31T10:20:00Z'
-lease_expires_at: '2026-07-31T12:20:00Z'
-lease_released_at: '2026-07-31T11:09:17Z'
-last_heartbeat_at: '2026-07-31T11:09:17Z'
-controller_authorization_sha: 0d9274d0dbef7267d9b6671d8bbd099cba14893d
-latest_valid_observed_control_head_sha: 0d9274d0dbef7267d9b6671d8bbd099cba14893d
-reconciled_state_based_on_control_head_sha: ddd36a461481504219ac663cf464417eb2e6658b
-ready_consumed_by_control_head_sha: 0d9274d0dbef7267d9b6671d8bbd099cba14893d
-ready_consumed_state_based_on_control_head_sha: ddd36a461481504219ac663cf464417eb2e6658b
-ready_authorization_control_head_sha: ddd36a461481504219ac663cf464417eb2e6658b
-ready_entry_state_based_on_control_head_sha: 0a2e8c390d48da157be35a2f9d06f876a70b5e62
-ready_entry_payload_digest: 102533576903c248ec018c2806191d6fbc055ef2a2dcd2438042e5129e815e89
-claim_mode: resume_existing
-expected_existing_head_sha: b87901e803cdd3be7e09a1143d9f23eceaf7ad78
-lease_phase_scope: P21_then_P22_accepted_source_microbatch_only
+phase: F02_then_P18_lean_source_microbatch_complete
+claimed_by: codex-i36-f02-p18-source-05827ada
+claim_time: '2026-07-31T13:03:39Z'
+claim_id: 05827ada-e374-43a1-b606-9fa8ace0d171
+lease_id: e5ba5eae-272b-481d-b66b-1f4957840e10
+lease_issued_at: '2026-07-31T13:03:39Z'
+lease_expires_at: '2026-07-31T16:03:39Z'
+lease_released_at: '2026-07-31T13:38:40Z'
+last_heartbeat_at: '2026-07-31T13:38:40Z'
+controller_authorization_sha: cc03a0c8f73339c05e3fbe0179661882169b32d9
+latest_valid_observed_control_head_sha: cc03a0c8f73339c05e3fbe0179661882169b32d9
+reconciled_state_based_on_control_head_sha: 4105c365a90ecb27fb930077ecaf02a9125edb38
+ready_consumed_by_control_head_sha: cc03a0c8f73339c05e3fbe0179661882169b32d9
+ready_consumed_state_based_on_control_head_sha: 4105c365a90ecb27fb930077ecaf02a9125edb38
+ready_authorization_control_head_sha: 4105c365a90ecb27fb930077ecaf02a9125edb38
+ready_entry_state_based_on_control_head_sha: 4105c365a90ecb27fb930077ecaf02a9125edb38
+ready_entry_payload_digest: e4a0f3e3dcf06750bf28a4029f38ee9c0d03b74f00d3eb3e409b5bb30e246512
+claim_mode: controller_claim_no_claim_only_commit
+expected_existing_head_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
+lease_phase_scope: F02_then_P18_lean_source_microbatch
 P21_publication_scope_correction_integration_binding:
   containing_control_head_sha: a58965e989a9dab81d079a8d02afe23aab146fb8
   authorized_start_sha: 7185d45b2dbcf157aa9e4f7cbcea02cc516ecf7d
@@ -3344,3 +3344,106 @@ P21_P22_source_microbatch_terminal:
     audit and consume both merge items, exact ancestry and release scope,
     completed validation, released lease, clean remote equality, and zero
     effects before issuing any successor authority.
+F02_P18_lean_source_microbatch_terminal:
+  containing_control_head_sha: cc03a0c8f73339c05e3fbe0179661882169b32d9
+  state_basis_control_head_sha: 4105c365a90ecb27fb930077ecaf02a9125edb38
+  exact_authorized_start_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
+  ready_entry_payload_digest: e4a0f3e3dcf06750bf28a4029f38ee9c0d03b74f00d3eb3e409b5bb30e246512
+  claim_id: 05827ada-e374-43a1-b606-9fa8ace0d171
+  writer_id: codex-i36-f02-p18-source-05827ada
+  lease_id: e5ba5eae-272b-481d-b66b-1f4957840e10
+  lease_issued_at: '2026-07-31T13:03:39Z'
+  lease_expires_at: '2026-07-31T16:03:39Z'
+  lease_released_at: '2026-07-31T13:38:40Z'
+  last_heartbeat_at: '2026-07-31T13:38:40Z'
+  lease_phase_scope: F02_then_P18_lean_source_microbatch
+  writer_slots_released:
+    - RELEASE_INTEGRATOR
+  merge_item_payload_digests:
+    F02: e173c6b19150ed26b0bccbda36dcdd94b7111044b2476985042d3960611006b3
+    P18: e83044cbb1f6b381da07521e6fd36c17418e1d820cbf371805a3feb4cab3c2ee
+  ordered_merges:
+    F02:
+      merge_id: 81343d98-4027-4984-aa22-667bac140d4d
+      source_head_sha: 3ee2f651528f5170dd714b921500235d4e015c5b
+      source_parent_sha: b46ff339ab3d79b06547d387795e95951a200263
+      source_tree_sha: 597f7aaa16ba5f46cd58404079cf413c19a6bd19
+      source_delta_base_head_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
+      merge_result_head_sha: 614c723681cff39db2ebd8988017d4b389d1adc1
+      merge_parent_target_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
+      merge_parent_source_sha: 3ee2f651528f5170dd714b921500235d4e015c5b
+      merge_tree_sha: 597f7aaa16ba5f46cd58404079cf413c19a6bd19
+      source_path_count: 7
+      source_path_inventory_digest: a28d4c79e43025499b3518d7fa194aeb4755cb903f508bc9b3c7353dadd56966
+      source_manifest_digest: 507805b23a2ba2b82e174e6f478c97cbba155e418d16511a525f01fe685f4c28
+      state_handoff_digest: 62a0494054c46bc8ba16f8b1b57898cb3ccee19a9b324dec9201939da144c894
+      runtime_triplet_digest: 1852f5414eb77a15dea67d80707fc913ea25f6fcc1c9ba50cd50e3c792f56297
+    P18:
+      merge_id: 417ab877-7cdc-4244-8e40-bc268325a4de
+      source_head_sha: 1926e61c793ce29d7240c1ee05d2a4879b52770b
+      source_parent_sha: abc2be5b19f5539a4e3bcea55886f5ff12d5de64
+      source_tree_sha: 3be253c75d6f35972b895f980ee58266e5a80a05
+      source_delta_base_head_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
+      required_merge_after_F02_sha: 3ee2f651528f5170dd714b921500235d4e015c5b
+      merge_result_head_sha: 4efab9fe2e9d6f34850e93b0ea434d3ed00dd8b3
+      merge_parent_target_sha: 614c723681cff39db2ebd8988017d4b389d1adc1
+      merge_parent_source_sha: 1926e61c793ce29d7240c1ee05d2a4879b52770b
+      merge_tree_sha: 6f3a3e8d4d9fdd6e0cb1f1ad185a107a9b3fa5f1
+      source_path_count: 8
+      source_path_inventory_digest: 1dd57e7e6aed52361594eb355635aa799b9cc63aca5a52ab65f88b346d90af1a
+      source_manifest_digest: 749d8af2878867401f88f16eb02d2adcedc8ca9b2e41efe1245988eca6c6a437
+      product_artifact_manifest_digest: 1aec3f57732e639247eb99f450f878991e197d0de866d5bbb3e2c1ac5126d340
+      state_handoff_digest: 4b732a77050b64ed8e441573a321f74988ee96f1af1906340571e8190d91293c
+      runtime_triplet_digest: fac28c509f5d0761379a7a699b3fbaf91b2a189431cd657a2bed9c7bbfa84e3e
+  scope:
+    F02_source_paths: 7
+    P18_source_paths: 8
+    combined_source_paths: 15
+    pairwise_path_collision_count: 0
+    terminal_runtime_paths: 3
+    release_path_count: 18
+  completed_validation:
+    canonical_ready_and_merge_payload_digests: passed
+    exact_merge_parents_trees_order_and_ancestry: passed
+    exact_first_parent_scopes: passed_7_and_8_paths
+    source_merge_conflicts: 0
+    producer_source_edits_by_I36: 0
+    P18_focused_vitest:
+      result: passed_35_of_35
+      repository: 21
+      domain: 10
+      server_callback_contract: 4
+    migration_inventory:
+      result: passed
+      count: 87
+      last: packages/db/migrations/2256_v21_approved_school_configuration_authority.sql
+      path_rawsha_manifest_digest: 7b835161715dd80d2ee207823636919b07a014cbfcebda4eae2bb6950cbf7072
+      protected_2234_through_2253: passed_20_of_20_blob_identical_to_authorized_start
+      exact_delta: only_2254_2255_2256
+    native_postgresql_18_4:
+      server_version: 18.4
+      server_version_num: 180004
+      fresh_transactional_apply: passed_87_of_87
+      replay: passed_87_of_87_already_applied
+      immutable_ledger: passed_87_of_87
+      pending: 0
+      issues: 0
+      ledger_lf_manifest_sha256: 0c873cb1ff5b2d16e8b25fe25e0bebe1820b2474889a4857acb0ad2db498e446
+      isolation: loopback_disposable_cluster
+      teardown: server_stopped_and_exact_disposable_runtime_removed
+    terminal_task_state_yaml_parse: passed
+    terminal_diff_check: passed
+    exact_release_scope: passed_18_paths_from_authorized_start
+  central_steward_application: none
+  shared_registration_application: none
+  provider_or_candidate_action: false
+  external_effects:
+    attempted: 0
+    succeeded: 0
+    reconciled: 0
+  safe_next_action: >-
+    Stop after committing and normally pushing the exact three-runtime-path
+    terminal child of the ordered F02/P18 merge head. C00 must independently
+    audit and consume both merge items, exact ancestry and release scope,
+    native PostgreSQL evidence, released lease, clean remote equality, runtime
+    digests, and effects 0/0/0 before issuing successor authority.

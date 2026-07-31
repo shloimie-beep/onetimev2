@@ -1097,3 +1097,46 @@ the ordered merge ancestry, terminal parent/tree, exact release scope and
 digests, validation evidence, lease release, unchanged requests/migrations,
 and effects `0/0/0`; consume both merge items; and issue new authority before
 any successor action.
+
+## F02 then P18 lean source microbatch terminal
+
+Live control `cc03a0c8f73339c05e3fbe0179661882169b32d9`, based on
+`4105c365a90ecb27fb930077ecaf02a9125edb38`, authorized canonical READY
+`e4a0f3e3dcf06750bf28a4029f38ee9c0d03b74f00d3eb3e409b5bb30e246512`
+from exact clean local/tracking/live integration parent
+`392cc119b2df65f9bd38da8c4db36113f1add967`. Claim
+`05827ada-e374-43a1-b606-9fa8ace0d171`, writer
+`codex-i36-f02-p18-source-05827ada`, and sole RELEASE_INTEGRATOR lease
+`e5ba5eae-272b-481d-b66b-1f4957840e10` bounded this microbatch.
+
+I36 merged F02 `3ee2f651528f5170dd714b921500235d4e015c5b` first at
+`614c723681cff39db2ebd8988017d4b389d1adc1`, with parents exactly the
+authorized start and F02 source and tree
+`597f7aaa16ba5f46cd58404079cf413c19a6bd19`. I36 then merged P18
+`1926e61c793ce29d7240c1ee05d2a4879b52770b` at
+`4efab9fe2e9d6f34850e93b0ea434d3ed00dd8b3`, with parents exactly the F02
+merge and P18 source and tree
+`6f3a3e8d4d9fdd6e0cb1f1ad185a107a9b3fa5f1`. Both source heads are
+ancestors. The exact first-parent scopes are 7 and 8 disjoint paths; no
+conflict, producer edit, steward application, or registration occurred.
+
+Verification passed the exact 35 P18 assertions: repository 21, domain 10,
+and server callback contract 4. The migration inventory is exactly 87 files;
+protected migrations 2234 through 2253 are byte-identical to the authorized
+start, and the only migration delta is 2254 through 2256. Fresh isolated
+native PostgreSQL 18.4 (`180004`) applied 87/87, replayed 87/87 as already
+applied, and verified an exact 87/87 ledger with zero pending migrations or
+issues. The ledger LF-manifest SHA-256 is
+`0c873cb1ff5b2d16e8b25fe25e0bebe1820b2474889a4857acb0ad2db498e446`.
+The loopback server was stopped and its exact disposable runtime removed.
+
+The sole lease was released at `2026-07-31T13:38:40Z`, before its
+`2026-07-31T16:03:39Z` expiry. No provider, candidate, deployment, DNS, send,
+charge, customer, persistent-database, or other external effect occurred.
+Effects remain attempted `0`, succeeded `0`, reconciled `0`.
+
+I36 must stop after the exact runtime-triplet terminal is normally pushed and
+clean local/tracking/live equality is proved. C00 must independently audit and
+consume both merge items, ancestry, exact release scope, native PostgreSQL
+evidence, runtime digests, lease release, and zero effects before successor
+authority.
