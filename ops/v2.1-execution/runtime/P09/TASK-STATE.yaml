@@ -71,8 +71,8 @@ convergence_dependency_bindings:
     migration_2241_git_blob: 83d423ef6b5e0e6fb6673f8c9467b2d08970a8bc
     migration_2249_raw_sha256: eb5a6ba248ebcd080b1a17b8eec0ca0ee0f4c2d79c5d440e6f6c16d1dfebf914
     migration_2249_git_blob: d6e100aecedf6726406f4d708920a973a6eb5fb0
-status: claimed
-phase: P09_P10_school_seat_authority_convergence_request_atomic_claim_only
+status: ready_for_review
+phase: P09_P10_school_seat_authority_convergence_request_complete
 claimed_by: codex-p09-seat-convergence-129aacb2
 claim_time: '2026-07-31T03:48:00Z'
 claim_id: 129aacb2-3e46-484f-94c1-1b2122b62950
@@ -80,20 +80,20 @@ lease_slot: SCHOOL_INQUIRY
 lease_id: 5238d22d-51eb-4f74-9cec-a0bf337cc72f
 lease_issued_at: '2026-07-31T03:48:00Z'
 lease_expires_at: '2026-07-31T05:48:00Z'
-lease_phase_scope: P09_P10_school_seat_authority_convergence_request_atomic_claim_only
-reconciled_resume_scope: null
+lease_phase_scope: P09_P10_school_seat_authority_convergence_request_only
+reconciled_resume_scope: P09_P10_school_seat_authority_convergence_request_only
 heartbeat_interval_minutes: 30
-lease_released_at: null
-last_heartbeat_at: '2026-07-31T04:18:06Z'
-controller_authorization_sha: fdcba89094f6b8f9460db3d41f3602be2d476990
-controller_authorization_parent_sha: ce71f41af1c70f689db9b3346ae5dfc643a1344f
-claim_reconciled_control_sha: null
-claim_reconciled_control_parent_sha: null
-atomic_claim_head_sha: null
+lease_released_at: '2026-07-31T04:51:04Z'
+last_heartbeat_at: '2026-07-31T04:51:04Z'
+controller_authorization_sha: cc90f922663405d883a798db8d4278ef803bb7cb
+controller_authorization_parent_sha: fdcba89094f6b8f9460db3d41f3602be2d476990
+claim_reconciled_control_sha: cc90f922663405d883a798db8d4278ef803bb7cb
+claim_reconciled_control_parent_sha: fdcba89094f6b8f9460db3d41f3602be2d476990
+atomic_claim_head_sha: 989b7fa979b62f4f78ae76900a73d0011b36f5e6
 ready_entry_state_based_on_control_head_sha: ce71f41af1c70f689db9b3346ae5dfc643a1344f
 ready_entry_payload_digest: 3e3462d65c63269f5623251cbb4f65b0808b20b11fc37c12a38ebf616798cc0c
 effect_lock_leases: []
-state_based_on_head_sha: a64a0c03edb6ae50023011f470358e9214f1196c
+state_based_on_head_sha: 989b7fa979b62f4f78ae76900a73d0011b36f5e6
 last_implementation_commit_sha: 05488497a7ca96841c235118c1e5da0bf9270ca1
 implementation_artifact_digest: cfd846747005ecfaf86a78ee1f958ddab8b5a252e5f5efe7e06b45014d22398a
 implementation_artifact_digest_algorithm: >-
@@ -149,6 +149,24 @@ convergence_request_scope:
     immutable predecessor evidence.
   - P10 receives no READY in this phase and remains pending P09 terminal
     request admission.
+convergence_request_result:
+  request_id: P09-migration-002
+  request_path: ops/v2.1-execution/runtime/P09/steward-requests/P09-migration-002.yaml
+  raw_git_blob_sha256: 538d6509a5170efc5c164f577d2054005edcd74c17d95e6128cb84ecb37c1a62
+  git_blob_sha1: 75cd8bb242eaaa59d7ebb215ea4d8881fb5354e1
+  canonical_payload_digest: d9958a9def7fa6d41f5c457a20ff44df8ba265f532e76dd397532ccfcf570dbb
+  disposition: immutable_request_published_pending_C00_admission
+  supersession_boundary:
+    P09-migration-001: school_seat_and_approved_configuration_semantics_only
+    P10-MIGRATION-001: school_seat_allowance_and_configuration_semantics_only
+  preserved_predecessor_evidence:
+    P09-migration-001_raw_sha256: f6612a8c3b435ca86f8dd8c5ce18ea9a1d91d4c4c0348fb5607eb6681c66b5df
+    P10-MIGRATION-001_canonical_payload_digest: 33dbeedf5fd09e13215129f7d2baa9140e03e6b0372fdabab4d3c032ba6f2dcd
+    P10_STEWARD_REQUESTS_git_blob_sha1: 6470da05b25a4afc1436fcde646d08da88caf457
+    migration_2241_raw_sha256: a318572247530b1dbbda75a0ba2b0f58b66e8a88156f1ee57874c79216c1d649
+    migration_2241_git_blob_sha1: 83d423ef6b5e0e6fb6673f8c9467b2d08970a8bc
+    migration_2249_raw_sha256: eb5a6ba248ebcd080b1a17b8eec0ca0ee0f4c2d79c5d440e6f6c16d1dfebf914
+    migration_2249_git_blob_sha1: d6e100aecedf6726406f4d708920a973a6eb5fb0
 completed_steps:
   - Verified current control 26f29aeb, the exact unexpired P09 READY entry,
     expected remote branch head 33a21a45, and zero effect locks.
@@ -187,28 +205,45 @@ completed_steps:
   - Updated only the P09 runtime triplet for the atomic claim; no product,
     request, migration, P10, shared-control, provider, or external-effect work
     was performed.
+  - Verified pushed control cc90f922663405d883a798db8d4278ef803bb7cb
+    with state basis fdcba89094f6b8f9460db3d41f3602be2d476990,
+    empty consumed READY, exact atomic claim 989b7fa979b62f4f78ae76900a73d0011b36f5e6,
+    unchanged claim/writer/lease, request-only phase scope, and effects 0/0/0.
+  - Published immutable P09-migration-002 with raw digest
+    538d6509a5170efc5c164f577d2054005edcd74c17d95e6128cb84ecb37c1a62,
+    canonical payload digest
+    d9958a9def7fa6d41f5c457a20ff44df8ba265f532e76dd397532ccfcf570dbb,
+    and Git blob 75cd8bb242eaaa59d7ebb215ea4d8881fb5354e1.
+  - Preserved P09-migration-001, P10-MIGRATION-001, migrations 2241/2249,
+    all product files, P10 runtime bytes, and every non-overlapping predecessor
+    semantic; no SQL, ordinal, steward application, integration, provider,
+    candidate, or external effect occurred.
+  - Released claim-bound SCHOOL_INQUIRY lease
+    5238d22d-51eb-4f74-9cec-a0bf337cc72f at 2026-07-31T04:51:04Z,
+    before its 2026-07-31T05:48:00Z expiry.
 remaining_steps:
-  - C00 must independently reconcile the exact pushed three-file atomic-claim
-    checkpoint before P09 performs any later work.
-  - Only a subsequent exact C00 authorization may permit immutable
-    P09-migration-002 request creation; no latent request authority exists.
-  - P10 remains pending and receives no READY until the P09 request is terminal
-    and C00 admits it.
-next_action: C00 must reconcile the exact pushed P09 atomic-claim head; P09 must stop without creating P09-migration-002 or performing any later work.
+  - C00 must independently audit and admit the exact immutable
+    P09-migration-002 request and final four-path P09 checkpoint.
+  - P10 remains pending until C00 admits this request, then may receive only
+    separately authorized acknowledgment work.
+  - F02 alone may allocate and write any successor migration after request
+    admission and dependency ordering.
+next_action: C00 must audit the exact pushed P09 request-only terminal, immutable request digest and four-path scope, then admit P09-migration-002 before any P10 acknowledgment or F02 allocation; P09 must stop.
 requirements:
   OTV2-SIGNUP-178: repository_route_implemented_candidate_provider_evidence_pending
   OTV2-SIGNUP-229: exact_public_route_implemented_candidate_provider_evidence_pending
-  OTV2-SCHOOL-200: approved_configuration_persistence_implemented_candidate_evidence_pending
-  OTV2-SCHOOL-214: protected_absence_preserved_candidate_inventory_pending
+  OTV2-SCHOOL-200: convergence_request_published_C00_admission_pending
+  OTV2-SCHOOL-214: convergence_request_preserves_absent_school_surfaces_C00_admission_pending
 acceptance_cases:
   OTV2-SIGNUP-178-SCHOOL-INQUIRY-NO-ACCESS: local_repository_assertions_passed
   OTV2-SIGNUP-229-PUBLIC-SCHOOL-INQUIRY: exact_route_assertions_passed
-  OTV2-SCHOOL-200-AC01: local_configuration_persistence_assertions_passed
-  OTV2-SCHOOL-214-AC01: prohibited_surface_and_effect_assertions_preserved
+  OTV2-SCHOOL-200-AC01: convergence_request_contract_complete_candidate_evidence_pending
+  OTV2-SCHOOL-214-AC01: prohibited_surface_and_effect_contract_preserved
 changed_paths:
   - ops/v2.1-execution/runtime/P09/HANDOFF.md
   - ops/v2.1-execution/runtime/P09/NEXT-PROMPT.md
   - ops/v2.1-execution/runtime/P09/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P09/steward-requests/P09-migration-002.yaml
 migrations:
   - path: packages/db/migrations/2249_v21_school_inquiry.sql
     raw_git_blob_sha256: eb5a6ba248ebcd080b1a17b8eec0ca0ee0f4c2d79c5d440e6f6c16d1dfebf914
@@ -220,6 +255,10 @@ steward_requests:
   - id: P09-registration-001
     sha256: f78ab4076227222509f61b5d430188cbdaee369adf0bd6ebe82703482171fef1
     state: immutable_request_unchanged_source_descriptor_ready_central_application_pending
+  - id: P09-migration-002
+    sha256: 538d6509a5170efc5c164f577d2054005edcd74c17d95e6128cb84ecb37c1a62
+    canonical_payload_digest: d9958a9def7fa6d41f5c457a20ff44df8ba265f532e76dd397532ccfcf570dbb
+    state: immutable_request_published_pending_C00_admission
 verification:
   commands_run:
     - command: exact current control, READY digest, branch, base, lease, and effect-lock verification
@@ -242,6 +281,12 @@ verification:
       result: passed; control fdcba890, P09 a64a0c03, integration d89a0f38, READY 3e3462d6
     - command: exact atomic-claim scope, YAML, digest, diff-hygiene, and secret checks
       result: passed; exactly the P09 runtime triplet and zero external effects
+    - command: exact cc90f922 control, empty READY, claim, lease, and request-only scope readback
+      result: passed; control parent fdcba890, P09 head 989b7fa9, unchanged claim and live lease
+    - command: P09-migration-002 schema and supersession-boundary validation
+      result: passed; complete scoped optimistic contract, Family three-seat invariant, 2241/2249 compatibility, contradiction quarantine, and unrelated predecessor semantics preserved
+    - command: exact four-path diff, YAML, raw/canonical/blob digest, protected-byte, secret, and effect checks
+      result: passed; request raw 538d6509, canonical d9958a9d, blob 75cd8bb2, effects 0/0/0
   known_baseline_failures: []
 external_effects:
   authority: none

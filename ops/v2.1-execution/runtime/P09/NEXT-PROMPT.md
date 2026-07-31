@@ -1,51 +1,60 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
-MODE: START_OR_RESUME
+MODE: INDEPENDENT_REVIEW
 
-Resume P09 only after C00 independently reconciles the exact pushed
-school-seat authority convergence atomic-claim head and publishes a separate
-exact authorization.
+Independently audit and admit the final P09 School-seat authority convergence
+request-only terminal.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-p09-school-inquiry
-Pre-claim head: a64a0c03edb6ae50023011f470358e9214f1196c
-Pushed control authorization: fdcba89094f6b8f9460db3d41f3602be2d476990
-READY state basis: ce71f41af1c70f689db9b3346ae5dfc643a1344f
-Authorized integration head: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
-READY digest: 3e3462d65c63269f5623251cbb4f65b0808b20b11fc37c12a38ebf616798cc0c
+Request-phase parent: 989b7fa979b62f4f78ae76900a73d0011b36f5e6
+Continuation control: cc90f922663405d883a798db8d4278ef803bb7cb
+Control state basis: fdcba89094f6b8f9460db3d41f3602be2d476990
 Claim: 129aacb2-3e46-484f-94c1-1b2122b62950
 Writer: codex-p09-seat-convergence-129aacb2
 SCHOOL_INQUIRY lease: 5238d22d-51eb-4f74-9cec-a0bf337cc72f
-Lease expiry: 2026-07-31T05:48:00Z
-Phase scope: P09_P10_school_seat_authority_convergence_request_atomic_claim_only
-Effect locks: none
+Lease released: 2026-07-31T04:51:04Z before 05:48:00Z expiry
+
+Request:
+ops/v2.1-execution/runtime/P09/steward-requests/P09-migration-002.yaml
+Request raw SHA-256:
+538d6509a5170efc5c164f577d2054005edcd74c17d95e6128cb84ecb37c1a62
+Request canonical payload digest:
+d9958a9def7fa6d41f5c457a20ff44df8ba265f532e76dd397532ccfcf570dbb
+Request Git blob:
+75cd8bb242eaaa59d7ebb215ea4d8881fb5354e1
 
 Task state: ops/v2.1-execution/runtime/P09/TASK-STATE.yaml
 Handoff: ops/v2.1-execution/runtime/P09/HANDOFF.md
 
-First read the exact remote P09 head and C00 reconciliation. The atomic-claim
-head is the sole-child checkpoint of `a64a0c03…`; derive it from the remote and
-do not assume authority from this prompt alone.
+Verify the final remote is a clean sole child of `989b7fa9…` changing exactly
+the immutable request and P09 runtime triplet. Reproduce exact raw Git hashes,
+canonical TASK+HANDOFF and runtime-triplet raw-concatenation digests, separate
+path manifests, YAML/schema, request payload digest, timely lease release, and
+effects `0/0/0`.
 
-No latent request authority exists. Until C00 publishes a separate READY bound
-to the exact pushed claim head:
+Prove that the request:
 
-- do not create `P09-migration-002`;
-- do not allocate an ordinal or write SQL;
-- do not edit product, test, P10, shared-control, provider, candidate,
-  deployment, DNS, or billing files;
-- do not apply or acknowledge a request; and
-- do not inspect or mutate a provider or perform an external effect.
+- creates one fully scoped, optimistic-versioned approved-School
+  contract/configuration authority;
+- binds household, active adult account manager, seats, USD price, billing
+  start, terms, immutable contract reference, reason, active-Admin authorizer,
+  authorized time, canonical/idempotency evidence, audit/history, version, and
+  exact readback;
+- preserves Family at exactly three seats;
+- treats immutable 2241/2249 rows only as compatibility
+  evidence/projections and stops or quarantines contradictory/incomplete rows;
+- supersedes only overlapping School seat/config semantics of
+  `P09-migration-001` and `P10-MIGRATION-001`; and
+- preserves all inquiry/acknowledgment and unrelated Admin-directory semantics
+  with no School role/portal/bulk roster/nurture, Student GHL identity/email,
+  credential, provider secret, direct Stripe mutation, or access grant.
 
-If a later exact C00 authorization is present, its request-only scope must
-preserve `P09-migration-001` and `P10-MIGRATION-001` as immutable predecessor
-evidence and converge only their overlapping approved-School seat/config
-semantics into one fully scoped, optimistic-versioned authority. It must carry
-household, adult account manager, seat allowance, price, USD currency, billing
-start, terms, immutable contract reference, reason, authorizer, authorized
-time, and audit/version evidence. Family remains exactly three seats.
-Contradictory predecessor rows must stop or quarantine, never silently win.
+Do not edit or allocate a migration, apply or acknowledge a steward request,
+edit product/P10/control state, integrate, freeze a candidate, inspect or
+mutate a provider, deploy, change DNS, send, charge, or perform an external
+effect.
 
-P10 remains pending and receives no READY in this phase. Effects remain
-attempted `0`, succeeded `0`, reconciled `0`.
+If admitted, C00 may separately authorize P10 acknowledgment-only work and
+later F02 migration allocation. P09 remains stopped.
