@@ -307,3 +307,183 @@ C00 must independently verify the exact four-path scope, proposal-authority
 parity, immutable allocation/request/migration/checksum bytes, released sole
 lease, clean local/tracking/live equality, and effects `0/0/0` before
 integration. Do not apply a central steward result from this checkpoint.
+
+# F02 Migration 2254 P22 Learning-Engagement Atomic Claim
+
+- Claim parent: `9754f2ae0736ace4bbf7d2a88c73f1d28b0b5a20`
+- Containing control: `fdcba89094f6b8f9460db3d41f3602be2d476990`
+- READY parent/controller: `ce71f41af1c70f689db9b3346ae5dfc643a1344f`
+- Authorized integration start: `d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9`
+- READY digest: `d227353928ba2c492ad7b0e21468bf6198634e9e800f96da507369c48ea640ce`
+- Claim: `8041cc43-6a31-443b-87be-ef663f767c80`
+- Writer: `codex-f02-migration-2254-8041cc43`
+- MIGRATION_AUTHORITY lease: `55139366-ce78-4536-8cd3-33c08a1aba38`
+- SCHEMA_CONTRACT lease: `0669b0a0-ef3e-44cd-a9d9-2cb61b9b5e49`
+- Lease expiry: `2026-07-31T05:48:00Z`
+- Prior state/handoff digest:
+  `e0b2ede55c202a8701905fbf7468f1a33ff09ae3a9f4fec5f5926a018f107616`
+- Prior runtime-triplet digest:
+  `4059e319ef6bf2fc82f0a7243c20b461060e63d0b16525777b5cc81fa38075b9`
+- Effects: `0/0/0`
+
+The live F02, control, integration, proposal, and immutable
+`P22-migration-001` source bindings all matched the pushed READY. The protected
+pre-existing untracked `.codex-lane1-pglite.mjs` remains excluded at exactly
+1597 bytes and SHA-256
+`11117a9144f8d2838466619ba0f3255ab18d0c164793c340fe3badb453206f17`.
+
+This first checkpoint changes only the F02 runtime triplet. It does not read
+the request body for implementation, edit the allocation proposal, author SQL,
+or change product, shared control, provider, deployment, send, charge, or
+external-effect bytes.
+
+Stop for independent C00 reconciliation. No migration-2254 or proposal
+authority is latent; a separate later C00 control commit is mandatory.
+
+# F02 Migration 2254 P22 Learning-Engagement Held Not Admissible
+
+- Held checkpoint parent:
+  `4007334f36c0a87b3289cb99f4a9d2f25eeda2a9`
+- Current containing control:
+  `cc90f922663405d883a798db8d4278ef803bb7cb`
+- Control state basis:
+  `fdcba89094f6b8f9460db3d41f3602be2d476990`
+- Current READY queue: empty
+- Claim: `8041cc43-6a31-443b-87be-ef663f767c80`
+- Writer: `codex-f02-migration-2254-8041cc43`
+- MIGRATION_AUTHORITY lease:
+  `55139366-ce78-4536-8cd3-33c08a1aba38`
+- SCHEMA_CONTRACT lease:
+  `0669b0a0-ef3e-44cd-a9d9-2cb61b9b5e49`
+- Lease expiry: `2026-07-31T05:48:00Z`
+- Both leases released: `2026-07-31T04:48:40Z`
+- Disposition: `held_not_admissible`
+- Effects: `0/0/0`
+
+The immutable `P22-migration-001` cannot safely authorize migration 2254.
+Its current contract and repository write an `onetime.learning_attendance`
+aggregate keyed without runtime tier or verification environment. That would
+compete with canonical migration 2251's append-only attendance events and
+versioned, evidence-bound projection. The P22 write cannot preserve 2251
+source, digest, lineage, idempotency, version, or correction-event semantics,
+and `learning_attendance_segments` is not written by the integrated repository.
+
+The same P22 contract scopes every learning query and write only by account and
+product, despite mandatory runtime-tier and verification-environment
+isolation. Its leaderboard projection also expects distinct first and last
+names that the current identity schema does not provide; `display_name` must
+not be parsed or treated as those unavailable semantics. Finally, mutable
+question `transitions_json` and a current recognition-consent row are not
+immutable transition and consent audit authorities.
+
+P22 must publish a new immutable successor request before F02 may allocate
+ordinal 2254. The successor must:
+
+1. preserve migration 2251 as the sole attendance write authority and make any
+   P22 attendance compatibility projection read-only;
+2. add runtime-tier and verification-environment scope to every learning
+   contract, query, write, key, and index;
+3. bind leaderboard names only to canonical actual/display-name semantics that
+   exist at the successor's admitted dependency head; and
+4. require append-only question-transition and recognition-consent audit
+   events, with current rows treated only as projections.
+
+This checkpoint changes only the F02 runtime triplet and releases both bounded
+writer leases before expiry. It does not edit the allocation proposal, author
+SQL, change product or immutable request bytes, submit a steward result, merge,
+register shared state, freeze a candidate, touch a provider, or perform an
+external effect. The protected untracked `.codex-lane1-pglite.mjs` remains
+excluded at exactly 1597 bytes and SHA-256
+`11117a9144f8d2838466619ba0f3255ab18d0c164793c340fe3badb453206f17`.
+
+Stop for C00 reconciliation. No migration-2254, proposal, successor-request,
+integration, provider, candidate, or effect authority is latent.
+
+# F02 Migrations 2254-2256 P22/P12/P09 Atomic Claim
+
+- Claim parent: `22ada24a0ade35e406b9d1b55cb65f396ea2162b`
+- Containing control: `864298e32e693599a804a5b152739de4ae17ee2b`
+- READY parent/controller: `52cb53061527b1df9b95029bcf211fe258609368`
+- Authorized integration start: `392cc119b2df65f9bd38da8c4db36113f1add967`
+- READY digest: `8abdeb3c79fdae914e86707bec541535de1d2ec3a29a5e1c155bcb9a73176f21`
+- Claim: `41a5ba44-435f-454f-b157-c6059d4bbc37`
+- Writer: `codex-f02-migrations-2254-2256-41a5ba44`
+- MIGRATION_AUTHORITY lease: `c741bc95-8fc2-4d4f-aaff-a76295580468`
+- SCHEMA_CONTRACT lease: `2c7b6d40-ea5f-423a-a000-a043d2bd6f7a`
+- Lease issue/expiry: `2026-07-31T11:28:40Z` / `2026-07-31T13:28:40Z`
+- Prior state/handoff digest:
+  `85521b85e692a2fb28d4013e49b87ab71e276bd3cb13e4f73dbc0d611a3a3733`
+- Prior runtime-triplet digest:
+  `b0f6ba3cfc0bcc2b7345152253f5552dc921f44fe90c186765d0e5de17e81973`
+- Effects: `0/0/0`
+
+The fetched remote F02 and integration heads matched the READY. Independent
+Git-byte verification matched C00, I36, F02, and P10 ancestry/runtime records;
+the P22-migration-002, P12-migration-001, and P09-migration-002 request raw,
+canonical, and Git-blob identities; the 200/200 locked package and 15/15 source
+manifests; and the unchanged proposal raw SHA-256
+`f1c23180b49e21149e173a812b561813d0bc9e36adc5ea411721027b753ca643`
+and Git blob `d7c35dd21ffb5f688346d624627a58708be68a7c`.
+
+This first checkpoint changes only the F02 runtime triplet. It does not read a
+successor request body for implementation, edit the allocation proposal,
+author migrations 2254-2256, change migrations 2234-2253, or change product,
+shared control, provider, deployment, send, charge, or external-effect bytes.
+The protected pre-existing untracked `.codex-lane1-pglite.mjs` remains excluded
+at exactly 1597 bytes and SHA-256
+`11117a9144f8d2838466619ba0f3255ab18d0c164793c340fe3badb453206f17`.
+
+Stop for independent C00 reconciliation. No proposal, SQL, integration,
+provider, candidate, or effect authority is latent; a later descendant C00
+control continuation is mandatory.
+
+# F02 Migrations 2254-2256 P22/P12/P09 Terminal
+
+- Continuation control: `30229697371eedd735123eb89fd063e8f7c2689e`
+- Subsequent non-authority control: `4105c365a90ecb27fb930077ecaf02a9125edb38`
+- Parent/controller: `70b12ea370e8430bc80c0943231af98a3f5e6265`
+- Authorized integration start: `392cc119b2df65f9bd38da8c4db36113f1add967`
+- Reconciled claim checkpoint: `216c983bbdfffc5e3e09f4fa69e5fe5f3d46415e`
+- Disposable merge: `b46ff339ab3d79b06547d387795e95951a200263`
+- Merge parents: `392cc119b2df65f9bd38da8c4db36113f1add967`,
+  `216c983bbdfffc5e3e09f4fa69e5fe5f3d46415e`
+- Claim: `41a5ba44-435f-454f-b157-c6059d4bbc37`
+- Writer: `codex-f02-migrations-2254-2256-41a5ba44`
+- MIGRATION_AUTHORITY lease: `c741bc95-8fc2-4d4f-aaff-a76295580468`
+- SCHEMA_CONTRACT lease: `2c7b6d40-ea5f-423a-a000-a043d2bd6f7a`
+- Lease expiry: `2026-07-31T13:28:40Z`
+- Lease release: `2026-07-31T12:49:27Z`
+- Authorized inventory digest:
+  `a28d4c79e43025499b3518d7fa194aeb4755cb903f508bc9b3c7353dadd56966`
+- Effects: `0/0/0`
+
+The exact seven-path continuation allocated and authored only migrations 2254,
+2255, and 2256 plus the allocation proposal and F02 runtime triplet. Migration
+2254 creates the seven four-dimension-fenced P22 engagement structures while
+preserving migration 2251 as the sole attendance write authority. Migration
+2255 adds required Unicode-nonblank `actual_name` by exact legacy copy and
+makes `display_name` nullable but nonblank when present. Migration 2256 creates
+one exact-scope approved-School authority, append-only history and quarantine,
+and read-only compatibility evidence for the overlapping 2241/2249 tables.
+The later control descendant `4105c365...` changed P18 evidence only and
+explicitly carried this exact F02 authority forward without changing its
+claim, leases, expiry, scope, path digest, integration start, or expected head.
+
+Native PostgreSQL 18.4 applied all 87 migrations to a fresh disposable
+database, replayed all 87, and verified all 87 ledger checksums. Focused probes
+passed exact replay/conflict, four-dimension isolation, optimistic concurrency,
+append-only and monotonic ledger fences, badge no-write replay, Unicode name
+rejection, School predecessor read-only behavior, School concurrent one-winner
+behavior, and whole-transaction rollback. The database was stopped and removed;
+no persistent database or provider operation occurred.
+
+Migrations 2234-2253 and every immutable request remain byte-identical. The
+protected untracked `.codex-lane1-pglite.mjs` remains excluded at 1597 bytes
+and SHA-256
+`11117a9144f8d2838466619ba0f3255ab18d0c164793c340fe3badb453206f17`.
+
+C00 must independently verify and decide admission of the pushed terminal.
+This handoff does not apply a central steward result, merge the shared
+integration branch, freeze a candidate, inspect or mutate a provider, deploy,
+backfill a persistent database, send, charge, activate a customer, or perform
+any external effect.
