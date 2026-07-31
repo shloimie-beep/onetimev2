@@ -136,10 +136,11 @@ blockers:
     local merges a6929cdd then 08e26cfd; 67 focused assertions and the relevant web builds passed. Changed-package
     typecheck found exactly three P12 test-only contract errors: two stale 1.1.0 semantic fixtures and one widened receipt
     disposition mock. C00 held the safe local merges and dispatched one exact six-path P12 correction; no runtime product
-    defect, shared-path application, remote integration push, or external effect occurred.
+    defect, shared-path application, remote integration push, or external effect occurred. P12 terminal 3ad55dc1 then
+    passed one independent review: exact six-path scope, 19/19 focused assertions, zero P12/P09 type diagnostics, released
+    lease and effects 0/0/0. C00 admitted only this child as correction merge d188c42e atop held local head 08e26cfd.
   required_authority_or_input:
-  - Complete and independently review the exact six-path P12 integration type-contract correction, append its accepted
-    child to the held ancestry-preserving I36 microbatch, and complete the affected merged checks
+  - Complete correction merge d188c42e atop held I36 head 08e26cfd and terminalize the ancestry-preserving source microbatch
   - Apply admitted P12 server/client -002 plus barrel -003 during dependency-ordered Batch A; never apply either
     superseded predecessor
   - Pass real signup, reload, logout, re-login, pre/post-expiry, household, inactive-route, wrong-household,
@@ -184,9 +185,10 @@ blockers:
     I36 without applying them. Accepted P12 correction 71fb96d6 passed its one correction review, and C00 dispatched the
     ordered source-only P12-then-P09 I36 microbatch from exact integration ae3ced8a; the three P09 successors remain
     assigned and unapplied. I36's clean local source merges passed all 67 focused assertions and relevant web builds but
-    are held before terminal/push for the exact three P12 test-only type-contract errors now under bounded correction.
+    were held before terminal/push for three P12 test-only type-contract errors. Accepted P12 child 3ad55dc1 corrects
+    those exact fixtures and is now the sole authorized third merge; no P09 or shared byte changes.
   required_authority_or_input:
-  - Complete the bounded P12 test-contract correction and then terminalize the held ancestry-preserving I36 source microbatch
+  - Merge accepted P12 child 3ad55dc1 and terminalize the held ancestry-preserving I36 source microbatch
   - Apply the three admitted P09 split successors in dependency order and rerun the focused static production /school test
   protection: School inquiry must create no product account, access, Student contact, nurture enrollment, WhatsApp send, or direct provider/billing mutation.
   next_check: Re-evaluate after ordered P12-then-P09 source integration and dependency-ordered I36 route registration.

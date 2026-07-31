@@ -16,15 +16,16 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: f0d144154927a47bffd7939d815a510fbed3adf2
+controller_authorization_sha: 5c0c6c958a25ef313cb623bcfc3928899e5279ac
 next_action: >-
-  Preserve I36's clean local ancestry-preserving P12 and P09 merges at 08e26cfd under the existing RELEASE_INTEGRATOR
-  lease while P12 corrects three integration-found test-only TypeScript contracts in one six-path terminal from exact
-  head 71fb96d6. Change only the two stale 1.1.0 semantic fixtures, the widened receipt-disposition mock, and the P12
-  runtime triplet; do not change product behavior or shared paths. Run only the three focused tests, changed-package
-  typecheck and exact-file static checks, then stop for one independent review. After acceptance, append the P12 child
-  to the same source microbatch, rerun the affected merged checks, and terminalize I36 once. Candidate freeze, provider
-  effect, deployment, DNS change, send, charge, customer activation, and every external effect remain prohibited.
+  Resume I36 from exact held local head 08e26cfd under its existing claim and RELEASE_INTEGRATOR lease. Consume only
+  correction MERGE item d188c42e and merge independently accepted P12 child 3ad55dc1 as the second parent, preserving
+  the existing P12 71fb96d6 and P09 ce8df6e6 ancestry and forecast tree ea56dee0. Preserve every steward request and
+  shared path byte. Rerun the merged P12/P09 focused suite, changed-workspace typecheck with zero P12/P09 diagnostics,
+  and exact changed-file static checks; reuse the already-passed relevant web builds because the child is test/runtime
+  metadata only. Update I36's runtime triplet once, release the lease, push one terminal, and stop for one independent
+  review. Candidate freeze, provider effect, deployment, DNS change, send, charge, customer activation, and every
+  external effect remain prohibited.
 production_completion_lanes:
 - lane: A
   owner: F02
@@ -119,7 +120,7 @@ production_completion_lanes:
   provider_effects: prohibited_until_candidate_authority_and_exact_lock
 - lane: D
   owner: I36
-  status: source_microbatch_local_merges_held_for_P12_test_contract_correction
+  status: P12_P09_source_microbatch_type_contract_closure_ready
   branch: codex/v21-integration
   prior_release_sha: 524563f07b3bb8544db989982dc55d4bc86a1999
   partial_checkpoint_sha: a5a2ad94b77eaf596930609d4d5abe4fa672439b
@@ -247,13 +248,17 @@ production_completion_lanes:
   writer_id: codex-i36-p12-p09-source-586989e0
   writer_lease_id: 04dfa82c-4b04-4083-8255-1b78f20f59ff
   writer_lease_expires_at: '2026-07-31T18:23:33Z'
-  active_phase_scope: P12_then_P09_source_microbatch_held_for_P12_type_contract_correction
+  active_phase_scope: P12_P09_source_microbatch_type_contract_closure
   P12_local_merge_sha: a6929cdddbde5282f37c10a60a5cc602cff44866
   P09_local_merge_sha: 08e26cfd9958da54b3fff95942d81f08ac7a5e09
   local_merge_tree_sha: 7bc370097d3e19d8bb762e13f118e35e920ba758
   merged_focused_tests: 67_passed_3_declared_native_skips
   merged_web_client_and_pages_builds: passed
-  merged_typecheck_status: held_three_P12_test_only_contract_errors
+  merged_typecheck_status: P12_correction_independently_accepted_pending_exact_child_merge
+  P12_type_contract_source_head_sha: 3ad55dc1de45bb11ec7ead886d88af9f592f2c18
+  P12_type_contract_merge_id: d188c42e-a9e7-4f9e-a0a4-3436d266fcf4
+  P12_type_contract_merge_payload_digest: 980815f9eaf8c437d78963d4650670e97dae27a10ee2785735fe92efc032ac61
+  P12_type_contract_forecast_tree_sha: ea56dee09fe9dfb5ad65b826f14684e2577821c3
   P12_P09_authorized_start_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
   P12_source_head_sha: 71fb96d60ea08e5947681e1ea1c704606ff215cc
   P12_source_path_inventory_digest: 9c4fc65510c30ecfc112bcbd6956ec567c48d5ed2ce2027cf3a1452c5a63f268
@@ -341,6 +346,8 @@ successor_dispatch:
   P12_replay_concealment_terminal_accepted_at: '2026-07-31T16:23:33Z'
   P12_P09_source_microbatch_dispatched_at: '2026-07-31T16:23:33Z'
   P12_integration_type_contract_correction_dispatched_at: '2026-07-31T16:49:03Z'
+  P12_integration_type_contract_correction_accepted_at: '2026-07-31T17:11:15Z'
+  I36_type_contract_closure_dispatched_at: '2026-07-31T17:11:15Z'
   lease_issued_at: '2026-07-31T16:23:33Z'
   lease_expires_at: '2026-07-31T18:23:33Z'
   ready_queue_published: true
@@ -411,11 +418,11 @@ successor_dispatch:
     effect_locks: []
     external_effects: 0/0/0
   P12:
-    status: claimed
-    phase: parent_household_integration_type_contract_correction
+    status: accepted_queued_for_merge
+    phase: parent_household_integration_type_contract_correction_complete
     branch: codex/v21-p12-parent-household-concrete
     authorized_start_sha: 71fb96d60ea08e5947681e1ea1c704606ff215cc
-    expected_existing_head_sha: 71fb96d60ea08e5947681e1ea1c704606ff215cc
+    expected_existing_head_sha: 3ad55dc1de45bb11ec7ead886d88af9f592f2c18
     predecessor_source_head_sha: 9ada912c3238421e661f89e590c07c042dd6424b
     held_terminal_head_sha: 153c52e97123bb8723c8671873bf96d01444584c
     held_terminal_first_parent_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
@@ -456,19 +463,30 @@ successor_dispatch:
     request_raw_sha256: 6f76b024f756b89ef430a21c0744b4dd43114c5d5e9213bd76582e2534d3bc17
     request_git_blob: 92c1765089dc227f44e852857a404ab11a0e7fe2
     prior_lease_released_at: '2026-07-31T16:11:11Z'
-    claim_id: 8a7c03c1-af56-43ad-ba0a-ce2f3c764845
-    writer_id: codex-p12-type-contract-8a7c03c1
-    writer_slot: PARENT_HOUSEHOLD_UI
-    writer_lease_id: 6e355e1f-ef06-4a44-87c4-f51f9f039dd0
-    writer_lease_expires_at: '2026-07-31T18:23:33Z'
-    ready_entry_payload_digest: 1d7f2c81fa9522d0e0d66001053938c43fe1bb72040341fceef9e9cd0f0dfc7e
+    type_contract_terminal_head_sha: 3ad55dc1de45bb11ec7ead886d88af9f592f2c18
+    type_contract_terminal_parent_sha: 71fb96d60ea08e5947681e1ea1c704606ff215cc
+    type_contract_terminal_tree_sha: a933e9bf2de853001ce11ac802fe4be69e0ede0c
+    type_contract_state_handoff_digest: fd3a2665013fc2fb0f948d8e67d021d89b184c01bc991d60cef8b0d8719db324
+    type_contract_runtime_triplet_digest: 4478f4e0dd45fda62402b782a483f91fff2446d1983ac58ea5c467bc79c0e505
+    type_contract_manifest_digest: 551050c82f71398e7a5808b94ca03977d051f31b1577df2367e50b24915c7272
+    type_contract_diff_sha256: 818511cebb74f96abddeeb33d0d747c55a9853828099a31963a4fc1e224bfb5d
+    type_contract_lease_released_at: '2026-07-31T17:03:32Z'
+    claim_id: null
+    writer_id: null
+    writer_slot: null
+    writer_lease_id: null
+    writer_lease_expires_at: null
+    ready_entry_payload_digest: null
     exact_writable_path_count: 6
     authorized_path_inventory_digest: 2301a50c11726d06a901b65fe86f67f79d0d9f4a3918d44a32c63426d81d8656
     prior_independent_review_status: passed_no_P1_or_P2
-    integration_typecheck_status: held_three_test_only_contract_errors
+    integration_typecheck_status: corrected_zero_P12_or_P09_diagnostics
+    independent_type_contract_review_status: passed_no_P1_or_P2
     source_merge_as_second_parent: true
     merge_id: f7c7150d-190c-4e29-a89e-618f625e36ee
     merge_payload_digest: 3c7fd98bf1b92ac78a92122e5a291565e8cb84d227a1b4683030a07ba42a0c08
+    type_contract_merge_id: d188c42e-a9e7-4f9e-a0a4-3436d266fcf4
+    type_contract_merge_payload_digest: 980815f9eaf8c437d78963d4650670e97dae27a10ee2785735fe92efc032ac61
     successor_request_digests:
       P12-server-registration-002: 1d3d64921721c91d57d0d81d6252f2d4b8af82212afd6c5e076168c7ed787939
       P12-client-route-002: 49021ac11df00c4f485f88661b4e5d6ca2c30c033269161e40a62adf458f1802
@@ -523,9 +541,10 @@ successor_dispatch:
     external_effects: 0/0/0
   I36:
     status: claimed
-    phase: P12_then_P09_source_microbatch_held_for_P12_type_contract_correction
+    phase: P12_P09_source_microbatch_type_contract_closure
     branch: codex/v21-integration
-    expected_existing_head_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
+    expected_existing_head_sha: 08e26cfd9958da54b3fff95942d81f08ac7a5e09
+    remote_integration_head_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
     atomic_claim_parent_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
     atomic_claim_tree_sha: a3f5578ff5bc108f16480444e7adc66112337268
     atomic_claim_state_handoff_digest: bc8f2247c7fc64a63b4445d75cfeee4047de6a24d3671f14d3a537c8d90f986e
@@ -539,12 +558,12 @@ successor_dispatch:
     writer_id: codex-i36-p12-p09-source-586989e0
     writer_lease_id: 04dfa82c-4b04-4083-8255-1b78f20f59ff
     writer_lease_expires_at: '2026-07-31T18:23:33Z'
-    ready_entry_payload_digest: null
+    ready_entry_payload_digest: c0b634ffa53ca8b6462e91645d45653d69434d4674c8a175e37e69fca76e0380
     P12_local_merge_sha: a6929cdddbde5282f37c10a60a5cc602cff44866
     P09_local_merge_sha: 08e26cfd9958da54b3fff95942d81f08ac7a5e09
     held_local_tree_sha: 7bc370097d3e19d8bb762e13f118e35e920ba758
     focused_merged_tests: 67_passed_3_declared_native_skips
-    merged_typecheck_status: held_three_P12_test_only_contract_errors
+    merged_typecheck_status: P12_correction_accepted_pending_exact_child_merge
     P21_source_merge_sha: f5172829a0df0af9fa9790cb5b88427ed3ccadc4
     P22_source_merge_sha: 70c48e60b2ca2177ba0eaeb606ef55a93eba0ca7
     terminal_head_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
@@ -556,11 +575,14 @@ successor_dispatch:
     merge_order: P12_then_P09
     P12_merge_id: f7c7150d-190c-4e29-a89e-618f625e36ee
     P09_merge_id: 3475d18d-e67d-4690-b456-fe88527d9bb1
+    P12_type_contract_merge_id: d188c42e-a9e7-4f9e-a0a4-3436d266fcf4
     P12_merge_payload_digest: 3c7fd98bf1b92ac78a92122e5a291565e8cb84d227a1b4683030a07ba42a0c08
     P09_merge_payload_digest: 375db3de4a419cbf557d63c0aae1696b1a205972a5d511b9164c7c7e666d3a4d
+    P12_type_contract_merge_payload_digest: 980815f9eaf8c437d78963d4650670e97dae27a10ee2785735fe92efc032ac61
     P12_P09_exact_source_path_counts: 21_plus_19
     P12_P09_source_path_collisions: 0
     P12_then_P09_forecast_tree_sha: 7bc370097d3e19d8bb762e13f118e35e920ba758
+    P12_type_contract_closure_forecast_tree_sha: ea56dee09fe9dfb5ad65b826f14684e2577821c3
     P12_P09_forecast_conflicts: 0
     P21_P22_exact_source_path_counts: 9_plus_16
     P21_P22_source_path_collisions: 0

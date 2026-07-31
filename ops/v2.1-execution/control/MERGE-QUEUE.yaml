@@ -126,9 +126,63 @@ items:
       succeeded: 0
       reconciled: 0
     state_based_on_control_head_sha: f8d9059b53d0e62cefa0bdb3bced312f3d2e3dd5
+  - schema_version: 1
+    execution_id: OT-V21-PRODUCTION
+    merge_id: d188c42e-a9e7-4f9e-a0a4-3436d266fcf4
+    kind: implementation_correction
+    task_id: P12
+    source_branch: codex/v21-p12-parent-household-concrete
+    source_head_sha: 3ad55dc1de45bb11ec7ead886d88af9f592f2c18
+    target_branch: codex/v21-integration
+    expected_target_head_sha: 08e26cfd9958da54b3fff95942d81f08ac7a5e09
+    source_delta_base_head_sha: 71fb96d60ea08e5947681e1ea1c704606ff215cc
+    required_merge_base_sha: 71fb96d60ea08e5947681e1ea1c704606ff215cc
+    preserve_source_ancestry: true
+    required_postmerge_ancestor_sha: 3ad55dc1de45bb11ec7ead886d88af9f592f2c18
+    merge_after_heads:
+      P12_prior: 71fb96d60ea08e5947681e1ea1c704606ff215cc
+      P09: ce8df6e6d612dc935cb204fb7f7803489e90d740
+      I36_held_local: 08e26cfd9958da54b3fff95942d81f08ac7a5e09
+    allowed_paths:
+      - apps/web/src/client/app/parent/household/ParentHouseholdWorkspace.test.tsx
+      - apps/web/src/server/features/portals/parent-household/router.test.ts
+      - apps/web/src/server/features/portals/parent-household/service.test.ts
+      - ops/v2.1-execution/runtime/P12/HANDOFF.md
+      - ops/v2.1-execution/runtime/P12/NEXT-PROMPT.md
+      - ops/v2.1-execution/runtime/P12/TASK-STATE.yaml
+    writer_slot_leases: *p12_p09_source_integrator_lease
+    task_packet_digest: 37a367f92ac2af2a1e9ef17ae97ec2caed3d80ea608d7bcbbeeb6ecc64a0c2bd
+    task_context_digest: 1b1bc9f0a0624836ba69e7c35acb2d70ea43f71347cb434be9796b307e418b73
+    state_handoff_digest: fd3a2665013fc2fb0f948d8e67d021d89b184c01bc991d60cef8b0d8719db324
+    runtime_triplet_digest: 4478f4e0dd45fda62402b782a483f91fff2446d1983ac58ea5c467bc79c0e505
+    source_path_count: 6
+    source_path_inventory_digest: 2301a50c11726d06a901b65fe86f67f79d0d9f4a3918d44a32c63426d81d8656
+    source_manifest_digest: 551050c82f71398e7a5808b94ca03977d051f31b1577df2367e50b24915c7272
+    source_tree_sha: a933e9bf2de853001ce11ac802fe4be69e0ede0c
+    source_diff_sha256: 818511cebb74f96abddeeb33d0d747c55a9853828099a31963a4fc1e224bfb5d
+    test_artifact_manifest_digest: 9c1ef81d100e33d25ea1a0dbb8108c20dda0fb08e00cf0e53949af6f3ef542b2
+    runtime_manifest_digest: bea57bba71602e2e384e710ada03f7038b57812d7e21371c380643305a797e45
+    interface_version: 1.2.0
+    interface_digest: f9c323080c32925864f780fb05981850644ba3a91a2303fa3f282bc7461378d9
+    focused_suite_counts:
+      files: 3
+      tests: 19
+    changed_workspace_typecheck:
+      P12_diagnostics: 0
+      P09_diagnostics: 0
+      unchanged_baseline_files: 4
+    independent_review: passed_no_P1_or_P2
+    forecast_tree_sha: ea56dee09fe9dfb5ad65b826f14684e2577821c3
+    request_disposition_boundary: preserve_only_no_steward_application_in_source_microbatch
+    external_effect_summary:
+      attempted: 0
+      succeeded: 0
+      reconciled: 0
+    state_based_on_control_head_sha: 5c0c6c958a25ef313cb623bcfc3928899e5279ac
 item_payload_digests:
   f7c7150d-190c-4e29-a89e-618f625e36ee: 3c7fd98bf1b92ac78a92122e5a291565e8cb84d227a1b4683030a07ba42a0c08
   3475d18d-e67d-4690-b456-fe88527d9bb1: 375db3de4a419cbf557d63c0aae1696b1a205972a5d511b9164c7c7e666d3a4d
+  d188c42e-a9e7-4f9e-a0a4-3436d266fcf4: 980815f9eaf8c437d78963d4650670e97dae27a10ee2785735fe92efc032ac61
 completed_items:
   - schema_version: 1
     execution_id: OT-V21-PRODUCTION
