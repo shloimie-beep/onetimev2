@@ -16,18 +16,21 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: ce71f41af1c70f689db9b3346ae5dfc643a1344f
+controller_authorization_sha: fdcba89094f6b8f9460db3d41f3602be2d476990
 next_action: >-
-  Reconciled exact I36 terminal d89a0f38 after independent six-path, native PostgreSQL 18.4 lifecycle/concurrency,
-  Chromium, build, typecheck, focused-test, format, lint, secret, scope, ancestry, lease-release, remote-equality, and
-  zero-effect proof. Dispatch only the F02 migration-2254, P12 distinct-name request, and P09/P10 School-seat
-  convergence atomic runtime claims from exact integration d89a0f38. Each worker must push only its runtime triplet
-  and stop for C00 reconciliation; no SQL, request, steward result, candidate, provider, deployment, DNS, send, charge,
-  customer, or other external effect is authorized.
+  Independently reconciled exact runtime-triplet atomic claims F02 4007334f, P12 8f6eacf8, and P09 989b7fa9 with
+  canonical digests, exact three-path scopes, clean live remote equality, active task-bound leases, and effects 0/0/0.
+  Independent preflight proved immutable P22-migration-001 cannot safely authorize migration 2254 because it would
+  create a second writable attendance authority and omits runtime-tier and verification-environment isolation. Continue
+  F02 only for an exact runtime-triplet conflict terminal and release of both leases; continue P12 only for immutable
+  request P12-migration-001 and P09 only for immutable convergence request P09-migration-002. Each worker must release
+  its lease or leases at an honest terminal, push, and stop for C00 admission. Do not write SQL or an allocation,
+  apply or acknowledge a steward result, integrate, freeze a candidate, inspect or mutate a provider, deploy, change
+  DNS, run a live migration, send, charge, activate a customer, or perform any external effect.
 production_completion_lanes:
 - lane: A
   owner: F02
-  status: migration_2254_P22_learning_engagement_atomic_claim_ready
+  status: migration_2254_P22_learning_engagement_conflict_review_active
   branch: codex/v21-lane1-migration-correction
   source_head_sha: 26234c47e5bc92f4d3392d77d98bc3a758d25189
   admitted_acknowledgment_head_sha: 9754f2ae0736ace4bbf7d2a88c73f1d28b0b5a20
@@ -40,12 +43,27 @@ production_completion_lanes:
   successor_request_head_sha: a210c6cb2e0f1ea9901745e131140646e91935f9
   successor_request_digest: 4c102308b097a26a1a25b3f37a894ab1222acbbc09421502d77fc0a5d880e4a9
   next_migration_ordinal: 2254
-  atomic_claim_expected_head_sha: 9754f2ae0736ace4bbf7d2a88c73f1d28b0b5a20
+  atomic_claim_predecessor_sha: 9754f2ae0736ace4bbf7d2a88c73f1d28b0b5a20
+  atomic_claim_head_sha: 4007334f36c0a87b3289cb99f4a9d2f25eeda2a9
+  atomic_claim_tree_sha: 4396e56a651703f2299b06a662de868ab4e0e850
+  atomic_claim_path_count: 3
+  atomic_claim_task_raw_sha256: 1465f29679dd39b3e61237ae750ff2551c7571c145022e17d200a07147f4946b
+  atomic_claim_handoff_raw_sha256: 6768359831e522fc0bf4662832b3a6a04b90212f3c5b285bb02f35116fb703ab
+  atomic_claim_next_raw_sha256: 5527113f7db007def1d3e475c310bcec6ef2ad792b5d6a1f497a05b6bcd88872
+  atomic_claim_state_handoff_digest: 72712ece7aaa2b8e7ad3861176698f9a786040cf8260991588249585a497dcd9
+  atomic_claim_runtime_triplet_digest: 7d22d4ecfda464f71e51a741123e2fd6ca939f77a4d0b1578361ae86a6e4a9ac
+  atomic_claim_path_inventory_digest: 8600be3f05604753011c7130e71afdcb2e7e748a34f218eabbff1e0348f05397
+  atomic_claim_pair_manifest_digest: 869a0bec1c550922495b7b5ba303afea0426baa4ccd1446c7f823a44c4158d29
+  atomic_claim_triplet_manifest_digest: 4f53752329533ab40ccc5d211f558b4a3ae3184c5d5b1187b5131f62682903bc
   atomic_claim_id: 8041cc43-6a31-443b-87be-ef663f767c80
   migration_authority_lease_id: 55139366-ce78-4536-8cd3-33c08a1aba38
   schema_contract_lease_id: 0669b0a0-ef3e-44cd-a9d9-2cb61b9b5e49
   atomic_claim_lease_expires_at: '2026-07-31T05:48:00Z'
-  scope: immutable_2250_2253_plus_forward_only_2254_learning_engagement_atomic_claim_only
+  active_phase_scope: F02_migration_2254_P22_learning_engagement_conflict_review_runtime_triplet_only
+  scope: immutable_2250_2253_plus_immutable_P22_request_preserved_no_2254_write
+  conflict_gate: >-
+    P22-migration-001 would create a competing writable attendance authority beside canonical migration 2251 and lacks
+    required product/runtime-tier/verification-environment isolation; a P22 successor is required before allocation.
   provider_effects: prohibited
 - lane: B
   owner: F07_with_P08_public_entry
@@ -174,25 +192,77 @@ production_completion_lanes:
   scope: exact_v21_auth_client_lifecycle_successor_plus_native_proof_and_I36_runtime_triplet
   provider_effects: prohibited
 successor_dispatch:
-  state_based_on_control_head_sha: ce71f41af1c70f689db9b3346ae5dfc643a1344f
+  state_based_on_control_head_sha: fdcba89094f6b8f9460db3d41f3602be2d476990
   authorized_start_integration_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
   lease_issued_at: '2026-07-31T03:48:00Z'
   lease_expires_at: '2026-07-31T05:48:00Z'
+  atomic_claims_reconciled_at: '2026-07-31T04:30:00Z'
+  ready_queue_consumed: true
   F02:
-    status: atomic_claim_ready
-    phase: migration_2254_P22_learning_engagement
-    expected_existing_head_sha: 9754f2ae0736ace4bbf7d2a88c73f1d28b0b5a20
-    ready_entry_payload_digest: d227353928ba2c492ad7b0e21468bf6198634e9e800f96da507369c48ea640ce
+    status: atomic_claim_reconciled_conflict_terminal_active
+    phase: migration_2254_P22_learning_engagement_conflict_review
+    expected_existing_head_sha: 4007334f36c0a87b3289cb99f4a9d2f25eeda2a9
+    atomic_claim_parent_sha: 9754f2ae0736ace4bbf7d2a88c73f1d28b0b5a20
+    atomic_claim_tree_sha: 4396e56a651703f2299b06a662de868ab4e0e850
+    atomic_claim_task_raw_sha256: 1465f29679dd39b3e61237ae750ff2551c7571c145022e17d200a07147f4946b
+    atomic_claim_handoff_raw_sha256: 6768359831e522fc0bf4662832b3a6a04b90212f3c5b285bb02f35116fb703ab
+    atomic_claim_next_raw_sha256: 5527113f7db007def1d3e475c310bcec6ef2ad792b5d6a1f497a05b6bcd88872
+    atomic_claim_state_handoff_digest: 72712ece7aaa2b8e7ad3861176698f9a786040cf8260991588249585a497dcd9
+    atomic_claim_runtime_triplet_digest: 7d22d4ecfda464f71e51a741123e2fd6ca939f77a4d0b1578361ae86a6e4a9ac
+    atomic_claim_path_inventory_digest: 8600be3f05604753011c7130e71afdcb2e7e748a34f218eabbff1e0348f05397
+    atomic_claim_pair_manifest_digest: 869a0bec1c550922495b7b5ba303afea0426baa4ccd1446c7f823a44c4158d29
+    atomic_claim_triplet_manifest_digest: 4f53752329533ab40ccc5d211f558b4a3ae3184c5d5b1187b5131f62682903bc
+    consumed_ready_entry_payload_digest: d227353928ba2c492ad7b0e21468bf6198634e9e800f96da507369c48ea640ce
+    active_phase_scope: F02_migration_2254_P22_learning_engagement_conflict_review_runtime_triplet_only
+    held_reason: >-
+      Preserve migration 2251 as the sole attendance authority. Immutable P22-migration-001 lacks runtime-tier and
+      verification-environment scope and requires a successor before F02 may allocate or author migration 2254.
+    authorized_paths:
+    - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
+    - ops/v2.1-execution/runtime/F02/HANDOFF.md
+    - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
   P12:
-    status: atomic_claim_ready
+    status: atomic_claim_reconciled_request_only_active
     phase: P12_distinct_actual_name_display_name_migration_request
-    expected_existing_head_sha: 4bc6f15c8beffb28dc845d976a62b9c4915a11dc
-    ready_entry_payload_digest: 86d690e8c86c758daef88ce47ac315a753372ab36d83aa7b5cad2c7017ee561b
+    expected_existing_head_sha: 8f6eacf8bc471009747225ecb1aa9c117955578b
+    atomic_claim_parent_sha: 4bc6f15c8beffb28dc845d976a62b9c4915a11dc
+    atomic_claim_tree_sha: 5baccff23c7343e83a80d722fc3014375674131d
+    atomic_claim_task_raw_sha256: 27b046b3f25c4912f176d1788967b4f45b8f32f1a9e07a7be566a2a8825ed222
+    atomic_claim_handoff_raw_sha256: fa93dc81038faa935909f0b4b8d1dcb74b0a891f72b22de5aad0b7c6fe8e8d96
+    atomic_claim_next_raw_sha256: 7844f8d875c6fa58d05edf7a8d0ee68e8c6da4372d771d3a05824589a1ae62a5
+    atomic_claim_state_handoff_digest: ba7c4426ee27810ddfef0efe74329d6c31bde18d5189a6790dfca03da95d66c0
+    atomic_claim_runtime_triplet_digest: f8a9d88ad25723df7a0ccbe3e1d57ee4069cadcb56aafd7a0238cbcc5ed04758
+    atomic_claim_path_inventory_digest: 2a417eb8e524b2d68defe7fa8e6db98df9a0d410a8063784a7f2ea62972f1d64
+    atomic_claim_pair_manifest_digest: 529d7f12acca6d824fe543963f94df12e49f9188a19f6e969e6d9f6a42028c13
+    atomic_claim_triplet_manifest_digest: dbc81bd056677a1fda0fd4c8485dbd0a42bb357a06f629211abb96ba22de232a
+    consumed_ready_entry_payload_digest: 86d690e8c86c758daef88ce47ac315a753372ab36d83aa7b5cad2c7017ee561b
+    active_phase_scope: P12_distinct_actual_name_display_name_migration_request_only
+    authorized_paths:
+    - ops/v2.1-execution/runtime/P12/TASK-STATE.yaml
+    - ops/v2.1-execution/runtime/P12/HANDOFF.md
+    - ops/v2.1-execution/runtime/P12/NEXT-PROMPT.md
+    - ops/v2.1-execution/runtime/P12/steward-requests/P12-migration-001.yaml
   P09:
-    status: atomic_claim_ready
+    status: atomic_claim_reconciled_request_only_active
     phase: P09_P10_school_seat_authority_convergence_request
-    expected_existing_head_sha: a64a0c03edb6ae50023011f470358e9214f1196c
-    ready_entry_payload_digest: 3e3462d65c63269f5623251cbb4f65b0808b20b11fc37c12a38ebf616798cc0c
+    expected_existing_head_sha: 989b7fa979b62f4f78ae76900a73d0011b36f5e6
+    atomic_claim_parent_sha: a64a0c03edb6ae50023011f470358e9214f1196c
+    atomic_claim_tree_sha: 0be8c742334e9f6cf244eff5d011a4de156adc74
+    atomic_claim_task_raw_sha256: 078cf22c7c0ea19b0b26e094d2390cd11767972aa5b27cb52cd219b9d162db64
+    atomic_claim_handoff_raw_sha256: 5a146a353a02892e1d4c90636775f5ee5ffa6ba667339e21de11fbc4d61bb5a7
+    atomic_claim_next_raw_sha256: 56eadd4daccc355f865fdab4ae5d4b4a1c44ab8fdcf77a0fa77dd1b4162e4018
+    atomic_claim_state_handoff_digest: 7c5e9cbbbea82778ba505ec373621329c3f05eb496440b8ff8c702603b639168
+    atomic_claim_runtime_triplet_digest: 0bbdde294f42ebdfbd5436d99e74dc32b2e449971c4a3b522cc30114c0f67253
+    atomic_claim_path_inventory_digest: 1ee17571e9d71ca4f2f8a2610e800b33a525369f4f8282b887d053c3e13eb6ca
+    atomic_claim_pair_manifest_digest: ca665bf958e3aa78e6445ac2918c97dd61eb7691cfde88dc5225d9efdb424fa8
+    atomic_claim_triplet_manifest_digest: 165c981e780b66c8c4fee99447d2838808874ec8f0f44343378f3262027dd6a7
+    consumed_ready_entry_payload_digest: 3e3462d65c63269f5623251cbb4f65b0808b20b11fc37c12a38ebf616798cc0c
+    active_phase_scope: P09_P10_school_seat_authority_convergence_request_only
+    authorized_paths:
+    - ops/v2.1-execution/runtime/P09/TASK-STATE.yaml
+    - ops/v2.1-execution/runtime/P09/HANDOFF.md
+    - ops/v2.1-execution/runtime/P09/NEXT-PROMPT.md
+    - ops/v2.1-execution/runtime/P09/steward-requests/P09-migration-002.yaml
   P10:
     successor_status: pending_P09_migration_002_terminal_and_C00_admission
   provider_effects: prohibited

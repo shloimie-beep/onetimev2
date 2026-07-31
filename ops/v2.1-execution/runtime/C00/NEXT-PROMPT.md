@@ -2654,3 +2654,53 @@ READY now and remains pending the P09 terminal and later C00 admission.
 Candidate freezing, provider locks or effects, deployment, DNS, live database
 migration, sends, charges, activation, and broad production remain withheld.
 The legal bundle gates only `production_broad`.
+
+# Current instruction: continue the three reconciled claims within narrowed bounds
+
+Resolve the exact pushed control commit containing this instruction from state
+basis `fdcba89094f6b8f9460db3d41f3602be2d476990`. Verify an empty READY queue,
+the unchanged claim/writer/lease identities, exact clean local/tracking/live
+task-head equality, active pre-expiry leases, and effects `0/0/0` before any
+edit.
+
+Run the three disjoint continuations concurrently:
+
+1. F02 from exact head
+   `4007334f36c0a87b3289cb99f4a9d2f25eeda2a9`: change only
+   `ops/v2.1-execution/runtime/F02/TASK-STATE.yaml`,
+   `HANDOFF.md`, and `NEXT-PROMPT.md`. Record that immutable
+   `P22-migration-001` conflicts with canonical migration 2251 attendance
+   authority and required runtime-tier/verification-environment isolation;
+   require a P22 successor, release both task leases, push, verify remote
+   equality, and stop. Do not create 2254 or edit the proposal. Preserve
+   untracked `.codex-lane1-pglite.mjs` exactly at 1,597 bytes and SHA-256
+   `11117a9144f8d2838466619ba0f3255ab18d0c164793c340fe3badb453206f17`;
+   stage only the runtime triplet.
+2. P12 from exact head
+   `8f6eacf8bc471009747225ecb1aa9c117955578b`: create only
+   `ops/v2.1-execution/runtime/P12/steward-requests/P12-migration-001.yaml`
+   plus the P12 runtime triplet. Use `kind: migration`; bind requirements
+   032/033/034 and their AC01 cases; request required nonblank
+   `actual_name`, exact-copy legacy backfill, nullable nonblank-when-present
+   `display_name`, preservation of the `self`/`dependent` relationship values,
+   the `self_adult_id` invariant, and all unrelated identity/security fields,
+   and an F02/C00 ordinal strictly after 2254. Do not add date of birth, age,
+   age band, grade, a Hebrew-specific name, Student email, provider/GHL
+   identity, credential, password, or plaintext-secret fields. Allocate no
+   ordinal. Release the P12 lease, push, verify remote equality, and stop.
+3. P09 from exact head
+   `989b7fa979b62f4f78ae76900a73d0011b36f5e6`: create only
+   `ops/v2.1-execution/runtime/P09/steward-requests/P09-migration-002.yaml`
+   plus the P09 runtime triplet. Supersede only overlapping School seat/config
+   semantics in `P09-migration-001` and `P10-MIGRATION-001`; require full
+   optimistic-versioned scope, household/adult account-manager authority,
+   seats, price, USD, billing start, terms, immutable contract reference,
+   reason, authorizer/time/audit/version, Family exactly three seats, 2241/2249
+   compatibility projections, and fail-closed contradiction quarantine.
+   Release the P09 lease, push, verify remote equality, and stop.
+
+C00 must independently admit all three terminals before issuing P22 or P10
+authority. No worker may integrate, apply or acknowledge a steward result,
+freeze a candidate, claim a provider/effect lock, deploy, change DNS, run a
+live database migration, send, charge, activate a customer, or perform any
+external effect. Legal gates only `production_broad`.

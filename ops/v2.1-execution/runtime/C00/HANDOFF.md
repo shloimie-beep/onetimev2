@@ -3098,3 +3098,61 @@ Candidate remains null, all 14 provider locks remain unclaimed, and external
 effects remain `0/0/0`. No provider, deployment, DNS, live-migration, send,
 charge, activation, or legal-bundle action is authorized by this dispatch.
 Legal continues to gate only `production_broad`.
+
+# Atomic-claim reconciliation, bounded request continuation, and F02 hold
+
+From exact control basis
+`fdcba89094f6b8f9460db3d41f3602be2d476990`, C00 independently reconciled
+the three pushed runtime-triplet atomic claims:
+
+- F02 `4007334f36c0a87b3289cb99f4a9d2f25eeda2a9`, sole parent
+  `9754f2ae0736ace4bbf7d2a88c73f1d28b0b5a20`, tree
+  `4396e56a651703f2299b06a662de868ab4e0e850`, canonical state/HANDOFF
+  `72712ece...`, triplet `7d22d4ec...`, and path inventory `8600be3f...`;
+- P12 `8f6eacf8bc471009747225ecb1aa9c117955578b`, sole parent
+  `4bc6f15c8beffb28dc845d976a62b9c4915a11dc`, tree
+  `5baccff23c7343e83a80d722fc3014375674131d`, canonical state/HANDOFF
+  `ba7c4426...`, triplet `f8a9d88a...`, and path inventory `2a417eb8...`;
+- P09 `989b7fa979b62f4f78ae76900a73d0011b36f5e6`, sole parent
+  `a64a0c03edb6ae50023011f470358e9214f1196c`, tree
+  `0be8c742334e9f6cf244eff5d011a4de156adc74`, canonical state/HANDOFF
+  `7c5e9cbb...`, triplet `0bbdde29...`, and path inventory `1ee17571...`.
+
+All three live remotes equal their clean task heads. Their claims, writers,
+and four disjoint task-bound leases remain unchanged through
+`2026-07-31T05:48:00Z`. The three READY entries are consumed; no replacement
+claim or lease was issued.
+
+The F02 source gate failed safely before any SQL or proposal edit. Immutable
+`P22-migration-001` would introduce a second writable attendance authority
+beside canonical migration 2251, omits runtime-tier and
+verification-environment isolation, depends on unavailable first/last-name
+fields, and does not provide immutable question-transition or consent-event
+history. F02 is therefore authorized only to update its runtime triplet with
+this honest held disposition, release both leases, push, and stop. It must not
+create migration 2254 or edit the allocation proposal. A P22 successor must
+preserve migration 2251 as the sole attendance write path, add full scope,
+depend on P12's actual/display-name correction, and require append-only
+question-transition and consent events.
+
+P12 may create only immutable `P12-migration-001` plus its runtime triplet.
+The request must add required Unicode-capable nonblank `actual_name`, exact-copy
+backfill it from legacy `display_name`, allow nullable but nonblank-when-present
+`display_name`, preserve the `self`/`dependent` relationship values and
+`self_adult_id` invariant plus every identity, lifecycle, version, username,
+history, and credential field, allocate no ordinal, release its lease, push,
+and stop. It must not add date of birth, age, age band, grade, a
+Hebrew-specific name, Student email, provider/GHL identity, credential,
+password, or plaintext-secret fields.
+
+P09 may create only immutable `P09-migration-002` plus its runtime triplet.
+The request must supersede only overlapping School seat/config semantics of the
+two predecessor requests; preserve full scope, household/adult account-manager
+authority, seats, price/currency/billing/terms/audit/version semantics and the
+2241/2249 compatibility projections; quarantine contradictions; release its
+lease, push, and stop. P10 remains pending until P09 terminal admission.
+
+Candidate remains null, all 14 provider locks remain unclaimed, and effects
+remain `0/0/0`. No integration, steward-result application, live database,
+provider, deployment, DNS, send, charge, activation, or legal-bundle effect is
+authorized. Legal continues to gate only `production_broad`.
