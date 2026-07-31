@@ -1,48 +1,70 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
 task_id: P12
-interface_implementation_head_sha: d0ae3a1a4b1717dc28cdf7f7ebfdbeee990f27a2
+interface_implementation_head_sha: derive_from_git_and_record_in_control_registry
 metadata_commit_sha: derive_from_git_and_record_in_control_registry
 task_packet_digest: 37a367f92ac2af2a1e9ef17ae97ec2caed3d80ea608d7bcbbeeb6ecc64a0c2bd
-contract_digest: ec615147fd6b7becf278c97aef35ee28c4bdfd8109d7ee7897701e3e25216e26
+contract_digest: f9c323080c32925864f780fb05981850644ba3a91a2303fa3f282bc7461378d9
 contract_digest_algorithm: >-
   SHA-256 over UTF-8 lines containing semantic_contract_version=<version>
   followed by exact path=<artifact SHA-256> lines sorted lexicographically by
-  path, with LF separators and no final newline.
+  path, with LF separators and no final newline. Artifact hashes are computed
+  from the exact normalized Git blob bytes in the terminal merge tree.
 contract_schema_version: 1
-semantic_contract_version: 1.0.1
+semantic_contract_version: 1.2.0
 state: interface_ready
 exports:
   - path: apps/web/src/client/app/parent/household/index.ts
     symbols:
       - ParentHouseholdWorkspace
-    sha256: 79eeee2c26b66f548e9592ac398db4495d69df0714a581bfea36eddec134ed39
+      - ParentHouseholdView
+      - ParentHouseholdApiError
+      - createParentHouseholdApi
+      - ParentHouseholdApi
+      - ParentHouseholdBootstrap
+    sha256: 4aa586c1c19baf635e59c5043a834f8acb60c844b8354aac885dd05fcfbdbf19
   - path: apps/web/src/server/features/portals/parent-household/index.ts
     symbols:
+      - createPostgresParentHouseholdRepository
+      - ParentHouseholdPostgresOptions
+      - createParentHouseholdRouter
       - createParentHouseholdService
-    sha256: 084e4d6c800a1063437193672da83909accd62353d1ae49366f66f0310e51bc1
+      - ParentHouseholdService
+    sha256: 05bde767efa55936e77d0efc73a73f884bb2310b532e7c5277e1917dc7ff99b9
   - path: packages/contracts/src/portals/parent-household/index.ts
     symbols:
       - PARENT_HOUSEHOLD_CONTRACT_VERSION
       - STANDARD_FAMILY_STUDENT_ALLOWANCE
       - STUDENT_ACTUAL_NAME_INSTRUCTIONS
+      - ParentHouseholdAccessState
+      - ParentStudentRelationship
+      - ParentStudentLifecycle
       - ParentHouseholdPrincipal
+      - ParentManagedStudent
       - ParentHouseholdRecord
       - ParentHouseholdSnapshot
-      - ParentManagedStudent
+      - StudentProfileInput
+      - StudentCredentialInput
       - CreateParentStudentCommand
       - UpdateParentStudentCommand
       - ParentStudentLifecycleCommand
       - ResetParentStudentCredentialCommand
+      - StudentCredentialHandoff
+      - ParentHouseholdAuditEvent
       - ParentHouseholdMutation
+      - ParentHouseholdMutationOperation
+      - ParentHouseholdMutationContext
+      - ParentHouseholdMutationReceipt
+      - ParentHouseholdMutationResponse
       - ParentHouseholdRepository
       - ParentStudentPasswordPort
       - ParentStudentIdPort
       - PARENT_HOUSEHOLD_ERROR_CODES
-    sha256: bf96c9d7e9ff331cac1babe179a67f2ac26a63a556198186a5ccf9569d57be8d
+    sha256: f33bbfa6d46b933540493c8895b08e86aad7eeef2a50deaa3e68ed523dd8d7ed
   - path: packages/domain/src/portals/parent-household/index.ts
     symbols:
       - ParentHouseholdError
+      - ParentHouseholdErrorCode
       - archiveParentStudent
       - buildParentHouseholdSnapshot
       - createParentStudent
@@ -51,20 +73,25 @@ exports:
       - updateParentStudent
     sha256: 51c640862c1ca76639bdb528bc04cbd84ec9e2689ab41018414ddfef59f85962
 compatibility_invariants:
-  - Parent authority is derived from a server-authenticated parent principal and exact adult-owned household scope.
-  - Standard Family creation and restoration cannot exceed three active Students even if repository data carries a larger allowance, and must commit against the exact household revision.
-  - Same-state archive and restore resubmits fail closed with parent_student_lifecycle_unchanged before replacement, revision increment, audit creation, enrollment/session effects, or repository commit.
-  - A Student is self or dependent, has active or archived lifecycle, and never carries email, age, date-of-birth, grade, or Hebrew-specific fields.
-  - Credential creation/reset returns plaintext only in the immediate display-once handoff; persistence receives only a hash.
-  - Username or password changes and archive transitions revoke Student sessions; active lifecycle drives canonical enrollment.
-  - Inactive household access retains a scoped overview but cannot mutate Students.
-  - Central routes and root barrel exports remain gated by P12-registration-001.
+  - Parent authority, adult identity, active role, session, and exact owned household are derived only from the authenticated server session; request input cannot select scope.
+  - An inactive household receives a status-only overview with no Student rows, forms, handoff, or mutation replay; every Student mutation fails closed.
+  - Standard Family creation and restoration enforce at most three active Students under a locked household revision, including concurrent final-seat attempts.
+  - Student identity stores required Unicode-nonblank actual_name, optional Unicode-nonblank display_name, and relationship self or dependent without date, age, grade, Hebrew-specific, email, or provider identity fields.
+  - Usernames are globally unique within exact runtime scope; update ownership and normalized target validation precede global availability lookup, and wrong-household targets remain uniformly concealed.
+  - Credentials persist only as the canonical versioned Argon2id hash; its lazy async factory runs once only after the locked receipt miss and mutation validation, and credential-version change invalidates prior Student authentication.
+  - Persisted idempotency evidence uses a server-keyed password fingerprint rather than plaintext-derived request hashing; exact replay writes and hashes nothing and returns credential_handoff null even after later state changes.
+  - Mismatched password confirmation fails before any create/reset receipt lookup, hash, ID allocation, write, or credential response, including when a matching receipt already exists.
+  - Only a newly committed create or credential reset may display the submitted password once; plaintext never crosses persistence, audit, logs, email, or a replay response.
+  - Student profile, household revision, service acceptance, canonical enrollment, audit, credential evidence, launch/session revocation, revocation readback, and receipt changes share one transaction.
+  - Immutable P12-registration-001 is superseded and must never be edited or applied; central server/client registration remains gated by their schema-valid -002 requests, while P12-barrel-export-003 solely supersedes stale P12-barrel-export-002 for interface 1.2.0.
 downstream_tasks:
   - P13
+  - I36
 verification_commands:
-  - npx vitest run packages/domain/src/portals/parent-household/parent-household.test.ts apps/web/src/server/features/portals/parent-household/service.test.ts apps/web/src/client/app/parent/household/ParentHouseholdWorkspace.test.tsx
+  - npx vitest run packages/domain/src/portals/parent-household/parent-household.test.ts apps/web/src/server/features/portals/parent-household/service.test.ts apps/web/src/server/features/portals/parent-household/postgres-repository.test.ts apps/web/src/server/features/portals/parent-household/router.test.ts apps/web/src/client/app/parent/household/ParentHouseholdWorkspace.test.tsx
+  - P12_NATIVE_POSTGRES_DISPOSABLE=true npx vitest run apps/web/src/server/features/portals/parent-household/postgres-repository.test.ts against disposable native PostgreSQL through migration 2255
+  - npx eslint apps/web/src/client/app/parent/household apps/web/src/server/features/portals/parent-household packages/contracts/src/portals/parent-household packages/domain/src/portals/parent-household
   - npm run typecheck -- --pretty false
-  - focused ESLint and Prettier checks over P12 implementation and tests
-  - git diff --check
+  - schema, formatting, scope, immutable-byte, digest, diff, and secret checks
 contains_product_completion_claim: false
 contains_external_effect: false

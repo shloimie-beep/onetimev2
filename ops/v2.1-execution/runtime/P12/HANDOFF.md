@@ -1,85 +1,103 @@
-# P12 Corrected Interface-Digest Final Handoff
+# P12 Replay and Concealment Correction Terminal
 
-## Identity
+## Authority
 
-- Branch: `codex/v21-p12-parent-household`
-- Atomic metadata-correction claim:
-  `b8d43694b93b5f932c35d065e633c887761f67a1`
-- Product implementation head:
-  `d0ae3a1a4b1717dc28cdf7f7ebfdbeee990f27a2`
-- Corrected interface metadata checkpoint:
-  `e5f59e707f9b3a12c9b64b30aaa23e638c2d816f`
-- Final handoff commit: derive with `git rev-parse HEAD`; C00 records the
-  observed remote head.
-- Containing controller:
-  `5d2877fa0eb5071572c2c08bbe5f0169e27b12ba`
-- Ready-entry parent/acquisition:
-  `76c1c2d9363bb20c9abd2e005ca0651fca73ceb8`
-- Reconciled control:
-  `c8957e599763556d8eb6140e499783d52818d49f`
-- Claim: `86e406be-cec6-493e-a2a8-4d0744168ed9`
-- Writer: `codex-p12-worker-86e406be`
-- PARENT_HOUSEHOLD_UI lease:
-  `79c5cf83-4438-4c68-ba4f-8e18b87de1f4`
-- Lease issued: `2026-07-29T04:24:36Z`
-- Lease expiry: `2026-07-29T05:24:36Z`
-- Lease released: `2026-07-29T04:39:16Z`
-- Ready-entry digest:
-  `8bb0d6d8bcc996fe9a50ebafec45046d3a65bad9cf85f193d90c083fc6b1eb30`
+- Branch: `codex/v21-p12-parent-household-concrete`
+- Authorized live control: `f8d9059b53d0e62cefa0bdb3bced312f3d2e3dd5`
+- READY state basis: `321fd3482d5ee54bbad19d97205b54845d0d0aac`
+- READY entry digest: `538a416e944278120e5e490b3e3e102134ae01c205478e177047a509fc8aabe0`
+- Resumed start: `153c52e97123bb8723c8671873bf96d01444584c`
+- Claim: `c2fee1f8-2f7f-4cc7-bec9-cc0695ec3cb4`
+- Writer: `codex-p12-replay-concealment-c2fee1f8`
+- PARENT_HOUSEHOLD_UI lease: `1d841d45-043c-4e33-8f3d-0c635faa68d0`, released at
+  `2026-07-31T16:11:11Z` before its `2026-07-31T17:38:16Z` expiry
+- Authorized path count: 10; inventory digest:
+  `c816e5a6cc91f4326ee8552142e747b196b4ec3c454a4cee424c4ad16bc1dcee`
 
-## Corrected semantic digest
+The existing ordered merge parents remain:
 
-The exact documented preimage contains semantic version `1.0.1` followed by
-the four lexicographically sorted `path=sha256` export lines, separated by four
-LF bytes and with no final newline. It is exactly 515 UTF-8 bytes and hashes to:
+1. `ae3ced8a9daa11044d4278968c14cb6baa12a480`
+2. `9ada912c3238421e661f89e590c07c042dd6424b`
 
-`ec615147fd6b7becf278c97aef35ee28c4bdfd8109d7ee7897701e3e25216e26`
+History was neither rewritten nor squashed. Derive the new terminal commit and
+tree from the pushed remote. Effect locks remained empty and external effects
+are `0/0/0`.
 
-The prior `7ac6f511...` value is superseded because it used literal
-backslash-plus-`n` bytes contrary to the documented algorithm.
+## Correction completed
 
-## Byte-identical artifacts
+The repository contract now receives `password_hash_factory`, a lazy async
+factory, instead of an eager hash. The PostgreSQL repository invokes it exactly
+once only after:
 
-- Client export:
-  `79eeee2c26b66f548e9592ac398db4495d69df0714a581bfea36eddec134ed39`
-- Server export:
-  `084e4d6c800a1063437193672da83909accd62353d1ae49366f66f0310e51bc1`
-- Contract export:
-  `bf96c9d7e9ff331cac1babe179a67f2ac26a63a556198186a5ccf9569d57be8d`
-- Domain export:
-  `51c640862c1ca76639bdb528bc04cbd84ec9e2689ab41018414ddfef59f85962`
-- Steward request:
-  `501ae46b1ad26e933d2e15b4f13760f4c3c8ec93d2672dc7be0d7e372046e733`
+- the transaction and household/idempotency advisory lock;
+- authenticated adult/session/role/owned-household resolution;
+- production-read-only and inactive-access denial;
+- a locked exact-receipt miss;
+- mutation shape, revision, seat, lifecycle, target, and unchanged-row checks;
+- normalized runtime-scoped username availability.
 
-Product, contract, test, export, steward, migration, shared, and effect
-artifacts remain byte-identical to the exact atomic claim input. Only
-`INTERFACE-CHECKPOINT.yaml` and P12 runtime metadata references change.
+An exact or racing replay returns before the factory. Native same-key create and
+reset races each produced one hash, one committed credential handoff, one
+null-handoff replay, and one canonical Student/receipt state. Sequential and
+later-state replay performed no additional hash or write.
 
-## Exact next action
+Create and reset now compare `new_password` and `password_confirmation` before
+any receipt lookup. A mismatch fails before household load, hash, Student-ID
+allocation, persistence, or credential response, even when a matching receipt
+already exists.
 
-I36 should independently review and integrate product implementation
-`d0ae3a1a4b1717dc28cdf7f7ebfdbeee990f27a2` and corrected interface
-checkpoint `e5f59e707f9b3a12c9b64b30aaa23e638c2d816f`, reproduce the exact
-515-byte semantic digest, and disposition the immutable steward request. C00
-may authorize P13 only after exact corrected interface integration.
+Update now constructs and validates the owned target mutation before global
+username availability. The lookup receives only the normalized username and
+Student ID from that validated target. Focused service and concrete-repository
+tests prove a wrong-household Student receives the same concealed
+`parent_student_missing` result whether its proposed username is globally taken
+or available; no availability query or mutation follows the failed ownership
+proof.
+
+## Interface and immutable requests
+
+Semantic interface `1.2.0` is ready for correction review. Its canonical
+UTF-8/LF/no-final-newline digest is
+`f9c323080c32925864f780fb05981850644ba3a91a2303fa3f282bc7461378d9`.
+
+Normalized export hashes are:
+
+- client index: `4aa586c1c19baf635e59c5043a834f8acb60c844b8354aac885dd05fcfbdbf19`
+- server index: `05bde767efa55936e77d0efc73a73f884bb2310b532e7c5277e1917dc7ff99b9`
+- contract index: `f33bbfa6d46b933540493c8895b08e86aad7eeef2a50deaa3e68ed523dd8d7ed`
+- domain index: `51c640862c1ca76639bdb528bc04cbd84ec9e2689ab41018414ddfef59f85962`
+
+Immutable `P12-server-registration-002` and `P12-client-route-002` remain valid
+and byte-identical. Immutable `P12-barrel-export-002` also remains byte-identical
+but is now stale and must never be applied. The only new successor is:
+
+- `P12-barrel-export-003` — raw SHA-256
+  `d3a72cb8cd794e548d06e1602582370f1aeda2889431dd7104e02d7adc5e40b6`
+
+It retains all seven requirement IDs and seven AC01 IDs, binds the barrel to
+interface 1.2.0, and solely supersedes `P12-barrel-export-002`. No other
+successor was created. `P12-registration-001` remains immutable superseded
+evidence, and `P12-migration-001` remains immutable fulfilled evidence.
 
 ## Verification
 
-- Claim-relative delta: exactly the interface checkpoint and three P12 runtime
-  files.
-- Start-relative delta: exactly 16 authorized P12 paths.
-- Prettier/YAML parse and diff hygiene: passed.
-- Repository secret scan: passed across 2750 text files.
-- Correct LF semantic, four export, and steward-request hashes: reproduced.
-- Local, tracking, and remote refs: exact and clean.
+- Focused five-file suite: 31 tests passed; 3 declared native-only cases skipped.
+- Fresh disposable PostgreSQL 18.4, UTF-8, through migration 2255: all 8
+  repository tests passed, including final-seat serialization, same-key create
+  and reset serialization, and injected rollback.
+- Focused ESLint and Prettier: passed.
+- Interface preimage/export hashes, new request schema and traceability,
+  immutable `-002` bytes, exact ten-path scope, diff hygiene, and secret checks:
+  passed.
+- The first native harness attempt used the Windows default database encoding
+  and was discarded before semantic tests; the explicit UTF-8 rerun above is
+  the authoritative proof. The exact disposable database cluster was removed.
 
-## External effects
+## Next action
 
-Authority is `none`; attempted `0`, succeeded `0`, reconciled `0`.
-
-## Security and recovery
-
-No provider payload, customer or child data, credential, secret, deployment,
-mutation, or deletion was accessed or attempted. Recovery base is exact atomic
-metadata-correction claim
-`b8d43694b93b5f932c35d065e633c887761f67a1`.
+C00 should perform exactly one independent review of this pushed correction
+terminal. On PASS, it should dispatch the single ordered P12-then-P09 I36 source
+microbatch. I36 applies `P12-server-registration-002`,
+`P12-client-route-002`, and `P12-barrel-export-003`, while rejecting and
+withholding `P12-barrel-export-002`. It must not revive
+`P12-registration-001` or edit any immutable request.

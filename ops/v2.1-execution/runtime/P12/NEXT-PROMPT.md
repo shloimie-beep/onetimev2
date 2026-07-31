@@ -1,37 +1,66 @@
 MODEL: GPT-5.6-SOL
-REASONING: HIGH
+REASONING: XHIGH
 SERVICE TIER: PRIORITY
-MODE: REVIEW_OR_INTEGRATE
+MODE: REVIEW
 
-Review One Time v2.1 task P12 from its exact corrected ready-for-review final.
+Perform exactly one independent correction review of the pushed terminal on
+`codex/v21-p12-parent-household-concrete`.
 
-Repository: shloimie-beep/onetimev2
-Branch: codex/v21-p12-parent-household
-Authoritative control ref: origin/codex/v21-control
-Task state: ops/v2.1-execution/runtime/P12/TASK-STATE.yaml
-Handoff: ops/v2.1-execution/runtime/P12/HANDOFF.md
-Interface checkpoint: ops/v2.1-execution/runtime/P12/INTERFACE-CHECKPOINT.yaml
+Authority is live control
+`f8d9059b53d0e62cefa0bdb3bced312f3d2e3dd5`, READY basis
+`321fd3482d5ee54bbad19d97205b54845d0d0aac`, READY digest
+`538a416e944278120e5e490b3e3e102134ae01c205478e177047a509fc8aabe0`,
+claim `c2fee1f8-2f7f-4cc7-bec9-cc0695ec3cb4`, writer
+`codex-p12-replay-concealment-c2fee1f8`, and released lease
+`1d841d45-043c-4e33-8f3d-0c635faa68d0`. Effects are `0/0/0`.
 
-C00 reconciled atomic metadata claim
-`b8d43694b93b5f932c35d065e633c887761f67a1` at exact control
-`c8957e599763556d8eb6140e499783d52818d49f`. Claim
-`86e406be-cec6-493e-a2a8-4d0744168ed9` and PARENT_HOUSEHOLD_UI
-lease `79c5cf83-4438-4c68-ba4f-8e18b87de1f4` were released
-task-locally at `2026-07-29T04:39:16Z`, before the
-`2026-07-29T05:24:36Z` expiry. No effect lock or external authority existed.
+Require clean local/tracking/live equality and exact preservation of the
+existing ordered parents:
 
-The exact 515-byte UTF-8 preimage uses LF separators and no final newline. Its
-correct semantic contract digest is
-`ec615147fd6b7becf278c97aef35ee28c4bdfd8109d7ee7897701e3e25216e26`.
-The four export hashes and steward digest remain byte-identical.
+1. `ae3ced8a9daa11044d4278968c14cb6baa12a480`
+2. `9ada912c3238421e661f89e590c07c042dd6424b`
 
-Exact product implementation:
-`d0ae3a1a4b1717dc28cdf7f7ebfdbeee990f27a2`. Exact corrected interface
-metadata checkpoint:
-`e5f59e707f9b3a12c9b64b30aaa23e638c2d816f`.
+Review exactly the ten authorized paths with inventory digest
+`c816e5a6cc91f4326ee8552142e747b196b4ec3c454a4cee424c4ad16bc1dcee`.
+Reject any other authored path, history rewrite, external effect, or mutation of
+an existing immutable steward request.
 
-I36 must independently verify and integrate those exact heads, reproduce the
-515-byte LF/no-final-newline semantic digest and unchanged export/steward
-hashes, and disposition `P12-registration-001`. C00 may authorize P13 only
-after exact corrected interface integration. Do not resume P12 without new
-exact C00 authorization.
+Verify the three held P2s are closed:
+
+1. `password_hash_factory` is lazy across the exported repository contract,
+   service, and PostgreSQL repository. It executes exactly once only after the
+   advisory lock, authenticated scope/read-only/inactive gates, locked receipt
+   miss, mutation validation, and normalized username availability. Racing or
+   sequential exact replay hashes and writes zero times and returns no
+   credential handoff.
+2. Mismatched create/reset confirmation fails before any receipt lookup,
+   household load, hash, ID allocation, write, or credential response, including
+   when a matching receipt exists.
+3. Update constructs and validates its owned target before username
+   availability and queries only the normalized validated target. A
+   wrong-household target remains uniformly concealed regardless of global
+   username state or attacker-supplied Student ID.
+
+Require the focused 31-test result, disposable native PostgreSQL 18.4 eight-test
+race/rollback result, focused lint/format, exact interface preimage, immutable
+request bytes, scope, and diff hygiene.
+
+Semantic interface `1.2.0` digest is
+`f9c323080c32925864f780fb05981850644ba3a91a2303fa3f282bc7461378d9`.
+Record the new terminal commit as its implementation and metadata checkpoint.
+
+Steward disposition after PASS:
+
+- retain and apply `P12-server-registration-002` raw SHA-256
+  `7613a0c268faca7cb1fac830b3f4f97f502677e0fe2254360f9342820cc1c00f`;
+- retain and apply `P12-client-route-002` raw SHA-256
+  `0731b9cc4dad55f26d26d9080b3eeba2b6e18739954de49b6a1d6c87d0e163c8`;
+- reject and withhold immutable stale `P12-barrel-export-002` raw SHA-256
+  `2a82d0963bff76d05e9290f8648c232468fb1d9f0078c958657bb44e1621322d`;
+- admit and apply only `P12-barrel-export-003` raw SHA-256
+  `d3a72cb8cd794e548d06e1602582370f1aeda2889431dd7104e02d7adc5e40b6`.
+
+On PASS, C00 dispatches one ordered P12-then-P09 I36 source microbatch. Do not
+begin I36 integration from this P12 branch. Do not edit control, integration,
+central composers/barrels, migrations, providers, candidate, deployment, DNS,
+send, charge, or customer state, and perform no external effect.
