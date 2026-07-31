@@ -3,64 +3,47 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: REVIEW
 
-Perform exactly one independent correction review of the pushed terminal on
-`codex/v21-p12-parent-household-concrete`.
+Perform exactly one independent review of the pushed integration type-contract
+correction on `codex/v21-p12-parent-household-concrete`.
 
 Authority is live control
-`f8d9059b53d0e62cefa0bdb3bced312f3d2e3dd5`, READY basis
-`321fd3482d5ee54bbad19d97205b54845d0d0aac`, READY digest
-`538a416e944278120e5e490b3e3e102134ae01c205478e177047a509fc8aabe0`,
-claim `c2fee1f8-2f7f-4cc7-bec9-cc0695ec3cb4`, writer
-`codex-p12-replay-concealment-c2fee1f8`, and released lease
-`1d841d45-043c-4e33-8f3d-0c635faa68d0`. Effects are `0/0/0`.
+`5c0c6c958a25ef313cb623bcfc3928899e5279ac`, READY basis
+`f0d144154927a47bffd7939d815a510fbed3adf2`, READY digest
+`1d7f2c81fa9522d0e0d66001053938c43fe1bb72040341fceef9e9cd0f0dfc7e`,
+claim `8a7c03c1-af56-43ad-ba0a-ce2f3c764845`, writer
+`codex-p12-type-contract-8a7c03c1`, and released lease
+`6e355e1f-ef06-4a44-87c4-f51f9f039dd0`. Effects are `0/0/0`.
 
-Require clean local/tracking/live equality and exact preservation of the
-existing ordered parents:
-
-1. `ae3ced8a9daa11044d4278968c14cb6baa12a480`
-2. `9ada912c3238421e661f89e590c07c042dd6424b`
-
-Review exactly the ten authorized paths with inventory digest
-`c816e5a6cc91f4326ee8552142e747b196b4ec3c454a4cee424c4ad16bc1dcee`.
+Require clean local/tracking/live equality and a normal single-parent descendant
+of exact start `71fb96d60ea08e5947681e1ea1c704606ff215cc`. Review exactly the
+six authorized paths with inventory digest
+`2301a50c11726d06a901b65fe86f67f79d0d9f4a3918d44a32c63426d81d8656`.
 Reject any other authored path, history rewrite, external effect, or mutation of
-an existing immutable steward request.
+an interface, steward request, product source, central composer, registration,
+migration, provider, integration, or candidate byte.
 
-Verify the three held P2s are closed:
+Verify exactly these corrections:
 
-1. `password_hash_factory` is lazy across the exported repository contract,
-   service, and PostgreSQL repository. It executes exactly once only after the
-   advisory lock, authenticated scope/read-only/inactive gates, locked receipt
-   miss, mutation validation, and normalized username availability. Racing or
-   sequential exact replay hashes and writes zero times and returns no
-   credential handoff.
-2. Mismatched create/reset confirmation fails before any receipt lookup,
-   household load, hash, ID allocation, write, or credential response, including
-   when a matching receipt exists.
-3. Update constructs and validates its owned target before username
-   availability and queries only the normalized validated target. A
-   wrong-household target remains uniformly concealed regardless of global
-   username state or attacker-supplied Student ID.
+1. `ParentHouseholdWorkspace.test.tsx` changes only its typed fixture contract
+   version from `1.1.0` to exact `1.2.0`.
+2. `router.test.ts` makes the same exact typed-fixture correction.
+3. `service.test.ts` preserves the default receipt disposition as the exact
+   `'committed'` literal type without changing test or product behavior.
 
-Require the focused 31-test result, disposable native PostgreSQL 18.4 eight-test
-race/rollback result, focused lint/format, exact interface preimage, immutable
-request bytes, scope, and diff hygiene.
+Require 3 focused files and 19 tests passing, exact-file ESLint and Prettier,
+and workspace typecheck proof with zero P12/P09 diagnostics. The only permitted
+remaining diagnostics are the byte-unchanged Stripe official-client baseline
+and three duplicated-Playwright-installation harness baselines in `ot-52`,
+`ot-83`, and `w12-09`.
 
-Semantic interface `1.2.0` digest is
-`f9c323080c32925864f780fb05981850644ba3a91a2303fa3f282bc7461378d9`.
-Record the new terminal commit as its implementation and metadata checkpoint.
+Semantic interface `1.2.0` and digest
+`f9c323080c32925864f780fb05981850644ba3a91a2303fa3f282bc7461378d9`
+must remain unchanged. All steward requests must remain byte-identical.
 
-Steward disposition after PASS:
-
-- retain and apply `P12-server-registration-002` raw SHA-256
-  `7613a0c268faca7cb1fac830b3f4f97f502677e0fe2254360f9342820cc1c00f`;
-- retain and apply `P12-client-route-002` raw SHA-256
-  `0731b9cc4dad55f26d26d9080b3eeba2b6e18739954de49b6a1d6c87d0e163c8`;
-- reject and withhold immutable stale `P12-barrel-export-002` raw SHA-256
-  `2a82d0963bff76d05e9290f8648c232468fb1d9f0078c958657bb44e1621322d`;
-- admit and apply only `P12-barrel-export-003` raw SHA-256
-  `d3a72cb8cd794e548d06e1602582370f1aeda2889431dd7104e02d7adc5e40b6`.
-
-On PASS, C00 dispatches one ordered P12-then-P09 I36 source microbatch. Do not
-begin I36 integration from this P12 branch. Do not edit control, integration,
-central composers/barrels, migrations, providers, candidate, deployment, DNS,
-send, charge, or customer state, and perform no external effect.
+On PASS, C00 should admit this normal descendant as the sole P12 type-contract
+closure for the already-held I36 source microbatch. I36 merges it after its safe
+local P12-then-P09 merges, reruns only the bounded merged checks, and
+terminalizes source integration. Do not restart or discard the safe local
+merges, apply shared registrations, edit control or integration from this P12
+branch, touch providers/candidate/deployment/DNS/send/charge/customer state, or
+perform any external effect.

@@ -56,7 +56,7 @@ function setup(overrides?: {
       await input.password_hash_factory?.();
       return (
         overrides?.commitReceipt ?? {
-          disposition: 'committed',
+          disposition: 'committed' as const,
           operation: input.audit.action,
           student_id: input.audit.student_id,
           household_revision: input.next.revision,
