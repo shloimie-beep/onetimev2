@@ -1,4 +1,4 @@
-# P22 Atomic Authority-Successor Claim Handoff
+# P22 Renewal-Requested Handoff
 
 ## Identity
 
@@ -46,11 +46,18 @@ unchanged. This checkpoint changes only `TASK-STATE.yaml`, `HANDOFF.md`, and
 
 ## Next action
 
-Push and report this exact sole-parent atomic claim, then stop. Product and
-successor-request work may begin only after C00 consumes the exact pushed claim
-head and explicitly resumes P22 under separate authority.
+C00 reconciled atomic claim
+`7988604c2e37850aa51dbfc31138398468dd1493` at control
+`2d82c15a7af7284cacb7688b8a719da8f4f530a8`. This continuation reproduced
+the exact 16-path inventory and product-base manifest, verified every committed
+base product hash, and completed read-only seam analysis. No product, test, or
+request byte changed.
+
+Push this three-runtime-file `renewal_requested` checkpoint, then stop all
+writes. Resume the substantive exact-16-path correction only after C00
+publishes a fresh lease against the exact pushed head.
 
 ## Effects
 
 Authority none; attempted/succeeded/reconciled `0/0/0`. The
-LEARNING_ENGAGEMENT lease remains held for C00 reconciliation.
+LEARNING_ENGAGEMENT lease remains held pending C00 renewal.

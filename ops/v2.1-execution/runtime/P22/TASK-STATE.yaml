@@ -40,8 +40,8 @@ dependency_heads:
     interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
     task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
     task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
-status: claimed
-phase: P22_learning_engagement_authority_successor_atomic_claim_only
+status: renewal_requested
+phase: renewal_requested
 claim_mode: resume_existing_branch
 claimed_by: codex-p22-authority-successor-a54f8667
 claim_time: '2026-07-31T05:39:21Z'
@@ -54,16 +54,19 @@ writer_slot_leases:
     state_based_on_control_head_sha: cc90f922663405d883a798db8d4278ef803bb7cb
     phase_scope: P22_learning_engagement_authority_successor_atomic_claim_only
 lease_expires_at: '2026-07-31T07:06:00Z'
-last_heartbeat_at: '2026-07-31T05:39:21Z'
-controller_authorization_sha: 8b4d83ae15ebd5ddfc95d01e163f73d4865f4c73
-resume_containing_control_sha: 8b4d83ae15ebd5ddfc95d01e163f73d4865f4c73
+last_heartbeat_at: '2026-07-31T06:13:53Z'
+controller_authorization_sha: 2d82c15a7af7284cacb7688b8a719da8f4f530a8
+resume_containing_control_sha: 2d82c15a7af7284cacb7688b8a719da8f4f530a8
 reconciled_control_sha: ddef233830979fd2a0e2d3a146bdd389b23a9c84
 ready_entry_state_based_on_control_head_sha: cc90f922663405d883a798db8d4278ef803bb7cb
 ready_entry_payload_digest: 49d6cfb5f77707dfae008065588d720bc32093e83aad982e8c0d71861cb40051
-state_based_on_head_sha: 4d1b6dfc31d2b46f6cd530792816953d2a767fc2
+state_based_on_head_sha: 7988604c2e37850aa51dbfc31138398468dd1493
 last_implementation_commit_sha: 459e9187500477312a69542fc2b1e7d2fc552dd3
 implementation_artifact_digest: 2552e3b9211f596e3739945fb9f4766527706eddf5fcb755338426ff572af967
 completed_steps:
+  - C00 reconciled atomic claim 7988604c2e37850aa51dbfc31138398468dd1493 at control 2d82c15a7af7284cacb7688b8a719da8f4f530a8 and authorized the exact 16-path substantive correction ceiling.
+  - Reproduced authorized path-inventory digest d153ca704b5275a3ccc95518b8e8a95ef08fbcc5c35177376447ac94bebf14c3, product-base manifest 8077e667a05bc1f2817f36d11746255c48b9345e9a849d5131444fecabf5d4c4, all seven existing raw product hashes, and the authorized absent repository test.
+  - Completed read-only inspection of the P22 artifacts and canonical P18 attendance, P12 identity, privacy consent, and steward-request seams; no product, test, or request byte changed.
   - Fetched control 8b4d83ae15ebd5ddfc95d01e163f73d4865f4c73 and verified the P22 READY payload digest 49d6cfb5f77707dfae008065588d720bc32093e83aad982e8c0d71861cb40051, claim a54f8667-d95d-415c-89ac-a6ac824775aa, writer codex-p22-authority-successor-a54f8667, and sole LEARNING_ENGAGEMENT lease d20c0e9b-03a0-4ca1-a555-394fad6b2df2.
   - Verified local and remote P22 head 4d1b6dfc31d2b46f6cd530792816953d2a767fc2 and authorized integration/evidence SHA d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9 before this claim-only checkpoint.
   - Verified reconciled control ddef233830979fd2a0e2d3a146bdd389b23a9c84 records exact correction claim head 0430569088aeb4f244e5540dddf778b72525bc64, claim, branch, and sole unexpired lease.
@@ -85,9 +88,9 @@ completed_steps:
   - Bound the rolling approvedQuestionCount timestamp to the first approved_for_class or published transition, never an earlier private answer and never refreshed by later publication.
   - Added service-layer negative assertions proving cross-class question and attendance attempts perform no repository save; eleven focused assertions pass.
 remaining_steps:
-  - Push and report this exact three-file atomic authority-successor claim.
-  - Stop before product or successor-request work and await C00 reconciliation of the exact remote claim head.
-next_action: Push and report the atomic authority-successor claim, then stop until C00 consumes its exact remote head and explicitly resumes P22.
+  - Obtain a C00-issued fresh resume lease against this exact renewal checkpoint.
+  - Resume the substantive exact-16-path correction only under that fresh lease.
+next_action: Push this renewal_requested runtime checkpoint, stop all writes, and resume substantive exact-16-path correction only after C00 issues a fresh resume lease against its exact head.
 requirements:
   OTV2-LEARNING-093: implementation_verified
   OTV2-LEARNING-094: implementation_verified
@@ -131,6 +134,8 @@ verification:
       result: passed; claim a54f8667, writer codex-p22-authority-successor-a54f8667, lease d20c0e9b, zero effect locks, and authorized SHA d89a0f38
     - command: exact claim-only changed-path verification
       result: passed before commit; only the three P22 runtime files changed
+    - command: substantive authority, 16-path inventory, product-base manifest, and raw Git-blob verification
+      result: passed; control 2d82c15a, inventory d153ca70, manifest 8077e667, seven exact product hashes, and authorized repository test absence
   known_baseline_failures: []
 external_effects:
   authority: none
@@ -140,3 +145,4 @@ external_effects:
 blockers: []
 out_of_scope_findings:
   - Product and successor-request work is intentionally deferred until C00 reconciles this exact pushed atomic claim head.
+  - Substantive edits are paused pending a fresh C00-issued resume lease.

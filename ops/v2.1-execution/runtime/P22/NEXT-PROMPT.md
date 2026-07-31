@@ -3,8 +3,8 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
-Resume P22 only after C00 has consumed the exact atomic authority-successor
-claim head and issued separate substantive authority.
+Resume P22 substantive exact-16-path correction only after C00 publishes a
+fresh lease against the exact pushed `renewal_requested` checkpoint.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-p22-learning-engagement
@@ -24,10 +24,10 @@ codex-p22-authority-successor-a54f8667, and sole LEARNING_ENGAGEMENT lease
 d20c0e9b-03a0-4ca1-a555-394fad6b2df2 expiring
 2026-07-31T07:06:00Z.
 
-Before any further write, fetch remote refs and verify C00 consumed the exact
-pushed claim head, local and remote equal it, the lease remains valid, and no
-foreign writer or path collision exists. Continue only under the exact new
-READY phase and path ceiling C00 publishes.
+Before any further write, fetch remote refs and verify the fresh C00 control,
+claim/lease, and local/tracking/live equality. Preserve the exact 16-path
+ceiling and resume from the completed read-only analysis recorded in the
+runtime state and handoff.
 
 This atomic checkpoint authorizes no product, test, migration, registration,
 successor-request, provider, deployment, DNS, live database, send, charge, or
