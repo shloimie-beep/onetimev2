@@ -121,10 +121,10 @@ blockers:
     invalid-cookie recovery, safe continuation, sole-household routing, native PostgreSQL lifecycle/concurrency proof,
     real Chromium reload/logout coverage, build, typecheck, format, lint, and effects 0/0/0. P12 terminal
     9ada912c created immutable P12-migration-001 at raw digest
-    6f76b024f756b89ef430a21c0744b4dd43114c5d5e9213bd76582e2534d3bc17; C00 admitted it to F02 without applying it.
+    6f76b024f756b89ef430a21c0744b4dd43114c5d5e9213bd76582e2534d3bc17. I36 release ae3ced8a integrated
+    forward-only migration 2255 with native PostgreSQL 18.4 apply/replay/ledger 87/87; C00 dispatched the exact
+    19-writable-path concrete P12 correction under a fresh PARENT_HOUSEHOLD_UI lease.
   required_authority_or_input:
-  - After the P22 migration-2254 authority correction, apply exact P12-migration-001 as forward-only migration 2255
-    through F02 with native PostgreSQL proof
   - Implement the P12 concrete PostgreSQL repository/router/forms, service-account acceptance, canonical enrollment,
     audit/idempotency, and persistent Student-creation browser proof
   - Replace immutable legacy-kind P12-registration-001 with schema-valid P12 server, client, and barrel successors
@@ -136,8 +136,9 @@ blockers:
     session establishment from row insertion alone, expose raw token material, rewrite migrations 2235/2241, fabricate a
     multi-household selector, or treat inactive access as an unauthenticated Parent.
   next_check: >-
-    Re-evaluate after forward-only migration 2255 and the P12 persistence/route/browser checkpoint pass. Preserve the
-    recovery-capable post-commit session boundary without claiming stricter cross-transaction atomicity.
+    Re-evaluate after the active P12 concrete terminal, its single independent review, I36 shared registration, and the
+    mounted persistence/route/browser checkpoint. Preserve the recovery-capable post-commit session boundary without
+    claiming stricter cross-transaction atomicity.
 - blocker_id: P09-SCHOOL-INQUIRY-ROUTE-COMPOSITION
   status: open
   scope: controlled_launch_candidate
@@ -159,11 +160,12 @@ blockers:
     seat/configuration authority; C00 admitted it to F02 and dispatched only a bounded P10 metadata acknowledgment.
     Immutable request P09-registration-001 also requires signed-out GET /school and an Admin-authorized approved-school
     configuration surface; neither exists in the admitted P09 source, so the request cannot truthfully be marked
-    applied from central POST registration alone.
+    applied from central POST registration alone. I36 release ae3ced8a integrated forward-only migration 2256 with
+    native PostgreSQL 18.4 apply/replay/ledger 87/87; C00 dispatched the exact 18-writable-path P09 correction with only
+    two explicit repository ownership exceptions.
   required_authority_or_input:
-  - Complete and admit the exact P10 acknowledgment of P09-migration-002, then apply the request as forward-only
-    migration 2256 through F02 with native PostgreSQL proof
-  - Issue a bounded P09 producer correction for signed-out GET /school and the Admin-authorized configuration surface
+  - Complete the active bounded P09 producer correction for signed-out GET /school and the Admin-authorized
+    configuration surface
   - Replace immutable P09-registration-001 with schema-valid split shared requests; preserve its requirement IDs and
     omit, without inventing replacements for, its two malformed non-ACNN acceptance IDs
   - Register the complete reviewed surface in an I36 central checkpoint and rerun the static production landing test
@@ -194,16 +196,18 @@ blockers:
     effects 0/0/0. Corrected P18 terminal 1926e61c is independently accepted with exact eight-path source, 35 focused
     assertions, released lease, and effects 0/0/0. F02 terminal 3ee2f651 is independently accepted with exact seven-path
     source, allocated migrations 2254 through 2256, native PostgreSQL 18.4 apply/replay/ledger 87/87, released leases,
-    and effects 0/0/0. Both accepted heads are queued in exact F02-then-P18 order for one I36 source microbatch.
+    and effects 0/0/0. I36 release ae3ced8a merged F02 then P18 with exact ancestry, 18 release paths, unchanged protected
+    migrations, repeated native PostgreSQL 18.4 apply/replay/ledger 87/87, released lease, effects 0/0/0, and one
+    independent review with no P1/P2 discrepancy. C00 recorded migrations 2254-2256 as integrated and their exact
+    successor requests as applied.
   required_authority_or_input:
-  - Integrate exact F02 3ee2f651 then P18 1926e61c through the claimed I36 source microbatch and pass one merged
-    changed-area and native PostgreSQL verification
-  - Apply the remaining four corrected shared requests through their exact I36 checkpoints and re-run merged registration checks
+  - Apply the remaining dependency-ordered corrected shared requests through exact I36 batches A-D and re-run merged
+    registration checks
   protection: >-
     Do not apply P22-migration-001 or P22-registration-001, create a second attendance write authority, parse a display
     name into identity fields, mutate audit history, write SQL before the successor is admitted, or advance candidate,
     provider, deployment, DNS, live-database, send, charge, or customer activation gates.
-  next_check: Re-evaluate after the F02-then-P18 I36 source terminal and later shared registration.
+  next_check: Re-evaluate after the remaining dependency-ordered shared-registration batches and merged checks.
 - blocker_id: P21-CANONICAL-CONTENT-STATE-WRITER
   status: open
   scope: controlled_launch_candidate

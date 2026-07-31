@@ -1202,16 +1202,16 @@ items:
   request_digest: c44539cb6ef8960de256aee6ab2881734fc888b63e14a0cd78bec20eaf72f468
   requesting_task_id: P22
   kind: migration
-  status: assigned
+  status: applied
   assigned_steward: F02
   target_checkpoint: F02_forward_migration_2254_after_P21_then_P22_source_integration
   acknowledged_by_task: true
   acknowledgment_head_sha: 3ee2f651528f5170dd714b921500235d4e015c5b
   acknowledgment_state_handoff_digest: 62a0494054c46bc8ba16f8b1b57898cb3ccee19a9b324dec9201939da144c894
-  applied_commit_sha: null
-  result_record_head_sha: null
-  evaluated_target_head_sha: null
-  result_digest: null
+  applied_commit_sha: 614c723681cff39db2ebd8988017d4b389d1adc1
+  result_record_head_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
+  evaluated_target_head_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
+  result_digest: 6d6e825f44a53dc7307d03c7936e9b11ec8b070a428396d24bfc707d4dd99ae3
   rejection_reason: null
 - request_id: P22-server-registration-002
   request_digest: 9cac829ad7441f3772e587a50bb30c984807b93e1df89db41948b5e3490700dc
@@ -1232,31 +1232,31 @@ items:
   request_digest: 6f76b024f756b89ef430a21c0744b4dd43114c5d5e9213bd76582e2534d3bc17
   requesting_task_id: P12
   kind: migration
-  status: assigned
+  status: applied
   assigned_steward: F02
   target_checkpoint: F02_forward_migration_2255_after_P22_2254
   acknowledged_by_task: true
   acknowledgment_head_sha: 3ee2f651528f5170dd714b921500235d4e015c5b
   acknowledgment_state_handoff_digest: 62a0494054c46bc8ba16f8b1b57898cb3ccee19a9b324dec9201939da144c894
-  applied_commit_sha: null
-  result_record_head_sha: null
-  evaluated_target_head_sha: null
-  result_digest: null
+  applied_commit_sha: 614c723681cff39db2ebd8988017d4b389d1adc1
+  result_record_head_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
+  evaluated_target_head_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
+  result_digest: b5877993d8c2ae1c86df74866c2859439054ef94194266e4d148b1214d377594
   rejection_reason: null
 - request_id: P09-migration-002
   request_digest: 538d6509a5170efc5c164f577d2054005edcd74c17d95e6128cb84ecb37c1a62
   requesting_task_id: P09
   kind: migration
-  status: assigned
+  status: applied
   assigned_steward: F02
   target_checkpoint: F02_forward_migration_2256_after_P10_authority_acknowledgment
   acknowledged_by_task: true
   acknowledgment_head_sha: 3ee2f651528f5170dd714b921500235d4e015c5b
   acknowledgment_state_handoff_digest: 62a0494054c46bc8ba16f8b1b57898cb3ccee19a9b324dec9201939da144c894
-  applied_commit_sha: null
-  result_record_head_sha: null
-  evaluated_target_head_sha: null
-  result_digest: null
+  applied_commit_sha: 614c723681cff39db2ebd8988017d4b389d1adc1
+  result_record_head_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
+  evaluated_target_head_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
+  result_digest: 74ecf8e801fc1c0d5a123b2ea275b411071ba01e4e69e7cc84e0699bcb21e359
   rejection_reason: null
 entry_schema:
   request_id: null

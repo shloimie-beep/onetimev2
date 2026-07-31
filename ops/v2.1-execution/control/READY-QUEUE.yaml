@@ -3,65 +3,222 @@ execution_id: OT-V21-PRODUCTION
 generated_by: C00
 status: operational
 ready:
-  - task_id: I36
-    status: resume_ready
-    phase: F02_then_P18_lean_source_microbatch
-    branch: codex/v21-integration
-    claim_mode: resume_existing
-    state_based_on_control_head_sha: 4105c365a90ecb27fb930077ecaf02a9125edb38
-    authorized_start_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
-    expected_existing_head: 392cc119b2df65f9bd38da8c4db36113f1add967
+  - task_id: P12
+    status: ready
+    phase: parent_household_concrete_persistence_route_and_forms_correction
+    branch: codex/v21-p12-parent-household-concrete
+    claim_mode: create_new_branch
+    state_based_on_control_head_sha: cc03a0c8f73339c05e3fbe0179661882169b32d9
+    authorized_start_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
+    expected_existing_head: null
     package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
     source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
-    task_packet_digest: 55e261760baac780e9a4db48c328480c6f98172261ef990e563a00b25c467fc7
-    task_context_digest: 7f47da82267dec5dafe9ad53da7ece7618c331645f0591982851c47987d06813
+    task_packet_digest: 37a367f92ac2af2a1e9ef17ae97ec2caed3d80ea608d7bcbbeeb6ecc64a0c2bd
+    task_context_digest: 1b1bc9f0a0624836ba69e7c35acb2d70ea43f71347cb434be9796b307e418b73
     dependency_heads_and_digests:
       C00:
         required_state: operational
         observed_state: operational
-        observed_control_head_sha: 4105c365a90ecb27fb930077ecaf02a9125edb38
-        control_state_canonical_digest: b040c7c4794e83438fc53cf80ff7f3e30f13780e049e650fc0a537ae41677081
+        observed_control_head_sha: cc03a0c8f73339c05e3fbe0179661882169b32d9
+        control_state_canonical_digest: ec0f9f772bc2fc82459682b1218d41247a21d366fe001080ac9c0001b5fad3c7
+      I36:
+        required_state: F02_then_P18_lean_source_microbatch_accepted
+        observed_state: F02_then_P18_lean_source_microbatch_accepted
+        terminal_head_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
+        terminal_parent_sha: 4efab9fe2e9d6f34850e93b0ea434d3ed00dd8b3
+        terminal_tree_sha: 2501433f286dba71778d1abe2e60f0fa10de57f9
+        state_handoff_digest: 78347417eb67dcda7f85a5b90b071a2e87ec327cb9c9aa7cc8fb4568bdd847b3
+        runtime_triplet_digest: 58ea62cafb749e83836d1afc91b8c170c4ed85236e23de26f118e601ae5666ba
+        lease_released_at: '2026-07-31T13:38:40Z'
+        independent_review: passed_no_P1_or_P2
+        external_effects: 0/0/0
+      P12:
+        required_state: migration_request_complete_ready_for_concrete_correction
+        observed_state: migration_request_complete_ready_for_concrete_correction
+        observed_task_head_sha: 9ada912c3238421e661f89e590c07c042dd6424b
+        terminal_parent_sha: 8f6eacf8bc471009747225ecb1aa9c117955578b
+        terminal_tree_sha: 003921b0730b400621d50722c4268a4f9bd0cfd5
+        state_handoff_digest: 64128ef7dede926c2a0323738e9bab73d6b203825fbf456b28a0375b205b402e
+        runtime_triplet_digest: a1e0e07f74dc805b2db4cc9edae90e0df51ee68c96da7fa15dea15875e2f0c24
+        immutable_migration_request: P12-migration-001
+        source_must_be_second_parent: true
       F02:
-        required_state: ready_for_integration
-        observed_state: ready_for_integration
-        observed_task_head_sha: 3ee2f651528f5170dd714b921500235d4e015c5b
-        terminal_parent_sha: b46ff339ab3d79b06547d387795e95951a200263
-        terminal_tree_sha: 597f7aaa16ba5f46cd58404079cf413c19a6bd19
-        source_path_inventory_digest: a28d4c79e43025499b3518d7fa194aeb4755cb903f508bc9b3c7353dadd56966
-        source_manifest_digest: 507805b23a2ba2b82e174e6f478c97cbba155e418d16511a525f01fe685f4c28
-        state_handoff_digest: 62a0494054c46bc8ba16f8b1b57898cb3ccee19a9b324dec9201939da144c894
-        runtime_triplet_digest: 1852f5414eb77a15dea67d80707fc913ea25f6fcc1c9ba50cd50e3c792f56297
-      P18:
-        required_state: ready_for_integration
-        observed_state: ready_for_integration
-        observed_task_head_sha: 1926e61c793ce29d7240c1ee05d2a4879b52770b
-        terminal_parent_sha: abc2be5b19f5539a4e3bcea55886f5ff12d5de64
-        terminal_tree_sha: 3be253c75d6f35972b895f980ee58266e5a80a05
-        source_path_inventory_digest: 1dd57e7e6aed52361594eb355635aa799b9cc63aca5a52ab65f88b346d90af1a
-        source_manifest_digest: 749d8af2878867401f88f16eb02d2adcedc8ca9b2e41efe1245988eca6c6a437
-        product_artifact_manifest_digest: 1aec3f57732e639247eb99f450f878991e197d0de866d5bbb3e2c1ac5126d340
-        state_handoff_digest: 4b732a77050b64ed8e441573a321f74988ee96f1af1906340571e8190d91293c
-        runtime_triplet_digest: fac28c509f5d0761379a7a699b3fbaf91b2a189431cd657a2bed9c7bbfa84e3e
+        required_state: migration_2255_integrated
+        observed_state: migration_2255_integrated
+        source_head_sha: 3ee2f651528f5170dd714b921500235d4e015c5b
+        integration_merge_sha: 614c723681cff39db2ebd8988017d4b389d1adc1
+        integration_release_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
+        migration_file: packages/db/migrations/2255_v21_student_actual_name.sql
+        checksum_sha256: 7f647a55f26b732bdb8b95771dbb0c43fe6c9a5833389d5dba0888f7f55aab32
+    authorized_paths:
+      - packages/contracts/src/portals/parent-household/index.ts
+      - apps/web/src/server/features/portals/parent-household/service.ts
+      - apps/web/src/server/features/portals/parent-household/service.test.ts
+      - apps/web/src/server/features/portals/parent-household/postgres-repository.ts
+      - apps/web/src/server/features/portals/parent-household/postgres-repository.test.ts
+      - apps/web/src/server/features/portals/parent-household/router.ts
+      - apps/web/src/server/features/portals/parent-household/router.test.ts
+      - apps/web/src/server/features/portals/parent-household/index.ts
+      - apps/web/src/client/app/parent/household/api.ts
+      - apps/web/src/client/app/parent/household/ParentHouseholdWorkspace.tsx
+      - apps/web/src/client/app/parent/household/ParentHouseholdWorkspace.test.tsx
+      - apps/web/src/client/app/parent/household/index.ts
+      - ops/v2.1-execution/runtime/P12/INTERFACE-CHECKPOINT.yaml
+      - ops/v2.1-execution/runtime/P12/TASK-STATE.yaml
+      - ops/v2.1-execution/runtime/P12/HANDOFF.md
+      - ops/v2.1-execution/runtime/P12/NEXT-PROMPT.md
+      - ops/v2.1-execution/runtime/P12/steward-requests/P12-server-registration-002.yaml
+      - ops/v2.1-execution/runtime/P12/steward-requests/P12-client-route-002.yaml
+      - ops/v2.1-execution/runtime/P12/steward-requests/P12-barrel-export-002.yaml
+    correction_directives:
+      - >-
+        Create this new branch at exact integration ae3ced8a and merge P12 9ada912c as the second parent before any
+        correction. Preserve immutable P12-migration-001 byte-for-byte; do not rewrite history, cherry-pick, or squash.
+      - >-
+        Implement the concrete PostgreSQL repository, authenticated Parent router, persisted client forms, server-derived
+        session/scope/CSRF authorization, exact idempotent replay versus mismatch, optimistic revision, three-seat cap,
+        actual_name plus optional display_name, credential hashing and one-time display, atomic enrollment/audit/session
+        revocation, wrong-household concealment, and rollback behavior.
+      - >-
+        Publish exactly three schema-valid immutable successors P12-server-registration-002, P12-client-route-002, and
+        P12-barrel-export-002. They supersede but never edit P12-registration-001. Central composer, app.ts, root barrel,
+        migration, package, global-style, control, queue, provider, and integration files are prohibited.
+      - >-
+        Run one focused contract/service/repository/router/client validation and native PostgreSQL through migration 2255.
+        Defer the full mounted reload/logout/re-login browser journey to I36 after central P08/P12 registration; do not
+        broaden this producer lane merely to make that later composed test possible.
     writer_slot_leases:
-      - slot: RELEASE_INTEGRATOR
-        lease_id: e5ba5eae-272b-481d-b66b-1f4957840e10
-        holder_task_id: I36
-        holder_claim_id: 05827ada-e374-43a1-b606-9fa8ace0d171
-        holder_writer_id: codex-i36-f02-p18-source-05827ada
-        state_based_on_control_head_sha: 4105c365a90ecb27fb930077ecaf02a9125edb38
-        lease_issued_at: '2026-07-31T13:03:39Z'
-        lease_expires_at: '2026-07-31T16:03:39Z'
-        phase_scope: F02_then_P18_lean_source_microbatch
+      - slot: PARENT_HOUSEHOLD_UI
+        lease_id: 302b8602-ec7c-4e81-9562-f792c6fb6e4c
+        holder_task_id: P12
+        holder_claim_id: 77d55d69-8496-4f7e-b441-6bed1e83f819
+        holder_writer_id: codex-p12-concrete-correction-77d55d69
+        state_based_on_control_head_sha: cc03a0c8f73339c05e3fbe0179661882169b32d9
+        lease_issued_at: '2026-07-31T13:52:38Z'
+        lease_expires_at: '2026-07-31T16:52:38Z'
+        phase_scope: parent_household_concrete_persistence_route_and_forms_correction
     effect_lock_leases: []
-    claim_id: 05827ada-e374-43a1-b606-9fa8ace0d171
-    lease_issued_at: '2026-07-31T13:03:39Z'
-    lease_expires_at: '2026-07-31T16:03:39Z'
+    claim_id: 77d55d69-8496-4f7e-b441-6bed1e83f819
+    lease_issued_at: '2026-07-31T13:52:38Z'
+    lease_expires_at: '2026-07-31T16:52:38Z'
     heartbeat_interval_minutes: 30
-    prompt_path: ops/v2.1-execution/prompts/I36-START-OR-RESUME.md
+    prompt_path: ops/v2.1-execution/prompts/P12-START-OR-RESUME.md
+    model: GPT-5.6-SOL
+    reasoning: XHIGH
+  - task_id: P09
+    status: ready
+    phase: school_inquiry_and_approved_school_authority_correction
+    branch: codex/v21-p09-school-inquiry-concrete
+    claim_mode: create_new_branch
+    state_based_on_control_head_sha: cc03a0c8f73339c05e3fbe0179661882169b32d9
+    authorized_start_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
+    expected_existing_head: null
+    package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
+    source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+    task_packet_digest: 191ac9febfbd715a7d97c3a882305ec0ea332023f95f74f3be254265bcdbcbe8
+    task_context_digest: a79a242f32c782ee37ffe345b419a443e5ce22dacec10b2390958456fc8cfece
+    dependency_heads_and_digests:
+      C00:
+        required_state: operational
+        observed_state: operational
+        observed_control_head_sha: cc03a0c8f73339c05e3fbe0179661882169b32d9
+        control_state_canonical_digest: ec0f9f772bc2fc82459682b1218d41247a21d366fe001080ac9c0001b5fad3c7
+      I36:
+        required_state: F02_then_P18_lean_source_microbatch_accepted
+        observed_state: F02_then_P18_lean_source_microbatch_accepted
+        terminal_head_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
+        terminal_parent_sha: 4efab9fe2e9d6f34850e93b0ea434d3ed00dd8b3
+        terminal_tree_sha: 2501433f286dba71778d1abe2e60f0fa10de57f9
+        state_handoff_digest: 78347417eb67dcda7f85a5b90b071a2e87ec327cb9c9aa7cc8fb4568bdd847b3
+        runtime_triplet_digest: 58ea62cafb749e83836d1afc91b8c170c4ed85236e23de26f118e601ae5666ba
+        lease_released_at: '2026-07-31T13:38:40Z'
+        independent_review: passed_no_P1_or_P2
+        external_effects: 0/0/0
+      P09:
+        required_state: migration_request_complete_ready_for_concrete_correction
+        observed_state: migration_request_complete_ready_for_concrete_correction
+        observed_task_head_sha: d9a4ce8082a028be81e234999deb43f659072a6d
+        terminal_parent_sha: 989b7fa979b62f4f78ae76900a73d0011b36f5e6
+        terminal_tree_sha: 13e62c1af4a660c86f3087c978e43065e909bdac
+        state_handoff_digest: e91186c8c1c6355189e1951e9a1ec7b95de402a26ca4f78a70a66b10a0acbb78
+        runtime_triplet_digest: e05fc349c2ae5a2d1c1139778ec24e838a60c72a85b6ad502f99c0681e141fe5
+        immutable_migration_request: P09-migration-002
+        source_must_be_second_parent: true
+      F02:
+        required_state: migration_2256_integrated
+        observed_state: migration_2256_integrated
+        source_head_sha: 3ee2f651528f5170dd714b921500235d4e015c5b
+        integration_merge_sha: 614c723681cff39db2ebd8988017d4b389d1adc1
+        integration_release_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
+        migration_file: packages/db/migrations/2256_v21_approved_school_configuration_authority.sql
+        checksum_sha256: 7caffcc1f89bcf13e037c86f97b4418819ac24366117a43c3a5fb3a6b6c16593
+    authorized_paths:
+      - apps/web/src/client/public/school/model.ts
+      - apps/web/src/client/public/school/model.test.ts
+      - apps/web/src/server/features/signup/school/service.ts
+      - apps/web/src/server/features/signup/school/service.test.ts
+      - apps/web/src/server/features/signup/school/approved-school-router.ts
+      - apps/web/src/server/features/signup/school/approved-school-router.test.ts
+      - packages/contracts/src/signup/school/index.ts
+      - packages/contracts/src/signup/school/school-signup.contract.test.ts
+      - packages/domain/src/signup/school/policy.ts
+      - packages/domain/src/signup/school/policy.test.ts
+      - packages/db/src/signup/school/repository.ts
+      - packages/db/src/signup/school/repository.test.ts
+      - ops/v2.1-execution/runtime/P09/steward-requests/P09-server-registration-002.yaml
+      - ops/v2.1-execution/runtime/P09/steward-requests/P09-client-route-002.yaml
+      - ops/v2.1-execution/runtime/P09/steward-requests/P09-barrel-export-002.yaml
+      - ops/v2.1-execution/runtime/P09/TASK-STATE.yaml
+      - ops/v2.1-execution/runtime/P09/HANDOFF.md
+      - ops/v2.1-execution/runtime/P09/NEXT-PROMPT.md
+    ownership_exception:
+      reason: migration_2256_makes_the_existing_P09_repository_the_only_safe_canonical_authority_adapter
+      exact_paths:
+        - packages/db/src/signup/school/repository.ts
+        - packages/db/src/signup/school/repository.test.ts
+    correction_directives:
+      - >-
+        Create this new branch at exact integration ae3ced8a and merge P09 d9a4ce80 as the second parent before any
+        correction. Carry P09-migration-002 byte-identically and leave P09-registration-001 immutable.
+      - >-
+        Keep the existing strict public POST router unchanged. Extend the signed-out /school page model and implement a
+        separate dependency-injected Admin approved-school router plus contract/domain/service/repository behavior with
+        server-derived Admin actor, scope, CSRF, authorization time and canonical hash; exact replay versus mismatch;
+        optimistic create/update/readback; production_read_only denial; and no account, Student, access, nurture, provider,
+        School-role, portal, roster, WhatsApp, Stripe, or external effect.
+      - >-
+        The repository may read and write only onetime.approved_school_configuration_authority_v21. It must not reference
+        approved_school_configurations_v21 or admin_school_seat_allowances. The two exact repository paths above are the
+        sole explicit exception to P09's original globs.
+      - >-
+        Publish exactly the three schema-valid immutable successors named in authorized_paths, preserving requirement IDs
+        and only valid AC identifiers. Central app, public-page builder, public entry, CRM/Admin composer, root barrels,
+        migration, package, control, queue, provider, and integration files are prohibited.
+      - >-
+        Run one focused seven-file Vitest invocation plus exact-file lint, formatting, YAML, scope, legacy-SQL absence,
+        diff, and secret checks. Native PostgreSQL and broad suites are not repeated in this P09 lane; I36 later runs the
+        touched-graph typecheck/build/static /school test after central composition.
+    writer_slot_leases:
+      - slot: SCHOOL_INQUIRY
+        lease_id: af63b680-b00d-437e-aded-fdbe14e8686f
+        holder_task_id: P09
+        holder_claim_id: b7495ee7-55e6-4311-b31a-39d699643e50
+        holder_writer_id: codex-p09-concrete-correction-b7495ee7
+        state_based_on_control_head_sha: cc03a0c8f73339c05e3fbe0179661882169b32d9
+        lease_issued_at: '2026-07-31T13:52:38Z'
+        lease_expires_at: '2026-07-31T16:52:38Z'
+        phase_scope: school_inquiry_and_approved_school_authority_correction
+    effect_lock_leases: []
+    claim_id: b7495ee7-55e6-4311-b31a-39d699643e50
+    lease_issued_at: '2026-07-31T13:52:38Z'
+    lease_expires_at: '2026-07-31T16:52:38Z'
+    heartbeat_interval_minutes: 30
+    prompt_path: ops/v2.1-execution/prompts/P09-START-OR-RESUME.md
     model: GPT-5.6-SOL
     reasoning: XHIGH
 entry_payload_digests:
-  I36: e4a0f3e3dcf06750bf28a4029f38ee9c0d03b74f00d3eb3e409b5bb30e246512
+  P12: 3be08e42202e106064ba7b1c092615117ca3b7de60e4b4e07f8f872d7c1d9c61
+  P09: ab34b7d47003fa7b5ea92eaad853745ebf28b27aafdb8fb6a9bc99e438a2cebf
 digest_algorithm: >-
   For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively, separators ','
   and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives in this sibling map,

@@ -3310,3 +3310,46 @@ local/tracking/live equality, and stop for one independent review.
 Candidate freeze, provider inspection or mutation, deployment, DNS, sends,
 charges, customer activation, persistent/live database effects, and every
 external effect remain prohibited.
+
+# Current instruction: complete P12 and P09 concrete corrections
+
+Resolve the pushed control descendant of
+`cc03a0c8f73339c05e3fbe0179661882169b32d9` and verify clean accepted
+integration `ae3ced8a9daa11044d4278968c14cb6baa12a480`.
+
+Run these two disjoint lanes in parallel:
+
+1. P12 uses READY
+   `3be08e42202e106064ba7b1c092615117ca3b7de60e4b4e07f8f872d7c1d9c61`,
+   claim `77d55d69-8496-4f7e-b441-6bed1e83f819`, writer
+   `codex-p12-concrete-correction-77d55d69`, and PARENT_HOUSEHOLD_UI lease
+   `302b8602-ec7c-4e81-9562-f792c6fb6e4c`. Create
+   `codex/v21-p12-parent-household-concrete` at `ae3ced8a`, merge
+   `9ada912c3238421e661f89e590c07c042dd6424b` as the second parent, preserve
+   immutable `P12-migration-001`, and implement only the exact 19 READY paths.
+   Publish exactly the server-registration, client-route, and barrel-export
+   successors named in READY. Run focused contract/service/repository/router/
+   client checks plus native PostgreSQL through 2255; leave the mounted
+   reload/logout/re-login browser journey for I36 composition.
+2. P09 uses READY
+   `ab34b7d47003fa7b5ea92eaad853745ebf28b27aafdb8fb6a9bc99e438a2cebf`,
+   claim `b7495ee7-55e6-4311-b31a-39d699643e50`, writer
+   `codex-p09-concrete-correction-b7495ee7`, and SCHOOL_INQUIRY lease
+   `af63b680-b00d-437e-aded-fdbe14e8686f`. Create
+   `codex/v21-p09-school-inquiry-concrete` at `ae3ced8a`, merge
+   `d9a4ce8082a028be81e234999deb43f659072a6d` as the second parent, carry
+   immutable `P09-migration-002`, and implement only the exact 18 READY paths.
+   The two exact repository paths are the sole ownership exception. Publish
+   exactly the three split successors; run one focused seven-file test
+   invocation and exact-file static checks, without repeating native or broad
+   suites.
+
+For both lanes, do not edit central composers, app/root barrels, migrations,
+package manifests, control/queue files, providers, or integration. Preserve
+source ancestry, update the task runtime triplet once at terminal, release the
+lease, push normally, verify local/tracking/live equality, and stop for one
+independent review. No claim-only checkpoint is permitted.
+
+Candidate freeze, provider inspection or mutation, deployment, DNS, sends,
+charges, customer activation, persistent/live database effects, and every
+external effect remain prohibited.

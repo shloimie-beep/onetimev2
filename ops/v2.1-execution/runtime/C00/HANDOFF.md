@@ -3727,3 +3727,43 @@ once at terminal, release the lease, push normally, verify live equality, and
 stop for one independent review. Candidate, shared steward application,
 providers, deployment, DNS, sends, charges, customer activation, and every
 external effect remain prohibited.
+
+# I36 accepted; P12 and P09 concrete corrections dispatched
+
+I36 terminal `ae3ced8a9daa11044d4278968c14cb6baa12a480` passed its single
+independent review with no P1/P2 discrepancy. It preserves ordered F02 then
+P18 ancestry at merge heads `614c723681cff39db2ebd8988017d4b389d1adc1`
+and `4efab9fe2e9d6f34850e93b0ea434d3ed00dd8b3`, has exact 18-path release
+inventory `72dbd80d...`, runtime pair/triplet `78347417...`/`58ea62ca...`,
+native PostgreSQL 18.4 apply/replay/ledger `87/87`, a timely released lease,
+clean local/tracking/live equality, and effects `0/0/0`.
+
+C00 consumed the I36 READY, moved both exact F02/P18 merge payloads unchanged
+to completed history, and recorded forward-only migrations 2254-2256 plus
+their immutable steward requests as integrated/applied. Candidate remains
+null, provider locks remain unclaimed, effect locks remain empty, and effects
+remain `0/0/0`.
+
+P12 is dispatched from exact integration `ae3ced8a` on new branch
+`codex/v21-p12-parent-household-concrete`. It must merge predecessor
+`9ada912c...` as the second parent, preserve `P12-migration-001`, and change
+only its exact 19 writable paths under READY `3be08e42...`, claim
+`77d55d69-8496-4f7e-b441-6bed1e83f819`, writer
+`codex-p12-concrete-correction-77d55d69`, and PARENT_HOUSEHOLD_UI lease
+`302b8602-ec7c-4e81-9562-f792c6fb6e4c`.
+
+P09 is dispatched from the same integration head on new branch
+`codex/v21-p09-school-inquiry-concrete`. It must merge predecessor
+`d9a4ce80...` as the second parent, carry `P09-migration-002` unchanged, and
+change only its exact 18 writable paths under READY `ab34b7d4...`, claim
+`b7495ee7-55e6-4311-b31a-39d699643e50`, writer
+`codex-p09-concrete-correction-b7495ee7`, and SCHOOL_INQUIRY lease
+`af63b680-b00d-437e-aded-fdbe14e8686f`. The only ownership exception is the
+exact repository implementation/test pair under
+`packages/db/src/signup/school/`.
+
+Both leases expire at `2026-07-31T16:52:38Z`. Each lane publishes one
+substantive terminal and stops for one independent review. No claim-only
+checkpoint, central composition, duplicated broad/native validation, candidate
+freeze, provider effect, deployment, DNS, send, charge, customer activation,
+or other external effect is authorized.
