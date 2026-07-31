@@ -143,10 +143,12 @@ blockers:
     three declared native skips, zero P12/P09 type diagnostics, exact changed-file static checks, released its lease,
     and recorded effects 0/0/0. One independent review passed the exact 40-source/43-release-path terminal with no P1/P2.
     Batch C terminal b0cc23a0 is independently accepted with 87 focused assertions, clean exact ancestry, released
-    leases, no P1/P2, and effects 0/0/0; it changed no P08/P12 shared-composition byte.
+    leases, no P1/P2, and effects 0/0/0; it changed no P08/P12 shared-composition byte. Batch A terminal 3ea1a32e
+    completed the mounted P12/P08 composition and behavioral validation, but independent review held one P2 because
+    the .env.example evidence hash used checkout bytes; all product semantics and the other fifteen hashes passed.
   required_authority_or_input:
-  - Execute dependency-ordered Batch A from accepted Batch C, applying admitted P12 server/client -002 plus barrel -003
-    under the fail-closed exact legal-evidence-pair boundary; never apply either superseded predecessor
+  - Complete and independently accept the exact Batch A runtime-triplet-only Git-blob manifest correction; preserve
+    all product bytes and the fail-closed legal-evidence-pair boundary
   - Pass real signup, reload, logout, re-login, pre/post-expiry, household, inactive-route, wrong-household,
     stale-security, expired, revoked, no-legacy-fallback, and Student create/manage verification
   protection: >-
@@ -154,8 +156,8 @@ blockers:
     session establishment from row insertion alone, expose raw token material, rewrite migrations 2235/2241, fabricate a
     multi-household selector, or treat inactive access as an unauthenticated Parent.
   next_check: >-
-    Re-evaluate after Batch A shared registration and the mounted persistence/route/browser checkpoint. Preserve the
-    recovery-capable post-commit session boundary without claiming stricter cross-transaction atomicity.
+    Re-evaluate after the Batch A evidence correction is independently accepted. Preserve the recovery-capable
+    post-commit session boundary without claiming stricter cross-transaction atomicity.
 - blocker_id: P09-SCHOOL-INQUIRY-ROUTE-COMPOSITION
   status: open
   scope: controlled_launch_candidate
@@ -194,12 +196,14 @@ blockers:
     native skips, zero P12/P09 type diagnostics, exact changed-file static checks, released its lease, and recorded
     effects 0/0/0. One independent review passed the exact 40-source/43-release-path terminal with no P1/P2. Batch C
     terminal b0cc23a0 is independently accepted with clean exact ancestry, 87 focused assertions, released leases, no
-    P1/P2, and effects 0/0/0; it changed no P09 shared-composition byte.
+    P1/P2, and effects 0/0/0; it changed no P09 shared-composition byte. Batch A terminal 3ea1a32e completed the P09
+    server/public/client composition and real /school validation; only its .env.example evidence hash/product manifest
+    is held for one runtime-triplet correction, with no product defect or other P1/P2.
   required_authority_or_input:
-  - Execute Batch A from accepted Batch C, apply all three admitted P09 split successors, and rerun the focused static
-    production /school test
+  - Complete and independently accept the exact Batch A runtime-triplet-only evidence correction before consuming the
+    three P09 dispositions
   protection: School inquiry must create no product account, access, Student contact, nurture enrollment, WhatsApp send, or direct provider/billing mutation.
-  next_check: Re-evaluate after dependency-ordered Batch A route registration.
+  next_check: Re-evaluate after the Batch A evidence correction is independently accepted.
 - blocker_id: P22-LEARNING-ENGAGEMENT-AUTHORITY-CONVERGENCE
   status: open
   scope: controlled_launch_candidate
@@ -232,10 +236,11 @@ blockers:
     P08-config-002 fully applied, the repository-safe P22 server-only key prerequisite present without a value,
     48/48 focused assertions, zero changed-path type diagnostics, both leases released, and effects 0/0/0. Batch C
     terminal b0cc23a0 is independently accepted; P30 remains honestly worker-composition blocked and effects remain
-    0/0/0. Batch A may apply only P22-barrel-export-002: P22 server/client paths remain incomplete and later-gated.
+    0/0/0. Batch A terminal 3ea1a32e applied only P22-barrel-export-002 and preserved the path-incomplete server/client
+    gates; its product semantics passed, but one runtime evidence-manifest P2 must be corrected before acceptance.
   required_authority_or_input:
-  - Apply the exact Batch A safe subset, issue corrected path-complete successors for P21/P22 server/client work, then
-    finish Batch D and re-run merged registration checks
+  - Accept the exact Batch A evidence correction, then issue corrected path-complete successors for P21/P22
+    server/client work, finish Batch D, and re-run merged registration checks
   protection: >-
     Do not apply P22-migration-001 or P22-registration-001, create a second attendance write authority, parse a display
     name into identity fields, mutate audit history, write SQL before the successor is admitted, or advance candidate,
