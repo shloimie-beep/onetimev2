@@ -2741,3 +2741,76 @@ product/request work or any F02 migration. No worker may apply a steward
 result, integrate, freeze a candidate, inspect or mutate a provider, deploy,
 change DNS, run a live database migration, send, charge, activate a customer,
 or perform any external effect. Legal gates only `production_broad`.
+
+# Current instruction: continue P22 within the exact 16-path correction ceiling
+
+Resolve the exact pushed control commit containing this instruction from state
+basis `8b4d83ae15ebd5ddfc95d01e163f73d4865f4c73`. Verify the consumed empty
+READY queue, exact P22 atomic claim head
+`7988604c2e37850aa51dbfc31138398468dd1493`, sole parent
+`4d1b6dfc31d2b46f6cd530792816953d2a767fc2`, claim
+`a54f8667-d95d-415c-89ac-a6ac824775aa`, writer
+`codex-p22-authority-successor-a54f8667`, LEARNING_ENGAGEMENT lease
+`d20c0e9b-03a0-4ca1-a555-394fad6b2df2` through
+`2026-07-31T07:06:00Z`, integration `d89a0f38...`, null candidate, empty
+effect locks, and effects `0/0/0`.
+
+Continue the already-claimed P22 worker directly; no second atomic-claim
+checkpoint is required. Change exactly these 16 paths:
+
+1. `apps/web/src/server/features/learning/service.test.ts`
+2. `apps/web/src/server/features/learning/service.ts`
+3. `packages/contracts/src/learning/index.ts`
+4. `packages/db/src/learning/schema-contract.ts`
+5. `packages/db/src/learning/repository.ts`
+6. `packages/db/src/learning/repository.test.ts` (new)
+7. `packages/domain/src/learning/engagement.ts`
+8. `packages/domain/src/learning/engagement.test.ts`
+9. `ops/v2.1-execution/runtime/P22/steward-requests/P22-migration-002.yaml`
+10. `ops/v2.1-execution/runtime/P22/steward-requests/P22-server-registration-002.yaml`
+11. `ops/v2.1-execution/runtime/P22/steward-requests/P22-client-route-002.yaml`
+12. `ops/v2.1-execution/runtime/P22/steward-requests/P22-config-key-002.yaml`
+13. `ops/v2.1-execution/runtime/P22/steward-requests/P22-barrel-export-002.yaml`
+14. `ops/v2.1-execution/runtime/P22/TASK-STATE.yaml`
+15. `ops/v2.1-execution/runtime/P22/HANDOFF.md`
+16. `ops/v2.1-execution/runtime/P22/NEXT-PROMPT.md`
+
+Enforce all of the following:
+
+- every P22 scope is account + product + runtime tier + verification
+  environment;
+- migration 2251 remains the sole attendance writer; P22 has no attendance
+  table or write API and consumes P18 attendance read-only only after canonical
+  account/Student/class binding;
+- canonical privacy `member_recognition` consent is read-only to P22; P22
+  creates no consent table or mutation;
+- P12 `actual_name` and nullable `display_name` remain independent and are
+  never parsed or used as fallbacks for one another; peers never receive
+  `actual_name`;
+- full-scope aliases are stable and unambiguous; consent withdrawal changes
+  only the rendered label;
+- each question mutation atomically updates its projection and appends
+  transition evidence plus recognition evidence when required; replay is
+  write-free, mismatched idempotency conflicts, and both ledgers are
+  append-only;
+- remove the unconditional cross-class Admin announcement path and fail closed
+  on unknown audience/state values.
+
+Preserve immutable `P22-migration-001` and `P22-registration-001` byte-for-byte.
+Publish the five named -002 files using exact kinds `migration`,
+`server_feature_registration`, `client_route_registration`, `config_key`, and
+`barrel_export`. Each request must use all 11 requirement IDs 093-100, 196,
+197, and 238, and only ten canonical acceptance IDs 093-100 AC01 plus 196/197
+AC01. Never put the malformed 238 pseudo-case IDs in request
+`acceptance_case_ids`. The migration request explicitly excludes attendance,
+consent, and name tables; the config request names only a server-side alias
+HMAC key, never a value.
+
+Run focused domain, repository, and service tests, workspace typecheck, scoped
+lint/format, YAML/schema, exact-scope, diff, and secret gates. Before expiry,
+update the runtime triplet, release the P22 lease, create one normal commit,
+push without force, verify local/tracking/live equality and a clean worktree,
+then stop for C00. Do not write SQL, allocate or apply a migration, edit shared
+registration/barrels/configuration, integrate, freeze a candidate, inspect or
+mutate a provider, deploy, change DNS, send, charge, activate a customer, or
+perform any external effect.

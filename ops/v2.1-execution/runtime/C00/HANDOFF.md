@@ -3220,3 +3220,80 @@ remain `0/0/0`. No SQL, migration allocation or application, steward result,
 integration, candidate, provider, deployment, DNS, send, charge, customer
 activation, or external effect is authorized. Legal continues to gate only
 `production_broad`.
+
+# P22 atomic-claim and P10 acknowledgment reconciliation
+
+From exact control basis
+`8b4d83ae15ebd5ddfc95d01e163f73d4865f4c73`, C00 independently
+reconciled both bounded worker checkpoints:
+
+- P22 atomic claim `7988604c2e37850aa51dbfc31138398468dd1493`,
+  sole parent `4d1b6dfc31d2b46f6cd530792816953d2a767fc2`, tree
+  `439392091838230e2b03cbbd49ab1517939bb404`, TASK/HANDOFF/NEXT raw
+  SHA-256 `db310e3f...` / `81b8f2e8...` / `12ba26df...`,
+  state-HANDOFF `251c7839...`, runtime triplet `92253e8e...`, and path
+  inventory `98d6da55...`;
+- P10 acknowledgment terminal
+  `b5dd0edbd5504f091bc1666a87a4b2956b6a3c9a`, sole parent
+  `5fccc34507ae9c5dbc609e234ab559576ab3a445`, tree
+  `e886d9169a4b0465d76c045e1bde109e45a1b4e9`, TASK/HANDOFF/NEXT raw
+  SHA-256 `36309c58...` / `552b68cb...` / `fc755d4b...`,
+  state-HANDOFF `e920c9ae...`, runtime triplet `0c117c03...`, and path
+  inventory `15260bbc...`.
+
+Both commits change exactly their task-local runtime triplets, have clean
+local/tracking/live equality, preserve all product and steward-request bytes,
+and record effects `0/0/0`. P10 acknowledged only the overlapping
+approved-School seat/configuration authority of immutable
+`P09-migration-002`; all eight P10 cases remain implementation-ready and its
+ADMIN_DIRECTORY lease was released at `2026-07-31T05:42:30Z`.
+
+The two READY entries are consumed and the queue is empty. P22 remains the
+sole live non-controller writer under claim
+`a54f8667-d95d-415c-89ac-a6ac824775aa`, writer
+`codex-p22-authority-successor-a54f8667`, and LEARNING_ENGAGEMENT lease
+`d20c0e9b-03a0-4ca1-a555-394fad6b2df2` through
+`2026-07-31T07:06:00Z`. This separate control phase now authorizes exactly
+these 16 paths:
+
+- `apps/web/src/server/features/learning/service.test.ts`
+- `apps/web/src/server/features/learning/service.ts`
+- `packages/contracts/src/learning/index.ts`
+- `packages/db/src/learning/schema-contract.ts`
+- `packages/db/src/learning/repository.ts`
+- `packages/db/src/learning/repository.test.ts` (new)
+- `packages/domain/src/learning/engagement.ts`
+- `packages/domain/src/learning/engagement.test.ts`
+- `ops/v2.1-execution/runtime/P22/steward-requests/P22-migration-002.yaml`
+- `ops/v2.1-execution/runtime/P22/steward-requests/P22-server-registration-002.yaml`
+- `ops/v2.1-execution/runtime/P22/steward-requests/P22-client-route-002.yaml`
+- `ops/v2.1-execution/runtime/P22/steward-requests/P22-config-key-002.yaml`
+- `ops/v2.1-execution/runtime/P22/steward-requests/P22-barrel-export-002.yaml`
+- the P22 `TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`.
+
+The sorted path inventory digest is
+`d153ca704b5275a3ccc95518b8e8a95ef08fbcc5c35177376447ac94bebf14c3`.
+The seven existing product/test blobs remain byte-identical from implementation
+`459e9187` through integration `d89a0f38`; the new repository test is absent at
+the base. Their canonical base manifest digest is
+`8077e667a05bc1f2817f36d11746255c48b9345e9a849d5131444fecabf5d4c4`.
+
+P22 must carry account, product, runtime tier, and verification environment
+through every scope. It must remove all P22 attendance writes/tables and
+consume migration 2251's P18 projection read-only through an identity-bound
+adapter. It must consume canonical `member_recognition` privacy consent
+read-only, use P12 `actual_name` and nullable `display_name` without parsing or
+fallback, never show peers `actual_name`, and derive aliases from the complete
+unambiguous scope. Question mutations must atomically update a projection and
+append immutable transition and recognition events; withdrawal may change only
+the rendered label, never membership, facts, values, order, or rank.
+
+Both predecessor requests remain byte-identical. Each of the five schema-valid
+successors must carry all 11 P22 requirement IDs and only the ten canonical
+AC01 case IDs for 093-100, 196, and 197. The malformed predecessor pseudo-cases
+for 238 may remain in task verification but must not appear in any successor
+`acceptance_case_ids`. The migration successor must explicitly exclude
+attendance, consent, and name tables. No SQL, allocation, steward application,
+integration, candidate, provider, deployment, DNS, send, charge, customer
+activation, or external effect is authorized. Legal continues to gate only
+`production_broad`.

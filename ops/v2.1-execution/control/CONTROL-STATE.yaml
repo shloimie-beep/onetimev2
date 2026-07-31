@@ -16,15 +16,17 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: cc90f922663405d883a798db8d4278ef803bb7cb
+controller_authorization_sha: 8b4d83ae15ebd5ddfc95d01e163f73d4865f4c73
 next_action: >-
-  Independently reconciled F02 conflict terminal 22ada24a, P12 request terminal 9ada912c, and P09 convergence terminal
-  d9a4ce80 with exact scope, ancestry, immutable request identities, timely lease release, clean live remote equality,
-  and effects 0/0/0. Registered P12-migration-001 and P09-migration-002 as assigned and unapplied. Dispatch P22 only for
-  one runtime-triplet atomic claim, then stop for a separate C00 authorization of its exact 16-path product/request
-  correction. Dispatch P10 directly for one runtime-triplet acknowledgment of the narrow P09/P10 seat-authority
-  overlap. No SQL, allocation, steward disposition, integration, candidate, provider, deployment, DNS, send, charge,
-  customer activation, or external effect is authorized.
+  Independently reconciled P22 atomic claim 7988604c and P10 acknowledgment terminal b5dd0edb with exact sole-parent
+  three-path scope, canonical raw-concatenation digests, immutable product/request bytes, clean live remote equality,
+  lease truth, and effects 0/0/0. The consumed READY queue is empty. Continue P22 under its already-claimed
+  LEARNING_ENGAGEMENT lease only across the exact 16 authorized paths: eight product/test files, five schema-valid
+  successor requests, and the P22 runtime triplet. Preserve migration 2251 as sole attendance-write authority, consume
+  canonical privacy consent and P12 identity read-only, and make question-transition and recognition history
+  append-only. P10 is returned to review with its lease released. No SQL, allocation, steward application,
+  integration, candidate, provider, deployment, DNS, send, charge, customer activation, or external effect is
+  authorized.
 production_completion_lanes:
 - lane: A
   owner: F02
@@ -196,12 +198,13 @@ production_completion_lanes:
   scope: exact_v21_auth_client_lifecycle_successor_plus_native_proof_and_I36_runtime_triplet
   provider_effects: prohibited
 successor_dispatch:
-  state_based_on_control_head_sha: cc90f922663405d883a798db8d4278ef803bb7cb
+  state_based_on_control_head_sha: 8b4d83ae15ebd5ddfc95d01e163f73d4865f4c73
   authorized_start_integration_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
   terminal_claims_reconciled_at: '2026-07-31T05:06:00Z'
+  P22_atomic_and_P10_terminal_reconciled_at: '2026-07-31T05:50:50Z'
   lease_issued_at: '2026-07-31T05:06:00Z'
   lease_expires_at: '2026-07-31T07:06:00Z'
-  ready_queue_published: true
+  ready_queue_published: false
   F02:
     status: blocked
     phase: migration_2254_P22_learning_engagement_held_not_admissible
@@ -236,30 +239,75 @@ successor_dispatch:
     terminal_runtime_triplet_digest: e05fc349529b75cf820db40066b677764136360e2f1d1807982205cda7702e99
     lease_released_at: '2026-07-31T04:51:04Z'
   P22:
-    status: resume_ready
-    phase: P22_learning_engagement_authority_successor_atomic_claim_only
-    expected_existing_head_sha: 4d1b6dfc31d2b46f6cd530792816953d2a767fc2
-    ready_entry_payload_digest: 49d6cfb5f77707dfae008065588d720bc32093e83aad982e8c0d71861cb40051
+    status: claimed
+    phase: P22_learning_engagement_authority_successor_product_and_request_correction
+    atomic_claim_head_sha: 7988604c2e37850aa51dbfc31138398468dd1493
+    atomic_claim_parent_sha: 4d1b6dfc31d2b46f6cd530792816953d2a767fc2
+    atomic_claim_tree_sha: 439392091838230e2b03cbbd49ab1517939bb404
+    atomic_claim_task_raw_sha256: db310e3f8c03f8efd4d265525e0d395b305dd1ca66963aeea7b280be47755842
+    atomic_claim_handoff_raw_sha256: 81b8f2e8c7b0bf9dc52d58bbe9abd9a97a233c9c5070fcb89f6dd362f216f3c9
+    atomic_claim_next_raw_sha256: 12ba26dfc2fe062ba5ac65cb872156018a005d3d4041fa0de3b174e6604d02db
+    atomic_claim_state_handoff_digest: 251c7839190991afc32c2390c13e5f37da6243a55a92721935c794c7b3dc3611
+    atomic_claim_runtime_triplet_digest: 92253e8e8872aab09f376198d0081f7862bfae27a5bb0deab82b95a0215c360d
+    atomic_claim_path_inventory_digest: 98d6da552ccf6572ee6d9c7386ace10f1522db3e76c595579d60a2f97476892f
+    prior_ready_entry_payload_digest: 49d6cfb5f77707dfae008065588d720bc32093e83aad982e8c0d71861cb40051
     claim_id: a54f8667-d95d-415c-89ac-a6ac824775aa
     writer_id: codex-p22-authority-successor-a54f8667
     writer_lease_id: d20c0e9b-03a0-4ca1-a555-394fad6b2df2
+    writer_lease_expires_at: '2026-07-31T07:06:00Z'
+    authorized_path_inventory_digest: d153ca704b5275a3ccc95518b8e8a95ef08fbcc5c35177376447ac94bebf14c3
+    product_base_manifest_digest: 8077e667a05bc1f2817f36d11746255c48b9345e9a849d5131444fecabf5d4c4
+    product_base_raw_sha256:
+      apps/web/src/server/features/learning/service.test.ts: 67070412b132c519366df8d1cb8130a6f937ba81f7a2b2452affb9f90a2ae45c
+      apps/web/src/server/features/learning/service.ts: ff7437f098d1a8138974c0e13ac95e72338dc833b46db944a4c13e7630181c76
+      packages/contracts/src/learning/index.ts: db45f8f22ba4e316bded5a515c4ff2f622559ae490a7d0515de31ba8d532e3fb
+      packages/db/src/learning/repository.test.ts: null
+      packages/db/src/learning/repository.ts: ace99b90e4baf5a8e8cc1a45046c6aa4b20b7150fd1bbe247ccf4ca483444844
+      packages/db/src/learning/schema-contract.ts: 3fe6ce90d90273af07a728e2d57dbdfa392238044c8c3cacd6a47d5aa7ce48e8
+      packages/domain/src/learning/engagement.test.ts: b0608eeeef340b4cfa103322a4ab529d40ccf053610670cd1feba54778351eb9
+      packages/domain/src/learning/engagement.ts: 9040cde5161ed28fbfa7fb18c93e18b4d7bbf36677703866aad27c0ba8a4c7f7
     authorized_paths:
-    - ops/v2.1-execution/runtime/P22/TASK-STATE.yaml
+    - apps/web/src/server/features/learning/service.test.ts
+    - apps/web/src/server/features/learning/service.ts
     - ops/v2.1-execution/runtime/P22/HANDOFF.md
     - ops/v2.1-execution/runtime/P22/NEXT-PROMPT.md
-    later_substantive_path_ceiling: 16
+    - ops/v2.1-execution/runtime/P22/TASK-STATE.yaml
+    - ops/v2.1-execution/runtime/P22/steward-requests/P22-barrel-export-002.yaml
+    - ops/v2.1-execution/runtime/P22/steward-requests/P22-client-route-002.yaml
+    - ops/v2.1-execution/runtime/P22/steward-requests/P22-config-key-002.yaml
+    - ops/v2.1-execution/runtime/P22/steward-requests/P22-migration-002.yaml
+    - ops/v2.1-execution/runtime/P22/steward-requests/P22-server-registration-002.yaml
+    - packages/contracts/src/learning/index.ts
+    - packages/db/src/learning/repository.test.ts
+    - packages/db/src/learning/repository.ts
+    - packages/db/src/learning/schema-contract.ts
+    - packages/domain/src/learning/engagement.test.ts
+    - packages/domain/src/learning/engagement.ts
+    substantive_path_ceiling: 16
+    effect_locks: []
+    external_effects: 0/0/0
   P10:
-    status: resume_ready
-    phase: P09_P10_school_seat_authority_convergence_acknowledgment
-    expected_existing_head_sha: 5fccc34507ae9c5dbc609e234ab559576ab3a445
-    ready_entry_payload_digest: b3beba3c354d96e99bcf2ac3d97295087116f29149b9ff2a5146c0300c84a018
-    claim_id: e057d59f-2c37-4685-9bb4-ce407670caa4
-    writer_id: codex-p10-seat-ack-e057d59f
-    writer_lease_id: 215bd21b-fe00-4a12-a4b2-37959ed4b5d5
-    authorized_paths:
-    - ops/v2.1-execution/runtime/P10/TASK-STATE.yaml
-    - ops/v2.1-execution/runtime/P10/HANDOFF.md
-    - ops/v2.1-execution/runtime/P10/NEXT-PROMPT.md
+    status: ready_for_review
+    phase: review
+    terminal_head_sha: b5dd0edbd5504f091bc1666a87a4b2956b6a3c9a
+    terminal_parent_sha: 5fccc34507ae9c5dbc609e234ab559576ab3a445
+    terminal_tree_sha: e886d9169a4b0465d76c045e1bde109e45a1b4e9
+    terminal_task_raw_sha256: 36309c582dff4a22dede692065b35cba9bd6aec58d100f65935ebaa53ff63654
+    terminal_handoff_raw_sha256: 552b68cb405a4c30c9f3d1716b5bc8eab602c1eb639705d0ffa93b61b30bc0fa
+    terminal_next_raw_sha256: fc755d4bb858666ec6d1a6bfb575be04b919a33de1a4c2d1a19e48d6fbfd10e5
+    terminal_state_handoff_digest: e920c9ae99f7f0e11a595ff5f1f7639b5f70efd898f7d0c4b86fe0a3f8416a17
+    terminal_runtime_triplet_digest: 0c117c03f1ac7f7a247583b5312e55d059f8b0f8e3a40e068adf718a8298e319
+    terminal_path_inventory_digest: 15260bbc7c1a9435b34ef3017a57ad91d7b540b845cfce45cc10cf61f32106ab
+    prior_ready_entry_payload_digest: b3beba3c354d96e99bcf2ac3d97295087116f29149b9ff2a5146c0300c84a018
+    prior_claim_id: e057d59f-2c37-4685-9bb4-ce407670caa4
+    prior_writer_id: codex-p10-seat-ack-e057d59f
+    released_writer_lease_id: 215bd21b-fe00-4a12-a4b2-37959ed4b5d5
+    lease_released_at: '2026-07-31T05:42:30Z'
+    implementation_artifact_digest: 07d90e33e041eed1e3cdfd02e2fbf8b31c13e5f8fa188e7edffcd57fbc581873
+    steward_requests_raw_sha256: 0bb00ea1993634956d0bedba776b4eb2b20d32aec9f18b88edeb7e2823143aea
+    steward_requests_git_blob: 6470da05b25a4afc1436fcde646d08da88caf457
+    effect_locks: []
+    external_effects: 0/0/0
   provider_effects: prohibited
 authority_note: >-
   Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through

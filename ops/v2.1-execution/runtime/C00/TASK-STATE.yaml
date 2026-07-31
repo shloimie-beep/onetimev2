@@ -12,15 +12,15 @@ phase: full_production_completion_convergence
 claimed_by: codex-c00-orchestrator-782440c2
 claim_time: '2026-07-30T16:25:00Z'
 claim_id: 782440c2-46a7-42c5-b7bc-7138685e95e6
-lease_expires_at: '2026-07-31T07:06:00Z'
-last_heartbeat_at: '2026-07-31T05:06:00Z'
-controller_authorization_sha: cc90f922663405d883a798db8d4278ef803bb7cb
+lease_expires_at: '2026-07-31T07:50:50Z'
+last_heartbeat_at: '2026-07-31T05:50:50Z'
+controller_authorization_sha: 8b4d83ae15ebd5ddfc95d01e163f73d4865f4c73
 ready_entry_payload_digest: null
-state_based_on_head_sha: cc90f922663405d883a798db8d4278ef803bb7cb
+state_based_on_head_sha: 8b4d83ae15ebd5ddfc95d01e163f73d4865f4c73
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 lean_completion_bindings:
   full_production_completion_convergence:
-    prior_control_head_sha: cc90f922663405d883a798db8d4278ef803bb7cb
+    prior_control_head_sha: 8b4d83ae15ebd5ddfc95d01e163f73d4865f4c73
     current_integration_head_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
     I36_parent_session_terminal_head_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
     I36_parent_session_terminal_parent_sha: 2e62d79d0122360155dd10da9c2b2c13892eff89
@@ -104,16 +104,38 @@ lean_completion_bindings:
     P22_successor_expected_existing_head_sha: 4d1b6dfc31d2b46f6cd530792816953d2a767fc2
     P22_successor_atomic_path_count: 3
     P22_successor_later_substantive_path_ceiling: 16
+    P22_successor_atomic_claim_head_sha: 7988604c2e37850aa51dbfc31138398468dd1493
+    P22_successor_atomic_claim_parent_sha: 4d1b6dfc31d2b46f6cd530792816953d2a767fc2
+    P22_successor_atomic_claim_tree_sha: 439392091838230e2b03cbbd49ab1517939bb404
+    P22_successor_atomic_claim_task_raw_sha256: db310e3f8c03f8efd4d265525e0d395b305dd1ca66963aeea7b280be47755842
+    P22_successor_atomic_claim_handoff_raw_sha256: 81b8f2e8c7b0bf9dc52d58bbe9abd9a97a233c9c5070fcb89f6dd362f216f3c9
+    P22_successor_atomic_claim_next_raw_sha256: 12ba26dfc2fe062ba5ac65cb872156018a005d3d4041fa0de3b174e6604d02db
+    P22_successor_atomic_claim_state_handoff_digest: 251c7839190991afc32c2390c13e5f37da6243a55a92721935c794c7b3dc3611
+    P22_successor_atomic_claim_runtime_triplet_digest: 92253e8e8872aab09f376198d0081f7862bfae27a5bb0deab82b95a0215c360d
+    P22_successor_atomic_claim_path_inventory_digest: 98d6da552ccf6572ee6d9c7386ace10f1522db3e76c595579d60a2f97476892f
+    P22_successor_substantive_path_inventory_digest: d153ca704b5275a3ccc95518b8e8a95ef08fbcc5c35177376447ac94bebf14c3
+    P22_successor_product_base_manifest_digest: 8077e667a05bc1f2817f36d11746255c48b9345e9a849d5131444fecabf5d4c4
+    P22_successor_substantive_control_authorized: true
     P10_school_seat_ack_claim_id: e057d59f-2c37-4685-9bb4-ce407670caa4
     P10_school_seat_ack_writer_id: codex-p10-seat-ack-e057d59f
     P10_school_seat_ack_writer_lease_id: 215bd21b-fe00-4a12-a4b2-37959ed4b5d5
     P10_school_seat_ack_ready_entry_payload_digest: b3beba3c354d96e99bcf2ac3d97295087116f29149b9ff2a5146c0300c84a018
     P10_school_seat_ack_expected_existing_head_sha: 5fccc34507ae9c5dbc609e234ab559576ab3a445
-    successor_terminal_reconciliation_at: '2026-07-31T05:06:00Z'
+    P10_school_seat_ack_terminal_head_sha: b5dd0edbd5504f091bc1666a87a4b2956b6a3c9a
+    P10_school_seat_ack_terminal_parent_sha: 5fccc34507ae9c5dbc609e234ab559576ab3a445
+    P10_school_seat_ack_terminal_tree_sha: e886d9169a4b0465d76c045e1bde109e45a1b4e9
+    P10_school_seat_ack_terminal_task_raw_sha256: 36309c582dff4a22dede692065b35cba9bd6aec58d100f65935ebaa53ff63654
+    P10_school_seat_ack_terminal_handoff_raw_sha256: 552b68cb405a4c30c9f3d1716b5bc8eab602c1eb639705d0ffa93b61b30bc0fa
+    P10_school_seat_ack_terminal_next_raw_sha256: fc755d4bb858666ec6d1a6bfb575be04b919a33de1a4c2d1a19e48d6fbfd10e5
+    P10_school_seat_ack_terminal_state_handoff_digest: e920c9ae99f7f0e11a595ff5f1f7639b5f70efd898f7d0c4b86fe0a3f8416a17
+    P10_school_seat_ack_terminal_runtime_triplet_digest: 0c117c03f1ac7f7a247583b5312e55d059f8b0f8e3a40e068adf718a8298e319
+    P10_school_seat_ack_terminal_path_inventory_digest: 15260bbc7c1a9435b34ef3017a57ad91d7b540b845cfce45cc10cf61f32106ab
+    P10_school_seat_ack_lease_released_at: '2026-07-31T05:42:30Z'
+    successor_terminal_reconciliation_at: '2026-07-31T05:50:50Z'
     successor_dispatch_lease_expires_at: '2026-07-31T07:06:00Z'
     successor_atomic_ready_queue_consumed: true
     successor_followup_ready_queue_published: true
-    successor_followup_ready_queue_consumed: false
+    successor_followup_ready_queue_consumed: true
     P18_source_head_sha: 3be7bf4930a02ea5559db057ceedd6bb11a1b543
     P21_source_head_sha: 705030f2d5163f95340a19dc42efd0f167259869
     communications_source_head_sha: 3364c1c31ef12a81abf02cf9f80f7e8008c1778f
@@ -873,21 +895,26 @@ completed_steps:
 - independently reconciled exact F02 4007334f, P12 8f6eacf8, and P09 989b7fa9 atomic claims as sole-parent three-path runtime commits with canonical raw, pair, triplet, path-inventory, and manifest digests, unchanged source/product/request bytes, clean local/tracking/live equality, active task-bound leases, and effects 0/0/0; consumed all three READY entries without issuing replacement claims
 - held F02 before SQL or allocation after exact source preflight proved immutable P22-migration-001 would create a second writable attendance authority beside canonical migration 2251 and omits runtime-tier and verification-environment isolation; authorized only a runtime-triplet terminal record and both lease releases pending a P22 successor
 - independently reconciled F02 held terminal 22ada24a, P12 request terminal 9ada912c, and P09 convergence terminal d9a4ce80; admitted exact immutable P12-migration-001 and P09-migration-002 without application, recorded all released leases and effects 0/0/0, and issued only a P22 runtime-triplet atomic claim plus a P10 runtime-triplet acknowledgment claim
+- independently reconciled P22 atomic claim 7988604c and P10 acknowledgment terminal b5dd0edb as exact sole-parent runtime-triplet commits; reproduced raw, state/HANDOFF, triplet, and path-inventory digests, verified immutable product/request bytes and live remote equality, consumed both READY entries, returned P10 to review with its lease released, and authorized only P22's exact 16-path product/request correction under the existing live LEARNING_ENGAGEMENT lease with effects 0/0/0
 remaining_steps:
-- Reconcile the exact P22 runtime-triplet atomic claim and P10 acknowledgment terminal against their READY digests, sole-parent scopes, leases, remote equality, and zero-effect boundaries.
-- Authorize and admit the exact 16-path P22 correction: eight product/test paths, five schema-valid successors, and its runtime triplet, preserving migration 2251 as sole attendance authority and append-only question/consent audit.
+- >-
+  Run and independently admit the exact 16-path P22 correction: eight product/test paths, five schema-valid successors,
+  and its runtime triplet, preserving migration 2251 as sole attendance authority and append-only question/recognition
+  audit.
 - Route only P22-migration-002 to F02 for forward-only migration 2254 with native proof, then P12-migration-001 as 2255 and P09-migration-002 as 2256 in dependency order.
 - Operationalize P12's concrete PostgreSQL repository/router/forms and Student-creation journey before applying P12/P08 shared registration or closing the P08 blocker.
 - Complete P09's signed-out GET /school and Admin configuration surface after School-seat authority converges; do not over-claim P08-registration-002 or P09-registration-001.
 - Apply the remaining bounded producer adapters and shared central registrations, then run one merged workspace validation.
 - Freeze one exact candidate and run V37-V43 Phase A, R44, deferred proof, V43 Phase B, R45 certification, legal gate, cutover, and the observation window in their exact order.
 next_action: >-
-  Push this exact control phase and verify remote equality. Then dispatch P22 from exact 4d1b6dfc only for one
-  runtime-triplet atomic claim under claim a54f8667 and LEARNING_ENGAGEMENT lease d20c0e9b; it must push and stop before
-  product or request work. Concurrently dispatch P10 from exact 5fccc345 for one direct runtime-triplet acknowledgment
-  under claim e057d59f and ADMIN_DIRECTORY lease 215bd21b; it may acknowledge only the overlapping P09/P10 School-seat
-  authority and must release, push, and stop. Neither task may write SQL, apply a steward result, integrate, freeze a
-  candidate, access a provider, deploy, change DNS, send, charge, activate a customer, or perform any external effect.
+  Push this exact control phase and verify remote equality. Then continue P22 from exact atomic head 7988604c under
+  unchanged claim a54f8667 and LEARNING_ENGAGEMENT lease d20c0e9b across exactly 16 paths: eight named product/test
+  files, five schema-valid -002 steward requests, and the P22 runtime triplet. Enforce full account/product/runtime-tier/
+  verification-environment scope, migration 2251 as sole attendance writer, read-only canonical consent and identity
+  seams, append-only question-transition and recognition ledgers, peer actual-name suppression, and label-only consent
+  withdrawal. Preserve both -001 requests byte-for-byte. Push one recoverable terminal checkpoint and release the
+  P22 lease. Do not write SQL, allocate or apply a migration, integrate, freeze a candidate, access a provider, deploy,
+  change DNS, send, charge, activate a customer, or perform any external effect.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -895,13 +922,13 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: cc90f922663405d883a798db8d4278ef803bb7cb
+  current_control_parent_sha: 8b4d83ae15ebd5ddfc95d01e163f73d4865f4c73
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
       claim_id: 782440c2-46a7-42c5-b7bc-7138685e95e6
-      observed_head: cc90f922663405d883a798db8d4278ef803bb7cb
-      lease_expires_at: '2026-07-31T07:06:00Z'
+      observed_head: 8b4d83ae15ebd5ddfc95d01e163f73d4865f4c73
+      lease_expires_at: '2026-07-31T07:50:50Z'
       lease_state: active
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -1080,11 +1107,11 @@ orchestration:
       scheduling_state: ready_for_review_school_seat_convergence_request_admitted
     P10:
       branch: codex/v21-p10-admin-directory
-      claim_id: e057d59f-2c37-4685-9bb4-ce407670caa4
-      observed_head: 5fccc34507ae9c5dbc609e234ab559576ab3a445
+      claim_id: null
+      observed_head: b5dd0edbd5504f091bc1666a87a4b2956b6a3c9a
       authorized_start_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
-      lease_expires_at: '2026-07-31T07:06:00Z'
-      scheduling_state: resume_ready_school_seat_authority_acknowledgment_only
+      lease_expires_at: null
+      scheduling_state: ready_for_review_school_seat_authority_acknowledged
     P12:
       branch: codex/v21-p12-parent-household
       claim_id: null
@@ -1109,10 +1136,10 @@ orchestration:
     P22:
       branch: codex/v21-p22-learning-engagement
       claim_id: a54f8667-d95d-415c-89ac-a6ac824775aa
-      observed_head: 4d1b6dfc31d2b46f6cd530792816953d2a767fc2
+      observed_head: 7988604c2e37850aa51dbfc31138398468dd1493
       authorized_start_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
       lease_expires_at: '2026-07-31T07:06:00Z'
-      scheduling_state: resume_ready_authority_successor_atomic_claim_only
+      scheduling_state: claimed_exact_16_path_authority_successor_correction_authorized
     P23:
       branch: codex/v21-p23-student-notifications
       claim_id: null
@@ -1792,6 +1819,14 @@ verification:
   - I36 terminal reconciliation and three-way successor dispatch: passed all 12 parsed YAML documents, 46 unique registry tasks, exact READY objects and canonical digests d2273539/86d690e8/3e3462d6, unique C00/F02/P09/P12 active claims, four disjoint non-controller writer leases, released I36 authority, null candidate, 14 unclaimed provider locks, no effect locks, protected normalized Git bytes for all seven non-scope control YAML files, exact seven-path diff, diff-check, and secret scan across 2423 files; scoped Prettier preserved the known four-file control/runtime baseline while the other three touched documents passed, so no broad formatting rewrite was made
   - atomic-claim reconciliation and bounded continuation: passed all 12 parsed YAML documents, 46 unique registry tasks, empty consumed READY queue, exact live control fdcba890/F02 4007334f/P12 8f6eacf8/P09 989b7fa9/integration d89a0f38 remote heads, canonical raw/pair/triplet/path-inventory/manifest evidence, unique C00/F02/P09/P12 active claims, four disjoint non-controller writer leases, unchanged P10, released I36 authority, null candidate, 14 unclaimed provider locks, no effect locks, parent CONTROL-STATE raw digest ef1008a1, protected normalized Git bytes for all seven non-scope control YAML files, exact seven-path diff, diff-check, and secret scan across 2423 files; scoped Prettier preserved the known four-file CONTROL-STATE/TASK-REGISTRY/C00-HANDOFF/C00-TASK-STATE baseline while the other three touched documents passed. F02 was held before SQL or allocation because P22-migration-001 conflicts with canonical migration 2251 attendance authority and required runtime-tier/environment isolation; only its runtime-triplet terminal plus the P12/P09 request-only artifacts are authorized.
   - terminal-request reconciliation and P22/P10 dispatch: passed all 12 parsed YAML documents, 46 unique registry tasks and complete touched proofs, canonical READY 49d6cfb5/b3beba3c mirrored in all authority records, exact C00/P22/P10 active claims with two disjoint task leases, 76 unique 15-field steward items, 10 unique blockers with four open, null candidate, 14 unclaimed provider locks, empty effect locks, effects 0/0/0, 11/11 normalized control digests, five protected control files byte-identical, exact nine-path scope, diff-check, and secret scan across 2423 files. Scoped Prettier preserves the six-file inherited baseline while CONTROL-LEASE, READY-QUEUE, and C00 NEXT-PROMPT pass; READY-QUEUE's introduced formatting delta was corrected without changing either canonical entry digest.
+  - P22 atomic-claim and P10 acknowledgment reconciliation: passed exact sole-parent heads 7988604c/b5dd0edb, exact three-path scopes, raw TASK/HANDOFF/NEXT identities, canonical state-HANDOFF/triplet/path-inventory digests 251c7839/92253e8e/98d6da55 and e920c9ae/0c117c03/15260bbc, preserved P22/P10 product and request bytes, clean live remote equality, P10 lease release at 05:42:30Z, consumed empty READY queue, live P22 lease and exact 16-path continuation ceiling, null candidate, no effect locks, and effects 0/0/0
+  - >-
+    P22 continuation control validation: passed all 12 parsed YAML documents, 46 unique registry tasks, exact C00/P22
+    active claims, released P10 authority, empty READY and MERGE queues, 76 unique 15-field steward items, 10 blockers
+    with four open, null candidate, 14 unclaimed provider locks, exact P22 product-base and 16-path manifests, seven
+    protected normalized Git blobs, exact seven-path control diff, diff-check, and the 2,423-file secret scan. Scoped
+    Prettier passes CONTROL-LEASE, READY-QUEUE, and C00 NEXT-PROMPT and preserves the four-file inherited baseline on
+    CONTROL-STATE, TASK-REGISTRY, C00 HANDOFF, and C00 TASK-STATE; no broad rewrite was made.
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:
