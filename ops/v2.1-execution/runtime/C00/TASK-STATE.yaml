@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: immediate_lean_completion_mode
-claimed_by: codex-c00-orchestrator-06ec2a0e
-claim_time: '2026-07-31T13:52:38Z'
-claim_id: 06ec2a0e-8e2d-41da-b1da-6cd312024d46
-lease_expires_at: '2026-07-31T13:52:38Z'
-last_heartbeat_at: '2026-07-31T13:52:38Z'
-controller_authorization_sha: cc03a0c8f73339c05e3fbe0179661882169b32d9
+claimed_by: codex-c00-orchestrator-4f02114d
+claim_time: '2026-07-31T14:52:08Z'
+claim_id: 4f02114d-5b4b-4466-8a45-75d92d5c3a5c
+lease_expires_at: '2026-07-31T14:52:08Z'
+last_heartbeat_at: '2026-07-31T14:52:08Z'
+controller_authorization_sha: 48f27d399d4ed714f6219487629c406af1fbb49f
 ready_entry_payload_digest: null
-state_based_on_head_sha: cc03a0c8f73339c05e3fbe0179661882169b32d9
+state_based_on_head_sha: 48f27d399d4ed714f6219487629c406af1fbb49f
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 immediate_lean_completion_mode:
   source_attachment_sha256: 6c7e65fd4c583a1aa2e115ef2132f449a9e3fd49bfcf52ec6c0c49674c467d08
@@ -84,12 +84,17 @@ immediate_lean_completion_mode:
     P12_writer_id: codex-p12-concrete-correction-77d55d69
     P12_parent_household_lease_id: 302b8602-ec7c-4e81-9562-f792c6fb6e4c
     P12_exact_writable_path_count: 19
-    P09_ready_entry_payload_digest: ab34b7d47003fa7b5ea92eaad853745ebf28b27aafdb8fb6a9bc99e438a2cebf
+    P09_prior_ready_entry_payload_digest: ab34b7d47003fa7b5ea92eaad853745ebf28b27aafdb8fb6a9bc99e438a2cebf
+    P09_ready_entry_payload_digest: 6c1e0bd137ee03d0d816ee21cf2a23322a71ed485373b9b1e165533aee3a1be1
     P09_claim_id: b7495ee7-55e6-4311-b31a-39d699643e50
     P09_writer_id: codex-p09-concrete-correction-b7495ee7
     P09_school_inquiry_lease_id: af63b680-b00d-437e-aded-fdbe14e8686f
     P09_exact_writable_path_count: 18
     P09_exact_repository_exception_path_count: 2
+    P09_durable_replay_authority_amended_at: '2026-07-31T14:52:08Z'
+    P09_independent_review_status: held_one_P2_durable_history_replay
+    P09_history_read_authority: SELECT_only_onetime.approved_school_configuration_history_v21
+    P09_history_writer: migration_2256_trigger_only
     lease_expires_at: '2026-07-31T16:52:38Z'
     candidate: null
     effect_locks: []
@@ -1157,10 +1162,16 @@ completed_steps:
   - dispatched one ancestry-preserving I36 source microbatch from d89a0f38 in exact P21-then-P22 order under the sole RELEASE_INTEGRATOR lease and one disjoint exact-eight-path P18 post-commit callback correction under EMBEDDED_CLASSROOM; candidate, providers, effects, migrations, and shared registrations remain withheld
   - independently reconciled I36 atomic claim b87901e8 as the exact three-runtime-file child of d89a0f38 with canonical raw/pair/triplet evidence, clean local/tracking/live equality, live claim/lease, no source ancestry, and effects 0/0/0
   - consumed only the I36 READY entry, preserved P18 READY unchanged, and rebound both ordered P21/P22 merge targets to exact claim head b87901e8 with canonical payload digests a3f43e06/c7084c74
+- >-
+  Held the uncommitted P09 concrete terminal on one independently found P2: a later approved-School configuration hid an
+  older idempotency key despite migration 2256 preserving append-only history; amended only the same branch, claim, lease,
+  path ceiling, and READY to permit SELECT-only durable replay readback while retaining the trigger as sole history writer
+  and prohibiting both legacy authority tables, direct history writes, candidate work, providers, and all external effects.
 remaining_steps:
 - >-
-  Complete the two active ancestry-preserving P12 and P09 concrete correction terminals from exact integration
-  ae3ced8a, each inside its exact writable allowlist and under its sole task lease.
+  Complete the two active ancestry-preserving P12 and P09 concrete correction terminals from exact integration ae3ced8a,
+  including P09's amended SELECT-only durable history replay, each inside its exact writable allowlist and under its
+  unchanged sole task lease.
 - >-
   Give each terminal one independent review, admit accepted successor requests, then run dependency-ordered I36
   registration batches A-D with one merged touched-graph validation.
@@ -1168,11 +1179,12 @@ remaining_steps:
 - Complete the static production GET /school and Admin configuration composition after P09 central registration.
 - Freeze one exact candidate and run V37-V43 Phase A, R44, deferred proof, V43 Phase B, R45 certification, legal gate, cutover, and the observation window in their exact order.
 next_action: >-
-  P12 and P09 resolve the pushed control descendant of cc03a0c8, verify READY digests 3be08e42 and ab34b7d4, create
-  their new correction branches at exact integration ae3ced8a, and merge task heads 9ada912c and d9a4ce80 as second
-  parents. Implement only their exact 19-path and 18-path corrections, respectively; publish one substantive terminal
-  each, release leases, verify live equality, and stop for one independent review. Candidate, providers, deployment,
-  DNS, sends, charges, customer activation, and every external effect remain prohibited.
+  Resolve the pushed control descendant of 48f27d39 and verify P12 READY 3be08e42 plus amended P09 READY 6c1e0bd1.
+  Continue the same uncommitted ancestry-preserving terminals, branches, claims, leases, second-parent merges, and exact
+  19-path/18-path ceilings; do not restart either lane. P09 closes the durable-replay P2 with SELECT-only history readback,
+  never a direct history write. Each lane publishes one substantive terminal, releases its lease, verifies live equality,
+  and stops for one independent review. Candidate, providers, deployment, DNS, sends, charges, customer activation, and
+  every external effect remain prohibited.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -1180,13 +1192,13 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: cc03a0c8f73339c05e3fbe0179661882169b32d9
+  current_control_parent_sha: 48f27d399d4ed714f6219487629c406af1fbb49f
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: 06ec2a0e-8e2d-41da-b1da-6cd312024d46
-      observed_head: cc03a0c8f73339c05e3fbe0179661882169b32d9
-      lease_expires_at: '2026-07-31T13:52:38Z'
+      claim_id: 4f02114d-5b4b-4466-8a45-75d92d5c3a5c
+      observed_head: 48f27d399d4ed714f6219487629c406af1fbb49f
+      lease_expires_at: '2026-07-31T14:52:08Z'
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -1791,17 +1803,17 @@ steward_requests:
   target_checkpoint: F02_forward_migration_2256_after_P10_authority_acknowledgment
 verification:
   control_digests:
-    control_state: c459f5ef91d0356b4c638de061ed10bf5bd7912289c16137334b1ee516a466b3
-    control_lease: 2d042a353aef57082f7805eccd8ae7d82d0d076d5879de0c79b28d22c0ab7231
-    task_registry: 372e98aef3614c5619e01680b8b21271cf1d88c026ce480aa920221e98a12c33
-    ready_queue: 8fce9afe7da9f385b2cc8736e6343dc6c5cfa1c605dac97143aecfa84c61299d
+    control_state: 9e73b3daa3b488d4a03af5a9c0842b5ed9b21c69ef5b48bafbea433a97f2664d
+    control_lease: fbe666be4566ac9eb5bdf3b6f31d571e55e891a06cab02a2bf01577f81f4cf2b
+    task_registry: 73b656fd641ba9a23c8bda09cda5014e2f6137a0c4b23246f7b41bb5de37830a
+    ready_queue: 57d08277ffdc85d500dc9da23174831f2a1e7aafe4c25f4e67e84dd847127705
     merge_queue: 3a6aa1dfe47c4ed8b4368dc71e150698f86dee51a5efdc3d45631c6981814c9b
     steward_queue: 4fcf5ac5355aac15c1fb888ce365ae4991f158f6646ffafdbc3a8ef15b9ca6ff
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
     authority_status: a9970a1c7bc682d81815a9eae1826222e9fa94d1d359158a263e40ee792c94a2
     migration_allocations: 4c153d5f54253fe32e159d9d7e4452ca19a895a0bdecd0665f364b524a91d913
     current_candidate: d363b5688183208265274bc5521676505338df544965c36e76ec1205ea9bf724
-    blockers: b3a283e446401925f734d139df685e7763ff973033c45009f5ae0c43e4788ea7
+    blockers: a13f4fe049ec1654a1ba7ef32f34fbf15862af699f8ecac1b7ab66a4ecad5bce
   commands_run:
   - delivery SHA256SUMS.txt: 214/214 passed
   - package inventory: 46 tasks, 46 contexts, 46 prompts, 16 source-spec files
@@ -2108,6 +2120,13 @@ verification:
     effects 0/0/0, exact 11-path control/runtime scope, normalized control digests, diff-check, and a 2,423-file secret
     scan. Scoped Prettier preserved the inherited baseline on the same files while C00 NEXT-PROMPT remained clean; no
     broad formatting rewrite was made.
+  - >-
+    P09 durable-replay authority amendment validation: parsed all 11 canonical control YAML files plus C00 TASK-STATE,
+    preserved 46 unique tasks, reproduced both READY digests including amended P09 6c1e0bd1 and all 17 completed MERGE
+    digests, preserved 82 unique 15-field steward requests, 11 blockers with five open, null candidate, 14 unclaimed
+    provider locks, empty effect locks, effects 0/0/0, and all 11 normalized control digests. The same P09 branch, claim,
+    lease, ancestry, two repository exceptions, and 18-path ceiling remain active; only exact-scope SELECT history
+    readback for durable replay was added.
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

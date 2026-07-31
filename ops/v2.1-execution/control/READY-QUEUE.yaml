@@ -110,7 +110,7 @@ ready:
     phase: school_inquiry_and_approved_school_authority_correction
     branch: codex/v21-p09-school-inquiry-concrete
     claim_mode: create_new_branch
-    state_based_on_control_head_sha: cc03a0c8f73339c05e3fbe0179661882169b32d9
+    state_based_on_control_head_sha: 48f27d399d4ed714f6219487629c406af1fbb49f
     authorized_start_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
     expected_existing_head: null
     package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
@@ -121,8 +121,8 @@ ready:
       C00:
         required_state: operational
         observed_state: operational
-        observed_control_head_sha: cc03a0c8f73339c05e3fbe0179661882169b32d9
-        control_state_canonical_digest: ec0f9f772bc2fc82459682b1218d41247a21d366fe001080ac9c0001b5fad3c7
+        observed_control_head_sha: 48f27d399d4ed714f6219487629c406af1fbb49f
+        control_state_canonical_digest: 91e5e3f8a2ca52ffebd487cdd2ff11eb904100085b14728eba5aa2f67681f2b3
       I36:
         required_state: F02_then_P18_lean_source_microbatch_accepted
         observed_state: F02_then_P18_lean_source_microbatch_accepted
@@ -187,9 +187,13 @@ ready:
         optimistic create/update/readback; production_read_only denial; and no account, Student, access, nurture, provider,
         School-role, portal, roster, WhatsApp, Stripe, or external effect.
       - >-
-        The repository may read and write only onetime.approved_school_configuration_authority_v21. It must not reference
-        approved_school_configurations_v21 or admin_school_seat_allowances. The two exact repository paths above are the
-        sole explicit exception to P09's original globs.
+        The repository may read and write onetime.approved_school_configuration_authority_v21 and may SELECT only from
+        onetime.approved_school_configuration_history_v21 by exact product, runtime tier, verification environment, and
+        idempotency key solely to return durable exact replays after a later configuration version; it may join current
+        authority only to recover immutable created_at. It must never insert, update, or delete history directly; migration
+        2256's trigger remains its only writer. It must not reference approved_school_configurations_v21 or
+        admin_school_seat_allowances. The two exact repository paths above are the sole explicit exception to P09's
+        original globs.
       - >-
         Publish exactly the three schema-valid immutable successors named in authorized_paths, preserving requirement IDs
         and only valid AC identifiers. Central app, public-page builder, public entry, CRM/Admin composer, root barrels,
@@ -204,7 +208,7 @@ ready:
         holder_task_id: P09
         holder_claim_id: b7495ee7-55e6-4311-b31a-39d699643e50
         holder_writer_id: codex-p09-concrete-correction-b7495ee7
-        state_based_on_control_head_sha: cc03a0c8f73339c05e3fbe0179661882169b32d9
+        state_based_on_control_head_sha: 48f27d399d4ed714f6219487629c406af1fbb49f
         lease_issued_at: '2026-07-31T13:52:38Z'
         lease_expires_at: '2026-07-31T16:52:38Z'
         phase_scope: school_inquiry_and_approved_school_authority_correction
@@ -218,7 +222,7 @@ ready:
     reasoning: XHIGH
 entry_payload_digests:
   P12: 3be08e42202e106064ba7b1c092615117ca3b7de60e4b4e07f8f872d7c1d9c61
-  P09: ab34b7d47003fa7b5ea92eaad853745ebf28b27aafdb8fb6a9bc99e438a2cebf
+  P09: 6c1e0bd137ee03d0d816ee21cf2a23322a71ed485373b9b1e165533aee3a1be1
 digest_algorithm: >-
   For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively, separators ','
   and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives in this sibling map,

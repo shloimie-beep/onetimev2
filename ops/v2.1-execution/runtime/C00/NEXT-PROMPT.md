@@ -3311,7 +3311,7 @@ Candidate freeze, provider inspection or mutation, deployment, DNS, sends,
 charges, customer activation, persistent/live database effects, and every
 external effect remain prohibited.
 
-# Current instruction: complete P12 and P09 concrete corrections
+# Prior instruction: complete P12 and P09 concrete corrections
 
 Resolve the pushed control descendant of
 `cc03a0c8f73339c05e3fbe0179661882169b32d9` and verify clean accepted
@@ -3353,3 +3353,39 @@ independent review. No claim-only checkpoint is permitted.
 Candidate freeze, provider inspection or mutation, deployment, DNS, sends,
 charges, customer activation, persistent/live database effects, and every
 external effect remain prohibited.
+
+# Current instruction: continue P09 durable replay fix in the same terminal
+
+Resolve the pushed control descendant of
+`48f27d399d4ed714f6219487629c406af1fbb49f`. Do not restart either active
+producer lane.
+
+P12 continues unchanged under READY
+`3be08e42202e106064ba7b1c092615117ca3b7de60e4b4e07f8f872d7c1d9c61`,
+its existing branch, claim, lease, open ancestry-preserving merge, and exact
+19-path writable ceiling.
+
+P09 continues the same uncommitted terminal under amended READY
+`6c1e0bd137ee03d0d816ee21cf2a23322a71ed485373b9b1e165533aee3a1be1`,
+existing claim `b7495ee7-55e6-4311-b31a-39d699643e50`, writer
+`codex-p09-concrete-correction-b7495ee7`, and SCHOOL_INQUIRY lease
+`af63b680-b00d-437e-aded-fdbe14e8686f`. Its branch, second-parent ancestry,
+two repository ownership exceptions, and exact 18-path writable ceiling are
+unchanged.
+
+Close the independently found durable-replay P2 by querying
+`onetime.approved_school_configuration_history_v21` only by exact product,
+runtime tier, verification environment, and idempotency key to reproduce an
+older exact committed result after a later version. Join current authority
+only to recover immutable `created_at`. Never insert, update, or delete the
+history table directly; migration 2256's trigger is its sole writer. Continue
+prohibiting `approved_school_configurations_v21` and
+`admin_school_seat_allowances`. Extend focused repository/service tests for
+prior-version exact replay and mismatched-payload conflict, rerun only the
+focused seven-file invocation and exact-file static checks, then finish the
+same one substantive terminal and single independent review.
+
+No new branch, claim, lease, claim-only checkpoint, central composition,
+broad/native rerun, candidate freeze, provider inspection or mutation,
+deployment, DNS change, send, charge, customer activation, persistent/live
+database effect, or other external effect is authorized.

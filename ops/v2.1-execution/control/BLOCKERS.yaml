@@ -162,15 +162,18 @@ blockers:
     configuration surface; neither exists in the admitted P09 source, so the request cannot truthfully be marked
     applied from central POST registration alone. I36 release ae3ced8a integrated forward-only migration 2256 with
     native PostgreSQL 18.4 apply/replay/ledger 87/87; C00 dispatched the exact 18-writable-path P09 correction with only
-    two explicit repository ownership exceptions.
+    two explicit repository ownership exceptions. Its independent pre-terminal review found one P2: current-authority
+    replay works, but a later configuration version hides the prior idempotency key even though migration 2256 preserves
+    it in append-only history. C00 amended the same live claim and lease to permit SELECT-only history readback for
+    durable exact replay; the trigger remains the sole history writer and both legacy authority tables remain prohibited.
   required_authority_or_input:
-  - Complete the active bounded P09 producer correction for signed-out GET /school and the Admin-authorized
-    configuration surface
+  - Complete the active bounded P09 producer correction, including durable exact replay from SELECT-only migration-2256
+    history, signed-out GET /school, and the Admin-authorized configuration surface
   - Replace immutable P09-registration-001 with schema-valid split shared requests; preserve its requirement IDs and
     omit, without inventing replacements for, its two malformed non-ACNN acceptance IDs
   - Register the complete reviewed surface in an I36 central checkpoint and rerun the static production landing test
   protection: School inquiry must create no product account, access, Student contact, nurture enrollment, WhatsApp send, or direct provider/billing mutation.
-  next_check: Re-evaluate after the complete P09 request surface and I36 route registration are independently admitted.
+  next_check: Re-evaluate after the amended P09 terminal passes focused replay review and the complete request surface is admitted for I36 route registration.
 - blocker_id: P22-LEARNING-ENGAGEMENT-AUTHORITY-CONVERGENCE
   status: open
   scope: controlled_launch_candidate

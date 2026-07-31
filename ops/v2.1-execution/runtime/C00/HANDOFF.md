@@ -3767,3 +3767,28 @@ substantive terminal and stops for one independent review. No claim-only
 checkpoint, central composition, duplicated broad/native validation, candidate
 freeze, provider effect, deployment, DNS, send, charge, customer activation,
 or other external effect is authorized.
+
+# P09 durable replay authority amended in place
+
+P09's single independent pre-terminal review found one P2: the authority
+table retains only the newest idempotency key, so replaying an older committed
+configuration after a later update would miss even though migration 2256
+preserves that version in append-only
+`onetime.approved_school_configuration_history_v21`.
+
+C00 held the same uncommitted terminal and amended only its read authority.
+P09 continues on the existing branch, claim
+`b7495ee7-55e6-4311-b31a-39d699643e50`, SCHOOL_INQUIRY lease
+`af63b680-b00d-437e-aded-fdbe14e8686f`, second-parent merge, two repository
+ownership exceptions, and exact 18-path writable ceiling. Amended canonical
+READY is
+`6c1e0bd137ee03d0d816ee21cf2a23322a71ed485373b9b1e165533aee3a1be1`.
+
+The repository may SELECT from the migration-2256 history table solely by
+exact product, tier, verification environment, and idempotency key for durable
+exact replay, joining current authority only for immutable `created_at`. It
+may not insert, update, or delete history directly; the migration trigger
+remains its only writer. Both legacy School authority tables remain
+prohibited. P12 is unchanged under READY `3be08e42...`. Candidate, provider,
+deployment, DNS, send, charge, customer, and every external-effect authority
+remain absent.

@@ -16,16 +16,16 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: cc03a0c8f73339c05e3fbe0179661882169b32d9
+controller_authorization_sha: 48f27d399d4ed714f6219487629c406af1fbb49f
 next_action: >-
-  Run P12 and P09 concrete corrections in parallel from exact accepted integration ae3ced8a. Each new correction branch
-  must merge its existing task head as the second parent, remain inside its exact READY allowlist, publish one substantive
-  terminal with three schema-valid successor requests, and stop for one independent review. P12 owns its concrete
-  PostgreSQL/router/forms path and P09 owns the signed-out School/Admin authority path including only the two exact
-  repository exceptions. No claim-only checkpoint, central composition, broad suite, or duplicated native proof.
-  Candidate freeze, steward application, provider effects, deployment, DNS, sends, charges, customer activation,
-  and every external effect remain prohibited until their exact dependency, candidate, authority, lock, and fencing
-  gates are satisfied.
+  Continue the same uncommitted P12 and P09 concrete correction terminals from exact accepted integration ae3ced8a. P09
+  must close the independently found durable-replay P2 by using SELECT-only access to migration 2256's append-only history
+  table; the trigger remains the only history writer and both legacy School authority tables remain prohibited. The P09
+  branch, claim, lease, two repository path exceptions, full 18-path writable ceiling, and second-parent ancestry remain
+  unchanged. P12 continues independently inside its exact 19-path writable ceiling. Each lane publishes one substantive
+  terminal with three schema-valid successor requests. No claim-only checkpoint, central composition, broad suite,
+  duplicated native proof, candidate freeze, steward application, provider effect, deployment, DNS change, send, charge,
+  customer activation, or other external effect is authorized.
 production_completion_lanes:
 - lane: A
   owner: F02
@@ -287,7 +287,7 @@ production_completion_lanes:
   scope: ancestry_preserving_P21_then_P22_source_only_plus_I36_runtime_triplet
   provider_effects: prohibited
 successor_dispatch:
-  state_based_on_control_head_sha: cc03a0c8f73339c05e3fbe0179661882169b32d9
+  state_based_on_control_head_sha: 48f27d399d4ed714f6219487629c406af1fbb49f
   authorized_start_integration_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
   terminal_claims_reconciled_at: '2026-07-31T05:06:00Z'
   P22_atomic_and_P10_terminal_reconciled_at: '2026-07-31T05:50:50Z'
@@ -312,6 +312,7 @@ successor_dispatch:
   F02_then_P18_microbatch_dispatched_at: '2026-07-31T13:03:39Z'
   F02_then_P18_microbatch_accepted_at: '2026-07-31T13:52:38Z'
   P12_P09_concrete_corrections_dispatched_at: '2026-07-31T13:52:38Z'
+  P09_durable_replay_authority_amended_at: '2026-07-31T14:52:08Z'
   lease_issued_at: '2026-07-31T13:52:38Z'
   lease_expires_at: '2026-07-31T16:52:38Z'
   ready_queue_published: true
@@ -425,7 +426,10 @@ successor_dispatch:
     writer_slot: SCHOOL_INQUIRY
     writer_lease_id: af63b680-b00d-437e-aded-fdbe14e8686f
     writer_lease_expires_at: '2026-07-31T16:52:38Z'
-    ready_entry_payload_digest: ab34b7d47003fa7b5ea92eaad853745ebf28b27aafdb8fb6a9bc99e438a2cebf
+    ready_entry_payload_digest: 6c1e0bd137ee03d0d816ee21cf2a23322a71ed485373b9b1e165533aee3a1be1
+    independent_review_status: held_one_P2_durable_history_replay
+    durable_replay_authority: select_only_approved_school_configuration_history_v21
+    history_writer: migration_2256_trigger_only
     exact_writable_path_count: 18
     exact_repository_ownership_exception_path_count: 2
     source_merge_as_second_parent: true
