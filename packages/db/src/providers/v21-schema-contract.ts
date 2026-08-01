@@ -1,9 +1,33 @@
-export const PROVIDER_CORE_SCHEMA_CONTRACT_VERSION = '1.0.0' as const;
+export const PROVIDER_CORE_SCHEMA_CONTRACT_VERSION = '1.1.0' as const;
 
 export const PROVIDER_CORE_SCHEMA_CONTRACT = {
   schema: 'onetime',
   extends_table: 'job_outbox',
   tables: {
+    provider_registry_binding_v21: {
+      purpose: 'canonical non-secret active provider binding and immutable readback evidence',
+      required_columns: [
+        'registry_binding_key',
+        'provider',
+        'product_key',
+        'runtime_tier',
+        'verification_environment_id',
+        'provider_account_ref_hash',
+        'allowed_operation_types',
+        'mutation_policy',
+        'active',
+        'registry_evidence_digest',
+        'provider_readback_evidence_digest',
+        'observed_at',
+        'version',
+      ],
+      unique_key: [
+        'registry_binding_key',
+        'product_key',
+        'runtime_tier',
+        'verification_environment_id',
+      ],
+    },
     provider_operation_binding: {
       purpose: 'exact non-secret provider registry/account binding for each ProviderOperation',
       required_columns: [
@@ -74,6 +98,8 @@ export const PROVIDER_CORE_SCHEMA_CONTRACT = {
     },
   },
   required_invariants: [
+    'active provider authority comes only from the canonical registry binding table and never per-operation correlation rows',
+    'registry reads require exact account, provider, scope, operation, evidence digests, version, and freshness',
     'Stripe ProviderOperations are signed-event ingestion or readback only and never mutation',
     'provider account, runtime tier, verification environment, request hash, and registry binding match before readback applies',
     'identity_review blocks only GHL projection, workflow, and billing effects',

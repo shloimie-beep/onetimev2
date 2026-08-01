@@ -3,6 +3,9 @@ import type {
   HouseholdProviderMapping,
   ProviderOperation,
   ProviderReconciliationRepository,
+  ProviderRegistryBindingEvidence,
+  ProviderRegistryBindingReadPort,
+  ProviderRegistryBindingReadRequest,
 } from '../../../contracts/src/providers/v21-provider-core.ts';
 
 type SqlRow = Record<string, unknown>;
@@ -24,6 +27,67 @@ export interface ProviderCoreSqlPool {
 }
 
 export function createPostgresProviderCoreRepository(pool: ProviderCoreSqlPool) {
+  const registry: ProviderRegistryBindingReadPort = {
+    async readActiveRegistryBinding(input) {
+      if (
+        input.registry_binding_key.trim() === '' ||
+        input.operation_type.trim() === '' ||
+        !isSha256(input.expected_provider_account_ref_hash) ||
+        !isSha256(input.expected_registry_evidence_digest) ||
+        !isSha256(input.expected_provider_readback_evidence_digest) ||
+        !Number.isSafeInteger(input.expected_version) ||
+        input.expected_version < 1 ||
+        !Number.isFinite(Date.parse(input.observed_not_before))
+      ) {
+        return null;
+      }
+      const client = await pool.connect();
+      try {
+        const result = await client.query(
+          `SELECT registry_binding_key, provider, product_key, runtime_tier,
+                  verification_environment_id, provider_account_ref_hash,
+                  allowed_operation_types, mutation_policy, active,
+                  registry_evidence_digest, provider_readback_evidence_digest,
+                  observed_at, version
+             FROM onetime.provider_registry_binding_v21
+            WHERE registry_binding_key = $1
+              AND provider = $2
+              AND product_key = $3
+              AND runtime_tier = $4
+              AND verification_environment_id = $5
+              AND provider_account_ref_hash = $6
+              AND $7 = ANY(allowed_operation_types)
+              AND registry_evidence_digest = $8
+              AND provider_readback_evidence_digest = $9
+              AND version = $10
+              AND observed_at >= $11
+              AND active = true
+              AND ($12 <> 'mutation' OR mutation_policy <> 'prohibited')
+            ORDER BY registry_binding_key
+            LIMIT 2`,
+          [
+            input.registry_binding_key,
+            input.provider,
+            input.scope.product,
+            input.scope.runtime_tier,
+            input.scope.verification_environment_id,
+            input.expected_provider_account_ref_hash,
+            input.operation_type,
+            input.expected_registry_evidence_digest,
+            input.expected_provider_readback_evidence_digest,
+            input.expected_version,
+            input.observed_not_before,
+            input.effect_kind,
+          ],
+        );
+        if (result.rows.length !== 1) return null;
+        return mapProviderRegistryBindingEvidence(input, result.rows[0]);
+      } finally {
+        client.release();
+      }
+    },
+  };
+
   const reconciliation: ProviderReconciliationRepository = {
     async claimAcceptanceUnknown(input) {
       const client = await pool.connect();
@@ -114,6 +178,7 @@ export function createPostgresProviderCoreRepository(pool: ProviderCoreSqlPool) 
   };
 
   return {
+    ...registry,
     ...reconciliation,
     async saveAdultGhlIdentityLink(
       link: AdultGhlIdentityLink,
@@ -210,6 +275,64 @@ export function createPostgresProviderCoreRepository(pool: ProviderCoreSqlPool) 
   };
 }
 
+function mapProviderRegistryBindingEvidence(
+  input: ProviderRegistryBindingReadRequest,
+  row: SqlRow | undefined,
+): ProviderRegistryBindingEvidence | null {
+  if (!row) return null;
+  const allowedOperationTypes = Array.isArray(row.allowed_operation_types)
+    ? row.allowed_operation_types.map(String)
+    : [];
+  const observedAt = safeIso(row.observed_at);
+  if (observedAt === null) return null;
+  const version = Number(row.version);
+  const providerAccountRefHash = String(row.provider_account_ref_hash);
+  const registryEvidenceDigest = String(row.registry_evidence_digest);
+  const providerReadbackEvidenceDigest = String(row.provider_readback_evidence_digest);
+  if (
+    String(row.registry_binding_key) !== input.registry_binding_key ||
+    String(row.provider) !== input.provider ||
+    String(row.product_key) !== input.scope.product ||
+    String(row.runtime_tier) !== input.scope.runtime_tier ||
+    String(row.verification_environment_id) !== input.scope.verification_environment_id ||
+    providerAccountRefHash !== input.expected_provider_account_ref_hash ||
+    !allowedOperationTypes.includes(input.operation_type) ||
+    allowedOperationTypes.some((operationType) => operationType.trim() === '') ||
+    new Set(allowedOperationTypes).size !== allowedOperationTypes.length ||
+    row.active !== true ||
+    registryEvidenceDigest !== input.expected_registry_evidence_digest ||
+    providerReadbackEvidenceDigest !== input.expected_provider_readback_evidence_digest ||
+    version !== input.expected_version ||
+    Date.parse(observedAt) < Date.parse(input.observed_not_before) ||
+    !isSha256(providerAccountRefHash) ||
+    !isSha256(registryEvidenceDigest) ||
+    !isSha256(providerReadbackEvidenceDigest) ||
+    (input.effect_kind === 'mutation' && String(row.mutation_policy) === 'prohibited')
+  ) {
+    return null;
+  }
+  if (!['allowed', 'orchestration_only', 'prohibited'].includes(String(row.mutation_policy))) {
+    return null;
+  }
+  return {
+    binding: {
+      registry_binding_key: input.registry_binding_key,
+      provider: input.provider,
+      scope: input.scope,
+      provider_account_ref_hash: providerAccountRefHash,
+      allowed_operation_types: allowedOperationTypes,
+      mutation_policy: String(
+        row.mutation_policy,
+      ) as ProviderRegistryBindingEvidence['binding']['mutation_policy'],
+      active: true,
+    },
+    registry_evidence_digest: registryEvidenceDigest,
+    provider_readback_evidence_digest: providerReadbackEvidenceDigest,
+    observed_at: observedAt,
+    version,
+  };
+}
+
 async function withTransaction<T>(
   pool: ProviderCoreSqlPool,
   run: (client: ProviderCoreSqlClient) => Promise<T>,
@@ -281,4 +404,16 @@ function nullableIso(value: unknown): string | null {
 
 function requiredIso(value: unknown): string {
   return value instanceof Date ? value.toISOString() : new Date(String(value)).toISOString();
+}
+
+function safeIso(value: unknown): string | null {
+  try {
+    return requiredIso(value);
+  } catch {
+    return null;
+  }
+}
+
+function isSha256(value: string): boolean {
+  return /^[a-f0-9]{64}$/u.test(value);
 }

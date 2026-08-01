@@ -8,7 +8,7 @@ package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a
 branch: codex/v21-integration
 start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 dependency_heads:
-  C00: b168ab1f258f25f030a934269a7ed4a109af4e08
+  C00: cfa3a42c5868676025c0e4414af20856643d0ecc
   F02: 3ee2f651528f5170dd714b921500235d4e015c5b
   F03: 3947c9887f3c6914a8247c70ac816a4ae94c76d0
   F06: 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
@@ -40,24 +40,123 @@ dependency_heads:
   P18: 1926e61c793ce29d7240c1ee05d2a4879b52770b
   P21: c11dec418fa3de896e96c348f87928c92c9f86b9
 status: ready_for_review
-phase: held_P22_integration_assertion_correction_terminal
-claimed_by: codex-i36-P22-integration-assertion-49c2efa0
-claim_time: '2026-08-01T21:15:56Z'
-claim_id: 49c2efa0-4a42-4cbe-8e17-a1f3eaadab13
-lease_id: f0b86e14-faf3-4d96-acdd-ded62bd858fd
-lease_issued_at: '2026-08-01T21:15:56Z'
-lease_expires_at: '2026-08-02T01:15:56Z'
-lease_released_at: '2026-08-01T21:25:32Z'
-last_heartbeat_at: '2026-08-01T21:25:32Z'
-controller_authorization_sha: b168ab1f258f25f030a934269a7ed4a109af4e08
-latest_valid_observed_control_head_sha: b168ab1f258f25f030a934269a7ed4a109af4e08
+phase: F06_active_registry_binding_source_terminal
+claimed_by: codex-i36-F06-binding-source-0f8c8a10
+claim_time: '2026-08-01T21:47:00Z'
+claim_id: 0f8c8a10-e2f9-4f4c-8ba2-baca8638a581
+lease_id: 151a65cf-f0ae-4a14-bf96-58b6378198df
+lease_issued_at: '2026-08-01T21:47:00Z'
+lease_expires_at: '2026-08-02T01:47:00Z'
+lease_released_at: '2026-08-01T22:12:03Z'
+last_heartbeat_at: '2026-08-01T22:12:03Z'
+controller_authorization_sha: cfa3a42c5868676025c0e4414af20856643d0ecc
+latest_valid_observed_control_head_sha: cfa3a42c5868676025c0e4414af20856643d0ecc
 reconciled_state_based_on_control_head_sha: cdc98ae7a5212c288ad16b35df70addc517e54af
-ready_authorization_control_head_sha: b168ab1f258f25f030a934269a7ed4a109af4e08
-ready_entry_state_based_on_control_head_sha: bdc355b68caf4cdab7f0dbcdeaa8f93655456a91
-ready_entry_payload_digest: a0ac214fae63fa2530d1000197849a7ebfdf01c28f0745a63bdd4e646acb9941
+ready_authorization_control_head_sha: cfa3a42c5868676025c0e4414af20856643d0ecc
+ready_entry_state_based_on_control_head_sha: b168ab1f258f25f030a934269a7ed4a109af4e08
+ready_entry_payload_digest: e1fa167e1d0b39f3fb5bef044e5f1e1e58032aa23696ff98e4cffe4c70b6be8a
 claim_mode: new
-expected_existing_head_sha: d1d416877dd841c3cf63ca53362427b61327ff53
-lease_phase_scope: exact_one_test_plus_I36_runtime_triplet_correction_and_release
+expected_existing_head_sha: 6c55a238fbbe8811f0004425e3ed92065c8530c0
+lease_phase_scope: exact_twelve_path_F06_active_binding_source_and_release
+writer_slot_leases_released:
+  - slot: MIGRATION_AUTHORITY
+    lease_id: c55cdc26-7a62-4ef0-9439-77774b4475fd
+  - slot: PROVIDER_CORE
+    lease_id: 66efea67-5d05-40ad-b3bf-7e0557719f64
+  - slot: PROVIDER_REGISTRY
+    lease_id: 6814d947-5c8c-40c3-92bc-36293c538805
+  - slot: RELEASE_INTEGRATOR
+    lease_id: 151a65cf-f0ae-4a14-bf96-58b6378198df
+F06_active_registry_binding_source_terminal:
+  containing_control_head_sha: cfa3a42c5868676025c0e4414af20856643d0ecc
+  state_basis_control_head_sha: b168ab1f258f25f030a934269a7ed4a109af4e08
+  exact_authorized_start_sha: 6c55a238fbbe8811f0004425e3ed92065c8530c0
+  ready_entry_payload_digest: e1fa167e1d0b39f3fb5bef044e5f1e1e58032aa23696ff98e4cffe4c70b6be8a
+  claim_id: 0f8c8a10-e2f9-4f4c-8ba2-baca8638a581
+  writer_id: codex-i36-F06-binding-source-0f8c8a10
+  lease_issued_at: '2026-08-01T21:47:00Z'
+  lease_expires_at: '2026-08-02T01:47:00Z'
+  lease_released_at: '2026-08-01T22:12:03Z'
+  writer_slot_leases_released:
+    - slot: MIGRATION_AUTHORITY
+      lease_id: c55cdc26-7a62-4ef0-9439-77774b4475fd
+    - slot: PROVIDER_CORE
+      lease_id: 66efea67-5d05-40ad-b3bf-7e0557719f64
+    - slot: PROVIDER_REGISTRY
+      lease_id: 6814d947-5c8c-40c3-92bc-36293c538805
+    - slot: RELEASE_INTEGRATOR
+      lease_id: 151a65cf-f0ae-4a14-bf96-58b6378198df
+  effect_lock_leases: []
+  exact_scope:
+    product_paths: 8
+    allocation_metadata_paths: 1
+    runtime_paths: 3
+    total_paths: 12
+    product_path_inventory_digest: 03af783b5ddbdd75084a4faffa5291f49564a3494c5f38557dcfab3a25dccbb5
+    release_path_inventory_digest: 194e0f47505cd808ee5ee628a9691468e14fdb215b8a676b3c572638e3a9ec99
+    authorized_product_preimage_manifest_digest: 1db0772c3944e2a67bc2eca921265c6951bf6f262dc26da077491ff469ee1247
+    product_postimage_manifest_digest: 0ccda0381935a7ac875cfa0ac1ca919db0467cc5c5d5fc265d8e9c4f7ddd9963
+    product_manifest_algorithm: >-
+      SHA-256 of compact UTF-8 JSON for the path-sorted eight-element array shaped
+      {"path":<POSIX path>,"sha256":<exact staged Git-blob SHA-256>}.
+  migration_allocation:
+    ordinal: 2257
+    file: packages/db/migrations/2257_v21_provider_registry_bindings.sql
+    normalized_lf_sha256: 1c7f1f5307301de01eaff24c33c6c57877b6804050d9787aea5d6c8d2a735c97
+    repository_runner_sha256: 3961d3d0b946ac3e4ae318fa0bd3f275aff6d423cd4d80a1bdd9ea933842b1ef
+    allocation_proposal_postimage_sha256: e70d85c9449e4b30abde4690cbd69a8b1d06e2aefdf0d7b8d09978630f88bbd7
+    next_available_ordinal: 2258
+    prior_migrations_2234_through_2256_changed: false
+  repository_truth:
+    active_binding_table: onetime.provider_registry_binding_v21
+    active_binding_read_port: ProviderRegistryBindingReadPort
+    per_operation_binding_used_as_active_authority: false
+    exact_fences:
+      - binding_key
+      - provider
+      - product_runtime_environment_scope
+      - provider_account_reference_hash
+      - operation_type
+      - mutation_policy
+      - registry_evidence_digest
+      - provider_readback_evidence_digest
+      - observed_not_before
+      - optimistic_version
+    empty_or_ambiguous_or_mismatched_result: null_fail_closed
+    raw_provider_identity_or_credential_stored: false
+  completed_validation:
+    exact_authorized_preimages: passed_8_of_8
+    exact_changed_path_scope: passed_12_of_12
+    runtime_yaml_parse: passed_2_of_2
+    focused_provider_tests: passed_12_of_12
+    repository_migration_inventory: passed_7_of_7_including_full_fresh_apply_and_read_only_verification
+    disposable_PGlite_apply_and_trigger_proof: passed
+    PGlite_stale_version_rejected: true
+    PGlite_delete_rejected: true
+    scoped_eslint: passed_zero_findings
+    scoped_prettier: passed_seven_TypeScript_files
+    diff_check: passed
+    secret_scan: passed_3165_repository_text_files
+    changed_path_type_diagnostics: zero
+    workspace_typecheck: baseline_blocked_exactly_4_unchanged_out_of_scope_diagnostics
+    migration_checksums: passed_exact_native_and_repository_runner_pair
+  unchanged_out_of_scope_typecheck_baselines:
+    - packages/domain/src/billing/stripe-official-client.ts Status OtherString mismatch
+    - tests/ot-52/portal-browser-harness.ts duplicate Playwright Page type
+    - tests/ot-83/portal-browser-harness.ts duplicate Playwright Page type
+    - tests/w12-09/portal-gamification-browser-harness.ts duplicate Playwright Page type
+  registry_rows_created: 0
+  provider_calls: 0
+  candidate_or_provider_action: false
+  deployment_or_DNS_action: false
+  external_effects:
+    attempted: 0
+    succeeded: 0
+    reconciled: 0
+  safe_next_action: >-
+    All four leases were released before expiry. Push the exact twelve-path terminal and stop for independent review. After acceptance, use this
+    read port in the P21 reconciler, then mount the P18-owned P22 attachment, then compose P30 through exact F05/F06 adapters.
+    Registry population, candidate freeze, provider inspection/effect, deployment, DNS, send, and upload remain separately gated.
 P22_integration_assertion_correction_terminal:
   containing_control_head_sha: b168ab1f258f25f030a934269a7ed4a109af4e08
   state_basis_control_head_sha: bdc355b68caf4cdab7f0dbcdeaa8f93655456a91

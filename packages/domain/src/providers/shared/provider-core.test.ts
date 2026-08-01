@@ -4,10 +4,13 @@ import type {
   ProviderCanonicalReadback,
   ProviderOperation,
   ProviderRegistryBinding,
+  ProviderRegistryBindingEvidence,
+  ProviderRegistryBindingReadRequest,
 } from '../../../../contracts/src/providers/v21-provider-core.ts';
 import {
   assertHouseholdProviderMappings,
   assertProviderOperationBound,
+  assertProviderRegistryBindingEvidence,
   completeHouseholdOwnerReassociation,
   decideIdentityBoundEffect,
   reconcileProviderOperation,
@@ -31,6 +34,44 @@ const SCOPE = {
 } as const;
 
 describe('F06 provider truth and reconciliation', () => {
+  it('accepts only exact, current, active registry evidence', () => {
+    const request = bindingReadRequest();
+    const evidence = bindingEvidence();
+    expect(() => assertProviderRegistryBindingEvidence(request, evidence)).not.toThrow();
+
+    const mismatches: ProviderRegistryBindingEvidence[] = [
+      { ...evidence, version: 3 },
+      { ...evidence, observed_at: '2026-07-28T18:59:59.999Z' },
+      { ...evidence, registry_evidence_digest: HASH_D },
+      { ...evidence, provider_readback_evidence_digest: HASH_E },
+      { ...evidence, binding: { ...evidence.binding, active: false } },
+      {
+        ...evidence,
+        binding: { ...evidence.binding, allowed_operation_types: ['ghl.other'] },
+      },
+      {
+        ...evidence,
+        binding: {
+          ...evidence.binding,
+          scope: { ...SCOPE, verification_environment_id: 'provider_sandbox' },
+        },
+      },
+    ];
+    for (const mismatch of mismatches) {
+      expect(() => assertProviderRegistryBindingEvidence(request, mismatch)).toThrow();
+    }
+
+    expect(() =>
+      assertProviderRegistryBindingEvidence(
+        { ...request, effect_kind: 'mutation' },
+        {
+          ...evidence,
+          binding: { ...evidence.binding, mutation_policy: 'prohibited' },
+        },
+      ),
+    ).toThrow(/prohibits mutation/i);
+  });
+
   it('binds readback to the exact registry account and reconciles without dispatch retry', () => {
     const operation = acceptanceUnknownOperation();
     const next = reconcileProviderOperation(operation, highLevelBinding(), readback(), {
@@ -283,6 +324,31 @@ function highLevelBinding(): ProviderRegistryBinding {
     allowed_operation_types: ['ghl.household.upsert'],
     mutation_policy: 'allowed',
     active: true,
+  };
+}
+
+function bindingReadRequest(): ProviderRegistryBindingReadRequest {
+  return {
+    registry_binding_key: 'highlevel-ci',
+    provider: 'highlevel',
+    scope: SCOPE,
+    operation_type: 'ghl.household.upsert',
+    effect_kind: 'readback',
+    expected_provider_account_ref_hash: HASH_A,
+    expected_registry_evidence_digest: HASH_B,
+    expected_provider_readback_evidence_digest: HASH_C,
+    expected_version: 2,
+    observed_not_before: NOW.toISOString(),
+  };
+}
+
+function bindingEvidence(): ProviderRegistryBindingEvidence {
+  return {
+    binding: highLevelBinding(),
+    registry_evidence_digest: HASH_B,
+    provider_readback_evidence_digest: HASH_C,
+    observed_at: NOW.toISOString(),
+    version: 2,
   };
 }
 

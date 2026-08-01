@@ -256,4 +256,14 @@ allocations:
     destructive: false
     checksum_sha256: 7caffcc1f89bcf13e037c86f97b4418819ac24366117a43c3a5fb3a6b6c16593
     pg_mem_checksum_sha256: 7ade2f5e433363418f6fa998be446ec9a57cf9862c9ede8b70787002d089d41a
-next_available_ordinal: 2257
+  - ordinal: 2257
+    file: packages/db/migrations/2257_v21_provider_registry_bindings.sql
+    owner_task_id: F06
+    request_id: C00-F06-active-binding-source-001
+    state: allocated
+    purpose: Canonical non-secret active provider-registry binding authority with exact account, scope, operation, mutation-policy, evidence-digest, freshness, and optimistic-version fences.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: 1c7f1f5307301de01eaff24c33c6c57877b6804050d9787aea5d6c8d2a735c97
+    pg_mem_checksum_sha256: 3961d3d0b946ac3e4ae318fa0bd3f275aff6d423cd4d80a1bdd9ea933842b1ef
+next_available_ordinal: 2258

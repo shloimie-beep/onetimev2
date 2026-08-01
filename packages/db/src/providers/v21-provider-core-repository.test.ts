@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import type {
   ProviderCanonicalReadback,
   ProviderOperation,
+  ProviderRegistryBindingReadRequest,
 } from '../../../contracts/src/providers/v21-provider-core.ts';
 import {
   createPostgresProviderCoreRepository,
@@ -12,6 +13,39 @@ const HASH = 'a'.repeat(64);
 const NOW = '2026-07-28T19:00:00.000Z';
 
 describe('Postgres provider core repository', () => {
+  it('reads only one exact active registry binding with current evidence', async () => {
+    const query = vi.fn().mockResolvedValue({ rows: [bindingRow()], rowCount: 1 });
+    const repository = createPostgresProviderCoreRepository(pool(query));
+    const result = await repository.readActiveRegistryBinding(bindingRequest());
+    expect(result?.binding.registry_binding_key).toBe('highlevel-ci');
+    expect(result?.binding.allowed_operation_types).toEqual(['ghl.household.upsert']);
+    expect(result?.registry_evidence_digest).toBe('b'.repeat(64));
+    expect(query.mock.calls[0]?.[0]).toContain('provider_registry_binding_v21');
+    expect(query.mock.calls[0]?.[0]).not.toContain('provider_operation_binding');
+    expect(query.mock.calls[0]?.[1]).toEqual([
+      'highlevel-ci',
+      'highlevel',
+      'one_time_mishnayos',
+      'isolated_staging',
+      'ci',
+      HASH,
+      'ghl.household.upsert',
+      'b'.repeat(64),
+      'c'.repeat(64),
+      2,
+      NOW,
+      'mutation',
+    ]);
+  });
+
+  it('fails closed on empty, duplicate, or malformed registry evidence', async () => {
+    for (const rows of [[], [bindingRow(), bindingRow()], [{ ...bindingRow(), active: false }]]) {
+      const query = vi.fn().mockResolvedValue({ rows, rowCount: rows.length });
+      const repository = createPostgresProviderCoreRepository(pool(query));
+      await expect(repository.readActiveRegistryBinding(bindingRequest())).resolves.toBeNull();
+    }
+  });
+
   it('claims only exact-scope acceptance-unknown operations with parameterized SQL', async () => {
     const query = vi.fn().mockResolvedValue({ rows: [row()], rowCount: 1 });
     const repository = createPostgresProviderCoreRepository(pool(query));
@@ -131,5 +165,38 @@ function readback(): ProviderCanonicalReadback {
     safe_error_code: null,
     completed_locally: true,
     observed_at: NOW,
+  };
+}
+
+function bindingRequest(): ProviderRegistryBindingReadRequest {
+  return {
+    registry_binding_key: 'highlevel-ci',
+    provider: 'highlevel',
+    scope: operation().scope,
+    operation_type: 'ghl.household.upsert',
+    effect_kind: 'mutation',
+    expected_provider_account_ref_hash: HASH,
+    expected_registry_evidence_digest: 'b'.repeat(64),
+    expected_provider_readback_evidence_digest: 'c'.repeat(64),
+    expected_version: 2,
+    observed_not_before: NOW,
+  };
+}
+
+function bindingRow(): Record<string, unknown> {
+  return {
+    registry_binding_key: 'highlevel-ci',
+    provider: 'highlevel',
+    product_key: 'one_time_mishnayos',
+    runtime_tier: 'isolated_staging',
+    verification_environment_id: 'ci',
+    provider_account_ref_hash: HASH,
+    allowed_operation_types: ['ghl.household.upsert'],
+    mutation_policy: 'orchestration_only',
+    active: true,
+    registry_evidence_digest: 'b'.repeat(64),
+    provider_readback_evidence_digest: 'c'.repeat(64),
+    observed_at: NOW,
+    version: 2,
   };
 }

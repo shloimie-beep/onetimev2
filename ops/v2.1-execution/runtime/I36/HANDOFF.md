@@ -1,5 +1,48 @@
 # I36 Integration Releases
 
+## Current terminal - F06 active registry binding source
+
+Control `cfa3a42c5868676025c0e4414af20856643d0ecc`, based on
+`b168ab1f258f25f030a934269a7ed4a109af4e08`, accepted integration terminal
+`6c55a238fbbe8811f0004425e3ed92065c8530c0` with zero P1, P2, or P3
+findings and authorized this exact twelve-path repository-only successor under
+READY `e1fa167e1d0b39f3fb5bef044e5f1e1e58032aa23696ff98e4cffe4c70b6be8a`.
+
+The successor adds the canonical `onetime.provider_registry_binding_v21`
+registry source, migration 2257, its exact read port, fail-closed repository
+reader, schema contract, validation, and migration allocation evidence. It does
+not treat the per-operation `provider_operation_binding` table as active
+registry authority. Empty, duplicate, inactive, stale, mismatched, or malformed
+evidence returns no active binding. Exact binding key, provider, scope, safe
+account-reference hash, operation, mutation policy, both evidence digests,
+freshness floor, and optimistic version are fenced. Stripe direct mutation
+remains prohibited, and no raw provider identity or credential is stored.
+
+Focused provider tests pass 12/12. Repository migration verification passes
+7/7, including the full fresh inventory and read-only verification. A disposable
+in-process PGlite proof applied migration 2257, accepted an exact version-1 row
+and version-2 update, and rejected a stale version jump and deletion. This was
+not a candidate or live database. Scoped ESLint and Prettier pass; changed-path
+type diagnostics are zero. Workspace typecheck retains exactly the four
+unchanged out-of-scope Stripe and duplicate-Playwright baselines.
+
+The native normalized-LF migration digest is
+`1c7f1f5307301de01eaff24c33c6c57877b6804050d9787aea5d6c8d2a735c97`;
+the repository-runner digest is
+`3961d3d0b946ac3e4ae318fa0bd3f275aff6d423cd4d80a1bdd9ea933842b1ef`.
+The allocation proposal advances the next available ordinal to 2258 and prior
+migrations 2234 through 2256 are unchanged. The eight-path product postimage
+manifest is `0ccda0381935a7ac875cfa0ac1ca919db0467cc5c5d5fc265d8e9c4f7ddd9963`.
+
+No registry row, candidate, provider call, deployment, DNS change, persistent
+database write, contact, send, billing, cleanup, or external effect occurred;
+effects remain `0/0/0`. Claim `0f8c8a10-e2f9-4f4c-8ba2-baca8638a581`
+and the MIGRATION_AUTHORITY, PROVIDER_CORE, PROVIDER_REGISTRY, and
+RELEASE_INTEGRATOR leases were released at `2026-08-01T22:12:03Z`, before
+expiry. After independent acceptance, the critical order is P21 reconciler,
+P18-owned P22 attachment, and then P30 F05/F06 composition. Registry population
+and every external action remain separately gated.
+
 ## Current terminal — P22 direct integration assertion correction
 
 Control `b168ab1f258f25f030a934269a7ed4a109af4e08`, based on

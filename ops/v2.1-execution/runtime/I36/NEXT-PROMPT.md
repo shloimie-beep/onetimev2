@@ -1,6 +1,73 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
+MODE: PAUSE_FOR_C00_F06_ACTIVE_BINDING_SOURCE_REVIEW
+
+Audit the exact pushed I36 twelve-path F06 active registry binding source
+terminal. Do not freeze a candidate, populate or inspect a live provider
+registry, mutate a provider, deploy, change DNS, touch a persistent database,
+create a contact, enroll, send, charge, clean up, or perform any external effect.
+
+Repository: shloimie-beep/onetimev2
+Branch: codex/v21-integration
+Authorized start and required sole parent:
+`6c55a238fbbe8811f0004425e3ed92065c8530c0`
+Containing control: `cfa3a42c5868676025c0e4414af20856643d0ecc`
+Authority/control basis: `b168ab1f258f25f030a934269a7ed4a109af4e08`
+READY: `e1fa167e1d0b39f3fb5bef044e5f1e1e58032aa23696ff98e4cffe4c70b6be8a`
+Claim: `0f8c8a10-e2f9-4f4c-8ba2-baca8638a581`
+Writer: `codex-i36-F06-binding-source-0f8c8a10`
+Leases: MIGRATION_AUTHORITY `c55cdc26-7a62-4ef0-9439-77774b4475fd`,
+PROVIDER_CORE `66efea67-5d05-40ad-b3bf-7e0557719f64`, PROVIDER_REGISTRY
+`6814d947-5c8c-40ad-b3bf-7e0557719f64`, and RELEASE_INTEGRATOR
+`151a65cf-f0ae-4a14-bf96-58b6378198df`.
+Lease issue/expiry/release: `2026-08-01T21:47:00Z` /
+`2026-08-02T01:47:00Z` / `2026-08-01T22:12:03Z`.
+Effects: `0/0/0`.
+
+Confirm exact sole-parent ancestry and exactly twelve changed paths: eight
+product paths, the F02 migration allocation proposal, and the I36 runtime
+triplet. Confirm product/release inventory digests `03af783b...` and
+`194e0f47...`, authorized product preimage manifest `1db0772c...`, and product
+postimage manifest
+`0ccda0381935a7ac875cfa0ac1ca919db0467cc5c5d5fc265d8e9c4f7ddd9963`.
+
+Confirm migration 2257 is the only changed migration, migrations 2234 through
+2256 are byte-identical to the parent, the proposal advances the next ordinal
+to 2258, and the migration digests are native normalized-LF
+`1c7f1f5307301de01eaff24c33c6c57877b6804050d9787aea5d6c8d2a735c97`
+and repository-runner
+`3961d3d0b946ac3e4ae318fa0bd3f275aff6d423cd4d80a1bdd9ea933842b1ef`.
+
+Confirm active authority comes only from
+`onetime.provider_registry_binding_v21`, never by inference from
+`provider_operation_binding`. Confirm exact binding-key, provider, scope,
+safe-account-reference, operation, mutation-policy, registry-evidence,
+provider-readback-evidence, freshness, and optimistic-version fences. Confirm
+empty, duplicate, inactive, stale, malformed, or mismatched evidence fails
+closed; direct Stripe mutation is prohibited; deletion and stale version jumps
+are rejected; and no raw provider identity or credential is stored.
+
+Confirm focused provider tests pass 12/12, repository migration verification
+passes 7/7, disposable PGlite apply/trigger proof passes, scoped ESLint and
+Prettier pass, changed-path type diagnostics are zero, diff hygiene and secret
+scan pass, refs equal the pushed terminal, and the worktree is clean. Treat the
+four unchanged out-of-scope Stripe and duplicate-Playwright diagnostics as
+baselines, not changed-path failures.
+
+Return an exact P1/P2/P3 finding count. C00 must not advance this successor
+unless it has zero P1/P2. If accepted, retain the execution order P21
+reconciler, P18-owned P22 attachment, then P30 F05/F06 composition. Registry
+population, candidate freeze, and every provider or release effect remain
+separately gated. Stop.
+
+---
+
+## Superseded P22 integration assertion correction audit prompt record
+
+MODEL: GPT-5.6-SOL
+REASONING: XHIGH
+SERVICE TIER: PRIORITY
 MODE: PAUSE_FOR_C00_P22_INTEGRATION_ASSERTION_CORRECTION_REVIEW
 
 Audit the exact pushed I36 four-path P22 test-and-evidence correction terminal.

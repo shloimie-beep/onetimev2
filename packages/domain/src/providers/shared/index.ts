@@ -3,6 +3,7 @@ export {
   assertCanonicalReadback,
   assertProviderOperationBound,
   assertProviderRegistryBinding,
+  assertProviderRegistryBindingEvidence,
   reconcileProviderOperation,
 } from './operation.ts';
 export {

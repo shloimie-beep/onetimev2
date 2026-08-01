@@ -28,6 +28,33 @@ export interface ProviderRegistryBinding {
   active: boolean;
 }
 
+export interface ProviderRegistryBindingReadRequest {
+  registry_binding_key: string;
+  provider: ProviderKey;
+  scope: JobScope;
+  operation_type: string;
+  effect_kind: ProviderOperation['effect_kind'];
+  expected_provider_account_ref_hash: string;
+  expected_registry_evidence_digest: string;
+  expected_provider_readback_evidence_digest: string;
+  expected_version: number;
+  observed_not_before: string;
+}
+
+export interface ProviderRegistryBindingEvidence {
+  binding: ProviderRegistryBinding;
+  registry_evidence_digest: string;
+  provider_readback_evidence_digest: string;
+  observed_at: string;
+  version: number;
+}
+
+export interface ProviderRegistryBindingReadPort {
+  readActiveRegistryBinding(
+    input: ProviderRegistryBindingReadRequest,
+  ): Promise<ProviderRegistryBindingEvidence | null>;
+}
+
 export interface ProviderOperation extends Omit<ProviderJobRecord, 'provider'> {
   provider: ProviderKey;
   registry_binding_key: string;
