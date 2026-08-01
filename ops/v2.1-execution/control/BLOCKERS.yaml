@@ -328,7 +328,7 @@ blockers:
     check.
   next_check: Revalidate after any later ownership-transfer, household-session, or migration byte change and once at candidate freeze.
 - blocker_id: P35-NORMALIZED-ROUTE-AND-UNKNOWN-HOST-ENFORCEMENT
-  status: open
+  status: closed
   scope: repository_release_gate
   owner: I36_C00
   affected_tasks:
@@ -337,20 +337,17 @@ blockers:
   - V42
   - R44
   safe_work_completed: >-
-    Batch D terminal 03e30641 retired the canonical Tisha B'Av page/API routes, removed active client/build surfaces,
-    preserved all archive bytes, passed focused canonical tests and builds, released its lease, and recorded effects
-    0/0/0. One independent review found no P1 but reproduced two P2 defects: decode/normalization variants and former
-    tisha-bav-live outputs can bypass route and archived-asset denial into express.static, while fixed-path router mounting
-    leaves generic legacy mutation prefixes unreachable and permits unknown production hosts to reach public HTML, assets,
-    rate limits, and repository calls. Exact ten-path correction authority is now issued from the held terminal.
+    Corrected Batch D terminal acd9ffae closes both held P2s with one shared decode-once normalizer/classifier, all-path
+    legacy retirement middleware, archived page/asset denial before static serving, and a global production unknown-host
+    guard before every public, API, rate-limit, repository, and write path. The exact seven product/test paths plus I36
+    triplet, immutable P35 request, final manifest 49b3c321, focused verifier/unit/integration/browser proofs, canonical
+    pass-through, direct-double-encoding boundary, zero DB calls for unknown hosts, released lease, clean remote equality,
+    and effects 0/0/0 were independently reproduced. The authorized second review found no P1, P2, or P3.
   required_authority_or_input: []
   protection: >-
     Preserve the immutable P35 request, migrations, archive manifest and all archived assets. Decode exactly once, do not
     recursively decode percent encoding, keep unrelated canonical-host routes functional, and permit no candidate,
     provider, deployment, DNS, contact, send, billing, cleanup, or other external effect.
-  next_check: >-
-    Close only after the exact correction terminal proves the full normalized alias/asset matrix, global production
-    unknown-host fail-closed behavior before DB access, reachable generic legacy mutation retirement, clean remote equality,
-    released lease, effects 0/0/0, and one authorized second independent review with no P1/P2.
+  next_check: Revalidate only after a later domain-transition, static-serving, host-validation, or server bootstrap change and once at candidate freeze.
 rule: One precise blocker per entry with owner, affected tasks, safe work completed, required authority/input, and
   next check.

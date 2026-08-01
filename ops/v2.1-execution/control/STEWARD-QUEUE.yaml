@@ -56,16 +56,16 @@ items:
   request_digest: 7c604c8ec91fdaeeedda141b19a075bacccbe94961b420f3a85dd6bcc9ad6cf2
   requesting_task_id: P35
   kind: route_registration
-  status: assigned
+  status: applied
   assigned_steward: I36
   target_checkpoint: I36_next_shared_registration_checkpoint
-  acknowledged_by_task: false
-  acknowledgment_head_sha: null
-  acknowledgment_state_handoff_digest: null
-  applied_commit_sha: null
-  result_record_head_sha: null
-  evaluated_target_head_sha: null
-  result_digest: null
+  acknowledged_by_task: true
+  acknowledgment_head_sha: acd9ffae1df73765dbf46d049db14010ef12e869
+  acknowledgment_state_handoff_digest: 03ee7dbc5389243ee7f337d2c3c4038de3cac33d42e21664ca28947d8873b3dc
+  applied_commit_sha: acd9ffae1df73765dbf46d049db14010ef12e869
+  result_record_head_sha: acd9ffae1df73765dbf46d049db14010ef12e869
+  evaluated_target_head_sha: 03e30641fb5de4de920978b2e574ad6bf4a015ad
+  result_digest: 5f2a2b2ccff1fa70c6f1bab1e39262e135169a2682c293bb692a8f177a717b0a
   rejection_reason: null
 - request_id: P35-config-deploy-001
   request_digest: be7572a96f3ece3d6cdfc2f98b52efee4d712ff6786e36ee8bb50ae58f79c605
