@@ -1727,3 +1727,61 @@ I36 must stop after the single terminal is normally pushed with clean
 local/tracking/live equality. C00 must independently audit the three immutable
 dispositions, canonical generation, exact twelve-path scope, P30's preserved
 Batch A gate, both released leases, and zero effects before issuing Batch A.
+
+## P21 F05/F06 authority-gated publication terminal
+
+Live control `0063689594c1ab9beb2d9f4d64f89a8491284a4c` authorized canonical
+READY `add5b10b2f34c2cbe3ef8ddd096ad374760631a1e8f1896a1a3933aa31f5491a`
+from exact clean integration parent
+`951c151c28f905ad7458973a750c3887edc38ddc`. Claim
+`27bc68ec-74be-4cdf-a6c6-b3ddea179d90` and writer
+`codex-i36-P21-reconciler-27bc68ec` bounded the exact fifteen product/test
+paths plus this I36 runtime triplet.
+
+P21 now registers exact `publish_private` and `revoke_private` F05 handlers.
+Each handler reopens and compares the complete in-flight job, lease, original
+P21 outbox, and immutable provider-operation binding before requesting an
+independently preapproved selector-bound F06 active-registry read. Missing or
+mismatched scope, operation, effect, lease, version, outbox, selector,
+binding, or registry evidence fails before the injected adapter. Accepted F05
+results are always persisted with `completed_locally:false`.
+
+Acceptance-unknown work remains confined to the generic F06 reconciliation
+engine. Effect-exists becomes accepted and still requires P21 finalization;
+effect-absent becomes retry-safe only after dispatch for the batch has ended;
+unknown work is never blindly redispatched. Finalization selects only the
+exact accepted, non-unknown, still-pending P21 outbox. It performs an
+authority-gated canonical Vimeo readback between two database transactions,
+derives the audience server-side from transactionally current eligibility in
+both transactions, rejects any intervening audience change, and completes the
+job, original outbox, readback ledger, canonical content state, assignments,
+library projections, notices, and receipt atomically.
+
+Server composition keeps Vimeo readback unavailable. The central worker
+registry includes `content.p21-publication`, but its default authority port is
+null and it performs zero database or provider calls. No real Vimeo adapter,
+provider network path, persistent database, candidate, deployment, DNS, or
+production effect was used.
+
+Verification passed the final twelve-file P21/F05/F06 suite with 75/75 tests,
+the read-only migration inventory with 7/7 tests, zero ESLint findings across
+all fifteen product/test paths, Prettier, diff hygiene, and the 3,171-file
+secret scan. Changed-path type diagnostics are zero. The complete workspace
+typecheck remains blocked only by the four unchanged documented Stripe and
+Playwright-harness diagnostics. The product manifest is
+`b93af38442d27ca395ea094d8e1f166132b0169cce93c28b5610eed2fe5820f3`;
+the exact product and release path inventories are respectively
+`12cc924a0bf34eb5e6d5c68a5507f0e080c6f7a5a053c2281ed447afb810cb6a`
+and `1a9ea9e220cc668684a39a1b9bd570a76a371b434226783ac1195ac4f1c62fdd`.
+
+CONTENT_PUBLICATION lease `b30f7c9c-3916-4935-a4c1-1057ba0e1390`,
+SERVER_COMPOSER lease `5f79e47d-f671-4f00-abd6-1200185897c3`,
+WORKER_COMPOSER lease `5d3a25c9-7ec7-4b59-adf9-ecaa27cf6bff`, and
+RELEASE_INTEGRATOR lease `6e076496-9ac3-4985-a62c-7b6c9f2142ba` were released
+at `2026-08-01T23:54:44Z`, before the `2026-08-02T02:53:43Z` expiry. No
+provider, persistent-database, candidate, deployment, DNS, send, charge,
+customer, or other external effect occurred. Effects remain `0/0/0`.
+
+I36 must stop after the single exact terminal is normally pushed with clean
+local/tracking/live equality. C00 must independently review and consume this
+terminal before enabling any adapter or issuing candidate/provider authority.

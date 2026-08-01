@@ -1,5 +1,6 @@
 import type { AppConfig } from '../../../../../packages/config/src/index.ts';
 import type { DbPool } from '../../../../../packages/db/src/index.ts';
+import { runContentPublicationWorker } from '../content-publication/composition.ts';
 import { runOt16CheckpointWorker } from '../ghl-workflows/campaigns/composition.ts';
 
 export const WORKER_RUNNER_REGISTRY_CONTRACT_VERSION = '1.0.0' as const;
@@ -45,7 +46,14 @@ const ot16CheckpointRegistration = defineWorkerRunner({
   run: runOt16CheckpointWorker,
 });
 
+const contentPublicationRegistration = defineWorkerRunner({
+  runnerId: 'content.p21-publication',
+  contractVersion: WORKER_RUNNER_REGISTRY_CONTRACT_VERSION,
+  run: runContentPublicationWorker,
+});
+
 export const workerRunnerRegistrations: readonly WorkerRunnerRegistration[] = Object.freeze([
+  contentPublicationRegistration,
   ot16CheckpointRegistration,
 ]);
 

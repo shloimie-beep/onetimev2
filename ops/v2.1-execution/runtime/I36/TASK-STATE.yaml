@@ -4950,3 +4950,121 @@ successor_request_schema_and_materialization_terminal:
     may then add the four immutable successors to the steward queue and issue a
     separately fenced dependency-ordered application batch; no successor is
     applied and no candidate or external effect is authorized by this terminal.
+P21_F05_F06_registration_terminal:
+  containing_control_head_sha: 0063689594c1ab9beb2d9f4d64f89a8491284a4c
+  state_basis_control_head_sha: 0063689594c1ab9beb2d9f4d64f89a8491284a4c
+  exact_authorized_start_sha: 951c151c28f905ad7458973a750c3887edc38ddc
+  ready_entry_payload_digest: add5b10b2f34c2cbe3ef8ddd096ad374760631a1e8f1896a1a3933aa31f5491a
+  claim_id: 27bc68ec-74be-4cdf-a6c6-b3ddea179d90
+  writer_id: codex-i36-P21-reconciler-27bc68ec
+  lease_issued_at: '2026-08-01T22:53:43Z'
+  lease_expires_at: '2026-08-02T02:53:43Z'
+  lease_released_at: '2026-08-01T23:54:44Z'
+  last_heartbeat_at: '2026-08-01T23:54:44Z'
+  writer_slot_leases_released:
+    - slot: CONTENT_PUBLICATION
+      lease_id: b30f7c9c-3916-4935-a4c1-1057ba0e1390
+    - slot: SERVER_COMPOSER
+      lease_id: 5f79e47d-f671-4f00-abd6-1200185897c3
+    - slot: WORKER_COMPOSER
+      lease_id: 5d3a25c9-7ec7-4b59-adf9-ecaa27cf6bff
+    - slot: RELEASE_INTEGRATOR
+      lease_id: 6e076496-9ac3-4985-a62c-7b6c9f2142ba
+  effect_lock_leases: []
+  exact_scope:
+    product_and_test_paths: 15
+    runtime_paths: 3
+    total_paths: 18
+    exact_product_path_inventory_digest: 12cc924a0bf34eb5e6d5c68a5507f0e080c6f7a5a053c2281ed447afb810cb6a
+    exact_release_path_inventory_digest: 1a9ea9e220cc668684a39a1b9bd570a76a371b434226783ac1195ac4f1c62fdd
+    path_inventory_algorithm: sha256_sorted_POSIX_paths_LF_joined_with_terminal_LF
+    authorized_product_preimage_manifest_digest: a8e51b26ba8c8d5906aed2bc1da13b990f836adf0660cca6b46a00f8f9614950
+  product_artifact:
+    paths:
+      - path: apps/web/src/server/features/content/publication/composition.test.ts
+        raw_sha256: 78920cfea80a1b225a03f3b317ef30c129be8a391759dd00efeb96a91de52562
+      - path: apps/web/src/server/features/content/publication/composition.ts
+        raw_sha256: 5cebed59e7fe73e2951ca98321ae7caee4665f8cb9d1060803960236d072af74
+      - path: apps/web/src/server/features/content/publication/service.test.ts
+        raw_sha256: f6e77f5ae3c80c0d3ce98788b56ed002a9d13c4c82f84cbceb80d82945d8385f
+      - path: apps/web/src/server/features/content/publication/service.ts
+        raw_sha256: 821d925accca139f23107ee8b775db5119bc9e3f856d59e88ebc161259c64643
+      - path: apps/worker/src/runners/content-publication/adapters.test.ts
+        raw_sha256: ae89eac6a10251e366773e0b285283d916450678167fd90e9ab7bd43d3ce6208
+      - path: apps/worker/src/runners/content-publication/adapters.ts
+        raw_sha256: 4ab2d7ba911a017c4f2194b71ebc385c25dac7b939d199ba24775b4fd42d5d7b
+      - path: apps/worker/src/runners/content-publication/composition.test.ts
+        raw_sha256: 7a90c2617d3273c04b78a80e3b98e473fdcb20f295f09bf123dd471c12807968
+      - path: apps/worker/src/runners/content-publication/composition.ts
+        raw_sha256: be94212b20c0911e374cbf156e4c6b9aa9677c264ceec27b8e9dc0313cabd1aa
+      - path: apps/worker/src/runners/content-publication/runner.test.ts
+        raw_sha256: 6ad4c0069126afc4f5a63506e2e27e1520617f15fd128a6205502ded54f182dc
+      - path: apps/worker/src/runners/content-publication/runner.ts
+        raw_sha256: 729244849ced913a02940617cdd4313aafd38424fdcb7a2187e4ad7faf65d72c
+      - path: apps/worker/src/runners/registry/index.test.ts
+        raw_sha256: 05259d0606e5a8cf89cf233451abad12a64962f19fc55dea3aeef0852df3abdd
+      - path: apps/worker/src/runners/registry/index.ts
+        raw_sha256: 55049bd4dc378ce2c9eb6054b90678e4838744928d7165d2c9d5977877a8b2d0
+      - path: packages/contracts/src/content/publication/index.ts
+        raw_sha256: 63aed5accdbe8df450f8eef2e8e0568c3869cc022cbf7a95e038f490b17829e3
+      - path: packages/db/src/content/publication/repository.test.ts
+        raw_sha256: d548ae7d300bbc4b963257fa2d0fd5c911afa0dc09e5081da207753619688303
+      - path: packages/db/src/content/publication/repository.ts
+        raw_sha256: 15c3a5c162a262d65ca362675c9ebcdbdcbba9aafb50e49d13d0b8b08287b825
+    canonical_json_manifest_digest: b93af38442d27ca395ea094d8e1f166132b0169cce93c28b5610eed2fe5820f3
+  repository_truth:
+    F05_exact_publish_and_revoke_handlers_registered: true
+    F05_reopens_full_leased_job_outbox_and_immutable_binding: true
+    F05_accepted_completed_locally_forced_false: true
+    F06_generic_reconciliation_engine_preserved: true
+    F06_effect_exists_transitions_to_accepted_not_complete: true
+    F06_effect_absent_transitions_to_retry_safe_without_same_batch_redispatch: true
+    F06_still_unknown_remains_quarantined: true
+    independent_preapproved_authority_request_required_before_each_adapter: true
+    active_registry_readback_and_immutable_operation_binding_required: true
+    publish_and_revoke_finalization_select_only_exact_accepted_pending_outbox: true
+    publication_audience_derived_server_side_from_current_eligibility: true
+    publication_audience_stable_across_two_transaction_readback_boundary: true
+    publication_completion_atomic_with_job_outbox_ledger_state_assignments_library_notices: true
+    server_readback_composer_disabled: true
+    central_worker_registration_default_disabled: true
+    central_worker_default_provider_calls: 0
+    real_vimeo_adapter_present: false
+    provider_network_path_present: false
+    persistent_database_used: false
+  completed_validation:
+    live_control_head: passed_0063689594c1ab9beb2d9f4d64f89a8491284a4c
+    exact_integration_start: passed_951c151c28f905ad7458973a750c3887edc38ddc
+    canonical_ready_digest: passed_add5b10b2f34c2cbe3ef8ddd096ad374760631a1e8f1896a1a3933aa31f5491a
+    exact_path_and_preimage_scope: passed_18_of_18
+    focused_P21_F05_F06_vitest: passed_12_files_75_tests
+    read_only_migration_inventory_vitest: passed_7_of_7
+    scoped_eslint: passed_zero_findings_15_files
+    scoped_prettier: passed_15_files
+    repository_secret_scan: passed_3171_text_files
+    diff_check: passed
+    changed_workspace_type_diagnostics: zero
+    workspace_typecheck: baseline_blocked_exactly_4_unchanged_out_of_scope_diagnostics
+    database_backed_migration_cli: not_run_DATABASE_URL_unavailable
+  unchanged_out_of_scope_baselines:
+    workspace_typecheck:
+      - packages/domain/src/billing/stripe-official-client.ts Status OtherString mismatch
+      - tests/ot-52/portal-browser-harness.ts duplicate Playwright Page type
+      - tests/ot-83/portal-browser-harness.ts duplicate Playwright Page type
+      - tests/w12-09/portal-gamification-browser-harness.ts duplicate Playwright Page type
+  migration_or_SQL_change: false
+  steward_request_bytes_changed: false
+  provider_or_infrastructure_inspection: false
+  provider_or_candidate_action: false
+  deployment_or_DNS_action: false
+  external_effects:
+    attempted: 0
+    succeeded: 0
+    reconciled: 0
+  safe_next_action: >-
+    Push one exact eighteen-path terminal and stop. C00 must independently
+    review the P21 F05/F06 gates, server-derived two-transaction audience,
+    atomic finalization, disabled default registration, exact manifests,
+    validation evidence, released leases, unchanged baselines, and effects
+    0/0/0 before enabling an adapter, freezing a candidate, or authorizing any
+    provider, persistent-database, deployment, DNS, or production effect.

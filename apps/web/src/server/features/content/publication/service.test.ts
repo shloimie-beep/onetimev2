@@ -273,7 +273,6 @@ describe('P21 content publication service', () => {
       scope,
       contentId: 'content_one',
       providerOperationId: publishing.pendingProviderOperationId!,
-      audience: [audience({ occurrenceId: 'content_one' })],
       binding: completion,
     });
     expect(result).toMatchObject({ replay: false, record: { state: 'published', version: 4 } });
@@ -324,7 +323,6 @@ describe('P21 content publication service', () => {
         scope,
         contentId: 'content_one',
         providerOperationId: publishing.pendingProviderOperationId!,
-        audience: [audience({ occurrenceId: 'content_one' })],
         binding: completion,
       }),
     ).resolves.toMatchObject({ replay: true, record: { state: 'published', version: 4 } });
@@ -698,7 +696,6 @@ describe('P21 content publication service', () => {
         scope,
         contentId: 'content_one',
         providerOperationId: publishing.pendingProviderOperationId!,
-        audience: [audience({ occurrenceId: 'content_one' })],
         binding: publicationReadback,
       }),
     ).rejects.toThrowError(/forced_canonical_record_published_failure/);
@@ -714,7 +711,6 @@ describe('P21 content publication service', () => {
       scope,
       contentId: 'content_one',
       providerOperationId: publishing.pendingProviderOperationId!,
-      audience: [audience({ occurrenceId: 'content_one' })],
       binding: publicationReadback,
     });
     memory.failCanonicalOperation = 'unpublish';
@@ -854,7 +850,6 @@ describe('P21 content publication service', () => {
         scope,
         contentId: 'content_one',
         providerOperationId: publishing.pendingProviderOperationId!,
-        audience: [audience({ occurrenceId: 'content_one' })],
         binding: command(3, 'readback.complete', '5'),
       }),
     ).rejects.toThrowError(ContentPublicationError);
@@ -926,6 +921,25 @@ describe('P21 content publication service', () => {
     memory.acceptProviderOperation(publishing.pendingProviderOperationId!);
     memory.eligibilities.set('student_one:content_one:occurrence_one', eligibility());
     const completion = command(3, 'publish.complete.key', 'c');
+    await expect(
+      service.applyPrivatePublicationReadback({
+        scope,
+        contentId: 'content_one',
+        providerOperationId: publishing.pendingProviderOperationId!,
+        binding: command(2, 'publish.stale.key', 'c'),
+      }),
+    ).rejects.toThrowError(/pending publication operation is unavailable/i);
+    memory.records.set('content_one', { ...publishing, state: 'archived' });
+    await expect(
+      service.applyPrivatePublicationReadback({
+        scope,
+        contentId: 'content_one',
+        providerOperationId: publishing.pendingProviderOperationId!,
+        binding: completion,
+      }),
+    ).rejects.toThrowError(/pending publication operation is unavailable/i);
+    expect(memory.readbackCalls).toHaveLength(0);
+    memory.records.set('content_one', publishing);
     memory.readbackMutation = (observation) => ({
       ...observation,
       providerResourceRefHash: hash('0'),
@@ -935,7 +949,6 @@ describe('P21 content publication service', () => {
         scope,
         contentId: 'content_one',
         providerOperationId: publishing.pendingProviderOperationId!,
-        audience: [audience()],
         binding: completion,
       }),
     ).rejects.toThrowError(/does not match the provider/i);
@@ -946,7 +959,6 @@ describe('P21 content publication service', () => {
         scope,
         contentId: 'content_one',
         providerOperationId: publishing.pendingProviderOperationId!,
-        audience: [audience()],
         binding: completion,
       }),
     ).rejects.toThrowError(/forced_provider_completion_failure/i);
@@ -964,7 +976,6 @@ describe('P21 content publication service', () => {
         scope,
         contentId: 'content_one',
         providerOperationId: publishing.pendingProviderOperationId!,
-        audience: [audience()],
         binding: completion,
       }),
     ).rejects.toThrowError(/incomplete or ambiguous/i);
@@ -979,7 +990,6 @@ describe('P21 content publication service', () => {
         scope,
         contentId: 'content_one',
         providerOperationId: publishing.pendingProviderOperationId!,
-        audience: [audience()],
         binding: completion,
       }),
     ).rejects.toThrowError(/pending publication operation is unavailable/i);
@@ -995,13 +1005,32 @@ describe('P21 content publication service', () => {
           scope,
           contentId: 'content_one',
           providerOperationId: publishing.pendingProviderOperationId!,
-          audience: [audience()],
           binding: completion,
         }),
       ).rejects.toThrowError(/not currently eligible/i);
     }
     expect(memory.materializations).toHaveLength(0);
     expect(memory.intentStates.get(memory.intents[0]!.intentId)).toBe('pending');
+    memory.eligibilities.set('student_one:content_one:occurrence_one', eligibility());
+
+    memory.readbackMutation = (observation) => {
+      memory.eligibilities.set(
+        'student_one:content_one:occurrence_one',
+        eligibility({ enrollmentVersion: 99 }),
+      );
+      return observation;
+    };
+    await expect(
+      service.applyPrivatePublicationReadback({
+        scope,
+        contentId: 'content_one',
+        providerOperationId: publishing.pendingProviderOperationId!,
+        binding: completion,
+      }),
+    ).rejects.toThrowError(/pending publication operation is unavailable/i);
+    expect(memory.materializations).toHaveLength(0);
+    expect(memory.intentStates.get(memory.intents[0]!.intentId)).toBe('pending');
+    memory.readbackMutation = null;
     memory.eligibilities.set('student_one:content_one:occurrence_one', eligibility());
 
     await expect(
@@ -1022,7 +1051,6 @@ describe('P21 content publication service', () => {
       scope,
       contentId: 'content_one',
       providerOperationId: publishing.pendingProviderOperationId!,
-      audience: [audience()],
       binding: completion,
     });
     memory.eligibilities.set('student_one:content_one:occurrence_one', {
@@ -1632,6 +1660,27 @@ class MemoryPublicationRepository
   ) {
     const found = this.eligibilities.get(`${studentId}:${contentId}:${occurrenceId}`) ?? null;
     return found && matchesScope(found, requestScope) ? found : null;
+  }
+
+  async listCurrentPublicationEligibility(
+    requestScope: ContentPublicationScope,
+    contentId: string,
+    contentVersionId: string,
+    publicationGeneration: number,
+  ) {
+    return [...this.eligibilities.values()]
+      .filter(
+        (entry) =>
+          matchesScope(entry, requestScope) &&
+          entry.contentId === contentId &&
+          entry.contentVersionId === contentVersionId &&
+          entry.publicationGeneration === publicationGeneration,
+      )
+      .sort((left, right) =>
+        `${left.studentId}:${left.occurrenceId}`.localeCompare(
+          `${right.studentId}:${right.occurrenceId}`,
+        ),
+      );
   }
 
   async savePublicationMaterialization(materialization: ContentPublicationMaterialization) {

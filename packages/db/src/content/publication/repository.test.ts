@@ -725,6 +725,129 @@ describe('P21 PostgreSQL publication repository', () => {
     expect(client.queries[2]?.text).not.toContain('onetime.provider_operations');
   });
 
+  it('reopens only exact leased P21 work and lists reconciliation/finalization through original outbox joins', async () => {
+    const inFlight = {
+      ...providerOperation(),
+      state: 'in_flight' as const,
+      version: 3,
+      dispatch_attempts: 1,
+      lifetime_dispatch_attempts: 1,
+      lease_owner: 'worker_one',
+      lease_generation: 2,
+      lease_expires_at: '2026-08-02T00:05:00.000Z',
+      last_heartbeat_at: '2026-08-02T00:00:00.000Z',
+    };
+    const intent = {
+      ...scope,
+      intentId: 'intent_one',
+      providerOperationId: inFlight.job_id,
+      provider: 'vimeo' as const,
+      contentId: inFlight.aggregate_ref,
+      contentVersionId: inFlight.payload_ref,
+      publicationGeneration: inFlight.source_version,
+      operation: 'publish_private' as const,
+      idempotencyKey: inFlight.idempotency_key,
+      requestHash: inFlight.canonical_request_hash,
+      state: 'pending' as const,
+      createdAt: inFlight.created_at,
+      approvalEvidence,
+    };
+    const { scope: operationScope, ...operationColumns } = inFlight;
+    const operationRow = {
+      ...operationColumns,
+      product: operationScope.product,
+      runtime_tier: operationScope.runtime_tier,
+      verification_environment_id: operationScope.verification_environment_id,
+    };
+    const client = new CapturingClient(false, undefined, (text) => {
+      if (text.includes('SELECT j.*, o.intent_json')) {
+        return [{ ...operationRow, intent_json: intent }];
+      }
+      if (text.includes("j.state = 'acceptance_unknown'")) {
+        return [
+          {
+            ...operationRow,
+            state: 'acceptance_unknown',
+            unknown_effect: true,
+            lease_owner: null,
+            lease_expires_at: null,
+          },
+        ];
+      }
+      if (text.includes("j.state = 'accepted'")) {
+        return [
+          {
+            account_key: scope.accountKey,
+            content_id: 'content_one',
+            provider_operation_id: 'provider_operation_one',
+            operation: 'publish_private',
+            provider_operation_version: 4,
+            intent_id: 'intent_one',
+            content_record_version: 7,
+          },
+        ];
+      }
+      return undefined;
+    });
+    const repository = createPostgresContentPublicationRepository({
+      connect: async () => client,
+    });
+    await expect(repository.reopenDispatchContext(inFlight)).resolves.toMatchObject({
+      intent: { intentId: 'intent_one' },
+      operation: { job_id: 'provider_operation_one', state: 'in_flight', version: 3 },
+      lease: { owner: 'worker_one', generation: 2, job_version: 3 },
+    });
+    await expect(
+      repository.listAcceptanceUnknownOperations(operationScope, 5),
+    ).resolves.toMatchObject([
+      { job_id: 'provider_operation_one', state: 'acceptance_unknown', unknown_effect: true },
+    ]);
+    await expect(repository.listAcceptedPendingWork(operationScope, 5)).resolves.toEqual([
+      {
+        scope: operationScope,
+        accountKey: 'account_one',
+        contentId: 'content_one',
+        providerOperationId: 'provider_operation_one',
+        operation: 'publish_private',
+        providerOperationVersion: 4,
+        outboxIntentId: 'intent_one',
+        contentRecordVersion: 7,
+      },
+    ]);
+
+    const sql = client.queries.map(({ text }) => text).join('\n');
+    expect(sql).toContain("j.state = 'in_flight'");
+    expect(sql).toContain('j.lease_generation = $8');
+    expect(sql).toContain("j.state = 'acceptance_unknown'");
+    expect(sql).toContain("j.state = 'accepted'");
+    expect(sql).toContain('p.pending_provider_operation_id = o.provider_operation_id');
+    expect(sql).toContain("o.state = 'pending'");
+  });
+
+  it('lists the exact deterministic current publication audience under a shared lock', async () => {
+    const eligible = eligibility();
+    const client = new CapturingClient(false, undefined, (text) =>
+      text.includes('ORDER BY student_id, occurrence_id')
+        ? [{ eligibility_json: eligible }]
+        : undefined,
+    );
+    const repository = createPostgresContentPublicationRepository({
+      connect: async () => client,
+    });
+
+    await expect(
+      repository.inTransaction((unit) =>
+        unit.listCurrentPublicationEligibility(scope, 'content_one', 'content_version_one', 1),
+      ),
+    ).resolves.toEqual([eligible]);
+    const query = client.queries.find(({ text }) =>
+      text.includes('ORDER BY student_id, occurrence_id'),
+    );
+    expect(query?.text).toContain('content_version_id = $4');
+    expect(query?.text).toContain('publication_generation = $5');
+    expect(query?.text).toContain('FOR SHARE');
+  });
+
   it('rolls back an optimistic conflict without a partial commit', async () => {
     const client = new CapturingClient(true);
     const repository = createPostgresContentPublicationRepository({

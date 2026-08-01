@@ -5,6 +5,7 @@ import {
   composeContentPublicationService,
   createContentPublicationFeatureRegistration,
   disabledVimeoBinding,
+  disabledVimeoReadbackAdapter,
 } from './composition.ts';
 
 describe('P21 content-publication composition', () => {
@@ -38,6 +39,12 @@ describe('P21 content-publication composition', () => {
       composeContentPublicationService({ config: testConfig(), pool: tracedPool(queries) }),
     ).not.toThrow();
     expect(queries).toEqual([]);
+  });
+
+  it('keeps server-side provider readback unavailable outside the authority-gated worker', async () => {
+    await expect(
+      disabledVimeoReadbackAdapter().readCanonical({} as never, new AbortController().signal),
+    ).rejects.toThrow('content_publication_vimeo_readback_unavailable');
   });
 });
 

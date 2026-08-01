@@ -13,13 +13,19 @@ import type {
   ContentPublicationRepository,
   ContentPublicationScope,
   ContentPublicationUnitOfWork,
+  ContentPublicationWorkerRepository,
   PendingContentPublicationProviderContext,
   StudentContentAssignment,
   StudentPlaybackAuthorizationFacts,
   StudentPublicationEligibility,
   StudentContentResume,
 } from '../../../../contracts/src/content/publication/index.ts';
-import type { JobScope } from '../../../../contracts/src/jobs/index.ts';
+import type {
+  JobLeaseToken,
+  JobScope,
+  ProviderJobRecord,
+} from '../../../../contracts/src/jobs/index.ts';
+import type { ProviderOperation } from '../../../../contracts/src/providers/v21-provider-core.ts';
 
 export interface ContentPublicationSqlClient {
   query<Row extends Record<string, unknown> = Record<string, unknown>>(
@@ -53,7 +59,44 @@ interface ResumeRow extends Record<string, unknown> {
   resume_json: StudentContentResume;
 }
 
-interface PendingProviderContextRow extends Record<string, unknown> {
+interface ProviderOperationRow extends Record<string, unknown> {
+  job_id: string;
+  operation_type: string;
+  aggregate_ref: string;
+  source_version: number;
+  provider: string;
+  product: JobScope['product'];
+  runtime_tier: JobScope['runtime_tier'];
+  verification_environment_id: JobScope['verification_environment_id'];
+  idempotency_key: string;
+  canonical_request_hash: string;
+  payload_ref: string;
+  payload_digest: string;
+  compensation_for_job_id: string | null;
+  state: ProviderOperation['state'];
+  version: number;
+  recovery_generation: number;
+  dispatch_attempts: number;
+  lifetime_dispatch_attempts: number;
+  reconciliation_attempts: number;
+  lease_owner: string | null;
+  lease_generation: number;
+  lease_expires_at: string | Date | null;
+  last_heartbeat_at: string | Date | null;
+  next_attempt_at: string | Date | null;
+  unknown_effect: boolean;
+  provider_acceptance_digest: string | null;
+  reconciliation_digest: string | null;
+  safe_error_code: string | null;
+  created_at: string | Date;
+  updated_at: string | Date;
+  registry_binding_key: string;
+  provider_account_ref_hash: string;
+  effect_kind: ProviderOperation['effect_kind'];
+  household_id: string | null;
+}
+
+interface PendingProviderContextRow extends ProviderOperationRow {
   intent_json: ContentPublicationOutboxIntent;
   account_key: string;
   provider_operation_id: string;
@@ -161,7 +204,7 @@ interface CanonicalContentEvent {
 
 export function createPostgresContentPublicationRepository(
   pool: ContentPublicationSqlPool,
-): ContentPublicationRepository {
+): ContentPublicationRepository & ContentPublicationWorkerRepository {
   return {
     async inTransaction<T>(work: (unit: ContentPublicationUnitOfWork) => Promise<T>) {
       const client = await pool.connect();
@@ -173,6 +216,180 @@ export function createPostgresContentPublicationRepository(
       } catch (error) {
         await client.query('ROLLBACK');
         throw error;
+      } finally {
+        client.release();
+      }
+    },
+
+    async reopenDispatchContext(job) {
+      if (
+        job.provider !== 'vimeo' ||
+        (job.operation_type !== 'publish_private' && job.operation_type !== 'revoke_private') ||
+        job.state !== 'in_flight' ||
+        job.unknown_effect ||
+        job.lease_owner === null ||
+        job.lease_expires_at === null
+      ) {
+        return null;
+      }
+      const client = await pool.connect();
+      try {
+        const result = await client.query<
+          ProviderOperationRow & { intent_json: ContentPublicationOutboxIntent }
+        >(
+          `SELECT j.*, o.intent_json, b.registry_binding_key,
+                  b.provider_account_ref_hash, b.effect_kind, b.household_id
+             FROM onetime.job_outbox AS j
+             JOIN onetime.content_publication_outbox AS o
+               ON o.provider_operation_id = j.job_id
+             JOIN onetime.provider_operation_binding AS b
+               ON b.job_id = j.job_id
+            WHERE j.job_id = $1
+              AND j.provider = 'vimeo'
+              AND j.operation_type = $2
+              AND j.product = $3
+              AND j.runtime_tier = $4
+              AND j.verification_environment_id = $5
+              AND j.state = 'in_flight'
+              AND j.version = $6
+              AND j.lease_owner = $7
+              AND j.lease_generation = $8
+              AND j.lease_expires_at = $9::timestamptz
+              AND j.unknown_effect = FALSE
+              AND o.account_key <> ''
+              AND o.product_key = j.product
+              AND o.provider = j.provider
+              AND o.operation = j.operation_type
+              AND o.content_id = j.aggregate_ref
+              AND o.content_version_id = j.payload_ref
+              AND o.publication_generation = j.source_version
+              AND o.request_hash = j.canonical_request_hash
+              AND o.state = 'pending'
+            LIMIT 2`,
+          [
+            job.job_id,
+            job.operation_type,
+            job.scope.product,
+            job.scope.runtime_tier,
+            job.scope.verification_environment_id,
+            job.version,
+            job.lease_owner,
+            job.lease_generation,
+            job.lease_expires_at,
+          ],
+        );
+        if (result.rows.length !== 1) return null;
+        const row = result.rows[0]!;
+        const operation = mapProviderOperation(row);
+        if (!sameProviderJob(operation, job)) return null;
+        const intent = row.intent_json;
+        if (!intentMatchesOperation(intent, operation)) return null;
+        return {
+          intent,
+          operation,
+          lease: leaseFromOperation(operation),
+        };
+      } finally {
+        client.release();
+      }
+    },
+
+    async listAcceptanceUnknownOperations(scope, limit) {
+      assertWorkerLimit(limit);
+      const client = await pool.connect();
+      try {
+        const result = await client.query<ProviderOperationRow>(
+          `SELECT j.*, b.registry_binding_key, b.provider_account_ref_hash,
+                  b.effect_kind, b.household_id
+             FROM onetime.job_outbox AS j
+             JOIN onetime.content_publication_outbox AS o
+               ON o.provider_operation_id = j.job_id
+             JOIN onetime.provider_operation_binding AS b
+               ON b.job_id = j.job_id
+            WHERE j.product = $1
+              AND j.runtime_tier = $2
+              AND j.verification_environment_id = $3
+              AND j.provider = 'vimeo'
+              AND j.operation_type IN ('publish_private', 'revoke_private')
+              AND j.state = 'acceptance_unknown'
+              AND j.unknown_effect = TRUE
+              AND o.product_key = j.product
+              AND o.provider = j.provider
+              AND o.operation = j.operation_type
+              AND o.content_id = j.aggregate_ref
+              AND o.content_version_id = j.payload_ref
+              AND o.publication_generation = j.source_version
+              AND o.request_hash = j.canonical_request_hash
+              AND o.state = 'pending'
+            ORDER BY j.updated_at, j.job_id
+            LIMIT $4`,
+          [scope.product, scope.runtime_tier, scope.verification_environment_id, limit],
+        );
+        return result.rows.map(mapProviderOperation);
+      } finally {
+        client.release();
+      }
+    },
+
+    async listAcceptedPendingWork(scope, limit) {
+      assertWorkerLimit(limit);
+      const client = await pool.connect();
+      try {
+        const result = await client.query<{
+          account_key: string;
+          content_id: string;
+          provider_operation_id: string;
+          operation: 'publish_private' | 'revoke_private';
+          provider_operation_version: number;
+          intent_id: string;
+          content_record_version: number;
+        }>(
+          `SELECT o.account_key, o.content_id,
+                  o.provider_operation_id, o.operation,
+                  j.version AS provider_operation_version, o.intent_id,
+                  p.version AS content_record_version
+             FROM onetime.content_publication_outbox AS o
+             JOIN onetime.job_outbox AS j
+               ON j.job_id = o.provider_operation_id
+             JOIN onetime.provider_operation_binding AS b
+               ON b.job_id = j.job_id
+             JOIN onetime.content_publications AS p
+               ON p.account_key = o.account_key
+              AND p.product_key = o.product_key
+              AND p.content_id = o.content_id
+              AND p.content_version_id = o.content_version_id
+              AND p.publication_generation = o.publication_generation
+              AND p.pending_provider_operation_id = o.provider_operation_id
+            WHERE j.product = $1
+              AND j.runtime_tier = $2
+              AND j.verification_environment_id = $3
+              AND j.provider = 'vimeo'
+              AND j.operation_type IN ('publish_private', 'revoke_private')
+              AND j.state = 'accepted'
+              AND j.unknown_effect = FALSE
+              AND o.product_key = j.product
+              AND o.provider = j.provider
+              AND o.operation = j.operation_type
+              AND o.content_id = j.aggregate_ref
+              AND o.content_version_id = j.payload_ref
+              AND o.publication_generation = j.source_version
+              AND o.request_hash = j.canonical_request_hash
+              AND o.state = 'pending'
+              AND b.effect_kind = 'mutation'
+            ORDER BY j.updated_at, j.job_id
+            LIMIT $4`,
+          [scope.product, scope.runtime_tier, scope.verification_environment_id, limit],
+        );
+        return result.rows.map((row) => ({
+          scope: { ...scope },
+          accountKey: row.account_key,
+          contentId: row.content_id,
+          providerOperationId: row.provider_operation_id,
+          operation: row.operation,
+          providerOperationVersion: Number(row.provider_operation_version),
+          outboxIntentId: row.intent_id,
+          contentRecordVersion: Number(row.content_record_version),
+        }));
       } finally {
         client.release();
       }
@@ -526,7 +743,8 @@ function createUnit(client: ContentPublicationSqlClient): ContentPublicationUnit
 
     async getPendingProviderContext(scope, providerOperationId, operation) {
       const result = await client.query<PendingProviderContextRow>(
-        `SELECT o.intent_json,
+        `SELECT j.*,
+                o.intent_json,
                 o.account_key,
                 o.approval_projection_digest,
                 j.job_id AS provider_operation_id,
@@ -545,6 +763,8 @@ function createUnit(client: ContentPublicationSqlClient): ContentPublicationUnit
                 j.unknown_effect,
                 b.registry_binding_key,
                 b.provider_account_ref_hash,
+                b.effect_kind,
+                b.household_id,
                 j.provider_acceptance_digest,
                 j.reconciliation_digest AS provider_reconciliation_digest
            FROM onetime.content_publication_outbox AS o
@@ -813,6 +1033,27 @@ function createUnit(client: ContentPublicationSqlClient): ContentPublicationUnit
         [scope.accountKey, scope.productKey, studentId, contentId, occurrenceId],
       );
       return result.rows[0]?.eligibility_json ?? null;
+    },
+
+    async listCurrentPublicationEligibility(
+      scope,
+      contentId,
+      contentVersionId,
+      publicationGeneration,
+    ) {
+      const result = await client.query<PublicationEligibilityRow>(
+        `SELECT eligibility_json
+           FROM onetime.student_content_publication_eligibility
+          WHERE account_key = $1
+            AND product_key = $2
+            AND content_id = $3
+            AND content_version_id = $4
+            AND publication_generation = $5
+          ORDER BY student_id, occurrence_id
+          FOR SHARE`,
+        [scope.accountKey, scope.productKey, contentId, contentVersionId, publicationGeneration],
+      );
+      return result.rows.map((row) => row.eligibility_json);
     },
 
     async savePublicationMaterialization(materialization: ContentPublicationMaterialization) {
@@ -1532,6 +1773,139 @@ function requireOne(rowCount: number | null | undefined, code: string) {
   if (rowCount !== 1) throw new Error(code);
 }
 
+function assertWorkerLimit(limit: number): void {
+  if (!Number.isSafeInteger(limit) || limit < 1 || limit > 100) {
+    throw new Error('content_publication_worker_limit_invalid');
+  }
+}
+
+function mapProviderOperation(row: ProviderOperationRow): ProviderOperation {
+  return {
+    job_id: String(row.job_id),
+    operation_type: String(row.operation_type),
+    aggregate_ref: String(row.aggregate_ref),
+    source_version: Number(row.source_version),
+    provider: String(row.provider) as ProviderOperation['provider'],
+    scope: {
+      product: String(row.product) as ProviderOperation['scope']['product'],
+      runtime_tier: String(row.runtime_tier) as ProviderOperation['scope']['runtime_tier'],
+      verification_environment_id: String(
+        row.verification_environment_id,
+      ) as ProviderOperation['scope']['verification_environment_id'],
+    },
+    idempotency_key: String(row.idempotency_key),
+    canonical_request_hash: String(row.canonical_request_hash),
+    payload_ref: String(row.payload_ref),
+    payload_digest: String(row.payload_digest),
+    compensation_for_job_id: nullableString(row.compensation_for_job_id),
+    state: String(row.state) as ProviderOperation['state'],
+    version: Number(row.version),
+    recovery_generation: Number(row.recovery_generation),
+    dispatch_attempts: Number(row.dispatch_attempts),
+    lifetime_dispatch_attempts: Number(row.lifetime_dispatch_attempts),
+    reconciliation_attempts: Number(row.reconciliation_attempts),
+    lease_owner: nullableString(row.lease_owner),
+    lease_generation: Number(row.lease_generation),
+    lease_expires_at: nullableIso(row.lease_expires_at),
+    last_heartbeat_at: nullableIso(row.last_heartbeat_at),
+    next_attempt_at: nullableIso(row.next_attempt_at),
+    unknown_effect: Boolean(row.unknown_effect),
+    provider_acceptance_digest: nullableString(row.provider_acceptance_digest),
+    reconciliation_digest: nullableString(row.reconciliation_digest),
+    safe_error_code: nullableString(row.safe_error_code),
+    created_at: requiredIso(row.created_at),
+    updated_at: requiredIso(row.updated_at),
+    registry_binding_key: String(row.registry_binding_key),
+    provider_account_ref_hash: String(row.provider_account_ref_hash),
+    effect_kind: String(row.effect_kind) as ProviderOperation['effect_kind'],
+    household_id: nullableString(row.household_id),
+  };
+}
+
+function sameProviderJob(operation: ProviderOperation, job: ProviderJobRecord): boolean {
+  return (
+    JSON.stringify(providerJobFingerprint(operation)) ===
+    JSON.stringify(providerJobFingerprint(job))
+  );
+}
+
+function providerJobFingerprint(job: ProviderJobRecord) {
+  return {
+    job_id: job.job_id,
+    operation_type: job.operation_type,
+    aggregate_ref: job.aggregate_ref,
+    source_version: job.source_version,
+    provider: job.provider,
+    scope: job.scope,
+    idempotency_key: job.idempotency_key,
+    canonical_request_hash: job.canonical_request_hash,
+    payload_ref: job.payload_ref,
+    payload_digest: job.payload_digest,
+    compensation_for_job_id: job.compensation_for_job_id,
+    state: job.state,
+    version: job.version,
+    recovery_generation: job.recovery_generation,
+    dispatch_attempts: job.dispatch_attempts,
+    lifetime_dispatch_attempts: job.lifetime_dispatch_attempts,
+    reconciliation_attempts: job.reconciliation_attempts,
+    lease_owner: job.lease_owner,
+    lease_generation: job.lease_generation,
+    lease_expires_at: nullableIso(job.lease_expires_at),
+    last_heartbeat_at: nullableIso(job.last_heartbeat_at),
+    next_attempt_at: nullableIso(job.next_attempt_at),
+    unknown_effect: job.unknown_effect,
+    provider_acceptance_digest: job.provider_acceptance_digest,
+    reconciliation_digest: job.reconciliation_digest,
+    safe_error_code: job.safe_error_code,
+    created_at: requiredIso(job.created_at),
+    updated_at: requiredIso(job.updated_at),
+  };
+}
+
+function intentMatchesOperation(
+  intent: ContentPublicationOutboxIntent,
+  operation: ProviderOperation,
+): boolean {
+  return (
+    intent.providerOperationId === operation.job_id &&
+    intent.provider === operation.provider &&
+    intent.operation === operation.operation_type &&
+    intent.productKey === operation.scope.product &&
+    intent.contentId === operation.aggregate_ref &&
+    intent.contentVersionId === operation.payload_ref &&
+    intent.publicationGeneration === operation.source_version &&
+    intent.idempotencyKey === operation.idempotency_key &&
+    intent.requestHash === operation.canonical_request_hash &&
+    intent.approvalEvidence.projectionDigest === operation.payload_digest &&
+    intent.state === 'pending'
+  );
+}
+
+function leaseFromOperation(operation: ProviderOperation): JobLeaseToken {
+  if (operation.lease_owner === null || operation.lease_expires_at === null) {
+    throw new Error('content_publication_dispatch_lease_unavailable');
+  }
+  return {
+    job_id: operation.job_id,
+    owner: operation.lease_owner,
+    generation: operation.lease_generation,
+    expires_at: operation.lease_expires_at,
+    job_version: operation.version,
+  };
+}
+
+function nullableString(value: unknown): string | null {
+  return value === null || value === undefined ? null : String(value);
+}
+
+function nullableIso(value: unknown): string | null {
+  return value === null || value === undefined ? null : requiredIso(value);
+}
+
+function requiredIso(value: unknown): string {
+  return value instanceof Date ? value.toISOString() : new Date(String(value)).toISOString();
+}
+
 function mapPendingProviderContext(
   row: PendingProviderContextRow,
 ): PendingContentPublicationProviderContext {
@@ -1562,5 +1936,6 @@ function mapPendingProviderContext(
       providerReconciliationDigest: row.provider_reconciliation_digest,
       approvalProjectionDigest: row.approval_projection_digest,
     },
+    operationRecord: mapProviderOperation(row),
   };
 }

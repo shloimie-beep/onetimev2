@@ -9,7 +9,7 @@ import type {
   ContentPublicationScope,
   GovernedContentOccurrenceRelation,
   PendingContentPublicationProviderContext,
-  StudentPublicationAudience,
+  StudentPublicationEligibility,
   VimeoContentPublicationReadbackAdapter,
   VimeoContentPublicationObservation,
 } from '../../../../../../../packages/contracts/src/content/publication/index.ts';
@@ -173,15 +173,17 @@ export function createContentPublicationService(deps: {
       scope: ContentPublicationScope;
       contentId: string;
       providerOperationId: string;
-      audience: readonly Omit<StudentPublicationAudience, 'accountKey' | 'productKey'>[];
       binding: ContentPublicationCommandBinding;
     }) {
       const prepared = await deps.repository.inTransaction(async (unit) => {
         const current = await requiredContent(unit, input.scope, input.contentId);
-        const audience = input.audience.map((member) => ({
-          ...member,
-          ...input.scope,
-        }));
+        const eligibility = await unit.listCurrentPublicationEligibility(
+          input.scope,
+          current.contentId,
+          current.contentVersionId,
+          current.publicationGeneration,
+        );
+        const audience = derivePublicationAudience(eligibility);
         const binding = authoritativeBinding(input.binding, 'record_published', current, {
           providerOperationId: input.providerOperationId,
           audience,
@@ -195,6 +197,9 @@ export function createContentPublicationService(deps: {
           assertReceiptReplay(priorReceipt, 'record_published', binding.requestHash, current);
           return { replayResult: { record: current, replay: true as const } };
         }
+        if (current.state !== 'publishing' || binding.expectedVersion !== current.version) {
+          return providerConflict();
+        }
         const pendingProviderContext =
           current.pendingProviderOperationId === input.providerOperationId
             ? await unit.getPendingProviderContext(
@@ -206,7 +211,7 @@ export function createContentPublicationService(deps: {
         if (!pendingProviderContext) return providerConflict();
         const executionScope = await unit.resolveCanonicalContentExecutionScope(current);
         assertProviderExecutionScope(executionScope, pendingProviderContext.executionScope);
-        return { pendingProviderContext };
+        return { pendingProviderContext, eligibility, audience };
       });
       if ('replayResult' in prepared) return prepared.replayResult;
       const observation = await readCanonicalVimeo(
@@ -217,10 +222,13 @@ export function createContentPublicationService(deps: {
       if (observation.operation !== 'publish_private') return providerConflict();
       return deps.repository.inTransaction(async (unit) => {
         const current = await requiredContent(unit, input.scope, input.contentId);
-        const audience = input.audience.map((member) => ({
-          ...member,
-          ...input.scope,
-        }));
+        const eligibility = await unit.listCurrentPublicationEligibility(
+          input.scope,
+          current.contentId,
+          current.contentVersionId,
+          current.publicationGeneration,
+        );
+        const audience = derivePublicationAudience(eligibility);
         const binding = authoritativeBinding(input.binding, 'record_published', current, {
           providerOperationId: input.providerOperationId,
           audience,
@@ -234,6 +242,9 @@ export function createContentPublicationService(deps: {
           assertReceiptReplay(priorReceipt, 'record_published', binding.requestHash, current);
           return { record: current, replay: true as const };
         }
+        if (current.state !== 'publishing' || binding.expectedVersion !== current.version) {
+          return providerConflict();
+        }
         const pendingProviderContext =
           current.pendingProviderOperationId === input.providerOperationId
             ? await unit.getPendingProviderContext(
@@ -244,28 +255,20 @@ export function createContentPublicationService(deps: {
             : null;
         if (
           !pendingProviderContext ||
-          JSON.stringify(pendingProviderContext) !== JSON.stringify(prepared.pendingProviderContext)
+          JSON.stringify(pendingProviderContext) !==
+            JSON.stringify(prepared.pendingProviderContext) ||
+          JSON.stringify(eligibility) !== JSON.stringify(prepared.eligibility) ||
+          JSON.stringify(audience) !== JSON.stringify(prepared.audience)
         ) {
           return providerConflict();
         }
         const executionScope = await unit.resolveCanonicalContentExecutionScope(current);
         assertProviderExecutionScope(executionScope, pendingProviderContext.executionScope);
-        const eligibility = await Promise.all(
-          audience.map((member) =>
-            unit.getCurrentPublicationEligibility(
-              input.scope,
-              member.studentId,
-              input.contentId,
-              member.occurrenceId,
-            ),
-          ),
-        );
-        if (eligibility.some((entry) => entry === null)) return unavailable();
         const result = recordPrivatePublication({
           record: current,
           observation,
           audience,
-          eligibility: eligibility.filter((entry) => entry !== null),
+          eligibility,
           pendingProviderContext,
           binding,
         });
@@ -309,6 +312,12 @@ export function createContentPublicationService(deps: {
           assertReceiptReplay(priorReceipt, 'record_revoked', binding.requestHash, current);
           return { replayResult: { record: current, replay: true as const } };
         }
+        if (
+          (current.state !== 'approved' && current.state !== 'archived') ||
+          binding.expectedVersion !== current.version
+        ) {
+          return providerConflict();
+        }
         const pendingProviderContext =
           current.pendingProviderOperationId === input.providerOperationId
             ? await unit.getPendingProviderContext(
@@ -342,6 +351,12 @@ export function createContentPublicationService(deps: {
         if (priorReceipt) {
           assertReceiptReplay(priorReceipt, 'record_revoked', binding.requestHash, current);
           return { record: current, replay: true as const };
+        }
+        if (
+          (current.state !== 'approved' && current.state !== 'archived') ||
+          binding.expectedVersion !== current.version
+        ) {
+          return providerConflict();
         }
         const pendingProviderContext =
           current.pendingProviderOperationId === input.providerOperationId
@@ -731,6 +746,23 @@ function authoritativeBinding(
       requestPayload,
     }),
   };
+}
+
+function derivePublicationAudience(eligibility: readonly StudentPublicationEligibility[]) {
+  return eligibility.map((entry) => ({
+    accountKey: entry.accountKey,
+    productKey: entry.productKey,
+    studentId: entry.studentId,
+    householdId: entry.householdId,
+    adultRecipientId: entry.adultRecipientId,
+    occurrenceId: entry.occurrenceId,
+    studentVersion: entry.studentVersion,
+    enrollmentVersion: entry.enrollmentVersion,
+    accessVersion: entry.accessVersion,
+    serviceAccountConsentVersion: entry.serviceAccountConsentVersion,
+    privacyVersion: entry.privacyVersion,
+    revocationVersion: entry.revocationVersion,
+  }));
 }
 
 function unavailable(): never {

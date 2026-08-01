@@ -18,19 +18,39 @@ function context(mode: 'once' | 'continuous'): WorkerRunnerContext {
 }
 
 describe('worker runner registry', () => {
-  it('registers exactly one durable communications.ot16-checkpoint runner', () => {
-    expect(workerRunnerRegistrations).toHaveLength(1);
-    expect(workerRunnerRegistrations[0]).toMatchObject({
-      runnerId: 'communications.ot16-checkpoint',
-      contractVersion: '1.0.0',
-    });
+  it('registers the durable communications and disabled P21 publication runners', () => {
+    expect(workerRunnerRegistrations).toHaveLength(2);
+    expect(workerRunnerRegistrations).toEqual([
+      expect.objectContaining({
+        runnerId: 'content.p21-publication',
+        contractVersion: '1.0.0',
+      }),
+      expect.objectContaining({
+        runnerId: 'communications.ot16-checkpoint',
+        contractVersion: '1.0.0',
+      }),
+    ]);
   });
 
   it.each(['once', 'continuous'] as const)(
     'uses the same fail-closed default registration in %s mode',
     async (mode) => {
       const results = await runWorkerRunners({ context: context(mode) });
-      expect(Object.keys(results)).toEqual(['communications.ot16-checkpoint']);
+      expect(Object.keys(results)).toEqual([
+        'content.p21-publication',
+        'communications.ot16-checkpoint',
+      ]);
+      expect(results['content.p21-publication']).toMatchObject({
+        enabled: false,
+        providerCallsPerformed: false,
+        summary: {
+          disabledReason: 'content_publication_authority_unavailable',
+          providerCalls: 0,
+          dispatch: { claimed: 0 },
+          reconciliation: { claimed: 0 },
+          finalization: { selected: 0 },
+        },
+      });
       expect(results['communications.ot16-checkpoint']).toMatchObject({
         enabled: false,
         providerCallsPerformed: false,

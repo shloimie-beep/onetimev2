@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import type { AppConfig } from '../../../../../../../packages/config/src/index.ts';
+import type { VimeoContentPublicationReadbackAdapter } from '../../../../../../../packages/contracts/src/content/publication/index.ts';
 import type { ProviderRegistryBinding } from '../../../../../../../packages/contracts/src/providers/v21-provider-core.ts';
 import { createPostgresContentPublicationRepository } from '../../../../../../../packages/db/src/content/publication/index.ts';
 import { createContentProcessingRepository } from '../../../../../../../packages/db/src/content/processing/repository.ts';
@@ -57,14 +58,18 @@ export function composeContentPublicationService(input: {
     repository,
     approvedProjectionRepository: createContentProcessingRepository(input.pool),
     vimeoProviderBinding: input.providerBinding ?? disabledVimeoBinding(input.config),
-    vimeoReadbackAdapter: {
-      async readCanonical() {
-        throw new Error('content_publication_vimeo_readback_unavailable');
-      },
-    },
+    vimeoReadbackAdapter: disabledVimeoReadbackAdapter(),
     createId: input.createId ?? (() => `playback_${randomUUID()}`),
   });
   return service;
+}
+
+export function disabledVimeoReadbackAdapter(): VimeoContentPublicationReadbackAdapter {
+  return {
+    async readCanonical() {
+      throw new Error('content_publication_vimeo_readback_unavailable');
+    },
+  };
 }
 
 export function disabledVimeoBinding(config: AppConfig): ProviderRegistryBinding {

@@ -795,3 +795,60 @@ refs equal the terminal head, and no provider, candidate, deployment, DNS,
 send, charge, customer, persistent-database, or external effect occurred.
 C00 must reconcile and consume both merge items before issuing successor
 authority. Stop.
+
+## Current audit target: P21 F05/F06 publication terminal
+
+Audit the exact pushed I36 P21 publication terminal. Do not enable an adapter,
+use a persistent database, freeze a candidate, inspect or mutate a provider,
+deploy, change DNS, send, charge, or perform any successor effect from this
+prompt.
+
+Repository: shloimie-beep/onetimev2
+Branch: codex/v21-integration
+Authorized start: `951c151c28f905ad7458973a750c3887edc38ddc`
+Containing control: `0063689594c1ab9beb2d9f4d64f89a8491284a4c`
+READY: `add5b10b2f34c2cbe3ef8ddd096ad374760631a1e8f1896a1a3933aa31f5491a`
+Claim: `27bc68ec-74be-4cdf-a6c6-b3ddea179d90`
+Writer: `codex-i36-P21-reconciler-27bc68ec`
+Lease issue: `2026-08-01T22:53:43Z`
+Lease expiry: `2026-08-02T02:53:43Z`
+Lease release: `2026-08-01T23:54:44Z`
+Effects: `0/0/0`
+
+Confirm the exact fifteen product/test paths and I36 runtime triplet. Confirm
+the product and release path-inventory digests are respectively
+`12cc924a0bf34eb5e6d5c68a5507f0e080c6f7a5a053c2281ed447afb810cb6a`
+and `1a9ea9e220cc668684a39a1b9bd570a76a371b434226783ac1195ac4f1c62fdd`,
+the authorized preimage manifest is
+`a8e51b26ba8c8d5906aed2bc1da13b990f836adf0660cca6b46a00f8f9614950`,
+and the final product manifest is
+`b93af38442d27ca395ea094d8e1f166132b0169cce93c28b5610eed2fe5820f3`.
+
+Confirm F05 reopens and validates the complete leased job, original P21
+outbox, and immutable provider binding; obtains exact independently
+preapproved active-registry evidence before every injected adapter; and forces
+accepted results to `completed_locally:false`. Confirm scope, operation,
+effect, lease, version, outbox, selector, binding, and evidence mismatches all
+fail before adapter invocation.
+
+Confirm acceptance-unknown work uses only generic F06 reconciliation; effect
+exists becomes accepted pending local completion, effect absent becomes
+retry-safe without same-batch blind redispatch, and still-unknown remains
+quarantined. Confirm finalization selects only the exact accepted/non-unknown
+pending outbox, derives the audience from current eligibility on both sides of
+the provider-readback boundary, rejects intervening audience changes, and
+atomically completes provider/outbox/ledger/content/assignment/library/notice/
+receipt state.
+
+Confirm server-side Vimeo readback stays disabled and the centrally registered
+`content.p21-publication` worker is authority-null and performs zero calls by
+default. Confirm no real Vimeo adapter or provider/network/persistent-database
+path exists in this terminal.
+
+Confirm the final twelve-file suite passed 75/75, migration verification passed
+7/7, all fifteen product/test files pass ESLint and Prettier, diff hygiene and
+the 3,171-file secret scan pass, changed-path type diagnostics are zero, and
+only the four unchanged Stripe/Playwright workspace baselines remain. Confirm
+all four leases were released before expiry, local/tracking/live refs equal the
+terminal head, and effects remain 0/0/0. C00 must independently consume the
+terminal before any adapter, candidate, provider, or release authority. Stop.

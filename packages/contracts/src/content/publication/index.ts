@@ -2,8 +2,17 @@ import type {
   ApprovedForPublicationProjectionParams,
   SourceCompleteApprovedForPublicationProjection,
 } from '../processing/index.ts';
-import type { JobScope } from '../../jobs/index.ts';
-import type { ProviderOperation } from '../../providers/v21-provider-core.ts';
+import type {
+  JobLeaseToken,
+  JobScope,
+  ProviderDispatchOutcome,
+  ProviderJobRecord,
+} from '../../jobs/index.ts';
+import type {
+  ProviderOperation,
+  ProviderRegistryBindingEvidence,
+  ProviderRegistryBindingReadRequest,
+} from '../../providers/v21-provider-core.ts';
 
 export const CONTENT_PUBLICATION_CONTRACT_VERSION = '2.1.0';
 export const CONTENT_PUBLICATION_PRODUCT_KEY = 'one_time_mishnayos';
@@ -311,6 +320,47 @@ export interface PendingContentPublicationProviderContext {
   intent: ContentPublicationOutboxIntent;
   providerOperation: ContentPublicationProviderOperation;
   executionScope?: JobScope;
+  operationRecord?: ProviderOperation;
+}
+
+export type ContentPublicationAuthorityStage = 'dispatch' | 'reconciliation' | 'finalization';
+
+export interface ContentPublicationAuthoritySelector {
+  stage: ContentPublicationAuthorityStage;
+  operation_type: 'publish_private' | 'revoke_private';
+  scope: JobScope;
+  effect_kind: 'mutation';
+}
+
+export interface ContentPublicationAuthorityRequestPort {
+  getPreapprovedRequest(
+    selector: ContentPublicationAuthoritySelector,
+  ): Promise<ProviderRegistryBindingReadRequest | null>;
+}
+
+export interface ContentPublicationDispatchContext {
+  intent: ContentPublicationOutboxIntent;
+  operation: ProviderOperation;
+  lease: JobLeaseToken;
+}
+
+export interface ContentPublicationAcceptedWork {
+  scope: JobScope;
+  accountKey: string;
+  contentId: string;
+  providerOperationId: string;
+  operation: 'publish_private' | 'revoke_private';
+  providerOperationVersion: number;
+  outboxIntentId: string;
+  contentRecordVersion: number;
+}
+
+export interface ContentPublicationProviderDispatchAdapter {
+  dispatch(
+    context: ContentPublicationDispatchContext,
+    evidence: ProviderRegistryBindingEvidence,
+    signal: AbortSignal,
+  ): Promise<ProviderDispatchOutcome>;
 }
 
 export interface ContentPublicationProviderCompletion extends ContentPublicationScope {
@@ -499,6 +549,12 @@ export interface ContentPublicationUnitOfWork {
     contentId: string,
     occurrenceId: string,
   ): Promise<StudentPublicationEligibility | null>;
+  listCurrentPublicationEligibility(
+    scope: ContentPublicationScope,
+    contentId: string,
+    contentVersionId: string,
+    publicationGeneration: number,
+  ): Promise<readonly StudentPublicationEligibility[]>;
   savePublicationMaterialization(materialization: ContentPublicationMaterialization): Promise<void>;
   listPublishedContent(
     scope: ContentPublicationScope,
@@ -523,4 +579,16 @@ export interface ContentPublicationUnitOfWork {
 
 export interface ContentPublicationRepository {
   inTransaction<T>(work: (unit: ContentPublicationUnitOfWork) => Promise<T>): Promise<T>;
+}
+
+export interface ContentPublicationWorkerRepository {
+  reopenDispatchContext(job: ProviderJobRecord): Promise<ContentPublicationDispatchContext | null>;
+  listAcceptanceUnknownOperations(
+    scope: JobScope,
+    limit: number,
+  ): Promise<readonly ProviderOperation[]>;
+  listAcceptedPendingWork(
+    scope: JobScope,
+    limit: number,
+  ): Promise<readonly ContentPublicationAcceptedWork[]>;
 }
