@@ -53,6 +53,13 @@ describe('F06 provider truth and reconciliation', () => {
         ...evidence,
         binding: {
           ...evidence.binding,
+          allowed_operation_types: ['ghl.household.upsert', null as unknown as string],
+        },
+      },
+      {
+        ...evidence,
+        binding: {
+          ...evidence.binding,
           scope: { ...SCOPE, verification_environment_id: 'provider_sandbox' },
         },
       },

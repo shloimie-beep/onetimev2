@@ -39,7 +39,17 @@ describe('Postgres provider core repository', () => {
   });
 
   it('fails closed on empty, duplicate, or malformed registry evidence', async () => {
-    for (const rows of [[], [bindingRow(), bindingRow()], [{ ...bindingRow(), active: false }]]) {
+    for (const rows of [
+      [],
+      [bindingRow(), bindingRow()],
+      [{ ...bindingRow(), active: false }],
+      [
+        {
+          ...bindingRow(),
+          allowed_operation_types: ['ghl.household.upsert', null],
+        },
+      ],
+    ]) {
       const query = vi.fn().mockResolvedValue({ rows, rowCount: rows.length });
       const repository = createPostgresProviderCoreRepository(pool(query));
       await expect(repository.readActiveRegistryBinding(bindingRequest())).resolves.toBeNull();

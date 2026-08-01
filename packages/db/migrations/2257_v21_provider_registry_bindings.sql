@@ -49,6 +49,8 @@ CREATE INDEX provider_registry_binding_active_scope_idx
 
 -- @postgres-only-begin
 ALTER TABLE onetime.provider_registry_binding_v21
+  ADD CONSTRAINT provider_registry_binding_operation_types_no_null_check
+    CHECK (array_position(allowed_operation_types, NULL) IS NULL),
   ADD CONSTRAINT provider_registry_binding_account_hash_hex_check
     CHECK (provider_account_ref_hash ~ '^[0-9a-f]{64}$'),
   ADD CONSTRAINT provider_registry_binding_registry_digest_hex_check

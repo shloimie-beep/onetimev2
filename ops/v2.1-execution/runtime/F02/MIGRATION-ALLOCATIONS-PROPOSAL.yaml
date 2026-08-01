@@ -264,6 +264,6 @@ allocations:
     purpose: Canonical non-secret active provider-registry binding authority with exact account, scope, operation, mutation-policy, evidence-digest, freshness, and optimistic-version fences.
     replaces_applied_migration: false
     destructive: false
-    checksum_sha256: 1c7f1f5307301de01eaff24c33c6c57877b6804050d9787aea5d6c8d2a735c97
+    checksum_sha256: 04e348e04c4c794147a678d03167df51cd21872d350c73c83b2181b68bc0619e
     pg_mem_checksum_sha256: 3961d3d0b946ac3e4ae318fa0bd3f275aff6d423cd4d80a1bdd9ea933842b1ef
 next_available_ordinal: 2258

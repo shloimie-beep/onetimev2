@@ -1,6 +1,62 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
+MODE: PAUSE_FOR_C00_F06_NULL_ARRAY_CORRECTION_REVIEW
+
+Audit the exact pushed I36 nine-path malformed operation-array correction.
+Do not advance P21, freeze a candidate, populate/inspect a provider registry,
+touch a persistent database, mutate a provider, deploy, change DNS, send,
+charge, clean up, or perform any external effect.
+
+Repository: shloimie-beep/onetimev2
+Branch: codex/v21-integration
+Authorized start and required sole parent:
+`701ef6e19d0cb640677c066c2d49fb2f453bb6bc`
+Containing control: `b7249121e94130e1ee9d561a112851ac4040fa66`
+Authority/control basis: `cfa3a42c5868676025c0e4414af20856643d0ecc`
+READY: `aea49a43a89386b9faa5c3ff6931c22f91d6f516a3167c490d102b436964d6f8`
+Claim: `ab201f03-0385-41a2-9467-03c21ca56c44`
+Writer: `codex-i36-F06-null-array-correction-ab201f03`
+Leases: MIGRATION_AUTHORITY `f5bebc14-5900-4ed0-8dde-b7deee89b80c`,
+PROVIDER_CORE `4ae7a2d1-0dec-4f92-afaf-e20aff169039`, PROVIDER_REGISTRY
+`5ba16ac0-d964-4cf5-9111-ec886e7e2401`, RELEASE_INTEGRATOR
+`72c085b6-6048-4b3e-b11e-4b9af840008c`.
+Issue/expiry/release: `2026-08-01T22:32:45Z` /
+`2026-08-02T02:32:45Z` / `2026-08-01T22:46:01Z`.
+Effects: `0/0/0`.
+
+Confirm exact sole-parent ancestry and exactly nine changed paths: migration
+2257, provider repository and test, provider domain validator and test, the F02
+allocation proposal, and the I36 runtime triplet. Confirm product/release
+inventory digests `fa2d587a...` / `93bd882e...`, product preimage manifest
+`ca8861bf...`, and product postimage manifest
+`1dcaccc344ef2d5ded0cdab332eaf0faa6a9e140cbc9289373f0715ed8bba144`.
+
+Confirm the native migration constraint rejects a NULL element in
+`allowed_operation_types`; the repository rejects every non-string element
+before coercion; the domain validator rejects non-string operation types; and
+the exact `[requested_operation,NULL]` evidence fails closed. Confirm valid
+evidence remains accepted. Prior migrations 2234 through 2256 must be unchanged,
+the proposal must remain at 2258, and corrected native/repository-runner digests
+must equal `04e348e0...` / `3961d3d0...`.
+
+Confirm focused provider/migration tests pass 19/19, disposable PGlite rejects
+the NULL array and accepts a valid row, scoped lint/format/diff/secret checks
+pass, typecheck has no changed-path diagnostic and exactly the four declared
+unchanged baselines, leases release before expiry, refs equal the pushed commit,
+and the worktree is clean.
+
+Return exact P1/P2/P3 counts. Do not advance unless P1/P2 are zero. If accepted,
+the next repository-only step is the separately bounded 18-path P21 reconciler;
+candidate/provider/release effects remain separately gated. Stop.
+
+---
+
+## Superseded F06 active binding source audit prompt record
+
+MODEL: GPT-5.6-SOL
+REASONING: XHIGH
+SERVICE TIER: PRIORITY
 MODE: PAUSE_FOR_C00_F06_ACTIVE_BINDING_SOURCE_REVIEW
 
 Audit the exact pushed I36 twelve-path F06 active registry binding source

@@ -280,9 +280,14 @@ function mapProviderRegistryBindingEvidence(
   row: SqlRow | undefined,
 ): ProviderRegistryBindingEvidence | null {
   if (!row) return null;
-  const allowedOperationTypes = Array.isArray(row.allowed_operation_types)
-    ? row.allowed_operation_types.map(String)
-    : [];
+  const allowedOperationTypes =
+    Array.isArray(row.allowed_operation_types) &&
+    row.allowed_operation_types.every(
+      (operationType): operationType is string => typeof operationType === 'string',
+    )
+      ? row.allowed_operation_types
+      : null;
+  if (allowedOperationTypes === null) return null;
   const observedAt = safeIso(row.observed_at);
   if (observedAt === null) return null;
   const version = Number(row.version);

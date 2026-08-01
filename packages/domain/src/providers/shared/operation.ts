@@ -23,6 +23,12 @@ export function assertProviderRegistryBinding(binding: ProviderRegistryBinding):
   }
   const operations = new Set<string>();
   for (const operationType of binding.allowed_operation_types) {
+    if (typeof operationType !== 'string') {
+      throw new ProviderCoreError(
+        'invalid_contract',
+        'Provider binding operation types must be strings.',
+      );
+    }
     assertOpaque(operationType, 'allowed_operation_type');
     if (operations.has(operationType)) {
       throw new ProviderCoreError(

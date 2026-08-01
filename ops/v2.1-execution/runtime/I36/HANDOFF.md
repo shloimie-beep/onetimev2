@@ -1,5 +1,40 @@
 # I36 Integration Releases
 
+## Current terminal - F06 malformed operation-array correction
+
+Independent review of `701ef6e19d0cb640677c066c2d49fb2f453bb6bc`
+passed the complete release envelope and all substantive authority fences except
+one P2: SQL array `[requested_operation,NULL]` was accepted, then the mapper
+coerced `NULL` to synthetic string `"null"`. Review counted zero P1, one P2,
+and zero P3, so P21 and candidate advancement remained held.
+
+Control `b7249121e94130e1ee9d561a112851ac4040fa66`, based on
+`cfa3a42c5868676025c0e4414af20856643d0ecc`, authorized only the five affected
+product/test paths, the F02 allocation proposal, and this I36 runtime triplet
+under READY `aea49a43a89386b9faa5c3ff6931c22f91d6f516a3167c490d102b436964d6f8`.
+
+Migration 2257 now has a native PostgreSQL constraint rejecting NULL operation
+elements. The repository validates every element's runtime type before any
+coercion and returns null for malformed evidence. Domain validation explicitly
+rejects non-string operation types. Regression coverage includes the exact
+`[requested_operation,NULL]` row at repository and domain boundaries.
+
+Focused provider and migration verification passes 19/19. A disposable
+in-process PGlite proof applied corrected migration 2257, rejected the NULL
+array, and accepted a valid exact row. This was not a candidate or persistent
+database. The corrected native normalized-LF migration digest is
+`04e348e04c4c794147a678d03167df51cd21872d350c73c83b2181b68bc0619e`;
+the stripped repository-runner digest remains
+`3961d3d0b946ac3e4ae318fa0bd3f275aff6d423cd4d80a1bdd9ea933842b1ef`.
+The proposal remains at next ordinal 2258.
+
+No registry row, provider call, candidate, deployment, DNS, persistent database,
+contact, send, billing, cleanup, or external effect occurred; effects remain
+`0/0/0`. Claim `ab201f03-0385-41a2-9467-03c21ca56c44` and all four writer
+leases were released at `2026-08-01T22:46:01Z`, before expiry. Independent
+acceptance of this exact nine-path correction is required before the
+already-mapped 18-path P21 reconciler successor may begin.
+
 ## Current terminal - F06 active registry binding source
 
 Control `cfa3a42c5868676025c0e4414af20856643d0ecc`, based on
