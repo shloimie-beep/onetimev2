@@ -35,17 +35,18 @@ blockers:
   - V43
   - R45
   safe_work_completed: >-
-    Existing F06 operation binding, reconciliation contract, migration 2238, provider-operation ledger, and exact scope/readback
-    validators are integrated. Independent read-only mapping confirmed that provider_operation_binding is per-operation
-    correlation only and cannot truthfully supply active registry authority. Migration ordinal 2257 is the next available.
+    Exact twelve-path terminal 701ef6e1 added the empty canonical registry table/reader at migration 2257, advanced the
+    proposal to 2258, passed 19/19 focused tests, migration inventory, PGlite trigger proof, secret scan, exact scope/manifests,
+    released leases, remote equality, and effects 0/0/0. Independent review passed every envelope and authority fence but held
+    one P2: [requested_operation,NULL] survives storage, then the mapper coerces NULL to synthetic string "null".
   required_authority_or_input: []
   protection: >-
-    Implement only the empty-by-default exact binding registry and reader under READY e1fa167e. Do not populate an active
-    HighLevel or Vimeo binding, infer one from a location/workflow/account identifier, expose raw identities or credentials,
-    contact a provider, freeze a candidate, deploy, send, upload, or perform any external effect.
+    Apply only the exact nine-path NULL-element fail-closed correction under READY aea49a43. Preserve all accepted 701ef6e1
+    semantics, migration ordinal 2257, proposal next ordinal 2258, empty registry, provider-operation separation, Stripe
+    prohibition, and effects 0/0/0. P21 and every candidate/provider/release action remain held.
   next_check: >-
-    Independently review the exact twelve-path terminal for migration 2257, scope/evidence reader fences, empty-state fail-closed
-    behavior, migration apply/replay, proposal 2258, released leases, remote equality, and effects 0/0/0.
+    Independently review the exact nine-path correction for database NULL-element rejection, strict mapper/domain type rejection,
+    [requested_operation,NULL] regression coverage, updated checksum pair, proposal 2258, released leases, equality, and 0/0/0.
 - blocker_id: OPS-084-LEGAL-BUNDLE
   status: open
   scope: production_broad
