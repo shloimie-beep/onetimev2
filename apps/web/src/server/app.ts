@@ -124,6 +124,11 @@ import type {
 } from '../../../../packages/contracts/src/portals/index.ts';
 import { AUTH_SESSION_COOKIE } from '../../../../packages/contracts/src/identity/auth/index.ts';
 import type { SchoolSignupScope } from '../../../../packages/contracts/src/signup/school/index.ts';
+import type { AttendanceProjectionChangePort } from '../../../../packages/contracts/src/classroom/embedded/index.ts';
+import {
+  CONTENT_PUBLICATION_PRODUCT_KEY,
+  type ContentPublicationPrincipal,
+} from '../../../../packages/contracts/src/content/publication/index.ts';
 import {
   CrmDuplicateError,
   CrmVersionConflictError,
@@ -314,6 +319,16 @@ import {
   installServerFeatureRouters,
   type ServerFeatureRegistration,
 } from './features/registry/index.ts';
+import {
+  createContentPublicationFeatureRegistration,
+  type ContentPublicationRequestIdentity,
+} from './features/content/publication/index.ts';
+import {
+  createLearningComposition,
+  createLearningRouter,
+  createPostgresLearningActorResolver,
+  type MountedP18Binding,
+} from './features/learning/index.ts';
 
 type AppDeps = {
   config: AppConfig;
@@ -325,6 +340,10 @@ type AppDeps = {
   zoomClassOccurrenceProvider?: ZoomClassOccurrenceProvider;
   featureRegistrations?: readonly ServerFeatureRegistration[];
   v21AdultSessionRuntime?: V21AdultSessionRuntime;
+  learningRuntime?: {
+    nativePostgresSchemaProven: boolean;
+    attachToMountedP18?: (changes: AttendanceProjectionChangePort) => MountedP18Binding;
+  };
   /** @deprecated Retained only so historical test harnesses compile; no demo route is registered. */
   learningDeliveryDemoReportPath?: string;
 };
@@ -404,6 +423,7 @@ export function createApp({
   zoomClassOccurrenceProvider,
   featureRegistrations,
   v21AdultSessionRuntime: injectedV21AdultSessionRuntime,
+  learningRuntime,
 }: AppDeps) {
   const v21AdultSessionRuntime =
     injectedV21AdultSessionRuntime ??
@@ -440,11 +460,19 @@ export function createApp({
       return router;
     },
   };
+  const centrallyBoundContentPublicationRegistration = createContentPublicationFeatureRegistration({
+    resolveIdentity: (req) => contentPublicationIdentityFromRequest(req, pool, config),
+    verifyCsrf: async (req, identity) => {
+      const csrfToken = req.header('x-csrf-token') ?? req.body?.csrf_token;
+      return verifySessionCsrf({ pool, sessionKey: identity.sessionKey, csrfToken });
+    },
+  });
   const centrallyBoundFeatureRegistrations: readonly ServerFeatureRegistration[] = (
     featureRegistrations ?? [
       domainTransitionFeatureRegistration,
       familySignupFeatureRegistration,
       schoolInquiryFeatureRegistration,
+      centrallyBoundContentPublicationRegistration,
     ]
   ).map((registration) =>
     registration.featureId === domainTransitionFeatureRegistration.featureId
@@ -607,6 +635,40 @@ export function createApp({
   app.use(express.json({ limit: '32kb' }));
   app.use(express.urlencoded({ extended: false, limit: '32kb' }));
 
+  const learningScope = {
+    accountKey: config.accountKey,
+    productKey: config.productKey,
+    runtimeTier: config.oneTimeRuntimeTier,
+    verificationEnvironmentId: config.oneTimeVerificationEnvironmentId,
+  };
+  const resolveLearningActor = createPostgresLearningActorResolver({
+    pool,
+    scope: learningScope,
+    resolveSession: async (request) => {
+      const session = await sessionFromRequest(request, pool, config);
+      return session
+        ? {
+            sessionKey: session.session_key,
+            principalId: session.user.user_key,
+            role: session.user.role,
+          }
+        : null;
+    },
+  });
+  const learningComposition = createLearningComposition({
+    pool,
+    scope: learningScope,
+    aliasHmacKey: config.learningAliasHmacKey,
+    aliasHmacKeyConfigured: config.learningAliasHmacKeyConfigured,
+    nativePostgresSchemaProven: learningRuntime?.nativePostgresSchemaProven === true,
+    contentPublicationWriterMounted: centrallyBoundFeatureRegistrations.some(
+      (registration) => registration.featureId === 'onetime.content-publication',
+    ),
+    ...(learningRuntime?.attachToMountedP18
+      ? { attachToMountedP18: learningRuntime.attachToMountedP18 }
+      : {}),
+    ...(clock ? { clock } : {}),
+  });
   installServerFeatureRouters({
     app,
     context: {
@@ -617,6 +679,23 @@ export function createApp({
     },
     registrations: centrallyBoundFeatureRegistrations,
   });
+
+  app.use(
+    '/api/app/learning',
+    createLearningRouter({
+      service: learningComposition.service,
+      enabled: learningComposition.enabled,
+      blockers: learningComposition.blockers,
+      resolveActor: resolveLearningActor,
+      verifyCsrf: (request, authenticated) =>
+        verifySessionCsrf({
+          pool,
+          sessionKey: authenticated.sessionKey,
+          csrfToken: request.header('x-csrf-token') ?? request.body?.csrf_token,
+        }),
+      ...(clock ? { clock } : {}),
+    }),
+  );
 
   const parentStudentServiceAccountVersion = config.parentStudentServiceAccountVersion;
   const parentStudentServiceAccountEvidenceReference =
@@ -5034,7 +5113,8 @@ async function parentHouseholdSubjects(pool: DbPool, config: AppConfig, userKey:
 
 async function studentLearnerSubject(pool: DbPool, config: AppConfig, userKey: string) {
   const result = await pool.query(
-    `SELECT links.learner_key, links.household_key, access_state.access_state_key
+    `SELECT links.learner_key, links.household_key, access_state.access_state_key,
+            account_access.state AS account_access_state
        FROM onetime.account_learner_identity_links AS links
        JOIN onetime.portal_student_access_state AS access_state
          ON access_state.account_key = links.account_key
@@ -5069,6 +5149,51 @@ async function studentLearnerSubject(pool: DbPool, config: AppConfig, userKey: s
     learner_key: String(row.learner_key),
     household_key: String(row.household_key),
     access_state_key: String(row.access_state_key),
+    access_state:
+      String(row.account_access_state) === 'grace' ? ('grace' as const) : ('active' as const),
+  };
+}
+
+async function contentPublicationIdentityFromRequest(
+  req: Request,
+  pool: DbPool,
+  config: AppConfig,
+): Promise<ContentPublicationRequestIdentity | null> {
+  if (config.productKey !== CONTENT_PUBLICATION_PRODUCT_KEY) return null;
+  const session = await sessionFromRequest(req, pool, config);
+  if (!session) return null;
+
+  let student: Awaited<ReturnType<typeof studentLearnerSubject>> | null = null;
+  if (session.user.role === 'student') {
+    student = await studentLearnerSubject(pool, config, session.user.user_key);
+    if (
+      !student ||
+      !Number.isSafeInteger(session.session_security_version) ||
+      Number(session.session_security_version) < 1
+    ) {
+      return null;
+    }
+  }
+
+  const role: ContentPublicationPrincipal['role'] =
+    session.user.role === 'admin'
+      ? 'admin'
+      : session.user.role === 'student'
+        ? 'student'
+        : 'parent';
+  return {
+    sessionKey: session.session_key,
+    principal: {
+      actorId: session.user.user_key,
+      role,
+      accountKey: config.accountKey,
+      productKey: CONTENT_PUBLICATION_PRODUCT_KEY,
+      householdId: student?.household_key ?? '',
+      studentId: student?.learner_key ?? null,
+      sessionId: role === 'student' ? session.session_key : null,
+      sessionVersion: role === 'student' ? Number(session.session_security_version) : null,
+      accessState: role === 'admin' ? 'active' : (student?.access_state ?? 'inactive'),
+    },
   };
 }
 

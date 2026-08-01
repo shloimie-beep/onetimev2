@@ -1,5 +1,6 @@
 import type { AppConfig } from '../../../../../packages/config/src/index.ts';
 import type { DbPool } from '../../../../../packages/db/src/index.ts';
+import { runOt16CheckpointWorker } from '../ghl-workflows/campaigns/composition.ts';
 
 export const WORKER_RUNNER_REGISTRY_CONTRACT_VERSION = '1.0.0' as const;
 
@@ -31,14 +32,22 @@ export type WorkerRunnerRegistration = {
 
 export type WorkerRunnerResults = Readonly<Record<string, WorkerRunnerResult>>;
 
-export const workerRunnerRegistrations: readonly WorkerRunnerRegistration[] = Object.freeze([]);
-
 export function defineWorkerRunner(
   registration: WorkerRunnerRegistration,
 ): WorkerRunnerRegistration {
   validateWorkerRunners([registration]);
   return Object.freeze({ ...registration });
 }
+
+const ot16CheckpointRegistration = defineWorkerRunner({
+  runnerId: 'communications.ot16-checkpoint',
+  contractVersion: WORKER_RUNNER_REGISTRY_CONTRACT_VERSION,
+  run: runOt16CheckpointWorker,
+});
+
+export const workerRunnerRegistrations: readonly WorkerRunnerRegistration[] = Object.freeze([
+  ot16CheckpointRegistration,
+]);
 
 export async function runWorkerRunners(input: {
   context: WorkerRunnerContext;

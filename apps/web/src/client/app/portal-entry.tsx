@@ -19,6 +19,8 @@ import {
 } from '../features/portals/PortalFeatures.js';
 import { ParentClientRoot, StudentClientRoot, resolveCurrentClientRoute } from './router/index.js';
 import { ParentHouseholdWorkspace, type ParentHouseholdView } from './parent/household/index.js';
+import { StudentLibraryWorkspace } from './student/library/index.js';
+import { StudentLearningOverview } from './student/learning/StudentLearningOverview.js';
 import { AppShell, type ShellNavItem, type ShellUser } from './shell/AppShell.js';
 import {
   PortalApiError,
@@ -30,6 +32,7 @@ import {
   getLiveClassQuestions,
   getSession,
   getStudentDashboard,
+  getStudentLearningSnapshot,
   invokeProtectedAction,
   logoutSession,
   markLiveClassQuestionReady,
@@ -37,9 +40,11 @@ import {
   requestParentRecovery,
   setParentLearnerArchived,
   submitClassroomQuestion,
+  submitLearningQuestion,
   submitStudentQuestion,
   updateParentLearner,
   type V21ApiSession,
+  type StudentLearningSnapshot,
 } from './portal-api.js';
 import './crm.css';
 
@@ -98,6 +103,7 @@ function PortalApp() {
     ReturnType<typeof getParentAccessShell>
   > | null>(null);
   const [studentDashboard, setStudentDashboard] = useState<StudentPortalDashboard | null>(null);
+  const [studentLearning, setStudentLearning] = useState<StudentLearningSnapshot | null>(null);
   const [liveClassQuestions, setLiveClassQuestions] = useState<LiveClassQuestion[]>([]);
   const [selectedLearnerKey, setSelectedLearnerKey] = useState<string | null>(null);
   const [parentMaterials, setParentMaterials] = useState<Record<string, ParentLearnerMaterials>>(
@@ -180,6 +186,11 @@ function PortalApp() {
         const dashboard = await getStudentDashboard();
         setStudentDashboard(dashboard);
         await loadLiveQuestions(dashboard);
+        try {
+          setStudentLearning(await getStudentLearningSnapshot());
+        } catch {
+          setStudentLearning(null);
+        }
       }
       setViewState('ready');
     } catch (error) {
@@ -689,6 +700,37 @@ function PortalApp() {
                 roleLabel={session.user.role_label}
                 onChangePassword={handlePasswordChange}
               />
+            ) : null
+          }
+          libraryWorkspace={
+            session ? (
+              <StudentLibraryWorkspace
+                csrfToken={session.csrf_token}
+                actorFingerprint={actorFingerprint}
+                onProtectedStateCleared={() => void load()}
+              />
+            ) : null
+          }
+          learningOverview={
+            session ? (
+              studentLearning ? (
+                <StudentLearningOverview
+                  questions={studentLearning.questions}
+                  publishedQuestions={studentLearning.publishedQuestions}
+                  announcements={studentLearning.announcements}
+                  badges={studentLearning.badges}
+                  leaderboard={studentLearning.leaderboard}
+                  onSubmitQuestion={async (body) => {
+                    await submitLearningQuestion({ csrfToken: session.csrf_token, body });
+                    setStudentLearning(await getStudentLearningSnapshot());
+                  }}
+                />
+              ) : (
+                <section className="state-panel" role="status">
+                  <h2>Learning is not available yet</h2>
+                  <p>The protected learning service is waiting for its release gates.</p>
+                </section>
+              )
             ) : null
           }
         />

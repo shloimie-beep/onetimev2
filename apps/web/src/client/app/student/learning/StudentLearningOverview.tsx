@@ -1,16 +1,24 @@
+import React from 'react';
 import type {
   LearningAnnouncement,
-  LearningBadgeAward,
   LearningLeaderboard,
   LearningQuestion,
+  PublicLearningBadge,
+  PublishedClassQuestion,
 } from '../../../../../../../packages/contracts/src/learning/index.ts';
 
 export function StudentLearningOverview(props: {
   questions: readonly LearningQuestion[];
+  publishedQuestions: readonly PublishedClassQuestion[];
   announcements: readonly { announcement: LearningAnnouncement; read: boolean }[];
-  badges: readonly LearningBadgeAward[];
+  badges: readonly PublicLearningBadge[];
   leaderboard: LearningLeaderboard | null;
+  onSubmitQuestion?: (body: string) => Promise<void>;
 }) {
+  const [draft, setDraft] = React.useState('');
+  const [submitState, setSubmitState] = React.useState<'idle' | 'saving' | 'saved' | 'error'>(
+    'idle',
+  );
   return (
     <main aria-labelledby="student-learning-title">
       <h1 id="student-learning-title">My learning</h1>
@@ -27,6 +35,60 @@ export function StudentLearningOverview(props: {
                 <p>{question.body}</p>
                 <p>Status: {question.state.replaceAll('_', ' ')}</p>
                 {question.answer ? <p>Rabbi Eli’s answer: {question.answer}</p> : null}
+              </li>
+            ))}
+          </ol>
+        )}
+        {props.onSubmitQuestion ? (
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              const body = draft.trim();
+              if (body.length < 3 || submitState === 'saving') return;
+              setSubmitState('saving');
+              void props
+                .onSubmitQuestion?.(body)
+                .then(() => {
+                  setDraft('');
+                  setSubmitState('saved');
+                })
+                .catch(() => setSubmitState('error'));
+            }}
+          >
+            <label htmlFor="p22-student-question">Ask a private question</label>
+            <textarea
+              id="p22-student-question"
+              minLength={3}
+              maxLength={2_000}
+              required
+              value={draft}
+              onChange={(event) => {
+                setDraft(event.currentTarget.value);
+                setSubmitState('idle');
+              }}
+            />
+            <button type="submit" disabled={submitState === 'saving' || draft.trim().length < 3}>
+              {submitState === 'saving' ? 'Sending' : 'Send question'}
+            </button>
+            {submitState === 'saved' ? <p role="status">Question sent.</p> : null}
+            {submitState === 'error' ? (
+              <p role="alert">Question could not be sent. Try again.</p>
+            ) : null}
+          </form>
+        ) : null}
+      </section>
+
+      <section aria-labelledby="student-published-question-title">
+        <h2 id="student-published-question-title">Published class questions</h2>
+        {props.publishedQuestions.length === 0 ? (
+          <p>No moderated class questions yet.</p>
+        ) : (
+          <ol>
+            {props.publishedQuestions.map((question) => (
+              <li key={question.questionId} data-author-entry-key={question.authorEntryKey}>
+                <p>{question.question}</p>
+                {question.answer ? <p>{question.answer}</p> : null}
+                <p>Asked by {question.authorDisplayName}</p>
               </li>
             ))}
           </ol>
@@ -75,7 +137,7 @@ export function StudentLearningOverview(props: {
             entries={props.leaderboard.categories.currentAttendanceStreak}
           />
           <LeaderboardTable
-            caption="Questions answered or approved"
+            caption="Questions approved or published"
             entries={props.leaderboard.categories.approvedQuestionCount}
           />
         </section>
@@ -100,7 +162,7 @@ function LeaderboardTable(props: {
       </thead>
       <tbody>
         {props.entries.map((entry) => (
-          <tr key={entry.studentId}>
+          <tr key={entry.entryKey}>
             <td>{entry.rank}</td>
             <td>{entry.displayName}</td>
             <td>{entry.value}</td>

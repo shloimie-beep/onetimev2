@@ -1,5 +1,56 @@
 # I36 Integration Releases
 
+## Current terminal — path-complete P21/P22/P30 application held at real interfaces
+
+Control `de282f8ed1e5c57a23b301c760802593f53ed591`, based on
+`cdc98ae7a5212c288ad16b35df70addc517e54af`, authorized one exact 41-product-
+path application from integration `e569d6933bc25ec848fe9eb279e193d40b38787e`.
+The READY digest `6db477bb...`, all 41 preimages, four immutable request blobs,
+and the 41/44 path inventories reproduced before editing.
+
+P21 is fully applied at its repository-only ceiling. The canonical PostgreSQL
+repository/service, authenticated CSRF-protected Admin commands, protected
+Student library and playback routes, Admin and Student workspaces, neutral
+Parent denial, and provider-disabled default are centrally registered. Resume
+concurrency is derived from the independent `student_content_resume` aggregate,
+never the publication version.
+
+P22 server and client repository code is applied: SELECT-only adapters,
+server-derived authenticated routes, safe Admin and Student clients, no Parent
+route, and no peer canonical identity. It remains honestly held because the
+current application has no path-complete P18 mounted repository to return the
+same attendance-intake instance through the callback seam. The route therefore
+stays generic private/no-store 503 until that exact gate, native candidate
+migration 2254, and protected deployed alias-key readback are satisfied. No
+unused second P18 repository was created.
+
+P30 registers `communications.ot16-checkpoint` for once and continuous worker
+execution with deterministic operation identity, final adult eligibility and
+suppression gates, AbortSignal propagation, and no WhatsApp surface. Dispatch
+now requires a durable canonical F05 receipt; acceptance-unknown is quarantined
+and never blindly retried. The default remains disabled because no admitted F05
+OT-16 dispatch adapter, exact active F06 binding, or saved/reopened provider
+identity exists. No provider call occurred.
+
+Validation passed for all changed paths: 15 files/54 tests, P30 32/32, scoped
+ESLint and Prettier, client/pages builds, server/learning/worker runtime imports,
+3,164-file secret scan, exact scope/preimage/request checks, and diff hygiene.
+The expanded repository run passed 93/94; its sole failure is the unchanged P22
+LF-literal test against a Windows CRLF checkout. Typecheck reproduced only the
+four unchanged Stripe/duplicate-Playwright diagnostics; brand check reproduced
+the unchanged raw-color finding in `scripts/ops/validate-ot-launch-governance.ts`.
+
+The exact product postimage manifest is `3009b918...`. All four writer leases
+under claim `d9908072-b7a2-4ddb-9de9-7c7da697feaa` were released at
+`2026-08-01T20:15:43Z`, before expiry. Candidate, effect, provider, deployment,
+DNS, database, contact, send, charge, and cleanup actions remain absent;
+effects are `0/0/0`.
+
+C00 must independently review the pushed 44-path terminal. It may accept P21
+and repository-safe P22/P30 code, but must keep runnable P22 and P30 dispatch
+held and issue the smallest exact P18 mounted-registration and F05/F06 adapter
+successors before candidate freeze or any provider action.
+
 ## Current terminal — successor schema and request materialization
 
 Control `cdc98ae7a5212c288ad16b35df70addc517e54af`, based on

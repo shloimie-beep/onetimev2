@@ -35,11 +35,13 @@ import {
   Table,
 } from '@onetime/brand-system/react';
 import { CONTENT_SECTIONS, contentSectionFromPath } from '../admin-ia.js';
+import { PublicationWorkspace } from '../admin/content/publication/index.js';
 import { WorkspaceTabs } from '../shell/WorkspaceTabs.js';
 import './content-workspace.css';
 
 type RouteKind =
   | 'overview'
+  | 'publication'
   | 'processing'
   | 'factory'
   | 'create'
@@ -257,6 +259,12 @@ export function ContentWorkspace({
             onOpen={(sourceKey) => onNavigate(`/app/content/${encodeURIComponent(sourceKey)}`)}
           />
         </>
+      )}
+      {!loading && !error && route.kind === 'publication' && (
+        <PublicationWorkspace
+          csrfToken={csrfToken}
+          onProtectedStateCleared={onProtectedStateCleared}
+        />
       )}
       {!loading && !error && route.kind === 'processing' && processing && (
         <>
@@ -1767,6 +1775,7 @@ function routeFromPath(path: string): RouteState {
     .split('/')
     .filter(Boolean);
   const segment = segments[0] ?? '';
+  if (segment === 'publication') return { kind: 'publication' };
   if (segment === 'processing') return { kind: 'processing' };
   if (segment === 'factory') return { kind: 'factory' };
   if (segment === 'studio') return { kind: segments[1] === 'social' ? 'social' : 'create' };

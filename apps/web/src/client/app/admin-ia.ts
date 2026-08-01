@@ -26,6 +26,7 @@ export type ContactsSectionId = (typeof CONTACTS_SECTIONS)[number]['id'];
 
 export const CONTENT_SECTIONS = [
   { id: 'library', label: 'Library', href: '/app/content' },
+  { id: 'publication', label: 'Publication', href: '/app/content/publication' },
   { id: 'factory', label: 'Factory', href: '/app/content/factory' },
   { id: 'studio', label: 'Studio', href: '/app/content/studio' },
   { id: 'knowledge', label: 'Knowledge', href: '/app/content/knowledge' },
@@ -94,6 +95,7 @@ export function contactsSectionFromPath(pathname: string): ContactsSectionId {
 export function contentSectionFromPath(pathname: string): ContentSectionId {
   const segments = pathSegments(pathname, '/app/content');
   const first = segments[0] ?? '';
+  if (first === 'publication') return 'publication';
   if (first === 'factory') return 'factory';
   if (['studio', 'create', 'social'].includes(first)) return 'studio';
   if (first === 'knowledge') return 'knowledge';

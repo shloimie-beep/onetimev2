@@ -13,7 +13,16 @@ import type {
   StudentQuestion,
   StudentPortalDashboard,
   SupportPreview,
+  LearningAnnouncement,
+  LearningLeaderboard,
+  LearningQuestion,
+  PublicLearningBadge,
+  PublishedClassQuestion,
 } from '@onetime/contracts';
+import type {
+  StudentLibraryItem,
+  StudentPlaybackGrant,
+} from '../../../../../packages/contracts/src/content/publication/index.ts';
 
 type ParentAccessShell = {
   mode: 'active' | 'paused';
@@ -56,6 +65,14 @@ export type V21ApiSession = {
 };
 
 export type ApiSession = LegacyApiSession | V21ApiSession;
+
+export type StudentLearningSnapshot = {
+  questions: readonly LearningQuestion[];
+  publishedQuestions: readonly PublishedClassQuestion[];
+  announcements: readonly { announcement: LearningAnnouncement; read: boolean }[];
+  badges: readonly PublicLearningBadge[];
+  leaderboard: LearningLeaderboard | null;
+};
 
 export class PortalApiError extends Error {
   readonly status: number;
@@ -256,6 +273,28 @@ export async function getStudentDashboard() {
   return json.data;
 }
 
+export async function getStudentLearningSnapshot() {
+  const response = await api<{ success: true; data: StudentLearningSnapshot }>(
+    '/api/app/learning/student-snapshot',
+  );
+  return response.data;
+}
+
+export async function submitLearningQuestion(input: { csrfToken: string; body: string }) {
+  const response = await api<{
+    success: true;
+    data: { question: LearningQuestion; replay: boolean };
+  }>('/api/app/learning/questions', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-csrf-token': input.csrfToken },
+    body: JSON.stringify({
+      body: input.body,
+      idempotency_key: createIdempotencyKey(),
+    }),
+  });
+  return response.data.question;
+}
+
 export async function createParentRewardGoal(input: {
   csrfToken: string;
   learnerKey: string;
@@ -434,6 +473,106 @@ export async function invokeProtectedAction(action: ProtectedActionDescriptor, c
   }
   const json = await api<{ success: true; data: ProtectedActionDescriptor }>(action.href, init);
   return json.data;
+}
+
+export type StudentPlaybackBootstrap = Pick<
+  StudentPlaybackGrant,
+  'contentId' | 'bootstrapPath' | 'issuedAt' | 'expiresAt' | 'renewable'
+>;
+
+export async function searchStudentPublicationLibrary(input: { csrfToken: string; query: string }) {
+  const json = await api<{ success: true; data: { items: StudentLibraryItem[] } }>(
+    '/api/app/student/library/search',
+    {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-csrf-token': input.csrfToken },
+      body: JSON.stringify({ query: input.query }),
+    },
+  );
+  return json.data.items;
+}
+
+export async function bootstrapStudentPublicationPlayback(input: {
+  csrfToken: string;
+  contentId: string;
+}) {
+  return studentPlaybackGrantCommand(input, 'bootstrap');
+}
+
+export async function renewStudentPublicationPlayback(input: {
+  csrfToken: string;
+  contentId: string;
+}) {
+  return studentPlaybackGrantCommand(input, 'renew');
+}
+
+export async function readStudentPublicationPlayback(bootstrapPath: string) {
+  const json = await api<{
+    success: true;
+    data: {
+      authorized: true;
+      content_id: string;
+      playback_session_id: string;
+      expires_at: string;
+    };
+  }>(bootstrapPath, { method: 'GET', cache: 'no-store' });
+  return {
+    authorized: json.data.authorized,
+    contentId: json.data.content_id,
+    playbackSessionId: json.data.playback_session_id,
+    expiresAt: json.data.expires_at,
+  };
+}
+
+export async function saveStudentPublicationResume(input: {
+  csrfToken: string;
+  contentId: string;
+  positionMs: number;
+}) {
+  const json = await api<{
+    success: true;
+    data: { content_id: string; position_ms: number; version: number; updated_at: string };
+  }>(`/api/app/student/library/${encodeURIComponent(input.contentId)}/resume`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-csrf-token': input.csrfToken },
+    body: JSON.stringify({
+      position_ms: input.positionMs,
+      idempotency_key: createIdempotencyKey(),
+    }),
+  });
+  return {
+    contentId: json.data.content_id,
+    positionMs: json.data.position_ms,
+    version: json.data.version,
+    updatedAt: json.data.updated_at,
+  };
+}
+
+async function studentPlaybackGrantCommand(
+  input: { csrfToken: string; contentId: string },
+  operation: 'bootstrap' | 'renew',
+): Promise<StudentPlaybackBootstrap> {
+  const json = await api<{
+    success: true;
+    data: {
+      content_id: string;
+      bootstrap_path: string;
+      issued_at: string;
+      expires_at: string;
+      renewable: true;
+    };
+  }>(`/api/app/student/library/${encodeURIComponent(input.contentId)}/${operation}`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-csrf-token': input.csrfToken },
+    body: JSON.stringify({}),
+  });
+  return {
+    contentId: json.data.content_id,
+    bootstrapPath: json.data.bootstrap_path,
+    issuedAt: json.data.issued_at,
+    expiresAt: json.data.expires_at,
+    renewable: json.data.renewable,
+  };
 }
 
 export function createIdempotencyKey() {

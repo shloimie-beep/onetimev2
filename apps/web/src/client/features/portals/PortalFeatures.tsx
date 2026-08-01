@@ -138,6 +138,8 @@ export type StudentPortalFeatureProps = {
   onPreviewSupport?: () => void;
   onRetry?: () => void;
   accountSecurity?: React.ReactNode;
+  libraryWorkspace?: React.ReactNode;
+  learningOverview?: React.ReactNode;
   /** @deprecated The class-helper surface is retired; this callback is ignored. */
   onQueryHelper?: (question: string, classKey?: string) => Promise<unknown>;
 };
@@ -458,6 +460,8 @@ export function StudentPortalFeature({
   onPreviewSupport,
   onRetry,
   accountSecurity,
+  libraryWorkspace,
+  learningOverview,
 }: StudentPortalFeatureProps) {
   const [sessionMarker, setSessionMarker] = useState(actorFingerprint);
   const [question, setQuestion] = useState('');
@@ -605,46 +609,56 @@ export function StudentPortalFeature({
         {activeSection === 'library' && (
           <>
             <h2 id="student-library-heading">Library</h2>
-            {dashboard.featured_lesson && <FeaturedLesson lesson={dashboard.featured_lesson} />}
-            <ContentList
-              items={dashboard.library_items.filter((item) => item.status === 'published')}
-              onOpen={readOnly ? undefined : onOpenContent}
-            />
+            {libraryWorkspace ?? (
+              <>
+                {dashboard.featured_lesson && <FeaturedLesson lesson={dashboard.featured_lesson} />}
+                <ContentList
+                  items={dashboard.library_items.filter((item) => item.status === 'published')}
+                  onOpen={readOnly ? undefined : onOpenContent}
+                />
+              </>
+            )}
           </>
         )}
 
         {activeSection === 'progress' && (
           <>
             <h2 id="student-progress-heading">Progress</h2>
-            <RewardSummary
-              rewards={dashboard.rewards}
-              progress={dashboard.progress}
-              history={[]}
-              gamification={dashboard.gamification}
-            />
-            <LeaderboardPanel
-              leaderboard={dashboard.leaderboard}
-              ownLearnerKey={dashboard.learner.learner_key}
-            />
+            {learningOverview ?? (
+              <>
+                <RewardSummary
+                  rewards={dashboard.rewards}
+                  progress={dashboard.progress}
+                  history={[]}
+                  gamification={dashboard.gamification}
+                />
+                <LeaderboardPanel
+                  leaderboard={dashboard.leaderboard}
+                  ownLearnerKey={dashboard.learner.learner_key}
+                />
+              </>
+            )}
           </>
         )}
 
         {activeSection === 'questions' && (
           <>
             <h2 id="student-questions-heading">Questions</h2>
-            <QuestionPanel
-              questions={dashboard.questions}
-              upcoming={dashboard.upcoming_classes}
-              onSubmitQuestion={readOnly ? undefined : onSubmitQuestion}
-              readOnly={readOnly}
-            />
+            {learningOverview ?? (
+              <QuestionPanel
+                questions={dashboard.questions}
+                upcoming={dashboard.upcoming_classes}
+                onSubmitQuestion={readOnly ? undefined : onSubmitQuestion}
+                readOnly={readOnly}
+              />
+            )}
           </>
         )}
 
         {activeSection === 'updates' && (
           <>
             <h2 id="student-updates-heading">Updates</h2>
-            <UpdatesList updates={dashboard.updates} />
+            {learningOverview ?? <UpdatesList updates={dashboard.updates} />}
             <button
               type="button"
               className="ot-button"

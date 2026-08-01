@@ -1,6 +1,70 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
+MODE: PAUSE_FOR_C00_PATH_COMPLETE_SUCCESSOR_APPLICATION_REVIEW
+
+Audit the exact pushed I36 path-complete P21/P22/P30 application terminal.
+This remains repository-only. Do not freeze a candidate, inspect or mutate a
+provider, deploy, change DNS, touch a live database, create a contact, enroll,
+send, charge, clean up, or perform any external effect.
+
+Repository: shloimie-beep/onetimev2
+Branch: codex/v21-integration
+Authorized start and required sole parent:
+`e569d6933bc25ec848fe9eb279e193d40b38787e`
+Containing control: `de282f8ed1e5c57a23b301c760802593f53ed591`
+Authority/control basis: `cdc98ae7a5212c288ad16b35df70addc517e54af`
+READY: `6db477bb1582db04be734a013f33d27d3d0a5e0b47d3eb49c50bea4f5e367949`
+Claim: `d9908072-b7a2-4ddb-9de9-7c7da697feaa`
+Writer: `codex-i36-path-complete-successors-d9908072`
+Leases: SERVER `a0c7c66e...`, CLIENT `570f0cfa...`, WORKER `99f7435b...`,
+RELEASE `cc10a2b6...`
+Lease issue/expiry/release: `2026-08-01T19:21:43Z` /
+`2026-08-02T01:21:43Z` / `2026-08-01T20:15:43Z`
+Effects: `0/0/0`
+
+Confirm exact sole-parent ancestry; all 41 authorized product/test paths plus
+only the I36 runtime triplet; product/release inventory digests `af90bfd9...`
+and `51184320...`; preimage manifest `bc1da224...`; postimage manifest
+`3009b918...`; all exact preimages; and all four immutable raw/canonical
+request digests.
+
+Confirm P21's repository-only request is fully applied, including central
+server/client composition, server-derived scope, neutral denial, no Parent
+playback, provider-disabled default, and independent resume-aggregate version.
+
+Confirm P22 repository code and client routes are present and safe, but do not
+mark runnable acceptance complete: there is no actual path-complete mounted P18
+attendance repository instance to bind the callback, and no second unused P18
+repository was created. The route must remain generic private/no-store 503
+until the exact P18 same-instance gate, native candidate migration 2254, and
+protected nonblank deployed alias-key readback pass.
+
+Confirm P30's registry and durable runner code, exact F05 receipt validation,
+acceptance-unknown quarantine/no blind retry, final eligibility/suppression
+reads, AbortSignal, once/continuous registration, and absent WhatsApp path.
+Do not mark dispatch complete: the admitted F05 OT-16 dispatch adapter, exact
+active F06 binding, and saved/reopened provider identity remain absent, so the
+default must be disabled with `providerCallsPerformed=false`.
+
+Confirm 15 changed files/54 tests, P30 32/32, expanded repository 93/94 with
+only the untouched CRLF-literal failure, scoped ESLint/Prettier, web builds,
+runtime imports, secret scan, exact checks, diff hygiene, and only the four
+unchanged typecheck diagnostics. Treat the unchanged brand-check raw-color
+finding as baseline evidence, not a changed-path failure.
+
+C00 may accept the repository-safe terminal while retaining the explicit held
+gates. Issue the smallest separately fenced P18 mounted-registration and
+F05/F06 adapter successors before candidate freeze or any provider effect.
+Stop.
+
+---
+
+## Historical prompt record
+
+MODEL: GPT-5.6-SOL
+REASONING: XHIGH
+SERVICE TIER: PRIORITY
 MODE: PAUSE_FOR_C00_SUCCESSOR_SCHEMA_AND_REQUEST_ADMISSION
 
 Audit the exact pushed I36 successor-schema/request terminal. This is a

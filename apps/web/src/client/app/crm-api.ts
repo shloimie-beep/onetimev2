@@ -26,6 +26,9 @@ import type {
   UpdateClassSeriesPayload,
   ContactNote,
   ContactTag,
+  AttendanceRecord,
+  LearningAnnouncement,
+  LearningQuestion,
 } from '@onetime/contracts';
 
 export type ApiSession = {
@@ -290,6 +293,12 @@ export type ResolvedCrmCapabilities = {
     search: boolean;
   };
   source: 'server_issued' | 'temporary_legacy_role_compatibility' | 'none';
+};
+
+export type AdminLearningSnapshot = {
+  questions: readonly LearningQuestion[];
+  announcements: readonly LearningAnnouncement[];
+  attendance: readonly AttendanceRecord[];
 };
 
 export const CRM_SEARCH_ADAPTER = {
@@ -563,6 +572,22 @@ export async function getOperatorLaunchStatus() {
 
 export async function getGamificationAdminDashboard() {
   return authenticatedJson<AdminGamificationDashboardResponse>('/api/v1/gamification/admin');
+}
+
+export async function getAdminLearningSnapshot(): Promise<AdminLearningSnapshot> {
+  const [questions, announcements, attendance] = await Promise.all([
+    authenticatedJson<{ success: true; data: LearningQuestion[] }>('/api/app/learning/questions'),
+    authenticatedJson<{
+      success: true;
+      data: Array<{ announcement: LearningAnnouncement; read: boolean }>;
+    }>('/api/app/learning/announcements'),
+    authenticatedJson<{ success: true; data: AttendanceRecord[] }>('/api/app/learning/attendance'),
+  ]);
+  return {
+    questions: questions.data,
+    announcements: announcements.data.map((entry) => entry.announcement),
+    attendance: attendance.data,
+  };
 }
 
 export async function getClasses() {

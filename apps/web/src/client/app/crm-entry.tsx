@@ -31,6 +31,7 @@ import {
 import { AppShell, type ShellNavItem, type ShellUser } from './shell/AppShell.js';
 import { WorkspaceTabs } from './shell/WorkspaceTabs.js';
 import { GamificationAdminPanel } from './gamification-admin/GamificationAdminPanel.js';
+import { AdminLearningWorkspace } from './admin/learning/AdminLearningWorkspace.js';
 import { ClassManagementWorkspace } from './classes/ClassManagementWorkspace.js';
 import { SupportFeature } from './support/SupportFeature.js';
 import { changeOwnPassword } from './portal-api.js';
@@ -48,6 +49,7 @@ import {
   getContact,
   getContentLibrary,
   getGamificationAdminDashboard,
+  getAdminLearningSnapshot,
   getOwnerDashboard,
   getSession,
   listContacts,
@@ -58,6 +60,7 @@ import {
   saveContactRequest,
   type Assignee,
   type ApiSession,
+  type AdminLearningSnapshot,
   type QueryState,
 } from './crm-api.js';
 import './crm.css';
@@ -160,6 +163,11 @@ function CrmApp() {
   const [gamificationDashboard, setGamificationDashboard] =
     useState<AdminGamificationDashboardResponse | null>(null);
   const [gamificationState, setGamificationState] = useState<AsyncPanelState>({
+    loading: false,
+    error: '',
+  });
+  const [adminLearning, setAdminLearning] = useState<AdminLearningSnapshot | null>(null);
+  const [adminLearningState, setAdminLearningState] = useState<AsyncPanelState>({
     loading: false,
     error: '',
   });
@@ -315,6 +323,12 @@ function CrmApp() {
         if (classroomSectionFromPath(location.pathname) === 'rewards' && !isRabbi) {
           await loadGamificationDashboard();
         }
+        if (
+          !isRabbi &&
+          ['questions', 'rewards'].includes(classroomSectionFromPath(location.pathname))
+        ) {
+          await loadAdminLearning();
+        }
       } else {
         setSelectedClass(null);
         setClassDetailState({ loading: false, error: '' });
@@ -452,6 +466,20 @@ function CrmApp() {
       setGamificationState({
         loading: false,
         error: errorMessage(error, 'Learning rewards could not load.'),
+      });
+    }
+  }
+
+  async function loadAdminLearning() {
+    setAdminLearningState({ loading: true, error: '' });
+    try {
+      setAdminLearning(await getAdminLearningSnapshot());
+      setAdminLearningState({ loading: false, error: '' });
+    } catch (error) {
+      if (handleAuthError(error)) return;
+      setAdminLearningState({
+        loading: false,
+        error: errorMessage(error, 'Learning engagement could not load.'),
       });
     }
   }
@@ -640,6 +668,9 @@ function CrmApp() {
       void loadClasses(occurrenceKey);
       if (classroomSectionFromPath(target.pathname) === 'rewards') {
         void loadGamificationDashboard();
+      }
+      if (['questions', 'rewards'].includes(classroomSectionFromPath(target.pathname))) {
+        void loadAdminLearning();
       }
     } else {
       setSelectedClass(null);
@@ -986,6 +1017,9 @@ function CrmApp() {
           gamificationDashboard={gamificationDashboard}
           gamificationLoading={gamificationState.loading}
           gamificationError={gamificationState.error}
+          adminLearning={adminLearning}
+          adminLearningLoading={adminLearningState.loading}
+          adminLearningError={adminLearningState.error}
           loading={classesState.loading}
           error={classesState.error}
           detailLoading={classDetailState.loading}
@@ -996,6 +1030,7 @@ function CrmApp() {
           onRefreshOccurrences={loadClasses}
           onRetryDetail={(occurrenceKey) => void loadClassDetail(occurrenceKey)}
           onRetryRewards={() => void loadGamificationDashboard()}
+          onRetryLearning={() => void loadAdminLearning()}
         />
       )}
       {surface === 'content' &&
@@ -1591,6 +1626,9 @@ function ClassesPanel({
   gamificationDashboard,
   gamificationLoading,
   gamificationError,
+  adminLearning,
+  adminLearningLoading,
+  adminLearningError,
   loading,
   error,
   detailLoading,
@@ -1601,6 +1639,7 @@ function ClassesPanel({
   onRefreshOccurrences,
   onRetryDetail,
   onRetryRewards,
+  onRetryLearning,
 }: {
   csrfToken: string;
   section: ClassroomSectionId;
@@ -1610,6 +1649,9 @@ function ClassesPanel({
   gamificationDashboard: AdminGamificationDashboardResponse | null;
   gamificationLoading: boolean;
   gamificationError: string;
+  adminLearning: AdminLearningSnapshot | null;
+  adminLearningLoading: boolean;
+  adminLearningError: string;
   loading: boolean;
   error: string;
   detailLoading: boolean;
@@ -1620,6 +1662,7 @@ function ClassesPanel({
   onRefreshOccurrences: (preferredOccurrenceKey?: string | null) => Promise<void>;
   onRetryDetail: (occurrenceKey: string) => void;
   onRetryRewards: () => void;
+  onRetryLearning: () => void;
 }) {
   const teachingSections = [
     'classes',
@@ -1647,7 +1690,29 @@ function ClassesPanel({
         label="Classroom area"
         onNavigate={onNavigate}
       />
-      {isManagementSection ? (
+      {!teachingOnly && section === 'questions' ? (
+        <AdminLearningPanel
+          snapshot={adminLearning}
+          loading={adminLearningLoading}
+          error={adminLearningError}
+          onRetry={onRetryLearning}
+        />
+      ) : !teachingOnly && section === 'rewards' ? (
+        <>
+          <AdminLearningPanel
+            snapshot={adminLearning}
+            loading={adminLearningLoading}
+            error={adminLearningError}
+            onRetry={onRetryLearning}
+          />
+          <GamificationAdminPanel
+            dashboard={gamificationDashboard}
+            loading={gamificationLoading}
+            error={gamificationError}
+            onRetry={onRetryRewards}
+          />
+        </>
+      ) : isManagementSection ? (
         <ClassManagementWorkspace
           csrfToken={csrfToken}
           section={section}
@@ -1785,6 +1850,33 @@ function ClassroomFocusedBody({
       </dl>
     </article>
   );
+}
+
+function AdminLearningPanel({
+  snapshot,
+  loading,
+  error,
+  onRetry,
+}: {
+  snapshot: AdminLearningSnapshot | null;
+  loading: boolean;
+  error: string;
+  onRetry: () => void;
+}) {
+  if (loading && !snapshot) return <ReadOnlySkeleton label="Loading learning engagement" />;
+  if (error && !snapshot) {
+    return (
+      <StatePanel
+        kind="error"
+        title="Learning engagement could not load"
+        body={error}
+        actionLabel="Retry"
+        onAction={onRetry}
+      />
+    );
+  }
+  if (!snapshot) return null;
+  return <AdminLearningWorkspace {...snapshot} />;
 }
 
 function BillingPanel({
