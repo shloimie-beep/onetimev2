@@ -12,7 +12,12 @@ describe('P22 web learning composition boundary', () => {
     expect(app).toContain('createPostgresLearningActorResolver');
     expect(router).not.toMatch(/router\.(?:post|put|patch|delete)\('\/attendance/);
     expect(router).not.toMatch(/router\.(?:post|put|patch|delete)\([^\n]*consent/);
-    expect(composition).toContain('binding.repository === binding.mountedRepository');
+    expect(composition).not.toContain('binding.repository === binding.mountedRepository');
+    expect(composition).not.toContain('attachToMountedP18');
+    expect(composition).not.toContain('MountedP18Binding');
+    expect(composition).toContain(
+      'blockers.push(LEARNING_COMPOSITION_BLOCKERS.attendanceRepository);',
+    );
     expect(composition).not.toContain('createPostgresEmbeddedClassroomRepository');
   });
 });

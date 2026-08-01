@@ -1,5 +1,40 @@
 # I36 Integration Releases
 
+## Current terminal — P22 direct integration assertion correction
+
+Control `b168ab1f258f25f030a934269a7ed4a109af4e08`, based on
+`bdc355b68caf4cdab7f0dbcdeaa8f93655456a91`, held semantic terminal
+`d1d416877dd841c3cf63ca53362427b61327ff53` at independent review with zero
+P1, one P2, and zero P3. All six prior product P2 findings were closed; the sole
+new finding was a directly relevant P22 integration test that still positively
+asserted the removed insecure self-attested repository-equality seam.
+
+READY `a0ac214fae63fa2530d1000197849a7ebfdf01c28f0745a63bdd4e646acb9941`
+authorized exactly that test plus the I36 runtime triplet. The test now proves
+the repository-equality string, `attachToMountedP18`, and `MountedP18Binding`
+are absent; the mounted-P18 attendance blocker remains unconditional; and no
+second embedded-classroom repository exists. Its authenticated-route and absent
+attendance/consent mutation assertions remain. No product code, immutable
+request, migration, config, or lockfile changed.
+
+The exact formerly red test passes 1/1. The full focused P21/P22/P30 set plus
+that integration test passes 70/70 across ten files. The one changed test passes
+ESLint and Prettier, and diff hygiene passes. Its exact staged Git-blob SHA-256
+is `5e05de7800344f2145bce8e3b73b20227d4a6ada7ab0ed3c43efde4310f34dbe`;
+the one-path postimage manifest is
+`d6af0d8977219966319f98a275ce184aea4a3d113827e1e85e88021ab9af86fa`.
+
+Claim `49c2efa0-4a42-4cbe-8e17-a1f3eaadab13` and sole RELEASE_INTEGRATOR lease
+`f0b86e14-faf3-4d96-acdd-ded62bd858fd` were released at
+`2026-08-01T21:25:32Z`, before expiry. No candidate, provider, infrastructure,
+deployment, DNS, database, contact, send, billing, cleanup, or external action
+occurred; effects remain `0/0/0`.
+
+C00 must independently review this four-path terminal. Candidate freeze remains
+held until that review returns no P1/P2, and the later P21 F05/F06 reconciler,
+real P18-owned attachment/readback plus schema/secret evidence, and real P30
+F05/F06/provider bindings remain explicit dependency gates.
+
 ## Current terminal — held P21/P22/P30 semantic correction
 
 Control `bdc355b68caf4cdab7f0dbcdeaa8f93655456a91`, based on

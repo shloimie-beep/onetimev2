@@ -8,7 +8,7 @@ package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a
 branch: codex/v21-integration
 start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 dependency_heads:
-  C00: bdc355b68caf4cdab7f0dbcdeaa8f93655456a91
+  C00: b168ab1f258f25f030a934269a7ed4a109af4e08
   F02: 3ee2f651528f5170dd714b921500235d4e015c5b
   F03: 3947c9887f3c6914a8247c70ac816a4ae94c76d0
   F06: 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
@@ -40,24 +40,74 @@ dependency_heads:
   P18: 1926e61c793ce29d7240c1ee05d2a4879b52770b
   P21: c11dec418fa3de896e96c348f87928c92c9f86b9
 status: ready_for_review
-phase: held_P21_P22_P30_semantic_correction_terminal
-claimed_by: codex-i36-held-semantic-correction-1abaf754
-claim_time: '2026-08-01T20:31:59Z'
-claim_id: 1abaf754-7160-4a03-908e-382ec8b471ac
-lease_id: bfb7723c-1017-4e2b-90c7-62aaee990313
-lease_issued_at: '2026-08-01T20:31:59Z'
-lease_expires_at: '2026-08-02T02:31:59Z'
-lease_released_at: '2026-08-01T20:58:02Z'
-last_heartbeat_at: '2026-08-01T20:58:02Z'
-controller_authorization_sha: bdc355b68caf4cdab7f0dbcdeaa8f93655456a91
-latest_valid_observed_control_head_sha: bdc355b68caf4cdab7f0dbcdeaa8f93655456a91
+phase: held_P22_integration_assertion_correction_terminal
+claimed_by: codex-i36-P22-integration-assertion-49c2efa0
+claim_time: '2026-08-01T21:15:56Z'
+claim_id: 49c2efa0-4a42-4cbe-8e17-a1f3eaadab13
+lease_id: f0b86e14-faf3-4d96-acdd-ded62bd858fd
+lease_issued_at: '2026-08-01T21:15:56Z'
+lease_expires_at: '2026-08-02T01:15:56Z'
+lease_released_at: '2026-08-01T21:25:32Z'
+last_heartbeat_at: '2026-08-01T21:25:32Z'
+controller_authorization_sha: b168ab1f258f25f030a934269a7ed4a109af4e08
+latest_valid_observed_control_head_sha: b168ab1f258f25f030a934269a7ed4a109af4e08
 reconciled_state_based_on_control_head_sha: cdc98ae7a5212c288ad16b35df70addc517e54af
-ready_authorization_control_head_sha: bdc355b68caf4cdab7f0dbcdeaa8f93655456a91
-ready_entry_state_based_on_control_head_sha: de282f8ed1e5c57a23b301c760802593f53ed591
-ready_entry_payload_digest: 08e4446d2cfc1f8a04600336694ec4e02714231ae1ce3b4bce62235131e1b7d8
+ready_authorization_control_head_sha: b168ab1f258f25f030a934269a7ed4a109af4e08
+ready_entry_state_based_on_control_head_sha: bdc355b68caf4cdab7f0dbcdeaa8f93655456a91
+ready_entry_payload_digest: a0ac214fae63fa2530d1000197849a7ebfdf01c28f0745a63bdd4e646acb9941
 claim_mode: new
-expected_existing_head_sha: 32e21c0dfa93195b05df99d81c906a4039341355
-lease_phase_scope: exact_held_P21_P22_P30_semantic_correction
+expected_existing_head_sha: d1d416877dd841c3cf63ca53362427b61327ff53
+lease_phase_scope: exact_one_test_plus_I36_runtime_triplet_correction_and_release
+P22_integration_assertion_correction_terminal:
+  containing_control_head_sha: b168ab1f258f25f030a934269a7ed4a109af4e08
+  state_basis_control_head_sha: bdc355b68caf4cdab7f0dbcdeaa8f93655456a91
+  exact_authorized_start_sha: d1d416877dd841c3cf63ca53362427b61327ff53
+  ready_entry_payload_digest: a0ac214fae63fa2530d1000197849a7ebfdf01c28f0745a63bdd4e646acb9941
+  claim_id: 49c2efa0-4a42-4cbe-8e17-a1f3eaadab13
+  writer_id: codex-i36-P22-integration-assertion-49c2efa0
+  lease_issued_at: '2026-08-01T21:15:56Z'
+  lease_expires_at: '2026-08-02T01:15:56Z'
+  lease_released_at: '2026-08-01T21:25:32Z'
+  writer_slot_leases_released:
+    - slot: RELEASE_INTEGRATOR
+      lease_id: f0b86e14-faf3-4d96-acdd-ded62bd858fd
+  effect_lock_leases: []
+  exact_scope:
+    product_and_test_paths: 1
+    runtime_paths: 3
+    total_paths: 4
+    product_path_inventory_digest: 23261bc5dc7351ff95e4a4ac6828cd43b7c05de12bf7a93e8038a4e20f31c9e2
+    release_path_inventory_digest: 898d8a0f59fe1de1b1efe98ca200a1a620bf062c7dcba956fe6a70202754f400
+    authorized_preimage_manifest_digest: a75f0250b09e473532f3d43ecc91690d6ef09a10e53d243132be7f4651ef7161
+    product_postimage_manifest_digest: d6af0d8977219966319f98a275ce184aea4a3d113827e1e85e88021ab9af86fa
+    product_postimage_manifest_algorithm: >-
+      SHA-256 of compact UTF-8 JSON for the path-sorted one-element array shaped
+      {"path":<POSIX path>,"sha256":<exact staged Git-blob SHA-256>}.
+  corrected_finding:
+    P22_direct_integration_assertion: >-
+      Removed the stale positive equality assertion and now proves the self-attested equality string, attachToMountedP18,
+      and MountedP18Binding are absent; the mounted-attendance blocker is unconditional; and no second P18 repository exists.
+  completed_validation:
+    live_control_READY_head_preimage: passed_1_of_1
+    exact_newly_red_P22_integration_test: passed_1_file_1_test
+    focused_P21_P22_P30_plus_integration: passed_10_files_70_tests
+    scoped_eslint: passed_zero_findings_1_path
+    scoped_prettier: passed_1_path
+    diff_check: passed
+  product_code_change: false
+  migration_or_SQL_change: false
+  config_or_lockfile_change: false
+  immutable_request_bytes_changed: false
+  provider_or_infrastructure_inspection: false
+  provider_or_candidate_action: false
+  deployment_or_DNS_action: false
+  external_effects:
+    attempted: 0
+    succeeded: 0
+    reconciled: 0
+  safe_next_action: >-
+    Push one exact four-path test-and-evidence correction terminal and stop for independent review. Candidate freeze and
+    every provider effect remain prohibited; retain the later P21 reconciler, P18 attachment, and P30 F05/F06/provider gates.
 held_semantic_correction_terminal:
   containing_control_head_sha: bdc355b68caf4cdab7f0dbcdeaa8f93655456a91
   state_basis_control_head_sha: de282f8ed1e5c57a23b301c760802593f53ed591

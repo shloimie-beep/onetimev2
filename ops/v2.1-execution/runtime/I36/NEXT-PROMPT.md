@@ -1,71 +1,71 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
-MODE: PAUSE_FOR_C00_HELD_SEMANTIC_CORRECTION_REVIEW
+MODE: PAUSE_FOR_C00_P22_INTEGRATION_ASSERTION_CORRECTION_REVIEW
 
-Audit the exact pushed I36 held P21/P22/P30 semantic-correction terminal. This
-is repository-only. Do not freeze a candidate, inspect or mutate a provider,
-deploy, change DNS, touch a live database, create a contact, enroll, send,
-charge, clean up, or perform any external effect.
+Audit the exact pushed I36 four-path P22 test-and-evidence correction terminal.
+Do not freeze a candidate, inspect or mutate a provider, deploy, change DNS,
+touch a live database, create a contact, enroll, send, charge, clean up, or
+perform any external effect.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-integration
 Authorized start and required sole parent:
-`32e21c0dfa93195b05df99d81c906a4039341355`
-Containing control: `bdc355b68caf4cdab7f0dbcdeaa8f93655456a91`
-Authority/control basis: `de282f8ed1e5c57a23b301c760802593f53ed591`
-READY: `08e4446d2cfc1f8a04600336694ec4e02714231ae1ce3b4bce62235131e1b7d8`
-Claim: `1abaf754-7160-4a03-908e-382ec8b471ac`
-Writer: `codex-i36-held-semantic-correction-1abaf754`
-Leases: SERVER `85b2ea40...`, WORKER `4a52432e...`, RELEASE `bfb7723c...`
-Lease issue/expiry/release: `2026-08-01T20:31:59Z` /
-`2026-08-02T02:31:59Z` / `2026-08-01T20:58:02Z`
+`d1d416877dd841c3cf63ca53362427b61327ff53`
+Containing control: `b168ab1f258f25f030a934269a7ed4a109af4e08`
+Authority/control basis: `bdc355b68caf4cdab7f0dbcdeaa8f93655456a91`
+READY: `a0ac214fae63fa2530d1000197849a7ebfdf01c28f0745a63bdd4e646acb9941`
+Claim: `49c2efa0-4a42-4cbe-8e17-a1f3eaadab13`
+Writer: `codex-i36-P22-integration-assertion-49c2efa0`
+RELEASE_INTEGRATOR lease: `f0b86e14-faf3-4d96-acdd-ded62bd858fd`
+Lease issue/expiry/release: `2026-08-01T21:15:56Z` /
+`2026-08-02T01:15:56Z` / `2026-08-01T21:25:32Z`
 Effects: `0/0/0`
 
-Confirm exact sole-parent ancestry; the 13 authorized product/test paths plus
-only the I36 runtime triplet; product/release inventory digests `69cfbf73...`
-and `a6d196e4...`; preimage manifest `63cf8726...`; postimage manifest
-`769548802db4ea2dfb7e711b183533709827176b775ec7e94534fde25173c1c1`;
-all exact preimages; and all four immutable request digests.
+Confirm exact sole-parent ancestry and exactly four changed paths:
+`tests/integration/learning/learning-composition.test.ts` plus the I36 runtime
+triplet. Confirm product/release inventory digests `23261bc5...` and
+`898d8a0f...`, preimage manifest `a75f0250...`, test postimage
+`5e05de7800344f2145bce8e3b73b20227d4a6ada7ab0ed3c43efde4310f34dbe`,
+and postimage manifest
+`d6af0d8977219966319f98a275ce184aea4a3d113827e1e85e88021ab9af86fa`.
 
-Confirm P21 has no separate resume-version preflight transaction, same-key
-retries use the stable server-owned zero sentinel in receipt hashing, and the
-real resume-row CAS remains independently derived inside `service.saveResume`.
-Do not mark P21 complete: the exact locked F05/F06 internal reconciler remains
-a later path-complete gate.
+Confirm the formerly red integration test now asserts the insecure equality
+string, `attachToMountedP18`, and `MountedP18Binding` are absent; the
+mounted-P18 attendance blocker remains unconditional; and no second embedded
+classroom repository is created. Retain authenticated-route and absent
+attendance/consent mutation assertions. Confirm no product code, immutable
+request, migration, config, or lockfile changed.
 
-Confirm P22 exposes no self-attested mounted-P18 injection seam and cannot be
-enabled by equal references returned from a caller. It must remain generic
-private/no-store 503 until a non-self-attested P18 runtime attachment/readback,
-native migration 2254, and protected deployed alias-key readback pass. Confirm
-no second attendance repository exists.
+Confirm the exact integration test passes 1/1, the focused P21/P22/P30 suite
+plus that test passes 70/70 across ten files, the changed test passes ESLint and
+Prettier, and diff hygiene passes. Confirm the sole lease was released before
+expiry, refs equal the pushed terminal, the worktree is clean, and no candidate
+or external effect occurred.
 
-Confirm P30 maps durable F05 `dead_letter` terminally, checks every
-`completeDecision` result, never reports a lost fence completed, and passes
-only the authority-returned safe provider reference to dispatch. Confirm
-saved/reopened readback equality to exact approved registry digest
-`06d1ee3b125f7d0893994e9c55b075bc387034606f38e74ef074532a86dd0339`
-and rendered-body digest
-`180797cf833054f2d433e189404a4a6c498a80ade2821ac8fea0f0e659552d30`.
-Acceptance-unknown must remain quarantined without blind retry; WhatsApp and
-reachable default provider dispatch must remain absent.
-
-Confirm focused 69/69 tests, scoped ESLint/Prettier, HighLevel registry check,
-both web builds, runtime imports, 3,164-file secret scan, exact checks, diff
-hygiene, and only the four unchanged typecheck diagnostics. Treat the wider
-unit result 578/593 as baseline evidence: all 15 failures are in nine untouched
-portal/copy/config/billing and legacy occurrence-seed tests, not correction
-paths.
-
-Confirm all three leases were released before expiry, local/tracking/live refs
-equal the pushed terminal, the worktree is clean, and no candidate, provider,
-infrastructure, deployment, DNS, database, billing, contact, send, cleanup, or
-external effect occurred. Return an exact P1/P2/P3 finding count. C00 must not
-advance candidate freeze unless this correction has zero P1/P2. Stop.
+Return an exact P1/P2/P3 finding count. C00 must not advance candidate freeze
+unless this correction has zero P1/P2. Retain later gates for the P21 F05/F06
+reconciler, real P18-owned attachment/readback plus native schema and alias
+secret evidence, and real P30 F05/F06/provider bindings. Stop.
 
 ---
 
-## Superseded audit prompt record
+## Superseded semantic-correction audit prompt record
+
+MODEL: GPT-5.6-SOL
+REASONING: XHIGH
+SERVICE TIER: PRIORITY
+MODE: PAUSE_FOR_C00_HELD_SEMANTIC_CORRECTION_REVIEW
+
+Audit terminal `d1d416877dd841c3cf63ca53362427b61327ff53` under READY
+`08e4446d2cfc1f8a04600336694ec4e02714231ae1ce3b4bce62235131e1b7d8`.
+Independent review closed all six prior product P2 findings but held one new
+P2 because the directly relevant P22 integration test retained the removed
+self-attested repository-equality assertion. Effects remained `0/0/0`.
+
+---
+
+## Superseded path-complete audit prompt record
 
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
