@@ -16,13 +16,12 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: de282f8ed1e5c57a23b301c760802593f53ed591
+controller_authorization_sha: bdc355b68caf4cdab7f0dbcdeaa8f93655456a91
 next_action: >-
-  Correct the independently held integration terminal 32e21c0d within the exact 13-product-path subset plus I36 runtime
-  triplet. Stabilize P21 resume replay while retaining independent in-transaction CAS; remove P22's self-attested mounted-P18
-  enablement seam; and correct P30 dead-letter, completion-fence, authority-reference, and exact readback-digest semantics.
-  Preserve disabled defaults and explicit later gates for the P21 reconciler, actual P18 mount, native schema, deployed alias
-  secret, and real F05/F06/provider bindings. Push one correction terminal and stop for independent review; candidate and effects remain prohibited.
+  Correct the sole newly red P22 integration assertion at terminal d1d41687 without changing product code. Replace the stale
+  self-attested repository-equality expectation with explicit absence proofs for that seam and its attachment types, retain the
+  unconditional mounted-P18 blocker and no-second-repository proof, run the exact test plus the 69-test focused suite, update only
+  the I36 runtime triplet, and push one four-path terminal for review. Candidate freeze and effects remain prohibited.
 production_completion_lanes:
 - lane: A
   owner: F02
@@ -117,7 +116,7 @@ production_completion_lanes:
   provider_effects: prohibited_until_candidate_authority_and_exact_lock
 - lane: D
   owner: I36
-  status: path_complete_application_held_semantic_correction_dispatched
+  status: semantic_product_correction_held_one_P2_test_only_correction_dispatched
   branch: codex/v21-integration
   prior_release_sha: 524563f07b3bb8544db989982dc55d4bc86a1999
   partial_checkpoint_sha: a5a2ad94b77eaf596930609d4d5abe4fa672439b
@@ -130,7 +129,7 @@ production_completion_lanes:
   partial_checkpoint_runtime_triplet_digest: a877b1e24c450a599e8c9b0066345cc06d0444a4c9749aecdda0f7da0c3c628b
   partial_checkpoint_five_path_digest: c405518fb5c7a744fa24e6b4b6f88712af9de68e109920e9fad369e63374d31d
   all_producer_implementation_heads_ancestor_count: 35
-  expected_head_sha: 32e21c0dfa93195b05df99d81c906a4039341355
+  expected_head_sha: d1d416877dd841c3cf63ca53362427b61327ff53
   Batch_B_claim_id: 995fe313-efa9-4e5f-b4f6-eeadc9b50d6d
   Batch_B_CONFIG_DEPS_lease_id: e75d8901-0b96-4ec7-b64e-724cfdbcd7a1
   Batch_B_RELEASE_INTEGRATOR_lease_id: eafaecb9-82b6-4e99-bbc3-0d9ad8d92b84
@@ -299,6 +298,25 @@ production_completion_lanes:
   held_correction_release_path_count: 16
   held_correction_release_path_inventory_digest: a6d196e4e0021a3323c3e7fa850613106d6de68f5eb35da0aa967a160449d5e1
   held_correction_product_preimage_manifest_digest: 63cf872681002db52b35008d62e6536770ebdc2931ad58777c4c2b28f56cc20d
+  held_correction_terminal_head_sha: d1d416877dd841c3cf63ca53362427b61327ff53
+  held_correction_terminal_parent_sha: 32e21c0dfa93195b05df99d81c906a4039341355
+  held_correction_terminal_tree_sha: 7eb2ce93e4776eeea591cad7cbf0fd12dd8d83bf
+  held_correction_terminal_timestamp: '2026-08-02T00:04:42+03:00'
+  held_correction_product_postimage_manifest_digest: 769548802db4ea2dfb7e711b183533709827176b775ec7e94534fde25173c1c1
+  held_correction_release_postimage_manifest_digest: a017139bfba29f9ed8e3893bbb85930ee664a2870a6ffd0bc4244af095e7f8cf
+  held_correction_lease_released_at: '2026-08-01T20:58:02Z'
+  held_correction_independent_review: held_zero_P1_one_P2_zero_P3_test_only
+  held_correction_external_effects: 0/0/0
+  P22_integration_assertion_correction_claim_id: 49c2efa0-4a42-4cbe-8e17-a1f3eaadab13
+  P22_integration_assertion_RELEASE_INTEGRATOR_lease_id: f0b86e14-faf3-4d96-acdd-ded62bd858fd
+  P22_integration_assertion_lease_expires_at: '2026-08-02T01:15:56Z'
+  P22_integration_assertion_ready_entry_payload_digest: a0ac214fae63fa2530d1000197849a7ebfdf01c28f0745a63bdd4e646acb9941
+  P22_integration_assertion_authorized_start_sha: d1d416877dd841c3cf63ca53362427b61327ff53
+  P22_integration_assertion_product_path_count: 1
+  P22_integration_assertion_product_path_inventory_digest: 23261bc5dc7351ff95e4a4ac6828cd43b7c05de12bf7a93e8038a4e20f31c9e2
+  P22_integration_assertion_release_path_count: 4
+  P22_integration_assertion_release_path_inventory_digest: 898d8a0f59fe1de1b1efe98ca200a1a620bf062c7dcba956fe6a70202754f400
+  P22_integration_assertion_product_preimage_manifest_digest: a75f0250b09e473532f3d43ecc91690d6ef09a10e53d243132be7f4651ef7161
   Batch_D_external_effects: 0/0/0
   P21_P22_source_atomic_claim_sha: b87901e803cdd3be7e09a1143d9f23eceaf7ad78
   P21_P22_source_atomic_claim_parent_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9

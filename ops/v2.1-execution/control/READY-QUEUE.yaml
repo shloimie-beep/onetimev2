@@ -5,12 +5,12 @@ status: operational
 ready:
   - task_id: I36
     status: ready
-    phase: held_terminal_P21_P22_P30_semantic_correction
+    phase: held_terminal_P22_integration_assertion_correction
     branch: codex/v21-integration
     claim_mode: new
-    state_based_on_control_head_sha: de282f8ed1e5c57a23b301c760802593f53ed591
-    authorized_start_sha: 32e21c0dfa93195b05df99d81c906a4039341355
-    expected_existing_head: 32e21c0dfa93195b05df99d81c906a4039341355
+    state_based_on_control_head_sha: bdc355b68caf4cdab7f0dbcdeaa8f93655456a91
+    authorized_start_sha: d1d416877dd841c3cf63ca53362427b61327ff53
+    expected_existing_head: d1d416877dd841c3cf63ca53362427b61327ff53
     package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
     source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
     task_packet_digest: 55e261760baac780e9a4db48c328480c6f98172261ef990e563a00b25c467fc7
@@ -19,45 +19,29 @@ ready:
       C00:
         required_state: immediate_lean_completion_mode
         observed_state: immediate_lean_completion_mode
-        observed_control_head_sha: de282f8ed1e5c57a23b301c760802593f53ed591
-        control_state_canonical_digest: 1ecb60f951bdbc107e206c8cb5990b11060a1718347834192a4cc6d659f99648
+        observed_control_head_sha: bdc355b68caf4cdab7f0dbcdeaa8f93655456a91
+        control_state_canonical_digest: 22d4e986087f06269802f6288a348620a868bf3e2924827fb284a61f05f5bcae
       I36:
-        required_state: exact_path_complete_application_terminal_independently_reviewed
-        observed_state: held_zero_P1_six_P2_one_P3
-        terminal_head_sha: 32e21c0dfa93195b05df99d81c906a4039341355
-        terminal_parent_sha: e569d6933bc25ec848fe9eb279e193d40b38787e
-        terminal_tree_sha: 596e0d86774614c0f4b724d6081740fe8979330c
-        terminal_timestamp: '2026-08-01T23:21:40+03:00'
-        state_handoff_digest: dad3a2237173f77456d746df7346ea74be45d70b49ce96f5da88488428549669
-        runtime_triplet_digest: dfc1dc5a1d929f4d92cfc7f3c5f4efa58ad623a6051a26f23741d2a7b27072af
-        exact_product_path_count: 41
-        exact_release_path_count: 44
-        product_postimage_manifest_digest: 3009b9186edfe8058a82c60772b7d0de4b0f629d182bd92bd5517a67271bc5ac
-        release_postimage_manifest_digest: 00b8589c26bd4c30e05d3b02bfff70d2735df94834c32f7e1cdd5e6a4c9c040d
-        independent_review: held_zero_P1_six_P2_one_P3
-        lease_released_at: '2026-08-01T20:15:43Z'
+        required_state: exact_semantic_correction_terminal_independently_reviewed
+        observed_state: held_zero_P1_one_P2_zero_P3_test_only
+        terminal_head_sha: d1d416877dd841c3cf63ca53362427b61327ff53
+        terminal_parent_sha: 32e21c0dfa93195b05df99d81c906a4039341355
+        terminal_tree_sha: 7eb2ce93e4776eeea591cad7cbf0fd12dd8d83bf
+        terminal_timestamp: '2026-08-02T00:04:42+03:00'
+        exact_product_path_count: 13
+        exact_release_path_count: 16
+        product_postimage_manifest_digest: 769548802db4ea2dfb7e711b183533709827176b775ec7e94534fde25173c1c1
+        release_postimage_manifest_digest: a017139bfba29f9ed8e3893bbb85930ee664a2870a6ffd0bc4244af095e7f8cf
+        independent_review: held_zero_P1_one_P2_zero_P3_test_only
+        lease_released_at: '2026-08-01T20:58:02Z'
         external_effects: 0/0/0
-      P21:
-        request_id: P21-registration-004
-        request_raw_sha256: ce7eea4f3451cd27e244812372848b736bd2a941e537c0aa6ec0311369adc53e
-        request_canonical_sha256: 410dc50576b4321bd4fda5d14d5b77eb45ef251cdb4c4ef6a9056951615d606c
-        observed_state: held_resume_replay_and_missing_internal_reconciler
       P22:
         server_request_id: P22-server-registration-003
         server_request_raw_sha256: b359a3beb0626ab13d30e6df5fd429d4266b9e3dd57571cdaf279cf27b780698
         client_request_id: P22-client-route-003
         client_request_raw_sha256: 6187ea301a60c621ab3e48a19bf80e78ec21ebcbff204a50259f654caafcbc8e
-        observed_state: client_repository_surface_accepted_server_held_self_attested_P18_gate
-      P30:
-        request_id: P30-registry-registration-002
-        request_raw_sha256: cae9e59973cb9d5371902f59a3ac5884a9a34b2dc324cece4b0ceb85d53ef1cb
-        request_canonical_sha256: d42c6567491d4cec6f84e694f9fde375538a16aac833877b2f6f91b906c9c3e6
-        observed_state: held_receipt_fence_authority_and_digest_semantics
+        observed_state: product_semantics_correct_safe_fail_closed_direct_integration_assertion_stale
     request_bindings:
-      P21-registration-004:
-        request_digest: ce7eea4f3451cd27e244812372848b736bd2a941e537c0aa6ec0311369adc53e
-        source_path: ops/v2.1-execution/runtime/P21/steward-requests/P21-registration-004.yaml
-        digest_kind: raw_git_blob_sha256
       P22-server-registration-003:
         request_digest: b359a3beb0626ab13d30e6df5fd429d4266b9e3dd57571cdaf279cf27b780698
         source_path: ops/v2.1-execution/runtime/P22/steward-requests/P22-server-registration-003.yaml
@@ -66,104 +50,48 @@ ready:
         request_digest: 6187ea301a60c621ab3e48a19bf80e78ec21ebcbff204a50259f654caafcbc8e
         source_path: ops/v2.1-execution/runtime/P22/steward-requests/P22-client-route-003.yaml
         digest_kind: raw_git_blob_sha256
-      P30-registry-registration-002:
-        request_digest: cae9e59973cb9d5371902f59a3ac5884a9a34b2dc324cece4b0ceb85d53ef1cb
-        source_path: ops/v2.1-execution/runtime/P30/steward-requests/P30-registry-registration-002.yaml
-        digest_kind: raw_git_blob_sha256
     authorized_paths:
-      - apps/web/src/server/app.ts
-      - apps/web/src/server/features/content/publication/composition.test.ts
-      - apps/web/src/server/features/content/publication/composition.ts
-      - apps/web/src/server/features/content/publication/router.test.ts
-      - apps/web/src/server/features/content/publication/router.ts
-      - apps/web/src/server/features/learning/composition.test.ts
-      - apps/web/src/server/features/learning/composition.ts
-      - apps/web/src/server/features/learning/index.ts
-      - apps/worker/src/runners/ghl-workflows/campaigns/adapters.ts
-      - apps/worker/src/runners/ghl-workflows/campaigns/composition.test.ts
-      - apps/worker/src/runners/ghl-workflows/campaigns/composition.ts
-      - apps/worker/src/runners/ghl-workflows/campaigns/runner.test.ts
-      - apps/worker/src/runners/ghl-workflows/campaigns/runner.ts
+      - tests/integration/learning/learning-composition.test.ts
       - ops/v2.1-execution/runtime/I36/HANDOFF.md
       - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
       - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
-    authorized_path_count: 16
-    authorized_path_inventory_digest: a6d196e4e0021a3323c3e7fa850613106d6de68f5eb35da0aa967a160449d5e1
-    product_path_count: 13
-    product_path_inventory_digest: 69cfbf733eb52dda2ad34d7402cd2a952fc5c99d22102acaa5630ee29e038a2d
-    authorized_product_preimage_manifest_digest: 63cf872681002db52b35008d62e6536770ebdc2931ad58777c4c2b28f56cc20d
+    authorized_path_count: 4
+    authorized_path_inventory_digest: 898d8a0f59fe1de1b1efe98ca200a1a620bf062c7dcba956fe6a70202754f400
+    product_path_count: 1
+    product_path_inventory_digest: 23261bc5dc7351ff95e4a4ac6828cd43b7c05de12bf7a93e8038a4e20f31c9e2
+    authorized_product_preimage_manifest_digest: a75f0250b09e473532f3d43ecc91690d6ef09a10e53d243132be7f4651ef7161
     authorized_product_preimages:
-      apps/web/src/server/app.ts: 03524cb31f314bca8547723ff21d49eae84a123b23e50b054acff4d693aedad4
-      apps/web/src/server/features/content/publication/composition.test.ts: 1f62c85a17fbd89d3f3166da144358bc65bc595c46067c0dbf22090e666dd9dc
-      apps/web/src/server/features/content/publication/composition.ts: b51275f91a94a2f7153fae61d226f08c4146b5e7256f7aab581126af7cd190bd
-      apps/web/src/server/features/content/publication/router.test.ts: 5c39032c6e6e965d9ab17556b524e282325ca7befcaa40ab7613becac28343b3
-      apps/web/src/server/features/content/publication/router.ts: 745a6241bdcda584f5d1f793186e1c1e01e28ce78766409ebab349ec5a7f885d
-      apps/web/src/server/features/learning/composition.test.ts: e5977a7ccd991c64015a30b570edb898613364732f51d7981b253cdf75dabd90
-      apps/web/src/server/features/learning/composition.ts: 5ede58d334208f6342ed35ced86326ee3e0c7d40f393711ce8e440367b1d9486
-      apps/web/src/server/features/learning/index.ts: fa6fd8f1d285c04defa4186be1dac2ad89a1d3d91282005c1cd963bbc486cf07
-      apps/worker/src/runners/ghl-workflows/campaigns/adapters.ts: 3d98aa73746ffdfb80889705c42416d7861f13d011849b42c7f8d1b60e14d842
-      apps/worker/src/runners/ghl-workflows/campaigns/composition.test.ts: 07a974e073bf715446900f3ca9fc736b8db01e879457f95400f850bafcf3e498
-      apps/worker/src/runners/ghl-workflows/campaigns/composition.ts: 9d71342a3237e9ada86a0f62b842b7713709f146205ed00e0d8144767980c3f1
-      apps/worker/src/runners/ghl-workflows/campaigns/runner.test.ts: f047c06b196569ac01321f999a1c72332cdaa3ddcd0cf92ebd929a2ea9353693
-      apps/worker/src/runners/ghl-workflows/campaigns/runner.ts: 7748ca759c62a3c4a217fde717220474aad9b5b2871f505740fe27a7f5990927
+      tests/integration/learning/learning-composition.test.ts: c895864b5a08426543197cdcbc88f9f6f951560a7799bd942939438cbdb98ea3
     directives:
       - >-
-        Correct P21 resume handling without changing service/domain contracts: remove the separate preflight transaction,
-        keep a stable server-owned request-hash version sentinel across retries, and retain the real independent resume CAS
-        already derived from the locked resume row inside service.saveResume. Add a same-idempotency-key retry proof. Do not
-        claim P21 complete; the exact F05/F06 internal reconciler remains a later path-complete successor gate.
+        Change only the stale P22 integration assertion. Prove that the removed self-attested equality seam,
+        attachToMountedP18, and MountedP18Binding are absent; the mounted-P18 attendance blocker remains unconditional;
+        and no second embedded-classroom repository is created. Retain authenticated-route and absent attendance/consent
+        mutation assertions. Do not change product code, immutable requests, migrations, config, or lockfiles.
       - >-
-        Remove the self-attested P22 mounted-P18 enablement seam. Repository code must stay generic private/no-store 503 until
-        a later exact P18 successor installs the callback into the actual attendance-intake repository and exposes a
-        non-self-attested attachment/readback contract. Do not create a second repository or weaken secret/native-schema gates.
-      - >-
-        Correct P30 so F05 dead_letter maps terminally, every completeDecision result is checked and a lost fence is never
-        reported completed, dispatch uses only the authority-returned safe provider reference, and saved/reopened readback
-        digests are equal to the exact approved OT-16 registry/content digests rather than merely shape-valid. Preserve
-        acceptance-unknown quarantine, no blind retry, no WhatsApp, and disabled defaults without real F05/F06/provider gates.
-      - >-
-        Run focused P21/P22/P30 tests plus scoped lint, format, typecheck classification, imports, exact path/preimage/request
-        checks, and diff hygiene. Update only the I36 runtime triplet, release all three leases, push one correction terminal,
-        and stop for independent review. Retain explicit later exact gates for P21 reconciler, real P18 mount, native schema,
-        deployed alias key, and real F05/F06/provider bindings; this correction does not authorize candidate freeze or effects.
+        Run the exact corrected integration test, the existing focused 69-test P21/P22/P30 suite, scoped lint and format,
+        exact preimage/path checks, and diff hygiene. Update only the I36 runtime triplet, release the sole lease, push one
+        four-path terminal, and stop for independent review. Candidate freeze and every external effect remain prohibited.
     writer_slot_leases:
-      - slot: SERVER_COMPOSER
-        lease_id: 85b2ea40-3892-4654-9485-fa1cb8611306
-        holder_task_id: I36
-        holder_claim_id: 1abaf754-7160-4a03-908e-382ec8b471ac
-        holder_writer_id: codex-i36-held-semantic-correction-1abaf754
-        state_based_on_control_head_sha: de282f8ed1e5c57a23b301c760802593f53ed591
-        lease_issued_at: '2026-08-01T20:31:59Z'
-        lease_expires_at: '2026-08-02T02:31:59Z'
-        phase_scope: exact_P21_resume_and_P22_fail_closed_gate_correction
-      - slot: WORKER_COMPOSER
-        lease_id: 4a52432e-397b-45ad-9716-85338bf7c109
-        holder_task_id: I36
-        holder_claim_id: 1abaf754-7160-4a03-908e-382ec8b471ac
-        holder_writer_id: codex-i36-held-semantic-correction-1abaf754
-        state_based_on_control_head_sha: de282f8ed1e5c57a23b301c760802593f53ed591
-        lease_issued_at: '2026-08-01T20:31:59Z'
-        lease_expires_at: '2026-08-02T02:31:59Z'
-        phase_scope: exact_P30_receipt_fence_authority_digest_correction
       - slot: RELEASE_INTEGRATOR
-        lease_id: bfb7723c-1017-4e2b-90c7-62aaee990313
+        lease_id: f0b86e14-faf3-4d96-acdd-ded62bd858fd
         holder_task_id: I36
-        holder_claim_id: 1abaf754-7160-4a03-908e-382ec8b471ac
-        holder_writer_id: codex-i36-held-semantic-correction-1abaf754
-        state_based_on_control_head_sha: de282f8ed1e5c57a23b301c760802593f53ed591
-        lease_issued_at: '2026-08-01T20:31:59Z'
-        lease_expires_at: '2026-08-02T02:31:59Z'
-        phase_scope: exact_16_path_held_terminal_correction_and_release
+        holder_claim_id: 49c2efa0-4a42-4cbe-8e17-a1f3eaadab13
+        holder_writer_id: codex-i36-P22-integration-assertion-49c2efa0
+        state_based_on_control_head_sha: bdc355b68caf4cdab7f0dbcdeaa8f93655456a91
+        lease_issued_at: '2026-08-01T21:15:56Z'
+        lease_expires_at: '2026-08-02T01:15:56Z'
+        phase_scope: exact_one_test_plus_I36_runtime_triplet_correction_and_release
     effect_lock_leases: []
-    claim_id: 1abaf754-7160-4a03-908e-382ec8b471ac
-    lease_issued_at: '2026-08-01T20:31:59Z'
-    lease_expires_at: '2026-08-02T02:31:59Z'
+    claim_id: 49c2efa0-4a42-4cbe-8e17-a1f3eaadab13
+    lease_issued_at: '2026-08-01T21:15:56Z'
+    lease_expires_at: '2026-08-02T01:15:56Z'
     heartbeat_interval_minutes: 30
     prompt_path: ops/v2.1-execution/prompts/I36-START-OR-RESUME.md
     model: GPT-5.6-SOL
     reasoning: XHIGH
 entry_payload_digests:
-  I36: 08e4446d2cfc1f8a04600336694ec4e02714231ae1ce3b4bce62235131e1b7d8
+  I36: a0ac214fae63fa2530d1000197849a7ebfdf01c28f0745a63bdd4e646acb9941
 digest_algorithm: >-
   For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively, separators ',' and ':',
   ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives in this sibling map, never inside the entry.

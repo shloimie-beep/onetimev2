@@ -13,19 +13,21 @@ blockers:
   - V43
   - R45
   safe_work_completed: >-
-    Exact integration 32e21c0d is pushed, clean, and effect-free. Its 44-path envelope, 41 preimages, four immutable
-    requests, focused tests, released leases, and 0/0/0 effects passed. Independent review found zero P1, six P2,
-    and one P3 while confirming P22/P30 defaults remain fail-closed and no provider call is reachable.
+    Exact semantic correction d1d41687 is pushed, clean, and effect-free. Its sole parent, 16-path envelope, 13 preimages,
+    four immutable requests, manifests, focused 69-test suite, released leases, and 0/0/0 effects passed. Independent review
+    confirmed all prior six product P2 findings closed, P22/P30 remain fail-closed, and found zero P1, one P2, zero P3:
+    a directly relevant P22 integration test still asserts the removed insecure self-attested repository-equality seam.
   required_authority_or_input: []
   protection: >-
-    Do not freeze a candidate or enable P21 provider reconciliation, P22 learning, or P30 dispatch from 32e21c0d.
-    Correct only the exact 13 product paths plus I36 runtime triplet authorized by READY 08e4446d. Preserve generic
-    disabled responses and later exact gates for the P21 reconciler, actual mounted P18 callback, native schema,
-    deployed alias secret, and real F05/F06/provider bindings.
+    Do not freeze a candidate or enable P21 provider reconciliation, P22 learning, or P30 dispatch from d1d41687.
+    Correct only tests/integration/learning/learning-composition.test.ts plus the I36 runtime triplet authorized by READY
+    a0ac214f. Product code, immutable requests, migrations, config, and lockfiles are frozen. Preserve generic disabled
+    responses and later exact gates for the P21 reconciler, actual mounted P18 callback, native schema, deployed alias secret,
+    and real F05/F06/provider bindings.
   next_check: >-
-    Independently review the single correction terminal for stable P21 replay/in-transaction CAS, removal of the
-    self-attested P18 gate, terminal dead-letter mapping, checked completion fences, authority-bound provider reference,
-    exact approved readback digests, released leases, exact scope, and effects 0/0/0.
+    Run and independently review the exact corrected P22 integration test plus the existing focused 69-test suite. Confirm
+    the stale equality expectation and attachment types are absent, the mounted-P18 blocker remains unconditional, no second
+    repository exists, exact four-path scope and preimages hold, the lease is released, and effects remain 0/0/0.
 - blocker_id: OPS-084-LEGAL-BUNDLE
   status: open
   scope: production_broad
