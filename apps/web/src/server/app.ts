@@ -300,7 +300,9 @@ import { createApprovedSchoolAdminRouter } from './features/signup/school/approv
 import { createSchoolSignupService } from './features/signup/school/service.ts';
 import {
   classifyDomain,
+  classifyDomainTransitionPath,
   domainTransitionFeatureRegistration,
+  normalizeDomainTransitionPath,
 } from './features/domain-transition/index.ts';
 import {
   createParentHouseholdRouter,
@@ -473,6 +475,16 @@ export function createApp({
     }),
   );
   app.use(traceMiddleware);
+  app.use((req, res, next) => {
+    if (config.nodeEnv !== 'production' || classifyDomain(req.header('host') ?? '') !== 'unknown') {
+      next();
+      return;
+    }
+    setPrivateNoStore(res);
+    res.setHeader('Referrer-Policy', 'no-referrer');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.status(404).type('text').send('Not found.');
+  });
   app.use(
     '/api/v1/delivery/resend',
     createResendWebhookRouter({ config, pool, ...(clock ? { clock } : {}) }),
@@ -4222,9 +4234,12 @@ export function createApp({
   });
 
   app.use((req, res, next) => {
+    const rawPath = req.originalUrl || req.url;
+    const normalizedPath = normalizeDomainTransitionPath(rawPath);
     if (
-      /^\/assets\/events\/tisha-bav-2026(?:\/|$)/u.test(req.path) ||
-      /^\/assets\/app-experience-preview(?:-|\.|$)/u.test(req.path)
+      classifyDomainTransitionPath(rawPath) === 'tisha_bav_archived_asset' ||
+      (normalizedPath !== null &&
+        /^\/assets\/app-experience-preview(?:-|\.|$)/u.test(normalizedPath))
     ) {
       setPrivateNoStore(res);
       res.status(404).type('text').send('Not found.');

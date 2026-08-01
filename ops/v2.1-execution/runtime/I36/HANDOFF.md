@@ -1,6 +1,62 @@
 # I36 Integration Releases
 
-## Current terminal — Batch D P35 domain-transition retirement
+## Current terminal — Batch D P35 security correction
+
+Control `3aebe99dc9d5c3ae28d648597351ce6200691ed3`, based on
+`2213842965302e6c5ccbd9fd26f011681be20b1e`, held Batch D terminal
+`03e30641fb5de4de920978b2e574ad6bf4a015ad` after one independent review
+found two P2 defects and no P1: path normalization could bypass retired page
+and asset denial into static serving, and the fixed-path router left generic
+legacy prefixes unreachable while unknown production hosts could reach
+unrelated public and API handlers. Canonical correction READY is
+`67566b13b89cc68b7373230bb6ce707bda0312b1c059db7cc63495c1ce1d2c0e`.
+
+The correction exports one decode-once path normalizer/classifier shared by
+policy, router, and static denial. It normalizes slash/backslash separators,
+repeated and trailing slashes, dot segments, and ASCII case without recursive
+percent decoding. Both former `tisha-bav-live` output aliases are retired. The
+transition router now evaluates all paths, so `/api/legacy/*` and
+`/api/v1/legacy/*` mutations reach the accepted no-store 410 response. A
+production-only application guard runs before the first application route, so
+unknown hosts cannot reach HTML, assets, early webhooks, API rate limits, or
+the repository; canonical unrelated HTML and assets still pass through.
+
+Physical stale page and asset fixtures now fail closed across canonical,
+encoded-letter/separator, repeated-slash, raw/encoded-backslash, plain/encoded
+dot-segment, case, and former-live variants. Direct double encoding is not
+recursively classified and remains 404. The proof asserts no stale bytes, DB
+call or state change, cookie, or redirect. The immutable P35 request, archive
+manifest, all nine archived assets, migrations, and provider evidence remain
+byte-identical.
+
+Exactly seven product/test paths plus the I36 runtime triplet changed. Product
+and release inventory digests are
+`ae9356efb55d46990a1c1156cfd00e6652004cf5632492374f8059a6529830f7`
+and `54ee59b6a72ec7cf2e88747ba5659473f6f6976c66223c80cbc6f9982fd15ba8`;
+the exact seven-product Git-blob manifest is
+`49b3c321a6fab22d692048242dedf50e7ccbea6635b58daca14d3df6873739eb`.
+
+Validation passed: P35 verifier; focused unit 1/1; focused corrected HTTP 2/2;
+the complete changed integration file 35 passes plus only its unchanged
+missing-Zoom fixture failure; client/pages builds; generated-output absence;
+final-byte seed-free Chromium 3/3; scoped ESLint/Prettier; diff hygiene; and
+zero changed-path type diagnostics. Workspace typecheck reproduces exactly the
+four unchanged Stripe/duplicate-Playwright diagnostics.
+
+Claim `177acf91-73ce-4153-ac87-abdf71dde6c3`, writer
+`codex-i36-batch-d-security-correction-177acf91`, and RELEASE_INTEGRATOR lease
+`f32be76b-8e68-4c04-b731-134e379194c2` bounded the exact ten paths. The lease
+was released at `2026-08-01T18:43:44Z`, before its
+`2026-08-01T22:25:05Z` expiry. Candidate and effect locks remained absent; no
+provider, infrastructure, deployment, DNS, contact, send, billing, cleanup, or
+external action occurred. Effects remain `0/0/0`.
+
+I36 must stop after the single correction terminal is pushed with clean
+local/tracking/live equality. C00 must conduct the authorized second
+independent review and must not mark P35 applied or dispatch successors unless
+no P1/P2 remains.
+
+## Held terminal — Batch D P35 domain-transition retirement
 
 Live control `2213842965302e6c5ccbd9fd26f011681be20b1e`, based on
 `f66edb4d0728b90374e56da13dbd9853657d349c`, authorized the exact P35

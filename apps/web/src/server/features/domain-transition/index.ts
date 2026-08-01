@@ -7,11 +7,14 @@ export {
   CANONICAL_TRANSITION_ORIGIN,
   HOST_ONLY_SESSION_REQUIREMENTS,
   classifyDomain,
+  classifyDomainTransitionPath,
   decideDomainTransition,
   evaluateCutoverGate,
+  normalizeDomainTransitionPath,
   safeAttributionQuery,
   type DomainRole,
   type DomainTransitionMode,
+  type DomainTransitionPathClass,
   type TransitionDecision,
 } from './policy.ts';
 export {

@@ -1259,8 +1259,18 @@ describe('Tisha BAv retired HTTP surface', () => {
       for (const routePath of [
         '/tisha-bav',
         '/tisha-bav.html',
+        '/tisha-bav-live',
+        '/tisha-bav-live.html',
         '/tisha-bav/live',
         '/tisha-bav/success',
+        '/%74isha-bav',
+        '/tisha%2Dbav',
+        '//tisha-bav',
+        '/other/../tisha-bav.html',
+        '/other/%2e%2e/tisha-bav-live.html',
+        '/other\\..\\tisha-bav',
+        '/other%5c..%5ctisha-bav',
+        '/TISHA-BAV',
       ]) {
         const response = await canonicalFetch(server.baseUrl, routePath);
         expect(response.status, routePath).toBe(410);
@@ -1282,6 +1292,10 @@ describe('Tisha BAv retired HTTP surface', () => {
       });
       expect(head.status).toBe(410);
       expect(await head.text()).toBe('');
+
+      const directlyDoubleEncoded = await canonicalFetch(server.baseUrl, '/%2574isha-bav');
+      expect(directlyDoubleEncoded.status).toBe(404);
+      expect(await directlyDoubleEncoded.text()).not.toContain('STALE ACTIVE');
 
       for (const request of [
         {
@@ -1322,15 +1336,118 @@ describe('Tisha BAv retired HTTP surface', () => {
       expect(redirect.headers.get('location')).toBeNull();
       expect(await redirect.text()).toContain('This event has ended');
 
-      const archivedAsset = await canonicalFetch(
-        server.baseUrl,
+      for (const legacyMutationPath of ['/api/legacy/proof', '/api/v1/legacy/proof']) {
+        const response = await canonicalFetch(server.baseUrl, legacyMutationPath, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: '{}',
+        });
+        expect(response.status, legacyMutationPath).toBe(410);
+        expect(response.headers.get('set-cookie'), legacyMutationPath).toBeNull();
+        expect(response.headers.get('location'), legacyMutationPath).toBeNull();
+        expect(await response.json(), legacyMutationPath).toEqual({
+          code: 'LEGACY_MUTATION_RETIRED',
+          message: 'This legacy action is no longer available.',
+        });
+      }
+
+      for (const assetPath of [
         '/assets/events/tisha-bav-2026/archived-proof.png',
-      );
-      expect(archivedAsset.status).toBe(404);
-      expect(archivedAsset.headers.get('cache-control')).toContain('no-store');
-      expect(await archivedAsset.text()).not.toContain('ARCHIVED_ASSET_BYTES');
+        '/assets/events/%74isha-bav-2026/archived-proof.png',
+        '/assets/events%2Ftisha-bav-2026%2Farchived-proof.png',
+        '/assets//events/tisha-bav-2026/archived-proof.png',
+        '/assets/events/other/../tisha-bav-2026/archived-proof.png',
+        '/assets/events/other/%2e%2e/tisha-bav-2026/archived-proof.png',
+        '/assets\\events\\tisha-bav-2026\\archived-proof.png',
+        '/assets%5cevents%5ctisha-bav-2026%5carchived-proof.png',
+        '/ASSETS/EVENTS/TISHA-BAV-2026/ARCHIVED-PROOF.PNG',
+        '/assets/events/%2574isha-bav-2026/archived-proof.png',
+      ]) {
+        const response = await canonicalFetch(server.baseUrl, assetPath);
+        expect(response.status, assetPath).toBe(404);
+        expect(response.headers.get('set-cookie'), assetPath).toBeNull();
+        expect(response.headers.get('location'), assetPath).toBeNull();
+        expect(await response.text(), assetPath).not.toContain('ARCHIVED_ASSET_BYTES');
+      }
 
       expect(await stateSnapshot()).toBe(stateBefore);
+    } finally {
+      await server.close();
+      await rm(distDir, { recursive: true, force: true });
+    }
+  });
+
+  it('rejects unknown production hosts before public or database handling', async () => {
+    const distDir = await mkdtemp(path.join(tmpdir(), 'unknown-host-proof-'));
+    await mkdir(path.join(distDir, 'assets'), { recursive: true });
+    await Promise.all([
+      writeFile(path.join(distDir, 'index.html'), '<h1>PUBLIC_HTML_BYTES</h1>'),
+      writeFile(path.join(distDir, 'assets/public.js'), 'PUBLIC_ASSET_BYTES'),
+    ]);
+
+    let trackDatabaseCalls = false;
+    let databaseCalls = 0;
+    const guardedPool = new Proxy(pool, {
+      get(target, property) {
+        const value = Reflect.get(target, property, target);
+        if (property === 'query' && typeof value === 'function') {
+          return (...args: unknown[]) => {
+            if (trackDatabaseCalls) databaseCalls += 1;
+            return Reflect.apply(value, target, args);
+          };
+        }
+        return typeof value === 'function' ? value.bind(target) : value;
+      },
+    });
+    const server = await startServer(
+      testConfig({
+        NODE_ENV: 'production',
+        AUTH_CSRF_SECRET: 'test-only-auth-csrf-secret-for-unknown-host-proof',
+        PROTECTED_PAYLOAD_ENCRYPTION_KEY: 'test-only-32-byte-protected-payload-key-do-not-use',
+      }),
+      openWindow,
+      distDir,
+      guardedPool,
+    );
+    trackDatabaseCalls = true;
+    try {
+      const canonicalRoot = await canonicalFetch(server.baseUrl, '/');
+      expect(canonicalRoot.status).toBe(200);
+      expect(canonicalRoot.headers.get('cache-control')).not.toBe('no-store');
+      expect(await canonicalRoot.text()).toContain('PUBLIC_HTML_BYTES');
+      const canonicalAsset = await canonicalFetch(server.baseUrl, '/assets/public.js');
+      expect(canonicalAsset.status).toBe(200);
+      expect(await canonicalAsset.text()).toBe('PUBLIC_ASSET_BYTES');
+
+      for (const targetPath of ['/', '/assets/public.js']) {
+        const response = await canonicalFetch(server.baseUrl, targetPath, {
+          headers: { host: 'attacker.invalid' },
+        });
+        expect(response.status, targetPath).toBe(404);
+        expect(response.headers.get('cache-control'), targetPath).toContain('no-store');
+        expect(await response.text(), targetPath).toBe('Not found.');
+      }
+
+      const earlyWebhook = await canonicalFetch(server.baseUrl, '/api/v1/delivery/resend', {
+        method: 'POST',
+        headers: { host: 'attacker.invalid', 'content-type': 'application/json' },
+        body: '{}',
+      });
+      expect(earlyWebhook.status).toBe(404);
+      expect(earlyWebhook.headers.get('cache-control')).toContain('no-store');
+      expect(await earlyWebhook.text()).toBe('Not found.');
+
+      const lead = await canonicalFetch(server.baseUrl, '/api/v1/leads', {
+        method: 'POST',
+        headers: { host: 'attacker.invalid', 'content-type': 'application/json' },
+        body: JSON.stringify({ email: 'unknown-host@example.test' }),
+      });
+      expect(lead.status).toBe(404);
+      expect(lead.headers.get('cache-control')).toContain('no-store');
+      expect(lead.headers.get('set-cookie')).toBeNull();
+      expect(lead.headers.get('location')).toBeNull();
+      expect(await lead.text()).toBe('Not found.');
+      expect(databaseCalls).toBe(0);
     } finally {
       await server.close();
       await rm(distDir, { recursive: true, force: true });
@@ -1696,15 +1813,18 @@ async function canonicalFetch(
     body?: string;
   } = {},
 ): Promise<Response> {
-  const target = new URL(routePath, baseUrl);
+  const target = new URL(baseUrl);
   return new Promise<Response>((resolve, reject) => {
     const request = httpRequest(
-      target,
       {
+        protocol: target.protocol,
+        hostname: target.hostname,
+        port: target.port,
+        path: routePath,
         method: options.method ?? 'GET',
         headers: {
-          ...options.headers,
           host: 'join.onetimeonetime.com',
+          ...options.headers,
         },
       },
       (response) => {
@@ -1734,10 +1854,10 @@ async function canonicalFetch(
   });
 }
 
-async function startServer(config: AppConfig, now: Date, distDir?: string) {
+async function startServer(config: AppConfig, now: Date, distDir?: string, appPool: DbPool = pool) {
   const app = createApp({
     config,
-    pool,
+    pool: appPool,
     clock: () => now,
     ...(distDir ? { distDir } : {}),
   });

@@ -4,8 +4,12 @@ const canonicalHeaders = { host: 'join.onetimeonetime.com' };
 const browserRoutes = [
   '/tisha-bav',
   '/tisha-bav.html',
+  '/tisha-bav-live',
+  '/tisha-bav-live.html',
   '/tisha-bav/live',
   '/tisha-bav/success',
+  '/%74isha-bav',
+  '/TISHA-BAV',
 ] as const;
 const archivedAssets = [
   'hero-desktop.png',
@@ -52,6 +56,13 @@ test.describe('retired Tisha BAv public surface', () => {
     const head = await request.head('/tisha-bav', { headers: canonicalHeaders });
     expect(head.status()).toBe(410);
     expect(await head.text()).toBe('');
+
+    const directlyDoubleEncoded = await request.get('/%2574isha-bav', {
+      headers: canonicalHeaders,
+      maxRedirects: 0,
+    });
+    expect(directlyDoubleEncoded.status()).toBe(404);
+    expect(await directlyDoubleEncoded.text()).not.toContain('Reserve My Spot');
   });
 
   test('registration, join, and provider redirect surfaces cannot activate', async ({
@@ -99,6 +110,17 @@ test.describe('retired Tisha BAv public surface', () => {
     expect(redirect.headers()['set-cookie']).toBeUndefined();
     expect(redirect.headers().location).toBeUndefined();
     expect(await redirect.text()).toContain('This event has ended');
+
+    const legacyMutation = await request.post('/api/v1/legacy/proof', {
+      headers: canonicalHeaders,
+      data: {},
+      maxRedirects: 0,
+    });
+    expect(legacyMutation.status()).toBe(410);
+    expect(await legacyMutation.json()).toEqual({
+      code: 'LEGACY_MUTATION_RETIRED',
+      message: 'This legacy action is no longer available.',
+    });
   });
 
   test('archived event assets are never served from the public static tree', async ({
@@ -113,6 +135,20 @@ test.describe('retired Tisha BAv public surface', () => {
       expect(response.headers()['cache-control'], asset).toContain('no-store');
       expect(response.headers()['content-type'], asset).toContain('text/plain');
       expect(await response.text(), asset).toBe('Not found.');
+    }
+
+    for (const assetPath of [
+      '/assets/events/%74isha-bav-2026/hero-desktop.png',
+      '/assets/events%2Ftisha-bav-2026%2Fhero-desktop.png',
+      '/ASSETS/EVENTS/TISHA-BAV-2026/HERO-DESKTOP.PNG',
+    ]) {
+      const response = await request.get(assetPath, {
+        headers: canonicalHeaders,
+        maxRedirects: 0,
+      });
+      expect(response.status(), assetPath).toBe(404);
+      expect(response.headers()['cache-control'], assetPath).toContain('no-store');
+      expect(await response.text(), assetPath).toBe('Not found.');
     }
   });
 });

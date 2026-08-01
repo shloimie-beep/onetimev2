@@ -4,8 +4,10 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
   HOST_ONLY_SESSION_REQUIREMENTS,
+  classifyDomainTransitionPath,
   decideDomainTransition,
   evaluateCutoverGate,
+  normalizeDomainTransitionPath,
 } from '../../apps/web/src/server/features/domain-transition/policy.ts';
 import {
   assertLegacyImportBoundary,
@@ -48,7 +50,22 @@ assert.deepEqual(signup, {
     'https://join.onetimeonetime.com/signup?source=old-bookmark&utm_campaign=migration_2026',
 });
 
-for (const path of ['/tisha-bav', '/tisha-bav.html', '/tisha-bav/live', '/tisha-bav/success']) {
+for (const path of [
+  '/tisha-bav',
+  '/tisha-bav.html',
+  '/tisha-bav-live',
+  '/tisha-bav-live.html',
+  '/tisha-bav/live',
+  '/tisha-bav/success',
+  '/%74isha-bav',
+  '/tisha%2Dbav',
+  '//tisha-bav',
+  '/x/../tisha-bav',
+  '/x/%2e%2e/tisha-bav',
+  '/x\\..\\tisha-bav',
+  '/x%5c..%5ctisha-bav',
+  '/TISHA-BAV',
+]) {
   for (const method of ['GET', 'HEAD']) {
     assert.deepEqual(
       decideDomainTransition({ host: 'join.onetimeonetime.com', method, path }),
@@ -56,6 +73,36 @@ for (const path of ['/tisha-bav', '/tisha-bav.html', '/tisha-bav/live', '/tisha-
       `${method} ${path} must remain retired`,
     );
   }
+}
+assert.deepEqual(
+  decideDomainTransition({
+    host: 'join.onetimeonetime.com',
+    method: 'GET',
+    path: '/%2574isha-bav',
+  }),
+  { action: 'pass_through', role: 'transition' },
+  'Direct double encoding must not be decoded recursively',
+);
+for (const path of [
+  '/assets/events/tisha-bav-2026/hero.png',
+  '/assets/events/%74isha-bav-2026/hero.png',
+  '/assets/events%2Ftisha-bav-2026%2Fhero.png',
+  '/assets/events/other/../tisha-bav-2026/hero.png',
+  '/assets\\events\\tisha-bav-2026\\hero.png',
+  '/ASSETS/EVENTS/TISHA-BAV-2026/HERO.PNG',
+]) {
+  assert.equal(
+    classifyDomainTransitionPath(path),
+    'tisha_bav_archived_asset',
+    `${path} must classify as an archived asset`,
+  );
+}
+assert.equal(normalizeDomainTransitionPath('/x/%2e%2e/TISHA-BAV/'), '/tisha-bav');
+for (const path of ['/api/legacy/proof', '/api/v1/legacy/proof']) {
+  assert.deepEqual(
+    decideDomainTransition({ host: 'join.onetimeonetime.com', method: 'POST', path }),
+    { action: 'gone', status: 410, reason: 'legacy_mutation_retired' },
+  );
 }
 for (const probe of [
   { method: 'POST', path: '/api/v1/events/tisha-bav-2026/register' },
@@ -72,7 +119,7 @@ assert.deepEqual(
   decideDomainTransition({
     host: 'preview.example.test',
     method: 'GET',
-    path: '/login',
+    path: '/',
   }),
   { action: 'not_found', status: 404, reason: 'unknown_host' },
 );
@@ -156,7 +203,7 @@ assert.ok(
 );
 assert.ok(
   appSource.indexOf('installServerFeatureRouters({') <
-    appSource.indexOf('/^\\/assets\\/events\\/tisha-bav-2026'),
+    appSource.indexOf("classifyDomainTransitionPath(rawPath) === 'tisha_bav_archived_asset'"),
   'P35 must be mounted before the archived-asset deny and public static serving',
 );
 

@@ -1,63 +1,67 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
-MODE: PAUSE_FOR_C00_BATCH_D_P35_DOMAIN_TRANSITION_RETIREMENT_AUDIT
+MODE: PAUSE_FOR_C00_BATCH_D_P35_SECURITY_CORRECTION_SECOND_REVIEW
 
-Audit the exact pushed I36 Batch D P35 domain-transition-retirement terminal.
-Do not perform provider or infrastructure inspection/mutation, candidate work,
-deployment, DNS, billing, contact creation, send, activation, or any external
-successor action from this prompt.
+Conduct the authorized second independent review of the exact pushed I36 Batch
+D P35 security-correction terminal. The first review held two P2 defects and no
+P1; do not mark P35 applied unless this correction has no P1/P2. Do not perform
+provider/infra inspection or mutation, candidate work, deployment, DNS,
+billing, contact creation, send, cleanup, or any external successor action.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-integration
-Authorized start and required sole parent: `460ba42db534e669a63e0c6e2383a0f2e8d6ac97`
-Containing control: `2213842965302e6c5ccbd9fd26f011681be20b1e`
-Authority/control basis: `f66edb4d0728b90374e56da13dbd9853657d349c`
-READY: `a330befb939fcfda31fae9bfca1ece0b56a3ce959cb47265b45da9db42afd3d9`
-Claim: `eb0bd2af-26a7-448a-90d8-1a5e4ae56ce8`
-Writer: `codex-i36-batch-d-p35-eb0bd2af`
-RELEASE_INTEGRATOR lease: `595bc994-56d3-4805-9e86-cf7bccc805ca`
-Lease issued: `2026-07-31T20:53:07Z`
-Lease expiry: `2026-08-01T00:53:07Z`
-Lease release: `2026-07-31T21:23:02Z`
+Authorized start and required sole parent: `03e30641fb5de4de920978b2e574ad6bf4a015ad`
+Held terminal parent: `460ba42db534e669a63e0c6e2383a0f2e8d6ac97`
+Containing control: `3aebe99dc9d5c3ae28d648597351ce6200691ed3`
+Authority/control basis: `2213842965302e6c5ccbd9fd26f011681be20b1e`
+READY: `67566b13b89cc68b7373230bb6ce707bda0312b1c059db7cc63495c1ce1d2c0e`
+Claim: `177acf91-73ce-4153-ac87-abdf71dde6c3`
+Writer: `codex-i36-batch-d-security-correction-177acf91`
+RELEASE_INTEGRATOR lease: `f32be76b-8e68-4c04-b731-134e379194c2`
+Lease issued: `2026-08-01T18:25:05Z`
+Lease expiry: `2026-08-01T22:25:05Z`
+Lease release: `2026-08-01T18:43:44Z`
 Effects: `0/0/0`
 
-Reproduce the ten-path inventory
-`e5a54c5ea6f9ee253d9f3f1835ce9b2ac91ffd20a7d149b627ed6c3a7f42ca82`,
-the seven-product inventory
-`e9db03c400cbf3f797c4e5d93a0719c85330a45fec5a8da47950b292d67f0a20`,
-all seven authorized Git-blob preimages, and immutable raw Git request
-`P35-route-registration-001` digest
+Reproduce the exact ten-path release inventory
+`54ee59b6a72ec7cf2e88747ba5659473f6f6976c66223c80cbc6f9982fd15ba8`,
+seven-product inventory
+`ae9356efb55d46990a1c1156cfd00e6652004cf5632492374f8059a6529830f7`,
+all seven authorized Git-blob preimages at `03e30641`, the exact final
+seven-product Git-blob manifest
+`49b3c321a6fab22d692048242dedf50e7ccbea6635b58daca14d3df6873739eb`,
+and immutable raw P35 request digest
 `7c604c8ec91fdaeeedda141b19a075bacccbe94961b420f3a85dd6bcc9ad6cf2`.
-Confirm the terminal changes exactly those seven product/test paths and the I36
-runtime triplet, with no archive, migration, request, control, provider, or
-deployment byte changed.
+Confirm exactly seven product/test paths plus the I36 runtime triplet changed.
 
-Confirm `domainTransitionFeatureRegistration` is centrally mounted before
-later routes, production unknown-host rejection remains fail closed, and the
-non-production compatibility wrapper only prevents localhost login/signup
-regressions. Confirm all four canonical historical browser paths return the
-accepted no-store 410 ended-event page before static serving. Confirm register,
-join, and redirect surfaces return 410 without database change, cookie, or
-provider redirect.
+Reproduce both original P2s against the held parent, then confirm the terminal
+closes them. Audit one decode-once shared normalizer/classifier for encoded
+letters and separators, slash/backslash, repeated/trailing slashes, dot
+segments, and ASCII case. Confirm it does not recursively decode `%25`.
+Confirm `tisha-bav-live` and `.html` aliases and every normalized stale page
+variant return 410 before static, while all normalized archived-asset variants
+return no-store 404 without serving physical bytes.
 
-Confirm active Tisha client and page-generation hooks are absent, incremental
-builds remove `tisha-bav.html` and `tisha-bav-live.html`, all nine archived
-source assets and the archive manifest remain, and the archived asset prefix
-returns no-store 404 even when a physical file exists.
+Confirm the transition router evaluates all paths, generic `/api/legacy/*` and
+`/api/v1/legacy/*` mutations return accepted 410 JSON, and unrelated canonical
+host paths pass through. Confirm the production unknown-host guard runs before
+the first application route: attacker-host root, public asset, early Resend
+webhook, and lead POST must all return 404 with zero repository calls, cookie,
+or redirect. Nonproduction localhost compatibility must remain unchanged.
 
-Confirm the P35 verifier, focused unit and integration tests, both web builds,
-three seed-free Playwright tests, scoped ESLint and Prettier, generated-output
-absence, and diff hygiene. Confirm workspace typecheck has zero changed-path
-diagnostics and exactly four unchanged out-of-scope Stripe/Playwright
-diagnostics. Distinguish the unchanged standard-browser missing `join_opens_at`
-seed and unchanged historical join fixture missing its Zoom URL from the green
-bounded P35 tests.
+Confirm verifier; focused unit 1/1; corrected HTTP 2/2; complete integration
+file 35 passes plus only the unchanged missing-Zoom fixture failure; both web
+builds; generated Tisha output absence; final-byte seed-free Chromium 3/3;
+scoped ESLint/Prettier; diff hygiene; zero changed-path type diagnostics; and
+exactly four unchanged workspace Stripe/duplicate-Playwright diagnostics.
 
-Confirm the sole lease was released before expiry, local/tracking/live
-integration refs equal the terminal head, and no provider or external effect
-occurred. C00 must independently consume this terminal before any successor
-authority. Stop.
+Confirm immutable request, archive manifest, nine archived assets, migrations,
+provider evidence, control files, and all out-of-scope bytes are unchanged.
+Confirm the lease released before expiry, local/tracking/live integration refs
+equal the terminal, candidate/effect locks are absent, and effects are 0/0/0.
+Report P1/P2/P3 findings and stop. C00 may accept and dispatch successors only
+if the result has no P1/P2.
 
 ---
 
