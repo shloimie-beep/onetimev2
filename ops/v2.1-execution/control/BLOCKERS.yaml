@@ -1,6 +1,31 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
 blockers:
+- blocker_id: I36-P21-P22-P30-SEMANTIC-CORRECTION
+  status: open
+  scope: pre_candidate_repository_correctness
+  owner: C00_and_I36
+  affected_tasks:
+  - I36
+  - P21
+  - P22
+  - P30
+  - V43
+  - R45
+  safe_work_completed: >-
+    Exact integration 32e21c0d is pushed, clean, and effect-free. Its 44-path envelope, 41 preimages, four immutable
+    requests, focused tests, released leases, and 0/0/0 effects passed. Independent review found zero P1, six P2,
+    and one P3 while confirming P22/P30 defaults remain fail-closed and no provider call is reachable.
+  required_authority_or_input: []
+  protection: >-
+    Do not freeze a candidate or enable P21 provider reconciliation, P22 learning, or P30 dispatch from 32e21c0d.
+    Correct only the exact 13 product paths plus I36 runtime triplet authorized by READY 08e4446d. Preserve generic
+    disabled responses and later exact gates for the P21 reconciler, actual mounted P18 callback, native schema,
+    deployed alias secret, and real F05/F06/provider bindings.
+  next_check: >-
+    Independently review the single correction terminal for stable P21 replay/in-transaction CAS, removal of the
+    self-attested P18 gate, terminal dead-letter mapping, checked completion fences, authority-bound provider reference,
+    exact approved readback digests, released leases, exact scope, and effects 0/0/0.
 - blocker_id: OPS-084-LEGAL-BUNDLE
   status: open
   scope: production_broad

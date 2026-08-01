@@ -1387,43 +1387,47 @@ items:
   kind: server_feature_registration
   status: assigned
   assigned_steward: I36
-  target_checkpoint: I36_path_complete_successor_application_P21_first
-  acknowledged_by_task: false
-  acknowledgment_head_sha: null
-  acknowledgment_state_handoff_digest: null
+  target_checkpoint: I36_held_semantic_correction_then_path_complete_reconciler_successor
+  acknowledged_by_task: true
+  acknowledgment_head_sha: 32e21c0dfa93195b05df99d81c906a4039341355
+  acknowledgment_state_handoff_digest: dad3a2237173f77456d746df7346ea74be45d70b49ce96f5da88488428549669
   applied_commit_sha: null
-  result_record_head_sha: null
-  evaluated_target_head_sha: null
+  result_record_head_sha: 32e21c0dfa93195b05df99d81c906a4039341355
+  evaluated_target_head_sha: e569d6933bc25ec848fe9eb279e193d40b38787e
   result_digest: null
-  rejection_reason: null
+  rejection_reason: >-
+    Held after independent review: separate resume-version preflight breaks same-key replay and is not enforced by the
+    in-transaction CAS; the required locked internal reconciler is also not runtime-registered. Safe repository fragments remain.
 - request_id: P22-server-registration-003
   request_digest: 0639ab621ae2306fd68eb6d07326a6529d4ebd74dd4fae09181b11bd8a19e83f
   requesting_task_id: P22
   kind: server_feature_registration
   status: assigned
   assigned_steward: I36
-  target_checkpoint: I36_path_complete_successor_application_P22_server_after_P21
-  acknowledged_by_task: false
-  acknowledgment_head_sha: null
-  acknowledgment_state_handoff_digest: null
+  target_checkpoint: I36_remove_self_attested_gate_then_exact_P18_mounted_successor
+  acknowledged_by_task: true
+  acknowledgment_head_sha: 32e21c0dfa93195b05df99d81c906a4039341355
+  acknowledgment_state_handoff_digest: dad3a2237173f77456d746df7346ea74be45d70b49ce96f5da88488428549669
   applied_commit_sha: null
-  result_record_head_sha: null
-  evaluated_target_head_sha: null
+  result_record_head_sha: 32e21c0dfa93195b05df99d81c906a4039341355
+  evaluated_target_head_sha: e569d6933bc25ec848fe9eb279e193d40b38787e
   result_digest: null
-  rejection_reason: null
+  rejection_reason: >-
+    Dependency-held: actual runtime safely returns generic no-store 503, but equal references returned by an injector
+    do not prove that the P22 callback was installed into the mounted P18 attendance repository.
 - request_id: P22-client-route-003
   request_digest: 21472b085a29a1948e6037af4d144850d69dd5784472c9485ba5260d4428677f
   requesting_task_id: P22
   kind: client_route_registration
   status: assigned
   assigned_steward: I36
-  target_checkpoint: I36_path_complete_successor_application_P22_client_after_server
-  acknowledged_by_task: false
-  acknowledgment_head_sha: null
-  acknowledgment_state_handoff_digest: null
+  target_checkpoint: accepted_repository_surface_held_behind_corrected_P22_server_and_candidate_gates
+  acknowledged_by_task: true
+  acknowledgment_head_sha: 32e21c0dfa93195b05df99d81c906a4039341355
+  acknowledgment_state_handoff_digest: dad3a2237173f77456d746df7346ea74be45d70b49ce96f5da88488428549669
   applied_commit_sha: null
-  result_record_head_sha: null
-  evaluated_target_head_sha: null
+  result_record_head_sha: 32e21c0dfa93195b05df99d81c906a4039341355
+  evaluated_target_head_sha: e569d6933bc25ec848fe9eb279e193d40b38787e
   result_digest: null
   rejection_reason: null
 - request_id: P30-registry-registration-002
@@ -1432,15 +1436,17 @@ items:
   kind: worker_runner_registration
   status: assigned
   assigned_steward: I36
-  target_checkpoint: I36_path_complete_successor_application_P30_worker
-  acknowledged_by_task: false
-  acknowledgment_head_sha: null
-  acknowledgment_state_handoff_digest: null
+  target_checkpoint: I36_held_semantic_correction_then_real_F05_F06_provider_successor
+  acknowledged_by_task: true
+  acknowledgment_head_sha: 32e21c0dfa93195b05df99d81c906a4039341355
+  acknowledgment_state_handoff_digest: dad3a2237173f77456d746df7346ea74be45d70b49ce96f5da88488428549669
   applied_commit_sha: null
-  result_record_head_sha: null
-  evaluated_target_head_sha: null
+  result_record_head_sha: 32e21c0dfa93195b05df99d81c906a4039341355
+  evaluated_target_head_sha: e569d6933bc25ec848fe9eb279e193d40b38787e
   result_digest: null
-  rejection_reason: null
+  rejection_reason: >-
+    Held after independent review: dead_letter is misreported retryable, final completion-fence results are ignored,
+    dispatch does not use only the authority-returned provider reference, and readback digests are shape-only.
 entry_schema:
   request_id: null
   request_digest: null

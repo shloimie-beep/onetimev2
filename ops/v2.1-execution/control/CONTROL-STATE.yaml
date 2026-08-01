@@ -16,13 +16,13 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: cdc98ae7a5212c288ad16b35df70addc517e54af
+controller_authorization_sha: de282f8ed1e5c57a23b301c760802593f53ed591
 next_action: >-
-  Apply the four immutable path-complete P21/P22/P30 successors from exact integration e569d693 as one dependency-ordered
-  repository batch under SERVER_COMPOSER, CLIENT_COMPOSER, WORKER_COMPOSER, and RELEASE_INTEGRATOR leases. P21 publication
-  composition precedes P22 server/client learning composition; P30 durable OT-16 worker registration remains fail-closed
-  without exact provider identity/readback. Change only the 41-product-path union plus I36 runtime triplet, run focused and
-  merged validation once, push one terminal, and stop for independent review. Candidate and every external effect remain prohibited.
+  Correct the independently held integration terminal 32e21c0d within the exact 13-product-path subset plus I36 runtime
+  triplet. Stabilize P21 resume replay while retaining independent in-transaction CAS; remove P22's self-attested mounted-P18
+  enablement seam; and correct P30 dead-letter, completion-fence, authority-reference, and exact readback-digest semantics.
+  Preserve disabled defaults and explicit later gates for the P21 reconciler, actual P18 mount, native schema, deployed alias
+  secret, and real F05/F06/provider bindings. Push one correction terminal and stop for independent review; candidate and effects remain prohibited.
 production_completion_lanes:
 - lane: A
   owner: F02
@@ -117,7 +117,7 @@ production_completion_lanes:
   provider_effects: prohibited_until_candidate_authority_and_exact_lock
 - lane: D
   owner: I36
-  status: path_complete_P21_P22_P30_application_dispatched
+  status: path_complete_application_held_semantic_correction_dispatched
   branch: codex/v21-integration
   prior_release_sha: 524563f07b3bb8544db989982dc55d4bc86a1999
   partial_checkpoint_sha: a5a2ad94b77eaf596930609d4d5abe4fa672439b
@@ -130,7 +130,7 @@ production_completion_lanes:
   partial_checkpoint_runtime_triplet_digest: a877b1e24c450a599e8c9b0066345cc06d0444a4c9749aecdda0f7da0c3c628b
   partial_checkpoint_five_path_digest: c405518fb5c7a744fa24e6b4b6f88712af9de68e109920e9fad369e63374d31d
   all_producer_implementation_heads_ancestor_count: 35
-  expected_head_sha: e569d6933bc25ec848fe9eb279e193d40b38787e
+  expected_head_sha: 32e21c0dfa93195b05df99d81c906a4039341355
   Batch_B_claim_id: 995fe313-efa9-4e5f-b4f6-eeadc9b50d6d
   Batch_B_CONFIG_DEPS_lease_id: e75d8901-0b96-4ec7-b64e-724cfdbcd7a1
   Batch_B_RELEASE_INTEGRATOR_lease_id: eafaecb9-82b6-4e99-bbc3-0d9ad8d92b84
@@ -281,6 +281,24 @@ production_completion_lanes:
   path_complete_application_release_path_count: 44
   path_complete_application_release_path_inventory_digest: 51184320695b72b5d049d626996bf38292dfff01064699dba501087720fb6cdd
   path_complete_application_product_preimage_manifest_digest: bc1da22472133ffc57b980565cde3c442d4026315b97005ee671cf99f939b19a
+  path_complete_application_terminal_head_sha: 32e21c0dfa93195b05df99d81c906a4039341355
+  path_complete_application_terminal_parent_sha: e569d6933bc25ec848fe9eb279e193d40b38787e
+  path_complete_application_terminal_tree_sha: 596e0d86774614c0f4b724d6081740fe8979330c
+  path_complete_application_state_handoff_digest: dad3a2237173f77456d746df7346ea74be45d70b49ce96f5da88488428549669
+  path_complete_application_runtime_triplet_digest: dfc1dc5a1d929f4d92cfc7f3c5f4efa58ad623a6051a26f23741d2a7b27072af
+  path_complete_application_review: held_zero_P1_six_P2_one_P3
+  held_correction_claim_id: 1abaf754-7160-4a03-908e-382ec8b471ac
+  held_correction_SERVER_COMPOSER_lease_id: 85b2ea40-3892-4654-9485-fa1cb8611306
+  held_correction_WORKER_COMPOSER_lease_id: 4a52432e-397b-45ad-9716-85338bf7c109
+  held_correction_RELEASE_INTEGRATOR_lease_id: bfb7723c-1017-4e2b-90c7-62aaee990313
+  held_correction_lease_expires_at: '2026-08-02T02:31:59Z'
+  held_correction_ready_entry_payload_digest: 08e4446d2cfc1f8a04600336694ec4e02714231ae1ce3b4bce62235131e1b7d8
+  held_correction_authorized_start_sha: 32e21c0dfa93195b05df99d81c906a4039341355
+  held_correction_product_path_count: 13
+  held_correction_product_path_inventory_digest: 69cfbf733eb52dda2ad34d7402cd2a952fc5c99d22102acaa5630ee29e038a2d
+  held_correction_release_path_count: 16
+  held_correction_release_path_inventory_digest: a6d196e4e0021a3323c3e7fa850613106d6de68f5eb35da0aa967a160449d5e1
+  held_correction_product_preimage_manifest_digest: 63cf872681002db52b35008d62e6536770ebdc2931ad58777c4c2b28f56cc20d
   Batch_D_external_effects: 0/0/0
   P21_P22_source_atomic_claim_sha: b87901e803cdd3be7e09a1143d9f23eceaf7ad78
   P21_P22_source_atomic_claim_parent_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
@@ -505,8 +523,10 @@ successor_dispatch:
   I36_successor_schema_request_materialization_dispatched_at: '2026-08-01T18:58:37Z'
   I36_successor_schema_request_terminal_accepted_at: '2026-08-01T19:21:43Z'
   I36_path_complete_P21_P22_P30_application_dispatched_at: '2026-08-01T19:21:43Z'
-  lease_issued_at: '2026-08-01T19:21:43Z'
-  lease_expires_at: '2026-08-02T01:21:43Z'
+  I36_path_complete_application_held_at: '2026-08-01T20:31:59Z'
+  I36_semantic_correction_dispatched_at: '2026-08-01T20:31:59Z'
+  lease_issued_at: '2026-08-01T20:31:59Z'
+  lease_expires_at: '2026-08-02T02:31:59Z'
   ready_queue_published: true
   F02:
     status: integrated_and_reconciled
