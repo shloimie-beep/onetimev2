@@ -1,0 +1,47 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P30-registry-registration-002
+task_id: P30
+kind: worker_runner_registration
+requirement_ids:
+  - OTV2-GHL-225
+acceptance_case_ids:
+  - OTV2-GHL-225-SCHEDULE
+  - OTV2-GHL-225-PAID-EXIT
+  - OTV2-GHL-225-SCHOOL-EXIT
+  - OTV2-GHL-225-SUPPRESSION
+rationale: P30-registry-registration-001 is immutable, admitted only for the OT-14/OT-15 registry fragment, and invalid as the missing durable OT-16 worker registration because it used the unsupported registration kind and mixed already-integrated requirements. This successor owns only the durable OT-16 worker and preserves all four exact OTV2-GHL-225 cases. It grants no provider build, activation, enrollment, canary, or send authority.
+desired_semantic_change: Register only the durable communications.ot16-checkpoint worker through the canonical worker registry. Before claim, schedule, write, or provider call, require the active F06 highlevel.ot16.primary binding and exact saved/reopened OT-16 provider identity/readback, the P27 linked and in_sync adult identity, and P28 migration 2247 communication foundation. Fail closed with providerCallsPerformed=false whenever any gate is absent. Quarantine acceptance-unknown outcomes for provider reconciliation and never retry them.
+proposed_symbols_routes_keys_or_dependencies:
+  - |-
+    Exact immutable path inventory; SHA-256 of sorted LF-delimited paths with final LF is cc8fe47bd7ea862286e44f42d863711120f492774b772d621bdd710c1234dbc0:
+    apps/worker/src/runners/ghl-workflows/campaigns/adapters.ts
+    apps/worker/src/runners/ghl-workflows/campaigns/composition.test.ts
+    apps/worker/src/runners/ghl-workflows/campaigns/composition.ts
+    apps/worker/src/runners/ghl-workflows/campaigns/index.ts
+    apps/worker/src/runners/ghl-workflows/campaigns/runner.test.ts
+    apps/worker/src/runners/ghl-workflows/campaigns/runner.ts
+    apps/worker/src/runners/registry/index.test.ts
+    apps/worker/src/runners/registry/index.ts
+  - Register durable runner key communications.ot16-checkpoint and deterministic operation identity ghl.workflow.ot16_checkpoint in the existing worker registry for both once and continuous paths; apps/worker/src/main.ts already invokes that registry and is outside this ceiling.
+  - Use exact F06 interface digest 7d0e2e360036fa6e3b742053c714b13f442e29c9ff3e83ad7b6bf02c005694a0, implementation commit 94281de13063203808ecabef8a818762e5ff1e2e, migration 2238, and binding key highlevel.ot16.primary.
+  - Use P27 interface digest 788e150f7819431fecd8036701d1e78d6fe0a39b818795b318d54e70998d5ce6 and implementation commit 7d5edd687016b827769cc931b3766b2ae566507c; require exact linked and in_sync adult identity. Use the P28 communication repository on migration 2247.
+  - CampaignEmailPort must accept AbortSignal plus a safe provider reference and return a ProviderDispatchOutcome that distinguishes accepted, not_accepted_retryable, permanent, and acceptance_unknown.
+  - Run all production-read-only, provider-mode/configuration, exact-location, OT-16 identity, saved/reopen readback, F06 binding/scope, P27 identity, P28 eligibility, paid, decline, School, consent, and suppression gates before scheduling, claiming, reservation, state write, or provider call.
+  - Map not_accepted_retryable to F05 retry_wait, permanent to terminal, and acceptance_unknown to quarantine. Never automatically retry acceptance_unknown; release it only after exact provider reconciliation proves disposition.
+  - Keep WhatsApp absent from the port and runner.
+compatibility_assumptions:
+  - Exact path digest cc8fe47bd7ea862286e44f42d863711120f492774b772d621bdd710c1234dbc0 is computed from the eight sorted paths with a final LF.
+  - Integration preimages are campaigns/index.ts d3399ae92b4a2cb43f45fc47d09c400c1b4da1adb96ffecb5d81484cf6c3b438; campaigns/runner.test.ts 71cc95dc241b164eedf60e4ba7080c1a7c866da13b2e92b2260f1f96b91edc76; campaigns/runner.ts dc41a6112c975110f11e29fcac0d5a1d9ad365072d6a31c28889f76d565ab714; registry/index.ts f27a2ef4c5b1248ab7af4848e1703c2d130e150f0f54df242ee915e27610fde5. The other four paths are absent/new.
+  - F05 remains the exact provider-operation lifecycle boundary at interface digest fd17c478bfc851dcb434b8e0c2750701605b80dfdf880833a6a2993e8fad6329 and implementation commit 1ade14c52e42e59bb8fd1d1de776b91406c45f15 with migration 2236.
+  - OTV2-GHL-134 and OTV2-GHL-135 remain attributed to the already-integrated OT-14/OT-15 fragment and are intentionally not duplicated here.
+  - The canonical OT-16 registry currently has ghlId empty and observedStatus MISSING. Code may land, but the runner must remain disabled until an exact provider identity, F06 binding, and saved/reopen readback are available.
+verification_performed:
+  - Validated the exact eight-path inventory and preimages at integration 3ea1a32ef971947ab10c129e1de74b54e7311834.
+  - Repository verification must cover scheduler boundaries, deterministic dedupe, adult-only identity, final paid/decline/School/consent/suppression reads, pre-claim fail-closed behavior, F05 result mapping, acceptance-unknown quarantine, AbortSignal propagation, once and continuous registry entry, and full typecheck/lint/secret/diff controls.
+  - No provider identity was guessed and no provider call, build, activation, enrollment, canary, or send was performed or claimed.
+conflicts_or_risks:
+  - When production_read_only is true, writes are disabled, provider mode/configuration mismatches, exact GHL location mismatches, OT-16 ID is blank, save/reopen readback is missing or stale, or the F06 binding is absent, inactive, or scope-mismatched, return a disabled result with enabled=false, providerCallsPerformed=false, and zero schedules, claims, reservations, writes, and provider calls.
+  - providerCallsPerformed must remain false whenever OT-16 identity, binding, provider readback, P27 identity, P28 repository, or final eligibility evidence is unavailable.
+  - Never retry acceptance_unknown, never expose a WhatsApp path, and never treat this repository registration as provider-effect authority.
+contains_secret_or_private_data: false

@@ -1,6 +1,67 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
+MODE: PAUSE_FOR_C00_SUCCESSOR_SCHEMA_AND_REQUEST_ADMISSION
+
+Audit the exact pushed I36 successor-schema/request terminal. This is a
+repository-metadata phase only. Do not apply any successor, edit product
+source, freeze a candidate, inspect or mutate providers, deploy, change DNS,
+touch a live database, create a contact, enroll, send, charge, or perform any
+external effect.
+
+Repository: shloimie-beep/onetimev2
+Branch: codex/v21-integration
+Authorized start and required sole parent:
+`acd9ffae1df73765dbf46d049db14010ef12e869`
+Containing control: `cdc98ae7a5212c288ad16b35df70addc517e54af`
+Authority/control basis: `3aebe99dc9d5c3ae28d648597351ce6200691ed3`
+READY: `3a1fb3c3c6d7b485a5672f85be39b404b76936cfa178334df6888020e99972e1`
+Claim: `743bcd43-cc89-4bab-a3ab-b610d5ac49bb`
+Writer: `codex-i36-successor-schema-requests-743bcd43`
+RELEASE_INTEGRATOR lease: `c290bc01-2c9c-48fb-bf56-d9460d32dfec`
+Lease issued: `2026-08-01T18:58:37Z`
+Lease expiry: `2026-08-01T22:58:37Z`
+Lease release: `2026-08-01T19:14:50Z`
+Effects: `0/0/0`
+
+Confirm the sole parent, clean ancestry, exact eight-path scope, authorized
+path digest `965fd8118bc5e6486c4690eb943edd88ce681d123dfc996154b69e839aea2ec1`,
+all four absent request preimages, exact prior schema raw digest, and no
+product, migration, central registration, config, lockfile, or unrelated
+runtime changes.
+
+Confirm the schema differs only by replacing the acceptance-case item pattern
+with the exact 265-ID enum in matrix order; schema LF Git-blob SHA-256 must be
+`4b8f107c9d828e47497629bbb749790b86dc3a984730d6e777d84b4787b43098`.
+Confirm the request-kind enum and F01 interface checkpoint are unchanged.
+Validate the schema under Draft 2020-12 and prove exact matrix count, order,
+uniqueness, and sorted-ID digest
+`ec0843e963db3f5f8d8f554992d2c40b8d6fa969475afe0058e6b455b4b03dfc`.
+
+Confirm these exact raw/canonical request digests:
+
+- P21-registration-004: `ce7eea4f...` / `410dc505...`
+- P22-server-registration-003: `b359a3be...` / `0639ab62...`
+- P22-client-route-003: `6187ea30...` / `21472b08...`
+- P30-registry-registration-002: `cae9e599...` / `d42c6567...`
+
+Confirm all four validate as schema instances, their substantive inventories
+exclude their own request YAML and runtime triplet, and P30 preserves the
+exact eight-product-path digest `cc8fe47b...`.
+
+Confirm lease release before expiry, local/tracking/live integration equality,
+and no candidate, provider, deployment, DNS, database, send, contact, charge,
+cleanup, or external effect. C00 may then admit the requests into the steward
+queue and issue separately fenced dependency-ordered application authority.
+Stop.
+
+---
+
+## Historical prompt record
+
+MODEL: GPT-5.6-SOL
+REASONING: XHIGH
+SERVICE TIER: PRIORITY
 MODE: PAUSE_FOR_C00_BATCH_D_P35_SECURITY_CORRECTION_SECOND_REVIEW
 
 Conduct the authorized second independent review of the exact pushed I36 Batch

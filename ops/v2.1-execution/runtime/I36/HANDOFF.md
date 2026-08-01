@@ -1,5 +1,40 @@
 # I36 Integration Releases
 
+## Current terminal — successor schema and request materialization
+
+Control `cdc98ae7a5212c288ad16b35df70addc517e54af`, based on
+`3aebe99dc9d5c3ae28d648597351ce6200691ed3`, accepted corrected Batch D
+terminal `acd9ffae1df73765dbf46d049db14010ef12e869` after the authorized second
+review returned zero P1, P2, and P3 findings. It then issued canonical READY
+`3a1fb3c3c6d7b485a5672f85be39b404b76936cfa178334df6888020e99972e1`
+for one exact eight-path repository-metadata phase.
+
+The F01 steward-request schema now accepts exactly the 265 immutable case IDs
+from `ACCEPTANCE-ENVIRONMENT-MATRIX.yaml`, in matrix order, while preserving
+the request-kind enum and every unrelated schema rule. Its exact LF Git-blob
+SHA-256 is `4b8f107c9d828e47497629bbb749790b86dc3a984730d6e777d84b4787b43098`.
+The matrix count, order, uniqueness, and sorted-ID digest `ec0843e9...`
+reproduce, and Draft 2020-12 validation passes.
+
+Four path-complete immutable successors are now materialized without applying
+them: `P21-registration-004` (`ce7eea4f...`),
+`P22-server-registration-003` (`b359a3be...`),
+`P22-client-route-003` (`6187ea30...`), and
+`P30-registry-registration-002` (`cae9e599...`). All raw and canonical
+digests reproduce; P30 retains its exact eight-product-path digest
+`cc8fe47b...`. No product source, migration, central registration, config,
+lockfile, provider, deployment, candidate, DNS, database, send, contact,
+charge, or cleanup byte or effect changed.
+
+Claim `743bcd43-cc89-4bab-a3ab-b610d5ac49bb` and RELEASE_INTEGRATOR lease
+`c290bc01-2c9c-48fb-bf56-d9460d32dfec` were released at
+`2026-08-01T19:14:50Z`, before the `2026-08-01T22:58:37Z` expiry. Effects
+remain attempted `0`, succeeded `0`, reconciled `0`.
+
+I36 must push this one terminal with clean local/tracking/live equality and
+stop for C00 admission. C00 may then queue and apply the four successors only
+under separately fenced dependency-ordered authority.
+
 ## Current terminal — Batch D P35 security correction
 
 Control `3aebe99dc9d5c3ae28d648597351ce6200691ed3`, based on

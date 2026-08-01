@@ -1,0 +1,65 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P22-server-registration-003
+task_id: P22
+kind: server_feature_registration
+requirement_ids:
+  - OTV2-LEARNING-093
+  - OTV2-LEARNING-094
+  - OTV2-LEARNING-095
+  - OTV2-LEARNING-096
+  - OTV2-LEARNING-097
+  - OTV2-LEARNING-098
+  - OTV2-LEARNING-099
+  - OTV2-LEARNING-100
+  - OTV2-LEARNING-196
+  - OTV2-LEARNING-197
+  - OTV2-LEARNING-238
+acceptance_case_ids:
+  - OTV2-LEARNING-093-AC01
+  - OTV2-LEARNING-094-AC01
+  - OTV2-LEARNING-095-AC01
+  - OTV2-LEARNING-096-AC01
+  - OTV2-LEARNING-097-AC01
+  - OTV2-LEARNING-098-AC01
+  - OTV2-LEARNING-099-AC01
+  - OTV2-LEARNING-100-AC01
+  - OTV2-LEARNING-196-AC01
+  - OTV2-LEARNING-197-AC01
+  - OTV2-LEARNING-238-QUESTION-DEDUPE
+  - OTV2-LEARNING-238-RECOGNITION-CONSENT
+rationale: P22-server-registration-002 is immutable, unapplied, path-incomplete, and missing the two exact OTV2-LEARNING-238 cases. This successor supplies the complete server composition ceiling. Repository composition is not proof of the deployed LEARNING_ALIAS_HMAC_KEY, migration 2254 on native PostgreSQL, or the mounted P18 callback.
+desired_semantic_change: Register the P22 learning service behind authenticated /api/app/learning routes with server-derived scope and identity. Compose canonical SELECT-only attendance, identity, privacy-consent, and class review ports; attach badge recalculation to the actual mounted P18 attendance repository; and fail closed unless the P21 canonical content writer, deployed alias HMAC secret, and native-PostgreSQL schema are proven.
+proposed_symbols_routes_keys_or_dependencies:
+  - |-
+    Exact immutable path inventory; SHA-256 of sorted LF-delimited paths with final LF is a0f81e8734c9ddedd3ea940ef44615d5ded7bab2ae54d4555b6042c79a695c2f:
+    apps/web/src/server/app.ts
+    apps/web/src/server/features/learning/adapters.test.ts
+    apps/web/src/server/features/learning/adapters.ts
+    apps/web/src/server/features/learning/composition.test.ts
+    apps/web/src/server/features/learning/composition.ts
+    apps/web/src/server/features/learning/index.ts
+    apps/web/src/server/features/learning/router.test.ts
+    apps/web/src/server/features/learning/router.ts
+    tests/integration/learning/learning-composition.test.ts
+  - Register createLearningEngagementService and authenticated /api/app/learning routes; derive account, product, runtime tier, verification environment, principal, household, Student, class, and roster scope from the authenticated server session, never from request input.
+  - Compose SELECT-only LearningAttendanceReadPort, LearningIdentityReadPort, LearningRecognitionConsentReadPort, and LearningReviewItemReadPort. Prove roster authorization before review lookup and pass the exact authorized class so cross-class callers receive no record or correction oracle.
+  - Attach recalculateBadgesAfterAttendanceProjectionChange as AttendanceProjectionChangePort to the same createPostgresEmbeddedClassroomRepository instance used by mounted P18 attendance intake. Do not instantiate an otherwise unused P18 repository merely to satisfy this gate.
+  - For ordinary canonical P18 projection changes, use internal canonical_attendance_projection_change context and non-revoking recalculation; do not fabricate an Admin actor. Exact audited Admin corrections may revoke or restore only when audit reference, reason, actor, and latest source event match.
+  - 'Exact source-event replay must re-invoke digest-idempotent recalculation: a complete projection writes nothing, a prior post-commit failure is repaired, and an older exact correction after a successor neither overwrites the newer projection nor fails.'
+  - Require deployed configuration to enable learning aliases and require the actual trimmed LEARNING_ALIAS_HMAC_KEY value to be nonblank. An environment example, variable name, mock, or test-only key is not evidence.
+  - Use the P21 canonical content-state writer keyed by content_publications.content_id for approved review proof and fail closed when it is unavailable. Register no attendance record/correction route and no recognition-consent mutation route.
+compatibility_assumptions:
+  - Migration 2254 must be deployed and proven on the candidate native-PostgreSQL target; PGlite or captured-query tests are repository-only evidence.
+  - The P18 registration successor must already mount the exact repository instance receiving the callback; a second unused instance is forbidden.
+  - P21-registration-004 must be admitted and its content-state population path mounted before review proof can be runnable.
+  - No provider configuration or external effect is authorized by this registration.
+verification_performed:
+  - Validated the inventory digest against integration 3ea1a32ef971947ab10c129e1de74b54e7311834.
+  - Repository verification must cover adapters, composition, router and integration tests; callback replay/repair/supersession; class authorization order; secret fail-closed behavior; native SQL compatibility; typecheck; and secret/diff controls.
+  - No deployed secret, native-PostgreSQL migration, or live mounted P18 composition was performed or claimed while drafting this request.
+conflicts_or_risks:
+  - Fail closed when any canonical adapter, identity binding, roster proof, P21 writer, deployed alias secret, native schema, or actual P18 callback composition is unavailable.
+  - Never satisfy the callback test with an unused P18 repository instance.
+  - Do not expose attendance mutation, consent mutation, canonical peer identity, private questions, or a cross-class existence oracle.
+contains_secret_or_private_data: false

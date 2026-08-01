@@ -8,7 +8,7 @@ package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a
 branch: codex/v21-integration
 start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 dependency_heads:
-  C00: 3aebe99dc9d5c3ae28d648597351ce6200691ed3
+  C00: cdc98ae7a5212c288ad16b35df70addc517e54af
   F02: 3ee2f651528f5170dd714b921500235d4e015c5b
   F03: 3947c9887f3c6914a8247c70ac816a4ae94c76d0
   F06: 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
@@ -40,24 +40,24 @@ dependency_heads:
   P18: 1926e61c793ce29d7240c1ee05d2a4879b52770b
   P21: c11dec418fa3de896e96c348f87928c92c9f86b9
 status: ready_for_review
-phase: batch_D_P35_security_normalization_and_unknown_host_correction_complete
-claimed_by: codex-i36-batch-d-security-correction-177acf91
-claim_time: '2026-08-01T18:25:05Z'
-claim_id: 177acf91-73ce-4153-ac87-abdf71dde6c3
-lease_id: f32be76b-8e68-4c04-b731-134e379194c2
-lease_issued_at: '2026-08-01T18:25:05Z'
-lease_expires_at: '2026-08-01T22:25:05Z'
-lease_released_at: '2026-08-01T18:43:44Z'
-last_heartbeat_at: '2026-08-01T18:43:44Z'
-controller_authorization_sha: 3aebe99dc9d5c3ae28d648597351ce6200691ed3
-latest_valid_observed_control_head_sha: 3aebe99dc9d5c3ae28d648597351ce6200691ed3
-reconciled_state_based_on_control_head_sha: 2213842965302e6c5ccbd9fd26f011681be20b1e
-ready_authorization_control_head_sha: 3aebe99dc9d5c3ae28d648597351ce6200691ed3
-ready_entry_state_based_on_control_head_sha: 2213842965302e6c5ccbd9fd26f011681be20b1e
-ready_entry_payload_digest: 67566b13b89cc68b7373230bb6ce707bda0312b1c059db7cc63495c1ce1d2c0e
+phase: successor_request_schema_and_materialization_complete
+claimed_by: codex-i36-successor-schema-requests-743bcd43
+claim_time: '2026-08-01T18:58:37Z'
+claim_id: 743bcd43-cc89-4bab-a3ab-b610d5ac49bb
+lease_id: c290bc01-2c9c-48fb-bf56-d9460d32dfec
+lease_issued_at: '2026-08-01T18:58:37Z'
+lease_expires_at: '2026-08-01T22:58:37Z'
+lease_released_at: '2026-08-01T19:14:50Z'
+last_heartbeat_at: '2026-08-01T19:14:50Z'
+controller_authorization_sha: cdc98ae7a5212c288ad16b35df70addc517e54af
+latest_valid_observed_control_head_sha: cdc98ae7a5212c288ad16b35df70addc517e54af
+reconciled_state_based_on_control_head_sha: 3aebe99dc9d5c3ae28d648597351ce6200691ed3
+ready_authorization_control_head_sha: cdc98ae7a5212c288ad16b35df70addc517e54af
+ready_entry_state_based_on_control_head_sha: 3aebe99dc9d5c3ae28d648597351ce6200691ed3
+ready_entry_payload_digest: 3a1fb3c3c6d7b485a5672f85be39b404b76936cfa178334df6888020e99972e1
 claim_mode: new
-expected_existing_head_sha: 03e30641fb5de4de920978b2e574ad6bf4a015ad
-lease_phase_scope: batch_D_exact_P35_security_normalization_and_unknown_host_correction_ten_path_terminal_only
+expected_existing_head_sha: acd9ffae1df73765dbf46d049db14010ef12e869
+lease_phase_scope: exact_schema_compatibility_and_four_successor_request_materialization_eight_paths_only
 P21_publication_scope_correction_integration_binding:
   containing_control_head_sha: a58965e989a9dab81d079a8d02afe23aab146fb8
   authorized_start_sha: 7185d45b2dbcf157aa9e4f7cbcea02cc516ecf7d
@@ -4467,3 +4467,70 @@ batch_D_P35_security_correction_terminal:
     the authorized second independent review of exact scope, normalization,
     global host enforcement, focused proofs, released lease, and effects 0/0/0.
     Do not mark P35 applied or issue successor authority unless no P1/P2 remains.
+successor_request_schema_and_materialization_terminal:
+  containing_control_head_sha: cdc98ae7a5212c288ad16b35df70addc517e54af
+  state_basis_control_head_sha: 3aebe99dc9d5c3ae28d648597351ce6200691ed3
+  exact_authorized_start_sha: acd9ffae1df73765dbf46d049db14010ef12e869
+  ready_entry_payload_digest: 3a1fb3c3c6d7b485a5672f85be39b404b76936cfa178334df6888020e99972e1
+  claim_id: 743bcd43-cc89-4bab-a3ab-b610d5ac49bb
+  writer_id: codex-i36-successor-schema-requests-743bcd43
+  lease_issued_at: '2026-08-01T18:58:37Z'
+  lease_expires_at: '2026-08-01T22:58:37Z'
+  lease_released_at: '2026-08-01T19:14:50Z'
+  writer_slot_leases_released:
+    - slot: RELEASE_INTEGRATOR
+      lease_id: c290bc01-2c9c-48fb-bf56-d9460d32dfec
+  effect_lock_leases: []
+  exact_scope:
+    schema_and_request_paths: 5
+    runtime_paths: 3
+    total_paths: 8
+    path_inventory_digest: 965fd8118bc5e6486c4690eb943edd88ce681d123dfc996154b69e839aea2ec1
+  acceptance_schema:
+    path: ops/v2.1-execution/runtime/F01/steward-requests/schema/steward-request.schema.json
+    prior_raw_git_blob_sha256: 9e431aacac0527eac99ae87e0e5105b3bb78a95e23618964fbf6433e84de675d
+    final_raw_git_blob_sha256: 4b8f107c9d828e47497629bbb749790b86dc3a984730d6e777d84b4787b43098
+    acceptance_case_enum_count: 265
+    acceptance_case_enum_order: exact_matrix_order
+    sorted_case_id_digest: ec0843e963db3f5f8d8f554992d2c40b8d6fa969475afe0058e6b455b4b03dfc
+    matrix_raw_git_blob_sha256: 3972640970c37875b70c02165cff2add4a034073b952e4e508481735b55d954d
+    request_kind_enum_changed: false
+    F01_interface_checkpoint_changed: false
+  immutable_successor_requests:
+    P21-registration-004:
+      path: ops/v2.1-execution/runtime/P21/steward-requests/P21-registration-004.yaml
+      raw_git_blob_sha256: ce7eea4f3451cd27e244812372848b736bd2a941e537c0aa6ec0311369adc53e
+      canonical_object_sha256: 410dc50576b4321bd4fda5d14d5b77eb45ef251cdb4c4ef6a9056951615d606c
+    P22-client-route-003:
+      path: ops/v2.1-execution/runtime/P22/steward-requests/P22-client-route-003.yaml
+      raw_git_blob_sha256: 6187ea301a60c621ab3e48a19bf80e78ec21ebcbff204a50259f654caafcbc8e
+      canonical_object_sha256: 21472b085a29a1948e6037af4d144850d69dd5784472c9485ba5260d4428677f
+    P22-server-registration-003:
+      path: ops/v2.1-execution/runtime/P22/steward-requests/P22-server-registration-003.yaml
+      raw_git_blob_sha256: b359a3beb0626ab13d30e6df5fd429d4266b9e3dd57571cdaf279cf27b780698
+      canonical_object_sha256: 0639ab621ae2306fd68eb6d07326a6529d4ebd74dd4fae09181b11bd8a19e83f
+    P30-registry-registration-002:
+      path: ops/v2.1-execution/runtime/P30/steward-requests/P30-registry-registration-002.yaml
+      raw_git_blob_sha256: cae9e59973cb9d5371902f59a3ac5884a9a34b2dc324cece4b0ceb85d53ef1cb
+      canonical_object_sha256: d42c6567491d4cec6f84e694f9fde375538a16aac833877b2f6f91b906c9c3e6
+      exact_eight_product_path_digest: cc8fe47bd7ea862286e44f42d863711120f492774b772d621bdd710c1234dbc0
+  completed_validation:
+    live_control_head: passed_cdc98ae7a5212c288ad16b35df70addc517e54af
+    exact_integration_start: passed_acd9ffae1df73765dbf46d049db14010ef12e869
+    canonical_ready_digest: passed_3a1fb3c3c6d7b485a5672f85be39b404b76936cfa178334df6888020e99972e1
+    exact_path_and_preimage_scope: passed_8_of_8
+    draft_2020_12_schema_check: passed
+    all_four_successor_instances: passed
+    acceptance_enum_exact_count_order_and_uniqueness: passed
+    raw_and_canonical_request_digests: passed_4_of_4
+    product_source_or_migration_change: false
+    provider_or_candidate_action: false
+  external_effects:
+    attempted: 0
+    succeeded: 0
+    reconciled: 0
+  safe_next_action: >-
+    Push one exact eight-path metadata terminal and stop for C00 admission. C00
+    may then add the four immutable successors to the steward queue and issue a
+    separately fenced dependency-ordered application batch; no successor is
+    applied and no candidate or external effect is authorized by this terminal.
