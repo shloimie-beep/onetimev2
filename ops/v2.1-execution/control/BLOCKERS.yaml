@@ -1,385 +1,357 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
 blockers:
-  - blocker_id: I36-P21-P22-P30-SEMANTIC-CORRECTION
-    status: open
-    scope: pre_candidate_repository_correctness
-    owner: C00_and_I36
-    affected_tasks:
-      - I36
-      - P21
-      - P22
-      - P30
-      - V43
-      - R45
-    safe_work_completed: >-
-      Exact integration 32e21c0d is pushed, clean, and effect-free. Its 44-path envelope, 41 preimages, four immutable
-      requests, focused tests, released leases, and 0/0/0 effects passed. Independent review found zero P1, six P2,
-      and one P3 while confirming P22/P30 defaults remain fail-closed and no provider call is reachable.
-    required_authority_or_input: []
-    protection: >-
-      Do not freeze a candidate or enable P21 provider reconciliation, P22 learning, or P30 dispatch from 32e21c0d.
-      Correct only the exact 13 product paths plus I36 runtime triplet authorized by READY 08e4446d. Preserve generic
-      disabled responses and later exact gates for the P21 reconciler, actual mounted P18 callback, native schema,
-      deployed alias secret, and real F05/F06/provider bindings.
-    next_check: >-
-      Independently review the single correction terminal for stable P21 replay/in-transaction CAS, removal of the
-      self-attested P18 gate, terminal dead-letter mapping, checked completion fences, authority-bound provider reference,
-      exact approved readback digests, released leases, exact scope, and effects 0/0/0.
-  - blocker_id: OPS-084-LEGAL-BUNDLE
-    status: open
-    scope: production_broad
-    owner: external_product_owner_and_qualified_legal_reviewer
-    affected_tasks:
-      - P34
-      - V43
-      - R45
-    safe_work_completed: >-
-      Audited predecessor release 4bc8e7a8 remains an ancestor of current independently audited integration 524563f0.
-      All six required repository paths are absent, no existing steward request names them, P34 owns only the
-      non-fabricatable gate mechanism, and restricted CI, staging, production-read-only, and operator-canary verification
-      may continue.
-    required_authority_or_input:
-      - Exact approved legal/terms-of-service.html
-      - Exact approved legal/privacy-notice.html
-      - Exact approved legal/student-data-and-recording-consent.html
-      - Exact approved legal/cancellation-policy.html
-      - Exact approved legal/refund-policy.html
-      - Exact legal/legal-policy-manifest.json containing matching hashes, immutable versions, effective dates, named product-owner approval, and named qualified-legal-reviewer credential or firm and approval
-    protection: Codex must not draft, infer, approve, substitute, or weaken the legal text or approval record.
-    next_check: Re-evaluate only when the exact externally approved six-file bundle is supplied; until then fail production_broad closed.
-  - blocker_id: F02-2250-2252-SEMANTIC-FENCING
-    status: closed
-    scope: controlled_launch_candidate
-    owner: C00_and_F02
-    affected_tasks:
-      - F02
-      - P17
-      - P18
-      - P21
-      - V43
-      - R45
-    safe_work_completed: >-
-      Correction 39cacd4a is integrated at 526f0384. Fresh PostgreSQL 18.3/PGlite probes reject the eleven reproduced
-      preview, confirmation, request-hash, acceptance-unknown, active-session, revocation, and attendance-projection
-      bypasses; exact positive rows pass, the provider readback ledger is append-only, 54/54 focused tests pass, tracked
-      migrations 2250-2252 replay, typecheck and secret checks pass, and no live database or external effect occurred.
-    required_authority_or_input: []
-    protection: The historical rejected head 68e3c527 remains diagnostic only; only the corrected final migration bytes may be considered for candidate replay.
-    next_check: Revalidate after any later migration or database-byte change and once at candidate freeze.
-  - blocker_id: F02-2251-PGMEM-CHECKSUM-METADATA
-    status: closed
-    scope: preintegration_metadata_truth
-    owner: C00_and_F02
-    affected_tasks:
-      - F02
-      - P18
-      - I36
-    safe_work_completed: >-
-      Exact four-path correction terminal edacab1d preserves immutable migration 2251 blob 4bd4afdc, records normalized-LF
-      checksum 525172d9, control checksum 3fdeedcb, and independently rederived repository-runner checksum ee0f9616, and
-      binds the full 64-character P17 request digest ending 624ca. Independent review passed every checksum, immutable
-      request/migration, exact-scope, YAML, diff, secret, remote-equality, and zero-effect gate; no migration, request,
-      product, provider, or external-effect byte changed.
-    required_authority_or_input: []
-    protection: >-
-      Preserve the validated immutable migration/request bytes and all exact checksum fields at edacab1d; do not revive
-      the superseded fd4cdaa3 value or truncate the P17 digest.
-    next_check: Revalidate only after a later migration, request, or checksum-byte change and once at candidate freeze.
-  - blocker_id: F02-PROPOSAL-AUTHORITY-METADATA
-    status: closed
-    scope: preintegration_metadata_truth
-    owner: C00_and_F02
-    affected_tasks:
-      - F02
-      - P18
-      - I36
-    safe_work_completed: >-
-      Exact four-path terminal 9754f2ae rebinds the live allocation-proposal authority to claim 68f6e27a, sole
-      MIGRATION_AUTHORITY lease defa457c, writer codex-f02-proposal-authority-68f6e27a, control a7978fb1, parent/controller
-      fbc5d540, and start edacab1d, with no live schema lease. Independent review passed proposal raw f1c23180,
-      state/handoff e0b2ede5, triplet 4059e319, unchanged non-authority proposal objects, every allocation/checksum/P17 and
-      2250-2252 acknowledgment, released lease, exact scope, remote equality, YAML/format/diff/secret, and effects 0/0/0.
-    required_authority_or_input: []
-    protection: >-
-      Preserve exact admitted terminal 9754f2ae, every allocation/request/migration/checksum byte, and the sole live
-      authority. Do not apply a central steward result until the exact terminal is integrated and independently reconciled.
-    next_check: Revalidate after integration and after any later allocation, request, migration, checksum, or proposal-authority byte change.
-  - blocker_id: P20-P21-PUBLICATION-SEED-INTEGRATION
-    status: closed
-    scope: controlled_launch_candidate
-    owner: P20_P21_F02_I36
-    affected_tasks:
-      - P20
-      - P21
-      - F02
-      - I36
-      - V39
-      - R44
-    safe_work_completed: >-
-      Exact F02 26234c47, P20/P21 a210c6cb, and P08 7ba18b92 are ordered integration ancestors of release 4bc8e7a8 at
-      merges 13141329, 4c2d9a6c, and e1dce668. The merged repository applied all 84 migrations to fresh PostgreSQL 16.14,
-      replayed all 84 as already applied, verified zero pending, passed the complete pg-mem inventory, 78 focused tests,
-      typecheck, independent ancestry/scope/digest review, and effects 0/0/0. Migration 2253 is mirrored as the exact
-      forward-only P21-MIGRATION-003 allocation; empty Mishnah references remain valid when none were supplied and approved.
-    required_authority_or_input: []
-    protection:
-      Preserve the independently admitted source and forward-only migration bytes; do not execute migration
-      2253 on a live database or claim candidate publication readiness until the later candidate and live-migration gates
-      are satisfied.
-    next_check: Re-run the complete migration inventory only after later merged migration or database-byte changes and once at candidate freeze.
-  - blocker_id: P08-FAMILY-PARENT-SESSION-COMPOSITION
-    status: closed
-    scope: controlled_launch_candidate
-    owner: P12_F02_P08_I36
-    affected_tasks:
-      - F04
-      - F03
-      - P08
-      - P12
-      - I36
-      - V37
-      - V40
-      - R44
-    safe_work_completed: >-
-      Corrected P08 7ba18b92, F04 b43c1923, and F03 3947c988 are exact integration ancestors. I36 terminal d89a0f38
-      completed the v2.1 Parent auth/client lifecycle with credential login, CSRF bootstrap, logout/revocation,
-      invalid-cookie recovery, safe continuation, sole-household routing, native PostgreSQL lifecycle/concurrency proof,
-      real Chromium reload/logout coverage, build, typecheck, format, lint, and effects 0/0/0. P12 terminal
-      9ada912c created immutable P12-migration-001 at raw digest
-      6f76b024f756b89ef430a21c0744b4dd43114c5d5e9213bd76582e2534d3bc17. I36 release ae3ced8a integrated
-      forward-only migration 2255 with native PostgreSQL 18.4 apply/replay/ledger 87/87. P12 terminal 153c52e9 then
-      completed the concrete repository/router/forms surface with 28 focused and six native PostgreSQL assertions, exact
-      two-parent ancestry, immutable migration and successor bytes, released lease, and effects 0/0/0. One independent
-      product review held three P2s: a commit-race replay may rehash, update ordering leaks a cross-household ID/username
-      distinction, and a same-key replay can accept mismatched password confirmation. C00 dispatched only the exact
-      ten-path replay/concealment correction plus a replacement 1.2.0 barrel request under a fresh lease. Correction
-      terminal 71fb96d6 then passed one independent review with no P1/P2: exact ten-path scope, lazy hash serialization,
-      confirmation rejection before replay, uniform wrong-household concealment, 31 focused assertions, disposable native
-      PostgreSQL 18.4 8/8, semantic interface 1.2.0, released lease, and effects 0/0/0. C00 rejected and acknowledged
-      obsolete P12-registration-001 and stale barrel -002, admitted only server/client -002 plus barrel -003, and dispatched
-      the source-only P12-then-P09 microbatch without applying shared paths. I36 preserved exact source ancestry in clean
-      local merges a6929cdd then 08e26cfd; 67 focused assertions and the relevant web builds passed. Changed-package
-      typecheck found exactly three P12 test-only contract errors: two stale 1.1.0 semantic fixtures and one widened receipt
-      disposition mock. C00 held the safe local merges and dispatched one exact six-path P12 correction; no runtime product
-      defect, shared-path application, remote integration push, or external effect occurred. P12 terminal 3ad55dc1 then
-      passed one independent review: exact six-path scope, 19/19 focused assertions, zero P12/P09 type diagnostics, released
-      lease and effects 0/0/0. C00 admitted only this child as correction merge d188c42e atop held local head 08e26cfd.
-      I36 then preserved the ordered P12/P09/correction ancestry at terminal 288d5883, passed 67 focused assertions with
-      three declared native skips, zero P12/P09 type diagnostics, exact changed-file static checks, released its lease,
-      and recorded effects 0/0/0. One independent review passed the exact 40-source/43-release-path terminal with no P1/P2.
-      Batch C terminal b0cc23a0 is independently accepted with 87 focused assertions, clean exact ancestry, released
-      leases, no P1/P2, and effects 0/0/0; it changed no P08/P12 shared-composition byte. Batch A terminal 3ea1a32e
-      completed the mounted P12/P08 composition and behavioral validation, but independent review held one P2 because
-      the .env.example evidence hash used checkout bytes; all product semantics and the other fifteen hashes passed.
-      Runtime-only correction 460ba42d replaced it with the exact Git-blob hash and reproduced the canonical sixteen-item
-      product manifest. One focused independent correction review passed exact scope, ancestry, all hashes, unchanged
-      dispositions and validation truth, released lease, clean live equality, and effects 0/0/0.
-    required_authority_or_input:
-      - No further source-composition input. Candidate-bound verification must still exercise real signup, reload, logout,
-        re-login, pre/post-expiry, household, inactive-route, wrong-household, stale-security, expired, revoked,
-        no-legacy-fallback, and Student create/manage journeys with the exact approved legal-evidence pair.
-    protection: >-
-      Do not mark P08-auth-household-002 or P12-registration-001 applied from the server-shell partial, claim signup
-      session establishment from row insertion alone, expose raw token material, rewrite migrations 2235/2241, fabricate a
-      multi-household selector, or treat inactive access as an unauthenticated Parent.
-    next_check: >-
-      Revalidate only at candidate verification or after a later overlapping source change. Preserve the recovery-capable
-      post-commit session boundary without claiming stricter cross-transaction atomicity.
-  - blocker_id: P09-SCHOOL-INQUIRY-ROUTE-COMPOSITION
-    status: closed
-    scope: controlled_launch_candidate
-    owner: P09_P10_F02_I36
-    affected_tasks:
-      - P09
-      - P10
-      - F02
-      - F07
-      - I36
-      - V37
-    safe_work_completed: >-
-      Corrected P09 terminal a64a0c03 adds the concrete transactional PostgreSQL repository and task-owned exact POST
-      /api/v2.1/signup/school-inquiry descriptor. Independent review passed its exact seven-path scope, 26 focused tests,
-      typecheck, durable normalized-email deduplication, one local acknowledgment intent, and zero account, access,
-      Student, nurture, provider, WhatsApp, or Stripe effects. P09 and corrected landing terminal fc16537d are exact
-      integration ancestors of independently audited release 524563f0. P09 terminal d9a4ce80 created immutable
-      P09-migration-002 at raw/canonical digests 538d6509/d9958a9d to converge the overlapping P09/P10 approved-School
-      seat/configuration authority; C00 admitted it to F02 and dispatched only a bounded P10 metadata acknowledgment.
-      Immutable request P09-registration-001 also requires signed-out GET /school and an Admin-authorized approved-school
-      configuration surface; neither exists in the admitted P09 source, so the request cannot truthfully be marked
-      applied from central POST registration alone. I36 release ae3ced8a integrated forward-only migration 2256 with
-      native PostgreSQL 18.4 apply/replay/ledger 87/87; C00 dispatched the exact 18-writable-path P09 correction with only
-      two explicit repository ownership exceptions. Its independent pre-terminal review found one P2: current-authority
-      replay works, but a later configuration version hides the prior idempotency key even though migration 2256 preserves
-      it in append-only history. C00 amended the same claim to permit SELECT-only history readback. Corrected terminal
-      ce8df6e6 then passed one independent review with no P1/P2: 36 focused tests, exact 19-path source, durable scoped
-      history replay, immutable migration and legacy-request bytes, released lease, and effects 0/0/0. C00 withheld and
-      acknowledged the obsolete monolithic P09-registration-001 and admitted the three schema-valid split successors to
-      I36 without applying them. Accepted P12 correction 71fb96d6 passed its one correction review, and C00 dispatched the
-      ordered source-only P12-then-P09 I36 microbatch from exact integration ae3ced8a; the three P09 successors remain
-      assigned and unapplied. I36's clean local source merges passed all 67 focused assertions and relevant web builds but
-      were held before terminal/push for three P12 test-only type-contract errors. Accepted P12 child 3ad55dc1 corrects
-      those exact fixtures and is now the sole authorized third merge; no P09 or shared byte changes.
-      I36 terminal 288d5883 then preserved all ordered source ancestry, passed 67 focused assertions with three declared
-      native skips, zero P12/P09 type diagnostics, exact changed-file static checks, released its lease, and recorded
-      effects 0/0/0. One independent review passed the exact 40-source/43-release-path terminal with no P1/P2. Batch C
-      terminal b0cc23a0 is independently accepted with clean exact ancestry, 87 focused assertions, released leases, no
-      P1/P2, and effects 0/0/0; it changed no P09 shared-composition byte. Batch A terminal 3ea1a32e completed the P09
-      server/public/client composition and real /school validation; only its .env.example evidence hash/product manifest
-      was held for one runtime-triplet correction, with no product defect or other P1/P2. Corrected terminal 460ba42d and
-      one focused independent review passed the exact Git-blob manifest, preserved every P09 product byte and disposition,
-      released the correction lease, proved clean live equality, and recorded effects 0/0/0.
-    required_authority_or_input:
-      - No further source-composition input. Candidate-bound verification must preserve the no-account, no-access,
-        no-Student-contact, no-nurture, and no-provider-write boundary.
-    protection: School inquiry must create no product account, access, Student contact, nurture enrollment, WhatsApp send, or direct provider/billing mutation.
-    next_check: Revalidate only at candidate verification or after a later overlapping source change.
-  - blocker_id: P22-LEARNING-ENGAGEMENT-AUTHORITY-CONVERGENCE
-    status: open
-    scope: controlled_launch_candidate
-    owner: P22_F02_C00_I36
-    affected_tasks:
-      - P22
-      - F02
-      - P12
-      - I36
-      - V37
-      - V40
-      - R44
-    safe_work_completed: >-
-      F02 terminal 22ada24a preserved migration 2251 as the sole attendance write authority, wrote no SQL or allocation,
-      released both leases before expiry, and recorded effects 0/0/0. P22 exact-eight-path terminal 347a08b2 binds
-      attendance, recognition, and review corrections to immutable canonical source identities, preserves all seven
-      present successor requests, and released LEARNING_ENGAGEMENT lease 0ae4f2d7 at 2026-07-31T09:20:00Z. Root and
-      independent review reproduced clean local/tracking/live equality, exact scope, 44/44 focused tests, static/request
-      gates, older attendance no-write replay, latest repair, and no P1/P2; effects remain 0/0/0. P21 terminal c11dec41
-      is independently accepted with 31/31 focused tests and no P1/P2/P3. Its PGlite proof is valid embedded SQL/trigger
-      evidence, while native PostgreSQL-server replay remains mandatory before candidate freeze. I36 integrated P21 then
-      P22 and released terminal 392cc119 with exact 25-source/28-release-path evidence, all merged checks passing, and
-      effects 0/0/0. Corrected P18 terminal 1926e61c is independently accepted with exact eight-path source, 35 focused
-      assertions, released lease, and effects 0/0/0. F02 terminal 3ee2f651 is independently accepted with exact seven-path
-      source, allocated migrations 2254 through 2256, native PostgreSQL 18.4 apply/replay/ledger 87/87, released leases,
-      and effects 0/0/0. I36 release ae3ced8a merged F02 then P18 with exact ancestry, 18 release paths, unchanged protected
-      migrations, repeated native PostgreSQL 18.4 apply/replay/ledger 87/87, released lease, effects 0/0/0, and one
-      independent review with no P1/P2 discrepancy. C00 recorded migrations 2254-2256 as integrated and their exact
-      successor requests as applied. I36 Batch B terminal 8c5b08cc is independently accepted with exact six-path scope,
-      P08-config-002 fully applied, the repository-safe P22 server-only key prerequisite present without a value,
-      48/48 focused assertions, zero changed-path type diagnostics, both leases released, and effects 0/0/0. Batch C
-      terminal b0cc23a0 is independently accepted; P30 remains honestly worker-composition blocked and effects remain
-      0/0/0. Batch A terminal 3ea1a32e applied only P22-barrel-export-002 and preserved the path-incomplete server/client
-      gates. Corrected terminal 460ba42d fixed the sole runtime evidence-manifest P2, passed one focused independent review,
-      and is accepted with product semantics and zero effects intact. Metadata terminal e569d693 materialized and validated
-      immutable path-complete P21-registration-004, P22-server-registration-003, P22-client-route-003, and
-      P30-registry-registration-002 under the corrected 265-case schema. C00 admitted all four and dispatched one exact
-      dependency-ordered repository application batch with no effect locks.
-    required_authority_or_input:
-      - Complete the dispatched P21-then-P22 server/client application and merged registration checks
-      - Preserve native PostgreSQL replay and the deployed LEARNING_ALIAS_HMAC_KEY as fail-closed candidate gates
-    protection: >-
-      Do not apply P22-migration-001 or P22-registration-001, create a second attendance write authority, parse a display
-      name into identity fields, mutate audit history, write SQL before the successor is admitted, or advance candidate,
-      provider, deployment, DNS, live-database, send, charge, or customer activation gates.
-    next_check: Re-evaluate after the remaining dependency-ordered shared-registration batches and merged checks.
-  - blocker_id: P21-CANONICAL-CONTENT-STATE-WRITER
-    status: open
-    scope: controlled_launch_candidate
-    owner: P21_I36_C00
-    affected_tasks:
-      - P21
-      - P22
-      - I36
-      - V40
-      - R44
-    safe_work_completed: >-
-      Integration d89a0f38 contains migration 2234 canonical aggregate-state schema/reconciler, forward-only publication
-      migration 2253, and corrected P21 source head 705030f2 as an ancestor. Read-only seam inspection found no production
-      content writer: only family signup writes human_account/access aggregates. The P22 canonical review proof query is
-      correctly fail-closed on an exact published content occurrence, so its shared registration cannot be applied until
-      production publication commands populate canonical content state. P21 correction terminal c11dec41 closes the prior
-      pre-approval archive and late replay defects. Root plus two independent reviewers reproduced exact eight-path scope,
-      immutable registration-003, 31/31 focused tests, typecheck, lint/format/static/secret gates, clean remote equality,
-      released lease, effects 0/0/0, and no P1/P2/P3. The dispatched path digest 5b93f48f was a C00 derivation typo; the
-      exact eight-path digest is d3a605c5. Embedded PGlite proof passed, but native PostgreSQL-server replay is retained as
-      a hard merged/candidate gate. Metadata terminal e569d693 materialized and validated immutable path-complete
-      P21-registration-004; C00 admitted it and dispatched its exact 18-path application first in the shared P21/P22 batch.
-    required_authority_or_input:
-      - Complete the dispatched P21-registration-004 application before the P22 server composition
-      - Reproduce the corrected behavior against a true native PostgreSQL server in the merged migration/candidate gate
-      - Preserve P21-registration-003 as superseded path-incomplete history
-    protection: >-
-      Do not directly mutate canonical_aggregate_states, add a second reconciler, write a new migration, emit same-state
-      events, split the publication CAS from the canonical event transaction, apply registration before the writer, or
-      advance candidate/provider/release gates while canonical content state is absent.
-    next_check: Re-evaluate after c11dec41 is an integration ancestor and native PostgreSQL-server replay is recorded.
-  - blocker_id: F04-OWNERSHIP-TRANSFER-REVOCATION-COLUMNS
-    status: closed
-    scope: controlled_launch_candidate
-    owner: F04_I36
-    affected_tasks:
-      - F04
-      - I36
-      - V37
-      - R44
-    safe_work_completed: >-
-      Independent review of F04 terminal a5868a95 confirmed its bounded Parent-session/label correction and also reproduced
-      a separate defect already present at integration base c0a1e04b and audited integration 8634b2ab.
-      persistAppliedOwnershipTransfer calls revokeIds with schema-incompatible columns under migration 2235.
-      v21_adult_sessions uses revoke_reason; v21_billing_portal_sessions has no reason column and requires the canonical
-      revoked state; v21_account_action_tokens uses action_token_id/revoked_at rather than
-      token_id/invalidated_at/invalidation_reason. Exact eight-path correction terminal b43c1923/product 2834f79b now
-      independently passes migration-2235-compatible revocation SQL, unique-ID row-count checks, three required version
-      increments, adult updated_at/reason handling, mixed nonempty revocation, late-failure whole-transaction rollback,
-      25 focused tests, and the verified 14-test native PostgreSQL proof. It is an exact ancestor of independently audited
-      release 524563f0 at merge 303ae3a7; the merged 63-assertion suite, typecheck, lint/format, unchanged migration tree,
-      exact scope/ancestry, and zero-effect gates pass.
-    required_authority_or_input: []
-    protection: Do not alter migration 2235, weaken ownership-transfer atomicity, omit any revocation set, or treat empty-set tests as production proof.
-    next_check: Revalidate after any later ownership-transfer, session, token, billing-portal, or migration byte change and once at candidate freeze.
-  - blocker_id: F04-OWNERSHIP-TRANSFER-SESSION-SCOPE
-    status: closed
-    scope: controlled_launch_candidate
-    owner: F04_I36
-    affected_tasks:
-      - F04
-      - I36
-      - V37
-      - R44
-    safe_work_completed: >-
-      Independent review found a second pre-existing transfer defect in the F04 domain logic. Outgoing Parent sessions
-      are selected by account, Parent role, and unrevoked state, but not by the transferred household. A transfer can
-      therefore revoke a sibling-household session even though locked specification section 4.4 requires independent
-      multi-household access. Exact eight-path correction terminal b43c1923/product 2834f79b now independently passes
-      transferred-household selection and locked-inventory scope, a sibling-household preservation regression, focused
-      domain/repository verification, and the verified native PostgreSQL proof. It is an exact ancestor of independently
-      audited release 524563f0 at merge 303ae3a7; the merged 63-assertion suite, typecheck, lint/format, unchanged migration
-      tree, exact scope/ancestry, and zero-effect gates pass.
-    required_authority_or_input: []
-    protection:
-      Do not broaden revocation to every Parent session on the account or weaken the locked-inventory equality
-      check.
-    next_check: Revalidate after any later ownership-transfer, household-session, or migration byte change and once at candidate freeze.
-  - blocker_id: P35-NORMALIZED-ROUTE-AND-UNKNOWN-HOST-ENFORCEMENT
-    status: closed
-    scope: repository_release_gate
-    owner: I36_C00
-    affected_tasks:
-      - P35
-      - I36
-      - V42
-      - R44
-    safe_work_completed: >-
-      Corrected Batch D terminal acd9ffae closes both held P2s with one shared decode-once normalizer/classifier, all-path
-      legacy retirement middleware, archived page/asset denial before static serving, and a global production unknown-host
-      guard before every public, API, rate-limit, repository, and write path. The exact seven product/test paths plus I36
-      triplet, immutable P35 request, final manifest 49b3c321, focused verifier/unit/integration/browser proofs, canonical
-      pass-through, direct-double-encoding boundary, zero DB calls for unknown hosts, released lease, clean remote equality,
-      and effects 0/0/0 were independently reproduced. The authorized second review found no P1, P2, or P3.
-    required_authority_or_input: []
-    protection: >-
-      Preserve the immutable P35 request, migrations, archive manifest and all archived assets. Decode exactly once, do not
-      recursively decode percent encoding, keep unrelated canonical-host routes functional, and permit no candidate,
-      provider, deployment, DNS, contact, send, billing, cleanup, or other external effect.
-    next_check: Revalidate only after a later domain-transition, static-serving, host-validation, or server bootstrap change and once at candidate freeze.
-rule:
-  One precise blocker per entry with owner, affected tasks, safe work completed, required authority/input, and
+- blocker_id: OPS-084-LEGAL-BUNDLE
+  status: open
+  scope: production_broad
+  owner: external_product_owner_and_qualified_legal_reviewer
+  affected_tasks:
+  - P34
+  - V43
+  - R45
+  safe_work_completed: >-
+    Audited predecessor release 4bc8e7a8 remains an ancestor of current independently audited integration 524563f0.
+    All six required repository paths are absent, no existing steward request names them, P34 owns only the
+    non-fabricatable gate mechanism, and restricted CI, staging, production-read-only, and operator-canary verification
+    may continue.
+  required_authority_or_input:
+  - Exact approved legal/terms-of-service.html
+  - Exact approved legal/privacy-notice.html
+  - Exact approved legal/student-data-and-recording-consent.html
+  - Exact approved legal/cancellation-policy.html
+  - Exact approved legal/refund-policy.html
+  - Exact legal/legal-policy-manifest.json containing matching hashes, immutable versions, effective dates, named product-owner approval, and named qualified-legal-reviewer credential or firm and approval
+  protection: Codex must not draft, infer, approve, substitute, or weaken the legal text or approval record.
+  next_check: Re-evaluate only when the exact externally approved six-file bundle is supplied; until then fail production_broad closed.
+- blocker_id: F02-2250-2252-SEMANTIC-FENCING
+  status: closed
+  scope: controlled_launch_candidate
+  owner: C00_and_F02
+  affected_tasks:
+  - F02
+  - P17
+  - P18
+  - P21
+  - V43
+  - R45
+  safe_work_completed: >-
+    Correction 39cacd4a is integrated at 526f0384. Fresh PostgreSQL 18.3/PGlite probes reject the eleven reproduced
+    preview, confirmation, request-hash, acceptance-unknown, active-session, revocation, and attendance-projection
+    bypasses; exact positive rows pass, the provider readback ledger is append-only, 54/54 focused tests pass, tracked
+    migrations 2250-2252 replay, typecheck and secret checks pass, and no live database or external effect occurred.
+  required_authority_or_input: []
+  protection: The historical rejected head 68e3c527 remains diagnostic only; only the corrected final migration bytes may be considered for candidate replay.
+  next_check: Revalidate after any later migration or database-byte change and once at candidate freeze.
+- blocker_id: F02-2251-PGMEM-CHECKSUM-METADATA
+  status: closed
+  scope: preintegration_metadata_truth
+  owner: C00_and_F02
+  affected_tasks:
+  - F02
+  - P18
+  - I36
+  safe_work_completed: >-
+    Exact four-path correction terminal edacab1d preserves immutable migration 2251 blob 4bd4afdc, records normalized-LF
+    checksum 525172d9, control checksum 3fdeedcb, and independently rederived repository-runner checksum ee0f9616, and
+    binds the full 64-character P17 request digest ending 624ca. Independent review passed every checksum, immutable
+    request/migration, exact-scope, YAML, diff, secret, remote-equality, and zero-effect gate; no migration, request,
+    product, provider, or external-effect byte changed.
+  required_authority_or_input: []
+  protection: >-
+    Preserve the validated immutable migration/request bytes and all exact checksum fields at edacab1d; do not revive
+    the superseded fd4cdaa3 value or truncate the P17 digest.
+  next_check: Revalidate only after a later migration, request, or checksum-byte change and once at candidate freeze.
+- blocker_id: F02-PROPOSAL-AUTHORITY-METADATA
+  status: closed
+  scope: preintegration_metadata_truth
+  owner: C00_and_F02
+  affected_tasks:
+  - F02
+  - P18
+  - I36
+  safe_work_completed: >-
+    Exact four-path terminal 9754f2ae rebinds the live allocation-proposal authority to claim 68f6e27a, sole
+    MIGRATION_AUTHORITY lease defa457c, writer codex-f02-proposal-authority-68f6e27a, control a7978fb1, parent/controller
+    fbc5d540, and start edacab1d, with no live schema lease. Independent review passed proposal raw f1c23180,
+    state/handoff e0b2ede5, triplet 4059e319, unchanged non-authority proposal objects, every allocation/checksum/P17 and
+    2250-2252 acknowledgment, released lease, exact scope, remote equality, YAML/format/diff/secret, and effects 0/0/0.
+  required_authority_or_input: []
+  protection: >-
+    Preserve exact admitted terminal 9754f2ae, every allocation/request/migration/checksum byte, and the sole live
+    authority. Do not apply a central steward result until the exact terminal is integrated and independently reconciled.
+  next_check: Revalidate after integration and after any later allocation, request, migration, checksum, or proposal-authority byte change.
+- blocker_id: P20-P21-PUBLICATION-SEED-INTEGRATION
+  status: closed
+  scope: controlled_launch_candidate
+  owner: P20_P21_F02_I36
+  affected_tasks:
+  - P20
+  - P21
+  - F02
+  - I36
+  - V39
+  - R44
+  safe_work_completed: >-
+    Exact F02 26234c47, P20/P21 a210c6cb, and P08 7ba18b92 are ordered integration ancestors of release 4bc8e7a8 at
+    merges 13141329, 4c2d9a6c, and e1dce668. The merged repository applied all 84 migrations to fresh PostgreSQL 16.14,
+    replayed all 84 as already applied, verified zero pending, passed the complete pg-mem inventory, 78 focused tests,
+    typecheck, independent ancestry/scope/digest review, and effects 0/0/0. Migration 2253 is mirrored as the exact
+    forward-only P21-MIGRATION-003 allocation; empty Mishnah references remain valid when none were supplied and approved.
+  required_authority_or_input: []
+  protection: Preserve the independently admitted source and forward-only migration bytes; do not execute migration
+    2253 on a live database or claim candidate publication readiness until the later candidate and live-migration gates
+    are satisfied.
+  next_check: Re-run the complete migration inventory only after later merged migration or database-byte changes and once at candidate freeze.
+- blocker_id: P08-FAMILY-PARENT-SESSION-COMPOSITION
+  status: closed
+  scope: controlled_launch_candidate
+  owner: P12_F02_P08_I36
+  affected_tasks:
+  - F04
+  - F03
+  - P08
+  - P12
+  - I36
+  - V37
+  - V40
+  - R44
+  safe_work_completed: >-
+    Corrected P08 7ba18b92, F04 b43c1923, and F03 3947c988 are exact integration ancestors. I36 terminal d89a0f38
+    completed the v2.1 Parent auth/client lifecycle with credential login, CSRF bootstrap, logout/revocation,
+    invalid-cookie recovery, safe continuation, sole-household routing, native PostgreSQL lifecycle/concurrency proof,
+    real Chromium reload/logout coverage, build, typecheck, format, lint, and effects 0/0/0. P12 terminal
+    9ada912c created immutable P12-migration-001 at raw digest
+    6f76b024f756b89ef430a21c0744b4dd43114c5d5e9213bd76582e2534d3bc17. I36 release ae3ced8a integrated
+    forward-only migration 2255 with native PostgreSQL 18.4 apply/replay/ledger 87/87. P12 terminal 153c52e9 then
+    completed the concrete repository/router/forms surface with 28 focused and six native PostgreSQL assertions, exact
+    two-parent ancestry, immutable migration and successor bytes, released lease, and effects 0/0/0. One independent
+    product review held three P2s: a commit-race replay may rehash, update ordering leaks a cross-household ID/username
+    distinction, and a same-key replay can accept mismatched password confirmation. C00 dispatched only the exact
+    ten-path replay/concealment correction plus a replacement 1.2.0 barrel request under a fresh lease. Correction
+    terminal 71fb96d6 then passed one independent review with no P1/P2: exact ten-path scope, lazy hash serialization,
+    confirmation rejection before replay, uniform wrong-household concealment, 31 focused assertions, disposable native
+    PostgreSQL 18.4 8/8, semantic interface 1.2.0, released lease, and effects 0/0/0. C00 rejected and acknowledged
+    obsolete P12-registration-001 and stale barrel -002, admitted only server/client -002 plus barrel -003, and dispatched
+    the source-only P12-then-P09 microbatch without applying shared paths. I36 preserved exact source ancestry in clean
+    local merges a6929cdd then 08e26cfd; 67 focused assertions and the relevant web builds passed. Changed-package
+    typecheck found exactly three P12 test-only contract errors: two stale 1.1.0 semantic fixtures and one widened receipt
+    disposition mock. C00 held the safe local merges and dispatched one exact six-path P12 correction; no runtime product
+    defect, shared-path application, remote integration push, or external effect occurred. P12 terminal 3ad55dc1 then
+    passed one independent review: exact six-path scope, 19/19 focused assertions, zero P12/P09 type diagnostics, released
+    lease and effects 0/0/0. C00 admitted only this child as correction merge d188c42e atop held local head 08e26cfd.
+    I36 then preserved the ordered P12/P09/correction ancestry at terminal 288d5883, passed 67 focused assertions with
+    three declared native skips, zero P12/P09 type diagnostics, exact changed-file static checks, released its lease,
+    and recorded effects 0/0/0. One independent review passed the exact 40-source/43-release-path terminal with no P1/P2.
+    Batch C terminal b0cc23a0 is independently accepted with 87 focused assertions, clean exact ancestry, released
+    leases, no P1/P2, and effects 0/0/0; it changed no P08/P12 shared-composition byte. Batch A terminal 3ea1a32e
+    completed the mounted P12/P08 composition and behavioral validation, but independent review held one P2 because
+    the .env.example evidence hash used checkout bytes; all product semantics and the other fifteen hashes passed.
+    Runtime-only correction 460ba42d replaced it with the exact Git-blob hash and reproduced the canonical sixteen-item
+    product manifest. One focused independent correction review passed exact scope, ancestry, all hashes, unchanged
+    dispositions and validation truth, released lease, clean live equality, and effects 0/0/0.
+  required_authority_or_input:
+  - No further source-composition input. Candidate-bound verification must still exercise real signup, reload, logout,
+    re-login, pre/post-expiry, household, inactive-route, wrong-household, stale-security, expired, revoked,
+    no-legacy-fallback, and Student create/manage journeys with the exact approved legal-evidence pair.
+  protection: >-
+    Do not mark P08-auth-household-002 or P12-registration-001 applied from the server-shell partial, claim signup
+    session establishment from row insertion alone, expose raw token material, rewrite migrations 2235/2241, fabricate a
+    multi-household selector, or treat inactive access as an unauthenticated Parent.
+  next_check: >-
+    Revalidate only at candidate verification or after a later overlapping source change. Preserve the recovery-capable
+    post-commit session boundary without claiming stricter cross-transaction atomicity.
+- blocker_id: P09-SCHOOL-INQUIRY-ROUTE-COMPOSITION
+  status: closed
+  scope: controlled_launch_candidate
+  owner: P09_P10_F02_I36
+  affected_tasks:
+  - P09
+  - P10
+  - F02
+  - F07
+  - I36
+  - V37
+  safe_work_completed: >-
+    Corrected P09 terminal a64a0c03 adds the concrete transactional PostgreSQL repository and task-owned exact POST
+    /api/v2.1/signup/school-inquiry descriptor. Independent review passed its exact seven-path scope, 26 focused tests,
+    typecheck, durable normalized-email deduplication, one local acknowledgment intent, and zero account, access,
+    Student, nurture, provider, WhatsApp, or Stripe effects. P09 and corrected landing terminal fc16537d are exact
+    integration ancestors of independently audited release 524563f0. P09 terminal d9a4ce80 created immutable
+    P09-migration-002 at raw/canonical digests 538d6509/d9958a9d to converge the overlapping P09/P10 approved-School
+    seat/configuration authority; C00 admitted it to F02 and dispatched only a bounded P10 metadata acknowledgment.
+    Immutable request P09-registration-001 also requires signed-out GET /school and an Admin-authorized approved-school
+    configuration surface; neither exists in the admitted P09 source, so the request cannot truthfully be marked
+    applied from central POST registration alone. I36 release ae3ced8a integrated forward-only migration 2256 with
+    native PostgreSQL 18.4 apply/replay/ledger 87/87; C00 dispatched the exact 18-writable-path P09 correction with only
+    two explicit repository ownership exceptions. Its independent pre-terminal review found one P2: current-authority
+    replay works, but a later configuration version hides the prior idempotency key even though migration 2256 preserves
+    it in append-only history. C00 amended the same claim to permit SELECT-only history readback. Corrected terminal
+    ce8df6e6 then passed one independent review with no P1/P2: 36 focused tests, exact 19-path source, durable scoped
+    history replay, immutable migration and legacy-request bytes, released lease, and effects 0/0/0. C00 withheld and
+    acknowledged the obsolete monolithic P09-registration-001 and admitted the three schema-valid split successors to
+    I36 without applying them. Accepted P12 correction 71fb96d6 passed its one correction review, and C00 dispatched the
+    ordered source-only P12-then-P09 I36 microbatch from exact integration ae3ced8a; the three P09 successors remain
+    assigned and unapplied. I36's clean local source merges passed all 67 focused assertions and relevant web builds but
+    were held before terminal/push for three P12 test-only type-contract errors. Accepted P12 child 3ad55dc1 corrects
+    those exact fixtures and is now the sole authorized third merge; no P09 or shared byte changes.
+    I36 terminal 288d5883 then preserved all ordered source ancestry, passed 67 focused assertions with three declared
+    native skips, zero P12/P09 type diagnostics, exact changed-file static checks, released its lease, and recorded
+    effects 0/0/0. One independent review passed the exact 40-source/43-release-path terminal with no P1/P2. Batch C
+    terminal b0cc23a0 is independently accepted with clean exact ancestry, 87 focused assertions, released leases, no
+    P1/P2, and effects 0/0/0; it changed no P09 shared-composition byte. Batch A terminal 3ea1a32e completed the P09
+    server/public/client composition and real /school validation; only its .env.example evidence hash/product manifest
+    was held for one runtime-triplet correction, with no product defect or other P1/P2. Corrected terminal 460ba42d and
+    one focused independent review passed the exact Git-blob manifest, preserved every P09 product byte and disposition,
+    released the correction lease, proved clean live equality, and recorded effects 0/0/0.
+  required_authority_or_input:
+  - No further source-composition input. Candidate-bound verification must preserve the no-account, no-access,
+    no-Student-contact, no-nurture, and no-provider-write boundary.
+  protection: School inquiry must create no product account, access, Student contact, nurture enrollment, WhatsApp send, or direct provider/billing mutation.
+  next_check: Revalidate only at candidate verification or after a later overlapping source change.
+- blocker_id: P22-LEARNING-ENGAGEMENT-AUTHORITY-CONVERGENCE
+  status: open
+  scope: controlled_launch_candidate
+  owner: P22_F02_C00_I36
+  affected_tasks:
+  - P22
+  - F02
+  - P12
+  - I36
+  - V37
+  - V40
+  - R44
+  safe_work_completed: >-
+    F02 terminal 22ada24a preserved migration 2251 as the sole attendance write authority, wrote no SQL or allocation,
+    released both leases before expiry, and recorded effects 0/0/0. P22 exact-eight-path terminal 347a08b2 binds
+    attendance, recognition, and review corrections to immutable canonical source identities, preserves all seven
+    present successor requests, and released LEARNING_ENGAGEMENT lease 0ae4f2d7 at 2026-07-31T09:20:00Z. Root and
+    independent review reproduced clean local/tracking/live equality, exact scope, 44/44 focused tests, static/request
+    gates, older attendance no-write replay, latest repair, and no P1/P2; effects remain 0/0/0. P21 terminal c11dec41
+    is independently accepted with 31/31 focused tests and no P1/P2/P3. Its PGlite proof is valid embedded SQL/trigger
+    evidence, while native PostgreSQL-server replay remains mandatory before candidate freeze. I36 integrated P21 then
+    P22 and released terminal 392cc119 with exact 25-source/28-release-path evidence, all merged checks passing, and
+    effects 0/0/0. Corrected P18 terminal 1926e61c is independently accepted with exact eight-path source, 35 focused
+    assertions, released lease, and effects 0/0/0. F02 terminal 3ee2f651 is independently accepted with exact seven-path
+    source, allocated migrations 2254 through 2256, native PostgreSQL 18.4 apply/replay/ledger 87/87, released leases,
+    and effects 0/0/0. I36 release ae3ced8a merged F02 then P18 with exact ancestry, 18 release paths, unchanged protected
+    migrations, repeated native PostgreSQL 18.4 apply/replay/ledger 87/87, released lease, effects 0/0/0, and one
+    independent review with no P1/P2 discrepancy. C00 recorded migrations 2254-2256 as integrated and their exact
+    successor requests as applied. I36 Batch B terminal 8c5b08cc is independently accepted with exact six-path scope,
+    P08-config-002 fully applied, the repository-safe P22 server-only key prerequisite present without a value,
+    48/48 focused assertions, zero changed-path type diagnostics, both leases released, and effects 0/0/0. Batch C
+    terminal b0cc23a0 is independently accepted; P30 remains honestly worker-composition blocked and effects remain
+    0/0/0. Batch A terminal 3ea1a32e applied only P22-barrel-export-002 and preserved the path-incomplete server/client
+    gates. Corrected terminal 460ba42d fixed the sole runtime evidence-manifest P2, passed one focused independent review,
+    and is accepted with product semantics and zero effects intact. Metadata terminal e569d693 materialized and validated
+    immutable path-complete P21-registration-004, P22-server-registration-003, P22-client-route-003, and
+    P30-registry-registration-002 under the corrected 265-case schema. C00 admitted all four and dispatched one exact
+    dependency-ordered repository application batch with no effect locks.
+  required_authority_or_input:
+  - Complete the dispatched P21-then-P22 server/client application and merged registration checks
+  - Preserve native PostgreSQL replay and the deployed LEARNING_ALIAS_HMAC_KEY as fail-closed candidate gates
+  protection: >-
+    Do not apply P22-migration-001 or P22-registration-001, create a second attendance write authority, parse a display
+    name into identity fields, mutate audit history, write SQL before the successor is admitted, or advance candidate,
+    provider, deployment, DNS, live-database, send, charge, or customer activation gates.
+  next_check: Re-evaluate after the remaining dependency-ordered shared-registration batches and merged checks.
+- blocker_id: P21-CANONICAL-CONTENT-STATE-WRITER
+  status: open
+  scope: controlled_launch_candidate
+  owner: P21_I36_C00
+  affected_tasks:
+  - P21
+  - P22
+  - I36
+  - V40
+  - R44
+  safe_work_completed: >-
+    Integration d89a0f38 contains migration 2234 canonical aggregate-state schema/reconciler, forward-only publication
+    migration 2253, and corrected P21 source head 705030f2 as an ancestor. Read-only seam inspection found no production
+    content writer: only family signup writes human_account/access aggregates. The P22 canonical review proof query is
+    correctly fail-closed on an exact published content occurrence, so its shared registration cannot be applied until
+    production publication commands populate canonical content state. P21 correction terminal c11dec41 closes the prior
+    pre-approval archive and late replay defects. Root plus two independent reviewers reproduced exact eight-path scope,
+    immutable registration-003, 31/31 focused tests, typecheck, lint/format/static/secret gates, clean remote equality,
+    released lease, effects 0/0/0, and no P1/P2/P3. The dispatched path digest 5b93f48f was a C00 derivation typo; the
+    exact eight-path digest is d3a605c5. Embedded PGlite proof passed, but native PostgreSQL-server replay is retained as
+    a hard merged/candidate gate. Metadata terminal e569d693 materialized and validated immutable path-complete
+    P21-registration-004; C00 admitted it and dispatched its exact 18-path application first in the shared P21/P22 batch.
+  required_authority_or_input:
+  - Complete the dispatched P21-registration-004 application before the P22 server composition
+  - Reproduce the corrected behavior against a true native PostgreSQL server in the merged migration/candidate gate
+  - Preserve P21-registration-003 as superseded path-incomplete history
+  protection: >-
+    Do not directly mutate canonical_aggregate_states, add a second reconciler, write a new migration, emit same-state
+    events, split the publication CAS from the canonical event transaction, apply registration before the writer, or
+    advance candidate/provider/release gates while canonical content state is absent.
+  next_check: Re-evaluate after c11dec41 is an integration ancestor and native PostgreSQL-server replay is recorded.
+- blocker_id: F04-OWNERSHIP-TRANSFER-REVOCATION-COLUMNS
+  status: closed
+  scope: controlled_launch_candidate
+  owner: F04_I36
+  affected_tasks:
+  - F04
+  - I36
+  - V37
+  - R44
+  safe_work_completed: >-
+    Independent review of F04 terminal a5868a95 confirmed its bounded Parent-session/label correction and also reproduced
+    a separate defect already present at integration base c0a1e04b and audited integration 8634b2ab.
+    persistAppliedOwnershipTransfer calls revokeIds with schema-incompatible columns under migration 2235.
+    v21_adult_sessions uses revoke_reason; v21_billing_portal_sessions has no reason column and requires the canonical
+    revoked state; v21_account_action_tokens uses action_token_id/revoked_at rather than
+    token_id/invalidated_at/invalidation_reason. Exact eight-path correction terminal b43c1923/product 2834f79b now
+    independently passes migration-2235-compatible revocation SQL, unique-ID row-count checks, three required version
+    increments, adult updated_at/reason handling, mixed nonempty revocation, late-failure whole-transaction rollback,
+    25 focused tests, and the verified 14-test native PostgreSQL proof. It is an exact ancestor of independently audited
+    release 524563f0 at merge 303ae3a7; the merged 63-assertion suite, typecheck, lint/format, unchanged migration tree,
+    exact scope/ancestry, and zero-effect gates pass.
+  required_authority_or_input: []
+  protection: Do not alter migration 2235, weaken ownership-transfer atomicity, omit any revocation set, or treat empty-set tests as production proof.
+  next_check: Revalidate after any later ownership-transfer, session, token, billing-portal, or migration byte change and once at candidate freeze.
+- blocker_id: F04-OWNERSHIP-TRANSFER-SESSION-SCOPE
+  status: closed
+  scope: controlled_launch_candidate
+  owner: F04_I36
+  affected_tasks:
+  - F04
+  - I36
+  - V37
+  - R44
+  safe_work_completed: >-
+    Independent review found a second pre-existing transfer defect in the F04 domain logic. Outgoing Parent sessions
+    are selected by account, Parent role, and unrevoked state, but not by the transferred household. A transfer can
+    therefore revoke a sibling-household session even though locked specification section 4.4 requires independent
+    multi-household access. Exact eight-path correction terminal b43c1923/product 2834f79b now independently passes
+    transferred-household selection and locked-inventory scope, a sibling-household preservation regression, focused
+    domain/repository verification, and the verified native PostgreSQL proof. It is an exact ancestor of independently
+    audited release 524563f0 at merge 303ae3a7; the merged 63-assertion suite, typecheck, lint/format, unchanged migration
+    tree, exact scope/ancestry, and zero-effect gates pass.
+  required_authority_or_input: []
+  protection: Do not broaden revocation to every Parent session on the account or weaken the locked-inventory equality
+    check.
+  next_check: Revalidate after any later ownership-transfer, household-session, or migration byte change and once at candidate freeze.
+- blocker_id: P35-NORMALIZED-ROUTE-AND-UNKNOWN-HOST-ENFORCEMENT
+  status: closed
+  scope: repository_release_gate
+  owner: I36_C00
+  affected_tasks:
+  - P35
+  - I36
+  - V42
+  - R44
+  safe_work_completed: >-
+    Corrected Batch D terminal acd9ffae closes both held P2s with one shared decode-once normalizer/classifier, all-path
+    legacy retirement middleware, archived page/asset denial before static serving, and a global production unknown-host
+    guard before every public, API, rate-limit, repository, and write path. The exact seven product/test paths plus I36
+    triplet, immutable P35 request, final manifest 49b3c321, focused verifier/unit/integration/browser proofs, canonical
+    pass-through, direct-double-encoding boundary, zero DB calls for unknown hosts, released lease, clean remote equality,
+    and effects 0/0/0 were independently reproduced. The authorized second review found no P1, P2, or P3.
+  required_authority_or_input: []
+  protection: >-
+    Preserve the immutable P35 request, migrations, archive manifest and all archived assets. Decode exactly once, do not
+    recursively decode percent encoding, keep unrelated canonical-host routes functional, and permit no candidate,
+    provider, deployment, DNS, contact, send, billing, cleanup, or other external effect.
+  next_check: Revalidate only after a later domain-transition, static-serving, host-validation, or server bootstrap change and once at candidate freeze.
+rule: One precise blocker per entry with owner, affected tasks, safe work completed, required authority/input, and
   next check.
