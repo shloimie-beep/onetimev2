@@ -124,7 +124,6 @@ import type {
 } from '../../../../packages/contracts/src/portals/index.ts';
 import { AUTH_SESSION_COOKIE } from '../../../../packages/contracts/src/identity/auth/index.ts';
 import type { SchoolSignupScope } from '../../../../packages/contracts/src/signup/school/index.ts';
-import type { AttendanceProjectionChangePort } from '../../../../packages/contracts/src/classroom/embedded/index.ts';
 import {
   CONTENT_PUBLICATION_PRODUCT_KEY,
   type ContentPublicationPrincipal,
@@ -327,7 +326,6 @@ import {
   createLearningComposition,
   createLearningRouter,
   createPostgresLearningActorResolver,
-  type MountedP18Binding,
 } from './features/learning/index.ts';
 
 type AppDeps = {
@@ -342,7 +340,6 @@ type AppDeps = {
   v21AdultSessionRuntime?: V21AdultSessionRuntime;
   learningRuntime?: {
     nativePostgresSchemaProven: boolean;
-    attachToMountedP18?: (changes: AttendanceProjectionChangePort) => MountedP18Binding;
   };
   /** @deprecated Retained only so historical test harnesses compile; no demo route is registered. */
   learningDeliveryDemoReportPath?: string;
@@ -664,9 +661,6 @@ export function createApp({
     contentPublicationWriterMounted: centrallyBoundFeatureRegistrations.some(
       (registration) => registration.featureId === 'onetime.content-publication',
     ),
-    ...(learningRuntime?.attachToMountedP18
-      ? { attachToMountedP18: learningRuntime.attachToMountedP18 }
-      : {}),
     ...(clock ? { clock } : {}),
   });
   installServerFeatureRouters({

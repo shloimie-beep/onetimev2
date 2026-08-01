@@ -23,12 +23,7 @@ export type ContentPublicationServicePort = Pick<
   | 'library'
   | 'playback'
   | 'saveResume'
-> & {
-  resolveResumeExpectedVersion(input: {
-    principal: ContentPublicationPrincipal;
-    contentId: string;
-  }): Promise<number | null>;
-};
+>;
 
 export type ContentPublicationRequestIdentity = {
   principal: ContentPublicationPrincipal;
@@ -223,21 +218,13 @@ export function createContentPublicationRouter(input: ContentPublicationRouterIn
       const identity = await requireIdentity(input, req, res, 'student');
       if (!identity || !(await requireCsrf(input, req, res, identity))) return;
       const payload = resumeSchema.parse(req.body);
-      const expectedVersion = await input.service.resolveResumeExpectedVersion({
-        principal: identity.principal,
-        contentId: routeId(req.params.contentId),
-      });
-      if (expectedVersion === null) {
-        neutralUnavailable(res);
-        return;
-      }
       const resume = await input.service.saveResume({
         principal: identity.principal,
         contentId: routeId(req.params.contentId),
         positionMs: payload.position_ms,
         binding: binding(
           {
-            expected_version: expectedVersion,
+            expected_version: 0,
             idempotency_key: payload.idempotency_key,
           },
           clock,

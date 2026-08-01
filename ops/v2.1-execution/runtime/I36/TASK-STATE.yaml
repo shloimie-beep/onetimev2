@@ -8,7 +8,7 @@ package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a
 branch: codex/v21-integration
 start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 dependency_heads:
-  C00: de282f8ed1e5c57a23b301c760802593f53ed591
+  C00: bdc355b68caf4cdab7f0dbcdeaa8f93655456a91
   F02: 3ee2f651528f5170dd714b921500235d4e015c5b
   F03: 3947c9887f3c6914a8247c70ac816a4ae94c76d0
   F06: 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
@@ -40,24 +40,101 @@ dependency_heads:
   P18: 1926e61c793ce29d7240c1ee05d2a4879b52770b
   P21: c11dec418fa3de896e96c348f87928c92c9f86b9
 status: ready_for_review
-phase: path_complete_successor_application_held_terminal
-claimed_by: codex-i36-path-complete-successors-d9908072
-claim_time: '2026-08-01T19:21:43Z'
-claim_id: d9908072-b7a2-4ddb-9de9-7c7da697feaa
-lease_id: cc10a2b6-7baa-488f-8fd7-05b7ce877604
-lease_issued_at: '2026-08-01T19:21:43Z'
-lease_expires_at: '2026-08-02T01:21:43Z'
-lease_released_at: '2026-08-01T20:15:43Z'
-last_heartbeat_at: '2026-08-01T20:15:43Z'
-controller_authorization_sha: de282f8ed1e5c57a23b301c760802593f53ed591
-latest_valid_observed_control_head_sha: de282f8ed1e5c57a23b301c760802593f53ed591
+phase: held_P21_P22_P30_semantic_correction_terminal
+claimed_by: codex-i36-held-semantic-correction-1abaf754
+claim_time: '2026-08-01T20:31:59Z'
+claim_id: 1abaf754-7160-4a03-908e-382ec8b471ac
+lease_id: bfb7723c-1017-4e2b-90c7-62aaee990313
+lease_issued_at: '2026-08-01T20:31:59Z'
+lease_expires_at: '2026-08-02T02:31:59Z'
+lease_released_at: '2026-08-01T20:58:02Z'
+last_heartbeat_at: '2026-08-01T20:58:02Z'
+controller_authorization_sha: bdc355b68caf4cdab7f0dbcdeaa8f93655456a91
+latest_valid_observed_control_head_sha: bdc355b68caf4cdab7f0dbcdeaa8f93655456a91
 reconciled_state_based_on_control_head_sha: cdc98ae7a5212c288ad16b35df70addc517e54af
-ready_authorization_control_head_sha: de282f8ed1e5c57a23b301c760802593f53ed591
-ready_entry_state_based_on_control_head_sha: cdc98ae7a5212c288ad16b35df70addc517e54af
-ready_entry_payload_digest: 6db477bb1582db04be734a013f33d27d3d0a5e0b47d3eb49c50bea4f5e367949
+ready_authorization_control_head_sha: bdc355b68caf4cdab7f0dbcdeaa8f93655456a91
+ready_entry_state_based_on_control_head_sha: de282f8ed1e5c57a23b301c760802593f53ed591
+ready_entry_payload_digest: 08e4446d2cfc1f8a04600336694ec4e02714231ae1ce3b4bce62235131e1b7d8
 claim_mode: new
-expected_existing_head_sha: e569d6933bc25ec848fe9eb279e193d40b38787e
-lease_phase_scope: exact_dependency_ordered_P21_P22_P30_path_complete_successor_application
+expected_existing_head_sha: 32e21c0dfa93195b05df99d81c906a4039341355
+lease_phase_scope: exact_held_P21_P22_P30_semantic_correction
+held_semantic_correction_terminal:
+  containing_control_head_sha: bdc355b68caf4cdab7f0dbcdeaa8f93655456a91
+  state_basis_control_head_sha: de282f8ed1e5c57a23b301c760802593f53ed591
+  exact_authorized_start_sha: 32e21c0dfa93195b05df99d81c906a4039341355
+  ready_entry_payload_digest: 08e4446d2cfc1f8a04600336694ec4e02714231ae1ce3b4bce62235131e1b7d8
+  claim_id: 1abaf754-7160-4a03-908e-382ec8b471ac
+  writer_id: codex-i36-held-semantic-correction-1abaf754
+  lease_issued_at: '2026-08-01T20:31:59Z'
+  lease_expires_at: '2026-08-02T02:31:59Z'
+  lease_released_at: '2026-08-01T20:58:02Z'
+  writer_slot_leases_released:
+    - slot: SERVER_COMPOSER
+      lease_id: 85b2ea40-3892-4654-9485-fa1cb8611306
+    - slot: WORKER_COMPOSER
+      lease_id: 4a52432e-397b-45ad-9716-85338bf7c109
+    - slot: RELEASE_INTEGRATOR
+      lease_id: bfb7723c-1017-4e2b-90c7-62aaee990313
+  effect_lock_leases: []
+  exact_scope:
+    product_and_test_paths: 13
+    runtime_paths: 3
+    total_paths: 16
+    product_path_inventory_digest: 69cfbf733eb52dda2ad34d7402cd2a952fc5c99d22102acaa5630ee29e038a2d
+    release_path_inventory_digest: a6d196e4e0021a3323c3e7fa850613106d6de68f5eb35da0aa967a160449d5e1
+    authorized_preimage_manifest_digest: 63cf872681002db52b35008d62e6536770ebdc2931ad58777c4c2b28f56cc20d
+    product_postimage_manifest_digest: 769548802db4ea2dfb7e711b183533709827176b775ec7e94534fde25173c1c1
+    product_postimage_manifest_algorithm: >-
+      SHA-256 of compact UTF-8 JSON for the path-sorted 13-element array shaped
+      {"path":<POSIX path>,"sha256":<exact staged Git-blob SHA-256>}.
+  corrected_findings:
+    P21_resume_replay: stable_server_owned_zero_sentinel_with_independent_in_transaction_resume_CAS
+    P22_mounted_repository_gate: self_attested_seam_removed_route_remains_generic_private_no_store_503
+    P30_dead_letter: terminal_permanently_rejected
+    P30_completion_fences: every_completeDecision_result_checked
+    P30_provider_reference: authority_returned_reference_only
+    P30_readback_digests: exact_approved_registry_and_rendered_body_equality
+  P30_exact_approved_digests:
+    registry_sha256: 06d1ee3b125f7d0893994e9c55b075bc387034606f38e74ef074532a86dd0339
+    rendered_body_sha256: 180797cf833054f2d433e189404a4a6c498a80ade2821ac8fea0f0e659552d30
+  completed_validation:
+    live_control_READY_head_preimages_requests: passed_13_of_13_preimages_4_of_4_requests
+    focused_P21_P22_P30: passed_9_files_69_tests
+    scoped_eslint: passed_zero_findings_13_paths
+    scoped_prettier: passed_13_paths
+    highlevel_registry_check: passed
+    web_client_build: passed
+    public_pages_build: passed
+    server_learning_worker_runtime_imports: passed
+    secret_scan: passed_3164_text_files
+    workspace_typecheck: baseline_blocked_exactly_4_unchanged_out_of_scope_diagnostics
+    full_unit: baseline_blocked_578_of_593_with_15_failures_across_9_untouched_files
+    diff_check: passed
+  unchanged_out_of_scope_baselines:
+    workspace_typecheck:
+      - packages/domain/src/billing/stripe-official-client.ts Stripe Status OtherString mismatch
+      - tests/ot-52/portal-browser-harness.ts duplicate Playwright Page type
+      - tests/ot-83/portal-browser-harness.ts duplicate Playwright Page type
+      - tests/w12-09/portal-gamification-browser-harness.ts duplicate Playwright Page type
+    full_unit: >-
+      Fifteen failures remain across nine tests covering preexisting portal navigation/copy assertions, production protected-payload
+      fixture configuration, legacy billing public-entry scanning, and occurrence seeds missing join_opens_at. None is a correction path.
+  retained_later_exact_gates:
+    - P21 requires a separately path-complete locked F05/F06 internal publication reconciler.
+    - P22 requires a non-self-attested P18 runtime attachment/readback contract, native migration 2254, and protected alias-key readback.
+    - P30 requires the admitted real F05 dispatch adapter, active F06 binding, and exact saved/reopened OT-16 provider identity/readback.
+  migration_or_SQL_change: false
+  config_or_lockfile_change: false
+  immutable_request_bytes_changed: false
+  provider_or_infrastructure_inspection: false
+  provider_or_candidate_action: false
+  deployment_or_DNS_action: false
+  external_effects:
+    attempted: 0
+    succeeded: 0
+    reconciled: 0
+  safe_next_action: >-
+    Push one exact 16-path correction terminal and stop for independent review. Candidate freeze and every provider effect remain prohibited.
 path_complete_successor_application_terminal:
   containing_control_head_sha: de282f8ed1e5c57a23b301c760802593f53ed591
   state_basis_control_head_sha: cdc98ae7a5212c288ad16b35df70addc517e54af

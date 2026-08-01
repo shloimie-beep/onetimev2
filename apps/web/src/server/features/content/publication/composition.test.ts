@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import { loadConfig } from '../../../../../../../packages/config/src/index.ts';
-import type { ContentPublicationPrincipal } from '../../../../../../../packages/contracts/src/content/publication/index.ts';
 import type { DbPool } from '../../../../../../../packages/db/src/index.ts';
 import {
   composeContentPublicationService,
@@ -33,33 +32,12 @@ describe('P21 content-publication composition', () => {
     expect(() => composeContentPublicationService({ config, pool: unusedPool() })).not.toThrow();
   });
 
-  it('resolves resume concurrency from the independent resume aggregate', async () => {
+  it('does not preflight resume concurrency outside the service transaction', () => {
     const queries: string[] = [];
-    const pool = tracedPool(queries, 7);
-    const service = composeContentPublicationService({ config: testConfig(), pool });
-
-    await expect(
-      service.resolveResumeExpectedVersion({
-        principal: studentPrincipal(),
-        contentId: 'content-one',
-      }),
-    ).resolves.toBe(7);
-
-    expect(queries.some((query) => query.includes('student_content_resume'))).toBe(true);
-    expect(queries.some((query) => query.includes('content_publications'))).toBe(false);
-  });
-
-  it('uses version zero for a new independent resume aggregate', async () => {
-    const service = composeContentPublicationService({
-      config: testConfig(),
-      pool: tracedPool([], null),
-    });
-    await expect(
-      service.resolveResumeExpectedVersion({
-        principal: studentPrincipal(),
-        contentId: 'content-one',
-      }),
-    ).resolves.toBe(0);
+    expect(() =>
+      composeContentPublicationService({ config: testConfig(), pool: tracedPool(queries) }),
+    ).not.toThrow();
+    expect(queries).toEqual([]);
   });
 });
 
@@ -82,17 +60,11 @@ function unusedPool(): DbPool {
   } as unknown as DbPool;
 }
 
-function tracedPool(queries: string[], resumeVersion: number | null): DbPool {
+function tracedPool(queries: string[]): DbPool {
   return {
     connect: async () => ({
       query: async (text: string) => {
         queries.push(text);
-        if (text.includes('student_content_resume')) {
-          return {
-            rows: resumeVersion === null ? [] : [{ resume_json: { version: resumeVersion } }],
-            rowCount: resumeVersion === null ? 0 : 1,
-          };
-        }
         return { rows: [], rowCount: 0 };
       },
       release: () => undefined,
@@ -100,18 +72,4 @@ function tracedPool(queries: string[], resumeVersion: number | null): DbPool {
     query: async () => ({ rows: [], rowCount: 0 }),
     end: async () => undefined,
   } as unknown as DbPool;
-}
-
-function studentPrincipal(): ContentPublicationPrincipal {
-  return {
-    actorId: 'student-user-one',
-    role: 'student',
-    accountKey: 'account-one',
-    productKey: 'one_time_mishnayos',
-    householdId: 'household-one',
-    studentId: 'student-one',
-    sessionId: 'session-one',
-    sessionVersion: 1,
-    accessState: 'active',
-  };
 }

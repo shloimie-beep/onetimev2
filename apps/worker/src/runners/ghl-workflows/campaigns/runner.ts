@@ -168,15 +168,23 @@ export async function runOt16Checkpoint(
   const finalCandidate = await input.eligibility.readCurrent(prewritePlan.adult_id);
   const dispatchPlan = plan(input, finalCandidate, finalSuppression);
   if (dispatchPlan.state !== 'deliver_email') {
-    const result = nonDeliveryResult(dispatchPlan, { reservations: 1, writes: 3 });
-    await input.repository.completeDecision({
+    const completed = await input.repository.completeDecision({
       operation_id: input.operation_id,
       expected_version: input.expected_version + 1,
       status: 'skipped',
       safe_provider_ref_hash: null,
-      safe_reason: resultReason(result),
+      safe_reason: resultReason(nonDeliveryResult(dispatchPlan)),
     });
-    return result;
+    if (!completed) {
+      return {
+        state: 'stale_fenced',
+        email_provider_calls: 0,
+        whatsapp_provider_calls: 0,
+        reservations: 1,
+        writes: 2,
+      };
+    }
+    return nonDeliveryResult(dispatchPlan, { reservations: 1, writes: 3 });
   }
 
   let receipt: CampaignEmailDispatchReceipt;
@@ -254,16 +262,18 @@ async function persistOutcome(
   }
 
   if (outcome.kind === 'not_accepted_retryable') {
-    await input.repository.completeDecision({
+    const terminal = durableJob.state === 'dead_letter';
+    const completed = await input.repository.completeDecision({
       operation_id: dispatchPlan.operation_id,
       expected_version: input.expected_version + 1,
-      status: 'retry_pending',
+      status: terminal ? 'skipped' : 'retry_pending',
       safe_provider_ref_hash: null,
-      safe_reason: outcome.safe_error_code,
+      safe_reason: durableJob.safe_error_code ?? outcome.safe_error_code,
     });
+    if (!completed) return completionUnconfirmed();
     return {
-      state: 'retry_pending',
-      safe_error_code: outcome.safe_error_code,
+      state: terminal ? 'permanently_rejected' : 'retry_pending',
+      safe_error_code: durableJob.safe_error_code ?? outcome.safe_error_code,
       email_provider_calls: 1,
       whatsapp_provider_calls: 0,
       reservations: 1,
@@ -272,13 +282,14 @@ async function persistOutcome(
   }
 
   if (outcome.kind === 'permanently_rejected') {
-    await input.repository.completeDecision({
+    const completed = await input.repository.completeDecision({
       operation_id: dispatchPlan.operation_id,
       expected_version: input.expected_version + 1,
       status: 'skipped',
       safe_provider_ref_hash: null,
       safe_reason: outcome.safe_error_code,
     });
+    if (!completed) return completionUnconfirmed();
     return {
       state: 'permanently_rejected',
       safe_error_code: outcome.safe_error_code,
@@ -335,7 +346,7 @@ function receiptMatchesDispatch(
   }
   if (outcome.kind === 'permanently_rejected') {
     return (
-      job.state === 'rejected' &&
+      (job.state === 'rejected' || job.state === 'dead_letter') &&
       !job.unknown_effect &&
       job.provider_acceptance_digest === null &&
       hasSafeErrorCode(job.safe_error_code)
@@ -347,6 +358,17 @@ function receiptMatchesDispatch(
     job.provider_acceptance_digest === null &&
     hasSafeErrorCode(job.safe_error_code)
   );
+}
+
+function completionUnconfirmed(): RunOt16CheckpointResult {
+  return {
+    state: 'dispatch_persistence_unconfirmed',
+    safe_error_code: 'ot16_decision_completion_unconfirmed',
+    email_provider_calls: 1,
+    whatsapp_provider_calls: 0,
+    reservations: 1,
+    writes: 2,
+  };
 }
 
 function hasSafeErrorCode(value: unknown): value is string {

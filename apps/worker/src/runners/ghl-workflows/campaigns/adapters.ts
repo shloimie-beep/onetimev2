@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { readFile } from 'node:fs/promises';
 
 import type { WorkerRunnerContext } from '../../registry/index.ts';
 
@@ -6,6 +7,7 @@ export const OT16_WORKFLOW_KEY = 'OT-16' as const;
 export const OT16_OPERATION_TYPE = 'ghl.workflow.ot16_checkpoint' as const;
 export const OT16_REGISTRY_BINDING_KEY = 'highlevel.ot16.primary' as const;
 export const OT16_CANONICAL_LOCATION_ID = 'pBSnOK2nkdxp6gf9Rg3o' as const;
+export const OT16_APPROVED_EXPIRY_AT = '2026-09-13T19:24:00+03:00' as const;
 
 export type Ot16AuthorityBlockedReason =
   | 'production_read_only'
@@ -84,8 +86,7 @@ export async function inspectDefaultOt16Authority(
     !['SAVED_REOPENED', 'ACTIVE_CONFIGURED', 'ACTIVE_TESTED'].includes(
       String(readback.readiness),
     ) ||
-    !isSha256(readback.registry_digest) ||
-    !isSha256(readback.rendered_body_digest) ||
+    !matchesApprovedOt16Digests(readback, registry) ||
     !delivery ||
     typeof delivery.provider_read_at !== 'string' ||
     delivery.provider_read_at.trim() === ''
@@ -102,17 +103,44 @@ export async function inspectDefaultOt16Authority(
 async function readCanonicalOt16Registry(): Promise<{
   ghlId: string;
   observedStatus: string;
+  registryDigest: string;
+  renderedBodyDigest: string;
 } | null> {
   try {
     const source = await import('../../../../../../scripts/highlevel/workflow-registry-source.ts');
+    const campaigns =
+      await import('../../../../../../packages/domain/src/communications/workflows/campaigns/index.ts');
     const record = source.canonicalWorkflowAssets.find((asset) => asset.key === OT16_WORKFLOW_KEY);
     if (!record) return null;
-    return { ghlId: record.ghlId, observedStatus: record.observedStatus };
+    const registryDigest = createHash('sha256')
+      .update(await readFile(source.workflowRegistryPath))
+      .digest('hex');
+    const renderedBodyDigest = createHash('sha256')
+      .update(
+        campaigns.buildOt16Notice({
+          checkpoint_days: 14,
+          expiry_at: OT16_APPROVED_EXPIRY_AT,
+        }).body,
+        'utf8',
+      )
+      .digest('hex');
+    return {
+      ghlId: record.ghlId,
+      observedStatus: record.observedStatus,
+      registryDigest,
+      renderedBodyDigest,
+    };
   } catch {
     return null;
   }
 }
 
-function isSha256(value: unknown): value is string {
-  return typeof value === 'string' && /^[a-f0-9]{64}$/u.test(value);
+export function matchesApprovedOt16Digests(
+  readback: Record<string, unknown>,
+  approved: { registryDigest: string; renderedBodyDigest: string },
+): boolean {
+  return (
+    readback.registry_digest === approved.registryDigest &&
+    readback.rendered_body_digest === approved.renderedBodyDigest
+  );
 }

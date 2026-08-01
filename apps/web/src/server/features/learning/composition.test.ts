@@ -1,5 +1,4 @@
 import { describe, expect, it, vi } from 'vitest';
-import type { EmbeddedClassroomRepository } from '../../../../../../packages/contracts/src/classroom/embedded/index.ts';
 import type { DbPool } from '../../../../../../packages/db/src/index.ts';
 import { createLearningComposition, LEARNING_COMPOSITION_BLOCKERS } from './composition.ts';
 
@@ -30,9 +29,7 @@ describe('P22 learning composition', () => {
     ]);
   });
 
-  it('enables only when the callback is attached to the identical repository mounted by P18', () => {
-    const repository = {} as EmbeddedClassroomRepository;
-    const attach = vi.fn(() => ({ repository, mountedRepository: repository }));
+  it('stays unavailable when other gates pass because no mounted P18 attachment contract exists', () => {
     const result = createLearningComposition({
       pool,
       scope,
@@ -40,27 +37,8 @@ describe('P22 learning composition', () => {
       aliasHmacKeyConfigured: true,
       nativePostgresSchemaProven: true,
       contentPublicationWriterMounted: true,
-      attachToMountedP18: attach,
-    });
-    expect(result.enabled).toBe(true);
-    expect(result.mountedP18Repository).toBe(repository);
-    expect(attach).toHaveBeenCalledWith(result.attendanceProjectionChanges);
-  });
-
-  it('rejects a callback wired to an unused second P18 repository', () => {
-    const result = createLearningComposition({
-      pool,
-      scope,
-      aliasHmacKey: 'deployed-alias-key',
-      aliasHmacKeyConfigured: true,
-      nativePostgresSchemaProven: true,
-      contentPublicationWriterMounted: true,
-      attachToMountedP18: () => ({
-        repository: {} as EmbeddedClassroomRepository,
-        mountedRepository: {} as EmbeddedClassroomRepository,
-      }),
     });
     expect(result.enabled).toBe(false);
-    expect(result.blockers).toContain(LEARNING_COMPOSITION_BLOCKERS.attendanceRepository);
+    expect(result.blockers).toEqual([LEARNING_COMPOSITION_BLOCKERS.attendanceRepository]);
   });
 });

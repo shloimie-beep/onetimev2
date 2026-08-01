@@ -270,6 +270,29 @@ describe('P30 OT-16 worker boundary', () => {
     }
   });
 
+  it('does not report a send-time skip as completed when its fence is lost', async () => {
+    const { repository, suppression, eligibility, email } = ports({
+      finalCandidate: candidate({ verified_paid_access: true }),
+    });
+    vi.mocked(repository.completeDecision).mockResolvedValueOnce(false);
+    await expect(
+      runOt16Checkpoint({
+        ...checkpointInput(),
+        repository,
+        suppression,
+        eligibility,
+        email,
+      }),
+    ).resolves.toEqual({
+      state: 'stale_fenced',
+      email_provider_calls: 0,
+      whatsapp_provider_calls: 0,
+      reservations: 1,
+      writes: 2,
+    });
+    expect(email.dispatchThroughF05).not.toHaveBeenCalled();
+  });
+
   it('maps canonical F05 outcomes and never retries acceptance-unknown', async () => {
     const cases: Array<{
       outcome: ProviderDispatchOutcome;
@@ -315,6 +338,71 @@ describe('P30 OT-16 worker boundary', () => {
         );
       }
     }
+  });
+
+  it('maps a durable F05 dead letter terminally instead of retrying it', async () => {
+    const outcome: ProviderDispatchOutcome = {
+      kind: 'not_accepted_retryable',
+      safe_error_code: 'safe_retry_exhausted',
+      retry_after_ms: 1,
+    };
+    const { repository, suppression, eligibility, email } = ports({ outcome });
+    email.dispatchThroughF05.mockImplementationOnce(async (sendInput) => {
+      const receipt = dispatchReceipt(outcome, sendInput.operation_id);
+      receipt.durable_job.state = 'dead_letter';
+      return receipt;
+    });
+    await expect(
+      runOt16Checkpoint({
+        ...checkpointInput(),
+        repository,
+        suppression,
+        eligibility,
+        email,
+      }),
+    ).resolves.toMatchObject({
+      state: 'permanently_rejected',
+      safe_error_code: 'safe_retry_exhausted',
+      writes: 3,
+    });
+    expect(repository.completeDecision).toHaveBeenCalledWith(
+      expect.objectContaining({ status: 'skipped', safe_reason: 'safe_retry_exhausted' }),
+    );
+  });
+
+  it.each([
+    {
+      outcome: {
+        kind: 'not_accepted_retryable',
+        safe_error_code: 'safe_retry',
+        retry_after_ms: 1,
+      } as ProviderDispatchOutcome,
+    },
+    {
+      outcome: {
+        kind: 'permanently_rejected',
+        safe_error_code: 'safe_terminal',
+      } as ProviderDispatchOutcome,
+    },
+  ])('does not report a rejected outcome as completed after a lost fence', async ({ outcome }) => {
+    const { repository, suppression, eligibility, email } = ports({ outcome });
+    vi.mocked(repository.completeDecision).mockResolvedValueOnce(false);
+    await expect(
+      runOt16Checkpoint({
+        ...checkpointInput(),
+        repository,
+        suppression,
+        eligibility,
+        email,
+      }),
+    ).resolves.toEqual({
+      state: 'dispatch_persistence_unconfirmed',
+      safe_error_code: 'ot16_decision_completion_unconfirmed',
+      email_provider_calls: 1,
+      whatsapp_provider_calls: 0,
+      reservations: 1,
+      writes: 2,
+    });
   });
 
   it('does not claim F05 quarantine when dispatch persistence is unconfirmed', async () => {

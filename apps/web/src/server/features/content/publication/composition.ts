@@ -64,23 +64,7 @@ export function composeContentPublicationService(input: {
     },
     createId: input.createId ?? (() => `playback_${randomUUID()}`),
   });
-  return Object.assign(service, {
-    resolveResumeExpectedVersion: (request: {
-      principal: import('../../../../../../../packages/contracts/src/content/publication/index.ts').ContentPublicationPrincipal;
-      contentId: string;
-    }) => {
-      const studentId = request.principal.studentId;
-      if (!studentId) return Promise.resolve(null);
-      return repository.inTransaction(async (unit) => {
-        const resume = await unit.getResume(
-          { accountKey: request.principal.accountKey, productKey: request.principal.productKey },
-          studentId,
-          request.contentId,
-        );
-        return resume?.version ?? 0;
-      });
-    },
-  });
+  return service;
 }
 
 export function disabledVimeoBinding(config: AppConfig): ProviderRegistryBinding {

@@ -34,7 +34,6 @@ export type Ot16CandidatePreflight =
       ready: true;
       identityLinkState: GhlIdentityLinkState;
       mappingReconciliationState: HouseholdProviderMapping['reconciliation_state'];
-      safeProviderReference: string | null;
       candidate: CampaignAudienceCandidate;
       suppression: CommunicationSuppressionSnapshot;
     };
@@ -74,6 +73,7 @@ export async function runOt16CheckpointWorker(
 ): Promise<WorkerRunnerResult> {
   const authority = await (dependencies?.inspectAuthority ?? inspectDefaultOt16Authority)(context);
   if (!authority.ready) return disabled(authority.reason);
+  if (!isSha256(authority.safeProviderReference)) return disabled('f06_binding_unavailable');
 
   // The exact F05 campaign dispatch adapter and canonical F06 active-binding
   // reader are not exposed by the integrated interfaces. The production path
@@ -88,7 +88,6 @@ export async function runOt16CheckpointWorker(
     if (
       preflight.identityLinkState !== 'linked' ||
       preflight.mappingReconciliationState !== 'in_sync' ||
-      !isSha256(preflight.safeProviderReference) ||
       preflight.candidate.subject.kind !== 'adult' ||
       preflight.candidate.subject.adult_id !== checkpoint.adultId
     ) {
@@ -107,14 +106,14 @@ export async function runOt16CheckpointWorker(
       candidate: preflight.candidate,
       suppression_at_approval: preflight.suppression,
       expected_version: checkpoint.expectedVersion,
-      safe_provider_reference: preflight.safeProviderReference,
+      safe_provider_reference: authority.safeProviderReference,
       signal: dependencies.signal,
       repository: dependencies.repository,
       suppression: dependencies.suppression,
       eligibility: dependencies.eligibility,
       email: dependencies.email,
     });
-    summary.claimed += result.state === 'stale_fenced' ? 0 : 1;
+    summary.claimed += result.writes > 0 ? 1 : 0;
     summary.reservations += result.reservations;
     summary.writes += result.writes;
     summary.providerCalls += result.email_provider_calls;

@@ -1,6 +1,75 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
+MODE: PAUSE_FOR_C00_HELD_SEMANTIC_CORRECTION_REVIEW
+
+Audit the exact pushed I36 held P21/P22/P30 semantic-correction terminal. This
+is repository-only. Do not freeze a candidate, inspect or mutate a provider,
+deploy, change DNS, touch a live database, create a contact, enroll, send,
+charge, clean up, or perform any external effect.
+
+Repository: shloimie-beep/onetimev2
+Branch: codex/v21-integration
+Authorized start and required sole parent:
+`32e21c0dfa93195b05df99d81c906a4039341355`
+Containing control: `bdc355b68caf4cdab7f0dbcdeaa8f93655456a91`
+Authority/control basis: `de282f8ed1e5c57a23b301c760802593f53ed591`
+READY: `08e4446d2cfc1f8a04600336694ec4e02714231ae1ce3b4bce62235131e1b7d8`
+Claim: `1abaf754-7160-4a03-908e-382ec8b471ac`
+Writer: `codex-i36-held-semantic-correction-1abaf754`
+Leases: SERVER `85b2ea40...`, WORKER `4a52432e...`, RELEASE `bfb7723c...`
+Lease issue/expiry/release: `2026-08-01T20:31:59Z` /
+`2026-08-02T02:31:59Z` / `2026-08-01T20:58:02Z`
+Effects: `0/0/0`
+
+Confirm exact sole-parent ancestry; the 13 authorized product/test paths plus
+only the I36 runtime triplet; product/release inventory digests `69cfbf73...`
+and `a6d196e4...`; preimage manifest `63cf8726...`; postimage manifest
+`769548802db4ea2dfb7e711b183533709827176b775ec7e94534fde25173c1c1`;
+all exact preimages; and all four immutable request digests.
+
+Confirm P21 has no separate resume-version preflight transaction, same-key
+retries use the stable server-owned zero sentinel in receipt hashing, and the
+real resume-row CAS remains independently derived inside `service.saveResume`.
+Do not mark P21 complete: the exact locked F05/F06 internal reconciler remains
+a later path-complete gate.
+
+Confirm P22 exposes no self-attested mounted-P18 injection seam and cannot be
+enabled by equal references returned from a caller. It must remain generic
+private/no-store 503 until a non-self-attested P18 runtime attachment/readback,
+native migration 2254, and protected deployed alias-key readback pass. Confirm
+no second attendance repository exists.
+
+Confirm P30 maps durable F05 `dead_letter` terminally, checks every
+`completeDecision` result, never reports a lost fence completed, and passes
+only the authority-returned safe provider reference to dispatch. Confirm
+saved/reopened readback equality to exact approved registry digest
+`06d1ee3b125f7d0893994e9c55b075bc387034606f38e74ef074532a86dd0339`
+and rendered-body digest
+`180797cf833054f2d433e189404a4a6c498a80ade2821ac8fea0f0e659552d30`.
+Acceptance-unknown must remain quarantined without blind retry; WhatsApp and
+reachable default provider dispatch must remain absent.
+
+Confirm focused 69/69 tests, scoped ESLint/Prettier, HighLevel registry check,
+both web builds, runtime imports, 3,164-file secret scan, exact checks, diff
+hygiene, and only the four unchanged typecheck diagnostics. Treat the wider
+unit result 578/593 as baseline evidence: all 15 failures are in nine untouched
+portal/copy/config/billing and legacy occurrence-seed tests, not correction
+paths.
+
+Confirm all three leases were released before expiry, local/tracking/live refs
+equal the pushed terminal, the worktree is clean, and no candidate, provider,
+infrastructure, deployment, DNS, database, billing, contact, send, cleanup, or
+external effect occurred. Return an exact P1/P2/P3 finding count. C00 must not
+advance candidate freeze unless this correction has zero P1/P2. Stop.
+
+---
+
+## Superseded audit prompt record
+
+MODEL: GPT-5.6-SOL
+REASONING: XHIGH
+SERVICE TIER: PRIORITY
 MODE: PAUSE_FOR_C00_PATH_COMPLETE_SUCCESSOR_APPLICATION_REVIEW
 
 Audit the exact pushed I36 path-complete P21/P22/P30 application terminal.

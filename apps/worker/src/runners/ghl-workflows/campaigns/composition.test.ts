@@ -8,6 +8,7 @@ import type {
 import type { ProviderDispatchOutcome } from '../../../../../../packages/contracts/src/jobs/index.ts';
 import type { CampaignAudienceCandidate } from '../../../../../../packages/domain/src/communications/workflows/campaigns/index.ts';
 import type { WorkerRunnerContext } from '../../registry/index.ts';
+import { matchesApprovedOt16Digests } from './adapters.ts';
 import { runOt16CheckpointWorker, type Ot16WorkerDependencies } from './composition.ts';
 import type { CampaignEmailDispatchReceipt } from './runner.ts';
 
@@ -86,7 +87,6 @@ function dependencies(
       ready: true as const,
       identityLinkState: 'linked' as const,
       mappingReconciliationState: 'in_sync' as const,
-      safeProviderReference: h('d'),
       candidate: candidate(),
       suppression: suppression(),
     })),
@@ -193,9 +193,47 @@ describe('P30 OT-16 worker composition', () => {
     });
     expect(deps.email.dispatchThroughF05).toHaveBeenCalledOnce();
     expect(deps.email.dispatchThroughF05).toHaveBeenCalledWith(
-      expect.objectContaining({ safe_provider_reference: h('d') }),
+      expect.objectContaining({ safe_provider_reference: h('c') }),
       deps.signal,
     );
+  });
+
+  it('accepts only the exact approved registry and rendered-body digest pair', () => {
+    const approved = { registryDigest: h('e'), renderedBodyDigest: h('f') };
+    expect(
+      matchesApprovedOt16Digests(
+        { registry_digest: h('e'), rendered_body_digest: h('f') },
+        approved,
+      ),
+    ).toBe(true);
+    expect(
+      matchesApprovedOt16Digests(
+        { registry_digest: h('0'), rendered_body_digest: h('f') },
+        approved,
+      ),
+    ).toBe(false);
+    expect(
+      matchesApprovedOt16Digests(
+        { registry_digest: h('e'), rendered_body_digest: h('0') },
+        approved,
+      ),
+    ).toBe(false);
+  });
+
+  it('rejects an invalid authority-owned provider reference before scheduling', async () => {
+    const deps = dependencies();
+    deps.inspectAuthority = vi.fn(async () => ({
+      ready: true as const,
+      safeProviderReference: 'not-a-provider-reference',
+    }));
+    const result = await runOt16CheckpointWorker(context(), deps);
+    expect(result).toMatchObject({
+      enabled: false,
+      providerCallsPerformed: false,
+      summary: { disabledReason: 'f06_binding_unavailable', scheduled: 0, writes: 0 },
+    });
+    expect(deps.listDueCheckpoints).not.toHaveBeenCalled();
+    expect(deps.repository.persistDecision).not.toHaveBeenCalled();
   });
 
   it('quarantines acceptance-unknown and reports a provider call without retrying it', async () => {
@@ -233,7 +271,6 @@ describe('P30 OT-16 worker composition', () => {
       ready: true as const,
       identityLinkState: 'linked' as const,
       mappingReconciliationState: 'in_sync' as const,
-      safeProviderReference: h('d'),
       candidate: {
         ...candidate(),
         subject: {
@@ -260,17 +297,12 @@ describe('P30 OT-16 worker composition', () => {
       name: 'mapping reconciliation hold',
       override: { mappingReconciliationState: 'reconciliation_hold' as const },
     },
-    {
-      name: 'missing verified provider reference',
-      override: { safeProviderReference: null },
-    },
   ])('rejects $name before any P28 mutation', async ({ override }) => {
     const deps = dependencies();
     deps.preflight = vi.fn(async () => ({
       ready: true as const,
       identityLinkState: 'linked' as const,
       mappingReconciliationState: 'in_sync' as const,
-      safeProviderReference: h('d'),
       candidate: candidate(),
       suppression: suppression(),
       ...override,

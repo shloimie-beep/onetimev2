@@ -1,55 +1,53 @@
 # I36 Integration Releases
 
-## Current terminal — path-complete P21/P22/P30 application held at real interfaces
+## Current terminal — held P21/P22/P30 semantic correction
 
-Control `de282f8ed1e5c57a23b301c760802593f53ed591`, based on
-`cdc98ae7a5212c288ad16b35df70addc517e54af`, authorized one exact 41-product-
-path application from integration `e569d6933bc25ec848fe9eb279e193d40b38787e`.
-The READY digest `6db477bb...`, all 41 preimages, four immutable request blobs,
-and the 41/44 path inventories reproduced before editing.
+Control `bdc355b68caf4cdab7f0dbcdeaa8f93655456a91`, based on
+`de282f8ed1e5c57a23b301c760802593f53ed591`, authorized one exact correction
+from integration `32e21c0dfa93195b05df99d81c906a4039341355`. READY
+`08e4446d...`, all 13 product preimages, all four immutable request blobs, and
+the exact 13/16 path inventories reproduced before editing.
 
-P21 is fully applied at its repository-only ceiling. The canonical PostgreSQL
-repository/service, authenticated CSRF-protected Admin commands, protected
-Student library and playback routes, Admin and Student workspaces, neutral
-Parent denial, and provider-disabled default are centrally registered. Resume
-concurrency is derived from the independent `student_content_resume` aggregate,
-never the publication version.
+P21 no longer reads resume version in a separate preflight transaction. The
+HTTP receipt binding uses a stable server-owned zero sentinel across same-key
+retries, while `service.saveResume` retains its independent in-transaction CAS
+against the locked `student_content_resume` row. The provider-disabled default
+is unchanged. P21 remains held for a separately path-complete locked F05/F06
+internal publication reconciler.
 
-P22 server and client repository code is applied: SELECT-only adapters,
-server-derived authenticated routes, safe Admin and Student clients, no Parent
-route, and no peer canonical identity. It remains honestly held because the
-current application has no path-complete P18 mounted repository to return the
-same attendance-intake instance through the callback seam. The route therefore
-stays generic private/no-store 503 until that exact gate, native candidate
-migration 2254, and protected deployed alias-key readback are satisfied. No
-unused second P18 repository was created.
+P22's self-attested mounted-P18 injection seam is removed. No caller can enable
+learning merely by returning two equal repository references. With its other
+gates satisfied, composition still records the mounted-attendance blocker and
+the authenticated route remains generic private/no-store 503. A later exact P18
+runtime attachment/readback contract, native migration 2254, and protected
+alias-key readback are still required; no second repository was created.
 
-P30 registers `communications.ot16-checkpoint` for once and continuous worker
-execution with deterministic operation identity, final adult eligibility and
-suppression gates, AbortSignal propagation, and no WhatsApp surface. Dispatch
-now requires a durable canonical F05 receipt; acceptance-unknown is quarantined
-and never blindly retried. The default remains disabled because no admitted F05
-OT-16 dispatch adapter, exact active F06 binding, or saved/reopened provider
-identity exists. No provider call occurred.
+P30 now uses only the authority-returned safe provider reference. Saved/reopened
+readback must equal the exact approved registry digest `06d1ee3b...` and rendered
+body digest `180797cf...`; shape-only hashes are rejected. F05 `dead_letter` is
+terminal, every `completeDecision` result is checked, and a lost fence is never
+reported completed. Acceptance-unknown remains quarantined with no blind retry,
+WhatsApp remains absent, and the default stays disabled without real F05/F06 and
+provider bindings.
 
-Validation passed for all changed paths: 15 files/54 tests, P30 32/32, scoped
-ESLint and Prettier, client/pages builds, server/learning/worker runtime imports,
-3,164-file secret scan, exact scope/preimage/request checks, and diff hygiene.
-The expanded repository run passed 93/94; its sole failure is the unchanged P22
-LF-literal test against a Windows CRLF checkout. Typecheck reproduced only the
-four unchanged Stripe/duplicate-Playwright diagnostics; brand check reproduced
-the unchanged raw-color finding in `scripts/ops/validate-ot-launch-governance.ts`.
+Focused verification passed 69/69 tests across nine P21/P22/P30 files. Scoped
+ESLint and Prettier, HighLevel registry validation, both web builds, runtime
+imports, the 3,164-file secret scan, exact preimage/request/scope checks, and
+diff hygiene passed. Typecheck reproduced only the same four unchanged
+Stripe/duplicate-Playwright diagnostics. The wider unit suite passed 578/593;
+its 15 failures are spread across nine untouched portal/copy/config/billing and
+legacy occurrence-seed tests, with none in the 13 correction paths.
 
-The exact product postimage manifest is `3009b918...`. All four writer leases
-under claim `d9908072-b7a2-4ddb-9de9-7c7da697feaa` were released at
-`2026-08-01T20:15:43Z`, before expiry. Candidate, effect, provider, deployment,
-DNS, database, contact, send, charge, and cleanup actions remain absent;
-effects are `0/0/0`.
+The exact product postimage manifest is
+`769548802db4ea2dfb7e711b183533709827176b775ec7e94534fde25173c1c1`.
+Claim `1abaf754-7160-4a03-908e-382ec8b471ac` and SERVER, WORKER, and RELEASE
+leases were released at `2026-08-01T20:58:02Z`, before expiry. Candidate,
+effect, provider, deployment, DNS, database, contact, send, charge, and cleanup
+actions remain absent; effects are `0/0/0`.
 
-C00 must independently review the pushed 44-path terminal. It may accept P21
-and repository-safe P22/P30 code, but must keep runnable P22 and P30 dispatch
-held and issue the smallest exact P18 mounted-registration and F05/F06 adapter
-successors before candidate freeze or any provider action.
+C00 must independently review the pushed 16-path correction terminal. It must
+retain the explicit P21 reconciler, real P18 mount, and real F05/F06/provider
+gates before candidate freeze or any provider action.
 
 ## Current terminal — successor schema and request materialization
 

@@ -64,6 +64,35 @@ describe('P21 content-publication router', () => {
     expect(response.status).toBe(400);
     expect(service.library).not.toHaveBeenCalled();
   });
+
+  it('keeps the resume request hash binding stable across same-key retries', async () => {
+    const service = fakeService();
+    vi.mocked(service.saveResume).mockResolvedValue({
+      contentId: 'content-one',
+      positionMs: 1250,
+      version: 1,
+      updatedAt: '2026-08-01T10:00:00.000Z',
+    } as never);
+    const harness = await startHarness(service, identity('student'));
+    const request = {
+      position_ms: 1250,
+      idempotency_key: 'resume-content-one-at-1250',
+    };
+
+    const first = await post(harness, '/api/app/student/library/content-one/resume', request);
+    const retry = await post(harness, '/api/app/student/library/content-one/resume', request);
+
+    expect(first.status).toBe(200);
+    expect(retry.status).toBe(200);
+    expect(service.saveResume).toHaveBeenCalledTimes(2);
+    const firstBinding = vi.mocked(service.saveResume).mock.calls[0]?.[0].binding;
+    const retryBinding = vi.mocked(service.saveResume).mock.calls[1]?.[0].binding;
+    expect(firstBinding).toMatchObject({
+      expectedVersion: 0,
+      idempotencyKey: request.idempotency_key,
+    });
+    expect(retryBinding).toEqual(firstBinding);
+  });
 });
 
 async function startHarness(
@@ -134,7 +163,6 @@ function fakeService(): ContentPublicationServicePort {
     library: vi.fn(unavailable),
     playback: vi.fn(unavailable),
     saveResume: vi.fn(unavailable),
-    resolveResumeExpectedVersion: vi.fn(async () => 0),
   } as unknown as ContentPublicationServicePort;
 }
 

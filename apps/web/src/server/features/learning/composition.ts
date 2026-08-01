@@ -1,7 +1,4 @@
-import type {
-  AttendanceProjectionChangePort,
-  EmbeddedClassroomRepository,
-} from '../../../../../../packages/contracts/src/classroom/embedded/index.ts';
+import type { AttendanceProjectionChangePort } from '../../../../../../packages/contracts/src/classroom/embedded/index.ts';
 import type { LearningScope } from '../../../../../../packages/contracts/src/learning/index.ts';
 import type { DbPool } from '../../../../../../packages/db/src/index.ts';
 import {
@@ -20,25 +17,17 @@ export const LEARNING_COMPOSITION_BLOCKERS = {
 export type LearningCompositionBlocker =
   (typeof LEARNING_COMPOSITION_BLOCKERS)[keyof typeof LEARNING_COMPOSITION_BLOCKERS];
 
-export type MountedP18Binding = {
-  /** The repository receiving P18 attendance intake. */
-  repository: EmbeddedClassroomRepository;
-  /** The repository actually mounted by P18. Must be the same object. */
-  mountedRepository: EmbeddedClassroomRepository;
-};
-
 export type LearningComposition = {
   enabled: boolean;
   blockers: readonly LearningCompositionBlocker[];
   service: ReturnType<typeof createLearningEngagementService>;
   attendanceProjectionChanges: AttendanceProjectionChangePort;
-  mountedP18Repository: EmbeddedClassroomRepository | null;
 };
 
 /**
- * Composes P22 without creating a second P18 repository. The only supported
- * attendance seam asks the already-mounted P18 composition to install this
- * callback and proves object identity on readback.
+ * Composes P22 without creating or accepting a self-attested P18 repository.
+ * A later exact successor must supply a mounted-repository attachment contract
+ * backed by the P18 runtime itself before this composition can be enabled.
  */
 export function createLearningComposition(input: {
   pool: DbPool;
@@ -47,7 +36,6 @@ export function createLearningComposition(input: {
   aliasHmacKeyConfigured: boolean;
   nativePostgresSchemaProven: boolean;
   contentPublicationWriterMounted: boolean;
-  attachToMountedP18?: (projectionChanges: AttendanceProjectionChangePort) => MountedP18Binding;
   clock?: () => Date;
 }): LearningComposition {
   const adapters = createPostgresLearningAdapters(input.pool);
@@ -78,22 +66,12 @@ export function createLearningComposition(input: {
     blockers.push(LEARNING_COMPOSITION_BLOCKERS.contentWriter);
   }
 
-  let mountedP18Repository: EmbeddedClassroomRepository | null = null;
-  if (blockers.length === 0 && input.attachToMountedP18) {
-    const binding = input.attachToMountedP18(attendanceProjectionChanges);
-    if (binding.repository === binding.mountedRepository) {
-      mountedP18Repository = binding.repository;
-    }
-  }
-  if (!mountedP18Repository) {
-    blockers.push(LEARNING_COMPOSITION_BLOCKERS.attendanceRepository);
-  }
+  blockers.push(LEARNING_COMPOSITION_BLOCKERS.attendanceRepository);
 
   return {
     enabled: blockers.length === 0,
     blockers,
     service,
     attendanceProjectionChanges,
-    mountedP18Repository,
   };
 }
