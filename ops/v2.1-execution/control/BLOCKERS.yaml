@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 blockers:
 - blocker_id: I36-P21-P22-P30-SEMANTIC-CORRECTION
-  status: open
+  status: closed
   scope: pre_candidate_repository_correctness
   owner: C00_and_I36
   affected_tasks:
@@ -13,21 +13,39 @@ blockers:
   - V43
   - R45
   safe_work_completed: >-
-    Exact semantic correction d1d41687 is pushed, clean, and effect-free. Its sole parent, 16-path envelope, 13 preimages,
-    four immutable requests, manifests, focused 69-test suite, released leases, and 0/0/0 effects passed. Independent review
-    confirmed all prior six product P2 findings closed, P22/P30 remain fail-closed, and found zero P1, one P2, zero P3:
-    a directly relevant P22 integration test still asserts the removed insecure self-attested repository-equality seam.
+    Exact semantic correction d1d41687 and its exact four-path test-only successor 6c55a238 are pushed, clean, and effect-free.
+    The stale P22 assertion now proves the rejected self-attested equality/attachment seam absent, the mounted-P18 blocker
+    unconditional, and no second repository. The combined focused suite passed 70/70; exact scope, pre/postimages, manifests,
+    released leases, remote equality, and effects 0/0/0 passed. Independent review accepted zero P1, zero P2, zero P3.
   required_authority_or_input: []
   protection: >-
-    Do not freeze a candidate or enable P21 provider reconciliation, P22 learning, or P30 dispatch from d1d41687.
-    Correct only tests/integration/learning/learning-composition.test.ts plus the I36 runtime triplet authorized by READY
-    a0ac214f. Product code, immutable requests, migrations, config, and lockfiles are frozen. Preserve generic disabled
-    responses and later exact gates for the P21 reconciler, actual mounted P18 callback, native schema, deployed alias secret,
-    and real F05/F06/provider bindings.
+    Preserve the accepted 6c55a238 semantics. Do not restore a self-attested P18/P22 attachment, create a second classroom
+    repository, infer active provider authority from per-operation rows, or bypass the later exact P21/P18/P22/P30 gates.
   next_check: >-
-    Run and independently review the exact corrected P22 integration test plus the existing focused 69-test suite. Confirm
-    the stale equality expectation and attachment types are absent, the mounted-P18 blocker remains unconditional, no second
-    repository exists, exact four-path scope and preimages hold, the lease is released, and effects remain 0/0/0.
+    Revalidate only if any accepted P21/P22/P30 semantic-correction byte changes and once at candidate freeze.
+- blocker_id: F06-ACTIVE-REGISTRY-BINDING-SOURCE
+  status: open
+  scope: pre_candidate_repository_correctness
+  owner: C00_and_I36
+  affected_tasks:
+  - F06
+  - P21
+  - P30
+  - I36
+  - V43
+  - R45
+  safe_work_completed: >-
+    Existing F06 operation binding, reconciliation contract, migration 2238, provider-operation ledger, and exact scope/readback
+    validators are integrated. Independent read-only mapping confirmed that provider_operation_binding is per-operation
+    correlation only and cannot truthfully supply active registry authority. Migration ordinal 2257 is the next available.
+  required_authority_or_input: []
+  protection: >-
+    Implement only the empty-by-default exact binding registry and reader under READY e1fa167e. Do not populate an active
+    HighLevel or Vimeo binding, infer one from a location/workflow/account identifier, expose raw identities or credentials,
+    contact a provider, freeze a candidate, deploy, send, upload, or perform any external effect.
+  next_check: >-
+    Independently review the exact twelve-path terminal for migration 2257, scope/evidence reader fences, empty-state fail-closed
+    behavior, migration apply/replay, proposal 2258, released leases, remote equality, and effects 0/0/0.
 - blocker_id: OPS-084-LEGAL-BUNDLE
   status: open
   scope: production_broad

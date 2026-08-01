@@ -16,12 +16,12 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: bdc355b68caf4cdab7f0dbcdeaa8f93655456a91
+controller_authorization_sha: b168ab1f258f25f030a934269a7ed4a109af4e08
 next_action: >-
-  Correct the sole newly red P22 integration assertion at terminal d1d41687 without changing product code. Replace the stale
-  self-attested repository-equality expectation with explicit absence proofs for that seam and its attachment types, retain the
-  unconditional mounted-P18 blocker and no-second-repository proof, run the exact test plus the 69-test focused suite, update only
-  the I36 runtime triplet, and push one four-path terminal for review. Candidate freeze and effects remain prohibited.
+  Implement the exact empty-by-default F06 active provider-registry binding source at integration 6c55a238. Allocate only
+  migration 2257, add the exact scope/evidence contract and repository reader, advance the proposal to 2258, and prove every
+  positive and negative fence without populating a binding or contacting a provider. Push one exact twelve-path terminal for
+  independent review. Candidate freeze and every external effect remain prohibited.
 production_completion_lanes:
 - lane: A
   owner: F02
@@ -116,7 +116,7 @@ production_completion_lanes:
   provider_effects: prohibited_until_candidate_authority_and_exact_lock
 - lane: D
   owner: I36
-  status: semantic_product_correction_held_one_P2_test_only_correction_dispatched
+  status: semantic_correction_accepted_F06_active_binding_source_dispatched
   branch: codex/v21-integration
   prior_release_sha: 524563f07b3bb8544db989982dc55d4bc86a1999
   partial_checkpoint_sha: a5a2ad94b77eaf596930609d4d5abe4fa672439b
@@ -129,7 +129,7 @@ production_completion_lanes:
   partial_checkpoint_runtime_triplet_digest: a877b1e24c450a599e8c9b0066345cc06d0444a4c9749aecdda0f7da0c3c628b
   partial_checkpoint_five_path_digest: c405518fb5c7a744fa24e6b4b6f88712af9de68e109920e9fad369e63374d31d
   all_producer_implementation_heads_ancestor_count: 35
-  expected_head_sha: d1d416877dd841c3cf63ca53362427b61327ff53
+  expected_head_sha: 6c55a238fbbe8811f0004425e3ed92065c8530c0
   Batch_B_claim_id: 995fe313-efa9-4e5f-b4f6-eeadc9b50d6d
   Batch_B_CONFIG_DEPS_lease_id: e75d8901-0b96-4ec7-b64e-724cfdbcd7a1
   Batch_B_RELEASE_INTEGRATOR_lease_id: eafaecb9-82b6-4e99-bbc3-0d9ad8d92b84
@@ -317,6 +317,32 @@ production_completion_lanes:
   P22_integration_assertion_release_path_count: 4
   P22_integration_assertion_release_path_inventory_digest: 898d8a0f59fe1de1b1efe98ca200a1a620bf062c7dcba956fe6a70202754f400
   P22_integration_assertion_product_preimage_manifest_digest: a75f0250b09e473532f3d43ecc91690d6ef09a10e53d243132be7f4651ef7161
+  P22_integration_assertion_terminal_head_sha: 6c55a238fbbe8811f0004425e3ed92065c8530c0
+  P22_integration_assertion_terminal_parent_sha: d1d416877dd841c3cf63ca53362427b61327ff53
+  P22_integration_assertion_terminal_tree_sha: 76d645955333610038addb24362d80f4f3ed06cf
+  P22_integration_assertion_terminal_timestamp: '2026-08-02T00:28:56+03:00'
+  P22_integration_assertion_product_postimage_manifest_digest: d6af0d8977219966319f98a275ce184aea4a3d113827e1e85e88021ab9af86fa
+  P22_integration_assertion_release_postimage_manifest_digest: 8865f8d392c59615e268d091a60c1b90eebf85b0349fdd70bde814cf4633ccfa
+  P22_integration_assertion_lease_released_at: '2026-08-01T21:25:32Z'
+  P22_integration_assertion_independent_review: passed_zero_P1_zero_P2_zero_P3
+  P22_integration_assertion_focused_tests: 70/70_passed
+  P22_integration_assertion_external_effects: 0/0/0
+  F06_binding_source_claim_id: 0f8c8a10-e2f9-4f4c-8ba2-baca8638a581
+  F06_binding_source_MIGRATION_AUTHORITY_lease_id: c55cdc26-7a62-4ef0-9439-77774b4475fd
+  F06_binding_source_PROVIDER_CORE_lease_id: 66efea67-5d05-40ad-b3bf-7e0557719f64
+  F06_binding_source_PROVIDER_REGISTRY_lease_id: 6814d947-5c8c-40c3-92bc-36293c538805
+  F06_binding_source_RELEASE_INTEGRATOR_lease_id: 151a65cf-f0ae-4a14-bf96-58b6378198df
+  F06_binding_source_lease_expires_at: '2026-08-02T01:47:00Z'
+  F06_binding_source_ready_entry_payload_digest: e1fa167e1d0b39f3fb5bef044e5f1e1e58032aa23696ff98e4cffe4c70b6be8a
+  F06_binding_source_authorized_start_sha: 6c55a238fbbe8811f0004425e3ed92065c8530c0
+  F06_binding_source_product_path_count: 8
+  F06_binding_source_product_path_inventory_digest: 03af783b5ddbdd75084a4faffa5291f49564a3494c5f38557dcfab3a25dccbb5
+  F06_binding_source_release_path_count: 12
+  F06_binding_source_release_path_inventory_digest: 194e0f47505cd808ee5ee628a9691468e14fdb215b8a676b3c572638e3a9ec99
+  F06_binding_source_product_preimage_manifest_digest: 1db0772c3944e2a67bc2eca921265c6951bf6f262dc26da077491ff469ee1247
+  F06_binding_source_migration_ordinal: 2257
+  F06_binding_source_effect_locks: []
+  F06_binding_source_external_effects: 0/0/0
   Batch_D_external_effects: 0/0/0
   P21_P22_source_atomic_claim_sha: b87901e803cdd3be7e09a1143d9f23eceaf7ad78
   P21_P22_source_atomic_claim_parent_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
