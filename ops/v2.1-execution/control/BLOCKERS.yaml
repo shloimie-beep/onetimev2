@@ -242,10 +242,13 @@ blockers:
     terminal b0cc23a0 is independently accepted; P30 remains honestly worker-composition blocked and effects remain
     0/0/0. Batch A terminal 3ea1a32e applied only P22-barrel-export-002 and preserved the path-incomplete server/client
     gates. Corrected terminal 460ba42d fixed the sole runtime evidence-manifest P2, passed one focused independent review,
-    and is accepted with product semantics and zero effects intact.
+    and is accepted with product semantics and zero effects intact. Metadata terminal e569d693 materialized and validated
+    immutable path-complete P21-registration-004, P22-server-registration-003, P22-client-route-003, and
+    P30-registry-registration-002 under the corrected 265-case schema. C00 admitted all four and dispatched one exact
+    dependency-ordered repository application batch with no effect locks.
   required_authority_or_input:
-  - Issue corrected path-complete successors for P21/P22 server/client work, finish Batch D, and re-run merged
-    registration checks
+  - Complete the dispatched P21-then-P22 server/client application and merged registration checks
+  - Preserve native PostgreSQL replay and the deployed LEARNING_ALIAS_HMAC_KEY as fail-closed candidate gates
   protection: >-
     Do not apply P22-migration-001 or P22-registration-001, create a second attendance write authority, parse a display
     name into identity fields, mutate audit history, write SQL before the successor is admitted, or advance candidate,
@@ -271,11 +274,12 @@ blockers:
     immutable registration-003, 31/31 focused tests, typecheck, lint/format/static/secret gates, clean remote equality,
     released lease, effects 0/0/0, and no P1/P2/P3. The dispatched path digest 5b93f48f was a C00 derivation typo; the
     exact eight-path digest is d3a605c5. Embedded PGlite proof passed, but native PostgreSQL-server replay is retained as
-    a hard merged/candidate gate.
+    a hard merged/candidate gate. Metadata terminal e569d693 materialized and validated immutable path-complete
+    P21-registration-004; C00 admitted it and dispatched its exact 18-path application first in the shared P21/P22 batch.
   required_authority_or_input:
-  - Author and admit corrected path-complete P21-registration-004 before applying the P21/P22 server composition
+  - Complete the dispatched P21-registration-004 application before the P22 server composition
   - Reproduce the corrected behavior against a true native PostgreSQL server in the merged migration/candidate gate
-  - Preserve P21-registration-003 as path-incomplete and supersede it only after the corrected successor is immutable
+  - Preserve P21-registration-003 as superseded path-incomplete history
   protection: >-
     Do not directly mutate canonical_aggregate_states, add a second reconciler, write a new migration, emit same-state
     events, split the publication CAS from the canonical event transaction, apply registration before the writer, or

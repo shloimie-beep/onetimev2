@@ -1381,6 +1381,66 @@ items:
   evaluated_target_head_sha: b0cc23a05cb2f2f0ef4ee8860352320c18a8e450
   result_digest: f48fccfd36ba109ba06647303bf352a32e87081027094ff830b56e4114d861a7
   rejection_reason: null
+- request_id: P21-registration-004
+  request_digest: 410dc50576b4321bd4fda5d14d5b77eb45ef251cdb4c4ef6a9056951615d606c
+  requesting_task_id: P21
+  kind: server_feature_registration
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_path_complete_successor_application_P21_first
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
+- request_id: P22-server-registration-003
+  request_digest: 0639ab621ae2306fd68eb6d07326a6529d4ebd74dd4fae09181b11bd8a19e83f
+  requesting_task_id: P22
+  kind: server_feature_registration
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_path_complete_successor_application_P22_server_after_P21
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
+- request_id: P22-client-route-003
+  request_digest: 21472b085a29a1948e6037af4d144850d69dd5784472c9485ba5260d4428677f
+  requesting_task_id: P22
+  kind: client_route_registration
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_path_complete_successor_application_P22_client_after_server
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
+- request_id: P30-registry-registration-002
+  request_digest: d42c6567491d4cec6f84e694f9fde375538a16aac833877b2f6f91b906c9c3e6
+  requesting_task_id: P30
+  kind: worker_runner_registration
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_path_complete_successor_application_P30_worker
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
 entry_schema:
   request_id: null
   request_digest: null

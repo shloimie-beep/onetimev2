@@ -5,12 +5,12 @@ status: operational
 ready:
 - task_id: I36
   status: ready
-  phase: successor_request_schema_and_materialization_batch
+  phase: path_complete_P21_P22_P30_dependency_ordered_application
   branch: codex/v21-integration
   claim_mode: new
-  state_based_on_control_head_sha: 3aebe99dc9d5c3ae28d648597351ce6200691ed3
-  authorized_start_sha: acd9ffae1df73765dbf46d049db14010ef12e869
-  expected_existing_head: acd9ffae1df73765dbf46d049db14010ef12e869
+  state_based_on_control_head_sha: cdc98ae7a5212c288ad16b35df70addc517e54af
+  authorized_start_sha: e569d6933bc25ec848fe9eb279e193d40b38787e
+  expected_existing_head: e569d6933bc25ec848fe9eb279e193d40b38787e
   package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
   source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
   task_packet_digest: 55e261760baac780e9a4db48c328480c6f98172261ef990e563a00b25c467fc7
@@ -19,118 +19,248 @@ ready:
     C00:
       required_state: immediate_lean_completion_mode
       observed_state: immediate_lean_completion_mode
-      observed_control_head_sha: 3aebe99dc9d5c3ae28d648597351ce6200691ed3
-      control_state_canonical_digest: fc9328493207d7e95dafd1ab47a1925afa7693cfe0b1bc74805e3f642261b485
+      observed_control_head_sha: cdc98ae7a5212c288ad16b35df70addc517e54af
+      control_state_canonical_digest: f08a380b49517043a7d6730a4da4d93ae14ebcb05b9f8d1cfb9b14c9a7164575
     I36:
-      required_state: batch_D_security_correction_accepted
-      observed_state: batch_D_terminal_second_review_passed_no_P1_P2_or_P3
-      terminal_head_sha: acd9ffae1df73765dbf46d049db14010ef12e869
-      terminal_parent_sha: 03e30641fb5de4de920978b2e574ad6bf4a015ad
-      terminal_tree_sha: 8469394958f06d30141523c12b26b3fdb155bb27
-      terminal_timestamp: '2026-08-01T21:49:14+03:00'
-      state_handoff_digest: 03ee7dbc5389243ee7f337d2c3c4038de3cac33d42e21664ca28947d8873b3dc
-      runtime_triplet_digest: 6726fe999e870a1cc6146d09d562e9273eeb90552957c5cec9b3a3cd3c14d1c2
-      product_path_count: 7
-      product_path_inventory_digest: ae9356efb55d46990a1c1156cfd00e6652004cf5632492374f8059a6529830f7
-      release_path_count: 10
-      release_path_inventory_digest: 54ee59b6a72ec7cf2e88747ba5659473f6f6976c66223c80cbc6f9982fd15ba8
-      exact_product_manifest_digest: 49b3c321a6fab22d692048242dedf50e7ccbea6635b58daca14d3df6873739eb
-      second_independent_review: passed_no_P1_P2_or_P3
-      lease_released_at: '2026-08-01T18:43:44Z'
+      required_state: successor_schema_and_requests_materialized
+      observed_state: exact_eight_path_metadata_terminal_pushed_and_clean
+      terminal_head_sha: e569d6933bc25ec848fe9eb279e193d40b38787e
+      terminal_parent_sha: acd9ffae1df73765dbf46d049db14010ef12e869
+      terminal_tree_sha: e21a07f338c425d45f51e2159ba41e1ba0be8c08
+      terminal_timestamp: '2026-08-01T22:19:57+03:00'
+      state_handoff_digest: 6dc0647e9fc4b7744787f80d13015a8fd5d8c5bb8c8d29a5e885ea671fb66e1a
+      runtime_triplet_digest: 6d5ca6a7aa03de2d38290b8f18961dea19f267eb1de47b480d36d87b943d9c72
+      exact_path_count: 8
+      exact_path_inventory_digest: 965fd8118bc5e6486c4690eb943edd88ce681d123dfc996154b69e839aea2ec1
+      schema_raw_sha256: 4b8f107c9d828e47497629bbb749790b86dc3a984730d6e777d84b4787b43098
+      schema_validation: passed_draft_2020_12
+      lease_released_at: '2026-08-01T19:14:50Z'
       external_effects: 0/0/0
-    ACCEPTANCE_MATRIX:
-      required_state: immutable_265_case_catalog
-      observed_state: exact_265_case_ids_read_from_matrix_in_matrix_order
-      source_path: ops/v2.1-execution/ACCEPTANCE-ENVIRONMENT-MATRIX.yaml
-      raw_git_blob_sha256: 3972640970c37875b70c02165cff2add4a034073b952e4e508481735b55d954d
-      sorted_case_id_digest: ec0843e963db3f5f8d8f554992d2c40b8d6fa969475afe0058e6b455b4b03dfc
-    SUCCESSOR_DRAFTS:
-      required_state: exact_four_drafts_valid_under_corrected_schema
-      observed_state: prepared_read_only_and_hash_bound
-      P21-registration-004_raw_sha256: ce7eea4f3451cd27e244812372848b736bd2a941e537c0aa6ec0311369adc53e
-      P22-server-registration-003_raw_sha256: b359a3beb0626ab13d30e6df5fd429d4266b9e3dd57571cdaf279cf27b780698
-      P22-client-route-003_raw_sha256: 6187ea301a60c621ab3e48a19bf80e78ec21ebcbff204a50259f654caafcbc8e
-      P30-registry-registration-002_raw_sha256: cae9e59973cb9d5371902f59a3ac5884a9a34b2dc324cece4b0ceb85d53ef1cb
+    P21:
+      required_state: corrected_source_integrated_and_path_complete_successor_immutable
+      observed_state: satisfied
+      source_head_sha: c11dec418fa3de896e96c348f87928c92c9f86b9
+      request_id: P21-registration-004
+      request_raw_sha256: ce7eea4f3451cd27e244812372848b736bd2a941e537c0aa6ec0311369adc53e
+      request_canonical_sha256: 410dc50576b4321bd4fda5d14d5b77eb45ef251cdb4c4ef6a9056951615d606c
+      request_product_path_count: 18
+      request_product_path_digest_with_final_LF: 0aaeaf416d916eb2dc806fe21ba05914ef7ae57acd3c9307f45489c06333b824
+    P22:
+      required_state: corrected_source_P18_callback_and_2254_integrated_with_path_complete_successors_immutable
+      observed_state: satisfied_repository_ancestors_native_candidate_replay_and_deployed_secret_remain_later_gates
+      source_head_sha: 347a08b29b801de0a74b242d962c42a886dcd717
+      server_request_id: P22-server-registration-003
+      server_request_raw_sha256: b359a3beb0626ab13d30e6df5fd429d4266b9e3dd57571cdaf279cf27b780698
+      server_request_canonical_sha256: 0639ab621ae2306fd68eb6d07326a6529d4ebd74dd4fae09181b11bd8a19e83f
+      server_product_path_count: 9
+      server_product_path_digest_with_final_LF: a0f81e8734c9ddedd3ea940ef44615d5ded7bab2ae54d4555b6042c79a695c2f
+      client_request_id: P22-client-route-003
+      client_request_raw_sha256: 6187ea301a60c621ab3e48a19bf80e78ec21ebcbff204a50259f654caafcbc8e
+      client_request_canonical_sha256: 21472b085a29a1948e6037af4d144850d69dd5784472c9485ba5260d4428677f
+      client_product_path_count: 10
+      client_product_path_digest_with_final_LF: c1bbe4eeb53c6c9bcaac99e683386f54bead4e6be924508bd03c1df05a3bfdd0
+    P30:
+      required_state: durable_OT16_source_integrated_and_path_complete_successor_immutable
+      observed_state: satisfied_repository_only_provider_identity_and_readback_remain_later_fail_closed_gates
+      source_head_sha: 772d4783f82b7eb89a5c98d897601b444cd3c2f4
+      request_id: P30-registry-registration-002
+      request_raw_sha256: cae9e59973cb9d5371902f59a3ac5884a9a34b2dc324cece4b0ceb85d53ef1cb
+      request_canonical_sha256: d42c6567491d4cec6f84e694f9fde375538a16aac833877b2f6f91b906c9c3e6
+      request_product_path_count: 8
+      request_product_path_digest_with_final_LF: cc8fe47bd7ea862286e44f42d863711120f492774b772d621bdd710c1234dbc0
   request_bindings:
     P21-registration-004:
       request_digest: ce7eea4f3451cd27e244812372848b736bd2a941e537c0aa6ec0311369adc53e
-      destination_path: ops/v2.1-execution/runtime/P21/steward-requests/P21-registration-004.yaml
+      source_path: ops/v2.1-execution/runtime/P21/steward-requests/P21-registration-004.yaml
       digest_kind: raw_git_blob_sha256
     P22-server-registration-003:
       request_digest: b359a3beb0626ab13d30e6df5fd429d4266b9e3dd57571cdaf279cf27b780698
-      destination_path: ops/v2.1-execution/runtime/P22/steward-requests/P22-server-registration-003.yaml
+      source_path: ops/v2.1-execution/runtime/P22/steward-requests/P22-server-registration-003.yaml
       digest_kind: raw_git_blob_sha256
     P22-client-route-003:
       request_digest: 6187ea301a60c621ab3e48a19bf80e78ec21ebcbff204a50259f654caafcbc8e
-      destination_path: ops/v2.1-execution/runtime/P22/steward-requests/P22-client-route-003.yaml
+      source_path: ops/v2.1-execution/runtime/P22/steward-requests/P22-client-route-003.yaml
       digest_kind: raw_git_blob_sha256
     P30-registry-registration-002:
       request_digest: cae9e59973cb9d5371902f59a3ac5884a9a34b2dc324cece4b0ceb85d53ef1cb
-      destination_path: ops/v2.1-execution/runtime/P30/steward-requests/P30-registry-registration-002.yaml
+      source_path: ops/v2.1-execution/runtime/P30/steward-requests/P30-registry-registration-002.yaml
       digest_kind: raw_git_blob_sha256
   authorized_paths:
-  - ops/v2.1-execution/runtime/F01/steward-requests/schema/steward-request.schema.json
+  - apps/web/src/client/app/admin-ia.ts
+  - apps/web/src/client/app/admin/content/publication/PublicationWorkspace.test.tsx
+  - apps/web/src/client/app/admin/content/publication/PublicationWorkspace.tsx
+  - apps/web/src/client/app/admin/content/publication/index.ts
+  - apps/web/src/client/app/admin/learning/AdminLearningWorkspace.test.tsx
+  - apps/web/src/client/app/admin/learning/AdminLearningWorkspace.tsx
+  - apps/web/src/client/app/content-workspace/ContentWorkspace.tsx
+  - apps/web/src/client/app/crm-api.ts
+  - apps/web/src/client/app/crm-entry.tsx
+  - apps/web/src/client/app/portal-api.ts
+  - apps/web/src/client/app/portal-entry.tsx
+  - apps/web/src/client/app/student/learning/StudentLearningOverview.test.tsx
+  - apps/web/src/client/app/student/learning/StudentLearningOverview.tsx
+  - apps/web/src/client/app/student/library/StudentLibraryWorkspace.test.tsx
+  - apps/web/src/client/app/student/library/StudentLibraryWorkspace.tsx
+  - apps/web/src/client/app/student/library/index.ts
+  - apps/web/src/client/features/portals/PortalFeatures.tsx
+  - apps/web/src/server/app.ts
+  - apps/web/src/server/features/content/publication/composition.test.ts
+  - apps/web/src/server/features/content/publication/composition.ts
+  - apps/web/src/server/features/content/publication/index.ts
+  - apps/web/src/server/features/content/publication/router.test.ts
+  - apps/web/src/server/features/content/publication/router.ts
+  - apps/web/src/server/features/learning/adapters.test.ts
+  - apps/web/src/server/features/learning/adapters.ts
+  - apps/web/src/server/features/learning/composition.test.ts
+  - apps/web/src/server/features/learning/composition.ts
+  - apps/web/src/server/features/learning/index.ts
+  - apps/web/src/server/features/learning/router.test.ts
+  - apps/web/src/server/features/learning/router.ts
+  - apps/worker/src/runners/ghl-workflows/campaigns/adapters.ts
+  - apps/worker/src/runners/ghl-workflows/campaigns/composition.test.ts
+  - apps/worker/src/runners/ghl-workflows/campaigns/composition.ts
+  - apps/worker/src/runners/ghl-workflows/campaigns/index.ts
+  - apps/worker/src/runners/ghl-workflows/campaigns/runner.test.ts
+  - apps/worker/src/runners/ghl-workflows/campaigns/runner.ts
+  - apps/worker/src/runners/registry/index.test.ts
+  - apps/worker/src/runners/registry/index.ts
   - ops/v2.1-execution/runtime/I36/HANDOFF.md
   - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
   - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
-  - ops/v2.1-execution/runtime/P21/steward-requests/P21-registration-004.yaml
-  - ops/v2.1-execution/runtime/P22/steward-requests/P22-client-route-003.yaml
-  - ops/v2.1-execution/runtime/P22/steward-requests/P22-server-registration-003.yaml
-  - ops/v2.1-execution/runtime/P30/steward-requests/P30-registry-registration-002.yaml
-  authorized_path_count: 8
-  authorized_path_inventory_digest: 965fd8118bc5e6486c4690eb943edd88ce681d123dfc996154b69e839aea2ec1
-  substantive_request_path_count: 5
-  runtime_path_count: 3
-  authorized_preimages:
-    ops/v2.1-execution/runtime/F01/steward-requests/schema/steward-request.schema.json: 9e431aacac0527eac99ae87e0e5105b3bb78a95e23618964fbf6433e84de675d
-    ops/v2.1-execution/runtime/I36/HANDOFF.md: e4bb2623ae8c26ed9825645aced589da96ab38504f26e2765cf32604c0a38fed
-    ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md: 6267915addee1ad22c5bd57436448c1bb402d50f74d0bc2028fccb33f1793a2f
-    ops/v2.1-execution/runtime/I36/TASK-STATE.yaml: 7dffce297f1e16ed43a0c82c0f7afdc1c97877b53961c361da145c7fd59190e5
-    ops/v2.1-execution/runtime/P21/steward-requests/P21-registration-004.yaml: null
-    ops/v2.1-execution/runtime/P22/steward-requests/P22-client-route-003.yaml: null
-    ops/v2.1-execution/runtime/P22/steward-requests/P22-server-registration-003.yaml: null
-    ops/v2.1-execution/runtime/P30/steward-requests/P30-registry-registration-002.yaml: null
-  expected_schema_raw_sha256: 4b8f107c9d828e47497629bbb749790b86dc3a984730d6e777d84b4787b43098
+  - tests/integration/content/content-publication-composition.test.ts
+  - tests/integration/learning/learning-client-routes.test.tsx
+  - tests/integration/learning/learning-composition.test.ts
+  authorized_path_count: 44
+  authorized_path_inventory_digest: 51184320695b72b5d049d626996bf38292dfff01064699dba501087720fb6cdd
+  product_path_count: 41
+  product_path_inventory_digest: af90bfd9f14ae1cb396b7aed552e66b80847c9490b80650dfa492c1481cefa07
+  authorized_product_preimage_manifest_digest: bc1da22472133ffc57b980565cde3c442d4026315b97005ee671cf99f939b19a
+  authorized_product_preimages:
+    apps/web/src/client/app/admin-ia.ts: cb84db55cb28e805dd356b16a0a2681c420fd0ab28366d8e57ef3776e1bad800
+    apps/web/src/client/app/admin/content/publication/PublicationWorkspace.test.tsx: null
+    apps/web/src/client/app/admin/content/publication/PublicationWorkspace.tsx: null
+    apps/web/src/client/app/admin/content/publication/index.ts: 7353ec24b51d6c3fa360f5f6b8249eeed311398faf23934fcfc13a0fcf8c8c65
+    apps/web/src/client/app/admin/learning/AdminLearningWorkspace.test.tsx: null
+    apps/web/src/client/app/admin/learning/AdminLearningWorkspace.tsx: eee03a4e4cef5b67688de1d657ec1bc2f2fda5f9fe9d0cbbd65664dfbd6d2183
+    apps/web/src/client/app/content-workspace/ContentWorkspace.tsx: 36f99ec67960ea15fb05247094a6532d5a00e88efe8021fcf04ffbae4c41c179
+    apps/web/src/client/app/crm-api.ts: 15f90dca86cddd252585c1239dfd08ff86eb228cd472abc241d0a24bc2f42f76
+    apps/web/src/client/app/crm-entry.tsx: 48a5a6eed6b0b8c5203072d73a8febb0ff4847f2d3cd48ba9df4799b1f2ec6e7
+    apps/web/src/client/app/portal-api.ts: e73e34711b44414c94033428e0c6274ba81dfcedd1a7da982b7cd3cbb0057afc
+    apps/web/src/client/app/portal-entry.tsx: 68d5b8d773bd3b07391f29b2bcd608b10be06302723aced268a9023989a81b84
+    apps/web/src/client/app/student/learning/StudentLearningOverview.test.tsx: null
+    apps/web/src/client/app/student/learning/StudentLearningOverview.tsx: 5bb2200800692b5e95102123692733e60e1376dffa876f883ce3c897fe7670f1
+    apps/web/src/client/app/student/library/StudentLibraryWorkspace.test.tsx: null
+    apps/web/src/client/app/student/library/StudentLibraryWorkspace.tsx: null
+    apps/web/src/client/app/student/library/index.ts: 7353ec24b51d6c3fa360f5f6b8249eeed311398faf23934fcfc13a0fcf8c8c65
+    apps/web/src/client/features/portals/PortalFeatures.tsx: 15057bb0a286211e9a5f05c37a6c552f686cc0ef4f137f2979e6caa55c94952c
+    apps/web/src/server/app.ts: 7daf0bf64b0f4581056266cc0d67ff3114d79335e80fc66b5d2a7f177afc1724
+    apps/web/src/server/features/content/publication/composition.test.ts: null
+    apps/web/src/server/features/content/publication/composition.ts: null
+    apps/web/src/server/features/content/publication/index.ts: 7588197e75f35d02cc0a931bbc54e35c1cd6af25801ca7e308acd46e99186319
+    apps/web/src/server/features/content/publication/router.test.ts: null
+    apps/web/src/server/features/content/publication/router.ts: null
+    apps/web/src/server/features/learning/adapters.test.ts: null
+    apps/web/src/server/features/learning/adapters.ts: null
+    apps/web/src/server/features/learning/composition.test.ts: null
+    apps/web/src/server/features/learning/composition.ts: null
+    apps/web/src/server/features/learning/index.ts: null
+    apps/web/src/server/features/learning/router.test.ts: null
+    apps/web/src/server/features/learning/router.ts: null
+    apps/worker/src/runners/ghl-workflows/campaigns/adapters.ts: null
+    apps/worker/src/runners/ghl-workflows/campaigns/composition.test.ts: null
+    apps/worker/src/runners/ghl-workflows/campaigns/composition.ts: null
+    apps/worker/src/runners/ghl-workflows/campaigns/index.ts: d3399ae92b4a2cb43f45fc47d09c400c1b4da1adb96ffecb5d81484cf6c3b438
+    apps/worker/src/runners/ghl-workflows/campaigns/runner.test.ts: 71cc95dc241b164eedf60e4ba7080c1a7c866da13b2e92b2260f1f96b91edc76
+    apps/worker/src/runners/ghl-workflows/campaigns/runner.ts: dc41a6112c975110f11e29fcac0d5a1d9ad365072d6a31c28889f76d565ab714
+    apps/worker/src/runners/registry/index.test.ts: null
+    apps/worker/src/runners/registry/index.ts: f27a2ef4c5b1248ab7af4848e1703c2d130e150f0f54df242ee915e27610fde5
+    tests/integration/content/content-publication-composition.test.ts: null
+    tests/integration/learning/learning-client-routes.test.tsx: null
+    tests/integration/learning/learning-composition.test.ts: null
+  application_order:
+  - P21-registration-004_server_and_client_publication_composition
+  - P22-server-registration-003_learning_server_and_actual_P18_callback_composition
+  - P22-client-route-003_authenticated_Admin_and_Student_learning_routes
+  - P30-registry-registration-002_durable_OT16_worker_once_and_continuous_registration
   directives:
   - >-
-    Make the one minimal schema correction required by the immutable acceptance catalog: replace only the
-    acceptance_case_ids item pattern with an exact enum of all 265 IDs from ACCEPTANCE-ENVIRONMENT-MATRIX.yaml in
-    matrix order. Preserve every other schema byte semantically, including the request-kind enum, and do not update
-    the F01 interface checkpoint for this validation-only compatibility correction.
+    Fully apply P21-registration-004 within its exact 18-path ceiling. Compose the canonical PostgreSQL publication
+    repository/service, authenticated CSRF-protected Admin commands, protected Student library reads and renewal, the
+    locked internal reconciler boundary, Admin publication workspace, and Student library workspace. Preserve
+    source-derived scope, independent aggregate versions, transactional state/event changes, neutral no-store denial,
+    and no Parent playback or direct provider mutation.
   - >-
-    Materialize the four exact hash-bound successor drafts at their canonical task-local paths. Preserve their request
-    IDs, requirements, acceptance IDs, path inventories, risk boundaries, and raw SHA-256 values exactly; do not edit
-    product source, central registration files, migrations, configuration, lockfiles, providers, or existing immutable
-    requests in this phase.
+    Then fully apply P22-server-registration-003 within its exact nine-path ceiling. Compose SELECT-only attendance,
+    identity, recognition-consent, review and canonical-content adapters; mount authenticated server-derived learning
+    routes; attach badge recalculation to the exact P18 repository instance that receives mounted attendance changes;
+    require the actual trimmed LEARNING_ALIAS_HMAC_KEY and canonical P21 writer at runtime; keep absent deployed secret
+    and native candidate migration proof as explicit fail-closed later gates, never guessed values.
   - >-
-    Validate Draft 2020-12 schema conformance for the corrected schema and all four new requests, prove the 265-ID enum
-    is exact with no missing, duplicate, or extra case, reproduce all raw and canonical request digests, verify exact
-    path/preimage scope and local/tracking/live equality, update the I36 runtime triplet once, release the lease, push
-    one terminal, and stop for C00 admission before applying any successor.
+    Then fully apply P22-client-route-003 within its exact ten-path ceiling. Wire only authenticated Admin and Student
+    shells to safe server projections, opaque entry keys, consent-safe labels, approved-or-published wording, and
+    moderated class data. Add no Parent learning route and expose no canonical peer identity or provider reference.
   - >-
-    This repository-metadata phase authorizes no candidate freeze, provider inspection or mutation, deployment, DNS,
-    live database work, contact creation, enrollment, send, charge, cleanup, or any other external effect. No effect
-    lock is issued.
+    Apply P30-registry-registration-002 within its exact eight-path ceiling. Register durable
+    communications.ot16-checkpoint for once and continuous worker execution with deterministic operation identity,
+    AbortSignal propagation, exact F05/F06/P27/P28 gates before schedule/claim/write/provider call, acceptance-unknown
+    quarantine with no automatic retry, final paid/School/consent/suppression reads, and no WhatsApp surface. Missing
+    OT-16 ID, binding or saved/reopen readback must remain disabled with providerCallsPerformed=false.
+  - >-
+    Run focused request-named server/client/worker and integration tests, changed-package lint/format/typecheck, relevant
+    web and worker builds, exact request/hash/path/preimage/ancestry checks, and one merged workspace verification matched
+    to the 41 product paths. Update the I36 runtime triplet once, preserve all four immutable requests byte-for-byte,
+    release all four writer leases, push one terminal, and stop for one independent application review.
+  - >-
+    This repository-only application authorizes no migration edit or live replay, candidate freeze, provider inspection
+    or mutation, deployment, DNS, contact creation, enrollment, send, billing action, cleanup, or other external effect.
+    No effect lock is issued.
   writer_slot_leases:
-  - slot: RELEASE_INTEGRATOR
-    lease_id: c290bc01-2c9c-48fb-bf56-d9460d32dfec
+  - slot: SERVER_COMPOSER
+    lease_id: a0c7c66e-a55b-4f9a-8e08-d9262dacf221
     holder_task_id: I36
-    holder_claim_id: 743bcd43-cc89-4bab-a3ab-b610d5ac49bb
-    holder_writer_id: codex-i36-successor-schema-requests-743bcd43
-    state_based_on_control_head_sha: 3aebe99dc9d5c3ae28d648597351ce6200691ed3
-    lease_issued_at: '2026-08-01T18:58:37Z'
-    lease_expires_at: '2026-08-01T22:58:37Z'
-    phase_scope: exact_schema_compatibility_and_four_successor_request_materialization_eight_paths_only
+    holder_claim_id: d9908072-b7a2-4ddb-9de9-7c7da697feaa
+    holder_writer_id: codex-i36-path-complete-successors-d9908072
+    state_based_on_control_head_sha: cdc98ae7a5212c288ad16b35df70addc517e54af
+    lease_issued_at: '2026-08-01T19:21:43Z'
+    lease_expires_at: '2026-08-02T01:21:43Z'
+    phase_scope: exact_P21_P22_server_application_with_shared_app_path
+  - slot: CLIENT_COMPOSER
+    lease_id: 570f0cfa-e79a-4332-8e4f-6bc74160f1ab
+    holder_task_id: I36
+    holder_claim_id: d9908072-b7a2-4ddb-9de9-7c7da697feaa
+    holder_writer_id: codex-i36-path-complete-successors-d9908072
+    state_based_on_control_head_sha: cdc98ae7a5212c288ad16b35df70addc517e54af
+    lease_issued_at: '2026-08-01T19:21:43Z'
+    lease_expires_at: '2026-08-02T01:21:43Z'
+    phase_scope: exact_P21_P22_client_application_with_three_shared_client_paths
+  - slot: WORKER_COMPOSER
+    lease_id: 99f7435b-81b9-4ef9-9334-a71eac602a77
+    holder_task_id: I36
+    holder_claim_id: d9908072-b7a2-4ddb-9de9-7c7da697feaa
+    holder_writer_id: codex-i36-path-complete-successors-d9908072
+    state_based_on_control_head_sha: cdc98ae7a5212c288ad16b35df70addc517e54af
+    lease_issued_at: '2026-08-01T19:21:43Z'
+    lease_expires_at: '2026-08-02T01:21:43Z'
+    phase_scope: exact_P30_durable_OT16_worker_registration
+  - slot: RELEASE_INTEGRATOR
+    lease_id: cc10a2b6-7baa-488f-8fd7-05b7ce877604
+    holder_task_id: I36
+    holder_claim_id: d9908072-b7a2-4ddb-9de9-7c7da697feaa
+    holder_writer_id: codex-i36-path-complete-successors-d9908072
+    state_based_on_control_head_sha: cdc98ae7a5212c288ad16b35df70addc517e54af
+    lease_issued_at: '2026-08-01T19:21:43Z'
+    lease_expires_at: '2026-08-02T01:21:43Z'
+    phase_scope: exact_dependency_ordered_successor_application_and_terminal
   effect_lock_leases: []
-  claim_id: 743bcd43-cc89-4bab-a3ab-b610d5ac49bb
-  lease_issued_at: '2026-08-01T18:58:37Z'
-  lease_expires_at: '2026-08-01T22:58:37Z'
+  claim_id: d9908072-b7a2-4ddb-9de9-7c7da697feaa
+  lease_issued_at: '2026-08-01T19:21:43Z'
+  lease_expires_at: '2026-08-02T01:21:43Z'
   heartbeat_interval_minutes: 30
   prompt_path: ops/v2.1-execution/prompts/I36-START-OR-RESUME.md
   model: GPT-5.6-SOL
   reasoning: XHIGH
 entry_payload_digests:
-  I36: 3a1fb3c3c6d7b485a5672f85be39b404b76936cfa178334df6888020e99972e1
+  I36: 6db477bb1582db04be734a013f33d27d3d0a5e0b47d3eb49c50bea4f5e367949
 digest_algorithm: >-
   For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively, separators ',' and ':',
   ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives in this sibling map, never inside the entry.
