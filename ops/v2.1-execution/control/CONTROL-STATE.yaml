@@ -16,14 +16,14 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: f66edb4d0728b90374e56da13dbd9853657d349c
+controller_authorization_sha: 2213842965302e6c5ccbd9fd26f011681be20b1e
 next_action: >-
-  Execute exact repository-only Batch D request P35-route-registration-001 from independently accepted corrected Batch A
-  terminal 460ba42d. Under one bounded RELEASE_INTEGRATOR lease, mount the accepted domain-transition registration before
-  historical Tisha B'Av routes, retire active page/form/join/client/build surfaces, preserve archived source assets and
-  evidence, and prove 410/no-write plus no generated public HTML. Change only the exact seven product/test paths and I36
-  runtime triplet, run changed-byte validation, push one terminal, and stop for one independent review. Candidate,
-  provider, deployment, DNS, billing, contact, send, activation, cleanup, and every external effect remain prohibited.
+  Correct the two independently reproduced Batch D P2 defects from held terminal 03e30641 under one bounded
+  RELEASE_INTEGRATOR lease: normalize controlled paths once before policy/static handling, deny every normalized archived
+  Tisha B'Av alias and asset, route generic legacy mutation prefixes through the accepted 410 policy, and reject unknown
+  production hosts globally before HTML, assets, API rate limits, repository access, or writes. Change only the exact seven
+  product/test paths and I36 runtime triplet, push one terminal, and stop for the authorized second independent review.
+  Candidate, provider, deployment, DNS, billing, contact, send, activation, cleanup, and every external effect remain prohibited.
 production_completion_lanes:
 - lane: A
   owner: F02
@@ -118,7 +118,7 @@ production_completion_lanes:
   provider_effects: prohibited_until_candidate_authority_and_exact_lock
 - lane: D
   owner: I36
-  status: Batch_A_independently_accepted_Batch_D_P35_route_retirement_dispatched
+  status: Batch_D_terminal_held_two_P2_exact_security_correction_dispatched
   branch: codex/v21-integration
   prior_release_sha: 524563f07b3bb8544db989982dc55d4bc86a1999
   partial_checkpoint_sha: a5a2ad94b77eaf596930609d4d5abe4fa672439b
@@ -131,7 +131,7 @@ production_completion_lanes:
   partial_checkpoint_runtime_triplet_digest: a877b1e24c450a599e8c9b0066345cc06d0444a4c9749aecdda0f7da0c3c628b
   partial_checkpoint_five_path_digest: c405518fb5c7a744fa24e6b4b6f88712af9de68e109920e9fad369e63374d31d
   all_producer_implementation_heads_ancestor_count: 35
-  expected_head_sha: 460ba42db534e669a63e0c6e2383a0f2e8d6ac97
+  expected_head_sha: 03e30641fb5de4de920978b2e574ad6bf4a015ad
   Batch_B_claim_id: 995fe313-efa9-4e5f-b4f6-eeadc9b50d6d
   Batch_B_CONFIG_DEPS_lease_id: e75d8901-0b96-4ec7-b64e-724cfdbcd7a1
   Batch_B_RELEASE_INTEGRATOR_lease_id: eafaecb9-82b6-4e99-bbc3-0d9ad8d92b84
@@ -200,6 +200,24 @@ production_completion_lanes:
   Batch_D_product_path_inventory_digest: e9db03c400cbf3f797c4e5d93a0719c85330a45fec5a8da47950b292d67f0a20
   Batch_D_release_path_count: 10
   Batch_D_release_path_inventory_digest: e5a54c5ea6f9ee253d9f3f1835ce9b2ac91ffd20a7d149b627ed6c3a7f42ca82
+  Batch_D_held_terminal_head_sha: 03e30641fb5de4de920978b2e574ad6bf4a015ad
+  Batch_D_held_terminal_parent_sha: 460ba42db534e669a63e0c6e2383a0f2e8d6ac97
+  Batch_D_held_terminal_tree_sha: 2918d25135b03db926176d576792dc60edd498e8
+  Batch_D_held_terminal_timestamp: '2026-08-01T00:26:45+03:00'
+  Batch_D_held_state_handoff_digest: 482eca48ec26eb29781b93dd33652e3688f85e2a2e520c8a136826fad43c95cd
+  Batch_D_held_runtime_triplet_digest: 7aeb8db7a1cf608640534192ec8879228a7dad5ee545164498b941966c96e26d
+  Batch_D_held_exact_product_manifest_digest: 347904184cf3011fc79137dab1e0f2ff73ed7a7870c7bd206ff52dd244b6b0d1
+  Batch_D_initial_independent_review: held_two_P2_path_normalization_and_global_unknown_host_enforcement_no_P1
+  Batch_D_prior_lease_released_at: '2026-07-31T21:23:02Z'
+  Batch_D_correction_claim_id: 177acf91-73ce-4153-ac87-abdf71dde6c3
+  Batch_D_correction_RELEASE_INTEGRATOR_lease_id: f32be76b-8e68-4c04-b731-134e379194c2
+  Batch_D_correction_lease_expires_at: '2026-08-01T22:25:05Z'
+  Batch_D_correction_ready_entry_payload_digest: 67566b13b89cc68b7373230bb6ce707bda0312b1c059db7cc63495c1ce1d2c0e
+  Batch_D_correction_product_path_count: 7
+  Batch_D_correction_product_path_inventory_digest: ae9356efb55d46990a1c1156cfd00e6652004cf5632492374f8059a6529830f7
+  Batch_D_correction_release_path_count: 10
+  Batch_D_correction_release_path_inventory_digest: 54ee59b6a72ec7cf2e88747ba5659473f6f6976c66223c80cbc6f9982fd15ba8
+  Batch_D_external_effects: 0/0/0
   P21_P22_source_atomic_claim_sha: b87901e803cdd3be7e09a1143d9f23eceaf7ad78
   P21_P22_source_atomic_claim_parent_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
   P21_P22_source_atomic_claim_tree_sha: a3f5578ff5bc108f16480444e7adc66112337268

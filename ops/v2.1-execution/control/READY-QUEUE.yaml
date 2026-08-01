@@ -3,120 +3,120 @@ execution_id: OT-V21-PRODUCTION
 generated_by: C00
 status: operational
 ready:
-  - task_id: I36
-    status: ready
-    phase: batch_D_P35_retired_surface_route_and_public_build_cleanup
-    branch: codex/v21-integration
-    claim_mode: new
-    state_based_on_control_head_sha: f66edb4d0728b90374e56da13dbd9853657d349c
-    authorized_start_sha: 460ba42db534e669a63e0c6e2383a0f2e8d6ac97
-    expected_existing_head: 460ba42db534e669a63e0c6e2383a0f2e8d6ac97
-    package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
-    source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
-    task_packet_digest: 55e261760baac780e9a4db48c328480c6f98172261ef990e563a00b25c467fc7
-    task_context_digest: 7f47da82267dec5dafe9ad53da7ece7618c331645f0591982851c47987d06813
-    dependency_heads_and_digests:
-      C00:
-        required_state: immediate_lean_completion_mode
-        observed_state: immediate_lean_completion_mode
-        observed_control_head_sha: f66edb4d0728b90374e56da13dbd9853657d349c
-        control_state_canonical_digest: dc7a061433b8986d842186d6c417a46450b9cc911c404c82b00aa7959147189b
-      I36:
-        required_state: batch_A_corrected_terminal_independently_passed
-        observed_state: batch_A_corrected_terminal_independently_passed
-        corrected_terminal_head_sha: 460ba42db534e669a63e0c6e2383a0f2e8d6ac97
-        corrected_terminal_parent_sha: 3ea1a32ef971947ab10c129e1de74b54e7311834
-        corrected_terminal_tree_sha: f25984877d0f5e03931ca7bdab3b9fc088f46bd3
-        corrected_terminal_timestamp: '2026-07-31T23:49:34+03:00'
-        corrected_state_handoff_digest: d1fcd9bef863e0c00178c29e598227c91f3371ed7cc88e205c59f5d9ddf02555
-        corrected_runtime_triplet_digest: 6d84071c1d1c6a9f3d5251026aae97783356d9c9965e6bf77a4394bf1673b653
-        product_terminal_head_sha: 3ea1a32ef971947ab10c129e1de74b54e7311834
-        product_terminal_tree_sha: ca1fea5a6ae54128cd0117d949e3176176c047bc
-        product_path_count: 16
-        product_path_inventory_digest: fdf96938e88d1685d733f87db88581a52a0f172c6b7ef243f87ef7ea529725e4
-        exact_product_manifest_digest: 17c7eae7d0bfd2991abe3228a1bf8bcecf923f140d81a48d6ba1037ecfa8f014
-        independent_review: passed_no_P1_or_P2
-        prior_five_leases_released_at: '2026-07-31T20:15:30Z'
-        correction_lease_released_at: '2026-07-31T20:45:09Z'
-        external_effects: 0/0/0
-      P35:
-        required_state: source_implementation_and_domain_transition_policy_integrated
-        observed_state: source_implementation_and_domain_transition_policy_integrated
-        immutable_request_id: P35-route-registration-001
-        immutable_request_raw_git_blob_sha256: 7c604c8ec91fdaeeedda141b19a075bacccbe94961b420f3a85dd6bcc9ad6cf2
-        immutable_request_source_path: ops/v2.1-execution/runtime/P35/steward-requests/P35-route-registration-001.yaml
-    request_bindings:
-      P35-route-registration-001:
-        request_digest: 7c604c8ec91fdaeeedda141b19a075bacccbe94961b420f3a85dd6bcc9ad6cf2
-        source_path: ops/v2.1-execution/runtime/P35/steward-requests/P35-route-registration-001.yaml
-        digest_kind: raw_git_blob_sha256
-    authorized_paths:
-      - apps/web/src/client/public/public-entry.ts
-      - apps/web/src/server/app.ts
-      - ops/v2.1-execution/runtime/I36/HANDOFF.md
-      - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
-      - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
-      - scripts/build-public-pages.ts
-      - scripts/v21-migration/verify-domain-transition.ts
-      - tests/e2e/tisha-bav-funnel.spec.ts
-      - tests/integration/tisha-bav-event-funnel.test.ts
-      - tests/unit/tisha-bav-public-copy.test.ts
-    authorized_path_count: 10
-    authorized_path_inventory_digest: e5a54c5ea6f9ee253d9f3f1835ce9b2ac91ffd20a7d149b627ed6c3a7f42ca82
-    product_path_count: 7
-    product_path_inventory_digest: e9db03c400cbf3f797c4e5d93a0719c85330a45fec5a8da47950b292d67f0a20
-    authorized_product_preimages:
-      apps/web/src/client/public/public-entry.ts: e3c20439b0cfc1c4646f4a546ec88b31aafe0bd06410efc4416d45ad75d99646
-      apps/web/src/server/app.ts: a4f0cc569a17e5d473b082b48e9124d5679d523b0124b1c56cb55cca32d8e4c7
-      scripts/build-public-pages.ts: e69659e4a01039f65f07be738001f2a29d84a475440cc60016f576b7a47e3518
-      scripts/v21-migration/verify-domain-transition.ts: 1eb43e28f09bffc6edb5603a92bacde70bc0ddfa83c3a7831f6c868570eff190
-      tests/e2e/tisha-bav-funnel.spec.ts: 524e0dfd9dc497c03d966f08912416c8a8062227810b11c8c08495fb6155c654
-      tests/integration/tisha-bav-event-funnel.test.ts: 6fcf691582937fd0ac28908026a3edf475d68dbbb841935c414ac5edaa86d719
-      tests/unit/tisha-bav-public-copy.test.ts: a0c5dff85fd42e8c4d9774ac180714a72032b9267a58b5e785861ef6f6126a55
-    correction_directives:
-      - >-
-        Apply only immutable request P35-route-registration-001. Mount the accepted domainTransitionFeatureRegistration
-        before every historical Tisha B'Av route. Retire the active landing, live, register, join, redirect, client hook,
-        and public-page generation surfaces while preserving the accepted 410 ended-event/no-write policy.
-      - >-
-        Remove generated tisha-bav.html and tisha-bav-live.html output and every active client registration/join hook.
-        Prove the retired page and API paths return the accepted 410 behavior without repository, cookie, contact,
-        enrollment, message, or provider writes. Prove retired asset request paths are not publicly served.
-      - >-
-        Preserve all historical migrations, archived source assets, archive manifests, provider evidence, and immutable
-        steward-request bytes. Do not delete or rewrite Tisha B'Av archive material, provider assets, or historical data.
-      - >-
-        Run validation matched to these source bytes only: focused P35/domain-transition and retired-surface unit,
-        integration, and seed-free browser assertions; changed-package format, lint, and typecheck; the relevant public
-        page and web production builds; exact path/preimage/diff/ancestry checks. Do not run a repository-wide audit.
-      - >-
-        Update the I36 runtime triplet once at terminal, record the exact immutable request disposition, release the one
-        phase lease, push one normal terminal, prove clean local/tracking/live equality, and stop for one independent
-        review.
-      - >-
-        This repository-only phase authorizes no candidate freeze, deployment, DNS, provider inspection or mutation,
-        contact creation, enrollment, send, billing action, cleanup, or other external effect. No effect lock is issued.
-    writer_slot_leases:
-      - slot: RELEASE_INTEGRATOR
-        lease_id: 595bc994-56d3-4805-9e86-cf7bccc805ca
-        holder_task_id: I36
-        holder_claim_id: eb0bd2af-26a7-448a-90d8-1a5e4ae56ce8
-        holder_writer_id: codex-i36-batch-d-p35-eb0bd2af
-        state_based_on_control_head_sha: f66edb4d0728b90374e56da13dbd9853657d349c
-        lease_issued_at: '2026-07-31T20:53:07Z'
-        lease_expires_at: '2026-08-01T00:53:07Z'
-        phase_scope: batch_D_exact_P35_route_retirement_ten_path_terminal_only
-    effect_lock_leases: []
-    claim_id: eb0bd2af-26a7-448a-90d8-1a5e4ae56ce8
-    lease_issued_at: '2026-07-31T20:53:07Z'
-    lease_expires_at: '2026-08-01T00:53:07Z'
-    heartbeat_interval_minutes: 30
-    prompt_path: ops/v2.1-execution/prompts/I36-START-OR-RESUME.md
-    model: GPT-5.6-SOL
-    reasoning: XHIGH
+- task_id: I36
+  status: ready
+  phase: batch_D_P35_security_normalization_and_unknown_host_correction
+  branch: codex/v21-integration
+  claim_mode: new
+  state_based_on_control_head_sha: 2213842965302e6c5ccbd9fd26f011681be20b1e
+  authorized_start_sha: 03e30641fb5de4de920978b2e574ad6bf4a015ad
+  expected_existing_head: 03e30641fb5de4de920978b2e574ad6bf4a015ad
+  package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
+  source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+  task_packet_digest: 55e261760baac780e9a4db48c328480c6f98172261ef990e563a00b25c467fc7
+  task_context_digest: 7f47da82267dec5dafe9ad53da7ece7618c331645f0591982851c47987d06813
+  dependency_heads_and_digests:
+    C00:
+      required_state: immediate_lean_completion_mode
+      observed_state: immediate_lean_completion_mode
+      observed_control_head_sha: 2213842965302e6c5ccbd9fd26f011681be20b1e
+      control_state_canonical_digest: b0b4bbcd4e6ad08279db65e890d2d6dc760d000b5118d77665bb8a471573a0c2
+    I36:
+      required_state: batch_D_terminal_held_for_exact_security_correction
+      observed_state: batch_D_terminal_held_for_two_P2_no_P1
+      held_terminal_head_sha: 03e30641fb5de4de920978b2e574ad6bf4a015ad
+      held_terminal_parent_sha: 460ba42db534e669a63e0c6e2383a0f2e8d6ac97
+      held_terminal_tree_sha: 2918d25135b03db926176d576792dc60edd498e8
+      held_terminal_timestamp: '2026-08-01T00:26:45+03:00'
+      held_state_handoff_digest: 482eca48ec26eb29781b93dd33652e3688f85e2a2e520c8a136826fad43c95cd
+      held_runtime_triplet_digest: 7aeb8db7a1cf608640534192ec8879228a7dad5ee545164498b941966c96e26d
+      held_product_path_count: 7
+      held_product_path_inventory_digest: e9db03c400cbf3f797c4e5d93a0719c85330a45fec5a8da47950b292d67f0a20
+      held_release_path_count: 10
+      held_release_path_inventory_digest: e5a54c5ea6f9ee253d9f3f1835ce9b2ac91ffd20a7d149b627ed6c3a7f42ca82
+      held_exact_product_manifest_digest: 347904184cf3011fc79137dab1e0f2ff73ed7a7870c7bd206ff52dd244b6b0d1
+      independent_review: held_two_P2_path_normalization_and_global_unknown_host_enforcement_no_P1
+      prior_lease_released_at: '2026-07-31T21:23:02Z'
+      external_effects: 0/0/0
+    P35:
+      required_state: immutable_request_preserved_and_pending_corrected_application
+      observed_state: immutable_request_preserved_and_pending_corrected_application
+      immutable_request_id: P35-route-registration-001
+      immutable_request_raw_git_blob_sha256: 7c604c8ec91fdaeeedda141b19a075bacccbe94961b420f3a85dd6bcc9ad6cf2
+      immutable_request_source_path: ops/v2.1-execution/runtime/P35/steward-requests/P35-route-registration-001.yaml
+  request_bindings:
+    P35-route-registration-001:
+      request_digest: 7c604c8ec91fdaeeedda141b19a075bacccbe94961b420f3a85dd6bcc9ad6cf2
+      source_path: ops/v2.1-execution/runtime/P35/steward-requests/P35-route-registration-001.yaml
+      digest_kind: raw_git_blob_sha256
+  authorized_paths:
+  - apps/web/src/server/app.ts
+  - apps/web/src/server/features/domain-transition/index.ts
+  - apps/web/src/server/features/domain-transition/policy.ts
+  - apps/web/src/server/features/domain-transition/router.ts
+  - ops/v2.1-execution/runtime/I36/HANDOFF.md
+  - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
+  - scripts/v21-migration/verify-domain-transition.ts
+  - tests/e2e/tisha-bav-funnel.spec.ts
+  - tests/integration/tisha-bav-event-funnel.test.ts
+  authorized_path_count: 10
+  authorized_path_inventory_digest: 54ee59b6a72ec7cf2e88747ba5659473f6f6976c66223c80cbc6f9982fd15ba8
+  product_path_count: 7
+  product_path_inventory_digest: ae9356efb55d46990a1c1156cfd00e6652004cf5632492374f8059a6529830f7
+  authorized_product_preimages:
+    apps/web/src/server/app.ts: 0e28896ebe096eff9407483912e3e25904acbb83bdec8fcf8d7de47a3413bd3a
+    apps/web/src/server/features/domain-transition/index.ts: 67a555258aad2478326cacef4a67e3a056e3925991c99b0cf7613f66f98a5ef6
+    apps/web/src/server/features/domain-transition/policy.ts: f23a54151816f55e980bb4c16ada91b005cc32ed3d45b13ad7738bec09370350
+    apps/web/src/server/features/domain-transition/router.ts: 8f7358e6191d8ab490bbfc15901ea578ac1b373cf2ab87ca3e7308a1833cbaf6
+    scripts/v21-migration/verify-domain-transition.ts: 4196dffd39836cfd39bd67964fbc6959224b8d8c46edf4681d91d9a7891e775c
+    tests/e2e/tisha-bav-funnel.spec.ts: 43670914569a88b6cd734ffa08c7c7058badf986d256f2ea076d8c94d48ffbb7
+    tests/integration/tisha-bav-event-funnel.test.ts: 2084a75330a7e0e76bd54800b5cafd36f150ffcbcd2f24cfbaa2d8f84dbbbfb8
+  correction_directives:
+  - >-
+    Correct both independently reproduced P2s as one bounded security closure. Export one shared decode-once path normalizer/classifier,
+    normalize slash and backslash separators, repeated and trailing slashes, dot segments, and ASCII case for controlled comparisons, and
+    never recursively decode percent-encoded input.
+  - >-
+    Run domain-transition policy as all-path middleware. Reject every unknown production host before public HTML, static assets, API rate
+    limits, repository access, or writes; allow unrelated canonical-host paths to pass through; preserve controlled login/signup no-store
+    pass-through behavior; and make generic /api/legacy and /api/v1/legacy mutation prefixes reachable as 410 retirements.
+  - >-
+    Reuse the shared normalizer for archived Tisha B'Av asset denial and add the former generated outputs /tisha-bav-live and
+    /tisha-bav-live.html to the retired aliases. Preserve archived source assets, archive manifests, migrations, provider evidence, and the
+    immutable steward request byte-for-byte.
+  - >-
+    Add a focused regression matrix covering canonical, case, encoded letter and separator, repeated slash, raw and encoded backslash,
+    plain and encoded dot segments, both live-output aliases, and direct double encoding. Assert no stale HTML or asset bytes, no DB call or
+    state change, no cookie, and no redirect. Keep exhaustive HTTP proof in integration/verifier and a representative seed-free browser set.
+  - >-
+    Run validation matched only to these bytes: focused verifier, unit/integration and seed-free browser assertions, changed-file format and
+    lint, relevant client/page build, exact path/preimage/diff/ancestry checks, and baseline-aware typecheck. Update the I36 runtime triplet
+    once at terminal with candid baseline diagnostics, release the one phase lease, push one normal terminal, and stop for the authorized
+    second independent review because the first review found P2 defects.
+  - >-
+    This repository-only correction authorizes no candidate freeze, deployment, DNS, provider inspection or mutation, contact creation,
+    enrollment, send, billing action, cleanup, or other external effect. No effect lock is issued.
+  writer_slot_leases:
+  - slot: RELEASE_INTEGRATOR
+    lease_id: f32be76b-8e68-4c04-b731-134e379194c2
+    holder_task_id: I36
+    holder_claim_id: 177acf91-73ce-4153-ac87-abdf71dde6c3
+    holder_writer_id: codex-i36-batch-d-security-correction-177acf91
+    state_based_on_control_head_sha: 2213842965302e6c5ccbd9fd26f011681be20b1e
+    lease_issued_at: '2026-08-01T18:25:05Z'
+    lease_expires_at: '2026-08-01T22:25:05Z'
+    phase_scope: batch_D_exact_P35_security_normalization_and_unknown_host_correction_ten_path_terminal_only
+  effect_lock_leases: []
+  claim_id: 177acf91-73ce-4153-ac87-abdf71dde6c3
+  lease_issued_at: '2026-08-01T18:25:05Z'
+  lease_expires_at: '2026-08-01T22:25:05Z'
+  heartbeat_interval_minutes: 30
+  prompt_path: ops/v2.1-execution/prompts/I36-START-OR-RESUME.md
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
 entry_payload_digests:
-  I36: a330befb939fcfda31fae9bfca1ece0b56a3ce959cb47265b45da9db42afd3d9
+  I36: 67566b13b89cc68b7373230bb6ce707bda0312b1c059db7cc63495c1ce1d2c0e
 digest_algorithm: >-
-  For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively, separators ','
-  and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives in this sibling map,
-  never inside the entry.
+  For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively, separators ',' and ':',
+  ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives in this sibling map, never inside the entry.
