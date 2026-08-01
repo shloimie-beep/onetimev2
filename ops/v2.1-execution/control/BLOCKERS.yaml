@@ -24,7 +24,7 @@ blockers:
   next_check: >-
     Revalidate only if any accepted P21/P22/P30 semantic-correction byte changes and once at candidate freeze.
 - blocker_id: F06-ACTIVE-REGISTRY-BINDING-SOURCE
-  status: open
+  status: closed
   scope: pre_candidate_repository_correctness
   owner: C00_and_I36
   affected_tasks:
@@ -38,15 +38,17 @@ blockers:
     Exact twelve-path terminal 701ef6e1 added the empty canonical registry table/reader at migration 2257, advanced the
     proposal to 2258, passed 19/19 focused tests, migration inventory, PGlite trigger proof, secret scan, exact scope/manifests,
     released leases, remote equality, and effects 0/0/0. Independent review passed every envelope and authority fence but held
-    one P2: [requested_operation,NULL] survives storage, then the mapper coerces NULL to synthetic string "null".
+    one P2: [requested_operation,NULL] survived storage, then the mapper coerced NULL to synthetic string "null". Exact
+    nine-path correction 951c151c rejects NULL array elements by named database constraint and strict mapper/domain validation,
+    preserves migration 2257 and proposal ordinal 2258, passes 19/19 focused tests plus disposable PGlite proof, has released
+    leases and remote equality, and was independently accepted with zero P1, zero P2, zero P3 and effects 0/0/0.
   required_authority_or_input: []
   protection: >-
-    Apply only the exact nine-path NULL-element fail-closed correction under READY aea49a43. Preserve all accepted 701ef6e1
-    semantics, migration ordinal 2257, proposal next ordinal 2258, empty registry, provider-operation separation, Stripe
-    prohibition, and effects 0/0/0. P21 and every candidate/provider/release action remain held.
+    Preserve accepted terminal 951c151c, migration ordinal 2257, proposal next ordinal 2258, empty registry,
+    provider-operation separation, strict malformed-array rejection, Stripe prohibition, and effects 0/0/0. Registry
+    population and every candidate/provider/release action remain held behind their exact later gates.
   next_check: >-
-    Independently review the exact nine-path correction for database NULL-element rejection, strict mapper/domain type rejection,
-    [requested_operation,NULL] regression coverage, updated checksum pair, proposal 2258, released leases, equality, and 0/0/0.
+    Revalidate only if accepted registry/migration bytes change and at the native merged/candidate migration gate.
 - blocker_id: OPS-084-LEGAL-BUNDLE
   status: open
   scope: production_broad
@@ -322,15 +324,18 @@ blockers:
     exact eight-path digest is d3a605c5. Embedded PGlite proof passed, but native PostgreSQL-server replay is retained as
     a hard merged/candidate gate. Metadata terminal e569d693 materialized and validated immutable path-complete
     P21-registration-004; C00 admitted it and dispatched its exact 18-path application first in the shared P21/P22 batch.
+    The earlier broad shared application was held and semantically corrected through accepted integration 951c151c. C00 has
+    now narrowed the remaining repository-only successor to 15 publication/reconciliation product-test paths plus the I36
+    runtime triplet, with independently supplied active-binding authority, no real Vimeo adapter, and effects 0/0/0.
   required_authority_or_input:
-  - Complete the dispatched P21-registration-004 application before the P22 server composition
+  - Complete and independently review the exact repository-only P21 publication/reconciliation successor before P22/P30 continuation
   - Reproduce the corrected behavior against a true native PostgreSQL server in the merged migration/candidate gate
   - Preserve P21-registration-003 as superseded path-incomplete history
   protection: >-
     Do not directly mutate canonical_aggregate_states, add a second reconciler, write a new migration, emit same-state
-    events, split the publication CAS from the canonical event transaction, apply registration before the writer, or
-    advance candidate/provider/release gates while canonical content state is absent.
-  next_check: Re-evaluate after c11dec41 is an integration ancestor and native PostgreSQL-server replay is recorded.
+    events, split the publication CAS from the canonical event transaction, derive provider authority from provider-returned
+    data, add a real provider adapter, or advance candidate/provider/release gates while canonical content state is absent.
+  next_check: Re-evaluate after the exact P21 successor is independently accepted and native PostgreSQL-server replay is recorded.
 - blocker_id: F04-OWNERSHIP-TRANSFER-REVOCATION-COLUMNS
   status: closed
   scope: controlled_launch_candidate

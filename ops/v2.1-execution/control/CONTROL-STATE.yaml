@@ -16,12 +16,13 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: cfa3a42c5868676025c0e4414af20856643d0ecc
+controller_authorization_sha: b7249121e94130e1ee9d561a112851ac4040fa66
 next_action: >-
-  Correct only the held malformed-operation P2 at integration 701ef6e1. Reject NULL allowed-operation array elements at the
-  database, mapper, and domain boundaries; update only migration 2257 checksums in the proposal; and prove the exact regression.
-  Push one exact nine-path correction terminal for independent review. P21, candidate freeze, registry population, providers,
-  persistent databases, deployment, DNS, and every external effect remain prohibited.
+  Complete the exact repository-only P21 content-publication reconciliation successor at accepted integration 951c151c.
+  Bind dispatch and acceptance-unknown handling to independently requested active F06 evidence, derive publication audiences
+  server-side, and preserve atomic local finalization. Push one exact eighteen-path terminal for independent review. Candidate
+  freeze, registry population, real provider adapters/calls, persistent databases, deployment, DNS, and every external effect
+  remain prohibited.
 production_completion_lanes:
 - lane: A
   owner: F02
@@ -116,7 +117,7 @@ production_completion_lanes:
   provider_effects: prohibited_until_candidate_authority_and_exact_lock
 - lane: D
   owner: I36
-  status: F06_active_binding_source_held_one_P2_null_array_correction_dispatched
+  status: F06_binding_source_accepted_P21_repository_only_successor_dispatched
   branch: codex/v21-integration
   prior_release_sha: 524563f07b3bb8544db989982dc55d4bc86a1999
   partial_checkpoint_sha: a5a2ad94b77eaf596930609d4d5abe4fa672439b
@@ -129,7 +130,7 @@ production_completion_lanes:
   partial_checkpoint_runtime_triplet_digest: a877b1e24c450a599e8c9b0066345cc06d0444a4c9749aecdda0f7da0c3c628b
   partial_checkpoint_five_path_digest: c405518fb5c7a744fa24e6b4b6f88712af9de68e109920e9fad369e63374d31d
   all_producer_implementation_heads_ancestor_count: 35
-  expected_head_sha: 701ef6e19d0cb640677c066c2d49fb2f453bb6bc
+  expected_head_sha: 951c151c28f905ad7458973a750c3887edc38ddc
   Batch_B_claim_id: 995fe313-efa9-4e5f-b4f6-eeadc9b50d6d
   Batch_B_CONFIG_DEPS_lease_id: e75d8901-0b96-4ec7-b64e-724cfdbcd7a1
   Batch_B_RELEASE_INTEGRATOR_lease_id: eafaecb9-82b6-4e99-bbc3-0d9ad8d92b84
@@ -367,6 +368,32 @@ production_completion_lanes:
   F06_null_array_correction_product_preimage_manifest_digest: ca8861bfe563c601434fce6270c72564f1ede7501d9593ac88d3357dd28b09a8
   F06_null_array_correction_effect_locks: []
   F06_null_array_correction_external_effects: 0/0/0
+  F06_null_array_correction_terminal_head_sha: 951c151c28f905ad7458973a750c3887edc38ddc
+  F06_null_array_correction_terminal_parent_sha: 701ef6e19d0cb640677c066c2d49fb2f453bb6bc
+  F06_null_array_correction_terminal_tree_sha: abaec266f2ac91625f1cf7ff72b258cc3e537826
+  F06_null_array_correction_terminal_timestamp: '2026-08-02T01:48:05+03:00'
+  F06_null_array_correction_product_postimage_manifest_digest: 1dcaccc344ef2d5ded0cdab332eaf0faa6a9e140cbc9289373f0715ed8bba144
+  F06_null_array_correction_release_postimage_manifest_digest: 1cedfab15e448fa520f627f44116bd44e6f35306faaef90c5818cc4d5a10c260
+  F06_null_array_correction_migration_raw_sha256: 04e348e04c4c794147a678d03167df51cd21872d350c73c83b2181b68bc0619e
+  F06_null_array_correction_repository_runner_checksum: 3961d3d0b946ac3e4ae318fa0bd3f275aff6d423cd4d80a1bdd9ea933842b1ef
+  F06_null_array_correction_lease_released_at: '2026-08-01T22:46:01Z'
+  F06_null_array_correction_independent_review: passed_zero_P1_zero_P2_zero_P3
+  F06_null_array_correction_focused_tests: 19/19_passed
+  P21_successor_claim_id: 27bc68ec-74be-4cdf-a6c6-b3ddea179d90
+  P21_successor_CONTENT_PUBLICATION_lease_id: b30f7c9c-3916-4935-a4c1-1057ba0e1390
+  P21_successor_SERVER_COMPOSER_lease_id: 5f79e47d-f671-4f00-abd6-1200185897c3
+  P21_successor_WORKER_COMPOSER_lease_id: 5d3a25c9-7ec7-4b59-adf9-ecaa27cf6bff
+  P21_successor_RELEASE_INTEGRATOR_lease_id: 6e076496-9ac3-4985-a62c-7b6c9f2142ba
+  P21_successor_lease_expires_at: '2026-08-02T02:53:43Z'
+  P21_successor_ready_entry_payload_digest: add5b10b2f34c2cbe3ef8ddd096ad374760631a1e8f1896a1a3933aa31f5491a
+  P21_successor_authorized_start_sha: 951c151c28f905ad7458973a750c3887edc38ddc
+  P21_successor_product_path_count: 15
+  P21_successor_product_path_inventory_digest: 12cc924a0bf34eb5e6d5c68a5507f0e080c6f7a5a053c2281ed447afb810cb6a
+  P21_successor_release_path_count: 18
+  P21_successor_release_path_inventory_digest: 1a9ea9e220cc668684a39a1b9bd570a76a371b434226783ac1195ac4f1c62fdd
+  P21_successor_product_preimage_manifest_digest: a8e51b26ba8c8d5906aed2bc1da13b990f836adf0660cca6b46a00f8f9614950
+  P21_successor_effect_locks: []
+  P21_successor_external_effects: 0/0/0
   Batch_D_external_effects: 0/0/0
   P21_P22_source_atomic_claim_sha: b87901e803cdd3be7e09a1143d9f23eceaf7ad78
   P21_P22_source_atomic_claim_parent_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
@@ -593,8 +620,10 @@ successor_dispatch:
   I36_path_complete_P21_P22_P30_application_dispatched_at: '2026-08-01T19:21:43Z'
   I36_path_complete_application_held_at: '2026-08-01T20:31:59Z'
   I36_semantic_correction_dispatched_at: '2026-08-01T20:31:59Z'
-  lease_issued_at: '2026-08-01T20:31:59Z'
-  lease_expires_at: '2026-08-02T02:31:59Z'
+  F06_null_array_correction_accepted_at: '2026-08-01T22:53:43Z'
+  P21_repository_only_successor_dispatched_at: '2026-08-01T22:53:43Z'
+  lease_issued_at: '2026-08-01T22:53:43Z'
+  lease_expires_at: '2026-08-02T02:53:43Z'
   ready_queue_published: true
   F02:
     status: integrated_and_reconciled
@@ -786,10 +815,10 @@ successor_dispatch:
     external_effects: 0/0/0
   I36:
     status: ready
-    phase: path_complete_P21_P22_P30_dependency_ordered_application
+    phase: P21_content_publication_reconciliation_successor
     branch: codex/v21-integration
-    expected_existing_head_sha: e569d6933bc25ec848fe9eb279e193d40b38787e
-    remote_integration_head_sha: e569d6933bc25ec848fe9eb279e193d40b38787e
+    expected_existing_head_sha: 951c151c28f905ad7458973a750c3887edc38ddc
+    remote_integration_head_sha: 951c151c28f905ad7458973a750c3887edc38ddc
     atomic_claim_parent_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
     atomic_claim_tree_sha: a3f5578ff5bc108f16480444e7adc66112337268
     atomic_claim_state_handoff_digest: bc8f2247c7fc64a63b4445d75cfeee4047de6a24d3671f14d3a537c8d90f986e
@@ -809,14 +838,22 @@ successor_dispatch:
     Batch_A_correction_claim_id: be576814-96ef-48f2-88b5-2d3cc9b37cbb
     Batch_A_correction_ready_entry_payload_digest: 7010a65000ffcccab55809c6e95961f6de0d6e4e95409020f9d610bdbf384861
     Batch_A_correction_lease_released_at: '2026-07-31T20:45:09Z'
-    claim_id: d9908072-b7a2-4ddb-9de9-7c7da697feaa
-    writer_id: codex-i36-path-complete-successors-d9908072
-    SERVER_COMPOSER_lease_id: a0c7c66e-a55b-4f9a-8e08-d9262dacf221
-    CLIENT_COMPOSER_lease_id: 570f0cfa-e79a-4332-8e4f-6bc74160f1ab
-    WORKER_COMPOSER_lease_id: 99f7435b-81b9-4ef9-9334-a71eac602a77
-    RELEASE_INTEGRATOR_lease_id: cc10a2b6-7baa-488f-8fd7-05b7ce877604
-    writer_lease_expires_at: '2026-08-02T01:21:43Z'
-    ready_entry_payload_digest: 6db477bb1582db04be734a013f33d27d3d0a5e0b47d3eb49c50bea4f5e367949
+    claim_id: 27bc68ec-74be-4cdf-a6c6-b3ddea179d90
+    writer_id: codex-i36-P21-reconciler-27bc68ec
+    CONTENT_PUBLICATION_lease_id: b30f7c9c-3916-4935-a4c1-1057ba0e1390
+    SERVER_COMPOSER_lease_id: 5f79e47d-f671-4f00-abd6-1200185897c3
+    WORKER_COMPOSER_lease_id: 5d3a25c9-7ec7-4b59-adf9-ecaa27cf6bff
+    RELEASE_INTEGRATOR_lease_id: 6e076496-9ac3-4985-a62c-7b6c9f2142ba
+    writer_lease_expires_at: '2026-08-02T02:53:43Z'
+    ready_entry_payload_digest: add5b10b2f34c2cbe3ef8ddd096ad374760631a1e8f1896a1a3933aa31f5491a
+    F06_correction_terminal_head_sha: 951c151c28f905ad7458973a750c3887edc38ddc
+    F06_correction_terminal_tree_sha: abaec266f2ac91625f1cf7ff72b258cc3e537826
+    F06_correction_independent_review: passed_zero_P1_zero_P2_zero_P3
+    P21_successor_product_path_count: 15
+    P21_successor_product_path_inventory_digest: 12cc924a0bf34eb5e6d5c68a5507f0e080c6f7a5a053c2281ed447afb810cb6a
+    P21_successor_release_path_count: 18
+    P21_successor_release_path_inventory_digest: 1a9ea9e220cc668684a39a1b9bd570a76a371b434226783ac1195ac4f1c62fdd
+    P21_successor_product_preimage_manifest_digest: a8e51b26ba8c8d5906aed2bc1da13b990f836adf0660cca6b46a00f8f9614950
     P12_local_merge_sha: a6929cdddbde5282f37c10a60a5cc602cff44866
     P09_local_merge_sha: 08e26cfd9958da54b3fff95942d81f08ac7a5e09
     held_local_tree_sha: 7bc370097d3e19d8bb762e13f118e35e920ba758
@@ -1152,8 +1189,8 @@ successor_dispatch:
     effect_locks: []
     external_effects: 0/0/0
   P21:
-    status: ordered_source_integrated
-    phase: P21_replay_preapproval_archive_fix_integrated
+    status: successor_dispatched
+    phase: P21_content_publication_reconciliation_successor_dispatched
     branch: codex/v21-p21-publication-scope-correction
     integration_merge_sha: f5172829a0df0af9fa9790cb5b88427ed3ccadc4
     integration_release_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
@@ -1192,6 +1229,21 @@ successor_dispatch:
     registration_successor: P21-registration-003
     registration_successor_raw_sha256: 0100943c4acb2104fd1e5d755f860a675944ce19b1a0b92188dcac84ac19ed16
     merge_order: P21_writer_before_P21_and_P22_server_registration
+    successor_authorized_start_sha: 951c151c28f905ad7458973a750c3887edc38ddc
+    successor_claim_id: 27bc68ec-74be-4cdf-a6c6-b3ddea179d90
+    successor_writer_id: codex-i36-P21-reconciler-27bc68ec
+    successor_CONTENT_PUBLICATION_lease_id: b30f7c9c-3916-4935-a4c1-1057ba0e1390
+    successor_SERVER_COMPOSER_lease_id: 5f79e47d-f671-4f00-abd6-1200185897c3
+    successor_WORKER_COMPOSER_lease_id: 5d3a25c9-7ec7-4b59-adf9-ecaa27cf6bff
+    successor_RELEASE_INTEGRATOR_lease_id: 6e076496-9ac3-4985-a62c-7b6c9f2142ba
+    successor_lease_expires_at: '2026-08-02T02:53:43Z'
+    successor_ready_entry_payload_digest: add5b10b2f34c2cbe3ef8ddd096ad374760631a1e8f1896a1a3933aa31f5491a
+    successor_product_path_count: 15
+    successor_product_path_inventory_digest: 12cc924a0bf34eb5e6d5c68a5507f0e080c6f7a5a053c2281ed447afb810cb6a
+    successor_release_path_count: 18
+    successor_release_path_inventory_digest: 1a9ea9e220cc668684a39a1b9bd570a76a371b434226783ac1195ac4f1c62fdd
+    successor_product_preimage_manifest_digest: a8e51b26ba8c8d5906aed2bc1da13b990f836adf0660cca6b46a00f8f9614950
+    successor_scope: repository_only_no_real_provider_adapter_or_external_effect
     effect_locks: []
     external_effects: 0/0/0
   P10:
