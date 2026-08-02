@@ -1,0 +1,57 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+verification_lane: V37
+canonical_candidate_digest: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
+candidate_product_source_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
+authority: read_only_only
+observed_at: '2026-08-02T12:00:00Z'
+requests:
+  - method: GET
+    origin: https://app.onetimeonetime.com
+    paths: ['/', '/version', '/family', '/signup', '/school', '/admin']
+    result: dns_resolution_failed
+    http_status: 0
+    redirects: 0
+  - method: GET
+    origin: https://join.onetimeonetime.com
+    path: /version
+    http_status: 200
+    target_app: one-time
+    reported_version: 0d69de15e3c5e7a5e51f2b9262c992ea153c51fb
+    reported_git_commit_sha: ed77a04dd24391d5b79be7f839d7f5752a57e0f9
+    deployment_provider: railway
+    deployment_id: f8ba23d3-311b-4277-a85d-6695611fedfd
+    candidate_match: false
+  - method: GET
+    origin: https://join.onetimeonetime.com
+    path: /
+    http_status: 200
+    body_sha256: 94100f8a2fd13c971c2bb9795fe4a5febd15fa58dafb738effc0a046ed86dcea
+    observations:
+      - legacy Sign Up Now entry is visible
+      - an offline WhatsApp assistant panel is visible
+      - campaign ticker uses a September 11 deadline
+  - method: GET
+    origin: https://join.onetimeonetime.com
+    path: /signup
+    http_status: 200
+    body_sha256: d0bc29582271e5033583fe9e2ceb7550894e9f6a2bc6311e37fcfc112f35ab21
+    observations:
+      - legacy combined Family-or-School lead form is visible
+      - the form posts to /api/v1/leads and does not collect an account password
+      - success copy promises later access and member-login details
+  - method: GET
+    origin: https://join.onetimeonetime.com
+    path: /family
+    http_status: 404
+  - method: GET
+    origin: https://join.onetimeonetime.com
+    path: /school
+    http_status: 404
+external_effects:
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+unexpected_effects: 0
+cleanup: not_applicable
+redaction: public status, version, route, and copy markers only; no response headers, cookies, credentials, or personal data retained

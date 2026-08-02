@@ -1,0 +1,19 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+case_id: OTV2-FOUNDATION-001-AC01
+canonical_candidate_digest: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
+repository_source_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
+owner_tasks:
+  - P34
+commands:
+  - curl.exe -sS -L --max-time 20 https://app.onetimeonetime.com/version
+  - curl.exe -sS --max-time 20 https://join.onetimeonetime.com/version
+observed_failure: >-
+  Every read-only request to https://app.onetimeonetime.com failed DNS resolution; the live join origin reports a
+  non-candidate deployment.
+redaction: No secrets, credentials, cookies, child data, private queries, or raw provider payloads retained.
+external_effects:
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+reproduced_at: '2026-08-02T12:08:00Z'

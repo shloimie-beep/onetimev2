@@ -1,0 +1,21 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+case_id: OTV2-FOUNDATION-208-AC01
+canonical_candidate_digest: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
+repository_source_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
+owner_tasks:
+  - F01
+  - I36
+commands:
+  - npm run build:client
+  - rg -n 'experience-preview' dist/apps/web/public/manifest-app.json
+  - curl.exe -sS https://join.onetimeonetime.com/
+observed_failure: >-
+  The candidate production client build emits the experience-preview Student asset, and the current live join landing
+  exposes an offline WhatsApp assistant.
+redaction: No secrets, credentials, cookies, child data, private queries, or raw provider payloads retained.
+external_effects:
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+reproduced_at: '2026-08-02T12:08:00Z'

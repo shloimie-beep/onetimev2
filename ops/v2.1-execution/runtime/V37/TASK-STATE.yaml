@@ -1,0 +1,89 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: V37
+task_packet_digest: d21e54222451e62e053621da4c7015a0670cefb216ede426e837f84bdd94841c
+task_context_digest: d31b4d8b8bc6b7768ed02f0d3231816f9653db4fe9727ddf3a511cd710a34357
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+branch: codex/v21-verify-ea45b0ab10ec-v37
+start_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
+dependency_heads:
+  I36: 031cfde117028c8c199c7bc47e46e18a8227139d
+status: ready_for_evidence_merge
+phase: ready_for_evidence_merge
+claimed_by: codex-v37-7bf24561
+claim_time: '2026-08-02T11:58:12Z'
+claim_id: 7bf24561-9b95-480b-8172-49b6498bff07
+lease_expires_at: '2026-08-02T15:50:03Z'
+last_heartbeat_at: '2026-08-02T12:12:04Z'
+lease_released_at: '2026-08-02T12:12:04Z'
+writer_slot_leases:
+  VERIFY_IDENTITY_ADMIN:
+    lease_id: e48f2ded-422e-4705-aaaf-4ab389636664
+    status: released
+    released_at: '2026-08-02T12:12:04Z'
+controller_authorization_sha: 4062a17de4b299a620ada6fce0d194ff25743578
+ready_entry_payload_digest: 30d6912c416db8490f9e018cf6d0d833bd02a784efb8c234dc4e01ddb6e3139c
+state_based_on_head_sha: ed6cae9efe3cefe69abac5fa5c02ae5ed23a50d0
+last_implementation_commit_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
+candidate:
+  canonical_digest: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
+  repository_source_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
+  manifest_digest: 30867a96bfc5370ead95b83b6519b4ec365947d874c609dd8e5dbecba7e54876
+completed_steps:
+  - verified repository identity, isolated worktree, branch head, control authorization, claim, lease, and READY digest
+  - verified all 200 LOCKED-SHA256SUMS entries and the task, context, prompt, source-package, and candidate identities
+  - reused accepted F01, F03, F04, P08, P09, P10, and P11 evidence and ran assigned current/delta checks
+  - performed public production GET-only landing, version, Family, School, signup, and Admin route readbacks
+  - wrote and digest-validated all 55 immutable attempts, 55 CURRENT pointers, five failure reproductions, shared evidence, and lane summary
+  - reconciled zero external effects and released VERIFY_IDENTITY_ADMIN lease e48f2ded-422e-4705-aaaf-4ab389636664
+remaining_steps: []
+next_action: C00 should validate and queue the exact pushed V37 evidence head for I36 aggregation; failed and blocked cases remain release blockers and are not waived.
+requirements:
+  expected: 48
+  passed: 37
+  failed: 5
+  blocked: 6
+acceptance_cases:
+  expected: 55
+  attempted: 55
+  passed: 44
+  failed: 5
+  blocked: 6
+  stale: 0
+  waived: 0
+result_summary:
+  path: ops/v2.1-execution/results/ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d/V37/SUMMARY.yaml
+  digest: c33427d8f950cab2627067c6996d37583bd77541e7b5088abe079c92d3d46571
+changed_paths:
+  - ops/v2.1-execution/results/ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d/V37/**
+  - ops/v2.1-execution/runtime/V37/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/V37/HANDOFF.md
+  - ops/v2.1-execution/runtime/V37/NEXT-PROMPT.md
+migrations: []
+steward_requests: []
+verification:
+  commands_run:
+    - git fetch origin --prune
+    - normalized-LF verification of all 200 LOCKED-SHA256SUMS entries
+    - npm ci --ignore-scripts
+    - npm run build:client
+    - npm run typecheck
+    - focused Vitest current/delta matrix; 31 passing files and 193 passing tests, plus two candidate integration files with four reproducible failures
+    - landing/signup Playwright current check; blocked before browser start by stale join_opens_at fixture
+    - production read-only curl GET matrix for app.onetimeonetime.com and join.onetimeonetime.com
+    - result YAML parse, case coverage, pointer/result SHA-256, candidate binding, environment allowance, effect reconciliation, and scope validation
+  known_baseline_failures: []
+external_effects:
+  authority: read_only_only
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers:
+  - OTV2-FOUNDATION-001-AC01 failed because app.onetimeonetime.com does not resolve and the join origin reports a non-candidate deployment.
+  - OTV2-FOUNDATION-003-AC01, OTV2-FOUNDATION-004-AC01, and OTV2-FOUNDATION-216-AC01 are blocked because no allowed deployment runtime exposes the immutable candidate.
+  - OTV2-FOUNDATION-006-AC01 is blocked because the CI browser server fixture violates required class_occurrences.join_opens_at before browser start.
+  - OTV2-FOUNDATION-208-AC01 failed because the production bundle emits experience-preview Student code and the current join landing exposes a WhatsApp assistant.
+  - OTV2-AUTH-019-AC01, OTV2-SIGNUP-177-AC01, and OTV2-SIGNUP-228-BEFORE-EXPIRY failed because authenticated /app/parent returns 404.
+  - OTV2-SIGNUP-178-SCHOOL-INQUIRY-NO-ACCESS and OTV2-SIGNUP-229-PUBLIC-SCHOOL-INQUIRY are blocked because their provider lead/acknowledgement effects were not authorized.
+out_of_scope_findings:
+  - Current join production is commit 0d69de15 with Railway git commit ed77a04d, not candidate source 0a5ef2e1 or candidate digest ea45b0ab.
