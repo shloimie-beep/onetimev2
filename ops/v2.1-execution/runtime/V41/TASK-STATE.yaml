@@ -1,0 +1,55 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: V41
+task_packet_digest: fc87f562590f92b3aef5c9b7854086a4527c618873b3f86fb66daa1a215f210a
+task_context_digest: aa36054d247762264b443582677beb57f8bc3a7cfa0a834e3c1b9c7a5760dc73
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+branch: codex/v21-verify-ea45b0ab10ec-v41
+start_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
+dependency_heads:
+  I36: 031cfde117028c8c199c7bc47e46e18a8227139d
+status: claimed
+phase: candidate_bound_phase_a
+claimed_by: codex-v41-bf9d08fb
+claim_time: '2026-08-02T11:59:00Z'
+claim_id: bf9d08fb-23a7-479e-9899-c1b03505fe5a
+lease_expires_at: '2026-08-02T15:50:03Z'
+last_heartbeat_at: '2026-08-02T11:59:00Z'
+controller_authorization_sha: 4062a17de4b299a620ada6fce0d194ff25743578
+ready_entry_payload_digest: 350ab3fb62d18392387cfc2414a3a30711c532405368c32572ccbaf271d1a916
+state_based_on_head_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
+last_implementation_commit_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
+completed_steps:
+  - verified repository identity, isolated worktree, remote branch head, claim, lease, and candidate binding
+remaining_steps:
+  - verify immutable package, candidate, environment, and provider-registry digests
+  - execute and record all 29 assigned cases without provider mutation
+  - write lane summary and release the task lease
+next_action: Verify immutable candidate and environment bindings, then execute the 29 assigned cases using local/CI evidence and authorized production read-only provider inspection only.
+requirements:
+  expected: 27
+  verified: 0
+acceptance_cases:
+  expected: 29
+  attempted: 0
+  passed: 0
+  failed: 0
+  blocked: 0
+changed_paths:
+  - ops/v2.1-execution/runtime/V41/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/V41/HANDOFF.md
+  - ops/v2.1-execution/runtime/V41/NEXT-PROMPT.md
+migrations: []
+steward_requests: []
+verification:
+  commands_run:
+    - git fetch --all --prune
+    - verified origin repository, control entry, READY digest, branch head, claim, and lease
+  known_baseline_failures: []
+external_effects:
+  authority: read_only_only
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings: []
