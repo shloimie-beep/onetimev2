@@ -1,0 +1,196 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+canonical_candidate_digest: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
+lane: V38
+lane_head_sha: derive_from_pushed_terminal_commit
+expected_case_ids:
+  - OTV2-CALENDAR-051-AC01
+  - OTV2-CALENDAR-052-AC01
+  - OTV2-CALENDAR-053-AC01
+  - OTV2-CALENDAR-054-AC01
+  - OTV2-CALENDAR-055-AC01
+  - OTV2-CALENDAR-056-AC01
+  - OTV2-CALENDAR-057-AC01
+  - OTV2-CALENDAR-058-AC01
+  - OTV2-CALENDAR-059-AC01
+  - OTV2-CALENDAR-060-AC01
+  - OTV2-CALENDAR-061-AC01
+  - OTV2-CALENDAR-062-AC01
+  - OTV2-CALENDAR-063-AC01
+  - OTV2-CALENDAR-064-AC01
+  - OTV2-EMAIL-139-AC01
+  - OTV2-EMAIL-140-AC01
+  - OTV2-EMAIL-141-AC01
+  - OTV2-EMAIL-142-AC01
+  - OTV2-EMAIL-143-AC01
+  - OTV2-EMAIL-144-AC01
+  - OTV2-EMAIL-145-AC01
+  - OTV2-EMAIL-146-AC01
+  - OTV2-PARENT-031-AC01
+  - OTV2-PARENT-032-AC01
+  - OTV2-PARENT-033-AC01
+  - OTV2-PARENT-034-AC01
+  - OTV2-PARENT-035-AC01
+  - OTV2-PARENT-036-AC01
+  - OTV2-PARENT-037-AC01
+  - OTV2-PARENT-039-AC01
+  - OTV2-PARENT-040-AC01
+  - OTV2-PARENT-185-AC01
+  - OTV2-STUDENT-041-AC01
+  - OTV2-STUDENT-042-AC01
+  - OTV2-STUDENT-043-AC01
+  - OTV2-STUDENT-044-AC01
+  - OTV2-STUDENT-045-AC01
+  - OTV2-STUDENT-046-AC01
+  - OTV2-STUDENT-047-AC01
+  - OTV2-STUDENT-048-AC01
+  - OTV2-STUDENT-049-AC01
+  - OTV2-STUDENT-050-AC01
+  - OTV2-TICKETS-147-AC01
+  - OTV2-TICKETS-148-AC01
+  - OTV2-TICKETS-149-AC01
+  - OTV2-TICKETS-150-AC01
+  - OTV2-TICKETS-151-AC01
+  - OTV2-TICKETS-152-AC01
+  - OTV2-TICKETS-186-AC01
+  - OTV2-UX-158-AC01
+  - OTV2-UX-159-AC01
+  - OTV2-UX-160-AC01
+  - OTV2-UX-161-AC01
+  - OTV2-UX-162-AC01
+  - OTV2-UX-163-AC01
+  - OTV2-UX-164-AC01
+  - OTV2-UX-165-AC01
+  - OTV2-UX-204-AC01
+counts:
+  expected: 58
+  attempted: 58
+  passed: 50
+  failed: 0
+  blocked: 8
+  stale: 0
+  waived: 0
+unexpected_external_effects: 0
+cleanup_open_count: 0
+result_digests:
+  OTV2-CALENDAR-051-AC01: aac9546e6deffa888b8282e42bc7b54551eb00ad47ef9f66c008743cde0102e3
+  OTV2-CALENDAR-052-AC01: 3611663e03385ed0943815a9167a1cbf3076d2663fc8d6383763a1c96847a3f0
+  OTV2-CALENDAR-053-AC01: 6414188b265a8df38db4ffe32a54c60ec1ce4d7594ae754ee94ae4c8d8cb9a3c
+  OTV2-CALENDAR-054-AC01: fd8c1f184289f5cd147b380b5d4edda73465c8f3d761cbfd225ec06f1db619cc
+  OTV2-CALENDAR-055-AC01: cb930b7167f488a18d3c681ffbc25ca4ee333daef6ba41dbefed1620f0676c8c
+  OTV2-CALENDAR-056-AC01: 7ed6f08b35a1852d95f3a4e3373009d542729bce7d1158280c7bf08e44bdb06f
+  OTV2-CALENDAR-057-AC01: bba3ad72fc4c82c31f2df39e5d1cc7344d3a963d0d3c03d6ae07aa0e7b40212b
+  OTV2-CALENDAR-058-AC01: b2dd322ebd8350c18ecdc8254c008a7f3305b00d9dda3b20b1b867e32ee9be3a
+  OTV2-CALENDAR-059-AC01: 1716759861b860c0ebcbc2a52d6165ceb6762537378e12af8d23178ef8c68563
+  OTV2-CALENDAR-060-AC01: 51d049250df3c6ef60e4d642f24de443f9b460951632d820f4f00e73cb4c61ae
+  OTV2-CALENDAR-061-AC01: ed26210bff6cbc1644b46d32bb58b8463fc7bf0ba09cb1956a76e344e7adfce8
+  OTV2-CALENDAR-062-AC01: 53240bd60c6029fb0cb8274b4ea89ee3c08b89e38841743e11b3c1c2718550e7
+  OTV2-CALENDAR-063-AC01: 9aad1e2f503b3d3d079a548308efcdd78472d8d50062ee09ce17e4a62d636ad2
+  OTV2-CALENDAR-064-AC01: ba7862905a3a7385a53b226b2f2b41614b5de9cf350ea8e2262da850c209f329
+  OTV2-EMAIL-139-AC01: 3ec7b0fb027d0233c7afea93aaab0f7f5ae290b999da74d1ec3442ac66602813
+  OTV2-EMAIL-140-AC01: c17a067c10313c13fcc1e7db70c127849ec0bd29df1aad36a1122e696d033da3
+  OTV2-EMAIL-141-AC01: 3a8e5c5603ca4bcac26d427dea235ba6278602c2a52dfe7d222427d9f8515cf7
+  OTV2-EMAIL-142-AC01: 54fc208f4cfb82d4caedbaad970501cbc350a80a6e553390af850b422b11f2b7
+  OTV2-EMAIL-143-AC01: 45b3032e1e23e688e5ca686539569ff6c691698dc984cf91423a0a9b2d219e3f
+  OTV2-EMAIL-144-AC01: f3037acde6ab23888e5fd4e7e42846c957b5673d197fa4700a9ab99a2dda65c7
+  OTV2-EMAIL-145-AC01: 06627821b58dd2ee450f38a8008ec0570ac5ff717639fd1fdb0cce0bbbe3cb68
+  OTV2-EMAIL-146-AC01: 02ced4fde4b7e2aa368e69473f66036cc2563f71e349547783d43ff4b3f77a59
+  OTV2-PARENT-031-AC01: 9680b264c37f23eae998cbda972a62d773a28162f7a43d4a098242e7153820a0
+  OTV2-PARENT-032-AC01: 2ade631cc93f2dab14ca5a5bbd6bccb45f3151917b80f2402303a01815f42c70
+  OTV2-PARENT-033-AC01: 8414a3fb18bc7ed0967feae416b5ae5c2dcf7cb7e477bef44a8c3b69fcb3c9c1
+  OTV2-PARENT-034-AC01: dae039d7385d08c3fb0ea8645c3b554658ea78369fdfb3b8f338fd86315d8cf0
+  OTV2-PARENT-035-AC01: 89f4e096f712e6d638bbf9d8986ceeff1de55a2e530ba78ffd7a250e2e894ae6
+  OTV2-PARENT-036-AC01: ec3fc7a37640aef955c0cf18c9a3ef54c7966b73242fc1a7edf8d49fd45db622
+  OTV2-PARENT-037-AC01: 4dc88e7104e68168340fd803def3604532ecb5299d32b1d6bdcb45dfe39b4934
+  OTV2-PARENT-039-AC01: c1c405b5bca9339013f88915747a4d6564ec6ed478e7f18956073f4a5985274e
+  OTV2-PARENT-040-AC01: 9a1b5af5737ebdab989fdf42e0546e7462ea80ea4345b743b52f60ab6d3af210
+  OTV2-PARENT-185-AC01: 4efa0cbe9480f1cac51174ab8b7b8a62280413af3c6b105027e8b939ed0b1f4c
+  OTV2-STUDENT-041-AC01: 6630ff0e6bb52b195f784e557cb010e2b6b7d439716bceb3931c8c6c4eb323bf
+  OTV2-STUDENT-042-AC01: ce2724bca292b78e3efc89791a55ad9322c1b48161be5e1546115848d5e76b3d
+  OTV2-STUDENT-043-AC01: 938d723acca405a90fa799592d18cf5e89f505640eb44d05d7c4be19296f041f
+  OTV2-STUDENT-044-AC01: 096736143e5dc91a5728e976ffcf4a785474772406f54529db8ca8cf4ab0670f
+  OTV2-STUDENT-045-AC01: 4c2cfca79b2e8c3bdba7aa7156119b68506d6f9276979db46479acb6fbd79922
+  OTV2-STUDENT-046-AC01: 951ae36c92e8df3171ea2ce86411b9868d44c808867be2212052a6b72fa4ef0b
+  OTV2-STUDENT-047-AC01: 9d1bc8e0661ced6d9a2c5482cd2dc7b871f86b7bc463fc2c4eae4e3d0878ae15
+  OTV2-STUDENT-048-AC01: caf987dd05d70afcd83588d3cc93655b9dbbf5e8283f2d2b77d6362ffa8d45de
+  OTV2-STUDENT-049-AC01: 86f02b21c309c836f0edef709c223a376a2e885ab3207169b1aaa38652e95fb1
+  OTV2-STUDENT-050-AC01: 5945eba3ecfcfef5af02a12109fbd710d0f1859337bdcc69424070f6b16c16ca
+  OTV2-TICKETS-147-AC01: e3f47328de569f226896234f5f654da5e1bcca979c16ec8d49197be53ff7512a
+  OTV2-TICKETS-148-AC01: 1a0bdedfd6278cc104fc60557b7ce1a518ff12dc15cc70837b0d92b231d7e5e9
+  OTV2-TICKETS-149-AC01: 35e19ba1f4c65e3091aa474024e3bc68ca4337d17e14652be11c6c1a80725346
+  OTV2-TICKETS-150-AC01: 03784b259d2923afb27a413836c8a1fba7996520ec739947178d94f3882a9821
+  OTV2-TICKETS-151-AC01: 802fc1110358780a13ca1bf6ecd15c516ff1be36291b34bf5909788e0bb81eea
+  OTV2-TICKETS-152-AC01: 10679409f590d7465f03a361eff466e802791a0109b93cef7bc7b4bdcbb509b3
+  OTV2-TICKETS-186-AC01: 80473738f8048831c7218bb855708ee060e858d591415be03e18de1663fd10c1
+  OTV2-UX-158-AC01: 0f8afe46cbfadc168dc61c46479d9c30192fb4635b2cfbe1b01b14f84d677110
+  OTV2-UX-159-AC01: 2f2fc2d7694c50143086fc1c0d526914c614d18a85a580fc0c672cd6d2131201
+  OTV2-UX-160-AC01: 84b5f9b06b4a2341565476d16c978df96530a839cba05cb3cbe1f65281753d3d
+  OTV2-UX-161-AC01: c4371a55ef4a3b36aaf5f3f4c024de3721504f4ef72f09815c1da711b6522f89
+  OTV2-UX-162-AC01: e9e96fadacbb9ed3dda73327420fe86d70e1ac164f85f10cce0500b5cdc5ca49
+  OTV2-UX-163-AC01: 7c06c0f691896c56340ccb436b59fbab28ef3ded0116b47367cc717014db5dfc
+  OTV2-UX-164-AC01: 4412847935f1a5e0f75053777b0c3ef6cfa978e6786e19d20d61d10893ccc9d0
+  OTV2-UX-165-AC01: a9c0c65f86669d2acf61b0319f930fca092afa1354b342b83a44d50bc1f67444
+  OTV2-UX-204-AC01: 30fee82a2242ae42b104da034bf6cb0091ba9bcdd8d0df82149118018d1a13b6
+blocked_case_ids:
+  - OTV2-EMAIL-139-AC01
+  - OTV2-EMAIL-140-AC01
+  - OTV2-EMAIL-141-AC01
+  - OTV2-EMAIL-142-AC01
+  - OTV2-EMAIL-143-AC01
+  - OTV2-EMAIL-144-AC01
+  - OTV2-EMAIL-145-AC01
+  - OTV2-EMAIL-146-AC01
+failed_case_ids: []
+verification_summary:
+  production_build_and_typecheck: passed
+  focused_parent_student_calendar_support_copy: passed_84_of_84_across_22_files
+  focused_admin_dashboard_and_v21_brand_contract: passed_7_of_7
+  accepted_candidate_source_landing_browser_accessibility_replay: passed_7_of_7
+  current_candidate_static_landing_replay: passed_9_of_10
+  current_candidate_static_landing_replay_note: >-
+    The sole miss was the expected unexpanded runtime boundary placeholder
+    under a static-only server. The browser, responsive, accessibility, copy,
+    Family, School, no-JavaScript, reduced-motion, and analytics checks passed.
+  google_calendar_absence_inventory: passed_zero_matches
+  known_superseded_test_failures:
+    - tests/unit/highlevel/rabbi-launch-email-design.test.ts expects a superseded copy identity; canonical copy catalog assertions passed.
+    - tests/unit/brand-system/brand-system.test.ts compares a stale route manifest/visual matrix to the accepted v2.1 registry.
+    - tests/unit/learning-product-portals.test.ts has a stale occurrence fixture missing join_opens_at.
+candidate_visual_evidence:
+  mobile_360x800_screenshot_sha256: ae80326f97d07fb920d8e7a67f0e1822321a507b9e21ed1ee61d57e85bef2f05
+  desktop_1440x1000_screenshot_sha256: a5843fe50b5d35e74b1a01a89877829f1ce31024331336d5805a835a5c075614
+production_read_only_delta:
+  origin: https://join.onetimeonetime.com
+  version_endpoint_sha256: b3b98e5476ba066126cc8a9e9cad347c28972a3845c07d11c51b34510725207b
+  observed_runtime_version: 0d69de15e3c5e7a5e51f2b9262c992ea153c51fb
+  observed_deployment_git_commit_sha: ed77a04dd24391d5b79be7f839d7f5752a57e0f9
+  candidate_source_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
+  candidate_deployed: false
+  observed_delta: legacy landing still exposes a WhatsApp help control and Rosh Hashanah countdown
+  disposition: observation_only_not_used_as_candidate_pass_evidence
+email_blocker:
+  code: V38_EMAIL_SEED_AUTHORITY_AND_FIXTURE_UNAVAILABLE
+  detail: >-
+    All eight copy_human_approval cases require persistent staging or a
+    production operator canary, named final-copy approval, verified
+    destinations, and one seed delivery. No candidate-bound persistent
+    instance, operator seed fixture, or named approval is bound, the governed
+    Rabbi sender/reply route remains unproven, and V38 is read-only-only with
+    sends prohibited.
+  owners:
+    - C00
+    - P31
+    - V42
+    - operator
+legal_release_gate:
+  blocker_id: OPS-084-LEGAL-BUNDLE
+  blocks_this_lane: false
+  scope: broad_production_release_only
+external_effects:
+  authority: read_only_only
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+  unexpected: 0
+generated_at: '2026-08-02T12:18:00Z'
+

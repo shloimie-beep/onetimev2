@@ -1,0 +1,10 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+canonical_candidate_digest: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
+case_id: OTV2-STUDENT-050-AC01
+current_attempt_path: ops/v2.1-execution/results/ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d/V38/OTV2-STUDENT-050-AC01/attempt-1.yaml
+current_attempt_digest: 5945eba3ecfcfef5af02a12109fbd710d0f1859337bdcc69424070f6b16c16ca
+status: passed
+supersedes_result_digest: none
+updated_at: '2026-08-02T12:18:00Z'
+

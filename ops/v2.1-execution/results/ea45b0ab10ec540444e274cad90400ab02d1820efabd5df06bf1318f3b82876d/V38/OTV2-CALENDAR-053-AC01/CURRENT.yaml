@@ -1,0 +1,10 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+canonical_candidate_digest: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
+case_id: OTV2-CALENDAR-053-AC01
+current_attempt_path: ops/v2.1-execution/results/ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d/V38/OTV2-CALENDAR-053-AC01/attempt-1.yaml
+current_attempt_digest: 6414188b265a8df38db4ffe32a54c60ec1ce4d7594ae754ee94ae4c8d8cb9a3c
+status: passed
+supersedes_result_digest: none
+updated_at: '2026-08-02T12:18:00Z'
+

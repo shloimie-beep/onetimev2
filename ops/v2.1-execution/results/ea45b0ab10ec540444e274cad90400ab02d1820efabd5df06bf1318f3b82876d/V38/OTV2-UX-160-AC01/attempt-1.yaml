@@ -1,0 +1,89 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+case_id: OTV2-UX-160-AC01
+requirement_id: OTV2-UX-160
+verification_lane: V38
+status: passed
+blocker_code: none
+supersedes_result_digest: none
+candidate_digest: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
+candidate:
+  repository_source_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
+  application_content_sha256: 05deaa76b64ccfb7ab82b78ce75965c134ffd39a63da1fc40139dc6eee901e3e
+  product_tree_digest: c85b7053474f6331363b585876ea91c616005f0d0c60df4219b3388e10db7696
+  candidate_manifest_digest: 30867a96bfc5370ead95b83b6519b4ec365947d874c609dd8e5dbecba7e54876
+  web_artifact_digest: 8d928252ce9644d80674e16ca03e5058ccb9b83cca97801c6e065c0208c35cb6
+  worker_artifact_digest: cbe0456d956496027419a8ba510913d3a0735cc4ab09ec9bcfab0498f70fc0cc
+  configuration_bundle_digest: 71c5e8a17c73a0414bee2b40f5803f14ae7190dd996e57e97c7396c4ca3f5d6e
+  migration_inventory_digest: 1598fc0f7f18e172b9566c65dbb81593ba2b5b1339e1dbca312aa01b53383f6b
+  frontend_asset_digest: 7d42cbcb4715a722bcc3bdfcb76f349f2fc17140f63f98cdd17d0b856b7799d5
+  route_action_inventory_digest: 3ca498c122f0fc3a8f753898687e233b717349f9486b8df86dd02e22fb06d483
+  workflow_registry_digest: 08fa35058d351e79aa56a8bddcb6752ba2f356c4fde35c0a26b13338c1f53573
+  highlevel_registry_digest: d6c52146588a8699ae82a7b10158c48ab8683018a5e3cf336b9f43e222a759cf
+  provider_registry_digest: 80778ec9924ddc7ecb204f6ed6ed380c922ce5f4c7135b4a733ba5fc5f138b16
+  message_catalog_digest: e4da6ceab0e7eabbb0a927bbb85195e0a955229f37eb3a8ae4c45aad58155d8a
+  acceptance_contract_digest: d1dd39b0f91e94a4d8f179454a15fbeabb3d31d88afd490db1a5040ff6777444
+  environment_profile_schema_digest: 6f6d9fa499a731d27db16005bfa63fd6fbfefc1c212def1eb986f006b60063ce
+allowed_environment_contract:
+  matrix_digest: 3972640970c37875b70c02165cff2add4a034073b952e4e508481735b55d954d
+  allowed_environments:
+    - "ci"
+    - "persistent_staging"
+    - "production_operator_canary"
+environment:
+  verification_environment_id: "C1_CI"
+  runtime_tier: "ci"
+deployment_instance:
+  deployment_instance_id: "local-candidate-build-0a5ef2e1"
+  deployment_instance_digest: "candidate-product-tree-c85b7053474f6331363b585876ea91c616005f0d0c60df4219b3388e10db7696"
+  deployed_artifact_digest: "8d928252ce9644d80674e16ca03e5058ccb9b83cca97801c6e065c0208c35cb6"
+  configuration_digest: "71c5e8a17c73a0414bee2b40f5803f14ae7190dd996e57e97c7396c4ca3f5d6e"
+  migration_inventory_digest: "1598fc0f7f18e172b9566c65dbb81593ba2b5b1339e1dbca312aa01b53383f6b"
+  deployment_time: "2026-08-02T12:04:00Z"
+  production_specific_gate: false
+provider_context:
+  registry_digest: 80778ec9924ddc7ecb204f6ed6ed380c922ce5f4c7135b4a733ba5fc5f138b16
+  asset_identities: []
+actors_and_fixtures:
+  - "actor:admin"
+  - "actor:parent"
+  - "actor:student"
+  - "fixture:admin_shloimie"
+  - "fixture:parent_operator_canary"
+  - "fixture:student_operator_canary_1"
+steps_executed:
+  - "Automated in the focused C1_CI candidate fixture: render the supported viewport/browser matrix"
+  - "Automated in the focused C1_CI candidate fixture: complete keyboard-only journey"
+  - "Automated in the focused C1_CI candidate fixture: inspect focus/name/role/state/contrast/reflow"
+  - "Automated in the focused C1_CI candidate fixture: capture candidate-bound screenshots"
+observed_results:
+  - "Calendar has left categories, top filters, even branded cells, and responsive details."
+  - "Candidate build and typecheck passed; accepted source-bound static browser/accessibility replay passed 7/7, the current isolated candidate landing replay passed 9/10 with the sole miss limited to an intentionally unexpanded server runtime placeholder in the static-only harness, and seven focused Admin/dashboard/brand assertions passed."
+  - "Current read-only production version 0d69de15e3c5e7a5e51f2b9262c992ea153c51fb is not the frozen candidate source 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365; its legacy WhatsApp/countdown landing was recorded as a deployment delta and was not used to pass this candidate case."
+  - "Candidate mobile 360x800 and desktop 1440x1000 screenshots were visually inspected; SHA-256 digests are bound below."
+  - "No forbidden or unexpected external effect was observed; all provider adapters remained local CI sinks or read-only observations."
+evidence:
+  redacted_artifacts:
+    - "ops/v2.1-execution/runtime/I36/TASK-STATE.yaml"
+    - "ops/v2.1-execution/runtime/F07/TASK-STATE.yaml"
+    - "tests/e2e/landing-signup.spec.ts"
+    - "packages/brand-system/src/v21.contract.test.tsx"
+    - "apps/web/src/client/app/admin/dashboard/AdminOperationsDashboard.test.tsx"
+  digests:
+    - "candidate_manifest_sha256=30867a96bfc5370ead95b83b6519b4ec365947d874c609dd8e5dbecba7e54876"
+    - "ux_evidence_aggregate_sha256=bdb42bd46dbc48eb68ac52f705dc52d3259053d128d47f23918830df37422f0c"
+    - "candidate_mobile_360x800_screenshot_sha256=ae80326f97d07fb920d8e7a67f0e1822321a507b9e21ed1ee61d57e85bef2f05"
+    - "candidate_desktop_1440x1000_screenshot_sha256=a5843fe50b5d35e74b1a01a89877829f1ce31024331336d5805a835a5c075614"
+    - "live_version_readback_sha256=b3b98e5476ba066126cc8a9e9cad347c28972a3845c07d11c51b34510725207b"
+external_effects:
+  authority_record: V38_READY_read_only_only_12ed1af9ea95163f43b6a2b7a95ca64f2e964d9319e9a0044670d33a604edbfb
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+cleanup:
+  status: not_applicable
+  evidence: []
+unexpected_effects: 0
+waiver: none
+verified_at: '2026-08-02T12:18:00Z'
+
