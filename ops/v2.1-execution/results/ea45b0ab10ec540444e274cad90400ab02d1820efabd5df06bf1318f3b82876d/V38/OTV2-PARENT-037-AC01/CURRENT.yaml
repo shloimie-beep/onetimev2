@@ -3,8 +3,7 @@ execution_id: OT-V21-PRODUCTION
 canonical_candidate_digest: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
 case_id: OTV2-PARENT-037-AC01
 current_attempt_path: ops/v2.1-execution/results/ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d/V38/OTV2-PARENT-037-AC01/attempt-1.yaml
-current_attempt_digest: 4dc88e7104e68168340fd803def3604532ecb5299d32b1d6bdcb45dfe39b4934
+current_attempt_digest: dbc8b15ecbaa9dc42097edaffdb420abca76396fa8d8b189d1e3ee202c51f6d9
 status: passed
 supersedes_result_digest: none
 updated_at: '2026-08-02T12:18:00Z'
-
