@@ -73,7 +73,7 @@ ready:
   - task_id: I36
     lane: candidate_freeze_preparation
     status: consumed
-    phase: corrected_candidate_refreeze_terminal_review_in_progress
+    phase: corrected_candidate_refreeze_terminal_accepted
     branch: codex/v21-integration
     preparation_branch: codex/v21-launch-critical-correction
     claim_mode: new
@@ -272,7 +272,8 @@ ready:
     prior_terminal_head_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
     prior_terminal_review: P1_0_P2_0_P3_0
     terminal_head_sha: 32bb6ea3889f5ea5dfb2541a17f5d37e0f7f7418
-    terminal_review: in_progress
+    terminal_review: P1_0_P2_0_P3_0
+    accepted_at: '2026-08-02T13:20:19Z'
     heartbeat_interval_minutes: 15
     prompt_path: ops/v2.1-execution/prompts/I36-START-OR-RESUME.md
     model: GPT-5.6-SOL

@@ -466,15 +466,15 @@ tasks:
     transitioned_at: '2026-07-30T19:30:53Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/F07/status_proof
 - task_id: I36
-  status: corrected_candidate_refreeze_review_in_progress
-  active_phase: corrected_candidate_refreeze_delta_review
+  status: corrected_candidate_accepted
+  active_phase: candidate_bound_staging_and_draft_config_preparation
   branch: codex/v21-integration
   phase_branches:
     integration: codex/v21-integration
     launch_source_correction: codex/v21-launch-source-correction
     launch_priority_source_correction: codex/v21-launch-critical-correction
   phase_heads:
-    integration: 42065da2be8334382b2491c8e1d1a3a43231ab98
+    integration: 32bb6ea3889f5ea5dfb2541a17f5d37e0f7f7418
     F02_P28_P31_direct_prerequisite_source_integration_atomic_claim: 1b8335f8bdad4bc4ac1aa65838314faa7d65ebd0
     F02_P28_P31_direct_prerequisite_source_integration_release: 3cf787409decb5beb84561ef7e37924111d398b6
     P31_P20_P17_correction_release_integration_atomic_claim: 1b0df6fa15b2ac4a5febe35fee3f18ca9b9457d7
@@ -593,6 +593,7 @@ tasks:
     launch_priority_source_correction_review: P1_0_P2_0_P3_0
     launch_priority_source_correction_integration_merge: 42065da2be8334382b2491c8e1d1a3a43231ab98
     corrected_candidate_refreeze_terminal: 32bb6ea3889f5ea5dfb2541a17f5d37e0f7f7418
+    corrected_candidate_refreeze_review: P1_0_P2_0_P3_0
   authorized_start_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
   last_known_remote_head: 32bb6ea3889f5ea5dfb2541a17f5d37e0f7f7418
   active_claim_id: null
@@ -600,13 +601,13 @@ tasks:
   lease_expires_at: null
   active_writer_leases: []
   active_effect_lock_leases: []
-  last_heartbeat_at: '2026-08-02T13:12:51Z'
+  last_heartbeat_at: '2026-08-02T13:20:19Z'
   controller_authorization_sha: 8b2871228ecc0be54aa299dc4d25dad60afd27e1
   ready_entry_payload_digest: null
   interface_checkpoint_sha: null
   implementation_head_sha: 32bb6ea3889f5ea5dfb2541a17f5d37e0f7f7418
   status_proof:
-    state: corrected_candidate_refreeze_terminal_review_in_progress
+    state: corrected_candidate_accepted
     producer_task_id: I36
     producer_head_sha: 32bb6ea3889f5ea5dfb2541a17f5d37e0f7f7418
     canonical_candidate_digest: 68af08379cf596a2c8dfac28253487fb21fea222c6ea1275d096a6f972130ee8
