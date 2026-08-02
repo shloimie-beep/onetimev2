@@ -16,11 +16,11 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: 0063689594c1ab9beb2d9f4d64f89a8491284a4c
+controller_authorization_sha: ec48eda10f0799e852d015fefca227d99e6863af
 next_action: >-
-  Correct only the held P21 effect-exists completion defect at integration 1873fc8d. Force the P21-gated F06 readback to
-  completed_locally:false, prove the generic lifecycle persists accepted rather than complete, and repair current I36 metadata.
-  Push one exact five-path terminal for independent review. Candidate freeze, registry population, real provider adapters/calls,
+  Correct only the stale canonical current-checkpoint metadata in the I36 runtime triplet at integration b9869874. Preserve
+  the accepted code behavior and every product byte; replace the remaining P35 current instructions and path inventory with
+  the exact P21 correction checkpoint. Push one exact three-path terminal for independent review. Candidate freeze, providers,
   persistent databases, deployment, DNS, and every external effect remain prohibited.
 production_completion_lanes:
 - lane: A
@@ -116,7 +116,7 @@ production_completion_lanes:
   provider_effects: prohibited_until_candidate_authority_and_exact_lock
 - lane: D
   owner: I36
-  status: P21_repository_only_successor_held_effect_exists_correction_dispatched
+  status: P21_code_correct_current_metadata_correction_dispatched
   branch: codex/v21-integration
   prior_release_sha: 524563f07b3bb8544db989982dc55d4bc86a1999
   partial_checkpoint_sha: a5a2ad94b77eaf596930609d4d5abe4fa672439b
@@ -129,7 +129,7 @@ production_completion_lanes:
   partial_checkpoint_runtime_triplet_digest: a877b1e24c450a599e8c9b0066345cc06d0444a4c9749aecdda0f7da0c3c628b
   partial_checkpoint_five_path_digest: c405518fb5c7a744fa24e6b4b6f88712af9de68e109920e9fad369e63374d31d
   all_producer_implementation_heads_ancestor_count: 35
-  expected_head_sha: 1873fc8d7e5478eb736021175bb2214d78d865cd
+  expected_head_sha: b98698740936df0b1817be616039da2101a6cb28
   Batch_B_claim_id: 995fe313-efa9-4e5f-b4f6-eeadc9b50d6d
   Batch_B_CONFIG_DEPS_lease_id: e75d8901-0b96-4ec7-b64e-724cfdbcd7a1
   Batch_B_RELEASE_INTEGRATOR_lease_id: eafaecb9-82b6-4e99-bbc3-0d9ad8d92b84
@@ -413,6 +413,23 @@ production_completion_lanes:
   P21_effect_exists_correction_product_preimage_manifest_digest: 7659a232dc4293c76dfb2f7a16bc9cdf0820b36376705ce095fa6fe500edd3a8
   P21_effect_exists_correction_effect_locks: []
   P21_effect_exists_correction_external_effects: 0/0/0
+  P21_effect_exists_correction_terminal_head_sha: b98698740936df0b1817be616039da2101a6cb28
+  P21_effect_exists_correction_terminal_parent_sha: 1873fc8d7e5478eb736021175bb2214d78d865cd
+  P21_effect_exists_correction_terminal_tree_sha: d7e3ec78084553803af29dd23655bdf2bbeac2da
+  P21_effect_exists_correction_terminal_timestamp: '2026-08-02T03:27:18+03:00'
+  P21_effect_exists_correction_product_postimage_manifest_digest: 371eb2d184ed8550f17b1b13970db71fa1daf95d3204e54abd7c374803e4cdd5
+  P21_effect_exists_correction_lease_released_at: '2026-08-02T00:22:23Z'
+  P21_effect_exists_correction_independent_review: held_zero_P1_one_P2_zero_P3
+  P21_current_metadata_correction_claim_id: d007c280-1ccb-4f3a-80c5-a79118de94be
+  P21_current_metadata_correction_RELEASE_INTEGRATOR_lease_id: 1a1a07e4-a6dd-4caa-97d6-f66b6a8a608e
+  P21_current_metadata_correction_lease_expires_at: '2026-08-02T03:33:22Z'
+  P21_current_metadata_correction_ready_entry_payload_digest: 2070446cb082bf532a5a8167927c34097a56b237770ccf01fa1b7311bc762e11
+  P21_current_metadata_correction_authorized_start_sha: b98698740936df0b1817be616039da2101a6cb28
+  P21_current_metadata_correction_product_path_count: 0
+  P21_current_metadata_correction_release_path_count: 3
+  P21_current_metadata_correction_release_path_inventory_digest: bdf3cfe7a516fb00f891ef66f1f752591ce3d894243bbe50393980d10a3a441a
+  P21_current_metadata_correction_effect_locks: []
+  P21_current_metadata_correction_external_effects: 0/0/0
   Batch_D_external_effects: 0/0/0
   P21_P22_source_atomic_claim_sha: b87901e803cdd3be7e09a1143d9f23eceaf7ad78
   P21_P22_source_atomic_claim_parent_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
@@ -643,8 +660,10 @@ successor_dispatch:
   P21_repository_only_successor_dispatched_at: '2026-08-01T22:53:43Z'
   P21_repository_only_successor_held_at: '2026-08-02T00:10:31Z'
   P21_effect_exists_correction_dispatched_at: '2026-08-02T00:10:31Z'
-  lease_issued_at: '2026-08-02T00:10:31Z'
-  lease_expires_at: '2026-08-02T04:10:31Z'
+  P21_effect_exists_correction_held_at: '2026-08-02T00:33:22Z'
+  P21_current_metadata_correction_dispatched_at: '2026-08-02T00:33:22Z'
+  lease_issued_at: '2026-08-02T00:33:22Z'
+  lease_expires_at: '2026-08-02T03:33:22Z'
   ready_queue_published: true
   F02:
     status: integrated_and_reconciled
@@ -836,10 +855,10 @@ successor_dispatch:
     external_effects: 0/0/0
   I36:
     status: ready
-    phase: P21_effect_exists_local_finalization_correction
+    phase: P21_current_checkpoint_metadata_correction
     branch: codex/v21-integration
-    expected_existing_head_sha: 1873fc8d7e5478eb736021175bb2214d78d865cd
-    remote_integration_head_sha: 1873fc8d7e5478eb736021175bb2214d78d865cd
+    expected_existing_head_sha: b98698740936df0b1817be616039da2101a6cb28
+    remote_integration_head_sha: b98698740936df0b1817be616039da2101a6cb28
     atomic_claim_parent_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
     atomic_claim_tree_sha: a3f5578ff5bc108f16480444e7adc66112337268
     atomic_claim_state_handoff_digest: bc8f2247c7fc64a63b4445d75cfeee4047de6a24d3671f14d3a537c8d90f986e
@@ -859,12 +878,16 @@ successor_dispatch:
     Batch_A_correction_claim_id: be576814-96ef-48f2-88b5-2d3cc9b37cbb
     Batch_A_correction_ready_entry_payload_digest: 7010a65000ffcccab55809c6e95961f6de0d6e4e95409020f9d610bdbf384861
     Batch_A_correction_lease_released_at: '2026-07-31T20:45:09Z'
-    claim_id: 7f9e3cc8-4c72-4f38-ab60-09f8e6187877
-    writer_id: codex-i36-P21-effect-exists-correction-7f9e3cc8
-    WORKER_COMPOSER_lease_id: 5bc3f1dc-0874-4eb3-abaf-542c14d60814
-    RELEASE_INTEGRATOR_lease_id: 890c2452-d61b-4d4d-a951-aa6886c50952
-    writer_lease_expires_at: '2026-08-02T04:10:31Z'
-    ready_entry_payload_digest: 30168c46b1bcc1dd3587fcf9bf692b5b267ba7ae8fa06753ccf810ae6ec819ed
+    claim_id: d007c280-1ccb-4f3a-80c5-a79118de94be
+    writer_id: codex-i36-P21-current-metadata-d007c280
+    RELEASE_INTEGRATOR_lease_id: 1a1a07e4-a6dd-4caa-97d6-f66b6a8a608e
+    writer_lease_expires_at: '2026-08-02T03:33:22Z'
+    ready_entry_payload_digest: 2070446cb082bf532a5a8167927c34097a56b237770ccf01fa1b7311bc762e11
+    P21_code_correction_terminal_head_sha: b98698740936df0b1817be616039da2101a6cb28
+    P21_code_correction_independent_review: held_zero_P1_one_P2_zero_P3_metadata_only
+    P21_current_metadata_correction_product_path_count: 0
+    P21_current_metadata_correction_release_path_count: 3
+    P21_current_metadata_correction_release_path_inventory_digest: bdf3cfe7a516fb00f891ef66f1f752591ce3d894243bbe50393980d10a3a441a
     P21_held_terminal_head_sha: 1873fc8d7e5478eb736021175bb2214d78d865cd
     P21_held_terminal_independent_review: held_one_P1_one_P2_zero_P3
     P21_effect_exists_correction_product_path_count: 2
@@ -1216,7 +1239,7 @@ successor_dispatch:
     external_effects: 0/0/0
   P21:
     status: correction_dispatched
-    phase: P21_effect_exists_local_finalization_correction_dispatched
+    phase: P21_current_checkpoint_metadata_correction_dispatched
     branch: codex/v21-p21-publication-scope-correction
     integration_merge_sha: f5172829a0df0af9fa9790cb5b88427ed3ccadc4
     integration_release_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
@@ -1284,6 +1307,17 @@ successor_dispatch:
     effect_exists_correction_release_path_count: 5
     effect_exists_correction_release_path_inventory_digest: c29ae8b6ef3187f117c4b60956c869c6abb03b1cd955350419d414fcb2a55b81
     effect_exists_correction_product_preimage_manifest_digest: 7659a232dc4293c76dfb2f7a16bc9cdf0820b36376705ce095fa6fe500edd3a8
+    effect_exists_correction_terminal_head_sha: b98698740936df0b1817be616039da2101a6cb28
+    effect_exists_correction_terminal_review: held_zero_P1_one_P2_zero_P3_metadata_only
+    current_metadata_correction_authorized_start_sha: b98698740936df0b1817be616039da2101a6cb28
+    current_metadata_correction_claim_id: d007c280-1ccb-4f3a-80c5-a79118de94be
+    current_metadata_correction_writer_id: codex-i36-P21-current-metadata-d007c280
+    current_metadata_correction_RELEASE_INTEGRATOR_lease_id: 1a1a07e4-a6dd-4caa-97d6-f66b6a8a608e
+    current_metadata_correction_lease_expires_at: '2026-08-02T03:33:22Z'
+    current_metadata_correction_ready_entry_payload_digest: 2070446cb082bf532a5a8167927c34097a56b237770ccf01fa1b7311bc762e11
+    current_metadata_correction_product_path_count: 0
+    current_metadata_correction_release_path_count: 3
+    current_metadata_correction_release_path_inventory_digest: bdf3cfe7a516fb00f891ef66f1f752591ce3d894243bbe50393980d10a3a441a
     effect_locks: []
     external_effects: 0/0/0
   P10:

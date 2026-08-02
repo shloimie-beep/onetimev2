@@ -329,16 +329,18 @@ blockers:
     runtime triplet, with independently supplied active-binding authority, no real Vimeo adapter, and effects 0/0/0. Exact
     terminal 1873fc8d passed its declared 75 tests and envelope gates, but independent review held one P1 and one P2: the P21
     reconciliation wrapper permits provider readback completed_locally:true to bypass required local finalization, and current
-    I36 metadata overstates that fence. C00 dispatched an exact two-product-path plus runtime-triplet correction with no effects.
+    I36 metadata overstates that fence. Correction terminal b9869874 fixes the product defect and passes its focused 20/20 plus
+    prior 76/76 packet, but independent review holds zero P1, one P2, zero P3 because top-level TASK-STATE current fields still
+    point to the older Batch-D/P35 checkpoint. C00 dispatched an exact runtime-triplet-only metadata correction with no effects.
   required_authority_or_input:
-  - Complete and independently review the exact P21 effect-exists local-finalization correction before P22/P30 continuation
+  - Complete and independently review the exact P21 current-checkpoint runtime metadata correction before P22/P30 continuation
   - Reproduce the corrected behavior against a true native PostgreSQL server in the merged migration/candidate gate
   - Preserve P21-registration-003 as superseded path-incomplete history
   protection: >-
     Do not directly mutate canonical_aggregate_states, add a second reconciler, write a new migration, emit same-state
     events, split the publication CAS from the canonical event transaction, derive provider authority from provider-returned
     data, add a real provider adapter, or advance candidate/provider/release gates while canonical content state is absent.
-  next_check: Re-evaluate after the exact five-path P21 correction is independently accepted and native PostgreSQL-server replay is recorded.
+  next_check: Re-evaluate after the exact runtime-triplet P21 metadata correction is independently accepted and native PostgreSQL-server replay is recorded.
 - blocker_id: F04-OWNERSHIP-TRANSFER-REVOCATION-COLUMNS
   status: closed
   scope: controlled_launch_candidate

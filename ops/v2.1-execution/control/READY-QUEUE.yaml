@@ -5,12 +5,12 @@ status: operational
 ready:
   - task_id: I36
     status: ready
-    phase: P21_effect_exists_local_finalization_correction
+    phase: P21_current_checkpoint_metadata_correction
     branch: codex/v21-integration
     claim_mode: new
-    state_based_on_control_head_sha: 0063689594c1ab9beb2d9f4d64f89a8491284a4c
-    authorized_start_sha: 1873fc8d7e5478eb736021175bb2214d78d865cd
-    expected_existing_head: 1873fc8d7e5478eb736021175bb2214d78d865cd
+    state_based_on_control_head_sha: ec48eda10f0799e852d015fefca227d99e6863af
+    authorized_start_sha: b98698740936df0b1817be616039da2101a6cb28
+    expected_existing_head: b98698740936df0b1817be616039da2101a6cb28
     package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
     source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
     task_packet_digest: 55e261760baac780e9a4db48c328480c6f98172261ef990e563a00b25c467fc7
@@ -19,98 +19,77 @@ ready:
       C00:
         required_state: immediate_lean_completion_mode
         observed_state: immediate_lean_completion_mode
-        observed_control_head_sha: 0063689594c1ab9beb2d9f4d64f89a8491284a4c
-        control_state_canonical_digest: 1d0b3c578e2b1340017e026cc68a58a7a1aecb41dbb97e63c03d173f76364d97
+        observed_control_head_sha: ec48eda10f0799e852d015fefca227d99e6863af
+        control_state_canonical_digest: 8aece9cc2616d2774fba6faf1ca9ac32586b5492f88dba092dd96fd34ccdc249
       I36:
-        required_state: P21_terminal_held_one_P1_one_P2
-        observed_state: P21_terminal_held_one_P1_one_P2
-        terminal_head_sha: 1873fc8d7e5478eb736021175bb2214d78d865cd
-        terminal_parent_sha: 951c151c28f905ad7458973a750c3887edc38ddc
-        terminal_tree_sha: 38bf82572e3b4bbe76015ba53687ea8441ee4e48
-        terminal_timestamp: '2026-08-02T02:59:36+03:00'
-        product_postimage_manifest_digest: b93af38442d27ca395ea094d8e1f166132b0169cce93c28b5610eed2fe5820f3
-        focused_tests: 75/75_passed_but_missing_completed_locally_true_regression
-        independent_review: held_one_P1_one_P2_zero_P3
-        lease_released_at: '2026-08-01T23:54:44Z'
+        required_state: P21_code_correct_metadata_held_one_P2
+        observed_state: P21_code_correct_metadata_held_one_P2
+        terminal_head_sha: b98698740936df0b1817be616039da2101a6cb28
+        terminal_parent_sha: 1873fc8d7e5478eb736021175bb2214d78d865cd
+        terminal_tree_sha: d7e3ec78084553803af29dd23655bdf2bbeac2da
+        terminal_timestamp: '2026-08-02T03:27:18+03:00'
+        product_postimage_manifest_digest: 371eb2d184ed8550f17b1b13970db71fa1daf95d3204e54abd7c374803e4cdd5
+        focused_tests: 20/20_and_76/76_passed
+        independent_review: held_zero_P1_one_P2_zero_P3
+        lease_released_at: '2026-08-02T00:22:23Z'
         external_effects: 0/0/0
-      F06:
-        required_state: generic_reconciliation_lifecycle_preserved
-        observed_state: generic_reconciliation_lifecycle_preserved
-        interface_checkpoint_sha: 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
-        interface_checkpoint_digest: 7d0e2e360036fa6e3b742053c714b13f442e29c9ff3e83ad7b6bf02c005694a0
       P21:
-        required_state: repository_only_successor_requires_local_finalization
-        observed_state: repository_only_successor_requires_local_finalization
-        held_terminal_head_sha: 1873fc8d7e5478eb736021175bb2214d78d865cd
+        required_state: effect_exists_local_finalization_code_correct
+        observed_state: effect_exists_local_finalization_code_correct
+        corrected_terminal_head_sha: b98698740936df0b1817be616039da2101a6cb28
         native_postgresql_gate: required_before_candidate_freeze
     authorized_paths:
-      - apps/worker/src/runners/content-publication/adapters.ts
-      - apps/worker/src/runners/content-publication/runner.test.ts
       - ops/v2.1-execution/runtime/I36/HANDOFF.md
       - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
       - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
-    authorized_path_count: 5
-    authorized_path_inventory_digest: c29ae8b6ef3187f117c4b60956c869c6abb03b1cd955350419d414fcb2a55b81
-    product_path_count: 2
-    product_path_inventory_digest: 37b9f89c777663618d3035f8da20d13346550635fb42cd8ec40321714456a19f
-    authorized_product_preimage_manifest_digest: 7659a232dc4293c76dfb2f7a16bc9cdf0820b36376705ce095fa6fe500edd3a8
+    authorized_path_count: 3
+    authorized_path_inventory_digest: bdf3cfe7a516fb00f891ef66f1f752591ce3d894243bbe50393980d10a3a441a
+    product_path_count: 0
+    product_path_inventory_digest: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    authorized_product_preimage_manifest_digest: 44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a
     authorized_product_preimage_manifest_algorithm: stable_json_sorted_keys_sha256
-    authorized_product_preimages:
-      apps/worker/src/runners/content-publication/adapters.ts: 4ab2d7ba911a017c4f2194b71ebc385c25dac7b939d199ba24775b4fd42d5d7b
-      apps/worker/src/runners/content-publication/runner.test.ts: 6ad4c0069126afc4f5a63506e2e27e1520617f15fd128a6205502ded54f182dc
+    authorized_product_preimages: {}
     authorized_runtime_preimages:
-      ops/v2.1-execution/runtime/I36/HANDOFF.md: 1fa50aa16f0739a2a7cde84ce25287d83b295ac3383802ffbd625163934d9a7a
-      ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md: 43ae8503426fe3fe8c16b4305b8c83745ddb684976ff26bab825b5cf7ccca6f7
-      ops/v2.1-execution/runtime/I36/TASK-STATE.yaml: 8199cde9ebc6c5e1e21ce98e824abe8a958d17255f509a850af387101aed8246
+      ops/v2.1-execution/runtime/I36/HANDOFF.md: 48d2301559446bf7161e4f08933e42cfb70c0989edb44a6913cb6bc7d1612514
+      ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md: 3df7f5ef11bc8f0d7c63ab2b52cd8c522868b50351f30d9eab87a3eb715bde2e
+      ops/v2.1-execution/runtime/I36/TASK-STATE.yaml: 459fffb73d1484762521405322a63e969dba98dce98074719e2e55535a022f93
     directives:
       - >-
-        Preserve terminal 1873fc8d except for the exact P21 reconciliation-completion defect and current I36 metadata.
-        In the P21-gated reconciliation adapter, normalize every effect_exists result to completed_locally:false before the
-        generic F06 lifecycle sees it. Do not change the generic F06 lifecycle or any provider contract.
+        Change only the I36 runtime triplet. Preserve every product, test, migration, config, control, immutable request, and
+        provider byte from b9869874. Record that the P21 code correction is sound but terminal admission is held at zero P1,
+        one P2, zero P3 solely for stale canonical current-checkpoint metadata.
       - >-
-        Add an exact runner-level regression in which the injected Vimeo reconciliation adapter returns effect_exists with
-        completed_locally:true. Prove the P21 wrapper persists the next job as accepted, never complete, and leaves local
-        publication finalization required. Preserve effect-absent retry safety and unknown quarantine.
+        In TASK-STATE, make every canonical current field agree with the P21 correction: state_based_on_head_sha,
+        last_implementation_commit_sha, remaining_steps, next_action, and current_checkpoint_changed_paths. Remove the old
+        Batch-D/P35 instructions from current authority without deleting historical records. The exact current checkpoint is
+        b9869874 plus this runtime-only child and exactly the runtime triplet.
       - >-
-        Repair the I36 runtime triplet so its current/top-level task, review mode, control basis, terminal truth, and safe next
-        action all describe this correction. Record the held one-P1/one-P2 review honestly; remove or supersede false current
-        claims without rewriting historical records.
+        Keep HANDOFF and NEXT-PROMPT current/top sections aligned with this metadata-only correction and its review target.
+        Reproduce READY, runtime preimages, YAML parsing, runtime formatting, diff hygiene, release the lease, push one exact
+        three-path terminal, prove local/tracking/live equality and clean tree, and stop for independent review.
       - >-
-        Run the focused P21 adapter/runner and generic F06 suites, the prior 75-test packet or a strictly sufficient superset,
-        scoped typecheck/lint/format/diff/secret gates, exact scope/preimages, lease release, remote equality, and clean-tree
-        checks. Push one exact five-path correction terminal and stop for independent review.
-      - >-
-        Add no migration, real Vimeo adapter, provider/network call, registry population, effect lock, persistent database,
-        candidate, deployment, DNS, send, charge, customer mutation, cleanup, or external effect. Effects remain 0/0/0.
+        Do not rerun broad product suites or change product claims. Add no provider/network/registry/persistent-database/candidate/
+        deployment/DNS/send/charge/customer/cleanup/external effect. Effects remain 0/0/0.
     writer_slot_leases:
-      - slot: WORKER_COMPOSER
-        lease_id: 5bc3f1dc-0874-4eb3-abaf-542c14d60814
-        holder_task_id: I36
-        holder_claim_id: 7f9e3cc8-4c72-4f38-ab60-09f8e6187877
-        holder_writer_id: codex-i36-P21-effect-exists-correction-7f9e3cc8
-        state_based_on_control_head_sha: 0063689594c1ab9beb2d9f4d64f89a8491284a4c
-        lease_issued_at: '2026-08-02T00:10:31Z'
-        lease_expires_at: '2026-08-02T04:10:31Z'
-        phase_scope: P21_reconciliation_completed_locally_normalization_and_regression_only
       - slot: RELEASE_INTEGRATOR
-        lease_id: 890c2452-d61b-4d4d-a951-aa6886c50952
+        lease_id: 1a1a07e4-a6dd-4caa-97d6-f66b6a8a608e
         holder_task_id: I36
-        holder_claim_id: 7f9e3cc8-4c72-4f38-ab60-09f8e6187877
-        holder_writer_id: codex-i36-P21-effect-exists-correction-7f9e3cc8
-        state_based_on_control_head_sha: 0063689594c1ab9beb2d9f4d64f89a8491284a4c
-        lease_issued_at: '2026-08-02T00:10:31Z'
-        lease_expires_at: '2026-08-02T04:10:31Z'
-        phase_scope: exact_five_path_correction_terminal_and_release
+        holder_claim_id: d007c280-1ccb-4f3a-80c5-a79118de94be
+        holder_writer_id: codex-i36-P21-current-metadata-d007c280
+        state_based_on_control_head_sha: ec48eda10f0799e852d015fefca227d99e6863af
+        lease_issued_at: '2026-08-02T00:33:22Z'
+        lease_expires_at: '2026-08-02T03:33:22Z'
+        phase_scope: exact_runtime_triplet_current_checkpoint_metadata_only
     effect_lock_leases: []
-    claim_id: 7f9e3cc8-4c72-4f38-ab60-09f8e6187877
-    lease_issued_at: '2026-08-02T00:10:31Z'
-    lease_expires_at: '2026-08-02T04:10:31Z'
+    claim_id: d007c280-1ccb-4f3a-80c5-a79118de94be
+    lease_issued_at: '2026-08-02T00:33:22Z'
+    lease_expires_at: '2026-08-02T03:33:22Z'
     heartbeat_interval_minutes: 30
     prompt_path: ops/v2.1-execution/prompts/I36-START-OR-RESUME.md
     model: GPT-5.6-SOL
     reasoning: XHIGH
 entry_payload_digests:
-  I36: 30168c46b1bcc1dd3587fcf9bf692b5b267ba7ae8fa06753ccf810ae6ec819ed
+  I36: 2070446cb082bf532a5a8167927c34097a56b237770ccf01fa1b7311bc762e11
 digest_algorithm: >-
   For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively, separators ',' and ':',
   ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives in this sibling map, never inside the entry.
