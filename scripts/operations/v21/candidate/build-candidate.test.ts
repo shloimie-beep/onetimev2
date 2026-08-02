@@ -68,9 +68,9 @@ describe('I36 deterministic candidate builder', () => {
     expect(sets.route_action_inventory.files).toEqual([
       { path: 'ops/day-one/visible-action-registry.json', sha256: sha256(registry) },
     ]);
-    expect(sets.application_content.expected_paths).toHaveLength(1146);
-    expect(sets.web_artifact.expected_paths).toHaveLength(1012);
-    expect(sets.worker_artifact.expected_paths).toHaveLength(1012);
+    expect(sets.application_content.expected_paths).toHaveLength(1148);
+    expect(sets.web_artifact.expected_paths).toHaveLength(1014);
+    expect(sets.worker_artifact.expected_paths).toHaveLength(1014);
     expect(sets.application_content.expected_paths).toEqual(
       [...sets.application_content.expected_paths].sort((left, right) =>
         Buffer.compare(Buffer.from(left), Buffer.from(right)),

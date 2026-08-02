@@ -32,12 +32,14 @@ const command = (): FamilySignupCommand => ({
   parent_newsletter_consent: true,
 });
 const passwordHash = `argon2id-v1$v=19$m=19456,t=2,p=1$${'a'.repeat(22)}$${'b'.repeat(43)}`;
+const freeAccessExpiresAt = '2026-09-13T16:24:00.000Z';
 
 describe('P08 PostgreSQL Family-signup repository', () => {
   it('serializes exact request and identity keys and commits every local aggregate atomically', async () => {
     const harness = recordingPool();
     const service = createFamilySignupService({
       repository: createPostgresFamilySignupRepository(harness.pool),
+      freeAccessExpiresAt,
       hashPassword: async () => passwordHash,
       fingerprintPasswordForIdempotency: async () => 'c'.repeat(64),
       allocateIds: () => ({
@@ -117,6 +119,7 @@ describe('P08 PostgreSQL Family-signup repository', () => {
     const harness = recordingPool();
     const service = createFamilySignupService({
       repository: createPostgresFamilySignupRepository(harness.pool),
+      freeAccessExpiresAt,
       hashPassword: async () => passwordHash,
       fingerprintPasswordForIdempotency: async () => 'c'.repeat(64),
       allocateIds: () => ({
@@ -170,6 +173,7 @@ describe('P08 PostgreSQL Family-signup repository', () => {
     const harness = recordingPool('v21_adult_credentials');
     const service = createFamilySignupService({
       repository: createPostgresFamilySignupRepository(harness.pool),
+      freeAccessExpiresAt,
       hashPassword: async () => passwordHash,
       fingerprintPasswordForIdempotency: async () => 'c'.repeat(64),
       allocateIds: () => ({
@@ -197,6 +201,7 @@ describe('P08 PostgreSQL Family-signup repository', () => {
     const harness = recordingPool();
     const service = createFamilySignupService({
       repository: createPostgresFamilySignupRepository(harness.pool),
+      freeAccessExpiresAt,
       hashPassword: async () => passwordHash,
       fingerprintPasswordForIdempotency: async () => 'c'.repeat(64),
       allocateIds: () => ({

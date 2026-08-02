@@ -671,7 +671,13 @@ function assertCommitInput(input: {
   ) {
     throw invariant('The durable GHL identity decision and outbox dispatch state disagree.');
   }
-  assertCommercialBillingPlan(input.commercial_billing, binding, projection, result);
+  assertCommercialBillingPlan(
+    input.commercial_billing,
+    binding,
+    projection,
+    result,
+    input.committed_at,
+  );
 }
 
 function validGhlHandoff(
@@ -719,9 +725,16 @@ function assertCommercialBillingPlan(
   binding: FamilySignupRequestBinding,
   projection: NonNullable<FamilySignupResult['projection']>,
   result: FamilySignupResult,
+  committedAt: string,
 ): void {
   const signup = plan.signup;
   const signupProjection = signup.response.projection;
+  const configuredExpiryMatchesLocalProjection =
+    projection.free_access_expires_at !== null
+      ? signupProjection.freePeriodEndsAt === projection.free_access_expires_at
+      : signupProjection.freePeriodEndsAt === null ||
+        (Number.isFinite(Date.parse(signupProjection.freePeriodEndsAt)) &&
+          Date.parse(signupProjection.freePeriodEndsAt) <= Date.parse(committedAt));
   if (
     signup.actor_ref !== projection.adult_id ||
     signup.operation_scope !== `billing.commercial.signup:${projection.household_id}` ||
@@ -735,7 +748,7 @@ function assertCommercialBillingPlan(
     signupProjection.accessState !== projection.access_state ||
     signupProjection.subscriptionState !== 'none' ||
     signupProjection.activeStudentCount !== 0 ||
-    signupProjection.freePeriodEndsAt !== projection.free_access_expires_at ||
+    !configuredExpiryMatchesLocalProjection ||
     signupProjection.paidPeriodEndsAt !== null ||
     signupProjection.firstChargeAt !== null ||
     signupProjection.cancelAtPeriodEnd !== false ||
