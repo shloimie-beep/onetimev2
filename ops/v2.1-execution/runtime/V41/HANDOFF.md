@@ -1,55 +1,54 @@
 # V41 Handoff
 
-## Identity
+## Outcome
 
-- Branch: `codex/v21-verify-ea45b0ab10ec-v41`
-- Start SHA: `031cfde117028c8c199c7bc47e46e18a8227139d`
-- Frozen product source SHA: `0a5ef2e1e6ba88b151334f2aa78bee9cd8949365`
-- Canonical candidate digest: `ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d`
-- Current handoff commit: derive with `git rev-parse HEAD`; C00 records the observed remote head.
-- Task packet digest: `fc87f562590f92b3aef5c9b7854086a4527c618873b3f86fb66daa1a215f210a`
-- Context digest: `aa36054d247762264b443582677beb57f8bc3a7cfa0a834e3c1b9c7a5760dc73`
-- Source package digest: `10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e`
+V41 is ready_for_evidence_merge with all 29 assigned cases attempted: 19 passed, 0 failed, and 10 blocked. The exact results commit is 4bb5430d0c088762a6cbc5e64e45cfb04dfedde5; the terminal runtime commit is the remote branch head that contains this handoff.
 
-## Completed behavior
+## Candidate identity
 
-- Verified the repository, isolated worktree, frozen candidate head, exact remote verifier branch, READY payload digest, claim, writer lease, and read-only-only provider authority.
-
-## Remaining work
-
-- Verify all immutable candidate/environment/provider registry bindings.
-- Execute and truthfully record all 29 assigned acceptance cases.
-- Use live provider access only for redacted, read-only facts; perform no mutation or external effect.
-- Write the lane summary, terminal runtime checkpoint, and release the lease.
-
-## Exact next action
-
-Verify immutable candidate and environment bindings, then execute the 29 assigned cases using local/CI evidence and authorized production read-only provider inspection only.
-
-## Coverage
-
-- Requirements: 0 of 27 verified.
-- Acceptance cases: 0 of 29 attempted.
-
-## Changed files and migrations
-
-- Only the V41 runtime triplet is present in this claim checkpoint.
-- Migrations: none.
+- Branch: codex/v21-verify-ea45b0ab10ec-v41
+- Frozen product source: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
+- Canonical candidate: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
+- Candidate manifest digest: 30867a96bfc5370ead95b83b6519b4ec365947d874c609dd8e5dbecba7e54876
+- Results summary: ops/v2.1-execution/results/ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d/V41/SUMMARY.yaml
 
 ## Verification
 
-- Remote repository identity, control ref, candidate branch, claim, and lease checks passed.
+- Typecheck passed.
+- 49/49 focused assertions passed across 13 files.
+- All 29 attempt YAML records and 29 CURRENT pointers parse and bind the exact candidate.
+- Every selected environment is allowed by matrix digest 3972640970c37875b70c02165cff2add4a034073b952e4e508481735b55d954d.
+- All pointer and supporting-artifact SHA-256 values match staged Git blobs.
+- Changed paths are limited to the authorized V41 results and runtime triplet.
 
-## External effects
+## Current provider identities
+
+- HighLevel canonical location: pBSnOK2nkdxp6gf9Rg3o.
+- HighLevel account/agency: unknown.
+- Connector read: contact collection available, reported count 1,493; only an unfiltered 20-row window was returned, so adult-only and zero Student contacts are not proven live.
+- Stripe-through-GHL account, product, price, webhook, checkout, subscription, portal, invoice, charge, and test clock: unknown.
+- Rabbi campaign sender: Rabbi Eli Scheller <rabbielischeller@onetimeonetime.com>; identity fixed in registry, provider acceptance pending.
+- Office sender: Shloimie from One Time Mishnayos <info@onetimeonetime.com>; registry active.
+- Brand sender: One Time Mishnayos <info@onetimeonetime.com>; registry active.
+- Account-security sender: One Time Mishnayos Account <info@onetimeonetime.com>; preferred account address remains pending.
+
+## Blocked acceptance
+
+Ten cases remain blocked by missing provider identity/effect authority or missing exhaustive authenticated execution:
+
+- Stripe subscription, hosted portal, test clock, and charge readbacks: 4.
+- Authenticated browser/full route inventory: 3.
+- GHL workflow save/seed/suppression authority and full contact inventory: 3.
+
+The exact blocker-to-case mapping is in the lane summary and CURRENT records.
+
+## External effects and lease
 
 - Authority: read-only only.
-- Attempted/succeeded/reconciled external effects: 0/0/0.
-- Cleanup: not applicable.
+- Attempted/succeeded/reconciled effects: 0/0/0.
+- No provider/effect lock was acquired.
+- Writer lease f4739877-6884-4ac5-8952-ed0ee5d4a52e was released at 2026-08-02T12:24:41Z.
 
-## Security, privacy, and data handling
+## Next action
 
-- No credentials, provider payloads, contact data, or child data were read into committed evidence.
-
-## Blockers, deviations, and recovery
-
-- None at claim time.
+I36 should fetch the exact remote terminal head, verify ancestry from results commit 4bb5430d0c088762a6cbc5e64e45cfb04dfedde5, validate the V41-only delta, and aggregate it into the evidence branch. Blocked cases require a new C00 authorization and exact provider/deployment identities before supersession.

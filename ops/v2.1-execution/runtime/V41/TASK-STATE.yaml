@@ -4,38 +4,60 @@ task_id: V41
 task_packet_digest: fc87f562590f92b3aef5c9b7854086a4527c618873b3f86fb66daa1a215f210a
 task_context_digest: aa36054d247762264b443582677beb57f8bc3a7cfa0a834e3c1b9c7a5760dc73
 spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
 branch: codex/v21-verify-ea45b0ab10ec-v41
 start_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
 dependency_heads:
   I36: 031cfde117028c8c199c7bc47e46e18a8227139d
-status: claimed
-phase: candidate_bound_phase_a
+status: ready_for_evidence_merge
+phase: complete
+claim_mode: existing_branch
 claimed_by: codex-v41-bf9d08fb
 claim_time: '2026-08-02T11:59:00Z'
 claim_id: bf9d08fb-23a7-479e-9899-c1b03505fe5a
+writer_slot_leases:
+  - slot: VERIFY_BILLING_PROVIDERS
+    lease_id: f4739877-6884-4ac5-8952-ed0ee5d4a52e
+    lease_expires_at: '2026-08-02T15:50:03Z'
+    lease_released_at: '2026-08-02T12:24:41Z'
+    state: released
 lease_expires_at: '2026-08-02T15:50:03Z'
-last_heartbeat_at: '2026-08-02T11:59:00Z'
+lease_released_at: '2026-08-02T12:24:41Z'
+last_heartbeat_at: '2026-08-02T12:24:41Z'
 controller_authorization_sha: 4062a17de4b299a620ada6fce0d194ff25743578
 ready_entry_payload_digest: 350ab3fb62d18392387cfc2414a3a30711c532405368c32572ccbaf271d1a916
-state_based_on_head_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
-last_implementation_commit_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
+canonical_candidate_digest: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
+candidate_manifest_digest: 30867a96bfc5370ead95b83b6519b4ec365947d874c609dd8e5dbecba7e54876
+repository_source_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
+state_based_on_head_sha: 4bb5430d0c088762a6cbc5e64e45cfb04dfedde5
+last_result_commit_sha: 4bb5430d0c088762a6cbc5e64e45cfb04dfedde5
 completed_steps:
-  - verified repository identity, isolated worktree, remote branch head, claim, lease, and candidate binding
+  - Verified the exact control authorization, READY digest, claim, writer lease, branch, candidate, package, task, context, matrix, registry, and artifact bindings.
+  - Reproduced all 200 locked Git-blob digests and all 15 source-package Git-blob digests.
+  - Performed read-only HighLevel inspection with redaction; retained no contact payloads, names, addresses, phones, credentials, or bearer material.
+  - Confirmed canonical HighLevel location pBSnOK2nkdxp6gf9Rg3o from immutable registry/prior UI evidence while recording account/agency and Stripe-through-GHL identities as unknown.
+  - Passed workspace typecheck and 49 focused assertions across 13 provider, commercial billing, billing-access, and GHL-identity test files.
+  - Wrote one candidate-bound attempt and one exact CURRENT pointer for every assigned case.
+  - Validated all YAML, exact assigned-case membership, allowed-environment bindings, attempt-pointer SHA-256 values, supporting-artifact digests, changed-path scope, diff hygiene, and redaction scan.
+  - Published 29 results: 19 passed, 0 failed, and 10 blocked.
+  - Performed zero provider mutations, deployments, sends, enrollments, contacts, charges, refunds, cleanup effects, or lock acquisitions.
+  - Pushed exact results commit 4bb5430d0c088762a6cbc5e64e45cfb04dfedde5 and released the V41 writer lease.
 remaining_steps:
-  - verify immutable package, candidate, environment, and provider-registry digests
-  - execute and record all 29 assigned cases without provider mutation
-  - write lane summary and release the task lease
-next_action: Verify immutable candidate and environment bindings, then execute the 29 assigned cases using local/CI evidence and authorized production read-only provider inspection only.
+  - I36 validates and aggregates the exact terminal V41 branch head into the candidate evidence branch.
+  - C00 separately supplies new authority and provider identities before any blocked live/provider case can be superseded.
+next_action: I36 should fetch the exact remote V41 terminal head, verify its ancestry from results commit 4bb5430d0c088762a6cbc5e64e45cfb04dfedde5 and its V41-only delta, then aggregate it without product changes.
 requirements:
   expected: 27
-  verified: 0
+  fully_passed: 18
+  blocked: 9
 acceptance_cases:
   expected: 29
-  attempted: 0
-  passed: 0
+  attempted: 29
+  passed: 19
   failed: 0
-  blocked: 0
+  blocked: 10
 changed_paths:
+  - ops/v2.1-execution/results/ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d/V41/**
   - ops/v2.1-execution/runtime/V41/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/V41/HANDOFF.md
   - ops/v2.1-execution/runtime/V41/NEXT-PROMPT.md
@@ -43,13 +65,48 @@ migrations: []
 steward_requests: []
 verification:
   commands_run:
-    - git fetch --all --prune
-    - verified origin repository, control entry, READY digest, branch head, claim, and lease
+    - immutable locked/source Git-blob SHA-256 verification
+    - npm run typecheck -- --pretty false
+    - focused Vitest over 13 V41 implementation test files
+    - candidate/task/matrix/result YAML parse and exact case-set validation
+    - CURRENT pointer SHA-256 validation against staged Git blobs
+    - supporting evidence digest validation against staged Git blobs
+    - targeted provider-payload, PII, and credential scan
+    - git diff --check and exact changed-path scope audit
+  test_files_passed: 13
+  tests_passed: 49
+  result_counts:
+    attempted: 29
+    passed: 19
+    failed: 0
+    blocked: 10
   known_baseline_failures: []
 external_effects:
   authority: read_only_only
   attempted: 0
   succeeded: 0
   reconciled: 0
-blockers: []
-out_of_scope_findings: []
+  provider_locks_acquired: 0
+blockers:
+  - code: PROVIDER_SUBSCRIPTION_READBACK_UNAVAILABLE
+    cases: 1
+  - code: HOSTED_PORTAL_END_TO_END_UNAVAILABLE
+    cases: 1
+  - code: STRIPE_TEST_CLOCK_IDENTITY_UNAVAILABLE
+    cases: 1
+  - code: STRIPE_CHARGE_READBACK_UNAVAILABLE
+    cases: 1
+  - code: AUTHENTICATED_BROWSER_FIXTURE_UNAVAILABLE
+    cases: 1
+  - code: FULL_ROUTE_AUTHORIZATION_HARNESS_UNAVAILABLE
+    cases: 1
+  - code: AUTHENTICATED_ROUTE_INVENTORY_UNAVAILABLE
+    cases: 1
+  - code: GHL_WORKFLOW_EFFECT_AUTHORITY_UNAVAILABLE
+    cases: 2
+  - code: GHL_FULL_CONTACT_INVENTORY_UNAVAILABLE
+    cases: 1
+out_of_scope_findings:
+  - The live connector reported a 1493-contact collection but returned the same unfiltered 20-row window for Student and Parent queries; live adult-only and zero-Student identity are not proven.
+  - HighLevel location/account and payment-identity reads require an unavailable companies.readonly OAuth scope.
+  - The GHL-bound Stripe account, product, price, webhook, checkout, subscription, portal, invoice, charge, and test-clock identities remain unknown.
