@@ -71,15 +71,15 @@ ready:
     model: GPT-5.6-SOL
     reasoning: XHIGH
   - task_id: I36
-    lane: candidate_proof_source_correction
+    lane: candidate_proof_evidence_correction
     status: ready
-    phase: candidate_pg18_reference_initialization_order_correction
+    phase: candidate_pg18_failed_run_phase_truth_correction
     branch: codex/v21-integration
     preparation_branch: codex/v21-launch-source-correction
     claim_mode: new
-    state_based_on_control_head_sha: 7db01ed9440ffa912d2639693e629938a0a64e91
-    authorized_start_sha: d61f4e49349ed4b63618513ce6642337690d55d0
-    expected_existing_head: d61f4e49349ed4b63618513ce6642337690d55d0
+    state_based_on_control_head_sha: 3cc3f339988c8ba057baa4f54fc861b37c09e4c0
+    authorized_start_sha: 59616c76f34634103a9049a816b8d2d740613836
+    expected_existing_head: 59616c76f34634103a9049a816b8d2d740613836
     package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
     source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
     task_packet_digest: 55e261760baac780e9a4db48c328480c6f98172261ef990e563a00b25c467fc7
@@ -227,39 +227,38 @@ ready:
         - tests/unit/lead-validation.test.ts
         - tests/unit/operator-launch-status-ui.test.ts
     directives:
-      - Correct only the proved top-level-await temporal-dead-zone defect by moving candidate proof invocation after all module constants initialize; do not alter proof semantics, SQL, budgets, or provider gates.
-      - Run the proof dry fail-closed check, typecheck, scoped lint/format, and focused source inspection only; no workflow dispatch or external effect is authorized.
-      - Update only the I36 runtime triplet for the correction terminal and stop for one delta-only review.
-      - The failed run 30743955340 is reconciled with zero non-disposable, provider, customer, deployment, DNS, send, billing, or production effect.
-    repository_write_authority: exact_correction_authorized_paths_only
+      - Correct only the runtime evidence overstatement found by the independent P1=0, P2=1, P3=0 review; record that migration proof completed before the provider-registry guard failed.
+      - Preserve the accepted two-line source correction at 59616c76f34634103a9049a816b8d2d740613836 byte-for-byte.
+      - Run YAML, formatting, diff, scope, exact-log-order, and remote-equality checks only; no workflow dispatch or external effect is authorized.
+      - Update only the I36 runtime triplet and stop for one delta-only independent review.
+      - Run 30743955340 remains reconciled with stopped disposable infrastructure and zero non-disposable, provider, customer, deployment, DNS, send, billing, or production effect.
+    repository_write_authority: exact_runtime_evidence_correction_paths_only
     correction_authorized_paths:
-      path_count: 4
-      path_inventory_digest: 823960e12ddb131f1bc0587c512eef63e7eaa160020f3438c1d9b4b0bf1e1780
-      preimage_manifest_digest: a495f0a6a1bcd9b731e79eb44c45f9c8ad861b99c19365e85d9b31c7bea23f59
+      path_count: 3
+      path_inventory_digest: bdf3cfe7a516fb00f891ef66f1f752591ce3d894243bbe50393980d10a3a441a
+      preimage_manifest_digest: d96021d0e56179ebc406bc92542a386a364680f8aa1b3403a63b7d95caa615cc
       preimages:
-        ops/v2.1-execution/runtime/I36/HANDOFF.md: 5257f44db2c44522bc6c3978187585cbceda622e02e4dd185161dd85f018e3ca
-        ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md: d4abb509e43a6185062447fa8353c881ee1281508b0c179e491f1de4dc06f3c1
-        ops/v2.1-execution/runtime/I36/TASK-STATE.yaml: 5897f71fcd94f6325dcdfeb3fa30e82bf5b07e46e21b07888f8265fa8c6f8d54
-        scripts/postgres-assurance/candidate-pg18-proof.ts: 087efe889f33f521dd7e448782126fb6cff35dc4ea5fc2e8f6ef49bfec19cd6e
+        ops/v2.1-execution/runtime/I36/HANDOFF.md: ad02f629bd61aed0d54cd0e258cca5770c1ddb4db825579028cd2260e54db68e
+        ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md: 1ca01dcc28a41c676a4b4cee449883b7f7ba8fb7d29e06ebec9dd7215bd4a14c
+        ops/v2.1-execution/runtime/I36/TASK-STATE.yaml: 875bdbff2d82efc6d413f5fa5b0d70b9cf0d2ae03600b69830d2d964483cdbb9
       paths:
         - ops/v2.1-execution/runtime/I36/HANDOFF.md
         - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
         - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
-        - scripts/postgres-assurance/candidate-pg18-proof.ts
-    accepted_terminal_head_sha: 370420f14e0c3aefc9399319c74960ca699ab90a
-    accepted_terminal_review: P1_0_P2_0_P3_0
+    accepted_terminal_head_sha: 59616c76f34634103a9049a816b8d2d740613836
+    accepted_terminal_review: held_P1_0_P2_1_P3_0
     writer_slot_leases:
-      - { slot: RELEASE_INTEGRATOR, lease_id: 161bd0c3-877f-4f20-b42c-014e375ed1ca }
+      - { slot: RELEASE_INTEGRATOR, lease_id: e83619b8-1cf2-4920-99d9-17046ef7ed6d }
     effect_lock_leases: []
-    claim_id: ed8b434a-3da5-4f7d-b0ff-02819c4c1705
-    writer_id: codex-i36-pg18-correction-ed8b434a
-    lease_issued_at: '2026-08-02T10:35:42Z'
-    lease_expires_at: '2026-08-02T11:20:42Z'
+    claim_id: 27f81ff8-ff28-486d-9fcc-385914ec3584
+    writer_id: codex-i36-pg18-evidence-correction-27f81ff8
+    lease_issued_at: '2026-08-02T10:56:19Z'
+    lease_expires_at: '2026-08-02T11:41:19Z'
     heartbeat_interval_minutes: 15
     prompt_path: ops/v2.1-execution/prompts/I36-START-OR-RESUME.md
     model: GPT-5.6-SOL
     reasoning: XHIGH
 entry_payload_digests:
   F02: 388c28b5c4c946a75f9f4e9ddb103e69193a505e3889a88aaad744ac9e5388c7
-  I36: 62b33e59de38c3fc0a12aed34a04b259e4a385294f6eaf5d98d47327c915c25d
+  I36: b2c1ba427be41a35634a729e01b33769e2c400a3ae01e9ce18add3f627ef7a50
 digest_algorithm: recursively_sorted_compact_UTF8_JSON_SHA256_per_ready_entry

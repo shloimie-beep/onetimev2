@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: operational
-active_phase: candidate_pg18_source_correction
+active_phase: candidate_pg18_evidence_correction
 bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
@@ -16,12 +16,26 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: 7db01ed9440ffa912d2639693e629938a0a64e91
+controller_authorization_sha: 3cc3f339988c8ba057baa4f54fc861b37c09e4c0
 next_action: >-
-  Correct the one proved candidate-proof module initialization-order defect within the exact four-path ceiling, push one
-  I36 correction terminal, and perform one delta-only review. The failed disposable run is reconciled and its lock is
-  released. No CI dispatch, deployment, DNS change, provider/customer mutation, database write, send, billing, or other
-  external effect is authorized in this correction phase.
+  Correct only the three-file evidence overstatement identified by the P1=0, P2=1, P3=0 delta review, push one runtime
+  terminal, and perform one delta-only review. Preserve the accepted source correction byte-for-byte. No CI dispatch,
+  deployment, DNS change, provider/customer mutation, database write, send, billing, or other external effect is
+  authorized in this correction phase.
+candidate_pg18_source_correction_review:
+  reviewed_at: '2026-08-02T10:56:19Z'
+  held_terminal_sha: 59616c76f34634103a9049a816b8d2d740613836
+  findings: P1_0_P2_1_P3_0
+  source_correction_sound: true
+  sole_P2: runtime_triplet_overstated_failure_as_before_migrations
+  exact_log_truth: migration_proof_completed_before_provider_registry_guard_initialization_failure
+  disposable_database_cleanup_reconciled: true
+  non_disposable_or_provider_customer_effects: 0
+  evidence_correction_claim_id: 27f81ff8-ff28-486d-9fcc-385914ec3584
+  evidence_correction_path_count: 3
+  evidence_correction_path_inventory_digest: bdf3cfe7a516fb00f891ef66f1f752591ce3d894243bbe50393980d10a3a441a
+  evidence_correction_preimage_manifest_digest: d96021d0e56179ebc406bc92542a386a364680f8aa1b3403a63b7d95caa615cc
+  evidence_correction_READY_digest: b2c1ba427be41a35634a729e01b33769e2c400a3ae01e9ce18add3f627ef7a50
 candidate_pg18_source_authority_transcription_correction:
   recorded_at: '2026-08-02T10:41:27Z'
   exact_parent_sha: 370420f14e0c3aefc9399319c74960ca699ab90a
