@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: operational
-active_phase: launch_priority_landing_form_and_email_preparation
+active_phase: launch_priority_candidate_staged_waiting_exact_launch_inputs
 bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
@@ -11,17 +11,44 @@ bootstrap_phase_order:
 - integration_created
 - control_initialized
 - operational
-reviewed_head: 97c38375ac7d57bc3ef5beab0bc67e6b1fe5b0e9
+reviewed_head: ecaf7b153f2b5323fd11859204a6db5c2a20fc6a
 integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: e7fb4021d9bf4dbc9c38dbcadcc6eb9139082acf494416ce970c7c503f757456
 active_writer_limit: 4
 controller_authorization_sha: 76692fbb6e65cdeb68e32862dd0c03490b5e5750
 next_action: >-
-  Begin the bounded landing and Family-form launch delta from accepted source 2e514a73773bd97f20e423076539ed7224948552.
-  Consolidate the access boundary without guessing the pending September 11 cutoff time, complete focused verification,
-  and prepare a new reversible staging candidate. In parallel, refresh DNS/GHL sender, workflow, audience, and suppression
-  readbacks. Do not broadly enroll or send before Shloimie approves the exact final copy and counts.
+  Preserve exact staged candidate 97c38375ac7d57bc3ef5beab0bc67e6b1fe5b0e9 and obtain the exact first-class
+  date/time, the September 11 cutoff time, authenticated Forward Email alias routing, and a canonical adult-only GHL
+  discriminator/exhaustive current audience source. Then bind fresh candidate/provider authority for one operator Family
+  signup, GHL adult-contact readback, and draft-only sender/workflow configuration. Do not deploy production, enroll, or
+  send broadly before the required canary and Shloimie's exact copy/audience approval.
+launch_priority_verification_integration:
+  recorded_at: '2026-08-02T16:35:29Z'
+  source_parent_sha: 2e514a73773bd97f20e423076539ed7224948552
+  source_terminal_sha: bc237c14d3f0271a6713e7db1cf9691e4e9aae1d
+  independent_delta_review: P1_0_P2_0_P3_0_accepted
+  integration_terminal_sha: ecaf7b153f2b5323fd11859204a6db5c2a20fc6a
+  exact_delta: tests_support_test_server_and_rabbi_launch_email_design_test_only
+  staged_candidate_preserved: 97c38375ac7d57bc3ef5beab0bc67e6b1fe5b0e9
+  apps_tree_unchanged: a0615918e89342b2d5e49f55a130dc719024489f
+  packages_tree_unchanged: ff539da831690d35de63f32efbc67398d874e24a
+  focused_unit_result: 13_of_13_passed
+  focused_browser_result: 10_of_10_passed
+  provider_or_external_effects: 0/0/0
+launch_priority_external_readback:
+  recorded_at: '2026-08-02T15:09:37Z'
+  canonical_ghl_location: pBSnOK2nkdxp6gf9Rg3o
+  ghl_total_contacts: 1493
+  ot02a_migration_tag_list_count: 30
+  suppression_aware_event_list_count: 0
+  ot01_ot02a_ot02b_state: empty_draft_shells_zero_enrollments
+  ot15_state: absent
+  exact_adult_student_dedupe_overlap_exclusion_counts: unprovable_from_current_live_schema_and_connector
+  rabbi_sender_acceptance: unproven
+  forward_email_private_alias_state: unavailable_logged_out_in_app_and_chrome
+  resend_send_spf_state: two_records_same_owner_repair_not_attempted
+  provider_or_external_effects: 0/0/0
 staging_health_route_candidate_acceptance:
   recorded_at: '2026-08-02T14:33:55Z'
   state_basis_control_head_sha: 57449993e5fc1191f3a2fe8b86cee2dbefa5ce67

@@ -466,15 +466,15 @@ tasks:
     transitioned_at: '2026-07-30T19:30:53Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/F07/status_proof
 - task_id: I36
-  status: staging_deployment_in_progress
-  active_phase: candidate_bound_staging_deployment
+  status: launch_priority_waiting_exact_inputs
+  active_phase: candidate_staged_verification_integrated_waiting_canary_inputs
   branch: codex/v21-integration
   phase_branches:
     integration: codex/v21-integration
     launch_source_correction: codex/v21-launch-source-correction
     launch_priority_source_correction: codex/v21-launch-critical-correction
   phase_heads:
-    integration: 97c38375ac7d57bc3ef5beab0bc67e6b1fe5b0e9
+    integration: ecaf7b153f2b5323fd11859204a6db5c2a20fc6a
     F02_P28_P31_direct_prerequisite_source_integration_atomic_claim: 1b8335f8bdad4bc4ac1aa65838314faa7d65ebd0
     F02_P28_P31_direct_prerequisite_source_integration_release: 3cf787409decb5beb84561ef7e37924111d398b6
     P31_P20_P17_correction_release_integration_atomic_claim: 1b0df6fa15b2ac4a5febe35fee3f18ca9b9457d7
@@ -604,8 +604,11 @@ tasks:
     staging_health_route_source_correction_integration_merge: 1b88ac230db018df5cb27ab792846f18ae6a0e07
     staging_health_route_candidate_refreeze_terminal: 97c38375ac7d57bc3ef5beab0bc67e6b1fe5b0e9
     staging_health_route_candidate_refreeze_review: P1_0_P2_0_P3_0
+    launch_priority_verification_terminal: bc237c14d3f0271a6713e7db1cf9691e4e9aae1d
+    launch_priority_verification_review: P1_0_P2_0_P3_0
+    launch_priority_verification_integration_merge: ecaf7b153f2b5323fd11859204a6db5c2a20fc6a
   authorized_start_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
-  last_known_remote_head: 97c38375ac7d57bc3ef5beab0bc67e6b1fe5b0e9
+  last_known_remote_head: ecaf7b153f2b5323fd11859204a6db5c2a20fc6a
   active_claim_id: null
   active_writer_id: null
   lease_expires_at: null
@@ -615,14 +618,14 @@ tasks:
   controller_authorization_sha: 76692fbb6e65cdeb68e32862dd0c03490b5e5750
   ready_entry_payload_digest: null
   interface_checkpoint_sha: null
-  implementation_head_sha: 97c38375ac7d57bc3ef5beab0bc67e6b1fe5b0e9
+  implementation_head_sha: ecaf7b153f2b5323fd11859204a6db5c2a20fc6a
   status_proof:
-    state: staging_health_route_deployment_reconciled_success
+    state: launch_priority_verification_integrated_candidate_runtime_unchanged
     producer_task_id: I36
-    producer_head_sha: 97c38375ac7d57bc3ef5beab0bc67e6b1fe5b0e9
+    producer_head_sha: bc237c14d3f0271a6713e7db1cf9691e4e9aae1d
     canonical_candidate_digest: e7fb4021d9bf4dbc9c38dbcadcc6eb9139082acf494416ce970c7c503f757456
     interface_checkpoint_digest: null
-    integration_or_evidence_head_sha: 97c38375ac7d57bc3ef5beab0bc67e6b1fe5b0e9
+    integration_or_evidence_head_sha: ecaf7b153f2b5323fd11859204a6db5c2a20fc6a
     candidate_manifest_digest: dabbefb03b7f610cd3b4025acb485d352a6a183e08755e4e4bc77bb65edad746
     result_index_digest: null
     case_counts:
@@ -650,8 +653,15 @@ tasks:
     staging_health_route_worker_reconciliation: success_exact_candidate_zero_delivery_effects
     staging_health_route_provider_readback_digest: 9c8f7105c18c3fd222cc0b802ee898dbd8c63df6d1e70cf9504dd8e57bc8425a
     staging_launch_readiness_gap: canonical_access_expiry_unset_and_first_class_at_unset
+    staged_candidate_head_sha: 97c38375ac7d57bc3ef5beab0bc67e6b1fe5b0e9
+    launch_priority_source_terminal_sha: bc237c14d3f0271a6713e7db1cf9691e4e9aae1d
+    launch_priority_delta_review: P1_0_P2_0_P3_0_accepted
+    launch_priority_integration_sha: ecaf7b153f2b5323fd11859204a6db5c2a20fc6a
+    launch_priority_delta_scope: two_test_files_only_runtime_trees_unchanged
+    launch_priority_verification: 13_unit_and_10_browser_passed
+    launch_priority_provider_readback: workflows_empty_or_absent_sender_unproven_current_exact_adult_counts_unprovable
     state_based_on_control_head_sha: 76692fbb6e65cdeb68e32862dd0c03490b5e5750
-    transitioned_at: '2026-08-02T14:59:02Z'
+    transitioned_at: '2026-08-02T16:35:29Z'
     proof_record_location: 'ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/I36/status_proof'
 - task_id: P08
   status: ready_for_review
