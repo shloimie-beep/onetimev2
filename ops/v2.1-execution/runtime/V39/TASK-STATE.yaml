@@ -1,0 +1,97 @@
+{
+  'schema_version': 1,
+  'execution_id': 'OT-V21-PRODUCTION',
+  'task_id': 'V39',
+  'status': 'ready_for_evidence_merge',
+  'phase': 'candidate_bound_phase_a_terminal',
+  'branch': 'codex/v21-verify-ea45b0ab10ec-v39',
+  'authorized_start_sha': '031cfde117028c8c199c7bc47e46e18a8227139d',
+  'evidence_head_sha': 'd62e00d466e3cdd12a6ed6a45995f91a27379a7c',
+  'controller_authorization_sha': '4062a17de4b299a620ada6fce0d194ff25743578',
+  'state_based_on_control_head_sha': '01e5c84ddca04467e16fff73754be368f59bb7fb',
+  'ready_entry_payload_digest': '56fc1adbe802ad3516651db0a9e83f89aa552de163e2c9f16a27367df4d4d68f',
+  'canonical_candidate_digest': 'ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d',
+  'candidate_product_source_sha': '0a5ef2e1e6ba88b151334f2aa78bee9cd8949365',
+  'candidate_manifest_digest': '30867a96bfc5370ead95b83b6519b4ec365947d874c609dd8e5dbecba7e54876',
+  'candidate_manifest_commit_sha': '031cfde117028c8c199c7bc47e46e18a8227139d',
+  'claim_id': '91c0ff4c-5f9e-4449-836c-f610ec5b6ba9',
+  'writer_id': 'codex-v39-91c0ff4c',
+  'claim_time': '2026-08-02T11:50:03Z',
+  'lease_issued_at': '2026-08-02T11:50:03Z',
+  'lease_expires_at': '2026-08-02T15:50:03Z',
+  'last_heartbeat_at': '2026-08-02T12:14:58.080Z',
+  'lease_released_at': '2026-08-02T12:14:58.080Z',
+  'writer_slot_leases':
+    {
+      'VERIFY_CLASSROOM_CONTENT':
+        {
+          'lease_id': '40d3aab7-08ce-4330-a3d4-afcac796db67',
+          'released_at': '2026-08-02T12:14:58.080Z',
+        },
+    },
+  'allowed_environment_progression':
+    ['C1_CI', 'C2_persistent_staging', 'C3_provider_sandbox', 'C4_production_read_only'],
+  'external_authority': 'candidate-bound read-only only; no provider mutation authority or effect lock',
+  'effect_lock_leases': [],
+  'counts':
+    {
+      'expected': 49,
+      'attempted': 49,
+      'passed': 3,
+      'failed': 0,
+      'blocked': 46,
+      'stale': 0,
+      'waived': 0,
+    },
+  'blocker_counts':
+    {
+      'BLOCKED_ROUTE_COMPLETE_API_ACCEPTANCE_HARNESS': 1,
+      'BLOCKED_PERSISTENT_ROLE_BROWSER_EVIDENCE': 3,
+      'BLOCKED_ZOOM_PROVIDER_AND_REAL_TABLET_EVIDENCE': 17,
+      'BLOCKED_RUNTIME_ABSENCE_BROWSER_INVENTORY': 1,
+      'BLOCKED_REAL_BROWSER_AND_DATABASE_CALENDAR_EVIDENCE': 1,
+      'BLOCKED_PERSISTENT_SAGA_ACCEPTANCE_FIXTURE': 2,
+      'BLOCKED_REAL_MEDIA_PROVIDER_PIPELINE_EVIDENCE': 19,
+      'BLOCKED_REAL_LEARNING_ROLE_AND_DATABASE_EVIDENCE': 1,
+      'BLOCKED_EIGHT_DOMAIN_STATE_ACCEPTANCE_HARNESS': 1,
+    },
+  'completed_steps':
+    [
+      'bound every result to immutable candidate ea45b0ab and the exact acceptance environment matrix',
+      'ran a 27/27 exact green jobs and content-ingest packet',
+      'ran 271/273 supplemental classroom/content assertions and classified two historical superseded assertions without changing candidate source',
+      'ran 12/12 supplemental calendar and 114/114 Zoom cleanup/inspection assertions',
+      'published one immutable attempt and one current pointer for all 49 assigned cases',
+      'recorded three passed, zero failed, forty-six blocked, zero stale, zero waived, and zero unexpected effects',
+      'released the VERIFY_CLASSROOM_CONTENT lease after pushing the complete evidence checkpoint',
+    ],
+  'remaining_steps':
+    [
+      'C00 independently validates and merges the V39 lane onto the candidate evidence branch',
+      'C00 groups blocked cases by shared fixture/effect class and dispatches superseding candidate-bound attempts only after exact locks and gates are available',
+    ],
+  'result_root': 'ops/v2.1-execution/results/ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d/V39',
+  'lane_summary_path': 'ops/v2.1-execution/results/ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d/V39/LANE-SUMMARY.yaml',
+  'verification':
+    {
+      'exact_green_packet': '4 files / 27 tests / 27 passed / 0 failed',
+      'supplemental_candidate_packet': '39 files / 273 tests / 271 passed / 2 historical superseded failures / 0 assigned-case failures',
+      'supplemental_calendar_packet': '2 files / 12 tests / 12 passed',
+      'supplemental_zoom_cleanup_packet': '6 files / 114 tests / 114 passed',
+      'result_and_pointer_parse': '49/49 attempts and 49/49 pointers parsed; all pointer digests matched attempt bytes',
+    },
+  'external_effects': { 'attempted': 0, 'succeeded': 0, 'reconciled': 0, 'unexpected': 0 },
+  'blockers':
+    [
+      { 'code': 'BLOCKED_ROUTE_COMPLETE_API_ACCEPTANCE_HARNESS', 'count': 1 },
+      { 'code': 'BLOCKED_PERSISTENT_ROLE_BROWSER_EVIDENCE', 'count': 3 },
+      { 'code': 'BLOCKED_ZOOM_PROVIDER_AND_REAL_TABLET_EVIDENCE', 'count': 17 },
+      { 'code': 'BLOCKED_RUNTIME_ABSENCE_BROWSER_INVENTORY', 'count': 1 },
+      { 'code': 'BLOCKED_REAL_BROWSER_AND_DATABASE_CALENDAR_EVIDENCE', 'count': 1 },
+      { 'code': 'BLOCKED_PERSISTENT_SAGA_ACCEPTANCE_FIXTURE', 'count': 2 },
+      { 'code': 'BLOCKED_REAL_MEDIA_PROVIDER_PIPELINE_EVIDENCE', 'count': 19 },
+      { 'code': 'BLOCKED_REAL_LEARNING_ROLE_AND_DATABASE_EVIDENCE', 'count': 1 },
+      { 'code': 'BLOCKED_EIGHT_DOMAIN_STATE_ACCEPTANCE_HARNESS', 'count': 1 },
+    ],
+  'next_action': 'C00 should validate remote head and result digests, merge the lane to codex/v21-evidence-ea45b0ab10ec, then schedule the smallest shared provider/staging/operator fixture batches that can supersede the 46 blocked attempts.',
+}

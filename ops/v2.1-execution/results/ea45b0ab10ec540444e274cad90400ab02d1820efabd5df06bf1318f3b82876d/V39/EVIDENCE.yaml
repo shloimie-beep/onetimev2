@@ -1,82 +1,73 @@
 {
-  "schema_version": 1,
-  "execution_id": "OT-V21-PRODUCTION",
-  "verification_lane": "V39",
-  "canonical_candidate_digest": "ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d",
-  "candidate_manifest_commit_sha": "031cfde117028c8c199c7bc47e46e18a8227139d",
-  "product_source_sha": "0a5ef2e1e6ba88b151334f2aa78bee9cd8949365",
-  "verification_environment_id": "candidate-ci-local-v39",
-  "runtime_tier": "ci",
-  "exact_green_packet": {
-    "command": "npx vitest run packages/domain/src/jobs/foundation.test.ts packages/domain/src/content/ingest/content-ingest.test.ts apps/web/src/server/features/content/ingest/service.test.ts apps/worker/src/runners/content-ingest/runner.test.ts --reporter=default",
-    "files": [
-      "packages/domain/src/jobs/foundation.test.ts",
-      "packages/domain/src/content/ingest/content-ingest.test.ts",
-      "apps/web/src/server/features/content/ingest/service.test.ts",
-      "apps/worker/src/runners/content-ingest/runner.test.ts"
-    ],
-    "file_count": 4,
-    "test_count": 27,
-    "passed": 27,
-    "failed": 0,
-    "combined_source_digest": "7bde728d6eb935bb0a7bf6d2f882e56eb1d4df3ba2e9e9cbac697d48f7874c2f"
-  },
-  "supplemental_candidate_packet": {
-    "file_count": 39,
-    "passed_test_files": 37,
-    "failed_test_files": 2,
-    "passed_tests": 271,
-    "failed_tests": 2,
-    "selected_current_contract_source_digest": "01f06a9fe71951d4ad0a150bc85d4d0d4ff1a90724f02671e071fc44ea2105bc",
-    "historical_findings": [
-      {
-        "path": "tests/integration/content/learning-delivery-demo-route.test.ts",
-        "finding": "legacy demo route assertion expected an anonymous redirect but the candidate intentionally returns 404 because the demo route is not mounted",
-        "assigned_v39_case_failure": false
-      },
-      {
-        "path": "tests/integration/content/content-library.test.ts",
-        "finding": "historical owner admission assertion omitted the candidate email-assurance step and received the intended EMAIL_ASSURANCE_REQUIRED denial",
-        "assigned_v39_case_failure": false
-      }
-    ]
-  },
-  "supplemental_calendar_packet": {
-    "files": 2,
-    "tests": 12,
-    "passed": 12,
-    "failed": 0
-  },
-  "supplemental_zoom_cleanup_packet": {
-    "files": 6,
-    "tests": 114,
-    "passed": 114,
-    "failed": 0
-  },
-  "postgres_18_candidate_proof": {
-    "github_run_id": 30745346334,
-    "artifact_id": 8832696355,
-    "artifact_sha256": "09bac837e0ce4c1bfebb6d72d35a6292553f53a6dfbb90c76b1779d8e41fc586",
-    "evidence_manifest_sha256": "efc0d131b3f03cf57ae61aec2e9acd45f07e7be20d2d4bfd73bdfd5a0a60a6d0",
-    "migration_apply_replay_files_ledger": "89/89/89/89",
-    "pending_and_issues": "0/0",
-    "probes": "8/8 passed",
-    "restore_clone": "passed"
-  },
-  "authority": {
-    "controller_head": "4062a17de4b299a620ada6fce0d194ff25743578",
-    "ready_payload_digest": "56fc1adb3f7f939e58fdad116a299836328306866b40bc08a06b975ae9cad68f",
-    "claim_id": "91c0ff4c",
-    "writer_id": "codex-v39-91c0ff4c",
-    "lease_id": "40d3aab7",
-    "allowed_provider_mode": "read_only_only",
-    "effect_locks": []
-  },
-  "external_effects": {
-    "attempted": 0,
-    "succeeded": 0,
-    "reconciled": 0
-  },
-  "generated_at": "2026-08-02T12:09:09.496Z"
+  'schema_version': 1,
+  'execution_id': 'OT-V21-PRODUCTION',
+  'verification_lane': 'V39',
+  'canonical_candidate_digest': 'ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d',
+  'candidate_manifest_commit_sha': '031cfde117028c8c199c7bc47e46e18a8227139d',
+  'product_source_sha': '0a5ef2e1e6ba88b151334f2aa78bee9cd8949365',
+  'verification_environment_id': 'candidate-ci-local-v39',
+  'runtime_tier': 'ci',
+  'exact_green_packet':
+    {
+      'command': 'npx vitest run packages/domain/src/jobs/foundation.test.ts packages/domain/src/content/ingest/content-ingest.test.ts apps/web/src/server/features/content/ingest/service.test.ts apps/worker/src/runners/content-ingest/runner.test.ts --reporter=default',
+      'files':
+        [
+          'packages/domain/src/jobs/foundation.test.ts',
+          'packages/domain/src/content/ingest/content-ingest.test.ts',
+          'apps/web/src/server/features/content/ingest/service.test.ts',
+          'apps/worker/src/runners/content-ingest/runner.test.ts',
+        ],
+      'file_count': 4,
+      'test_count': 27,
+      'passed': 27,
+      'failed': 0,
+      'combined_source_digest': '7bde728d6eb935bb0a7bf6d2f882e56eb1d4df3ba2e9e9cbac697d48f7874c2f',
+    },
+  'supplemental_candidate_packet':
+    {
+      'file_count': 39,
+      'passed_test_files': 37,
+      'failed_test_files': 2,
+      'passed_tests': 271,
+      'failed_tests': 2,
+      'selected_current_contract_source_digest': '01f06a9fe71951d4ad0a150bc85d4d0d4ff1a90724f02671e071fc44ea2105bc',
+      'historical_findings':
+        [
+          {
+            'path': 'tests/integration/content/learning-delivery-demo-route.test.ts',
+            'finding': 'legacy demo route assertion expected an anonymous redirect but the candidate intentionally returns 404 because the demo route is not mounted',
+            'assigned_v39_case_failure': false,
+          },
+          {
+            'path': 'tests/integration/content/content-library.test.ts',
+            'finding': 'historical owner admission assertion omitted the candidate email-assurance step and received the intended EMAIL_ASSURANCE_REQUIRED denial',
+            'assigned_v39_case_failure': false,
+          },
+        ],
+    },
+  'supplemental_calendar_packet': { 'files': 2, 'tests': 12, 'passed': 12, 'failed': 0 },
+  'supplemental_zoom_cleanup_packet': { 'files': 6, 'tests': 114, 'passed': 114, 'failed': 0 },
+  'postgres_18_candidate_proof':
+    {
+      'github_run_id': 30745346334,
+      'artifact_id': 8832696355,
+      'artifact_sha256': '09bac837e0ce4c1bfebb6d72d35a6292553f53a6dfbb90c76b1779d8e41fc586',
+      'evidence_manifest_sha256': 'efc0d131b3f03cf57ae61aec2e9acd45f07e7be20d2d4bfd73bdfd5a0a60a6d0',
+      'migration_apply_replay_files_ledger': '89/89/89/89',
+      'pending_and_issues': '0/0',
+      'probes': '8/8 passed',
+      'restore_clone': 'passed',
+    },
+  'authority':
+    {
+      'controller_head': '4062a17de4b299a620ada6fce0d194ff25743578',
+      'ready_payload_digest': '56fc1adbe802ad3516651db0a9e83f89aa552de163e2c9f16a27367df4d4d68f',
+      'claim_id': '91c0ff4c-5f9e-4449-836c-f610ec5b6ba9',
+      'writer_id': 'codex-v39-91c0ff4c',
+      'lease_id': '40d3aab7-08ce-4330-a3d4-afcac796db67',
+      'allowed_provider_mode': 'read_only_only',
+      'effect_locks': [],
+    },
+  'external_effects': { 'attempted': 0, 'succeeded': 0, 'reconciled': 0 },
+  'generated_at': '2026-08-02T12:09:09.496Z',
 }
-
