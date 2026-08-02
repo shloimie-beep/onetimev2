@@ -77,6 +77,8 @@ test('public landing implements the complete accepted campaign contract', async 
   await expect(page.getByText(/fake|testimonial/i)).toHaveCount(0);
   expect(requests.some((url) => /(?:operations|bna)/i.test(url))).toBe(false);
 
+  await assertGalleryControls(page);
+
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
     'content',
     'https://join.onetimeonetime.com/assets/social/mishnayos-made-memorable.png',
@@ -101,6 +103,12 @@ test('public landing implements the complete accepted campaign contract', async 
           .map((image) => image.getAttribute('src')),
       ),
   ).toEqual([]);
+});
+
+test('gallery selection and playback controls update their rendered state', async ({ page }) => {
+  await useServerDate(page, '2026-08-01T12:00:00.000Z');
+  await page.goto('/');
+  await assertGalleryControls(page);
 });
 
 test('server-synchronized free-period boundary changes countdown, landing, and signup copy', async ({
@@ -520,6 +528,26 @@ async function useServerDate(page: Page, value: string) {
     }
     return route.continue();
   });
+}
+
+async function assertGalleryControls(page: Page) {
+  const galleryDots = page.locator('[data-gallery-dot]');
+  const secondGalleryDot = galleryDots.nth(1);
+  const secondGallerySlide = page.locator('[data-gallery-slide]').nth(1);
+  const secondGalleryCaption = (await secondGallerySlide.locator('figcaption').innerText()).trim();
+  await expect(secondGalleryDot).toHaveAttribute('aria-pressed', 'false');
+  await secondGalleryDot.click();
+  await expect(secondGalleryDot).toHaveAttribute('aria-pressed', 'true');
+  await expect(secondGallerySlide).toHaveAttribute('data-active', 'true');
+  await expect(secondGallerySlide).toHaveAttribute('aria-hidden', 'false');
+  await expect(page.locator('[data-gallery-status]')).toHaveText(`Showing ${secondGalleryCaption}`);
+
+  const galleryToggle = page.locator('[data-gallery-toggle]');
+  await expect(galleryToggle).toHaveText('Pause slideshow');
+  await expect(galleryToggle).toHaveAttribute('aria-pressed', 'false');
+  await galleryToggle.click();
+  await expect(galleryToggle).toHaveText('Play slideshow');
+  await expect(galleryToggle).toHaveAttribute('aria-pressed', 'true');
 }
 
 async function completeFamilySignupForm(page: Page, email: string) {

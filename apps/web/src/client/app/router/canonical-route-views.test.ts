@@ -1,4 +1,7 @@
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
+import { SupportTicketLinks } from '../support/SupportFeature.tsx';
 import {
   CANONICAL_ROUTE_COMPATIBILITY_PATHS,
   CANONICAL_ROUTE_VIEW_BINDINGS,
@@ -31,9 +34,9 @@ describe('v2.1 canonical route views', () => {
     expect(
       CANONICAL_V21_ROUTES.filter(({ routeId }) => routeId.startsWith('RT-STU-')),
     ).toHaveLength(17);
-    expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'ready')).toHaveLength(46);
+    expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'ready')).toHaveLength(29);
     expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'isolated')).toHaveLength(
-      17,
+      34,
     );
     expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'missing')).toHaveLength(
       30,
@@ -77,8 +80,88 @@ describe('v2.1 canonical route views', () => {
       '/app/crm/contacts/contact-1',
     );
     expect(CANONICAL_ROUTE_COMPATIBILITY_PATHS['RT-ADM-002']).toBeUndefined();
-    expect(CANONICAL_ROUTE_COMPATIBILITY_PATHS['RT-ADM-043']).toBe('/app/billing');
+    expect(CANONICAL_ROUTE_COMPATIBILITY_PATHS['RT-ADM-043']).toBeUndefined();
+    const occurrence = resolveCurrentClientRoute(
+      '/app/classroom/occurrences/occurrence-1',
+      'admin',
+    );
+    expect(
+      occurrence &&
+        compatibilityPathForRoute(occurrence, '/app/classroom/occurrences/occurrence-1'),
+    ).toBe('/app/classes/occurrences?occurrence_key=occurrence-1');
+    expect(CANONICAL_ROUTE_COMPATIBILITY_PATHS['RT-ADM-040']).toBeUndefined();
+    expect(CANONICAL_ROUTE_COMPATIBILITY_PATHS['RT-STU-060']).toBeUndefined();
+    expect(CANONICAL_ROUTE_COMPATIBILITY_PATHS['RT-STU-061']).toBeUndefined();
+    expect(CANONICAL_ROUTE_COMPATIBILITY_PATHS['RT-STU-040']).toBeUndefined();
+    expect(resolveCurrentClientRoute('/app/student/questions', 'student')).toMatchObject({
+      routeId: 'RT-STU-040',
+      readiness: 'isolated',
+      handler: null,
+    });
+    expect(resolveCurrentClientRoute('/app/student/support', 'student')).toMatchObject({
+      routeId: 'RT-STU-060',
+      readiness: 'ready',
+      handlerDisposition: 'mounted',
+    });
+    expect(resolveCurrentClientRoute('/app/student/support/ticket-1', 'student')).toMatchObject({
+      routeId: 'RT-STU-061',
+      readiness: 'ready',
+      handlerDisposition: 'mounted',
+    });
+    expect(resolveCurrentClientRoute('/app/classroom/questions', 'admin')).toMatchObject({
+      routeId: 'RT-ADM-040',
+      readiness: 'isolated',
+      handler: null,
+    });
+    expect(resolveCurrentClientRoute('/signup/received')).toMatchObject({
+      routeId: 'RT-PUB-003',
+      readiness: 'isolated',
+      handler: null,
+    });
+    for (const routeId of [
+      'RT-ADM-001',
+      'RT-ADM-020',
+      'RT-ADM-021',
+      'RT-ADM-024',
+      'RT-ADM-032',
+      'RT-ADM-036',
+      'RT-ADM-043',
+      'RT-ADM-050',
+      'RT-ADM-051',
+      'RT-STU-041',
+      'RT-STU-042',
+      'RT-STU-040',
+      'RT-PAR-060',
+      'RT-PAR-061',
+      'RT-STU-050',
+    ]) {
+      expect(CANONICAL_V21_ROUTES.find((route) => route.routeId === routeId)).toMatchObject({
+        readiness: 'isolated',
+        handler: null,
+      });
+    }
     expect(CANONICAL_ROUTE_COMPATIBILITY_PATHS['RT-ADM-066']).toBeUndefined();
     expect(CANONICAL_ROUTE_COMPATIBILITY_PATHS['RT-PAR-011']).toBeUndefined();
+  });
+
+  it('renders recent Student support receipts on the canonical Student route only', () => {
+    const markup = renderToStaticMarkup(
+      createElement(SupportTicketLinks, {
+        basePath: '/app/student/support',
+        tickets: [
+          {
+            receipt_id: 'ticket/one',
+            status: 'received',
+            delivery_state: 'queued',
+            public_summary: 'Received',
+            updated_at: '2026-08-02T07:00:00.000Z',
+          },
+        ],
+      }),
+    );
+
+    expect(markup).toContain('href="/app/student/support/ticket%2Fone"');
+    expect(markup).not.toContain('/app/support');
+    expect(markup).not.toContain('/app/parent/support');
   });
 });

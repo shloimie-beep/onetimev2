@@ -41,6 +41,184 @@ type Registry = {
 
 const sha256 = (value: Buffer | string) => createHash('sha256').update(value).digest('hex');
 
+const EXPECTED_SOURCE_INPUT_PATHS = [
+  'ops/v2.1-execution/source-spec/02-ACCEPTANCE-CONTRACT-v2.1.yaml',
+  'ops/v2.1-execution/source-spec/03-DECISION-REGISTER-v2.1.md',
+  'ops/v2.1-execution/source-spec/05-ACTOR-ROLE-CAPABILITY-ROUTE-MATRIX-v2.1.md',
+  'ops/v2.1-execution/source-spec/08-SCREEN-CATALOG-AND-DESIGN-SYSTEM-v2.1.md',
+  'apps/web/src/server/app.ts',
+  'apps/web/src/server/features/portals/routers.ts',
+  'apps/web/src/server/features/support/router.ts',
+  'apps/web/src/server/features/signup/school/router.ts',
+  'apps/web/src/server/features/v21-canonical-routes/router.ts',
+  'apps/web/src/client/app/admin-ia.ts',
+  'apps/web/src/client/app/crm-entry.tsx',
+  'apps/web/src/client/app/live-entry.tsx',
+  'apps/web/src/client/app/portal-entry.tsx',
+  'apps/web/src/client/features/portals/PortalFeatures.tsx',
+  'apps/web/src/client/app/router/registry.ts',
+  'apps/web/src/client/app/router/canonical-route-views.ts',
+  'apps/web/src/client/app/support/SupportFeature.tsx',
+  'apps/web/src/client/public/public-entry.ts',
+  'apps/web/src/client/public/school/model.ts',
+  'packages/brand-system/src/route-branding.ts',
+  'packages/brand-system/src/v21.ts',
+  'scripts/build-public-pages.ts',
+  'packages/domain/src/dashboard/service.ts',
+] as const;
+
+const EXPECTED_ACTION_BINDINGS = [
+  ['auth.parent.logout.button', '/app/parent/students', ['parent'], 'POST', '/api/v1/auth/logout'],
+  ['auth.student.logout.button', '/app/student', ['student'], 'POST', '/api/v1/auth/logout'],
+  [
+    'classes.open_detail.button',
+    '/app/classroom/occurrences/:occurrenceId',
+    ['admin'],
+    'GET',
+    '/api/v1/classes/:occurrenceKey',
+  ],
+  ['crm.contacts.create.form', '/app/contacts', ['admin'], 'POST', '/api/v1/crm/contacts'],
+  [
+    'crm.contacts.open.button',
+    '/app/contacts/:contactId',
+    ['admin'],
+    'GET',
+    '/api/v1/crm/contacts/:contactId',
+  ],
+  ['crm.contacts.search.form', '/app/contacts', ['admin'], 'POST', '/api/v1/crm/contacts/search'],
+  [
+    'crm.contacts.update.form',
+    '/app/contacts/:contactId',
+    ['admin'],
+    'PATCH',
+    '/api/v1/crm/contacts/:contactId',
+  ],
+  ['crm.contacts.view.route', '/app/contacts', ['admin'], 'GET', '/api/v1/crm/contacts'],
+  [
+    'live_class.question.ready.button',
+    '/app/student',
+    ['student'],
+    'POST',
+    '/api/v1/live-class/questions/:id/ready',
+  ],
+  [
+    'live_class.question.submit.form',
+    '/app/student',
+    ['student'],
+    'POST',
+    '/api/v1/live-class/questions',
+  ],
+  [
+    'portal.parent.learner.select.button',
+    '/app/parent/students',
+    ['parent'],
+    'CLIENT',
+    'apps/web/src/client/features/portals/PortalFeatures.tsx',
+  ],
+  [
+    'portal.parent.student_access.reset.button',
+    '/app/parent/students',
+    ['parent'],
+    'POST',
+    '/api/v1/portals/parent/households/:householdKey/learners/:learnerKey/student-access/reset',
+  ],
+  [
+    'portal.parent.student_access.setup.form',
+    '/app/parent/students',
+    ['parent'],
+    'POST',
+    '/api/v1/portals/parent/households/:householdKey/learners/:learnerKey/student-access/setup',
+  ],
+  [
+    'portal.parent.student_access.suspend.button',
+    '/app/parent/students',
+    ['parent'],
+    'POST',
+    '/api/v1/portals/parent/households/:householdKey/learners/:learnerKey/student-access/suspend',
+  ],
+  [
+    'portal.student.classroom.question.form',
+    '/app/student',
+    ['student'],
+    'POST',
+    '/api/v1/classroom/questions',
+  ],
+  [
+    'portal.student.private_question.send.button',
+    '/app/student',
+    ['student'],
+    'POST',
+    '/api/v1/portals/student/questions',
+  ],
+  [
+    'portal.student.view.route',
+    '/app/student',
+    ['student'],
+    'GET',
+    '/api/v1/portals/student/dashboard',
+  ],
+  [
+    'public.gallery.next.button',
+    '/',
+    ['public'],
+    'CLIENT',
+    'apps/web/src/client/public/public-entry.ts',
+  ],
+  [
+    'public.gallery.previous.button',
+    '/',
+    ['public'],
+    'CLIENT',
+    'apps/web/src/client/public/public-entry.ts',
+  ],
+  [
+    'public.gallery.select.button',
+    '/',
+    ['public'],
+    'CLIENT',
+    'apps/web/src/client/public/public-entry.ts',
+  ],
+  [
+    'public.gallery.slideshow.toggle.button',
+    '/',
+    ['public'],
+    'CLIENT',
+    'apps/web/src/client/public/public-entry.ts',
+  ],
+  ['public.home.route', '/', ['public'], 'GET', '/'],
+  ['public.login.route', '/login', ['public'], 'GET', '/login'],
+  [
+    'public.school-inquiry.submit.form',
+    '/school',
+    ['public'],
+    'POST',
+    '/api/v2.1/signup/school-inquiry',
+  ],
+  ['public.signup.route', '/signup', ['public'], 'GET', '/signup'],
+  ['public.signup.submit.form', '/signup', ['public'], 'POST', '/api/v1/signup/family'],
+  [
+    'support.student.receipt.view.route',
+    '/app/student/support/:ticketId',
+    ['student'],
+    'GET',
+    '/api/v1/support/receipts/:receiptId/status',
+  ],
+  [
+    'support.student.submit.form',
+    '/app/student/support',
+    ['student'],
+    'POST',
+    '/api/v1/support/tickets',
+  ],
+  [
+    'support.student.view.route',
+    '/app/student/support',
+    ['student'],
+    'GET',
+    '/app/student/support',
+  ],
+] as const;
+
 describe('v2.1 visible action registry', () => {
   const sourceText = readFileSync('ops/day-one/visible-action-registry.json', 'utf8');
   const registry = JSON.parse(sourceText) as Registry;
@@ -51,6 +229,10 @@ describe('v2.1 visible action registry', () => {
     expect(registry.production_roles).toEqual(['admin', 'parent', 'student']);
     expect(registry.public_actor).toBe('public');
     expect(registry.readiness_states).toEqual(['ready', 'isolated', 'missing']);
+    expect(registry.source_inputs.map(({ path }) => path)).toEqual(EXPECTED_SOURCE_INPUT_PATHS);
+    expect(new Set(registry.source_inputs.map(({ path }) => path)).size).toBe(
+      EXPECTED_SOURCE_INPUT_PATHS.length,
+    );
     for (const input of registry.source_inputs) {
       expect(input.sha256, input.path).toBe(
         sha256(execFileSync('git', ['show', `:${input.path}`])),
@@ -69,10 +251,10 @@ describe('v2.1 visible action registry', () => {
     expect(registry.canonical_routes).toHaveLength(93);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'ready'),
-    ).toHaveLength(46);
+    ).toHaveLength(29);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'isolated'),
-    ).toHaveLength(17);
+    ).toHaveLength(34);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'missing'),
     ).toHaveLength(30);
@@ -84,8 +266,18 @@ describe('v2.1 visible action registry', () => {
       ({ readiness_state }) => readiness_state === 'ready',
     );
     const actionIds = registry.actions.map(({ action_id }) => action_id);
+    const sourcePaths = new Set(registry.source_inputs.map(({ path }) => path));
     expect(actionIds).toEqual([...actionIds].sort());
     expect(new Set(actionIds).size).toBe(actionIds.length);
+    expect(
+      registry.actions.map((action) => [
+        action.action_id,
+        action.route,
+        action.roles,
+        action.handler.method,
+        action.handler.path,
+      ]),
+    ).toEqual(EXPECTED_ACTION_BINDINGS);
     for (const action of registry.actions) {
       const route = readyRoutes.find(({ path }) => path === action.route);
       expect(route, action.action_id).toBeDefined();
@@ -96,6 +288,9 @@ describe('v2.1 visible action registry', () => {
       expect(action.surface).toMatch(/^(route|button|form)$/u);
       expect(action.capability).toMatch(/:/u);
       expect(action.handler.path).toMatch(/^(?:\/|(?:apps|packages|scripts)\/)/u);
+      if (action.handler.method === 'CLIENT') {
+        expect(sourcePaths.has(action.handler.path), action.action_id).toBe(true);
+      }
       expect(action.audit.event).toBeTruthy();
       expect(action.readiness_state).toBe('ready');
       expect(action.external_mutation).toBe(false);
@@ -124,24 +319,93 @@ describe('v2.1 visible action registry', () => {
     );
   });
 
-  it('binds central Family signup and role-scoped support to production handlers', () => {
+  it('binds central Family and School signup to their exact production handlers', () => {
     const byId = new Map(registry.actions.map((action) => [action.action_id, action]));
+    const publicEntry = execFileSync(
+      'git',
+      ['show', ':apps/web/src/client/public/public-entry.ts'],
+      { encoding: 'utf8' },
+    );
+    const publicPageBuilder = execFileSync('git', ['show', ':scripts/build-public-pages.ts'], {
+      encoding: 'utf8',
+    });
+    const supportFeature = execFileSync(
+      'git',
+      ['show', ':apps/web/src/client/app/support/SupportFeature.tsx'],
+      { encoding: 'utf8' },
+    );
     expect(byId.get('public.signup.submit.form')).toMatchObject({
       roles: ['public'],
       handler: { method: 'POST', path: '/api/v1/signup/family' },
-    });
-    expect(byId.get('dashboard.view.route')).toMatchObject({
-      roles: ['admin'],
-      handler: { method: 'GET', path: '/api/v1/dashboard/owner' },
     });
     expect(byId.get('portal.parent.student_access.reset.button')).toMatchObject({
       route: '/app/parent/students',
       roles: ['parent'],
     });
+    expect(byId.get('public.school-inquiry.submit.form')).toMatchObject({
+      route: '/school',
+      roles: ['public'],
+      handler: { method: 'POST', path: '/api/v2.1/signup/school-inquiry' },
+      external_mutation: false,
+    });
+    expect(byId.get('public.gallery.select.button')).toMatchObject({
+      route: '/',
+      roles: ['public'],
+      handler: { method: 'CLIENT', path: 'apps/web/src/client/public/public-entry.ts' },
+      test_evidence: [
+        'tests/e2e/landing-signup.spec.ts',
+        'tests/unit/day-one/visible-action-registry.test.ts',
+      ],
+    });
+    expect(byId.get('public.gallery.slideshow.toggle.button')).toMatchObject({
+      route: '/',
+      roles: ['public'],
+      handler: { method: 'CLIENT', path: 'apps/web/src/client/public/public-entry.ts' },
+      test_evidence: [
+        'tests/e2e/landing-signup.spec.ts',
+        'tests/unit/day-one/visible-action-registry.test.ts',
+      ],
+    });
+    expect(publicPageBuilder).toContain('data-gallery-dot');
+    expect(publicPageBuilder).toContain('data-gallery-toggle');
+    expect(publicEntry).toContain("querySelectorAll<HTMLButtonElement>('[data-gallery-dot]')");
+    expect(publicEntry).toContain("querySelector<HTMLButtonElement>('[data-gallery-toggle]')");
+    expect(publicEntry).toContain(
+      "button.addEventListener('click', () => showFromControl(buttonIndex))",
+    );
+    expect(publicEntry).toContain("toggle.addEventListener('click', () =>");
     expect(byId.get('support.student.submit.form')).toMatchObject({
       route: '/app/student/support',
       roles: ['student'],
       handler: { method: 'POST', path: '/api/v1/support/tickets' },
+      test_evidence: [
+        'apps/web/src/client/app/router/canonical-route-views.test.ts',
+        'tests/unit/day-one/visible-action-registry.test.ts',
+      ],
     });
+    expect(byId.get('support.student.receipt.view.route')).toMatchObject({
+      route: '/app/student/support/:ticketId',
+      roles: ['student'],
+      handler: { method: 'GET', path: '/api/v1/support/receipts/:receiptId/status' },
+      test_evidence: [
+        'apps/web/src/client/app/router/canonical-route-views.test.ts',
+        'tests/unit/day-one/visible-action-registry.test.ts',
+      ],
+    });
+    expect(byId.get('support.student.view.route')).toMatchObject({
+      route: '/app/student/support',
+      roles: ['student'],
+      handler: { method: 'GET', path: '/app/student/support' },
+      test_evidence: [
+        'apps/web/src/client/app/router/canonical-route-views.test.ts',
+        'tests/unit/day-one/visible-action-registry.test.ts',
+      ],
+    });
+    expect(supportFeature).toContain(
+      'href={`${basePath}/${encodeURIComponent(ticket.receipt_id)}`}',
+    );
+    expect(supportFeature).not.toContain('/app/support/receipts/');
+    expect(supportFeature).not.toContain('/app/parent/support');
+    expect([...byId.keys()].some((actionId) => actionId.startsWith('support.parent.'))).toBe(false);
   });
 });

@@ -40,31 +40,132 @@ dependency_heads:
   P18: 1926e61c793ce29d7240c1ee05d2a4879b52770b
   P21: c11dec418fa3de896e96c348f87928c92c9f86b9
 status: ready_for_review
-phase: canonical_route_candidate_source_fail_closed_held_checkpoint
-claimed_by: codex-i36-route-convergence-a3ae432b
-claim_time: '2026-08-02T05:17:02Z'
-claim_id: a3ae432b-8abd-45b7-b84d-7571a54a1bb8
-lease_id: 8a34d221-1333-4ed3-a4af-3ad930ef3a3b
-lease_issued_at: '2026-08-02T05:17:02Z'
-lease_expires_at: '2026-08-02T11:17:02Z'
-lease_released_at: '2026-08-02T06:25:46Z'
-last_heartbeat_at: '2026-08-02T06:25:46Z'
+phase: held_source_review_correction_terminal
+claimed_by: codex-i36-held-source-correction-b2d91877
+claim_time: '2026-08-02T06:45:22Z'
+claim_id: b2d91877-4afc-4307-ae16-e3eeb4ea27e6
+lease_id: 97f89adb-7b6e-47f8-b175-4e3a1f75dddb
+lease_issued_at: '2026-08-02T06:45:22Z'
+lease_expires_at: '2026-08-02T12:45:22Z'
+lease_released_at: '2026-08-02T08:19:16Z'
+last_heartbeat_at: '2026-08-02T08:19:16Z'
 controller_authorization_sha: 71342aa60de3f3840c70555a616cded8f5672989
-latest_valid_observed_control_head_sha: 71342aa60de3f3840c70555a616cded8f5672989
-reconciled_state_based_on_control_head_sha: 61d52aa85f3f040187c21081c0e17a83544f9443
-ready_authorization_control_head_sha: 71342aa60de3f3840c70555a616cded8f5672989
-ready_entry_state_based_on_control_head_sha: 61d52aa85f3f040187c21081c0e17a83544f9443
-ready_entry_payload_digest: 85ff11c44fdcd4426a821250ae554e8f7a251edd7fd6e0d9ac610df9d58bafc8
+latest_valid_observed_control_head_sha: 6852bbfd2bbccc1b7a3bfe53393e46eacc6b9ace
+reconciled_state_based_on_control_head_sha: 6852bbfd2bbccc1b7a3bfe53393e46eacc6b9ace
+ready_authorization_control_head_sha: 6852bbfd2bbccc1b7a3bfe53393e46eacc6b9ace
+ready_entry_state_based_on_control_head_sha: 71342aa60de3f3840c70555a616cded8f5672989
+ready_entry_payload_digest: d58967bf53d161676d1a8c198f76c399a22c0e321e13d2b349e85605fd7cc209
 claim_mode: new
-expected_existing_head_sha: 9082f3015d6fe95cf374266b49a9e4db7ae69ead
-lease_phase_scope: canonical_route_and_candidate_source_correction
+expected_existing_head_sha: e7417f39e71fbb4fb45aa4a9436ba78496020063
+lease_phase_scope: held_source_review_correction
 writer_slot_leases_released:
   - slot: CLIENT_COMPOSER
-    lease_id: 74272335-1c16-4e4f-bdcd-63ab10909511
+    lease_id: e193437a-a355-4a5d-b740-0a443ca3e71a
   - slot: SERVER_COMPOSER
-    lease_id: 806d0bf5-3317-4855-ae09-3d2e4c21cd9e
+    lease_id: 67f84dd8-f317-455c-81f5-91d3cf324c77
   - slot: RELEASE_INTEGRATOR
-    lease_id: 8a34d221-1333-4ed3-a4af-3ad930ef3a3b
+    lease_id: 97f89adb-7b6e-47f8-b175-4e3a1f75dddb
+held_source_review_correction_terminal:
+  containing_control_head_sha: 6852bbfd2bbccc1b7a3bfe53393e46eacc6b9ace
+  state_basis_control_head_sha: 71342aa60de3f3840c70555a616cded8f5672989
+  exact_authorized_start_sha: e7417f39e71fbb4fb45aa4a9436ba78496020063
+  ready_entry_payload_digest: d58967bf53d161676d1a8c198f76c399a22c0e321e13d2b349e85605fd7cc209
+  authorized_ceiling:
+    path_count: 58
+    path_inventory_digest: 6995f60547d5f5b2c912aa64f3aebbe627efd50e4169637c6f631fcb134032ea
+    preimage_manifest_digest: d6f44950507b741424fd8741c0875fa5db6caa542af11e9a0260990ed7c56b7b
+  claim_id: b2d91877-4afc-4307-ae16-e3eeb4ea27e6
+  writer_id: codex-i36-held-source-correction-b2d91877
+  lease_issued_at: '2026-08-02T06:45:22Z'
+  lease_expires_at: '2026-08-02T12:45:22Z'
+  lease_released_at: '2026-08-02T08:19:16Z'
+  last_heartbeat_at: '2026-08-02T08:19:16Z'
+  writer_slot_leases_released:
+    - slot: CLIENT_COMPOSER
+      lease_id: e193437a-a355-4a5d-b740-0a443ca3e71a
+    - slot: SERVER_COMPOSER
+      lease_id: 67f84dd8-f317-455c-81f5-91d3cf324c77
+    - slot: RELEASE_INTEGRATOR
+      lease_id: 97f89adb-7b6e-47f8-b175-4e3a1f75dddb
+  effect_lock_leases: []
+  exact_scope:
+    source_and_test_paths: 15
+    runtime_paths: 3
+    total_paths: 18
+    source_path_inventory_digest: 583dca8d744d7232e5fc0e137fa358743c7c091b7abc3bfc9423f52872ad3d6c
+    runtime_path_inventory_digest: bdf3cfe7a516fb00f891ef66f1f752591ce3d894243bbe50393980d10a3a441a
+    release_path_inventory_digest: ad65c64bd983cb647db9693cdc35838d7ae67b4809cf56b868cd5ca6d87981cc
+    source_preimage_manifest_digest: fbb77c808572cb322f72ada77a40ef448ac14875caec5cbd9964080442619a99
+    release_preimage_manifest_digest: f032095d5c427ea45e38f37f166e1d64bcd3fb99042d3447db55d42503c48115
+    source_postimage_manifest_digest: 01af83c4ff56063d1bad5cf9bc4e8c77e30649a74dba196053322456bd8be1ea
+    manifest_algorithm: sha256_compact_UTF8_JSON_path_sorted_path_and_raw_blob_sha256
+  route_truth:
+    locked_total: 93
+    ready: 29
+    isolated: 34
+    missing: 30
+    protected_ready: 16
+    protected_non_ready: 59
+    visible_actions: 29
+  candidate_input_truth:
+    app_blob_count: 1146
+    web_blob_count: 1012
+    worker_blob_count: 1012
+    exact_git_blob_derivation: true
+    caller_inventory_control_rejected: true
+  corrected_findings:
+    support_surface: canonical_Student_only_with_encoded_ticket_links_and_no_Parent_or_legacy_navigation
+    safe_return: legacy_app_support_rejected_for_Parent_Student_Admin_and_default_roles
+    gallery_controls: exact_public_entry_handlers_and_real_browser_state_transitions_proved
+    route_dispositions: STU040_and_STU050_isolated_and_dead_shell_links_removed
+    visible_action_registry: exact_29_action_projection_with_current_source_hashes
+    candidate_builder: raw_Git_blobs_batched_cat_file_and_deterministic_exact_source_SHA_inputs
+  superseded_out_of_ceiling_contract_drift:
+    path: tests/integration/support/ot89a-subscriber-support.test.ts
+    path_modified: false
+    legacy_expectations_superseded: 3
+    exact_drift:
+      - anonymous_or_non_subscriber_app_support_expected_200_lead_UI_now_404
+      - disabled_app_support_expected_crm_root_now_404
+      - paused_Parent_app_support_expected_crm_root_now_404
+  completed_validation:
+    local_delta_packet: passed_27_of_27_across_6_files
+    focused_gallery_browser: passed_1_of_1
+    workspace_typecheck: passed
+    scoped_eslint: passed
+    scoped_prettier: passed_15_of_15
+    public_and_client_build: passed
+    repository_secret_scan: passed_3189_text_files
+    diff_check: passed
+    clean_checkout_tree: 1a4e2f3dcc5f707eb2d7e14377e380929564faaf
+    clean_checkout_synthetic_commit: 5d6f8020db1024cbd18ddb7cb6176fa95a6f9e08
+    clean_checkout_npm_ci: passed_359_packages_installed
+    clean_checkout_build_and_typecheck: passed
+    clean_checkout_delta_packet: passed_27_of_27_across_6_files
+    clean_checkout_gallery_browser: passed_1_of_1
+  disclosed_out_of_scope_baselines:
+    global_prettier: failed_2563_untouched_files_changed_files_clean
+    broader_auth_crm_packet: failed_7_existing_out_of_scope_assertions
+    normal_Playwright_server: blocked_by_existing_seed_missing_nonnull_join_opens_at
+    full_landing_contract: reaches_existing_missing_legal_copy_before_gallery_assertions
+    npm_audit: unchanged_1_high_vulnerability_no_audit_fix_mutation
+  disposition:
+    all_route_convergence_claimed: false
+    candidate_ready_claimed: false
+    production_complete_claimed: false
+    checkpoint_kind: bounded_held_source_review_correction_terminal
+  provider_or_infrastructure_inspection: false
+  provider_or_candidate_action: false
+  deployment_or_DNS_action: false
+  external_effects:
+    attempted: 0
+    succeeded: 0
+    reconciled: 0
+  safe_next_action: >-
+    Push this exact 18-path correction terminal, prove clean local, tracking,
+    and live integration equality, and stop for delta-only independent review.
+    Candidate, provider, persistent-database, deployment, DNS, send, charge,
+    cleanup, and every external successor effect remain separately gated.
 canonical_route_candidate_source_held_checkpoint:
   containing_control_head_sha: 71342aa60de3f3840c70555a616cded8f5672989
   state_basis_control_head_sha: 61d52aa85f3f040187c21081c0e17a83544f9443

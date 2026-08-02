@@ -112,6 +112,7 @@ export type ParentPortalFeatureProps = {
   ) => void;
   onLaunchClass?: (learnerKey: string, action: ProtectedActionDescriptor) => void;
   onOpenContent?: (learnerKey: string, action: ProtectedActionDescriptor) => void;
+  /** @deprecated Parent support routes are isolated; this callback is ignored. */
   onPreviewSupport?: (learnerKey?: string) => void;
   onRetry?: () => void;
   accountSecurity?: React.ReactNode;
@@ -163,7 +164,6 @@ export function ParentPortalFeature({
   onStudentAccessAction,
   onLaunchClass,
   onOpenContent,
-  onPreviewSupport,
   onRetry,
   accountSecurity,
 }: ParentPortalFeatureProps) {
@@ -355,7 +355,6 @@ export function ParentPortalFeature({
                 library={selectedMaterials?.library ?? []}
                 reviewSheets={selectedMaterials?.review_sheets ?? []}
                 onOpen={(action) => onOpenContent?.(selectedLearner.learner_key, action)}
-                onPreviewSupport={() => onPreviewSupport?.(selectedLearner.learner_key)}
               />
             </section>
           </div>
@@ -1068,22 +1067,15 @@ function MaterialsSummary({
   library,
   reviewSheets,
   onOpen,
-  onPreviewSupport,
 }: {
   library: LibraryItem[];
   reviewSheets: LibraryItem[];
   onOpen?: ((action: ProtectedActionDescriptor) => void) | undefined;
-  onPreviewSupport?: (() => void) | undefined;
 }) {
   return (
     <section className="ot-subsection" aria-labelledby="materials-heading">
       <h3 id="materials-heading">Materials</h3>
       <ContentList items={[...library, ...reviewSheets]} onOpen={onOpen} />
-      {onPreviewSupport && (
-        <button type="button" className="ot-button" onClick={onPreviewSupport}>
-          Technical support
-        </button>
-      )}
     </section>
   );
 }

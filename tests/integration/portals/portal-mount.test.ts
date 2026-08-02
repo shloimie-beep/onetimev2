@@ -72,6 +72,49 @@ describe('OT-71 mounted parent and student portals', () => {
     expect(resolveCurrentClientRoute('/app/parent/not-locked', 'parent')).toBeNull();
   });
 
+  it('never admits the missing legacy support route as a post-login destination', async () => {
+    const server = await listenForTest(createApp({ config, pool, distDir }));
+    try {
+      const parent = await postLogin(
+        server.baseUrl,
+        'parent@example.test',
+        'ParentPass!234',
+        '/app/support',
+      );
+      expect(parent.status).toBe(200);
+      expect(parent.json.return_to).toBe('/app/parent');
+
+      const student = await postLogin(
+        server.baseUrl,
+        'student@example.test',
+        'StudentPass!234',
+        '/app/support',
+      );
+      expect(student.status).toBe(200);
+      expect(student.json.return_to).toBe('/app/student');
+
+      const canonicalStudent = await postLogin(
+        server.baseUrl,
+        'student@example.test',
+        'StudentPass!234',
+        '/app/student/support',
+      );
+      expect(canonicalStudent.status).toBe(200);
+      expect(canonicalStudent.json.return_to).toBe('/app/student/support');
+
+      const admin = await postLogin(
+        server.baseUrl,
+        'admin@example.test',
+        'AdminPass!234',
+        '/app/support',
+      );
+      expect(admin.status).toBe(200);
+      expect(admin.json.return_to).toBe('/app/dashboard');
+    } finally {
+      await server.close();
+    }
+  });
+
   it('mounts the public School inquiry and keeps unconfigured Parent Student policy fail closed', async () => {
     const server = await listenForTest(createApp({ config, pool, distDir }));
     try {
@@ -106,6 +149,116 @@ describe('OT-71 mounted parent and student portals', () => {
         access_grants_created: 0,
         nurture_workflow_intent_ids: [],
       });
+    } finally {
+      await server.close();
+    }
+  });
+
+  it('keeps missing Admin support private and preserves only the protected legacy Student classroom', async () => {
+    const server = await listenForTest(createApp({ config, pool, distDir }));
+    try {
+      const publicSupport = await fetch(`${server.baseUrl}/app/support`, { redirect: 'manual' });
+      expect(publicSupport.status).toBe(404);
+      expect(await publicSupport.text()).not.toContain('Sign in for learning support');
+
+      const anonymousClassroom = await fetch(`${server.baseUrl}/app/classroom`, {
+        redirect: 'manual',
+      });
+      expect(anonymousClassroom.status).toBe(302);
+      expect(anonymousClassroom.headers.get('location')).toBe('/login?return_to=%2Fapp%2Fstudent');
+
+      const student = await loginAs(server.baseUrl, 'student@example.test', 'StudentPass!234');
+      const studentClassroom = await fetch(`${server.baseUrl}/app/classroom`, {
+        headers: { cookie: student.cookies },
+      });
+      expect(studentClassroom.status).toBe(200);
+      expect(studentClassroom.headers.get('cache-control')).toContain('no-store');
+      expect(studentClassroom.headers.get('referrer-policy')).toBe('no-referrer');
+      expect(studentClassroom.headers.get('x-robots-tag')).toBe('noindex, nofollow');
+
+      const parent = await loginAs(server.baseUrl, 'parent@example.test', 'ParentPass!234');
+      expect(
+        (
+          await fetch(`${server.baseUrl}/app/classroom`, {
+            headers: { cookie: parent.cookies },
+          })
+        ).status,
+      ).toBe(403);
+
+      const admin = await loginAs(server.baseUrl, 'admin@example.test', 'AdminPass!234');
+      expect(
+        (
+          await fetch(`${server.baseUrl}/app/classroom`, {
+            headers: { cookie: admin.cookies },
+          })
+        ).status,
+      ).toBe(403);
+    } finally {
+      await server.close();
+    }
+  });
+
+  it('keeps a resolved v2.1 Parent session authenticated while returning denial semantics', async () => {
+    const v21AdultSessionRuntime = {
+      resolveCookieHeader: async () => ({ status: 'resolved', context: {} }),
+    } as never;
+    const server = await listenForTest(
+      createApp({ config, pool, distDir, v21AdultSessionRuntime }),
+    );
+    const cookie = '__Host-onetime-session=resolved-v21-parent';
+    try {
+      for (const requestPath of ['/access-denied', '/app/contacts']) {
+        const denied = await fetch(`${server.baseUrl}${requestPath}`, {
+          headers: { cookie },
+          redirect: 'manual',
+        });
+        expect(denied.status, requestPath).toBe(403);
+        expect(denied.headers.get('cache-control'), requestPath).toContain('no-store');
+        expect(denied.headers.getSetCookie().join(';'), requestPath).not.toContain(
+          '__Host-onetime-session=;',
+        );
+      }
+      const isolatedStudentQuestions = await fetch(`${server.baseUrl}/app/student/questions`, {
+        headers: { cookie },
+        redirect: 'manual',
+      });
+      expect(isolatedStudentQuestions.status).toBe(404);
+      expect(isolatedStudentQuestions.headers.get('cache-control')).toContain('no-store');
+      expect(isolatedStudentQuestions.headers.getSetCookie().join(';')).not.toContain(
+        '__Host-onetime-session=;',
+      );
+    } finally {
+      await server.close();
+    }
+  });
+
+  it('denies Student self-password mutation without changing the credential', async () => {
+    const server = await listenForTest(createApp({ config, pool, distDir }));
+    try {
+      const student = await loginAs(server.baseUrl, 'student@example.test', 'StudentPass!234');
+      const denied = await fetch(`${server.baseUrl}/api/v1/auth/password`, {
+        method: 'POST',
+        headers: {
+          cookie: student.cookies,
+          'content-type': 'application/json',
+          'x-csrf-token': student.json.csrf_token,
+        },
+        body: JSON.stringify({
+          current_password: 'StudentPass!234',
+          new_password: 'StudentChanged!234',
+        }),
+      });
+      expect(denied.status).toBe(403);
+      await expect(denied.json()).resolves.toMatchObject({
+        success: false,
+        code: 'STUDENT_PASSWORD_ADULT_MANAGED',
+      });
+      expect(
+        (await postLogin(server.baseUrl, 'student@example.test', 'StudentPass!234')).status,
+      ).toBe(200);
+      expect(
+        (await postLogin(server.baseUrl, 'student@example.test', 'StudentChanged!234')).status,
+      ).toBe(401);
     } finally {
       await server.close();
     }
@@ -566,7 +719,7 @@ async function loginAs(baseUrl: string, identifier: string, password: string) {
   };
 }
 
-async function postLogin(baseUrl: string, identifier: string, password: string) {
+async function postLogin(baseUrl: string, identifier: string, password: string, returnTo?: string) {
   const csrf = await getLoginCsrf(baseUrl);
   const response = await fetch(`${baseUrl}/api/v1/auth/login`, {
     method: 'POST',
@@ -575,7 +728,12 @@ async function postLogin(baseUrl: string, identifier: string, password: string) 
       'content-type': 'application/json',
       'x-csrf-token': csrf.token,
     },
-    body: JSON.stringify({ identifier, password, csrf_token: csrf.token }),
+    body: JSON.stringify({
+      identifier,
+      password,
+      csrf_token: csrf.token,
+      ...(returnTo ? { return_to: returnTo } : {}),
+    }),
   });
   const text = await response.text();
   return {

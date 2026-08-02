@@ -1,76 +1,77 @@
 # I36 Integration Releases
 
-## Current held checkpoint - canonical-route and candidate-source truth correction
+## Current terminal - held-source review correction
 
-Control `71342aa60de3f3840c70555a616cded8f5672989`, based on
-`61d52aa85f3f040187c21081c0e17a83544f9443`, authorized this repository-only
-correction from exact clean start `9082f3015d6fe95cf374266b49a9e4db7ae69ead`
-under READY `85ff11c44fdcd4426a821250ae554e8f7a251edd7fd6e0d9ac610df9d58bafc8`.
-The exact 55-path ceiling and preimage manifest remain `f84c296b3ef155d14612a2cb9920bd59d68bf21167153795e605279633148eaa`
-and `42c615dec4d3d4159613c41ada0ad4f102edf238b96ed7db669e360154835570`.
+Control `6852bbfd2bbccc1b7a3bfe53393e46eacc6b9ace`, with authority basis
+`71342aa60de3f3840c70555a616cded8f5672989`, authorized this exact bounded
+repository correction from sole parent
+`e7417f39e71fbb4fb45aa4a9436ba78496020063` under READY
+`d58967bf53d161676d1a8c198f76c399a22c0e321e13d2b349e85605fd7cc209`.
+The 58-path ceiling has inventory
+`6995f60547d5f5b2c912aa64f3aebbe627efd50e4169637c6f631fcb134032ea`
+and preimage manifest
+`d6f44950507b741424fd8741c0875fa5db6caa542af11e9a0260990ed7c56b7b`.
 
-This is a meaningful fail-closed source checkpoint, not all-route convergence,
-candidate readiness, or terminal production completion. The exact 93-route
-registry reports 46 ready, 17 isolated, and 30 missing. The isolated IDs are
-`RT-AUTH-005`, `RT-AUTH-008`, `RT-PAR-001`, `RT-PAR-010`, `RT-PAR-020`,
-`RT-PAR-021`, `RT-PAR-030`, `RT-PAR-040`, `RT-PAR-041`, `RT-PAR-071`,
-`RT-PAR-072`, `RT-STU-012`, `RT-STU-030`, `RT-STU-051`, `RT-STU-070`,
-`RT-STU-071`, and `RT-STU-072`. The missing IDs are `RT-PUB-008`,
-`RT-PUB-009`, `RT-ADM-002`, `RT-ADM-012`, `RT-ADM-014`, `RT-ADM-015`,
-`RT-ADM-016`, `RT-ADM-017`, `RT-ADM-023`, `RT-ADM-030`, `RT-ADM-031`,
-`RT-ADM-033`, `RT-ADM-038`, `RT-ADM-041`, `RT-ADM-042`, `RT-ADM-060`,
-`RT-ADM-061`, `RT-ADM-062`, `RT-ADM-063`, `RT-ADM-064`, `RT-ADM-065`,
-`RT-ADM-066`, `RT-ADM-068`, `RT-ADM-069`, `RT-PAR-011`, `RT-PAR-050`,
-`RT-PAR-070`, `RT-STU-010`, `RT-STU-011`, and `RT-STU-021`. `RT-STU-012`
-is explicitly isolated, not missing: the existing embedded-classroom resolver
-cannot prove requested occurrence identity equals the authorized grant without
-separately owned service changes.
-
-Ready routes now have exact mounted handlers or bounded compatibility targets.
-Every isolated or missing route has a null advertised handler and an exact
-fail-closed server registration ahead of legacy broad mounts; literal routes
-also outrank parameter templates. Family signup uses `/api/v1/signup/family`,
-setup/reset token paths are scrubbed from browser history, and only truthful
-ready destinations appear in Admin, Parent, Student, brand, and visible-action
-navigation. The visible-action registry is an exact 93-route projection using
-raw Git-blob source hashes with no retired or non-ready actions.
-
-The candidate builder rejects caller inventories and derives every nonempty
-input set from raw Git blobs at the exact repository SHA. It emits deterministic
-Git/deployment archives, excludes mutable runtime/control/result material from
-the product tree, and names no fictional `dist` entrypoint. This closes the
-prior 1P1/2P2 only insofar as registry and builder truth are corrected; the 47
-non-ready product routes remain blocked and separately owned.
-
-The checkpoint changes 22 source/test paths plus the I36 runtime triplet. The
-source, runtime, and release inventories are `864eae3953c425105cab1e90bef54aa65b71fe1c76b029f7bec8ba73114549b6`,
+This terminal changes exactly 15 source/test paths plus the I36 runtime
+triplet. The source, runtime, and release inventories are
+`583dca8d744d7232e5fc0e137fa358743c7c091b7abc3bfc9423f52872ad3d6c`,
 `bdf3cfe7a516fb00f891ef66f1f752591ce3d894243bbe50393980d10a3a441a`,
-and `aa24b9aa10e12c90aa1382ccea69864d90b105ed9a2d7da352cb08363d27513b`.
-The source postimage manifest is `9f0b0dd59437965b0f79dc0e9dd0925a3d026fc5601c6994d36519e50f84eed1`;
-source and release preimage manifests are `e3a2f4997a60dc8f9db9e3061e79fbf25508fc5e5d6b04f519c9566032135c9d`
-and `933e267b8afb5cf6f404a2e103b59d308590fe96388a72b11990c535c6f85900`.
+and `ad65c64bd983cb647db9693cdc35838d7ae67b4809cf56b868cd5ca6d87981cc`.
+The source postimage is
+`01af83c4ff56063d1bad5cf9bc4e8c77e30649a74dba196053322456bd8be1ea`;
+the source and release preimages are
+`fbb77c808572cb322f72ada77a40ef448ac14875caec5cbd9964080442619a99`
+and `f032095d5c427ea45e38f37f166e1d64bcd3fb99042d3447db55d42503c48115`.
 
-Focused route, support, candidate-builder, registry, Admin-IA, and portal
-packets pass 27/27 across nine files. Workspace typecheck, scoped ESLint,
-scoped Prettier, public/client builds, diff hygiene, and the 3,189-file secret
-scan pass. A clean detached checkout passed `npm ci`, build/typecheck, and the
-16-assertion route/builder/registry packet. The broader Playwright packet could
-not start because the pre-existing E2E seed omits required non-null
-`join_opens_at`; no migration or seed change was authorized here.
+The exact 93-route registry now reports 29 ready, 34 isolated, and 30 missing;
+the protected subset is 16 ready and 59 non-ready. The visible-action registry
+contains exactly 29 truthful actions. Support is canonical Student-only:
+ticket links remain beneath `/app/student/support` and encode receipt IDs,
+while Parent and legacy support navigation is absent. Safe-return admission
+rejects `/app/support` for Parent, Student, Admin, and default roles while
+preserving canonical Student support. `RT-STU-040` and `RT-STU-050` remain
+isolated and dead shell links are removed.
 
-Claim `a3ae432b-8abd-45b7-b84d-7571a54a1bb8` and CLIENT_COMPOSER lease
-`74272335-1c16-4e4f-bdcd-63ab10909511`, SERVER_COMPOSER lease
-`806d0bf5-3317-4855-ae09-3d2e4c21cd9e`, and RELEASE_INTEGRATOR lease
-`8a34d221-1333-4ed3-a4af-3ad930ef3a3b` were released at
-`2026-08-02T06:25:46Z`, before the `2026-08-02T11:17:02Z` expiry. No provider,
-network, registry-population, persistent-database, native-PostgreSQL,
-candidate, deployment, DNS, send, charge, customer, cleanup, or external
-effect occurred; effects remain `0/0/0`.
+The public gallery has registered selection and slideshow controls with exact
+source wiring and browser-proved rendered-state transitions. The candidate
+builder derives raw Git blobs at the exact source SHA using batched
+`cat-file`, rejects caller-controlled inventory, and deterministically derives
+1,146 app blobs, 1,012 web blobs, and 1,012 worker blobs.
 
-I36 must push this exact held checkpoint, prove clean local/tracking/live
-equality, and stop for independent C00 review. Product-route completion,
-candidate metadata or freeze, and every external successor action remain
-separately gated.
+The out-of-ceiling file
+`tests/integration/support/ot89a-subscriber-support.test.ts` was not changed.
+Its three legacy `/app/support` UI expectations are recorded as superseded
+contract drift: anonymous/non-subscriber lead UI, disabled CRM-root, and
+paused-Parent CRM-root now fail closed at 404. No OT89A evidence citation
+remains in the visible-action registry.
+
+The local delta packet passes 27/27 across six files, and the focused gallery
+browser proof passes 1/1. Typecheck, scoped ESLint/Prettier, build, diff hygiene,
+and the 3,189-file secret scan pass. Detached tree
+`1a4e2f3dcc5f707eb2d7e14377e380929564faaf` with synthetic commit
+`5d6f8020db1024cbd18ddb7cb6176fa95a6f9e08` passed clean `npm ci`, build and
+typecheck, the 27/27 delta packet, and the 1/1 gallery browser proof.
+
+Disclosed out-of-scope baselines remain: global formatting reports 2,563
+untouched files while every changed file is clean; the broader auth/CRM packet
+has seven existing failures; normal Playwright startup is blocked by the
+existing seed omission of non-null `join_opens_at`; the full landing contract
+reaches an existing missing legal-copy assertion before gallery assertions;
+and `npm ci` reports one unchanged high vulnerability without an audit-fix
+mutation.
+
+Claim `b2d91877-4afc-4307-ae16-e3eeb4ea27e6`, CLIENT_COMPOSER lease
+`e193437a-a355-4a5d-b740-0a443ca3e71a`, SERVER_COMPOSER lease
+`67f84dd8-f317-455c-81f5-91d3cf324c77`, and RELEASE_INTEGRATOR lease
+`97f89adb-7b6e-47f8-b175-4e3a1f75dddb` were released at
+`2026-08-02T08:19:16Z`, before the `2026-08-02T12:45:22Z` expiry. No provider,
+network, persistent-database, candidate, deployment, DNS, send, charge,
+customer, cleanup, or external effect occurred; effects remain `0/0/0`.
+
+I36 must push this exact 18-path correction, prove clean local/tracking/live
+equality, and stop for delta-only independent review. This is not all-route
+convergence, candidate readiness, production completion, or authority for any
+external successor effect.
 
 All sections below are retained historical release records and audit prompts.
 

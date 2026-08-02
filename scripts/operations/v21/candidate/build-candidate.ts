@@ -205,42 +205,46 @@ const nondeterministicKeyPattern =
 const mutableCandidatePathPattern =
   /^ops\/v2\.1-execution\/(?:control|runtime|results|proofs|merge)(?:\/|$)/;
 
-const ARCHIVE_INPUTS = {
-  web_artifact: [
-    'apps/web',
-    'packages',
-    'scripts',
-    'package.json',
-    'package-lock.json',
-    'tsconfig.typecheck.json',
-  ],
-  worker_artifact: [
-    'apps/worker',
-    'packages',
-    'scripts',
-    'package.json',
-    'package-lock.json',
-    'tsconfig.typecheck.json',
-  ],
-  frontend_assets: [
-    'apps/web/src/client',
-    'apps/web/public',
-    'packages/brand-system',
-    'scripts/build-public-pages.ts',
-  ],
-} as const;
+const APPLICATION_CONTENT_ROOTS = [
+  'apps',
+  'packages',
+  'scripts',
+  'ops/commercial',
+  'integrations',
+  'ops/day-one',
+] as const;
+
+const DOCKER_CONTEXT_ROOTS = ['apps', 'packages', 'scripts', 'ops/commercial'] as const;
+
+const DOCKER_CONTEXT_EXACT_PATHS = [
+  '.dockerignore',
+  '.prettierrc.json',
+  'Dockerfile',
+  'eslint.config.js',
+  'package.json',
+  'package-lock.json',
+  'tsconfig.typecheck.json',
+] as const;
+
+const RAILWAY_SHARED_INPUT = 'railway.json' as const;
+const RAILWAY_WEB_INPUT = 'railway.web.staging.json' as const;
+const RAILWAY_WORKER_INPUT = 'railway.worker.staging.json' as const;
 
 function sha256(value: string | Uint8Array): string {
   return createHash('sha256').update(value).digest('hex');
 }
 
-function gitBytes(repositoryRoot: string, args: readonly string[]): Buffer {
+function gitBytes(
+  repositoryRoot: string,
+  args: readonly string[],
+  stdin?: string | Buffer,
+): Buffer {
   try {
     return execFileSync('git', args, {
       cwd: repositoryRoot,
-      encoding: 'buffer',
+      ...(stdin === undefined ? {} : { input: stdin }),
       maxBuffer: 256 * 1024 * 1024,
-      stdio: ['ignore', 'pipe', 'pipe'],
+      stdio: [stdin === undefined ? 'ignore' : 'pipe', 'pipe', 'pipe'],
       windowsHide: true,
     });
   } catch (error) {
@@ -255,21 +259,48 @@ function trackedPathsAtSource(repositoryRoot: string, sourceSha: string): string
     .toString('utf8')
     .split('\0')
     .filter(Boolean)
-    .sort();
+    .sort(compareRepositoryPaths);
   if (paths.length === 0) throw new Error('repository source tree must not be empty');
   paths.forEach((entry, index) => assertRepositoryPath(entry, `source_tree[${index}]`));
   return paths;
 }
 
-function gitBlobInput(
+function gitBlobInputs(
   repositoryRoot: string,
   sourceSha: string,
-  repositoryPath: string,
-): CandidateInputFile {
-  return hashCandidateInput(
-    repositoryPath,
-    gitBytes(repositoryRoot, ['cat-file', 'blob', `${sourceSha}:${repositoryPath}`]),
+  repositoryPaths: readonly string[],
+): CandidateInputFile[] {
+  const output = gitBytes(
+    repositoryRoot,
+    ['cat-file', '--batch'],
+    repositoryPaths.map((repositoryPath) => `${sourceSha}:${repositoryPath}\n`).join(''),
   );
+  const files: CandidateInputFile[] = [];
+  let offset = 0;
+  for (const repositoryPath of repositoryPaths) {
+    const headerEnd = output.indexOf(0x0a, offset);
+    if (headerEnd < 0) throw new Error(`Git blob batch omitted header for ${repositoryPath}`);
+    const header = output.subarray(offset, headerEnd).toString('utf8');
+    const match = /^[0-9a-f]+ blob ([0-9]+)$/u.exec(header);
+    if (!match?.[1]) {
+      throw new Error(
+        `Candidate input ${repositoryPath} must resolve to a raw Git blob (${header})`,
+      );
+    }
+    const size = Number(match[1]);
+    if (!Number.isSafeInteger(size) || size < 0) {
+      throw new Error(`Git blob batch returned an invalid size for ${repositoryPath}`);
+    }
+    const contentStart = headerEnd + 1;
+    const contentEnd = contentStart + size;
+    if (contentEnd >= output.length || output[contentEnd] !== 0x0a) {
+      throw new Error(`Git blob batch returned truncated bytes for ${repositoryPath}`);
+    }
+    files.push(hashCandidateInput(repositoryPath, output.subarray(contentStart, contentEnd)));
+    offset = contentEnd + 1;
+  }
+  if (offset !== output.length) throw new Error('Git blob batch returned unrequested bytes');
+  return files;
 }
 
 function inventoryFromPaths(
@@ -278,33 +309,27 @@ function inventoryFromPaths(
   paths: readonly string[],
 ): CandidateInputSet {
   if (paths.length === 0) throw new Error('derived candidate input set must not be empty');
-  const expectedPaths = [...paths].sort();
+  const expectedPaths = [...paths].sort(compareRepositoryPaths);
   return {
     expected_paths: expectedPaths,
-    files: expectedPaths.map((repositoryPath) =>
-      gitBlobInput(repositoryRoot, sourceSha, repositoryPath),
-    ),
+    files: gitBlobInputs(repositoryRoot, sourceSha, expectedPaths),
   };
 }
 
-function archiveInput(
-  repositoryRoot: string,
-  sourceSha: string,
-  archivePath: string,
-  pathspecs: readonly string[],
-): CandidateInputSet {
-  const archive = gitBytes(repositoryRoot, [
-    'archive',
-    '--format=tar.gz',
-    sourceSha,
-    '--',
-    ...pathspecs,
-  ]);
-  if (archive.length === 0) throw new Error(`${archivePath} archive must not be empty`);
-  return {
-    expected_paths: [archivePath],
-    files: [hashCandidateInput(archivePath, archive)],
-  };
+function compareRepositoryPaths(left: string, right: string): number {
+  return Buffer.compare(Buffer.from(left, 'utf8'), Buffer.from(right, 'utf8'));
+}
+
+function selectTrackedPaths(
+  tracked: readonly string[],
+  roots: readonly string[],
+  exactPaths: readonly string[] = [],
+): string[] {
+  const exact = new Set(exactPaths);
+  return tracked.filter(
+    (entry) =>
+      exact.has(entry) || roots.some((root) => entry === root || entry.startsWith(`${root}/`)),
+  );
 }
 
 const derivedInputSetCache = new Map<string, Record<CandidateInputSetName, CandidateInputSet>>();
@@ -338,6 +363,23 @@ export function deriveCandidateInputSets(
   if (cached) return cloneInputSets(cached);
   const tracked = trackedPathsAtSource(repositoryRoot, repositorySourceSha);
   const productTree = tracked.filter((entry) => !mutableCandidatePathPattern.test(entry));
+  const applicationContent = selectTrackedPaths(productTree, APPLICATION_CONTENT_ROOTS, [
+    ...DOCKER_CONTEXT_EXACT_PATHS,
+    RAILWAY_SHARED_INPUT,
+    RAILWAY_WEB_INPUT,
+    RAILWAY_WORKER_INPUT,
+  ]);
+  const dockerContext = selectTrackedPaths(
+    productTree,
+    DOCKER_CONTEXT_ROOTS,
+    DOCKER_CONTEXT_EXACT_PATHS,
+  );
+  const webServiceBundle = [...dockerContext, RAILWAY_SHARED_INPUT, RAILWAY_WEB_INPUT].sort(
+    compareRepositoryPaths,
+  );
+  const workerServiceBundle = [...dockerContext, RAILWAY_SHARED_INPUT, RAILWAY_WORKER_INPUT].sort(
+    compareRepositoryPaths,
+  );
   const configurationBundle = productTree.filter((entry) =>
     /(?:^|\/)(?:Dockerfile|railway[^/]*|\.env[^/]*|[^/]*config[^/]*)$/iu.test(entry),
   );
@@ -347,51 +389,28 @@ export function deriveCandidateInputSets(
       entry.startsWith('integrations/highlevel/registry/') ||
       /(?:^|\/)(?:provider|providers)(?:[-_./]|$)/iu.test(entry),
   );
+  const frontendAssets = selectTrackedPaths(
+    productTree,
+    ['apps/web/src/client', 'apps/web/public', 'packages/brand-system'],
+    ['scripts/build-public-pages.ts'],
+  );
 
   const derived: Record<CandidateInputSetName, CandidateInputSet> = {
-    application_content: archiveInput(
+    application_content: inventoryFromPaths(
       repositoryRoot,
       repositorySourceSha,
-      'git/application-content.git-archive.tar.gz',
-      ['apps', 'packages', 'scripts', 'integrations', 'ops/day-one'],
+      applicationContent,
     ),
-    product_tree: archiveInput(
-      repositoryRoot,
-      repositorySourceSha,
-      'git/product-tree.git-archive.tar.gz',
-      [
-        '.',
-        ':(exclude)ops/v2.1-execution/control',
-        ':(exclude)ops/v2.1-execution/runtime',
-        ':(exclude)ops/v2.1-execution/results',
-        ':(exclude)ops/v2.1-execution/proofs',
-        ':(exclude)ops/v2.1-execution/merge',
-      ],
-    ),
-    web_artifact: archiveInput(
-      repositoryRoot,
-      repositorySourceSha,
-      'artifacts/web-build-context.tar.gz',
-      ARCHIVE_INPUTS.web_artifact,
-    ),
-    worker_artifact: archiveInput(
-      repositoryRoot,
-      repositorySourceSha,
-      'artifacts/worker-build-context.tar.gz',
-      ARCHIVE_INPUTS.worker_artifact,
-    ),
+    product_tree: inventoryFromPaths(repositoryRoot, repositorySourceSha, productTree),
+    web_artifact: inventoryFromPaths(repositoryRoot, repositorySourceSha, webServiceBundle),
+    worker_artifact: inventoryFromPaths(repositoryRoot, repositorySourceSha, workerServiceBundle),
     configuration_bundle: inventoryFromPaths(
       repositoryRoot,
       repositorySourceSha,
       configurationBundle,
     ),
     migration_inventory: inventoryFromPaths(repositoryRoot, repositorySourceSha, migrations),
-    frontend_assets: archiveInput(
-      repositoryRoot,
-      repositorySourceSha,
-      'artifacts/frontend-build-context.tar.gz',
-      ARCHIVE_INPUTS.frontend_assets,
-    ),
+    frontend_assets: inventoryFromPaths(repositoryRoot, repositorySourceSha, frontendAssets),
     route_action_inventory: inventoryFromPaths(repositoryRoot, repositorySourceSha, [
       'ops/day-one/visible-action-registry.json',
     ]),
@@ -472,6 +491,8 @@ function assertRepositoryPath(path: unknown, location: string): asserts path is 
     path.length === 0 ||
     path.startsWith('/') ||
     path.includes('\\') ||
+    path.includes('\0') ||
+    path.includes('\n') ||
     path.split('/').includes('..') ||
     path === '.git' ||
     path.startsWith('.git/')
@@ -487,7 +508,7 @@ function assertSortedPaths(paths: unknown, location: string): asserts paths is s
   let priorPath: string | undefined;
   for (const [index, path] of paths.entries()) {
     assertRepositoryPath(path, `${location}[${index}]`);
-    if (priorPath !== undefined && path <= priorPath) {
+    if (priorPath !== undefined && compareRepositoryPaths(path, priorPath) <= 0) {
       throw new Error(`${location} must be strictly sorted with no duplicates`);
     }
     priorPath = path;
@@ -519,7 +540,7 @@ function assertInputSet(
     if (typeof entry.sha256 !== 'string' || !sha256Pattern.test(entry.sha256)) {
       throw new Error(`input_sets.${setName}[${index}].sha256 must be lowercase SHA-256`);
     }
-    if (priorPath !== undefined && entry.path <= priorPath) {
+    if (priorPath !== undefined && compareRepositoryPaths(entry.path, priorPath) <= 0) {
       throw new Error(`input_sets.${setName} must be strictly sorted by path with no duplicates`);
     }
     priorPath = entry.path;

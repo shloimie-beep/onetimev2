@@ -21,7 +21,6 @@ describe('Parent and Student portal navigation and account security', () => {
     expect(STUDENT_PORTAL_SECTIONS.map((section) => section.label)).toEqual([
       'Today',
       'Library',
-      'Class Helper',
       'Progress',
       'Questions',
       'Updates',
@@ -87,6 +86,28 @@ describe('Parent and Student portal navigation and account security', () => {
     expect(portalEntry).toContain('<AccountSecurityPanel');
     expect(portalEntry).toContain('autoComplete="current-password"');
     expect(portalEntry).toContain('autoComplete="new-password"');
+    expect(portalEntry).toContain("if (role === 'student')");
+    expect(portalEntry).toContain('Student passwords are managed by a Parent or Administrator.');
     expect(liveEntry).toContain("headers: { 'x-csrf-token': csrfToken }");
+  });
+
+  it('advertises only the mounted Student support route from portal callbacks', () => {
+    const portalEntry = readFileSync('apps/web/src/client/app/portal-entry.tsx', 'utf8');
+    const portalFeatures = readFileSync(
+      'apps/web/src/client/features/portals/PortalFeatures.tsx',
+      'utf8',
+    );
+
+    expect(portalEntry).toContain("window.location.assign('/app/student/support')");
+    expect(portalEntry).toContain('basePath="/app/student/support"');
+    expect(portalEntry).not.toContain('/app/parent/support');
+    expect(portalEntry).not.toContain("window.location.assign('/app/support')");
+    expect(portalEntry).not.toContain("href: '/app/student/questions'");
+    expect(portalEntry).not.toContain("href: '/app/student/updates'");
+    expect(portalEntry).not.toContain('Support remains available while learning access is paused.');
+    expect(portalFeatures).not.toContain('onPreviewSupport(selectedLearner.learner_key)');
+    expect(portalFeatures).toContain(
+      'Parent support routes are isolated; this callback is ignored.',
+    );
   });
 });

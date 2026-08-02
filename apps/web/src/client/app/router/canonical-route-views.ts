@@ -90,33 +90,15 @@ export function CanonicalRouteView({
 export const CANONICAL_ROUTE_COMPATIBILITY_PATHS: Readonly<
   Partial<Record<CanonicalRouteId, `/${string}`>>
 > = Object.freeze({
-  'RT-ADM-001': '/app/dashboard',
   'RT-ADM-010': '/app/crm',
   'RT-ADM-011': '/app/crm/contacts/:contactId',
   'RT-ADM-013': '/app/crm/contact-operations?household=:householdId',
-  'RT-ADM-020': '/app/content/processing',
-  'RT-ADM-021': '/app/content/create',
-  'RT-ADM-024': '/app/content',
-  'RT-ADM-032': '/app/classes',
   'RT-ADM-034': '/app/classes/occurrences',
-  'RT-ADM-035': '/app/classes/:occurrenceId',
-  'RT-ADM-036': '/app/classes/enrollments',
+  'RT-ADM-035': '/app/classes/occurrences?occurrence_key=:occurrenceId',
   'RT-ADM-037': '/app/classes/occurrences',
   'RT-ADM-039': '/app/classes/recordings',
-  'RT-ADM-040': '/app/live-console',
-  'RT-ADM-043': '/app/billing',
-  'RT-ADM-050': '/app/live-console',
-  'RT-ADM-051': '/app/live-console?occurrence_key=:occurrenceId',
   'RT-ADM-067': '/app/crm/audit',
-  'RT-PAR-060': '/app/support',
-  'RT-PAR-061': '/app/support/receipts/:ticketId',
   'RT-STU-020': '/app/student?section=library',
-  'RT-STU-040': '/app/student?section=questions',
-  'RT-STU-041': '/app/student?section=questions&mode=new',
-  'RT-STU-042': '/app/student?section=questions&question_id=:questionId',
-  'RT-STU-050': '/app/student?section=updates',
-  'RT-STU-060': '/app/support',
-  'RT-STU-061': '/app/support/receipts/:ticketId',
 });
 
 export function compatibilityPathForRoute(

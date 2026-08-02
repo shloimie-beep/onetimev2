@@ -10,7 +10,7 @@ import {
 
 type Props = {
   receiptId?: string | undefined;
-  basePath?: '/app/support' | '/app/parent/support' | '/app/student/support';
+  basePath?: '/app/student/support';
   onProtectedStateCleared: () => void;
 };
 
@@ -32,7 +32,7 @@ const defaultCategories = [
 
 export function SupportFeature({
   receiptId,
-  basePath = '/app/support',
+  basePath = '/app/student/support',
   onProtectedStateCleared,
 }: Props) {
   const [state, setState] = useState<LoadState>({ kind: 'loading' });
@@ -296,18 +296,28 @@ export function SupportFeature({
           {tickets.length === 0 ? (
             <p>No support requests yet.</p>
           ) : (
-            tickets.map((ticket) => (
-              <a key={ticket.receipt_id} href={`/app/support/receipts/${ticket.receipt_id}`}>
-                <strong>{readableState(ticket.status)}</strong>
-                <span>{deliveryLabel(ticket.delivery_state)}</span>
-                <small>{formatDate(ticket.updated_at)}</small>
-              </a>
-            ))
+            <SupportTicketLinks tickets={tickets} basePath={basePath} />
           )}
         </aside>
       </div>
     </section>
   );
+}
+
+export function SupportTicketLinks({
+  tickets,
+  basePath,
+}: {
+  tickets: SupportTicketSummary[];
+  basePath: '/app/student/support';
+}) {
+  return tickets.map((ticket) => (
+    <a key={ticket.receipt_id} href={`${basePath}/${encodeURIComponent(ticket.receipt_id)}`}>
+      <strong>{readableState(ticket.status)}</strong>
+      <span>{deliveryLabel(ticket.delivery_state)}</span>
+      <small>{formatDate(ticket.updated_at)}</small>
+    </a>
+  ));
 }
 
 async function readAttachments(values: FormDataEntryValue[]) {

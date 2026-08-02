@@ -27,10 +27,10 @@ describe('v2.1 canonical route server registration', () => {
     );
     expect(registrations.every(({ path }) => !path.includes('*'))).toBe(true);
     expect(new Set(registrations.map(({ path }) => path)).size).toBe(75);
-    expect(CANONICAL_READY_PROTECTED_ROUTES).toHaveLength(32);
+    expect(CANONICAL_READY_PROTECTED_ROUTES).toHaveLength(16);
     expect(
       CANONICAL_PROTECTED_ROUTES.filter(({ readiness }) => readiness !== 'ready'),
-    ).toHaveLength(43);
+    ).toHaveLength(59);
   });
 
   it('binds exact shell and role semantics', () => {

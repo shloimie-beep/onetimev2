@@ -1,62 +1,62 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
-MODE: PAUSE_FOR_C00_I36_ROUTE_SOURCE_HELD_CHECKPOINT_REVIEW
+MODE: PAUSE_FOR_C00_I36_HELD_SOURCE_CORRECTION_DELTA_REVIEW
 
-Audit the exact pushed I36 canonical-route and candidate-source fail-closed
-checkpoint. Do not continue product-route implementation, mark all-route
-convergence, bind or freeze a candidate, inspect or mutate a provider, touch a
-persistent database, run native PostgreSQL proof, deploy, change DNS, send,
-charge, clean up, or perform an external effect.
+Audit only the exact pushed I36 15-source/3-runtime held-source correction
+delta. Do not restart the broad audit, expand the ceiling, modify OT89A, continue
+product-route implementation, mark all-route convergence, bind or freeze a
+candidate, inspect or mutate a provider, touch a persistent database, deploy,
+change DNS, send, charge, clean up, or perform an external effect.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-integration
 Authorized start and required sole parent:
-`9082f3015d6fe95cf374266b49a9e4db7ae69ead`
-Containing control: `71342aa60de3f3840c70555a616cded8f5672989`
-Authority basis: `61d52aa85f3f040187c21081c0e17a83544f9443`
-READY: `85ff11c44fdcd4426a821250ae554e8f7a251edd7fd6e0d9ac610df9d58bafc8`
-Claim: `a3ae432b-8abd-45b7-b84d-7571a54a1bb8`
-Writer: `codex-i36-route-convergence-a3ae432b`
-Leases: CLIENT_COMPOSER `74272335-1c16-4e4f-bdcd-63ab10909511`,
-SERVER_COMPOSER `806d0bf5-3317-4855-ae09-3d2e4c21cd9e`, and
-RELEASE_INTEGRATOR `8a34d221-1333-4ed3-a4af-3ad930ef3a3b`.
-Lease issue/expiry/release: `2026-08-02T05:17:02Z` /
-`2026-08-02T11:17:02Z` / `2026-08-02T06:25:46Z`. Effects: `0/0/0`.
+`e7417f39e71fbb4fb45aa4a9436ba78496020063`
+Containing control: `6852bbfd2bbccc1b7a3bfe53393e46eacc6b9ace`
+Authority basis: `71342aa60de3f3840c70555a616cded8f5672989`
+READY: `d58967bf53d161676d1a8c198f76c399a22c0e321e13d2b349e85605fd7cc209`
+Claim: `b2d91877-4afc-4307-ae16-e3eeb4ea27e6`
+Writer: `codex-i36-held-source-correction-b2d91877`
+Leases: CLIENT_COMPOSER `e193437a-a355-4a5d-b740-0a443ca3e71a`,
+SERVER_COMPOSER `67f84dd8-f317-455c-81f5-91d3cf324c77`, and
+RELEASE_INTEGRATOR `97f89adb-7b6e-47f8-b175-4e3a1f75dddb`.
+Lease issue/expiry/release: `2026-08-02T06:45:22Z` /
+`2026-08-02T12:45:22Z` / `2026-08-02T08:19:16Z`. Effects: `0/0/0`.
 
-Confirm sole parent `9082f301...`, exact 22-source/3-runtime scope, and source,
-runtime, and release inventories `864eae3953c425105cab1e90bef54aa65b71fe1c76b029f7bec8ba73114549b6`,
+Confirm sole parent `e7417f39...`, exact 15-source/3-runtime scope, and source,
+runtime, and release inventories `583dca8d744d7232e5fc0e137fa358743c7c091b7abc3bfc9423f52872ad3d6c`,
 `bdf3cfe7a516fb00f891ef66f1f752591ce3d894243bbe50393980d10a3a441a`,
-and `aa24b9aa10e12c90aa1382ccea69864d90b105ed9a2d7da352cb08363d27513b`.
-Confirm source postimage `9f0b0dd59437965b0f79dc0e9dd0925a3d026fc5601c6994d36519e50f84eed1`
-and source/release preimages `e3a2f4997a60dc8f9db9e3061e79fbf25508fc5e5d6b04f519c9566032135c9d`
-and `933e267b8afb5cf6f404a2e103b59d308590fe96388a72b11990c535c6f85900`.
-Confirm all changed paths are inside the authorized 55-path ceiling with
-inventory `f84c296b...` and preimage manifest `42c615de...`.
+and `ad65c64bd983cb647db9693cdc35838d7ae67b4809cf56b868cd5ca6d87981cc`.
+Confirm source postimage `01af83c4ff56063d1bad5cf9bc4e8c77e30649a74dba196053322456bd8be1ea`
+and source/release preimages `fbb77c808572cb322f72ada77a40ef448ac14875caec5cbd9964080442619a99`
+and `f032095d5c427ea45e38f37f166e1d64bcd3fb99042d3447db55d42503c48115`.
+Confirm all changed paths are inside the authorized 58-path ceiling with
+inventory `6995f605...` and preimage manifest `d6f44950...`.
 
-Confirm exactly 93 locked routes and truthful counts 46 ready, 17 isolated,
-and 30 missing. Confirm every non-ready route has a null handler and exact
-server fail-closed registration; no prefix or generic-view fallback advertises
-readiness; literal routes outrank parameter templates; and `RT-STU-012` is
-isolated. Reproduce both non-ready ID inventories from HANDOFF/TASK-STATE.
+Confirm the registry reports exactly 93 locked routes: 29 ready, 34 isolated,
+and 30 missing; the protected subset is 16 ready and 59 non-ready; and the
+visible-action registry has exactly 29 actions. Confirm Student-only canonical
+support, encoded recent-ticket paths, absence of Parent/legacy support
+navigation, and safe-return rejection of `/app/support` for Parent, Student,
+Admin, and default roles while canonical Student support survives.
 
-Confirm canonical public/auth/Admin/Parent/Student navigation and bounded
-aliases, exact Family signup API, setup/reset token scrubbing, role/session/CSRF
-fences, source-hashed visible-action parity, and exclusion of retired/non-ready
-actions. Confirm the builder derives raw blobs and deterministic archives at the
-exact source SHA, rejects caller inventory control and omitted inputs, and
-names no fictional build artifact.
+Confirm gallery select/toggle source wiring and the real-browser rendered-state
+proof. Confirm `RT-STU-040` and `RT-STU-050` stay isolated, dead shell links are
+absent, and the candidate builder derives exact raw Git blobs using batched
+`cat-file` with deterministic counts 1,146 app, 1,012 web, and 1,012 worker.
 
-Reproduce the 27/27 focused packet, typecheck, scoped ESLint/Prettier,
-public/client build, diff hygiene, secret scan, and clean npm-ci packet. Treat
-the E2E seed's absent non-null `join_opens_at` as a disclosed harness baseline
-unless the reviewed diff caused it. Confirm all three leases released before
-expiry, clean local/tracking/live equality, and no external effect.
+Confirm `tests/integration/support/ot89a-subscriber-support.test.ts` is outside
+the changed scope and its three legacy `/app/support` UI expectations are
+explicitly superseded drift, not evidence to restore the legacy route. Confirm
+the local and clean-checkout 27/27 delta packets, local and clean 1/1 gallery
+browser proofs, typecheck, scoped lint/format, build, diff hygiene, secret scan,
+and clean `npm ci`. Treat every disclosed baseline as out of scope unless the
+reviewed delta caused it.
 
-Return exact P1/P2/P3 counts. The checkpoint may close registry/builder truth
-findings, but must remain held for 47 non-ready product routes and must not be
-admitted as all-route convergence, candidate readiness, or production
-completion. Stop.
+Return exact P1/P2/P3 counts. Confirm all three leases released before expiry,
+clean local/tracking/live equality, and effects `0/0/0`. Do not admit this as
+all-route convergence, candidate readiness, or production completion. Stop.
 
 ---
 

@@ -587,6 +587,12 @@ export function createApp({
     },
   );
 
+  app.get('/app/support', (_req, res) => {
+    setPrivateNoStore(res);
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    res.status(404).type('text').send('Canonical Admin support is not available.');
+  });
+
   registerSupportRoutes({
     app,
     config,
@@ -934,8 +940,25 @@ export function createApp({
   app.get('/access-denied', async (req: RequestWithTrace, res) => {
     const session = await sessionFromRequest(req, pool, config);
     if (!session) {
-      res.redirect(302, '/login?return_to=%2Faccess-denied');
-      return;
+      const cookieHeader = req.header('cookie');
+      if (cookieHeaderHasName(cookieHeader, AUTH_SESSION_COOKIE.name)) {
+        const resolution = await v21AdultSessionRuntime.resolveCookieHeader({
+          cookie_header: cookieHeader,
+          ...(clock ? { now: clock() } : {}),
+        });
+        if (resolution.status === 'unavailable') {
+          setPrivateNoStore(res);
+          res.status(503).type('text').send('Access verification is temporarily unavailable.');
+          return;
+        }
+        if (resolution.status !== 'resolved' || !resolution.context) {
+          res.redirect(302, '/login?return_to=%2Faccess-denied');
+          return;
+        }
+      } else {
+        res.redirect(302, '/login?return_to=%2Faccess-denied');
+        return;
+      }
     }
     setPrivateNoStore(res);
     res.setHeader('X-Robots-Tag', 'noindex, nofollow');
@@ -987,6 +1010,7 @@ export function createApp({
         token_type: inspected.token_type,
         target_role: inspected.target_role,
         expires_at: inspected.expires_at,
+        mfa_required: inspected.mfa_required,
       });
     } catch (error) {
       handleLifecycleRouteError(error, req, res, 'We could not check that link yet.');
@@ -1053,6 +1077,7 @@ export function createApp({
       setAuthCookies(res, config, session.session_token, session.csrf_token);
       res.status(200).json({
         success: true,
+        mfa_required: inspected.mfa_required,
         csrf_token: session.csrf_token,
         return_to: defaultRouteForRole(session.user.role),
       });
@@ -1129,6 +1154,24 @@ export function createApp({
         return;
       }
       if (route.shell === 'student') {
+        const legacySession = await sessionFromRequest(req, pool, config);
+        const cookieHeader = req.header('cookie');
+        if (!legacySession && cookieHeaderHasName(cookieHeader, AUTH_SESSION_COOKIE.name)) {
+          const resolution = await v21AdultSessionRuntime.resolveCookieHeader({
+            cookie_header: cookieHeader,
+            ...(clock ? { now: clock() } : {}),
+          });
+          if (resolution.status === 'unavailable') {
+            setPrivateNoStore(res);
+            res.status(503).type('text').send('Access verification is temporarily unavailable.');
+            return;
+          }
+          if (resolution.status === 'resolved' && resolution.context) {
+            setPrivateNoStore(res);
+            res.status(403).type('html').send(forbiddenAppHtml('student'));
+            return;
+          }
+        }
         await serveProtectedAppShell(req, res, {
           pool,
           config,
@@ -1142,11 +1185,29 @@ export function createApp({
 
       const session = await sessionFromRequest(req, pool, config);
       if (!session) {
+        const cookieHeader = req.header('cookie');
+        if (cookieHeaderHasName(cookieHeader, AUTH_SESSION_COOKIE.name)) {
+          const resolution = await v21AdultSessionRuntime.resolveCookieHeader({
+            cookie_header: cookieHeader,
+            ...(clock ? { now: clock() } : {}),
+          });
+          if (resolution.status === 'unavailable') {
+            setPrivateNoStore(res);
+            res.status(503).type('text').send('Access verification is temporarily unavailable.');
+            return;
+          }
+          if (resolution.status === 'resolved' && resolution.context) {
+            setPrivateNoStore(res);
+            res.status(403).type('html').send(forbiddenOwnerAdminHtml(req.path));
+            return;
+          }
+        }
         const returnTo = safeReturnPath(req.path, config) ?? '/app/dashboard';
         res.redirect(302, `/login?return_to=${encodeURIComponent(returnTo)}`);
         return;
       }
-      if (!['owner', 'admin', 'rabbi'].includes(session.user.role)) {
+      const canonicalUser = currentClientUser(session.user);
+      if (canonicalUser?.role !== 'admin') {
         setPrivateNoStore(res);
         res.status(403).type('html').send(forbiddenOwnerAdminHtml(req.path));
         return;
@@ -1155,7 +1216,11 @@ export function createApp({
       setPrivateNoStore(res);
       await sendAppHtml(res, distDir, route.shell === 'live' ? 'live' : 'crm', config);
     },
-    unavailableHandlerFor: (route: CanonicalProtectedRoute) => (_req, res) => {
+    unavailableHandlerFor: (route: CanonicalProtectedRoute) => (_req, res, next) => {
+      if (route.routeId === 'RT-ADM-030') {
+        next();
+        return;
+      }
       setPrivateNoStore(res);
       res.status(404).type('text').send(`Canonical route ${route.routeId} is not available.`);
     },
@@ -1864,6 +1929,15 @@ export function createApp({
     if (!session) return;
     if (!requireSameOriginPost(req, res, config)) return;
     if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    if (session.user.role === 'student') {
+      res.status(403).json({
+        success: false,
+        code: 'STUDENT_PASSWORD_ADULT_MANAGED',
+        message: 'Student passwords are managed by a Parent or Administrator.',
+        request_id: req.traceId,
+      });
+      return;
+    }
     try {
       const payload = authenticatedPasswordChangePayloadSchema.parse(req.body);
       const result = await changeOwnPassword({
@@ -6179,25 +6253,20 @@ function returnPathForRole(value: string | undefined, role: string, config: AppC
   if (role === 'owner' || role === 'admin') {
     return !startsWithRoute('/app') ||
       startsWithRoute('/app/parent') ||
-      startsWithRoute('/app/student')
+      startsWithRoute('/app/student') ||
+      startsWithRoute('/app/support')
       ? defaultRouteForRole(role)
       : safe;
   }
   if (role === 'parent') {
-    return startsWithRoute('/app/parent') ||
-      startsWithRoute('/app/support') ||
-      startsWithRoute('/app/billing/checkout')
+    return startsWithRoute('/app/parent') || startsWithRoute('/app/billing/checkout')
       ? safe
       : defaultRouteForRole(role);
   }
   if (role === 'student') {
-    return startsWithRoute('/app/student') || startsWithRoute('/app/support')
-      ? safe
-      : defaultRouteForRole(role);
+    return startsWithRoute('/app/student') ? safe : defaultRouteForRole(role);
   }
-  return startsWithRoute('/app/crm') || startsWithRoute('/app/support')
-    ? safe
-    : defaultRouteForRole(role);
+  return startsWithRoute('/app/crm') ? safe : defaultRouteForRole(role);
 }
 
 function forbiddenAppHtml(appPage: 'parent' | 'student') {

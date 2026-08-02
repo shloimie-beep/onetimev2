@@ -93,10 +93,8 @@ type PortalDialog =
 
 function PortalApp() {
   const portalRole = portalRoleFromLocation(location.pathname);
-  const classroomRoute = /^\/app\/student\/class\/[^/]+$/u.test(location.pathname);
-  const supportRoute = location.pathname.match(
-    /^\/app\/(?:parent|student)\/support(?:\/([^/]+))?$/u,
-  );
+  const classroomRoute = location.pathname === '/app/classroom';
+  const supportRoute = location.pathname.match(/^\/app\/student\/support(?:\/([^/]+))?$/u);
   const [activeSection, setActiveSection] = useState<ParentPortalSection | StudentPortalSection>(
     () => portalSectionFromLocation(portalRole),
   );
@@ -577,12 +575,6 @@ function PortalApp() {
           href: '/app/parent/students',
           current: location.pathname.startsWith('/app/parent/students'),
         },
-        {
-          id: 'v21-parent-support',
-          label: 'Support',
-          href: '/app/parent/support',
-          current: location.pathname.startsWith('/app/parent/support'),
-        },
       ];
     }
     if (portalRole === 'parent') {
@@ -592,12 +584,6 @@ function PortalApp() {
           label: 'Students',
           href: '/app/parent/students',
           current: location.pathname.startsWith('/app/parent/students'),
-        },
-        {
-          id: 'parent-support',
-          label: 'Support',
-          href: '/app/parent/support',
-          current: location.pathname.startsWith('/app/parent/support'),
         },
       ];
     }
@@ -613,18 +599,6 @@ function PortalApp() {
         label: 'Library',
         href: '/app/student/library',
         current: activeSection === 'library',
-      },
-      {
-        id: 'student-questions',
-        label: 'Questions',
-        href: '/app/student/questions',
-        current: activeSection === 'questions',
-      },
-      {
-        id: 'student-updates',
-        label: 'Updates',
-        href: '/app/student/updates',
-        current: activeSection === 'updates',
       },
       {
         id: 'student-support',
@@ -682,7 +656,7 @@ function PortalApp() {
       {supportRoute ? (
         <SupportFeature
           receiptId={supportRoute[1] ? decodeURIComponent(supportRoute[1]) : undefined}
-          basePath={portalRole === 'parent' ? '/app/parent/support' : '/app/student/support'}
+          basePath="/app/student/support"
           onProtectedStateCleared={() => {
             setSessionExpired(true);
             setSession(null);
@@ -750,7 +724,6 @@ function PortalApp() {
             onStudentAccessAction={openStudentAccessDialog}
             onLaunchClass={(_learnerKey, action) => void handleProtectedAction(action)}
             onOpenContent={(_learnerKey, action) => void handleProtectedAction(action)}
-            onPreviewSupport={() => window.location.assign('/app/support')}
             onRetry={() => void load()}
             accountSecurity={
               session ? (
@@ -783,8 +756,6 @@ function PortalApp() {
             const canonicalSectionPath: Partial<Record<StudentPortalSection, string>> = {
               today: '/app/student',
               library: '/app/student/library',
-              questions: '/app/student/questions',
-              updates: '/app/student/updates',
             };
             history.pushState(
               {},
@@ -803,7 +774,7 @@ function PortalApp() {
           onMarkLiveClassReady={(questionKey, ready) =>
             void handleLiveClassReady(questionKey, ready)
           }
-          onPreviewSupport={() => window.location.assign('/app/support')}
+          onPreviewSupport={() => window.location.assign('/app/student/support')}
           onRetry={() => void load()}
           accountSecurity={
             session ? (
@@ -903,9 +874,6 @@ function ParentPausedShell({
             Current paid or complimentary access is not active. No learning content is available
             until access is restored.
           </p>
-          <a className="ot-button ot-button--secondary" href="/app/support">
-            Contact Support
-          </a>
         </div>
       </section>
     );
@@ -933,13 +901,6 @@ function ParentPausedShell({
         </button>
       </div>
       <div id="account-security">{accountSecurity}</div>
-      <div className="ot-panel">
-        <h3>Support</h3>
-        <p>Support remains available while learning access is paused.</p>
-        <a className="ot-button ot-button--secondary" href="/app/support">
-          Open Support
-        </a>
-      </div>
     </section>
   );
 }
@@ -976,6 +937,34 @@ function AccountSecurityPanel({
     newPassword === confirmPassword &&
     newPassword !== currentPassword;
 
+  if (role === 'student') {
+    return (
+      <section className="ot-subsection" aria-labelledby="account-security-heading">
+        <div className="ot-section-title">
+          <div>
+            <h3 id="account-security-heading">Account &amp; security</h3>
+            <p>Student credentials are adult-managed.</p>
+          </div>
+          <span>{roleLabel}</span>
+        </div>
+        <dl className="ot-mini-metrics">
+          <div>
+            <dt>Sign-in identifier</dt>
+            <dd>{displaySignInIdentifier(identifier, role)}</dd>
+          </div>
+          <div>
+            <dt>Session</dt>
+            <dd>Secure and active</dd>
+          </div>
+        </dl>
+        <p className="ot-muted">
+          Student passwords are managed by a Parent or Administrator. Ask them to send a secure
+          reset.
+        </p>
+      </section>
+    );
+  }
+
   return (
     <section className="ot-subsection" aria-labelledby="account-security-heading">
       <div className="ot-section-title">
@@ -996,13 +985,7 @@ function AccountSecurityPanel({
         </div>
       </dl>
       <p className="ot-muted">
-        {role === 'student' ? (
-          <>If you cannot sign in, ask your Parent or an Administrator to send a secure reset.</>
-        ) : (
-          <>
-            Cannot use your current password? <a href="/forgot-password">Request a secure reset</a>.
-          </>
-        )}
+        Cannot use your current password? <a href="/forgot-password">Request a secure reset</a>.
       </p>
       <form
         className="ot-dialog-form"
@@ -1516,6 +1499,7 @@ function portalSectionFromLocation(
 }
 
 function portalRoleFromLocation(pathname: string): 'parent' | 'student' {
+  if (pathname === '/app/classroom') return 'student';
   const route = resolveCurrentClientRoute(pathname);
   if (route?.shell === 'parent') return 'parent';
   if (route?.shell === 'student') return 'student';

@@ -68,12 +68,77 @@ describe('I36 deterministic candidate builder', () => {
     expect(sets.route_action_inventory.files).toEqual([
       { path: 'ops/day-one/visible-action-registry.json', sha256: sha256(registry) },
     ]);
-    expect(sets.web_artifact.expected_paths).toEqual(['artifacts/web-build-context.tar.gz']);
-    expect(sets.worker_artifact.expected_paths).toEqual(['artifacts/worker-build-context.tar.gz']);
-    expect(sets.frontend_assets.expected_paths).toEqual([
-      'artifacts/frontend-build-context.tar.gz',
-    ]);
+    expect(sets.application_content.expected_paths).toHaveLength(1146);
+    expect(sets.web_artifact.expected_paths).toHaveLength(1012);
+    expect(sets.worker_artifact.expected_paths).toHaveLength(1012);
+    expect(sets.application_content.expected_paths).toEqual(
+      [...sets.application_content.expected_paths].sort((left, right) =>
+        Buffer.compare(Buffer.from(left), Buffer.from(right)),
+      ),
+    );
+    for (const requiredPath of [
+      '.dockerignore',
+      '.prettierrc.json',
+      'Dockerfile',
+      'eslint.config.js',
+      'package.json',
+      'package-lock.json',
+      'tsconfig.typecheck.json',
+      'apps/web/src/server/app.ts',
+      'apps/worker/src/main/index.ts',
+      'ops/commercial/ot87/family-plan.v1.json',
+      'railway.json',
+      'railway.web.staging.json',
+      'railway.worker.staging.json',
+    ]) {
+      expect(sets.application_content.expected_paths, requiredPath).toContain(requiredPath);
+    }
+    for (const requiredPath of [
+      '.dockerignore',
+      '.prettierrc.json',
+      'Dockerfile',
+      'eslint.config.js',
+      'package.json',
+      'package-lock.json',
+      'tsconfig.typecheck.json',
+      'apps/web/src/server/app.ts',
+      'apps/worker/src/main/index.ts',
+      'ops/commercial/ot87/family-plan.v1.json',
+      'railway.json',
+    ]) {
+      expect(sets.web_artifact.expected_paths, requiredPath).toContain(requiredPath);
+      expect(sets.worker_artifact.expected_paths, requiredPath).toContain(requiredPath);
+    }
+    expect(sets.web_artifact.expected_paths).toContain('railway.web.staging.json');
+    expect(sets.web_artifact.expected_paths).not.toContain('railway.worker.staging.json');
+    expect(sets.worker_artifact.expected_paths).toContain('railway.worker.staging.json');
+    expect(sets.worker_artifact.expected_paths).not.toContain('railway.web.staging.json');
+    expect(
+      sets.application_content.expected_paths.some((entry) =>
+        /^ops\/v2\.1-execution\/(?:control|runtime|results|proofs|merge)(?:\/|$)/u.test(entry),
+      ),
+    ).toBe(false);
     expect(JSON.stringify(sets)).not.toMatch(/dist\/apps\/(?:web|worker)\/(?:server|main)\.js/u);
+    expect(JSON.stringify(sets)).not.toMatch(/(?:git-archive|build-context\.tar|artifact.*\.tar)/u);
+
+    for (const [setName, repositoryPath] of [
+      ['application_content', 'Dockerfile'],
+      ['web_artifact', 'railway.web.staging.json'],
+      ['worker_artifact', 'railway.worker.staging.json'],
+    ] as const) {
+      const blob = execFileSync('git', ['cat-file', 'blob', `${sourceSha}:${repositoryPath}`], {
+        cwd: repositoryRoot,
+      });
+      expect(
+        sets[setName].files.find(({ path }) => path === repositoryPath),
+        `${setName}:${repositoryPath}`,
+      ).toEqual({ path: repositoryPath, sha256: sha256(blob) });
+    }
+
+    sets.web_artifact.files[0]!.sha256 = '0'.repeat(64);
+    expect(
+      deriveCandidateInputSets(repositoryRoot, sourceSha).web_artifact.files[0]!.sha256,
+    ).not.toBe('0'.repeat(64));
   }, 30_000);
 
   it('derives the candidate identity deterministically without caller-supplied path inventories', () => {
