@@ -1,3 +1,32 @@
+CURRENT INSTRUCTION — DOCKER-CONTEXT CORRECTED CANDIDATE DELTA REVIEW
+
+Audit only the exact pushed I36 five-path terminal whose parent is
+`954c5e3505c1a1ba8f9bb0c1edb193a9408dac79`. Confirm exactly the two new
+candidate documents under
+`ops/v2.1-execution/merge/candidates/c7faf43f4cc17a0e80f01c5db0a31f6a81f9b1f5f5090281b6f6daaf1cc84dab/`
+and the I36 runtime triplet changed. Confirm source
+`d5f75bbae511f6549897b1b005db1c5978b4487b`, candidate
+`c7faf43f4cc17a0e80f01c5db0a31f6a81f9b1f5f5090281b6f6daaf1cc84dab`,
+path inventory
+`23eacc77df2bd33a68b58c2b6479801bab9d684339c0fc9a8b135011b2123cb6`,
+and preimage manifest
+`b37a124099fcb9377ff9571f3d3c74f21495a5dd9956cd760f12bf12a7976d1d`.
+
+Confirm derivation SHA-256
+`c1a7bb7356e3630f419b31e7399e3393a7d2ff95d3778935b959b80cc8c88286`
+and manifest SHA-256
+`48c68cec03b5c83b9e0befa64c903e5f94b3b4a7faff53bfe021367b316b0f07`,
+then independently reproduce the candidate. Confirm the source correction's
+review is P1=0, P2=0, P3=0 and the full build passes. Confirm the unchanged
+migration, frontend, route-action, workflow, HighLevel, provider, message,
+acceptance, and environment-profile digests match the candidate documents.
+Confirm PostgreSQL 18.4 run `30748901653` remains applicable because the
+migration inventory is unchanged. Run only the candidate-builder tests and
+exact-scope, parse, hash, diff, and runtime-format checks. Confirm this refreeze
+performed no provider or deployment effect. Return exact P1/P2/P3 counts.
+
+--- HISTORICAL PROMPTS BELOW ---
+
 CURRENT INSTRUCTION — CORRECTED CANDIDATE REFREEZE DELTA REVIEW
 
 Audit only the exact pushed I36 five-path corrected candidate-refreeze terminal.

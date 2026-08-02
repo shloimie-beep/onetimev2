@@ -1,5 +1,43 @@
 # I36 Integration Releases
 
+## Current terminal - Docker-context corrected candidate refreeze
+
+The first Railway staging attempt for corrected candidate
+`68af08379cf596a2c8dfac28253487fb21fea222c6ea1275d096a6f972130ee8`
+failed safely during Docker typecheck because `integrations/` was absent from
+the Docker build context. Web deployment
+`bb369416-5130-4fd0-8ec6-ba9b309fdd23` and worker deployment
+`ea1a2031-126c-4df0-9565-fe8b11c55241` both failed before an application
+instance was replaced or a database migration ran. The effect is reconciled,
+its lock is released, the prior staging deployments remain active, and control
+is pushed at `44edd0a460156088720b71c9ccb615b5972971fb`.
+
+Source `d5f75bbae511f6549897b1b005db1c5978b4487b` adds only the required
+`integrations/` copies to the Docker base and runtime stages. Its full local
+build passed and its independent review is P1=0, P2=0, P3=0. Integration merge
+`954c5e3505c1a1ba8f9bb0c1edb193a9408dac79` contains that correction.
+
+The new deterministic candidate is
+`c7faf43f4cc17a0e80f01c5db0a31f6a81f9b1f5f5090281b6f6daaf1cc84dab`,
+bound to exact source `d5f75bbae511f6549897b1b005db1c5978b4487b`. Its derivation and
+manifest SHA-256 values are respectively
+`c1a7bb7356e3630f419b31e7399e3393a7d2ff95d3778935b959b80cc8c88286`
+and `48c68cec03b5c83b9e0befa64c903e5f94b3b4a7faff53bfe021367b316b0f07`.
+This terminal changes exactly five paths: the two new candidate documents and
+the I36 runtime triplet. The path-inventory and preimage-manifest digests are
+`23eacc77df2bd33a68b58c2b6479801bab9d684339c0fc9a8b135011b2123cb6`
+and `b37a124099fcb9377ff9571f3d3c74f21495a5dd9956cd760f12bf12a7976d1d`.
+
+The migration inventory remains byte-identical at
+`1598fc0f7f18e172b9566c65dbb81593ba2b5b1339e1dbca312aa01b53383f6b`;
+therefore PostgreSQL 18.4 proof run `30748901653` remains applicable without a
+duplicate full proof run. Push this exact terminal, perform one delta-only
+candidate review, and only after acceptance acquire fresh candidate-bound
+Railway authority and locks for a new staging attempt. This refreeze holds no
+provider lock and performs no external effect.
+
+All sections below are retained historical release records and audit prompts.
+
 ## Current terminal - corrected immutable candidate refreeze
 
 Control `8b2871228ecc0be54aa299dc4d25dad60afd27e1`, based on
