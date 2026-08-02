@@ -63,6 +63,27 @@ authorities:
     lock_released_at: '2026-08-02T11:17:33Z'
     checked_at: '2026-08-02T11:17:33Z'
     state_based_on_control_head_sha: b35b084cbe9811058dc7bb2e8b0de0fe1c895e18
+  i36-pg18-proof-20260802124709:
+    schema_version: 1
+    execution_id: OT-V21-PRODUCTION
+    authority_id: i36-pg18-proof-20260802124709
+    authority_kind: derived_candidate_preparation_effect
+    grant_digest: 490faa5d1db30027b69df9dd11236728a0122ae30acee6fa6ca8ebec3004d614
+    source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+    status: active
+    expires_at: '2026-08-02T13:32:09Z'
+    latest_revocation_path: null
+    latest_revocation_digest: null
+    provider_lock: production:deployment
+    provider_lock_lease_id: 5547777d-a87f-464e-abcb-4068c0f1a60c
+    fencing_token: fence-61adc6f7-0322-4226-86d8-e8d5773250ac
+    effect_authority_usable: true
+    candidate_binding_status: exact_source_sha_bound_pre_freeze
+    repository_source_sha: 7943a20895939f66b6755d02f819165850d1042f
+    integration_head_sha: 42065da2be8334382b2491c8e1d1a3a43231ab98
+    prerequisite_review: P1_0_P2_0_P3_0
+    checked_at: '2026-08-02T12:47:09Z'
+    state_based_on_control_head_sha: d488ff76efbf2dad0052b0eeaf97003a79ab5b8e
 entry_schema: templates/AUTHORITY-STATUS-ENTRY.yaml
 revocation_schema: templates/AUTHORITY-REVOCATION-RECORD.yaml
 rule: C00 records externally granted/revoked/expired authority; it does not grant it. Every update binds the known

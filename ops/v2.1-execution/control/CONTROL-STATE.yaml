@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: operational
-active_phase: launch_priority_source_correction_accepted_for_integration
+active_phase: corrected_candidate_pg18_proof_reserved
 bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
@@ -16,13 +16,62 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
 active_writer_limit: 4
-controller_authorization_sha: 228f1c4fdf3fbbf8a694bb2a7cee71cd405fab7c
+controller_authorization_sha: d488ff76efbf2dad0052b0eeaf97003a79ab5b8e
 next_action: >-
-  Merge exact accepted source head 7943a20895939f66b6755d02f819165850d1042f into integration at
-  031cfde117028c8c199c7bc47e46e18a8227139d, run the focused integration proof, and refreeze a corrected candidate.
-  In parallel, continue read-only GHL audience/workflow and DNS/sender/deployment reconciliation. No provider mutation,
-  deployment, DNS, contact, send, enrollment, billing, cleanup, operator canary, or broad production effect is
-  authorized by this checkpoint.
+  Push the exact write-ahead reservation, revalidate its authority and production:deployment fencing token, and dispatch
+  one OPS-11 PostgreSQL 18.4 proof for source 7943a20895939f66b6755d02f819165850d1042f. Reconcile the exact run and
+  ephemeral cleanup before releasing the lock. No production deployment, DNS, provider/customer mutation, contact,
+  send, enrollment, billing, cleanup, operator canary, or broad production effect is authorized by this checkpoint.
+corrected_source_integration_terminal:
+  recorded_at: '2026-08-02T12:44:55Z'
+  state_basis_control_head_sha: d488ff76efbf2dad0052b0eeaf97003a79ab5b8e
+  prior_integration_head_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
+  accepted_source_head_sha: 7943a20895939f66b6755d02f819165850d1042f
+  integration_merge_head_sha: 42065da2be8334382b2491c8e1d1a3a43231ab98
+  merge_parent_count: 2
+  changed_path_count: 5
+  focused_integration_tests: passed_9_with_1_native_postgresql_skip
+  clean_production_build: passed
+  typecheck: passed
+  retired_preview_artifact_files_and_references: 0/0
+  provider_or_external_effects: 0/0/0
+corrected_candidate_pg18_proof_dispatch_authority:
+  recorded_at: '2026-08-02T12:47:09Z'
+  control_basis_sha: d488ff76efbf2dad0052b0eeaf97003a79ab5b8e
+  accepted_source_head_sha: 7943a20895939f66b6755d02f819165850d1042f
+  integration_merge_head_sha: 42065da2be8334382b2491c8e1d1a3a43231ab98
+  independent_review: P1_0_P2_0_P3_0
+  authority_id: i36-pg18-proof-20260802124709
+  authority_grant_digest: 490faa5d1db30027b69df9dd11236728a0122ae30acee6fa6ca8ebec3004d614
+  authority_status_index_digest: 36b305d60ee7c432d216b8e4b0f0acf6ac240c94504bd60406ec9a99a59ec4d1
+  authority_status_entry_digest: cd4d02ccef1ac243fbb6de6cb4dae324d3f92d88c90d65d492d65c8a3ec5c9c6
+  lock: production:deployment
+  lock_lease_id: 5547777d-a87f-464e-abcb-4068c0f1a60c
+  fencing_token: fence-61adc6f7-0322-4226-86d8-e8d5773250ac
+  maximum_dispatch_count: 1
+  exact_workflow: .github/workflows/ops11-postgres-18-assurance.yml
+  exact_ref: codex/v21-integration
+  exact_input_repository_source_sha: 7943a20895939f66b6755d02f819165850d1042f
+  disposable_database_only: true
+  provider_or_customer_effect_authority: none
+  production_deployment_authority: none
+  external_effects_before_dispatch: 0/0/0
+launch_priority_ghl_read_only_reconciliation:
+  recorded_at: '2026-08-02T12:46:00Z'
+  canonical_location_id: pBSnOK2nkdxp6gf9Rg3o
+  authenticated_account_label: info@onetimeonetime.com
+  workflows:
+    OT-01: { id: 95a6f461-1a04-4260-b379-246fdcc45af7, state: empty_draft_shell, total: 0, active: 0 }
+    OT-02A: { id: 368d47ca-c6d2-4545-acb0-664f98bac8f2, state: empty_draft_shell, total: 0, active: 0 }
+    OT-02B: { id: a7038e32-79d2-4d2d-b103-5722ab0abcfc, state: empty_draft_shell, total: 0, active: 0 }
+    OT-15: { id: null, state: missing }
+  rabbi_campaign_sender_required: rabbielischeller@onetimeonetime.com
+  live_sender_readback: unavailable_no_actions_configured
+  all_contacts_count: 1493
+  OT_02A_saved_list: { id: uB6c6xMvSTxwkJVeIgmd, migration_tagged_count: 30, eligible_audience: unproven }
+  exhaustive_eligible_excluded_zero_student_category_exclusive_counts: unknown_connector_not_exhaustive
+  broad_enrollment_or_send_authority: none
+  provider_effects: 0/0/0
 candidate_phase_a_batch_1_terminal_evidence:
   recorded_at: '2026-08-02T12:33:37Z'
   state_basis_control_head_sha: 228f1c4fdf3fbbf8a694bb2a7cee71cd405fab7c
