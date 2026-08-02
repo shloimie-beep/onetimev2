@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "execution_id": "OT-V21-PRODUCTION",
+  "case_id": "OTV2-CLASSROOM-187-AC01",
+  "requirement_id": "OTV2-CLASSROOM-187",
+  "verification_lane": "V39",
+  "status": "blocked",
+  "blocker_code": "BLOCKED_ZOOM_PROVIDER_AND_REAL_TABLET_EVIDENCE",
+  "supersedes_result_digest": "none",
+  "candidate_digest": "ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d",
+  "candidate": {
+    "repository_source_sha": "0a5ef2e1e6ba88b151334f2aa78bee9cd8949365",
+    "application_content_sha256": "05deaa76b64ccfb7ab82b78ce75965c134ffd39a63da1fc40139dc6eee901e3e",
+    "product_tree_digest": "c85b7053474f6331363b585876ea91c616005f0d0c60df4219b3388e10db7696",
+    "candidate_manifest_digest": "30867a96bfc5370ead95b83b6519b4ec365947d874c609dd8e5dbecba7e54876",
+    "web_artifact_digest": "8d928252ce9644d80674e16ca03e5058ccb9b83cca97801c6e065c0208c35cb6",
+    "worker_artifact_digest": "cbe0456d956496027419a8ba510913d3a0735cc4ab09ec9bcfab0498f70fc0cc",
+    "configuration_bundle_digest": "71c5e8a17c73a0414bee2b40f5803f14ae7190dd996e57e97c7396c4ca3f5d6e",
+    "migration_inventory_digest": "1598fc0f7f18e172b9566c65dbb81593ba2b5b1339e1dbca312aa01b53383f6b",
+    "frontend_asset_digest": "7d42cbcb4715a722bcc3bdfcb76f349f2fc17140f63f98cdd17d0b856b7799d5",
+    "route_action_inventory_digest": "3ca498c122f0fc3a8f753898687e233b717349f9486b8df86dd02e22fb06d483",
+    "workflow_registry_digest": "08fa35058d351e79aa56a8bddcb6752ba2f356c4fde35c0a26b13338c1f53573",
+    "highlevel_registry_digest": "d6c52146588a8699ae82a7b10158c48ab8683018a5e3cf336b9f43e222a759cf",
+    "provider_registry_digest": "80778ec9924ddc7ecb204f6ed6ed380c922ce5f4c7135b4a733ba5fc5f138b16",
+    "message_catalog_digest": "e4da6ceab0e7eabbb0a927bbb85195e0a955229f37eb3a8ae4c45aad58155d8a",
+    "acceptance_contract_digest": "d1dd39b0f91e94a4d8f179454a15fbeabb3d31d88afd490db1a5040ff6777444",
+    "environment_profile_schema_digest": "6f6d9fa499a731d27db16005bfa63fd6fbfefc1c212def1eb986f006b60063ce"
+  },
+  "allowed_environment_contract": {
+    "matrix_digest": "3972640970c37875b70c02165cff2add4a034073b952e4e508481735b55d954d",
+    "allowed_environments": [
+      "ci",
+      "provider_sandbox",
+      "production_operator_canary"
+    ]
+  },
+  "environment": {
+    "verification_environment_id": "candidate-ci-local-v39",
+    "runtime_tier": "ci"
+  },
+  "deployment_instance": {
+    "deployment_instance_id": "not_applicable_ci_local",
+    "deployment_instance_digest": "not_applicable_ci_local",
+    "deployed_artifact_digest": "05deaa76b64ccfb7ab82b78ce75965c134ffd39a63da1fc40139dc6eee901e3e",
+    "configuration_digest": "71c5e8a17c73a0414bee2b40f5803f14ae7190dd996e57e97c7396c4ca3f5d6e",
+    "migration_inventory_digest": "1598fc0f7f18e172b9566c65dbb81593ba2b5b1339e1dbca312aa01b53383f6b",
+    "deployment_time": "not_applicable_ci_local",
+    "production_specific_gate": false
+  },
+  "provider_context": {
+    "registry_digest": "80778ec9924ddc7ecb204f6ed6ed380c922ce5f4c7135b4a733ba5fc5f138b16",
+    "asset_identities": []
+  },
+  "actors_and_fixtures": [
+    "task-specific Zoom mutation authority and exclusive provider lock",
+    "canonical operator occurrence and Student fixtures",
+    "meeting/registrant provider readback",
+    "three real tablet browser sessions and audited denial/reconnect evidence"
+  ],
+  "steps_executed": [
+    "bound the immutable candidate and acceptance-environment matrix",
+    "ran bounded candidate-local contract, repository, runner, and negative-path checks",
+    "evaluated mandatory zoom_classroom evidence requirements",
+    "stopped before any unleased provider, deployment, persistent-fixture, browser-session, send, billing, or cleanup effect"
+  ],
+  "observed_results": [
+    "candidate-local checks did not expose an assigned-case failure, but they cannot satisfy the mandatory zoom_classroom evidence profile",
+    "missing evidence/precondition: task-specific Zoom mutation authority and exclusive provider lock; canonical operator occurrence and Student fixtures; meeting/registrant provider readback; three real tablet browser sessions and audited denial/reconnect evidence",
+    "result is blocked, not passed or waived; later candidate-bound provider/staging/operator execution may supersede this attempt"
+  ],
+  "evidence": {
+    "redacted_artifacts": [
+      "ops/v2.1-execution/results/ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d/V39/EVIDENCE.yaml"
+    ],
+    "digests": [
+      {
+        "kind": "exact_green_test_sources",
+        "sha256": "7bde728d6eb935bb0a7bf6d2f882e56eb1d4df3ba2e9e9cbac697d48f7874c2f"
+      },
+      {
+        "kind": "candidate_manifest",
+        "sha256": "30867a96bfc5370ead95b83b6519b4ec365947d874c609dd8e5dbecba7e54876"
+      },
+      {
+        "kind": "postgres_18_candidate_proof_archive",
+        "sha256": "09bac837e0ce4c1bfebb6d72d35a6292553f53a6dfbb90c76b1779d8e41fc586"
+      }
+    ]
+  },
+  "external_effects": {
+    "authority_record": "V39 candidate-bound Phase A read-only dispatch at control 4062a17de4b299a620ada6fce0d194ff25743578",
+    "attempted": 0,
+    "succeeded": 0,
+    "reconciled": 0
+  },
+  "cleanup": {
+    "status": "not_applicable_no_external_effect",
+    "evidence": []
+  },
+  "unexpected_effects": 0,
+  "waiver": "none",
+  "verified_at": "2026-08-02T12:09:09.496Z"
+}
+

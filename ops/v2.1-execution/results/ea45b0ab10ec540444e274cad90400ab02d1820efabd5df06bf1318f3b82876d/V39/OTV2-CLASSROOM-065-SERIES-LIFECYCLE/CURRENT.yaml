@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "execution_id": "OT-V21-PRODUCTION",
+  "canonical_candidate_digest": "ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d",
+  "case_id": "OTV2-CLASSROOM-065-SERIES-LIFECYCLE",
+  "current_attempt_path": "ops/v2.1-execution/results/ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d/V39/OTV2-CLASSROOM-065-SERIES-LIFECYCLE/attempt-1.yaml",
+  "current_attempt_digest": "94167b01b0520e0580b532aa51cced9be0be2ed88a5d33c6a1539f288576a15c",
+  "status": "blocked",
+  "supersedes_result_digest": "none",
+  "updated_at": "2026-08-02T12:09:09.496Z"
+}
+
