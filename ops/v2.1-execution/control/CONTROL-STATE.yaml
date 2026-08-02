@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: operational
-active_phase: corrected_candidate_pg18_proof_reserved
+active_phase: corrected_candidate_pg18_proof_in_progress
 bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
@@ -18,9 +18,9 @@ candidate: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
 active_writer_limit: 4
 controller_authorization_sha: 54939204f65376475ccf4e349c289f7a9708c8bd
 next_action: >-
-  Push the exact write-ahead reservation, revalidate its authority and production:deployment fencing token, and dispatch
-  one OPS-11 PostgreSQL 18.4 proof for source 7943a20895939f66b6755d02f819165850d1042f. Reconcile the exact run and
-  ephemeral cleanup before releasing the lock. No production deployment, DNS, provider/customer mutation, contact,
+  Monitor exact GitHub Actions run 30748901653 to terminal state, verify source-bound sanitized proof artifacts and
+  ephemeral cleanup, and reconcile the effect before releasing the production:deployment lock. No production
+  deployment, DNS, provider/customer mutation, contact,
   send, enrollment, billing, cleanup, operator canary, or broad production effect is authorized by this checkpoint.
 corrected_source_integration_terminal:
   recorded_at: '2026-08-02T12:44:55Z'
@@ -83,6 +83,20 @@ corrected_candidate_pg18_proof_dispatch_authority:
   provider_or_customer_effect_authority: none
   production_deployment_authority: none
   external_effects_before_dispatch: 0/0/0
+corrected_candidate_pg18_proof_dispatch:
+  dispatched_at: '2026-08-02T12:57:17Z'
+  state_basis_control_head_sha: 51b761102009e33a4fa33a822b4d87856dac18c9
+  github_run_id: 30748901653
+  github_run_url: https://github.com/shloimie-beep/onetimev2/actions/runs/30748901653
+  workflow: OPS-11_PostgreSQL_18_Assurance
+  event: workflow_dispatch
+  ref: codex/v21-integration
+  ref_head_sha: 42065da2be8334382b2491c8e1d1a3a43231ab98
+  exact_input_repository_source_sha: 7943a20895939f66b6755d02f819165850d1042f
+  initial_readback_state: in_progress
+  initial_readback_digest: 6b8f76ab520075c7a2fae642c6f84f67fb28fd562c0884c4161aba76d2497111
+  provider_or_customer_effects: 0
+  production_deployments: 0
 launch_priority_ghl_read_only_reconciliation:
   recorded_at: '2026-08-02T12:46:00Z'
   canonical_location_id: pBSnOK2nkdxp6gf9Rg3o
