@@ -34,11 +34,13 @@ authorities:
     provider_lock: production:deployment
     provider_lock_lease_id: d1b9f7f9-23b5-4bfc-93ab-fb28195c3cc8
     fencing_token: fence-c044ab0a-1169-40ec-a245-317a6a1b8326
-    effect_authority_usable: true
+    effect_authority_usable: false
     candidate_binding_status: exact_source_sha_bound_pre_freeze
     repository_source_sha: 370420f14e0c3aefc9399319c74960ca699ab90a
-    checked_at: '2026-08-02T10:28:29Z'
-    state_based_on_control_head_sha: 78625ac9b72c59f045412b5e13c835ef749fb2d5
+    disposition: consumed_and_reconciled_failed_run_30743955340
+    lock_released_at: '2026-08-02T10:35:18Z'
+    checked_at: '2026-08-02T10:35:18Z'
+    state_based_on_control_head_sha: 7db01ed9440ffa912d2639693e629938a0a64e91
 entry_schema: templates/AUTHORITY-STATUS-ENTRY.yaml
 revocation_schema: templates/AUTHORITY-REVOCATION-RECORD.yaml
 rule: C00 records externally granted/revoked/expired authority; it does not grant it. Every update binds the known

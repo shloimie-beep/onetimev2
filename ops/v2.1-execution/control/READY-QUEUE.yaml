@@ -71,13 +71,13 @@ ready:
     model: GPT-5.6-SOL
     reasoning: XHIGH
   - task_id: I36
-    lane: candidate_preparation
+    lane: candidate_proof_source_correction
     status: ready
-    phase: exact_sha_disposable_postgresql_18_4_proof_dispatch
+    phase: candidate_pg18_reference_initialization_order_correction
     branch: codex/v21-integration
     preparation_branch: codex/v21-launch-source-correction
-    claim_mode: new_effect_successor
-    state_based_on_control_head_sha: 78625ac9b72c59f045412b5e13c835ef749fb2d5
+    claim_mode: new
+    state_based_on_control_head_sha: 7db01ed9440ffa912d2639693e629938a0a64e91
     authorized_start_sha: d61f4e49349ed4b63618513ce6642337690d55d0
     expected_existing_head: d61f4e49349ed4b63618513ce6642337690d55d0
     package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
@@ -227,32 +227,39 @@ ready:
         - tests/unit/lead-validation.test.ts
         - tests/unit/operator-launch-status-ui.test.ts
     directives:
-      - The 63-path source packet is closed and accepted at integration head 370420f14e0c3aefc9399319c74960ca699ab90a with P1=0, P2=0, and P3=0; no repository write is authorized in this successor.
-      - Dispatch exactly one OPS-11 PostgreSQL 18 Assurance workflow from ref codex/v21-integration with repository_source_sha=370420f14e0c3aefc9399319c74960ca699ab90a.
-      - Use only the ephemeral GitHub Actions runner and disposable postgres:18.4 service; never access staging, production, provider, or customer data.
-      - Read back the exact GitHub run identity, conclusion, checked-out SHA, PostgreSQL version, migration count, replay result, and sanitized artifact before release.
-      - Do not retry an ambiguous dispatch under this authority and do not freeze a candidate unless the proof is successful and reconciled.
-    repository_write_authority: none
+      - Correct only the proved top-level-await temporal-dead-zone defect by moving candidate proof invocation after all module constants initialize; do not alter proof semantics, SQL, budgets, or provider gates.
+      - Run the proof dry fail-closed check, typecheck, scoped lint/format, and focused source inspection only; no workflow dispatch or external effect is authorized.
+      - Update only the I36 runtime triplet for the correction terminal and stop for one delta-only review.
+      - The failed run 30743955340 is reconciled with zero non-disposable, provider, customer, deployment, DNS, send, billing, or production effect.
+    repository_write_authority: exact_correction_authorized_paths_only
+    correction_authorized_paths:
+      path_count: 4
+      path_inventory_digest: 823960e12ddb131f1bc0587c512eef63e7eaa160020f3438c1d9b4b0bf1e1780
+      preimage_manifest_digest: 60b1611120ec5a098149e4c2c7b6434cde389efe9103cc71fd12ad519f32286f
+      preimages:
+        ops/v2.1-execution/runtime/I36/HANDOFF.md: 5257f44db2c44522bc6c3978187585cbceda622e02e4dd185161dd85f018e3ca
+        ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md: d4abb509e43a6185062447fa8353c881ee1281508b0c179e491f1de4dc06f3c1
+        ops/v2.1-execution/runtime/I36/TASK-STATE.yaml: 5897f71fcd94f6325dcdfeb3fa30e82bf5b07e46e21b07888f8265fa8c6f8d54
+        scripts/postgres-assurance/candidate-pg18-proof.ts: 909de0c62648164558b2cf9e16e81b35fe66af591a4801131970111f16a7cd38
+      paths:
+        - ops/v2.1-execution/runtime/I36/HANDOFF.md
+        - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
+        - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
+        - scripts/postgres-assurance/candidate-pg18-proof.ts
     accepted_terminal_head_sha: 370420f14e0c3aefc9399319c74960ca699ab90a
     accepted_terminal_review: P1_0_P2_0_P3_0
     writer_slot_leases:
-      - { slot: RELEASE_INTEGRATOR, lease_id: 75e00476-338b-48ed-bb1e-36ee2fe25166 }
-    effect_lock_leases:
-      - lock: production:deployment
-        lease_id: d1b9f7f9-23b5-4bfc-93ab-fb28195c3cc8
-        fencing_token: fence-c044ab0a-1169-40ec-a245-317a6a1b8326
-        provider_identity: github_actions:shloimie-beep/onetimev2:ops11-postgres-18-assurance.yml
-        operation: exact_SHA_disposable_PostgreSQL_18_4_workflow_dispatch
-        expires_at: '2026-08-02T11:13:29Z'
-    claim_id: c70ce9cc-25bd-4dcf-80eb-1d30a68af2fe
-    writer_id: codex-i36-pg18-proof-c70ce9cc
-    lease_issued_at: '2026-08-02T10:28:29Z'
-    lease_expires_at: '2026-08-02T11:13:29Z'
-    heartbeat_interval_minutes: 10
+      - { slot: RELEASE_INTEGRATOR, lease_id: 161bd0c3-877f-4f20-b42c-014e375ed1ca }
+    effect_lock_leases: []
+    claim_id: ed8b434a-3da5-4f7d-b0ff-02819c4c1705
+    writer_id: codex-i36-pg18-correction-ed8b434a
+    lease_issued_at: '2026-08-02T10:35:42Z'
+    lease_expires_at: '2026-08-02T11:20:42Z'
+    heartbeat_interval_minutes: 15
     prompt_path: ops/v2.1-execution/prompts/I36-START-OR-RESUME.md
     model: GPT-5.6-SOL
     reasoning: XHIGH
 entry_payload_digests:
   F02: 388c28b5c4c946a75f9f4e9ddb103e69193a505e3889a88aaad744ac9e5388c7
-  I36: abdea8d0da9104b39995a7d5b5144908e5fadfb2e76cdebd40647a0e91b4ed93
+  I36: 04ec53be747713591e2b711552de0289530f2d7adc727407d4b6aea89759a14a
 digest_algorithm: recursively_sorted_compact_UTF8_JSON_SHA256_per_ready_entry

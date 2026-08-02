@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: operational
-active_phase: candidate_pg18_proof_dispatch
+active_phase: candidate_pg18_source_correction
 bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
@@ -16,12 +16,30 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: 78625ac9b72c59f045412b5e13c835ef749fb2d5
+controller_authorization_sha: 7db01ed9440ffa912d2639693e629938a0a64e91
 next_action: >-
-  Dispatch exactly one OPS-11 PostgreSQL 18 Assurance run from integration head 370420f14e0c3aefc9399319c74960ca699ab90a,
-  reconcile its exact run identity and sanitized evidence, then release the production:deployment lock. No deployment,
-  DNS change, provider/customer mutation, non-disposable database write, seed send, enrollment, charge, or cleanup is
-  authorized by this candidate-preparation successor.
+  Correct the one proved candidate-proof module initialization-order defect within the exact four-path ceiling, push one
+  I36 correction terminal, and perform one delta-only review. The failed disposable run is reconciled and its lock is
+  released. No CI dispatch, deployment, DNS change, provider/customer mutation, database write, send, billing, or other
+  external effect is authorized in this correction phase.
+candidate_pg18_first_run_reconciliation:
+  recorded_at: '2026-08-02T10:35:42Z'
+  control_basis_sha: 7db01ed9440ffa912d2639693e629938a0a64e91
+  github_run_id: 30743955340
+  exact_source_sha: 370420f14e0c3aefc9399319c74960ca699ab90a
+  conclusion: failure
+  failed_step: candidate_bound_PostgreSQL_18_4_proof
+  failure_class: source_reference_initialization_order
+  non_disposable_external_effects: 0
+  provider_or_customer_effects: 0
+  ephemeral_runner_and_database_cleanup: complete
+  authority_consumed: i36-pg18-proof-20260802102829
+  lock_released: d1b9f7f9-23b5-4bfc-93ab-fb28195c3cc8
+  correction_claim_id: ed8b434a-3da5-4f7d-b0ff-02819c4c1705
+  correction_path_count: 4
+  correction_path_inventory_digest: 823960e12ddb131f1bc0587c512eef63e7eaa160020f3438c1d9b4b0bf1e1780
+  correction_preimage_manifest_digest: 60b1611120ec5a098149e4c2c7b6434cde389efe9103cc71fd12ad519f32286f
+  correction_ready_entry_payload_digest: 04ec53be747713591e2b711552de0289530f2d7adc727407d4b6aea89759a14a
 candidate_pg18_proof_dispatch:
   recorded_at: '2026-08-02T10:28:29Z'
   control_basis_sha: 78625ac9b72c59f045412b5e13c835ef749fb2d5

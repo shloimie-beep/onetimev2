@@ -581,20 +581,19 @@ tasks:
     candidate_pg18_proof_authorized_start: 370420f14e0c3aefc9399319c74960ca699ab90a
   authorized_start_sha: d61f4e49349ed4b63618513ce6642337690d55d0
   last_known_remote_head: 370420f14e0c3aefc9399319c74960ca699ab90a
-  active_claim_id: c70ce9cc-25bd-4dcf-80eb-1d30a68af2fe
-  active_writer_id: codex-i36-pg18-proof-c70ce9cc
-  lease_expires_at: '2026-08-02T11:13:29Z'
+  active_claim_id: ed8b434a-3da5-4f7d-b0ff-02819c4c1705
+  active_writer_id: codex-i36-pg18-correction-ed8b434a
+  lease_expires_at: '2026-08-02T11:20:42Z'
   active_writer_leases:
-    - 75e00476-338b-48ed-bb1e-36ee2fe25166
-  active_effect_lock_leases:
-    - d1b9f7f9-23b5-4bfc-93ab-fb28195c3cc8
-  last_heartbeat_at: '2026-08-02T10:28:29Z'
-  controller_authorization_sha: 78625ac9b72c59f045412b5e13c835ef749fb2d5
-  ready_entry_payload_digest: abdea8d0da9104b39995a7d5b5144908e5fadfb2e76cdebd40647a0e91b4ed93
+    - 161bd0c3-877f-4f20-b42c-014e375ed1ca
+  active_effect_lock_leases: []
+  last_heartbeat_at: '2026-08-02T10:35:42Z'
+  controller_authorization_sha: 7db01ed9440ffa912d2639693e629938a0a64e91
+  ready_entry_payload_digest: 04ec53be747713591e2b711552de0289530f2d7adc727407d4b6aea89759a14a
   interface_checkpoint_sha: null
   implementation_head_sha: 370420f14e0c3aefc9399319c74960ca699ab90a
   status_proof:
-    state: candidate_pg18_proof_dispatch_ready
+    state: candidate_pg18_source_correction_ready
     producer_task_id: C00
     producer_head_sha: 370420f14e0c3aefc9399319c74960ca699ab90a
     canonical_candidate_digest: null
@@ -609,9 +608,11 @@ tasks:
       blocked: 0
       stale: 0
       waived: 0
-    external_effects_reconciled: false
-    state_based_on_control_head_sha: 78625ac9b72c59f045412b5e13c835ef749fb2d5
-    transitioned_at: '2026-08-02T10:28:29Z'
+    external_effects_reconciled: true
+    failed_effect_run_id: 30743955340
+    failed_effect_reconciliation: source_reference_initialization_order_zero_non_disposable_effects
+    state_based_on_control_head_sha: 7db01ed9440ffa912d2639693e629938a0a64e91
+    transitioned_at: '2026-08-02T10:35:42Z'
     proof_record_location: 'ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/I36/status_proof'
 - task_id: P08
   status: ready_for_review
