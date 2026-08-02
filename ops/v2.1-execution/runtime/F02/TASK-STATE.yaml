@@ -864,9 +864,9 @@ completed_steps:
   - Applied the complete final 84-migration inventory to fresh native PostgreSQL 16.14, replayed migration 2253, and passed the full malformed, stale, reordered, cross-scope, mismatch, and five-guard native rejection probe batch.
   - Applied and verified the complete 84-migration repository pg-mem inventory with harness-only built-in registrations and zero pending migrations.
 remaining_steps:
-  - C00 must independently audit and decide admission of the exact seven-path migration-2254-2256 terminal.
-  - A separately authorized integration action is required; this terminal does not update the shared integration branch or apply a central steward result.
-next_action: Push the exact seven-path terminal, verify local/tracking/live equality and released leases, then stop for independent C00 audit. No additional migration, product, shared-control, integration, provider, candidate, or effect authority is latent.
+  - C00 must independently re-review and decide admission of the exact one-path durable-resume correction on top of the five-path migration-2258 terminal.
+  - After admission, merge F02 migration 2258 into the shared integration branch before the I36 launch-source terminal.
+next_action: Stop for independent C00 re-review of this one-path durable-resume correction. Do not edit another migration, merge, deploy, change a provider, send, enroll, charge, or perform an external effect.
 requirements:
   OTV2-STATE-202: implementation_ready
 acceptance_cases:
