@@ -71,15 +71,15 @@ ready:
     model: GPT-5.6-SOL
     reasoning: XHIGH
   - task_id: I36
-    lane: candidate_proof_evidence_correction
+    lane: candidate_proof_disposable_effect
     status: ready
-    phase: candidate_pg18_failed_run_phase_truth_correction
+    phase: candidate_pg18_proof_dispatch_ready
     branch: codex/v21-integration
     preparation_branch: codex/v21-launch-source-correction
     claim_mode: new
-    state_based_on_control_head_sha: 3cc3f339988c8ba057baa4f54fc861b37c09e4c0
-    authorized_start_sha: 59616c76f34634103a9049a816b8d2d740613836
-    expected_existing_head: 59616c76f34634103a9049a816b8d2d740613836
+    state_based_on_control_head_sha: 1410f6ae4f702fa6d6546858621875809a860350
+    authorized_start_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
+    expected_existing_head: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
     package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
     source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
     task_packet_digest: 55e261760baac780e9a4db48c328480c6f98172261ef990e563a00b25c467fc7
@@ -227,12 +227,12 @@ ready:
         - tests/unit/lead-validation.test.ts
         - tests/unit/operator-launch-status-ui.test.ts
     directives:
-      - Correct only the runtime evidence overstatement found by the independent P1=0, P2=1, P3=0 review; record that migration proof completed before the provider-registry guard failed.
-      - Preserve the accepted two-line source correction at 59616c76f34634103a9049a816b8d2d740613836 byte-for-byte.
-      - Run YAML, formatting, diff, scope, exact-log-order, and remote-equality checks only; no workflow dispatch or external effect is authorized.
-      - Update only the I36 runtime triplet and stop for one delta-only independent review.
-      - Run 30743955340 remains reconciled with stopped disposable infrastructure and zero non-disposable, provider, customer, deployment, DNS, send, billing, or production effect.
-    repository_write_authority: exact_runtime_evidence_correction_paths_only
+      - Dispatch exactly one run of .github/workflows/ops11-postgres-18-assurance.yml on codex/v21-integration with input repository_source_sha 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365.
+      - Use only authority i36-pg18-proof-20260802110345, lock lease b4f86406-01a4-4380-80a4-66064bbf113c, and fence fence-0cc8b646-f1bf-422d-8c1c-1a670bc8cc2b.
+      - Require exact run identity readback, monitor to terminal, retain only sanitized artifacts, reconcile the effect, and release the lock.
+      - Do not retry under this authority after any attempted dispatch.
+      - No persistent database, provider/customer data, deployment, DNS, contact, send, billing, or production effect is authorized.
+    repository_write_authority: none_effect_dispatch_only
     correction_authorized_paths:
       path_count: 3
       path_inventory_digest: bdf3cfe7a516fb00f891ef66f1f752591ce3d894243bbe50393980d10a3a441a
@@ -245,20 +245,24 @@ ready:
         - ops/v2.1-execution/runtime/I36/HANDOFF.md
         - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
         - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
-    accepted_terminal_head_sha: 59616c76f34634103a9049a816b8d2d740613836
-    accepted_terminal_review: held_P1_0_P2_1_P3_0
-    writer_slot_leases:
-      - { slot: RELEASE_INTEGRATOR, lease_id: e83619b8-1cf2-4920-99d9-17046ef7ed6d }
-    effect_lock_leases: []
-    claim_id: 27f81ff8-ff28-486d-9fcc-385914ec3584
-    writer_id: codex-i36-pg18-evidence-correction-27f81ff8
-    lease_issued_at: '2026-08-02T10:56:19Z'
-    lease_expires_at: '2026-08-02T11:41:19Z'
+    accepted_terminal_head_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
+    accepted_terminal_review: P1_0_P2_0_P3_0
+    writer_slot_leases: []
+    effect_lock_leases:
+      - lock: production:deployment
+        lease_id: b4f86406-01a4-4380-80a4-66064bbf113c
+        fencing_token: fence-0cc8b646-f1bf-422d-8c1c-1a670bc8cc2b
+        authority_id: i36-pg18-proof-20260802110345
+        lease_expires_at: '2026-08-02T11:48:45Z'
+    claim_id: i36-pg18-proof-20260802110345
+    writer_id: C00
+    lease_issued_at: '2026-08-02T11:03:45Z'
+    lease_expires_at: '2026-08-02T11:48:45Z'
     heartbeat_interval_minutes: 15
     prompt_path: ops/v2.1-execution/prompts/I36-START-OR-RESUME.md
     model: GPT-5.6-SOL
     reasoning: XHIGH
 entry_payload_digests:
   F02: 388c28b5c4c946a75f9f4e9ddb103e69193a505e3889a88aaad744ac9e5388c7
-  I36: b2c1ba427be41a35634a729e01b33769e2c400a3ae01e9ce18add3f627ef7a50
+  I36: f842ae257d62caa9a94a2c9585bc24f4e4ace3007b4d9930c4076c01758516f0
 digest_algorithm: recursively_sorted_compact_UTF8_JSON_SHA256_per_ready_entry

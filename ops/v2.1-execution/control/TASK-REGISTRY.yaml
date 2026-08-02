@@ -581,40 +581,42 @@ tasks:
     candidate_pg18_proof_authorized_start: 370420f14e0c3aefc9399319c74960ca699ab90a
     candidate_pg18_source_correction_held: 59616c76f34634103a9049a816b8d2d740613836
     candidate_pg18_source_correction_review: P1_0_P2_1_P3_0
-  authorized_start_sha: 59616c76f34634103a9049a816b8d2d740613836
-  last_known_remote_head: 59616c76f34634103a9049a816b8d2d740613836
-  active_claim_id: 27f81ff8-ff28-486d-9fcc-385914ec3584
-  active_writer_id: codex-i36-pg18-evidence-correction-27f81ff8
-  lease_expires_at: '2026-08-02T11:41:19Z'
-  active_writer_leases:
-    - e83619b8-1cf2-4920-99d9-17046ef7ed6d
-  active_effect_lock_leases: []
-  last_heartbeat_at: '2026-08-02T10:56:19Z'
-  controller_authorization_sha: 3cc3f339988c8ba057baa4f54fc861b37c09e4c0
-  ready_entry_payload_digest: b2c1ba427be41a35634a729e01b33769e2c400a3ae01e9ce18add3f627ef7a50
+    candidate_pg18_evidence_correction_accepted: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
+    candidate_pg18_evidence_correction_review: P1_0_P2_0_P3_0
+  authorized_start_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
+  last_known_remote_head: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
+  active_claim_id: i36-pg18-proof-20260802110345
+  active_writer_id: C00
+  lease_expires_at: '2026-08-02T11:48:45Z'
+  active_writer_leases: []
+  active_effect_lock_leases:
+    - b4f86406-01a4-4380-80a4-66064bbf113c
+  last_heartbeat_at: '2026-08-02T11:03:45Z'
+  controller_authorization_sha: 1410f6ae4f702fa6d6546858621875809a860350
+  ready_entry_payload_digest: f842ae257d62caa9a94a2c9585bc24f4e4ace3007b4d9930c4076c01758516f0
   interface_checkpoint_sha: null
-  implementation_head_sha: 59616c76f34634103a9049a816b8d2d740613836
+  implementation_head_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
   status_proof:
-    state: candidate_pg18_evidence_correction_ready
+    state: candidate_pg18_proof_dispatch_ready
     producer_task_id: C00
-    producer_head_sha: 59616c76f34634103a9049a816b8d2d740613836
+    producer_head_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
     canonical_candidate_digest: null
     interface_checkpoint_digest: null
-    integration_or_evidence_head_sha: 59616c76f34634103a9049a816b8d2d740613836
+    integration_or_evidence_head_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
     candidate_manifest_digest: null
     result_index_digest: null
     case_counts:
       expected: 1
-      passed: 0
-      failed: 1
+      passed: 1
+      failed: 0
       blocked: 0
       stale: 0
       waived: 0
     external_effects_reconciled: true
     failed_effect_run_id: 30743955340
     failed_effect_reconciliation: source_reference_initialization_order_zero_non_disposable_effects
-    state_based_on_control_head_sha: 3cc3f339988c8ba057baa4f54fc861b37c09e4c0
-    transitioned_at: '2026-08-02T10:56:19Z'
+    state_based_on_control_head_sha: 1410f6ae4f702fa6d6546858621875809a860350
+    transitioned_at: '2026-08-02T11:03:45Z'
     proof_record_location: 'ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/I36/status_proof'
 - task_id: P08
   status: ready_for_review
