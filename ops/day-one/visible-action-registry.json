@@ -1,530 +1,98 @@
 {
-  "schema_version": "onetime.day_one.visible_actions.v1",
-  "generated_at": "2026-07-15T11:50:43.723Z",
-  "source": {
-    "base_sha": "741af0c08ee1d43be4e220b7c6e4c77a2330adc2",
-    "product_anchor_sha": "b753d50ca562c01cfa8619762254e70c90b0105f"
-  },
-  "readiness_states": ["ready", "unavailable_by_design"],
+  "schema_version": "onetime.v2_1.visible_actions.v1",
+  "generated_by": "I36",
+  "source_inputs": [
+    {
+      "path": "ops/v2.1-execution/source-spec/02-ACCEPTANCE-CONTRACT-v2.1.yaml",
+      "sha256": "58cdea9e69cda109b827f6f95516713593d2ddb7d754e6232dc5b0db2582f166"
+    },
+    {
+      "path": "ops/v2.1-execution/source-spec/03-DECISION-REGISTER-v2.1.md",
+      "sha256": "b49a1d603890c6843bbefcdb2003ce0087790db1ecb04d26a59b4e6f8614ef59"
+    },
+    {
+      "path": "ops/v2.1-execution/source-spec/05-ACTOR-ROLE-CAPABILITY-ROUTE-MATRIX-v2.1.md",
+      "sha256": "e385820b5ad7a1a4668884871b5af9bcd8b9256d72e25ec8e582358af2c9bb5c"
+    },
+    {
+      "path": "ops/v2.1-execution/source-spec/08-SCREEN-CATALOG-AND-DESIGN-SYSTEM-v2.1.md",
+      "sha256": "49f1d14d397cb727958df7acf09511cbb9fdc8cca1c52e76d2d8dd22b5e5c9a7"
+    },
+    {
+      "path": "apps/web/src/server/app.ts",
+      "sha256": "632933ae6a2bf91dbb32d818fb83cdf55c9218d7fd9439f9cf798517299359a8"
+    },
+    {
+      "path": "apps/web/src/server/features/portals/routers.ts",
+      "sha256": "38f20b63eea28ccf070e6c134bfae5637273e964c812188811cffae5e17192f5"
+    },
+    {
+      "path": "apps/web/src/server/features/support/router.ts",
+      "sha256": "f5c83130045724721ad7d1c27bb4282d9082c9da040edefda493d5d9e82c5112"
+    },
+    {
+      "path": "apps/web/src/client/app/crm-entry.tsx",
+      "sha256": "8b8c5f8136c3e19d5b2b3a6ccbb56183bd47aa90ce79313785a1d18b8365b6a0"
+    },
+    {
+      "path": "apps/web/src/client/app/live-entry.tsx",
+      "sha256": "634ea9ab140d0582a5388e34874819a90402cbc144f464469610602e263e0245"
+    },
+    {
+      "path": "apps/web/src/client/app/portal-entry.tsx",
+      "sha256": "69598bc3e7780262c0d89fb6173b6a4437bfee3565293f5833ae2af962340982"
+    },
+    {
+      "path": "apps/web/src/client/public/public-entry.ts",
+      "sha256": "167bbebf939e97771cb45991ccee6afeb92861b7477bd29cd7558904921b6410"
+    },
+    {
+      "path": "packages/domain/src/dashboard/service.ts",
+      "sha256": "496b63e0765862217a2da343dd0c03c60970327add6b37c0656fa137645b8349"
+    }
+  ],
+  "production_roles": ["admin", "parent", "student"],
+  "public_actor": "public",
+  "readiness_states": ["ready"],
   "actions": [
     {
-      "action_id": "public.home.route",
-      "label": "Home",
-      "surface": "route",
-      "route": "/",
-      "roles": ["anonymous"],
-      "capability": "public:landing:read",
-      "handler": {
-        "method": "GET",
-        "path": "/"
-      },
-      "idempotency": {
-        "required": false,
-        "key_source": null
-      },
-      "audit": {
-        "mode": "none",
-        "event": "public_landing_view"
-      },
-      "states": {
-        "loading": "Loading bounded local data.",
-        "success": "Action completed or the route is visible.",
-        "error": "A local error state is shown and no external mutation is attempted.",
-        "permission": "Unauthorized roles are denied by server session scope.",
-        "offline": "No protected cached data is used while offline."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "not_provider_dependent",
-      "external_mutation": false,
-      "test_evidence": [
-        "tests/e2e/landing-signup.spec.ts",
-        "tests/accessibility/public-a11y.spec.ts"
-      ]
-    },
-    {
-      "action_id": "public.signup.route",
-      "label": "Sign Up Now",
-      "surface": "route",
-      "route": "/signup",
-      "roles": ["anonymous"],
-      "capability": "public:signup:read",
-      "handler": {
-        "method": "GET",
-        "path": "/signup"
-      },
-      "idempotency": {
-        "required": false,
-        "key_source": null
-      },
-      "audit": {
-        "mode": "none",
-        "event": "public_signup_view"
-      },
-      "states": {
-        "loading": "Loading bounded local data.",
-        "success": "Action completed or the route is visible.",
-        "error": "A local error state is shown and no external mutation is attempted.",
-        "permission": "Unauthorized roles are denied by server session scope.",
-        "offline": "No protected cached data is used while offline."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "not_provider_dependent",
-      "external_mutation": false,
-      "test_evidence": [
-        "tests/e2e/landing-signup.spec.ts",
-        "tests/accessibility/public-a11y.spec.ts"
-      ]
-    },
-    {
-      "action_id": "public.signup.submit.form",
-      "label": "Submit signup",
-      "surface": "form",
-      "route": "/signup",
-      "roles": ["anonymous"],
-      "capability": "leads:create",
-      "handler": {
-        "method": "POST",
-        "path": "/api/v1/leads"
-      },
-      "idempotency": {
-        "required": true,
-        "key_source": "client-generated idempotency_key"
-      },
-      "audit": {
-        "mode": "domain_audit",
-        "event": "signup_lead_created"
-      },
-      "states": {
-        "loading": "Loading bounded local data.",
-        "success": "Action completed or the route is visible.",
-        "error": "A local error state is shown and no external mutation is attempted.",
-        "permission": "Unauthorized roles are denied by server session scope.",
-        "offline": "No protected cached data is used while offline."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "not_provider_dependent",
-      "external_mutation": false,
-      "test_evidence": [
-        "tests/e2e/landing-signup.spec.ts",
-        "tests/integration/lead-capture.test.ts"
-      ]
-    },
-    {
-      "action_id": "public.tisha_bav.route",
-      "label": "Tisha B'Av Program",
-      "surface": "route",
-      "route": "/tisha-bav",
-      "roles": ["anonymous"],
-      "capability": "public:event:read",
-      "handler": {
-        "method": "GET",
-        "path": "/tisha-bav"
-      },
-      "idempotency": {
-        "required": false,
-        "key_source": null
-      },
-      "audit": {
-        "mode": "none",
-        "event": "tisha_bav_event_view"
-      },
-      "states": {
-        "loading": "Loading bounded local data.",
-        "success": "Action completed or the route is visible.",
-        "error": "A local error state is shown and no external mutation is attempted.",
-        "permission": "Unauthorized roles are denied by server session scope.",
-        "offline": "No protected cached data is used while offline."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "not_provider_dependent",
-      "external_mutation": false,
-      "test_evidence": [
-        "tests/integration/tisha-bav-event-funnel.test.ts",
-        "tests/e2e/tisha-bav-funnel.spec.ts"
-      ]
-    },
-    {
-      "action_id": "public.tisha_bav.registration_modal.open",
-      "label": "Reserve My Spot",
+      "action_id": "auth.logout.button",
+      "label": "Logout",
       "surface": "button",
-      "route": "/tisha-bav",
-      "roles": ["anonymous"],
-      "capability": "events:register:open",
-      "handler": {
-        "method": "CLIENT",
-        "path": "apps/web/src/client/public/public-entry.ts"
-      },
-      "idempotency": {
-        "required": false,
-        "key_source": null
-      },
-      "audit": {
-        "mode": "none",
-        "event": "tisha_bav_registration_modal_open"
-      },
-      "states": {
-        "loading": "Loading bounded local data.",
-        "success": "Registration modal is visible.",
-        "error": "A local error state is shown and no external mutation is attempted.",
-        "permission": "Unauthorized roles are denied by server session scope.",
-        "offline": "No protected cached data is used while offline."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "not_provider_dependent",
-      "external_mutation": false,
-      "test_evidence": ["tests/e2e/tisha-bav-funnel.spec.ts"]
-    },
-    {
-      "action_id": "public.tisha_bav.registration_modal.close",
-      "label": "Close registration modal",
-      "surface": "button",
-      "route": "/tisha-bav",
-      "roles": ["anonymous"],
-      "capability": "events:register:close",
-      "handler": {
-        "method": "CLIENT",
-        "path": "apps/web/src/client/public/public-entry.ts"
-      },
-      "idempotency": {
-        "required": false,
-        "key_source": null
-      },
-      "audit": {
-        "mode": "none",
-        "event": "tisha_bav_registration_modal_close"
-      },
-      "states": {
-        "loading": "Loading bounded local data.",
-        "success": "Registration modal is closed.",
-        "error": "A local error state is shown and no external mutation is attempted.",
-        "permission": "Unauthorized roles are denied by server session scope.",
-        "offline": "No protected cached data is used while offline."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "not_provider_dependent",
-      "external_mutation": false,
-      "test_evidence": ["tests/e2e/tisha-bav-funnel.spec.ts"]
-    },
-    {
-      "action_id": "public.tisha_bav.register.form",
-      "label": "Reserve My Spot",
-      "surface": "form",
-      "route": "/tisha-bav",
-      "roles": ["anonymous"],
-      "capability": "events:register",
-      "handler": {
-        "method": "POST",
-        "path": "/api/v1/events/tisha-bav-2026/register"
-      },
-      "idempotency": {
-        "required": true,
-        "key_source": "client-generated idempotency_key"
-      },
-      "audit": {
-        "mode": "domain_audit",
-        "event": "tisha_bav_2026_event_registered"
-      },
-      "states": {
-        "loading": "Loading bounded local data.",
-        "success": "Action completed or the route is visible.",
-        "error": "A local error state is shown and no external mutation is attempted.",
-        "permission": "Unauthorized roles are denied by server session scope.",
-        "offline": "No protected cached data is used while offline."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "event_sync_provider_default_off",
-      "external_mutation": false,
-      "test_evidence": [
-        "tests/integration/tisha-bav-event-funnel.test.ts",
-        "tests/e2e/tisha-bav-funnel.spec.ts"
-      ]
-    },
-    {
-      "action_id": "public.tisha_bav.share.whatsapp.link",
-      "label": "WhatsApp share",
-      "surface": "button",
-      "route": "/tisha-bav",
-      "roles": ["anonymous"],
-      "capability": "events:share",
-      "handler": {
-        "method": "GET",
-        "path": "https://wa.me/?text=:encoded_public_event_url"
-      },
-      "idempotency": {
-        "required": false,
-        "key_source": null
-      },
-      "audit": {
-        "mode": "none",
-        "event": "tisha_bav_whatsapp_share_open"
-      },
-      "states": {
-        "loading": "Loading bounded local data.",
-        "success": "The browser opens the WhatsApp share target.",
-        "error": "A local error state is shown and no external mutation is attempted.",
-        "permission": "Unauthorized roles are denied by server session scope.",
-        "offline": "No protected cached data is used while offline."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "browser_share_only",
-      "external_mutation": false,
-      "test_evidence": ["tests/e2e/tisha-bav-funnel.spec.ts"]
-    },
-    {
-      "action_id": "public.tisha_bav.share.email_friend.link",
-      "label": "Email a Friend",
-      "surface": "button",
-      "route": "/tisha-bav",
-      "roles": ["anonymous"],
-      "capability": "events:share",
-      "handler": {
-        "method": "GET",
-        "path": "mailto:?subject=:event_subject&body=:public_event_url"
-      },
-      "idempotency": {
-        "required": false,
-        "key_source": null
-      },
-      "audit": {
-        "mode": "none",
-        "event": "tisha_bav_email_friend_open"
-      },
-      "states": {
-        "loading": "Loading bounded local data.",
-        "success": "The browser opens the email share target.",
-        "error": "A local error state is shown and no external mutation is attempted.",
-        "permission": "Unauthorized roles are denied by server session scope.",
-        "offline": "No protected cached data is used while offline."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "browser_share_only",
-      "external_mutation": false,
-      "test_evidence": ["tests/e2e/tisha-bav-funnel.spec.ts"]
-    },
-    {
-      "action_id": "public.tisha_bav.share.copy_link.button",
-      "label": "Copy Link",
-      "surface": "button",
-      "route": "/tisha-bav",
-      "roles": ["anonymous"],
-      "capability": "events:share",
-      "handler": {
-        "method": "CLIENT",
-        "path": "apps/web/src/client/public/public-entry.ts"
-      },
-      "idempotency": {
-        "required": false,
-        "key_source": null
-      },
-      "audit": {
-        "mode": "none",
-        "event": "tisha_bav_copy_share_link"
-      },
-      "states": {
-        "loading": "Loading bounded local data.",
-        "success": "The canonical public event link is copied.",
-        "error": "A local copy-unavailable message is shown.",
-        "permission": "Unauthorized roles are denied by server session scope.",
-        "offline": "No protected cached data is used while offline."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "browser_share_only",
-      "external_mutation": false,
-      "test_evidence": ["tests/e2e/tisha-bav-funnel.spec.ts"]
-    },
-    {
-      "action_id": "public.tisha_bav.share.native.button",
-      "label": "Share",
-      "surface": "button",
-      "route": "/tisha-bav",
-      "roles": ["anonymous"],
-      "capability": "events:share",
-      "handler": {
-        "method": "CLIENT",
-        "path": "apps/web/src/client/public/public-entry.ts"
-      },
-      "idempotency": {
-        "required": false,
-        "key_source": null
-      },
-      "audit": {
-        "mode": "none",
-        "event": "tisha_bav_native_share"
-      },
-      "states": {
-        "loading": "Loading bounded local data.",
-        "success": "The browser native share sheet opens when supported.",
-        "error": "A local share-unavailable state is shown.",
-        "permission": "Unauthorized roles are denied by server session scope.",
-        "offline": "No protected cached data is used while offline."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "browser_share_only",
-      "external_mutation": false,
-      "test_evidence": ["tests/e2e/tisha-bav-funnel.spec.ts"]
-    },
-    {
-      "action_id": "public.tisha_bav.live.route",
-      "label": "Private event access",
-      "surface": "route",
-      "route": "/tisha-bav/live",
-      "roles": ["anonymous"],
-      "capability": "events:join:start",
-      "handler": {
-        "method": "GET",
-        "path": "/tisha-bav/live"
-      },
-      "idempotency": {
-        "required": false,
-        "key_source": null
-      },
-      "audit": {
-        "mode": "none",
-        "event": "tisha_bav_live_page_view"
-      },
-      "states": {
-        "loading": "Loading bounded local data.",
-        "success": "Action completed or the route is visible.",
-        "error": "A local error state is shown and no external mutation is attempted.",
-        "permission": "Unauthorized roles are denied by server session scope.",
-        "offline": "No protected cached data is used while offline."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "zoom_provider_default_off",
-      "external_mutation": false,
-      "test_evidence": ["tests/integration/tisha-bav-event-funnel.test.ts"]
-    },
-    {
-      "action_id": "public.tisha_bav.join.form",
-      "label": "Join the Live Program",
-      "surface": "form",
-      "route": "/tisha-bav/live",
-      "roles": ["anonymous"],
-      "capability": "events:join",
-      "handler": {
-        "method": "POST",
-        "path": "/api/v1/events/tisha-bav-2026/join"
-      },
-      "idempotency": {
-        "required": true,
-        "key_source": "client-generated idempotency_key"
-      },
-      "audit": {
-        "mode": "local_write",
-        "event": "tisha_bav_join_session_created"
-      },
-      "states": {
-        "loading": "Loading bounded local data.",
-        "success": "Action completed or the route is visible.",
-        "error": "A local error state is shown and no external mutation is attempted.",
-        "permission": "Unauthorized roles are denied by server session scope.",
-        "offline": "No protected cached data is used while offline."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "zoom_provider_default_off",
-      "external_mutation": false,
-      "test_evidence": ["tests/integration/tisha-bav-event-funnel.test.ts"]
-    },
-    {
-      "action_id": "public.login.route",
-      "label": "Member Login",
-      "surface": "route",
-      "route": "/login",
-      "roles": ["anonymous"],
-      "capability": "auth:login:start",
-      "handler": {
-        "method": "GET",
-        "path": "/login"
-      },
-      "idempotency": {
-        "required": false,
-        "key_source": null
-      },
-      "audit": {
-        "mode": "none",
-        "event": "login_page_view"
-      },
-      "states": {
-        "loading": "Loading bounded local data.",
-        "success": "Action completed or the route is visible.",
-        "error": "A local error state is shown and no external mutation is attempted.",
-        "permission": "Unauthorized roles are denied by server session scope.",
-        "offline": "No protected cached data is used while offline."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "not_provider_dependent",
-      "external_mutation": false,
-      "test_evidence": ["tests/integration/auth-crm.test.ts", "tests/e2e/crm-core.spec.ts"]
-    },
-    {
-      "action_id": "public.gallery.next.button",
-      "label": "Next teaching photo",
-      "surface": "button",
-      "route": "/",
-      "roles": ["anonymous"],
-      "capability": "public:gallery:navigate",
-      "handler": {
-        "method": "CLIENT",
-        "path": "apps/web/src/client/public/public-entry.ts"
-      },
-      "idempotency": {
-        "required": false,
-        "key_source": null
-      },
-      "audit": {
-        "mode": "none",
-        "event": "public_gallery_next"
-      },
-      "states": {
-        "loading": "Loading bounded local data.",
-        "success": "Action completed or the route is visible.",
-        "error": "A local error state is shown and no external mutation is attempted.",
-        "permission": "Unauthorized roles are denied by server session scope.",
-        "offline": "No protected cached data is used while offline."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "not_provider_dependent",
-      "external_mutation": false,
-      "test_evidence": ["tests/e2e/landing-signup.spec.ts"]
-    },
-    {
-      "action_id": "public.gallery.previous.button",
-      "label": "Previous teaching photo",
-      "surface": "button",
-      "route": "/",
-      "roles": ["anonymous"],
-      "capability": "public:gallery:navigate",
-      "handler": {
-        "method": "CLIENT",
-        "path": "apps/web/src/client/public/public-entry.ts"
-      },
-      "idempotency": {
-        "required": false,
-        "key_source": null
-      },
-      "audit": {
-        "mode": "none",
-        "event": "public_gallery_previous"
-      },
-      "states": {
-        "loading": "Loading bounded local data.",
-        "success": "Action completed or the route is visible.",
-        "error": "A local error state is shown and no external mutation is attempted.",
-        "permission": "Unauthorized roles are denied by server session scope.",
-        "offline": "No protected cached data is used while offline."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "not_provider_dependent",
-      "external_mutation": false,
-      "test_evidence": ["tests/e2e/landing-signup.spec.ts"]
-    },
-    {
-      "action_id": "dashboard.view.route",
-      "label": "Dashboard",
-      "surface": "route",
       "route": "/app/dashboard",
-      "roles": ["owner", "admin"],
-      "capability": "dashboard:read",
+      "roles": ["admin", "parent", "student"],
+      "capability": "auth:session:revoke",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/auth/logout"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "session",
+        "event": "logout"
+      },
+      "states": {
+        "loading": "Saving request.",
+        "success": "Request completed.",
+        "error": "The request could not be completed.",
+        "permission": "The signed-in role cannot use this action.",
+        "offline": "Network unavailable; retry before changing data."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
+    },
+    {
+      "action_id": "billing.status.view.route",
+      "label": "Household access",
+      "surface": "route",
+      "route": "/app/billing",
+      "roles": ["admin"],
+      "capability": "accounts:access:read",
       "handler": {
         "method": "GET",
         "path": "/api/v1/dashboard/owner"
@@ -535,7 +103,7 @@
       },
       "audit": {
         "mode": "local_read",
-        "event": "dashboard_read"
+        "event": "account_access_status_read"
       },
       "states": {
         "loading": "Loading bounded data.",
@@ -550,15 +118,15 @@
       "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
     },
     {
-      "action_id": "dashboard.refresh.button",
-      "label": "Refresh dashboard",
+      "action_id": "classes.back_to_list.button",
+      "label": "Back to classes",
       "surface": "button",
-      "route": "/app/dashboard",
-      "roles": ["owner", "admin"],
-      "capability": "dashboard:read",
+      "route": "/app/classes",
+      "roles": ["admin"],
+      "capability": "classes:read",
       "handler": {
         "method": "GET",
-        "path": "/api/v1/dashboard/owner"
+        "path": "/api/v1/classes"
       },
       "idempotency": {
         "required": false,
@@ -566,7 +134,69 @@
       },
       "audit": {
         "mode": "local_read",
-        "event": "dashboard_read"
+        "event": "classes_read"
+      },
+      "states": {
+        "loading": "Loading classes.",
+        "success": "Class list is visible.",
+        "error": "Class list could not load.",
+        "permission": "Only owner/admin roles can view classes.",
+        "offline": "Network unavailable; no cached protected data is used."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": ["tests/integration/classes/class-fulfillment.test.ts"]
+    },
+    {
+      "action_id": "classes.open_detail.button",
+      "label": "Open class details",
+      "surface": "button",
+      "route": "/app/classes/:occurrenceKey",
+      "roles": ["admin"],
+      "capability": "classes:read",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/classes/:occurrenceKey"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "class_detail_read"
+      },
+      "states": {
+        "loading": "Loading class details.",
+        "success": "Class details are visible.",
+        "error": "Class details could not load.",
+        "permission": "Only owner/admin roles can view class details.",
+        "offline": "Network unavailable; no cached protected data is used."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": ["tests/integration/classes/class-fulfillment.test.ts"]
+    },
+    {
+      "action_id": "classes.refresh.button",
+      "label": "Refresh classes",
+      "surface": "button",
+      "route": "/app/classes",
+      "roles": ["admin"],
+      "capability": "classes:read",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/classes"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "classes_read"
       },
       "states": {
         "loading": "Loading bounded data.",
@@ -581,11 +211,290 @@
       "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
     },
     {
-      "action_id": "dashboard.open_crm.button",
-      "label": "Open CRM",
+      "action_id": "classes.view.route",
+      "label": "Classes",
+      "surface": "route",
+      "route": "/app/classes",
+      "roles": ["admin"],
+      "capability": "classes:read",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/classes"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "classes_read"
+      },
+      "states": {
+        "loading": "Loading bounded data.",
+        "success": "Data loaded.",
+        "error": "The source could not be loaded.",
+        "permission": "The signed-in role cannot use this action.",
+        "offline": "Network unavailable; no cached protected data is used."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
+    },
+    {
+      "action_id": "communications.filters.form",
+      "label": "Filter communications",
+      "surface": "form",
+      "route": "/app/communications",
+      "roles": ["admin"],
+      "capability": "communications:read",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/communications"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "communications_read"
+      },
+      "states": {
+        "loading": "Loading bounded data.",
+        "success": "Data loaded.",
+        "error": "The source could not be loaded.",
+        "permission": "The signed-in role cannot use this action.",
+        "offline": "Network unavailable; no cached protected data is used."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
+    },
+    {
+      "action_id": "communications.view.route",
+      "label": "Communications",
+      "surface": "route",
+      "route": "/app/communications",
+      "roles": ["admin"],
+      "capability": "communications:read",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/communications"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "communications_read"
+      },
+      "states": {
+        "loading": "Loading bounded data.",
+        "success": "Data loaded.",
+        "error": "The source could not be loaded.",
+        "permission": "The signed-in role cannot use this action.",
+        "offline": "Network unavailable; no cached protected data is used."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
+    },
+    {
+      "action_id": "content.library.refresh.button",
+      "label": "Refresh content",
       "surface": "button",
-      "route": "/app/dashboard",
-      "roles": ["owner", "admin"],
+      "route": "/app/content",
+      "roles": ["admin"],
+      "capability": "content:library:read",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/content/library"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "content_library_read"
+      },
+      "states": {
+        "loading": "Loading bounded data.",
+        "success": "Data loaded.",
+        "error": "The source could not be loaded.",
+        "permission": "The signed-in role cannot use this action.",
+        "offline": "Network unavailable; no cached protected data is used."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
+    },
+    {
+      "action_id": "content.library.view.route",
+      "label": "Content Library",
+      "surface": "route",
+      "route": "/app/content",
+      "roles": ["admin"],
+      "capability": "content:library:read",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/content/library"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "content_library_read"
+      },
+      "states": {
+        "loading": "Loading bounded data.",
+        "success": "Data loaded.",
+        "error": "The source could not be loaded.",
+        "permission": "The signed-in role cannot use this action.",
+        "offline": "Network unavailable; no cached protected data is used."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
+    },
+    {
+      "action_id": "crm.contacts.create.form",
+      "label": "Create CRM contact",
+      "surface": "form",
+      "route": "/app/crm",
+      "roles": ["admin"],
+      "capability": "crm:contacts:create",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/crm/contacts"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "client-generated idempotency_key"
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "crm_contact_created"
+      },
+      "states": {
+        "loading": "Saving request.",
+        "success": "Request completed.",
+        "error": "The request could not be completed.",
+        "permission": "The signed-in role cannot use this action.",
+        "offline": "Network unavailable; retry before changing data."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
+    },
+    {
+      "action_id": "crm.contacts.open.button",
+      "label": "Open CRM contact",
+      "surface": "button",
+      "route": "/app/crm/contacts/:contactId",
+      "roles": ["admin"],
+      "capability": "crm:contacts:read",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/crm/contacts/:contactId"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "crm_contact_read"
+      },
+      "states": {
+        "loading": "Loading bounded data.",
+        "success": "Data loaded.",
+        "error": "The source could not be loaded.",
+        "permission": "The signed-in role cannot use this action.",
+        "offline": "Network unavailable; no cached protected data is used."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
+    },
+    {
+      "action_id": "crm.contacts.search.form",
+      "label": "Search CRM contacts",
+      "surface": "form",
+      "route": "/app/crm",
+      "roles": ["admin"],
+      "capability": "crm:contacts:search",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/crm/contacts/search"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "crm_contacts_search"
+      },
+      "states": {
+        "loading": "Loading bounded data.",
+        "success": "Data loaded.",
+        "error": "The source could not be loaded.",
+        "permission": "The signed-in role cannot use this action.",
+        "offline": "Network unavailable; no cached protected data is used."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
+    },
+    {
+      "action_id": "crm.contacts.update.form",
+      "label": "Update CRM contact",
+      "surface": "form",
+      "route": "/app/crm/contacts/:contactId",
+      "roles": ["admin"],
+      "capability": "crm:contacts:update",
+      "handler": {
+        "method": "PATCH",
+        "path": "/api/v1/crm/contacts/:contactId"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "crm_contact_updated"
+      },
+      "states": {
+        "loading": "Saving request.",
+        "success": "Request completed.",
+        "error": "The request could not be completed.",
+        "permission": "The signed-in role cannot use this action.",
+        "offline": "Network unavailable; retry before changing data."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
+    },
+    {
+      "action_id": "crm.contacts.view.route",
+      "label": "CRM",
+      "surface": "route",
+      "route": "/app/crm",
+      "roles": ["admin"],
       "capability": "crm:contacts:read",
       "handler": {
         "method": "GET",
@@ -612,11 +521,42 @@
       "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
     },
     {
+      "action_id": "dashboard.open_billing.button",
+      "label": "Open household access",
+      "surface": "button",
+      "route": "/app/dashboard",
+      "roles": ["admin"],
+      "capability": "accounts:access:read",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/dashboard/owner"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "account_access_status_read"
+      },
+      "states": {
+        "loading": "Loading bounded data.",
+        "success": "Data loaded.",
+        "error": "The source could not be loaded.",
+        "permission": "The signed-in role cannot use this action.",
+        "offline": "Network unavailable; no cached protected data is used."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
+    },
+    {
       "action_id": "dashboard.open_classes.button",
       "label": "Open Classes",
       "surface": "button",
       "route": "/app/dashboard",
-      "roles": ["owner", "admin"],
+      "roles": ["admin"],
       "capability": "classes:read",
       "handler": {
         "method": "GET",
@@ -647,7 +587,7 @@
       "label": "Open Communications",
       "surface": "button",
       "route": "/app/dashboard",
-      "roles": ["owner", "admin"],
+      "roles": ["admin"],
       "capability": "communications:read",
       "handler": {
         "method": "GET",
@@ -678,7 +618,7 @@
       "label": "Open Content Library",
       "surface": "button",
       "route": "/app/dashboard",
-      "roles": ["owner", "admin"],
+      "roles": ["admin"],
       "capability": "content:library:read",
       "handler": {
         "method": "GET",
@@ -705,76 +645,11 @@
       "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
     },
     {
-      "action_id": "dashboard.open_billing.button",
-      "label": "Open household access",
+      "action_id": "dashboard.open_crm.button",
+      "label": "Open CRM",
       "surface": "button",
       "route": "/app/dashboard",
-      "roles": ["owner", "admin"],
-      "capability": "accounts:access:read",
-      "handler": {
-        "method": "GET",
-        "path": "/api/v1/dashboard/owner"
-      },
-      "idempotency": {
-        "required": false,
-        "key_source": null
-      },
-      "audit": {
-        "mode": "local_read",
-        "event": "account_access_status_read"
-      },
-      "states": {
-        "loading": "Loading bounded data.",
-        "success": "Data loaded.",
-        "error": "The source could not be loaded.",
-        "permission": "The signed-in role cannot use this action.",
-        "offline": "Network unavailable; no cached protected data is used."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "not_provider_dependent",
-      "external_mutation": false,
-      "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
-    },
-    {
-      "action_id": "dashboard.open_rewards.button",
-      "label": "Open Learning Rewards",
-      "surface": "button",
-      "route": "/app/dashboard",
-      "roles": ["owner", "admin"],
-      "capability": "gamification:admin",
-      "handler": {
-        "method": "GET",
-        "path": "/api/v1/gamification/admin"
-      },
-      "idempotency": {
-        "required": false,
-        "key_source": null
-      },
-      "audit": {
-        "mode": "local_read",
-        "event": "gamification_admin_read"
-      },
-      "states": {
-        "loading": "Loading bounded data.",
-        "success": "Data loaded.",
-        "error": "The source could not be loaded.",
-        "permission": "The signed-in role cannot use this action.",
-        "offline": "Network unavailable; no cached protected data is used."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "not_provider_dependent",
-      "external_mutation": false,
-      "test_evidence": [
-        "tests/integration/dashboard/owner-dashboard.test.ts",
-        "tests/w12-09/portal-gamification-browser-harness.ts"
-      ]
-    },
-    {
-      "action_id": "crm.contacts.view.route",
-      "label": "CRM",
-      "surface": "route",
-      "route": "/app/crm",
-      "roles": ["owner", "admin", "crm_agent", "viewer"],
+      "roles": ["admin"],
       "capability": "crm:contacts:read",
       "handler": {
         "method": "GET",
@@ -801,46 +676,15 @@
       "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
     },
     {
-      "action_id": "crm.contacts.search.form",
-      "label": "Search CRM contacts",
-      "surface": "form",
-      "route": "/app/crm",
-      "roles": ["owner", "admin", "crm_agent", "viewer"],
-      "capability": "crm:contacts:search",
-      "handler": {
-        "method": "POST",
-        "path": "/api/v1/crm/contacts/search"
-      },
-      "idempotency": {
-        "required": false,
-        "key_source": null
-      },
-      "audit": {
-        "mode": "local_read",
-        "event": "crm_contacts_search"
-      },
-      "states": {
-        "loading": "Loading bounded data.",
-        "success": "Data loaded.",
-        "error": "The source could not be loaded.",
-        "permission": "The signed-in role cannot use this action.",
-        "offline": "Network unavailable; no cached protected data is used."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "not_provider_dependent",
-      "external_mutation": false,
-      "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
-    },
-    {
-      "action_id": "crm.contacts.open.button",
-      "label": "Open CRM contact",
+      "action_id": "dashboard.open_rewards.button",
+      "label": "Open Learning Rewards",
       "surface": "button",
-      "route": "/app/crm/contacts/:contactId",
-      "roles": ["owner", "admin", "crm_agent", "viewer"],
-      "capability": "crm:contacts:read",
+      "route": "/app/dashboard",
+      "roles": ["admin"],
+      "capability": "gamification:admin",
       "handler": {
         "method": "GET",
-        "path": "/api/v1/crm/contacts/:contactId"
+        "path": "/api/v1/gamification/admin"
       },
       "idempotency": {
         "required": false,
@@ -848,7 +692,7 @@
       },
       "audit": {
         "mode": "local_read",
-        "event": "crm_contact_read"
+        "event": "gamification_admin_read"
       },
       "states": {
         "loading": "Loading bounded data.",
@@ -860,325 +704,18 @@
       "readiness_state": "ready",
       "provider_mode": "not_provider_dependent",
       "external_mutation": false,
-      "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
+      "test_evidence": [
+        "tests/integration/dashboard/owner-dashboard.test.ts",
+        "tests/w12-09/portal-gamification-browser-harness.ts"
+      ]
     },
     {
-      "action_id": "crm.contacts.create.form",
-      "label": "Create CRM contact",
-      "surface": "form",
-      "route": "/app/crm",
-      "roles": ["owner", "admin", "crm_agent"],
-      "capability": "crm:contacts:create",
-      "handler": {
-        "method": "POST",
-        "path": "/api/v1/crm/contacts"
-      },
-      "idempotency": {
-        "required": true,
-        "key_source": "client-generated idempotency_key"
-      },
-      "audit": {
-        "mode": "domain_audit",
-        "event": "crm_contact_created"
-      },
-      "states": {
-        "loading": "Saving request.",
-        "success": "Request completed.",
-        "error": "The request could not be completed.",
-        "permission": "The signed-in role cannot use this action.",
-        "offline": "Network unavailable; retry before changing data."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "not_provider_dependent",
-      "external_mutation": false,
-      "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
-    },
-    {
-      "action_id": "crm.contacts.update.form",
-      "label": "Update CRM contact",
-      "surface": "form",
-      "route": "/app/crm/contacts/:contactId",
-      "roles": ["owner", "admin", "crm_agent"],
-      "capability": "crm:contacts:update",
-      "handler": {
-        "method": "PATCH",
-        "path": "/api/v1/crm/contacts/:contactId"
-      },
-      "idempotency": {
-        "required": false,
-        "key_source": null
-      },
-      "audit": {
-        "mode": "domain_audit",
-        "event": "crm_contact_updated"
-      },
-      "states": {
-        "loading": "Saving request.",
-        "success": "Request completed.",
-        "error": "The request could not be completed.",
-        "permission": "The signed-in role cannot use this action.",
-        "offline": "Network unavailable; retry before changing data."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "not_provider_dependent",
-      "external_mutation": false,
-      "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
-    },
-    {
-      "action_id": "classes.view.route",
-      "label": "Classes",
-      "surface": "route",
-      "route": "/app/classes",
-      "roles": ["owner", "admin"],
-      "capability": "classes:read",
-      "handler": {
-        "method": "GET",
-        "path": "/api/v1/classes"
-      },
-      "idempotency": {
-        "required": false,
-        "key_source": null
-      },
-      "audit": {
-        "mode": "local_read",
-        "event": "classes_read"
-      },
-      "states": {
-        "loading": "Loading bounded data.",
-        "success": "Data loaded.",
-        "error": "The source could not be loaded.",
-        "permission": "The signed-in role cannot use this action.",
-        "offline": "Network unavailable; no cached protected data is used."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "not_provider_dependent",
-      "external_mutation": false,
-      "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
-    },
-    {
-      "action_id": "classes.refresh.button",
-      "label": "Refresh classes",
+      "action_id": "dashboard.refresh.button",
+      "label": "Refresh dashboard",
       "surface": "button",
-      "route": "/app/classes",
-      "roles": ["owner", "admin"],
-      "capability": "classes:read",
-      "handler": {
-        "method": "GET",
-        "path": "/api/v1/classes"
-      },
-      "idempotency": {
-        "required": false,
-        "key_source": null
-      },
-      "audit": {
-        "mode": "local_read",
-        "event": "classes_read"
-      },
-      "states": {
-        "loading": "Loading bounded data.",
-        "success": "Data loaded.",
-        "error": "The source could not be loaded.",
-        "permission": "The signed-in role cannot use this action.",
-        "offline": "Network unavailable; no cached protected data is used."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "not_provider_dependent",
-      "external_mutation": false,
-      "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
-    },
-    {
-      "action_id": "classes.open_detail.button",
-      "label": "Open class details",
-      "surface": "button",
-      "route": "/app/classes/:occurrenceKey",
-      "roles": ["owner", "admin"],
-      "capability": "classes:read",
-      "handler": {
-        "method": "GET",
-        "path": "/api/v1/classes/:occurrenceKey"
-      },
-      "idempotency": {
-        "required": false,
-        "key_source": null
-      },
-      "audit": {
-        "mode": "local_read",
-        "event": "class_detail_read"
-      },
-      "states": {
-        "loading": "Loading class details.",
-        "success": "Class details are visible.",
-        "error": "Class details could not load.",
-        "permission": "Only owner/admin roles can view class details.",
-        "offline": "Network unavailable; no cached protected data is used."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "not_provider_dependent",
-      "external_mutation": false,
-      "test_evidence": ["tests/integration/classes/class-fulfillment.test.ts"]
-    },
-    {
-      "action_id": "classes.back_to_list.button",
-      "label": "Back to classes",
-      "surface": "button",
-      "route": "/app/classes",
-      "roles": ["owner", "admin"],
-      "capability": "classes:read",
-      "handler": {
-        "method": "GET",
-        "path": "/api/v1/classes"
-      },
-      "idempotency": {
-        "required": false,
-        "key_source": null
-      },
-      "audit": {
-        "mode": "local_read",
-        "event": "classes_read"
-      },
-      "states": {
-        "loading": "Loading classes.",
-        "success": "Class list is visible.",
-        "error": "Class list could not load.",
-        "permission": "Only owner/admin roles can view classes.",
-        "offline": "Network unavailable; no cached protected data is used."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "not_provider_dependent",
-      "external_mutation": false,
-      "test_evidence": ["tests/integration/classes/class-fulfillment.test.ts"]
-    },
-    {
-      "action_id": "content.library.view.route",
-      "label": "Content Library",
-      "surface": "route",
-      "route": "/app/content",
-      "roles": ["owner", "admin"],
-      "capability": "content:library:read",
-      "handler": {
-        "method": "GET",
-        "path": "/api/v1/content/library"
-      },
-      "idempotency": {
-        "required": false,
-        "key_source": null
-      },
-      "audit": {
-        "mode": "local_read",
-        "event": "content_library_read"
-      },
-      "states": {
-        "loading": "Loading bounded data.",
-        "success": "Data loaded.",
-        "error": "The source could not be loaded.",
-        "permission": "The signed-in role cannot use this action.",
-        "offline": "Network unavailable; no cached protected data is used."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "not_provider_dependent",
-      "external_mutation": false,
-      "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
-    },
-    {
-      "action_id": "content.library.refresh.button",
-      "label": "Refresh content",
-      "surface": "button",
-      "route": "/app/content",
-      "roles": ["owner", "admin"],
-      "capability": "content:library:read",
-      "handler": {
-        "method": "GET",
-        "path": "/api/v1/content/library"
-      },
-      "idempotency": {
-        "required": false,
-        "key_source": null
-      },
-      "audit": {
-        "mode": "local_read",
-        "event": "content_library_read"
-      },
-      "states": {
-        "loading": "Loading bounded data.",
-        "success": "Data loaded.",
-        "error": "The source could not be loaded.",
-        "permission": "The signed-in role cannot use this action.",
-        "offline": "Network unavailable; no cached protected data is used."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "not_provider_dependent",
-      "external_mutation": false,
-      "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
-    },
-    {
-      "action_id": "communications.view.route",
-      "label": "Communications",
-      "surface": "route",
-      "route": "/app/communications",
-      "roles": ["owner", "admin"],
-      "capability": "communications:read",
-      "handler": {
-        "method": "GET",
-        "path": "/api/v1/communications"
-      },
-      "idempotency": {
-        "required": false,
-        "key_source": null
-      },
-      "audit": {
-        "mode": "local_read",
-        "event": "communications_read"
-      },
-      "states": {
-        "loading": "Loading bounded data.",
-        "success": "Data loaded.",
-        "error": "The source could not be loaded.",
-        "permission": "The signed-in role cannot use this action.",
-        "offline": "Network unavailable; no cached protected data is used."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "not_provider_dependent",
-      "external_mutation": false,
-      "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
-    },
-    {
-      "action_id": "communications.filters.form",
-      "label": "Filter communications",
-      "surface": "form",
-      "route": "/app/communications",
-      "roles": ["owner", "admin"],
-      "capability": "communications:read",
-      "handler": {
-        "method": "GET",
-        "path": "/api/v1/communications"
-      },
-      "idempotency": {
-        "required": false,
-        "key_source": null
-      },
-      "audit": {
-        "mode": "local_read",
-        "event": "communications_read"
-      },
-      "states": {
-        "loading": "Loading bounded data.",
-        "success": "Data loaded.",
-        "error": "The source could not be loaded.",
-        "permission": "The signed-in role cannot use this action.",
-        "offline": "Network unavailable; no cached protected data is used."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "not_provider_dependent",
-      "external_mutation": false,
-      "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
-    },
-    {
-      "action_id": "billing.status.view.route",
-      "label": "Household access",
-      "surface": "route",
-      "route": "/app/billing",
-      "roles": ["owner", "admin"],
-      "capability": "accounts:access:read",
+      "route": "/app/dashboard",
+      "roles": ["admin"],
+      "capability": "dashboard:read",
       "handler": {
         "method": "GET",
         "path": "/api/v1/dashboard/owner"
@@ -1189,7 +726,38 @@
       },
       "audit": {
         "mode": "local_read",
-        "event": "account_access_status_read"
+        "event": "dashboard_read"
+      },
+      "states": {
+        "loading": "Loading bounded data.",
+        "success": "Data loaded.",
+        "error": "The source could not be loaded.",
+        "permission": "The signed-in role cannot use this action.",
+        "offline": "Network unavailable; no cached protected data is used."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
+    },
+    {
+      "action_id": "dashboard.view.route",
+      "label": "Dashboard",
+      "surface": "route",
+      "route": "/app/dashboard",
+      "roles": ["admin"],
+      "capability": "dashboard:read",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/dashboard/owner"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "dashboard_read"
       },
       "states": {
         "loading": "Loading bounded data.",
@@ -1208,7 +776,7 @@
       "label": "Refresh household access",
       "surface": "button",
       "route": "/app/billing",
-      "roles": ["owner", "admin"],
+      "roles": ["admin"],
       "capability": "accounts:access:read",
       "handler": {
         "method": "GET",
@@ -1235,15 +803,15 @@
       "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
     },
     {
-      "action_id": "rewards.view.route",
-      "label": "Learning Rewards",
+      "action_id": "live_class.console.route",
+      "label": "Rabbi Live Console",
       "surface": "route",
-      "route": "/app/rewards",
-      "roles": ["owner", "admin"],
-      "capability": "gamification:admin",
+      "route": "/app/live-console",
+      "roles": ["admin"],
+      "capability": "live-class:control",
       "handler": {
         "method": "GET",
-        "path": "/api/v1/gamification/admin"
+        "path": "/app/live-console"
       },
       "idempotency": {
         "required": false,
@@ -1251,214 +819,189 @@
       },
       "audit": {
         "mode": "local_read",
-        "event": "gamification_admin_read"
+        "event": "live_class_console_read"
       },
       "states": {
-        "loading": "Loading bounded data.",
-        "success": "Data loaded.",
-        "error": "The source could not be loaded.",
-        "permission": "The signed-in role cannot use this action.",
-        "offline": "Network unavailable; no cached protected data is used."
+        "loading": "Loading the private question queue and classroom state.",
+        "success": "The live console shows the bounded class queue, roster, and stage controls.",
+        "error": "A local error state is shown without exposing private student questions.",
+        "permission": "Only owner and admin sessions may open the console.",
+        "offline": "No private question or classroom state is cached for offline use."
       },
       "readiness_state": "ready",
-      "provider_mode": "not_provider_dependent",
+      "provider_mode": "fake_or_meeting_sdk_host",
       "external_mutation": false,
       "test_evidence": [
-        "tests/integration/dashboard/owner-dashboard.test.ts",
-        "tests/w12-09/portal-gamification-browser-harness.ts"
+        "tests/unit/live-class/live-class-service.test.ts",
+        "tests/e2e/rabbi-live-console-fake.spec.ts"
       ]
     },
     {
-      "action_id": "rewards.refresh.button",
-      "label": "Refresh rewards",
+      "action_id": "live_class.question.done.button",
+      "label": "Done",
       "surface": "button",
-      "route": "/app/rewards",
-      "roles": ["owner", "admin"],
-      "capability": "gamification:admin",
-      "handler": {
-        "method": "GET",
-        "path": "/api/v1/gamification/admin"
-      },
-      "idempotency": {
-        "required": false,
-        "key_source": null
-      },
-      "audit": {
-        "mode": "local_read",
-        "event": "gamification_admin_read"
-      },
-      "states": {
-        "loading": "Loading bounded data.",
-        "success": "Data loaded.",
-        "error": "The source could not be loaded.",
-        "permission": "The signed-in role cannot use this action.",
-        "offline": "Network unavailable; no cached protected data is used."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "not_provider_dependent",
-      "external_mutation": false,
-      "test_evidence": [
-        "tests/integration/dashboard/owner-dashboard.test.ts",
-        "tests/w12-09/portal-gamification-browser-harness.ts"
-      ]
-    },
-    {
-      "action_id": "auth.logout.button",
-      "label": "Logout",
-      "surface": "button",
-      "route": "/app/dashboard",
-      "roles": ["owner", "admin", "crm_agent", "viewer", "parent", "student"],
-      "capability": "auth:session:revoke",
+      "route": "/app/live-console",
+      "roles": ["admin"],
+      "capability": "live-class:control",
       "handler": {
         "method": "POST",
-        "path": "/api/v1/auth/logout"
-      },
-      "idempotency": {
-        "required": false,
-        "key_source": null
-      },
-      "audit": {
-        "mode": "session",
-        "event": "logout"
-      },
-      "states": {
-        "loading": "Saving request.",
-        "success": "Request completed.",
-        "error": "The request could not be completed.",
-        "permission": "The signed-in role cannot use this action.",
-        "offline": "Network unavailable; retry before changing data."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "not_provider_dependent",
-      "external_mutation": false,
-      "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
-    },
-    {
-      "action_id": "support.view.route",
-      "label": "Subscriber Support",
-      "surface": "route",
-      "route": "/app/support",
-      "roles": ["owner", "admin", "crm_agent", "viewer", "parent", "student"],
-      "capability": "support:ticket:create",
-      "handler": {
-        "method": "GET",
-        "path": "/app/support"
-      },
-      "idempotency": {
-        "required": false,
-        "key_source": null
-      },
-      "audit": {
-        "mode": "local_read",
-        "event": "support_route_view"
-      },
-      "states": {
-        "loading": "Loading bounded local data.",
-        "success": "Action completed or the route is visible.",
-        "error": "A local error state is shown and no external mutation is attempted.",
-        "permission": "Unauthorized or non-subscriber accounts see only the public lead path.",
-        "offline": "No protected cached data is used while offline."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "mock_or_disabled_only",
-      "external_mutation": false,
-      "test_evidence": ["tests/integration/support/ot89a-subscriber-support.test.ts"]
-    },
-    {
-      "action_id": "support.submit.form",
-      "label": "Submit support request",
-      "surface": "form",
-      "route": "/app/support",
-      "roles": ["owner", "admin", "crm_agent", "viewer", "parent", "student"],
-      "capability": "support:ticket:create",
-      "handler": {
-        "method": "POST",
-        "path": "/api/v1/support/tickets"
+        "path": "/api/v1/live-class/questions/:id/complete"
       },
       "idempotency": {
         "required": true,
-        "key_source": "client-generated idempotency_key"
+        "key_source": "body.idempotency_key"
       },
       "audit": {
-        "mode": "domain_audit",
-        "event": "support_submission_accepted"
+        "mode": "first_party",
+        "event": "live_question_completed"
       },
       "states": {
-        "loading": "Saving request.",
-        "success": "Durable receipt and local status projection are committed.",
-        "error": "The request could not be completed or delivery is delayed.",
-        "permission": "Server-side active entitlement recheck blocks non-subscribers.",
-        "offline": "Network unavailable; retry before changing data."
+        "loading": "Returning the stage to slides and clearing the featured question.",
+        "success": "The question is completed and the stage is reset.",
+        "error": "The current state remains visible for a bounded retry.",
+        "permission": "Only owner and admin sessions may complete a question.",
+        "offline": "Done/reset controls are unavailable offline."
       },
       "readiness_state": "ready",
-      "provider_mode": "mock_or_disabled_only",
+      "provider_mode": "fake_or_meeting_sdk_host",
       "external_mutation": false,
-      "test_evidence": ["tests/integration/support/ot89a-subscriber-support.test.ts"]
+      "test_evidence": [
+        "tests/unit/live-class/live-class-service.test.ts",
+        "tests/e2e/rabbi-live-console-fake.spec.ts"
+      ]
     },
     {
-      "action_id": "support.receipt.view.route",
-      "label": "Support Receipt",
-      "surface": "route",
-      "route": "/app/support/receipts/:receiptId",
-      "roles": ["owner", "admin", "crm_agent", "viewer", "parent", "student"],
-      "capability": "support:ticket:status",
+      "action_id": "live_class.question.feature.button",
+      "label": "Feature",
+      "surface": "button",
+      "route": "/app/live-console",
+      "roles": ["admin"],
+      "capability": "live-class:control",
       "handler": {
-        "method": "GET",
-        "path": "/api/v1/support/receipts/:receiptId/status"
+        "method": "POST",
+        "path": "/api/v1/live-class/questions/:id/live"
       },
       "idempotency": {
-        "required": false,
-        "key_source": null
+        "required": true,
+        "key_source": "body.idempotency_key"
       },
       "audit": {
-        "mode": "local_read",
-        "event": "support_status_projection_read"
+        "mode": "first_party",
+        "event": "live_question_featured"
       },
       "states": {
-        "loading": "Loading bounded local status.",
-        "success": "Cached same-account status is visible.",
-        "error": "The local receipt could not be found.",
-        "permission": "Cross-account and cross-user receipt reads are denied.",
-        "offline": "No protected cached data is used while offline."
+        "loading": "Queuing bounded classroom and stage commands.",
+        "success": "The ready student becomes the featured stage participant.",
+        "error": "No stage advance is claimed and a retry state is shown.",
+        "permission": "Only owner and admin sessions may feature a student.",
+        "offline": "Feature controls are unavailable offline."
       },
       "readiness_state": "ready",
-      "provider_mode": "mock_or_disabled_only",
+      "provider_mode": "fake_or_meeting_sdk_host",
       "external_mutation": false,
-      "test_evidence": ["tests/integration/support/ot89a-subscriber-support.test.ts"]
+      "test_evidence": [
+        "tests/unit/live-class/live-class-service.test.ts",
+        "tests/e2e/rabbi-live-console-fake.spec.ts"
+      ]
     },
     {
-      "action_id": "portal.parent.view.route",
-      "label": "Parent Portal",
-      "surface": "route",
-      "route": "/app/parent",
-      "roles": ["parent"],
-      "capability": "parent:household:read",
+      "action_id": "live_class.question.ready.button",
+      "label": "Student Ready",
+      "surface": "button",
+      "route": "/app/student",
+      "roles": ["student"],
+      "capability": "student:class:question",
       "handler": {
-        "method": "GET",
-        "path": "/api/v1/portals/parent/dashboard"
+        "method": "POST",
+        "path": "/api/v1/live-class/questions/:id/ready"
       },
       "idempotency": {
-        "required": false,
-        "key_source": null
+        "required": true,
+        "key_source": "body.idempotency_key"
       },
       "audit": {
-        "mode": "local_read",
-        "event": "parent_portal_dashboard_read"
+        "mode": "first_party",
+        "event": "live_student_ready"
       },
       "states": {
-        "loading": "Loading bounded local data.",
-        "success": "Action completed or the route is visible.",
-        "error": "A local error state is shown and no external mutation is attempted.",
-        "permission": "Unauthorized roles are denied by server session scope.",
-        "offline": "No protected cached data is used while offline."
+        "loading": "Saving the student's readiness choice.",
+        "success": "The Rabbi sees that the selected student is ready.",
+        "error": "The readiness choice is not advanced and a retry state is shown.",
+        "permission": "Only the selected student's session may mark readiness.",
+        "offline": "Readiness is unavailable offline."
       },
       "readiness_state": "ready",
       "provider_mode": "not_provider_dependent",
       "external_mutation": false,
       "test_evidence": [
-        "tests/integration/portals/portal-mount.test.ts",
-        "tests/ot-52/portal-ui.test.ts"
+        "tests/unit/live-class/live-class-service.test.ts",
+        "tests/e2e/rabbi-live-console-fake.spec.ts"
       ]
+    },
+    {
+      "action_id": "live_class.question.select.button",
+      "label": "Select",
+      "surface": "button",
+      "route": "/app/live-console",
+      "roles": ["admin"],
+      "capability": "live-class:control",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/live-class/questions/:id/select"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "body.idempotency_key"
+      },
+      "audit": {
+        "mode": "first_party",
+        "event": "live_question_selected"
+      },
+      "states": {
+        "loading": "Selecting the private question.",
+        "success": "The selected student receives the readiness prompt.",
+        "error": "The queue remains unchanged and a bounded error is shown.",
+        "permission": "Only owner and admin sessions may select questions.",
+        "offline": "Selection is unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "fake_or_meeting_sdk_host",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/unit/live-class/live-class-service.test.ts",
+        "tests/e2e/rabbi-live-console-fake.spec.ts"
+      ]
+    },
+    {
+      "action_id": "live_class.question.submit.form",
+      "label": "Submit private question",
+      "surface": "form",
+      "route": "/app/student",
+      "roles": ["student"],
+      "capability": "student:class:question",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/live-class/questions"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "body.idempotency_key"
+      },
+      "audit": {
+        "mode": "first_party",
+        "event": "live_question_submitted"
+      },
+      "states": {
+        "loading": "Submitting the question privately.",
+        "success": "The question is queued for the Rabbi without exposing sibling data.",
+        "error": "A bounded retry state is shown.",
+        "permission": "The server derives the submitting student from the session.",
+        "offline": "Questions are not queued offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": ["tests/unit/live-class/live-class-service.test.ts"]
     },
     {
       "action_id": "portal.parent.learner.select.button",
@@ -1492,15 +1035,15 @@
       "test_evidence": ["tests/ot-52/portal-ui.test.ts"]
     },
     {
-      "action_id": "portal.parent.learner.create.button",
-      "label": "Add learner",
+      "action_id": "portal.parent.student_access.reset.button",
+      "label": "Reset student access",
       "surface": "button",
       "route": "/app/parent",
       "roles": ["parent"],
-      "capability": "parent:learner:create",
+      "capability": "parent:student-access:manage",
       "handler": {
         "method": "POST",
-        "path": "/api/v1/portals/parent/households/:householdKey/learners"
+        "path": "/api/v1/portals/parent/households/:householdKey/learners/:learnerKey/student-access/reset"
       },
       "idempotency": {
         "required": false,
@@ -1508,7 +1051,7 @@
       },
       "audit": {
         "mode": "domain_audit",
-        "event": "portal_learner_created"
+        "event": "student_reset_issued"
       },
       "states": {
         "loading": "Loading bounded local data.",
@@ -1517,10 +1060,10 @@
         "permission": "Unauthorized roles are denied by server session scope.",
         "offline": "No protected cached data is used while offline."
       },
-      "readiness_state": "unavailable_by_design",
+      "readiness_state": "ready",
       "provider_mode": "not_provider_dependent",
       "external_mutation": false,
-      "test_evidence": ["tests/ot-52/portal-ui.test.ts"]
+      "test_evidence": ["tests/integration/portals/portal-mount.test.ts"]
     },
     {
       "action_id": "portal.parent.student_access.setup.form",
@@ -1540,37 +1083,6 @@
       "audit": {
         "mode": "domain_audit",
         "event": "student_setup_issued"
-      },
-      "states": {
-        "loading": "Loading bounded local data.",
-        "success": "Action completed or the route is visible.",
-        "error": "A local error state is shown and no external mutation is attempted.",
-        "permission": "Unauthorized roles are denied by server session scope.",
-        "offline": "No protected cached data is used while offline."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "not_provider_dependent",
-      "external_mutation": false,
-      "test_evidence": ["tests/integration/portals/portal-mount.test.ts"]
-    },
-    {
-      "action_id": "portal.parent.student_access.reset.button",
-      "label": "Reset student access",
-      "surface": "button",
-      "route": "/app/parent",
-      "roles": ["parent"],
-      "capability": "parent:student-access:manage",
-      "handler": {
-        "method": "POST",
-        "path": "/api/v1/portals/parent/households/:householdKey/learners/:learnerKey/student-access/reset"
-      },
-      "idempotency": {
-        "required": false,
-        "key_source": null
-      },
-      "audit": {
-        "mode": "domain_audit",
-        "event": "student_reset_issued"
       },
       "states": {
         "loading": "Loading bounded local data.",
@@ -1616,114 +1128,15 @@
       "test_evidence": ["tests/integration/portals/portal-mount.test.ts"]
     },
     {
-      "action_id": "portal.parent.class.launch.button",
-      "label": "Launch class",
-      "surface": "button",
-      "route": "/app/parent",
-      "roles": ["parent"],
-      "capability": "parent:class:launch",
-      "handler": {
-        "method": "POST",
-        "path": "/api/v1/portals/parent/households/:householdKey/learners/:learnerKey/classes/:classKey/launch"
-      },
-      "idempotency": {
-        "required": false,
-        "key_source": null
-      },
-      "audit": {
-        "mode": "local_read",
-        "event": "parent_class_launch_attempt"
-      },
-      "states": {
-        "loading": "Loading bounded local data.",
-        "success": "Action completed or the route is visible.",
-        "error": "A local error state is shown and no external mutation is attempted.",
-        "permission": "Unauthorized roles are denied by server session scope.",
-        "offline": "No protected cached data is used while offline."
-      },
-      "readiness_state": "unavailable_by_design",
-      "provider_mode": "provider_default_off",
-      "external_mutation": false,
-      "test_evidence": [
-        "tests/integration/classes/class-fulfillment.test.ts",
-        "tests/integration/portals/portal-mount.test.ts"
-      ]
-    },
-    {
-      "action_id": "portal.parent.reward_goal.create.form",
-      "label": "Add parent reward",
-      "surface": "form",
-      "route": "/app/parent",
-      "roles": ["parent"],
-      "capability": "gamification:write",
-      "handler": {
-        "method": "POST",
-        "path": "/api/v1/gamification/parent-rewards"
-      },
-      "idempotency": {
-        "required": true,
-        "key_source": "client-generated idempotency_key"
-      },
-      "audit": {
-        "mode": "domain_audit",
-        "event": "parent_reward_goal_created"
-      },
-      "states": {
-        "loading": "Loading bounded local data.",
-        "success": "Action completed or the route is visible.",
-        "error": "A local error state is shown and no external mutation is attempted.",
-        "permission": "Unauthorized roles are denied by server session scope.",
-        "offline": "No protected cached data is used while offline."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "not_provider_dependent",
-      "external_mutation": false,
-      "test_evidence": [
-        "tests/unit/w12-09-gamification.test.ts",
-        "tests/w12-09/portal-gamification-browser-harness.ts"
-      ]
-    },
-    {
-      "action_id": "portal.parent.support.open.button",
-      "label": "Technical support",
-      "surface": "button",
-      "route": "/app/parent",
-      "roles": ["parent"],
-      "capability": "parent:support:preview",
-      "handler": {
-        "method": "CLIENT",
-        "path": "apps/web/src/client/app/portal-entry.tsx"
-      },
-      "idempotency": {
-        "required": false,
-        "key_source": null
-      },
-      "audit": {
-        "mode": "none",
-        "event": "support_route_open"
-      },
-      "states": {
-        "loading": "Loading bounded local data.",
-        "success": "Action completed or the route is visible.",
-        "error": "A local error state is shown and no external mutation is attempted.",
-        "permission": "Unauthorized roles are denied by server session scope.",
-        "offline": "No protected cached data is used while offline."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "not_provider_dependent",
-      "external_mutation": false,
-      "test_evidence": ["tests/integration/support/ot89a-subscriber-support.test.ts"]
-    },
-    {
-      "action_id": "portal.student.view.route",
-      "label": "Student Portal",
+      "action_id": "portal.parent.view.route",
+      "label": "Parent Portal",
       "surface": "route",
-      "route": "/app/student",
-      "roles": ["student"],
-      "capability": "student:dashboard:read",
+      "route": "/app/parent",
+      "roles": ["parent"],
+      "capability": "parent:household:read",
       "handler": {
         "method": "GET",
-        "path": "/api/v1/portals/student/dashboard"
+        "path": "/api/v1/portals/parent/dashboard"
       },
       "idempotency": {
         "required": false,
@@ -1731,7 +1144,7 @@
       },
       "audit": {
         "mode": "local_read",
-        "event": "student_portal_dashboard_read"
+        "event": "parent_portal_dashboard_read"
       },
       "states": {
         "loading": "Loading bounded local data.",
@@ -1746,40 +1159,6 @@
       "test_evidence": [
         "tests/integration/portals/portal-mount.test.ts",
         "tests/ot-52/portal-ui.test.ts"
-      ]
-    },
-    {
-      "action_id": "portal.student.class.launch.button",
-      "label": "Join class",
-      "surface": "button",
-      "route": "/app/student",
-      "roles": ["student"],
-      "capability": "student:class:launch",
-      "handler": {
-        "method": "POST",
-        "path": "/api/v1/portals/student/classes/:classKey/launch"
-      },
-      "idempotency": {
-        "required": false,
-        "key_source": null
-      },
-      "audit": {
-        "mode": "local_read",
-        "event": "student_class_launch_attempt"
-      },
-      "states": {
-        "loading": "Loading bounded local data.",
-        "success": "Action completed or the route is visible.",
-        "error": "A local error state is shown and no external mutation is attempted.",
-        "permission": "Unauthorized roles are denied by server session scope.",
-        "offline": "No protected cached data is used while offline."
-      },
-      "readiness_state": "unavailable_by_design",
-      "provider_mode": "provider_default_off",
-      "external_mutation": false,
-      "test_evidence": [
-        "tests/integration/portals/portal-mount.test.ts",
-        "tests/integration/classroom/zoom-learner-classroom.test.ts"
       ]
     },
     {
@@ -1845,68 +1224,6 @@
       "test_evidence": ["tests/integration/classroom/zoom-learner-classroom.test.ts"]
     },
     {
-      "action_id": "portal.student.class_helper.query.form",
-      "label": "Ask helper",
-      "surface": "form",
-      "route": "/app/student",
-      "roles": ["student"],
-      "capability": "helper:query",
-      "handler": {
-        "method": "POST",
-        "path": "/api/v1/portals/student/helper/query"
-      },
-      "idempotency": {
-        "required": true,
-        "key_source": "client-generated idempotency_key"
-      },
-      "audit": {
-        "mode": "retrieval_audit",
-        "event": "student_class_helper_query"
-      },
-      "states": {
-        "loading": "Checking approved class material.",
-        "success": "An answer or bounded abstention is shown with no external mutation.",
-        "error": "A local error state is shown and no private question is submitted.",
-        "permission": "Unauthorized roles are denied by server session scope.",
-        "offline": "No protected cached data is used while offline."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "not_provider_dependent",
-      "external_mutation": false,
-      "test_evidence": ["tests/unit/ot107-student-class-helper.test.ts"]
-    },
-    {
-      "action_id": "portal.student.private_question.preview.form",
-      "label": "Preview private question",
-      "surface": "form",
-      "route": "/app/student",
-      "roles": ["student"],
-      "capability": "student:question:create",
-      "handler": {
-        "method": "CLIENT",
-        "path": "apps/web/src/client/features/portals/PortalFeatures.tsx"
-      },
-      "idempotency": {
-        "required": false,
-        "key_source": null
-      },
-      "audit": {
-        "mode": "none",
-        "event": "private_question_previewed"
-      },
-      "states": {
-        "loading": "Preparing local preview.",
-        "success": "Exact text is shown before submission.",
-        "error": "No private question is submitted.",
-        "permission": "Unauthorized roles are denied by server session scope.",
-        "offline": "No protected cached data is used while offline."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "not_provider_dependent",
-      "external_mutation": false,
-      "test_evidence": ["tests/ot-52/portal-ui.test.ts"]
-    },
-    {
       "action_id": "portal.student.private_question.send.button",
       "label": "Send private question",
       "surface": "button",
@@ -1938,15 +1255,15 @@
       "test_evidence": ["tests/ot-52/portal-router.test.ts", "tests/ot-52/portal-services.test.ts"]
     },
     {
-      "action_id": "portal.student.content.open.button",
-      "label": "Open",
-      "surface": "button",
+      "action_id": "portal.student.view.route",
+      "label": "Student Portal",
+      "surface": "route",
       "route": "/app/student",
       "roles": ["student"],
       "capability": "student:dashboard:read",
       "handler": {
-        "method": "POST",
-        "path": "/api/v1/content/library/:itemKey/open"
+        "method": "GET",
+        "path": "/api/v1/portals/student/dashboard"
       },
       "idempotency": {
         "required": false,
@@ -1954,7 +1271,7 @@
       },
       "audit": {
         "mode": "local_read",
-        "event": "student_content_open_attempt"
+        "event": "student_portal_dashboard_read"
       },
       "states": {
         "loading": "Loading bounded local data.",
@@ -1963,24 +1280,24 @@
         "permission": "Unauthorized roles are denied by server session scope.",
         "offline": "No protected cached data is used while offline."
       },
-      "readiness_state": "unavailable_by_design",
+      "readiness_state": "ready",
       "provider_mode": "not_provider_dependent",
       "external_mutation": false,
       "test_evidence": [
-        "tests/integration/content/content-library.test.ts",
+        "tests/integration/portals/portal-mount.test.ts",
         "tests/ot-52/portal-ui.test.ts"
       ]
     },
     {
-      "action_id": "portal.student.support.open.button",
-      "label": "Technical help",
+      "action_id": "public.gallery.next.button",
+      "label": "Next teaching photo",
       "surface": "button",
-      "route": "/app/student",
-      "roles": ["student"],
-      "capability": "student:support:preview",
+      "route": "/",
+      "roles": ["public"],
+      "capability": "public:gallery:navigate",
       "handler": {
         "method": "CLIENT",
-        "path": "apps/web/src/client/app/portal-entry.tsx"
+        "path": "apps/web/src/client/public/public-entry.ts"
       },
       "idempotency": {
         "required": false,
@@ -1988,7 +1305,7 @@
       },
       "audit": {
         "mode": "none",
-        "event": "support_route_open"
+        "event": "public_gallery_next"
       },
       "states": {
         "loading": "Loading bounded local data.",
@@ -1999,19 +1316,313 @@
       },
       "readiness_state": "ready",
       "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": ["tests/e2e/landing-signup.spec.ts"]
+    },
+    {
+      "action_id": "public.gallery.previous.button",
+      "label": "Previous teaching photo",
+      "surface": "button",
+      "route": "/",
+      "roles": ["public"],
+      "capability": "public:gallery:navigate",
+      "handler": {
+        "method": "CLIENT",
+        "path": "apps/web/src/client/public/public-entry.ts"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "none",
+        "event": "public_gallery_previous"
+      },
+      "states": {
+        "loading": "Loading bounded local data.",
+        "success": "Action completed or the route is visible.",
+        "error": "A local error state is shown and no external mutation is attempted.",
+        "permission": "Unauthorized roles are denied by server session scope.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": ["tests/e2e/landing-signup.spec.ts"]
+    },
+    {
+      "action_id": "public.home.route",
+      "label": "Home",
+      "surface": "route",
+      "route": "/",
+      "roles": ["public"],
+      "capability": "public:landing:read",
+      "handler": {
+        "method": "GET",
+        "path": "/"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "none",
+        "event": "public_landing_view"
+      },
+      "states": {
+        "loading": "Loading bounded local data.",
+        "success": "Action completed or the route is visible.",
+        "error": "A local error state is shown and no external mutation is attempted.",
+        "permission": "Unauthorized roles are denied by server session scope.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/e2e/landing-signup.spec.ts",
+        "tests/accessibility/public-a11y.spec.ts"
+      ]
+    },
+    {
+      "action_id": "public.login.route",
+      "label": "Member Login",
+      "surface": "route",
+      "route": "/login",
+      "roles": ["public"],
+      "capability": "auth:login:start",
+      "handler": {
+        "method": "GET",
+        "path": "/login"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "none",
+        "event": "login_page_view"
+      },
+      "states": {
+        "loading": "Loading bounded local data.",
+        "success": "Action completed or the route is visible.",
+        "error": "A local error state is shown and no external mutation is attempted.",
+        "permission": "Unauthorized roles are denied by server session scope.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": ["tests/integration/auth-crm.test.ts", "tests/e2e/crm-core.spec.ts"]
+    },
+    {
+      "action_id": "public.signup.route",
+      "label": "Sign Up Now",
+      "surface": "route",
+      "route": "/signup",
+      "roles": ["public"],
+      "capability": "public:signup:read",
+      "handler": {
+        "method": "GET",
+        "path": "/signup"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "none",
+        "event": "public_signup_view"
+      },
+      "states": {
+        "loading": "Loading bounded local data.",
+        "success": "Action completed or the route is visible.",
+        "error": "A local error state is shown and no external mutation is attempted.",
+        "permission": "Unauthorized roles are denied by server session scope.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/e2e/landing-signup.spec.ts",
+        "tests/accessibility/public-a11y.spec.ts"
+      ]
+    },
+    {
+      "action_id": "public.signup.submit.form",
+      "label": "Submit signup",
+      "surface": "form",
+      "route": "/signup",
+      "roles": ["public"],
+      "capability": "leads:create",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/leads"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "client-generated idempotency_key"
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "signup_lead_created"
+      },
+      "states": {
+        "loading": "Loading bounded local data.",
+        "success": "Action completed or the route is visible.",
+        "error": "A local error state is shown and no external mutation is attempted.",
+        "permission": "Unauthorized roles are denied by server session scope.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/e2e/landing-signup.spec.ts",
+        "tests/integration/lead-capture.test.ts"
+      ]
+    },
+    {
+      "action_id": "rewards.refresh.button",
+      "label": "Refresh rewards",
+      "surface": "button",
+      "route": "/app/rewards",
+      "roles": ["admin"],
+      "capability": "gamification:admin",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/gamification/admin"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "gamification_admin_read"
+      },
+      "states": {
+        "loading": "Loading bounded data.",
+        "success": "Data loaded.",
+        "error": "The source could not be loaded.",
+        "permission": "The signed-in role cannot use this action.",
+        "offline": "Network unavailable; no cached protected data is used."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/dashboard/owner-dashboard.test.ts",
+        "tests/w12-09/portal-gamification-browser-harness.ts"
+      ]
+    },
+    {
+      "action_id": "rewards.view.route",
+      "label": "Learning Rewards",
+      "surface": "route",
+      "route": "/app/rewards",
+      "roles": ["admin"],
+      "capability": "gamification:admin",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/gamification/admin"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "gamification_admin_read"
+      },
+      "states": {
+        "loading": "Loading bounded data.",
+        "success": "Data loaded.",
+        "error": "The source could not be loaded.",
+        "permission": "The signed-in role cannot use this action.",
+        "offline": "Network unavailable; no cached protected data is used."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/dashboard/owner-dashboard.test.ts",
+        "tests/w12-09/portal-gamification-browser-harness.ts"
+      ]
+    },
+    {
+      "action_id": "support.receipt.view.route",
+      "label": "Support Receipt",
+      "surface": "route",
+      "route": "/app/support/receipts/:receiptId",
+      "roles": ["admin", "parent", "student"],
+      "capability": "support:ticket:status",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/support/receipts/:receiptId/status"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "support_status_projection_read"
+      },
+      "states": {
+        "loading": "Loading bounded local status.",
+        "success": "Cached same-account status is visible.",
+        "error": "The local receipt could not be found.",
+        "permission": "Cross-account and cross-user receipt reads are denied.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "mock_or_disabled_only",
       "external_mutation": false,
       "test_evidence": ["tests/integration/support/ot89a-subscriber-support.test.ts"]
     },
     {
-      "action_id": "learning_delivery.vimeo_autotrim_demo.route",
-      "label": "Prepared Vimeo Demo",
+      "action_id": "support.submit.form",
+      "label": "Submit support request",
+      "surface": "form",
+      "route": "/app/support",
+      "roles": ["admin", "parent", "student"],
+      "capability": "support:ticket:create",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/support/tickets"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "client-generated idempotency_key"
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "support_submission_accepted"
+      },
+      "states": {
+        "loading": "Saving request.",
+        "success": "Durable receipt and local status projection are committed.",
+        "error": "The request could not be completed or delivery is delayed.",
+        "permission": "Server-side active entitlement recheck blocks non-subscribers.",
+        "offline": "Network unavailable; retry before changing data."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "mock_or_disabled_only",
+      "external_mutation": false,
+      "test_evidence": ["tests/integration/support/ot89a-subscriber-support.test.ts"]
+    },
+    {
+      "action_id": "support.view.route",
+      "label": "Subscriber Support",
       "surface": "route",
-      "route": "/app/learning-delivery/demo/vimeo-autotrim",
-      "roles": ["owner", "admin"],
-      "capability": "learning-delivery:demo-read",
+      "route": "/app/support",
+      "roles": ["admin", "parent", "student"],
+      "capability": "support:ticket:create",
       "handler": {
         "method": "GET",
-        "path": "/app/learning-delivery/demo/vimeo-autotrim"
+        "path": "/app/support"
       },
       "idempotency": {
         "required": false,
@@ -2019,299 +1630,19 @@
       },
       "audit": {
         "mode": "local_read",
-        "event": "learning_delivery_vimeo_autotrim_demo_read"
-      },
-      "states": {
-        "loading": "Loading sanitized prepared-media metadata.",
-        "success": "Protected demo route is visible with safe prepared-asset metadata.",
-        "error": "A safe blocker state is shown without provider URLs or transcript text.",
-        "permission": "Unauthorized roles are denied by server session scope.",
-        "offline": "No protected cached media or transcript is exposed while offline."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "isolated_private_vimeo_canary",
-      "external_mutation": false,
-      "test_evidence": [
-        "tests/unit/content/learning-delivery.test.ts",
-        "tests/integration/content/learning-delivery-demo-route.test.ts"
-      ]
-    },
-    {
-      "action_id": "live_class.console.route",
-      "label": "Rabbi Live Console",
-      "surface": "route",
-      "route": "/app/live-console",
-      "roles": ["owner", "admin"],
-      "capability": "live-class:control",
-      "handler": { "method": "GET", "path": "/app/live-console" },
-      "idempotency": { "required": false, "key_source": null },
-      "audit": { "mode": "local_read", "event": "live_class_console_read" },
-      "states": {
-        "loading": "Loading the private question queue and classroom state.",
-        "success": "The live console shows the bounded class queue, roster, and stage controls.",
-        "error": "A local error state is shown without exposing private student questions.",
-        "permission": "Only owner and admin sessions may open the console.",
-        "offline": "No private question or classroom state is cached for offline use."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "fake_or_meeting_sdk_host",
-      "external_mutation": false,
-      "test_evidence": [
-        "tests/unit/live-class/live-class-service.test.ts",
-        "tests/e2e/rabbi-live-console-fake.spec.ts"
-      ]
-    },
-    {
-      "action_id": "live_class.question.submit.form",
-      "label": "Submit private question",
-      "surface": "form",
-      "route": "/app/student",
-      "roles": ["student"],
-      "capability": "student:class:question",
-      "handler": { "method": "POST", "path": "/api/v1/live-class/questions" },
-      "idempotency": { "required": true, "key_source": "body.idempotency_key" },
-      "audit": { "mode": "first_party", "event": "live_question_submitted" },
-      "states": {
-        "loading": "Submitting the question privately.",
-        "success": "The question is queued for the Rabbi without exposing sibling data.",
-        "error": "A bounded retry state is shown.",
-        "permission": "The server derives the submitting student from the session.",
-        "offline": "Questions are not queued offline."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "not_provider_dependent",
-      "external_mutation": false,
-      "test_evidence": ["tests/unit/live-class/live-class-service.test.ts"]
-    },
-    {
-      "action_id": "live_class.question.select.button",
-      "label": "Select",
-      "surface": "button",
-      "route": "/app/live-console",
-      "roles": ["owner", "admin"],
-      "capability": "live-class:control",
-      "handler": { "method": "POST", "path": "/api/v1/live-class/questions/:id/select" },
-      "idempotency": { "required": true, "key_source": "body.idempotency_key" },
-      "audit": { "mode": "first_party", "event": "live_question_selected" },
-      "states": {
-        "loading": "Selecting the private question.",
-        "success": "The selected student receives the readiness prompt.",
-        "error": "The queue remains unchanged and a bounded error is shown.",
-        "permission": "Only owner and admin sessions may select questions.",
-        "offline": "Selection is unavailable offline."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "fake_or_meeting_sdk_host",
-      "external_mutation": false,
-      "test_evidence": [
-        "tests/unit/live-class/live-class-service.test.ts",
-        "tests/e2e/rabbi-live-console-fake.spec.ts"
-      ]
-    },
-    {
-      "action_id": "live_class.question.ready.button",
-      "label": "Student Ready",
-      "surface": "button",
-      "route": "/app/student",
-      "roles": ["student"],
-      "capability": "student:class:question",
-      "handler": { "method": "POST", "path": "/api/v1/live-class/questions/:id/ready" },
-      "idempotency": { "required": true, "key_source": "body.idempotency_key" },
-      "audit": { "mode": "first_party", "event": "live_student_ready" },
-      "states": {
-        "loading": "Saving the student's readiness choice.",
-        "success": "The Rabbi sees that the selected student is ready.",
-        "error": "The readiness choice is not advanced and a retry state is shown.",
-        "permission": "Only the selected student's session may mark readiness.",
-        "offline": "Readiness is unavailable offline."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "not_provider_dependent",
-      "external_mutation": false,
-      "test_evidence": [
-        "tests/unit/live-class/live-class-service.test.ts",
-        "tests/e2e/rabbi-live-console-fake.spec.ts"
-      ]
-    },
-    {
-      "action_id": "live_class.question.feature.button",
-      "label": "Feature",
-      "surface": "button",
-      "route": "/app/live-console",
-      "roles": ["owner", "admin"],
-      "capability": "live-class:control",
-      "handler": { "method": "POST", "path": "/api/v1/live-class/questions/:id/live" },
-      "idempotency": { "required": true, "key_source": "body.idempotency_key" },
-      "audit": { "mode": "first_party", "event": "live_question_featured" },
-      "states": {
-        "loading": "Queuing bounded classroom and stage commands.",
-        "success": "The ready student becomes the featured stage participant.",
-        "error": "No stage advance is claimed and a retry state is shown.",
-        "permission": "Only owner and admin sessions may feature a student.",
-        "offline": "Feature controls are unavailable offline."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "fake_or_meeting_sdk_host",
-      "external_mutation": false,
-      "test_evidence": [
-        "tests/unit/live-class/live-class-service.test.ts",
-        "tests/e2e/rabbi-live-console-fake.spec.ts"
-      ]
-    },
-    {
-      "action_id": "live_class.question.done.button",
-      "label": "Done",
-      "surface": "button",
-      "route": "/app/live-console",
-      "roles": ["owner", "admin"],
-      "capability": "live-class:control",
-      "handler": { "method": "POST", "path": "/api/v1/live-class/questions/:id/complete" },
-      "idempotency": { "required": true, "key_source": "body.idempotency_key" },
-      "audit": { "mode": "first_party", "event": "live_question_completed" },
-      "states": {
-        "loading": "Returning the stage to slides and clearing the featured question.",
-        "success": "The question is completed and the stage is reset.",
-        "error": "The current state remains visible for a bounded retry.",
-        "permission": "Only owner and admin sessions may complete a question.",
-        "offline": "Done/reset controls are unavailable offline."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "fake_or_meeting_sdk_host",
-      "external_mutation": false,
-      "test_evidence": [
-        "tests/unit/live-class/live-class-service.test.ts",
-        "tests/e2e/rabbi-live-console-fake.spec.ts"
-      ]
-    },
-    {
-      "action_id": "portal_test_lab.view.route",
-      "label": "Portal Test Lab",
-      "surface": "route",
-      "route": "/app/portal-test-lab",
-      "roles": ["owner", "admin"],
-      "capability": "portal-test-lab:read",
-      "handler": {
-        "method": "GET",
-        "path": "/app/portal-test-lab"
-      },
-      "idempotency": {
-        "required": false,
-        "key_source": null
-      },
-      "audit": {
-        "mode": "local_read",
-        "event": "portal_test_lab_read"
+        "event": "support_route_view"
       },
       "states": {
         "loading": "Loading bounded local data.",
         "success": "Action completed or the route is visible.",
         "error": "A local error state is shown and no external mutation is attempted.",
-        "permission": "Unauthorized roles are denied by server session scope.",
+        "permission": "Unauthorized or non-subscriber accounts see only the public lead path.",
         "offline": "No protected cached data is used while offline."
       },
       "readiness_state": "ready",
-      "provider_mode": "test_only",
+      "provider_mode": "mock_or_disabled_only",
       "external_mutation": false,
-      "test_evidence": [
-        "tests/integration/portals/portal-test-lab.test.ts",
-        "tests/e2e/w12-03-portal-test-lab.spec.ts"
-      ]
-    },
-    {
-      "action_id": "portal_test_lab.reseed.form",
-      "label": "Re-seed test lab",
-      "surface": "form",
-      "route": "/app/portal-test-lab",
-      "roles": ["owner", "admin"],
-      "capability": "portal-test-lab:seed",
-      "handler": {
-        "method": "POST",
-        "path": "/app/portal-test-lab/reseed"
-      },
-      "idempotency": {
-        "required": false,
-        "key_source": null
-      },
-      "audit": {
-        "mode": "local_fixture_write",
-        "event": "portal_test_lab_reseeded"
-      },
-      "states": {
-        "loading": "Loading bounded local data.",
-        "success": "Action completed or the route is visible.",
-        "error": "A local error state is shown and no external mutation is attempted.",
-        "permission": "Unauthorized roles are denied by server session scope.",
-        "offline": "No protected cached data is used while offline."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "memory_test_fixture",
-      "external_mutation": false,
-      "test_evidence": ["tests/integration/portals/portal-test-lab.test.ts"]
-    },
-    {
-      "action_id": "portal_test_lab.reset.form",
-      "label": "Reset lab state",
-      "surface": "form",
-      "route": "/app/portal-test-lab",
-      "roles": ["owner", "admin"],
-      "capability": "portal-test-lab:reset",
-      "handler": {
-        "method": "POST",
-        "path": "/app/portal-test-lab/reset"
-      },
-      "idempotency": {
-        "required": false,
-        "key_source": null
-      },
-      "audit": {
-        "mode": "local_fixture_write",
-        "event": "portal_test_lab_reset"
-      },
-      "states": {
-        "loading": "Loading bounded local data.",
-        "success": "Action completed or the route is visible.",
-        "error": "A local error state is shown and no external mutation is attempted.",
-        "permission": "Unauthorized roles are denied by server session scope.",
-        "offline": "No protected cached data is used while offline."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "memory_test_fixture",
-      "external_mutation": false,
-      "test_evidence": [
-        "tests/integration/portals/portal-test-lab.test.ts",
-        "tests/e2e/w12-03-portal-test-lab.spec.ts"
-      ]
-    },
-    {
-      "action_id": "portal_test_lab.login_link.button",
-      "label": "Login page",
-      "surface": "button",
-      "route": "/app/portal-test-lab",
-      "roles": ["owner", "admin"],
-      "capability": "portal-test-lab:read",
-      "handler": {
-        "method": "GET",
-        "path": "/login?return_to=:portalRoute"
-      },
-      "idempotency": {
-        "required": false,
-        "key_source": null
-      },
-      "audit": {
-        "mode": "none",
-        "event": "portal_test_lab_login_link_open"
-      },
-      "states": {
-        "loading": "Loading bounded local data.",
-        "success": "Action completed or the route is visible.",
-        "error": "A local error state is shown and no external mutation is attempted.",
-        "permission": "Unauthorized roles are denied by server session scope.",
-        "offline": "No protected cached data is used while offline."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "not_provider_dependent",
-      "external_mutation": false,
-      "test_evidence": ["tests/e2e/w12-03-portal-test-lab.spec.ts"]
+      "test_evidence": ["tests/integration/support/ot89a-subscriber-support.test.ts"]
     }
   ]
 }
