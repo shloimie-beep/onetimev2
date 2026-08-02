@@ -301,6 +301,11 @@ import {
   schoolInquiryFeatureRegistration,
 } from './features/signup/school/router.ts';
 import { createApprovedSchoolAdminRouter } from './features/signup/school/approved-school-router.ts';
+import {
+  installCanonicalProtectedRoutes,
+  type CanonicalProtectedRoute,
+  type CanonicalReadyProtectedRoute,
+} from './features/v21-canonical-routes/router.ts';
 import { createSchoolSignupService } from './features/signup/school/service.ts';
 import {
   classifyDomain,
@@ -880,6 +885,14 @@ export function createApp({
     res.status(200).type('html').send(activationPageHtml(csrf.csrf_token));
   });
 
+  app.get('/setup/:token', (_req, res) => {
+    const csrf = createLoginCsrf(config);
+    setCsrfCookie(res, config, csrf.csrf_cookie);
+    setPrivateNoStore(res);
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    res.status(200).type('html').send(activationPageHtml(csrf.csrf_token));
+  });
+
   app.get('/forgot-password', (_req, res) => {
     const csrf = createLoginCsrf(config);
     setCsrfCookie(res, config, csrf.csrf_cookie);
@@ -894,6 +907,58 @@ export function createApp({
     setPrivateNoStore(res);
     res.setHeader('X-Robots-Tag', 'noindex, nofollow');
     res.status(200).type('html').send(resetPasswordPageHtml(csrf.csrf_token));
+  });
+
+  app.get('/reset-password/:token', (_req, res) => {
+    const csrf = createLoginCsrf(config);
+    setCsrfCookie(res, config, csrf.csrf_cookie);
+    setPrivateNoStore(res);
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    res.status(200).type('html').send(resetPasswordPageHtml(csrf.csrf_token));
+  });
+
+  app.get('/session-ended', (_req, res) => {
+    setPrivateNoStore(res);
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    res
+      .status(200)
+      .type('html')
+      .send(
+        canonicalAuthStatePageHtml(
+          'Session ended',
+          'Your session has ended. Sign in again to continue safely.',
+        ),
+      );
+  });
+
+  app.get('/access-denied', async (req: RequestWithTrace, res) => {
+    const session = await sessionFromRequest(req, pool, config);
+    if (!session) {
+      res.redirect(302, '/login?return_to=%2Faccess-denied');
+      return;
+    }
+    setPrivateNoStore(res);
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    res
+      .status(403)
+      .type('html')
+      .send(
+        canonicalAuthStatePageHtml(
+          'Access denied',
+          'Your account does not have access to that page. No protected record was disclosed.',
+        ),
+      );
+  });
+
+  app.get('/select-role', async (req: RequestWithTrace, res) => {
+    const session = await sessionFromRequest(req, pool, config);
+    if (!session) {
+      res.redirect(302, '/login?return_to=%2Fselect-role');
+      return;
+    }
+    setPrivateNoStore(res);
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    res.status(404).type('text').send('Authorized role selection is not available.');
   });
 
   app.post('/api/v1/account-lifecycle/token-status', async (req: RequestWithTrace, res) => {
@@ -1047,6 +1112,53 @@ export function createApp({
     } catch (error) {
       handleLifecycleRouteError(error, req, res, 'Password reset is unavailable right now.');
     }
+  });
+
+  installCanonicalProtectedRoutes({
+    app,
+    handlerFor: (route: CanonicalReadyProtectedRoute) => async (req: RequestWithTrace, res) => {
+      if (route.shell === 'parent') {
+        await serveV21CompatibleParentAppShell(req, res, {
+          pool,
+          config,
+          distDir,
+          fallbackPath: '/app/parent',
+          v21AdultSessionRuntime,
+          ...(clock ? { clock } : {}),
+        });
+        return;
+      }
+      if (route.shell === 'student') {
+        await serveProtectedAppShell(req, res, {
+          pool,
+          config,
+          distDir,
+          appPage: 'student',
+          allowedRoles: ['student'],
+          fallbackPath: '/app/student',
+        });
+        return;
+      }
+
+      const session = await sessionFromRequest(req, pool, config);
+      if (!session) {
+        const returnTo = safeReturnPath(req.path, config) ?? '/app/dashboard';
+        res.redirect(302, `/login?return_to=${encodeURIComponent(returnTo)}`);
+        return;
+      }
+      if (!['owner', 'admin', 'rabbi'].includes(session.user.role)) {
+        setPrivateNoStore(res);
+        res.status(403).type('html').send(forbiddenOwnerAdminHtml(req.path));
+        return;
+      }
+      await ensureSessionCsrfCookie(req, res, pool, config, session);
+      setPrivateNoStore(res);
+      await sendAppHtml(res, distDir, route.shell === 'live' ? 'live' : 'crm', config);
+    },
+    unavailableHandlerFor: (route: CanonicalProtectedRoute) => (_req, res) => {
+      setPrivateNoStore(res);
+      res.status(404).type('text').send(`Canonical route ${route.routeId} is not available.`);
+    },
   });
 
   app.get(/^\/app\/crm(?:\/.*)?$/, async (req: RequestWithTrace, res) => {
@@ -4471,7 +4583,9 @@ function publicHtmlFileForPath(pathname: string) {
   if (pathname === '/app/classroom') return 'app/student.html';
   const staticPages = new Set([
     '/signup',
+    '/signup/received',
     '/school',
+    '/school/received',
     '/login',
     '/privacy',
     '/terms',
@@ -6132,6 +6246,25 @@ function forbiddenOwnerAdminHtml(requestPath: string) {
     </section>
   </main>
 </body>
+</html>`;
+}
+
+function canonicalAuthStatePageHtml(title: string, message: string) {
+  return `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <title>${escapeHtml(title)} | One Time Mishnayos</title>
+  </head>
+  <body>
+    <main>
+      <h1>${escapeHtml(title)}</h1>
+      <p>${escapeHtml(message)}</p>
+      <p><a href="/login">Return to login</a></p>
+    </main>
+  </body>
 </html>`;
 }
 

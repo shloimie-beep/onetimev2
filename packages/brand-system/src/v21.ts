@@ -54,10 +54,10 @@ export const oneTimeV21Tokens = {
 
 export const ADMIN_PRIMARY_NAVIGATION = [
   { id: 'dashboard', label: 'Dashboard', href: '/app/dashboard' },
-  { id: 'contacts', label: 'Contacts', href: '/app/crm' },
+  { id: 'contacts', label: 'Contacts', href: '/app/contacts' },
   { id: 'content', label: 'Content', href: '/app/content' },
-  { id: 'classroom', label: 'Classroom', href: '/app/classes' },
-  { id: 'live-console', label: 'Live Console', href: '/app/live-console' },
+  { id: 'classroom', label: 'Classroom', href: '/app/classroom/classes' },
+  { id: 'live-console', label: 'Live Console', href: '/app/live' },
 ] as const;
 
 export type V21Role = 'admin' | 'parent' | 'student';

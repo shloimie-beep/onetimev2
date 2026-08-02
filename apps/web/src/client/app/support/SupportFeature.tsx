@@ -10,6 +10,7 @@ import {
 
 type Props = {
   receiptId?: string | undefined;
+  basePath?: '/app/support' | '/app/parent/support' | '/app/student/support';
   onProtectedStateCleared: () => void;
 };
 
@@ -29,7 +30,11 @@ const defaultCategories = [
   { value: 'other', label: 'Other' },
 ];
 
-export function SupportFeature({ receiptId, onProtectedStateCleared }: Props) {
+export function SupportFeature({
+  receiptId,
+  basePath = '/app/support',
+  onProtectedStateCleared,
+}: Props) {
   const [state, setState] = useState<LoadState>({ kind: 'loading' });
   const [eligibility, setEligibility] = useState<SupportEligibilityResponse | null>(null);
   const [tickets, setTickets] = useState<SupportTicketSummary[]>([]);
@@ -116,7 +121,10 @@ export function SupportFeature({ receiptId, onProtectedStateCleared }: Props) {
           ? 'Support request was already saved. Opening receipt.'
           : 'Support request saved. Opening receipt.',
       );
-      window.location.assign(response.status_path);
+      const receiptKey = response.status_path.split('/').filter(Boolean).at(-1);
+      window.location.assign(
+        receiptKey ? `${basePath}/${encodeURIComponent(receiptKey)}` : basePath,
+      );
     } catch (error) {
       setStatus(supportSubmitErrorMessage(error));
       setSaving(false);
@@ -151,7 +159,7 @@ export function SupportFeature({ receiptId, onProtectedStateCleared }: Props) {
           </div>
         </dl>
         <p>{state.receipt.public_summary}</p>
-        <a className="button-secondary" href="/app/support">
+        <a className="button-secondary" href={basePath}>
           Back to support
         </a>
       </section>

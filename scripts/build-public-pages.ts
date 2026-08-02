@@ -301,11 +301,10 @@ function landingPage() {
     <h2>${escapeHtml(landingContent.assurances.heading)}</h2>
     <div class="information-grid">${assuranceCards}</div>
     <nav class="assurance-links" aria-label="Account and policy links">
-      <a href="/terms">Terms, cancellation, and refunds</a>
+      <a href="/terms">Terms of Use</a>
       <a href="/privacy">Privacy Notice</a>
       <a href="/student-data">Student Data Notice</a>
       <a href="/login">Member Login</a>
-      <a href="/support">Support</a>
     </nav>
   </section>
   ${gallerySection}
@@ -574,13 +573,35 @@ function legalPage(
 
 await mkdir(outDir, { recursive: true });
 await mkdir(path.join(outDir, 'app'), { recursive: true });
+await mkdir(path.join(outDir, 'signup'), { recursive: true });
+await mkdir(path.join(outDir, 'school'), { recursive: true });
 await Promise.all([
   rm(path.join(outDir, 'tisha-bav.html'), { force: true }),
   rm(path.join(outDir, 'tisha-bav-live.html'), { force: true }),
 ]);
 await writeFile(path.join(outDir, 'index.html'), landingPage());
 await writeFile(path.join(outDir, 'signup.html'), signupPage());
+await writeFile(
+  path.join(outDir, 'signup', 'received.html'),
+  simplePage(
+    'Signup received | One Time Mishnayos',
+    'Signup received',
+    'Your Family signup was saved. Check your email for the secure next step.',
+    'noindex, nofollow',
+    '/signup/received',
+  ),
+);
 await writeFile(path.join(outDir, 'school.html'), schoolPage());
+await writeFile(
+  path.join(outDir, 'school', 'received.html'),
+  simplePage(
+    'School inquiry received | One Time Mishnayos',
+    'School inquiry received',
+    'Your inquiry was saved. Our team will follow up manually.',
+    'noindex, nofollow',
+    '/school/received',
+  ),
+);
 await writeFile(
   path.join(outDir, 'login.html'),
   simplePage(

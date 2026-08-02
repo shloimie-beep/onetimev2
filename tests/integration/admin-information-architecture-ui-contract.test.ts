@@ -23,8 +23,8 @@ describe('OT-LAUNCH-01 Admin IA client contract', () => {
     expect(crm).toContain('session?.capabilities?.operator_experience?.live_console === true');
     expect(crm).toContain('utilityItems={utilityItems}');
     expect(crm).toContain('className="dashboard-overview-list"');
-    expect(crm).toContain("label: 'Operations'");
-    expect(crm).toContain("href: '/app/operations'");
+    expect(crm).not.toContain("label: 'Operations'");
+    expect(crm).not.toContain("href: '/app/operations'");
     expect(crm).not.toContain('dashboard.open_experience_preview.button');
     expect(crm).not.toContain("href: '/app/experience-preview'");
     expect(crm).not.toContain("href: '/app/launch-status'");

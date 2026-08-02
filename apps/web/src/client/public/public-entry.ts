@@ -991,12 +991,15 @@ async function checkLifecycleToken(
 function consumeFragmentValue(names: string | string[] = 'token') {
   const params = new URLSearchParams(window.location.hash.replace(/^#/, ''));
   const candidates = Array.isArray(names) ? names : [names];
-  const token = candidates.map((name) => params.get(name) ?? '').find(Boolean) ?? '';
-  if (token && window.location.hash) {
+  const fragmentToken = candidates.map((name) => params.get(name) ?? '').find(Boolean) ?? '';
+  const tokenRoute = window.location.pathname.match(/^\/(setup|reset-password)\/([^/]+)$/u);
+  const pathToken = tokenRoute ? decodeURIComponent(tokenRoute[2] ?? '') : '';
+  const token = fragmentToken || pathToken;
+  if (token && (window.location.hash || tokenRoute)) {
     window.history.replaceState(
       null,
       document.title,
-      window.location.pathname + window.location.search,
+      `${tokenRoute ? `/${tokenRoute[1]}` : window.location.pathname}${window.location.search}`,
     );
   }
   return token;

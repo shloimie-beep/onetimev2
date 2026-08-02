@@ -6,7 +6,7 @@ task_context_digest: 7f47da82267dec5dafe9ad53da7ece7618c331645f0591982851c47987d
 spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
 package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
 branch: codex/v21-integration
-start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
+start_sha: 9082f3015d6fe95cf374266b49a9e4db7ae69ead
 dependency_heads:
   C00: 702cce4dbe6cb6160c10144f212dc6627676f1a8
   F02: 3ee2f651528f5170dd714b921500235d4e015c5b
@@ -40,29 +40,145 @@ dependency_heads:
   P18: 1926e61c793ce29d7240c1ee05d2a4879b52770b
   P21: c11dec418fa3de896e96c348f87928c92c9f86b9
 status: ready_for_review
-phase: P18_registration_002_two_P2_correction_terminal
-claimed_by: codex-i36-P18-correction-62a752ae
-claim_time: '2026-08-02T03:17:23Z'
-claim_id: 62a752ae-c2a0-4f3f-8a1c-08bde30fa02a
-lease_id: 8e17574a-ee4d-468e-ae70-557b8f16dd76
-lease_issued_at: '2026-08-02T03:17:23Z'
-lease_expires_at: '2026-08-02T06:17:23Z'
-lease_released_at: '2026-08-02T03:38:22Z'
-last_heartbeat_at: '2026-08-02T03:38:22Z'
-controller_authorization_sha: aee8c07684270736b6947a008a4a0d620c61ed6c
-latest_valid_observed_control_head_sha: 702cce4dbe6cb6160c10144f212dc6627676f1a8
-reconciled_state_based_on_control_head_sha: aee8c07684270736b6947a008a4a0d620c61ed6c
-ready_authorization_control_head_sha: aee8c07684270736b6947a008a4a0d620c61ed6c
-ready_entry_state_based_on_control_head_sha: aee8c07684270736b6947a008a4a0d620c61ed6c
-ready_entry_payload_digest: 8b2f9db9ffbe3c4a2635f53d68447cfac421416b869df5a433dffac28fc7d4ea
+phase: canonical_route_candidate_source_fail_closed_held_checkpoint
+claimed_by: codex-i36-route-convergence-a3ae432b
+claim_time: '2026-08-02T05:17:02Z'
+claim_id: a3ae432b-8abd-45b7-b84d-7571a54a1bb8
+lease_id: 8a34d221-1333-4ed3-a4af-3ad930ef3a3b
+lease_issued_at: '2026-08-02T05:17:02Z'
+lease_expires_at: '2026-08-02T11:17:02Z'
+lease_released_at: '2026-08-02T06:25:46Z'
+last_heartbeat_at: '2026-08-02T06:25:46Z'
+controller_authorization_sha: 71342aa60de3f3840c70555a616cded8f5672989
+latest_valid_observed_control_head_sha: 71342aa60de3f3840c70555a616cded8f5672989
+reconciled_state_based_on_control_head_sha: 61d52aa85f3f040187c21081c0e17a83544f9443
+ready_authorization_control_head_sha: 71342aa60de3f3840c70555a616cded8f5672989
+ready_entry_state_based_on_control_head_sha: 61d52aa85f3f040187c21081c0e17a83544f9443
+ready_entry_payload_digest: 85ff11c44fdcd4426a821250ae554e8f7a251edd7fd6e0d9ac610df9d58bafc8
 claim_mode: new
-expected_existing_head_sha: 89f9adf886a15f396b6713dfdf0259bfde27bb0d
-lease_phase_scope: exact_P18_service_time_fences_two_product_paths_and_runtime_triplet_only
+expected_existing_head_sha: 9082f3015d6fe95cf374266b49a9e4db7ae69ead
+lease_phase_scope: canonical_route_and_candidate_source_correction
 writer_slot_leases_released:
-  - slot: EMBEDDED_CLASSROOM
-    lease_id: b20881f5-369e-40c7-a0dd-d28366d9a57f
+  - slot: CLIENT_COMPOSER
+    lease_id: 74272335-1c16-4e4f-bdcd-63ab10909511
+  - slot: SERVER_COMPOSER
+    lease_id: 806d0bf5-3317-4855-ae09-3d2e4c21cd9e
   - slot: RELEASE_INTEGRATOR
-    lease_id: 8e17574a-ee4d-468e-ae70-557b8f16dd76
+    lease_id: 8a34d221-1333-4ed3-a4af-3ad930ef3a3b
+canonical_route_candidate_source_held_checkpoint:
+  containing_control_head_sha: 71342aa60de3f3840c70555a616cded8f5672989
+  state_basis_control_head_sha: 61d52aa85f3f040187c21081c0e17a83544f9443
+  exact_authorized_start_sha: 9082f3015d6fe95cf374266b49a9e4db7ae69ead
+  ready_entry_payload_digest: 85ff11c44fdcd4426a821250ae554e8f7a251edd7fd6e0d9ac610df9d58bafc8
+  authorized_ceiling:
+    path_count: 55
+    path_inventory_digest: f84c296b3ef155d14612a2cb9920bd59d68bf21167153795e605279633148eaa
+    preimage_manifest_digest: 42c615dec4d3d4159613c41ada0ad4f102edf238b96ed7db669e360154835570
+  claim_id: a3ae432b-8abd-45b7-b84d-7571a54a1bb8
+  writer_id: codex-i36-route-convergence-a3ae432b
+  lease_issued_at: '2026-08-02T05:17:02Z'
+  lease_expires_at: '2026-08-02T11:17:02Z'
+  lease_released_at: '2026-08-02T06:25:46Z'
+  writer_slot_leases_released:
+    - slot: CLIENT_COMPOSER
+      lease_id: 74272335-1c16-4e4f-bdcd-63ab10909511
+    - slot: SERVER_COMPOSER
+      lease_id: 806d0bf5-3317-4855-ae09-3d2e4c21cd9e
+    - slot: RELEASE_INTEGRATOR
+      lease_id: 8a34d221-1333-4ed3-a4af-3ad930ef3a3b
+  exact_scope:
+    source_and_test_paths: 22
+    runtime_paths: 3
+    total_paths: 25
+    source_path_inventory_digest: 864eae3953c425105cab1e90bef54aa65b71fe1c76b029f7bec8ba73114549b6
+    runtime_path_inventory_digest: bdf3cfe7a516fb00f891ef66f1f752591ce3d894243bbe50393980d10a3a441a
+    release_path_inventory_digest: aa24b9aa10e12c90aa1382ccea69864d90b105ed9a2d7da352cb08363d27513b
+    source_preimage_manifest_digest: e3a2f4997a60dc8f9db9e3061e79fbf25508fc5e5d6b04f519c9566032135c9d
+    release_preimage_manifest_digest: 933e267b8afb5cf6f404a2e103b59d308590fe96388a72b11990c535c6f85900
+    source_postimage_manifest_digest: 9f0b0dd59437965b0f79dc0e9dd0925a3d026fc5601c6994d36519e50f84eed1
+  route_truth:
+    locked_total: 93
+    ready: 46
+    isolated: 17
+    missing: 30
+    isolated_route_ids:
+      - RT-AUTH-005
+      - RT-AUTH-008
+      - RT-PAR-001
+      - RT-PAR-010
+      - RT-PAR-020
+      - RT-PAR-021
+      - RT-PAR-030
+      - RT-PAR-040
+      - RT-PAR-041
+      - RT-PAR-071
+      - RT-PAR-072
+      - RT-STU-012
+      - RT-STU-030
+      - RT-STU-051
+      - RT-STU-070
+      - RT-STU-071
+      - RT-STU-072
+    missing_route_ids:
+      - RT-PUB-008
+      - RT-PUB-009
+      - RT-ADM-002
+      - RT-ADM-012
+      - RT-ADM-014
+      - RT-ADM-015
+      - RT-ADM-016
+      - RT-ADM-017
+      - RT-ADM-023
+      - RT-ADM-030
+      - RT-ADM-031
+      - RT-ADM-033
+      - RT-ADM-038
+      - RT-ADM-041
+      - RT-ADM-042
+      - RT-ADM-060
+      - RT-ADM-061
+      - RT-ADM-062
+      - RT-ADM-063
+      - RT-ADM-064
+      - RT-ADM-065
+      - RT-ADM-066
+      - RT-ADM-068
+      - RT-ADM-069
+      - RT-PAR-011
+      - RT-PAR-050
+      - RT-PAR-070
+      - RT-STU-010
+      - RT-STU-011
+      - RT-STU-021
+    STU_012_classification: isolated_not_missing_no_authorized_occurrence_identity_binding
+  disposition:
+    checkpoint_kind: meaningful_fail_closed_source_correction
+    all_route_convergence_claimed: false
+    candidate_ready_claimed: false
+    production_complete_claimed: false
+    prior_1P1_2P2_closed_scope: registry_and_candidate_builder_truth_only
+    product_route_completion_blocked: true
+  completed_validation:
+    focused_route_support_candidate_registry_Admin_IA_portal: passed_27_of_27_across_9_files
+    workspace_typecheck: passed
+    scoped_eslint: passed_zero_findings_22_source_test_paths
+    scoped_prettier: passed_22_of_22_source_test_paths
+    public_and_client_build: passed
+    clean_npm_ci_checkout: passed_359_packages_installed
+    clean_checkout_build_and_typecheck: passed
+    clean_checkout_focused_packet: passed_16_of_16
+    repository_secret_scan: passed_3189_text_files
+    diff_check: passed
+    broader_Playwright_harness: blocked_before_tests_by_existing_seed_missing_nonnull_join_opens_at
+  external_effects:
+    attempted: 0
+    succeeded: 0
+    reconciled: 0
+  safe_next_action: >-
+    Push this exact held checkpoint and stop for independent C00 review. The 47
+    non-ready product routes, candidate work, native PostgreSQL, provider,
+    database, deployment, DNS, send, charge, cleanup, and every external effect
+    remain separately gated.
 P18_registration_002_two_P2_correction_terminal:
   containing_control_head_sha: 702cce4dbe6cb6160c10144f212dc6627676f1a8
   state_basis_control_head_sha: aee8c07684270736b6947a008a4a0d620c61ed6c
@@ -1018,9 +1134,13 @@ merge_result_head_sha: 9a028e7a967221441dfd4d5cf9417eb2885a072f
 merge_parent_target_head_sha: c19c90777e0562c6fa77e30f0e0fc7ab9ba300f9
 merge_parent_source_head_sha: 3364c1c31ef12a81abf02cf9f80f7e8008c1778f
 prior_postmerge_integrator_fix_head_sha: e423868957f3a3cb9ddf992e39368fceb15661c0
-state_based_on_head_sha: 89f9adf886a15f396b6713dfdf0259bfde27bb0d
+state_based_on_head_sha: 9082f3015d6fe95cf374266b49a9e4db7ae69ead
 last_implementation_commit_sha: derive_with_git_rev_parse_HEAD
 completed_steps:
+  - Accepted the exact canonical-route/candidate-source correction authority from control 71342aa60de3f3840c70555a616cded8f5672989, basis 61d52aa85f3f040187c21081c0e17a83544f9443, READY 85ff11c44fdcd4426a821250ae554e8f7a251edd7fd6e0d9ac610df9d58bafc8, and clean start 9082f3015d6fe95cf374266b49a9e4db7ae69ead.
+  - Corrected registry, server mounting, route navigation, visible actions, and candidate source derivation as a truthful fail-closed checkpoint with exact route counts 46 ready, 17 isolated, and 30 missing; explicitly retained RT-STU-012 as isolated.
+  - Passed 27/27 focused assertions, typecheck, lint, format, public/client build, diff and secret gates, plus clean npm-ci build/typecheck and 16/16 focused assertions; disclosed the existing E2E seed join_opens_at blocker without changing its migration or seed.
+  - Released CLIENT_COMPOSER 74272335-1c16-4e4f-bdcd-63ab10909511, SERVER_COMPOSER 806d0bf5-3317-4855-ae09-3d2e4c21cd9e, and RELEASE_INTEGRATOR 8a34d221-1333-4ed3-a4af-3ad930ef3a3b at 2026-08-02T06:25:46Z before expiry; no provider, database, candidate, deploy, DNS, send, charge, cleanup, or external effect occurred and effects remain 0/0/0.
   - Accepted exact five-path P18 correction authority from corrected containing control 702cce4dbe6cb6160c10144f212dc6627676f1a8, state basis aee8c07684270736b6947a008a4a0d620c61ed6c, READY 8b2f9db9ffbe3c4a2635f53d68447cfac421416b869df5a433dffac28fc7d4ea, and clean integration start 89f9adf886a15f396b6713dfdf0259bfde27bb0d.
   - Reproduced all five authorized preimages, exact path inventories and preimage manifest; recorded that control 702cce4d corrected only the initially mistranscribed start-tree and prior-product-manifest values while scope, claim, leases, and preimages remained unchanged.
   - Added the pre-context active/unexpired live-session fence for embedded-client attendance and covered revoked, exact-expiry, past-expiry, invalid-expiry, and invalid-authoritative-time denials before evidence or append.
@@ -2347,25 +2467,43 @@ family_parent_session_composition_binding:
       fixture, and stale login email-link-confirm markup expectation.
   external_effects: 0/0/0
 remaining_steps:
-  - C00 must independently review the exact pushed five-path child of 89f9adf886a15f396b6713dfdf0259bfde27bb0d, both P2 corrections, corrected authority binding, product postimages, exact scope and preimages, released two leases, clean remote equality, and effects 0/0/0.
-  - Candidate binding must separately supply and read back the real F03/P16/P32 context resolver, Meeting SDK signer, verified provider-attendance intake including raw-webhook handling if required, and Admin attendance-subject resolver; native PostgreSQL candidate proof remains required before freeze.
-  - Exact `/app/classroom` post-login return support requires separate F03-owned authority if desired; the current safe signed-out flow returns to `/app/student` and requires an explicit click back to Classroom.
-  - Candidate freeze, provider or registry work, persistent-database work, deployment, DNS, billing, contact, send, activation, cleanup, and every external successor action require separate exact authority.
+  - C00 must independently review the exact pushed 25-path child of 9082f3015d6fe95cf374266b49a9e4db7ae69ead, route counts and classifications, source derivation, exact scope/preimages/postimages, released leases, clean equality, and effects 0/0/0.
+  - Product owners must separately implement and admit the 17 isolated and 30 missing route contracts; RT-STU-012 needs an authorized occurrence-identity binding before it can become ready.
+  - Candidate metadata/freeze, native PostgreSQL, provider or registry work, persistent-database work, deployment, DNS, billing, contact, send, activation, cleanup, and every external successor action require separate exact authority.
 next_action: >-
-  STOP. C00 must independently review the exact pushed P18-registration-002
-  two-P2 correction terminal with sole parent
-  89f9adf886a15f396b6713dfdf0259bfde27bb0d, exact two-product/three-runtime
-  scope, preimages and product postimages, corrected control binding, both
-  released writer leases, clean local/tracking/live equality, and effects 0/0/0
-  before admitting it or advancing candidate binding.
+  STOP. C00 must independently review the pushed fail-closed route and source
+  checkpoint with sole parent 9082f3015d6fe95cf374266b49a9e4db7ae69ead,
+  exact 22-source/3-runtime scope, truthful 46/17/30 route disposition, released
+  leases, clean local/tracking/live equality, and effects 0/0/0. Do not admit it
+  as all-route convergence, candidate readiness, or production completion.
 requirements: {}
 acceptance_cases: {}
 current_checkpoint_changed_paths:
-  - apps/web/src/server/features/classroom/embedded/service.test.ts
-  - apps/web/src/server/features/classroom/embedded/service.ts
+  - apps/web/src/client/app/admin-ia.ts
+  - apps/web/src/client/app/crm-entry.tsx
+  - apps/web/src/client/app/live-entry.tsx
+  - apps/web/src/client/app/portal-entry.tsx
+  - apps/web/src/client/app/router/canonical-route-views.test.ts
+  - apps/web/src/client/app/router/canonical-route-views.ts
+  - apps/web/src/client/app/router/registry.ts
+  - apps/web/src/client/app/support/SupportFeature.tsx
+  - apps/web/src/client/public/public-entry.ts
+  - apps/web/src/server/app.ts
+  - apps/web/src/server/features/v21-canonical-routes/router.test.ts
+  - apps/web/src/server/features/v21-canonical-routes/router.ts
+  - ops/day-one/visible-action-registry.json
   - ops/v2.1-execution/runtime/I36/HANDOFF.md
   - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
   - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
+  - packages/brand-system/src/route-branding.ts
+  - packages/brand-system/src/v21.ts
+  - scripts/build-public-pages.ts
+  - scripts/operations/v21/candidate/build-candidate.test.ts
+  - scripts/operations/v21/candidate/build-candidate.ts
+  - tests/integration/admin-information-architecture-ui-contract.test.ts
+  - tests/integration/portals/portal-mount.test.ts
+  - tests/unit/admin-information-architecture.test.ts
+  - tests/unit/day-one/visible-action-registry.test.ts
 changed_paths:
   - apps/web/src/client/app/portal-entry.tsx
   - apps/web/src/client/app/router/index.ts

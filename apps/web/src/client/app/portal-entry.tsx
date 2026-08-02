@@ -22,6 +22,7 @@ import { ParentHouseholdWorkspace, type ParentHouseholdView } from './parent/hou
 import { StudentLibraryWorkspace } from './student/library/index.js';
 import { StudentLearningOverview } from './student/learning/StudentLearningOverview.js';
 import { StudentClassroomWorkspace } from './student/classroom/StudentClassroomWorkspace.js';
+import { SupportFeature } from './support/SupportFeature.js';
 import { AppShell, type ShellNavItem, type ShellUser } from './shell/AppShell.js';
 import {
   PortalApiError,
@@ -92,7 +93,10 @@ type PortalDialog =
 
 function PortalApp() {
   const portalRole = portalRoleFromLocation(location.pathname);
-  const classroomRoute = location.pathname === '/app/classroom';
+  const classroomRoute = /^\/app\/student\/class\/[^/]+$/u.test(location.pathname);
+  const supportRoute = location.pathname.match(
+    /^\/app\/(?:parent|student)\/support(?:\/([^/]+))?$/u,
+  );
   const [activeSection, setActiveSection] = useState<ParentPortalSection | StudentPortalSection>(
     () => portalSectionFromLocation(portalRole),
   );
@@ -568,27 +572,67 @@ function PortalApp() {
     if (v21ParentSession) {
       return [
         {
-          id: 'v21-parent-overview',
-          label: 'Overview',
-          href: '/app/parent',
-          current: location.pathname === '/app/parent',
-        },
-        {
           id: 'v21-parent-students',
           label: 'Students',
           href: '/app/parent/students',
           current: location.pathname.startsWith('/app/parent/students'),
         },
+        {
+          id: 'v21-parent-support',
+          label: 'Support',
+          href: '/app/parent/support',
+          current: location.pathname.startsWith('/app/parent/support'),
+        },
       ];
     }
-    const sections = portalRole === 'parent' ? PARENT_PORTAL_SECTIONS : STUDENT_PORTAL_SECTIONS;
-    const route = portalRole === 'parent' ? '/app/parent' : '/app/student';
-    return sections.map((section) => ({
-      id: `${portalRole}-${section.id}`,
-      label: section.label,
-      href: `${route}?section=${section.id}`,
-      current: activeSection === section.id,
-    }));
+    if (portalRole === 'parent') {
+      return [
+        {
+          id: 'parent-students',
+          label: 'Students',
+          href: '/app/parent/students',
+          current: location.pathname.startsWith('/app/parent/students'),
+        },
+        {
+          id: 'parent-support',
+          label: 'Support',
+          href: '/app/parent/support',
+          current: location.pathname.startsWith('/app/parent/support'),
+        },
+      ];
+    }
+    return [
+      {
+        id: 'student-today',
+        label: 'Today',
+        href: '/app/student',
+        current: activeSection === 'today',
+      },
+      {
+        id: 'student-library',
+        label: 'Library',
+        href: '/app/student/library',
+        current: activeSection === 'library',
+      },
+      {
+        id: 'student-questions',
+        label: 'Questions',
+        href: '/app/student/questions',
+        current: activeSection === 'questions',
+      },
+      {
+        id: 'student-updates',
+        label: 'Updates',
+        href: '/app/student/updates',
+        current: activeSection === 'updates',
+      },
+      {
+        id: 'student-support',
+        label: 'Support',
+        href: '/app/student/support',
+        current: location.pathname.startsWith('/app/student/support'),
+      },
+    ];
   }, [activeSection, classroomRoute, portalRole, v21ParentSession]);
   const title = classroomRoute
     ? 'Classroom'
@@ -635,7 +679,16 @@ function PortalApp() {
       sessionExpired={sessionExpired}
       onSignIn={signIn}
     >
-      {portalRole === 'parent' ? (
+      {supportRoute ? (
+        <SupportFeature
+          receiptId={supportRoute[1] ? decodeURIComponent(supportRoute[1]) : undefined}
+          basePath={portalRole === 'parent' ? '/app/parent/support' : '/app/student/support'}
+          onProtectedStateCleared={() => {
+            setSessionExpired(true);
+            setSession(null);
+          }}
+        />
+      ) : portalRole === 'parent' ? (
         v21ParentSession ? (
           <ParentHouseholdWorkspace view={parentHouseholdViewFromLocation(location.pathname)} />
         ) : parentAccessShell?.mode === 'paused' ? (
@@ -682,7 +735,11 @@ function PortalApp() {
             learnerMaterials={parentMaterials}
             actorFingerprint={actorFingerprint}
             onSelectSection={(section) => {
-              history.pushState({}, '', `/app/parent?section=${section}`);
+              history.pushState(
+                {},
+                '',
+                section === 'learners' ? '/app/parent/students' : `/app/parent?section=${section}`,
+              );
               setActiveSection(section);
             }}
             onSelectLearner={setSelectedLearnerKey}
@@ -723,7 +780,17 @@ function PortalApp() {
           navigationMode="shell"
           actorFingerprint={actorFingerprint}
           onSelectSection={(section) => {
-            history.pushState({}, '', `/app/student?section=${section}`);
+            const canonicalSectionPath: Partial<Record<StudentPortalSection, string>> = {
+              today: '/app/student',
+              library: '/app/student/library',
+              questions: '/app/student/questions',
+              updates: '/app/student/updates',
+            };
+            history.pushState(
+              {},
+              '',
+              canonicalSectionPath[section] ?? `/app/student?section=${section}`,
+            );
             setActiveSection(section);
           }}
           onLaunchClass={(action) => void handleProtectedAction(action)}
@@ -1440,6 +1507,11 @@ function portalSectionFromLocation(
 ): ParentPortalSection | StudentPortalSection {
   const requested = new URLSearchParams(location.search).get('section');
   if (requested && isPortalSection(role, requested)) return requested;
+  if (role === 'student') {
+    if (location.pathname === '/app/student/library') return 'library';
+    if (location.pathname.startsWith('/app/student/questions')) return 'questions';
+    if (location.pathname === '/app/student/updates') return 'updates';
+  }
   return role === 'parent' ? 'learners' : 'today';
 }
 

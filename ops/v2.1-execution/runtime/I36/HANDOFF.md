@@ -1,5 +1,79 @@
 # I36 Integration Releases
 
+## Current held checkpoint - canonical-route and candidate-source truth correction
+
+Control `71342aa60de3f3840c70555a616cded8f5672989`, based on
+`61d52aa85f3f040187c21081c0e17a83544f9443`, authorized this repository-only
+correction from exact clean start `9082f3015d6fe95cf374266b49a9e4db7ae69ead`
+under READY `85ff11c44fdcd4426a821250ae554e8f7a251edd7fd6e0d9ac610df9d58bafc8`.
+The exact 55-path ceiling and preimage manifest remain `f84c296b3ef155d14612a2cb9920bd59d68bf21167153795e605279633148eaa`
+and `42c615dec4d3d4159613c41ada0ad4f102edf238b96ed7db669e360154835570`.
+
+This is a meaningful fail-closed source checkpoint, not all-route convergence,
+candidate readiness, or terminal production completion. The exact 93-route
+registry reports 46 ready, 17 isolated, and 30 missing. The isolated IDs are
+`RT-AUTH-005`, `RT-AUTH-008`, `RT-PAR-001`, `RT-PAR-010`, `RT-PAR-020`,
+`RT-PAR-021`, `RT-PAR-030`, `RT-PAR-040`, `RT-PAR-041`, `RT-PAR-071`,
+`RT-PAR-072`, `RT-STU-012`, `RT-STU-030`, `RT-STU-051`, `RT-STU-070`,
+`RT-STU-071`, and `RT-STU-072`. The missing IDs are `RT-PUB-008`,
+`RT-PUB-009`, `RT-ADM-002`, `RT-ADM-012`, `RT-ADM-014`, `RT-ADM-015`,
+`RT-ADM-016`, `RT-ADM-017`, `RT-ADM-023`, `RT-ADM-030`, `RT-ADM-031`,
+`RT-ADM-033`, `RT-ADM-038`, `RT-ADM-041`, `RT-ADM-042`, `RT-ADM-060`,
+`RT-ADM-061`, `RT-ADM-062`, `RT-ADM-063`, `RT-ADM-064`, `RT-ADM-065`,
+`RT-ADM-066`, `RT-ADM-068`, `RT-ADM-069`, `RT-PAR-011`, `RT-PAR-050`,
+`RT-PAR-070`, `RT-STU-010`, `RT-STU-011`, and `RT-STU-021`. `RT-STU-012`
+is explicitly isolated, not missing: the existing embedded-classroom resolver
+cannot prove requested occurrence identity equals the authorized grant without
+separately owned service changes.
+
+Ready routes now have exact mounted handlers or bounded compatibility targets.
+Every isolated or missing route has a null advertised handler and an exact
+fail-closed server registration ahead of legacy broad mounts; literal routes
+also outrank parameter templates. Family signup uses `/api/v1/signup/family`,
+setup/reset token paths are scrubbed from browser history, and only truthful
+ready destinations appear in Admin, Parent, Student, brand, and visible-action
+navigation. The visible-action registry is an exact 93-route projection using
+raw Git-blob source hashes with no retired or non-ready actions.
+
+The candidate builder rejects caller inventories and derives every nonempty
+input set from raw Git blobs at the exact repository SHA. It emits deterministic
+Git/deployment archives, excludes mutable runtime/control/result material from
+the product tree, and names no fictional `dist` entrypoint. This closes the
+prior 1P1/2P2 only insofar as registry and builder truth are corrected; the 47
+non-ready product routes remain blocked and separately owned.
+
+The checkpoint changes 22 source/test paths plus the I36 runtime triplet. The
+source, runtime, and release inventories are `864eae3953c425105cab1e90bef54aa65b71fe1c76b029f7bec8ba73114549b6`,
+`bdf3cfe7a516fb00f891ef66f1f752591ce3d894243bbe50393980d10a3a441a`,
+and `aa24b9aa10e12c90aa1382ccea69864d90b105ed9a2d7da352cb08363d27513b`.
+The source postimage manifest is `9f0b0dd59437965b0f79dc0e9dd0925a3d026fc5601c6994d36519e50f84eed1`;
+source and release preimage manifests are `e3a2f4997a60dc8f9db9e3061e79fbf25508fc5e5d6b04f519c9566032135c9d`
+and `933e267b8afb5cf6f404a2e103b59d308590fe96388a72b11990c535c6f85900`.
+
+Focused route, support, candidate-builder, registry, Admin-IA, and portal
+packets pass 27/27 across nine files. Workspace typecheck, scoped ESLint,
+scoped Prettier, public/client builds, diff hygiene, and the 3,189-file secret
+scan pass. A clean detached checkout passed `npm ci`, build/typecheck, and the
+16-assertion route/builder/registry packet. The broader Playwright packet could
+not start because the pre-existing E2E seed omits required non-null
+`join_opens_at`; no migration or seed change was authorized here.
+
+Claim `a3ae432b-8abd-45b7-b84d-7571a54a1bb8` and CLIENT_COMPOSER lease
+`74272335-1c16-4e4f-bdcd-63ab10909511`, SERVER_COMPOSER lease
+`806d0bf5-3317-4855-ae09-3d2e4c21cd9e`, and RELEASE_INTEGRATOR lease
+`8a34d221-1333-4ed3-a4af-3ad930ef3a3b` were released at
+`2026-08-02T06:25:46Z`, before the `2026-08-02T11:17:02Z` expiry. No provider,
+network, registry-population, persistent-database, native-PostgreSQL,
+candidate, deployment, DNS, send, charge, customer, cleanup, or external
+effect occurred; effects remain `0/0/0`.
+
+I36 must push this exact held checkpoint, prove clean local/tracking/live
+equality, and stop for independent C00 review. Product-route completion,
+candidate metadata or freeze, and every external successor action remain
+separately gated.
+
+All sections below are retained historical release records and audit prompts.
+
 ## Current terminal - P18-registration-002 two-P2 correction
 
 Corrected containing control `702cce4dbe6cb6160c10144f212dc6627676f1a8`,

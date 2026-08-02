@@ -35,6 +35,8 @@ import { AdminLearningWorkspace } from './admin/learning/AdminLearningWorkspace.
 import { ClassManagementWorkspace } from './classes/ClassManagementWorkspace.js';
 import { SupportFeature } from './support/SupportFeature.js';
 import { changeOwnPassword } from './portal-api.js';
+import { resolveCurrentClientRoute } from './router/index.js';
+import { compatibilityPathForRoute } from './router/canonical-route-views.js';
 import {
   AuthExpiredError,
   appendNote,
@@ -268,8 +270,19 @@ function CrmApp() {
 
   async function routeFromLocation() {
     if (sessionExpired) return;
-    const supportReceiptMatch = location.pathname.match(/^\/app\/support\/receipts\/([^/]+)$/);
-    if (location.pathname === '/app/support' || supportReceiptMatch?.[1]) {
+    const canonicalRoute = resolveCurrentClientRoute(location.pathname, 'admin');
+    const compatibilityTarget =
+      canonicalRoute?.readiness === 'ready'
+        ? compatibilityPathForRoute(canonicalRoute, location.pathname)
+        : null;
+    const effectiveLocation = new URL(
+      compatibilityTarget ?? `${location.pathname}${location.search}`,
+      location.origin,
+    );
+    const routePath = effectiveLocation.pathname;
+    const routeSearch = effectiveLocation.search;
+    const supportReceiptMatch = routePath.match(/^\/app\/support\/receipts\/([^/]+)$/);
+    if (routePath === '/app/support' || supportReceiptMatch?.[1]) {
       setContactOperationsMode(false);
       setSurface('support');
       setSupportReceiptId(
@@ -283,15 +296,15 @@ function CrmApp() {
       return;
     }
     if (
-      location.pathname === '/app/crm/households' ||
-      location.pathname === '/app/crm/users' ||
-      location.pathname === '/app/crm/learners' ||
-      location.pathname === '/app/crm/audit'
+      routePath === '/app/crm/households' ||
+      routePath === '/app/crm/users' ||
+      routePath === '/app/crm/learners' ||
+      routePath === '/app/crm/audit'
     ) {
       setSurface('crm');
       setContactOperationsMode(false);
       setContactOperationsHouseholdKey(null);
-      setContactsRoutePath(location.pathname);
+      setContactsRoutePath(routePath);
       setCommunicationsMode(null);
       setSupportReceiptId(null);
       setSelected(null);
@@ -300,7 +313,7 @@ function CrmApp() {
       setListLoading(false);
       return;
     }
-    const ownerSurface = ownerSurfaceFromPath(location.pathname);
+    const ownerSurface = ownerSurfaceFromPath(routePath);
     if (ownerSurface && ownerSurface !== 'crm') {
       setContactOperationsMode(false);
       setContactOperationsHouseholdKey(null);
@@ -314,19 +327,16 @@ function CrmApp() {
       if ((ownerSurface === 'dashboard' || ownerSurface === 'billing') && !isRabbi) {
         await loadDashboard();
       }
-      if (ownerSurface === 'dashboard') setDashboardRoutePath(location.pathname);
+      if (ownerSurface === 'dashboard') setDashboardRoutePath(routePath);
       if (ownerSurface === 'classes') {
-        const nextClassroomPath = `${location.pathname}${location.search}`;
-        const occurrenceKey = classroomOccurrenceFromLocation(location.pathname, location.search);
+        const nextClassroomPath = `${routePath}${routeSearch}`;
+        const occurrenceKey = classroomOccurrenceFromLocation(routePath, routeSearch);
         setClassroomRoutePath(nextClassroomPath);
         await loadClasses(occurrenceKey);
-        if (classroomSectionFromPath(location.pathname) === 'rewards' && !isRabbi) {
+        if (classroomSectionFromPath(routePath) === 'rewards' && !isRabbi) {
           await loadGamificationDashboard();
         }
-        if (
-          !isRabbi &&
-          ['questions', 'rewards'].includes(classroomSectionFromPath(location.pathname))
-        ) {
+        if (!isRabbi && ['questions', 'rewards'].includes(classroomSectionFromPath(routePath))) {
           await loadAdminLearning();
         }
       } else {
@@ -334,12 +344,12 @@ function CrmApp() {
         setClassDetailState({ loading: false, error: '' });
       }
       if (ownerSurface === 'content') {
-        setContentRoutePath(location.pathname);
+        setContentRoutePath(routePath);
         if (isRabbi) await loadTeachingContent();
       }
       return;
     }
-    if (location.pathname === communicationsRouteDescriptor.path) {
+    if (routePath === communicationsRouteDescriptor.path) {
       setContactOperationsMode(false);
       setSurface('crm');
       setCommunicationsMode({ kind: 'global' });
@@ -349,7 +359,7 @@ function CrmApp() {
       setListLoading(false);
       return;
     }
-    const contactCommunicationsMatch = location.pathname.match(
+    const contactCommunicationsMatch = routePath.match(
       /^\/app\/crm\/contacts\/([^/]+)\/communications$/,
     );
     if (contactCommunicationsMatch?.[1]) {
@@ -365,12 +375,12 @@ function CrmApp() {
       setListLoading(false);
       return;
     }
-    if (location.pathname === '/app/crm/contact-operations') {
+    if (routePath === '/app/crm/contact-operations') {
       setSurface('crm');
       setContactsRoutePath('/app/crm');
       setContactOperationsMode(true);
       setContactOperationsHouseholdKey(
-        new URLSearchParams(location.search).get('household')?.trim() || null,
+        new URLSearchParams(routeSearch).get('household')?.trim() || null,
       );
       setCommunicationsMode(null);
       setSupportReceiptId(null);
@@ -383,10 +393,10 @@ function CrmApp() {
     setSurface('crm');
     setContactOperationsMode(false);
     setContactOperationsHouseholdKey(null);
-    setContactsRoutePath(location.pathname);
+    setContactsRoutePath(routePath);
     setCommunicationsMode(null);
     setSupportReceiptId(null);
-    const match = location.pathname.match(/^\/app\/crm\/contacts\/([^/]+)$/);
+    const match = routePath.match(/^\/app\/crm\/contacts\/([^/]+)$/);
     const contactId = match?.[1];
     if (contactId) {
       setCreating(false);
@@ -835,28 +845,7 @@ function CrmApp() {
     : canReadCrm
       ? [{ id: 'contacts', label: 'Contacts', href: '/app/crm', current: true }]
       : [];
-  const utilityItems: ShellNavItem[] = [
-    ...(canReadOwnerShell
-      ? [
-          {
-            id: 'operations',
-            label: 'Operations',
-            href: '/app/operations',
-            current: surface === 'operations',
-          },
-        ]
-      : []),
-    ...(session && !isRabbi
-      ? [
-          {
-            id: 'support',
-            label: 'Support',
-            href: '/app/support',
-            current: surface === 'support',
-          },
-        ]
-      : []),
-  ];
+  const utilityItems: ShellNavItem[] = [];
   const shellUser = session ? shellUserFromSession(session.user) : null;
   const pageTitle =
     surface !== 'crm'

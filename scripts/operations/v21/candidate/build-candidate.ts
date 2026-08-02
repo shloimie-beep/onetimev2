@@ -1,5 +1,7 @@
 import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 import { createRequire } from 'node:module';
+import path from 'node:path';
 
 export const CANDIDATE_DOMAIN_PREFIX = 'ONE-TIME-V2.1-CANDIDATE\0';
 
@@ -149,7 +151,6 @@ export type NativePostgresqlResult = {
 export type CandidateBuildRequest = {
   schema_version: 1;
   repository_source_sha: string;
-  input_sets: Record<CandidateInputSetName, CandidateInputSet>;
   tool_versions: {
     node: string;
     npm: string;
@@ -158,6 +159,10 @@ export type CandidateBuildRequest = {
   };
   commands: string[];
   native_postgresql: NativePostgresqlResult;
+};
+
+export type CandidateSourceOptions = {
+  repository_root?: string;
 };
 
 export type CandidateDerivation = {
@@ -200,8 +205,216 @@ const nondeterministicKeyPattern =
 const mutableCandidatePathPattern =
   /^ops\/v2\.1-execution\/(?:control|runtime|results|proofs|merge)(?:\/|$)/;
 
+const ARCHIVE_INPUTS = {
+  web_artifact: [
+    'apps/web',
+    'packages',
+    'scripts',
+    'package.json',
+    'package-lock.json',
+    'tsconfig.typecheck.json',
+  ],
+  worker_artifact: [
+    'apps/worker',
+    'packages',
+    'scripts',
+    'package.json',
+    'package-lock.json',
+    'tsconfig.typecheck.json',
+  ],
+  frontend_assets: [
+    'apps/web/src/client',
+    'apps/web/public',
+    'packages/brand-system',
+    'scripts/build-public-pages.ts',
+  ],
+} as const;
+
 function sha256(value: string | Uint8Array): string {
   return createHash('sha256').update(value).digest('hex');
+}
+
+function gitBytes(repositoryRoot: string, args: readonly string[]): Buffer {
+  try {
+    return execFileSync('git', args, {
+      cwd: repositoryRoot,
+      encoding: 'buffer',
+      maxBuffer: 256 * 1024 * 1024,
+      stdio: ['ignore', 'pipe', 'pipe'],
+      windowsHide: true,
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(`Git source derivation failed (${args.join(' ')}): ${message}`);
+  }
+}
+
+function trackedPathsAtSource(repositoryRoot: string, sourceSha: string): string[] {
+  gitBytes(repositoryRoot, ['cat-file', '-e', `${sourceSha}^{commit}`]);
+  const paths = gitBytes(repositoryRoot, ['ls-tree', '-r', '--name-only', '-z', sourceSha])
+    .toString('utf8')
+    .split('\0')
+    .filter(Boolean)
+    .sort();
+  if (paths.length === 0) throw new Error('repository source tree must not be empty');
+  paths.forEach((entry, index) => assertRepositoryPath(entry, `source_tree[${index}]`));
+  return paths;
+}
+
+function gitBlobInput(
+  repositoryRoot: string,
+  sourceSha: string,
+  repositoryPath: string,
+): CandidateInputFile {
+  return hashCandidateInput(
+    repositoryPath,
+    gitBytes(repositoryRoot, ['cat-file', 'blob', `${sourceSha}:${repositoryPath}`]),
+  );
+}
+
+function inventoryFromPaths(
+  repositoryRoot: string,
+  sourceSha: string,
+  paths: readonly string[],
+): CandidateInputSet {
+  if (paths.length === 0) throw new Error('derived candidate input set must not be empty');
+  const expectedPaths = [...paths].sort();
+  return {
+    expected_paths: expectedPaths,
+    files: expectedPaths.map((repositoryPath) =>
+      gitBlobInput(repositoryRoot, sourceSha, repositoryPath),
+    ),
+  };
+}
+
+function archiveInput(
+  repositoryRoot: string,
+  sourceSha: string,
+  archivePath: string,
+  pathspecs: readonly string[],
+): CandidateInputSet {
+  const archive = gitBytes(repositoryRoot, [
+    'archive',
+    '--format=tar.gz',
+    sourceSha,
+    '--',
+    ...pathspecs,
+  ]);
+  if (archive.length === 0) throw new Error(`${archivePath} archive must not be empty`);
+  return {
+    expected_paths: [archivePath],
+    files: [hashCandidateInput(archivePath, archive)],
+  };
+}
+
+const derivedInputSetCache = new Map<string, Record<CandidateInputSetName, CandidateInputSet>>();
+
+function cloneInputSets(
+  sets: Record<CandidateInputSetName, CandidateInputSet>,
+): Record<CandidateInputSetName, CandidateInputSet> {
+  return Object.fromEntries(
+    CANDIDATE_INPUT_SET_NAMES.map((setName) => [
+      setName,
+      {
+        expected_paths: [...sets[setName].expected_paths],
+        files: sets[setName].files.map((file) => ({ ...file })),
+      },
+    ]),
+  ) as Record<CandidateInputSetName, CandidateInputSet>;
+}
+
+export function deriveCandidateInputSets(
+  repositoryRoot: string,
+  repositorySourceSha: string,
+): Record<CandidateInputSetName, CandidateInputSet> {
+  if (!path.isAbsolute(repositoryRoot)) {
+    throw new Error('repository_root must be an absolute path');
+  }
+  if (!gitShaPattern.test(repositorySourceSha)) {
+    throw new Error('repository_source_sha must be an exact lowercase 40-character Git SHA');
+  }
+  const cacheKey = `${path.resolve(repositoryRoot)}\0${repositorySourceSha}`;
+  const cached = derivedInputSetCache.get(cacheKey);
+  if (cached) return cloneInputSets(cached);
+  const tracked = trackedPathsAtSource(repositoryRoot, repositorySourceSha);
+  const productTree = tracked.filter((entry) => !mutableCandidatePathPattern.test(entry));
+  const configurationBundle = productTree.filter((entry) =>
+    /(?:^|\/)(?:Dockerfile|railway[^/]*|\.env[^/]*|[^/]*config[^/]*)$/iu.test(entry),
+  );
+  const migrations = productTree.filter((entry) => entry.startsWith('packages/db/migrations/'));
+  const providerRegistry = productTree.filter(
+    (entry) =>
+      entry.startsWith('integrations/highlevel/registry/') ||
+      /(?:^|\/)(?:provider|providers)(?:[-_./]|$)/iu.test(entry),
+  );
+
+  const derived: Record<CandidateInputSetName, CandidateInputSet> = {
+    application_content: archiveInput(
+      repositoryRoot,
+      repositorySourceSha,
+      'git/application-content.git-archive.tar.gz',
+      ['apps', 'packages', 'scripts', 'integrations', 'ops/day-one'],
+    ),
+    product_tree: archiveInput(
+      repositoryRoot,
+      repositorySourceSha,
+      'git/product-tree.git-archive.tar.gz',
+      [
+        '.',
+        ':(exclude)ops/v2.1-execution/control',
+        ':(exclude)ops/v2.1-execution/runtime',
+        ':(exclude)ops/v2.1-execution/results',
+        ':(exclude)ops/v2.1-execution/proofs',
+        ':(exclude)ops/v2.1-execution/merge',
+      ],
+    ),
+    web_artifact: archiveInput(
+      repositoryRoot,
+      repositorySourceSha,
+      'artifacts/web-build-context.tar.gz',
+      ARCHIVE_INPUTS.web_artifact,
+    ),
+    worker_artifact: archiveInput(
+      repositoryRoot,
+      repositorySourceSha,
+      'artifacts/worker-build-context.tar.gz',
+      ARCHIVE_INPUTS.worker_artifact,
+    ),
+    configuration_bundle: inventoryFromPaths(
+      repositoryRoot,
+      repositorySourceSha,
+      configurationBundle,
+    ),
+    migration_inventory: inventoryFromPaths(repositoryRoot, repositorySourceSha, migrations),
+    frontend_assets: archiveInput(
+      repositoryRoot,
+      repositorySourceSha,
+      'artifacts/frontend-build-context.tar.gz',
+      ARCHIVE_INPUTS.frontend_assets,
+    ),
+    route_action_inventory: inventoryFromPaths(repositoryRoot, repositorySourceSha, [
+      'ops/day-one/visible-action-registry.json',
+    ]),
+    workflow_registry: inventoryFromPaths(repositoryRoot, repositorySourceSha, [
+      'integrations/highlevel/registry/workflow-registry.yaml',
+    ]),
+    highlevel_registry: inventoryFromPaths(repositoryRoot, repositorySourceSha, [
+      'integrations/highlevel/registry/current.json',
+    ]),
+    provider_registry: inventoryFromPaths(repositoryRoot, repositorySourceSha, providerRegistry),
+    message_catalog: inventoryFromPaths(repositoryRoot, repositorySourceSha, [
+      'ops/v2.1-execution/source-spec/09-WORKFLOW-NOTIFICATION-COPY-CATALOG-v2.1.md',
+    ]),
+    acceptance_contract: inventoryFromPaths(repositoryRoot, repositorySourceSha, [
+      'ops/v2.1-execution/source-spec/02-ACCEPTANCE-CONTRACT-v2.1.yaml',
+    ]),
+    environment_profile_schema: inventoryFromPaths(repositoryRoot, repositorySourceSha, [
+      'ops/release/ot75/environment-schema.json',
+    ]),
+  };
+  for (const setName of CANDIDATE_INPUT_SET_NAMES) assertInputSet(setName, derived[setName]);
+  derivedInputSetCache.set(cacheKey, cloneInputSets(derived));
+  return cloneInputSets(derived);
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -432,14 +645,7 @@ function assertCandidateBuildRequest(request: unknown): asserts request is Candi
   }
   assertExactKeys(
     request,
-    [
-      'schema_version',
-      'repository_source_sha',
-      'input_sets',
-      'tool_versions',
-      'commands',
-      'native_postgresql',
-    ],
+    ['schema_version', 'repository_source_sha', 'tool_versions', 'commands', 'native_postgresql'],
     'request',
   );
   if (request.schema_version !== 1) {
@@ -450,13 +656,6 @@ function assertCandidateBuildRequest(request: unknown): asserts request is Candi
     !gitShaPattern.test(request.repository_source_sha)
   ) {
     throw new Error('repository_source_sha must be an exact lowercase 40-character Git SHA');
-  }
-  if (!isRecord(request.input_sets)) {
-    throw new Error('input_sets must be an object');
-  }
-  assertExactKeys(request.input_sets, CANDIDATE_INPUT_SET_NAMES, 'input_sets');
-  for (const setName of CANDIDATE_INPUT_SET_NAMES) {
-    assertInputSet(setName, request.input_sets[setName]);
   }
   assertToolVersions(request.tool_versions);
   assertCommands(request.commands);
@@ -508,14 +707,19 @@ export function hashCandidateInput(path: string, content: string | Uint8Array): 
   return { path, sha256: sha256(content) };
 }
 
-export function buildCandidate(request: unknown): CandidateBuildResult {
+export function buildCandidate(
+  request: unknown,
+  options: CandidateSourceOptions = {},
+): CandidateBuildResult {
   assertCandidateBuildRequest(request);
+  const repositoryRoot = path.resolve(options.repository_root ?? process.cwd());
+  const inputSets = deriveCandidateInputSets(repositoryRoot, request.repository_source_sha);
 
   const derivedInputSets = {} as CandidateDerivation['input_sets'];
   const derivedCoreFields: Partial<CandidateCore> = {};
   for (const setName of CANDIDATE_INPUT_SET_NAMES) {
     const definition = CANDIDATE_INPUT_SET_DEFINITIONS[setName];
-    const inputSet = request.input_sets[setName];
+    const inputSet = inputSets[setName];
     const files = inputSet.files.map((file) => ({ ...file }));
     const digest = digestInputSet(files, definition.digest_mode);
     derivedCoreFields[definition.candidate_core_field] = digest;
@@ -601,6 +805,7 @@ function assertFrozenAt(frozenAt: string): void {
 export function buildCandidateDocuments(
   request: unknown,
   frozenAt: string,
+  options: CandidateSourceOptions = {},
 ): CandidateBuildResult & {
   candidate_directory: string;
   derivation_path: string;
@@ -609,7 +814,7 @@ export function buildCandidateDocuments(
   candidate_yaml: string;
 } {
   assertFrozenAt(frozenAt);
-  const result = buildCandidate(request);
+  const result = buildCandidate(request, options);
   const digest = result.canonical_candidate_digest;
   const candidateDirectory = `ops/v2.1-execution/merge/candidates/${digest}`;
   const manifest = {

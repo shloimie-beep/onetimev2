@@ -10,7 +10,6 @@ import type {
 import {
   LIVE_CONSOLE_SECTIONS,
   adminPrimaryNav,
-  liveConsoleHref,
   liveConsoleSectionFromSearch,
 } from './admin-ia.js';
 import { AppShell, type ShellNavItem, type ShellUser } from './shell/AppShell.js';
@@ -44,14 +43,16 @@ function LiveConsole() {
   const [data, setData] = useState<ConsoleData | null>(null);
   const [notice, setNotice] = useState<Notice | null>(null);
   const [loading, setLoading] = useState(true);
-  const occurrenceKey = useMemo(
-    () => new URLSearchParams(location.search).get('occurrence_key'),
-    [],
-  );
+  const occurrenceKey = useMemo(() => {
+    const routeMatch = /^\/app\/live\/([^/]+)$/u.exec(location.pathname);
+    return routeMatch?.[1]
+      ? decodeURIComponent(routeMatch[1])
+      : new URLSearchParams(location.search).get('occurrence_key');
+  }, []);
   const section = liveConsoleSectionFromSearch(location.search);
   const liveConsoleSections = LIVE_CONSOLE_SECTIONS.map((item) => ({
     ...item,
-    href: liveConsoleHref(item.id, occurrenceKey),
+    href: `${occurrenceKey ? `/app/live/${encodeURIComponent(occurrenceKey)}` : '/app/live'}?section=${encodeURIComponent(item.id)}`,
   }));
 
   async function load() {
@@ -96,10 +97,7 @@ function LiveConsole() {
 
   const liveConsoleReady = session?.capabilities?.operator_experience?.live_console === true;
   const navItems: ShellNavItem[] = adminPrimaryNav('live-console', liveConsoleReady);
-  const utilityItems: ShellNavItem[] = [
-    { id: 'operations', label: 'Operations', href: '/app/operations', current: false },
-    { id: 'support', label: 'Support', href: '/app/support', current: false },
-  ];
+  const utilityItems: ShellNavItem[] = [];
   const selected = data?.selected_question ?? null;
 
   return (
@@ -116,7 +114,11 @@ function LiveConsole() {
       onLogout={() => {
         if (session) void logout(session.csrf_token);
       }}
-      onSignIn={() => window.location.assign('/login?return_to=%2Fapp%2Flive-console')}
+      onSignIn={() =>
+        window.location.assign(
+          `/login?return_to=${encodeURIComponent(`${location.pathname}${location.search}`)}`,
+        )
+      }
     >
       <section className="live-console" aria-busy={loading}>
         <WorkspaceTabs

@@ -1,9 +1,9 @@
 export const ADMIN_PRIMARY_AREAS = [
   { id: 'dashboard', label: 'Dashboard', href: '/app/dashboard' },
-  { id: 'contacts', label: 'Contacts', href: '/app/crm' },
+  { id: 'contacts', label: 'Contacts', href: '/app/contacts' },
   { id: 'content', label: 'Content', href: '/app/content' },
-  { id: 'classroom', label: 'Classroom', href: '/app/classes' },
-  { id: 'live-console', label: 'Live Console', href: '/app/live-console' },
+  { id: 'classroom', label: 'Classroom', href: '/app/classroom/classes' },
+  { id: 'live-console', label: 'Live Console', href: '/app/live' },
 ] as const;
 
 export type AdminPrimaryAreaId = (typeof ADMIN_PRIMARY_AREAS)[number]['id'];
@@ -15,50 +15,45 @@ export const DASHBOARD_SECTIONS = [
 export type DashboardSectionId = (typeof DASHBOARD_SECTIONS)[number]['id'];
 
 export const CONTACTS_SECTIONS = [
-  { id: 'people', label: 'People / Contacts', href: '/app/crm' },
-  { id: 'households', label: 'Households', href: '/app/crm/households' },
-  { id: 'users', label: 'Users & Roles', href: '/app/crm/users' },
-  { id: 'learners', label: 'Learners', href: '/app/crm/learners' },
-  { id: 'audit', label: 'Audit History', href: '/app/crm/audit' },
+  { id: 'people', label: 'People / Contacts', href: '/app/contacts' },
+  { id: 'audit', label: 'Audit History', href: '/app/audit' },
 ] as const;
 
-export type ContactsSectionId = (typeof CONTACTS_SECTIONS)[number]['id'];
+export type ContactsSectionId = 'people' | 'households' | 'users' | 'learners' | 'audit';
 
 export const CONTENT_SECTIONS = [
-  { id: 'library', label: 'Library', href: '/app/content' },
-  { id: 'publication', label: 'Publication', href: '/app/content/publication' },
-  { id: 'factory', label: 'Factory', href: '/app/content/factory' },
-  { id: 'studio', label: 'Studio', href: '/app/content/studio' },
-  { id: 'knowledge', label: 'Knowledge', href: '/app/content/knowledge' },
-  { id: 'prompts', label: 'Prompts', href: '/app/content/prompts' },
+  { id: 'library', label: 'Library', href: '/app/library' },
+  { id: 'publication', label: 'Pipeline', href: '/app/content' },
+  { id: 'factory', label: 'Upload', href: '/app/content/upload' },
 ] as const;
 
-export type ContentSectionId = (typeof CONTENT_SECTIONS)[number]['id'];
+export type ContentSectionId =
+  'library' | 'publication' | 'factory' | 'studio' | 'knowledge' | 'prompts';
 
 export const CLASSROOM_SECTIONS = [
-  { id: 'classes', label: 'Classes', href: '/app/classes' },
-  { id: 'occurrences', label: 'Occurrences', href: '/app/classes/occurrences' },
-  { id: 'enrollments', label: 'Enrollments', href: '/app/classes/enrollments' },
-  { id: 'recordings', label: 'Recordings', href: '/app/classes/recordings' },
-  { id: 'access', label: 'Access', href: '/app/classes/access' },
-  { id: 'questions', label: 'Questions', href: '/app/classes/questions' },
-  { id: 'rewards', label: 'Rewards', href: '/app/classes/rewards' },
+  { id: 'classes', label: 'Classes', href: '/app/classroom/classes' },
+  { id: 'occurrences', label: 'Occurrences', href: '/app/classroom/occurrences' },
+  { id: 'enrollments', label: 'Enrollments', href: '/app/classroom/enrollments' },
+  { id: 'recordings', label: 'Recordings', href: '/app/classroom/recordings' },
+  { id: 'access', label: 'Access', href: '/app/classroom/access' },
+  { id: 'questions', label: 'Questions', href: '/app/classroom/questions' },
 ] as const;
 
-export type ClassroomSectionId = (typeof CLASSROOM_SECTIONS)[number]['id'];
+export type ClassroomSectionId =
+  'classes' | 'occurrences' | 'enrollments' | 'recordings' | 'access' | 'questions' | 'rewards';
 
 export const LIVE_CONSOLE_SECTIONS = [
   {
     id: 'current-class',
     label: 'Current Class',
-    href: '/app/live-console?section=current-class',
+    href: '/app/live?section=current-class',
   },
   {
     id: 'questions',
     label: 'Questions',
-    href: '/app/live-console?section=questions',
+    href: '/app/live?section=questions',
   },
-  { id: 'zoom', label: 'Zoom', href: '/app/live-console?section=zoom' },
+  { id: 'zoom', label: 'Zoom', href: '/app/live?section=zoom' },
 ] as const;
 
 export type LiveConsoleSectionId = (typeof LIVE_CONSOLE_SECTIONS)[number]['id'];
@@ -134,7 +129,8 @@ export function classroomOccurrenceFromLocation(pathname: string, search: string
 }
 
 export function classroomHref(section: ClassroomSectionId, occurrenceKey?: string | null) {
-  const base = CLASSROOM_SECTIONS.find((item) => item.id === section)?.href ?? '/app/classes';
+  const base =
+    CLASSROOM_SECTIONS.find((item) => item.id === section)?.href ?? '/app/classroom/classes';
   if (!occurrenceKey) return base;
   return `${base}?occurrence_key=${encodeURIComponent(occurrenceKey)}`;
 }
@@ -147,7 +143,7 @@ export function liveConsoleSectionFromSearch(search: string): LiveConsoleSection
 export function liveConsoleHref(section: LiveConsoleSectionId, occurrenceKey?: string | null) {
   const params = new URLSearchParams({ section });
   if (occurrenceKey) params.set('occurrence_key', occurrenceKey);
-  return `/app/live-console?${params.toString()}`;
+  return `/app/live?${params.toString()}`;
 }
 
 function pathSegments(pathname: string, prefix: string) {

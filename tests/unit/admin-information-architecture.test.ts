@@ -22,10 +22,10 @@ describe('OT-LAUNCH-01 Admin information architecture', () => {
   it('keeps five canonical Admin areas and gates Live Console by server readiness', () => {
     expect(ADMIN_PRIMARY_AREAS).toEqual([
       { id: 'dashboard', label: 'Dashboard', href: '/app/dashboard' },
-      { id: 'contacts', label: 'Contacts', href: '/app/crm' },
+      { id: 'contacts', label: 'Contacts', href: '/app/contacts' },
       { id: 'content', label: 'Content', href: '/app/content' },
-      { id: 'classroom', label: 'Classroom', href: '/app/classes' },
-      { id: 'live-console', label: 'Live Console', href: '/app/live-console' },
+      { id: 'classroom', label: 'Classroom', href: '/app/classroom/classes' },
+      { id: 'live-console', label: 'Live Console', href: '/app/live' },
     ]);
     expect(adminPrimaryNav('content', true).filter((item) => item.current)).toEqual([
       { id: 'content', label: 'Content', href: '/app/content', current: true },
@@ -49,18 +49,9 @@ describe('OT-LAUNCH-01 Admin information architecture', () => {
     expect(DASHBOARD_SECTIONS.map((item) => item.label)).toEqual(['Overview']);
     expect(CONTACTS_SECTIONS.map((item) => item.label)).toEqual([
       'People / Contacts',
-      'Households',
-      'Users & Roles',
-      'Learners',
       'Audit History',
     ]);
-    expect(CONTENT_SECTIONS.map((item) => item.label)).toEqual([
-      'Library',
-      'Factory',
-      'Studio',
-      'Knowledge',
-      'Prompts',
-    ]);
+    expect(CONTENT_SECTIONS.map((item) => item.label)).toEqual(['Library', 'Pipeline', 'Upload']);
     expect(CLASSROOM_SECTIONS.map((item) => item.label)).toEqual([
       'Classes',
       'Occurrences',
@@ -68,7 +59,6 @@ describe('OT-LAUNCH-01 Admin information architecture', () => {
       'Recordings',
       'Access',
       'Questions',
-      'Rewards',
     ]);
     expect(LIVE_CONSOLE_SECTIONS.map((item) => item.label)).toEqual([
       'Current Class',
@@ -99,12 +89,12 @@ describe('OT-LAUNCH-01 Admin information architecture', () => {
       classroomOccurrenceFromLocation('/app/classes/questions', '?occurrence_key=occurrence-2'),
     ).toBe('occurrence-2');
     expect(classroomHref('rewards', 'occurrence / 2')).toBe(
-      '/app/classes/rewards?occurrence_key=occurrence%20%2F%202',
+      '/app/classroom/classes?occurrence_key=occurrence%20%2F%202',
     );
     expect(liveConsoleSectionFromSearch('?section=zoom')).toBe('zoom');
     expect(liveConsoleSectionFromSearch('?section=unknown')).toBe('current-class');
     expect(liveConsoleHref('questions', 'occurrence / 2')).toBe(
-      '/app/live-console?section=questions&occurrence_key=occurrence+%2F+2',
+      '/app/live?section=questions&occurrence_key=occurrence+%2F+2',
     );
   });
 });

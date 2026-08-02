@@ -60,19 +60,16 @@ afterEach(async () => {
 });
 
 describe('OT-71 mounted parent and student portals', () => {
-  it('resolves the longest exact Parent household route before the generic Parent shell', () => {
-    expect(resolveCurrentClientRoute('/app/parent', 'parent')?.routeId).toBe(
-      'onetime.parent.portal',
-    );
-    expect(resolveCurrentClientRoute('/app/parent/students', 'parent')?.routeId).toBe(
-      'onetime.parent.household.students',
-    );
+  it('resolves exact locked Parent routes without a generic prefix fallback', () => {
+    expect(resolveCurrentClientRoute('/app/parent', 'parent')?.routeId).toBe('RT-PAR-001');
+    expect(resolveCurrentClientRoute('/app/parent/students', 'parent')?.routeId).toBe('RT-PAR-002');
     expect(resolveCurrentClientRoute('/app/parent/students/new', 'parent')?.routeId).toBe(
-      'onetime.parent.household.students-new',
+      'RT-PAR-003',
     );
     expect(resolveCurrentClientRoute('/app/parent/students/student-1', 'parent')?.routeId).toBe(
-      'onetime.parent.household.student',
+      'RT-PAR-004',
     );
+    expect(resolveCurrentClientRoute('/app/parent/not-locked', 'parent')).toBeNull();
   });
 
   it('mounts the public School inquiry and keeps unconfigured Parent Student policy fail closed', async () => {
@@ -114,22 +111,25 @@ describe('OT-71 mounted parent and student portals', () => {
     }
   });
 
-  it('mounts parent shell and APIs through canonical parent sessions only', async () => {
+  it('fails the isolated Parent root closed while mounting ready Parent children and APIs', async () => {
     const server = await listenForTest(createApp({ config, pool, distDir }));
     try {
       const anonymousShell = await fetch(`${server.baseUrl}/app/parent`, { redirect: 'manual' });
-      expect(anonymousShell.status).toBe(302);
-      expect(anonymousShell.headers.get('location')).toContain('return_to=%2Fapp%2Fparent');
-      const anonymousBilling = await fetch(`${server.baseUrl}/app/parent?section=billing`, {
+      expect(anonymousShell.status).toBe(404);
+      const anonymousStudents = await fetch(`${server.baseUrl}/app/parent/students`, {
         redirect: 'manual',
       });
-      expect(anonymousBilling.status).toBe(302);
-      expect(anonymousBilling.headers.get('location')).toContain(
-        'return_to=%2Fapp%2Fparent%3Fsection%3Dbilling',
+      expect(anonymousStudents.status).toBe(302);
+      expect(anonymousStudents.headers.get('location')).toContain(
+        'return_to=%2Fapp%2Fparent%2Fstudents',
       );
 
       const parent = await loginAs(server.baseUrl, 'parent@example.test', 'ParentPass!234');
-      const parentShell = await fetch(`${server.baseUrl}/app/parent`, {
+      const parentRoot = await fetch(`${server.baseUrl}/app/parent`, {
+        headers: { cookie: parent.cookies },
+      });
+      expect(parentRoot.status).toBe(404);
+      const parentShell = await fetch(`${server.baseUrl}/app/parent/students`, {
         headers: { cookie: parent.cookies },
       });
       expect(parentShell.status).toBe(200);
