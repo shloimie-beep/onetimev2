@@ -298,14 +298,44 @@ blockers:
     requirements and six acceptance cases, raw/canonical/inventory/preimage digests, released lease, clean remote equality,
     and effects 0/0/0 with zero P1, zero P2, and zero P3. C00 admitted only that successor and dispatched its exact 22
     product/test paths plus the I36 runtime triplet with no config, provider, database, candidate, or effect authority.
+    Integration terminal 89f9adf8 completed that scope with 71/71 focused assertions, passing build/lint/format gates,
+    four unchanged baseline type errors, released leases, clean remote equality, and effects 0/0/0. Independent admission
+    review held zero P1 and two P2 defects: revoked/expired sessions can still append client attendance, and malformed or
+    already-expired signer envelopes can be returned as ready. C00 narrowed correction authority to the exact two product/test
+    paths plus I36 runtime triplet; no candidate or provider authority was granted.
   required_authority_or_input:
-  - Complete the dispatched exact P18 same-instance repository composition and mounted-runtime checks
+  - Complete and independently re-review the exact P18 two-P2 repository correction
   - Preserve native PostgreSQL replay and the deployed LEARNING_ALIAS_HMAC_KEY as fail-closed candidate gates
   protection: >-
     Do not apply P22-migration-001 or P22-registration-001, create a second attendance write authority, parse a display
     name into identity fields, mutate audit history, write SQL before the successor is admitted, or advance candidate,
     provider, deployment, DNS, live-database, send, charge, or customer activation gates.
-  next_check: Re-evaluate after the exact P18 repository terminal and again at native-PostgreSQL candidate verification.
+  next_check: Re-evaluate after the exact P18 correction terminal and again at native-PostgreSQL candidate verification.
+- blocker_id: P18-REGISTRATION-002-TERMINAL-CORRECTNESS
+  status: open
+  scope: pre_candidate_repository_correctness
+  owner: P18_I36_C00
+  affected_tasks:
+  - P18
+  - I36
+  - V39
+  - R45
+  safe_work_completed: >-
+    Integration 89f9adf886a15f396b6713dfdf0259bfde27bb0d is an exact 25-path terminal over admitted request
+    P18-registration-002. Its 71/71 focused assertions, builds, focused lint/format, zero changed-path type diagnostics,
+    exact scope/manifests, secret scan, released leases, clean local/tracking/live equality, and effects 0/0/0 were
+    reproduced. Independent code review found zero P1 and exactly two P2 defects: recordClientAttendance does not reject a
+    freshly loaded session whose state is revoked or whose 90-second lease is no longer live; assertEphemeralBootstrap does
+    not reject non-finite timestamps or an envelope already expired at authoritative now. No external effect occurred.
+  required_authority_or_input:
+  - Correct only apps/web/src/server/features/classroom/embedded/service.ts and service.test.ts plus the I36 runtime triplet
+  - Prove revoked and expired attendance rejection and finite, live, no-more-than-60-second minimally usable signer output
+  - Obtain an independent zero-P1/zero-P2 review before any candidate, provider, database, deployment, or DNS work
+  protection: >-
+    Preserve server-derived identity, occurrence/consent/CSRF/reset/replay/callback behavior, terminal grant consumption on
+    signer failure, and fresh-grant retry semantics. Do not expand configuration, provider, database, candidate, deploy,
+    DNS, send, charge, cleanup, or external-effect authority.
+  next_check: Re-evaluate immediately after the exact five-path correction terminal is pushed with leases released.
 - blocker_id: P21-CANONICAL-CONTENT-STATE-WRITER
   status: open
   scope: controlled_launch_candidate
