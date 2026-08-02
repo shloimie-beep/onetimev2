@@ -589,7 +589,7 @@ tasks:
   active_effect_lock_leases: []
   last_heartbeat_at: '2026-08-02T10:35:42Z'
   controller_authorization_sha: 7db01ed9440ffa912d2639693e629938a0a64e91
-  ready_entry_payload_digest: 04ec53be747713591e2b711552de0289530f2d7adc727407d4b6aea89759a14a
+  ready_entry_payload_digest: 62b33e59de38c3fc0a12aed34a04b259e4a385294f6eaf5d98d47327c915c25d
   interface_checkpoint_sha: null
   implementation_head_sha: 370420f14e0c3aefc9399319c74960ca699ab90a
   status_proof:

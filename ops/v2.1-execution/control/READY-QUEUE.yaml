@@ -235,12 +235,12 @@ ready:
     correction_authorized_paths:
       path_count: 4
       path_inventory_digest: 823960e12ddb131f1bc0587c512eef63e7eaa160020f3438c1d9b4b0bf1e1780
-      preimage_manifest_digest: 60b1611120ec5a098149e4c2c7b6434cde389efe9103cc71fd12ad519f32286f
+      preimage_manifest_digest: a495f0a6a1bcd9b731e79eb44c45f9c8ad861b99c19365e85d9b31c7bea23f59
       preimages:
         ops/v2.1-execution/runtime/I36/HANDOFF.md: 5257f44db2c44522bc6c3978187585cbceda622e02e4dd185161dd85f018e3ca
         ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md: d4abb509e43a6185062447fa8353c881ee1281508b0c179e491f1de4dc06f3c1
         ops/v2.1-execution/runtime/I36/TASK-STATE.yaml: 5897f71fcd94f6325dcdfeb3fa30e82bf5b07e46e21b07888f8265fa8c6f8d54
-        scripts/postgres-assurance/candidate-pg18-proof.ts: 909de0c62648164558b2cf9e16e81b35fe66af591a4801131970111f16a7cd38
+        scripts/postgres-assurance/candidate-pg18-proof.ts: 087efe889f33f521dd7e448782126fb6cff35dc4ea5fc2e8f6ef49bfec19cd6e
       paths:
         - ops/v2.1-execution/runtime/I36/HANDOFF.md
         - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
@@ -261,5 +261,5 @@ ready:
     reasoning: XHIGH
 entry_payload_digests:
   F02: 388c28b5c4c946a75f9f4e9ddb103e69193a505e3889a88aaad744ac9e5388c7
-  I36: 04ec53be747713591e2b711552de0289530f2d7adc727407d4b6aea89759a14a
+  I36: 62b33e59de38c3fc0a12aed34a04b259e4a385294f6eaf5d98d47327c915c25d
 digest_algorithm: recursively_sorted_compact_UTF8_JSON_SHA256_per_ready_entry

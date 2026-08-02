@@ -22,6 +22,16 @@ next_action: >-
   I36 correction terminal, and perform one delta-only review. The failed disposable run is reconciled and its lock is
   released. No CI dispatch, deployment, DNS change, provider/customer mutation, database write, send, billing, or other
   external effect is authorized in this correction phase.
+candidate_pg18_source_authority_transcription_correction:
+  recorded_at: '2026-08-02T10:41:27Z'
+  exact_parent_sha: 370420f14e0c3aefc9399319c74960ca699ab90a
+  affected_path: scripts/postgres-assurance/candidate-pg18-proof.ts
+  incorrect_preimage_sha256: 909de0c62648164558b2cf9e16e81b35fe66af591a4801131970111f16a7cd38
+  corrected_raw_git_preimage_sha256: 087efe889f33f521dd7e448782126fb6cff35dc4ea5fc2e8f6ef49bfec19cd6e
+  corrected_preimage_manifest_digest: a495f0a6a1bcd9b731e79eb44c45f9c8ad861b99c19365e85d9b31c7bea23f59
+  scope_paths_claim_lease_and_directives_changed: false
+  correction_source_commit_or_push_preceded_this_record: false
+  external_effect: false
 candidate_pg18_first_run_reconciliation:
   recorded_at: '2026-08-02T10:35:42Z'
   control_basis_sha: 7db01ed9440ffa912d2639693e629938a0a64e91
@@ -38,8 +48,8 @@ candidate_pg18_first_run_reconciliation:
   correction_claim_id: ed8b434a-3da5-4f7d-b0ff-02819c4c1705
   correction_path_count: 4
   correction_path_inventory_digest: 823960e12ddb131f1bc0587c512eef63e7eaa160020f3438c1d9b4b0bf1e1780
-  correction_preimage_manifest_digest: 60b1611120ec5a098149e4c2c7b6434cde389efe9103cc71fd12ad519f32286f
-  correction_ready_entry_payload_digest: 04ec53be747713591e2b711552de0289530f2d7adc727407d4b6aea89759a14a
+  correction_preimage_manifest_digest: a495f0a6a1bcd9b731e79eb44c45f9c8ad861b99c19365e85d9b31c7bea23f59
+  correction_ready_entry_payload_digest: 62b33e59de38c3fc0a12aed34a04b259e4a385294f6eaf5d98d47327c915c25d
 candidate_pg18_proof_dispatch:
   recorded_at: '2026-08-02T10:28:29Z'
   control_basis_sha: 78625ac9b72c59f045412b5e13c835ef749fb2d5
