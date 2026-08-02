@@ -77,7 +77,7 @@ ready:
     branch: codex/v21-integration
     preparation_branch: codex/v21-launch-source-correction
     claim_mode: resume_existing
-    state_based_on_control_head_sha: 5cd292a9e4fab2730435192d1ac6ca27a93a4381
+    state_based_on_control_head_sha: 450fec7fa227a932a0d4f9d6143304e22be17fa0
     authorized_start_sha: d61f4e49349ed4b63618513ce6642337690d55d0
     expected_existing_head: d61f4e49349ed4b63618513ce6642337690d55d0
     package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
@@ -87,16 +87,16 @@ ready:
     dependencies:
       - task_id: C00
         required_state: accepted_source_checkpoint_and_parallel_launch_reconciliation
-        required_control_head_sha: 5cd292a9e4fab2730435192d1ac6ca27a93a4381
+        required_control_head_sha: 450fec7fa227a932a0d4f9d6143304e22be17fa0
       - task_id: F02
         required_state: migration_2258_terminal_integrated_before_I36_terminal_push
       - task_id: Shloimie_launch_inputs
         required_state: cutoff_and_first_class_may_remain_unset_no_guessing
     authorized_paths:
-      path_count: 55
-      path_inventory_digest: 7210b79c0661e90920066712b3d7d1d63e60c905a1c9cfa8f9ac7eaf98e98943
+      path_count: 57
+      path_inventory_digest: 40f0a4c2d509d8549e58d220b8bf48af72c46a4179caf6621890f9597b44bb87
       path_inventory_algorithm: sha256_sorted_LF_delimited_paths_with_final_LF
-      preimage_manifest_digest: 4d5c3e0d2049edd97055e05e7d3b8cf9a128218147bf0ec89d123aea51720912
+      preimage_manifest_digest: a16916ca390adf2baa0f1a6443fea284942a57384ccd56d64e6ccb238b0d5f6e
       preimage_manifest_algorithm: sha256_compact_UTF8_JSON_path_sorted_path_to_raw_sha256_or_null
       preimages:
         .env.example: 810adf00e3d62127689d7423cc03e79664e09f5013d51b5b62c76c88a4ded661
@@ -144,6 +144,8 @@ ready:
         packages/domain/src/signup/family/policy.test.ts: 48ed25b51b144ea8c778808a743a057b377c08b70aeec573ed68d5d6409b9549
         packages/domain/src/signup/family/policy.ts: c7a3b9c1b5dad1f0467d233cc4a94d750baa109e1b557575883244e1aa97a194
         scripts/build-public-pages.ts: 764db894689268a1f7a33635e4a06992403ba0531908181c1e8062aba5b3e3ef
+        scripts/operations/v21/candidate/build-candidate.test.ts: 989483f27a6920f79c58497856873fa9d40fcbbc8e4c487d4e801234621fe8c9
+        scripts/operations/v21/candidate/build-candidate.ts: 2c0e6beecfa14384119aa2d8d918cf876fea6a770ede156744903d61438c8cac
         scripts/postgres-assurance/candidate-pg18-proof.ts: null
         tests/e2e/landing-signup.spec.ts: b9a2c4cf3f1a7da1bb59aa72beacba6ed31e6e6739117e474f68510b97488d32
         tests/integration/accounts/v21-family-parent-session-composition.test.ts: 299e590dbebf9b823bd8d5d975be2235594e37da943a2c32ab36718bb68adc01
@@ -200,6 +202,8 @@ ready:
         - packages/domain/src/signup/family/policy.test.ts
         - packages/domain/src/signup/family/policy.ts
         - scripts/build-public-pages.ts
+        - scripts/operations/v21/candidate/build-candidate.test.ts
+        - scripts/operations/v21/candidate/build-candidate.ts
         - scripts/postgres-assurance/candidate-pg18-proof.ts
         - tests/e2e/landing-signup.spec.ts
         - tests/integration/accounts/v21-family-parent-session-composition.test.ts
@@ -241,5 +245,5 @@ ready:
     reasoning: XHIGH
 entry_payload_digests:
   F02: 388c28b5c4c946a75f9f4e9ddb103e69193a505e3889a88aaad744ac9e5388c7
-  I36: c1cfc594d82f8b182bdaf54634a4d486156fa8744941ca0348370ba95ffdc61b
+  I36: f984df16a5ef3cb29e137eb32fdd3e9c9c92aa0a08adbd4492394eba73d9910b
 digest_algorithm: recursively_sorted_compact_UTF8_JSON_SHA256_per_ready_entry

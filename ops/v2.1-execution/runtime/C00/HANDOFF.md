@@ -3,7 +3,7 @@
 Exact integration `d61f4e49349ed4b63618513ce6642337690d55d0` is independently accepted. Read-only launch
 reconciliation found one coherent source correction and one forward migration. C00 issued F02 READY
 `388c28b5c4c946a75f9f4e9ddb103e69193a505e3889a88aaad744ac9e5388c7` for migration 2258 and I36 READY
-`c1cfc594d82f8b182bdaf54634a4d486156fa8744941ca0348370ba95ffdc61b` for the 55-path launch source/tooling ceiling.
+`f984df16a5ef3cb29e137eb32fdd3e9c9c92aa0a08adbd4492394eba73d9910b` for the amended 57-path launch source/tooling ceiling.
 
 F02 must finish migration 2258 first. I36 may prepare its disjoint phase branch concurrently, then integrate F02 before
 one terminal source checkpoint. The correction adds optional first-class and free-expiry values without guessing either,

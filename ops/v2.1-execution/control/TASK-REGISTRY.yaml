@@ -593,8 +593,8 @@ tasks:
     - 42810294-b675-42f8-b89d-7e8cb0208814
     - f2f57653-eda0-4003-803a-6675bc412ee1
   last_heartbeat_at: '2026-08-02T09:08:39Z'
-  controller_authorization_sha: 5cd292a9e4fab2730435192d1ac6ca27a93a4381
-  ready_entry_payload_digest: c1cfc594d82f8b182bdaf54634a4d486156fa8744941ca0348370ba95ffdc61b
+  controller_authorization_sha: 450fec7fa227a932a0d4f9d6143304e22be17fa0
+  ready_entry_payload_digest: f984df16a5ef3cb29e137eb32fdd3e9c9c92aa0a08adbd4492394eba73d9910b
   interface_checkpoint_sha: null
   implementation_head_sha: d61f4e49349ed4b63618513ce6642337690d55d0
   status_proof:
