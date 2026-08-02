@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "execution_id": "OT-V21-PRODUCTION",
+  "canonical_candidate_digest": "ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d",
+  "case_id": "OTV2-CLASSROOM-232-BOOTSTRAP-LEASE",
+  "current_attempt_path": "ops/v2.1-execution/results/ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d/V39/OTV2-CLASSROOM-232-BOOTSTRAP-LEASE/attempt-1.yaml",
+  "current_attempt_digest": "c290e9e9a18faa0825358f120abf0bb8519b3ee83e714f973a2717f468bec623",
+  "status": "blocked",
+  "supersedes_result_digest": "none",
+  "updated_at": "2026-08-02T12:09:09.496Z"
+}
+

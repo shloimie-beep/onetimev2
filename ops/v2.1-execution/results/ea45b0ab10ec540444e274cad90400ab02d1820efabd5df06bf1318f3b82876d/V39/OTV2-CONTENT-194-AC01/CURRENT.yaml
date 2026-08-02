@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "execution_id": "OT-V21-PRODUCTION",
+  "canonical_candidate_digest": "ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d",
+  "case_id": "OTV2-CONTENT-194-AC01",
+  "current_attempt_path": "ops/v2.1-execution/results/ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d/V39/OTV2-CONTENT-194-AC01/attempt-1.yaml",
+  "current_attempt_digest": "c4e93211d37d9c094312bcc3d0b8e804d8e71d1c6f65ccf033aa387a7f3e719a",
+  "status": "blocked",
+  "supersedes_result_digest": "none",
+  "updated_at": "2026-08-02T12:09:09.496Z"
+}
+
