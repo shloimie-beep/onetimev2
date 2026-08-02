@@ -3,6 +3,7 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 COPY apps ./apps
 COPY packages ./packages
+COPY integrations ./integrations
 COPY scripts ./scripts
 COPY ops/commercial ./ops/commercial
 COPY tsconfig.typecheck.json ./
@@ -19,6 +20,7 @@ COPY --from=base /app/node_modules ./node_modules
 COPY --from=base /app/dist ./dist
 COPY --from=base /app/apps ./apps
 COPY --from=base /app/packages ./packages
+COPY --from=base /app/integrations ./integrations
 COPY --from=base /app/scripts ./scripts
 COPY --from=base /app/ops/commercial ./ops/commercial
 COPY --from=base /app/packages/db/migrations ./packages/db/migrations
