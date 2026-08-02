@@ -71,13 +71,13 @@ ready:
     model: GPT-5.6-SOL
     reasoning: XHIGH
   - task_id: I36
-    lane: candidate_preparation
-    status: ready
-    phase: exact_sha_disposable_postgresql_18_4_proof_dispatch
+    lane: launch_source
+    status: resume_ready
+    phase: launch_timing_family_form_email_and_pg18_tooling_correction
     branch: codex/v21-integration
     preparation_branch: codex/v21-launch-source-correction
-    claim_mode: new_effect_successor
-    state_based_on_control_head_sha: 403c65b85f6bc85bba4a38df19c977058e2ff3d6
+    claim_mode: resume_existing
+    state_based_on_control_head_sha: 607ee4a324ab379674f2b1306ec66058f9d09e51
     authorized_start_sha: d61f4e49349ed4b63618513ce6642337690d55d0
     expected_existing_head: d61f4e49349ed4b63618513ce6642337690d55d0
     package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
@@ -227,32 +227,35 @@ ready:
         - tests/unit/lead-validation.test.ts
         - tests/unit/operator-launch-status-ui.test.ts
     directives:
-      - The 63-path source packet is closed and accepted at integration head 370420f14e0c3aefc9399319c74960ca699ab90a with P1=0, P2=0, and P3=0; no repository write is authorized in this successor.
-      - Dispatch exactly one OPS-11 PostgreSQL 18 Assurance workflow from ref codex/v21-integration with repository_source_sha=370420f14e0c3aefc9399319c74960ca699ab90a.
-      - Use only the ephemeral GitHub Actions runner and disposable postgres:18.4 service; never access staging, production, provider, or customer data.
-      - Read back the exact GitHub run identity, conclusion, checked-out SHA, PostgreSQL version, migration count, replay result, and sanitized artifact before release.
-      - Do not retry an ambiguous dispatch under this authority and do not freeze a candidate unless the proof is successful and reconciled.
-    repository_write_authority: none
-    accepted_terminal_head_sha: 370420f14e0c3aefc9399319c74960ca699ab90a
-    accepted_terminal_review: P1_0_P2_0_P3_0
+      - Prepare on the disjoint phase branch; integrate only after the F02 2258 terminal is admitted and merged first.
+      - Add optional ONE_TIME_FIRST_CLASS_AT and ONE_TIME_FREE_ACCESS_EXPIRES_AT with no compiled value or guessed date.
+      - When expiry is absent, hide date/countdown claims and fail closed for free-signup, billing, and email effects; require it for production_operator_canary and production_broad.
+      - Make /signup Family-only, preserve /school separately, and preserve adult-only cardless payload plus zero Student GHL contacts.
+      - Replace LIVE EVERY DAY with LIVE SUNDAY-THURSDAY and remove customer/operator controlled-pilot wording without editing historical Board evidence.
+      - Install the ten corrected draft messages only in repository desired state; do not publish, activate, enroll, or send.
+      - Pin disposable candidate proof to PostgreSQL 18.4 and exact source SHA; no CI dispatch occurs in this packet.
+      - Finish in one substantive terminal checkpoint; use focused tests only; no broad audit or unrelated suite.
     writer_slot_leases:
-      - { slot: RELEASE_INTEGRATOR, lease_id: 9d4b0e21-eb00-4a42-a40a-87be42e8ba6e }
-    effect_lock_leases:
-      - lock: production:deployment
-        lease_id: 44fbf5e5-cfdf-4e94-b5c2-6cd8012d6817
-        fencing_token: fence-947c4f06-76e9-4889-b157-71da684d1b3e
-        provider_identity: github_actions:shloimie-beep/onetimev2:ops11-postgres-18-assurance.yml
-        operation: exact_SHA_disposable_PostgreSQL_18_4_workflow_dispatch
-        expires_at: '2026-08-02T11:09:09Z'
-    claim_id: 113dafd8-2cfb-4aec-94fa-dafe2d98a8d7
-    writer_id: codex-i36-pg18-proof-113dafd8
-    lease_issued_at: '2026-08-02T10:24:09Z'
-    lease_expires_at: '2026-08-02T11:09:09Z'
-    heartbeat_interval_minutes: 10
+      - { slot: CONFIG_DEPS, lease_id: 6dcd190c-55b5-4651-84af-e6fd425e5d99 }
+      - { slot: SERVER_COMPOSER, lease_id: 20709907-eec6-462a-9ba3-379c44d5c890 }
+      - { slot: CLIENT_COMPOSER, lease_id: d9b950b3-40f5-4a36-9c88-3c56ea09841e }
+      - { slot: GHL_REGISTRY, lease_id: aa344a05-e504-4939-8511-d46f2f3633c0 }
+      - { slot: RELEASE_INTEGRATOR, lease_id: 923f788c-4fab-46b7-8de6-8b1d1038de7d }
+      - { slot: FAMILY_SIGNUP, lease_id: f4839fef-38de-4824-9199-35c196772349 }
+      - { slot: BILLING_COMMERCIAL, lease_id: a2a792bc-81e2-4205-a482-4c8128290235 }
+      - { slot: GHL_CORE_WORKFLOWS, lease_id: 9ba3dd12-3c8c-4fa9-ba86-9649c6a9861b }
+      - { slot: GHL_CAMPAIGNS, lease_id: 42810294-b675-42f8-b89d-7e8cb0208814 }
+      - { slot: COPY_CATALOG, lease_id: f2f57653-eda0-4003-803a-6675bc412ee1 }
+    effect_lock_leases: []
+    claim_id: becf6b05-e160-442f-8b5a-2a0c6193bb26
+    writer_id: codex-i36-launch-source-becf6b05
+    lease_issued_at: '2026-08-02T09:08:39Z'
+    lease_expires_at: '2026-08-02T13:08:39Z'
+    heartbeat_interval_minutes: 30
     prompt_path: ops/v2.1-execution/prompts/I36-START-OR-RESUME.md
     model: GPT-5.6-SOL
     reasoning: XHIGH
 entry_payload_digests:
   F02: 388c28b5c4c946a75f9f4e9ddb103e69193a505e3889a88aaad744ac9e5388c7
-  I36: 464d349c37f45b753dd77fda5702482966013364b95bf2ce786742da51ee79eb
+  I36: 79b66a4b3f0ee9381e0da869f199b93446c44e3d093c2d9e07723e02e053bf35
 digest_algorithm: recursively_sorted_compact_UTF8_JSON_SHA256_per_ready_entry
