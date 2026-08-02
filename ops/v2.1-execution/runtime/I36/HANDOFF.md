@@ -1,6 +1,44 @@
 # I36 Integration Releases
 
-## Current terminal - P21 current-checkpoint metadata correction
+## Current terminal - P18-registration-002 request materialization
+
+Live control `cd1b86517b314d7738240a515f90e4c73ef9314e`, based on
+`66f6bcdc11987c6ef6288877319f43ef9b09f085`, contains canonical READY
+`091f8cf212dfb8329e8954ba19a74503263f6f26fabd33c5cc8ec8f6fe3a5638`.
+The authorized start and required sole parent is accepted P21 metadata terminal
+`48182afe34d5b369b6fbbc05b6d6f788c34e5429`, independently passed with zero
+P1, zero P2, and zero P3.
+
+This four-path repository-only child materializes immutable
+`P18-registration-002` exactly from the C00 draft. Its raw Git-blob SHA-256 is
+`59dc010fcbcb370248a0736b4df37ce090ac7239c92afc6aefa38e8ba87c8624`,
+canonical-object SHA-256 is
+`0ccf99213e29b459f5d9c095e847b7e018cbf8f7a0416849d99465e24045f080`,
+and embedded 22-path sorted-LF inventory digest is
+`2b21372b09476b9a029bced558f5d3856997b902cf9d69d6f1437ec0c862f551`.
+All five requirements, six acceptance cases, exact same-instance P22
+dependency, and fail-closed credential/config/signer/timing caveats are
+preserved. `P18-registration-001` remains byte-identical. Migration 2251 is
+recorded as the applied and reconciled P18-migration-003 successor.
+
+The changed scope is exactly the new request and the I36 runtime triplet under
+inventory digest
+`e15bf1e3d8747c18c299e3cdf1a729ffc6cdc460ebaf242f470dae8dede4ce2b`.
+Draft 2020-12 schema, acceptance IDs, raw/canonical/inventory digests, exact
+preimages, YAML, scoped formatting, diff/scope, repository secret, and
+zero-effect gates pass. Claim `68ebd4f6-7182-4c19-be55-591de3ef98cc` and sole
+RELEASE_INTEGRATOR lease `c3a9f152-c6dc-46f6-b79c-860a4f4e1f5d` were released
+at `2026-08-02T01:49:20Z`, before the `2026-08-02T04:17:01Z` expiry.
+
+No product, test, config, migration, control, old-request, provider, candidate,
+database, deployment, DNS, send, charge, cleanup, or external effect occurred;
+effects remain `0/0/0`. I36 must stop after push and clean local/tracking/live
+equality. C00 must independently admit this request before any of its 22
+product/test paths may be implemented.
+
+All sections below are retained historical release records and audit prompts.
+
+## Historical terminal - P21 current-checkpoint metadata correction
 
 Live control `66f6bcdc11987c6ef6288877319f43ef9b09f085`, based on
 `ec48eda10f0799e852d015fefca227d99e6863af`, contains canonical READY
@@ -37,8 +75,6 @@ I36 must stop after this exact runtime-only terminal is pushed with clean
 local, tracking, and live equality. C00 must independently review this child
 and close the sole metadata P2 before admitting the P21 code terminal.
 Candidate freeze and every provider or release effect remain held.
-
-All sections below are retained historical release records and audit prompts.
 
 ## Current terminal - P21 effect-exists local-finalization correction
 

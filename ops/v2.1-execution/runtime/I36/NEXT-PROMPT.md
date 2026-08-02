@@ -1,6 +1,62 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
+MODE: PAUSE_FOR_C00_P18_REGISTRATION_002_ADMISSION_REVIEW
+
+Audit the exact pushed I36 four-path P18-registration-002 request
+materialization. Do not implement any of its 22 product/test paths, add config
+or signer scope, touch a persistent database, freeze a candidate, inspect or
+mutate a provider, deploy, change DNS, send, charge, clean up, or perform an
+external effect.
+
+Repository: shloimie-beep/onetimev2
+Branch: codex/v21-integration
+Authorized start and required sole parent:
+`48182afe34d5b369b6fbbc05b6d6f788c34e5429`
+Containing control: `cd1b86517b314d7738240a515f90e4c73ef9314e`
+Authority/READY basis: `66f6bcdc11987c6ef6288877319f43ef9b09f085`
+READY: `091f8cf212dfb8329e8954ba19a74503263f6f26fabd33c5cc8ec8f6fe3a5638`
+Claim: `68ebd4f6-7182-4c19-be55-591de3ef98cc`
+Writer: `codex-i36-P18-request-68ebd4f6`
+RELEASE_INTEGRATOR lease: `c3a9f152-c6dc-46f6-b79c-860a4f4e1f5d`
+Lease issue/expiry/release: `2026-08-02T01:17:01Z` /
+`2026-08-02T04:17:01Z` / `2026-08-02T01:49:20Z`
+Effects: `0/0/0`
+
+Confirm the terminal changes exactly the new immutable request and I36 runtime
+triplet under inventory digest
+`e15bf1e3d8747c18c299e3cdf1a729ffc6cdc460ebaf242f470dae8dede4ce2b`.
+Reproduce all three existing preimages and explicit new-path absence. Confirm
+P18-registration-001 is unchanged.
+
+Validate P18-registration-002 against the declared Draft 2020-12 steward
+schema. Confirm raw Git-blob digest
+`59dc010fcbcb370248a0736b4df37ce090ac7239c92afc6aefa38e8ba87c8624`,
+canonical-object digest
+`0ccf99213e29b459f5d9c095e847b7e018cbf8f7a0416849d99465e24045f080`,
+and exact 22-path sorted-LF-final-LF digest
+`2b21372b09476b9a029bced558f5d3856997b902cf9d69d6f1437ec0c862f551`.
+Confirm all five requirement IDs, all six acceptance IDs, eleven existing and
+eleven new paths, exact same-instance P22 dependency, and fail-closed provider
+credential, config, signer, and timing caveats.
+
+Confirm P21 metadata terminal `48182afe...` was independently accepted at zero
+P1/P2/P3 and migration 2251 is the applied and reconciled P18-migration-003
+successor. Confirm no product, test, config, migration, control, old-request,
+provider, candidate, database, deployment, DNS, send, charge, cleanup, or
+external effect occurred. Confirm YAML, scoped format, diff/scope, secret scan,
+lease release, clean worktree, and local/tracking/live equality.
+
+Return exact P1/P2/P3 counts. Do not admit the request or authorize product
+implementation unless P1 and P2 are zero. Stop.
+
+---
+
+## Historical audit prompt - P21 current-checkpoint metadata correction
+
+MODEL: GPT-5.6-SOL
+REASONING: XHIGH
+SERVICE TIER: PRIORITY
 MODE: PAUSE_FOR_C00_P21_CURRENT_CHECKPOINT_METADATA_REVIEW
 
 Audit the exact pushed I36 runtime-only P21 current-checkpoint metadata
