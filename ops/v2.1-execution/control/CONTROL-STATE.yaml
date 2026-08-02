@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: operational
-active_phase: candidate_bound_phase_a_batch_1_dispatched
+active_phase: candidate_bound_phase_a_partial_results_and_launch_correction
 bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
@@ -16,11 +16,56 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
 active_writer_limit: 4
-controller_authorization_sha: 01e5c84ddca04467e16fff73754be368f59bb7fb
+controller_authorization_sha: 4062a17de4b299a620ada6fce0d194ff25743578
 next_action: >-
-  Run V37, V38, V39, and V41 in parallel from exact candidate/evidence head 031cfde117028c8c199c7bc47e46e18a8227139d.
-  Prioritize live landing/Family and GHL identity readbacks. This dispatch is read-only for providers and authorizes no
-  mutation, deployment, DNS, contact, send, enrollment, billing, cleanup, operator canary, or broad production effect.
+  Correct only the demonstrated Parent-route and retired preview-build defects from exact source
+  0a5ef2e1e6ba88b151334f2aa78bee9cd8949365, run focused delta tests, and push one terminal checkpoint. V38 and V41
+  continue read-only against the frozen evidence identity. No provider mutation, deployment, DNS, contact, send,
+  enrollment, billing, cleanup, operator canary, or broad production effect is authorized by this checkpoint.
+launch_priority_source_correction_authority:
+  recorded_at: '2026-08-02T12:25:37.714Z'
+  control_basis_sha: 4062a17de4b299a620ada6fce0d194ff25743578
+  failed_candidate_digest: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
+  exact_source_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
+  branch: codex/v21-launch-critical-correction
+  owner: I36
+  claim_id: 4b51b294-a4a3-4f0b-91e8-fb9cd37bcaa3
+  writer_id: codex-i36-launch-critical-4b51b294
+  writer_lease_id: 4d4ab19d-5562-4c88-97ac-6b995c362343
+  writer_lease_expires_at: '2026-08-02T16:25:37.714Z'
+  authorized_path_count: 5
+  authorized_path_inventory_digest: 32890fc553f668c2e373b70a9df714050a8409fe56fea888759a201236a3045a
+  authorized_preimage_manifest_digest: 00ee774df0b074ee557a615f1b3117c41c874a733165d50a3728b1bdc18d17c1
+  authorized_paths:
+    - apps/web/src/client/app/router/registry.ts
+    - apps/web/src/server/features/v21-canonical-routes/router.test.ts
+    - apps/web/vite.app.config.ts
+    - scripts/build-public-pages.ts
+    - tests/integration/experience-preview-ui-contract.test.ts
+  required_delta_checks:
+    - v21_family_parent_session_composition
+    - canonical_route_registration
+    - ordinary_application_preview_absence
+    - production_client_build_manifest_preview_absence
+  correction_boundary: source_and_focused_tests_only
+  provider_or_external_effect_authority: none
+  external_effects: 0/0/0
+candidate_phase_a_partial_evidence_merge:
+  recorded_at: '2026-08-02T12:19:14Z'
+  state_basis_control_head_sha: 4062a17de4b299a620ada6fce0d194ff25743578
+  canonical_candidate_digest: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
+  evidence_branch: codex/v21-evidence-ea45b0ab10ec
+  evidence_head_sha: 2aeedc02c67623c3af9cfbfd508d87941a70f5d5
+  lane_merge_heads:
+    V37: 74050c373bf3d99176f37f52f43e8c1a7dc1b898
+    V39: 2aeedc02c67623c3af9cfbfd508d87941a70f5d5
+  lane_terminal_heads:
+    V37: a6c83ee43af18483a257b52c0cb744c17935d79b
+    V39: 5d354904a4ae098376d5ffabb307992f4468243e
+  case_counts: { expected: 104, attempted: 104, passed: 47, failed: 5, blocked: 52, stale: 0, waived: 0 }
+  unexpected_external_effects: 0
+  cleanup_open_count: 0
+  disposition: candidate_failed_source_correction_required
 candidate_phase_a_batch_1_dispatch:
   recorded_at: '2026-08-02T11:50:03Z'
   state_basis_control_head_sha: 01e5c84ddca04467e16fff73754be368f59bb7fb
