@@ -8,16 +8,16 @@ branch: codex/v21-control
 start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
-phase: candidate_frozen_evidence_branch_authorized
-claimed_by: codex-c00-candidate-freeze-acceptance-346aba3d
-claim_time: '2026-08-02T11:42:48Z'
-claim_id: 346aba3d-1ba2-45a6-8211-1650e24056de
-lease_expires_at: '2026-08-02T12:42:48Z'
-lease_released_at: '2026-08-02T11:42:48Z'
-last_heartbeat_at: '2026-08-02T11:42:48Z'
-controller_authorization_sha: 146774966cd35a96c51d2f467ccfd3b458fd9cc6
+phase: candidate_bound_phase_a_batch_1_dispatched
+claimed_by: codex-c00-phase-a-batch1-f1314a2c
+claim_time: '2026-08-02T11:50:03Z'
+claim_id: f1314a2c-e61f-419f-a276-33513acce7fc
+lease_expires_at: '2026-08-02T12:50:03Z'
+lease_released_at: '2026-08-02T11:50:03Z'
+last_heartbeat_at: '2026-08-02T11:50:03Z'
+controller_authorization_sha: 01e5c84ddca04467e16fff73754be368f59bb7fb
 ready_entry_payload_digest: null
-state_based_on_head_sha: 146774966cd35a96c51d2f467ccfd3b458fd9cc6
+state_based_on_head_sha: 01e5c84ddca04467e16fff73754be368f59bb7fb
 last_implementation_commit_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
 candidate_freeze_acceptance:
   canonical_candidate_digest: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
@@ -27,6 +27,13 @@ candidate_freeze_acceptance:
   derivation_digest: f848922c8297f8ee90a934b7875876976913fc23af21c3ce590b7a4571ace8ca
   independent_review: P1_0_P2_0_P3_0
   evidence_branch: codex/v21-evidence-ea45b0ab10ec
+  external_effects: 0/0/0
+candidate_phase_a_batch_1_dispatch:
+  evidence_head_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
+  lanes: [V37, V38, V39, V41]
+  assigned_case_count: 191
+  provider_mode: read_only_only
+  effect_lock_leases: []
   external_effects: 0/0/0
 launch_source_correction_dispatch:
   recorded_at: '2026-08-02T09:08:39Z'
@@ -1288,14 +1295,13 @@ completed_steps:
   and prohibiting both legacy authority tables, direct history writes, candidate work, providers, and all external effects.
 remaining_steps:
 - >-
-  Create and verify codex/v21-evidence-ea45b0ab10ec at exact frozen head 031cfde117028c8c199c7bc47e46e18a8227139d.
+  Complete candidate-bound Phase A Batch 1 for V37, V38, V39, and V41, writing only assigned result/runtime paths.
 - >-
-  Issue one candidate-bound verifier dispatch, prioritizing landing/Family deployment readiness and GHL sender/workflow/audience preparation.
+  As slots finish, dispatch V42, V40, and V43 Phase A; move GHL mutation behind one exact candidate-bound lock/fence transaction.
 - Run V37-V43 Phase A, R44, deferred proof, V43 Phase B, R45 certification, legal gate, cutover, and the observation window in their exact order.
 next_action: >-
-  Create the exact evidence branch from the frozen candidate, verify remote equality, then dispatch candidate-bound lanes.
-  No broad enrollment or send before Shloimie's exact approval; every live effect requires its exact authority, lock, fence,
-  readback, reconciliation, and bounded operator fixture.
+  Run V37/V38/V39/V41 from exact head 031cfde1. Reuse accepted evidence and perform only assigned current checks.
+  Provider access is read-only in this dispatch; no mutation or production effect is authorized.
 orchestration:
   enabled: true
   mechanism: native_subagents

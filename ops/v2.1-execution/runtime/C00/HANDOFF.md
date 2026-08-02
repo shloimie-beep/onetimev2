@@ -9,12 +9,13 @@ and `f848922c8297f8ee90a934b7875876976913fc23af21c3ce590b7a4571ace8ca`.
 All fourteen non-empty input sets, 3,275 unique source paths, builder 4/4,
 PostgreSQL 18.4 proof, released writer lease, and freeze effects 0/0/0 pass.
 
-Create `codex/v21-evidence-ea45b0ab10ec` at the exact frozen head, verify the
-remote ref, then issue one candidate-bound verifier dispatch. Landing/Family
-production readiness and the Rabbi sender/GHL workflow/audience work are the
-business-priority lanes. No broad enrollment or send is authorized before
-Shloimie's exact copy-and-audience approval; live effects remain lock/fence and
-operator-fixture bounded.
+Evidence branch `codex/v21-evidence-ea45b0ab10ec` exists at the exact frozen
+head. Candidate-bound Phase A Batch 1 dispatches V37, V38, V39, and V41 for
+191 assigned cases, with a C4 production-read-only ceiling and no effect locks.
+Landing/Family production readiness and GHL identity are the business-priority
+current readbacks. No provider mutation, deployment, DNS, contact, send,
+enrollment, billing, cleanup, operator canary, or broad production effect is
+authorized by this batch.
 
 ## Superseded launch source correction handoff
 

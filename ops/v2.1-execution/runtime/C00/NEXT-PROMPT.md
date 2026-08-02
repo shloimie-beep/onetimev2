@@ -1,7 +1,7 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
-MODE: CREATE_EVIDENCE_BRANCH_THEN_DISPATCH_CANDIDATE_BOUND_LANES
+MODE: RUN_CANDIDATE_BOUND_PHASE_A_BATCH_1
 
 # Current immutable candidate
 
@@ -11,13 +11,13 @@ at manifest commit `031cfde117028c8c199c7bc47e46e18a8227139d` and product source
 `0a5ef2e1e6ba88b151334f2aa78bee9cd8949365`. Its independent freeze review is
 P1=0, P2=0, P3=0 and effects are 0/0/0.
 
-Create `codex/v21-evidence-ea45b0ab10ec` from the exact manifest commit and
-verify remote equality. Then issue one candidate-bound verifier transaction and
-run the allowed lanes in parallel, prioritizing: (1) landing/Family deployment
-readiness, (2) canonical Rabbi sender/DNS, and (3) GHL workflows/audiences.
-Perform only current readbacks until each exact effect authority, lock, fence,
-fixture, budget, rollback, and reconciliation plan is recorded. Do not broadly
-enroll or send before Shloimie approves the exact final copy and audience counts.
+Evidence branch `codex/v21-evidence-ea45b0ab10ec` is verified at the manifest
+commit. Run V37, V38, V39, and V41 in parallel from that exact head using their
+READY entries, canonical branches, case sets, and writer leases. Perform only
+assigned candidate-bound checks and current production readbacks. Provider
+access is read-only; no live mutation or effect lock is authorized. Prioritize
+landing/Family and GHL identity facts so the exact effect transaction can be
+issued next without delaying unrelated verification.
 
 ## Superseded launch source dispatch
 

@@ -268,7 +268,156 @@ ready:
     prompt_path: ops/v2.1-execution/prompts/I36-START-OR-RESUME.md
     model: GPT-5.6-SOL
     reasoning: XHIGH
+  - task_id: V37
+    lane: identity_public_entry_admin
+    status: ready
+    phase: candidate_bound_phase_a
+    claim_mode: new
+    state_based_on_control_head_sha: 01e5c84ddca04467e16fff73754be368f59bb7fb
+    authorized_start_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
+    expected_existing_head: 031cfde117028c8c199c7bc47e46e18a8227139d
+    canonical_candidate_digest: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
+    candidate_product_source_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
+    candidate_manifest_digest: 30867a96bfc5370ead95b83b6519b4ec365947d874c609dd8e5dbecba7e54876
+    evidence_branch: codex/v21-evidence-ea45b0ab10ec
+    branch: codex/v21-verify-ea45b0ab10ec-v37
+    harness_branch: codex/v21-harness-ea45b0ab10ec-v37
+    case_count: 55
+    allowed_environment_progression: [C1_CI, C2_persistent_staging, C3_provider_sandbox, C4_production_read_only]
+    authorized_result_scope:
+      globs:
+        - ops/v2.1-execution/results/ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d/V37/**
+        - ops/v2.1-execution/runtime/V37/**
+      harness_excluded_from_canonical_branch: true
+    directives: &candidate_phase_a_directives
+      - Write only candidate-bound lane results and the lane runtime triplet on the canonical verifier branch.
+      - Reuse accepted source evidence and run only assigned current checks; do not modify deployable source or the frozen candidate.
+      - Provider access is read-only only in this dispatch. No mutation, deployment, DNS, contact, send, enrollment, billing, cleanup, or production effect is authorized.
+      - Every result must bind the exact candidate, source, environment, case ID, evidence digest, and reconciled zero-effect ledger.
+    external_authority: &candidate_phase_a_read_only
+      mode: read_only_only
+      provider_mutation: none
+      effect_locks: []
+      operator_canary: not_authorized
+      broad_send_or_enrollment: prohibited
+    writer_slot_leases:
+      - { slot: VERIFY_IDENTITY_ADMIN, lease_id: e48f2ded-422e-4705-aaaf-4ab389636664 }
+    claim_id: 7bf24561-9b95-480b-8172-49b6498bff07
+    writer_id: codex-v37-7bf24561
+    lease_issued_at: '2026-08-02T11:50:03Z'
+    lease_expires_at: '2026-08-02T15:50:03Z'
+    heartbeat_interval_minutes: 30
+    prompt_path: ops/v2.1-execution/prompts/V37-START-OR-RESUME.md
+    model: GPT-5.6-SOL
+    service_tier: PRIORITY
+    reasoning: XHIGH
+  - task_id: V38
+    lane: ux_parent_student_support_copy
+    status: ready
+    phase: candidate_bound_phase_a
+    claim_mode: new
+    state_based_on_control_head_sha: 01e5c84ddca04467e16fff73754be368f59bb7fb
+    authorized_start_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
+    expected_existing_head: 031cfde117028c8c199c7bc47e46e18a8227139d
+    canonical_candidate_digest: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
+    candidate_product_source_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
+    candidate_manifest_digest: 30867a96bfc5370ead95b83b6519b4ec365947d874c609dd8e5dbecba7e54876
+    evidence_branch: codex/v21-evidence-ea45b0ab10ec
+    branch: codex/v21-verify-ea45b0ab10ec-v38
+    harness_branch: codex/v21-harness-ea45b0ab10ec-v38
+    case_count: 58
+    allowed_environment_progression: [C1_CI, C2_persistent_staging, C3_provider_sandbox, C4_production_read_only]
+    authorized_result_scope:
+      globs:
+        - ops/v2.1-execution/results/ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d/V38/**
+        - ops/v2.1-execution/runtime/V38/**
+      harness_excluded_from_canonical_branch: true
+    directives: *candidate_phase_a_directives
+    external_authority: *candidate_phase_a_read_only
+    writer_slot_leases:
+      - { slot: VERIFY_PORTALS_UX, lease_id: a70c05e8-84c4-45e9-8e2a-12cb7e433d73 }
+    claim_id: 26c2da65-06c8-4b4d-8ccb-94d405851013
+    writer_id: codex-v38-26c2da65
+    lease_issued_at: '2026-08-02T11:50:03Z'
+    lease_expires_at: '2026-08-02T15:50:03Z'
+    heartbeat_interval_minutes: 30
+    prompt_path: ops/v2.1-execution/prompts/V38-START-OR-RESUME.md
+    model: GPT-5.6-SOL
+    service_tier: PRIORITY
+    reasoning: HIGH
+  - task_id: V39
+    lane: schema_jobs_classroom_content
+    status: ready
+    phase: candidate_bound_phase_a
+    claim_mode: new
+    state_based_on_control_head_sha: 01e5c84ddca04467e16fff73754be368f59bb7fb
+    authorized_start_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
+    expected_existing_head: 031cfde117028c8c199c7bc47e46e18a8227139d
+    canonical_candidate_digest: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
+    candidate_product_source_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
+    candidate_manifest_digest: 30867a96bfc5370ead95b83b6519b4ec365947d874c609dd8e5dbecba7e54876
+    evidence_branch: codex/v21-evidence-ea45b0ab10ec
+    branch: codex/v21-verify-ea45b0ab10ec-v39
+    harness_branch: codex/v21-harness-ea45b0ab10ec-v39
+    case_count: 49
+    allowed_environment_progression: [C1_CI, C2_persistent_staging, C3_provider_sandbox, C4_production_read_only]
+    authorized_result_scope:
+      globs:
+        - ops/v2.1-execution/results/ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d/V39/**
+        - ops/v2.1-execution/runtime/V39/**
+      harness_excluded_from_canonical_branch: true
+    directives: *candidate_phase_a_directives
+    external_authority: *candidate_phase_a_read_only
+    writer_slot_leases:
+      - { slot: VERIFY_CLASSROOM_CONTENT, lease_id: 40d3aab7-08ce-4330-a3d4-afcac796db67 }
+    claim_id: 91c0ff4c-5f9e-4449-836c-f610ec5b6ba9
+    writer_id: codex-v39-91c0ff4c
+    lease_issued_at: '2026-08-02T11:50:03Z'
+    lease_expires_at: '2026-08-02T15:50:03Z'
+    heartbeat_interval_minutes: 30
+    prompt_path: ops/v2.1-execution/prompts/V39-START-OR-RESUME.md
+    model: GPT-5.6-SOL
+    service_tier: PRIORITY
+    reasoning: XHIGH
+  - task_id: V41
+    lane: provider_billing_access_ghl_identity
+    status: ready
+    phase: candidate_bound_phase_a
+    claim_mode: new
+    state_based_on_control_head_sha: 01e5c84ddca04467e16fff73754be368f59bb7fb
+    authorized_start_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
+    expected_existing_head: 031cfde117028c8c199c7bc47e46e18a8227139d
+    canonical_candidate_digest: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
+    candidate_product_source_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
+    candidate_manifest_digest: 30867a96bfc5370ead95b83b6519b4ec365947d874c609dd8e5dbecba7e54876
+    evidence_branch: codex/v21-evidence-ea45b0ab10ec
+    branch: codex/v21-verify-ea45b0ab10ec-v41
+    harness_branch: codex/v21-harness-ea45b0ab10ec-v41
+    case_count: 29
+    allowed_environment_progression: [C1_CI, C2_persistent_staging, C3_provider_sandbox, C4_production_read_only]
+    authorized_result_scope:
+      globs:
+        - ops/v2.1-execution/results/ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d/V41/**
+        - ops/v2.1-execution/runtime/V41/**
+      harness_excluded_from_canonical_branch: true
+    directives: *candidate_phase_a_directives
+    external_authority: *candidate_phase_a_read_only
+    writer_slot_leases:
+      - { slot: VERIFY_BILLING_PROVIDERS, lease_id: f4739877-6884-4ac5-8952-ed0ee5d4a52e }
+    claim_id: bf9d08fb-23a7-479e-9899-c1b03505fe5a
+    writer_id: codex-v41-bf9d08fb
+    lease_issued_at: '2026-08-02T11:50:03Z'
+    lease_expires_at: '2026-08-02T15:50:03Z'
+    heartbeat_interval_minutes: 30
+    prompt_path: ops/v2.1-execution/prompts/V41-START-OR-RESUME.md
+    model: GPT-5.6-SOL
+    service_tier: PRIORITY
+    reasoning: XHIGH
 entry_payload_digests:
   F02: 388c28b5c4c946a75f9f4e9ddb103e69193a505e3889a88aaad744ac9e5388c7
   I36: null
+  V37: 30d6912c416db8490f9e018cf6d0d833bd02a784efb8c234dc4e01ddb6e3139c
+  V38: 12ed1af9ea95163f43b6a2b7a95ca64f2e964d9319e9a0044670d33a604edbfb
+  V39: 56fc1adbe802ad3516651db0a9e83f89aa552de163e2c9f16a27367df4d4d68f
+  V41: 350ab3fb62d18392387cfc2414a3a30711c532405368c32572ccbaf271d1a916
 digest_algorithm: recursively_sorted_compact_UTF8_JSON_SHA256_per_ready_entry

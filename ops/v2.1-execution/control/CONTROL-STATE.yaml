@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: operational
-active_phase: candidate_frozen_evidence_branch_authorized
+active_phase: candidate_bound_phase_a_batch_1_dispatched
 bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
@@ -16,12 +16,30 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
 active_writer_limit: 4
-controller_authorization_sha: 146774966cd35a96c51d2f467ccfd3b458fd9cc6
+controller_authorization_sha: 01e5c84ddca04467e16fff73754be368f59bb7fb
 next_action: >-
-  Create evidence branch codex/v21-evidence-ea45b0ab10ec from exact frozen manifest commit
-  031cfde117028c8c199c7bc47e46e18a8227139d, verify remote equality, then issue one candidate-bound verifier dispatch.
-  Prioritize landing/Family production readiness and GHL sender/workflow/audience preparation, but do not broadly enroll
-  or send before Shloimie's exact copy-and-audience approval and do not perform any live effect without its exact lock/fence.
+  Run V37, V38, V39, and V41 in parallel from exact candidate/evidence head 031cfde117028c8c199c7bc47e46e18a8227139d.
+  Prioritize live landing/Family and GHL identity readbacks. This dispatch is read-only for providers and authorizes no
+  mutation, deployment, DNS, contact, send, enrollment, billing, cleanup, operator canary, or broad production effect.
+candidate_phase_a_batch_1_dispatch:
+  recorded_at: '2026-08-02T11:50:03Z'
+  state_basis_control_head_sha: 01e5c84ddca04467e16fff73754be368f59bb7fb
+  canonical_candidate_digest: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
+  candidate_manifest_commit_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
+  candidate_product_source_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
+  evidence_branch: codex/v21-evidence-ea45b0ab10ec
+  evidence_head_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
+  branches:
+    V37: codex/v21-verify-ea45b0ab10ec-v37
+    V38: codex/v21-verify-ea45b0ab10ec-v38
+    V39: codex/v21-verify-ea45b0ab10ec-v39
+    V41: codex/v21-verify-ea45b0ab10ec-v41
+  case_counts: { V37: 55, V38: 58, V39: 49, V41: 29, total: 191 }
+  environment_ceiling: C4_production_read_only
+  provider_mutation_authority: none
+  effect_lock_leases: []
+  operator_canary_authority: none
+  external_effects: 0/0/0
 candidate_freeze_acceptance:
   recorded_at: '2026-08-02T11:42:48Z'
   state_basis_control_head_sha: 146774966cd35a96c51d2f467ccfd3b458fd9cc6
