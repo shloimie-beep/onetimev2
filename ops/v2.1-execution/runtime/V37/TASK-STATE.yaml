@@ -1,0 +1,59 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: V37
+task_packet_digest: d21e54222451e62e053621da4c7015a0670cefb216ede426e837f84bdd94841c
+task_context_digest: d31b4d8b8bc6b7768ed02f0d3231816f9653db4fe9727ddf3a511cd710a34357
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+branch: codex/v21-verify-ea45b0ab10ec-v37
+start_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
+dependency_heads:
+  I36: 031cfde117028c8c199c7bc47e46e18a8227139d
+status: claimed
+phase: candidate_bound_phase_a
+claimed_by: codex-v37-7bf24561
+claim_time: '2026-08-02T11:58:12Z'
+claim_id: 7bf24561-9b95-480b-8172-49b6498bff07
+lease_expires_at: '2026-08-02T15:50:03Z'
+last_heartbeat_at: '2026-08-02T11:58:12Z'
+controller_authorization_sha: 4062a17de4b299a620ada6fce0d194ff25743578
+ready_entry_payload_digest: 30d6912c416db8490f9e018cf6d0d833bd02a784efb8c234dc4e01ddb6e3139c
+state_based_on_head_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
+last_implementation_commit_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
+candidate:
+  canonical_digest: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
+  repository_source_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
+  manifest_digest: 30867a96bfc5370ead95b83b6519b4ec365947d874c609dd8e5dbecba7e54876
+completed_steps:
+  - verified repository identity, isolated worktree, branch head, control authorization, claim, lease, and READY digest
+  - verified all 200 LOCKED-SHA256SUMS entries and the task, context, prompt, source-package, and candidate identities
+remaining_steps:
+  - run current candidate and authorized production read-only checks for all 55 assigned cases
+  - write immutable attempts, CURRENT pointers, lane summary, terminal runtime triplet, commit, push, and release lease
+next_action: Run the V37 current/delta verification matrix without external effects.
+requirements:
+  expected: 48
+  verified: 0
+acceptance_cases:
+  expected: 55
+  attempted: 0
+  passed: 0
+  failed: 0
+  blocked: 0
+changed_paths:
+  - ops/v2.1-execution/runtime/V37/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/V37/HANDOFF.md
+  - ops/v2.1-execution/runtime/V37/NEXT-PROMPT.md
+migrations: []
+steward_requests: []
+verification:
+  commands_run:
+    - git fetch origin --prune
+    - normalized-LF verification of all 200 LOCKED-SHA256SUMS entries
+  known_baseline_failures: []
+external_effects:
+  authority: read_only_only
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings: []
