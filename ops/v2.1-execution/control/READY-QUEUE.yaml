@@ -73,11 +73,11 @@ ready:
   - task_id: I36
     lane: candidate_freeze_preparation
     status: ready
-    phase: candidate_pg18_proof_reconciled_success
+    phase: exact_candidate_freeze_authorized
     branch: codex/v21-integration
     preparation_branch: codex/v21-launch-source-correction
     claim_mode: new
-    state_based_on_control_head_sha: b35b084cbe9811058dc7bb2e8b0de0fe1c895e18
+    state_based_on_control_head_sha: 08079bd87085ba8fd0b242f8ff7923c1b46f3a88
     authorized_start_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
     expected_existing_head: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
     package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
@@ -227,37 +227,45 @@ ready:
         - tests/unit/lead-validation.test.ts
         - tests/unit/operator-launch-status-ui.test.ts
     directives:
-      - Admit successful run 30745346334 only for exact source 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365 and sanitized artifact 8832696355.
-      - Treat authority i36-pg18-proof-20260802110345 as consumed and the production:deployment lock as released.
-      - Preserve the 89/89 migration/replay/ledger, zero pending/issues, eight passing probes, and passing restore-clone evidence.
-      - Derive a separate exact repository-only candidate-freeze authority before writing candidate metadata or evidence indexes.
-      - No provider, persistent database, deployment, DNS, contact, send, billing, or production effect is authorized by this entry.
-    repository_write_authority: none_until_exact_candidate_freeze_authority
+      - Materialize exactly candidate ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d from source 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365 and the sanitized candidate build request from run 30745346334.
+      - Write only CANDIDATE-DERIVATION.json, CANDIDATE.yaml, and the I36 runtime triplet under the exact five-path ceiling.
+      - Require derivation SHA-256 f848922c8297f8ee90a934b7875876976913fc23af21c3ce590b7a4571ace8ca and manifest SHA-256 30867a96bfc5370ead95b83b6519b4ec365947d874c609dd8e5dbecba7e54876.
+      - Preserve all deployable source, migrations, workflow/provider registries, and accepted source correction bytes.
+      - Push one terminal and stop for one delta-only candidate identity review before creating the evidence branch or any provider/deployment effect.
+    repository_write_authority: exact_candidate_freeze_paths_only
     correction_authorized_paths:
-      path_count: 3
-      path_inventory_digest: bdf3cfe7a516fb00f891ef66f1f752591ce3d894243bbe50393980d10a3a441a
-      preimage_manifest_digest: d96021d0e56179ebc406bc92542a386a364680f8aa1b3403a63b7d95caa615cc
+      path_count: 5
+      path_inventory_digest: 3b125e97f2ea2b59bf44c28b70be350f2a0f1e5b8f22ce976785b900e36626d7
+      preimage_manifest_digest: 28afa552b05e57a6847a439a2fc29a674a39c7ccfcb2e910b4593ca061a5981d
       preimages:
-        ops/v2.1-execution/runtime/I36/HANDOFF.md: ad02f629bd61aed0d54cd0e258cca5770c1ddb4db825579028cd2260e54db68e
-        ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md: 1ca01dcc28a41c676a4b4cee449883b7f7ba8fb7d29e06ebec9dd7215bd4a14c
-        ops/v2.1-execution/runtime/I36/TASK-STATE.yaml: 875bdbff2d82efc6d413f5fa5b0d70b9cf0d2ae03600b69830d2d964483cdbb9
+        ops/v2.1-execution/merge/candidates/ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d/CANDIDATE-DERIVATION.json: null
+        ops/v2.1-execution/merge/candidates/ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d/CANDIDATE.yaml: null
+        ops/v2.1-execution/runtime/I36/HANDOFF.md: 75bf763a17610495c1a866a3e0597e72618dcc851e398a7ff603a75d0f6d1b41
+        ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md: d36408234b7c7dbf0309943db6f1086b180028d6dce0622d64cef34bbfe16c8c
+        ops/v2.1-execution/runtime/I36/TASK-STATE.yaml: 26b31509f8f2f696ea783120a02f9b7a8cd24764483c11e304774d9b674f81e3
       paths:
+        - ops/v2.1-execution/merge/candidates/ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d/CANDIDATE-DERIVATION.json
+        - ops/v2.1-execution/merge/candidates/ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d/CANDIDATE.yaml
         - ops/v2.1-execution/runtime/I36/HANDOFF.md
         - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
         - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
+      required_postimages:
+        ops/v2.1-execution/merge/candidates/ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d/CANDIDATE-DERIVATION.json: f848922c8297f8ee90a934b7875876976913fc23af21c3ce590b7a4571ace8ca
+        ops/v2.1-execution/merge/candidates/ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d/CANDIDATE.yaml: 30867a96bfc5370ead95b83b6519b4ec365947d874c609dd8e5dbecba7e54876
     accepted_terminal_head_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
     accepted_terminal_review: P1_0_P2_0_P3_0
-    writer_slot_leases: []
     effect_lock_leases: []
-    claim_id: null
-    writer_id: null
-    lease_issued_at: null
-    lease_expires_at: null
+    writer_slot_leases:
+      - { slot: RELEASE_INTEGRATOR, lease_id: 8a7206c7-0c56-4fab-9565-63a2859077a2 }
+    claim_id: 48f1af59-52f9-4868-bacd-b6e79bf4292d
+    writer_id: codex-i36-candidate-freeze-48f1af59
+    lease_issued_at: '2026-08-02T11:23:01Z'
+    lease_expires_at: '2026-08-02T12:23:01Z'
     heartbeat_interval_minutes: 15
     prompt_path: ops/v2.1-execution/prompts/I36-START-OR-RESUME.md
     model: GPT-5.6-SOL
     reasoning: XHIGH
 entry_payload_digests:
   F02: 388c28b5c4c946a75f9f4e9ddb103e69193a505e3889a88aaad744ac9e5388c7
-  I36: e1c415fcb0e38758b115d3d85ff22fd1996948f34a3ba62640681fd2dfdd36e8
+  I36: 26439fc6fe15620e8cdc00b4b82151c536b5b3f53303cd0aaf9d687c542a50b6
 digest_algorithm: recursively_sorted_compact_UTF8_JSON_SHA256_per_ready_entry

@@ -587,18 +587,19 @@ tasks:
     candidate_pg18_native_proof_result: success
   authorized_start_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
   last_known_remote_head: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
-  active_claim_id: null
-  active_writer_id: null
-  lease_expires_at: null
-  active_writer_leases: []
+  active_claim_id: 48f1af59-52f9-4868-bacd-b6e79bf4292d
+  active_writer_id: codex-i36-candidate-freeze-48f1af59
+  lease_expires_at: '2026-08-02T12:23:01Z'
+  active_writer_leases:
+    - 8a7206c7-0c56-4fab-9565-63a2859077a2
   active_effect_lock_leases: []
-  last_heartbeat_at: '2026-08-02T11:17:33Z'
-  controller_authorization_sha: b35b084cbe9811058dc7bb2e8b0de0fe1c895e18
-  ready_entry_payload_digest: e1c415fcb0e38758b115d3d85ff22fd1996948f34a3ba62640681fd2dfdd36e8
+  last_heartbeat_at: '2026-08-02T11:23:01Z'
+  controller_authorization_sha: 08079bd87085ba8fd0b242f8ff7923c1b46f3a88
+  ready_entry_payload_digest: 26439fc6fe15620e8cdc00b4b82151c536b5b3f53303cd0aaf9d687c542a50b6
   interface_checkpoint_sha: null
   implementation_head_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
   status_proof:
-    state: candidate_pg18_proof_passed_ready_for_freeze_authority
+    state: exact_candidate_freeze_ready
     producer_task_id: C00
     producer_head_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
     canonical_candidate_digest: null
@@ -618,8 +619,8 @@ tasks:
     failed_effect_reconciliation: source_reference_initialization_order_zero_non_disposable_effects
     successful_effect_run_id: 30745346334
     successful_effect_reconciliation: PostgreSQL_18_4_89_migrations_8_probes_restore_clone_passed_zero_non_disposable_effects
-    state_based_on_control_head_sha: b35b084cbe9811058dc7bb2e8b0de0fe1c895e18
-    transitioned_at: '2026-08-02T11:17:33Z'
+    state_based_on_control_head_sha: 08079bd87085ba8fd0b242f8ff7923c1b46f3a88
+    transitioned_at: '2026-08-02T11:23:01Z'
     proof_record_location: 'ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/I36/status_proof'
 - task_id: P08
   status: ready_for_review
