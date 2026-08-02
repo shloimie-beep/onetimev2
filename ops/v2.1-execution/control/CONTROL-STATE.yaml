@@ -52,6 +52,20 @@ launch_source_scope_amendment:
   amended_I36_ready_entry_payload_digest: f984df16a5ef3cb29e137eb32fdd3e9c9c92aa0a08adbd4492394eba73d9910b
   provider_or_external_effect_authority: none
   external_effects: 0/0/0
+launch_source_office_sender_consistency_amendment:
+  recorded_at: '2026-08-02T09:35:00Z'
+  control_basis_sha: cb5fe3bd55941316a80fbeb1b2d20923b95dd712
+  reason: OT_01_required_office_sender_must_match_message_class_registry_prompt_and_checklist
+  added_paths:
+    - integrations/highlevel/ai-workflow-prompts/OT-01-new-lead-intake.md
+    - integrations/highlevel/registry/message-class-registry.yaml
+    - integrations/highlevel/workflow-checklists/OT-01-new-lead-intake.md
+  amended_I36_authorized_path_count: 60
+  amended_I36_path_inventory_digest: 36d6a171365d878a9080d4e42ce04cd535df147277ea1941b956861477fe5de3
+  amended_I36_preimage_manifest_digest: b9a3d5fcca28936a045727a1db1c828375adbbd6a85af80c5b159bd9b5aeb7b5
+  amended_I36_ready_entry_payload_digest: aaee8cdfdd5859f6a44ffb0c504a0d77f545889498f54aab74404cc2020d2f3c
+  provider_or_external_effect_authority: none
+  external_effects: 0/0/0
 production_completion_lanes:
 - lane: A
   owner: F02

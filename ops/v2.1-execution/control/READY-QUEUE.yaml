@@ -77,7 +77,7 @@ ready:
     branch: codex/v21-integration
     preparation_branch: codex/v21-launch-source-correction
     claim_mode: resume_existing
-    state_based_on_control_head_sha: 450fec7fa227a932a0d4f9d6143304e22be17fa0
+    state_based_on_control_head_sha: cb5fe3bd55941316a80fbeb1b2d20923b95dd712
     authorized_start_sha: d61f4e49349ed4b63618513ce6642337690d55d0
     expected_existing_head: d61f4e49349ed4b63618513ce6642337690d55d0
     package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
@@ -93,10 +93,10 @@ ready:
       - task_id: Shloimie_launch_inputs
         required_state: cutoff_and_first_class_may_remain_unset_no_guessing
     authorized_paths:
-      path_count: 57
-      path_inventory_digest: 40f0a4c2d509d8549e58d220b8bf48af72c46a4179caf6621890f9597b44bb87
+      path_count: 60
+      path_inventory_digest: 36d6a171365d878a9080d4e42ce04cd535df147277ea1941b956861477fe5de3
       path_inventory_algorithm: sha256_sorted_LF_delimited_paths_with_final_LF
-      preimage_manifest_digest: a16916ca390adf2baa0f1a6443fea284942a57384ccd56d64e6ccb238b0d5f6e
+      preimage_manifest_digest: b9a3d5fcca28936a045727a1db1c828375adbbd6a85af80c5b159bd9b5aeb7b5
       preimage_manifest_algorithm: sha256_compact_UTF8_JSON_path_sorted_path_to_raw_sha256_or_null
       preimages:
         .env.example: 810adf00e3d62127689d7423cc03e79664e09f5013d51b5b62c76c88a4ded661
@@ -116,13 +116,16 @@ ready:
         apps/web/src/server/features/signup/family/service.ts: 0e8837094adb71e6e05b7417f69074fb00608316f7a436a6d1d6dbd8996e67dd
         apps/worker/src/runners/ghl-workflows/campaigns/adapters.ts: 5f404253681e4f63a072e78534b71cf28b29dd4225a572b0a009e9a025835d71
         apps/worker/src/runners/ghl-workflows/campaigns/composition.test.ts: 2ea4b398084ac150887f1fa8c25e647f2059492ddb6ddd470606f4277d8c31c1
+        integrations/highlevel/ai-workflow-prompts/OT-01-new-lead-intake.md: be0fea1aa175b02117548b6b4ee0114a0e23894dc6167c11040a1013aa5fff15
         integrations/highlevel/ai-workflow-prompts/OT-02A-existing-subscriber-migration-2026-v1.md: d8f5737d9ac03c17f011127ef0638a7a82b4700a069c052aedc034d0d04e0ed4
         integrations/highlevel/ai-workflow-prompts/OT-02B-new-lead-nurture-v1.md: 37fbaeff4de2ba6b3662e4ab5b77e8a464c077f50d9797e4f717ae858345295d
         integrations/highlevel/registry/WORKFLOW-CONTROL-REPORT.md: e877597814ea9c9f809ea8f2f2d1446cbabdd9accb22606869c3e00aad150f9b
         integrations/highlevel/registry/current.json: da675fabdf5fff2b5cb472d1e48353fb169e49bd3fa711504e08b46c1b0a4097
+        integrations/highlevel/registry/message-class-registry.yaml: 48fb01836a3a4870e0e0bd9ae221a48afc8ed6407df75879d812a72faad28d5b
         integrations/highlevel/registry/workflow-registry.yaml: 06d1ee3b125f7d0893994e9c55b075bc387034606f38e74ef074532a86dd0339
         integrations/highlevel/v21/workflow-fragments/P29-core-lifecycle.yaml: ea6b13c67f2ac0631a3d6f27a705cfdc0511ac2993d1f5cb7c8ba012b87718b3
         integrations/highlevel/v21/workflow-fragments/P30-campaigns.yaml: 468f7df01ae68a5cf07b1bbcac88fd457d5bd3261c16b5143382cec786697b7a
+        integrations/highlevel/workflow-checklists/OT-01-new-lead-intake.md: e1fc3de89447379a67b050715c02d00793c3d7975729ddd78442cdf5ac4e54dd
         integrations/highlevel/workflow-checklists/OT-02A-existing-subscriber-migration-2026-v1.md: c665b45a787578cb1cb7ba150e1fc5e3b0198adaf2294e4435b063fb522e77a3
         integrations/highlevel/workflows.yaml: 387c7ed84656065bfd2edea7d85109a17bc01d7a861d2d3b73a73d4bba9089fb
         ops/v2.1-execution/runtime/I36/HANDOFF.md: beeb6119497267b7392df042c08fea4a7d24731c28793d575774382bd4839315
@@ -174,13 +177,16 @@ ready:
         - apps/web/src/server/features/signup/family/service.ts
         - apps/worker/src/runners/ghl-workflows/campaigns/adapters.ts
         - apps/worker/src/runners/ghl-workflows/campaigns/composition.test.ts
+        - integrations/highlevel/ai-workflow-prompts/OT-01-new-lead-intake.md
         - integrations/highlevel/ai-workflow-prompts/OT-02A-existing-subscriber-migration-2026-v1.md
         - integrations/highlevel/ai-workflow-prompts/OT-02B-new-lead-nurture-v1.md
         - integrations/highlevel/registry/WORKFLOW-CONTROL-REPORT.md
         - integrations/highlevel/registry/current.json
+        - integrations/highlevel/registry/message-class-registry.yaml
         - integrations/highlevel/registry/workflow-registry.yaml
         - integrations/highlevel/v21/workflow-fragments/P29-core-lifecycle.yaml
         - integrations/highlevel/v21/workflow-fragments/P30-campaigns.yaml
+        - integrations/highlevel/workflow-checklists/OT-01-new-lead-intake.md
         - integrations/highlevel/workflow-checklists/OT-02A-existing-subscriber-migration-2026-v1.md
         - integrations/highlevel/workflows.yaml
         - ops/v2.1-execution/runtime/I36/HANDOFF.md
@@ -245,5 +251,5 @@ ready:
     reasoning: XHIGH
 entry_payload_digests:
   F02: 388c28b5c4c946a75f9f4e9ddb103e69193a505e3889a88aaad744ac9e5388c7
-  I36: f984df16a5ef3cb29e137eb32fdd3e9c9c92aa0a08adbd4492394eba73d9910b
+  I36: aaee8cdfdd5859f6a44ffb0c504a0d77f545889498f54aab74404cc2020d2f3c
 digest_algorithm: recursively_sorted_compact_UTF8_JSON_SHA256_per_ready_entry
