@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: operational
-active_phase: candidate_bound_staging_reconciliation
+active_phase: staging_web_health_route_source_correction
 bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
@@ -18,10 +18,11 @@ candidate: c7faf43f4cc17a0e80f01c5db0a31f6a81f9b1f5f5090281b6f6daaf1cc84dab
 active_writer_limit: 4
 controller_authorization_sha: 44edd0a460156088720b71c9ccb615b5972971fb
 next_action: >-
-  Reconcile exact Railway staging web deployment 570b55ef-5057-4ec8-9b8d-18ffb7be424c and worker deployment
-  46f9af56-d601-4717-84d9-6e2c44c9c126 for accepted candidate 887ab80c793932234035c6eb434a445e7920ce96.
-  Do not retry or perform a successor effect. Do not activate GHL, send, enroll, mutate DNS or production, create
-  Student contacts, or perform a customer or billing effect.
+  Correct the staging web health path so the production-mode unknown-domain guard cannot intercept Railway health
+  probes before public /health, /ready, and /version routes. Run only focused route-order/domain-guard checks and a
+  clean build, independently review the minimal delta, and refreeze a new candidate before any successor staging
+  effect. Do not activate GHL, send, enroll, mutate DNS or production, create Student contacts, or perform a customer
+  or billing effect.
 Docker_context_candidate_acceptance:
   recorded_at: '2026-08-02T13:55:04Z'
   state_basis_control_head_sha: 44edd0a460156088720b71c9ccb615b5972971fb
@@ -66,6 +67,23 @@ Docker_context_staging_deployment_attempt:
   web_initial_state: QUEUED
   worker_deployment_id: 46f9af56-d601-4717-84d9-6e2c44c9c126
   worker_initial_state: QUEUED
+  production_deployments_DNS_sends_enrollments_billing_effects: 0/0/0/0/0
+Docker_context_staging_deployment_reconciliation:
+  reconciled_at: '2026-08-02T14:11:44Z'
+  web_deployment_id: 570b55ef-5057-4ec8-9b8d-18ffb7be424c
+  web_terminal_state: FAILED
+  web_image_build: SUCCESS
+  web_failure: new_instance_listening_healthcheck_GET_health_404_unknown_domain_guard
+  web_prior_active_deployment_id: 106977e3-3dc7-4dd0-8f1a-c57642bd0c54
+  staging_web_endpoint_readback: initial_502_then_version_and_root_timeout
+  worker_deployment_id: 46f9af56-d601-4717-84d9-6e2c44c9c126
+  worker_terminal_state: SUCCESS
+  worker_delivery_effects: 0
+  database_migrations: 89_total_59_already_applied_30_applied_2228_through_2258
+  database_migration_errors: 0
+  provider_readback_digest: 95cb7739157f269f95b29f7ea34c3edaf8d1eac72657a9afcb3e1025e5e523c5
+  authority_consumed: i36-staging-deploy-20260802135504
+  lock_released: 2c0e395c-d492-4945-876d-c3f7060fe306
   production_deployments_DNS_sends_enrollments_billing_effects: 0/0/0/0/0
 corrected_candidate_refreeze_authority:
   recorded_at: '2026-08-02T13:05:10Z'

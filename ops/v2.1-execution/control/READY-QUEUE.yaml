@@ -73,7 +73,7 @@ ready:
   - task_id: I36
     lane: candidate_bound_staging
     status: consumed
-    phase: Docker_context_candidate_staging_reconciliation
+    phase: staging_web_health_route_source_correction_required
     branch: codex/v21-integration
     preparation_branch: codex/v21-launch-critical-correction
     claim_mode: new
@@ -264,22 +264,13 @@ ready:
       review: P1_0_P2_0_P3_0
     accepted_terminal_head_sha: d5f75bbae511f6549897b1b005db1c5978b4487b
     accepted_terminal_review: P1_0_P2_0_P3_0
-    effect_lock_leases:
+    effect_lock_leases: []
+    effect_lock_leases_released:
       - lock: production:deployment
         lease_id: 2c0e395c-d492-4945-876d-c3f7060fe306
-        fencing_token: fence-9ac0556d-d74e-46d2-9fb4-cce2b61a4085
         authority_id: i36-staging-deploy-20260802135504
-        authority_grant_digest: 769422c91892e066bb18ce8735d878954cf620d1bfbf9dab3979926c2d7161e0
-        authority_status_index_digest: da51d4e423f3492d31671ce59a468cbd831770da37186f5e17221330957549aa
-        authority_status_entry_digest: 1e9f66379fd8e731fa809b35b8ae67c9958395bd00f7bb9b355c5b8eba857645
-        latest_revocation_digest: null
-        candidate_digest: c7faf43f4cc17a0e80f01c5db0a31f6a81f9b1f5f5090281b6f6daaf1cc84dab
-        provider_environment_id: 11edf8a2-0160-45b4-a039-b15b4beb4c10
-        maximum_effect_count: 2
-        state_based_on_control_head_sha: 44edd0a460156088720b71c9ccb615b5972971fb
-        lease_issued_at: '2026-08-02T13:55:04Z'
-        lease_expires_at: '2026-08-02T14:40:04Z'
-    effect_lock_leases_released:
+        disposition: consumed_and_reconciled_web_failed_health_404_worker_success
+        released_at: '2026-08-02T14:11:44Z'
       - lock: production:deployment
         lease_id: 4c71055a-fff3-466b-bcfc-915ab43f2970
         authority_id: i36-staging-deploy-20260802132339

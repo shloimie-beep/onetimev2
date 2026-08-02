@@ -1,0 +1,45 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: i36-staging-deploy-20260802135504
+event_sequence: 3
+previous_event_digest: c917b4bab110584aa1cc17767376cfa778c3e0755eec7e6ce5ff0c4190fee5c6
+state: RECONCILED
+task_id: I36
+canonical_event_path: ops/v2.1-execution/effects/c7faf43f4cc17a0e80f01c5db0a31f6a81f9b1f5f5090281b6f6daaf1cc84dab/I36/i36-staging-deploy-20260802135504/events/003-RECONCILED.yaml
+candidate_digest: c7faf43f4cc17a0e80f01c5db0a31f6a81f9b1f5f5090281b6f6daaf1cc84dab
+candidate_manifest_commit_sha: 887ab80c793932234035c6eb434a445e7920ce96
+authority_id: i36-staging-deploy-20260802135504
+authority_grant_digest: 769422c91892e066bb18ce8735d878954cf620d1bfbf9dab3979926c2d7161e0
+lock: production:deployment
+lock_lease_id: 2c0e395c-d492-4945-876d-c3f7060fe306
+fencing_token: fence-9ac0556d-d74e-46d2-9fb4-cce2b61a4085
+provider_identity: railway:7c8eee26-7a6a-4684-826d-9f4377d67d46:11edf8a2-0160-45b4-a039-b15b4beb4c10:web-9fb6d9f4:worker-76e7fdc2
+provider_request_or_operation_id: github_ref_update_and_railway_deployments_570b55ef_46f9af56
+provider_readback:
+  digest: 95cb7739157f269f95b29f7ea34c3edaf8d1eac72657a9afcb3e1025e5e523c5
+  source_branch_sha: 887ab80c793932234035c6eb434a445e7920ce96
+  web_deployment_id: 570b55ef-5057-4ec8-9b8d-18ffb7be424c
+  web_state: FAILED
+  web_commit_sha: 887ab80c793932234035c6eb434a445e7920ce96
+  web_image_build: SUCCESS
+  web_image_digest: sha256:7dc6089449fd75e5f12f2e6d123b84730092f44cc00ed055a0b758db5204f922
+  web_failure: new_instance_listening_healthcheck_GET_health_404_unknown_domain_guard
+  web_prior_active_deployment_id: 106977e3-3dc7-4dd0-8f1a-c57642bd0c54
+  web_prior_active_state: SUCCESS
+  staging_web_endpoint_readback: initial_502_then_version_and_root_timeout
+  worker_deployment_id: 46f9af56-d601-4717-84d9-6e2c44c9c126
+  worker_state: SUCCESS
+  worker_commit_sha: 887ab80c793932234035c6eb434a445e7920ce96
+  worker_image_digest: sha256:a356433edf0c89c21657f1b288962ee1ffb7d0baf244660a7ba6b226794cf23d
+  worker_delivery_batches: zero_claimed_zero_delivered
+  database_migrations: 89_total_59_already_applied_30_applied_2228_through_2258
+  database_migration_errors: 0
+effect_budget_consumed:
+  staging_deployments: 2
+  production_deployments: 0
+  DNS_changes: 0
+  sends_or_enrollments: 0
+cleanup_state: complete_terminal_readback_no_retry_web_source_correction_required
+lock_release_state: released
+reconciled_at: '2026-08-02T14:11:44Z'
+immutable: true

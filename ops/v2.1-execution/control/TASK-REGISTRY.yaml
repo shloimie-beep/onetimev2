@@ -466,8 +466,8 @@ tasks:
     transitioned_at: '2026-07-30T19:30:53Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/F07/status_proof
 - task_id: I36
-  status: staging_deployment_in_progress
-  active_phase: candidate_bound_staging_reconciliation
+  status: staging_web_failed_health_route_source_correction_required
+  active_phase: staging_web_health_route_source_correction
   branch: codex/v21-integration
   phase_branches:
     integration: codex/v21-integration
@@ -605,21 +605,14 @@ tasks:
   active_writer_id: null
   lease_expires_at: null
   active_writer_leases: []
-  active_effect_lock_leases:
-    - lock: production:deployment
-      lease_id: 2c0e395c-d492-4945-876d-c3f7060fe306
-      fencing_token: fence-9ac0556d-d74e-46d2-9fb4-cce2b61a4085
-      authority_id: i36-staging-deploy-20260802135504
-      candidate_digest: c7faf43f4cc17a0e80f01c5db0a31f6a81f9b1f5f5090281b6f6daaf1cc84dab
-      provider_environment_id: 11edf8a2-0160-45b4-a039-b15b4beb4c10
-      lease_expires_at: '2026-08-02T14:40:04Z'
-  last_heartbeat_at: '2026-08-02T14:05:09Z'
-  controller_authorization_sha: 56ebdfcd394a50cd8fa5364b88d8e0589f3821d9
+  active_effect_lock_leases: []
+  last_heartbeat_at: '2026-08-02T14:11:44Z'
+  controller_authorization_sha: 74ef4e56ecc087d3aebae5d51d11d4a5f4c8460e
   ready_entry_payload_digest: null
   interface_checkpoint_sha: null
   implementation_head_sha: 887ab80c793932234035c6eb434a445e7920ce96
   status_proof:
-    state: staging_deployment_in_progress
+    state: staging_web_failed_health_route_source_correction_required
     producer_task_id: I36
     producer_head_sha: 887ab80c793932234035c6eb434a445e7920ce96
     canonical_candidate_digest: c7faf43f4cc17a0e80f01c5db0a31f6a81f9b1f5f5090281b6f6daaf1cc84dab
@@ -639,8 +632,13 @@ tasks:
     failed_effect_reconciliation: source_reference_initialization_order_zero_non_disposable_effects
     successful_effect_run_id: 30745346334
     successful_effect_reconciliation: PostgreSQL_18_4_89_migrations_8_probes_restore_clone_passed_zero_non_disposable_effects
-    state_based_on_control_head_sha: 56ebdfcd394a50cd8fa5364b88d8e0589f3821d9
-    transitioned_at: '2026-08-02T14:05:09Z'
+    staging_web_deployment_id: 570b55ef-5057-4ec8-9b8d-18ffb7be424c
+    staging_web_reconciliation: failed_healthcheck_GET_health_404_prior_deployment_retained_endpoint_unavailable
+    staging_worker_deployment_id: 46f9af56-d601-4717-84d9-6e2c44c9c126
+    staging_worker_reconciliation: success_exact_candidate_zero_delivery_effects
+    staging_database_reconciliation: 89_total_59_already_applied_30_applied_zero_errors
+    state_based_on_control_head_sha: 74ef4e56ecc087d3aebae5d51d11d4a5f4c8460e
+    transitioned_at: '2026-08-02T14:11:44Z'
     proof_record_location: 'ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/I36/status_proof'
 - task_id: P08
   status: ready_for_review

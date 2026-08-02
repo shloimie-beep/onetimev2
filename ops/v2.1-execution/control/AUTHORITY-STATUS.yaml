@@ -167,7 +167,8 @@ authorities:
     prerequisite_review: P1_0_P2_0_P3_0
     checked_at: '2026-08-02T13:55:04Z'
     state_based_on_control_head_sha: 44edd0a460156088720b71c9ccb615b5972971fb
-    disposition: consumed_two_staging_deployments_pending_reconciliation
+    disposition: consumed_and_reconciled_web_failed_health_404_worker_success
+    lock_released_at: '2026-08-02T14:11:44Z'
 entry_schema: templates/AUTHORITY-STATUS-ENTRY.yaml
 revocation_schema: templates/AUTHORITY-REVOCATION-RECORD.yaml
 rule: C00 records externally granted/revoked/expired authority; it does not grant it. Every update binds the known
