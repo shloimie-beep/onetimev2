@@ -1,0 +1,66 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+verification_lane: V37
+canonical_candidate_digest: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
+candidate_product_source_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
+candidate_manifest_digest: 30867a96bfc5370ead95b83b6519b4ec365947d874c609dd8e5dbecba7e54876
+verified_at: '2026-08-02T12:05:00Z'
+identity_checks:
+  source_is_ancestor_of_candidate_freeze: passed
+  locked_sha256sums: passed_200_of_200
+  candidate_manifest_sha256: passed
+  workspace_typecheck: passed
+  client_build: passed
+focused_suites:
+  - scope: auth_and_household_identity
+    files: 7
+    passed: 68
+    failed: 0
+    skipped: 3
+  - scope: family_and_school_signup
+    files: 12
+    passed: 66
+    failed: 0
+    skipped: 0
+  - scope: admin_directory_operations_and_search
+    files: 7
+    passed: 41
+    failed: 0
+    skipped: 0
+  - scope: canonical_routes_public_models_and_admin_ia
+    files: 5
+    passed: 18
+    failed: 0
+    skipped: 0
+candidate_failures:
+  - owner_task: I36
+    reproduction: npx vitest run tests/integration/accounts/v21-family-parent-session-composition.test.ts --environment node
+    result: 2_failed_1_passed_1_skipped
+    observations:
+      - authenticated /app/parent returns 404 where 200 is required
+      - the outage-cookie /app/parent path returns 404 where fail-closed 503 is required
+  - owner_task: I36
+    reproduction: npx vitest run tests/integration/public-metadata-runtime.test.ts --environment node
+    result: 2_failed_1_passed
+    observations:
+      - /assets/app-PortalFeatures.js returns 404 where the current runtime contract requires 200
+      - authenticated /app/parent returns 404 where no-store application HTML is required
+  - owner_task: I36
+    reproduction: npx playwright test tests/e2e/landing-signup.spec.ts --project=chromium --reporter=line
+    result: blocked_before_browser_start
+    observations:
+      - the CI test server fixture insert omits required class_occurrences.join_opens_at
+      - pg-mem rejects the fixture before any browser case begins
+absence_inventory:
+  status: failed
+  observations:
+    - production client build emits assets/app-experience-preview-student.js
+    - manifest-app.json registers the experience-preview Student entry
+    - generated operator launch status retains /app/experience-preview
+    - the server denies the preview asset in production, but the prohibited production bundle remains emitted
+external_effects:
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+unexpected_effects: 0
+cleanup: not_applicable
