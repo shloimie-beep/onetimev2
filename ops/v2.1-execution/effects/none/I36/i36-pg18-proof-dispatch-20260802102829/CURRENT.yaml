@@ -1,0 +1,14 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: i36-pg18-proof-dispatch-20260802102829
+task_id: I36
+state: RESERVED
+event_sequence: 1
+current_event_path: ops/v2.1-execution/effects/none/I36/i36-pg18-proof-dispatch-20260802102829/events/001-RESERVED.yaml
+current_event_digest: ed7c44e5c2a10af83af81e36388c38a7b8ff795e22f312cc768ef23cccf89a4c
+authority_id: i36-pg18-proof-20260802102829
+lock: production:deployment
+lock_lease_id: d1b9f7f9-23b5-4bfc-93ab-fb28195c3cc8
+fencing_token: fence-c044ab0a-1169-40ec-a245-317a6a1b8326
+repository_source_sha: 370420f14e0c3aefc9399319c74960ca699ab90a
+updated_at: '2026-08-02T10:31:30Z'
