@@ -8,7 +8,7 @@ package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a
 branch: codex/v21-integration
 start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 dependency_heads:
-  C00: ec48eda10f0799e852d015fefca227d99e6863af
+  C00: 66f6bcdc11987c6ef6288877319f43ef9b09f085
   F02: 3ee2f651528f5170dd714b921500235d4e015c5b
   F03: 3947c9887f3c6914a8247c70ac816a4ae94c76d0
   F06: 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
@@ -40,29 +40,27 @@ dependency_heads:
   P18: 1926e61c793ce29d7240c1ee05d2a4879b52770b
   P21: c11dec418fa3de896e96c348f87928c92c9f86b9
 status: ready_for_review
-phase: P21_effect_exists_local_finalization_correction_terminal
-claimed_by: codex-i36-P21-effect-exists-correction-7f9e3cc8
-claim_time: '2026-08-02T00:10:31Z'
-claim_id: 7f9e3cc8-4c72-4f38-ab60-09f8e6187877
-lease_id: 890c2452-d61b-4d4d-a951-aa6886c50952
-lease_issued_at: '2026-08-02T00:10:31Z'
-lease_expires_at: '2026-08-02T04:10:31Z'
-lease_released_at: '2026-08-02T00:22:23Z'
-last_heartbeat_at: '2026-08-02T00:22:23Z'
-controller_authorization_sha: 0063689594c1ab9beb2d9f4d64f89a8491284a4c
-latest_valid_observed_control_head_sha: ec48eda10f0799e852d015fefca227d99e6863af
-reconciled_state_based_on_control_head_sha: 0063689594c1ab9beb2d9f4d64f89a8491284a4c
-ready_authorization_control_head_sha: 0063689594c1ab9beb2d9f4d64f89a8491284a4c
-ready_entry_state_based_on_control_head_sha: 0063689594c1ab9beb2d9f4d64f89a8491284a4c
-ready_entry_payload_digest: 30168c46b1bcc1dd3587fcf9bf692b5b267ba7ae8fa06753ccf810ae6ec819ed
+phase: P21_current_checkpoint_metadata_correction_terminal
+claimed_by: codex-i36-P21-current-metadata-d007c280
+claim_time: '2026-08-02T00:33:22Z'
+claim_id: d007c280-1ccb-4f3a-80c5-a79118de94be
+lease_id: 1a1a07e4-a6dd-4caa-97d6-f66b6a8a608e
+lease_issued_at: '2026-08-02T00:33:22Z'
+lease_expires_at: '2026-08-02T03:33:22Z'
+lease_released_at: '2026-08-02T00:52:52Z'
+last_heartbeat_at: '2026-08-02T00:52:52Z'
+controller_authorization_sha: ec48eda10f0799e852d015fefca227d99e6863af
+latest_valid_observed_control_head_sha: 66f6bcdc11987c6ef6288877319f43ef9b09f085
+reconciled_state_based_on_control_head_sha: ec48eda10f0799e852d015fefca227d99e6863af
+ready_authorization_control_head_sha: ec48eda10f0799e852d015fefca227d99e6863af
+ready_entry_state_based_on_control_head_sha: ec48eda10f0799e852d015fefca227d99e6863af
+ready_entry_payload_digest: 2070446cb082bf532a5a8167927c34097a56b237770ccf01fa1b7311bc762e11
 claim_mode: new
-expected_existing_head_sha: 1873fc8d7e5478eb736021175bb2214d78d865cd
-lease_phase_scope: exact_five_path_P21_effect_exists_local_finalization_correction_and_release
+expected_existing_head_sha: b98698740936df0b1817be616039da2101a6cb28
+lease_phase_scope: exact_runtime_triplet_current_checkpoint_metadata_only
 writer_slot_leases_released:
-  - slot: WORKER_COMPOSER
-    lease_id: 5bc3f1dc-0874-4eb3-abaf-542c14d60814
   - slot: RELEASE_INTEGRATOR
-    lease_id: 890c2452-d61b-4d4d-a951-aa6886c50952
+    lease_id: 1a1a07e4-a6dd-4caa-97d6-f66b6a8a608e
 F06_malformed_operation_array_fail_closed_correction_terminal:
   containing_control_head_sha: b7249121e94130e1ee9d561a112851ac4040fa66
   state_basis_control_head_sha: cfa3a42c5868676025c0e4414af20856643d0ecc
@@ -729,9 +727,14 @@ merge_result_head_sha: 9a028e7a967221441dfd4d5cf9417eb2885a072f
 merge_parent_target_head_sha: c19c90777e0562c6fa77e30f0e0fc7ab9ba300f9
 merge_parent_source_head_sha: 3364c1c31ef12a81abf02cf9f80f7e8008c1778f
 prior_postmerge_integrator_fix_head_sha: e423868957f3a3cb9ddf992e39368fceb15661c0
-state_based_on_head_sha: 460ba42db534e669a63e0c6e2383a0f2e8d6ac97
-last_implementation_commit_sha: pending_single_terminal_commit
+state_based_on_head_sha: b98698740936df0b1817be616039da2101a6cb28
+last_implementation_commit_sha: b98698740936df0b1817be616039da2101a6cb28
 completed_steps:
+  - Accepted exact I36 runtime-triplet-only P21 current-checkpoint metadata authority from live control 66f6bcdc11987c6ef6288877319f43ef9b09f085, state basis ec48eda10f0799e852d015fefca227d99e6863af, READY 2070446cb082bf532a5a8167927c34097a56b237770ccf01fa1b7311bc762e11, and clean integration start b98698740936df0b1817be616039da2101a6cb28.
+  - Reproduced canonical READY, exact path-inventory digest bdf3cfe7a516fb00f891ef66f1f752591ce3d894243bbe50393980d10a3a441a, and all three authorized runtime preimages before editing.
+  - Recorded that the P21 code terminal is sound but held at zero P1, one P2, and zero P3 solely for stale canonical current metadata; corrected the head and implementation fields, current review instructions, and exact runtime-triplet checkpoint inventory while preserving all historical records.
+  - Preserved every product, test, migration, config, control, immutable request, and provider byte plus all prior product validation claims; no broad product suite was rerun.
+  - Passed YAML parsing, runtime formatting, exact scope and preimage checks, READY reproduction, diff hygiene, and the 3,171-file repository secret scan; released sole RELEASE_INTEGRATOR lease 1a1a07e4-a6dd-4caa-97d6-f66b6a8a608e at 2026-08-02T00:52:52Z before expiry with effects 0/0/0.
   - Accepted exact Batch D P35 authority from live control 2213842965302e6c5ccbd9fd26f011681be20b1e, state basis f66edb4d0728b90374e56da13dbd9853657d349c, READY a330befb939fcfda31fae9bfca1ece0b56a3ce959cb47265b45da9db42afd3d9, and exact clean integration start 460ba42db534e669a63e0c6e2383a0f2e8d6ac97.
   - Reproduced the exact ten-path and seven-product path-inventory digests e5a54c5ea6f9ee253d9f3f1835ce9b2ac91ffd20a7d149b627ed6c3a7f42ca82 and e9db03c400cbf3f797c4e5d93a0719c85330a45fec5a8da47950b292d67f0a20, all seven Git-blob preimages, and immutable raw P35 request 7c604c8ec91fdaeeedda141b19a075bacccbe94961b420f3a85dd6bcc9ad6cf2.
   - Mounted the accepted domain-transition feature before later routes; removed active Tisha page, registration, join, redirect, share, modal, and public-build hooks; retained archived source/evidence and the no-store 404 asset deny; and made incremental public builds remove both stale generated Tisha HTML files.
@@ -2036,28 +2039,22 @@ family_parent_session_composition_binding:
       fixture, and stale login email-link-confirm markup expectation.
   external_effects: 0/0/0
 remaining_steps:
-  - C00 must independently audit the exact pushed Batch D P35 terminal, seven product/test paths plus the I36 runtime triplet, accepted route order and no-write 410 behavior, generated-output and asset denial proofs, focused validation, released lease, and effects 0/0/0.
-  - P08 provider and billing-worker composition, corrected P21 registration, P22 server/client service composition and protected-secret injection, and the P30 durable adult-only worker boundary remain later-gated.
-  - Candidate freeze, native PostgreSQL-server replay, provider or infrastructure inspection, deployment, DNS, billing, contact, send, activation, and every external successor action require separate exact authority.
+  - C00 must independently audit the exact pushed runtime-only child of b98698740936df0b1817be616039da2101a6cb28, corrected canonical current fields, exact three-path scope and preimages, preserved product bytes and validation truth, released lease, clean remote equality, and effects 0/0/0.
+  - The P21 code terminal remains held at zero P1, one P2, and zero P3 until independent review closes the sole stale-current-metadata P2; the native PostgreSQL gate remains required before candidate freeze.
+  - Candidate freeze, provider or registry work, persistent-database work, deployment, DNS, billing, contact, send, activation, cleanup, and every external successor action require separate exact authority.
 next_action: >-
-  STOP. C00 must independently audit the exact pushed Batch D P35 terminal,
-  exact ten-path scope, central feature ordering, 410 no-write and archived-
-  asset denial proofs, stale generated-page convergence, documented unchanged
-  baselines, released RELEASE_INTEGRATOR lease, clean remote equality, and
-  effects 0/0/0 before any successor action.
+  STOP. C00 must independently audit the exact pushed P21 current-checkpoint
+  metadata-only child, sole parent b98698740936df0b1817be616039da2101a6cb28,
+  corrected canonical current fields, exact runtime-triplet scope and preimages,
+  preserved product and historical bytes, unchanged product validation claims,
+  released RELEASE_INTEGRATOR lease, clean remote equality, and effects 0/0/0
+  before admitting P21 or authorizing any successor action.
 requirements: {}
 acceptance_cases: {}
 current_checkpoint_changed_paths:
-  - apps/web/src/client/public/public-entry.ts
-  - apps/web/src/server/app.ts
-  - scripts/build-public-pages.ts
-  - scripts/v21-migration/verify-domain-transition.ts
-  - tests/e2e/tisha-bav-funnel.spec.ts
-  - tests/integration/tisha-bav-event-funnel.test.ts
-  - tests/unit/tisha-bav-public-copy.test.ts
-  - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/I36/HANDOFF.md
   - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
 changed_paths:
   - apps/web/src/client/app/portal-entry.tsx
   - apps/web/src/client/app/router/index.ts
@@ -5153,3 +5150,76 @@ P21_effect_exists_local_finalization_correction_terminal:
     review. Candidate freeze, provider registry population, adapter enablement,
     persistent-database work, provider access, deployment, DNS, sends, charges,
     customer mutations, cleanup, and every external effect remain prohibited.
+P21_current_checkpoint_metadata_correction_terminal:
+  containing_control_head_sha: 66f6bcdc11987c6ef6288877319f43ef9b09f085
+  state_basis_control_head_sha: ec48eda10f0799e852d015fefca227d99e6863af
+  exact_authorized_start_sha: b98698740936df0b1817be616039da2101a6cb28
+  ready_entry_payload_digest: 2070446cb082bf532a5a8167927c34097a56b237770ccf01fa1b7311bc762e11
+  prior_code_terminal:
+    head_sha: b98698740936df0b1817be616039da2101a6cb28
+    parent_sha: 1873fc8d7e5478eb736021175bb2214d78d865cd
+    tree_sha: d7e3ec78084553803af29dd23655bdf2bbeac2da
+    terminal_timestamp: '2026-08-02T03:27:18+03:00'
+    independent_review: held_zero_P1_one_P2_zero_P3
+    sole_P2: stale_canonical_current_checkpoint_metadata
+    code_correction_sound: true
+    product_postimage_manifest_digest: 371eb2d184ed8550f17b1b13970db71fa1daf95d3204e54abd7c374803e4cdd5
+  claim_id: d007c280-1ccb-4f3a-80c5-a79118de94be
+  writer_id: codex-i36-P21-current-metadata-d007c280
+  lease_issued_at: '2026-08-02T00:33:22Z'
+  lease_expires_at: '2026-08-02T03:33:22Z'
+  lease_released_at: '2026-08-02T00:52:52Z'
+  last_heartbeat_at: '2026-08-02T00:52:52Z'
+  writer_slot_leases_released:
+    - slot: RELEASE_INTEGRATOR
+      lease_id: 1a1a07e4-a6dd-4caa-97d6-f66b6a8a608e
+  effect_lock_leases: []
+  exact_scope:
+    product_paths: 0
+    runtime_paths: 3
+    total_paths: 3
+    exact_runtime_path_inventory_digest: bdf3cfe7a516fb00f891ef66f1f752591ce3d894243bbe50393980d10a3a441a
+    empty_product_path_inventory_digest: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    authorized_runtime_preimages:
+      ops/v2.1-execution/runtime/I36/HANDOFF.md: 48d2301559446bf7161e4f08933e42cfb70c0989edb44a6913cb6bc7d1612514
+      ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md: 3df7f5ef11bc8f0d7c63ab2b52cd8c522868b50351f30d9eab87a3eb715bde2e
+      ops/v2.1-execution/runtime/I36/TASK-STATE.yaml: 459fffb73d1484762521405322a63e969dba98dce98074719e2e55535a022f93
+  corrected_canonical_current_fields:
+    state_based_on_head_sha: b98698740936df0b1817be616039da2101a6cb28
+    last_implementation_commit_sha: b98698740936df0b1817be616039da2101a6cb28
+    remaining_steps: P21_current_checkpoint_metadata_child_independent_review
+    next_action: stop_for_C00_independent_review
+    current_checkpoint_changed_paths: exact_I36_runtime_triplet
+    old_Batch_D_P35_current_authority_removed: true
+    historical_Batch_D_P35_records_preserved: true
+  preservation:
+    product_or_test_bytes_changed: false
+    migration_or_SQL_change: false
+    config_or_control_change: false
+    immutable_request_bytes_changed: false
+    historical_records_deleted: false
+    prior_product_validation_claims_changed: false
+    broad_product_suites_rerun: false
+  completed_validation:
+    live_control_head: passed_66f6bcdc11987c6ef6288877319f43ef9b09f085
+    canonical_READY_digest: passed_2070446cb082bf532a5a8167927c34097a56b237770ccf01fa1b7311bc762e11
+    exact_integration_start: passed_b98698740936df0b1817be616039da2101a6cb28
+    exact_runtime_preimages: passed_3_of_3
+    exact_changed_path_scope: passed_3_of_3
+    task_state_yaml_parse: passed
+    runtime_formatting: passed_3_of_3
+    diff_check: passed
+    repository_secret_scan: passed_3171_text_files
+  provider_or_infrastructure_inspection: false
+  provider_or_candidate_action: false
+  deployment_or_DNS_action: false
+  external_effects:
+    attempted: 0
+    succeeded: 0
+    reconciled: 0
+  safe_next_action: >-
+    Push one exact runtime-triplet-only terminal and stop. C00 must independently
+    audit the corrected canonical current fields, exact scope and preimages,
+    preserved product and historical bytes, unchanged validation truth, released
+    lease, clean local/tracking/live equality, and effects 0/0/0 before admitting
+    the P21 code terminal or authorizing any candidate, provider, or release work.

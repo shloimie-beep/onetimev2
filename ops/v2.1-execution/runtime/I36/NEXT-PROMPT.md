@@ -1,7 +1,57 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
-MODE: PAUSE_FOR_C00_P21_EFFECT_EXISTS_CORRECTION_REVIEW
+MODE: PAUSE_FOR_C00_P21_CURRENT_CHECKPOINT_METADATA_REVIEW
+
+Audit the exact pushed I36 runtime-only P21 current-checkpoint metadata
+correction. Do not rerun broad product suites, enable an adapter, populate or
+inspect a provider registry, touch a persistent database, freeze a candidate,
+access or mutate a provider, deploy, change DNS, send, charge, clean up, or
+perform any external effect.
+
+Repository: shloimie-beep/onetimev2
+Branch: codex/v21-integration
+Authorized start and required sole parent:
+`b98698740936df0b1817be616039da2101a6cb28`
+Containing control: `66f6bcdc11987c6ef6288877319f43ef9b09f085`
+Authority/READY basis: `ec48eda10f0799e852d015fefca227d99e6863af`
+READY: `2070446cb082bf532a5a8167927c34097a56b237770ccf01fa1b7311bc762e11`
+Claim: `d007c280-1ccb-4f3a-80c5-a79118de94be`
+Writer: `codex-i36-P21-current-metadata-d007c280`
+RELEASE_INTEGRATOR lease: `1a1a07e4-a6dd-4caa-97d6-f66b6a8a608e`
+Lease issue/expiry/release: `2026-08-02T00:33:22Z` /
+`2026-08-02T03:33:22Z` / `2026-08-02T00:52:52Z`
+Effects: `0/0/0`
+
+Confirm the terminal changes exactly the I36 runtime triplet and no product
+path. Confirm path-inventory digest `bdf3cfe7a516fb00f891ef66f1f752591ce3d894243bbe50393980d10a3a441a`
+and authorized preimages `48d2301559446bf7161e4f08933e42cfb70c0989edb44a6913cb6bc7d1612514`,
+`3df7f5ef11bc8f0d7c63ab2b52cd8c522868b50351f30d9eab87a3eb715bde2e`,
+and `459fffb73d1484762521405322a63e969dba98dce98074719e2e55535a022f93`.
+
+Confirm the P21 code terminal `b9869874...` remains held at zero P1, one P2,
+and zero P3 solely for stale canonical current metadata. Confirm
+`state_based_on_head_sha` and `last_implementation_commit_sha` name that exact
+P21 code terminal, current `remaining_steps` and `next_action` direct only this
+runtime-child review and later separately authorized gates, and
+`current_checkpoint_changed_paths` contains exactly the runtime triplet. Confirm
+the old Batch D/P35 instructions remain historical only.
+
+Confirm every product, test, migration, config, control, immutable request,
+provider, and historical-record byte is unchanged; prior product validation
+claims are preserved; no broad product suite was rerun; and YAML, runtime
+formatting, diff/scope/preimage, READY, secret-scan, lease-release, clean-tree,
+and local/tracking/live gates pass. Confirm no provider, network, registry,
+persistent-database, candidate, deployment, DNS, send, charge, customer,
+cleanup, or external effect occurred.
+
+Return exact P1/P2/P3 counts for this runtime-only child. Do not admit the P21
+code terminal or advance candidate/provider/release work unless P1 and P2 are
+zero. Stop.
+
+---
+
+## Historical audit prompt - P21 effect-exists local-finalization correction
 
 Audit the exact pushed I36 five-path P21 effect-exists local-finalization
 correction. Do not enable an adapter, populate or inspect a provider registry,

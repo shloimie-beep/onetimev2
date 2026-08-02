@@ -1,5 +1,45 @@
 # I36 Integration Releases
 
+## Current terminal - P21 current-checkpoint metadata correction
+
+Live control `66f6bcdc11987c6ef6288877319f43ef9b09f085`, based on
+`ec48eda10f0799e852d015fefca227d99e6863af`, contains canonical READY
+`2070446cb082bf532a5a8167927c34097a56b237770ccf01fa1b7311bc762e11`.
+The authorized start and required sole parent is P21 code terminal
+`b98698740936df0b1817be616039da2101a6cb28`.
+
+Independent review found the P21 code correction sound and held terminal
+admission at zero P1, one P2, and zero P3 solely because canonical current
+metadata remained stale. `state_based_on_head_sha` still named `460ba42d...`,
+`last_implementation_commit_sha` was still pending, `remaining_steps` and
+`next_action` still directed the old Batch D/P35 review, and the current
+checkpoint inventory still named that old ten-path checkpoint.
+
+This runtime-only child corrects those canonical current fields to the P21
+terminal. The current code and state basis and the last implementation commit
+are `b98698740936df0b1817be616039da2101a6cb28`; the current review target is
+this exact three-runtime-path child; and the current checkpoint contains only
+`HANDOFF.md`, `NEXT-PROMPT.md`, and `TASK-STATE.yaml`. Every product, test,
+migration, config, control, immutable request, provider, and historical-record
+byte remains unchanged. Prior product validation claims were preserved and no
+broad product suite was rerun.
+
+Canonical READY, the three authorized runtime preimages, YAML parsing, runtime
+formatting, exact scope and diff hygiene, and the 3,171-file repository secret
+scan pass. Claim `d007c280-1ccb-4f3a-80c5-a79118de94be` and sole
+RELEASE_INTEGRATOR lease `1a1a07e4-a6dd-4caa-97d6-f66b6a8a608e` were
+released at `2026-08-02T00:52:52Z`, before the `2026-08-02T03:33:22Z`
+expiry. No provider, network, registry, persistent-database, candidate,
+deployment, DNS, send, charge, customer, cleanup, or external effect occurred;
+effects remain `0/0/0`.
+
+I36 must stop after this exact runtime-only terminal is pushed with clean
+local, tracking, and live equality. C00 must independently review this child
+and close the sole metadata P2 before admitting the P21 code terminal.
+Candidate freeze and every provider or release effect remain held.
+
+All sections below are retained historical release records and audit prompts.
+
 ## Current terminal - P21 effect-exists local-finalization correction
 
 Live control `ec48eda10f0799e852d015fefca227d99e6863af` contains canonical
@@ -42,8 +82,6 @@ send, charge, customer, cleanup, or external effect occurred; effects remain
 Once this exact five-path terminal is normally pushed, I36 must stop for
 independent review. Candidate freeze and every provider or release effect
 remain held.
-
-All sections below are retained historical release records and audit prompts.
 
 ## Current terminal - F06 malformed operation-array correction
 
