@@ -258,21 +258,13 @@ ready:
         ops/v2.1-execution/merge/candidates/68af08379cf596a2c8dfac28253487fb21fea222c6ea1275d096a6f972130ee8/CANDIDATE.yaml: 16f5452c0feea8252f5bc8b544cb3b3514aad65fb6c1f4c35d5044e641c00824
     accepted_terminal_head_sha: 7943a20895939f66b6755d02f819165850d1042f
     accepted_terminal_review: P1_0_P2_0_P3_0
-    effect_lock_leases:
+    effect_lock_leases: []
+    effect_lock_leases_released:
       - lock: production:deployment
         lease_id: 4c71055a-fff3-466b-bcfc-915ab43f2970
-        fencing_token: fence-d132237b-def0-4da8-95f9-c7cc639a7fd7
         authority_id: i36-staging-deploy-20260802132339
-        authority_grant_digest: 09ea4f76bbd74062c0e83004db140e7ecfc7d2cb1cb8504d2e6d50b40d9b01d4
-        authority_status_index_digest: a9a83507cee4a720d79ce6c0c755b2fa0235aafbfcda9df1707ef4a91524321c
-        authority_status_entry_digest: da8fc28ff9f719ad8d16ea567f5e92c4e55cbb5bd42f8f9a3db08ce19883039d
-        latest_revocation_digest: null
-        candidate_digest: 68af08379cf596a2c8dfac28253487fb21fea222c6ea1275d096a6f972130ee8
-        provider_environment_id: 11edf8a2-0160-45b4-a039-b15b4beb4c10
-        maximum_effect_count: 2
-        state_based_on_control_head_sha: e509f02a4a1887ff5573b277fcff0295b61c92aa
-        lease_issued_at: '2026-08-02T13:23:39Z'
-        lease_expires_at: '2026-08-02T14:08:39Z'
+        disposition: consumed_and_reconciled_failed_builds
+        released_at: '2026-08-02T13:32:45Z'
     prior_writer_slot_leases_released:
       - { slot: RELEASE_INTEGRATOR, lease_id: 8a7206c7-0c56-4fab-9565-63a2859077a2 }
     writer_slot_leases_released:

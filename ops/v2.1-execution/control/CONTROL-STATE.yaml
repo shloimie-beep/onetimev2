@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: operational
-active_phase: candidate_bound_staging_deployment_reserved
+active_phase: Docker_build_context_source_correction
 bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
@@ -18,10 +18,10 @@ candidate: 68af08379cf596a2c8dfac28253487fb21fea222c6ea1275d096a6f972130ee8
 active_writer_limit: 4
 controller_authorization_sha: e509f02a4a1887ff5573b277fcff0295b61c92aa
 next_action: >-
-  Prepare fresh candidate-bound authority and one exact effect reservation before deploying candidate
-  68af08379cf596a2c8dfac28253487fb21fea222c6ea1275d096a6f972130ee8 to the canonical Railway staging environment.
-  GHL work may prepare Draft-only assets only under its separate exact location lock. Do not activate, send, enroll,
-  mutate DNS or production, create Student contacts, or perform a customer, billing, or broad production effect.
+  Correct the Docker image build context so the existing worker import of integrations/highlevel/v21/identity/index.ts
+  is present during Railway typecheck, run the exact Docker build locally, independently review the minimal delta, and
+  refreeze a new candidate before any fresh staging effect. Do not retry the failed candidate, activate GHL, send,
+  enroll, mutate DNS or production, create Student contacts, or perform a customer or billing effect.
 corrected_candidate_refreeze_authority:
   recorded_at: '2026-08-02T13:05:10Z'
   control_basis_sha: 04ceb6e3899198c6baeb560e4b6a5006ecbca635
@@ -103,6 +103,21 @@ staging_deployment_attempt:
   web_initial_state: QUEUED
   worker_deployment_id: ea1a2031-126c-4df0-9565-fe8b11c55241
   worker_initial_state: QUEUED
+  production_deployments_DNS_sends_enrollments_billing_effects: 0/0/0/0/0
+staging_deployment_reconciliation:
+  reconciled_at: '2026-08-02T13:32:45Z'
+  web_deployment_id: bb369416-5130-4fd0-8ec6-ba9b309fdd23
+  web_terminal_state: FAILED
+  worker_deployment_id: ea1a2031-126c-4df0-9565-fe8b11c55241
+  worker_terminal_state: FAILED
+  failure: Docker_build_typecheck_TS2307_integrations_directory_missing_from_image
+  provider_readback_digest: 559c43b9ca998a1e5235815169e93bfdab845fda08a036886c4ba2b058053db3
+  application_instances_replaced: 0
+  database_migrations_run: 0
+  prior_web_deployment_active: 106977e3-3dc7-4dd0-8f1a-c57642bd0c54
+  prior_worker_deployment_active: e0e43168-4623-4aa0-b837-ad4e6875e64f
+  authority_consumed: i36-staging-deploy-20260802132339
+  lock_released: 4c71055a-fff3-466b-bcfc-915ab43f2970
   production_deployments_DNS_sends_enrollments_billing_effects: 0/0/0/0/0
 corrected_source_integration_terminal:
   recorded_at: '2026-08-02T12:44:55Z'
