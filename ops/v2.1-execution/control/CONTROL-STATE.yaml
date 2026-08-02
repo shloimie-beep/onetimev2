@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: operational
-active_phase: staging_web_health_route_source_correction
+active_phase: candidate_bound_staging_deployment
 bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
@@ -11,18 +11,51 @@ bootstrap_phase_order:
 - integration_created
 - control_initialized
 - operational
-reviewed_head: 887ab80c793932234035c6eb434a445e7920ce96
+reviewed_head: 97c38375ac7d57bc3ef5beab0bc67e6b1fe5b0e9
 integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
-candidate: c7faf43f4cc17a0e80f01c5db0a31f6a81f9b1f5f5090281b6f6daaf1cc84dab
+candidate: e7fb4021d9bf4dbc9c38dbcadcc6eb9139082acf494416ce970c7c503f757456
 active_writer_limit: 4
-controller_authorization_sha: 44edd0a460156088720b71c9ccb615b5972971fb
+controller_authorization_sha: 57449993e5fc1191f3a2fe8b86cee2dbefa5ce67
 next_action: >-
-  Correct the staging web health path so the production-mode unknown-domain guard cannot intercept Railway health
-  probes before public /health, /ready, and /version routes. Run only focused route-order/domain-guard checks and a
-  clean build, independently review the minimal delta, and refreeze a new candidate before any successor staging
-  effect. Do not activate GHL, send, enroll, mutate DNS or production, create Student contacts, or perform a customer
-  or billing effect.
+  Execute the single reserved fast-forward of codex/full-app-staging-live from 887ab80c793932234035c6eb434a445e7920ce96
+  to exact accepted candidate manifest 97c38375ac7d57bc3ef5beab0bc67e6b1fe5b0e9, then reconcile at most one web
+  and one worker staging deployment. Verify /health, /version, landing, and Family form only after terminal success.
+  Do not activate GHL, send, enroll, mutate DNS or production, create Student contacts, or perform billing effects.
+staging_health_route_candidate_acceptance:
+  recorded_at: '2026-08-02T14:33:55Z'
+  state_basis_control_head_sha: 57449993e5fc1191f3a2fe8b86cee2dbefa5ce67
+  parent_integration_sha: 1b88ac230db018df5cb27ab792846f18ae6a0e07
+  terminal_head_sha: 97c38375ac7d57bc3ef5beab0bc67e6b1fe5b0e9
+  repository_source_sha: 2e514a73773bd97f20e423076539ed7224948552
+  canonical_candidate_digest: e7fb4021d9bf4dbc9c38dbcadcc6eb9139082acf494416ce970c7c503f757456
+  derivation_sha256: 008754642b5a3d754b528ac1dd8859ab184fb7ad07fd09a4bc4b3859b240ddb6
+  manifest_sha256: dabbefb03b7f610cd3b4025acb485d352a6a183e08755e4e4bc77bb65edad746
+  exact_scope: five_paths_two_candidate_documents_and_I36_runtime_triplet
+  independent_delta_review: P1_0_P2_0_P3_0_approved
+  migration_inventory_digest: 1598fc0f7f18e172b9566c65dbb81593ba2b5b1339e1dbca312aa01b53383f6b
+  pg18_run_id: 30748901653
+  pg18_applicability: accepted_migration_bytes_unchanged
+  provider_or_external_effects: 0/0/0
+staging_health_route_deployment_reservation:
+  recorded_at: '2026-08-02T14:33:55Z'
+  state_basis_control_head_sha: 57449993e5fc1191f3a2fe8b86cee2dbefa5ce67
+  authority_id: i36-staging-deploy-20260802143355
+  authority_grant_digest: a5943e87fd61ad74f32e96c101e2f2ffcf8e28af756148576d253e8703b3c545
+  authority_status_index_digest: d618d9f259675d2c65deda2955e764cd419c49d06b81c3e88ff4010244af7c80
+  authority_status_entry_digest: 2f597059118ab984fe7b9c0e34500cee46ace40f30a6fa481648e4cec76b0cfa
+  lock: production:deployment
+  lock_lease_id: 394d712a-1504-45bc-982c-b72048e10a8e
+  fencing_token: fence-bc77d202-1e81-4786-b330-0bfc13243326
+  project_id: 7c8eee26-7a6a-4684-826d-9f4377d67d46
+  environment_id: 11edf8a2-0160-45b4-a039-b15b4beb4c10
+  web_service_id: 9fb6d9f4-4f50-4df6-868b-c18a9b83d2f2
+  worker_service_id: 76e7fdc2-99b9-4a82-ba55-5dff3723398f
+  source_branch_before_sha: 887ab80c793932234035c6eb434a445e7920ce96
+  source_branch_after_sha: 97c38375ac7d57bc3ef5beab0bc67e6b1fe5b0e9
+  maximum_deployments: 2
+  production_deployment_DNS_send_enrollment_billing_authority: none
+  effects_before_reservation: 0/0/0/0
 Docker_context_candidate_acceptance:
   recorded_at: '2026-08-02T13:55:04Z'
   state_basis_control_head_sha: 44edd0a460156088720b71c9ccb615b5972971fb

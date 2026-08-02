@@ -466,15 +466,15 @@ tasks:
     transitioned_at: '2026-07-30T19:30:53Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/F07/status_proof
 - task_id: I36
-  status: staging_web_failed_health_route_source_correction_required
-  active_phase: staging_web_health_route_source_correction
+  status: staging_deployment_reserved
+  active_phase: candidate_bound_staging_deployment
   branch: codex/v21-integration
   phase_branches:
     integration: codex/v21-integration
     launch_source_correction: codex/v21-launch-source-correction
     launch_priority_source_correction: codex/v21-launch-critical-correction
   phase_heads:
-    integration: 887ab80c793932234035c6eb434a445e7920ce96
+    integration: 97c38375ac7d57bc3ef5beab0bc67e6b1fe5b0e9
     F02_P28_P31_direct_prerequisite_source_integration_atomic_claim: 1b8335f8bdad4bc4ac1aa65838314faa7d65ebd0
     F02_P28_P31_direct_prerequisite_source_integration_release: 3cf787409decb5beb84561ef7e37924111d398b6
     P31_P20_P17_correction_release_integration_atomic_claim: 1b0df6fa15b2ac4a5febe35fee3f18ca9b9457d7
@@ -599,26 +599,38 @@ tasks:
     Docker_context_source_correction_integration_merge: 954c5e3505c1a1ba8f9bb0c1edb193a9408dac79
     Docker_context_candidate_refreeze_terminal: 887ab80c793932234035c6eb434a445e7920ce96
     Docker_context_candidate_refreeze_review: P1_0_P2_0_P3_0
+    staging_health_route_source_correction_terminal: 2e514a73773bd97f20e423076539ed7224948552
+    staging_health_route_source_correction_review: P1_0_P2_0_P3_0
+    staging_health_route_source_correction_integration_merge: 1b88ac230db018df5cb27ab792846f18ae6a0e07
+    staging_health_route_candidate_refreeze_terminal: 97c38375ac7d57bc3ef5beab0bc67e6b1fe5b0e9
+    staging_health_route_candidate_refreeze_review: P1_0_P2_0_P3_0
   authorized_start_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
-  last_known_remote_head: 887ab80c793932234035c6eb434a445e7920ce96
+  last_known_remote_head: 97c38375ac7d57bc3ef5beab0bc67e6b1fe5b0e9
   active_claim_id: null
   active_writer_id: null
   lease_expires_at: null
   active_writer_leases: []
-  active_effect_lock_leases: []
-  last_heartbeat_at: '2026-08-02T14:11:44Z'
-  controller_authorization_sha: 74ef4e56ecc087d3aebae5d51d11d4a5f4c8460e
+  active_effect_lock_leases:
+    - lock: production:deployment
+      lease_id: 394d712a-1504-45bc-982c-b72048e10a8e
+      fencing_token: fence-bc77d202-1e81-4786-b330-0bfc13243326
+      authority_id: i36-staging-deploy-20260802143355
+      candidate_digest: e7fb4021d9bf4dbc9c38dbcadcc6eb9139082acf494416ce970c7c503f757456
+      provider_environment_id: 11edf8a2-0160-45b4-a039-b15b4beb4c10
+      lease_expires_at: '2026-08-02T15:18:55Z'
+  last_heartbeat_at: '2026-08-02T14:33:55Z'
+  controller_authorization_sha: 57449993e5fc1191f3a2fe8b86cee2dbefa5ce67
   ready_entry_payload_digest: null
   interface_checkpoint_sha: null
-  implementation_head_sha: 887ab80c793932234035c6eb434a445e7920ce96
+  implementation_head_sha: 97c38375ac7d57bc3ef5beab0bc67e6b1fe5b0e9
   status_proof:
-    state: staging_web_failed_health_route_source_correction_required
+    state: staging_deployment_reserved
     producer_task_id: I36
-    producer_head_sha: 887ab80c793932234035c6eb434a445e7920ce96
-    canonical_candidate_digest: c7faf43f4cc17a0e80f01c5db0a31f6a81f9b1f5f5090281b6f6daaf1cc84dab
+    producer_head_sha: 97c38375ac7d57bc3ef5beab0bc67e6b1fe5b0e9
+    canonical_candidate_digest: e7fb4021d9bf4dbc9c38dbcadcc6eb9139082acf494416ce970c7c503f757456
     interface_checkpoint_digest: null
-    integration_or_evidence_head_sha: 887ab80c793932234035c6eb434a445e7920ce96
-    candidate_manifest_digest: 48c68cec03b5c83b9e0befa64c903e5f94b3b4a7faff53bfe021367b316b0f07
+    integration_or_evidence_head_sha: 97c38375ac7d57bc3ef5beab0bc67e6b1fe5b0e9
+    candidate_manifest_digest: dabbefb03b7f610cd3b4025acb485d352a6a183e08755e4e4bc77bb65edad746
     result_index_digest: null
     case_counts:
       expected: 8
@@ -627,7 +639,7 @@ tasks:
       blocked: 0
       stale: 0
       waived: 0
-    external_effects_reconciled: true
+    external_effects_reconciled: false
     failed_effect_run_id: 30743955340
     failed_effect_reconciliation: source_reference_initialization_order_zero_non_disposable_effects
     successful_effect_run_id: 30745346334
@@ -637,8 +649,10 @@ tasks:
     staging_worker_deployment_id: 46f9af56-d601-4717-84d9-6e2c44c9c126
     staging_worker_reconciliation: success_exact_candidate_zero_delivery_effects
     staging_database_reconciliation: 89_total_59_already_applied_30_applied_zero_errors
-    state_based_on_control_head_sha: 74ef4e56ecc087d3aebae5d51d11d4a5f4c8460e
-    transitioned_at: '2026-08-02T14:11:44Z'
+    active_staging_authority_id: i36-staging-deploy-20260802143355
+    active_staging_lock_lease_id: 394d712a-1504-45bc-982c-b72048e10a8e
+    state_based_on_control_head_sha: 57449993e5fc1191f3a2fe8b86cee2dbefa5ce67
+    transitioned_at: '2026-08-02T14:33:55Z'
     proof_record_location: 'ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/I36/status_proof'
 - task_id: P08
   status: ready_for_review
