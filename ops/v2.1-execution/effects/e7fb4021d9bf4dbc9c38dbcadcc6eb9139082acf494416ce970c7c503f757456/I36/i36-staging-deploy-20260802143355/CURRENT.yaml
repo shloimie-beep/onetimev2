@@ -2,10 +2,10 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 effect_id: i36-staging-deploy-20260802143355
 task_id: I36
-state: ATTEMPTED_UNKNOWN
-event_sequence: 2
-current_event_path: ops/v2.1-execution/effects/e7fb4021d9bf4dbc9c38dbcadcc6eb9139082acf494416ce970c7c503f757456/I36/i36-staging-deploy-20260802143355/events/002-ATTEMPTED.yaml
-current_event_digest: 5f18d54f01a2536a4151a3f179acd9259e79c98b1faad3bf8a000f7d6ad9d2b6
+state: RECONCILED
+event_sequence: 3
+current_event_path: ops/v2.1-execution/effects/e7fb4021d9bf4dbc9c38dbcadcc6eb9139082acf494416ce970c7c503f757456/I36/i36-staging-deploy-20260802143355/events/003-RECONCILED.yaml
+current_event_digest: ef510b7e8906c1c912be865191ae2dad66e3189ac2d7402741c0373ded240cc5
 authority_id: i36-staging-deploy-20260802143355
 lock: production:deployment
 lock_lease_id: 394d712a-1504-45bc-982c-b72048e10a8e
@@ -13,7 +13,7 @@ fencing_token: fence-bc77d202-1e81-4786-b330-0bfc13243326
 candidate_digest: e7fb4021d9bf4dbc9c38dbcadcc6eb9139082acf494416ce970c7c503f757456
 candidate_manifest_commit_sha: 97c38375ac7d57bc3ef5beab0bc67e6b1fe5b0e9
 provider_request_or_operation_id: github_ref_update_and_railway_deployments_040e85a2_eb9cf7b3
-provider_readback_state: web_QUEUED_worker_QUEUED_exact_candidate
-cleanup_state: pending_staging_deployment_reconciliation
-lock_release_state: held
-updated_at: '2026-08-02T14:49:13Z'
+provider_readback_state: web_SUCCESS_worker_SUCCESS_health_version_landing_family_form_read_back
+cleanup_state: complete_terminal_readback_no_retry_required
+lock_release_state: released
+updated_at: '2026-08-02T14:59:02Z'

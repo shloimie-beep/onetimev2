@@ -1,0 +1,51 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: i36-staging-deploy-20260802143355
+event_sequence: 3
+previous_event_digest: 5f18d54f01a2536a4151a3f179acd9259e79c98b1faad3bf8a000f7d6ad9d2b6
+state: RECONCILED
+task_id: I36
+canonical_event_path: ops/v2.1-execution/effects/e7fb4021d9bf4dbc9c38dbcadcc6eb9139082acf494416ce970c7c503f757456/I36/i36-staging-deploy-20260802143355/events/003-RECONCILED.yaml
+candidate_digest: e7fb4021d9bf4dbc9c38dbcadcc6eb9139082acf494416ce970c7c503f757456
+candidate_manifest_commit_sha: 97c38375ac7d57bc3ef5beab0bc67e6b1fe5b0e9
+authority_id: i36-staging-deploy-20260802143355
+authority_grant_digest: a5943e87fd61ad74f32e96c101e2f2ffcf8e28af756148576d253e8703b3c545
+lock: production:deployment
+lock_lease_id: 394d712a-1504-45bc-982c-b72048e10a8e
+fencing_token: fence-bc77d202-1e81-4786-b330-0bfc13243326
+provider_identity: railway:7c8eee26-7a6a-4684-826d-9f4377d67d46:11edf8a2-0160-45b4-a039-b15b4beb4c10:web-9fb6d9f4:worker-76e7fdc2
+provider_request_or_operation_id: github_ref_update_and_railway_deployments_040e85a2_eb9cf7b3
+provider_readback:
+  digest: 9c8f7105c18c3fd222cc0b802ee898dbd8c63df6d1e70cf9504dd8e57bc8425a
+  source_branch_sha: 97c38375ac7d57bc3ef5beab0bc67e6b1fe5b0e9
+  web_deployment_id: 040e85a2-4333-4e4a-9142-522e934d9f60
+  web_state: SUCCESS
+  web_commit_sha: 97c38375ac7d57bc3ef5beab0bc67e6b1fe5b0e9
+  web_image_digest: sha256:6e8b8524ad125e3ca664649d7fb56829ad47bd88844b9d88920830fdab391f77
+  worker_deployment_id: eb9cf7b3-44fe-4574-aea9-285c1014b55f
+  worker_state: SUCCESS
+  worker_commit_sha: 97c38375ac7d57bc3ef5beab0bc67e6b1fe5b0e9
+  worker_image_digest: sha256:bfc2448b0b604746f6116548f10b8ec5c1d0bf284bf7ed148a4865a16ce24e1b
+  public_health: 200_PUBLIC_HEALTH_OK
+  exact_instance_version: 200_PUBLIC_RELEASE_AVAILABLE
+  exact_instance_landing: 200_priority_copy_live_sunday_thursday
+  exact_instance_family_form: 200_adult_only_no_card_no_student_email
+  family_bootstrap: 200_writes_allowed_true
+  public_staging_guard: root_404_version_404_expected_unknown_host
+  worker_delivery: zero_claimed_zero_delivered
+  database_migrations: 89_of_89_zero_errors
+staging_launch_readiness:
+  canonical_access_expiry: unset_requires_next_launch_delta_and_confirmed_cutoff_time
+  first_class_at: unset_pending_Rabbi_confirmation
+  operator_family_signup: not_performed_in_health_route_deployment_effect
+  disposition: deploy_correction_succeeded_launch_form_acceptance_continues_in_next_bounded_lane
+effect_budget_consumed:
+  staging_deployments: 2
+  production_deployments: 0
+  DNS_changes: 0
+  sends_or_enrollments: 0
+  billing_effects: 0
+cleanup_state: complete_terminal_readback_no_retry_required
+lock_release_state: released
+reconciled_at: '2026-08-02T14:59:02Z'
+immutable: true

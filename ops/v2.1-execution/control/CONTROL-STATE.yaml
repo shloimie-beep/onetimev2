@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: operational
-active_phase: candidate_bound_staging_deployment
+active_phase: launch_priority_landing_form_and_email_preparation
 bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
@@ -16,12 +16,12 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: e7fb4021d9bf4dbc9c38dbcadcc6eb9139082acf494416ce970c7c503f757456
 active_writer_limit: 4
-controller_authorization_sha: 57449993e5fc1191f3a2fe8b86cee2dbefa5ce67
+controller_authorization_sha: 76692fbb6e65cdeb68e32862dd0c03490b5e5750
 next_action: >-
-  Reconcile exact web deployment 040e85a2-4333-4e4a-9142-522e934d9f60 and worker deployment
-  eb9cf7b3-44fe-4574-aea9-285c1014b55f for candidate 97c38375ac7d57bc3ef5beab0bc67e6b1fe5b0e9.
-  Verify /health, /version, landing, and Family form only after terminal success. Do not retry, activate GHL, send,
-  enroll, mutate DNS or production, create Student contacts, or perform billing effects.
+  Begin the bounded landing and Family-form launch delta from accepted source 2e514a73773bd97f20e423076539ed7224948552.
+  Consolidate the access boundary without guessing the pending September 11 cutoff time, complete focused verification,
+  and prepare a new reversible staging candidate. In parallel, refresh DNS/GHL sender, workflow, audience, and suppression
+  readbacks. Do not broadly enroll or send before Shloimie approves the exact final copy and counts.
 staging_health_route_candidate_acceptance:
   recorded_at: '2026-08-02T14:33:55Z'
   state_basis_control_head_sha: 57449993e5fc1191f3a2fe8b86cee2dbefa5ce67
@@ -66,6 +66,28 @@ staging_health_route_deployment_attempt:
   web_initial_state: QUEUED
   worker_deployment_id: eb9cf7b3-44fe-4574-aea9-285c1014b55f
   worker_initial_state: QUEUED
+  production_deployments_DNS_sends_enrollments_billing_effects: 0/0/0/0/0
+staging_health_route_deployment_reconciliation:
+  reconciled_at: '2026-08-02T14:59:02Z'
+  source_branch_sha: 97c38375ac7d57bc3ef5beab0bc67e6b1fe5b0e9
+  web_deployment_id: 040e85a2-4333-4e4a-9142-522e934d9f60
+  web_terminal_state: SUCCESS
+  web_image_digest: sha256:6e8b8524ad125e3ca664649d7fb56829ad47bd88844b9d88920830fdab391f77
+  worker_deployment_id: eb9cf7b3-44fe-4574-aea9-285c1014b55f
+  worker_terminal_state: SUCCESS
+  worker_image_digest: sha256:bfc2448b0b604746f6116548f10b8ec5c1d0bf284bf7ed148a4865a16ce24e1b
+  health_readback: 200_PUBLIC_HEALTH_OK
+  exact_instance_version_readback: 200_PUBLIC_RELEASE_AVAILABLE
+  exact_instance_landing_readback: 200_priority_copy_live_sunday_thursday
+  exact_instance_family_form_readback: 200_adult_only_no_card_no_student_email
+  family_bootstrap_readback: 200_writes_allowed_true
+  direct_public_staging_hostname_guard: root_404_version_404_expected_unknown_host
+  worker_delivery_effects: 0
+  database_migrations: 89_of_89_zero_errors
+  provider_readback_digest: 9c8f7105c18c3fd222cc0b802ee898dbd8c63df6d1e70cf9504dd8e57bc8425a
+  launch_readiness_gap: canonical_access_expiry_unset_and_first_class_at_unset
+  authority_consumed: i36-staging-deploy-20260802143355
+  lock_released: 394d712a-1504-45bc-982c-b72048e10a8e
   production_deployments_DNS_sends_enrollments_billing_effects: 0/0/0/0/0
 Docker_context_candidate_acceptance:
   recorded_at: '2026-08-02T13:55:04Z'

@@ -73,7 +73,7 @@ ready:
   - task_id: I36
     lane: candidate_bound_staging
     status: consumed
-    phase: staging_health_route_candidate_deployment_reserved
+    phase: staging_health_route_candidate_deployment_reconciled_success
     branch: codex/v21-integration
     preparation_branch: codex/v21-launch-critical-correction
     claim_mode: new
@@ -271,22 +271,13 @@ ready:
       review: P1_0_P2_0_P3_0
     accepted_terminal_head_sha: 2e514a73773bd97f20e423076539ed7224948552
     accepted_terminal_review: P1_0_P2_0_P3_0
-    effect_lock_leases:
+    effect_lock_leases: []
+    effect_lock_leases_released:
       - lock: production:deployment
         lease_id: 394d712a-1504-45bc-982c-b72048e10a8e
-        fencing_token: fence-bc77d202-1e81-4786-b330-0bfc13243326
         authority_id: i36-staging-deploy-20260802143355
-        authority_grant_digest: a5943e87fd61ad74f32e96c101e2f2ffcf8e28af756148576d253e8703b3c545
-        authority_status_index_digest: d618d9f259675d2c65deda2955e764cd419c49d06b81c3e88ff4010244af7c80
-        authority_status_entry_digest: 2f597059118ab984fe7b9c0e34500cee46ace40f30a6fa481648e4cec76b0cfa
-        latest_revocation_digest: null
-        candidate_digest: e7fb4021d9bf4dbc9c38dbcadcc6eb9139082acf494416ce970c7c503f757456
-        provider_environment_id: 11edf8a2-0160-45b4-a039-b15b4beb4c10
-        maximum_effect_count: 2
-        state_based_on_control_head_sha: 57449993e5fc1191f3a2fe8b86cee2dbefa5ce67
-        lease_issued_at: '2026-08-02T14:33:55Z'
-        lease_expires_at: '2026-08-02T15:18:55Z'
-    effect_lock_leases_released:
+        disposition: consumed_and_reconciled_web_worker_success_exact_instance_readback
+        released_at: '2026-08-02T14:59:02Z'
       - lock: production:deployment
         lease_id: 2c0e395c-d492-4945-876d-c3f7060fe306
         authority_id: i36-staging-deploy-20260802135504
