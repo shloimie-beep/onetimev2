@@ -72,27 +72,31 @@ ready:
     reasoning: XHIGH
   - task_id: I36
     lane: candidate_freeze_preparation
-    status: consumed
-    phase: exact_candidate_freeze_accepted
+    status: ready
+    phase: corrected_candidate_refreeze_authorized
     branch: codex/v21-integration
-    preparation_branch: codex/v21-launch-source-correction
+    preparation_branch: codex/v21-launch-critical-correction
     claim_mode: new
-    state_based_on_control_head_sha: 08079bd87085ba8fd0b242f8ff7923c1b46f3a88
-    authorized_start_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
-    expected_existing_head: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
+    state_based_on_control_head_sha: 04ceb6e3899198c6baeb560e4b6a5006ecbca635
+    authorized_start_sha: 42065da2be8334382b2491c8e1d1a3a43231ab98
+    expected_existing_head: 42065da2be8334382b2491c8e1d1a3a43231ab98
     package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
     source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
     task_packet_digest: 55e261760baac780e9a4db48c328480c6f98172261ef990e563a00b25c467fc7
     task_context_digest: 7f47da82267dec5dafe9ad53da7ece7618c331645f0591982851c47987d06813
     dependencies:
       - task_id: C00
-        required_state: accepted_source_checkpoint_and_parallel_launch_reconciliation
-        required_control_head_sha: 450fec7fa227a932a0d4f9d6143304e22be17fa0
-      - task_id: F02
-        required_state: migration_2258_terminal_integrated_before_I36_terminal_push
+        required_state: corrected_candidate_pg18_proof_reconciled_refreeze_preparation
+        required_control_head_sha: 04ceb6e3899198c6baeb560e4b6a5006ecbca635
+      - task_id: I36_source
+        required_state: accepted_corrected_source_P1_0_P2_0_P3_0
+        required_head_sha: 7943a20895939f66b6755d02f819165850d1042f
+      - task_id: candidate_pg18_proof
+        required_state: completed_success_reconciled_cleanup_complete
+        github_run_id: 30748901653
       - task_id: Shloimie_launch_inputs
         required_state: cutoff_and_first_class_may_remain_unset_no_guessing
-    authorized_paths:
+    historical_source_authorized_paths_consumed:
       path_count: 63
       path_inventory_digest: d64f0e5bef040d3492a35f634192faf7224edf38bf3e4bcee9107d4a105c2d81
       path_inventory_algorithm: sha256_sorted_LF_delimited_paths_with_final_LF
@@ -227,43 +231,45 @@ ready:
         - tests/unit/lead-validation.test.ts
         - tests/unit/operator-launch-status-ui.test.ts
     directives:
-      - Materialize exactly candidate ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d from source 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365 and the sanitized candidate build request from run 30745346334.
+      - Materialize exactly candidate 68af08379cf596a2c8dfac28253487fb21fea222c6ea1275d096a6f972130ee8 from source 7943a20895939f66b6755d02f819165850d1042f and the sanitized candidate build request from run 30748901653.
       - Write only CANDIDATE-DERIVATION.json, CANDIDATE.yaml, and the I36 runtime triplet under the exact five-path ceiling.
-      - Require derivation SHA-256 f848922c8297f8ee90a934b7875876976913fc23af21c3ce590b7a4571ace8ca and manifest SHA-256 30867a96bfc5370ead95b83b6519b4ec365947d874c609dd8e5dbecba7e54876.
-      - Preserve all deployable source, migrations, workflow/provider registries, and accepted source correction bytes.
+      - Require derivation SHA-256 9abad1cd94a58cd124667c0ff69aa022bb27bfa6de7cddd77363bdbed32ab1d6 and manifest SHA-256 16f5452c0feea8252f5bc8b544cb3b3514aad65fb6c1f4c35d5044e641c00824.
+      - Preserve all deployable source, migrations, workflow/provider registries, and accepted corrected-source bytes.
       - Push one terminal and stop for one delta-only candidate identity review before creating the evidence branch or any provider/deployment effect.
     repository_write_authority: exact_candidate_freeze_paths_only
     correction_authorized_paths:
       path_count: 5
-      path_inventory_digest: 3b125e97f2ea2b59bf44c28b70be350f2a0f1e5b8f22ce976785b900e36626d7
-      preimage_manifest_digest: 28afa552b05e57a6847a439a2fc29a674a39c7ccfcb2e910b4593ca061a5981d
+      path_inventory_digest: 539038dfedbb69cd1b6e23ea35f6c7184c3dc895620aa29e2d75c805587b84c8
+      preimage_manifest_digest: b897ac1c0f20932ad3b2ee6798f12d936ced31d801826e58a53cb4393e615853
       preimages:
-        ops/v2.1-execution/merge/candidates/ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d/CANDIDATE-DERIVATION.json: null
-        ops/v2.1-execution/merge/candidates/ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d/CANDIDATE.yaml: null
-        ops/v2.1-execution/runtime/I36/HANDOFF.md: 75bf763a17610495c1a866a3e0597e72618dcc851e398a7ff603a75d0f6d1b41
-        ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md: d36408234b7c7dbf0309943db6f1086b180028d6dce0622d64cef34bbfe16c8c
-        ops/v2.1-execution/runtime/I36/TASK-STATE.yaml: 26b31509f8f2f696ea783120a02f9b7a8cd24764483c11e304774d9b674f81e3
+        ops/v2.1-execution/merge/candidates/68af08379cf596a2c8dfac28253487fb21fea222c6ea1275d096a6f972130ee8/CANDIDATE-DERIVATION.json: null
+        ops/v2.1-execution/merge/candidates/68af08379cf596a2c8dfac28253487fb21fea222c6ea1275d096a6f972130ee8/CANDIDATE.yaml: null
+        ops/v2.1-execution/runtime/I36/HANDOFF.md: 763bf2817be0d062bfbf6655bf570b0d30c0469f7083c933b096874261299f87
+        ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md: a6ac8a433df266536ae94434f53b4be3137f660e682d046d47fc33efccc0ea6e
+        ops/v2.1-execution/runtime/I36/TASK-STATE.yaml: f26233def395cc000b89096d7342024f9176bcc41bb58a9eda86f755a978eae1
       paths:
-        - ops/v2.1-execution/merge/candidates/ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d/CANDIDATE-DERIVATION.json
-        - ops/v2.1-execution/merge/candidates/ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d/CANDIDATE.yaml
+        - ops/v2.1-execution/merge/candidates/68af08379cf596a2c8dfac28253487fb21fea222c6ea1275d096a6f972130ee8/CANDIDATE-DERIVATION.json
+        - ops/v2.1-execution/merge/candidates/68af08379cf596a2c8dfac28253487fb21fea222c6ea1275d096a6f972130ee8/CANDIDATE.yaml
         - ops/v2.1-execution/runtime/I36/HANDOFF.md
         - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
         - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
       required_postimages:
-        ops/v2.1-execution/merge/candidates/ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d/CANDIDATE-DERIVATION.json: f848922c8297f8ee90a934b7875876976913fc23af21c3ce590b7a4571ace8ca
-        ops/v2.1-execution/merge/candidates/ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d/CANDIDATE.yaml: 30867a96bfc5370ead95b83b6519b4ec365947d874c609dd8e5dbecba7e54876
-    accepted_terminal_head_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
+        ops/v2.1-execution/merge/candidates/68af08379cf596a2c8dfac28253487fb21fea222c6ea1275d096a6f972130ee8/CANDIDATE-DERIVATION.json: 9abad1cd94a58cd124667c0ff69aa022bb27bfa6de7cddd77363bdbed32ab1d6
+        ops/v2.1-execution/merge/candidates/68af08379cf596a2c8dfac28253487fb21fea222c6ea1275d096a6f972130ee8/CANDIDATE.yaml: 16f5452c0feea8252f5bc8b544cb3b3514aad65fb6c1f4c35d5044e641c00824
+    accepted_terminal_head_sha: 7943a20895939f66b6755d02f819165850d1042f
     accepted_terminal_review: P1_0_P2_0_P3_0
     effect_lock_leases: []
-    writer_slot_leases_released:
+    prior_writer_slot_leases_released:
       - { slot: RELEASE_INTEGRATOR, lease_id: 8a7206c7-0c56-4fab-9565-63a2859077a2 }
-    claim_id: 48f1af59-52f9-4868-bacd-b6e79bf4292d
-    writer_id: codex-i36-candidate-freeze-48f1af59
-    lease_issued_at: '2026-08-02T11:23:01Z'
-    lease_expires_at: '2026-08-02T12:23:01Z'
-    lease_released_at: '2026-08-02T11:35:37Z'
-    terminal_head_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
-    terminal_review: P1_0_P2_0_P3_0
+    writer_slot_leases:
+      - { slot: RELEASE_INTEGRATOR, lease_id: 6adaaa97-05a1-4538-9ad8-4db69d90c877 }
+    claim_id: ce000af6-1d5a-4e90-bdcf-c777e507f451
+    writer_id: codex-i36-candidate-refreeze-ce000af6
+    lease_issued_at: '2026-08-02T13:05:10Z'
+    lease_expires_at: '2026-08-02T14:05:10Z'
+    prior_lease_released_at: '2026-08-02T11:35:37Z'
+    prior_terminal_head_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
+    prior_terminal_review: P1_0_P2_0_P3_0
     heartbeat_interval_minutes: 15
     prompt_path: ops/v2.1-execution/prompts/I36-START-OR-RESUME.md
     model: GPT-5.6-SOL
@@ -415,7 +421,7 @@ ready:
     reasoning: XHIGH
 entry_payload_digests:
   F02: 388c28b5c4c946a75f9f4e9ddb103e69193a505e3889a88aaad744ac9e5388c7
-  I36: null
+  I36: 30469bad977f43bf1631a3cb22dc714bcbaf01792e2969336108ead35e4cd36b
   V37: 30d6912c416db8490f9e018cf6d0d833bd02a784efb8c234dc4e01ddb6e3139c
   V38: 12ed1af9ea95163f43b6a2b7a95ca64f2e964d9319e9a0044670d33a604edbfb
   V39: 56fc1adbe802ad3516651db0a9e83f89aa552de163e2c9f16a27367df4d4d68f

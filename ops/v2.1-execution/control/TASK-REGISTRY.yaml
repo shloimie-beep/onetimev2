@@ -466,8 +466,8 @@ tasks:
     transitioned_at: '2026-07-30T19:30:53Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/F07/status_proof
 - task_id: I36
-  status: ready_for_corrected_candidate_refreeze
-  active_phase: corrected_candidate_pg18_proof_reconciled
+  status: corrected_candidate_refreeze_authorized
+  active_phase: corrected_candidate_refreeze
   branch: codex/v21-integration
   phase_branches:
     integration: codex/v21-integration
@@ -594,18 +594,19 @@ tasks:
     launch_priority_source_correction_integration_merge: 42065da2be8334382b2491c8e1d1a3a43231ab98
   authorized_start_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
   last_known_remote_head: 42065da2be8334382b2491c8e1d1a3a43231ab98
-  active_claim_id: null
-  active_writer_id: null
-  lease_expires_at: null
-  active_writer_leases: []
+  active_claim_id: ce000af6-1d5a-4e90-bdcf-c777e507f451
+  active_writer_id: codex-i36-candidate-refreeze-ce000af6
+  lease_expires_at: '2026-08-02T14:05:10Z'
+  active_writer_leases:
+    - 6adaaa97-05a1-4538-9ad8-4db69d90c877
   active_effect_lock_leases: []
-  last_heartbeat_at: '2026-08-02T13:00:45Z'
-  controller_authorization_sha: d8c39176adaa021650d4a8f543b78be0b13e9a7c
-  ready_entry_payload_digest: null
+  last_heartbeat_at: '2026-08-02T13:05:10Z'
+  controller_authorization_sha: 04ceb6e3899198c6baeb560e4b6a5006ecbca635
+  ready_entry_payload_digest: 30469bad977f43bf1631a3cb22dc714bcbaf01792e2969336108ead35e4cd36b
   interface_checkpoint_sha: null
   implementation_head_sha: 7943a20895939f66b6755d02f819165850d1042f
   status_proof:
-    state: corrected_candidate_pg18_proof_reconciled_ready_for_refreeze
+    state: corrected_candidate_refreeze_authorized
     producer_task_id: I36
     producer_head_sha: 7943a20895939f66b6755d02f819165850d1042f
     canonical_candidate_digest: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
@@ -626,7 +627,7 @@ tasks:
     successful_effect_run_id: 30745346334
     successful_effect_reconciliation: PostgreSQL_18_4_89_migrations_8_probes_restore_clone_passed_zero_non_disposable_effects
     state_based_on_control_head_sha: 228f1c4fdf3fbbf8a694bb2a7cee71cd405fab7c
-    transitioned_at: '2026-08-02T13:00:45Z'
+    transitioned_at: '2026-08-02T13:05:10Z'
     proof_record_location: 'ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/I36/status_proof'
 - task_id: P08
   status: ready_for_review
