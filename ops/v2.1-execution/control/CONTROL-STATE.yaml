@@ -66,6 +66,22 @@ launch_source_office_sender_consistency_amendment:
   amended_I36_ready_entry_payload_digest: aaee8cdfdd5859f6a44ffb0c504a0d77f545889498f54aab74404cc2020d2f3c
   provider_or_external_effect_authority: none
   external_effects: 0/0/0
+F02_proposal_preimage_canonicalization_evidence:
+  recorded_at: '2026-08-02T09:47:00Z'
+  control_basis_sha: c69446a5e7e2b6317ff2981e40878820b0982892
+  authorized_integration_head_sha: d61f4e49349ed4b63618513ce6642337690d55d0
+  path: ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
+  preimage_manifest_digest_kind: exact_dispatch_worktree_raw_bytes
+  exact_dispatch_worktree_raw_sha256: 049bcd5c274dd6593a99aa5d1ca41f11218667066fe3bf1ad579fa11f278fce9
+  exact_dispatch_worktree_bytes: 15773
+  exact_dispatch_worktree_CRLF_count: 255
+  exact_dispatch_worktree_bare_LF_count: 14
+  git_blob_sha1: d75c2e4fac3ca040275a39f78907ae47c42380e5
+  git_blob_raw_sha256: f559b78f5417d41ec7642fa17028174720cda5e6f68e337a7cde79fbd6b1ab22
+  git_blob_bytes: 15518
+  git_hash_object_worktree_matches_head_blob: true
+  integration_worktree_clean_at_dispatch: true
+  external_effects: 0/0/0
 production_completion_lanes:
 - lane: A
   owner: F02
