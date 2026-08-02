@@ -327,6 +327,14 @@ import {
   createLearningRouter,
   createPostgresLearningActorResolver,
 } from './features/learning/index.ts';
+import {
+  createEmbeddedClassroomFeatureComposition,
+  createEmbeddedClassroomRequestIdentityResolver,
+  EMBEDDED_CLASSROOM_FEATURE_ID,
+  EMBEDDED_CLASSROOM_MOUNT_PATH,
+  isEmbeddedClassroomInstalledRuntimeReceipt,
+  type EmbeddedClassroomCandidateRuntime,
+} from './features/classroom/embedded/index.ts';
 
 type AppDeps = {
   config: AppConfig;
@@ -341,6 +349,7 @@ type AppDeps = {
   learningRuntime?: {
     nativePostgresSchemaProven: boolean;
   };
+  embeddedClassroomRuntime?: EmbeddedClassroomCandidateRuntime;
   /** @deprecated Retained only so historical test harnesses compile; no demo route is registered. */
   learningDeliveryDemoReportPath?: string;
 };
@@ -421,6 +430,7 @@ export function createApp({
   featureRegistrations,
   v21AdultSessionRuntime: injectedV21AdultSessionRuntime,
   learningRuntime,
+  embeddedClassroomRuntime,
 }: AppDeps) {
   const v21AdultSessionRuntime =
     injectedV21AdultSessionRuntime ??
@@ -663,6 +673,35 @@ export function createApp({
     ),
     ...(clock ? { clock } : {}),
   });
+  if (
+    centrallyBoundFeatureRegistrations.some(
+      (registration) =>
+        registration.featureId === EMBEDDED_CLASSROOM_FEATURE_ID ||
+        registration.mountPath === EMBEDDED_CLASSROOM_MOUNT_PATH,
+    )
+  ) {
+    throw new Error('embedded_classroom_registration_is_centrally_owned');
+  }
+  const embeddedClassroomComposition = createEmbeddedClassroomFeatureComposition({
+    attendanceProjectionChanges: learningComposition.attendanceProjectionChanges,
+    identities: createEmbeddedClassroomRequestIdentityResolver({
+      scope: {
+        product: 'one_time_mishnayos',
+        runtime_tier: config.oneTimeRuntimeTier,
+        verification_environment_id: config.oneTimeVerificationEnvironmentId,
+      },
+      publicOrigin: config.publicBaseUrl,
+      lineageSecret: config.authCsrfSecret,
+      resolvePortalActor: (request) => portalActorFromRequest(request, pool, config),
+      verifyCsrf: (request, actor) =>
+        verifySessionCsrf({
+          pool,
+          sessionKey: actor.session_key,
+          csrfToken: request.header('x-csrf-token') ?? request.body?.csrf_token,
+        }),
+    }),
+    ...(embeddedClassroomRuntime ? { candidateRuntime: embeddedClassroomRuntime } : {}),
+  });
   installServerFeatureRouters({
     app,
     context: {
@@ -673,6 +712,21 @@ export function createApp({
     },
     registrations: centrallyBoundFeatureRegistrations,
   });
+  installServerFeatureRouters({
+    app,
+    context: {
+      config,
+      pool,
+      distDir,
+      ...(clock ? { clock } : {}),
+    },
+    registrations: [embeddedClassroomComposition.registration],
+  });
+  const embeddedClassroomInstalledReceipt = embeddedClassroomComposition.readInstalledReceipt();
+  if (!isEmbeddedClassroomInstalledRuntimeReceipt(embeddedClassroomInstalledReceipt)) {
+    throw new Error('embedded_classroom_runtime_receipt_unavailable');
+  }
+  app.locals.embeddedClassroomInstalledRuntimeReceipt = embeddedClassroomInstalledReceipt;
 
   app.use(
     '/api/app/learning',
@@ -1180,6 +1234,55 @@ export function createApp({
       allowedRoles: ['student'],
       fallbackPath: '/app/student',
     });
+  });
+
+  app.get('/app/classroom', async (req: RequestWithTrace, res) => {
+    const session = await sessionFromRequest(req, pool, config);
+    if (!session) {
+      res.redirect(302, '/login?return_to=%2Fapp%2Fstudent');
+      return;
+    }
+    if (session.user.role !== 'student') {
+      setPrivateNoStore(res);
+      res.status(403).type('html').send(forbiddenAppHtml('student'));
+      return;
+    }
+    await ensureSessionCsrfCookie(req, res, pool, config, session);
+    setPrivateNoStore(res);
+    res.setHeader('Referrer-Policy', 'no-referrer');
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    res.setHeader('Permissions-Policy', 'camera=(self), microphone=(self), fullscreen=(self)');
+    const providerReady = Boolean(
+      embeddedClassroomRuntime?.contextResolver && embeddedClassroomRuntime.sdkBootstrap,
+    );
+    res.setHeader(
+      'Content-Security-Policy',
+      (providerReady
+        ? [
+            "default-src 'self'",
+            "img-src 'self' data: blob: https://source.zoom.us",
+            "script-src 'self' https://source.zoom.us 'unsafe-eval' 'wasm-unsafe-eval'",
+            "style-src 'self' 'unsafe-inline' https://source.zoom.us",
+            "connect-src 'self' https://*.zoom.us wss://*.zoom.us",
+            "worker-src 'self' blob:",
+            "media-src 'self' blob: mediastream:",
+            "object-src 'none'",
+            "base-uri 'self'",
+            "frame-ancestors 'none'",
+          ]
+        : [
+            "default-src 'self'",
+            "img-src 'self' data:",
+            "script-src 'self'",
+            "style-src 'self'",
+            "connect-src 'self'",
+            "object-src 'none'",
+            "base-uri 'self'",
+            "frame-ancestors 'none'",
+          ]
+      ).join('; '),
+    );
+    await sendAppHtml(res, distDir, 'student', config);
   });
 
   const handleLeadPost = async (req: RequestWithTrace, res: express.Response) => {
@@ -4365,6 +4468,7 @@ function isMutableBuiltClientAsset(filePath: string) {
 function publicHtmlFileForPath(pathname: string) {
   if (pathname === '/') return 'index.html';
   if (pathname.startsWith('/app/content/')) return 'app/content.html';
+  if (pathname === '/app/classroom') return 'app/student.html';
   const staticPages = new Set([
     '/signup',
     '/school',

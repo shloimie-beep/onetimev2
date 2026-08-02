@@ -1,6 +1,90 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
+MODE: PAUSE_FOR_C00_P18_REGISTRATION_002_IMPLEMENTATION_REVIEW
+
+Audit the exact pushed I36 P18-registration-002 implementation terminal. Do
+not continue implementation, bind a candidate runtime, add config or signer
+scope, touch a persistent database, run native PostgreSQL candidate proof,
+freeze a candidate, inspect or mutate a provider, deploy, change DNS, send,
+charge, clean up, or perform an external effect.
+
+Repository: shloimie-beep/onetimev2
+Branch: codex/v21-integration
+Authorized start and required sole parent:
+`06a4e660bb00f37100a93abd11561351dfce9b79`
+Containing control: `79fb3b949cf7b551aff939df868b048dc227213e`
+Authority/READY basis: `cd1b86517b314d7738240a515f90e4c73ef9314e`
+READY: `3351222de3826f808045384787925df0366f232ae4b279d7426a897f26538728`
+Claim: `e7435237-dd27-42e6-887f-c137b987e00f`
+Writer: `codex-i36-P18-implementation-e7435237`
+Leases: EMBEDDED_CLASSROOM `a7253f6b-9caa-43c5-868e-7bedd6cf2d14`,
+SERVER_COMPOSER `2e138bdd-6f07-4d23-8212-38d74ca5ebf1`, CLIENT_COMPOSER
+`16e48e6c-596c-40ed-8dec-5bcfd4066f0d`, BARREL_REGISTRAR
+`aee0be4b-ee54-418a-9e2e-90172f345dad`, and RELEASE_INTEGRATOR
+`6467fc1b-0f35-4e12-80d9-8ef68cb6bd35`.
+Lease issue/expiry/release: `2026-08-02T02:07:10Z` /
+`2026-08-02T06:07:10Z` / `2026-08-02T02:58:30Z`.
+Effects: `0/0/0`.
+
+Confirm the terminal has sole parent `06a4e660...` and exactly 25 changed
+paths: the admitted 22 product/test paths plus the I36 runtime triplet. Confirm
+product/release path-inventory digests
+`2b21372b09476b9a029bced558f5d3856997b902cf9d69d6f1437ec0c862f551`
+and `c2e6a780ea8cc991b94926acd515921e4cb1a5ade9f181dc1b94f95ac229ef5b`,
+product/release preimage manifests
+`660221d367079c2997f7bfb7b12913f6122c69aa3e9788fee6ae4d5736067d00`
+and `95f0737ea38caf4ea403ec44afbd1ea5ce63317be5463ec4ba28aec5871acf72`,
+and product postimage manifest
+`580da8c07974aca4301b4ed995ae98f38bc4c61f4f6960b71aee219ad5684f5e`.
+Confirm eleven existing and eleven absent product preimages.
+
+Confirm immutable P18-registration-002 still has raw digest
+`59dc010fcbcb370248a0736b4df37ce090ac7239c92afc6aefa38e8ba87c8624`,
+canonical digest
+`0ccf99213e29b459f5d9c095e847b7e018cbf8f7a0416849d99465e24045f080`,
+and prior independent admission with zero P1/P2/P3. Confirm migration 2251 is
+unchanged and remains the admitted applied/reconciled P18-migration-003
+successor.
+
+Review the substantive invariants: authenticated constant `/app/classroom`;
+fixed same-origin CSRF-protected APIs; server-derived Student identity, scope,
+session, and device lineage; exactly one captured PostgreSQL repository using
+the existing P22 projection callback across all mounted operations; 60-second
+single-use bootstrap; 30-second heartbeat and 90-second version-fenced lease;
+current-context rechecks at issue, redeem, heartbeat, and client attendance;
+verified correlated provider attendance; audited Admin reset/correction;
+deterministic attendance reconciliation/replay; no raw Zoom URL or browser
+storage/query identity; and authentic one-shot mount receipt.
+
+Confirm the default context resolver, SDK signer, provider verification, and
+Admin attendance-subject ports remain fail closed for later candidate binding.
+Confirm no native PostgreSQL or provider proof is claimed. Confirm the signed-out
+route honestly returns to `/app/student` because the immutable F03 return-path
+validator excludes `/app/classroom`; exact post-login return acceptance is not
+claimed. Confirm candidate binding still needs the real F03/P16/P32 resolver,
+signer, provider verifier with raw webhook bytes if required, and Admin subject
+resolver.
+
+Reproduce 71/71 focused tests, scoped ESLint/Prettier, client and page builds,
+zero changed-path type diagnostics, YAML, exact scope/preimages/postimages,
+diff hygiene, and repository secret scan. Workspace typecheck may retain only
+the exact four declared unchanged Stripe and duplicate-Playwright baselines.
+Confirm every lease was released before expiry, the worktree is clean, and
+local, tracking, and live integration heads equal the pushed terminal. Confirm
+no provider, network, persistent-database, candidate, deployment, DNS, contact,
+send, billing, cleanup, or external effect occurred.
+
+Return exact P1/P2/P3 counts. Do not admit the implementation or advance any
+candidate/provider/release work unless P1 and P2 are zero. Stop.
+
+---
+
+## Historical audit prompt - P18-registration-002 request materialization
+
+MODEL: GPT-5.6-SOL
+REASONING: XHIGH
+SERVICE TIER: PRIORITY
 MODE: PAUSE_FOR_C00_P18_REGISTRATION_002_ADMISSION_REVIEW
 
 Audit the exact pushed I36 four-path P18-registration-002 request

@@ -222,6 +222,48 @@ export function createPostgresEmbeddedClassroomRepository(
       }
     },
 
+    async loadAttendanceEvidence(input) {
+      return withTransaction(pool, async (client) => {
+        const values = [
+          input.scope.product,
+          input.scope.runtime_tier,
+          input.scope.verification_environment_id,
+          input.occurrence_id,
+          input.student_id,
+        ];
+        const [events, projection] = await Promise.all([
+          client.query(
+            `SELECT *
+               FROM onetime.classroom_attendance_events_v21
+              WHERE product = $1
+                AND runtime_tier = $2
+                AND verification_environment_id = $3
+                AND occurrence_id = $4
+                AND student_id = $5
+              ORDER BY observed_at ASC, convert_to(attendance_event_id, 'UTF8') ASC
+              FOR SHARE`,
+            values,
+          ),
+          client.query(
+            `SELECT *
+               FROM onetime.classroom_attendance_projection_v21
+              WHERE product = $1
+                AND runtime_tier = $2
+                AND verification_environment_id = $3
+                AND occurrence_id = $4
+                AND student_id = $5
+              FOR SHARE`,
+            values,
+          ),
+        ]);
+        return {
+          events: events.rows.map(mapAttendanceEvent),
+          projection:
+            projection.rows[0] === undefined ? null : mapAttendanceProjection(projection.rows[0]),
+        };
+      });
+    },
+
     async appendAttendance(input) {
       let changes: readonly AttendanceProjectionChange[];
       try {
@@ -782,6 +824,67 @@ function projectionValues(projection: AttendanceProjection): readonly unknown[] 
     projection.version,
     projection.updated_at,
   ];
+}
+
+function mapAttendanceEvent(row: SqlRow): AttendanceEvent {
+  return {
+    attendance_event_id: requiredString(row.attendance_event_id),
+    scope: mapScope(row),
+    occurrence_id: requiredString(row.occurrence_id),
+    student_id: requiredString(row.student_id),
+    source: requiredEventSource(row.source),
+    event_kind: requiredEventKind(row.event_kind),
+    observed_at: iso(row.observed_at),
+    connection_lineage_id: requiredString(row.connection_lineage_id),
+    idempotency_key: requiredString(row.idempotency_key),
+    source_event_ref_digest: requiredString(row.source_event_ref_digest),
+    provider_verified: row.provider_verified === true,
+    correction_intervals: correctionIntervals(row.correction_intervals),
+    correction_reason: nullableString(row.correction_reason),
+    correction_admin_id: nullableString(row.correction_admin_id),
+    audit_ref: nullableString(row.audit_ref),
+  };
+}
+
+function mapAttendanceProjection(row: SqlRow): AttendanceProjection {
+  return {
+    scope: mapScope(row),
+    occurrence_id: requiredString(row.occurrence_id),
+    student_id: requiredString(row.student_id),
+    first_joined_at: nullableIso(row.first_joined_at),
+    last_left_at: nullableIso(row.last_left_at),
+    total_connected_minutes: Number(row.total_connected_minutes),
+    attendance_percentage: Number(row.attendance_percentage),
+    reconnect_count: Number(row.reconnect_count),
+    late: row.late === true,
+    reconciliation_state: String(
+      row.reconciliation_state,
+    ) as AttendanceProjection['reconciliation_state'],
+    manual_correction_reason: nullableString(row.manual_correction_reason),
+    correction_admin_id: nullableString(row.correction_admin_id),
+    source_event_count: Number(row.source_event_count),
+    version: Number(row.version),
+    updated_at: iso(row.updated_at),
+  };
+}
+
+function correctionIntervals(value: unknown): AttendanceEvent['correction_intervals'] {
+  const candidate = typeof value === 'string' ? (JSON.parse(value) as unknown) : value;
+  if (!Array.isArray(candidate)) throw new Error('attendance_correction_intervals_invalid');
+  return candidate.map((interval) => {
+    if (
+      interval === null ||
+      typeof interval !== 'object' ||
+      typeof (interval as { joined_at?: unknown }).joined_at !== 'string' ||
+      typeof (interval as { left_at?: unknown }).left_at !== 'string'
+    ) {
+      throw new Error('attendance_correction_intervals_invalid');
+    }
+    return {
+      joined_at: (interval as { joined_at: string }).joined_at,
+      left_at: (interval as { left_at: string }).left_at,
+    };
+  });
 }
 
 function mapGrant(row: SqlRow): LaunchGrantRecord {

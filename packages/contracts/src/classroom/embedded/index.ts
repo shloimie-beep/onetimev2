@@ -137,8 +137,16 @@ export type LiveSessionDecision =
 
 export interface EphemeralMeetingSdkBootstrap {
   sdk_session_ref: string;
+  sdk_web_version: string;
   sdk_signature: string;
+  meeting_number: string;
+  meeting_password: string;
+  registrant_token: string;
+  participant_email: string;
+  customer_key: string;
   participant_display_name: string;
+  recording_capture_active: boolean;
+  leave_path: '/app/classroom';
   issued_at: string;
   expires_at: string;
   role: 0;
@@ -230,6 +238,25 @@ export interface AttendanceProjectionChangePort {
   onAttendanceProjectionChange(change: AttendanceProjectionChange): Promise<void>;
 }
 
+export interface AttendanceEvidenceSnapshot {
+  events: readonly AttendanceEvent[];
+  projection: AttendanceProjection | null;
+}
+
+export interface EmbeddedAttendanceSubject {
+  scope: JobScope;
+  occurrence_id: string;
+  student_id: string;
+  registrant_id: string;
+  scheduled_start_at: string;
+  scheduled_end_at: string;
+}
+
+export interface VerifiedProviderAttendance {
+  subject: EmbeddedAttendanceSubject;
+  event: AttendanceEvent;
+}
+
 export interface CommitBootstrapInput {
   prior_grant: LaunchGrantRecord;
   next_grant: LaunchGrantRecord;
@@ -257,6 +284,11 @@ export interface EmbeddedClassroomRepository {
     next_session: LiveStudentSession;
     now: Date;
   }): Promise<boolean>;
+  loadAttendanceEvidence(input: {
+    scope: JobScope;
+    occurrence_id: string;
+    student_id: string;
+  }): Promise<AttendanceEvidenceSnapshot>;
   appendAttendance(input: {
     events: readonly AttendanceEvent[];
     prior_projection: AttendanceProjection | null;
@@ -265,10 +297,19 @@ export interface EmbeddedClassroomRepository {
 }
 
 export interface EmbeddedJoinContextResolver {
+  resolveForIssue(input: {
+    scope: JobScope;
+    actor: EmbeddedStudentActor;
+  }): Promise<EmbeddedJoinContext>;
   resolve(input: {
     scope: JobScope;
     actor: EmbeddedStudentActor;
     grant: LaunchGrantRecord;
+  }): Promise<EmbeddedJoinContext>;
+  resolveLiveSession(input: {
+    scope: JobScope;
+    actor: EmbeddedStudentActor;
+    session: LiveStudentSession;
   }): Promise<EmbeddedJoinContext>;
 }
 

@@ -1,6 +1,73 @@
 # I36 Integration Releases
 
-## Current terminal - P18-registration-002 request materialization
+## Current terminal - P18-registration-002 implementation
+
+Containing control `79fb3b949cf7b551aff939df868b048dc227213e`, based on
+`cd1b86517b314d7738240a515f90e4c73ef9314e`, authorized the admitted P18
+successor under READY
+`3351222de3826f808045384787925df0366f232ae4b279d7426a897f26538728`.
+The exact authorized start and required sole parent is
+`06a4e660bb00f37100a93abd11561351dfce9b79`. The immutable request remains
+bound to raw SHA-256
+`59dc010fcbcb370248a0736b4df37ce090ac7239c92afc6aefa38e8ba87c8624`
+and canonical-object SHA-256
+`0ccf99213e29b459f5d9c095e847b7e018cbf8f7a0416849d99465e24045f080`.
+
+This exact repository-only terminal changes 22 product/test paths and the I36
+runtime triplet. Their inventory digests are
+`2b21372b09476b9a029bced558f5d3856997b902cf9d69d6f1437ec0c862f551`
+and `c2e6a780ea8cc991b94926acd515921e4cb1a5ade9f181dc1b94f95ac229ef5b`;
+the product postimage manifest is
+`580da8c07974aca4301b4ed995ae98f38bc4c61f4f6960b71aee219ad5684f5e`.
+All eleven existing and eleven absent product preimages reproduce the admitted
+manifest `660221d367079c2997f7bfb7b12913f6122c69aa3e9788fee6ae4d5736067d00`.
+
+The implementation mounts the authenticated constant Student route
+`/app/classroom` and the fixed `/api/app/classroom` boundary. Student identity,
+household, environment scope, authenticated session, device lineage, and CSRF
+are server-derived. One captured PostgreSQL embedded-classroom repository is
+constructed with the existing P22 attendance-projection callback and shared by
+bootstrap, heartbeat, reset, reconciled attendance intake, and the mounted
+runtime. The service enforces the 60-second single-use bootstrap, 30-second
+heartbeat, 90-second renewable single-device lease, current-authorization
+recheck contract, verified provider correlation, audited Admin corrections,
+deterministic attendance reconciliation, and bounded optimistic retry. The
+Student client keeps exchange, lease, and SDK data in memory and places no raw
+join URL or identity in query strings or browser storage.
+
+Candidate-bound context, SDK signer, provider verification, and Admin
+attendance-subject ports intentionally remain fail closed. No native PostgreSQL
+candidate proof or real candidate binding was performed. The immutable F03
+login return-path validator does not accept `/app/classroom`; signed-out users
+therefore return safely to `/app/student` and must click back to Classroom.
+This terminal does not claim exact post-login return acceptance. A later
+candidate binding must also supply verifiable raw Zoom-webhook handling if the
+provider signature contract requires the original body bytes.
+
+Validation passes 71/71 focused assertions across ten files, scoped ESLint and
+Prettier across all 22 product/test paths, both client and page builds, exact
+preimage/scope and diff checks, and the repository secret scan across 3,183
+text files. Changed-path type diagnostics are zero. Workspace typecheck retains
+only the exact four unchanged out-of-scope Stripe and duplicate-Playwright
+baselines.
+
+Claim `e7435237-dd27-42e6-887f-c137b987e00f` and leases EMBEDDED_CLASSROOM
+`a7253f6b-9caa-43c5-868e-7bedd6cf2d14`, SERVER_COMPOSER
+`2e138bdd-6f07-4d23-8212-38d74ca5ebf1`, CLIENT_COMPOSER
+`16e48e6c-596c-40ed-8dec-5bcfd4066f0d`, BARREL_REGISTRAR
+`aee0be4b-ee54-418a-9e2e-90172f345dad`, and RELEASE_INTEGRATOR
+`6467fc1b-0f35-4e12-80d9-8ef68cb6bd35` were released at
+`2026-08-02T02:58:30Z`, before the `2026-08-02T06:07:10Z` expiry. No provider,
+network, persistent-database, candidate, deployment, DNS, send, charge,
+customer, cleanup, or external effect occurred; effects remain `0/0/0`.
+
+I36 must push this one exact terminal, prove clean local/tracking/live equality,
+and stop. C00 must independently review the pushed head before candidate
+binding or any external successor action.
+
+All sections below are retained historical release records and audit prompts.
+
+## Historical terminal - P18-registration-002 request materialization
 
 Live control `cd1b86517b314d7738240a515f90e4c73ef9314e`, based on
 `66f6bcdc11987c6ef6288877319f43ef9b09f085`, contains canonical READY

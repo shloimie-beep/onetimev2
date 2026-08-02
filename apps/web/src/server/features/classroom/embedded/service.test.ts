@@ -11,6 +11,31 @@ const HASH = 'a'.repeat(64);
 const NOW = new Date('2026-07-28T17:00:00.000Z');
 
 describe('embedded classroom service', () => {
+  it('issues and rechecks a 60-second launch grant before redemption', async () => {
+    const repository = repositoryFixture();
+    const service = createEmbeddedClassroomService({
+      repository,
+      context_resolver: contextResolver(),
+      sdk_bootstrap: {
+        createEphemeralBootstrap: vi.fn(async () => usableBootstrap()),
+      },
+    });
+
+    await expect(service.bootstrap({ ...command(), grant_id: 'grant-1' })).resolves.toEqual(
+      expect.objectContaining({ disposition: 'ready', safe_code: 'join_allowed' }),
+    );
+    expect(repository.insertLaunchGrant).toHaveBeenCalledWith(
+      expect.objectContaining({
+        grant_id: 'grant-1',
+        grant_key_digest: HASH,
+        issued_at: NOW.toISOString(),
+        expires_at: '2026-07-28T17:01:00.000Z',
+        student_id: 'student-1',
+        occurrence_id: 'occurrence-1',
+      }),
+    );
+  });
+
   it('commits grant consumption and the lease before returning a minimal no-store SDK bootstrap', async () => {
     const order: string[] = [];
     const repository = repositoryFixture();
@@ -20,18 +45,11 @@ describe('embedded classroom service', () => {
     });
     const createEphemeralBootstrap = vi.fn(async () => {
       order.push('sign');
-      return {
-        sdk_session_ref: 'sdk-session-1',
-        sdk_signature: 'ephemeral-signature',
-        participant_display_name: 'Student One',
-        issued_at: NOW.toISOString(),
-        expires_at: '2026-07-28T17:00:45.000Z',
-        role: 0 as const,
-      };
+      return usableBootstrap();
     });
     const service = createEmbeddedClassroomService({
       repository,
-      context_resolver: { resolve: vi.fn(async () => contextFixture()) },
+      context_resolver: contextResolver(),
       sdk_bootstrap: { createEphemeralBootstrap },
     });
 
@@ -54,7 +72,7 @@ describe('embedded classroom service', () => {
     const createEphemeralBootstrap = vi.fn();
     const service = createEmbeddedClassroomService({
       repository,
-      context_resolver: { resolve: vi.fn(async () => contextFixture()) },
+      context_resolver: contextResolver(),
       sdk_bootstrap: { createEphemeralBootstrap },
     });
 
@@ -73,7 +91,7 @@ describe('embedded classroom service', () => {
     const sdk = vi.fn();
     const expiredService = createEmbeddedClassroomService({
       repository: expiredRepository,
-      context_resolver: { resolve: vi.fn(async () => contextFixture()) },
+      context_resolver: contextResolver(),
       sdk_bootstrap: { createEphemeralBootstrap: sdk },
     });
     await expect(expiredService.redeem(command())).resolves.toEqual({
@@ -88,7 +106,7 @@ describe('embedded classroom service', () => {
     };
     const consentService = createEmbeddedClassroomService({
       repository: consentRepository,
-      context_resolver: { resolve: vi.fn(async () => noConsent) },
+      context_resolver: contextResolver(noConsent),
       sdk_bootstrap: { createEphemeralBootstrap: sdk },
     });
     await expect(consentService.redeem(command())).resolves.toEqual({
@@ -104,7 +122,7 @@ describe('embedded classroom service', () => {
     const repository = repositoryFixture({ current: sessionFixture() });
     const service = createEmbeddedClassroomService({
       repository,
-      context_resolver: { resolve: vi.fn() },
+      context_resolver: contextResolver(),
       sdk_bootstrap: { createEphemeralBootstrap: vi.fn() },
     });
     await expect(
@@ -117,6 +135,8 @@ describe('embedded classroom service', () => {
       }),
     ).resolves.toEqual({
       persisted: true,
+      lease_generation: 1,
+      version: 2,
       lease_expires_at: '2026-07-28T17:02:00.000Z',
       next_heartbeat_at: '2026-07-28T17:01:00.000Z',
     });
@@ -136,6 +156,51 @@ describe('embedded classroom service', () => {
           state: 'revoked',
           revoked_by_admin_id: 'admin-1',
           revoke_audit_ref: 'audit-reset-1',
+        }),
+      }),
+    );
+  });
+
+  it('derives embedded attendance subject and lineage from the reauthorized live session', async () => {
+    const repository = repositoryFixture({ current: sessionFixture() });
+    const service = createEmbeddedClassroomService({
+      repository,
+      context_resolver: contextResolver(),
+      sdk_bootstrap: { createEphemeralBootstrap: vi.fn() },
+    });
+
+    await expect(
+      service.recordClientAttendance({
+        scope: contextFixture().scope,
+        actor: contextFixture().actor,
+        event_kind: 'joined',
+        attendance_event_id: 'attendance-1',
+        idempotency_key: 'attendance-idempotency-1',
+        source_event_ref_digest: HASH,
+        now: NOW,
+      }),
+    ).resolves.toEqual({ disposition: 'accepted' });
+    expect(repository.loadAttendanceEvidence).toHaveBeenCalledWith({
+      scope: contextFixture().scope,
+      occurrence_id: 'occurrence-1',
+      student_id: 'student-1',
+    });
+    expect(repository.appendAttendance).toHaveBeenCalledWith(
+      expect.objectContaining({
+        events: [
+          expect.objectContaining({
+            occurrence_id: 'occurrence-1',
+            student_id: 'student-1',
+            connection_lineage_id: 'device-1',
+            source: 'embedded_client',
+            provider_verified: false,
+          }),
+        ],
+        next_projection: expect.objectContaining({
+          occurrence_id: 'occurrence-1',
+          student_id: 'student-1',
+          reconciliation_state: 'provisional',
+          source_event_count: 1,
         }),
       }),
     );
@@ -163,7 +228,35 @@ function repositoryFixture(input?: {
     commitBootstrap: vi.fn(async () => true),
     persistLiveSession: vi.fn(async () => true),
     resetStudentLaunch: vi.fn(async () => true),
+    loadAttendanceEvidence: vi.fn(async () => ({ events: [], projection: null })),
     appendAttendance: vi.fn(async () => true),
+  };
+}
+
+function usableBootstrap() {
+  return {
+    sdk_session_ref: 'sdk-session-1',
+    sdk_web_version: '3.11.2',
+    sdk_signature: 'ephemeral-signature',
+    meeting_number: '12345678901',
+    meeting_password: 'meeting-password',
+    registrant_token: 'registrant-token',
+    participant_email: 'student-alias@example.invalid',
+    customer_key: 'customer-key',
+    participant_display_name: 'Student One',
+    recording_capture_active: true,
+    leave_path: '/app/classroom' as const,
+    issued_at: NOW.toISOString(),
+    expires_at: '2026-07-28T17:00:45.000Z',
+    role: 0 as const,
+  };
+}
+
+function contextResolver(context = contextFixture()) {
+  return {
+    resolveForIssue: vi.fn(async () => context),
+    resolve: vi.fn(async () => context),
+    resolveLiveSession: vi.fn(async () => context),
   };
 }
 

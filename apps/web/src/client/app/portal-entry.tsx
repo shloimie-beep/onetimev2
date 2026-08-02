@@ -21,6 +21,7 @@ import { ParentClientRoot, StudentClientRoot, resolveCurrentClientRoute } from '
 import { ParentHouseholdWorkspace, type ParentHouseholdView } from './parent/household/index.js';
 import { StudentLibraryWorkspace } from './student/library/index.js';
 import { StudentLearningOverview } from './student/learning/StudentLearningOverview.js';
+import { StudentClassroomWorkspace } from './student/classroom/StudentClassroomWorkspace.js';
 import { AppShell, type ShellNavItem, type ShellUser } from './shell/AppShell.js';
 import {
   PortalApiError,
@@ -91,6 +92,7 @@ type PortalDialog =
 
 function PortalApp() {
   const portalRole = portalRoleFromLocation(location.pathname);
+  const classroomRoute = location.pathname === '/app/classroom';
   const [activeSection, setActiveSection] = useState<ParentPortalSection | StudentPortalSection>(
     () => portalSectionFromLocation(portalRole),
   );
@@ -120,6 +122,9 @@ function PortalApp() {
     null;
 
   useEffect(() => {
+    if (classroomRoute && (location.search || location.hash)) {
+      history.replaceState({}, '', '/app/classroom');
+    }
     void load();
   }, []);
 
@@ -156,6 +161,16 @@ function PortalApp() {
       if (nextSession.user.role !== portalRole) {
         setV21ParentSession(null);
         setViewState('permission');
+        return;
+      }
+      if (classroomRoute) {
+        setV21ParentSession(null);
+        setParentAccessShell(null);
+        setParentDashboard(null);
+        setStudentDashboard(null);
+        setStudentLearning(null);
+        setLiveClassQuestions([]);
+        setViewState('ready');
         return;
       }
       if (nextSession.session_model === 'v21') {
@@ -506,7 +521,9 @@ function PortalApp() {
 
   function signIn() {
     window.location.assign(
-      `/login?return_to=${encodeURIComponent(`${location.pathname}${location.search}`)}`,
+      classroomRoute
+        ? '/login?return_to=%2Fapp%2Fstudent'
+        : `/login?return_to=${encodeURIComponent(`${location.pathname}${location.search}`)}`,
     );
   }
 
@@ -532,6 +549,22 @@ function PortalApp() {
   }
 
   const navItems = useMemo<ShellNavItem[]>(() => {
+    if (classroomRoute) {
+      return [
+        {
+          id: 'student-portal',
+          label: 'Student Portal',
+          href: '/app/student',
+          current: false,
+        },
+        {
+          id: 'student-classroom',
+          label: 'Classroom',
+          href: '/app/classroom',
+          current: true,
+        },
+      ];
+    }
     if (v21ParentSession) {
       return [
         {
@@ -556,10 +589,15 @@ function PortalApp() {
       href: `${route}?section=${section.id}`,
       current: activeSection === section.id,
     }));
-  }, [activeSection, portalRole, v21ParentSession]);
-  const title = portalRole === 'parent' ? 'Parent Portal' : 'Student Portal';
-  const description =
-    portalRole === 'parent'
+  }, [activeSection, classroomRoute, portalRole, v21ParentSession]);
+  const title = classroomRoute
+    ? 'Classroom'
+    : portalRole === 'parent'
+      ? 'Parent Portal'
+      : 'Student Portal';
+  const description = classroomRoute
+    ? 'Protected Student classroom'
+    : portalRole === 'parent'
       ? (v21ParentSession?.parent_context.household.display_name ??
         parentDashboard?.household.display_name ??
         'Household')
@@ -669,6 +707,14 @@ function PortalApp() {
             }
           />
         )
+      ) : classroomRoute ? (
+        session ? (
+          <StudentClassroomWorkspace
+            csrfToken={session.csrf_token}
+            actorFingerprint={actorFingerprint}
+            onProtectedStateCleared={() => void load()}
+          />
+        ) : null
       ) : (
         <StudentClientRoot
           viewState={viewState}

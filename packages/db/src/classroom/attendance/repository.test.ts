@@ -67,6 +67,71 @@ describe('Postgres embedded classroom repository', () => {
     expect(String(query.mock.calls[0]?.[0])).not.toContain(HASH);
   });
 
+  it('loads one exact attendance subject with locale-independent evidence ordering', async () => {
+    const event = attendanceEvent();
+    const projection = attendanceProjection();
+    const query = vi
+      .fn()
+      .mockResolvedValueOnce({ rows: [], rowCount: null })
+      .mockResolvedValueOnce({
+        rows: [
+          {
+            ...storedEventRow(event),
+            observed_at: event.observed_at,
+            connection_lineage_id: event.connection_lineage_id,
+            idempotency_key: event.idempotency_key,
+            provider_verified: event.provider_verified,
+            correction_intervals: event.correction_intervals,
+          },
+        ],
+        rowCount: 1,
+      })
+      .mockResolvedValueOnce({
+        rows: [
+          {
+            product: projection.scope.product,
+            runtime_tier: projection.scope.runtime_tier,
+            verification_environment_id: projection.scope.verification_environment_id,
+            occurrence_id: projection.occurrence_id,
+            student_id: projection.student_id,
+            first_joined_at: projection.first_joined_at,
+            last_left_at: projection.last_left_at,
+            total_connected_minutes: projection.total_connected_minutes,
+            attendance_percentage: projection.attendance_percentage,
+            reconnect_count: projection.reconnect_count,
+            late: projection.late,
+            reconciliation_state: projection.reconciliation_state,
+            manual_correction_reason: projection.manual_correction_reason,
+            correction_admin_id: projection.correction_admin_id,
+            source_event_count: projection.source_event_count,
+            version: projection.version,
+            updated_at: projection.updated_at,
+          },
+        ],
+        rowCount: 1,
+      })
+      .mockResolvedValueOnce({ rows: [], rowCount: null });
+    const repository = createRepository(query);
+
+    await expect(
+      repository.loadAttendanceEvidence({
+        scope: grant().scope,
+        occurrence_id: 'occurrence-1',
+        student_id: 'student-1',
+      }),
+    ).resolves.toEqual({ events: [event], projection });
+    expect(String(query.mock.calls[1]?.[0])).toContain(
+      "convert_to(attendance_event_id, 'UTF8') ASC",
+    );
+    expect(query.mock.calls[1]?.[1]).toEqual([
+      'one_time_mishnayos',
+      'isolated_staging',
+      'ci',
+      'occurrence-1',
+      'student-1',
+    ]);
+  });
+
   it('consumes the one-use grant and acquires the session in one transaction', async () => {
     const query = vi
       .fn()

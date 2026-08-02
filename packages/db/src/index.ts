@@ -464,3 +464,4 @@ export {
   LEARNING_ENGAGEMENT_REQUIRED_SCHEMA,
   LEARNING_ENGAGEMENT_SCHEMA_CONTRACT_VERSION,
 } from './learning/schema-contract.ts';
+export * from './classroom/attendance/index.ts';
