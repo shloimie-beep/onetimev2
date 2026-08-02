@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: operational
-active_phase: corrected_candidate_accepted_staging_and_draft_config_preparation
+active_phase: candidate_bound_staging_deployment_reserved
 bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
@@ -16,7 +16,7 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: 68af08379cf596a2c8dfac28253487fb21fea222c6ea1275d096a6f972130ee8
 active_writer_limit: 4
-controller_authorization_sha: 8b2871228ecc0be54aa299dc4d25dad60afd27e1
+controller_authorization_sha: e509f02a4a1887ff5573b277fcff0295b61c92aa
 next_action: >-
   Prepare fresh candidate-bound authority and one exact effect reservation before deploying candidate
   68af08379cf596a2c8dfac28253487fb21fea222c6ea1275d096a6f972130ee8 to the canonical Railway staging environment.
@@ -74,6 +74,25 @@ corrected_candidate_acceptance:
   next_allowed_phase: candidate_bound_staging_and_draft_only_provider_preparation
   broad_send_or_enrollment: prohibited_pending_exact_copy_and_count_approval
   provider_or_external_effects: 0/0/0
+staging_deployment_reservation:
+  recorded_at: '2026-08-02T13:23:39Z'
+  state_basis_control_head_sha: e509f02a4a1887ff5573b277fcff0295b61c92aa
+  authority_id: i36-staging-deploy-20260802132339
+  authority_grant_digest: 09ea4f76bbd74062c0e83004db140e7ecfc7d2cb1cb8504d2e6d50b40d9b01d4
+  authority_status_index_digest: a9a83507cee4a720d79ce6c0c755b2fa0235aafbfcda9df1707ef4a91524321c
+  authority_status_entry_digest: da8fc28ff9f719ad8d16ea567f5e92c4e55cbb5bd42f8f9a3db08ce19883039d
+  lock: production:deployment
+  lock_lease_id: 4c71055a-fff3-466b-bcfc-915ab43f2970
+  fencing_token: fence-d132237b-def0-4da8-95f9-c7cc639a7fd7
+  project_id: 7c8eee26-7a6a-4684-826d-9f4377d67d46
+  environment_id: 11edf8a2-0160-45b4-a039-b15b4beb4c10
+  web_service_id: 9fb6d9f4-4f50-4df6-868b-c18a9b83d2f2
+  worker_service_id: 76e7fdc2-99b9-4a82-ba55-5dff3723398f
+  source_branch_before_sha: 53a18e771488c61cf271cb33a0bcacee2c7135f4
+  source_branch_after_sha: 32bb6ea3889f5ea5dfb2541a17f5d37e0f7f7418
+  maximum_deployments: 2
+  production_deployment_DNS_send_enrollment_billing_authority: none
+  effects_before_reservation: 0/0/0/0
 corrected_source_integration_terminal:
   recorded_at: '2026-08-02T12:44:55Z'
   state_basis_control_head_sha: d488ff76efbf2dad0052b0eeaf97003a79ab5b8e

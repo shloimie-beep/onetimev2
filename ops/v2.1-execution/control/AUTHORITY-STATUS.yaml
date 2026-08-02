@@ -109,6 +109,34 @@ authorities:
     lock_released_at: '2026-08-02T13:00:45Z'
     checked_at: '2026-08-02T13:00:45Z'
     state_based_on_control_head_sha: d8c39176adaa021650d4a8f543b78be0b13e9a7c
+  i36-staging-deploy-20260802132339:
+    schema_version: 1
+    execution_id: OT-V21-PRODUCTION
+    authority_id: i36-staging-deploy-20260802132339
+    authority_kind: derived_candidate_bound_staging_deployment
+    grant_digest: 09ea4f76bbd74062c0e83004db140e7ecfc7d2cb1cb8504d2e6d50b40d9b01d4
+    source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+    status: active
+    expires_at: '2026-08-02T14:08:39Z'
+    latest_revocation_path: null
+    latest_revocation_digest: null
+    provider_lock: production:deployment
+    provider_lock_lease_id: 4c71055a-fff3-466b-bcfc-915ab43f2970
+    fencing_token: fence-d132237b-def0-4da8-95f9-c7cc639a7fd7
+    effect_authority_usable: true
+    candidate_binding_status: exact_candidate_bound
+    canonical_candidate_digest: 68af08379cf596a2c8dfac28253487fb21fea222c6ea1275d096a6f972130ee8
+    candidate_manifest_commit_sha: 32bb6ea3889f5ea5dfb2541a17f5d37e0f7f7418
+    repository_source_sha: 7943a20895939f66b6755d02f819165850d1042f
+    provider_project_id: 7c8eee26-7a6a-4684-826d-9f4377d67d46
+    provider_environment_id: 11edf8a2-0160-45b4-a039-b15b4beb4c10
+    provider_service_ids:
+      - 9fb6d9f4-4f50-4df6-868b-c18a9b83d2f2
+      - 76e7fdc2-99b9-4a82-ba55-5dff3723398f
+    maximum_effect_count: 2
+    prerequisite_review: P1_0_P2_0_P3_0
+    checked_at: '2026-08-02T13:23:39Z'
+    state_based_on_control_head_sha: e509f02a4a1887ff5573b277fcff0295b61c92aa
 entry_schema: templates/AUTHORITY-STATUS-ENTRY.yaml
 revocation_schema: templates/AUTHORITY-REVOCATION-RECORD.yaml
 rule: C00 records externally granted/revoked/expired authority; it does not grant it. Every update binds the known

@@ -1,0 +1,81 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+authority_id: i36-staging-deploy-20260802132339
+authority_kind: derived_candidate_bound_staging_deployment
+task_id: I36
+candidate_digest: 68af08379cf596a2c8dfac28253487fb21fea222c6ea1275d096a6f972130ee8
+candidate_binding_status: exact_candidate_bound
+candidate_manifest_commit_sha: 32bb6ea3889f5ea5dfb2541a17f5d37e0f7f7418
+repository_source_sha: 7943a20895939f66b6755d02f819165850d1042f
+canonical_path: ops/v2.1-execution/authority/68af08379cf596a2c8dfac28253487fb21fea222c6ea1275d096a6f972130ee8/I36/i36-staging-deploy-20260802132339/GRANT.yaml
+source_grant_id: ot-v21-production-source-grant-20260729
+source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+source_approval_evidence_path: ops/v2.1-execution/authority/none/C00/ot-v21-production-source-grant-20260729/APPROVAL.md
+source_approval_evidence_digest: 8c95a959f79aba0ac34fa0fcb6cb463cceac9aeb2bb52da1603d39db3e2c33c2
+grant_status_at_issue: active
+approved_by: Shloimie Dratler
+scope:
+  provider: Railway
+  workspace_id: d2428a88-aa7e-4369-b396-72060bf720f4
+  project_id: 7c8eee26-7a6a-4684-826d-9f4377d67d46
+  project_name: one-time-ot99-staging-96b42905
+  environment_id: 11edf8a2-0160-45b4-a039-b15b4beb4c10
+  environment_name: staging
+  repository: shloimie-beep/onetimev2
+  source_branch: codex/full-app-staging-live
+  source_branch_before_sha: 53a18e771488c61cf271cb33a0bcacee2c7135f4
+  source_branch_after_sha: 32bb6ea3889f5ea5dfb2541a17f5d37e0f7f7418
+  web_service_id: 9fb6d9f4-4f50-4df6-868b-c18a9b83d2f2
+  web_prior_deployment_id: 106977e3-3dc7-4dd0-8f1a-c57642bd0c54
+  web_prior_image_digest: sha256:5a70b4e3326517d9cfd10f66b112502b9d8de73394851d4a22c601df85c6c476
+  worker_service_id: 76e7fdc2-99b9-4a82-ba55-5dff3723398f
+  worker_prior_deployment_id: e0e43168-4623-4aa0-b837-ad4e6875e64f
+  worker_prior_image_digest: sha256:53783dbe57f776182b58d58f2d1c5614133edbc801e8cd092b5d9658456add7e
+  database_service_id: e6671cb7-178a-4821-b977-7b6e24c0c052
+  database_runtime: PostgreSQL_18
+  production_project_or_environment_access: prohibited
+fencing_token: fence-d132237b-def0-4da8-95f9-c7cc639a7fd7
+lock: production:deployment
+provider_lock_lease_id: 4c71055a-fff3-466b-bcfc-915ab43f2970
+provider_account_location_or_asset_id:
+  provider: Railway
+  project_id: 7c8eee26-7a6a-4684-826d-9f4377d67d46
+  environment_id: 11edf8a2-0160-45b4-a039-b15b4beb4c10
+  service_ids:
+    - 9fb6d9f4-4f50-4df6-868b-c18a9b83d2f2
+    - 76e7fdc2-99b9-4a82-ba55-5dff3723398f
+allowed_operation: one exact fast-forward of codex/full-app-staging-live from 53a18e771488c61cf271cb33a0bcacee2c7135f4 to 32bb6ea3889f5ea5dfb2541a17f5d37e0f7f7418 causing at most one web and one worker staging deployment, followed by exact readback and reconciliation
+maximum_effect_count: 2
+maximum_effect_value: not_applicable
+approved_fixture_ids:
+  - canonical_persistent_staging_environment_11edf8a2
+operator_identity: C00
+approved_at: '2026-08-02T13:23:39Z'
+recorded_at: '2026-08-02T13:23:39Z'
+expires_at: '2026-08-02T14:08:39Z'
+prerequisite_review:
+  candidate_manifest_commit_sha: 32bb6ea3889f5ea5dfb2541a17f5d37e0f7f7418
+  canonical_candidate_digest: 68af08379cf596a2c8dfac28253487fb21fea222c6ea1275d096a6f972130ee8
+  candidate_review: P1_0_P2_0_P3_0
+  candidate_acceptance_control_head_sha: e509f02a4a1887ff5573b277fcff0295b61c92aa
+  candidate_pg18_run_id: 30748901653
+  candidate_pg18_result: success_PostgreSQL_18_4_89_of_89_cleanup_complete
+  staging_target_readback: exact_project_environment_web_worker_and_prior_deployments_confirmed
+rollback_and_reconciliation:
+  - require both new deployments to report exact commit 32bb6ea3889f5ea5dfb2541a17f5d37e0f7f7418
+  - require web health and version readback plus landing and Family-form smoke tests
+  - require worker deployment success and no migration or startup error in bounded logs
+  - retain prior web deployment 106977e3-3dc7-4dd0-8f1a-c57642bd0c54 and worker deployment e0e43168-4623-4aa0-b837-ad4e6875e64f for rollback
+  - on failed or ambiguous deployment, stop and reconcile before any retry
+  - release the exclusive lock only after provider readback and ledger reconciliation
+stop_conditions:
+  - source grant is revoked or expired
+  - candidate review is not P1=0 and P2=0
+  - origin/codex/v21-integration differs from 32bb6ea3889f5ea5dfb2541a17f5d37e0f7f7418
+  - origin/codex/full-app-staging-live differs from 53a18e771488c61cf271cb33a0bcacee2c7135f4 before the effect
+  - target project, environment, or either service identity differs from the exact bound identity
+  - another effect holds the production:deployment lock
+  - the update is not a fast-forward
+  - the operation would target production, DNS, GHL, a customer, a send, enrollment, billing, or more than two deployments
+contains_secret: false
+immutable: true
