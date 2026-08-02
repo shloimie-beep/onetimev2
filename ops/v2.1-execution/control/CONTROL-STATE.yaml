@@ -16,14 +16,32 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: 71342aa60de3f3840c70555a616cded8f5672989
+controller_authorization_sha: 5cd292a9e4fab2730435192d1ac6ca27a93a4381
 next_action: >-
-  Accept exact integration d61f4e49 after one delta-only review returned zero P1, P2, or P3. Begin the four disjoint lean
-  launch lanes in parallel: landing/Family source and deployment-readiness inspection, canonical Rabbi sender and DNS
-  readback, exact GHL workflow/audience readback, and candidate/native-PostgreSQL preparation. Inspection and exact-scope
-  planning are authorized now. Any provider mutation, deployment, DNS change, persistent-database write, seed send, or
-  cleanup still requires its dependency gate plus the exact provider/effect lock and fencing token; broad enrollment or
-  sending remains prohibited until the single Shloimie approval checkpoint.
+  Execute the two disjoint READY packets from exact d61: F02 authors forward-only migration 2258, while I36 prepares the
+  bounded launch source and PostgreSQL-proof tooling correction on its phase branch. Integrate F02 first, then land one
+  I36 terminal checkpoint and perform one delta-only review. No provider mutation, deployment, DNS change, persistent
+  database write, CI dispatch, seed send, enrollment, charge, or cleanup is authorized in this phase.
+launch_source_correction_dispatch_boundary:
+  recorded_at: '2026-08-02T09:08:39Z'
+  control_basis_sha: 5cd292a9e4fab2730435192d1ac6ca27a93a4381
+  integration_start_sha: d61f4e49349ed4b63618513ce6642337690d55d0
+  F02_ready_entry_payload_digest: 388c28b5c4c946a75f9f4e9ddb103e69193a505e3889a88aaad744ac9e5388c7
+  F02_claim_id: 197eba4d-bbf3-4942-9716-da8d44fca85c
+  F02_authorized_path_count: 5
+  F02_path_inventory_digest: 2d219d52c298344b140ce5aef0371ed6c8fb3ca022e1e2e1f5c335d671869c08
+  F02_preimage_manifest_digest: a2778bbd10842c4980a408db7c3c92b92e5a524e4a77ce75f6e999e79609bed7
+  F02_migration_ordinal: 2258
+  I36_ready_entry_payload_digest: c1cfc594d82f8b182bdaf54634a4d486156fa8744941ca0348370ba95ffdc61b
+  I36_claim_id: becf6b05-e160-442f-8b5a-2a0c6193bb26
+  I36_authorized_path_count: 55
+  I36_path_inventory_digest: 7210b79c0661e90920066712b3d7d1d63e60c905a1c9cfa8f9ac7eaf98e98943
+  I36_preimage_manifest_digest: 4d5c3e0d2049edd97055e05e7d3b8cf9a128218147bf0ec89d123aea51720912
+  launch_values: optional_unset_no_guessing
+  source_scope: landing_family_form_email_desired_state_and_pg18_proof_tooling
+  integration_order: F02_2258_then_I36_launch_source
+  provider_or_external_effect_authority: none
+  external_effects: 0/0/0
 production_completion_lanes:
 - lane: A
   owner: F02

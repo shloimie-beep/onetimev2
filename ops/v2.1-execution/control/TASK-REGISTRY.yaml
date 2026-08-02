@@ -127,10 +127,11 @@ tasks:
     transitioned_at: '2026-07-29T13:48:24Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/F01/status_proof
 - task_id: F02
-  status: ready_for_integration
-  active_phase: migration_2254_2256_P22_P12_P09_implementation_complete
-  branch: codex/v21-lane1-migration-correction
+  status: ready
+  active_phase: configurable_launch_timing_migration_2258
+  branch: codex/v21-f02-launch-timing-2258
   phase_branches:
+    configurable_launch_timing_migration_2258: codex/v21-f02-launch-timing-2258
     contract: codex/v21-f02-schema-state-migrations
     implementation: codex/v21-f02-schema-state-migrations
     interface_ready: codex/v21-f02-schema-state-migrations
@@ -186,15 +187,17 @@ tasks:
     migration_2254_2256_P22_P12_P09_authorized_start: 392cc119b2df65f9bd38da8c4db36113f1add967
     migration_2254_2256_P22_P12_P09_atomic_claim: 216c983bbdfffc5e3e09f4fa69e5fe5f3d46415e
     migration_2254_2256_P22_P12_P09_implementation_complete: 3ee2f651528f5170dd714b921500235d4e015c5b
-  authorized_start_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
-  last_known_remote_head: 3ee2f651528f5170dd714b921500235d4e015c5b
-  active_claim_id: null
-  active_writer_id: null
-  lease_expires_at: null
-  active_writer_leases: []
-  last_heartbeat_at: '2026-07-31T12:49:27Z'
-  controller_authorization_sha: 4105c365a90ecb27fb930077ecaf02a9125edb38
-  ready_entry_payload_digest: null
+  authorized_start_sha: d61f4e49349ed4b63618513ce6642337690d55d0
+  last_known_remote_head: null
+  active_claim_id: 197eba4d-bbf3-4942-9716-da8d44fca85c
+  active_writer_id: codex-f02-launch-timing-197eba4d
+  lease_expires_at: '2026-08-02T13:08:39Z'
+  active_writer_leases:
+    - b344b5ec-97bd-44ef-ae6f-f473bd8dbf86
+    - 1535d824-beb1-4d9a-9536-be5c79214c74
+  last_heartbeat_at: '2026-08-02T09:08:39Z'
+  controller_authorization_sha: 5cd292a9e4fab2730435192d1ac6ca27a93a4381
+  ready_entry_payload_digest: 388c28b5c4c946a75f9f4e9ddb103e69193a505e3889a88aaad744ac9e5388c7
   interface_checkpoint_sha: e4673ff1c2e621e26ac93034be245b280c4da4fa
   implementation_head_sha: 3ee2f651528f5170dd714b921500235d4e015c5b
   status_proof:
@@ -463,13 +466,14 @@ tasks:
     transitioned_at: '2026-07-30T19:30:53Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/F07/status_proof
 - task_id: I36
-  status: ready_for_candidate_gate
-  active_phase: accepted_source_checkpoint_and_parallel_launch_reconciliation
+  status: resume_ready
+  active_phase: launch_timing_family_form_email_and_pg18_tooling_correction
   branch: codex/v21-integration
   phase_branches:
     integration: codex/v21-integration
+    launch_source_correction: codex/v21-launch-source-correction
   phase_heads:
-    integration: acd9ffae1df73765dbf46d049db14010ef12e869
+    integration: d61f4e49349ed4b63618513ce6642337690d55d0
     F02_P28_P31_direct_prerequisite_source_integration_atomic_claim: 1b8335f8bdad4bc4ac1aa65838314faa7d65ebd0
     F02_P28_P31_direct_prerequisite_source_integration_release: 3cf787409decb5beb84561ef7e37924111d398b6
     P31_P20_P17_correction_release_integration_atomic_claim: 1b0df6fa15b2ac4a5febe35fee3f18ca9b9457d7
@@ -574,13 +578,23 @@ tasks:
     held_source_review_correction_accepted: d61f4e49349ed4b63618513ce6642337690d55d0
   authorized_start_sha: d61f4e49349ed4b63618513ce6642337690d55d0
   last_known_remote_head: d61f4e49349ed4b63618513ce6642337690d55d0
-  active_claim_id: null
-  active_writer_id: null
-  lease_expires_at: null
-  active_writer_leases: []
-  last_heartbeat_at: '2026-08-02T08:19:16Z'
-  controller_authorization_sha: 71342aa60de3f3840c70555a616cded8f5672989
-  ready_entry_payload_digest: null
+  active_claim_id: becf6b05-e160-442f-8b5a-2a0c6193bb26
+  active_writer_id: codex-i36-launch-source-becf6b05
+  lease_expires_at: '2026-08-02T13:08:39Z'
+  active_writer_leases:
+    - 6dcd190c-55b5-4651-84af-e6fd425e5d99
+    - 20709907-eec6-462a-9ba3-379c44d5c890
+    - d9b950b3-40f5-4a36-9c88-3c56ea09841e
+    - aa344a05-e504-4939-8511-d46f2f3633c0
+    - 923f788c-4fab-46b7-8de6-8b1d1038de7d
+    - f4839fef-38de-4824-9199-35c196772349
+    - a2a792bc-81e2-4205-a482-4c8128290235
+    - 9ba3dd12-3c8c-4fa9-ba86-9649c6a9861b
+    - 42810294-b675-42f8-b89d-7e8cb0208814
+    - f2f57653-eda0-4003-803a-6675bc412ee1
+  last_heartbeat_at: '2026-08-02T09:08:39Z'
+  controller_authorization_sha: 5cd292a9e4fab2730435192d1ac6ca27a93a4381
+  ready_entry_payload_digest: c1cfc594d82f8b182bdaf54634a4d486156fa8744941ca0348370ba95ffdc61b
   interface_checkpoint_sha: null
   implementation_head_sha: d61f4e49349ed4b63618513ce6642337690d55d0
   status_proof:

@@ -1,4 +1,19 @@
-# Held source review correction — current handoff
+# Launch source correction dispatched — current handoff
+
+Exact integration `d61f4e49349ed4b63618513ce6642337690d55d0` is independently accepted. Read-only launch
+reconciliation found one coherent source correction and one forward migration. C00 issued F02 READY
+`388c28b5c4c946a75f9f4e9ddb103e69193a505e3889a88aaad744ac9e5388c7` for migration 2258 and I36 READY
+`c1cfc594d82f8b182bdaf54634a4d486156fa8744941ca0348370ba95ffdc61b` for the 55-path launch source/tooling ceiling.
+
+F02 must finish migration 2258 first. I36 may prepare its disjoint phase branch concurrently, then integrate F02 before
+one terminal source checkpoint. The correction adds optional first-class and free-expiry values without guessing either,
+makes `/signup` Family-only, preserves `/school`, replaces stale daily/pilot copy, installs the ten corrected draft emails
+in repository desired state, and adds exact PostgreSQL 18.4 candidate-proof tooling. No provider effect, deployment, DNS
+change, database write, workflow dispatch, seed, enrollment, send, or charge is authorized. Effects remain `0/0/0`.
+
+## Superseded held source review correction
+
+# Held source review correction — prior handoff
 
 Fail-closed source checkpoint `e7417f39e71fbb4fb45aa4a9436ba78496020063` is clean, pushed, and effect-free, but it is
 held by independent review. Its exact 93-route inventory declares 46 ready, 17 isolated, and 30 missing. At least nineteen

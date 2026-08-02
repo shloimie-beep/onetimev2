@@ -8,16 +8,28 @@ branch: codex/v21-control
 start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
-phase: accepted_source_checkpoint_and_parallel_launch_reconciliation
-claimed_by: codex-c00-launch-convergence-7994af83
-claim_time: '2026-08-02T08:35:57Z'
-claim_id: 7994af83-5874-427b-94e9-85afcf1aa34b
-lease_expires_at: '2026-08-02T14:35:57Z'
-last_heartbeat_at: '2026-08-02T08:35:57Z'
-controller_authorization_sha: 71342aa60de3f3840c70555a616cded8f5672989
+phase: launch_source_correction_dispatched
+claimed_by: codex-c00-launch-source-e199a6a7
+claim_time: '2026-08-02T09:08:39Z'
+claim_id: e199a6a7-dacf-4f5b-bf20-e35221c4b937
+lease_expires_at: '2026-08-02T13:08:39Z'
+last_heartbeat_at: '2026-08-02T09:08:39Z'
+controller_authorization_sha: 5cd292a9e4fab2730435192d1ac6ca27a93a4381
 ready_entry_payload_digest: null
-state_based_on_head_sha: 71342aa60de3f3840c70555a616cded8f5672989
+state_based_on_head_sha: 5cd292a9e4fab2730435192d1ac6ca27a93a4381
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
+launch_source_correction_dispatch:
+  recorded_at: '2026-08-02T09:08:39Z'
+  integration_start_sha: d61f4e49349ed4b63618513ce6642337690d55d0
+  F02_ready_entry_payload_digest: 388c28b5c4c946a75f9f4e9ddb103e69193a505e3889a88aaad744ac9e5388c7
+  F02_claim_id: 197eba4d-bbf3-4942-9716-da8d44fca85c
+  F02_path_count: 5
+  I36_ready_entry_payload_digest: c1cfc594d82f8b182bdaf54634a4d486156fa8744941ca0348370ba95ffdc61b
+  I36_claim_id: becf6b05-e160-442f-8b5a-2a0c6193bb26
+  I36_path_count: 55
+  integration_order: F02_then_I36
+  provider_effects: prohibited
+  external_effects: 0/0/0
 held_source_review_correction_acceptance:
   recorded_at: '2026-08-02T08:35:57Z'
   containing_control_head_sha: 6852bbfd2bbccc1b7a3bfe53393e46eacc6b9ace
