@@ -2718,6 +2718,7 @@ requests byte-identical.
 
 No provider call, send, enrollment, charge, deployment, DNS change, live
 migration execution, candidate freeze, or external effect is authorized.
+
 # Accepted source microbatch 1 and bounded producer corrections — current handoff
 
 Remote control parent is
@@ -3848,3 +3849,18 @@ remains its only writer. Both legacy School authority tables remain
 prohibited. P12 is unchanged under READY `3be08e42...`. Candidate, provider,
 deployment, DNS, send, charge, customer, and every external-effect authority
 remain absent.
+
+# Accepted source correction and launch convergence - current handoff
+
+Integration `d61f4e49349ed4b63618513ce6642337690d55d0` is clean and pushed from sole parent
+`e7417f39e71fbb4fb45aa4a9436ba78496020063`. The one authorized delta-only review reproduced the exact 58-path ceiling,
+all terminal digests, 27/27 focused tests, exact 93-route truth at 29 ready / 34 isolated / 30 missing, 29 visible actions,
+complete candidate inputs, released leases, remote equality, and effects `0/0/0`; it returned P1=0, P2=0, P3=0.
+
+The next lean phase runs four disjoint read-only reconciliation lanes in parallel: landing/Family deployment readiness,
+canonical Rabbi sender and DNS, exact GHL workflows/audiences/consent/suppression, and candidate/native-PostgreSQL/freeze
+preparation. No provider mutation, deployment, DNS change, persistent-database write, seed send, cleanup, or other effect is
+authorized until the exact dependency gate and provider/effect lock with fencing token. Broad enrollment and sending remain
+held for the single Shloimie approval checkpoint.
+
+## Superseded handoffs follow

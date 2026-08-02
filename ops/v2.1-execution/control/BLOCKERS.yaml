@@ -344,7 +344,7 @@ blockers:
   next_check: Reopen only after an overlapping source change or a triggered candidate-bound failure.
 
 - blocker_id: CANDIDATE-V21-VISIBLE-ACTION-REGENERATION
-  status: open
+  status: closed
   scope: pre_candidate_repository_correctness
   owner: I36_C00
   affected_tasks:
@@ -352,24 +352,17 @@ blockers:
   - V37
   - V40
   safe_work_completed: >-
-    I36 pushed fail-closed source checkpoint e7417f39 from exact 9082f301 with 93 canonical IDs declared as 46 ready,
-    17 isolated, and 30 missing; exact scope, Git-blob hashes, focused tests, typecheck, build, clean install, released leases,
-    remote equality, and effects 0/0/0 passed. Independent review still held two P1 and two P2, and specialist route review
-    found additional false-ready behavior: incomplete deployable artifact identity; raw retired-role authorization; Parent
-    support and wrong-role v2.1 session mismatch; Student self-password mutation; public/missing Admin support shadowing;
-    classroom shadowing; generic or wrong-target Admin/Student aliases; incomplete signup result; and one-directional visible
-    action parity omitting School inquiry. C00 has held freeze and dispatched one exact 58-path correction from e7417f39
-    under READY d58967bf; no native PostgreSQL, metadata freeze, provider, deploy, or external effect occurred.
-  required_authority_or_input:
-  - Correct or downgrade every reviewed false-ready route while preserving all 93 exact canonical IDs
-  - Close canonical role/session, Student credential, support-order, and classroom-compatibility safety defects
-  - Bind normative application-content inventory and complete deployable web/worker artifacts or contexts at the exact source SHA
-  - Enforce bidirectional visible-action/source parity including the mounted School inquiry action
+    Exact correction terminal d61f4e49 from sole parent e7417f39 changes 15 source/test paths plus the I36 runtime triplet,
+    all inside the authorized 58-path ceiling. One delta-only independent review reproduced every inventory, preimage,
+    postimage, and READY digest; passed 27/27 focused tests; confirmed exact 93-route truth at 29 ready, 34 isolated, and
+    30 missing plus 29 visible actions and complete candidate inputs; and returned zero P1, P2, or P3. Local, tracking,
+    and live heads are equal, all three leases were released before expiry, and effects remain 0/0/0.
+  required_authority_or_input: []
   protection: >-
     Do not run or modify the historical OT81 release-evidence writer, label a default fallback ready, invent product behavior,
-    reintroduce retired/demo/preview/test surfaces or roles, or continue native PostgreSQL/freeze/provider work before one
-    independently accepted corrected source checkpoint.
-  next_check: Re-review the exact 58-path correction terminal; close only after zero P1/P2 and exact 93-route semantic parity.
+    reintroduce retired/demo/preview/test surfaces or roles, or treat this bounded source correction as candidate freeze or
+    production release.
+  next_check: Revalidate only if an accepted source byte changes or during exact candidate-bound verification.
 - blocker_id: P21-CANONICAL-CONTENT-STATE-WRITER
   status: open
   scope: controlled_launch_candidate

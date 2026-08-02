@@ -1,7 +1,23 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
-MODE: START_OR_RESUME
+MODE: CONTINUE_LEAN_LAUNCH_CONVERGENCE
+
+# Accepted source checkpoint and current launch lanes
+
+Use exact clean local/tracking/live integration
+`d61f4e49349ed4b63618513ce6642337690d55d0`. Its sole parent is `e7417f39e71fbb4fb45aa4a9436ba78496020063`.
+The single delta-only review returned P1=0, P2=0, P3=0; all digests reproduced, 27/27 focused tests passed, all leases were
+released before expiry, and effects remain `0/0/0`.
+
+Continue four disjoint lean lanes: (1) landing/Family source and deployment-readiness reconciliation, (2) canonical Rabbi
+sender and DNS readback, (3) exact GHL workflow/audience/consent/suppression readback, and (4) candidate/native-PostgreSQL
+and freeze preparation. Read-only inspection and exact-scope planning are allowed. Acquire the required exclusive provider
+or writer lock and fencing token immediately before any live effect. Do not deploy, mutate DNS or providers, write a
+persistent database, send a seed, enroll an audience, charge, or clean up until the exact dependency gate and effect-bound
+authority are recorded. Never broad-send before the single Shloimie approval checkpoint.
+
+# Superseded I36 held source review correction
 
 # Latest I36 held source review correction
 

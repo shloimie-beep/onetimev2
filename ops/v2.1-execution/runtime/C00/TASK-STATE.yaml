@@ -8,16 +8,38 @@ branch: codex/v21-control
 start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
-phase: held_source_review_correction_dispatch
-claimed_by: codex-c00-held-source-correction-1b0de035
-claim_time: '2026-08-02T06:45:22Z'
-claim_id: 1b0de035-309f-4e7d-86b7-7408c45e2bc5
-lease_expires_at: '2026-08-02T12:45:22Z'
-last_heartbeat_at: '2026-08-02T06:45:22Z'
+phase: accepted_source_checkpoint_and_parallel_launch_reconciliation
+claimed_by: codex-c00-launch-convergence-7994af83
+claim_time: '2026-08-02T08:35:57Z'
+claim_id: 7994af83-5874-427b-94e9-85afcf1aa34b
+lease_expires_at: '2026-08-02T14:35:57Z'
+last_heartbeat_at: '2026-08-02T08:35:57Z'
 controller_authorization_sha: 71342aa60de3f3840c70555a616cded8f5672989
-ready_entry_payload_digest: d58967bf53d161676d1a8c198f76c399a22c0e321e13d2b349e85605fd7cc209
+ready_entry_payload_digest: null
 state_based_on_head_sha: 71342aa60de3f3840c70555a616cded8f5672989
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
+held_source_review_correction_acceptance:
+  recorded_at: '2026-08-02T08:35:57Z'
+  containing_control_head_sha: 6852bbfd2bbccc1b7a3bfe53393e46eacc6b9ace
+  terminal_head_sha: d61f4e49349ed4b63618513ce6642337690d55d0
+  terminal_parent_sha: e7417f39e71fbb4fb45aa4a9436ba78496020063
+  terminal_timestamp: '2026-08-02T11:24:07+03:00'
+  independent_review: passed_zero_P1_zero_P2_zero_P3
+  exact_scope: 15_source_test_plus_3_I36_runtime_paths
+  focused_tests: 27_passed_across_6_files
+  route_truth: 93_total_29_ready_34_isolated_30_missing
+  visible_actions: 29
+  candidate_input_counts: 1146_app_1012_web_1012_worker
+  leases_released_at: '2026-08-02T08:19:16Z'
+  external_effects: 0/0/0
+parallel_launch_reconciliation_boundary:
+  recorded_at: '2026-08-02T08:35:57Z'
+  landing_and_family: read_only_source_deployment_and_production_identity_reconciliation
+  rabbi_sender_and_dns: read_only_canonical_provider_and_DNS_reconciliation
+  ghl_campaigns: read_only_workflow_audience_consent_suppression_and_sender_reconciliation
+  candidate: read_only_exact_next_scope_native_postgresql_and_freeze_preparation
+  external_effect_authority: none_until_exact_dependency_gate_lock_and_fencing_token
+  broad_enrollment_or_send: prohibited_until_single_Shloimie_approval_checkpoint
 candidate_preparation_dispatch_boundary:
   recorded_at: '2026-08-02T04:10:47Z'
   control_basis_sha: 702cce4dbe6cb6160c10144f212dc6627676f1a8
