@@ -293,15 +293,19 @@ blockers:
     and is accepted with product semantics and zero effects intact. Metadata terminal e569d693 materialized and validated
     immutable path-complete P21-registration-004, P22-server-registration-003, P22-client-route-003, and
     P30-registry-registration-002 under the corrected 265-case schema. C00 admitted all four and dispatched one exact
-    dependency-ordered repository application batch with no effect locks.
+    dependency-ordered repository application batch with no effect locks. Integration 06a4e660 also materializes
+    path-complete P18-registration-002. Independent review passed its exact four-path scope, Draft 2020-12 schema, all five
+    requirements and six acceptance cases, raw/canonical/inventory/preimage digests, released lease, clean remote equality,
+    and effects 0/0/0 with zero P1, zero P2, and zero P3. C00 admitted only that successor and dispatched its exact 22
+    product/test paths plus the I36 runtime triplet with no config, provider, database, candidate, or effect authority.
   required_authority_or_input:
-  - Complete the dispatched P21-then-P22 server/client application and merged registration checks
+  - Complete the dispatched exact P18 same-instance repository composition and mounted-runtime checks
   - Preserve native PostgreSQL replay and the deployed LEARNING_ALIAS_HMAC_KEY as fail-closed candidate gates
   protection: >-
     Do not apply P22-migration-001 or P22-registration-001, create a second attendance write authority, parse a display
     name into identity fields, mutate audit history, write SQL before the successor is admitted, or advance candidate,
     provider, deployment, DNS, live-database, send, charge, or customer activation gates.
-  next_check: Re-evaluate after the remaining dependency-ordered shared-registration batches and merged checks.
+  next_check: Re-evaluate after the exact P18 repository terminal and again at native-PostgreSQL candidate verification.
 - blocker_id: P21-CANONICAL-CONTENT-STATE-WRITER
   status: open
   scope: controlled_launch_candidate

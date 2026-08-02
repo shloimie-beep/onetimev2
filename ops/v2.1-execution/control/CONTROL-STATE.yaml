@@ -16,12 +16,13 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: 66f6bcdc11987c6ef6288877319f43ef9b09f085
+controller_authorization_sha: cd1b86517b314d7738240a515f90e4c73ef9314e
 next_action: >-
-  Materialize only immutable P18-registration-002 plus the I36 runtime triplet from accepted integration 48182afe. Bind the
-  complete 22-path P18 product ceiling but do not implement it yet. Validate the exact raw, canonical, inventory, schema,
-  acceptance-ID, preimage, lease-release, and remote-equality gates, then stop for independent request admission. Candidate,
-  provider, persistent-database, deployment, DNS, and every external effect remain prohibited.
+  Implement independently admitted P18-registration-002 from exact integration 06a4e660 within its 22 product/test paths
+  plus the I36 runtime triplet. Use one captured PostgreSQL classroom repository with the existing P22 callback, preserve
+  server-derived identity, authorization, consent, CSRF, reset, attendance, and timing fences, and remain fail closed when
+  provider signer/secret binding is unavailable. No config/signer scope expansion, provider, persistent-database, candidate,
+  deployment, DNS, send, charge, or external effect is authorized.
 production_completion_lanes:
 - lane: A
   owner: F02
@@ -116,7 +117,7 @@ production_completion_lanes:
   provider_effects: prohibited_until_candidate_authority_and_exact_lock
 - lane: D
   owner: I36
-  status: P21_terminal_accepted_P18_successor_request_materialization_dispatched
+  status: P18_registration_002_admitted_implementation_dispatched
   branch: codex/v21-integration
   prior_release_sha: 524563f07b3bb8544db989982dc55d4bc86a1999
   partial_checkpoint_sha: a5a2ad94b77eaf596930609d4d5abe4fa672439b
@@ -129,7 +130,7 @@ production_completion_lanes:
   partial_checkpoint_runtime_triplet_digest: a877b1e24c450a599e8c9b0066345cc06d0444a4c9749aecdda0f7da0c3c628b
   partial_checkpoint_five_path_digest: c405518fb5c7a744fa24e6b4b6f88712af9de68e109920e9fad369e63374d31d
   all_producer_implementation_heads_ancestor_count: 35
-  expected_head_sha: 48182afe34d5b369b6fbbc05b6d6f788c34e5429
+  expected_head_sha: 06a4e660bb00f37100a93abd11561351dfce9b79
   Batch_B_claim_id: 995fe313-efa9-4e5f-b4f6-eeadc9b50d6d
   Batch_B_CONFIG_DEPS_lease_id: e75d8901-0b96-4ec7-b64e-724cfdbcd7a1
   Batch_B_RELEASE_INTEGRATOR_lease_id: eafaecb9-82b6-4e99-bbc3-0d9ad8d92b84
@@ -450,6 +451,32 @@ production_completion_lanes:
   P18_registration_002_product_path_inventory_digest: 2b21372b09476b9a029bced558f5d3856997b902cf9d69d6f1437ec0c862f551
   P18_successor_request_materialization_effect_locks: []
   P18_successor_request_materialization_external_effects: 0/0/0
+  P18_successor_request_materialization_terminal_head_sha: 06a4e660bb00f37100a93abd11561351dfce9b79
+  P18_successor_request_materialization_terminal_parent_sha: 48182afe34d5b369b6fbbc05b6d6f788c34e5429
+  P18_successor_request_materialization_terminal_tree_sha: e1221b708f85d66000f1a7c0f576e18e3f2344cb
+  P18_successor_request_materialization_terminal_timestamp: '2026-08-02T04:57:09+03:00'
+  P18_successor_request_materialization_four_path_postimage_manifest_digest: 184555ece0877fe560fb861df4a74cf68c998fdf6aead3b882e818968cb0dddb
+  P18_successor_request_materialization_runtime_postimage_manifest_digest: a5d6f71ad4df5a234b2b7a8cf9c3bf5c684bcff47671f7ed3f3626ee813888e7
+  P18_successor_request_materialization_lease_released_at: '2026-08-02T01:49:20Z'
+  P18_successor_request_materialization_independent_review: passed_zero_P1_zero_P2_zero_P3
+  P18_implementation_claim_id: e7435237-dd27-42e6-887f-c137b987e00f
+  P18_implementation_writer_id: codex-i36-P18-implementation-e7435237
+  P18_implementation_EMBEDDED_CLASSROOM_lease_id: a7253f6b-9caa-43c5-868e-7bedd6cf2d14
+  P18_implementation_SERVER_COMPOSER_lease_id: 2e138bdd-6f07-4d23-8212-38d74ca5ebf1
+  P18_implementation_CLIENT_COMPOSER_lease_id: 16e48e6c-596c-40ed-8dec-5bcfd4066f0d
+  P18_implementation_BARREL_REGISTRAR_lease_id: aee0be4b-ee54-418a-9e2e-90172f345dad
+  P18_implementation_RELEASE_INTEGRATOR_lease_id: 6467fc1b-0f35-4e12-80d9-8ef68cb6bd35
+  P18_implementation_ready_entry_payload_digest: 3351222de3826f808045384787925df0366f232ae4b279d7426a897f26538728
+  P18_implementation_authorized_start_sha: 06a4e660bb00f37100a93abd11561351dfce9b79
+  P18_implementation_product_path_count: 22
+  P18_implementation_product_path_inventory_digest: 2b21372b09476b9a029bced558f5d3856997b902cf9d69d6f1437ec0c862f551
+  P18_implementation_release_path_count: 25
+  P18_implementation_release_path_inventory_digest: c2e6a780ea8cc991b94926acd515921e4cb1a5ade9f181dc1b94f95ac229ef5b
+  P18_implementation_product_preimage_manifest_digest: 660221d367079c2997f7bfb7b12913f6122c69aa3e9788fee6ae4d5736067d00
+  P18_implementation_release_preimage_manifest_digest: 95f0737ea38caf4ea403ec44afbd1ea5ce63317be5463ec4ba28aec5871acf72
+  P18_implementation_lease_expires_at: '2026-08-02T06:07:10Z'
+  P18_implementation_effect_locks: []
+  P18_implementation_external_effects: 0/0/0
   Batch_D_external_effects: 0/0/0
   P21_P22_source_atomic_claim_sha: b87901e803cdd3be7e09a1143d9f23eceaf7ad78
   P21_P22_source_atomic_claim_parent_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
@@ -684,8 +711,10 @@ successor_dispatch:
   P21_current_metadata_correction_dispatched_at: '2026-08-02T00:33:22Z'
   P21_current_metadata_correction_accepted_at: '2026-08-02T01:17:01Z'
   P18_successor_request_materialization_dispatched_at: '2026-08-02T01:17:01Z'
-  lease_issued_at: '2026-08-02T01:17:01Z'
-  lease_expires_at: '2026-08-02T04:17:01Z'
+  P18_successor_request_materialization_accepted_at: '2026-08-02T02:07:10Z'
+  P18_registration_002_implementation_dispatched_at: '2026-08-02T02:07:10Z'
+  lease_issued_at: '2026-08-02T02:07:10Z'
+  lease_expires_at: '2026-08-02T06:07:10Z'
   ready_queue_published: true
   F02:
     status: integrated_and_reconciled
@@ -877,10 +906,10 @@ successor_dispatch:
     external_effects: 0/0/0
   I36:
     status: ready
-    phase: P18_path_complete_successor_request_materialization
+    phase: P18_registration_002_path_complete_repository_implementation
     branch: codex/v21-integration
-    expected_existing_head_sha: 48182afe34d5b369b6fbbc05b6d6f788c34e5429
-    remote_integration_head_sha: 48182afe34d5b369b6fbbc05b6d6f788c34e5429
+    expected_existing_head_sha: 06a4e660bb00f37100a93abd11561351dfce9b79
+    remote_integration_head_sha: 06a4e660bb00f37100a93abd11561351dfce9b79
     atomic_claim_parent_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
     atomic_claim_tree_sha: a3f5578ff5bc108f16480444e7adc66112337268
     atomic_claim_state_handoff_digest: bc8f2247c7fc64a63b4445d75cfeee4047de6a24d3671f14d3a537c8d90f986e
@@ -900,11 +929,15 @@ successor_dispatch:
     Batch_A_correction_claim_id: be576814-96ef-48f2-88b5-2d3cc9b37cbb
     Batch_A_correction_ready_entry_payload_digest: 7010a65000ffcccab55809c6e95961f6de0d6e4e95409020f9d610bdbf384861
     Batch_A_correction_lease_released_at: '2026-07-31T20:45:09Z'
-    claim_id: 68ebd4f6-7182-4c19-be55-591de3ef98cc
-    writer_id: codex-i36-P18-request-68ebd4f6
-    RELEASE_INTEGRATOR_lease_id: c3a9f152-c6dc-46f6-b79c-860a4f4e1f5d
-    writer_lease_expires_at: '2026-08-02T04:17:01Z'
-    ready_entry_payload_digest: 091f8cf212dfb8329e8954ba19a74503263f6f26fabd33c5cc8ec8f6fe3a5638
+    claim_id: e7435237-dd27-42e6-887f-c137b987e00f
+    writer_id: codex-i36-P18-implementation-e7435237
+    EMBEDDED_CLASSROOM_lease_id: a7253f6b-9caa-43c5-868e-7bedd6cf2d14
+    SERVER_COMPOSER_lease_id: 2e138bdd-6f07-4d23-8212-38d74ca5ebf1
+    CLIENT_COMPOSER_lease_id: 16e48e6c-596c-40ed-8dec-5bcfd4066f0d
+    BARREL_REGISTRAR_lease_id: aee0be4b-ee54-418a-9e2e-90172f345dad
+    RELEASE_INTEGRATOR_lease_id: 6467fc1b-0f35-4e12-80d9-8ef68cb6bd35
+    writer_lease_expires_at: '2026-08-02T06:07:10Z'
+    ready_entry_payload_digest: 3351222de3826f808045384787925df0366f232ae4b279d7426a897f26538728
     P21_current_metadata_terminal_head_sha: 48182afe34d5b369b6fbbc05b6d6f788c34e5429
     P21_current_metadata_independent_review: passed_zero_P1_zero_P2_zero_P3
     P18_successor_request_materialization_release_path_count: 4
@@ -913,6 +946,13 @@ successor_dispatch:
     P18_registration_002_canonical_sha256: 0ccf99213e29b459f5d9c095e847b7e018cbf8f7a0416849d99465e24045f080
     P18_registration_002_product_path_count: 22
     P18_registration_002_product_path_inventory_digest: 2b21372b09476b9a029bced558f5d3856997b902cf9d69d6f1437ec0c862f551
+    P18_registration_002_materialization_terminal_head_sha: 06a4e660bb00f37100a93abd11561351dfce9b79
+    P18_registration_002_materialization_terminal_tree_sha: e1221b708f85d66000f1a7c0f576e18e3f2344cb
+    P18_registration_002_materialization_independent_review: passed_zero_P1_zero_P2_zero_P3
+    P18_registration_002_implementation_release_path_count: 25
+    P18_registration_002_implementation_release_path_inventory_digest: c2e6a780ea8cc991b94926acd515921e4cb1a5ade9f181dc1b94f95ac229ef5b
+    P18_registration_002_implementation_product_preimage_manifest_digest: 660221d367079c2997f7bfb7b12913f6122c69aa3e9788fee6ae4d5736067d00
+    P18_registration_002_implementation_release_preimage_manifest_digest: 95f0737ea38caf4ea403ec44afbd1ea5ce63317be5463ec4ba28aec5871acf72
     P21_code_correction_terminal_head_sha: b98698740936df0b1817be616039da2101a6cb28
     P21_code_correction_independent_review: held_zero_P1_one_P2_zero_P3_metadata_only
     P21_current_metadata_correction_product_path_count: 0
@@ -1098,8 +1138,8 @@ successor_dispatch:
     effect_locks: []
     external_effects: 0/0/0
   P18:
-    status: successor_request_materialization_dispatched
-    phase: P18_registration_002_path_complete_request_materialization
+    status: implementation_dispatched_to_I36
+    phase: P18_registration_002_path_complete_repository_implementation
     branch: codex/v21-p18-attendance-projection-callback
     authorized_start_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
     expected_existing_head_sha: 1926e61c793ce29d7240c1ee05d2a4879b52770b
@@ -1166,7 +1206,7 @@ successor_dispatch:
       external_effects: 0/0/0
     registration_001_raw_sha256: 1157f31a58d51047b73a2ee8e757da4428d08708bc29fa7b31818b722ac098b0
     registration_001_canonical_sha256: 3e5cfa4b78e3224c3b5ee55257b32c121d448e69fe6479b208c225277b5a917c
-    registration_001_disposition: immutable_assigned_path_incomplete
+    registration_001_disposition: immutable_rejected_superseded_by_independently_admitted_registration_002
     registration_002_materialization_authorized_start_sha: 48182afe34d5b369b6fbbc05b6d6f788c34e5429
     registration_002_materialization_claim_id: 68ebd4f6-7182-4c19-be55-591de3ef98cc
     registration_002_materialization_writer_id: codex-i36-P18-request-68ebd4f6
@@ -1179,6 +1219,20 @@ successor_dispatch:
     registration_002_product_path_inventory_digest: 2b21372b09476b9a029bced558f5d3856997b902cf9d69d6f1437ec0c862f551
     registration_002_release_path_count: 4
     registration_002_release_path_inventory_digest: e15bf1e3d8747c18c299e3cdf1a729ffc6cdc460ebaf242f470dae8dede4ce2b
+    registration_002_materialization_terminal_head_sha: 06a4e660bb00f37100a93abd11561351dfce9b79
+    registration_002_materialization_terminal_parent_sha: 48182afe34d5b369b6fbbc05b6d6f788c34e5429
+    registration_002_materialization_terminal_tree_sha: e1221b708f85d66000f1a7c0f576e18e3f2344cb
+    registration_002_materialization_independent_review: passed_zero_P1_zero_P2_zero_P3
+    registration_002_disposition: admitted_assigned_to_I36_for_exact_repository_implementation
+    registration_002_implementation_claim_id: e7435237-dd27-42e6-887f-c137b987e00f
+    registration_002_implementation_writer_id: codex-i36-P18-implementation-e7435237
+    registration_002_implementation_ready_entry_payload_digest: 3351222de3826f808045384787925df0366f232ae4b279d7426a897f26538728
+    registration_002_implementation_authorized_start_sha: 06a4e660bb00f37100a93abd11561351dfce9b79
+    registration_002_implementation_product_path_count: 22
+    registration_002_implementation_release_path_count: 25
+    registration_002_implementation_release_path_inventory_digest: c2e6a780ea8cc991b94926acd515921e4cb1a5ade9f181dc1b94f95ac229ef5b
+    registration_002_implementation_product_preimage_manifest_digest: 660221d367079c2997f7bfb7b12913f6122c69aa3e9788fee6ae4d5736067d00
+    registration_002_implementation_release_preimage_manifest_digest: 95f0737ea38caf4ea403ec44afbd1ea5ce63317be5463ec4ba28aec5871acf72
     effect_locks: []
     external_effects: 0/0/0
   P22:

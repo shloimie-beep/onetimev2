@@ -437,15 +437,33 @@ items:
   request_digest: 3e5cfa4b78e3224c3b5ee55257b32c121d448e69fe6479b208c225277b5a917c
   requesting_task_id: P18
   kind: registration
-  status: assigned
+  status: rejected
   assigned_steward: I36
-  target_checkpoint: I36_next_shared_registration_checkpoint_after_F02_P18_migration_003
+  target_checkpoint: superseded_by_independently_admitted_P18-registration-002
   acknowledged_by_task: false
   acknowledgment_head_sha: null
   acknowledgment_state_handoff_digest: null
   applied_commit_sha: null
   result_record_head_sha: null
-  evaluated_target_head_sha: null
+  evaluated_target_head_sha: 06a4e660bb00f37100a93abd11561351dfce9b79
+  result_digest: null
+  rejection_reason: >-
+    Immutable P18-registration-001 is path-incomplete. Exact path-complete successor P18-registration-002 preserves all
+    five requirements and six acceptance cases and passed independent schema, digest, scope, preimage, lease, remote,
+    and zero-effect admission with zero P1, zero P2, and zero P3.
+- request_id: P18-registration-002
+  request_digest: 0ccf99213e29b459f5d9c095e847b7e018cbf8f7a0416849d99465e24045f080
+  requesting_task_id: P18
+  kind: registration
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_exact_path_complete_P18_repository_implementation
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: 06a4e660bb00f37100a93abd11561351dfce9b79
   result_digest: null
   rejection_reason: null
 - request_id: P28-migration-001
