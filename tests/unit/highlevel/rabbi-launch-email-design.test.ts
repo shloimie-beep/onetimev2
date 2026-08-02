@@ -20,18 +20,16 @@ describe('Rabbi launch email design', () => {
     ]);
 
     expect(registry).toContain(
-      "reviewed_email_one_identity: 'rabbi_new_program_existing_subscriber_migration_v1'",
+      "reviewed_email_one_identity: 'ghl.legacy_member_migration.step_1.v1'",
     );
     expect(registry).toContain(
-      "reviewed_email_two_identity: 'rabbi_parent_student_experience_existing_subscriber_migration_v1'",
+      "reviewed_email_two_identity: 'ghl.legacy_member_migration.step_2.v1'",
     );
     expect(registry).toContain(
-      "reviewed_email_three_identity: 'rabbi_controlled_pilot_existing_subscriber_migration_v1'",
+      "reviewed_email_three_identity: 'ghl.legacy_member_migration.step_3.v1'",
     );
     expect(registry).toContain('workflow_draft_unpublished_inactive_unenrolled: true');
-    expect(registry).toContain(
-      "reviewed_email_one_identity: 'rabbi_new_program_prelaunch_nurture_v1'",
-    );
+    expect(registry).toContain("reviewed_email_one_identity: 'ghl.prelaunch_nurture.step_1.v1'");
     expect(registry).toContain(
       "canonical_public_rabbi_identity: 'Rabbi Eli Scheller <rabbielischeller@onetimeonetime.com>'",
     );
@@ -44,36 +42,45 @@ describe('Rabbi launch email design', () => {
     expect(senderRegistry).toContain("replyTo: 'rabbielischeller@onetimeonetime.com'");
     expect(senderRegistry).toContain("historicalAliases:\n    - 'rabbi@onetimeonetime.com'");
     expect(migrationPrompt).toContain('operator-selected adult existing-subscriber migration list');
-    expect(migrationPrompt).toContain('Tisha event permission is event-purpose only');
-    expect(migrationPrompt).toContain('Subject: A new chapter for One Time Mishnayos');
+    expect(migrationPrompt).toContain('Event-specific permission never permits this sequence.');
+    expect(migrationPrompt).toContain('Subject: A new zman for One Time Mishnayos');
     expect(migrationPrompt).toContain(
-      '## Reviewed Email Two — `rabbi_parent_student_experience_existing_subscriber_migration_v1`',
+      '## Reviewed Email Two - `ghl.legacy_member_migration.step_2.v1`',
     );
     expect(migrationPrompt).toContain(
-      'Live Mishnah learning, recordings, review, and progress in one secure family experience.',
+      'One Time combines live learning with an on-demand recording library',
     );
     expect(migrationPrompt).toContain(
-      '## Reviewed Email Three — `rabbi_controlled_pilot_existing_subscriber_migration_v1`',
+      '## Reviewed Email Three - `ghl.legacy_member_migration.step_3.v1`',
     );
     expect(migrationPrompt).toContain(
-      'To see current pilot information and any available next step, visit: [One Time Home URL].',
+      'Your family can begin with immediate free access and add up to three Student seats',
     );
+    expect(migrationPrompt).not.toMatch(/controlled pilot|pilot information/i);
     expect(migrationPrompt).toContain(
       'Keep the workflow Draft, unpublished, inactive, and unenrolled.',
     );
-    expect(migrationPrompt).toContain('Use the standard GHL unsubscribe treatment.');
+    expect(migrationPrompt).toContain(
+      'Use the standard GHL unsubscribe treatment on all three emails.',
+    );
+    expect(migrationPrompt).toContain(
+      'The historical `rabbi@onetimeonetime.com` alias must never be selected for canonical public use.',
+    );
     expect(nurturePrompt).toContain('independently proven general-marketing permission');
     expect(nurturePrompt).toContain(
-      'Tisha registration, attendance, payment, portal state, deliverability, and legacy tags never establish that permission',
+      'Event registration, attendance, payment, portal state, deliverability, and legacy tags never establish permission.',
+    );
+    expect(nurturePrompt).toContain(
+      'Never use the historical `rabbi@onetimeonetime.com` alias or a fallback identity.',
     );
     for (const prompt of [migrationPrompt, nurturePrompt]) {
-      expect(prompt).toContain('Rabbi Eli Scheller <rabbielischeller@onetimeonetime.com>');
+      expect(prompt).toContain('Rabbi Eli Scheller');
+      expect(prompt).toContain('rabbielischeller@onetimeonetime.com');
       expect(prompt).toContain('One Time Rabbi Campaign Phase 2 From');
       expect(prompt).toContain('One Time Rabbi Reply-To');
-      expect(prompt).toContain('provider-era');
-      expect(prompt).toContain('must never be selected for canonical public use');
+      expect(prompt).toContain('GHL-UI-24');
       expect(prompt).toContain('One Time Home URL');
-      expect(prompt).toContain('This copy is not an authorization to send.');
+      expect(prompt).toContain('This copy is not authorization to send.');
     }
   });
 

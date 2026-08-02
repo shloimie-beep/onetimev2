@@ -17,6 +17,7 @@ import {
 } from '../../packages/domain/src/index.ts';
 import {
   W12_PORTAL_TEST_LAB,
+  isPortalTestLabEnabled,
   seedPortalTestLab,
 } from '../../apps/web/src/server/features/portal-test-lab/router.ts';
 import { CONTACT_OPERATIONS_E2E_OWNER_SESSION_TOKEN } from './contact-operations-session.ts';
@@ -141,8 +142,10 @@ await createAccountUser({
 });
 await seedDayOneBrowserRecords();
 await runContentFactoryBrowserAcceptance();
-await seedPortalTestLab({ pool, config });
-await seedW12AdminSession();
+if (isPortalTestLabEnabled(config)) {
+  await seedPortalTestLab({ pool, config });
+  await seedW12AdminSession();
+}
 await seedContactOperationsOwnerSession();
 const testClock = process.env.OT_TEST_CLOCK
   ? () => new Date(String(process.env.OT_TEST_CLOCK))
@@ -359,9 +362,11 @@ async function seedDayOneBrowserRecords() {
   await pool.query(
     `INSERT INTO onetime.class_occurrences
        (occurrence_key, account_key, product_key, class_series_key, local_class_date,
-        starts_at, reminder_due_at, joinable_until, occurrence_state, access_state)
+        starts_at, reminder_due_at, joinable_until, occurrence_state, access_state,
+        join_opens_at, join_closes_at, scheduled_ends_at)
      VALUES ('e2e_class_occurrence', $1, $2, 'e2e_class_series', '2026-07-16',
-        $3, $4, $5, 'scheduled', 'provider_unavailable')`,
+        $3, $4, $5, 'scheduled', 'provider_unavailable',
+        $3::timestamptz - interval '15 minutes', $5, $5)`,
     [
       config.accountKey,
       config.productKey,
