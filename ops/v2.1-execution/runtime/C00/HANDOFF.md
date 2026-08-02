@@ -1,4 +1,25 @@
-# Parent auth/client successor — current handoff
+# Candidate preparation and immutable freeze — current handoff
+
+Integration `685861828a68c679eeb2a310d17f283a00e3c505` is independently accepted for the exact P18
+correction with zero P1, zero P2, and zero P3. Its focused packet is 90/90, the corrected service suite is 25/25,
+build/lint/format and clean locked-install typecheck pass, both leases are released, and effects remain `0/0/0`.
+All 35 registered implementation heads are ancestors of this integration head.
+
+Candidate freeze is now bounded to one nine-path I36 phase. It must regenerate the locked v2.1 visible-action registry
+and focused parity test, add the deterministic candidate builder/test, pass one clean canonical merged verification, prove
+all 88 migrations on disposable native PostgreSQL 18.4 including migration 2257 negative probes, and write only the
+candidate derivation/manifest plus I36 runtime triplet in the metadata freeze checkpoint. The exact path-inventory digest
+is `48a1960a30eaea2a799b3cf4f4fc59a2d739131ee139da6bb4a0dfcc9530a31f`; the preimage manifest is
+`06794a14c52946e4b7160be3bd59a44a97a12162ea98c6f92ac2b53d4bd3928a`.
+
+The prior four TypeScript diagnostics were caused by a cross-worktree `node_modules` junction. A detached `npm ci` and
+`npm run typecheck` pass with no source edit. The open legal bundle is broad-release-only and does not block freeze.
+No provider, persistent database, credential, deployment, DNS, send, charge, cleanup, customer, or external effect is
+authorized. I36 claim `09f62e83-0602-4f91-a00d-c95e37d218bb` has sole RELEASE_INTEGRATOR lease
+`423af25b-be06-47ff-95c5-5ae8b364129d` through `2026-08-02T07:10:47Z` and must stop after normal push, evidence-branch
+creation, lease release, and clean local/tracking/live equality.
+
+## Superseded parent auth/client handoff
 
 I36 terminal validation stopped correctly at exact clean integration
 `2e62d79d0122360155dd10da9c2b2c13892eff89` when repository-configured

@@ -8,16 +8,38 @@ branch: codex/v21-control
 start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
-phase: immediate_lean_completion_mode
-claimed_by: codex-c00-orchestrator-4f02114d
-claim_time: '2026-07-31T14:52:08Z'
-claim_id: 4f02114d-5b4b-4466-8a45-75d92d5c3a5c
-lease_expires_at: '2026-07-31T14:52:08Z'
-last_heartbeat_at: '2026-07-31T14:52:08Z'
-controller_authorization_sha: 48f27d399d4ed714f6219487629c406af1fbb49f
-ready_entry_payload_digest: null
-state_based_on_head_sha: 48f27d399d4ed714f6219487629c406af1fbb49f
+phase: candidate_preparation_and_freeze_dispatch
+claimed_by: codex-c00-candidate-preparation-95f345ab
+claim_time: '2026-08-02T04:10:47Z'
+claim_id: 95f345ab-e683-4a08-982f-d43fd181bf4e
+lease_expires_at: '2026-08-02T07:10:47Z'
+last_heartbeat_at: '2026-08-02T04:10:47Z'
+controller_authorization_sha: 702cce4dbe6cb6160c10144f212dc6627676f1a8
+ready_entry_payload_digest: cd72e0a97a6e2ab2d5f952c4a6df85eb74c0de9f399f5b6631fbc8a84cab3a97
+state_based_on_head_sha: 702cce4dbe6cb6160c10144f212dc6627676f1a8
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
+candidate_preparation_dispatch_boundary:
+  recorded_at: '2026-08-02T04:10:47Z'
+  control_basis_sha: 702cce4dbe6cb6160c10144f212dc6627676f1a8
+  integration_start_sha: 685861828a68c679eeb2a310d17f283a00e3c505
+  P18_correction_independent_review: passed_zero_P1_zero_P2_zero_P3
+  clean_detached_npm_ci_typecheck: passed
+  prior_four_type_diagnostics: cross_worktree_node_modules_junction_artifacts_not_source_defects
+  all_implementation_heads_ancestor_count: 35
+  migration_inventory_count: 88
+  migration_2257_sha256: 04e348e04c4c794147a678d03167df51cd21872d350c73c83b2181b68bc0619e
+  visible_action_registry_disposition: must_regenerate_for_v2_1_before_freeze
+  exact_path_count: 9
+  exact_path_inventory_digest: 48a1960a30eaea2a799b3cf4f4fc59a2d739131ee139da6bb4a0dfcc9530a31f
+  preimage_manifest_digest: 06794a14c52946e4b7160be3bd59a44a97a12162ea98c6f92ac2b53d4bd3928a
+  I36_claim_id: 09f62e83-0602-4f91-a00d-c95e37d218bb
+  I36_writer_id: codex-i36-candidate-freeze-09f62e83
+  I36_RELEASE_INTEGRATOR_lease_id: 423af25b-be06-47ff-95c5-5ae8b364129d
+  I36_lease_expires_at: '2026-08-02T07:10:47Z'
+  I36_ready_entry_payload_digest: cd72e0a97a6e2ab2d5f952c4a6df85eb74c0de9f399f5b6631fbc8a84cab3a97
+  legal_gate_classification: broad_production_release_only
+  provider_or_external_effect_authority: none
+  external_effects: 0/0/0
 immediate_lean_completion_mode:
   source_attachment_sha256: 6c7e65fd4c583a1aa2e115ef2132f449a9e3fd49bfcf52ec6c0c49674c467d08
   recorded_at: '2026-07-31T12:26:10Z'

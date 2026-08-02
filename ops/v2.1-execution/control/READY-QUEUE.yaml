@@ -4,116 +4,123 @@ generated_by: C00
 ready:
   - task_id: I36
     status: ready
-    phase: P18_registration_002_two_P2_repository_correction
+    phase: candidate_preparation_and_freeze
     branch: codex/v21-integration
     claim_mode: new
-    state_based_on_control_head_sha: aee8c07684270736b6947a008a4a0d620c61ed6c
-    authorized_start_sha: 89f9adf886a15f396b6713dfdf0259bfde27bb0d
-    expected_head_sha: 89f9adf886a15f396b6713dfdf0259bfde27bb0d
-    package_lock_sha256: fc8516c75a299c5c0569050b379ae0205170d1bf8e8e978802327efb9f99fd06
-    source_package_sha256: 10df0e182a6d7098fdb84b69fc2f88b3f5d0ef438895ceca1f1b2bda946d9a54
-    task_packet_sha256: 55e261f9d072e375f4698b91146dfef0a42336d4579be33f015b77d5b96646c7
-    task_context_digest: 7f47da6a6abcb7d9386f5fc124bdf1f6dcc1737a00fe400acfa96f1a16e1dbd6
+    state_based_on_control_head_sha: 702cce4dbe6cb6160c10144f212dc6627676f1a8
+    authorized_start_sha: 685861828a68c679eeb2a310d17f283a00e3c505
+    expected_head_sha: 685861828a68c679eeb2a310d17f283a00e3c505
+    package_lock_sha256: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
+    source_package_sha256: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+    task_packet_sha256: 55e261760baac780e9a4db48c328480c6f98172261ef990e563a00b25c467fc7
+    task_context_digest: 7f47da82267dec5dafe9ad53da7ece7618c331645f0591982851c47987d06813
     dependencies:
       - task_id: C00
         required_state: immediate_lean_completion_mode
-        required_head_sha: aee8c07684270736b6947a008a4a0d620c61ed6c
+        required_head_sha: 702cce4dbe6cb6160c10144f212dc6627676f1a8
       - task_id: I36
-        required_state: P18_registration_002_terminal_held_two_P2
-        required_head_sha: 89f9adf886a15f396b6713dfdf0259bfde27bb0d
-        required_parent_sha: 06a4e660bb00f37100a93abd11561351dfce9b79
-        required_tree_sha: 80a11f4da6a0167f9e09b121ebd563c7e40825a4
-        required_timestamp: '2026-08-02T06:04:33+03:00'
-        required_product_manifest_digest: 580da8c07974aca4301b4ed995ae98f38bc4c61f4f6960b71aee219ad5684f5e
+        required_state: P18_registration_002_correction_terminal_accepted
+        required_head_sha: 685861828a68c679eeb2a310d17f283a00e3c505
+        required_parent_sha: 89f9adf886a15f396b6713dfdf0259bfde27bb0d
+        required_tree_sha: 61030c2aa8d3f091e158b3cf6a8edd9d59c286fa
+        required_timestamp: '2026-08-02T06:43:59+03:00'
+        required_product_manifest_digest: f62dcdebba981de49f2beecbc2e80a433f354675751f9f95e9549e39de0b4d42
       - task_id: P18
-        required_state: exact_two_P2_repository_correction
-        independent_review: zero_P1_two_P2
+        required_state: implementation_ready
+        independent_review: zero_P1_zero_P2_zero_P3
         external_effects: 0/0/0
-    request_binding:
-      request_id: P18-registration-002
-      raw_sha256: 59dc010fcbcb370248a0736b4df37ce090ac7239c92afc6aefa38e8ba87c8624
-      canonical_sha256: 0ccf99213e29b459f5d9c095e847b7e018cbf8f7a0416849d99465e24045f080
+      - task_id: implementation_set
+        required_state: all_35_registered_heads_are_integration_ancestors
+        required_head_sha: 685861828a68c679eeb2a310d17f283a00e3c505
     authorized_paths:
-      path_count: 5
-      path_inventory_digest: 6e7411f3b136e23a3187210a893038b2fd9c16455227d93aa0dc6efda6967640
-      product_path_count: 2
-      product_path_inventory_digest: dc7a45f788a00e8bd7149c3d789f7413220e4bdf4d6415fec0ee730200b00212
+      path_count: 9
+      path_inventory_digest: 48a1960a30eaea2a799b3cf4f4fc59a2d739131ee139da6bb4a0dfcc9530a31f
+      source_path_count: 4
+      source_path_inventory_digest: a3480c57a4ccbab807a6214861632f0071e022ff73b4143da33be84e3b96c2d5
+      candidate_output_path_count: 2
+      candidate_output_path_inventory_digest: 0c49468a4141ce36176973bffdb95ba5b7410589b2e8d3f4fddfcb31e34d5cbb
       runtime_path_count: 3
       runtime_path_inventory_digest: bdf3cfe7a516fb00f891ef66f1f752591ce3d894243bbe50393980d10a3a441a
-      preimage_manifest_digest: 4144b996e5bff0b1f08ef7ffcac2ddead499120701a3638f1293eb4330b76509
+      preimage_manifest_digest: 06794a14c52946e4b7160be3bd59a44a97a12162ea98c6f92ac2b53d4bd3928a
       preimages:
-        apps/web/src/server/features/classroom/embedded/service.test.ts: a17f507fb7149c53690e072f5bc7dddfb5cbb36e9e00531991da476f84f5a0e3
-        apps/web/src/server/features/classroom/embedded/service.ts: bbb268a89aa8841fd455d2e43f8d6ec5756bed89777bd3ea257e873a58513051
-        ops/v2.1-execution/runtime/I36/HANDOFF.md: 8a93a68aea71cec5a4c3989817c41d2501b657e9b5ca166756428951b310b531
-        ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md: 883b5c8caec9293941181030d80efe37eaa458f6b6ca81374f75ec671733c7bc
-        ops/v2.1-execution/runtime/I36/TASK-STATE.yaml: fc210ddac47284ecf7aad166d8d7063f2c4e1526aa5e441dcafba4d979922985
+        ops/day-one/visible-action-registry.json: ff9f126e7ee273c187630c1aec6e7b3084d465d56a75d663d68a56a6720c3c4f
+        ops/v2.1-execution/merge/candidates/<canonical-candidate-digest>/CANDIDATE-DERIVATION.json: null
+        ops/v2.1-execution/merge/candidates/<canonical-candidate-digest>/CANDIDATE.yaml: null
+        ops/v2.1-execution/runtime/I36/HANDOFF.md: acd1ccb42c8b89b8dcc582c246da20d477b31b3a451d69b087e4cb995bea06ba
+        ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md: 9b60436257adc52a6dd6c742c0c77dd2e6996df2c31f2dddaf5bee7e0bb16bbd
+        ops/v2.1-execution/runtime/I36/TASK-STATE.yaml: 4dd6f73054f689d90fd066ef6a2ac35562635942c3305716cc47edfc73a5ce67
+        scripts/operations/v21/candidate/build-candidate.test.ts: null
+        scripts/operations/v21/candidate/build-candidate.ts: null
+        tests/unit/day-one/visible-action-registry.test.ts: 674b3745dbe8376211f760f23025dedb51eebb0432cfa41e59fb1d649f5171e5
       paths:
-        - apps/web/src/server/features/classroom/embedded/service.test.ts
-        - apps/web/src/server/features/classroom/embedded/service.ts
+        - ops/day-one/visible-action-registry.json
+        - ops/v2.1-execution/merge/candidates/<canonical-candidate-digest>/CANDIDATE-DERIVATION.json
+        - ops/v2.1-execution/merge/candidates/<canonical-candidate-digest>/CANDIDATE.yaml
         - ops/v2.1-execution/runtime/I36/HANDOFF.md
         - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
         - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
+        - scripts/operations/v21/candidate/build-candidate.test.ts
+        - scripts/operations/v21/candidate/build-candidate.ts
+        - tests/unit/day-one/visible-action-registry.test.ts
     writer_assignments:
-      EMBEDDED_CLASSROOM:
-        path_count: 2
-        path_inventory_digest: dc7a45f788a00e8bd7149c3d789f7413220e4bdf4d6415fec0ee730200b00212
-        paths:
-          - apps/web/src/server/features/classroom/embedded/service.test.ts
-          - apps/web/src/server/features/classroom/embedded/service.ts
       RELEASE_INTEGRATOR:
-        path_count: 3
-        path_inventory_digest: bdf3cfe7a516fb00f891ef66f1f752591ce3d894243bbe50393980d10a3a441a
+        path_count: 9
+        path_inventory_digest: 48a1960a30eaea2a799b3cf4f4fc59a2d739131ee139da6bb4a0dfcc9530a31f
         paths:
+          - ops/day-one/visible-action-registry.json
+          - ops/v2.1-execution/merge/candidates/<canonical-candidate-digest>/CANDIDATE-DERIVATION.json
+          - ops/v2.1-execution/merge/candidates/<canonical-candidate-digest>/CANDIDATE.yaml
           - ops/v2.1-execution/runtime/I36/HANDOFF.md
           - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
           - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
+          - scripts/operations/v21/candidate/build-candidate.test.ts
+          - scripts/operations/v21/candidate/build-candidate.ts
+          - tests/unit/day-one/visible-action-registry.test.ts
     directives:
       - >-
-        Reject embedded-client attendance unless the freshly loaded live session is active and its lease expires strictly
-        after the authoritative command time. Perform this fence before context/evidence resolution, reconciliation, or append.
+        Regenerate the visible-action registry deterministically from locked v2.1 actor, route, screen, action, handler,
+        and acceptance sources. Remove every retired, demo, preview, test-only, unavailable_by_design, Tisha B'Av, Class
+        Helper, Vimeo demo, Portal Test Lab, owner, crm_agent, and viewer entry. Do not run or modify the historical OT81 writer.
       - >-
-        Reject SDK signer envelopes unless issued_at and expires_at are finite valid timestamps satisfying
-        issued_at <= now < expires_at, expires_at > issued_at, and a lifetime no greater than 60 seconds. Preserve the
-        terminal consumption of the current bootstrap grant on signer failure and the fresh-grant retry design.
+        Add one deterministic candidate builder and focused test. Record exact inclusion sets, canonicalization, tool versions,
+        commands, per-input hashes, artifact and registry derivations, and sanitized native-PostgreSQL results in
+        CANDIDATE-DERIVATION.json. Reject unresolved placeholders, floats, nondeterminism, missing inputs, and extra inputs.
       - >-
-        Validate the server-returned bootstrap as minimally usable: semantic dotted-numeric SDK version, 9-32 digit meeting
-        number, nonblank non-URL signature/password/participant name, Student role, leaveUrl /app/classroom, and boolean video.
+        Use a clean isolated worktree with Node 24 and npm ci. Prove all 35 accepted implementation heads remain ancestors,
+        then pass npm run verify, highlevel:registry:check, highlevel:workflow-control:projection-check, candidate-builder tests,
+        and visible-action-registry tests on the exact pre-manifest source SHA. Cross-worktree node_modules junctions are invalid.
       - >-
-        Add focused tests for revoked, exactly expired, and past-expiry attendance; invalid timestamps, already-expired signer
-        envelopes, malformed SDK version, and malformed meeting number. Preserve all existing behavior and tests.
+        Use only the existing local disposable embedded-postgres 18.4 helper. Apply and replay all 88 migrations, verify an
+        exact 88-entry immutable ledger with pending 0 and issues 0, and add focused migration 2257 accept/reject probes for
+        NULL operation arrays, digest shape, Stripe policy, stale/version-jump updates, DELETE denial, rollback, and cleanup.
       - >-
-        Change no other product or control path. Perform no provider inspection/mutation, network call, persistent database,
-        candidate freeze, deployment, DNS, send, charge, cleanup, or external effect. Update the I36 runtime triplet, release
-        both leases, push one exact terminal, prove local/tracking/live equality, and stop for independent review.
+        Write a source checkpoint first, then write only CANDIDATE-DERIVATION.json, CANDIDATE.yaml, and the I36 runtime triplet
+        in the metadata freeze checkpoint. The manifest repository_source_sha must be the exact source checkpoint. Independently
+        recompute the canonical candidate digest, push normally, create codex/v21-evidence-<candidate-short-sha> from the
+        frozen checkpoint, release the lease, prove local/tracking/live equality, and stop for C00 validation.
+      - >-
+        No provider inspection or mutation, persistent database, credential readback, deployment, DNS, send, charge, cleanup,
+        customer effect, legal broad-release gate, or other external effect is authorized. Effects must remain 0/0/0.
     writer_slot_leases:
-      - slot: EMBEDDED_CLASSROOM
-        lease_id: b20881f5-369e-40c7-a0dd-d28366d9a57f
-        holder_task_id: I36
-        holder_claim_id: 62a752ae-c2a0-4f3f-8a1c-08bde30fa02a
-        holder_writer_id: codex-i36-P18-correction-62a752ae
-        state_based_on_control_head_sha: aee8c07684270736b6947a008a4a0d620c61ed6c
-        lease_issued_at: '2026-08-02T03:17:23Z'
-        lease_expires_at: '2026-08-02T06:17:23Z'
-        phase_scope: exact_P18_embedded_service_and_test_correction
       - slot: RELEASE_INTEGRATOR
-        lease_id: 8e17574a-ee4d-468e-ae70-557b8f16dd76
+        lease_id: 423af25b-be06-47ff-95c5-5ae8b364129d
         holder_task_id: I36
-        holder_claim_id: 62a752ae-c2a0-4f3f-8a1c-08bde30fa02a
-        holder_writer_id: codex-i36-P18-correction-62a752ae
-        state_based_on_control_head_sha: aee8c07684270736b6947a008a4a0d620c61ed6c
-        lease_issued_at: '2026-08-02T03:17:23Z'
-        lease_expires_at: '2026-08-02T06:17:23Z'
-        phase_scope: exact_I36_terminal_runtime_triplet_only
+        holder_claim_id: 09f62e83-0602-4f91-a00d-c95e37d218bb
+        holder_writer_id: codex-i36-candidate-freeze-09f62e83
+        state_based_on_control_head_sha: 702cce4dbe6cb6160c10144f212dc6627676f1a8
+        lease_issued_at: '2026-08-02T04:10:47Z'
+        lease_expires_at: '2026-08-02T07:10:47Z'
+        phase_scope: exact_candidate_preparation_and_freeze_nine_path_ceiling
     effect_lock_leases: []
-    claim_id: 62a752ae-c2a0-4f3f-8a1c-08bde30fa02a
-    lease_issued_at: '2026-08-02T03:17:23Z'
-    lease_expires_at: '2026-08-02T06:17:23Z'
+    claim_id: 09f62e83-0602-4f91-a00d-c95e37d218bb
+    lease_issued_at: '2026-08-02T04:10:47Z'
+    lease_expires_at: '2026-08-02T07:10:47Z'
     heartbeat_interval_minutes: 30
     prompt_path: ops/v2.1-execution/prompts/I36-START-OR-RESUME.md
     model: GPT-5.6-SOL
     reasoning: XHIGH
 entry_payload_digests:
-  I36: 8b2f9db9ffbe3c4a2635f53d68447cfac421416b869df5a433dffac28fc7d4ea
+  I36: cd72e0a97a6e2ab2d5f952c4a6df85eb74c0de9f399f5b6631fbc8a84cab3a97
 digest_algorithm: >-
   For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively, separators ',' and ':',
   ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives in this sibling map, never inside the entry.

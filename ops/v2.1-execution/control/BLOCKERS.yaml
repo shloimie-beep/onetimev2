@@ -303,16 +303,20 @@ blockers:
     review held zero P1 and two P2 defects: revoked/expired sessions can still append client attendance, and malformed or
     already-expired signer envelopes can be returned as ready. C00 narrowed correction authority to the exact two product/test
     paths plus I36 runtime triplet; no candidate or provider authority was granted.
+    Correction terminal 685861828a68c679eeb2a310d17f283a00e3c505 is independently accepted with exact five-path
+    scope, 25/25 corrected service assertions, 90/90 full focused P18 assertions, clean build/lint/format/type gates from a
+    locked non-junction install, released leases, effects 0/0/0, and zero P1, zero P2, and zero P3. The P18 source seam is
+    therefore complete; native migration proof and deployed protected bindings remain candidate/deployment gates.
   required_authority_or_input:
-  - Complete and independently re-review the exact P18 two-P2 repository correction
-  - Preserve native PostgreSQL replay and the deployed LEARNING_ALIAS_HMAC_KEY as fail-closed candidate gates
+  - Prove the current 88-migration inventory on disposable native PostgreSQL 18.4 before freeze
+  - Preserve deployed LEARNING_ALIAS_HMAC_KEY and same-instance P18 callback bindings as fail-closed post-freeze gates
   protection: >-
     Do not apply P22-migration-001 or P22-registration-001, create a second attendance write authority, parse a display
     name into identity fields, mutate audit history, write SQL before the successor is admitted, or advance candidate,
     provider, deployment, DNS, live-database, send, charge, or customer activation gates.
-  next_check: Re-evaluate after the exact P18 correction terminal and again at native-PostgreSQL candidate verification.
+  next_check: Re-evaluate at native-PostgreSQL candidate preparation and candidate-bound deployment verification.
 - blocker_id: P18-REGISTRATION-002-TERMINAL-CORRECTNESS
-  status: open
+  status: closed
   scope: pre_candidate_repository_correctness
   owner: P18_I36_C00
   affected_tasks:
@@ -326,16 +330,40 @@ blockers:
     exact scope/manifests, secret scan, released leases, clean local/tracking/live equality, and effects 0/0/0 were
     reproduced. Independent code review found zero P1 and exactly two P2 defects: recordClientAttendance does not reject a
     freshly loaded session whose state is revoked or whose 90-second lease is no longer live; assertEphemeralBootstrap does
-    not reject non-finite timestamps or an envelope already expired at authoritative now. No external effect occurred.
+    not reject non-finite timestamps or an envelope already expired at authoritative now. Exact correction terminal
+    685861828a68c679eeb2a310d17f283a00e3c505 adds the active/unexpired attendance fence and strict finite live signer
+    envelope validation. Independent review passed exact scope and pre/postimage manifests, 25/25 corrected service tests,
+    90/90 P18 tests, clean build/lint/format/type gates from a locked install, released leases, clean remote equality, effects
+    0/0/0, and zero P1, zero P2, and zero P3.
   required_authority_or_input:
-  - Correct only apps/web/src/server/features/classroom/embedded/service.ts and service.test.ts plus the I36 runtime triplet
-  - Prove revoked and expired attendance rejection and finite, live, no-more-than-60-second minimally usable signer output
-  - Obtain an independent zero-P1/zero-P2 review before any candidate, provider, database, deployment, or DNS work
+  - none
   protection: >-
     Preserve server-derived identity, occurrence/consent/CSRF/reset/replay/callback behavior, terminal grant consumption on
     signer failure, and fresh-grant retry semantics. Do not expand configuration, provider, database, candidate, deploy,
     DNS, send, charge, cleanup, or external-effect authority.
-  next_check: Re-evaluate immediately after the exact five-path correction terminal is pushed with leases released.
+  next_check: Reopen only after an overlapping source change or a triggered candidate-bound failure.
+
+- blocker_id: CANDIDATE-V21-VISIBLE-ACTION-REGENERATION
+  status: open
+  scope: pre_candidate_repository_correctness
+  owner: I36_C00
+  affected_tasks:
+  - I36
+  - V37
+  - V40
+  safe_work_completed: >-
+    The locked supersession table permits reuse only of the historical registry schema and test references and requires the
+    v2.1 route/action inventory and readiness states to be regenerated. Exact current bytes are unchanged from the reviewed
+    pre-v2.1 baseline, bind obsolete source SHAs, and still expose retired Tisha B'Av, Class Helper, Vimeo demo, Portal Test
+    Lab, preview/test surfaces, retired roles, and unavailable_by_design certification states. C00 bounded regeneration and
+    parity validation into the same nine-path I36 candidate-preparation phase; no separate audit or effect is required.
+  required_authority_or_input:
+  - Regenerate ops/day-one/visible-action-registry.json deterministically from the locked v2.1 surface and exact source SHA
+  - Update its focused unit test and make the candidate builder fail on retired, missing, extra, or nondeterministic entries
+  protection: >-
+    Do not run or modify the historical OT81 release-evidence writer, reintroduce retired/demo/preview/test surfaces or roles,
+    or claim final PASSED acceptance before candidate-bound verification.
+  next_check: Close on the independently verified candidate-preparation source checkpoint.
 - blocker_id: P21-CANONICAL-CONTENT-STATE-WRITER
   status: open
   scope: controlled_launch_candidate

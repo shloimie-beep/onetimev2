@@ -3,7 +3,32 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
-# Latest I36 three-file Prettier correction and terminal validation
+# Latest I36 candidate preparation and immutable freeze
+
+Resume only from exact clean local/tracking/live integration
+`685861828a68c679eeb2a310d17f283a00e3c505` under containing control with state basis
+`702cce4dbe6cb6160c10144f212dc6627676f1a8`, canonical READY digest to be reproduced from the sibling map, claim
+`09f62e83-0602-4f91-a00d-c95e37d218bb`, writer `codex-i36-candidate-freeze-09f62e83`, and sole RELEASE_INTEGRATOR
+lease `423af25b-be06-47ff-95c5-5ae8b364129d` through `2026-08-02T07:10:47Z`.
+
+Change only the nine READY-bound paths. First regenerate the v2.1 visible-action registry and its unit test; create the
+candidate builder/test; and commit a source checkpoint. Do not run or modify the historical OT81 writer. Then use a clean
+Node 24 `npm ci` worktree, prove all 35 implementation heads remain ancestors, and pass the canonical repository,
+HighLevel registry/projection, candidate-builder, and visible-action tests.
+
+Run the current 88-migration inventory on the existing local disposable PostgreSQL 18.4 helper. Require 88/88 apply,
+88/88 no-op replay, exact ledger, pending 0, issues 0, version `180004`, focused migration 2257 policy/constraint/update/
+delete/rollback probes, and exact cleanup. Record only sanitized results.
+
+Compute the reproducible candidate core and write only
+`merge/candidates/<digest>/CANDIDATE-DERIVATION.json`, `CANDIDATE.yaml`, and the I36 runtime triplet in the metadata freeze
+checkpoint. Independently recompute the digest, push normally, create `codex/v21-evidence-<candidate-short-sha>` from the
+frozen checkpoint, release the lease, prove clean local/tracking/live equality, and stop for C00 validation.
+
+No provider inspection/mutation, persistent database, secret readback, deployment, DNS, send, charge, cleanup, legal
+broad-release action, customer action, or external effect is authorized. Effects remain `0/0/0`.
+
+# Superseded I36 three-file Prettier correction and terminal validation
 
 Resume only from exact clean local/tracking/live integration
 `2e62d79d0122360155dd10da9c2b2c13892eff89` under unchanged:
