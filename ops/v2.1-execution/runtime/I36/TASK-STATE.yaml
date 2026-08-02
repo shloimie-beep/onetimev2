@@ -40,24 +40,102 @@ dependency_heads:
   P18: 1926e61c793ce29d7240c1ee05d2a4879b52770b
   P21: c11dec418fa3de896e96c348f87928c92c9f86b9
 status: ready_for_review
-phase: candidate_freeze_terminal
-claimed_by: codex-i36-candidate-freeze-48f1af59
-claim_time: '2026-08-02T11:23:01Z'
-claim_id: 48f1af59-52f9-4868-bacd-b6e79bf4292d
-lease_id: 8a7206c7-0c56-4fab-9565-63a2859077a2
-lease_issued_at: '2026-08-02T11:23:01Z'
-lease_expires_at: '2026-08-02T12:23:01Z'
-lease_released_at: '2026-08-02T11:35:37Z'
-last_heartbeat_at: '2026-08-02T11:35:37Z'
-controller_authorization_sha: 146774966cd35a96c51d2f467ccfd3b458fd9cc6
-latest_valid_observed_control_head_sha: 146774966cd35a96c51d2f467ccfd3b458fd9cc6
-reconciled_state_based_on_control_head_sha: 08079bd87085ba8fd0b242f8ff7923c1b46f3a88
-ready_authorization_control_head_sha: 146774966cd35a96c51d2f467ccfd3b458fd9cc6
-ready_entry_state_based_on_control_head_sha: 146774966cd35a96c51d2f467ccfd3b458fd9cc6
-ready_entry_payload_digest: 26439fc6fe15620e8cdc00b4b82151c536b5b3f53303cd0aaf9d687c542a50b6
+phase: corrected_candidate_refreeze_terminal
+claimed_by: codex-i36-candidate-refreeze-ce000af6
+claim_time: '2026-08-02T13:05:10Z'
+claim_id: ce000af6-1d5a-4e90-bdcf-c777e507f451
+lease_id: 6adaaa97-05a1-4538-9ad8-4db69d90c877
+lease_issued_at: '2026-08-02T13:05:10Z'
+lease_expires_at: '2026-08-02T14:05:10Z'
+lease_released_at: '2026-08-02T13:09:25Z'
+last_heartbeat_at: '2026-08-02T13:09:25Z'
+controller_authorization_sha: 8b2871228ecc0be54aa299dc4d25dad60afd27e1
+latest_valid_observed_control_head_sha: 8b2871228ecc0be54aa299dc4d25dad60afd27e1
+reconciled_state_based_on_control_head_sha: 04ceb6e3899198c6baeb560e4b6a5006ecbca635
+ready_authorization_control_head_sha: 8b2871228ecc0be54aa299dc4d25dad60afd27e1
+ready_entry_state_based_on_control_head_sha: 8b2871228ecc0be54aa299dc4d25dad60afd27e1
+ready_entry_payload_digest: 30469bad977f43bf1631a3cb22dc714bcbaf01792e2969336108ead35e4cd36b
 claim_mode: new
-expected_existing_head_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
-lease_phase_scope: candidate_freeze
+expected_existing_head_sha: 42065da2be8334382b2491c8e1d1a3a43231ab98
+lease_phase_scope: corrected_candidate_refreeze
+corrected_candidate_refreeze_terminal:
+  containing_control_head_sha: 8b2871228ecc0be54aa299dc4d25dad60afd27e1
+  state_basis_control_head_sha: 04ceb6e3899198c6baeb560e4b6a5006ecbca635
+  exact_authorized_start_sha: 42065da2be8334382b2491c8e1d1a3a43231ab98
+  repository_source_sha: 7943a20895939f66b6755d02f819165850d1042f
+  ready_entry_payload_digest: 30469bad977f43bf1631a3cb22dc714bcbaf01792e2969336108ead35e4cd36b
+  accepted_terminal_review: P1_0_P2_0_P3_0
+  claim_id: ce000af6-1d5a-4e90-bdcf-c777e507f451
+  writer_id: codex-i36-candidate-refreeze-ce000af6
+  lease_issued_at: '2026-08-02T13:05:10Z'
+  lease_expires_at: '2026-08-02T14:05:10Z'
+  lease_released_at: '2026-08-02T13:09:25Z'
+  last_heartbeat_at: '2026-08-02T13:09:25Z'
+  writer_slot_leases_released:
+    - slot: RELEASE_INTEGRATOR
+      lease_id: 6adaaa97-05a1-4538-9ad8-4db69d90c877
+  effect_lock_leases: []
+  exact_scope:
+    path_count: 5
+    path_inventory_digest: 539038dfedbb69cd1b6e23ea35f6c7184c3dc895620aa29e2d75c805587b84c8
+    preimage_manifest_digest: b897ac1c0f20932ad3b2ee6798f12d936ced31d801826e58a53cb4393e615853
+    candidate_document_paths: 2
+    runtime_paths: 3
+    deployable_source_paths: 0
+  candidate_identity:
+    canonical_candidate_digest: 68af08379cf596a2c8dfac28253487fb21fea222c6ea1275d096a6f972130ee8
+    repository_source_sha: 7943a20895939f66b6755d02f819165850d1042f
+    application_content_sha256: 88000a77c028d25a4ac724993a72f0320d972ee67a965cae694bfecdf8fa318e
+    product_tree_digest: 0b0e1bc456b8f098cd61f706e8a1333be3e0b4c7bfc4aaae0393fc3bcd369d29
+    web_artifact_digest: c0b6f520a325e72dd1889b3b5db69d8ee623bf86c387b4a9bb29dd466bb0f5f0
+    worker_artifact_digest: be966ff48745f6351d512c6e1293b1ed38a792b92435202bf879ba4204c7accb
+    configuration_bundle_digest: a83856a9c97b36a9b0e032190c7c495b163ba5394709015f0fe313a2aef44480
+    migration_inventory_digest: 1598fc0f7f18e172b9566c65dbb81593ba2b5b1339e1dbca312aa01b53383f6b
+    frontend_asset_digest: 252fe0a836d71319b811da47170c2a7947b3dcc5001d952b69d72af14cdee219
+    route_action_inventory_digest: 3ca498c122f0fc3a8f753898687e233b717349f9486b8df86dd02e22fb06d483
+    workflow_registry_digest: 08fa35058d351e79aa56a8bddcb6752ba2f356c4fde35c0a26b13338c1f53573
+    highlevel_registry_digest: d6c52146588a8699ae82a7b10158c48ab8683018a5e3cf336b9f43e222a759cf
+    provider_registry_digest: 80778ec9924ddc7ecb204f6ed6ed380c922ce5f4c7135b4a733ba5fc5f138b16
+    message_catalog_digest: e4da6ceab0e7eabbb0a927bbb85195e0a955229f37eb3a8ae4c45aad58155d8a
+    acceptance_contract_digest: d1dd39b0f91e94a4d8f179454a15fbeabb3d31d88afd490db1a5040ff6777444
+    environment_profile_schema_digest: 6f6d9fa499a731d27db16005bfa63fd6fbfefc1c212def1eb986f006b60063ce
+    frozen_at: '2026-08-02T13:03:30Z'
+    immutable: true
+  candidate_documents:
+    derivation_sha256: 9abad1cd94a58cd124667c0ff69aa022bb27bfa6de7cddd77363bdbed32ab1d6
+    manifest_sha256: 16f5452c0feea8252f5bc8b544cb3b3514aad65fb6c1f4c35d5044e641c00824
+  pg18_proof:
+    github_run_id: 30748901653
+    exact_source_sha: 7943a20895939f66b6755d02f819165850d1042f
+    artifact_id: 8833796828
+    artifact_archive_sha256: 0e594801187fef1fc47a67f7273fb156956439484fe60c230d93348f9f343cc3
+    evidence_manifest_sha256: 4e309ad0d74ae48a5a0cbf204e387d63e901bfd4480b88f618bc8acdaa0a7288
+    PostgreSQL_version: '18.4'
+    migration_apply_replay_files_ledger: 89/89/89/89
+    pending_and_issues: 0/0
+    probes: 8/8_passed
+    restore_clone: passed_schema_ledger_match_idempotent
+    disposable_runner_and_database_stopped: true
+  validation:
+    candidate_document_hashes: passed_2_of_2
+    candidate_JSON_and_YAML_parse: passed
+    canonical_candidate_digest_reproduction: passed
+    candidate_builder: passed_4_of_4
+    exact_five_path_scope: passed_5_of_5
+    deployable_source_unchanged: passed
+    candidate_generated_format: exact_required_hashes_preserved_not_reformatted
+    runtime_prettier: passed_3_of_3
+    diff_check: passed
+  effects:
+    candidate_refreeze_external_effects: 0/0/0
+    proof_dispatch_reconciled_separately: 1/1/1
+    provider_or_customer: 0
+    deployment_or_DNS: 0
+    contact_send_enrollment_or_billing: 0
+  safe_next_action: >-
+    Push this exact five-path corrected candidate-refreeze terminal and stop for one delta-only candidate identity review.
+    Do not create an evidence branch or perform a provider, deployment, DNS, contact, send, enrollment, billing,
+    cleanup, operator-canary, or production effect from this terminal.
 candidate_freeze_terminal:
   containing_control_head_sha: 146774966cd35a96c51d2f467ccfd3b458fd9cc6
   state_basis_control_head_sha: 08079bd87085ba8fd0b242f8ff7923c1b46f3a88

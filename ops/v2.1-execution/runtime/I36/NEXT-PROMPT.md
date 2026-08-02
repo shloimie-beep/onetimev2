@@ -1,3 +1,46 @@
+CURRENT INSTRUCTION — CORRECTED CANDIDATE REFREEZE DELTA REVIEW
+
+Audit only the exact pushed I36 five-path corrected candidate-refreeze terminal.
+All prior prompts below are historical and non-operative. Do not restart a broad
+audit, create an evidence branch, inspect or mutate a provider, deploy, change
+DNS, create a contact, publish, enroll, send, charge, clean up, or perform any
+external effect.
+
+Repository: shloimie-beep/onetimev2
+Branch: codex/v21-integration
+Authorized start: `42065da2be8334382b2491c8e1d1a3a43231ab98`
+Accepted corrected source: `7943a20895939f66b6755d02f819165850d1042f`
+Containing control: `8b2871228ecc0be54aa299dc4d25dad60afd27e1`
+Authority basis: `04ceb6e3899198c6baeb560e4b6a5006ecbca635`
+READY: `30469bad977f43bf1631a3cb22dc714bcbaf01792e2969336108ead35e4cd36b`
+Claim: `ce000af6-1d5a-4e90-bdcf-c777e507f451`
+Writer: `codex-i36-candidate-refreeze-ce000af6`
+RELEASE_INTEGRATOR lease: `6adaaa97-05a1-4538-9ad8-4db69d90c877`
+Lease issue/release/expiry: `2026-08-02T13:05:10Z` /
+`2026-08-02T13:09:25Z` / `2026-08-02T14:05:10Z`.
+
+Confirm exactly five changed paths: the two new candidate documents under
+`ops/v2.1-execution/merge/candidates/68af08379cf596a2c8dfac28253487fb21fea222c6ea1275d096a6f972130ee8/`
+and the I36 runtime triplet. Confirm inventory
+`539038dfedbb69cd1b6e23ea35f6c7184c3dc895620aa29e2d75c805587b84c8`
+and authorized preimage manifest
+`b897ac1c0f20932ad3b2ee6798f12d936ced31d801826e58a53cb4393e615853`.
+Confirm the derivation and manifest SHA-256 values are
+`9abad1cd94a58cd124667c0ff69aa022bb27bfa6de7cddd77363bdbed32ab1d6`
+and `16f5452c0feea8252f5bc8b544cb3b3514aad65fb6c1f4c35d5044e641c00824`,
+and independently reproduce candidate
+`68af08379cf596a2c8dfac28253487fb21fea222c6ea1275d096a6f972130ee8`
+from exact source `7943a20895939f66b6755d02f819165850d1042f`.
+
+Confirm source-bound proof run `30748901653` and artifact `8833796828` passed
+PostgreSQL 18.4 with 89/89/89/89 migrations, 0/0 pending/issues, 8/8 probes,
+an idempotent isolated restore, and stopped its disposable runner/database.
+Confirm candidate-builder tests 4/4, exact-scope/diff/runtime formatting, and
+zero provider, customer, deployment, DNS, contact, send, enrollment, billing,
+operator-canary, or production effect. Return exact P1/P2/P3 counts.
+
+--- HISTORICAL PROMPTS BELOW ---
+
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY

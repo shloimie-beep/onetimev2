@@ -1,5 +1,39 @@
 # I36 Integration Releases
 
+## Current terminal - corrected immutable candidate refreeze
+
+Control `8b2871228ecc0be54aa299dc4d25dad60afd27e1`, based on
+`04ceb6e3899198c6baeb560e4b6a5006ecbca635`, authorizes exactly five paths
+from integration `42065da2be8334382b2491c8e1d1a3a43231ab98` and accepted corrected source
+`7943a20895939f66b6755d02f819165850d1042f` under READY
+`30469bad977f43bf1631a3cb22dc714bcbaf01792e2969336108ead35e4cd36b`.
+The scope and preimage digests are
+`539038dfedbb69cd1b6e23ea35f6c7184c3dc895620aa29e2d75c805587b84c8`
+and `b897ac1c0f20932ad3b2ee6798f12d936ced31d801826e58a53cb4393e615853`.
+
+The corrected immutable candidate is
+`68af08379cf596a2c8dfac28253487fb21fea222c6ea1275d096a6f972130ee8`.
+Its deterministic derivation and manifest SHA-256 values are respectively
+`9abad1cd94a58cd124667c0ff69aa022bb27bfa6de7cddd77363bdbed32ab1d6`
+and `16f5452c0feea8252f5bc8b544cb3b3514aad65fb6c1f4c35d5044e641c00824`.
+Both documents parse and independently reproduce the exact candidate digest;
+the candidate-builder suite passes 4/4. No deployable source byte changed.
+
+The refreeze is grounded in successful source-bound PostgreSQL 18.4 run
+`30748901653` and artifact `8833796828`: migrations apply/replay/files/ledger
+are 89/89/89/89, pending/issues are 0/0, all 8 probes and isolated restore
+verification passed, and the disposable runner/database stopped. The effect
+was separately reconciled at 1/1/1 with zero non-disposable effect.
+
+Claim `ce000af6-1d5a-4e90-bdcf-c777e507f451` used RELEASE_INTEGRATOR lease
+`6adaaa97-05a1-4538-9ad8-4db69d90c877`, issued
+`2026-08-02T13:05:10Z`, released `2026-08-02T13:09:25Z`, and expiring
+`2026-08-02T14:05:10Z`. Push this exact five-path terminal and stop for one
+delta-only candidate identity review. Do not create an evidence branch or
+perform an external successor effect from this terminal.
+
+All sections below are retained historical release records and audit prompts.
+
 ## Current terminal - immutable candidate freeze
 
 Control `146774966cd35a96c51d2f467ccfd3b458fd9cc6`, based on
