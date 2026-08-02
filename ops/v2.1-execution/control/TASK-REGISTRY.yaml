@@ -466,7 +466,7 @@ tasks:
     transitioned_at: '2026-07-30T19:30:53Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/F07/status_proof
 - task_id: I36
-  status: staging_deployment_reserved
+  status: staging_deployment_in_progress
   active_phase: candidate_bound_staging_deployment
   branch: codex/v21-integration
   phase_branches:
@@ -624,7 +624,7 @@ tasks:
   interface_checkpoint_sha: null
   implementation_head_sha: 97c38375ac7d57bc3ef5beab0bc67e6b1fe5b0e9
   status_proof:
-    state: staging_deployment_reserved
+    state: staging_deployment_in_progress
     producer_task_id: I36
     producer_head_sha: 97c38375ac7d57bc3ef5beab0bc67e6b1fe5b0e9
     canonical_candidate_digest: e7fb4021d9bf4dbc9c38dbcadcc6eb9139082acf494416ce970c7c503f757456
@@ -651,8 +651,10 @@ tasks:
     staging_database_reconciliation: 89_total_59_already_applied_30_applied_zero_errors
     active_staging_authority_id: i36-staging-deploy-20260802143355
     active_staging_lock_lease_id: 394d712a-1504-45bc-982c-b72048e10a8e
-    state_based_on_control_head_sha: 57449993e5fc1191f3a2fe8b86cee2dbefa5ce67
-    transitioned_at: '2026-08-02T14:33:55Z'
+    active_staging_web_deployment_id: 040e85a2-4333-4e4a-9142-522e934d9f60
+    active_staging_worker_deployment_id: eb9cf7b3-44fe-4574-aea9-285c1014b55f
+    state_based_on_control_head_sha: 13e228d455dc204f1c2ca1409d379284f9200631
+    transitioned_at: '2026-08-02T14:49:13Z'
     proof_record_location: 'ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/I36/status_proof'
 - task_id: P08
   status: ready_for_review

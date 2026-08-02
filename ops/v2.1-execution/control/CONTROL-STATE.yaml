@@ -18,10 +18,10 @@ candidate: e7fb4021d9bf4dbc9c38dbcadcc6eb9139082acf494416ce970c7c503f757456
 active_writer_limit: 4
 controller_authorization_sha: 57449993e5fc1191f3a2fe8b86cee2dbefa5ce67
 next_action: >-
-  Execute the single reserved fast-forward of codex/full-app-staging-live from 887ab80c793932234035c6eb434a445e7920ce96
-  to exact accepted candidate manifest 97c38375ac7d57bc3ef5beab0bc67e6b1fe5b0e9, then reconcile at most one web
-  and one worker staging deployment. Verify /health, /version, landing, and Family form only after terminal success.
-  Do not activate GHL, send, enroll, mutate DNS or production, create Student contacts, or perform billing effects.
+  Reconcile exact web deployment 040e85a2-4333-4e4a-9142-522e934d9f60 and worker deployment
+  eb9cf7b3-44fe-4574-aea9-285c1014b55f for candidate 97c38375ac7d57bc3ef5beab0bc67e6b1fe5b0e9.
+  Verify /health, /version, landing, and Family form only after terminal success. Do not retry, activate GHL, send,
+  enroll, mutate DNS or production, create Student contacts, or perform billing effects.
 staging_health_route_candidate_acceptance:
   recorded_at: '2026-08-02T14:33:55Z'
   state_basis_control_head_sha: 57449993e5fc1191f3a2fe8b86cee2dbefa5ce67
@@ -56,6 +56,17 @@ staging_health_route_deployment_reservation:
   maximum_deployments: 2
   production_deployment_DNS_send_enrollment_billing_authority: none
   effects_before_reservation: 0/0/0/0
+staging_health_route_deployment_attempt:
+  attempted_at: '2026-08-02T14:49:13Z'
+  state_basis_control_head_sha: 13e228d455dc204f1c2ca1409d379284f9200631
+  source_branch_before_sha: 887ab80c793932234035c6eb434a445e7920ce96
+  source_branch_after_sha: 97c38375ac7d57bc3ef5beab0bc67e6b1fe5b0e9
+  branch_update: fast_forward_succeeded
+  web_deployment_id: 040e85a2-4333-4e4a-9142-522e934d9f60
+  web_initial_state: QUEUED
+  worker_deployment_id: eb9cf7b3-44fe-4574-aea9-285c1014b55f
+  worker_initial_state: QUEUED
+  production_deployments_DNS_sends_enrollments_billing_effects: 0/0/0/0/0
 Docker_context_candidate_acceptance:
   recorded_at: '2026-08-02T13:55:04Z'
   state_basis_control_head_sha: 44edd0a460156088720b71c9ccb615b5972971fb

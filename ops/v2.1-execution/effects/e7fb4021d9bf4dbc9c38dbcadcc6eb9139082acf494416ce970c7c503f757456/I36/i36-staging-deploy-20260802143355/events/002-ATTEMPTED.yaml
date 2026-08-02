@@ -1,0 +1,32 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: i36-staging-deploy-20260802143355
+event_sequence: 2
+previous_event_digest: d73923175306bd2bae152be4cb9e1957860d065113d01bb205f91b72aa4bf8dc
+state: ATTEMPTED_UNKNOWN
+task_id: I36
+canonical_event_path: ops/v2.1-execution/effects/e7fb4021d9bf4dbc9c38dbcadcc6eb9139082acf494416ce970c7c503f757456/I36/i36-staging-deploy-20260802143355/events/002-ATTEMPTED.yaml
+candidate_digest: e7fb4021d9bf4dbc9c38dbcadcc6eb9139082acf494416ce970c7c503f757456
+candidate_manifest_commit_sha: 97c38375ac7d57bc3ef5beab0bc67e6b1fe5b0e9
+authority_id: i36-staging-deploy-20260802143355
+authority_grant_digest: a5943e87fd61ad74f32e96c101e2f2ffcf8e28af756148576d253e8703b3c545
+authority_status_index_digest: d618d9f259675d2c65deda2955e764cd419c49d06b81c3e88ff4010244af7c80
+authority_status_entry_digest: 2f597059118ab984fe7b9c0e34500cee46ace40f30a6fa481648e4cec76b0cfa
+latest_revocation_digest: none
+lock: production:deployment
+lock_lease_id: 394d712a-1504-45bc-982c-b72048e10a8e
+fencing_token: fence-bc77d202-1e81-4786-b330-0bfc13243326
+provider_request_or_operation_id: github_ref_update_and_railway_deployments_040e85a2_eb9cf7b3
+operation_result:
+  source_branch_before_sha: 887ab80c793932234035c6eb434a445e7920ce96
+  source_branch_after_sha: 97c38375ac7d57bc3ef5beab0bc67e6b1fe5b0e9
+  branch_update: fast_forward_succeeded
+  web_deployment_id: 040e85a2-4333-4e4a-9142-522e934d9f60
+  web_initial_state: QUEUED
+  worker_deployment_id: eb9cf7b3-44fe-4574-aea9-285c1014b55f
+  worker_initial_state: QUEUED
+  exact_candidate_commit_readback: passed_2_of_2
+provider_readback_digest: pending_terminal_readback
+cleanup_state: pending_staging_deployment_reconciliation
+event_at: '2026-08-02T14:49:13Z'
+immutable: true
