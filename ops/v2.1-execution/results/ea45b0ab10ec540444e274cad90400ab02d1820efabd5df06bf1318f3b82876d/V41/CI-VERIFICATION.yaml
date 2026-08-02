@@ -1,0 +1,76 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+verification_lane: V41
+canonical_candidate_digest: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
+repository_source_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
+environment_id: ci
+runtime_tier: isolated_staging
+executed_at: '2026-08-02T12:08:04Z'
+commands:
+  - npm exec -- vitest run <13 focused V41 test files> --reporter=verbose
+  - npm run typecheck -- --pretty false
+outcomes:
+  typecheck: passed
+  test_files_passed: 13
+  test_files_failed: 0
+  tests_passed: 49
+  tests_failed: 0
+test_files:
+  - packages/domain/src/providers/shared/provider-core.test.ts
+  - packages/db/src/providers/v21-provider-core-repository.test.ts
+  - apps/worker/src/runners/provider-reconciliation/runner.test.ts
+  - packages/domain/src/billing/commercial/policy.test.ts
+  - apps/web/src/server/features/billing/commercial/service.test.ts
+  - apps/web/src/client/app/parent/billing/ParentBillingWorkspace.test.tsx
+  - packages/domain/src/billing/access/billing-access.test.ts
+  - packages/db/src/billing/access/memory-repository.test.ts
+  - apps/web/src/server/features/billing/access/service.test.ts
+  - apps/worker/src/runners/billing-reconciliation/runner.test.ts
+  - packages/domain/src/communications/ghl-identity/planner.test.ts
+  - packages/db/src/communications/ghl-identity/repository.test.ts
+  - apps/worker/src/runners/ghl-identity/runner.test.ts
+verified_behavior_groups:
+  provider_core:
+    assertions_passed: 10
+    facts:
+      - exact active registry evidence is required
+      - wrong account and wrong environment fail closed
+      - Stripe mutations are prohibited
+      - acceptance-unknown operations reconcile before retry
+      - adult identity ambiguity quarantines only GHL and paid billing effects
+      - household GHL and Stripe references remain isolated through transfer
+  commercial_billing:
+    assertions_passed: 14
+    facts:
+      - plan is 67 USD monthly with a three-Student cap
+      - free signup is cardless and creates no provider intent
+      - standard hosted checkout schedules no immediate charge and replays idempotently
+      - immediate charge requires separate exact consent
+      - refunds require Admin authority
+      - cancellation preserves access to paid period end
+      - only matched signed billing evidence changes access
+  billing_access:
+    assertions_passed: 11
+    facts:
+      - failed payment starts one seven-day grace window
+      - Student access persists during grace and stops after expiry
+      - newer unresolved failure outranks older paid evidence
+      - verified household-matched recovery restores access once
+      - signed receipts reject invalid, stale, replay-conflicting, or mutation-capable input
+  ghl_identity:
+    assertions_passed: 14
+    facts:
+      - Adult records are classified from approved facts
+      - active export rows are not automatically active legacy
+      - suppression remains distinct
+      - Student subjects fail before provider intent or invocation
+      - local state remains durable across provider failure
+limitations:
+  - CI proves candidate logic and in-memory/provider-adapter boundaries, not a candidate-bound live provider effect.
+  - No browser-authenticated full route inventory was executed.
+  - No Stripe test clock, hosted portal, subscription, invoice, charge, refund, or webhook identity was available.
+  - GHL workflow acceptance requires provider_sandbox or production_operator_canary and could not be executed read-only.
+external_effects:
+  attempted: 0
+  succeeded: 0
+  reconciled: 0

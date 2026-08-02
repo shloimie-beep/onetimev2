@@ -1,0 +1,18 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+canonical_candidate_digest: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
+environment_id: provider_sandbox
+runtime_tier: isolated_staging
+status: unavailable
+deployment_instance_id: not_available
+deployed_artifact_digest: not_deployed
+configuration_digest: 71c5e8a17c73a0414bee2b40f5803f14ae7190dd996e57e97c7396c4ca3f5d6e
+migration_inventory_digest: 1598fc0f7f18e172b9566c65dbb81593ba2b5b1339e1dbca312aa01b53383f6b
+route_action_inventory_digest: 3ca498c122f0fc3a8f753898687e233b717349f9486b8df86dd02e22fb06d483
+provider_registry_digest: 80778ec9924ddc7ecb204f6ed6ed380c922ce5f4c7135b4a733ba5fc5f138b16
+provider_readback_digest: b60ede174a17eee5f011c7dc727aee839c9585853c886f0ebb5309c25cde88c8
+reason: No candidate-bound HighLevel provider sandbox or authorized production operator canary was available.
+external_effects:
+  attempted: 0
+  succeeded: 0
+  reconciled: 0

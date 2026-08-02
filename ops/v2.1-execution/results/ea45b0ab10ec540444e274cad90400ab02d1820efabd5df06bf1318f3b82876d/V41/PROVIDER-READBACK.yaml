@@ -1,0 +1,77 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+verification_lane: V41
+canonical_candidate_digest: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
+authority: read_only_only
+observed_at: '2026-08-02T12:06:00Z'
+redaction:
+  provider_payloads_retained: false
+  contact_names_addresses_phones_retained: false
+  credentials_or_bearers_retained: false
+highlevel:
+  expected_location_id: pBSnOK2nkdxp6gf9Rg3o
+  canonical_location_identity: pBSnOK2nkdxp6gf9Rg3o
+  canonical_account_or_agency_identity: unknown
+  prior_candidate_bound_readback:
+    location_url_matched: true
+    visible_location_label: info@onetimeonetime.com
+    workflow_root: One Time
+    canonical_folders_visible: 10
+    source_digest: 35d6de26d55205f3937bf3d696886802d33041eba59a7fa2c2bdc671edf8b22f
+  current_connector_readback:
+    contact_collection_readable: true
+    reported_contact_count: 1493
+    returned_window_count: 20
+    requested_student_filter_honored: false
+    requested_parent_filter_honored: false
+    location_metadata_readable: false
+    location_metadata_blocker: companies_readonly_oauth_scope_missing
+    workflow_inventory_readable: false
+    workflow_query_result: rejected_wrong_resource
+    payment_identity_readable: false
+    payment_identity_blocker: companies_readonly_oauth_scope_missing
+  identity_conclusion:
+    adult_only_mapping_proven_live: false
+    zero_student_contacts_proven_live: false
+    reason: The connector exposed only an unfiltered contact window and could not bind it to canonical location/account metadata.
+stripe_through_ghl:
+  canonical_account_identity: unknown
+  product_identity: unknown
+  price_identity: unknown
+  webhook_identity: unknown
+  checkout_identity: unknown
+  direct_stripe_connector_available: false
+  live_billing_readback_possible: false
+sender_registry:
+  registry_digest: d1d7aa69790f6c49e0e38828bb1cc366b87fa7fc1cb15e9deda9f36385e7512e
+  rabbi_campaign:
+    display_name: Rabbi Eli Scheller
+    from_address: rabbielischeller@onetimeonetime.com
+    reply_to: rabbielischeller@onetimeonetime.com
+    status: canonical_identity_fixed_provider_acceptance_pending
+  office:
+    display_name: Shloimie from One Time Mishnayos
+    from_address: info@onetimeonetime.com
+    reply_to: info@onetimeonetime.com
+    status: active_in_registry
+  brand:
+    display_name: One Time Mishnayos
+    from_address: info@onetimeonetime.com
+    reply_to: info@onetimeonetime.com
+    status: active_in_registry
+  account_security:
+    provider: Resend
+    display_name: One Time Mishnayos Account
+    current_address: info@onetimeonetime.com
+    preferred_address: account@onetimeonetime.com
+    status: preferred_address_pending_domain_acceptance
+workflow_registry:
+  registry_digest: 08fa35058d351e79aa56a8bddcb6752ba2f356c4fde35c0a26b13338c1f53573
+  current_live_readback: unavailable
+  publication_authorized: false
+  enrollment_authorized: false
+effects:
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+  locks_acquired: 0

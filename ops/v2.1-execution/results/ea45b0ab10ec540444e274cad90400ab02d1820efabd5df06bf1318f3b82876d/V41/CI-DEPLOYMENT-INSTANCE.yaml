@@ -1,0 +1,21 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+canonical_candidate_digest: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
+deployment_instance_id: ci-worktree-v41-ea45b0ab10ec-20260802T120804Z
+environment_id: ci
+runtime_tier: isolated_staging
+deployed_artifact_digest: 05deaa76b64ccfb7ab82b78ce75965c134ffd39a63da1fc40139dc6eee901e3e
+configuration_digest: 71c5e8a17c73a0414bee2b40f5803f14ae7190dd996e57e97c7396c4ca3f5d6e
+migration_inventory_digest: 1598fc0f7f18e172b9566c65dbb81593ba2b5b1339e1dbca312aa01b53383f6b
+route_action_inventory_digest: 3ca498c122f0fc3a8f753898687e233b717349f9486b8df86dd02e22fb06d483
+provider_registry_digest: 80778ec9924ddc7ecb204f6ed6ed380c922ce5f4c7135b4a733ba5fc5f138b16
+provider_asset_readback_digests:
+  - 7ec4e962d34adf70f5fbf48cc4c2212c84130a832b1bc5c6ff49a3aaf683700b
+  - b60ede174a17eee5f011c7dc727aee839c9585853c886f0ebb5309c25cde88c8
+deployed_at: '2026-08-02T12:08:04Z'
+deployment_readback_digest: 7ec4e962d34adf70f5fbf48cc4c2212c84130a832b1bc5c6ff49a3aaf683700b
+production_specific_gate: false
+immutable: true
+notes:
+  - This immutable CI instance is the exact candidate worktree exercised by V41.
+  - It is not a persistent staging or production deployment and performed no provider effects.
