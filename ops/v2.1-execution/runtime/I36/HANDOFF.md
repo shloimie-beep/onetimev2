@@ -1,5 +1,75 @@
 # I36 Integration Releases
 
+## Current terminal - launch source and configurable timing
+
+Control `403c65b85f6bc85bba4a38df19c977058e2ff3d6`, based on
+`607ee4a324ab379674f2b1306ec66058f9d09e51`, authorized this bounded I36
+successor from accepted source `d61f4e49349ed4b63618513ce6642337690d55d0`
+under READY `79b66a4b3f0ee9381e0da869f199b93446c44e3d093c2d9e07723e02e053bf35`.
+The exact 63-path ceiling has inventory
+`d64f0e5bef040d3492a35f634192faf7224edf38bf3e4bcee9107d4a105c2d81`
+and preimage manifest
+`ce9d8b48af8901dfb98cfd52fe9e439bc74eb36e1ffb3fc3d32185522e3d48cb`.
+
+F02 migration 2258 was integrated first at
+`411790eb2b2b705f5487e58567dcd72d31f06cea`. I36 source terminal
+`36c4afca2204bfd1dac76a53adc94d4c859c3291` was then merged at
+`836340a7db094b5024e25bd3bc31f87f2c9cdbde`; combined repository/candidate
+correction `cecdd3b83c5bcd15ced45d83bf45113f60d51544` closes the two integration
+deltas exposed only after those branches met.
+
+The I36 release changes 59 source/test paths plus this runtime triplet. Their
+source, runtime, and release inventories are
+`5a1ccd80643a4ad04c39f73bb9588fec241609cde20fdf8f2af98b169a8e9231`,
+`bdf3cfe7a516fb00f891ef66f1f752591ce3d894243bbe50393980d10a3a441a`,
+and `198028d9694ef71bbdaaad216920d769bbfe8024c7f725450e34e8f03e1919b7`.
+The source preimage/postimage manifests are
+`64c44dea53843552aab2c39c3ff58774b8ee465978a6ca39d58720b6556cfae6`
+and `507a7bee98c6cf652fc22067661abcc6ad37b89c36077c3b62f06977e1034a72`.
+The one authorized unchanged source path is the already-green Family router
+test. Five additional changed paths in the full integration range belong to
+the separately accepted F02 migration terminal.
+
+The landing and signup source now say `LIVE SUNDAY–THURSDAY`, preserve `JOIN
+FREE`, retain the accepted desktop/mobile assets, and contain no compiled or
+guessed first-class/cutoff timestamp. `ONE_TIME_FIRST_CLASS_AT` and
+`ONE_TIME_FREE_ACCESS_EXPIRES_AT` are the only runtime sources. Without the
+cutoff, countdown/date claims remain hidden and signup, billing, OT-16, and
+production promotion fail closed. Family signup remains adult-managed,
+cardless, and zero-Student-contact; School remains a separate manual inquiry.
+
+The repository contains exactly ten reviewed GHL launch drafts: one office
+OT-01 receipt and nine Rabbi campaign messages across OT-02A, OT-15, and
+OT-02B. All four workflows remain `DRAFT_WAITING_EXTERNAL`; publication,
+enrollment, and send authority are false. No provider asset was created or
+changed.
+
+The integrated tree verifies 89 migrations and derives exact candidate inputs
+of 1,148 application, 1,014 web, and 1,014 worker blobs. The PostgreSQL 18.4
+proof workflow is pinned and fail-closed but was not dispatched, and no
+candidate was frozen.
+
+Validation passes typecheck, scoped ESLint/Prettier, diff hygiene, the 3,190-file
+secret scan, 77/77 communication/worker tests, 7/7 migration checks, 4/4 Family
+repository tests, 4/4 candidate-builder tests, HighLevel registry/projection
+checks, and the existing 10/10 external landing browser harness. The focused
+landing/config/service packet has 67 passing assertions; its two additional
+failures are the disclosed pre-existing static-asset and Parent canonical-route
+404 baseline. Normal Playwright startup retains the disclosed seed omission of
+non-null `join_opens_at`.
+
+Claim `becf6b05-e160-442f-8b5a-2a0c6193bb26` and all ten writer-slot leases
+were released at `2026-08-02T10:17:50Z`, before expiry
+`2026-08-02T13:08:39Z`. No provider, network, persistent-database, candidate,
+deployment, DNS, contact, send, enrollment, billing, charge, cleanup, or other
+external effect occurred; effects remain `0/0/0`.
+
+Push this exact terminal, prove clean local/tracking/live equality, and perform
+one delta-only independent review. Candidate freeze and every external effect
+remain separately gated.
+
+All sections below are retained historical release records and audit prompts.
+
 ## Current terminal - held-source review correction
 
 Control `6852bbfd2bbccc1b7a3bfe53393e46eacc6b9ace`, with authority basis

@@ -1,6 +1,70 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
+MODE: PAUSE_FOR_C00_I36_LAUNCH_SOURCE_DELTA_REVIEW
+
+Audit only the exact pushed I36 launch-source/configurable-timing terminal. Do
+not restart a broad audit, inspect accepted history beyond parent/scope checks,
+freeze a candidate, dispatch the PostgreSQL workflow, inspect or mutate a
+provider, touch a persistent database, deploy, change DNS, create a contact,
+publish, enroll, send, charge, clean up, or perform any external effect.
+
+Repository: shloimie-beep/onetimev2
+Branch: codex/v21-integration
+Authorized source start: `d61f4e49349ed4b63618513ce6642337690d55d0`
+Containing control: `403c65b85f6bc85bba4a38df19c977058e2ff3d6`
+Authority basis: `607ee4a324ab379674f2b1306ec66058f9d09e51`
+READY: `79b66a4b3f0ee9381e0da869f199b93446c44e3d093c2d9e07723e02e053bf35`
+Claim: `becf6b05-e160-442f-8b5a-2a0c6193bb26`
+Writer: `codex-i36-launch-source-becf6b05`
+Lease issue/expiry/release: `2026-08-02T09:08:39Z` /
+`2026-08-02T13:08:39Z` / `2026-08-02T10:17:50Z`
+Effects: `0/0/0`.
+
+Confirm F02 migration terminal `0f9422fc...` was integrated first at
+`411790eb...`; I36 source `36c4afca...` was merged at `836340a7...`; and
+combined correction `cecdd3b8...` is a three-path integration correction.
+Confirm I36 changes exactly 59 source/test paths plus the runtime triplet,
+inside the 63-path ceiling, with one authorized unchanged Family router test.
+The five additional full-range paths are exactly the separately accepted F02
+terminal.
+
+Confirm source/runtime/release inventories
+`5a1ccd80643a4ad04c39f73bb9588fec241609cde20fdf8f2af98b169a8e9231`,
+`bdf3cfe7a516fb00f891ef66f1f752591ce3d894243bbe50393980d10a3a441a`,
+and `198028d9694ef71bbdaaad216920d769bbfe8024c7f725450e34e8f03e1919b7`;
+source preimage/postimage manifests
+`64c44dea53843552aab2c39c3ff58774b8ee465978a6ca39d58720b6556cfae6`
+and `507a7bee98c6cf652fc22067661abcc6ad37b89c36077c3b62f06977e1034a72`;
+and ceiling inventory/preimage
+`d64f0e5bef040d3492a35f634192faf7224edf38bf3e4bcee9107d4a105c2d81`
+and `ce9d8b48af8901dfb98cfd52fe9e439bc74eb36e1ffb3fc3d32185522e3d48cb`.
+
+Review only the changed behavior: optional single-source first-class and
+free-access cutoff; no guessed date; fail-closed production promotion, signup,
+billing, and OT-16 when unset; Sunday–Thursday landing copy; Family-only
+adult/cardless/zero-Student signup; separate School inquiry; ten exact draft
+messages across OT-01, OT-02A, OT-15, and OT-02B; canonical sender split; and
+publication/enrollment/send disabled.
+
+Confirm migration count 89 and candidate inputs 1,148 application / 1,014 web /
+1,014 worker. Reproduce only the focused checks needed for the delta: typecheck,
+scoped lint/format/diff, communication 77/77, migration 7/7, Family repository
+4/4, candidate builder 4/4, and registry/projection checks. Accept the disclosed
+two static/canonical 404s and Playwright seed omission only if unchanged and not
+caused by this delta.
+
+Return exact P1/P2/P3 counts. Confirm clean local/tracking/live equality and all
+leases released before expiry. Do not admit candidate readiness or production
+completion. Stop.
+
+---
+
+## Historical audit prompt - held-source review correction
+
+MODEL: GPT-5.6-SOL
+REASONING: XHIGH
+SERVICE TIER: PRIORITY
 MODE: PAUSE_FOR_C00_I36_HELD_SOURCE_CORRECTION_DELTA_REVIEW
 
 Audit only the exact pushed I36 15-source/3-runtime held-source correction

@@ -6,10 +6,10 @@ task_context_digest: 7f47da82267dec5dafe9ad53da7ece7618c331645f0591982851c47987d
 spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
 package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
 branch: codex/v21-integration
-start_sha: 9082f3015d6fe95cf374266b49a9e4db7ae69ead
+start_sha: d61f4e49349ed4b63618513ce6642337690d55d0
 dependency_heads:
-  C00: 702cce4dbe6cb6160c10144f212dc6627676f1a8
-  F02: 3ee2f651528f5170dd714b921500235d4e015c5b
+  C00: 403c65b85f6bc85bba4a38df19c977058e2ff3d6
+  F02: 0f9422fc3c09d0c19ef91f61058955f5a80b7870
   F03: 3947c9887f3c6914a8247c70ac816a4ae94c76d0
   F06: 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
   P14: 3393169e2284d65ff0a970d797aa1f83ebf9d895
@@ -40,31 +40,144 @@ dependency_heads:
   P18: 1926e61c793ce29d7240c1ee05d2a4879b52770b
   P21: c11dec418fa3de896e96c348f87928c92c9f86b9
 status: ready_for_review
-phase: held_source_review_correction_terminal
-claimed_by: codex-i36-held-source-correction-b2d91877
-claim_time: '2026-08-02T06:45:22Z'
-claim_id: b2d91877-4afc-4307-ae16-e3eeb4ea27e6
-lease_id: 97f89adb-7b6e-47f8-b175-4e3a1f75dddb
-lease_issued_at: '2026-08-02T06:45:22Z'
-lease_expires_at: '2026-08-02T12:45:22Z'
-lease_released_at: '2026-08-02T08:19:16Z'
-last_heartbeat_at: '2026-08-02T08:19:16Z'
-controller_authorization_sha: 71342aa60de3f3840c70555a616cded8f5672989
-latest_valid_observed_control_head_sha: 6852bbfd2bbccc1b7a3bfe53393e46eacc6b9ace
-reconciled_state_based_on_control_head_sha: 6852bbfd2bbccc1b7a3bfe53393e46eacc6b9ace
-ready_authorization_control_head_sha: 6852bbfd2bbccc1b7a3bfe53393e46eacc6b9ace
-ready_entry_state_based_on_control_head_sha: 71342aa60de3f3840c70555a616cded8f5672989
-ready_entry_payload_digest: d58967bf53d161676d1a8c198f76c399a22c0e321e13d2b349e85605fd7cc209
+phase: launch_source_and_configurable_timing_terminal
+claimed_by: codex-i36-launch-source-becf6b05
+claim_time: '2026-08-02T09:08:39Z'
+claim_id: becf6b05-e160-442f-8b5a-2a0c6193bb26
+lease_id: 923f788c-4fab-46b7-8de6-8b1d1038de7d
+lease_issued_at: '2026-08-02T09:08:39Z'
+lease_expires_at: '2026-08-02T13:08:39Z'
+lease_released_at: '2026-08-02T10:17:50Z'
+last_heartbeat_at: '2026-08-02T10:17:50Z'
+controller_authorization_sha: 607ee4a324ab379674f2b1306ec66058f9d09e51
+latest_valid_observed_control_head_sha: 403c65b85f6bc85bba4a38df19c977058e2ff3d6
+reconciled_state_based_on_control_head_sha: 607ee4a324ab379674f2b1306ec66058f9d09e51
+ready_authorization_control_head_sha: 607ee4a324ab379674f2b1306ec66058f9d09e51
+ready_entry_state_based_on_control_head_sha: 607ee4a324ab379674f2b1306ec66058f9d09e51
+ready_entry_payload_digest: 79b66a4b3f0ee9381e0da869f199b93446c44e3d093c2d9e07723e02e053bf35
 claim_mode: new
-expected_existing_head_sha: e7417f39e71fbb4fb45aa4a9436ba78496020063
-lease_phase_scope: held_source_review_correction
+expected_existing_head_sha: d61f4e49349ed4b63618513ce6642337690d55d0
+lease_phase_scope: launch_source_and_configurable_timing
 writer_slot_leases_released:
-  - slot: CLIENT_COMPOSER
-    lease_id: e193437a-a355-4a5d-b740-0a443ca3e71a
+  - slot: CONFIG_DEPS
+    lease_id: 6dcd190c-55b5-4651-84af-e6fd425e5d99
   - slot: SERVER_COMPOSER
-    lease_id: 67f84dd8-f317-455c-81f5-91d3cf324c77
+    lease_id: 20709907-eec6-462a-9ba3-379c44d5c890
+  - slot: CLIENT_COMPOSER
+    lease_id: d9b950b3-40f5-4a36-9c88-3c56ea09841e
+  - slot: GHL_REGISTRY
+    lease_id: aa344a05-e504-4939-8511-d46f2f3633c0
   - slot: RELEASE_INTEGRATOR
-    lease_id: 97f89adb-7b6e-47f8-b175-4e3a1f75dddb
+    lease_id: 923f788c-4fab-46b7-8de6-8b1d1038de7d
+  - slot: FAMILY_SIGNUP
+    lease_id: f4839fef-38de-4824-9199-35c196772349
+  - slot: BILLING_COMMERCIAL
+    lease_id: a2a792bc-81e2-4205-a482-4c8128290235
+  - slot: GHL_CORE_WORKFLOWS
+    lease_id: 9ba3dd12-3c8c-4fa9-ba86-9649c6a9861b
+  - slot: GHL_CAMPAIGNS
+    lease_id: 42810294-b675-42f8-b89d-7e8cb0208814
+  - slot: COPY_CATALOG
+    lease_id: f2f57653-eda0-4003-803a-6675bc412ee1
+launch_source_and_configurable_timing_terminal:
+  containing_control_head_sha: 403c65b85f6bc85bba4a38df19c977058e2ff3d6
+  state_basis_control_head_sha: 607ee4a324ab379674f2b1306ec66058f9d09e51
+  exact_authorized_start_sha: d61f4e49349ed4b63618513ce6642337690d55d0
+  ready_entry_payload_digest: 79b66a4b3f0ee9381e0da869f199b93446c44e3d093c2d9e07723e02e053bf35
+  authorized_ceiling:
+    path_count: 63
+    path_inventory_digest: d64f0e5bef040d3492a35f634192faf7224edf38bf3e4bcee9107d4a105c2d81
+    preimage_manifest_digest: ce9d8b48af8901dfb98cfd52fe9e439bc74eb36e1ffb3fc3d32185522e3d48cb
+  claim_id: becf6b05-e160-442f-8b5a-2a0c6193bb26
+  writer_id: codex-i36-launch-source-becf6b05
+  lease_issued_at: '2026-08-02T09:08:39Z'
+  lease_expires_at: '2026-08-02T13:08:39Z'
+  lease_released_at: '2026-08-02T10:17:50Z'
+  last_heartbeat_at: '2026-08-02T10:17:50Z'
+  exact_scope:
+    source_and_test_paths: 59
+    runtime_paths: 3
+    total_paths: 62
+    authorized_unchanged_path: apps/web/src/server/features/signup/family/router.test.ts
+    source_path_inventory_digest: 5a1ccd80643a4ad04c39f73bb9588fec241609cde20fdf8f2af98b169a8e9231
+    runtime_path_inventory_digest: bdf3cfe7a516fb00f891ef66f1f752591ce3d894243bbe50393980d10a3a441a
+    release_path_inventory_digest: 198028d9694ef71bbdaaad216920d769bbfe8024c7f725450e34e8f03e1919b7
+    source_preimage_manifest_digest: 64c44dea53843552aab2c39c3ff58774b8ee465978a6ca39d58720b6556cfae6
+    source_postimage_manifest_digest: 507a7bee98c6cf652fc22067661abcc6ad37b89c36077c3b62f06977e1034a72
+    release_preimage_manifest_digest: 4325b495c9babaf2d049ccaa241cd6be2f081ca3764d441cc0da23525b9273ef
+    manifest_algorithm: sha256_compact_UTF8_JSON_path_sorted_path_and_raw_Git_content_sha256_or_null
+  integration_chain:
+    accepted_source_start: d61f4e49349ed4b63618513ce6642337690d55d0
+    F02_terminal: 0f9422fc3c09d0c19ef91f61058955f5a80b7870
+    F02_integration_merge: 411790eb2b2b705f5487e58567dcd72d31f06cea
+    I36_source_terminal: 36c4afca2204bfd1dac76a53adc94d4c859c3291
+    I36_source_merge: 836340a7db094b5024e25bd3bc31f87f2c9cdbde
+    combined_correction: cecdd3b83c5bcd15ced45d83bf45113f60d51544
+  configurable_launch_truth:
+    first_class_source: ONE_TIME_FIRST_CLASS_AT
+    free_access_expiry_source: ONE_TIME_FREE_ACCESS_EXPIRES_AT
+    compiled_or_guessed_timestamp_present: false
+    production_operator_canary_or_broad_without_expiry: rejected
+    landing_countdown_without_expiry: hidden
+    signup_and_billing_without_expiry: inactive_and_fail_closed
+    OT16_digest_without_expiry: fail_closed_before_database_or_provider_access
+  landing_and_signup_truth:
+    schedule: LIVE_SUNDAY_THURSDAY
+    primary_cta: JOIN_FREE
+    family_signup: adult_managed_no_card_no_student_fields
+    school: separate_manual_inquiry
+    student_GHL_contacts: prohibited
+    immediate_free_access: only_before_configured_cutoff
+  launch_communications_truth:
+    canonical_workflows: [OT-01, OT-02A, OT-15, OT-02B]
+    canonical_drafts: 10
+    office_messages: 1
+    rabbi_campaign_messages: 9
+    workflow_state: DRAFT_WAITING_EXTERNAL
+    publication_authorized: false
+    enrollment_authorized: false
+    sends_performed: 0
+  migration_and_candidate_inputs:
+    migration_2258_integrated_first: true
+    migration_count: 89
+    application_blob_count: 1148
+    web_blob_count: 1014
+    worker_blob_count: 1014
+    candidate_frozen: false
+    PostgreSQL_18_4_workflow_dispatched: false
+  completed_validation:
+    workspace_typecheck: passed
+    scoped_eslint: passed
+    scoped_prettier: passed
+    diff_check: passed
+    repository_secret_scan: passed_3190_text_files
+    communications_and_worker_packet: passed_77_of_77
+    migration_verification: passed_7_of_7
+    family_repository: passed_4_of_4
+    candidate_builder: passed_4_of_4
+    landing_config_service_packet: passed_67_with_2_disclosed_unrelated_static_route_baselines
+    focused_external_browser_harness: passed_10_of_10
+    highlevel_registry_and_projection: passed
+  disclosed_out_of_scope_baselines:
+    public_metadata_static_asset_and_parent_route: existing_2_404_failures
+    normal_Playwright_server: existing_seed_omits_nonnull_join_opens_at
+    broad_provider_reconciliation: separately_gated_after_candidate
+  disposition:
+    source_terminal_complete: true
+    delta_review_pending: true
+    candidate_ready_claimed: false
+    production_complete_claimed: false
+  provider_or_infrastructure_effect: false
+  deployment_or_DNS_action: false
+  external_effects:
+    attempted: 0
+    succeeded: 0
+    reconciled: 0
+  safe_next_action: >-
+    Push the exact terminal, prove clean local/tracking/live equality, and run
+    one delta-only independent review. Do not freeze a candidate or perform a
+    provider, DNS, deployment, signup, enrollment, send, billing, or cleanup
+    effect unless the terminal is accepted and its successor gates are met.
 held_source_review_correction_terminal:
   containing_control_head_sha: 6852bbfd2bbccc1b7a3bfe53393e46eacc6b9ace
   state_basis_control_head_sha: 71342aa60de3f3840c70555a616cded8f5672989
