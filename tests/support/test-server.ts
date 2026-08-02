@@ -365,7 +365,8 @@ async function seedDayOneBrowserRecords() {
         starts_at, reminder_due_at, joinable_until, occurrence_state, access_state,
         join_opens_at, join_closes_at, scheduled_ends_at)
      VALUES ('e2e_class_occurrence', $1, $2, 'e2e_class_series', '2026-07-16',
-        $3, $4, $5, 'scheduled', 'provider_unavailable', $4, $5, $5)`,
+        $3, $4, $5, 'scheduled', 'provider_unavailable',
+        $3::timestamptz - interval '15 minutes', $5, $5)`,
     [
       config.accountKey,
       config.productKey,

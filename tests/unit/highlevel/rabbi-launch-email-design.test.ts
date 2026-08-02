@@ -63,16 +63,22 @@ describe('Rabbi launch email design', () => {
     expect(migrationPrompt).toContain(
       'Use the standard GHL unsubscribe treatment on all three emails.',
     );
+    expect(migrationPrompt).toContain(
+      'The historical `rabbi@onetimeonetime.com` alias must never be selected for canonical public use.',
+    );
     expect(nurturePrompt).toContain('independently proven general-marketing permission');
     expect(nurturePrompt).toContain(
       'Event registration, attendance, payment, portal state, deliverability, and legacy tags never establish permission.',
     );
+    expect(nurturePrompt).toContain(
+      'Never use the historical `rabbi@onetimeonetime.com` alias or a fallback identity.',
+    );
     for (const prompt of [migrationPrompt, nurturePrompt]) {
+      expect(prompt).toContain('Rabbi Eli Scheller');
       expect(prompt).toContain('rabbielischeller@onetimeonetime.com');
       expect(prompt).toContain('One Time Rabbi Campaign Phase 2 From');
       expect(prompt).toContain('One Time Rabbi Reply-To');
       expect(prompt).toContain('GHL-UI-24');
-      expect(prompt).toContain('rabbi@onetimeonetime.com');
       expect(prompt).toContain('One Time Home URL');
       expect(prompt).toContain('This copy is not authorization to send.');
     }
