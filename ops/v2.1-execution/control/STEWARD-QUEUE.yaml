@@ -422,16 +422,16 @@ items:
   request_digest: a7fea38033ff31b691fb065d124bf4d71e0900ea3dd2fbc0bd481cefd00b1960
   requesting_task_id: P18
   kind: migration
-  status: assigned
+  status: applied
   assigned_steward: F02
   target_checkpoint: F02_next_migration_checkpoint
-  acknowledged_by_task: false
-  acknowledgment_head_sha: null
-  acknowledgment_state_handoff_digest: null
-  applied_commit_sha: null
-  result_record_head_sha: null
-  evaluated_target_head_sha: null
-  result_digest: null
+  acknowledged_by_task: true
+  acknowledgment_head_sha: 9754f2ae0736ace4bbf7d2a88c73f1d28b0b5a20
+  acknowledgment_state_handoff_digest: e0b2ede55c202a8701905fbf7468f1a33ff09ae3a9f4fec5f5926a018f107616
+  applied_commit_sha: 526f038412d7652451e519fae0f8ef857625029a
+  result_record_head_sha: 524563f07b3bb8544db989982dc55d4bc86a1999
+  evaluated_target_head_sha: dd944eee39c314c562171c89c7350a6900ea2e6f
+  result_digest: 88fbea4f467bb0b468ae80464b46da141f0026a16e82d4444cf02bee5dcad35b
   rejection_reason: null
 - request_id: P18-registration-001
   request_digest: 3e5cfa4b78e3224c3b5ee55257b32c121d448e69fe6479b208c225277b5a917c

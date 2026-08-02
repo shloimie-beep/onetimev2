@@ -331,16 +331,19 @@ blockers:
     reconciliation wrapper permits provider readback completed_locally:true to bypass required local finalization, and current
     I36 metadata overstates that fence. Correction terminal b9869874 fixes the product defect and passes its focused 20/20 plus
     prior 76/76 packet, but independent review holds zero P1, one P2, zero P3 because top-level TASK-STATE current fields still
-    point to the older Batch-D/P35 checkpoint. C00 dispatched an exact runtime-triplet-only metadata correction with no effects.
+    point to the older Batch-D/P35 checkpoint. Exact runtime-only terminal 48182afe corrects those fields. C00 independently
+    reproduced READY, all preimages, exact three-path scope, YAML/format/diff/secret gates, lease release, clean remote equality,
+    effects 0/0/0, and accepted the complete P21 repository terminal with zero P1, zero P2, and zero P3. Native PostgreSQL
+    replay and actual candidate-mounted population/readback remain later hard gates; no provider or candidate effect occurred.
   required_authority_or_input:
-  - Complete and independently review the exact P21 current-checkpoint runtime metadata correction before P22/P30 continuation
   - Reproduce the corrected behavior against a true native PostgreSQL server in the merged migration/candidate gate
   - Preserve P21-registration-003 as superseded path-incomplete history
+  - Prove the admitted P21 writer is mounted and populates canonical content state before enabling dependent P22 review proof
   protection: >-
     Do not directly mutate canonical_aggregate_states, add a second reconciler, write a new migration, emit same-state
     events, split the publication CAS from the canonical event transaction, derive provider authority from provider-returned
     data, add a real provider adapter, or advance candidate/provider/release gates while canonical content state is absent.
-  next_check: Re-evaluate after the exact runtime-triplet P21 metadata correction is independently accepted and native PostgreSQL-server replay is recorded.
+  next_check: Re-evaluate at candidate preparation after native PostgreSQL replay and mounted P21 population/readback are recorded.
 - blocker_id: F04-OWNERSHIP-TRANSFER-REVOCATION-COLUMNS
   status: closed
   scope: controlled_launch_candidate

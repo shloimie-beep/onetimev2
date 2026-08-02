@@ -5,12 +5,12 @@ status: operational
 ready:
   - task_id: I36
     status: ready
-    phase: P21_current_checkpoint_metadata_correction
+    phase: P18_path_complete_successor_request_materialization
     branch: codex/v21-integration
     claim_mode: new
-    state_based_on_control_head_sha: ec48eda10f0799e852d015fefca227d99e6863af
-    authorized_start_sha: b98698740936df0b1817be616039da2101a6cb28
-    expected_existing_head: b98698740936df0b1817be616039da2101a6cb28
+    state_based_on_control_head_sha: 66f6bcdc11987c6ef6288877319f43ef9b09f085
+    authorized_start_sha: 48182afe34d5b369b6fbbc05b6d6f788c34e5429
+    expected_existing_head: 48182afe34d5b369b6fbbc05b6d6f788c34e5429
     package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
     source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
     task_packet_digest: 55e261760baac780e9a4db48c328480c6f98172261ef990e563a00b25c467fc7
@@ -19,77 +19,103 @@ ready:
       C00:
         required_state: immediate_lean_completion_mode
         observed_state: immediate_lean_completion_mode
-        observed_control_head_sha: ec48eda10f0799e852d015fefca227d99e6863af
-        control_state_canonical_digest: 8aece9cc2616d2774fba6faf1ca9ac32586b5492f88dba092dd96fd34ccdc249
+        observed_control_head_sha: 66f6bcdc11987c6ef6288877319f43ef9b09f085
+        control_state_canonical_digest: 9a1546979d2c90e7af48cf7e083b5adad9a6cd9b406f0ccf594ef80abf2cc7bb
       I36:
-        required_state: P21_code_correct_metadata_held_one_P2
-        observed_state: P21_code_correct_metadata_held_one_P2
-        terminal_head_sha: b98698740936df0b1817be616039da2101a6cb28
-        terminal_parent_sha: 1873fc8d7e5478eb736021175bb2214d78d865cd
-        terminal_tree_sha: d7e3ec78084553803af29dd23655bdf2bbeac2da
-        terminal_timestamp: '2026-08-02T03:27:18+03:00'
-        product_postimage_manifest_digest: 371eb2d184ed8550f17b1b13970db71fa1daf95d3204e54abd7c374803e4cdd5
-        focused_tests: 20/20_and_76/76_passed
-        independent_review: held_zero_P1_one_P2_zero_P3
-        lease_released_at: '2026-08-02T00:22:23Z'
+        required_state: P21_current_metadata_terminal_accepted
+        observed_state: P21_current_metadata_terminal_passed_no_P1_P2_or_P3
+        terminal_head_sha: 48182afe34d5b369b6fbbc05b6d6f788c34e5429
+        terminal_parent_sha: b98698740936df0b1817be616039da2101a6cb28
+        terminal_tree_sha: 471c6b87b093559af9c4ff5fca0e2bb06c9eb08b
+        terminal_timestamp: '2026-08-02T03:54:43+03:00'
+        runtime_postimage_manifest_digest: 2d2514df15cafa4ccadbab299f9ab810415677d49e9c018d8ef544bd5677e4fe
+        exact_scope: 3_runtime_paths_0_product_paths
+        independent_review: passed_zero_P1_zero_P2_zero_P3
+        lease_released_at: '2026-08-02T00:52:52Z'
         external_effects: 0/0/0
       P21:
-        required_state: effect_exists_local_finalization_code_correct
-        observed_state: effect_exists_local_finalization_code_correct
+        required_state: repository_terminal_accepted
+        observed_state: accepted_after_code_and_metadata_corrections
         corrected_terminal_head_sha: b98698740936df0b1817be616039da2101a6cb28
+        metadata_terminal_head_sha: 48182afe34d5b369b6fbbc05b6d6f788c34e5429
         native_postgresql_gate: required_before_candidate_freeze
+      P18:
+        required_state: migration_003_successor_reconciled_and_registration_001_path_incomplete
+        observed_state: migration_2251_integrated_registration_002_draft_hash_bound
+        migration_2251_sha256: ee0f961687e25ccd60e700d8a58cd9e11e71de1187e68fe517d684992eccdf36
+        original_registration_raw_sha256: 1157f31a58d51047b73a2ee8e757da4428d08708bc29fa7b31818b722ac098b0
+        original_registration_canonical_sha256: 3e5cfa4b78e3224c3b5ee55257b32c121d448e69fe6479b208c225277b5a917c
+        successor_draft_raw_sha256: 59dc010fcbcb370248a0736b4df37ce090ac7239c92afc6aefa38e8ba87c8624
+        successor_draft_canonical_sha256: 0ccf99213e29b459f5d9c095e847b7e018cbf8f7a0416849d99465e24045f080
+        successor_product_path_count: 22
+        successor_product_path_inventory_digest: 2b21372b09476b9a029bced558f5d3856997b902cf9d69d6f1437ec0c862f551
+      P22:
+        required_state: mounted_P18_same_instance_dependency_explicit
+        observed_state: server_request_003_dependency_held
+        server_request_raw_sha256: b359a3beb0626ab13d30e6df5fd429d4266b9e3dd57571cdaf279cf27b780698
+        server_request_canonical_sha256: 0639ab621ae2306fd68eb6d07326a6529d4ebd74dd4fae09181b11bd8a19e83f
+    request_bindings:
+      P18-registration-002:
+        request_digest: 59dc010fcbcb370248a0736b4df37ce090ac7239c92afc6aefa38e8ba87c8624
+        canonical_object_digest: 0ccf99213e29b459f5d9c095e847b7e018cbf8f7a0416849d99465e24045f080
+        destination_path: ops/v2.1-execution/runtime/P18/steward-requests/P18-registration-002.yaml
+        digest_kind: raw_git_blob_sha256
     authorized_paths:
       - ops/v2.1-execution/runtime/I36/HANDOFF.md
       - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
       - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
-    authorized_path_count: 3
-    authorized_path_inventory_digest: bdf3cfe7a516fb00f891ef66f1f752591ce3d894243bbe50393980d10a3a441a
+      - ops/v2.1-execution/runtime/P18/steward-requests/P18-registration-002.yaml
+    authorized_path_count: 4
+    authorized_path_inventory_digest: e15bf1e3d8747c18c299e3cdf1a729ffc6cdc460ebaf242f470dae8dede4ce2b
     product_path_count: 0
     product_path_inventory_digest: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
     authorized_product_preimage_manifest_digest: 44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a
     authorized_product_preimage_manifest_algorithm: stable_json_sorted_keys_sha256
     authorized_product_preimages: {}
-    authorized_runtime_preimages:
-      ops/v2.1-execution/runtime/I36/HANDOFF.md: 48d2301559446bf7161e4f08933e42cfb70c0989edb44a6913cb6bc7d1612514
-      ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md: 3df7f5ef11bc8f0d7c63ab2b52cd8c522868b50351f30d9eab87a3eb715bde2e
-      ops/v2.1-execution/runtime/I36/TASK-STATE.yaml: 459fffb73d1484762521405322a63e969dba98dce98074719e2e55535a022f93
+    substantive_request_path_count: 1
+    runtime_path_count: 3
+    authorized_preimages:
+      ops/v2.1-execution/runtime/I36/HANDOFF.md: 062f3001ae0f81eb415567298c46599ec9fba775fd8526ff33baf93316c8da92
+      ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md: 20d34db61587a36dbf62ade7da5d50b132074d3ea8b83aa24af81c8de337570d
+      ops/v2.1-execution/runtime/I36/TASK-STATE.yaml: 9610d92359a0847fd9ae08c750f7e571903d31c57a90040275f40f877d454bc4
+      ops/v2.1-execution/runtime/P18/steward-requests/P18-registration-002.yaml: null
     directives:
       - >-
-        Change only the I36 runtime triplet. Preserve every product, test, migration, config, control, immutable request, and
-        provider byte from b9869874. Record that the P21 code correction is sound but terminal admission is held at zero P1,
-        one P2, zero P3 solely for stale canonical current-checkpoint metadata.
+        Materialize exactly one new immutable request, P18-registration-002, at its canonical destination with raw SHA-256
+        59dc010fcbcb370248a0736b4df37ce090ac7239c92afc6aefa38e8ba87c8624 and canonical-object SHA-256
+        0ccf99213e29b459f5d9c095e847b7e018cbf8f7a0416849d99465e24045f080. Preserve P18-registration-001 unchanged.
       - >-
-        In TASK-STATE, make every canonical current field agree with the P21 correction: state_based_on_head_sha,
-        last_implementation_commit_sha, remaining_steps, next_action, and current_checkpoint_changed_paths. Remove the old
-        Batch-D/P35 instructions from current authority without deleting historical records. The exact current checkpoint is
-        b9869874 plus this runtime-only child and exactly the runtime triplet.
+        The request must preserve all five P18 requirements and six acceptance cases and bind the exact 22-path product/test
+        ceiling digest 2b21372b09476b9a029bced558f5d3856997b902cf9d69d6f1437ec0c862f551: eleven existing Git-blob-bound paths and eleven
+        explicitly absent new paths. It must state the same-instance P22 callback dependency and all fail-closed caveats exactly.
       - >-
-        Keep HANDOFF and NEXT-PROMPT current/top sections aligned with this metadata-only correction and its review target.
-        Reproduce READY, runtime preimages, YAML parsing, runtime formatting, diff hygiene, release the lease, push one exact
-        three-path terminal, prove local/tracking/live equality and clean tree, and stop for independent review.
+        Update only the I36 runtime triplet around the immutable request. Record P21 metadata terminal 48182afe accepted with
+        zero P1/P2/P3, migration 2251 reconciliation, exact request digests and scope, and the next independent request-admission
+        review. Validate Draft 2020-12 schema, all acceptance IDs, raw/canonical/request inventory digests, and exact preimages.
       - >-
-        Do not rerun broad product suites or change product claims. Add no provider/network/registry/persistent-database/candidate/
-        deployment/DNS/send/charge/customer/cleanup/external effect. Effects remain 0/0/0.
+        Change no product, test, config, migration, control, existing immutable request, or provider byte. Do not implement the
+        22-path request yet. Run no broad product suite. Release the sole lease, push one exact four-path terminal, prove clean
+        local/tracking/live equality, and stop. No provider/network/database/candidate/deploy/DNS/send/charge/external effect.
     writer_slot_leases:
       - slot: RELEASE_INTEGRATOR
-        lease_id: 1a1a07e4-a6dd-4caa-97d6-f66b6a8a608e
+        lease_id: c3a9f152-c6dc-46f6-b79c-860a4f4e1f5d
         holder_task_id: I36
-        holder_claim_id: d007c280-1ccb-4f3a-80c5-a79118de94be
-        holder_writer_id: codex-i36-P21-current-metadata-d007c280
-        state_based_on_control_head_sha: ec48eda10f0799e852d015fefca227d99e6863af
-        lease_issued_at: '2026-08-02T00:33:22Z'
-        lease_expires_at: '2026-08-02T03:33:22Z'
-        phase_scope: exact_runtime_triplet_current_checkpoint_metadata_only
+        holder_claim_id: 68ebd4f6-7182-4c19-be55-591de3ef98cc
+        holder_writer_id: codex-i36-P18-request-68ebd4f6
+        state_based_on_control_head_sha: 66f6bcdc11987c6ef6288877319f43ef9b09f085
+        lease_issued_at: '2026-08-02T01:17:01Z'
+        lease_expires_at: '2026-08-02T04:17:01Z'
+        phase_scope: exact_P18_registration_002_materialization_and_runtime_triplet_only
     effect_lock_leases: []
-    claim_id: d007c280-1ccb-4f3a-80c5-a79118de94be
-    lease_issued_at: '2026-08-02T00:33:22Z'
-    lease_expires_at: '2026-08-02T03:33:22Z'
+    claim_id: 68ebd4f6-7182-4c19-be55-591de3ef98cc
+    lease_issued_at: '2026-08-02T01:17:01Z'
+    lease_expires_at: '2026-08-02T04:17:01Z'
     heartbeat_interval_minutes: 30
     prompt_path: ops/v2.1-execution/prompts/I36-START-OR-RESUME.md
     model: GPT-5.6-SOL
     reasoning: XHIGH
 entry_payload_digests:
-  I36: 2070446cb082bf532a5a8167927c34097a56b237770ccf01fa1b7311bc762e11
+  I36: 091f8cf212dfb8329e8954ba19a74503263f6f26fabd33c5cc8ec8f6fe3a5638
 digest_algorithm: >-
   For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively, separators ',' and ':',
   ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives in this sibling map, never inside the entry.
