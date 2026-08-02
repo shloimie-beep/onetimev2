@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: operational
-active_phase: candidate_bound_phase_a_partial_results_and_launch_correction
+active_phase: launch_priority_source_correction_accepted_for_integration
 bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
@@ -16,12 +16,48 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
 active_writer_limit: 4
-controller_authorization_sha: 4062a17de4b299a620ada6fce0d194ff25743578
+controller_authorization_sha: 228f1c4fdf3fbbf8a694bb2a7cee71cd405fab7c
 next_action: >-
-  Correct only the demonstrated Parent-route and retired preview-build defects from exact source
-  0a5ef2e1e6ba88b151334f2aa78bee9cd8949365, run focused delta tests, and push one terminal checkpoint. V38 and V41
-  continue read-only against the frozen evidence identity. No provider mutation, deployment, DNS, contact, send,
-  enrollment, billing, cleanup, operator canary, or broad production effect is authorized by this checkpoint.
+  Merge exact accepted source head 7943a20895939f66b6755d02f819165850d1042f into integration at
+  031cfde117028c8c199c7bc47e46e18a8227139d, run the focused integration proof, and refreeze a corrected candidate.
+  In parallel, continue read-only GHL audience/workflow and DNS/sender/deployment reconciliation. No provider mutation,
+  deployment, DNS, contact, send, enrollment, billing, cleanup, operator canary, or broad production effect is
+  authorized by this checkpoint.
+candidate_phase_a_batch_1_terminal_evidence:
+  recorded_at: '2026-08-02T12:33:37Z'
+  state_basis_control_head_sha: 228f1c4fdf3fbbf8a694bb2a7cee71cd405fab7c
+  canonical_candidate_digest: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
+  evidence_branch: codex/v21-evidence-ea45b0ab10ec
+  evidence_head_sha: b85790b4737674cfc5adfa4e43fd51c9a60a3e4c
+  lane_terminal_heads:
+    V37: a6c83ee43af18483a257b52c0cb744c17935d79b
+    V38: 4ce1158e2e0127ad5b2dc67126ddf05b1719f61e
+    V39: 5d354904a4ae098376d5ffabb307992f4468243e
+    V41: cee580a2573956c446533088ad331410da4228a5
+  lane_evidence_merge_heads:
+    V37: 74050c373bf3d99176f37f52f43e8c1a7dc1b898
+    V38: 8cf181d0727e15ba170f5d3f5ac7eb1d2015ecc5
+    V39: 2aeedc02c67623c3af9cfbfd508d87941a70f5d5
+    V41: b85790b4737674cfc5adfa4e43fd51c9a60a3e4c
+  case_counts: { expected: 191, attempted: 191, passed: 116, failed: 5, blocked: 70, stale: 0, waived: 0 }
+  unexpected_external_effects: 0
+  cleanup_open_count: 0
+  disposition: failed_candidate_superseded_by_source_correction_accepted_for_integration
+launch_priority_source_correction_terminal:
+  recorded_at: '2026-08-02T12:32:43Z'
+  control_basis_sha: 228f1c4fdf3fbbf8a694bb2a7cee71cd405fab7c
+  branch: codex/v21-launch-critical-correction
+  parent_source_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
+  terminal_head_sha: 7943a20895939f66b6755d02f819165850d1042f
+  changed_path_count: 5
+  focused_route_and_family_tests: passed_5_with_1_native_postgresql_skip
+  preview_contract_tests: passed_4_of_4
+  production_client_build: passed_preview_manifest_and_page_absent
+  typecheck: passed
+  independent_delta_review: passed_P1_0_P2_0_P3_0
+  reviewed_head_sha: 7943a20895939f66b6755d02f819165850d1042f
+  reviewed_at: '2026-08-02T12:41:01.179Z'
+  provider_or_external_effects: 0/0/0
 launch_priority_source_correction_authority:
   recorded_at: '2026-08-02T12:25:37.714Z'
   control_basis_sha: 4062a17de4b299a620ada6fce0d194ff25743578
@@ -33,6 +69,7 @@ launch_priority_source_correction_authority:
   writer_id: codex-i36-launch-critical-4b51b294
   writer_lease_id: 4d4ab19d-5562-4c88-97ac-6b995c362343
   writer_lease_expires_at: '2026-08-02T16:25:37.714Z'
+  writer_lease_released_at: '2026-08-02T12:41:01.179Z'
   authorized_path_count: 5
   authorized_path_inventory_digest: 32890fc553f668c2e373b70a9df714050a8409fe56fea888759a201236a3045a
   authorized_preimage_manifest_digest: 00ee774df0b074ee557a615f1b3117c41c874a733165d50a3728b1bdc18d17c1
