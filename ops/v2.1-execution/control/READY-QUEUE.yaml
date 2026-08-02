@@ -5,12 +5,12 @@ status: operational
 ready:
   - task_id: I36
     status: ready
-    phase: P21_content_publication_reconciliation_successor
+    phase: P21_effect_exists_local_finalization_correction
     branch: codex/v21-integration
     claim_mode: new
-    state_based_on_control_head_sha: b7249121e94130e1ee9d561a112851ac4040fa66
-    authorized_start_sha: 951c151c28f905ad7458973a750c3887edc38ddc
-    expected_existing_head: 951c151c28f905ad7458973a750c3887edc38ddc
+    state_based_on_control_head_sha: 0063689594c1ab9beb2d9f4d64f89a8491284a4c
+    authorized_start_sha: 1873fc8d7e5478eb736021175bb2214d78d865cd
+    expected_existing_head: 1873fc8d7e5478eb736021175bb2214d78d865cd
     package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
     source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
     task_packet_digest: 55e261760baac780e9a4db48c328480c6f98172261ef990e563a00b25c467fc7
@@ -19,175 +19,98 @@ ready:
       C00:
         required_state: immediate_lean_completion_mode
         observed_state: immediate_lean_completion_mode
-        observed_control_head_sha: b7249121e94130e1ee9d561a112851ac4040fa66
-        control_state_canonical_digest: 9f5cccf5d2969c3b93f1676e1106599fc3f65317a50451b1515d3e3a1b29e367
+        observed_control_head_sha: 0063689594c1ab9beb2d9f4d64f89a8491284a4c
+        control_state_canonical_digest: 1d0b3c578e2b1340017e026cc68a58a7a1aecb41dbb97e63c03d173f76364d97
       I36:
-        required_state: F06_active_binding_source_corrected_and_independently_accepted
-        observed_state: F06_active_binding_source_corrected_and_independently_accepted
-        terminal_head_sha: 951c151c28f905ad7458973a750c3887edc38ddc
-        terminal_parent_sha: 701ef6e19d0cb640677c066c2d49fb2f453bb6bc
-        terminal_tree_sha: abaec266f2ac91625f1cf7ff72b258cc3e537826
-        terminal_timestamp: '2026-08-02T01:48:05+03:00'
-        product_postimage_manifest_digest: 1dcaccc344ef2d5ded0cdab332eaf0faa6a9e140cbc9289373f0715ed8bba144
-        release_postimage_manifest_digest: 1cedfab15e448fa520f627f44116bd44e6f35306faaef90c5818cc4d5a10c260
-        focused_tests: 19/19_passed
-        independent_review: passed_zero_P1_zero_P2_zero_P3
-        lease_released_at: '2026-08-01T22:46:01Z'
+        required_state: P21_terminal_held_one_P1_one_P2
+        observed_state: P21_terminal_held_one_P1_one_P2
+        terminal_head_sha: 1873fc8d7e5478eb736021175bb2214d78d865cd
+        terminal_parent_sha: 951c151c28f905ad7458973a750c3887edc38ddc
+        terminal_tree_sha: 38bf82572e3b4bbe76015ba53687ea8441ee4e48
+        terminal_timestamp: '2026-08-02T02:59:36+03:00'
+        product_postimage_manifest_digest: b93af38442d27ca395ea094d8e1f166132b0169cce93c28b5610eed2fe5820f3
+        focused_tests: 75/75_passed_but_missing_completed_locally_true_regression
+        independent_review: held_one_P1_one_P2_zero_P3
+        lease_released_at: '2026-08-01T23:54:44Z'
         external_effects: 0/0/0
-      F05:
-        required_state: exact_scope_job_dispatch_interface_ready
-        observed_state: exact_scope_job_dispatch_interface_ready
-        terminal_head_sha: 9174d845e1c04916e2f1884cfadfaef624ac6862
-        interface_checkpoint_sha: 0656380bcfc50cc464dcea7588448dc724049599
-        interface_checkpoint_digest: fd17c478bfc851dcb434b8e0c2750701605b80dfdf880833a6a2993e8fad6329
       F06:
-        required_state: generic_reconciliation_and_active_binding_interfaces_ready_with_accepted_registry_source
-        observed_state: generic_reconciliation_and_active_binding_interfaces_ready_with_accepted_registry_source
-        verification_head_sha: ce061ca5b208cfb2a41e0c2f439a7a4b91e8ca57
+        required_state: generic_reconciliation_lifecycle_preserved
+        observed_state: generic_reconciliation_lifecycle_preserved
         interface_checkpoint_sha: 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
         interface_checkpoint_digest: 7d0e2e360036fa6e3b742053c714b13f442e29c9ff3e83ad7b6bf02c005694a0
-        active_registry_source_head_sha: 951c151c28f905ad7458973a750c3887edc38ddc
-        registry_state: empty_fail_closed
-      P14:
-        required_state: provider_operation_binding_contract_ready
-        observed_state: provider_operation_binding_contract_ready
-        terminal_head_sha: 3393169e2284d65ff0a970d797aa1f83ebf9d895
-        interface_checkpoint_digest: 1a9b86f0d39cc0e3999973fc988d9c2d00c302ccad13a50857c14c7d5e2f03e1
-      P20:
-        required_state: publication_seed_and_projection_integrated
-        observed_state: publication_seed_and_projection_integrated
-        terminal_head_sha: a210c6cb2e0f1ea9901745e131140646e91935f9
-        integration_release_sha: 4bc8e7a84039394ffb0584deaccdff19eebaea9b
       P21:
-        required_state: corrected_publication_projection_integrated_successor_writer_pending
-        observed_state: corrected_publication_projection_integrated_successor_writer_pending
-        source_terminal_head_sha: c11dec418fa3de896e96c348f87928c92c9f86b9
-        source_integration_merge_sha: f5172829a0df0af9fa9790cb5b88427ed3ccadc4
-        source_integration_release_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
+        required_state: repository_only_successor_requires_local_finalization
+        observed_state: repository_only_successor_requires_local_finalization
+        held_terminal_head_sha: 1873fc8d7e5478eb736021175bb2214d78d865cd
         native_postgresql_gate: required_before_candidate_freeze
     authorized_paths:
-      - apps/web/src/server/features/content/publication/composition.test.ts
-      - apps/web/src/server/features/content/publication/composition.ts
-      - apps/web/src/server/features/content/publication/service.test.ts
-      - apps/web/src/server/features/content/publication/service.ts
-      - apps/worker/src/runners/content-publication/adapters.test.ts
       - apps/worker/src/runners/content-publication/adapters.ts
-      - apps/worker/src/runners/content-publication/composition.test.ts
-      - apps/worker/src/runners/content-publication/composition.ts
       - apps/worker/src/runners/content-publication/runner.test.ts
-      - apps/worker/src/runners/content-publication/runner.ts
-      - apps/worker/src/runners/registry/index.test.ts
-      - apps/worker/src/runners/registry/index.ts
-      - packages/contracts/src/content/publication/index.ts
-      - packages/db/src/content/publication/repository.test.ts
-      - packages/db/src/content/publication/repository.ts
       - ops/v2.1-execution/runtime/I36/HANDOFF.md
       - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
       - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
-    authorized_path_count: 18
-    authorized_path_inventory_digest: 1a9ea9e220cc668684a39a1b9bd570a76a371b434226783ac1195ac4f1c62fdd
-    product_path_count: 15
-    product_path_inventory_digest: 12cc924a0bf34eb5e6d5c68a5507f0e080c6f7a5a053c2281ed447afb810cb6a
-    authorized_product_preimage_manifest_digest: a8e51b26ba8c8d5906aed2bc1da13b990f836adf0660cca6b46a00f8f9614950
-    authorized_product_preimage_manifest_algorithm: stable_json_sorted_keys_sha256_null_for_absent
+    authorized_path_count: 5
+    authorized_path_inventory_digest: c29ae8b6ef3187f117c4b60956c869c6abb03b1cd955350419d414fcb2a55b81
+    product_path_count: 2
+    product_path_inventory_digest: 37b9f89c777663618d3035f8da20d13346550635fb42cd8ec40321714456a19f
+    authorized_product_preimage_manifest_digest: 7659a232dc4293c76dfb2f7a16bc9cdf0820b36376705ce095fa6fe500edd3a8
+    authorized_product_preimage_manifest_algorithm: stable_json_sorted_keys_sha256
     authorized_product_preimages:
-      apps/web/src/server/features/content/publication/composition.test.ts: cc02951aeb2b4376a94922b96a2ae0e6c72f22cdbaede03eae0e5c1c26f88cf7
-      apps/web/src/server/features/content/publication/composition.ts: 11b15c5d5e1e2e385d20ac50bf7b3f00eaefd975ec527cac10f64c7d9c527968
-      apps/web/src/server/features/content/publication/service.test.ts: 4aa8e876139ea820df7f8122c0f6b9a7c93b1498701ca85609dac7acb2b78ecf
-      apps/web/src/server/features/content/publication/service.ts: 33accd32aad23989fa43569141da0bdaa3165978c11986380e698a73fa4da1db
-      apps/worker/src/runners/content-publication/adapters.test.ts: null
-      apps/worker/src/runners/content-publication/adapters.ts: null
-      apps/worker/src/runners/content-publication/composition.test.ts: null
-      apps/worker/src/runners/content-publication/composition.ts: null
-      apps/worker/src/runners/content-publication/runner.test.ts: null
-      apps/worker/src/runners/content-publication/runner.ts: null
-      apps/worker/src/runners/registry/index.test.ts: 1e055916f4967970b0d9fb2c3aa5a1e9efd755e312e8678668bcea4deb60a126
-      apps/worker/src/runners/registry/index.ts: 7977f3f860cb348360e76ff9951cbf5c2478f1fc3d4726c8adde5a9c8de78fad
-      packages/contracts/src/content/publication/index.ts: 4d19f4ad4ccd703067601f3ea4591bdd4a4eb0b57ea7c63d0ea338fbdf23f1a0
-      packages/db/src/content/publication/repository.test.ts: 5c8f55604cae62473f39463c99f384670d66113528ddfe0589d11cc57c4fa10b
-      packages/db/src/content/publication/repository.ts: 6b56e1ba11fc2c7054c9de479aac7a26679d8dd6cca4ce862548a479fe683916
+      apps/worker/src/runners/content-publication/adapters.ts: 4ab2d7ba911a017c4f2194b71ebc385c25dac7b939d199ba24775b4fd42d5d7b
+      apps/worker/src/runners/content-publication/runner.test.ts: 6ad4c0069126afc4f5a63506e2e27e1520617f15fd128a6205502ded54f182dc
     authorized_runtime_preimages:
-      ops/v2.1-execution/runtime/I36/HANDOFF.md: af9cab41ac0fd9d0c4606db5fc57363f69f440e35eafe32c1d294655e8460315
-      ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md: 4c1d59ce917cdfa5f480dba74603612686c104691c82f2b152e21335d8c1c31f
-      ops/v2.1-execution/runtime/I36/TASK-STATE.yaml: e4590370e6c49da8b7487a916baf3019b8e48923111b6505bdfa34bec2b54c39
+      ops/v2.1-execution/runtime/I36/HANDOFF.md: 1fa50aa16f0739a2a7cde84ce25287d83b295ac3383802ffbd625163934d9a7a
+      ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md: 43ae8503426fe3fe8c16b4305b8c83745ddb684976ff26bab825b5cf7ccca6f7
+      ops/v2.1-execution/runtime/I36/TASK-STATE.yaml: 8199cde9ebc6c5e1e21ce98e824abe8a958d17255f509a850af387101aed8246
     directives:
       - >-
-        Implement the repository-only P21 successor in this exact envelope. Claim exact-scope publish_private and
-        revoke_private F05 jobs, reopen complete dispatch context including claimed lease, job version, operation,
-        content/outbox identity, and immutable provider_operation_binding, and force every accepted result to
-        completed_locally:false.
+        Preserve terminal 1873fc8d except for the exact P21 reconciliation-completion defect and current I36 metadata.
+        In the P21-gated reconciliation adapter, normalize every effect_exists result to completed_locally:false before the
+        generic F06 lifecycle sees it. Do not change the generic F06 lifecycle or any provider contract.
       - >-
-        Before any adapter call, obtain a pre-approved ProviderRegistryBindingReadRequest from the independent P21
-        authority-request port for the exact stage, operation, scope, and effect; validate its selector, call the active F06
-        binding reader, assert the evidence, and compare it to the immutable per-operation binding. Never derive that request
-        from the registry row, operation binding, config, credentials, readback, HTTP payload, or F05 job.
+        Add an exact runner-level regression in which the injected Vimeo reconciliation adapter returns effect_exists with
+        completed_locally:true. Prove the P21 wrapper persists the next job as accepted, never complete, and leaves local
+        publication finalization required. Preserve effect-absent retry safety and unknown quarantine.
       - >-
-        Route acceptance-unknown through the generic F06 reconciliation runner only after the same exact binding gate. Treat
-        canonical provider truth as authoritative: effect_exists becomes accepted with completed_locally:false, effect_absent
-        becomes retryable, and unknown never causes blind redispatch.
+        Repair the I36 runtime triplet so its current/top-level task, review mode, control basis, terminal truth, and safe next
+        action all describe this correction. Record the held one-P1/one-P2 review honestly; remove or supersede false current
+        claims without rewriting historical records.
       - >-
-        Finalize only P21 pending outboxes whose exact F05 job is accepted and unknown_effect=false. Derive the audience
-        server-side from current student_content_publication_eligibility; remove caller-supplied audience; preserve the
-        two-transaction provider-readback boundary and atomic completion fence for job, outbox, ledger, canonical state,
-        assignments, library, and notices.
+        Run the focused P21 adapter/runner and generic F06 suites, the prior 75-test packet or a strictly sufficient superset,
+        scoped typecheck/lint/format/diff/secret gates, exact scope/preimages, lease release, remote equality, and clean-tree
+        checks. Push one exact five-path correction terminal and stop for independent review.
       - >-
-        The default authority-request port is null and the central worker composition remains disabled with
-        providerCallsPerformed=false. Add no real Vimeo adapter, effect lock, registry population, migration, app/server
-        central composition, worker main, config, provider/network call, persistent database action, candidate action, or
-        external effect.
-      - >-
-        Prove missing authority and every selector, scope, operation, effect, lease, job-version, outbox, binding, replay,
-        archive, acceptance-unknown, and stale-fence mismatch fails closed before adapter invocation. Prove publish and revoke
-        run once, derived audience is current, and disabled central registration performs zero provider calls. Run the focused
-        P21 repository/domain/service/composition/router, new worker, central registry, and F06 suites plus exact scope,
-        preimage, typecheck-baseline, lint, format, secret, diff, lease-release, and remote-equality gates.
+        Add no migration, real Vimeo adapter, provider/network call, registry population, effect lock, persistent database,
+        candidate, deployment, DNS, send, charge, customer mutation, cleanup, or external effect. Effects remain 0/0/0.
     writer_slot_leases:
-      - slot: CONTENT_PUBLICATION
-        lease_id: b30f7c9c-3916-4935-a4c1-1057ba0e1390
-        holder_task_id: I36
-        holder_claim_id: 27bc68ec-74be-4cdf-a6c6-b3ddea179d90
-        holder_writer_id: codex-i36-P21-reconciler-27bc68ec
-        state_based_on_control_head_sha: b7249121e94130e1ee9d561a112851ac4040fa66
-        lease_issued_at: '2026-08-01T22:53:43Z'
-        lease_expires_at: '2026-08-02T02:53:43Z'
-        phase_scope: P21_dispatch_reconciliation_and_atomic_finalization_only
-      - slot: SERVER_COMPOSER
-        lease_id: 5f79e47d-f671-4f00-abd6-1200185897c3
-        holder_task_id: I36
-        holder_claim_id: 27bc68ec-74be-4cdf-a6c6-b3ddea179d90
-        holder_writer_id: codex-i36-P21-reconciler-27bc68ec
-        state_based_on_control_head_sha: b7249121e94130e1ee9d561a112851ac4040fa66
-        lease_issued_at: '2026-08-01T22:53:43Z'
-        lease_expires_at: '2026-08-02T02:53:43Z'
-        phase_scope: P21_service_and_repository_composition_only
       - slot: WORKER_COMPOSER
-        lease_id: 5d3a25c9-7ec7-4b59-adf9-ecaa27cf6bff
+        lease_id: 5bc3f1dc-0874-4eb3-abaf-542c14d60814
         holder_task_id: I36
-        holder_claim_id: 27bc68ec-74be-4cdf-a6c6-b3ddea179d90
-        holder_writer_id: codex-i36-P21-reconciler-27bc68ec
-        state_based_on_control_head_sha: b7249121e94130e1ee9d561a112851ac4040fa66
-        lease_issued_at: '2026-08-01T22:53:43Z'
-        lease_expires_at: '2026-08-02T02:53:43Z'
-        phase_scope: P21_worker_runner_adapters_and_registration_only
+        holder_claim_id: 7f9e3cc8-4c72-4f38-ab60-09f8e6187877
+        holder_writer_id: codex-i36-P21-effect-exists-correction-7f9e3cc8
+        state_based_on_control_head_sha: 0063689594c1ab9beb2d9f4d64f89a8491284a4c
+        lease_issued_at: '2026-08-02T00:10:31Z'
+        lease_expires_at: '2026-08-02T04:10:31Z'
+        phase_scope: P21_reconciliation_completed_locally_normalization_and_regression_only
       - slot: RELEASE_INTEGRATOR
-        lease_id: 6e076496-9ac3-4985-a62c-7b6c9f2142ba
+        lease_id: 890c2452-d61b-4d4d-a951-aa6886c50952
         holder_task_id: I36
-        holder_claim_id: 27bc68ec-74be-4cdf-a6c6-b3ddea179d90
-        holder_writer_id: codex-i36-P21-reconciler-27bc68ec
-        state_based_on_control_head_sha: b7249121e94130e1ee9d561a112851ac4040fa66
-        lease_issued_at: '2026-08-01T22:53:43Z'
-        lease_expires_at: '2026-08-02T02:53:43Z'
-        phase_scope: exact_eighteen_path_terminal_and_release
+        holder_claim_id: 7f9e3cc8-4c72-4f38-ab60-09f8e6187877
+        holder_writer_id: codex-i36-P21-effect-exists-correction-7f9e3cc8
+        state_based_on_control_head_sha: 0063689594c1ab9beb2d9f4d64f89a8491284a4c
+        lease_issued_at: '2026-08-02T00:10:31Z'
+        lease_expires_at: '2026-08-02T04:10:31Z'
+        phase_scope: exact_five_path_correction_terminal_and_release
     effect_lock_leases: []
-    claim_id: 27bc68ec-74be-4cdf-a6c6-b3ddea179d90
-    lease_issued_at: '2026-08-01T22:53:43Z'
-    lease_expires_at: '2026-08-02T02:53:43Z'
+    claim_id: 7f9e3cc8-4c72-4f38-ab60-09f8e6187877
+    lease_issued_at: '2026-08-02T00:10:31Z'
+    lease_expires_at: '2026-08-02T04:10:31Z'
     heartbeat_interval_minutes: 30
     prompt_path: ops/v2.1-execution/prompts/I36-START-OR-RESUME.md
     model: GPT-5.6-SOL
     reasoning: XHIGH
 entry_payload_digests:
-  I36: add5b10b2f34c2cbe3ef8ddd096ad374760631a1e8f1896a1a3933aa31f5491a
+  I36: 30168c46b1bcc1dd3587fcf9bf692b5b267ba7ae8fa06753ccf810ae6ec819ed
 digest_algorithm: >-
   For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively, separators ',' and ':',
   ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives in this sibling map, never inside the entry.
