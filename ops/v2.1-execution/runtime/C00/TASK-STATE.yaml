@@ -8,16 +8,26 @@ branch: codex/v21-control
 start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
-phase: launch_source_correction_dispatched
-claimed_by: codex-c00-launch-source-e199a6a7
-claim_time: '2026-08-02T09:20:10Z'
-claim_id: 550cd951-4c57-42e0-81a4-3e9e5d996562
-lease_expires_at: '2026-08-02T13:20:10Z'
-last_heartbeat_at: '2026-08-02T09:20:10Z'
-controller_authorization_sha: 450fec7fa227a932a0d4f9d6143304e22be17fa0
+phase: candidate_frozen_evidence_branch_authorized
+claimed_by: codex-c00-candidate-freeze-acceptance-346aba3d
+claim_time: '2026-08-02T11:42:48Z'
+claim_id: 346aba3d-1ba2-45a6-8211-1650e24056de
+lease_expires_at: '2026-08-02T12:42:48Z'
+lease_released_at: '2026-08-02T11:42:48Z'
+last_heartbeat_at: '2026-08-02T11:42:48Z'
+controller_authorization_sha: 146774966cd35a96c51d2f467ccfd3b458fd9cc6
 ready_entry_payload_digest: null
-state_based_on_head_sha: 450fec7fa227a932a0d4f9d6143304e22be17fa0
-last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
+state_based_on_head_sha: 146774966cd35a96c51d2f467ccfd3b458fd9cc6
+last_implementation_commit_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
+candidate_freeze_acceptance:
+  canonical_candidate_digest: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
+  terminal_head_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
+  product_source_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
+  manifest_digest: 30867a96bfc5370ead95b83b6519b4ec365947d874c609dd8e5dbecba7e54876
+  derivation_digest: f848922c8297f8ee90a934b7875876976913fc23af21c3ce590b7a4571ace8ca
+  independent_review: P1_0_P2_0_P3_0
+  evidence_branch: codex/v21-evidence-ea45b0ab10ec
+  external_effects: 0/0/0
 launch_source_correction_dispatch:
   recorded_at: '2026-08-02T09:08:39Z'
   integration_start_sha: d61f4e49349ed4b63618513ce6642337690d55d0
@@ -1278,18 +1288,14 @@ completed_steps:
   and prohibiting both legacy authority tables, direct history writes, candidate work, providers, and all external effects.
 remaining_steps:
 - >-
-  Complete the exact 58-path held-source review correction from e7417f39. Fix or downgrade the reviewed false-ready routes,
-  close role/session/credential/support/classroom boundaries, and bind normative application plus deployable artifact identity.
+  Create and verify codex/v21-evidence-ea45b0ab10ec at exact frozen head 031cfde117028c8c199c7bc47e46e18a8227139d.
 - >-
-  Give the corrected source terminal one independent review; only after zero P1/P2 run clean merged verification, disposable
-  native PostgreSQL 18.4 migration proof, deterministic candidate derivation, immutable manifest, and evidence branch.
-- Freeze one exact candidate and run V37-V43 Phase A, R44, deferred proof, V43 Phase B, R45 certification, legal gate, cutover, and the observation window in their exact order.
+  Issue one candidate-bound verifier dispatch, prioritizing landing/Family deployment readiness and GHL sender/workflow/audience preparation.
+- Run V37-V43 Phase A, R44, deferred proof, V43 Phase B, R45 certification, legal gate, cutover, and the observation window in their exact order.
 next_action: >-
-  Resolve the pushed control descendant of 71342aa6 and verify READY d58967bf. Continue exact integration e7417f39 under
-  claim b2d91877 and its three task-bound writer leases. Change only the 58 READY paths, correct all reviewed P1/P2 findings,
-  run proportional and one clean-install verification, push one corrected source checkpoint, release every lease, and stop
-  for independent C00 review. Native PostgreSQL, candidate metadata/freeze, providers, deployment, DNS, sends, charges,
-  customer activation, and every external effect are prohibited.
+  Create the exact evidence branch from the frozen candidate, verify remote equality, then dispatch candidate-bound lanes.
+  No broad enrollment or send before Shloimie's exact approval; every live effect requires its exact authority, lock, fence,
+  readback, reconciliation, and bounded operator fixture.
 orchestration:
   enabled: true
   mechanism: native_subagents

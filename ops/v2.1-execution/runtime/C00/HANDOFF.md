@@ -1,4 +1,24 @@
-# Launch source correction dispatched — current handoff
+# Immutable candidate frozen — current handoff
+
+Candidate `ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d`
+is frozen and independently accepted at integration head
+`031cfde117028c8c199c7bc47e46e18a8227139d`, sole parent/product source
+`0a5ef2e1e6ba88b151334f2aa78bee9cd8949365`, with P1=0, P2=0, P3=0.
+The manifest and derivation digests are `30867a96bfc5370ead95b83b6519b4ec365947d874c609dd8e5dbecba7e54876`
+and `f848922c8297f8ee90a934b7875876976913fc23af21c3ce590b7a4571ace8ca`.
+All fourteen non-empty input sets, 3,275 unique source paths, builder 4/4,
+PostgreSQL 18.4 proof, released writer lease, and freeze effects 0/0/0 pass.
+
+Create `codex/v21-evidence-ea45b0ab10ec` at the exact frozen head, verify the
+remote ref, then issue one candidate-bound verifier dispatch. Landing/Family
+production readiness and the Rabbi sender/GHL workflow/audience work are the
+business-priority lanes. No broad enrollment or send is authorized before
+Shloimie's exact copy-and-audience approval; live effects remain lock/fence and
+operator-fixture bounded.
+
+## Superseded launch source correction handoff
+
+# Launch source correction dispatched — prior handoff
 
 Exact integration `d61f4e49349ed4b63618513ce6642337690d55d0` is independently accepted. Read-only launch
 reconciliation found one coherent source correction and one forward migration. C00 issued F02 READY

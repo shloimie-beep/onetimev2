@@ -72,8 +72,8 @@ ready:
     reasoning: XHIGH
   - task_id: I36
     lane: candidate_freeze_preparation
-    status: ready
-    phase: exact_candidate_freeze_authorized
+    status: consumed
+    phase: exact_candidate_freeze_accepted
     branch: codex/v21-integration
     preparation_branch: codex/v21-launch-source-correction
     claim_mode: new
@@ -255,17 +255,20 @@ ready:
     accepted_terminal_head_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
     accepted_terminal_review: P1_0_P2_0_P3_0
     effect_lock_leases: []
-    writer_slot_leases:
+    writer_slot_leases_released:
       - { slot: RELEASE_INTEGRATOR, lease_id: 8a7206c7-0c56-4fab-9565-63a2859077a2 }
     claim_id: 48f1af59-52f9-4868-bacd-b6e79bf4292d
     writer_id: codex-i36-candidate-freeze-48f1af59
     lease_issued_at: '2026-08-02T11:23:01Z'
     lease_expires_at: '2026-08-02T12:23:01Z'
+    lease_released_at: '2026-08-02T11:35:37Z'
+    terminal_head_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
+    terminal_review: P1_0_P2_0_P3_0
     heartbeat_interval_minutes: 15
     prompt_path: ops/v2.1-execution/prompts/I36-START-OR-RESUME.md
     model: GPT-5.6-SOL
     reasoning: XHIGH
 entry_payload_digests:
   F02: 388c28b5c4c946a75f9f4e9ddb103e69193a505e3889a88aaad744ac9e5388c7
-  I36: 26439fc6fe15620e8cdc00b4b82151c536b5b3f53303cd0aaf9d687c542a50b6
+  I36: null
 digest_algorithm: recursively_sorted_compact_UTF8_JSON_SHA256_per_ready_entry

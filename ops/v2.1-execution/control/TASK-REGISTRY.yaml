@@ -466,8 +466,8 @@ tasks:
     transitioned_at: '2026-07-30T19:30:53Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/F07/status_proof
 - task_id: I36
-  status: resume_ready
-  active_phase: launch_timing_family_form_email_and_pg18_tooling_correction
+  status: candidate_frozen
+  active_phase: evidence_branch_creation
   branch: codex/v21-integration
   phase_branches:
     integration: codex/v21-integration
@@ -585,28 +585,29 @@ tasks:
     candidate_pg18_evidence_correction_review: P1_0_P2_0_P3_0
     candidate_pg18_native_proof_run: 30745346334
     candidate_pg18_native_proof_result: success
-  authorized_start_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
-  last_known_remote_head: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
-  active_claim_id: 48f1af59-52f9-4868-bacd-b6e79bf4292d
-  active_writer_id: codex-i36-candidate-freeze-48f1af59
-  lease_expires_at: '2026-08-02T12:23:01Z'
-  active_writer_leases:
-    - 8a7206c7-0c56-4fab-9565-63a2859077a2
+    candidate_freeze_terminal: 031cfde117028c8c199c7bc47e46e18a8227139d
+    candidate_freeze_review: P1_0_P2_0_P3_0
+  authorized_start_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
+  last_known_remote_head: 031cfde117028c8c199c7bc47e46e18a8227139d
+  active_claim_id: null
+  active_writer_id: null
+  lease_expires_at: null
+  active_writer_leases: []
   active_effect_lock_leases: []
-  last_heartbeat_at: '2026-08-02T11:23:01Z'
-  controller_authorization_sha: 08079bd87085ba8fd0b242f8ff7923c1b46f3a88
-  ready_entry_payload_digest: 26439fc6fe15620e8cdc00b4b82151c536b5b3f53303cd0aaf9d687c542a50b6
+  last_heartbeat_at: '2026-08-02T11:42:48Z'
+  controller_authorization_sha: 146774966cd35a96c51d2f467ccfd3b458fd9cc6
+  ready_entry_payload_digest: null
   interface_checkpoint_sha: null
-  implementation_head_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
+  implementation_head_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
   status_proof:
-    state: exact_candidate_freeze_ready
-    producer_task_id: C00
-    producer_head_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
-    canonical_candidate_digest: null
+    state: immutable_candidate_frozen_and_accepted
+    producer_task_id: I36
+    producer_head_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
+    canonical_candidate_digest: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
     interface_checkpoint_digest: null
-    integration_or_evidence_head_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
-    candidate_manifest_digest: null
-    result_index_digest: efc0d131b3f03cf57ae61aec2e9acd45f07e7be20d2d4bfd73bdfd5a0a60a6d0
+    integration_or_evidence_head_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
+    candidate_manifest_digest: 30867a96bfc5370ead95b83b6519b4ec365947d874c609dd8e5dbecba7e54876
+    result_index_digest: null
     case_counts:
       expected: 8
       passed: 8
@@ -619,8 +620,8 @@ tasks:
     failed_effect_reconciliation: source_reference_initialization_order_zero_non_disposable_effects
     successful_effect_run_id: 30745346334
     successful_effect_reconciliation: PostgreSQL_18_4_89_migrations_8_probes_restore_clone_passed_zero_non_disposable_effects
-    state_based_on_control_head_sha: 08079bd87085ba8fd0b242f8ff7923c1b46f3a88
-    transitioned_at: '2026-08-02T11:23:01Z'
+    state_based_on_control_head_sha: 146774966cd35a96c51d2f467ccfd3b458fd9cc6
+    transitioned_at: '2026-08-02T11:42:48Z'
     proof_record_location: 'ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/I36/status_proof'
 - task_id: P08
   status: ready_for_review

@@ -1,15 +1,19 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
-status: not_frozen
-canonical_candidate_digest: null
-product_source_sha: null
-application_content_sha256: null
-candidate_manifest_digest: null
-candidate_manifest_commit_sha: null
-candidate_manifest_path: null
-evidence_branch: null
+status: frozen
+canonical_candidate_digest: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
+product_source_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
+application_content_sha256: 05deaa76b64ccfb7ab82b78ce75965c134ffd39a63da1fc40139dc6eee901e3e
+candidate_manifest_digest: 30867a96bfc5370ead95b83b6519b4ec365947d874c609dd8e5dbecba7e54876
+candidate_manifest_commit_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
+candidate_manifest_path: ops/v2.1-execution/merge/candidates/ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d/CANDIDATE.yaml
+evidence_branch: codex/v21-evidence-ea45b0ab10ec
 evidence_head_sha: null
 result_index_digest: null
 production_gate_deployment_digest: null
 acceptance_environment_matrix_digest: 3972640970c37875b70c02165cff2add4a034073b952e4e508481735b55d954d
 rule: C00 records identities reported by I36; C00 does not create or alter product artifacts.
+frozen_at: '2026-08-02T11:42:48Z'
+freeze_terminal_head_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
+freeze_terminal_parent_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
+freeze_review: P1_0_P2_0_P3_0
