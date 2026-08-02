@@ -1,4 +1,4 @@
-# V38 Handoff
+# V38 Terminal Handoff
 
 ## Identity
 
@@ -8,7 +8,8 @@
 - Canonical candidate digest: `ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d`
 - Candidate manifest digest: `30867a96bfc5370ead95b83b6519b4ec365947d874c609dd8e5dbecba7e54876`
 - Claim: `26c2da65-06c8-4b4d-8ccb-94d405851013`, held by `codex-v38-26c2da65`
-- Writer lease: `VERIFY_PORTALS_UX` / `a70c05e8-84c4-45e9-8e2a-12cb7e433d73`, expiring `2026-08-02T15:50:03Z`
+- Evidence head before terminal metadata: `dc6a334f34f3be9755e8850c57439c4f7f07f10b`
+- Writer lease: `VERIFY_PORTALS_UX` / `a70c05e8-84c4-45e9-8e2a-12cb7e433d73`, released `2026-08-02T12:25:33Z`
 - Containing control authorization: `01e5c84ddca04467e16fff73754be368f59bb7fb`
 - READY payload digest: `12ed1af9ea95163f43b6a2b7a95ca64f2e964d9319e9a0044670d33a604edbfb`
 - Task packet digest: `3403b63fe06ad196d88bbae00e4596fe19dc89ce15b9d3473b30fe0a1c1aa290`
@@ -17,40 +18,68 @@
 
 ## Completed behavior
 
-Verified the exact control-plane authorization, candidate identity, branch head,
-claim, and exclusive writer lease. No candidate bytes or provider state have
-been changed.
+V38 is `ready_for_evidence_merge`. All 58 assigned cases have terminal,
+candidate-bound records under
+`ops/v2.1-execution/results/ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d/V38/`.
+The lane has 50 passes, 0 failures, and 8 precise Email blockers. Every CURRENT
+pointer and lane-summary digest was reconciled against the committed attempt
+blob. No candidate byte or provider state changed.
 
-## Remaining work
+## Verified evidence
 
-Execute and record all 58 assigned UX, Parent, Student, Calendar, Tickets, and
-Email acceptance cases, validate the result set, and release the writer lease.
+- Production build and typecheck passed.
+- The focused Parent, Student, Calendar, Tickets, and Copy set passed 84/84
+  across 22 files; focused Admin and v2.1 brand-contract checks passed 7/7.
+- The accepted candidate-source landing replay passed 7/7. The current static
+  candidate replay passed 9/10; its sole miss was the expected runtime-boundary
+  placeholder under a static-only server, while copy, responsive, accessibility,
+  no-JavaScript, reduced-motion, and analytics checks passed.
+- Mobile `360x800` and desktop `1440x1000` visual evidence digests are recorded
+  in `LANE-SUMMARY.yaml`.
+- Google Calendar absence inventory found zero candidate implementation matches.
+- Read-only production inspection established that the live deployment is not
+  this candidate: `/version` reported runtime `0d69de15e3c5e7a5e51f2b9262c992ea153c51fb`
+  and deployment commit `ed77a04dd24391d5b79be7f839d7f5752a57e0f9`.
+
+## Terminal blockers
+
+`OTV2-EMAIL-139-AC01` through `OTV2-EMAIL-146-AC01` are blocked by
+`V38_EMAIL_SEED_AUTHORITY_AND_FIXTURE_UNAVAILABLE`. These human-copy-approval
+cases require a candidate-bound persistent staging or production operator
+canary, named final-copy approval, verified destinations, and one seed delivery.
+No such instance, approval, or operator fixture is bound; the governed Rabbi
+sender/reply route remains unproven; and V38 authorization prohibits sends.
+C00/P31/V42/operator own resolution. The legal bundle is broad-release-only and
+does not block V38 or candidate evidence aggregation.
 
 ## Exact next action
 
-Extract the normative V38 case matrix, then execute the focused candidate-bound
-verification set without provider mutation.
+C00 queues the exact pushed terminal V38 head for I36 evidence aggregation, then
+V42/operator coordination resolves the eight Email seed/approval blockers.
 
 ## Coverage
 
-- Acceptance cases: 0 of 58 terminal.
+- Acceptance cases: 58 of 58 terminal: 50 passed, 0 failed, 8 blocked.
 - External effects: 0 attempted, 0 succeeded, 0 reconciled.
 
 ## Changed files and migrations
 
-Only the V38 runtime triplet has been created. No migration or product source
-path changed.
+Only the V38 runtime triplet and candidate-bound V38 result tree changed. No
+migration or product source path changed.
 
 ## Verification
 
-Remote control, READY entry, candidate identity, and branch collision checks
-passed. Case execution has not started.
+Remote authorization and candidate identity passed. Build/typecheck, focused
+tests, browser/accessibility checks, read-only production inspection, YAML parse,
+58 committed-blob pointer reconciliations, scope checks, and diff hygiene passed.
+Three superseded test expectations are recorded in TASK-STATE and LANE-SUMMARY;
+their accepted replacement contracts passed.
 
 ## External effects
 
-Authority is `read_only_only`. No provider mutation, deployment, DNS change,
-contact change, send, enrollment, billing action, cleanup, or production effect
-is authorized or attempted.
+Authority remained `read_only_only`. No provider mutation, deployment, DNS
+change, contact change, send, enrollment, billing action, cleanup, or production
+effect was authorized or attempted.
 
 ## Security, privacy, and data handling
 
@@ -58,4 +87,5 @@ No secret, customer data, child data, or bearer URL is recorded.
 
 ## Blockers, deviations, and recovery
 
-No blocker at claim time. Resume from the exact next action above.
+Do not rerun V38 or treat the eight Email records as product failures. Resume
+from the exact next action above using the exact pushed terminal head.

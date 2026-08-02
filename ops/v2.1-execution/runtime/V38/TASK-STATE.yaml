@@ -12,55 +12,98 @@ dependency_heads:
     candidate_source_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
     canonical_candidate_digest: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
     candidate_manifest_digest: 30867a96bfc5370ead95b83b6519b4ec365947d874c609dd8e5dbecba7e54876
-status: active
-phase: candidate_bound_verification
+status: ready_for_evidence_merge
+phase: ready_for_evidence_merge
 claimed_by: codex-v38-26c2da65
 claim_time: '2026-08-02T11:50:03Z'
 claim_id: 26c2da65-06c8-4b4d-8ccb-94d405851013
 lease_expires_at: '2026-08-02T15:50:03Z'
-last_heartbeat_at: '2026-08-02T12:00:29Z'
+last_heartbeat_at: '2026-08-02T12:25:33Z'
+lease_released_at: '2026-08-02T12:25:33Z'
 controller_authorization_sha: 01e5c84ddca04467e16fff73754be368f59bb7fb
 ready_entry_payload_digest: 12ed1af9ea95163f43b6a2b7a95ca64f2e964d9319e9a0044670d33a604edbfb
 writer_slot_leases:
   VERIFY_PORTALS_UX:
     lease_id: a70c05e8-84c4-45e9-8e2a-12cb7e433d73
     lease_expires_at: '2026-08-02T15:50:03Z'
-state_based_on_head_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
-last_implementation_commit_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
+    released_at: '2026-08-02T12:25:33Z'
+state_based_on_head_sha: dc6a334f34f3be9755e8850c57439c4f7f07f10b
+last_implementation_commit_sha: dc6a334f34f3be9755e8850c57439c4f7f07f10b
 completed_steps:
   - Verified the exact remote V38 control registration and READY entry.
   - Rejected branch collision by confirming the remote verifier head equals the authorized start SHA.
   - Bound the lane to the frozen candidate and its manifest digest.
-remaining_steps:
-  - Verify all 58 assigned cases in their allowed environments.
-  - Write candidate-bound attempt records and CURRENT pointers.
-  - Validate evidence, release the writer lease, and push the terminal checkpoint.
-next_action: Extract the normative V38 case matrix, then execute the focused candidate-bound verification set without provider mutation.
+  - Built and typechecked the candidate successfully.
+  - Passed 84 focused Parent, Student, Calendar, Tickets, and Copy tests across 22 files.
+  - Passed all 7 focused Admin dashboard and accepted v2.1 brand-contract tests.
+  - Replayed the accepted candidate-source landing suite 7/7 and the current static candidate landing 9/10, with only the documented static-server runtime-placeholder boundary miss.
+  - Verified zero Google Calendar implementation matches in the candidate calendar roots.
+  - Inspected the candidate landing at mobile and desktop sizes and recorded content-addressed screenshots.
+  - Performed a read-only live production/version readback and established that production is not yet running this candidate.
+  - Wrote and validated all 58 candidate-bound attempt records and CURRENT pointers.
+  - Reconciled every pointer and lane-summary digest against the committed Git blob.
+  - Recorded 50 passed, 0 failed, and 8 precisely blocked Email cases with zero external effects.
+  - Released the exclusive VERIFY_PORTALS_UX writer lease.
+remaining_steps: []
+next_action: C00 should queue the exact pushed terminal V38 head for I36 evidence aggregation; V42/operator coordination should resolve the eight Email seed/approval blockers.
 requirements:
   expected: 58
-  completed: 0
+  completed: 58
 acceptance_cases:
   expected: 58
-  passed: 0
+  passed: 50
   failed: 0
-  blocked: 0
+  blocked: 8
   stale: 0
   waived: 0
 changed_paths:
   - ops/v2.1-execution/runtime/V38/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/V38/HANDOFF.md
   - ops/v2.1-execution/runtime/V38/NEXT-PROMPT.md
+  - ops/v2.1-execution/results/ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d/V38/**
 migrations: []
 steward_requests: []
 verification:
   commands_run:
     - git fetch origin --prune
     - remote control/READY/branch identity and payload digest verification
-  known_baseline_failures: []
+    - npm run build
+    - 'focused Parent/Student/Calendar/Tickets/Copy Vitest run: 22 files and 84 tests passed'
+    - 'focused Admin dashboard and v2.1 brand-contract Vitest run: 7 tests passed'
+    - 'accepted I36/F07 candidate-source landing replay: 7 of 7 passed'
+    - 'current candidate static landing replay: 9 of 10 passed'
+    - candidate mobile 360x800 and desktop 1440x1000 browser inspection
+    - 'Google Calendar absence inventory: zero matches'
+    - live production and /version read-only inspection
+    - 58-case YAML parse, identity, status, pointer, lane-summary, and committed-Git-blob digest validation
+    - git diff --check
+  known_baseline_failures:
+    - tests/unit/highlevel/rabbi-launch-email-design.test.ts expects a superseded copy identity; the canonical copy catalog passed 3 of 3.
+    - tests/unit/brand-system/brand-system.test.ts compares a stale route manifest and visual matrix to the accepted v2.1 registry; the accepted v2.1 contract passed.
+    - tests/unit/learning-product-portals.test.ts has a stale occurrence fixture missing join_opens_at; its other 3 tests passed.
 external_effects:
   authority: read_only_only
   attempted: 0
   succeeded: 0
   reconciled: 0
-blockers: []
-out_of_scope_findings: []
+  unexpected: 0
+blockers:
+  - code: V38_EMAIL_SEED_AUTHORITY_AND_FIXTURE_UNAVAILABLE
+    case_ids:
+      - OTV2-EMAIL-139-AC01
+      - OTV2-EMAIL-140-AC01
+      - OTV2-EMAIL-141-AC01
+      - OTV2-EMAIL-142-AC01
+      - OTV2-EMAIL-143-AC01
+      - OTV2-EMAIL-144-AC01
+      - OTV2-EMAIL-145-AC01
+      - OTV2-EMAIL-146-AC01
+    reason: copy_human_approval requires persistent staging or a production operator canary, named final-copy approval, verified destinations, and one seed delivery; those bindings are unavailable and V38 is read-only-only.
+    owners:
+      - C00
+      - P31
+      - V42
+      - operator
+out_of_scope_findings:
+  - Live production reported runtime version 0d69de15e3c5e7a5e51f2b9262c992ea153c51fb and deployment commit ed77a04dd24391d5b79be7f839d7f5752a57e0f9, not candidate source 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365; the legacy landing still exposes a WhatsApp help control and Rosh Hashanah countdown.
+  - OPS-084-LEGAL-BUNDLE is a broad-production-release gate and does not block V38 candidate verification or evidence aggregation.
