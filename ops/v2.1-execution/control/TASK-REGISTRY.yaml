@@ -466,15 +466,15 @@ tasks:
     transitioned_at: '2026-07-30T19:30:53Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/F07/status_proof
 - task_id: I36
-  status: staging_deployment_failed_source_correction_required
-  active_phase: Docker_build_context_source_correction
+  status: staging_deployment_reserved
+  active_phase: candidate_bound_staging_deployment
   branch: codex/v21-integration
   phase_branches:
     integration: codex/v21-integration
     launch_source_correction: codex/v21-launch-source-correction
     launch_priority_source_correction: codex/v21-launch-critical-correction
   phase_heads:
-    integration: 32bb6ea3889f5ea5dfb2541a17f5d37e0f7f7418
+    integration: 887ab80c793932234035c6eb434a445e7920ce96
     F02_P28_P31_direct_prerequisite_source_integration_atomic_claim: 1b8335f8bdad4bc4ac1aa65838314faa7d65ebd0
     F02_P28_P31_direct_prerequisite_source_integration_release: 3cf787409decb5beb84561ef7e37924111d398b6
     P31_P20_P17_correction_release_integration_atomic_claim: 1b0df6fa15b2ac4a5febe35fee3f18ca9b9457d7
@@ -594,26 +594,38 @@ tasks:
     launch_priority_source_correction_integration_merge: 42065da2be8334382b2491c8e1d1a3a43231ab98
     corrected_candidate_refreeze_terminal: 32bb6ea3889f5ea5dfb2541a17f5d37e0f7f7418
     corrected_candidate_refreeze_review: P1_0_P2_0_P3_0
+    Docker_context_source_correction_terminal: d5f75bbae511f6549897b1b005db1c5978b4487b
+    Docker_context_source_correction_review: P1_0_P2_0_P3_0
+    Docker_context_source_correction_integration_merge: 954c5e3505c1a1ba8f9bb0c1edb193a9408dac79
+    Docker_context_candidate_refreeze_terminal: 887ab80c793932234035c6eb434a445e7920ce96
+    Docker_context_candidate_refreeze_review: P1_0_P2_0_P3_0
   authorized_start_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
-  last_known_remote_head: 32bb6ea3889f5ea5dfb2541a17f5d37e0f7f7418
+  last_known_remote_head: 887ab80c793932234035c6eb434a445e7920ce96
   active_claim_id: null
   active_writer_id: null
   lease_expires_at: null
   active_writer_leases: []
-  active_effect_lock_leases: []
-  last_heartbeat_at: '2026-08-02T13:20:19Z'
-  controller_authorization_sha: 8b2871228ecc0be54aa299dc4d25dad60afd27e1
+  active_effect_lock_leases:
+    - lock: production:deployment
+      lease_id: 2c0e395c-d492-4945-876d-c3f7060fe306
+      fencing_token: fence-9ac0556d-d74e-46d2-9fb4-cce2b61a4085
+      authority_id: i36-staging-deploy-20260802135504
+      candidate_digest: c7faf43f4cc17a0e80f01c5db0a31f6a81f9b1f5f5090281b6f6daaf1cc84dab
+      provider_environment_id: 11edf8a2-0160-45b4-a039-b15b4beb4c10
+      lease_expires_at: '2026-08-02T14:40:04Z'
+  last_heartbeat_at: '2026-08-02T13:55:04Z'
+  controller_authorization_sha: 44edd0a460156088720b71c9ccb615b5972971fb
   ready_entry_payload_digest: null
   interface_checkpoint_sha: null
-  implementation_head_sha: 32bb6ea3889f5ea5dfb2541a17f5d37e0f7f7418
+  implementation_head_sha: 887ab80c793932234035c6eb434a445e7920ce96
   status_proof:
-    state: staging_deployment_failed_source_correction_required
+    state: staging_deployment_reserved
     producer_task_id: I36
-    producer_head_sha: 32bb6ea3889f5ea5dfb2541a17f5d37e0f7f7418
-    canonical_candidate_digest: 68af08379cf596a2c8dfac28253487fb21fea222c6ea1275d096a6f972130ee8
+    producer_head_sha: 887ab80c793932234035c6eb434a445e7920ce96
+    canonical_candidate_digest: c7faf43f4cc17a0e80f01c5db0a31f6a81f9b1f5f5090281b6f6daaf1cc84dab
     interface_checkpoint_digest: null
-    integration_or_evidence_head_sha: 32bb6ea3889f5ea5dfb2541a17f5d37e0f7f7418
-    candidate_manifest_digest: 16f5452c0feea8252f5bc8b544cb3b3514aad65fb6c1f4c35d5044e641c00824
+    integration_or_evidence_head_sha: 887ab80c793932234035c6eb434a445e7920ce96
+    candidate_manifest_digest: 48c68cec03b5c83b9e0befa64c903e5f94b3b4a7faff53bfe021367b316b0f07
     result_index_digest: null
     case_counts:
       expected: 8
@@ -627,8 +639,8 @@ tasks:
     failed_effect_reconciliation: source_reference_initialization_order_zero_non_disposable_effects
     successful_effect_run_id: 30745346334
     successful_effect_reconciliation: PostgreSQL_18_4_89_migrations_8_probes_restore_clone_passed_zero_non_disposable_effects
-    state_based_on_control_head_sha: 228f1c4fdf3fbbf8a694bb2a7cee71cd405fab7c
-    transitioned_at: '2026-08-02T13:12:51Z'
+    state_based_on_control_head_sha: 44edd0a460156088720b71c9ccb615b5972971fb
+    transitioned_at: '2026-08-02T13:55:04Z'
     proof_record_location: 'ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/I36/status_proof'
 - task_id: P08
   status: ready_for_review

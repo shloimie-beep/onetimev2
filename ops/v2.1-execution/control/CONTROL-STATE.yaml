@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: operational
-active_phase: Docker_build_context_source_correction
+active_phase: candidate_bound_staging_deployment
 bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
@@ -11,17 +11,51 @@ bootstrap_phase_order:
 - integration_created
 - control_initialized
 - operational
-reviewed_head: 32bb6ea3889f5ea5dfb2541a17f5d37e0f7f7418
+reviewed_head: 887ab80c793932234035c6eb434a445e7920ce96
 integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
-candidate: 68af08379cf596a2c8dfac28253487fb21fea222c6ea1275d096a6f972130ee8
+candidate: c7faf43f4cc17a0e80f01c5db0a31f6a81f9b1f5f5090281b6f6daaf1cc84dab
 active_writer_limit: 4
-controller_authorization_sha: e509f02a4a1887ff5573b277fcff0295b61c92aa
+controller_authorization_sha: 44edd0a460156088720b71c9ccb615b5972971fb
 next_action: >-
-  Correct the Docker image build context so the existing worker import of integrations/highlevel/v21/identity/index.ts
-  is present during Railway typecheck, run the exact Docker build locally, independently review the minimal delta, and
-  refreeze a new candidate before any fresh staging effect. Do not retry the failed candidate, activate GHL, send,
-  enroll, mutate DNS or production, create Student contacts, or perform a customer or billing effect.
+  Execute the single reserved fast-forward of codex/full-app-staging-live from 32bb6ea3889f5ea5dfb2541a17f5d37e0f7f7418
+  to exact accepted candidate manifest 887ab80c793932234035c6eb434a445e7920ce96, then reconcile at most one web
+  and one worker staging deployment. Do not activate GHL, send, enroll, mutate DNS or production, create Student
+  contacts, or perform a customer or billing effect.
+Docker_context_candidate_acceptance:
+  recorded_at: '2026-08-02T13:55:04Z'
+  state_basis_control_head_sha: 44edd0a460156088720b71c9ccb615b5972971fb
+  parent_integration_sha: 954c5e3505c1a1ba8f9bb0c1edb193a9408dac79
+  terminal_head_sha: 887ab80c793932234035c6eb434a445e7920ce96
+  repository_source_sha: d5f75bbae511f6549897b1b005db1c5978b4487b
+  canonical_candidate_digest: c7faf43f4cc17a0e80f01c5db0a31f6a81f9b1f5f5090281b6f6daaf1cc84dab
+  derivation_sha256: c1a7bb7356e3630f419b31e7399e3393a7d2ff95d3778935b959b80cc8c88286
+  manifest_sha256: 48c68cec03b5c83b9e0befa64c903e5f94b3b4a7faff53bfe021367b316b0f07
+  exact_scope: five_paths_two_candidate_documents_and_I36_runtime_triplet
+  independent_delta_review: P1_0_P2_0_P3_0_approved
+  migration_inventory_digest: 1598fc0f7f18e172b9566c65dbb81593ba2b5b1339e1dbca312aa01b53383f6b
+  pg18_run_id: 30748901653
+  pg18_applicability: accepted_migration_bytes_unchanged
+  provider_or_external_effects: 0/0/0
+Docker_context_staging_deployment_reservation:
+  recorded_at: '2026-08-02T13:55:04Z'
+  state_basis_control_head_sha: 44edd0a460156088720b71c9ccb615b5972971fb
+  authority_id: i36-staging-deploy-20260802135504
+  authority_grant_digest: 769422c91892e066bb18ce8735d878954cf620d1bfbf9dab3979926c2d7161e0
+  authority_status_index_digest: da51d4e423f3492d31671ce59a468cbd831770da37186f5e17221330957549aa
+  authority_status_entry_digest: 1e9f66379fd8e731fa809b35b8ae67c9958395bd00f7bb9b355c5b8eba857645
+  lock: production:deployment
+  lock_lease_id: 2c0e395c-d492-4945-876d-c3f7060fe306
+  fencing_token: fence-9ac0556d-d74e-46d2-9fb4-cce2b61a4085
+  project_id: 7c8eee26-7a6a-4684-826d-9f4377d67d46
+  environment_id: 11edf8a2-0160-45b4-a039-b15b4beb4c10
+  web_service_id: 9fb6d9f4-4f50-4df6-868b-c18a9b83d2f2
+  worker_service_id: 76e7fdc2-99b9-4a82-ba55-5dff3723398f
+  source_branch_before_sha: 32bb6ea3889f5ea5dfb2541a17f5d37e0f7f7418
+  source_branch_after_sha: 887ab80c793932234035c6eb434a445e7920ce96
+  maximum_deployments: 2
+  production_deployment_DNS_send_enrollment_billing_authority: none
+  effects_before_reservation: 0/0/0/0
 corrected_candidate_refreeze_authority:
   recorded_at: '2026-08-02T13:05:10Z'
   control_basis_sha: 04ceb6e3899198c6baeb560e4b6a5006ecbca635

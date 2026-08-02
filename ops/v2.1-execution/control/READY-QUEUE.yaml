@@ -71,15 +71,15 @@ ready:
     model: GPT-5.6-SOL
     reasoning: XHIGH
   - task_id: I36
-    lane: candidate_freeze_preparation
+    lane: candidate_bound_staging
     status: consumed
-    phase: corrected_candidate_refreeze_terminal_accepted
+    phase: Docker_context_candidate_staging_deployment_reserved
     branch: codex/v21-integration
     preparation_branch: codex/v21-launch-critical-correction
     claim_mode: new
-    state_based_on_control_head_sha: 04ceb6e3899198c6baeb560e4b6a5006ecbca635
-    authorized_start_sha: 42065da2be8334382b2491c8e1d1a3a43231ab98
-    expected_existing_head: 42065da2be8334382b2491c8e1d1a3a43231ab98
+    state_based_on_control_head_sha: 44edd0a460156088720b71c9ccb615b5972971fb
+    authorized_start_sha: 887ab80c793932234035c6eb434a445e7920ce96
+    expected_existing_head: 887ab80c793932234035c6eb434a445e7920ce96
     package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
     source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
     task_packet_digest: 55e261760baac780e9a4db48c328480c6f98172261ef990e563a00b25c467fc7
@@ -89,8 +89,8 @@ ready:
         required_state: corrected_candidate_pg18_proof_reconciled_refreeze_preparation
         required_control_head_sha: 04ceb6e3899198c6baeb560e4b6a5006ecbca635
       - task_id: I36_source
-        required_state: accepted_corrected_source_P1_0_P2_0_P3_0
-        required_head_sha: 7943a20895939f66b6755d02f819165850d1042f
+        required_state: accepted_Docker_context_source_P1_0_P2_0_P3_0
+        required_head_sha: d5f75bbae511f6549897b1b005db1c5978b4487b
       - task_id: candidate_pg18_proof
         required_state: completed_success_reconciled_cleanup_complete
         github_run_id: 30748901653
@@ -231,12 +231,11 @@ ready:
         - tests/unit/lead-validation.test.ts
         - tests/unit/operator-launch-status-ui.test.ts
     directives:
-      - Materialize exactly candidate 68af08379cf596a2c8dfac28253487fb21fea222c6ea1275d096a6f972130ee8 from source 7943a20895939f66b6755d02f819165850d1042f and the sanitized candidate build request from run 30748901653.
-      - Write only CANDIDATE-DERIVATION.json, CANDIDATE.yaml, and the I36 runtime triplet under the exact five-path ceiling.
-      - Require derivation SHA-256 9abad1cd94a58cd124667c0ff69aa022bb27bfa6de7cddd77363bdbed32ab1d6 and manifest SHA-256 16f5452c0feea8252f5bc8b544cb3b3514aad65fb6c1f4c35d5044e641c00824.
-      - Preserve all deployable source, migrations, workflow/provider registries, and accepted corrected-source bytes.
-      - Push one terminal and stop for one delta-only candidate identity review before creating the evidence branch or any provider/deployment effect.
-    repository_write_authority: exact_candidate_freeze_paths_only
+      - Fast-forward only codex/full-app-staging-live from exact 32bb6ea3889f5ea5dfb2541a17f5d37e0f7f7418 to exact accepted candidate terminal 887ab80c793932234035c6eb434a445e7920ce96.
+      - Permit at most one web and one worker deployment in exact Railway staging environment 11edf8a2-0160-45b4-a039-b15b4beb4c10.
+      - Reconcile exact deployment IDs, commit readback, health, version, bounded logs, prior rollback deployments, and lock release before any successor effect.
+      - Prohibit production, DNS, GHL, customer, contact, send, enrollment, billing, and cleanup effects in this reservation.
+    repository_write_authority: exact_staging_branch_fast_forward_only
     correction_authorized_paths:
       path_count: 5
       path_inventory_digest: 539038dfedbb69cd1b6e23ea35f6c7184c3dc895620aa29e2d75c805587b84c8
@@ -256,9 +255,30 @@ ready:
       required_postimages:
         ops/v2.1-execution/merge/candidates/68af08379cf596a2c8dfac28253487fb21fea222c6ea1275d096a6f972130ee8/CANDIDATE-DERIVATION.json: 9abad1cd94a58cd124667c0ff69aa022bb27bfa6de7cddd77363bdbed32ab1d6
         ops/v2.1-execution/merge/candidates/68af08379cf596a2c8dfac28253487fb21fea222c6ea1275d096a6f972130ee8/CANDIDATE.yaml: 16f5452c0feea8252f5bc8b544cb3b3514aad65fb6c1f4c35d5044e641c00824
-    accepted_terminal_head_sha: 7943a20895939f66b6755d02f819165850d1042f
+    Docker_context_candidate:
+      terminal_head_sha: 887ab80c793932234035c6eb434a445e7920ce96
+      candidate_digest: c7faf43f4cc17a0e80f01c5db0a31f6a81f9b1f5f5090281b6f6daaf1cc84dab
+      repository_source_sha: d5f75bbae511f6549897b1b005db1c5978b4487b
+      derivation_sha256: c1a7bb7356e3630f419b31e7399e3393a7d2ff95d3778935b959b80cc8c88286
+      manifest_sha256: 48c68cec03b5c83b9e0befa64c903e5f94b3b4a7faff53bfe021367b316b0f07
+      review: P1_0_P2_0_P3_0
+    accepted_terminal_head_sha: d5f75bbae511f6549897b1b005db1c5978b4487b
     accepted_terminal_review: P1_0_P2_0_P3_0
-    effect_lock_leases: []
+    effect_lock_leases:
+      - lock: production:deployment
+        lease_id: 2c0e395c-d492-4945-876d-c3f7060fe306
+        fencing_token: fence-9ac0556d-d74e-46d2-9fb4-cce2b61a4085
+        authority_id: i36-staging-deploy-20260802135504
+        authority_grant_digest: 769422c91892e066bb18ce8735d878954cf620d1bfbf9dab3979926c2d7161e0
+        authority_status_index_digest: da51d4e423f3492d31671ce59a468cbd831770da37186f5e17221330957549aa
+        authority_status_entry_digest: 1e9f66379fd8e731fa809b35b8ae67c9958395bd00f7bb9b355c5b8eba857645
+        latest_revocation_digest: null
+        candidate_digest: c7faf43f4cc17a0e80f01c5db0a31f6a81f9b1f5f5090281b6f6daaf1cc84dab
+        provider_environment_id: 11edf8a2-0160-45b4-a039-b15b4beb4c10
+        maximum_effect_count: 2
+        state_based_on_control_head_sha: 44edd0a460156088720b71c9ccb615b5972971fb
+        lease_issued_at: '2026-08-02T13:55:04Z'
+        lease_expires_at: '2026-08-02T14:40:04Z'
     effect_lock_leases_released:
       - lock: production:deployment
         lease_id: 4c71055a-fff3-466b-bcfc-915ab43f2970
@@ -277,9 +297,9 @@ ready:
     prior_lease_released_at: '2026-08-02T11:35:37Z'
     prior_terminal_head_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
     prior_terminal_review: P1_0_P2_0_P3_0
-    terminal_head_sha: 32bb6ea3889f5ea5dfb2541a17f5d37e0f7f7418
+    terminal_head_sha: 887ab80c793932234035c6eb434a445e7920ce96
     terminal_review: P1_0_P2_0_P3_0
-    accepted_at: '2026-08-02T13:20:19Z'
+    accepted_at: '2026-08-02T13:55:04Z'
     heartbeat_interval_minutes: 15
     prompt_path: ops/v2.1-execution/prompts/I36-START-OR-RESUME.md
     model: GPT-5.6-SOL
