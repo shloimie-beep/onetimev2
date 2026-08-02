@@ -2,10 +2,10 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 effect_id: i36-pg18-proof-dispatch-20260802124709
 task_id: I36
-state: RESERVED
-event_sequence: 1
-current_event_path: ops/v2.1-execution/effects/none/I36/i36-pg18-proof-dispatch-20260802124709/events/001-RESERVED.yaml
-current_event_digest: 1c445f9f3577af507cf4c84e37a6117e3d57761968ed8549162f3166ef1995ea
+state: CLOSED
+event_sequence: 3
+current_event_path: ops/v2.1-execution/effects/none/I36/i36-pg18-proof-dispatch-20260802124709/events/003-CLOSED.yaml
+current_event_digest: 53e5f74e4c956de610ded1b811b569ced7cad4ed63a4a875f8d7f8df5b3f8128
 authority_id: i36-pg18-proof-20260802124709
 lock: production:deployment
 lock_lease_id: 5547777d-a87f-464e-abcb-4068c0f1a60c
@@ -13,7 +13,7 @@ fencing_token: fence-61adc6f7-0322-4226-86d8-e8d5773250ac
 repository_source_sha: 7943a20895939f66b6755d02f819165850d1042f
 integration_head_sha: 42065da2be8334382b2491c8e1d1a3a43231ab98
 provider_request_or_operation_id: none_before_dispatch
-provider_readback_state: none_before_dispatch
-cleanup_state: pending_ephemeral_runner_completion
-lock_release_state: held
-updated_at: '2026-08-02T12:47:09Z'
+provider_readback_state: no_dispatch
+cleanup_state: complete_no_dispatch_no_external_resource
+lock_release_state: released
+updated_at: '2026-08-02T12:53:00Z'

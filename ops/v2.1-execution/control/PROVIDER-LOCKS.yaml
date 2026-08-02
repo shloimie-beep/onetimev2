@@ -155,20 +155,20 @@ locks:
 - lock: production:deployment
   status: claimed
   holder_task_id: I36
-  holder_claim_id: cd3d8266-7923-4b67-a8c7-be516e507e1e
-  lease_id: 5547777d-a87f-464e-abcb-4068c0f1a60c
-  fencing_token: fence-61adc6f7-0322-4226-86d8-e8d5773250ac
+  holder_claim_id: 885ab6ed-5d5a-4146-981b-44cf989cf16a
+  lease_id: 09014f8b-3d4d-452d-9c84-52cdb1afd340
+  fencing_token: fence-65842aaa-8625-4d10-a46f-996d6687b306
   canonical_candidate_digest: not_applicable_pre_freeze_exact_source_sha
   provider_identity: github_actions:shloimie-beep/onetimev2:ops11-postgres-18-assurance.yml
   authorized_operation: workflow_dispatch_exact_SHA_disposable_PostgreSQL_18_4_proof
-  claimed_at: '2026-08-02T12:47:09Z'
-  lease_expires_at: '2026-08-02T13:32:09Z'
-  authority_id: i36-pg18-proof-20260802124709
-  authority_grant_digest: 490faa5d1db30027b69df9dd11236728a0122ae30acee6fa6ca8ebec3004d614
-  authority_status_index_digest: 36b305d60ee7c432d216b8e4b0f0acf6ac240c94504bd60406ec9a99a59ec4d1
-  authority_status_entry_digest: cd4d02ccef1ac243fbb6de6cb4dae324d3f92d88c90d65d492d65c8a3ec5c9c6
+  claimed_at: '2026-08-02T12:53:00Z'
+  lease_expires_at: '2026-08-02T13:38:00Z'
+  authority_id: i36-pg18-proof-20260802125300
+  authority_grant_digest: 14244bca1e7f6e2cb6ee5b0c95406c31ca66b96f42520b05b6a692d2e8e577c3
+  authority_status_index_digest: 90e6ac28371974d06a2c572a3154ccca377ab56162db9df2ccc8f608a5f683d1
+  authority_status_entry_digest: 3a61d03a20894f1880ff48d931f1e1831810cdf0c5baeec48b58828c25f2ad4c
   latest_revocation_digest: null
-  authority_checked_at: '2026-08-02T12:47:09Z'
+  authority_checked_at: '2026-08-02T12:53:00Z'
   effect_budget:
     dispatch_count: 1
     repository_source_sha: 7943a20895939f66b6755d02f819165850d1042f

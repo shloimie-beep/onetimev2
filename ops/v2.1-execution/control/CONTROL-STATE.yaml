@@ -16,7 +16,7 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
 active_writer_limit: 4
-controller_authorization_sha: d488ff76efbf2dad0052b0eeaf97003a79ab5b8e
+controller_authorization_sha: 54939204f65376475ccf4e349c289f7a9708c8bd
 next_action: >-
   Push the exact write-ahead reservation, revalidate its authority and production:deployment fencing token, and dispatch
   one OPS-11 PostgreSQL 18.4 proof for source 7943a20895939f66b6755d02f819165850d1042f. Reconcile the exact run and
@@ -35,7 +35,7 @@ corrected_source_integration_terminal:
   typecheck: passed
   retired_preview_artifact_files_and_references: 0/0
   provider_or_external_effects: 0/0/0
-corrected_candidate_pg18_proof_dispatch_authority:
+corrected_candidate_pg18_initial_reservation_cancelled:
   recorded_at: '2026-08-02T12:47:09Z'
   control_basis_sha: d488ff76efbf2dad0052b0eeaf97003a79ab5b8e
   accepted_source_head_sha: 7943a20895939f66b6755d02f819165850d1042f
@@ -48,6 +48,33 @@ corrected_candidate_pg18_proof_dispatch_authority:
   lock: production:deployment
   lock_lease_id: 5547777d-a87f-464e-abcb-4068c0f1a60c
   fencing_token: fence-61adc6f7-0322-4226-86d8-e8d5773250ac
+  maximum_dispatch_count: 1
+  exact_workflow: .github/workflows/ops11-postgres-18-assurance.yml
+  exact_ref: codex/v21-integration
+  exact_input_repository_source_sha: 7943a20895939f66b6755d02f819165850d1042f
+  disposable_database_only: true
+  provider_or_customer_effect_authority: none
+  production_deployment_authority: none
+  external_effects_before_dispatch: 0/0/0
+  observed_remote_authority_status_index_digest: 6c5abf23795c6c00f9e18ca49fc6a8c85d28a4dfc44fedc68f217043a720ed54
+  cancellation_reason: reserved_digest_did_not_match_git_normalized_remote_blob
+  provider_call_performed: false
+  external_effects: 0/0/0
+  closed_at: '2026-08-02T12:53:00Z'
+corrected_candidate_pg18_proof_dispatch_authority:
+  recorded_at: '2026-08-02T12:53:00Z'
+  control_basis_sha: 54939204f65376475ccf4e349c289f7a9708c8bd
+  accepted_source_head_sha: 7943a20895939f66b6755d02f819165850d1042f
+  integration_merge_head_sha: 42065da2be8334382b2491c8e1d1a3a43231ab98
+  independent_review: P1_0_P2_0_P3_0
+  authority_id: i36-pg18-proof-20260802125300
+  authority_grant_digest: 14244bca1e7f6e2cb6ee5b0c95406c31ca66b96f42520b05b6a692d2e8e577c3
+  authority_status_index_digest: 90e6ac28371974d06a2c572a3154ccca377ab56162db9df2ccc8f608a5f683d1
+  authority_status_entry_digest: 3a61d03a20894f1880ff48d931f1e1831810cdf0c5baeec48b58828c25f2ad4c
+  digest_basis: exact_git_normalized_bytes_and_canonical_entry_JSON
+  lock: production:deployment
+  lock_lease_id: 09014f8b-3d4d-452d-9c84-52cdb1afd340
+  fencing_token: fence-65842aaa-8625-4d10-a46f-996d6687b306
   maximum_dispatch_count: 1
   exact_workflow: .github/workflows/ops11-postgres-18-assurance.yml
   exact_ref: codex/v21-integration

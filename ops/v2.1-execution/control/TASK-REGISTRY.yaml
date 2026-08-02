@@ -594,14 +594,14 @@ tasks:
     launch_priority_source_correction_integration_merge: 42065da2be8334382b2491c8e1d1a3a43231ab98
   authorized_start_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
   last_known_remote_head: 42065da2be8334382b2491c8e1d1a3a43231ab98
-  active_claim_id: cd3d8266-7923-4b67-a8c7-be516e507e1e
-  active_writer_id: codex-i36-pg18-proof-cd3d8266
-  lease_expires_at: '2026-08-02T13:32:09Z'
+  active_claim_id: 885ab6ed-5d5a-4146-981b-44cf989cf16a
+  active_writer_id: codex-i36-pg18-proof-885ab6ed
+  lease_expires_at: '2026-08-02T13:38:00Z'
   active_writer_leases: []
   active_effect_lock_leases:
-    - 5547777d-a87f-464e-abcb-4068c0f1a60c
-  last_heartbeat_at: '2026-08-02T12:47:09Z'
-  controller_authorization_sha: d488ff76efbf2dad0052b0eeaf97003a79ab5b8e
+    - 09014f8b-3d4d-452d-9c84-52cdb1afd340
+  last_heartbeat_at: '2026-08-02T12:53:00Z'
+  controller_authorization_sha: 54939204f65376475ccf4e349c289f7a9708c8bd
   ready_entry_payload_digest: null
   interface_checkpoint_sha: null
   implementation_head_sha: 7943a20895939f66b6755d02f819165850d1042f
@@ -627,7 +627,7 @@ tasks:
     successful_effect_run_id: 30745346334
     successful_effect_reconciliation: PostgreSQL_18_4_89_migrations_8_probes_restore_clone_passed_zero_non_disposable_effects
     state_based_on_control_head_sha: 228f1c4fdf3fbbf8a694bb2a7cee71cd405fab7c
-    transitioned_at: '2026-08-02T12:47:09Z'
+    transitioned_at: '2026-08-02T12:53:00Z'
     proof_record_location: 'ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/I36/status_proof'
 - task_id: P08
   status: ready_for_review

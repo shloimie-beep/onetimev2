@@ -77,13 +77,36 @@ authorities:
     provider_lock: production:deployment
     provider_lock_lease_id: 5547777d-a87f-464e-abcb-4068c0f1a60c
     fencing_token: fence-61adc6f7-0322-4226-86d8-e8d5773250ac
+    effect_authority_usable: false
+    candidate_binding_status: exact_source_sha_bound_pre_freeze
+    repository_source_sha: 7943a20895939f66b6755d02f819165850d1042f
+    integration_head_sha: 42065da2be8334382b2491c8e1d1a3a43231ab98
+    prerequisite_review: P1_0_P2_0_P3_0
+    disposition: cancelled_before_effect_remote_authority_status_digest_mismatch
+    lock_released_at: '2026-08-02T12:53:00Z'
+    checked_at: '2026-08-02T12:53:00Z'
+    state_based_on_control_head_sha: 54939204f65376475ccf4e349c289f7a9708c8bd
+  i36-pg18-proof-20260802125300:
+    schema_version: 1
+    execution_id: OT-V21-PRODUCTION
+    authority_id: i36-pg18-proof-20260802125300
+    authority_kind: derived_candidate_preparation_effect
+    grant_digest: 14244bca1e7f6e2cb6ee5b0c95406c31ca66b96f42520b05b6a692d2e8e577c3
+    source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+    status: active
+    expires_at: '2026-08-02T13:38:00Z'
+    latest_revocation_path: null
+    latest_revocation_digest: null
+    provider_lock: production:deployment
+    provider_lock_lease_id: 09014f8b-3d4d-452d-9c84-52cdb1afd340
+    fencing_token: fence-65842aaa-8625-4d10-a46f-996d6687b306
     effect_authority_usable: true
     candidate_binding_status: exact_source_sha_bound_pre_freeze
     repository_source_sha: 7943a20895939f66b6755d02f819165850d1042f
     integration_head_sha: 42065da2be8334382b2491c8e1d1a3a43231ab98
     prerequisite_review: P1_0_P2_0_P3_0
-    checked_at: '2026-08-02T12:47:09Z'
-    state_based_on_control_head_sha: d488ff76efbf2dad0052b0eeaf97003a79ab5b8e
+    checked_at: '2026-08-02T12:53:00Z'
+    state_based_on_control_head_sha: 54939204f65376475ccf4e349c289f7a9708c8bd
 entry_schema: templates/AUTHORITY-STATUS-ENTRY.yaml
 revocation_schema: templates/AUTHORITY-REVOCATION-RECORD.yaml
 rule: C00 records externally granted/revoked/expired authority; it does not grant it. Every update binds the known

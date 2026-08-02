@@ -1,0 +1,32 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: i36-pg18-proof-dispatch-20260802125300
+event_sequence: 1
+previous_event_digest: none
+state: RESERVED
+task_id: I36
+canonical_event_path: ops/v2.1-execution/effects/none/I36/i36-pg18-proof-dispatch-20260802125300/events/001-RESERVED.yaml
+current_pointer_path: ops/v2.1-execution/effects/none/I36/i36-pg18-proof-dispatch-20260802125300/CURRENT.yaml
+candidate_digest: not_applicable_pre_freeze_exact_source_sha
+repository_source_sha: 7943a20895939f66b6755d02f819165850d1042f
+integration_head_sha: 42065da2be8334382b2491c8e1d1a3a43231ab98
+deployment_instance_digest: none
+authority_grant_digest: 14244bca1e7f6e2cb6ee5b0c95406c31ca66b96f42520b05b6a692d2e8e577c3
+authority_status_index_digest: 90e6ac28371974d06a2c572a3154ccca377ab56162db9df2ccc8f608a5f683d1
+authority_status_entry_digest: 3a61d03a20894f1880ff48d931f1e1831810cdf0c5baeec48b58828c25f2ad4c
+latest_revocation_digest: none
+authority_checked_at: '2026-08-02T12:53:00Z'
+lock: production:deployment
+lock_lease_id: 09014f8b-3d4d-452d-9c84-52cdb1afd340
+fencing_token: fence-65842aaa-8625-4d10-a46f-996d6687b306
+provider_identity: github_actions:shloimie-beep/onetimev2:ops11-postgres-18-assurance.yml
+operation: workflow_dispatch_exact_SHA_disposable_PostgreSQL_18_4_proof
+budget_reservation:
+  count: 1
+  value: not_applicable
+provider_request_or_operation_id: none_before_dispatch
+provider_readback_digest: none_before_dispatch
+cleanup_state: pending_ephemeral_runner_completion
+state_based_on_head_sha: 54939204f65376475ccf4e349c289f7a9708c8bd
+event_at: '2026-08-02T12:53:00Z'
+immutable: true
