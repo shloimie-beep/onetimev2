@@ -20,6 +20,25 @@ authorities:
     candidate_binding_status: pending
     checked_at: '2026-07-30T16:25:00Z'
     state_based_on_control_head_sha: 1b33b5d92a3cb59d64232050ffbe4eccfeb3d4ca
+  i36-pg18-proof-20260802102829:
+    schema_version: 1
+    execution_id: OT-V21-PRODUCTION
+    authority_id: i36-pg18-proof-20260802102829
+    authority_kind: derived_candidate_preparation_effect
+    grant_digest: 533cd4cd0409a150ddf9389f25e5d3403422ec4b1f3107cd2c9a9c8249a05115
+    source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+    status: active
+    expires_at: '2026-08-02T11:13:29Z'
+    latest_revocation_path: null
+    latest_revocation_digest: null
+    provider_lock: production:deployment
+    provider_lock_lease_id: d1b9f7f9-23b5-4bfc-93ab-fb28195c3cc8
+    fencing_token: fence-c044ab0a-1169-40ec-a245-317a6a1b8326
+    effect_authority_usable: true
+    candidate_binding_status: exact_source_sha_bound_pre_freeze
+    repository_source_sha: 370420f14e0c3aefc9399319c74960ca699ab90a
+    checked_at: '2026-08-02T10:28:29Z'
+    state_based_on_control_head_sha: 78625ac9b72c59f045412b5e13c835ef749fb2d5
 entry_schema: templates/AUTHORITY-STATUS-ENTRY.yaml
 revocation_schema: templates/AUTHORITY-REVOCATION-RECORD.yaml
 rule: C00 records externally granted/revoked/expired authority; it does not grant it. Every update binds the known

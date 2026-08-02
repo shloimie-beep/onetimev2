@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: operational
-active_phase: immediate_lean_completion_mode
+active_phase: candidate_pg18_proof_dispatch
 bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
@@ -16,12 +16,31 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: 450fec7fa227a932a0d4f9d6143304e22be17fa0
+controller_authorization_sha: 78625ac9b72c59f045412b5e13c835ef749fb2d5
 next_action: >-
-  Execute the two disjoint READY packets from exact d61: F02 authors forward-only migration 2258, while I36 prepares the
-  bounded launch source and PostgreSQL-proof tooling correction on its phase branch. Integrate F02 first, then land one
-  I36 terminal checkpoint and perform one delta-only review. No provider mutation, deployment, DNS change, persistent
-  database write, CI dispatch, seed send, enrollment, charge, or cleanup is authorized in this phase.
+  Dispatch exactly one OPS-11 PostgreSQL 18 Assurance run from integration head 370420f14e0c3aefc9399319c74960ca699ab90a,
+  reconcile its exact run identity and sanitized evidence, then release the production:deployment lock. No deployment,
+  DNS change, provider/customer mutation, non-disposable database write, seed send, enrollment, charge, or cleanup is
+  authorized by this candidate-preparation successor.
+candidate_pg18_proof_dispatch:
+  recorded_at: '2026-08-02T10:28:29Z'
+  control_basis_sha: 78625ac9b72c59f045412b5e13c835ef749fb2d5
+  accepted_integration_head_sha: 370420f14e0c3aefc9399319c74960ca699ab90a
+  independent_review: P1_0_P2_0_P3_0
+  authority_id: i36-pg18-proof-20260802102829
+  ready_entry_payload_digest: abdea8d0da9104b39995a7d5b5144908e5fadfb2e76cdebd40647a0e91b4ed93
+  authority_grant_digest: 533cd4cd0409a150ddf9389f25e5d3403422ec4b1f3107cd2c9a9c8249a05115
+  lock: production:deployment
+  lock_lease_id: d1b9f7f9-23b5-4bfc-93ab-fb28195c3cc8
+  fencing_token: fence-c044ab0a-1169-40ec-a245-317a6a1b8326
+  maximum_dispatch_count: 1
+  exact_workflow: .github/workflows/ops11-postgres-18-assurance.yml
+  exact_ref: codex/v21-integration
+  exact_input_repository_source_sha: 370420f14e0c3aefc9399319c74960ca699ab90a
+  disposable_database_only: true
+  provider_or_customer_effect_authority: none
+  production_deployment_authority: none
+  external_effects_before_dispatch: 0/0/0
 launch_source_correction_dispatch_boundary:
   recorded_at: '2026-08-02T09:08:39Z'
   control_basis_sha: 5cd292a9e4fab2730435192d1ac6ca27a93a4381
