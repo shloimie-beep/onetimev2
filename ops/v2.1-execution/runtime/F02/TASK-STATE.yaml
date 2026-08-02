@@ -4,8 +4,8 @@ task_id: F02
 task_packet_digest: 7f76d84250d7c117eb78f1bbe70419d9395f46d2ef496527332d5140ad049bce
 task_context_digest: 0d581af766419d9c448774279a5b4bd9f7883378f91e2dcb2666ac057ff369fc
 spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
-branch: codex/v21-lane1-migration-correction
-start_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
+branch: codex/v21-f02-launch-timing-2258
+start_sha: d61f4e49349ed4b63618513ce6642337690d55d0
 dependency_heads:
   C00:
     required_state: full_production_completion_convergence
@@ -655,35 +655,78 @@ migration_2254_2256_P22_P12_P09_atomic_claim:
   sql_authored: true
   later_migration_authority_latent: false
   external_effects: 0/0/0
+launch_timing_2258_checkpoint:
+  disposition: implementation_complete_pending_independent_C00_admission
+  authorized_start_sha: d61f4e49349ed4b63618513ce6642337690d55d0
+  containing_control_head_sha: cb5fe3bd55941316a80fbeb1b2d20923b95dd712
+  controller_authorization_sha: 5cd292a9e4fab2730435192d1ac6ca27a93a4381
+  ready_entry_payload_digest: 388c28b5c4c946a75f9f4e9ddb103e69193a505e3889a88aaad744ac9e5388c7
+  claim_id: 197eba4d-bbf3-4942-9716-da8d44fca85c
+  writer_id: codex-f02-launch-timing-197eba4d
+  lease_issued_at: '2026-08-02T09:08:39Z'
+  lease_expires_at: '2026-08-02T13:08:39Z'
+  leases_released_at: '2026-08-02T09:27:26Z'
+  writer_slot_leases:
+    MIGRATION_AUTHORITY:
+      lease_id: b344b5ec-97bd-44ef-ae6f-f473bd8dbf86
+      phase_scope: F02_configurable_launch_timing_migration_2258
+      released_at: '2026-08-02T09:27:26Z'
+    SCHEMA_CONTRACT:
+      lease_id: 1535d824-beb1-4d9a-9536-be5c79214c74
+      phase_scope: F02_configurable_launch_timing_migration_2258
+      released_at: '2026-08-02T09:27:26Z'
+  authorized_paths:
+    - ops/v2.1-execution/runtime/F02/HANDOFF.md
+    - ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
+    - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
+    - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
+    - packages/db/migrations/2258_v21_configurable_launch_timing.sql
+  migration:
+    ordinal: 2258
+    path: packages/db/migrations/2258_v21_configurable_launch_timing.sql
+    checksum_sha256: 8a0bf65c9ac8f383a6a0167706e360157664fa5327e7e6855641b326e724e5c7
+    pg_mem_checksum_sha256: ec63a25f07819b66dba2f70f1609283318a0295c46316861fd67cfacf9de352e
+    applied_migration_2248_edited: false
+    existing_rows_rewritten: false
+    fixed_date_constraint_removed_forward_only: true
+    structural_access_invariants_preserved: true
+  migration_inventory_count_after_2258: 89
+  focused_verification:
+    migration_verification: 7/7
+    family_repository: 4/4
+    diff_check: passed
+    native_postgresql_18_4: delegated_to_candidate_bound_exact_source_proof
+  effect_lock_leases: []
+  external_effects: 0/0/0
 status: ready_for_review
-phase: migration_2254_2256_P22_P12_P09_implementation_complete
-claimed_by: codex-f02-migrations-2254-2256-41a5ba44
-claim_time: '2026-07-31T12:00:46Z'
-claim_id: 41a5ba44-435f-454f-b157-c6059d4bbc37
-writer_slot_lease_id: c741bc95-8fc2-4d4f-aaff-a76295580468
-lease_issued_at: '2026-07-31T11:28:40Z'
-lease_expires_at: '2026-07-31T13:28:40Z'
-last_heartbeat_at: '2026-07-31T12:49:27Z'
-lease_released_at: '2026-07-31T12:49:27Z'
-controller_authorization_sha: 70b12ea370e8430bc80c0943231af98a3f5e6265
-containing_control_head_sha: 30229697371eedd735123eb89fd063e8f7c2689e
-ready_entry_parent_control_sha: 70b12ea370e8430bc80c0943231af98a3f5e6265
-state_based_on_control_head_sha: 70b12ea370e8430bc80c0943231af98a3f5e6265
-ready_entry_payload_digest: 8abdeb3c79fdae914e86707bec541535de1d2ec3a29a5e1c155bcb9a73176f21
+phase: configurable_launch_timing_migration_2258_complete
+claimed_by: codex-f02-launch-timing-197eba4d
+claim_time: '2026-08-02T09:08:39Z'
+claim_id: 197eba4d-bbf3-4942-9716-da8d44fca85c
+writer_slot_lease_id: b344b5ec-97bd-44ef-ae6f-f473bd8dbf86
+lease_issued_at: '2026-08-02T09:08:39Z'
+lease_expires_at: '2026-08-02T13:08:39Z'
+last_heartbeat_at: '2026-08-02T09:27:26Z'
+lease_released_at: '2026-08-02T09:27:26Z'
+controller_authorization_sha: 5cd292a9e4fab2730435192d1ac6ca27a93a4381
+containing_control_head_sha: cb5fe3bd55941316a80fbeb1b2d20923b95dd712
+ready_entry_parent_control_sha: 5cd292a9e4fab2730435192d1ac6ca27a93a4381
+state_based_on_control_head_sha: cb5fe3bd55941316a80fbeb1b2d20923b95dd712
+ready_entry_payload_digest: 388c28b5c4c946a75f9f4e9ddb103e69193a505e3889a88aaad744ac9e5388c7
 writer_slot_leases:
   MIGRATION_AUTHORITY:
-    lease_id: c741bc95-8fc2-4d4f-aaff-a76295580468
-    lease_issued_at: '2026-07-31T11:28:40Z'
-    lease_expires_at: '2026-07-31T13:28:40Z'
-    phase_scope: F02_migration_2254_2256_P22_P12_P09
-    released_at: '2026-07-31T12:49:27Z'
+    lease_id: b344b5ec-97bd-44ef-ae6f-f473bd8dbf86
+    lease_issued_at: '2026-08-02T09:08:39Z'
+    lease_expires_at: '2026-08-02T13:08:39Z'
+    phase_scope: F02_configurable_launch_timing_migration_2258
+    released_at: '2026-08-02T09:27:26Z'
   SCHEMA_CONTRACT:
-    lease_id: 2c7b6d40-ea5f-423a-a000-a043d2bd6f7a
-    lease_issued_at: '2026-07-31T11:28:40Z'
-    lease_expires_at: '2026-07-31T13:28:40Z'
-    phase_scope: F02_migration_2254_2256_P22_P12_P09
-    released_at: '2026-07-31T12:49:27Z'
-state_based_on_head_sha: b46ff339ab3d79b06547d387795e95951a200263
+    lease_id: 1535d824-beb1-4d9a-9536-be5c79214c74
+    lease_issued_at: '2026-08-02T09:08:39Z'
+    lease_expires_at: '2026-08-02T13:08:39Z'
+    phase_scope: F02_configurable_launch_timing_migration_2258
+    released_at: '2026-08-02T09:27:26Z'
+state_based_on_head_sha: d61f4e49349ed4b63618513ce6642337690d55d0
 last_implementation_commit_sha: null
 completed_steps:
   - Re-fetched subsequent control descendant 4105c365 and verified it explicitly continued F02 while preserving the exact claim, dual leases, expiry, authorized integration start, expected F02 head, seven paths, inventory digest, and zero effect locks.
@@ -821,9 +864,9 @@ completed_steps:
   - Applied the complete final 84-migration inventory to fresh native PostgreSQL 16.14, replayed migration 2253, and passed the full malformed, stale, reordered, cross-scope, mismatch, and five-guard native rejection probe batch.
   - Applied and verified the complete 84-migration repository pg-mem inventory with harness-only built-in registrations and zero pending migrations.
 remaining_steps:
-  - C00 must independently audit and decide admission of the exact seven-path migration-2254-2256 terminal.
-  - A separately authorized integration action is required; this terminal does not update the shared integration branch or apply a central steward result.
-next_action: Push the exact seven-path terminal, verify local/tracking/live equality and released leases, then stop for independent C00 audit. No additional migration, product, shared-control, integration, provider, candidate, or effect authority is latent.
+  - C00 must independently re-review and decide admission of the exact one-path durable-resume correction on top of the five-path migration-2258 terminal.
+  - After admission, merge F02 migration 2258 into the shared integration branch before the I36 launch-source terminal.
+next_action: Stop for independent C00 re-review of this one-path durable-resume correction. Do not edit another migration, merge, deploy, change a provider, send, enroll, charge, or perform an external effect.
 requirements:
   OTV2-STATE-202: implementation_ready
 acceptance_cases:

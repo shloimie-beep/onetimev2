@@ -3,6 +3,37 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
+Audit the exact F02 configurable launch-timing migration 2258 terminal.
+
+Require authorized start `d61f4e49349ed4b63618513ce6642337690d55d0`,
+containing control `cb5fe3bd55941316a80fbeb1b2d20923b95dd712`,
+controller authorization `5cd292a9e4fab2730435192d1ac6ca27a93a4381`,
+READY `388c28b5c4c946a75f9f4e9ddb103e69193a505e3889a88aaad744ac9e5388c7`,
+claim `197eba4d-bbf3-4942-9716-da8d44fca85c`, and the exact two released
+writer leases recorded in `TASK-STATE.yaml`.
+
+Require exactly five changed paths: migration 2258, the allocation proposal,
+and the F02 runtime triplet. Confirm migration 2248 is byte-identical and no
+existing row is rewritten. Verify 2258 removes any surviving fixed September 13
+check and installs date-agnostic immediate-free, checkout, and identity-review
+structural invariants. Recompute native and repository-runner checksums and
+confirm the proposal advances to ordinal 2259.
+
+Require YAML, formatting, diff hygiene, secret scan, timely lease release,
+clean local/tracking/live equality, 7/7 migration-verification cases, 4/4
+Family repository cases, and effects `0/0/0`. Treat fresh PostgreSQL 18.4
+89/89 apply, replay, immutable-ledger, and 2258 semantic probes as a
+candidate-bound dependency after exact source integration.
+
+Do not merge during independent review. Do not edit migration 2248, deploy,
+change providers, send, enroll, charge, or perform external effects. Return
+findings by severity and stop for C00 admission.
+
+MODEL: GPT-5.6-SOL
+REASONING: XHIGH
+SERVICE TIER: PRIORITY
+MODE: START_OR_RESUME
+
 Audit the exact F02 migration 2250–2252 runtime acknowledgment checkpoint.
 
 Require canonical control `c44656d40769b28f2d55e6e1041d716175129f4a`,
