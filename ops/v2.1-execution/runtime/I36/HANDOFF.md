@@ -1,5 +1,46 @@
 # I36 Integration Releases
 
+## Current terminal - staging health-route corrected candidate refreeze
+
+The Docker-context corrected staging attempt built both images and ran all 89
+database migrations without an error. Worker deployment
+`46f9af56-d601-4717-84d9-6e2c44c9c126` succeeded with zero claimed and zero
+delivered messages. Web deployment `570b55ef-5057-4ec8-9b8d-18ffb7be424c`
+started on port 8080 but failed Railway's `/health` probe because the production
+host guard rejected Railway's probe host. The effect is reconciled, its lock is
+released, and control is pushed at
+`57449993e5fc1191f3a2fe8b86cee2dbefa5ce67`.
+
+Source `2e514a73773bd97f20e423076539ed7224948552` moves only the minimal no-database
+`/health` liveness response ahead of that host guard and adds one regression.
+Unrecognized-host root, asset, webhook, and lead requests remain rejected
+without database access; `/ready`, `/version`, and every other route remain
+guarded. The focused regression, diagnostics suite, full build, formatting,
+and diff checks pass. Independent source review is P1=0, P2=0, P3=0.
+Integration merge `1b88ac230db018df5cb27ab792846f18ae6a0e07` contains the correction.
+
+The deterministic candidate is
+`e7fb4021d9bf4dbc9c38dbcadcc6eb9139082acf494416ce970c7c503f757456`,
+bound to exact source `2e514a73773bd97f20e423076539ed7224948552`. Its derivation and manifest
+SHA-256 values are respectively
+`008754642b5a3d754b528ac1dd8859ab184fb7ad07fd09a4bc4b3859b240ddb6`
+and `dabbefb03b7f610cd3b4025acb485d352a6a183e08755e4e4bc77bb65edad746`.
+This terminal changes exactly five paths: the two new candidate documents and
+the I36 runtime triplet. The path-inventory and preimage-manifest digests are
+`097359debc779085bc859d92e22eaa1bc03cb6161e12d294f5784abc7d10f34c`
+and `f5663ca6aed691ea7917bf6ba7fc1c5d3a55b059ee13e020fba2a63d781ad2e6`.
+
+The migration inventory remains byte-identical at
+`1598fc0f7f18e172b9566c65dbb81593ba2b5b1339e1dbca312aa01b53383f6b`;
+therefore PostgreSQL 18.4 proof run `30748901653` remains applicable without a
+duplicate full proof run. Complete only the narrow candidate terminal checks,
+push this exact terminal, perform one delta-only review, and only after
+acceptance acquire fresh candidate-bound Railway authority and locks for a new
+staging attempt. This refreeze holds no provider lock and performs no external
+effect.
+
+All sections below are retained historical release records and audit prompts.
+
 ## Current terminal - Docker-context corrected candidate refreeze
 
 The first Railway staging attempt for corrected candidate

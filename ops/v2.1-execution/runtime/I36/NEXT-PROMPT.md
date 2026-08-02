@@ -1,3 +1,35 @@
+CURRENT INSTRUCTION - STAGING HEALTH-ROUTE CORRECTED CANDIDATE DELTA REVIEW
+
+Audit only the exact pushed I36 five-path terminal whose parent is
+`1b88ac230db018df5cb27ab792846f18ae6a0e07`. Confirm exactly the two new
+candidate documents under
+`ops/v2.1-execution/merge/candidates/e7fb4021d9bf4dbc9c38dbcadcc6eb9139082acf494416ce970c7c503f757456/`
+and the I36 runtime triplet changed. Confirm source
+`2e514a73773bd97f20e423076539ed7224948552`, candidate
+`e7fb4021d9bf4dbc9c38dbcadcc6eb9139082acf494416ce970c7c503f757456`,
+path inventory
+`097359debc779085bc859d92e22eaa1bc03cb6161e12d294f5784abc7d10f34c`,
+and preimage manifest
+`f5663ca6aed691ea7917bf6ba7fc1c5d3a55b059ee13e020fba2a63d781ad2e6`.
+
+Confirm derivation SHA-256
+`008754642b5a3d754b528ac1dd8859ab184fb7ad07fd09a4bc4b3859b240ddb6`
+and manifest SHA-256
+`dabbefb03b7f610cd3b4025acb485d352a6a183e08755e4e4bc77bb65edad746`,
+then independently reproduce the candidate. Confirm the source correction's
+review is P1=0, P2=0, P3=0, its full build passes, the targeted health regression
+passes 1/1, and diagnostics routes pass 3/3. Confirm `/health` alone precedes
+the production host guard while `/ready`, `/version`, and all other routes stay
+guarded. Confirm the unchanged migration, frontend, route-action, workflow,
+HighLevel, provider, message, acceptance, and environment-profile digests match
+the candidate documents. Confirm PostgreSQL 18.4 run `30748901653` remains
+applicable because the migration inventory is unchanged. Run only the
+candidate-builder tests and exact-scope, parse, hash, diff, and runtime-format
+checks. Confirm this refreeze performed no provider or deployment effect.
+Return exact P1/P2/P3 counts.
+
+--- HISTORICAL PROMPTS BELOW ---
+
 CURRENT INSTRUCTION — DOCKER-CONTEXT CORRECTED CANDIDATE DELTA REVIEW
 
 Audit only the exact pushed I36 five-path terminal whose parent is
