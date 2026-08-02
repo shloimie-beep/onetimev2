@@ -515,6 +515,10 @@ export function createApp({
     }),
   );
   app.use(traceMiddleware);
+  app.get('/health', (_req, res) => {
+    setPrivateNoStore(res);
+    res.json({ ok: true, service: 'onetime-web', code: 'PUBLIC_HEALTH_OK' });
+  });
   app.use((req, res, next) => {
     if (config.nodeEnv !== 'production' || classifyDomain(req.header('host') ?? '') !== 'unknown') {
       next();
@@ -840,11 +844,6 @@ export function createApp({
     sessionFromRequest: (req) => sessionFromRequest(req, pool, config),
     setPrivateNoStore,
     ...(clock ? { clock } : {}),
-  });
-
-  app.get('/health', (_req, res) => {
-    setPrivateNoStore(res);
-    res.json({ ok: true, service: 'onetime-web', code: 'PUBLIC_HEALTH_OK' });
   });
 
   app.get('/ready', async (req: RequestWithTrace, res) => {

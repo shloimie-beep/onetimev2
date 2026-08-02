@@ -1377,7 +1377,7 @@ describe('Tisha BAv retired HTTP surface', () => {
     }
   });
 
-  it('rejects unknown production hosts before public or database handling', async () => {
+  it('keeps minimal liveness host-independent while rejecting other unknown production hosts', async () => {
     const distDir = await mkdtemp(path.join(tmpdir(), 'unknown-host-proof-'));
     await mkdir(path.join(distDir, 'assets'), { recursive: true });
     await Promise.all([
@@ -1418,6 +1418,17 @@ describe('Tisha BAv retired HTTP surface', () => {
       const canonicalAsset = await canonicalFetch(server.baseUrl, '/assets/public.js');
       expect(canonicalAsset.status).toBe(200);
       expect(await canonicalAsset.text()).toBe('PUBLIC_ASSET_BYTES');
+
+      const liveness = await canonicalFetch(server.baseUrl, '/health', {
+        headers: { host: 'attacker.invalid' },
+      });
+      expect(liveness.status).toBe(200);
+      expect(liveness.headers.get('cache-control')).toContain('no-store');
+      expect(await liveness.json()).toEqual({
+        ok: true,
+        service: 'onetime-web',
+        code: 'PUBLIC_HEALTH_OK',
+      });
 
       for (const targetPath of ['/', '/assets/public.js']) {
         const response = await canonicalFetch(server.baseUrl, targetPath, {
