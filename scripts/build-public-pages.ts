@@ -91,7 +91,7 @@ function pageShell(
     icon?: string;
     appleTouchIcon?: string;
     app?: boolean;
-    appEntry?: 'crm' | 'live' | 'portal' | 'experience-preview-student';
+    appEntry?: 'crm' | 'live' | 'portal';
   } = {},
 ) {
   const description = options.description ?? landingContent.seo.description;
@@ -694,17 +694,4 @@ await writeFile(
     canonicalPath: '/app/student',
     description: 'One Time protected student portal.',
   }).replace('index, follow', 'noindex, nofollow'),
-);
-await writeFile(
-  path.join(outDir, 'app', 'experience-preview-student.html'),
-  pageShell(
-    'Fictional Student Preview | One Time Mishnayos',
-    `<div id="experience-preview-student-root"></div>`,
-    {
-      app: true,
-      appEntry: 'experience-preview-student',
-      canonicalPath: '/app/experience-preview/student',
-      description: 'One Time isolated read-only fictional Student preview.',
-    },
-  ).replace('index, follow', 'noindex, nofollow'),
 );

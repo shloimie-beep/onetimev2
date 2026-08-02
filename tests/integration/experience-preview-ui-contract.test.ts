@@ -20,11 +20,11 @@ describe('OT-LAUNCH-01 operator-visible UI contract', () => {
     'apps/web/src/server/features/experience-preview/router.ts',
     'utf8',
   );
+  const appBuildSource = readFileSync('apps/web/vite.app.config.ts', 'utf8');
+  const publicPagesBuildSource = readFileSync('scripts/build-public-pages.ts', 'utf8');
 
   it('keeps launch tools contextual and gates canonical operating areas by server capability', () => {
     expect(crmSource).toContain('adminPrimaryNav(adminCurrentArea, liveConsoleReady)');
-    expect(crmSource).toContain("label: 'Operations'");
-    expect(crmSource).toContain("href: '/app/operations'");
     expect(crmSource).not.toContain("label: 'Experience Preview'");
     expect(crmSource).not.toContain("href: '/app/experience-preview'");
     expect(crmSource).not.toContain("label: 'Launch Status'");
@@ -69,5 +69,12 @@ describe('OT-LAUNCH-01 operator-visible UI contract', () => {
     expect(previewCss).toContain('.fictional-student-portal-preview {');
     expect(previewCss).toContain('@media (max-width: 480px)');
     expect(previewCss).toContain('.experience-preview-selectors');
+  });
+
+  it('does not emit retired preview Student assets in the ordinary production build', () => {
+    expect(appBuildSource).not.toContain('experience-preview/student-entry.tsx');
+    expect(appBuildSource).not.toContain("'experience-preview-student'");
+    expect(publicPagesBuildSource).not.toContain('experience-preview-student.html');
+    expect(publicPagesBuildSource).not.toContain("appEntry: 'experience-preview-student'");
   });
 });

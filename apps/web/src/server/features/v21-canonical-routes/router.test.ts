@@ -27,10 +27,10 @@ describe('v2.1 canonical route server registration', () => {
     );
     expect(registrations.every(({ path }) => !path.includes('*'))).toBe(true);
     expect(new Set(registrations.map(({ path }) => path)).size).toBe(75);
-    expect(CANONICAL_READY_PROTECTED_ROUTES).toHaveLength(16);
+    expect(CANONICAL_READY_PROTECTED_ROUTES).toHaveLength(18);
     expect(
       CANONICAL_PROTECTED_ROUTES.filter(({ readiness }) => readiness !== 'ready'),
-    ).toHaveLength(59);
+    ).toHaveLength(57);
   });
 
   it('binds exact shell and role semantics', () => {
@@ -40,6 +40,24 @@ describe('v2.1 canonical route server registration', () => {
     expect(
       CANONICAL_PROTECTED_ROUTES.find(({ routeId }) => routeId === 'RT-PAR-030'),
     ).toMatchObject({ pathname: '/app/parent/billing', shell: 'parent', roles: ['parent'] });
+    expect(
+      CANONICAL_READY_PROTECTED_ROUTES.find(({ routeId }) => routeId === 'RT-PAR-001'),
+    ).toMatchObject({
+      pathname: '/app/parent',
+      shell: 'parent',
+      roles: ['parent'],
+      readiness: 'ready',
+      handlerDisposition: 'mounted',
+    });
+    expect(
+      CANONICAL_READY_PROTECTED_ROUTES.find(({ routeId }) => routeId === 'RT-PAR-070'),
+    ).toMatchObject({
+      pathname: '/app/parent/account',
+      shell: 'parent',
+      roles: ['parent'],
+      readiness: 'ready',
+      handlerDisposition: 'mounted',
+    });
     expect(
       CANONICAL_PROTECTED_ROUTES.find(({ routeId }) => routeId === 'RT-STU-012'),
     ).toMatchObject({
