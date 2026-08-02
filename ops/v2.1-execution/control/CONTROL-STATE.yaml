@@ -16,7 +16,7 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: 79fb3b949cf7b551aff939df868b048dc227213e
+controller_authorization_sha: aee8c07684270736b6947a008a4a0d620c61ed6c
 next_action: >-
   Correct the two independently reproduced P18-registration-002 P2 defects from exact integration 89f9adf8 within only
   embedded service.ts, service.test.ts, and the I36 runtime triplet. Reject attendance from revoked or expired live sessions
@@ -132,9 +132,9 @@ production_completion_lanes:
   expected_head_sha: 89f9adf886a15f396b6713dfdf0259bfde27bb0d
   P18_registration_002_terminal_head_sha: 89f9adf886a15f396b6713dfdf0259bfde27bb0d
   P18_registration_002_terminal_parent_sha: 06a4e660bb00f37100a93abd11561351dfce9b79
-  P18_registration_002_terminal_tree_sha: 80a11f4df41545aa31405843255d354cedfaef9a
+  P18_registration_002_terminal_tree_sha: 80a11f4da6a0167f9e09b121ebd563c7e40825a4
   P18_registration_002_terminal_timestamp: '2026-08-02T06:04:33+03:00'
-  P18_registration_002_terminal_product_manifest_digest: 580da8f6341e3c962e80e01b579ee7afd2a8867e198772db735f9dd74d287551
+  P18_registration_002_terminal_product_manifest_digest: 580da8c07974aca4301b4ed995ae98f38bc4c61f4f6960b71aee219ad5684f5e
   P18_registration_002_terminal_independent_review: held_zero_P1_two_P2
   P18_registration_002_correction_claim_id: 62a752ae-c2a0-4f3f-8a1c-08bde30fa02a
   P18_registration_002_correction_path_count: 5
@@ -948,7 +948,7 @@ successor_dispatch:
     BARREL_REGISTRAR_lease_id: null
     RELEASE_INTEGRATOR_lease_id: 8e17574a-ee4d-468e-ae70-557b8f16dd76
     writer_lease_expires_at: '2026-08-02T06:17:23Z'
-    ready_entry_payload_digest: 0bf98b78df197259b697d89cf14c17e8392a1ef4ee51e5d23aa03281aac94c80
+    ready_entry_payload_digest: 8b2f9db9ffbe3c4a2635f53d68447cfac421416b869df5a433dffac28fc7d4ea
     P21_current_metadata_terminal_head_sha: 48182afe34d5b369b6fbbc05b6d6f788c34e5429
     P21_current_metadata_independent_review: passed_zero_P1_zero_P2_zero_P3
     P18_successor_request_materialization_release_path_count: 4
@@ -965,7 +965,7 @@ successor_dispatch:
     P18_registration_002_implementation_product_preimage_manifest_digest: 660221d367079c2997f7bfb7b12913f6122c69aa3e9788fee6ae4d5736067d00
     P18_registration_002_implementation_release_preimage_manifest_digest: 95f0737ea38caf4ea403ec44afbd1ea5ce63317be5463ec4ba28aec5871acf72
     P18_registration_002_implementation_terminal_head_sha: 89f9adf886a15f396b6713dfdf0259bfde27bb0d
-    P18_registration_002_implementation_terminal_product_manifest_digest: 580da8f6341e3c962e80e01b579ee7afd2a8867e198772db735f9dd74d287551
+    P18_registration_002_implementation_terminal_product_manifest_digest: 580da8c07974aca4301b4ed995ae98f38bc4c61f4f6960b71aee219ad5684f5e
     P18_registration_002_implementation_independent_review: held_zero_P1_two_P2
     P18_registration_002_correction_product_path_count: 2
     P18_registration_002_correction_product_path_inventory_digest: dc7a45f788a00e8bd7149c3d789f7413220e4bdf4d6415fec0ee730200b00212
@@ -1199,9 +1199,9 @@ successor_dispatch:
     writer_id: codex-i36-P18-correction-62a752ae
     writer_lease_id: b20881f5-369e-40c7-a0dd-d28366d9a57f
     writer_lease_expires_at: '2026-08-02T06:17:23Z'
-    ready_entry_payload_digest: 0bf98b78df197259b697d89cf14c17e8392a1ef4ee51e5d23aa03281aac94c80
+    ready_entry_payload_digest: 8b2f9db9ffbe3c4a2635f53d68447cfac421416b869df5a433dffac28fc7d4ea
     integration_implementation_terminal_head_sha: 89f9adf886a15f396b6713dfdf0259bfde27bb0d
-    integration_implementation_terminal_product_manifest_digest: 580da8f6341e3c962e80e01b579ee7afd2a8867e198772db735f9dd74d287551
+    integration_implementation_terminal_product_manifest_digest: 580da8c07974aca4301b4ed995ae98f38bc4c61f4f6960b71aee219ad5684f5e
     correction_release_path_count: 5
     correction_release_path_inventory_digest: 6e7411f3b136e23a3187210a893038b2fd9c16455227d93aa0dc6efda6967640
     authorized_path_inventory_digest: a1faaf0d274b87576b567dcd9aa305184598dd8c7bd9d44dd526fc97cd7b76f8

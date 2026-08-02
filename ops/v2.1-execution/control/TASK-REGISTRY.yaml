@@ -46,14 +46,15 @@ tasks:
     P21_metadata_acceptance_P18_successor_request_materialization_dispatch_authorized_start: 66f6bcdc11987c6ef6288877319f43ef9b09f085
     P18_registration_002_admission_implementation_dispatch_authorized_start: cd1b86517b314d7738240a515f90e4c73ef9314e
     P18_registration_002_terminal_review_two_P2_correction_dispatch_authorized_start: 79fb3b949cf7b551aff939df868b048dc227213e
-  authorized_start_sha: 79fb3b949cf7b551aff939df868b048dc227213e
-  last_known_remote_head: 79fb3b949cf7b551aff939df868b048dc227213e
-  active_claim_id: 39ebd6f1-8d47-4887-8b5f-41f234e30dc0
-  active_writer_id: codex-c00-P18-review-correction-dispatch-39ebd6f1
-  lease_expires_at: '2026-08-02T06:17:23Z'
-  last_heartbeat_at: '2026-08-02T03:17:23Z'
-  controller_authorization_sha: 79fb3b949cf7b551aff939df868b048dc227213e
-  ready_entry_payload_digest: 0bf98b78df197259b697d89cf14c17e8392a1ef4ee51e5d23aa03281aac94c80
+    P18_registration_002_control_evidence_binding_correction_authorized_start: aee8c07684270736b6947a008a4a0d620c61ed6c
+  authorized_start_sha: aee8c07684270736b6947a008a4a0d620c61ed6c
+  last_known_remote_head: aee8c07684270736b6947a008a4a0d620c61ed6c
+  active_claim_id: bd77e899-51b9-4427-bc58-a690cf6b926b
+  active_writer_id: codex-c00-P18-evidence-binding-correction-bd77e899
+  lease_expires_at: '2026-08-02T06:32:26Z'
+  last_heartbeat_at: '2026-08-02T03:32:26Z'
+  controller_authorization_sha: aee8c07684270736b6947a008a4a0d620c61ed6c
+  ready_entry_payload_digest: 8b2f9db9ffbe3c4a2635f53d68447cfac421416b869df5a433dffac28fc7d4ea
   interface_checkpoint_sha: null
   implementation_head_sha: null
   status_proof:
@@ -73,8 +74,8 @@ tasks:
       stale: 0
       waived: 0
     external_effects_reconciled: true
-    state_based_on_control_head_sha: 79fb3b949cf7b551aff939df868b048dc227213e
-    transitioned_at: '2026-08-02T03:17:23Z'
+    state_based_on_control_head_sha: aee8c07684270736b6947a008a4a0d620c61ed6c
+    transitioned_at: '2026-08-02T03:32:26Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/C00/status_proof
 - task_id: F01
   status: ready_for_review
@@ -574,8 +575,8 @@ tasks:
       lease_id: 8e17574a-ee4d-468e-ae70-557b8f16dd76
       phase_scope: exact_P18_terminal_runtime_triplet_only
   last_heartbeat_at: '2026-08-02T03:17:23Z'
-  controller_authorization_sha: 79fb3b949cf7b551aff939df868b048dc227213e
-  ready_entry_payload_digest: 0bf98b78df197259b697d89cf14c17e8392a1ef4ee51e5d23aa03281aac94c80
+  controller_authorization_sha: aee8c07684270736b6947a008a4a0d620c61ed6c
+  ready_entry_payload_digest: 8b2f9db9ffbe3c4a2635f53d68447cfac421416b869df5a433dffac28fc7d4ea
   interface_checkpoint_sha: null
   implementation_head_sha: 89f9adf886a15f396b6713dfdf0259bfde27bb0d
   status_proof:
@@ -595,8 +596,8 @@ tasks:
       stale: 0
       waived: 0
     external_effects_reconciled: true
-    state_based_on_control_head_sha: 79fb3b949cf7b551aff939df868b048dc227213e
-    transitioned_at: '2026-08-02T03:17:23Z'
+    state_based_on_control_head_sha: aee8c07684270736b6947a008a4a0d620c61ed6c
+    transitioned_at: '2026-08-02T03:32:26Z'
     proof_record_location: 'ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/I36/status_proof'
 - task_id: P08
   status: ready_for_review
@@ -1129,8 +1130,8 @@ tasks:
       lease_id: b20881f5-369e-40c7-a0dd-d28366d9a57f
       phase_scope: exact_P18_embedded_service_and_test_correction
   last_heartbeat_at: '2026-08-02T03:17:23Z'
-  controller_authorization_sha: 79fb3b949cf7b551aff939df868b048dc227213e
-  ready_entry_payload_digest: 0bf98b78df197259b697d89cf14c17e8392a1ef4ee51e5d23aa03281aac94c80
+  controller_authorization_sha: aee8c07684270736b6947a008a4a0d620c61ed6c
+  ready_entry_payload_digest: 8b2f9db9ffbe3c4a2635f53d68447cfac421416b869df5a433dffac28fc7d4ea
   interface_checkpoint_sha: null
   implementation_head_sha: 89f9adf886a15f396b6713dfdf0259bfde27bb0d
   status_proof:
@@ -1150,8 +1151,8 @@ tasks:
       stale: 0
       waived: 0
     external_effects_reconciled: true
-    state_based_on_control_head_sha: 79fb3b949cf7b551aff939df868b048dc227213e
-    transitioned_at: '2026-08-02T03:17:23Z'
+    state_based_on_control_head_sha: aee8c07684270736b6947a008a4a0d620c61ed6c
+    transitioned_at: '2026-08-02T03:32:26Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/P18/status_proof
 - task_id: P19
   status: ready_for_review

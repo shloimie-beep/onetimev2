@@ -7,7 +7,7 @@ ready:
     phase: P18_registration_002_two_P2_repository_correction
     branch: codex/v21-integration
     claim_mode: new
-    state_based_on_control_head_sha: 79fb3b949cf7b551aff939df868b048dc227213e
+    state_based_on_control_head_sha: aee8c07684270736b6947a008a4a0d620c61ed6c
     authorized_start_sha: 89f9adf886a15f396b6713dfdf0259bfde27bb0d
     expected_head_sha: 89f9adf886a15f396b6713dfdf0259bfde27bb0d
     package_lock_sha256: fc8516c75a299c5c0569050b379ae0205170d1bf8e8e978802327efb9f99fd06
@@ -17,14 +17,14 @@ ready:
     dependencies:
       - task_id: C00
         required_state: immediate_lean_completion_mode
-        required_head_sha: 79fb3b949cf7b551aff939df868b048dc227213e
+        required_head_sha: aee8c07684270736b6947a008a4a0d620c61ed6c
       - task_id: I36
         required_state: P18_registration_002_terminal_held_two_P2
         required_head_sha: 89f9adf886a15f396b6713dfdf0259bfde27bb0d
         required_parent_sha: 06a4e660bb00f37100a93abd11561351dfce9b79
-        required_tree_sha: 80a11f4df41545aa31405843255d354cedfaef9a
+        required_tree_sha: 80a11f4da6a0167f9e09b121ebd563c7e40825a4
         required_timestamp: '2026-08-02T06:04:33+03:00'
-        required_product_manifest_digest: 580da8f6341e3c962e80e01b579ee7afd2a8867e198772db735f9dd74d287551
+        required_product_manifest_digest: 580da8c07974aca4301b4ed995ae98f38bc4c61f4f6960b71aee219ad5684f5e
       - task_id: P18
         required_state: exact_two_P2_repository_correction
         independent_review: zero_P1_two_P2
@@ -91,7 +91,7 @@ ready:
         holder_task_id: I36
         holder_claim_id: 62a752ae-c2a0-4f3f-8a1c-08bde30fa02a
         holder_writer_id: codex-i36-P18-correction-62a752ae
-        state_based_on_control_head_sha: 79fb3b949cf7b551aff939df868b048dc227213e
+        state_based_on_control_head_sha: aee8c07684270736b6947a008a4a0d620c61ed6c
         lease_issued_at: '2026-08-02T03:17:23Z'
         lease_expires_at: '2026-08-02T06:17:23Z'
         phase_scope: exact_P18_embedded_service_and_test_correction
@@ -100,7 +100,7 @@ ready:
         holder_task_id: I36
         holder_claim_id: 62a752ae-c2a0-4f3f-8a1c-08bde30fa02a
         holder_writer_id: codex-i36-P18-correction-62a752ae
-        state_based_on_control_head_sha: 79fb3b949cf7b551aff939df868b048dc227213e
+        state_based_on_control_head_sha: aee8c07684270736b6947a008a4a0d620c61ed6c
         lease_issued_at: '2026-08-02T03:17:23Z'
         lease_expires_at: '2026-08-02T06:17:23Z'
         phase_scope: exact_I36_terminal_runtime_triplet_only
@@ -113,7 +113,7 @@ ready:
     model: GPT-5.6-SOL
     reasoning: XHIGH
 entry_payload_digests:
-  I36: 0bf98b78df197259b697d89cf14c17e8392a1ef4ee51e5d23aa03281aac94c80
+  I36: 8b2f9db9ffbe3c4a2635f53d68447cfac421416b869df5a433dffac28fc7d4ea
 digest_algorithm: >-
   For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively, separators ',' and ':',
   ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives in this sibling map, never inside the entry.
