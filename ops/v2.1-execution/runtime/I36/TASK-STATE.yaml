@@ -40,24 +40,102 @@ dependency_heads:
   P18: 1926e61c793ce29d7240c1ee05d2a4879b52770b
   P21: c11dec418fa3de896e96c348f87928c92c9f86b9
 status: ready_for_review
-phase: candidate_pg18_failed_run_phase_truth_correction_terminal
-claimed_by: codex-i36-pg18-evidence-correction-27f81ff8
-claim_time: '2026-08-02T10:56:19Z'
-claim_id: 27f81ff8-ff28-486d-9fcc-385914ec3584
-lease_id: e83619b8-1cf2-4920-99d9-17046ef7ed6d
-lease_issued_at: '2026-08-02T10:56:19Z'
-lease_expires_at: '2026-08-02T11:41:19Z'
-lease_released_at: '2026-08-02T10:59:21Z'
-last_heartbeat_at: '2026-08-02T10:59:21Z'
-controller_authorization_sha: 3cc3f339988c8ba057baa4f54fc861b37c09e4c0
-latest_valid_observed_control_head_sha: 1410f6ae4f702fa6d6546858621875809a860350
-reconciled_state_based_on_control_head_sha: 3cc3f339988c8ba057baa4f54fc861b37c09e4c0
-ready_authorization_control_head_sha: 3cc3f339988c8ba057baa4f54fc861b37c09e4c0
-ready_entry_state_based_on_control_head_sha: 3cc3f339988c8ba057baa4f54fc861b37c09e4c0
-ready_entry_payload_digest: b2c1ba427be41a35634a729e01b33769e2c400a3ae01e9ce18add3f627ef7a50
+phase: candidate_freeze_terminal
+claimed_by: codex-i36-candidate-freeze-48f1af59
+claim_time: '2026-08-02T11:23:01Z'
+claim_id: 48f1af59-52f9-4868-bacd-b6e79bf4292d
+lease_id: 8a7206c7-0c56-4fab-9565-63a2859077a2
+lease_issued_at: '2026-08-02T11:23:01Z'
+lease_expires_at: '2026-08-02T12:23:01Z'
+lease_released_at: '2026-08-02T11:35:37Z'
+last_heartbeat_at: '2026-08-02T11:35:37Z'
+controller_authorization_sha: 146774966cd35a96c51d2f467ccfd3b458fd9cc6
+latest_valid_observed_control_head_sha: 146774966cd35a96c51d2f467ccfd3b458fd9cc6
+reconciled_state_based_on_control_head_sha: 08079bd87085ba8fd0b242f8ff7923c1b46f3a88
+ready_authorization_control_head_sha: 146774966cd35a96c51d2f467ccfd3b458fd9cc6
+ready_entry_state_based_on_control_head_sha: 146774966cd35a96c51d2f467ccfd3b458fd9cc6
+ready_entry_payload_digest: 26439fc6fe15620e8cdc00b4b82151c536b5b3f53303cd0aaf9d687c542a50b6
 claim_mode: new
-expected_existing_head_sha: 59616c76f34634103a9049a816b8d2d740613836
-lease_phase_scope: candidate_pg18_failed_run_phase_truth_correction
+expected_existing_head_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
+lease_phase_scope: candidate_freeze
+candidate_freeze_terminal:
+  containing_control_head_sha: 146774966cd35a96c51d2f467ccfd3b458fd9cc6
+  state_basis_control_head_sha: 08079bd87085ba8fd0b242f8ff7923c1b46f3a88
+  exact_authorized_start_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
+  ready_entry_payload_digest: 26439fc6fe15620e8cdc00b4b82151c536b5b3f53303cd0aaf9d687c542a50b6
+  accepted_terminal_review: P1_0_P2_0_P3_0
+  claim_id: 48f1af59-52f9-4868-bacd-b6e79bf4292d
+  writer_id: codex-i36-candidate-freeze-48f1af59
+  lease_issued_at: '2026-08-02T11:23:01Z'
+  lease_expires_at: '2026-08-02T12:23:01Z'
+  lease_released_at: '2026-08-02T11:35:37Z'
+  last_heartbeat_at: '2026-08-02T11:35:37Z'
+  writer_slot_leases_released:
+    - slot: RELEASE_INTEGRATOR
+      lease_id: 8a7206c7-0c56-4fab-9565-63a2859077a2
+  effect_lock_leases: []
+  exact_scope:
+    path_count: 5
+    path_inventory_digest: 3b125e97f2ea2b59bf44c28b70be350f2a0f1e5b8f22ce976785b900e36626d7
+    preimage_manifest_digest: 28afa552b05e57a6847a439a2fc29a674a39c7ccfcb2e910b4593ca061a5981d
+    candidate_document_paths: 2
+    runtime_paths: 3
+    deployable_source_paths: 0
+  candidate_identity:
+    canonical_candidate_digest: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
+    repository_source_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
+    application_content_sha256: 05deaa76b64ccfb7ab82b78ce75965c134ffd39a63da1fc40139dc6eee901e3e
+    product_tree_digest: c85b7053474f6331363b585876ea91c616005f0d0c60df4219b3388e10db7696
+    web_artifact_digest: 8d928252ce9644d80674e16ca03e5058ccb9b83cca97801c6e065c0208c35cb6
+    worker_artifact_digest: cbe0456d956496027419a8ba510913d3a0735cc4ab09ec9bcfab0498f70fc0cc
+    configuration_bundle_digest: 71c5e8a17c73a0414bee2b40f5803f14ae7190dd996e57e97c7396c4ca3f5d6e
+    migration_inventory_digest: 1598fc0f7f18e172b9566c65dbb81593ba2b5b1339e1dbca312aa01b53383f6b
+    frontend_asset_digest: 7d42cbcb4715a722bcc3bdfcb76f349f2fc17140f63f98cdd17d0b856b7799d5
+    route_action_inventory_digest: 3ca498c122f0fc3a8f753898687e233b717349f9486b8df86dd02e22fb06d483
+    workflow_registry_digest: 08fa35058d351e79aa56a8bddcb6752ba2f356c4fde35c0a26b13338c1f53573
+    highlevel_registry_digest: d6c52146588a8699ae82a7b10158c48ab8683018a5e3cf336b9f43e222a759cf
+    provider_registry_digest: 80778ec9924ddc7ecb204f6ed6ed380c922ce5f4c7135b4a733ba5fc5f138b16
+    message_catalog_digest: e4da6ceab0e7eabbb0a927bbb85195e0a955229f37eb3a8ae4c45aad58155d8a
+    acceptance_contract_digest: d1dd39b0f91e94a4d8f179454a15fbeabb3d31d88afd490db1a5040ff6777444
+    environment_profile_schema_digest: 6f6d9fa499a731d27db16005bfa63fd6fbfefc1c212def1eb986f006b60063ce
+    frozen_at: '2026-08-02T11:23:01Z'
+    immutable: true
+  candidate_documents:
+    derivation_sha256: f848922c8297f8ee90a934b7875876976913fc23af21c3ce590b7a4571ace8ca
+    manifest_sha256: 30867a96bfc5370ead95b83b6519b4ec365947d874c609dd8e5dbecba7e54876
+  pg18_proof:
+    github_run_id: 30745346334
+    exact_source_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
+    artifact_id: 8832696355
+    artifact_archive_sha256: 09bac837e0ce4c1bfebb6d72d35a6292553f53a6dfbb90c76b1779d8e41fc586
+    evidence_manifest_sha256: efc0d131b3f03cf57ae61aec2e9acd45f07e7be20d2d4bfd73bdfd5a0a60a6d0
+    PostgreSQL_version: '18.4'
+    migration_apply_replay_files_ledger: 89/89/89/89
+    pending_and_issues: 0/0
+    probes: 8/8_passed
+    restore_clone: passed_schema_ledger_match_idempotent
+    disposable_runner_and_database_stopped: true
+  validation:
+    candidate_document_hashes: passed_2_of_2
+    candidate_JSON_and_YAML_parse: passed
+    canonical_candidate_digest_reproduction: passed
+    candidate_builder: passed_4_of_4
+    exact_five_path_scope: passed_5_of_5
+    deployable_source_unchanged: passed
+    candidate_generated_format: exact_required_hashes_preserved_not_reformatted
+    runtime_prettier: passed_3_of_3
+    diff_check: passed
+  effects:
+    candidate_freeze_external_effects: 0/0/0
+    proof_dispatch_reconciled_separately: 1/1/1
+    provider_or_customer: 0
+    deployment_or_DNS: 0
+    contact_send_enrollment_or_billing: 0
+  safe_next_action: >-
+    Push this exact five-path candidate-freeze terminal and stop for one
+    delta-only candidate identity review. Do not create an evidence branch or
+    perform any provider, deployment, DNS, contact, send, enrollment, billing,
+    cleanup, or production effect from this terminal.
 candidate_pg18_failed_run_phase_truth_correction_terminal:
   containing_control_head_sha: 1410f6ae4f702fa6d6546858621875809a860350
   state_basis_control_head_sha: 3cc3f339988c8ba057baa4f54fc861b37c09e4c0
@@ -1441,9 +1519,10 @@ merge_result_head_sha: 9a028e7a967221441dfd4d5cf9417eb2885a072f
 merge_parent_target_head_sha: c19c90777e0562c6fa77e30f0e0fc7ab9ba300f9
 merge_parent_source_head_sha: 3364c1c31ef12a81abf02cf9f80f7e8008c1778f
 prior_postmerge_integrator_fix_head_sha: e423868957f3a3cb9ddf992e39368fceb15661c0
-state_based_on_head_sha: 59616c76f34634103a9049a816b8d2d740613836
+state_based_on_head_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
 last_implementation_commit_sha: derive_with_git_rev_parse_HEAD
 completed_steps:
+  - Materialized immutable candidate ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d from accepted source 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365 and sanitized successful PostgreSQL 18.4 proof run 30745346334 under exact five-path authority; no deployable source or external provider state changed.
   - Accepted the exact canonical-route/candidate-source correction authority from control 71342aa60de3f3840c70555a616cded8f5672989, basis 61d52aa85f3f040187c21081c0e17a83544f9443, READY 85ff11c44fdcd4426a821250ae554e8f7a251edd7fd6e0d9ac610df9d58bafc8, and clean start 9082f3015d6fe95cf374266b49a9e4db7ae69ead.
   - Corrected registry, server mounting, route navigation, visible actions, and candidate source derivation as a truthful fail-closed checkpoint with exact route counts 46 ready, 17 isolated, and 30 missing; explicitly retained RT-STU-012 as isolated.
   - Passed 27/27 focused assertions, typecheck, lint, format, public/client build, diff and secret gates, plus clean npm-ci build/typecheck and 16/16 focused assertions; disclosed the existing E2E seed join_opens_at blocker without changing its migration or seed.
@@ -2774,18 +2853,18 @@ family_parent_session_composition_binding:
       fixture, and stale login email-link-confirm markup expectation.
   external_effects: 0/0/0
 remaining_steps:
-  - C00 must independently review the exact pushed runtime-triplet child of 59616c76f34634103a9049a816b8d2d740613836 and return exact P1/P2/P3 counts.
-  - A zero-P1/zero-P2 delta review is required before any fresh exact one-run PostgreSQL 18.4 proof authority, lock, fence, or dispatch.
-  - Candidate freeze, provider or registry work, persistent-database work, deployment, DNS, billing, contact, send, activation, cleanup, and every external successor action remain separately gated.
+  - Push the exact five-path candidate-freeze terminal.
+  - C00 must independently reproduce the candidate identity and return exact P1/P2/P3 counts.
+  - Evidence-branch creation, provider configuration, deployment, DNS, billing, contact, send, activation, cleanup, and every external successor action remain separately gated.
 next_action: >-
-  STOP. C00 must independently review the exact runtime-triplet evidence
-  correction child of 59616c76f34634103a9049a816b8d2d740613836,
-  verify exact log order, preserved source bytes, released lease, clean
-  local/tracking/live equality, and reconciled failed run. No retry is
-  authorized by this terminal.
+  Push the exact five-path candidate-freeze terminal and stop for one
+  delta-only candidate identity review. No evidence branch or external effect
+  is authorized by this terminal.
 requirements: {}
 acceptance_cases: {}
 current_checkpoint_changed_paths:
+  - ops/v2.1-execution/merge/candidates/ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d/CANDIDATE-DERIVATION.json
+  - ops/v2.1-execution/merge/candidates/ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d/CANDIDATE.yaml
   - ops/v2.1-execution/runtime/I36/HANDOFF.md
   - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
   - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml

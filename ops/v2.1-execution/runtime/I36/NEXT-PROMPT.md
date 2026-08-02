@@ -1,6 +1,64 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
+MODE: PAUSE_FOR_C00_I36_CANDIDATE_IDENTITY_DELTA_REVIEW
+
+Audit only the exact pushed I36 five-path immutable candidate-freeze terminal.
+Do not restart a broad audit, create an evidence branch, inspect or mutate a
+provider, deploy, change DNS, create a contact, publish, enroll, send, charge,
+clean up, or perform any external effect.
+
+Repository: shloimie-beep/onetimev2
+Branch: codex/v21-integration
+Authorized start and required sole parent:
+`0a5ef2e1e6ba88b151334f2aa78bee9cd8949365`
+Containing control: `146774966cd35a96c51d2f467ccfd3b458fd9cc6`
+Authority basis: `08079bd87085ba8fd0b242f8ff7923c1b46f3a88`
+READY: `26439fc6fe15620e8cdc00b4b82151c536b5b3f53303cd0aaf9d687c542a50b6`
+Claim: `48f1af59-52f9-4868-bacd-b6e79bf4292d`
+Writer: `codex-i36-candidate-freeze-48f1af59`
+RELEASE_INTEGRATOR lease: `8a7206c7-0c56-4fab-9565-63a2859077a2`
+Lease issue/release/expiry: `2026-08-02T11:23:01Z` /
+`2026-08-02T11:35:37Z` / `2026-08-02T12:23:01Z`.
+
+Confirm exactly five changed paths: the two new candidate documents under
+`ops/v2.1-execution/merge/candidates/ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d/`
+and the I36 runtime triplet. Confirm inventory
+`3b125e97f2ea2b59bf44c28b70be350f2a0f1e5b8f22ce976785b900e36626d7`
+and authorized preimage manifest
+`28afa552b05e57a6847a439a2fc29a674a39c7ccfcb2e910b4593ca061a5981d`.
+Confirm every deployable source, migration, workflow/provider registry, and
+accepted source-correction byte remains identical to the sole parent.
+
+Confirm the derivation and manifest SHA-256 values are
+`f848922c8297f8ee90a934b7875876976913fc23af21c3ce590b7a4571ace8ca`
+and `30867a96bfc5370ead95b83b6519b4ec365947d874c609dd8e5dbecba7e54876`.
+Parse both documents and independently reproduce canonical candidate digest
+`ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d`
+from the recursively sorted candidate core with domain prefix
+`ONE-TIME-V2.1-CANDIDATE\0`. Confirm source SHA `0a5ef2e1...`, all declared
+core digests, exact non-empty input sets, and candidate-builder tests 4/4.
+
+Confirm existing sanitized proof run `30745346334` succeeded on exact source,
+used PostgreSQL 18.4, applied/replayed all 89 migrations with ledger/files
+89/89, pending/issues 0/0, passed 8/8 probes and isolated restore verification,
+stopped its disposable runner/database, and remains separately reconciled at
+1/1/1. Confirm the freeze itself performed effects 0/0/0 and no provider,
+customer, deployment, DNS, contact, send, enrollment, billing, or production
+effect.
+
+Reproduce JSON/YAML parsing, exact hashes and identity, scoped Prettier, diff
+hygiene, exact parent, released lease, and clean local/tracking/live equality.
+Return exact P1/P2/P3 counts. Do not admit provider readiness, operator
+acceptance, or production release. Stop.
+
+---
+
+## Historical audit prompt - PG18 phase-truth correction
+
+MODEL: GPT-5.6-SOL
+REASONING: XHIGH
+SERVICE TIER: PRIORITY
 MODE: PAUSE_FOR_C00_I36_PG18_PHASE_TRUTH_CORRECTION_DELTA_REVIEW
 
 Audit only the exact pushed I36 runtime-triplet phase-truth correction. Do not

@@ -1,5 +1,40 @@
 # I36 Integration Releases
 
+## Current terminal - immutable candidate freeze
+
+Control `146774966cd35a96c51d2f467ccfd3b458fd9cc6`, based on
+`08079bd87085ba8fd0b242f8ff7923c1b46f3a88`, authorizes exactly five paths
+from accepted source `0a5ef2e1e6ba88b151334f2aa78bee9cd8949365` under READY
+`26439fc6fe15620e8cdc00b4b82151c536b5b3f53303cd0aaf9d687c542a50b6`.
+The scope and preimage digests are
+`3b125e97f2ea2b59bf44c28b70be350f2a0f1e5b8f22ce976785b900e36626d7`
+and `28afa552b05e57a6847a439a2fc29a674a39c7ccfcb2e910b4593ca061a5981d`.
+
+The immutable canonical candidate is
+`ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d`.
+Its deterministic derivation and manifest SHA-256 values are respectively
+`f848922c8297f8ee90a934b7875876976913fc23af21c3ce590b7a4571ace8ca`
+and `30867a96bfc5370ead95b83b6519b4ec365947d874c609dd8e5dbecba7e54876`.
+Both documents parse, reproduce the candidate digest from the exact source,
+and the candidate-builder suite passes 4/4. No deployable source byte changed.
+
+The freeze is grounded in successful sanitized PostgreSQL 18.4 run
+`30745346334` and artifact `8832696355`: migrations apply/replay/files/ledger
+are 89/89/89/89, pending/issues are 0/0, all 8 probes and isolated restore
+verification passed, and the disposable runner/database stopped. The proof
+dispatch is separately reconciled at 1/1/1. This freeze performed no provider,
+customer, deployment, DNS, contact, send, enrollment, billing, or production
+effect; its effects are 0/0/0.
+
+Claim `48f1af59-52f9-4868-bacd-b6e79bf4292d` uses RELEASE_INTEGRATOR lease
+`8a7206c7-0c56-4fab-9565-63a2859077a2`, issued
+`2026-08-02T11:23:01Z`, released `2026-08-02T11:35:37Z`, and expiring
+`2026-08-02T12:23:01Z`. Push this exact five-path terminal and stop for one
+delta-only candidate identity review. Do not create an evidence branch or
+perform an external successor effect from this terminal.
+
+All sections below are retained historical release records and audit prompts.
+
 ## Current terminal - PG18 failed-run phase-truth correction
 
 Control `1410f6ae4f702fa6d6546858621875809a860350`, based on
