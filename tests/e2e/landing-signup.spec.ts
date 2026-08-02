@@ -27,7 +27,7 @@ test('public landing implements the complete accepted campaign contract', async 
   await expect(page.locator('.hero .schedule')).toContainText(
     'Sunday–Thursday at 7:00 PM Jerusalem time',
   );
-  await expect(page.locator('[data-local-class-time]')).toContainText('your next class:');
+  await expect(page.locator('[data-local-class-time]')).toBeEmpty();
   const heroCta = page.locator('.hero .hero-cta');
   await expect(heroCta).toHaveText('JOIN FREE');
   await expect(heroCta).toHaveAttribute('href', '/signup');
@@ -58,10 +58,9 @@ test('public landing implements the complete accepted campaign contract', async 
     'href',
     '/school',
   );
-  await expect(page.getByRole('heading', { name: 'Free access, then $67/month' })).toBeVisible();
-  await expect(page.locator('[data-before-expiry]')).toContainText(
-    'Free access ends September 13, 2026 at 7:24 p.m. Jerusalem time.',
-  );
+  await expect(page.getByRole('heading', { name: 'Family access and billing' })).toBeVisible();
+  await expect(page.locator('#access [data-before-expiry]')).toBeHidden();
+  await expect(page.locator('#access [data-at-or-after-expiry]')).toBeVisible();
   await expect(page.getByRole('link', { name: 'Terms, cancellation, and refunds' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Privacy Notice' }).last()).toBeVisible();
   await expect(page.getByRole('link', { name: 'Student Data Notice' })).toBeVisible();
@@ -111,20 +110,20 @@ test('gallery selection and playback controls update their rendered state', asyn
   await assertGalleryControls(page);
 });
 
-test('server-synchronized free-period boundary changes countdown, landing, and signup copy', async ({
+test('missing free-period configuration renders no countdown or fabricated free date', async ({
   page,
 }) => {
   await useServerDate(page, '2026-09-13T16:23:00.000Z');
   await page.goto('/');
-  await expect(page.locator('.campaign-ticker')).toContainText('FREE ACCESS');
-  await expect(page.locator('.campaign-ticker')).toContainText('remaining');
-  await expect(page.locator('#access [data-before-expiry]')).toBeVisible();
-  await expect(page.locator('#access [data-at-or-after-expiry]')).toBeHidden();
+  await expect(page.locator('.campaign-ticker-shell')).toBeHidden();
+  await expect(page.locator('#access')).toHaveAttribute('data-access-boundary', '');
+  await expect(page.locator('#access [data-before-expiry]')).toBeHidden();
+  await expect(page.locator('#access [data-at-or-after-expiry]')).toBeVisible();
 
   await page.unrouteAll({ behavior: 'wait' });
   await useServerDate(page, '2026-09-13T16:24:01.000Z');
   await page.reload();
-  await expect(page.locator('.campaign-ticker')).toBeHidden();
+  await expect(page.locator('.campaign-ticker-shell')).toBeHidden();
   await expect(page.locator('#access [data-before-expiry]')).toBeHidden();
   await expect(page.locator('#access [data-at-or-after-expiry]')).toBeVisible();
   await expect(page.locator('#access [data-at-or-after-expiry]')).toContainText('$67/month');
@@ -171,6 +170,12 @@ test('Family submission uses the P08 bootstrap, exact CSRF binding, and no Stude
   });
 
   await page.goto('/signup?entry=family');
+  await expect(page.locator('input[name="classification_choice"]')).toHaveCount(0);
+  await expect(page.locator('[data-school-fields]')).toHaveCount(0);
+  await expect(page.getByRole('link', { name: /separate School inquiry form/i })).toHaveAttribute(
+    'href',
+    '/school',
+  );
   await expect(page.getByText('Student email is not required.')).toBeVisible();
   await expect(page.getByLabel(/student.*email/i)).toHaveCount(0);
   await page.getByLabel('First name', { exact: true }).fill('Playwright');
@@ -182,7 +187,7 @@ test('Family submission uses the P08 bootstrap, exact CSRF binding, and no Stude
   await page.getByLabel(/I acknowledge the Privacy Notice/).check();
   await expect(page.getByLabel('General marketing')).not.toBeChecked();
   await expect(page.getByLabel('Parent newsletter')).not.toBeChecked();
-  await page.getByRole('button', { name: 'Create my free family account' }).click();
+  await page.getByRole('button', { name: 'Create account and continue to checkout' }).click();
 
   await expect(page.getByRole('heading', { name: 'Your Family account was saved.' })).toBeVisible();
   await expect(page.getByText(/Automatic sign-in is not available yet/)).toBeVisible();
@@ -452,13 +457,13 @@ test('campaign remains useful without JavaScript and honors reduced motion and m
   const noJsPage = await context.newPage();
   await noJsPage.goto('/');
   await expect(noJsPage.getByRole('heading', { name: 'MISHNAYOS MADE MEMORABLE' })).toBeVisible();
-  await expect(noJsPage.getByText(/Free access ends September 13, 2026/)).toBeVisible();
+  await expect(noJsPage.getByText(/September 13, 2026/)).toHaveCount(0);
   await noJsPage.goto('/signup');
   await expect(noJsPage.locator('noscript > .noscript-panel')).toContainText(
     'JavaScript is required for secure signup submission.',
   );
   await expect(
-    noJsPage.getByRole('button', { name: 'Create my free family account' }),
+    noJsPage.getByRole('button', { name: 'Create account and continue to checkout' }),
   ).toBeHidden();
   await context.close();
 });
@@ -558,5 +563,5 @@ async function completeFamilySignupForm(page: Page, email: string) {
   await page.getByLabel('Confirm password').fill('StrongPassword!234');
   await page.getByLabel(/I agree to the Terms/).check();
   await page.getByLabel(/I acknowledge the Privacy Notice/).check();
-  await page.getByRole('button', { name: 'Create my free family account' }).click();
+  await page.getByRole('button', { name: 'Create account and continue to checkout' }).click();
 }

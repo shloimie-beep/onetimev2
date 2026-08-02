@@ -1,8 +1,5 @@
 import { createHash } from 'node:crypto';
-import {
-  FAMILY_PLAN,
-  FIXED_FREE_PERIOD,
-} from '../../../../../../../packages/contracts/src/billing/commercial/index.ts';
+import { FAMILY_PLAN } from '../../../../../../../packages/contracts/src/billing/commercial/index.ts';
 import { GHL_IDENTITY_CONTRACT_VERSION } from '../../../../../../../packages/contracts/src/communications/ghl-identity/index.ts';
 import type {
   FamilySignupGhlHandoff,
@@ -738,7 +735,7 @@ function assertCommercialBillingPlan(
     signupProjection.accessState !== projection.access_state ||
     signupProjection.subscriptionState !== 'none' ||
     signupProjection.activeStudentCount !== 0 ||
-    signupProjection.freePeriodEndsAt !== FIXED_FREE_PERIOD.endsAt ||
+    signupProjection.freePeriodEndsAt !== projection.free_access_expires_at ||
     signupProjection.paidPeriodEndsAt !== null ||
     signupProjection.firstChargeAt !== null ||
     signupProjection.cancelAtPeriodEnd !== false ||

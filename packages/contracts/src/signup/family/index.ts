@@ -9,14 +9,13 @@ export const FAMILY_SIGNUP_CONTRACT_VERSION = '2.1.0' as const;
 export const FAMILY_SIGNUP_OPERATION = 'public_family_signup' as const;
 export const FAMILY_SIGNUP_IDEMPOTENCY_KEY_MIN_LENGTH = 43 as const;
 export const FAMILY_SIGNUP_IDEMPOTENCY_KEY_MAX_LENGTH = 128 as const;
-export const FAMILY_SIGNUP_CLASSIFICATIONS = ['family', 'school'] as const;
+export const FAMILY_SIGNUP_CLASSIFICATIONS = ['family'] as const;
 export type FamilySignupClassification = (typeof FAMILY_SIGNUP_CLASSIFICATIONS)[number];
 
-export const FAMILY_FREE_EXPIRY = '2026-09-13T16:24:00.000Z' as const;
 export const FAMILY_SIGNUP_COPY = {
   before_expiry: {
     cta: 'Create my free family account',
-    helper: 'No credit card. Free access ends September 13, 2026 at 7:24 p.m. Jerusalem time.',
+    helper: 'No credit card is required during the configured free-access period.',
   },
   at_or_after_expiry: {
     cta: 'Create account and continue to checkout',
@@ -122,7 +121,7 @@ export interface FamilySignupLocalProjection {
   access_state: 'free' | 'inactive';
   seat_limit: 3;
   active_seat_count: 0;
-  free_access_expires_at: typeof FAMILY_FREE_EXPIRY | null;
+  free_access_expires_at: string | null;
   checkout_required: boolean;
   checkout_blocked_by_identity_review: boolean;
   rolling_trial_granted: false;

@@ -278,6 +278,9 @@ export const familySignupFeatureRegistration = defineServerFeature({
 function defaultSubmitter(config: AppConfig, pool: DbPool): FamilySignupSubmitter {
   return createFamilySignupService({
     repository: createPostgresFamilySignupRepository(pool),
+    ...(config.oneTimeFreeAccessExpiresAt
+      ? { freeAccessExpiresAt: config.oneTimeFreeAccessExpiresAt }
+      : {}),
     hashPassword: async (password) => hashAuthPassword(password),
     fingerprintPasswordForIdempotency: async (password) =>
       createHmac('sha256', config.authCsrfSecret)

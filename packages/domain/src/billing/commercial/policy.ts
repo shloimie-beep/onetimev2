@@ -1,7 +1,7 @@
 import type { AdultAuthorizationContext } from '../../../../contracts/src/access/v21-household-authorization.ts';
 import {
   FAMILY_PLAN,
-  FIXED_FREE_PERIOD,
+  FREE_PERIOD_POLICY,
   type CommercialBillingActor,
   type CommercialBillingCommand,
   type CommercialBillingProjection,
@@ -17,25 +17,27 @@ import { CommercialBillingError } from './errors.ts';
 export type FreePeriodConfiguration = {
   sourceKey: string;
   timeZone: 'Asia/Jerusalem';
-  endsAt: string;
+  endsAt: string | null;
 };
 
-export const DEFAULT_FREE_PERIOD_CONFIGURATION: FreePeriodConfiguration = {
-  sourceKey: FIXED_FREE_PERIOD.sourceKey,
-  timeZone: FIXED_FREE_PERIOD.timeZone,
-  endsAt: FIXED_FREE_PERIOD.endsAt,
-};
+export function freePeriodConfiguration(endsAt?: string): FreePeriodConfiguration {
+  return {
+    sourceKey: FREE_PERIOD_POLICY.sourceKey,
+    timeZone: FREE_PERIOD_POLICY.timeZone,
+    endsAt: endsAt ?? null,
+  };
+}
 
 export function freePeriodStatus(input: { now: Date; configuration: FreePeriodConfiguration }) {
   const nowMs = validTime(input.now, 'now');
   assertFreePeriodConfiguration(input.configuration);
-  const endMs = Date.parse(input.configuration.endsAt);
+  const endMs = input.configuration.endsAt ? Date.parse(input.configuration.endsAt) : null;
   return {
     sourceKey: input.configuration.sourceKey,
     timeZone: input.configuration.timeZone,
     endsAt: input.configuration.endsAt,
-    active: nowMs < endMs,
-    remainingMilliseconds: Math.max(0, endMs - nowMs),
+    active: endMs !== null && nowMs < endMs,
+    remainingMilliseconds: endMs === null ? 0 : Math.max(0, endMs - nowMs),
   };
 }
 
@@ -203,8 +205,8 @@ export function applyVerifiedCommercialEvidence(input: {
       : freePeriodStatus({
             now: input.now,
             configuration: {
-              sourceKey: FIXED_FREE_PERIOD.sourceKey,
-              timeZone: FIXED_FREE_PERIOD.timeZone,
+              sourceKey: FREE_PERIOD_POLICY.sourceKey,
+              timeZone: FREE_PERIOD_POLICY.timeZone,
               endsAt: prior.freePeriodEndsAt,
             },
           }).active
@@ -406,13 +408,13 @@ function assertCurrentProjection(
 function assertFreePeriodConfiguration(configuration: FreePeriodConfiguration) {
   if (
     configuration.sourceKey.trim() === '' ||
-    configuration.timeZone !== FIXED_FREE_PERIOD.timeZone ||
-    configuration.endsAt !== FIXED_FREE_PERIOD.endsAt ||
-    !Number.isFinite(Date.parse(configuration.endsAt))
+    configuration.sourceKey !== FREE_PERIOD_POLICY.sourceKey ||
+    configuration.timeZone !== FREE_PERIOD_POLICY.timeZone ||
+    (configuration.endsAt !== null && !Number.isFinite(Date.parse(configuration.endsAt)))
   ) {
     throw new CommercialBillingError(
       'invalid_configuration',
-      'The locked Jerusalem free-period configuration is required.',
+      'The Jerusalem free-period configuration must use an optional valid runtime instant.',
     );
   }
 }

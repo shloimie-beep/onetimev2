@@ -60,6 +60,7 @@ export interface FamilySignupRepository {
 
 export interface FamilySignupServiceDependencies {
   repository: FamilySignupRepository;
+  freeAccessExpiresAt?: string;
   hashPassword(password: string): Promise<string>;
   /**
    * Returns a keyed, server-only deterministic SHA-256 fingerprint. It is used
@@ -109,6 +110,9 @@ export function createFamilySignupService(dependencies: FamilySignupServiceDepen
             command: input.command,
             normalized_email: canonical.request.normalized_email,
             now: input.now,
+            ...(dependencies.freeAccessExpiresAt
+              ? { free_access_expires_at: dependencies.freeAccessExpiresAt }
+              : {}),
             proposed_adult_id: '',
             proposed_human_account_id: '',
             proposed_household_id: '',
@@ -130,6 +134,9 @@ export function createFamilySignupService(dependencies: FamilySignupServiceDepen
             command: input.command,
             normalized_email: canonical.request.normalized_email,
             now: input.now,
+            ...(dependencies.freeAccessExpiresAt
+              ? { free_access_expires_at: dependencies.freeAccessExpiresAt }
+              : {}),
             proposed_adult_id: '',
             proposed_human_account_id: '',
             proposed_household_id: '',
@@ -152,6 +159,9 @@ export function createFamilySignupService(dependencies: FamilySignupServiceDepen
           command: input.command,
           normalized_email: canonical.request.normalized_email,
           now: input.now,
+          ...(dependencies.freeAccessExpiresAt
+            ? { free_access_expires_at: dependencies.freeAccessExpiresAt }
+            : {}),
           proposed_adult_id: ids.adult_id,
           proposed_human_account_id: ids.human_account_id,
           proposed_household_id: ids.household_id,

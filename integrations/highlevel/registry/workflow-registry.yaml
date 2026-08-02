@@ -53,7 +53,7 @@ business_workflows:
     asset_kind: 'workflow'
     category: 'business_workflow'
     folder: '00 - Intake & Data'
-    purpose: 'Lead intake after public signup or bot action.'
+    purpose: 'Adult receipt after successful durable Family-account creation and immediate-free-access commit.'
     sourceOfTruth: 'Shared'
     allowedValues: []
     workflowsAllowedToWrite: []
@@ -67,30 +67,38 @@ business_workflows:
     lastTestedDate: ''
     promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-01-new-lead-intake.md'
     checklistPath: 'integrations/highlevel/workflow-checklists/OT-01-new-lead-intake.md'
-    messageClass: 'signup_confirmation'
-    senderKey: 'brand'
+    messageClass: 'access_help'
+    senderKey: 'office'
     transport: 'GHL'
-    exactTrigger: 'adult public signup submitted'
+    exactTrigger: 'successful durable Family-account creation committed with immediate free access'
     companionDelivery: ''
     providerContract:
-      exactTriggerFilter: 'adult public signup submitted after One Time or OT-B01 creates or updates the adult contact, with known source and consent'
+      exactTriggerFilter: 'One Time confirms successful durable Family-account creation and immediate free access for the adult account owner'
       orderedCriticalActions:
-        - 'apply OT | Lead'
-        - 'apply only the canonical known source tag'
-        - 'preserve unrelated tags'
-      deliveryCategory: 'signup_confirmation'
-      senderKey: 'brand'
+        - 'require durable Family-account creation and immediate-free-access local readback'
+        - 'confirm immediate free access with no card and no automatic charge'
+        - 'confirm capacity for up to three Student seats without creating Student contacts in GHL'
+        - 'send the exact canonical adult receipt only after local readback'
+      deliveryCategory: 'access_help'
+      senderKey: 'office'
     displayOrder: 1
     desiredStatus: 'DRAFT_WAITING_EXTERNAL'
     observedStatus: 'DRAFT_SHELL'
     exactOrderedTriggers:
-      - 'Receive the canonical adult public-signup event from One Time or OT-B01.'
-      - 'Require a known source and recorded adult channel-consent state.'
+      - 'Receive only the successful durable Family-account creation commit from One Time.'
+      - 'Require immediate-free-access local readback for the same adult account owner.'
     exactOrderedActions:
-      - 'Create or update only the adult contact using the canonical idempotency key.'
-      - 'Apply OT | Lead.'
-      - 'Apply only the canonical known-source tag.'
-      - 'Preserve every unrelated existing tag.'
+      - 'Confirm the durable Family account and immediate free access without a card or automatic charge.'
+      - 'Confirm capacity for up to three Student seats without creating any Student contact in GHL.'
+      - 'Send canonical copy ghl.signup_confirmation.v1 through the office sender.'
+      - 'Keep School inquiries separate and manual; never enroll them in OT-01 or automatic nurture.'
+    essentialValues:
+      canonical_copy_ids:
+        - 'ghl.signup_confirmation.v1'
+      cta_custom_value: 'One Time Member Login URL'
+      school_handling: 'separate manual path; no OT-01 entry and no automatic nurture'
+      enrollment_authorized: false
+      publication_authorized: false
     observedTriggers: []
     observedActions: []
     enrollmentReadback:
@@ -108,7 +116,7 @@ business_workflows:
       result: 'not_run'
       reference: 'integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json'
       detail: 'GHL-UI-14 is not in the reviewed queue/export and does not define the exact bounded delivery action or message template; no safe configuration or test was possible.'
-    blocker: 'BLOCKED_GIT_JOB_INCOMPLETE: GHL-UI-14 defines the trigger and gates but not an exact bounded delivery action/template, and it is absent from the reviewed queue/export; keep the empty Draft shell.'
+    blocker: 'DRAFT_REPOSITORY_ONLY: exact durable Family-account trigger and canonical receipt are registered; provider configuration and save/reopen readback remain separately authorized.'
     evidence:
       - 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
       - 'integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json'
@@ -143,7 +151,7 @@ business_workflows:
     exactTrigger: 'registered existing subscriber migration audience entry'
     companionDelivery: ''
     displayOrder: 2
-    desiredStatus: 'SAVED_REOPENED'
+    desiredStatus: 'DRAFT_WAITING_EXTERNAL'
     observedStatus: 'DRAFT_SHELL'
     exactOrderedTriggers:
       - 'Enter only an explicitly approved 2026 existing-subscriber migration audience.'
@@ -158,7 +166,7 @@ business_workflows:
     observedTriggers: []
     observedActions: []
     essentialValues:
-      configured_state: 'draft_saved_reopened'
+      configured_state: 'draft_waiting_external'
       audience_scope: 'explicitly approved 2026 existing-subscriber migration segment only'
       audience_authority: 'operator-selected adult migration list only; historic payment, attendance, event registration, portal state, deliverability, and legacy tags never grant authority'
       sequence_length: 3
@@ -170,14 +178,14 @@ business_workflows:
       sender_decision_status: 'fixed; not an operator decision gate'
       sender_acceptance_job: 'GHL-UI-24-rabbi-campaign-one-seed-reply-acceptance'
       reviewed_sequence_version: 'ot_02a_existing_subscriber_migration_three_email_v1'
-      reviewed_email_one_identity: 'rabbi_new_program_existing_subscriber_migration_v1'
+      reviewed_email_one_identity: 'ghl.legacy_member_migration.step_1.v1'
       reviewed_email_one_cta: 'One Time Home URL custom value only'
-      reviewed_email_two_identity: 'rabbi_parent_student_experience_existing_subscriber_migration_v1'
+      reviewed_email_two_identity: 'ghl.legacy_member_migration.step_2.v1'
       reviewed_email_two_cta: 'One Time Home URL custom value only'
-      reviewed_email_two_verified_scope: 'Parent/Student experience, live Mishnah, recordings for review, progress, and secure family access only'
-      reviewed_email_three_identity: 'rabbi_controlled_pilot_existing_subscriber_migration_v1'
-      reviewed_email_three_cta: 'One Time Home URL custom value only'
-      reviewed_email_three_verified_scope: 'controlled-pilot invitation only; no enrollment, access, payment, acceptance, or reservation claim'
+      reviewed_email_two_verified_scope: 'restart reminder covering live Mishnah, on-demand review, progress, and secure family access only'
+      reviewed_email_three_identity: 'ghl.legacy_member_migration.step_3.v1'
+      reviewed_email_three_cta: 'One Time Signup URL custom value only'
+      reviewed_email_three_verified_scope: 'secure durable Family-account activation reminder with immediate free access, up to three Student seats, no card, and no automatic charge'
       standard_unsubscribe_required: true
       cadence_configured: false
       workflow_draft_unpublished_inactive_unenrolled: true
@@ -192,7 +200,7 @@ business_workflows:
       result: 'not_run'
       reference: 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
       detail: 'Draft preserved; no contact enrolled and no send authorized.'
-    blocker: 'Approved migration audience, cadence, and controlled-test authorization are absent.'
+    blocker: 'Approved migration audience, cadence, and separately authorized test are absent.'
     evidence:
       - 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
   - key: 'OT-02B'
@@ -225,7 +233,7 @@ business_workflows:
     exactTrigger: 'registered new lead nurture audience entry'
     companionDelivery: ''
     displayOrder: 3
-    desiredStatus: 'SAVED_REOPENED'
+    desiredStatus: 'DRAFT_WAITING_EXTERNAL'
     observedStatus: 'DRAFT_SHELL'
     exactOrderedTriggers:
       - 'Enter only the canonical new-lead nurture audience.'
@@ -238,7 +246,7 @@ business_workflows:
     observedTriggers: []
     observedActions: []
     essentialValues:
-      configured_state: 'draft_saved_reopened'
+      configured_state: 'draft_waiting_external'
       audience_scope: 'consented unsuppressed new leads only'
       audience_authority: 'independently proven general-marketing permission only; Tisha registration, attendance, payment, portal state, deliverability, and legacy tags never grant authority'
       sender_registry_key: 'rabbi_campaign'
@@ -248,8 +256,13 @@ business_workflows:
       reply_to: 'rabbielischeller@onetimeonetime.com only'
       sender_decision_status: 'fixed; not an operator decision gate'
       sender_acceptance_job: 'GHL-UI-24-rabbi-campaign-one-seed-reply-acceptance'
-      reviewed_email_one_identity: 'rabbi_new_program_prelaunch_nurture_v1'
+      reviewed_sequence_version: 'ot_02b_new_lead_nurture_three_email_v1'
+      reviewed_email_one_identity: 'ghl.prelaunch_nurture.step_1.v1'
       reviewed_email_one_cta: 'One Time Home URL custom value only'
+      reviewed_email_two_identity: 'ghl.prelaunch_nurture.step_2.v1'
+      reviewed_email_two_cta: 'One Time Home URL custom value only'
+      reviewed_email_three_identity: 'ghl.prelaunch_nurture.step_3.v1'
+      reviewed_email_three_cta: 'One Time Signup URL custom value only'
       stop_states: ['checkout_started', 'active', 'opt_out', 'suppressed']
       enrollment_authorized: false
       publication_authorized: false
@@ -966,9 +979,13 @@ business_workflows:
         - 'ghl.former_member_reactivation.step_2.v1'
         - 'ghl.former_member_reactivation.step_3.v1'
       canonical_subjects:
-        - 'See what is new in One Time Mishnayos'
-        - 'A separate Student portal for live class and recordings'
-        - 'Come back free until September 13'
+        - 'Help your son remember what he learns'
+        - 'Live Mishnah learning, with recordings ready for review'
+        - 'Come back to One Time with free access now'
+      canonical_cta_custom_values:
+        - 'One Time Home URL'
+        - 'One Time Home URL'
+        - 'One Time Signup URL'
       canonical_timing_days:
         - '0'
         - '4'

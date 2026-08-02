@@ -16,6 +16,7 @@ const scope: FamilySignupScope = {
   verification_environment_id: 'ci',
 };
 const idempotencyKey = '1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg';
+const freeAccessExpiresAt = '2026-09-13T16:24:00.000Z';
 const command = (): FamilySignupCommand => ({
   classification: 'family',
   idempotency_key: idempotencyKey,
@@ -38,6 +39,7 @@ const input = (now: string, signupCommand = command()): PlanFamilySignupInput =>
     command: signupCommand,
     normalized_email: canonical.request.normalized_email,
     now: new Date(now),
+    free_access_expires_at: freeAccessExpiresAt,
     proposed_adult_id: 'adult_1',
     proposed_human_account_id: 'account_1',
     proposed_household_id: 'household_1',
@@ -56,7 +58,7 @@ const input = (now: string, signupCommand = command()): PlanFamilySignupInput =>
 };
 
 describe('P08 family signup policy', () => {
-  it('grants cardless free access only before the fixed expiry', () => {
+  it('grants cardless free access only before the configured expiry', () => {
     const before = planFamilySignup(input('2026-09-13T16:23:59.000Z'));
     expect(before.result.projection).toMatchObject({
       access_state: 'free',
@@ -105,6 +107,34 @@ describe('P08 family signup policy', () => {
         },
       });
     }
+  });
+
+  it('uses inactive checkout with no free-access timestamp when expiry is absent', () => {
+    const withoutExpiry = input('2026-08-01T12:00:00.000Z');
+    delete withoutExpiry.free_access_expires_at;
+    expect(planFamilySignup(withoutExpiry)).toMatchObject({
+      result: {
+        next_action: 'checkout',
+        projection: {
+          access_branch: 'inactive_checkout',
+          access_state: 'inactive',
+          free_access_expires_at: null,
+          checkout_required: true,
+          card_collected: false,
+        },
+      },
+      commercial_billing: {
+        signup: { response: { projection: { freePeriodEndsAt: null } } },
+        checkout: {
+          response: {
+            intent: {
+              chargeMode: 'at_hosted_checkout',
+              firstChargeAt: '2026-08-01T12:00:00.000Z',
+            },
+          },
+        },
+      },
+    });
   });
 
   it('returns the same generic zero-write result for every local HumanAccount state', () => {

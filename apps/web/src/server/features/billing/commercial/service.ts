@@ -7,19 +7,18 @@ import type {
 } from '../../../../../../../packages/contracts/src/billing/commercial/index.ts';
 import type { JobScope } from '../../../../../../../packages/contracts/src/jobs/index.ts';
 import {
-  DEFAULT_FREE_PERIOD_CONFIGURATION,
   applyVerifiedCommercialEvidence,
   createFamilySignupProjection,
+  freePeriodConfiguration,
   planHostedBillingCommand,
-  type FreePeriodConfiguration,
 } from '../../../../../../../packages/domain/src/billing/commercial/index.ts';
 import { canonicalRequestHash } from '../../../../../../../packages/domain/src/jobs/idempotency.ts';
 
 export function createCommercialBillingService(deps: {
   repository: CommercialBillingRepository;
-  freePeriodConfiguration?: FreePeriodConfiguration;
+  freeAccessExpiresAt?: string;
 }) {
-  const configuration = deps.freePeriodConfiguration ?? DEFAULT_FREE_PERIOD_CONFIGURATION;
+  const configuration = freePeriodConfiguration(deps.freeAccessExpiresAt);
 
   return {
     async createFamilySignup(input: {

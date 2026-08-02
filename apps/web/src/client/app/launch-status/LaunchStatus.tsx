@@ -59,9 +59,9 @@ export function LaunchStatusContent({
     <section className="launch-status" data-goal-id={projection.goal_id}>
       <header className="launch-status__hero">
         <div>
-          <p className="ot-kicker">Controlled launch pilot</p>
+          <p className="ot-kicker">Launch readiness</p>
           <h2>Launch Status</h2>
-          <p>{milestone.label}</p>
+          <p>Current verified release progress</p>
         </div>
         <Badge>Board-derived</Badge>
       </header>

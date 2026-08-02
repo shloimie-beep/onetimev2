@@ -12,11 +12,19 @@ export const FAMILY_PLAN = {
   householdSeatLimit: 3,
 } as const;
 
-export const FIXED_FREE_PERIOD = {
+export const FREE_PERIOD_POLICY = {
   sourceKey: 'family_free_period_v2_1',
   timeZone: 'Asia/Jerusalem',
-  endsAt: '2026-09-13T19:24:00+03:00',
-  endsAtUtc: '2026-09-13T16:24:00.000Z',
+} as const;
+
+/**
+ * Compatibility shape for callers that still import the former constant.
+ * Empty timestamps deliberately carry no launch default.
+ */
+export const FIXED_FREE_PERIOD = {
+  ...FREE_PERIOD_POLICY,
+  endsAt: '',
+  endsAtUtc: '',
 } as const;
 
 export type CommercialBillingAccessState = 'free' | 'active' | 'inactive';
@@ -36,7 +44,7 @@ export interface CommercialBillingProjection {
   accessState: CommercialBillingAccessState;
   subscriptionState: CommercialSubscriptionState;
   activeStudentCount: number;
-  freePeriodEndsAt: string;
+  freePeriodEndsAt: string | null;
   paidPeriodEndsAt: string | null;
   firstChargeAt: string | null;
   cancelAtPeriodEnd: boolean;

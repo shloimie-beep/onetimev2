@@ -19,6 +19,7 @@ const scope: FamilySignupScope = {
   verification_environment_id: 'ci',
 };
 const idempotencyKey = '1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg';
+const freeAccessExpiresAt = '2026-09-13T16:24:00.000Z';
 const command = (): FamilySignupCommand => ({
   classification: 'family',
   idempotency_key: idempotencyKey,
@@ -68,6 +69,7 @@ describe('P08 family signup service', () => {
     };
     const service = createFamilySignupService({
       repository,
+      freeAccessExpiresAt,
       hashPassword: async () => 'argon2id-safe-hash',
       fingerprintPasswordForIdempotency: async () => h('a'),
       allocateIds: () => ({
@@ -325,6 +327,7 @@ describe('P08 family signup service', () => {
           commits.push(value);
         },
       }),
+      freeAccessExpiresAt,
       hashPassword: async () => 'argon2id-safe-hash',
       fingerprintPasswordForIdempotency: async () => h('a'),
       allocateIds: () => ({
@@ -368,6 +371,7 @@ describe('P08 family signup service', () => {
           commits.push(value);
         },
       }),
+      freeAccessExpiresAt,
       hashPassword: async () => 'argon2id-safe-hash',
       fingerprintPasswordForIdempotency: async () => h('a'),
       allocateIds: () => ({

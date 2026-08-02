@@ -1,13 +1,56 @@
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 
+import { findCanonicalCopy } from '../../../../../../packages/domain/src/communications/copy/catalog.ts';
 import type { WorkerRunnerContext } from '../../registry/index.ts';
+
+export const LAUNCH_WORKFLOW_KEYS = ['OT-01', 'OT-02A', 'OT-15', 'OT-02B'] as const;
+
+export type LaunchCampaignAdapter = Readonly<{
+  copyId: string;
+  workflowId: (typeof LAUNCH_WORKFLOW_KEYS)[number];
+  senderKey: 'office' | 'rabbi_campaign';
+  subject: string;
+  preheader: string;
+  body: string;
+  ctaLabel: string;
+  ctaDestination: 'one_time_home_url' | 'one_time_signup_url' | 'one_time_member_login_url';
+}>;
+
+/**
+ * Resolves only reviewed repository copy. It performs no provider lookup,
+ * enrollment, publication, or delivery and fails closed on an incomplete or
+ * unrelated catalog entry.
+ */
+export function readCanonicalLaunchCampaign(copyId: string): LaunchCampaignAdapter | null {
+  const copy = findCanonicalCopy(copyId);
+  if (
+    !copy ||
+    copy.provider !== 'ghl' ||
+    !LAUNCH_WORKFLOW_KEYS.includes(copy.workflowId as (typeof LAUNCH_WORKFLOW_KEYS)[number]) ||
+    (copy.sender !== 'office' && copy.sender !== 'rabbi_campaign') ||
+    !copy.preheader ||
+    !copy.ctaLabel ||
+    !copy.ctaDestination
+  ) {
+    return null;
+  }
+  return {
+    copyId: copy.id,
+    workflowId: copy.workflowId as (typeof LAUNCH_WORKFLOW_KEYS)[number],
+    senderKey: copy.sender,
+    subject: copy.subject,
+    preheader: copy.preheader,
+    body: copy.body,
+    ctaLabel: copy.ctaLabel,
+    ctaDestination: copy.ctaDestination,
+  };
+}
 
 export const OT16_WORKFLOW_KEY = 'OT-16' as const;
 export const OT16_OPERATION_TYPE = 'ghl.workflow.ot16_checkpoint' as const;
 export const OT16_REGISTRY_BINDING_KEY = 'highlevel.ot16.primary' as const;
 export const OT16_CANONICAL_LOCATION_ID = 'pBSnOK2nkdxp6gf9Rg3o' as const;
-export const OT16_APPROVED_EXPIRY_AT = '2026-09-13T19:24:00+03:00' as const;
 
 export type Ot16AuthorityBlockedReason =
   | 'production_read_only'
@@ -52,11 +95,14 @@ export async function inspectDefaultOt16Authority(
   if (!context.config.highLevelPrivateIntegrationsToken) {
     return { ready: false, reason: 'provider_configuration_missing' };
   }
+  if (!context.config.oneTimeFreeAccessExpiresAt) {
+    return { ready: false, reason: 'provider_configuration_missing' };
+  }
   if (context.config.highLevelLocationId !== OT16_CANONICAL_LOCATION_ID) {
     return { ready: false, reason: 'location_mismatch' };
   }
 
-  const registry = await readCanonicalOt16Registry();
+  const registry = await readCanonicalOt16Registry(context.config.oneTimeFreeAccessExpiresAt);
   if (!registry) return { ready: false, reason: 'ot16_registry_unavailable' };
   if (!registry.ghlId.trim()) return { ready: false, reason: 'ot16_identity_missing' };
   if (!['SAVED_REOPENED', 'ACTIVE_CONFIGURED', 'ACTIVE_TESTED'].includes(registry.observedStatus)) {
@@ -100,7 +146,7 @@ export async function inspectDefaultOt16Authority(
   return { ready: false, reason: 'f06_binding_unavailable' };
 }
 
-async function readCanonicalOt16Registry(): Promise<{
+async function readCanonicalOt16Registry(expiryAt: string): Promise<{
   ghlId: string;
   observedStatus: string;
   registryDigest: string;
@@ -119,7 +165,7 @@ async function readCanonicalOt16Registry(): Promise<{
       .update(
         campaigns.buildOt16Notice({
           checkpoint_days: 14,
-          expiry_at: OT16_APPROVED_EXPIRY_AT,
+          expiry_at: expiryAt,
         }).body,
         'utf8',
       )

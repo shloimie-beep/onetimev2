@@ -6,13 +6,13 @@ import type {
 } from '../../../../contracts/src/billing/commercial/index.ts';
 import {
   FAMILY_PLAN,
-  FIXED_FREE_PERIOD,
+  FREE_PERIOD_POLICY,
 } from '../../../../contracts/src/billing/commercial/index.ts';
 import { CommercialBillingError } from './errors.ts';
 import {
-  DEFAULT_FREE_PERIOD_CONFIGURATION,
   applyVerifiedCommercialEvidence,
   createFamilySignupProjection,
+  freePeriodConfiguration,
   freePeriodStatus,
   planHostedBillingCommand,
 } from './policy.ts';
@@ -22,6 +22,13 @@ const scope = {
   runtime_tier: 'isolated_staging',
   verification_environment_id: 'ci',
 } as const;
+
+const FREE_ACCESS_EXPIRES_AT = '2026-09-13T19:24:00+03:00';
+const DEFAULT_FREE_PERIOD_CONFIGURATION = freePeriodConfiguration(FREE_ACCESS_EXPIRES_AT);
+const FIXED_FREE_PERIOD = {
+  ...FREE_PERIOD_POLICY,
+  endsAt: FREE_ACCESS_EXPIRES_AT,
+};
 
 const parent: CommercialBillingActor = {
   adultId: 'adult_owner',
@@ -83,6 +90,26 @@ describe('P25 commercial billing policy', () => {
     });
     expect(freeProjection().accessState).toBe('free');
     expect(freeProjection(new Date(FIXED_FREE_PERIOD.endsAt)).accessState).toBe('inactive');
+  });
+
+  it('treats an absent runtime expiry as inactive with no fabricated timestamp', () => {
+    const configuration = freePeriodConfiguration();
+    expect(freePeriodStatus({ now: new Date('2026-08-01T12:00:00.000Z'), configuration })).toEqual({
+      sourceKey: FREE_PERIOD_POLICY.sourceKey,
+      timeZone: 'Asia/Jerusalem',
+      endsAt: null,
+      active: false,
+      remainingMilliseconds: 0,
+    });
+    expect(
+      createFamilySignupProjection({
+        householdId: 'household_one',
+        ownerAdultId: parent.adultId,
+        activeStudentCount: 0,
+        now: new Date('2026-08-01T12:00:00.000Z'),
+        configuration,
+      }),
+    ).toMatchObject({ accessState: 'inactive', freePeriodEndsAt: null });
   });
 
   it('hard-caps the Family plan at three active Students', () => {

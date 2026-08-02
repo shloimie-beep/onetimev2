@@ -68,6 +68,7 @@ workflows:
       disposition: channel_skipped_not_configured
   - workflow_key: OT-15
     canonical_name: OT-15 Former Member Reactivation
+    desired_initial_state: DRAFT_WAITING_EXTERNAL
     purpose: former_member_reactivation
     subject: adult_only
     sender_key: rabbi_campaign
@@ -75,11 +76,11 @@ workflows:
     trigger: named approval launch for the exact former-member segment
     ordered_steps:
       - validate all three canonical copy entries and exact content approvals
-      - send approved step 1 at approval launch
+      - send approved outcomes step 1 at approval launch
       - wait 4 days and re-evaluate every exit and suppression condition
-      - send approved step 2
+      - send approved live and on-demand step 2
       - wait 5 additional days and re-evaluate every exit and suppression condition
-      - send approved step 3 on day 9
+      - send approved free-access step 3 on day 9
       - record dormant WhatsApp as channel_skipped_not_configured with zero provider calls
     audience:
       former_or_canceled_adult: true
@@ -91,20 +92,22 @@ workflows:
       - day: 0
         timing: approval_launch
         copy_id: ghl.former_member_reactivation.step_1.v1
-        subject: See what is new in One Time Mishnayos
+        subject: Help your son remember what he learns
         canonical_copy_state: integrated
         exact_content_approval_required: true
       - day: 4
         copy_id: ghl.former_member_reactivation.step_2.v1
-        subject: A separate Student portal for live class and recordings
-        canonical_copy_state: pending_P30-copy-registration-001
+        subject: Live Mishnah learning, with recordings ready for review
+        canonical_copy_state: integrated
         exact_content_approval_required: true
       - day: 9
         copy_id: ghl.former_member_reactivation.step_3.v1
-        subject: Come back free until September 13
-        canonical_copy_state: pending_P30-copy-registration-001
+        subject: Come back to One Time with free access now
+        canonical_copy_state: integrated
         exact_content_approval_required: true
     launch_readiness: blocked_until_all_three_canonical_copy_entries_and_exact_content_approvals
+    publishing_authorized: false
+    enrollment_authorized: false
     exit_conditions:
       - signup completed
       - active membership verified
@@ -154,8 +157,7 @@ workflows:
       explicit_decline: excluded
       custom_school_terms: excluded
       student_contact: prohibited
-    canonical_expiry_at: '2026-09-13T19:24:00+03:00'
-    replacement_expiry_source: canonical_configuration
+    canonical_expiry_source: ONE_TIME_FREE_ACCESS_EXPIRES_AT
     standard_family_price:
       amount: 67
       currency: USD

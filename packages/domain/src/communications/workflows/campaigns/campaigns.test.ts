@@ -172,17 +172,17 @@ describe('P30 campaign workflows', () => {
       {
         day: 0,
         copy_id: 'ghl.former_member_reactivation.step_1.v1',
-        subject: 'See what is new in One Time Mishnayos',
+        subject: 'Help your son remember what he learns',
       },
       {
         day: 4,
         copy_id: 'ghl.former_member_reactivation.step_2.v1',
-        subject: 'A separate Student portal for live class and recordings',
+        subject: 'Live Mishnah learning, with recordings ready for review',
       },
       {
         day: 9,
         copy_id: 'ghl.former_member_reactivation.step_3.v1',
-        subject: 'Come back free until September 13',
+        subject: 'Come back to One Time with free access now',
       },
     ]);
     expect(

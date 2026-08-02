@@ -28,51 +28,46 @@ workflows:
     acceptance_case_id: OTV2-GHL-123-AC01
     canonical_name: OT-01 New Lead Intake
     desired_initial_state: DRAFT_WAITING_EXTERNAL
-    sender_key: brand
-    message_class: signup_confirmation
-    message_purpose: marketing
-    trigger: adult public signup submitted
+    sender_key: office
+    message_class: access_help
+    message_purpose: essential_billing_access
+    trigger: successful durable Family-account creation committed with immediate free access
     ordered_steps:
-      - match_or_create_adult_contact_without_student_contact
-      - upsert_one_household_keyed_opportunity
-      - project_one_time_family_signup_lifecycle
-      - branch_school_inquiry_to_shloimie_acknowledgement_and_stop
-      - branch_family_before_cutover_to_immediate_free_access_without_card
-      - branch_family_at_or_after_cutover_to_inactive_household_and_hosted_checkout
-      - send_one_adult_welcome_after_local_readback
+      - require_successful_durable_family_account_creation_readback
+      - confirm_immediate_free_access_without_card_or_automatic_charge
+      - confirm_up_to_three_student_seats_without_creating_ghl_student_contacts
+      - send_one_adult_family_account_receipt_after_local_readback
       - quarantine_ambiguous_crm_match_without_blocking_local_login_or_free_access
     waits: []
-    policy_constants:
-      - free_access_cutover=2026-09-13T19:24:00+03:00
+    policy_constants: []
     exit_conditions:
-      - family_welcome_sent
-      - school_acknowledgement_sent
+      - family_account_receipt_sent
+      - durable_family_account_readback_missing
       - ambiguous_adult_match_quarantined
       - suppression_or_invalid_address
-    idempotency_scope: adult_household_signup_episode
+    idempotency_scope: adult_durable_family_account_creation_episode
     requires_approved_audience: true
     requires_approved_copy: true
     requires_admin_approval: false
     requires_provider_readback: false
     requires_signed_billing_projection: false
     requires_local_commit_readback: true
-    approved_copy_ids: []
+    approved_copy_ids:
+      - ghl.signup_confirmation.v1
   - workflow_key: OT-02A
     requirement_id: OTV2-GHL-124
     acceptance_case_id: OTV2-GHL-124-AC01
     canonical_name: OT-02A Existing Subscriber Migration 2026 v1
-    desired_initial_state: SAVED_REOPENED
+    desired_initial_state: DRAFT_WAITING_EXTERNAL
     sender_key: rabbi_campaign
     message_class: existing_subscriber_migration
     message_purpose: marketing
     trigger: registered existing subscriber migration audience entry
     ordered_steps:
-      - send_approved_launch_message
-      - send_day_3_only_when_signup_absent
-      - send_day_7_only_when_signup_absent
-    waits:
-      - P3D
-      - P4D
+      - send_approved_informational_message
+      - after_approved_cadence_recheck_every_exit_and_send_restart_reminder
+      - after_approved_cadence_recheck_every_exit_and_send_account_activation_reminder
+    waits: []
     policy_constants:
       - audience=OT-02A | Replit Active Migration Candidates | 2026
     exit_conditions:
@@ -90,24 +85,22 @@ workflows:
     requires_local_commit_readback: true
     approved_copy_ids:
       - ghl.legacy_member_migration.step_1.v1
+      - ghl.legacy_member_migration.step_2.v1
+      - ghl.legacy_member_migration.step_3.v1
   - workflow_key: OT-02B
     requirement_id: OTV2-GHL-125
     acceptance_case_id: OTV2-GHL-125-AC01
     canonical_name: OT-02B New Lead Nurture v1
-    desired_initial_state: SAVED_REOPENED
+    desired_initial_state: DRAFT_WAITING_EXTERNAL
     sender_key: rabbi_campaign
     message_class: prelaunch_nurture
     message_purpose: marketing
     trigger: registered new lead nurture audience entry
     ordered_steps:
-      - send_start
-      - send_day_2
-      - send_day_5
-      - send_day_9_with_start_free_cta
-    waits:
-      - P2D
-      - P3D
-      - P4D
+      - send_approved_outcomes_message
+      - after_approved_cadence_recheck_every_exit_and_send_live_on_demand_message
+      - after_approved_cadence_recheck_every_exit_and_send_free_access_message
+    waits: []
     policy_constants: []
     exit_conditions:
       - signup
@@ -124,7 +117,10 @@ workflows:
     requires_provider_readback: false
     requires_signed_billing_projection: false
     requires_local_commit_readback: true
-    approved_copy_ids: []
+    approved_copy_ids:
+      - ghl.prelaunch_nurture.step_1.v1
+      - ghl.prelaunch_nurture.step_2.v1
+      - ghl.prelaunch_nurture.step_3.v1
   - workflow_key: OT-03
     requirement_id: OTV2-GHL-126
     acceptance_case_id: OTV2-GHL-126-AC01

@@ -18,6 +18,8 @@ describe('OT-LAUNCH-01 Launch Status UI', () => {
     expect(html).toContain('Remaining and in progress');
     expect(html).toContain('Open the bounded staging task.');
     expect(html).toContain('href="/app/dashboard"');
+    expect(html).toContain('Launch readiness');
+    expect(html).not.toMatch(/controlled[ -]?(?:launch|live)?[ -]?pilot/iu);
     expect(html).not.toMatch(/https?:\/\/|operator@example|password|provider_secret/iu);
   });
 });

@@ -30,6 +30,8 @@ describe('runtime public metadata origin', () => {
     const config = loadConfig({
       NODE_ENV: 'test',
       PUBLIC_BASE_URL: 'https://ot99-web-staging.up.railway.app',
+      ONE_TIME_FIRST_CLASS_AT: '2026-08-09T19:00:00+03:00',
+      ONE_TIME_FREE_ACCESS_EXPIRES_AT: '2026-09-13T19:24:00+03:00',
     });
     pool = createMemoryPool();
     server = await listenForTest(createApp({ config, pool, distDir }));
@@ -39,13 +41,19 @@ describe('runtime public metadata origin', () => {
     const signup = await fetch(`${baseUrl}/signup`);
     const school = await fetch(`${baseUrl}/school`);
 
-    await expect(root.text()).resolves.toContain(
+    const rootMarkup = await root.text();
+    const signupMarkup = await signup.text();
+    const schoolMarkup = await school.text();
+    expect(rootMarkup).toContain(
       '<link rel="canonical" href="https://ot99-web-staging.up.railway.app/">',
     );
-    await expect(signup.text()).resolves.toContain(
+    expect(rootMarkup).toContain('data-first-class-at="2026-08-09T19:00:00+03:00"');
+    expect(rootMarkup).toContain('data-access-boundary="2026-09-13T19:24:00+03:00"');
+    expect(signupMarkup).toContain(
       '<meta property="og:url" content="https://ot99-web-staging.up.railway.app/signup">',
     );
-    await expect(school.text()).resolves.toContain(
+    expect(signupMarkup).toContain('data-access-boundary="2026-09-13T19:24:00+03:00"');
+    expect(schoolMarkup).toContain(
       '<link rel="canonical" href="https://ot99-web-staging.up.railway.app/school">',
     );
   });
@@ -138,7 +146,7 @@ async function writeHtml(targetDir: string, fileName: string) {
       '<html><head>',
       '<link rel="canonical" href="https://join.onetimeonetime.com/">',
       '<meta property="og:url" content="https://join.onetimeonetime.com/">',
-      '</head><body>ok</body></html>',
+      '</head><body><span data-first-class-at="__ONE_TIME_FIRST_CLASS_AT__"></span><section data-access-boundary="__ONE_TIME_FREE_ACCESS_EXPIRES_AT__">ok</section></body></html>',
     ].join(''),
     'utf8',
   );

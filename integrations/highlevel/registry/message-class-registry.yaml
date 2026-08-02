@@ -74,6 +74,7 @@
   owner: 'Shloimie'
   sourceOfTruth: 'HighLevel'
   allowedWorkflows:
+    - 'OT-01'
     - 'OT-B03'
   securityTokensAllowed: false
 - key: 'billing_help'
@@ -128,7 +129,6 @@
   owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
   sourceOfTruth: 'HighLevel'
   allowedWorkflows:
-    - 'OT-01'
     - 'OT-04'
     - 'OT-B01'
   securityTokensAllowed: false
