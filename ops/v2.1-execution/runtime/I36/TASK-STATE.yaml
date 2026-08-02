@@ -40,45 +40,93 @@ dependency_heads:
   P18: 1926e61c793ce29d7240c1ee05d2a4879b52770b
   P21: c11dec418fa3de896e96c348f87928c92c9f86b9
 status: ready_for_review
-phase: launch_source_and_configurable_timing_terminal
-claimed_by: codex-i36-launch-source-becf6b05
-claim_time: '2026-08-02T09:08:39Z'
-claim_id: becf6b05-e160-442f-8b5a-2a0c6193bb26
-lease_id: 923f788c-4fab-46b7-8de6-8b1d1038de7d
-lease_issued_at: '2026-08-02T09:08:39Z'
-lease_expires_at: '2026-08-02T13:08:39Z'
-lease_released_at: '2026-08-02T10:17:50Z'
-last_heartbeat_at: '2026-08-02T10:17:50Z'
-controller_authorization_sha: 607ee4a324ab379674f2b1306ec66058f9d09e51
-latest_valid_observed_control_head_sha: 403c65b85f6bc85bba4a38df19c977058e2ff3d6
-reconciled_state_based_on_control_head_sha: 607ee4a324ab379674f2b1306ec66058f9d09e51
-ready_authorization_control_head_sha: 607ee4a324ab379674f2b1306ec66058f9d09e51
-ready_entry_state_based_on_control_head_sha: 607ee4a324ab379674f2b1306ec66058f9d09e51
-ready_entry_payload_digest: 79b66a4b3f0ee9381e0da869f199b93446c44e3d093c2d9e07723e02e053bf35
+phase: candidate_pg18_proof_source_correction_terminal
+claimed_by: codex-i36-pg18-correction-ed8b434a
+claim_time: '2026-08-02T10:35:42Z'
+claim_id: ed8b434a-3da5-4f7d-b0ff-02819c4c1705
+lease_id: 161bd0c3-877f-4f20-b42c-014e375ed1ca
+lease_issued_at: '2026-08-02T10:35:42Z'
+lease_expires_at: '2026-08-02T11:20:42Z'
+lease_released_at: '2026-08-02T10:41:27Z'
+last_heartbeat_at: '2026-08-02T10:41:27Z'
+controller_authorization_sha: 7db01ed9440ffa912d2639693e629938a0a64e91
+latest_valid_observed_control_head_sha: 3cc3f339988c8ba057baa4f54fc861b37c09e4c0
+reconciled_state_based_on_control_head_sha: 7db01ed9440ffa912d2639693e629938a0a64e91
+ready_authorization_control_head_sha: 7db01ed9440ffa912d2639693e629938a0a64e91
+ready_entry_state_based_on_control_head_sha: 7db01ed9440ffa912d2639693e629938a0a64e91
+ready_entry_payload_digest: 62b33e59de38c3fc0a12aed34a04b259e4a385294f6eaf5d98d47327c915c25d
 claim_mode: new
-expected_existing_head_sha: d61f4e49349ed4b63618513ce6642337690d55d0
-lease_phase_scope: launch_source_and_configurable_timing
+expected_existing_head_sha: 370420f14e0c3aefc9399319c74960ca699ab90a
+lease_phase_scope: candidate_pg18_proof_source_correction
+candidate_pg18_proof_source_correction_terminal:
+  containing_control_head_sha: 3cc3f339988c8ba057baa4f54fc861b37c09e4c0
+  state_basis_control_head_sha: 7db01ed9440ffa912d2639693e629938a0a64e91
+  exact_authorized_start_sha: 370420f14e0c3aefc9399319c74960ca699ab90a
+  ready_entry_payload_digest: 62b33e59de38c3fc0a12aed34a04b259e4a385294f6eaf5d98d47327c915c25d
+  claim_id: ed8b434a-3da5-4f7d-b0ff-02819c4c1705
+  writer_id: codex-i36-pg18-correction-ed8b434a
+  lease_issued_at: '2026-08-02T10:35:42Z'
+  lease_expires_at: '2026-08-02T11:20:42Z'
+  lease_released_at: '2026-08-02T10:41:27Z'
+  last_heartbeat_at: '2026-08-02T10:41:27Z'
+  writer_slot_leases_released:
+    - slot: RELEASE_INTEGRATOR
+      lease_id: 161bd0c3-877f-4f20-b42c-014e375ed1ca
+  effect_lock_leases: []
+  exact_scope:
+    path_count: 4
+    path_inventory_digest: 823960e12ddb131f1bc0587c512eef63e7eaa160020f3438c1d9b4b0bf1e1780
+    preimage_manifest_digest: a495f0a6a1bcd9b731e79eb44c45f9c8ad861b99c19365e85d9b31c7bea23f59
+    corrected_source_preimage_sha256: 087efe889f33f521dd7e448782126fb6cff35dc4ea5fc2e8f6ef49bfec19cd6e
+    source_paths: 1
+    runtime_paths: 3
+  reconciled_failed_proof:
+    github_run_id: 30743955340
+    exact_source_sha: 370420f14e0c3aefc9399319c74960ca699ab90a
+    conclusion: failure
+    failed_before_migrations_and_probes: true
+    failure_class: top_level_await_before_const_initialization
+    exact_error: ReferenceError_PROVIDER_BINDING_INSERT_before_initialization
+    disposable_PostgreSQL_18_4_started_and_stopped: true
+    uploaded_artifact_count: 0
+    original_authority_consumed: true
+    original_lock_released: true
+    retry_authorized: false
+  correction:
+    file: scripts/postgres-assurance/candidate-pg18-proof.ts
+    change: move_main_invocation_after_all_module_constants_initialize
+    proof_semantics_or_SQL_changed: false
+    budgets_or_provider_gates_changed: false
+  completed_validation:
+    workspace_typecheck: passed
+    scoped_eslint: passed
+    scoped_prettier: passed
+    diff_check: passed
+    dry_fail_closed_without_exact_authorization: passed_exit_1
+  effects:
+    github_disposable_CI_dispatch:
+      attempted: 1
+      succeeded: 0
+      reconciled: 1
+    non_disposable_infrastructure: 0
+    provider_or_customer: 0
+    deployment_or_DNS: 0
+    contact_send_enrollment_or_billing: 0
+    correction_phase_external_effects: 0/0/0
+  disposition:
+    candidate_frozen: false
+    source_correction_complete: true
+    delta_review_pending: true
+    candidate_ready_claimed: false
+    production_complete_claimed: false
+  safe_next_action: >-
+    Push this exact four-path terminal and stop for one delta-only independent
+    review. Do not dispatch another workflow or perform a provider, deployment,
+    DNS, database, contact, send, enrollment, billing, cleanup, or production
+    effect without fresh exact successor authority and a new lock and fence.
 writer_slot_leases_released:
-  - slot: CONFIG_DEPS
-    lease_id: 6dcd190c-55b5-4651-84af-e6fd425e5d99
-  - slot: SERVER_COMPOSER
-    lease_id: 20709907-eec6-462a-9ba3-379c44d5c890
-  - slot: CLIENT_COMPOSER
-    lease_id: d9b950b3-40f5-4a36-9c88-3c56ea09841e
-  - slot: GHL_REGISTRY
-    lease_id: aa344a05-e504-4939-8511-d46f2f3633c0
   - slot: RELEASE_INTEGRATOR
-    lease_id: 923f788c-4fab-46b7-8de6-8b1d1038de7d
-  - slot: FAMILY_SIGNUP
-    lease_id: f4839fef-38de-4824-9199-35c196772349
-  - slot: BILLING_COMMERCIAL
-    lease_id: a2a792bc-81e2-4205-a482-4c8128290235
-  - slot: GHL_CORE_WORKFLOWS
-    lease_id: 9ba3dd12-3c8c-4fa9-ba86-9649c6a9861b
-  - slot: GHL_CAMPAIGNS
-    lease_id: 42810294-b675-42f8-b89d-7e8cb0208814
-  - slot: COPY_CATALOG
-    lease_id: f2f57653-eda0-4003-803a-6675bc412ee1
+    lease_id: 161bd0c3-877f-4f20-b42c-014e375ed1ca
 launch_source_and_configurable_timing_terminal:
   containing_control_head_sha: 403c65b85f6bc85bba4a38df19c977058e2ff3d6
   state_basis_control_head_sha: 607ee4a324ab379674f2b1306ec66058f9d09e51
@@ -1348,7 +1396,7 @@ merge_result_head_sha: 9a028e7a967221441dfd4d5cf9417eb2885a072f
 merge_parent_target_head_sha: c19c90777e0562c6fa77e30f0e0fc7ab9ba300f9
 merge_parent_source_head_sha: 3364c1c31ef12a81abf02cf9f80f7e8008c1778f
 prior_postmerge_integrator_fix_head_sha: e423868957f3a3cb9ddf992e39368fceb15661c0
-state_based_on_head_sha: 9082f3015d6fe95cf374266b49a9e4db7ae69ead
+state_based_on_head_sha: 370420f14e0c3aefc9399319c74960ca699ab90a
 last_implementation_commit_sha: derive_with_git_rev_parse_HEAD
 completed_steps:
   - Accepted the exact canonical-route/candidate-source correction authority from control 71342aa60de3f3840c70555a616cded8f5672989, basis 61d52aa85f3f040187c21081c0e17a83544f9443, READY 85ff11c44fdcd4426a821250ae554e8f7a251edd7fd6e0d9ac610df9d58bafc8, and clean start 9082f3015d6fe95cf374266b49a9e4db7ae69ead.
@@ -2681,43 +2729,22 @@ family_parent_session_composition_binding:
       fixture, and stale login email-link-confirm markup expectation.
   external_effects: 0/0/0
 remaining_steps:
-  - C00 must independently review the exact pushed 25-path child of 9082f3015d6fe95cf374266b49a9e4db7ae69ead, route counts and classifications, source derivation, exact scope/preimages/postimages, released leases, clean equality, and effects 0/0/0.
-  - Product owners must separately implement and admit the 17 isolated and 30 missing route contracts; RT-STU-012 needs an authorized occurrence-identity binding before it can become ready.
-  - Candidate metadata/freeze, native PostgreSQL, provider or registry work, persistent-database work, deployment, DNS, billing, contact, send, activation, cleanup, and every external successor action require separate exact authority.
+  - C00 must independently review the exact pushed four-path child of 370420f14e0c3aefc9399319c74960ca699ab90a and return exact P1/P2/P3 counts.
+  - A successful delta review is required before any fresh exact one-run PostgreSQL 18.4 proof authority, lock, fence, or dispatch.
+  - Candidate freeze, provider or registry work, persistent-database work, deployment, DNS, billing, contact, send, activation, cleanup, and every external successor action remain separately gated.
 next_action: >-
-  STOP. C00 must independently review the pushed fail-closed route and source
-  checkpoint with sole parent 9082f3015d6fe95cf374266b49a9e4db7ae69ead,
-  exact 22-source/3-runtime scope, truthful 46/17/30 route disposition, released
-  leases, clean local/tracking/live equality, and effects 0/0/0. Do not admit it
-  as all-route convergence, candidate readiness, or production completion.
+  STOP. C00 must independently review the exact one-source/three-runtime
+  correction child of 370420f14e0c3aefc9399319c74960ca699ab90a,
+  verify the invocation-order fix, local gates, released lease, clean
+  local/tracking/live equality, and reconciled failed run. No retry is
+  authorized by this terminal.
 requirements: {}
 acceptance_cases: {}
 current_checkpoint_changed_paths:
-  - apps/web/src/client/app/admin-ia.ts
-  - apps/web/src/client/app/crm-entry.tsx
-  - apps/web/src/client/app/live-entry.tsx
-  - apps/web/src/client/app/portal-entry.tsx
-  - apps/web/src/client/app/router/canonical-route-views.test.ts
-  - apps/web/src/client/app/router/canonical-route-views.ts
-  - apps/web/src/client/app/router/registry.ts
-  - apps/web/src/client/app/support/SupportFeature.tsx
-  - apps/web/src/client/public/public-entry.ts
-  - apps/web/src/server/app.ts
-  - apps/web/src/server/features/v21-canonical-routes/router.test.ts
-  - apps/web/src/server/features/v21-canonical-routes/router.ts
-  - ops/day-one/visible-action-registry.json
   - ops/v2.1-execution/runtime/I36/HANDOFF.md
   - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
   - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
-  - packages/brand-system/src/route-branding.ts
-  - packages/brand-system/src/v21.ts
-  - scripts/build-public-pages.ts
-  - scripts/operations/v21/candidate/build-candidate.test.ts
-  - scripts/operations/v21/candidate/build-candidate.ts
-  - tests/integration/admin-information-architecture-ui-contract.test.ts
-  - tests/integration/portals/portal-mount.test.ts
-  - tests/unit/admin-information-architecture.test.ts
-  - tests/unit/day-one/visible-action-registry.test.ts
+  - scripts/postgres-assurance/candidate-pg18-proof.ts
 changed_paths:
   - apps/web/src/client/app/portal-entry.tsx
   - apps/web/src/client/app/router/index.ts

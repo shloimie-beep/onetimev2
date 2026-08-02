@@ -1,7 +1,57 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
-MODE: PAUSE_FOR_C00_I36_LAUNCH_SOURCE_DELTA_REVIEW
+MODE: PAUSE_FOR_C00_I36_PG18_SOURCE_CORRECTION_DELTA_REVIEW
+
+Audit only the exact pushed I36 candidate-PG18 proof source correction. Do not
+restart a broad audit, dispatch or retry a workflow, start a database, freeze a
+candidate, inspect or mutate a provider, deploy, change DNS, create a contact,
+publish, enroll, send, charge, clean up, or perform any external effect.
+
+Repository: shloimie-beep/onetimev2
+Branch: codex/v21-integration
+Authorized start and required sole parent:
+`370420f14e0c3aefc9399319c74960ca699ab90a`
+Containing control: `3cc3f339988c8ba057baa4f54fc861b37c09e4c0`
+Authority basis: `7db01ed9440ffa912d2639693e629938a0a64e91`
+READY: `62b33e59de38c3fc0a12aed34a04b259e4a385294f6eaf5d98d47327c915c25d`
+Claim: `ed8b434a-3da5-4f7d-b0ff-02819c4c1705`
+Writer: `codex-i36-pg18-correction-ed8b434a`
+RELEASE_INTEGRATOR lease: `161bd0c3-877f-4f20-b42c-014e375ed1ca`
+Lease issue/expiry/release: `2026-08-02T10:35:42Z` /
+`2026-08-02T11:20:42Z` / `2026-08-02T10:41:27Z`.
+
+Confirm exactly four changed paths: the candidate proof script plus the I36
+runtime triplet. Confirm path inventory
+`823960e12ddb131f1bc0587c512eef63e7eaa160020f3438c1d9b4b0bf1e1780`
+and authorized preimage manifest
+`a495f0a6a1bcd9b731e79eb44c45f9c8ad861b99c19365e85d9b31c7bea23f59`.
+Confirm the corrected proof-script raw-Git preimage is
+`087efe889f33f521dd7e448782126fb6cff35dc4ea5fc2e8f6ef49bfec19cd6e`
+and that control `3cc3f339...` changed only that transcription and its derived
+manifest/READY digests.
+
+Review only the two-line semantic change: top-level `await main()` moved from
+before the module constants to the end of the module, after all constants and
+helpers initialize. Confirm proof semantics, SQL, budgets, and provider gates
+are unchanged. Reproduce workspace typecheck, scoped ESLint/Prettier, diff
+hygiene, and the dry fail-closed nonzero exit without exact authorization.
+
+Confirm failed GitHub Actions run `30743955340` used exact source
+`370420f...`, failed before migrations/probes with
+`PROVIDER_BINDING_INSERT` before initialization, and is reconciled. Confirm
+dispatch effects `1/0/1`, stopped disposable runner/database, consumed prior
+authority, released prior lock, and zero non-disposable infrastructure,
+provider, customer, deployment, DNS, contact, send, enrollment, billing, or
+production effect.
+
+Return exact P1/P2/P3 counts. Confirm this lease released before expiry and
+clean local/tracking/live equality. Do not admit candidate readiness or
+production completion. Stop.
+
+---
+
+## Historical audit prompt - launch source and configurable timing
 
 Audit only the exact pushed I36 launch-source/configurable-timing terminal. Do
 not restart a broad audit, inspect accepted history beyond parent/scope checks,

@@ -1,5 +1,45 @@
 # I36 Integration Releases
 
+## Current terminal - candidate PG18 proof source correction
+
+Control `3cc3f339988c8ba057baa4f54fc861b37c09e4c0`, based on dispatch and
+reconciliation record `7db01ed9440ffa912d2639693e629938a0a64e91`, authorized one
+exact four-path correction from accepted integration head
+`370420f14e0c3aefc9399319c74960ca699ab90a` under READY
+`62b33e59de38c3fc0a12aed34a04b259e4a385294f6eaf5d98d47327c915c25d`.
+The exact path inventory and preimage manifest are
+`823960e12ddb131f1bc0587c512eef63e7eaa160020f3438c1d9b4b0bf1e1780`
+and `a495f0a6a1bcd9b731e79eb44c45f9c8ad861b99c19365e85d9b31c7bea23f59`.
+Control `3cc3f339...` corrects the proof-script preimage to exact raw-Git
+SHA-256 `087efe889f33f521dd7e448782126fb6cff35dc4ea5fc2e8f6ef49bfec19cd6e`;
+scope, claim, lease, and directives are unchanged.
+
+GitHub Actions run `30743955340` checked out exact head `370420f...` and
+started a disposable PostgreSQL 18.4 service, but the proof process failed
+before migrations or probes because its top-level `await main()` executed
+before `PROVIDER_BINDING_INSERT` was initialized. The runner and disposable
+database stopped, no artifact was available, the one-run authority was
+consumed, its effect was reconciled, and its lock was released. Dispatch
+effects are `1/0/1`; non-disposable infrastructure, provider, customer,
+deployment, DNS, contact, send, enrollment, billing, and production effects
+are all zero.
+
+The correction moves only the `main()` invocation after all module constants.
+It does not change proof semantics, SQL, budgets, or provider gates. Workspace
+typecheck, scoped ESLint and Prettier, diff hygiene, and a dry fail-closed run
+without exact authorization all pass.
+
+Claim `ed8b434a-3da5-4f7d-b0ff-02819c4c1705` and RELEASE_INTEGRATOR lease
+`161bd0c3-877f-4f20-b42c-014e375ed1ca` were released at
+`2026-08-02T10:41:27Z`, before expiry `2026-08-02T11:20:42Z`. This correction
+phase performed no external effect.
+
+Push this exact four-path terminal and stop for one delta-only independent
+review. No workflow retry, candidate freeze, provider action, deployment, DNS
+change, or other successor effect is authorized by this terminal.
+
+All sections below are retained historical release records and audit prompts.
+
 ## Current terminal - launch source and configurable timing
 
 Control `403c65b85f6bc85bba4a38df19c977058e2ff3d6`, based on

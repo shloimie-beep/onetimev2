@@ -93,8 +93,6 @@ type DatabaseProof = {
   learning_2254: LearningProof;
 };
 
-await main();
-
 async function main() {
   assertExecutionBoundary();
   assertOutputBoundary();
@@ -1009,3 +1007,5 @@ async function writeJson(filePath: string, value: unknown) {
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(message);
 }
+
+await main();
