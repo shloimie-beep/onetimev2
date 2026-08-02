@@ -39,15 +39,15 @@ test('authenticated CRM list and detail stay within request and usability budget
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/signup');
+  await page.goto('/school');
   const email = `perf-${Date.now()}@example.test`;
   const contactName = `Perf Parent ${Date.now()}`;
-  await page.getByRole('radio', { name: 'School inquiry' }).check();
-  await page.getByLabel('Parent or contact name').fill(contactName);
-  await page.getByLabel('Family or School').fill('Perf Family');
-  await page.getByLabel('Location').fill('Jerusalem');
+  const [firstName, ...lastNameParts] = contactName.split(' ');
+  await page.getByLabel('School name').fill('Perf School');
+  await page.getByLabel('Contact first name').fill(firstName!);
+  await page.getByLabel('Contact last name').fill(lastNameParts.join(' '));
   await page.getByRole('textbox', { name: 'School contact email' }).fill(email);
-  await page.getByRole('button', { name: 'Send School inquiry' }).click();
+  await page.getByRole('button', { name: 'Send school inquiry' }).click();
   await page.getByRole('heading', { name: /received your school inquiry/i }).waitFor();
 
   const apiRequests: string[] = [];

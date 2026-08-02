@@ -4,7 +4,7 @@ import type {
   CommercialBillingProjection,
   CommercialBillingRepository,
 } from '../../../../../../../packages/contracts/src/billing/commercial/index.ts';
-import { FIXED_FREE_PERIOD } from '../../../../../../../packages/contracts/src/billing/commercial/index.ts';
+import { FREE_PERIOD_POLICY } from '../../../../../../../packages/contracts/src/billing/commercial/index.ts';
 import { createCommercialBillingService } from './service.ts';
 
 const scope = {
@@ -12,6 +12,9 @@ const scope = {
   runtime_tier: 'isolated_staging',
   verification_environment_id: 'ci',
 } as const;
+
+const FREE_ACCESS_EXPIRES_AT = '2026-09-13T19:24:00+03:00';
+const FIXED_FREE_PERIOD = { ...FREE_PERIOD_POLICY, endsAt: FREE_ACCESS_EXPIRES_AT };
 
 const actor = {
   adultId: 'adult_owner',
@@ -86,7 +89,10 @@ function memoryRepository(): CommercialBillingRepository {
 
 describe('commercial billing service', () => {
   it('persists free signup idempotently without creating any provider intent', async () => {
-    const service = createCommercialBillingService({ repository: memoryRepository() });
+    const service = createCommercialBillingService({
+      repository: memoryRepository(),
+      freeAccessExpiresAt: FREE_ACCESS_EXPIRES_AT,
+    });
     const input = {
       householdId: 'household_one',
       ownerAdultId: 'adult_owner',
@@ -111,7 +117,10 @@ describe('commercial billing service', () => {
 
   it('persists one GHL-hosted standard Checkout intent and replays resubmission', async () => {
     const repository = memoryRepository();
-    const service = createCommercialBillingService({ repository });
+    const service = createCommercialBillingService({
+      repository,
+      freeAccessExpiresAt: FREE_ACCESS_EXPIRES_AT,
+    });
     await service.createFamilySignup({
       householdId: 'household_one',
       ownerAdultId: 'adult_owner',
@@ -160,7 +169,10 @@ describe('commercial billing service', () => {
 
   it('does not activate access from mismatched financial evidence', async () => {
     const repository = memoryRepository();
-    const service = createCommercialBillingService({ repository });
+    const service = createCommercialBillingService({
+      repository,
+      freeAccessExpiresAt: FREE_ACCESS_EXPIRES_AT,
+    });
     await service.createFamilySignup({
       householdId: 'household_one',
       ownerAdultId: 'adult_owner',

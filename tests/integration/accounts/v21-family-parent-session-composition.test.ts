@@ -53,6 +53,7 @@ beforeEach(async () => {
     COMMIT_SHA: 'test',
     OUTBOX_TRANSPORT_MODE: 'sink',
     AUTH_CSRF_SECRET: 'v21-family-parent-composition-test-secret',
+    ONE_TIME_FREE_ACCESS_EXPIRES_AT: '2026-09-13T16:24:00.000Z',
     PARENT_STUDENT_SERVICE_ACCOUNT_VERSION: 'test-only-parent-student-service-v1',
     PARENT_STUDENT_SERVICE_ACCOUNT_EVIDENCE_REFERENCE:
       'test-only-evidence/parent-student-service-v1',
@@ -514,6 +515,7 @@ describe.runIf(nativeProofEnabled)(
           COMMIT_SHA: 'test',
           OUTBOX_TRANSPORT_MODE: 'sink',
           AUTH_CSRF_SECRET: 'i36-native-parent-session-test-secret',
+          ONE_TIME_FREE_ACCESS_EXPIRES_AT: '2026-09-13T16:24:00.000Z',
         });
         let nativeNow = new Date('2026-09-13T16:23:59.000Z');
         nativeDistDir = await mkdtemp(path.join(tmpdir(), 'i36-native-parent-session-'));

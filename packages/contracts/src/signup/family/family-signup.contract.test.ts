@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import {
-  FAMILY_FREE_EXPIRY,
   FAMILY_SIGNUP_CLASSIFICATIONS,
   FAMILY_SIGNUP_CONTRACT_VERSION,
   FAMILY_SIGNUP_COPY,
@@ -15,12 +14,11 @@ import {
 } from './index.ts';
 
 describe('P08 family signup contract', () => {
-  it('pins the two exclusive branches and exact fixed-expiry copy', () => {
-    expect(FAMILY_SIGNUP_CLASSIFICATIONS).toEqual(['family', 'school']);
-    expect(FAMILY_FREE_EXPIRY).toBe('2026-09-13T16:24:00.000Z');
+  it('pins the Family-only classification and date-free optional-expiry copy', () => {
+    expect(FAMILY_SIGNUP_CLASSIFICATIONS).toEqual(['family']);
     expect(FAMILY_SIGNUP_COPY.before_expiry).toEqual({
       cta: 'Create my free family account',
-      helper: 'No credit card. Free access ends September 13, 2026 at 7:24 p.m. Jerusalem time.',
+      helper: 'No credit card is required during the configured free-access period.',
     });
     expect(FAMILY_SIGNUP_COPY.at_or_after_expiry.cta).toBe(
       'Create account and continue to checkout',

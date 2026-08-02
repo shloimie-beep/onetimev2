@@ -216,6 +216,14 @@ const envSchema = z.object({
     (value) => (typeof value === 'string' && value.trim() === '' ? undefined : value),
     oneTimeVerificationEnvironmentSchema.optional(),
   ),
+  ONE_TIME_FIRST_CLASS_AT: z.preprocess(
+    (value) => (typeof value === 'string' && value.trim() === '' ? undefined : value),
+    z.iso.datetime({ offset: true }).optional(),
+  ),
+  ONE_TIME_FREE_ACCESS_EXPIRES_AT: z.preprocess(
+    (value) => (typeof value === 'string' && value.trim() === '' ? undefined : value),
+    z.iso.datetime({ offset: true }).optional(),
+  ),
   LEARNING_ALIAS_HMAC_KEY: optionalNonblankString,
   PARENT_STUDENT_SERVICE_ACCOUNT_VERSION: optionalNonblankString,
   PARENT_STUDENT_SERVICE_ACCOUNT_EVIDENCE_REFERENCE: optionalNonblankString,
@@ -398,6 +406,14 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
   }
   const oneTimeVerificationWritesAllowed =
     oneTimeVerificationEnvironmentId !== 'production_read_only';
+  if (
+    ['production_operator_canary', 'production_broad'].includes(oneTimeVerificationEnvironmentId) &&
+    !parsed.ONE_TIME_FREE_ACCESS_EXPIRES_AT
+  ) {
+    throw new Error(
+      'ONE_TIME_FREE_ACCESS_EXPIRES_AT is required for production operator-canary or broad promotion.',
+    );
+  }
   if (
     parsed.ONE_TIME_RABBI_GHL_REPLY_MODE === 'synthetic' &&
     !['test', 'isolated_staging'].includes(oneTimeRuntimeEnvironment)
@@ -633,6 +649,8 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     oneTimeRuntimeTier,
     oneTimeVerificationEnvironmentId,
     oneTimeVerificationWritesAllowed,
+    oneTimeFirstClassAt: parsed.ONE_TIME_FIRST_CLASS_AT,
+    oneTimeFreeAccessExpiresAt: parsed.ONE_TIME_FREE_ACCESS_EXPIRES_AT,
     learningAliasHmacKey: parsed.LEARNING_ALIAS_HMAC_KEY,
     learningAliasHmacKeyConfigured: Boolean(parsed.LEARNING_ALIAS_HMAC_KEY),
     parentStudentServiceAccountVersion: parsed.PARENT_STUDENT_SERVICE_ACCOUNT_VERSION,

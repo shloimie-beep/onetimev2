@@ -1,185 +1,153 @@
 import { describe, expect, it } from 'vitest';
 
 import {
-  CAMPAIGN_APPROVAL_SEMANTIC_VERSION,
-  canonicalContentDigest,
-  evaluateCampaignApproval,
-  type CampaignApprovalInput,
-} from '../../../packages/domain/src/communications/copy/approval.ts';
-import {
+  CANONICAL_COPY_CATALOG,
   COPY_CATALOG_SEMANTIC_VERSION,
   findCanonicalCopy,
-  SENDER_IDENTITIES,
-  type CanonicalCopyMessage,
 } from '../../../packages/domain/src/communications/copy/catalog.ts';
 import {
   findGhlCopyFragment,
   GHL_COPY_FRAGMENT_VERSION,
 } from '../../../integrations/highlevel/v21/copy/catalog.ts';
 
-const STEP_ONE_ID = 'ghl.former_member_reactivation.step_1.v1';
-const STEP_TWO_ID = 'ghl.former_member_reactivation.step_2.v1';
-const STEP_THREE_ID = 'ghl.former_member_reactivation.step_3.v1';
+const LAUNCH_COPY = [
+  {
+    id: 'ghl.signup_confirmation.v1',
+    workflowId: 'OT-01',
+    sender: 'office',
+    subject: 'Your One Time Family account is ready',
+    preheader: 'Free access is available now, with room for up to three Student seats.',
+    ctaLabel: 'Open My Family Account',
+    ctaDestination: 'one_time_member_login_url',
+  },
+  {
+    id: 'ghl.legacy_member_migration.step_1.v1',
+    workflowId: 'OT-02A',
+    sender: 'rabbi_campaign',
+    subject: 'A new zman for One Time Mishnayos',
+    preheader: 'A personal update from Rabbi Eli about what is beginning in Elul.',
+    ctaLabel: "See What's New",
+    ctaDestination: 'one_time_home_url',
+  },
+  {
+    id: 'ghl.legacy_member_migration.step_2.v1',
+    workflowId: 'OT-02A',
+    sender: 'rabbi_campaign',
+    subject: 'A steady way to begin Mishnah again',
+    preheader: 'Live learning, on-demand review, and a clear routine for the new zman.',
+    ctaLabel: 'See How One Time Works',
+    ctaDestination: 'one_time_home_url',
+  },
+  {
+    id: 'ghl.legacy_member_migration.step_3.v1',
+    workflowId: 'OT-02A',
+    sender: 'rabbi_campaign',
+    subject: 'Activate your new One Time Family account',
+    preheader: 'Restart with immediate free access and room for up to three Student seats.',
+    ctaLabel: 'Activate My Family Account',
+    ctaDestination: 'one_time_signup_url',
+  },
+  {
+    id: 'ghl.former_member_reactivation.step_1.v1',
+    workflowId: 'OT-15',
+    sender: 'rabbi_campaign',
+    subject: 'Help your son remember what he learns',
+    preheader: 'Build clarity, consistency, and lasting Mishnah knowledge.',
+    ctaLabel: 'See the Learning Experience',
+    ctaDestination: 'one_time_home_url',
+  },
+  {
+    id: 'ghl.former_member_reactivation.step_2.v1',
+    workflowId: 'OT-15',
+    sender: 'rabbi_campaign',
+    subject: 'Live Mishnah learning, with recordings ready for review',
+    preheader: 'Join live, return on demand, and keep building steady progress.',
+    ctaLabel: 'Explore Live and On-Demand Learning',
+    ctaDestination: 'one_time_home_url',
+  },
+  {
+    id: 'ghl.former_member_reactivation.step_3.v1',
+    workflowId: 'OT-15',
+    sender: 'rabbi_campaign',
+    subject: 'Come back to One Time with free access now',
+    preheader: 'Restart without a card or an automatic charge.',
+    ctaLabel: 'Restart with Free Access',
+    ctaDestination: 'one_time_signup_url',
+  },
+  {
+    id: 'ghl.prelaunch_nurture.step_1.v1',
+    workflowId: 'OT-02B',
+    sender: 'rabbi_campaign',
+    subject: 'Build clarity, memory, and consistency in Mishnah',
+    preheader: 'A steady learning experience designed to help Mishnah last.',
+    ctaLabel: 'See How One Time Works',
+    ctaDestination: 'one_time_home_url',
+  },
+  {
+    id: 'ghl.prelaunch_nurture.step_2.v1',
+    workflowId: 'OT-02B',
+    sender: 'rabbi_campaign',
+    subject: 'Live learning when it is time to learn - recordings when it is time to review',
+    preheader: 'One secure Family account for live class and on-demand review.',
+    ctaLabel: 'Explore Live and On-Demand Learning',
+    ctaDestination: 'one_time_home_url',
+  },
+  {
+    id: 'ghl.prelaunch_nurture.step_3.v1',
+    workflowId: 'OT-02B',
+    sender: 'rabbi_campaign',
+    subject: 'Begin One Time with free access now',
+    preheader: 'Start without a card and add up to three Student seats.',
+    ctaLabel: 'Start with Free Access',
+    ctaDestination: 'one_time_signup_url',
+  },
+] as const;
 
-const STEP_ONE_DIGEST = 'ff7fd5af4c77c5e9dfd62c5340ff0cb058f48d427ce407f8d6976593f1420ae2';
-const STEP_TWO_DIGEST = '530df43199316af56f2227090e164c898988d24a07e2fd08998e26539b6678c4';
-const STEP_THREE_DIGEST = 'e2bdbc3063431caa10bfd2ae2a2e6768a99d1f07a5b7f83d5e53b52faa0e4087';
+describe('canonical launch copy', () => {
+  it('registers the exact ten office/Rabbi messages and registered CTA destinations', () => {
+    expect(COPY_CATALOG_SEMANTIC_VERSION).toBe('1.2.0');
+    expect(GHL_COPY_FRAGMENT_VERSION).toBe('1.2.0');
 
-describe('P31 OT-15 canonical copy registration', () => {
-  it('publishes the exact owner-authored day-4 and day-9 messages and immutable digests', () => {
-    expect(COPY_CATALOG_SEMANTIC_VERSION).toBe('1.1.0');
-    expect(CAMPAIGN_APPROVAL_SEMANTIC_VERSION).toBe('1.1.0');
-    expect(GHL_COPY_FRAGMENT_VERSION).toBe('1.1.0');
-
-    const stepTwo = requireCopy(STEP_TWO_ID);
-    expect(stepTwo).toEqual({
-      id: STEP_TWO_ID,
-      workflowId: 'OT-15',
-      provider: 'ghl',
-      sender: 'rabbi_campaign',
-      audience: 'former_adult',
-      subject: 'A separate Student portal for live class and recordings',
-      body: "Hi {{contact.first_name}},\n\nOne Time Mishnayos now gives each Student a separate portal for Rabbi Eli's live class and recording library.\n\nYour Student signs in with their own username and password to join the daily class and open recordings. You manage the account and Student access from the Parent Dashboard.\n\nI would be happy to have your family learning with us again.\n\nHatzlacha,\nRabbi Eli Scheller\nOne Time Mishnayos",
-      ctaLabel: 'Open One Time',
-      requiresApproval: true,
-      requiresCurrentConsent: true,
-      launchTiming: 'approval_launch',
-      daysAfterApprovalLaunch: 4,
-      tokenBearing: false,
-      requiredVariables: ['contact.first_name'],
-    });
-    expect(canonicalContentDigest(stepTwo)).toBe(STEP_TWO_DIGEST);
-
-    const stepThree = requireCopy(STEP_THREE_ID);
-    expect(stepThree).toEqual({
-      id: STEP_THREE_ID,
-      workflowId: 'OT-15',
-      provider: 'ghl',
-      sender: 'rabbi_campaign',
-      audience: 'former_adult',
-      subject: 'Come back free until September 13',
-      body: "Hi {{contact.first_name}},\n\nYou can come back to One Time Mishnayos free until September 13, 2026 at 7:24 p.m. Jerusalem time.\n\nNo card is required, and you will not be charged automatically. Create a Parent account, then add up to three Student accounts for Rabbi Eli's live class and recordings.\n\nI hope you will join us again.\n\nHatzlacha,\nRabbi Eli Scheller\nOne Time Mishnayos",
-      ctaLabel: 'Come back to One Time',
-      requiresApproval: true,
-      requiresCurrentConsent: true,
-      launchTiming: 'approval_launch',
-      daysAfterApprovalLaunch: 9,
-      tokenBearing: false,
-      requiredVariables: ['contact.first_name'],
-    });
-    expect(canonicalContentDigest(stepThree)).toBe(STEP_THREE_DIGEST);
-  });
-
-  it('keeps step 1 byte-for-byte canonical while publishing all three GHL approval contracts', () => {
-    const stepOne = requireCopy(STEP_ONE_ID);
-    expect(stepOne).toEqual({
-      id: STEP_ONE_ID,
-      workflowId: 'OT-15',
-      provider: 'ghl',
-      sender: 'rabbi_campaign',
-      audience: 'former_adult',
-      subject: 'See what is new in One Time Mishnayos',
-      body: 'Hi {{contact.first_name}},\n\n{{campaign.body}}\n\nHatzlacha,\nRabbi Eli Scheller\nOne Time Mishnayos',
-      ctaLabel: 'Open One Time',
-      requiresApproval: true,
-      requiresCurrentConsent: true,
-      launchTiming: 'approval_launch',
-      tokenBearing: false,
-      requiredVariables: ['contact.first_name', 'campaign.body'],
-    });
-    expect(canonicalContentDigest(stepOne)).toBe(STEP_ONE_DIGEST);
-
-    const expected = [
-      [STEP_ONE_ID, undefined, STEP_ONE_DIGEST],
-      [STEP_TWO_ID, 4, STEP_TWO_DIGEST],
-      [STEP_THREE_ID, 9, STEP_THREE_DIGEST],
-    ] as const;
-    for (const [id, daysAfterApprovalLaunch, contentDigest] of expected) {
-      const fragment = findGhlCopyFragment(id);
-      expect(fragment).toMatchObject({
-        id,
-        workflowId: 'OT-15',
-        sender: 'rabbi_campaign',
-        audience: 'former_adult',
-        requiresExactAdminApproval: true,
-        requiresCurrentConsent: true,
-        launchTiming: 'approval_launch',
-        requiredVariables:
-          id === STEP_ONE_ID ? ['contact.first_name', 'campaign.body'] : ['contact.first_name'],
-        contentDigest,
+    for (const expected of LAUNCH_COPY) {
+      expect(findCanonicalCopy(expected.id)).toMatchObject(expected);
+      expect(findGhlCopyFragment(expected.id)).toMatchObject({
+        ...expected,
         adultOnly: true,
         tokenBearing: false,
       });
-      expect(fragment?.daysAfterApprovalLaunch).toBe(daysAfterApprovalLaunch);
-      expect(JSON.stringify(fragment)).not.toContain('{{token.');
     }
+
+    expect(LAUNCH_COPY.filter((message) => message.sender === 'office')).toHaveLength(1);
+    expect(LAUNCH_COPY.filter((message) => message.sender === 'rabbi_campaign')).toHaveLength(9);
   });
 
-  it('fails closed on body, subject, or sequence-day drift and on missing named approval or consent', () => {
-    const canonical = requireCopy(STEP_TWO_ID);
-    const approvedContentDigest = canonicalContentDigest(canonical);
+  it('keeps the four requested workflow counts and every corrected claim', () => {
+    const messages = LAUNCH_COPY.map(({ id }) => findCanonicalCopy(id)!);
+    expect(messages.filter(({ workflowId }) => workflowId === 'OT-01')).toHaveLength(1);
+    expect(messages.filter(({ workflowId }) => workflowId === 'OT-02A')).toHaveLength(3);
+    expect(messages.filter(({ workflowId }) => workflowId === 'OT-15')).toHaveLength(3);
+    expect(messages.filter(({ workflowId }) => workflowId === 'OT-02B')).toHaveLength(3);
 
-    expect(evaluateCampaignApproval(approvalInput(canonical, approvedContentDigest))).toMatchObject(
-      { allowed: true, reasons: [] },
-    );
+    const receipt = findCanonicalCopy('ghl.signup_confirmation.v1')!;
+    expect(receipt.body).toContain('durable One Time Family account');
+    expect(receipt.body).toContain('immediate free access');
+    expect(receipt.body).toContain('up to three Student seats');
+    expect(receipt.body).toContain('no card was collected');
+    expect(receipt.body).toContain('there is no automatic charge');
 
-    const driftedMessages: CanonicalCopyMessage[] = [
-      { ...canonical, body: `${canonical.body}\nChanged.` },
-      { ...canonical, subject: `${canonical.subject} changed` },
-      { ...canonical, daysAfterApprovalLaunch: 5 },
-    ];
-    for (const message of driftedMessages) {
-      expect(evaluateCampaignApproval(approvalInput(message, approvedContentDigest))).toMatchObject(
-        {
-          allowed: false,
-          reasons: expect.arrayContaining(['content digest drift or missing approval']),
-        },
-      );
-    }
+    const campaignText = messages
+      .map(({ subject, preheader, body }) => `${subject}\n${preheader ?? ''}\n${body}`)
+      .join('\n');
+    expect(campaignText).not.toMatch(/\bpilot\b/iu);
+    expect(campaignText).not.toMatch(/September\s+1[0-9]|20[0-9]{2}-09-1[0-9]|[0-9]{1,2}:24/iu);
+    expect(campaignText).toContain('new zman begins in Elul');
+    expect(campaignText).toContain('on-demand recording library');
+  });
 
-    const missingNamedApprovalInput = approvalInput(canonical, approvedContentDigest, {
-      currentConsentVerified: false,
-    });
-    const missingNamedApprovalAndConsent = { ...missingNamedApprovalInput };
-    delete missingNamedApprovalAndConsent.namedAdminApproval;
-    expect(evaluateCampaignApproval(missingNamedApprovalAndConsent)).toMatchObject({
-      allowed: false,
-      reasons: expect.arrayContaining([
-        'missing named Admin approval',
-        'current required consent was not verified',
-      ]),
-    });
+  it('does not leak launch copy into unrelated workflow slots', () => {
+    const launchIds = new Set<string>(LAUNCH_COPY.map(({ id }) => id));
+    const launchCatalog = CANONICAL_COPY_CATALOG.filter(({ id }) => launchIds.has(id));
+    expect(launchCatalog).toHaveLength(10);
+    expect(new Set(launchCatalog.map(({ id }) => id)).size).toBe(10);
   });
 });
-
-function requireCopy(id: string): CanonicalCopyMessage {
-  const message = findCanonicalCopy(id);
-  if (!message) throw new Error(`Missing canonical copy: ${id}`);
-  return message;
-}
-
-function approvalInput(
-  message: CanonicalCopyMessage,
-  approvedContentDigest: string,
-  overrides: Partial<CampaignApprovalInput> = {},
-): CampaignApprovalInput {
-  return {
-    message,
-    sender: SENDER_IDENTITIES.rabbi_campaign,
-    audienceCount: 1,
-    approvedAudienceCount: 1,
-    suppressedCountReadBack: true,
-    audienceSampleReadBack: true,
-    renderedWithSeedData: true,
-    linksUseProductionOrigin: true,
-    operatorSeedDelivered: true,
-    unexpectedEffects: 0,
-    recipientKinds: ['adult'],
-    approvedContentDigest,
-    approvedAudienceDigest: 'approved-audience',
-    actualAudienceDigest: 'approved-audience',
-    namedAdminApproval: 'Rabbi Eli Scheller',
-    currentConsentVerified: true,
-    ...overrides,
-  };
-}

@@ -111,12 +111,8 @@ function renderTimedAccessState() {
       node.hidden = !expired;
     });
     if (container.matches('[data-signup-form]')) {
-      const schoolSelected =
-        container.querySelector<HTMLInputElement>(
-          'input[name="classification_choice"][value="school"]',
-        )?.checked ?? false;
       const submit = container.querySelector<HTMLButtonElement>('button[type="submit"]');
-      if (submit && !schoolSelected && !submit.disabled) {
+      if (submit && !submit.disabled) {
         submit.textContent = expired
           ? 'Create account and continue to checkout'
           : 'Create my free family account';
@@ -128,10 +124,15 @@ function renderTimedAccessState() {
 const campaign = document.querySelector<HTMLElement>('[data-campaign-deadline]');
 function renderCampaignCountdown() {
   if (!campaign) return;
+  const shell = campaign.closest<HTMLElement>('.campaign-ticker-shell');
   const boundary = Date.parse(campaign.dataset.campaignDeadline ?? '');
-  if (!Number.isFinite(boundary)) return;
+  if (!Number.isFinite(boundary)) {
+    if (shell) shell.hidden = true;
+    return;
+  }
   const remainingMs = boundary - serverNow().getTime();
-  campaign.hidden = remainingMs <= 0;
+  if (shell) shell.hidden = remainingMs <= 0;
+  campaign.hidden = false;
   if (remainingMs <= 0) return;
   const totalMinutes = Math.max(0, Math.ceil(remainingMs / 60_000));
   const days = Math.floor(totalMinutes / 1440);
@@ -144,85 +145,22 @@ function renderCampaignCountdown() {
     .forEach((item) => (item.textContent = copy));
 }
 
-function timeZoneOffsetMs(date: Date, timeZone: string) {
-  const parts: Record<string, number> = {};
-  for (const part of new Intl.DateTimeFormat('en-CA', {
-    timeZone,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hourCycle: 'h23',
-  }).formatToParts(date)) {
-    if (part.type !== 'literal') parts[part.type] = Number(part.value);
-  }
-  return (
-    Date.UTC(
-      parts.year ?? 0,
-      (parts.month ?? 1) - 1,
-      parts.day ?? 1,
-      parts.hour ?? 0,
-      parts.minute ?? 0,
-      parts.second ?? 0,
-    ) - date.getTime()
-  );
-}
-
-function jerusalemWallTimeToInstant(year: number, month: number, day: number, hour: number) {
-  const wallClockAsUtc = Date.UTC(year, month - 1, day, hour);
-  let instant = new Date(wallClockAsUtc);
-  for (let pass = 0; pass < 2; pass += 1) {
-    instant = new Date(wallClockAsUtc - timeZoneOffsetMs(instant, 'Asia/Jerusalem'));
-  }
-  return instant;
-}
-
 function renderLocalClassTime() {
   const target = document.querySelector<HTMLElement>('[data-local-class-time]');
   if (!target) return;
-  const now = serverNow();
-  const jerusalemParts: Record<string, number> = {};
-  for (const part of new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Asia/Jerusalem',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  }).formatToParts(now)) {
-    if (part.type !== 'literal') jerusalemParts[part.type] = Number(part.value);
+  const firstClassAt = Date.parse(target.dataset.firstClassAt ?? '');
+  if (!Number.isFinite(firstClassAt)) {
+    target.textContent = '';
+    return;
   }
-  const base = new Date(
-    Date.UTC(
-      jerusalemParts.year ?? now.getUTCFullYear(),
-      (jerusalemParts.month ?? now.getUTCMonth() + 1) - 1,
-      jerusalemParts.day ?? now.getUTCDate(),
-    ),
-  );
-  let next: Date | null = null;
-  for (let offset = 0; offset < 9; offset += 1) {
-    const candidateDate = new Date(base.getTime() + offset * 86_400_000);
-    if (candidateDate.getUTCDay() > 4) continue;
-    const candidate = jerusalemWallTimeToInstant(
-      candidateDate.getUTCFullYear(),
-      candidateDate.getUTCMonth() + 1,
-      candidateDate.getUTCDate(),
-      19,
-    );
-    if (candidate.getTime() >= now.getTime()) {
-      next = candidate;
-      break;
-    }
-  }
-  if (!next) return;
-  target.textContent = ` — your next class: ${new Intl.DateTimeFormat(undefined, {
+  target.textContent = ` — first class: ${new Intl.DateTimeFormat(undefined, {
     weekday: 'short',
     month: 'short',
     day: 'numeric',
     hour: 'numeric',
     minute: '2-digit',
     timeZoneName: 'short',
-  }).format(next)}`;
+  }).format(new Date(firstClassAt))}`;
 }
 
 function renderTimedPublicState() {
@@ -409,12 +347,7 @@ if (form) {
   const status = form.querySelector<HTMLElement>('[data-form-status]');
   const success = document.querySelector<HTMLElement>('[data-success-panel]');
   const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
-  const familyFields = form.querySelector<HTMLElement>('[data-family-fields]');
-  const schoolFields = form.querySelector<HTMLElement>('[data-school-fields]');
   const timezone = form.querySelector<HTMLInputElement>('#timezone');
-  const entryChoices = [
-    ...form.querySelectorAll<HTMLInputElement>('input[name="classification_choice"]'),
-  ];
   const schoolOnly = form.dataset.signupEntry === 'school';
   const familyBootstrap: {
     idempotency_key: string;
@@ -432,40 +365,17 @@ if (form) {
     form
       .querySelectorAll<HTMLElement>('[data-error-for]')
       .forEach((node) => (node.textContent = ''));
-  const currentEntry = () =>
-    schoolOnly || entryChoices.find((choice) => choice.checked)?.value === 'school'
-      ? 'school'
-      : 'family';
-  const setSectionEnabled = (section: HTMLElement | null, enabled: boolean) => {
-    if (!section) return;
-    section.hidden = !enabled;
-    section
-      .querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input, textarea')
-      .forEach((field) => {
-        field.disabled = !enabled;
-      });
-  };
+  const currentEntry = () => (schoolOnly ? 'school' : 'family');
   const familyButtonCopy = () => {
     const boundary = Date.parse(form.dataset.accessBoundary ?? '');
-    return Number.isFinite(boundary) && serverNow().getTime() >= boundary
-      ? 'Create account and continue to checkout'
-      : 'Create my free family account';
-  };
-  const syncEntry = () => {
-    const family = currentEntry() === 'family';
-    setSectionEnabled(familyFields, family);
-    setSectionEnabled(schoolFields, !family);
-    if (submit) submit.textContent = family ? familyButtonCopy() : schoolInquiryModel.cta;
+    return Number.isFinite(boundary) && serverNow().getTime() < boundary
+      ? 'Create my free family account'
+      : 'Create account and continue to checkout';
   };
 
   const detectedTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   if (timezone && detectedTimezone) timezone.value = detectedTimezone;
-  const requestedEntry = new URLSearchParams(window.location.search).get('entry');
-  if (requestedEntry === 'school') {
-    entryChoices.find((choice) => choice.value === 'school')?.click();
-  }
-  entryChoices.forEach((choice) => choice.addEventListener('change', syncEntry));
-  syncEntry();
+  if (submit) submit.textContent = schoolOnly ? schoolInquiryModel.cta : familyButtonCopy();
 
   const loadFamilyBootstrap = async () => {
     const current = familyBootstrap[0];

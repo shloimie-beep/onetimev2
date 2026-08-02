@@ -1,9 +1,7 @@
 export const campaign = {
-  id: 'free-until-rosh-hashanah-2026',
+  id: 'configured-free-access',
   timezone: 'Asia/Jerusalem',
-  deadlineDate: '2026-09-11',
-  deadlineAt: '2026-09-13T16:24:00.000Z',
-  label: 'FREE UNTIL ROSH HASHANAH',
+  label: 'FREE ACCESS',
 };
 
 export const landingContent = {
@@ -37,7 +35,7 @@ export const landingContent = {
     title: 'Live Mishnayos—plus the tools to make it stick.',
     bullets: [
       {
-        lead: 'LIVE EVERY DAY',
+        lead: 'LIVE SUNDAY–THURSDAY',
         body: 'Join Rabbi Scheller for a clear, engaging Mishnayos class.',
       },
       {
@@ -176,9 +174,9 @@ export const landingContent = {
     },
   },
   access: {
-    heading: 'Free access, then $67/month',
+    heading: 'Family access and billing',
     before:
-      'Create a Family account without a credit card. Free access ends September 13, 2026 at 7:24 p.m. Jerusalem time.',
+      'Create a Family account without a credit card during the configured free-access period.',
     after:
       'After the free period, continued Family access is $67/month through the secure hosted billing flow. Creating an account does not charge a card.',
   },

@@ -2,10 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { familySignupFormModel, parsePublicSignupClassification } from './model.ts';
 
 describe('P08 public signup model', () => {
-  it('accepts exactly one Family or School classification', () => {
+  it('accepts only the Family classification', () => {
     expect(parsePublicSignupClassification('family')).toBe('family');
-    expect(parsePublicSignupClassification('school')).toBe('school');
-    for (const invalid of [undefined, '', 'hybrid', ['family', 'school'], { family: true }]) {
+    for (const invalid of [undefined, '', 'school', 'hybrid', ['family'], { family: true }]) {
       expect(() => parsePublicSignupClassification(invalid)).toThrow(
         'invalid_public_signup_classification',
       );
@@ -13,10 +12,11 @@ describe('P08 public signup model', () => {
   });
 
   it('publishes the exact Family fields and editable searchable IANA metadata', () => {
-    expect(familySignupFormModel(new Date('2026-09-13T16:23:59.000Z')).cta).toBe(
+    const expiresAt = '2026-09-13T16:24:00.000Z';
+    expect(familySignupFormModel(new Date('2026-09-13T16:23:59.000Z'), expiresAt).cta).toBe(
       'Create my free family account',
     );
-    const boundary = familySignupFormModel(new Date('2026-09-13T16:24:00.000Z'));
+    const boundary = familySignupFormModel(new Date('2026-09-13T16:24:00.000Z'), expiresAt);
     expect(boundary.cta).toBe('Create account and continue to checkout');
     expect(boundary.card_fields).toBe(0);
     expect(boundary.student_fields).toBe(0);
@@ -37,5 +37,14 @@ describe('P08 public signup model', () => {
     expect(boundary.optional_consent_fields.every(({ default_checked }) => !default_checked)).toBe(
       true,
     );
+  });
+
+  it('uses the safe checkout branch when no free expiry is configured', () => {
+    expect(familySignupFormModel(new Date('2026-08-01T12:00:00.000Z'))).toMatchObject({
+      classification: 'family',
+      cta: 'Create account and continue to checkout',
+      card_fields: 0,
+      student_fields: 0,
+    });
   });
 });

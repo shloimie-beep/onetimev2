@@ -8,7 +8,11 @@ import type {
 import type { ProviderDispatchOutcome } from '../../../../../../packages/contracts/src/jobs/index.ts';
 import type { CampaignAudienceCandidate } from '../../../../../../packages/domain/src/communications/workflows/campaigns/index.ts';
 import type { WorkerRunnerContext } from '../../registry/index.ts';
-import { matchesApprovedOt16Digests } from './adapters.ts';
+import {
+  inspectDefaultOt16Authority,
+  matchesApprovedOt16Digests,
+  readCanonicalLaunchCampaign,
+} from './adapters.ts';
 import { runOt16CheckpointWorker, type Ot16WorkerDependencies } from './composition.ts';
 import type { CampaignEmailDispatchReceipt } from './runner.ts';
 
@@ -139,6 +143,36 @@ function dispatchReceipt(
 }
 
 describe('P30 OT-16 worker composition', () => {
+  it('adapts exactly the ten repository-only launch messages without provider effects', () => {
+    const ids = [
+      'ghl.signup_confirmation.v1',
+      'ghl.legacy_member_migration.step_1.v1',
+      'ghl.legacy_member_migration.step_2.v1',
+      'ghl.legacy_member_migration.step_3.v1',
+      'ghl.former_member_reactivation.step_1.v1',
+      'ghl.former_member_reactivation.step_2.v1',
+      'ghl.former_member_reactivation.step_3.v1',
+      'ghl.prelaunch_nurture.step_1.v1',
+      'ghl.prelaunch_nurture.step_2.v1',
+      'ghl.prelaunch_nurture.step_3.v1',
+    ];
+    const adapters = ids.map((id) => readCanonicalLaunchCampaign(id));
+    expect(adapters).not.toContain(null);
+    expect(adapters.filter((entry) => entry?.senderKey === 'office')).toHaveLength(1);
+    expect(adapters.filter((entry) => entry?.senderKey === 'rabbi_campaign')).toHaveLength(9);
+    expect(new Set(adapters.map((entry) => entry?.workflowId))).toEqual(
+      new Set(['OT-01', 'OT-02A', 'OT-15', 'OT-02B']),
+    );
+    expect(adapters.map((entry) => entry?.ctaDestination)).toEqual(
+      expect.arrayContaining([
+        'one_time_home_url',
+        'one_time_signup_url',
+        'one_time_member_login_url',
+      ]),
+    );
+    expect(readCanonicalLaunchCampaign('ghl.parent_newsletter.v1')).toBeNull();
+  });
+
   it.each([
     'production_read_only',
     'verification_writes_disabled',
@@ -175,6 +209,27 @@ describe('P30 OT-16 worker composition', () => {
     expect(deps.preflight).not.toHaveBeenCalled();
     expect(deps.repository.persistDecision).not.toHaveBeenCalled();
     expect(deps.email.dispatchThroughF05).not.toHaveBeenCalled();
+  });
+
+  it('fails closed when ONE_TIME_FREE_ACCESS_EXPIRES_AT is absent', async () => {
+    const workerContext = context();
+    workerContext.config = {
+      ...workerContext.config,
+      oneTimeVerificationEnvironmentId: 'provider_sandbox',
+      oneTimeVerificationWritesAllowed: true,
+      deliveryProviderMode: 'provider',
+      deliveryProviderTransportEnabled: true,
+      highLevelEventSyncMode: 'provider',
+      highLevelPrivateIntegrationsToken: 'test-highlevel-token',
+      highLevelLocationId: 'pBSnOK2nkdxp6gf9Rg3o',
+      oneTimeFreeAccessExpiresAt: undefined,
+    };
+
+    await expect(inspectDefaultOt16Authority(workerContext)).resolves.toEqual({
+      ready: false,
+      reason: 'provider_configuration_missing',
+    });
+    expect(workerContext.pool.query).not.toHaveBeenCalled();
   });
 
   it('registers and runs the deterministic checkpoint through the classified provider port', async () => {

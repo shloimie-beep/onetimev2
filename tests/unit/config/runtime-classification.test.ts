@@ -221,6 +221,7 @@ describe('canonical runtime classification', () => {
         NODE_ENV: 'production',
         ...productionSecrets,
         ONE_TIME_VERIFICATION_ENVIRONMENT_ID: 'production_operator_canary',
+        ONE_TIME_FREE_ACCESS_EXPIRES_AT: '2026-09-13T19:24:00+03:00',
       }),
     ).toMatchObject({
       oneTimeRuntimeTier: 'production',
@@ -258,6 +259,37 @@ describe('canonical runtime classification', () => {
         ONE_TIME_VERIFICATION_ENVIRONMENT_ID: 'unknown',
       }),
     ).toThrow(/ONE_TIME_VERIFICATION_ENVIRONMENT_ID/i);
+  });
+
+  it('keeps launch timing optional without defaults and blocks promotion without free expiry', () => {
+    expect(loadConfig({ NODE_ENV: 'development' })).toMatchObject({
+      oneTimeFirstClassAt: undefined,
+      oneTimeFreeAccessExpiresAt: undefined,
+    });
+    expect(
+      loadConfig({
+        NODE_ENV: 'test',
+        ONE_TIME_FIRST_CLASS_AT: '2026-08-09T19:00:00+03:00',
+        ONE_TIME_FREE_ACCESS_EXPIRES_AT: '2026-09-13T19:24:00+03:00',
+      }),
+    ).toMatchObject({
+      oneTimeFirstClassAt: '2026-08-09T19:00:00+03:00',
+      oneTimeFreeAccessExpiresAt: '2026-09-13T19:24:00+03:00',
+    });
+    expect(() =>
+      loadConfig({
+        NODE_ENV: 'production',
+        ...productionSecrets,
+        ONE_TIME_VERIFICATION_ENVIRONMENT_ID: 'production_operator_canary',
+      }),
+    ).toThrow(/ONE_TIME_FREE_ACCESS_EXPIRES_AT/i);
+    expect(() =>
+      loadConfig({
+        NODE_ENV: 'production',
+        ...productionSecrets,
+        ONE_TIME_VERIFICATION_ENVIRONMENT_ID: 'production_broad',
+      }),
+    ).toThrow(/ONE_TIME_FREE_ACCESS_EXPIRES_AT/i);
   });
 
   it('exposes only a configured nonblank server-side learning alias HMAC key', () => {

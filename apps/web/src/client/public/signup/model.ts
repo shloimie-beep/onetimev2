@@ -1,5 +1,4 @@
 import {
-  FAMILY_FREE_EXPIRY,
   FAMILY_SIGNUP_COPY,
   FAMILY_SIGNUP_FIELDS,
   FAMILY_SIGNUP_FORBIDDEN_FIELDS,
@@ -9,12 +8,13 @@ import {
 } from '../../../../../../packages/contracts/src/signup/family/index.ts';
 
 export function parsePublicSignupClassification(value: unknown): FamilySignupClassification {
-  if (value === 'family' || value === 'school') return value;
+  if (value === 'family') return value;
   throw new Error('invalid_public_signup_classification');
 }
 
-export function familySignupFormModel(now: Date) {
-  const beforeExpiry = now.getTime() < Date.parse(FAMILY_FREE_EXPIRY);
+export function familySignupFormModel(now: Date, freeAccessExpiresAt?: string) {
+  const expiry = freeAccessExpiresAt ? Date.parse(freeAccessExpiresAt) : Number.NaN;
+  const beforeExpiry = Number.isFinite(expiry) && now.getTime() < expiry;
   return {
     classification: 'family' as const,
     fields: FAMILY_SIGNUP_FIELDS,

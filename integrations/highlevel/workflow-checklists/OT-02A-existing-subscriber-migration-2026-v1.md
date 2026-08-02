@@ -7,28 +7,21 @@ sender_key: rabbi_campaign
 transport: GHL
 Registry: integrations/highlevel/registry/workflow-registry.yaml
 
-- Build only in Draft.
-- Confirm every field, tag, and custom value exists in `registry/current.json` before use.
-- Read `sender-registry.yaml`, `message-class-registry.yaml`, and `communications-contract.json` before sender configuration.
-- Select One Time Rabbi Campaign Sender Name and verify it renders exactly `Rabbi Eli Scheller`.
-- Select One Time Rabbi Campaign Phase 2 From and verify it renders exactly `rabbielischeller@onetimeonetime.com`.
-- Select One Time Rabbi Reply-To and verify it renders exactly `rabbielischeller@onetimeonetime.com`.
-- The single canonical public identity is `Rabbi Eli Scheller <rabbielischeller@onetimeonetime.com>` for both From and Reply-To; this is not an open product decision.
-- Preserve One Time Rabbi Campaign Phase 1 From and historical `rabbi@onetimeonetime.com` data, but never select either for canonical public use.
-- Until GHL-UI-24 proves provider acceptance, keep this Draft blocked. Do not use a fallback identity, activate, enroll, or send.
-- Never guess or hardcode an unregistered sender identity.
-- Use the three current controlled emails from the paired canonical prompt, in this exact order: `rabbi_new_program_existing_subscriber_migration_v1`, `rabbi_parent_student_experience_existing_subscriber_migration_v1`, then `rabbi_controlled_pilot_existing_subscriber_migration_v1`. They supersede provider-era copy instructions and authorize no send.
-- Preserve Reviewed Email One exactly. Do not derive, paraphrase, or overwrite it while adding the reviewed Email Two and Email Three repository specifications.
-- Email Two may describe only the verified Parent/Student experience: live Mishnah learning, recordings for review, steady progress, and secure family access. Keep Student data out of GHL.
-- Email Three may invite the recipient to learn about the controlled pilot only through the registered One Time Home URL. Do not use a direct signup, checkout, Zoom/provider, recording, or application URL.
-- Insert only the registered One Time Home URL custom value for every CTA in this sequence.
+- Build only in Draft; keep unpublished, inactive, and unenrolled.
+- Confirm every field, tag, and custom value exists in `registry/current.json`.
+- Select the registered sender values and verify `Rabbi Eli Scheller <rabbielischeller@onetimeonetime.com>` for both From and Reply-To.
+- Never select the historical `rabbi@onetimeonetime.com` alias or any fallback identity.
+- Keep the workflow blocked until GHL-UI-24 proves provider acceptance.
+- Use exactly these copy IDs in order:
+  1. `ghl.legacy_member_migration.step_1.v1`
+  2. `ghl.legacy_member_migration.step_2.v1`
+  3. `ghl.legacy_member_migration.step_3.v1`
+- Email One is informational, Email Two is the restart reminder, and Email Three is the secure Family-account activation reminder.
+- Use only the registered CTA custom value named by each canonical copy entry.
 - Apply the standard GHL unsubscribe treatment to each email.
-- Keep cadence values unset until separately approved.
-- Do not select an audience. An operator-selected adult migration list is a later separate authorization; payment, attendance, event registration, portal state, deliverability, and legacy tags never select or authorize it.
-- Keep the workflow Draft, unpublished, inactive, and unenrolled.
-- No Human Handoff action.
-- No human task creation.
-- No production contact enrollment.
-- No outbound message send in this lane.
-- No Student contact, Student field, or Student tag.
-- Record the workflow ID in `WORKFLOW-ID-CAPTURE.md` after creation.
+- Leave cadence unset until separately approved.
+- Select no audience. Only an operator-approved adult migration list with documented migration authority is eligible.
+- Recheck migration authority and every suppression state before each email.
+- Exit on signup, decline, invalid address, unsubscribe, DND, complaint, hard bounce, suppression, or completion.
+- No Human Handoff, human task, production enrollment, outbound send, Student contact, Student field, or Student tag.
+- Keep the publish toggle off until explicit separate approval.

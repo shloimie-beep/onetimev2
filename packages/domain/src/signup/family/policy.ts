@@ -5,7 +5,6 @@ import type {
 } from '../../../../contracts/src/billing/commercial/index.ts';
 import { GHL_IDENTITY_CONTRACT_VERSION } from '../../../../contracts/src/communications/ghl-identity/index.ts';
 import {
-  FAMILY_FREE_EXPIRY,
   FAMILY_SIGNUP_FIELDS,
   FAMILY_SIGNUP_IDEMPOTENCY_KEY_MAX_LENGTH,
   FAMILY_SIGNUP_IDEMPOTENCY_KEY_MIN_LENGTH,
@@ -26,8 +25,8 @@ import {
 import { normalizeAdultEmail } from '../../accounts/v21-household-identity.ts';
 import { evaluatePassword } from '../../auth/policy.ts';
 import {
-  DEFAULT_FREE_PERIOD_CONFIGURATION,
   createFamilySignupProjection,
+  freePeriodConfiguration,
   planHostedBillingCommand,
 } from '../../billing/commercial/index.ts';
 import { canonicalRequestHash } from '../../jobs/idempotency.ts';
@@ -104,6 +103,7 @@ export interface PlanFamilySignupInput {
   command: FamilySignupCommand;
   normalized_email: string;
   now: Date;
+  free_access_expires_at?: string;
   proposed_adult_id: string;
   proposed_human_account_id: string;
   proposed_household_id: string;
@@ -274,7 +274,9 @@ export function planFamilySignup(input: PlanFamilySignupInput): FamilySignupPlan
           state: 'readback_required' as const,
           verified_contact_ref_hash: null,
         };
-  const beforeExpiry = input.now.getTime() < Date.parse(FAMILY_FREE_EXPIRY);
+  const freeAccessExpiresAt = input.free_access_expires_at;
+  const expiry = freeAccessExpiresAt ? Date.parse(freeAccessExpiresAt) : Number.NaN;
+  const beforeExpiry = Number.isFinite(expiry) && input.now.getTime() < expiry;
   const identityReviewBlocksCheckout = !beforeExpiry && link.state === 'identity_review';
   const consentChoices: FamilySignupAdultConsentChoices = {
     general_marketing: input.command.general_marketing_consent,
@@ -293,7 +295,7 @@ export function planFamilySignup(input: PlanFamilySignupInput): FamilySignupPlan
     access_state: beforeExpiry ? 'free' : 'inactive',
     seat_limit: 3,
     active_seat_count: 0,
-    free_access_expires_at: beforeExpiry ? FAMILY_FREE_EXPIRY : null,
+    free_access_expires_at: beforeExpiry ? freeAccessExpiresAt! : null,
     checkout_required: !beforeExpiry && !identityReviewBlocksCheckout,
     checkout_blocked_by_identity_review: identityReviewBlocksCheckout,
     rolling_trial_granted: false,
@@ -358,6 +360,7 @@ export function planFamilySignup(input: PlanFamilySignupInput): FamilySignupPlan
     requestBinding: input.request_binding,
     projection,
     now: input.now,
+    ...(freeAccessExpiresAt === undefined ? {} : { freeAccessExpiresAt }),
     checkoutRequired: !beforeExpiry && !identityReviewBlocksCheckout,
   });
   return {
@@ -406,18 +409,20 @@ function planCommercialBilling(input: {
   requestBinding: FamilySignupRequestBinding;
   projection: FamilySignupLocalProjection;
   now: Date;
+  freeAccessExpiresAt?: string;
   checkoutRequired: boolean;
 }): FamilySignupCommercialBillingPlan {
+  const configuration = freePeriodConfiguration(input.freeAccessExpiresAt);
   const signupProjection = createFamilySignupProjection({
     householdId: input.projection.household_id,
     ownerAdultId: input.projection.adult_id,
     activeStudentCount: 0,
     now: input.now,
-    configuration: DEFAULT_FREE_PERIOD_CONFIGURATION,
+    configuration,
   });
   if (
     signupProjection.accessState !== input.projection.access_state ||
-    signupProjection.freePeriodEndsAt !== DEFAULT_FREE_PERIOD_CONFIGURATION.endsAt
+    signupProjection.freePeriodEndsAt !== configuration.endsAt
   ) {
     throw new FamilySignupError('invalid_family_signup');
   }
@@ -427,7 +432,7 @@ function planCommercialBilling(input: {
     ownerAdultId: input.projection.adult_id,
     activeStudentCount: 0,
     occurredAt: input.now.toISOString(),
-    freePeriodSourceKey: DEFAULT_FREE_PERIOD_CONFIGURATION.sourceKey,
+    freePeriodSourceKey: configuration.sourceKey,
   });
   const signup: FamilySignupCommercialCommandRecord = {
     actor_ref: input.projection.adult_id,
@@ -463,7 +468,7 @@ function planCommercialBilling(input: {
       consent: null,
     },
     prior: signupProjection,
-    configuration: DEFAULT_FREE_PERIOD_CONFIGURATION,
+    configuration,
   });
   return {
     signup,

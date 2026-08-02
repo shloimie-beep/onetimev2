@@ -40,7 +40,7 @@ function requestFixture(): CandidateBuildRequest {
     ],
     native_postgresql: {
       engine_version: '18.4',
-      migration_count: 88,
+      migration_count: 89,
       ledger_digest: sha256('immutable migration ledger'),
       pending_count: 0,
       issue_count: 0,
@@ -183,6 +183,12 @@ describe('I36 deterministic candidate builder', () => {
     expect(() => buildCandidate(failedProbe, { repository_root: repositoryRoot })).toThrow(
       /passed named probe/,
     );
+
+    const pre2258MigrationCount = requestFixture();
+    pre2258MigrationCount.native_postgresql.migration_count = 88;
+    expect(() =>
+      buildCandidate(pre2258MigrationCount, { repository_root: repositoryRoot }),
+    ).toThrow(/exactly 89 migrations/);
   });
 
   it('renders later-freeze documents outside candidate identity', () => {

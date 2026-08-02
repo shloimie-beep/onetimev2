@@ -4709,7 +4709,16 @@ function rewritePublicMetadata(html: string, config: AppConfig, canonicalPath: s
       /<meta property="og:url" content="[^"]*">/,
       `<meta property="og:url" content="${metadataUrl}">`,
     );
-  return rewriteAppAssetUrls(rewrittenMetadata, config);
+  return rewriteAppAssetUrls(rewriteLaunchTiming(rewrittenMetadata, config), config);
+}
+
+function rewriteLaunchTiming(html: string, config: AppConfig) {
+  return html
+    .replaceAll('__ONE_TIME_FIRST_CLASS_AT__', escapeHtml(config.oneTimeFirstClassAt ?? ''))
+    .replaceAll(
+      '__ONE_TIME_FREE_ACCESS_EXPIRES_AT__',
+      escapeHtml(config.oneTimeFreeAccessExpiresAt ?? ''),
+    );
 }
 
 function rewriteAppAssetUrls(html: string, config: AppConfig) {
@@ -5331,7 +5340,7 @@ function createParentAccessSummaryAdapter(
       const state = access?.state ?? 'pending';
       const sourceLabel =
         access?.source_kind === 'free_pilot' || access?.source_kind === 'complimentary'
-          ? 'Complimentary pilot access'
+          ? 'Complimentary access'
           : 'Current learning access';
       return {
         enabled: true,

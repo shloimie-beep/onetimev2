@@ -56,11 +56,11 @@ export const P30_CAMPAIGN_WORKFLOWS = [
     trigger: 'named approval launch for the exact former-member segment',
     ordered_steps: [
       'validate all three canonical copy entries and exact content approvals',
-      'send approved step 1 at approval launch',
+      'send approved outcomes step 1 at approval launch',
       'wait 4 days and re-evaluate every exit and suppression condition',
-      'send approved step 2',
+      'send approved live and on-demand step 2',
       'wait 5 additional days and re-evaluate every exit and suppression condition',
-      'send approved step 3 on day 9',
+      'send approved free-access step 3 on day 9',
       'record dormant WhatsApp as channel_skipped_not_configured with zero provider calls',
     ],
     exit_conditions: [

@@ -254,13 +254,23 @@ describe('P29 core GHL workflow definitions', () => {
     expect(reminder.policy_constants).toContain('parent_reminder_offset=PT30M');
   });
 
-  it('pins OT-01 signup lifecycle projection and exact cutover plus the migration audience', () => {
-    expect(CORE_WORKFLOW_BY_KEY['OT-01'].ordered_steps).toContain(
-      'project_one_time_family_signup_lifecycle',
+  it('pins the durable OT-01 receipt and exact approved migration audience', () => {
+    expect(CORE_WORKFLOW_BY_KEY['OT-01']).toMatchObject({
+      sender_key: 'office',
+      desired_initial_state: 'DRAFT_WAITING_EXTERNAL',
+      trigger: 'successful durable Family-account creation committed with immediate free access',
+      approved_copy_ids: ['ghl.signup_confirmation.v1'],
+    });
+    expect(CORE_WORKFLOW_BY_KEY['OT-01'].ordered_steps).toEqual(
+      expect.arrayContaining([
+        'require_successful_durable_family_account_creation_readback',
+        'confirm_immediate_free_access_without_card_or_automatic_charge',
+        'confirm_up_to_three_student_seats_without_creating_ghl_student_contacts',
+      ]),
     );
-    expect(CORE_WORKFLOW_BY_KEY['OT-01'].policy_constants).toContain(
-      'free_access_cutover=2026-09-13T19:24:00+03:00',
-    );
+    expect(CORE_WORKFLOW_BY_KEY['OT-01'].ordered_steps.join('|')).not.toMatch(/school/iu);
+    expect(CORE_WORKFLOW_BY_KEY['OT-01'].exit_conditions.join('|')).not.toMatch(/school/iu);
+    expect(CORE_WORKFLOW_BY_KEY['OT-01'].policy_constants).toEqual([]);
     expect(CORE_WORKFLOW_BY_KEY['OT-02A'].policy_constants).toContain(
       'audience=OT-02A | Replit Active Migration Candidates | 2026',
     );
@@ -335,10 +345,19 @@ describe('P29 core GHL workflow definitions', () => {
     ).toThrow('approved_copy_required');
   });
 
-  it('uses the four P31 canonical copy identifiers without inventing replacements', () => {
+  it('uses the complete corrected launch-copy identifiers without inventing replacements', () => {
     expect(CORE_WORKFLOW_BY_KEY['OT-02A'].approved_copy_ids).toEqual([
       'ghl.legacy_member_migration.step_1.v1',
+      'ghl.legacy_member_migration.step_2.v1',
+      'ghl.legacy_member_migration.step_3.v1',
     ]);
+    expect(CORE_WORKFLOW_BY_KEY['OT-02B'].approved_copy_ids).toEqual([
+      'ghl.prelaunch_nurture.step_1.v1',
+      'ghl.prelaunch_nurture.step_2.v1',
+      'ghl.prelaunch_nurture.step_3.v1',
+    ]);
+    expect(CORE_WORKFLOW_BY_KEY['OT-02A'].desired_initial_state).toBe('DRAFT_WAITING_EXTERNAL');
+    expect(CORE_WORKFLOW_BY_KEY['OT-02B'].desired_initial_state).toBe('DRAFT_WAITING_EXTERNAL');
     expect(CORE_WORKFLOW_BY_KEY['OT-08'].approved_copy_ids).toEqual([
       'ghl.parent_portal_activated.v1',
     ]);
