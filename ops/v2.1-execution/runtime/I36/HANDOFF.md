@@ -1,5 +1,35 @@
 # I36 Integration Releases
 
+## Current terminal - PG18 failed-run phase-truth correction
+
+Control `1410f6ae4f702fa6d6546858621875809a860350`, based on
+`3cc3f339988c8ba057baa4f54fc861b37c09e4c0`, holds source-correction terminal
+`59616c76f34634103a9049a816b8d2d740613836` at P1=0, P2=1, P3=0 and
+authorizes only this runtime-triplet evidence correction. READY is
+`b2c1ba427be41a35634a729e01b33769e2c400a3ae01e9ce18add3f627ef7a50`;
+the runtime inventory and preimage manifest are
+`bdf3cfe7a516fb00f891ef66f1f752591ce3d894243bbe50393980d10a3a441a`
+and `d96021d0e56179ebc406bc92542a386a364680f8aa1b3403a63b7d95caa615cc`.
+
+The sole P2 was an evidence overstatement, not a code defect. Run
+`30743955340` completed its migration proof before entering
+`proveProviderRegistryGuards`, where the module-initialization error occurred.
+Later provider-registry guard probes did not complete. The disposable runner
+and database stopped and remain reconciled; non-disposable infrastructure,
+provider, customer, deployment, DNS, contact, send, enrollment, billing, and
+production effects remain zero. The two-line source correction is unchanged.
+
+Claim `27f81ff8-ff28-486d-9fcc-385914ec3584` and RELEASE_INTEGRATOR lease
+`e83619b8-1cf2-4920-99d9-17046ef7ed6d` were released at
+`2026-08-02T10:59:21Z`, before expiry `2026-08-02T11:41:19Z`. Exact failed-log
+order, three-path scope/preimages, YAML, runtime formatting, diff hygiene, and
+parent remote equality pass. This correction performed no external effect.
+
+Push this exact runtime-triplet child and stop for one delta-only review. No
+workflow retry or external effect is authorized.
+
+All sections below are retained historical release records and audit prompts.
+
 ## Current terminal - candidate PG18 proof source correction
 
 Control `3cc3f339988c8ba057baa4f54fc861b37c09e4c0`, based on dispatch and
@@ -14,10 +44,11 @@ Control `3cc3f339...` corrects the proof-script preimage to exact raw-Git
 SHA-256 `087efe889f33f521dd7e448782126fb6cff35dc4ea5fc2e8f6ef49bfec19cd6e`;
 scope, claim, lease, and directives are unchanged.
 
-GitHub Actions run `30743955340` checked out exact head `370420f...` and
-started a disposable PostgreSQL 18.4 service, but the proof process failed
-before migrations or probes because its top-level `await main()` executed
-before `PROVIDER_BINDING_INSERT` was initialized. The runner and disposable
+GitHub Actions run `30743955340` checked out exact head `370420f...`, started
+a disposable PostgreSQL 18.4 service, and completed its migration proof before
+failing inside `proveProviderRegistryGuards` because its top-level `await
+main()` executed before `PROVIDER_BINDING_INSERT` was initialized. Later
+provider-registry guard probes did not complete. The runner and disposable
 database stopped, no artifact was available, the one-run authority was
 consumed, its effect was reconciled, and its lock was released. Dispatch
 effects are `1/0/1`; non-disposable infrastructure, provider, customer,

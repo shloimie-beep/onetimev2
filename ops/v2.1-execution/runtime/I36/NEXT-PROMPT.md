@@ -1,6 +1,53 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
+MODE: PAUSE_FOR_C00_I36_PG18_PHASE_TRUTH_CORRECTION_DELTA_REVIEW
+
+Audit only the exact pushed I36 runtime-triplet phase-truth correction. Do not
+restart a broad audit, change source code, dispatch or retry a workflow, start
+a database, freeze a candidate, inspect or mutate a provider, deploy, change
+DNS, create a contact, publish, enroll, send, charge, clean up, or perform any
+external effect.
+
+Repository: shloimie-beep/onetimev2
+Branch: codex/v21-integration
+Authorized start and required sole parent:
+`59616c76f34634103a9049a816b8d2d740613836`
+Containing control: `1410f6ae4f702fa6d6546858621875809a860350`
+Authority basis: `3cc3f339988c8ba057baa4f54fc861b37c09e4c0`
+READY: `b2c1ba427be41a35634a729e01b33769e2c400a3ae01e9ce18add3f627ef7a50`
+Claim: `27f81ff8-ff28-486d-9fcc-385914ec3584`
+Writer: `codex-i36-pg18-evidence-correction-27f81ff8`
+RELEASE_INTEGRATOR lease: `e83619b8-1cf2-4920-99d9-17046ef7ed6d`
+Lease issue/expiry/release: `2026-08-02T10:56:19Z` /
+`2026-08-02T11:41:19Z` / `2026-08-02T10:59:21Z`.
+
+Confirm exactly the I36 runtime triplet changed, with inventory
+`bdf3cfe7a516fb00f891ef66f1f752591ce3d894243bbe50393980d10a3a441a`
+and preimage manifest
+`d96021d0e56179ebc406bc92542a386a364680f8aa1b3403a63b7d95caa615cc`.
+Confirm source-correction head `59616c76...` remains byte-identical in this
+child.
+
+Confirm the corrected evidence against existing run `30743955340`: migration
+proof completed before failure inside `proveProviderRegistryGuards`; later
+provider-registry guard probes did not complete. Confirm the disposable runner
+and database stopped, the prior one-run authority is consumed, its lock is
+released, and non-disposable/provider/customer/deployment/DNS/send/billing
+effects remain zero.
+
+Reproduce only exact failed-log order, three-path scope and preimages, YAML,
+runtime Prettier, diff hygiene, and local/tracking/live equality. Return exact
+P1/P2/P3 counts. Do not admit candidate readiness or production completion.
+Stop.
+
+---
+
+## Historical audit prompt - candidate PG18 source correction
+
+MODEL: GPT-5.6-SOL
+REASONING: XHIGH
+SERVICE TIER: PRIORITY
 MODE: PAUSE_FOR_C00_I36_PG18_SOURCE_CORRECTION_DELTA_REVIEW
 
 Audit only the exact pushed I36 candidate-PG18 proof source correction. Do not
@@ -38,8 +85,10 @@ are unchanged. Reproduce workspace typecheck, scoped ESLint/Prettier, diff
 hygiene, and the dry fail-closed nonzero exit without exact authorization.
 
 Confirm failed GitHub Actions run `30743955340` used exact source
-`370420f...`, failed before migrations/probes with
-`PROVIDER_BINDING_INSERT` before initialization, and is reconciled. Confirm
+`370420f...`, completed migration proof and then failed inside
+`proveProviderRegistryGuards` with `PROVIDER_BINDING_INSERT` before
+initialization, and is reconciled. Confirm later provider-registry guard probes
+did not complete. Confirm
 dispatch effects `1/0/1`, stopped disposable runner/database, consumed prior
 authority, released prior lock, and zero non-disposable infrastructure,
 provider, customer, deployment, DNS, contact, send, enrollment, billing, or

@@ -40,24 +40,68 @@ dependency_heads:
   P18: 1926e61c793ce29d7240c1ee05d2a4879b52770b
   P21: c11dec418fa3de896e96c348f87928c92c9f86b9
 status: ready_for_review
-phase: candidate_pg18_proof_source_correction_terminal
-claimed_by: codex-i36-pg18-correction-ed8b434a
-claim_time: '2026-08-02T10:35:42Z'
-claim_id: ed8b434a-3da5-4f7d-b0ff-02819c4c1705
-lease_id: 161bd0c3-877f-4f20-b42c-014e375ed1ca
-lease_issued_at: '2026-08-02T10:35:42Z'
-lease_expires_at: '2026-08-02T11:20:42Z'
-lease_released_at: '2026-08-02T10:41:27Z'
-last_heartbeat_at: '2026-08-02T10:41:27Z'
-controller_authorization_sha: 7db01ed9440ffa912d2639693e629938a0a64e91
-latest_valid_observed_control_head_sha: 3cc3f339988c8ba057baa4f54fc861b37c09e4c0
-reconciled_state_based_on_control_head_sha: 7db01ed9440ffa912d2639693e629938a0a64e91
-ready_authorization_control_head_sha: 7db01ed9440ffa912d2639693e629938a0a64e91
-ready_entry_state_based_on_control_head_sha: 7db01ed9440ffa912d2639693e629938a0a64e91
-ready_entry_payload_digest: 62b33e59de38c3fc0a12aed34a04b259e4a385294f6eaf5d98d47327c915c25d
+phase: candidate_pg18_failed_run_phase_truth_correction_terminal
+claimed_by: codex-i36-pg18-evidence-correction-27f81ff8
+claim_time: '2026-08-02T10:56:19Z'
+claim_id: 27f81ff8-ff28-486d-9fcc-385914ec3584
+lease_id: e83619b8-1cf2-4920-99d9-17046ef7ed6d
+lease_issued_at: '2026-08-02T10:56:19Z'
+lease_expires_at: '2026-08-02T11:41:19Z'
+lease_released_at: '2026-08-02T10:59:21Z'
+last_heartbeat_at: '2026-08-02T10:59:21Z'
+controller_authorization_sha: 3cc3f339988c8ba057baa4f54fc861b37c09e4c0
+latest_valid_observed_control_head_sha: 1410f6ae4f702fa6d6546858621875809a860350
+reconciled_state_based_on_control_head_sha: 3cc3f339988c8ba057baa4f54fc861b37c09e4c0
+ready_authorization_control_head_sha: 3cc3f339988c8ba057baa4f54fc861b37c09e4c0
+ready_entry_state_based_on_control_head_sha: 3cc3f339988c8ba057baa4f54fc861b37c09e4c0
+ready_entry_payload_digest: b2c1ba427be41a35634a729e01b33769e2c400a3ae01e9ce18add3f627ef7a50
 claim_mode: new
-expected_existing_head_sha: 370420f14e0c3aefc9399319c74960ca699ab90a
-lease_phase_scope: candidate_pg18_proof_source_correction
+expected_existing_head_sha: 59616c76f34634103a9049a816b8d2d740613836
+lease_phase_scope: candidate_pg18_failed_run_phase_truth_correction
+candidate_pg18_failed_run_phase_truth_correction_terminal:
+  containing_control_head_sha: 1410f6ae4f702fa6d6546858621875809a860350
+  state_basis_control_head_sha: 3cc3f339988c8ba057baa4f54fc861b37c09e4c0
+  exact_authorized_start_sha: 59616c76f34634103a9049a816b8d2d740613836
+  ready_entry_payload_digest: b2c1ba427be41a35634a729e01b33769e2c400a3ae01e9ce18add3f627ef7a50
+  prior_terminal_review: P1_0_P2_1_P3_0
+  sole_P2: runtime_triplet_overstated_failure_as_before_migrations
+  claim_id: 27f81ff8-ff28-486d-9fcc-385914ec3584
+  writer_id: codex-i36-pg18-evidence-correction-27f81ff8
+  lease_issued_at: '2026-08-02T10:56:19Z'
+  lease_expires_at: '2026-08-02T11:41:19Z'
+  lease_released_at: '2026-08-02T10:59:21Z'
+  last_heartbeat_at: '2026-08-02T10:59:21Z'
+  writer_slot_leases_released:
+    - slot: RELEASE_INTEGRATOR
+      lease_id: e83619b8-1cf2-4920-99d9-17046ef7ed6d
+  effect_lock_leases: []
+  exact_scope:
+    runtime_paths: 3
+    path_inventory_digest: bdf3cfe7a516fb00f891ef66f1f752591ce3d894243bbe50393980d10a3a441a
+    preimage_manifest_digest: d96021d0e56179ebc406bc92542a386a364680f8aa1b3403a63b7d95caa615cc
+  corrected_evidence:
+    github_run_id: 30743955340
+    migration_proof_completed_before_failure: true
+    failure_location: proveProviderRegistryGuards
+    failure_detail: PROVIDER_BINDING_INSERT_accessed_before_initialization
+    later_provider_registry_guard_probes_completed: false
+    disposable_runner_and_database_cleanup: complete
+    source_correction_changed: false
+  validation:
+    exact_failed_log_order: passed
+    exact_three_path_scope_and_preimages: passed
+    task_state_yaml_parse: passed
+    runtime_prettier: passed
+    diff_check: passed
+    local_tracking_live_parent_equality: passed
+  effects:
+    correction_phase_external_effects: 0/0/0
+    failed_run_disposable_dispatch: 1/0/1
+    non_disposable_infrastructure: 0
+    provider_or_customer: 0
+  safe_next_action: >-
+    Push this exact runtime-triplet child and stop for one delta-only review.
+    No workflow retry or external effect is authorized.
 candidate_pg18_proof_source_correction_terminal:
   containing_control_head_sha: 3cc3f339988c8ba057baa4f54fc861b37c09e4c0
   state_basis_control_head_sha: 7db01ed9440ffa912d2639693e629938a0a64e91
@@ -84,7 +128,8 @@ candidate_pg18_proof_source_correction_terminal:
     github_run_id: 30743955340
     exact_source_sha: 370420f14e0c3aefc9399319c74960ca699ab90a
     conclusion: failure
-    failed_before_migrations_and_probes: true
+    migration_proof_completed_before_provider_registry_guard_failure: true
+    later_provider_registry_guard_probes_completed: false
     failure_class: top_level_await_before_const_initialization
     exact_error: ReferenceError_PROVIDER_BINDING_INSERT_before_initialization
     disposable_PostgreSQL_18_4_started_and_stopped: true
@@ -126,7 +171,7 @@ candidate_pg18_proof_source_correction_terminal:
     effect without fresh exact successor authority and a new lock and fence.
 writer_slot_leases_released:
   - slot: RELEASE_INTEGRATOR
-    lease_id: 161bd0c3-877f-4f20-b42c-014e375ed1ca
+    lease_id: e83619b8-1cf2-4920-99d9-17046ef7ed6d
 launch_source_and_configurable_timing_terminal:
   containing_control_head_sha: 403c65b85f6bc85bba4a38df19c977058e2ff3d6
   state_basis_control_head_sha: 607ee4a324ab379674f2b1306ec66058f9d09e51
@@ -1396,7 +1441,7 @@ merge_result_head_sha: 9a028e7a967221441dfd4d5cf9417eb2885a072f
 merge_parent_target_head_sha: c19c90777e0562c6fa77e30f0e0fc7ab9ba300f9
 merge_parent_source_head_sha: 3364c1c31ef12a81abf02cf9f80f7e8008c1778f
 prior_postmerge_integrator_fix_head_sha: e423868957f3a3cb9ddf992e39368fceb15661c0
-state_based_on_head_sha: 370420f14e0c3aefc9399319c74960ca699ab90a
+state_based_on_head_sha: 59616c76f34634103a9049a816b8d2d740613836
 last_implementation_commit_sha: derive_with_git_rev_parse_HEAD
 completed_steps:
   - Accepted the exact canonical-route/candidate-source correction authority from control 71342aa60de3f3840c70555a616cded8f5672989, basis 61d52aa85f3f040187c21081c0e17a83544f9443, READY 85ff11c44fdcd4426a821250ae554e8f7a251edd7fd6e0d9ac610df9d58bafc8, and clean start 9082f3015d6fe95cf374266b49a9e4db7ae69ead.
@@ -2729,13 +2774,13 @@ family_parent_session_composition_binding:
       fixture, and stale login email-link-confirm markup expectation.
   external_effects: 0/0/0
 remaining_steps:
-  - C00 must independently review the exact pushed four-path child of 370420f14e0c3aefc9399319c74960ca699ab90a and return exact P1/P2/P3 counts.
-  - A successful delta review is required before any fresh exact one-run PostgreSQL 18.4 proof authority, lock, fence, or dispatch.
+  - C00 must independently review the exact pushed runtime-triplet child of 59616c76f34634103a9049a816b8d2d740613836 and return exact P1/P2/P3 counts.
+  - A zero-P1/zero-P2 delta review is required before any fresh exact one-run PostgreSQL 18.4 proof authority, lock, fence, or dispatch.
   - Candidate freeze, provider or registry work, persistent-database work, deployment, DNS, billing, contact, send, activation, cleanup, and every external successor action remain separately gated.
 next_action: >-
-  STOP. C00 must independently review the exact one-source/three-runtime
-  correction child of 370420f14e0c3aefc9399319c74960ca699ab90a,
-  verify the invocation-order fix, local gates, released lease, clean
+  STOP. C00 must independently review the exact runtime-triplet evidence
+  correction child of 59616c76f34634103a9049a816b8d2d740613836,
+  verify exact log order, preserved source bytes, released lease, clean
   local/tracking/live equality, and reconciled failed run. No retry is
   authorized by this terminal.
 requirements: {}
@@ -2744,7 +2789,6 @@ current_checkpoint_changed_paths:
   - ops/v2.1-execution/runtime/I36/HANDOFF.md
   - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
   - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
-  - scripts/postgres-assurance/candidate-pg18-proof.ts
 changed_paths:
   - apps/web/src/client/app/portal-entry.tsx
   - apps/web/src/client/app/router/index.ts
