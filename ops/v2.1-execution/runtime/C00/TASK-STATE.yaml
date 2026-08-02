@@ -8,15 +8,15 @@ branch: codex/v21-control
 start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
-phase: candidate_preparation_and_freeze_dispatch
-claimed_by: codex-c00-candidate-preparation-95f345ab
-claim_time: '2026-08-02T04:10:47Z'
-claim_id: 95f345ab-e683-4a08-982f-d43fd181bf4e
-lease_expires_at: '2026-08-02T07:10:47Z'
-last_heartbeat_at: '2026-08-02T04:10:47Z'
-controller_authorization_sha: 702cce4dbe6cb6160c10144f212dc6627676f1a8
-ready_entry_payload_digest: cd72e0a97a6e2ab2d5f952c4a6df85eb74c0de9f399f5b6631fbc8a84cab3a97
-state_based_on_head_sha: 702cce4dbe6cb6160c10144f212dc6627676f1a8
+phase: canonical_route_and_candidate_source_correction_dispatch
+claimed_by: codex-c00-route-correction-ada2d953
+claim_time: '2026-08-02T05:17:02Z'
+claim_id: ada2d953-98df-47a5-adff-4604a3f2c198
+lease_expires_at: '2026-08-02T11:17:02Z'
+last_heartbeat_at: '2026-08-02T05:17:02Z'
+controller_authorization_sha: 61d52aa85f3f040187c21081c0e17a83544f9443
+ready_entry_payload_digest: 85ff11c44fdcd4426a821250ae554e8f7a251edd7fd6e0d9ac610df9d58bafc8
+state_based_on_head_sha: 61d52aa85f3f040187c21081c0e17a83544f9443
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 candidate_preparation_dispatch_boundary:
   recorded_at: '2026-08-02T04:10:47Z'
@@ -38,6 +38,30 @@ candidate_preparation_dispatch_boundary:
   I36_lease_expires_at: '2026-08-02T07:10:47Z'
   I36_ready_entry_payload_digest: cd72e0a97a6e2ab2d5f952c4a6df85eb74c0de9f399f5b6631fbc8a84cab3a97
   legal_gate_classification: broad_production_release_only
+  provider_or_external_effect_authority: none
+  external_effects: 0/0/0
+canonical_route_correction_dispatch_boundary:
+  recorded_at: '2026-08-02T05:17:02Z'
+  control_basis_sha: 61d52aa85f3f040187c21081c0e17a83544f9443
+  held_source_checkpoint_sha: 9082f3015d6fe95cf374266b49a9e4db7ae69ead
+  held_source_checkpoint_parent_sha: 685861828a68c679eeb2a310d17f283a00e3c505
+  held_source_checkpoint_tree_sha: cd952a9eced0747b5ef377a5d2ebaa529988e258
+  held_source_checkpoint_timestamp: '2026-08-02T07:55:15+03:00'
+  held_source_checkpoint_review: held_one_P1_two_P2
+  locked_canonical_route_count: 93
+  truthfully_registered_route_count: 21
+  missing_route_specific_handler_count: 72
+  exact_path_count: 55
+  exact_path_inventory_digest: f84c296b3ef155d14612a2cb9920bd59d68bf21167153795e605279633148eaa
+  preimage_manifest_digest: 42c615dec4d3d4159613c41ada0ad4f102edf238b96ed7db669e360154835570
+  I36_claim_id: a3ae432b-8abd-45b7-b84d-7571a54a1bb8
+  I36_writer_id: codex-i36-route-convergence-a3ae432b
+  I36_CLIENT_COMPOSER_lease_id: 74272335-1c16-4e4f-bdcd-63ab10909511
+  I36_SERVER_COMPOSER_lease_id: 806d0bf5-3317-4855-ae09-3d2e4c21cd9e
+  I36_RELEASE_INTEGRATOR_lease_id: 8a34d221-1333-4ed3-a4af-3ad930ef3a3b
+  I36_lease_expires_at: '2026-08-02T11:17:02Z'
+  I36_ready_entry_payload_digest: 85ff11c44fdcd4426a821250ae554e8f7a251edd7fd6e0d9ac610df9d58bafc8
+  native_postgresql_or_candidate_freeze_authority: none_until_corrected_source_acceptance
   provider_or_external_effect_authority: none
   external_effects: 0/0/0
 immediate_lean_completion_mode:
@@ -1191,22 +1215,18 @@ completed_steps:
   and prohibiting both legacy authority tables, direct history writes, candidate work, providers, and all external effects.
 remaining_steps:
 - >-
-  Complete the two active ancestry-preserving P12 and P09 concrete correction terminals from exact integration ae3ced8a,
-  including P09's amended SELECT-only durable history replay, each inside its exact writable allowlist and under its
-  unchanged sole task lease.
+  Complete the exact 55-path canonical-route, visible-registry, and candidate-builder correction from held source checkpoint
+  9082f301. Mount or explicitly alias all 93 locked routes truthfully and derive candidate inputs from exact Git bytes.
 - >-
-  Give each terminal one independent review, admit accepted successor requests, then run dependency-ordered I36
-  registration batches A-D with one merged touched-graph validation.
-- Complete the mounted P12 Student-creation/reload/logout/re-login browser journey after P08/P12 central registration.
-- Complete the static production GET /school and Admin configuration composition after P09 central registration.
+  Give the corrected source terminal one independent review; only after zero P1/P2 run clean merged verification, disposable
+  native PostgreSQL 18.4 migration proof, deterministic candidate derivation, immutable manifest, and evidence branch.
 - Freeze one exact candidate and run V37-V43 Phase A, R44, deferred proof, V43 Phase B, R45 certification, legal gate, cutover, and the observation window in their exact order.
 next_action: >-
-  Resolve the pushed control descendant of 48f27d39 and verify P12 READY 3be08e42 plus amended P09 READY 6c1e0bd1.
-  Continue the same uncommitted ancestry-preserving terminals, branches, claims, leases, second-parent merges, and exact
-  19-path/18-path ceilings; do not restart either lane. P09 closes the durable-replay P2 with SELECT-only history readback,
-  never a direct history write. Each lane publishes one substantive terminal, releases its lease, verifies live equality,
-  and stops for one independent review. Candidate, providers, deployment, DNS, sends, charges, customer activation, and
-  every external effect remain prohibited.
+  Resolve the pushed control descendant of 61d52aa8 and verify READY 85ff11c4. Continue exact integration 9082f301 under
+  claim a3ae432b and its three task-bound writer leases. Change only the 55 READY paths, correct all 93 canonical route
+  registrations plus Git-byte registry/candidate identity, run proportional and one clean-install verification, push one
+  corrected source checkpoint, release every lease, and stop for independent C00 review. Native PostgreSQL, candidate
+  metadata/freeze, providers, deployment, DNS, sends, charges, customer activation, and every external effect are prohibited.
 orchestration:
   enabled: true
   mechanism: native_subagents

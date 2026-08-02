@@ -4,12 +4,12 @@ generated_by: C00
 ready:
   - task_id: I36
     status: ready
-    phase: candidate_preparation_and_freeze
+    phase: canonical_route_and_candidate_source_correction
     branch: codex/v21-integration
     claim_mode: new
-    state_based_on_control_head_sha: 702cce4dbe6cb6160c10144f212dc6627676f1a8
-    authorized_start_sha: 685861828a68c679eeb2a310d17f283a00e3c505
-    expected_head_sha: 685861828a68c679eeb2a310d17f283a00e3c505
+    state_based_on_control_head_sha: 61d52aa85f3f040187c21081c0e17a83544f9443
+    authorized_start_sha: 9082f3015d6fe95cf374266b49a9e4db7ae69ead
+    expected_head_sha: 9082f3015d6fe95cf374266b49a9e4db7ae69ead
     package_lock_sha256: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
     source_package_sha256: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
     task_packet_sha256: 55e261760baac780e9a4db48c328480c6f98172261ef990e563a00b25c467fc7
@@ -17,110 +17,319 @@ ready:
     dependencies:
       - task_id: C00
         required_state: immediate_lean_completion_mode
-        required_head_sha: 702cce4dbe6cb6160c10144f212dc6627676f1a8
+        required_head_sha: 61d52aa85f3f040187c21081c0e17a83544f9443
       - task_id: I36
-        required_state: P18_registration_002_correction_terminal_accepted
-        required_head_sha: 685861828a68c679eeb2a310d17f283a00e3c505
-        required_parent_sha: 89f9adf886a15f396b6713dfdf0259bfde27bb0d
-        required_tree_sha: 61030c2aa8d3f091e158b3cf6a8edd9d59c286fa
-        required_timestamp: '2026-08-02T06:43:59+03:00'
-        required_product_manifest_digest: f62dcdebba981de49f2beecbc2e80a433f354675751f9f95e9549e39de0b4d42
-      - task_id: P18
-        required_state: implementation_ready
-        independent_review: zero_P1_zero_P2_zero_P3
+        required_state: candidate_source_checkpoint_held
+        required_head_sha: 9082f3015d6fe95cf374266b49a9e4db7ae69ead
+        required_parent_sha: 685861828a68c679eeb2a310d17f283a00e3c505
+        required_tree_sha: cd952a9eced0747b5ef377a5d2ebaa529988e258
+        required_timestamp: '2026-08-02T07:55:15+03:00'
+        independent_review: held_one_P1_two_P2
         external_effects: 0/0/0
-      - task_id: implementation_set
-        required_state: all_35_registered_heads_are_integration_ancestors
-        required_head_sha: 685861828a68c679eeb2a310d17f283a00e3c505
+      - task_id: canonical_route_inventory
+        required_state: 93_locked_routes_21_truthfully_registered_72_missing_route_specific_handlers
+      - task_id: candidate_artifact_identity
+        required_state: must_replace_caller_self_attestation_and_fictional_dist_paths
     authorized_paths:
-      path_count: 9
-      path_inventory_digest: 48a1960a30eaea2a799b3cf4f4fc59a2d739131ee139da6bb4a0dfcc9530a31f
-      source_path_count: 4
-      source_path_inventory_digest: a3480c57a4ccbab807a6214861632f0071e022ff73b4143da33be84e3b96c2d5
-      candidate_output_path_count: 2
-      candidate_output_path_inventory_digest: 0c49468a4141ce36176973bffdb95ba5b7410589b2e8d3f4fddfcb31e34d5cbb
-      runtime_path_count: 3
-      runtime_path_inventory_digest: bdf3cfe7a516fb00f891ef66f1f752591ce3d894243bbe50393980d10a3a441a
-      preimage_manifest_digest: 06794a14c52946e4b7160be3bd59a44a97a12162ea98c6f92ac2b53d4bd3928a
+      path_count: 55
+      path_inventory_digest: f84c296b3ef155d14612a2cb9920bd59d68bf21167153795e605279633148eaa
+      preimage_manifest_digest: 42c615dec4d3d4159613c41ada0ad4f102edf238b96ed7db669e360154835570
       preimages:
-        ops/day-one/visible-action-registry.json: ff9f126e7ee273c187630c1aec6e7b3084d465d56a75d663d68a56a6720c3c4f
-        ops/v2.1-execution/merge/candidates/<canonical-candidate-digest>/CANDIDATE-DERIVATION.json: null
-        ops/v2.1-execution/merge/candidates/<canonical-candidate-digest>/CANDIDATE.yaml: null
+        apps/web/src/client/app/admin-ia.ts: 5afc52631bdcb4b3ad4f6384b9dc0492cc823c8e5c9f160004b7194c6c742b33
+        apps/web/src/client/app/admin/support/AdminSupportWorkspace.test.tsx: 09d4ee73d35caefc225be704cb7f7df1c94cb872e950577237536d7d09a063dd
+        apps/web/src/client/app/admin/support/AdminSupportWorkspace.tsx: 2e608a8c0fbb98dc94ad22b84f96679cd62a9bd6dd44ea42102b07fba3ad31f0
+        apps/web/src/client/app/crm-api.ts: f559bfdc2ab67e0306f7161143477651c0b96a3d570ea0b11c89413fa5634615
+        apps/web/src/client/app/crm-entry.tsx: 8b8c5f8136c3e19d5b2b3a6ccbb56183bd47aa90ce79313785a1d18b8365b6a0
+        apps/web/src/client/app/live-entry.tsx: fc40ff46dd3620cfd37aacd0969a5cc10a9e3852aa764757d45e921cb1cd92cc
+        apps/web/src/client/app/parent/billing/ParentBillingWorkspace.test.tsx: d94e7ea395da5573218b98cd994882604d71a4c632da20eb04c7fc4dcdf0ebd7
+        apps/web/src/client/app/parent/billing/ParentBillingWorkspace.tsx: 4608933f21f76988be81fe688fcf69d745ea6110dc92c47705f49592ed1f01a0
+        apps/web/src/client/app/parent/privacy/PrivacyDataRightsPanel.test.tsx: b87a5b52a3da37041473b334d14bd5670e97118e850def2783d7bf8442c6d607
+        apps/web/src/client/app/parent/privacy/PrivacyDataRightsPanel.tsx: c95e34d50b36d1a37b86c5c251c3f06443f90d48fedf34c190b3eb675caf3c47
+        apps/web/src/client/app/portal-api.ts: 48435a2df3ccddb84474c62517b710a48782d16f39080ddba6ec52afba05d763
+        apps/web/src/client/app/portal-entry.tsx: 69598bc3e7780262c0d89fb6173b6a4437bfee3565293f5833ae2af962340982
+        apps/web/src/client/app/router/canonical-route-views.test.ts: null
+        apps/web/src/client/app/router/canonical-route-views.ts: null
+        apps/web/src/client/app/router/registry.ts: 4cebfef5087e513685c5305d30c848deb69089ea2214839a0bc81136e756ba4f
+        apps/web/src/client/app/student/learning/StudentLearningOverview.test.tsx: 6f70030ec23d62a779eff90cf53935f67b8f93ceda1e1295de7d8603ebbd8dd0
+        apps/web/src/client/app/student/learning/StudentLearningOverview.tsx: 89e39c781d1c55a7eaf0fd64465f7aa07f814c994fd927f3a54ba67bb97c5681
+        apps/web/src/client/app/student/library/StudentLibraryWorkspace.test.tsx: 61907b6913967787783689786b0452cb62eaac63e11b18126d2dc5bb9a9fec81
+        apps/web/src/client/app/student/library/StudentLibraryWorkspace.tsx: d109b62cf78f35bd5fbabf84cc44073d5e2eb968cba06701d34d06e2f780c57a
+        apps/web/src/client/app/student/notifications/StudentNotificationCenter.test.tsx: 5eb34d0d68b4dc46ef94a7d99f083b29ca2ba9eb684018e94bfee4974f5ebd14
+        apps/web/src/client/app/student/notifications/StudentNotificationCenter.tsx: cd79e280aa6c8149e5fc8fb0f3cba5a8e650cdc9336d28c969071800b58185a3
+        apps/web/src/client/app/support/SupportFeature.tsx: 0ae78928272f18b8e77f2c06cfa94351382d025fc1a146b86610dd33575a74d5
+        apps/web/src/client/public/public-entry.ts: 167bbebf939e97771cb45991ccee6afeb92861b7477bd29cd7558904921b6410
+        apps/web/src/server/app.ts: 632933ae6a2bf91dbb32d818fb83cdf55c9218d7fd9439f9cf798517299359a8
+        apps/web/src/server/features/accounts/v21-account-context-service.test.ts: 7adf407190c6d7c2ab0de6c76b2d66a5e58703297b3d40ee481287a8f51c350d
+        apps/web/src/server/features/accounts/v21-account-context-service.ts: 3c39208c962c6a6df4885dc6e61998467f8372c3bf41c34a723afa83d80610a2
+        apps/web/src/server/features/notifications/student/service.test.ts: da456a22ee28f9a841dd4727b841a6b0871b4a5949b36ba8a2dd99ddc8cea62f
+        apps/web/src/server/features/notifications/student/service.ts: dee31945fcff6352d58c413df32403cb1f4ee228b17897f2d1955e52042c7dfa
+        apps/web/src/server/features/portals/parent-summary/service.test.ts: e099008a550e32dfbbdbab28d6b1f81ab8296ee48a6ff3514f10cf3c30b1a67a
+        apps/web/src/server/features/portals/parent-summary/service.ts: 521d08338826d00e567dc8820342a70459980ccf327a4c5529fd8167e85f27c6
+        apps/web/src/server/features/portals/student/service.test.ts: 49fad2325132623827e18145816c39a60d0eb033e24c5c8fc75410b01240d0af
+        apps/web/src/server/features/portals/student/service.ts: 73ec29f166cf08cfc709cab09ed898e022a72acd7e68a243bd7d1ddbf3f16792
+        apps/web/src/server/features/privacy/privacy-service.test.ts: a2ee335728a7f87e125dbb1c7db0e703f12674bbd605d970d14691a77d7be870
+        apps/web/src/server/features/privacy/privacy-service.ts: eb99cfdb70973ead28ce1f05fb6c4e58affa26e5fb704bf03f6a62fbfbb0ec2d
+        apps/web/src/server/features/support/v21-service.ts: 866027bab69c4eaf4a2c5ebfe8940aaf4e49f857030707957fe80a848862ca56
+        apps/web/src/server/features/v21-canonical-routes/router.test.ts: null
+        apps/web/src/server/features/v21-canonical-routes/router.ts: null
+        ops/day-one/visible-action-registry.json: b989aa9ddd09e68cfbf0a0dd1630d5b88dcacafcfd3f70a44ea595c15d48f817
         ops/v2.1-execution/runtime/I36/HANDOFF.md: acd1ccb42c8b89b8dcc582c246da20d477b31b3a451d69b087e4cb995bea06ba
         ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md: 9b60436257adc52a6dd6c742c0c77dd2e6996df2c31f2dddaf5bee7e0bb16bbd
         ops/v2.1-execution/runtime/I36/TASK-STATE.yaml: 4dd6f73054f689d90fd066ef6a2ac35562635942c3305716cc47edfc73a5ce67
-        scripts/operations/v21/candidate/build-candidate.test.ts: null
-        scripts/operations/v21/candidate/build-candidate.ts: null
-        tests/unit/day-one/visible-action-registry.test.ts: 674b3745dbe8376211f760f23025dedb51eebb0432cfa41e59fb1d649f5171e5
+        packages/brand-system/src/route-branding.ts: 7f26a13be566a860b4a03ce39a82fb86e3407fabe243c36cc4aadcbdcf48485e
+        packages/brand-system/src/v21.ts: 85b09ca02cea2b3a78bbc1698a1f311f850a6c47fec5116e16ad61d1da87bfaf
+        scripts/build-public-pages.ts: 41f35018a63f4aa6cae31128c033520806e7622fec9fe08e987309819805b54d
+        scripts/operations/v21/candidate/build-candidate.test.ts: 3f879f774b4fbc3b8664d67f4b3cb72bc4288109733a6f304602ed05683ba800
+        scripts/operations/v21/candidate/build-candidate.ts: 92a10da31ee2ef254e9fdee4db52c6c6e3b44d7dc86d93a0c518e64384e45488
+        tests/e2e/account-lifecycle-pages.spec.ts: c7f351cf323918ee24e999235727f2051ef97df1f5c4192277d9e6e7a25465bc
+        tests/e2e/admin-information-architecture.spec.ts: ae4fb4093a7fa50a37fc9afb7994235ebadcafd62adf57e35cd264b1bd819840
+        tests/e2e/landing-signup.spec.ts: 0adea1c28b72fe234df8311b731f2da6352d486b8eacaee972c1e479c5523bde
+        tests/e2e/support.spec.ts: 459795e47d105bf1715510064e31fb7ebc3618eb0ad4cad2cd97aa7fd8df81ab
+        tests/integration/accounts/account-lifecycle-web.test.ts: 6f73509b788850f099e000d1090e3714db2a89fd8d4406f0eb27b0559b8ec8ac
+        tests/integration/admin-information-architecture-ui-contract.test.ts: b711aab04d794e180770b90087609152e29a1847fb51b91633fd143291c3bfc2
+        tests/integration/portals/portal-mount.test.ts: 553419bbaa69232533d0774ed7c1ec9d8e9c523d7f99b82fdf56da310968bccf
+        tests/unit/admin-information-architecture.test.ts: e524c5dac40ec73f675231b9314a523be3bcc53dee34402d3edafb49e1707056
+        tests/unit/day-one/visible-action-registry.test.ts: 31c2e302d9083fd8644d9acdc5a9f74dc91294d178e28c18c7f23bcb8211170b
       paths:
+        - apps/web/src/client/app/admin-ia.ts
+        - apps/web/src/client/app/admin/support/AdminSupportWorkspace.test.tsx
+        - apps/web/src/client/app/admin/support/AdminSupportWorkspace.tsx
+        - apps/web/src/client/app/crm-api.ts
+        - apps/web/src/client/app/crm-entry.tsx
+        - apps/web/src/client/app/live-entry.tsx
+        - apps/web/src/client/app/parent/billing/ParentBillingWorkspace.test.tsx
+        - apps/web/src/client/app/parent/billing/ParentBillingWorkspace.tsx
+        - apps/web/src/client/app/parent/privacy/PrivacyDataRightsPanel.test.tsx
+        - apps/web/src/client/app/parent/privacy/PrivacyDataRightsPanel.tsx
+        - apps/web/src/client/app/portal-api.ts
+        - apps/web/src/client/app/portal-entry.tsx
+        - apps/web/src/client/app/router/canonical-route-views.test.ts
+        - apps/web/src/client/app/router/canonical-route-views.ts
+        - apps/web/src/client/app/router/registry.ts
+        - apps/web/src/client/app/student/learning/StudentLearningOverview.test.tsx
+        - apps/web/src/client/app/student/learning/StudentLearningOverview.tsx
+        - apps/web/src/client/app/student/library/StudentLibraryWorkspace.test.tsx
+        - apps/web/src/client/app/student/library/StudentLibraryWorkspace.tsx
+        - apps/web/src/client/app/student/notifications/StudentNotificationCenter.test.tsx
+        - apps/web/src/client/app/student/notifications/StudentNotificationCenter.tsx
+        - apps/web/src/client/app/support/SupportFeature.tsx
+        - apps/web/src/client/public/public-entry.ts
+        - apps/web/src/server/app.ts
+        - apps/web/src/server/features/accounts/v21-account-context-service.test.ts
+        - apps/web/src/server/features/accounts/v21-account-context-service.ts
+        - apps/web/src/server/features/notifications/student/service.test.ts
+        - apps/web/src/server/features/notifications/student/service.ts
+        - apps/web/src/server/features/portals/parent-summary/service.test.ts
+        - apps/web/src/server/features/portals/parent-summary/service.ts
+        - apps/web/src/server/features/portals/student/service.test.ts
+        - apps/web/src/server/features/portals/student/service.ts
+        - apps/web/src/server/features/privacy/privacy-service.test.ts
+        - apps/web/src/server/features/privacy/privacy-service.ts
+        - apps/web/src/server/features/support/v21-service.ts
+        - apps/web/src/server/features/v21-canonical-routes/router.test.ts
+        - apps/web/src/server/features/v21-canonical-routes/router.ts
         - ops/day-one/visible-action-registry.json
-        - ops/v2.1-execution/merge/candidates/<canonical-candidate-digest>/CANDIDATE-DERIVATION.json
-        - ops/v2.1-execution/merge/candidates/<canonical-candidate-digest>/CANDIDATE.yaml
         - ops/v2.1-execution/runtime/I36/HANDOFF.md
         - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
         - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
+        - packages/brand-system/src/route-branding.ts
+        - packages/brand-system/src/v21.ts
+        - scripts/build-public-pages.ts
         - scripts/operations/v21/candidate/build-candidate.test.ts
         - scripts/operations/v21/candidate/build-candidate.ts
+        - tests/e2e/account-lifecycle-pages.spec.ts
+        - tests/e2e/admin-information-architecture.spec.ts
+        - tests/e2e/landing-signup.spec.ts
+        - tests/e2e/support.spec.ts
+        - tests/integration/accounts/account-lifecycle-web.test.ts
+        - tests/integration/admin-information-architecture-ui-contract.test.ts
+        - tests/integration/portals/portal-mount.test.ts
+        - tests/unit/admin-information-architecture.test.ts
         - tests/unit/day-one/visible-action-registry.test.ts
     writer_assignments:
-      RELEASE_INTEGRATOR:
-        path_count: 9
-        path_inventory_digest: 48a1960a30eaea2a799b3cf4f4fc59a2d739131ee139da6bb4a0dfcc9530a31f
+      CLIENT_COMPOSER:
+        path_count: 30
+        path_inventory_digest: 0fec0db2e4650223353e50950c120b603b672655dcb161198b59e51cd308694f
         paths:
+          - apps/web/src/client/app/admin-ia.ts
+          - apps/web/src/client/app/admin/support/AdminSupportWorkspace.test.tsx
+          - apps/web/src/client/app/admin/support/AdminSupportWorkspace.tsx
+          - apps/web/src/client/app/crm-api.ts
+          - apps/web/src/client/app/crm-entry.tsx
+          - apps/web/src/client/app/live-entry.tsx
+          - apps/web/src/client/app/parent/billing/ParentBillingWorkspace.test.tsx
+          - apps/web/src/client/app/parent/billing/ParentBillingWorkspace.tsx
+          - apps/web/src/client/app/parent/privacy/PrivacyDataRightsPanel.test.tsx
+          - apps/web/src/client/app/parent/privacy/PrivacyDataRightsPanel.tsx
+          - apps/web/src/client/app/portal-api.ts
+          - apps/web/src/client/app/portal-entry.tsx
+          - apps/web/src/client/app/router/canonical-route-views.test.ts
+          - apps/web/src/client/app/router/canonical-route-views.ts
+          - apps/web/src/client/app/router/registry.ts
+          - apps/web/src/client/app/student/learning/StudentLearningOverview.test.tsx
+          - apps/web/src/client/app/student/learning/StudentLearningOverview.tsx
+          - apps/web/src/client/app/student/library/StudentLibraryWorkspace.test.tsx
+          - apps/web/src/client/app/student/library/StudentLibraryWorkspace.tsx
+          - apps/web/src/client/app/student/notifications/StudentNotificationCenter.test.tsx
+          - apps/web/src/client/app/student/notifications/StudentNotificationCenter.tsx
+          - apps/web/src/client/app/support/SupportFeature.tsx
+          - apps/web/src/client/public/public-entry.ts
+          - packages/brand-system/src/route-branding.ts
+          - packages/brand-system/src/v21.ts
+          - tests/e2e/account-lifecycle-pages.spec.ts
+          - tests/e2e/admin-information-architecture.spec.ts
+          - tests/e2e/landing-signup.spec.ts
+          - tests/e2e/support.spec.ts
+          - tests/unit/admin-information-architecture.test.ts
+      SERVER_COMPOSER:
+        path_count: 18
+        path_inventory_digest: cdea8d1f6d3403267d98005f8a867cecb1bf176f76c812ae05b1893811390bf7
+        paths:
+          - apps/web/src/server/app.ts
+          - apps/web/src/server/features/accounts/v21-account-context-service.test.ts
+          - apps/web/src/server/features/accounts/v21-account-context-service.ts
+          - apps/web/src/server/features/notifications/student/service.test.ts
+          - apps/web/src/server/features/notifications/student/service.ts
+          - apps/web/src/server/features/portals/parent-summary/service.test.ts
+          - apps/web/src/server/features/portals/parent-summary/service.ts
+          - apps/web/src/server/features/portals/student/service.test.ts
+          - apps/web/src/server/features/portals/student/service.ts
+          - apps/web/src/server/features/privacy/privacy-service.test.ts
+          - apps/web/src/server/features/privacy/privacy-service.ts
+          - apps/web/src/server/features/support/v21-service.ts
+          - apps/web/src/server/features/v21-canonical-routes/router.test.ts
+          - apps/web/src/server/features/v21-canonical-routes/router.ts
+          - scripts/build-public-pages.ts
+          - tests/integration/accounts/account-lifecycle-web.test.ts
+          - tests/integration/admin-information-architecture-ui-contract.test.ts
+          - tests/integration/portals/portal-mount.test.ts
+      RELEASE_INTEGRATOR:
+        path_count: 55
+        path_inventory_digest: f84c296b3ef155d14612a2cb9920bd59d68bf21167153795e605279633148eaa
+        paths:
+          - apps/web/src/client/app/admin-ia.ts
+          - apps/web/src/client/app/admin/support/AdminSupportWorkspace.test.tsx
+          - apps/web/src/client/app/admin/support/AdminSupportWorkspace.tsx
+          - apps/web/src/client/app/crm-api.ts
+          - apps/web/src/client/app/crm-entry.tsx
+          - apps/web/src/client/app/live-entry.tsx
+          - apps/web/src/client/app/parent/billing/ParentBillingWorkspace.test.tsx
+          - apps/web/src/client/app/parent/billing/ParentBillingWorkspace.tsx
+          - apps/web/src/client/app/parent/privacy/PrivacyDataRightsPanel.test.tsx
+          - apps/web/src/client/app/parent/privacy/PrivacyDataRightsPanel.tsx
+          - apps/web/src/client/app/portal-api.ts
+          - apps/web/src/client/app/portal-entry.tsx
+          - apps/web/src/client/app/router/canonical-route-views.test.ts
+          - apps/web/src/client/app/router/canonical-route-views.ts
+          - apps/web/src/client/app/router/registry.ts
+          - apps/web/src/client/app/student/learning/StudentLearningOverview.test.tsx
+          - apps/web/src/client/app/student/learning/StudentLearningOverview.tsx
+          - apps/web/src/client/app/student/library/StudentLibraryWorkspace.test.tsx
+          - apps/web/src/client/app/student/library/StudentLibraryWorkspace.tsx
+          - apps/web/src/client/app/student/notifications/StudentNotificationCenter.test.tsx
+          - apps/web/src/client/app/student/notifications/StudentNotificationCenter.tsx
+          - apps/web/src/client/app/support/SupportFeature.tsx
+          - apps/web/src/client/public/public-entry.ts
+          - apps/web/src/server/app.ts
+          - apps/web/src/server/features/accounts/v21-account-context-service.test.ts
+          - apps/web/src/server/features/accounts/v21-account-context-service.ts
+          - apps/web/src/server/features/notifications/student/service.test.ts
+          - apps/web/src/server/features/notifications/student/service.ts
+          - apps/web/src/server/features/portals/parent-summary/service.test.ts
+          - apps/web/src/server/features/portals/parent-summary/service.ts
+          - apps/web/src/server/features/portals/student/service.test.ts
+          - apps/web/src/server/features/portals/student/service.ts
+          - apps/web/src/server/features/privacy/privacy-service.test.ts
+          - apps/web/src/server/features/privacy/privacy-service.ts
+          - apps/web/src/server/features/support/v21-service.ts
+          - apps/web/src/server/features/v21-canonical-routes/router.test.ts
+          - apps/web/src/server/features/v21-canonical-routes/router.ts
           - ops/day-one/visible-action-registry.json
-          - ops/v2.1-execution/merge/candidates/<canonical-candidate-digest>/CANDIDATE-DERIVATION.json
-          - ops/v2.1-execution/merge/candidates/<canonical-candidate-digest>/CANDIDATE.yaml
           - ops/v2.1-execution/runtime/I36/HANDOFF.md
           - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
           - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
+          - packages/brand-system/src/route-branding.ts
+          - packages/brand-system/src/v21.ts
+          - scripts/build-public-pages.ts
           - scripts/operations/v21/candidate/build-candidate.test.ts
           - scripts/operations/v21/candidate/build-candidate.ts
+          - tests/e2e/account-lifecycle-pages.spec.ts
+          - tests/e2e/admin-information-architecture.spec.ts
+          - tests/e2e/landing-signup.spec.ts
+          - tests/e2e/support.spec.ts
+          - tests/integration/accounts/account-lifecycle-web.test.ts
+          - tests/integration/admin-information-architecture-ui-contract.test.ts
+          - tests/integration/portals/portal-mount.test.ts
+          - tests/unit/admin-information-architecture.test.ts
           - tests/unit/day-one/visible-action-registry.test.ts
     directives:
       - >-
-        Regenerate the visible-action registry deterministically from locked v2.1 actor, route, screen, action, handler,
-        and acceptance sources. Remove every retired, demo, preview, test-only, unavailable_by_design, Tisha B'Av, Class
-        Helper, Vimeo demo, Portal Test Lab, owner, crm_agent, and viewer entry. Do not run or modify the historical OT81 writer.
+        Converge all 93 locked RT-PUB, RT-AUTH, RT-ADM, RT-PAR, and RT-STU routes into one truthful canonical route
+        registry. Reuse existing workspaces by explicit compatibility routing where behavior already exists, compose
+        isolated v2.1 services and screens where present, and implement only the minimum missing route-specific
+        UI/server seams inside this ceiling. Never label a default fallback or absent screen ready.
       - >-
-        Add one deterministic candidate builder and focused test. Record exact inclusion sets, canonicalization, tool versions,
-        commands, per-input hashes, artifact and registry derivations, and sanitized native-PostgreSQL results in
-        CANDIDATE-DERIVATION.json. Reject unresolved placeholders, floats, nondeterminism, missing inputs, and extra inputs.
+        Replace legacy Admin route ownership with canonical paths while preserving only safe compatibility redirects;
+        make Parent and Student canonical child pathnames resolve the intended view instead of defaulting. Bind Family
+        signup to /api/v1/signup/family, add the required public/auth route states, and retain wrong-role, scope,
+        inactivity, CSRF, and safe-return protections.
       - >-
-        Use a clean isolated worktree with Node 24 and npm ci. Prove all 35 accepted implementation heads remain ancestors,
-        then pass npm run verify, highlevel:registry:check, highlevel:workflow-control:projection-check, candidate-builder tests,
-        and visible-action-registry tests on the exact pre-manifest source SHA. Cross-worktree node_modules junctions are invalid.
+        Correct the candidate builder so production inputs are derived from raw Git blobs at the exact source SHA and
+        deterministic deployable archive or artifact provenance, not caller-controlled expected_paths or fictional dist
+        files. A simultaneous omission from expected_paths and files must fail. Hash registry sources from Git bytes so
+        clean Windows and LF checkouts agree.
       - >-
-        Use only the existing local disposable embedded-postgres 18.4 helper. Apply and replay all 88 migrations, verify an
-        exact 88-entry immutable ledger with pending 0 and issues 0, and add focused migration 2257 accept/reject probes for
-        NULL operation arrays, digest shape, Stripe policy, stale/version-jump updates, DELETE denial, rollback, and cleanup.
+        Regenerate the visible-action registry from exact canonical route IDs plus authoritative visible action
+        descriptors. Enforce exact missing, extra, retired, route, role, handler, readiness, and source-hash parity;
+        remove the brittle historical fixed-count/prune behavior and do not run or modify the OT81 writer.
       - >-
-        Write a source checkpoint first, then write only CANDIDATE-DERIVATION.json, CANDIDATE.yaml, and the I36 runtime triplet
-        in the metadata freeze checkpoint. The manifest repository_source_sha must be the exact source checkpoint. Independently
-        recompute the canonical candidate digest, push normally, create codex/v21-evidence-<candidate-short-sha> from the
-        frozen checkpoint, release the lease, prove local/tracking/live equality, and stop for C00 validation.
+        Run focused route, auth, portal, support, candidate-builder, and registry tests first, then proportional
+        typecheck, lint, format, public/client builds, diff hygiene, secret scan, and one clean npm-ci checkout. Commit
+        and push one corrected source checkpoint, update only the I36 runtime triplet at terminal, release every lease,
+        and stop for independent C00 review before native PostgreSQL or candidate metadata.
       - >-
-        No provider inspection or mutation, persistent database, credential readback, deployment, DNS, send, charge, cleanup,
-        customer effect, legal broad-release gate, or other external effect is authorized. Effects must remain 0/0/0.
+        No provider inspection or mutation, persistent database, native PostgreSQL proof, candidate freeze/manifest,
+        deployment, DNS, send, charge, cleanup, customer effect, legal broad-release gate, or external effect is
+        authorized. Effects remain 0/0/0.
     writer_slot_leases:
-      - slot: RELEASE_INTEGRATOR
-        lease_id: 423af25b-be06-47ff-95c5-5ae8b364129d
+      - slot: CLIENT_COMPOSER
+        lease_id: 74272335-1c16-4e4f-bdcd-63ab10909511
         holder_task_id: I36
-        holder_claim_id: 09f62e83-0602-4f91-a00d-c95e37d218bb
-        holder_writer_id: codex-i36-candidate-freeze-09f62e83
-        state_based_on_control_head_sha: 702cce4dbe6cb6160c10144f212dc6627676f1a8
-        lease_issued_at: '2026-08-02T04:10:47Z'
-        lease_expires_at: '2026-08-02T07:10:47Z'
-        phase_scope: exact_candidate_preparation_and_freeze_nine_path_ceiling
+        holder_claim_id: a3ae432b-8abd-45b7-b84d-7571a54a1bb8
+        holder_writer_id: codex-i36-route-convergence-a3ae432b
+        state_based_on_control_head_sha: 61d52aa85f3f040187c21081c0e17a83544f9443
+        lease_issued_at: '2026-08-02T05:17:02Z'
+        lease_expires_at: '2026-08-02T11:17:02Z'
+        phase_scope: canonical_route_and_candidate_source_correction
+      - slot: SERVER_COMPOSER
+        lease_id: 806d0bf5-3317-4855-ae09-3d2e4c21cd9e
+        holder_task_id: I36
+        holder_claim_id: a3ae432b-8abd-45b7-b84d-7571a54a1bb8
+        holder_writer_id: codex-i36-route-convergence-a3ae432b
+        state_based_on_control_head_sha: 61d52aa85f3f040187c21081c0e17a83544f9443
+        lease_issued_at: '2026-08-02T05:17:02Z'
+        lease_expires_at: '2026-08-02T11:17:02Z'
+        phase_scope: canonical_route_and_candidate_source_correction
+      - slot: RELEASE_INTEGRATOR
+        lease_id: 8a34d221-1333-4ed3-a4af-3ad930ef3a3b
+        holder_task_id: I36
+        holder_claim_id: a3ae432b-8abd-45b7-b84d-7571a54a1bb8
+        holder_writer_id: codex-i36-route-convergence-a3ae432b
+        state_based_on_control_head_sha: 61d52aa85f3f040187c21081c0e17a83544f9443
+        lease_issued_at: '2026-08-02T05:17:02Z'
+        lease_expires_at: '2026-08-02T11:17:02Z'
+        phase_scope: canonical_route_and_candidate_source_correction
     effect_lock_leases: []
-    claim_id: 09f62e83-0602-4f91-a00d-c95e37d218bb
-    lease_issued_at: '2026-08-02T04:10:47Z'
-    lease_expires_at: '2026-08-02T07:10:47Z'
+    claim_id: a3ae432b-8abd-45b7-b84d-7571a54a1bb8
+    lease_issued_at: '2026-08-02T05:17:02Z'
+    lease_expires_at: '2026-08-02T11:17:02Z'
     heartbeat_interval_minutes: 30
     prompt_path: ops/v2.1-execution/prompts/I36-START-OR-RESUME.md
     model: GPT-5.6-SOL
     reasoning: XHIGH
 entry_payload_digests:
-  I36: cd72e0a97a6e2ab2d5f952c4a6df85eb74c0de9f399f5b6631fbc8a84cab3a97
+  I36: 85ff11c44fdcd4426a821250ae554e8f7a251edd7fd6e0d9ac610df9d58bafc8
 digest_algorithm: >-
-  For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively, separators ',' and ':',
-  ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives in this sibling map, never inside the entry.
+  For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively, separators ',' and
+  ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives in this sibling map,
+  never inside the entry.

@@ -16,13 +16,13 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: 702cce4dbe6cb6160c10144f212dc6627676f1a8
+controller_authorization_sha: 61d52aa85f3f040187c21081c0e17a83544f9443
 next_action: >-
-  From exact clean integration 68586182, regenerate the v2.1 visible-action registry, build and test one deterministic
-  candidate-identity generator, run the canonical merged verification in a clean locked dependency tree, prove all 88
-  migrations on disposable native PostgreSQL 18.4 including migration 2257 negative probes, then write the reproducible
-  candidate derivation and immutable manifest and create its evidence branch. No provider, persistent database, deployment,
-  DNS, send, charge, cleanup, or external effect is authorized in this phase.
+  From held source checkpoint 9082f301, complete one exact 55-path canonical-route, visible-registry, and candidate-builder
+  correction. Truthfully mount or explicitly alias all 93 locked routes, derive source and artifact identity from exact Git
+  bytes at the source SHA, run proportional and one clean-install verification, push one corrected source checkpoint, and
+  stop for independent C00 review. Native PostgreSQL, candidate metadata/freeze, providers, persistent databases, deployment,
+  DNS, sends, charges, cleanup, legal broad-release action, and every external effect remain prohibited.
 production_completion_lanes:
 - lane: A
   owner: F02
@@ -680,7 +680,7 @@ production_completion_lanes:
   scope: ancestry_preserving_P21_then_P22_source_only_plus_I36_runtime_triplet
   provider_effects: prohibited
 successor_dispatch:
-  state_based_on_control_head_sha: f66edb4d0728b90374e56da13dbd9853657d349c
+  state_based_on_control_head_sha: 61d52aa85f3f040187c21081c0e17a83544f9443
   authorized_start_integration_sha: 460ba42db534e669a63e0c6e2383a0f2e8d6ac97
   terminal_claims_reconciled_at: '2026-07-31T05:06:00Z'
   P22_atomic_and_P10_terminal_reconciled_at: '2026-07-31T05:50:50Z'
@@ -738,8 +738,10 @@ successor_dispatch:
   P18_registration_002_two_P2_correction_dispatched_at: '2026-08-02T03:17:23Z'
   P18_registration_002_correction_accepted_at: '2026-08-02T04:10:47Z'
   I36_candidate_preparation_and_freeze_dispatched_at: '2026-08-02T04:10:47Z'
-  lease_issued_at: '2026-08-02T04:10:47Z'
-  lease_expires_at: '2026-08-02T07:10:47Z'
+  I36_candidate_source_checkpoint_held_at: '2026-08-02T05:17:02Z'
+  I36_canonical_route_and_candidate_source_correction_dispatched_at: '2026-08-02T05:17:02Z'
+  lease_issued_at: '2026-08-02T05:17:02Z'
+  lease_expires_at: '2026-08-02T11:17:02Z'
   ready_queue_published: true
   F02:
     status: integrated_and_reconciled
@@ -931,10 +933,10 @@ successor_dispatch:
     external_effects: 0/0/0
   I36:
     status: ready
-    phase: candidate_preparation_and_freeze
+    phase: canonical_route_and_candidate_source_correction
     branch: codex/v21-integration
-    expected_existing_head_sha: 685861828a68c679eeb2a310d17f283a00e3c505
-    remote_integration_head_sha: 685861828a68c679eeb2a310d17f283a00e3c505
+    expected_existing_head_sha: 9082f3015d6fe95cf374266b49a9e4db7ae69ead
+    remote_integration_head_sha: 9082f3015d6fe95cf374266b49a9e4db7ae69ead
     atomic_claim_parent_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
     atomic_claim_tree_sha: a3f5578ff5bc108f16480444e7adc66112337268
     atomic_claim_state_handoff_digest: bc8f2247c7fc64a63b4445d75cfeee4047de6a24d3671f14d3a537c8d90f986e
@@ -954,15 +956,15 @@ successor_dispatch:
     Batch_A_correction_claim_id: be576814-96ef-48f2-88b5-2d3cc9b37cbb
     Batch_A_correction_ready_entry_payload_digest: 7010a65000ffcccab55809c6e95961f6de0d6e4e95409020f9d610bdbf384861
     Batch_A_correction_lease_released_at: '2026-07-31T20:45:09Z'
-    claim_id: 09f62e83-0602-4f91-a00d-c95e37d218bb
-    writer_id: codex-i36-candidate-freeze-09f62e83
+    claim_id: a3ae432b-8abd-45b7-b84d-7571a54a1bb8
+    writer_id: codex-i36-route-convergence-a3ae432b
     EMBEDDED_CLASSROOM_lease_id: null
-    SERVER_COMPOSER_lease_id: null
-    CLIENT_COMPOSER_lease_id: null
+    SERVER_COMPOSER_lease_id: 806d0bf5-3317-4855-ae09-3d2e4c21cd9e
+    CLIENT_COMPOSER_lease_id: 74272335-1c16-4e4f-bdcd-63ab10909511
     BARREL_REGISTRAR_lease_id: null
-    RELEASE_INTEGRATOR_lease_id: 423af25b-be06-47ff-95c5-5ae8b364129d
-    writer_lease_expires_at: '2026-08-02T07:10:47Z'
-    ready_entry_payload_digest: cd72e0a97a6e2ab2d5f952c4a6df85eb74c0de9f399f5b6631fbc8a84cab3a97
+    RELEASE_INTEGRATOR_lease_id: 8a34d221-1333-4ed3-a4af-3ad930ef3a3b
+    writer_lease_expires_at: '2026-08-02T11:17:02Z'
+    ready_entry_payload_digest: 85ff11c44fdcd4426a821250ae554e8f7a251edd7fd6e0d9ac610df9d58bafc8
     P21_current_metadata_terminal_head_sha: 48182afe34d5b369b6fbbc05b6d6f788c34e5429
     P21_current_metadata_independent_review: passed_zero_P1_zero_P2_zero_P3
     P18_successor_request_materialization_release_path_count: 4
@@ -993,6 +995,18 @@ successor_dispatch:
     candidate_preparation_path_count: 9
     candidate_preparation_path_inventory_digest: 48a1960a30eaea2a799b3cf4f4fc59a2d739131ee139da6bb4a0dfcc9530a31f
     candidate_preparation_preimage_manifest_digest: 06794a14c52946e4b7160be3bd59a44a97a12162ea98c6f92ac2b53d4bd3928a
+    held_candidate_source_checkpoint_sha: 9082f3015d6fe95cf374266b49a9e4db7ae69ead
+    held_candidate_source_parent_sha: 685861828a68c679eeb2a310d17f283a00e3c505
+    held_candidate_source_tree_sha: cd952a9eced0747b5ef377a5d2ebaa529988e258
+    held_candidate_source_independent_review: held_one_P1_two_P2
+    canonical_route_inventory_count: 93
+    truthfully_registered_route_count: 21
+    missing_route_specific_handler_count: 72
+    correction_path_count: 55
+    correction_path_inventory_digest: f84c296b3ef155d14612a2cb9920bd59d68bf21167153795e605279633148eaa
+    correction_preimage_manifest_digest: 42c615dec4d3d4159613c41ada0ad4f102edf238b96ed7db669e360154835570
+    correction_effect_locks: []
+    correction_external_effects: 0/0/0
     P21_code_correction_terminal_head_sha: b98698740936df0b1817be616039da2101a6cb28
     P21_code_correction_independent_review: held_zero_P1_one_P2_zero_P3_metadata_only
     P21_current_metadata_correction_product_path_count: 0

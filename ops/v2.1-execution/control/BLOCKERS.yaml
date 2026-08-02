@@ -352,18 +352,22 @@ blockers:
   - V37
   - V40
   safe_work_completed: >-
-    The locked supersession table permits reuse only of the historical registry schema and test references and requires the
-    v2.1 route/action inventory and readiness states to be regenerated. Exact current bytes are unchanged from the reviewed
-    pre-v2.1 baseline, bind obsolete source SHAs, and still expose retired Tisha B'Av, Class Helper, Vimeo demo, Portal Test
-    Lab, preview/test surfaces, retired roles, and unavailable_by_design certification states. C00 bounded regeneration and
-    parity validation into the same nine-path I36 candidate-preparation phase; no separate audit or effect is required.
+    I36 pushed source checkpoint 9082f301 with effects 0/0/0, but independent review held it on one P1 and two P2 findings.
+    The regenerated registry pruned 24 historical entries yet added zero v2.1 IDs: locked source 05 defines 93 canonical
+    RT-PUB/RT-AUTH/RT-ADM/RT-PAR/RT-STU routes, while only 21 currently have truthful route-specific handlers and 72 remain
+    unmounted or default-fallback paths. The registry also hashes checkout newline bytes, so clean Windows and LF checkouts
+    disagree. The candidate builder trusts caller-controlled expected_paths and fictional dist server/worker outputs, so a
+    self-consistent omission passes. C00 has held freeze and dispatched one exact 55-path route/composition/builder correction
+    from 9082f301 under READY 85ff11c4; no native PostgreSQL, metadata freeze, provider, deploy, or external effect occurred.
   required_authority_or_input:
-  - Regenerate ops/day-one/visible-action-registry.json deterministically from the locked v2.1 surface and exact source SHA
-  - Update its focused unit test and make the candidate builder fail on retired, missing, extra, or nondeterministic entries
+  - Converge all 93 canonical routes truthfully, using explicit aliases only where the intended behavior exists
+  - Derive registry source hashes and candidate inputs from exact Git blobs at the exact source SHA
+  - Build deterministic deployable archive or artifact provenance without caller-controlled expected paths or fictional dist files
   protection: >-
-    Do not run or modify the historical OT81 release-evidence writer, reintroduce retired/demo/preview/test surfaces or roles,
-    or claim final PASSED acceptance before candidate-bound verification.
-  next_check: Close on the independently verified candidate-preparation source checkpoint.
+    Do not run or modify the historical OT81 release-evidence writer, label a default fallback ready, invent product behavior,
+    reintroduce retired/demo/preview/test surfaces or roles, or continue native PostgreSQL/freeze/provider work before one
+    independently accepted corrected source checkpoint.
+  next_check: Re-review the exact 55-path correction terminal; close only after zero P1/P2 and exact 93-route semantic parity.
 - blocker_id: P21-CANONICAL-CONTENT-STATE-WRITER
   status: open
   scope: controlled_launch_candidate

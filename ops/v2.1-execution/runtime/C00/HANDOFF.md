@@ -1,4 +1,23 @@
-# Candidate preparation and immutable freeze — current handoff
+# Canonical route and candidate-source correction — current handoff
+
+Candidate-source checkpoint `9082f3015d6fe95cf374266b49a9e4db7ae69ead` is clean and effect-free but is held by
+independent review on one P1 and two P2 findings. The visible-action registry contains no newly generated v2.1 IDs and
+covers only 21 of 93 locked canonical routes truthfully; 72 canonical paths are unmounted or resolve through a misleading
+default fallback. Its source hashes depend on checkout newlines. The candidate builder also accepts caller-controlled
+input omissions and names server/worker `dist` artifacts that the current build does not produce.
+
+C00 has dispatched one lean 55-path correction from exact `9082f301` under READY
+`85ff11c44fdcd4426a821250ae554e8f7a251edd7fd6e0d9ac610df9d58bafc8`, I36 claim
+`a3ae432b-8abd-45b7-b84d-7571a54a1bb8`, and CLIENT/SERVER/RELEASE leases through `2026-08-02T11:17:02Z`.
+The correction must mount or explicitly alias every locked route only to truthful existing behavior, add the minimum
+missing composition seams, regenerate exact route/action parity from Git blobs, and derive deterministic deployable
+archive or artifact provenance from the exact source SHA. It must push one corrected source checkpoint and stop for
+independent review.
+
+Native PostgreSQL proof, candidate metadata/freeze, providers, persistent databases, deployments, DNS, sends, charges,
+cleanup, customer effects, and legal broad-release work remain held. Effects are `0/0/0`.
+
+## Superseded candidate preparation and immutable freeze handoff
 
 Integration `685861828a68c679eeb2a310d17f283a00e3c505` is independently accepted for the exact P18
 correction with zero P1, zero P2, and zero P3. Its focused packet is 90/90, the corrected service suite is 25/25,

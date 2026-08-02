@@ -3,7 +3,33 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
-# Latest I36 candidate preparation and immutable freeze
+# Latest I36 canonical route and candidate-source correction
+
+Resume from exact clean local/tracking/live integration
+`9082f3015d6fe95cf374266b49a9e4db7ae69ead` under the containing control descendant of
+`61d52aa85f3f040187c21081c0e17a83544f9443`. Reproduce canonical READY digest
+`85ff11c44fdcd4426a821250ae554e8f7a251edd7fd6e0d9ac610df9d58bafc8`, claim
+`a3ae432b-8abd-45b7-b84d-7571a54a1bb8`, writer `codex-i36-route-convergence-a3ae432b`, and the exact CLIENT_COMPOSER,
+SERVER_COMPOSER, and RELEASE_INTEGRATOR leases through `2026-08-02T11:17:02Z`.
+
+Change only the 55 READY-bound paths. Converge all 93 locked RT-PUB/RT-AUTH/RT-ADM/RT-PAR/RT-STU routes into truthful
+route-specific registrations. Use explicit compatibility routing only when it reaches the intended behavior; never label
+a broad default fallback ready. Bind Family signup to `/api/v1/signup/family`, compose the existing isolated Admin,
+Parent, Student, account-context, privacy, support, and notification surfaces, and implement only the minimum missing
+route seams inside the ceiling.
+
+Correct the registry test to hash exact Git blobs and enforce exact canonical IDs, paths, roles, handlers, readiness,
+missing/extra/retired entries, and source hashes. Correct the candidate builder to derive repository inputs from raw Git
+bytes at the exact source SHA and deterministic deployable archive or artifact provenance; reject simultaneous omissions
+and remove fictional `dist` assumptions.
+
+Run focused route/auth/portal/support/registry/builder tests, then proportional typecheck, lint, format, builds, diff and
+secret checks plus one clean `npm ci` verification. Push one corrected source checkpoint, update only the I36 runtime
+triplet at terminal, release all three leases, prove clean local/tracking/live equality, and stop for independent C00 review.
+Do not run native PostgreSQL, write candidate metadata, freeze, inspect or mutate providers, use a persistent database,
+deploy, change DNS, send, charge, clean up external assets, or perform any external effect. Effects remain `0/0/0`.
+
+# Superseded I36 candidate preparation and immutable freeze
 
 Resume only from exact clean local/tracking/live integration
 `685861828a68c679eeb2a310d17f283a00e3c505` under containing control with state basis
