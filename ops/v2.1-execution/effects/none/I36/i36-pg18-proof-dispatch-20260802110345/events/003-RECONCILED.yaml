@@ -1,0 +1,61 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: i36-pg18-proof-dispatch-20260802110345
+event_sequence: 3
+previous_event_digest: 8b7f72b7a362250437ac2a29b24cbcc70cef8a0613520b2384f291be432f1df1
+state: RECONCILED
+task_id: I36
+canonical_event_path: ops/v2.1-execution/effects/none/I36/i36-pg18-proof-dispatch-20260802110345/events/003-RECONCILED.yaml
+current_pointer_path: ops/v2.1-execution/effects/none/I36/i36-pg18-proof-dispatch-20260802110345/CURRENT.yaml
+candidate_digest: not_applicable_pre_freeze_exact_source_sha
+repository_source_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
+deployment_instance_digest: none
+authority_grant_digest: 0a6cd88677c20c3b361a8d0e47a1084cfab23ba4631154cebd15e3e0cc220329
+authority_status_index_digest: 9bce6c2f3720a5943daeb1ef16abdeaa6331b45152d7bb855b61deaaa3afa0af
+authority_status_entry_digest: bcb3eff9c1d05b6a77b2cfc84f90c54b706a5a83250d6048fbb6bbbd4b81f850
+latest_revocation_digest: none
+authority_checked_at: '2026-08-02T11:17:33Z'
+lock: production:deployment
+lock_lease_id: b4f86406-01a4-4380-80a4-66064bbf113c
+fencing_token: fence-0cc8b646-f1bf-422d-8c1c-1a670bc8cc2b
+provider_identity: github_actions:shloimie-beep/onetimev2:ops11-postgres-18-assurance.yml
+operation: workflow_dispatch_exact_SHA_disposable_PostgreSQL_18_4_proof
+budget_reservation:
+  count: 1
+  value: not_applicable
+provider_request_or_operation_id: github_actions_run_30745346334
+provider_readback_digest: bd1c4ffcdb51d9f290a12c91493bf00736a917cf4149006a0c734ce7401e200a
+provider_readback_state: completed_success
+artifact:
+  artifact_id: 8832696355
+  name: ops11-postgres-18-assurance-30745346334-1
+  archive_sha256: 09bac837e0ce4c1bfebb6d72d35a6292553f53a6dfbb90c76b1779d8e41fc586
+  size_bytes: 21787
+  expires_at: '2026-08-09T11:15:55Z'
+  sanitized_file_count: 6
+  downloaded_evidence_manifest_digest: efc0d131b3f03cf57ae61aec2e9acd45f07e7be20d2d4bfd73bdfd5a0a60a6d0
+  candidate_proof_sha256: 9e0bb8a71840fe6c346809296da636e8051f051bb4b1a3c6793b94f71bb9f91f
+  candidate_build_request_sha256: 9ab7fd3dca5f0533d6b95f576edb9986336e1049dc9c4c6fb7d20120bc3a1f5e
+  restore_clone_report_sha256: 75bc627d9c251ecb9e899f427eb3998e5bcd104bf65be5c8349bac087e6d467c
+  postgres_assurance_report_sha256: 988c4f857036da67bd360033bd17a30327f5fb31a6f4b7b7658dcf9f720ccf72
+proof:
+  postgres_engine_version: '18.4'
+  migrations_applied: 89
+  migrations_replayed: 89
+  migration_files: 89
+  ledger_rows: 89
+  pending: 0
+  issues: 0
+  guard_probes_passed: 8
+  guard_probes_failed: 0
+  restore_clone: passed
+  restored_migrations_idempotent: true
+  exact_disposable_database_absent_after_proof: true
+  workflow_secret_scan_lint_format_typecheck: passed
+cleanup_state: complete_ephemeral_runner_and_database_stopped
+lock_release_state: released_after_successful_sanitized_evidence_readback
+non_disposable_external_effects: 0
+provider_customer_deployment_DNS_send_billing_effects: 0
+state_based_on_head_sha: b35b084cbe9811058dc7bb2e8b0de0fe1c895e18
+event_at: '2026-08-02T11:17:33Z'
+immutable: true

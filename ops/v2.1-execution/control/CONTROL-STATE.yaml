@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: operational
-active_phase: candidate_pg18_proof_dispatch_ready
+active_phase: candidate_pg18_proof_reconciled_success
 bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
@@ -16,12 +16,31 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: 1410f6ae4f702fa6d6546858621875809a860350
+controller_authorization_sha: b35b084cbe9811058dc7bb2e8b0de0fe1c895e18
 next_action: >-
-  Reserve and dispatch exactly one candidate-bound PostgreSQL 18.4 proof for source
-  0a5ef2e1e6ba88b151334f2aa78bee9cd8949365 under authority i36-pg18-proof-20260802110345 and the exact live lock/fence,
-  then monitor, reconcile, and release the lock. No retry, deployment, DNS, provider/customer mutation, persistent database
-  write, send, billing, or production effect is authorized.
+  Derive exact repository-only candidate-freeze authority from successful run 30745346334 and its sanitized evidence,
+  then build and freeze one immutable candidate for source 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365. The proof authority is consumed
+  and its lock is released. Provider, persistent-database, deployment, DNS, contact, send, billing, and production effects
+  remain separately gated.
+candidate_pg18_proof_success:
+  reconciled_at: '2026-08-02T11:17:33Z'
+  state_basis_control_head_sha: b35b084cbe9811058dc7bb2e8b0de0fe1c895e18
+  github_run_id: 30745346334
+  exact_source_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
+  conclusion: success
+  artifact_id: 8832696355
+  artifact_archive_sha256: 09bac837e0ce4c1bfebb6d72d35a6292553f53a6dfbb90c76b1779d8e41fc586
+  downloaded_evidence_manifest_digest: efc0d131b3f03cf57ae61aec2e9acd45f07e7be20d2d4bfd73bdfd5a0a60a6d0
+  PostgreSQL: '18.4'
+  migrations_apply_replay_files_ledger: 89/89/89/89
+  pending_and_issues: 0/0
+  guard_probes: 8/8
+  restore_clone: passed_idempotent_schema_and_ledger_match
+  workflow_secret_scan_lint_format_typecheck: passed
+  ephemeral_runner_and_database_cleanup: complete
+  authority_consumed: i36-pg18-proof-20260802110345
+  lock_released: b4f86406-01a4-4380-80a4-66064bbf113c
+  non_disposable_provider_customer_deployment_DNS_send_billing_effects: 0
 candidate_pg18_retry_dispatch_authority:
   recorded_at: '2026-08-02T11:03:45Z'
   control_basis_sha: 1410f6ae4f702fa6d6546858621875809a860350

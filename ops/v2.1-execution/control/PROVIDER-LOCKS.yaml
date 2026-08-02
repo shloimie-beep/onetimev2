@@ -153,24 +153,24 @@ locks:
   effect_budget: null
   cleanup_state: not_applicable
 - lock: production:deployment
-  status: claimed
-  holder_task_id: I36
-  holder_claim_id: i36-pg18-proof-20260802110345
-  lease_id: b4f86406-01a4-4380-80a4-66064bbf113c
-  fencing_token: fence-0cc8b646-f1bf-422d-8c1c-1a670bc8cc2b
-  canonical_candidate_digest: exact_source_sha_0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
-  provider_identity: github_actions:shloimie-beep/onetimev2:ops11-postgres-18-assurance.yml
-  authorized_operation: one_workflow_dispatch_exact_SHA_disposable_PostgreSQL_18_4_proof
-  claimed_at: '2026-08-02T11:03:45Z'
-  lease_expires_at: '2026-08-02T11:48:45Z'
-  authority_id: i36-pg18-proof-20260802110345
-  authority_grant_digest: 0a6cd88677c20c3b361a8d0e47a1084cfab23ba4631154cebd15e3e0cc220329
-  authority_status_index_digest: 9bce6c2f3720a5943daeb1ef16abdeaa6331b45152d7bb855b61deaaa3afa0af
-  authority_status_entry_digest: bcb3eff9c1d05b6a77b2cfc84f90c54b706a5a83250d6048fbb6bbbd4b81f850
+  status: unclaimed
+  holder_task_id: null
+  holder_claim_id: null
+  lease_id: null
+  fencing_token: null
+  canonical_candidate_digest: null
+  provider_identity: null
+  authorized_operation: null
+  claimed_at: null
+  lease_expires_at: null
+  authority_id: null
+  authority_grant_digest: null
+  authority_status_index_digest: null
+  authority_status_entry_digest: null
   latest_revocation_digest: null
-  authority_checked_at: '2026-08-02T11:03:45Z'
-  effect_budget: 1
-  cleanup_state: pending_ephemeral_runner_completion
+  authority_checked_at: null
+  effect_budget: null
+  cleanup_state: not_applicable
 - lock: provider:s3-kms
   status: unclaimed
   holder_task_id: null
