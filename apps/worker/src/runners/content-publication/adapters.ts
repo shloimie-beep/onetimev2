@@ -119,7 +119,10 @@ export function createGatedProviderReconciliationAdapter(input: {
         registry: input.registry,
       });
       assertSameBinding(suppliedBinding, evidence.binding);
-      return input.adapter.readCanonical(operation, evidence.binding, signal);
+      const readback = await input.adapter.readCanonical(operation, evidence.binding, signal);
+      return readback.disposition === 'effect_exists'
+        ? { ...readback, completed_locally: false }
+        : readback;
     },
   };
 }

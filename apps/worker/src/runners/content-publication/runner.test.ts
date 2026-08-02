@@ -168,6 +168,68 @@ describe('P21 content publication runner', () => {
     expect(foundation.claimDueJobs).toHaveBeenCalledOnce();
     expect(events.indexOf('f05:persist')).toBeLessThan(events.indexOf('f06:list'));
   });
+
+  it('forces effect-exists to accepted when the injected adapter claims local completion', async () => {
+    const events: string[] = [];
+    const dispatchOperation = operation('dispatch_job', 'publish_private', 'in_flight');
+    const unknownOperation = operation('unknown_job', 'publish_private', 'acceptance_unknown');
+    const publicationRepository = workerRepository({
+      dispatchOperation,
+      unknownOperations: [unknownOperation],
+      acceptedWork: [],
+      events,
+    });
+    const injectedReadCanonical = vi.fn(async (providerOperation: ProviderOperation) => ({
+      ...readback(providerOperation, 'effect_exists'),
+      completed_locally: true,
+    }));
+    const persistReconciliation = vi.fn(async ({ next, readback: persistedReadback }) => {
+      expect(persistedReadback.completed_locally).toBe(false);
+      expect(next.state).toBe('accepted');
+      expect(next.state).not.toBe('complete');
+      expect(next.unknown_effect).toBe(false);
+      events.push('f06:persist');
+      return true;
+    });
+
+    const summary = await runContentPublicationBatch({
+      jobRepository: foundationRepository(dispatchOperation, events),
+      publicationRepository,
+      providerRepository: {
+        claimAcceptanceUnknown: vi.fn(async () => []),
+        persistReconciliation,
+      },
+      authority: authorityPort(),
+      registry: registryPort(),
+      dispatchAdapter: {
+        dispatch: vi.fn(async () => ({
+          kind: 'accepted' as const,
+          provider_acceptance_digest: hash('d'),
+          completed_locally: false,
+        })),
+      },
+      reconciliationAdapter: {
+        provider: 'vimeo',
+        readCanonical: injectedReadCanonical,
+      },
+      finalizationService: {
+        applyPrivatePublicationReadback: vi.fn(),
+        applyPrivateRevocationReadback: vi.fn(),
+      },
+      logger: { info: vi.fn(), warn: vi.fn() },
+      options: options(),
+    });
+
+    expect(injectedReadCanonical).toHaveBeenCalledOnce();
+    expect(persistReconciliation).toHaveBeenCalledOnce();
+    expect(summary.reconciliation).toMatchObject({
+      claimed: 1,
+      accepted_or_complete: 1,
+      failed_closed: 0,
+    });
+    expect(summary.finalization).toMatchObject({ selected: 0, completed: 0, failed_closed: 0 });
+    expect(events.indexOf('f06:persist')).toBeLessThan(events.indexOf('finalize:list'));
+  });
 });
 
 function options() {

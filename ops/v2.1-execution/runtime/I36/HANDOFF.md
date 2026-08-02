@@ -1,5 +1,50 @@
 # I36 Integration Releases
 
+## Current terminal - P21 effect-exists local-finalization correction
+
+Live control `ec48eda10f0799e852d015fefca227d99e6863af` contains canonical
+READY `30168c46b1bcc1dd3587fcf9bf692b5b267ba7ae8fa06753ccf810ae6ec819ed`,
+whose exact authority basis is
+`0063689594c1ab9beb2d9f4d64f89a8491284a4c`. The authorized start and sole
+parent is held terminal `1873fc8d7e5478eb736021175bb2214d78d865cd`.
+
+Independent review held that prior terminal with one P1, one P2, and zero P3.
+The P1 was substantive: the P21-gated reconciliation adapter passed through an
+injected `effect_exists` result with `completed_locally:true`, allowing generic
+F06 to mark the job complete before canonical P21 local finalization. The P2
+was evidence: the runtime triplet still advertised an older F06 correction and
+did not honestly record the held P21 review or current authority.
+
+This exact correction forces every P21-gated `effect_exists` readback to
+`completed_locally:false` before generic F06 lifecycle evaluation. A new
+runner-level regression injects `completed_locally:true` and proves both the
+persisted readback normalization and resulting `accepted`, never `complete`,
+job state. Canonical P21 finalization therefore remains required. Effect-absent
+retry safety, still-unknown quarantine, the generic F06 lifecycle, and provider
+contracts are unchanged.
+
+Verification passes 20/20 focused P21 adapter/runner/generic-F06 assertions,
+the prior full packet at 76/76, and read-only migration inventory at 7/7.
+Both changed TypeScript files pass ESLint and Prettier; changed-path type
+diagnostics are zero. Workspace typecheck retains only the four unchanged
+Stripe and duplicate-Playwright baselines. The 3,171-file secret scan passes.
+The two-path product postimage manifest is
+`371eb2d184ed8550f17b1b13970db71fa1daf95d3204e54abd7c374803e4cdd5`.
+
+Claim `7f9e3cc8-4c72-4f38-ab60-09f8e6187877`, WORKER_COMPOSER lease
+`5bc3f1dc-0874-4eb3-abaf-542c14d60814`, and RELEASE_INTEGRATOR lease
+`890c2452-d61b-4d4d-a951-aa6886c50952` were released at
+`2026-08-02T00:22:23Z`, before the `2026-08-02T04:10:31Z` expiry. No provider,
+network, registry-population, persistent-database, candidate, deployment, DNS,
+send, charge, customer, cleanup, or external effect occurred; effects remain
+`0/0/0`.
+
+Once this exact five-path terminal is normally pushed, I36 must stop for
+independent review. Candidate freeze and every provider or release effect
+remain held.
+
+All sections below are retained historical release records and audit prompts.
+
 ## Current terminal - F06 malformed operation-array correction
 
 Independent review of `701ef6e19d0cb640677c066c2d49fb2f453bb6bc`

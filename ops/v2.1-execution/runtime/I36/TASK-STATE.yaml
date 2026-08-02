@@ -8,7 +8,7 @@ package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a
 branch: codex/v21-integration
 start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 dependency_heads:
-  C00: b7249121e94130e1ee9d561a112851ac4040fa66
+  C00: ec48eda10f0799e852d015fefca227d99e6863af
   F02: 3ee2f651528f5170dd714b921500235d4e015c5b
   F03: 3947c9887f3c6914a8247c70ac816a4ae94c76d0
   F06: 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
@@ -40,33 +40,29 @@ dependency_heads:
   P18: 1926e61c793ce29d7240c1ee05d2a4879b52770b
   P21: c11dec418fa3de896e96c348f87928c92c9f86b9
 status: ready_for_review
-phase: F06_malformed_operation_array_fail_closed_correction_terminal
-claimed_by: codex-i36-F06-null-array-correction-ab201f03
-claim_time: '2026-08-01T22:32:45Z'
-claim_id: ab201f03-0385-41a2-9467-03c21ca56c44
-lease_id: 72c085b6-6048-4b3e-b11e-4b9af840008c
-lease_issued_at: '2026-08-01T22:32:45Z'
-lease_expires_at: '2026-08-02T02:32:45Z'
-lease_released_at: '2026-08-01T22:46:01Z'
-last_heartbeat_at: '2026-08-01T22:46:01Z'
-controller_authorization_sha: b7249121e94130e1ee9d561a112851ac4040fa66
-latest_valid_observed_control_head_sha: b7249121e94130e1ee9d561a112851ac4040fa66
-reconciled_state_based_on_control_head_sha: cdc98ae7a5212c288ad16b35df70addc517e54af
-ready_authorization_control_head_sha: b7249121e94130e1ee9d561a112851ac4040fa66
-ready_entry_state_based_on_control_head_sha: cfa3a42c5868676025c0e4414af20856643d0ecc
-ready_entry_payload_digest: aea49a43a89386b9faa5c3ff6931c22f91d6f516a3167c490d102b436964d6f8
+phase: P21_effect_exists_local_finalization_correction_terminal
+claimed_by: codex-i36-P21-effect-exists-correction-7f9e3cc8
+claim_time: '2026-08-02T00:10:31Z'
+claim_id: 7f9e3cc8-4c72-4f38-ab60-09f8e6187877
+lease_id: 890c2452-d61b-4d4d-a951-aa6886c50952
+lease_issued_at: '2026-08-02T00:10:31Z'
+lease_expires_at: '2026-08-02T04:10:31Z'
+lease_released_at: '2026-08-02T00:22:23Z'
+last_heartbeat_at: '2026-08-02T00:22:23Z'
+controller_authorization_sha: 0063689594c1ab9beb2d9f4d64f89a8491284a4c
+latest_valid_observed_control_head_sha: ec48eda10f0799e852d015fefca227d99e6863af
+reconciled_state_based_on_control_head_sha: 0063689594c1ab9beb2d9f4d64f89a8491284a4c
+ready_authorization_control_head_sha: 0063689594c1ab9beb2d9f4d64f89a8491284a4c
+ready_entry_state_based_on_control_head_sha: 0063689594c1ab9beb2d9f4d64f89a8491284a4c
+ready_entry_payload_digest: 30168c46b1bcc1dd3587fcf9bf692b5b267ba7ae8fa06753ccf810ae6ec819ed
 claim_mode: new
-expected_existing_head_sha: 701ef6e19d0cb640677c066c2d49fb2f453bb6bc
-lease_phase_scope: exact_nine_path_F06_null_array_correction_and_release
+expected_existing_head_sha: 1873fc8d7e5478eb736021175bb2214d78d865cd
+lease_phase_scope: exact_five_path_P21_effect_exists_local_finalization_correction_and_release
 writer_slot_leases_released:
-  - slot: MIGRATION_AUTHORITY
-    lease_id: f5bebc14-5900-4ed0-8dde-b7deee89b80c
-  - slot: PROVIDER_CORE
-    lease_id: 4ae7a2d1-0dec-4f92-afaf-e20aff169039
-  - slot: PROVIDER_REGISTRY
-    lease_id: 5ba16ac0-d964-4cf5-9111-ec886e7e2401
+  - slot: WORKER_COMPOSER
+    lease_id: 5bc3f1dc-0874-4eb3-abaf-542c14d60814
   - slot: RELEASE_INTEGRATOR
-    lease_id: 72c085b6-6048-4b3e-b11e-4b9af840008c
+    lease_id: 890c2452-d61b-4d4d-a951-aa6886c50952
 F06_malformed_operation_array_fail_closed_correction_terminal:
   containing_control_head_sha: b7249121e94130e1ee9d561a112851ac4040fa66
   state_basis_control_head_sha: cfa3a42c5868676025c0e4414af20856643d0ecc
@@ -5068,3 +5064,92 @@ P21_F05_F06_registration_terminal:
     validation evidence, released leases, unchanged baselines, and effects
     0/0/0 before enabling an adapter, freezing a candidate, or authorizing any
     provider, persistent-database, deployment, DNS, or production effect.
+P21_effect_exists_local_finalization_correction_terminal:
+  containing_control_head_sha: ec48eda10f0799e852d015fefca227d99e6863af
+  state_basis_control_head_sha: 0063689594c1ab9beb2d9f4d64f89a8491284a4c
+  exact_authorized_start_sha: 1873fc8d7e5478eb736021175bb2214d78d865cd
+  ready_entry_payload_digest: 30168c46b1bcc1dd3587fcf9bf692b5b267ba7ae8fa06753ccf810ae6ec819ed
+  prior_held_terminal:
+    head_sha: 1873fc8d7e5478eb736021175bb2214d78d865cd
+    parent_sha: 951c151c28f905ad7458973a750c3887edc38ddc
+    independent_review: held_one_P1_one_P2_zero_P3
+    P1: P21_effect_exists_readback_could_bypass_required_local_finalization
+    P2: runtime_triplet_current_metadata_and_terminal_truth_were_stale
+  claim_id: 7f9e3cc8-4c72-4f38-ab60-09f8e6187877
+  writer_id: codex-i36-P21-effect-exists-correction-7f9e3cc8
+  lease_issued_at: '2026-08-02T00:10:31Z'
+  lease_expires_at: '2026-08-02T04:10:31Z'
+  lease_released_at: '2026-08-02T00:22:23Z'
+  last_heartbeat_at: '2026-08-02T00:22:23Z'
+  writer_slot_leases_released:
+    - slot: WORKER_COMPOSER
+      lease_id: 5bc3f1dc-0874-4eb3-abaf-542c14d60814
+    - slot: RELEASE_INTEGRATOR
+      lease_id: 890c2452-d61b-4d4d-a951-aa6886c50952
+  effect_lock_leases: []
+  exact_scope:
+    product_and_test_paths: 2
+    runtime_paths: 3
+    total_paths: 5
+    exact_product_path_inventory_digest: 37b9f89c777663618d3035f8da20d13346550635fb42cd8ec40321714456a19f
+    exact_release_path_inventory_digest: c29ae8b6ef3187f117c4b60956c869c6abb03b1cd955350419d414fcb2a55b81
+    path_inventory_algorithm: sha256_sorted_POSIX_paths_LF_joined_with_terminal_LF
+    authorized_product_preimage_manifest_digest: 7659a232dc4293c76dfb2f7a16bc9cdf0820b36376705ce095fa6fe500edd3a8
+    authorized_product_preimage_manifest_algorithm: stable_json_sorted_keys_sha256
+  product_artifact:
+    paths:
+      - path: apps/worker/src/runners/content-publication/adapters.ts
+        raw_sha256: 93603089b7feff00a8fc5d9075f72df5ebfb125a07d65fd68974de09a783c85a
+      - path: apps/worker/src/runners/content-publication/runner.test.ts
+        raw_sha256: 72981d7034bfb2e707e02c4b575c8b1c45dc4ace3349ef8d2f476d1e2e85ad16
+    canonical_json_manifest_digest: 371eb2d184ed8550f17b1b13970db71fa1daf95d3204e54abd7c374803e4cdd5
+  corrected_findings:
+    effect_exists_completed_locally_normalization: forced_false_before_generic_F06_lifecycle
+    resulting_persisted_job_state: accepted_never_complete
+    required_P21_local_finalization: preserved
+    injected_completed_locally_true_runner_regression: passed
+    runtime_triplet_current_metadata: repaired_and_prior_hold_recorded
+  preserved_semantics:
+    generic_F06_lifecycle_changed: false
+    effect_absent_retry_safety: preserved
+    still_unknown_quarantine: preserved
+    provider_contract_changed: false
+    real_vimeo_adapter_present: false
+    provider_network_path_present: false
+    persistent_database_used: false
+  completed_validation:
+    live_control_head: passed_ec48eda10f0799e852d015fefca227d99e6863af
+    exact_READY_basis: passed_0063689594c1ab9beb2d9f4d64f89a8491284a4c
+    canonical_READY_digest: passed_30168c46b1bcc1dd3587fcf9bf692b5b267ba7ae8fa06753ccf810ae6ec819ed
+    exact_integration_start: passed_1873fc8d7e5478eb736021175bb2214d78d865cd
+    exact_path_and_preimage_scope: passed_5_of_5
+    focused_P21_adapter_runner_and_generic_F06_vitest: passed_3_files_20_tests
+    prior_P21_F05_F06_packet: passed_12_files_76_tests
+    read_only_migration_inventory_vitest: passed_7_of_7
+    scoped_eslint: passed_zero_findings_2_files
+    scoped_prettier: passed_5_files
+    task_state_yaml_parse: passed
+    diff_check: passed
+    repository_secret_scan: passed_3171_text_files
+    changed_workspace_type_diagnostics: zero
+    workspace_typecheck: baseline_blocked_exactly_4_unchanged_out_of_scope_diagnostics
+  unchanged_out_of_scope_baselines:
+    workspace_typecheck:
+      - packages/domain/src/billing/stripe-official-client.ts Status OtherString mismatch
+      - tests/ot-52/portal-browser-harness.ts duplicate Playwright Page type
+      - tests/ot-83/portal-browser-harness.ts duplicate Playwright Page type
+      - tests/w12-09/portal-gamification-browser-harness.ts duplicate Playwright Page type
+  migration_or_SQL_change: false
+  steward_request_bytes_changed: false
+  provider_or_infrastructure_inspection: false
+  provider_or_candidate_action: false
+  deployment_or_DNS_action: false
+  external_effects:
+    attempted: 0
+    succeeded: 0
+    reconciled: 0
+  safe_next_action: >-
+    Push one exact five-path correction terminal and stop for independent
+    review. Candidate freeze, provider registry population, adapter enablement,
+    persistent-database work, provider access, deployment, DNS, sends, charges,
+    customer mutations, cleanup, and every external effect remain prohibited.

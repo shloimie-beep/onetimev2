@@ -1,7 +1,55 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
-MODE: PAUSE_FOR_C00_F06_NULL_ARRAY_CORRECTION_REVIEW
+MODE: PAUSE_FOR_C00_P21_EFFECT_EXISTS_CORRECTION_REVIEW
+
+Audit the exact pushed I36 five-path P21 effect-exists local-finalization
+correction. Do not enable an adapter, populate or inspect a provider registry,
+touch a persistent database, freeze a candidate, access or mutate a provider,
+deploy, change DNS, send, charge, clean up, or perform any external effect.
+
+Repository: shloimie-beep/onetimev2
+Branch: codex/v21-integration
+Authorized start and required sole parent:
+`1873fc8d7e5478eb736021175bb2214d78d865cd`
+Containing control: `ec48eda10f0799e852d015fefca227d99e6863af`
+Authority/READY basis: `0063689594c1ab9beb2d9f4d64f89a8491284a4c`
+READY: `30168c46b1bcc1dd3587fcf9bf692b5b267ba7ae8fa06753ccf810ae6ec819ed`
+Claim: `7f9e3cc8-4c72-4f38-ab60-09f8e6187877`
+Writer: `codex-i36-P21-effect-exists-correction-7f9e3cc8`
+WORKER_COMPOSER lease: `5bc3f1dc-0874-4eb3-abaf-542c14d60814`
+RELEASE_INTEGRATOR lease: `890c2452-d61b-4d4d-a951-aa6886c50952`
+Lease issue/expiry/release: `2026-08-02T00:10:31Z` /
+`2026-08-02T04:10:31Z` / `2026-08-02T00:22:23Z`
+Effects: `0/0/0`
+
+Confirm the exact two product/test paths and I36 runtime triplet. Confirm
+product/release path-inventory digests `37b9f89c...` / `c29ae8b6...`, authorized
+product preimage manifest `7659a232...`, and product postimage manifest
+`371eb2d184ed8550f17b1b13970db71fa1daf95d3204e54abd7c374803e4cdd5`.
+
+Confirm prior terminal `1873fc8d...` was honestly held at one P1, one P2, and
+zero P3. Confirm the P21-gated reconciliation adapter normalizes every
+`effect_exists` result to `completed_locally:false` before generic F06 sees it.
+Confirm the exact runner regression injects `completed_locally:true`, persists
+`accepted` rather than `complete`, and leaves canonical P21 local finalization
+required. Confirm effect-absent retry safety, still-unknown quarantine, generic
+F06 lifecycle, provider contracts, and the disabled real-provider posture are
+unchanged.
+
+Confirm 20/20 focused assertions, the prior packet at 76/76, read-only migration
+inventory at 7/7, scoped lint/format/type/diff/secret gates, YAML parsing, exact
+scope/preimages, lease release before expiry, clean tree, and local/tracking/live
+equality. Confirm no provider, network, registry-population, persistent-database,
+candidate, deployment, DNS, send, charge, customer, cleanup, or external effect
+occurred.
+
+Return exact P1/P2/P3 counts. Do not advance candidate/provider/release work
+unless P1 and P2 are zero. Stop.
+
+---
+
+## Historical audit prompt - F06 malformed operation-array correction
 
 Audit the exact pushed I36 nine-path malformed operation-array correction.
 Do not advance P21, freeze a candidate, populate/inspect a provider registry,
