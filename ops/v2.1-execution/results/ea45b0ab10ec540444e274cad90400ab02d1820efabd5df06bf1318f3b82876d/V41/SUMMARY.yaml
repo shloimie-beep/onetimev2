@@ -1,0 +1,102 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+verification_lane: V41
+canonical_candidate_digest: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
+repository_source_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
+candidate_manifest_digest: 30867a96bfc5370ead95b83b6519b4ec365947d874c609dd8e5dbecba7e54876
+acceptance_environment_matrix_digest: 3972640970c37875b70c02165cff2add4a034073b952e4e508481735b55d954d
+verified_at: '2026-08-02T12:10:28Z'
+counts:
+  assigned: 29
+  attempted: 29
+  current_pointers: 29
+  passed: 19
+  failed: 0
+  blocked: 10
+  waived: 0
+passed_cases:
+  - OTV2-PROVIDER-209-AC01
+  - OTV2-PROVIDER-231-MULTI-HOUSEHOLD-MAPPING
+  - OTV2-PROVIDER-243-GHL-IDENTITY-QUARANTINE
+  - OTV2-BILLING-101-AC01
+  - OTV2-BILLING-102-AC01
+  - OTV2-BILLING-103-AC01
+  - OTV2-BILLING-104-AC01
+  - OTV2-BILLING-105-AC01
+  - OTV2-BILLING-106-AC01
+  - OTV2-BILLING-109-AC01
+  - OTV2-BILLING-110-AC01
+  - OTV2-BILLING-111-AC01
+  - OTV2-BILLING-112-AC01
+  - OTV2-BILLING-113-AC01
+  - OTV2-BILLING-114-AC01
+  - OTV2-BILLING-115-AC01
+  - OTV2-BILLING-116-AC01
+  - OTV2-BILLING-242-EVENT-PRECEDENCE-GRACE
+  - OTV2-PARENT-236-VERIFIED-RECOVERY
+blocked_cases:
+  - OTV2-BILLING-107-AC01
+  - OTV2-BILLING-108-AC01
+  - OTV2-BILLING-224-STANDARD
+  - OTV2-BILLING-224-IMMEDIATE-EXCEPTION
+  - OTV2-PARENT-038-AC01
+  - OTV2-BILLING-201-INACTIVE-ROUTE-AUTHORIZATION
+  - OTV2-PARENT-236-INACTIVE-ALLOWLIST
+  - OTV2-GHL-117-AC01
+  - OTV2-GHL-118-AC01
+  - OTV2-GHL-119-AC01
+blockers:
+  PROVIDER_SUBSCRIPTION_READBACK_UNAVAILABLE: 1
+  HOSTED_PORTAL_END_TO_END_UNAVAILABLE: 1
+  STRIPE_TEST_CLOCK_IDENTITY_UNAVAILABLE: 1
+  STRIPE_CHARGE_READBACK_UNAVAILABLE: 1
+  AUTHENTICATED_BROWSER_FIXTURE_UNAVAILABLE: 1
+  FULL_ROUTE_AUTHORIZATION_HARNESS_UNAVAILABLE: 1
+  AUTHENTICATED_ROUTE_INVENTORY_UNAVAILABLE: 1
+  GHL_WORKFLOW_EFFECT_AUTHORITY_UNAVAILABLE: 2
+  GHL_FULL_CONTACT_INVENTORY_UNAVAILABLE: 1
+verification:
+  typecheck: passed
+  focused_test_files_passed: 13
+  focused_tests_passed: 49
+  result_yaml_documents_parsed: 58
+  current_pointer_digests_matched: 29
+current_provider_identities:
+  highlevel:
+    location_id: pBSnOK2nkdxp6gf9Rg3o
+    account_or_agency: unknown
+    visible_location_label_from_prior_readback: info@onetimeonetime.com
+    connector_contact_count: 1493
+    full_adult_only_inventory_proven: false
+    zero_student_contacts_proven: false
+  stripe_through_ghl:
+    account: unknown
+    product: unknown
+    price: unknown
+    webhook: unknown
+    checkout: unknown
+  senders:
+    rabbi_campaign: Rabbi Eli Scheller <rabbielischeller@onetimeonetime.com>; provider acceptance pending
+    office: Shloimie from One Time Mishnayos <info@onetimeonetime.com>; registry active
+    brand: One Time Mishnayos <info@onetimeonetime.com>; registry active
+    account_security: One Time Mishnayos Account <info@onetimeonetime.com>; preferred account address pending
+evidence_artifacts:
+  ci_verification:
+    path: ops/v2.1-execution/results/ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d/V41/CI-VERIFICATION.yaml
+    sha256: 7ec4e962d34adf70f5fbf48cc4c2212c84130a832b1bc5c6ff49a3aaf683700b
+  provider_readback:
+    path: ops/v2.1-execution/results/ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d/V41/PROVIDER-READBACK.yaml
+    sha256: b60ede174a17eee5f011c7dc727aee839c9585853c886f0ebb5309c25cde88c8
+  ci_deployment_instance:
+    path: ops/v2.1-execution/results/ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d/V41/CI-DEPLOYMENT-INSTANCE.yaml
+    sha256: 4b4a15572265974766effaac5f225808abde8eb3dbc5fa9fe4a6d3a77a280fd7
+  blocked_provider_environment:
+    path: ops/v2.1-execution/results/ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d/V41/BLOCKED-PROVIDER-ENVIRONMENT.yaml
+    sha256: 36c12fbaaad3fbabc085a3170dbba94da56104698d3198b96b74fdc5a0509495
+external_effects:
+  authority: read_only_only
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+  unexpected: 0
+  provider_locks_acquired: 0
