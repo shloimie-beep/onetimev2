@@ -252,6 +252,7 @@ export function createEmbeddedClassroomService(input: {
       if (current === null) {
         throw new EmbeddedClassroomError('authorization_changed', 'Live session is unavailable.');
       }
+      assertActiveAttendanceSession(current, command.now);
       const context = await input.context_resolver.resolveLiveSession({
         scope: command.scope,
         actor: command.actor,
@@ -407,11 +408,30 @@ function assertAttendanceSubject(subject: EmbeddedAttendanceSubject, event: Atte
   }
 }
 
+function assertActiveAttendanceSession(
+  session: Parameters<EmbeddedJoinContextResolver['resolveLiveSession']>[0]['session'],
+  now: Date,
+): void {
+  const nowMs = now.getTime();
+  const leaseExpiresAt = new Date(session.lease_expires_at).getTime();
+  if (
+    session.state !== 'active' ||
+    !Number.isFinite(nowMs) ||
+    !Number.isFinite(leaseExpiresAt) ||
+    leaseExpiresAt <= nowMs
+  ) {
+    throw new EmbeddedClassroomError(
+      'authorization_changed',
+      'An active unexpired live Student session is required.',
+    );
+  }
+}
+
 function assertEphemeralBootstrap(
   bootstrap: Awaited<ReturnType<MeetingSdkBootstrapPort['createEphemeralBootstrap']>>,
   now: Date,
 ): void {
-  const values = [
+  const requiredStrings = [
     bootstrap.sdk_session_ref,
     bootstrap.sdk_web_version,
     bootstrap.sdk_signature,
@@ -422,15 +442,37 @@ function assertEphemeralBootstrap(
     bootstrap.customer_key,
     bootstrap.participant_display_name,
   ];
-  if (values.some((value) => value.trim() === '' || /https?:\/\//i.test(value))) {
+  if (
+    requiredStrings.some(
+      (value) => typeof value !== 'string' || value.trim() === '' || isUrlLike(value),
+    )
+  ) {
     throw new EmbeddedClassroomError(
       'bootstrap_unavailable',
       'SDK bootstrap cannot contain an empty value or raw URL.',
     );
   }
+  if (!/^\d+\.\d+\.\d+$/u.test(bootstrap.sdk_web_version)) {
+    throw new EmbeddedClassroomError('bootstrap_unavailable', 'SDK bootstrap version is invalid.');
+  }
+  if (!/^\d{9,32}$/u.test(bootstrap.meeting_number)) {
+    throw new EmbeddedClassroomError(
+      'bootstrap_unavailable',
+      'SDK bootstrap meeting number is invalid.',
+    );
+  }
   const issued = new Date(bootstrap.issued_at).getTime();
   const expires = new Date(bootstrap.expires_at).getTime();
-  if (issued > now.getTime() || expires <= issued || expires - issued > 60_000) {
+  const current = now.getTime();
+  if (
+    !Number.isFinite(issued) ||
+    !Number.isFinite(expires) ||
+    !Number.isFinite(current) ||
+    issued > current ||
+    current >= expires ||
+    expires <= issued ||
+    expires - issued > 60_000
+  ) {
     throw new EmbeddedClassroomError('bootstrap_unavailable', 'SDK bootstrap lifetime is invalid.');
   }
   if (bootstrap.role !== 0 || bootstrap.leave_path !== '/app/classroom') {
@@ -441,6 +483,17 @@ function assertEphemeralBootstrap(
       'bootstrap_unavailable',
       'SDK recording indicator state is invalid.',
     );
+  }
+}
+
+function isUrlLike(value: string): boolean {
+  const candidate = value.trim();
+  if (candidate.startsWith('//')) return true;
+  try {
+    new URL(candidate);
+    return true;
+  } catch {
+    return false;
   }
 }
 

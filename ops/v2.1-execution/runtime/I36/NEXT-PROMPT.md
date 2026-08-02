@@ -1,6 +1,77 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
+MODE: PAUSE_FOR_C00_P18_REGISTRATION_002_TWO_P2_CORRECTION_REVIEW
+
+Audit the exact pushed I36 five-path P18-registration-002 correction terminal.
+Do not continue implementation, expand scope, bind a candidate, inspect or
+mutate a provider, touch a persistent database, run native PostgreSQL proof,
+deploy, change DNS, send, charge, clean up, or perform an external effect.
+
+Repository: shloimie-beep/onetimev2
+Branch: codex/v21-integration
+Authorized start and required sole parent:
+`89f9adf886a15f396b6713dfdf0259bfde27bb0d`
+Corrected containing control: `702cce4dbe6cb6160c10144f212dc6627676f1a8`
+Authority/READY basis: `aee8c07684270736b6947a008a4a0d620c61ed6c`
+Corrected READY:
+`8b2f9db9ffbe3c4a2635f53d68447cfac421416b869df5a433dffac28fc7d4ea`
+Claim: `62a752ae-c2a0-4f3f-8a1c-08bde30fa02a`
+Writer: `codex-i36-P18-correction-62a752ae`
+EMBEDDED_CLASSROOM lease: `b20881f5-369e-40c7-a0dd-d28366d9a57f`
+RELEASE_INTEGRATOR lease: `8e17574a-ee4d-468e-ae70-557b8f16dd76`
+Lease issue/expiry/release: `2026-08-02T03:17:23Z` /
+`2026-08-02T06:17:23Z` / `2026-08-02T03:38:22Z`.
+Effects: `0/0/0`.
+
+Confirm the terminal has sole parent `89f9adf8...` and changes exactly
+`service.ts`, `service.test.ts`, and the I36 runtime triplet. Confirm product,
+runtime, and release inventories
+`dc7a45f788a00e8bd7149c3d789f7413220e4bdf4d6415fec0ee730200b00212`,
+`bdf3cfe7a516fb00f891ef66f1f752591ce3d894243bbe50393980d10a3a441a`,
+and `6e7411f3b136e23a3187210a893038b2fd9c16455227d93aa0dc6efda6967640`;
+preimage manifest
+`4144b996e5bff0b1f08ef7ffcac2ddead499120701a3638f1293eb4330b76509`;
+and product postimage manifest
+`f62dcdebba981de49f2beecbc2e80a433f354675751f9f95e9549e39de0b4d42`.
+
+Confirm initial control `aee8c076...` had only a transcription defect: wrong
+start-tree `80a11f4df415...` and prior-manifest `580da8f634...`. Confirm corrected
+control `702cce4d...` binds actual tree `80a11f4da6a...` and manifest
+`580da8c079...`, while the exact start, scope, all five preimages, claim, and
+leases are unchanged.
+
+Confirm embedded-client attendance now rejects a freshly loaded session before
+context/evidence/reconciliation/append unless it is active and has a finite
+lease expiry strictly greater than finite authoritative `command.now`. Confirm
+revoked, exact-expiry, past-expiry, invalid-expiry, and invalid-time tests.
+
+Confirm signer envelopes require finite timestamps satisfying
+`issued_at <= now < expires_at`, `expires_at > issued_at`, and lifetime at most
+60 seconds. Confirm semantic dotted-numeric SDK version, 9-32 digit meeting
+number, nonblank non-URL signature/password/name and other required values,
+Student role, exact classroom leave path, and boolean recording state. Confirm
+invalid, expired, future-issued, overlong, malformed, blank, URL-valued,
+wrong-role/path/type cases fail only after grant consumption; a fresh-grant
+retry remains accepted.
+
+Reproduce the corrected service suite at 25/25, full focused P18 packet at
+90/90, scoped ESLint/Prettier, client build, zero changed-path type diagnostics,
+YAML, scope/preimages/postimages, diff hygiene, and repository secret scan.
+Workspace typecheck may retain only the exact four declared unchanged Stripe
+and duplicate-Playwright baselines. Confirm both leases released before expiry,
+clean worktree, local/tracking/live equality, and no external effect.
+
+Return exact P1/P2/P3 counts. Do not admit the correction or advance candidate,
+provider, database, or release work unless P1 and P2 are zero. Stop.
+
+---
+
+## Historical audit prompt - P18-registration-002 implementation
+
+MODEL: GPT-5.6-SOL
+REASONING: XHIGH
+SERVICE TIER: PRIORITY
 MODE: PAUSE_FOR_C00_P18_REGISTRATION_002_IMPLEMENTATION_REVIEW
 
 Audit the exact pushed I36 P18-registration-002 implementation terminal. Do

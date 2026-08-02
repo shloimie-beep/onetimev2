@@ -8,6 +8,7 @@ import type {
 import { createEmbeddedClassroomService } from './service.ts';
 
 const HASH = 'a'.repeat(64);
+const OTHER_HASH = 'b'.repeat(64);
 const NOW = new Date('2026-07-28T17:00:00.000Z');
 
 describe('embedded classroom service', () => {
@@ -63,6 +64,145 @@ describe('embedded classroom service', () => {
       'referrer-policy': 'no-referrer',
     });
     expect(JSON.stringify(result)).not.toMatch(/https?:\/\//i);
+  });
+
+  it.each([
+    {
+      name: 'an invalid issued timestamp',
+      mutate: () => ({ ...usableBootstrap(), issued_at: 'not-a-timestamp' }),
+    },
+    {
+      name: 'an invalid expiry timestamp',
+      mutate: () => ({ ...usableBootstrap(), expires_at: 'not-a-timestamp' }),
+    },
+    {
+      name: 'an already-expired envelope',
+      mutate: () => ({
+        ...usableBootstrap(),
+        issued_at: '2026-07-28T16:59:15.000Z',
+        expires_at: NOW.toISOString(),
+      }),
+    },
+    {
+      name: 'a future-issued envelope',
+      mutate: () => ({
+        ...usableBootstrap(),
+        issued_at: '2026-07-28T17:00:00.001Z',
+        expires_at: '2026-07-28T17:00:45.001Z',
+      }),
+    },
+    {
+      name: 'an envelope longer than 60 seconds',
+      mutate: () => ({ ...usableBootstrap(), expires_at: '2026-07-28T17:01:00.001Z' }),
+    },
+    {
+      name: 'a malformed SDK version',
+      mutate: () => ({ ...usableBootstrap(), sdk_web_version: '3.latest.2' }),
+    },
+    {
+      name: 'a malformed meeting number',
+      mutate: () => ({ ...usableBootstrap(), meeting_number: '123-456-789' }),
+    },
+    {
+      name: 'a blank signature',
+      mutate: () => ({ ...usableBootstrap(), sdk_signature: '   ' }),
+    },
+    {
+      name: 'a URL-valued meeting password',
+      mutate: () => ({ ...usableBootstrap(), meeting_password: 'https://zoom.invalid/j/1' }),
+    },
+    {
+      name: 'a blank participant name',
+      mutate: () => ({ ...usableBootstrap(), participant_display_name: '   ' }),
+    },
+    {
+      name: 'a non-Student role',
+      mutate: () => ({ ...usableBootstrap(), role: 1 as 0 }),
+    },
+    {
+      name: 'a non-classroom leave path',
+      mutate: () => ({
+        ...usableBootstrap(),
+        leave_path: '/app/student' as '/app/classroom',
+      }),
+    },
+    {
+      name: 'a non-boolean recording state',
+      mutate: () => ({
+        ...usableBootstrap(),
+        recording_capture_active: 'yes' as unknown as boolean,
+      }),
+    },
+  ])('commits terminal grant consumption before rejecting $name', async ({ mutate }) => {
+    const repository = repositoryFixture();
+    const createEphemeralBootstrap = vi.fn(async () => mutate());
+    const service = createEmbeddedClassroomService({
+      repository,
+      context_resolver: contextResolver(),
+      sdk_bootstrap: { createEphemeralBootstrap },
+    });
+
+    await expect(service.redeem(command())).resolves.toEqual({
+      disposition: 'denied',
+      safe_code: 'bootstrap_unavailable',
+    });
+    expect(repository.commitBootstrap).toHaveBeenCalledOnce();
+    expect(repository.commitBootstrap).toHaveBeenCalledWith(
+      expect.objectContaining({
+        next_grant: expect.objectContaining({ used_at: NOW.toISOString(), version: 2 }),
+      }),
+    );
+    expect(createEphemeralBootstrap).toHaveBeenCalledOnce();
+  });
+
+  it('keeps signer failure terminal for its grant while allowing a fresh-grant retry', async () => {
+    const repository = repositoryFixture();
+    const freshGrant = {
+      ...grantFixture(),
+      grant_id: 'grant-2',
+      grant_key_digest: OTHER_HASH,
+    };
+    repository.loadLaunchGrant = vi
+      .fn()
+      .mockResolvedValueOnce(grantFixture())
+      .mockResolvedValueOnce(freshGrant);
+    repository.loadLiveSession = vi
+      .fn()
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce(sessionFixture());
+    const createEphemeralBootstrap = vi
+      .fn(async () => usableBootstrap())
+      .mockResolvedValueOnce({ ...usableBootstrap(), expires_at: NOW.toISOString() });
+    const service = createEmbeddedClassroomService({
+      repository,
+      context_resolver: contextResolver(),
+      sdk_bootstrap: { createEphemeralBootstrap },
+    });
+
+    await expect(service.redeem(command())).resolves.toEqual({
+      disposition: 'denied',
+      safe_code: 'bootstrap_unavailable',
+    });
+    await expect(
+      service.redeem({
+        ...command(),
+        grant_key_digest: OTHER_HASH,
+        live_session_id: 'live-retry',
+      }),
+    ).resolves.toEqual(expect.objectContaining({ disposition: 'ready' }));
+    expect(repository.commitBootstrap).toHaveBeenCalledTimes(2);
+    expect(repository.commitBootstrap).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
+        next_grant: expect.objectContaining({ grant_id: 'grant-1', used_at: NOW.toISOString() }),
+      }),
+    );
+    expect(repository.commitBootstrap).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({
+        prior_grant: expect.objectContaining({ grant_id: 'grant-2', used_at: null }),
+      }),
+    );
   });
 
   it('denies a second device before consuming the grant or invoking the SDK port', async () => {
@@ -204,6 +344,63 @@ describe('embedded classroom service', () => {
         }),
       }),
     );
+  });
+
+  it.each([
+    {
+      name: 'a revoked session',
+      current: {
+        ...sessionFixture(),
+        state: 'revoked' as const,
+        revoked_at: NOW.toISOString(),
+        revoked_by_admin_id: 'admin-1',
+        revoke_audit_ref: 'audit-reset-1',
+      },
+      now: NOW,
+    },
+    {
+      name: 'a lease expiring exactly at the authoritative time',
+      current: { ...sessionFixture(), lease_expires_at: NOW.toISOString() },
+      now: NOW,
+    },
+    {
+      name: 'a lease expired before the authoritative time',
+      current: { ...sessionFixture(), lease_expires_at: '2026-07-28T16:59:59.999Z' },
+      now: NOW,
+    },
+    {
+      name: 'a non-finite lease expiry',
+      current: { ...sessionFixture(), lease_expires_at: 'not-a-timestamp' },
+      now: NOW,
+    },
+    {
+      name: 'a non-finite authoritative time',
+      current: sessionFixture(),
+      now: new Date('not-a-timestamp'),
+    },
+  ])('rejects client attendance from $name before downstream work', async ({ current, now }) => {
+    const repository = repositoryFixture({ current });
+    const resolver = contextResolver();
+    const service = createEmbeddedClassroomService({
+      repository,
+      context_resolver: resolver,
+      sdk_bootstrap: { createEphemeralBootstrap: vi.fn() },
+    });
+
+    await expect(
+      service.recordClientAttendance({
+        scope: contextFixture().scope,
+        actor: contextFixture().actor,
+        event_kind: 'joined',
+        attendance_event_id: 'attendance-rejected',
+        idempotency_key: 'attendance-idempotency-rejected',
+        source_event_ref_digest: HASH,
+        now,
+      }),
+    ).rejects.toMatchObject({ code: 'authorization_changed' });
+    expect(resolver.resolveLiveSession).not.toHaveBeenCalled();
+    expect(repository.loadAttendanceEvidence).not.toHaveBeenCalled();
+    expect(repository.appendAttendance).not.toHaveBeenCalled();
   });
 });
 

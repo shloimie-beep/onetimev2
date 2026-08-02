@@ -8,7 +8,7 @@ package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a
 branch: codex/v21-integration
 start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 dependency_heads:
-  C00: 79fb3b949cf7b551aff939df868b048dc227213e
+  C00: 702cce4dbe6cb6160c10144f212dc6627676f1a8
   F02: 3ee2f651528f5170dd714b921500235d4e015c5b
   F03: 3947c9887f3c6914a8247c70ac816a4ae94c76d0
   F06: 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
@@ -40,35 +40,111 @@ dependency_heads:
   P18: 1926e61c793ce29d7240c1ee05d2a4879b52770b
   P21: c11dec418fa3de896e96c348f87928c92c9f86b9
 status: ready_for_review
-phase: P18_registration_002_implementation_terminal
-claimed_by: codex-i36-P18-implementation-e7435237
-claim_time: '2026-08-02T02:07:10Z'
-claim_id: e7435237-dd27-42e6-887f-c137b987e00f
-lease_id: 6467fc1b-0f35-4e12-80d9-8ef68cb6bd35
-lease_issued_at: '2026-08-02T02:07:10Z'
-lease_expires_at: '2026-08-02T06:07:10Z'
-lease_released_at: '2026-08-02T02:58:30Z'
-last_heartbeat_at: '2026-08-02T02:58:30Z'
-controller_authorization_sha: cd1b86517b314d7738240a515f90e4c73ef9314e
-latest_valid_observed_control_head_sha: 79fb3b949cf7b551aff939df868b048dc227213e
-reconciled_state_based_on_control_head_sha: cd1b86517b314d7738240a515f90e4c73ef9314e
-ready_authorization_control_head_sha: cd1b86517b314d7738240a515f90e4c73ef9314e
-ready_entry_state_based_on_control_head_sha: cd1b86517b314d7738240a515f90e4c73ef9314e
-ready_entry_payload_digest: 3351222de3826f808045384787925df0366f232ae4b279d7426a897f26538728
+phase: P18_registration_002_two_P2_correction_terminal
+claimed_by: codex-i36-P18-correction-62a752ae
+claim_time: '2026-08-02T03:17:23Z'
+claim_id: 62a752ae-c2a0-4f3f-8a1c-08bde30fa02a
+lease_id: 8e17574a-ee4d-468e-ae70-557b8f16dd76
+lease_issued_at: '2026-08-02T03:17:23Z'
+lease_expires_at: '2026-08-02T06:17:23Z'
+lease_released_at: '2026-08-02T03:38:22Z'
+last_heartbeat_at: '2026-08-02T03:38:22Z'
+controller_authorization_sha: aee8c07684270736b6947a008a4a0d620c61ed6c
+latest_valid_observed_control_head_sha: 702cce4dbe6cb6160c10144f212dc6627676f1a8
+reconciled_state_based_on_control_head_sha: aee8c07684270736b6947a008a4a0d620c61ed6c
+ready_authorization_control_head_sha: aee8c07684270736b6947a008a4a0d620c61ed6c
+ready_entry_state_based_on_control_head_sha: aee8c07684270736b6947a008a4a0d620c61ed6c
+ready_entry_payload_digest: 8b2f9db9ffbe3c4a2635f53d68447cfac421416b869df5a433dffac28fc7d4ea
 claim_mode: new
-expected_existing_head_sha: 06a4e660bb00f37100a93abd11561351dfce9b79
-lease_phase_scope: exact_P18_registration_002_22_product_test_paths_and_runtime_triplet_only
+expected_existing_head_sha: 89f9adf886a15f396b6713dfdf0259bfde27bb0d
+lease_phase_scope: exact_P18_service_time_fences_two_product_paths_and_runtime_triplet_only
 writer_slot_leases_released:
   - slot: EMBEDDED_CLASSROOM
-    lease_id: a7253f6b-9caa-43c5-868e-7bedd6cf2d14
-  - slot: SERVER_COMPOSER
-    lease_id: 2e138bdd-6f07-4d23-8212-38d74ca5ebf1
-  - slot: CLIENT_COMPOSER
-    lease_id: 16e48e6c-596c-40ed-8dec-5bcfd4066f0d
-  - slot: BARREL_REGISTRAR
-    lease_id: aee0be4b-ee54-418a-9e2e-90172f345dad
+    lease_id: b20881f5-369e-40c7-a0dd-d28366d9a57f
   - slot: RELEASE_INTEGRATOR
-    lease_id: 6467fc1b-0f35-4e12-80d9-8ef68cb6bd35
+    lease_id: 8e17574a-ee4d-468e-ae70-557b8f16dd76
+P18_registration_002_two_P2_correction_terminal:
+  containing_control_head_sha: 702cce4dbe6cb6160c10144f212dc6627676f1a8
+  state_basis_control_head_sha: aee8c07684270736b6947a008a4a0d620c61ed6c
+  exact_authorized_start_sha: 89f9adf886a15f396b6713dfdf0259bfde27bb0d
+  ready_entry_payload_digest: 8b2f9db9ffbe3c4a2635f53d68447cfac421416b869df5a433dffac28fc7d4ea
+  held_implementation_terminal:
+    head_sha: 89f9adf886a15f396b6713dfdf0259bfde27bb0d
+    parent_sha: 06a4e660bb00f37100a93abd11561351dfce9b79
+    tree_sha: 80a11f4da6a0167f9e09b121ebd563c7e40825a4
+    product_manifest_digest: 580da8c07974aca4301b4ed995ae98f38bc4c61f4f6960b71aee219ad5684f5e
+    independent_review: zero_P1_two_P2
+  authority_transcription_correction:
+    initial_control_head_sha: aee8c07684270736b6947a008a4a0d620c61ed6c
+    initial_ready_entry_payload_digest: 0bf98b78df197259b697d89cf14c17e8392a1ef4ee51e5d23aa03281aac94c80
+    incorrectly_transcribed_tree_sha: 80a11f4df41545aa31405843255d354cedfaef9a
+    incorrectly_transcribed_product_manifest_digest: 580da8f6341e3c962e80e01b579ee7afd2a8867e198772db735f9dd74d287551
+    corrected_control_head_sha: 702cce4dbe6cb6160c10144f212dc6627676f1a8
+    corrected_tree_sha: 80a11f4da6a0167f9e09b121ebd563c7e40825a4
+    corrected_product_manifest_digest: 580da8c07974aca4301b4ed995ae98f38bc4c61f4f6960b71aee219ad5684f5e
+    scope_preimages_claim_and_leases_changed: false
+  claim_id: 62a752ae-c2a0-4f3f-8a1c-08bde30fa02a
+  writer_id: codex-i36-P18-correction-62a752ae
+  lease_issued_at: '2026-08-02T03:17:23Z'
+  lease_expires_at: '2026-08-02T06:17:23Z'
+  lease_released_at: '2026-08-02T03:38:22Z'
+  last_heartbeat_at: '2026-08-02T03:38:22Z'
+  writer_slot_leases_released:
+    - slot: EMBEDDED_CLASSROOM
+      lease_id: b20881f5-369e-40c7-a0dd-d28366d9a57f
+    - slot: RELEASE_INTEGRATOR
+      lease_id: 8e17574a-ee4d-468e-ae70-557b8f16dd76
+  effect_lock_leases: []
+  exact_scope:
+    product_paths: 2
+    runtime_paths: 3
+    total_paths: 5
+    product_path_inventory_digest: dc7a45f788a00e8bd7149c3d789f7413220e4bdf4d6415fec0ee730200b00212
+    runtime_path_inventory_digest: bdf3cfe7a516fb00f891ef66f1f752591ce3d894243bbe50393980d10a3a441a
+    release_path_inventory_digest: 6e7411f3b136e23a3187210a893038b2fd9c16455227d93aa0dc6efda6967640
+    authorized_preimage_manifest_digest: 4144b996e5bff0b1f08ef7ffcac2ddead499120701a3638f1293eb4330b76509
+    manifest_algorithm: sha256_compact_UTF8_JSON_path_sorted_path_and_raw_blob_sha256
+  product_artifact:
+    canonical_json_manifest_digest: f62dcdebba981de49f2beecbc2e80a433f354675751f9f95e9549e39de0b4d42
+    paths:
+      apps/web/src/server/features/classroom/embedded/service.test.ts: dd3fdd671213283ee6a08a2d03762a47944fa50eaddabdd76d2e3d658b48478b
+      apps/web/src/server/features/classroom/embedded/service.ts: 89fd65541b518a8aeaa41ef2e4b5baaeecdbe29f493eb0f08a97e23c719258dd
+  corrected_findings:
+    embedded_client_attendance_session_fence: active_state_finite_lease_and_strict_expiry_before_context_or_evidence
+    attendance_negative_cases: revoked_exact_expiry_past_expiry_invalid_expiry_and_invalid_authoritative_time
+    signer_timestamp_fence: finite_issued_and_expiry_with_issued_lte_now_lt_expiry_positive_lifetime_max_60_seconds
+    signer_minimum_output: semantic_three_part_numeric_SDK_version_9_to_32_digit_meeting_number_nonblank_non_URL_values_Student_role_classroom_leave_path_boolean_recording_state
+    signer_failure_grant_consumption: terminal_commit_preserved
+    fresh_grant_retry: preserved_and_tested
+  completed_validation:
+    corrected_service_tests: passed_25_of_25
+    full_focused_P18_packet: passed_90_of_90_across_10_files
+    scoped_eslint: passed_zero_findings_2_files
+    scoped_prettier: passed_2_of_2
+    client_build: passed
+    changed_path_type_diagnostics: zero
+    workspace_typecheck: baseline_blocked_exactly_4_unchanged_out_of_scope_diagnostics
+    corrected_control_binding: passed
+    exact_authorized_preimages: passed_5_of_5
+    exact_changed_path_scope: passed_5_of_5
+    product_postimage_manifest: passed_f62dcdebba981de49f2beecbc2e80a433f354675751f9f95e9549e39de0b4d42
+    runtime_yaml_parse: passed
+    runtime_and_product_format: passed_5_of_5
+    repository_secret_scan: passed_3183_text_files
+    diff_check: passed
+  preservation:
+    all_other_product_or_test_paths_changed: false
+    migration_config_lockfile_control_or_request_change: false
+    provider_network_persistent_database_candidate_deploy_or_DNS_action: false
+  external_effects:
+    attempted: 0
+    succeeded: 0
+    reconciled: 0
+  safe_next_action: >-
+    Push this exact five-path two-P2 correction terminal and stop for C00
+    independent review. Candidate binding, native PostgreSQL proof, provider,
+    database, deploy, DNS, send, charge, cleanup, and every external effect
+    remain separately gated.
 P18_registration_002_implementation_terminal:
   containing_control_head_sha: 79fb3b949cf7b551aff939df868b048dc227213e
   state_basis_control_head_sha: cd1b86517b314d7738240a515f90e4c73ef9314e
@@ -942,9 +1018,15 @@ merge_result_head_sha: 9a028e7a967221441dfd4d5cf9417eb2885a072f
 merge_parent_target_head_sha: c19c90777e0562c6fa77e30f0e0fc7ab9ba300f9
 merge_parent_source_head_sha: 3364c1c31ef12a81abf02cf9f80f7e8008c1778f
 prior_postmerge_integrator_fix_head_sha: e423868957f3a3cb9ddf992e39368fceb15661c0
-state_based_on_head_sha: 06a4e660bb00f37100a93abd11561351dfce9b79
+state_based_on_head_sha: 89f9adf886a15f396b6713dfdf0259bfde27bb0d
 last_implementation_commit_sha: derive_with_git_rev_parse_HEAD
 completed_steps:
+  - Accepted exact five-path P18 correction authority from corrected containing control 702cce4dbe6cb6160c10144f212dc6627676f1a8, state basis aee8c07684270736b6947a008a4a0d620c61ed6c, READY 8b2f9db9ffbe3c4a2635f53d68447cfac421416b869df5a433dffac28fc7d4ea, and clean integration start 89f9adf886a15f396b6713dfdf0259bfde27bb0d.
+  - Reproduced all five authorized preimages, exact path inventories and preimage manifest; recorded that control 702cce4d corrected only the initially mistranscribed start-tree and prior-product-manifest values while scope, claim, leases, and preimages remained unchanged.
+  - Added the pre-context active/unexpired live-session fence for embedded-client attendance and covered revoked, exact-expiry, past-expiry, invalid-expiry, and invalid-authoritative-time denials before evidence or append.
+  - Hardened the signer envelope to finite strict time bounds and minimally usable SDK fields; preserved terminal grant consumption on signer failure and proved a fresh-grant retry succeeds.
+  - Passed the corrected service suite at 25/25 and the full focused P18 packet at 90/90, scoped ESLint/Prettier, client build, zero changed-path type diagnostics, and the unchanged four-diagnostic workspace type baseline.
+  - Released EMBEDDED_CLASSROOM lease b20881f5-369e-40c7-a0dd-d28366d9a57f and RELEASE_INTEGRATOR lease 8e17574a-ee4d-468e-ae70-557b8f16dd76 at 2026-08-02T03:38:22Z before expiry; no provider, network, database, candidate, deploy, DNS, send, charge, cleanup, or external effect occurred and effects remain 0/0/0.
   - Accepted exact P18-registration-002 implementation authority from containing control 79fb3b949cf7b551aff939df868b048dc227213e, state basis cd1b86517b314d7738240a515f90e4c73ef9314e, READY 3351222de3826f808045384787925df0366f232ae4b279d7426a897f26538728, and clean integration start 06a4e660bb00f37100a93abd11561351dfce9b79.
   - Reproduced the admitted request raw/canonical digests, exact 22-product/3-runtime inventories, all eleven existing product preimages and eleven explicit new-path absences, and the product/release preimage manifests before editing.
   - Implemented the protected constant Student classroom, server-derived identity/scope/CSRF boundary, one captured PostgreSQL repository with the existing P22 projection callback, 60-second bootstrap, 30-second heartbeat, 90-second single-device lease, current-authorization recheck contract, and reconciled attendance intake within the exact ceiling.
@@ -2265,45 +2347,25 @@ family_parent_session_composition_binding:
       fixture, and stale login email-link-confirm markup expectation.
   external_effects: 0/0/0
 remaining_steps:
-  - C00 must independently review the exact pushed 25-path child of 06a4e660bb00f37100a93abd11561351dfce9b79, implementation semantics, product postimages, exact scope and preimages, released five leases, clean remote equality, and effects 0/0/0.
+  - C00 must independently review the exact pushed five-path child of 89f9adf886a15f396b6713dfdf0259bfde27bb0d, both P2 corrections, corrected authority binding, product postimages, exact scope and preimages, released two leases, clean remote equality, and effects 0/0/0.
   - Candidate binding must separately supply and read back the real F03/P16/P32 context resolver, Meeting SDK signer, verified provider-attendance intake including raw-webhook handling if required, and Admin attendance-subject resolver; native PostgreSQL candidate proof remains required before freeze.
   - Exact `/app/classroom` post-login return support requires separate F03-owned authority if desired; the current safe signed-out flow returns to `/app/student` and requires an explicit click back to Classroom.
   - Candidate freeze, provider or registry work, persistent-database work, deployment, DNS, billing, contact, send, activation, cleanup, and every external successor action require separate exact authority.
 next_action: >-
   STOP. C00 must independently review the exact pushed P18-registration-002
-  implementation terminal with sole parent
-  06a4e660bb00f37100a93abd11561351dfce9b79, exact 22-product/3-runtime
-  scope, preimages and product postimages, implementation and validation truth,
-  all five released writer leases, clean local/tracking/live equality, and
-  effects 0/0/0 before admitting it or advancing candidate binding.
+  two-P2 correction terminal with sole parent
+  89f9adf886a15f396b6713dfdf0259bfde27bb0d, exact two-product/three-runtime
+  scope, preimages and product postimages, corrected control binding, both
+  released writer leases, clean local/tracking/live equality, and effects 0/0/0
+  before admitting it or advancing candidate binding.
 requirements: {}
 acceptance_cases: {}
 current_checkpoint_changed_paths:
-  - apps/web/src/client/app/portal-entry.tsx
-  - apps/web/src/client/app/student/classroom/StudentClassroomWorkspace.test.tsx
-  - apps/web/src/client/app/student/classroom/StudentClassroomWorkspace.tsx
-  - apps/web/src/client/app/student/classroom/api.test.ts
-  - apps/web/src/client/app/student/classroom/api.ts
-  - apps/web/src/server/app.ts
-  - apps/web/src/server/features/classroom/embedded/adapters.test.ts
-  - apps/web/src/server/features/classroom/embedded/adapters.ts
-  - apps/web/src/server/features/classroom/embedded/composition.test.ts
-  - apps/web/src/server/features/classroom/embedded/composition.ts
-  - apps/web/src/server/features/classroom/embedded/index.ts
-  - apps/web/src/server/features/classroom/embedded/router.test.ts
-  - apps/web/src/server/features/classroom/embedded/router.ts
   - apps/web/src/server/features/classroom/embedded/service.test.ts
   - apps/web/src/server/features/classroom/embedded/service.ts
   - ops/v2.1-execution/runtime/I36/HANDOFF.md
   - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
   - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
-  - packages/contracts/src/classroom/embedded/index.ts
-  - packages/contracts/src/index.ts
-  - packages/db/src/classroom/attendance/repository.test.ts
-  - packages/db/src/classroom/attendance/repository.ts
-  - packages/db/src/index.ts
-  - packages/domain/src/index.ts
-  - tests/integration/classroom/embedded-classroom-mount.test.ts
 changed_paths:
   - apps/web/src/client/app/portal-entry.tsx
   - apps/web/src/client/app/router/index.ts

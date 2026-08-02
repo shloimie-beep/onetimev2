@@ -1,6 +1,68 @@
 # I36 Integration Releases
 
-## Current terminal - P18-registration-002 implementation
+## Current terminal - P18-registration-002 two-P2 correction
+
+Corrected containing control `702cce4dbe6cb6160c10144f212dc6627676f1a8`,
+based on `aee8c07684270736b6947a008a4a0d620c61ed6c`, authorizes this exact
+five-path child under READY
+`8b2f9db9ffbe3c4a2635f53d68447cfac421416b869df5a433dffac28fc7d4ea`.
+The authorized start and required sole parent is held implementation terminal
+`89f9adf886a15f396b6713dfdf0259bfde27bb0d`, independently reviewed at zero
+P1 and two P2 findings.
+
+The initial control dispatch `aee8c076...` correctly bound the start, five
+paths, five preimages, claim, and two leases, but mistranscribed the start tree
+as `80a11f4df41545aa31405843255d354cedfaef9a` and prior product manifest as
+`580da8f6341e3c962e80e01b579ee7afd2a8867e198772db735f9dd74d287551`.
+Control `702cce4d...` corrects those evidence values to start tree
+`80a11f4da6a0167f9e09b121ebd563c7e40825a4` and prior product manifest
+`580da8c07974aca4301b4ed995ae98f38bc4c61f4f6960b71aee219ad5684f5e`.
+No scope, preimage, claim, or lease changed.
+
+The first P2 is closed by rejecting embedded-client attendance immediately
+after the fresh session load unless the session is active, both the
+authoritative command time and lease expiry are finite, and the lease expires
+strictly after that command time. The fence runs before context resolution,
+evidence loading, reconciliation, or append. Tests cover revoked, exact-expiry,
+past-expiry, invalid-expiry, and invalid-authoritative-time cases.
+
+The second P2 is closed by rejecting signer envelopes unless issue, current,
+and expiry times are finite and satisfy `issued_at <= now < expires_at`,
+`expires_at > issued_at`, and a maximum 60-second lifetime. The server also
+requires a semantic three-part dotted-numeric SDK version, a 9-32 digit meeting
+number, nonblank non-URL SDK values, Student role, exact `/app/classroom` leave
+path, and boolean recording state. The existing commit-before-sign boundary is
+preserved: signer failure leaves that grant terminal, while a fresh grant can
+retry successfully.
+
+The exact two-product postimage manifest is
+`f62dcdebba981de49f2beecbc2e80a433f354675751f9f95e9549e39de0b4d42`.
+The two-product and five-path inventories remain
+`dc7a45f788a00e8bd7149c3d789f7413220e4bdf4d6415fec0ee730200b00212`
+and `6e7411f3b136e23a3187210a893038b2fd9c16455227d93aa0dc6efda6967640`;
+all five preimages reproduce manifest
+`4144b996e5bff0b1f08ef7ffcac2ddead499120701a3638f1293eb4330b76509`.
+
+The corrected service suite passes 25/25 and the full focused P18 packet passes
+90/90 across ten files. Both changed TypeScript files pass ESLint and Prettier;
+the client build passes; changed-path type diagnostics are zero; workspace
+typecheck retains only the exact four unchanged Stripe and duplicate-Playwright
+baselines.
+
+Claim `62a752ae-c2a0-4f3f-8a1c-08bde30fa02a`, EMBEDDED_CLASSROOM lease
+`b20881f5-369e-40c7-a0dd-d28366d9a57f`, and RELEASE_INTEGRATOR lease
+`8e17574a-ee4d-468e-ae70-557b8f16dd76` were released at
+`2026-08-02T03:38:22Z`, before the `2026-08-02T06:17:23Z` expiry. No provider,
+network, persistent-database, candidate, deployment, DNS, send, charge,
+customer, cleanup, or external effect occurred; effects remain `0/0/0`.
+
+I36 must push this exact five-path terminal, prove clean local/tracking/live
+equality, and stop for C00 independent review. Candidate and every external
+successor action remain separately gated.
+
+All sections below are retained historical release records and audit prompts.
+
+## Historical terminal - P18-registration-002 implementation
 
 Containing control `79fb3b949cf7b551aff939df868b048dc227213e`, based on
 `cd1b86517b314d7738240a515f90e4c73ef9314e`, authorized the admitted P18
