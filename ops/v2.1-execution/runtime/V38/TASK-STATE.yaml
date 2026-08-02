@@ -1,0 +1,66 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: V38
+task_packet_digest: 3403b63fe06ad196d88bbae00e4596fe19dc89ce15b9d3473b30fe0a1c1aa290
+task_context_digest: 39c4601c278333c7213400a13f3098258b51666dd019f2f83d385dee87a62bfd
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+branch: codex/v21-verify-ea45b0ab10ec-v38
+start_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
+dependency_heads:
+  I36:
+    required_state: candidate_frozen
+    candidate_source_sha: 0a5ef2e1e6ba88b151334f2aa78bee9cd8949365
+    canonical_candidate_digest: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
+    candidate_manifest_digest: 30867a96bfc5370ead95b83b6519b4ec365947d874c609dd8e5dbecba7e54876
+status: active
+phase: candidate_bound_verification
+claimed_by: codex-v38-26c2da65
+claim_time: '2026-08-02T11:50:03Z'
+claim_id: 26c2da65-06c8-4b4d-8ccb-94d405851013
+lease_expires_at: '2026-08-02T15:50:03Z'
+last_heartbeat_at: '2026-08-02T12:00:29Z'
+controller_authorization_sha: 01e5c84ddca04467e16fff73754be368f59bb7fb
+ready_entry_payload_digest: 12ed1af9ea95163f43b6a2b7a95ca64f2e964d9319e9a0044670d33a604edbfb
+writer_slot_leases:
+  VERIFY_PORTALS_UX:
+    lease_id: a70c05e8-84c4-45e9-8e2a-12cb7e433d73
+    lease_expires_at: '2026-08-02T15:50:03Z'
+state_based_on_head_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
+last_implementation_commit_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
+completed_steps:
+  - Verified the exact remote V38 control registration and READY entry.
+  - Rejected branch collision by confirming the remote verifier head equals the authorized start SHA.
+  - Bound the lane to the frozen candidate and its manifest digest.
+remaining_steps:
+  - Verify all 58 assigned cases in their allowed environments.
+  - Write candidate-bound attempt records and CURRENT pointers.
+  - Validate evidence, release the writer lease, and push the terminal checkpoint.
+next_action: Extract the normative V38 case matrix, then execute the focused candidate-bound verification set without provider mutation.
+requirements:
+  expected: 58
+  completed: 0
+acceptance_cases:
+  expected: 58
+  passed: 0
+  failed: 0
+  blocked: 0
+  stale: 0
+  waived: 0
+changed_paths:
+  - ops/v2.1-execution/runtime/V38/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/V38/HANDOFF.md
+  - ops/v2.1-execution/runtime/V38/NEXT-PROMPT.md
+migrations: []
+steward_requests: []
+verification:
+  commands_run:
+    - git fetch origin --prune
+    - remote control/READY/branch identity and payload digest verification
+  known_baseline_failures: []
+external_effects:
+  authority: read_only_only
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings: []
