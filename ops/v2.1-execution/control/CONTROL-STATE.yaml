@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: operational
-active_phase: corrected_candidate_refreeze_authorized
+active_phase: corrected_candidate_refreeze_delta_review
 bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
@@ -14,14 +14,14 @@ bootstrap_phase_order:
 reviewed_head: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
-candidate: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
+candidate: 68af08379cf596a2c8dfac28253487fb21fea222c6ea1275d096a6f972130ee8
 active_writer_limit: 4
-controller_authorization_sha: 04ceb6e3899198c6baeb560e4b6a5006ecbca635
+controller_authorization_sha: 8b2871228ecc0be54aa299dc4d25dad60afd27e1
 next_action: >-
-  Build and validate a corrected immutable candidate from exact source 7943a20895939f66b6755d02f819165850d1042f
-  and successful source-bound PostgreSQL proof run 30748901653, then push one candidate-freeze checkpoint for delta
-  review. No production deployment, DNS, provider/customer mutation, contact, send, enrollment, billing, cleanup,
-  operator canary, or broad production effect is authorized by this checkpoint.
+  Complete one independent delta-only identity review of corrected candidate-refreeze head
+  32bb6ea3889f5ea5dfb2541a17f5d37e0f7f7418. Do not create its evidence branch or perform a production deployment,
+  DNS change, provider/customer mutation, contact, send, enrollment, billing, cleanup, operator canary, or broad
+  production effect until the exact candidate is accepted.
 corrected_candidate_refreeze_authority:
   recorded_at: '2026-08-02T13:05:10Z'
   control_basis_sha: 04ceb6e3899198c6baeb560e4b6a5006ecbca635
@@ -40,6 +40,27 @@ corrected_candidate_refreeze_authority:
   manifest_postimage_sha256: 16f5452c0feea8252f5bc8b544cb3b3514aad65fb6c1f4c35d5044e641c00824
   ready_entry_payload_digest: 30469bad977f43bf1631a3cb22dc714bcbaf01792e2969336108ead35e4cd36b
   external_effect_authority: none
+corrected_candidate_refreeze_terminal:
+  recorded_at: '2026-08-02T13:12:51Z'
+  control_basis_sha: 8b2871228ecc0be54aa299dc4d25dad60afd27e1
+  parent_integration_sha: 42065da2be8334382b2491c8e1d1a3a43231ab98
+  terminal_head_sha: 32bb6ea3889f5ea5dfb2541a17f5d37e0f7f7418
+  repository_source_sha: 7943a20895939f66b6755d02f819165850d1042f
+  canonical_candidate_digest: 68af08379cf596a2c8dfac28253487fb21fea222c6ea1275d096a6f972130ee8
+  candidate_manifest_commit_sha: 32bb6ea3889f5ea5dfb2541a17f5d37e0f7f7418
+  derivation_sha256: 9abad1cd94a58cd124667c0ff69aa022bb27bfa6de7cddd77363bdbed32ab1d6
+  manifest_sha256: 16f5452c0feea8252f5bc8b544cb3b3514aad65fb6c1f4c35d5044e641c00824
+  path_count: 5
+  path_inventory_digest: 539038dfedbb69cd1b6e23ea35f6c7184c3dc895620aa29e2d75c805587b84c8
+  preimage_manifest_digest: b897ac1c0f20932ad3b2ee6798f12d936ced31d801826e58a53cb4393e615853
+  candidate_builder: passed_4_of_4
+  candidate_document_reproduction: passed
+  runtime_prettier: passed_3_of_3
+  exact_scope_and_diff: passed_5_of_5
+  source_bound_pg18_run_id: 30748901653
+  writer_lease_released_at: '2026-08-02T13:09:25Z'
+  independent_delta_review: in_progress
+  provider_or_external_effects: 0/0/0
 corrected_source_integration_terminal:
   recorded_at: '2026-08-02T12:44:55Z'
   state_basis_control_head_sha: d488ff76efbf2dad0052b0eeaf97003a79ab5b8e

@@ -72,8 +72,8 @@ ready:
     reasoning: XHIGH
   - task_id: I36
     lane: candidate_freeze_preparation
-    status: ready
-    phase: corrected_candidate_refreeze_authorized
+    status: consumed
+    phase: corrected_candidate_refreeze_terminal_review_in_progress
     branch: codex/v21-integration
     preparation_branch: codex/v21-launch-critical-correction
     claim_mode: new
@@ -261,15 +261,18 @@ ready:
     effect_lock_leases: []
     prior_writer_slot_leases_released:
       - { slot: RELEASE_INTEGRATOR, lease_id: 8a7206c7-0c56-4fab-9565-63a2859077a2 }
-    writer_slot_leases:
+    writer_slot_leases_released:
       - { slot: RELEASE_INTEGRATOR, lease_id: 6adaaa97-05a1-4538-9ad8-4db69d90c877 }
     claim_id: ce000af6-1d5a-4e90-bdcf-c777e507f451
     writer_id: codex-i36-candidate-refreeze-ce000af6
     lease_issued_at: '2026-08-02T13:05:10Z'
     lease_expires_at: '2026-08-02T14:05:10Z'
+    lease_released_at: '2026-08-02T13:09:25Z'
     prior_lease_released_at: '2026-08-02T11:35:37Z'
     prior_terminal_head_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
     prior_terminal_review: P1_0_P2_0_P3_0
+    terminal_head_sha: 32bb6ea3889f5ea5dfb2541a17f5d37e0f7f7418
+    terminal_review: in_progress
     heartbeat_interval_minutes: 15
     prompt_path: ops/v2.1-execution/prompts/I36-START-OR-RESUME.md
     model: GPT-5.6-SOL
@@ -421,7 +424,7 @@ ready:
     reasoning: XHIGH
 entry_payload_digests:
   F02: 388c28b5c4c946a75f9f4e9ddb103e69193a505e3889a88aaad744ac9e5388c7
-  I36: 30469bad977f43bf1631a3cb22dc714bcbaf01792e2969336108ead35e4cd36b
+  I36: null
   V37: 30d6912c416db8490f9e018cf6d0d833bd02a784efb8c234dc4e01ddb6e3139c
   V38: 12ed1af9ea95163f43b6a2b7a95ca64f2e964d9319e9a0044670d33a604edbfb
   V39: 56fc1adbe802ad3516651db0a9e83f89aa552de163e2c9f16a27367df4d4d68f
