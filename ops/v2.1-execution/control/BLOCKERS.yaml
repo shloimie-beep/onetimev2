@@ -352,22 +352,24 @@ blockers:
   - V37
   - V40
   safe_work_completed: >-
-    I36 pushed source checkpoint 9082f301 with effects 0/0/0, but independent review held it on one P1 and two P2 findings.
-    The regenerated registry pruned 24 historical entries yet added zero v2.1 IDs: locked source 05 defines 93 canonical
-    RT-PUB/RT-AUTH/RT-ADM/RT-PAR/RT-STU routes, while only 21 currently have truthful route-specific handlers and 72 remain
-    unmounted or default-fallback paths. The registry also hashes checkout newline bytes, so clean Windows and LF checkouts
-    disagree. The candidate builder trusts caller-controlled expected_paths and fictional dist server/worker outputs, so a
-    self-consistent omission passes. C00 has held freeze and dispatched one exact 55-path route/composition/builder correction
-    from 9082f301 under READY 85ff11c4; no native PostgreSQL, metadata freeze, provider, deploy, or external effect occurred.
+    I36 pushed fail-closed source checkpoint e7417f39 from exact 9082f301 with 93 canonical IDs declared as 46 ready,
+    17 isolated, and 30 missing; exact scope, Git-blob hashes, focused tests, typecheck, build, clean install, released leases,
+    remote equality, and effects 0/0/0 passed. Independent review still held two P1 and two P2, and specialist route review
+    found additional false-ready behavior: incomplete deployable artifact identity; raw retired-role authorization; Parent
+    support and wrong-role v2.1 session mismatch; Student self-password mutation; public/missing Admin support shadowing;
+    classroom shadowing; generic or wrong-target Admin/Student aliases; incomplete signup result; and one-directional visible
+    action parity omitting School inquiry. C00 has held freeze and dispatched one exact 58-path correction from e7417f39
+    under READY d58967bf; no native PostgreSQL, metadata freeze, provider, deploy, or external effect occurred.
   required_authority_or_input:
-  - Converge all 93 canonical routes truthfully, using explicit aliases only where the intended behavior exists
-  - Derive registry source hashes and candidate inputs from exact Git blobs at the exact source SHA
-  - Build deterministic deployable archive or artifact provenance without caller-controlled expected paths or fictional dist files
+  - Correct or downgrade every reviewed false-ready route while preserving all 93 exact canonical IDs
+  - Close canonical role/session, Student credential, support-order, and classroom-compatibility safety defects
+  - Bind normative application-content inventory and complete deployable web/worker artifacts or contexts at the exact source SHA
+  - Enforce bidirectional visible-action/source parity including the mounted School inquiry action
   protection: >-
     Do not run or modify the historical OT81 release-evidence writer, label a default fallback ready, invent product behavior,
     reintroduce retired/demo/preview/test surfaces or roles, or continue native PostgreSQL/freeze/provider work before one
     independently accepted corrected source checkpoint.
-  next_check: Re-review the exact 55-path correction terminal; close only after zero P1/P2 and exact 93-route semantic parity.
+  next_check: Re-review the exact 58-path correction terminal; close only after zero P1/P2 and exact 93-route semantic parity.
 - blocker_id: P21-CANONICAL-CONTENT-STATE-WRITER
   status: open
   scope: controlled_launch_candidate

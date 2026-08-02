@@ -3,7 +3,32 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
-# Latest I36 canonical route and candidate-source correction
+# Latest I36 held source review correction
+
+Resume from exact clean local/tracking/live integration
+`e7417f39e71fbb4fb45aa4a9436ba78496020063` under the containing control descendant of
+`71342aa60de3f3840c70555a616cded8f5672989`. Reproduce canonical READY digest
+`d58967bf53d161676d1a8c198f76c399a22c0e321e13d2b349e85605fd7cc209`, claim
+`b2d91877-4afc-4307-ae16-e3eeb4ea27e6`, writer `codex-i36-held-source-correction-b2d91877`, and the exact
+CLIENT_COMPOSER, SERVER_COMPOSER, and RELEASE_INTEGRATOR leases through `2026-08-02T12:45:22Z`.
+
+Change only the 58 READY-bound paths. Treat e7417f39 as held. Fix or downgrade every reviewed false-ready route, with
+specific coverage of ADM-001/020/021/024/032/035/036/040/043/050/051, PAR-060/061, STU-040/041/042/050, PUB-003, and
+AUTH-006. Normalize legacy Admin identities at the canonical boundary, deny Student self-password mutation in UI and
+server, preserve v2.1 Parent authentication for denial semantics, prevent public/missing Admin support shadowing, and keep
+the protected legacy Student classroom reachable while STU-012 remains isolated.
+
+Make `application_content_sha256` the normative sorted path-NUL-sha256 inventory. Bind web/worker digests to complete
+deployable artifacts or deterministic contexts containing every Dockerfile COPY and Railway/deployment input at the exact
+source SHA. Enforce bidirectional visible-action/source parity, including School inquiry. Reproduce and close the classroom
+regression; run focused route/auth/portal/support/registry/builder/classroom tests, proportional static/build gates, secret
+and diff checks, plus one clean `npm ci` verification. Push one corrected source checkpoint, update only the I36 runtime
+triplet at terminal, release all three leases, prove live equality, and stop for independent review.
+
+Do not run native PostgreSQL, write candidate metadata, freeze, inspect or mutate providers, use a persistent database,
+deploy, change DNS, send, charge, clean external assets, or perform any external effect. Effects remain `0/0/0`.
+
+# Superseded I36 canonical route and candidate-source correction
 
 Resume from exact clean local/tracking/live integration
 `9082f3015d6fe95cf374266b49a9e4db7ae69ead` under the containing control descendant of

@@ -1,4 +1,20 @@
-# Canonical route and candidate-source correction — current handoff
+# Held source review correction — current handoff
+
+Fail-closed source checkpoint `e7417f39e71fbb4fb45aa4a9436ba78496020063` is clean, pushed, and effect-free, but it is
+held by independent review. Its exact 93-route inventory declares 46 ready, 17 isolated, and 30 missing. At least nineteen
+ready claims are not behavior-truthful, and the candidate builder still binds partial source archives rather than normative
+application inventory plus complete deployable artifacts or contexts. Canonical Admin authorization accepts raw retired
+roles; Parent support and denial paths mishandle v2.1 sessions; Student Updates exposes self-password mutation; legacy
+support/classroom registration order violates fail-closed compatibility; and visible-action parity omits School inquiry.
+
+C00 has dispatched one lean 58-path correction from exact `e7417f39` under READY
+`d58967bf53d161676d1a8c198f76c399a22c0e321e13d2b349e85605fd7cc209`, I36 claim
+`b2d91877-4afc-4307-ae16-e3eeb4ea27e6`, and CLIENT/SERVER/RELEASE leases through `2026-08-02T12:45:22Z`.
+The correction must fix or downgrade every reviewed false-ready route, close the role/session/credential/order defects,
+bind complete candidate identity at the exact source SHA, enforce bidirectional route/action/source parity, reproduce and
+close the classroom regression, push one corrected source checkpoint, release all leases, and stop for independent review.
+
+## Superseded canonical route and candidate-source correction handoff
 
 Candidate-source checkpoint `9082f3015d6fe95cf374266b49a9e4db7ae69ead` is clean and effect-free but is held by
 independent review on one P1 and two P2 findings. The visible-action registry contains no newly generated v2.1 IDs and

@@ -8,15 +8,15 @@ branch: codex/v21-control
 start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
-phase: canonical_route_and_candidate_source_correction_dispatch
-claimed_by: codex-c00-route-correction-ada2d953
-claim_time: '2026-08-02T05:17:02Z'
-claim_id: ada2d953-98df-47a5-adff-4604a3f2c198
-lease_expires_at: '2026-08-02T11:17:02Z'
-last_heartbeat_at: '2026-08-02T05:17:02Z'
-controller_authorization_sha: 61d52aa85f3f040187c21081c0e17a83544f9443
-ready_entry_payload_digest: 85ff11c44fdcd4426a821250ae554e8f7a251edd7fd6e0d9ac610df9d58bafc8
-state_based_on_head_sha: 61d52aa85f3f040187c21081c0e17a83544f9443
+phase: held_source_review_correction_dispatch
+claimed_by: codex-c00-held-source-correction-1b0de035
+claim_time: '2026-08-02T06:45:22Z'
+claim_id: 1b0de035-309f-4e7d-86b7-7408c45e2bc5
+lease_expires_at: '2026-08-02T12:45:22Z'
+last_heartbeat_at: '2026-08-02T06:45:22Z'
+controller_authorization_sha: 71342aa60de3f3840c70555a616cded8f5672989
+ready_entry_payload_digest: d58967bf53d161676d1a8c198f76c399a22c0e321e13d2b349e85605fd7cc209
+state_based_on_head_sha: 71342aa60de3f3840c70555a616cded8f5672989
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 candidate_preparation_dispatch_boundary:
   recorded_at: '2026-08-02T04:10:47Z'
@@ -61,6 +61,29 @@ canonical_route_correction_dispatch_boundary:
   I36_RELEASE_INTEGRATOR_lease_id: 8a34d221-1333-4ed3-a4af-3ad930ef3a3b
   I36_lease_expires_at: '2026-08-02T11:17:02Z'
   I36_ready_entry_payload_digest: 85ff11c44fdcd4426a821250ae554e8f7a251edd7fd6e0d9ac610df9d58bafc8
+  native_postgresql_or_candidate_freeze_authority: none_until_corrected_source_acceptance
+  provider_or_external_effect_authority: none
+  external_effects: 0/0/0
+held_source_review_correction_dispatch_boundary:
+  recorded_at: '2026-08-02T06:45:22Z'
+  control_basis_sha: 71342aa60de3f3840c70555a616cded8f5672989
+  held_source_checkpoint_sha: e7417f39e71fbb4fb45aa4a9436ba78496020063
+  held_source_checkpoint_parent_sha: 9082f3015d6fe95cf374266b49a9e4db7ae69ead
+  held_source_checkpoint_tree_sha: a0c2037c923d54f4db16d1531ceeb8e1573f7f70
+  held_source_checkpoint_timestamp: '2026-08-02T09:32:05+03:00'
+  held_source_checkpoint_review: held_two_P1_two_P2_plus_specialist_route_findings
+  declared_route_truth: 93_total_46_ready_17_isolated_30_missing
+  truthful_ready_upper_bound_before_correction: 27
+  exact_path_count: 58
+  exact_path_inventory_digest: 6995f60547d5f5b2c912aa64f3aebbe627efd50e4169637c6f631fcb134032ea
+  preimage_manifest_digest: d6f44950507b741424fd8741c0875fa5db6caa542af11e9a0260990ed7c56b7b
+  I36_claim_id: b2d91877-4afc-4307-ae16-e3eeb4ea27e6
+  I36_writer_id: codex-i36-held-source-correction-b2d91877
+  I36_CLIENT_COMPOSER_lease_id: e193437a-a355-4a5d-b740-0a443ca3e71a
+  I36_SERVER_COMPOSER_lease_id: 67f84dd8-f317-455c-81f5-91d3cf324c77
+  I36_RELEASE_INTEGRATOR_lease_id: 97f89adb-7b6e-47f8-b175-4e3a1f75dddb
+  I36_lease_expires_at: '2026-08-02T12:45:22Z'
+  I36_ready_entry_payload_digest: d58967bf53d161676d1a8c198f76c399a22c0e321e13d2b349e85605fd7cc209
   native_postgresql_or_candidate_freeze_authority: none_until_corrected_source_acceptance
   provider_or_external_effect_authority: none
   external_effects: 0/0/0
@@ -1215,18 +1238,18 @@ completed_steps:
   and prohibiting both legacy authority tables, direct history writes, candidate work, providers, and all external effects.
 remaining_steps:
 - >-
-  Complete the exact 55-path canonical-route, visible-registry, and candidate-builder correction from held source checkpoint
-  9082f301. Mount or explicitly alias all 93 locked routes truthfully and derive candidate inputs from exact Git bytes.
+  Complete the exact 58-path held-source review correction from e7417f39. Fix or downgrade the reviewed false-ready routes,
+  close role/session/credential/support/classroom boundaries, and bind normative application plus deployable artifact identity.
 - >-
   Give the corrected source terminal one independent review; only after zero P1/P2 run clean merged verification, disposable
   native PostgreSQL 18.4 migration proof, deterministic candidate derivation, immutable manifest, and evidence branch.
 - Freeze one exact candidate and run V37-V43 Phase A, R44, deferred proof, V43 Phase B, R45 certification, legal gate, cutover, and the observation window in their exact order.
 next_action: >-
-  Resolve the pushed control descendant of 61d52aa8 and verify READY 85ff11c4. Continue exact integration 9082f301 under
-  claim a3ae432b and its three task-bound writer leases. Change only the 55 READY paths, correct all 93 canonical route
-  registrations plus Git-byte registry/candidate identity, run proportional and one clean-install verification, push one
-  corrected source checkpoint, release every lease, and stop for independent C00 review. Native PostgreSQL, candidate
-  metadata/freeze, providers, deployment, DNS, sends, charges, customer activation, and every external effect are prohibited.
+  Resolve the pushed control descendant of 71342aa6 and verify READY d58967bf. Continue exact integration e7417f39 under
+  claim b2d91877 and its three task-bound writer leases. Change only the 58 READY paths, correct all reviewed P1/P2 findings,
+  run proportional and one clean-install verification, push one corrected source checkpoint, release every lease, and stop
+  for independent C00 review. Native PostgreSQL, candidate metadata/freeze, providers, deployment, DNS, sends, charges,
+  customer activation, and every external effect are prohibited.
 orchestration:
   enabled: true
   mechanism: native_subagents
