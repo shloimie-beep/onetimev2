@@ -266,4 +266,14 @@ allocations:
     destructive: false
     checksum_sha256: 04e348e04c4c794147a678d03167df51cd21872d350c73c83b2181b68bc0619e
     pg_mem_checksum_sha256: 3961d3d0b946ac3e4ae318fa0bd3f275aff6d423cd4d80a1bdd9ea933842b1ef
-next_available_ordinal: 2258
+  - ordinal: 2258
+    file: packages/db/migrations/2258_v21_configurable_launch_timing.sql
+    owner_task_id: F02
+    request_id: C00-launch-configurable-timing-001
+    state: allocated
+    purpose: Replace the fixed Family free-access cutoff check with forward-only date-agnostic structural invariants so one protected runtime expiry can govern signup, billing, landing, and communications without rewriting existing rows.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: 8a0bf65c9ac8f383a6a0167706e360157664fa5327e7e6855641b326e724e5c7
+    pg_mem_checksum_sha256: ec63a25f07819b66dba2f70f1609283318a0295c46316861fd67cfacf9de352e
+next_available_ordinal: 2259

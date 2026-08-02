@@ -1,3 +1,31 @@
+# F02 Configurable Launch Timing Migration 2258 Release
+
+- Authorized start: `d61f4e49349ed4b63618513ce6642337690d55d0`
+- Containing control: `cb5fe3bd55941316a80fbeb1b2d20923b95dd712`
+- Controller authorization: `5cd292a9e4fab2730435192d1ac6ca27a93a4381`
+- READY digest: `388c28b5c4c946a75f9f4e9ddb103e69193a505e3889a88aaad744ac9e5388c7`
+- Claim: `197eba4d-bbf3-4942-9716-da8d44fca85c`
+- MIGRATION_AUTHORITY lease: `b344b5ec-97bd-44ef-ae6f-f473bd8dbf86`
+- SCHEMA_CONTRACT lease: `1535d824-beb1-4d9a-9536-be5c79214c74`
+- Released: `2026-08-02T09:27:26Z`, before `2026-08-02T13:08:39Z`
+- Effects: `0/0/0`
+
+Migration 2258 removes the remaining fixed September 13 Family-access check
+forward-only and replaces it with date-agnostic structural invariants. It does
+not edit migration 2248 or rewrite existing rows. One protected runtime expiry
+can now govern signup, billing, landing, and communications after source
+integration.
+
+The allocation proposal advances from 2258 to 2259. The exact five-path scope,
+89-migration pg-mem inventory, 7/7 migration-verification cases, and 4/4 Family
+repository cases passed. The candidate-bound PostgreSQL 18.4 job owns fresh
+native 89/89 apply, replay, ledger, and migration-2258 semantic proof after the
+source correction is integrated.
+
+Stop for independent C00 delta review and integration. Do not edit migration
+2248, deploy, change provider state, send, enroll, charge, or perform any
+external effect.
+
 # F02 Lease B Compatibility-Semantic Correction Release
 
 - Claim parent: `24c327eaf06fc502d167d2d5863c5fbb05db5a2c`
