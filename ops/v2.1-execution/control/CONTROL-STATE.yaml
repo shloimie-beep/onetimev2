@@ -82,6 +82,20 @@ F02_proposal_preimage_canonicalization_evidence:
   git_hash_object_worktree_matches_head_blob: true
   integration_worktree_clean_at_dispatch: true
   external_effects: 0/0/0
+launch_source_runtime_projection_consistency_amendment:
+  recorded_at: '2026-08-02T09:52:00Z'
+  control_basis_sha: 607ee4a324ab379674f2b1306ec66058f9d09e51
+  reason: launch_configuration_and_copy_projection_exports_are_required_by_the_already_authorized_runtime_consumers
+  added_paths:
+    - integrations/highlevel/v21/copy/catalog.ts
+    - packages/domain/src/billing/commercial/index.ts
+    - packages/domain/src/communications/workflows/campaigns/definitions.ts
+  amended_I36_authorized_path_count: 63
+  amended_I36_path_inventory_digest: d64f0e5bef040d3492a35f634192faf7224edf38bf3e4bcee9107d4a105c2d81
+  amended_I36_preimage_manifest_digest: ce9d8b48af8901dfb98cfd52fe9e439bc74eb36e1ffb3fc3d32185522e3d48cb
+  amended_I36_ready_entry_payload_digest: 79b66a4b3f0ee9381e0da869f199b93446c44e3d093c2d9e07723e02e053bf35
+  provider_or_external_effect_authority: none
+  external_effects: 0/0/0
 production_completion_lanes:
 - lane: A
   owner: F02

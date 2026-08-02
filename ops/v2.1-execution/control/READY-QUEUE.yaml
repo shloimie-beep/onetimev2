@@ -77,7 +77,7 @@ ready:
     branch: codex/v21-integration
     preparation_branch: codex/v21-launch-source-correction
     claim_mode: resume_existing
-    state_based_on_control_head_sha: cb5fe3bd55941316a80fbeb1b2d20923b95dd712
+    state_based_on_control_head_sha: 607ee4a324ab379674f2b1306ec66058f9d09e51
     authorized_start_sha: d61f4e49349ed4b63618513ce6642337690d55d0
     expected_existing_head: d61f4e49349ed4b63618513ce6642337690d55d0
     package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
@@ -93,10 +93,10 @@ ready:
       - task_id: Shloimie_launch_inputs
         required_state: cutoff_and_first_class_may_remain_unset_no_guessing
     authorized_paths:
-      path_count: 60
-      path_inventory_digest: 36d6a171365d878a9080d4e42ce04cd535df147277ea1941b956861477fe5de3
+      path_count: 63
+      path_inventory_digest: d64f0e5bef040d3492a35f634192faf7224edf38bf3e4bcee9107d4a105c2d81
       path_inventory_algorithm: sha256_sorted_LF_delimited_paths_with_final_LF
-      preimage_manifest_digest: b9a3d5fcca28936a045727a1db1c828375adbbd6a85af80c5b159bd9b5aeb7b5
+      preimage_manifest_digest: ce9d8b48af8901dfb98cfd52fe9e439bc74eb36e1ffb3fc3d32185522e3d48cb
       preimage_manifest_algorithm: sha256_compact_UTF8_JSON_path_sorted_path_to_raw_sha256_or_null
       preimages:
         .env.example: 810adf00e3d62127689d7423cc03e79664e09f5013d51b5b62c76c88a4ded661
@@ -123,6 +123,7 @@ ready:
         integrations/highlevel/registry/current.json: da675fabdf5fff2b5cb472d1e48353fb169e49bd3fa711504e08b46c1b0a4097
         integrations/highlevel/registry/message-class-registry.yaml: 48fb01836a3a4870e0e0bd9ae221a48afc8ed6407df75879d812a72faad28d5b
         integrations/highlevel/registry/workflow-registry.yaml: 06d1ee3b125f7d0893994e9c55b075bc387034606f38e74ef074532a86dd0339
+        integrations/highlevel/v21/copy/catalog.ts: 60410db3ed428eb8bc9f69b291278688bc4288a9c3ce98c0fc4d0c9b52ad978e
         integrations/highlevel/v21/workflow-fragments/P29-core-lifecycle.yaml: ea6b13c67f2ac0631a3d6f27a705cfdc0511ac2993d1f5cb7c8ba012b87718b3
         integrations/highlevel/v21/workflow-fragments/P30-campaigns.yaml: 468f7df01ae68a5cf07b1bbcac88fd457d5bd3261c16b5143382cec786697b7a
         integrations/highlevel/workflow-checklists/OT-01-new-lead-intake.md: e1fc3de89447379a67b050715c02d00793c3d7975729ddd78442cdf5ac4e54dd
@@ -135,10 +136,12 @@ ready:
         packages/contracts/src/billing/commercial/index.ts: e8606fd2d462925875b9fc52ee69e1ac8befecd243dc3e13e2ae4ea098bf1ac6
         packages/contracts/src/signup/family/family-signup.contract.test.ts: 04f374c0a1dd0de7fdc11281413f4a343c92aebf2e89d3eeea70861c359aba69
         packages/contracts/src/signup/family/index.ts: 68941951ec25e85ee72a5fec315aefa006ce2458fef46eb87b2b62785358e53e
+        packages/domain/src/billing/commercial/index.ts: 2b94ae0eba3507e4ff0ef5368faf3103c128b05ea3d7d7ff53b711a3d0ad74d6
         packages/domain/src/billing/commercial/policy.test.ts: f1bba79cd200170080720f82462b0aa3301d11e5de443265bcad985e05e3f423
         packages/domain/src/billing/commercial/policy.ts: fb7d2a3dfca5cb90fee2d3ef36ab40ef33100a6c0612fa8242a7d0f9faaf680a
         packages/domain/src/communications/copy/catalog.ts: aa922d8567466c40a798f4cf99229092a4957571a5e8afb01d40c7dcdc4df08f
         packages/domain/src/communications/workflows/campaigns/campaigns.test.ts: 028734f6e849c1b5747bf8753079fc2b9c4d79ee125c5dff0dc306d2e47f47b4
+        packages/domain/src/communications/workflows/campaigns/definitions.ts: f721fd97c3137c61c8b8b67f963e47752c2c7e6dd76f0265df963f409092ec54
         packages/domain/src/communications/workflows/campaigns/messages.ts: 7157301545581e11db04418ce4d0454fde76ad7109c18e4ea081349172558489
         packages/domain/src/communications/workflows/core/core-workflows.test.ts: eb2b8acaf1b0cef7527aa61d08521cec6d72ce7fcf7fefd4da4a9ff2d4c766d5
         packages/domain/src/communications/workflows/core/definitions.ts: c0168b23a06a0d928bbd92f71bce87fd195afbdd32c2308b53a638272548d216
@@ -184,6 +187,7 @@ ready:
         - integrations/highlevel/registry/current.json
         - integrations/highlevel/registry/message-class-registry.yaml
         - integrations/highlevel/registry/workflow-registry.yaml
+        - integrations/highlevel/v21/copy/catalog.ts
         - integrations/highlevel/v21/workflow-fragments/P29-core-lifecycle.yaml
         - integrations/highlevel/v21/workflow-fragments/P30-campaigns.yaml
         - integrations/highlevel/workflow-checklists/OT-01-new-lead-intake.md
@@ -196,10 +200,12 @@ ready:
         - packages/contracts/src/billing/commercial/index.ts
         - packages/contracts/src/signup/family/family-signup.contract.test.ts
         - packages/contracts/src/signup/family/index.ts
+        - packages/domain/src/billing/commercial/index.ts
         - packages/domain/src/billing/commercial/policy.test.ts
         - packages/domain/src/billing/commercial/policy.ts
         - packages/domain/src/communications/copy/catalog.ts
         - packages/domain/src/communications/workflows/campaigns/campaigns.test.ts
+        - packages/domain/src/communications/workflows/campaigns/definitions.ts
         - packages/domain/src/communications/workflows/campaigns/messages.ts
         - packages/domain/src/communications/workflows/core/core-workflows.test.ts
         - packages/domain/src/communications/workflows/core/definitions.ts
@@ -251,5 +257,5 @@ ready:
     reasoning: XHIGH
 entry_payload_digests:
   F02: 388c28b5c4c946a75f9f4e9ddb103e69193a505e3889a88aaad744ac9e5388c7
-  I36: aaee8cdfdd5859f6a44ffb0c504a0d77f545889498f54aab74404cc2020d2f3c
+  I36: 79b66a4b3f0ee9381e0da869f199b93446c44e3d093c2d9e07723e02e053bf35
 digest_algorithm: recursively_sorted_compact_UTF8_JSON_SHA256_per_ready_entry
