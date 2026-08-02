@@ -73,7 +73,7 @@ ready:
   - task_id: I36
     lane: candidate_bound_staging
     status: consumed
-    phase: Docker_context_candidate_staging_deployment_reserved
+    phase: Docker_context_candidate_staging_reconciliation
     branch: codex/v21-integration
     preparation_branch: codex/v21-launch-critical-correction
     claim_mode: new

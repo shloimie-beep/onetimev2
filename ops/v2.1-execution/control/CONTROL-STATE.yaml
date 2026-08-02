@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: operational
-active_phase: candidate_bound_staging_deployment
+active_phase: candidate_bound_staging_reconciliation
 bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
@@ -18,10 +18,10 @@ candidate: c7faf43f4cc17a0e80f01c5db0a31f6a81f9b1f5f5090281b6f6daaf1cc84dab
 active_writer_limit: 4
 controller_authorization_sha: 44edd0a460156088720b71c9ccb615b5972971fb
 next_action: >-
-  Execute the single reserved fast-forward of codex/full-app-staging-live from 32bb6ea3889f5ea5dfb2541a17f5d37e0f7f7418
-  to exact accepted candidate manifest 887ab80c793932234035c6eb434a445e7920ce96, then reconcile at most one web
-  and one worker staging deployment. Do not activate GHL, send, enroll, mutate DNS or production, create Student
-  contacts, or perform a customer or billing effect.
+  Reconcile exact Railway staging web deployment 570b55ef-5057-4ec8-9b8d-18ffb7be424c and worker deployment
+  46f9af56-d601-4717-84d9-6e2c44c9c126 for accepted candidate 887ab80c793932234035c6eb434a445e7920ce96.
+  Do not retry or perform a successor effect. Do not activate GHL, send, enroll, mutate DNS or production, create
+  Student contacts, or perform a customer or billing effect.
 Docker_context_candidate_acceptance:
   recorded_at: '2026-08-02T13:55:04Z'
   state_basis_control_head_sha: 44edd0a460156088720b71c9ccb615b5972971fb
@@ -56,6 +56,17 @@ Docker_context_staging_deployment_reservation:
   maximum_deployments: 2
   production_deployment_DNS_send_enrollment_billing_authority: none
   effects_before_reservation: 0/0/0/0
+Docker_context_staging_deployment_attempt:
+  attempted_at: '2026-08-02T14:05:09Z'
+  state_basis_control_head_sha: 56ebdfcd394a50cd8fa5364b88d8e0589f3821d9
+  source_branch_before_sha: 32bb6ea3889f5ea5dfb2541a17f5d37e0f7f7418
+  source_branch_after_sha: 887ab80c793932234035c6eb434a445e7920ce96
+  branch_update: fast_forward_succeeded
+  web_deployment_id: 570b55ef-5057-4ec8-9b8d-18ffb7be424c
+  web_initial_state: QUEUED
+  worker_deployment_id: 46f9af56-d601-4717-84d9-6e2c44c9c126
+  worker_initial_state: QUEUED
+  production_deployments_DNS_sends_enrollments_billing_effects: 0/0/0/0/0
 corrected_candidate_refreeze_authority:
   recorded_at: '2026-08-02T13:05:10Z'
   control_basis_sha: 04ceb6e3899198c6baeb560e4b6a5006ecbca635

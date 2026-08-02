@@ -466,8 +466,8 @@ tasks:
     transitioned_at: '2026-07-30T19:30:53Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/F07/status_proof
 - task_id: I36
-  status: staging_deployment_reserved
-  active_phase: candidate_bound_staging_deployment
+  status: staging_deployment_in_progress
+  active_phase: candidate_bound_staging_reconciliation
   branch: codex/v21-integration
   phase_branches:
     integration: codex/v21-integration
@@ -613,13 +613,13 @@ tasks:
       candidate_digest: c7faf43f4cc17a0e80f01c5db0a31f6a81f9b1f5f5090281b6f6daaf1cc84dab
       provider_environment_id: 11edf8a2-0160-45b4-a039-b15b4beb4c10
       lease_expires_at: '2026-08-02T14:40:04Z'
-  last_heartbeat_at: '2026-08-02T13:55:04Z'
-  controller_authorization_sha: 44edd0a460156088720b71c9ccb615b5972971fb
+  last_heartbeat_at: '2026-08-02T14:05:09Z'
+  controller_authorization_sha: 56ebdfcd394a50cd8fa5364b88d8e0589f3821d9
   ready_entry_payload_digest: null
   interface_checkpoint_sha: null
   implementation_head_sha: 887ab80c793932234035c6eb434a445e7920ce96
   status_proof:
-    state: staging_deployment_reserved
+    state: staging_deployment_in_progress
     producer_task_id: I36
     producer_head_sha: 887ab80c793932234035c6eb434a445e7920ce96
     canonical_candidate_digest: c7faf43f4cc17a0e80f01c5db0a31f6a81f9b1f5f5090281b6f6daaf1cc84dab
@@ -639,8 +639,8 @@ tasks:
     failed_effect_reconciliation: source_reference_initialization_order_zero_non_disposable_effects
     successful_effect_run_id: 30745346334
     successful_effect_reconciliation: PostgreSQL_18_4_89_migrations_8_probes_restore_clone_passed_zero_non_disposable_effects
-    state_based_on_control_head_sha: 44edd0a460156088720b71c9ccb615b5972971fb
-    transitioned_at: '2026-08-02T13:55:04Z'
+    state_based_on_control_head_sha: 56ebdfcd394a50cd8fa5364b88d8e0589f3821d9
+    transitioned_at: '2026-08-02T14:05:09Z'
     proof_record_location: 'ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/I36/status_proof'
 - task_id: P08
   status: ready_for_review
