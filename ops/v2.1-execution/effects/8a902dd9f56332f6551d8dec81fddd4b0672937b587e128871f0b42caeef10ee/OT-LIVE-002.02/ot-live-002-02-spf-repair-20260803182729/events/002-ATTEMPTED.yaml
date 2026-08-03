@@ -1,0 +1,57 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: ot-live-002-02-spf-repair-20260803182729
+event_sequence: 2
+previous_event_digest: 1640c99a5942c49ad64eede3f510891ffb983ce148f53f0eb7951a68a0994e1b
+state: ATTEMPTED
+task_id: OT-LIVE-002.02
+owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+canonical_event_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/OT-LIVE-002.02/ot-live-002-02-spf-repair-20260803182729/events/002-ATTEMPTED.yaml
+current_pointer_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/OT-LIVE-002.02/ot-live-002-02-spf-repair-20260803182729/CURRENT.yaml
+candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+authority_id: ot-live-002-02-spf-repair-20260803182729
+authority_grant_digest: 3c653690b8067633d050286d03f0faef52febf1d12711a4cf9a565723fa4b3b8
+lock: infra:dns
+lock_lease_id: e360ff02-e3a9-428f-8ace-32d8a3882801
+fencing_token: fence-633f042e-c489-4d7b-9104-fba8c08151de
+provider_identity: godaddy:canonical-account:onetimeonetime.com
+provider_request_or_operation_id: GoDaddy_UI_send_owner_exact_value_update_then_protected_row_deletion
+operation_readback:
+  retained_value_update:
+    result: success
+    before: v=spf1 include:amazonses.com ~all
+    after: v=spf1 include:amazonses.com include:dc-7415a7219d._spfm.send.onetimeonetime.com ~all
+    GoDaddy_exact_readback: true
+  redundant_value_deletion:
+    target: v=spf1 include:dc-7415a7219d._spfm.send.onetimeonetime.com ~all
+    UI_path: Delete_then_Yes_Confirm_then_protected_Continue
+    result: explicit_provider_failure
+    repeated_result: explicit_provider_failure
+    provider_UI_value_present_after: true
+    authoritative_ns37_value_present_after: true
+    authoritative_ns38_value_present_after: true
+    deletion_effect_occurred: false
+  fenced_unit_result: failed_requires_exact_rollback
+rollback_readback:
+  retained_value_restore:
+    result: success
+    restored_value: v=spf1 include:amazonses.com ~all
+  redundant_value_recreation:
+    attempted: false
+    reason: deletion_never_occurred
+primary_effect_count:
+  TXT_updates: 1
+  TXT_deletions: 0
+  TXT_creations: 0
+rollback_effect_count:
+  TXT_updates: 1
+  TXT_recreations: 0
+unexpected_effects: 0
+Forward_Email_alias_or_route_mutations: 0
+other_DNS_nameserver_application_send_or_customer_effects: 0
+cleanup_state: exact_rollback_applied_terminal_multi_resolver_readback_pending
+attempted_at: '2026-08-03T18:36:06Z'
+state_based_on_head_sha: 1c639d4299fac1d125c489bf14fbc8c8f80b9102
+contains_secret: false
+immutable: true

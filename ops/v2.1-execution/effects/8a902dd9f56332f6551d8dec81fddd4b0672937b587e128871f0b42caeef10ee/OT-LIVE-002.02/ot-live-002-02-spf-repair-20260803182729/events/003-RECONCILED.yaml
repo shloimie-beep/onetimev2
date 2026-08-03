@@ -1,0 +1,52 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: ot-live-002-02-spf-repair-20260803182729
+event_sequence: 3
+previous_event_digest: 244ac1434df0e6afd9846f3bf5a2eff7015b993afec01b29b0fbe8ab71859d42
+state: RECONCILED
+terminal_disposition: FAILED_ROLLED_BACK
+task_id: OT-LIVE-002.02
+owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+canonical_event_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/OT-LIVE-002.02/ot-live-002-02-spf-repair-20260803182729/events/003-RECONCILED.yaml
+current_pointer_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/OT-LIVE-002.02/ot-live-002-02-spf-repair-20260803182729/CURRENT.yaml
+candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+authority_id: ot-live-002-02-spf-repair-20260803182729
+authority_grant_digest: 3c653690b8067633d050286d03f0faef52febf1d12711a4cf9a565723fa4b3b8
+lock: infra:dns
+lock_lease_id: e360ff02-e3a9-428f-8ace-32d8a3882801
+fencing_token: fence-633f042e-c489-4d7b-9104-fba8c08151de
+provider_identity: godaddy:canonical-account:onetimeonetime.com
+terminal_readback:
+  exact_owner: send.onetimeonetime.com
+  exact_type: TXT
+  GoDaddy_UI_values:
+    - v=spf1 include:amazonses.com ~all
+    - v=spf1 include:dc-7415a7219d._spfm.send.onetimeonetime.com ~all
+  authoritative_ns37_values_match_rollback: true
+  authoritative_ns38_values_match_rollback: true
+  public_8_8_8_8_values_match_rollback: true
+  public_9_9_9_9_values_match_rollback: true
+  public_1_1_1_1_state: temporarily_cached_intermediate_merged_plus_redundant_values
+  public_1_1_1_1_disposition: non_authoritative_cache_wait_for_TTL_no_new_effect
+  third_SPF_present: false
+  other_DNS_records_changed: 0
+  nameserver_changes: 0
+  Forward_Email_alias_or_route_mutations: 0
+  application_or_Railway_changes: 0
+  provider_sends_or_customer_effects: 0
+  broad_campaign_sends: 0
+effect_count_after:
+  primary_TXT_updates: 1
+  primary_TXT_deletions: 0
+  rollback_TXT_updates: 1
+  rollback_TXT_recreations: 0
+unexpected_effects: 0
+cleanup_state: complete_exact_original_authoritative_state_restored_public_cache_convergence_by_TTL_only
+provider_blocker: GoDaddy_protected_row_deletion_explicit_failure_after_Delete_Yes_Confirm_and_Continue
+lock_release_state: released_after_failed_rolled_back_terminal_reconciliation
+broad_send_authorized: false
+reconciled_at: '2026-08-03T18:36:07Z'
+state_based_on_head_sha: 1c639d4299fac1d125c489bf14fbc8c8f80b9102
+contains_secret: false
+immutable: true

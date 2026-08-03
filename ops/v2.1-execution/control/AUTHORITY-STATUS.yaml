@@ -926,12 +926,13 @@ authorities:
     infra_dns_effect_usable: false
     infra_dns_successor_authority_id: ot-live-002-02-spf-repair-20260803182729
     infra_dns_successor_reason: exact_duplicate_SPF_repair_requires_one_previously_unbudgeted_TXT_deletion
+    infra_dns_successor_terminal_disposition: FAILED_ROLLED_BACK_GoDaddy_protected_deletion_failure
     Forward_Email_effect_usable: false
     Forward_Email_blocker: authenticated_Google_account_has_zero_managed_domains_and_no_canonical_Forward_Email_ownership_or_destination_evidence
     prerequisite_review: prior_DNS_effect_terminal_GHL_and_Resend_exact_ids_recorded_zero_Students_minors_Schools_current_subscribers_suppressed_or_ambiguous
     disposition: reserved_for_governed_configuration_bounded_email_auth_alias_seed_reply_and_inactive_asset_reconciliation_zero_broad_send
-    checked_at: '2026-08-03T18:27:28Z'
-    state_based_on_control_head_sha: d51d317c0a97549345ec557f6fabbbbbce309915
+    checked_at: '2026-08-03T18:36:07Z'
+    state_based_on_control_head_sha: 1c639d4299fac1d125c489bf14fbc8c8f80b9102
   ot-live-002-02-spf-repair-20260803182729:
     schema_version: 1
     execution_id: OT-V21-PRODUCTION
@@ -940,14 +941,14 @@ authorities:
     grant_digest: 3c653690b8067633d050286d03f0faef52febf1d12711a4cf9a565723fa4b3b8
     source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
     predecessor_authority_id: ot-live-002-02-provider-authority-20260803181433
-    status: active
+    status: consumed
     expires_at: '2026-08-04T18:14:33Z'
     latest_revocation_path: null
     latest_revocation_digest: null
     provider_lock: infra:dns
     provider_lock_lease_id: e360ff02-e3a9-428f-8ace-32d8a3882801
     fencing_token: fence-633f042e-c489-4d7b-9104-fba8c08151de
-    effect_authority_usable: true
+    effect_authority_usable: false
     candidate_binding_status: exact_frozen_candidate_currently_active_on_web_and_worker
     candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
     repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
@@ -961,9 +962,15 @@ authorities:
     Forward_Email_effect_usable: false
     broad_campaign_send_usable: false
     prerequisite_review: live_GoDaddy_readback_proved_two_exact_SPF_values_at_same_owner_and_no_other_change_requested
-    disposition: reserved_for_one_fenced_duplicate_SPF_repair_with_exact_authoritative_public_readback_and_exact_rollback_only
-    checked_at: '2026-08-03T18:27:28Z'
-    state_based_on_control_head_sha: d51d317c0a97549345ec557f6fabbbbbce309915
+    disposition: FAILED_ROLLED_BACK_GoDaddy_protected_deletion_explicit_failure_original_two_authoritative_values_restored
+    provider_blocker: GoDaddy_protected_row_deletion_failed_after_Delete_Yes_Confirm_and_Continue
+    terminal_event_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/OT-LIVE-002.02/ot-live-002-02-spf-repair-20260803182729/events/003-RECONCILED.yaml
+    terminal_event_digest: 983932d0ce602e147402ee5aeb94e5db83e6a4374254c3b715ad2e3dd7a55254
+    authoritative_rollback_state: exact_original_two_values_restored_on_ns37_and_ns38
+    public_cache_state: 8_8_8_8_and_9_9_9_9_restored_1_1_1_1_temporary_intermediate_cache
+    lock_released_at: '2026-08-03T18:36:07Z'
+    checked_at: '2026-08-03T18:36:07Z'
+    state_based_on_control_head_sha: 1c639d4299fac1d125c489bf14fbc8c8f80b9102
 entry_schema: templates/AUTHORITY-STATUS-ENTRY.yaml
 revocation_schema: templates/AUTHORITY-REVOCATION-RECORD.yaml
 rule: C00 records externally granted/revoked/expired authority; it does not grant it. Every update binds the known
