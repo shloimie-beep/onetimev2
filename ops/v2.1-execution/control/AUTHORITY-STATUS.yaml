@@ -273,7 +273,7 @@ authorities:
     provider_lock: production:deployment
     provider_lock_lease_id: a79ce7c7-4664-46bb-880a-71c0b40cc7b2
     fencing_token: fence-d9afc2af-81cd-4bd2-9bad-422346d2fbaa
-    effect_authority_usable: true
+    effect_authority_usable: false
     candidate_binding_status: exact_candidate_bound
     canonical_candidate_digest: 43592b5ee03fe5b0f1ac2cbadcaa76a7d7e0f941a9a2ec12c8154190549c06da
     candidate_manifest_commit_sha: 7485b834b03ae0c91122186818b91f427efeb24e
@@ -286,6 +286,8 @@ authorities:
     prerequisite_review: exact_staging_deployment_and_operator_fixture_sink_gates_passed
     checked_at: '2026-08-03T09:14:59Z'
     state_based_on_control_head_sha: c71c1438998beaf46c2ee70d6b563acfa71c73d5
+    disposition: consumed_and_reconciled_parent_canary_passed_student_management_blocked
+    lock_released_at: '2026-08-03T09:41:41Z'
 entry_schema: templates/AUTHORITY-STATUS-ENTRY.yaml
 revocation_schema: templates/AUTHORITY-REVOCATION-RECORD.yaml
 rule: C00 records externally granted/revoked/expired authority; it does not grant it. Every update binds the known

@@ -1,0 +1,55 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-family-canary-20260803091459
+event_sequence: 2
+previous_event_digest: 4ab7b8bc05adbefdfa0e9673c71d3552845d996316b2b159d1a1a7060e131ca9
+state: ATTEMPTED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/43592b5ee03fe5b0f1ac2cbadcaa76a7d7e0f941a9a2ec12c8154190549c06da/C00/c00-family-canary-20260803091459/events/002-ATTEMPTED.yaml
+candidate_digest: 43592b5ee03fe5b0f1ac2cbadcaa76a7d7e0f941a9a2ec12c8154190549c06da
+candidate_manifest_commit_sha: 7485b834b03ae0c91122186818b91f427efeb24e
+repository_source_sha: 7485b834b03ae0c91122186818b91f427efeb24e
+authority_id: c00-family-canary-20260803091459
+lock: production:deployment
+lock_lease_id: a79ce7c7-4664-46bb-880a-71c0b40cc7b2
+fencing_token: fence-d9afc2af-81cd-4bd2-9bad-422346d2fbaa
+provider_identity: railway:7c8eee26-7a6a-4684-826d-9f4377d67d46:11edf8a2-0160-45b4-a039-b15b4beb4c10:web-9fb6d9f4:deployment-a9d35645
+operation_results:
+  approved_fixture_id: c00_family_canary_43592b5e_20260803a
+  fixture_destination_sha256: 8b1c0f20a4ffb7249b774b9c63317f09aa5986822d696b7087f8ae04c0cbde20
+  signup_posts: 1
+  signup_status: 201
+  signup_success: true
+  signup_code: FAMILY_SIGNUP_COMPLETE
+  local_access_state: free
+  session_established: true
+  session_cookie_present: true
+  provider_effects_completed_inline: 0
+  v21_session_status: 200
+  session_model: v21
+  owned_household_count: 1
+  household_id_sha256: d6b7027ccb0766fa147cefdd1fd439cbd32b3976074684701b742e5f75b0357c
+  parent_shell_status: 200
+  parent_household_status: 503
+  parent_household_disposition: PARENT_HOUSEHOLD_UNAVAILABLE_due_to_absent_service_account_version_and_evidence_reference
+  student_mutation_attempted: false
+  parent_accounts_created_or_updated: 1
+  households_created_or_updated: 1
+  student_accounts_created_or_updated: 0
+  worker_log_records_observed: 40
+  worker_delivery_or_provider_records: 0
+  worker_nonzero_delivery_records: 0
+  worker_provider_send_success_records: 0
+  email_send_or_provider_enrollment: false
+budget_consumed:
+  signup_posts: 1
+  parent_accounts: 1
+  households: 1
+  student_accounts: 0
+  provider_sends_or_enrollments: 0
+  deployments: 0
+  production_mutations: 0
+provider_request_or_operation_id: family_signup_fixture_8b1c0f20_on_web_deployment_a9d35645
+cleanup_state: exact_isolated_staging_operator_fixture_retained_no_cleanup_mutation_authorized
+event_at: '2026-08-03T09:41:41Z'
+immutable: true

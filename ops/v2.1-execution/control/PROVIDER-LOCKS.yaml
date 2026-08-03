@@ -153,31 +153,24 @@ locks:
   effect_budget: null
   cleanup_state: not_applicable
 - lock: production:deployment
-  status: claimed
-  holder_task_id: C00
-  holder_claim_id: f5cbb74c-a954-4e7a-9dea-cfb74b46811b
-  lease_id: a79ce7c7-4664-46bb-880a-71c0b40cc7b2
-  fencing_token: fence-d9afc2af-81cd-4bd2-9bad-422346d2fbaa
-  canonical_candidate_digest: 43592b5ee03fe5b0f1ac2cbadcaa76a7d7e0f941a9a2ec12c8154190549c06da
-  provider_identity: railway:7c8eee26-7a6a-4684-826d-9f4377d67d46:11edf8a2-0160-45b4-a039-b15b4beb4c10:web-9fb6d9f4:deployment-a9d35645
-  authorized_operation: one_protected_operator_family_signup_parent_session_and_household_readback_zero_student_zero_send
-  claimed_at: '2026-08-03T09:14:59Z'
-  lease_expires_at: '2026-08-03T09:44:59Z'
-  authority_id: c00-family-canary-20260803091459
-  authority_grant_digest: 36521feff3802333f254480355c8418ff4940c4ccc2ebd672c54775f887b4b58
-  authority_status_index_digest: 10b6c799db80a1b86e18b1fcedba68ac73e1e1b6ffc59146cde8d656f22f3290
-  authority_status_entry_digest: 37bb8e49dbc42f86db7e634d43e09290ad8e66b885ad092b6aa6d3fa383a2f70
+  status: unclaimed
+  holder_task_id: null
+  holder_claim_id: null
+  lease_id: null
+  fencing_token: null
+  canonical_candidate_digest: null
+  provider_identity: null
+  authorized_operation: null
+  claimed_at: null
+  lease_expires_at: null
+  authority_id: null
+  authority_grant_digest: null
+  authority_status_index_digest: null
+  authority_status_entry_digest: null
   latest_revocation_digest: null
-  authority_checked_at: '2026-08-03T09:14:59Z'
-  effect_budget:
-    signup_posts_max: 1
-    parent_accounts_max: 1
-    households_max: 1
-    student_accounts_max: 0
-    provider_sends_or_enrollments_max: 0
-    deployments_max: 0
-    production_mutations_max: 0
-  cleanup_state: pending_family_canary_reconciliation
+  authority_checked_at: null
+  effect_budget: null
+  cleanup_state: not_applicable
 - lock: provider:s3-kms
   status: unclaimed
   holder_task_id: null
