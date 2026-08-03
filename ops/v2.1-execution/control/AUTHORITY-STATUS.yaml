@@ -570,9 +570,10 @@ authorities:
     integration_head_sha: f349b252204f2509a7d39944749fed11d4c9199b
     maximum_effect_count: 1
     prerequisite_review: student_projection_7_passed_3_native_pending_auth_4_of_4_portal_mount_8_of_8_expected_90_through_2259
-    disposition: consumed_once_run_30817866471_in_progress_exact_source
-    checked_at: '2026-08-03T13:25:30.4660757Z'
-    state_based_on_control_head_sha: 0ac73895962ae6ba826fc967e9ec09e517939147
+    disposition: consumed_and_reconciled_failed_native_harness_missing_1300_billing_dependency_no_product_sql_failure
+    lock_released_at: '2026-08-03T13:27:13.6286063Z'
+    checked_at: '2026-08-03T13:27:13.6286063Z'
+    state_based_on_control_head_sha: 864f0c6f1987a5ae37b3cf16a13f24df2ac357b7
 entry_schema: templates/AUTHORITY-STATUS-ENTRY.yaml
 revocation_schema: templates/AUTHORITY-REVOCATION-RECORD.yaml
 rule: C00 records externally granted/revoked/expired authority; it does not grant it. Every update binds the known

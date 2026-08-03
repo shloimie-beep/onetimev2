@@ -2,10 +2,10 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 effect_id: c00-pg18-student-proof-dispatch-20260803131936
 task_id: C00
-state: ATTEMPTED
-event_sequence: 2
-current_event_path: ops/v2.1-execution/effects/none/C00/c00-pg18-student-proof-dispatch-20260803131936/events/002-ATTEMPTED.yaml
-current_event_digest: 4fb46b4ccd7cf13c6e8005fd4b99d1399a07e82ca8b579d822440e5d3c8e859c
+state: RECONCILED
+event_sequence: 3
+current_event_path: ops/v2.1-execution/effects/none/C00/c00-pg18-student-proof-dispatch-20260803131936/events/003-RECONCILED.yaml
+current_event_digest: 8aeb31b6470d943f15b4cca205a1d72a911ca966ade80bd5cca894fd8f4d31d3
 authority_id: c00-pg18-student-proof-20260803131936
 lock: production:deployment
 lock_lease_id: d1c29aad-7d81-4669-80dd-680f52217d6c
@@ -13,7 +13,7 @@ fencing_token: fence-a4d937f8-51c7-4e20-8d87-4402bddedb22
 repository_source_sha: f349b252204f2509a7d39944749fed11d4c9199b
 integration_head_sha: f349b252204f2509a7d39944749fed11d4c9199b
 provider_request_or_operation_id: github_actions_run_30817866471
-provider_readback_state: in_progress_exact_source
-cleanup_state: pending_ephemeral_runner_completion
-lock_release_state: claimed
-updated_at: '2026-08-03T13:25:30.4660757Z'
+provider_readback_state: completed_failure_native_harness_missing_migration_1300
+cleanup_state: complete_ephemeral_runner_and_database_stopped
+lock_release_state: released
+updated_at: '2026-08-03T13:27:13.6286063Z'
