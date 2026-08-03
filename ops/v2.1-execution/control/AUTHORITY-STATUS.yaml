@@ -557,21 +557,22 @@ authorities:
     authority_kind: derived_candidate_preparation_effect
     grant_digest: a1fe9694395e162522896526948cf1ff0c3223cb6c89b8b5d8d39db3277ece05
     source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
-    status: active
+    status: consumed
     expires_at: '2026-08-03T14:04:36Z'
     latest_revocation_path: null
     latest_revocation_digest: null
     provider_lock: production:deployment
     provider_lock_lease_id: d1c29aad-7d81-4669-80dd-680f52217d6c
     fencing_token: fence-a4d937f8-51c7-4e20-8d87-4402bddedb22
-    effect_authority_usable: true
+    effect_authority_usable: false
     candidate_binding_status: exact_source_sha_bound_pre_freeze
     repository_source_sha: f349b252204f2509a7d39944749fed11d4c9199b
     integration_head_sha: f349b252204f2509a7d39944749fed11d4c9199b
     maximum_effect_count: 1
     prerequisite_review: student_projection_7_passed_3_native_pending_auth_4_of_4_portal_mount_8_of_8_expected_90_through_2259
-    checked_at: '2026-08-03T13:19:36Z'
-    state_based_on_control_head_sha: f311e97bedc1e06f7073b8c58080720c78969e5c
+    disposition: consumed_once_run_30817866471_in_progress_exact_source
+    checked_at: '2026-08-03T13:25:30.4660757Z'
+    state_based_on_control_head_sha: 0ac73895962ae6ba826fc967e9ec09e517939147
 entry_schema: templates/AUTHORITY-STATUS-ENTRY.yaml
 revocation_schema: templates/AUTHORITY-REVOCATION-RECORD.yaml
 rule: C00 records externally granted/revoked/expired authority; it does not grant it. Every update binds the known
