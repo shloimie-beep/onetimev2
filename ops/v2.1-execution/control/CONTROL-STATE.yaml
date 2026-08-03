@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: operational
-active_phase: ot_live_001_02_login_timestamp_fix_candidate_and_protected_canary
+active_phase: ot_live_001_02_public_support_repair_candidate_and_deployment
 bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
@@ -14,17 +14,39 @@ bootstrap_phase_order:
 reviewed_head: ecaf7b153f2b5323fd11859204a6db5c2a20fc6a
 integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
-candidate: 366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094
+candidate: 99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098
 active_writer_limit: 4
 controller_authorization_sha: 76692fbb6e65cdeb68e32862dd0c03490b5e5750
 next_action: >-
-  Preserve the restored healthy live ca442 application, exact app domain/TLS, one Parent and household, zero Student
-  state, and zero external delivery controls. Railway from-source unexpectedly selected main 610b; the cleanup down
-  path removed the prior active deployments and caused a bounded 502 outage before exact deploymentRollback restored
-  both ca442 images and health/readiness/version 200. The attempt is terminally FAILED_ROLLED_BACK. Keep candidate
-  366c57eb frozen at source a64d9052. A successor may deploy only by exact clean local upload with explicit Dockerfile
-  manifest and pre/post artifact readback; never use from-source or down. Keep broad communication held on Sep 11/Sep
-  13 and the failed SPF deletion blockers.
+  Candidate 99b6c11b at exact source ffd1c55a is validated and frozen for the public support route repair. Acquire one
+  fresh candidate-bound production lock and bounded local-upload deployment authority, then deploy the exact clean
+  web and worker source with explicit Dockerfile manifests and verify deployment identity, health, readiness,
+  /support redirect, /app/support response, migration inventory, and worker sink. Never use Railway from-source or
+  down. Run a protected Parent canary only if an existing bound credential or session is available; otherwise record
+  the canary as blocked without inspecting or requesting stored secrets. Keep email sending, DNS, audiences, Students,
+  billing, and unrelated provider effects held.
+ot_live_001_02_public_support_repair_candidate_freeze:
+  recorded_at: '2026-08-03T20:06:36Z'
+  control_parent_sha: 729fd49b803f98ad0de17042a0a0ac62a4b7e3aa
+  freeze_record_commit_sha: ea64afeb98d02ea315382f8b899a9b61e44ee6ca
+  source_branch: codex/ot-live-progressive-portal-20260803
+  source_sha: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+  base_source_sha: a64d9052305e6a0a31cc9bf3268fb634000c8f8a
+  canonical_candidate_digest: 99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098
+  application_content_sha256: 433f5a865bd85f2bfba25783dea5812fb9bb35180b14a5ef8e4fe4a1bbce513c
+  candidate_manifest_sha256: d8a6b529dff516f81f8db48ca0c00299de7018f73907b6e9c3e282a9264ed358
+  candidate_derivation_sha256: 36c87b4510d3af66be88803dd17b270a196f2a6ca839f497f628863a33bc0951
+  candidate_manifest_path: ops/v2.1-execution/merge/candidates/99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098/CANDIDATE.yaml
+  frozen_at: '2026-08-03T20:05:34.006Z'
+  exact_delta: public_support_alias_shadow_guard_removal_registry_and_test_census
+  focused_tests: support_11_portal_8_registry_4_routes_4_candidate_builder_4
+  typecheck_lint_prettier_build: passed
+  secret_scan: passed_3219_text_files
+  database_migrations_changed: 0
+  migration_inventory_digest: abdbfd5837ed54751e55458a3a79886ca9799e3d738344b40d6f95aad621a5ea
+  hosted_pg18_result: reused_exact_90_migration_inventory_8_probes_restore_equal
+  production_dependency_audit: inherited_zero_vulnerabilities_no_dependency_changes
+  provider_or_external_effects: 0/0/0
 ot_live_002_02_provider_handoff:
   reconciled_at: '2026-08-03T19:02:11Z'
   owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
