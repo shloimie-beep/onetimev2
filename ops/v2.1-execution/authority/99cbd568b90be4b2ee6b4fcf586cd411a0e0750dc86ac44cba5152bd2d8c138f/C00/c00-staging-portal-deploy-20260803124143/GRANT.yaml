@@ -1,0 +1,93 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+authority_id: c00-staging-portal-deploy-20260803124143
+authority_kind: derived_candidate_bound_staging_portal_deployment_and_operator_canary
+task_id: C00
+candidate_digest: 99cbd568b90be4b2ee6b4fcf586cd411a0e0750dc86ac44cba5152bd2d8c138f
+candidate_binding_status: exact_candidate_bound_from_native_pg18_evidence
+candidate_manifest_commit_sha: not_materialized_lean_exact_source_binding
+repository_source_sha: e816aa28a97aff32849bab4fe5ae7fc4663e2498
+canonical_path: ops/v2.1-execution/authority/99cbd568b90be4b2ee6b4fcf586cd411a0e0750dc86ac44cba5152bd2d8c138f/C00/c00-staging-portal-deploy-20260803124143/GRANT.yaml
+source_grant_id: ot-v21-production-source-grant-20260729
+source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+source_approval_evidence_path: ops/v2.1-execution/authority/none/C00/ot-v21-production-source-grant-20260729/APPROVAL.md
+source_approval_evidence_digest: 8c95a959f79aba0ac34fa0fcb6cb463cceac9aeb2bb52da1603d39db3e2c33c2
+grant_status_at_issue: active
+approved_by: Shloimie Dratler
+scope:
+  provider: Railway_and_GitHub
+  workspace_id: d2428a88-aa7e-4369-b396-72060bf720f4
+  project_id: 7c8eee26-7a6a-4684-826d-9f4377d67d46
+  project_name: one-time-ot99-staging-96b42905
+  environment_id: 11edf8a2-0160-45b4-a039-b15b4beb4c10
+  environment_name: staging
+  public_base_url: https://ot99-web-staging.up.railway.app
+  repository: shloimie-beep/onetimev2
+  source_branch: codex/full-app-staging-live
+  source_branch_before_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+  source_branch_after_sha: e816aa28a97aff32849bab4fe5ae7fc4663e2498
+  web_service_id: 9fb6d9f4-4f50-4df6-868b-c18a9b83d2f2
+  web_prior_deployment_id: 6127e53a-428f-462e-a2ea-e853f6df5f09
+  web_prior_image_digest: sha256:4837a7f8cc886a599835943dd3f5d3a7d23125accb6c7fcd4b4687d3cb78c30f
+  worker_service_id: 76e7fdc2-99b9-4a82-ba55-5dff3723398f
+  worker_prior_deployment_id: 54115c9b-f7fd-43a9-b564-8800c401d637
+  worker_prior_image_digest: sha256:cc472476b21d9028158140b9d66748bdd111033030cd5c3160d68c57d897bb26
+  database_service_id: e6671cb7-178a-4821-b977-7b6e24c0c052
+  database_runtime: PostgreSQL_18
+  test_only_policy_pair:
+    PARENT_STUDENT_SERVICE_ACCOUNT_VERSION: test-only-parent-student-service-v1
+    PARENT_STUDENT_SERVICE_ACCOUNT_EVIDENCE_REFERENCE: test-only-evidence/parent-student-service-v1
+  test_only_policy_scope: persistent_staging_operator_canary_only_never_production
+  operator_fixture_email: staging-parent-c00-20260803124143@example.invalid
+  production_project_or_environment_access: prohibited
+fencing_token: fence-419cb224-ed29-42bc-99e2-43ecbb3000bb
+lock: production:deployment
+provider_lock_lease_id: c115f426-5170-4c3f-8e57-b24bc46ff3d5
+provider_account_location_or_asset_id:
+  provider: Railway_and_GitHub
+  project_id: 7c8eee26-7a6a-4684-826d-9f4377d67d46
+  environment_id: 11edf8a2-0160-45b4-a039-b15b4beb4c10
+  service_ids:
+    - 9fb6d9f4-4f50-4df6-868b-c18a9b83d2f2
+    - 76e7fdc2-99b9-4a82-ba55-5dff3723398f
+allowed_operation: set the exact staging-only Parent-Student policy pair without deployment, fast-forward codex/full-app-staging-live from f95b30d8 to e816aa28 causing at most one web and one worker staging deployment, then run exact readback and one sink-only operator portal canary
+maximum_effect_count: 7
+maximum_effect_value: not_applicable
+approved_fixture_ids:
+  - canonical_persistent_staging_environment_11edf8a2
+  - staging_parent_c00_20260803124143_example_invalid
+operator_identity: C00
+approved_at: '2026-08-03T12:41:43Z'
+recorded_at: '2026-08-03T12:41:43Z'
+expires_at: '2026-08-03T13:26:43Z'
+prerequisite_review:
+  canonical_candidate_digest: 99cbd568b90be4b2ee6b4fcf586cd411a0e0750dc86ac44cba5152bd2d8c138f
+  repository_source_sha: e816aa28a97aff32849bab4fe5ae7fc4663e2498
+  candidate_pg18_run_id: 30814122202
+  candidate_pg18_result: success_PostgreSQL_18_4_90_of_90_through_2259_cleanup_complete
+  candidate_pg18_artifact_digest: 4d7a1315f9ad299cf92a9a198297b9c87bedc4052036844f15b86ff963097dcc
+  parent_and_student_portal_tests: passed_155_with_4_skipped
+  current_web_and_worker: success_at_f95b30d8
+  source_branch_update: exact_fast_forward
+  legal_document_classification: broad_production_release_only_not_staging_or_operator_canary
+  staging_safety_readback: sink_delivery_highlevel_disabled_budget_zero_zoom_canary_false_stripe_test_false_live_charge_no
+rollback_and_reconciliation:
+  - require the variable write to use --skip-deploys and exact staging web service identity
+  - require both new deployments to report exact commit e816aa28a97aff32849bab4fe5ae7fc4663e2498
+  - require web predeploy migration 2259 success plus health, ready, version, landing, Parent route, and Student route readback
+  - require worker deployment success and no migration, startup, or delivery error in bounded logs
+  - require operator canary to remain sink-only, example.invalid, and absent from GHL, providers, sends, billing, and production
+  - retain prior web deployment 6127e53a-428f-462e-a2ea-e853f6df5f09 and worker deployment 54115c9b-f7fd-43a9-b564-8800c401d637 for rollback
+  - on failed or ambiguous deployment, stop and reconcile before any retry
+  - release the exclusive lock only after provider readback and effect reconciliation
+stop_conditions:
+  - source grant is revoked or expired
+  - origin/codex/v21-integration differs from e816aa28a97aff32849bab4fe5ae7fc4663e2498
+  - origin/codex/full-app-staging-live differs from f95b30d830d57a29b123949134e9ee3077a945a1 before the effect
+  - target project, environment, or either service identity differs from the exact bound identity
+  - staging delivery is not sink or HighLevel actions are not disabled with zero canary budget
+  - another effect holds the production:deployment lock
+  - the update is not a fast-forward
+  - the operation would target production, DNS, GHL, a customer, a real send, enrollment, billing, or more than two deployments
+contains_secret: false
+immutable: true
