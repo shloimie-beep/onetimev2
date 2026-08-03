@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: operational
-active_phase: ot_live_001_02_public_support_repair_candidate_and_deployment
+active_phase: ot_live_001_02_public_support_repair_deployed_external_launch_holds
 bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
@@ -18,13 +18,14 @@ candidate: 99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098
 active_writer_limit: 4
 controller_authorization_sha: 76692fbb6e65cdeb68e32862dd0c03490b5e5750
 next_action: >-
-  Candidate 99b6c11b at exact source ffd1c55a is validated and frozen for the public support route repair. Acquire one
-  fresh candidate-bound production lock and bounded local-upload deployment authority, then deploy the exact clean
-  web and worker source with explicit Dockerfile manifests and verify deployment identity, health, readiness,
-  /support redirect, /app/support response, migration inventory, and worker sink. Never use Railway from-source or
-  down. Run a protected Parent canary only if an existing bound credential or session is available; otherwise record
-  the canary as blocked without inspecting or requesting stored secrets. Keep email sending, DNS, audiences, Students,
-  billing, and unrelated provider effects held.
+  Preserve exact candidate 99b6c11b at source ffd1c55a live on Railway web deployment 50b737ff and worker deployment
+  66463233, both SUCCESS/RUNNING on Dockerfile images with health, readiness, support, 90/90 migrations, and sink
+  worker readback green. The deployment authority is consumed and the production lock is released. Do not create a
+  successor deployment authority unless a new frozen product delta exists. Protected Parent canary remains unstarted
+  because no approved reusable Parent credential or live session exists. Keep broad email send false while Sep 11/Sep
+  13, audience/consent/suppression, duplicate SPF, Forward Email reply route, seed/reply proof, and current-copy gates
+  remain unresolved. Reconcile the separately observed POST /api/webhooks/wapi 404 traffic only in its proper provider
+  lane; do not broaden this completed deployment slice.
 ot_live_001_02_public_support_repair_candidate_freeze:
   recorded_at: '2026-08-03T20:06:36Z'
   control_parent_sha: 729fd49b803f98ad0de17042a0a0ac62a4b7e3aa
@@ -55,9 +56,16 @@ ot_live_001_02_public_support_repair_deployment_authority:
   repository_source_sha: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
   production_lock_lease_id: c48f08bd-db24-41b6-b864-a89ad67dc0ee
   fencing_token: fence-bd0d6c96-24ec-4fc9-8a9f-8bd95d658b40
-  state: ACTIVE_RESERVED
+  state: CONSUMED_RECONCILED
   effect_budget: two_exact_local_uploads_and_exact_ID_cancel_or_rollback_only_if_required
   customer_provider_DNS_email_billing_effects: 0
+  web_deployment_id: 50b737ff-b6d1-4cd4-a416-5cffb548775a
+  web_image_digest: sha256:c0998bd09dba9de12feaabfe33330acf19a753ab663e0b2c5330a166c7ccbdfc
+  worker_deployment_id: 66463233-1466-4bcb-bfdd-8533ce48f9f1
+  worker_image_digest: sha256:bf0ca5b6992f48b7b232df24dcf8c1285c64ee9c4d6416c2f2c5998d940ac60c
+  terminal_event_digest: 292026ffd20fdf38dfef34eb926503acf42b088400cde309fd9e298d8a2561db
+  terminal_disposition: DEPLOYMENT_SUCCESS_PUBLIC_SUPPORT_REPAIRED_CANARY_NOT_RUN_MISSING_PROTECTED_PARENT_CREDENTIAL
+  lock_released_at: '2026-08-03T20:35:47Z'
 ot_live_002_02_provider_handoff:
   reconciled_at: '2026-08-03T19:02:11Z'
   owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a

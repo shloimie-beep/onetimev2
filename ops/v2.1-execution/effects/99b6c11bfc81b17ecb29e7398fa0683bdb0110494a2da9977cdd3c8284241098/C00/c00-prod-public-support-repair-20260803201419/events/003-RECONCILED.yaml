@@ -1,0 +1,46 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prod-public-support-repair-20260803201419
+event_sequence: 3
+previous_event_digest: 9677a1431294d1051c4c8e69ae190d95c9b4fec67cf3b849e1da6b45e9c948a3
+state: RECONCILED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098/C00/c00-prod-public-support-repair-20260803201419/events/003-RECONCILED.yaml
+current_pointer_path: ops/v2.1-execution/effects/99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098/C00/c00-prod-public-support-repair-20260803201419/CURRENT.yaml
+candidate_digest: 99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098
+repository_source_sha: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+authority_id: c00-prod-public-support-repair-20260803201419
+authority_grant_digest: 6e9ecad50d1034c481d32948e722d5a47eacf7b22202ed98c8d5b500efba09c3
+lock: production:deployment
+lock_lease_id: c48f08bd-db24-41b6-b864-a89ad67dc0ee
+fencing_token: fence-bd0d6c96-24ec-4fc9-8a9f-8bd95d658b40
+operation: terminally_reconcile_exact_ffd1_public_support_repair_deployment_and_readback
+terminal_readback:
+  live_web_deployment_id: 50b737ff-b6d1-4cd4-a416-5cffb548775a
+  live_web_status_builder_and_image: SUCCESS_RUNNING_DOCKERFILE_sha256_c0998bd0
+  live_worker_deployment_id: 66463233-1466-4bcb-bfdd-8533ce48f9f1
+  live_worker_status_builder_and_image: SUCCESS_RUNNING_DOCKERFILE_sha256_bf0ca5b6
+  exact_candidate_source_sha: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+  source_file_hashes_match_local_web_and_worker: true
+  public_health_readiness_version: HTTP_200_HTTP_200_HTTP_200
+  support_alias_and_route: HTTP_302_to_/app/support_and_HTTP_200
+  support_cache_and_indexing: no_store_noindex
+  landing_support_link: present_exact_/support
+  migration_inventory: 90_files_90_live_rows_pending_zero_latest_2259
+  worker_sink_batch: claimed_0_delivered_0_retried_0_dead_lettered_0_suppressed_0_skipped_0
+  Parent_login_or_session_effect: 0
+  Parent_household_Student_mutations: 0_0_0
+  variable_mutations: 0
+  database_migrations: 0
+  external_provider_GHL_billing_DNS_audience_send_or_broad_effects: 0
+effect_count_after: 2
+unexpected_effects: 0
+cleanup_state: exact_candidate_live_healthy_no_unresolved_deployment_effect_known_good_prior_images_preserved_in_history
+lock_release_state: released_after_exact_deployment_and_readback
+terminal_disposition: DEPLOYMENT_SUCCESS_PUBLIC_SUPPORT_REPAIRED_CANARY_NOT_RUN_MISSING_PROTECTED_PARENT_CREDENTIAL
+remaining_requirement: existing_fixture_Parent_password_or_operator_sign_in_then_new_exact_candidate_bound_canary_authority_if_protected_canary_is_still_required
+separate_nonblocking_observation: repeated_POST_/api/webhooks/wapi_HTTP_404_requires_separate_provider_route_reconciliation
+event_at: '2026-08-03T20:35:47Z'
+state_based_on_head_sha: 4fc39a4b4afea3df86575b76086e2115cb1e3640
+contains_secret: false
+immutable: true

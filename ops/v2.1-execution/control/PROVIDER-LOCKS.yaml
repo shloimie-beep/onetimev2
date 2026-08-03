@@ -153,24 +153,24 @@ locks:
   effect_budget: null
   cleanup_state: not_applicable
 - lock: production:deployment
-  status: claimed
-  holder_task_id: C00
-  holder_claim_id: 0a8648c0-dc8e-476c-b405-80bec986d30b
-  lease_id: c48f08bd-db24-41b6-b864-a89ad67dc0ee
-  fencing_token: fence-bd0d6c96-24ec-4fc9-8a9f-8bd95d658b40
-  canonical_candidate_digest: 99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098
-  provider_identity: Railway_project_ce55ef20_environment_f911acfc_web_d175ad94_worker_742f60ed
-  authorized_operation: exact_clean_ffd1_Dockerfile_local_upload_web_worker_public_support_readback_and_exact_prior_ID_rollback_only_if_required
-  claimed_at: '2026-08-03T20:14:19Z'
-  lease_expires_at: '2026-08-03T21:44:19Z'
-  authority_id: c00-prod-public-support-repair-20260803201419
-  authority_grant_digest: 6e9ecad50d1034c481d32948e722d5a47eacf7b22202ed98c8d5b500efba09c3
-  authority_status_index_digest: c5a6d4385cb3202dfa4690541479b9bf9cedfecd711251d5740067543e47f4d3
-  authority_status_entry_digest: e2578dadb91c1e4305501799884ae28092bd1b482778f6b6ae62a37a757620f0
+  status: unclaimed
+  holder_task_id: null
+  holder_claim_id: null
+  lease_id: null
+  fencing_token: null
+  canonical_candidate_digest: null
+  provider_identity: null
+  authorized_operation: null
+  claimed_at: null
+  lease_expires_at: null
+  authority_id: null
+  authority_grant_digest: null
+  authority_status_index_digest: null
+  authority_status_entry_digest: null
   latest_revocation_digest: null
-  authority_checked_at: '2026-08-03T20:14:19Z'
-  effect_budget: two_local_uploads_two_exact_cancels_two_exact_prior_ID_rollbacks_zero_other_effects
-  cleanup_state: exact_a64_web_worker_live_healthy_preserve_until_candidate_ffd1_replacements_are_verified
+  authority_checked_at: null
+  effect_budget: null
+  cleanup_state: exact_candidate_ffd1_web_worker_live_healthy_support_repaired_lock_released_2026-08-03T20:35:47Z
 - lock: provider:s3-kms
   status: unclaimed
   holder_task_id: null
