@@ -574,6 +574,28 @@ authorities:
     lock_released_at: '2026-08-03T13:27:13.6286063Z'
     checked_at: '2026-08-03T13:27:13.6286063Z'
     state_based_on_control_head_sha: 864f0c6f1987a5ae37b3cf16a13f24df2ac357b7
+  c00-pg18-student-proof-20260803132901:
+    schema_version: 1
+    execution_id: OT-V21-PRODUCTION
+    authority_id: c00-pg18-student-proof-20260803132901
+    authority_kind: derived_candidate_preparation_effect
+    grant_digest: 10899bb70c2f9cdb56a64f6964179e5208377d9307dd211bd01f6a0715f0e2bb
+    source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+    status: active
+    expires_at: '2026-08-03T14:14:01Z'
+    latest_revocation_path: null
+    latest_revocation_digest: null
+    provider_lock: production:deployment
+    provider_lock_lease_id: f4591695-a802-4165-a3b2-f2b821d07da8
+    fencing_token: fence-c6d985ec-5379-4fb5-84b0-b6922f73cd1b
+    effect_authority_usable: true
+    candidate_binding_status: exact_source_sha_bound_pre_freeze
+    repository_source_sha: efb680b2666efd0fbc9fd0e8c1895b5fcadc696e
+    integration_head_sha: efb680b2666efd0fbc9fd0e8c1895b5fcadc696e
+    maximum_effect_count: 1
+    prerequisite_review: corrected_native_harness_dependency_memory_7_passed_native_3_pending_expected_90_through_2259
+    checked_at: '2026-08-03T13:29:01Z'
+    state_based_on_control_head_sha: 3bbfa9dd81f70a0bda868a6c0c716a8607f9919d
 entry_schema: templates/AUTHORITY-STATUS-ENTRY.yaml
 revocation_schema: templates/AUTHORITY-REVOCATION-RECORD.yaml
 rule: C00 records externally granted/revoked/expired authority; it does not grant it. Every update binds the known

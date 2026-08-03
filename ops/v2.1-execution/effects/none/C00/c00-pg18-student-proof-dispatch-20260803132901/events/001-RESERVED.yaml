@@ -1,0 +1,32 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-pg18-student-proof-dispatch-20260803132901
+event_sequence: 1
+previous_event_digest: none
+state: RESERVED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/none/C00/c00-pg18-student-proof-dispatch-20260803132901/events/001-RESERVED.yaml
+current_pointer_path: ops/v2.1-execution/effects/none/C00/c00-pg18-student-proof-dispatch-20260803132901/CURRENT.yaml
+candidate_digest: not_applicable_pre_freeze_exact_source_sha
+repository_source_sha: efb680b2666efd0fbc9fd0e8c1895b5fcadc696e
+integration_head_sha: efb680b2666efd0fbc9fd0e8c1895b5fcadc696e
+deployment_instance_digest: none
+authority_grant_digest: 10899bb70c2f9cdb56a64f6964179e5208377d9307dd211bd01f6a0715f0e2bb
+authority_status_index_digest: 18cb1e534eaa83f4faa54914d50bcf8eb0f7bda9fa45ad7f266bf64f8666aeed
+authority_status_entry_digest: 7d147c0d1b286ff0f3ae6ba11a6823eb927ea6ff04d99b03fbbea6a6a78538a3
+latest_revocation_digest: none
+authority_checked_at: '2026-08-03T13:29:01Z'
+lock: production:deployment
+lock_lease_id: f4591695-a802-4165-a3b2-f2b821d07da8
+fencing_token: fence-c6d985ec-5379-4fb5-84b0-b6922f73cd1b
+provider_identity: github_actions:shloimie-beep/onetimev2:ops11-postgres-18-assurance.yml
+operation: workflow_dispatch_exact_SHA_disposable_PostgreSQL_18_4_student_projection_proof
+budget_reservation:
+  count: 1
+  value: not_applicable
+provider_request_or_operation_id: none_before_dispatch
+provider_readback_digest: none_before_dispatch
+cleanup_state: pending_ephemeral_runner_completion
+state_based_on_head_sha: 3bbfa9dd81f70a0bda868a6c0c716a8607f9919d
+event_at: '2026-08-03T13:29:01Z'
+immutable: true
