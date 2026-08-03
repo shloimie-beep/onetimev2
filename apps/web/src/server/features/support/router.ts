@@ -102,6 +102,12 @@ export function registerSupportRoutes(input: {
     },
   );
 
+  input.app.get('/support', (_req, res) => {
+    input.session.setPrivateNoStore(res);
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    res.redirect(302, '/app/support');
+  });
+
   input.app.get('/app/support', async (req: RequestWithTrace, res) => {
     input.session.setPrivateNoStore(res);
     res.setHeader('X-Robots-Tag', 'noindex, nofollow');

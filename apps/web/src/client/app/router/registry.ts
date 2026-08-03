@@ -37,6 +37,7 @@ type RouteSeed = Omit<
 
 const BOUNDED_ALIAS_ROUTE_IDS = new Set<CanonicalRouteId>([
   'RT-PUB-005',
+  'RT-PUB-009',
   'RT-PUB-010',
   'RT-AUTH-003',
   'RT-AUTH-004',
@@ -91,7 +92,6 @@ const ISOLATED_ROUTE_IDS = new Set<CanonicalRouteId>([
 
 const MISSING_ROUTE_IDS = new Set<CanonicalRouteId>([
   'RT-PUB-008',
-  'RT-PUB-009',
   'RT-ADM-002',
   'RT-ADM-012',
   'RT-ADM-014',

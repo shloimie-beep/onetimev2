@@ -72,7 +72,7 @@ describe('OT-71 mounted parent and student portals', () => {
     expect(resolveCurrentClientRoute('/app/parent/not-locked', 'parent')).toBeNull();
   });
 
-  it('never admits the missing legacy support route as a post-login destination', async () => {
+  it('does not admit the generic member support route as a role-specific post-login destination', async () => {
     const server = await listenForTest(createApp({ config, pool, distDir }));
     try {
       const parent = await postLogin(
@@ -154,12 +154,20 @@ describe('OT-71 mounted parent and student portals', () => {
     }
   });
 
-  it('keeps missing Admin support private and preserves only the protected legacy Student classroom', async () => {
+  it('keeps member support lead-only for anonymous visitors and preserves only the protected legacy Student classroom', async () => {
     const server = await listenForTest(createApp({ config, pool, distDir }));
     try {
+      const publicSupportAlias = await fetch(`${server.baseUrl}/support`, { redirect: 'manual' });
+      expect(publicSupportAlias.status).toBe(302);
+      expect(publicSupportAlias.headers.get('location')).toBe('/app/support');
+      expect(publicSupportAlias.headers.get('cache-control')).toContain('no-store');
+      expect(publicSupportAlias.headers.get('x-robots-tag')).toContain('noindex');
+
       const publicSupport = await fetch(`${server.baseUrl}/app/support`, { redirect: 'manual' });
-      expect(publicSupport.status).toBe(404);
-      expect(await publicSupport.text()).not.toContain('Sign in for learning support');
+      expect(publicSupport.status).toBe(200);
+      expect(publicSupport.headers.get('cache-control')).toContain('no-store');
+      expect(publicSupport.headers.get('x-robots-tag')).toContain('noindex');
+      expect(await publicSupport.text()).toContain('Sign in for learning support');
 
       const anonymousClassroom = await fetch(`${server.baseUrl}/app/classroom`, {
         redirect: 'manual',

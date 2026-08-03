@@ -597,12 +597,6 @@ export function createApp({
     },
   );
 
-  app.get('/app/support', (_req, res) => {
-    setPrivateNoStore(res);
-    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
-    res.status(404).type('text').send('Canonical Admin support is not available.');
-  });
-
   registerSupportRoutes({
     app,
     config,

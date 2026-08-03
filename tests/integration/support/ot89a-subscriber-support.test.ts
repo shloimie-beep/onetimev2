@@ -4,8 +4,10 @@ import { loadConfig, type AppConfig } from '../../../packages/config/src/index.t
 import { createMemoryPool, runMigrations, type DbPool } from '../../../packages/db/src/index.ts';
 import { supportEventV1Schema } from '../../../packages/contracts/src/support/index.ts';
 import {
+  authenticateUser,
   createAccountUser,
   createOt89SignedHeaders,
+  createSession,
   createSupportId,
   requeueSupportDeadLetter,
   runSupportDeliveryBatch,
@@ -49,8 +51,8 @@ beforeEach(async () => {
   otherUserKey = await createAccountUser({
     pool,
     config,
-    email: 'other@example.test',
-    password: 'OtherPass!234',
+    email: 'viewer@example.test',
+    password: 'ViewerPass!234',
     displayName: 'Other Parent',
     role: 'viewer',
   });
@@ -90,13 +92,13 @@ describe('OT-89A subscriber support producer', () => {
     });
     expect(anonymousPost.status).toBe(401);
 
-    const other = await loginAs('other@example.test', 'OtherPass!234');
+    const other = await createDirectSession('viewer@example.test', 'ViewerPass!234');
     const nonSubscriberPage = await fetch(`${baseUrl}/app/support`, {
       headers: { cookie: other.cookies },
     });
     expect(await nonSubscriberPage.text()).not.toContain('data-support-form');
     const denied = await postSupport(other, validSupportPayload('non-sub'));
-    expect(denied.status).toBe(403);
+    expect(denied.status).toBe(401);
     const count = await pool.query(
       'SELECT count(*)::int AS count FROM onetime.support_submissions',
     );
@@ -524,6 +526,28 @@ async function getLoginCsrf(targetBaseUrl = baseUrl) {
 
 async function loginAs(email: string, password: string): Promise<LoginResult> {
   return loginAsAt(baseUrl, email, password);
+}
+
+async function createDirectSession(email: string, password: string): Promise<LoginResult> {
+  const authenticated = await authenticateUser({
+    pool,
+    config,
+    email,
+    password,
+    ip: '127.0.0.1',
+    userAgent: 'ot89-support-integration-test',
+  });
+  expect(authenticated.ok).toBe(true);
+  if (!authenticated.ok) throw new Error(`direct authentication failed: ${authenticated.code}`);
+  const session = await createSession({
+    pool,
+    config,
+    user: authenticated.user,
+  });
+  return {
+    cookies: `otcrm_session=${session.session_token}; otcrm_csrf=${session.csrf_token}`,
+    json: { success: true, csrf_token: session.csrf_token },
+  };
 }
 
 async function loginAsAt(

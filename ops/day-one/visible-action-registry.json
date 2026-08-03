@@ -20,7 +20,7 @@
     },
     {
       "path": "apps/web/src/server/app.ts",
-      "sha256": "3f71c1a9f07b5e886464de954481c52b805234b69d2101f442169ee059ba00e3"
+      "sha256": "33cb4f23b4af7af5e011f491322b36f0c71cb9443e228cff837f50ff82d99a18"
     },
     {
       "path": "apps/web/src/server/features/portals/routers.ts",
@@ -28,7 +28,7 @@
     },
     {
       "path": "apps/web/src/server/features/support/router.ts",
-      "sha256": "3ff122893cc459a39b437106721cdf29e189714d8570f98074c152824f414011"
+      "sha256": "f3bbbbcf107615fc55130300442a32e0fa62f77662c630892fc1b0d89993311d"
     },
     {
       "path": "apps/web/src/server/features/signup/school/router.ts",
@@ -52,7 +52,7 @@
     },
     {
       "path": "apps/web/src/client/app/portal-entry.tsx",
-      "sha256": "8b3700ecbbbd220e0865cfc30bd0c04a0dc457acb8082551697f80da480c3a47"
+      "sha256": "396c0a0cc9bcf0059e816b367705b083651ff242537e7289737c521ab92e4757"
     },
     {
       "path": "apps/web/src/client/features/portals/PortalFeatures.tsx",
@@ -60,7 +60,7 @@
     },
     {
       "path": "apps/web/src/client/app/router/registry.ts",
-      "sha256": "d542df5eff276700f1e91eed8c61c818b4810e7837085293d427788acd4a7501"
+      "sha256": "2911b8d418a1ff36cdb2bde8946d712b39aa5b58bd32e8d5510e83d4b57c6de3"
     },
     {
       "path": "apps/web/src/client/app/router/canonical-route-views.ts",
@@ -72,7 +72,7 @@
     },
     {
       "path": "apps/web/src/client/public/public-entry.ts",
-      "sha256": "fce4e69ea7547c0426425c8e96d8b0b6b0972de00eec6f25824e906bd32b886e"
+      "sha256": "bae5306ecd1e6af34fd746d5d4b9f06180c91bf558d015d464b709c04975090e"
     },
     {
       "path": "apps/web/src/client/public/school/model.ts",
@@ -88,7 +88,7 @@
     },
     {
       "path": "scripts/build-public-pages.ts",
-      "sha256": "764db894689268a1f7a33635e4a06992403ba0531908181c1e8062aba5b3e3ef"
+      "sha256": "023bbab327afa2ca7847a524e494246b601c3e3314b81b5be6da72aa5b7a37dc"
     },
     {
       "path": "packages/domain/src/dashboard/service.ts",
@@ -167,9 +167,9 @@
       "route_id": "RT-PUB-009",
       "path": "/support",
       "roles": ["public"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "public.support",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-PUB-010",
@@ -575,9 +575,9 @@
       "route_id": "RT-PAR-001",
       "path": "/app/parent",
       "roles": ["parent"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "parent.rt-par-001",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-PAR-002",
@@ -687,9 +687,9 @@
       "route_id": "RT-PAR-070",
       "path": "/app/parent/account",
       "roles": ["parent"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "parent.rt-par-070",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-PAR-071",
