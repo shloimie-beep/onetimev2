@@ -642,9 +642,11 @@ authorities:
     integration_head_sha: badd8a6198b0072495fdcd1f3e37787505513065
     maximum_effect_count: 1
     prerequisite_review: pg18_functional_10_of_10_restore_pass_secret_scan_3217_passed_expected_90_through_2259
-    disposition: consumed_by_github_actions_run_30819704438_pending_final_reconciliation
-    checked_at: '2026-08-03T13:49:13.8806174Z'
-    state_based_on_control_head_sha: d6d2dd92249826b69bb58df89cc6830e1a23716a
+    disposition: consumed_and_reconciled_success_exact_source_pg18_full_proof
+    derived_lean_candidate_digest: f585ef3deaf6cfac8cbb59e4f17c26247a50ab4188032a630f72579476f9fe06
+    lock_released_at: '2026-08-03T13:50:59.9211757Z'
+    checked_at: '2026-08-03T13:50:59.9211757Z'
+    state_based_on_control_head_sha: 25ffc3f30cd1a97c0e343c11b158756493496b3d
 entry_schema: templates/AUTHORITY-STATUS-ENTRY.yaml
 revocation_schema: templates/AUTHORITY-REVOCATION-RECORD.yaml
 rule: C00 records externally granted/revoked/expired authority; it does not grant it. Every update binds the known
