@@ -1,0 +1,76 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prod-progressive-railway-20260803162734
+event_sequence: 3
+previous_event_digest: cb4f933f5a92275e238ae408d19480d5e8dce7bfb343ba2573d15705e626fabd
+state: ATTEMPTED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-progressive-railway-20260803162734/events/003-ATTEMPTED.yaml
+current_pointer_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-progressive-railway-20260803162734/CURRENT.yaml
+candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+authority_id: c00-prod-progressive-railway-20260803162734
+authority_grant_digest: ea44463a56ca0566624b1704a3a998fffdf6439b361d0a7c717196bd7acdf0ed
+lock: production:deployment
+lock_lease_id: 075d7564-8660-4fa0-8420-9655757b8da3
+fencing_token: fence-8311372a-a931-4769-a53d-f37a561b3ffd
+operation: exact_candidate_deploy_under_temporary_production_operator_canary_then_read_only_restore
+provider_readback:
+  verification_environment:
+    web: production_operator_canary
+    worker: production_operator_canary
+    variable_assignments_consumed: 2
+  web:
+    service_id: d175ad94-5e3c-41c2-8cbc-daa1a299077d
+    active_deployment_id: 7e355bb1-1938-4689-8723-7fd83b48719d
+    active_status: SUCCESS
+    active_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+    active_image_digest: sha256:aec85be766e201bdbc2542609d3f0d1a415e92787c8fb59464f932d86225fae5
+    duplicate_deployment_id: debfd7d9-dd28-4180-b9b5-5becf77a8aea
+    duplicate_status: REMOVED
+    duplicate_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+    duplicate_image_digest: sha256:e463c15a131b0904645da498f0136f29e692d9c4262ebc354a1e50973ef14e03
+    deployment_trigger_count_after: 0
+  worker:
+    service_id: 742f60ed-dc2f-4321-85d0-019003d4e9b9
+    active_deployment_id: 64a4edff-f566-4057-8ebe-c350bba5314a
+    active_status: SUCCESS
+    active_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+    active_image_digest: sha256:4df4d1b96b800ec2bba9cf31398d47ba733b27625d42ed0551724b7f342dc17d
+    deployment_trigger_count_after: 0
+  routing:
+    join_root_health_ready_version: 200_200_200_200
+    join_login: 302_expected_auth_redirect
+    app_domain_sync: ACTIVE
+    app_DNS: PROPAGATED
+    app_certificate: CERTIFICATE_STATUS_TYPE_VALIDATING_OWNERSHIP
+    app_TLS_status: pending_wrong_principal_expected_during_validation
+provider_anomaly:
+  kind: Railway_service_source_connect_partial_success_after_error_response
+  web_candidate_deployments_created: 2
+  wrong_source_deployments_created: 0
+  active_duplicate_count_after_provider_supersession: 0
+  impact: one_exact_candidate_web_deployment_REMOVED_and_one_exact_candidate_web_deployment_SUCCESS
+  retry_policy_after_readback: stopped_no_more_source_connection_retries
+stop_condition:
+  triggered: true
+  reason: web_source_connection_created_more_than_one_candidate_deployment
+  further_effects_under_this_authority: stopped
+  safe_state: exact_candidate_active_on_web_and_worker_sources_disconnected_canary_not_run_variables_still_protected
+  required_next_control_action: derive_exact_recovery_authority_and_fenced_lock_for_one_canary_and_read_only_restoration_before_any_further_live_effect
+effect_counts_after:
+  Railway_custom_domains_created: 1
+  variable_assignments: 2
+  source_connection_attempts: 3
+  source_disconnections: 2
+  production_deployments: 3
+  Parent_household_Student_canaries: 0_0_0
+  external_provider_sends_or_enrollments: 0
+  GHL_mutations: 0
+  billing_effects: 0
+unexpected_customer_or_provider_effects: 0
+cleanup_state: sources_disconnected_exact_candidate_active_recovery_authority_required_before_canary_or_restore
+event_at: '2026-08-03T17:04:48Z'
+state_based_on_head_sha: 9f85a192e668dc7767e8b5520961e98557ecfbda
+contains_secret: false
+immutable: true
