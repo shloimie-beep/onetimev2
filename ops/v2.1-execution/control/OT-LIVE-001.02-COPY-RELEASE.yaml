@@ -54,11 +54,11 @@ production:
   new_signup_post_performed: false
   provider_DNS_GHL_variable_billing_customer_effects: 0
 remaining_gates:
-  portal_activation: app.onetimeonetime.com_unresolved_and_progressive_candidate_not_released
+  portal_activation: provider_identity_resolved_but_app_record_absent_and_progressive_candidate_not_released
   broad_communication: exact_cutoff_decision_required
   legal: broad_release_only_OPS_084_open
 rollback:
   web_deployment_id: 1635d06a-4ee7-4afd-9501-34a943a0d3c7
   worker_deployment_id: 901724db-951b-41c6-8265-6faa06ab676e
   needed: false
-next_safe_slice: resolve_exact_app_domain_binding_read_only_then_prepare_progressive_Parent_Student_candidate_and_one_canary
+next_safe_slice: freeze_and_verify_badd8a61_plus_prereg_copy_progressive_candidate_then_bind_app_domain_and_run_one_canary

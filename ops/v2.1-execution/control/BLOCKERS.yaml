@@ -499,14 +499,17 @@ blockers:
   - OT-LIVE-PORTAL-001
   safe_work_completed: >-
     Read-only production checks proved join /login returns 302 to https://app.onetimeonetime.com/login while the target
-    hostname has no DNS resolution. Landing, signup, legal, health, readiness, version, and adult-only preregistration
-    remain healthy and unchanged.
+    hostname has no DNS resolution. Railway readback bound the canonical production project, environment, web service,
+    deployment, and active join custom domain. The existing signed-in GoDaddy account visibly owns onetimeonetime.com,
+    and its live DNS page matched the authoritative nameservers and exact join CNAME; no app record exists. No provider
+    mutation occurred. Landing, signup, legal, health, readiness, version, and adult-only preregistration remain healthy.
   required_authority_or_input: []
   protection: >-
-    Resolve the canonical Railway custom-domain and DNS identities from live registry/readback, then acquire the exact
-    production deployment/DNS lock and fencing token immediately before a bounded effect. Do not guess a record target
-    or redirect the working preregistration origin.
-  next_check: Exact custom-domain and DNS readback before the progressive production portal canary.
+    Freeze the progressive candidate first, then acquire the exact production deployment and DNS locks with fencing
+    tokens immediately before the bounded two-provider effect. Create the app Railway custom domain, read its returned
+    required CNAME value, and only then add the exact GoDaddy app record. Do not guess a record target or redirect the
+    working preregistration origin.
+  next_check: Exact candidate binding, then Railway app-domain creation and returned-target readback before DNS write.
 - blocker_id: OT-LIVE-001-COPY-TRUTH
   status: closed
   scope: production_broad_promotion

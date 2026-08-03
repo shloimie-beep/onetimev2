@@ -1,0 +1,74 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+record_id: OT-LIVE-001.02-APP-DOMAIN-PREFLIGHT
+owner: C00
+captured_at: '2026-08-03T15:40:47Z'
+inspection_mode: read_only
+external_effects: 0
+candidate_binding:
+  current_live_source_sha: 801af7ec1a3513d28c921ca2b8d08d8c1bca21d1
+  current_live_candidate_digest: c5ce445a0a81c3bbcbd0f6c384b45ae27183af4d071e4521bf197d46f5d88762
+railway_identity:
+  workspace_id: d2428a88-aa7e-4369-b396-72060bf720f4
+  workspace_name: sdratler's Projects
+  project_id: ce55ef20-1418-4ad3-aafa-f877fb992dc8
+  project_name: one-time-production
+  environment_id: f911acfc-e206-44df-a569-9d69d709b94b
+  environment_name: production
+  service_id: d175ad94-5e3c-41c2-8cbc-daa1a299077d
+  service_name: one-time-web
+  current_deployment_id: 0acdbf58-658a-40df-bca3-7e7dd847a2b1
+  current_deployment_status: SUCCESS
+  current_source_sha: 801af7ec1a3513d28c921ca2b8d08d8c1bca21d1
+  source_disconnected: true
+godaddy_identity:
+  provider: GoDaddy
+  signed_in_account_display_name: Moshe Hoffman
+  signed_in_organization: Gadlus Haadam
+  canonical_zone: onetimeonetime.com
+  ownership_readback: onetimeonetime.com_listed_as_a_Domain_in_the_signed_in_account
+  dns_management_readback: exact_zone_opened_and_records_visible
+  canonical_registry_before_readback: provider_and_zone_confirmed_account_unknown
+  identity_disposition: provider_account_zone_and_live_records_now_confirmed
+  sensitive_profile_fields_retained: false
+current_domain_readback:
+  authoritative_nameservers: [ns37.domaincontrol.com, ns38.domaincontrol.com]
+  railway_custom_domains:
+  - domain_id: 4447443b-bac4-4f16-a390-795d7e9bd811
+    domain: join.onetimeonetime.com
+    required_cname_target: awaz36ln.up.railway.app
+    current_cname_target: awaz36ln.up.railway.app
+    sync_status: ACTIVE
+    certificate_status: VALID
+  app_domain:
+    hostname: app.onetimeonetime.com
+    railway_custom_domain_present: false
+    public_dns_present: false
+    godaddy_record_present: false
+    classification: new_exact_custom_domain_and_CNAME_required_not_an_edit
+future_effect_boundary:
+  ready_for_mutation: false
+  reason: progressive_Parent_Student_candidate_must_be_frozen_and_bound_first
+  required_locks: [production:deployment, infra:dns]
+  required_order:
+  - reserve_candidate_bound_authority_and_both_exclusive_locks_with_fencing_tokens
+  - create_only_app.onetimeonetime.com_on_the_exact_Railway_production_web_service
+  - read_back_the_new_domain_ID_and_required_CNAME_value_without_assuming_it_matches_join
+  - add_only_the_exact_app_CNAME_in_the_confirmed_GoDaddy_zone
+  - verify_public_propagation_Railway_sync_TLS_and_both_direct_and_join_redirect_login_paths
+  - reconcile_and_release_both_locks
+  rollback:
+  - delete_only_the_exact_GoDaddy_app_record_created_by_immutable_effect_ID
+  - delete_only_the_exact_Railway_app_custom_domain_created_by_immutable_domain_ID
+  prohibited:
+  - modifying_join_or_apex_records
+  - reusing_or_displaying_profile_contact_fields
+  - guessing_the_new_Railway_required_value
+  - activating_broad_portal_or_campaign_traffic_before_the_canary
+contains_secret: false
+conclusion:
+  provider_identity_ambiguity_resolved: true
+  exact_current_absence_proven: true
+  live_preregistration_changed: false
+  portal_activation_blocker_open: true
+  next_safe_slice: freeze_and_verify_badd8a61_plus_prereg_copy_progressive_candidate_without_provider_mutation
