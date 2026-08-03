@@ -14,15 +14,43 @@ bootstrap_phase_order:
 reviewed_head: ecaf7b153f2b5323fd11859204a6db5c2a20fc6a
 integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
-candidate: e7fb4021d9bf4dbc9c38dbcadcc6eb9139082acf494416ce970c7c503f757456
+candidate: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
 active_writer_limit: 4
 controller_authorization_sha: 76692fbb6e65cdeb68e32862dd0c03490b5e5750
 next_action: >-
   Preserve exact live adult-only preregistration copy release 801af7ec and its inherited unchanged-form canary binding.
   Railway and signed-in GoDaddy readback have resolved the canonical app.onetimeonetime.com provider identities without
-  mutation and proved the app binding is absent. Freeze the smallest badd8a61-plus-copy progressive Parent/Student
-  candidate, then bind the app domain and run one protected production canary under fresh authority and both locks.
+  mutation and proved the app binding is absent. The smallest progressive Parent/Student candidate is now frozen at
+  source ca442fa4 and digest 8a902dd9. Bind the app domain and run one protected production canary under fresh
+  candidate-bound authority and both production:deployment and infra:dns locks.
   Keep broad communication held until Shloimie selects the single free-access cutoff.
+ot_live_001_02_progressive_candidate_freeze:
+  recorded_at: '2026-08-03T16:18:17Z'
+  control_parent_sha: 795c743bdae39d878dd8528c21eeb769f61998a4
+  freeze_record_commit_sha: ca930d456f3739af5ce3303f4fe880325136d56a
+  source_branch: codex/ot-live-progressive-portal-20260803
+  source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+  canonical_candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+  application_content_sha256: 6b65ec55f786a6f103a08c5a062b465058a037309d6e7d65e31ceadd4fd4b3db
+  candidate_manifest_sha256: e71d047e1d2cb6bc2a77ea7da1361d7ca87e69989a677fd19e2ddf7bdd1cf628
+  candidate_derivation_sha256: a8d93427a15117aeb2b638fc5ad898dc65c6bc3c088bda54944369dc1e544eee
+  candidate_manifest_path: ops/v2.1-execution/merge/candidates/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/CANDIDATE.yaml
+  frozen_at: '2026-08-03T16:15:40.762Z'
+  hosted_pg18_run_id: 30831028321
+  hosted_pg18_artifact_id: 8862942320
+  hosted_pg18_version: 18.4
+  hosted_pg18_migrations: 90_of_90
+  hosted_pg18_pending_and_issues: 0_and_0
+  hosted_pg18_ledger_digest: dbddc86e08ff25378d687febcfb36c41dbe7132f017fafe7a7e11b72a424fdc3
+  hosted_pg18_probes: 8_of_8
+  hosted_pg18_restore: passed_source_and_restored_equal
+  candidate_builder: passed_4_of_4
+  parent_student_browser_proof: passed_2_of_2
+  landing_signup_browser_proof: passed_10_of_10
+  account_lifecycle_integration: passed_4_of_4
+  production_dependency_audit: zero_vulnerabilities
+  independent_delta_review: P1_0_P2_0_P3_0_accepted
+  provider_or_external_effects: 0/0/0
 launch_priority_verification_integration:
   recorded_at: '2026-08-02T16:35:29Z'
   source_parent_sha: 2e514a73773bd97f20e423076539ed7224948552
