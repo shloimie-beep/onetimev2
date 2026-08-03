@@ -1,0 +1,46 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prod-progressive-dns-20260803162734
+event_sequence: 2
+previous_event_digest: 5726b6baed08f876e43811bb8b3d77036d9b9acfe22ba41397bd4fe116290b10
+state: ATTEMPTED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-progressive-dns-20260803162734/events/002-ATTEMPTED.yaml
+current_pointer_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-progressive-dns-20260803162734/CURRENT.yaml
+candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+authority_id: c00-prod-progressive-dns-20260803162734
+authority_grant_digest: bf3bb7bbdf3c5b6b59f148dea702528be54aec03985143b62eaf56e7d75d08ff
+lock: infra:dns
+lock_lease_id: 639857f4-e808-4bc6-93c2-e65acc065fd9
+fencing_token: fence-a437d346-02fe-43ec-aa51-2d7524d96460
+operation: create_one_exact_app_CNAME_then_verify_provider_public_DNS_and_Railway_readback
+provider_request_or_operation_id: GoDaddy_CNAME_app_3vp17vx5_up_railway_app
+provider_readback:
+  zone: onetimeonetime.com
+  authoritative_nameservers: ns37.domaincontrol.com_and_ns38.domaincontrol.com
+  record_name: app
+  record_fqdn: app.onetimeonetime.com
+  record_type: CNAME
+  record_value: 3vp17vx5.up.railway.app
+  TTL_selected: 1_2_Hour
+  GoDaddy_result: success_DNS_record_updated_successfully
+  GoDaddy_record_count_after: 27
+  public_DNS_status: resolved
+  public_CNAME_value: 3vp17vx5.up.railway.app
+  public_TTL_seconds_at_readback: 3600
+  Railway_domain_id: 9f1f5d7a-1176-4f67-aa53-5ebe59234dad
+  Railway_domain_sync_status: ACTIVE
+  Railway_DNS_status: DNS_RECORD_STATUS_PROPAGATED
+  Railway_current_value: 3vp17vx5.up.railway.app
+  Railway_certificate_status: CERTIFICATE_STATUS_TYPE_VALIDATING_OWNERSHIP
+  existing_join_domain_id: 4447443b-bac4-4f16-a390-795d7e9bd811
+  existing_join_domain_status: ACTIVE
+  existing_join_domain_changed: false
+effect_count_after: 1
+unexpected_effects: 0
+cleanup_state: exact_CNAME_created_DNS_reconciled_TLS_and_application_readback_pending
+event_at: '2026-08-03T16:51:49Z'
+state_based_on_head_sha: 678a3b18ad7a2f62837651fa1abb480364ca560c
+contains_secret: false
+immutable: true
