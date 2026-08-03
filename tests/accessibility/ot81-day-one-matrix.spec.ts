@@ -27,13 +27,13 @@ test.describe('OT81 responsive accessibility matrix', () => {
       await page.goto('/');
       await expect(
         page.getByRole('heading', {
-          name: 'MISHNAYOS MADE MEMORABLE',
+          name: 'HELP YOUR SON LOVE LEARNING MISHNAYOS',
         }),
       ).toBeVisible();
       evidence.push(await inspectPage(page, `landing-${viewport.name}`));
 
       await page.goto('/signup');
-      await expect(page.getByRole('heading', { name: 'Pre-register Your Family' })).toBeVisible();
+      await expect(page.getByRole('heading', { name: 'Enroll Your Son Free' })).toBeVisible();
       evidence.push(await inspectPage(page, `signup-${viewport.name}`));
     }
 

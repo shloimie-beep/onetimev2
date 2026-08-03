@@ -40,7 +40,7 @@ const publicActions = [
   }),
   action({
     action_id: 'public.signup.route',
-    label: 'Pre-register',
+    label: 'Sign Up Now',
     surface: 'route',
     route: '/signup',
     roles: ['anonymous'],
@@ -55,11 +55,14 @@ const publicActions = [
     surface: 'form',
     route: '/signup',
     roles: ['anonymous'],
-    capability: 'leads:create',
-    handler: ['POST', '/api/v1/leads'],
+    capability: 'accounts:family:create',
+    handler: ['POST', '/api/v1/signup/family'],
     idempotency: [true, 'client-generated idempotency_key'],
-    audit: ['domain_audit', 'signup_lead_created'],
-    test_evidence: ['tests/e2e/landing-signup.spec.ts', 'tests/integration/lead-capture.test.ts'],
+    audit: ['domain_audit', 'family_signup_created'],
+    test_evidence: [
+      'tests/e2e/landing-signup.spec.ts',
+      'apps/web/src/server/features/signup/family/router.test.ts',
+    ],
   }),
   action({
     action_id: 'public.login.route',

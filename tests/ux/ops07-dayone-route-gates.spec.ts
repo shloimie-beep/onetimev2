@@ -18,10 +18,10 @@ const cases = [
   {
     id: 'landing',
     path: '/',
-    heading: 'Worldwide Mishnah Learning / Live from Eretz Yisrael',
+    heading: 'HELP YOUR SON LOVE LEARNING MISHNAYOS',
     role: 'anonymous',
   },
-  { id: 'signup', path: '/signup', heading: 'Pre-register Your Family', role: 'anonymous' },
+  { id: 'signup', path: '/signup', heading: 'Enroll Your Son Free', role: 'anonymous' },
   { id: 'login', path: '/login', button: 'Login', role: 'anonymous' },
   { id: 'crm', path: '/app/crm', heading: 'CRM', role: 'admin' },
   { id: 'dashboard', path: '/app/dashboard', heading: 'Dashboard', role: 'admin' },

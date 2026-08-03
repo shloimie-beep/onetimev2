@@ -39,7 +39,7 @@ test.describe('OT81 integrated 30-sample performance matrix', () => {
         await page.goto('/');
         await page
           .getByRole('heading', {
-            name: 'MISHNAYOS MADE MEMORABLE',
+            name: 'HELP YOUR SON LOVE LEARNING MISHNAYOS',
           })
           .waitFor();
       }),
@@ -47,7 +47,7 @@ test.describe('OT81 integrated 30-sample performance matrix', () => {
     results.push(
       await measureRoute(page, 'signup', async () => {
         await page.goto('/signup');
-        await page.getByRole('heading', { name: 'Pre-register Your Family' }).waitFor();
+        await page.getByRole('heading', { name: 'Enroll Your Son Free' }).waitFor();
       }),
     );
     results.push(

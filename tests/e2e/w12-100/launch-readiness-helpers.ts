@@ -29,13 +29,13 @@ export const publicRouteProbes: RouteProbe[] = [
     id: 'landing',
     path: '/',
     audience: 'public',
-    expectedHeading: 'Worldwide Mishnah Learning / Live from Eretz Yisrael',
+    expectedHeading: 'HELP YOUR SON LOVE LEARNING MISHNAYOS',
   },
   {
     id: 'signup',
     path: '/signup',
     audience: 'public',
-    expectedHeading: 'Pre-register Your Family',
+    expectedHeading: 'Enroll Your Son Free',
     collectionSurface: true,
   },
   { id: 'privacy', path: '/privacy', audience: 'public', expectedHeading: /Privacy/i },
@@ -325,7 +325,7 @@ export async function customerSafetyFindings(page: Page) {
       'technical_diagnostic_visible',
     ],
     [
-      /\$67|month afterward|No card today|ROSH HASHANAH SPECIAL/i,
+      /month afterward|No card today|ROSH HASHANAH SPECIAL/i,
       'stale_pricing_or_campaign_copy_visible',
     ],
   ];
@@ -338,17 +338,16 @@ export async function customerSafetyFindings(page: Page) {
 export async function createSyntheticContact(page: Page) {
   const email = `w12-100-${Date.now()}@example.test`;
   const contactName = `W12 100 Parent ${Date.now()}`;
-  await page.goto('/signup');
-  await page.getByLabel('Adult name').fill(contactName);
-  await page.getByLabel('Family or household name').fill('W12 100 Synthetic Family');
-  await page.getByLabel('Adult location').fill('Jerusalem');
-  await page.getByRole('textbox', { name: 'Adult email' }).fill(email);
-  const submit = page.getByRole('button', { name: 'Pre-register my Family' });
+  const [firstName, ...lastNameParts] = contactName.split(' ');
+  await page.goto('/school');
+  await page.getByLabel('School name').fill('W12 100 Synthetic School');
+  await page.getByLabel('Contact first name').fill(firstName!);
+  await page.getByLabel('Contact last name').fill(lastNameParts.join(' '));
+  await page.getByRole('textbox', { name: 'School contact email' }).fill(email);
+  const submit = page.getByRole('button', { name: 'Send school inquiry' });
   await expect(submit).toBeVisible();
   await submit.click();
-  await expect(
-    page.getByRole('heading', { name: 'Adult pre-registration received.' }),
-  ).toBeVisible();
+  await expect(page.getByRole('heading', { name: /received your school inquiry/i })).toBeVisible();
   return { email, contactName };
 }
 

@@ -6,7 +6,7 @@ test('landing meets local performance and overflow gates', async ({ page }) => {
   await page.goto('/', { waitUntil: 'load' });
   await page
     .getByRole('heading', {
-      name: 'MISHNAYOS MADE MEMORABLE',
+      name: 'HELP YOUR SON LOVE LEARNING MISHNAYOS',
     })
     .waitFor();
   const usableMs = Date.now() - started;
@@ -26,7 +26,7 @@ test('signup meets local performance and layout gates', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const started = Date.now();
   await page.goto('/signup', { waitUntil: 'load' });
-  await page.getByRole('heading', { name: 'Pre-register Your Family' }).waitFor();
+  await page.getByRole('heading', { name: 'Enroll Your Son Free' }).waitFor();
   const usableMs = Date.now() - started;
   const overflow = await page.evaluate(
     () => document.documentElement.scrollWidth > document.documentElement.clientWidth,

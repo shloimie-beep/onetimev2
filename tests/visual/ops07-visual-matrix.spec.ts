@@ -38,10 +38,15 @@ test.describe('OPS-07 visual matrix', () => {
     for (const viewport of viewports) {
       await page.setViewportSize(viewport);
       results.push(
-        await captureRoute(page, `landing-${viewport.name}`, '/', 'MISHNAYOS MADE MEMORABLE'),
+        await captureRoute(
+          page,
+          `landing-${viewport.name}`,
+          '/',
+          'HELP YOUR SON LOVE LEARNING MISHNAYOS',
+        ),
       );
       results.push(
-        await captureRoute(page, `signup-${viewport.name}`, '/signup', 'Pre-register Your Family'),
+        await captureRoute(page, `signup-${viewport.name}`, '/signup', 'Enroll Your Son Free'),
       );
     }
 

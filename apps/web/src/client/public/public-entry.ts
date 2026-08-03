@@ -139,7 +139,7 @@ function renderCampaignCountdown() {
   const hours = Math.floor((totalMinutes % 1440) / 60);
   const minutes = totalMinutes % 60;
   const copy = `FREE ACCESS — ${days}d ${hours}h ${minutes}m remaining`;
-  campaign.setAttribute('aria-label', `${copy}. Pre-register your Family.`);
+  campaign.setAttribute('aria-label', `${copy}. Create your Family account.`);
   campaign
     .querySelectorAll<HTMLElement>('.campaign-ticker-item')
     .forEach((item) => (item.textContent = copy));
@@ -349,8 +349,6 @@ if (form) {
   const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
   const timezone = form.querySelector<HTMLInputElement>('#timezone');
   const schoolOnly = form.dataset.signupEntry === 'school';
-  const preregistrationOnly = form.dataset.signupEntry === 'preregistration';
-  const preregistrationIdempotencyKey = `family-preregistration-${crypto.randomUUID()}`;
   const familyBootstrap: {
     idempotency_key: string;
     csrf_token: string;
@@ -367,8 +365,7 @@ if (form) {
     form
       .querySelectorAll<HTMLElement>('[data-error-for]')
       .forEach((node) => (node.textContent = ''));
-  const currentEntry = () =>
-    schoolOnly ? 'school' : preregistrationOnly ? 'preregistration' : 'family';
+  const currentEntry = () => (schoolOnly ? 'school' : 'family');
   const familyButtonCopy = () => {
     const boundary = Date.parse(form.dataset.accessBoundary ?? '');
     return Number.isFinite(boundary) && serverNow().getTime() < boundary
@@ -378,13 +375,7 @@ if (form) {
 
   const detectedTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   if (timezone && detectedTimezone) timezone.value = detectedTimezone;
-  if (submit) {
-    submit.textContent = schoolOnly
-      ? schoolInquiryModel.cta
-      : preregistrationOnly
-        ? 'Pre-register my Family'
-        : familyButtonCopy();
-  }
+  if (submit) submit.textContent = schoolOnly ? schoolInquiryModel.cta : familyButtonCopy();
 
   const loadFamilyBootstrap = async () => {
     const current = familyBootstrap[0];
@@ -405,7 +396,7 @@ if (form) {
     familyBootstrap.splice(0, familyBootstrap.length, json);
     return json;
   };
-  if (!schoolOnly && !preregistrationOnly) {
+  if (!schoolOnly) {
     void loadFamilyBootstrap().catch(() => {
       if (status)
         status.textContent = 'Secure Family signup is still loading. You can retry shortly.';
@@ -433,40 +424,13 @@ if (form) {
 
     if (submit) {
       submit.disabled = true;
-      submit.textContent =
-        entry === 'family'
-          ? 'Creating account…'
-          : entry === 'preregistration'
-            ? 'Saving pre-registration…'
-            : 'Sending inquiry…';
+      submit.textContent = entry === 'family' ? 'Creating account…' : 'Sending inquiry…';
     }
     if (status) status.textContent = '';
 
     try {
       let response: Response;
-      if (entry === 'preregistration') {
-        response = await fetch('/api/v1/leads', {
-          method: 'POST',
-          credentials: 'same-origin',
-          headers: { 'content-type': 'application/json', accept: 'application/json' },
-          body: JSON.stringify({
-            contact_name: String(data.get('contact_name') ?? ''),
-            family_or_school: String(data.get('family_or_school') ?? ''),
-            audience_type: 'family',
-            location: String(data.get('location') ?? ''),
-            timezone: String(data.get('timezone') ?? ''),
-            ...(detectedTimezone ? { browser_timezone: detectedTimezone } : {}),
-            email: String(data.get('email') ?? ''),
-            reminder_preference: 'none',
-            reminder_consent: false,
-            idempotency_key: preregistrationIdempotencyKey,
-            attribution: {
-              landing_path: '/signup',
-              referrer: document.referrer.slice(0, 500),
-            },
-          }),
-        });
-      } else if (entry === 'family') {
+      if (entry === 'family') {
         const bootstrap = await loadFamilyBootstrap();
         if (!bootstrap.writes_allowed) {
           throw new Error('Signup writes are disabled in this verification environment.');
@@ -549,28 +513,20 @@ if (form) {
         const body = success.querySelector<HTMLElement>('[data-success-body]');
         if (heading) {
           heading.textContent =
-            entry === 'preregistration'
-              ? typeof json.message === 'object' && json.message.heading
-                ? json.message.heading
-                : 'Adult pre-registration received.'
-              : entry === 'family'
-                ? 'Your Family account was saved.'
-                : (typeof json.message === 'object' && json.message.heading) ||
-                  'Thank you — we received your School inquiry.';
+            entry === 'family'
+              ? 'Your Family account was saved.'
+              : (typeof json.message === 'object' && json.message.heading) ||
+                'Thank you — we received your School inquiry.';
         }
         if (body) {
           body.textContent =
-            entry === 'preregistration'
-              ? typeof json.message === 'object' && json.message.body
-                ? json.message.body
-                : 'We saved the adult contact for follow-up. No portal account, Student account, subscription, or charge was created.'
-              : entry === 'family'
-                ? typeof json.message === 'string'
-                  ? json.message
-                  : 'Automatic sign-in is not available yet. Use Member Login when session setup is available.'
-                : typeof json.message === 'string'
-                  ? json.message
-                  : (json.message?.body ?? schoolInquiryModel.success);
+            entry === 'family'
+              ? typeof json.message === 'string'
+                ? json.message
+                : 'Your Family account and free access are ready. Continue to the Parent portal.'
+              : typeof json.message === 'string'
+                ? json.message
+                : (json.message?.body ?? schoolInquiryModel.success);
         }
         success.focus();
       }
@@ -582,12 +538,7 @@ if (form) {
     } finally {
       if (submit) {
         submit.disabled = false;
-        submit.textContent =
-          entry === 'family'
-            ? familyButtonCopy()
-            : entry === 'preregistration'
-              ? 'Pre-register my Family'
-              : schoolInquiryModel.cta;
+        submit.textContent = entry === 'family' ? familyButtonCopy() : schoolInquiryModel.cta;
       }
     }
   });

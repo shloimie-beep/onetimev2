@@ -25,10 +25,10 @@ test('OT82 canonical public shell, ticker, and mobile invariant', async ({ page 
     await expect(page.locator('.campaign-ticker')).toHaveAttribute('href', '/signup');
     await expect(page.locator('.campaign-ticker')).toHaveAttribute(
       'aria-label',
-      /FREE ACCESS.*remaining.*Pre-register your Family/i,
+      /FREE ACCESS.*remaining.*Create your Family account/i,
     );
     await expect(
-      page.getByLabel('Primary').getByRole('link', { name: 'Pre-register' }),
+      page.getByLabel('Primary').getByRole('link', { name: 'Sign Up Now' }),
     ).toBeVisible();
     await expect(page.locator('.brand-lockup img')).toBeVisible();
     await expect(page.locator('.site-header')).toBeVisible();

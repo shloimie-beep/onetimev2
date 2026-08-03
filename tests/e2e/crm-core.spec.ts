@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-test('synthetic signup appears once in authenticated CRM and opens detail on mobile', async ({
+test('synthetic School inquiry appears once in authenticated CRM and opens detail on mobile', async ({
   page,
 }) => {
   const requested: string[] = [];
@@ -9,16 +9,15 @@ test('synthetic signup appears once in authenticated CRM and opens detail on mob
   const email = `crm-${Date.now()}@example.test`;
   const contactName = `CRM Browser Parent ${Date.now()}`;
 
-  await page.goto('/signup');
-  await page.getByLabel('Adult name').fill(contactName);
-  await page.getByLabel('Family or household name').fill('CRM Browser Family');
-  await page.getByLabel('Adult location').fill('Jerusalem');
-  await page.getByRole('textbox', { name: 'Adult email' }).fill(email);
+  const [firstName, ...lastNameParts] = contactName.split(' ');
+  await page.goto('/school');
+  await page.getByLabel('School name').fill('CRM Browser School');
+  await page.getByLabel('Contact first name').fill(firstName!);
+  await page.getByLabel('Contact last name').fill(lastNameParts.join(' '));
+  await page.getByRole('textbox', { name: 'School contact email' }).fill(email);
   await expect(page.getByLabel(/Student|WhatsApp|marketing/i)).toHaveCount(0);
-  await page.getByRole('button', { name: 'Pre-register my Family' }).click();
-  await expect(
-    page.getByRole('heading', { name: 'Adult pre-registration received.' }),
-  ).toBeVisible();
+  await page.getByRole('button', { name: 'Send school inquiry' }).click();
+  await expect(page.getByRole('heading', { name: /received your school inquiry/i })).toBeVisible();
 
   await login(page);
   await expect(page.getByRole('heading', { name: 'Contacts' })).toBeVisible();
