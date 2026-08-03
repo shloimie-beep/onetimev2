@@ -1,0 +1,69 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+authority_id: c00-pg18-proof-20260803122825
+authority_kind: derived_candidate_preparation_effect
+task_id: C00
+candidate_digest: not_applicable_pre_freeze
+candidate_binding_status: exact_source_sha_bound_pre_freeze
+repository_source_sha: e816aa28a97aff32849bab4fe5ae7fc4663e2498
+canonical_path: ops/v2.1-execution/authority/none/C00/c00-pg18-proof-20260803122825/GRANT.yaml
+source_grant_id: ot-v21-production-source-grant-20260729
+source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+source_approval_evidence_path: ops/v2.1-execution/authority/none/C00/ot-v21-production-source-grant-20260729/APPROVAL.md
+source_approval_evidence_digest: 8c95a959f79aba0ac34fa0fcb6cb463cceac9aeb2bb52da1603d39db3e2c33c2
+grant_status_at_issue: active
+approved_by: Shloimie Dratler
+scope:
+  repository: shloimie-beep/onetimev2
+  workflow: .github/workflows/ops11-postgres-18-assurance.yml
+  workflow_name: OPS-11 PostgreSQL 18 Assurance
+  ref: codex/v21-integration
+  integration_head_sha: e816aa28a97aff32849bab4fe5ae7fc4663e2498
+  input_repository_source_sha: e816aa28a97aff32849bab4fe5ae7fc4663e2498
+  database_target: disposable_GitHub_Actions_postgres_18_4_service_only
+  production_or_staging_database_access: prohibited
+  customer_or_provider_data_access: prohibited
+fencing_token: fence-aa16b055-373e-4ba8-af61-68435379391e
+lock: production:deployment
+provider_lock_lease_id: 28546f19-c665-485c-9698-a4476a637923
+provider_account_location_or_asset_id:
+  provider: GitHub_Actions
+  repository: shloimie-beep/onetimev2
+  workflow_file: ops11-postgres-18-assurance.yml
+  ref: codex/v21-integration
+allowed_operation: one workflow_dispatch with the exact source SHA followed by read-only run and artifact reconciliation
+maximum_effect_count: 1
+maximum_effect_value: not_applicable
+approved_fixture_ids:
+  - github_actions_ephemeral_runner
+  - disposable_postgres_18_4_service
+operator_identity: C00
+approved_at: '2026-08-03T12:28:25Z'
+recorded_at: '2026-08-03T12:28:25Z'
+expires_at: '2026-08-03T13:13:25Z'
+prerequisite_review:
+  exact_source_head_sha: e816aa28a97aff32849bab4fe5ae7fc4663e2498
+  integration_live_head_sha: e816aa28a97aff32849bab4fe5ae7fc4663e2498
+  parent_and_student_portal_colocated_tests: passed_127_with_3_skipped
+  portal_integration_tests: passed_28_with_1_skipped
+  candidate_builder_tests: passed_4_of_4
+  vimeo_migration_source_contract: passed_1_of_1
+  expected_migration_count: 90
+  expected_last_migration_ordinal: 2259
+cleanup_and_reconciliation:
+  - require GitHub run identity readback immediately after dispatch
+  - require exact checked-out source SHA and PostgreSQL 18.4 evidence artifact
+  - require migration apply 90 of 90, replay 90 of 90, pending 0, issues 0, and last ordinal 2259
+  - require guard probes and isolated restore-clone proof to pass
+  - GitHub runner and database service must remain ephemeral
+  - retain only sanitized workflow artifacts for seven days
+  - record failure or ambiguous dispatch without retrying under this authority
+stop_conditions:
+  - source grant is revoked or expired
+  - integration live head differs from e816aa28a97aff32849bab4fe5ae7fc4663e2498
+  - exact source head e816aa28a97aff32849bab4fe5ae7fc4663e2498 is not reachable from integration
+  - another run holds the production:deployment lock
+  - workflow, repository, ref, or input differs from the exact bound identity
+  - any non-disposable database, provider account, customer data, deployment, DNS, send, billing, or production effect would occur
+contains_secret: false
+immutable: true
