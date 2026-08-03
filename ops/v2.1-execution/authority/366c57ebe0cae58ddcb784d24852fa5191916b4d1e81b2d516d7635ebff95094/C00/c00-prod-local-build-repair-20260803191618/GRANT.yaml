@@ -1,0 +1,91 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+authority_id: c00-prod-local-build-repair-20260803191618
+authority_kind: derived_candidate_bound_exact_local_upload_build_resolution_and_protected_existing_fixture_canary
+task_id: C00
+candidate_digest: 366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094
+candidate_binding_status: exact_frozen_three_file_login_timestamp_repair_clean_local_archive
+candidate_manifest_commit_sha: 8b1d9c3c277da59ea7d372a5b491a1ce0bf65879
+repository_source_sha: a64d9052305e6a0a31cc9bf3268fb634000c8f8a
+source_branch: codex/ot-live-progressive-portal-20260803
+canonical_path: ops/v2.1-execution/authority/366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094/C00/c00-prod-local-build-repair-20260803191618/GRANT.yaml
+source_grant_id: ot-v21-production-source-grant-20260729
+source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+source_approval_evidence_path: ops/v2.1-execution/authority/none/C00/ot-v21-production-source-grant-20260729/APPROVAL.md
+source_approval_evidence_digest: 8c95a959f79aba0ac34fa0fcb6cb463cceac9aeb2bb52da1603d39db3e2c33c2
+predecessor_authority_id: c00-prod-local-upload-repair-20260803190542
+predecessor_terminal_event_digest: 33a1e2fcf02c5dcae858f44778b47abd0e01d3af65d298c196adb32592678b4e
+grant_status_at_issue: active
+approved_by: Shloimie Dratler
+approved_at: '2026-08-03T19:16:18Z'
+recorded_at: '2026-08-03T19:16:18Z'
+expires_at: '2026-08-03T20:46:18Z'
+scope:
+  provider: One Time application on Railway production
+  project_id: ce55ef20-1418-4ad3-aafa-f877fb992dc8
+  environment_id: f911acfc-e206-44df-a569-9d69d709b94b
+  web_service_id: d175ad94-5e3c-41c2-8cbc-daa1a299077d
+  worker_service_id: 742f60ed-dc2f-4321-85d0-019003d4e9b9
+  current_web_deployment_id: ad3a52fc-902a-41ca-b480-ca92bc3022d8
+  current_worker_deployment_id: 48045084-211a-4082-bbc3-9c03830b80ff
+  current_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+  target_source_sha: a64d9052305e6a0a31cc9bf3268fb634000c8f8a
+  exact_clean_worktree_path: C:/Users/User/Documents/Codex/2026-07-28/files-mentioned-by-the-user-one/work/ot-live-progressive-portal-20260803
+  railway_manifest_sha256: 53c89d863cf679f62bf4911ded79ab72e6c35a0b7e462b46d7aa25cb12e32c9f
+  Dockerfile_sha256: beda32f7f842d9412552ecfafb8fb0bcb7faab6eb90dde310c658d9bacdf73f5
+  exact_latest_migration_id: 2259_vimeo_mishnayos_catalog_adoption
+  exact_migration_inventory_digest: abdbfd5837ed54751e55458a3a79886ca9799e3d738344b40d6f95aad621a5ea
+  application_origin: https://app.onetimeonetime.com
+  fixture_id: c00_prod_portal_canary_8a902dd9_20260803a
+fencing_token: fence-e23c0008-7d4d-41d2-ab05-3a16c9c6a342
+lock: production:deployment
+holder_claim_id: 60dc17cd-a5d3-4aaf-b96c-b01cff8c79ed
+provider_lock_lease_id: 920dd6d4-3c2b-41c1-8cb7-2ad27fcf11b3
+allowed_operation: upload the exact clean a64 local archive once to the web and once to the worker; allow only transient generic INITIALIZING metadata while Railway scans the archive; during build planning require the official detected Dockerfile log or exact Dockerfile build manifest, then require SUCCESS, running instances, new image digests, public health readiness version, clean logs, and unchanged migration state; resume only the existing protected Parent fixture and one Parent-managed Student lifecycle canary
+maximum_effect_count: 10
+maximum_effect_value: two_exact_local_archive_deployments_one_existing_fixture_Student_canary_two_exact_ID_cancels_before_cutover_and_two_exact_prior_image_rollbacks_only_if_required
+approved_fixture_ids:
+  - c00_prod_portal_canary_8a902dd9_20260803a
+operator_identity: C00
+effect_budget:
+  database_migrations_max: 0
+  additional_parent_accounts_created_or_updated_max: 0
+  additional_households_created_or_updated_max: 0
+  student_accounts_created_or_updated_max: 1
+  student_credential_rotations_max: 1
+  student_lifecycle_transitions_max: 4
+  source_connections_or_disconnections_max: 0
+  local_archive_production_deployments_max: 2
+  exact_pre_cutover_deployment_cancels_max: 2
+  variable_mutations_max: 0
+  rollback_to_exact_prior_deployments_max: 2
+  Railway_or_DNS_domain_mutations_max: 0
+  external_provider_GHL_billing_broad_effects_max: 0
+prerequisite_review:
+  control_head_sha: 8f17a4e69ca6e49b79c563fb0407e4b5a7817d26
+  clean_source_and_remote_head: a64d9052305e6a0a31cc9bf3268fb634000c8f8a
+  source_delta_and_validation: three_file_timestamp_precision_fix_all_focused_tests_typecheck_lint_prettier_build_secret_scan_passed
+  migration_inventory: unchanged_90_files_90_live_ledger_rows_pending_zero
+  live_web_and_worker: restored_ca442_images_SUCCESS_health_200
+  first_local_upload_learning: candidate_message_bound_upload_cancelled_at_INITIALIZING_before_build_generic_metadata_is_pre_build_not_final_manifest
+  official_Railway_docs: railway_up_scans_compresses_uploads_then_builds_using_Railpack_or_root_Dockerfile_and_root_Dockerfile_is_auto_detected
+  live_fixture_state: one_Parent_one_household_zero_Student
+  delivery_controls: sink_sink_sink_resend_false_highlevel_disabled_real_transports_false
+rollback_and_reconciliation:
+  - record immutable reservation before upload
+  - recheck exact clean worktree manifest Dockerfile remote control and source heads before each upload
+  - use deployment_up_local_archive only and never from_source down source_connect source_disconnect or variable mutation
+  - accept generic INITIALIZING metadata only while no build or image exists and require candidate-bound CLI message
+  - poll to build planning and require detected Dockerfile evidence before permitting deployment to proceed; cancel only the exact new ID on mismatch
+  - keep current ca442 deployment active during build and use deploymentRollback exact named prior ID only if an unhealthy replacement cuts over
+  - preserve the existing Parent and household and create no additional Parent or household and no Student email
+  - require zero variable migration external-provider GHL billing DNS or broad effect
+stop_conditions:
+  - grant lock lease fence candidate worktree hashes source head or remote control mismatch
+  - INITIALIZING changes to BUILDING without detected Dockerfile evidence or exact Dockerfile manifest
+  - final deployment metadata message service identity healthcheck or builder differs from the exact bound inputs
+  - migration ledger differs from 90 rows pending zero or fixture differs from one Parent one household zero Student before creation
+  - Parent login app TLS health or delivery sink controls fail
+  - any variable migration source connection provider GHL billing DNS customer or broad communication mutation would occur
+contains_secret: false
+immutable: true

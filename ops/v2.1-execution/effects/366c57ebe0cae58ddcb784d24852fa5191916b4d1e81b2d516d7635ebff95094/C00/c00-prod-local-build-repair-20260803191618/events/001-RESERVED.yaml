@@ -1,0 +1,54 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prod-local-build-repair-20260803191618
+event_sequence: 1
+previous_event_digest: none
+state: RESERVED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094/C00/c00-prod-local-build-repair-20260803191618/events/001-RESERVED.yaml
+current_pointer_path: ops/v2.1-execution/effects/366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094/C00/c00-prod-local-build-repair-20260803191618/CURRENT.yaml
+candidate_digest: 366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094
+candidate_manifest_commit_sha: 8b1d9c3c277da59ea7d372a5b491a1ce0bf65879
+repository_source_sha: a64d9052305e6a0a31cc9bf3268fb634000c8f8a
+source_branch: codex/ot-live-progressive-portal-20260803
+authority_id: c00-prod-local-build-repair-20260803191618
+authority_grant_digest: 594872a1e7effdf4681c20daa408f5a95f159fe2a9ccc8abb1c0414ee1301a21
+authority_status_index_digest: 7c6fd8d3fcf5a715531043150dc0bf7860e608316d10db0cfa342b7327396fe5
+authority_status_entry_digest: e08c71a146bf4bf78d6014d3039ddf5131c51330f5cb1ee8acf58728dc369ee0
+latest_revocation_digest: none
+lock: production:deployment
+lock_lease_id: 920dd6d4-3c2b-41c1-8cb7-2ad27fcf11b3
+holder_claim_id: 60dc17cd-a5d3-4aaf-b96c-b01cff8c79ed
+fencing_token: fence-e23c0008-7d4d-41d2-ab05-3a16c9c6a342
+provider_identity:
+  project_id: ce55ef20-1418-4ad3-aafa-f877fb992dc8
+  environment_id: f911acfc-e206-44df-a569-9d69d709b94b
+  web_service_id: d175ad94-5e3c-41c2-8cbc-daa1a299077d
+  worker_service_id: 742f60ed-dc2f-4321-85d0-019003d4e9b9
+operation: exact_local_a64_upload_allow_INITIALIZING_then_require_Dockerfile_build_web_worker_and_existing_fixture_Student_canary
+effect_budget:
+  database_migrations_max: 0
+  local_archive_production_deployments_max: 2
+  exact_pre_cutover_deployment_cancels_max: 2
+  additional_Parent_household_Student_canaries_max: 0_0_1
+  variable_mutations_max: 0
+  rollback_to_exact_prior_deployments_max: 2
+  source_domain_provider_GHL_billing_broad_effects_max: 0
+provider_readback_before:
+  web_deployment_id: ad3a52fc-902a-41ca-b480-ca92bc3022d8
+  web_status_source_and_image: SUCCESS_ca442_sha256_aec85be7
+  worker_deployment_id: 48045084-211a-4082-bbc3-9c03830b80ff
+  worker_status_source_and_image: SUCCESS_ca442_sha256_4df4d1b9
+  target_worktree_and_remote_head: clean_a64d9052305e6a0a31cc9bf3268fb634000c8f8a
+  railway_manifest_sha256: 53c89d863cf679f62bf4911ded79ab72e6c35a0b7e462b46d7aa25cb12e32c9f
+  Dockerfile_sha256: beda32f7f842d9412552ecfafb8fb0bcb7faab6eb90dde310c658d9bacdf73f5
+  migration_file_and_ledger_count: 90_90
+  migration_pending_count: 0
+  existing_fixture_counts: one_Parent_one_household_zero_Student
+  delivery_controls: sink_sink_sink_resend_false_highlevel_disabled_real_transports_false
+  app_domain_TLS_health: valid_HTTP_200
+reserved_at: '2026-08-03T19:16:18Z'
+lease_expires_at: '2026-08-03T20:46:18Z'
+state_based_on_head_sha: 8f17a4e69ca6e49b79c563fb0407e4b5a7817d26
+contains_secret: false
+immutable: true
