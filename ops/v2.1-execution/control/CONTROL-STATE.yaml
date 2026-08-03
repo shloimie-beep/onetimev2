@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: operational
-active_phase: ot_live_001_02_support_live_bna_summary_producer_source_only_external_launch_holds
+active_phase: ot_live_001_02_support_live_wapi_misroute_reconciled_blocked_external_launch_holds
 bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
@@ -26,8 +26,11 @@ next_action: >-
   provisioned key ID/secret, candidate-bound admission, and operator replay/duplicate canary are available. Protected
   Parent canary remains unstarted because no approved reusable Parent credential or live session exists. Keep broad
   email send false while Sep 11/Sep 13, audience/consent/suppression, duplicate SPF, Forward Email reply route,
-  seed/reply proof, and current-copy gates remain unresolved. Reconcile the separately observed POST
-  /api/webhooks/wapi 404 traffic only in its proper provider lane; do not broaden the completed deployment slice.
+  seed/reply proof, and current-copy gates remain unresolved. Whapi live readback proves its sole persistent messages
+  webhook is misrouted to join /api/webhooks/wapi, producing at least 5,000 404 callbacks in ten minutes. Do not add an
+  acknowledging One Time route or mutate the provider while WhatsApp messages/workflows are budgeted at zero. Require
+  an exact disable-versus-repoint decision; repointing additionally requires verified canonical receiver ownership,
+  matching secret binding, and no-send/auto-reply-off state before a candidate-bound provider lock and fence are issued.
 ot_live_001_02_public_support_repair_candidate_freeze:
   recorded_at: '2026-08-03T20:06:36Z'
   control_parent_sha: 729fd49b803f98ad0de17042a0a0ac62a4b7e3aa
@@ -90,6 +93,29 @@ ot_live_001_bna_summary_producer_source_handoff:
   database_migrations_shared_registration_runtime_composition: 0_0_0
   provider_deployment_customer_message_effects: 0_0_0_0
   enablement_gate: exact_HTTPS_endpoint_separate_key_candidate_admission_operator_replay_duplicate_canary
+ot_live_001_wapi_webhook_misroute_readback:
+  recorded_at: '2026-08-03T21:00:13Z'
+  candidate_digest: 99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098
+  production_web_deployment_id: 50b737ff-b6d1-4cd4-a416-5cffb548775a
+  provider_registry_basis: protected_Railway_variable_names_and_live_Whapi_GET_settings
+  provider_host: gate.whapi.cloud
+  provider_instance_phone_sender_bindings: present_not_displayed
+  webhook_count: 1
+  webhook_target: https_join.onetimeonetime.com_api_webhooks_wapi
+  webhook_mode_and_event: body_messages_POST
+  webhook_custom_header_name: x-one-time-wapi-webhook-secret
+  callback_persist: true
+  live_HTTP_observation_window: '2026-08-03T20:49:52Z/2026-08-03T20:59:49Z'
+  minimum_failed_callbacks_in_window: 5000
+  HTTP_method_status_host_source_count: POST_404_join.onetimeonetime.com_1
+  live_HTTP_safe_summary_sha256: 31080b0e445e7b043231a4d2dcdf232e0abc2255650779752ab80b3f7c36175b
+  provider_safe_summary_sha256: dc56dd6153a70ea70b660c461c3de2dd1913340a4f7881024c84c3afd3ff0e31
+  canonical_documented_BNA_receiver_public_GET: 200_ready
+  one_time_source_expected_Meta_endpoint: /api/v1/whatsapp/meta/webhook_default_off_not_registered
+  one_time_transport_real_transport_canary_authorized: false_false_false
+  disposition: PROVIDER_SIDE_STALE_ENDPOINT_NOT_A_MISSING_ONE_TIME_ROUTE
+  mutation_or_send_effects: 0_0
+  blocker: disable_or_repoint_decision_plus_receiver_no_send_proof_and_provider_authority_lock_fence
 ot_live_002_02_provider_handoff:
   reconciled_at: '2026-08-03T19:02:11Z'
   owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a

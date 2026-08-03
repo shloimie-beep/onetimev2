@@ -530,5 +530,28 @@ blockers:
     Preserve exact copy release 801af7ec and its unchanged preregistration/form/provider contract. Revalidate only after
     a later public-copy, form, analytics, runtime, or provider-binding change.
   next_check: Progressive portal candidate preparation; broad communication remains separately held by the cutoff conflict.
+- blocker_id: OT-LIVE-001-WAPI-WEBHOOK-MISROUTE
+  status: open
+  scope: production_whatsapp_provider_configuration
+  owner: Shloimie_then_C00_with_canonical_receiver_owner
+  affected_tasks:
+  - OT-LIVE-OPS-001
+  - OT-LIVE-PRV-001
+  safe_work_completed: >-
+    Protected registry and live Whapi GET /settings readback prove the sole persistent messages webhook targets
+    https://join.onetimeonetime.com/api/webhooks/wapi with the expected named secret header. Exact Railway HTTP readback
+    observed at least 5,000 POST 404 callbacks from one source in ten minutes on production deployment 50b737ff. The
+    current One Time source has no legacy WAPI receiver and keeps its separate Meta endpoint default-off. The documented
+    BNA receiver returns public GET 200 ready. No webhook, provider, variable, BNA, message, deployment, or customer
+    mutation occurred.
+  required_authority_or_input:
+  - Exact operator decision to disable the stale Whapi webhook or repoint it to the canonical receiver
+  - For repointing, canonical receiver-owner proof that the matching secret is bound and every auto-reply/outbound-send mode is off
+  protection: >-
+    Do not add a 200/204 sink route that would discard inbound messages. Do not repoint while the receiver could auto-reply,
+    and do not activate or send WhatsApp. Immediately before any provider correction, bind the exact current candidate,
+    acquire the exclusive Whapi provider lock and fencing token, preserve the existing header/event settings, perform one
+    exact update only, read back the provider setting, and retain an exact rollback target.
+  next_check: Reconcile after the disable-versus-repoint decision and no-send receiver proof are both available.
 rule: One precise blocker per entry with owner, affected tasks, safe work completed, required authority/input, and
   next check.
