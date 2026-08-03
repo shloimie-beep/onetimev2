@@ -13,7 +13,7 @@ locks:
   lease_expires_at: '2026-08-04T18:14:33Z'
   authority_id: ot-live-002-02-provider-authority-20260803181433
   authority_grant_digest: 20a3f775c230e531d950759fcd93fb034f2f6ae48d889459e9c5d1903186e4dc
-  authority_status_index_digest: 7372c9646f4c4df7323e1c9d8d64579c169066db4ba610844b8835ff71f0d867
+  authority_status_index_digest: 7655eee2546ebae4a3f0795ce3b01553b3994729018fa05d3f12b52449206163
   authority_status_entry_digest: 0d953a8f2427ee0a37cf992b844c08901ecaea2132e44098f78e1a0414c5a60b
   latest_revocation_digest: none
   authority_checked_at: '2026-08-03T18:14:33Z'
@@ -115,7 +115,7 @@ locks:
   lease_expires_at: '2026-08-04T18:14:33Z'
   authority_id: ot-live-002-02-provider-authority-20260803181433
   authority_grant_digest: 20a3f775c230e531d950759fcd93fb034f2f6ae48d889459e9c5d1903186e4dc
-  authority_status_index_digest: 7372c9646f4c4df7323e1c9d8d64579c169066db4ba610844b8835ff71f0d867
+  authority_status_index_digest: 7655eee2546ebae4a3f0795ce3b01553b3994729018fa05d3f12b52449206163
   authority_status_entry_digest: 0d953a8f2427ee0a37cf992b844c08901ecaea2132e44098f78e1a0414c5a60b
   latest_revocation_digest: none
   authority_checked_at: '2026-08-03T18:14:33Z'
@@ -164,24 +164,33 @@ locks:
   effect_budget: null
   cleanup_state: not_applicable
 - lock: production:deployment
-  status: unclaimed
-  holder_task_id: null
-  holder_claim_id: null
-  lease_id: null
-  fencing_token: null
-  canonical_candidate_digest: null
-  provider_identity: null
-  authorized_operation: null
-  claimed_at: null
-  lease_expires_at: null
-  authority_id: null
-  authority_grant_digest: null
-  authority_status_index_digest: null
-  authority_status_entry_digest: null
-  latest_revocation_digest: null
-  authority_checked_at: null
-  effect_budget: null
-  cleanup_state: not_applicable
+  status: claimed
+  holder_task_id: C00
+  holder_claim_id: 74be27f1-4619-4f2a-b760-f2f5448b73bf
+  lease_id: 49245f79-0d76-4f53-85ce-84ea68c17f01
+  fencing_token: fence-59b0975a-0ef4-42fb-a118-430a35049fab
+  canonical_candidate_digest: 366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094
+  provider_identity: railway:ce55ef20-1418-4ad3-aafa-f877fb992dc8:f911acfc-e206-44df-a569-9d69d709b94b:web_d175ad94_worker_742f60ed
+  authorized_operation: exact_a64_from_source_web_worker_deploy_existing_fixture_Student_canary_delete_only_ONE_TIME_VERIFICATION_ENVIRONMENT_ID_from_two_services_then_exact_candidate_restoration_and_exact_prior_deployment_rollback_only_if_required
+  claimed_at: '2026-08-03T18:46:16Z'
+  lease_expires_at: '2026-08-03T20:16:16Z'
+  authority_id: c00-prod-login-timestamp-repair-20260803184616
+  authority_grant_digest: 525e1c0caa6902d1d60435d8d1a31e788952fa19de8d3dbb022bc3ca7ac0ace3
+  authority_status_index_digest: 7655eee2546ebae4a3f0795ce3b01553b3994729018fa05d3f12b52449206163
+  authority_status_entry_digest: 17aeaf7d2f99f94d0d78650b8ae77f1926b4bde01ef820e27fc69c225041b042
+  latest_revocation_digest: none
+  authority_checked_at: '2026-08-03T18:46:16Z'
+  effect_budget:
+    database_migrations_max: 0
+    source_connections_and_disconnections_max: 0
+    initial_production_deployments_max: 2
+    additional_Parent_household_Student_canaries_max: 0_0_1
+    variable_deletions_max: 2
+    restoration_production_deployments_max: 2
+    rollback_to_exact_prior_deployments_max: 2
+    Railway_or_DNS_domain_mutations_max: 0
+    provider_GHL_billing_broad_effects_max: 0
+  cleanup_state: pending_exact_a64_deploy_existing_fixture_canary_two_variable_deletions_restoration_and_terminal_reconciliation
 - lock: provider:s3-kms
   status: unclaimed
   holder_task_id: null

@@ -1,0 +1,54 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prod-login-timestamp-repair-20260803184616
+event_sequence: 1
+previous_event_digest: none
+state: RESERVED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094/C00/c00-prod-login-timestamp-repair-20260803184616/events/001-RESERVED.yaml
+current_pointer_path: ops/v2.1-execution/effects/366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094/C00/c00-prod-login-timestamp-repair-20260803184616/CURRENT.yaml
+candidate_digest: 366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094
+candidate_manifest_commit_sha: 8b1d9c3c277da59ea7d372a5b491a1ce0bf65879
+repository_source_sha: a64d9052305e6a0a31cc9bf3268fb634000c8f8a
+source_branch: codex/ot-live-progressive-portal-20260803
+authority_id: c00-prod-login-timestamp-repair-20260803184616
+authority_grant_digest: 525e1c0caa6902d1d60435d8d1a31e788952fa19de8d3dbb022bc3ca7ac0ace3
+authority_status_index_digest: 7655eee2546ebae4a3f0795ce3b01553b3994729018fa05d3f12b52449206163
+authority_status_entry_digest: 17aeaf7d2f99f94d0d78650b8ae77f1926b4bde01ef820e27fc69c225041b042
+latest_revocation_digest: none
+lock: production:deployment
+lock_lease_id: 49245f79-0d76-4f53-85ce-84ea68c17f01
+holder_claim_id: 74be27f1-4619-4f2a-b760-f2f5448b73bf
+fencing_token: fence-59b0975a-0ef4-42fb-a118-430a35049fab
+provider_identity:
+  project_id: ce55ef20-1418-4ad3-aafa-f877fb992dc8
+  environment_id: f911acfc-e206-44df-a569-9d69d709b94b
+  web_service_id: d175ad94-5e3c-41c2-8cbc-daa1a299077d
+  worker_service_id: 742f60ed-dc2f-4321-85d0-019003d4e9b9
+operation: exact_a64_from_source_web_worker_deploy_then_existing_fixture_Student_canary_and_read_only_restoration
+effect_budget:
+  database_migrations_max: 0
+  initial_production_deployments_max: 2
+  additional_Parent_household_Student_canaries_max: 0_0_1
+  variable_deletions_max: 2
+  restoration_production_deployments_max: 2
+  rollback_to_exact_prior_deployments_max: 2
+  source_domain_provider_GHL_billing_broad_effects_max: 0
+provider_readback_before:
+  web_deployment_id: 7e355bb1-1938-4689-8723-7fd83b48719d
+  web_status_instance_and_source: SUCCESS_RUNNING_ca442fa43544c89e135fe751b177e1ff473b9e57
+  worker_deployment_id: 64a4edff-f566-4057-8ebe-c350bba5314a
+  worker_status_instance_and_source: SUCCESS_RUNNING_ca442fa43544c89e135fe751b177e1ff473b9e57
+  target_branch_remote_head: a64d9052305e6a0a31cc9bf3268fb634000c8f8a
+  deployment_trigger_count_web_worker: 0_0
+  migration_file_and_ledger_count: 90_90
+  migration_pending_count: 0
+  existing_fixture_counts: one_Parent_one_household_zero_Student
+  failed_login_session_state: revoked
+  delivery_controls: sink_sink_sink_resend_false_highlevel_disabled_real_transports_false
+  app_domain_TLS_health: valid_HTTP_200
+reserved_at: '2026-08-03T18:46:16Z'
+lease_expires_at: '2026-08-03T20:16:16Z'
+state_based_on_head_sha: 23746c8b1c7fc7d1db8109266d74a321a574781c
+contains_secret: false
+immutable: true
