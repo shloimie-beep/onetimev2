@@ -1,0 +1,53 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prod-prereg-copy-20260803152153
+event_sequence: 2
+previous_event_digest: 4e462e72e46fb1be4f4fc7a1fa02dccdbc86fc13064d18c6f093fe83f31612fd
+state: ATTEMPTED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/c5ce445a0a81c3bbcbd0f6c384b45ae27183af4d071e4521bf197d46f5d88762/C00/c00-prod-prereg-copy-20260803152153/events/002-ATTEMPTED.yaml
+current_pointer_path: ops/v2.1-execution/effects/c5ce445a0a81c3bbcbd0f6c384b45ae27183af4d071e4521bf197d46f5d88762/C00/c00-prod-prereg-copy-20260803152153/CURRENT.yaml
+candidate_digest: c5ce445a0a81c3bbcbd0f6c384b45ae27183af4d071e4521bf197d46f5d88762
+repository_source_sha: 801af7ec1a3513d28c921ca2b8d08d8c1bca21d1
+authority_id: c00-prod-prereg-copy-20260803152153
+lock_lease_id: 9c415ddc-0840-42c0-92fd-9d77e9b530d3
+fencing_token: fence-82f7ab88-168b-49d7-81b9-f89025d42349
+provider_request_or_operation_id: railway_git_deployments_0acdbf58_988c7df1
+provider_attempt:
+  web:
+    source_connection: performed
+    cli_result: ServiceInstance_not_found_after_provider_mutation
+    provider_readback_confirmed_mutation: true
+    deployment_id: 0acdbf58-658a-40df-bca3-7e7dd847a2b1
+    deployment_source_sha: 801af7ec1a3513d28c921ca2b8d08d8c1bca21d1
+    deployment_branch: codex/ot-live-prereg-copy-20260803
+    state_at_checkpoint: BUILDING
+    source_disconnected: true
+  worker:
+    source_connection: performed
+    cli_result: ServiceInstance_not_found_after_provider_mutation
+    provider_readback_confirmed_mutation: true
+    deployment_id: 988c7df1-a92a-48c4-aa6b-74fd46a9f4c2
+    deployment_source_sha: 801af7ec1a3513d28c921ca2b8d08d8c1bca21d1
+    deployment_branch: codex/ot-live-prereg-copy-20260803
+    state_at_checkpoint: BUILDING
+    source_disconnected: true
+effect_counts:
+  source_connections: 2
+  source_disconnections: 2
+  production_deployments: 2
+  signup_posts: 0
+  variable_assignments: 0
+  DNS_changes: 0
+  GHL_mutations: 0
+  provider_sends_or_enrollments: 0
+  billing_or_charge_effects: 0
+  customer_or_student_effects: 0
+prior_serving_state_during_build:
+  web_deployment_id: 1635d06a-4ee7-4afd-9501-34a943a0d3c7
+  worker_deployment_id: 901724db-951b-41c6-8265-6faa06ab676e
+  canonical_health: 200
+cleanup_state: sources_disconnected_builds_in_progress_prior_release_serving
+attempted_at: '2026-08-03T15:26:24Z'
+contains_secret: false
+immutable: true

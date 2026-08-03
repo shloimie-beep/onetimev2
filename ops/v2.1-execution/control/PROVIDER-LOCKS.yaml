@@ -175,7 +175,7 @@ locks:
     production_deployments_max: 2
     signup_posts_max: 0
     provider_DNS_GHL_variable_billing_effects_max: 0
-  cleanup_state: pending_source_disconnect_and_reconciliation
+  cleanup_state: sources_disconnected_exact_candidate_builds_in_progress
 - lock: provider:s3-kms
   status: unclaimed
   holder_task_id: null
