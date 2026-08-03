@@ -153,32 +153,24 @@ locks:
   effect_budget: null
   cleanup_state: not_applicable
 - lock: production:deployment
-  status: claimed
-  holder_task_id: C00
-  holder_claim_id: ae8b63ad-fede-44be-b665-9c9119f9a9e5
-  lease_id: 399e3a47-3316-4aa6-be71-4bec1611ec74
-  fencing_token: fence-a3e859ca-4080-471d-bebb-15572c412280
-  canonical_candidate_digest: 366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094
-  provider_identity: railway:ce55ef20-1418-4ad3-aafa-f877fb992dc8:f911acfc-e206-44df-a569-9d69d709b94b:web_d175ad94_worker_742f60ed
-  authorized_operation: exact_clean_a64_local_archive_upload_web_worker_existing_fixture_Student_canary_and_exact_prior_deploymentRollback_only_if_required
-  claimed_at: '2026-08-03T19:05:42Z'
-  lease_expires_at: '2026-08-03T20:35:42Z'
-  authority_id: c00-prod-local-upload-repair-20260803190542
-  authority_grant_digest: 1d8fcd62711f11ed9df64fb1c6787098a8221acb9826fff68f42275b5e868516
-  authority_status_index_digest: 509d6ab952af6550089e0fc500fef97a4839b9f563f34e2592890d0682c9155a
-  authority_status_entry_digest: 9a5d91aec0b6731abdeffa11bf8262c1cc38fc2776b61154fa3f60f49281eb93
-  latest_revocation_digest: none
-  authority_checked_at: '2026-08-03T19:05:42Z'
-  effect_budget:
-    database_migrations_max: 0
-    source_connections_and_disconnections_max: 0
-    local_archive_production_deployments_max: 2
-    additional_Parent_household_Student_canaries_max: 0_0_1
-    variable_mutations_max: 0
-    rollback_to_exact_prior_deployments_max: 2
-    Railway_or_DNS_domain_mutations_max: 0
-    provider_GHL_billing_broad_effects_max: 0
-  cleanup_state: pending_exact_a64_local_upload_existing_fixture_canary_and_terminal_reconciliation
+  status: unclaimed
+  holder_task_id: null
+  holder_claim_id: null
+  lease_id: null
+  fencing_token: null
+  canonical_candidate_digest: null
+  provider_identity: null
+  authorized_operation: null
+  claimed_at: null
+  lease_expires_at: null
+  authority_id: null
+  authority_grant_digest: null
+  authority_status_index_digest: null
+  authority_status_entry_digest: null
+  latest_revocation_digest: null
+  authority_checked_at: null
+  effect_budget: null
+  cleanup_state: not_applicable
 - lock: provider:s3-kms
   status: unclaimed
   holder_task_id: null

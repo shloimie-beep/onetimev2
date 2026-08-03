@@ -1,0 +1,42 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prod-local-upload-repair-20260803190542
+event_sequence: 3
+previous_event_digest: 385ce5c2ecb2a310a2b0ac3c789fa5360aef6105574955c00d43a67a48e56168
+state: RECONCILED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094/C00/c00-prod-local-upload-repair-20260803190542/events/003-RECONCILED.yaml
+current_pointer_path: ops/v2.1-execution/effects/366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094/C00/c00-prod-local-upload-repair-20260803190542/CURRENT.yaml
+candidate_digest: 366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094
+repository_source_sha: a64d9052305e6a0a31cc9bf3268fb634000c8f8a
+authority_id: c00-prod-local-upload-repair-20260803190542
+authority_grant_digest: 1d8fcd62711f11ed9df64fb1c6787098a8221acb9826fff68f42275b5e868516
+lock: production:deployment
+lock_lease_id: 399e3a47-3316-4aa6-be71-4bec1611ec74
+fencing_token: fence-a3e859ca-4080-471d-bebb-15572c412280
+operation: terminally_reconcile_cancelled_initializing_local_upload_and_release_deployment_lock
+terminal_readback:
+  attempted_web_deployment_id_and_state: fdfc2a0e-a79c-45e4-a0c9-1462d7cf718b_REMOVED
+  attempted_build_or_image: none
+  live_web_deployment_id: ad3a52fc-902a-41ca-b480-ca92bc3022d8
+  live_web_status_source_and_image: SUCCESS_ca442_sha256_aec85be7
+  live_worker_deployment_id: 48045084-211a-4082-bbc3-9c03830b80ff
+  live_worker_status_source_and_image: SUCCESS_ca442_sha256_4df4d1b9
+  public_health: HTTP_200
+  candidate_deployed: false
+  database_migrations: 0
+  Parent_household_Student_mutations: 0_0_0
+  variable_mutations: 0
+  external_provider_GHL_billing_or_broad_effects: 0
+effect_count_after: 2
+unexpected_effects: 0
+cleanup_state: reconciled_attempt_removed_before_build_known_good_release_unchanged
+lock_release_state: released_after_exact_cancel_and_zero_cutover_readback
+terminal_disposition: CANCELLED_NO_BUILD_NO_CUTOVER
+successor_candidate_digest: 366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094
+successor_source_sha: a64d9052305e6a0a31cc9bf3268fb634000c8f8a
+successor_requirement: local_upload_may_show_generic_INITIALIZING_only_until_build_planning_then_must_prove_detected_Dockerfile_exact_manifest_and_health_before_cutover
+event_at: '2026-08-03T19:13:25Z'
+state_based_on_head_sha: b95ce5bdb4f223fc68eacd3fc2ba45861e12e697
+contains_secret: false
+immutable: true
