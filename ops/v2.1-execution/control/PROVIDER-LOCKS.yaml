@@ -153,24 +153,38 @@ locks:
   effect_budget: null
   cleanup_state: not_applicable
 - lock: production:deployment
-  status: unclaimed
-  holder_task_id: null
-  holder_claim_id: null
-  lease_id: null
-  fencing_token: null
-  canonical_candidate_digest: null
-  provider_identity: null
-  authorized_operation: null
-  claimed_at: null
-  lease_expires_at: null
-  authority_id: null
-  authority_grant_digest: null
-  authority_status_index_digest: null
-  authority_status_entry_digest: null
+  status: claimed
+  holder_task_id: C00
+  holder_claim_id: 814cb6a6-ef03-49a3-9215-59cbf4f194fa
+  lease_id: 12d7de4e-11a4-4995-acfb-7e1433974c22
+  fencing_token: fence-ff754288-c12a-4c06-980c-4c7475d97c06
+  canonical_candidate_digest: 61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14
+  provider_identity: railway:ce55ef20-1418-4ad3-aafa-f877fb992dc8:f911acfc-e206-44df-a569-9d69d709b94b:web-d175ad94:worker-742f60ed:postgres-db590e4a
+  authorized_operation: protected_production_backup_46_forward_migrations_8_exact_variables_2_exact_candidate_deployments_2_idempotency_canary_posts_zero_external_send
+  claimed_at: '2026-08-03T10:53:09Z'
+  lease_expires_at: '2026-08-03T11:43:09Z'
+  authority_id: c00-production-prereg-release-20260803105309
+  authority_grant_digest: 256a8b0cb26844f14688ecdf8177cd1ee262200aa7f43d75fb9ef748211959b7
+  authority_status_index_digest: 29f21c380104dc732349b70d6c8675c365658caa7d1b2fc7a304002548afba44
+  authority_status_entry_digest: 9ef9b6b345c2d87628920c238a33a481d2717dd1d6391479f86ea1d411c32477
   latest_revocation_digest: null
-  authority_checked_at: null
-  effect_budget: null
-  cleanup_state: not_applicable
+  authority_checked_at: '2026-08-03T10:53:09Z'
+  effect_budget:
+    protected_logical_backups_max: 1
+    pending_migrations_applied_max: 46
+    exact_variable_assignments_max: 8
+    production_deployments_max: 2
+    signup_posts_max: 2
+    local_adult_contacts_max: 1
+    local_signup_leads_max: 1
+    local_sink_intents_max: 2
+    portal_accounts_max: 0
+    student_accounts_max: 0
+    external_provider_sends_or_enrollments_max: 0
+    charges_max: 0
+    DNS_changes_max: 0
+    GHL_mutations_max: 0
+  cleanup_state: pending_backup_migrations_deployment_canary_and_handoff_reconciliation
 - lock: provider:s3-kms
   status: unclaimed
   holder_task_id: null

@@ -1,0 +1,116 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+authority_id: c00-production-prereg-release-20260803105309
+authority_kind: derived_candidate_bound_production_preregistration_release_and_operator_canary
+task_id: C00
+candidate_digest: 61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14
+candidate_binding_status: exact_candidate_bound
+candidate_manifest_commit_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+repository_source_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+canonical_path: ops/v2.1-execution/authority/61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14/C00/c00-production-prereg-release-20260803105309/GRANT.yaml
+source_grant_id: ot-v21-production-source-grant-20260729
+source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+source_approval_evidence_path: ops/v2.1-execution/authority/none/C00/ot-v21-production-source-grant-20260729/APPROVAL.md
+source_approval_evidence_digest: 8c95a959f79aba0ac34fa0fcb6cb463cceac9aeb2bb52da1603d39db3e2c33c2
+grant_status_at_issue: active
+approved_by: Shloimie Dratler
+scope:
+  provider: One Time application on Railway production
+  project_id: ce55ef20-1418-4ad3-aafa-f877fb992dc8
+  environment_id: f911acfc-e206-44df-a569-9d69d709b94b
+  environment_name: production
+  web_service_id: d175ad94-5e3c-41c2-8cbc-daa1a299077d
+  worker_service_id: 742f60ed-dc2f-4321-85d0-019003d4e9b9
+  database_service_id: db590e4a-7dc5-40cb-a243-5206ce21b746
+  database_volume_id: 911ff445-84e8-4f03-ac3f-c92e51225398
+  public_base_url: https://join.onetimeonetime.com
+  preregistration_endpoint: https://join.onetimeonetime.com/api/v1/leads
+  fixture_id: c00_prod_prereg_canary_61232115_20260803a
+  fixture_destination_source: derived_plus_alias_from_ONE_TIME_OWNER_TEST_EMAIL
+  fixture_plus_alias_suffix: otv21-prod-prereg-61232115-20260803a
+  fixture_destination_sha256: 53ea91a56760d0c225f1fb77e8ff89a810a867ece008859d43e20363b77744b4
+  local_adult_contacts_created_or_updated_max: 1
+  local_signup_leads_created_or_updated_max: 1
+  portal_accounts_created_or_updated_max: 0
+  student_accounts_created_or_updated_max: 0
+  external_provider_sends_or_enrollments_max: 0
+  DNS_changes_max: 0
+fencing_token: fence-ff754288-c12a-4c06-980c-4c7475d97c06
+lock: production:deployment
+provider_lock_lease_id: 12d7de4e-11a4-4995-acfb-7e1433974c22
+provider_account_location_or_asset_id:
+  provider: Railway
+  project_id: ce55ef20-1418-4ad3-aafa-f877fb992dc8
+  environment_id: f911acfc-e206-44df-a569-9d69d709b94b
+  service_ids:
+    - d175ad94-5e3c-41c2-8cbc-daa1a299077d
+    - 742f60ed-dc2f-4321-85d0-019003d4e9b9
+    - db590e4a-7dc5-40cb-a243-5206ce21b746
+allowed_operation: create one protected pre-release logical database dump on the exact existing production database volume, apply only the 46 pending checksummed forward-only migrations from the frozen candidate and verify 89 of 89, set only APP_VERSION, COMMIT_SHA, ONE_TIME_FIRST_CLASS_AT, and ONE_TIME_FREE_ACCESS_EXPIRES_AT on the exact web and worker services without activating delivery, deploy the exact frozen candidate source to web and worker, run one operator adult-only production preregistration plus one exact idempotent replay, verify one adult contact and lead with zero portal/Student/payment/GHL/send/enrollment effects, publish the one LIVE-SEND-GATE handoff, and roll back only to the bound prior web/worker deployments if a release regression is observed
+maximum_effect_count: 64
+maximum_effect_value: one_protected_logical_backup_46_forward_migrations_8_exact_variable_assignments_2_deployments_2_canary_posts_one_adult_contact_and_lead_zero_external_send
+approved_fixture_ids:
+  - c00_prod_prereg_canary_61232115_20260803a
+operator_identity: C00
+approved_at: '2026-08-03T10:53:09Z'
+recorded_at: '2026-08-03T10:53:09Z'
+expires_at: '2026-08-03T11:43:09Z'
+effect_budget:
+  protected_logical_backups: 1
+  pending_migrations_applied_max: 46
+  exact_variable_assignments_max: 8
+  production_deployments_max: 2
+  signup_posts_max: 2
+  local_adult_contacts_max: 1
+  local_signup_leads_max: 1
+  local_sink_intents_max: 2
+  portal_accounts_max: 0
+  student_accounts_max: 0
+  external_provider_sends_or_enrollments_max: 0
+  charges_max: 0
+  DNS_changes_max: 0
+  GHL_mutations_max: 0
+prerequisite_review:
+  canonical_candidate_digest: 61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14
+  repository_source_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+  staging_web_deployment: 6127e53a-428f-462e-a2ea-e853f6df5f09_SUCCESS
+  staging_worker_deployment: 54115c9b-f7fd-43a9-b564-8800c401d637_SUCCESS
+  staging_preregistration_canary: passed_zero_external_send_zero_account_zero_student_zero_charge
+  native_postgresql_migrations: passed_89_apply_replay_ledger_pending_0
+  production_migration_metadata: 43_applied_46_pending_latest_applied_2220_latest_candidate_2258
+  production_current_web_deployment: f8ba23d3-311b-4277-a85d-6695611fedfd
+  production_current_worker_deployment: 26bf7d62-db73-41d6-9887-1d2215ddfaff
+  production_current_version: 0d69de15e3c5e7a5e51f2b9262c992ea153c51fb
+  production_current_web_image_digest: sha256:589174a146869e9eee6d584d511ff462ba8ddec515bb557c8a063980c2512198
+  production_current_worker_image_digest: sha256:6ec4927db333ffe9440a4bed8b8b067ea37f0f94dad55ba38f5938a753e978ae
+  production_outbox_transport_mode: sink
+  production_delivery_provider_mode: sink
+  production_real_email_transport_enabled: false
+  production_owner_fixture_control: confirmed_by_configured_ONE_TIME_OWNER_TEST_EMAIL
+  built_in_backup_or_PITR: unavailable_on_current_plan
+  protected_logical_backup_before_migrations: required
+  legal_gate: OPS-084-LEGAL-BUNDLE_open_scope_production_broad
+  email_campaign_may_send: false
+rollback_and_reconciliation:
+  - require a protected custom-format pg_dump on the existing exact database volume, mode-restricted, nonempty, hashed, and list-readable before applying migrations
+  - require production migration status 89 of 89 with pending zero and unrecognized zero after the migration batch
+  - require exact commit, timing, sink, and no-real-email variable readback on web and worker
+  - require web and worker deployment SUCCESS, exact frozen source identity, clean health/version/log readback, and corrected adult-only no-card landing/form on the canonical domain
+  - submit the protected operator fixture exactly once and replay only the identical payload with the same idempotency key; require first duplicate false and replay duplicate true with identical contact/signup hashes and no new outbox intents
+  - require zero Student, portal, charge, external GHL, provider-send, audience-enrollment, or DNS effect
+  - on release regression, restore the bound old web and worker deployments; forward migrations remain additive and must not be reversed destructively
+  - retain the protected logical backup until release completion; later deletion requires exact path verification and separate cleanup authority
+  - release the exclusive lock only after application, migration, canary, and provider readback plus ledger reconciliation
+stop_conditions:
+  - source grant is revoked or expired
+  - origin/codex/v21-integration or codex/full-app-staging-live differs from f95b30d830d57a29b123949134e9ee3077a945a1
+  - origin/codex/v21-control differs from the reservation commit created for this authority
+  - protected fixture hash or source differs from the bound identity
+  - production project, environment, web, worker, database service, volume, domain, or rollback deployments differ
+  - sink mode, provider mode, real-email-transport safety, or production runtime readback differs
+  - protected logical backup cannot be created and read back before migrations
+  - migration metadata differs from 43 applied, 46 pending, zero unrecognized before apply
+  - another effect holds the production:deployment lock
+  - the operation would activate delivery, send, enroll, mutate GHL or DNS, charge, touch a legacy user, collect Student/card data, create a portal/Student, exceed one adult contact/lead, or broaden beyond pre-registration controlled release
+contains_secret: false
+immutable: true

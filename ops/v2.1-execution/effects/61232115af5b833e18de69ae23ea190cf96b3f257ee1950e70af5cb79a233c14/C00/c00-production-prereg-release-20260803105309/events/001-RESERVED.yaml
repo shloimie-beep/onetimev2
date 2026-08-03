@@ -1,0 +1,61 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-production-prereg-release-20260803105309
+event_sequence: 1
+previous_event_digest: none
+state: RESERVED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14/C00/c00-production-prereg-release-20260803105309/events/001-RESERVED.yaml
+current_pointer_path: ops/v2.1-execution/effects/61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14/C00/c00-production-prereg-release-20260803105309/CURRENT.yaml
+candidate_digest: 61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14
+candidate_manifest_commit_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+repository_source_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+authority_grant_digest: 256a8b0cb26844f14688ecdf8177cd1ee262200aa7f43d75fb9ef748211959b7
+authority_status_index_digest: 29f21c380104dc732349b70d6c8675c365658caa7d1b2fc7a304002548afba44
+authority_status_entry_digest: 9ef9b6b345c2d87628920c238a33a481d2717dd1d6391479f86ea1d411c32477
+latest_revocation_digest: none
+authority_checked_at: '2026-08-03T10:53:09Z'
+lock: production:deployment
+lock_lease_id: 12d7de4e-11a4-4995-acfb-7e1433974c22
+fencing_token: fence-ff754288-c12a-4c06-980c-4c7475d97c06
+provider_identity: railway:ce55ef20-1418-4ad3-aafa-f877fb992dc8:f911acfc-e206-44df-a569-9d69d709b94b:web-d175ad94:worker-742f60ed:postgres-db590e4a
+operation: protected_production_backup_46_forward_migrations_8_exact_variables_2_exact_candidate_deployments_2_idempotency_canary_posts_zero_external_send
+production_before:
+  version: 0d69de15e3c5e7a5e51f2b9262c992ea153c51fb
+  web_deployment_id: f8ba23d3-311b-4277-a85d-6695611fedfd
+  web_image_digest: sha256:589174a146869e9eee6d584d511ff462ba8ddec515bb557c8a063980c2512198
+  worker_deployment_id: 26bf7d62-db73-41d6-9887-1d2215ddfaff
+  worker_image_digest: sha256:6ec4927db333ffe9440a4bed8b8b067ea37f0f94dad55ba38f5938a753e978ae
+  migrations_applied: 43
+  migrations_pending: 46
+  latest_applied_migration: 2220_tisha_bav_event_email_permission
+  latest_candidate_migration: 2258_v21_configurable_launch_timing
+  outbox_transport_mode: sink
+  delivery_provider_mode: sink
+  real_email_transport_enabled: false
+  legal_gate: OPS-084-LEGAL-BUNDLE_open_production_broad
+fixture:
+  fixture_id: c00_prod_prereg_canary_61232115_20260803a
+  destination_sha256: 53ea91a56760d0c225f1fb77e8ff89a810a867ece008859d43e20363b77744b4
+  destination_disclosed: false
+budget_reservation:
+  protected_logical_backups: 1
+  pending_migrations_applied: 46
+  exact_variable_assignments: 8
+  production_deployments: 2
+  signup_posts: 2
+  local_adult_contacts: 1
+  local_signup_leads: 1
+  local_sink_intents: 2
+  portal_accounts: 0
+  student_accounts: 0
+  external_provider_sends_or_enrollments: 0
+  charges: 0
+  DNS_changes: 0
+  GHL_mutations: 0
+provider_request_or_operation_id: none_before_effect
+provider_readback_digest: none_before_effect
+cleanup_state: pending_backup_migrations_deployment_canary_and_handoff_reconciliation
+state_based_on_head_sha: e3a18c43e625783b49e88ddb8c98d67f1a2b6c44
+event_at: '2026-08-03T10:53:09Z'
+immutable: true
