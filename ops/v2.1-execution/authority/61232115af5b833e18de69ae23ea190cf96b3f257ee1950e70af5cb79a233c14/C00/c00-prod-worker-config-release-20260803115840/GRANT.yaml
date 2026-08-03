@@ -1,0 +1,95 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+authority_id: c00-prod-worker-config-release-20260803115840
+authority_kind: derived_candidate_bound_production_worker_config_registration_deployment_and_operator_canary
+task_id: C00
+candidate_digest: 61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14
+candidate_binding_status: exact_candidate_bound
+candidate_manifest_commit_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+repository_source_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+canonical_path: ops/v2.1-execution/authority/61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14/C00/c00-prod-worker-config-release-20260803115840/GRANT.yaml
+source_grant_id: ot-v21-production-source-grant-20260729
+source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+source_approval_evidence_path: ops/v2.1-execution/authority/none/C00/ot-v21-production-source-grant-20260729/APPROVAL.md
+source_approval_evidence_digest: 8c95a959f79aba0ac34fa0fcb6cb463cceac9aeb2bb52da1603d39db3e2c33c2
+grant_status_at_issue: active
+approved_by: Shloimie Dratler
+scope:
+  provider: One Time application on Railway production
+  project_id: ce55ef20-1418-4ad3-aafa-f877fb992dc8
+  environment_id: f911acfc-e206-44df-a569-9d69d709b94b
+  web_service_id: d175ad94-5e3c-41c2-8cbc-daa1a299077d
+  worker_service_id: 742f60ed-dc2f-4321-85d0-019003d4e9b9
+  worker_config_file_before: null
+  worker_config_file_after: railway.worker.staging.json
+  source_repository: shloimie-beep/onetimev2
+  source_branch: codex/full-app-staging-live
+  source_branch_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+  public_base_url: https://join.onetimeonetime.com
+  fixture_id: c00_prod_prereg_canary_61232115_20260803a
+  fixture_destination_sha256: 53ea91a56760d0c225f1fb77e8ff89a810a867ece008859d43e20363b77744b4
+fencing_token: fence-e578e74c-57e3-4f15-b0d2-9d739a136039
+lock: production:deployment
+provider_lock_lease_id: bba3e624-5b1f-4562-bde3-699770de36a4
+allowed_operation: set only the exact production worker service configFile to the repository-tracked canonical railway.worker.staging.json, accept at most one resulting worker deployment or if none is created connect the worker once to the exact frozen Git source to create one deployment and immediately disconnect, verify exact worker SUCCESS with no HTTP healthcheck and clean sink-only logs alongside the already successful exact web release, submit one protected operator registration and one identical idempotent replay, publish the single LIVE-SEND-GATE handoff, and roll back only to the bound prior deployments on regression
+maximum_effect_count: 5
+maximum_effect_value: 1_worker_service_config_mutation_1_optional_source_connection_and_disconnection_1_worker_deployment_2_canary_posts_one_adult_contact_and_lead_zero_external_send
+approved_fixture_ids:
+  - c00_prod_prereg_canary_61232115_20260803a
+operator_identity: C00
+approved_at: '2026-08-03T11:58:40Z'
+recorded_at: '2026-08-03T11:58:40Z'
+expires_at: '2026-08-03T12:43:40Z'
+effect_budget:
+  worker_service_config_mutations_max: 1
+  source_connections_max: 1
+  source_disconnections_max: 1
+  production_deployments_max: 1
+  signup_posts_max: 2
+  local_adult_contacts_max: 1
+  local_signup_leads_max: 1
+  local_sink_intents_max: 2
+  portal_accounts_max: 0
+  student_accounts_max: 0
+  external_provider_sends_or_enrollments_max: 0
+  charges_max: 0
+  variable_assignments_max: 0
+  migrations_max: 0
+  DNS_changes_max: 0
+  GHL_mutations_max: 0
+prerequisite_review:
+  protected_backup: complete_sha256_694c1c888bf0931f19f7a6d7fb84b0560b3e79e276af9e0c7b6353f79eb5e1ae
+  production_migrations: 89_applied_0_pending_historical_order_warning_preserved
+  protected_payload_key: configured_same_value_web_and_worker_fingerprint_d76f27ac
+  production_delivery_controls: sink_sink_real_email_false
+  highlevel_event_sync_mode: disabled_web_and_worker
+  web_release: SUCCESS_1635d06a_exact_f95b30d8_health_200
+  worker_failed_runtime_evidence: container_started_and_completed_delivery_batch
+  worker_failure_only: inherited_root_web_healthcheck_path
+  canonical_staging_worker_config_file: railway.worker.staging.json
+  canonical_staging_worker_config_file_readback: exact
+  production_worker_config_file: null
+  rollback_web_deployment: f8ba23d3-311b-4277-a85d-6695611fedfd
+  rollback_worker_deployment: 26bf7d62-db73-41d6-9887-1d2215ddfaff
+  legal_gate: OPS-084-LEGAL-BUNDLE_open_scope_production_broad
+  email_campaign_may_send: false
+rollback_and_reconciliation:
+  - require exact control and source heads, web success, worker failure reason, production configFile null, staging registry configFile exact, key configured, and sink controls immediately before edit
+  - require configFile exact readback and at most one new worker deployment total
+  - if the config edit creates a deployment do not connect a source; if it creates none connect exactly once and disconnect immediately after the deployment ID exists
+  - require worker deployment exact f95b30d830d57a29b123949134e9ee3077a945a1, SUCCESS, no HTTP healthcheck, ALWAYS restart policy, worker process, clean sink-only logs, and zero send
+  - require web health, exact Railway commit provenance, canonical adult-only form, initial duplicate false, and identical replay duplicate true with matching contact/signup hashes and no new outbox intents
+  - require zero Student, portal, charge, GHL, provider-send, audience-enrollment, DNS, variable, secret, or migration effect
+  - on regression restore prior web and worker deployments; configFile may remain registered because it is the canonical worker configuration
+  - release lock only after deployment, canary, handoff, and provider readback reconciliation
+stop_conditions:
+  - source grant is revoked or expired
+  - remote source, integration, or control head differs from the bound reservation
+  - production health, migrations, key presence, sink controls, service identities, web success, rollback targets, or worker failure identity differs
+  - production worker configFile is no longer null before edit or staging configFile differs
+  - the config edit or source connection creates more than one worker deployment in total
+  - protected fixture hash differs
+  - another effect holds the production:deployment lock
+  - the operation would activate delivery, send, enroll, mutate GHL or DNS, change another service config, charge, touch a legacy user, collect Student/card data, create a portal/Student, or exceed one adult contact/lead
+contains_secret: false
+immutable: true

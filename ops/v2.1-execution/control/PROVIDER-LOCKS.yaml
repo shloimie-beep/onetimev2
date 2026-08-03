@@ -153,24 +153,40 @@ locks:
   effect_budget: null
   cleanup_state: not_applicable
 - lock: production:deployment
-  status: unclaimed
-  holder_task_id: null
-  holder_claim_id: null
-  lease_id: null
-  fencing_token: null
-  canonical_candidate_digest: null
-  provider_identity: null
-  authorized_operation: null
-  claimed_at: null
-  lease_expires_at: null
-  authority_id: null
-  authority_grant_digest: null
-  authority_status_index_digest: null
-  authority_status_entry_digest: null
-  latest_revocation_digest: null
-  authority_checked_at: null
-  effect_budget: null
-  cleanup_state: not_applicable
+  status: claimed
+  holder_task_id: C00
+  holder_claim_id: 7a80e5a7-239b-4be5-a0ba-1f50d4423ecb
+  lease_id: bba3e624-5b1f-4562-bde3-699770de36a4
+  fencing_token: fence-e578e74c-57e3-4f15-b0d2-9d739a136039
+  canonical_candidate_digest: 61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14
+  provider_identity: railway:ce55ef20-1418-4ad3-aafa-f877fb992dc8:f911acfc-e206-44df-a569-9d69d709b94b:web-d175ad94:worker-742f60ed
+  authorized_operation: exact_worker_config_file_registration_one_worker_deployment_two_idempotency_canary_posts_zero_external_send
+  claimed_at: '2026-08-03T11:58:40Z'
+  lease_expires_at: '2026-08-03T12:43:40Z'
+  authority_id: c00-prod-worker-config-release-20260803115840
+  authority_grant_digest: 82d9868d39df8cd01976de4442be7472eccebb69dccc421927d37d5a6b2b8f7c
+  authority_status_index_digest: 4e1906c3d74dfb528f9f6965ed78a0109778beef8f39e5fec552ea1cba667904
+  authority_status_entry_digest: 70e7883501a60d545262712227ccf6d62867a60e4836a8b14dc751659cd5c1e9
+  latest_revocation_digest: none
+  authority_checked_at: '2026-08-03T11:58:40Z'
+  effect_budget:
+    worker_service_config_mutations: 1
+    source_connections: 1
+    source_disconnections: 1
+    production_deployments: 1
+    signup_posts: 2
+    local_adult_contacts: 1
+    local_signup_leads: 1
+    local_sink_intents: 2
+    portal_accounts: 0
+    student_accounts: 0
+    external_provider_sends_or_enrollments: 0
+    charges: 0
+    variable_assignments: 0
+    migrations: 0
+    DNS_changes: 0
+    GHL_mutations: 0
+  cleanup_state: pending_worker_config_deployment_canary_handoff_and_readback
 - lock: provider:s3-kms
   status: unclaimed
   holder_task_id: null
