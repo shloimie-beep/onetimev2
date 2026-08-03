@@ -153,29 +153,24 @@ locks:
   effect_budget: null
   cleanup_state: not_applicable
 - lock: production:deployment
-  status: claimed
-  holder_task_id: C00
-  holder_claim_id: 97975088-52b0-4dec-9a1e-8e63dc584337
-  lease_id: 9c415ddc-0840-42c0-92fd-9d77e9b530d3
-  fencing_token: fence-82f7ab88-168b-49d7-81b9-f89025d42349
-  canonical_candidate_digest: c5ce445a0a81c3bbcbd0f6c384b45ae27183af4d071e4521bf197d46f5d88762
-  provider_identity: railway:ce55ef20-1418-4ad3-aafa-f877fb992dc8:f911acfc-e206-44df-a569-9d69d709b94b:web_d175ad94_worker_742f60ed
-  authorized_operation: copy_only_deploy_exact_801af7ec1a3513d28c921ca2b8d08d8c1bca21d1_then_disconnect_and_readback
-  claimed_at: '2026-08-03T15:21:53Z'
-  lease_expires_at: '2026-08-03T16:06:53Z'
-  authority_id: c00-prod-prereg-copy-20260803152153
-  authority_grant_digest: ef183a7c968d519bbc6b48575d55cd51d07034c11ea147f3b46c479c34deaafe
-  authority_status_index_digest: 409e67089bda1ba93898b8f2be4c8099513757833c44fc9e73b550386edda2a1
-  authority_status_entry_digest: 6f17ca04923005edf418ca640e206cba168512273d8144360eb5cfb4c95a787c
-  latest_revocation_digest: none
-  authority_checked_at: '2026-08-03T15:21:53Z'
-  effect_budget:
-    source_connections_max: 2
-    source_disconnections_max: 2
-    production_deployments_max: 2
-    signup_posts_max: 0
-    provider_DNS_GHL_variable_billing_effects_max: 0
-  cleanup_state: sources_disconnected_exact_candidate_builds_in_progress
+  status: unclaimed
+  holder_task_id: null
+  holder_claim_id: null
+  lease_id: null
+  fencing_token: null
+  canonical_candidate_digest: null
+  provider_identity: null
+  authorized_operation: null
+  claimed_at: null
+  lease_expires_at: null
+  authority_id: null
+  authority_grant_digest: null
+  authority_status_index_digest: null
+  authority_status_entry_digest: null
+  latest_revocation_digest: null
+  authority_checked_at: null
+  effect_budget: null
+  cleanup_state: reconciled_copy_release_sources_disconnected
 - lock: provider:s3-kms
   status: unclaimed
   holder_task_id: null

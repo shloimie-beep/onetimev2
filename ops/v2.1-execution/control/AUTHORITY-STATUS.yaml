@@ -8,7 +8,7 @@ authorities:
     authority_id: ot-v21-production-source-grant-20260729
     authority_kind: external_source_grant
     grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
-    status: active
+    status: consumed
     expires_at: '2026-08-05T07:13:45Z'
     expires_on_release_completion: true
     latest_revocation_path: null
@@ -685,16 +685,17 @@ authorities:
     provider_lock: production:deployment
     provider_lock_lease_id: 9c415ddc-0840-42c0-92fd-9d77e9b530d3
     fencing_token: fence-82f7ab88-168b-49d7-81b9-f89025d42349
-    effect_authority_usable: true
+    effect_authority_usable: false
     candidate_binding_status: lean_exact_source_bound_from_full_pg18_proof
     candidate_digest: c5ce445a0a81c3bbcbd0f6c384b45ae27183af4d071e4521bf197d46f5d88762
     repository_source_sha: 801af7ec1a3513d28c921ca2b8d08d8c1bca21d1
     source_branch: codex/ot-live-prereg-copy-20260803
     maximum_effect_count: 6
     prerequisite_review: exact_copy_only_candidate_pg18_success_current_production_f95_healthy_sources_disconnected_canary_reused_on_no_form_diff
-    disposition: reserved_not_yet_attempted
-    checked_at: '2026-08-03T15:21:53Z'
-    state_based_on_control_head_sha: c57d3a21cbd5f4f405a4e409489b12f037844c59
+    disposition: consumed_and_reconciled_success_exact_copy_release_sources_disconnected_zero_form_or_provider_effects
+    lock_released_at: '2026-08-03T15:30:43Z'
+    checked_at: '2026-08-03T15:30:43Z'
+    state_based_on_control_head_sha: 3aaca62eb98661c38530abc7d266241d04a1f578
 entry_schema: templates/AUTHORITY-STATUS-ENTRY.yaml
 revocation_schema: templates/AUTHORITY-REVOCATION-RECORD.yaml
 rule: C00 records externally granted/revoked/expired authority; it does not grant it. Every update binds the known

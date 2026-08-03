@@ -1,0 +1,64 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+record_id: OT-LIVE-001.02-COPY-RELEASE
+owner: C00
+recorded_at: '2026-08-03T15:30:43Z'
+source:
+  production_candidate_sha: 801af7ec1a3513d28c921ca2b8d08d8c1bca21d1
+  production_candidate_branch: codex/ot-live-prereg-copy-20260803
+  integration_sha_with_same_change: cf30a6ca10695fb4e6b9859e7e4aba9c77831b2f
+  base_production_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+  exact_product_diff: five_landing_copy_replacements_only
+  exact_test_diff: focused_unit_and_rendered_copy_assertions
+verification:
+  local:
+    unit: 9_of_9_passed
+    landing_signup_browser: 10_of_10_passed
+    focused_copy_browser: passed
+    build_client: passed
+    build_pages: passed
+    secret_scan: 3199_files_passed
+    local_full_typecheck: baseline_dependency_junction_skew_only_not_candidate_evidence
+  hosted_clean_candidate:
+    workflow: OPS-11_PostgreSQL_18_Assurance
+    workflow_run_id: 30826684363
+    exact_source_sha: 801af7ec1a3513d28c921ca2b8d08d8c1bca21d1
+    result: success
+    postgres: '18.4'
+    migrations: 89_apply_89_replay_89_ledger_0_pending_0_issues_through_2258
+    restore_clone: passed
+    secret_scan_format_lint_typecheck: passed
+    artifact_id: '8861165705'
+    artifact_digest: sha256:d9740e68ccf871683d35b1144375366d895cc4ba6da5ce6f47ef058865d4221a
+    candidate_build_request_sha256: 010f9676a08c006af79d729a2ef72477c389c61f6d302dc425fb6881306089ff
+    candidate_build_request_canonical_json_sha256: b70878c5049bf42feba400ac1f8481783215e8539f901046b5af6fc4c2343e30
+    candidate_postgresql_proof_sha256: 7befb321321bddacbe7641b5d546a908063f706913c99c25f8887133ce43e333
+    derived_lean_candidate_digest: c5ce445a0a81c3bbcbd0f6c384b45ae27183af4d071e4521bf197d46f5d88762
+  superseded_verification_dispatch:
+    workflow_run_id: 30826636490
+    disposition: cancelled_during_container_initialization_before_candidate_checkout_or_test
+    reusable_evidence: false
+    non_disposable_effects: 0
+production:
+  project_id: ce55ef20-1418-4ad3-aafa-f877fb992dc8
+  environment_id: f911acfc-e206-44df-a569-9d69d709b94b
+  web_deployment_id: 0acdbf58-658a-40df-bca3-7e7dd847a2b1
+  worker_deployment_id: 988c7df1-a92a-48c4-aa6b-74fd46a9f4c2
+  source_sha: 801af7ec1a3513d28c921ca2b8d08d8c1bca21d1
+  services_success_and_running: true
+  sources_disconnected: true
+  registration_mode: pre_registration
+  corrected_copy_live: true
+  form_contract_unchanged: true
+  accepted_canary_reused: true
+  new_signup_post_performed: false
+  provider_DNS_GHL_variable_billing_customer_effects: 0
+remaining_gates:
+  portal_activation: app.onetimeonetime.com_unresolved_and_progressive_candidate_not_released
+  broad_communication: exact_cutoff_decision_required
+  legal: broad_release_only_OPS_084_open
+rollback:
+  web_deployment_id: 1635d06a-4ee7-4afd-9501-34a943a0d3c7
+  worker_deployment_id: 901724db-951b-41c6-8265-6faa06ab676e
+  needed: false
+next_safe_slice: resolve_exact_app_domain_binding_read_only_then_prepare_progressive_Parent_Student_candidate_and_one_canary

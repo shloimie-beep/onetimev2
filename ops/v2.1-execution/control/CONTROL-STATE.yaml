@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: operational
-active_phase: ot_live_001_02_prereg_fingerprinted_copy_and_portal_gates
+active_phase: ot_live_001_02_copy_truth_live_portal_dns_and_candidate_next
 bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
@@ -18,11 +18,10 @@ candidate: e7fb4021d9bf4dbc9c38dbcadcc6eb9139082acf494416ce970c7c503f757456
 active_writer_limit: 4
 controller_authorization_sha: 76692fbb6e65cdeb68e32862dd0c03490b5e5750
 next_action: >-
-  Preserve exact live adult-only preregistration f95b30d8 and its accepted idempotent canary. Prepare the smallest
-  copy-only preregistration correction for unsupported and daily/seven-day claims without changing the form contract.
-  Resolve exact canonical app.onetimeonetime.com Railway/DNS identity and acquire fresh candidate-bound authority only
-  when the progressive portal candidate, rollback, and one production canary are ready. Keep broad communication held
-  until Shloimie selects the single free-access cutoff.
+  Preserve exact live adult-only preregistration copy release 801af7ec and its inherited unchanged-form canary binding.
+  Resolve the canonical app.onetimeonetime.com Railway custom-domain and DNS target without mutation, then prepare the
+  smallest progressive Parent/Student production candidate and one protected canary under fresh authority. Keep broad
+  communication held until Shloimie selects the single free-access cutoff.
 launch_priority_verification_integration:
   recorded_at: '2026-08-02T16:35:29Z'
   source_parent_sha: 2e514a73773bd97f20e423076539ed7224948552

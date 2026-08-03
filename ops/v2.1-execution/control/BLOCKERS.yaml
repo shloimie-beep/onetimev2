@@ -508,20 +508,24 @@ blockers:
     or redirect the working preregistration origin.
   next_check: Exact custom-domain and DNS readback before the progressive production portal canary.
 - blocker_id: OT-LIVE-001-COPY-TRUTH
-  status: open
+  status: closed
   scope: production_broad_promotion
   owner: C00
   affected_tasks:
   - OT-LIVE-DEC-002
   - OT-LIVE-CHG-001
   safe_work_completed: >-
-    Repeated browser and HTTP fingerprinting found stable Sunday-through-Thursday schedule text but also the unsupported
-    world-renowned claim and four daily/seven-day implications. No cache alternation, form defect, Student field,
-    payment field, raw Zoom URL, or provider effect was found.
+    Exact copy-only candidate 801af7ec removed the unsupported world-renowned claim and four daily/seven-day
+    implications, added focused unit/rendered assertions, passed 9/9 unit and 10/10 landing/signup browser checks,
+    build, secret scan, and exact clean hosted PostgreSQL 18.4/restore/lint/typecheck proof. Production web deployment
+    0acdbf58 and worker 988c7df1 now serve exact 801af7ec with sources disconnected. Three cache-busted HTTP reads and
+    desktop/390px/360px Chromium prove the corrected copy, unchanged adult-only preregistration form, no overflow, no
+    Student/payment fields, no raw Zoom URL, and healthy readiness. No form, provider, DNS, GHL, variable, billing, or
+    customer effect occurred.
   required_authority_or_input: []
   protection: >-
-    Prepare an exact preregistration copy-only correction that cannot change registration mode, persistence, provider
-    bindings, legal pages, approved-person raster assets, or the accepted canary semantics.
-  next_check: Candidate-bound rendered-copy assertions and production readback after a later authorized deployment.
+    Preserve exact copy release 801af7ec and its unchanged preregistration/form/provider contract. Revalidate only after
+    a later public-copy, form, analytics, runtime, or provider-binding change.
+  next_check: Progressive portal candidate preparation; broad communication remains separately held by the cutoff conflict.
 rule: One precise blocker per entry with owner, affected tasks, safe work completed, required authority/input, and
   next check.

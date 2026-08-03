@@ -1,0 +1,115 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prod-prereg-copy-20260803152153
+event_sequence: 3
+previous_event_digest: 4e52e56d2280880dbce0648bffe5427671188f6c94d5e718be4c7dbcb8574a90
+state: RECONCILED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/c5ce445a0a81c3bbcbd0f6c384b45ae27183af4d071e4521bf197d46f5d88762/C00/c00-prod-prereg-copy-20260803152153/events/003-RECONCILED.yaml
+current_pointer_path: ops/v2.1-execution/effects/c5ce445a0a81c3bbcbd0f6c384b45ae27183af4d071e4521bf197d46f5d88762/C00/c00-prod-prereg-copy-20260803152153/CURRENT.yaml
+candidate_digest: c5ce445a0a81c3bbcbd0f6c384b45ae27183af4d071e4521bf197d46f5d88762
+repository_source_sha: 801af7ec1a3513d28c921ca2b8d08d8c1bca21d1
+authority_id: c00-prod-prereg-copy-20260803152153
+authority_grant_digest: ef183a7c968d519bbc6b48575d55cd51d07034c11ea147f3b46c479c34deaafe
+authority_status_index_digest_after_reconciliation: dcad00997bace5dc8d63fe30816eb58db269de02db9473584cb5eee6fe7ea2d6
+authority_status_entry_digest_after_reconciliation: 77be5356c69db67e9dcdc10a8819c5fa2891338b9e7e25c4a9f67d542ce9a278
+lock_lease_id: 9c415ddc-0840-42c0-92fd-9d77e9b530d3
+fencing_token: fence-82f7ab88-168b-49d7-81b9-f89025d42349
+provider_request_or_operation_id: railway_git_deployments_0acdbf58_988c7df1
+provider_readback:
+  project_id: ce55ef20-1418-4ad3-aafa-f877fb992dc8
+  environment_id: f911acfc-e206-44df-a569-9d69d709b94b
+  web:
+    service_id: d175ad94-5e3c-41c2-8cbc-daa1a299077d
+    deployment_id: 0acdbf58-658a-40df-bca3-7e7dd847a2b1
+    source_sha: 801af7ec1a3513d28c921ca2b8d08d8c1bca21d1
+    branch: codex/ot-live-prereg-copy-20260803
+    image_digest: sha256:d2a05738991e51eab7c970813ec9c3d251656347fddc0fffbf6d03d0360ada15
+    status: SUCCESS
+    instance_state: RUNNING
+    source_disconnected: true
+  worker:
+    service_id: 742f60ed-dc2f-4321-85d0-019003d4e9b9
+    deployment_id: 988c7df1-a92a-48c4-aa6b-74fd46a9f4c2
+    source_sha: 801af7ec1a3513d28c921ca2b8d08d8c1bca21d1
+    branch: codex/ot-live-prereg-copy-20260803
+    image_digest: sha256:8270c96d4f4c3d34501c60f1f45a7d961ec4aa1e8d122f215f6c1d7a0514f61d
+    status: SUCCESS
+    instance_state: RUNNING
+    source_disconnected: true
+  provider_controls:
+    delivery_provider_mode: sink
+    delivery_provider_per_run_budget: '1'
+    delivery_provider_per_provider_budget: '1'
+    resend_canary_authorized: false
+    highlevel_event_sync_mode: disabled
+  bounded_logs:
+    web_lines_checked: 200
+    worker_lines_checked: 2
+    error_or_fatal_count: 0
+    migration_failure: false
+    provider_send_observed: false
+production_fingerprint_after:
+  cache_busted_root_reads: 3
+  root_statuses: [200, 200, 200]
+  root_lengths: [21982, 21982, 21982]
+  root_sha256_base64:
+  - 8tu3bAz/3UCnfyQG8o6hyDBb5xY/JZUEp9FkewvjVJ0=
+  - 8tu3bAz/3UCnfyQG8o6hyDBb5xY/JZUEp9FkewvjVJ0=
+  - 8tu3bAz/3UCnfyQG8o6hyDBb5xY/JZUEp9FkewvjVJ0=
+  alternating_variant_detected: false
+  corrected_copy_present: true
+  world_renowned_present: false
+  daily_or_seven_day_implications_present: false
+  registration_mode: pre_registration
+  primary_cta_destination: /signup
+  signup_status: 200
+  signup_form_action: /api/v1/leads
+  signup_entry: preregistration
+  student_fields: 0
+  payment_fields: 0
+  promises_immediate_portal: false
+  raw_zoom_url: false
+  health: 200_PUBLIC_HEALTH_OK
+  ready: 200_PUBLIC_READY
+  version: 200_PUBLIC_RELEASE_AVAILABLE
+  browser_viewports:
+  - {size: 1440x1000, root_overflow: false, signup_overflow: false}
+  - {size: 390x844, root_overflow: false, signup_overflow: false}
+  - {size: 360x800, root_overflow: false, signup_overflow: false}
+canary_reconciliation:
+  prior_canary_source: f95b30d830d57a29b123949134e9ee3077a945a1
+  prior_canary_result: accepted_idempotent_one_adult_zero_student_GHL_zero_external_send
+  exact_candidate_diff_paths:
+  - packages/domain/src/landing/content.ts
+  - tests/unit/lead-validation.test.ts
+  - tests/e2e/landing-signup.spec.ts
+  form_server_provider_analytics_runtime_path_changed: false
+  repeated_form_submission_required: false
+  signup_posts_performed: 0
+effect_counts:
+  source_connections: 2
+  source_disconnections: 2
+  production_deployments: 2
+  signup_posts: 0
+  variable_assignments: 0
+  DNS_changes: 0
+  GHL_mutations: 0
+  provider_sends_or_enrollments: 0
+  billing_or_charge_effects: 0
+  customer_or_student_effects: 0
+rollback:
+  web_deployment_id: 1635d06a-4ee7-4afd-9501-34a943a0d3c7
+  worker_deployment_id: 901724db-951b-41c6-8265-6faa06ab676e
+  rollback_needed: false
+provider_readback_state: exact_candidate_success_sources_disconnected_corrected_copy_stable_form_unchanged
+disposition: consumed_and_reconciled_success
+production_promotion_complete: true
+broad_campaign_may_send: false
+cleanup_state: complete_sources_disconnected_lock_released
+lock_release_state: released
+lock_released_at: '2026-08-03T15:30:43Z'
+event_at: '2026-08-03T15:30:43Z'
+contains_secret: false
+immutable: true
+
