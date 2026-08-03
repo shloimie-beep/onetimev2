@@ -13,7 +13,7 @@ locks:
   lease_expires_at: '2026-08-04T18:14:33Z'
   authority_id: ot-live-002-02-provider-authority-20260803181433
   authority_grant_digest: 20a3f775c230e531d950759fcd93fb034f2f6ae48d889459e9c5d1903186e4dc
-  authority_status_index_digest: 124ea859d58712b66de394548c1261f5ba5d9bcc4a13c9fbf6926f9ed6bef959
+  authority_status_index_digest: f0da5bd884da088b3017ce6f38a712aec08491f4d54908ffaa937902079ff56b
   authority_status_entry_digest: 0d953a8f2427ee0a37cf992b844c08901ecaea2132e44098f78e1a0414c5a60b
   latest_revocation_digest: none
   authority_checked_at: '2026-08-03T18:14:33Z'
@@ -115,7 +115,7 @@ locks:
   lease_expires_at: '2026-08-04T18:14:33Z'
   authority_id: ot-live-002-02-provider-authority-20260803181433
   authority_grant_digest: 20a3f775c230e531d950759fcd93fb034f2f6ae48d889459e9c5d1903186e4dc
-  authority_status_index_digest: 124ea859d58712b66de394548c1261f5ba5d9bcc4a13c9fbf6926f9ed6bef959
+  authority_status_index_digest: f0da5bd884da088b3017ce6f38a712aec08491f4d54908ffaa937902079ff56b
   authority_status_entry_digest: 0d953a8f2427ee0a37cf992b844c08901ecaea2132e44098f78e1a0414c5a60b
   latest_revocation_digest: none
   authority_checked_at: '2026-08-03T18:14:33Z'
@@ -157,7 +157,7 @@ locks:
   lease_expires_at: '2026-08-04T18:14:33Z'
   authority_id: ot-live-002-02-provider-authority-20260803181433
   authority_grant_digest: 20a3f775c230e531d950759fcd93fb034f2f6ae48d889459e9c5d1903186e4dc
-  authority_status_index_digest: 124ea859d58712b66de394548c1261f5ba5d9bcc4a13c9fbf6926f9ed6bef959
+  authority_status_index_digest: f0da5bd884da088b3017ce6f38a712aec08491f4d54908ffaa937902079ff56b
   authority_status_entry_digest: 0d953a8f2427ee0a37cf992b844c08901ecaea2132e44098f78e1a0414c5a60b
   latest_revocation_digest: none
   authority_checked_at: '2026-08-03T18:14:33Z'
@@ -170,31 +170,24 @@ locks:
     broad_or_customer_sends_max: 0
   cleanup_state: prior_Railway_TXT_TLS_terminal_exact_new_email_auth_and_alias_effects_pending_per_effect_readback_and_reconciliation
 - lock: production:deployment
-  status: claimed
-  holder_task_id: C00
-  holder_claim_id: 2cc05d76-8b6a-40f0-85db-a61ea1748ca3
-  lease_id: 1c03b3eb-7a19-4d4f-a446-bca131228ebb
-  fencing_token: fence-69027459-7cf7-4a6a-995e-eecbb21f5abc
-  canonical_candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
-  provider_identity: railway:ce55ef20-1418-4ad3-aafa-f877fb992dc8:f911acfc-e206-44df-a569-9d69d709b94b:web_d175ad94_worker_742f60ed
-  authorized_operation: exact_active_ca442_resume_existing_Student_canary_two_variable_deletions_and_at_most_two_read_only_restoration_deployments_zero_migration_source_or_provider_effects
-  claimed_at: '2026-08-03T17:50:56Z'
-  lease_expires_at: '2026-08-03T18:45:56Z'
-  authority_id: c00-prod-canary-restoration-20260803175056
-  authority_grant_digest: 1ec4888913ba6f48ff66c65eece254bf6379d29a9cb88096f29784c668903bd4
-  authority_status_index_digest: 139866d819e00914d3fb4099db11fa49cf23d4a79fb6b3cafd8080710ad8459e
-  authority_status_entry_digest: 04aa463da64674d57bde22fb6f0bb7034d896f3e633a466b03cd5d9377589671
-  latest_revocation_digest: none
-  authority_checked_at: '2026-08-03T17:50:56Z'
-  effect_budget:
-    database_migrations_max: 0
-    Railway_or_DNS_domain_mutations_max: 0
-    variable_deletions_max: 2
-    source_connections_and_disconnections_max: 0
-    production_deployments_max: 2
-    additional_Parent_household_Student_canaries_max: 0_0_1
-    provider_DNS_GHL_billing_broad_effects_max: 0
-  cleanup_state: sources_disconnected_2259_exact_pending_remaining_Student_canary_read_only_restore_and_reconciliation
+  status: unclaimed
+  holder_task_id: null
+  holder_claim_id: null
+  lease_id: null
+  fencing_token: null
+  canonical_candidate_digest: null
+  provider_identity: null
+  authorized_operation: null
+  claimed_at: null
+  lease_expires_at: null
+  authority_id: null
+  authority_grant_digest: null
+  authority_status_index_digest: null
+  authority_status_entry_digest: null
+  latest_revocation_digest: null
+  authority_checked_at: null
+  effect_budget: null
+  cleanup_state: not_applicable
 - lock: provider:s3-kms
   status: unclaimed
   holder_task_id: null

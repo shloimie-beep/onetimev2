@@ -1,0 +1,51 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prod-canary-restoration-20260803175056
+event_sequence: 2
+previous_event_digest: 961fda88072a8ef0314180d746cd08a91d4372c560982935eb6fddf2385fe1db
+state: ATTEMPTED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-canary-restoration-20260803175056/events/002-ATTEMPTED.yaml
+current_pointer_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-canary-restoration-20260803175056/CURRENT.yaml
+candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+authority_id: c00-prod-canary-restoration-20260803175056
+authority_grant_digest: 1ec4888913ba6f48ff66c65eece254bf6379d29a9cb88096f29784c668903bd4
+lock: production:deployment
+lock_lease_id: 1c03b3eb-7a19-4d4f-a446-bca131228ebb
+fencing_token: fence-69027459-7cf7-4a6a-995e-eecbb21f5abc
+operation: resume_existing_protected_Student_canary_after_Parent_login_precondition
+attempt_readback:
+  application_origin: https://app.onetimeonetime.com
+  Parent_login_HTTP_status: 503
+  Parent_login_result: stopped_before_Student_creation
+  Parent_accounts_after: 1
+  households_after: 1
+  Student_accounts_after: 0
+  new_Parent_login_sessions_created: 1
+  new_Parent_login_sessions_revoked_immediately: 1
+  prior_signup_session_preserved_active: true
+  login_rate_limit_buckets_retained:
+    login_account_ip: 1
+    login_ip: 1
+    login_account_product: 1
+    login_global: 1
+  expected_rate_limit_release_predicates_matching_rows: 0_of_4
+  exact_failure_cause: node_pg_returned_reset_at_as_Date_then_String_Date_dropped_milliseconds_so_exact_release_predicates_did_not_match
+  production_reset_at_fraction_observed: milliseconds_366
+  application_timestamp_round_trip_fraction: milliseconds_dropped
+  source_or_deployment_changes: 0
+  database_migrations: 0
+  variable_deletions: 0
+  external_provider_sends_or_enrollments: 0
+  GHL_mutations: 0
+  charges: 0
+effect_count_after: 1
+unexpected_effects: 0
+cleanup_state: transient_login_session_revoked_rate_limit_buckets_expire_naturally_no_Student_or_external_effect_pending
+stop_reason: deterministic_login_budget_timestamp_precision_defect_requires_new_candidate
+successor_source_sha: a64d9052305e6a0a31cc9bf3268fb634000c8f8a
+event_at: '2026-08-03T18:23:06Z'
+state_based_on_head_sha: 1a02984e99bea678afc3348b6f51a43adce87686
+contains_secret: false
+immutable: true

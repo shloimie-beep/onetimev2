@@ -1,0 +1,46 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prod-canary-restoration-20260803175056
+event_sequence: 3
+previous_event_digest: 9a2e1a3601aa8e91c0e6e944000bfa1fdedd94c98b6c267746847b376d4991dd
+state: RECONCILED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-canary-restoration-20260803175056/events/003-RECONCILED.yaml
+current_pointer_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-canary-restoration-20260803175056/CURRENT.yaml
+candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+authority_id: c00-prod-canary-restoration-20260803175056
+authority_grant_digest: 1ec4888913ba6f48ff66c65eece254bf6379d29a9cb88096f29784c668903bd4
+lock: production:deployment
+lock_lease_id: 1c03b3eb-7a19-4d4f-a446-bca131228ebb
+fencing_token: fence-69027459-7cf7-4a6a-995e-eecbb21f5abc
+operation: reconcile_stopped_Parent_login_precondition_and_release_deployment_lock
+terminal_readback:
+  live_web_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+  live_worker_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+  source_or_deployment_changes: 0
+  migration_file_and_ledger_count: 90_90
+  migration_pending_count: 0
+  Parent_accounts: 1
+  households: 1
+  Student_accounts: 0
+  failed_login_session_state: revoked
+  prior_signup_session_state: active
+  retained_rate_limit_bucket_count: 4
+  retained_rate_limit_bucket_disposition: bounded_failed_login_budget_expires_by_existing_TTL_no_manual_mutation
+  variable_deletions: 0
+  external_provider_sends_or_enrollments: 0
+  GHL_mutations: 0
+  charges: 0
+  broad_audience_activations: 0
+effect_count_after: 1
+unexpected_effects: 0
+cleanup_state: reconciled_no_Student_external_or_deployment_effect_transient_failed_login_session_revoked_bounded_rate_limit_budget_left_to_TTL
+lock_release_state: released_after_terminal_failed_precondition_reconciliation
+stop_reason: Parent_login_503_due_exact_reset_at_millisecond_loss
+successor_source_sha: a64d9052305e6a0a31cc9bf3268fb634000c8f8a
+successor_candidate_status: tested_and_pushed_not_yet_frozen_or_deployed
+event_at: '2026-08-03T18:23:07Z'
+state_based_on_head_sha: 1a02984e99bea678afc3348b6f51a43adce87686
+contains_secret: false
+immutable: true
