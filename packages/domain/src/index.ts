@@ -216,6 +216,9 @@ export {
   type Ot104rVimeoVideoInspection,
   type Ot104rVimeoWebhookReceiptResult,
 } from './content/vimeo-private-runtime.ts';
+export * from './content/vimeo-mishnayos-catalog.ts';
+export * from './content/vimeo-mishnayos-provider.ts';
+export * from './content/vimeo-mishnayos-taxonomy.ts';
 export {
   OT109_SCOPE,
   Ot109PublisherError,
