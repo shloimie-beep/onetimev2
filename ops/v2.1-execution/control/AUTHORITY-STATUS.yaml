@@ -528,14 +528,14 @@ authorities:
     authority_kind: derived_candidate_bound_staging_portal_deployment_and_operator_canary
     grant_digest: 8aa77065d5eb1d934bcad604a6387843e9c63c409cc9bb7adaa94438538b265a
     source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
-    status: active
+    status: consumed
     expires_at: '2026-08-03T13:26:43Z'
     latest_revocation_path: null
     latest_revocation_digest: null
     provider_lock: production:deployment
     provider_lock_lease_id: c115f426-5170-4c3f-8e57-b24bc46ff3d5
     fencing_token: fence-419cb224-ed29-42bc-99e2-43ecbb3000bb
-    effect_authority_usable: true
+    effect_authority_usable: false
     candidate_binding_status: exact_candidate_bound_from_native_pg18_evidence
     canonical_candidate_digest: 99cbd568b90be4b2ee6b4fcf586cd411a0e0750dc86ac44cba5152bd2d8c138f
     repository_source_sha: e816aa28a97aff32849bab4fe5ae7fc4663e2498
@@ -546,8 +546,10 @@ authorities:
       - 76e7fdc2-99b9-4a82-ba55-5dff3723398f
     maximum_effect_count: 7
     prerequisite_review: pg18_90_of_90_portals_155_passed_staging_sink_fast_forward_legal_broad_only
-    checked_at: '2026-08-03T12:41:43Z'
-    state_based_on_control_head_sha: 644dbd85b9df1a630f85e22b9541f15296535811
+    disposition: consumed_and_reconciled_deploy_success_portal_canary_failed_missing_student_auth_projection
+    lock_released_at: '2026-08-03T12:55:52.5599100Z'
+    checked_at: '2026-08-03T12:55:52.5599100Z'
+    state_based_on_control_head_sha: f4998530c016f8b68b170e5ce9b6e67cb647024f
 entry_schema: templates/AUTHORITY-STATUS-ENTRY.yaml
 revocation_schema: templates/AUTHORITY-REVOCATION-RECORD.yaml
 rule: C00 records externally granted/revoked/expired authority; it does not grant it. Every update binds the known

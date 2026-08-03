@@ -1,0 +1,58 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-staging-portal-deploy-20260803124143
+event_sequence: 3
+previous_event_digest: 479c8e7f8a10f8db7298649d5eecbe19e62f2f6614d4f52695b0e7fa59dcb0d4
+state: RECONCILED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/99cbd568b90be4b2ee6b4fcf586cd411a0e0750dc86ac44cba5152bd2d8c138f/C00/c00-staging-portal-deploy-20260803124143/events/003-RECONCILED.yaml
+current_pointer_path: ops/v2.1-execution/effects/99cbd568b90be4b2ee6b4fcf586cd411a0e0750dc86ac44cba5152bd2d8c138f/C00/c00-staging-portal-deploy-20260803124143/CURRENT.yaml
+candidate_digest: 99cbd568b90be4b2ee6b4fcf586cd411a0e0750dc86ac44cba5152bd2d8c138f
+candidate_manifest_commit_sha: not_materialized_lean_exact_source_binding
+repository_source_sha: e816aa28a97aff32849bab4fe5ae7fc4663e2498
+deployment_instance_digest: f43e1e2f92a49f9f31d5b9a7c4d1b96f53ed74d66f2b6ae73f7893466e60b587
+authority_grant_digest: 8aa77065d5eb1d934bcad604a6387843e9c63c409cc9bb7adaa94438538b265a
+authority_status_index_digest: 971ece359955c46871e584ca963ec2d6b8ded0edd1ed0e4d90b24acf106f6faa
+authority_status_entry_digest: 2e56083993be3231668a6507b479ebaff8d8414c9a777373b16508331ef9af29
+latest_revocation_digest: none
+lock: production:deployment
+lock_lease_id: c115f426-5170-4c3f-8e57-b24bc46ff3d5
+fencing_token: fence-419cb224-ed29-42bc-99e2-43ecbb3000bb
+provider_identity: railway:7c8eee26-7a6a-4684-826d-9f4377d67d46:11edf8a2-0160-45b4-a039-b15b4beb4c10:web-9fb6d9f4:worker-76e7fdc2
+operation: exact_staging_policy_pair_skip_deploy_fast_forward_f95b30d8_to_e816aa28_two_deployments_and_sink_portal_canary
+provider_request_or_operation_id: railway_web_4d01c1c6_worker_8daf16ec_after_github_ref_fast_forward
+provider_readback_digest: c9da251c49d994746343dc24d4af5523b2aafb6b43282b744ecb2cadbd567691
+provider_readback_state: deployments_success_portal_canary_failed_student_login_invalid_credentials
+web_deployment_id: 4d01c1c6-395b-4a49-873c-f4359586d3f4
+web_state: SUCCESS
+web_image_digest: sha256:068c29dad8c1dc2d79b9a3c494bc94a2e9e086dd750ecfb43d9a8206becef664
+web_builder: DOCKERFILE
+web_migrations: 90_of_90
+worker_deployment_id: 8daf16ec-7c1e-4fc8-a021-e6d362bbb2e2
+worker_state: SUCCESS
+worker_image_digest: sha256:008d050e086d270b5a60160465c25fa881d825984ba45a4491e78a2fad3fbcb8
+worker_builder: DOCKERFILE
+worker_delivery_readback: sink_claimed_0_delivered_0_suppressed_0
+http_readback: health_200_ready_200_landing_200_parent_302_student_302
+canary_fixture_id: staging_parent_c00_20260803124143_example_invalid
+canary_student_id: student_52e6796d-d554-481b-839f-481d211cb795
+canary_result: parent_signup_201_student_create_201_student_login_401_INVALID_CREDENTIALS
+failure_root_cause: v21_student_profile_acceptance_and_enrollment_exist_but_legacy_auth_projection_count_is_zero
+effect_budget_consumed:
+  configuration_writes: 1
+  source_ref_updates: 1
+  staging_deployments: 2
+  parent_signups: 1
+  student_creates: 1
+  student_login_attempts: 1
+  total: 7
+  production_deployments: 0
+  DNS_changes: 0
+  GHL_mutations: 0
+  sends_or_enrollments: 0
+  billing_effects: 0
+cleanup_state: exact_fixture_preserved_for_candidate_correction_no_ambiguous_provider_effect
+lock_release_state: released
+state_based_on_head_sha: f4998530c016f8b68b170e5ce9b6e67cb647024f
+event_at: '2026-08-03T12:55:52.5599100Z'
+immutable: true
