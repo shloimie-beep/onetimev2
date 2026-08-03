@@ -581,20 +581,21 @@ authorities:
     authority_kind: derived_candidate_preparation_effect
     grant_digest: 10899bb70c2f9cdb56a64f6964179e5208377d9307dd211bd01f6a0715f0e2bb
     source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
-    status: active
+    status: consumed
     expires_at: '2026-08-03T14:14:01Z'
     latest_revocation_path: null
     latest_revocation_digest: null
     provider_lock: production:deployment
     provider_lock_lease_id: f4591695-a802-4165-a3b2-f2b821d07da8
     fencing_token: fence-c6d985ec-5379-4fb5-84b0-b6922f73cd1b
-    effect_authority_usable: true
+    effect_authority_usable: false
     candidate_binding_status: exact_source_sha_bound_pre_freeze
     repository_source_sha: efb680b2666efd0fbc9fd0e8c1895b5fcadc696e
     integration_head_sha: efb680b2666efd0fbc9fd0e8c1895b5fcadc696e
     maximum_effect_count: 1
     prerequisite_review: corrected_native_harness_dependency_memory_7_passed_native_3_pending_expected_90_through_2259
-    checked_at: '2026-08-03T13:29:01Z'
+    disposition: consumed_by_github_actions_run_30818449057_pending_final_reconciliation
+    checked_at: '2026-08-03T13:33:41.0280637Z'
     state_based_on_control_head_sha: 3bbfa9dd81f70a0bda868a6c0c716a8607f9919d
 entry_schema: templates/AUTHORITY-STATUS-ENTRY.yaml
 revocation_schema: templates/AUTHORITY-REVOCATION-RECORD.yaml
