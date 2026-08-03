@@ -1,0 +1,52 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prod-canary-restoration-20260803175056
+event_sequence: 1
+previous_event_digest: none
+state: RESERVED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-canary-restoration-20260803175056/events/001-RESERVED.yaml
+current_pointer_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-canary-restoration-20260803175056/CURRENT.yaml
+candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+candidate_manifest_commit_sha: ca930d456f3739af5ce3303f4fe880325136d56a
+repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+source_branch: codex/ot-live-progressive-portal-20260803
+authority_id: c00-prod-canary-restoration-20260803175056
+authority_grant_digest: 1ec4888913ba6f48ff66c65eece254bf6379d29a9cb88096f29784c668903bd4
+authority_status_index_digest: 139866d819e00914d3fb4099db11fa49cf23d4a79fb6b3cafd8080710ad8459e
+authority_status_entry_digest: 04aa463da64674d57bde22fb6f0bb7034d896f3e633a466b03cd5d9377589671
+latest_revocation_digest: none
+lock: production:deployment
+lock_lease_id: 1c03b3eb-7a19-4d4f-a446-bca131228ebb
+holder_claim_id: 2cc05d76-8b6a-40f0-85db-a61ea1748ca3
+fencing_token: fence-69027459-7cf7-4a6a-995e-eecbb21f5abc
+provider_identity:
+  project_id: ce55ef20-1418-4ad3-aafa-f877fb992dc8
+  environment_id: f911acfc-e206-44df-a569-9d69d709b94b
+  web_service_id: d175ad94-5e3c-41c2-8cbc-daa1a299077d
+  worker_service_id: 742f60ed-dc2f-4321-85d0-019003d4e9b9
+operation: resume_existing_protected_Student_canary_then_two_variable_deletions_and_read_only_restore
+effect_budget:
+  database_migrations_max: 0
+  additional_Parent_household_Student_canaries_max: 0_0_1
+  variable_deletions_max: 2
+  production_deployments_max: 2
+  source_domain_provider_GHL_billing_effects_max: 0
+provider_readback_before:
+  web_deployment_id: 7e355bb1-1938-4689-8723-7fd83b48719d
+  web_status_and_source: SUCCESS_ca442fa43544c89e135fe751b177e1ff473b9e57
+  worker_deployment_id: 64a4edff-f566-4057-8ebe-c350bba5314a
+  worker_status_and_source: SUCCESS_ca442fa43544c89e135fe751b177e1ff473b9e57
+  deployment_trigger_count_web_worker: 0_0
+  migration_file_and_ledger_count: 90_90
+  migration_pending_count: 0
+  migration_2259_position_checksum: 90_fae76e3a62930a099bbbe679e9d0ba6bb977587b5eacfeca50984f26fc851b2b
+  accepted_preexisting_historical_order_mismatch_digest: ed5cad4c776e8fc5b2722483b1c1b10019d05a50b30d5bd1c5a9123413e03f8d
+  existing_fixture_counts: one_Parent_one_household_zero_Student_one_sink_outbox_intent
+  fixture_destination_sha256: 668a11adfc0081d872327eb23b0248cee690cb96270ecaa63d8087401b33ff21
+  delivery_controls: sink_sink_sink_resend_false_highlevel_disabled_real_transports_false
+reserved_at: '2026-08-03T17:50:56Z'
+lease_expires_at: '2026-08-03T18:45:56Z'
+state_based_on_head_sha: 9856279a0f6a1e5860ed3c04e24a6604a00700ff
+contains_secret: false
+immutable: true

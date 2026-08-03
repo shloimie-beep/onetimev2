@@ -1,0 +1,61 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prod-migration-canary-recovery-20260803174225
+event_sequence: 2
+previous_event_digest: 6312cb3e9f196795a7e68dad3eccbd2e53ec29b73f0080e4a085ee7113009005
+state: ATTEMPTED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-migration-canary-recovery-20260803174225/events/002-ATTEMPTED.yaml
+current_pointer_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-migration-canary-recovery-20260803174225/CURRENT.yaml
+candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+authority_id: c00-prod-migration-canary-recovery-20260803174225
+authority_grant_digest: db4b7377ff4e1b23ab4b1c2b1c318cbe5164cfa080df37497c114d27a1e8648d
+lock: production:deployment
+lock_lease_id: 08428d09-15b9-46d2-b2e8-3283fdeb0405
+fencing_token: fence-2907caac-c4db-4277-96d3-7a9bcda5ddf0
+operation: apply_only_exact_candidate_Git_artifact_migration_2259_then_resume_existing_Student_canary_and_read_only_restore
+migration_operation:
+  command: npm_run_db_migrate_from_exact_active_web_artifact
+  transaction: committed
+  migrations_reported_total: 90
+  migrations_already_applied: 89
+  migrations_newly_applied: 1
+  exact_new_migration_id: 2259_vimeo_mishnayos_catalog_adoption
+  exact_new_migration_checksum: fae76e3a62930a099bbbe679e9d0ba6bb977587b5eacfeca50984f26fc851b2b
+post_migration_readback:
+  migration_file_count: 90
+  migration_ledger_count: 90
+  applied_count: 90
+  pending_count: 0
+  migration_2259_position_by_applied_at: 90
+  migration_2259_exact_rows: 1
+  migration_2259_tables_present: 3
+  verifier_status: invalid_only_due_to_known_historical_order_warning
+  verifier_issue: MIGRATION_LEDGER_ORDER_MISMATCH
+  historical_order_mismatch_count: 12
+  historical_order_mismatch_positions: 41_through_52
+  historical_order_mismatch_digest: ed5cad4c776e8fc5b2722483b1c1b10019d05a50b30d5bd1c5a9123413e03f8d
+  historical_warning_prior_evidence: c00-production-prereg-release-20260803105309_event_002_and_003
+  fixture_counts_after: one_Parent_one_household_zero_Student
+  external_provider_sends_or_enrollments: 0
+stop_condition:
+  triggered: true
+  reason: zero_issue_postcondition_not_met_because_known_historical_production_ledger_order_warning_is_preserved
+  further_effects_under_this_authority: stopped
+  safe_state: exact_2259_applied_position_90_checksum_exact_pending_zero_fixture_unchanged_transports_sink
+  required_next_control_action: derive_zero_migration_successor_accepting_only_exact_preexisting_historical_warning_then_resume_canary
+effect_counts_after:
+  database_migrations_applied: 1
+  Parent_accounts_created_under_this_authority: 0
+  households_created_under_this_authority: 0
+  Student_accounts_created_under_this_authority: 0
+  external_provider_sends_or_enrollments: 0
+  GHL_mutations: 0
+  billing_effects: 0
+unexpected_effects: 0
+cleanup_state: migration_complete_no_rollback_historical_warning_preserved_canary_and_read_only_restore_pending_successor
+event_at: '2026-08-03T17:50:56Z'
+state_based_on_head_sha: 9856279a0f6a1e5860ed3c04e24a6604a00700ff
+contains_secret: false
+immutable: true

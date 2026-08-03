@@ -1,0 +1,90 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+authority_id: c00-prod-canary-restoration-20260803175056
+authority_kind: derived_candidate_bound_post_migration_progressive_canary_and_read_only_restoration
+task_id: C00
+candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+candidate_binding_status: exact_frozen_candidate_active_on_both_services_sources_disconnected_migration_2259_applied
+candidate_manifest_commit_sha: ca930d456f3739af5ce3303f4fe880325136d56a
+repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+canonical_path: ops/v2.1-execution/authority/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-canary-restoration-20260803175056/GRANT.yaml
+source_grant_id: ot-v21-production-source-grant-20260729
+source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+source_approval_evidence_path: ops/v2.1-execution/authority/none/C00/ot-v21-production-source-grant-20260729/APPROVAL.md
+source_approval_evidence_digest: 8c95a959f79aba0ac34fa0fcb6cb463cceac9aeb2bb52da1603d39db3e2c33c2
+predecessor_authority_id: c00-prod-migration-canary-recovery-20260803174225
+predecessor_effect_event_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-migration-canary-recovery-20260803174225/events/002-ATTEMPTED.yaml
+predecessor_stop_reason: exact_2259_applied_and_pending_zero_but_verifier_preserves_known_preexisting_historical_order_warning
+grant_status_at_issue: active
+approved_by: Shloimie Dratler
+scope:
+  provider: One Time application on Railway production
+  workspace_id: d2428a88-aa7e-4369-b396-72060bf720f4
+  project_id: ce55ef20-1418-4ad3-aafa-f877fb992dc8
+  environment_id: f911acfc-e206-44df-a569-9d69d709b94b
+  web_service_id: d175ad94-5e3c-41c2-8cbc-daa1a299077d
+  worker_service_id: 742f60ed-dc2f-4321-85d0-019003d4e9b9
+  web_candidate_deployment_id: 7e355bb1-1938-4689-8723-7fd83b48719d
+  worker_candidate_deployment_id: 64a4edff-f566-4057-8ebe-c350bba5314a
+  exact_latest_migration_id: 2259_vimeo_mishnayos_catalog_adoption
+  exact_latest_migration_checksum: fae76e3a62930a099bbbe679e9d0ba6bb977587b5eacfeca50984f26fc851b2b
+  accepted_preexisting_historical_order_mismatch_digest: ed5cad4c776e8fc5b2722483b1c1b10019d05a50b30d5bd1c5a9123413e03f8d
+  application_origin: https://app.onetimeonetime.com
+  fixture_id: c00_prod_portal_canary_8a902dd9_20260803a
+  fixture_destination_sha256: 668a11adfc0081d872327eb23b0248cee690cb96270ecaa63d8087401b33ff21
+fencing_token: fence-69027459-7cf7-4a6a-995e-eecbb21f5abc
+lock: production:deployment
+provider_lock_lease_id: 1c03b3eb-7a19-4d4f-a446-bca131228ebb
+allowed_operation: from the exact stopped predecessor state only, perform read-only checks confirming 90 migration files and ledger rows, pending zero, exact 2259 position 90 and checksum, and only the bound preexisting historical order warning; wait for valid app TLS; resume only the existing protected fixture by creating one Parent-managed Student and exercising the bounded credential, revocation, suspension, restoration, and relogin lifecycle; delete ONE_TIME_VERIFICATION_ENVIRONMENT_ID from both exact services; accept at most one exact-candidate restoration deployment per service and use explicit redeploy only if deletion does not produce it; then reconcile production_read_only behavior and zero external provider effects
+maximum_effect_count: 7
+maximum_effect_value: zero_migrations_zero_additional_Parents_or_households_one_Student_two_variable_deletions_at_most_two_exact_candidate_restoration_deployments_zero_source_domain_provider_GHL_or_billing_effects
+approved_fixture_ids:
+  - c00_prod_portal_canary_8a902dd9_20260803a
+operator_identity: C00
+approved_at: '2026-08-03T17:50:56Z'
+recorded_at: '2026-08-03T17:50:56Z'
+expires_at: '2026-08-03T18:45:56Z'
+effect_budget:
+  database_migrations_max: 0
+  additional_parent_accounts_created_or_updated_max: 0
+  additional_households_created_or_updated_max: 0
+  student_accounts_created_or_updated_max: 1
+  student_credential_rotations_max: 1
+  student_lifecycle_transitions_max: 4
+  variable_deletions_max: 2
+  production_deployments_max: 2
+  source_connections_or_disconnections_max: 0
+  Railway_or_DNS_domain_mutations_max: 0
+  external_provider_sends_or_enrollments_max: 0
+  GHL_mutations_max: 0
+  charges_max: 0
+  broad_audience_activations_max: 0
+prerequisite_review:
+  control_head_sha: 9856279a0f6a1e5860ed3c04e24a6604a00700ff
+  candidate_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+  live_migration_ledger: 90_rows_pending_zero_2259_exact_position_90
+  migration_2259_checksum: fae76e3a62930a099bbbe679e9d0ba6bb977587b5eacfeca50984f26fc851b2b
+  accepted_historical_warning: same_MIGRATION_LEDGER_ORDER_MISMATCH_recorded_before_2259_at_original_89_migration_release
+  accepted_historical_mismatch_digest: ed5cad4c776e8fc5b2722483b1c1b10019d05a50b30d5bd1c5a9123413e03f8d
+  partial_canary_readback: one_Parent_one_household_zero_Student_one_sink_outbox_intent
+  fixture_hash_verified: true
+  delivery_controls: sink_sink_sink_resend_false_highlevel_disabled_real_transports_false
+  broad_activation_authorized: false
+rollback_and_reconciliation:
+  - never mutate migration files, schema_migrations rows, applied_at values, schema, data, or migrations under this authority
+  - accept only the exact bound historical order mismatch; stop on any missing row, checksum issue, pending migration, new issue code, changed mismatch count, position, identity, or digest
+  - preserve the existing Parent and household; create no additional Parent or household and no Student email
+  - keep both deployment-trigger queries empty and preserve exact ca442fa43544c89e135fe751b177e1ff473b9e57 source
+  - restore ONE_TIME_VERIFICATION_ENVIRONMENT_ID to absent production_read_only behavior on both services
+  - require exact candidate source, SUCCESS, health, readiness, clean bounded logs, valid app TLS, application login, and preserved preregistration truth
+  - require zero email, WhatsApp, Telegram, payment, GHL, audience, or broad activation effect
+  - release the lock only after exact canary, runtime, deployment, and provider readback reconciliation
+stop_conditions:
+  - source grant is revoked or expired
+  - live ledger differs from 90 rows, pending zero, exact 2259 position 90 and checksum, or the bound historical mismatch digest
+  - either active service differs from the bound exact candidate or any deployment trigger exists
+  - the existing fixture readback differs from one Parent, one household, zero Student, and the approved fixture SHA-256
+  - app TLS or application login is not valid before Student creation
+  - the operation would migrate, alter schema_migrations, send, enroll, mutate GHL, charge, touch a customer, collect a Student email, modify DNS, connect a source, or change the disputed public cutoff
+contains_secret: false
+immutable: true

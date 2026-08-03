@@ -159,30 +159,29 @@ locks:
 - lock: production:deployment
   status: claimed
   holder_task_id: C00
-  holder_claim_id: 58d077b3-7d0c-45b9-9e34-f9a15d405471
-  lease_id: 08428d09-15b9-46d2-b2e8-3283fdeb0405
-  fencing_token: fence-2907caac-c4db-4277-96d3-7a9bcda5ddf0
+  holder_claim_id: 2cc05d76-8b6a-40f0-85db-a61ea1748ca3
+  lease_id: 1c03b3eb-7a19-4d4f-a446-bca131228ebb
+  fencing_token: fence-69027459-7cf7-4a6a-995e-eecbb21f5abc
   canonical_candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
   provider_identity: railway:ce55ef20-1418-4ad3-aafa-f877fb992dc8:f911acfc-e206-44df-a569-9d69d709b94b:web_d175ad94_worker_742f60ed
-  authorized_operation: exact_active_ca442_apply_only_2259_then_resume_existing_Student_canary_two_variable_deletions_and_at_most_two_read_only_restoration_deployments_zero_source_or_provider_effects
-  claimed_at: '2026-08-03T17:42:25Z'
-  lease_expires_at: '2026-08-03T18:37:25Z'
-  authority_id: c00-prod-migration-canary-recovery-20260803174225
-  authority_grant_digest: db4b7377ff4e1b23ab4b1c2b1c318cbe5164cfa080df37497c114d27a1e8648d
-  authority_status_index_digest: f4b92a273f4ef061be7edda04008f9059ee845faa9f2ef89cc30162d3bcd9a60
-  authority_status_entry_digest: 5d56ba3b04b7c994160f55050a410c9c84e517c933a62319330e18e88e77f74d
+  authorized_operation: exact_active_ca442_resume_existing_Student_canary_two_variable_deletions_and_at_most_two_read_only_restoration_deployments_zero_migration_source_or_provider_effects
+  claimed_at: '2026-08-03T17:50:56Z'
+  lease_expires_at: '2026-08-03T18:45:56Z'
+  authority_id: c00-prod-canary-restoration-20260803175056
+  authority_grant_digest: 1ec4888913ba6f48ff66c65eece254bf6379d29a9cb88096f29784c668903bd4
+  authority_status_index_digest: 139866d819e00914d3fb4099db11fa49cf23d4a79fb6b3cafd8080710ad8459e
+  authority_status_entry_digest: 04aa463da64674d57bde22fb6f0bb7034d896f3e633a466b03cd5d9377589671
   latest_revocation_digest: none
-  authority_checked_at: '2026-08-03T17:42:25Z'
+  authority_checked_at: '2026-08-03T17:50:56Z'
   effect_budget:
-    database_migrations_max: 1
-    exact_allowed_migration_id: 2259_vimeo_mishnayos_catalog_adoption
+    database_migrations_max: 0
     Railway_or_DNS_domain_mutations_max: 0
     variable_deletions_max: 2
     source_connections_and_disconnections_max: 0
     production_deployments_max: 2
     additional_Parent_household_Student_canaries_max: 0_0_1
     provider_DNS_GHL_billing_broad_effects_max: 0
-  cleanup_state: sources_disconnected_pending_exact_2259_remaining_Student_canary_read_only_restore_and_reconciliation
+  cleanup_state: sources_disconnected_2259_exact_pending_remaining_Student_canary_read_only_restore_and_reconciliation
 - lock: provider:s3-kms
   status: unclaimed
   holder_task_id: null
