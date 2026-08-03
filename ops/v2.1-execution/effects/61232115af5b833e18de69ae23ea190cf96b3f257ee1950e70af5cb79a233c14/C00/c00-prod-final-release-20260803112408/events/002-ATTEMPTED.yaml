@@ -1,0 +1,48 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prod-final-release-20260803112408
+event_sequence: 2
+previous_event_digest: 7cf4efbb79f5eec9765068d761d09a7f2258faa4053b76625b4d77dc6fa2c519
+state: ATTEMPTED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14/C00/c00-prod-final-release-20260803112408/events/002-ATTEMPTED.yaml
+candidate_digest: 61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14
+repository_source_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+authority_id: c00-prod-final-release-20260803112408
+lock_lease_id: cc4d3a24-d4a7-4dfd-b1b8-a1e111694fd7
+fencing_token: fence-c6b7262e-b6cb-4085-b17a-4cb2d091a7a1
+operation_results:
+  highlevel_event_sync_mode_web: disabled
+  highlevel_event_sync_mode_worker: disabled
+  safe_variable_assignments_triggered_deployments: 0
+  exact_source_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+  web_deployment_id: 83b24eba-efcb-410c-883d-b50917745239
+  web_deployment_status: FAILED
+  worker_deployment_id: 8d4e1cc9-fd1f-477a-bd89-28513055d306
+  worker_deployment_status: FAILED
+  failure_phase: startup_healthcheck
+  failure_cause: missing_PROTECTED_PAYLOAD_ENCRYPTION_KEY_required_by_frozen_production_runtime
+  web_source_disconnected: true
+  worker_source_disconnected: true
+  canonical_live_version_after_failure: 0d69de15e3c5e7a5e51f2b9262c992ea153c51fb
+  prior_web_and_worker_still_serving: true
+budget_consumed:
+  exact_variable_assignments: 2
+  source_connections: 2
+  source_disconnections: 2
+  production_deployments: 2
+  signup_posts: 0
+  local_adult_contacts: 0
+  local_signup_leads: 0
+  local_sink_intents: 0
+  portal_accounts: 0
+  student_accounts: 0
+  external_provider_sends_or_enrollments: 0
+  charges: 0
+  migrations: 0
+  DNS_changes: 0
+  GHL_mutations: 0
+provider_request_or_operation_id: railway_git_deployments_83b24eba_8d4e1cc9
+cleanup_state: terminal_sources_disconnected_failed_deployments_nonserving_prior_runtime_healthy_no_canary
+event_at: '2026-08-03T11:45:04.5315130Z'
+immutable: true

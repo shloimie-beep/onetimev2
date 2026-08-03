@@ -1,0 +1,41 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prod-final-release-20260803112408
+event_sequence: 3
+previous_event_digest: bca8f474ace0cd2bd9c847414bc5df5059faad5578ea2677b45b9daac66512eb
+state: RECONCILED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14/C00/c00-prod-final-release-20260803112408/events/003-RECONCILED.yaml
+candidate_digest: 61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14
+repository_source_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+authority_id: c00-prod-final-release-20260803112408
+lock_lease_id: cc4d3a24-d4a7-4dfd-b1b8-a1e111694fd7
+fencing_token: fence-c6b7262e-b6cb-4085-b17a-4cb2d091a7a1
+provider_request_or_operation_id: railway_git_deployments_83b24eba_8d4e1cc9
+provider_readback:
+  highlevel_event_sync_mode_web: disabled
+  highlevel_event_sync_mode_worker: disabled
+  sink_controls_preserved: true
+  exact_source_build_completed: true
+  exact_source_runtime_started: false
+  failure_cause_reconciled: missing_PROTECTED_PAYLOAD_ENCRYPTION_KEY
+  web_source_disconnected: true
+  worker_source_disconnected: true
+  canonical_live_version: 0d69de15e3c5e7a5e51f2b9262c992ea153c51fb
+  canonical_live_health: 200
+  prior_web_deployment_still_serving: f8ba23d3-311b-4277-a85d-6695611fedfd
+  prior_worker_deployment_still_serving: 26bf7d62-db73-41d6-9887-1d2215ddfaff
+  signup_posts: 0
+  external_provider_sends_or_enrollments: 0
+  portal_or_student_accounts: 0
+  charges: 0
+provider_readback_state: exact_source_builds_failed_missing_protected_payload_key_sources_disconnected_prior_runtime_healthy_zero_external_send
+disposition: consumed_and_reconciled_fresh_secret_configuration_and_deployment_authority_required
+production_promotion_complete: false
+email_campaign_may_send: false
+unexpected_external_effects: 0
+cleanup_state: terminal_sources_disconnected_failed_deployments_nonserving_prior_runtime_healthy
+lock_release_state: released
+lock_released_at: '2026-08-03T11:45:04.5315130Z'
+event_at: '2026-08-03T11:45:04.5315130Z'
+immutable: true
