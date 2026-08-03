@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: operational
-active_phase: ot_live_001_02_public_support_repair_deployed_external_launch_holds
+active_phase: ot_live_001_02_support_live_bna_summary_producer_source_only_external_launch_holds
 bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
@@ -21,11 +21,13 @@ next_action: >-
   Preserve exact candidate 99b6c11b at source ffd1c55a live on Railway web deployment 50b737ff and worker deployment
   66463233, both SUCCESS/RUNNING on Dockerfile images with health, readiness, support, 90/90 migrations, and sink
   worker readback green. The deployment authority is consumed and the production lock is released. Do not create a
-  successor deployment authority unless a new frozen product delta exists. Protected Parent canary remains unstarted
-  because no approved reusable Parent credential or live session exists. Keep broad email send false while Sep 11/Sep
-  13, audience/consent/suppression, duplicate SPF, Forward Email reply route, seed/reply proof, and current-copy gates
-  remain unresolved. Reconcile the separately observed POST /api/webhooks/wapi 404 traffic only in its proper provider
-  lane; do not broaden this completed deployment slice.
+  successor deployment authority unless a new frozen product delta exists. Preserve source-only BNA summary producer
+  b4805a55 default-off and outside the frozen/live candidate until an exact HTTPS consumer endpoint, separately
+  provisioned key ID/secret, candidate-bound admission, and operator replay/duplicate canary are available. Protected
+  Parent canary remains unstarted because no approved reusable Parent credential or live session exists. Keep broad
+  email send false while Sep 11/Sep 13, audience/consent/suppression, duplicate SPF, Forward Email reply route,
+  seed/reply proof, and current-copy gates remain unresolved. Reconcile the separately observed POST
+  /api/webhooks/wapi 404 traffic only in its proper provider lane; do not broaden the completed deployment slice.
 ot_live_001_02_public_support_repair_candidate_freeze:
   recorded_at: '2026-08-03T20:06:36Z'
   control_parent_sha: 729fd49b803f98ad0de17042a0a0ac62a4b7e3aa
@@ -66,6 +68,28 @@ ot_live_001_02_public_support_repair_deployment_authority:
   terminal_event_digest: 292026ffd20fdf38dfef34eb926503acf42b088400cde309fd9e298d8a2561db
   terminal_disposition: DEPLOYMENT_SUCCESS_PUBLIC_SUPPORT_REPAIRED_CANARY_NOT_RUN_MISSING_PROTECTED_PARENT_CREDENTIAL
   lock_released_at: '2026-08-03T20:35:47Z'
+ot_live_001_bna_summary_producer_source_handoff:
+  recorded_at: '2026-08-03T20:52:28Z'
+  source_contract_repository: shloimie-beep/bnei-neviim-academy
+  source_contract_commit_sha: 19a49c3d3e1d2513972bcc9ef83a4dd58a742d39
+  source_branch: codex/ot-live-001-bna-summary-producer-20260803
+  source_sha: b4805a55233d3019f5bbd6e01f3dbce6c272cacb
+  source_tree_sha: 455f9bfdbb11a8647a845037eb601750f5de0414
+  source_base_sha: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+  disposition: SOURCE_ONLY_DEFAULT_OFF_NOT_IN_FROZEN_OR_LIVE_CANDIDATE
+  feature_flag: BNA_CONTROL_SUMMARY_EVENTS_ENABLED_false_by_default
+  endpoint_configuration_name: BNA_CONTROL_SUMMARY_ENDPOINT_URL
+  key_id_configuration_name: BNA_CONTROL_SUMMARY_HMAC_KEY_ID
+  secret_configuration_name: BNA_CONTROL_SUMMARY_HMAC_SECRET
+  contract_event_types: 11
+  focused_tests: 27_of_27_passed
+  replay_proof: exact_raw_UTF8_HMAC_SHA256_300_second_expiry_stable_retry_identity_passed
+  typecheck_lint_prettier_build: passed
+  secret_scan: passed_3224_text_files
+  semantic_schema_match_to_source: passed
+  database_migrations_shared_registration_runtime_composition: 0_0_0
+  provider_deployment_customer_message_effects: 0_0_0_0
+  enablement_gate: exact_HTTPS_endpoint_separate_key_candidate_admission_operator_replay_duplicate_canary
 ot_live_002_02_provider_handoff:
   reconciled_at: '2026-08-03T19:02:11Z'
   owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
