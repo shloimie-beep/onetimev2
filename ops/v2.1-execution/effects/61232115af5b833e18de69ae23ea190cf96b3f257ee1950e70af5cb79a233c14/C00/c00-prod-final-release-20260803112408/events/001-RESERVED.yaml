@@ -1,0 +1,50 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prod-final-release-20260803112408
+event_sequence: 1
+previous_event_digest: none
+state: RESERVED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14/C00/c00-prod-final-release-20260803112408/events/001-RESERVED.yaml
+current_pointer_path: ops/v2.1-execution/effects/61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14/C00/c00-prod-final-release-20260803112408/CURRENT.yaml
+candidate_digest: 61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14
+candidate_manifest_commit_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+repository_source_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+authority_grant_digest: 1e69fd147f1715a11aa01c0c2e8cb370e985af4ab686c9d3def83a2d38a8a497
+authority_status_index_digest: 50747d07650b20d28b9ac236ea6a49ac6a4428520a4585c98075a8e0d960a47b
+authority_status_entry_digest: 28fc108de9433e44cafc641dc8bf25b3a8f8ef263a253ccd3569f05cdf58e151
+latest_revocation_digest: none
+authority_checked_at: '2026-08-03T11:24:08Z'
+lock: production:deployment
+lock_lease_id: cc4d3a24-d4a7-4dfd-b1b8-a1e111694fd7
+fencing_token: fence-c6b7262e-b6cb-4085-b17a-4cb2d091a7a1
+provider_identity: railway:ce55ef20-1418-4ad3-aafa-f877fb992dc8:f911acfc-e206-44df-a569-9d69d709b94b:web-d175ad94:worker-742f60ed
+operation: exact_highlevel_sync_disable_two_source_connections_two_disconnections_two_exact_candidate_deployments_two_idempotency_canary_posts_zero_external_send
+source_repository: shloimie-beep/onetimev2
+source_branch: codex/full-app-staging-live
+source_branch_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+rollback_web_deployment_id: f8ba23d3-311b-4277-a85d-6695611fedfd
+rollback_worker_deployment_id: 26bf7d62-db73-41d6-9887-1d2215ddfaff
+fixture_id: c00_prod_prereg_canary_61232115_20260803a
+fixture_destination_sha256: 53ea91a56760d0c225f1fb77e8ff89a810a867ece008859d43e20363b77744b4
+budget_reservation:
+  exact_variable_assignments: 2
+  source_connections: 2
+  source_disconnections: 2
+  production_deployments: 2
+  signup_posts: 2
+  local_adult_contacts: 1
+  local_signup_leads: 1
+  local_sink_intents: 2
+  portal_accounts: 0
+  student_accounts: 0
+  external_provider_sends_or_enrollments: 0
+  charges: 0
+  migrations: 0
+  DNS_changes: 0
+  GHL_mutations: 0
+provider_request_or_operation_id: none_before_effect
+cleanup_state: pending_config_deployments_disconnections_canary_handoff_and_readback
+state_based_on_head_sha: 6bac0a3744b6f2b665c1e18448f92bde7e6cca4c
+event_at: '2026-08-03T11:24:08Z'
+immutable: true
