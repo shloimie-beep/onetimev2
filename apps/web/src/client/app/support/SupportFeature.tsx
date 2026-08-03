@@ -10,6 +10,7 @@ import {
 
 type Props = {
   receiptId?: string | undefined;
+  basePath?: '/app/student/support';
   onProtectedStateCleared: () => void;
 };
 
@@ -29,7 +30,11 @@ const defaultCategories = [
   { value: 'other', label: 'Other' },
 ];
 
-export function SupportFeature({ receiptId, onProtectedStateCleared }: Props) {
+export function SupportFeature({
+  receiptId,
+  basePath = '/app/student/support',
+  onProtectedStateCleared,
+}: Props) {
   const [state, setState] = useState<LoadState>({ kind: 'loading' });
   const [eligibility, setEligibility] = useState<SupportEligibilityResponse | null>(null);
   const [tickets, setTickets] = useState<SupportTicketSummary[]>([]);
@@ -116,7 +121,10 @@ export function SupportFeature({ receiptId, onProtectedStateCleared }: Props) {
           ? 'Support request was already saved. Opening receipt.'
           : 'Support request saved. Opening receipt.',
       );
-      window.location.assign(response.status_path);
+      const receiptKey = response.status_path.split('/').filter(Boolean).at(-1);
+      window.location.assign(
+        receiptKey ? `${basePath}/${encodeURIComponent(receiptKey)}` : basePath,
+      );
     } catch (error) {
       setStatus(supportSubmitErrorMessage(error));
       setSaving(false);
@@ -151,7 +159,7 @@ export function SupportFeature({ receiptId, onProtectedStateCleared }: Props) {
           </div>
         </dl>
         <p>{state.receipt.public_summary}</p>
-        <a className="button-secondary" href="/app/support">
+        <a className="button-secondary" href={basePath}>
           Back to support
         </a>
       </section>
@@ -174,13 +182,13 @@ export function SupportFeature({ receiptId, onProtectedStateCleared }: Props) {
   if (!eligibility?.can_create_ticket) {
     return (
       <section className="support-shell" aria-labelledby="support-unavailable-title">
-        <h2 id="support-unavailable-title">Subscriber support is unavailable</h2>
+        <h2 id="support-unavailable-title">Learning support is unavailable</h2>
         <p>
-          Subscriber support is available after sign-in with an active One Time subscription. Public
-          help and WhatsApp guidance stay available from the signup path.
+          Support is available after sign-in with current One Time learning access. For signup or
+          account help, continue to the public help path.
         </p>
         <a className="button-primary" href="/signup">
-          Continue through the public WhatsApp lead path
+          Continue to signup and help
         </a>
       </section>
     );
@@ -197,7 +205,7 @@ export function SupportFeature({ receiptId, onProtectedStateCleared }: Props) {
             value={idempotencyRef.current}
             readOnly
           />
-          <h2 id="support-heading">Subscriber Support</h2>
+          <h2 id="support-heading">Member Support</h2>
           <label>
             <span>Category</span>
             <select name="category" required defaultValue="technical_bug">
@@ -288,18 +296,28 @@ export function SupportFeature({ receiptId, onProtectedStateCleared }: Props) {
           {tickets.length === 0 ? (
             <p>No support requests yet.</p>
           ) : (
-            tickets.map((ticket) => (
-              <a key={ticket.receipt_id} href={`/app/support/receipts/${ticket.receipt_id}`}>
-                <strong>{readableState(ticket.status)}</strong>
-                <span>{deliveryLabel(ticket.delivery_state)}</span>
-                <small>{formatDate(ticket.updated_at)}</small>
-              </a>
-            ))
+            <SupportTicketLinks tickets={tickets} basePath={basePath} />
           )}
         </aside>
       </div>
     </section>
   );
+}
+
+export function SupportTicketLinks({
+  tickets,
+  basePath,
+}: {
+  tickets: SupportTicketSummary[];
+  basePath: '/app/student/support';
+}) {
+  return tickets.map((ticket) => (
+    <a key={ticket.receipt_id} href={`${basePath}/${encodeURIComponent(ticket.receipt_id)}`}>
+      <strong>{readableState(ticket.status)}</strong>
+      <span>{deliveryLabel(ticket.delivery_state)}</span>
+      <small>{formatDate(ticket.updated_at)}</small>
+    </a>
+  ));
 }
 
 async function readAttachments(values: FormDataEntryValue[]) {

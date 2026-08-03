@@ -1,0 +1,291 @@
+{
+  "schema_version": 1,
+  "goal_id": "OT-LAUNCH-01",
+  "track_id": "video_to_classroom_e2e",
+  "task_id": "VIDEO-TO-CLASSROOM-E2E",
+  "verified_at": "2026-07-23T20:16:33Z",
+  "result": {
+    "repository": "shloimie-beep/onetimev2",
+    "branch": "codex/video-to-classroom-e2e",
+    "pull_request": 113,
+    "pull_request_state": "draft",
+    "governed_base": "69e451184ea2a80d13b12ccaf3da20db0c2684cf",
+    "runtime_acceptance_base": "fc1220741dfe0dd00757a4e5013a9cef4438baa8",
+    "superseded_head": "41d4d30af09fca44d12fb47f527fc4f4e37b3820",
+    "superseded_reason": "Independent exact-head audit found failStage was not fenced by lease generation.",
+    "implementation_head_before_handoff": "e7f001ee9496109bac0ea20af5065bdabe7de122",
+    "terminal_pr_head": "45b213a5ddfde97d60f220ae3eb0bdff5cda51ed",
+    "semantic_patch_boundary": [
+      {
+        "commit": "516a0a58b083c583a05dcfcbd79d5f0b10833916",
+        "subject": "feat(content): make video delivery durable and occurrence scoped"
+      },
+      {
+        "commit": "822266bcefc4f7b27012bf35b158a48c2652cc65",
+        "subject": "chore(railway): colocate durable media worker for PR previews"
+      },
+      {
+        "commit": "89c0db7e1be645376a4d869022b9c5bc52036300",
+        "subject": "fix(media): isolate durable content worker"
+      },
+      {
+        "commit": "98e1a7f4d002bc22499dba2dcc3cc529f50828c2",
+        "subject": "fix(content): expose safe durable worker failure proof"
+      },
+      {
+        "commit": "45d7563e457c760d6d0708812b54b90bac42fa99",
+        "subject": "fix(db): repair synthetic content provider constraint"
+      },
+      {
+        "commit": "8c5657cb38fac5fb79985ad8d3c32efb3e9b01af",
+        "subject": "fix(worker): retain redacted stage diagnostics"
+      },
+      {
+        "commit": "b19307c2645da45f6ee563f0915ce3ff5089ad6a",
+        "subject": "fix(content): bound publication diagnostics"
+      },
+      {
+        "commit": "6c39a0a56546f8173f53c145b037d5918479f5af",
+        "subject": "fix(content): isolate publication transaction boundary"
+      },
+      {
+        "commit": "3e29a0dc71df1dd3be2500a7fadf91cf7690acb0",
+        "subject": "fix(content): repair provider-off publication constraint"
+      },
+      {
+        "commit": "d87c649354963ca6517a7720d2ddcb6ec5f3a9b6",
+        "subject": "fix(content): honor occurrence-scoped student access"
+      },
+      {
+        "commit": "bafd1e3110a529f538a823ea1ec15892630710bf",
+        "subject": "style(content): format migration assertion"
+      },
+      {
+        "commit": "41d4d30af09fca44d12fb47f527fc4f4e37b3820",
+        "subject": "docs(ops): record video classroom integration handoff"
+      },
+      {
+        "commit": "e7f001ee9496109bac0ea20af5065bdabe7de122",
+        "subject": "fix(content): fence failed lease generations"
+      }
+    ],
+    "changed_file_boundary": [
+      ".env.example",
+      "apps/web/src/client/app/content-workspace/ContentWorkspace.tsx",
+      "apps/web/src/server/app.ts",
+      "apps/worker/src/content-factory/index.ts",
+      "apps/worker/src/content-factory/runtime.ts",
+      "apps/worker/src/main/index.ts",
+      "packages/contracts/src/content/content-factory.ts",
+      "packages/db/migrations/2221_video_to_classroom_e2e.sql",
+      "packages/db/migrations/2222_content_factory_provider_constraint.sql",
+      "packages/db/migrations/2224_content_factory_publish_ready_constraint.sql",
+      "packages/domain/src/content/content-factory-storage.ts",
+      "packages/domain/src/content/content-factory-worker.ts",
+      "packages/domain/src/content/content-factory.ts",
+      "packages/domain/src/content/service.ts",
+      "packages/domain/src/delivery/redaction.ts",
+      "packages/domain/src/index.ts",
+      "scripts/railway-start.d.mts",
+      "scripts/railway-start.mjs",
+      "tests/e2e/content-factory.spec.ts",
+      "tests/integration/content/content-factory-runtime.test.ts",
+      "tests/integration/content/content-factory.test.ts",
+      "tests/integration/runtime-version-proof.test.ts",
+      "tests/support/test-server.ts",
+      "tests/unit/content/content-factory-migration.test.ts",
+      "tests/unit/content/content-factory-runtime.test.ts",
+      "tests/unit/content/content-factory.test.ts",
+      "tests/unit/railway/content-factory-colocation.test.ts"
+    ],
+    "migrations": [
+      {
+        "path": "packages/db/migrations/2214_learning_delivery_content_factory.sql",
+        "sha256": "7c5a8ad21cc4610dc32c2378b72e2024eafc45445a9658a1ae1e9783fcf8068c",
+        "ownership": "integrated predecessor; reserved and applied in the isolated preview; must not be renamed"
+      },
+      {
+        "path": "packages/db/migrations/2221_video_to_classroom_e2e.sql",
+        "sha256": "25559ae6b514864c02e2e9ef2139a4906733cdeb9fe2208ca2db1b0a42f40536",
+        "ownership": "PR 113"
+      },
+      {
+        "path": "packages/db/migrations/2222_content_factory_provider_constraint.sql",
+        "sha256": "79a3f3f60a2cd9b4c08bcd08b4d694f1d652f90ab288da79d578d87ce1cd32c0",
+        "ownership": "PR 113"
+      },
+      {
+        "path": "packages/db/migrations/2224_content_factory_publish_ready_constraint.sql",
+        "upstream_isolated_preview_path": "packages/db/migrations/2223_content_factory_publish_ready_constraint.sql",
+        "sha256": "59ac22d69f56382669d70d1e78c7556e162efcc3183a5552b111f3d7b9953a65",
+        "ownership": "PR 113",
+        "preview_state": "applied",
+        "repair": "forward-only replacement of the stale generated publish constraint"
+      }
+    ],
+    "configuration_variable_names": [
+      "CONTENT_FACTORY_COLOCATED_WORKER",
+      "CONTENT_FACTORY_WORKER_ENABLED",
+      "CONTENT_FACTORY_PROCESSING_MODE",
+      "CONTENT_FACTORY_STORAGE_DRIVER",
+      "CONTENT_FACTORY_STORAGE_ROOT",
+      "CONTENT_FACTORY_MAX_UPLOAD_BYTES",
+      "CONTENT_FACTORY_POLL_INTERVAL_MS",
+      "CONTENT_FACTORY_LEASE_MS",
+      "DATABASE_URL",
+      "DATABASE_SSL",
+      "ONE_TIME_ACCOUNT_KEY",
+      "ONE_TIME_PRODUCT_KEY",
+      "APP_VERSION",
+      "COMMIT_SHA"
+    ],
+    "storage_and_worker_contract": {
+      "preview_volume_id": "86ca914a-9375-4c0d-99a7-80a57187792a",
+      "mount_path": "/var/lib/onetime/content-factory",
+      "mount_owner": "web service",
+      "capacity_gb": 5,
+      "runner": "dedicated narrow content-factory lease loop",
+      "runner_scope": "content-factory jobs only; no delivery, lifecycle email, WhatsApp, GHL, Telegram, or unrelated queues",
+      "provider_mode": "synthetic/provider-off",
+      "topology_requirement": "A Railway volume is service-local. The narrow content worker must run in the volume-owning service, or source storage must move to shared private object storage. A standalone worker service cannot consume the web service local volume."
+    },
+    "isolated_preview": {
+      "project_id": "7c8eee26-7a6a-4684-826d-9f4377d67d46",
+      "environment_id": "8efeaf85-f9c0-4b47-9f1e-229abaffaa53",
+      "web_service_id": "9fb6d9f4-4f50-4df6-868b-c18a9b83d2f2",
+      "standalone_worker_service_id": "76e7fdc2-99b9-4a82-ba55-5dff3723398f",
+      "postgres_service_id": "7dc5b2ec-03ff-4c22-821d-8df925fe63ee",
+      "url": "https://ot99-web-onetimev2-pr-113.up.railway.app",
+      "verified_implementation_deployment_id": "1c185c44-d079-49f4-aea5-a5663f6b8238",
+      "verified_implementation_head": "bafd1e3110a529f538a823ea1ec15892630710bf",
+      "terminal_handoff_deployment": "aea5aace-4b11-427a-a56f-db2e468d3ed1",
+      "health": "pass",
+      "readiness": "pass; database ready; latest migration 2223; no blockers",
+      "service_initiated_internet_flows": 0
+    },
+    "acceptance": {
+      "private_intake_persists_across_restart_and_redeploy": "pass",
+      "lease_expiry_and_worker_restart_recovery": "pass",
+      "lease_failure_fencing": {
+        "state": "pass",
+        "contract": "failStage mutates the job only when owner digest and lease generation both match, and mutates the intake only after exactly one fenced job row was updated",
+        "adversarial_case": "An expired generation cannot fail a generation-2 lease or its intake when the same worker identity and digest are reused."
+      },
+      "idempotent_logical_output": "pass",
+      "manual_retry_budget": {
+        "maximum_manual_windows": 3,
+        "attempt_count_reset_per_window": true,
+        "cumulative_manual_retry_count_preserved": true,
+        "fourth_manual_retry_rejected": true
+      },
+      "publication": "pass on the single existing approved synthetic item; publication was not repeated",
+      "entitled_student_playback": "pass with protected playback, approved description/questions, and captions",
+      "sibling_denial": "pass; direct route denied and metadata hidden",
+      "unpublish_revocation": "pass immediately and after service restart",
+      "provider_calls_performed": false,
+      "external_provider_canary": "not_run_separately_authorized"
+    },
+    "publication_diagnostic": {
+      "original_safe_failure": {
+        "stage": "mark_published",
+        "safe_error_code": "pg_23514"
+      },
+      "repair": "The conductor-integrated 2224 migration preserves the upstream 2223 SQL bytes and checksum while replacing the stale generated raw-provider-URL publish check with the opaque provider ID, approval, publication, and captions-ready contract",
+      "student_library_repair": "Occurrence-scoped factory video access now requires the exact active content entitlement plus exact active occurrence entitlement; review sheets retain the household billing gate."
+    },
+    "seed_contract": {
+      "account_key": "rabbi_sheller_provider",
+      "product_key": "one_time_mishnah_class",
+      "household_key": "ot_launch_01_video_pr113_household",
+      "student_learner_key": "ot_launch_01_video_pr113_student",
+      "sibling_learner_key": "ot_launch_01_video_pr113_sibling",
+      "series_key": "ot_launch_01_video_pr113_series",
+      "occurrence_key": "ot_launch_01_video_pr113_occurrence",
+      "student_entitlement_key": "ot_launch_01_video_pr113_student_entitlement",
+      "admin_session_key": "sess_ot_launch_01_video_pr113_admin"
+    },
+    "mis_scoped_seed_cleanup": {
+      "exact_scope": {
+        "account_key": "one_time",
+        "product_key": "one_time_mishnah_class"
+      },
+      "rows_removed": 10,
+      "before": {
+        "households": 1,
+        "learners": 2,
+        "access_states": 2,
+        "identity_links": 2,
+        "series": 1,
+        "occurrences": 1,
+        "occurrence_entitlements": 1,
+        "dependent_intakes": 0,
+        "dependent_items": 0
+      },
+      "after": {
+        "all_exact_counts": 0,
+        "dependent_rows": 0
+      }
+    },
+    "verification": {
+      "focused_unit_and_integration": "pass, including the same-identity stale-generation adversarial lease test",
+      "chromium_admin_to_unpublish": "pass on the one existing synthetic item",
+      "chromium_restart_revocation": "pass",
+      "typecheck": "pass",
+      "build": "pass",
+      "scoped_lint": "pass",
+      "scoped_format": "pass",
+      "secret_scan": "pass",
+      "migration_safety_and_checksums": "pass",
+      "git_diff_check": "pass"
+    },
+    "governance_files_preserved": {
+      "ops/goals/OT-LAUNCH-01/BOARD.yaml": "f77c423c3867bb93068d7a727644bc485f7990ec",
+      "ops/goals/CURRENT.yaml": "f9f180a3c09c5a2fcabf9a914e4b3465bc2ad0d2",
+      "ops/previews/current.json": "f5c6cc778b2cb6d92c63153c7341f8525e35fbf9"
+    }
+  },
+  "conductor_integration": [
+    "Integrate the complete semantic range from 69e451184ea2a80d13b12ccaf3da20db0c2684cf through the terminal PR head; do not cherry-pick only the UI or only a repair commit.",
+    "Preserve migrations 2214, 2221, 2222, and conductor-integrated 2224 with the recorded checksums and apply them before starting the narrow worker. The upstream isolated preview's 2223 filename remains historical evidence; PR 97 already owns 2223_account_product_access_projection.",
+    "Preserve ops/goals/OT-LAUNCH-01/BOARD.yaml, ops/goals/CURRENT.yaml, and ops/previews/current.json bytes until the conductor performs its owned status update.",
+    "Provision persistent private storage at /var/lib/onetime/content-factory on the service running the narrow worker, or replace it with shared private object storage.",
+    "Keep provider calls disabled until separately and exactly authorized.",
+    "Use only the exact occurrence-scoped seed contract when isolated acceptance data is required; no demo seed satisfies the durable lane.",
+    "Run the focused exact-head media, portal, occurrence, migration, restart, redaction, typecheck, build, lint, format, and secret-scan gates."
+  ],
+  "conductor_acceptance": {
+    "product_source": "5556c4ab78e01d367666694459eb2ea97f4028ef",
+    "semantic_range": "69e451184ea2a80d13b12ccaf3da20db0c2684cf..45b213a5ddfde97d60f220ae3eb0bdff5cda51ed",
+    "web_deployment": "ef159bf7-c313-45dc-8ebd-bcfa30c8d033",
+    "worker_deployment": "8e7e8276-550d-461f-9c40-f106684a0ea0",
+    "staging_version": "full-app-staging-live-5556c4a",
+    "schema": "2224_content_factory_publish_ready_constraint",
+    "persistent_volume": {
+      "id": "52de07a9-bfc8-4830-b943-32c3804b2732",
+      "service": "ot99-web",
+      "mount_path": "/var/lib/onetime/content-factory",
+      "capacity_gb": 5,
+      "narrow_worker_ready_before_and_after_restart": true
+    },
+    "browser_click_path": "Admin Dashboard -> Preview Parent & Student portals -> Open portal preview -> choose exact fictional role -> Prepare fictional Student session -> dedicated read-only Student shell",
+    "role_labels": ["Parent", "Student 1", "Student 2", "Student 3", "Rabbi/Classroom"],
+    "content_acceptance": {
+      "admin_upload_process_review_publish": "pass",
+      "student_2_direct_credential_playback": "pass",
+      "student_1_preview_sibling_denial": "pass",
+      "same_source_restart_persistence": "pass",
+      "unpublish_route_revocation": "pass",
+      "fresh_student_2_preview_revocation": "pass",
+      "temporary_item_final_state": "approved_unpublished"
+    },
+    "screenshot_evidence": "ops/evidence/ot-launch-01-pr113-persistent-staging-5556c4a",
+    "same_snapshot_focused_tests": "127/127 pass",
+    "external_provider_calls": 0,
+    "customer_messages": 0,
+    "production_changed": false
+  },
+  "remaining_work": null,
+  "blocker": null,
+  "persistent_staging_changed": true,
+  "production_changed": false
+}

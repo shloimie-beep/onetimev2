@@ -1,0 +1,27 @@
+{
+  "generated_at": "2026-07-22T07:28:43.966Z",
+  "mode": "bounded_operator_reconciliation",
+  "contact_fingerprint": "fab156df2719852d",
+  "registration_count": 1,
+  "highlevel_delivery_count": 1,
+  "highlevel_delivery_status": "succeeded",
+  "highlevel_delivery_attempts_during_reconciliation": 10,
+  "workflow_id": "a34ea513-4612-4f53-8bd8-49e89e6610f9",
+  "workflow_status": "published",
+  "workflow_match_count": 1,
+  "confirmation_executions": 1,
+  "active_enrollments": 1,
+  "active_action": "wait_until_one_hour_before_event",
+  "provider_ui_tags": {
+    "registered": true,
+    "event_source": true,
+    "weekly_newsletter": false
+  },
+  "warm_campaign": {
+    "id": "f28d8b8a-c26a-4a4f-a9f2-d2a8e94af1ae",
+    "status": "draft",
+    "recipients": 0,
+    "messages_sent": 0
+  },
+  "broad_messages_sent": 0
+}

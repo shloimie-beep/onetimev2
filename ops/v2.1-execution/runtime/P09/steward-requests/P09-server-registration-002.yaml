@@ -1,0 +1,49 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P09-server-registration-002
+task_id: P09
+kind: server_feature_registration
+requirement_ids:
+  - OTV2-SIGNUP-178
+  - OTV2-SIGNUP-229
+  - OTV2-SCHOOL-200
+  - OTV2-SCHOOL-214
+acceptance_case_ids:
+  - OTV2-SCHOOL-200-AC01
+  - OTV2-SCHOOL-214-AC01
+rationale: >-
+  P09 owns the strict public School-inquiry router and the dependency-injected
+  approved-School Admin router, but cannot edit the central server composer or
+  the existing Admin account-management route registration.
+desired_semantic_change: >-
+  Register the existing strict public POST /api/v2.1/signup/school-inquiry
+  router unchanged. Register the new dependency-injected approved-School
+  configuration router only under the existing authenticated Admin
+  account-management surface. Derive the exact product, runtime tier,
+  verification environment, Admin actor identity, authorization time,
+  canonical request hash, and runtime binding on the server; require valid
+  same-origin CSRF for every mutation; and reject any request-body attempt to
+  select or override those values. Deny configuration writes in
+  production_read_only before repository access. Preserve exact idempotency
+  replay, reject key/hash mismatch and stale optimistic versions, and expose
+  only exact committed readback. Do not add a School role, School portal,
+  Student surface, provider effect, or direct Stripe mutation.
+proposed_symbols_routes_keys_or_dependencies:
+  - existing strict POST /api/v2.1/signup/school-inquiry router
+  - createApprovedSchoolAdminRouter
+  - createSchoolSignupService.configureApprovedSchool
+  - authenticated existing Admin account-management route composition
+  - server-derived Admin identity, exact scope, CSRF, audit time, canonical request hash, and runtime binding
+compatibility_assumptions:
+  - The existing public School-inquiry POST router remains byte-for-byte behaviorally unchanged.
+  - F03 and F04 supply the canonical authenticated Admin and exact account scope.
+  - The approved-School repository uses only the canonical migration-2256 authority.
+verification_performed:
+  - Verified the public router remains strict and rejects access, account, role, portal, and consent fields.
+  - Verified the new Admin router is dependency-injected and derives authority inputs on the server.
+  - Verified production_read_only denial occurs before approved-School repository access.
+conflicts_or_risks:
+  - Fail closed if the authenticated Admin, exact scope, CSRF proof, runtime binding, or audit time is unavailable.
+  - Do not register either router on a broader unauthenticated or non-Admin surface than specified.
+  - Do not expose body-controlled actor, scope, authorization time, canonical hash, or runtime tier.
+contains_secret_or_private_data: false

@@ -1,0 +1,145 @@
+{
+  "schema_id": "one-time-highlevel-agent-mode-queue",
+  "schema_version": "1.1.0",
+  "generated_at": "2026-07-21T13:45:16.180Z",
+  "repository": "shloimie-beep/onetimev2",
+  "registry_schema": "one-time-highlevel@1.1.0",
+  "pinned_registry_commit_source": "integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md",
+  "location_id": "pBSnOK2nkdxp6gf9Rg3o",
+  "location_fingerprint": "31fcbd2792f131dc",
+  "registry_counts": {
+    "standard_contact_fields": 8,
+    "contact_custom_fields": 34,
+    "active_contact_custom_fields": 20,
+    "pending_contact_custom_fields": 13,
+    "deprecated_contact_custom_fields": 1,
+    "tags": 38,
+    "active_tags": 28,
+    "pending_tags": 9,
+    "deprecated_tags": 1,
+    "custom_values": 40,
+    "sender_profiles": 5,
+    "message_classes": 35,
+    "pipelines": 3,
+    "events": 1,
+    "business_workflows": 14,
+    "bot_action_workflows": 5,
+    "deprecated_workflows": 3
+  },
+  "safety_defaults": {
+    "messages_sent": 0,
+    "workflows_created_by_api": 0,
+    "workflows_published": 0,
+    "production_workflow_enrollments": 0,
+    "stripe_mutations": 0,
+    "student_contacts_created": 0,
+    "no_send": true,
+    "no_publish": true
+  },
+  "ordered_jobs": [
+    {
+      "job_id": "GHL-UI-01",
+      "order": 1,
+      "title": "create sender custom-value folder",
+      "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-01-create-sender-custom-value-folder.json",
+      "result_path": "integrations/highlevel/agent-mode/results/GHL-UI-01.result.json",
+      "idempotency_key": "one-time-ghl:GHL-UI-01:bb93fb12df1fdd31"
+    },
+    {
+      "job_id": "GHL-UI-02",
+      "order": 2,
+      "title": "reconcile sender values",
+      "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-02-reconcile-sender-values.json",
+      "result_path": "integrations/highlevel/agent-mode/results/GHL-UI-02.result.json",
+      "idempotency_key": "one-time-ghl:GHL-UI-02:7ef8439346e3f82b"
+    },
+    {
+      "job_id": "GHL-UI-03",
+      "order": 3,
+      "title": "create or reconcile pipelines",
+      "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-03-create-or-reconcile-pipelines.json",
+      "result_path": "integrations/highlevel/agent-mode/results/GHL-UI-03.result.json",
+      "idempotency_key": "one-time-ghl:GHL-UI-03:6c923be8807b27af"
+    },
+    {
+      "job_id": "GHL-UI-04",
+      "order": 4,
+      "title": "update workflow sender identities",
+      "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-04-update-workflow-sender-identities.json",
+      "result_path": "integrations/highlevel/agent-mode/results/GHL-UI-04.result.json",
+      "idempotency_key": "one-time-ghl:GHL-UI-04:4e8a6d184ba84c14"
+    },
+    {
+      "job_id": "GHL-UI-05",
+      "order": 5,
+      "title": "update OT-A1",
+      "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-05-update-ot-a1.json",
+      "result_path": "integrations/highlevel/agent-mode/results/GHL-UI-05.result.json",
+      "idempotency_key": "one-time-ghl:GHL-UI-05:7a48ed5459d973c7"
+    },
+    {
+      "job_id": "GHL-UI-06",
+      "order": 6,
+      "title": "verify sending domain",
+      "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-06-verify-sending-domain.json",
+      "result_path": "integrations/highlevel/agent-mode/results/GHL-UI-06.result.json",
+      "idempotency_key": "one-time-ghl:GHL-UI-06:c25847549661c225"
+    },
+    {
+      "job_id": "GHL-UI-07",
+      "order": 7,
+      "title": "phase-1 seed",
+      "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-07-phase-1-seed.json",
+      "result_path": "integrations/highlevel/agent-mode/results/GHL-UI-07.result.json",
+      "idempotency_key": "one-time-ghl:GHL-UI-07:cf4bcb9354272be6"
+    },
+    {
+      "job_id": "GHL-UI-08",
+      "order": 8,
+      "title": "office seed",
+      "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-08-office-seed.json",
+      "result_path": "integrations/highlevel/agent-mode/results/GHL-UI-08.result.json",
+      "idempotency_key": "one-time-ghl:GHL-UI-08:10b62bdfe47d3271"
+    },
+    {
+      "job_id": "GHL-UI-09",
+      "order": 9,
+      "title": "brand seed",
+      "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-09-brand-seed.json",
+      "result_path": "integrations/highlevel/agent-mode/results/GHL-UI-09.result.json",
+      "idempotency_key": "one-time-ghl:GHL-UI-09:f581f5daa77da7f5"
+    },
+    {
+      "job_id": "GHL-UI-10",
+      "order": 10,
+      "title": "capture workflow IDs",
+      "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-10-capture-workflow-ids.json",
+      "result_path": "integrations/highlevel/agent-mode/results/GHL-UI-10.result.json",
+      "idempotency_key": "one-time-ghl:GHL-UI-10:42aeda94cf001324"
+    },
+    {
+      "job_id": "GHL-UI-11",
+      "order": 11,
+      "title": "capture pipeline IDs",
+      "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-11-capture-pipeline-ids.json",
+      "result_path": "integrations/highlevel/agent-mode/results/GHL-UI-11.result.json",
+      "idempotency_key": "one-time-ghl:GHL-UI-11:4c9be6f4ddd859f5"
+    },
+    {
+      "job_id": "GHL-UI-12",
+      "order": 12,
+      "title": "save and readback verification",
+      "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-12-save-and-readback-verification.json",
+      "result_path": "integrations/highlevel/agent-mode/results/GHL-UI-12.result.json",
+      "idempotency_key": "one-time-ghl:GHL-UI-12:326275366bf9d786"
+    },
+    {
+      "job_id": "GHL-UI-13",
+      "order": 13,
+      "title": "phase-2 rabbi acceptance",
+      "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-13-phase-2-rabbi-acceptance.json",
+      "result_path": "integrations/highlevel/agent-mode/results/GHL-UI-13.result.json",
+      "idempotency_key": "one-time-ghl:GHL-UI-13:88fd9a2607e04eb8"
+    }
+  ]
+}

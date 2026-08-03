@@ -74,11 +74,12 @@ export async function listContacts({
 }): Promise<ContactListResult> {
   const parsed = contactSearchCommandSchema.parse(query);
   const params: unknown[] = [config.accountKey, config.productKey];
-  const where = [
-    'contacts.account_key = $1',
-    'contacts.product_key = $2',
-    'contacts.archived_at IS NULL',
-  ];
+  const where = ['contacts.account_key = $1', 'contacts.product_key = $2'];
+  where.push(
+    parsed.lead_status === 'archived'
+      ? 'contacts.archived_at IS NOT NULL'
+      : 'contacts.archived_at IS NULL',
+  );
 
   if (parsed.search) {
     params.push(`%${parsed.search.toLowerCase()}%`);
@@ -207,7 +208,6 @@ export async function getContactDetail({
       WHERE contacts.account_key = $1
         AND contacts.product_key = $2
         AND (contacts.public_contact_id = $3 OR contacts.contact_key = $3)
-        AND contacts.archived_at IS NULL
       ORDER BY leads.created_at DESC
       LIMIT 1`,
     [config.accountKey, config.productKey, contactId],
@@ -452,6 +452,53 @@ export async function archiveContact({
       metadata: { reason: reason ?? 'operator_archive', no_external_side_effects: true },
     });
     return { contact_id: String(row.public_contact_id), archived: true };
+  });
+}
+
+export async function reactivateContact({
+  pool,
+  config,
+  contactId,
+  actorUserKey,
+}: {
+  pool: DbPool;
+  config: AppConfig;
+  contactId: string;
+  actorUserKey: string;
+}) {
+  return inTransaction(pool, async (client) => {
+    const result = await client.query(
+      `UPDATE onetime.contacts
+          SET archived_at = NULL,
+              archived_by_user_key = NULL,
+              archive_reason = NULL,
+              lead_status = CASE
+                WHEN prior_lead_status IN ('new', 'in_review', 'contacted', 'scheduled', 'closed')
+                  THEN prior_lead_status
+                ELSE 'new'
+              END,
+              prior_lead_status = NULL,
+              reactivated_at = now(),
+              reactivated_by_user_key = $4,
+              updated_at = now(),
+              last_activity_at = now(),
+              version = version + 1
+        WHERE account_key = $1
+          AND product_key = $2
+          AND (public_contact_id = $3 OR contact_key = $3)
+          AND archived_at IS NOT NULL
+        RETURNING *`,
+      [config.accountKey, config.productKey, contactId, actorUserKey],
+    );
+    const row = result.rows[0];
+    if (!row) return null;
+    await insertCrmAudit(client, config, {
+      contactKey: String(row.contact_key),
+      actorUserKey,
+      eventType: 'crm_contact_reactivated',
+      metadata: { no_external_side_effects: true },
+    });
+    return { contact_id: String(row.public_contact_id), reactivated: true };
   });
 }
 
@@ -984,21 +1031,29 @@ async function hydrateContactList(
   }
 
   const subscriberRows = await target.query(
-    `SELECT users.email_normalized
+    `SELECT DISTINCT users.email_normalized
        FROM onetime.account_users AS users
-       JOIN onetime.billing_entitlement_projections AS entitlements
-         ON entitlements.account_key = users.account_key
-        AND entitlements.product_key = users.product_key
-        AND entitlements.principal_key = users.user_key
-        AND entitlements.principal_type = 'account_user'
-        AND entitlements.status = 'active'
+       JOIN onetime.portal_guardian_relationships AS guardians
+         ON guardians.account_key = users.account_key
+        AND guardians.product_key = users.product_key
+        AND guardians.guardian_user_ref = users.user_key
+        AND guardians.status = 'active'
+       JOIN onetime.account_access_projections AS access
+         ON access.account_key = guardians.account_key
+        AND access.product_key = guardians.product_key
+        AND access.household_key = guardians.household_key
+        AND access.state IN ('active', 'grace', 'scheduled_end')
+        AND access.effective_at <= $4
+        AND (access.expires_at IS NULL OR access.expires_at > $4)
       WHERE users.account_key = $1
         AND users.product_key = $2
+        AND users.status = 'active'
         AND users.email_normalized = ANY($3::text[])`,
     [
       config.accountKey,
       config.productKey,
       rows.map((row) => String(row.email_normalized ?? '')).filter(Boolean),
+      new Date(),
     ],
   );
   const subscriberEmails = new Set(subscriberRows.rows.map((row) => String(row.email_normalized)));
@@ -1009,7 +1064,7 @@ async function hydrateContactList(
     facts.set(contactKey, [
       ...systemFactsForContact(row, rolesByEmail.get(String(row.email_normalized)) ?? []),
       ...(subscriberEmails.has(String(row.email_normalized))
-        ? [systemFact('subscriber', 'active', 'billing_projection')]
+        ? [systemFact('subscriber', 'active', 'account_access_projection')]
         : []),
       ...(explicitFacts.get(contactKey) ?? []),
     ]);
@@ -1023,6 +1078,7 @@ async function hydrateContactDetail(
   row: Record<string, unknown>,
 ): Promise<{
   enrollment_summary: ContactDetail['enrollment_summary'];
+  managed_household: ContactDetail['managed_household'];
   relationships: ContactRelationship[];
   notes: ContactNote[];
   tasks: ContactTask[];
@@ -1045,10 +1101,17 @@ async function hydrateContactDetail(
     : { rows: [] };
   const userKey = user.rows[0]?.user_key ? String(user.rows[0].user_key) : null;
 
-  const [relationshipRows, noteRows, taskRows, supportRows, outboxRows, auditRows] =
-    await Promise.all([
-      target.query(
-        `SELECT relationships.relationship_key, relationships.relationship_type, relationships.label,
+  const [
+    relationshipRows,
+    noteRows,
+    taskRows,
+    supportRows,
+    outboxRows,
+    auditRows,
+    managedHouseholdRows,
+  ] = await Promise.all([
+    target.query(
+      `SELECT relationships.relationship_key, relationships.relationship_type, relationships.label,
                 target.public_contact_id, target.display_name
            FROM onetime.crm_relationships AS relationships
            JOIN onetime.contacts AS target
@@ -1061,10 +1124,10 @@ async function hydrateContactDetail(
             AND relationships.unlinked_at IS NULL
           ORDER BY relationships.updated_at DESC
           LIMIT 20`,
-        [config.accountKey, config.productKey, contactKey],
-      ),
-      target.query(
-        `SELECT notes.note_key, notes.body, notes.source, notes.created_at,
+      [config.accountKey, config.productKey, contactKey],
+    ),
+    target.query(
+      `SELECT notes.note_key, notes.body, notes.source, notes.created_at,
                 users.display_name AS author_name
            FROM onetime.crm_contact_notes AS notes
            LEFT JOIN onetime.account_users AS users ON users.user_key = notes.author_user_key
@@ -1073,10 +1136,10 @@ async function hydrateContactDetail(
             AND notes.contact_key = $3
           ORDER BY notes.created_at DESC, notes.note_key DESC
           LIMIT 20`,
-        [config.accountKey, config.productKey, contactKey],
-      ),
-      target.query(
-        `SELECT tasks.task_key, tasks.title, tasks.detail, tasks.status, tasks.due_at,
+      [config.accountKey, config.productKey, contactKey],
+    ),
+    target.query(
+      `SELECT tasks.task_key, tasks.title, tasks.detail, tasks.status, tasks.due_at,
                 users.display_name AS owner_name
            FROM onetime.crm_tasks AS tasks
            LEFT JOIN onetime.account_users AS users ON users.user_key = tasks.owner_user_key
@@ -1085,41 +1148,55 @@ async function hydrateContactDetail(
             AND tasks.contact_key = $3
           ORDER BY tasks.due_at ASC, tasks.task_key ASC
           LIMIT 20`,
-        [config.accountKey, config.productKey, contactKey],
-      ),
-      userKey
-        ? target.query(
-            `SELECT receipt_id, status, delivery_state, public_summary, updated_at
+      [config.accountKey, config.productKey, contactKey],
+    ),
+    userKey
+      ? target.query(
+          `SELECT receipt_id, status, delivery_state, public_summary, updated_at
                FROM onetime.support_status_projection
               WHERE account_key = $1
                 AND product_key = $2
                 AND actor_user_key = $3
               ORDER BY updated_at DESC
               LIMIT 10`,
-            [config.accountKey, config.productKey, userKey],
-          )
-        : Promise.resolve({ rows: [] }),
-      target.query(
-        `SELECT delivery_key, event_type, channel, status, created_at, delivered_at, payload
+          [config.accountKey, config.productKey, userKey],
+        )
+      : Promise.resolve({ rows: [] }),
+    target.query(
+      `SELECT delivery_key, event_type, channel, status, created_at, delivered_at, payload
            FROM onetime.outbox_events
           WHERE account_key = $1
             AND product_key = $2
             AND contact_key = $3
           ORDER BY created_at DESC
           LIMIT 20`,
-        [config.accountKey, config.productKey, contactKey],
-      ),
-      target.query(
-        `SELECT event_key, event_type, metadata, created_at
+      [config.accountKey, config.productKey, contactKey],
+    ),
+    target.query(
+      `SELECT event_key, event_type, metadata, created_at
            FROM onetime.audit_events
           WHERE account_key = $1
             AND product_key = $2
             AND contact_key = $3
           ORDER BY created_at DESC
           LIMIT 20`,
-        [config.accountKey, config.productKey, contactKey],
-      ),
-    ]);
+      [config.accountKey, config.productKey, contactKey],
+    ),
+    target.query(
+      `SELECT links.household_key, households.display_name
+           FROM onetime.adult_household_contact_links AS links
+           JOIN onetime.portal_households AS households
+             ON households.account_key = links.account_key
+            AND households.product_key = links.product_key
+            AND households.household_key = links.household_key
+          WHERE links.account_key = $1
+            AND links.product_key = $2
+            AND links.contact_key = $3
+            AND households.status = 'active'
+          LIMIT 2`,
+      [config.accountKey, config.productKey, contactKey],
+    ),
+  ]);
 
   const relationships = relationshipRows.rows.map((item) => ({
     relationship_id: String(item.relationship_key),
@@ -1164,6 +1241,13 @@ async function hydrateContactDetail(
       value: support_tickets.length ? `${support_tickets.length} ticket(s)` : 'None',
     },
   ];
+  const managed_household =
+    managedHouseholdRows.rows.length === 1
+      ? {
+          household_key: String(managedHouseholdRows.rows[0]?.household_key),
+          display_name: String(managedHouseholdRows.rows[0]?.display_name),
+        }
+      : null;
   const timeline = [
     ...outboxRows.rows.map((item) => ({
       timeline_id: String(item.delivery_key),
@@ -1212,7 +1296,15 @@ async function hydrateContactDetail(
     })),
   ].sort((a, b) => new Date(b.occurred_at).getTime() - new Date(a.occurred_at).getTime());
 
-  return { enrollment_summary, relationships, notes, tasks, support_tickets, timeline };
+  return {
+    enrollment_summary,
+    managed_household,
+    relationships,
+    notes,
+    tasks,
+    support_tickets,
+    timeline,
+  };
 }
 
 async function insertContactNote(
@@ -1312,7 +1404,13 @@ function rowToDetail(
   detail: Partial<
     Pick<
       ContactDetail,
-      'enrollment_summary' | 'relationships' | 'notes' | 'tasks' | 'support_tickets' | 'timeline'
+      | 'enrollment_summary'
+      | 'managed_household'
+      | 'relationships'
+      | 'notes'
+      | 'tasks'
+      | 'support_tickets'
+      | 'timeline'
     >
   > = {},
 ): ContactDetail {
@@ -1332,6 +1430,7 @@ function rowToDetail(
       captured_at: row.signup_created_at ? toIso(row.signup_created_at) : null,
     },
     enrollment_summary: detail.enrollment_summary ?? [],
+    managed_household: detail.managed_household ?? null,
     relationships: detail.relationships ?? [],
     notes: detail.notes ?? [],
     tasks: detail.tasks ?? [],

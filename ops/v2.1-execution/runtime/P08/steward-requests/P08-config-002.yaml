@@ -1,0 +1,44 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P08-config-002
+task_id: P08
+kind: configuration_and_shared_tests
+requirement_ids:
+  - OTV2-SIGNUP-177
+  - OTV2-SIGNUP-213
+  - OTV2-SIGNUP-228
+acceptance_case_ids:
+  - OTV2-SIGNUP-177-AC01
+  - OTV2-SIGNUP-213-AC01
+  - OTV2-SIGNUP-228-BEFORE-EXPIRY
+  - OTV2-SIGNUP-228-AT-AND-AFTER-EXPIRY
+rationale: >-
+  P08 cannot edit packages/config/src/index.ts or central config tests. The
+  Family route needs an exact runtime-tier and verification-environment binding
+  so production_read_only rejects writes before repository access and no
+  canary/broad environment can be selected by a fallback.
+desired_semantic_change: >-
+  Add the canonical ONE_TIME_VERIFICATION_ENVIRONMENT_ID configuration and
+  expose an exact runtime-tier binding for P08 and other v2.1 features. Defaults
+  must be deterministic and fail safe: local/test use ci, isolated staging uses
+  persistent_staging, and production uses production_read_only. Production
+  operator-canary and broad writes require their exact explicit identifiers.
+proposed_symbols_routes_keys_or_dependencies:
+  - Add OneTimeVerificationEnvironment and OneTimeRuntimeTier types plus the exact ci|provider_sandbox|persistent_staging|production_read_only|production_operator_canary|production_broad vocabulary.
+  - Map ci, provider_sandbox, and persistent_staging only to isolated_staging; map production_read_only, production_operator_canary, and production_broad only to production.
+  - Parse ONE_TIME_VERIFICATION_ENVIRONMENT_ID centrally and reject unknown or cross-tier values at startup.
+  - Expose oneTimeRuntimeTier, oneTimeVerificationEnvironmentId, and oneTimeVerificationWritesAllowed; derive writes_allowed=false exactly for production_read_only.
+  - Pass the validated values to resolveFamilySignupScope or inject them as FamilySignupRouterInput.runtimeBinding.
+  - Add shared config tests for every safe default, exact operator-canary selection, cross-tier rejection, unknown-value rejection, and production_read_only POST rejection before service/repository access.
+compatibility_assumptions:
+  - ONE_TIME_RUNTIME_ENVIRONMENT remains the canonical delivery/runtime selector.
+  - Existing secret-managed deployment configuration supplies explicit production canary or broad identifiers only after the corresponding release gate.
+  - P08's local fallback remains production_read_only when the central fields are absent.
+verification_performed:
+  - P08 route tests cover ci and production_read_only bindings without changing central config.
+  - Workspace TypeScript typecheck.
+conflicts_or_risks:
+  - Do not default production to operator-canary or broad.
+  - Do not silently coerce an unknown or cross-tier value.
+  - Do not treat runtime classification alone as provider authority, a release gate, or a fencing token.
+contains_secret_or_private_data: false

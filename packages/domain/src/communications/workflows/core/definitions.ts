@@ -1,0 +1,320 @@
+import type { CommunicationPurpose } from '../../../../../contracts/src/communications/foundation/index.ts';
+import {
+  CORE_WORKFLOW_ACCEPTANCE_CASE_IDS,
+  CORE_WORKFLOW_REQUIREMENT_IDS,
+  REQUIRED_CORE_APPROVAL_GATES,
+  type CoreWorkflowDefinition,
+  type CoreWorkflowKey,
+  type CoreWorkflowMessageClass,
+} from './types.ts';
+
+type DefinitionInput = {
+  key: CoreWorkflowKey;
+  name: string;
+  purpose: string;
+  messagePurpose: Exclude<CommunicationPurpose, 'requested_security'>;
+  sender: CoreWorkflowDefinition['sender_key'];
+  messageClass: CoreWorkflowMessageClass;
+  trigger: string;
+  steps: readonly string[];
+  waits?: readonly string[];
+  constants?: readonly string[];
+  exits: readonly string[];
+  scope: string;
+  copyIds?: readonly string[];
+  initial?: CoreWorkflowDefinition['desired_initial_state'];
+  billingProjection?: boolean;
+  localReadback?: boolean;
+  adminApproval?: boolean;
+  providerReadback?: boolean;
+};
+
+function define(input: DefinitionInput): CoreWorkflowDefinition {
+  return {
+    workflow_key: input.key,
+    canonical_name: input.name,
+    requirement_id: CORE_WORKFLOW_REQUIREMENT_IDS[input.key],
+    acceptance_case_id: CORE_WORKFLOW_ACCEPTANCE_CASE_IDS[input.key],
+    purpose: input.purpose,
+    subject: 'adult_only',
+    sender_key: input.sender,
+    message_purpose: input.messagePurpose,
+    message_class: input.messageClass,
+    trigger: input.trigger,
+    ordered_steps: input.steps,
+    waits: input.waits ?? [],
+    policy_constants: input.constants ?? [],
+    exit_conditions: input.exits,
+    idempotency_scope: input.scope,
+    approval_gates: REQUIRED_CORE_APPROVAL_GATES,
+    desired_initial_state: input.initial ?? 'SAVED_REOPENED',
+    approved_copy_ids: input.copyIds ?? [],
+    requires_signed_billing_projection: input.billingProjection ?? false,
+    requires_local_commit_readback: input.localReadback ?? true,
+    requires_approved_audience: true,
+    requires_approved_copy: true,
+    requires_admin_approval: input.adminApproval ?? false,
+    requires_provider_readback: input.providerReadback ?? false,
+    requires_send_time_suppression_recheck: true,
+    email_required: true,
+    whatsapp_state: 'dormant',
+    student_contact_prohibited: true,
+    provider_financial_mutation: false,
+    provider_access_mutation: false,
+    ghl_student_contact_calls: 0,
+    whatsapp_provider_calls: 0,
+  };
+}
+
+export const CORE_WORKFLOW_DEFINITIONS = [
+  define({
+    key: 'OT-01',
+    name: 'OT-01 New Lead Intake',
+    purpose: 'Durable Family-account creation receipt',
+    messagePurpose: 'essential_billing_access',
+    sender: 'office',
+    messageClass: 'access_help',
+    trigger: 'successful durable Family-account creation committed with immediate free access',
+    initial: 'DRAFT_WAITING_EXTERNAL',
+    steps: [
+      'require_successful_durable_family_account_creation_readback',
+      'confirm_immediate_free_access_without_card_or_automatic_charge',
+      'confirm_up_to_three_student_seats_without_creating_ghl_student_contacts',
+      'send_one_adult_family_account_receipt_after_local_readback',
+      'quarantine_ambiguous_crm_match_without_blocking_local_login_or_free_access',
+    ],
+    exits: [
+      'family_account_receipt_sent',
+      'durable_family_account_readback_missing',
+      'ambiguous_adult_match_quarantined',
+      'suppression_or_invalid_address',
+    ],
+    scope: 'adult_durable_family_account_creation_episode',
+    copyIds: ['ghl.signup_confirmation.v1'],
+  }),
+  define({
+    key: 'OT-02A',
+    name: 'OT-02A Existing Subscriber Migration 2026 v1',
+    purpose: 'Approved dated legacy-member migration',
+    messagePurpose: 'marketing',
+    sender: 'rabbi_campaign',
+    messageClass: 'existing_subscriber_migration',
+    trigger: 'registered existing subscriber migration audience entry',
+    initial: 'DRAFT_WAITING_EXTERNAL',
+    steps: [
+      'send_approved_informational_message',
+      'after_approved_cadence_recheck_every_exit_and_send_restart_reminder',
+      'after_approved_cadence_recheck_every_exit_and_send_account_activation_reminder',
+    ],
+    exits: ['signup', 'suppression', 'invalid_address', 'decline', 'campaign_complete'],
+    scope: 'adult_approved_migration_campaign',
+    copyIds: [
+      'ghl.legacy_member_migration.step_1.v1',
+      'ghl.legacy_member_migration.step_2.v1',
+      'ghl.legacy_member_migration.step_3.v1',
+    ],
+    constants: ['audience=OT-02A | Replit Active Migration Candidates | 2026'],
+  }),
+  define({
+    key: 'OT-02B',
+    name: 'OT-02B New Lead Nurture v1',
+    purpose: 'Explicitly opted-in interested-lead nurture',
+    messagePurpose: 'marketing',
+    sender: 'rabbi_campaign',
+    messageClass: 'prelaunch_nurture',
+    trigger: 'registered new lead nurture audience entry',
+    initial: 'DRAFT_WAITING_EXTERNAL',
+    steps: [
+      'send_approved_outcomes_message',
+      'after_approved_cadence_recheck_every_exit_and_send_live_on_demand_message',
+      'after_approved_cadence_recheck_every_exit_and_send_free_access_message',
+    ],
+    exits: [
+      'signup',
+      'school_inquiry',
+      'unsubscribe',
+      'suppression',
+      'complaint',
+      'hard_bounce',
+      'campaign_complete',
+    ],
+    scope: 'adult_explicit_opt_in_nurture_episode',
+    copyIds: [
+      'ghl.prelaunch_nurture.step_1.v1',
+      'ghl.prelaunch_nurture.step_2.v1',
+      'ghl.prelaunch_nurture.step_3.v1',
+    ],
+  }),
+  define({
+    key: 'OT-03',
+    name: 'OT-03 Checkout Started / Abandoned',
+    purpose: 'Eligible household checkout follow-up',
+    messagePurpose: 'marketing',
+    sender: 'rabbi_campaign',
+    messageClass: 'warm_enrollment_campaign',
+    trigger: 'checkout started and not completed within the registered wait window',
+    steps: [
+      'wait_for_verified_active_projection',
+      'send_after_2_hours_without_implying_payment',
+      'send_final_after_24_hours_without_implying_payment',
+    ],
+    waits: ['PT2H', 'PT22H'],
+    exits: [
+      'verified_active_projection',
+      'checkout_canceled',
+      'suppression',
+      'newer_checkout_episode',
+      'follow_up_complete',
+    ],
+    scope: 'household_checkout_episode',
+  }),
+  define({
+    key: 'OT-04',
+    name: 'OT-04 Payment Active',
+    purpose: 'Verified active billing projection confirmation',
+    messagePurpose: 'essential_billing_access',
+    sender: 'brand',
+    messageClass: 'signup_confirmation',
+    trigger: 'One Time payment/access projection becomes Active',
+    constants: ['standard_family_terms=USD 67/month'],
+    steps: [
+      'read_exact_standard_67_usd_monthly_or_approved_school_terms',
+      'read_next_billing_date_from_projection',
+      'request_idempotent_product_access_restore',
+      'send_once_per_activation_episode',
+    ],
+    exits: ['confirmation_sent', 'projection_no_longer_active', 'suppression'],
+    scope: 'household_billing_activation_episode',
+    billingProjection: true,
+  }),
+  define({
+    key: 'OT-05',
+    name: 'OT-05 Payment Failed / Grace',
+    purpose: 'Payment-failure grace and recovery lifecycle',
+    messagePurpose: 'essential_billing_access',
+    sender: 'office',
+    messageClass: 'payment_failed_support',
+    trigger: 'One Time payment/access projection becomes Grace after payment failure',
+    steps: [
+      'send_immediate_provider_hosted_repair_link_without_card_data',
+      'send_day_3_when_unrecovered',
+      'send_day_6_when_unrecovered',
+      'send_grace_expiry_paused_notice_preserving_parent_restricted_login',
+      'send_recovery_restored_notice',
+    ],
+    waits: ['P3D', 'P3D', 'until_verified_grace_expiry_or_recovery'],
+    exits: ['verified_recovery', 'verified_expiry', 'suppression', 'newer_billing_episode'],
+    scope: 'household_payment_failure_episode',
+    billingProjection: true,
+  }),
+  define({
+    key: 'OT-06',
+    name: 'OT-06 Subscription Canceled',
+    purpose: 'Cancel-at-period-end lifecycle',
+    messagePurpose: 'essential_billing_access',
+    sender: 'office',
+    messageClass: 'cancellation_help',
+    trigger: 'One Time subscription projection becomes Canceled when support context is required',
+    steps: [
+      'send_immediate_exact_final_access_date_without_refund_promise',
+      'send_24_hours_before_final_access',
+    ],
+    waits: ['until_24_hours_before_verified_final_access'],
+    exits: ['reactivation', 'cancellation_reversed', 'final_notice_sent', 'suppression'],
+    scope: 'household_cancel_at_period_end_episode',
+    billingProjection: true,
+  }),
+  define({
+    key: 'OT-07',
+    name: 'OT-07 Parent Portal Invitation',
+    purpose: 'Admin-created Parent companion invitation',
+    messagePurpose: 'essential_billing_access',
+    sender: 'brand',
+    messageClass: 'portal_welcome',
+    trigger: 'One Time access confirmation requests the parent portal companion email',
+    initial: 'DRAFT_WAITING_EXTERNAL',
+    steps: [
+      'send_ghl_companion_explanation_without_security_token',
+      'leave_setup_token_and_setup_link_delivery_to_resend',
+    ],
+    exits: ['companion_sent', 'invitation_revoked', 'suppression'],
+    scope: 'adult_parent_invitation_episode',
+  }),
+  define({
+    key: 'OT-08',
+    name: 'OT-08 Parent Portal Activated',
+    purpose: 'First completed Parent setup',
+    messagePurpose: 'essential_billing_access',
+    sender: 'brand',
+    messageClass: 'portal_activated',
+    trigger: 'One Time parent portal projection becomes Active',
+    initial: 'DRAFT_WAITING_EXTERNAL',
+    steps: ['send_parent_portal_activated_copy_once'],
+    exits: ['activation_message_sent', 'suppression'],
+    scope: 'adult_first_parent_setup',
+    copyIds: ['ghl.parent_portal_activated.v1'],
+  }),
+  define({
+    key: 'OT-09',
+    name: 'OT-09 Parent Class Reminder',
+    purpose: 'Parent reminder and Student in-app occurrence notice',
+    messagePurpose: 'optional_reminder',
+    sender: 'brand',
+    messageClass: 'class_reminder',
+    trigger: 'registered confirmed class reminder schedule and consent gate pass',
+    initial: 'DRAFT_WAITING_EXTERNAL',
+    constants: ['parent_reminder_offset=PT30M', 'student_delivery=in_app_only'],
+    steps: [
+      'send_one_parent_message_30_minutes_before_occurrence',
+      'include_parent_protected_schedule_link_only',
+      'create_student_in_app_notice_without_ghl_contact',
+      'send_immediate_parent_schedule_change_or_cancel_notice',
+    ],
+    waits: ['until_30_minutes_before_occurrence'],
+    exits: ['occurrence_completed', 'occurrence_canceled', 'schedule_replaced', 'suppression'],
+    scope: 'adult_household_class_occurrence',
+    copyIds: ['ghl.parent_class_reminder.v1'],
+  }),
+  define({
+    key: 'OT-10',
+    name: 'OT-10 New Recording Available',
+    purpose: 'Approved published recording availability',
+    messagePurpose: 'optional_reminder',
+    sender: 'brand',
+    messageClass: 'recording_available',
+    trigger: 'One Time marks a protected recording available for an entitled household',
+    initial: 'DRAFT_WAITING_EXTERNAL',
+    adminApproval: true,
+    providerReadback: true,
+    steps: [
+      'send_parent_message_with_eligible_student_names_and_parent_login',
+      'create_student_in_app_protected_library_notice',
+      'never_include_vimeo_bearer_url',
+    ],
+    exits: ['recording_notice_sent', 'publication_reversed', 'suppression'],
+    scope: 'adult_household_published_content',
+    copyIds: ['ghl.parent_recording_available.v1'],
+  }),
+  define({
+    key: 'OT-13',
+    name: 'OT-13 Refund / Chargeback',
+    purpose: 'Verified refund or neutral chargeback support notice',
+    messagePurpose: 'essential_billing_access',
+    sender: 'office',
+    messageClass: 'refund_help',
+    trigger: 'refund or chargeback support state is recorded',
+    steps: [
+      'state_verified_refund_amount_and_status',
+      'describe_chargeback_neutrally_without_threat_or_speculation',
+      'explain_current_access_and_billing_contact',
+      'never_change_access_independently',
+    ],
+    exits: ['notice_sent', 'projection_superseded', 'suppression'],
+    scope: 'household_refund_or_chargeback_episode',
+    billingProjection: true,
+  }),
+] as const satisfies readonly CoreWorkflowDefinition[];
+
+export const CORE_WORKFLOW_BY_KEY = Object.fromEntries(
+  CORE_WORKFLOW_DEFINITIONS.map((workflow) => [workflow.workflow_key, workflow]),
+) as Record<CoreWorkflowKey, CoreWorkflowDefinition>;

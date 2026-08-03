@@ -56,4 +56,4 @@ npx tsx scripts/w12-100/deploy/railway-launch-toolkit.ts rollback-staging --mani
 ```
 
 Then run `post-deploy-verification.md` against the staging URL. Stop if
-`/version` does not show the exact pre-deploy source.
+protected diagnostics runtime does not show the exact pre-deploy source.

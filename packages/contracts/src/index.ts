@@ -2,17 +2,27 @@ import { z } from 'zod';
 
 export * from './classes/index.ts';
 export * from './classroom/index.ts';
+export * from './classroom/embedded/index.ts';
+export * from './live-class/index.ts';
 export * from './content/index.ts';
 export * from './social/index.ts';
 export * from './accounts/index.ts';
 export * from './gamification/index.ts';
 export * from './portals/index.ts';
+export * from './learning/index.ts';
+export * from './signup/school/index.ts';
 export * from './dashboard/index.ts';
 export * from './billing/index.ts';
+export * from './access/index.ts';
 export * from './action-gateway/events.ts';
 export * from './support/index.ts';
 export * from './whatsapp/index.ts';
 export * from './ops/index.ts';
+export * from './events/index.ts';
+export * from './experience-preview/index.ts';
+export * from './highlevel/index.ts';
+export * from './contact-operations/index.ts';
+export * from './telegram/rabbi-communications.ts';
 
 export const reminderPreferenceSchema = z.enum(['email', 'whatsapp', 'both', 'none']);
 export type ReminderPreference = z.infer<typeof reminderPreferenceSchema>;
@@ -141,6 +151,7 @@ export function publicFieldErrors(error: z.ZodError): Record<string, string> {
 export const userRoleSchema = z.enum([
   'owner',
   'admin',
+  'rabbi',
   'crm_agent',
   'viewer',
   'parent',
@@ -151,6 +162,7 @@ export type UserRole = z.infer<typeof userRoleSchema>;
 export const roleDisplayLabel: Record<UserRole, string> = {
   owner: 'Administrator',
   admin: 'Administrator',
+  rabbi: 'Rabbi',
   crm_agent: 'CRM Agent',
   viewer: 'Viewer',
   parent: 'Parent',
@@ -178,12 +190,25 @@ const optionalTrimmed = (max = 180) =>
     .optional()
     .transform((value) => (value ? value : undefined));
 
-export const loginPayloadSchema = z.object({
-  email: z.string().trim().email().max(254),
-  password: z.string().min(8).max(256),
-  csrf_token: z.string().trim().min(16).max(160).optional(),
-  return_to: z.string().trim().max(240).optional(),
-});
+const loginIdentifierSchema = z.string().trim().min(3).max(254);
+
+export const loginPayloadSchema = z
+  .object({
+    identifier: loginIdentifierSchema.optional(),
+    email: loginIdentifierSchema.optional(),
+    password: z.string().min(8).max(256),
+    csrf_token: z.string().trim().min(16).max(160).optional(),
+    return_to: z.string().trim().max(240).optional(),
+  })
+  .superRefine((payload, ctx) => {
+    if (!payload.identifier && !payload.email) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['identifier'],
+        message: 'Enter your email or student username.',
+      });
+    }
+  });
 export type LoginPayload = z.infer<typeof loginPayloadSchema>;
 
 export const mfaChallengePayloadSchema = z.object({
@@ -452,6 +477,10 @@ export type ContactDetail = ContactListItem & {
     captured_at: string | null;
   };
   enrollment_summary: ContactSummaryFact[];
+  managed_household: {
+    household_key: string;
+    display_name: string;
+  } | null;
   relationships: ContactRelationship[];
   notes: ContactNote[];
   tasks: ContactTask[];
@@ -475,6 +504,12 @@ export const contactDetailSchema: z.ZodType<ContactDetail> = contactListItemSche
     captured_at: z.string().nullable(),
   }),
   enrollment_summary: z.array(contactSummaryFactSchema),
+  managed_household: z
+    .object({
+      household_key: z.string().min(3).max(180),
+      display_name: z.string().min(1).max(180),
+    })
+    .nullable(),
   relationships: z.array(contactRelationshipSchema),
   notes: z.array(contactNoteSchema),
   tasks: z.array(contactTaskSchema),

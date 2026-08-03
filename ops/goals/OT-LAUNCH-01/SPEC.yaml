@@ -1,0 +1,357 @@
+schema_version: 1
+goal_id: OT-LAUNCH-01
+source_of_status: ops/goals/OT-LAUNCH-01/BOARD.yaml
+runtime:
+  persistent_staging: https://ot99-web-staging.up.railway.app
+  production_mutation_allowed: controlled_pilot_only
+  classification:
+    allowed_preview_values: [isolated_staging, test]
+    enable_flag: ONE_TIME_EXPERIENCE_PREVIEW_ENABLED
+    production_behavior: fail_closed_404
+  production_rollout:
+    policy: independently_accepted_slice_only
+    operator_authorized_at: 2026-07-23T10:32:47Z
+    current_target: controlled_free_operator_pilot
+    requirements:
+      - Exact immutable staging head and deployed version agree.
+      - Focused automated and desktop/mobile browser acceptance passes.
+      - Rollback target and scope are explicit before promotion.
+      - Promotion changes only the accepted slice and verifies the live route after deployment.
+      - The initial live cohort is operator-owned and free; broad enrollment remains closed.
+      - Real Administrator, Parent, Student, approved playback, and access-revocation journeys pass on separate devices.
+    exclusions:
+      - broad or customer provider sends
+      - payment collection or price changes
+      - destructive cleanup
+      - unrelated provider activation
+      - DNS or domain changes
+  provider_canary_authorization:
+    operator_authorized_at: 2026-07-23T10:32:47Z
+    allowed:
+      - Zoom staging configuration plus one bounded human host-and-Student canary
+      - BNA disposable preview database plus one private synthetic Telegram bridge canary
+      - one bounded operator-owned media staging canary
+    invariants:
+      - Protected values remain outside Git, logs, screenshots, and reports.
+      - Canary authority does not authorize customer or broad messages.
+      - Each provider is returned to its safe fail-closed state after proof unless exact production activation is separately accepted.
+
+golden_paths:
+  goal_control:
+    requirements:
+      - CURRENT.yaml points to one goal directory and one BOARD.yaml.
+      - BOARD.yaml is the only mutable status map; reports and preview pointers derive from it.
+      - The persistent-staging conductor alone assigns tracks and edits BOARD.yaml.
+      - Visual intent becomes route- and breakpoint-specific acceptance before implementation;
+        the assigned executor inspects the current page/screenshots, fixes obvious in-scope violations,
+        retests, and verifies the deployed URL without asking for non-decisions.
+      - The Admin launch summary is a source-hashed generated projection of BOARD acceptance IDs,
+        never editable status; it names the current milestone, objective percentage, exact blockers,
+        safe links, latest sanitized change, and one next executable task.
+  ghl:
+    requirements:
+      - GitHub is the canonical desired-state/control view; registry/workflow-registry.yaml is the
+        single editable automation inventory. workflows.yaml and registry/current.json are
+        source-hashed generated projections, and WORKFLOW-CONTROL-REPORT.md is generated from the
+        same YAML plus committed sanitized provider readbacks.
+      - Every canonical automation asset records exact asset_kind, ordered triggers/actions and
+        essential values, full nested folder ancestry/order, desired and observed status, GHL ID,
+        last readback, canary result, blocker, and evidence.
+      - Workflow control states are MISSING, DRAFT_SHELL, DRAFT_WAITING_EXTERNAL, SAVED_REOPENED,
+        ACTIVE_CONFIGURED, ACTIVE_TESTED, DRIFTED, and BLOCKED; folder organization alone never
+        proves operation.
+      - Close every permitted change through reviewed Git job -> browser mutation -> save ->
+        navigate/reload -> reopen/readback -> bounded safe canary -> sanitized committed result ->
+        drift validation against the registry.
+      - Report unknown workflows and fail closed; dependency-check them and move them to
+        99 - Deprecated only through a separately authorized safe job, never silently delete.
+      - Enrollment, publication/activation, broad sends, payments, production change,
+        quarantine/deprecation, and destructive actions remain separate exact approval gates.
+      - Inventory canonical folders, workflows, bot, knowledge base, fields, tags, values,
+        pipelines, senders, and campaigns across active, draft, archived, and deprecated states.
+      - Exhaustive drift evidence names the literal observed One Time root and covers root-level,
+        every nested folder, archived, and 99 - Deprecated assets; a curated canonical list cannot
+        prove that unknown assets are absent.
+      - Account for every canonical asset by ID, key, type, and full folder ancestry with no
+        unexplained duplicate.
+      - Publish only an exactly authorized workflow after controlled trigger/execution,
+        branch/wait, bounded-delivery, and replay/idempotency proof.
+      - Keep every other workflow explicitly draft or dependency-blocked.
+      - >-
+        Preserve current GHL-asset truth: OT-E01 alone retains a historical controlled ACTIVE_TESTED
+        canary, and terminal PR #107 head 1e247c7 saved/reopened the approved Email A copy on the same
+        Published ID with zero messages. This does not prove current registration end to end: the newest
+        production signup added no exact registered-event tag and created no enrollment. Two distinct OT-C01-named assets are
+        present: a Draft workflow wrapper with a broad unfiltered Created trigger, three contact-note
+        steps, and one configured Draft email step, plus the separate Draft Email Marketing campaign.
+        Both are unsent and must keep distinct exact IDs/kinds/paths/configuration; neither is activated,
+        collapsed, quarantined, or deleted. Every other visible canonical workflow is an empty DRAFT_SHELL
+        with zero trigger/actions/enrollments; OT-07 and OT-08 each have exact committed 0 total / 0 active
+        readback. OT-A1 is tracked outside workflow counts and its current live status is unverified/not
+        visible; the canonical KB plus one legacy unknown KB are also separate. Archived/hidden AI scope
+        remains unverified, and no organized Draft shell is described as operational.
+      - >-
+        Tisha registration has no newsletter checkbox and discloses exactly “By reserving, you’ll
+        receive emails about this event.” It grants only scoped Tisha event-email permission, never
+        newsletter/general-marketing consent. OT-E01 uses the exact event-registration marker plus
+        DND/suppression/unsubscribe/complaint/hard-bounce gates. OT-C01 remains Draft, unseeded,
+        unscheduled, and zero-send; 207 email-capable contacts are not opted in, invitation-audience
+        classification is read-only, and only synthetic/operator-owned verification is allowed.
+        OT-TISHA-HANDOFF-01 owns the separate application registration/tag/enrollment repair; after proof it
+        must reprocess the one affected operator contact exactly once without a manual GHL tag, duplicate
+        signup, substitute/fallback send, or duplicate enrollment/delivery.
+      - Use one canonical outbox-backed One Time to GHL event dispatcher and exact producers;
+        never add parallel direct delivery paths.
+      - >-
+        Application DB is authoritative for append-only account/product/event/contact-scoped
+        event_service_email permission history plus current projection; GHL fields/tags are projections
+        only and no existing contact receives inferred or backfilled permission. Tisha registration
+        atomically and idempotently grants only the fixed disclosed event scope, queues projection,
+        records disclosure version/source/timestamps, and cannot override withdrawal/suppression or
+        grant marketing consent.
+      - >-
+        Typed deny precedence is complaint/hard bounce, global suppression/DND, global unsubscribe,
+        event withdrawal/cancellation, invalid or ambiguous identity, then missing active event
+        permission. OT-E01 requires matching registration plus active event permission, never newsletter
+        opt-in, and rechecks at send time. The 207 contacts are classified read-only by identity
+        confidence, event permission, marketing permission, and delivery state; deliverability is not
+        consent. Use only a forward-only next-free migration after convergence, with no number assumed.
+      - OT-01, OT-07, OT-08, OT-09, OT-10, and OT-B01 through OT-B05 remain
+        DRAFT_WAITING_EXTERNAL until canonical app events/tags and bot-adapter invocations exist;
+        their exact waiting dependency is the app/adapter contract, not provider readiness.
+  content_factory:
+    requirements:
+      - Operator-owned video moves through private intake, conservative trim, transcript and VTT,
+        editable metadata and review-question draft, private Vimeo, Admin approval, and protected
+        Student playback.
+      - No raw private provider target or Zoom/Vimeo URL appears in a Student projection.
+      - Media staging integration and external Vimeo canary remain separate tracks.
+  zoom_meeting_sdk:
+    requirements:
+      - ZOOM_UI_PREVIEW is a protected provider-off/synthetic UI state and never implies a provider join.
+      - The canonical Meeting SDK variables are ZOOM_MEETING_SDK_CLIENT_ID,
+        ZOOM_MEETING_SDK_CLIENT_SECRET, and ZOOM_MEETING_SDK_WEB_VERSION; legacy
+        ZOOM_MEETING_SDK_KEY/SECRET are temporary aliases only and never substitute for S2S OAuth.
+      - The exact fictional occurrence has a protected Meeting SDK projection and Student Ready state.
+      - Student consent precedes join; protected grants deny replay and cross-student use.
+  zoom_s2s_host_control:
+    requirements:
+      - ZOOM_REAL_CONTROL requires separately proven S2S OAuth account/client credentials, exact
+        meeting/registrant/host identity, and a human-cleared provider canary; config presence is not proof.
+      - Canonical S2S variables are ZOOM_S2S_ACCOUNT_ID, ZOOM_S2S_CLIENT_ID, and
+        ZOOM_S2S_CLIENT_SECRET; ZOOM_ACCOUNT_ID is a temporary account-ID alias only.
+      - The Rabbi console controls the exact fictional meeting through S2S-backed mute, unmute,
+        and spotlight operations with scoped audit/readback.
+  bna:
+    requirements:
+      - Agent Action Hub foundation imports and reads back the canonical job set.
+      - Durability proves DB save, process restart, readback, and current-queue pin.
+      - Reconciliation statuses remain exact; blocked records are not described as complete.
+  telegram:
+    requirements:
+      - Exactly one consumer owns the bot; token, webhook, owner mapping, lease/gate, and private
+        canary contract all pass before readiness.
+      - A private canary may create/read back a synthetic GHL question draft through the canonical bridge.
+      - Customer sends stay off until a separate, explicit authorization.
+  payment_and_access:
+    requirements:
+      - GHL is the source of truth for payment transactions, invoices, subscription history,
+        refunds, and payment operations; One Time does not duplicate a payment ledger.
+      - >-
+        One Time stores only the account/product access projection required for authorization:
+        current state, effective and optional expiry timestamps, source reference, and revocation reason.
+      - A free pilot entitlement is explicit and cannot be misreported as a paid subscription.
+      - GHL payment-active, grace, canceled, refund, and chargeback events update the projection
+        only through the canonical outbox-backed dispatcher with dedupe, replay safety, and audit readback.
+      - Parent and Student authorization uses the One Time access projection and fails closed when
+        it is missing, expired, revoked, or ambiguous.
+      - >-
+        Paid state, complimentary access, and administrative suspension are independent current
+        source slots. The effective projection denies while suspended, otherwise grants for current
+        paid or complimentary access, and otherwise pauses; revoking one source never erases another.
+      - >-
+        Parent authentication remains available while access is paused and exposes only a limited
+        recovery, identity, and support shell. Student sessions and protected learning access are
+        revoked or denied while paused.
+  parent_student_contact_operations:
+    requirements:
+      - Every Student is a One Time-only identity linked to exactly one Parent household; no child is
+        created, synchronized, or represented as a GHL contact.
+      - A Parent or authorized school administrator may create any positive number of Student
+        profiles; ordinary enrollment never auto-creates three Students.
+      - One atomic idempotent enrollment command creates or links the adult, household, guardian,
+        optional local Students, optional complimentary access, secure activation, and one adult-only
+        GHL outbox projection; local success survives provider unavailability as sync_pending.
+      - Durable adult-to-household and adult-to-GHL-contact links support exact signed identity proof,
+        Open in GHL, and one-Parent reconciliation without full contact polling.
+      - Parent recovery sends a secure reset link without revealing or setting the password. Parent or
+        authorized school administrator may reset a Student credential only through a one-time
+        secret-safe flow with session revocation and audit.
+      - One Time stores no invoices, cards, charges, amounts, refunds, subscriptions, or payment
+        history, and administrative suspension explicitly does not cancel GHL billing.
+  admin_information_architecture:
+    requirements:
+      - Primary Administrator navigation is exactly Dashboard, Contacts, Content, Classroom, and
+        Live Console on desktop and in the mobile drawer.
+      - Household Access, Rewards, Communications, Launch Status, Experience Preview, and Support
+        remain available only in their correct contextual or utility location, not the primary rail.
+      - Content owns Studio; Classroom owns Rewards; Contacts owns Parents, Students, and Internal
+        Tasks; each page renders one selected category rather than simultaneous unrelated card groups.
+      - Legacy routes remain safe, canonical brand tabs/selectors are reused, and no browser code
+        invents a Student record, GHL link, or provider capability.
+      - Experience Preview removes redundant bottom route shortcuts and customer-visible BNA bridge
+        copy while preserving the one-use, no-opener, read-only, sibling-scoped security boundary.
+  rabbi_telegram_communications:
+    requirements:
+      - The One Time Rabbi bot has a distinct identity, deployment, scope, lease, and audit from the
+        BNA control-plane bot and never shares sessions, cookies, secrets, transcripts, or runtime.
+      - Parent replies use the same GHL adult conversation through preview and explicit confirmation;
+        One Time stores only opaque references, safe status/digests, idempotency, and audit.
+      - Student questions and confirmed Rabbi answers remain One Time-only and are visible only in the
+        exact Student portal; no child GHL contact or second conversation transcript is created.
+      - Internal Rabbi-to-operator tasks are a One Time aggregate, not customer messages or GHL tasks.
+      - Natural language compiles only to allowlisted typed capabilities and can never bypass scope,
+        explicit confirmation, replay protection, or provider-off gates.
+  structured_prompt_and_scoped_knowledge:
+    requirements:
+      - Prompt feedback produces a schema-valid section-scoped patch over an immutable structured
+        prompt version, with deterministic diff, guardrail preservation, activation, rollback, and
+        exact output/version provenance.
+      - Parent and Student helpers authorize before retrieval, use only current approved and
+        knowledge-approved content in exact household/learner scope, cite sources, abstain when
+        unsupported, resist prompt injection, and recheck entitlement/revocation.
+      - Existing retrieval and model ports converge into one server-only adapter; no second knowledge
+        store, public web answers, persistent raw chat memory, or GHL lead-bot KB is introduced.
+  human_confirmed_social_publishing:
+    requirements:
+      - Existing social ledgers converge into one provider-neutral immutable revision, approval,
+        schedule, delivery, and readback model; no third ledger is created.
+      - Edit, preview, approve, schedule, cancel, and retract actions are authenticated; any edit
+        invalidates approval, and a leased idempotent worker alone calls the provider.
+      - Telegram confirmation records or queues the exact approved revision and never performs the
+        provider call directly.
+      - Facebook text/image is first; GHL Social Planner capability must be verified before adapter
+        work, and YouTube remains explicitly unsupported until a real provider contract is proven.
+  bna_control_plane_operations_bot:
+    requirements:
+      - The BNA control-plane bot remains separate from One Time and starts as a redacted notifier and
+        read-only status surface using opaque references, counts, and HTTPS links.
+      - Any broader mutation or Codex capability requires a replacement ADR with exact action
+        allowlist, re-authentication, two-step confirmation, audit, rate limit, kill switch, and
+        emergency revoke; arbitrary shell, deploy, provider, product-session, transcript, and database
+        access remain forbidden.
+  public_lead_capture:
+    requirements:
+      - The current landing WhatsApp/offline-readiness helper is absent from markup and runtime code.
+      - A future public assistant uses the canonical GHL website-chat/conversation contract with
+        consent, dedupe, suppression, and truthful provider-off states.
+      - Telegram is never the general public lead or support inbox; only an explicitly classified
+        substantive Torah question may enter the private Rabbi Telegram queue.
+      - Voice remains a separate deferred channel and cannot be implied ready by website-chat proof.
+  operator_experience:
+    requirements:
+      - Admin navigation exposes Experience Preview only when its server capability is true.
+      - Admin navigation exposes Live Console only when its route capability is ready.
+      - /app/experience-preview renders Parent, Student 1, Student 2, Student 3, and
+        Rabbi/Classroom projections from exact fictional rows.
+      - Student preview sessions use an opaque single-use exchange, a route-scoped Secure HttpOnly
+        SameSite=Strict cookie, a five-minute maximum lifetime, and a dedicated GET-only shell.
+      - Separate Student tabs remain sibling-isolated and the originating Admin session remains usable.
+      - >-
+        Parent and Student portals fill the application workspace instead of rendering every category
+        simultaneously: category navigation is on the left at desktop widths, contextual controls are
+        above the content, a compact summary grid occupies the upper region, and one wide focused
+        workspace occupies the lower region.
+      - >-
+        At tablet/mobile widths the same categories remain discoverable through the application
+        navigation and a compact horizontal category control; the focused body replaces rather than
+        accumulates content, preserves native control semantics, and never introduces page overflow.
+      - >-
+        Admin has a visible Launch Status entry showing a Board-derived current milestone percentage,
+        what changed, what works, exact blockers, safe role/route links, and one next executable task.
+        The projection carries the BOARD source hash and contains no credentials, private destinations,
+        customer data, provider links, or diagnostic controls.
+  main_landing:
+    requirements:
+      - The main hero uses Worldwide Mishnah Learning / Live from Eretz Yisrael as the primary title,
+        Give your son a love for learning Torah as the smaller supporting line, and one visible Sign Up Now CTA.
+      - Free until Rosh Hashanah appears as an in-flow header divider with a Jerusalem-date countdown
+        that updates in the browser and disappears at expiry; no fixed bottom ticker remains.
+      - Outcome cards have equal media frames, Retention uses a face-safe focal crop, and subtle
+        scroll reveal is no-JS and reduced-motion safe.
+      - Ready-to-Run precedes How It Works. Teaching photos autoplay with accessible pause conditions.
+        Publication logos use larger equal white cards across the available width without the old label.
+      - Rabbi media uses a square full-source treatment and landing accents are yellow, black, and white.
+        The wider authenticated-app token migration remains separately scoped.
+  coherent_demo:
+    requirements:
+      - One fictional Cohen household supplies one Administrator, one Parent, three separately
+        credentialed siblings, one upcoming class, one protected occurrence, one approved lesson,
+        exact progress/reward and review questions, one private Rabbi question, and one Tisha example.
+      - Parent and Student golden paths show only their scoped exact data.
+      - Ordinary Admin, Parent, and Student landing views hide engineering, diagnostic, and dead test panels.
+      - Provider-dependent surfaces show provider_off or unavailable when exact gates/evidence are absent.
+  video_to_classroom_e2e:
+    requirements:
+      - 'PR #108 has converged; this implementation is eligible for conductor assignment.'
+      - Admin selects one canonical class occurrence and uploads one video to durable protected source
+        storage that retains a non-secret opaque locator across restart/redeploy.
+      - One idempotent worker advances probe -> conservative trim -> transcription -> captions ->
+        editable metadata/questions -> private Vimeo -> Admin review; retries cannot duplicate
+        transcription or provider upload.
+      - Admin can edit, approve, publish, and unpublish; only learners enrolled in the selected
+        occurrence receive Classroom access, unrelated siblings are denied, and unpublish revokes access.
+      - The fully usable staging path remains synthetic/provider-off. One bounded operator-owned
+        OpenAI/private-Vimeo canary is authorized, preserves protected values, and cannot broaden
+        publication or customer access.
+  production_pilot:
+    requirements:
+      - Create one semantic release candidate from the current production landing/hotfix line and
+        the accepted full-app staging line; never overwrite either side mechanically or ship stale assets.
+      - Prove exact migration/checksum inventory, production backup and restore path, rollback commit,
+        web/worker source agreement, and fail-closed provider defaults before promotion.
+      - Provision or safely activate the operator's real Administrator identity without committing or
+        rendering credentials, then verify Admin, Parent, Student, Classroom, content, and access revocation.
+      - Initial signup is free and operator-owned. It grants an explicit free-pilot entitlement and
+        never fabricates payment history or sends broad communications.
+      - Real Zoom production activation follows a successful staging canary and retains a narrow
+        occurrence/cohort gate and rollback.
+      - Broad customer enrollment remains closed until GHL consent/enrollment workflows and the
+        selected payment lifecycle are independently proven.
+
+security_invariants:
+  - No real Parent or Student impersonation.
+  - No learner/account identifiers or bearer material in a preview URL.
+  - Preview issuance proves exact account, product, household, active learner, credential/access marker,
+    provisioner marker, and preview eligibility.
+  - An exchange is bound to the originating Admin session key, consumed once, and cannot cross accounts.
+  - Preview responses are no-store, no-referrer, audited, and read-only.
+  - Credentials, customer/student data, private destinations, raw email copy, and provider secrets never enter Git.
+
+migrations:
+  preserved_external_prefix:
+    prefix: 2214
+    owner: 'PR #104 learning_delivery_content_factory'
+    sha256_evidence: 7c5a8ad2…f8068c
+  experience_preview:
+    prefix: 2215
+    path: packages/db/migrations/2215_experience_preview_sessions.sql
+    sha256: e2a9f039e66b659ee630f232ad88fbbfbd4d9dc06d1437256ca07f2655483d56
+    rule: forward_only_and_unique
+  next_prefix:
+    prefix: 2216
+    rule: reserve_only_for_genuinely_new_schema
+  historical_live_ledger:
+    immutable_duplicate_prefixes: [2209, 2210]
+    rule: Never delete, rename, or rewrite applied historical rows.
+  conditional_highlevel_projection:
+    path: packages/db/migrations/2205_highlevel_business_projection.sql
+    current_state: absent_from_PR_97_and_live_ledger
+    rule: If the app-contract lane proves it required, integrate the exact existing migration unchanged; do not renumber it.
+
+safe_routes:
+  experience_preview: /app/experience-preview
+  live_console: /app/live-console
+  content_factory: /app/content
+  classes: /app/classes
+  prepared_vimeo_demo: /app/learning-delivery/demo/vimeo-autotrim

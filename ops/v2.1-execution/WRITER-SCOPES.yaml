@@ -1,0 +1,614 @@
+schema_version: 1
+rule: An active writer may change only its machine-normalized owned globs and its own runtime/evidence files. Prose
+  scope notes never grant write authority. Shared hotspots require an exact canonical-slot lease from C00; any newly
+  discovered path outside the normalized set requires a steward request before editing.
+lease_semantics: Task writer_slots are capabilities, not task-duration claims. READY-QUEUE grants only the exact
+  canonical slots needed for the current checkpoint; I36 must not overlap an unreleased feature/steward lease.
+central_slots:
+- slot: AUTHORITY
+  owner_sequence:
+  - C00
+  paths:
+  - AGENTS.md authority/status
+  - ops/v2.1-execution/control/**
+- slot: SERVER_COMPOSER
+  owner_sequence:
+  - F01
+  - I36
+  paths:
+  - apps/web/src/server/app.ts
+  - apps/web/src/server/index.ts
+- slot: CLIENT_COMPOSER
+  owner_sequence:
+  - F01
+  - I36
+  paths:
+  - apps/web/src/client/app/crm-entry.tsx
+  - apps/web/src/client/app/portal-entry.tsx
+  - apps/web/src/client/app/live-entry.tsx
+  - Vite entry/config registration
+- slot: WORKER_COMPOSER
+  owner_sequence:
+  - F01
+  - I36
+  paths:
+  - apps/worker/src/main/index.ts
+- slot: MIGRATION_AUTHORITY
+  owner_sequence:
+  - F02
+  paths:
+  - packages/db/migrations/2234+*.sql
+  - ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
+- slot: CONFIG_DEPS
+  owner_sequence:
+  - F01
+  - I36
+  paths:
+  - packages/config/src/index.ts
+  - .env.example
+  - package.json
+  - package-lock.json
+  - deploy/runtime config
+- slot: BARREL_REGISTRAR
+  owner_sequence:
+  - F01
+  - I36
+  paths:
+  - packages/contracts/src/index.ts
+  - packages/domain/src/index.ts
+  - root registries
+- slot: DESIGN_SYSTEM
+  owner_sequence:
+  - F07
+  - I36
+  paths:
+  - packages/brand-system/**
+  - global/shared CSS
+  - shared app shells/navigation
+- slot: GHL_REGISTRY
+  owner_sequence:
+  - P28
+  - I36
+  paths:
+  - integrations/highlevel/registry/workflow-registry.yaml
+  - generated GHL registry/control reports
+- slot: RELEASE_INTEGRATOR
+  owner_sequence:
+  - I36
+  paths:
+  - codex/v21-integration
+  - CI/global test config
+  - ops/v2.1-execution/merge/candidates/**
+  - ops/v2.1-execution/results/<candidate-digest>/CANDIDATE-RESULT-INDEX.yaml
+- slot: FINAL_RELEASE_AUTHORITY
+  owner_sequence:
+  - R45
+  paths:
+  - ops/v2.1-execution/merge/FINAL-RELEASE-DECISION.yaml
+feature_tasks:
+  F01:
+    writer_slots:
+    - SERVER_COMPOSER
+    - CLIENT_COMPOSER
+    - WORKER_COMPOSER
+    - CONFIG_DEPS
+    - BARREL_REGISTRAR
+    - RETIRED_SURFACES
+    normalized_owned_globs:
+    - apps/web/src/client/app/crm-entry.tsx
+    - apps/web/src/client/app/live-entry.tsx
+    - apps/web/src/client/app/portal-entry.tsx
+    - apps/web/src/client/app/router/**
+    - apps/web/src/client/features/portals/PortalFeatures.tsx
+    - apps/web/src/server/app.ts
+    - apps/web/src/server/features/registry/**
+    - apps/web/src/server/index.ts
+    - apps/worker/src/main/index.ts
+    - apps/worker/src/runners/registry/**
+    - ops/v2.1-execution/runtime/F01/steward-requests/schema/**
+    - packages/config/src/index.ts
+    scope_notes_only:
+    - packages/config/src/index.ts seam only
+    - packages/contracts/src/index.ts registration seam only
+    - packages/domain/src/index.ts registration seam only
+    - new feature-router, client-router, runner-registry, and steward-request infrastructure
+    - current runtime mounts/navigation/tests for explicitly retired surfaces
+    explicit_excludes: []
+  F02:
+    writer_slots:
+    - MIGRATION_AUTHORITY
+    - SCHEMA_CONTRACT
+    normalized_owned_globs:
+    - ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
+    - packages/contracts/src/state/**
+    - packages/db/migrations/2234+*.sql
+    - packages/domain/src/state/**
+    scope_notes_only:
+    - packages/db/src migration compatibility and migration index
+    - tests dedicated to schema invariants and state transitions
+    explicit_excludes: []
+  F03:
+    writer_slots:
+    - IDENTITY_AUTH_ACCESS
+    normalized_owned_globs:
+    - apps/web/src/client/auth/**
+    - apps/web/src/server/features/auth/**
+    - packages/contracts/src/identity/auth/**
+    - packages/domain/src/auth/**
+    scope_notes_only:
+    - apps/web/src/client/auth/** except shared shell/global CSS
+    - auth/security focused tests
+    - steward requests for central registration/config/migrations
+    explicit_excludes: []
+  F04:
+    writer_slots:
+    - ACCOUNT_HOUSEHOLD_IDENTITY
+    normalized_owned_globs:
+    - apps/web/src/server/features/accounts/**
+    - packages/contracts/src/access/**
+    - packages/contracts/src/accounts/**
+    - packages/db/src/accounts/**
+    - packages/domain/src/access/**
+    - packages/domain/src/accounts/**
+    scope_notes_only:
+    - packages/db/src/accounts/** except migrations and central index
+    - account and tenant-isolation tests
+    - steward requests for central registration/migrations
+    explicit_excludes: []
+  F05:
+    writer_slots:
+    - API_JOB_FOUNDATION
+    normalized_owned_globs:
+    - apps/web/src/server/features/jobs/**
+    - apps/worker/src/runners/foundation/**
+    - packages/contracts/src/api/**
+    - packages/contracts/src/jobs/**
+    - packages/db/src/jobs/**
+    - packages/domain/src/jobs/**
+    scope_notes_only:
+    - packages/db/src/jobs/** except migrations and central index
+    - job/idempotency/quarantine tests
+    - steward requests for worker/server registration and migrations
+    explicit_excludes: []
+  F06:
+    writer_slots:
+    - PROVIDER_CORE
+    - PROVIDER_REGISTRY
+    normalized_owned_globs:
+    - apps/worker/src/runners/provider-reconciliation/**
+    - packages/contracts/src/providers/**
+    - packages/db/src/providers/**
+    - packages/domain/src/providers/shared/**
+    scope_notes_only:
+    - packages/db/src/providers/** except migrations and central index
+    - provider client factory and operation ledger modules
+    - steward requests for config/dependencies/registration/migrations
+    explicit_excludes: []
+  F07:
+    writer_slots:
+    - DESIGN_SYSTEM
+    normalized_owned_globs:
+    - apps/web/src/client/styles/v21/**
+    - packages/brand-system/**
+    scope_notes_only:
+    - shared AppShell/WorkspaceTabs/navigation primitives
+    - shared/global CSS and route-branding inventory
+    - responsive/accessibility/interaction primitive tests
+    - steward requests for root route registration only
+    explicit_excludes: []
+  P08:
+    writer_slots:
+    - FAMILY_SIGNUP
+    normalized_owned_globs:
+    - apps/web/src/client/public/signup/**
+    - apps/web/src/server/features/signup/family/**
+    - packages/contracts/src/signup/family/**
+    - packages/domain/src/signup/family/**
+    scope_notes_only:
+    - family-signup focused tests
+    - steward requests for route/config/migration changes
+    explicit_excludes: []
+  P09:
+    writer_slots:
+    - SCHOOL_INQUIRY
+    normalized_owned_globs:
+    - apps/web/src/client/public/school/**
+    - apps/web/src/server/features/signup/school/**
+    - packages/contracts/src/signup/school/**
+    - packages/domain/src/signup/school/**
+    scope_notes_only:
+    - school-inquiry focused tests
+    - steward requests for route/config/migration changes
+    explicit_excludes: []
+  P10:
+    writer_slots:
+    - ADMIN_DIRECTORY
+    normalized_owned_globs:
+    - apps/web/src/client/app/admin/directory/**
+    - apps/web/src/server/features/admin/directory/**
+    - packages/contracts/src/admin/directory/**
+    - packages/domain/src/admin-directory/**
+    - packages/domain/src/contact-operations/**
+    scope_notes_only:
+    - Admin directory focused tests
+    - steward requests for route/migration/registration changes
+    explicit_excludes: []
+  P11:
+    writer_slots:
+    - ADMIN_OPERATIONS_UI
+    normalized_owned_globs:
+    - apps/web/src/client/app/admin/dashboard/**
+    - apps/web/src/client/app/admin/search/**
+    - apps/web/src/server/features/admin/operations/**
+    - packages/contracts/src/admin/operations/**
+    - packages/domain/src/admin-search/**
+    scope_notes_only:
+    - Admin dashboard/search focused tests
+    - steward requests for route/registration changes
+    explicit_excludes: []
+  P12:
+    writer_slots:
+    - PARENT_HOUSEHOLD_UI
+    normalized_owned_globs:
+    - apps/web/src/client/app/parent/household/**
+    - apps/web/src/server/features/portals/parent-household/**
+    - packages/contracts/src/portals/parent-household/**
+    - packages/domain/src/portals/parent-household/**
+    scope_notes_only:
+    - Parent household/seat focused tests
+    - steward requests for route/migration/registration changes
+    explicit_excludes: []
+  P13:
+    writer_slots:
+    - PARENT_SUMMARY_UI
+    normalized_owned_globs:
+    - apps/web/src/client/app/parent/progress/**
+    - apps/web/src/client/app/parent/schedule/**
+    - apps/web/src/client/app/parent/updates/**
+    - apps/web/src/server/features/portals/parent-summary/**
+    - packages/contracts/src/portals/parent-summary/**
+    scope_notes_only:
+    - Parent support route-link steward request; P24 owns the support workspace
+    - Parent boundary focused tests
+    - steward requests for route/registration changes
+    explicit_excludes:
+    - apps/web/src/client/app/parent/support/**
+  P14:
+    writer_slots:
+    - STUDENT_APP
+    normalized_owned_globs:
+    - apps/web/src/client/app/student/account/**
+    - apps/web/src/client/app/student/home/**
+    - apps/web/src/client/app/student/profile/**
+    - apps/web/src/client/app/student/shell/**
+    - apps/web/src/server/features/portals/student/**
+    - packages/contracts/src/portals/student/**
+    - packages/domain/src/portals/student/**
+    scope_notes_only:
+    - Student isolation focused tests
+    - steward requests for route/migration/registration changes
+    explicit_excludes:
+    - apps/web/src/client/app/student/classroom/**
+    - apps/web/src/client/app/student/library/**
+    - apps/web/src/client/app/student/learning/**
+    - apps/web/src/client/app/student/notifications/**
+    - apps/web/src/client/app/student/support/**
+  P15:
+    writer_slots:
+    - CALENDAR
+    normalized_owned_globs:
+    - apps/web/src/client/features/calendar/**
+    - apps/web/src/server/features/calendar/**
+    - packages/contracts/src/calendar/**
+    - packages/db/src/calendar/**
+    - packages/domain/src/calendar/**
+    scope_notes_only:
+    - packages/db/src/calendar/** except migrations and central index
+    - calendar/timezone/DST focused tests
+    - steward requests for route/migration/registration changes
+    explicit_excludes: []
+  P16:
+    writer_slots:
+    - CLASSROOM_CORE
+    normalized_owned_globs:
+    - apps/web/src/client/app/admin/classroom/core/**
+    - apps/web/src/server/features/classes/core/**
+    - packages/contracts/src/classes/core/**
+    - packages/db/src/classes/core/**
+    - packages/domain/src/classes/core/**
+    scope_notes_only:
+    - packages/db/src/classes/core/** except migrations and central index
+    - class/enrollment concurrency tests
+    - steward requests for route/migration/registration changes
+    explicit_excludes: []
+  P17:
+    writer_slots:
+    - ZOOM_PREPARATION
+    normalized_owned_globs:
+    - apps/web/src/server/features/classroom/zoom-preparation/**
+    - apps/worker/src/runners/zoom-preparation/**
+    - packages/contracts/src/classroom/zoom-preparation/**
+    - packages/db/src/classroom/zoom-preparation/**
+    - packages/domain/src/classroom/zoom-preparation/**
+    scope_notes_only:
+    - packages/db/src/classroom/zoom-preparation/** except migrations and central index
+    - Zoom preparation/reconciliation tests
+    - steward requests for config/dependency/worker/server/migration changes
+    explicit_excludes: []
+  P18:
+    writer_slots:
+    - EMBEDDED_CLASSROOM
+    normalized_owned_globs:
+    - apps/web/src/client/app/student/classroom/**
+    - apps/web/src/server/features/classroom/embedded/**
+    - packages/contracts/src/classroom/embedded/**
+    - packages/db/src/classroom/attendance/**
+    - packages/domain/src/classroom/embedded/**
+    scope_notes_only:
+    - packages/db/src/classroom/attendance/** except migrations and central index
+    - apps/web/src/client/classroom/** feature modules
+    - lease/reconnect/attendance/consent tests
+    - steward requests for config/dependency/route/migration changes
+    explicit_excludes: []
+  P19:
+    writer_slots:
+    - CONTENT_INGEST
+    normalized_owned_globs:
+    - apps/web/src/client/app/admin/content/ingest/**
+    - apps/web/src/server/features/content/ingest/**
+    - apps/worker/src/runners/content-ingest/**
+    - packages/contracts/src/content/ingest/**
+    - packages/db/src/content/ingest/**
+    - packages/domain/src/content/ingest/**
+    scope_notes_only:
+    - packages/db/src/content/ingest/** except migrations and central index
+    - Drive/direct-upload/dedupe tests
+    - steward requests for config/dependency/route/worker/migration changes
+    explicit_excludes: []
+  P20:
+    writer_slots:
+    - CONTENT_PROCESSING
+    normalized_owned_globs:
+    - apps/worker/src/runners/content-processing/**
+    - packages/contracts/src/content/processing/**
+    - packages/db/src/content/processing/**
+    - packages/domain/src/content/processing/**
+    - scripts/media/v21/**
+    scope_notes_only:
+    - packages/db/src/content/processing/** except migrations and central index
+    - Admin processing/review feature modules
+    - streaming/trim/transcript/draft tests
+    - steward requests for config/dependency/worker/migration changes
+    explicit_excludes: []
+  P21:
+    writer_slots:
+    - CONTENT_PUBLICATION
+    normalized_owned_globs:
+    - apps/web/src/client/app/admin/content/publication/**
+    - apps/web/src/client/app/student/library/**
+    - apps/web/src/server/features/content/publication/**
+    - packages/contracts/src/content/publication/**
+    - packages/db/src/content/publication/**
+    - packages/domain/src/content/publication/**
+    scope_notes_only:
+    - packages/db/src/content/publication/** except migrations and central index
+    - Vimeo/playback/search/resume authorization tests
+    - steward requests for config/dependency/route/migration changes
+    explicit_excludes: []
+  P22:
+    writer_slots:
+    - LEARNING_ENGAGEMENT
+    normalized_owned_globs:
+    - apps/web/src/client/app/admin/learning/**
+    - apps/web/src/client/app/student/learning/**
+    - apps/web/src/server/features/learning/**
+    - packages/contracts/src/gamification/**
+    - packages/contracts/src/learning/**
+    - packages/db/src/gamification/**
+    - packages/db/src/learning/**
+    - packages/domain/src/gamification/**
+    - packages/domain/src/learning/**
+    scope_notes_only:
+    - packages/db/src/learning/** except migrations and central index
+    - packages/db/src/gamification/** except migrations and central index
+    - learning/recognition/privacy-boundary tests
+    - steward requests for route/migration/registration changes
+    explicit_excludes: []
+  P23:
+    writer_slots:
+    - STUDENT_NOTIFICATIONS
+    normalized_owned_globs:
+    - apps/web/src/client/app/student/notifications/**
+    - apps/web/src/server/features/notifications/student/**
+    - packages/contracts/src/notifications/student/**
+    - packages/db/src/notifications/student/**
+    - packages/domain/src/notifications/student/**
+    scope_notes_only:
+    - packages/db/src/notifications/student/** except migrations and central index
+    - notification lifecycle/a11y tests
+    - steward requests for route/migration/registration changes
+    explicit_excludes: []
+  P24:
+    writer_slots:
+    - SUPPORT
+    normalized_owned_globs:
+    - apps/web/src/client/app/admin/support/**
+    - apps/web/src/client/app/student/support/**
+    - apps/web/src/server/features/support/**
+    - packages/contracts/src/support/**
+    - packages/db/src/support/**
+    - packages/domain/src/support/**
+    scope_notes_only:
+    - packages/db/src/support/** except migrations and central index
+    - apps/web/src/client/app/parent/support/** integration module
+    - support/Telegram/privacy tests
+    - steward requests for config/dependency/route/migration changes
+    explicit_excludes: []
+  P25:
+    writer_slots:
+    - BILLING_COMMERCIAL
+    normalized_owned_globs:
+    - apps/web/src/client/app/parent/billing/**
+    - apps/web/src/server/features/billing/commercial/**
+    - packages/contracts/src/billing/commercial/**
+    - packages/db/src/billing/commercial/**
+    - packages/domain/src/billing/commercial/**
+    scope_notes_only:
+    - packages/db/src/billing/commercial/** except migrations and central index
+    - GHL-hosted billing adapter modules
+    - billing commercial/idempotency tests
+    - steward requests for config/dependency/route/migration changes
+    explicit_excludes: []
+  P26:
+    writer_slots:
+    - BILLING_ACCESS
+    normalized_owned_globs:
+    - apps/web/src/server/features/billing/access/**
+    - apps/worker/src/runners/billing-reconciliation/**
+    - packages/contracts/src/billing/access/**
+    - packages/db/src/billing/access/**
+    - packages/domain/src/billing/access/**
+    scope_notes_only:
+    - packages/db/src/billing/access/** except migrations and central index
+    - billing projection/grace/authorization/concurrency tests
+    - steward requests for config/dependency/route/worker/migration changes
+    explicit_excludes: []
+  P27:
+    writer_slots:
+    - GHL_IDENTITY
+    normalized_owned_globs:
+    - apps/worker/src/runners/ghl-identity/**
+    - integrations/highlevel/v21/identity/**
+    - packages/contracts/src/communications/ghl-identity/**
+    - packages/db/src/communications/ghl-identity/**
+    - packages/domain/src/communications/ghl-identity/**
+    scope_notes_only:
+    - packages/db/src/communications/ghl-identity/** except migrations and central index
+    - GHL dedupe/ambiguity/Student-prohibition tests
+    - steward requests for config/dependency/worker/migration changes
+    explicit_excludes: []
+  P28:
+    writer_slots:
+    - GHL_REGISTRY
+    - COMMUNICATION_FOUNDATION
+    normalized_owned_globs:
+    - apps/worker/src/runners/communications-foundation/**
+    - integrations/highlevel/registry/workflow-registry.yaml
+    - integrations/highlevel/v21/foundation/**
+    - packages/contracts/src/communications/foundation/**
+    - packages/db/src/communications/foundation/**
+    - packages/domain/src/communications/foundation/**
+    scope_notes_only:
+    - packages/db/src/communications/foundation/** except migrations and central index
+    - website bot lead-capture modules
+    - sender/suppression/readback/preference tests
+    - steward requests for config/dependency/route/worker/migration changes
+    explicit_excludes: []
+  P29:
+    writer_slots:
+    - GHL_CORE_WORKFLOWS
+    normalized_owned_globs:
+    - apps/worker/src/runners/ghl-workflows/core/**
+    - integrations/highlevel/v21/workflow-fragments/P29-core-lifecycle.yaml
+    - packages/domain/src/communications/workflows/core/**
+    scope_notes_only:
+    - core lifecycle workflow tests and readback fixtures
+    - steward request for canonical GHL registry registration
+    explicit_excludes: []
+  P30:
+    writer_slots:
+    - GHL_CAMPAIGNS
+    normalized_owned_globs:
+    - apps/worker/src/runners/ghl-workflows/campaigns/**
+    - integrations/highlevel/v21/workflow-fragments/P30-campaigns.yaml
+    - packages/domain/src/communications/workflows/campaigns/**
+    scope_notes_only:
+    - newsletter/reactivation/conversion tests and readback fixtures
+    - steward request for canonical GHL registry registration
+    explicit_excludes: []
+  P31:
+    writer_slots:
+    - COPY_CATALOG
+    normalized_owned_globs:
+    - apps/web/src/server/features/email/templates/**
+    - integrations/highlevel/v21/copy/**
+    - packages/domain/src/communications/copy/**
+    scope_notes_only:
+    - copy catalog generation/approval tests
+    - steward requests for registration/config only
+    explicit_excludes: []
+  P32:
+    writer_slots:
+    - PRIVACY_DATA_RIGHTS
+    normalized_owned_globs:
+    - apps/web/src/client/app/admin/privacy/**
+    - apps/web/src/client/app/parent/privacy/**
+    - apps/web/src/server/features/privacy/**
+    - apps/worker/src/runners/privacy-retention/**
+    - packages/contracts/src/privacy/**
+    - packages/db/src/privacy/**
+    - packages/domain/src/privacy/**
+    scope_notes_only:
+    - packages/db/src/privacy/** except migrations and central index
+    - consent/export/delete/retention/redaction tests
+    - steward requests for config/route/worker/migration changes
+    explicit_excludes: []
+  P33:
+    writer_slots:
+    - OPERATIONS_RUNTIME
+    normalized_owned_globs:
+    - apps/web/src/server/operations/**
+    - apps/worker/src/operations/**
+    - ops/runbooks/v2.1/runtime/**
+    - packages/observability/v21/**
+    - scripts/operations/v21/health/**
+    - scripts/operations/v21/monitoring/**
+    - scripts/operations/v21/runtime/**
+    scope_notes_only:
+    - apps/web/src/server/operations/** except central app registration
+    - apps/worker/src/operations/** except central runner registration
+    - runtime identity/health/redaction/leakage tests
+    - steward requests for config/dependency/deploy registration
+    explicit_excludes:
+    - scripts/operations/v21/backup-restore/**
+    - scripts/operations/v21/canary-budget/**
+  P34:
+    writer_slots:
+    - OPERATIONS_RECOVERY
+    normalized_owned_globs:
+    - ops/runbooks/v2.1/backup-restore/**
+    - ops/runbooks/v2.1/canary/**
+    - ops/runbooks/v2.1/rollback/**
+    - ops/v2.1-execution/proofs/<candidate-digest>/P34/**
+    - scripts/operations/v21/backup-restore/**
+    - scripts/operations/v21/canary-budget/**
+    scope_notes_only:
+    - legal artifact gate validation modules
+    - backup/restore/rollback/effect-budget tests
+    - candidate-bound P34 non-result supporting proof after R44
+    - steward requests for config/deploy changes
+    explicit_excludes: []
+  P35:
+    writer_slots:
+    - DOMAIN_TRANSITION
+    normalized_owned_globs:
+    - apps/web/src/client/public/domain-transition/**
+    - apps/web/src/server/features/domain-transition/**
+    - ops/archive/tisha-bav-template/**
+    - ops/runbooks/v2.1/domain-cutover/**
+    - scripts/v21-migration/**
+    scope_notes_only:
+    - scripts/v21-migration/** except immutable SQL migrations
+    - domain/redirect/migration/re-registration tests
+    - steward requests for config/deploy/migration/route changes
+    explicit_excludes: []
+forbidden_for_feature_tasks:
+- applied migration edits
+- new migration files outside F02
+- central server/client/worker composer edits after F01 interface checkpoint
+- root contract/domain barrel edits
+- package manifests/lockfiles
+- global styles/design tokens outside F07
+- canonical GHL registry outside P28/I36
+- global control/merge ledgers
+- another task's runtime or evidence files

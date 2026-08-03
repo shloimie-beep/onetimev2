@@ -590,7 +590,7 @@ function sreReadiness(): JsonValue {
     deployment_guard: 'scripts/w13-10/staging-deploy-guard.ts',
     deployment_mutations: 0,
     required_checks: [
-      'web health/readiness/version',
+      'fixed public health/readiness/version and protected runtime identity',
       'worker heartbeat and drain state',
       'queue depth and oldest age',
       'database locks and migration drift',
@@ -613,7 +613,7 @@ Requires exact project ID, environment ID, web service ID, worker service ID, da
 function stagingRollbackRunbook() {
   return `# Staging Rollback And Rollforward
 
-Record /version before deploy. Roll back only to the exact pre-deploy source and digest. Roll forward only to the exact candidate source and digest. Preserve source rebuild fallback. Database restore is a separately authorized last resort, never a routine rollback step.
+Record protected diagnostics runtime identity before deploy. Roll back only to the exact pre-deploy source and digest. Roll forward only to the exact candidate source and digest. Preserve source rebuild fallback. Database restore is a separately authorized last resort, never a routine rollback step.
 `;
 }
 
@@ -627,7 +627,7 @@ Production promotion is blocked until PRODUCT-DECISION-GATES.json has accepted d
 function incidentResponseRunbook() {
   return `# Incident Response
 
-Classify incident, preserve redacted evidence, disable provider transports first where outbound risk exists, pause imports, inspect queue/backpressure, verify /health /ready /version, and escalate legal/privacy issues before publication or customer messaging.
+Classify incident, preserve redacted evidence, disable provider transports first where outbound risk exists, pause imports, inspect queue/backpressure, verify fixed public /health /ready /version codes and protected diagnostics runtime, and escalate legal/privacy issues before publication or customer messaging.
 `;
 }
 
@@ -641,7 +641,7 @@ Default all provider transports off: email, WhatsApp, Telegram, Zoom, Vimeo, Buf
 function slosAndAlertsRunbook() {
   return `# SLOs And Alerts
 
-Track web health/readiness/version, signup latency/errors, worker heartbeat, queue depth, oldest age, claim leases, retries, dead letters, database saturation/locks, migration drift, backup age, login/activation/reset failures, webhook replay/signature failures, provider canary budgets, class launch projection, billing reconciliation, and support bridge health.
+Track fixed public web health/readiness/version, protected runtime identity, signup latency/errors, worker heartbeat, queue depth, oldest age, claim leases, retries, dead letters, database saturation/locks, migration drift, backup age, login/activation/reset failures, webhook replay/signature failures, provider canary budgets, class launch projection, billing reconciliation, and support bridge health.
 `;
 }
 

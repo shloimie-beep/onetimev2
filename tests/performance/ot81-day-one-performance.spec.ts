@@ -38,14 +38,16 @@ test.describe('OT81 integrated 30-sample performance matrix', () => {
       await measureRoute(page, 'landing', async () => {
         await page.goto('/');
         await page
-          .getByRole('heading', { name: 'Give your son a love for learning Torah.' })
+          .getByRole('heading', {
+            name: 'MISHNAYOS MADE MEMORABLE',
+          })
           .waitFor();
       }),
     );
     results.push(
       await measureRoute(page, 'signup', async () => {
         await page.goto('/signup');
-        await page.getByRole('heading', { name: 'Sign Up Now' }).waitFor();
+        await page.getByRole('heading', { name: 'Pre-register Your Family' }).waitFor();
       }),
     );
     results.push(
@@ -123,19 +125,14 @@ test.describe('OT81 integrated 30-sample performance matrix', () => {
 });
 
 async function createSyntheticContact(page: Page) {
-  await page.goto('/signup');
+  await page.goto('/school');
   const email = `ot81-perf-${Date.now()}@example.test`;
-  await page.getByLabel('Parent or contact name').fill('OT81 Performance Parent');
-  await page.getByLabel('Family or School').fill('OT81 Performance Family');
-  await page.getByLabel('Location').fill('Jerusalem');
-  await page.getByRole('textbox', { name: 'Email' }).fill(email);
-  await expect(page.getByLabel('Email class reminders')).not.toBeChecked();
-  await expect(page.getByLabel('WhatsApp class reminders')).not.toBeChecked();
-  await page.getByLabel('Email class reminders').check();
-  await page.getByRole('button', { name: 'Sign Up Now' }).click();
-  await page
-    .getByRole('heading', { name: 'Thank you - we received your Family signup.' })
-    .waitFor();
+  await page.getByLabel('School name').fill('OT81 Performance School');
+  await page.getByLabel('Contact first name').fill('OT81');
+  await page.getByLabel('Contact last name').fill('Performance Parent');
+  await page.getByRole('textbox', { name: 'School contact email' }).fill(email);
+  await page.getByRole('button', { name: 'Send school inquiry' }).click();
+  await page.getByRole('heading', { name: /received your school inquiry/i }).waitFor();
   await login(page, 'ot-admin@example.test', 'TestPassword!234', '/app/crm');
   const contactId = await page.evaluate(async (needle) => {
     const response = await fetch('/api/v1/crm/contacts');
@@ -180,7 +177,9 @@ async function measureRoute(page: Page, route: string, run: () => Promise<void>)
       lcp_ms: typeof vitals.lcp === 'number' ? Number(vitals.lcp.toFixed(1)) : null,
       cls: typeof vitals.cls === 'number' ? Number(vitals.cls.toFixed(4)) : null,
       browser_vitals_supported: !vitals.unsupported,
-      bna_operations_fanout_count: requests.filter((url) => /bna|operations/i.test(url)).length,
+      bna_operations_fanout_count: requests.filter((url) =>
+        /\/(?:bna|operations)(?:\/|$)/i.test(new URL(url).pathname),
+      ).length,
     });
   }
   const durations = samples.map((sample) => sample.duration_ms).sort((left, right) => left - right);

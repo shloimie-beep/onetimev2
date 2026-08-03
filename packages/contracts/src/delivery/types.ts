@@ -38,9 +38,38 @@ export type DeliveryOutboxStatus =
   | 'processing'
   | 'sink_delivered'
   | 'delivered'
+  | 'acceptance_unknown'
   | 'suppressed'
   | 'skipped'
   | 'dead_lettered';
+
+export const DELIVERY_PROVIDER_OPERATION_STATES = [
+  'not_started',
+  'in_flight',
+  'accepted',
+  'rejected',
+  'acceptance_unknown',
+] as const;
+export type DeliveryProviderOperationState = (typeof DELIVERY_PROVIDER_OPERATION_STATES)[number];
+
+export type DeliveryProviderName = 'resend' | 'one_time_wapi';
+export type DeliveryProviderAcceptanceRecovery = 'retry_same_key' | 'quarantine';
+
+export type DeliveryProviderOperation = {
+  provider: DeliveryProviderName;
+  idempotencyKey: string;
+  acceptanceRecovery: DeliveryProviderAcceptanceRecovery;
+};
+
+export type ClaimedDeliveryProviderOperation = {
+  state: DeliveryProviderOperationState;
+  provider: DeliveryProviderName | null;
+  idempotencyKey: string | null;
+  acceptanceRefHash: string | null;
+  dispatchedAt: Date | null;
+  acceptedAt: Date | null;
+  updatedAt: Date | null;
+};
 
 export type DeliveryContact = {
   contactKey: string;
@@ -79,6 +108,7 @@ export type ClaimedDelivery = {
   attempts: number;
   createdAt: Date;
   claimLeaseExpiresAt: Date;
+  providerOperation: ClaimedDeliveryProviderOperation;
   contact: DeliveryContact | null;
   signup: DeliverySignup | null;
 };
@@ -129,12 +159,14 @@ export type ProviderSendContext = {
 };
 
 export interface DeliveryProviderRouter {
+  providerOperation?(request: DeliveryRequest): DeliveryProviderOperation;
   send(request: DeliveryRequest, context: ProviderSendContext): Promise<ProviderReceipt>;
 }
 
 export type DeliveryFailure = {
   code: string;
   category: 'transient' | 'permanent';
+  acceptance: 'not_accepted' | 'unknown';
   provider?: 'resend' | 'one_time_wapi' | 'worker';
   httpStatus?: number;
   retryAfterMs?: number;
@@ -173,6 +205,11 @@ export type DeliveryOutcome =
       failure: DeliveryFailure;
     }
   | {
+      kind: 'acceptance_unknown';
+      at: Date;
+      failure: DeliveryFailure;
+    }
+  | {
       kind: 'suppressed';
       at: Date;
       reason: 'contact_suppressed';
@@ -194,6 +231,34 @@ export type ClaimBatchInput = {
 
 export interface DeliveryRepository {
   claimBatch(input: ClaimBatchInput): Promise<ClaimedDelivery[]>;
+  beginProviderOperation(
+    claim: ClaimedDelivery,
+    operation: DeliveryProviderOperation,
+    at: Date,
+  ): Promise<
+    | { kind: 'dispatch' }
+    | { kind: 'accepted'; receipt: ProviderReceipt }
+    | { kind: 'acceptance_unknown' }
+    | { kind: 'lease_lost' }
+  >;
+  recordProviderAccepted(
+    claim: ClaimedDelivery,
+    operation: DeliveryProviderOperation,
+    receipt: ProviderReceipt,
+    at: Date,
+  ): Promise<boolean>;
+  recordProviderRejected(
+    claim: ClaimedDelivery,
+    operation: DeliveryProviderOperation,
+    failure: DeliveryFailure,
+    at: Date,
+  ): Promise<boolean>;
+  recordProviderAcceptanceUnknown(
+    claim: ClaimedDelivery,
+    operation: DeliveryProviderOperation,
+    failure: DeliveryFailure,
+    at: Date,
+  ): Promise<boolean>;
   complete(claim: ClaimedDelivery, outcome: DeliveryOutcome): Promise<boolean>;
 }
 
@@ -209,6 +274,7 @@ export type DeliveryRunSummary = {
   sinkDelivered: number;
   retried: number;
   deadLettered: number;
+  acceptanceUnknown: number;
   suppressed: number;
   skipped: number;
   leaseLost: number;

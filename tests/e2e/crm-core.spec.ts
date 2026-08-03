@@ -10,20 +10,18 @@ test('synthetic signup appears once in authenticated CRM and opens detail on mob
   const contactName = `CRM Browser Parent ${Date.now()}`;
 
   await page.goto('/signup');
-  await page.getByLabel('Parent or contact name').fill(contactName);
-  await page.getByLabel('Family or School').fill('CRM Browser Family');
-  await page.getByLabel('Location').fill('Jerusalem');
-  await page.getByRole('textbox', { name: 'Email' }).fill(email);
-  await expect(page.getByLabel('Email class reminders')).not.toBeChecked();
-  await expect(page.getByLabel('WhatsApp class reminders')).not.toBeChecked();
-  await page.getByLabel('Email class reminders').check();
-  await page.getByRole('button', { name: 'Sign Up Now' }).click();
+  await page.getByLabel('Adult name').fill(contactName);
+  await page.getByLabel('Family or household name').fill('CRM Browser Family');
+  await page.getByLabel('Adult location').fill('Jerusalem');
+  await page.getByRole('textbox', { name: 'Adult email' }).fill(email);
+  await expect(page.getByLabel(/Student|WhatsApp|marketing/i)).toHaveCount(0);
+  await page.getByRole('button', { name: 'Pre-register my Family' }).click();
   await expect(
-    page.getByRole('heading', { name: 'Thank you - we received your Family signup.' }),
+    page.getByRole('heading', { name: 'Adult pre-registration received.' }),
   ).toBeVisible();
 
   await login(page);
-  await expect(page.getByRole('heading', { name: 'CRM' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Contacts' })).toBeVisible();
   await expect(page.getByLabel('Search')).toBeEnabled();
   await page.getByLabel('Search').fill(email);
   await page.getByRole('button', { name: 'Apply' }).click();
@@ -40,7 +38,7 @@ test('synthetic signup appears once in authenticated CRM and opens detail on mob
   expect(requested.some((url) => url.includes('operations') || url.includes('bna'))).toBe(false);
 
   await page.getByRole('button', { name: 'Back to CRM' }).click();
-  await expect(page.getByRole('heading', { name: 'CRM' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Contacts' })).toBeVisible();
   await page.goBack();
   await expect(page.getByRole('heading', { name: contactName })).toBeVisible();
 });
@@ -53,7 +51,7 @@ test('CRM create and edit controls are keyboard reachable with readable names', 
   await page.keyboard.press('Tab');
   await page.keyboard.press('Tab');
   await expect(page.locator('.mobile-current-link')).toBeFocused();
-  await page.getByLabel('CRM toolbar').getByRole('button', { name: 'Add contact' }).click();
+  await page.getByLabel('Contacts toolbar').getByRole('button', { name: 'Add contact' }).click();
   const createForm = page.locator('.contact-form');
   await createForm.getByRole('textbox', { name: 'Name' }).fill('Keyboard Contact');
   await createForm.getByLabel('Type').selectOption('school');

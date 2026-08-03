@@ -97,7 +97,7 @@ async function runConcurrencyProof(pool: DbPool) {
     idempotency_key: `ot83-seed-${suffix}-1`,
     display_name: 'Seed Learner 1',
   });
-  const second = await service.createLearner(actor, householdKey, {
+  await service.createLearner(actor, householdKey, {
     idempotency_key: `ot83-seed-${suffix}-2`,
     display_name: 'Seed Learner 2',
   });
@@ -137,28 +137,111 @@ async function runConcurrencyProof(pool: DbPool) {
     idempotency_key: `ot83-replacement-${suffix}`,
     display_name: 'Replacement Learner',
   });
-  let restoreBlocked = false;
-  try {
-    await service.restoreLearner(actor, householdKey, first.learner_key, {
-      idempotency_key: `ot83-restore-blocked-${suffix}`,
+  const replacementReplay = await service.createLearner(actor, householdKey, {
+    idempotency_key: `ot83-replacement-${suffix}`,
+    display_name: 'Replacement Learner',
+  });
+  const conflictingReplacementCode = await rejectionCode(
+    service.createLearner(actor, householdKey, {
+      idempotency_key: `ot83-replacement-${suffix}`,
+      display_name: 'Conflicting Replacement Learner',
+    }),
+  );
+  const blockedRestoreIdempotencyKey = `ot83-restore-after-replacement-${suffix}`;
+  const blockedRestoreCode = await rejectionCode(
+    service.restoreLearner(actor, householdKey, first.learner_key, {
+      idempotency_key: blockedRestoreIdempotencyKey,
       version: reArchived.version,
-    });
-  } catch (error) {
-    restoreBlocked =
-      typeof error === 'object' &&
-      error !== null &&
-      'code' in error &&
-      error.code === 'LEARNER_LIMIT_REACHED';
-  }
-
-  const auditRows = await pool.query(
-    `SELECT action_type, learner_key
-       FROM onetime.portal_audit_actions
+    }),
+  );
+  const activeAfterFinalRestore = await activeCount(pool, accountKey, productKey, householdKey);
+  const firstAfterBlockedRestore = await pool.query(
+    `SELECT learner_status, version
+       FROM onetime.portal_learners
       WHERE account_key = $1
         AND product_key = $2
         AND household_key = $3
-      ORDER BY created_at ASC`,
-    [accountKey, productKey, householdKey],
+        AND learner_key = $4`,
+    [accountKey, productKey, householdKey, first.learner_key],
+  );
+  const blockedRestoreWrites = await pool.query(
+    `SELECT
+       (SELECT count(*)::int
+          FROM onetime.portal_mutation_idempotency_records
+         WHERE account_key = $1
+           AND product_key = $2
+           AND actor_user_ref = $3
+           AND idempotency_key = $4) AS idempotency_count,
+       (SELECT count(*)::int
+          FROM onetime.portal_audit_actions
+         WHERE account_key = $1
+           AND product_key = $2
+           AND household_key = $5
+           AND learner_key = $6
+           AND action_type = 'learner_active') AS successful_restore_audit_count`,
+    [
+      accountKey,
+      productKey,
+      actor.actor_user_ref,
+      blockedRestoreIdempotencyKey,
+      householdKey,
+      first.learner_key,
+    ],
+  );
+
+  const legacyHouseholdKey = `household_ot83_legacy_${suffix}`;
+  const legacyActor: PortalActorContext = {
+    ...actor,
+    authorized_households: [
+      {
+        household_key: legacyHouseholdKey,
+        relationship_key: `relationship_ot83_legacy_${suffix}`,
+        relationship_label: 'Parent',
+        authority: 'primary_guardian',
+      },
+    ],
+  };
+  await pool.query(
+    `INSERT INTO onetime.portal_households
+       (household_key, account_key, product_key, display_name)
+     VALUES ($1, $2, $3, 'OT83 Synthetic Legacy Limit')`,
+    [legacyHouseholdKey, accountKey, productKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.portal_learners
+       (learner_key, account_key, product_key, household_key, display_name)
+     VALUES
+       ($1, $5, $6, $7, 'Synthetic Legacy Learner 1'),
+       ($2, $5, $6, $7, 'Synthetic Legacy Learner 2'),
+       ($3, $5, $6, $7, 'Synthetic Legacy Learner 3'),
+       ($4, $5, $6, $7, 'Synthetic Legacy Learner 4')`,
+    [
+      `learner_ot83_legacy_${suffix}_1`,
+      `learner_ot83_legacy_${suffix}_2`,
+      `learner_ot83_legacy_${suffix}_3`,
+      `learner_ot83_legacy_${suffix}_4`,
+      accountKey,
+      productKey,
+      legacyHouseholdKey,
+    ],
+  );
+  const legacyBefore = await legacyMutationCounts(pool, accountKey, productKey, legacyHouseholdKey);
+  const legacyProjection = await createPortalRepository(pool).getHousehold({
+    actor: legacyActor,
+    household_key: legacyHouseholdKey,
+  });
+  const legacyCreateCode = await rejectionCode(
+    service.createLearner(legacyActor, legacyHouseholdKey, {
+      idempotency_key: `ot83-legacy-create-${suffix}`,
+      display_name: 'Must Not Be Created',
+    }),
+  );
+  const legacyAfter = await legacyMutationCounts(pool, accountKey, productKey, legacyHouseholdKey);
+  const crossHouseholdCode = await rejectionCode(
+    service.createLearner(actor, legacyHouseholdKey, {
+      idempotency_key: `ot83-cross-household-${suffix}`,
+      display_name: 'Must Not Cross Scope',
+    }),
   );
 
   const status =
@@ -167,14 +250,27 @@ async function runConcurrencyProof(pool: DbPool) {
     activeAfterRace === 3 &&
     restored.learner_status === 'active' &&
     replacement.learner_status === 'active' &&
-    restoreBlocked
+    replacementReplay.learner_key === replacement.learner_key &&
+    conflictingReplacementCode === 'IDEMPOTENCY_CONFLICT' &&
+    blockedRestoreCode === 'LEARNER_LIMIT_REACHED' &&
+    activeAfterFinalRestore === 3 &&
+    firstAfterBlockedRestore.rows[0]?.learner_status === 'archived' &&
+    Number(firstAfterBlockedRestore.rows[0]?.version) === reArchived.version &&
+    Number(blockedRestoreWrites.rows[0]?.idempotency_count) === 0 &&
+    Number(blockedRestoreWrites.rows[0]?.successful_restore_audit_count) === 1 &&
+    legacyProjection?.active_learner_count === 4 &&
+    legacyProjection.max_active_learners === 3 &&
+    legacyProjection.learner_limit_reached === true &&
+    legacyCreateCode === 'LEARNER_LIMIT_REACHED' &&
+    JSON.stringify(legacyAfter) === JSON.stringify(legacyBefore) &&
+    crossHouseholdCode === 'NOT_FOUND'
       ? 'completed'
       : 'failed';
 
   return {
     status,
     scenario:
-      'Start with two active learners; launch two concurrent seat-consuming attempts; exactly one succeeds and one receives LEARNER_LIMIT_REACHED.',
+      'Start with two active learners; race two creates for the final seat; preserve archive, restore, replay, scope, and synthetic legacy-state atomicity under the household lock.',
     race: {
       fulfilled: fulfilled.length,
       limit_rejections: limitRejections.length,
@@ -183,20 +279,83 @@ async function runConcurrencyProof(pool: DbPool) {
     archive_restore: {
       archived_status: archived.learner_status,
       restored_status: restored.learner_status,
-      replacement_learner_key: replacement.learner_key,
-      restore_blocked_at_capacity: restoreBlocked,
+      replacement_replayed: replacementReplay.learner_key === replacement.learner_key,
+      conflicting_replay_code: conflictingReplacementCode,
+      restore_after_replacement_code: blockedRestoreCode,
+      active_after_final_restore: activeAfterFinalRestore,
+      rejected_restore_idempotency_rows: Number(
+        blockedRestoreWrites.rows[0]?.idempotency_count ?? -1,
+      ),
+      successful_restore_audit_rows: Number(
+        blockedRestoreWrites.rows[0]?.successful_restore_audit_count ?? -1,
+      ),
     },
-    audit_actions: auditRows.rows.map((row) => ({
-      action_type: String(row.action_type),
-      learner_key: String(row.learner_key),
-    })),
-    seeded_learners: [first.learner_key, second.learner_key],
+    synthetic_legacy_state: {
+      active_count: legacyProjection?.active_learner_count ?? null,
+      maximum: legacyProjection?.max_active_learners ?? null,
+      limit_reached: legacyProjection?.learner_limit_reached ?? null,
+      create_code: legacyCreateCode,
+      unchanged: JSON.stringify(legacyAfter) === JSON.stringify(legacyBefore),
+    },
+    scope: {
+      cross_household_code: crossHouseholdCode,
+    },
     external_mutations: {
       production_database: false,
       railway: false,
       providers: false,
       sends: false,
     },
+  };
+}
+
+async function rejectionCode(operation: Promise<unknown>) {
+  try {
+    await operation;
+    return null;
+  } catch (error) {
+    if (typeof error === 'object' && error && 'code' in error) {
+      return String(error.code);
+    }
+    throw error;
+  }
+}
+
+async function legacyMutationCounts(
+  pool: DbPool,
+  accountKey: string,
+  productKey: string,
+  householdKey: string,
+) {
+  const result = await pool.query(
+    `SELECT
+       (SELECT count(*)::int
+          FROM onetime.portal_learners
+         WHERE account_key = $1
+           AND product_key = $2
+           AND household_key = $3) AS learner_count,
+       (SELECT count(*)::int
+          FROM onetime.portal_student_access_state
+         WHERE account_key = $1
+           AND product_key = $2
+           AND household_key = $3) AS access_state_count,
+       (SELECT count(*)::int
+          FROM onetime.portal_audit_actions
+         WHERE account_key = $1
+           AND product_key = $2
+           AND household_key = $3) AS audit_count,
+       (SELECT count(*)::int
+          FROM onetime.portal_mutation_idempotency_records
+         WHERE account_key = $1
+           AND product_key = $2
+           AND operation_scope = $4) AS idempotency_count`,
+    [accountKey, productKey, householdKey, `learner.create:${householdKey}`],
+  );
+  return {
+    learner_count: Number(result.rows[0]?.learner_count ?? -1),
+    access_state_count: Number(result.rows[0]?.access_state_count ?? -1),
+    audit_count: Number(result.rows[0]?.audit_count ?? -1),
+    idempotency_count: Number(result.rows[0]?.idempotency_count ?? -1),
   };
 }
 

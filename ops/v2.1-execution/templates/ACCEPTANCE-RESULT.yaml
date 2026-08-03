@@ -1,0 +1,60 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+case_id: ${CASE_ID}
+requirement_id: ${REQUIREMENT_ID}
+verification_lane: ${TASK_ID}
+status: ${PASSED_FAILED_BLOCKED}
+blocker_code: ${CODE_OR_NONE}
+supersedes_result_digest: ${PRIOR_RESULT_DIGEST_OR_NONE}
+candidate_digest: ${CANONICAL_CANDIDATE_DIGEST}
+candidate:
+  repository_source_sha: ${PRODUCT_SOURCE_SHA}
+  application_content_sha256: ${APPLICATION_CONTENT_SHA256}
+  product_tree_digest: ${PRODUCT_TREE_DIGEST}
+  candidate_manifest_digest: ${CANDIDATE_MANIFEST_DIGEST}
+  web_artifact_digest: ${WEB_DIGEST}
+  worker_artifact_digest: ${WORKER_DIGEST}
+  configuration_bundle_digest: ${CANDIDATE_CONFIGURATION_BUNDLE_DIGEST}
+  migration_inventory_digest: ${MIGRATION_INVENTORY_DIGEST}
+  frontend_asset_digest: ${FRONTEND_DIGEST}
+  route_action_inventory_digest: ${ROUTE_ACTION_DIGEST}
+  workflow_registry_digest: ${WORKFLOW_DIGEST}
+  highlevel_registry_digest: ${HIGHLEVEL_REGISTRY_DIGEST}
+  provider_registry_digest: ${PROVIDER_REGISTRY_DIGEST}
+  message_catalog_digest: ${MESSAGE_CATALOG_DIGEST}
+  acceptance_contract_digest: ${ACCEPTANCE_CONTRACT_DIGEST}
+  environment_profile_schema_digest: ${ENVIRONMENT_PROFILE_SCHEMA_DIGEST}
+allowed_environment_contract:
+  matrix_digest: ${ACCEPTANCE_ENVIRONMENT_MATRIX_DIGEST}
+  allowed_environments: []
+environment:
+  verification_environment_id: ${ENVIRONMENT_ID}
+  runtime_tier: ${RUNTIME_TIER}
+deployment_instance:
+  deployment_instance_id: ${DEPLOYMENT_INSTANCE_ID}
+  deployment_instance_digest: ${DEPLOYMENT_INSTANCE_DIGEST}
+  deployed_artifact_digest: ${DEPLOYED_ARTIFACT_SET_DIGEST}
+  configuration_digest: ${DEPLOYMENT_CONFIGURATION_DIGEST}
+  migration_inventory_digest: ${DEPLOYED_MIGRATION_INVENTORY_DIGEST}
+  deployment_time: ${DEPLOYMENT_TIME}
+  production_specific_gate: ${TRUE_OR_FALSE}
+provider_context:
+  registry_digest: ${PROVIDER_REGISTRY_DIGEST}
+  asset_identities: []
+actors_and_fixtures: []
+steps_executed: []
+observed_results: []
+evidence:
+  redacted_artifacts: []
+  digests: []
+external_effects:
+  authority_record: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+cleanup:
+  status: not_applicable
+  evidence: []
+unexpected_effects: 0
+waiver: none
+verified_at: ${UTC_TIMESTAMP}

@@ -1,13 +1,34 @@
 import { createHash } from 'node:crypto';
+import { mkdtemp } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { Readable } from 'node:stream';
 import { loadConfig } from '../../packages/config/src/index.ts';
 import { createMemoryPool, runMigrations } from '../../packages/db/src/index.ts';
 import { createApp } from '../../apps/web/src/server/app.ts';
-import { createAccountUser } from '../../packages/domain/src/index.ts';
+import {
+  createAccountUser,
+  createContentFactoryIntake,
+  contentFactoryStorageFromEnv,
+  editContentFactoryItem,
+  grantFreePilotAccess,
+  performContentFactoryAction,
+  runContentFactoryWorkerOnce,
+} from '../../packages/domain/src/index.ts';
 import {
   W12_PORTAL_TEST_LAB,
+  isPortalTestLabEnabled,
   seedPortalTestLab,
 } from '../../apps/web/src/server/features/portal-test-lab/router.ts';
-import { W12_E2E_ADMIN_SESSION_TOKEN } from './w12-portal-test-lab-session.ts';
+import { CONTACT_OPERATIONS_E2E_OWNER_SESSION_TOKEN } from './contact-operations-session.ts';
+import {
+  W12_E2E_ADMIN_CSRF_TOKEN,
+  W12_E2E_ADMIN_SESSION_TOKEN,
+} from './w12-portal-test-lab-session.ts';
+import {
+  VIMEO_CATALOG_E2E_STUDENT_CSRF_TOKEN,
+  VIMEO_CATALOG_E2E_STUDENT_SESSION_TOKEN,
+} from './vimeo-mishnayos-catalog-session.ts';
 
 const config = loadConfig({
   ...process.env,
@@ -27,6 +48,12 @@ const config = loadConfig({
 });
 const pool = createMemoryPool();
 await runMigrations(pool);
+process.env.CONTENT_FACTORY_STORAGE_DRIVER = 'volume';
+process.env.CONTENT_FACTORY_STORAGE_ROOT = await mkdtemp(
+  path.join(tmpdir(), 'onetime-browser-content-factory-'),
+);
+process.env.CONTENT_FACTORY_MAX_UPLOAD_BYTES = '10485760';
+process.env.CONTENT_FACTORY_PROCESSING_MODE = 'synthetic';
 await createAccountUser({
   pool,
   config,
@@ -54,13 +81,48 @@ const parentUserKey = await createAccountUser({
   role: 'parent',
   mfaCapable: false,
 });
-await seedActiveSupportEntitlement(parentUserKey);
+const pausedParentUserKey = await createAccountUser({
+  pool,
+  config,
+  email: process.env.OT_TEST_PAUSED_PARENT_EMAIL ?? 'ot-paused-parent@example.test',
+  password: process.env.OT_TEST_PAUSED_PARENT_PASSWORD ?? 'PausedParentPassword!234',
+  displayName: 'Test Paused Parent',
+  role: 'parent',
+  mfaCapable: false,
+});
+const contactOperationsParentUserKey = await createAccountUser({
+  pool,
+  config,
+  email: 'contact-operations-parent@example.test',
+  password: 'ContactOperationsParent!234',
+  displayName: 'Contact Operations Parent',
+  role: 'parent',
+  mfaCapable: false,
+});
 const studentUserKey = await createAccountUser({
   pool,
   config,
   email: process.env.OT_TEST_STUDENT_EMAIL ?? 'ot-student@example.test',
   password: process.env.OT_TEST_STUDENT_PASSWORD ?? 'StudentPassword!234',
   displayName: 'Test Student',
+  role: 'student',
+  mfaCapable: false,
+});
+const contactOperationsStudentUserKey = await createAccountUser({
+  pool,
+  config,
+  email: 'contact-operations-student@example.test',
+  password: 'ContactOperationsStudent!234',
+  displayName: 'Contact Operations Student',
+  role: 'student',
+  mfaCapable: false,
+});
+const contentFactoryStudentUserKey = await createAccountUser({
+  pool,
+  config,
+  email: 'content-factory-student@example.test',
+  password: 'ContentFactoryStudent!234',
+  displayName: 'Content Factory Student',
   role: 'student',
   mfaCapable: false,
 });
@@ -83,18 +145,46 @@ await createAccountUser({
   mfaCapable: false,
 });
 await seedDayOneBrowserRecords();
-await seedPortalTestLab({ pool, config });
-await seedW12AdminSession();
+await runContentFactoryBrowserAcceptance();
+if (isPortalTestLabEnabled(config)) {
+  await seedPortalTestLab({ pool, config });
+  await seedW12AdminSession();
+}
+await seedContactOperationsOwnerSession();
+await seedVimeoCatalogStudentSession();
 const testClock = process.env.OT_TEST_CLOCK
   ? () => new Date(String(process.env.OT_TEST_CLOCK))
   : undefined;
-const app = createApp({ config, pool, ...(testClock ? { clock: testClock } : {}) });
+const app = createApp({
+  config,
+  pool,
+  ...(testClock ? { clock: testClock } : {}),
+  contentFactoryJobNotifier: async () => {
+    for (let attempt = 0; attempt < 6; attempt += 1) {
+      await runContentFactoryWorkerOnce({
+        pool,
+        config,
+        storage: contentFactoryStorageFromEnv(),
+        workerIdentity: 'chromium-content-factory-worker',
+        mode: 'synthetic',
+      });
+    }
+  },
+});
 const server = app.listen(config.port);
 
-process.on('SIGTERM', async () => {
+let shutdownStarted = false;
+async function shutdownTestServer() {
+  if (shutdownStarted) return;
+  shutdownStarted = true;
   server.close();
-  await pool.end();
-});
+  server.closeAllConnections?.();
+  await Promise.race([pool.end(), new Promise((resolve) => setTimeout(resolve, 250))]);
+  process.exit(0);
+}
+
+process.once('SIGTERM', () => void shutdownTestServer());
+process.once('SIGINT', () => void shutdownTestServer());
 
 async function seedDayOneBrowserRecords() {
   await pool.query(
@@ -102,16 +192,68 @@ async function seedDayOneBrowserRecords() {
        (household_key, account_key, product_key, display_name)
       VALUES
         ('e2e_household_alpha', $1, $2, 'E2E Alpha Family'),
-        ('e2e_household_zoom', $1, $2, 'E2E Zoom Family')`,
+        ('e2e_household_zoom', $1, $2, 'E2E Zoom Family'),
+        ('e2e_household_paused', $1, $2, 'E2E Paused Family'),
+        ('content_factory_household', $1, $2, 'Content Factory Family'),
+        ('contact_operations_household', $1, $2, 'Contact Operations Family')`,
     [config.accountKey, config.productKey],
   );
   await pool.query(
     `INSERT INTO onetime.portal_guardian_relationships
        (relationship_key, account_key, product_key, household_key, guardian_user_ref,
         relationship_label, authority)
-     VALUES ('e2e_relationship_alpha', $1, $2, 'e2e_household_alpha', $3, 'Parent',
-        'primary_guardian')`,
-    [config.accountKey, config.productKey, parentUserKey],
+     VALUES
+       ('e2e_relationship_alpha', $1, $2, 'e2e_household_alpha', $3, 'Parent',
+        'primary_guardian'),
+       ('e2e_relationship_paused', $1, $2, 'e2e_household_paused', $4, 'Parent',
+        'primary_guardian'),
+       ('contact_operations_relationship', $1, $2, 'contact_operations_household', $5,
+        'Parent', 'primary_guardian')`,
+    [
+      config.accountKey,
+      config.productKey,
+      parentUserKey,
+      pausedParentUserKey,
+      contactOperationsParentUserKey,
+    ],
+  );
+  await pool.query(
+    `INSERT INTO onetime.contacts
+       (contact_key, public_contact_id, account_key, product_key, display_name,
+        family_school_classification, family_or_school, location_text, timezone,
+        email_normalized, reminder_preference, suppression_state, source)
+     VALUES
+       ('e2e_contact_parent','e2e-public-parent',$1,$2,'Test Parent',
+        'family','E2E Alpha Family','Jerusalem','Asia/Jerusalem',
+        'ot-parent@example.test','none','active','e2e_fixture'),
+       ('e2e_contact_paused_parent','e2e-public-paused-parent',$1,$2,'Test Paused Parent',
+        'family','E2E Paused Family','Jerusalem','Asia/Jerusalem',
+        'ot-paused-parent@example.test','none','active','e2e_fixture'),
+       ('contact_operations_parent','contact-operations-public-parent',$1,$2,
+        'Contact Operations Parent','family','Contact Operations Family','Jerusalem',
+        'Asia/Jerusalem','contact-operations-parent@example.test','none','active',
+        'contact_operations_e2e_fixture')`,
+    [config.accountKey, config.productKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.adult_household_contact_links
+       (link_key, account_key, product_key, contact_key, household_key,
+        guardian_user_ref, highlevel_location_id, highlevel_contact_id, sync_state)
+     VALUES
+       ('e2e_adult_link_parent',$1,$2,'e2e_contact_parent','e2e_household_alpha',
+        $5,$4,NULL,'sync_pending'),
+       ('e2e_adult_link_paused',$1,$2,'e2e_contact_paused_parent','e2e_household_paused',
+        $3,$4,NULL,'sync_pending'),
+       ('contact_operations_adult_link',$1,$2,'contact_operations_parent',
+        'contact_operations_household',$6,$4,'contact_operations_highlevel_parent','synced')`,
+    [
+      config.accountKey,
+      config.productKey,
+      pausedParentUserKey,
+      config.highLevelLocationId,
+      parentUserKey,
+      contactOperationsParentUserKey,
+    ],
   );
   await pool.query(
     `INSERT INTO onetime.portal_learners
@@ -119,7 +261,11 @@ async function seedDayOneBrowserRecords() {
       VALUES
         ('e2e_learner_alpha', $1, $2, 'e2e_household_alpha', 'E2E Alpha Learner', '6'),
         ('e2e_learner_beta', $1, $2, 'e2e_household_alpha', 'E2E Beta Learner', '5'),
-        ('e2e_learner_zoom', $1, $2, 'e2e_household_zoom', 'E2E Zoom Learner', '6')`,
+        ('e2e_learner_zoom', $1, $2, 'e2e_household_zoom', 'E2E Zoom Learner', '6'),
+        ('content_factory_learner', $1, $2, 'content_factory_household',
+         'Content Factory Student', '6'),
+        ('contact_operations_learner', $1, $2, 'contact_operations_household',
+         'Contact Operations Student', '6')`,
     [config.accountKey, config.productKey],
   );
   await pool.query(
@@ -130,45 +276,86 @@ async function seedDayOneBrowserRecords() {
         ('e2e_access_alpha', $1, $2, 'e2e_household_alpha', 'e2e_learner_alpha', $3, 'active'),
         ('e2e_access_beta', $1, $2, 'e2e_household_alpha', 'e2e_learner_beta', NULL,
          'not_configured'),
-        ('e2e_access_zoom', $1, $2, 'e2e_household_zoom', 'e2e_learner_zoom', $4, 'active')`,
-    [config.accountKey, config.productKey, studentUserKey, zoomStudentUserKey],
+        ('e2e_access_zoom', $1, $2, 'e2e_household_zoom', 'e2e_learner_zoom', $4, 'active'),
+        ('contact_operations_access', $1, $2, 'contact_operations_household',
+         'contact_operations_learner', $5, 'active'),
+        ('content_factory_access', $1, $2, 'content_factory_household',
+         'content_factory_learner', $6, 'active')`,
+    [
+      config.accountKey,
+      config.productKey,
+      studentUserKey,
+      zoomStudentUserKey,
+      contactOperationsStudentUserKey,
+      contentFactoryStudentUserKey,
+    ],
   );
   await pool.query(
     `INSERT INTO onetime.account_learner_identity_links
         (link_key, account_key, product_key, household_key, learner_key, user_key)
        VALUES
         ('e2e_link_alpha_student', $1, $2, 'e2e_household_alpha', 'e2e_learner_alpha', $3),
-        ('e2e_link_zoom_student', $1, $2, 'e2e_household_zoom', 'e2e_learner_zoom', $4)`,
-    [config.accountKey, config.productKey, studentUserKey, zoomStudentUserKey],
+        ('e2e_link_zoom_student', $1, $2, 'e2e_household_zoom', 'e2e_learner_zoom', $4),
+        ('contact_operations_student_link', $1, $2, 'contact_operations_household',
+         'contact_operations_learner', $5),
+        ('content_factory_student_link', $1, $2, 'content_factory_household',
+         'content_factory_learner', $6)`,
+    [
+      config.accountKey,
+      config.productKey,
+      studentUserKey,
+      zoomStudentUserKey,
+      contactOperationsStudentUserKey,
+      contentFactoryStudentUserKey,
+    ],
   );
   await pool.query(
     `INSERT INTO onetime.classroom_household_entitlements
        (entitlement_key, account_key, product_key, household_key, entitlement_state)
       VALUES
         ('e2e_entitlement_alpha', $1, $2, 'e2e_household_alpha', 'active'),
-        ('e2e_entitlement_zoom', $1, $2, 'e2e_household_zoom', 'active')`,
+        ('e2e_entitlement_zoom', $1, $2, 'e2e_household_zoom', 'active'),
+        ('content_factory_entitlement', $1, $2, 'content_factory_household', 'active')`,
     [config.accountKey, config.productKey],
   );
-  await pool.query(
-    `INSERT INTO onetime.billing_entitlement_projections
-       (entitlement_key, account_key, product_key, principal_key, principal_type, status,
-        policy_version, source, reason, effective_at, evaluated_at, grants_access)
-     VALUES (
-       'billing_entitlement:' || $1 || ':' || $2 || ':e2e_household_alpha',
-       $1,
-       $2,
-       'e2e_household_alpha',
-       'opaque',
-       'active',
-       '2026-07-15.1',
-       'test_fixture_paid_invoice',
-       'active_paid_current_invoice',
-       '2026-07-15T12:00:00.000Z',
-       '2026-07-15T12:00:01.000Z',
-       true
-     )`,
-    [config.accountKey, config.productKey],
-  );
+  for (const fixture of [
+    {
+      householdKey: 'e2e_household_alpha',
+      idempotencyKey: 'e2e-free-pilot-alpha-v1',
+      sourceReference: 'e2e_free_pilot_alpha',
+    },
+    {
+      householdKey: 'e2e_household_zoom',
+      idempotencyKey: 'e2e-free-pilot-zoom-v1',
+      sourceReference: 'e2e_free_pilot_zoom',
+    },
+    {
+      householdKey: 'contact_operations_household',
+      idempotencyKey: 'contact-operations-free-pilot-v1',
+      sourceReference: 'contact_operations_free_pilot',
+    },
+    {
+      householdKey: 'content_factory_household',
+      idempotencyKey: 'content-factory-free-pilot-v1',
+      sourceReference: 'content_factory_free_pilot',
+    },
+  ]) {
+    await grantFreePilotAccess({
+      pool,
+      accountKey: config.accountKey,
+      productKey: config.productKey,
+      actorKind: 'provisioner',
+      now: new Date('2026-07-15T12:00:01.000Z'),
+      command: {
+        household_key: fixture.householdKey,
+        idempotency_key: fixture.idempotencyKey,
+        effective_at: '2026-07-15T12:00:00.000Z',
+        expires_at: '2027-07-15T12:00:00.000Z',
+        opaque_source_reference: fixture.sourceReference,
+        policy_version: 'e2e-current-access-v1',
+      },
+    });
+  }
   await pool.query(
     `INSERT INTO onetime.class_series
        (class_series_key, account_key, product_key, title, timezone, local_start_time,
@@ -180,9 +367,11 @@ async function seedDayOneBrowserRecords() {
   await pool.query(
     `INSERT INTO onetime.class_occurrences
        (occurrence_key, account_key, product_key, class_series_key, local_class_date,
-        starts_at, reminder_due_at, joinable_until, occurrence_state, access_state)
+        starts_at, reminder_due_at, joinable_until, occurrence_state, access_state,
+        join_opens_at, join_closes_at, scheduled_ends_at)
      VALUES ('e2e_class_occurrence', $1, $2, 'e2e_class_series', '2026-07-16',
-        $3, $4, $5, 'scheduled', 'provider_unavailable')`,
+        $3, $4, $5, 'scheduled', 'provider_unavailable',
+        $3::timestamptz - interval '15 minutes', $5, $5)`,
     [
       config.accountKey,
       config.productKey,
@@ -232,6 +421,23 @@ async function seedDayOneBrowserRecords() {
     [config.accountKey, config.productKey],
   );
   await pool.query(
+    `INSERT INTO onetime.classroom_lesson_publications
+       (lesson_key, account_key, product_key, class_series_key, occurrence_key, content_item_key,
+        title, description, publication_state, featured, published_at,
+        controlled_by_actor_ref, raw_private_url_present, transcript_state, resource_count,
+        resources_json)
+     VALUES ('e2e_lesson_recording', $1, $2, 'e2e_class_series', 'e2e_class_occurrence',
+             'e2e_recording_001', 'E2E Recording', 'Deterministic approved E2E recording.',
+             'published', false, now(), 'e2e_fixture', false, 'not_available', 0, '[]'::jsonb)
+     ON CONFLICT (lesson_key)
+     DO UPDATE SET publication_state = 'published',
+                   published_at = EXCLUDED.published_at,
+                   controlled_by_actor_ref = 'e2e_fixture',
+                   raw_private_url_present = false,
+                   updated_at = now()`,
+    [config.accountKey, config.productKey],
+  );
+  await pool.query(
     `INSERT INTO onetime.billing_provider_accounts
        (provider, mode, provider_account_ref, status)
      VALUES ('stripe', 'test', 'acct_e2e_test', 'active')`,
@@ -255,31 +461,92 @@ async function seedDayOneBrowserRecords() {
   void ownerUserKey;
 }
 
-async function seedActiveSupportEntitlement(userKey: string) {
+async function runContentFactoryBrowserAcceptance() {
   await pool.query(
-    `INSERT INTO onetime.billing_entitlement_projections
-       (entitlement_key, account_key, product_key, principal_key, principal_type, status,
-        policy_version, source, reason, effective_at, evaluated_at)
-     VALUES ($1,$2,$3,$4,'account_user','active','test-policy','test','active',now(),now())`,
-    [`e2e_entitlement_${userKey.slice(0, 16)}`, config.accountKey, config.productKey, userKey],
+    `INSERT INTO onetime.classroom_occurrence_learner_entitlements
+       (occurrence_entitlement_key, account_key, product_key, occurrence_key,
+        household_key, learner_key, entitlement_state, source)
+     VALUES ('browser_occurrence_alpha',$1,$2,'e2e_class_occurrence',
+       'e2e_household_alpha','e2e_learner_alpha','active','isolated_acceptance'),
+       ('browser_occurrence_content_factory',$1,$2,'e2e_class_occurrence',
+       'content_factory_household','content_factory_learner','active','isolated_acceptance')`,
+    [config.accountKey, config.productKey],
   );
-  await pool.query(
-    `INSERT INTO onetime.billing_subscription_projections
-       (account_key, product_key, principal_key, principal_type, provider, mode,
-        provider_account_ref, provider_customer_ref, provider_subscription_ref, status,
-        current_period_end, provider_updated_at, source_event_key)
-     VALUES ($1,$2,$3,'account_user','stripe','test','acct_e2e_support',$4,$5,'active',
-        $6::timestamptz,now(),$7)`,
-    [
-      config.accountKey,
-      config.productKey,
-      userKey,
-      `cus_support_${userKey.slice(0, 12)}`,
-      `sub_support_${userKey.slice(0, 12)}`,
-      new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-      `evt_support_${userKey.slice(0, 12)}`,
-    ],
+  const media = syntheticMp4('browser-acceptance');
+  const staged = await contentFactoryStorageFromEnv().stage({
+    stream: Readable.from([media]),
+    displayName: 'browser-accepted-occurrence.mp4',
+    declaredMimeType: 'video/mp4',
+    declaredLength: media.byteLength,
+  });
+  const intake = await createContentFactoryIntake({
+    pool,
+    config,
+    actorUserKey: ownerUserKey,
+    actorRole: 'owner',
+    displayName: staged.displayName,
+    mimeType: staged.mimeType,
+    byteLength: staged.byteLength,
+    sourceSha256: staged.sourceSha256,
+    privateRefDigest: staged.privateRefDigest,
+    storageLocator: staged.storageLocator,
+    occurrenceKey: 'e2e_class_occurrence',
+    idempotencyKey: 'browser-acceptance-intake-01',
+  });
+  for (let index = 0; index < 6; index += 1) {
+    await runContentFactoryWorkerOnce({
+      pool,
+      config,
+      storage: contentFactoryStorageFromEnv(),
+      workerIdentity: `browser-acceptance-worker-${index}`,
+      mode: 'synthetic',
+    });
+  }
+  const job = await pool.query(
+    `SELECT source_key FROM onetime.learning_delivery_content_factory_jobs
+      WHERE intake_key = $1 AND job_state = 'completed' LIMIT 1`,
+    [intake.intake_key],
   );
+  const sourceKey = String(job.rows[0]?.source_key ?? '');
+  if (!sourceKey) throw new Error('browser content factory acceptance did not complete');
+  await editContentFactoryItem({
+    pool,
+    config,
+    sourceKey,
+    actorUserKey: ownerUserKey,
+    actorRole: 'owner',
+    payload: {
+      title: 'Approved occurrence-scoped synthetic Mishnah review',
+      short_description:
+        'Approved provider-off acceptance content for the selected class occurrence.',
+      occurrence_key: 'e2e_class_occurrence',
+    },
+  });
+  await performContentFactoryAction({
+    pool,
+    config,
+    sourceKey,
+    actorUserKey: ownerUserKey,
+    actorRole: 'owner',
+    action: 'approve',
+  });
+  await performContentFactoryAction({
+    pool,
+    config,
+    sourceKey,
+    actorUserKey: ownerUserKey,
+    actorRole: 'owner',
+    action: 'publish',
+  });
+}
+
+function syntheticMp4(label: string) {
+  const bytes = Buffer.alloc(4_096, 0);
+  bytes.writeUInt32BE(24, 0);
+  bytes.write('ftyp', 4, 'ascii');
+  bytes.write('isom', 8, 'ascii');
+  createHash('sha256').update(label).digest().copy(bytes, 32);
+  return bytes;
 }
 
 async function seedW12AdminSession() {
@@ -314,7 +581,85 @@ async function seedW12AdminSession() {
       config.productKey,
       String(row.user_key),
       sha256(W12_E2E_ADMIN_SESSION_TOKEN),
-      sha256('w12-admin-csrf-local-only'),
+      sha256(W12_E2E_ADMIN_CSRF_TOKEN),
+      new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+      Number(row.security_version ?? 1),
+    ],
+  );
+}
+
+async function seedContactOperationsOwnerSession() {
+  const user = await pool.query(
+    `SELECT security_version
+       FROM onetime.account_users
+      WHERE account_key = $1
+        AND product_key = $2
+        AND user_key = $3
+      LIMIT 1`,
+    [config.accountKey, config.productKey, ownerUserKey],
+  );
+  const row = user.rows[0];
+  if (!row) throw new Error('missing contact operations owner test user');
+  await pool.query(
+    `INSERT INTO onetime.user_sessions
+       (session_key, account_key, product_key, user_key, token_hash, csrf_token_hash,
+        user_agent_hash, ip_hash, expires_at, rotated_from_session_key, security_version,
+        assurance_method, assurance_at)
+     VALUES ($1,$2,$3,$4,$5,$6,NULL,NULL,$7,NULL,$8,'email_challenge',now())
+     ON CONFLICT (session_key)
+     DO UPDATE SET token_hash = EXCLUDED.token_hash,
+                   csrf_token_hash = EXCLUDED.csrf_token_hash,
+                   expires_at = EXCLUDED.expires_at,
+                   revoked_at = NULL,
+                   security_version = EXCLUDED.security_version,
+                   assurance_method = 'email_challenge',
+                   assurance_at = now()`,
+    [
+      'sess_contact_operations_owner',
+      config.accountKey,
+      config.productKey,
+      ownerUserKey,
+      sha256(CONTACT_OPERATIONS_E2E_OWNER_SESSION_TOKEN),
+      sha256('contact-operations-owner-csrf-local-only'),
+      new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+      Number(row.security_version ?? 1),
+    ],
+  );
+}
+
+async function seedVimeoCatalogStudentSession() {
+  const user = await pool.query(
+    `SELECT security_version
+       FROM onetime.account_users
+      WHERE account_key = $1
+        AND product_key = $2
+        AND user_key = $3
+      LIMIT 1`,
+    [config.accountKey, config.productKey, studentUserKey],
+  );
+  const row = user.rows[0];
+  if (!row) throw new Error('missing Vimeo catalog browser Student');
+  await pool.query(
+    `INSERT INTO onetime.user_sessions
+       (session_key, account_key, product_key, user_key, token_hash, csrf_token_hash,
+        user_agent_hash, ip_hash, expires_at, rotated_from_session_key, security_version,
+        assurance_method, assurance_at)
+     VALUES ($1,$2,$3,$4,$5,$6,NULL,NULL,$7,NULL,$8,'password',now())
+     ON CONFLICT (session_key)
+     DO UPDATE SET token_hash = EXCLUDED.token_hash,
+                   csrf_token_hash = EXCLUDED.csrf_token_hash,
+                   expires_at = EXCLUDED.expires_at,
+                   revoked_at = NULL,
+                   security_version = EXCLUDED.security_version,
+                   assurance_method = 'password',
+                   assurance_at = now()`,
+    [
+      'sess_vimeo_catalog_student',
+      config.accountKey,
+      config.productKey,
+      studentUserKey,
+      sha256(VIMEO_CATALOG_E2E_STUDENT_SESSION_TOKEN),
+      sha256(VIMEO_CATALOG_E2E_STUDENT_CSRF_TOKEN),
       new Date(Date.now() + 60 * 60 * 1000).toISOString(),
       Number(row.security_version ?? 1),
     ],

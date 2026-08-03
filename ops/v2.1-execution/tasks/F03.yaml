@@ -1,0 +1,171 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: F03
+title: Adult and Student Authentication
+outcome: Deliver exact email/password adult authentication and username/password Student authentication with the
+  locked password, setup, reset, session, rate-limit, revocation, and no-MFA policy.
+kind: foundation
+wave: 3
+priority: launch_critical
+execution:
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+  service_tier: PRIORITY
+  mode: START_OR_RESUME
+  branch_template: codex/v21-f03-{slug}
+  harness_branch_template: null
+  maximum_active_writers_in_group: 8
+dependencies:
+  start_after:
+  - F02
+  required_start_states:
+    F02: interface_ready_integrated
+  merge_after:
+  - F02
+  candidate_integration_partners:
+  - F07
+  candidate_requires_all_implementation_tasks: false
+  acceptance_after: []
+  first_run_start_sha_source: origin/codex/v21-control:ops/v2.1-execution/control/READY-QUEUE.yaml authorized_start_sha
+interface_checkpoint:
+  required: true
+  unlocks:
+  - P08
+  - P10
+  - P12
+  - P14
+  - P24
+  - P26
+  - P32
+  contract_schema_version: 1
+  required_export_roots:
+  - packages/contracts/src/identity/auth/**
+  - packages/domain/src/auth/**
+  must_record_exact_realized_paths_symbols_versions_and_digests: true
+  rule: Publish and push an exact interface checkpoint; I36 must merge it into the integration branch before C00
+    authorizes downstream start.
+scope:
+  writer_slots:
+  - IDENTITY_AUTH_ACCESS
+  normalized_owned_globs:
+  - apps/web/src/client/auth/**
+  - apps/web/src/server/features/auth/**
+  - packages/contracts/src/identity/auth/**
+  - packages/domain/src/auth/**
+  scope_notes_only:
+  - apps/web/src/client/auth/** except shared shell/global CSS
+  - auth/security focused tests
+  - steward requests for central registration/config/migrations
+  explicit_path_excludes: []
+  forbidden_shared_paths:
+  - applied migration edits
+  - new migration files outside F02
+  - central server/client/worker composer edits after F01 interface checkpoint
+  - root contract/domain barrel edits
+  - package manifests/lockfiles
+  - global styles/design tokens outside F07
+  - canonical GHL registry outside P28/I36
+  - global control/merge ledgers
+  - another task's runtime or evidence files
+  external_authority: none
+coverage:
+  primary_requirement_ids:
+  - OTV2-AUTH-007
+  - OTV2-AUTH-008
+  - OTV2-AUTH-009
+  - OTV2-AUTH-010
+  - OTV2-AUTH-011
+  - OTV2-AUTH-012
+  - OTV2-AUTH-013
+  - OTV2-AUTH-014
+  - OTV2-AUTH-015
+  - OTV2-AUTH-016
+  - OTV2-AUTH-017
+  - OTV2-AUTH-018
+  - OTV2-AUTH-019
+  - OTV2-AUTH-020
+  - OTV2-AUTH-180
+  - OTV2-AUTH-227
+  primary_acceptance_case_ids:
+  - OTV2-AUTH-007-AC01
+  - OTV2-AUTH-008-AC01
+  - OTV2-AUTH-009-AC01
+  - OTV2-AUTH-010-AC01
+  - OTV2-AUTH-011-AC01
+  - OTV2-AUTH-012-AC01
+  - OTV2-AUTH-013-SINGLE-USE-TTL
+  - OTV2-AUTH-013-RENEWAL
+  - OTV2-AUTH-014-AC01
+  - OTV2-AUTH-015-AC01
+  - OTV2-AUTH-016-AC01
+  - OTV2-AUTH-017-AC01
+  - OTV2-AUTH-018-AC01
+  - OTV2-AUTH-019-AC01
+  - OTV2-AUTH-020-CSRF
+  - OTV2-AUTH-020-RATE
+  - OTV2-AUTH-020-COOKIE
+  - OTV2-AUTH-020-ROTATE
+  - OTV2-AUTH-180-AC01
+  - OTV2-AUTH-227-PASSWORDS-RATE-LIMITS
+  - OTV2-AUTH-227-SESSIONS-TOKENS-LEASES
+  - OTV2-AUTH-227-WEBHOOK-WORKER
+  verification_of_tasks: []
+  verification_requirement_ids: []
+  verification_acceptance_case_ids: []
+  decision_ids:
+  - DEC-012
+  - DEC-013
+  - DEC-014
+  - DEC-015
+  - DEC-023
+  - DEC-024
+  - DEC-052
+  - DEC-053
+  - DEC-092
+  - DEC-120
+  required_source_documents:
+  - 01-PRODUCT-SPEC-v2.1.md
+  - 03-DECISION-REGISTER-v2.1.md
+  - 05-ACTOR-ROLE-CAPABILITY-ROUTE-MATRIX-v2.1.md
+  - 06-DOMAIN-MODEL-AND-STATE-MACHINES-v2.1.md
+  - 07-SOURCE-OF-TRUTH-AND-PROVIDER-CONTRACTS-v2.1.md
+  - 10-PRIVACY-CONSENT-RETENTION-DATA-RIGHTS-v2.1.md
+  embedded_normative_sections: []
+deliverables:
+- adult and Student credential/session services
+- setup/reset/revocation flows
+- generic enumeration-safe responses and rate limits
+- removal of routine MFA/email-challenge behavior from the current product path
+notes: []
+terminal_states:
+- ready_for_review
+definition_of_done:
+- Every assigned behavior is implemented or, for verification/release tasks, every assigned case has a schema-valid
+  candidate-bound result.
+- The diff remains inside owned paths plus structured steward requests.
+- Task-owned verification passes; ordinary in-scope failures are diagnosed and corrected.
+- No prohibited product surface, fake fallback, security/privacy weakening, or unauthorized external effect is introduced.
+- TASK-STATE.yaml, HANDOFF.md, and NEXT-PROMPT.md are current.
+- 'All checkpoints are committed and pushed; this task may end only in one of these exact task-local terminal states:
+  ready_for_review.'
+checkpoint_policy:
+  interval_minutes: 30-45
+  mandatory_before:
+  - long-running command
+  - authorized external effect
+  - window end
+  mandatory_after:
+  - interface contract
+  - migration or invariant
+  - meaningful milestone
+  - blocker discovery
+stop_conditions:
+- missing explicit authority or provider identity for a required live effect
+- writer/path/provider lock collision
+- non-fast-forward push
+- normative contradiction requiring operator decision
+- incompatible or absent upstream interface contract
+- applied migration would need modification
+- continuation would weaken a protected invariant
+- destructive operation lacks exact target/authority
+- reproduced out-of-scope failure blocks progress after all safe independent work is complete

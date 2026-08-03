@@ -157,6 +157,30 @@ describe('W12-100 Railway launch toolkit', () => {
         return {
           status: 200,
           json: async () => ({
+            ok: true,
+            service: 'onetime-web',
+            code: 'PUBLIC_RELEASE_AVAILABLE',
+          }),
+        };
+      }
+      if (url.endsWith('/health')) {
+        return { status: 200, json: async () => ({ ok: true, service: 'onetime-web' }) };
+      }
+      if (url.endsWith('/ready')) {
+        return {
+          status: 200,
+          json: async () => ({
+            ok: true,
+            service: 'onetime-web',
+            code: 'PUBLIC_READY',
+          }),
+        };
+      }
+      return {
+        status: 200,
+        json: async () => ({
+          success: true,
+          runtime: {
             version: 'candidate',
             commit_sha: CANDIDATE_SHA,
             target_app: 'one-time',
@@ -170,29 +194,12 @@ describe('W12-100 Railway launch toolkit', () => {
               service_name: 'one-time-web',
               git_commit_sha: CANDIDATE_SHA,
             },
-          }),
-        };
-      }
-      if (url.endsWith('/health')) {
-        return { status: 200, json: async () => ({ ok: true, service: 'onetime-web' }) };
-      }
-      if (url.endsWith('/ready')) {
-        return {
-          status: 200,
-          json: async () => ({
-            ok: true,
+          },
+          snapshot: {
             optional_dependencies: [
               { name: 'email_transport', status: 'disabled' },
               { name: 'whatsapp_transport', status: 'disabled' },
             ],
-          }),
-        };
-      }
-      return {
-        status: 200,
-        json: async () => ({
-          success: true,
-          snapshot: {
             workers: [{ worker_type: 'delivery_outbox', state: 'ready', heartbeat_age_ms: 10_000 }],
             queues: [
               {
@@ -223,7 +230,7 @@ describe('W12-100 Railway launch toolkit', () => {
     ]);
   });
 
-  it('validates /version runtime deployment proof without requiring raw env values', () => {
+  it('validates protected runtime deployment proof without requiring raw env values', () => {
     const checks = evaluateVersionDeploymentProof(manifest(), 'verify-staging', {
       version: 'candidate',
       commit_sha: CANDIDATE_SHA,
@@ -243,6 +250,48 @@ describe('W12-100 Railway launch toolkit', () => {
       status: 'warning',
     });
     expect(JSON.stringify(checks)).not.toMatch(/DATABASE_URL|SECRET|TOKEN|PASSWORD/);
+  });
+
+  it('fails closed when protected diagnostics omit provider readiness', async () => {
+    const fetcher: Fetcher = async (url) => {
+      if (url.endsWith('/health') || url.endsWith('/ready') || url.endsWith('/version')) {
+        return { status: 200, json: async () => ({ ok: true }) };
+      }
+      return {
+        status: 200,
+        json: async () => ({
+          success: true,
+          runtime: {
+            version: 'candidate',
+            commit_sha: CANDIDATE_SHA,
+            deployment: {
+              provider: 'railway',
+              deployment_id: 'deploy-web-123',
+              snapshot_id: 'snapshot-web-123',
+              project_id: 'railway-project-123',
+              environment_id: 'railway-env-staging-123',
+              service_id: 'railway-web-service-123',
+              git_commit_sha: CANDIDATE_SHA,
+            },
+          },
+          snapshot: {
+            workers: [{ state: 'ready', heartbeat_age_ms: 1 }],
+            queues: [],
+          },
+        }),
+      };
+    };
+
+    const checks = await verifyHttpEndpoints({
+      manifest: manifest(),
+      operation: 'verify-staging',
+      fetcher,
+      opsProbeToken: 'probe-token-value',
+    });
+    expect(checks.find((check) => check.id === 'ready_provider_transports_safe')).toMatchObject({
+      status: 'blocked',
+      summary: 'Protected diagnostics omitted optional provider dependencies.',
+    });
   });
 
   it('records deployment IDs and digests without environment values', () => {

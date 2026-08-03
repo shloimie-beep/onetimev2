@@ -14,10 +14,10 @@ test.describe.configure({ mode: 'serial' });
 const performanceRecords: Array<Record<string, unknown>> = [];
 
 test('public pages meet local LCP, CLS, metadata, and navigation budgets', async ({ page }) => {
+  await installVitalsObserver(page);
   for (const viewport of [mobileViewport, desktopViewport]) {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     for (const route of ['/', '/signup', '/privacy', '/terms']) {
-      await installVitalsObserver(page);
       const started = Date.now();
       const response = await page.goto(route, { waitUntil: 'load' });
       await page.waitForLoadState('networkidle').catch(() => undefined);
@@ -122,6 +122,12 @@ test('public and authenticated bundles stay separated with launch budgets', asyn
   expect(metrics.font_woff2_raw_bytes).toBeLessThanOrEqual(250_000);
   expect(metrics.public_html_references_crm).toBe(false);
   expect(metrics.public_js_mentions_react).toBe(false);
+  for (const importKey of new Set([
+    ...(crmEntry?.imports ?? []),
+    ...(portalEntry?.imports ?? []),
+  ])) {
+    expect(appManifest[importKey]?.file).toMatch(/-[A-Za-z0-9_-]{8}\.js$/);
+  }
 });
 
 test.afterAll(async () => {

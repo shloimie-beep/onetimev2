@@ -5,19 +5,19 @@ test('support anonymous, non-subscriber, active, mobile, and receipt states pass
   page,
 }) => {
   await page.goto('/app/support');
-  await expect(page.getByRole('heading', { name: 'Sign in for subscriber support' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Sign in for learning support' })).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 
-  await login(page, 'ot-student@example.test', 'StudentPassword!234');
+  await login(page, 'viewer@example.test', 'ViewerPass!234');
   await page.goto('/app/support');
   await expect(
-    page.getByRole('heading', { name: 'Subscriber support is unavailable' }),
+    page.getByRole('heading', { name: 'Learning support is unavailable' }),
   ).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 
   await login(page, 'ot-parent@example.test', 'ParentPassword!234');
   await page.goto('/app/support');
-  await expect(page.getByRole('heading', { name: 'Subscriber Support' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Member Support' })).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 
   await page.setViewportSize({ width: 390, height: 844 });

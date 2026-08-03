@@ -1,0 +1,645 @@
+schema_version: 1
+queue_id: OT-LAUNCH-01-20260727
+mode: self_driving
+repository: shloimie-beep/onetimev2
+queue_ref: refs/heads/codex/audit-to-execution-control-tower-20260727
+board_path: ops/goals/OT-LAUNCH-01/BOARD.yaml
+index_path: ops/execution-windows/2026-07-27/WINDOW-INDEX.md
+locks_path: ops/execution-windows/2026-07-27/writer-locks.yaml
+dependencies_path: ops/execution-windows/2026-07-27/dependencies.yaml
+decisions_path: ops/execution-windows/2026-07-27/decisions-needed.md
+source_of_goal_status: ops/goals/OT-LAUNCH-01/BOARD.yaml
+queue_semantics: >-
+  dispatch_state coordinates claims and terminal execution attempts only. It
+  never overrides Board goal status, acceptance, provider truth, production
+  authority, or operator decisions.
+selection:
+  order: [priority_ascending, sequence_ascending, id_ascending]
+  runnable_when:
+    - item.lane exactly equals the worker WINDOW ID before any other field is evaluated
+    - assignment_state is assigned
+    - dispatch_state is ready
+    - every dependency is terminal done or an accepted external gate
+    - every required lock is free or already held by the same claim token
+    - the current remote Board row still authorizes the exact task and scope
+  stale_chat_rule: >-
+    Before every claim and before every successor, fetch queue_ref and reread
+    queue.yaml, writer-locks.yaml, dependencies.yaml, decisions-needed.md, and
+    the referenced current Board rows from the fetched remote head. Chat text
+    can bootstrap a lane but cannot keep an item runnable after Git changes.
+dispatch_states:
+  nonterminal: [planned, ready, claimed]
+  terminal: [done, blocked, cancelled, superseded]
+assignment_states: [planned, assigned, withdrawn]
+lane_routing:
+  candidate_filter: >-
+    Before reading assignment state, dispatch state, dependencies, locks,
+    branch, scope, or result fields, build the candidate set by filtering
+    items to item.lane == the worker's exact WINDOW ID. A non-control worker
+    must not evaluate, claim, execute, terminalize, or repair any item outside
+    that filtered set.
+  id_prefix_guard:
+    01-OT-CONTROL: Q01-
+    02-OT-ZOOM: Q02-
+    03-OT-GHL: Q03-
+    04-OT-PRODUCT: Q04-
+    05-OT-HYGIENE: Q05-
+    06-BNA-CONTROL: Q06-
+    07-OT-PRODUCTION: Q07-
+  dependency_rule: >-
+    A cross-lane dependency may be read only as accepted or not accepted. It
+    does not make the dependency item a candidate and grants no authority to
+    inspect, claim, execute, terminalize, or repair that other lane's work.
+  control_exception: >-
+    01-OT-CONTROL may inspect cross-lane GitHub evidence and reconcile
+    canonical state, but its own claim candidates remain limited to
+    lane == 01-OT-CONTROL and IDs beginning Q01-.
+  mismatch_rule: >-
+    If an item's lane and ID prefix disagree, or a lock holder's lane does not
+    match the lock permanent_lane, no worker may act on that item or lock.
+    Leave it unclaimed and let 01-OT-CONTROL repair the coordination state.
+allowed_manual_handoffs:
+  - SIGN IN
+  - APPROVE SEND
+  - APPROVE PRODUCTION
+  - APPROVE DESTRUCTIVE ACTION
+  - PRODUCT DECISION REQUIRED
+  - BLOCKED
+claim_protocol:
+  queue_mutation_scope:
+    - A non-control lane may edit only its own item claim/result/terminal fields in queue.yaml.
+    - A claiming or releasing lane updates required lock holders in writer-locks.yaml in the same queue-control commit.
+    - Only 01-OT-CONTROL may edit BOARD.yaml, dependencies.yaml, decisions-needed.md, assignments, priorities, scopes, or another lane.
+  compare_and_swap:
+    - Fetch queue_ref immediately before the queue-control edit.
+    - Base the queue-control commit on the exact fetched head.
+    - Push without force directly to queue_ref.
+    - If rejected, fetch, replay only the lane-local claim or terminal update, revalidate dependencies and locks, and retry at most three times.
+    - Never resolve a conflict by deleting another lane claim, result, dependency, or lock.
+  claim_fields:
+    - claim_token
+    - worker_task_id
+    - claimed_at
+    - claimed_from_queue_head
+  terminal_fields:
+    - terminal_at
+    - terminal_reason
+    - result_commit
+    - result_pr
+    - result_path
+    - validation_summary
+    - external_effects
+  no_time_expiry: >-
+    Claims and locks never expire by age. Only the same worker may release its
+    claim, or 01-OT-CONTROL may clear it after a read-only abandoned-worker
+    audit and a committed Board/queue reconciliation.
+result_protocol:
+  - Commit and push the scoped task result before marking the queue attempt terminal.
+  - Open or update the task draft PR when the assignment requires one.
+  - Mark the attempt terminal and release its locks in one queue-control commit.
+  - The control lane polls GitHub for every assigned or claimed lane branch and reconciles verified result PRs even when a worker did not update the queue.
+  - Fetch and reread the remote queue again before selecting a successor.
+  - Continue immediately to the next unblocked assigned item in the same lane.
+  - If no assigned item is runnable, remain idle and poll remote Git and GitHub; do not ask the operator for ordinary status relay.
+lanes:
+  - id: 01-OT-CONTROL
+    ordinal: 1
+    bootstrap_path: ops/execution-windows/2026-07-27/01-OT-CONTROL.md
+    permanent_scope: Board, queue, dependency, lock, decision, and result reconciliation only.
+  - id: 02-OT-ZOOM
+    ordinal: 2
+    bootstrap_path: ops/execution-windows/2026-07-27/02-OT-ZOOM.md
+    permanent_scope: Exactly assigned Zoom provider tasks; no product, Board, or unrelated meeting mutation.
+  - id: 03-OT-GHL
+    ordinal: 3
+    bootstrap_path: ops/execution-windows/2026-07-27/03-OT-GHL.md
+    permanent_scope: One HighLevel repository or browser task at a time under its exact lock.
+  - id: 04-OT-PRODUCT
+    ordinal: 4
+    bootstrap_path: ops/execution-windows/2026-07-27/04-OT-PRODUCT.md
+    permanent_scope: One Time product source and focused tests; migrations require the separate migration lock.
+  - id: 05-OT-HYGIENE
+    ordinal: 5
+    bootstrap_path: ops/execution-windows/2026-07-27/05-OT-HYGIENE.md
+    permanent_scope: Preservation, metadata, and individually authorized closure work only.
+  - id: 06-BNA-CONTROL
+    ordinal: 6
+    bootstrap_path: ops/execution-windows/2026-07-27/06-BNA-CONTROL.md
+    permanent_scope: BNA control and governance files explicitly assigned by the queue.
+  - id: 07-OT-PRODUCTION
+    ordinal: 7
+    bootstrap_path: ops/execution-windows/2026-07-27/07-OT-PRODUCTION.md
+    permanent_scope: Production work only after all dependencies and fresh production authority are accepted.
+items:
+  - id: Q01-001
+    lane: 01-OT-CONTROL
+    sequence: 1
+    priority: 1
+    title: Continuous result reconciliation and safe dispatch
+    assignment_state: assigned
+    dispatch_state: done
+    repeatable: false
+    board_track: self_driving_execution_queue
+    dependencies: []
+    required_locks: [BOARD]
+    branch: codex/audit-to-execution-control-tower-20260727
+    work_scope:
+      - Read terminal queue results and provider/result PR evidence.
+      - Validate evidence before changing Board truth.
+      - Update BOARD.yaml and its generated pointer.
+      - Promote only dependency-satisfied planned items to assigned/ready.
+      - Append a successor Q01 item before completing each reconciliation cycle.
+    forbidden:
+      - Implement a product, provider, migration, hygiene, BNA, or production lane task.
+      - Treat an audit recommendation, PR body, or queue state as acceptance by itself.
+    terminal_at: 2026-07-27T11:26:12+03:00
+    terminal_reason: GITHUB_RESULTS_RECONCILED_AND_SAFE_SUCCESSORS_WRITTEN
+    result_commit: 59368066c4debbf6ba80dc0a402d2767edb3d64b
+    result_pr: 124
+    result_path: ops/execution-windows/2026-07-27/queue.yaml
+    validation_summary: Exact GitHub heads for PRs 123, 125, and 126 verified; expected lane 04-06 branches have no PR; Board/queue/dependency/lock/pointer/governance/projection/format/secret/diff checks passed.
+    external_effects:
+      provider_mutations: 0
+      customer_messages: 0
+      sends: 0
+      production_mutations: 0
+      destructive_actions: 0
+  - id: Q01-002
+    lane: 01-OT-CONTROL
+    sequence: 2
+    priority: 1
+    title: Continuous GitHub result reconciliation and safe dispatch
+    assignment_state: assigned
+    dispatch_state: claimed
+    repeatable: true
+    board_track: self_driving_execution_queue
+    dependencies: []
+    required_locks: [BOARD]
+    branch: codex/audit-to-execution-control-tower-20260727
+    work_scope:
+      - Poll GitHub directly for every assigned or claimed lane branch.
+      - Verify exact result heads, changed scope, checks, counters, and stop conditions.
+      - Reconcile accepted evidence into BOARD.yaml and its generated pointer.
+      - Mark terminal queue attempts, release locks, and assign only dependency-satisfied successors.
+      - Append the next Q01 control item before completing this cycle.
+    forbidden:
+      - Ask the operator to paste a SHA, PR number, status, or completed-result summary.
+      - Implement a product, provider, migration, hygiene, BNA, or production lane task.
+      - Treat an audit recommendation, PR body, queue state, or local-only claim as acceptance.
+    result_path: ops/execution-windows/2026-07-27/queue.yaml
+  - id: Q02-001
+    lane: 02-OT-ZOOM
+    sequence: 1
+    priority: 1
+    title: Reconcile and delete the preserved disposable non-Tisha meeting
+    assignment_state: assigned
+    dispatch_state: blocked
+    board_track: zoom_real_control_operator_change_set
+    dependencies: []
+    required_locks: [ZOOM-PROVIDER]
+    branch: codex/zoom-disposable-cleanup-result-20260727
+    result_commit: eeb31101e0d8f8a395a1c3833129b1afde4fd845
+    result_pr: 125
+    result_path: ops/codex-runs/OT-LAUNCH-01/ZOOM-DISPOSABLE-CLEANUP-RESULT-20260727.md
+    terminal_reason: ZOOM_DISPOSABLE_CANARY_SCOPE_MISMATCH_BEFORE_DELETE
+    manual_handoff: BLOCKED
+    validation_summary: Focused reconciliation tests, scoped formatting, secret scan, and diff check passed.
+    external_effects:
+      oauth: 1
+      get: 1
+      post: 0
+      patch: 0
+      delete: 0
+      meetings_created: 0
+      joins_or_controls: 0
+      customer_messages: 0
+      staging_mutations: 0
+      production_mutations: 0
+  - id: Q02-002
+    lane: 02-OT-ZOOM
+    sequence: 2
+    priority: 2
+    title: Run one read-only sanitized scope-mismatch classification
+    assignment_state: planned
+    dispatch_state: planned
+    board_track: null
+    dependencies: [Q04-ZOOM-001, GATE-ZOOM-READONLY-DIAGNOSTIC-AUTHORITY]
+    required_locks: [ZOOM-PROVIDER]
+    forbidden:
+      - Run the cleanup/reconciliation-delete command.
+      - Perform more than one OAuth request and one meeting GET.
+      - Guess or substitute the meeting, runner, state, account, or authorization.
+      - Create, register, join, control, patch, or delete anything.
+    result_path: ops/execution-windows/2026-07-27/results/02-OT-ZOOM-scope-classification.json
+  - id: Q02-003
+    lane: 02-OT-ZOOM
+    sequence: 3
+    priority: 3
+    title: Execute an accepted mismatch repair or request the exact operator decision
+    assignment_state: planned
+    dispatch_state: planned
+    board_track: null
+    dependencies: [Q02-002, GATE-ZOOM-SCOPE-MISMATCH-RESOLVED]
+    required_locks: [ZOOM-PROVIDER]
+    manual_handoff: BLOCKED
+    forbidden:
+      - Retry cleanup from the generic mismatch category.
+      - Create or substitute a meeting, runner, journal, volume, account, or protected target.
+  - id: Q03-001
+    lane: 03-OT-GHL
+    sequence: 1
+    priority: 1
+    title: Read-only HighLevel current-truth inventory
+    assignment_state: assigned
+    dispatch_state: done
+    board_track: audit_wave_03_ghl_full_inventory
+    dependencies: []
+    required_locks: [GHL-BROWSER]
+    result_commit: b2fd8c73246a3a1e1655b22ee5c837d65c19ec97
+    result_pr: 123
+    result_path: integrations/highlevel/agent-mode/results/GHL-READONLY-INVENTORY-20260727.result.json
+    terminal_reason: COMPLETED_WITH_EXPLICIT_UNVERIFIED_UI_SCOPES
+    external_effects:
+      contacts_changed: 0
+      messages: 0
+      enrollments: 0
+      publications: 0
+      activations: 0
+      deletes_or_quarantines: 0
+  - id: Q03-002
+    lane: 03-OT-GHL
+    sequence: 2
+    priority: 1
+    title: Re-author Rabbi launch sender and message-class repository design
+    assignment_state: assigned
+    dispatch_state: blocked
+    board_track: audit_wave_03_ghl_sender_design
+    dependencies: [Q03-001]
+    required_locks: [GHL-REPOSITORY]
+    branch: codex/ghl-rabbi-launch-email-design-reauthor-20260727
+    claim_token: prequeue-019fa24b-f845-7262-bea1-883771c3688f
+    worker_task_id: 019fa24b-f845-7262-bea1-883771c3688f
+    claimed_at: 2026-07-27T10:42:35+03:00
+    claimed_from_queue_head: 1e2e14812db179562f503f4818aeca9b099d5c56
+    work_scope:
+      - Repository-only canonical sender, message-class, prompt, checklist, projection, job, test, and sanitized handoff changes authorized by the Board.
+    forbidden:
+      - Open or mutate HighLevel.
+      - Send, enroll, publish, activate, select an audience, import, or change a contact.
+      - Merge or cherry-pick divergent PR 116.
+    terminal_at: 2026-07-27T11:18:35+03:00
+    terminal_reason: LF_CRLF_PROMPT_FINGERPRINT_PROJECTION_MISMATCH
+    result_commit: 0fc24128dfb9f5d512c1915ad61bb9c6b3568042
+    result_pr: 126
+    result_path: ops/goals/OT-LAUNCH-01/handoffs/ghl-app-contract-shells--rabbi-launch-email-design.md
+    validation_summary: Semantic design tests, typecheck, secret scan, and three GitHub assurance suites passed. Independent control projection validation failed because the new prompt fingerprint helper hashes raw line endings and diverges across LF/CRLF checkouts; the result is not accepted.
+    external_effects:
+      highlevel_mutations: 0
+      customer_messages: 0
+      contacts_changed: 0
+      enrollments: 0
+      publications: 0
+      activations: 0
+      deletes_or_quarantines: 0
+      stripe_mutations: 0
+      access_mutations: 0
+      production_mutations: 0
+      provider_mutations: 0
+  - id: Q03-002R
+    lane: 03-OT-GHL
+    sequence: 3
+    priority: 1
+    title: Repair line-ending-portable GHL prompt fingerprints
+    assignment_state: assigned
+    dispatch_state: done
+    board_track: audit_wave_03_ghl_sender_design
+    dependencies: [Q03-001]
+    required_locks: [GHL-REPOSITORY]
+    base_commit: 0fc24128dfb9f5d512c1915ad61bb9c6b3568042
+    branch: codex/ghl-rabbi-launch-email-design-portability-20260727
+    claim_token: q03-002r-03-ot-ghl-20260727
+    worker_task_id: 03-OT-GHL-Q03-002R-20260727
+    claimed_at: 2026-07-27T11:46:53+03:00
+    claimed_from_queue_head: 0597b75e1ed2a6607c6838562894ef28df931b0b
+    work_scope:
+      - Preserve the exact semantic sender/message-class design from PR #126.
+      - Canonicalize every prompt fingerprint across LF, CRLF, and CR before SHA-256.
+      - Add focused portability proof and regenerate projections only through the canonical script.
+      - Return the updated sanitized handoff with zero external effects.
+    forbidden:
+      - Open or mutate HighLevel, send, enroll, publish, activate, select an audience, import, or change a contact.
+      - Change sender, message-class, audience, permission, CTA, or GHL-UI-24 semantics.
+      - Hand-edit generated projections or weaken source-hash convergence.
+    validation:
+      - Run the projection check from LF and CRLF fixtures/checkouts and require identical canonical hashes.
+      - Run focused sender/design tests, typecheck, scoped formatting, secret scan, and diff/scope checks.
+    result_path: ops/goals/OT-LAUNCH-01/handoffs/ghl-app-contract-shells--rabbi-launch-email-design.md
+    terminal_at: 2026-07-27T11:54:08+03:00
+    terminal_reason: LF_CRLF_CR_PROMPT_FINGERPRINTS_CANONICALIZED
+    result_commit: 3a9f953419d3f103194d9416872071d6e642c826
+    result_pr: 127
+    validation_summary: LF, CRLF, and CR prompt fixtures each passed canonical projection write/check and produced identical prompt-fingerprint, current.json, and workflows.yaml SHA-256 values; focused portability/sender/control-hash tests, typecheck, scoped formatting, secret scan, and diff/scope checks passed.
+    external_effects:
+      highlevel_mutations: 0
+      customer_messages: 0
+      contacts_changed: 0
+      enrollments: 0
+      publications: 0
+      activations: 0
+      deletes_or_quarantines: 0
+      stripe_mutations: 0
+      access_mutations: 0
+      production_mutations: 0
+      provider_mutations: 0
+  - id: Q03-003
+    lane: 03-OT-GHL
+    sequence: 4
+    priority: 2
+    title: Bounded Rabbi sender acceptance and reply-path canary
+    assignment_state: planned
+    dispatch_state: planned
+    board_track: null
+    dependencies:
+      - Q03-002R
+      - GATE-GHL-MAILBOX-REPLY-OWNERSHIP
+      - GATE-FRESH-GHL-CANARY-AUTHORITY
+    required_locks: [GHL-BROWSER]
+    manual_handoff: APPROVE SEND
+    forbidden:
+      - Any customer audience or more than one exact operator-owned seed.
+      - Any provider action before a separately committed Board assignment.
+  - id: Q04-001
+    lane: 04-OT-PRODUCT
+    sequence: 1
+    priority: 1
+    title: Canonical fail-closed runtime classification
+    assignment_state: assigned
+    dispatch_state: blocked
+    board_track: audit_wave_04_runtime_classification
+    dependencies: []
+    required_locks: [OT-PRODUCT]
+    branch: codex/w04-canonical-runtime-classification-20260727
+    claim_token: q04-001-04-ot-product-20260727
+    worker_task_id: 04-OT-PRODUCT
+    claimed_at: 2026-07-27T12:08:00+03:00
+    claimed_from_queue_head: 42a25fffa3ae8a3fb56e3b75f2add693cb02b2ac
+    terminal_at: 2026-07-27T12:20:00+03:00
+    terminal_reason: FULL_CI_RUNTIME_TUPLE_REGRESSION
+    result_commit: bdc29725ce253f408d39a2c32120b0628f68721c
+    result_pr: 128
+    validation_summary: Focused runtime/config unit tests (28), runtime-version integration tests (2), typecheck, build, scoped Prettier, secret scan, and diff check passed. GitHub Node CI failed two existing integration tests because the new canonical mismatch guard now throws before their older downstream error assertions; build and browser gates did not run, so the result is not accepted.
+    external_effects:
+      provider_mutations: 0
+      deployments: 0
+      production_mutations: 0
+      migration_applications: 0
+      customer_messages: 0
+    result_path: ops/execution-windows/2026-07-27/results/04-OT-PRODUCT-result.md
+  - id: Q04-001R
+    lane: 04-OT-PRODUCT
+    sequence: 2
+    priority: 1
+    title: Repair canonical runtime-classification integration expectations
+    assignment_state: assigned
+    dispatch_state: done
+    board_track: audit_wave_04_runtime_classification
+    dependencies: []
+    required_locks: [OT-PRODUCT]
+    base_commit: bdc29725ce253f408d39a2c32120b0628f68721c
+    branch: codex/w04-runtime-classification-regression-repair-20260727
+    claim_token: q04-001r-04-ot-product-20260727
+    worker_task_id: 04-OT-PRODUCT
+    claimed_at: 2026-07-27T12:15:00+03:00
+    claimed_from_queue_head: f1716aa60fd15f12a120447d9b85c3605ce7584d
+    work_scope:
+      - Preserve the canonical fail-closed runtime classifier and all PR #128 product semantics.
+      - Update only tests/integration/experience-preview.test.ts and tests/integration/security/provider-boundaries.test.ts so mixed classifications assert the canonical loadConfig mismatch boundary.
+      - Prove the two formerly failing tests, the focused runtime suites, the full integration suite, typecheck, build, formatting, secret scan, and diff scope.
+    forbidden:
+      - Change packages/config, application runtime behavior, provider gates, migrations, deployments, production, or BOARD.yaml.
+      - Weaken or bypass the DELIVERY_ENVIRONMENT and ONE_TIME_RUNTIME_ENVIRONMENT mismatch guard.
+      - Broaden into Q04-ZOOM-001 or any other planned product item.
+    result_path: ops/execution-windows/2026-07-27/results/04-OT-PRODUCT-runtime-regression-repair.md
+    terminal_at: 2026-07-27T12:27:00+03:00
+    terminal_reason: COMPLETED_RUNTIME_CLASSIFICATION_INTEGRATION_EXPECTATION_REPAIR
+    result_commit: f602a6ef31bd0e94a113bf3b7479191c8a35b127
+    result_pr: 129
+    validation_summary: Affected integration tests (21), runtime classification unit tests (11), runtime-version integration tests (2), full integration, typecheck, build, scoped Prettier, secret scan, and diff checks passed.
+    external_effects:
+      provider_mutations: 0
+      deployments: 0
+      production_mutations: 0
+      migration_applications: 0
+      customer_messages: 0
+  - id: Q04-ZOOM-001
+    lane: 04-OT-PRODUCT
+    sequence: 3
+    priority: 2
+    title: Add a mutation-impossible sanitized Zoom scope classifier
+    assignment_state: planned
+    dispatch_state: planned
+    board_track: zoom_scope_mismatch_diagnostic_tool
+    dependencies: [Q04-001R]
+    required_locks: [OT-PRODUCT]
+    base_commit: 2d22f46a40364c670d20fa197e78ead2a2f79c8e
+    branch: codex/zoom-disposable-scope-diagnostic-20260727
+    task_packet: ops/execution-windows/2026-07-27/ZOOM-SCOPE-MISMATCH-DIAGNOSTIC-TASK.md
+    result_path: ops/execution-windows/2026-07-27/results/04-OT-PRODUCT-zoom-scope-diagnostic.md
+    work_scope:
+      - Add one read-only command that calls the existing exact-meeting inspector against the preserved signed journal.
+      - Emit only safe boolean comparison fields, a start-time delta class, status-only journal state, and request counts.
+      - Hard-fail if POST, PATCH, or DELETE is attempted or if any raw protected/provider value could render.
+      - Add focused tests and a separately gated browser/provider executor prompt.
+    forbidden:
+      - Provider access or deployment.
+      - Cleanup retry, DELETE, meeting creation, registration, join, control, or journal mutation.
+      - Relax any reconciliation predicate or choose which mismatch is safe.
+  - id: Q04-002
+    lane: 04-OT-PRODUCT
+    sequence: 4
+    priority: 3
+    title: Public diagnostic minimization
+    assignment_state: planned
+    dispatch_state: planned
+    board_track: null
+    dependencies: [Q04-001R]
+    required_locks: [OT-PRODUCT]
+  - id: Q04-003
+    lane: 04-OT-PRODUCT
+    sequence: 5
+    priority: 4
+    title: Read-only migration verification
+    assignment_state: planned
+    dispatch_state: planned
+    board_track: null
+    dependencies: [Q04-001R]
+    required_locks: [OT-PRODUCT, MIGRATION]
+  - id: Q04-004
+    lane: 04-OT-PRODUCT
+    sequence: 6
+    priority: 5
+    title: Stable provider idempotency and uncertain-acceptance state
+    assignment_state: planned
+    dispatch_state: planned
+    board_track: null
+    dependencies: [Q04-001R]
+    required_locks: [OT-PRODUCT]
+  - id: Q04-005
+    lane: 04-OT-PRODUCT
+    sequence: 7
+    priority: 6
+    title: Bearer-free classroom launch transport
+    assignment_state: planned
+    dispatch_state: planned
+    board_track: null
+    dependencies: [GATE-ZOOM-CLEANUP-ACCEPTED]
+    required_locks: [OT-PRODUCT]
+  - id: Q04-006
+    lane: 04-OT-PRODUCT
+    sequence: 8
+    priority: 7
+    title: Three-active-learner enforcement
+    assignment_state: planned
+    dispatch_state: planned
+    board_track: null
+    dependencies: [Q04-001R, GATE-LEARNER-CAP-DISPOSITION-IF-NEEDED]
+    required_locks: [OT-PRODUCT, MIGRATION]
+    manual_handoff: PRODUCT DECISION REQUIRED
+  - id: Q04-007
+    lane: 04-OT-PRODUCT
+    sequence: 9
+    priority: 8
+    title: Telegram response atomicity
+    assignment_state: planned
+    dispatch_state: planned
+    board_track: null
+    dependencies: [Q04-001R]
+    required_locks: [OT-PRODUCT]
+  - id: Q05-001
+    lane: 05-OT-HYGIENE
+    sequence: 1
+    priority: 1
+    title: Sanitized clone and worktree preservation census
+    assignment_state: assigned
+    dispatch_state: blocked
+    board_track: audit_wave_05_preservation_census
+    dependencies: [GATE-PROTECTED-CENSUS-AND-BACKUP-ROOTS]
+    required_locks: [OT-HYGIENE]
+    branch: codex/w05-preservation-census-20260727
+    result_path: ops/preservation/2026-07-26/A05/inventory-summary.json
+    terminal_reason: OPERATOR_PROTECTED_CENSUS_PATHS_REQUIRED
+    manual_handoff: BLOCKED
+  - id: Q05-002
+    lane: 05-OT-HYGIENE
+    sequence: 2
+    priority: 2
+    title: Committed-object preservation
+    assignment_state: planned
+    dispatch_state: planned
+    board_track: null
+    dependencies: [Q05-001]
+    required_locks: [OT-HYGIENE]
+  - id: Q05-003
+    lane: 05-OT-HYGIENE
+    sequence: 3
+    priority: 3
+    title: Dirty-worktree protected backup
+    assignment_state: planned
+    dispatch_state: planned
+    board_track: null
+    dependencies: [Q05-001]
+    required_locks: [OT-HYGIENE]
+  - id: Q05-004
+    lane: 05-OT-HYGIENE
+    sequence: 4
+    priority: 4
+    title: Sanitized preservation-manifest draft PR
+    assignment_state: planned
+    dispatch_state: planned
+    board_track: null
+    dependencies: [Q05-002, Q05-003]
+    required_locks: [OT-HYGIENE]
+  - id: Q05-005
+    lane: 05-OT-HYGIENE
+    sequence: 5
+    priority: 5
+    title: Individually approved PR closure
+    assignment_state: planned
+    dispatch_state: planned
+    board_track: null
+    dependencies: [Q05-004, GATE-ACCEPTED-PR-CLOSE-LIST]
+    required_locks: [OT-HYGIENE]
+    manual_handoff: APPROVE DESTRUCTIVE ACTION
+  - id: Q06-001
+    lane: 06-BNA-CONTROL
+    sequence: 1
+    priority: 1
+    title: BNA current pointer and Board repair
+    assignment_state: assigned
+    dispatch_state: blocked
+    board_track: audit_wave_06_bna_control_pointer
+    dependencies: []
+    required_locks: [BNA-CONTROL]
+    branch: codex/bna-control-pointer-repair-20260727
+    result_path: ops/control/BNA-BOARD.yaml
+    claim_token: 348ed713-9e65-489b-836b-d1a28a9cc496
+    worker_task_id: 06-BNA-CONTROL-348ed713-9e65-489b-836b-d1a28a9cc496
+    claimed_at: 2026-07-27T11:49:47+03:00
+    claimed_from_queue_head: e2e1cc6a977178155d0cc223f319d3271ee733d2
+    terminal_at: 2026-07-27T11:51:45+03:00
+    terminal_reason: BNA_MASTER_DIVERGED_FROM_ASSIGNED_BASE
+    result_commit: null
+    result_pr: null
+    validation_summary: Remote BNA master is a9528b2d9467174d76d4c25bfb028f9308f24b4f, not required cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c; the required commit is unavailable after fetch, so no BNA file was read or changed.
+    external_effects:
+      bna_source_changes: 0
+      provider_mutations: 0
+      deployments: 0
+      data_changes: 0
+      destructive_actions: 0
+    manual_handoff: BLOCKED
+  - id: Q06-002
+    lane: 06-BNA-CONTROL
+    sequence: 2
+    priority: 2
+    title: BNA School foundation
+    assignment_state: planned
+    dispatch_state: planned
+    board_track: null
+    dependencies:
+      - Q06-001
+      - GATE-CONTROLLED-ONE-TIME-PILOT-ACCEPTED
+      - GATE-PROTECTED-BNA-SCHOOL-DATA-INVENTORY
+      - GATE-BNA-SCHOOL-PRODUCT-DECISIONS
+    required_locks: [BNA-CONTROL]
+    manual_handoff: PRODUCT DECISION REQUIRED
+  - id: Q07-001
+    lane: 07-OT-PRODUCTION
+    sequence: 1
+    priority: 1
+    title: Controlled One Time production pilot
+    assignment_state: planned
+    dispatch_state: blocked
+    board_track: production_pilot
+    dependencies:
+      - GATE-ZOOM-SUCCESSOR-CANARY-ACCEPTED
+      - Q04-001R
+      - Q04-002
+      - Q04-003
+      - Q04-006
+      - GATE-PRODUCTION-CANDIDATE-ACCEPTED
+      - GATE-BACKUP-RESTORE-ROLLBACK-ACCEPTED
+      - GATE-FRESH-PRODUCTION-AUTHORITY
+    required_locks: [OT-PRODUCT, MIGRATION, PRODUCTION]
+    terminal_reason: PRODUCTION_APPROVAL_DENIED_NOT_READY
+    authority_state: denied
+    unblock_requirements:
+      - An immutable production candidate is accepted in BOARD.yaml.
+      - Backup, disposable restore, forward migration, and rollback proof are accepted in BOARD.yaml.
+      - Every dependency named by Q07-001 is satisfied.
+      - Fresh exact Board authority names source, schema, cohort, routes, stop conditions, and rollback target.
+    manual_handoff: BLOCKED
+    forbidden:
+      - Claim or prepare production from audit prose, staging health, queue state, or prior general pilot intent.
+      - Deploy, migrate, change providers, enroll, message, or mutate production before a new exact Board assignment and fresh authority.
+      - Request APPROVE PRODUCTION again before every unblock requirement is accepted.

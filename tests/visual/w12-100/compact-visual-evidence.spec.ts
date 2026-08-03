@@ -24,7 +24,7 @@ test('captures concise launch-readiness screenshots without full-page duplicates
   const publicPage = await publicContext.newPage();
   for (const item of [
     { route: '/', name: 'landing-mobile-reduced-motion.png', heading: /love for learning Torah/i },
-    { route: '/signup', name: 'signup-mobile.png', heading: 'Sign Up Now' },
+    { route: '/signup', name: 'signup-mobile.png', heading: 'Pre-register Your Family' },
     { route: '/forgot-password', name: 'recovery-mobile.png', heading: 'Reset your password' },
     { route: '/w12-100-missing-route', name: '404-mobile.png', heading: /not found/i },
   ]) {
@@ -53,7 +53,7 @@ test('captures concise launch-readiness screenshots without full-page duplicates
       name: 'class-detail-desktop.png',
       heading: 'Classes',
     },
-    { route: '/app/billing', name: 'billing-desktop.png', heading: 'Products/Billing status' },
+    { route: '/app/billing', name: 'billing-desktop.png', heading: 'Household Access' },
   ]) {
     await ownerPage.goto(item.route);
     await expect(ownerPage.getByRole('heading', { name: item.heading })).toBeVisible();

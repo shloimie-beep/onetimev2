@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-08-03",
+  "status": "VIMEO_READ_AUTH_UNAVAILABLE",
+  "provider_requests_performed": 0,
+  "video_downloads_performed": 0,
+  "video_uploads_performed": 0,
+  "vimeo_mutations_performed": 0,
+  "database_writes_performed": 0,
+  "actual_inventory_counts_available": false,
+  "required_action": "Provide an already-authorized canonical Vimeo read session as VIMEO_ACCESS_TOKEN, then rerun the dry-run inventory command."
+}

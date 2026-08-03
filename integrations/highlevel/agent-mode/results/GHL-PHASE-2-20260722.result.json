@@ -1,0 +1,502 @@
+{
+  "schemaVersion": "one-time-highlevel-phase-2@1.0.0",
+  "generatedAt": "2026-07-22T09:39:00.213Z",
+  "source": {
+    "repository": "shloimie-beep/onetimev2",
+    "resultPullRequest": 107,
+    "resultBranch": "codex/highlevel-final-results-20260722",
+    "resultBaseBranch": "codex/highlevel-sender-registry-v1-1",
+    "resultBaseHeadAtRefresh": "a11bfafc8e8098413eb4262270f1718946875a88",
+    "resultHeadBeforePhaseTwo": "1fb2d39285b5cf644f2a5bc04d27e1b7385db173",
+    "applicationPullRequest": 97,
+    "applicationBranch": "codex/full-app-staging-live",
+    "applicationHeadAtContractReview": "09953ba2edfc7ba014b9fe2558dbc7f5c58972ea",
+    "locationId": "pBSnOK2nkdxp6gf9Rg3o",
+    "locationMatchVerified": true
+  },
+  "summary": {
+    "phase": "partial",
+    "oneRemainingDependency": "deployed One Time-to-HighLevel event dispatcher and typed OT-A1 adapter boundary for the registered workflow contracts",
+    "activeTestedTotal": 1,
+    "activeConfiguredTotal": 0,
+    "phaseTwoTargetsActivated": 0,
+    "phaseTwoControlledMessagesSent": 0,
+    "broadMessagesSent": 0,
+    "studentContactsCreated": 0,
+    "productionAppChanged": false,
+    "workflowDuplicatesCreated": 0,
+    "workflowContentMutations": 0,
+    "workflowPlacementCorrections": 2
+  },
+  "refresh": {
+    "pullRequest107": {
+      "state": "OPEN",
+      "draft": true,
+      "mergeable": true
+    },
+    "pullRequest97": {
+      "state": "OPEN",
+      "draft": true,
+      "mergeable": true,
+      "stagingUrl": "https://ot99-web-staging.up.railway.app"
+    },
+    "goalArtifacts": {
+      "goal": "ops/goals/OT-LAUNCH-01/GOAL.md",
+      "decisions": "ops/goals/OT-LAUNCH-01/DECISIONS.yaml",
+      "currentPointer": "ops/goals/CURRENT.yaml",
+      "boardPointer": "ops/goals/OT-LAUNCH-01/BOARD.yaml",
+      "boardPresentAtReviewedHead": false,
+      "standaloneSpecPresentAtReviewedHead": false,
+      "standaloneAcceptancePresentAtReviewedHead": false
+    }
+  },
+  "inventory": {
+    "reference": "GHL-P2-API-READBACK-20260722T093245Z",
+    "generatedAt": "2026-07-22T09:32:45.809Z",
+    "canonicalWorkflowsExpected": 19,
+    "canonicalWorkflowsFound": 19,
+    "published": 1,
+    "draft": 18,
+    "deleted": 0,
+    "deprecated": 0,
+    "normalizedDuplicateCandidates": [],
+    "conversationAi": {
+      "id": "0Z5YvlziuXqZmBntYFU0",
+      "mode": "off",
+      "duplicateCandidates": []
+    },
+    "knowledgeBase": {
+      "id": "ps6jttZ8WUGycLeQX6uF",
+      "duplicateCandidates": []
+    },
+    "apiExternalEffects": {
+      "contactsCreated": 0,
+      "workflowEnrollments": 0,
+      "messagesSent": 0,
+      "workflowsPublished": 0
+    }
+  },
+  "organizationReadback": {
+    "rootFolder": "One Time",
+    "corrections": [
+      {
+        "reference": "GHL-P2-FOLDER-OT01-20260722T0936Z",
+        "workflowId": "95a6f461-1a04-4260-b379-246fdcc45af7",
+        "workflowName": "OT-01 New Lead Intake",
+        "from": "location workflow root",
+        "to": "One Time / 00 - Intake & Data",
+        "result": "moved_existing_asset",
+        "readback": "breadcrumb_and_exact_row_verified",
+        "copiesCreated": 0
+      },
+      {
+        "reference": "GHL-P2-FOLDER-OT02A-20260722T0937Z",
+        "workflowId": "368d47ca-c6d2-4545-acb0-664f98bac8f2",
+        "workflowName": "OT-02A Existing Subscriber Migration 2026 v1",
+        "from": "location workflow root",
+        "to": "One Time / 10 - Enrollment & Nurture",
+        "result": "moved_existing_asset",
+        "readback": "breadcrumb_and_exact_row_verified",
+        "copiesCreated": 0
+      }
+    ],
+    "terminal": "19 of 19 exact workflow IDs are in the canonical nested One Time tree"
+  },
+  "applicationContractReview": {
+    "reference": "APP-CONTRACT-PR97-09953ba2",
+    "result": "no_phase_two_target_has_a_deployed_exact_trigger_contract",
+    "evidence": [
+      {
+        "path": "apps/web/src/server/features/leads/router.ts",
+        "finding": "public adult signup writes One Time lead state and outbox; no HighLevel tag, field, webhook, or workflow trigger is dispatched"
+      },
+      {
+        "path": "packages/contracts/src/delivery/types.ts",
+        "finding": "delivery contracts expose email, WhatsApp, and internal transports with Resend/WAPI providers; no generic HighLevel workflow transport is defined"
+      },
+      {
+        "path": "packages/domain/src/accounts/lifecycle-delivery.ts",
+        "finding": "activation and password-reset token delivery remains owned by One Time and Resend; no eligible non-token companion event is projected to HighLevel"
+      },
+      {
+        "path": "packages/domain/src/classes/service.ts",
+        "finding": "class reminder outbox behavior exists inside One Time with consent and suppression controls; no HighLevel reminder event is dispatched"
+      },
+      {
+        "path": "packages/contracts/src/content/learning-delivery.ts",
+        "finding": "recording.available and class.reminder.requested are registered business-event names"
+      },
+      {
+        "path": "packages/domain/src/content/learning-delivery.ts",
+        "finding": "events can be recorded as ready_for_highlevel, but the reviewed app head has no deployed producer-to-HighLevel dispatcher for these target workflows"
+      },
+      {
+        "path": "application source search",
+        "finding": "no deployed complete-signup, next-confirmed-class-info, member-login, password-help, or apply-opt-out typed OT-A1 adapters were found"
+      }
+    ]
+  },
+  "workflowResults": [
+    {
+      "key": "OT-01",
+      "id": "95a6f461-1a04-4260-b379-246fdcc45af7",
+      "folderPath": "One Time / 00 - Intake & Data",
+      "exactTriggerFilter": "adult public signup submitted after One Time or OT-B01 creates or updates the adult contact, with known source and consent",
+      "expectedCriticalActions": [
+        "apply OT | Lead",
+        "apply only the canonical known source tag",
+        "preserve unrelated tags"
+      ],
+      "observedCriticalActions": [],
+      "observedState": "saved blank Draft shell; editor reopened with no trigger or actions",
+      "senderKey": "brand",
+      "senderSelection": "not selected because no executable trigger contract exists",
+      "suppressionGates": [
+        "email DND",
+        "explicit opt-out",
+        "channel consent",
+        "known source and consent"
+      ],
+      "actionSave": "not applicable; no action layer configured",
+      "outerSave": "existing Draft saved",
+      "navigateReopen": "UI editor and API readback; canonical folder breadcrumb reverified after move",
+      "publishState": "draft",
+      "controlledExecutionReference": null,
+      "deliveryCategory": "signup_confirmation",
+      "idempotencyResult": "not testable without the deployed signup-to-HighLevel trigger contract",
+      "terminalState": "DRAFT_WAITING_EXTERNAL(deployed public-signup-to-HighLevel adult lead trigger contract)",
+      "remainingDependency": "deployed public-signup-to-HighLevel adult lead trigger contract"
+    },
+    {
+      "key": "OT-07",
+      "id": "fb48c3bf-7154-44c9-825e-88afb5bb7942",
+      "folderPath": "One Time / 30 - Portal Lifecycle",
+      "exactTriggerFilter": "One Time access confirmation requests the eligible parent portal companion email",
+      "expectedCriticalActions": [
+        "send or record a non-token parent portal companion only after One Time confirms eligibility",
+        "never store or send credentials or activation/reset tokens"
+      ],
+      "observedCriticalActions": [],
+      "observedState": "saved blank Draft shell; editor reopened with no trigger or actions",
+      "senderKey": "brand",
+      "senderSelection": "not selected because no executable trigger contract exists",
+      "suppressionGates": [
+        "email DND",
+        "explicit opt-out",
+        "channel consent",
+        "One Time access eligibility"
+      ],
+      "actionSave": "not applicable; no action layer configured",
+      "outerSave": "existing Draft saved",
+      "navigateReopen": "UI editor and API readback",
+      "publishState": "draft",
+      "controlledExecutionReference": null,
+      "deliveryCategory": "portal_welcome_companion",
+      "idempotencyResult": "not testable without the deployed companion-event projection",
+      "terminalState": "DRAFT_WAITING_EXTERNAL(deployed access-confirmation companion-event projection to HighLevel)",
+      "remainingDependency": "deployed access-confirmation companion-event projection to HighLevel"
+    },
+    {
+      "key": "OT-08",
+      "id": "eeca2efb-41be-40a7-bbc4-ee6fe8760dd9",
+      "folderPath": "One Time / 30 - Portal Lifecycle",
+      "exactTriggerFilter": "One Time parent portal projection becomes Active for the eligible adult contact",
+      "expectedCriticalActions": [
+        "record the adult parent portal activation",
+        "exclude Student data and learning progress"
+      ],
+      "observedCriticalActions": [],
+      "observedState": "saved Draft shell; no executable trigger/action was configured",
+      "senderKey": "brand",
+      "senderSelection": "not selected because no executable trigger contract exists",
+      "suppressionGates": [
+        "email DND",
+        "explicit opt-out",
+        "channel consent",
+        "One Time Active projection"
+      ],
+      "actionSave": "not applicable; no action layer configured",
+      "outerSave": "existing Draft saved",
+      "navigateReopen": "API readback; editor was not mutated",
+      "publishState": "draft",
+      "controlledExecutionReference": null,
+      "deliveryCategory": "portal_activated",
+      "idempotencyResult": "not testable without the deployed activation projection",
+      "terminalState": "DRAFT_WAITING_EXTERNAL(deployed parent-activation projection to HighLevel)",
+      "remainingDependency": "deployed parent-activation projection to HighLevel"
+    },
+    {
+      "key": "OT-09",
+      "id": "bc8af9fc-22d5-4b4f-b71a-121eeff87f5b",
+      "folderPath": "One Time / 40 - Learning Operations / Classes",
+      "exactTriggerFilter": "registered confirmed class reminder schedule and consent gate pass for an entitled adult household",
+      "expectedCriticalActions": [
+        "send only current confirmed class information supplied by One Time",
+        "use only a canonical protected One Time URL",
+        "never store or send a permanent raw Zoom URL"
+      ],
+      "observedCriticalActions": [],
+      "observedState": "saved Draft shell; no executable trigger/action was configured",
+      "senderKey": "brand",
+      "senderSelection": "not selected because no executable trigger contract exists",
+      "suppressionGates": [
+        "email DND",
+        "explicit opt-out",
+        "channel reminder consent",
+        "confirmed class",
+        "adult household entitlement"
+      ],
+      "actionSave": "not applicable; no action layer configured",
+      "outerSave": "existing Draft saved",
+      "navigateReopen": "API readback; editor was not mutated",
+      "publishState": "draft",
+      "controlledExecutionReference": null,
+      "deliveryCategory": "class_reminder",
+      "idempotencyResult": "not testable without the deployed class reminder event projection",
+      "terminalState": "DRAFT_WAITING_EXTERNAL(deployed confirmed-class reminder event projection to HighLevel)",
+      "remainingDependency": "deployed confirmed-class reminder event projection to HighLevel"
+    },
+    {
+      "key": "OT-10",
+      "id": "1bca5210-a3b9-496b-b3cd-48c60c0e33ca",
+      "folderPath": "One Time / 40 - Learning Operations / Content",
+      "exactTriggerFilter": "One Time marks a protected recording available for an entitled household",
+      "expectedCriticalActions": [
+        "send the approved recording-available notice to the eligible adult",
+        "use only the protected One Time recording URL",
+        "never expose a raw Vimeo provider URL"
+      ],
+      "observedCriticalActions": [],
+      "observedState": "saved blank Draft shell; editor reopened with no trigger or actions",
+      "senderKey": "brand",
+      "senderSelection": "not selected because no executable trigger contract exists",
+      "suppressionGates": [
+        "email DND",
+        "explicit opt-out",
+        "channel consent",
+        "approved content",
+        "household entitlement"
+      ],
+      "actionSave": "not applicable; no action layer configured",
+      "outerSave": "existing Draft saved",
+      "navigateReopen": "UI editor and API readback",
+      "publishState": "draft",
+      "controlledExecutionReference": null,
+      "deliveryCategory": "recording_available",
+      "idempotencyResult": "not testable without a deployed producer and HighLevel dispatcher",
+      "terminalState": "DRAFT_WAITING_EXTERNAL(deployed recording.available producer and HighLevel dispatcher)",
+      "remainingDependency": "deployed recording.available producer and HighLevel dispatcher"
+    },
+    {
+      "key": "OT-B01",
+      "id": "1c1c0bcd-6185-492e-819f-3b7c749d4c23",
+      "folderPath": "One Time / 60 - Bot Actions",
+      "exactTriggerFilter": "OT-A1 invokes the typed complete-signup adapter after all required adult details and consent context are complete",
+      "expectedCriticalActions": [
+        "validate required adult fields",
+        "invoke the protected HighLevel-to-One-Time adapter with idempotency key",
+        "never create a Student contact"
+      ],
+      "observedCriticalActions": [],
+      "observedState": "saved Draft shell; no executable trigger/action was configured",
+      "senderKey": "brand",
+      "senderSelection": "not selected because the typed adapter is absent",
+      "suppressionGates": [
+        "explicit opt-out",
+        "channel consent",
+        "required adult fields",
+        "idempotency key"
+      ],
+      "actionSave": "not applicable; no action layer configured",
+      "outerSave": "existing Draft saved",
+      "navigateReopen": "API readback; editor was not mutated",
+      "publishState": "draft",
+      "controlledExecutionReference": null,
+      "deliveryCategory": "signup_confirmation",
+      "idempotencyResult": "not testable without the typed adapter",
+      "terminalState": "DRAFT_WAITING_EXTERNAL(deployed OT-A1 complete-signup typed adapter)",
+      "remainingDependency": "deployed OT-A1 complete-signup typed adapter"
+    },
+    {
+      "key": "OT-B02",
+      "id": "cc766d32-0a47-47b5-818c-de45fefa83a7",
+      "folderPath": "One Time / 60 - Bot Actions",
+      "exactTriggerFilter": "OT-A1 invokes the typed next-confirmed-class-info adapter",
+      "expectedCriticalActions": [
+        "query safe current class state from One Time",
+        "return or send only the protected confirmed class information",
+        "never expose a raw provider URL"
+      ],
+      "observedCriticalActions": [],
+      "observedState": "saved Draft shell; no executable trigger/action was configured",
+      "senderKey": "brand",
+      "senderSelection": "not selected because the typed adapter is absent",
+      "suppressionGates": [
+        "email DND",
+        "explicit opt-out",
+        "channel consent",
+        "confirmed class",
+        "adult entitlement"
+      ],
+      "actionSave": "not applicable; no action layer configured",
+      "outerSave": "existing Draft saved",
+      "navigateReopen": "API readback; editor was not mutated",
+      "publishState": "draft",
+      "controlledExecutionReference": null,
+      "deliveryCategory": "class_reminder",
+      "idempotencyResult": "not testable without the typed adapter",
+      "terminalState": "DRAFT_WAITING_EXTERNAL(deployed OT-A1 next-confirmed-class-info typed adapter)",
+      "remainingDependency": "deployed OT-A1 next-confirmed-class-info typed adapter"
+    },
+    {
+      "key": "OT-B03",
+      "id": "8ff00774-82fd-42d7-992b-4e9aca0a5091",
+      "folderPath": "One Time / 60 - Bot Actions",
+      "exactTriggerFilter": "OT-A1 invokes the typed member-login adapter for an adult contact",
+      "expectedCriticalActions": [
+        "send only https://join.onetimeonetime.com/login",
+        "do not claim the account is active",
+        "never send credentials or tokens"
+      ],
+      "observedCriticalActions": [],
+      "observedState": "saved Draft shell; no executable trigger/action was configured",
+      "senderKey": "office",
+      "senderSelection": "not selected because the typed adapter is absent",
+      "suppressionGates": ["email DND", "explicit opt-out", "channel consent", "adult contact"],
+      "actionSave": "not applicable; no action layer configured",
+      "outerSave": "existing Draft saved",
+      "navigateReopen": "API readback; editor was not mutated",
+      "publishState": "draft",
+      "controlledExecutionReference": null,
+      "deliveryCategory": "access_help_companion",
+      "idempotencyResult": "not testable without the typed adapter",
+      "terminalState": "DRAFT_WAITING_EXTERNAL(deployed OT-A1 member-login companion adapter)",
+      "remainingDependency": "deployed OT-A1 member-login companion adapter"
+    },
+    {
+      "key": "OT-B04",
+      "id": "9f96c105-a298-4b5d-a5e5-8c573624d242",
+      "folderPath": "One Time / 60 - Bot Actions",
+      "exactTriggerFilter": "OT-A1 invokes the typed password-help adapter without account enumeration",
+      "expectedCriticalActions": [
+        "request the One Time password-help boundary",
+        "send only the canonical forgot-password URL as a non-token companion when eligible",
+        "leave reset-token creation and delivery to One Time and Resend"
+      ],
+      "observedCriticalActions": [],
+      "observedState": "saved Draft shell; no executable trigger/action was configured",
+      "senderKey": "account_security",
+      "senderTransport": "Resend for token delivery; GHL must never store or send a reset token",
+      "senderSelection": "not selected because the typed adapter is absent",
+      "suppressionGates": [
+        "email DND",
+        "explicit opt-out",
+        "privacy-safe non-enumerating response",
+        "no raw token"
+      ],
+      "actionSave": "not applicable; no action layer configured",
+      "outerSave": "existing Draft saved",
+      "navigateReopen": "API readback; editor was not mutated",
+      "publishState": "draft",
+      "controlledExecutionReference": null,
+      "deliveryCategory": "password_help_companion",
+      "idempotencyResult": "not testable without the typed adapter",
+      "terminalState": "DRAFT_WAITING_EXTERNAL(deployed OT-A1 password-help companion adapter delegating token delivery to One Time/Resend)",
+      "remainingDependency": "deployed OT-A1 password-help companion adapter delegating token delivery to One Time/Resend"
+    },
+    {
+      "key": "OT-B05",
+      "id": "badd7521-913c-43b8-9b7a-1c1ccedac63c",
+      "folderPath": "One Time / 60 - Bot Actions",
+      "exactTriggerFilter": "OT-A1 invokes the typed opt-out adapter for STOP, unsubscribe, remove me, do not contact me, wrong number, or equivalent intent",
+      "expectedCriticalActions": [
+        "set relevant channel DND",
+        "update consent and suppression fields",
+        "remove related opt-in tag",
+        "apply OT | Marketing Suppressed when appropriate",
+        "remove from marketing and nurture workflows",
+        "stop bot auto-follow-up"
+      ],
+      "observedCriticalActions": [],
+      "observedState": "saved Draft shell; no executable trigger/action was configured",
+      "senderKey": "brand",
+      "senderSelection": "not selected; the registry trigger says no acknowledgement is authorized and the prompt later says send one confirmation",
+      "suppressionGates": [
+        "opt-out action must run before any further eligible send",
+        "channel-specific DND",
+        "canonical marketing suppression"
+      ],
+      "actionSave": "not applicable; no action layer configured",
+      "outerSave": "existing Draft saved",
+      "navigateReopen": "API readback; editor was not mutated",
+      "publishState": "draft",
+      "controlledExecutionReference": null,
+      "deliveryCategory": "preference_enforcement",
+      "idempotencyResult": "not testable without the typed adapter and subsequent-send suppression replay",
+      "terminalState": "DRAFT_WAITING_EXTERNAL(deployed OT-A1 opt-out adapter with channel DND and suppression mapping)",
+      "remainingDependency": "deployed OT-A1 opt-out adapter with channel DND and suppression mapping",
+      "registryConflict": "the exact-trigger line authorizes no acknowledgement, while the action line says send one confirmation; fail closed to no send until reconciled"
+    }
+  ],
+  "existingTerminals": {
+    "OT-E01": {
+      "id": "a34ea513-4612-4f53-8bd8-49e89e6610f9",
+      "state": "ACTIVE_TESTED",
+      "testReference": "GHL-E01-operator-fab156df2719852d",
+      "activeEnrollments": 1,
+      "historicalEnrollments": 2,
+      "immediateConfirmationDeliveredOnce": true,
+      "duplicateReplayCreatedSecondActiveRun": false,
+      "rawZoomUrlPresent": false,
+      "messagesSentDuringPhaseTwo": 0
+    },
+    "OT-C01": {
+      "id": "f28d8b8a-c26a-4a4f-a9f2-d2a8e94af1ae",
+      "state": "DRAFT_NOT_SENT",
+      "audience": false,
+      "scheduled": false,
+      "sends": 0
+    },
+    "OT-A1": {
+      "id": "0Z5YvlziuXqZmBntYFU0",
+      "state": "OFF"
+    }
+  },
+  "controlledTests": {
+    "phaseTwoTargetExecutions": [],
+    "phaseTwoMessagesSent": 0,
+    "reasonNoTargetExecutionWasRun": "a controlled execution cannot prove a blank workflow whose exact application trigger contract is not deployed",
+    "retainedExactReferences": [
+      "GHL-P2-API-READBACK-20260722T093245Z",
+      "GHL-P2-FOLDER-OT01-20260722T0936Z",
+      "GHL-P2-FOLDER-OT02A-20260722T0937Z",
+      "APP-CONTRACT-PR97-09953ba2",
+      "GHL-E01-operator-fab156df2719852d",
+      "BNA-ENDPOINT-READBACK-20260722T0938Z"
+    ]
+  },
+  "agentActionHub": {
+    "reference": "BNA-ENDPOINT-READBACK-20260722T0938Z",
+    "status": "unavailable_not_deployed",
+    "checkedEndpoints": [
+      { "url": "https://ot99-web-staging.up.railway.app/operations/agent-actions", "status": 404 },
+      { "url": "https://join.onetimeonetime.com/operations/agent-actions", "status": 404 }
+    ],
+    "readbackClaimed": false,
+    "authoritativePersistence": "Git result artifact in PR 107"
+  },
+  "safety": {
+    "broadMessagesSent": 0,
+    "phaseTwoControlledMessagesSent": 0,
+    "studentContactsCreated": 0,
+    "productionAppChanged": false,
+    "productionAudienceEnrollments": 0,
+    "securityTokensStoredOrSentByHighLevel": 0,
+    "rawProviderUrlsAdded": 0,
+    "rabbiSenderActivated": false,
+    "autoPilotEnabled": false,
+    "contactsOrDestinationsPersistedInArtifact": false,
+    "messageBodiesPersistedInArtifact": false,
+    "providerPayloadsOrSecretsPersistedInArtifact": false
+  }
+}

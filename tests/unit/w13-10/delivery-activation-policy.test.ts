@@ -3,7 +3,7 @@ import { providerError } from '../../../packages/contracts/src/delivery/errors.t
 import {
   InMemoryDeliveryProviderBudget,
   evaluateProviderActivationPolicy,
-  providerAttemptIdempotencyKey,
+  providerOperationIdempotencyKey,
 } from '../../../packages/domain/src/delivery/activation-policy.ts';
 import { parseDeliveryProviderFeatureConfig } from '../../../apps/worker/src/delivery/provider-config.ts';
 import { OneTimeProviderDeliveryRouter } from '../../../apps/worker/src/delivery/provider-router.ts';
@@ -150,7 +150,7 @@ describe('W13-10 delivery activation policy', () => {
         { ...context, deliveryKey: 'delivery_w13_10_second', attempt: 3 },
       ),
     ).rejects.toThrow(/budget_exhausted/);
-    expect(idempotencyKeys).toEqual([providerAttemptIdempotencyKey('delivery_w13_10', 2)]);
+    expect(idempotencyKeys).toEqual([providerOperationIdempotencyKey('delivery_w13_10')]);
   });
 
   it('reports consent, suppression, lease, and audit blockers as typed codes', () => {

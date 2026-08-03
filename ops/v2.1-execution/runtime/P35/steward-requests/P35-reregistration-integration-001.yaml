@@ -1,0 +1,24 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P35-reregistration-integration-001
+task_id: P35
+kind: feature_integration
+requirement_ids:
+  - OTV2-MIGRATION-206
+acceptance_case_ids:
+  - OTV2-MIGRATION-206-AC01
+rationale: P35 owns the migration boundary and planning seam, while Family signup and GHL adult identity projection are owned by P08 and P27.
+desired_semantic_change: Consume planLegacyAdultReregistration from the normal v2.1 signup flow after local validation; retain only adult CRM continuity, use exact normalized-email/verified-link precedence, quarantine ambiguity, and never import legacy credentials, sessions, accounts, children, billing, consent, or access.
+proposed_symbols_routes_keys_or_dependencies:
+  - apps/web/src/server/features/domain-transition/legacy-adult.ts#planLegacyAdultReregistration
+  - P08 Family signup transaction seam
+  - P27 GHL adult identity projection seam
+compatibility_assumptions:
+  - Local signup commits before provider projection.
+  - GHL failure cannot duplicate or roll back the local account.
+verification_performed:
+  - P35 prohibited-field, normalization, match-precedence, and ambiguity tests
+conflicts_or_risks:
+  - A name-only or phone-only auto-merge is prohibited.
+  - A Student or child GHL contact is prohibited.
+contains_secret_or_private_data: false

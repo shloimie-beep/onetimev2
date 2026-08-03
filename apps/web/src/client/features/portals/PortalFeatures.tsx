@@ -1,8 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import type {
   AdministrativeUpdate,
-  HelperAnswer,
-  HelperAvailability,
+  ClassLeaderboardSummary,
   LearnerProfile,
   LibraryItem,
   ParentLearnerMaterials,
@@ -16,6 +15,7 @@ import type {
   StudentPortalDashboard,
   UpcomingClassSummary,
 } from '../../../../../../packages/contracts/src/portals/index.ts';
+import type { LiveClassQuestion } from '../../../../../../packages/contracts/src/live-class/index.ts';
 import type { GamificationSummary } from '../../../../../../packages/contracts/src/gamification/index.ts';
 
 export type PortalViewState =
@@ -31,15 +31,77 @@ export type PortalViewState =
   | 'success'
   | 'retry';
 
+export const PARENT_PORTAL_SECTIONS = [
+  {
+    id: 'learners',
+    label: 'Learners',
+    description: 'Profiles, separate Student access, and household controls.',
+  },
+  {
+    id: 'classes',
+    label: 'Classes & materials',
+    description: 'Upcoming classes and approved learning resources for the selected learner.',
+  },
+  {
+    id: 'progress',
+    label: 'Progress & rewards',
+    description: 'Private progress, milestones, and class activity.',
+  },
+  {
+    id: 'billing',
+    label: 'Billing',
+    description: 'Your current learning access. Billing is managed separately in GHL.',
+  },
+  {
+    id: 'updates',
+    label: 'Updates',
+    description: 'The selected learner’s latest private family updates.',
+  },
+] as const;
+
+export const STUDENT_PORTAL_SECTIONS = [
+  {
+    id: 'today',
+    label: 'Today',
+    description: 'Your next class and private class question workspace.',
+  },
+  {
+    id: 'library',
+    label: 'Library',
+    description: 'Only approved lessons and resources assigned to you.',
+  },
+  {
+    id: 'progress',
+    label: 'Progress',
+    description: 'Your private learning activity, milestones, and class board.',
+  },
+  {
+    id: 'questions',
+    label: 'Questions',
+    description: 'Ask the Rabbi privately and follow your submitted questions.',
+  },
+  {
+    id: 'updates',
+    label: 'Updates',
+    description: 'Class and account updates meant for you.',
+  },
+] as const;
+
+export type ParentPortalSection = (typeof PARENT_PORTAL_SECTIONS)[number]['id'];
+export type StudentPortalSection = (typeof STUDENT_PORTAL_SECTIONS)[number]['id'];
+
 export type ParentPortalFeatureProps = {
   viewState: PortalViewState;
   dashboard: ParentPortalDashboard | null;
   learnerMaterials?: Record<string, ParentLearnerMaterials>;
   rewardHistory?: Record<string, RewardEvent[]>;
   selectedLearnerKey?: string | null;
+  activeSection?: ParentPortalSection;
+  navigationMode?: 'shell' | 'embedded';
   actorFingerprint: string;
   resetSignal?: number;
   onSelectLearner?: (learnerKey: string) => void;
+  onSelectSection?: (section: ParentPortalSection) => void;
   onCreateLearner?: () => void;
   onEditLearner?: (learnerKey: string) => void;
   onArchiveLearner?: (learnerKey: string) => void;
@@ -50,28 +112,37 @@ export type ParentPortalFeatureProps = {
   ) => void;
   onLaunchClass?: (learnerKey: string, action: ProtectedActionDescriptor) => void;
   onOpenContent?: (learnerKey: string, action: ProtectedActionDescriptor) => void;
+  /** @deprecated Parent support routes are isolated; this callback is ignored. */
   onPreviewSupport?: (learnerKey?: string) => void;
-  onBillingCheckout?: () => void;
-  onBillingPortal?: () => void;
-  onCreateRewardGoal?: (
-    learnerKey: string,
-    goal: { title: string; description: string; pointsRequired: number },
-  ) => void;
   onRetry?: () => void;
+  accountSecurity?: React.ReactNode;
+  /** @deprecated The parent-created reward-goal surface is retired; this callback is ignored. */
+  onCreateRewardGoal?: (...args: never[]) => void;
 };
 
 export type StudentPortalFeatureProps = {
   viewState: PortalViewState;
   dashboard: StudentPortalDashboard | null;
+  readOnly?: boolean;
+  /** @deprecated `helper` is accepted only for source compatibility and renders no helper surface. */
+  activeSection?: StudentPortalSection | 'helper';
+  navigationMode?: 'shell' | 'embedded';
   actorFingerprint: string;
   resetSignal?: number;
   onLaunchClass?: (action: ProtectedActionDescriptor) => void;
   onOpenContent?: (action: ProtectedActionDescriptor) => void;
-  onQueryHelper?: (question: string) => Promise<HelperAnswer>;
   onSubmitQuestion?: (question: string, classKey?: string | undefined) => void;
   onSubmitClassroomQuestion?: (occurrenceKey: string, body: string) => void;
+  liveClassQuestions?: LiveClassQuestion[];
+  onMarkLiveClassReady?: (questionKey: string, ready: boolean) => void;
+  onSelectSection?: (section: StudentPortalSection) => void;
   onPreviewSupport?: () => void;
   onRetry?: () => void;
+  accountSecurity?: React.ReactNode;
+  libraryWorkspace?: React.ReactNode;
+  learningOverview?: React.ReactNode;
+  /** @deprecated The class-helper surface is retired; this callback is ignored. */
+  onQueryHelper?: (question: string, classKey?: string) => Promise<unknown>;
 };
 
 export function ParentPortalFeature({
@@ -80,9 +151,12 @@ export function ParentPortalFeature({
   learnerMaterials = {},
   rewardHistory = {},
   selectedLearnerKey,
+  activeSection: requestedSection,
+  navigationMode = 'embedded',
   actorFingerprint,
   resetSignal,
   onSelectLearner,
+  onSelectSection,
   onCreateLearner,
   onEditLearner,
   onArchiveLearner,
@@ -90,15 +164,13 @@ export function ParentPortalFeature({
   onStudentAccessAction,
   onLaunchClass,
   onOpenContent,
-  onPreviewSupport,
-  onBillingCheckout,
-  onBillingPortal,
-  onCreateRewardGoal,
   onRetry,
+  accountSecurity,
 }: ParentPortalFeatureProps) {
   const [activeLearnerKey, setActiveLearnerKey] = useState<string | null>(
     selectedLearnerKey ?? null,
   );
+  const [localSection, setLocalSection] = useState<ParentPortalSection>('learners');
   useEffect(() => {
     setActiveLearnerKey(selectedLearnerKey ?? null);
   }, [actorFingerprint, resetSignal, selectedLearnerKey]);
@@ -112,6 +184,18 @@ export function ParentPortalFeature({
   const selectedMaterials = selectedLearner
     ? learnerMaterials[selectedLearner.learner_key]
     : undefined;
+  const activeSection = requestedSection ?? localSection;
+  const selectedClasses = selectedLearner
+    ? (dashboard?.upcoming_classes[selectedLearner.learner_key] ?? [])
+    : [];
+  const selectedUpdates = selectedLearner
+    ? (dashboard?.updates[selectedLearner.learner_key] ?? [])
+    : [];
+
+  function selectSection(section: ParentPortalSection) {
+    setLocalSection(section);
+    onSelectSection?.(section);
+  }
 
   if (viewState !== 'ready' && viewState !== 'success' && !dashboard) {
     return <PortalState role="parent" viewState={viewState} onRetry={onRetry} />;
@@ -130,130 +214,155 @@ export function ParentPortalFeature({
             </button>
           )}
         </div>
+        {accountSecurity}
       </section>
     );
   }
 
   return (
     <section className="ot-portal" data-portal-role="parent" data-state={viewState}>
-      <PortalTopline
-        title="Parent Portal"
-        subtitle={dashboard.household.display_name}
-        aside={`${dashboard.household.active_learner_count}/3 active learners`}
-      />
       <StatusStrip viewState={viewState} onRetry={onRetry} />
-      <div className="ot-grid ot-grid-parent">
-        <section className="ot-panel" aria-labelledby="household-heading">
-          <div className="ot-panel-head">
-            <div>
-              <h2 id="household-heading">Household</h2>
-              <p>Consent: {label(dashboard.household.consent_status)}</p>
-            </div>
-            {onCreateLearner && (
-              <button
-                type="button"
-                className="ot-icon-button"
-                aria-label="Add learner"
-                title="Add learner"
-                onClick={onCreateLearner}
-              >
-                +
-              </button>
-            )}
-          </div>
-          {dashboard.household.learner_limit_reached && (
-            <p className="ot-warning" role="status">
-              V1 supports three active learners. Archive one before adding another.
-            </p>
-          )}
-          <div className="ot-learner-list" role="list" aria-label="Learners">
-            {learners.map((learner) => (
-              <div role="listitem" key={learner.learner_key}>
-                <button
-                  type="button"
-                  className="ot-learner-card"
-                  aria-pressed={selectedLearner?.learner_key === learner.learner_key}
-                  onClick={() => {
-                    setActiveLearnerKey(learner.learner_key);
-                    onSelectLearner?.(learner.learner_key);
-                  }}
-                >
-                  <strong>{learner.display_name}</strong>
-                  <span>
-                    {learner.grade_label ?? 'Grade not set'} - {label(learner.learner_status)}
-                  </span>
-                </button>
-              </div>
-            ))}
-          </div>
-          <BillingSummaryPanel
-            billing={dashboard.billing}
-            onCheckout={onBillingCheckout}
-            onPortal={onBillingPortal}
+      <PortalWorkspace
+        role="parent"
+        navigationMode={navigationMode}
+        sections={PARENT_PORTAL_SECTIONS}
+        activeSection={activeSection}
+        onSelectSection={(section) => selectSection(section as ParentPortalSection)}
+        summaryCards={[
+          {
+            section: 'learners',
+            label: 'Active learners',
+            value: `${dashboard.household.active_learner_count} active learners`,
+            detail: dashboard.household.display_name,
+          },
+          {
+            section: 'classes',
+            label: 'Next class',
+            value: selectedClasses[0]?.title ?? 'No class',
+            detail: selectedClasses[0]?.starts_at
+              ? formatDate(selectedClasses[0].starts_at)
+              : 'Nothing scheduled',
+          },
+          {
+            section: 'classes',
+            label: 'Approved materials',
+            value: String(
+              (selectedMaterials?.library.length ?? 0) +
+                (selectedMaterials?.review_sheets.length ?? 0),
+            ),
+            detail:
+              selectedMaterials?.library[0]?.title ??
+              selectedMaterials?.review_sheets[0]?.title ??
+              'No approved material yet',
+          },
+          {
+            section: 'progress',
+            label: 'Learning points',
+            value: String(
+              selectedLearner ? (dashboard.rewards[selectedLearner.learner_key]?.balance ?? 0) : 0,
+            ),
+            detail: selectedLearner?.display_name ?? 'Select a learner',
+          },
+        ]}
+        topControls={
+          <LearnerSwitcher
+            learners={learners}
+            selectedLearner={selectedLearner}
+            onCreateLearner={onCreateLearner}
+            onSelect={(learner) => {
+              setActiveLearnerKey(learner.learner_key);
+              onSelectLearner?.(learner.learner_key);
+            }}
           />
-        </section>
-
-        {selectedLearner && (
-          <section className="ot-panel ot-focus-panel" aria-labelledby="learner-heading">
-            <div className="ot-panel-head">
-              <div>
-                <h2 id="learner-heading">{selectedLearner.display_name}</h2>
-                <p>{selectedLearner.hebrew_name ?? 'Learner profile'}</p>
-              </div>
-              <div className="ot-action-row">
-                {onEditLearner && (
-                  <button
-                    type="button"
-                    className="ot-button"
-                    onClick={() => onEditLearner(selectedLearner.learner_key)}
-                  >
-                    Edit
-                  </button>
-                )}
-                {selectedLearner.learner_status === 'archived'
-                  ? onRestoreLearner && (
+        }
+      >
+        {activeSection === 'learners' && selectedLearner && (
+          <>
+            <div className="ot-focus-columns">
+              <section aria-labelledby="household-heading">
+                <div className="ot-panel-head">
+                  <div>
+                    <h2 id="household-heading">Household</h2>
+                    <p>Consent: {label(dashboard.household.consent_status)}</p>
+                  </div>
+                </div>
+                <p className="ot-muted">
+                  Choose a learner above to manage that child’s separate profile and Student access.
+                </p>
+              </section>
+              <section aria-labelledby="learner-heading">
+                <div className="ot-panel-head">
+                  <div>
+                    <h2 id="learner-heading">{selectedLearner.display_name}</h2>
+                    <p>{selectedLearner.hebrew_name ?? 'Learner profile'}</p>
+                  </div>
+                  <div className="ot-action-row">
+                    {onEditLearner && (
                       <button
                         type="button"
                         className="ot-button"
-                        onClick={() => onRestoreLearner(selectedLearner.learner_key)}
+                        onClick={() => onEditLearner(selectedLearner.learner_key)}
                       >
-                        Restore
-                      </button>
-                    )
-                  : onArchiveLearner && (
-                      <button
-                        type="button"
-                        className="ot-button"
-                        onClick={() => onArchiveLearner(selectedLearner.learner_key)}
-                      >
-                        Archive
+                        Edit
                       </button>
                     )}
-              </div>
+                    {selectedLearner.learner_status === 'archived'
+                      ? onRestoreLearner && (
+                          <button
+                            type="button"
+                            className="ot-button"
+                            onClick={() => onRestoreLearner(selectedLearner.learner_key)}
+                          >
+                            Restore
+                          </button>
+                        )
+                      : onArchiveLearner && (
+                          <button
+                            type="button"
+                            className="ot-button"
+                            onClick={() => onArchiveLearner(selectedLearner.learner_key)}
+                          >
+                            Archive
+                          </button>
+                        )}
+                  </div>
+                </div>
+                <StudentAccessControls
+                  learner={selectedLearner}
+                  access={selectedAccess ?? null}
+                  onAction={onStudentAccessAction}
+                />
+              </section>
             </div>
-            <StudentAccessControls
-              learner={selectedLearner}
-              access={selectedAccess ?? null}
-              onAction={onStudentAccessAction}
-            />
-            <ClassSummary
-              learner={selectedLearner}
-              classes={dashboard.upcoming_classes[selectedLearner.learner_key] ?? []}
-              onLaunch={onLaunchClass}
-            />
-            <MaterialsSummary
-              library={selectedMaterials?.library ?? []}
-              reviewSheets={selectedMaterials?.review_sheets ?? []}
-              helper={dashboard.helper}
-              onOpen={(action) => onOpenContent?.(selectedLearner.learner_key, action)}
-              onPreviewSupport={() => onPreviewSupport?.(selectedLearner.learner_key)}
-            />
-          </section>
+            {accountSecurity}
+          </>
         )}
 
-        {selectedLearner && (
-          <section className="ot-panel" aria-labelledby="parent-progress-heading">
-            <h2 id="parent-progress-heading">Progress And Rewards</h2>
+        {activeSection === 'classes' && selectedLearner && (
+          <div className="ot-focus-columns">
+            <section aria-labelledby="parent-classes-heading">
+              <h2 id="parent-classes-heading">Upcoming classes</h2>
+              <ClassSummary
+                learner={selectedLearner}
+                classes={selectedClasses}
+                onLaunch={onLaunchClass}
+              />
+            </section>
+            <section aria-labelledby="parent-materials-heading">
+              <h2 id="parent-materials-heading">Materials</h2>
+              <MaterialsSummary
+                key={selectedLearner.learner_key}
+                library={selectedMaterials?.library ?? []}
+                reviewSheets={selectedMaterials?.review_sheets ?? []}
+                onOpen={(action) => onOpenContent?.(selectedLearner.learner_key, action)}
+              />
+            </section>
+          </div>
+        )}
+
+        {activeSection === 'progress' && selectedLearner && (
+          <>
+            <h2 id="parent-progress-heading">Progress &amp; rewards</h2>
             <RewardSummary
               rewards={dashboard.rewards[selectedLearner.learner_key]}
               progress={selectedMaterials?.progress}
@@ -262,37 +371,36 @@ export function ParentPortalFeature({
                 selectedMaterials?.gamification ??
                 dashboard.gamification?.[selectedLearner.learner_key]
               }
-              onCreateRewardGoal={
-                onCreateRewardGoal
-                  ? (goal) => onCreateRewardGoal(selectedLearner.learner_key, goal)
-                  : undefined
-              }
             />
-            <UpdatesList updates={dashboard.updates[selectedLearner.learner_key] ?? []} />
-          </section>
+            <LeaderboardPanel
+              leaderboard={dashboard.leaderboard}
+              ownLearnerKey={selectedLearner.learner_key}
+            />
+          </>
         )}
-      </div>
+
+        {activeSection === 'billing' && <BillingSummaryPanel billing={dashboard.billing} />}
+
+        {activeSection === 'updates' && (
+          <>
+            <h2 id="parent-updates-heading">Updates</h2>
+            <UpdatesList updates={selectedUpdates} />
+          </>
+        )}
+      </PortalWorkspace>
     </section>
   );
 }
 
-function BillingSummaryPanel({
-  billing,
-  onCheckout,
-  onPortal,
-}: {
-  billing: ParentPortalDashboard['billing'];
-  onCheckout?: (() => void) | undefined;
-  onPortal?: (() => void) | undefined;
-}) {
+function BillingSummaryPanel({ billing }: { billing: ParentPortalDashboard['billing'] }) {
   if (!billing.enabled) {
     return (
       <section className="ot-subsection" aria-labelledby="billing-heading">
         <div className="ot-section-title">
-          <h3 id="billing-heading">Billing</h3>
+          <h3 id="billing-heading">Learning access</h3>
           <span>Unavailable</span>
         </div>
-        <p>Billing is unavailable in this environment.</p>
+        <p>Current learning access is unavailable in this environment.</p>
         <dl className="ot-stats">
           <div>
             <dt>Access</dt>
@@ -303,13 +411,10 @@ function BillingSummaryPanel({
     );
   }
   const status = billing.entitlement_status ?? 'pending';
-  const showCheckout =
-    billing.checkout_available && status !== 'active' && status !== 'scheduled_end';
-  const showPortal = billing.customer_portal_available;
   return (
     <section className="ot-subsection" aria-labelledby="billing-heading">
       <div>
-        <h3 id="billing-heading">Billing</h3>
+        <h3 id="billing-heading">Learning access</h3>
         <p>{billing.plan_truth}</p>
       </div>
       <dl className="ot-mini-metrics">
@@ -324,32 +429,14 @@ function BillingSummaryPanel({
       </dl>
       {billing.current_period_end && (
         <p className="ot-muted">
-          Current period ends {formatDate(billing.current_period_end)}
-          {billing.cancel_at_period_end ? '. Cancellation scheduled.' : ''}
+          Current access is scheduled through {formatDate(billing.current_period_end)}.
         </p>
       )}
       {billing.recovery_required && (
         <p className="ot-warning" role="status">
-          Payment recovery is required before learning access resumes.
+          Learning access needs operator review in GHL.
         </p>
       )}
-      <div className="ot-action-row">
-        {showCheckout && (
-          <button
-            type="button"
-            className="ot-button ot-button-primary"
-            disabled={!onCheckout}
-            onClick={onCheckout}
-          >
-            Start checkout
-          </button>
-        )}
-        {showPortal && (
-          <button type="button" className="ot-button" disabled={!onPortal} onClick={onPortal}>
-            Manage billing
-          </button>
-        )}
-      </div>
     </section>
   );
 }
@@ -357,23 +444,39 @@ function BillingSummaryPanel({
 export function StudentPortalFeature({
   viewState,
   dashboard,
+  readOnly = false,
+  activeSection: requestedSection,
+  navigationMode = 'embedded',
   actorFingerprint,
   resetSignal,
   onLaunchClass,
   onOpenContent,
-  onQueryHelper,
   onSubmitQuestion,
   onSubmitClassroomQuestion,
+  liveClassQuestions = [],
+  onMarkLiveClassReady,
+  onSelectSection,
   onPreviewSupport,
   onRetry,
+  accountSecurity,
+  libraryWorkspace,
+  learningOverview,
 }: StudentPortalFeatureProps) {
   const [sessionMarker, setSessionMarker] = useState(actorFingerprint);
   const [question, setQuestion] = useState('');
   const [questionState, setQuestionState] = useState<'idle' | 'sent' | 'blocked'>('idle');
+  const [localSection, setLocalSection] = useState<StudentPortalSection>('today');
   useEffect(() => {
     setSessionMarker(actorFingerprint);
   }, [actorFingerprint, resetSignal]);
   const currentClass = dashboard?.upcoming_classes[0] ?? null;
+  const activeSection =
+    requestedSection === 'helper' ? 'today' : (requestedSection ?? localSection);
+
+  function selectSection(section: StudentPortalSection) {
+    setLocalSection(section);
+    onSelectSection?.(section);
+  }
 
   if (viewState !== 'ready' && viewState !== 'success' && !dashboard) {
     return <PortalState role="student" viewState={viewState} onRetry={onRetry} />;
@@ -396,87 +499,373 @@ export function StudentPortalFeature({
       data-portal-role="student"
       data-state={viewState}
       data-session-marker={sessionMarker}
+      data-read-only={readOnly}
     >
-      <PortalTopline title="Student Portal" subtitle={dashboard.learner.display_name} />
       <StatusStrip viewState={viewState} onRetry={onRetry} />
-      <div className="ot-grid">
-        <section className="ot-panel ot-hero-panel" aria-labelledby="student-dashboard-heading">
-          <h2 id="student-dashboard-heading">Today</h2>
-          <ClassSummary classes={dashboard.upcoming_classes} onLaunch={onLaunchClass} />
-          {currentClass && (
-            <form
-              className="ot-question-form"
-              onSubmit={(event) => {
-                event.preventDefault();
-                const body = question.trim();
-                if (body.length < 3 || !onSubmitClassroomQuestion) {
-                  setQuestionState('blocked');
-                  return;
-                }
-                onSubmitClassroomQuestion(currentClass.class_key, body);
-                setQuestion('');
-                setQuestionState('sent');
-              }}
-            >
-              <label htmlFor="student-question">Question for class</label>
-              <textarea
-                id="student-question"
-                value={question}
-                minLength={3}
-                maxLength={360}
-                rows={3}
-                onChange={(event) => {
-                  setQuestion(event.currentTarget.value);
-                  setQuestionState('idle');
+      <PortalWorkspace
+        role="student"
+        navigationMode={navigationMode}
+        sections={STUDENT_PORTAL_SECTIONS}
+        activeSection={activeSection}
+        onSelectSection={(section) => selectSection(section as StudentPortalSection)}
+        summaryCards={[
+          {
+            section: 'today',
+            label: 'Next class',
+            value: currentClass?.title ?? 'No class',
+            detail: currentClass?.starts_at
+              ? formatDate(currentClass.starts_at)
+              : 'Nothing scheduled',
+          },
+          {
+            section: 'library',
+            label: 'Library',
+            value: String(
+              dashboard.library_items.filter((item) => item.status === 'published').length,
+            ),
+            detail:
+              dashboard.library_items.find((item) => item.status === 'published')?.title ??
+              'No approved lesson yet',
+          },
+          {
+            section: 'progress',
+            label: 'Learning points',
+            value: String(dashboard.rewards.balance),
+            detail: `${dashboard.progress.attendance_count} classes attended`,
+          },
+          {
+            section: 'questions',
+            label: 'Private questions',
+            value: String(dashboard.questions.length),
+            detail: 'Visible only to you and the Rabbi',
+          },
+        ]}
+        topControls={
+          <div className="ot-portal-identity" aria-label="Current learner">
+            <span>Learning as</span>
+            <strong>{dashboard.learner.display_name}</strong>
+          </div>
+        }
+      >
+        {activeSection === 'today' && (
+          <>
+            <h2 id="student-dashboard-heading">Today</h2>
+            <ClassSummary
+              classes={dashboard.upcoming_classes}
+              onLaunch={readOnly ? undefined : onLaunchClass}
+            />
+            {currentClass && (
+              <form
+                className="ot-question-form"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  const body = question.trim();
+                  if (readOnly || body.length < 3 || !onSubmitClassroomQuestion) {
+                    setQuestionState('blocked');
+                    return;
+                  }
+                  onSubmitClassroomQuestion(currentClass.class_key, body);
+                  setQuestion('');
+                  setQuestionState('sent');
                 }}
+              >
+                <label htmlFor="student-question">Question for class</label>
+                <textarea
+                  id="student-question"
+                  value={question}
+                  minLength={3}
+                  maxLength={360}
+                  rows={3}
+                  disabled={readOnly}
+                  onChange={(event) => {
+                    setQuestion(event.currentTarget.value);
+                    setQuestionState('idle');
+                  }}
+                />
+                <div className="ot-action-row">
+                  <button
+                    type="submit"
+                    className="ot-button"
+                    disabled={readOnly || !onSubmitClassroomQuestion}
+                  >
+                    Send question
+                  </button>
+                  {questionState !== 'idle' && (
+                    <span role={questionState === 'blocked' ? 'alert' : 'status'}>
+                      {questionState === 'sent' ? 'Sent' : 'Enter at least three characters.'}
+                    </span>
+                  )}
+                </div>
+              </form>
+            )}
+            <LiveClassReadyPanel
+              questions={liveClassQuestions}
+              {...(!readOnly && onMarkLiveClassReady ? { onMarkReady: onMarkLiveClassReady } : {})}
+            />
+          </>
+        )}
+
+        {activeSection === 'library' && (
+          <>
+            <h2 id="student-library-heading">Library</h2>
+            {libraryWorkspace ?? (
+              <>
+                {dashboard.featured_lesson && <FeaturedLesson lesson={dashboard.featured_lesson} />}
+                <ContentList
+                  items={dashboard.library_items.filter((item) => item.status === 'published')}
+                  onOpen={readOnly ? undefined : onOpenContent}
+                />
+              </>
+            )}
+          </>
+        )}
+
+        {activeSection === 'progress' && (
+          <>
+            <h2 id="student-progress-heading">Progress</h2>
+            {learningOverview ?? (
+              <>
+                <RewardSummary
+                  rewards={dashboard.rewards}
+                  progress={dashboard.progress}
+                  history={[]}
+                  gamification={dashboard.gamification}
+                />
+                <LeaderboardPanel
+                  leaderboard={dashboard.leaderboard}
+                  ownLearnerKey={dashboard.learner.learner_key}
+                />
+              </>
+            )}
+          </>
+        )}
+
+        {activeSection === 'questions' && (
+          <>
+            <h2 id="student-questions-heading">Questions</h2>
+            {learningOverview ?? (
+              <QuestionPanel
+                questions={dashboard.questions}
+                upcoming={dashboard.upcoming_classes}
+                onSubmitQuestion={readOnly ? undefined : onSubmitQuestion}
+                readOnly={readOnly}
               />
-              <div className="ot-action-row">
-                <button type="submit" className="ot-button" disabled={!onSubmitClassroomQuestion}>
-                  Send question
-                </button>
-                {questionState !== 'idle' && (
-                  <span role={questionState === 'blocked' ? 'alert' : 'status'}>
-                    {questionState === 'sent' ? 'Sent' : 'Enter at least three characters.'}
-                  </span>
-                )}
-              </div>
-            </form>
-          )}
-        </section>
-        <section className="ot-panel" aria-labelledby="student-library-heading">
-          <h2 id="student-library-heading">Library</h2>
-          <ContentList items={dashboard.library_items} onOpen={onOpenContent} />
-        </section>
-        <section className="ot-panel" aria-labelledby="student-helper-heading">
-          <h2 id="student-helper-heading">Class Helper</h2>
-          <ClassHelperPanel helper={dashboard.helper} onQueryHelper={onQueryHelper} />
-        </section>
-        <section className="ot-panel" aria-labelledby="student-progress-heading">
-          <h2 id="student-progress-heading">Progress</h2>
-          <RewardSummary
-            rewards={dashboard.rewards}
-            progress={dashboard.progress}
-            history={[]}
-            gamification={dashboard.gamification}
+            )}
+          </>
+        )}
+
+        {activeSection === 'updates' && (
+          <>
+            <h2 id="student-updates-heading">Updates</h2>
+            {learningOverview ?? <UpdatesList updates={dashboard.updates} />}
+            <button
+              type="button"
+              className="ot-button"
+              disabled={readOnly || !onPreviewSupport}
+              onClick={readOnly ? undefined : onPreviewSupport}
+            >
+              Technical help
+            </button>
+            {accountSecurity}
+          </>
+        )}
+      </PortalWorkspace>
+    </section>
+  );
+}
+
+type PortalSectionDefinition = {
+  id: string;
+  label: string;
+  description: string;
+};
+
+type PortalSummaryCard = {
+  section: string;
+  label: string;
+  value: string;
+  detail: string;
+};
+
+function PortalWorkspace({
+  role,
+  navigationMode,
+  sections,
+  activeSection,
+  onSelectSection,
+  summaryCards,
+  topControls,
+  children,
+}: {
+  role: 'parent' | 'student';
+  navigationMode: 'shell' | 'embedded';
+  sections: readonly PortalSectionDefinition[];
+  activeSection: string;
+  onSelectSection: (section: string) => void;
+  summaryCards: PortalSummaryCard[];
+  topControls?: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  const active = sections.find((section) => section.id === activeSection) ?? sections[0];
+  if (!active) return null;
+  const roleLabel = role === 'parent' ? 'Family workspace' : 'My learning';
+  return (
+    <div className="ot-portal-layout" data-navigation-mode={navigationMode}>
+      {navigationMode === 'embedded' && (
+        <aside className="ot-portal-menu" aria-label={`${roleLabel} categories`}>
+          <p className="ot-kicker">{roleLabel}</p>
+          <PortalSectionButtons
+            sections={sections}
+            activeSection={active.id}
+            onSelectSection={onSelectSection}
           />
+        </aside>
+      )}
+      <div className="ot-portal-workspace">
+        <header className="ot-portal-workspace-head">
+          <div>
+            <p className="ot-kicker">{roleLabel}</p>
+            <h2 id={`${role}-workspace-heading`}>{active.label}</h2>
+            <p>{active.description}</p>
+          </div>
+          {topControls}
+        </header>
+        {navigationMode === 'embedded' && (
+          <nav className="ot-portal-subnav" aria-label={`${roleLabel} categories`}>
+            <PortalSectionButtons
+              sections={sections}
+              activeSection={active.id}
+              onSelectSection={onSelectSection}
+            />
+          </nav>
+        )}
+        <section className="ot-portal-summary-grid" aria-label={`${roleLabel} overview`}>
+          {summaryCards.map((card) => (
+            <article
+              className="ot-portal-summary-card"
+              data-active={card.section === active.id}
+              key={`${card.section}-${card.label}`}
+            >
+              <h3>{card.label}</h3>
+              <strong>{card.value}</strong>
+              <p>{card.detail}</p>
+            </article>
+          ))}
         </section>
-        <section className="ot-panel" aria-labelledby="student-questions-heading">
-          <h2 id="student-questions-heading">Questions</h2>
-          <QuestionPanel
-            questions={dashboard.questions}
-            upcoming={dashboard.upcoming_classes}
-            onSubmitQuestion={onSubmitQuestion}
-          />
-        </section>
-        <section className="ot-panel" aria-labelledby="student-updates-heading">
-          <h2 id="student-updates-heading">Updates</h2>
-          <UpdatesList updates={dashboard.updates} />
-          <button type="button" className="ot-button" onClick={onPreviewSupport}>
-            Technical help
-          </button>
+        <section
+          className="ot-panel ot-focus-panel ot-portal-focus"
+          aria-labelledby={`${role}-workspace-heading`}
+        >
+          {children}
         </section>
       </div>
-    </section>
+    </div>
+  );
+}
+
+function PortalSectionButtons({
+  sections,
+  activeSection,
+  onSelectSection,
+}: {
+  sections: readonly PortalSectionDefinition[];
+  activeSection: string;
+  onSelectSection: (section: string) => void;
+}) {
+  return (
+    <div className="ot-portal-section-buttons">
+      {sections.map((section) => (
+        <button
+          type="button"
+          aria-current={section.id === activeSection ? 'page' : undefined}
+          key={section.id}
+          onClick={() => onSelectSection(section.id)}
+        >
+          <span>{section.label}</span>
+          <small>{section.description}</small>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function LearnerSwitcher({
+  learners,
+  selectedLearner,
+  onSelect,
+  onCreateLearner,
+}: {
+  learners: LearnerProfile[];
+  selectedLearner: LearnerProfile | null;
+  onSelect: (learner: LearnerProfile) => void;
+  onCreateLearner?: (() => void) | undefined;
+}) {
+  return (
+    <div className="ot-learner-switcher">
+      <span>Learner</span>
+      <div role="list" aria-label="Choose learner">
+        {learners.map((learner) => (
+          <div role="listitem" key={learner.learner_key}>
+            <button
+              type="button"
+              aria-pressed={selectedLearner?.learner_key === learner.learner_key}
+              onClick={() => onSelect(learner)}
+            >
+              <strong>{learner.display_name}</strong>
+              <small>
+                {learner.grade_label ?? 'Grade not set'} - {label(learner.learner_status)}
+              </small>
+            </button>
+          </div>
+        ))}
+      </div>
+      {onCreateLearner && (
+        <button type="button" className="ot-button" onClick={onCreateLearner}>
+          Add learner
+        </button>
+      )}
+    </div>
+  );
+}
+
+function LiveClassReadyPanel({
+  questions,
+  onMarkReady,
+}: {
+  questions: LiveClassQuestion[];
+  onMarkReady?: (questionKey: string, ready: boolean) => void;
+}) {
+  const selected = questions.find((question) =>
+    ['selected', 'student_ready', 'live'].includes(question.status),
+  );
+  if (!selected) return null;
+  const ready = selected.status === 'student_ready' || selected.status === 'live';
+  return (
+    <div className="ot-live-ready" role="status">
+      <div>
+        <strong>Rabbi selected your question.</strong>
+        <p>Enable microphone and video in Zoom when you are ready to answer.</p>
+      </div>
+      <div className="ot-action-row">
+        <button
+          type="button"
+          className="ot-button"
+          onClick={() => onMarkReady?.(selected.question_key, true)}
+          disabled={!onMarkReady || ready}
+        >
+          I'm ready
+        </button>
+        <button
+          type="button"
+          className="ot-button secondary"
+          onClick={() => onMarkReady?.(selected.question_key, false)}
+          disabled={!onMarkReady || selected.readiness === 'declined'}
+        >
+          Decline
+        </button>
+        <span>{ready ? 'Ready sent' : selected.readiness}</span>
+      </div>
+    </div>
   );
 }
 
@@ -590,6 +979,19 @@ function StudentAccessControls({
             ? 'Paused while learner is archived'
             : label(status)}
         </p>
+        {access?.username_display && <p>Username: {access.username_display}</p>}
+        {access?.credential_status && (
+          <p>
+            Credentials: {label(access.credential_status)}
+            {access.password_version ? ` - version ${access.password_version}` : ''}
+          </p>
+        )}
+        {(status === 'suspended' || status === 'disabled') && (
+          <p className="ot-warning" role="status">
+            Student sign-in is revoked. Restore access, or send a secure reset so the learner can
+            sign in again.
+          </p>
+        )}
       </div>
       {onAction && actions.length > 0 && (
         <div className="ot-action-row">
@@ -664,26 +1066,16 @@ function ClassSummary({
 function MaterialsSummary({
   library,
   reviewSheets,
-  helper,
   onOpen,
-  onPreviewSupport,
 }: {
   library: LibraryItem[];
   reviewSheets: LibraryItem[];
-  helper: HelperAvailability;
   onOpen?: ((action: ProtectedActionDescriptor) => void) | undefined;
-  onPreviewSupport?: (() => void) | undefined;
 }) {
   return (
     <section className="ot-subsection" aria-labelledby="materials-heading">
       <h3 id="materials-heading">Materials</h3>
       <ContentList items={[...library, ...reviewSheets]} onOpen={onOpen} />
-      <HelperState helper={helper} />
-      {onPreviewSupport && (
-        <button type="button" className="ot-button" onClick={onPreviewSupport}>
-          Technical support
-        </button>
-      )}
     </section>
   );
 }
@@ -695,16 +1087,39 @@ function ContentList({
   items: LibraryItem[];
   onOpen?: ((action: ProtectedActionDescriptor) => void) | undefined;
 }) {
-  if (items.length === 0) return <p className="ot-muted">Published materials will appear here.</p>;
+  const visibleItems = items.filter((item) => !item.content_factory?.is_demo);
+  if (visibleItems.length === 0) {
+    return <p className="ot-muted">Published materials will appear here.</p>;
+  }
   return (
     <div className="ot-stack">
-      {items.map((item) => {
+      {visibleItems.map((item) => {
         const action = item.open_action;
         return (
           <article className="ot-item" key={item.item_key}>
             <div>
               <strong>{item.title}</strong>
               <span>{label(item.item_type)}</span>
+              {item.lesson && (
+                <span>
+                  {item.lesson.approved_messages.length} approved messages,{' '}
+                  {item.lesson.resource_count} resources
+                </span>
+              )}
+              {item.content_factory && (
+                <div className="ot-stack">
+                  <p>{item.content_factory.approved_summary}</p>
+                  <span>Captions active · {label(item.content_factory.progress_state)}</span>
+                  <details>
+                    <summary>Approved review questions</summary>
+                    <ol>
+                      {item.content_factory.approved_review_questions.map((question) => (
+                        <li key={question}>{question}</li>
+                      ))}
+                    </ol>
+                  </details>
+                </div>
+              )}
             </div>
             {action && onOpen && (
               <button
@@ -723,97 +1138,16 @@ function ContentList({
   );
 }
 
-function ClassHelperPanel({
-  helper,
-  onQueryHelper,
-}: {
-  helper: HelperAvailability;
-  onQueryHelper?: ((question: string) => Promise<HelperAnswer>) | undefined;
-}) {
-  const [draft, setDraft] = useState('');
-  const [answer, setAnswer] = useState<HelperAnswer | null>(null);
-  const [state, setState] = useState<'idle' | 'loading' | 'answered' | 'error'>('idle');
-  const [error, setError] = useState('');
-  const trimmed = draft.trim();
-  const canAsk = helper.available && Boolean(onQueryHelper) && trimmed.length > 0;
-  return (
-    <div className="ot-stack ot-helper-panel">
-      <HelperState helper={helper} />
-      <p className="ot-muted">
-        Class Helper answers from Rabbi Scheller's approved class material.
-      </p>
-      <form
-        className="ot-question-form"
-        onSubmit={(event) => {
-          event.preventDefault();
-          if (!canAsk || !onQueryHelper) return;
-          setState('loading');
-          setError('');
-          void onQueryHelper(trimmed)
-            .then((result) => {
-              setAnswer(result);
-              setDraft('');
-              setState('answered');
-            })
-            .catch((caught: unknown) => {
-              setState('error');
-              setError(
-                caught instanceof Error
-                  ? caught.message
-                  : 'Class Helper is being prepared for this class. Send a private question and we will route it for review.',
-              );
-            });
-        }}
-      >
-        <label className="ot-field">
-          <span>Ask Class Helper</span>
-          <textarea
-            value={draft}
-            maxLength={800}
-            rows={4}
-            disabled={!helper.available || state === 'loading'}
-            onChange={(event) => {
-              setDraft(event.currentTarget.value);
-              setState('idle');
-              setError('');
-            }}
-          />
-        </label>
-        <button type="submit" className="ot-button ot-button-primary" disabled={!canAsk}>
-          {state === 'loading' ? 'Checking' : 'Ask helper'}
-        </button>
-      </form>
-      {error && (
-        <p className="ot-warning" role="alert">
-          {error}
-        </p>
-      )}
-      {answer && (
-        <article className="ot-helper-answer" data-abstained={answer.abstained}>
-          <p>{answer.answer}</p>
-          {answer.citations.length > 0 && (
-            <ul className="ot-citation-list" aria-label="Approved sources">
-              {answer.citations.map((citation) => (
-                <li key={`${citation.content_id}:${citation.section_id}`}>
-                  <a href={citation.deep_link}>{citation.section_title}</a>
-                </li>
-              ))}
-            </ul>
-          )}
-        </article>
-      )}
-    </div>
-  );
-}
-
 function QuestionPanel({
   questions,
   upcoming,
   onSubmitQuestion,
+  readOnly = false,
 }: {
   questions: StudentQuestion[];
   upcoming: UpcomingClassSummary[];
   onSubmitQuestion?: ((question: string, classKey?: string | undefined) => void) | undefined;
+  readOnly?: boolean;
 }) {
   const [draft, setDraft] = useState('');
   const [classKey, setClassKey] = useState(upcoming[0]?.class_key ?? '');
@@ -822,33 +1156,36 @@ function QuestionPanel({
     classKey?: string | undefined;
   } | null>(null);
   const trimmed = draft.trim();
+  useEffect(() => {
+    if (upcoming.length === 0) {
+      setClassKey('');
+      return;
+    }
+    if (!upcoming.some((item) => item.class_key === classKey)) {
+      setClassKey(upcoming[0]?.class_key ?? '');
+    }
+  }, [classKey, upcoming]);
   return (
     <div className="ot-stack">
       <form
         className="ot-question-form"
         onSubmit={(event) => {
           event.preventDefault();
-          if (!trimmed || !onSubmitQuestion) return;
+          if (readOnly || !trimmed || !onSubmitQuestion) return;
           setPreview({ question: trimmed, classKey: classKey || undefined });
         }}
       >
         {upcoming.length > 0 && (
-          <label className="ot-field">
-            <span>Class</span>
-            <select
-              value={classKey}
-              onChange={(event) => {
-                setClassKey(event.currentTarget.value);
-                setPreview(null);
-              }}
-            >
-              {upcoming.map((item) => (
-                <option key={item.class_key} value={item.class_key}>
-                  {item.title}
-                </option>
-              ))}
-            </select>
-          </label>
+          <ClassPicker
+            label="Class"
+            items={upcoming}
+            value={classKey}
+            disabled={readOnly}
+            onChange={(nextClassKey) => {
+              setClassKey(nextClassKey);
+              setPreview(null);
+            }}
+          />
         )}
         <label className="ot-field">
           <span>Ask privately</span>
@@ -856,6 +1193,7 @@ function QuestionPanel({
             value={draft}
             maxLength={800}
             rows={4}
+            disabled={readOnly}
             onChange={(event) => {
               setDraft(event.currentTarget.value);
               setPreview(null);
@@ -865,14 +1203,14 @@ function QuestionPanel({
         <button
           type="submit"
           className="ot-button ot-button-primary"
-          disabled={!trimmed || !onSubmitQuestion}
+          disabled={readOnly || !trimmed || !onSubmitQuestion}
         >
-          Preview private question
+          Review private question
         </button>
       </form>
       {preview && (
         <div className="ot-private-preview" role="status">
-          <strong>Private question preview</strong>
+          <strong>Review private question</strong>
           <p>{preview.question}</p>
           <div className="ot-action-row">
             <button
@@ -911,6 +1249,123 @@ function QuestionPanel({
   );
 }
 
+function ClassPicker({
+  label: pickerLabel,
+  items,
+  value,
+  disabled = false,
+  onChange,
+}: {
+  label: string;
+  items: UpcomingClassSummary[];
+  value: string;
+  disabled?: boolean;
+  onChange: (classKey: string) => void;
+}) {
+  return (
+    <fieldset className="ot-choice-field">
+      <legend>{pickerLabel}</legend>
+      <div className="ot-choice-list" role="radiogroup" aria-label={pickerLabel}>
+        {items.map((item) => (
+          <button
+            type="button"
+            className="ot-choice"
+            role="radio"
+            aria-checked={item.class_key === value}
+            disabled={disabled}
+            key={item.class_key}
+            onClick={() => onChange(item.class_key)}
+          >
+            <strong>{item.title}</strong>
+            <span>{item.starts_at ? formatDate(item.starts_at) : label(item.status)}</span>
+          </button>
+        ))}
+      </div>
+    </fieldset>
+  );
+}
+
+function FeaturedLesson({
+  lesson,
+}: {
+  lesson: NonNullable<StudentPortalDashboard['featured_lesson']>;
+}) {
+  return (
+    <article className="ot-featured-lesson">
+      <div>
+        <p className="ot-kicker">Featured lesson</p>
+        <strong>{lesson.title}</strong>
+        {lesson.description && <span>{lesson.description}</span>}
+      </div>
+      <dl className="ot-mini-metrics">
+        <div>
+          <dt>Resources</dt>
+          <dd>{lesson.resource_count}</dd>
+        </div>
+        <div>
+          <dt>Questions</dt>
+          <dd>{lesson.approved_messages.length}</dd>
+        </div>
+      </dl>
+    </article>
+  );
+}
+
+function LeaderboardPanel({
+  leaderboard,
+  ownLearnerKey,
+}: {
+  leaderboard?: ClassLeaderboardSummary | undefined;
+  ownLearnerKey?: string | undefined;
+}) {
+  if (!leaderboard) return null;
+  if (!leaderboard.published) {
+    return (
+      <section className="ot-leaderboard" aria-label="Class leaderboard">
+        <div className="ot-section-title">
+          <h3>{leaderboard.title}</h3>
+          <span>Rabbi review</span>
+        </div>
+        <p className="ot-muted">The class board is waiting for Rabbi publication.</p>
+      </section>
+    );
+  }
+  return (
+    <section className="ot-leaderboard" aria-label="Class leaderboard">
+      <div className="ot-section-title">
+        <h3>{leaderboard.title}</h3>
+        <span>All time</span>
+      </div>
+      {leaderboard.entries.length === 0 ? (
+        <p className="ot-muted">Class progress will appear after approved learning events.</p>
+      ) : (
+        <ol className="ot-leaderboard-list">
+          {leaderboard.entries.map((entry, index) => (
+            <li
+              key={entry.learner_key}
+              className="ot-leaderboard-row"
+              data-own={entry.own_entry || entry.learner_key === ownLearnerKey}
+            >
+              <span className="ot-rank">{index + 1}</span>
+              <div>
+                <strong>{entry.display_name}</strong>
+                <span>
+                  {entry.attendance_count} classes, {entry.completed_lessons} lessons,{' '}
+                  {entry.approved_questions} approved questions
+                </span>
+              </div>
+              <b>{entry.points} pts</b>
+            </li>
+          ))}
+        </ol>
+      )}
+      <p className="ot-guardrail-note">
+        Authenticated class board. Actual names are class-only; Rabbi corrections are audited.
+      </p>
+    </section>
+  );
+}
+
 function ProgressSummaryView({
   progress,
   rewards,
@@ -945,14 +1400,11 @@ function RewardSummary({
   progress,
   history,
   gamification,
-  onCreateRewardGoal,
 }: {
   rewards?: RewardBalance | undefined;
   progress?: ProgressSummary | undefined;
   history: RewardEvent[];
   gamification?: GamificationSummary | undefined;
-  onCreateRewardGoal?:
-    ((goal: { title: string; description: string; pointsRequired: number }) => void) | undefined;
 }) {
   if (!rewards) return <p className="ot-muted">Rewards are not loaded.</p>;
   if (gamification) {
@@ -961,7 +1413,6 @@ function RewardSummary({
         summary={gamification}
         fallbackProgress={progress}
         fallbackRewards={rewards}
-        onCreateRewardGoal={onCreateRewardGoal}
       />
     );
   }
@@ -995,13 +1446,10 @@ function GamificationSummaryView({
   summary,
   fallbackProgress,
   fallbackRewards,
-  onCreateRewardGoal,
 }: {
   summary: GamificationSummary;
   fallbackProgress?: ProgressSummary | undefined;
   fallbackRewards: RewardBalance;
-  onCreateRewardGoal?:
-    ((goal: { title: string; description: string; pointsRequired: number }) => void) | undefined;
 }) {
   const attendance = summary.streaks.find((streak) => streak.kind === 'attendance');
   const review = summary.streaks.find((streak) => streak.kind === 'review');
@@ -1060,8 +1508,6 @@ function GamificationSummaryView({
       <BadgeList badges={summary.badges} />
       <MilestoneList milestones={summary.milestones} />
       <ClassMilestoneList milestones={summary.class_milestones} />
-      <ParentRewardList rewards={summary.parent_rewards} />
-      {onCreateRewardGoal && <ParentRewardGoalForm onCreate={onCreateRewardGoal} />}
       <AccomplishmentList accomplishments={summary.accomplishments} />
       <p className="ot-guardrail-note">
         Private progress only. No public rankings, random rewards, or points for empty clicks.
@@ -1172,79 +1618,6 @@ function ClassMilestoneList({
   );
 }
 
-function ParentRewardList({ rewards }: { rewards: GamificationSummary['parent_rewards'] }) {
-  if (rewards.length === 0) {
-    return <p className="ot-muted">Optional parent rewards can be added for this learner.</p>;
-  }
-  return (
-    <div className="ot-stack" aria-label="Parent rewards">
-      {rewards.map((reward) => (
-        <article className="ot-item" key={reward.reward_goal_key}>
-          <div>
-            <strong>{reward.title}</strong>
-            <span>{reward.description || label(reward.status)}</span>
-          </div>
-          <b>{reward.points_required} pts</b>
-        </article>
-      ))}
-    </div>
-  );
-}
-
-function ParentRewardGoalForm({
-  onCreate,
-}: {
-  onCreate: (goal: { title: string; description: string; pointsRequired: number }) => void;
-}) {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [pointsRequired, setPointsRequired] = useState(50);
-  const canSubmit = title.trim().length > 0 && pointsRequired > 0;
-  return (
-    <form
-      className="ot-reward-form"
-      onSubmit={(event) => {
-        event.preventDefault();
-        if (!canSubmit) return;
-        onCreate({ title: title.trim(), description: description.trim(), pointsRequired });
-        setTitle('');
-        setDescription('');
-        setPointsRequired(50);
-      }}
-    >
-      <label className="ot-field">
-        <span>Parent reward</span>
-        <input
-          value={title}
-          maxLength={160}
-          onChange={(event) => setTitle(event.currentTarget.value)}
-        />
-      </label>
-      <label className="ot-field">
-        <span>Details</span>
-        <input
-          value={description}
-          maxLength={320}
-          onChange={(event) => setDescription(event.currentTarget.value)}
-        />
-      </label>
-      <label className="ot-field">
-        <span>Points required</span>
-        <input
-          type="number"
-          min={1}
-          max={5000}
-          value={pointsRequired}
-          onChange={(event) => setPointsRequired(Number(event.currentTarget.value))}
-        />
-      </label>
-      <button type="submit" className="ot-button ot-button-primary" disabled={!canSubmit}>
-        Add reward
-      </button>
-    </form>
-  );
-}
-
 function AccomplishmentList({
   accomplishments,
 }: {
@@ -1297,15 +1670,6 @@ function UpdatesList({ updates }: { updates: AdministrativeUpdate[] }) {
           {update.read_at ? <span>Read</span> : <span>New</span>}
         </article>
       ))}
-    </div>
-  );
-}
-
-function HelperState({ helper }: { helper: HelperAvailability }) {
-  return (
-    <div className="ot-helper" data-helper-available={helper.available}>
-      <strong>{helper.scope_label}</strong>
-      <span>{helper.available ? 'Available' : (helper.reason ?? 'Unavailable')}</span>
     </div>
   );
 }

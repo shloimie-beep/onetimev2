@@ -1,0 +1,41 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P16
+requests:
+  - request_id: P16-MIGRATION-001
+    kind: migration
+    requested_steward: I36
+    status: proposed
+    source_contract:
+      path: packages/db/src/classes/core/schema-contract.ts
+      version: P16-CLASSROOM-CORE-SCHEMA-001
+    exact_targets:
+      - packages/db/migrations/<allocated>_v21_classroom_core.sql
+    required_changes:
+      - Reconcile onetime.class_series with the P15 recurrence columns and add draft lifecycle, canonical identity, teacher, embedded-classroom, recording, and optimistic-version fields.
+      - Extend onetime.class_occurrences to the exact scheduled, preparing, ready, live, completed, and canceled states with optimistic versioning while preserving unique series plus Jerusalem-local-date identity.
+      - Add onetime.class_series_enrollments with one row per account, product, series, and Student and active/revoked lifecycle metadata.
+      - Add onetime.classroom_core_commands with unique account, product, and idempotency key plus immutable request hash and result metadata.
+      - Backfill the one canonical Sunday-through-Thursday 19:00 Asia/Jerusalem series without creating provider, communication, or enrollment effects.
+    validation:
+      - Apply the full migration inventory in a disposable PostgreSQL-compatible database.
+      - Prove exact lifecycle checks, canonical singleton, enrollment uniqueness, occurrence uniqueness, replay conflict, and rollback of Student plus enrollment on an injected failure.
+    external_effects_authorized: false
+  - request_id: P16-REGISTRATION-001
+    kind: registration
+    requested_steward: I36
+    status: proposed
+    exact_targets:
+      - packages/contracts/src/index.ts
+      - packages/domain/src/index.ts
+      - packages/db/src/index.ts
+      - apps/web/src/server central authenticated route composer
+      - apps/web/src/client central Admin route composer
+    required_changes:
+      - Re-export the P16 classroom-core contract, domain, and database roots without semantic changes.
+      - Instantiate createClassroomCoreRepository and createClassroomCoreService behind authenticated Admin and governed Student lifecycle adapters.
+      - Register ClassSeriesWorkspace in the F07 Admin shell and derive account, product, principal, and role only from authenticated server context.
+      - Keep provider calls outside transactions and dispatch only durable intents produced by explicit activation or occurrence lifecycle actions.
+    validation:
+      - Run typecheck, focused lifecycle and atomic-enrollment tests, authenticated scope denial tests, accessibility checks, and canonical-manual-unenroll route inventory.
+    external_effects_authorized: false

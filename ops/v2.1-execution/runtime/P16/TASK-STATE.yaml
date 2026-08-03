@@ -1,0 +1,167 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P16
+task_packet_digest: a2ba86653705892d62ad19fddcf14a5c519ffb3c6f130d3919de0f5a971f427e
+task_context_digest: 1df1eaa480ed68aa93538ae2dbd8a52864bbe728248f79b20b54e2de4b5e95a0
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+branch: codex/v21-p16-class-series-occurrences
+start_sha: 01cdb992660a1fbc20b204b829d28062fd044679
+dependency_heads:
+  F04:
+    state: interface_ready_integrated
+    task_head_sha: 54a0ac28b51d271aacab60003451dbcc66ffcac8
+    integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+    interface_implementation_head_sha: 81c0ee64072386db41aa5a40243c693762ab493a
+    interface_checkpoint_digest: a57837379bfc8210188887ff31937ed7882befe10b80941499dc7ba305e7984d
+  F05:
+    state: interface_ready_integrated
+    task_head_sha: 9174d845e1c04916e2f1884cfadfaef624ac6862
+    integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+    interface_implementation_head_sha: 1ade14c52e42e59bb8fd1d1de776b91406c45f15
+    interface_checkpoint_digest: fd17c478bfc851dcb434b8e0c2750701605b80dfdf880833a6a2993e8fad6329
+  P15:
+    state: interface_ready_integrated
+    task_head_sha: c96b8c55c07e5283e762537934a6bf948833700e
+    integration_head_sha: 01cdb992660a1fbc20b204b829d28062fd044679
+    interface_implementation_head_sha: ab71afb032b8e004cc655e3e5f5a6b8286aec380
+    interface_checkpoint_digest: 2ebe108d2aa39a90908889bf9cf8f96cffb93d296e7ee9614e0d1bb5b351c3eb
+status: ready_for_review
+phase: complete
+claimed_by: codex-p16-worker-ebdca6e9
+claim_time: '2026-07-30T01:01:25Z'
+claim_id: ebdca6e9-aa5b-411b-88fd-747089e869ce
+writer_slot_lease_id: 8c250e39-5c4d-4684-93ba-2ff373a1253a
+lease_issued_at: '2026-07-30T01:01:25Z'
+lease_expires_at: '2026-07-30T02:31:25Z'
+lease_released_at: '2026-07-30T01:39:42Z'
+last_heartbeat_at: '2026-07-30T01:39:42Z'
+controller_authorization_sha: c152aaa889694260f085f9441315a5104d4b5a1f
+state_based_on_control_head_sha: ae24cef068b50576569eb190695feddc79ddecc6
+ready_entry_payload_digest: bfbe5b37da8dd4e6acb36c5d57ea68a365d81fae50a95c53bb738e7e07c70be5
+state_based_on_head_sha: 79c745344e71c3b90a9fd7e569920e63a4d865cf
+last_implementation_commit_sha: f5f3d89fa1a8da29798c0b74a04f02541c4d2d5c
+interface_checkpoint_digest: 95c177d54a429dbcba604d9903c0edcb9aa6051f73e168f853d2b8fd4e377d68
+implementation_artifact_digest: 653d5d123dc78bf5a608947b59d0b4d387d3e8644fb2c5aaca234d99dad66190
+implementation_artifact_digest_algorithm: SHA-256 over exact implementation-head Git blobs as lexicographically sorted UTF-8 path=sha256 lines for the 16 non-runtime P16 artifacts, with LF separators and no final newline.
+interface_state_handoff_digest: afd57cbd0cc837caf6b6b007a61269f676f99ee1ea2d7d4edd7f2da65d31714e
+interface_state_handoff_digest_algorithm: SHA-256 over the exact interface-metadata-head Git blobs for HANDOFF.md, NEXT-PROMPT.md, and TASK-STATE.yaml as lexicographically sorted UTF-8 path=sha256 lines, with LF separators and no final newline.
+steward_request_digest: 628fe0cb860057b6dde8b5e214edfe00400ca8f701459993e099e6f923fd34cb
+completed_steps:
+  - verified exact remote identity, containing control authorization, registry/ready entry, branch absence, claim, CLASSROOM_CORE lease, and authorized start
+  - verified F04, F05, and P15 interface-ready integration bindings from the exact ready entry
+  - read the immutable P16 context, named dependency interfaces, and exact series, occurrence, and atomic enrollment transition contracts
+  - preserved the existing P16-owned implementation draft strictly unstaged while atomically claiming the C00 renewal
+  - implemented and pushed the versioned class-series, occurrence, canonical-enrollment, transaction, repository, service, Admin workspace, focused-test, and steward-request artifacts
+  - passed full typecheck, 17 focused assertions, focused lint, formatting, and diff hygiene
+  - published the exact P16 interface artifact hashes and combined contract digest for P17, P18, and P19
+  - published terminal ready_for_review metadata with exact implementation, interface, artifact, state/handoff, and steward-request bindings and released the task-local lease
+  - verified exact containing control 9d53cf1c581dcb67e30b2beb62d048a1839f23e2, sole acquisition parent a6bc58cc4a35173fd1606124c0fa651dda2dac64, expected remote head 72fca16b3a9cd82c666e293f8bfd7d84c30722a1, canonical READY digest, task/context/package bindings, fresh claim, sole CLASSROOM_CORE lease, empty effect locks, and effects 0/0/0
+  - claimed only the P16 runtime triplet for the classroom repository migration-compatibility correction; all product, test, interface, steward-request, control, provider, deployment, send, and effect bytes remain unchanged
+  - verified C00 reconciliation at control head 5644d38395e86ea114197eb12415106994bbf3ea with sole parent fe0d60fa2807b02882390df960f3e75517672d11, exact claim head be95754a1b331a5e420f9cf755bc190357fe3436, unchanged claim and sole lease, and effects 0/0/0
+  - persisted reminder_local_time from the authoritative series local start and reminder_due_at plus joinable_until from authoritative occurrence timing on every P16 repository insert, refreshing the same fields on updates
+  - added repository-boundary validation for absent or invalid schedule timing and direct coverage for midnight reminder wrap, positive occurrence timestamps, and rejection before persistence
+  - passed exact native PGlite PostgreSQL execution of 70 migrations through 2239_v21_classroom_core.sql, positive repository writes, NOT NULL/no-default inspection, omission rejection, and invalid-timing rejection
+  - passed full typecheck, 571 unit assertions across 87 files, focused ESLint and Prettier, secret scan, diff hygiene, artifact digest recomputation, and scope review
+  - published terminal ready_for_review metadata and released the sole CLASSROOM_CORE lease before expiry
+  - verified exact containing control 27100588cff40879024c88e11213864a1245741a, sole acquisition parent a84c647b2926b782b4b9b4289389d8584293ebbe, expected remote head c58ed7d65f46783717901512d249202b2ec46614, canonical READY digest, canonical control-state digest, task/context/package bindings, fresh claim, sole CLASSROOM_CORE lease, empty effect locks, and effects 0/0/0
+  - claimed only the P16 runtime triplet for the classroom repository weekday-encoding compatibility correction; all product, test, interface, steward-request, migration, control, provider, deployment, send, and effect bytes remain unchanged
+  - verified C00 reconciliation at control head c152aaa889694260f085f9441315a5104d4b5a1f with sole parent ae24cef068b50576569eb190695feddc79ddecc6, exact claim head 79c745344e71c3b90a9fd7e569920e63a4d865cf, unchanged claim and sole lease, and effects 0/0/0
+  - preserved public/domain weekday values 0 through 6 while encoding Sunday 0 as database 7 on write and decoding database 7 back to Sunday 0 on read without changing array order
+  - rejected absent, non-array, empty, non-integer, out-of-range, and duplicate weekday sets before any class-series persistence query, without a fallback default
+  - passed native PGlite PostgreSQL execution of 70 exact F02 migrations through 2239_v21_classroom_core.sql, canonical 0,1,2,3,4 to 7,1,2,3,4 and back, reordered roundtrip, and every malformed-input negative
+  - passed 12 focused repository assertions, full typecheck, focused ESLint and Prettier, secret scan, diff hygiene, artifact digest recomputation, and exact five-path scope review
+  - published terminal ready_for_review metadata and released the sole CLASSROOM_CORE lease before expiry
+remaining_steps:
+  - C00 must review the exact pushed terminal head and I36 must ancestry-integrate the accepted P16 correction.
+next_action: C00 should validate implementation commit f5f3d89fa1a8da29798c0b74a04f02541c4d2d5c, artifact digest 653d5d123dc78bf5a608947b59d0b4d387d3e8644fb2c5aaca234d99dad66190, canonical native migration-through-2239 roundtrip, released lease, and effects 0/0/0 before I36 ancestry-integration.
+requirements:
+  OTV2-CLASSROOM-065: implementation_ready
+  OTV2-CLASSROOM-066: implementation_ready
+  OTV2-CLASSROOM-067: implementation_ready
+  OTV2-CLASSROOM-184: implementation_ready
+  OTV2-CLASSROOM-223: implementation_ready
+  OTV2-CLASSROOM-234: implementation_ready
+  OTV2-CLASSROOM-235: implementation_ready
+acceptance_cases:
+  OTV2-CLASSROOM-065-SERIES-LIFECYCLE: implementation_ready
+  OTV2-CLASSROOM-066-AC01: implementation_ready
+  OTV2-CLASSROOM-067-AC01: implementation_ready
+  OTV2-CLASSROOM-184-AC01: implementation_ready
+  OTV2-CLASSROOM-223-DRAFT-THEN-ACTIVATE: implementation_ready
+  OTV2-CLASSROOM-234-FULL-LIFECYCLE: implementation_ready
+  OTV2-CLASSROOM-235-ATOMIC-ENROLLMENT: implementation_ready
+changed_paths:
+  - apps/web/src/client/app/admin/classroom/core/ClassSeriesWorkspace.tsx
+  - apps/web/src/client/app/admin/classroom/core/index.ts
+  - apps/web/src/server/features/classes/core/index.ts
+  - apps/web/src/server/features/classes/core/service.test.ts
+  - apps/web/src/server/features/classes/core/service.ts
+  - packages/contracts/src/classes/core/index.ts
+  - packages/db/src/classes/core/index.ts
+  - packages/db/src/classes/core/repository.ts
+  - packages/db/src/classes/core/schema-contract.ts
+  - packages/domain/src/classes/core/classroom-core.test.ts
+  - packages/domain/src/classes/core/enrollment.ts
+  - packages/domain/src/classes/core/errors.ts
+  - packages/domain/src/classes/core/index.ts
+  - packages/domain/src/classes/core/occurrences.ts
+  - packages/domain/src/classes/core/series.ts
+  - tests/unit/classes/classroom-core-repository.test.ts
+  - ops/v2.1-execution/runtime/P16/HANDOFF.md
+  - ops/v2.1-execution/runtime/P16/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/P16/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P16/STEWARD-REQUESTS.yaml
+  - ops/v2.1-execution/runtime/P16/TASK-STATE.yaml
+migrations: []
+steward_requests:
+  - P16-MIGRATION-001
+  - P16-REGISTRATION-001
+verification:
+  commands_run:
+    - exact control, ready entry, registry, branch absence, lease, and dependency binding verification (passed)
+    - exact renewal control head, expected existing remote head, ready parent, ready payload digest, claim, and lease verification (passed)
+    - prettier on the preserved P16-owned draft (passed before renewal checkpoint)
+    - typecheck and focused Vitest launch (blocked before execution because isolated worktree dependencies were unavailable)
+    - npm run typecheck with the authorized shared dependency runtime (passed)
+    - focused P16 Vitest suite (passed, 17 tests)
+    - focused ESLint over all P16 TypeScript artifacts (passed)
+    - focused Prettier check and git diff --check (passed)
+    - exact 15-artifact implementation Git-blob digest derivation (passed)
+    - exact six-export interface digest recomputation from implementation-head Git blobs (passed)
+    - exact resume control, acquisition parent, registry, READY entry, remote branch head, claim, lease, effect-lock, and dependency binding verification (passed)
+    - canonical recursively key-sorted READY payload recomputation (passed; 2682-byte preimage and digest 5a7d1bebc22b55cf415ad4cea51131aee21c880c09792c3c8bd4c064104bf675)
+    - exact prior P16 state/handoff and triplet digest recomputation (passed)
+    - task, context, and package-lock raw Git-blob digest verification (passed)
+    - reconciled control 5644d38395e86ea114197eb12415106994bbf3ea, sole parent fe0d60fa2807b02882390df960f3e75517672d11, exact claim head, claim/lease, branch, and zero-effect verification (passed)
+    - focused classroom core repository Vitest suite (passed, 4 tests)
+    - full unit suite (passed, 87 files and 571 tests)
+    - npm run typecheck (passed)
+    - focused ESLint and Prettier over the two correction artifacts (passed)
+    - npm run secret:scan (passed across 2553 repository text files)
+    - native PGlite PostgreSQL execution of 70 migrations through 2239_v21_classroom_core.sql with positive series/occurrence repository writes (passed)
+    - information_schema proof that reminder_local_time, reminder_due_at, and joinable_until are NOT NULL with no defaults; raw omission and repository invalid-input rejection (passed)
+    - exact 16-artifact implementation Git-blob digest derivation, including validation that the same algorithm reproduces the prior 15-artifact digest (passed)
+    - git diff --check, changed-path, migration, registration, interface, steward-request, effect, and branch-scope review (passed)
+    - exact corrected resume control, sole acquisition parent, registry/READY entry, remote branch head, claim, lease, effect-lock, and dependency binding verification (passed)
+    - canonical recursively key-sorted READY payload recomputation (passed; 3006-byte preimage and digest bfbe5b37da8dd4e6acb36c5d57ea68a365d81fae50a95c53bb738e7e07c70be5)
+    - canonical acquisition-parent control-state recomputation (passed; 1619-byte preimage and digest c54becb37cc4bb37236c2efa0b2944ea70739a5d0c05ff667cec215d015c29ae)
+    - exact prior P16 head, clean branch, triplet-only scope, sole CLASSROOM_CORE lease, empty effect locks, and effects 0/0/0 verification (passed)
+    - reconciled control c152aaa889694260f085f9441315a5104d4b5a1f, sole parent ae24cef068b50576569eb190695feddc79ddecc6, exact claim head, unchanged claim/lease, branch, and zero-effect verification (passed)
+    - focused classroom core repository Vitest suite (passed, 12 tests)
+    - npm run typecheck (passed)
+    - focused ESLint and Prettier over the two correction artifacts (passed)
+    - npm run secret:scan (passed across 2553 repository text files)
+    - native PGlite PostgreSQL execution of 70 exact F02 migrations through 2239_v21_classroom_core.sql at F02 head cd2d7c2fe3bfeb250c320bc02c9bfebb3bd04911 and migration blob ed93312101ae886e5eb3f482f64be45e3b5b9089 (passed)
+    - native canonical weekday roundtrip, reordered roundtrip, and absent/non-array/empty/non-integer/out-of-range/duplicate rejection with zero persistence queries (passed)
+    - exact 16-artifact implementation Git-blob digest derivation, including validation that the same algorithm reproduces the prior digest (passed)
+    - git diff --check, exact five-path, migration, contract/domain, interface, steward-request, registration, effect, and branch-scope review (passed)
+  known_baseline_failures: []
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings:
+  - Shared migration, root barrel, and central server/client registration changes are captured in STEWARD-REQUESTS.yaml and were not edited by P16.
+  - Contract/domain weekday semantics remain 0 through 6 and F02 migration 2237 remains ISO 1 through 7; both are unchanged because this correction is confined to the P16 repository boundary and its direct test.

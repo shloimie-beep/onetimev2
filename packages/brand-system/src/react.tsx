@@ -6,6 +6,8 @@ import React, {
 } from 'react';
 import { brandAssetPaths } from './tokens.ts';
 
+export * from './react-v21.tsx';
+
 type PrimitiveProps = {
   className?: string;
   children?: React.ReactNode;
@@ -233,17 +235,28 @@ export function SectionTabs({
   currentId,
   label = 'Section',
   className = 'ot-section-tabs',
+  onSelect,
 }: {
   tabs: Array<{ id: string; label: string; href?: string; disabled?: boolean }>;
   currentId: string;
   label?: string;
   className?: string;
+  onSelect?: (tab: { id: string; label: string; href?: string; disabled?: boolean }) => void;
 }) {
   return (
     <nav className={className} aria-label={label} data-ot-primitive="SectionTabs">
       {tabs.map((tab) =>
         tab.href && !tab.disabled ? (
-          <a key={tab.id} href={tab.href} aria-current={tab.id === currentId ? 'page' : undefined}>
+          <a
+            key={tab.id}
+            href={tab.href}
+            aria-current={tab.id === currentId ? 'page' : undefined}
+            onClick={(event) => {
+              if (!onSelect) return;
+              event.preventDefault();
+              onSelect(tab);
+            }}
+          >
             {tab.label}
           </a>
         ) : (
@@ -252,6 +265,7 @@ export function SectionTabs({
             type="button"
             disabled={tab.disabled}
             aria-pressed={tab.id === currentId}
+            onClick={() => onSelect?.(tab)}
           >
             {tab.label}
           </button>

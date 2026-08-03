@@ -40,7 +40,7 @@ const publicActions = [
   }),
   action({
     action_id: 'public.signup.route',
-    label: 'Sign Up Now',
+    label: 'Pre-register',
     surface: 'route',
     route: '/signup',
     roles: ['anonymous'],

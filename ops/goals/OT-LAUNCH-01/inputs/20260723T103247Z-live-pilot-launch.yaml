@@ -1,0 +1,54 @@
+schema_version: 1
+goal_id: OT-LAUNCH-01
+received_at: 2026-07-23T10:32:47Z
+source_ref: protected-thread-reference:019f8895-f0ad-7860-b880-d5b8ac5e80c9
+source_sha256: 0b2db482c3e0210dc5ee6d2541c7ab9c71342e58f8cf28a1c2c7a87d9ecd1531
+operator_wording: >-
+  I just want to log in and use it. Make the whole thing live for a controlled
+  free pilot, complete real Zoom testing, remove the current WhatsApp helper,
+  keep GHL as payment history authority, and show one clear progress/next-task
+  summary.
+observed_problem:
+  - The operator can use persistent staging but cannot yet use one coherent live production application.
+  - Real Zoom control remains provider-off even though the code and fake Rabbi flow exist.
+  - The landing page shows a placeholder WhatsApp/offline helper instead of the intended future lead-capture experience.
+  - Launch status is technically recorded in BOARD.yaml but is not presented as a concise operator-facing summary.
+  - Payment ownership was previously ambiguous between GHL history and One Time access.
+desired_user_outcome: >-
+  The operator can use a controlled free production pilot from another device,
+  sign in as real roles, watch approved content, run one real Zoom class canary,
+  and see one clear Admin launch summary showing what changed, what works, the
+  current milestone percentage, blockers, and the next executable task.
+acceptance_criteria:
+  - GHL remains the source of truth for payment transactions and payment history.
+  - One Time stores only the resulting account/product access state, effective dates, source reference, and revocation reason needed to authorize the application.
+  - A free pilot can grant access without fabricating a payment transaction.
+  - The current landing WhatsApp/offline helper is removed.
+  - The future public lead-capture bot creates a GHL lead/conversation; only an explicit substantive Torah question may route to the private Rabbi Telegram console.
+  - Persistent staging proves the real Zoom host-and-fictional-Student canary before production Zoom activation.
+  - A controlled production pilot proves real Admin, Parent, Student, approved playback, and rollback without broad customer messaging.
+  - The operator launch summary is a generated projection of BOARD.yaml and never becomes a second editable status model.
+affected_track:
+  - goal_system
+  - main_landing_polish
+  - operator_launch_dashboard
+  - zoom_real_control_operator_change_set
+  - production_pilot
+  - ghl_access_entitlement_projection
+  - public_lead_capture_bot
+decision:
+  status: not_needed
+  reason: The operator explicitly selected a free controlled pilot, GHL-owned billing history, authorized provider canaries, removal of the placeholder assistant, and one Board-derived launch summary.
+next_executable_task:
+  action: Reconcile the canonical goal model, assign independent landing/status/Zoom-preparation work, and produce an immutable staging launch checkpoint before any separately governed production promotion.
+  evidence_output:
+    - validated Board and pointer
+    - focused automated tests
+    - breakpoint browser proof
+    - sanitized provider and deployment readback
+  write_scope: 'Existing OT-LAUNCH-01 goal, PR #97 conductor branch, reviewed provider-action packets, and explicitly assigned application files only.'
+privacy_review:
+  secrets_committed: false
+  private_destinations_committed: false
+  customer_or_student_data_committed: false
+  raw_message_copy_committed: false

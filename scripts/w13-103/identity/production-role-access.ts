@@ -17,6 +17,7 @@ import {
   createStudentSetup,
   requestPasswordReset,
 } from '../../../packages/domain/src/accounts/lifecycle.ts';
+import { readHouseholdAccess } from '../../../packages/domain/src/access/service.ts';
 import { revokeUserSessions } from '../../../packages/domain/src/auth/service.ts';
 import { normalizeEmail, stableKey } from '../../../packages/domain/src/lead/normalize.ts';
 
@@ -63,6 +64,22 @@ const recipientSchema = z
   })
   .strict();
 
+const parentRecipientSchema = recipientSchema.extend({
+  free_pilot: z
+    .object({
+      expires_at: z.iso.datetime(),
+      policy_version: z.string().trim().min(3).max(120),
+      opaque_source_reference: z
+        .string()
+        .trim()
+        .min(8)
+        .max(180)
+        .regex(/^[A-Za-z0-9_:-]+$/u),
+    })
+    .strict()
+    .optional(),
+});
+
 const manifestSchema = z
   .object({
     schema_version: z.string().optional(),
@@ -99,7 +116,7 @@ const manifestSchema = z
       }),
     recipients: z.object({
       administrator: recipientSchema,
-      parent: recipientSchema,
+      parent: parentRecipientSchema,
       student: recipientSchema,
     }),
   })
@@ -679,7 +696,16 @@ async function planParent(
       destination_ref,
     };
   }
-  if (user)
+  if (user) {
+    if (recipient.free_pilot && !(await activeParentFreePilotMatches(pool, config, recipient))) {
+      return {
+        role: 'parent',
+        operation: 'blocked',
+        status: 'blocked',
+        reason_code: 'active_parent_free_pilot_requires_reviewed_access_command',
+        destination_ref,
+      };
+    }
     return {
       role: 'parent',
       operation: 'password_reset',
@@ -687,6 +713,7 @@ async function planParent(
       reason_code: null,
       destination_ref,
     };
+  }
   if (!ownerAdmin)
     return {
       role: 'parent',
@@ -816,6 +843,9 @@ async function issueParent(
   if (user && user.role !== 'parent') throw new Error('parent_role_conflict');
   const destination_ref = digestRef('email', email);
   if (user?.status === 'active') {
+    if (recipient.free_pilot && !(await activeParentFreePilotMatches(pool, config, recipient))) {
+      throw new Error('active_parent_free_pilot_requires_reviewed_access_command');
+    }
     const issued = await requestPasswordReset({
       pool,
       config,
@@ -839,11 +869,32 @@ async function issueParent(
       relationship_key: required(recipient.relationship_key, 'parent.relationship_key'),
       relationship_label: recipient.relationship_label ?? 'Parent',
       authority: recipient.authority ?? 'primary_guardian',
+      free_pilot: recipient.free_pilot,
     },
     now,
     includeLocalProofToken: true,
   });
   return issuedPair('parent', 'parent_activation', destination_ref, issued);
+}
+
+async function activeParentFreePilotMatches(
+  pool: DbPool,
+  config: AppConfig,
+  recipient: Manifest['recipients']['parent'],
+) {
+  if (!recipient.free_pilot || !recipient.household_key) return false;
+  const access = await readHouseholdAccess({
+    db: pool,
+    accountKey: config.accountKey,
+    productKey: config.productKey,
+    householdKey: recipient.household_key,
+  });
+  return (
+    access?.grants_access === true &&
+    access.source_kind === 'free_pilot' &&
+    access.opaque_source_reference === recipient.free_pilot.opaque_source_reference &&
+    access.expires_at === new Date(recipient.free_pilot.expires_at).toISOString()
+  );
 }
 
 async function issueStudent(

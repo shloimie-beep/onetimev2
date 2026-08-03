@@ -1,0 +1,51 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P09-registration-001
+task_id: P09
+kind: registration
+requirement_ids:
+  - OTV2-SIGNUP-178
+  - OTV2-SIGNUP-229
+  - OTV2-SCHOOL-200
+  - OTV2-SCHOOL-214
+acceptance_case_ids:
+  - OTV2-SIGNUP-178-SCHOOL-INQUIRY-NO-ACCESS
+  - OTV2-SIGNUP-229-PUBLIC-SCHOOL-INQUIRY
+  - OTV2-SCHOOL-200-AC01
+  - OTV2-SCHOOL-214-AC01
+rationale: >-
+  P09 owns isolated School inquiry contract, policy, service, and public form
+  model modules but cannot edit root barrels, public/client/server composers,
+  route registries, or central Admin navigation.
+desired_semantic_change: >-
+  Register the signed-out /school inquiry form and its same-origin submission
+  route, export the P09 contract/domain modules, and compose the approved-school
+  configuration service only into an existing Admin-authorized operational
+  surface. Preserve manual follow-up, deduplication, and the ordinary
+  Parent/Student account experience without adding any School role, portal,
+  roster surface, automated nurture, or inline provider action.
+proposed_symbols_routes_keys_or_dependencies:
+  - packages/contracts/src/index.ts exports packages/contracts/src/signup/school/index.ts
+  - packages/domain/src/index.ts exports packages/domain/src/signup/school/index.ts
+  - signed-out GET /school renders schoolInquiryFormModel with exactly four required and two optional fields
+  - same-origin POST /api/v2.1/signup/school-inquiry invokes createSchoolSignupService.submitInquiry with the exact environment-bound scope
+  - route rejects extra account/access/role/portal/consent fields before repository access and uses generic safe errors
+  - exact normalized-email retries return the durable acknowledgment without creating another lead or intent
+  - one acknowledgment intent may dispatch only after its local receipt commits; no Family, newsletter, conversion, reactivation, or other nurture intent is created
+  - approved-school configuration is exposed only in an existing Admin-authorized account-management surface and invokes createSchoolSignupService.configureApprovedSchool
+  - configured approved schools continue through existing Parent and Student routes, credentials, authorization, and household isolation
+  - no /school portal, School authorization role, school navigation, bulk-roster route, worker, job, or provider automation is registered
+compatibility_assumptions:
+  - P08 supplies the mutually exclusive family|school public classification seam and owns the Family branch.
+  - F03/F04 own ordinary Admin, Parent, Student, account, credential, and household authorization seams.
+  - P28/I36 own GHL registry and workflow dispatch; P09 creates no live provider call.
+verification_performed:
+  - focused P09 contract, domain, service, and client-model tests
+  - repository TypeScript typecheck
+conflicts_or_risks:
+  - Do not infer School inquiry when classification is missing or hybrid.
+  - Do not create a product account, password, passwordless claim, household, Student, subscription, access grant, or nurture enrollment from public inquiry.
+  - Do not register a School role, School portal, roster importer, or school-specific application shell.
+  - Do not dispatch acknowledgment or manual-sales provider work before the durable local receipt commits.
+  - Do not inspect or mutate live GHL while applying this request.
+contains_secret_or_private_data: false

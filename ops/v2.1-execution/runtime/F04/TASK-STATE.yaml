@@ -1,0 +1,132 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: F04
+task_packet_digest: 8129731ba92e32991ceda7c9e729196e82c4d9c8ac2cb8dfbee33a7c169d81f5
+task_context_digest: ee9e067b17a172c1a9c9886bffa7798e228359c08dbad4d8692b4d36518c1367
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+branch: codex/v21-f04-household-identity
+status: ready_for_review
+phase: ownership_transfer_revocation_atomicity_and_scope_correction_complete
+claim_mode: resume_phase_branch_fast_forward
+claimed_by: codex-f04-transfer-dba6e4fc
+claim_time: '2026-07-30T19:30:53Z'
+claim_id: dba6e4fc-04d0-4245-94e8-cc722e73b013
+expected_existing_head: a5868a9503d1037890f5f8e250c2afe5131c4331
+authorized_start_sha: 8634b2ab15df624576a88b31182ebdc68553ff74
+controller_authorization_sha: c44656d40769b28f2d55e6e1041d716175129f4a
+latest_observed_control_sha: c44656d40769b28f2d55e6e1041d716175129f4a
+ready_entry_state_based_on_control_head_sha: 98e7b05c7d256d55fd8a4dbd829230e42303e67e
+ready_entry_payload_digest: 1c8541d27f0e96522bc877ef7b74023b8861168088cbd5457b4ca980e7e07a06
+state_based_on_head_sha: 2834f79b9e45f7c310de037adf07c8ffc7ed50b7
+last_implementation_commit_sha: 2834f79b9e45f7c310de037adf07c8ffc7ed50b7
+writer_slot_leases:
+  - slot: ACCOUNT_HOUSEHOLD_IDENTITY
+    lease_id: 520d3ff9-ec5a-43cf-bfcd-0cdb5ab7886e
+    state: released
+    lease_released_at: '2026-07-28T18:43:54Z'
+  - slot: ACCOUNT_HOUSEHOLD_IDENTITY
+    lease_id: ecf3aa70-8429-4846-ab39-c74816547e35
+    holder_task_id: F04
+    holder_claim_id: ac096257-657d-40ab-88bb-80247126bf6b
+    state: released
+    lease_released_at: '2026-07-30T18:33:49Z'
+  - slot: ACCOUNT_HOUSEHOLD_IDENTITY
+    lease_id: 9e8691f9-a6c3-4386-9c1e-7aeef8db6578
+    holder_task_id: F04
+    holder_claim_id: dba6e4fc-04d0-4245-94e8-cc722e73b013
+    holder_writer_id: codex-f04-transfer-dba6e4fc
+    state_based_on_control_head_sha: 98e7b05c7d256d55fd8a4dbd829230e42303e67e
+    phase_scope: ownership_transfer_revocation_atomicity_and_household_scope_only
+    lease_issued_at: '2026-07-30T19:30:53Z'
+    lease_expires_at: '2026-07-30T21:30:53Z'
+    lease_released_at: '2026-07-30T20:01:25Z'
+    state: released
+effect_lock_leases: []
+lease_expires_at: '2026-07-30T21:30:53Z'
+last_heartbeat_at: '2026-07-30T20:01:25Z'
+lease_released_at: '2026-07-30T20:01:25Z'
+correction_authorization:
+  phase: ownership_transfer_revocation_atomicity_and_scope_correction
+  phase_scope: ownership_transfer_revocation_atomicity_and_household_scope_only
+  authorized_start_sha: 8634b2ab15df624576a88b31182ebdc68553ff74
+  expected_existing_head: a5868a9503d1037890f5f8e250c2afe5131c4331
+  package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
+  effect_lock_count: 0
+implementation:
+  product_commit_sha: 2834f79b9e45f7c310de037adf07c8ffc7ed50b7
+  product_artifact_digest: c87d04c097ca12496b602a765634017902994568428af9fc6110d50d245b0a85
+  repository_pair_digest: a7db7cafefe1202100574dbe88cc82fb4f6b9f0f262d32d5374bdf06e3d4cc91
+  domain_pair_digest: 8d15fa7d8e9516ac42105a34b5f6f5ba654336b4c674a0ed735710da11ea46be
+  digest_algorithm: >-
+    SHA-256 over UTF-8 lines containing <path>=<raw Git blob SHA-256>, sorted
+    lexicographically by path, with LF separators and no final newline.
+  artifacts:
+    packages/db/src/accounts/v21-household-identity-repository.test.ts: a7feb6e2bd24f813ad8aca52e6307aead76b252beed6463c64185390ef721de4
+    packages/db/src/accounts/v21-household-identity-repository.ts: ff930bc6209570207bbaa0e688b6245146182c4709e73d5ac5d623b940a413e0
+    packages/domain/src/accounts/v21-household-identity.test.ts: 94c0cbc591f48afa939178577504045df3520f6d72824c01776c501bab5150f5
+    packages/domain/src/accounts/v21-household-identity.ts: b58a787621e6379daa98dde87af879c8cc3a08b7646cdd3689fef148a66d337d
+interface_checkpoint:
+  semantic_contract_version: 1.0.1
+  interface_implementation_head_sha: 2834f79b9e45f7c310de037adf07c8ffc7ed50b7
+  contract_digest: 79176042f6fef736e27c9280e89d116146c515bf3ab275360f31784fed587e33
+  supersedes_checkpoint_sha: 4cc95c29c6012174595ba1821e0554aca8572e08
+  supersedes_contract_digest: a57837379bfc8210188887ff31937ed7882befe10b80941499dc7ba305e7984d
+completed_steps:
+  - Verified canonical control c44656d4, READY digest 1c8541d2, claim dba6e4fc, lease 9e8691f9, zero effect locks, expected task head a5868a95, and exact integration head 8634b2ab.
+  - Fast-forwarded the F04 task branch to exact integration 8634b2ab with no authorized-path drift before editing.
+  - Restricted outgoing Parent-session revocation to the transferred activeHouseholdId and proved a sibling-household Parent session remains active.
+  - Replaced schema-incompatible generic SQL with fixed migration-2235 adult-session, billing-session, and action-token revocation statements using canonical identifiers, state guards, timestamps, supported reason fields, and version increments.
+  - Required unique inventories and exact affected-row counts; missing, stale, used, or already-revoked rows now throw stale_version so the caller transaction rolls back.
+  - Proved successful mixed revocation and late used-token rollback on native PostgreSQL 16.14 after applying unchanged migrations 2234 and 2235.
+  - Preserved all public repository symbols and signatures plus immutable contract, migration, and steward-request bytes.
+  - Published backward-compatible interface checkpoint 1.0.1 bound to the exact four-file product commit.
+  - Passed focused tests, typecheck, focused lint/format, YAML/digest/immutability/secret/diff gates, and removed the exact disposable PostgreSQL database and role.
+  - Released claim dba6e4fc-04d0-4245-94e8-cc722e73b013 and lease 9e8691f9-a6c3-4386-9c1e-7aeef8db6578 before expiry with zero external effects.
+remaining_steps:
+  - C00 independently audits the exact pushed terminal head, product commit, eight-path scope, interface checkpoint, runtime triplet, native rollback proof, released lease, and zero effects before I36 admission.
+next_action: C00 validates and admits the exact pushed F04 terminal head without further F04 implementation or provider effects.
+requirements:
+  OTV2-ACCOUNT-181: implementation_verified
+  OTV2-ACCOUNT-182: implementation_verified
+  OTV2-ACCOUNT-183: implementation_verified
+  OTV2-ACCOUNT-230: implementation_verified
+acceptance_cases:
+  OTV2-ACCOUNT-181-AC01: task_owned_assertions_passed
+  OTV2-ACCOUNT-182-AC01: task_owned_assertions_passed
+  OTV2-ACCOUNT-183-AC01: task_owned_assertions_passed
+  OTV2-ACCOUNT-230-IDENTITY-ROLE-CONTEXT: task_owned_assertions_passed
+changed_paths:
+  - packages/db/src/accounts/v21-household-identity-repository.ts
+  - packages/db/src/accounts/v21-household-identity-repository.test.ts
+  - packages/domain/src/accounts/v21-household-identity.ts
+  - packages/domain/src/accounts/v21-household-identity.test.ts
+  - ops/v2.1-execution/runtime/F04/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/F04/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/F04/HANDOFF.md
+  - ops/v2.1-execution/runtime/F04/NEXT-PROMPT.md
+migrations: []
+steward_requests:
+  - F04-migration-001
+  - F04-registration-001
+verification:
+  commands_run:
+    - npx vitest run packages/contracts/src/accounts/v21-household-identity.test.ts packages/domain/src/accounts/v21-household-identity.test.ts apps/web/src/server/features/accounts/v21-account-context-service.test.ts packages/db/src/accounts/v21-household-identity-repository.test.ts --environment node
+    - F04_NATIVE_POSTGRES_DISPOSABLE=true F04_NATIVE_DATABASE_URL=<ephemeral> npx vitest run packages/db/src/accounts/v21-household-identity-repository.test.ts --environment node
+    - npx tsc --noEmit -p tsconfig.typecheck.json
+    - focused ESLint over the exact four product artifacts
+    - focused Prettier over the exact four product artifacts and four runtime artifacts
+    - exact interface, pair, product, runtime-triplet, immutable-artifact, and Git-blob digest reproduction
+    - git diff --check
+    - npm run secret:scan
+  focused_result: 25_passed_3_native_skipped
+  native_postgresql_result: 14_passed
+  native_postgresql_version: '16.14'
+  native_cleanup: exact_disposable_database_and_role_removed
+  known_baseline_failures: []
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings: []

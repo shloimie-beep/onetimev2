@@ -1,0 +1,92 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P12-migration-001
+task_id: P12
+kind: migration
+requirement_ids:
+  - OTV2-PARENT-032
+  - OTV2-PARENT-033
+  - OTV2-PARENT-034
+acceptance_case_ids:
+  - OTV2-PARENT-032-AC01
+  - OTV2-PARENT-033-AC01
+  - OTV2-PARENT-034-AC01
+rationale: >-
+  P12's integrated contract distinguishes a required Student actual_name from
+  an optional display_name, but migration 2235 persists only a required
+  display_name. F02 owns migration allocation and SQL; P12 therefore requests
+  the narrow forward-only persistence change without allocating an ordinal or
+  editing product, contract, or migration code.
+desired_semantic_change: >-
+  Allocate the next safe migration ordinal strictly after 2254. Alter only
+  onetime.v21_student_profiles: add Unicode-capable actual_name, preflight and
+  fail closed if any legacy display_name is blank under the canonical Unicode
+  White_Space predicate, backfill actual_name as an exact byte-preserving text
+  copy of display_name without trimming or fabrication, validate actual_name
+  as nonblank and make it NOT NULL, then make display_name nullable while
+  rejecting every non-NULL value that is blank under the same predicate.
+  Preserve every other column, key, reference, scope, index, trigger, and
+  invariant unchanged.
+proposed_symbols_routes_keys_or_dependencies:
+  - onetime.v21_student_profiles.actual_name
+  - onetime.v21_student_profiles.display_name
+  - v21_student_profiles_actual_name_nonblank_check
+  - v21_student_profiles_display_name_nonblank_when_present_check
+  - >-
+    Preserve relationship text NOT NULL CHECK (relationship IN ('self',
+    'dependent')) unchanged.
+  - >-
+    Preserve exactly ((relationship = 'self' AND self_adult_id IS NOT NULL) OR
+    (relationship = 'dependent' AND self_adult_id IS NULL)).
+  - >-
+    Preserve the v21_student_owner_guard ownership enforcement and all
+    product_key, runtime_tier, and verification_environment_id isolation.
+compatibility_assumptions:
+  - >-
+    The predecessor is exact migration 2235 with raw SHA-256
+    442231550a3aed2360772a9fbc4aebe96edf0510ee175e0b8c7d1097d94f7c1e
+    and Git blob 70047dd5c2aabed9bbdb12730c2a25d49d51fef3.
+  - >-
+    Existing display_name values become actual_name by exact copy; no existing
+    row is trimmed, normalized, synthesized, or silently repaired.
+  - >-
+    PostgreSQL text remains the Unicode-capable storage type, and the same
+    explicit Unicode White_Space nonblank predicate is used for both names.
+  - >-
+    The integrated Parent-household contract requires actual_name and permits
+    display_name to be NULL; runtime adapter and central registration work
+    remain separately authorized and are not granted by this request.
+  - >-
+    F02 and C00 choose the next safe ordinal strictly after 2254; P12 allocates
+    no ordinal and proposes no SQL filename.
+verification_performed:
+  - >-
+    Read migration 2235 and verified the existing
+    onetime.v21_student_profiles shape, relationship values, self_adult_id
+    invariant, household reference, isolation columns, index, and owner guard.
+  - >-
+    Read the integrated Parent-household contract, aggregate, and service at
+    d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9 and verified required
+    actual_name plus nullable display_name semantics.
+  - >-
+    Verified the request against the canonical steward-request JSON schema and
+    the exact P12 control authorization and four-path ceiling.
+conflicts_or_risks:
+  - >-
+    Migration 2235 rejects only the empty string, so whitespace-only legacy
+    display_name values are possible; the migration must stop before mutation
+    rather than trim, fabricate, or silently accept them.
+  - >-
+    Preserve relationship self/dependent, the exact self_adult_id nullability
+    invariant, the household-owner guard, credential_history_ref,
+    relationship_history_ref, lifecycle/version fields, and all isolation
+    fields unchanged.
+  - >-
+    Forbidden-field ceiling: do not add date of birth, age, age band, grade, a
+    Hebrew-specific name field, Student email, provider or GHL identity, or any
+    credential or plaintext field.
+  - >-
+    This request alone does not provide a concrete PostgreSQL
+    ParentHouseholdRepository adapter or central route composition; those
+    remain separate gated persistence and registration work.
+contains_secret_or_private_data: false

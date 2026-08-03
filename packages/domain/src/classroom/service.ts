@@ -111,12 +111,17 @@ export type ClassroomRepository = {
     actor: PortalActorContext;
     learner_key: string;
   }): Promise<ClassroomEligibility | null>;
+  isLearnerEnrolled(args: {
+    actor: Pick<PortalActorContext, 'account_key' | 'product_key'>;
+    occurrence_key: string;
+    learner_key: string;
+  }): Promise<boolean>;
   issueLaunchGrant(args: {
     actor: PortalActorContext;
     eligibility: ClassroomEligibility;
     occurrence: ClassroomOccurrenceRecord;
     grant_key: string;
-    secret_digest: string;
+    launch_reference_digest: string;
     session_key_digest: string;
     idempotency_key: string;
     request_hash: string;
@@ -124,10 +129,9 @@ export type ClassroomRepository = {
     now: Date;
     expires_at: Date;
   }): Promise<ClassroomLaunchGrantRecord>;
-  consumeLaunchGrant(args: {
+  consumePendingLaunchGrant(args: {
     actor: PortalActorContext;
-    grant_key: string;
-    secret_digest: string;
+    learner_key: string;
     session_key_digest: string;
     now: Date;
   }): Promise<ClassroomLaunchGrantRecord | null>;
@@ -196,6 +200,7 @@ export type ClassroomServiceDeps = {
   questionCodec: SensitivePayloadCodec;
   zoomMeetingLaunchPort?: ZoomMeetingLaunchPort;
   zoomRegistrantPort?: ZoomRegistrantPort;
+  zoomRealProviderReady?: boolean;
   zoomProviderReadinessPort?: ZoomProviderReadinessPort;
   zoomAttendanceReconciliationPort?: ZoomAttendanceReconciliationPort;
   zoomFeatureParticipantPort?: ZoomFeatureParticipantPort;
@@ -224,7 +229,7 @@ export function createClassroomService(deps: ClassroomServiceDeps) {
   void reminderDeliveryPort;
 
   return {
-    providerState: () => providerState(deps.config),
+    providerState: () => providerState(deps.config, deps.zoomRealProviderReady === true),
 
     async upcomingForLearner(args: { actor: PortalActorContext; learner: LearnerProfile }) {
       const now = clock();
@@ -236,10 +241,20 @@ export function createClassroomService(deps: ClassroomServiceDeps) {
       if (!eligibility) {
         throw new PortalServiceError('NOT_FOUND', 'The requested portal record was not found.');
       }
+      const occurrenceEnrollmentReady =
+        deps.config.zoomClassroomProviderMode !== 'real' ||
+        (await deps.repository.isLearnerEnrolled({
+          actor: args.actor,
+          occurrence_key: occurrence.occurrence_key,
+          learner_key: eligibility.learner_key,
+        }));
       const projection = occurrenceProjection({
         config: deps.config,
+        realProviderReady: deps.zoomRealProviderReady === true,
         occurrence,
-        eligibility,
+        eligibility: occurrenceEnrollmentReady
+          ? eligibility
+          : { ...eligibility, entitlement_state: null },
         now,
       });
       return projection;
@@ -279,8 +294,22 @@ export function createClassroomService(deps: ClassroomServiceDeps) {
       if (!eligibility) {
         throw new PortalServiceError('NOT_FOUND', 'The requested portal record was not found.');
       }
+      if (
+        deps.config.zoomClassroomProviderMode === 'real' &&
+        !(await deps.repository.isLearnerEnrolled({
+          actor: args.actor,
+          occurrence_key: occurrence.occurrence_key,
+          learner_key: eligibility.learner_key,
+        }))
+      ) {
+        throw new PortalServiceError(
+          'ENTITLEMENT_REQUIRED',
+          'This Student is not enrolled in that class occurrence.',
+        );
+      }
       const projection = occurrenceProjection({
         config: deps.config,
+        realProviderReady: deps.zoomRealProviderReady === true,
         occurrence,
         eligibility,
         now,
@@ -301,14 +330,6 @@ export function createClassroomService(deps: ClassroomServiceDeps) {
         occurrence.occurrence_key,
         idempotencyKey,
       ]);
-      const secret = deterministicGrantSecret(deps.config, {
-        grantKey,
-        actorUserRef: args.actor.actor_user_ref,
-        sessionKey: args.actor.session_key,
-        learnerKey: args.learner.learner_key,
-        occurrenceKey: occurrence.occurrence_key,
-        idempotencyKey,
-      });
       const grantTtlSeconds = Math.min(
         5 * 60,
         Math.max(30, deps.config.zoomClassroomJoinGrantTtlSeconds),
@@ -319,8 +340,11 @@ export function createClassroomService(deps: ClassroomServiceDeps) {
         eligibility,
         occurrence,
         grant_key: grantKey,
-        secret_digest: digestSecret(deps.config, secret),
-        session_key_digest: digestSecret(deps.config, args.actor.session_key),
+        launch_reference_digest: digestClassroomBinding(
+          deps.config,
+          `non-bearer-reference:${grantKey}`,
+        ),
+        session_key_digest: digestClassroomBinding(deps.config, args.actor.session_key),
         idempotency_key: idempotencyKey,
         request_hash: fingerprint({
           actor: args.actor.actor_user_ref,
@@ -349,9 +373,7 @@ export function createClassroomService(deps: ClassroomServiceDeps) {
         label: 'Join class',
         kind: 'class_launch' as const,
         method: 'GET' as const,
-        href: `/classroom/launch/${encodeURIComponent(grant.grant_key)}/${encodeURIComponent(
-          secret,
-        )}`,
+        href: '/classroom/launch',
         launch_token_ref: grant.grant_key,
         expires_at: grant.expires_at,
       };
@@ -361,19 +383,14 @@ export function createClassroomService(deps: ClassroomServiceDeps) {
       actor: PortalActorContext;
       payload: ClassroomLaunchBootstrapPayload;
     }): Promise<ClassroomLaunchBootstrapResponse> {
-      const parsed = parseLaunchPath(args.payload.launch_path);
-      if (!parsed) {
-        throw new PortalServiceError('FORBIDDEN', 'The classroom launch reference is invalid.');
-      }
       if (args.actor.actor_role !== 'student' || !args.actor.student_learner) {
         throw new PortalServiceError('FORBIDDEN', 'This classroom requires a student session.');
       }
       const now = clock();
-      const grant = await deps.repository.consumeLaunchGrant({
+      const grant = await deps.repository.consumePendingLaunchGrant({
         actor: args.actor,
-        grant_key: parsed.grantKey,
-        secret_digest: digestSecret(deps.config, parsed.secret),
-        session_key_digest: digestSecret(deps.config, args.actor.session_key),
+        learner_key: args.actor.student_learner.learner_key,
+        session_key_digest: digestClassroomBinding(deps.config, args.actor.session_key),
         now,
       });
       if (!grant) {
@@ -392,21 +409,40 @@ export function createClassroomService(deps: ClassroomServiceDeps) {
       if (!occurrence || !eligibility) {
         throw new PortalServiceError('NOT_FOUND', 'The requested classroom was not found.');
       }
+      if (
+        deps.config.zoomClassroomProviderMode === 'real' &&
+        !(await deps.repository.isLearnerEnrolled({
+          actor: args.actor,
+          occurrence_key: occurrence.occurrence_key,
+          learner_key: eligibility.learner_key,
+        }))
+      ) {
+        throw new PortalServiceError(
+          'ENTITLEMENT_REQUIRED',
+          'This Student is not enrolled in that class occurrence.',
+        );
+      }
       const projection = occurrenceProjection({
         config: deps.config,
+        realProviderReady: deps.zoomRealProviderReady === true,
         occurrence,
         eligibility,
         now,
       });
       assertCanJoin(projection.state);
-      const selectedView = selectView(args.payload.viewport_width, deps.config);
+      const selectedView =
+        deps.config.zoomClassroomProviderMode === 'real'
+          ? ('client' as const)
+          : selectView(args.payload.viewport_width, deps.config);
       const registrant = await zoomRegistrantPort.resolveRegistrant({
         config: deps.config,
         occurrence,
         eligibility,
         grant,
       });
-      if (registrant.registration_state !== 'sink_ready') {
+      const expectedRegistrantState =
+        deps.config.zoomClassroomProviderMode === 'real' ? 'real_ready' : 'sink_ready';
+      if (registrant.registration_state !== expectedRegistrantState) {
         throw new PortalServiceError(
           'ADAPTER_UNAVAILABLE',
           'Classroom provider is not configured.',
@@ -445,7 +481,7 @@ export function createClassroomService(deps: ClassroomServiceDeps) {
         sdk,
         provider: {
           mode: deps.config.zoomClassroomProviderMode,
-          state: providerState(deps.config),
+          state: providerState(deps.config, deps.zoomRealProviderReady === true),
           raw_join_url_present: false,
         },
         policy: {
@@ -486,6 +522,7 @@ export function createClassroomService(deps: ClassroomServiceDeps) {
       }
       const projection = occurrenceProjection({
         config: deps.config,
+        realProviderReady: deps.zoomRealProviderReady === true,
         occurrence,
         eligibility,
         now,
@@ -584,15 +621,28 @@ export function createClassroomService(deps: ClassroomServiceDeps) {
 
 export function createClassroomPortalAccessAdapter(input: {
   classroom: ClassroomService;
+  currentAccess(args: { actor: PortalActorContext; learner: LearnerProfile }): Promise<boolean>;
 }): LearnerClassAccessAdapter {
   return {
     upcomingForLearner: async ({ actor, learner }) => {
+      if (!(await input.currentAccess({ actor, learner }))) return [];
       const projection = await input.classroom.upcomingForLearner({ actor, learner });
       return [
         {
           class_key: projection.class_key,
           title: projection.title,
           starts_at: projection.starts_at,
+          local_time: '19:00' as const,
+          timezone: 'Asia/Jerusalem' as const,
+          protected_launch_required: true as const,
+          provider_state:
+            projection.provider_state === 'sink_ready'
+              ? ('sink_ready' as const)
+              : projection.provider_state === 'ready'
+                ? ('configured' as const)
+                : projection.provider_state === 'disabled'
+                  ? ('disabled' as const)
+                  : ('not_configured' as const),
           status:
             projection.state === 'open'
               ? 'live'
@@ -623,13 +673,20 @@ export function createClassroomPortalAccessAdapter(input: {
         },
       ];
     },
-    protectedLaunch: async ({ actor, learner, class_key, idempotency_key }) =>
-      input.classroom.issuePortalLaunch({
+    protectedLaunch: async ({ actor, learner, class_key, idempotency_key }) => {
+      if (!(await input.currentAccess({ actor, learner }))) {
+        throw new PortalServiceError(
+          'ENTITLEMENT_REQUIRED',
+          'Current household learning access is required.',
+        );
+      }
+      return input.classroom.issuePortalLaunch({
         actor,
         learner,
         class_key,
         ...(idempotency_key ? { idempotency_key } : {}),
-      }),
+      });
+    },
   };
 }
 
@@ -649,19 +706,20 @@ async function nextOccurrence(
   });
 }
 
-function providerState(config: AppConfig): ClassroomProviderState {
+function providerState(config: AppConfig, realProviderReady = false): ClassroomProviderState {
   if (!config.zoomClassroomEnabled) return 'disabled';
   if (config.zoomClassroomProviderMode === 'sink') return 'sink_ready';
-  return 'unconfigured';
+  return realProviderReady ? 'ready' : 'unconfigured';
 }
 
 function occurrenceProjection(input: {
   config: AppConfig;
+  realProviderReady?: boolean | undefined;
   occurrence: ClassroomOccurrenceRecord;
   eligibility: ClassroomEligibility;
   now: Date;
 }) {
-  const provider = providerState(input.config);
+  const provider = providerState(input.config, input.realProviderReady === true);
   const state = joinState({
     provider,
     eligibility: input.eligibility,
@@ -769,46 +827,10 @@ function selectView(viewportWidth: number | undefined, config: AppConfig): Class
   return 'component';
 }
 
-function deterministicGrantSecret(
-  config: AppConfig,
-  input: {
-    grantKey: string;
-    actorUserRef: string;
-    sessionKey: string;
-    learnerKey: string;
-    occurrenceKey: string;
-    idempotencyKey: string;
-  },
-) {
-  return createHmac('sha256', config.authCsrfSecret)
-    .update(
-      [
-        CLASSROOM_POLICY_VERSION,
-        input.grantKey,
-        input.actorUserRef,
-        input.sessionKey,
-        input.learnerKey,
-        input.occurrenceKey,
-        input.idempotencyKey,
-      ].join('\u001f'),
-    )
-    .digest('base64url')
-    .slice(0, 43);
-}
-
-function digestSecret(config: AppConfig, value: string) {
+function digestClassroomBinding(config: AppConfig, value: string) {
   return createHmac('sha256', `${config.authCsrfSecret}:ot88-classroom`)
     .update(value)
     .digest('hex');
-}
-
-function parseLaunchPath(path: string) {
-  const match = path.match(/^\/classroom\/launch\/([^/]+)\/([^/?#]+)$/);
-  if (!match) return null;
-  return {
-    grantKey: decodeURIComponent(match[1] ?? ''),
-    secret: decodeURIComponent(match[2] ?? ''),
-  };
 }
 
 function questionCodecContext(

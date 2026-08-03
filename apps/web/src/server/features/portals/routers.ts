@@ -92,6 +92,7 @@ type ParentPortalService = {
   helperQuery(
     actor: PortalActorContext,
     householdKey: string,
+    learnerKey: string,
     payload: z.infer<typeof helperQueryPayloadSchema>,
   ): Promise<unknown>;
   supportPreview(
@@ -127,6 +128,7 @@ type StudentPortalService = {
 export type ParentPortalRouterDeps = {
   resolveActor: PortalActorResolver;
   verifyCsrf: PortalCsrfVerifier;
+  verifyRecentAssurance?: PortalCsrfVerifier;
   service: ParentPortalService;
 };
 
@@ -243,6 +245,18 @@ export function createParentPortalRouter(deps: ParentPortalRouterDeps) {
       const householdKey = parseParam(req.params.householdKey);
       const learnerKey = parseParam(req.params.learnerKey);
       const operation = studentAccessOperationSchema.parse(req.params.operation);
+      if (
+        operation === 'reset' &&
+        (!deps.verifyRecentAssurance || !(await deps.verifyRecentAssurance(req, actor)))
+      ) {
+        sendError(
+          res.status(428),
+          'FORBIDDEN',
+          'Please sign in again before resetting a Student credential.',
+          req.traceId,
+        );
+        return;
+      }
       const payload = studentAccessOperationPayloadSchema.parse(req.body);
       sendData(
         res,
@@ -306,16 +320,17 @@ export function createParentPortalRouter(deps: ParentPortalRouterDeps) {
   );
 
   router.post(
-    '/households/:householdKey/helper/query',
+    '/households/:householdKey/learners/:learnerKey/helper/query',
     asyncRoute(async (req, res) => {
       const actor = await requireWriteActor(req, res, deps);
       if (!actor) return;
       const householdKey = parseParam(req.params.householdKey);
+      const learnerKey = parseParam(req.params.learnerKey);
       const payload = helperQueryPayloadSchema.parse(req.body);
       sendData(
         res,
         helperAnswerSchema,
-        await deps.service.helperQuery(actor, householdKey, payload),
+        await deps.service.helperQuery(actor, householdKey, learnerKey, payload),
       );
     }),
   );

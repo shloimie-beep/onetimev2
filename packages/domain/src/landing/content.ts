@@ -1,32 +1,47 @@
 export const campaign = {
-  id: 'free-until-rosh-hashanah-2026',
+  id: 'configured-free-access',
   timezone: 'Asia/Jerusalem',
-  deadlineDate: '2026-09-11',
-  label: 'JOIN NOW — FREE UNTIL ROSH HASHANAH',
+  label: 'FREE ACCESS',
 };
 
 export const landingContent = {
   seo: {
-    title: 'Give Your Son A Love For Learning Torah | One Time Mishnayos',
+    title: 'Help Your Son Love Learning Mishnayos | One Time Mishnayos',
     description:
-      'A live worldwide Mishnayos class with Rabbi Eli Scheller, built for boys to love learning Torah with clarity, excitement, and steady progress.',
+      'A fast-paced live-streamed class with Rabbi Eli Scheller, with clear explanations and review so boys understand and remember what they learn.',
     canonical: 'https://join.onetimeonetime.com/',
-    ogTitle: 'Give your son a love for learning Torah.',
-    ogDescription: 'Join One Time Mishnayos live from Eretz Yisrael with Rabbi Eli Scheller.',
+    ogTitle: 'Help Your Son Love Learning Mishnayos',
+    ogDescription:
+      'A fast-paced live-streamed class with Rabbi Eli Scheller. One perek each class day, with clear explanations and review.',
   },
   hero: {
-    kickerLines: ['WORLDWIDE MISHNAH LEARNING', 'LIVE FROM ERETZ YISRAEL'],
-    heading: 'Give your son a love for learning Torah.',
+    eyebrow: 'LIVE ONLINE + ON-DEMAND',
+    titleLines: ['HELP YOUR SON', 'LOVE LEARNING', 'MISHNAYOS'],
+    supporting:
+      'A fast-paced live-streamed class with Rabbi Eli Scheller. The boys complete one perek each class day, with clear explanations and review so they understand and remember what they learn.',
+    schedule: 'LIVE SUNDAY–THURSDAY · 7:00 PM ISRAEL TIME',
+    firstClass: 'Class begins Sunday, August 16, 2026 at 7:00 PM Asia/Jerusalem.',
+    freeAccessCutoff: 'Free access cutoff: Friday, September 11, 2026 at 6:00 PM Asia/Jerusalem.',
+    cta: {
+      label: 'Pre-register Your Family',
+      href: '/signup',
+      analyticsEvent: 'landing.signup.cta.clicked',
+      analyticsPlacement: 'hero',
+    },
+    note: 'Adult email only • No Student details • No credit card or automatic charge',
+    kickerLines: ['LIVE ONLINE', 'ON-DEMAND REVIEW'],
+    heading: 'Mishnayos made memorable.',
   },
   receive: {
     heading: 'Everything He Needs to Learn, Review, and Remember',
-    detailLine: 'Live every day at 7:00 p.m. Israel time.',
+    detailLine:
+      'Live Sunday–Thursday at 7:00 p.m. Israel time, completing one perek each class day.',
     eyebrow: 'A COMPLETE DIGITAL TORAH-LEARNING EXPERIENCE',
     iconLabel: 'Live class',
-    title: 'Live Daily Mishnayos—plus the tools to make it stick.',
+    title: 'Live Mishnayos—plus the tools to make it stick.',
     bullets: [
       {
-        lead: 'LIVE EVERY DAY',
+        lead: 'LIVE SUNDAY–THURSDAY',
         body: 'Join Rabbi Scheller for a clear, engaging Mishnayos class.',
       },
       {
@@ -94,11 +109,15 @@ export const landingContent = {
   },
   how: {
     heading: 'How It Works',
-    body: 'Sign up, get the class information, and join the daily 7:00 p.m. live Mishnayos class.',
-    steps: ['Sign up', 'Receive the class information', 'Enjoy the live class'],
+    body: 'Pre-register one adult contact now. The One Time team will follow up when Family portal access is ready.',
+    steps: [
+      'Pre-register the adult Family contact',
+      'Receive a personal access-readiness follow-up',
+      'Add separate Student seats only after secure access opens',
+    ],
   },
   who: {
-    heading: 'A Ready-to-Run Mishnayos Class—Wherever Your Son Learns',
+    heading: 'A Ready-to-Run Mishnayos Class—Wherever You Learn',
     audiences: [
       {
         lead: 'FAMILIES',
@@ -109,12 +128,70 @@ export const landingContent = {
         body: 'A real live class, connection with a rabbi, and a wider learning community.',
       },
       {
-        lead: 'SCHOOLS',
-        body: 'Add a complete live Mishnayos class to the school day.',
-      },
-      {
         lead: 'LOCAL STUDENTS',
         body: "Join Rabbi Scheller's daily learning community from Ramat Beit Shemesh.",
+      },
+      {
+        lead: 'ADULT LEARNERS',
+        body: 'An adult may learn as a Student by creating a separate Student seat inside the Family account.',
+      },
+    ],
+  },
+  experience: {
+    heading: 'One protected place for live class and review',
+    intro:
+      'The member experience keeps the embedded live class, protected on-demand library, schedules, and progress together after sign-in.',
+    cards: [
+      {
+        title: 'Live class',
+        body: 'Open the protected classroom from your portal at class time. Access details stay inside the signed-in experience.',
+      },
+      {
+        title: 'On-demand library',
+        body: 'Return to approved class recordings and review materials anytime through the protected library.',
+      },
+      {
+        title: 'Family and Student views',
+        body: 'Adults manage access from the Family portal; each learner uses a separate Student seat. Student email is not required.',
+      },
+    ],
+  },
+  participation: {
+    heading: 'What you need for class',
+    bullets: [
+      'Use a current desktop or mobile browser with a stable internet connection and working audio.',
+      'A camera is optional unless the class team gives a specific participation instruction; learners can still follow the lesson without broadcasting video.',
+      'Live sessions are moderated. Class recordings may be made available in the protected library; recording and recognition choices follow the published notices and operator controls.',
+    ],
+  },
+  enrollment: {
+    heading: 'Pre-register your Family',
+    family: {
+      title: 'Family',
+      body: 'Save one adult contact for launch follow-up. This does not yet create an account or learner seat, and no Student information is collected.',
+    },
+  },
+  access: {
+    heading: 'Pre-registration and future access',
+    before:
+      'Pre-register an adult contact during the configured free-access period. No credit card is collected, and portal access is not created by this form.',
+    after:
+      'Pre-registration remains cardless. If paid Family access is offered later, it is $67/month through a separate secure hosted billing flow; this form creates no charge.',
+  },
+  assurances: {
+    heading: 'Clear expectations before you join',
+    items: [
+      {
+        title: 'Privacy and Student data',
+        body: 'This pre-registration collects adult contact details only. Review the Privacy Notice now; Student data is requested only after secure Family access is ready.',
+      },
+      {
+        title: 'Cancellation and refunds',
+        body: 'Review the Terms for cancellation and refund rules before paid continuation. Billing changes use the hosted account flow.',
+      },
+      {
+        title: 'Login and support',
+        body: 'Existing members can sign in from Member Login. For access or account help, use the Support path; WhatsApp is not an active launch support channel.',
       },
     ],
   },
@@ -156,34 +233,28 @@ export const landingContent = {
     ['Mishpacha', '/assets/press/mishpacha.webp'],
   ],
   finalCta: {
-    heading: 'Ready to join the live class?',
-  },
-  whatsappAssistant: {
-    state: 'offline',
-    buttonLabel: 'WhatsApp help',
-    heading: 'Questions about joining?',
-    body: 'The WhatsApp assistant is being connected. Sign up now and the team will follow up with class information.',
-    ctaLabel: 'Sign Up Now',
-    ctaHref: '/signup',
-    dismissLabel: 'Dismiss WhatsApp helper',
+    heading: 'Ready to pre-register your Family?',
   },
   footer: {
     line: 'One Time Mishnayos with Rabbi Eli Scheller.',
     links: [
       ['Home', '/'],
-      ['Sign Up Now', '/signup'],
+      ['Pre-register', '/signup'],
       ['Privacy', '/privacy'],
       ['Terms', '/terms'],
+      ['Student Data', '/student-data'],
       ['Member Login', '/login'],
+      ['Support', '/support'],
     ],
   },
 } as const;
 
 export const sharedNav = [
   ['What You Receive', '#receive'],
-  ["What He'll Gain", '#gain'],
-  ['How It Works', '#how-it-works'],
+  ['Experience', '#experience'],
   ["Who It's For", '#who'],
+  ['How It Works', '#how-it-works'],
+  ['Pricing', '#access'],
   ['Rabbi Scheller', '#rabbi'],
   ['Member Login', '/login'],
 ] as const;

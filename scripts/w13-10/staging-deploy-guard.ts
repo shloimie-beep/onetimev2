@@ -56,10 +56,11 @@ export function evaluateStagingDeployCommand(
     dryRun: true,
     refusalCodes,
     requiredReadbacks: [
-      '/version before deployment',
-      '/version after deployment',
+      'protected runtime identity before deployment',
+      'protected runtime identity after deployment',
       '/health',
       '/ready',
+      '/version public availability',
       'worker heartbeat',
       'migration ledger',
       'queue state',

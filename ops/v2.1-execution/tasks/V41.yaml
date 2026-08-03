@@ -1,0 +1,178 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: V41
+title: Provider Foundation, Billing, Access, and GHL Identity Verification
+outcome: Verify provider idempotency/reconciliation, commercial billing flows, signed access projection, grace/recovery,
+  adult GHL mapping, and zero Student GHL contacts.
+kind: verification
+wave: 9
+priority: launch_critical
+execution:
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+  service_tier: PRIORITY
+  mode: START_OR_RESUME
+  branch_template: codex/v21-verify-{candidate_short_sha}-v41
+  harness_branch_template: codex/v21-harness-{candidate_short_sha}-v41
+  maximum_active_writers_in_group: 1
+dependencies:
+  start_after:
+  - I36
+  required_start_states:
+    I36: candidate_frozen
+  merge_after: []
+  candidate_integration_partners: []
+  candidate_requires_all_implementation_tasks: false
+  acceptance_after: []
+  first_run_start_sha_source: origin/codex/v21-control:ops/v2.1-execution/control/READY-QUEUE.yaml authorized_start_sha
+interface_checkpoint:
+  required: false
+  unlocks: []
+  contract_schema_version: 1
+  required_export_roots: []
+  must_record_exact_realized_paths_symbols_versions_and_digests: true
+  rule: No downstream contract checkpoint required.
+scope:
+  writer_slots:
+  - VERIFY_BILLING_PROVIDERS
+  normalized_owned_globs:
+  - ops/v2.1-execution/results/<candidate-digest>/V41/**
+  - ops/v2.1-execution/verification-harness/V41/**
+  scope_notes_only:
+  - verification-only branch codex/v21-verify-<candidate-short-sha>-v41
+  explicit_path_excludes: []
+  forbidden_shared_paths: []
+  external_authority: none by default; scoped read-only provider access only with C00 authorization; bounded effects
+    require a task-specific authority record and exclusive provider lock
+coverage:
+  primary_requirement_ids: []
+  primary_acceptance_case_ids: []
+  verification_of_tasks:
+  - F06
+  - P25
+  - P26
+  - P27
+  verification_requirement_ids:
+  - OTV2-PROVIDER-209
+  - OTV2-PROVIDER-231
+  - OTV2-PROVIDER-243
+  - OTV2-BILLING-101
+  - OTV2-BILLING-102
+  - OTV2-BILLING-103
+  - OTV2-BILLING-104
+  - OTV2-BILLING-105
+  - OTV2-BILLING-106
+  - OTV2-BILLING-107
+  - OTV2-BILLING-108
+  - OTV2-BILLING-109
+  - OTV2-BILLING-110
+  - OTV2-BILLING-224
+  - OTV2-PARENT-038
+  - OTV2-BILLING-111
+  - OTV2-BILLING-112
+  - OTV2-BILLING-113
+  - OTV2-BILLING-114
+  - OTV2-BILLING-115
+  - OTV2-BILLING-116
+  - OTV2-BILLING-201
+  - OTV2-BILLING-242
+  - OTV2-PARENT-236
+  - OTV2-GHL-117
+  - OTV2-GHL-118
+  - OTV2-GHL-119
+  verification_acceptance_case_ids:
+  - OTV2-PROVIDER-209-AC01
+  - OTV2-PROVIDER-231-MULTI-HOUSEHOLD-MAPPING
+  - OTV2-PROVIDER-243-GHL-IDENTITY-QUARANTINE
+  - OTV2-BILLING-101-AC01
+  - OTV2-BILLING-102-AC01
+  - OTV2-BILLING-103-AC01
+  - OTV2-BILLING-104-AC01
+  - OTV2-BILLING-105-AC01
+  - OTV2-BILLING-106-AC01
+  - OTV2-BILLING-107-AC01
+  - OTV2-BILLING-108-AC01
+  - OTV2-BILLING-109-AC01
+  - OTV2-BILLING-110-AC01
+  - OTV2-BILLING-224-STANDARD
+  - OTV2-BILLING-224-IMMEDIATE-EXCEPTION
+  - OTV2-PARENT-038-AC01
+  - OTV2-BILLING-111-AC01
+  - OTV2-BILLING-112-AC01
+  - OTV2-BILLING-113-AC01
+  - OTV2-BILLING-114-AC01
+  - OTV2-BILLING-115-AC01
+  - OTV2-BILLING-116-AC01
+  - OTV2-BILLING-201-INACTIVE-ROUTE-AUTHORIZATION
+  - OTV2-BILLING-242-EVENT-PRECEDENCE-GRACE
+  - OTV2-PARENT-236-INACTIVE-ALLOWLIST
+  - OTV2-PARENT-236-VERIFIED-RECOVERY
+  - OTV2-GHL-117-AC01
+  - OTV2-GHL-118-AC01
+  - OTV2-GHL-119-AC01
+  decision_ids:
+  - DEC-014
+  - DEC-019
+  - DEC-033
+  - DEC-040
+  - DEC-041
+  - DEC-042
+  - DEC-043
+  - DEC-044
+  - DEC-045
+  - DEC-046
+  - DEC-047
+  - DEC-048
+  - DEC-050
+  - DEC-051
+  - DEC-055
+  - DEC-090
+  - DEC-122
+  required_source_documents:
+  - 01-PRODUCT-SPEC-v2.1.md
+  - 03-DECISION-REGISTER-v2.1.md
+  - 05-ACTOR-ROLE-CAPABILITY-ROUTE-MATRIX-v2.1.md
+  - 06-DOMAIN-MODEL-AND-STATE-MACHINES-v2.1.md
+  - 07-SOURCE-OF-TRUTH-AND-PROVIDER-CONTRACTS-v2.1.md
+  - 08-SCREEN-CATALOG-AND-DESIGN-SYSTEM-v2.1.md
+  - 09-WORKFLOW-NOTIFICATION-COPY-CATALOG-v2.1.md
+  - 12-MIGRATION-CUTOVER-ROLLBACK-v2.1.md
+  embedded_normative_sections: []
+deliverables:
+- one schema-valid candidate-bound result record per assigned acceptance case
+- lane summary with exact pass/fail/blocked counts
+- zero unrecorded external effects
+- reproduction packet for every failure
+notes: []
+terminal_states:
+- ready_for_evidence_merge
+definition_of_done:
+- Every assigned behavior is implemented or, for verification/release tasks, every assigned case has a schema-valid
+  candidate-bound result.
+- The diff remains inside owned paths plus structured steward requests.
+- Task-owned verification passes; ordinary in-scope failures are diagnosed and corrected.
+- No prohibited product surface, fake fallback, security/privacy weakening, or unauthorized external effect is introduced.
+- TASK-STATE.yaml, HANDOFF.md, and NEXT-PROMPT.md are current.
+- 'All checkpoints are committed and pushed; this task may end only in one of these exact task-local terminal states:
+  ready_for_evidence_merge.'
+checkpoint_policy:
+  interval_minutes: 30-45
+  mandatory_before:
+  - long-running command
+  - authorized external effect
+  - window end
+  mandatory_after:
+  - interface contract
+  - migration or invariant
+  - meaningful milestone
+  - blocker discovery
+stop_conditions:
+- missing explicit authority or provider identity for a required live effect
+- writer/path/provider lock collision
+- non-fast-forward push
+- normative contradiction requiring operator decision
+- incompatible or absent upstream interface contract
+- applied migration would need modification
+- continuation would weaken a protected invariant
+- destructive operation lacks exact target/authority
+- reproduced out-of-scope failure blocks progress after all safe independent work is complete

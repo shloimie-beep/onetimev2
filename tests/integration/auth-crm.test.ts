@@ -129,6 +129,83 @@ describe('standalone CRM authentication', () => {
     expect(after.status).toBe(401);
   });
 
+  it('changes the signed-in password with CSRF and keeps role-incompatible return paths closed', async () => {
+    const csrf = await getLoginCsrf();
+    const routed = await fetch(`${baseUrl}/api/v1/auth/login`, {
+      method: 'POST',
+      headers: {
+        cookie: csrf.cookies,
+        'content-type': 'application/json',
+        'x-csrf-token': csrf.token,
+      },
+      body: JSON.stringify({
+        email: 'viewer@example.test',
+        password: 'ViewerPass!234',
+        csrf_token: csrf.token,
+        return_to: '/app/student?section=library',
+      }),
+    });
+    expect(routed.status).toBe(200);
+    const routedJson = (await routed.json()) as {
+      csrf_token: string;
+      return_to: string;
+    };
+    const cookies = mergeCookies(csrf.cookies, cookieHeader(routed.headers));
+    expect(routedJson.return_to).toBe('/app/crm');
+
+    const missingCsrf = await fetch(`${baseUrl}/api/v1/auth/password`, {
+      method: 'POST',
+      headers: { cookie: cookies, 'content-type': 'application/json' },
+      body: JSON.stringify({
+        current_password: 'ViewerPass!234',
+        new_password: 'ViewerChanged!567',
+      }),
+    });
+    expect(missingCsrf.status).toBe(403);
+
+    const wrongCurrent = await fetch(`${baseUrl}/api/v1/auth/password`, {
+      method: 'POST',
+      headers: {
+        cookie: cookies,
+        'content-type': 'application/json',
+        'x-csrf-token': routedJson.csrf_token,
+      },
+      body: JSON.stringify({
+        current_password: 'NotThePassword!9',
+        new_password: 'ViewerChanged!567',
+      }),
+    });
+    expect(wrongCurrent.status).toBe(400);
+    expect(await wrongCurrent.json()).toMatchObject({ code: 'INVALID_CURRENT_PASSWORD' });
+
+    const changed = await fetch(`${baseUrl}/api/v1/auth/password`, {
+      method: 'POST',
+      headers: {
+        cookie: cookies,
+        'content-type': 'application/json',
+        'x-csrf-token': routedJson.csrf_token,
+      },
+      body: JSON.stringify({
+        current_password: 'ViewerPass!234',
+        new_password: 'ViewerChanged!567',
+      }),
+    });
+    expect(changed.status).toBe(200);
+    expect(await changed.json()).toMatchObject({
+      success: true,
+      current_session_preserved: true,
+    });
+
+    const currentSession = await fetch(`${baseUrl}/api/v1/auth/session`, {
+      headers: { cookie: cookies },
+    });
+    expect(currentSession.status).toBe(200);
+    const oldPassword = await authenticateDirect('viewer@example.test', 'ViewerPass!234');
+    expect(oldPassword.status).toBe(401);
+    const newPassword = await authenticateDirect('viewer@example.test', 'ViewerChanged!567');
+    expect(newPassword.status).toBe(200);
+  });
+
   it('requires login CSRF and rate-limits failed login attempts', async () => {
     const noCsrf = await fetch(`${baseUrl}/api/v1/auth/login`, {
       method: 'POST',
@@ -681,6 +758,19 @@ async function getLoginCsrf() {
   const token = html.match(/name="csrf_token" value="([^"]+)"/)?.[1];
   if (!token) throw new Error('missing csrf token');
   return { token, cookies: cookieHeader(page.headers) };
+}
+
+async function authenticateDirect(email: string, password: string) {
+  const csrf = await getLoginCsrf();
+  return fetch(`${baseUrl}/api/v1/auth/login`, {
+    method: 'POST',
+    headers: {
+      cookie: csrf.cookies,
+      'content-type': 'application/json',
+      'x-csrf-token': csrf.token,
+    },
+    body: JSON.stringify({ email, password, csrf_token: csrf.token }),
+  });
 }
 
 async function loginAs(

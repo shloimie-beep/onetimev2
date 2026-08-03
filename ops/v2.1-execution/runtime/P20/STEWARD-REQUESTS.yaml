@@ -1,0 +1,80 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P20
+external_effects_authorized: false
+requests:
+  - request_id: P20-MIGRATION-001
+    kind: migration
+    requested_steward: F02
+    status: proposed
+    source_contract:
+      path: packages/db/src/content/processing/schema-contract.ts
+      version: P20-CONTENT-PROCESSING-SCHEMA-001
+    exact_targets:
+      - packages/db/migrations/<allocated>_v21_content_processing.sql
+    required_changes:
+      - Add the four tables and constraints described by CONTENT_PROCESSING_SCHEMA_CONTRACT without modifying any applied migration.
+      - Enforce tenant/product scope, immutable artifact revisions, optimistic processing versions, and command idempotency/request-hash fencing.
+      - Keep every processing artifact non-public and draft by default; the schema must not imply publication or Student visibility.
+    validation:
+      - Apply the full migration inventory in a disposable PostgreSQL-compatible database.
+      - Prove rollback, duplicate command replay, conflicting request hash denial, immutable revision, and optimistic-version conflict behavior.
+    external_effects_authorized: false
+  - request_id: P20-WORKER-REGISTRATION-001
+    kind: registration
+    requested_steward: I36
+    status: proposed
+    source_contract:
+      path: apps/worker/src/runners/content-processing/index.ts
+      export: ContentProcessingRunner
+    exact_targets:
+      - apps/worker/src/main/<central-composer-owned-path>
+    required_changes:
+      - Register the P20 runner through the central worker composer without changing runner behavior.
+      - Keep execution asynchronous, leased, restart-safe, checksum-bound, and disabled until the migration and runtime readiness gates pass.
+      - Inject only server-side adapters; never expose AWS or OpenAI credentials to a browser.
+    validation:
+      - Prove provider-off startup, duplicate replay, retry/dead-letter visibility, and no dispatch before durable command/source state.
+    external_effects_authorized: false
+  - request_id: P20-RUNTIME-CONFIG-001
+    kind: configuration
+    requested_steward: I36
+    status: proposed
+    source_contract:
+      paths:
+        - packages/contracts/src/content/processing/index.ts
+        - apps/worker/src/runners/content-processing/runner.ts
+    exact_targets:
+      - <central-runtime-config-owned-path>
+      - <deployment-secret-reference-owned-path>
+    required_changes:
+      - Bind private versioned S3 in eu-central-1 with SSE-KMS, Block Public Access, bucket-owner enforcement, server-only IAM, and exact readback.
+      - Bind OT-TRANSCRIBE-1 to gpt-4o-transcribe with language en and the registered request, segmentation, and prompt versions.
+      - Bind OT-LEARNING-DRAFT-1 to exact snapshot gpt-4.1-mini-2025-04-14 with Responses API strict Structured Outputs and no web search, tools, or conversation carry-over.
+      - Store only protected provider/project references and digests in ordinary records/logs; never store media, transcript, prompt, response, raw provider ID, or secret in logs.
+      - Keep provider-side and transient-copy retention at or below the approved 30-day boundary.
+    validation:
+      - Read back exact runtime tier, provider project digest, model, request format, prompt, glossary, segmentation, and schema pins.
+      - Prove wrong region/public bucket/browser credential/moving model alias/unpinned schema configurations fail closed.
+    external_effects_authorized: false
+  - request_id: P20-PINNED-MEDIA-RUNTIME-001
+    kind: dependency
+    requested_steward: I36
+    status: proposed
+    source_contract:
+      paths:
+        - scripts/media/v21/streaming-media.ts
+        - packages/domain/src/content/processing/index.ts
+      profile: OT-VIDEO-1
+    exact_targets:
+      - package.json
+      - package-lock.json
+      - <runtime-image-or-dependency-lock-owned-path>
+    required_changes:
+      - Provision and pin reviewed ffmpeg and ffprobe binaries that support libx264, AAC-LC, fast-start MP4, rotation normalization, and bounded stream/file operation.
+      - Record binary provenance, version, checksum, license review, vulnerability review, and deployment architecture.
+      - Do not add an in-process whole-media buffering dependency or an unpinned binary download.
+    validation:
+      - Run the P20 representative-media fixture and read back exact OT-VIDEO-1 stream properties, duration, decode status, checksum, and metadata removal.
+      - Prove a 3-5 GiB fixture remains within the configured memory budget and retries from durable state.
+    external_effects_authorized: false

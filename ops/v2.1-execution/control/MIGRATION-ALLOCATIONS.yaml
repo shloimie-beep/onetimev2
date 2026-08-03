@@ -1,0 +1,14 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+semantic_owner: F02
+mechanical_control_writer: C00
+proposal_path: ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
+reviewed_latest: 2233_zoom_class_occurrence_resources.sql
+next_available_ordinal: 2234
+never_allocate:
+- 2231
+allocations: []
+rule: F02 is the only semantic allocator and migration-file writer. It pushes a proposal on its task branch; C00
+  is the only writer of this control-plane mirror and copies the exact approved allocation without semantic change.
+  Every allocation binds task, purpose, filename, interface digest, and status. Parallel branches use disposable
+  databases.

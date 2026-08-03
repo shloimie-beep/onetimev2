@@ -614,36 +614,7 @@ export async function verifyHttpEndpoints(input: {
   const checks: CheckResult[] = [];
   const version = await fetchJson(fetcher, input.manifest.target.base_url, '/version');
   checks.push(httpStatusCheck('version_http', version.status));
-  if (isRecord(version.body)) {
-    const actualCommit = stringValue(version.body.commit_sha);
-    const actualVersion = stringValue(version.body.version);
-    const expectedCommit = expectedVersionCommit(input.manifest, input.operation);
-    checks.push(...evaluateVersionDeploymentProof(input.manifest, input.operation, version.body));
-    checks.push({
-      id: 'version_commit_match',
-      status: expectedCommit && actualCommit === expectedCommit ? 'passed' : 'blocked',
-      summary:
-        expectedCommit && actualCommit === expectedCommit
-          ? 'Version endpoint commit matches the required source.'
-          : 'Version endpoint commit does not match the required source.',
-      detail: `actual=${actualCommit || 'unknown'}; expected=${expectedCommit ?? 'missing'}`,
-    });
-    if (
-      endpointPhase(input.operation) === 'predeploy' &&
-      input.manifest.predeploy?.expected_version
-    ) {
-      checks.push({
-        id: 'version_name_match',
-        status: actualVersion === input.manifest.predeploy.expected_version ? 'passed' : 'blocked',
-        summary:
-          actualVersion === input.manifest.predeploy.expected_version
-            ? 'Version endpoint release name matches.'
-            : 'Version endpoint release name does not match.',
-      });
-    }
-  } else {
-    checks.push(blocked('version_json', 'Version endpoint did not return JSON.'));
-  }
+  checks.push(jsonOkCheck('version_ok', version.body));
 
   const health = await fetchJson(fetcher, input.manifest.target.base_url, '/health');
   checks.push(httpStatusCheck('health_http', health.status));
@@ -651,10 +622,13 @@ export async function verifyHttpEndpoints(input: {
   const ready = await fetchJson(fetcher, input.manifest.target.base_url, '/ready');
   checks.push(httpStatusCheck('ready_http', ready.status));
   checks.push(jsonOkCheck('ready_ok', ready.body));
-  checks.push(...providerReadyChecks(ready.body));
 
   if (!input.opsProbeToken) {
     checks.push(
+      blocked(
+        'runtime_identity_probe_token',
+        'Runtime identity verification requires an ops probe token.',
+      ),
       blocked(
         'worker_heartbeat_probe_token',
         'Worker heartbeat verification requires an ops probe token.',
@@ -669,6 +643,40 @@ export async function verifyHttpEndpoints(input: {
     { 'x-ops-probe-token': input.opsProbeToken },
   );
   checks.push(httpStatusCheck('ops_diagnostics_http', diagnostics.status));
+  if (isRecord(diagnostics.body) && isRecord(diagnostics.body.runtime)) {
+    const runtime = diagnostics.body.runtime;
+    const actualCommit = stringValue(runtime.commit_sha);
+    const actualVersion = stringValue(runtime.version);
+    const expectedCommit = expectedVersionCommit(input.manifest, input.operation);
+    checks.push(...evaluateVersionDeploymentProof(input.manifest, input.operation, runtime));
+    checks.push({
+      id: 'version_commit_match',
+      status: expectedCommit && actualCommit === expectedCommit ? 'passed' : 'blocked',
+      summary:
+        expectedCommit && actualCommit === expectedCommit
+          ? 'Protected runtime commit matches the required source.'
+          : 'Protected runtime commit does not match the required source.',
+      detail: `actual=${actualCommit || 'unknown'}; expected=${expectedCommit ?? 'missing'}`,
+    });
+    if (
+      endpointPhase(input.operation) === 'predeploy' &&
+      input.manifest.predeploy?.expected_version
+    ) {
+      checks.push({
+        id: 'version_name_match',
+        status: actualVersion === input.manifest.predeploy.expected_version ? 'passed' : 'blocked',
+        summary:
+          actualVersion === input.manifest.predeploy.expected_version
+            ? 'Protected runtime release name matches.'
+            : 'Protected runtime release name does not match.',
+      });
+    }
+  } else {
+    checks.push(
+      blocked('runtime_identity_json', 'Protected diagnostics did not return a runtime identity.'),
+    );
+  }
+  checks.push(...providerReadyChecks(diagnostics.body));
   checks.push(...workerHeartbeatChecks(input.manifest, diagnostics.body));
   checks.push(...queueChecks(input.manifest, diagnostics.body));
   return checks;
@@ -685,7 +693,7 @@ export function evaluateVersionDeploymentProof(
     return [
       warning(
         'version_deployment_proof_present',
-        'Version endpoint does not expose runtime deployment proof; falling back to legacy commit check.',
+        'Protected diagnostics do not expose runtime deployment proof; falling back to commit check.',
       ),
     ];
   }
@@ -1109,7 +1117,7 @@ function validatePredeployVersionExpectation(
   if (operation !== 'preflight-staging' && operation !== 'deploy-staging') {
     return passed(
       'predeploy_version_requirement_not_applicable',
-      'Predeploy /version expectation is not applicable.',
+      'Predeploy protected runtime expectation is not applicable.',
     );
   }
   const source = manifest.predeploy?.expected_commit_sha;
@@ -1118,8 +1126,8 @@ function validatePredeployVersionExpectation(
     status: source && COMMIT_SHA.test(source) ? 'passed' : 'blocked',
     summary:
       source && COMMIT_SHA.test(source)
-        ? 'Predeploy /version expected commit is explicit.'
-        : 'Predeploy /version expected commit is required before staging deployment.',
+        ? 'Predeploy protected runtime expected commit is explicit.'
+        : 'Predeploy protected runtime expected commit is required before staging deployment.',
   };
 }
 
@@ -1140,8 +1148,10 @@ function validateMutationConfirmation(manifest: LaunchManifest, options: CliOpti
 }
 
 function providerReadyChecks(body: unknown): CheckResult[] {
-  const optionalDependencies =
-    isRecord(body) && Array.isArray(body.optional_dependencies) ? body.optional_dependencies : [];
+  const snapshot = diagnosticSnapshot(body);
+  const optionalDependencies: unknown[] =
+    snapshot && Array.isArray(snapshot.optional_dependencies) ? snapshot.optional_dependencies : [];
+  const present = Boolean(snapshot && Array.isArray(snapshot.optional_dependencies));
   const unsafe = optionalDependencies
     .filter(isRecord)
     .filter((dependency) =>
@@ -1153,11 +1163,12 @@ function providerReadyChecks(body: unknown): CheckResult[] {
   return [
     {
       id: 'ready_provider_transports_safe',
-      status: unsafe.length === 0 ? 'passed' : 'blocked',
-      summary:
-        unsafe.length === 0
-          ? 'Ready endpoint optional provider dependencies are safe.'
-          : 'Ready endpoint reports an unsafe provider dependency.',
+      status: present && unsafe.length === 0 ? 'passed' : 'blocked',
+      summary: !present
+        ? 'Protected diagnostics omitted optional provider dependencies.'
+        : unsafe.length === 0
+          ? 'Protected diagnostics report safe optional provider dependencies.'
+          : 'Protected diagnostics report an unsafe provider dependency.',
     },
   ];
 }

@@ -1,0 +1,22 @@
+{
+  "job_id": "GHL-UI-18",
+  "location_id": "pBSnOK2nkdxp6gf9Rg3o",
+  "workflow": {
+    "key": "OT-10",
+    "id": "1bca5210-a3b9-496b-b3cd-48c60c0e33ca",
+    "name": "OT-10 New Recording Available",
+    "full_folder_path": "One Time / 40 - Learning Operations / Content"
+  },
+  "deployed_contract": "recording.available@1.0.0",
+  "expected": {
+    "trigger": "Contact Tag added: OT | Recording Available",
+    "fields": [
+      "contact.one_time_crm_contact_id",
+      "contact.one_time_email_consent",
+      "contact.one_time_suppression_state"
+    ],
+    "sender_key": "brand",
+    "suppression": "Approved content, entitled adult household, email consent granted, suppression active, email DND off."
+  },
+  "exact_copy_paste_prompt": "Use only location pBSnOK2nkdxp6gf9Rg3o. Reconcile OT-10 by exact ID 1bca5210-a3b9-496b-b3cd-48c60c0e33ca and full path One Time / 40 - Learning Operations / Content in every asset state; never duplicate. Verify recording.available@1.0.0 from the deployed approved-content publication path exists or remain DRAFT_WAITING_EXTERNAL(recording.available@1.0.0 approved-content deployment). Before any trigger test, prove the application row is explicitly authorized by the exact protected canary run ID, delivery-key allowlist and budget; disabled, mock, held or non-allowlisted rows must remain unclaimed. Configure Contact Tag added OT | Recording Available and require approved content, entitled adult household, email consent granted, suppression active and email DND off. Select sender_key brand from registered pickers. Use only the protected recording portal custom value; never map raw Vimeo or provider references. After the bounded action and application delivery receipt are complete, remove only the trigger tag so a later distinct approved recording can trigger; do not rely on a time-based replay lease. Save action and outer layers, navigate away, reload, reopen exact ID and read back all critical values before publish. Test one synthetic approved-content event and one operator-owned adult destination. Record the canary run hash, prove one execution and one bounded delivery, replay no duplicate, and no raw provider data in history. Record ACTIVE_CONFIGURED or ACTIVE_TESTED, zero broad sends and zero Student contacts."
+}

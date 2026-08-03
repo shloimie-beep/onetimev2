@@ -1,0 +1,404 @@
+{
+  "schemaVersion": "one-time-highlevel-ui-14-18-result@1.0.0",
+  "generatedAt": "2026-07-23T18:44:16.739Z",
+  "canonicalSource": {
+    "branch": "codex/full-app-staging-live",
+    "head": "5556c4ab78e01d367666694459eb2ea97f4028ef",
+    "stagingReadbackAt": "2026-07-23T18:54:22.608Z",
+    "stagingVersion": {
+      "deploymentGitCommitShaMatched": true,
+      "applicationCommitShaMatched": false,
+      "applicationCommitShaStatus": "stale_field_drift",
+      "healthStatus": 200,
+      "readyStatus": 200,
+      "readyBlockers": []
+    },
+    "reviewedJobRange": "GHL-UI-14..GHL-UI-18"
+  },
+  "location": {
+    "id": "pBSnOK2nkdxp6gf9Rg3o",
+    "matchVerified": true,
+    "literalRoot": "One Time"
+  },
+  "scope": {
+    "customerOrBroadMessagesSent": 0,
+    "emailMessagesSent": 0,
+    "whatsAppActionsOrMessages": 0,
+    "telegramActionsOrMessages": 0,
+    "contactMutations": 0,
+    "enrollmentMutations": 0,
+    "studentContactsCreated": 0,
+    "workflowPublications": 0,
+    "targetWorkflowConfigurationMutations": 0,
+    "protectiveWorkflowPauses": 1,
+    "duplicateWorkflowsCreated": 0,
+    "syntheticContactLookupRetried": false
+  },
+  "controlFinding": {
+    "result": "BLOCKED",
+    "reason": "The five reviewed job files define trigger and gate intent but are absent from the reviewed queue/export and do not define exact executable action/template details; configuring a live action would require invention.",
+    "queueOrExportEntriesFound": 0,
+    "publicationOrTestAllowed": false
+  },
+  "workflows": [
+    {
+      "jobId": "GHL-UI-14",
+      "key": "OT-01",
+      "name": "OT-01 New Lead Intake",
+      "id": "95a6f461-1a04-4260-b379-246fdcc45af7",
+      "fullFolderPath": "One Time / 00 - Intake & Data",
+      "folderIds": {
+        "root": "da1f8359-f399-477e-89b1-61a47d1b3db0",
+        "leaf": "35b75aaa-7b52-44a6-ada6-646f621b69b6"
+      },
+      "exactVisibleIdMatches": 1,
+      "duplicateCandidates": [],
+      "archivedScope": "unverified_ui_scope_unavailable",
+      "observedStatus": "DRAFT_SHELL",
+      "desiredStatus": "DRAFT_WAITING_EXTERNAL",
+      "triggerObserved": [],
+      "actionsObserved": [],
+      "expectedTrigger": "Contact Tag added: OT | Lead",
+      "expectedOrderedActions": [
+        "Read only the seven registered adult contact fields named by GHL-UI-14.",
+        "Require email consent granted, suppression active, and email DND off.",
+        "Run one bounded delivery action after the deployed adult.signup.submitted@1.0.0 contract and protected canary controls are proven.",
+        "After a successful delivery receipt, remove only OT | Lead."
+      ],
+      "waits": [],
+      "sender": {
+        "key": "brand",
+        "namePickerKey": "one_time_brand_sender_name",
+        "fromPickerKey": "one_time_brand_from",
+        "replyToPickerKey": "one_time_default_reply_to"
+      },
+      "enrollmentCounters": {
+        "total": 0,
+        "active": 0
+      },
+      "lastModifiedVisible": "Jul 22 2026, 12:36 PM",
+      "createdVisible": "Jul 22 2026, 11:38 AM",
+      "readbackAt": "2026-07-23T18:39:39.794Z",
+      "mutationApplied": false,
+      "status": "BLOCKED",
+      "blocker": "GHL-UI-14 does not define the exact bounded delivery action or message template and is absent from the reviewed queue/export.",
+      "jobPath": "integrations/highlevel/agent-mode/jobs/GHL-UI-14-activate-ot-01.json"
+    },
+    {
+      "jobId": "GHL-UI-15",
+      "key": "OT-07",
+      "name": "OT-07 Parent Portal Invitation",
+      "id": "fb48c3bf-7154-44c9-825e-88afb5bb7942",
+      "fullFolderPath": "One Time / 30 - Portal Lifecycle",
+      "folderIds": {
+        "root": "da1f8359-f399-477e-89b1-61a47d1b3db0",
+        "leaf": "250ff9f0-4985-46c0-a587-f7e3a0251bab"
+      },
+      "exactVisibleIdMatches": 1,
+      "duplicateCandidates": [],
+      "archivedScope": "unverified_ui_scope_unavailable",
+      "observedStatus": "DRAFT_SHELL",
+      "desiredStatus": "DRAFT_WAITING_EXTERNAL",
+      "triggerObserved": [],
+      "actionsObserved": [],
+      "expectedTrigger": "Contact Tag added: OT | Portal Invited",
+      "expectedOrderedActions": [
+        "Require eligible adult Parent status invited, email consent granted, suppression active, and email DND off.",
+        "Run one non-token companion action only after parent.portal.invitation_requested@1.0.0 and protected canary controls are proven.",
+        "Never map an activation token, credential, Student field, or Student identity.",
+        "After a successful delivery receipt, remove only OT | Portal Invited."
+      ],
+      "waits": [],
+      "sender": {
+        "key": "brand",
+        "namePickerKey": "one_time_brand_sender_name",
+        "fromPickerKey": "one_time_brand_from",
+        "replyToPickerKey": "one_time_default_reply_to"
+      },
+      "enrollmentCounters": {
+        "total": 0,
+        "active": 0
+      },
+      "lastModifiedVisible": "Jul 22 2026, 11:53 AM",
+      "createdVisible": "Jul 22 2026, 11:53 AM",
+      "readbackAt": "2026-07-23T18:40:09.780Z",
+      "mutationApplied": false,
+      "status": "BLOCKED",
+      "blocker": "GHL-UI-15 does not define the exact non-token companion action or message template and is absent from the reviewed queue/export.",
+      "jobPath": "integrations/highlevel/agent-mode/jobs/GHL-UI-15-activate-ot-07.json"
+    },
+    {
+      "jobId": "GHL-UI-16",
+      "key": "OT-08",
+      "name": "OT-08 Parent Portal Activated",
+      "id": "eeca2efb-41be-40a7-bbc4-ee6fe8760dd9",
+      "fullFolderPath": "One Time / 30 - Portal Lifecycle",
+      "folderIds": {
+        "root": "da1f8359-f399-477e-89b1-61a47d1b3db0",
+        "leaf": "250ff9f0-4985-46c0-a587-f7e3a0251bab"
+      },
+      "exactVisibleIdMatches": 1,
+      "duplicateCandidates": [],
+      "archivedScope": "unverified_ui_scope_unavailable",
+      "observedStatus": "DRAFT_SHELL",
+      "desiredStatus": "DRAFT_WAITING_EXTERNAL",
+      "triggerObserved": [],
+      "actionsObserved": [],
+      "expectedTrigger": "Contact Tag added: OT | Portal Active",
+      "expectedOrderedActions": [
+        "Require adult Parent status active, email consent granted, suppression active, and email DND off.",
+        "Run one bounded protected-portal action after parent.portal.activated@1.0.0 and protected canary controls are proven.",
+        "Never map credentials, Student fields, Student identities, or provider URLs.",
+        "After a successful delivery receipt, remove only OT | Portal Active."
+      ],
+      "waits": [],
+      "sender": {
+        "key": "brand",
+        "namePickerKey": "one_time_brand_sender_name",
+        "fromPickerKey": "one_time_brand_from",
+        "replyToPickerKey": "one_time_default_reply_to"
+      },
+      "enrollmentCounters": {
+        "total": 0,
+        "active": 0
+      },
+      "lastModifiedVisible": "Jul 22 2026, 11:57 AM",
+      "createdVisible": "Jul 22 2026, 11:53 AM",
+      "readbackAt": "2026-07-23T18:40:19.523Z",
+      "mutationApplied": false,
+      "status": "BLOCKED",
+      "blocker": "GHL-UI-16 does not define the exact bounded delivery action or message template and is absent from the reviewed queue/export.",
+      "jobPath": "integrations/highlevel/agent-mode/jobs/GHL-UI-16-activate-ot-08.json"
+    },
+    {
+      "jobId": "GHL-UI-17",
+      "key": "OT-09",
+      "name": "OT-09 Parent Class Reminder",
+      "id": "bc8af9fc-22d5-4b4f-b71a-121eeff87f5b",
+      "fullFolderPath": "One Time / 40 - Learning Operations / Classes",
+      "folderIds": {
+        "root": "da1f8359-f399-477e-89b1-61a47d1b3db0",
+        "parent": "37cce184-3c98-4229-a3ac-55e457f85d0c",
+        "leaf": "3fcc9185-8bb6-4158-9055-90d732db9bc5"
+      },
+      "exactVisibleIdMatches": 1,
+      "duplicateCandidates": [],
+      "archivedScope": "unverified_ui_scope_unavailable",
+      "observedStatus": "DRAFT_SHELL",
+      "desiredStatus": "DRAFT_WAITING_EXTERNAL",
+      "triggerObserved": [],
+      "actionsObserved": [],
+      "expectedTrigger": "Contact Tag added: OT | Class Reminder Pending",
+      "expectedOrderedActions": [
+        "Require a future class timestamp and timezone, confirmed occurrence, entitled adult household, email consent granted, suppression active, and email DND off.",
+        "Run one bounded reminder action using only a protected One Time Parent portal route after class.reminder.requested@1.0.0 and protected canary controls are proven.",
+        "Never map a raw Zoom or provider URL.",
+        "After a successful delivery receipt, remove only OT | Class Reminder Pending."
+      ],
+      "waits": [
+        "Unavailable: GHL-UI-17 does not specify an exact UI wait type, offset, or late-arrival branch."
+      ],
+      "sender": {
+        "key": "brand",
+        "namePickerKey": "one_time_brand_sender_name",
+        "fromPickerKey": "one_time_brand_from",
+        "replyToPickerKey": "one_time_default_reply_to"
+      },
+      "enrollmentCounters": {
+        "total": 0,
+        "active": 0
+      },
+      "lastModifiedVisible": "Jul 22 2026, 11:53 AM",
+      "createdVisible": "Jul 22 2026, 11:53 AM",
+      "readbackAt": "2026-07-23T18:38:15.108Z",
+      "mutationApplied": false,
+      "status": "BLOCKED",
+      "blocker": "GHL-UI-17 does not define the exact reminder action/template or UI wait/offset and is absent from the reviewed queue/export.",
+      "jobPath": "integrations/highlevel/agent-mode/jobs/GHL-UI-17-activate-ot-09.json"
+    },
+    {
+      "jobId": "GHL-UI-18",
+      "key": "OT-10",
+      "name": "OT-10 New Recording Available",
+      "id": "1bca5210-a3b9-496b-b3cd-48c60c0e33ca",
+      "fullFolderPath": "One Time / 40 - Learning Operations / Content",
+      "folderIds": {
+        "root": "da1f8359-f399-477e-89b1-61a47d1b3db0",
+        "parent": "37cce184-3c98-4229-a3ac-55e457f85d0c",
+        "leaf": "196a6d36-f31c-40e6-88b3-aa5abdb267e3"
+      },
+      "exactVisibleIdMatches": 1,
+      "duplicateCandidates": [],
+      "archivedScope": "unverified_ui_scope_unavailable",
+      "observedStatus": "DRAFT_SHELL",
+      "desiredStatus": "DRAFT_WAITING_EXTERNAL",
+      "triggerObserved": [],
+      "actionsObserved": [],
+      "expectedTrigger": "Contact Tag added: OT | Recording Available",
+      "expectedOrderedActions": [
+        "Require approved content, entitled adult household, email consent granted, suppression active, and email DND off.",
+        "Run one bounded recording-available action using only the protected recording portal custom value after recording.available@1.0.0 and protected canary controls are proven.",
+        "Never map a raw Vimeo or provider URL.",
+        "After a successful delivery receipt, remove only OT | Recording Available."
+      ],
+      "waits": [],
+      "sender": {
+        "key": "brand",
+        "namePickerKey": "one_time_brand_sender_name",
+        "fromPickerKey": "one_time_brand_from",
+        "replyToPickerKey": "one_time_default_reply_to"
+      },
+      "enrollmentCounters": {
+        "total": 0,
+        "active": 0
+      },
+      "lastModifiedVisible": "Jul 22 2026, 11:57 AM",
+      "createdVisible": "Jul 22 2026, 11:53 AM",
+      "readbackAt": "2026-07-23T18:39:15.410Z",
+      "mutationApplied": false,
+      "status": "BLOCKED",
+      "blocker": "GHL-UI-18 does not define the exact delivery action/template, is absent from the reviewed queue/export, and one_time_recording_portal_url has no verified ID or value.",
+      "jobPath": "integrations/highlevel/agent-mode/jobs/GHL-UI-18-activate-ot-10.json"
+    }
+  ],
+  "preservedAssets": {
+    "OT-E01": {
+      "id": "a34ea513-4612-4f53-8bd8-49e89e6610f9",
+      "name": "OT-E01 Tisha B'Av 2026 Registration and Reminders",
+      "fullFolderPath": "One Time / 45 - Events / 2026 / Tisha B'Av 2026",
+      "desiredStatus": "ACTIVE_TESTED",
+      "observedStatus": "DRIFTED",
+      "publishedSwitchObserved": true,
+      "immediateConfirmationAction": "disabled",
+      "subsequentOneHourWaitAndReminderVisible": true,
+      "readbackAt": "2026-07-23T19:12:15.375Z",
+      "mutationApplied": false,
+      "protectedClassLink": "sanitized_presence_not_reverified_in_this_track",
+      "blocker": "GHL did not render the disabled action subject, sender, body, or link controls, so identity against the accepted configuration could not be proven and the action was not re-enabled or saved."
+    },
+    "OT-C01": {
+      "canonicalCampaign": {
+        "id": "6a5f750b557817806a14b19e",
+        "kind": "email_marketing_campaign",
+        "desiredStatus": "SAVED_REOPENED",
+        "lastKnownStatus": "DRAFT_NOT_SENT",
+        "selectedRecipients": 0,
+        "sends": 0,
+        "readbackScope": "not reopened in this track; retained from prior canonical evidence",
+        "mutationApplied": false
+      },
+      "sameNameWorkflowWrapper": {
+        "id": "f28d8b8a-c26a-4a4f-a9f2-d2a8e94af1ae",
+        "kind": "workflow",
+        "fullFolderPath": "One Time / 45 - Events / 2026 / Tisha B'Av 2026",
+        "observedBefore": "Published",
+        "observedAfter": "Draft",
+        "status": "DRIFTED",
+        "enrollmentCountersAfter": {
+          "total": 2677,
+          "active": 0
+        },
+        "messageDeliveryCounts": "unavailable_not_inferred_from_enrollment_counts",
+        "protectiveMutation": "publish switch turned off, saved, reloaded, and reopened as Draft",
+        "reopenedAt": "2026-07-23T18:44:02.152Z",
+        "folderRowReadbackAt": "2026-07-23T18:44:16.739Z"
+      },
+      "crossKindNameCollision": true
+    }
+  },
+  "unknownOrLegacyCandidates": [
+    {
+      "name": "OT-C01 Tisha B'Av 2026 Warm Invitation",
+      "id": "f28d8b8a-c26a-4a4f-a9f2-d2a8e94af1ae",
+      "kind": "workflow_wrapper",
+      "status": "DRIFTED",
+      "disposition": "protectively paused; not deleted, moved, renamed, enrolled, or otherwise configured"
+    }
+  ],
+  "otE01RepairSubphase": {
+    "requestedAt": "2026-07-23T18:55:26Z",
+    "completedAt": "2026-07-23T19:12:15.375Z",
+    "workflowId": "a34ea513-4612-4f53-8bd8-49e89e6610f9",
+    "exactVisibleIdMatches": 1,
+    "fullFolderPath": "One Time / 45 - Events / 2026 / Tisha B'Av 2026",
+    "acceptedActionIdentity": {
+      "name": "Email A - Immediate Confirmation",
+      "senderKey": "rabbi_campaign",
+      "replyToKey": "one_time_default_reply_to",
+      "publicLinkKey": "one_time_tisha_bav_landing_url",
+      "permissionClass": "event_registration_only",
+      "suppressionGates": [
+        "email DND off",
+        "not suppressed",
+        "not unsubscribed",
+        "no complaint",
+        "no hard bounce"
+      ]
+    },
+    "observed": {
+      "workflowPublished": true,
+      "actionDisabled": true,
+      "actionSettingsDrawerOpened": true,
+      "subjectControlRendered": false,
+      "senderControlRendered": false,
+      "replyToControlRendered": false,
+      "bodyControlRendered": false,
+      "linkControlRendered": false,
+      "saveWorkflowControlRemainedSavedAndDisabled": true,
+      "freshReopenActionDisabled": true
+    },
+    "result": "BLOCKED",
+    "blocker": "ACTION_IDENTITY_UNVERIFIED: the GHL editor did not render the disabled action's subject, sender, body, or link controls, so exact identity could not be proven.",
+    "actionReenabled": false,
+    "actionSaved": false,
+    "workflowSaved": false,
+    "workflowPublishedOrRepublished": false,
+    "contactMutations": 0,
+    "enrollmentMutations": 0,
+    "messagesSent": 0,
+    "reminderTimingOrHistoryChanged": false,
+    "otC01Touched": false
+  },
+  "validationPlan": [
+    "npm run highlevel:registry:check",
+    "npm run highlevel:workflow-control:sync",
+    "npm run highlevel:workflow-control:report",
+    "npm run highlevel:workflow-control:projection-check",
+    "npm run highlevel:workflow-control:check",
+    "npm run secret:scan",
+    "scoped prettier check",
+    "git diff --check"
+  ],
+  "validationResults": [
+    {
+      "check": "highlevel registry schema and duplicate checks",
+      "status": "passed"
+    },
+    {
+      "check": "GitHub workflow control contract",
+      "status": "failed_expected_live_drift",
+      "detail": "OT-E01 registry status is DRIFTED while the older exhaustive observed snapshot still projects ACTIVE_TESTED."
+    },
+    {
+      "check": "workflow control projection",
+      "status": "passed"
+    },
+    {
+      "check": "workflow control report",
+      "status": "failed_expected_live_drift",
+      "detail": "One OT-E01 status disagreement is preserved instead of being hidden; the same-name OT-C01 workflow remains an explicit unknown cross-kind asset."
+    },
+    {
+      "check": "secret scan",
+      "status": "passed"
+    },
+    {
+      "check": "scoped Prettier",
+      "status": "passed"
+    },
+    {
+      "check": "git diff --check",
+      "status": "passed"
+    }
+  ]
+}

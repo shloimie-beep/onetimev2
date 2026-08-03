@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-07-22T06:16:21.012Z",
+  "source": "official_highlevel_read_apis",
+  "location_id": "pBSnOK2nkdxp6gf9Rg3o",
+  "registry_commit": "a87e06a6625edd0cff512eee533d204a169aa235",
+  "registry_paths": {
+    "current": "integrations/highlevel/registry/current.json",
+    "workflows": "integrations/highlevel/registry/workflow-registry.yaml",
+    "api_report": "integrations/highlevel/registry/api-reconciliation-report.json"
+  },
+  "assets": {
+    "custom_fields": {
+      "total": 34,
+      "verified": 33,
+      "deprecated_existing": 1,
+      "missing": 0,
+      "duplicates": 0
+    },
+    "tags": {
+      "total": 38,
+      "verified": 37,
+      "deprecated_existing": 1,
+      "missing": 0,
+      "duplicates": 0
+    },
+    "custom_values": {
+      "total": 40,
+      "verified": 33,
+      "blocked_ui_or_business_value": 7,
+      "missing": 0,
+      "duplicates": 0
+    },
+    "pipelines": [
+      {
+        "name": "One Time Enrollment and Conversion",
+        "id": "RTTGVfbMv5aM92BQqklL",
+        "status": "verified",
+        "stage_count": 8
+      },
+      {
+        "name": "One Time Member Support",
+        "id": "u2TzNK7t25ZdqqIrgjkE",
+        "status": "verified",
+        "stage_count": 7
+      },
+      {
+        "name": "One Time Torah Questions",
+        "id": "wabcK1pPBuqj1T4cjpI7",
+        "status": "verified",
+        "stage_count": 7
+      }
+    ]
+  },
+  "workflows": {
+    "api_status": "verified",
+    "live_total": 2,
+    "canonical_present": 2,
+    "canonical_missing": 17,
+    "duplicate_candidates": 0,
+    "folder_metadata": "api_not_exposed",
+    "ot_e01": {
+      "canonical_name": "OT-E01 Tisha B'Av 2026 Registration and Reminders",
+      "id": "a34ea513-4612-4f53-8bd8-49e89e6610f9",
+      "status": "published",
+      "canonical_folder": "45 - Events",
+      "last_modified": "2026-07-22T05:33:12.698Z"
+    },
+    "ot_c01": {
+      "canonical_name": "OT-C01 Tisha B'Av 2026 Warm Invitation",
+      "id": "f28d8b8a-c26a-4a4f-a9f2-d2a8e94af1ae",
+      "status": "draft",
+      "canonical_folder": "10 - Nurture & Sales",
+      "last_modified": "2026-07-21T16:16:32.330Z",
+      "audience_selected": false,
+      "messages_sent": 0
+    }
+  },
+  "conversation_ai": {
+    "api_status": "verified",
+    "live_total": 0,
+    "canonical_name": "OT-A1 One Time Enrollment Assistant",
+    "id": null,
+    "mode": "missing",
+    "required_state": "off_or_suggestive"
+  },
+  "knowledge_base": {
+    "api_status": "verified",
+    "live_total": 2,
+    "canonical_name": "One Time Mishnayos - Public Program and Support",
+    "id": "ps6jttZ8WUGycLeQX6uF",
+    "duplicate_candidates": 0,
+    "last_modified": "2026-07-21T16:43:24.922Z"
+  },
+  "operator_test_contact": {
+    "source": "protected_operator_test_configuration",
+    "email_configured": true,
+    "email_fingerprint": "fab156df2719852d",
+    "exact_match_count": 1,
+    "contact_ids": ["OEeBPVgcRIePsZVeLYfQ"]
+  },
+  "external_effects": {
+    "assets_created": 0,
+    "assets_updated": 0,
+    "contacts_created": 0,
+    "workflow_enrollments": 0,
+    "messages_sent": 0,
+    "student_contacts_created": 0
+  },
+  "blockers": [
+    "17 canonical non-event workflows are not exposed by the successful workflow API read and require later UI construction or reconciliation.",
+    "7 custom values remain blocked on verified URLs or approved business copy.",
+    "OT-A1 is not API-visible and remains missing/off; no activation is authorized.",
+    "The workflow list API does not expose live folder metadata; canonical target folders are recorded separately."
+  ]
+}

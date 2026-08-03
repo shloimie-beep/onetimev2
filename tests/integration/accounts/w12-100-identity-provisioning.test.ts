@@ -122,7 +122,7 @@ describe('W12-100 account and portal identity provisioning', () => {
         ONE_TIME_LIFECYCLE_DELIVERY_KEY: 'production-delivery-key-for-test-only-32',
         PORTAL_TEST_LAB_ENABLED: 'true',
       }),
-    ).toThrow('Portal Test Lab is forbidden in production');
+    ).toThrow('Portal Test Lab requires explicit test or isolated_staging runtime classification.');
   });
 
   it('emits redacted idempotent outcomes and blocks student setup until parent activation', async () => {
@@ -501,20 +501,35 @@ async function exercisePortalJourneys() {
 }
 
 async function seedVisibilityFixtures() {
+  const classStartsAt = new Date(Date.now() + 24 * 60 * 60_000);
+  const reminderDueAt = new Date(classStartsAt.getTime() - 30 * 60_000);
+  const joinableUntil = new Date(classStartsAt.getTime() + 75 * 60_000);
+  const joinOpensAt = new Date(classStartsAt.getTime() - 15 * 60_000);
+  const localClassDate = classStartsAt.toISOString().slice(0, 10);
   await pool.query(
-    `INSERT INTO onetime.billing_entitlement_projections
-       (entitlement_key, account_key, product_key, principal_key, principal_type, status,
-        policy_version, source, reason, effective_at, evaluated_at, grants_access)
-     VALUES ('w12_100_identity_billing',$1,$2,$3,'opaque','active','w12-100-test',
-        'w12_100_identity_fixture','synthetic_active_access',$4,$5,true)
-     ON CONFLICT (entitlement_key)
-     DO UPDATE SET status = 'active', grants_access = true, evaluated_at = EXCLUDED.evaluated_at`,
+    `INSERT INTO onetime.account_access_projections
+       (access_key, account_key, product_key, household_key, state, source_kind,
+        effective_at, expires_at, opaque_source_reference, source_revision,
+        source_updated_at, source_request_hash, policy_version, access_version,
+        last_event_key)
+     VALUES ('w12_100_identity_access',$1,$2,$3,'active','free_pilot',$4,$5,
+        'w12_100_identity_free_pilot',1,$4,
+        '1111111111111111111111111111111111111111111111111111111111111111',
+        'w12-100-current-access-v1',1,'w12_100_identity_access_seed')
+     ON CONFLICT (account_key, product_key, household_key)
+     DO UPDATE SET state = 'active', source_kind = 'free_pilot',
+       effective_at = EXCLUDED.effective_at, expires_at = EXCLUDED.expires_at,
+       source_updated_at = EXCLUDED.source_updated_at,
+       source_request_hash = EXCLUDED.source_request_hash,
+       policy_version = EXCLUDED.policy_version, revocation_reason = NULL,
+       access_version = onetime.account_access_projections.access_version + 1,
+       last_event_key = EXCLUDED.last_event_key, updated_at = now()`,
     [
       config.accountKey,
       config.productKey,
       manifest.household.household_key,
       new Date('2026-07-17T12:00:00.000Z'),
-      new Date('2026-07-17T12:00:01.000Z'),
+      new Date('2027-01-17T12:00:00.000Z'),
     ],
   );
   await pool.query(
@@ -529,11 +544,11 @@ async function seedVisibilityFixtures() {
   );
   await pool.query(
     `INSERT INTO onetime.class_occurrences
-       (occurrence_key, account_key, product_key, class_series_key, local_class_date,
+     (occurrence_key, account_key, product_key, class_series_key, local_class_date,
         starts_at, reminder_due_at, joinable_until, occurrence_state, reminder_state,
         access_state, join_opens_at, join_closes_at, scheduled_ends_at)
-     VALUES ('w12_100_class_occurrence',$1,$2,'w12_100_class_series','2026-07-20',
-        $3,$4,$5,'scheduled','pending','provider_unavailable',$6,$5,$5)
+     VALUES ('w12_100_class_occurrence',$1,$2,'w12_100_class_series',$3,
+        $4,$5,$6,'scheduled','pending','provider_unavailable',$7,$6,$6)
      ON CONFLICT (account_key, product_key, class_series_key, local_class_date)
      DO UPDATE SET starts_at = EXCLUDED.starts_at,
                    reminder_due_at = EXCLUDED.reminder_due_at,
@@ -541,12 +556,34 @@ async function seedVisibilityFixtures() {
     [
       config.accountKey,
       config.productKey,
-      new Date('2026-07-20T16:00:00.000Z'),
-      new Date('2026-07-20T15:30:00.000Z'),
-      new Date('2026-07-20T17:15:00.000Z'),
-      new Date('2026-07-20T15:45:00.000Z'),
+      localClassDate,
+      classStartsAt,
+      reminderDueAt,
+      joinableUntil,
+      joinOpensAt,
     ],
   );
+  for (const [index, learner] of manifest.learners.entries()) {
+    await pool.query(
+      `INSERT INTO onetime.classroom_occurrence_learner_entitlements
+         (occurrence_entitlement_key, account_key, product_key, occurrence_key,
+          household_key, learner_key, entitlement_state, source)
+       VALUES ($1,$2,$3,'w12_100_class_occurrence',$4,$5,'active','isolated_acceptance')
+       ON CONFLICT (account_key, product_key, occurrence_key, learner_key)
+       DO UPDATE SET household_key = EXCLUDED.household_key,
+                     entitlement_state = 'active',
+                     source = 'isolated_acceptance',
+                     revoked_at = NULL,
+                     updated_at = now()`,
+      [
+        `w12_100_occurrence_entitlement_${index + 1}`,
+        config.accountKey,
+        config.productKey,
+        manifest.household.household_key,
+        learner.learner_key,
+      ],
+    );
+  }
   await pool.query(
     `INSERT INTO onetime.content_items
        (content_item_key, account_key, product_key, occurrence_key, title, item_type,
@@ -585,6 +622,24 @@ async function seedVisibilityFixtures() {
      ON CONFLICT (account_key, product_key, entitlement_key)
      DO UPDATE SET entitlement_state = 'active', revoked_at = NULL`,
     [config.accountKey, config.productKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.classroom_lesson_publications
+       (lesson_key, account_key, product_key, class_series_key, occurrence_key, content_item_key,
+        title, description, publication_state, featured, published_at,
+        controlled_by_actor_ref, raw_private_url_present, transcript_state, resource_count,
+        resources_json)
+     VALUES ('w12_100_lesson_video',$1,$2,'w12_100_class_series','w12_100_class_occurrence',
+             'w12_100_content_video','W12-100 Synthetic Video',
+             'Deterministic approved W12-100 fixture projection.','published',false,$3,
+             'w12_100_fixture',false,'available',0,'[]'::jsonb)
+     ON CONFLICT (lesson_key)
+     DO UPDATE SET publication_state = 'published',
+                   published_at = EXCLUDED.published_at,
+                   controlled_by_actor_ref = 'w12_100_fixture',
+                   raw_private_url_present = false,
+                   updated_at = now()`,
+    [config.accountKey, config.productKey, new Date('2026-07-17T13:00:00.000Z')],
   );
 }
 

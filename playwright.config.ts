@@ -1,7 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 
 const port = process.env.PORT ?? '3100';
-const baseURL = `http://127.0.0.1:${port}`;
+const externalBaseURL = process.env.PLAYWRIGHT_BASE_URL;
+const baseURL = externalBaseURL ?? `http://127.0.0.1:${port}`;
 
 export default defineConfig({
   testDir: '.',
@@ -11,22 +12,30 @@ export default defineConfig({
     baseURL,
     trace: 'retain-on-failure',
   },
-  webServer: {
-    command: 'node --import tsx tests/support/test-server.ts',
-    url: `${baseURL}/health`,
-    reuseExistingServer: !process.env.CI,
-    timeout: 30_000,
-    env: {
-      NODE_ENV: 'test',
-      OT_TEST_DATABASE: 'memory',
-      RUN_MIGRATIONS_ON_STARTUP: 'true',
-      PORT: port,
-      LOGIN_IDENTIFIER_RATE_LIMIT_MAX: '50',
-      LOGIN_IP_RATE_LIMIT_MAX: '100',
-      ZOOM_CLASSROOM_ENABLED: 'true',
-      ZOOM_CLASSROOM_PROVIDER_MODE: 'sink',
-      OT_TEST_CLOCK: '2026-07-16T16:05:00.000Z',
-    },
-  },
+  ...(externalBaseURL
+    ? {}
+    : {
+        webServer: {
+          command: 'node --import tsx tests/support/test-server.ts',
+          url: `${baseURL}/health`,
+          reuseExistingServer: false,
+          gracefulShutdown: { signal: 'SIGTERM', timeout: 5_000 },
+          timeout: 30_000,
+          env: {
+            NODE_ENV: 'test',
+            OT_TEST_DATABASE: 'memory',
+            RUN_MIGRATIONS_ON_STARTUP: 'true',
+            PORT: port,
+            LOGIN_IDENTIFIER_RATE_LIMIT_MAX: '50',
+            LOGIN_IP_RATE_LIMIT_MAX: '100',
+            ZOOM_CLASSROOM_ENABLED: 'true',
+            ZOOM_CLASSROOM_PROVIDER_MODE: 'sink',
+            PORTAL_TEST_LAB_ENABLED: 'true',
+            OT_TEST_CLOCK: '2026-07-16T16:05:00.000Z',
+            ONE_TIME_FIRST_CLASS_AT: '2026-08-16T19:00:00+03:00',
+            ONE_TIME_FREE_ACCESS_EXPIRES_AT: '2026-09-11T18:00:00+03:00',
+          },
+        },
+      }),
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
 });

@@ -25,6 +25,6 @@ async function openClassroom(page: Page) {
   await page.getByRole('button', { name: 'Login' }).click();
   await page.waitForURL('**/app/student');
   await page.getByRole('button', { name: 'Join class' }).click();
-  await page.waitForURL('**/classroom/launch/**');
+  await page.waitForURL('**/classroom/launch');
   await expect(page.locator('[data-mocked-zoom-sdk="true"]')).toBeVisible();
 }

@@ -1,0 +1,124 @@
+{
+  "schema_version": 2,
+  "generated_at": "2026-07-22T08:16:20.0567273Z",
+  "repository": "shloimie-beep/onetimev2",
+  "integration_branch": "codex/full-app-staging-live",
+  "verified_application_head": "68b4d075c85f4023177b9363e04e23763f01d4f5",
+  "semantic_integration_commit": "7888306",
+  "staging_version": "full-app-staging-live-68b4d07",
+  "pull_requests": [
+    {
+      "pr": 93,
+      "status": "superseded",
+      "superseded_by": [97],
+      "integration_commit": "7888306",
+      "close_allowed": true,
+      "blocker": null
+    },
+    {
+      "pr": 94,
+      "status": "superseded",
+      "superseded_by": [97],
+      "integration_commit": "2f62a2af6c42e7f05ed43a82bd5c0a938fcceb38",
+      "close_allowed": true,
+      "blocker": null
+    },
+    {
+      "pr": 95,
+      "status": "superseded",
+      "superseded_by": [97],
+      "integration_commit": "7888306",
+      "close_allowed": true,
+      "blocker": null
+    },
+    {
+      "pr": 96,
+      "status": "superseded",
+      "superseded_by": [97],
+      "integration_commit": "2f62a2af6c42e7f05ed43a82bd5c0a938fcceb38",
+      "close_allowed": true,
+      "blocker": null
+    },
+    {
+      "pr": 97,
+      "status": "integration_target_live_on_staging",
+      "superseded_by": [],
+      "integration_commit": "7888306",
+      "close_allowed": false,
+      "blocker": "Full application production promotion remains deliberately unapproved."
+    },
+    {
+      "pr": 98,
+      "status": "superseded",
+      "superseded_by": [97],
+      "integration_commit": "2f62a2af6c42e7f05ed43a82bd5c0a938fcceb38",
+      "close_allowed": true,
+      "blocker": null
+    },
+    {
+      "pr": 99,
+      "status": "superseded",
+      "superseded_by": [97],
+      "integration_commit": "7888306",
+      "close_allowed": true,
+      "blocker": null
+    },
+    {
+      "pr": 100,
+      "status": "superseded",
+      "superseded_by": [97],
+      "integration_commit": "7888306",
+      "close_allowed": true,
+      "blocker": null
+    },
+    {
+      "pr": 101,
+      "status": "superseded",
+      "superseded_by": [97],
+      "integration_commit": "7888306",
+      "close_allowed": true,
+      "blocker": null
+    },
+    {
+      "pr": 102,
+      "status": "superseded",
+      "superseded_by": [97, 106],
+      "integration_commit": "7888306",
+      "production_release_commit": "0a85f4f8e8683bc19ac26fbdf1f6b8e91211429d",
+      "close_allowed": true,
+      "blocker": null
+    },
+    {
+      "pr": 103,
+      "status": "superseded",
+      "superseded_by": [97],
+      "integration_commit": "7888306",
+      "close_allowed": true,
+      "blocker": null
+    },
+    {
+      "pr": 104,
+      "status": "open_unique_work",
+      "superseded_by": [],
+      "integration_commit": null,
+      "close_allowed": false,
+      "blocker": "Operator-reviewed Vimeo content factory changes remain unique and are not in persistent staging."
+    },
+    {
+      "pr": 105,
+      "status": "open_unique_work",
+      "superseded_by": [],
+      "integration_commit": null,
+      "close_allowed": false,
+      "blocker": "Real Zoom host-control activation remains isolated and is not in persistent staging."
+    },
+    {
+      "pr": 106,
+      "status": "open_narrow_production_release",
+      "superseded_by": [],
+      "integration_commit": "0a85f4f8e8683bc19ac26fbdf1f6b8e91211429d",
+      "close_allowed": false,
+      "blocker": "Draft release PR remains the audit lane for the live narrow production release."
+    }
+  ]
+}

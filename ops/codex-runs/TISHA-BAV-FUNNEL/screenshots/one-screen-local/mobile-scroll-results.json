@@ -1,0 +1,51 @@
+[
+  {
+    "viewport": "360x640",
+    "scrollHeight": 640,
+    "innerHeight": 640,
+    "scrollWidth": 360,
+    "innerWidth": 360
+  },
+  {
+    "viewport": "360x700",
+    "scrollHeight": 700,
+    "innerHeight": 700,
+    "scrollWidth": 360,
+    "innerWidth": 360
+  },
+  {
+    "viewport": "360x800",
+    "scrollHeight": 800,
+    "innerHeight": 800,
+    "scrollWidth": 360,
+    "innerWidth": 360
+  },
+  {
+    "viewport": "390x664",
+    "scrollHeight": 664,
+    "innerHeight": 664,
+    "scrollWidth": 390,
+    "innerWidth": 390
+  },
+  {
+    "viewport": "390x844",
+    "scrollHeight": 844,
+    "innerHeight": 844,
+    "scrollWidth": 390,
+    "innerWidth": 390
+  },
+  {
+    "viewport": "412x732",
+    "scrollHeight": 732,
+    "innerHeight": 732,
+    "scrollWidth": 412,
+    "innerWidth": 412
+  },
+  {
+    "viewport": "430x820",
+    "scrollHeight": 820,
+    "innerHeight": 820,
+    "scrollWidth": 430,
+    "innerWidth": 430
+  }
+]

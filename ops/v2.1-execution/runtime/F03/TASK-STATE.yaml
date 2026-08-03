@@ -1,0 +1,228 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: F03
+task_packet_digest: 8474eeb85ea4c7991c1a42a798c1c3f6a3cda9f2b9a3b51b7c15617b5817ba27
+task_context_digest: 9ccc41a037fe9163800d56e8b34991d46e63399a46f3b6f47c986fa200e2ce5e
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+branch: codex/v21-f03-adult-student-auth
+start_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
+dependency_heads:
+  F02:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    task_head_sha: e4673ff1c2e621e26ac93034be245b280c4da4fa
+    integration_head_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
+    interface_implementation_head_sha: 191dac288ea1721bdc0252bd012060ca974d2242
+    interface_checkpoint_digest: c03e01d7e16bdc252b9964f1acfc60d40e772de98776023c20f7589e467b5ccd
+  I36:
+    required_state: accepted_source_microbatch_2_complete
+    observed_state: accepted_source_microbatch_2_complete
+    integration_head_sha: 8634b2ab15df624576a88b31182ebdc68553ff74
+    state_handoff_digest: 08049868c8645e2cc2d2ccf24c20c437317a19d32c07f26e8fa4f239ed49c044
+    runtime_triplet_digest: 098376075fa8dcec752ed0783ac7d3277ce0ad938ef321597207784f962d8ac0
+  F04:
+    required_state: parent_session_repository_integrated
+    observed_state: parent_session_repository_integrated
+    source_head_sha: a5868a9503d1037890f5f8e250c2afe5131c4331
+    integration_merge_sha: 98cc221f3b5dcb9d8d4038015dd4d4c96817618d
+    stable_repository_symbols:
+      - V21AdultSessionRepository
+      - createPostgresV21AdultSessionRepository
+  P08:
+    required_state: corrected_registration_server_integrated
+    observed_state: corrected_registration_server_integrated
+    source_head_sha: 7ba18b92462bc610895f2eb06ef6addaba531b19
+    integration_release_sha: 4bc8e7a84039394ffb0584deaccdff19eebaea9b
+status: ready_for_review
+phase: v21_parent_host_cookie_session_runtime_correction_complete
+claim_mode: resume_phase_branch_fast_forward
+claimed_by: codex-f03-parent-session-01368f45
+claim_time: '2026-07-30T19:30:53Z'
+claim_id: 01368f45-d6ea-4816-b70f-4b21ac418a83
+expected_existing_head: 7c638131a0cab757657e95c4d2229a1573e4cde1
+authorized_start_sha: 8634b2ab15df624576a88b31182ebdc68553ff74
+lease_id: 343a0e56-33ee-4227-b4ee-d373d1d3f3a9
+lease_expires_at: '2026-07-30T21:30:53Z'
+last_heartbeat_at: '2026-07-30T20:04:36Z'
+lease_released_at: '2026-07-30T20:04:36Z'
+writer_slot_leases:
+  IDENTITY_AUTH_ACCESS:
+    lease_id: 343a0e56-33ee-4227-b4ee-d373d1d3f3a9
+    holder_task_id: F03
+    holder_claim_id: 01368f45-d6ea-4816-b70f-4b21ac418a83
+    holder_writer_id: codex-f03-parent-session-01368f45
+    phase_scope: v21_parent_host_cookie_session_runtime_only
+    state_based_on_control_head_sha: 98e7b05c7d256d55fd8a4dbd829230e42303e67e
+    lease_expires_at: '2026-07-30T21:30:53Z'
+    released_at: '2026-07-30T20:04:36Z'
+    state: released
+controller_authorization_sha: c44656d40769b28f2d55e6e1041d716175129f4a
+ready_entry_state_based_on_control_head_sha: 98e7b05c7d256d55fd8a4dbd829230e42303e67e
+ready_entry_payload_digest: 04208bf0d5d926b5f08387688ffacf4818336feef7636b6dcf651c01c3a945f1
+state_based_on_head_sha: ac53a1afa05069566e9efe1c73bd1738639c9a27
+last_implementation_commit_sha: ac53a1afa05069566e9efe1c73bd1738639c9a27
+interface_checkpoint_digest: 66464e9a769c717dfdfda082bb8a26030da1681d601d6752fb04b10d812db111
+correction_artifact_digest: 0f78ec6c9d4455d9bffdb7824a1af7b67c78b71cfde38ed96ea3a1132e773350
+correction_artifact_digest_algorithm: >-
+  SHA-256 over UTF-8 lines containing <path>=<raw Git blob SHA-256> for the two
+  correction artifacts, sorted lexicographically by path, with LF separators
+  and no final newline.
+correction_artifacts:
+  apps/web/src/server/features/auth/v21-adult-session.test.ts: d1937277bd2478a115d770194eda4a102c515b8c1568a1aa3a9baede944ae1dc
+  apps/web/src/server/features/auth/v21-adult-session.ts: bc45a5f6cd64ed009cf8e236d0e756078eee256c43f376cefaf47261f544a23b
+completed_steps:
+  - Verified repository identity and exact remote control authorization.
+  - Recomputed the canonical F03 ready-entry payload digest.
+  - Verified the exact integrated F02 dependency checkpoint and digests.
+  - Atomically seeded the first F03 task claim.
+  - Read the locked F03 context and only its exact named authentication, role, session, provider-boundary, and privacy source sections.
+  - Published the additive v2.1 authentication contract and pure password, token, session, rate-limit, role, cookie, and safe-return enforcement.
+  - Applied F01-retired-auth-001 at implementation commit 56fa990c5d4a6cb7b602b5f68fe0d2402a0ee71e.
+  - Removed the routine owner/admin/rabbi email-challenge and trusted-device branch from authenticateUser while preserving rate limits, audit, current-access, password verification, and session rotation.
+  - Normalized owner/rabbi migration-history roles to the public admin boundary and removed MFA capability from returned session principals.
+  - Applied exact Admin, Parent, and Student idle/absolute session lifetimes and exact account+IP/IP login throttles.
+  - Applied exact Unicode password bounds without composition rules, identity/common-password rejection, uniquely salted Argon2id credentials, and legacy Student credential rehash on successful authentication.
+  - Added seven-day setup and 60-minute reset token issuance, hashing, single-use, expiry, and supersession semantics.
+  - Added host-only Secure HttpOnly SameSite=Lax session-cookie and role-safe same-origin return-target helpers.
+  - Passed typecheck, focused lint, 23 F03 contract/steward tests, and four current-access integration tests.
+  - Published interface checkpoint 66464e9a769c717dfdfda082bb8a26030da1681d601d6752fb04b10d812db111 for seven downstream tasks.
+  - Verified canonical control c44656d4, exact READY payload digest 04208bf0, claim 01368f45, IDENTITY_AUTH_ACCESS lease 343a0e56, expected remote F03 head 7c638131, and clean fast-forward to integration 8634b2ab before editing.
+  - Added a neutral injectable and PostgreSQL-backed v2.1 Parent-session runtime importing only the stable F04 repository symbols.
+  - Generated independent 32-byte session/access/refresh/CSRF material, persisted only the proven domain-separated lowercase SHA-256 access and refresh digests, and placed raw material only inside a bounded signed host-cookie envelope.
+  - Resolved only __Host-onetime-session through the exact F04 adult/account/Parent/household/runtime/environment/security/access/deadline binding and ignored the legacy cookie path.
+  - Required same-resolver middleware round-trip before reporting session establishment and best-effort revoked the exact session after any failed or unknown-outcome create/readback.
+  - Added exact-session HMAC CSRF verification and the canonical inactive-Parent overview, household switcher, billing, support list/detail, account, privacy, and data-rights allowlist with decoded segment-safety.
+  - Passed 44 focused assertions with one native-only F04 test skipped, workspace typecheck, focused ESLint/Prettier, diff hygiene, exact correction artifact digest reproduction, and a secret scan across 3106 repository text files.
+  - Released claim 01368f45-d6ea-4816-b70f-4b21ac418a83 and lease 343a0e56-33ee-4227-b4ee-d373d1d3f3a9 before expiry with zero external effects.
+remaining_steps:
+  - C00 independently reviews and admits the exact pushed F03 correction.
+  - After F03 admission, C00 may issue the bounded P08 composition claim and I36 must install the same resolver in the active Parent middleware before closing the Family-session blocker.
+next_action: >-
+  C00 validates the exact remote F03 terminal, integration 8634b2ab ancestry,
+  five-path scope, two-artifact digest, released lease, focused proof, and zero
+  effects before I36 admission and downstream P08 composition.
+requirements:
+  OTV2-AUTH-007: implementation_ready
+  OTV2-AUTH-008: implementation_ready
+  OTV2-AUTH-009: implementation_ready
+  OTV2-AUTH-010: implementation_ready
+  OTV2-AUTH-011: implementation_ready
+  OTV2-AUTH-012: implementation_ready
+  OTV2-AUTH-013: implementation_ready
+  OTV2-AUTH-014: implementation_ready
+  OTV2-AUTH-015: implementation_ready
+  OTV2-AUTH-016: implementation_ready
+  OTV2-AUTH-017: implementation_ready
+  OTV2-AUTH-018: implementation_ready
+  OTV2-AUTH-019: implementation_ready
+  OTV2-AUTH-020: parent_host_cookie_runtime_verified
+  OTV2-AUTH-180: implementation_ready
+  OTV2-AUTH-227: parent_session_runtime_verified
+acceptance_cases:
+  OTV2-AUTH-007-AC01: implementation_ready
+  OTV2-AUTH-008-AC01: implementation_ready
+  OTV2-AUTH-009-AC01: implementation_ready
+  OTV2-AUTH-010-AC01: implementation_ready
+  OTV2-AUTH-011-AC01: implementation_ready
+  OTV2-AUTH-012-AC01: implementation_ready
+  OTV2-AUTH-013-SINGLE-USE-TTL: implementation_ready
+  OTV2-AUTH-013-RENEWAL: implementation_ready
+  OTV2-AUTH-014-AC01: implementation_ready
+  OTV2-AUTH-015-AC01: implementation_ready
+  OTV2-AUTH-016-AC01: implementation_ready
+  OTV2-AUTH-017-AC01: implementation_ready
+  OTV2-AUTH-018-AC01: implementation_ready
+  OTV2-AUTH-019-AC01: implementation_ready
+  OTV2-AUTH-020-CSRF: task_owned_assertions_passed
+  OTV2-AUTH-020-RATE: implementation_ready
+  OTV2-AUTH-020-COOKIE: task_owned_assertions_passed
+  OTV2-AUTH-020-ROTATE: task_owned_assertions_passed
+  OTV2-AUTH-180-AC01: implementation_ready
+  OTV2-AUTH-227-PASSWORDS-RATE-LIMITS: implementation_ready
+  OTV2-AUTH-227-SESSIONS-TOKENS-LEASES: task_owned_assertions_passed
+  OTV2-AUTH-227-WEBHOOK-WORKER: implementation_ready
+changed_paths:
+  - apps/web/src/server/features/auth/v21-adult-session.test.ts
+  - apps/web/src/server/features/auth/v21-adult-session.ts
+  - ops/v2.1-execution/runtime/F03/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/F03/HANDOFF.md
+  - ops/v2.1-execution/runtime/F03/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/F03/INTERFACE-CHECKPOINT.yaml
+  - apps/web/src/client/auth/token-fragment.ts
+  - apps/web/src/server/features/auth/http-security.ts
+  - packages/contracts/src/identity/auth/index.ts
+  - packages/domain/src/auth/index.ts
+  - packages/domain/src/auth/policy.ts
+  - packages/domain/src/auth/rate-limits.ts
+  - packages/domain/src/auth/service.ts
+  - packages/domain/src/auth/sessions.ts
+  - packages/domain/src/auth/tokens.ts
+  - packages/domain/src/auth/v21-auth.contract.test.ts
+migrations: []
+steward_requests: []
+steward_results:
+  - schema_version: 1
+    execution_id: OT-V21-PRODUCTION
+    request_id: F01-retired-auth-001
+    request_digest: b6a115c0e71ba20a0d68a2426c1fd6e01a220ed6e017a58d7dc211751b5be13d
+    requesting_task_id: F01
+    kind: retired_surface
+    status: applied
+    assigned_steward: F03
+    source_head_sha: dc991ef901617cc6d7e4fe780c53b4833172a0a2
+    evaluated_target_head_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
+    target_checkpoint: F03_ready_for_review
+    acknowledged_by_task: false
+    applied_commit_sha: 56fa990c5d4a6cb7b602b5f68fe0d2402a0ee71e
+    result_head_sha: 56fa990c5d4a6cb7b602b5f68fe0d2402a0ee71e
+    external_effect_summary:
+      attempted: 0
+      succeeded: 0
+      reconciled: 0
+steward_result_payload_digests:
+  F01-retired-auth-001: f557eacfce20aace5ea74ec926e09c949f7d80e660ac44021b445476d5f53f6e
+steward_result_digest_algorithm: Parse each steward_results entry to a data object, serialize as UTF-8 JSON with keys sorted recursively, separators ',' and ':', ensure_ascii=false, and SHA-256 those bytes; the digest lives in the sibling steward_result_payload_digests map and not in the entry.
+verification:
+  commands_run:
+    - command: git ls-remote exact control, integration, task, and dependency refs
+      result: passed
+    - command: canonical sorted-JSON SHA-256 recomputation of the F03 ready entry
+      result: passed; fa68fd0b273ddffd6769c309fa0e5fd2a1197ed61021fc7eeed9ec36a3a88e66
+    - command: SHA-256 verification of package lock, task packet, context, prompt, and immutable F01 steward request
+      result: passed
+    - command: npm run typecheck
+      result: passed
+    - command: focused ESLint over all ten F03 TypeScript artifacts
+      result: passed
+    - command: vitest run packages/domain/src/auth/v21-auth.contract.test.ts tests/integration/accounts/current-access-auth.test.ts
+      result: passed; 27 tests across two files
+    - command: direct F01-retired-auth-001 pg-mem proof
+      result: passed; owner login returned public admin with password assurance and created zero email challenges and zero trusted-device artifacts
+    - command: Prettier and git diff --check over exact F03 scope
+      result: passed
+    - command: canonical interface contract digest recomputation
+      result: passed; 66464e9a769c717dfdfda082bb8a26030da1681d601d6752fb04b10d812db111
+    - command: canonical applied steward-result payload digest recomputation
+      result: passed; f557eacfce20aace5ea74ec926e09c949f7d80e660ac44021b445476d5f53f6e
+    - command: canonical sorted-JSON SHA-256 recomputation of the F03 correction READY entry
+      result: passed; 04208bf0d5d926b5f08387688ffacf4818336feef7636b6dcf651c01c3a945f1
+    - command: npx vitest run apps/web/src/server/features/auth/v21-adult-session.test.ts packages/domain/src/auth/v21-auth.contract.test.ts packages/db/src/accounts/v21-household-identity-repository.test.ts apps/web/src/server/features/signup/family/router.test.ts
+      result: passed; 44 tests passed and one native-only F04 test skipped across four files
+    - command: npm run typecheck
+      result: passed at correction implementation ac53a1afa05069566e9efe1c73bd1738639c9a27
+    - command: focused ESLint and Prettier over the two F03 correction artifacts
+      result: passed
+    - command: exact two-artifact raw Git blob SHA-256 and aggregate reproduction
+      result: passed; 0f78ec6c9d4455d9bffdb7824a1af7b67c78b71cfde38ed96ea3a1132e773350
+    - command: npm run secret:scan
+      result: passed across 3106 repository text files
+    - command: YAML parse, authorized five-path scope, git diff --check, normal push, and remote equality
+      result: pending terminal metadata commit and push
+  known_baseline_failures: []
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings: []

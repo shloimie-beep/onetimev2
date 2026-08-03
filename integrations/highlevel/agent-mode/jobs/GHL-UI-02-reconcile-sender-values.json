@@ -1,0 +1,193 @@
+{
+  "job_id": "GHL-UI-02",
+  "order": 2,
+  "title": "reconcile sender values",
+  "ghl_location": {
+    "location_id": "pBSnOK2nkdxp6gf9Rg3o",
+    "location_fingerprint": "31fcbd2792f131dc",
+    "verification_required": true
+  },
+  "exact_target_ui_path": "HighLevel > Settings > Custom Values > One Time - Senders",
+  "canonical_source_files": [
+    "integrations/highlevel/registry/current.json",
+    "integrations/highlevel/registry/sender-registry.yaml",
+    "integrations/highlevel/registry/message-class-registry.yaml",
+    "integrations/highlevel/registry/communications-contract.json",
+    "integrations/highlevel/registry/custom-values.yaml"
+  ],
+  "exact_copy_paste_prompt": "Job GHL-UI-02: reconcile sender values\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nUse only the immutable Commit A registry SHA embedded in integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md. Block if the executor is missing, the SHA is not immutable, or the checked-out registry differs.\nTarget UI path: HighLevel > Settings > Custom Values > One Time - Senders\n\nRead these canonical source files first:\n- integrations/highlevel/registry/current.json\n- integrations/highlevel/registry/sender-registry.yaml\n- integrations/highlevel/registry/message-class-registry.yaml\n- integrations/highlevel/registry/communications-contract.json\n- integrations/highlevel/registry/custom-values.yaml\n\nAllowed assets:\n- One Time Rabbi Campaign Sender Name\n- One Time Rabbi Campaign Phase 1 From\n- One Time Rabbi Campaign Phase 2 From\n- One Time Rabbi Personal Sender Name\n- One Time Rabbi Personal From\n- One Time Office Sender Name\n- One Time Office From\n- One Time Brand Sender Name\n- One Time Brand From\n- One Time Account Sender Name\n- One Time Account Preferred From\n- One Time Default Reply-To\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- activating rabbi@\n- deleting generic sender compatibility aliases\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Reconcile exact registered sender values and preserve the existing generic sender values as compatibility aliases.\n- Keep rabbi@ values recorded but inactive pending acceptance.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-02.result.json\nIdempotency key: one-time-ghl:GHL-UI-02:7ef8439346e3f82b",
+  "allowed_assets": [
+    "One Time Rabbi Campaign Sender Name",
+    "One Time Rabbi Campaign Phase 1 From",
+    "One Time Rabbi Campaign Phase 2 From",
+    "One Time Rabbi Personal Sender Name",
+    "One Time Rabbi Personal From",
+    "One Time Office Sender Name",
+    "One Time Office From",
+    "One Time Brand Sender Name",
+    "One Time Brand From",
+    "One Time Account Sender Name",
+    "One Time Account Preferred From",
+    "One Time Default Reply-To"
+  ],
+  "forbidden_assets": [
+    "Student contacts",
+    "Student username fields",
+    "Student password fields",
+    "workflow publish actions",
+    "production workflow enrollment",
+    "message sends",
+    "Stripe or live payment mutations",
+    "duplicate tags, fields, values, workflows, bots, or knowledge bases",
+    "activating rabbi@",
+    "deleting generic sender compatibility aliases"
+  ],
+  "prerequisites": [
+    "Read integrations/highlevel/registry/AGENT-HANDOFF.md.",
+    "Read integrations/highlevel/registry/current.json.",
+    "Read integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md and verify its immutable Commit A SHA before any action.",
+    "Verify HighLevel location ID is pBSnOK2nkdxp6gf9Rg3o.",
+    "Use only one canonical registry and do not create duplicate assets.",
+    "GHL-UI-01 saved and readback verified."
+  ],
+  "expected_ghl_ids_to_capture": ["registered_sender_custom_value_ids", "compatibility_alias_ids"],
+  "test_contact_rules": [
+    "No contact mutation is allowed for this job.",
+    "Do not use production contacts for verification."
+  ],
+  "defaults": {
+    "no_send": true,
+    "no_publish": true,
+    "no_production_workflow_enrollment": true,
+    "no_live_payment_mutation": true,
+    "no_student_contacts": true,
+    "save_required": true,
+    "readback_required": true
+  },
+  "completion_checklist": [
+    "Visible HighLevel location matched pBSnOK2nkdxp6gf9Rg3o.",
+    "Canonical source files for GHL-UI-02 were read before edits.",
+    "Only allowed assets were created, edited, or verified.",
+    "Forbidden assets and actions were not used.",
+    "Every changed asset was saved in the HighLevel UI.",
+    "Saved asset state was verified after save.",
+    "Safe GHL IDs and visible statuses were captured.",
+    "Messages sent = 0.",
+    "Workflow publish actions = 0.",
+    "Production contacts enrolled = 0.",
+    "Stripe or live payment mutations = 0.",
+    "Result JSON was saved to the BNA Agent Action drop-off lane.",
+    "Readback result ID was verified."
+  ],
+  "result_json_schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "job_id",
+      "status",
+      "ghl_location_id",
+      "saved",
+      "verified",
+      "captured_ids",
+      "messages_sent",
+      "workflows_published",
+      "production_contacts_enrolled",
+      "stripe_mutations",
+      "student_contacts_created",
+      "dropoff_result_id",
+      "readback_verified",
+      "idempotency_key",
+      "notes"
+    ],
+    "properties": {
+      "job_id": {
+        "const": "GHL-UI-02"
+      },
+      "status": {
+        "enum": ["done", "already_satisfied", "blocked", "partial", "failed"]
+      },
+      "ghl_location_id": {
+        "const": "pBSnOK2nkdxp6gf9Rg3o"
+      },
+      "saved": {
+        "type": "boolean"
+      },
+      "verified": {
+        "type": "boolean"
+      },
+      "captured_ids": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["asset_type", "name", "id", "status"],
+          "properties": {
+            "asset_type": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "messages_sent": {
+        "const": 0
+      },
+      "workflows_published": {
+        "const": 0
+      },
+      "production_contacts_enrolled": {
+        "const": 0
+      },
+      "stripe_mutations": {
+        "const": 0
+      },
+      "student_contacts_created": {
+        "const": 0
+      },
+      "dropoff_result_id": {
+        "type": "string",
+        "minLength": 1
+      },
+      "readback_verified": {
+        "type": "boolean"
+      },
+      "idempotency_key": {
+        "type": "string",
+        "minLength": 1
+      },
+      "blockers": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "notes": {
+        "type": "string"
+      }
+    }
+  },
+  "idempotency_key": "one-time-ghl:GHL-UI-02:7ef8439346e3f82b",
+  "bna_agent_action_dropoff": {
+    "lane": "highlevel_agent_mode",
+    "return_surface": "BNA Agent Action drop-off page",
+    "return_route": "/ops/agent-actions/highlevel/drop-off",
+    "result_path": "integrations/highlevel/agent-mode/results/GHL-UI-02.result.json",
+    "readback_verification": "After saving the result, reopen/read it and record the returned result ID.",
+    "metadata": {
+      "repository": "shloimie-beep/onetimev2",
+      "registry_root": "integrations/highlevel/registry/",
+      "queue_file": "integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json",
+      "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-02-reconcile-sender-values.json",
+      "result_file": "integrations/highlevel/agent-mode/results/GHL-UI-02.result.json"
+    }
+  }
+}

@@ -3,6 +3,11 @@ name: OPS-11 PostgreSQL 18 Assurance
 on:
   pull_request:
   workflow_dispatch:
+    inputs:
+      repository_source_sha:
+        description: Exact admitted 40-character integration source SHA to verify
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -19,7 +24,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:18
+        image: postgres:18.4
         env:
           POSTGRES_DB: postgres
           POSTGRES_USER: postgres
@@ -33,10 +38,18 @@ jobs:
           --health-retries 12
 
     steps:
-      - name: Checkout
+      - name: Checkout pull request source
+        if: github.event_name != 'workflow_dispatch'
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Checkout exact candidate source
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ inputs.repository_source_sha }}
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -46,6 +59,34 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Run candidate-bound PostgreSQL 18.4 proof
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          PGHOST: 127.0.0.1
+          PGPORT: 5432
+          PGDATABASE: postgres
+          PGUSER: postgres
+          PGPASSWORD: postgres
+          CANDIDATE_ALLOW_DISPOSABLE_POSTGRES_WRITE: 'true'
+          CANDIDATE_SOURCE_SHA: ${{ inputs.repository_source_sha }}
+          CANDIDATE_PG18_OUTPUT_DIR: ops/evidence/ops-11/pg18/candidate
+        run: npx tsx scripts/postgres-assurance/candidate-pg18-proof.ts
+
+      - name: Run native Parent-created Student identity projection proof
+        env:
+          P12_NATIVE_POSTGRES_DISPOSABLE: 'true'
+          PGHOST: 127.0.0.1
+          PGPORT: 5432
+          PGDATABASE: postgres
+          PGUSER: postgres
+          PGPASSWORD: postgres
+        run: |
+          printf -v P12_NATIVE_DATABASE_URL '%s://%s:%s@%s:%s/%s' \
+            postgresql "$PGUSER" "$PGPASSWORD" "$PGHOST" "$PGPORT" "$PGDATABASE"
+          export P12_NATIVE_DATABASE_URL
+          npx vitest run \
+            apps/web/src/server/features/portals/parent-household/postgres-repository.test.ts
 
       - name: Run OT-37 harness on PostgreSQL 18
         env:
@@ -74,6 +115,7 @@ jobs:
         run: >-
           npx prettier --check
           .github/workflows/ops11-postgres-18-assurance.yml
+          scripts/postgres-assurance/candidate-pg18-proof.ts
           scripts/postgres-assurance/ops11-pg18-restore-clone.ts
           ops/evidence/ops-11/pg18/latest-postgres-assurance-report.json
           ops/evidence/ops-11/pg18/latest-postgres-assurance-report.md
@@ -96,5 +138,7 @@ jobs:
             ops/evidence/ops-11/pg18/latest-postgres-assurance-report.md
             ops/evidence/ops-11/pg18/pg18-restore-clone-report.json
             ops/evidence/ops-11/pg18/pg18-restore-clone-report.md
+            ops/evidence/ops-11/pg18/candidate/candidate-postgresql-18.4-proof.json
+            ops/evidence/ops-11/pg18/candidate/candidate-build-request.json
           if-no-files-found: ignore
           retention-days: 7

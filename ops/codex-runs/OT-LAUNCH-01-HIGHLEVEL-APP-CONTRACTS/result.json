@@ -1,0 +1,71 @@
+{
+  "task": "OT-LAUNCH-01-HIGHLEVEL-APP-CONTRACTS",
+  "base_branch": "codex/full-app-staging-live",
+  "base_head": "ca89b900a6faf8e4915b1b4fa72f3eb107cdb896",
+  "evidence_pr": 107,
+  "evidence_head": "c9f779495ea40a61684c5f01c02ce3f68e450227",
+  "location_id": "pBSnOK2nkdxp6gf9Rg3o",
+  "contract_version": "1.0.0",
+  "outbound_events": 5,
+  "inbound_actions": 5,
+  "agent_mode_jobs": 10,
+  "migration": {
+    "id": "2216_highlevel_application_contracts.sql",
+    "sha256": "b95b46a573606eaa00fe9339ffb68d705ee20d0393f06c0d7c7b9cb33c3c0e0c",
+    "canonical_2205_restored": false,
+    "canonical_2205_sha256": "3135ccd5942c649dd1133f1709806bdb77de016cfd3e78f55f04ec86cb7001fd",
+    "canonical_2213_git_blob": "fe21dd9002f18c7d50a3736861f4089d3da96d4f",
+    "canonical_2213_sha256": "de79b58418608f4466ffadda967411b43cfca2df477911071ed4060805b5dae1",
+    "canonical_2213_modified": false,
+    "migration_ledger_rewritten": false,
+    "historical_media_migrations_replayed": false
+  },
+  "provider_mode_default": "disabled",
+  "action_mode_default": "disabled",
+  "release_audit_fixes": {
+    "provider_backlog_isolation": "passed_exact_run_allowlist_budget_and_mode",
+    "provider_operation_fencing": "passed_claim_token_receipts_crash_and_slow_row",
+    "inbound_hmac": "passed_raw_body_freshness_nonce_replay_and_scope",
+    "highlevel_static_secret_header_allowed": false
+  },
+  "external_highlevel_calls": 0,
+  "messages_sent": 0,
+  "broad_messages_sent": 0,
+  "student_contacts_created": 0,
+  "persistent_staging_changed": false,
+  "railway_pr_environment": {
+    "environment_id": "571685d6-3926-41f0-9dd8-80671e7f6eb7",
+    "postgres_version": 16,
+    "fresh_service_id": "63c52624-cddc-47ee-9276-26a2437919ff",
+    "fresh_volume": true,
+    "old_unmounted_service_removed": true,
+    "old_credential_endpoint_rejected": true,
+    "credential_values_recorded": false,
+    "temporary_pg16_tcp_proxy_removed": true,
+    "provider_modes_disabled": true,
+    "canary_authorization_present": false
+  },
+  "postgres_concurrency": {
+    "sql_contract_asserted": true,
+    "memory_two_worker_assertion": "passed",
+    "memory_slow_row_fence_assertion": "passed",
+    "real_postgres_execution": "passed_disposable_pr_pg16_exact_rebased_candidate",
+    "authorized_rows_claimed": 2,
+    "unauthorized_rows_claimed": 0,
+    "unique_claim_tokens": true,
+    "real_postgres_assertion": "scripts/highlevel/postgres-claim-assurance.ts"
+  },
+  "governance_validation_checks_passed": 18,
+  "governance_parsed_strings_checked": 470,
+  "governance_hash_comment_truncations": 0,
+  "workflow_control": {
+    "drifted": 0,
+    "report_matches": true,
+    "expected_fail_closed_scope": "archived_and_ai_inventory_plus_explicit_unknown_cross_kind_assets"
+  },
+  "focused_tests_passed": 53,
+  "full_integration_tests_passed": 261,
+  "full_unit_tests_passed": 291,
+  "full_chromium_tests_passed": 56,
+  "remaining_dependency": "Approve and prove a HighLevel-side per-request raw-body HMAC signer before any OT-B01 through OT-B05 Agent Mode activation."
+}

@@ -3,6 +3,7 @@ import type {
   DeliveryFailure,
   DeliveryLogger,
   DeliveryOutcome,
+  DeliveryProviderOperation,
   DeliveryProviderRouter,
   DeliveryRepository,
   DeliveryRunSummary,
@@ -47,6 +48,7 @@ function emptySummary(): DeliveryRunSummary {
     sinkDelivered: 0,
     retried: 0,
     deadLettered: 0,
+    acceptanceUnknown: 0,
     suppressed: 0,
     skipped: 0,
     leaseLost: 0,
@@ -83,6 +85,7 @@ async function sendWithTimeout(input: {
       reject(
         providerError('provider_timeout', {
           retryable: true,
+          acceptance: 'unknown',
           provider: 'worker',
         }),
       );
@@ -135,6 +138,7 @@ function incrementSummary(summary: DeliveryRunSummary, outcome: DeliveryOutcome)
     else summary.delivered += 1;
   } else if (outcome.kind === 'retry') summary.retried += 1;
   else if (outcome.kind === 'dead_lettered') summary.deadLettered += 1;
+  else if (outcome.kind === 'acceptance_unknown') summary.acceptanceUnknown += 1;
   else if (outcome.kind === 'suppressed') summary.suppressed += 1;
   else summary.skipped += 1;
 }
@@ -150,6 +154,35 @@ async function processClaim(
     const prepared = prepareDelivery(claim, input.messageConfig, clock());
     if (prepared.kind === 'terminal') {
       outcome = prepared.outcome;
+    } else if (claim.transportMode === 'provider') {
+      const operation = providerOperationFor(input.router, prepared.request, claim);
+      const begin = await input.repository.beginProviderOperation(claim, operation, clock());
+      if (begin.kind === 'lease_lost') {
+        recordLeaseLost(claim, input, summary, 'provider_operation_begin');
+        return;
+      }
+      if (begin.kind === 'acceptance_unknown') {
+        outcome = acceptanceUnknownOutcome(clock());
+      } else if (begin.kind === 'accepted') {
+        outcome = {
+          kind: 'delivered',
+          at: clock(),
+          receipt: begin.receipt,
+        };
+      } else {
+        const result = await dispatchProviderOperation(
+          claim,
+          operation,
+          prepared.request,
+          input,
+          clock,
+        );
+        if (!result) {
+          recordLeaseLost(claim, input, summary, 'provider_operation_transition');
+          return;
+        }
+        outcome = result;
+      }
     } else {
       const receipt = await sendWithTimeout({
         router: input.router,
@@ -182,7 +215,9 @@ async function processClaim(
     ...(outcome.kind === 'skipped' || outcome.kind === 'suppressed'
       ? { reason: outcome.reason }
       : {}),
-    ...(outcome.kind === 'retry' || outcome.kind === 'dead_lettered'
+    ...(outcome.kind === 'retry' ||
+    outcome.kind === 'dead_lettered' ||
+    outcome.kind === 'acceptance_unknown'
       ? {
           failure_code: outcome.failure.code,
           failure_category: outcome.failure.category,
@@ -192,11 +227,7 @@ async function processClaim(
       : {}),
   };
   if (!completed) {
-    summary.leaseLost += 1;
-    input.logger.warn('delivery_claim_lease_lost', {
-      ...fields,
-      lease_lost: true,
-    });
+    recordLeaseLost(claim, input, summary, 'delivery_complete', fields);
     return;
   }
   incrementSummary(summary, outcome);
@@ -230,8 +261,112 @@ export async function runDeliveryBatch(input: RunDeliveryBatchInput): Promise<De
     sink_delivered: summary.sinkDelivered,
     retried: summary.retried,
     dead_lettered: summary.deadLettered,
+    acceptance_unknown: summary.acceptanceUnknown,
     suppressed: summary.suppressed,
     skipped: summary.skipped,
   });
   return summary;
+}
+
+function providerOperationFor(
+  router: DeliveryProviderRouter,
+  request: Parameters<DeliveryProviderRouter['send']>[0],
+  claim: ClaimedDelivery,
+): DeliveryProviderOperation {
+  if (!router.providerOperation) {
+    throw providerError('provider_operation_contract_missing', {
+      retryable: false,
+      acceptance: 'not_accepted',
+      provider: 'worker',
+    });
+  }
+  const operation = router.providerOperation(request);
+  if (
+    operation.idempotencyKey !== request.idempotencyKey ||
+    operation.idempotencyKey !== claim.deliveryKey
+  ) {
+    throw providerError('provider_operation_identity_mismatch', {
+      retryable: false,
+      acceptance: 'unknown',
+      provider: 'worker',
+    });
+  }
+  return operation;
+}
+
+async function dispatchProviderOperation(
+  claim: ClaimedDelivery,
+  operation: DeliveryProviderOperation,
+  request: Parameters<DeliveryProviderRouter['send']>[0],
+  input: RunDeliveryBatchInput,
+  clock: () => Date,
+): Promise<DeliveryOutcome | null> {
+  try {
+    const receipt = await sendWithTimeout({
+      router: input.router,
+      claim,
+      request,
+      timeoutMs: input.options.providerTimeoutMs,
+    });
+    const at = clock();
+    const accepted = await input.repository.recordProviderAccepted(claim, operation, receipt, at);
+    if (!accepted) return null;
+    return {
+      kind: 'delivered',
+      at,
+      receipt,
+    };
+  } catch (error) {
+    const failure = classifyDeliveryError(error);
+    const at = clock();
+    if (failure.acceptance === 'unknown') {
+      const recorded = await input.repository.recordProviderAcceptanceUnknown(
+        claim,
+        operation,
+        failure,
+        at,
+      );
+      if (!recorded) return null;
+      if (operation.acceptanceRecovery === 'quarantine') {
+        return {
+          kind: 'acceptance_unknown',
+          at,
+          failure,
+        };
+      }
+    } else {
+      const recorded = await input.repository.recordProviderRejected(claim, operation, failure, at);
+      if (!recorded) return null;
+    }
+    return outcomeForFailure(claim, failure, at, input.options.maxAttempts);
+  }
+}
+
+function acceptanceUnknownOutcome(at: Date): DeliveryOutcome {
+  return {
+    kind: 'acceptance_unknown',
+    at,
+    failure: {
+      code: 'provider_acceptance_unknown',
+      category: 'permanent',
+      acceptance: 'unknown',
+      provider: 'worker',
+    },
+  };
+}
+
+function recordLeaseLost(
+  claim: ClaimedDelivery,
+  input: RunDeliveryBatchInput,
+  summary: DeliveryRunSummary,
+  stage: string,
+  fields: Readonly<Record<string, unknown>> = {},
+) {
+  summary.leaseLost += 1;
+  input.logger.warn('delivery_claim_lease_lost', {
+    delivery_ref: opaqueDeliveryReference(claim.deliveryKey),
+    stage,
+    ...fields,
+    lease_lost: true,
+  });
 }

@@ -131,19 +131,8 @@ test('parent, student, and portal test lab journeys stay responsive and role-sco
     const context = await browser.newContext({
       viewport: { width: journey.viewport.width, height: journey.viewport.height },
     });
-    if (journey.probe.id === 'portal_test_lab') {
-      await context.addCookies([
-        {
-          name: 'otcrm_session',
-          value: 'w12-admin-session-token-local-only-2026-07-17',
-          domain: '127.0.0.1',
-          path: '/',
-          httpOnly: true,
-          sameSite: 'Lax',
-        },
-      ]);
-    }
     const page = await context.newPage();
+    if (journey.probe.id === 'portal_test_lab') await useW12AdminSession(page);
     if (journey.role) await loginAs(page, journey.role, journey.probe.path);
     const record = await collectRouteSnapshot(page, journey.probe, journey.viewport, browserName);
     routeRecords.push(record);

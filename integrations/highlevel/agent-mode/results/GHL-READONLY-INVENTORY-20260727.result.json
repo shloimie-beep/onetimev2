@@ -1,0 +1,176 @@
+{
+  "schema_version": 1,
+  "result_kind": "read_only_highlevel_current_truth_inventory",
+  "window_id": "03-OT-GHL",
+  "captured_at": "2026-07-27T09:48:33.5955915+03:00",
+  "source_checkpoint": "e986b5e6502b1168b3eb28e200fd49ac8de46477",
+  "location": {
+    "id": "pBSnOK2nkdxp6gf9Rg3o",
+    "fingerprint": "sha256:31fcbd2792f131dc94275ef3674337fe46b277cdf61209702de1246d7f77a3e2",
+    "visible_route": "/v2/location/pBSnOK2nkdxp6gf9Rg3o/dashboard",
+    "match_verified": true
+  },
+  "inspection_mode": "ui_read_only",
+  "workflow_inventory": {
+    "literal_root": {
+      "asset_kind": "workflow_folder",
+      "safe_id": "UNEXPOSED",
+      "full_path": "One Time",
+      "state": "VISIBLE",
+      "duplicate_count": 0
+    },
+    "root_level_assets": [],
+    "visible_folder_tree": [
+      "One Time / 00 - Intake & Data",
+      "One Time / 10 - Enrollment & Nurture",
+      "One Time / 20 - Billing & Access",
+      "One Time / 30 - Portal Lifecycle",
+      "One Time / 40 - Learning Operations",
+      "One Time / 40 - Learning Operations / Classes",
+      "One Time / 40 - Learning Operations / Content",
+      "One Time / 45 - Events",
+      "One Time / 45 - Events / 2026",
+      "One Time / 45 - Events / 2026 / Tisha B'Av 2026",
+      "One Time / 50 - Support",
+      "One Time / 60 - Bot Actions",
+      "One Time / 90 - Internal Operations",
+      "One Time / 99 - Deprecated"
+    ],
+    "inspected_assets": [
+      {
+        "canonical_key": "OT-C01-wrapper",
+        "asset_kind": "workflow",
+        "safe_id": "f28d8b8a-c26a-4a4f-a9f2-d2a8e94af1ae",
+        "name": "OT-C01 Tisha B'Av 2026 Warm Invitation",
+        "full_path": "One Time / 45 - Events / 2026 / Tisha B'Av 2026",
+        "state": "DRAFT",
+        "total_enrolled": 2677,
+        "active_enrolled": 0,
+        "duplicate_count": 0,
+        "ui_readback": {
+          "trigger_visible": "Registered Audience Entry for Tisha B'Av 2026 Campaign",
+          "trigger_state_visible": "Created",
+          "workflow_url": "/v2/location/pBSnOK2nkdxp6gf9Rg3o/automation/workflow/f28d8b8a-c26a-4a4f-a9f2-d2a8e94af1ae"
+        }
+      },
+      {
+        "canonical_key": "OT-E01",
+        "asset_kind": "workflow",
+        "safe_id": "a34ea513-4612-4f53-8bd8-49e89e6610f9",
+        "name": "OT-E01 Tisha B'Av 2026 Registration and Reminders",
+        "full_path": "One Time / 45 - Events / 2026 / Tisha B'Av 2026",
+        "state": "PUBLISHED",
+        "total_enrolled": 44,
+        "active_enrolled": 0,
+        "duplicate_count": 0,
+        "ui_readback": {
+          "trigger_visible": "Contact Tag added includes registered-event tag",
+          "workflow_url": "/v2/location/pBSnOK2nkdxp6gf9Rg3o/automation/workflow/a34ea513-4612-4f53-8bd8-49e89e6610f9"
+        }
+      },
+      {
+        "canonical_key": "OT-09",
+        "asset_kind": "workflow",
+        "safe_id": "UNEXPOSED",
+        "name": "OT-09 Parent Class Reminder",
+        "full_path": "One Time / 40 - Learning Operations / Classes",
+        "state": "DRAFT",
+        "total_enrolled": 0,
+        "active_enrolled": 0,
+        "duplicate_count": 0
+      }
+    ],
+    "scope_readback": {
+      "active_and_draft": "VISIBLE_IN_INSPECTED_EVENT_AND_CLASS_FOLDERS",
+      "archived": "UNVERIFIED_ARCHIVED_SCOPE_NOT_EXPOSED_BY_WORKFLOWS_UI",
+      "deleted": "VISIBLE_NO_DATA_IN_30_DAY_DELETED_WORKFLOWS_VIEW",
+      "deprecated_99": "VISIBLE_EMPTY",
+      "uninspected_folder_contents": "UNVERIFIED"
+    }
+  },
+  "ot_c01_cross_kind_distinction": {
+    "workflow_wrapper": {
+      "kind": "workflow",
+      "safe_id": "f28d8b8a-c26a-4a4f-a9f2-d2a8e94af1ae",
+      "full_path": "One Time / 45 - Events / 2026 / Tisha B'Av 2026",
+      "state": "DRAFT",
+      "rendered_in_workflows_ui": true
+    },
+    "email_marketing_campaign": {
+      "kind": "email_marketing_campaign",
+      "safe_id": "UNVERIFIED",
+      "full_path": "UNVERIFIED",
+      "state": "UNVERIFIED",
+      "rendered_in_email_marketing_ui": false,
+      "reason": "The visible Email Marketing route rendered its page shell only; it exposed no campaign rows, IDs, paths, or states during this read-only capture."
+    }
+  },
+  "ot_e01_disabled_email_a": {
+    "action_name": "Email A - Immediate Confirmation",
+    "workflow_safe_id": "a34ea513-4612-4f53-8bd8-49e89e6610f9",
+    "action_disabled": true,
+    "read_only_drawer_opened": true,
+    "subject_rendered": false,
+    "sender_rendered": false,
+    "body_rendered": false,
+    "link_identity_rendered": false,
+    "identity_status": "NOT_RENDERED",
+    "save_clicked": false,
+    "action_enabled": false
+  },
+  "conversation_ai": {
+    "visible_scope": {
+      "path": "AI Agents / Conversation AI",
+      "state": "VISIBLE",
+      "total_conversations_visible": 0,
+      "ot_a1_visible": false,
+      "ot_a1_status": "UNVERIFIED_NOT_VISIBLE"
+    },
+    "hidden_or_backend_scope": "UNVERIFIED_NOT_EXPOSED_BY_UI"
+  },
+  "knowledge_bases": [
+    {
+      "canonical_key": "canonical",
+      "asset_kind": "knowledge_base",
+      "safe_id": "ps6jttZ8WUGycLeQX6uF",
+      "name": "One Time Mishnayos - Public Program and Support",
+      "full_path": "AI Agents / Knowledge Base / One Time Mishnayos - Public Program and Support",
+      "state": "VISIBLE",
+      "duplicate_count": 0,
+      "visible_summary": "0 knowledge gaps; one rich-text source visible"
+    },
+    {
+      "canonical_key": "legacy_unknown",
+      "asset_kind": "knowledge_base",
+      "safe_id": "vdPNmvicJcizCaDpmhWf",
+      "name": "Existing knowledge base",
+      "full_path": "AI Agents / Knowledge Base / Existing knowledge base",
+      "state": "VISIBLE_LEGACY",
+      "duplicate_count": 0,
+      "visible_summary": "0 knowledge gaps; no knowledge sources visible"
+    }
+  ],
+  "unexposed_or_missing_scopes": [
+    "Email Marketing campaign list/detail rendering beyond its visible shell",
+    "Workflow archived scope",
+    "Conversation AI hidden or backend scope",
+    "OT-A1 exact asset identity and state",
+    "Contents of workflow folders not explicitly opened in this capture"
+  ],
+  "external_effects": {
+    "contacts_changed": 0,
+    "messages": 0,
+    "enrollments": 0,
+    "publications": 0,
+    "activations": 0,
+    "deletes": 0,
+    "quarantines": 0,
+    "saves": 0,
+    "tests": 0,
+    "audiences_selected": 0
+  },
+  "notes": [
+    "No unexposed scope is represented as empty.",
+    "This result is evidence only and does not reconcile the canonical registry, generated projections, or Board."
+  ]
+}

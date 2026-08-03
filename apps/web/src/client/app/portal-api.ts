@@ -1,7 +1,9 @@
 import type {
-  ClassroomQuestionSubmitResponse,
   HelperAnswer,
   LearnerProfile,
+  LiveClassQuestion,
+  LiveClassQuestionListResponse,
+  LiveClassQuestionSubmitResponse,
   ParentLearnerMaterials,
   ParentPortalDashboard,
   ParentRewardGoal,
@@ -11,13 +13,65 @@ import type {
   StudentQuestion,
   StudentPortalDashboard,
   SupportPreview,
+  LearningAnnouncement,
+  LearningLeaderboard,
+  LearningQuestion,
+  PublicLearningBadge,
+  PublishedClassQuestion,
 } from '@onetime/contracts';
+import type {
+  StudentLibraryItem,
+  StudentPlaybackGrant,
+} from '../../../../../packages/contracts/src/content/publication/index.ts';
 
-export type ApiSession = {
+type ParentAccessShell = {
+  mode: 'active' | 'paused';
+  display_name: string;
+  household_count: number;
+  primary_household_key: string;
+  learning_routes_available: boolean;
+  identity_profile_available: true;
+  recovery_available: true;
+  support_available: true;
+};
+
+type LegacyApiSession = {
   authenticated: true;
   user: SessionUser;
   csrf_token: string;
   expires_at: string;
+  session_model?: undefined;
+};
+
+export type V21ApiSession = {
+  success: true;
+  authenticated: true;
+  session_model: 'v21';
+  user: SessionUser;
+  csrf_token: string;
+  expires_at: string;
+  parent_context: {
+    adult_id: string;
+    human_account_id: string;
+    owned_household_count: number;
+    household: {
+      household_id: string;
+      display_name: string;
+      classification: 'family' | 'school';
+      access_state: 'free' | 'active' | 'grace' | 'inactive';
+      owner_relationship: 'account_owner';
+    };
+  };
+};
+
+export type ApiSession = LegacyApiSession | V21ApiSession;
+
+export type StudentLearningSnapshot = {
+  questions: readonly LearningQuestion[];
+  publishedQuestions: readonly PublishedClassQuestion[];
+  announcements: readonly { announcement: LearningAnnouncement; read: boolean }[];
+  badges: readonly PublicLearningBadge[];
+  leaderboard: LearningLeaderboard | null;
 };
 
 export class PortalApiError extends Error {
@@ -32,7 +86,48 @@ export class PortalApiError extends Error {
 }
 
 export async function getSession() {
-  return api<ApiSession>('/api/v1/auth/session');
+  try {
+    return await api<V21ApiSession>('/api/v2.1/auth/session');
+  } catch (error) {
+    if (
+      !(error instanceof PortalApiError) ||
+      error.status !== 404 ||
+      error.code !== 'V21_SESSION_NOT_PRESENT'
+    ) {
+      throw error;
+    }
+  }
+  return api<LegacyApiSession>('/api/v1/auth/session');
+}
+
+export async function logoutSession(session: ApiSession) {
+  return api<{ success: true }>(
+    session.session_model === 'v21' ? '/api/v2.1/auth/logout' : '/api/v1/auth/logout',
+    {
+      method: 'POST',
+      headers: { 'x-csrf-token': session.csrf_token },
+    },
+  );
+}
+
+export async function changeOwnPassword(input: {
+  csrfToken: string;
+  currentPassword: string;
+  newPassword: string;
+}) {
+  return api<{
+    success: true;
+    password_updated_at: string;
+    sessions_invalidated: number;
+    current_session_preserved: true;
+  }>('/api/v1/auth/password', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-csrf-token': input.csrfToken },
+    body: JSON.stringify({
+      current_password: input.currentPassword,
+      new_password: input.newPassword,
+    }),
+  });
 }
 
 export async function getParentDashboard() {
@@ -40,6 +135,24 @@ export async function getParentDashboard() {
     '/api/v1/portals/parent/dashboard',
   );
   return json.data;
+}
+
+export async function getParentAccessShell() {
+  const json = await api<{ success: true; data: ParentAccessShell }>(
+    '/api/v1/contact-operations/parent-shell',
+  );
+  return json.data;
+}
+
+export async function requestParentRecovery(input: { csrfToken: string; householdKey: string }) {
+  return api<{ success: true; data: { request_accepted: true } }>(
+    `/api/v1/contact-operations/households/${encodeURIComponent(input.householdKey)}/parent-reset`,
+    {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-csrf-token': input.csrfToken },
+      body: JSON.stringify({ idempotency_key: createIdempotencyKey() }),
+    },
+  );
 }
 
 export async function getParentMaterials(householdKey: string, learnerKey: string) {
@@ -131,7 +244,8 @@ export async function runStudentAccessOperation(input: {
   householdKey: string;
   learnerKey: string;
   operation: 'setup' | 'reset' | 'suspend' | 'restore' | 'revoke_sessions';
-  email?: string | undefined;
+  username?: string | undefined;
+  password?: string | undefined;
   displayName?: string | undefined;
 }) {
   const json = await api<{ success: true; data: StudentAccessState }>(
@@ -143,7 +257,8 @@ export async function runStudentAccessOperation(input: {
       headers: { 'content-type': 'application/json', 'x-csrf-token': input.csrfToken },
       body: JSON.stringify({
         idempotency_key: createIdempotencyKey(),
-        ...(input.email ? { email: input.email } : {}),
+        ...(input.username ? { username: input.username } : {}),
+        ...(input.password ? { password: input.password } : {}),
         ...(input.displayName ? { display_name: input.displayName } : {}),
       }),
     },
@@ -156,6 +271,28 @@ export async function getStudentDashboard() {
     '/api/v1/portals/student/dashboard',
   );
   return json.data;
+}
+
+export async function getStudentLearningSnapshot() {
+  const response = await api<{ success: true; data: StudentLearningSnapshot }>(
+    '/api/app/learning/student-snapshot',
+  );
+  return response.data;
+}
+
+export async function submitLearningQuestion(input: { csrfToken: string; body: string }) {
+  const response = await api<{
+    success: true;
+    data: { question: LearningQuestion; replay: boolean };
+  }>('/api/app/learning/questions', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-csrf-token': input.csrfToken },
+    body: JSON.stringify({
+      body: input.body,
+      idempotency_key: createIdempotencyKey(),
+    }),
+  });
+  return response.data.question;
 }
 
 export async function createParentRewardGoal(input: {
@@ -217,24 +354,71 @@ export async function queryStudentHelper(input: { csrfToken: string; question: s
   return json.data;
 }
 
+export async function queryParentHelper(input: {
+  csrfToken: string;
+  householdKey: string;
+  learnerKey: string;
+  question: string;
+}) {
+  const json = await api<{ success: true; data: HelperAnswer }>(
+    `/api/v1/portals/parent/households/${encodeURIComponent(
+      input.householdKey,
+    )}/learners/${encodeURIComponent(input.learnerKey)}/helper/query`,
+    {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-csrf-token': input.csrfToken },
+      body: JSON.stringify({
+        idempotency_key: createIdempotencyKey(),
+        question: input.question,
+      }),
+    },
+  );
+  return json.data;
+}
+
 export async function submitClassroomQuestion(input: {
   csrfToken: string;
   occurrenceKey: string;
   body: string;
 }) {
-  const json = await api<{ success: true; data: ClassroomQuestionSubmitResponse }>(
-    '/api/v1/classroom/questions',
+  const json = await api<LiveClassQuestionSubmitResponse>('/api/v1/live-class/questions', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-csrf-token': input.csrfToken },
+    body: JSON.stringify({
+      occurrence_key: input.occurrenceKey,
+      body: input.body,
+      idempotency_key: createIdempotencyKey(),
+    }),
+  });
+  return json.data;
+}
+
+export async function getLiveClassQuestions(occurrenceKey: string) {
+  const json = await api<LiveClassQuestionListResponse>(
+    `/api/v1/live-class/questions?occurrence_key=${encodeURIComponent(occurrenceKey)}`,
+  );
+  return json.data.questions;
+}
+
+export async function markLiveClassQuestionReady(input: {
+  csrfToken: string;
+  questionKey: string;
+  ready: boolean;
+}) {
+  const json = await api<{ success: true; data: { question: LiveClassQuestion } }>(
+    `/api/v1/live-class/questions/${encodeURIComponent(input.questionKey)}/ready`,
     {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'x-csrf-token': input.csrfToken },
       body: JSON.stringify({
-        occurrence_key: input.occurrenceKey,
-        body: input.body,
         idempotency_key: createIdempotencyKey(),
+        ready: input.ready,
+        mic_ready: input.ready,
+        video_ready: input.ready,
       }),
     },
   );
-  return json.data;
+  return json.data.question;
 }
 
 export async function previewParentSupport(input: {
@@ -291,43 +475,104 @@ export async function invokeProtectedAction(action: ProtectedActionDescriptor, c
   return json.data;
 }
 
-export async function createBillingCheckoutSession(input: {
-  csrfToken: string;
-  principalKey: string;
-}) {
-  const json = await api<{
-    success: true;
-    data: { redirect_url: string };
-  }>('/api/v1/billing/checkout-sessions', {
-    method: 'POST',
-    headers: { 'content-type': 'application/json', 'x-csrf-token': input.csrfToken },
-    body: JSON.stringify({
-      principal_key: input.principalKey,
-      offer_key: 'family_monthly_usd_67_v1',
-      idempotency_key: createIdempotencyKey(),
-      version: 1,
-    }),
-  });
-  return json.data;
+export type StudentPlaybackBootstrap = Pick<
+  StudentPlaybackGrant,
+  'contentId' | 'bootstrapPath' | 'issuedAt' | 'expiresAt' | 'renewable'
+>;
+
+export async function searchStudentPublicationLibrary(input: { csrfToken: string; query: string }) {
+  const json = await api<{ success: true; data: { items: StudentLibraryItem[] } }>(
+    '/api/app/student/library/search',
+    {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-csrf-token': input.csrfToken },
+      body: JSON.stringify({ query: input.query }),
+    },
+  );
+  return json.data.items;
 }
 
-export async function createBillingPortalSession(input: {
+export async function bootstrapStudentPublicationPlayback(input: {
   csrfToken: string;
-  principalKey: string;
+  contentId: string;
+}) {
+  return studentPlaybackGrantCommand(input, 'bootstrap');
+}
+
+export async function renewStudentPublicationPlayback(input: {
+  csrfToken: string;
+  contentId: string;
+}) {
+  return studentPlaybackGrantCommand(input, 'renew');
+}
+
+export async function readStudentPublicationPlayback(bootstrapPath: string) {
+  const json = await api<{
+    success: true;
+    data: {
+      authorized: true;
+      content_id: string;
+      playback_session_id: string;
+      expires_at: string;
+    };
+  }>(bootstrapPath, { method: 'GET', cache: 'no-store' });
+  return {
+    authorized: json.data.authorized,
+    contentId: json.data.content_id,
+    playbackSessionId: json.data.playback_session_id,
+    expiresAt: json.data.expires_at,
+  };
+}
+
+export async function saveStudentPublicationResume(input: {
+  csrfToken: string;
+  contentId: string;
+  positionMs: number;
 }) {
   const json = await api<{
     success: true;
-    data: { redirect_url: string };
-  }>('/api/v1/billing/customer-portal-sessions', {
+    data: { content_id: string; position_ms: number; version: number; updated_at: string };
+  }>(`/api/app/student/library/${encodeURIComponent(input.contentId)}/resume`, {
     method: 'POST',
     headers: { 'content-type': 'application/json', 'x-csrf-token': input.csrfToken },
     body: JSON.stringify({
-      principal_key: input.principalKey,
+      position_ms: input.positionMs,
       idempotency_key: createIdempotencyKey(),
-      version: 1,
     }),
   });
-  return json.data;
+  return {
+    contentId: json.data.content_id,
+    positionMs: json.data.position_ms,
+    version: json.data.version,
+    updatedAt: json.data.updated_at,
+  };
+}
+
+async function studentPlaybackGrantCommand(
+  input: { csrfToken: string; contentId: string },
+  operation: 'bootstrap' | 'renew',
+): Promise<StudentPlaybackBootstrap> {
+  const json = await api<{
+    success: true;
+    data: {
+      content_id: string;
+      bootstrap_path: string;
+      issued_at: string;
+      expires_at: string;
+      renewable: true;
+    };
+  }>(`/api/app/student/library/${encodeURIComponent(input.contentId)}/${operation}`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-csrf-token': input.csrfToken },
+    body: JSON.stringify({}),
+  });
+  return {
+    contentId: json.data.content_id,
+    bootstrapPath: json.data.bootstrap_path,
+    issuedAt: json.data.issued_at,
+    expiresAt: json.data.expires_at,
+    renewable: json.data.renewable,
+  };
 }
 
 export function createIdempotencyKey() {

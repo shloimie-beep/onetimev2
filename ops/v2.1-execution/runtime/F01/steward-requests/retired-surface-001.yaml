@@ -1,0 +1,32 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: F01-retired-auth-001
+task_id: F01
+kind: retired_surface
+requirement_ids:
+  - OTV2-FOUNDATION-003
+  - OTV2-FOUNDATION-004
+  - OTV2-FOUNDATION-208
+acceptance_case_ids:
+  - OTV2-FOUNDATION-003-AC01
+  - OTV2-FOUNDATION-004-AC01
+  - OTV2-FOUNDATION-208-AC01
+rationale: The owned web surface no longer exposes MFA or routine email-challenge routes and the owned worker no longer delivers challenge outbox rows, but the domain authenticator still creates a challenge after a valid password for legacy internal Admin identities. That blocks the locked email-plus-password Admin journey.
+desired_semantic_change: Authenticate active owner, admin, and rabbi identity records with the same password path, return a SessionUser whose public role is admin, preserve existing rate limits and audit events, and never create an email challenge or trusted-device artifact.
+proposed_symbols_routes_keys_or_dependencies:
+  - packages/domain/src/auth/service.ts#authenticateUser
+  - packages/domain/src/auth/service.ts#LoginResult
+  - packages/domain/src/auth/service.ts#AuthAssuranceMethod
+  - packages/domain/src/index.ts authentication exports
+compatibility_assumptions:
+  - Existing owner and rabbi database role values remain migration history and are normalized to admin at the application boundary.
+  - Password verification, current-access checks, rate limiting, security-version fencing, session rotation, and audit logging remain enforced.
+  - Password reset and account-activation email links are not routine login challenges and remain supported.
+verification_performed:
+  - Owned login HTML contains no email-challenge or trusted-device control.
+  - Owned email-challenge and trusted-device endpoints return 404 in the F01 direct-access harness.
+  - packages/domain/src/auth/service.ts was inspected and still creates EMAIL_CHALLENGE_REQUIRED for owner, admin, and rabbi rows.
+conflicts_or_risks:
+  - Removing the challenge without preserving password rate limits, audit records, session rotation, and security-version checks would weaken authentication.
+  - Existing challenge outbox rows require a non-sending disposition rather than delivery.
+contains_secret_or_private_data: false

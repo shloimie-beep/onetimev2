@@ -1,0 +1,35 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: F01-config-retirement-003
+task_id: F01
+kind: config_key
+requirement_ids:
+  - OTV2-FOUNDATION-208
+acceptance_case_ids:
+  - OTV2-FOUNDATION-208-AC01
+rationale: Retired environment keys are no longer parsed by AppConfig and their runtime values are forced unavailable, but out-of-scope domain and test consumers still require compatibility properties carrying historical MFA, Buffer, demo, preview, and event names.
+desired_semantic_change: Migrate active cryptographic consumers to protectedPayloadEncryptionKey, delete retired provider/demo/event property consumers, then delete the temporary compatibility properties from AppConfig so the production configuration inventory contains no retired surface names or flags.
+proposed_symbols_routes_keys_or_dependencies:
+  - packages/domain/src/auth/service.ts crypto-key consumer
+  - packages/domain/src/telegram/runtime.ts crypto-key consumer
+  - packages/domain/src/telegram/rabbi-runtime.ts crypto-key consumer
+  - packages/domain/src/whatsapp/crypto.ts crypto-key consumer
+  - packages/domain/src/live-class/zoom-admin.ts crypto-key consumer
+  - packages/domain/src/classroom/zoom-occurrence.ts crypto-key consumer
+  - packages/domain/src/providers/control-center.ts Buffer readiness
+  - packages/domain/src/events/tisha-bav.ts retired event config
+  - apps/web/src/server/features/portal-test-lab/router.ts retired flag
+  - apps/web/src/server/features/learning-delivery-demo/router.ts retired flag
+  - apps/web/src/server/features/experience-preview/router.ts retired flag
+compatibility_assumptions:
+  - protectedPayloadEncryptionKey has the same secret-value requirements as the historical generic crypto-key property.
+  - Retired routers remain unregistered and may be deleted after historical tests are reclassified.
+  - Provider control remains available for launch providers after Buffer readiness is removed.
+verification_performed:
+  - AppConfig ignores retired preview, demo, Buffer, WhatsApp-assistant, Tisha event, and HighLevel event-sync environment keys.
+  - F01 config smoke forced retired compatibility surfaces unavailable even when retired environment keys were supplied.
+  - Repository typecheck identifies the out-of-scope consumers that currently require compatibility typing.
+conflicts_or_risks:
+  - Renaming crypto-key consumers must not rotate or log the underlying secret.
+  - Historical tests may need removal from current acceptance rather than product compatibility properties.
+contains_secret_or_private_data: false

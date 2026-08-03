@@ -1,0 +1,230 @@
+import React, { useEffect, useMemo, useState } from 'react';
+import type { ExperiencePreviewCatalog, ExperiencePreviewRoleId } from '@onetime/contracts';
+import { Select } from '@onetime/brand-system/react';
+import { RolePreview } from './RolePreview.js';
+
+type LoadState =
+  | { kind: 'loading' }
+  | { kind: 'error'; message: string }
+  | { kind: 'catalog'; catalog: ExperiencePreviewCatalog };
+
+export function ExperiencePreview({
+  csrfToken,
+  onProtectedStateCleared,
+}: {
+  csrfToken: string;
+  onProtectedStateCleared: () => void;
+}) {
+  const [state, setState] = useState<LoadState>({ kind: 'loading' });
+  const [selectedRoleId, setSelectedRoleId] = useState<ExperiencePreviewRoleId>('parent');
+  const [selectedSectionTitle, setSelectedSectionTitle] = useState('');
+  const [openingRoleId, setOpeningRoleId] = useState<ExperiencePreviewRoleId | null>(null);
+  const [launchError, setLaunchError] = useState('');
+  const [preparedLaunch, setPreparedLaunch] = useState<{
+    roleId: ExperiencePreviewRoleId;
+    url: string;
+  } | null>(null);
+
+  useEffect(() => {
+    void load();
+  }, []);
+
+  async function load() {
+    setState({ kind: 'loading' });
+    const response = await fetch('/api/v1/experience-preview', {
+      headers: { accept: 'application/json' },
+    });
+    if (response.status === 401) {
+      onProtectedStateCleared();
+      return;
+    }
+    const json = (await response.json().catch(() => null)) as {
+      success?: boolean;
+      data?: ExperiencePreviewCatalog;
+    } | null;
+    if (!response.ok || !json?.success || !json.data) {
+      setState({
+        kind: 'error',
+        message: 'Experience Preview is unavailable in this runtime.',
+      });
+      return;
+    }
+    setState({ kind: 'catalog', catalog: json.data });
+    const firstRoleId = json.data.roles[0]?.role_id ?? 'parent';
+    const firstPreview =
+      json.data.previews.find((preview) => preview.role_id === firstRoleId) ??
+      json.data.previews[0];
+    setSelectedRoleId(firstRoleId);
+    setSelectedSectionTitle(firstPreview?.sections[0]?.title ?? '');
+  }
+
+  async function openFictionalStudentSession(roleId: ExperiencePreviewRoleId) {
+    setLaunchError('');
+    setPreparedLaunch(null);
+    setOpeningRoleId(roleId);
+    try {
+      const response = await fetch('/api/v1/experience-preview/student-exchanges', {
+        method: 'POST',
+        headers: {
+          accept: 'application/json',
+          'content-type': 'application/json',
+          'x-csrf-token': csrfToken,
+        },
+        body: JSON.stringify({ role_id: roleId, csrf_token: csrfToken }),
+      });
+      if (response.status === 401) {
+        onProtectedStateCleared();
+        return;
+      }
+      const json = (await response.json().catch(() => null)) as {
+        success?: boolean;
+        exchange_url?: string;
+        message?: string;
+      } | null;
+      if (!response.ok || !json?.success || !json.exchange_url) {
+        throw new Error(json?.message ?? 'The fictional Student is unavailable for preview.');
+      }
+      setPreparedLaunch({ roleId, url: json.exchange_url });
+    } catch (error) {
+      setLaunchError(error instanceof Error ? error.message : 'Could not open the preview tab.');
+    } finally {
+      setOpeningRoleId(null);
+    }
+  }
+
+  const selected = useMemo(() => {
+    if (state.kind !== 'catalog') return null;
+    return (
+      state.catalog.previews.find((preview) => preview.role_id === selectedRoleId) ??
+      state.catalog.previews[0] ??
+      null
+    );
+  }, [selectedRoleId, state]);
+  const selectedSection =
+    selected?.sections.find((section) => section.title === selectedSectionTitle) ??
+    selected?.sections[0] ??
+    null;
+
+  if (state.kind === 'loading') {
+    return (
+      <section className="experience-preview" aria-busy="true">
+        <p className="state-panel" role="status">
+          Loading the fictional One Time walkthrough...
+        </p>
+      </section>
+    );
+  }
+
+  if (state.kind === 'error') {
+    return (
+      <section className="experience-preview">
+        <div className="state-panel error" role="alert">
+          <h2>Preview unavailable</h2>
+          <p>{state.message}</p>
+          <button type="button" className="button-secondary" onClick={() => void load()}>
+            Try again
+          </button>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="experience-preview" data-goal-id={state.catalog.goal_id}>
+      <header className="experience-preview-intro">
+        <div>
+          <p className="ot-kicker">Staging operator walkthrough</p>
+          <h2>{state.catalog.scenario_title}</h2>
+          <p>
+            Select a role to inspect exact fictional staging projections. Readiness comes only from
+            seeded pipeline rows; these previews cannot mutate Student data or replace the
+            Administrator session.
+          </p>
+        </div>
+        <span className="preview-readonly-badge">Read-only</span>
+      </header>
+
+      <div className="experience-preview-selectors">
+        <label>
+          <span>Role</span>
+          <Select
+            value={selectedRoleId}
+            onChange={(event) => {
+              const roleId = event.target.value as ExperiencePreviewRoleId;
+              const preview = state.catalog.previews.find(
+                (candidate) => candidate.role_id === roleId,
+              );
+              setSelectedRoleId(roleId);
+              setSelectedSectionTitle(preview?.sections[0]?.title ?? '');
+              setLaunchError('');
+              setPreparedLaunch(null);
+            }}
+          >
+            {state.catalog.roles.map((role) => (
+              <option key={role.role_id} value={role.role_id}>
+                {role.label} - {role.subtitle} ({stateLabel(role.state)})
+              </option>
+            ))}
+          </Select>
+        </label>
+        <label>
+          <span>Section</span>
+          <Select
+            value={selectedSection?.title ?? ''}
+            onChange={(event) => setSelectedSectionTitle(event.target.value)}
+          >
+            {selected?.sections.map((section) => (
+              <option key={section.title} value={section.title}>
+                {section.title}
+              </option>
+            ))}
+          </Select>
+        </label>
+      </div>
+
+      {selected && selectedSection && (
+        <>
+          <RolePreview preview={selected} section={selectedSection} />
+          {selected.can_open_student_session && (
+            <div className="experience-session-action">
+              <button
+                type="button"
+                className="button-primary"
+                disabled={openingRoleId === selected.role_id}
+                onClick={() => void openFictionalStudentSession(selected.role_id)}
+              >
+                {openingRoleId === selected.role_id
+                  ? 'Preparing fictional Student...'
+                  : 'Prepare fictional Student session'}
+              </button>
+              <small>
+                Opens a five-minute dedicated read-only shell with no Admin controls or Student
+                impersonation.
+              </small>
+              {launchError && <p role="alert">{launchError}</p>}
+              {preparedLaunch?.roleId === selected.role_id && (
+                <a
+                  className="button-secondary"
+                  href={preparedLaunch.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => {
+                    window.setTimeout(() => setPreparedLaunch(null), 0);
+                  }}
+                >
+                  Open fictional Student session
+                </a>
+              )}
+            </div>
+          )}
+        </>
+      )}
+    </section>
+  );
+}
+
+function stateLabel(value: string) {
+  if (value === 'ready') return 'Ready';
+  if (value === 'provider_off') return 'Provider off';
+  return 'Unavailable';
+}

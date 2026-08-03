@@ -1,0 +1,257 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: V37
+title: Identity, Public Entry, and Admin Verification
+outcome: Verify authority convergence, retired-surface absence, adult/Student authentication, identity/tenant isolation,
+  Family/School entry, and Admin directory/search against the immutable candidate.
+kind: verification
+wave: 9
+priority: launch_critical
+execution:
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+  service_tier: PRIORITY
+  mode: START_OR_RESUME
+  branch_template: codex/v21-verify-{candidate_short_sha}-v37
+  harness_branch_template: codex/v21-harness-{candidate_short_sha}-v37
+  maximum_active_writers_in_group: 1
+dependencies:
+  start_after:
+  - I36
+  required_start_states:
+    I36: candidate_frozen
+  merge_after: []
+  candidate_integration_partners: []
+  candidate_requires_all_implementation_tasks: false
+  acceptance_after: []
+  first_run_start_sha_source: origin/codex/v21-control:ops/v2.1-execution/control/READY-QUEUE.yaml authorized_start_sha
+interface_checkpoint:
+  required: false
+  unlocks: []
+  contract_schema_version: 1
+  required_export_roots: []
+  must_record_exact_realized_paths_symbols_versions_and_digests: true
+  rule: No downstream contract checkpoint required.
+scope:
+  writer_slots:
+  - VERIFY_IDENTITY_ADMIN
+  normalized_owned_globs:
+  - ops/v2.1-execution/results/<candidate-digest>/V37/**
+  - ops/v2.1-execution/verification-harness/V37/**
+  scope_notes_only:
+  - verification-only branch codex/v21-verify-<candidate-short-sha>-v37
+  explicit_path_excludes: []
+  forbidden_shared_paths: []
+  external_authority: none by default; scoped read-only provider access only with C00 authorization; bounded effects
+    require a task-specific authority record and exclusive provider lock
+coverage:
+  primary_requirement_ids: []
+  primary_acceptance_case_ids: []
+  verification_of_tasks:
+  - F01
+  - F03
+  - F04
+  - P08
+  - P09
+  - P10
+  - P11
+  verification_requirement_ids:
+  - OTV2-FOUNDATION-001
+  - OTV2-FOUNDATION-003
+  - OTV2-FOUNDATION-004
+  - OTV2-FOUNDATION-005
+  - OTV2-FOUNDATION-006
+  - OTV2-FOUNDATION-208
+  - OTV2-FOUNDATION-215
+  - OTV2-FOUNDATION-216
+  - OTV2-AUTH-007
+  - OTV2-AUTH-008
+  - OTV2-AUTH-009
+  - OTV2-AUTH-010
+  - OTV2-AUTH-011
+  - OTV2-AUTH-012
+  - OTV2-AUTH-013
+  - OTV2-AUTH-014
+  - OTV2-AUTH-015
+  - OTV2-AUTH-016
+  - OTV2-AUTH-017
+  - OTV2-AUTH-018
+  - OTV2-AUTH-019
+  - OTV2-AUTH-020
+  - OTV2-AUTH-180
+  - OTV2-AUTH-227
+  - OTV2-ACCOUNT-181
+  - OTV2-ACCOUNT-182
+  - OTV2-ACCOUNT-183
+  - OTV2-ACCOUNT-230
+  - OTV2-SIGNUP-176
+  - OTV2-SIGNUP-177
+  - OTV2-SIGNUP-179
+  - OTV2-SIGNUP-213
+  - OTV2-SIGNUP-228
+  - OTV2-SIGNUP-178
+  - OTV2-SIGNUP-229
+  - OTV2-SCHOOL-200
+  - OTV2-SCHOOL-214
+  - OTV2-ADMIN-022
+  - OTV2-ADMIN-023
+  - OTV2-ADMIN-024
+  - OTV2-ADMIN-025
+  - OTV2-ADMIN-026
+  - OTV2-ADMIN-027
+  - OTV2-ADMIN-028
+  - OTV2-ADMIN-030
+  - OTV2-ADMIN-021
+  - OTV2-ADMIN-029
+  - OTV2-ADMIN-205
+  verification_acceptance_case_ids:
+  - OTV2-FOUNDATION-001-AC01
+  - OTV2-FOUNDATION-003-AC01
+  - OTV2-FOUNDATION-004-AC01
+  - OTV2-FOUNDATION-005-AC01
+  - OTV2-FOUNDATION-006-AC01
+  - OTV2-FOUNDATION-208-AC01
+  - OTV2-FOUNDATION-215-AC01
+  - OTV2-FOUNDATION-216-AC01
+  - OTV2-AUTH-007-AC01
+  - OTV2-AUTH-008-AC01
+  - OTV2-AUTH-009-AC01
+  - OTV2-AUTH-010-AC01
+  - OTV2-AUTH-011-AC01
+  - OTV2-AUTH-012-AC01
+  - OTV2-AUTH-013-SINGLE-USE-TTL
+  - OTV2-AUTH-013-RENEWAL
+  - OTV2-AUTH-014-AC01
+  - OTV2-AUTH-015-AC01
+  - OTV2-AUTH-016-AC01
+  - OTV2-AUTH-017-AC01
+  - OTV2-AUTH-018-AC01
+  - OTV2-AUTH-019-AC01
+  - OTV2-AUTH-020-CSRF
+  - OTV2-AUTH-020-RATE
+  - OTV2-AUTH-020-COOKIE
+  - OTV2-AUTH-020-ROTATE
+  - OTV2-AUTH-180-AC01
+  - OTV2-AUTH-227-PASSWORDS-RATE-LIMITS
+  - OTV2-AUTH-227-SESSIONS-TOKENS-LEASES
+  - OTV2-AUTH-227-WEBHOOK-WORKER
+  - OTV2-ACCOUNT-181-AC01
+  - OTV2-ACCOUNT-182-AC01
+  - OTV2-ACCOUNT-183-AC01
+  - OTV2-ACCOUNT-230-IDENTITY-ROLE-CONTEXT
+  - OTV2-SIGNUP-176-FAMILY-OR-SCHOOL-BRANCH
+  - OTV2-SIGNUP-177-AC01
+  - OTV2-SIGNUP-179-AC01
+  - OTV2-SIGNUP-213-AC01
+  - OTV2-SIGNUP-228-BEFORE-EXPIRY
+  - OTV2-SIGNUP-228-AT-AND-AFTER-EXPIRY
+  - OTV2-SIGNUP-178-SCHOOL-INQUIRY-NO-ACCESS
+  - OTV2-SIGNUP-229-PUBLIC-SCHOOL-INQUIRY
+  - OTV2-SCHOOL-200-AC01
+  - OTV2-SCHOOL-214-AC01
+  - OTV2-ADMIN-022-AC01
+  - OTV2-ADMIN-023-AC01
+  - OTV2-ADMIN-024-AC01
+  - OTV2-ADMIN-025-AC01
+  - OTV2-ADMIN-026-AC01
+  - OTV2-ADMIN-027-AC01
+  - OTV2-ADMIN-028-AC01
+  - OTV2-ADMIN-030-AC01
+  - OTV2-ADMIN-021-AC01
+  - OTV2-ADMIN-029-AC01
+  - OTV2-ADMIN-205-AC01
+  decision_ids:
+  - DEC-001
+  - DEC-002
+  - DEC-003
+  - DEC-004
+  - DEC-005
+  - DEC-006
+  - DEC-010
+  - DEC-011
+  - DEC-012
+  - DEC-013
+  - DEC-014
+  - DEC-015
+  - DEC-017
+  - DEC-018
+  - DEC-019
+  - DEC-020
+  - DEC-021
+  - DEC-023
+  - DEC-024
+  - DEC-030
+  - DEC-032
+  - DEC-033
+  - DEC-034
+  - DEC-035
+  - DEC-036
+  - DEC-041
+  - DEC-050
+  - DEC-051
+  - DEC-052
+  - DEC-053
+  - DEC-054
+  - DEC-055
+  - DEC-092
+  - DEC-095
+  - DEC-097
+  - DEC-112
+  - DEC-120
+  - DEC-130
+  - DEC-132
+  - DEC-133
+  - DEC-135
+  - DEC-141
+  - DEC-143
+  - DEC-144
+  - DEC-151
+  required_source_documents:
+  - 01-PRODUCT-SPEC-v2.1.md
+  - 03-DECISION-REGISTER-v2.1.md
+  - 04-SUPERSESSION-AND-SYSTEM-DISPOSITION-v2.1.md
+  - 05-ACTOR-ROLE-CAPABILITY-ROUTE-MATRIX-v2.1.md
+  - 06-DOMAIN-MODEL-AND-STATE-MACHINES-v2.1.md
+  - 07-SOURCE-OF-TRUTH-AND-PROVIDER-CONTRACTS-v2.1.md
+  - 08-SCREEN-CATALOG-AND-DESIGN-SYSTEM-v2.1.md
+  - 09-WORKFLOW-NOTIFICATION-COPY-CATALOG-v2.1.md
+  - 10-PRIVACY-CONSENT-RETENTION-DATA-RIGHTS-v2.1.md
+  embedded_normative_sections: []
+deliverables:
+- one schema-valid candidate-bound result record per assigned acceptance case
+- lane summary with exact pass/fail/blocked counts
+- zero unrecorded external effects
+- reproduction packet for every failure
+notes: []
+terminal_states:
+- ready_for_evidence_merge
+definition_of_done:
+- Every assigned behavior is implemented or, for verification/release tasks, every assigned case has a schema-valid
+  candidate-bound result.
+- The diff remains inside owned paths plus structured steward requests.
+- Task-owned verification passes; ordinary in-scope failures are diagnosed and corrected.
+- No prohibited product surface, fake fallback, security/privacy weakening, or unauthorized external effect is introduced.
+- TASK-STATE.yaml, HANDOFF.md, and NEXT-PROMPT.md are current.
+- 'All checkpoints are committed and pushed; this task may end only in one of these exact task-local terminal states:
+  ready_for_evidence_merge.'
+checkpoint_policy:
+  interval_minutes: 30-45
+  mandatory_before:
+  - long-running command
+  - authorized external effect
+  - window end
+  mandatory_after:
+  - interface contract
+  - migration or invariant
+  - meaningful milestone
+  - blocker discovery
+stop_conditions:
+- missing explicit authority or provider identity for a required live effect
+- writer/path/provider lock collision
+- non-fast-forward push
+- normative contradiction requiring operator decision
+- incompatible or absent upstream interface contract
+- applied migration would need modification
+- continuation would weaken a protected invariant
+- destructive operation lacks exact target/authority
+- reproduced out-of-scope failure blocks progress after all safe independent work is complete

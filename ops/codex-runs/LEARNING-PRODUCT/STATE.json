@@ -1,0 +1,190 @@
+{
+  "schema_version": "codex_learning_product_state.v1",
+  "window_id": "LEARNING_PRODUCT",
+  "updated_at": "2026-07-20T13:50:34+03:00",
+  "source_prompt": {
+    "path": "C:/Users/User/.codex/attachments/57f58d6b-c8b9-4bbf-869a-320db0b3e0ed/pasted-text.txt",
+    "sha256": "50d850e3625f5f53e9e5013bb8227eca0a62f095b19bed150fd0a7444db9a24a"
+  },
+  "git": {
+    "worktree": "C:/Users/User/.onetime-worktrees/LEARNING-PRODUCT",
+    "branch": "codex/learning-product-portals-media",
+    "base_sha": "0d50e0f07afbc0d0d143a45e76e73821ca25178f",
+    "target_base_branch": "codex/one-time-finish-now-20260719"
+  },
+  "scope": {
+    "status": "ready_for_review_with_blocker",
+    "owned_paths_observed": true,
+    "external_provider_calls": "none",
+    "production_data_mutations": "none"
+  },
+  "requirements": [
+    {
+      "id": "LP-001",
+      "title": "Parent-managed student usernames and passwords without student email",
+      "status": "done",
+      "evidence": [
+        "packages/contracts/src/portals/index.ts",
+        "packages/domain/src/portals/account-lifecycle-adapter.ts",
+        "packages/db/migrations/2206_student_non_email_credentials.sql",
+        "tests/unit/learning-product-portals.test.ts",
+        "tests/integration/portals/portal-mount.test.ts"
+      ]
+    },
+    {
+      "id": "LP-002",
+      "title": "Parent portal can manage up to three active learners and credential actions",
+      "status": "done",
+      "evidence": [
+        "apps/web/src/client/app/portal-entry.tsx",
+        "apps/web/src/client/features/portals/PortalFeatures.tsx",
+        "tests/e2e/ot-83r-portals.spec.ts"
+      ]
+    },
+    {
+      "id": "LP-003",
+      "title": "Student portal remains restricted to the student scope",
+      "status": "done",
+      "evidence": [
+        "packages/domain/src/portals/services.ts",
+        "tests/integration/portals/portal-mount.test.ts",
+        "tests/e2e/ot-83r-portals.spec.ts"
+      ]
+    },
+    {
+      "id": "LP-004",
+      "title": "Class one Mishnah projection is fixed to 7 PM Asia/Jerusalem with protected launch",
+      "status": "done",
+      "evidence": [
+        "packages/domain/src/classes/service.ts",
+        "packages/domain/src/classroom/service.ts",
+        "packages/db/migrations/2207_classroom_board_and_lesson_projection.sql",
+        "tests/integration/classroom/zoom-learner-classroom.test.ts"
+      ]
+    },
+    {
+      "id": "LP-005",
+      "title": "Class-only all-time leaderboard uses actual names and positive point reasons",
+      "status": "done",
+      "evidence": [
+        "packages/contracts/src/gamification/index.ts",
+        "packages/domain/src/gamification/service.ts",
+        "packages/db/src/gamification/repository.ts",
+        "tests/unit/learning-product-portals.test.ts"
+      ]
+    },
+    {
+      "id": "LP-006",
+      "title": "Lesson publication projection only exposes Rabbi-approved safe lesson data",
+      "status": "done",
+      "evidence": [
+        "packages/contracts/src/portals/index.ts",
+        "packages/domain/src/content/service.ts",
+        "packages/db/migrations/2207_classroom_board_and_lesson_projection.sql",
+        "tests/integration/content/content-library.test.ts"
+      ]
+    },
+    {
+      "id": "LP-007",
+      "title": "Mobile critical portal controls avoid native select",
+      "status": "done",
+      "evidence": [
+        "apps/web/src/client/features/portals/PortalFeatures.tsx",
+        "packages/brand-system/src/styles/portal.css",
+        "tests/unit/learning-product-portals.test.ts"
+      ]
+    },
+    {
+      "id": "LP-008",
+      "title": "No Vimeo or Zoom provider calls during local validation",
+      "status": "done",
+      "evidence": [
+        "tests/e2e/ot88-zoom-classroom.spec.ts",
+        "npx playwright test tests/e2e/ot-83r-portals.spec.ts tests/e2e/ot88-zoom-classroom.spec.ts --reporter=line"
+      ]
+    },
+    {
+      "id": "LP-009",
+      "title": "Live database migration verification",
+      "status": "blocked",
+      "blocked_reason": "npm run db:verify requires DATABASE_URL; no production or provider database credentials were used in this window.",
+      "next_action_owner": "operator"
+    },
+    {
+      "id": "LP-010",
+      "title": "Username/password student session issuance",
+      "status": "blocked",
+      "blocked_reason": "This window implemented parent-managed credential projection, storage, audit, UI, and tests without editing apps/web/src/server/app.ts. The existing app-wide login route remains email-based and was explicitly outside this window's editable scope.",
+      "next_action_owner": "convergence_owner"
+    }
+  ],
+  "validation": [
+    {
+      "command": "npx vitest run tests/unit/learning-product-portals.test.ts",
+      "status": "passed"
+    },
+    {
+      "command": "npm run unit",
+      "status": "passed",
+      "details": "52 files, 256 tests"
+    },
+    {
+      "command": "npx vitest run --config vitest.integration.config.ts tests/integration/portals/portal-mount.test.ts tests/integration/classroom/zoom-learner-classroom.test.ts tests/integration/content/content-library.test.ts --reporter=dot",
+      "status": "passed",
+      "details": "3 files, 14 tests"
+    },
+    {
+      "command": "npx playwright test tests/e2e/ot-83r-portals.spec.ts tests/e2e/ot88-zoom-classroom.spec.ts --reporter=line",
+      "status": "passed",
+      "details": "5 tests"
+    },
+    {
+      "command": "npx playwright test tests/accessibility/ot88-zoom-classroom-a11y.spec.ts --reporter=line",
+      "status": "passed",
+      "details": "2 tests"
+    },
+    {
+      "command": "npx playwright test tests/performance/ot88-zoom-classroom-performance.spec.ts --reporter=line",
+      "status": "passed",
+      "details": "1 test"
+    },
+    {
+      "command": "npm run typecheck",
+      "status": "passed"
+    },
+    {
+      "command": "npm run lint",
+      "status": "passed"
+    },
+    {
+      "command": "npm run build",
+      "status": "passed"
+    },
+    {
+      "command": "npm run brand:check",
+      "status": "passed"
+    },
+    {
+      "command": "npm run secret:scan",
+      "status": "passed"
+    },
+    {
+      "command": "git diff --check",
+      "status": "passed"
+    },
+    {
+      "command": "npx prettier --check <touched files>",
+      "status": "passed"
+    },
+    {
+      "command": "npm run format",
+      "status": "failed_baseline",
+      "details": "Repo-wide formatter reports pre-existing style drift across many files; scoped touched-file Prettier check passed."
+    },
+    {
+      "command": "npm run db:verify",
+      "status": "blocked",
+      "details": "DATABASE_URL is required for PostgreSQL-backed runtime."
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+schema_version: 1
+reviewed_head: 73dda293079f602c83929d1bbccb8dd5b9d1a455
+status: measured_with_failures
+measured_at: '2026-07-28T14:49:55Z'
+environment_fingerprint: c5afeedd70477a93e259f02b5e31f49ce767b61b9dab9a0b4f597d7b191e3094
+toolchain_fingerprint: b5baa97eda65cf3d046bee3fca2b54fcfeda78f50a3491c62368ed4473e2f209
+dependency_lock_digest: 663a103d358bcb373f913ad29c340d59bba30edafdcb5ac4a8c74ff7d8ac9cdb
+valid_for_head: 73dda293079f602c83929d1bbccb8dd5b9d1a455
+expires_when:
+- reviewed or bootstrap source head changes
+- dependency lock digest changes
+- toolchain/runtime fingerprint changes
+- verification environment fingerprint changes
+regeneration_owner: C00
+rule: C00 records baseline command failures before implementation, binds them to source/dependency/toolchain/environment
+  fingerprints, and regenerates them whenever an expiry condition changes. Workers may rely only on still-valid
+  checksum-bound entries and must not relabel new failures as baseline failures.
+commands:
+- npm run verify
+failure_record_schema: templates/BASELINE-FAILURE.yaml
+fingerprint_rule: Normalize volatile paths/timestamps/IDs, redact secrets/private data, then SHA-256 the stable
+  failure signature.
+fingerprint_inputs:
+  environment: os=Microsoft Windows 10.0.26200;os_description=Microsoft Windows
+    10.0.26200;architecture=x64;shell=powershell;ci=false;timezone=Asia/Jerusalem
+  toolchain: node=v24.13.0;npm=11.6.2;git=2.53.0.windows.2;package_json_sha256=58fa140360d1bad4b1409be373efc5af6f09f8b3885064bb6bdd8b04498e5b0a;package_lock_sha256=663a103d358bcb373f913ad29c340d59bba30edafdcb5ac4a8c74ff7d8ac9cdb;prettier_config_sha256=24a24dbcd6631c048528d23424bf8e54c10c11e3612704a68676bff74992fec3
+recorded_failures:
+- schema_version: 1
+  execution_id: OT-V21-PRODUCTION
+  baseline_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
+  measured_at: '2026-07-28T14:49:55Z'
+  environment_fingerprint: c5afeedd70477a93e259f02b5e31f49ce767b61b9dab9a0b4f597d7b191e3094
+  toolchain_fingerprint: b5baa97eda65cf3d046bee3fca2b54fcfeda78f50a3491c62368ed4473e2f209
+  dependency_lock_digest: 663a103d358bcb373f913ad29c340d59bba30edafdcb5ac4a8c74ff7d8ac9cdb
+  command: npm run verify
+  exit_code: 1
+  failure_fingerprint: 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
+  first_relevant_lines_redacted:
+  - Secret scan passed across 2202 repo text files.
+  - 'Prettier check failed: Code style issues found in 1736 files.'
+  - Later verify stages did not run because the command is chained with &&.
+  affected_paths:
+  - .agents/**
+  - .github/**
+  - AGENTS.md
+  - apps/**
+  - artifacts/**
+  - config/**
+  - contracts/**
+  - integrations/**
+  - ops/**
+  - packages/**
+  - scripts/**
+  - tests/**
+  - tools/**
+  - repository root configuration and documentation
+  classification: preexisting_at_reviewed_head
+  recorded_by: C00
+  recorded_at: '2026-07-28T14:49:55Z'
+  expires_when:
+  - source head changes
+  - dependency lock changes
+  - toolchain/runtime changes
+  - verification environment changes

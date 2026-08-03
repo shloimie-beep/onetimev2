@@ -1,0 +1,122 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P14
+task_packet_digest: f35e796992e80fd947064e343a2088a069cc1a4e1e5be2719d0bbf4ced7cfac7
+task_context_digest: 0f7110208e474961ca0473b7725d54d4d399e691ab55da4fe7bba0c1ae745978
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+branch: codex/v21-p14-student-app
+start_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+dependency_heads:
+  F03:
+    state: interface_ready_integrated
+    task_head_sha: 7c638131a0cab757657e95c4d2229a1573e4cde1
+    integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+    interface_implementation_head_sha: 56fa990c5d4a6cb7b602b5f68fe0d2402a0ee71e
+    interface_checkpoint_digest: 66464e9a769c717dfdfda082bb8a26030da1681d601d6752fb04b10d812db111
+  F04:
+    state: interface_ready_integrated
+    task_head_sha: 54a0ac28b51d271aacab60003451dbcc66ffcac8
+    integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+    interface_implementation_head_sha: 81c0ee64072386db41aa5a40243c693762ab493a
+    interface_checkpoint_digest: a57837379bfc8210188887ff31937ed7882befe10b80941499dc7ba305e7984d
+  F07:
+    state: interface_ready_integrated
+    task_head_sha: 2c451d7b1f59eece1ae8df505d4eeec19f42e1ef
+    integration_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
+    interface_implementation_head_sha: a90baae8cf69d6823af6d741161fe0e9e7441321
+    interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
+status: ready_for_review
+phase: complete
+claimed_by: codex-p14-worker-cd46fd41
+claim_time: '2026-07-28T19:48:00Z'
+claim_id: cd46fd41-66f9-42c3-9215-2d12fbbf7d31
+writer_slot_lease_id: 9bf07bbc-62cb-4905-8091-790815fd556a
+lease_expires_at: '2026-07-28T20:27:38Z'
+lease_released_at: '2026-07-28T19:57:00Z'
+last_heartbeat_at: '2026-07-28T19:57:00Z'
+controller_authorization_sha: 0341f6303937bebc64e4d3cae6905168183dbb77
+state_based_on_control_head_sha: f2ace0993937a020a31c364f079bcf52b8c65350
+ready_entry_payload_digest: 835d7186f4413b121f360335878d3df270b40e50cabd0d74b4f1ba85ce6097d8
+state_based_on_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+last_implementation_commit_sha: 9c08e9c6735a61e201f7b05116a3406e6092e08b
+interface_checkpoint_digest: 1a9b86f0d39cc0e3999973fc988d9c2d00c302ccad13a50857c14c7d5e2f03e1
+completed_steps:
+  - Verified exact repository, containing control authorization, registry/ready entry, branch absence, atomic claim, unexpired STUDENT_APP lease, and authorized start.
+  - Verified package/task/context/source digests, locked manifests, and exact F03/F04/F07 integrated interface bindings.
+  - Read the P14 locked context and exact Student product, capability/route, screen, accessibility, and dependency sections.
+  - Implemented the versioned self-only Student contract/domain, authenticated server service, separate shell, Today, own profile, read-only credential guidance, and logout.
+  - Passed full workspace typecheck/lint, focused isolation/server/UI tests, formatting, diff hygiene, and feature style/data-surface inventories.
+  - Published the exact P14 interface checkpoint for P21 and a structured shared registration request.
+remaining_steps:
+  - I36 must review and integrate the P14 interface checkpoint before C00 authorizes P21.
+  - I36 must disposition P14-REGISTRATION-001 in shared barrel and route-composition paths.
+next_action: Review and integrate P14 interface digest 1a9b86f0d39cc0e3999973fc988d9c2d00c302ccad13a50857c14c7d5e2f03e1 from implementation head 9c08e9c6735a61e201f7b05116a3406e6092e08b, then disposition P14-REGISTRATION-001.
+requirements:
+  OTV2-STUDENT-041: implementation_ready
+  OTV2-STUDENT-042: implementation_ready
+  OTV2-STUDENT-043: implementation_ready
+  OTV2-STUDENT-044: implementation_ready
+  OTV2-STUDENT-045: implementation_ready
+  OTV2-STUDENT-046: implementation_ready
+  OTV2-STUDENT-047: implementation_ready
+  OTV2-STUDENT-048: implementation_ready
+  OTV2-STUDENT-049: implementation_ready
+  OTV2-STUDENT-050: implementation_ready
+acceptance_cases:
+  OTV2-STUDENT-041-AC01: implementation_ready
+  OTV2-STUDENT-042-AC01: implementation_ready
+  OTV2-STUDENT-043-AC01: implementation_ready
+  OTV2-STUDENT-044-AC01: implementation_ready
+  OTV2-STUDENT-045-AC01: implementation_ready
+  OTV2-STUDENT-046-AC01: implementation_ready
+  OTV2-STUDENT-047-AC01: implementation_ready
+  OTV2-STUDENT-048-AC01: implementation_ready
+  OTV2-STUDENT-049-AC01: implementation_ready
+  OTV2-STUDENT-050-AC01: implementation_ready
+changed_paths:
+  - apps/web/src/client/app/student/account/StudentAccount.tsx
+  - apps/web/src/client/app/student/account/index.ts
+  - apps/web/src/client/app/student/home/StudentToday.tsx
+  - apps/web/src/client/app/student/home/index.ts
+  - apps/web/src/client/app/student/profile/StudentProfile.tsx
+  - apps/web/src/client/app/student/profile/index.ts
+  - apps/web/src/client/app/student/shell/StudentShell.test.tsx
+  - apps/web/src/client/app/student/shell/StudentShell.tsx
+  - apps/web/src/client/app/student/shell/index.ts
+  - apps/web/src/client/app/student/shell/student-shell.css
+  - apps/web/src/server/features/portals/student/index.ts
+  - apps/web/src/server/features/portals/student/service.test.ts
+  - apps/web/src/server/features/portals/student/service.ts
+  - packages/contracts/src/portals/student/index.ts
+  - packages/domain/src/portals/student/errors.ts
+  - packages/domain/src/portals/student/index.ts
+  - packages/domain/src/portals/student/isolation.ts
+  - packages/domain/src/portals/student/navigation.ts
+  - packages/domain/src/portals/student/student-portal.test.ts
+  - packages/domain/src/portals/student/view.ts
+  - ops/v2.1-execution/runtime/P14/HANDOFF.md
+  - ops/v2.1-execution/runtime/P14/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/P14/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P14/STEWARD-REQUESTS.yaml
+  - ops/v2.1-execution/runtime/P14/TASK-STATE.yaml
+migrations: []
+steward_requests:
+  - P14-REGISTRATION-001
+verification:
+  commands_run:
+    - Exact control/ready/registry/branch/claim/lease/dependency verification: passed.
+    - LOCKED-SHA256SUMS immutable Git-blob verification: 200/200 passed; source specification 15/15 passed.
+    - npm run typecheck: passed.
+    - npm run lint -- --quiet: passed.
+    - npx vitest run packages/domain/src/portals/student/student-portal.test.ts apps/web/src/server/features/portals/student/service.test.ts apps/web/src/client/app/student/shell/StudentShell.test.tsx --environment node: passed, 9 tests.
+    - Prettier and git diff --check for P14 artifacts: passed.
+    - Raw feature palette/font inventory: absent.
+  known_baseline_failures: []
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings:
+  - Shared barrels and central route composition are captured in P14-REGISTRATION-001 and were not edited by P14.

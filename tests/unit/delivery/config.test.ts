@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { loadDeliveryWorkerConfig } from '../../../apps/worker/src/delivery/config.ts';
+import { loadConfig } from '../../../packages/config/src/index.ts';
 
 const baseEnv = {
   NODE_ENV: 'test',
@@ -144,7 +145,11 @@ describe('delivery worker config', () => {
     expect(() =>
       loadDeliveryWorkerConfig({
         ...baseEnv,
+        NODE_ENV: 'production',
         DELIVERY_ENVIRONMENT: 'production',
+        ONE_TIME_RUNTIME_ENVIRONMENT: 'production',
+        AUTH_CSRF_SECRET: 'production-delivery-config-csrf-secret',
+        MFA_SECRET_ENCRYPTION_KEY: 'production-delivery-config-mfa-key',
         DELIVERY_TRANSPORT_MODE: 'provider',
         ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED: 'true',
       }),
@@ -160,5 +165,35 @@ describe('delivery worker config', () => {
         DELIVERY_PROVIDER_TIMEOUT_LEASE_SAFETY_MS: '3000',
       }),
     ).toThrow(/safety margin/);
+  });
+});
+
+describe('live class fake adapter config', () => {
+  it('allows isolated staging previews to use the fake live adapter under production Node mode', () => {
+    const config = loadConfig({
+      ...baseEnv,
+      NODE_ENV: 'production',
+      DELIVERY_ENVIRONMENT: 'isolated_staging',
+      ONE_TIME_RUNTIME_ENVIRONMENT: 'isolated_staging',
+      AUTH_CSRF_SECRET: 'production-node-isolated-staging-csrf-secret',
+      MFA_SECRET_ENCRYPTION_KEY: 'production-node-isolated-staging-mfa-key',
+      LIVE_CLASS_FAKE_ADAPTER_ENABLED: 'true',
+    });
+
+    expect(config.liveClassFakeAdapterEnabled).toBe(true);
+  });
+
+  it('still rejects the fake live adapter in production runtime scope', () => {
+    expect(() =>
+      loadConfig({
+        ...baseEnv,
+        NODE_ENV: 'production',
+        DELIVERY_ENVIRONMENT: 'production',
+        ONE_TIME_RUNTIME_ENVIRONMENT: 'production',
+        AUTH_CSRF_SECRET: 'production-runtime-csrf-secret-value',
+        MFA_SECRET_ENCRYPTION_KEY: 'production-runtime-mfa-key-value',
+        LIVE_CLASS_FAKE_ADAPTER_ENABLED: 'true',
+      }),
+    ).toThrow(/Live class fake adapter is forbidden in production/);
   });
 });

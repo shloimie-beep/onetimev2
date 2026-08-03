@@ -50,33 +50,36 @@ describe('lead validation and content contracts', () => {
   });
 
   it('uses distinct family and school success copy', () => {
-    expect(successCopy('family').heading).toBe('Thank you - we received your Family signup.');
-    expect(successCopy('family').body).toContain('Class access and member login details');
+    expect(successCopy('family').heading).toBe('Adult pre-registration received.');
+    expect(successCopy('family').body).toContain('did not create a portal account');
     expect(successCopy('school').heading).toBe('Thank you - we received your school inquiry.');
     expect(successCopy('school').body).toContain('does not create class access');
   });
 
-  it('keeps the approved campaign countdown without stale pricing copy', () => {
+  it('renders campaign timing only from an explicit expiry', () => {
     const publicCopy = JSON.stringify({ campaign, landingContent });
-    expect(campaign.id).toBe('free-until-rosh-hashanah-2026');
-    expect(campaign.deadlineDate).toBe('2026-09-11');
+    expect(campaign.id).toBe('configured-free-access');
     expect(campaign.timezone).toBe('Asia/Jerusalem');
-    expect(campaignTicker(new Date('2026-09-10T20:59:00Z'))).toContain(
-      'JOIN NOW — FREE UNTIL ROSH HASHANAH',
+    expect(campaignTicker(new Date('2026-09-10T20:59:00Z'))).toBeNull();
+    expect(campaignTicker(new Date('2026-09-10T20:59:00Z'), '2026-09-13T19:24:00+03:00')).toContain(
+      'FREE ACCESS',
     );
-    expect(campaignTicker(new Date('2026-09-11T00:01:00+03:00'))).toBeNull();
-    expect(publicCopy).not.toMatch(/\$67|monthly price|No card today|trial/i);
+    expect(
+      campaignTicker(new Date('2026-09-13T19:24:00+03:00'), '2026-09-13T19:24:00+03:00'),
+    ).toBeNull();
+    expect(landingContent.hero.kickerLines).toEqual(['LIVE ONLINE', 'ON-DEMAND REVIEW']);
+    expect(landingContent.hero.heading).toBe('Mishnayos made memorable.');
+    expect(landingContent).not.toHaveProperty('whatsappAssistant');
+    expect(publicCopy).not.toMatch(/September 13|2026-09-13|LIVE EVERY DAY/i);
   });
 
   it('keeps the receive panel exact and scoped', () => {
     expect(landingContent.receive.heading).toBe(
       'Everything He Needs to Learn, Review, and Remember',
     );
-    expect(landingContent.receive.title).toBe(
-      'Live Daily Mishnayos—plus the tools to make it stick.',
-    );
+    expect(landingContent.receive.title).toBe('Live Mishnayos—plus the tools to make it stick.');
     expect(landingContent.receive.bullets.map((bullet) => bullet.lead)).toEqual([
-      'LIVE EVERY DAY',
+      'LIVE SUNDAY–THURSDAY',
       'REVIEW ANYTIME',
       'REMEMBER THE LEARNING',
       'STAY ON TRACK',

@@ -1,0 +1,47 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P22-config-key-002
+task_id: P22
+kind: config_key
+requirement_ids:
+  - OTV2-LEARNING-093
+  - OTV2-LEARNING-094
+  - OTV2-LEARNING-095
+  - OTV2-LEARNING-096
+  - OTV2-LEARNING-097
+  - OTV2-LEARNING-098
+  - OTV2-LEARNING-099
+  - OTV2-LEARNING-100
+  - OTV2-LEARNING-196
+  - OTV2-LEARNING-197
+  - OTV2-LEARNING-238
+acceptance_case_ids:
+  - OTV2-LEARNING-093-AC01
+  - OTV2-LEARNING-094-AC01
+  - OTV2-LEARNING-095-AC01
+  - OTV2-LEARNING-096-AC01
+  - OTV2-LEARNING-097-AC01
+  - OTV2-LEARNING-098-AC01
+  - OTV2-LEARNING-099-AC01
+  - OTV2-LEARNING-100-AC01
+  - OTV2-LEARNING-196-AC01
+  - OTV2-LEARNING-197-AC01
+rationale: >-
+  Stable consent-safe aliases and opaque leaderboard entry keys require a
+  protected server-side HMAC key.
+desired_semantic_change: >-
+  Add the required server-only configuration key
+  LEARNING_ALIAS_HMAC_KEY. Validate that it is present and nonblank in every
+  enabled runtime. Inject it into the P22 service without logging, returning,
+  serializing, or exposing its value to clients.
+proposed_symbols_routes_keys_or_dependencies:
+  - LEARNING_ALIAS_HMAC_KEY
+compatibility_assumptions:
+  - Rotation policy must preserve the intended alias-stability window or explicitly version aliases.
+  - The request names only the configuration key and contains no secret value.
+verification_performed:
+  - Verified source accepts aliasHmacKey only through server-side service construction.
+  - Verified aliases use HMAC-SHA256 over length-prefixed complete scope.
+conflicts_or_risks:
+  - Never place the secret value in code, commits, logs, responses, evidence, or client configuration.
+contains_secret_or_private_data: false

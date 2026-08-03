@@ -37,12 +37,18 @@ function assertTextExcludes(filePath, tokens) {
   }
 }
 
-async function fetchVersion(url) {
-  const response = await fetch(`${url}/version`);
+async function fetchRuntimeIdentity(url, probeToken) {
+  const response = await fetch(`${url}/api/internal/ops/diagnostics`, {
+    headers: { 'x-ops-probe-token': probeToken },
+  });
   if (!response.ok) {
-    throw new Error(`${url}/version returned ${response.status}`);
+    throw new Error(`${url}/api/internal/ops/diagnostics returned ${response.status}`);
   }
-  return response.json();
+  const body = await response.json();
+  if (!body || typeof body !== 'object' || !body.runtime || typeof body.runtime !== 'object') {
+    throw new Error(`${url}/api/internal/ops/diagnostics omitted protected runtime identity`);
+  }
+  return body.runtime;
 }
 
 const state = readJson(files.state);
@@ -152,9 +158,13 @@ for (const filePath of Object.values(files)) {
 
 if (checkLive) {
   try {
+    const probeToken = process.env.OPERATIONS_PROBE_TOKEN;
+    if (!probeToken) {
+      throw new Error('OPERATIONS_PROBE_TOKEN is required for protected live readback');
+    }
     const [production, staging] = await Promise.all([
-      fetchVersion(state.live_readback.production.url),
-      fetchVersion(state.live_readback.staging.url),
+      fetchRuntimeIdentity(state.live_readback.production.url, probeToken),
+      fetchRuntimeIdentity(state.live_readback.staging.url, probeToken),
     ]);
     assertEqual('live production version', production.version, expectedVersion);
     assertEqual('live production sha', production.commit_sha, expectedSha);

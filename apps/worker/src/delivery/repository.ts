@@ -3,10 +3,14 @@ import type {
   ClaimedDelivery,
   ClaimBatchInput,
   DeliveryContact,
+  DeliveryFailure,
   DeliveryLeadStatus,
   DeliveryOutcome,
+  DeliveryProviderName,
+  DeliveryProviderOperation,
   DeliveryRepository,
   DeliverySignup,
+  ProviderReceipt,
 } from '../../../../packages/contracts/src/delivery/types.ts';
 import { sanitizeFailureCode } from '../../../../packages/domain/src/delivery/retry.ts';
 
@@ -77,6 +81,13 @@ SELECT
   claimed.attempts,
   claimed.created_at,
   claimed.next_attempt_at AS claim_lease_expires_at,
+  claimed.provider_operation_state,
+  claimed.provider_operation_provider,
+  claimed.provider_operation_idempotency_key,
+  claimed.provider_acceptance_ref_hash,
+  claimed.provider_operation_dispatched_at,
+  claimed.provider_operation_accepted_at,
+  claimed.provider_operation_updated_at,
   contact.display_name,
   contact.family_school_classification,
   contact.family_or_school,
@@ -119,6 +130,97 @@ UPDATE onetime.outbox_events
 RETURNING delivery_key
 `;
 
+const READ_PROVIDER_OPERATION_SQL = `
+SELECT
+  provider_operation_state,
+  provider_operation_provider,
+  provider_operation_idempotency_key,
+  provider_acceptance_ref_hash,
+  provider_operation_dispatched_at,
+  provider_operation_accepted_at,
+  provider_operation_updated_at
+FROM onetime.outbox_events
+WHERE id = $1
+  AND account_key = $2
+  AND product_key = $3
+  AND transport_mode = $4
+  AND status = 'processing'
+  AND next_attempt_at = $5::timestamptz
+  AND next_attempt_at > $6::timestamptz
+FOR UPDATE
+`;
+
+const BEGIN_PROVIDER_OPERATION_SQL = `
+UPDATE onetime.outbox_events
+   SET provider_operation_state = 'in_flight',
+       provider_operation_provider = $7,
+       provider_operation_idempotency_key = $8,
+       provider_acceptance_ref_hash = NULL,
+       provider_operation_dispatched_at = COALESCE(provider_operation_dispatched_at, $6::timestamptz),
+       provider_operation_accepted_at = NULL,
+       provider_operation_updated_at = $6::timestamptz
+ WHERE id = $1
+   AND account_key = $2
+   AND product_key = $3
+   AND transport_mode = $4
+   AND status = 'processing'
+   AND next_attempt_at = $5::timestamptz
+   AND next_attempt_at > $6::timestamptz
+RETURNING delivery_key
+`;
+
+const QUARANTINE_PROVIDER_OPERATION_SQL = `
+UPDATE onetime.outbox_events
+   SET provider_operation_state = 'acceptance_unknown',
+       provider_operation_updated_at = $6::timestamptz
+ WHERE id = $1
+   AND account_key = $2
+   AND product_key = $3
+   AND transport_mode = $4
+   AND status = 'processing'
+   AND next_attempt_at = $5::timestamptz
+   AND next_attempt_at > $6::timestamptz
+RETURNING delivery_key
+`;
+
+const ACCEPT_PROVIDER_OPERATION_SQL = `
+UPDATE onetime.outbox_events
+   SET provider_operation_state = 'accepted',
+       provider_acceptance_ref_hash = $9,
+       provider_operation_accepted_at = $6::timestamptz,
+       provider_operation_updated_at = $6::timestamptz
+ WHERE id = $1
+   AND account_key = $2
+   AND product_key = $3
+   AND transport_mode = $4
+   AND status = 'processing'
+   AND next_attempt_at = $5::timestamptz
+   AND next_attempt_at > $6::timestamptz
+   AND provider_operation_provider = $7
+   AND provider_operation_idempotency_key = $8
+   AND provider_operation_state = 'in_flight'
+RETURNING delivery_key
+`;
+
+const REJECT_PROVIDER_OPERATION_SQL = `
+UPDATE onetime.outbox_events
+   SET provider_operation_state = $9,
+       provider_acceptance_ref_hash = NULL,
+       provider_operation_accepted_at = NULL,
+       provider_operation_updated_at = $6::timestamptz
+ WHERE id = $1
+   AND account_key = $2
+   AND product_key = $3
+   AND transport_mode = $4
+   AND status = 'processing'
+   AND next_attempt_at = $5::timestamptz
+   AND next_attempt_at > $6::timestamptz
+   AND provider_operation_provider = $7
+   AND provider_operation_idempotency_key = $8
+   AND provider_operation_state = 'in_flight'
+RETURNING delivery_key
+`;
+
 function asString(value: unknown): string {
   return typeof value === 'string' ? value : String(value ?? '');
 }
@@ -135,6 +237,16 @@ function asDate(value: unknown): Date {
     throw new Error('Database returned an invalid delivery timestamp.');
   }
   return parsed;
+}
+
+function asNullableDate(value: unknown): Date | null {
+  if (value === null || value === undefined || value === '') return null;
+  return asDate(value);
+}
+
+function asProviderName(value: unknown): DeliveryProviderName | null {
+  const provider = asNullableString(value);
+  return provider === 'resend' || provider === 'one_time_wapi' ? provider : null;
 }
 
 function asObject(value: unknown): Record<string, unknown> {
@@ -215,6 +327,19 @@ function parseClaim(row: SqlRow): ClaimedDelivery {
     attempts: Number(row.attempts ?? 0),
     createdAt: asDate(row.created_at),
     claimLeaseExpiresAt: asDate(row.claim_lease_expires_at),
+    providerOperation: {
+      state: ['not_started', 'in_flight', 'accepted', 'rejected', 'acceptance_unknown'].includes(
+        asString(row.provider_operation_state),
+      )
+        ? (asString(row.provider_operation_state) as ClaimedDelivery['providerOperation']['state'])
+        : 'not_started',
+      provider: asProviderName(row.provider_operation_provider),
+      idempotencyKey: asNullableString(row.provider_operation_idempotency_key),
+      acceptanceRefHash: asNullableString(row.provider_acceptance_ref_hash),
+      dispatchedAt: asNullableDate(row.provider_operation_dispatched_at),
+      acceptedAt: asNullableDate(row.provider_operation_accepted_at),
+      updatedAt: asNullableDate(row.provider_operation_updated_at),
+    },
     contact: parseContact(row),
     signup: parseSignup(row),
   };
@@ -236,6 +361,13 @@ function outcomeColumns(outcome: DeliveryOutcome): {
     return {
       status: 'pending',
       nextAttemptAt: outcome.nextAttemptAt,
+      deliveredAt: null,
+    };
+  }
+  if (outcome.kind === 'acceptance_unknown') {
+    return {
+      status: 'acceptance_unknown',
+      nextAttemptAt: outcome.at,
       deliveredAt: null,
     };
   }
@@ -263,7 +395,11 @@ function resultMetadata(claim: ClaimedDelivery, outcome: DeliveryOutcome): Recor
         .digest('hex')
         .slice(0, 16);
     }
-  } else if (outcome.kind === 'retry' || outcome.kind === 'dead_lettered') {
+  } else if (
+    outcome.kind === 'retry' ||
+    outcome.kind === 'dead_lettered' ||
+    outcome.kind === 'acceptance_unknown'
+  ) {
     metadata.failure_code = sanitizeFailureCode(outcome.failure.code);
     metadata.failure_category = outcome.failure.category;
     if (outcome.failure.provider) metadata.provider = outcome.failure.provider;
@@ -353,4 +489,153 @@ export class PostgresDeliveryRepository implements DeliveryRepository {
       client.release();
     }
   }
+
+  async beginProviderOperation(
+    claim: ClaimedDelivery,
+    operation: DeliveryProviderOperation,
+    at: Date,
+  ): Promise<
+    | { kind: 'dispatch' }
+    | { kind: 'accepted'; receipt: ProviderReceipt }
+    | { kind: 'acceptance_unknown' }
+    | { kind: 'lease_lost' }
+  > {
+    const client = await this.pool.connect();
+    try {
+      await client.query('BEGIN');
+      const current = await client.query(READ_PROVIDER_OPERATION_SQL, claimFenceValues(claim, at));
+      const row = current.rows[0];
+      if (!row) {
+        await client.query('COMMIT');
+        return { kind: 'lease_lost' };
+      }
+      const state = asString(row.provider_operation_state);
+      const provider = asProviderName(row.provider_operation_provider);
+      const idempotencyKey = asNullableString(row.provider_operation_idempotency_key);
+      if (
+        (provider && provider !== operation.provider) ||
+        (idempotencyKey && idempotencyKey !== operation.idempotencyKey)
+      ) {
+        await client.query('COMMIT');
+        return { kind: 'acceptance_unknown' };
+      }
+      if (state === 'accepted') {
+        const acceptanceRefHash = asNullableString(row.provider_acceptance_ref_hash);
+        const acceptedAt = asNullableDate(row.provider_operation_accepted_at);
+        await client.query('COMMIT');
+        if (!acceptanceRefHash || !acceptedAt) return { kind: 'acceptance_unknown' };
+        return {
+          kind: 'accepted',
+          receipt: {
+            provider: operation.provider,
+            messageId: acceptanceRefHash,
+            acceptedAt,
+            sink: false,
+          },
+        };
+      }
+      if (
+        (state === 'in_flight' || state === 'acceptance_unknown') &&
+        operation.acceptanceRecovery !== 'retry_same_key'
+      ) {
+        await client.query(QUARANTINE_PROVIDER_OPERATION_SQL, claimFenceValues(claim, at));
+        await client.query('COMMIT');
+        return { kind: 'acceptance_unknown' };
+      }
+      const updated = await client.query(BEGIN_PROVIDER_OPERATION_SQL, [
+        ...claimFenceValues(claim, at),
+        operation.provider,
+        operation.idempotencyKey,
+      ]);
+      await client.query('COMMIT');
+      return updated.rowCount ? { kind: 'dispatch' } : { kind: 'lease_lost' };
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+
+  async recordProviderAccepted(
+    claim: ClaimedDelivery,
+    operation: DeliveryProviderOperation,
+    receipt: ProviderReceipt,
+    at: Date,
+  ): Promise<boolean> {
+    const acceptanceRefHash = createHash('sha256')
+      .update(receipt.messageId ?? `${operation.provider}:${operation.idempotencyKey}`)
+      .digest('hex');
+    return this.transitionProviderOperation(
+      ACCEPT_PROVIDER_OPERATION_SQL,
+      claim,
+      operation,
+      at,
+      acceptanceRefHash,
+    );
+  }
+
+  async recordProviderRejected(
+    claim: ClaimedDelivery,
+    operation: DeliveryProviderOperation,
+    failure: DeliveryFailure,
+    at: Date,
+  ): Promise<boolean> {
+    void failure;
+    return this.transitionProviderOperation(
+      REJECT_PROVIDER_OPERATION_SQL,
+      claim,
+      operation,
+      at,
+      'rejected',
+    );
+  }
+
+  async recordProviderAcceptanceUnknown(
+    claim: ClaimedDelivery,
+    operation: DeliveryProviderOperation,
+    failure: DeliveryFailure,
+    at: Date,
+  ): Promise<boolean> {
+    void failure;
+    return this.transitionProviderOperation(
+      REJECT_PROVIDER_OPERATION_SQL,
+      claim,
+      operation,
+      at,
+      'acceptance_unknown',
+    );
+  }
+
+  private async transitionProviderOperation(
+    sql: string,
+    claim: ClaimedDelivery,
+    operation: DeliveryProviderOperation,
+    at: Date,
+    value: string,
+  ): Promise<boolean> {
+    const client = await this.pool.connect();
+    try {
+      const result = await client.query(sql, [
+        ...claimFenceValues(claim, at),
+        operation.provider,
+        operation.idempotencyKey,
+        value,
+      ]);
+      return Boolean(result.rowCount);
+    } finally {
+      client.release();
+    }
+  }
+}
+
+function claimFenceValues(claim: ClaimedDelivery, at: Date): unknown[] {
+  return [
+    claim.id,
+    claim.accountKey,
+    claim.productKey,
+    claim.transportMode,
+    claim.claimLeaseExpiresAt,
+    at,
+  ];
 }

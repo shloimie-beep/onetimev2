@@ -17,6 +17,8 @@ export {
   successCopy,
 } from './lead/normalize.ts';
 export { processOutboxSink } from './outbox/sink.ts';
+export * from './highlevel/index.ts';
+export * from './events/event-email-permission.ts';
 export {
   communicationHistorySourceTruthMatrix,
   dryRunCommunicationHistoryBackfill,
@@ -31,9 +33,28 @@ export {
   createClassPortalAccessAdapter,
   getClassOccurrenceDetail,
   listClassOccurrences,
+  listClassOccurrencesForLearner,
   resolveDailyClassWindow,
   scheduleClassFulfillmentForLead,
 } from './classes/service.ts';
+export {
+  ClassManagementError,
+  attachRecordingToClass,
+  createManagedClassOccurrence,
+  createManagedClassSeries,
+  enrollLearnerInClass,
+  getManagedClassOccurrence,
+  listClassEnrollmentCandidates,
+  listClassEnrollments,
+  listClassRecordingAccess,
+  listClassRecordings,
+  listManagedClassSeries,
+  setClassRecordingLearnerAccess,
+  unenrollLearnerFromClass,
+  updateManagedClassOccurrence,
+  updateManagedClassSeries,
+  type ClassManagementActor,
+} from './classes/management.ts';
 export {
   CLASSROOM_HOST_POLICY_VERSION,
   CLASSROOM_POLICY_VERSION,
@@ -42,14 +63,72 @@ export {
   type ClassroomRepository,
   type ClassroomService,
 } from './classroom/service.ts';
+export {
+  CANONICAL_OBS_SCENES,
+  CANONICAL_OBS_SOURCES,
+  LIVE_CLASS_POLICY_VERSION,
+  LIVE_CLASS_STAGE_SURFACE_LABEL,
+  createLiveClassService,
+  verifySignedLiveClassCommand,
+  type LiveClassCommandInsert,
+  type LiveClassLearnerRecord,
+  type LiveClassRepository,
+  type LiveClassService,
+  type LiveClassSessionRecord,
+  type ZoomHostLaunchPort,
+} from './live-class/service.ts';
+export {
+  createZoomHostLaunchPort,
+  inspectZoomHostControlReadiness,
+  ZOOM_HOST_AUTHORIZATION_VARIABLES,
+  ZOOM_HOST_CONTROL_PROVIDER_GATE_VARIABLES,
+  ZOOM_HOST_CONTROL_READINESS_VARIABLES,
+  ZOOM_HOST_CONTROL_REQUIRED_VARIABLES,
+  ZOOM_MEETING_SDK_APP_VARIABLES,
+  ZOOM_REAL_CONTROL_CANARY_AUTHORIZATION_VARIABLES,
+  ZOOM_S2S_MEETING_PROVISIONING_VARIABLES,
+} from './live-class/zoom-host.ts';
+export {
+  ZOOM_ADMIN_TEST_LEARNER_KEY,
+  ZOOM_ADMIN_TEST_LEARNER_NAME,
+  ZOOM_ADMIN_TEST_TOPIC_PREFIX,
+  createZoomAdminProvider,
+  createZoomAdminService,
+  type ZoomAdminProviderPort,
+  type ZoomAdminService,
+  type ZoomAdminTestResourceRecord,
+  type ZoomAdminTestResourceRepository,
+} from './live-class/zoom-admin.ts';
+export {
+  ZOOM_CUSTOMER_KEY_MAX_LENGTH,
+  assertZoomCustomerKey,
+  zoomCustomerKey,
+} from './live-class/zoom-identifiers.ts';
 export { createClassroomReminderJob } from './classroom/reminders.ts';
 export {
+  createZoomClassOccurrenceProvider,
+  createZoomClassOccurrenceHostLaunchPort,
+  createZoomClassOccurrenceService,
+  createZoomClassroomPorts,
+  type ZoomClassOccurrenceProvider,
+  type ZoomClassOccurrenceRepository,
+  type ZoomClassOccurrenceResourceRecord,
+} from './classroom/zoom-occurrence.ts';
+export {
   ZoomApiError,
+  ZOOM_ISOLATED_CANARY_AGENDA,
+  ZOOM_ISOLATED_CANARY_TOPIC_PREFIX,
   assertNoZoomSecretLeak,
   createLearnerZoomSdkSignature,
+  createHostZoomSdkSignature,
+  createZoomMeetingSdkSignature,
+  createZoomProtectedTargetInspectionClient,
   createZoomRestClient,
   registrantTokenFromJoinUrl,
   resolveZoomOccurrenceForLocalDate,
+  zoomIsolatedCanaryTopic,
+  type ZoomProtectedTargetInspectionRequestObserver,
+  type ZoomProtectedTargetScopeInspection,
 } from './providers/zoom-rest.ts';
 export {
   processZoomWebhook,
@@ -137,6 +216,9 @@ export {
   type Ot104rVimeoVideoInspection,
   type Ot104rVimeoWebhookReceiptResult,
 } from './content/vimeo-private-runtime.ts';
+export * from './content/vimeo-mishnayos-catalog.ts';
+export * from './content/vimeo-mishnayos-provider.ts';
+export * from './content/vimeo-mishnayos-taxonomy.ts';
 export {
   OT109_SCOPE,
   Ot109PublisherError,
@@ -155,6 +237,35 @@ export {
   type Ot109VimeoReference,
   type Ot109VimeoStatus,
 } from './content/publisher.ts';
+export {
+  LEARNING_DELIVERY_ALLOWED_TRANSITIONS,
+  LEARNING_DELIVERY_MEDIA_STATES,
+  LearningDeliveryError,
+  assertSafeLearningDeliveryBusinessEvent,
+  assertLearningDeliveryTransition,
+  buildLearningDeliveryPreparedDemoProjection,
+  buildLearningDeliveryBusinessEvent,
+  buildLearningDeliveryFfmpegRenderPlan,
+  buildLearningDeliveryFfprobePlan,
+  buildLearningDeliveryTranscriptArtifact,
+  buildLearningDeliveryWebVtt,
+  createLearningDeliveryOpenAiTranscriptionAdapter,
+  LEARNING_DELIVERY_TRANSCRIPTION_VOCABULARY_PROMPT,
+  learningDeliverySha256Hex,
+  normalizeLearningDeliveryDriveFile,
+  normalizeLearningDeliveryTranscriptSegments,
+  parseLearningDeliverySilencedetectLog,
+  projectLearningDeliveryTranscriptForTrim,
+  parseLearningDeliveryFfprobeJson,
+  recordLearningDeliveryBusinessEvent,
+  sanitizeLearningDeliveryMetadata,
+  suggestLearningDeliveryAutomaticTrim,
+  suggestLearningDeliveryTrim,
+} from './content/learning-delivery.ts';
+export * from './content/learning-delivery-inputs.ts';
+export * from './content/content-factory.ts';
+export * from './content/content-factory-storage.ts';
+export * from './content/content-factory-worker.ts';
 export {
   OT86B_ALLOWED_TRANSITIONS,
   Ot86bSocialPublishingError,
@@ -209,6 +320,8 @@ export {
   completeStudentReset,
   createOwnerAdminInvitation,
   createParentActivation,
+  issueParentActivationWithClient,
+  issueLocalStudentSetupWithClient,
   createStudentReset,
   createStudentSetup,
   inspectAccountLifecycleToken,
@@ -219,6 +332,19 @@ export {
   type AccountLifecycleTokenInspection,
 } from './accounts/lifecycle.ts';
 export {
+  ContactOperationsError,
+  contactOperationsCapabilitiesForRole,
+  enrollParentHousehold,
+  parentAccessShell,
+  readAdultContactLink,
+  readContactOperationsHousehold,
+  reconcileAdultContactLink,
+  requestParentResetForHousehold,
+  requestStudentResetForHousehold,
+  setContactOperationsAccess,
+  type ContactOperationsActor,
+} from './contact-operations/service.ts';
+export {
   decryptLifecycleDeliveryPayloadForTests,
   runLifecycleDeliveryOutboxBatch,
   type LifecycleDeliveryBatchSummary,
@@ -226,12 +352,14 @@ export {
 export {
   authenticateUser,
   activateTotpEnrollment,
+  changeOwnPassword,
   canAssignContacts,
   canEditContacts,
   createAccountUser,
   createLoginCsrf,
   createPostActivationMfaHandoff,
   createSession,
+  currentApplicationAccessForUser,
   consumePostActivationMfaHandoff,
   decryptAuthEmailChallengeDeliveryPayloadForTests,
   resendEmailChallenge,
@@ -255,8 +383,31 @@ export {
   verifyRecentEmailAssurance,
   verifySessionCsrf,
   type AuthenticatedSession,
+  type PasswordChangeResult,
 } from './auth/service.ts';
 export { consumeRateLimitBudgets } from './security/rate-limit.ts';
+export {
+  TISHA_BAV_COMMUNICATION_CATALOG_VERSION,
+  TISHA_BAV_EMAIL_CATALOG,
+  TISHA_BAV_EMAIL_SENDER,
+  TISHA_BAV_EVENT_DISPLAY,
+  TISHA_BAV_EVENT_START,
+  TISHA_BAV_WORKFLOW_SCHEDULE,
+} from './events/tisha-bav-communications.ts';
+export {
+  TISHA_BAV_EVENT_CODE,
+  TISHA_BAV_EVENT_TITLE,
+  TISHA_BAV_JOIN_PATH,
+  TISHA_BAV_LANDING_PATH,
+  TISHA_BAV_REDIRECT_PATH,
+  TishaBavIdempotencyConflictError,
+  TishaBavJoinError,
+  captureTishaBavRegistration,
+  inspectTishaBavRegistrationDelivery,
+  requestTishaBavJoin,
+  resolveTishaBavRedirect,
+  tishaBavEventState,
+} from './events/tisha-bav.ts';
 export { createAccountLifecycleCredentialAdapter } from './portals/account-lifecycle-adapter.ts';
 export { buildOwnerDashboard, ownerAdminVisibleActions } from './dashboard/service.ts';
 export {
@@ -280,11 +431,30 @@ export {
   STUDENT_CLASS_HELPER_NO_SOURCE,
   STUDENT_CLASS_HELPER_OUTSIDE_SCOPE,
   STUDENT_CLASS_HELPER_POLICY,
+  createDbStudentClassHelperRateLimitStore,
   createInMemoryStudentClassHelperRateLimitStore,
+  createScopedKnowledgeHelperAdapter,
   createStudentClassHelperAdapter,
   type StudentClassHelperProviderPort,
   type StudentClassHelperRateLimitStore,
 } from './portals/student-class-helper.ts';
+export {
+  STRUCTURED_PROMPT_SCHEMA_VERSION,
+  STRUCTURED_PROMPT_SECTION_ORDER,
+  StructuredPromptPatchError,
+  applyStructuredPromptOperations,
+  assertStoredPromptIntegrity,
+  canonicalStructuredPromptJson,
+  compileLegacyPromptDocument,
+  proposeStructuredPromptAppend,
+  readStructuredPromptDocument,
+  renderStructuredPromptDocument,
+  structuredPromptDocumentChecksum,
+  structuredPromptPatchEnvelope,
+  structuredPromptSectionChecksum,
+  type StructuredPromptDiff,
+  type StructuredPromptPatchEnvelope,
+} from './content/structured-prompt.ts';
 export {
   CrmDuplicateError,
   CrmReplyError,
@@ -300,11 +470,30 @@ export {
   listAssignableUsers,
   listContacts,
   previewSingleRecipientReply,
+  reactivateContact,
   removeCrmTag,
   updateContact,
 } from './crm/service.ts';
 export { createOneTimeTelegramApplicationAdapter } from './telegram/application-adapter.ts';
 export { createOneTimeTelegramAdminRuntime } from './telegram/runtime.ts';
+export { RabbiCommunicationService } from './telegram/rabbi-communications.ts';
+export {
+  RabbiTelegramCommunicationEngine,
+  RabbiTelegramIdentityAdapter,
+} from './telegram/rabbi-engine.ts';
+export {
+  DisabledRabbiConversationProvider,
+  HighLevelRabbiConversationProvider,
+  SyntheticRabbiConversationProvider,
+} from './telegram/rabbi-provider.ts';
+export {
+  createOneTimeRabbiTelegramRuntime,
+  rabbiTelegramReadiness,
+} from './telegram/rabbi-runtime.ts';
+export {
+  RabbiParentReplyWorker,
+  encryptRabbiParentConversationRef,
+} from './telegram/rabbi-worker.ts';
 export {
   OneTimeTelegramTransportAdapter,
   TelegramBotApiSendMessageClient,
@@ -367,7 +556,17 @@ export {
   type FixtureBillingProviderAdapter,
 } from './billing/fixture-adapter.ts';
 export { buildBillingReturnPaths, isRejectedReturnPath } from './billing/return-paths.ts';
-export { householdHasLearningAccess } from './billing/portal-access.ts';
+export {
+  AccountAccessError,
+  applyHouseholdAccessState,
+  applyHouseholdAccessStateWithClient,
+  grantFreePilotAccess,
+  householdHasLearningAccess,
+  readHouseholdAccess,
+  revokeFreePilotAccess,
+  type AccountAccessActorKind,
+  type AccountAccessErrorCode,
+} from './access/service.ts';
 export {
   SupportSubmissionError,
   attachmentRequestTarget,
@@ -413,3 +612,41 @@ export {
   loadMetaWhatsAppCloudAdapterOptions,
 } from './whatsapp/provider.ts';
 export { compileWhatsAppIntent } from './whatsapp/intent.ts';
+export {
+  AdminDirectoryError,
+  adminDirectoryListQuerySchema,
+  attachAdminGuardian,
+  attachGuardianPayloadSchema,
+  createAdminHousehold,
+  createAdminLearner,
+  createHouseholdPayloadSchema,
+  createLearnerPayloadSchema,
+  inviteAdminUser,
+  inviteUserPayloadSchema,
+  listAdminAuditHistory,
+  listAdminHouseholds,
+  listAdminLearners,
+  listAdminUsers,
+  requestAdminStudentSetup,
+  requestAdminUserPasswordReset,
+  setAdminHouseholdStatus,
+  setAdminLearnerStatus,
+  setAdminUserStatus,
+  studentSetupPayloadSchema as adminStudentSetupPayloadSchema,
+  updateAdminHousehold,
+  updateAdminLearner,
+  updateAdminUser,
+  updateHouseholdPayloadSchema,
+  updateLearnerPayloadSchema,
+  updateUserPayloadSchema,
+  versionPayloadSchema as adminDirectoryVersionPayloadSchema,
+  type AdminAuditEvent,
+  type AdminDirectoryActor,
+  type AdminHousehold,
+  type AdminLearner,
+  type AdminUser,
+} from './admin-directory/service.ts';
+export * from './learning/engagement.ts';
+export * from './classroom/embedded/index.ts';
+export * from './portals/parent-household/index.ts';
+export * from './signup/school/index.ts';

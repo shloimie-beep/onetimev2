@@ -1,0 +1,72 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P28
+interface_implementation_head_sha: 83355a7b6981073662d71f44a2c8f68264a307d8
+metadata_commit_sha: derive_from_git_and_record_in_control_registry
+task_packet_digest: 3fd5a9c080e3a7695a415dc6fc289d095ad662d6ccfa598910f73014cf38c823
+contract_digest: 2b8b685495e654dd1369a55086d8709f9612df26f042db676df9f0560a606c86
+contract_digest_algorithm: >-
+  SHA-256 over UTF-8 lines containing semantic_contract_version=<version>
+  followed by exact path=<artifact SHA-256> lines sorted lexicographically by
+  path, with LF separators and no final newline.
+contract_schema_version: 1
+semantic_contract_version: 1.0.0
+state: interface_ready
+exports:
+  - path: packages/contracts/src/communications/foundation/index.ts
+    symbols:
+      - COMMUNICATION_FOUNDATION_CONTRACT_VERSION
+      - REMINDER_PREFERENCES
+      - ReminderPreference
+      - COMMUNICATION_PURPOSES
+      - CommunicationPurpose
+      - CommunicationSubject
+      - CommunicationSenderKey
+      - CommunicationSenderProfile
+      - COMMUNICATION_SENDER_PROFILES
+      - CommunicationSuppressionSnapshot
+      - EmailSkipReason
+      - EmailChannelDecision
+      - WhatsappChannelDecision
+      - CommunicationChannelPlan
+      - PlanCommunicationChannelsInput
+      - WebsiteLeadKind
+      - WebsiteLeadCaptureInput
+      - WebsiteLeadCapturePlan
+      - WorkflowControlState
+      - WorkflowDeliveryReadback
+      - CommunicationsWorkflowReadback
+      - CommunicationsReview
+      - GovernedWorkflowAction
+      - GovernedWorkflowRequest
+      - WorkflowApprovalGate
+      - CommunicationWorkflowDefinition
+      - CommunicationWorkflowFragment
+      - CommunicationDecisionRecord
+      - CommunicationFoundationRepository
+    sha256: 4c0bac7bb722590d039dcbefae02e1194e6b36350d8a5059cc27af29aa07b5d3
+compatibility_invariants:
+  - Every GHL subject is adult_only; a Student is rejected before persistence, readback, lead capture, or provider access.
+  - Reminder preference is exactly email, whatsapp, both, or none; invalid values fail without a partial write.
+  - While WhatsApp is dormant, email remains active for email, whatsapp, and both, none suppresses optional reminders, and WhatsApp records channel_skipped_not_configured with zero provider calls.
+  - Requested security and essential billing/access email cannot be disabled by reminder or marketing preferences while the email remains deliverable; their transport is Resend.
+  - Optional and marketing email recheck DND, unsubscribe, complaint, hard bounce, invalid address, and purpose-specific suppression immediately before delivery.
+  - Rabbi campaign From is rabbi@onetimeonetime.com, every reply-to is info@onetimeonetime.com, and office/brand From is info@onetimeonetime.com.
+  - Communications Review denies non-Admin actors before loading data and exposes sanitized readback plus governed Start/Pause requests only; campaign editor, test-send, seed-send, and provider-canary controls remain absent.
+  - OT-B01 is public-website Family/School adult lead capture and cannot qualify through WhatsApp, create Students, grant access, or promise School pricing.
+  - Workflow fragments from P29/P30 require unique OT-01 through OT-16 keys, adult-only subject, email-required/dormant-WhatsApp behavior, idempotency, send-time suppression, and the six foundational approval gates.
+  - Registry identifiers cannot be silently reused; OT-11 is retired/reserved, OT-12 is adult support, OT-14 is Parent Newsletter, OT-15 is Former Member Reactivation, and the historical OT-B01 provider ID is not assigned to the new website-bot purpose.
+  - Persistence is parameterized and migration-only; central registration, generated projections, shared message-class coverage, and applied migrations are stewarded separately with no external-effect authority.
+downstream_tasks:
+  - P29
+  - P30
+verification_commands:
+  - npm run typecheck
+  - npm exec -- vitest run packages/domain/src/communications/foundation/foundation.test.ts packages/db/src/communications/foundation/repository.test.ts integrations/highlevel/v21/foundation/desired-state.test.ts integrations/highlevel/v21/foundation/registry-source.test.ts apps/worker/src/runners/communications-foundation/runner.test.ts
+  - focused ESLint over all P28 TypeScript artifacts
+  - focused Prettier check over P28 TypeScript, Markdown, and steward-request artifacts
+  - workflow-registry source parse and exact canonical-identity assertions
+  - canonical contract digest and per-artifact SHA-256 verification
+  - git diff --check
+contains_product_completion_claim: false
+contains_external_effect: false

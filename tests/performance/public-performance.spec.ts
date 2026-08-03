@@ -4,7 +4,11 @@ test('landing meets local performance and overflow gates', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const started = Date.now();
   await page.goto('/', { waitUntil: 'load' });
-  await page.getByRole('heading', { name: 'Give your son a love for learning Torah.' }).waitFor();
+  await page
+    .getByRole('heading', {
+      name: 'MISHNAYOS MADE MEMORABLE',
+    })
+    .waitFor();
   const usableMs = Date.now() - started;
   const metrics = await page.evaluate(() => {
     const nav = performance.getEntriesByType('navigation')[0] as
@@ -22,7 +26,7 @@ test('signup meets local performance and layout gates', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const started = Date.now();
   await page.goto('/signup', { waitUntil: 'load' });
-  await page.getByRole('heading', { name: 'Sign Up Now' }).waitFor();
+  await page.getByRole('heading', { name: 'Pre-register Your Family' }).waitFor();
   const usableMs = Date.now() - started;
   const overflow = await page.evaluate(
     () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
@@ -35,20 +39,16 @@ test('authenticated CRM list and detail stay within request and usability budget
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/signup');
+  await page.goto('/school');
   const email = `perf-${Date.now()}@example.test`;
   const contactName = `Perf Parent ${Date.now()}`;
-  await page.getByLabel('Parent or contact name').fill(contactName);
-  await page.getByLabel('Family or School').fill('Perf Family');
-  await page.getByLabel('Location').fill('Jerusalem');
-  await page.getByRole('textbox', { name: 'Email' }).fill(email);
-  await expect(page.getByLabel('Email class reminders')).not.toBeChecked();
-  await expect(page.getByLabel('WhatsApp class reminders')).not.toBeChecked();
-  await page.getByLabel('Email class reminders').check();
-  await page.getByRole('button', { name: 'Sign Up Now' }).click();
-  await page
-    .getByRole('heading', { name: 'Thank you - we received your Family signup.' })
-    .waitFor();
+  const [firstName, ...lastNameParts] = contactName.split(' ');
+  await page.getByLabel('School name').fill('Perf School');
+  await page.getByLabel('Contact first name').fill(firstName!);
+  await page.getByLabel('Contact last name').fill(lastNameParts.join(' '));
+  await page.getByRole('textbox', { name: 'School contact email' }).fill(email);
+  await page.getByRole('button', { name: 'Send school inquiry' }).click();
+  await page.getByRole('heading', { name: /received your school inquiry/i }).waitFor();
 
   const apiRequests: string[] = [];
   page.on('request', (request) => {

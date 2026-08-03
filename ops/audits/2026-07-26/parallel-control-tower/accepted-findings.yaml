@@ -1,0 +1,246 @@
+schema_version: 1
+source_of_status: ops/goals/OT-LAUNCH-01/BOARD.yaml
+reviewed_board_commit: 53a18e771488c61cf271cb33a0bcacee2c7135f4
+deduplication_policy: One finding per current control or execution effect; source audit IDs preserve provenance.
+findings:
+  - id: CT-F001
+    classification: CONFIRMED_CURRENT_TRUTH
+    priority: P0
+    source_audits: [A01, A02, A03]
+    summary: The accepted persistent-staging product source remains a22009f4dce6bae6b0553ea9007ff40eceaffd25; later conductor commits are control descendants, not product source.
+    evidence: [ops/goals/OT-LAUNCH-01/BOARD.yaml]
+    execution_effect: Preserve the accepted product source in every release and preservation manifest.
+  - id: CT-F002
+    classification: CONFIRMED_CURRENT_TRUTH
+    priority: P0
+    source_audits: [A01, A02, A03, A11]
+    summary: Existing Zoom cleanup is the only currently authorized Zoom provider action; a replacement meeting, join, control sequence, or production activation is not authorized.
+    evidence: [ops/goals/OT-LAUNCH-01/BOARD.yaml, source-reports/A03-result.md]
+    execution_effect: Keep WINDOW-02 separate and do not duplicate its ZOOM-PROVIDER lock.
+  - id: CT-F003
+    classification: CONFIRMED_CURRENT_TRUTH
+    priority: P0
+    source_audits: [A01, A02, A03]
+    summary: Production pilot remains unclaimed and depends on terminal Zoom cleanup, a new normal-Student canary, both Zoom acceptance IDs, immutable candidate proof, and separate promotion authority.
+    evidence: [ops/goals/OT-LAUNCH-01/BOARD.yaml, source-reports/A02-result.md]
+    execution_effect: WINDOW-07 is not runnable and receives no production writer.
+  - id: CT-F004
+    classification: NEW_FINDING
+    priority: P1
+    source_audits: [A01, A04, A10]
+    summary: HighLevel archived and hidden-AI inventory is incomplete, so repository sender design and all mutation jobs must remain behind one exhaustive read-only inventory.
+    evidence:
+      [integrations/highlevel/registry/workflow-registry.yaml, ops/goals/OT-LAUNCH-01/BOARD.yaml]
+    execution_effect: Assign one GHL-PROVIDER read-only inventory writer; authorize zero saves, sends, enrollments, or provider mutations.
+  - id: CT-F005
+    classification: CONFIRMED_CURRENT_TRUTH
+    priority: P1
+    source_audits: [A01, A04]
+    summary: PR #116 is open, unassigned by the Board, graph-conflicted, and cannot be used as execution or merge authority.
+    evidence: [ops/goals/OT-LAUNCH-01/BOARD.yaml, source-reports/A04-result.md]
+    execution_effect: Preserve for semantic review; do not merge, cherry-pick, execute, or close it in this wave.
+  - id: CT-F006
+    classification: NEW_FINDING
+    priority: P1
+    source_audits: [A01, A06, A11]
+    summary: Generated operator-facing launch data exposes internal task/infrastructure detail beyond the operator-summary privacy contract.
+    evidence:
+      [
+        apps/web/src/server/generated/operator-launch-status.ts,
+        scripts/ops/operator-launch-status-projection.ts,
+      ]
+    execution_effect: Queue a later product/control repair without placing private identifiers in the audit artifacts.
+  - id: CT-F007
+    classification: NEW_FINDING
+    priority: P2
+    source_audits: [A01]
+    summary: Board evidence still describes a 30-track Board while the canonical Board contains 36 tracks.
+    evidence: [ops/goals/OT-LAUNCH-01/BOARD.yaml]
+    execution_effect: Correct only in a future conductor-owned Board maintenance edit.
+  - id: CT-F008
+    classification: NEW_FINDING
+    priority: P1
+    source_audits: [A03]
+    source_finding_ids: [A03-N1, A03-N2, A03-N3]
+    summary: A successor Zoom canary requires source convergence, a prospective cleanup contract, exact provider-count acceptance, and fresh authority; the consumed cleanup contract cannot be reused.
+    evidence: [source-reports/A03-result.md]
+    execution_effect: Keep successor canary and bearer-free classroom task behind terminal cleanup and a new Board assignment.
+  - id: CT-F009
+    classification: NEW_FINDING
+    priority: P1
+    source_audits: [A04]
+    summary: GHL-UI-13 is a zero-send preflight and cannot itself authorize or execute a Rabbi sender canary.
+    evidence:
+      [
+        integrations/highlevel/agent-mode/jobs/GHL-UI-13-phase-2-rabbi-acceptance.json,
+        source-reports/A04-result.md,
+      ]
+    execution_effect: Require a separately reviewed successor job after full inventory and repository design.
+  - id: CT-F010
+    classification: CONFIRMED_CURRENT_TRUTH
+    priority: P1
+    source_audits: [A04, A10]
+    summary: OT-E01 remains fail-closed and drifted; OT-C01 workflow and campaign remain distinct Draft/unsent assets; application-to-GHL live handoff is unproved.
+    evidence:
+      [ops/goals/OT-LAUNCH-01/BOARD.yaml, integrations/highlevel/registry/workflow-registry.yaml]
+    execution_effect: No activation, manual tag, enrollment, audience selection, or send.
+  - id: CT-F011
+    classification: CONFIRMED_CURRENT_TRUTH
+    priority: P0
+    source_audits: [A05]
+    source_finding_ids: [P0-01, P0-05, P0-08, P0-09, P0-12]
+    summary: Preservation must precede any PR closure; source/product/control identity and immutable non-force refs must remain distinct.
+    evidence: [source-reports/A05-result.md]
+    execution_effect: Assign metadata-only preservation intake first; closure count remains zero.
+  - id: CT-F012
+    classification: NEW_FINDING
+    priority: P0
+    source_audits: [A05]
+    source_finding_ids: [P0-04, P0-06, P0-07]
+    summary: Several PR heads drifted, diverged, contain unique evidence, or conflict semantically, so number/title-based closure is unsafe.
+    evidence: [source-reports/A05-result.md]
+    execution_effect: Freeze exact heads and preserve evidence; require later semantic adjudication.
+  - id: CT-F013
+    classification: CONFIRMED_CURRENT_TRUTH
+    priority: P1
+    source_audits: [A06]
+    source_finding_ids: [A06-P1-02]
+    summary: Current repository secret scans cover bounded tracked text and do not prove binaries, archives, screenshots, untracked files, all refs, or historical content safe.
+    evidence: [scripts/secret-scan.mjs, source-reports/A06-result.md]
+    execution_effect: Preservation publication must fail closed on incomplete protected scan coverage.
+  - id: CT-F014
+    classification: CONFIRMED_CURRENT_TRUTH
+    priority: P1
+    source_audits: [A06]
+    source_finding_ids: [A06-P1-03]
+    summary: Git-history privacy remediation remains an explicit operator decision; current-file redaction does not authorize rewrite or force-push.
+    evidence: [ops/goals/OT-LAUNCH-01/BOARD.yaml, ops/goals/OT-LAUNCH-01/DECISIONS.yaml]
+    execution_effect: No rewrite, credential rotation, or metadata deletion in this wave.
+  - id: CT-F015
+    classification: NEW_FINDING
+    priority: P1
+    source_audits: [A06, A12]
+    source_finding_ids: [A06-P1-04, A12-F02, A12-F03, A12-F04, A12-F07, A12-F08, A12-F09]
+    summary: The pinned BNA tree retains executable One Time code and overlapping runtime, model, route, and delivery assumptions despite the standalone One Time repository.
+    evidence: [source-reports/A06-result.md, source-reports/A12-result.md]
+    execution_effect: Use contract-first decomposition and pointer repair; do not copy runtime or share databases/sessions.
+  - id: CT-F016
+    classification: NEW_FINDING
+    priority: P1
+    source_audits: [A07, A12]
+    source_finding_ids: [A07-F02, A07-F03, A07-F06, A12-F12, A12-F13]
+    summary: BNA start-here/current-run pointers are stale and can elevate a historical One Time-first execution run into current BNA authority.
+    evidence: [source-reports/A07-result.md, source-reports/A12-result.md]
+    execution_effect: Assign one BNA-CONTROL pointer-only writer at the exact current BNA master.
+  - id: CT-F017
+    classification: CONFIRMED_CURRENT_TRUTH
+    priority: P1
+    source_audits: [A07]
+    source_finding_ids: [A07-F01, A07-F04, A07-F05, A07-F07]
+    summary: BNA master cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c is the preservation checkpoint; legacy BNA is multi-role, its One Time truth is superseded, and BNA School remains no-GHL.
+    evidence: [source-reports/A07-result.md]
+    execution_effect: Preserve the checkpoint and keep BNA School/provider work separate from One Time GHL.
+  - id: CT-F018
+    classification: CONFIRMED_CURRENT_TRUTH
+    priority: P2
+    source_audits: [A07]
+    source_finding_ids: [A07-F08, A07-F09, A07-F10, A07-F11]
+    summary: No BNA School feature lane is currently accepted; PR #141 remains evidence awaiting convergence, while PR #142 is accepted only as provider-off implementation.
+    evidence: [ops/goals/OT-LAUNCH-01/BOARD.yaml, source-reports/A07-result.md]
+    execution_effect: Do not assign BNA School implementation or provider activation.
+  - id: CT-F019
+    classification: NEW_FINDING
+    priority: P1
+    source_audits: [A09]
+    source_finding_ids: [A09-F01, A09-F02]
+    summary: Post-event Tisha disposition and complete public auth/privacy/terms lifecycle need explicit control decisions or focused repository evidence.
+    evidence: [source-reports/A09-result.md]
+    execution_effect: Keep outside Wave 1; no production patch or promotion.
+  - id: CT-F020
+    classification: NEW_FINDING
+    priority: P1
+    source_audits: [A10]
+    source_finding_ids: [A10-N1, A10-N2, A10-N3, A10-N4, A10-N5]
+    summary: Historical campaign eligibility, approximate adult counts, tags, attendance, sender readiness, and transport readiness do not create current communication authority.
+    evidence: [ops/goals/OT-LAUNCH-01/DECISIONS.yaml, source-reports/A10-result.md]
+    execution_effect: Preserve zero audience, enrollment, and send authority.
+  - id: CT-F021
+    classification: CONFIRMED_CURRENT_TRUTH
+    priority: P1
+    source_audits: [A10]
+    source_finding_ids: [A10-C1, A10-C2, A10-C3, A10-C4, A10-C5, A10-C6]
+    summary: GHL person scope is adult-only; durable household linkage is separate from payment/access; event permission is exact and contact/event scoped; denial precedence fails closed.
+    evidence: [ops/goals/OT-LAUNCH-01/SPEC.yaml, ops/goals/OT-LAUNCH-01/DECISIONS.yaml]
+    execution_effect: All future GHL work must preserve adult-only identity and typed denial precedence.
+  - id: CT-F022
+    classification: NEW_FINDING
+    priority: P1
+    source_audits: [A11]
+    source_finding_ids: [A11-P1-01]
+    summary: Retry-specific provider idempotency can duplicate external delivery after uncertain acceptance.
+    evidence: [source-reports/A11-result.md]
+    execution_effect: Repair before any real general-delivery activation; sinks only during implementation.
+  - id: CT-F023
+    classification: NEW_FINDING
+    priority: P1
+    source_audits: [A11]
+    source_finding_ids: [A11-P1-02]
+    summary: Multiple runtime/environment classifications can disagree and bypass production-only controls.
+    evidence: [packages/config/src/index.ts, apps/web/src/server/app.ts]
+    execution_effect: Assign one OT-PRODUCT canonical runtime-classification writer in Wave 1.
+  - id: CT-F024
+    classification: NEW_FINDING
+    priority: P1
+    source_audits: [A11]
+    source_finding_ids: [A11-P1-03]
+    summary: Public readiness/version surfaces disclose operational topology beyond the public contract.
+    evidence: [apps/web/src/server/app.ts, source-reports/A11-result.md]
+    execution_effect: Queue after canonical runtime classification; no live endpoint access required.
+  - id: CT-F025
+    classification: NEW_FINDING
+    priority: P1
+    source_audits: [A11]
+    source_finding_ids: [A11-P1-04]
+    summary: The classroom launch bearer is placed in a URL path before no-store and no-referrer protections apply.
+    evidence: [packages/domain/src/classroom/service.ts, apps/web/src/server/app.ts]
+    execution_effect: Repair after current Zoom cleanup and before a successor normal-Student canary.
+  - id: CT-F026
+    classification: NEW_FINDING
+    priority: P1
+    source_audits: [A11]
+    source_finding_ids: [A11-P1-05]
+    summary: More than three active learners can be created and can block the household classroom projection.
+    evidence: [source-reports/A11-result.md]
+    execution_effect: Resolve before the full production candidate, with an explicit legacy-state decision.
+  - id: CT-F027
+    classification: NEW_FINDING
+    priority: P1
+    source_audits: [A11]
+    source_finding_ids: [A11-P1-06]
+    summary: The db:verify command applies pending migrations instead of performing read-only verification.
+    evidence: [scripts/migrate.ts, package.json, source-reports/A11-result.md]
+    execution_effect: Repair and prove against disposable PostgreSQL before production candidate acceptance.
+  - id: CT-F028
+    classification: NEW_FINDING
+    priority: P2
+    source_audits: [A11]
+    source_finding_ids: [A11-P2-01]
+    summary: Telegram response enqueue and inbox completion can replay a reply under a crash boundary.
+    evidence: [source-reports/A11-result.md]
+    execution_effect: Repair before real Telegram response delivery.
+  - id: CT-F029
+    classification: CONFIRMED_CURRENT_TRUTH
+    priority: P1
+    source_audits: [A12]
+    source_finding_ids: [A12-F01, A12-F05, A12-F06, A12-F10, A12-F11]
+    summary: Standalone One Time owns its runtime/cookie/schema, uses an asynchronous BNA support seam, and has no proved current direct import or cross-domain cookie collision.
+    evidence: [source-reports/A12-result.md]
+    execution_effect: Preserve product isolation and classify broader negative/live claims as unproved.
+  - id: CT-F030
+    classification: NEW_FINDING
+    priority: P1
+    source_audits: [A12]
+    source_finding_ids: [A12-F14]
+    summary: BNA PR #141 and PR #142 are target-shape evidence, not accepted decomposition state.
+    evidence: [source-reports/A12-result.md]
+    execution_effect: Do not treat either PR as authority to move code, data, providers, or production.

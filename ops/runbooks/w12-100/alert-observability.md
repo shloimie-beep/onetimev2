@@ -74,21 +74,21 @@ npx tsx scripts/w12-100/ops/observability-checks.ts --input "$RunDir/observabili
 
 ## Checks
 
-| Check                         | Severity | Source                                                             | Threshold                                                     |
-| ----------------------------- | -------- | ------------------------------------------------------------------ | ------------------------------------------------------------- |
-| Web readiness                 | critical | `/health`, `/ready`, `/version`, `onetime_ready`                   | health and ready 2xx, ready ok, version commit exact          |
-| Worker heartbeat              | critical | `/api/internal/ops/diagnostics`, `onetime_worker_heartbeat_age_ms` | at least one non-stale delivery worker heartbeat <= 120000 ms |
-| Queue depth                   | warning  | diagnostics queue snapshot, `onetime_queue_ready_count`            | ready count <= 50 for every launch queue                      |
-| Oldest ready age              | warning  | diagnostics queue snapshot                                         | oldest ready age <= 600000 ms                                 |
-| Delivery retries              | critical | diagnostics queue snapshot                                         | retry count <= 100                                            |
-| Delivery dead letters         | critical | diagnostics queue snapshot                                         | dead-letter count is 0                                        |
-| Database saturation           | critical | Railway/database metrics export                                    | connection, CPU, and storage saturation each < 85 percent     |
-| Rate-limit spikes             | warning  | HTTP/rate-limit metrics                                            | spike count <= 20 and limited ratio <= 0.10 over 5 minutes    |
-| Login failures                | warning  | auth metrics                                                       | failures <= 20 and failure ratio <= 0.20 over 5 minutes       |
-| Webhook verification failures | critical | WhatsApp, Telegram, generic signature metrics                      | 0 during launch window                                        |
-| Class launch failures         | critical | classroom launch metrics                                           | 0 over 15 minutes                                             |
-| Billing webhook failures      | critical | billing webhook metrics                                            | 0 webhook or signature failures over 5 minutes                |
-| Backup age                    | critical | Railway backup metadata                                            | latest backup age <= 1440 minutes and PITR metadata present   |
+| Check                         | Severity | Source                                                                          | Threshold                                                          |
+| ----------------------------- | -------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| Web readiness                 | critical | `/health`, `/ready`, `/version`, protected diagnostics runtime, `onetime_ready` | public routes 2xx with fixed codes; protected runtime commit exact |
+| Worker heartbeat              | critical | `/api/internal/ops/diagnostics`, `onetime_worker_heartbeat_age_ms`              | at least one non-stale delivery worker heartbeat <= 120000 ms      |
+| Queue depth                   | warning  | diagnostics queue snapshot, `onetime_queue_ready_count`                         | ready count <= 50 for every launch queue                           |
+| Oldest ready age              | warning  | diagnostics queue snapshot                                                      | oldest ready age <= 600000 ms                                      |
+| Delivery retries              | critical | diagnostics queue snapshot                                                      | retry count <= 100                                                 |
+| Delivery dead letters         | critical | diagnostics queue snapshot                                                      | dead-letter count is 0                                             |
+| Database saturation           | critical | Railway/database metrics export                                                 | connection, CPU, and storage saturation each < 85 percent          |
+| Rate-limit spikes             | warning  | HTTP/rate-limit metrics                                                         | spike count <= 20 and limited ratio <= 0.10 over 5 minutes         |
+| Login failures                | warning  | auth metrics                                                                    | failures <= 20 and failure ratio <= 0.20 over 5 minutes            |
+| Webhook verification failures | critical | WhatsApp, Telegram, generic signature metrics                                   | 0 during launch window                                             |
+| Class launch failures         | critical | classroom launch metrics                                                        | 0 over 15 minutes                                                  |
+| Billing webhook failures      | critical | billing webhook metrics                                                         | 0 webhook or signature failures over 5 minutes                     |
+| Backup age                    | critical | Railway backup metadata                                                         | latest backup age <= 1440 minutes and PITR metadata present        |
 
 ## Fail-Closed Behavior
 

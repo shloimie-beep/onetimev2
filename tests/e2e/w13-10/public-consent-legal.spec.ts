@@ -16,20 +16,17 @@ test('W13-10 legal pages render versioned launch truth without billing claims', 
   }
 });
 
-test('W13-10 signup does not preselect optional reminder consent', async ({ page }) => {
+test('W13-10 adult pre-registration exposes no optional reminder or Student fields', async ({
+  page,
+}) => {
   await page.goto('/signup');
-  const email = page.getByLabel('Email class reminders');
-  const whatsapp = page.getByLabel('WhatsApp class reminders');
-  await expect(email).not.toBeChecked();
-  await expect(whatsapp).not.toBeChecked();
-  await email.check();
-  await expect(page.getByLabel('Phone / WhatsApp')).not.toHaveAttribute('required', '');
-  await whatsapp.check();
-  await expect(page.getByLabel('Phone / WhatsApp')).toHaveAttribute('required', '');
-  await expect(
-    page.getByRole('link', { name: 'Communication and Reminder Consent' }),
-  ).toHaveAttribute('href', '/communications-consent');
-  await expect(
-    page.getByRole('link', { name: 'Parent/Guardian and Student Data Notice' }),
-  ).toHaveAttribute('href', '/student-data');
+  await expect(page.getByRole('heading', { name: 'Pre-register Your Family' })).toBeVisible();
+  await expect(page.getByLabel(/reminder|WhatsApp|phone|Student|password|marketing/i)).toHaveCount(
+    0,
+  );
+  await expect(page.getByText(/Follow-up requested/)).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Privacy Notice' })).toHaveAttribute(
+    'href',
+    '/privacy',
+  );
 });

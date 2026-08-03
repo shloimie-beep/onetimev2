@@ -1,0 +1,9 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+canonical_candidate_digest: ${CANONICAL_CANDIDATE_DIGEST}
+case_id: ${CASE_ID}
+current_attempt_path: ${RELATIVE_ATTEMPT_PATH}
+current_attempt_digest: ${ATTEMPT_SHA256}
+status: ${PASSED_FAILED_OR_BLOCKED}
+supersedes_result_digest: ${PRIOR_RESULT_DIGEST_OR_NONE}
+updated_at: ${UTC_TIMESTAMP}

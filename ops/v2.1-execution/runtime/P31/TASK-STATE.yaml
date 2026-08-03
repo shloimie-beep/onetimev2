@@ -1,0 +1,104 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P31
+status: ready_for_review
+phase: provider_readback_preflight_complete
+updated_at: '2026-07-30T17:00:48Z'
+branch: codex/v21-lane2-ghl-email
+expected_prior_branch_head_sha: 1e9f41a3af58d3385754961861a260d2746a5073
+start_integration_head_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
+state_based_on_control_head_sha: f0ccbdc81e6962add93d0900dd159e24df7cf05f
+communications_source_head_sha: 3364c1c31ef12a81abf02cf9f80f7e8008c1778f
+candidate:
+  status: not_frozen
+  digest: null
+claim:
+  claim_id: 8e264a4e-d748-4f11-84f1-cfe78869dd18
+  mode: ready
+  disposition: completed_for_review
+writer_slot_lease:
+  slot: COPY_CATALOG
+  lease_id: 43f6f071-e111-489d-b2ed-2c8d6db7f948
+authority:
+  mode: strictly_read_only_preflight
+  source_grant_id: ot-v21-production-source-grant-20260729
+  source_grant_present: true
+  candidate_bound_effect_authority_usable: false
+  provider_locks_acquired: 0
+completed_steps:
+  - Fast-forwarded the lane branch to the exact required integration head without a merge commit, reset, rebase, or force push.
+  - Read P28 through P31 implementation evidence, the provider and HighLevel registries, acceptance mapping, and V41/V42 coverage.
+  - Performed connector-first, strictly read-only provider discovery and recorded unknown or ambiguous identities as gaps rather than guessing.
+  - Confirmed the exact HighLevel location path pBSnOK2nkdxp6gf9Rg3o and the live One Time workflow folders.
+  - Read back 13 canonical P31/V42 workflow rows as Draft with zero active and zero total enrollments; four required rows are absent.
+  - Confirmed the Resend domain onetimeonetime.com is verified and ready to send and receive; the governed Rabbi sender route remains unproven.
+  - Recorded observed but not registry-bound Vimeo, Drive, Railway, and DNS identities without selecting a canonical target.
+  - Produced the canonical provider matrix, GHL workflow matrix with all 28 V42 case IDs plus the P31 adult-support case, and consolidated authorization-gap packet.
+  - Performed no provider mutation, send, charge, contact write, enrollment, workflow change, deployment, DNS change, file move, or publication.
+remaining_steps:
+  - C00 and I36 independently audit and integrate this exact six-path preflight checkpoint.
+  - After candidate freeze, C00 must bind exact provider identities, authority, fixtures, budgets, and fencing tokens before any live effect.
+  - V41/V42 must perform candidate-bound configuration, readback, bounded canaries, and reconciliation under the required exclusive locks.
+next_action: Stop. C00/I36 should audit the pushed preflight head, its six-path scope, matrix hashes, remote equality, and zero-effect record.
+requirements:
+  OTV2-EMAIL-139: implementation_ready_preflight_readback_recorded
+  OTV2-EMAIL-140: implementation_ready_preflight_readback_recorded
+  OTV2-EMAIL-141: implementation_ready_preflight_readback_recorded
+  OTV2-EMAIL-142: implementation_ready_preflight_readback_recorded
+  OTV2-EMAIL-143: implementation_ready_preflight_readback_recorded
+  OTV2-EMAIL-144: implementation_ready_preflight_readback_recorded
+  OTV2-EMAIL-145: implementation_ready_preflight_readback_recorded
+  OTV2-EMAIL-146: implementation_ready_preflight_readback_recorded
+acceptance_cases:
+  OTV2-EMAIL-139-AC01: candidate_bound_verification_pending
+  OTV2-EMAIL-140-AC01: candidate_bound_verification_pending
+  OTV2-EMAIL-141-AC01: candidate_bound_verification_pending
+  OTV2-EMAIL-142-AC01: candidate_bound_verification_pending
+  OTV2-EMAIL-143-AC01: candidate_bound_verification_pending
+  OTV2-EMAIL-144-AC01: candidate_bound_verification_pending
+  OTV2-EMAIL-145-AC01: candidate_bound_verification_pending
+  OTV2-EMAIL-146-AC01: candidate_bound_verification_pending
+changed_paths:
+  - ops/v2.1-execution/runtime/P31/PROVIDER-PREFLIGHT-MATRIX.yaml
+  - ops/v2.1-execution/runtime/P31/GHL-WORKFLOW-PREFLIGHT-MATRIX.yaml
+  - ops/v2.1-execution/runtime/P31/AUTHORIZATION-GAPS.yaml
+  - ops/v2.1-execution/runtime/P31/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P31/HANDOFF.md
+  - ops/v2.1-execution/runtime/P31/NEXT-PROMPT.md
+migrations: []
+artifacts:
+  provider_preflight_matrix:
+    path: ops/v2.1-execution/runtime/P31/PROVIDER-PREFLIGHT-MATRIX.yaml
+    sha256: 35d6de26d55205f3937bf3d696886802d33041eba59a7fa2c2bdc671edf8b22f
+  ghl_workflow_preflight_matrix:
+    path: ops/v2.1-execution/runtime/P31/GHL-WORKFLOW-PREFLIGHT-MATRIX.yaml
+    sha256: 80b46f631ae4cc1eca24d0b352c2cf13ce0aefa078c70d1c30d8b3a03a3a5fe7
+  authorization_gaps:
+    path: ops/v2.1-execution/runtime/P31/AUTHORIZATION-GAPS.yaml
+    sha256: 83115cf51ad4ddd24b3d0984c7c009419d9d43cfc894d9de901922e876ab50a6
+verification:
+  commands_run:
+    - YAML parse and structural validation of all P31 preflight YAML artifacts
+    - Exact 14-provider uniqueness and six proven read-permission count validation
+    - Exact 17 P31/V42 workflow-key uniqueness, nine cross-cutting case-row, and all 28 V42 case-ID validation
+    - Matrix summary reconciliation against parsed rows
+    - git diff --check
+    - repository secret scan
+    - exact six-path scope audit
+external_effects:
+  authority: read_only_preflight
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+  locks_acquired: 0
+blockers:
+  - id: P31-CANDIDATE-NULL
+    scope: candidate_bound_provider_configuration_and_verification
+    detail: No candidate digest exists, so effect authority and provider locks cannot be bound.
+  - id: P31-PROVIDER-IDENTITIES
+    scope: future_provider_effects
+    detail: Exact canonical identities and/or live permissions remain missing for the providers listed in AUTHORIZATION-GAPS.yaml.
+  - id: OPS-084-LEGAL-BUNDLE
+    scope: broad_production_release_only
+    detail: The external legal bundle does not block staging preparation, read-only provider checks, or an otherwise authorized operator-owned canary; it blocks the legal acceptance case, R45, customer activation, DNS cutover, and broad release.
+out_of_scope_findings: []

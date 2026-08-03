@@ -21,6 +21,8 @@ export const oneTimeTokens = {
   },
   typography: {
     display: "'DM Serif Display', Georgia, 'Times New Roman', serif",
+    campaign:
+      "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
     body: "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
   },
   spacing: {

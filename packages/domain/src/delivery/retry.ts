@@ -33,6 +33,9 @@ const ALLOWED_FAILURE_CODES = new Set([
   'provider_timeout',
   'provider_unavailable',
   'provider_unclassified_failure',
+  'provider_operation_contract_missing',
+  'provider_operation_identity_mismatch',
+  'provider_acceptance_unknown',
   'resend_internal_server_error',
   'resend_rate_limit_exceeded',
   'resend_validation_error',
@@ -56,6 +59,7 @@ function sanitizeFailure(failure: DeliveryFailure): DeliveryFailure {
   return {
     code: sanitizeFailureCode(failure.code),
     category: failure.category,
+    acceptance: failure.acceptance,
     ...(failure.provider ? { provider: failure.provider } : {}),
     ...(failure.httpStatus !== undefined ? { httpStatus: failure.httpStatus } : {}),
     ...(failure.retryAfterMs !== undefined
@@ -71,6 +75,7 @@ export function classifyDeliveryError(error: unknown): DeliveryFailure {
     return {
       code: 'provider_timeout',
       category: 'transient',
+      acceptance: 'unknown',
       provider: 'worker',
     };
   }
@@ -79,6 +84,7 @@ export function classifyDeliveryError(error: unknown): DeliveryFailure {
     return {
       code: 'provider_timeout',
       category: 'transient',
+      acceptance: 'unknown',
       provider: 'worker',
     };
   }
@@ -87,6 +93,7 @@ export function classifyDeliveryError(error: unknown): DeliveryFailure {
     return {
       code: 'provider_network_failure',
       category: 'transient',
+      acceptance: 'unknown',
       provider: 'worker',
     };
   }
@@ -94,6 +101,7 @@ export function classifyDeliveryError(error: unknown): DeliveryFailure {
   return {
     code: 'provider_unclassified_failure',
     category: 'transient',
+    acceptance: 'unknown',
     provider: 'worker',
   };
 }

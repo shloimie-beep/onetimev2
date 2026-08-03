@@ -1,0 +1,115 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P16
+interface_implementation_head_sha: 46b5c39aceb6006376903750cfc268b35bbaccdd
+metadata_commit_sha: derive_from_git_and_record_in_control_registry
+task_packet_digest: a2ba86653705892d62ad19fddcf14a5c519ffb3c6f130d3919de0f5a971f427e
+contract_digest: 95c177d54a429dbcba604d9903c0edcb9aa6051f73e168f853d2b8fd4e377d68
+contract_digest_algorithm: SHA-256 over UTF-8 lines containing semantic_contract_version=<version> followed by exact path=<artifact SHA-256> lines sorted lexicographically by path, with LF separators and no final newline.
+contract_schema_version: 1
+semantic_contract_version: 2.1.0
+state: interface_ready
+exports:
+  - path: packages/contracts/src/classes/core/index.ts
+    symbols:
+      - CLASSROOM_CORE_CONTRACT_VERSION
+      - CANONICAL_CLASS_SERIES_ID
+      - CANONICAL_CLASS_TIME_ZONE
+      - CANONICAL_CLASS_LOCAL_START_TIME
+      - CANONICAL_CLASS_DURATION_MINUTES
+      - CANONICAL_CLASS_WEEKDAYS
+      - CLASSROOM_ROLLING_HORIZON_DAYS
+      - ClassSeriesState
+      - ClassOccurrenceState
+      - SeriesEnrollmentState
+      - SeriesEnrollmentSource
+      - StudentLifecycleState
+      - StudentLifecycleAction
+      - ClassroomScope
+      - ClassroomAdminActor
+      - ClassSeriesRecord
+      - ClassOccurrenceRecord
+      - SeriesEnrollmentRecord
+      - StudentEligibilityRecord
+      - ClassroomCommandIdentity
+      - SeriesTransitionCommand
+      - SeriesEditCommand
+      - OccurrenceCreateCommand
+      - OccurrenceTransitionCommand
+      - OccurrenceRescheduleCommand
+      - StudentLifecycleEnrollmentCommand
+      - ClassroomEffectPlan
+      - ClassroomCommandReceipt
+      - ClassroomCoreUnitOfWork
+      - ClassroomCoreRepository
+      - CLASSROOM_CORE_ERROR_CODES
+    sha256: f91d311c2992e29f3198471805f25708adbd44715f9025a533660bb8df5d911c
+  - path: packages/domain/src/classes/core/enrollment.ts
+    symbols:
+      - StudentEnrollmentSnapshot
+      - applyStudentLifecycleWithCanonicalEnrollment
+      - CanonicalEnrollmentRepair
+      - planCanonicalEnrollmentReconciliation
+      - assertManualUnenrollAllowed
+    sha256: 95542d51504a31f26b2ee1522d71783dad5c607200c207792b39f98d4a50a18c
+  - path: packages/domain/src/classes/core/errors.ts
+    symbols:
+      - ClassroomCoreErrorCode
+      - ClassroomCoreError
+    sha256: 607f2750e52a73b416a42f48d2664b72698db4b7b6abd0b704eb776cc40159f8
+  - path: packages/domain/src/classes/core/index.ts
+    symbols:
+      - StudentEnrollmentSnapshot
+      - applyStudentLifecycleWithCanonicalEnrollment
+      - CanonicalEnrollmentRepair
+      - planCanonicalEnrollmentReconciliation
+      - assertManualUnenrollAllowed
+      - ClassroomCoreErrorCode
+      - ClassroomCoreError
+      - generateCoreOccurrences
+      - createOccurrence
+      - transitionOccurrence
+      - rescheduleOccurrence
+      - createCanonicalSeries
+      - createAdditionalSeries
+      - transitionSeries
+      - editSeries
+      - assertCanonicalCatalog
+    sha256: 325dc1789bb33d4197dae2ffeb27cd006eece7314c19e4b8ee7e7c737ff4dbbf
+  - path: packages/domain/src/classes/core/occurrences.ts
+    symbols:
+      - generateCoreOccurrences
+      - createOccurrence
+      - transitionOccurrence
+      - rescheduleOccurrence
+    sha256: 07e5e5d38da15fcbdca1c26f2268312dd8a33301cad6eb9ef7baabc85e729dd8
+  - path: packages/domain/src/classes/core/series.ts
+    symbols:
+      - createCanonicalSeries
+      - createAdditionalSeries
+      - transitionSeries
+      - editSeries
+      - assertCanonicalCatalog
+    sha256: cd14c03145106c19f6a445ea087ee97f35b83e994775c154a67facbd5437b472
+compatibility_invariants:
+  - The launch catalog has exactly one immutable active canonical series: Sunday through Thursday at 19:00 Asia/Jerusalem for 60 minutes.
+  - Additional series creation and archived-series restoration always persist draft with zero occurrence, enrollment, provider, communication, or family-visibility effects until explicit Admin activation.
+  - Series transitions are exactly draft to active or archived, active to paused or archived, paused to active or archived, and archived to draft; every other transition fails without a write.
+  - Occurrence transitions are exactly none to scheduled, scheduled to preparing, preparing to ready, ready to live, live to completed, pre-live to canceled, and future canceled to scheduled; completed is terminal.
+  - Occurrence identity is stable as series plus Jerusalem local class date, and reschedule/restore increments schedule version while requiring old launch grants to remain revoked.
+  - Every active Student has exactly one active canonical enrollment; activation, restoration, archive, credentials/access coordination, enrollment, receipt, and audit compose in one repository transaction.
+  - Canonical enrollment has no request, approval, opt-out, or manual unenroll operation; governed future noncanonical unenrollment remains available.
+  - Reconciliation repairs missing, extra, revoked, or duplicate canonical rows once and is a no-op on the second execution.
+  - Commands are tenant/product scoped, optimistic-version fenced, request-hash bound, and replay idempotently; provider calls remain outside database transactions.
+downstream_tasks:
+  - P17
+  - P18
+  - P19
+verification_commands:
+  - npm run typecheck
+  - npx vitest run --environment node packages/domain/src/classes/core/classroom-core.test.ts apps/web/src/server/features/classes/core/service.test.ts
+  - focused ESLint over all P16 TypeScript artifacts
+  - focused Prettier check over all P16 TypeScript, TSX, and YAML artifacts
+  - git diff --check
+contains_product_completion_claim: false
+contains_external_effect: false

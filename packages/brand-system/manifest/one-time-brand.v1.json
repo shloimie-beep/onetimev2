@@ -76,6 +76,7 @@
     },
     "typography": {
       "display": "'DM Serif Display', Georgia, 'Times New Roman', serif",
+      "campaign": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
       "body": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
     },
     "spacing": {
@@ -194,6 +195,8 @@
   "routes": {
     "/": "public-marketing",
     "/signup": "auth",
+    "/tisha-bav": "public-marketing",
+    "/tisha-bav/live": "public-marketing",
     "/login": "auth",
     "/activate": "auth",
     "/forgot-password": "auth",
@@ -208,6 +211,7 @@
     "/app/crm/contacts/:contactId": "owner-admin",
     "/app/crm/contacts/:contactId/communications": "owner-admin",
     "/app/dashboard": "owner-admin",
+    "/app/launch-status": "owner-admin",
     "/app/classes": "owner-admin",
     "/app/content": "owner-admin",
     "/app/billing": "owner-admin",
@@ -216,9 +220,11 @@
     "/app/communications": "owner-admin",
     "/app/support": "authenticated-support",
     "/app/support/receipts/:receiptId": "authenticated-support",
+    "/app/live-console": "owner-admin",
+    "/app/live-stage/:stageSession": "owner-admin",
     "/app/parent": "parent",
     "/app/student": "student",
-    "/classroom/launch/:grantKey/:secret": "student"
+    "/classroom/launch": "student"
   },
   "ticker": {
     "allowlist": ["/"],

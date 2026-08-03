@@ -1,0 +1,108 @@
+lowercase_tags:
+  - legacy: 'one-time'
+    replacement: 'No canonical replacement required; preserve only for historical reporting.'
+  - legacy: 'one-time-bot'
+    replacement: 'One Time Source Channel'
+  - legacy: 'one-time-signup-request'
+    replacement: 'One Time Signup Status = Collecting or Submitted'
+  - legacy: 'one-time-signup-submitted'
+    replacement: 'One Time Signup Status = Submitted'
+  - legacy: 'one-time-signup-confirmed'
+    replacement: 'One Time Signup Status = Confirmed'
+  - legacy: 'one-time-class-link-request'
+    replacement: 'One Time Bot Request Type = Next Class Info'
+  - legacy: 'one-time-password-reset'
+    replacement: 'One Time Bot Request Type = Password Help'
+  - legacy: 'one-time-human-handoff'
+    replacement: 'No replacement; disable and remove from active workflows.'
+  - legacy: 'one-time-opt-out'
+    replacement: 'OT | Marketing Suppressed, channel DND, consent field update, suppression field update.'
+workflows:
+  - key: 'OT-11'
+    canonicalName: 'OT-11 WhatsApp Lead Qualification'
+    normalizedName: 'ot_11_whatsapp_lead_qualification'
+    ghlId: ''
+    ghlKey: 'ot_11_whatsapp_lead_qualification'
+    objectType: 'deprecated_workflow'
+    dataType: 'workflow'
+    category: 'deprecated_workflow'
+    folder: '00 - Intake & Data'
+    purpose: 'Superseded by OT-A1 and OT-B01.'
+    sourceOfTruth: 'Shared'
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases: []
+    deprecationState: 'deprecated_existing'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: ''
+    lastTestedDate: ''
+    promptPath: ''
+    checklistPath: ''
+    messageClass: 'support_acknowledgement'
+    senderKey: 'brand'
+    transport: 'GHL'
+    exactTrigger: 'deprecated; no active trigger is allowed'
+    companionDelivery: ''
+  - key: 'OT-12'
+    canonicalName: 'OT-12 Support Intake / Technical Escalation'
+    normalizedName: 'ot_12_support_intake_technical_escalation'
+    ghlId: ''
+    ghlKey: 'ot_12_support_intake_technical_escalation'
+    objectType: 'deprecated_workflow'
+    dataType: 'workflow'
+    category: 'deprecated_workflow'
+    folder: '50 - Support'
+    purpose: 'Deprecated when it creates tasks or support escalation workflows.'
+    sourceOfTruth: 'Shared'
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases: []
+    deprecationState: 'deprecated_existing'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: ''
+    lastTestedDate: ''
+    promptPath: ''
+    checklistPath: ''
+    messageClass: 'support_reply'
+    senderKey: 'office'
+    transport: 'GHL'
+    exactTrigger: 'deprecated when it creates tasks; no active trigger is allowed'
+    companionDelivery: ''
+  - key: 'OT-HUMAN-HANDOFF'
+    canonicalName: 'OT - Human Handoff'
+    normalizedName: 'ot_human_handoff'
+    ghlId: ''
+    ghlKey: 'ot_human_handoff'
+    objectType: 'deprecated_workflow'
+    dataType: 'workflow'
+    category: 'deprecated_workflow'
+    folder: '50 - Support'
+    purpose: 'Human handoff workflow is not active for OT-A1.'
+    sourceOfTruth: 'Shared'
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases: []
+    deprecationState: 'deprecated_existing'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: ''
+    lastTestedDate: ''
+    promptPath: ''
+    checklistPath: ''
+    messageClass: 'support_acknowledgement'
+    senderKey: 'brand'
+    transport: 'GHL'
+    exactTrigger: 'forbidden and deprecated; no active trigger is allowed'
+    companionDelivery: ''
+existing_assets_preserved_not_deleted:
+  - 'OT | Support Requested'
+  - 'One Time Support Status'
+do_not_delete_historical_tags_until_contact_migration_reconciled: true

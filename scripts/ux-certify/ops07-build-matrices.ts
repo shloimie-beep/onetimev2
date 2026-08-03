@@ -103,7 +103,7 @@ const routeRows: EvidenceRow[] = [
   routeRow({
     id: 'student-portal-classroom',
     title: 'Student portal, classroom launch, and private question routes',
-    route: '/app/student, /classroom/launch/:grantKey/:secret',
+    route: '/app/student, /classroom/launch',
     roles: ['student'],
     viewports: ['360x800', '390x844', '768x1024', '1440x1000'],
     states: ['populated', 'provider-off', 'loading', 'offline', 'permission-denied'],
@@ -114,7 +114,7 @@ const routeRows: EvidenceRow[] = [
       'tests/e2e/ot88-zoom-classroom.spec.ts',
       'tests/accessibility/ot88-zoom-classroom-a11y.spec.ts',
     ],
-    requiredText: ['/classroom/launch/:grantKey/:secret', '/api/v1/classroom/questions'],
+    requiredText: ['/classroom/launch', '/api/v1/classroom/questions'],
   }),
   routeRow({
     id: 'subscriber-support',

@@ -52,7 +52,7 @@ test('authenticated CRM shell passes axe, reflow, and width-height target gates'
   await page.evaluate(() => {
     document.documentElement.style.fontSize = '200%';
   });
-  await expect(page.getByRole('heading', { name: 'CRM' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Contacts', exact: true })).toBeVisible();
   await expectNoOverflow(page);
   results.push({ mode: '200-percent-text-reflow', horizontal_overflow: false });
 

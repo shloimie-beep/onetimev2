@@ -163,8 +163,8 @@ export function evaluateProviderActivationPolicy(
   };
 }
 
-export function providerAttemptIdempotencyKey(idempotencyKey: string, attempt: number) {
-  return `${idempotencyKey}:attempt-${attempt}`;
+export function providerOperationIdempotencyKey(idempotencyKey: string) {
+  return idempotencyKey;
 }
 
 function blockers(

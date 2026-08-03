@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "goal_id": "OT-LAUNCH-01",
+  "track_id": "admin_experience_preview",
+  "task_id": "OT-LAUNCH-01-PERSISTENT-STAGING-CONDUCTOR",
+  "verified_at": "2026-07-22T10:12:00Z",
+  "result": {
+    "preserved_external_migration": "packages/db/migrations/2214_learning_delivery_content_factory.sql",
+    "preserved_external_sha256": "7c5a8ad21cc4610dc32c2378b72e2024eafc45445a9658a1ae1e9783fcf8068c",
+    "preserved_owner": {
+      "pr": 104,
+      "head": "5c0a5ef81ce10df4e40f135be1e2c648f643996a"
+    },
+    "experience_preview_migration": "packages/db/migrations/2215_experience_preview_sessions.sql",
+    "experience_preview_sha256": "e2a9f039e66b659ee630f232ad88fbbfbd4d9dc06d1437256ca07f2655483d56",
+    "local_duplicate_prefix_count": 0,
+    "reserved_next_prefix": 2216,
+    "immutable_historical_live_ledger_duplicate_prefixes": [2209, 2210],
+    "conditional_exact_migration": {
+      "path": "packages/db/migrations/2205_highlevel_business_projection.sql",
+      "state": "absent_from_PR_97_and_live_ledger",
+      "action": "integrate unchanged only if the HighLevel app-contract lane confirms it is required"
+    },
+    "checked_current_prs": [
+      { "pr": 104, "head": "5c0a5ef81ce10df4e40f135be1e2c648f643996a", "highest_claim": 2214 },
+      { "pr": 105, "head": "f93a3e05f1c4da927be24fe6abce589e8e9835a1", "highest_claim": null },
+      { "pr": 106, "head": "0a85f4f8e8683bc19ac26fbdf1f6b8e91211429d", "highest_claim": 2211 },
+      { "pr": 107, "head": "deda8f9b04dbafcc36363628a14b6fecc94fd854", "highest_claim": null }
+    ]
+  },
+  "remaining_work": "Verify applied migration ledger through 2215 after exact-head persistent-staging deployment.",
+  "blocker": null
+}

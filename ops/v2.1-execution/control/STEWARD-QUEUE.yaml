@@ -1,0 +1,17 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+items: []
+entry_schema:
+  request_id: null
+  request_digest: null
+  requesting_task_id: null
+  kind: null
+  status: requested_assigned_applied_rejected
+  assigned_steward: null
+  target_checkpoint: null
+  acknowledged_by_task: false
+  applied_commit_sha: null
+  rejection_reason: null
+rule: A task pushes the immutable request on its own branch. C00 records its digest and lifecycle here, assigns
+  the exact steward/checkpoint, and records the steward result. The requester must acknowledge the applied/rejected
+  result before task completion.

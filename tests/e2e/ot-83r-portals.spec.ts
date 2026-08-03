@@ -9,7 +9,7 @@ const evidenceRoot = path.resolve(process.cwd(), 'ops/evidence/ot-83r');
 const screenshotRoot = path.join(evidenceRoot, 'real-app-screenshots');
 const evidence: Array<Record<string, unknown>> = [];
 
-test('OT83R parent portal routes add, fourth-seat denial, edit, archive, restore, student access, and content open', async ({
+test('OT83R parent portal enforces the learner cap across add, archive, and restore', async ({
   page,
 }) => {
   const requests = collectRequests(page);
@@ -18,17 +18,22 @@ test('OT83R parent portal routes add, fourth-seat denial, edit, archive, restore
     page.locator('#app-main').getByRole('heading', { name: 'Parent Portal' }),
   ).toBeVisible();
 
-  await expect(page.getByText('2/3 active learners')).toBeVisible();
+  await expect(page.getByText('2 active learners')).toBeVisible();
   await openAddLearner(page, 'Gamma Learner', 'Grade 4');
-  await expect(page.getByText('3/3 active learners')).toBeVisible();
+  await expect(page.getByText('3 active learners')).toBeVisible();
   await expect(page.getByRole('button', { name: /Gamma Learner/i })).toBeVisible();
 
   await page.getByRole('button', { name: 'Add learner' }).first().click();
   let dialog = page.getByRole('dialog', { name: 'Add learner' });
   await dialog.getByLabel('Display name').fill('Delta Learner');
+  await dialog.getByLabel('Grade').fill('Grade 3');
   await dialog.getByRole('button', { name: 'Add learner' }).click();
-  await expect(dialog.getByRole('alert')).toContainText('at most three active learners');
-  await dialog.getByRole('button', { name: 'Close' }).click();
+  await expect(dialog.getByRole('alert')).toContainText(
+    'A household can have at most three active learners.',
+  );
+  await dialog.getByRole('button', { name: 'Cancel' }).click();
+  await expect(page.getByText('3 active learners')).toBeVisible();
+  await expect(page.getByRole('button', { name: /Delta Learner/i })).toHaveCount(0);
 
   await page.getByRole('button', { name: /Gamma Learner/i }).click();
   await page.getByRole('button', { name: 'Edit' }).click();
@@ -40,21 +45,32 @@ test('OT83R parent portal routes add, fourth-seat denial, edit, archive, restore
   await page.getByRole('button', { name: 'Archive' }).click();
   dialog = page.getByRole('dialog', { name: 'Archive learner' });
   await dialog.getByRole('button', { name: 'Archive' }).click();
-  await expect(page.getByText('2/3 active learners')).toBeVisible();
+  await expect(page.getByText('2 active learners')).toBeVisible();
   await expect(page.getByRole('button', { name: /Gamma Edited.*Archived/i })).toBeVisible();
 
+  await openAddLearner(page, 'Delta Learner', 'Grade 3');
+  await expect(page.getByText('3 active learners')).toBeVisible();
+  await expect(page.getByRole('button', { name: /Delta Learner/i })).toBeVisible();
+
+  await page.getByRole('button', { name: /Gamma Edited.*Archived/i }).click();
   await page.getByRole('button', { name: 'Restore' }).click();
   dialog = page.getByRole('dialog', { name: 'Restore learner' });
   await dialog.getByRole('button', { name: 'Restore' }).click();
-  await expect(page.getByText('3/3 active learners')).toBeVisible();
-  await expect(page.getByRole('button', { name: /Gamma Edited.*Active/i })).toBeVisible();
+  await expect(dialog.getByRole('alert')).toContainText(
+    'A household can have at most three active learners.',
+  );
+  await dialog.getByRole('button', { name: 'Cancel' }).click();
+  await expect(page.getByText('3 active learners')).toBeVisible();
+  await expect(page.getByRole('button', { name: /Gamma Edited.*Archived/i })).toBeVisible();
 
   await page.getByRole('button', { name: /E2E Beta Learner/i }).click();
   await page.getByRole('button', { name: 'Setup' }).click();
   dialog = page.getByRole('dialog', { name: 'Setup student access' });
-  await dialog.getByLabel('Student email').fill(`beta-student-${Date.now()}@example.test`);
+  await dialog.getByLabel('Student username').fill(`beta.student.${Date.now()}`);
+  await dialog.getByLabel('Student password').fill('BetaStudent123');
   await dialog.getByRole('button', { name: 'Setup' }).click();
-  await expect(page.getByText('Status: Setup requested')).toBeVisible();
+  await expect(page.getByText('Status: Active')).toBeVisible();
+  await expect(page.getByText('Credentials: Parent managed')).toBeVisible();
 
   await page.getByRole('button', { name: /E2E Alpha Learner/i }).click();
   await page.getByRole('button', { name: 'Reset' }).click();
@@ -72,13 +88,15 @@ test('OT83R parent portal routes add, fourth-seat denial, edit, archive, restore
   await dialog.getByRole('button', { name: 'Restore' }).click();
   await expect(page.getByText('Status: Active')).toBeVisible();
 
-  await expect(page.getByText('E2E Recording')).toBeVisible();
+  await page.getByRole('link', { name: 'Classes & materials' }).click();
+  const materialsWorkspace = page.getByRole('region', { name: 'Classes & materials' });
+  await expect(materialsWorkspace.getByText('E2E Recording')).toBeVisible();
   const contentResponse = page.waitForResponse(
     (response) =>
       response.url().includes('/api/v1/portals/parent/households/') &&
       response.url().includes('/content/e2e_recording_001/open'),
   );
-  await page
+  await materialsWorkspace
     .locator('article', { hasText: 'E2E Recording' })
     .getByRole('button', { name: 'Open' })
     .click();
@@ -105,13 +123,15 @@ test('OT83R student portal routes content open, questions, session expiry, sibli
   await expect(
     studentPage.locator('#app-main').getByRole('heading', { name: 'Student Portal' }),
   ).toBeVisible();
-  await expect(studentPage.getByText('E2E Recording')).toBeVisible();
+  await studentPage.getByRole('link', { name: 'Library' }).click();
+  const libraryWorkspace = studentPage.getByRole('region', { name: 'Library' });
+  await expect(libraryWorkspace.getByText('E2E Recording')).toBeVisible();
   await expect(studentPage.getByText(/Sibling Private Recording/i)).toHaveCount(0);
 
   const openResponse = studentPage.waitForResponse((response) =>
     response.url().includes('/api/v1/portals/student/content/e2e_recording_001/open'),
   );
-  await studentPage
+  await libraryWorkspace
     .locator('article', { hasText: 'E2E Recording' })
     .getByRole('button', { name: 'Open' })
     .click();
@@ -119,13 +139,14 @@ test('OT83R student portal routes content open, questions, session expiry, sibli
     /https?:\/\/|zoom|vimeo|drive|meet/i,
   );
 
+  await studentPage.getByRole('link', { name: 'Questions' }).click();
   const privateQuestion = 'What should I review before the next class?';
   await studentPage
     .getByRole('textbox', { name: 'Ask privately', exact: true })
     .fill(privateQuestion);
-  await studentPage.getByRole('button', { name: 'Preview private question' }).click();
+  await studentPage.getByRole('button', { name: 'Review private question' }).click();
   const privatePreview = studentPage.locator('.ot-private-preview');
-  await expect(privatePreview.getByText('Private question preview')).toBeVisible();
+  await expect(privatePreview.getByText('Review private question')).toBeVisible();
   await expect(privatePreview.getByText(privateQuestion)).toBeVisible();
   await studentPage.getByRole('button', { name: 'Send private question' }).click();
   await expect(studentPage.getByText('Question submitted.')).toBeVisible();
@@ -153,7 +174,8 @@ test('OT83R student portal routes content open, questions, session expiry, sibli
 
   const viewerContext = await browser.newContext();
   const viewerPage = await viewerContext.newPage();
-  await loginAs(viewerPage, 'viewer', '/app/parent');
+  await loginAs(viewerPage, 'viewer', '/app/crm');
+  await viewerPage.goto('/app/parent');
   await expect(
     viewerPage.getByRole('heading', { name: 'Parent Portal access unavailable' }),
   ).toBeVisible();
@@ -237,7 +259,7 @@ async function captureResponsiveA11y(page: Page, name: string, route = '/app/par
     evidence.push({
       name,
       viewport: size.label,
-      screenshot: screenshotPath,
+      screenshot: path.relative(process.cwd(), screenshotPath).replaceAll('\\', '/'),
       critical_or_serious_a11y: serious.length,
       horizontal_overflow: overflow,
       provider_url_leakage: /https?:\/\/|zoom|vimeo|drive|meet/i.test(text),
@@ -255,9 +277,13 @@ function collectRequests(page: Page) {
 }
 
 function expectForbiddenRequests(requests: string[]) {
-  const forbidden = requests.filter((url) =>
-    /bna|operations|leadconnector|gohighlevel|fonts\.googleapis|fonts\.gstatic/i.test(url),
-  );
+  const forbidden = requests.filter((url) => {
+    const parsed = new URL(url);
+    return (
+      /\/(bna|operations)(\/|$)/i.test(parsed.pathname) ||
+      /leadconnector|gohighlevel|fonts\.googleapis|fonts\.gstatic/i.test(parsed.hostname)
+    );
+  });
   expect(forbidden).toEqual([]);
 }
 
@@ -270,7 +296,7 @@ test.afterAll(async () => {
         status: 'completed',
         generated_at: new Date().toISOString(),
         journeys: [
-          'parent add/fourth-seat denial/edit/archive/restore/student-access/content-open',
+          'parent three-active-learner cap/add/edit/archive/restore/secure-student-access/content-open',
           'student content-open/questions/session-expiry/sibling-household-role-denial/provider-url-guard',
         ],
         evidence,

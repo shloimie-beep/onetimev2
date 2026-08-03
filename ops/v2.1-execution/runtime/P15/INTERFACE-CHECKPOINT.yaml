@@ -1,0 +1,91 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P15
+interface_implementation_head_sha: ab71afb032b8e004cc655e3e5f5a6b8286aec380
+metadata_commit_sha: derive_from_git_and_record_in_control_registry
+task_packet_digest: cc6d395e0cb231a5180c9f927a64c814148b4946f869d68ee6afc1b74bc5c8df
+contract_digest: 2ebe108d2aa39a90908889bf9cf8f96cffb93d296e7ee9614e0d1bb5b351c3eb
+contract_digest_algorithm: SHA-256 over UTF-8 lines containing semantic_contract_version=<version> followed by exact path=<artifact SHA-256> lines sorted lexicographically by path, with LF separators and no final newline.
+contract_schema_version: 1
+semantic_contract_version: 2.1.0
+state: interface_ready
+exports:
+  - path: packages/contracts/src/calendar/index.ts
+    symbols:
+      - CALENDAR_CONTRACT_VERSION
+      - CANONICAL_CLASS_TIME_ZONE
+      - CALENDAR_ROLLING_HORIZON_DAYS
+      - CalendarRole
+      - CalendarView
+      - CalendarOccurrenceStatus
+      - CalendarAccessState
+      - CalendarEditScope
+      - CalendarSeries
+      - CalendarOccurrence
+      - CalendarOccurrenceException
+      - CalendarActorScope
+      - CalendarQuery
+      - CalendarJoinState
+      - CalendarDisplayEvent
+      - CalendarQueryResult
+      - CalendarOccurrenceEdit
+      - CalendarRepositoryQuery
+      - CalendarRepository
+      - CALENDAR_ERROR_CODES
+    sha256: 50df368f4d02b29364f44d42d0b384ed978679a284ca4f45e51eae4c958fcedb
+  - path: packages/domain/src/calendar/errors.ts
+    symbols:
+      - CalendarErrorCode
+      - CalendarDomainError
+    sha256: dbde288aebceaae9b7cc60716d6403470bc8763d1a25f61947b57a3c3d459dbc
+  - path: packages/domain/src/calendar/index.ts
+    symbols:
+      - CalendarErrorCode
+      - CalendarDomainError
+      - CANONICAL_CLASS_SERIES
+      - generateRollingOccurrences
+      - assertOccurrenceEdit
+      - planOccurrenceEdit
+      - parseLocalDateTime
+      - zonedInstantForLocal
+      - formatCalendarInstant
+      - projectCalendarView
+      - allowedCalendarViews
+    sha256: 4fba817f47cb6fd8696c1580de9e83922162d44e91083f668561e712817ae930
+  - path: packages/domain/src/calendar/recurrence.ts
+    symbols:
+      - CANONICAL_CLASS_SERIES
+      - generateRollingOccurrences
+      - assertOccurrenceEdit
+      - planOccurrenceEdit
+    sha256: 8fc4feb21659bdd8d8e19ec5e61145c99d865c8d776b9c4f050e82d991ef6157
+  - path: packages/domain/src/calendar/time-zone.ts
+    symbols:
+      - parseLocalDateTime
+      - zonedInstantForLocal
+      - formatCalendarInstant
+    sha256: 9be7030b7ebf701eca9c0a62a745f6d90325259e7fd69053011cc66f6ef5dc55
+  - path: packages/domain/src/calendar/views.ts
+    symbols:
+      - projectCalendarView
+      - allowedCalendarViews
+    sha256: 9e5e7e02af2b3ae1b432c895ee1cd338b5ec4f8900bb372f5498a1962e6211bb
+compatibility_invariants:
+  - The canonical active class series is Sunday through Thursday at 19:00 Asia/Jerusalem for 60 minutes; generation covers at least 90 local days and excludes Friday/Saturday starts.
+  - Occurrence identity is stable and idempotent as series id plus canonical Jerusalem local class date.
+  - Local recurrence is converted through an explicit IANA time zone; DST gaps and unselected folds fail closed, and display formatting never falls back to the browser time zone.
+  - Parent and Student display zones are server-derived preferences; only Admin may request an alternate explicit display zone.
+  - Calendar role views are closed vocabularies; inactive access and out-of-scope household/Student filters are denied before a result is returned.
+  - Parent results never contain Join actions; Student results expose only the opaque open_live_class action during the ten-minute-before through fifteen-minute-after window.
+  - Past occurrences are immutable, edits require the exact series version, and this-and-future edits split history from a versioned successor series.
+  - Dates are formatted with en-US-u-ca-gregory, and no Google Calendar/provider contract or action is exported.
+downstream_tasks:
+  - P16
+verification_commands:
+  - npm run typecheck
+  - npm run lint -- --quiet
+  - npx vitest run packages/domain/src/calendar/calendar.test.ts apps/web/src/client/features/calendar/CalendarWorkspace.test.tsx --environment node
+  - git diff --check
+  - focused absence inventory for Google Calendar/provider integration in all P15-owned implementation roots
+contains_product_completion_claim: false
+contains_external_effect: false

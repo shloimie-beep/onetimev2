@@ -1,0 +1,40 @@
+{
+  "run_id": "FULL-APP-STAGING-LIVE",
+  "status": "live",
+  "production_changed": false,
+  "repository": "shloimie-beep/onetimev2",
+  "branch": "codex/full-app-staging-live",
+  "verified_application_head": "68b4d075c85f4023177b9363e04e23763f01d4f5",
+  "staging": {
+    "url": "https://ot99-web-staging.up.railway.app",
+    "login_url": "https://ot99-web-staging.up.railway.app/login",
+    "version": "full-app-staging-live-68b4d07",
+    "web_deployment_id": "49b866b8-fd67-47e6-9e27-d4d43b71ae0a",
+    "worker_deployment_id": "93a90788-2eb7-4678-88cf-84829fb72b01",
+    "latest_migration": "2213_learning_delivery_autotrim_transcripts"
+  },
+  "provisioning": {
+    "admin_login": "password_then_email_challenge_ready",
+    "parent_login": "ready",
+    "student_count": 3,
+    "student_logins": "ready",
+    "fourth_student_cap_rejection": true,
+    "vimeo_demo_lesson_ready": true,
+    "zoom_demo_class_ready": true,
+    "zoom_provider_mode": "sink",
+    "protected_zoom_launch_only": true,
+    "credentials_committed": false
+  },
+  "validation": {
+    "build": "passed",
+    "typecheck": "passed",
+    "lint": "passed",
+    "secret_scan": "passed",
+    "unit_tests": "279 passed",
+    "integration_tests": "230 passed",
+    "focused_vimeo_tests": "12 passed",
+    "live_parent_browser": "passed",
+    "live_student_browsers": "3 passed"
+  },
+  "blockers": []
+}

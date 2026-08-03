@@ -1,0 +1,18 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+canonical_candidate_digest: ${CANONICAL_CANDIDATE_DIGEST}
+lane: ${LANE_ID}
+lane_head_sha: ${LANE_HEAD}
+expected_case_ids: []
+counts:
+  expected: 0
+  attempted: 0
+  passed: 0
+  failed: 0
+  blocked: 0
+  stale: 0
+  waived: 0
+unexpected_external_effects: 0
+cleanup_open_count: 0
+result_digests: {}
+generated_at: ${UTC_TIMESTAMP}

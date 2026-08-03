@@ -1,0 +1,53 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P24-migration-001
+task_id: P24
+kind: migration
+requirement_ids:
+  - OTV2-TICKETS-147
+  - OTV2-TICKETS-148
+  - OTV2-TICKETS-149
+  - OTV2-TICKETS-150
+  - OTV2-TICKETS-151
+  - OTV2-TICKETS-152
+  - OTV2-TICKETS-186
+acceptance_case_ids:
+  - OTV2-TICKETS-147-AC01
+  - OTV2-TICKETS-148-AC01
+  - OTV2-TICKETS-149-AC01
+  - OTV2-TICKETS-150-AC01
+  - OTV2-TICKETS-151-AC01
+  - OTV2-TICKETS-152-AC01
+  - OTV2-TICKETS-186-AC01
+rationale: >-
+  P24 owns the additive support persistence contract but only F02 may allocate
+  and write a forward-only migration. P24 performs no runtime schema creation.
+desired_semantic_change: >-
+  Allocate the next safe migration ordinal for the P24 v2.1 support tables,
+  preserving One Time product scope, requester-private conversations, exact
+  five-state lifecycle, optimistic versions, immutable audit, canonical
+  idempotency, one nullable adult-only GHL conversation link, and redacted local
+  Telegram notification intents.
+proposed_symbols_routes_keys_or_dependencies:
+  - onetime.support_tickets_v21 with product fixed to one_time_mishnayos
+  - technical_support and rabbi_question conversation kinds with exact category checks
+  - open, in_progress, waiting_on_requester, resolved, and closed lifecycle check
+  - requester role, requester identity, household scope, nullable Student identity, assignee, optimistic version, and timestamps
+  - nullable adult technical-support ghl_conversation_id with a constraint forbidding it for Student or Rabbi-question rows
+  - onetime.support_messages_v21 with ticket-local immutable message identity and author role
+  - onetime.support_audit_v21 with ticket version, actor, action, before/after status, and timestamp
+  - onetime.support_idempotency_v21 unique on scope plus key with canonical request hash and ticket identity
+  - onetime.support_notification_intents_v21 unique on idempotency key with bounded redacted payload and no provider delivery result as product truth
+compatibility_assumptions:
+  - F04 supplies canonical One Time actor, household, Student, and Admin authorization scope.
+  - F05 supplies transaction, optimistic command, idempotency, and local outbox conventions.
+  - P24 repository activation occurs only after this forward migration is integrated.
+verification_performed:
+  - focused lifecycle, privacy, role, idempotency, redaction, and repository-invariant tests
+  - workspace typecheck and focused lint/format
+conflicts_or_risks:
+  - Parent household authority must never grant access to a Student conversation.
+  - Student rows must never gain a GHL contact or conversation identifier.
+  - Telegram intent payloads must never persist private bodies or Student identity.
+  - Provider delivery state must never replace the local ticket, message, or audit truth.
+contains_secret_or_private_data: false

@@ -1,0 +1,290 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+authority: C00 is the only writer of authoritative registry gate states. Workers and I36 publish proposals/proofs
+  on their own authorized branches; C00 validates remote heads and records the transition in TASK-REGISTRY.yaml.
+enums:
+  registry_status_values:
+  - planned
+  - ready
+  - resume_ready
+  - claimed
+  - renewal_requested
+  - blocked
+  - operational
+  - interface_ready
+  - interface_ready_integrated
+  - ready_for_review
+  - implementation_ready
+  - ready_for_evidence_merge
+  - phase_a_complete
+  - operator_evidence_ready
+  - postoperator_supporting_proof_ready
+  - evidence_aggregated
+  - candidate_frozen
+  - candidate_verified_passed_and_aggregated
+  - preoperator_cases_passed_and_aggregated
+  - operator_accepted_and_evidence_aggregated
+  - phase_b_postoperator_proof_aggregated
+  - phase_b_candidate_verified_passed_and_aggregated
+  - certification_evidence_ready
+  - certification_passed_and_aggregated
+  - release_decision_recorded
+  - release_blocked
+  - done
+  active_phase_values:
+  - planned
+  - bootstrap
+  - contract
+  - implementation
+  - integration
+  - verification
+  - phase_a_preoperator
+  - operator
+  - phase_b_supporting_proof
+  - phase_b_postoperator
+  - phase_a_certification
+  - phase_b_cutover
+  - phase_b_blocked_decision
+  - evidence_aggregation
+  - release
+  - blocked
+  - complete
+  - renewal_requested
+  ready_queue_status_values:
+  - ready
+  - resume_ready
+  claim_mode_values:
+  - create_new_branch
+  - resume_existing
+  - adopt_bootstrap_integration
+  bootstrap_phase_values:
+  - not_started
+  - package_installed
+  - agents_updated
+  - control_push_canary_passed
+  - integration_created
+  - control_initialized
+  - operational
+  release_decision_values:
+  - released
+  - release_blocked
+proof_schema:
+  state: null
+  producer_task_id: null
+  producer_head_sha: null
+  canonical_candidate_digest: null
+  interface_checkpoint_digest: null
+  integration_or_evidence_head_sha: null
+  candidate_manifest_digest: null
+  result_index_digest: null
+  case_counts:
+    expected: 0
+    passed: 0
+    failed: 0
+    blocked: 0
+    stale: 0
+    waived: 0
+  external_effects_reconciled: null
+  state_based_on_control_head_sha: null
+  transitioned_at: null
+  proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/<task-id>/status_proof
+states:
+  operational:
+    applies_to:
+    - C00
+    proposal_from: C00 bootstrap phase machine
+    required_proof:
+    - CONTROL-STATE.bootstrap_phase equals operational
+    - control push canary passed
+    - integration branch exists at recorded bootstrap SHA
+    - control schemas and F01/I36 ready entries validate
+  interface_ready:
+    applies_to: foundation_or_implementation_producer
+    proposal_from: producer task branch
+    required_proof:
+    - schema-valid INTERFACE-CHECKPOINT.yaml
+    - exact realized exports/symbols/version/digests
+    - focused contract checks passed
+  interface_ready_integrated:
+    applies_to: foundation_or_implementation_producer
+    proposal_from: I36 integration result
+    required_proof:
+    - producer interface checkpoint exact head/digest queued by C00
+    - I36 merged exact ancestry
+    - pushed integration head contains checkpoint
+    - contract/type checks passed
+    - registry proof records interface and integration digests
+  ready_for_review:
+    applies_to: implementation_worker
+    proposal_from: task branch
+    required_proof:
+    - assigned behavior implemented
+    - task-owned checks complete
+    - state/handoff/next prompt pushed
+    - external effects and steward requests reconciled
+  implementation_ready:
+    applies_to: F01-F07_and_P08-P35
+    proposal_from: C00 review of ready_for_review task head
+    required_proof:
+    - scope and writer leases valid
+    - requirements/cases accounted for
+    - checks and baseline classifications valid
+    - steward/migration/effect state accepted
+    - exact implementation head admitted to merge queue
+  ready_for_evidence_merge:
+    applies_to:
+    - V37
+    - V38
+    - V39
+    - V40
+    - V41
+    - V42
+    - V43
+    proposal_from: verification lane branch
+    required_proof:
+    - every phase-owned case attempted
+    - immutable result attempts and CURRENT pointers validate
+    - lane summary/state/handoff/next prompt pushed
+  phase_a_complete:
+    applies_to:
+    - V43
+    proposal_from: V43 Phase A branch
+    required_proof:
+    - 17 independent cases passed
+    - three exact post-operator cases blocked only with pending_R44
+    - Phase A lane summary/state/handoff/next prompt pushed
+  operator_evidence_ready:
+    applies_to:
+    - R44
+    proposal_from: R44 branch
+    required_proof:
+    - R44 results and append-only effect/cleanup records pushed
+    - candidate and production deployment identity recorded
+  postoperator_supporting_proof_ready:
+    applies_to:
+    - P34
+    proposal_from: P34 Phase B proof branch
+    required_proof:
+    - schema-valid supporting proof pushed
+    - contains_acceptance_result and claims_case_passed are false
+  evidence_aggregated:
+    applies_to:
+    - I36
+    proposal_from: I36 evidence branch
+    required_proof:
+    - exact queued allowed paths and heads aggregated
+    - result/proof/effect schemas and candidate bindings validate
+    - canonical index and evidence head pushed
+  candidate_frozen:
+    applies_to:
+    - I36
+    proposal_from: I36 frozen integration checkpoint
+    required_proof:
+    - all 35 implementation tasks are implementation_ready
+    - each exact implementation head is a Git ancestor of the frozen integration head
+    - all candidate integration seams reconciled
+    - canonical candidate manifest path/digest validates
+    - artifact/migration/frontend/route/workflow/provider digests validate
+    - candidate-specific evidence branch exists
+  candidate_verified_passed_and_aggregated:
+    applies_to:
+    - V37
+    - V38
+    - V39
+    - V40
+    - V41
+    - V42
+    proposal_from: I36 evidence aggregation
+    required_proof:
+    - all lane-owned cases have current candidate-bound passed results
+    - zero failed/blocked/stale/waived/unexpected-effect results
+    - lane head is included in evidence head
+    - candidate result index digest records exact lane head and counts
+  preoperator_cases_passed_and_aggregated:
+    applies_to:
+    - V43
+    proposal_from: I36 V43 Phase A evidence aggregation
+    required_proof:
+    - every V43 case not dependent on R44 is passed
+    - exactly OTV2-OPS-219-AC01, OTV2-OPS-241-ENVIRONMENT-MAPPING, and OTV2-OPS-241-LEGAL-ARTIFACT-GATE are blocked
+      with pending_R44
+    - case counts are expected 20, passed 17, blocked 3, failed/stale/waived 0
+    - zero other failed/blocked/stale/waived/unexpected-effect results
+    - Phase A head/counts and result-index digest are recorded
+  operator_accepted_and_evidence_aggregated:
+    applies_to:
+    - R44
+    proposal_from: I36 R44 evidence aggregation
+    required_proof:
+    - both R44-owned cases passed against the canonical candidate
+    - effect ledger, provider readback, and cleanup reconcile
+    - R44 head is included in evidence head and result index
+  phase_b_postoperator_proof_aggregated:
+    applies_to:
+    - P34
+    proposal_from: I36 P34 Phase B supporting-proof aggregation
+    required_proof:
+    - schema-valid P34 supporting proof binds canonical candidate and R44 evidence head
+    - proof covers OTV2-OPS-219-AC01, OTV2-OPS-241-ENVIRONMENT-MAPPING, and OTV2-OPS-241-LEGAL-ARTIFACT-GATE
+    - proof contains no acceptance result or pass claim
+    - P34 Phase B proof head is included in the evidence branch and supporting-proof index
+  phase_b_candidate_verified_passed_and_aggregated:
+    applies_to:
+    - V43
+    proposal_from: I36 final V43 evidence aggregation
+    required_proof:
+    - all three pending_R44 results are superseded by current passed results
+    - all V43-owned cases passed
+    - case counts are expected 20, passed 20, blocked/failed/stale/waived 0
+    - zero failed/blocked/stale/waived/unexpected-effect results
+    - V43 Phase B head is included in evidence head and result index
+  certification_evidence_ready:
+    applies_to:
+    - R45
+    proposal_from: R45 Phase A branch
+    required_proof:
+    - OTV2-OPS-175-AC01 has a current candidate-bound passed result
+    - no broad deployment/DNS/provider cutover mutation occurred
+    - R45 Phase A result/state/handoff/next prompt are pushed
+  certification_passed_and_aggregated:
+    applies_to:
+    - R45
+    proposal_from: I36 R45 Phase A evidence aggregation
+    required_proof:
+    - R45 Phase A head is included in canonical evidence branch
+    - canonical result index is exactly 265/265 passed
+    - C00 independently validates candidate/index/environment-matrix digests
+    - C00 issues a new exact Phase B resume lease
+  release_decision_recorded:
+    applies_to:
+    - R45
+    proposal_from: R45 result/decision branch
+    required_proof:
+    - schema-valid FINAL-RELEASE-DECISION.yaml is pushed
+    - released requires the R45-owned case passed and every later release gate satisfied
+    - release_blocked permits the R45-owned case failed/blocked, or passed with a later authority, cutover, observation,
+      rollback, or release gate unsatisfied
+    - decision case counts bind the current index plus any not-yet-aggregated R45 result
+    - authorized effects and observation reconcile
+    - result and decision are committed and pushed
+  release_blocked:
+    applies_to:
+    - C00 global execution
+    proposal_from: C00 after final I36 aggregation
+    required_proof:
+    - R45 decision status is release_blocked
+    - the exact unsatisfied gate or stop condition is recorded
+    - aggregated result-index counts exactly match the decision and may be below 265 passed
+    - no production-ready or released claim is present
+    - all performed effects and cleanup reconcile
+    - R45 decision head is aggregated into the canonical evidence branch
+  done:
+    applies_to:
+    - C00 global execution
+    proposal_from: C00 after final I36 aggregation
+    required_proof:
+    - R45 result/decision head is aggregated into canonical evidence branch
+    - R45 decision status is released
+    - canonical result index is 265/265 passed
+    - candidate/evidence/release digests independently match
+    - zero failed/blocked/stale/waived/unexpected effects

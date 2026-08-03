@@ -1,0 +1,279 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: F02
+authority:
+  writer_slot: MIGRATION_AUTHORITY
+  lease_id: c741bc95-8fc2-4d4f-aaff-a76295580468
+  schema_contract_lease_id: 2c7b6d40-ea5f-423a-a000-a043d2bd6f7a
+  claim_id: 41a5ba44-435f-454f-b157-c6059d4bbc37
+  writer_id: codex-f02-migrations-2254-2256-41a5ba44
+  containing_control_head_sha: 30229697371eedd735123eb89fd063e8f7c2689e
+  ready_entry_parent_control_sha: 70b12ea370e8430bc80c0943231af98a3f5e6265
+  controller_authorization_sha: 70b12ea370e8430bc80c0943231af98a3f5e6265
+  authorized_start_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
+  lease_expires_at: '2026-07-31T13:28:40Z'
+  released_at: '2026-07-31T12:49:27Z'
+  audit_status: PASS
+policy:
+  reviewed_latest: 2256_v21_approved_school_configuration_authority.sql
+  first_new_ordinal: 2234
+  never_allocate:
+    - 2231
+  allocation_rule: F02 is the sole allocator for new forward-only v2.1 migrations from ordinal 2234 upward.
+allocations:
+  - ordinal: 2234
+    file: packages/db/migrations/2234_canonical_state_machines.sql
+    owner_task_id: F02
+    state: allocated
+    purpose: Canonical state vocabularies, isolation mapping, optimistic concurrency, append-only idempotency, guarded transitions, and billing-operation fencing.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: d1352c5e46ae56ca549c9939ef739923109b4a0ab04f0d4df00c04dca71ccb22
+  - ordinal: 2235
+    file: packages/db/migrations/2235_v21_household_identity.sql
+    owner_task_id: F04
+    request_id: F04-migration-001
+    state: allocated
+    purpose: Normalized adult identities, human accounts and roles, households, Student profiles, sessions, ownership transfers, attestations, action tokens, billing portal sessions, provider reassociation intents, and append-only account audit.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: 442231550a3aed2360772a9fbc4aebe96edf0510ee175e0b8c7d1097d94f7c1e
+    pg_mem_checksum_sha256: abec96358e5b7b35d253ed8314625ad6a7829fd0230fd5a2763ccb29b8c496b3
+  - ordinal: 2236
+    file: packages/db/migrations/2236_v21_job_foundation.sql
+    owner_task_id: F05
+    request_id: F05-MIGRATION-001
+    state: allocated
+    purpose: Durable command idempotency and provider job outbox foundations with scoped uniqueness, monotonic counters, leasing, quarantine, compensation, and due-work indexes.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: 4a9b04d9b6b822448b7a188fa1afd0d4e84b522efd4b9f7e2a3e3c46015e7fdd
+    pg_mem_checksum_sha256: 4a9b04d9b6b822448b7a188fa1afd0d4e84b522efd4b9f7e2a3e3c46015e7fdd
+  - ordinal: 2237
+    file: packages/db/migrations/2237_v21_calendar_recurrence.sql
+    owner_task_id: P15
+    request_id: P15-MIGRATION-001
+    state: allocated
+    purpose: Recurring calendar series windows, weekdays, duration, lifecycle and optimistic versioning with safe legacy backfill, rescheduled occurrences, and draft-series occurrence fencing.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: 7b58a07ff8bb949260715bd630d02c34cb1f7188a7d0a9a9f52380d7a82eca86
+    pg_mem_checksum_sha256: 6ad635c575ded4d57949e2f2f95b8fef2048b19e7153a3e87bd4bb1b4f8179ea
+  - ordinal: 2238
+    file: packages/db/migrations/2238_v21_provider_core.sql
+    owner_task_id: F06
+    request_id: F06-migration-001
+    state: allocated
+    purpose: Provider operation bindings, adult GHL identity quarantine, household provider mappings, append-only readback evidence, and provider reconciliation indexing over the existing outbox state machine.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: 78651746213caf2131310eac7305c61f94f9480cfcf5ff347ebc2a07bbc15f6e
+    pg_mem_checksum_sha256: 58122d190463e293f2554fffca26feda7e755351b464c416bd89a8afbfd9e367
+  - ordinal: 2239
+    file: packages/db/migrations/2239_v21_classroom_core.sql
+    owner_task_id: P16
+    request_id: P16-MIGRATION-001
+    state: allocated
+    purpose: Canonical classroom series, occurrence lifecycle reconciliation, scoped series enrollments, immutable command idempotency, and Jerusalem recurrence backfill.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: acdd52511fb2fa738d2a122087c65dbf7ae06879b51bd913095a0c86f63ea111
+    pg_mem_checksum_sha256: 816a086b5ec6cc0aa6d3c13b8b36e2f75dbc381cb2f60b4f859dba0328be755c
+  - ordinal: 2240
+    file: packages/db/migrations/2240_v21_privacy_data_rights.sql
+    owner_task_id: P32
+    request_id: P32-migration-001
+    state: allocated
+    purpose: Append-only privacy consent and recording evidence, versioned data-rights workflows, one-use export grants, retention work, and purge receipts.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: 1b1627bfbef7c4500d7be7e50d217efdecd97af9f1148b7e6a769cc6ed4f6831
+    pg_mem_checksum_sha256: 57ad695347870bd33dddc0da65accb396f6beaa9fe7ccd53b192f34585618d84
+  - ordinal: 2241
+    file: packages/db/migrations/2241_v21_admin_directory.sql
+    owner_task_id: P10
+    request_id: P10-MIGRATION-001
+    state: allocated
+    purpose: Scoped admin directory identity, credential, service-acceptance, canonical enrollment, revocation, ownership-transfer, receipt, and audit evidence.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: a318572247530b1dbbda75a0ba2b0f58b66e8a88156f1ee57874c79216c1d649
+    pg_mem_checksum_sha256: 7bf7590399cf72f454a07d88745db082d9f76278ca5ddb6c8ea59a66de0404f3
+  - ordinal: 2242
+    file: packages/db/migrations/2242_v21_student_notifications.sql
+    owner_task_id: P23
+    request_id: P23-migration-001
+    state: allocated
+    purpose: Student notification center records, exact source/version deduplication, current-source precedence, lifecycle timestamps, and sound preferences.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: 2e70f0db042e4b9a34cc52dc711da56b226c1d241bbceac51be80ac6b50b2ab1
+    pg_mem_checksum_sha256: 2e70f0db042e4b9a34cc52dc711da56b226c1d241bbceac51be80ac6b50b2ab1
+  - ordinal: 2243
+    file: packages/db/migrations/2243_v21_support.sql
+    owner_task_id: P24
+    request_id: P24-migration-001
+    state: allocated
+    purpose: Scoped support tickets, messages, append-only audit, idempotency, requester privacy, and redacted Telegram notification intents.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: eea46ad8e68e38089de142613850997b6dcd32825a52a849c8aff6089607d6aa
+    pg_mem_checksum_sha256: 84093ce3212256fe0f2631ec56f1c4d0b7d0fa4ab48b120be06b76a841f0cbeb
+  - ordinal: 2244
+    file: packages/db/migrations/2244_v21_ghl_identity.sql
+    owner_task_id: P27
+    request_id: P27-migration-001
+    state: allocated
+    purpose: Transactional GHL identity sync operations, adult-only household projections, protected provider-reference hashes, retry state, and identity-review quarantine.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: afee7e1471f1c6c1b84c6570bb32d39cc8f6a1e576c4e5d7064753ef57939418
+    pg_mem_checksum_sha256: 464bbe61224cd3ab343aa21e5ed88956684171c082703272be0e973cc866bb73
+  - ordinal: 2245
+    file: packages/db/migrations/2245_v21_content_ingest.sql
+    owner_task_id: P19
+    request_id: P19-MIGRATION-001
+    state: allocated
+    purpose: Durable content upload sessions and bounded multipart evidence, checksum-deduplicated original sources, source links, Drive observations, and append-only ingest commands.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: 3cd620f1efa3b47c4f052fee7b217da9a627e929d2ac328129224ed2e8042a99
+    pg_mem_checksum_sha256: c047ea117ce66a201a60b3c2bb7d5f3096e07c14b832282fd8f7f706455ba3fe
+  - ordinal: 2246
+    file: packages/db/migrations/2246_v21_content_processing.sql
+    owner_task_id: P20
+    request_id: P20-MIGRATION-001
+    state: allocated
+    purpose: Versioned content-processing lifecycle, immutable artifact revisions, idempotent commands, bounded retry state, and append-only capture evidence over canonical ingest sources.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: b065b91e0705719b31cb13cfcd609a6144680c59ef48582e1cb8c6e8e1d0f5ba
+    pg_mem_checksum_sha256: e1a468be490ff3204f7a2e20f09a819d8f761c8e40b25efec66f753e55b94405
+  - ordinal: 2247
+    file: packages/db/migrations/2247_v21_communication_foundation.sql
+    owner_task_id: P28
+    request_id: P28-migration-001
+    state: allocated
+    purpose: Adult-only reminder preferences, WhatsApp opt-in evidence, versioned household reminder plans, append-only delivery attempts, governed public-lead plans, and email acquisition state.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: f43afa371d0d6f52d43ec0dab3bb0b5927915ae3a6187226f9a5b0285017b04b
+    pg_mem_checksum_sha256: 6a916a88a196439fd23e930c400ceecb667970f7c4000a4b1db21bb7d96d8468
+  - ordinal: 2248
+    file: packages/db/migrations/2248_v21_family_signup.sql
+    owner_task_id: P08
+    request_id: P08-migration-001
+    state: allocated
+    purpose: Global family-signup idempotency, credential isolation, owner binding, fixed free-access projection, separate consent evidence, receipts, and zero-effect outbox intent.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: e32f62b3494d8ac2f8110cc0e6df02c127d699f69b284abc09ca9db735ede87f
+    pg_mem_checksum_sha256: faba8d6659dc6288cd4df42b5b28f66ae29a6184450279351761a3cb1ac6214a
+  - ordinal: 2249
+    file: packages/db/migrations/2249_v21_school_inquiry.sql
+    owner_task_id: P09
+    request_id: P09-migration-001
+    state: allocated
+    purpose: Email-deduplicated public school inquiries, locked acknowledgment intent evidence, explicit zero-access posture, and separately approved versioned school configurations.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: eb5a6ba248ebcd080b1a17b8eec0ca0ee0f4c2d79c5d440e6f6c16d1dfebf914
+    pg_mem_checksum_sha256: 6666c474a4fbd87c028f59bf0c4863df71b6f8f547aefd7cb98abde4d284d9ce
+  - ordinal: 2250
+    file: packages/db/migrations/2250_v21_zoom_preparation.sql
+    owner_task_id: P17
+    request_id: P17-MIGRATION-002
+    request_digest: e4aed5ae31c5143deb230aa3a9e76f6bca0fd6857d22a4bec7e815f3b78624ca
+    state: allocated
+    purpose: Scoped Zoom preparation, immutable roster snapshots, normal-classroom resources and Student registrants, exact request/preview/confirmation fencing, and append-only idempotent preparation commands.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: e63ae53369575b77a8f9f86564bd06e9e5fe72cf19b2ad15bfcd177ddbe93b38
+    pg_mem_checksum_sha256: 08192ed0fae69324e53cf75a6f367de924006be29e7cd5daea699ca01c7d18f3
+  - ordinal: 2251
+    file: packages/db/migrations/2251_v21_embedded_classroom.sql
+    owner_task_id: P18
+    request_id: P18-migration-003
+    request_digest: a7fea38033ff31b691fb065d124bf4d71e0900ea3dd2fbc0bd481cefd00b1960
+    state: allocated
+    purpose: Disjoint embedded-classroom launch grants, active-session and revocation fencing, immutable attendance events, and request-bound attendance projections with fixed TTL and lease semantics.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: 3fdeedcb1f4be0b606644a742ed44fadb792aab551ca0d7359af3f758ad174f9
+    pg_mem_checksum_sha256: ee0f961687e25ccd60e700d8a58cd9e11e71de1187e68fe517d684992eccdf36
+  - ordinal: 2252
+    file: packages/db/migrations/2252_v21_content_publication.sql
+    owner_task_id: P21
+    request_id: P21-MIGRATION-002
+    request_digest: aeb2db007026e9ad6286c4daa10a8b1970df6869b4d9eb821e3fe29c6eefc792
+    state: allocated
+    purpose: Composite-scoped publication, approval evidence, provider completion readback, playback authorization, occurrence attachment, and exact content-version resume fencing.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: 7981b9cf9805ec9bfba7005e7688034bacb90f5e730d0e593c43202c68afeafc
+    pg_mem_checksum_sha256: bf1194f9da673a54e280f531395bc3af11500e132ca1cd483c2bc356281e33a2
+  - ordinal: 2253
+    file: packages/db/migrations/2253_v21_content_publication_projection_v2.sql
+    owner_task_id: P21
+    request_id: P21-MIGRATION-003
+    request_digest: 4c102308b097a26a1a25b3f37a894ab1222acbbc09421502d77fc0a5d880e4a9
+    state: allocated
+    purpose: Forward-only source-complete publication projection parity with exact 27-field evidence, 8-field immutable artifact provenance, persisted P20 evidence binding, and content-scoped validation at all five publication guards.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: b969f1872c17f5cbc7a58e26888777d92e5371a887e2c3956c077b834a144c55
+    pg_mem_checksum_sha256: 3d86765f1f026b891c3f908987980b7de6e431ce004b034e179ba703902fe517
+  - ordinal: 2254
+    file: packages/db/migrations/2254_v21_learning_engagement.sql
+    owner_task_id: P22
+    request_id: P22-migration-002
+    request_digest: c44539cb6ef8960de256aee6ab2881734fc888b63e14a0cd78bec20eaf72f468
+    state: allocated
+    purpose: Four-dimension-fenced learning engagement projections and append-only question, recognition, review, announcement, and badge evidence without a competing attendance authority.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: 9c4a0dcc6b34d7dd22b999b13060379d43500a24d6acb2552765f8bddc86ccd7
+    pg_mem_checksum_sha256: a3726955ea9bd15f00cba67e8699936e3992deaae916861a21b3ca8dd0bf715a
+  - ordinal: 2255
+    file: packages/db/migrations/2255_v21_student_actual_name.sql
+    owner_task_id: P12
+    request_id: P12-migration-001
+    request_digest: 9148d7bc0fe4d39d8afa90d55f25fac8f7bf253c10842bab65f5b25a00f699f4
+    state: allocated
+    purpose: Required Unicode-nonblank Student actual name with exact legacy display-name copy and nullable Unicode-nonblank display name.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: 7f647a55f26b732bdb8b95771dbb0c43fe6c9a5833389d5dba0888f7f55aab32
+    pg_mem_checksum_sha256: 692a563b66d31b985113818214167f7973505c89fb4fe8e431435db6aba0b27c
+  - ordinal: 2256
+    file: packages/db/migrations/2256_v21_approved_school_configuration_authority.sql
+    owner_task_id: P09
+    request_id: P09-migration-002
+    request_digest: d9958a9def7fa6d41f5c457a20ff44df8ba265f532e76dd397532ccfcf570dbb
+    state: allocated
+    purpose: Canonical exact-scope approved-School configuration authority with immutable audit, optimistic versioning, and quarantined read-only predecessor evidence.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: 7caffcc1f89bcf13e037c86f97b4418819ac24366117a43c3a5fb3a6b6c16593
+    pg_mem_checksum_sha256: 7ade2f5e433363418f6fa998be446ec9a57cf9862c9ede8b70787002d089d41a
+  - ordinal: 2257
+    file: packages/db/migrations/2257_v21_provider_registry_bindings.sql
+    owner_task_id: F06
+    request_id: C00-F06-active-binding-source-001
+    state: allocated
+    purpose: Canonical non-secret active provider-registry binding authority with exact account, scope, operation, mutation-policy, evidence-digest, freshness, and optimistic-version fences.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: 04e348e04c4c794147a678d03167df51cd21872d350c73c83b2181b68bc0619e
+    pg_mem_checksum_sha256: 3961d3d0b946ac3e4ae318fa0bd3f275aff6d423cd4d80a1bdd9ea933842b1ef
+  - ordinal: 2258
+    file: packages/db/migrations/2258_v21_configurable_launch_timing.sql
+    owner_task_id: F02
+    request_id: C00-launch-configurable-timing-001
+    state: allocated
+    purpose: Replace the fixed Family free-access cutoff check with forward-only date-agnostic structural invariants so one protected runtime expiry can govern signup, billing, landing, and communications without rewriting existing rows.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: 8a0bf65c9ac8f383a6a0167706e360157664fa5327e7e6855641b326e724e5c7
+    pg_mem_checksum_sha256: ec63a25f07819b66dba2f70f1609283318a0295c46316861fd67cfacf9de352e
+next_available_ordinal: 2259

@@ -122,3 +122,74 @@ export const opsAlertEventSchema = z.object({
 });
 
 export type OpsAlertEvent = z.infer<typeof opsAlertEventSchema>;
+
+export const operatorLaunchStatusStateSchema = z.enum([
+  'unclaimed',
+  'active',
+  'waiting_external',
+  'ready_for_convergence',
+  'done',
+  'blocked',
+  'provider_off',
+  'needs_operator_decision',
+]);
+
+const operatorLaunchStatusTrackSchema = z.object({
+  track_id: z.string().min(1).max(120),
+  label: z.string().min(1).max(160),
+});
+
+export const operatorLaunchStatusProjectionSchema = z.object({
+  schema_version: z.literal('ot.operator-launch-status.v1'),
+  goal_id: z.literal('OT-LAUNCH-01'),
+  generated_from_board: z.literal('ops/goals/OT-LAUNCH-01/BOARD.yaml'),
+  board_source_hash: z.string().regex(/^sha256:[a-f0-9]{64}$/u),
+  generated_at: z.string().datetime(),
+  current_milestone: z.object({
+    label: z.string().min(1).max(500),
+    acceptance_complete: z.number().int().nonnegative(),
+    acceptance_total: z.number().int().positive(),
+    percentage: z.number().int().min(0).max(100),
+  }),
+  what_changed: z.string().min(1).max(3000),
+  works_now: z.array(
+    operatorLaunchStatusTrackSchema.extend({
+      status: z.literal('done'),
+      acceptance_ids: z.array(z.string().min(1).max(80)).min(1),
+    }),
+  ),
+  remaining: z.array(
+    operatorLaunchStatusTrackSchema.extend({
+      status: operatorLaunchStatusStateSchema.exclude(['done']),
+      next_action: z.string().min(1).max(1200),
+    }),
+  ),
+  blockers: z.array(
+    operatorLaunchStatusTrackSchema.extend({
+      status: operatorLaunchStatusStateSchema,
+      code: z.string().min(1).max(160),
+      reason: z.string().min(1).max(1200),
+    }),
+  ),
+  safe_links: z
+    .array(
+      z.object({
+        id: z.string().min(1).max(80),
+        label: z.string().min(1).max(120),
+        href: z.string().regex(/^\/app(?:\/[a-z0-9-]+)*$/u),
+      }),
+    )
+    .min(1),
+  next_executable_task: operatorLaunchStatusTrackSchema.extend({
+    action: z.string().min(1).max(1200),
+  }),
+});
+
+export type OperatorLaunchStatusProjection = z.infer<typeof operatorLaunchStatusProjectionSchema>;
+
+export const operatorLaunchStatusResponseSchema = z.object({
+  success: z.literal(true),
+  launch_status: operatorLaunchStatusProjectionSchema,
+});
+
+export type OperatorLaunchStatusResponse = z.infer<typeof operatorLaunchStatusResponseSchema>;

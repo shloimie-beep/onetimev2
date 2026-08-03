@@ -1,0 +1,38 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+execution_pack_version: '2.1'
+effective_date: '2026-07-28'
+repository: shloimie-beep/onetimev2
+pull_request: 130
+reviewed_head: 73dda293079f602c83929d1bbccb8dd5b9d1a455
+reviewed_branch: codex/one-time-launch-convergence-20260727
+initial_execution_base: 73dda293079f602c83929d1bbccb8dd5b9d1a455
+source_specification:
+  specification_id: ONE-TIME-PRODUCTION-V2.1
+  directory: source-spec
+  sha256sums_file_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+  requirements: 243
+  acceptance_cases: 265
+  decisions: 107
+task_catalog:
+  total_prompts: 46
+  controller: 1
+  implementation: 35
+  integration: 1
+  verification_lanes: 7
+  operator_acceptance: 1
+  final_release: 1
+migration_lock:
+  reviewed_count: 64
+  reviewed_latest: 2233_zoom_class_occurrence_resources.sql
+  first_new_ordinal: 2234
+  never_allocate:
+  - 2231
+integrity:
+  delivery_checksum_manifest: SHA256SUMS.txt
+  locked_runtime_checksum_manifest: LOCKED-SHA256SUMS.txt
+  acceptance_environment_matrix: ACCEPTANCE-ENVIRONMENT-MATRIX.yaml
+  validation_report: VALIDATION-REPORT.md
+  rule: SHA256SUMS.txt verifies the delivered ZIP before bootstrap. After mutable control/runtime/evidence state
+    begins changing, verify LOCKED-SHA256SUMS.txt plus recorded task/context/dependency and current branch-state
+    digests.

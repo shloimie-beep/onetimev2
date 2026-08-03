@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 
 const binaryExtensions = new Set([
@@ -69,6 +69,10 @@ let scanned = 0;
 
 for (const filePath of trackedFiles()) {
   if (isBinaryFile(filePath)) continue;
+  // `git ls-files --cached` includes tracked paths deleted in the working tree.
+  // A deletion cannot introduce a secret, so skip it instead of aborting the
+  // scan before the remaining repository files are inspected.
+  if (!existsSync(filePath)) continue;
   const buffer = readFileSync(filePath);
   if (buffer.includes(0)) continue;
   const text = buffer.toString('utf8');

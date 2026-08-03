@@ -286,8 +286,9 @@ function parentService() {
       },
       rewards: { learner_key: 'learner_router_created', balance: 0, event_count: 0 },
       updates: [],
+      helper: { available: false, reason: 'Unavailable', scope_label: 'Portal helper' },
     }),
-    helperQuery: async () => ({ answer: 'Scoped answer', source_refs: ['source_ref_1'] }),
+    helperQuery: async () => helperAnswer(),
     supportPreview: async () => ({
       preview_key: 'support_preview_router',
       subject: 'Question',
@@ -324,7 +325,7 @@ function studentService() {
       href: null,
       launch_token_ref: 'content_unavailable_router',
     }),
-    helperQuery: async () => ({ answer: 'Scoped answer', source_refs: ['source_ref_1'] }),
+    helperQuery: async () => helperAnswer(),
     supportPreview: async () => ({
       preview_key: 'support_preview_router',
       subject: 'Question',
@@ -410,6 +411,29 @@ function action() {
     href: '/api/v1/portals/actions/class-launch',
     launch_token_ref: 'class_launch_ref',
     expires_at: '2026-07-14T09:00:00.000Z',
+  };
+}
+
+function helperAnswer() {
+  return {
+    answer: 'Scoped answer',
+    source_refs: ['Approved source (/library/classes/content_001#section-section_001)'],
+    citations: [
+      {
+        content_id: 'content_001',
+        version_id: 'version_001',
+        section_id: 'section_001',
+        section_title: 'Approved source',
+        deep_link: '/library/classes/content_001#section-section_001',
+        section_sha256: 'a'.repeat(64),
+      },
+    ],
+    abstained: false,
+    safe_reason_code: 'supported_by_approved_section',
+    private_question_available: true as const,
+    policy: 'ot107-student-class-helper-v1' as const,
+    provider_mode: 'provider_off' as const,
+    grounding_mode: 'approved_entitled_sections' as const,
   };
 }
 

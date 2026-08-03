@@ -1,0 +1,2399 @@
+# I36 Integration Releases
+
+## Current terminal - staging health-route corrected candidate refreeze
+
+The Docker-context corrected staging attempt built both images and ran all 89
+database migrations without an error. Worker deployment
+`46f9af56-d601-4717-84d9-6e2c44c9c126` succeeded with zero claimed and zero
+delivered messages. Web deployment `570b55ef-5057-4ec8-9b8d-18ffb7be424c`
+started on port 8080 but failed Railway's `/health` probe because the production
+host guard rejected Railway's probe host. The effect is reconciled, its lock is
+released, and control is pushed at
+`57449993e5fc1191f3a2fe8b86cee2dbefa5ce67`.
+
+Source `2e514a73773bd97f20e423076539ed7224948552` moves only the minimal no-database
+`/health` liveness response ahead of that host guard and adds one regression.
+Unrecognized-host root, asset, webhook, and lead requests remain rejected
+without database access; `/ready`, `/version`, and every other route remain
+guarded. The focused regression, diagnostics suite, full build, formatting,
+and diff checks pass. Independent source review is P1=0, P2=0, P3=0.
+Integration merge `1b88ac230db018df5cb27ab792846f18ae6a0e07` contains the correction.
+
+The deterministic candidate is
+`e7fb4021d9bf4dbc9c38dbcadcc6eb9139082acf494416ce970c7c503f757456`,
+bound to exact source `2e514a73773bd97f20e423076539ed7224948552`. Its derivation and manifest
+SHA-256 values are respectively
+`008754642b5a3d754b528ac1dd8859ab184fb7ad07fd09a4bc4b3859b240ddb6`
+and `dabbefb03b7f610cd3b4025acb485d352a6a183e08755e4e4bc77bb65edad746`.
+This terminal changes exactly five paths: the two new candidate documents and
+the I36 runtime triplet. The path-inventory and preimage-manifest digests are
+`097359debc779085bc859d92e22eaa1bc03cb6161e12d294f5784abc7d10f34c`
+and `f5663ca6aed691ea7917bf6ba7fc1c5d3a55b059ee13e020fba2a63d781ad2e6`.
+
+The migration inventory remains byte-identical at
+`1598fc0f7f18e172b9566c65dbb81593ba2b5b1339e1dbca312aa01b53383f6b`;
+therefore PostgreSQL 18.4 proof run `30748901653` remains applicable without a
+duplicate full proof run. Complete only the narrow candidate terminal checks,
+push this exact terminal, perform one delta-only review, and only after
+acceptance acquire fresh candidate-bound Railway authority and locks for a new
+staging attempt. This refreeze holds no provider lock and performs no external
+effect.
+
+All sections below are retained historical release records and audit prompts.
+
+## Current terminal - Docker-context corrected candidate refreeze
+
+The first Railway staging attempt for corrected candidate
+`68af08379cf596a2c8dfac28253487fb21fea222c6ea1275d096a6f972130ee8`
+failed safely during Docker typecheck because `integrations/` was absent from
+the Docker build context. Web deployment
+`bb369416-5130-4fd0-8ec6-ba9b309fdd23` and worker deployment
+`ea1a2031-126c-4df0-9565-fe8b11c55241` both failed before an application
+instance was replaced or a database migration ran. The effect is reconciled,
+its lock is released, the prior staging deployments remain active, and control
+is pushed at `44edd0a460156088720b71c9ccb615b5972971fb`.
+
+Source `d5f75bbae511f6549897b1b005db1c5978b4487b` adds only the required
+`integrations/` copies to the Docker base and runtime stages. Its full local
+build passed and its independent review is P1=0, P2=0, P3=0. Integration merge
+`954c5e3505c1a1ba8f9bb0c1edb193a9408dac79` contains that correction.
+
+The new deterministic candidate is
+`c7faf43f4cc17a0e80f01c5db0a31f6a81f9b1f5f5090281b6f6daaf1cc84dab`,
+bound to exact source `d5f75bbae511f6549897b1b005db1c5978b4487b`. Its derivation and
+manifest SHA-256 values are respectively
+`c1a7bb7356e3630f419b31e7399e3393a7d2ff95d3778935b959b80cc8c88286`
+and `48c68cec03b5c83b9e0befa64c903e5f94b3b4a7faff53bfe021367b316b0f07`.
+This terminal changes exactly five paths: the two new candidate documents and
+the I36 runtime triplet. The path-inventory and preimage-manifest digests are
+`23eacc77df2bd33a68b58c2b6479801bab9d684339c0fc9a8b135011b2123cb6`
+and `b37a124099fcb9377ff9571f3d3c74f21495a5dd9956cd760f12bf12a7976d1d`.
+
+The migration inventory remains byte-identical at
+`1598fc0f7f18e172b9566c65dbb81593ba2b5b1339e1dbca312aa01b53383f6b`;
+therefore PostgreSQL 18.4 proof run `30748901653` remains applicable without a
+duplicate full proof run. Push this exact terminal, perform one delta-only
+candidate review, and only after acceptance acquire fresh candidate-bound
+Railway authority and locks for a new staging attempt. This refreeze holds no
+provider lock and performs no external effect.
+
+All sections below are retained historical release records and audit prompts.
+
+## Current terminal - corrected immutable candidate refreeze
+
+Control `8b2871228ecc0be54aa299dc4d25dad60afd27e1`, based on
+`04ceb6e3899198c6baeb560e4b6a5006ecbca635`, authorizes exactly five paths
+from integration `42065da2be8334382b2491c8e1d1a3a43231ab98` and accepted corrected source
+`7943a20895939f66b6755d02f819165850d1042f` under READY
+`30469bad977f43bf1631a3cb22dc714bcbaf01792e2969336108ead35e4cd36b`.
+The scope and preimage digests are
+`539038dfedbb69cd1b6e23ea35f6c7184c3dc895620aa29e2d75c805587b84c8`
+and `b897ac1c0f20932ad3b2ee6798f12d936ced31d801826e58a53cb4393e615853`.
+
+The corrected immutable candidate is
+`68af08379cf596a2c8dfac28253487fb21fea222c6ea1275d096a6f972130ee8`.
+Its deterministic derivation and manifest SHA-256 values are respectively
+`9abad1cd94a58cd124667c0ff69aa022bb27bfa6de7cddd77363bdbed32ab1d6`
+and `16f5452c0feea8252f5bc8b544cb3b3514aad65fb6c1f4c35d5044e641c00824`.
+Both documents parse and independently reproduce the exact candidate digest;
+the candidate-builder suite passes 4/4. No deployable source byte changed.
+
+The refreeze is grounded in successful source-bound PostgreSQL 18.4 run
+`30748901653` and artifact `8833796828`: migrations apply/replay/files/ledger
+are 89/89/89/89, pending/issues are 0/0, all 8 probes and isolated restore
+verification passed, and the disposable runner/database stopped. The effect
+was separately reconciled at 1/1/1 with zero non-disposable effect.
+
+Claim `ce000af6-1d5a-4e90-bdcf-c777e507f451` used RELEASE_INTEGRATOR lease
+`6adaaa97-05a1-4538-9ad8-4db69d90c877`, issued
+`2026-08-02T13:05:10Z`, released `2026-08-02T13:09:25Z`, and expiring
+`2026-08-02T14:05:10Z`. Push this exact five-path terminal and stop for one
+delta-only candidate identity review. Do not create an evidence branch or
+perform an external successor effect from this terminal.
+
+All sections below are retained historical release records and audit prompts.
+
+## Current terminal - immutable candidate freeze
+
+Control `146774966cd35a96c51d2f467ccfd3b458fd9cc6`, based on
+`08079bd87085ba8fd0b242f8ff7923c1b46f3a88`, authorizes exactly five paths
+from accepted source `0a5ef2e1e6ba88b151334f2aa78bee9cd8949365` under READY
+`26439fc6fe15620e8cdc00b4b82151c536b5b3f53303cd0aaf9d687c542a50b6`.
+The scope and preimage digests are
+`3b125e97f2ea2b59bf44c28b70be350f2a0f1e5b8f22ce976785b900e36626d7`
+and `28afa552b05e57a6847a439a2fc29a674a39c7ccfcb2e910b4593ca061a5981d`.
+
+The immutable canonical candidate is
+`ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d`.
+Its deterministic derivation and manifest SHA-256 values are respectively
+`f848922c8297f8ee90a934b7875876976913fc23af21c3ce590b7a4571ace8ca`
+and `30867a96bfc5370ead95b83b6519b4ec365947d874c609dd8e5dbecba7e54876`.
+Both documents parse, reproduce the candidate digest from the exact source,
+and the candidate-builder suite passes 4/4. No deployable source byte changed.
+
+The freeze is grounded in successful sanitized PostgreSQL 18.4 run
+`30745346334` and artifact `8832696355`: migrations apply/replay/files/ledger
+are 89/89/89/89, pending/issues are 0/0, all 8 probes and isolated restore
+verification passed, and the disposable runner/database stopped. The proof
+dispatch is separately reconciled at 1/1/1. This freeze performed no provider,
+customer, deployment, DNS, contact, send, enrollment, billing, or production
+effect; its effects are 0/0/0.
+
+Claim `48f1af59-52f9-4868-bacd-b6e79bf4292d` uses RELEASE_INTEGRATOR lease
+`8a7206c7-0c56-4fab-9565-63a2859077a2`, issued
+`2026-08-02T11:23:01Z`, released `2026-08-02T11:35:37Z`, and expiring
+`2026-08-02T12:23:01Z`. Push this exact five-path terminal and stop for one
+delta-only candidate identity review. Do not create an evidence branch or
+perform an external successor effect from this terminal.
+
+All sections below are retained historical release records and audit prompts.
+
+## Current terminal - PG18 failed-run phase-truth correction
+
+Control `1410f6ae4f702fa6d6546858621875809a860350`, based on
+`3cc3f339988c8ba057baa4f54fc861b37c09e4c0`, holds source-correction terminal
+`59616c76f34634103a9049a816b8d2d740613836` at P1=0, P2=1, P3=0 and
+authorizes only this runtime-triplet evidence correction. READY is
+`b2c1ba427be41a35634a729e01b33769e2c400a3ae01e9ce18add3f627ef7a50`;
+the runtime inventory and preimage manifest are
+`bdf3cfe7a516fb00f891ef66f1f752591ce3d894243bbe50393980d10a3a441a`
+and `d96021d0e56179ebc406bc92542a386a364680f8aa1b3403a63b7d95caa615cc`.
+
+The sole P2 was an evidence overstatement, not a code defect. Run
+`30743955340` completed its migration proof before entering
+`proveProviderRegistryGuards`, where the module-initialization error occurred.
+Later provider-registry guard probes did not complete. The disposable runner
+and database stopped and remain reconciled; non-disposable infrastructure,
+provider, customer, deployment, DNS, contact, send, enrollment, billing, and
+production effects remain zero. The two-line source correction is unchanged.
+
+Claim `27f81ff8-ff28-486d-9fcc-385914ec3584` and RELEASE_INTEGRATOR lease
+`e83619b8-1cf2-4920-99d9-17046ef7ed6d` were released at
+`2026-08-02T10:59:21Z`, before expiry `2026-08-02T11:41:19Z`. Exact failed-log
+order, three-path scope/preimages, YAML, runtime formatting, diff hygiene, and
+parent remote equality pass. This correction performed no external effect.
+
+Push this exact runtime-triplet child and stop for one delta-only review. No
+workflow retry or external effect is authorized.
+
+All sections below are retained historical release records and audit prompts.
+
+## Current terminal - candidate PG18 proof source correction
+
+Control `3cc3f339988c8ba057baa4f54fc861b37c09e4c0`, based on dispatch and
+reconciliation record `7db01ed9440ffa912d2639693e629938a0a64e91`, authorized one
+exact four-path correction from accepted integration head
+`370420f14e0c3aefc9399319c74960ca699ab90a` under READY
+`62b33e59de38c3fc0a12aed34a04b259e4a385294f6eaf5d98d47327c915c25d`.
+The exact path inventory and preimage manifest are
+`823960e12ddb131f1bc0587c512eef63e7eaa160020f3438c1d9b4b0bf1e1780`
+and `a495f0a6a1bcd9b731e79eb44c45f9c8ad861b99c19365e85d9b31c7bea23f59`.
+Control `3cc3f339...` corrects the proof-script preimage to exact raw-Git
+SHA-256 `087efe889f33f521dd7e448782126fb6cff35dc4ea5fc2e8f6ef49bfec19cd6e`;
+scope, claim, lease, and directives are unchanged.
+
+GitHub Actions run `30743955340` checked out exact head `370420f...`, started
+a disposable PostgreSQL 18.4 service, and completed its migration proof before
+failing inside `proveProviderRegistryGuards` because its top-level `await
+main()` executed before `PROVIDER_BINDING_INSERT` was initialized. Later
+provider-registry guard probes did not complete. The runner and disposable
+database stopped, no artifact was available, the one-run authority was
+consumed, its effect was reconciled, and its lock was released. Dispatch
+effects are `1/0/1`; non-disposable infrastructure, provider, customer,
+deployment, DNS, contact, send, enrollment, billing, and production effects
+are all zero.
+
+The correction moves only the `main()` invocation after all module constants.
+It does not change proof semantics, SQL, budgets, or provider gates. Workspace
+typecheck, scoped ESLint and Prettier, diff hygiene, and a dry fail-closed run
+without exact authorization all pass.
+
+Claim `ed8b434a-3da5-4f7d-b0ff-02819c4c1705` and RELEASE_INTEGRATOR lease
+`161bd0c3-877f-4f20-b42c-014e375ed1ca` were released at
+`2026-08-02T10:41:27Z`, before expiry `2026-08-02T11:20:42Z`. This correction
+phase performed no external effect.
+
+Push this exact four-path terminal and stop for one delta-only independent
+review. No workflow retry, candidate freeze, provider action, deployment, DNS
+change, or other successor effect is authorized by this terminal.
+
+All sections below are retained historical release records and audit prompts.
+
+## Current terminal - launch source and configurable timing
+
+Control `403c65b85f6bc85bba4a38df19c977058e2ff3d6`, based on
+`607ee4a324ab379674f2b1306ec66058f9d09e51`, authorized this bounded I36
+successor from accepted source `d61f4e49349ed4b63618513ce6642337690d55d0`
+under READY `79b66a4b3f0ee9381e0da869f199b93446c44e3d093c2d9e07723e02e053bf35`.
+The exact 63-path ceiling has inventory
+`d64f0e5bef040d3492a35f634192faf7224edf38bf3e4bcee9107d4a105c2d81`
+and preimage manifest
+`ce9d8b48af8901dfb98cfd52fe9e439bc74eb36e1ffb3fc3d32185522e3d48cb`.
+
+F02 migration 2258 was integrated first at
+`411790eb2b2b705f5487e58567dcd72d31f06cea`. I36 source terminal
+`36c4afca2204bfd1dac76a53adc94d4c859c3291` was then merged at
+`836340a7db094b5024e25bd3bc31f87f2c9cdbde`; combined repository/candidate
+correction `cecdd3b83c5bcd15ced45d83bf45113f60d51544` closes the two integration
+deltas exposed only after those branches met.
+
+The I36 release changes 59 source/test paths plus this runtime triplet. Their
+source, runtime, and release inventories are
+`5a1ccd80643a4ad04c39f73bb9588fec241609cde20fdf8f2af98b169a8e9231`,
+`bdf3cfe7a516fb00f891ef66f1f752591ce3d894243bbe50393980d10a3a441a`,
+and `198028d9694ef71bbdaaad216920d769bbfe8024c7f725450e34e8f03e1919b7`.
+The source preimage/postimage manifests are
+`64c44dea53843552aab2c39c3ff58774b8ee465978a6ca39d58720b6556cfae6`
+and `507a7bee98c6cf652fc22067661abcc6ad37b89c36077c3b62f06977e1034a72`.
+The one authorized unchanged source path is the already-green Family router
+test. Five additional changed paths in the full integration range belong to
+the separately accepted F02 migration terminal.
+
+The landing and signup source now say `LIVE SUNDAY–THURSDAY`, preserve `JOIN
+FREE`, retain the accepted desktop/mobile assets, and contain no compiled or
+guessed first-class/cutoff timestamp. `ONE_TIME_FIRST_CLASS_AT` and
+`ONE_TIME_FREE_ACCESS_EXPIRES_AT` are the only runtime sources. Without the
+cutoff, countdown/date claims remain hidden and signup, billing, OT-16, and
+production promotion fail closed. Family signup remains adult-managed,
+cardless, and zero-Student-contact; School remains a separate manual inquiry.
+
+The repository contains exactly ten reviewed GHL launch drafts: one office
+OT-01 receipt and nine Rabbi campaign messages across OT-02A, OT-15, and
+OT-02B. All four workflows remain `DRAFT_WAITING_EXTERNAL`; publication,
+enrollment, and send authority are false. No provider asset was created or
+changed.
+
+The integrated tree verifies 89 migrations and derives exact candidate inputs
+of 1,148 application, 1,014 web, and 1,014 worker blobs. The PostgreSQL 18.4
+proof workflow is pinned and fail-closed but was not dispatched, and no
+candidate was frozen.
+
+Validation passes typecheck, scoped ESLint/Prettier, diff hygiene, the 3,190-file
+secret scan, 77/77 communication/worker tests, 7/7 migration checks, 4/4 Family
+repository tests, 4/4 candidate-builder tests, HighLevel registry/projection
+checks, and the existing 10/10 external landing browser harness. The focused
+landing/config/service packet has 67 passing assertions; its two additional
+failures are the disclosed pre-existing static-asset and Parent canonical-route
+404 baseline. Normal Playwright startup retains the disclosed seed omission of
+non-null `join_opens_at`.
+
+Claim `becf6b05-e160-442f-8b5a-2a0c6193bb26` and all ten writer-slot leases
+were released at `2026-08-02T10:17:50Z`, before expiry
+`2026-08-02T13:08:39Z`. No provider, network, persistent-database, candidate,
+deployment, DNS, contact, send, enrollment, billing, charge, cleanup, or other
+external effect occurred; effects remain `0/0/0`.
+
+Push this exact terminal, prove clean local/tracking/live equality, and perform
+one delta-only independent review. Candidate freeze and every external effect
+remain separately gated.
+
+All sections below are retained historical release records and audit prompts.
+
+## Current terminal - held-source review correction
+
+Control `6852bbfd2bbccc1b7a3bfe53393e46eacc6b9ace`, with authority basis
+`71342aa60de3f3840c70555a616cded8f5672989`, authorized this exact bounded
+repository correction from sole parent
+`e7417f39e71fbb4fb45aa4a9436ba78496020063` under READY
+`d58967bf53d161676d1a8c198f76c399a22c0e321e13d2b349e85605fd7cc209`.
+The 58-path ceiling has inventory
+`6995f60547d5f5b2c912aa64f3aebbe627efd50e4169637c6f631fcb134032ea`
+and preimage manifest
+`d6f44950507b741424fd8741c0875fa5db6caa542af11e9a0260990ed7c56b7b`.
+
+This terminal changes exactly 15 source/test paths plus the I36 runtime
+triplet. The source, runtime, and release inventories are
+`583dca8d744d7232e5fc0e137fa358743c7c091b7abc3bfc9423f52872ad3d6c`,
+`bdf3cfe7a516fb00f891ef66f1f752591ce3d894243bbe50393980d10a3a441a`,
+and `ad65c64bd983cb647db9693cdc35838d7ae67b4809cf56b868cd5ca6d87981cc`.
+The source postimage is
+`01af83c4ff56063d1bad5cf9bc4e8c77e30649a74dba196053322456bd8be1ea`;
+the source and release preimages are
+`fbb77c808572cb322f72ada77a40ef448ac14875caec5cbd9964080442619a99`
+and `f032095d5c427ea45e38f37f166e1d64bcd3fb99042d3447db55d42503c48115`.
+
+The exact 93-route registry now reports 29 ready, 34 isolated, and 30 missing;
+the protected subset is 16 ready and 59 non-ready. The visible-action registry
+contains exactly 29 truthful actions. Support is canonical Student-only:
+ticket links remain beneath `/app/student/support` and encode receipt IDs,
+while Parent and legacy support navigation is absent. Safe-return admission
+rejects `/app/support` for Parent, Student, Admin, and default roles while
+preserving canonical Student support. `RT-STU-040` and `RT-STU-050` remain
+isolated and dead shell links are removed.
+
+The public gallery has registered selection and slideshow controls with exact
+source wiring and browser-proved rendered-state transitions. The candidate
+builder derives raw Git blobs at the exact source SHA using batched
+`cat-file`, rejects caller-controlled inventory, and deterministically derives
+1,146 app blobs, 1,012 web blobs, and 1,012 worker blobs.
+
+The out-of-ceiling file
+`tests/integration/support/ot89a-subscriber-support.test.ts` was not changed.
+Its three legacy `/app/support` UI expectations are recorded as superseded
+contract drift: anonymous/non-subscriber lead UI, disabled CRM-root, and
+paused-Parent CRM-root now fail closed at 404. No OT89A evidence citation
+remains in the visible-action registry.
+
+The local delta packet passes 27/27 across six files, and the focused gallery
+browser proof passes 1/1. Typecheck, scoped ESLint/Prettier, build, diff hygiene,
+and the 3,189-file secret scan pass. Detached tree
+`1a4e2f3dcc5f707eb2d7e14377e380929564faaf` with synthetic commit
+`5d6f8020db1024cbd18ddb7cb6176fa95a6f9e08` passed clean `npm ci`, build and
+typecheck, the 27/27 delta packet, and the 1/1 gallery browser proof.
+
+Disclosed out-of-scope baselines remain: global formatting reports 2,563
+untouched files while every changed file is clean; the broader auth/CRM packet
+has seven existing failures; normal Playwright startup is blocked by the
+existing seed omission of non-null `join_opens_at`; the full landing contract
+reaches an existing missing legal-copy assertion before gallery assertions;
+and `npm ci` reports one unchanged high vulnerability without an audit-fix
+mutation.
+
+Claim `b2d91877-4afc-4307-ae16-e3eeb4ea27e6`, CLIENT_COMPOSER lease
+`e193437a-a355-4a5d-b740-0a443ca3e71a`, SERVER_COMPOSER lease
+`67f84dd8-f317-455c-81f5-91d3cf324c77`, and RELEASE_INTEGRATOR lease
+`97f89adb-7b6e-47f8-b175-4e3a1f75dddb` were released at
+`2026-08-02T08:19:16Z`, before the `2026-08-02T12:45:22Z` expiry. No provider,
+network, persistent-database, candidate, deployment, DNS, send, charge,
+customer, cleanup, or external effect occurred; effects remain `0/0/0`.
+
+I36 must push this exact 18-path correction, prove clean local/tracking/live
+equality, and stop for delta-only independent review. This is not all-route
+convergence, candidate readiness, production completion, or authority for any
+external successor effect.
+
+All sections below are retained historical release records and audit prompts.
+
+## Current terminal - P18-registration-002 two-P2 correction
+
+Corrected containing control `702cce4dbe6cb6160c10144f212dc6627676f1a8`,
+based on `aee8c07684270736b6947a008a4a0d620c61ed6c`, authorizes this exact
+five-path child under READY
+`8b2f9db9ffbe3c4a2635f53d68447cfac421416b869df5a433dffac28fc7d4ea`.
+The authorized start and required sole parent is held implementation terminal
+`89f9adf886a15f396b6713dfdf0259bfde27bb0d`, independently reviewed at zero
+P1 and two P2 findings.
+
+The initial control dispatch `aee8c076...` correctly bound the start, five
+paths, five preimages, claim, and two leases, but mistranscribed the start tree
+as `80a11f4df41545aa31405843255d354cedfaef9a` and prior product manifest as
+`580da8f6341e3c962e80e01b579ee7afd2a8867e198772db735f9dd74d287551`.
+Control `702cce4d...` corrects those evidence values to start tree
+`80a11f4da6a0167f9e09b121ebd563c7e40825a4` and prior product manifest
+`580da8c07974aca4301b4ed995ae98f38bc4c61f4f6960b71aee219ad5684f5e`.
+No scope, preimage, claim, or lease changed.
+
+The first P2 is closed by rejecting embedded-client attendance immediately
+after the fresh session load unless the session is active, both the
+authoritative command time and lease expiry are finite, and the lease expires
+strictly after that command time. The fence runs before context resolution,
+evidence loading, reconciliation, or append. Tests cover revoked, exact-expiry,
+past-expiry, invalid-expiry, and invalid-authoritative-time cases.
+
+The second P2 is closed by rejecting signer envelopes unless issue, current,
+and expiry times are finite and satisfy `issued_at <= now < expires_at`,
+`expires_at > issued_at`, and a maximum 60-second lifetime. The server also
+requires a semantic three-part dotted-numeric SDK version, a 9-32 digit meeting
+number, nonblank non-URL SDK values, Student role, exact `/app/classroom` leave
+path, and boolean recording state. The existing commit-before-sign boundary is
+preserved: signer failure leaves that grant terminal, while a fresh grant can
+retry successfully.
+
+The exact two-product postimage manifest is
+`f62dcdebba981de49f2beecbc2e80a433f354675751f9f95e9549e39de0b4d42`.
+The two-product and five-path inventories remain
+`dc7a45f788a00e8bd7149c3d789f7413220e4bdf4d6415fec0ee730200b00212`
+and `6e7411f3b136e23a3187210a893038b2fd9c16455227d93aa0dc6efda6967640`;
+all five preimages reproduce manifest
+`4144b996e5bff0b1f08ef7ffcac2ddead499120701a3638f1293eb4330b76509`.
+
+The corrected service suite passes 25/25 and the full focused P18 packet passes
+90/90 across ten files. Both changed TypeScript files pass ESLint and Prettier;
+the client build passes; changed-path type diagnostics are zero; workspace
+typecheck retains only the exact four unchanged Stripe and duplicate-Playwright
+baselines.
+
+Claim `62a752ae-c2a0-4f3f-8a1c-08bde30fa02a`, EMBEDDED_CLASSROOM lease
+`b20881f5-369e-40c7-a0dd-d28366d9a57f`, and RELEASE_INTEGRATOR lease
+`8e17574a-ee4d-468e-ae70-557b8f16dd76` were released at
+`2026-08-02T03:38:22Z`, before the `2026-08-02T06:17:23Z` expiry. No provider,
+network, persistent-database, candidate, deployment, DNS, send, charge,
+customer, cleanup, or external effect occurred; effects remain `0/0/0`.
+
+I36 must push this exact five-path terminal, prove clean local/tracking/live
+equality, and stop for C00 independent review. Candidate and every external
+successor action remain separately gated.
+
+All sections below are retained historical release records and audit prompts.
+
+## Historical terminal - P18-registration-002 implementation
+
+Containing control `79fb3b949cf7b551aff939df868b048dc227213e`, based on
+`cd1b86517b314d7738240a515f90e4c73ef9314e`, authorized the admitted P18
+successor under READY
+`3351222de3826f808045384787925df0366f232ae4b279d7426a897f26538728`.
+The exact authorized start and required sole parent is
+`06a4e660bb00f37100a93abd11561351dfce9b79`. The immutable request remains
+bound to raw SHA-256
+`59dc010fcbcb370248a0736b4df37ce090ac7239c92afc6aefa38e8ba87c8624`
+and canonical-object SHA-256
+`0ccf99213e29b459f5d9c095e847b7e018cbf8f7a0416849d99465e24045f080`.
+
+This exact repository-only terminal changes 22 product/test paths and the I36
+runtime triplet. Their inventory digests are
+`2b21372b09476b9a029bced558f5d3856997b902cf9d69d6f1437ec0c862f551`
+and `c2e6a780ea8cc991b94926acd515921e4cb1a5ade9f181dc1b94f95ac229ef5b`;
+the product postimage manifest is
+`580da8c07974aca4301b4ed995ae98f38bc4c61f4f6960b71aee219ad5684f5e`.
+All eleven existing and eleven absent product preimages reproduce the admitted
+manifest `660221d367079c2997f7bfb7b12913f6122c69aa3e9788fee6ae4d5736067d00`.
+
+The implementation mounts the authenticated constant Student route
+`/app/classroom` and the fixed `/api/app/classroom` boundary. Student identity,
+household, environment scope, authenticated session, device lineage, and CSRF
+are server-derived. One captured PostgreSQL embedded-classroom repository is
+constructed with the existing P22 attendance-projection callback and shared by
+bootstrap, heartbeat, reset, reconciled attendance intake, and the mounted
+runtime. The service enforces the 60-second single-use bootstrap, 30-second
+heartbeat, 90-second renewable single-device lease, current-authorization
+recheck contract, verified provider correlation, audited Admin corrections,
+deterministic attendance reconciliation, and bounded optimistic retry. The
+Student client keeps exchange, lease, and SDK data in memory and places no raw
+join URL or identity in query strings or browser storage.
+
+Candidate-bound context, SDK signer, provider verification, and Admin
+attendance-subject ports intentionally remain fail closed. No native PostgreSQL
+candidate proof or real candidate binding was performed. The immutable F03
+login return-path validator does not accept `/app/classroom`; signed-out users
+therefore return safely to `/app/student` and must click back to Classroom.
+This terminal does not claim exact post-login return acceptance. A later
+candidate binding must also supply verifiable raw Zoom-webhook handling if the
+provider signature contract requires the original body bytes.
+
+Validation passes 71/71 focused assertions across ten files, scoped ESLint and
+Prettier across all 22 product/test paths, both client and page builds, exact
+preimage/scope and diff checks, and the repository secret scan across 3,183
+text files. Changed-path type diagnostics are zero. Workspace typecheck retains
+only the exact four unchanged out-of-scope Stripe and duplicate-Playwright
+baselines.
+
+Claim `e7435237-dd27-42e6-887f-c137b987e00f` and leases EMBEDDED_CLASSROOM
+`a7253f6b-9caa-43c5-868e-7bedd6cf2d14`, SERVER_COMPOSER
+`2e138bdd-6f07-4d23-8212-38d74ca5ebf1`, CLIENT_COMPOSER
+`16e48e6c-596c-40ed-8dec-5bcfd4066f0d`, BARREL_REGISTRAR
+`aee0be4b-ee54-418a-9e2e-90172f345dad`, and RELEASE_INTEGRATOR
+`6467fc1b-0f35-4e12-80d9-8ef68cb6bd35` were released at
+`2026-08-02T02:58:30Z`, before the `2026-08-02T06:07:10Z` expiry. No provider,
+network, persistent-database, candidate, deployment, DNS, send, charge,
+customer, cleanup, or external effect occurred; effects remain `0/0/0`.
+
+I36 must push this one exact terminal, prove clean local/tracking/live equality,
+and stop. C00 must independently review the pushed head before candidate
+binding or any external successor action.
+
+All sections below are retained historical release records and audit prompts.
+
+## Historical terminal - P18-registration-002 request materialization
+
+Live control `cd1b86517b314d7738240a515f90e4c73ef9314e`, based on
+`66f6bcdc11987c6ef6288877319f43ef9b09f085`, contains canonical READY
+`091f8cf212dfb8329e8954ba19a74503263f6f26fabd33c5cc8ec8f6fe3a5638`.
+The authorized start and required sole parent is accepted P21 metadata terminal
+`48182afe34d5b369b6fbbc05b6d6f788c34e5429`, independently passed with zero
+P1, zero P2, and zero P3.
+
+This four-path repository-only child materializes immutable
+`P18-registration-002` exactly from the C00 draft. Its raw Git-blob SHA-256 is
+`59dc010fcbcb370248a0736b4df37ce090ac7239c92afc6aefa38e8ba87c8624`,
+canonical-object SHA-256 is
+`0ccf99213e29b459f5d9c095e847b7e018cbf8f7a0416849d99465e24045f080`,
+and embedded 22-path sorted-LF inventory digest is
+`2b21372b09476b9a029bced558f5d3856997b902cf9d69d6f1437ec0c862f551`.
+All five requirements, six acceptance cases, exact same-instance P22
+dependency, and fail-closed credential/config/signer/timing caveats are
+preserved. `P18-registration-001` remains byte-identical. Migration 2251 is
+recorded as the applied and reconciled P18-migration-003 successor.
+
+The changed scope is exactly the new request and the I36 runtime triplet under
+inventory digest
+`e15bf1e3d8747c18c299e3cdf1a729ffc6cdc460ebaf242f470dae8dede4ce2b`.
+Draft 2020-12 schema, acceptance IDs, raw/canonical/inventory digests, exact
+preimages, YAML, scoped formatting, diff/scope, repository secret, and
+zero-effect gates pass. Claim `68ebd4f6-7182-4c19-be55-591de3ef98cc` and sole
+RELEASE_INTEGRATOR lease `c3a9f152-c6dc-46f6-b79c-860a4f4e1f5d` were released
+at `2026-08-02T01:49:20Z`, before the `2026-08-02T04:17:01Z` expiry.
+
+No product, test, config, migration, control, old-request, provider, candidate,
+database, deployment, DNS, send, charge, cleanup, or external effect occurred;
+effects remain `0/0/0`. I36 must stop after push and clean local/tracking/live
+equality. C00 must independently admit this request before any of its 22
+product/test paths may be implemented.
+
+All sections below are retained historical release records and audit prompts.
+
+## Historical terminal - P21 current-checkpoint metadata correction
+
+Live control `66f6bcdc11987c6ef6288877319f43ef9b09f085`, based on
+`ec48eda10f0799e852d015fefca227d99e6863af`, contains canonical READY
+`2070446cb082bf532a5a8167927c34097a56b237770ccf01fa1b7311bc762e11`.
+The authorized start and required sole parent is P21 code terminal
+`b98698740936df0b1817be616039da2101a6cb28`.
+
+Independent review found the P21 code correction sound and held terminal
+admission at zero P1, one P2, and zero P3 solely because canonical current
+metadata remained stale. `state_based_on_head_sha` still named `460ba42d...`,
+`last_implementation_commit_sha` was still pending, `remaining_steps` and
+`next_action` still directed the old Batch D/P35 review, and the current
+checkpoint inventory still named that old ten-path checkpoint.
+
+This runtime-only child corrects those canonical current fields to the P21
+terminal. The current code and state basis and the last implementation commit
+are `b98698740936df0b1817be616039da2101a6cb28`; the current review target is
+this exact three-runtime-path child; and the current checkpoint contains only
+`HANDOFF.md`, `NEXT-PROMPT.md`, and `TASK-STATE.yaml`. Every product, test,
+migration, config, control, immutable request, provider, and historical-record
+byte remains unchanged. Prior product validation claims were preserved and no
+broad product suite was rerun.
+
+Canonical READY, the three authorized runtime preimages, YAML parsing, runtime
+formatting, exact scope and diff hygiene, and the 3,171-file repository secret
+scan pass. Claim `d007c280-1ccb-4f3a-80c5-a79118de94be` and sole
+RELEASE_INTEGRATOR lease `1a1a07e4-a6dd-4caa-97d6-f66b6a8a608e` were
+released at `2026-08-02T00:52:52Z`, before the `2026-08-02T03:33:22Z`
+expiry. No provider, network, registry, persistent-database, candidate,
+deployment, DNS, send, charge, customer, cleanup, or external effect occurred;
+effects remain `0/0/0`.
+
+I36 must stop after this exact runtime-only terminal is pushed with clean
+local, tracking, and live equality. C00 must independently review this child
+and close the sole metadata P2 before admitting the P21 code terminal.
+Candidate freeze and every provider or release effect remain held.
+
+## Current terminal - P21 effect-exists local-finalization correction
+
+Live control `ec48eda10f0799e852d015fefca227d99e6863af` contains canonical
+READY `30168c46b1bcc1dd3587fcf9bf692b5b267ba7ae8fa06753ccf810ae6ec819ed`,
+whose exact authority basis is
+`0063689594c1ab9beb2d9f4d64f89a8491284a4c`. The authorized start and sole
+parent is held terminal `1873fc8d7e5478eb736021175bb2214d78d865cd`.
+
+Independent review held that prior terminal with one P1, one P2, and zero P3.
+The P1 was substantive: the P21-gated reconciliation adapter passed through an
+injected `effect_exists` result with `completed_locally:true`, allowing generic
+F06 to mark the job complete before canonical P21 local finalization. The P2
+was evidence: the runtime triplet still advertised an older F06 correction and
+did not honestly record the held P21 review or current authority.
+
+This exact correction forces every P21-gated `effect_exists` readback to
+`completed_locally:false` before generic F06 lifecycle evaluation. A new
+runner-level regression injects `completed_locally:true` and proves both the
+persisted readback normalization and resulting `accepted`, never `complete`,
+job state. Canonical P21 finalization therefore remains required. Effect-absent
+retry safety, still-unknown quarantine, the generic F06 lifecycle, and provider
+contracts are unchanged.
+
+Verification passes 20/20 focused P21 adapter/runner/generic-F06 assertions,
+the prior full packet at 76/76, and read-only migration inventory at 7/7.
+Both changed TypeScript files pass ESLint and Prettier; changed-path type
+diagnostics are zero. Workspace typecheck retains only the four unchanged
+Stripe and duplicate-Playwright baselines. The 3,171-file secret scan passes.
+The two-path product postimage manifest is
+`371eb2d184ed8550f17b1b13970db71fa1daf95d3204e54abd7c374803e4cdd5`.
+
+Claim `7f9e3cc8-4c72-4f38-ab60-09f8e6187877`, WORKER_COMPOSER lease
+`5bc3f1dc-0874-4eb3-abaf-542c14d60814`, and RELEASE_INTEGRATOR lease
+`890c2452-d61b-4d4d-a951-aa6886c50952` were released at
+`2026-08-02T00:22:23Z`, before the `2026-08-02T04:10:31Z` expiry. No provider,
+network, registry-population, persistent-database, candidate, deployment, DNS,
+send, charge, customer, cleanup, or external effect occurred; effects remain
+`0/0/0`.
+
+Once this exact five-path terminal is normally pushed, I36 must stop for
+independent review. Candidate freeze and every provider or release effect
+remain held.
+
+## Current terminal - F06 malformed operation-array correction
+
+Independent review of `701ef6e19d0cb640677c066c2d49fb2f453bb6bc`
+passed the complete release envelope and all substantive authority fences except
+one P2: SQL array `[requested_operation,NULL]` was accepted, then the mapper
+coerced `NULL` to synthetic string `"null"`. Review counted zero P1, one P2,
+and zero P3, so P21 and candidate advancement remained held.
+
+Control `b7249121e94130e1ee9d561a112851ac4040fa66`, based on
+`cfa3a42c5868676025c0e4414af20856643d0ecc`, authorized only the five affected
+product/test paths, the F02 allocation proposal, and this I36 runtime triplet
+under READY `aea49a43a89386b9faa5c3ff6931c22f91d6f516a3167c490d102b436964d6f8`.
+
+Migration 2257 now has a native PostgreSQL constraint rejecting NULL operation
+elements. The repository validates every element's runtime type before any
+coercion and returns null for malformed evidence. Domain validation explicitly
+rejects non-string operation types. Regression coverage includes the exact
+`[requested_operation,NULL]` row at repository and domain boundaries.
+
+Focused provider and migration verification passes 19/19. A disposable
+in-process PGlite proof applied corrected migration 2257, rejected the NULL
+array, and accepted a valid exact row. This was not a candidate or persistent
+database. The corrected native normalized-LF migration digest is
+`04e348e04c4c794147a678d03167df51cd21872d350c73c83b2181b68bc0619e`;
+the stripped repository-runner digest remains
+`3961d3d0b946ac3e4ae318fa0bd3f275aff6d423cd4d80a1bdd9ea933842b1ef`.
+The proposal remains at next ordinal 2258.
+
+No registry row, provider call, candidate, deployment, DNS, persistent database,
+contact, send, billing, cleanup, or external effect occurred; effects remain
+`0/0/0`. Claim `ab201f03-0385-41a2-9467-03c21ca56c44` and all four writer
+leases were released at `2026-08-01T22:46:01Z`, before expiry. Independent
+acceptance of this exact nine-path correction is required before the
+already-mapped 18-path P21 reconciler successor may begin.
+
+## Current terminal - F06 active registry binding source
+
+Control `cfa3a42c5868676025c0e4414af20856643d0ecc`, based on
+`b168ab1f258f25f030a934269a7ed4a109af4e08`, accepted integration terminal
+`6c55a238fbbe8811f0004425e3ed92065c8530c0` with zero P1, P2, or P3
+findings and authorized this exact twelve-path repository-only successor under
+READY `e1fa167e1d0b39f3fb5bef044e5f1e1e58032aa23696ff98e4cffe4c70b6be8a`.
+
+The successor adds the canonical `onetime.provider_registry_binding_v21`
+registry source, migration 2257, its exact read port, fail-closed repository
+reader, schema contract, validation, and migration allocation evidence. It does
+not treat the per-operation `provider_operation_binding` table as active
+registry authority. Empty, duplicate, inactive, stale, mismatched, or malformed
+evidence returns no active binding. Exact binding key, provider, scope, safe
+account-reference hash, operation, mutation policy, both evidence digests,
+freshness floor, and optimistic version are fenced. Stripe direct mutation
+remains prohibited, and no raw provider identity or credential is stored.
+
+Focused provider tests pass 12/12. Repository migration verification passes
+7/7, including the full fresh inventory and read-only verification. A disposable
+in-process PGlite proof applied migration 2257, accepted an exact version-1 row
+and version-2 update, and rejected a stale version jump and deletion. This was
+not a candidate or live database. Scoped ESLint and Prettier pass; changed-path
+type diagnostics are zero. Workspace typecheck retains exactly the four
+unchanged out-of-scope Stripe and duplicate-Playwright baselines.
+
+The native normalized-LF migration digest is
+`1c7f1f5307301de01eaff24c33c6c57877b6804050d9787aea5d6c8d2a735c97`;
+the repository-runner digest is
+`3961d3d0b946ac3e4ae318fa0bd3f275aff6d423cd4d80a1bdd9ea933842b1ef`.
+The allocation proposal advances the next available ordinal to 2258 and prior
+migrations 2234 through 2256 are unchanged. The eight-path product postimage
+manifest is `0ccda0381935a7ac875cfa0ac1ca919db0467cc5c5d5fc265d8e9c4f7ddd9963`.
+
+No registry row, candidate, provider call, deployment, DNS change, persistent
+database write, contact, send, billing, cleanup, or external effect occurred;
+effects remain `0/0/0`. Claim `0f8c8a10-e2f9-4f4c-8ba2-baca8638a581`
+and the MIGRATION_AUTHORITY, PROVIDER_CORE, PROVIDER_REGISTRY, and
+RELEASE_INTEGRATOR leases were released at `2026-08-01T22:12:03Z`, before
+expiry. After independent acceptance, the critical order is P21 reconciler,
+P18-owned P22 attachment, and then P30 F05/F06 composition. Registry population
+and every external action remain separately gated.
+
+## Current terminal — P22 direct integration assertion correction
+
+Control `b168ab1f258f25f030a934269a7ed4a109af4e08`, based on
+`bdc355b68caf4cdab7f0dbcdeaa8f93655456a91`, held semantic terminal
+`d1d416877dd841c3cf63ca53362427b61327ff53` at independent review with zero
+P1, one P2, and zero P3. All six prior product P2 findings were closed; the sole
+new finding was a directly relevant P22 integration test that still positively
+asserted the removed insecure self-attested repository-equality seam.
+
+READY `a0ac214fae63fa2530d1000197849a7ebfdf01c28f0745a63bdd4e646acb9941`
+authorized exactly that test plus the I36 runtime triplet. The test now proves
+the repository-equality string, `attachToMountedP18`, and `MountedP18Binding`
+are absent; the mounted-P18 attendance blocker remains unconditional; and no
+second embedded-classroom repository exists. Its authenticated-route and absent
+attendance/consent mutation assertions remain. No product code, immutable
+request, migration, config, or lockfile changed.
+
+The exact formerly red test passes 1/1. The full focused P21/P22/P30 set plus
+that integration test passes 70/70 across ten files. The one changed test passes
+ESLint and Prettier, and diff hygiene passes. Its exact staged Git-blob SHA-256
+is `5e05de7800344f2145bce8e3b73b20227d4a6ada7ab0ed3c43efde4310f34dbe`;
+the one-path postimage manifest is
+`d6af0d8977219966319f98a275ce184aea4a3d113827e1e85e88021ab9af86fa`.
+
+Claim `49c2efa0-4a42-4cbe-8e17-a1f3eaadab13` and sole RELEASE_INTEGRATOR lease
+`f0b86e14-faf3-4d96-acdd-ded62bd858fd` were released at
+`2026-08-01T21:25:32Z`, before expiry. No candidate, provider, infrastructure,
+deployment, DNS, database, contact, send, billing, cleanup, or external action
+occurred; effects remain `0/0/0`.
+
+C00 must independently review this four-path terminal. Candidate freeze remains
+held until that review returns no P1/P2, and the later P21 F05/F06 reconciler,
+real P18-owned attachment/readback plus schema/secret evidence, and real P30
+F05/F06/provider bindings remain explicit dependency gates.
+
+## Current terminal — held P21/P22/P30 semantic correction
+
+Control `bdc355b68caf4cdab7f0dbcdeaa8f93655456a91`, based on
+`de282f8ed1e5c57a23b301c760802593f53ed591`, authorized one exact correction
+from integration `32e21c0dfa93195b05df99d81c906a4039341355`. READY
+`08e4446d...`, all 13 product preimages, all four immutable request blobs, and
+the exact 13/16 path inventories reproduced before editing.
+
+P21 no longer reads resume version in a separate preflight transaction. The
+HTTP receipt binding uses a stable server-owned zero sentinel across same-key
+retries, while `service.saveResume` retains its independent in-transaction CAS
+against the locked `student_content_resume` row. The provider-disabled default
+is unchanged. P21 remains held for a separately path-complete locked F05/F06
+internal publication reconciler.
+
+P22's self-attested mounted-P18 injection seam is removed. No caller can enable
+learning merely by returning two equal repository references. With its other
+gates satisfied, composition still records the mounted-attendance blocker and
+the authenticated route remains generic private/no-store 503. A later exact P18
+runtime attachment/readback contract, native migration 2254, and protected
+alias-key readback are still required; no second repository was created.
+
+P30 now uses only the authority-returned safe provider reference. Saved/reopened
+readback must equal the exact approved registry digest `06d1ee3b...` and rendered
+body digest `180797cf...`; shape-only hashes are rejected. F05 `dead_letter` is
+terminal, every `completeDecision` result is checked, and a lost fence is never
+reported completed. Acceptance-unknown remains quarantined with no blind retry,
+WhatsApp remains absent, and the default stays disabled without real F05/F06 and
+provider bindings.
+
+Focused verification passed 69/69 tests across nine P21/P22/P30 files. Scoped
+ESLint and Prettier, HighLevel registry validation, both web builds, runtime
+imports, the 3,164-file secret scan, exact preimage/request/scope checks, and
+diff hygiene passed. Typecheck reproduced only the same four unchanged
+Stripe/duplicate-Playwright diagnostics. The wider unit suite passed 578/593;
+its 15 failures are spread across nine untouched portal/copy/config/billing and
+legacy occurrence-seed tests, with none in the 13 correction paths.
+
+The exact product postimage manifest is
+`769548802db4ea2dfb7e711b183533709827176b775ec7e94534fde25173c1c1`.
+Claim `1abaf754-7160-4a03-908e-382ec8b471ac` and SERVER, WORKER, and RELEASE
+leases were released at `2026-08-01T20:58:02Z`, before expiry. Candidate,
+effect, provider, deployment, DNS, database, contact, send, charge, and cleanup
+actions remain absent; effects are `0/0/0`.
+
+C00 must independently review the pushed 16-path correction terminal. It must
+retain the explicit P21 reconciler, real P18 mount, and real F05/F06/provider
+gates before candidate freeze or any provider action.
+
+## Current terminal — successor schema and request materialization
+
+Control `cdc98ae7a5212c288ad16b35df70addc517e54af`, based on
+`3aebe99dc9d5c3ae28d648597351ce6200691ed3`, accepted corrected Batch D
+terminal `acd9ffae1df73765dbf46d049db14010ef12e869` after the authorized second
+review returned zero P1, P2, and P3 findings. It then issued canonical READY
+`3a1fb3c3c6d7b485a5672f85be39b404b76936cfa178334df6888020e99972e1`
+for one exact eight-path repository-metadata phase.
+
+The F01 steward-request schema now accepts exactly the 265 immutable case IDs
+from `ACCEPTANCE-ENVIRONMENT-MATRIX.yaml`, in matrix order, while preserving
+the request-kind enum and every unrelated schema rule. Its exact LF Git-blob
+SHA-256 is `4b8f107c9d828e47497629bbb749790b86dc3a984730d6e777d84b4787b43098`.
+The matrix count, order, uniqueness, and sorted-ID digest `ec0843e9...`
+reproduce, and Draft 2020-12 validation passes.
+
+Four path-complete immutable successors are now materialized without applying
+them: `P21-registration-004` (`ce7eea4f...`),
+`P22-server-registration-003` (`b359a3be...`),
+`P22-client-route-003` (`6187ea30...`), and
+`P30-registry-registration-002` (`cae9e599...`). All raw and canonical
+digests reproduce; P30 retains its exact eight-product-path digest
+`cc8fe47b...`. No product source, migration, central registration, config,
+lockfile, provider, deployment, candidate, DNS, database, send, contact,
+charge, or cleanup byte or effect changed.
+
+Claim `743bcd43-cc89-4bab-a3ab-b610d5ac49bb` and RELEASE_INTEGRATOR lease
+`c290bc01-2c9c-48fb-bf56-d9460d32dfec` were released at
+`2026-08-01T19:14:50Z`, before the `2026-08-01T22:58:37Z` expiry. Effects
+remain attempted `0`, succeeded `0`, reconciled `0`.
+
+I36 must push this one terminal with clean local/tracking/live equality and
+stop for C00 admission. C00 may then queue and apply the four successors only
+under separately fenced dependency-ordered authority.
+
+## Current terminal — Batch D P35 security correction
+
+Control `3aebe99dc9d5c3ae28d648597351ce6200691ed3`, based on
+`2213842965302e6c5ccbd9fd26f011681be20b1e`, held Batch D terminal
+`03e30641fb5de4de920978b2e574ad6bf4a015ad` after one independent review
+found two P2 defects and no P1: path normalization could bypass retired page
+and asset denial into static serving, and the fixed-path router left generic
+legacy prefixes unreachable while unknown production hosts could reach
+unrelated public and API handlers. Canonical correction READY is
+`67566b13b89cc68b7373230bb6ce707bda0312b1c059db7cc63495c1ce1d2c0e`.
+
+The correction exports one decode-once path normalizer/classifier shared by
+policy, router, and static denial. It normalizes slash/backslash separators,
+repeated and trailing slashes, dot segments, and ASCII case without recursive
+percent decoding. Both former `tisha-bav-live` output aliases are retired. The
+transition router now evaluates all paths, so `/api/legacy/*` and
+`/api/v1/legacy/*` mutations reach the accepted no-store 410 response. A
+production-only application guard runs before the first application route, so
+unknown hosts cannot reach HTML, assets, early webhooks, API rate limits, or
+the repository; canonical unrelated HTML and assets still pass through.
+
+Physical stale page and asset fixtures now fail closed across canonical,
+encoded-letter/separator, repeated-slash, raw/encoded-backslash, plain/encoded
+dot-segment, case, and former-live variants. Direct double encoding is not
+recursively classified and remains 404. The proof asserts no stale bytes, DB
+call or state change, cookie, or redirect. The immutable P35 request, archive
+manifest, all nine archived assets, migrations, and provider evidence remain
+byte-identical.
+
+Exactly seven product/test paths plus the I36 runtime triplet changed. Product
+and release inventory digests are
+`ae9356efb55d46990a1c1156cfd00e6652004cf5632492374f8059a6529830f7`
+and `54ee59b6a72ec7cf2e88747ba5659473f6f6976c66223c80cbc6f9982fd15ba8`;
+the exact seven-product Git-blob manifest is
+`49b3c321a6fab22d692048242dedf50e7ccbea6635b58daca14d3df6873739eb`.
+
+Validation passed: P35 verifier; focused unit 1/1; focused corrected HTTP 2/2;
+the complete changed integration file 35 passes plus only its unchanged
+missing-Zoom fixture failure; client/pages builds; generated-output absence;
+final-byte seed-free Chromium 3/3; scoped ESLint/Prettier; diff hygiene; and
+zero changed-path type diagnostics. Workspace typecheck reproduces exactly the
+four unchanged Stripe/duplicate-Playwright diagnostics.
+
+Claim `177acf91-73ce-4153-ac87-abdf71dde6c3`, writer
+`codex-i36-batch-d-security-correction-177acf91`, and RELEASE_INTEGRATOR lease
+`f32be76b-8e68-4c04-b731-134e379194c2` bounded the exact ten paths. The lease
+was released at `2026-08-01T18:43:44Z`, before its
+`2026-08-01T22:25:05Z` expiry. Candidate and effect locks remained absent; no
+provider, infrastructure, deployment, DNS, contact, send, billing, cleanup, or
+external action occurred. Effects remain `0/0/0`.
+
+I36 must stop after the single correction terminal is pushed with clean
+local/tracking/live equality. C00 must conduct the authorized second
+independent review and must not mark P35 applied or dispatch successors unless
+no P1/P2 remains.
+
+## Held terminal — Batch D P35 domain-transition retirement
+
+Live control `2213842965302e6c5ccbd9fd26f011681be20b1e`, based on
+`f66edb4d0728b90374e56da13dbd9853657d349c`, authorized the exact P35
+retirement from clean local, tracking, and live integration head
+`460ba42db534e669a63e0c6e2383a0f2e8d6ac97`. Canonical READY
+`a330befb939fcfda31fae9bfca1ece0b56a3ce959cb47265b45da9db42afd3d9`, the
+ten-path digest
+`e5a54c5ea6f9ee253d9f3f1835ce9b2ac91ffd20a7d149b627ed6c3a7f42ca82`, the
+seven-product digest
+`e9db03c400cbf3f797c4e5d93a0719c85330a45fec5a8da47950b292d67f0a20`, all
+seven Git-blob preimages, and raw immutable P35 request
+`7c604c8ec91fdaeeedda141b19a075bacccbe94961b420f3a85dd6bcc9ad6cf2`
+reproduced before editing.
+
+The accepted `domainTransitionFeatureRegistration` is now mounted first in the
+central composer. Production still rejects unknown hosts; non-production
+unknown hosts pass through so the existing localhost `/login` and `/signup`
+tests remain usable. On the canonical transition host, all four historical
+browser paths return the accepted no-store 410 ended-event page before any
+static file, and register, join, and redirect surfaces cannot write, set a
+cookie, or produce a provider redirect.
+
+The active public-client modal, registration, share, join, and redirect hooks
+were removed. Public-page generation no longer builds either Tisha page and
+explicitly removes both stale outputs on incremental builds. The archived
+manifest and all nine source assets remain intact, while the exact asset prefix
+remains a no-store 404 before public static serving. No historical migration,
+provider evidence, immutable request, or archive byte changed.
+
+Focused verification passed: the P35 verifier; one unit build-convergence test;
+one no-write integration test with a byte-identical database snapshot and
+physical stale page/asset fixtures; both web builds; three seed-free Playwright
+tests covering all four browser routes, all three endpoint surfaces, and all
+nine assets; scoped ESLint and Prettier; and diff hygiene. Both generated Tisha
+HTML files are absent after the final build. Workspace typecheck reports only
+the four unchanged out-of-scope Stripe and duplicate-Playwright diagnostics.
+The standard Playwright server remains blocked before tests by its unchanged
+missing `join_opens_at` seed, and the unchanged historical event-join success
+fixture still lacks a Zoom URL; the bounded P35 runs pass.
+
+Claim `eb0bd2af-26a7-448a-90d8-1a5e4ae56ce8`, writer
+`codex-i36-batch-d-p35-eb0bd2af`, and sole RELEASE_INTEGRATOR lease
+`595bc994-56d3-4805-9e86-cf7bccc805ca` bounded the exact seven product/test
+paths plus I36 runtime triplet. The lease was released at
+`2026-07-31T21:23:02Z`, before its `2026-08-01T00:53:07Z` expiry. No provider,
+infrastructure, candidate, deployment, DNS, billing, contact, send, activation,
+or external action occurred; effects remain attempted `0`, succeeded `0`,
+reconciled `0`.
+
+I36 must stop after the single terminal commit is normally pushed with clean
+local/tracking/live equality. C00 must independently audit the exact ten-path
+scope, immutable P35 request, route order, 410 no-write and asset-denial proofs,
+focused validation, unchanged baselines, lease release, and effects `0/0/0`
+before issuing any successor authority.
+
+## Current terminal — Batch A evidence-manifest correction
+
+Control `f66edb4d0728b90374e56da13dbd9853657d349c`, based on
+`44b9bc6d745810d74ca093d19f46806d8f58e077`, authorized an exact
+runtime-triplet-only evidence correction from held Batch A product terminal
+`3ea1a32ef971947ab10c129e1de74b54e7311834`. Canonical READY
+`7010a65000ffcccab55809c6e95961f6de0d6e4e95409020f9d610bdbf384861`
+and exact three-path inventory
+`f2ca153571210eb98426a7161043e5bf0ef163297fe8178beb6a2e974cf26176`
+reproduced before editing.
+
+The sole held P2 was evidence-only. The prior terminal recorded a checkout-byte
+hash for `.env.example`; exact Git bytes produce
+`726987ada50942d1efc5e435f8d12fa5d7f87865168e83623589104fdf671955`.
+All other fifteen product hashes match exactly. The canonical path-sorted
+sixteen-product Git-blob manifest therefore reproduces as
+`17c7eae7d0bfd2991abe3228a1bf8bcecf923f140d81a48d6ba1037ecfa8f014`.
+Both product and release path inventories remain unchanged.
+
+Only `TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md` changed. Every
+product, test, config, migration, request, disposition, and validation byte or
+truth remains frozen. No product test was rerun. The sole RELEASE_INTEGRATOR
+lease `ac7fa58f-ef5f-4d02-be59-676259f10a35` under claim
+`be576814-96ef-48f2-88b5-2d3cc9b37cbb` was released at
+`2026-07-31T20:45:09Z`, before expiry. No provider, infrastructure, candidate,
+deployment, DNS, billing, contact, send, activation, or external effect
+occurred; effects remain `0/0/0`.
+
+I36 must stop after the one normal correction commit is pushed with clean
+local/tracking/live equality. C00 must independently audit the corrected
+Git-blob manifest, exact runtime-triplet scope and Git-byte evidence, product
+immutability, released lease, and zero effects before any successor authority.
+
+## Underlying product terminal — Batch A shared composition
+
+Live control `44b9bc6d745810d74ca093d19f46806d8f58e077`, based on
+`234a7c99d1c10075381749920d857f32c4c55c54`, authorized the repository-only
+Batch A terminal from exact integration head
+`b0cc23a05cb2f2f0ef4ee8860352320c18a8e450`. READY
+`bde89ad33aa3e490425d9e2dd49331f555ec07f4977a84cb533f5b59b43cd93d`
+and all fourteen immutable request digests reproduced before editing.
+
+P12's accepted barrels, central server registration, and longest-specific
+client routes are fully composed. Parent Student policy remains fail closed:
+the optional version/evidence pair is blank-normalized, trimmed, required as a
+pair, and has no invented value or placeholder. Without the exact approved
+pair the write repository is not constructed and the API returns a generic
+no-store 503. With the pair, the central composer uses the real repository,
+service, canonical v2.1 Parent session, UUID Student IDs, Argon2id password
+hashing, and a domain-separated request HMAC.
+
+P09's accepted barrels, public inquiry route, protected approved-School Admin
+route, and signed-out `/school` artifact are fully composed. The page has
+exactly four required and two optional inquiry fields and no account, access,
+subscription, role, or roster surface. The protected Admin route requires
+same-origin CSRF plus exact active v2.1 Admin readback. A narrow bridge permits
+only an active legacy Admin with the same active v2.1 Admin identity and no
+active Parent membership to obtain the canonical Admin session.
+
+P08-auth-household-002 is satisfied by the composed P12 mount, persistence,
+session, and browser proof. P08-registration-001 is superseded.
+P08-registration-002 remains mixed: Family composition is present, while its
+provider and billing workers remain later-gated. P22's registration-neutral
+barrel is applied; its protected-key prerequisite was already present. P21 and
+P22 server/client successors and the P30 durable worker remain blocked and
+untouched.
+
+Exactly sixteen product paths and the I36 runtime triplet changed, for nineteen
+of twenty authorized paths. The unchanged authorized path is
+`tests/integration/admin-information-architecture-ui-contract.test.ts`. The
+product path-inventory digest is
+`fdf96938e88d1685d733f87db88581a52a0f172c6b7ef243f87ef7ea529725e4`
+and the product manifest digest is
+`17c7eae7d0bfd2991abe3228a1bf8bcecf923f140d81a48d6ba1037ecfa8f014`.
+
+Verification is complete: P12/P09 modules passed 65 tests with three declared
+skips; P22 behavior passed 32/32; the combined composition integrations passed
+10 tests with one declared skip; config passed 26/26; seed-free Playwright
+passed 9/9; scoped ESLint, Prettier, both web builds, central barrel readback,
+and diff hygiene passed. Workspace typecheck has zero changed-path diagnostics
+and exactly four unchanged Stripe/Playwright diagnostics. The wider P22 probe's
+sole failure is an unchanged CRLF static-source assertion in an untouched test;
+the standard browser harness's unchanged seed lacks `join_opens_at`, while the
+bounded seed-free browser run passed all nine assertions.
+
+Claim `b5a4907b-7915-4b7f-beda-34d58a6ff2a9` and leases BARREL_REGISTRAR
+`c9c7ba40-4433-4955-9db3-bf84619d492c`, CONFIG_DEPS
+`759a291e-2b36-46a5-882c-e4e25f984c45`, SERVER_COMPOSER
+`cf656271-cc6b-4ad8-9d56-3eb4117751bd`, CLIENT_COMPOSER
+`0ed016e6-f69b-4e6f-b612-307e1b2e9390`, and RELEASE_INTEGRATOR
+`acf323b0-539a-4669-93cd-982f0f8495ce` were released at
+`2026-07-31T20:15:30Z`, before expiry. No provider or infrastructure
+inspection, candidate action, deployment, DNS, billing, contact, send,
+activation, or external effect occurred; effects remain `0/0/0`.
+
+I36 must stop after the one terminal commit is normally pushed with clean
+local/tracking/live equality. C00 must independently audit all fourteen
+dispositions, the exact nineteen-path release, focused verification, five
+released leases, and zero effects before separately authorizing any successor.
+
+## Latest controlled-launch reconciliation — P21
+
+P21 publication-scope correction
+`705030f2d5163f95340a19dc42efd0f167259869` was independently admitted and
+merged from exact integration base
+`7185d45b2dbcf157aa9e4f7cbcea02cc516ecf7d` at
+`7adeaaa16fd4ed63a0374a36838010f88aeb5aa7`.
+
+The source is exact linear ancestry through implementation
+`7b51bae186728351ff1cf93b1c02fcba893b1051`; its six source/test paths plus
+three P21 runtime paths are the entire delta. Both protected request blobs are
+byte-identical, the source-artifact digest is
+`1ddfb7f2ddee9b25af0dc1b2352bb440ccf22e4ecfe347b4d67c48bad93d8a7c`,
+the merge-tree is clean, 17/17 focused tests pass, workspace typecheck passes,
+and provider/external effects remain `0/0/0`.
+
+F02 final `68e3c527f46da71434be4a1c888b01efc396cef0` was independently rejected and
+was not merged. Native PostgreSQL probes found launch-critical preview,
+idempotency, quarantine-transition, active-session, revocation, and attendance
+projection fencing bypasses. Its tracked migrations 2250–2251 and untracked
+2252 remain quarantined pending one bounded semantic correction.
+
+Next action: publish this terminal integration checkpoint, reconcile P21 and
+the F02 rejection once on control, then record and open the four exclusive
+controlled-launch lanes.
+
+## Identity
+
+- Branch: `codex/v21-integration`
+- Reconciled claim target:
+  `d53c1d22dfa84806b07c51e599997c7ebc053849`
+- Containing authorizing control:
+  `7bce3ea3a8976f2a4eb8dd713c4bfc96bcd3939a`
+- Sole acquisition parent:
+  `e25d0b521ada437c6e19236bfb7aaf59f0579889`
+- READY state: consumed when C00 reconciled exact claim head `d53c1d22`.
+- Claim: `d2ba6c12-e7c2-49b1-b4cd-883a1c394adb`
+- RELEASE_INTEGRATOR lease: `6c88e2a7-e2fc-48be-acae-4b4a5e9839ad`
+- Lease window: `2026-07-30T01:54:35Z` through
+  `2026-07-30T03:54:35Z`
+- Lease released: `2026-07-30T03:04:04Z`
+- Phase scope: `P16_P32_F02_compatibility_integration`
+- Release head: derive with `git rev-parse HEAD`; C00 independently audits the
+  exact pushed head, ordered merge ancestry, and I36 triplet digests.
+
+## Ordered merge results
+
+1. P16 source `55544f557f5b7aee01d264fba688fc56b971ad4b`
+   merged at `44100afb13c58506a18b0612ebce07113caff47e` from claim target
+   `d53c1d22` with exact five-path first-parent scope. Final rebound payload:
+   `58695dcb553d55502ba509ea54783b5e78d1edd9094ea9333f6467eca9a7fcf2`.
+2. P32 source `92a7ee6377d9507140def1159a440fbfd1733123`
+   merged at `f53a0592438df77f3d34d0e7b67e90d9924dbcdf` from P16 merge
+   `44100afb` with exact thirteen-path first-parent scope. Final rebound payload:
+   `18378a2ea0fae5b91640def9946c8ccf2e54f11c1d879ecbab55fbcf27af5836`.
+3. F02 source `cd2d7c2fe3bfeb250c320bc02c9bfebb3bd04911`
+   merged at `1b83575ab6fcba9be7b7f16e6ef44001f07d5623` from P32 merge
+   `f53a0592` with exact ten-path first-parent scope. Final rebound payload:
+   `e85b0073845c7bd7489d8596e5b68ddfe5792a0653ab376bdd69c7fdfa701195`.
+
+Every source is an ancestor of the final integration result. The P15, P16,
+P32, integrated-base, and F02 Lease A merge-after dependencies passed.
+
+## Verification
+
+The corrected remote control, acquisition parent, reconciled claim target,
+consumed READY state, unchanged claim and lease, final rebound queue payloads,
+source manifests, merge-after identities, and zero effects matched exactly.
+
+Focused P16/P32 compatibility tests passed 36/36. Disposable native PGlite
+PostgreSQL and repository-runner pg-mem applied and verified the full 75/75
+migration inventory through 2244; all six native/pg-mem checksum pairs and
+compatibility table probes passed with zero pending migrations.
+
+Workspace typecheck, full ESLint, raw Git-byte focused Prettier, diff hygiene,
+YAML, the 200/200 locked and 15/15 source-package Git-byte manifests, package
+structure/coverage counts, and the repository secret scan passed.
+
+No steward request or central allocation/registration was applied. No provider
+was inspected or mutated; no deployment, send, migration apply against an
+external database, or external effect occurred.
+
+## Next action
+
+C00 must independently audit the exact pushed metadata release head, its sole
+parent `1b83575a`, the ordered three-merge ancestry, exact 31-path release delta,
+released lease, I36 triplet digests, and effects `0/0/0`. I36 must stop.
+
+## Effects
+
+Authority none; attempted/succeeded/reconciled `0/0/0`.
+
+## P29/P30 final source integration
+
+Containing control `fe95eacb2a958ba043cc9f89c1c27e09e20b9324`
+with sole acquisition/state-basis parent
+`d2f7c554d2e3aa55c0621882b3591fb18a7c8818` consumed READY and reconciled
+atomic claim `c698da9826572c486f3ddf14cb01785dd2a120cf`.
+
+The unchanged claim is `4ec8712e-8ed3-4164-8774-c03c67748ec4`.
+RELEASE_INTEGRATOR lease `2ed546f8-d65b-4fe3-b86c-042d441e3015`
+was released at `2026-07-30T04:02:31Z`, before its
+`2026-07-30T05:45:23Z` expiry.
+
+P29 source `aa7b363812676afce8ac9ebd13f335e65551bb1f` merged at
+`4f4a11e3ee248af656d8443bbfb676a7de8d237e` from exact claim head
+`c698da98` with rebound payload
+`d26853a6ae2eeb0b7c15c5730a5ccd83ff6b318b29fcea997d9e622a023e87d3`
+and exact fifteen-path first-parent scope.
+
+P30 source `772d4783f82b7eb89a5c98d897601b444cd3c2f4` merged at
+`3033f13b06d95f6018113033521131cc4429cff3` from P29 merge
+`4f4a11e3` with rebound payload
+`e005f5c019ccc58160fb46e273abdb00068ea9f482fe670597707cb2cee76884`
+and exact fourteen-path first-parent scope.
+
+Both sources and the P28/P29/P31 merge-after heads are ancestors of the final
+result. Focused P29/P30 workflow and worker tests passed 70/70. Workspace
+typecheck, full ESLint, raw Git-byte focused Prettier, YAML parsing, repository
+secret scan, diff hygiene, exact 29-path combined scope, ancestry, source
+digests, and zero-effects checks passed.
+
+All steward requests remain committed evidence only and unapplied. No central
+registry/config/copy state was changed, no provider was inspected or mutated,
+and no deployment, send, or external effect occurred.
+
+C00 must independently audit the pushed metadata release head, its sole parent
+`3033f13b`, ordered merge ancestry/scopes, released lease, I36 triplet digests,
+and effects `0/0/0`. I36 must stop.
+
+## F02/P28/P31 direct-prerequisite atomic claim
+
+Containing control `ee21ee69cae87a77c4ee5519b61490fa2e453c3f`
+with sole acquisition/state-basis parent
+`07a1fa98b39a6b7d8eec8aec0ff9c60df4a25190` authorizes an atomic
+runtime-triplet-only claim from exact release
+`42068ace48fe1a93302ce7d5533e11803b526d5b`.
+
+READY payload
+`b60c929884c5bd974b66c1f02fe56d23fd50cceee35e929b5138a2d3c912bda1`
+was recomputed exactly. Claim `ff36a180-ce16-4787-841b-5e10a7aabfec`
+is held by `codex-i36-release-integrator-ff36a180` under sole
+RELEASE_INTEGRATOR lease `0430520f-6a94-4550-a1ea-f01f8d5173b2`
+through `2026-07-30T06:35:30Z`.
+
+The exact queued order and source bindings are:
+
+1. F02 `6d16d6eb2c901c58cc4d0c2bb3298b5543af3d9f`, base
+   `cd2d7c2fe3bfeb250c320bc02c9bfebb3bd04911`, payload
+   `bfb510daf058ad44252e823bf6313a366b4fa949499e2cb5cd2582b31d0ad9e8`.
+2. P28 `a2025a768ae6e69a15ec5605379a9e359cf2deec`, base
+   `f891f16eb13593d0eb3bbe53c076513d12b07c23`, payload
+   `f3e7df0d4f6ec528688aff5e252faddb7b5000841552ebb5e3d3847ab5ef7324`.
+3. P31 `d72dda5669627695edaf9dbf20f7650c9b5c9ded`, base
+   `ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d`, payload
+   `f9922704c6683b09949f121955ca19d4c6c707622cdba4b14a37de2cd6f7b8d9`.
+
+This checkpoint changes only the I36 TASK-STATE/HANDOFF/NEXT-PROMPT triplet.
+No source was merged, no steward or central state was applied, no provider was
+inspected or mutated, and no deployment, send, or external effect occurred.
+Effects remain `0/0/0`.
+
+C00 must independently audit this exact atomic claim and reconcile/consume
+READY with queue targets rebound to the pushed claim head before I36 may merge
+any source. I36 must stop.
+
+## F02/P28/P31 direct-prerequisite source integration
+
+Reconciled containing control
+`2718c23f19cc3f76f161a5e4f2562f9d7265f68e` with sole
+authorization/state-basis parent
+`ee21ee69cae87a77c4ee5519b61490fa2e453c3f` consumed READY for exact atomic
+claim `1b8335f8bdad4bc4ac1aa65838314faa7d65ebd0` and rebound all three queue
+targets to that claim.
+
+The unchanged claim is `ff36a180-ce16-4787-841b-5e10a7aabfec`.
+RELEASE_INTEGRATOR lease `0430520f-6a94-4550-a1ea-f01f8d5173b2`
+was released at `2026-07-30T05:43:58Z`, before its
+`2026-07-30T06:35:30Z` expiry.
+
+The ordered source merges are:
+
+1. F02 source `6d16d6eb2c901c58cc4d0c2bb3298b5543af3d9f`
+   merged at `acde075ecf50e77e57fb3bda82a18509d42345ad` from exact
+   claim `1b8335f8` with rebound payload
+   `54cf0dc63a9ec3df6181224f82104e3c5f7163537cd970704b28abfc6640a597`
+   and exact nine-path first-parent scope.
+2. P28 source `a2025a768ae6e69a15ec5605379a9e359cf2deec`
+   merged at `cb7a700e24e67b306d0ecbaf96a7b49351b6fcd9` from F02
+   merge `acde075e` with rebound payload
+   `55ca02a580f22d764be7fe62dd4e5455a811d423bbbbac4d75b008117c5505ad`
+   and exact twelve-path first-parent scope.
+3. P31 source `d72dda5669627695edaf9dbf20f7650c9b5c9ded`
+   merged at `5b479ac0b682889ecc3bcf1b3f33aebcbd605d8f` from P28
+   merge `cb7a700e` with rebound payload
+   `066ea448b424ada56611b6abdea4a56b49146707a34e0149199a0baca4509626`
+   and exact eight-path first-parent scope.
+
+Every source and declared prerequisite is an ancestor of the final integration
+result. The exact combined source delta is 29 paths.
+
+Focused F02/P28/P31 tests passed 68/68. Workspace typecheck, scoped Prettier,
+YAML parsing, repository secret scan, diff hygiene, source manifests, ordered
+ancestry/scopes, all five native/pg-mem migration checksum pairs, and a full
+80/80 repository-runner migration apply/verify passed.
+
+Full ESLint reports one exact admitted P31 source finding:
+`tests/unit/communications/copy-catalog.test.ts:143` assigns
+`_removedNamedApproval` without using it. I36 preserved the exact authorized
+P31 bytes; C00 will route a separate task-owned lint-only correction.
+
+No steward request or central registry/config/copy state was applied. No
+provider was inspected or mutated, and no deployment, send, or external effect
+occurred. Effects remain `0/0/0`.
+
+C00 must independently audit the pushed metadata release head, its sole parent
+`5b479ac0`, ordered merge ancestry/scopes, released lease, I36 triplet digests,
+the recorded P31 lint finding, and effects `0/0/0`. I36 must stop.
+
+## P31/P20/P17 correction-release atomic claim
+
+Containing control `d4b22e69de04a364e9cd6e7732fbd02b2fb3c2ef` with sole
+state-basis parent `a38b917f514b65c49d2d75789b8ae50d96985cdc` authorizes an
+atomic runtime-triplet-only claim from exact I36 release
+`3cf787409decb5beb84561ef7e37924111d398b6`.
+
+READY payload
+`f04fd32379e14f45a60988328b95ad07095463648519f4d8ae642b52542a8dce`
+was independently recomputed exactly. Claim
+`b3e05cde-c76b-4b54-8a63-9a32624f6a87` is held by
+`codex-i36-release-integrator-b3e05cde` under sole RELEASE_INTEGRATOR lease
+`dbef2b0e-c3c6-4ed9-a15f-f8fc0ae02dc7` through
+`2026-07-30T09:28:30Z`.
+
+The release-bound I36 state/handoff pair is
+`3113baf292636ba9be87a7250f468ce599231cbe61815df18efdaf287f04372e`;
+its runtime triplet is
+`5c85deb3125732b7074aba7677a7874093983bc8b19c8f4afbe798372baab0d2`.
+
+The exact queued order and source bindings are:
+
+1. P31 `839ec12bb83317a63f1d064891fb2929a707f3ec`, base
+   `d72dda5669627695edaf9dbf20f7650c9b5c9ded`, exact four-path source
+   manifest `59afcf23b99a3b2fb6320b9b4dd8fa03697f9f0c17e537bb8d449c1342043866`,
+   payload
+   `bcce534a48f64b851623ca9456a12b2be029292298998491ae16d1835800459f`.
+2. P20 `75137bf476b4a1773f29bb41a6a149148df2623d`, base
+   `3d75b57e91c12ab3e0cad78b1a6a63497838f46f`, exact eight-path source
+   manifest `955f15a7c8f15b9a96931f07ccbaebadc0918b29e928ed10038873174e3990d7`,
+   payload
+   `b1346d36669d5e921720d9a021ee2f39793fc13a51e9af95df2eb7657d63ccc6`.
+3. P17 `7f8a41bc09c81c53a276a32bbb667aeb1f0ee69c`, base
+   `78af71603713b6fc73fe755995bdf56193eb199a`, exact fourteen-path source
+   manifest `a6fc85d308c15d416f156ce6dda4828257ca25b9af9214f41aa875e40f73fd9e`,
+   payload
+   `134e70e40b081942f2742f81170497397a37800453c8761221d7a00906e5ceba`.
+
+The three source inventories are pairwise disjoint. This checkpoint changes
+only the I36 TASK-STATE/HANDOFF/NEXT-PROMPT triplet. No source was merged, no
+steward request or central state was applied, no provider was inspected or
+mutated, and no deployment, send, migration execution, or external effect
+occurred. Effects remain `0/0/0`.
+
+C00 must independently audit the exact pushed atomic-claim head and its sole
+parent, consume READY, and rebind all three expected target heads to the claim
+head before I36 may merge any source. I36 must stop.
+
+## P31/P20/P17 correction-release source integration
+
+C00 reconciled exact atomic claim
+`1b0df6fa15b2ac4a5febe35fee3f18ca9b9457d7` at containing control
+`60d76e2a5feb0f7cfcfd56aeaa5ee9ac58664e19`, whose sole parent is initial
+authorizing control `d4b22e69de04a364e9cd6e7732fbd02b2fb3c2ef`.
+
+The exact rebound payloads were independently recomputed before merge:
+
+- P31: `951e354746edcce3df991a046563ca6afa355cf45a5ae5f73fe2f3c2942fd9e4`.
+- P20: `a3c16a42f51ccfaf2864e10c955f9fca039c10ea5746975340ea004c42b35072`.
+- P17: `1017f826bac75dd0dc23d5aa70f495678f53898381f64f13d32ba3b0ef7ef711`.
+
+The ordered ancestry-preserving merge results are:
+
+1. P31 source `839ec12bb83317a63f1d064891fb2929a707f3ec` merged at
+   `e834523855ced654482552a5c5cda16767eb99d2` from atomic claim
+   `1b0df6fa` with exact four-path first-parent scope.
+2. P20 source `75137bf476b4a1773f29bb41a6a149148df2623d` merged at
+   `bb4a13a39cfbe843647793775a8a07285b446d6a` from P31 merge
+   `e8345238` with exact eight-path first-parent scope.
+3. P17 source `7f8a41bc09c81c53a276a32bbb667aeb1f0ee69c` merged at
+   `00ec4f9a4011ab125f1f5c38f3433462398a8da5` from P20 merge
+   `bb4a13a3` with exact fourteen-path first-parent scope.
+
+Every source is an ancestor of the final result, and the combined source delta
+is exactly 26 pairwise-disjoint paths. The terminal I36 runtime triplet makes
+the complete release delta exactly 29 paths.
+
+Verification passed:
+
+- 39 focused assertions across seven P31/P20/P17 files;
+- workspace typecheck;
+- full ESLint with zero findings;
+- normalized-LF raw-Git-blob Prettier across all 26 source paths;
+- merged YAML parsing and repository secret scan across 3084 text files;
+- exact merge parents, ancestry, first-parent scopes, combined scope, and diff
+  hygiene;
+- unchanged migration and control-ledger bytes, 80 migrations through maximum
+  ordinal 2249, and next ordinal 2250.
+
+`P17-MIGRATION-002` and `P17-SERVER-WORKER-REGISTRATION-002` remain immutable
+proposals and unapplied. No central ledger was edited, no provider was
+inspected or mutated, and no deployment, send, migration execution, or external
+effect occurred.
+
+RELEASE_INTEGRATOR lease `dbef2b0e-c3c6-4ed9-a15f-f8fc0ae02dc7` was released
+at `2026-07-30T08:32:46Z`, before its `2026-07-30T09:28:30Z` expiry. Effects
+remain attempted `0`, succeeded `0`, reconciled `0`.
+
+C00 must independently audit the exact pushed metadata release head, its sole
+parent `00ec4f9a4011ab125f1f5c38f3433462398a8da5`, ordered merge ancestry and
+4/8/14 scopes, released lease, I36 pair/triplet, unapplied successor requests,
+and effects `0/0/0`. I36 must stop.
+
+## Runtime-metadata-correction atomic claim
+
+Containing control `7d1a9fffdb7f12ace8f6161232a0ad9c1b749089` with sole
+state-basis parent `60d76e2a5feb0f7cfcfd56aeaa5ee9ac58664e19` authorizes only
+an I36 runtime-triplet metadata-correction claim from exact release
+`e2907b4086e65074a49717a840f45d53685b15f3`.
+
+Canonical READY
+`b793c1816f3e150ec5b2e1d79b4e317388b0e61dcd92d58a2418ae17c563382d`
+and state-basis control-state digest
+`39d11513c5436660ace30325f84cc70ceca419b180f7584156183612a018eae3`
+were recomputed exactly with the required task/context/package bindings.
+
+Claim `27f0fe39-785e-4cae-a707-de596a7e8500` is held by
+`codex-i36-release-integrator-27f0fe39` under sole RELEASE_INTEGRATOR lease
+`745aefd4-8660-4a0b-8d43-852769ced512` through
+`2026-07-30T09:47:00Z`.
+
+This first checkpoint changes only I36 TASK-STATE/HANDOFF/NEXT-PROMPT. The
+stale top-level TASK-STATE `remaining_steps` and `out_of_scope_findings` fields
+are intentionally preserved for the post-reconciliation cleanup. Every source,
+merge, migration, request, control, provider, deployment, send, and effect byte
+is frozen. Effects remain `0/0/0`.
+
+C00 must independently audit and reconcile the exact pushed atomic claim before
+I36 may correct either stale field. I36 must stop.
+
+## Superseding runtime-metadata-corrected final
+
+C00 reconciled atomic claim `3aab6a199730ab2ed75f45c234ec8331894cdf6b`
+at control `505804a1a3ab172229df94512f06c37cf214f270`. Its exact
+state/handoff pair is
+`38d37515f0fdbb01fa6ff1aabe1e6a01fabf2376b137d3eaf5b1c0db3b66fc19`
+and its runtime triplet is
+`b876dbb727989967c57409423b4ad9c00b001069428dfd10a05bc007e607cf68`.
+Claim `27f0fe39-785e-4cae-a707-de596a7e8500` and RELEASE_INTEGRATOR
+lease `745aefd4-8660-4a0b-8d43-852769ced512` remained unchanged.
+
+This runtime-triplet-only final supersedes rejected metadata release
+`e2907b4086e65074a49717a840f45d53685b15f3` and intermediate atomic claim
+`3aab6a199730ab2ed75f45c234ec8331894cdf6b`. Top-level `remaining_steps`
+and `out_of_scope_findings` are now empty.
+
+The historical failed lint verification entry remains historical evidence. P31
+lint correction `839ec12bb83317a63f1d064891fb2929a707f3ec` is integrated at
+`e834523855ced654482552a5c5cda16767eb99d2`, and the later current full
+ESLint run passed with zero findings.
+
+Lease `745aefd4-8660-4a0b-8d43-852769ced512` was released at
+`2026-07-30T08:56:39Z`, before its `2026-07-30T09:47:00Z` expiry. All
+source, merge, migration, P17 request, control, provider, deployment, send, and
+effect bytes remain frozen. Effects remain `0/0/0`.
+
+C00 must independently audit the exact pushed superseding final, its sole
+parent `3aab6a199730ab2ed75f45c234ec8331894cdf6b`, runtime-triplet-only
+scope, current lint evidence, released lease, final pair/triplet, and effects.
+I36 must stop.
+
+## Terminal-verification metadata-correction atomic claim
+
+Containing control `628e83b4a06923448a622322201992076493c779` with sole
+state-basis parent `505804a1a3ab172229df94512f06c37cf214f270` authorizes only
+an I36 runtime-triplet claim from exact final
+`f83ff0ce1ffb4ffcabfc8e6fccdbcc63278a61c5`.
+
+Canonical READY
+`3252e7b6e9e35f332e799e0151c14cd097cbc549b2d6c7879227f83268fa6228`
+and state-basis control-state digest
+`c6ba4310c2848b6fa5a72e45cd87f485fe61686d337a3a37260bfbc9fcfe7f2a`
+were recomputed exactly. Claim `f34c38fb-f977-4c41-ae4b-5343d13c85f7`
+holds sole RELEASE_INTEGRATOR lease
+`994b32cc-4ca9-4b11-88ed-713631a61f33` through
+`2026-07-30T09:47:00Z`.
+
+This first checkpoint intentionally preserves verbatim the single stale pending
+post-reconciliation verification result. Top-level `remaining_steps` and
+`out_of_scope_findings` remain empty. Every non-runtime byte is frozen and
+effects remain `0/0/0`.
+
+C00 must reconcile the exact pushed claim before I36 fixes the pending result.
+I36 must stop.
+
+## Terminal-verification-corrected final
+
+C00 reconciled exact claim `391866bf32150b515159146a329568ce544ade48`
+at control `4dd5749977205516ad94b23a5b628eadd3c8cf7c`. The claim
+state/handoff pair is
+`7ae5e9613bf66cadbc3228d49f39144720c09f05efbc735a6708eacdc16ad6cf`
+and its runtime triplet is
+`354e39ca8702ad1d63dc1d2bc33403c1dbed9b60a2bd023fb94e47dde57f55df`.
+
+The previously stale terminal verification now records passed evidence at exact
+prior final `f83ff0ce1ffb4ffcabfc8e6fccdbcc63278a61c5`, sole parent
+`3aab6a199730ab2ed75f45c234ec8331894cdf6b`, runtime-triplet-only scope,
+pair/triplet
+`0ad397970c536ee4250e041ce0476683c506b7c7eb8e03cebaa3cfb0c3271b4f` /
+`d069382c5794395d9f0e51d6d7197d245808d1db1f15d58caf79fbe650ccc3c4`,
+prior lease release before expiry, clean remote equality, frozen non-runtime
+bytes, and effects `0/0/0`.
+
+Top-level `remaining_steps` and `out_of_scope_findings` remain empty. Historical
+failed and current passed full-lint entries remain intact. New lease
+`994b32cc-4ca9-4b11-88ed-713631a61f33` was released at
+`2026-07-30T09:11:07Z`, before `2026-07-30T09:47:00Z`.
+
+C00 must independently audit the exact pushed corrected final, its sole parent
+`391866bf32150b515159146a329568ce544ade48`, runtime-triplet-only scope,
+final pair/triplet, and effects. I36 must stop.
+
+## Lean P18/P21 source-integration release
+
+Control `be9a5964cd69fd73a6f42713c96ece75982bd515` authorized one
+phase-level direct C00 integration from exact target
+`99fd8c33ea023e838d8ee9c993b5de52f4763e7f` under claim
+`1f77c6ea-f888-4f47-a16c-3b30f8549e6c` and sole integration lease
+`6abdf7d4-e6fb-4cce-8e06-2dbd5064dde3`.
+
+Exact P18 correction `3be7bf4930a02ea5559db057ceedd6bb11a1b543` merged at
+`91ea3ff9ad679ded033e9945d3a3ec48fb8ca554` with four first-parent
+paths. Exact P21 correction `83d906221a0f2882cf99a75459e7288a3e30f629`
+then merged at `71070dad9c69dff125194ceeddf271021d62304f` with fourteen
+first-parent paths. Both source heads are ancestors and the combined source
+scope is eighteen paths.
+
+The focused postmerge suite passed five files and fifteen tests. The complete
+execution-package validator passed from an LF-normalized Git archive with 200
+locked files, 46 tasks/contexts/prompts, 16 source-spec files, 243
+requirements, 265 cases, 107 decisions, and 35 implementation tasks.
+
+No steward request was applied. No provider was inspected or mutated, no
+candidate was frozen, and no deployment or send occurred. Effects remain
+attempted `0`, succeeded `0`, reconciled `0`. The lease was released at
+`2026-07-30T11:59:37Z`, before its `2026-07-30T13:09:12Z` expiry.
+
+C00 must audit the exact pushed terminal runtime final and reconcile control.
+After that milestone, F02 may receive the corrected 2250-2252 migration batch,
+and communications head `3364c1c31ef12a81abf02cf9f80f7e8008c1778f` may be
+admitted separately after independent validation.
+
+## Communications-convergence integration release
+
+Control `4b22c4704edc8bd21b0e0242ad00debfba67f5c2` authorized one
+phase-level direct C00 integration from exact target
+`c19c90777e0562c6fa77e30f0e0fc7ab9ba300f9` under claim
+`4e5bbe12-d283-40c4-bfaa-3d6a2d0aabd5` and sole RELEASE_INTEGRATOR lease
+`5930be35-0702-4318-b3b4-93170a2ab119`.
+
+Exact repository-only communications source
+`3364c1c31ef12a81abf02cf9f80f7e8008c1778f` merged at
+`9a028e7a967221441dfd4d5cf9417eb2885a072f` with exact parents, preserved
+source ancestry, and twenty first-parent paths. The first Windows postmerge
+run passed nine of ten tests and exposed only a CRLF-sensitive text assertion.
+Integrator fix `e423868957f3a3cb9ddf992e39368fceb15661c0` normalized line
+endings in that one admitted test reader without changing communications
+semantics.
+
+The final focused run passed four files and ten tests. HighLevel registry and
+workflow-control projection checks passed. The canonical public Rabbi identity
+is `Rabbi Eli Scheller <rabbielischeller@onetimeonetime.com>`, while
+`info@onetimeonetime.com` remains the business/office identity and the old
+`rabbi@` address remains historical data only.
+
+No steward request was applied. No provider was queried or mutated, no
+candidate was frozen, and no deployment, activation, enrollment, charge, DNS
+change, or send occurred. Effects remain `0/0/0`. The lease was released at
+`2026-07-30T12:16:13Z`, before its `2026-07-30T13:34:41Z` expiry.
+
+C00 must audit the exact pushed terminal runtime final and reconcile control
+while F02 completes the already authorized 2250-2252 migration batch.
+
+## Accepted source microbatch 1 and migration-harness release
+
+Control `26f29aeb6734948dd8b80ab85a342831defaecc9`, based on sole parent
+`f2b4a9faefdb5f780c9b620fedb413d408d27a19`, authorized one bounded
+source microbatch from exact integration
+`c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a`. Claim
+`870b6724-6099-4aa1-aa65-219efc121daf` held the sole RELEASE_INTEGRATOR
+lease `4929adfc-2383-4f16-bda9-04287e046333`.
+
+The canonical READY digest `e41f439e29c387a3ad1bba69227559582d0e8b643b64a41ce935c693726fd9ad`
+and all three merge-item payload, source-runtime, source-remote, merge-base,
+and exact-scope bindings were independently reproduced before any write.
+The ancestry-preserving merge sequence is:
+
+1. F02 `26234c47e5bc92f4d3392d77d98bc3a758d25189` merged at
+   `131413297b7eb6510a1e12d44337e576406cafae` with exact parents and five
+   first-parent paths.
+2. P20/P21 `a210c6cb2e0f1ea9901745e131140646e91935f9` merged at
+   `4c2d9a6c51ac3106d4f9cf8426d4d35f3fca92ee` with exact parents and
+   twenty first-parent paths.
+3. P08 `7ba18b92462bc610895f2eb06ef6addaba531b19` merged at
+   `e1dce668fb452a4c1892a33ea6d9c37061603aef` with exact parents and
+   seventeen first-parent paths.
+
+Harness implementation `dd819ae6188a89a38f3339f816afa4b206fd0860` changes only
+`packages/db/src/index.ts` and
+`tests/unit/db/migration-verification.test.ts`. It registers the exact
+pg-mem signatures `btrim(text)`, `length(text)`, `cardinality(text[])`, and
+`md5(text)`, and proves that verification of the fully applied repository
+inventory issues only reads and leaves the observed schema and ledger
+unchanged.
+
+Migration 2253 was reconciled from the admitted F02 proposal without changing
+the global control mirror. Immutable 2252 remains SHA-256 `7981b9cf...`.
+Migration 2253 is exact raw Git SHA-256 `b96fae17...`, checkout/native
+SHA-256 `b969f187...`, and repository-runner pg-mem SHA-256 `3d86765f...`.
+The inventory is 84 unique migrations through ordinal 2253, with next ordinal 2254.
+
+Postmerge verification passed thirteen focused files and 78 tests, including
+seven migration-verification tests; workspace typecheck; full ESLint with zero
+findings; focused Prettier; YAML parsing; secret scan across 3100 text files;
+exact queue digests, parents, ancestry, scopes, and remote fencing. A fresh
+isolated localhost PostgreSQL 16.14 cluster applied 84/84, replayed all 84 as
+already applied, and verified with zero pending migrations before being
+stopped. The complete pg-mem first apply and read-only verification also pass
+84/84. A second pg-mem `runMigrations` call still reaches the already recorded
+`CREATE TABLE IF NOT EXISTS onetime.schema_migrations` AST-coverage
+limitation; no admitted migration or newly registered function fails.
+
+P21-MIGRATION-003 and the three P08 successor requests remain immutable
+evidence only and unapplied. No central feature registration, configuration
+checkpoint, provider registry, candidate, deployment, DNS, message, billing,
+live-database, or provider action occurred. Effects remain `0/0/0`. The lease
+was released at `2026-07-30T18:31:38Z`, before its
+`2026-07-30T20:01:13Z` expiry.
+
+C00 must independently audit the pushed terminal runtime head and its sole
+parent `dd819ae6188a89a38f3339f816afa4b206fd0860`, reconcile control and the
+2253 allocation mirror, and issue a new exact I36 authorization before any
+further merge or shared-state change. I36 must stop.
+
+## Accepted source microbatch 2 release
+
+Containing control `98e7b05c7d256d55fd8a4dbd829230e42303e67e`, based on
+authorizing state `26f29aeb6734948dd8b80ab85a342831defaecc9`, authorized
+the exact three-item microbatch from integration
+`4bc8e7a84039394ffb0584deaccdff19eebaea9b`. Claim
+`77b3e5e2-bc2f-4c74-95c1-6bd61a4884a6` held the sole RELEASE_INTEGRATOR
+lease `3043fafc-a550-487a-9109-76dc7373caff`.
+
+The canonical READY digest
+`e41f28294f2a128ed697634d0d47050c8d04640355c1f71bb491ba9c7f3d1636`
+and all three merge-item payload, source-runtime, source-remote, merge-base,
+and exact-scope bindings were independently reproduced before writing. The
+ancestry-preserving merge sequence is:
+
+1. F04 `a5868a9503d1037890f5f8e250c2afe5131c4331` merged at
+   `98cc221f3b5dcb9d8d4038015dd4d4c96817618d` with exact parents and five
+   first-parent paths.
+2. P09 `a64a0c03edb6ae50023011f470358e9214f1196c` merged at
+   `3f9c699eacc3190fe4d2d38d2e61e85d793ac099` with exact parents and seven
+   first-parent paths.
+3. Lane B/F07 `fc16537da38e82bbd82f3210136145ed44988cd2` merged at
+   `1bedb166fdc18045b4d2630da10e208168c5eb4c` with exact parents and
+   eighteen first-parent paths.
+
+Postmerge verification passed nine focused files and 41 tests with the one
+source-declared native-PostgreSQL case skipped, seven migration-verification
+tests, workspace typecheck, production build, focused ESLint, CRLF-aware
+Prettier across all 28 existing source paths, YAML parsing, secret scan across
+3104 text files, exact scope/ancestry/diff/remote gates, and the seven-case
+landing browser/accessibility suite against the built static production
+artifact. The prior 84-migration inventory and both migration/database-harness
+files remain byte-identical to the authorized start.
+
+The exact normal command
+`npm exec -- playwright test tests/e2e/landing-signup.spec.ts` fails before
+any spec while the shared webServer seeds `e2e_class_occurrence`:
+`QueryError: null value in column "join_opens_at" violates not-null
+constraint`. The same command and error were reproduced in a clean detached
+worktree at exact pre-merge base `4bc8e7a8`; therefore this is an unchanged
+shared-fixture baseline, not a source regression. No shared fixture was
+edited. The seven source-owned landing checks pass against the built static
+artifact.
+
+No central registration, F03/P08 session composition, configuration,
+provider/GHL registry, candidate, deployment, DNS, send, billing, live
+database, or provider action occurred. Effects remain `0/0/0`.
+`F04-OWNERSHIP-TRANSFER-REVOCATION-COLUMNS` remains open for its separate
+producer correction. The lease was released at `2026-07-30T19:25:16Z`,
+before its `2026-07-30T20:44:51Z` expiry.
+
+C00 must audit the exact pushed terminal runtime head, reproduce the three
+merge parents and 33-path release scope, retain the shared-fixture baseline
+and F04 blocker, reconcile control, and issue a new exact I36 authorization.
+I36 must stop.
+
+## Accepted source microbatch 3 release
+
+Containing control `1d0fb443cde2ab992215a52f09c35ae56a97458f`,
+based on controller/state-basis head
+`a7978fb1f0d1d9914c3e2b8bd698290226087455`, authorized the exact
+four-item source microbatch from integration
+`8634b2ab15df624576a88b31182ebdc68553ff74`. Claim
+`f7ed3c6a-683b-4971-9e5e-2a65398c74c2` held the sole
+RELEASE_INTEGRATOR lease `3cd4b328-dfc0-4ed5-8a70-f9a0c125d20c`.
+
+This was the controller-specific four-item exception required by the current
+consolidation steer. It does not claim that the locked generic three-head
+microbatch sentence was satisfied; the exception is bound only to the exact
+containing control, claim, lease, source terminals, order, and disjoint scope
+recorded here.
+
+Canonical READY
+`a87a97b243b076b7ed7bfc10152ca373f187c76808a83d14acde72c86bc95801`
+and all four merge-item payload, source-runtime, source-remote, merge-base,
+and exact-scope bindings were independently reproduced before writing. The
+ancestry-preserving merge sequence is:
+
+1. F02 `9754f2ae0736ace4bbf7d2a88c73f1d28b0b5a20` merged at
+   `a9ea9281f30b8ff38d997f1c26c22aae90b37e29` with exact parents and four
+   first-parent paths.
+2. F04 `b43c1923bbfdd92d15572abc137a3ead3fdf2819` merged at
+   `303ae3a74febbfc7ecdc6dbd32ecad36e3cf5ab4` with exact parents and eight
+   first-parent paths.
+3. F03 `3947c9887f3c6914a8247c70ac816a4ae94c76d0` merged at
+   `78283a2e17847c6ebdfcdd86e2a52a992521adad` with exact parents and five
+   first-parent paths.
+4. P31 `f50d95ba82c7bbf6c21b88bd3ea5a85e116ab671` merged at
+   `b4469dda07c0e43823a036dd16e8b4874d1b4eea` with exact parents and six
+   first-parent paths.
+
+All four source terminals are ancestors. Their collision-free union is exactly
+23 paths, and the terminal I36 runtime triplet makes the complete release
+scope exactly 26 paths. The final source tree
+`da84a488e64eb18493a13f40a16b0d6a4bb05af5` matches independent preflight.
+
+Postmerge verification passed 63 focused assertions across seven files with
+only the three source-declared native-PostgreSQL cases skipped; workspace
+typecheck; focused ESLint; CRLF-aware Prettier across all 23 source paths;
+nine YAML parses; repository secret scan across 3,109 text files; exact
+parent, ancestry, tree, scope, and diff gates; and independent admission. The
+84-migration tree, source specification, task/context/prompt packets,
+immutable steward requests, and central migration/steward ledgers remain
+unchanged.
+
+P31 contributes admitted read-only preflight evidence only. This integration
+claimed no provider lock and performed no provider call, registry application,
+contact mutation, send, enrollment, charge, deployment, DNS change, WhatsApp
+action, candidate freeze, or other external effect. Effects remain attempted
+`0`, succeeded `0`, reconciled `0`.
+
+Lease `3cd4b328-dfc0-4ed5-8a70-f9a0c125d20c` was released at
+`2026-07-30T21:44:52Z`, before its `2026-07-30T23:22:48Z` expiry.
+
+C00 must independently audit the exact pushed terminal runtime final and sole
+parent `b4469dda07c0e43823a036dd16e8b4874d1b4eea`, reproduce the four ordered
+merge parents and exact 26-path release scope, reconcile all four queue items,
+and issue a new exact authorization before further integration, central
+registration, provider work, candidate freeze, deployment, or external
+effect. I36 must stop.
+
+## Family Parent-session composition release
+
+Containing control `90e70b07e5b10a16342e80c4f8b537a8ea21263c`, based on
+controller/state-basis head
+`1d0fb443cde2ab992215a52f09c35ae56a97458f`, authorized one exact
+composition checkpoint from clean integration
+`524563f07b3bb8544db989982dc55d4bc86a1999`. Claim
+`2e5c6cef-5e9d-4462-92a4-41510ac24959` held the sole SERVER_COMPOSER
+lease `1af50c79-1fb7-42b7-96e4-a29d8d8873f5`; canonical READY was
+`09952344b45d7b9f63419a5e5b167a6d49bbc9f5edb15d90283b81361dbd3257`.
+
+The server composer now constructs exactly one production PostgreSQL v2.1
+adult-session runtime from the existing pool, `config.authCsrfSecret`, and
+clock. It injects that same runtime into the centrally bound P08 Family router
+and the Parent shell middleware. An explicit optional runtime dependency is a
+test seam only; the omitted/default production path always constructs the
+PostgreSQL runtime.
+
+When `__Host-onetime-session` is present, `/app/parent`, every descendant, and
+`/select-household` resolve and authorize only through the v2.1 runtime.
+Malformed, wrong-household, stale-security-version, idle-expired,
+absolute-expired, revoked, and route-denied contexts return private
+`no-store` 403 before the Parent shell or data is served. The exact F03
+inactive allowlist remains authoritative. The legacy `otcrm_session`
+compatibility path is used only when the host cookie name is absent; a bad
+host cookie can never fall back to a valid legacy cookie.
+
+The real composition test drives the default central P08 registration without
+an explicit registration array. It submits Family signup one second before
+the locked cutoff and exactly at the cutoff, verifies 201/free and
+202/inactive results, host-cookie establishment, digest-only persistence,
+exact household readback, Parent and household-selection routes, inactive
+allowed and denied paths, and wrong-household, security-version, expiry, and
+revocation failures. It also proves legacy-only compatibility and the
+host-cookie-present no-fallback rule.
+
+Verification passed:
+
+- the new real composition test: one file, one test;
+- existing P08/F03/F04 suites: five files, 37 passed and three declared
+  native-PostgreSQL skips;
+- workspace typecheck;
+- changed-file ESLint with zero findings;
+- focused Prettier;
+- secret scan across 3,110 repository text files; and
+- diff hygiene and exact five-path scope.
+
+The selected legacy portal/auth integration run still has three failures
+across two files. All three reproduced unchanged in a clean detached worktree
+at exact base `524563f0`: a legacy viewer role returns 403, the production
+auth harness omits `PROTECTED_PAYLOAD_ENCRYPTION_KEY`, and a login-page test
+expects retired email-link-confirm markup. They are not I36 regressions, and
+no out-of-scope fixture was edited.
+
+Only `P08-auth-household-002` is locally applied by this exact checkpoint,
+pending C00 queue reconciliation. `P08-config-002` and broad
+`P08-registration-002` remain assigned and unapplied. No F03, F04, P08,
+migration, control-ledger, provider, registry, candidate, deployment, DNS,
+send, billing, or customer state changed. Effects remain attempted `0`,
+succeeded `0`, reconciled `0`.
+
+Two limitations remain explicit. P08 commits account and household state
+before session creation; the recovery-capable retry boundary is preserved,
+but cross-transaction atomicity is not claimed. This checkpoint converts the
+Parent app shell routes, not every legacy Parent API handler; handlers still
+using `sessionFromRequest` remain `otcrm_session`-bound until a separately
+authorized API-wide conversion.
+
+The SERVER_COMPOSER lease was released at `2026-07-30T22:50:00Z`, before its
+`2026-07-30T23:58:04Z` expiry. C00 must audit the exact pushed five-path
+release, reconcile only `P08-auth-household-002`, preserve the two successor
+requests and effects `0/0/0`, and issue new exact authority before any broader
+Parent API conversion, configuration, registration, provider work, candidate
+freeze, deployment, or external effect. I36 must stop.
+
+## Parent auth/client successor renewal checkpoint
+
+I36 checkpointed the in-progress successor at implementation commit
+`5285a71e86ebf80bab3332f6cc3490a380bc7890`, based on authorized start
+`a5a2ad94b77eaf596930609d4d5abe4fa672439b`. Historical authority is claim
+`ef14f276-f6a2-45a5-b35d-d45d37572ca5`, writer
+`codex-i36-parent-session-successor-ef14f276`, and lease
+`21315060-463e-49a8-a246-20057483ec20` across SERVER_COMPOSER,
+CLIENT_COMPOSER, IDENTITY_AUTH_ACCESS, and ACCOUNT_HOUSEHOLD_IDENTITY.
+The lease was released at `2026-07-31T00:54:34Z`, before its
+`2026-07-31T01:18:02Z` expiry, because a same-ID extension is invalid.
+
+The exact checkpoint contains ten authorized product/test paths plus this
+runtime triplet. Workspace typecheck passed, all twelve adult-session unit
+tests passed, focused Prettier passed, and `git diff --check` passed. Native
+PostgreSQL and browser terminal reruns are deliberately pending a fresh
+claim/lease; this is not a release-ready or candidate-ready assertion.
+
+The checkpoint includes substantial v2.1 credential login, session lifecycle,
+Parent client isolation, continuation hardening, cardinality enforcement, and
+native-proof work. Six security closeout items remain: finish/prove
+linearizable pre-Argon reservations; finish/prove invalid-versus-unavailable
+session propagation; prove invalid-CSRF retryability and outcome-dependent
+cookie clearing; propagate unverified password-upgrade cleanup as
+recovery-required; complete/read back redacted logout audit evidence; and run
+the real Parent bundle through reload/logout while proving zero legacy API
+calls.
+
+No provider, customer, migration, candidate, deployment, DNS, send, billing,
+or other external effect occurred. Effects remain `0/0/0`. C00 must verify
+the exact pushed renewal checkpoint and issue a fresh claim and new lease
+against that remote head before I36 resumes those six bounded items.
+
+## Parent auth/client successor fresh atomic claim
+
+Containing control `f0a73d35937a1366289ab7f733da354e65e0532b`, based on
+state-basis control `50ebdcdb345bf13bd76d9af013c25855bc369836`,
+authorizes one runtime-triplet-only atomic claim checkpoint from exact clean,
+remote-equal integration parent
+`0d834c0c0b0e1fd9db8b5a54076631cf1f2fe857`. Canonical READY is
+`010c6e951a95840de997ec93136b5ba1f28468b8fc35498ab008a81457cc5c1f`.
+
+Fresh claim `5deb22c5-dc93-4946-98f1-dd7db19ee164`, writer
+`codex-i36-parent-session-successor-5deb22c5`, and shared lease
+`87280cec-f71e-4dbd-91dd-38f54d0c7b93` bind SERVER_COMPOSER,
+CLIENT_COMPOSER, IDENTITY_AUTH_ACCESS, and ACCOUNT_HOUSEHOLD_IDENTITY. The
+lease was issued at `2026-07-31T00:58:50Z`, expires at
+`2026-07-31T02:28:50Z`, and had an actual checkpoint heartbeat at
+`2026-07-31T01:11:58Z`.
+
+Prior claim `ef14f276-f6a2-45a5-b35d-d45d37572ca5`, writer
+`codex-i36-parent-session-successor-ef14f276`, and lease
+`21315060-463e-49a8-a246-20057483ec20` remain historical, released, and
+superseded. Product checkpoint
+`5285a71e86ebf80bab3332f6cc3490a380bc7890` and all product/test bytes are
+unchanged by this atomic claim.
+
+All six renewal-checkpoint security closeout items remain preserved. No
+security implementation, validation rerun, destructive cleanup, PostgreSQL
+shutdown, provider call, customer mutation, candidate action, deployment,
+DNS change, send, billing action, or other external effect occurred. Effects
+remain `0/0/0`.
+
+I36 must stop after pushing this exact three-runtime-path checkpoint. C00 must
+independently reconcile its exact parent, path inventory, fresh authority
+bindings, digests, heartbeat, clean remote equality, and zero effects before
+I36 resumes product or test work.
+
+## Parent auth/client successor runtime-metadata correction
+
+C00 reconciliation HOLD
+`b2ddcf4c4bc132a9de9399dbd8cd66b0b46c0aff`, based on fresh-claim control
+`f0a73d35937a1366289ab7f733da354e65e0532b`, authorizes only correction of
+the stale canonical top-level `remaining_steps` and `next_action` metadata from
+exact clean, remote-equal parent
+`0389fe344f27bcd44c1640e7f6ebcb90d485b213`.
+
+Claim `5deb22c5-dc93-4946-98f1-dd7db19ee164`, writer
+`codex-i36-parent-session-successor-5deb22c5`, and shared lease
+`87280cec-f71e-4dbd-91dd-38f54d0c7b93` remain unchanged. The four writer
+slots are phase-scoped only to
+`parent_session_auth_client_successor_runtime_metadata_correction_only_then_stop`.
+The lease remains bounded from `2026-07-31T00:58:50Z` through
+`2026-07-31T02:28:50Z`; the actual correction heartbeat is
+`2026-07-31T01:23:30Z`.
+
+The corrected canonical `remaining_steps` now preserves all six bounded
+auth-security closeouts and the terminal native PostgreSQL, real-browser,
+production-build, workspace-typecheck, changed-file-lint, focused-format,
+secret-scan, and exact-scope gates. The canonical `next_action` is an explicit
+stop for C00 correction reconciliation before any product or test work.
+
+This checkpoint changes exactly the I36 runtime triplet. Product checkpoint
+`5285a71e86ebf80bab3332f6cc3490a380bc7890`, all ten product/test blobs, the
+fresh atomic-claim evidence, historical authority, and all product/test bytes
+remain unchanged. No substantive security work, validation rerun, destructive
+cleanup, PostgreSQL stop, provider call, migration, candidate action,
+deployment, DNS change, send, billing action, or other external effect
+occurred. Effects remain `0/0/0`.
+
+I36 must stop after pushing this correction-only checkpoint. C00 must
+independently reconcile its sole parent, correction control, exact three-path
+scope, unchanged authority, phase scope, heartbeat, corrected canonical
+fields, preserved blobs, pair/triplet digests, clean remote equality, and zero
+effects before any product or test work resumes.
+
+## Parent auth/client successor security-closeout renewal checkpoint
+
+I36 preserved the bounded successor closeout implementation from exact remote
+parent `2e7cd5be686285ec9506bece9e0761040f881fa5` under control
+`11d05d1f5d05d8817139c26890b78b1aadd8faad`, claim
+`5deb22c5-dc93-4946-98f1-dd7db19ee164`, writer
+`codex-i36-parent-session-successor-5deb22c5`, and shared lease
+`87280cec-f71e-4dbd-91dd-38f54d0c7b93`.
+
+Four authorized product/test paths complete transactional pre-Argon login
+reservations, exact release readback, retention only for a wrong password on an
+otherwise eligible credential, outage-cookie retryability, invalid-CSRF
+preservation, recovery-required password-upgrade cleanup, and exact redacted
+logout-audit readback. Workspace typecheck passed. Focused auth/repository
+tests passed 26 assertions with three declared native skips. The I36 pg-mem
+composition suite passed three assertions with one declared native skip,
+including six concurrent wrong-password requests yielding exactly five 401s
+and one 429, successful and ineligible release accounting, outage recovery,
+CSRF retry, and audit redaction.
+
+This is not a terminal release assertion. Native PostgreSQL 18.4 proof of
+simultaneous greater-than-five same-budget reservations and exact bucket
+readback/release remains pending, as do the real Chromium Parent reload/logout
+proof, production build, changed-file lint, focused formatting, repository
+secret scan, and final scope/diff/ancestry/immutable gates.
+
+All four writer slots—SERVER_COMPOSER, CLIENT_COMPOSER,
+IDENTITY_AUTH_ACCESS, and ACCOUNT_HOUSEHOLD_IDENTITY—were released together
+at `2026-07-31T02:13:49Z`, before the `2026-07-31T02:28:50Z` expiry. The
+already-running disposable PostgreSQL process was not stopped. No provider
+call, customer mutation, migration, steward application, candidate action,
+deployment, DNS change, send, charge, cleanup, or other external effect
+occurred. Effects remain `0/0/0`.
+
+C00 must audit the exact pushed renewal checkpoint and issue a fresh claim and
+new lease against its remote head before I36 resumes any pending terminal gate.
+I36 must stop.
+
+## Parent auth/client successor terminal-validation renewal atomic claim
+
+Live control `52793910c1a8d899ae4cffc50a63bcb38a137090`, based on
+authority/control parent `11d05d1f5d05d8817139c26890b78b1aadd8faad`,
+publishes canonical READY
+`d0b0dea5b12a09f8b37c3d1ff28dfc5290bd9ab549e01e3afbd0e583cc648695`.
+I36 independently reproduced that digest from the recursively key-sorted
+canonical READY payload before writing.
+
+This runtime-triplet-only checkpoint consumes fresh claim
+`8d8f5bb9-c439-48b6-9c19-b3e8f809a7ee`, writer
+`codex-i36-parent-session-successor-8d8f5bb9`, and shared lease
+`49ae7724-b77a-4cc5-81f6-d16b6e1f5457` from
+`2026-07-31T02:21:40Z` through `2026-07-31T04:21:40Z`. The live lease binds
+SERVER_COMPOSER, CLIENT_COMPOSER, IDENTITY_AUTH_ACCESS, and
+ACCOUNT_HOUSEHOLD_IDENTITY only to
+`parent_session_auth_client_successor_terminal_validation_renewal_atomic_claim_only`.
+It is intentionally not released by this atomic claim.
+
+Exact parent `889557800bb3344392f9defc4f6e38d4c049cd0f`, its tree, all ten
+product/test blobs, completed typecheck and focused test evidence, and pending
+terminal-gate record are preserved. No native PostgreSQL, browser, build,
+lint, format, secret, or product test was rerun. Disposable PostgreSQL session
+51752 remains alive.
+
+This checkpoint changes only the I36 runtime triplet. No product/test byte,
+migration, steward result, provider state, candidate, deployment, DNS, send,
+charge, customer state, or other external effect changed. Effects remain
+`0/0/0`.
+
+I36 must stop after a normal push and clean local/tracking/live equality.
+C00 must independently reconcile the exact pushed runtime-only child before
+any pending terminal gate runs.
+
+## Parent auth/client successor terminal completion
+
+Live control `ce71f41af1c70f689db9b3346ae5dfc643a1344f` authorized the
+repository-configured Prettier output for exactly three product/test paths and
+completion of the already-bounded terminal validation from clean,
+remote-equal parent `2e62d79d0122360155dd10da9c2b2c13892eff89`. The unchanged
+claim is `8d8f5bb9-c439-48b6-9c19-b3e8f809a7ee`, writer is
+`codex-i36-parent-session-successor-8d8f5bb9`, and shared lease is
+`49ae7724-b77a-4cc5-81f6-d16b6e1f5457`.
+
+The three formatting corrections exactly match the controller-bound raw
+SHA-256 and Git blob IDs:
+
+- `apps/web/src/server/app.ts`:
+  `e7359091cd01372177bf99aacce1e4902d4e179793eaa1ad7b7f432886536f5a`,
+  blob `f94f9e8ea0a376ba90fd07baa1aa8002d0cd63c3`;
+- `apps/web/src/server/features/auth/v21-adult-session.test.ts`:
+  `36dd959dfb1f88fd756cc01e3aca4ef6d26b3929638f137ad9a7bf2eb796d6ac`,
+  blob `347c7998065ae323fc7eb71a81cb0cb3a105ea41`; and
+- `tests/integration/accounts/v21-family-parent-session-composition.test.ts`:
+  `8a249afac0d0d6b9771444244385b3aba9d3e6ce2551efe7c0b597cb5c714f14`,
+  blob `bf5e6f340ece3c66df12ef3a5b0f3736d59e78c1`.
+
+Terminal verification passed workspace typecheck; two focused auth/repository
+files with 26 passing tests and three declared native skips; pg-mem Parent
+composition with three passes and one declared native skip; native PostgreSQL
+18.4 lifecycle; a separate production-runtime six-way simultaneous login
+proof yielding exactly five 401 responses and one 429 with denied bucket
+counts `[5,5,5,5]`, successful-login release counts `[0,5,5,5,5]`, and
+unchanged ineligible readback; one real-Chromium Parent reload/logout case
+with zero legacy calls; the production client/pages build; all-ten configured
+Prettier; all-ten changed-file ESLint with zero findings; the 3,110-file
+secret scan; and exact scope, diff, ancestry, hash, and immutable-byte checks.
+
+The disposable `ot_i36` PostgreSQL 18.4 listener remains live on its existing
+port under PID 8156 and was not stopped or reconfigured by I36. The original
+wrapper/session identifier 51752 was already absent when terminal readback
+began. Only the exact owned test schema was dropped after the native proof.
+
+All four slots—SERVER_COMPOSER, CLIENT_COMPOSER, IDENTITY_AUTH_ACCESS, and
+ACCOUNT_HOUSEHOLD_IDENTITY—were released together at
+`2026-07-31T03:31:32Z`, before the `2026-07-31T04:21:40Z` expiry. The terminal
+checkpoint changes exactly the three controller-bound formatting paths and
+the I36 runtime triplet. It changes no migration, central queue, provider,
+candidate, deployment, DNS, send, billing, or customer state. Effects remain
+`0/0/0`.
+
+I36 must stop after normal push and clean local/tracking/live equality. C00
+must independently audit the exact sole parent, six-path scope, formatted
+blob IDs, complete terminal evidence, simultaneous lease release, runtime
+digests, preserved PostgreSQL listener, and zero effects before any candidate
+or external action.
+
+## P21/P22 source microbatch resume atomic claim
+
+Live control `ddd36a461481504219ac663cf464417eb2e6658b`, based on
+controller/state-basis head
+`0a2e8c390d48da157be35a2f9d06f876a70b5e62`, publishes canonical READY
+`102533576903c248ec018c2806191d6fbc055ef2a2dcd2438042e5129e815e89`
+for exact clean local/tracking/live integration parent
+`d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9`.
+
+This runtime-triplet-only checkpoint consumes claim
+`f7a26569-d4d1-4b42-9d5c-7b98377bd235`, writer
+`codex-i36-p21-p22-source-f7a26569`, and the sole RELEASE_INTEGRATOR lease
+`5e0cd656-e4eb-492d-88d8-50c792fa1a20`. The lease was issued at
+`2026-07-31T10:20:00Z`, expires at `2026-07-31T12:20:00Z`, is scoped only to
+`P21_then_P22_accepted_source_microbatch_only`, and remains live and
+unreleased.
+
+Admission preflight passed without a source merge: the exact remote P21 and
+P22 terminal heads, parents, trees, required fixed bases, 9/16 path
+inventories, zero collisions, source manifests, implementation artifacts,
+runtime pair/triplet digests, immutable request bytes, task/context/prompt
+bindings, 200/200 locked files, canonical READY/item payloads, repository
+identity, and effects `0/0/0` all matched the live queue. P21 item digest is
+`a14e9343278833e48657fc6cf428a968fc1293d243097d908ac70dd562bc324d`;
+P22 item digest is
+`db8d1e7841f7343f8d1a0a6d8d82e42268e11cb27fb6413dec1cf7fe61c7e8d1`.
+
+The mandatory resume checkpoint moves integration away from the queued
+`d89a0f38...` target CAS. Therefore neither
+`c11dec418fa3de896e96c348f87928c92c9f86b9` nor
+`347a08b29b801de0a74b242d962c42a886dcd717` was merged. No producer source,
+migration, steward request, shared registration, control branch, provider,
+candidate, deployment, DNS, send, charge, customer, or other external state
+changed. Effects remain attempted `0`, succeeded `0`, reconciled `0`.
+
+I36 must stop after a normal push and clean local/tracking/live equality. C00
+must independently verify the exact sole parent, three-path scope, authority,
+queue identities, runtime raw/pair/triplet digests, live unreleased lease, and
+zero effects; consume READY; and publish descendant control with both P21/P22
+expected-target CAS fields rebound to this exact claim head under the same
+claim and lease before either ordered merge may begin.
+
+## P21 then P22 accepted-source microbatch terminal
+
+C00 reconciled the atomic claim and rebound both merge items at live control
+`0d9274d0dbef7267d9b6671d8bbd099cba14893d`, whose sole parent and
+state basis is `ddd36a461481504219ac663cf464417eb2e6658b`. The clean
+local/tracking/live integration CAS was exact claim checkpoint
+`b87901e803cdd3be7e09a1143d9f23eceaf7ad78`. Canonical rebound payloads
+reproduced exactly: P21
+`a3f43e06f433e03b22c59154c278993c1f5149c153f58fde6628b6ef95b1b824`
+and P22
+`c7084c74468e89d688f2d319c263f089d5c0a8f6017aa87b439e97e46f8abe67`.
+
+I36 merged P21 terminal
+`c11dec418fa3de896e96c348f87928c92c9f86b9` first at
+`f5172829a0df0af9fa9790cb5b88427ed3ccadc4`. Its parents are exactly the
+claim checkpoint and P21 source head; its tree is
+`3e73ea56bbdf53c18f78d04298419cda2ab3043e`. I36 then merged P22 terminal
+`347a08b29b801de0a74b242d962c42a886dcd717` at
+`70c48e60b2ca2177ba0eaeb606ef55a93eba0ca7`. Its parents are exactly the
+P21 merge and P22 source head; its tree is
+`11f38d89138e8d933d7fa6195cb747f2e57a3a03`. Both exact source heads are
+ancestors. No conflict or source edit occurred.
+
+The P21 first-parent scope is exactly nine paths with manifest
+`f0308424196d289516f72d76599acd98f16b2beca4d7ba61d2a57bb1bd1bf585`.
+The P22 first-parent scope is exactly sixteen paths with manifest
+`86f8154569c1fd6b56b68dc6736c84e14b2e497a25dd6619299195e0325499ea`.
+The disjoint combined source wave is 25 paths with inventory digest
+`1d7c540a0ecad753cca3f0fd11aed191ff20bd929d7e6d2a103eae9d1790b848`.
+The terminal adds only this I36 runtime triplet, for an exact 28-path release
+from the claim checkpoint.
+
+Verification passed:
+
+- P21 focused Vitest: five files, 31 tests;
+- P22 focused Vitest: three files, 44 tests;
+- workspace typecheck;
+- focused ESLint across 13 TypeScript files with zero findings;
+- focused Prettier across all 25 source paths;
+- eight merged source YAML files, diff hygiene, and repository secret scan
+  across 3,117 text files;
+- exact merge parents, ancestry, scopes, source manifests, and zero path
+  collisions;
+- unchanged 84-file migration inventory through migration 2253, with exact
+  inventory/manifest digests
+  `5df0ad16277ee6f67c683ed40fbb9e1a35145a5f0e9a76f16b2a57c8312ad28f`
+  and
+  `2c3e52bd1b58293ca17173c75fb7c9f6cd3bb8f15431400c04b6e88a4201f604`;
+  and
+- immutable raw Git hashes for P21 registration-003
+  `0100943c4acb2104fd1e5d755f860a675944ce19b1a0b92188dcac84ac19ed16`
+  and P22 server-registration-002
+  `f7a2111f38c22a2dd181804fbf495d0eb46bd8c91494d31dac2860fa976cb516`.
+
+The P22 repository test initially observed the Windows CRLF checkout rather
+than the LF Git blob and failed one literal string assertion. I36 checked out
+the exact LF index blob for validation only, passed all 44 tests, then restored
+the normal CRLF checkout with a clean Git status. No committed source byte
+changed.
+
+Claim `f7a26569-d4d1-4b42-9d5c-7b98377bd235` and the sole
+RELEASE_INTEGRATOR lease `5e0cd656-e4eb-492d-88d8-50c792fa1a20` remained
+unchanged. The lease was released at `2026-07-31T11:09:17Z`, before its
+`2026-07-31T12:20:00Z` expiry. No steward request was applied; no SQL,
+migration, shared registration, candidate, provider, deployment, DNS, send,
+charge, customer activation, or external action occurred. Effects remain
+attempted `0`, succeeded `0`, reconciled `0`. Native PostgreSQL-server replay
+remains a hard downstream gate before candidate freeze.
+
+I36 must stop after the exact runtime-triplet terminal commit is normally
+pushed with clean local/tracking/live equality. C00 must independently audit
+the ordered merge ancestry, terminal parent/tree, exact release scope and
+digests, validation evidence, lease release, unchanged requests/migrations,
+and effects `0/0/0`; consume both merge items; and issue new authority before
+any successor action.
+
+## F02 then P18 lean source microbatch terminal
+
+Live control `cc03a0c8f73339c05e3fbe0179661882169b32d9`, based on
+`4105c365a90ecb27fb930077ecaf02a9125edb38`, authorized canonical READY
+`e4a0f3e3dcf06750bf28a4029f38ee9c0d03b74f00d3eb3e409b5bb30e246512`
+from exact clean local/tracking/live integration parent
+`392cc119b2df65f9bd38da8c4db36113f1add967`. Claim
+`05827ada-e374-43a1-b606-9fa8ace0d171`, writer
+`codex-i36-f02-p18-source-05827ada`, and sole RELEASE_INTEGRATOR lease
+`e5ba5eae-272b-481d-b66b-1f4957840e10` bounded this microbatch.
+
+I36 merged F02 `3ee2f651528f5170dd714b921500235d4e015c5b` first at
+`614c723681cff39db2ebd8988017d4b389d1adc1`, with parents exactly the
+authorized start and F02 source and tree
+`597f7aaa16ba5f46cd58404079cf413c19a6bd19`. I36 then merged P18
+`1926e61c793ce29d7240c1ee05d2a4879b52770b` at
+`4efab9fe2e9d6f34850e93b0ea434d3ed00dd8b3`, with parents exactly the F02
+merge and P18 source and tree
+`6f3a3e8d4d9fdd6e0cb1f1ad185a107a9b3fa5f1`. Both source heads are
+ancestors. The exact first-parent scopes are 7 and 8 disjoint paths; no
+conflict, producer edit, steward application, or registration occurred.
+
+Verification passed the exact 35 P18 assertions: repository 21, domain 10,
+and server callback contract 4. The migration inventory is exactly 87 files;
+protected migrations 2234 through 2253 are byte-identical to the authorized
+start, and the only migration delta is 2254 through 2256. Fresh isolated
+native PostgreSQL 18.4 (`180004`) applied 87/87, replayed 87/87 as already
+applied, and verified an exact 87/87 ledger with zero pending migrations or
+issues. The ledger LF-manifest SHA-256 is
+`0c873cb1ff5b2d16e8b25fe25e0bebe1820b2474889a4857acb0ad2db498e446`.
+The loopback server was stopped and its exact disposable runtime removed.
+
+The sole lease was released at `2026-07-31T13:38:40Z`, before its
+`2026-07-31T16:03:39Z` expiry. No provider, candidate, deployment, DNS, send,
+charge, customer, persistent-database, or other external effect occurred.
+Effects remain attempted `0`, succeeded `0`, reconciled `0`.
+
+I36 must stop after the exact runtime-triplet terminal is normally pushed and
+clean local/tracking/live equality is proved. C00 must independently audit and
+consume both merge items, ancestry, exact release scope, native PostgreSQL
+evidence, runtime digests, lease release, and zero effects before successor
+authority.
+
+## P12 then P09 source microbatch with type-contract closure
+
+Live control `3c4a3aafb55ebe4745aa865733612172c9fad436`, based on
+`5c0c6c958a25ef313cb623bcfc3928899e5279ac`, authorized closure from preserved
+local P12-then-P09 head `08e26cfd9958da54b3fff95942d81f08ac7a5e09`.
+Canonical READY `c0b634ffa53ca8b6462e91645d45653d69434d4674c8a175e37e69fca76e0380`
+and all three merge payloads reproduced exactly.
+
+I36 merged P12 `71fb96d60ea08e5947681e1ea1c704606ff215cc` first at
+`a6929cdddbde5282f37c10a60a5cc602cff44866`, with parents exactly remote
+integration `ae3ced8a9daa11044d4278968c14cb6baa12a480` and P12, and tree
+`5d36cf0a62b3e49bff3bbd6cfaca809a1cba1c56`. It merged P09
+`ce8df6e6d612dc935cb204fb7f7803489e90d740` second at
+`08e26cfd9958da54b3fff95942d81f08ac7a5e09`, with parents exactly the P12
+merge and P09, and tree `7bc370097d3e19d8bb762e13f118e35e920ba758`.
+
+The initial merged typecheck exposed three P12 test-only contract diagnostics:
+two stale `1.1.0` fixtures and one widened receipt disposition. I36 did not
+edit producer source or push a false terminal. C00 held the exact local merges,
+issued a six-path P12 correction, and independently accepted correction head
+`3ad55dc1de45bb11ec7ead886d88af9f592f2c18` with no P1/P2. I36 merged that
+child third at `8ab92f4b2ee26bd3838d6793b7c29d357f66c3a5`, with parents exactly the
+held P09 merge and correction head, required merge base `71fb96d6`, and
+forecast tree `ea56dee09fe9dfb5ad65b826f14684e2577821c3`.
+
+All three source heads are ancestors. The P12 and P09 original scopes are
+exactly 21 and 19 disjoint paths. The correction is exactly six paths and
+changes only three tests plus the P12 runtime triplet. The final combined
+source wave remains 40 paths with inventory
+`914134026094df5aec87c1d78f5c0b965ef8e3ba2f14a48f5e298a65b8869d31`
+and manifest
+`4da1a34b941441463527bdc4274b04273e770cbf5bc555e21cdd6b7d312f7e4e`.
+No steward request byte was edited or applied.
+
+Closure verification passed:
+
+- merged P12/P09 focused Vitest: 12 files, 67 tests passed, with three
+  declared native-only skips;
+- changed-workspace typecheck: zero P12/P09 diagnostics and exactly four
+  unchanged documented Stripe/Playwright baseline diagnostics;
+- ESLint: zero findings across all 24 changed TypeScript paths;
+- exact LF Git-blob Prettier: 24/24;
+- diff hygiene and exact merge/scope/digest gates; and
+- the already-passed web client and public-pages builds were reused because
+  the closure child changes only tests and producer runtime metadata.
+
+Claim `586989e0-52cd-4470-9ba3-ebb5689f5f14` and RELEASE_INTEGRATOR lease
+`04dfa82c-4b04-4083-8255-1b78f20f59ff` remained unchanged throughout the
+hold. The lease was released at `2026-07-31T17:23:20Z`, before its
+`2026-07-31T18:23:33Z` expiry. No shared registration, migration, SQL,
+candidate, provider, deployment, DNS, send, charge, customer activation, or
+external action occurred. Effects remain attempted `0`, succeeded `0`,
+reconciled `0`.
+
+I36 must stop after the exact runtime-triplet terminal commit is normally
+pushed with clean local/tracking/live equality. C00 must independently audit
+and consume all three merge items before issuing the next B-then-C-then-A-then-D
+microbatch authority.
+
+## Batch B configuration, dependency, and shared-test terminal
+
+Live control `951e9d846e805d9d01ef1ad41973e41fefb8573e`, based on
+`3c4a3aafb55ebe4745aa865733612172c9fad436`, authorized Batch B from exact
+integration head `288d5883d4e5a4e298efa8659609b42f87d190d4`. Canonical READY digest
+`b753f0efbc69518c8286d1e37cf7e9bf120ee6e755d05f601faae1e9f82b7800`
+and all nine immutable request digests reproduced from exact Git bytes by
+their declared digest kinds.
+
+P08-config-002 is `applicable` and fully applied. Central config now defines
+the exact six verification environments, maps them strictly to isolated
+staging or production, selects deterministic fail-safe defaults, rejects
+unknown and cross-tier values, and exposes the validated runtime tier,
+environment ID, and writes-allowed projection. The existing P08 router reads
+those central fields and rejects `production_read_only` before service access.
+
+P22-config-key-002 remains `blocked_by_a_later_exact_gate` overall, although
+its complete repository-safe prerequisite is present: blank-normalized,
+server-only `LEARNING_ALIAS_HMAC_KEY` config, configured-state projection,
+example declaration, and tests. Batch A must require and inject the key in the
+central P22 service composer; Batch D must bind and read back the protected
+secret. No value was supplied or exposed.
+
+The other seven requests remain `blocked_by_a_later_exact_gate`, with their
+exact gates recorded in TASK-STATE: P32 needs Batch D immutable cross-boundary
+storage/KMS/role infrastructure; P19 needs Batch C canonical S3/Drive adapters
+and Batch D deployment binding; P20 runtime needs Batch C S3/OpenAI identities
+and Batch D secret readback; P20 media needs Batch D pinned binary provenance,
+runtime-image authority, and representative fixture proof; P29 needs Batch C
+HighLevel/workflow/approval bindings; P17 needs Batch C canonical Zoom app,
+account, host, origin, and settings readback; and P33 needs a frozen candidate
+plus Batch A/C observation adapters before Batch D identity injection. No
+request was marked applied while required semantics remained incomplete.
+
+Exactly three product/shared paths changed: `.env.example`,
+`packages/config/src/index.ts`, and
+`tests/unit/config/runtime-classification.test.ts`. The product manifest digest
+is `6e61d2c285e88b694f57361b8702e6a28c4ce5490b3e62e98812f4eba4dcc1ad`.
+`package.json` and `package-lock.json` are byte-identical to the authorized
+start because the blocked requests lack exact adapters, identities, runtime
+image, binary provenance, and fixtures; no unused or guessed dependency was
+added.
+
+Verification passed: three focused files and 48 tests; zero ESLint findings;
+Prettier and diff hygiene; direct ESM runtime import/readback; and zero changed-
+path workspace type diagnostics. The only four workspace typecheck diagnostics
+are the unchanged documented Stripe and three Playwright-harness baselines. The
+shared config test also received two narrow baseline repairs for the current
+`PROTECTED_PAYLOAD_ENCRYPTION_KEY` surface and retired demo input behavior.
+
+Claim `995fe313-efa9-4e5f-b4f6-eeadc9b50d6d`, CONFIG_DEPS lease
+`e75d8901-0b96-4ec7-b64e-724cfdbcd7a1`, and RELEASE_INTEGRATOR lease
+`eafaecb9-82b6-4e99-bbc3-0d9ad8d92b84` were released at
+`2026-07-31T18:09:01Z`, before the `2026-07-31T21:40:18Z` expiry. There was no
+provider or infrastructure inspection, shared registration, candidate action,
+deployment, DNS change, send, charge, customer activation, or external effect.
+Effects remain attempted `0`, succeeded `0`, reconciled `0`.
+
+I36 must stop after the single terminal is normally pushed with clean
+local/tracking/live equality. C00 must independently audit the nine immutable
+dispositions, exact six-path release scope, dependency non-change, validations,
+both released leases, and zero effects before separately authorizing Batch C,
+then Batch A, then Batch D.
+
+## Batch C repository workflow-registry terminal
+
+Live control `234a7c99d1c10075381749920d857f32c4c55c54`, based on
+`951e9d846e805d9d01ef1ad41973e41fefb8573e`, authorized repository-only
+Batch C from exact integration head `8c5b08ccb7cae95f90ccbb33fcd62a0f1e0c0898`.
+Canonical READY `0fbdb33b23552940cb6a860cfa7138435865623b8290e238a6a20b10c576d518`
+and exact raw Git request digests P28 `e937075b...`, P29 `e42a3ef9...`, and
+P30 `8c6b582f...` reproduced before editing.
+
+P28-registry-projection-001 and P29-registry-projection-001 are `applicable`
+and fully applied. P28 exact identity, state, sender, message-class, and empty-ID
+assertions now cover OT-11, OT-12, OT-14, OT-15, and OT-B01. The message-class
+registry was already exact and remains byte-identical. P29's exact twelve-key
+core lifecycle fragment is registered by default and reconciled to the canonical
+registry. Fragment validation admits only the exact OT-02A and OT-02B split keys,
+with arbitrary variants rejected.
+
+P30-registry-registration-001 remains `blocked_by_a_later_exact_gate` overall.
+Its complete repository-safe prerequisite is applied: the exact three-key P30
+fragment is registered by default, copy/sender/checkpoint/price and fail-closed
+registry truth are validated, stale fragment-pending wording was removed, and
+the canonical projections were regenerated. Batch A must still compose
+`runOt16Checkpoint` through the central durable adult-only worker boundary with
+real adapters; the runner exists and passes its six direct tests, while the
+central runner registry is still empty. No mixed request was falsely marked
+fully applied.
+
+Exactly nine product paths and the three I36 runtime paths changed. Generated
+`current.json` and `workflows.yaml` were written only by the canonical projection
+generator from source SHA-256
+`06d1ee3b125f7d0893994e9c55b075bc387034606f38e74ef074532a86dd0339`.
+The nine-path product manifest is
+`43daa144d54ef17eaca127ea198788b4eec63e8f13e18580e036afaa426260bb`.
+The full provider-ID map is unchanged; OT-11, OT-12, OT-14, OT-15, OT-16, and
+OT-B01 remain empty, with DRAFT/BLOCKED/MISSING truth preserved.
+
+Verification passed: 81 focused foundation/P28/P29/P30 assertions, six direct
+P30 runner assertions, canonical projection and registry checks, zero ESLint
+findings, Prettier, diff hygiene, and zero changed-path workspace type
+diagnostics. The only four workspace diagnostics are the unchanged documented
+Stripe and three Playwright-harness baselines.
+
+Claim `3cb0bfbd-53e8-47c9-b7a0-528a88501d92`, GHL_REGISTRY lease
+`381fddd0-1ac8-4172-a64e-8148bd207312`, and RELEASE_INTEGRATOR lease
+`8f15ef5c-8157-4571-8f72-476869626cf2` were released at
+`2026-07-31T18:52:05Z`, before the `2026-07-31T22:25:00Z` expiry. No provider
+inspection or mutation, publication, activation, enrollment, send, contact,
+Student contact, WhatsApp action, billing/customer mutation, candidate action,
+deployment, DNS change, or external effect occurred. Effects remain `0/0/0`.
+
+I36 must stop after the single terminal is normally pushed with clean
+local/tracking/live equality. C00 must independently audit the three immutable
+dispositions, canonical generation, exact twelve-path scope, P30's preserved
+Batch A gate, both released leases, and zero effects before issuing Batch A.
+
+## P21 F05/F06 authority-gated publication terminal
+
+Live control `0063689594c1ab9beb2d9f4d64f89a8491284a4c` authorized canonical
+READY `add5b10b2f34c2cbe3ef8ddd096ad374760631a1e8f1896a1a3933aa31f5491a`
+from exact clean integration parent
+`951c151c28f905ad7458973a750c3887edc38ddc`. Claim
+`27bc68ec-74be-4cdf-a6c6-b3ddea179d90` and writer
+`codex-i36-P21-reconciler-27bc68ec` bounded the exact fifteen product/test
+paths plus this I36 runtime triplet.
+
+P21 now registers exact `publish_private` and `revoke_private` F05 handlers.
+Each handler reopens and compares the complete in-flight job, lease, original
+P21 outbox, and immutable provider-operation binding before requesting an
+independently preapproved selector-bound F06 active-registry read. Missing or
+mismatched scope, operation, effect, lease, version, outbox, selector,
+binding, or registry evidence fails before the injected adapter. Accepted F05
+results are always persisted with `completed_locally:false`.
+
+Acceptance-unknown work remains confined to the generic F06 reconciliation
+engine. Effect-exists becomes accepted and still requires P21 finalization;
+effect-absent becomes retry-safe only after dispatch for the batch has ended;
+unknown work is never blindly redispatched. Finalization selects only the
+exact accepted, non-unknown, still-pending P21 outbox. It performs an
+authority-gated canonical Vimeo readback between two database transactions,
+derives the audience server-side from transactionally current eligibility in
+both transactions, rejects any intervening audience change, and completes the
+job, original outbox, readback ledger, canonical content state, assignments,
+library projections, notices, and receipt atomically.
+
+Server composition keeps Vimeo readback unavailable. The central worker
+registry includes `content.p21-publication`, but its default authority port is
+null and it performs zero database or provider calls. No real Vimeo adapter,
+provider network path, persistent database, candidate, deployment, DNS, or
+production effect was used.
+
+Verification passed the final twelve-file P21/F05/F06 suite with 75/75 tests,
+the read-only migration inventory with 7/7 tests, zero ESLint findings across
+all fifteen product/test paths, Prettier, diff hygiene, and the 3,171-file
+secret scan. Changed-path type diagnostics are zero. The complete workspace
+typecheck remains blocked only by the four unchanged documented Stripe and
+Playwright-harness diagnostics. The product manifest is
+`b93af38442d27ca395ea094d8e1f166132b0169cce93c28b5610eed2fe5820f3`;
+the exact product and release path inventories are respectively
+`12cc924a0bf34eb5e6d5c68a5507f0e080c6f7a5a053c2281ed447afb810cb6a`
+and `1a9ea9e220cc668684a39a1b9bd570a76a371b434226783ac1195ac4f1c62fdd`.
+
+CONTENT_PUBLICATION lease `b30f7c9c-3916-4935-a4c1-1057ba0e1390`,
+SERVER_COMPOSER lease `5f79e47d-f671-4f00-abd6-1200185897c3`,
+WORKER_COMPOSER lease `5d3a25c9-7ec7-4b59-adf9-ecaa27cf6bff`, and
+RELEASE_INTEGRATOR lease `6e076496-9ac3-4985-a62c-7b6c9f2142ba` were released
+at `2026-08-01T23:54:44Z`, before the `2026-08-02T02:53:43Z` expiry. No
+provider, persistent-database, candidate, deployment, DNS, send, charge,
+customer, or other external effect occurred. Effects remain `0/0/0`.
+
+I36 must stop after the single exact terminal is normally pushed with clean
+local/tracking/live equality. C00 must independently review and consume this
+terminal before enabling any adapter or issuing candidate/provider authority.

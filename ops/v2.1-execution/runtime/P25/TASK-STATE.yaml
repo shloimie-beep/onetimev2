@@ -1,0 +1,184 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P25
+task_packet_digest: a07dc5c293b60094776cf26f09548bf77a78cc19c66a3b484d78aa195d698f23
+task_context_digest: 89a326cfdd46f483f4722ebc5396c8aa4b844e2652af399e04a5455c9ce58cb9
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
+branch: codex/v21-p25-billing-commercial
+start_sha: d075dc1839660205845e7da039a182bbe44778d2
+dependency_heads:
+  F04:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    task_head_sha: 54a0ac28b51d271aacab60003451dbcc66ffcac8
+    integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+    interface_source_head_sha: 4cc95c29c6012174595ba1821e0554aca8572e08
+    interface_implementation_head_sha: 81c0ee64072386db41aa5a40243c693762ab493a
+    interface_checkpoint_digest: a57837379bfc8210188887ff31937ed7882befe10b80941499dc7ba305e7984d
+    task_packet_digest: 8129731ba92e32991ceda7c9e729196e82c4d9c8ac2cb8dfbee33a7c169d81f5
+    task_context_digest: ee9e067b17a172c1a9c9886bffa7798e228359c08dbad4d8692b4d36518c1367
+  F05:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    task_head_sha: 9174d845e1c04916e2f1884cfadfaef624ac6862
+    integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+    interface_source_head_sha: 0656380bcfc50cc464dcea7588448dc724049599
+    interface_implementation_head_sha: 1ade14c52e42e59bb8fd1d1de776b91406c45f15
+    interface_checkpoint_digest: fd17c478bfc851dcb434b8e0c2750701605b80dfdf880833a6a2993e8fad6329
+    task_packet_digest: 807393d09cb614e05625677818976930cf4a14e07e65bb488f647cdcd3b63ec3e
+    task_context_digest: 95728a601338101ba550f5b63edfa9cd96bd2e96c1011cf214462f98bfa40f6a
+  F06:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    task_head_sha: ce061ca5b208cfb2a41e0c2f439a7a4b91e8ca57
+    integration_head_sha: d35166838267711a514cf73822cd2ca49a3f3ded
+    interface_source_head_sha: 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
+    interface_implementation_head_sha: 94281de13063203808ecabef8a818762e5ff1e2e
+    interface_checkpoint_digest: 7d0e2e360036fa6e3b742053c714b13f442e29c9ff3e83ad7b6bf02c005694a0
+    task_packet_digest: f1a02ca5959cfb9087b68bf4d3bc06d6ace9d07cc0ac8dd464cfc748651f2e66
+    task_context_digest: 872493646ff10ab4f894b10b61c2125fdf61193bea1d518e0a153ccaa3a47ce3
+  F07:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    task_head_sha: 2c451d7b1f59eece1ae8df505d4eeec19f42e1ef
+    integration_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
+    interface_source_head_sha: 47a2bb6b76225951e0599683499a95f4dc9881be
+    interface_implementation_head_sha: a90baae8cf69d6823af6d741161fe0e9e7441321
+    interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
+    task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
+    task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
+status: ready_for_review
+phase: complete
+claim_mode: create_new_branch
+claimed_by: codex-p25-worker-a4dcccb9
+claim_time: '2026-07-29T05:09:24Z'
+claim_id: a4dcccb9-2058-44df-a72d-4b3e6f51bdd9
+writer_slot_leases:
+  - slot: BILLING_COMMERCIAL
+    lease_id: bf5b157c-d452-44a8-991f-bea035e1fd82
+    lease_issued_at: '2026-07-29T05:02:55Z'
+    lease_expires_at: '2026-07-29T06:02:55Z'
+    state_based_on_control_head_sha: 9e04eda2275f3b6a92066670d878a3e1c62361ca
+    phase_scope: P25_atomic_claim_only
+    reconciled_resume_scope: P25_owned_billing_commercial_implementation
+    reconciled_resume_control_sha: 86c4e9a640dbcff2f2de1ef85eb42ee433f22ae8
+    lease_released_at: '2026-07-29T05:37:19Z'
+    state: released
+lease_expires_at: '2026-07-29T06:02:55Z'
+lease_released_at: '2026-07-29T05:37:19Z'
+last_heartbeat_at: '2026-07-29T05:37:19Z'
+controller_authorization_sha: 2b29ce6ce75de10765f6f6c64d059e858c548281
+claim_reconciled_control_sha: 86c4e9a640dbcff2f2de1ef85eb42ee433f22ae8
+claim_reconciled_control_parent_sha: f98ee8e79018e5875e9c2be3d5961954b3c5ce04
+atomic_claim_head_sha: 3b322e3bf9f6206ea24e1cbea3451445f7e9ae1d
+ready_entry_state_based_on_control_head_sha: 9e04eda2275f3b6a92066670d878a3e1c62361ca
+ready_entry_payload_digest: 30aec96a3b09178b89f322ba285b6216c2851039f9eab971edad7e248ce4fb87
+state_based_on_head_sha: 48994c58310f716aa847c544c161bffd0b306954
+last_implementation_commit_sha: 48994c58310f716aa847c544c161bffd0b306954
+implementation_artifact_digest: c20cf0c626e48deac01e004941babb365eb2c9347aced41a6264fefda9baed91
+implementation_artifact_digest_algorithm: SHA-256 over ordinally sorted path=Git-blob-SHA-256 lines joined with LF and no final newline
+implementation_artifacts:
+  apps/web/src/client/app/parent/billing/ParentBillingWorkspace.test.tsx: d94e7ea395da5573218b98cd994882604d71a4c632da20eb04c7fc4dcdf0ebd7
+  apps/web/src/client/app/parent/billing/ParentBillingWorkspace.tsx: 4608933f21f76988be81fe688fcf69d745ea6110dc92c47705f49592ed1f01a0
+  apps/web/src/client/app/parent/billing/index.ts: 843b366a9c5cad1a9d28d99031bb04bddea6b97d5a429d3d0d34952f93c57826
+  apps/web/src/server/features/billing/commercial/index.ts: 2dc66de58b5122a637725cfd344089f6d2c17e28fc6bf2cb07a3c5c94ee5e368
+  apps/web/src/server/features/billing/commercial/service.test.ts: d9f3c4f47ac532839e34a50774e3e4efd4ebe76054880cd675eaafc53f652aa4
+  apps/web/src/server/features/billing/commercial/service.ts: 3f5c82cdd4928b0cf95b717e7e5d624e2793fb0336b6b719f35f4566fe9909b0
+  packages/contracts/src/billing/commercial/index.ts: 64c4a9de142bb97dc69ea4691c706d56ebb27e5f92abd94ba6289e24c226ad8b
+  packages/db/src/billing/commercial/repository.ts: 809a6a994114b93d30cb8439a361ebd0005f003156841c8c01101a1caeb7549f
+  packages/domain/src/billing/commercial/errors.ts: ce78b1b50ab03882a3528b1f406b5579d7ce53e67eb8cbb82978be18c93d62e9
+  packages/domain/src/billing/commercial/index.ts: 83e71d49d87540a4ed47beeed0568df23803000f3f1c9caed1080429a70a7fc8
+  packages/domain/src/billing/commercial/policy.test.ts: 9169fd6e24dbadb578e7108d18f97b853098434505a7cb1887df85dba9838562
+  packages/domain/src/billing/commercial/policy.ts: 67470e7a65f77600baa1b89281e9a9c5c7192e35258e25432966517bcb3672bf
+completed_steps:
+  - Verified exact released controller 2b29ce6ce75de10765f6f6c64d059e858c548281 and its sole acquisition parent 9e04eda2275f3b6a92066670d878a3e1c62361ca.
+  - Verified exact authorized start d075dc1839660205845e7da039a182bbe44778d2, absent local and remote P25 branch, package/task/context digests, and ready-entry digest 30aec96a3b09178b89f322ba285b6216c2851039f9eab971edad7e248ce4fb87.
+  - Verified exact F04, F05, F06, and F07 interface-ready integration bindings, including F04 implementation 81c0ee64072386db41aa5a40243c693762ab493a.
+  - Claimed the sole BILLING_COMMERCIAL writer lease with zero effect locks and created the isolated branch from the exact authorized start.
+  - Seeded only the three P25 runtime-memory files; no product, source, provider, steward, or effect work has started.
+  - Verified exact C00 reconciliation 86c4e9a640dbcff2f2de1ef85eb42ee433f22ae8 with sole parent f98ee8e79018e5875e9c2be3d5961954b3c5ce04 and resumed exact atomic claim head 3b322e3bf9f6206ea24e1cbea3451445f7e9ae1d.
+  - Implemented an immutable Family commercial contract with exact $67 USD monthly price, three-Student cap, fixed Jerusalem free period, GHL-hosted billing intents, and structural prohibition on One Time Stripe mutation.
+  - Implemented pure no-card signup, no-premature-charge scheduling, separately bound immediate-charge consent, Parent household authorization, duplicate checkout rejection, Admin-only refund requests, period-end cancellation requests, and verified evidence access projection.
+  - Implemented F05-backed transactional command/outbox persistence with stable replay and mismatch rejection, without a migration or central registration change.
+  - Implemented an accessible Parent billing workspace with configured countdown source, exact hosted-surface copy, separate unchecked consent, and no card field.
+  - Passed 3 focused files and 13 tests, workspace typecheck, focused ESLint and Prettier, diff hygiene, exact owned-scope audit, and secret scan across 2774 text files.
+  - Reproduced all 12 implementation Git-blob digests and canonical artifact digest c20cf0c626e48deac01e004941babb365eb2c9347aced41a6264fefda9baed91.
+  - Released BILLING_COMMERCIAL lease bf5b157c-d452-44a8-991f-bea035e1fd82 before expiry with no external effect attempted.
+remaining_steps:
+  - I36 must independently review and integrate exact implementation head 48994c58310f716aa847c544c161bffd0b306954.
+  - I36 must preserve direct-import isolation because no central registry, composer, route, provider, or steward action is included.
+next_action: I36 should review exact implementation head 48994c58310f716aa847c544c161bffd0b306954, reproduce artifact digest c20cf0c626e48deac01e004941babb365eb2c9347aced41a6264fefda9baed91, and integrate only after all focused invariants pass.
+requirements:
+  OTV2-BILLING-101: implementation_verified
+  OTV2-BILLING-102: implementation_verified
+  OTV2-BILLING-103: implementation_verified
+  OTV2-BILLING-104: implementation_verified
+  OTV2-BILLING-105: implementation_verified
+  OTV2-BILLING-106: implementation_verified
+  OTV2-BILLING-107: implementation_verified
+  OTV2-BILLING-108: implementation_verified
+  OTV2-BILLING-109: implementation_verified
+  OTV2-BILLING-110: implementation_verified
+  OTV2-BILLING-224: implementation_verified
+  OTV2-PARENT-038: implementation_verified
+acceptance_cases:
+  OTV2-BILLING-101-AC01: task_owned_assertions_passed
+  OTV2-BILLING-102-AC01: task_owned_assertions_passed
+  OTV2-BILLING-103-AC01: task_owned_assertions_passed
+  OTV2-BILLING-104-AC01: task_owned_assertions_passed
+  OTV2-BILLING-105-AC01: task_owned_assertions_passed
+  OTV2-BILLING-106-AC01: task_owned_assertions_passed
+  OTV2-BILLING-107-AC01: task_owned_assertions_passed
+  OTV2-BILLING-108-AC01: task_owned_assertions_passed
+  OTV2-BILLING-109-AC01: task_owned_assertions_passed
+  OTV2-BILLING-110-AC01: task_owned_assertions_passed
+  OTV2-BILLING-224-STANDARD: task_owned_assertions_passed
+  OTV2-BILLING-224-IMMEDIATE-EXCEPTION: task_owned_assertions_passed
+  OTV2-PARENT-038-AC01: task_owned_assertions_passed
+changed_paths:
+  - apps/web/src/client/app/parent/billing/ParentBillingWorkspace.test.tsx
+  - apps/web/src/client/app/parent/billing/ParentBillingWorkspace.tsx
+  - apps/web/src/client/app/parent/billing/index.ts
+  - apps/web/src/server/features/billing/commercial/index.ts
+  - apps/web/src/server/features/billing/commercial/service.test.ts
+  - apps/web/src/server/features/billing/commercial/service.ts
+  - ops/v2.1-execution/runtime/P25/HANDOFF.md
+  - ops/v2.1-execution/runtime/P25/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P25/TASK-STATE.yaml
+  - packages/contracts/src/billing/commercial/index.ts
+  - packages/db/src/billing/commercial/repository.ts
+  - packages/domain/src/billing/commercial/errors.ts
+  - packages/domain/src/billing/commercial/index.ts
+  - packages/domain/src/billing/commercial/policy.test.ts
+  - packages/domain/src/billing/commercial/policy.ts
+migrations: []
+steward_requests: []
+verification:
+  commands_run:
+    - command: exact controller, acquisition, start, registry, ready-entry, claim, lease, dependency, and branch-absence verification
+      result: passed; exact released authority, corrected F04 implementation binding, sole writer lease, and zero effect locks
+    - command: git worktree add -b codex/v21-p25-billing-commercial <isolated-worktree> d075dc1839660205845e7da039a182bbe44778d2
+      result: passed; branch created from exact authorized start
+    - command: exact C00 reconciliation and resumed-head verification
+      result: passed; control 86c4e9a6, sole parent f98ee8e7, and atomic claim head 3b322e3b
+    - command: npx vitest run packages/domain/src/billing/commercial/policy.test.ts apps/web/src/server/features/billing/commercial/service.test.ts apps/web/src/client/app/parent/billing/ParentBillingWorkspace.test.tsx
+      result: passed; 3 files and 13 tests
+    - command: npm run typecheck -- --pretty false
+      result: passed
+    - command: focused ESLint and Prettier over all 12 P25 implementation files
+      result: passed
+    - command: exact Git-blob artifact digest reproduction
+      result: passed; 12 artifacts, 1444-byte ordinal manifest preimage, digest c20cf0c626e48deac01e004941babb365eb2c9347aced41a6264fefda9baed91
+    - command: npm run secret:scan
+      result: passed across 2774 repository text files
+    - command: exact changed-path scope audit and git diff --check
+      result: passed; only 12 owned implementation files plus 3 P25 runtime files
+  known_baseline_failures: []
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings: []

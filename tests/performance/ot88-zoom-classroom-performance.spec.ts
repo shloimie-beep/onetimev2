@@ -10,7 +10,7 @@ test('OT-88 classroom launch stays within sink-mode usability and network budget
   page.on('request', (request) => requests.push(request));
   const started = Date.now();
   await page.getByRole('button', { name: 'Join class' }).click();
-  await page.waitForURL('**/classroom/launch/**');
+  await page.waitForURL('**/classroom/launch');
   await expect(page.locator('[data-mocked-zoom-sdk="true"]')).toBeVisible();
   const usableMs = Date.now() - started;
 

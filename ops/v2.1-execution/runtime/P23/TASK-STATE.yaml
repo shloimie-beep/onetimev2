@@ -1,0 +1,214 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P23
+task_packet_digest: 754b2b82d85adcd012c48d1d30468f90cda6b447509f5f414533a48d410f852f
+task_context_digest: b437bcccecf28816b3ae5d0a31716baa6f55d1549e16fa7b6baa8fc117bda836
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
+branch: codex/v21-p23-student-notifications
+start_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
+dependency_heads:
+  F05:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    task_head_sha: 9174d845e1c04916e2f1884cfadfaef624ac6862
+    integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+    interface_source_head_sha: 0656380bcfc50cc464dcea7588448dc724049599
+    interface_implementation_head_sha: 1ade14c52e42e59bb8fd1d1de776b91406c45f15
+    interface_checkpoint_digest: fd17c478bfc851dcb434b8e0c2750701605b80dfdf880833a6a2993e8fad6329
+    task_packet_digest: 807393d09cb614e05625677818976930cf4a14e07e65bb488f647cdcd3b63ec3
+    task_context_digest: 95728a601338101ba550f5b63edfa9cd96bd2e96c1011cf214462f98bfa40f6a
+  F07:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    task_head_sha: 2c451d7b1f59eece1ae8df505d4eeec19f42e1ef
+    integration_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
+    interface_source_head_sha: 47a2bb6b76225951e0599683499a95f4dc9881be
+    interface_implementation_head_sha: a90baae8cf69d6823af6d741161fe0e9e7441321
+    interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
+    task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
+    task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
+status: ready_for_review
+phase: complete
+claim_mode: resume_existing_branch
+claimed_by: codex-p23-worker-096ffffc
+claim_time: '2026-07-29T09:24:30Z'
+claim_id: 096ffffc-1637-4602-a9a8-3084e03a50e1
+writer_slot_leases:
+  - slot: STUDENT_NOTIFICATIONS
+    lease_id: 471de353-37c6-4e38-a6da-d2db92c4b207
+    lease_issued_at: '2026-07-29T09:18:31Z'
+    lease_expires_at: '2026-07-29T10:18:31Z'
+    state_based_on_control_head_sha: ca8eb4ab9957b6616664cfd5e944a73608596020
+    phase_scope: P23_atomic_claim_copy_dedupe_persistence_correction_only
+    lease_released_at: '2026-07-29T09:35:21Z'
+    state: released
+lease_expires_at: '2026-07-29T10:18:31Z'
+lease_released_at: '2026-07-29T09:35:21Z'
+last_heartbeat_at: '2026-07-29T09:35:21Z'
+controller_authorization_sha: fff9a0a79f2db87ffca97451f8295080b9736549
+authorization_acquisition_parent_sha: ca8eb4ab9957b6616664cfd5e944a73608596020
+copy_dedupe_claim_reconciled_control_sha: edff40fd3e362f932917c402cd9dbeb49b4ac77c
+copy_dedupe_claim_reconciled_acquisition_parent_sha: af433361f49dc4842835cf340c06f904ff2919b0
+atomic_copy_dedupe_claim_head_sha: 102c75c257dda033750d38e95b84ab05b8781507
+ready_entry_state_based_on_control_head_sha: ca8eb4ab9957b6616664cfd5e944a73608596020
+ready_entry_payload_digest: 67ad844e050bc27b56b0f4de8c7388e60ebac33a14e497e482c409e104020d4b
+phase_scope: P23_atomic_claim_copy_dedupe_persistence_correction_only
+state_based_on_head_sha: 2961e4a457be6dd1381a98c81258d7a3fb648b69
+last_implementation_commit_sha: 2961e4a457be6dd1381a98c81258d7a3fb648b69
+prior_claim_id: f7e3fb0e-a8d4-416b-8c79-786a696e2dc4
+prior_atomic_claim_head_sha: 433cc88b34d99099ca75f64876713406c6e43053
+prior_claim_reconciled_control_sha: 3df02f221b14c937dd1b721013b5067245fb4493
+prior_rejected_final_head_sha: 87da1f244ea8e19838c2695678089d1bcbe9687a
+rejected_final_head_sha: 24ec3a4effc622f384915d892cbaad046e1ea5d1
+rejection_status: copy_dedupe_persistence_correction_required_before_admission
+implementation_artifact_digest: 14ab3136df7262cc2656f35402e193786985bb5266e7adddc4f34ba44abb8a36
+implementation_artifact_digest_algorithm: >-
+  SHA-256 over UTF-8 lines containing <path>=<raw Git blob SHA-256> for
+  the 14 implementation and focused-test artifacts, sorted lexicographically
+  by path, with LF separators and no final newline.
+implementation_artifacts:
+  apps/web/src/client/app/student/notifications/StudentNotificationCenter.test.tsx: 5eb34d0d68b4dc46ef94a7d99f083b29ca2ba9eb684018e94bfee4974f5ebd14
+  apps/web/src/client/app/student/notifications/StudentNotificationCenter.tsx: cd79e280aa6c8149e5fc8fb0f3cba5a8e650cdc9336d28c969071800b58185a3
+  apps/web/src/client/app/student/notifications/index.ts: 578f22c4905ce5becb0bad9999850d94af2cbf9c787197974dc854e16c7ef48f
+  apps/web/src/server/features/notifications/student/index.ts: 5a2cfb38692f7d14d6000b9c2686e4c49c78979de038a0dc5d93cbb9fbb5f0f2
+  apps/web/src/server/features/notifications/student/service.test.ts: da456a22ee28f9a841dd4727b841a6b0871b4a5949b36ba8a2dd99ddc8cea62f
+  apps/web/src/server/features/notifications/student/service.ts: dee31945fcff6352d58c413df32403cb1f4ee228b17897f2d1955e52042c7dfa
+  packages/contracts/src/notifications/student/index.ts: 7259bdd5bb91400aeaf5e4298a9c0868686a4ff2334f90b84f2434e0e1215ee9
+  packages/db/src/notifications/student/index.ts: b3aeb5580165804053e5816109274280e9b371ccee09b5ecff09410b283cfb1f
+  packages/db/src/notifications/student/repository.test.ts: 69bdf627dfacbe983d54ecb2e1b3ccfa9aef20f3bab622f9e0b4766544410d58
+  packages/db/src/notifications/student/repository.ts: 2e4a50a8654f00df2cff37f1043aad27d0690691be7e897e297699150c7412d3
+  packages/domain/src/notifications/student/errors.ts: 9b252d9132c7037e129aed9331b699c4db3046d2ad9ac0ebb57034876df61b4f
+  packages/domain/src/notifications/student/index.ts: 2de9351d8c6c9404dd294baf7f74f97c0c3af1c1489fc0e10daf4562cf125419
+  packages/domain/src/notifications/student/lifecycle.test.ts: 338b323c09cd70b6dfa3bdcce5174f9a20521d68ba22af520a6648ab6a022565
+  packages/domain/src/notifications/student/lifecycle.ts: a9d748afb681f4a639d5851d274572d1351ce3ce096a8a6dab1cc2904c565f86
+steward_request_payload_digests:
+  P23-migration-001: e6f899adf23a16969e8cbcdf53d72d636948d70aa4963b0ed1e67cbdd5519524
+  P23-registration-001: 20d08ffa80042c0f894eba99fcc932409f90bb9c511c1e49705fd026bff1d261
+steward_request_aggregate_digest: f984e5ee374f4612bdc7e7f500791545acb7b98acef74703018a13b086596c4f
+steward_request_digest_algorithm: >-
+  Each payload digest is SHA-256 over the exact raw Git blob; the aggregate is
+  SHA-256 over sorted UTF-8 <path>=<payload-digest> lines with LF separators
+  and no final newline.
+completed_steps:
+  - Verified exact containing controller 9f1609933ceeaa315115a49d8612276002e33330, its sole acquisition parent 2dc1ffa0f4c3a2de22cfd8660571a355cda0b928, and exact authorized integration start cecc1c0dc6ff57562e5d89dd731289d860086bf7.
+  - Verified the P23 task branch was absent locally and remotely before branch creation.
+  - Recomputed and matched canonical ready-entry digest b0598496f6d52eb63e801cb0ac7741344256ff2dd1481916ab00c41e2b9b694f.
+  - Verified all 200 locked Git blobs, all 15 source-package Git blobs, and exact package, source, task, and context digests.
+  - Verified exact F05 and F07 interface-ready integration bindings and ancestry in the authorized start, including corrected F05 task packet digest 807393d09cb614e05625677818976930cf4a14e07e65bb488f647cdcd3b63ec3.
+  - Claimed the sole STUDENT_NOTIFICATIONS writer lease with zero effect locks and created the isolated branch from the exact authorized start.
+  - Seeded only the three P23 runtime-memory files; no product, source, provider, send, steward, migration, registration, or external-effect work has started.
+  - Published and C00 reconciled exact three-file atomic claim 05ef606022d260d11d56d31985a051d7b9013010 at control 8172f8cd9b5a13697d928a5c3e5c7fa4bc826a84.
+  - Implemented all eight locked Student notification categories with exact copy integration, category-defined active lifetimes, 30-day expired visibility, and archive removal.
+  - Implemented stable source-version dedupe, newer-version and cancellation supersession, idempotent mark-one and mark-all-read behavior, and unread counting without duplicate increments.
+  - Implemented safe internal-only action routes with recipient ownership and authorization rechecks at open time, neutral stale-action denial, and provider/private-copy rejection.
+  - Implemented persisted default-off sound preference and a pure foreground cue gate requiring a newly created unread visual notice plus browser interaction.
+  - Added a parameterized PostgreSQL repository with transactional dedupe and Student-scoped lifecycle/read/preference operations; no runtime schema creation or migration was added.
+  - Added an accessible controlled Student notification center with Unread, Read, and All filters, polite unread status, exact unavailable labeling, and optional sound control.
+  - Added two immutable structured steward requests for the forward-only schema migration and governed central registration; neither request was applied.
+  - Committed the exact 13 implementation/test artifacts and two steward requests at c1dc94bedac647dab9e1136bd0971cb3d6c57456.
+  - Reproduced all 13 raw Git-blob hashes, implementation aggregate 804943c420d2a64e569620642c15d51ce239988bb5104cefbd6f317b51490580, and both request payload and aggregate digests.
+  - Passed 3 focused files and 13 positive/negative tests, workspace typecheck, focused ESLint and Prettier, exact owned-path and diff hygiene checks, and secret scan across 2876 text files.
+  - Released claim 68340416-7e06-4986-a125-59d81b500a0b and STUDENT_NOTIFICATIONS lease 45041adc-a69f-4065-a179-b94473967c94 before expiry with no external effect attempted.
+  - C00 rejected final 39b050949a0874a1ea397c6c3f3420eb4fa19ccc from admission after independent direct probes found canonical-route, cancellation ordering, concurrent-version, indefinite-retention, runtime-private-copy, locked-copy, sound-consumer, timestamp, mark-one-idempotency, and accessibility defects.
+  - Verified fresh containing correction authorization a96477209a5dc6e32b43460eb775bd99f5cba1fc, sole acquisition parent 78626d9be8f42e3cd4ca1f0c2f8ea3e656122bb1, exact rejected remote head 39b050949a0874a1ea397c6c3f3420eb4fa19ccc, fresh claim 29e8b1d9-8769-479d-8a7a-df26137f185a, sole STUDENT_NOTIFICATIONS lease 489df25a-c3ed-4b34-8bb8-ddb6e8d88b99, and zero effect locks.
+  - Recomputed the 2766-byte canonical recursively key-sorted READY preimage and matched digest 2f57bb42123e7879658d8a063ea6c14b256bbef8c2b26b72e1714e3c9cf7ed97.
+  - Claimed only the three-file correction checkpoint; no product, test, request, provider, send, migration, registration, steward, or external-effect work was performed.
+  - C00 reconciled atomic correction claim b341ce5209909771647c2ca02167e077468fd597 under control 331ffc12ba126aafa2c25fb48293a7fd0a8734e6 and sole acquisition parent a6a9c53b670c1345187f846eaf1f53133f4c7e67.
+  - Corrected canonical /app/student route validation, cancellation/source-family race ordering, indefinite-notice retention, runtime status allowlisting, fixed Rabbi Eli copy, mark-one write idempotency, real visual-paired opt-in foreground sound consumption, timezone-labeled timestamps, and keyboard/focus/description accessibility.
+  - Added deterministic race, privacy, retention, sound, timezone, idempotency, and accessibility coverage; passed 3 files and 18 tests, workspace typecheck, focused ESLint/Prettier, diff hygiene, and secret scan across 2876 text files.
+  - Refreshed but did not apply the two bounded migration/registration requests, committed the corrected implementation at 8fdeaddb84a6c8e71271711fbd6b095046b6df21, reproduced all artifact/request digests, and released the sole writer lease before expiry.
+  - C00 rejected superseding final 87da1f244ea8e19838c2695678089d1bcbe9687a after exact-source re-audit found nonexistent /app/student/schedule routes, overbroad /app/student/* route admission, missing Arrow/Home/End tab handling, and an inaccurate dependency task-head ancestry statement.
+  - Verified containing authorization a95a1406200b139b4acd501c7b96821e6f74070a, its sole acquisition parent 6b3bb0619f3af04cb5a20a4f8650cc8ec6b042d4, exact clean local/tracking/remote rejected head 87da1f244ea8e19838c2695678089d1bcbe9687a, fresh claim f7e3fb0e-a8d4-416b-8c79-786a696e2dc4, sole unexpired STUDENT_NOTIFICATIONS lease f7b63d5e-489c-40aa-a793-9a7210f91bca, and zero effect locks.
+  - Recomputed the 2806-byte canonical recursively key-sorted READY preimage and matched digest 976b5c80e4bc3f437301603982168f3b4c7d3247fc8a26831006933d70432204.
+  - Claimed only the three-file residual-correction checkpoint; no product, test, request, migration, registration, steward, provider, send, or external-effect work was performed.
+  - C00 reconciled residual claim 433cc88b34d99099ca75f64876713406c6e43053 at control 3df02f221b14c937dd1b721013b5067245fb4493 with sole acquisition parent 4ca740bd8c2bbfcae7755038d88bdc616dd3444a.
+  - Replaced nonexistent class-change/cancellation schedule actions with canonical /app/student/calendar and constrained notification actions to the exact closed static and opaque-identifier Student route catalog.
+  - Added ArrowLeft/ArrowRight wrapping plus Home/End tab selection with preventDefault, controlled filter selection, actual button-ref focus, and preservation of tab focus across the controlled rerender.
+  - Added direct closed-route admission/rejection and tab-keyboard/focus tests; passed 3 files and 20 tests, workspace typecheck, focused ESLint/Prettier, exact residual scope, diff hygiene, and secret scan across 2876 text files.
+  - Corrected dependency ancestry evidence to state only integration/interface heads are ancestors while task heads are exact control identity bindings, committed implementation dafdd046b7048e67829b2f2a2496c8b830b23fec, reproduced all artifact/request digests, and released the writer lease before expiry.
+  - C00 rejected final 24ec3a4effc622f384915d892cbaad046e1ea5d1 because locked WNC-8 requires visible Open schedule copy while retaining canonical /app/student/calendar and because the raw-NUL dedupe tuple cannot be persisted through PostgreSQL text parameters or columns.
+  - Verified containing authorization fff9a0a79f2db87ffca97451f8295080b9736549, its sole acquisition parent ca8eb4ab9957b6616664cfd5e944a73608596020, exact clean local/tracking/remote rejected head 24ec3a4effc622f384915d892cbaad046e1ea5d1, immutable task/context/package/source digests, true F05/F07 integration-interface ancestry, fresh claim 096ffffc-1637-4602-a9a8-3084e03a50e1, sole unexpired STUDENT_NOTIFICATIONS lease 471de353-37c6-4e38-a6da-d2db92c4b207, and zero effect locks.
+  - Recomputed the 2814-byte canonical recursively key-sorted READY preimage and matched digest 67ad844e050bc27b56b0f4de8c7388e60ebac33a14e497e482c409e104020d4b.
+  - Claimed only the three-file copy/dedupe/persistence correction checkpoint; no product, test, request, migration, registration, steward, provider, send, or external-effect work was performed or verified in this phase.
+  - C00 reconciled copy/dedupe claim 102c75c257dda033750d38e95b84ab05b8781507 at control edff40fd3e362f932917c402cd9dbeb49b4ac77c with sole acquisition parent af433361f49dc4842835cf340c06f904ff2919b0.
+  - Restored exact locked Open schedule copy for class changed/canceled while preserving canonical /app/student/calendar routes.
+  - Replaced the raw-NUL dedupe representation with versioned canonical JSON over the exact event type, source entity, recipient Student, and numeric source version tuple; field/control characters are escaped, exact same-tuple retries remain stable, and representative delimiter/boundary-adversarial tuples remain distinct.
+  - Replaced the advisory-lock raw-NUL join because it also crosses a PostgreSQL text parameter, and added a repository-level regression inspecting actual advisory/insert query values for NUL-free persistence.
+  - Passed 4 focused files and 22 tests, workspace typecheck, focused ESLint/Prettier, exact correction scope, diff hygiene, and secret scan across 2877 text files.
+  - Confirmed the existing text-column migration request requires no change, committed implementation 2961e4a457be6dd1381a98c81258d7a3fb648b69, reproduced the 14-artifact and unchanged request digests, and released the writer lease before expiry.
+remaining_steps:
+  - C00 review or integrate the superseding ready-for-review final; migration and central registration remain unapplied.
+next_action: REVIEW_OR_INTEGRATE the superseding P23 final after exact remote verification.
+requirements:
+  OTV2-NOTIFY-203: implementation_verified_copy_corrected
+  OTV2-NOTIFY-237: implementation_verified_postgresql_safe_dedupe
+acceptance_cases:
+  OTV2-NOTIFY-203-AC01: task_owned_locked_copy_assertions_passed
+  OTV2-NOTIFY-237-CATEGORY-LIFETIME: task_owned_corrected_assertions_passed
+  OTV2-NOTIFY-237-DEDUPE-READ-SOUND: task_owned_postgresql_boundary_assertions_passed
+changed_paths:
+  - apps/web/src/client/app/student/notifications/StudentNotificationCenter.test.tsx
+  - apps/web/src/client/app/student/notifications/StudentNotificationCenter.tsx
+  - apps/web/src/client/app/student/notifications/index.ts
+  - apps/web/src/server/features/notifications/student/index.ts
+  - apps/web/src/server/features/notifications/student/service.test.ts
+  - apps/web/src/server/features/notifications/student/service.ts
+  - ops/v2.1-execution/runtime/P23/HANDOFF.md
+  - ops/v2.1-execution/runtime/P23/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P23/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P23/steward-requests/P23-migration-001.yaml
+  - ops/v2.1-execution/runtime/P23/steward-requests/P23-registration-001.yaml
+  - packages/contracts/src/notifications/student/index.ts
+  - packages/db/src/notifications/student/index.ts
+  - packages/db/src/notifications/student/repository.test.ts
+  - packages/db/src/notifications/student/repository.ts
+  - packages/domain/src/notifications/student/errors.ts
+  - packages/domain/src/notifications/student/index.ts
+  - packages/domain/src/notifications/student/lifecycle.test.ts
+  - packages/domain/src/notifications/student/lifecycle.ts
+migrations: []
+steward_requests:
+  - id: P23-migration-001
+    sha256: e6f899adf23a16969e8cbcdf53d72d636948d70aa4963b0ed1e67cbdd5519524
+  - id: P23-registration-001
+    sha256: 20d08ffa80042c0f894eba99fcc932409f90bb9c511c1e49705fd026bff1d261
+verification:
+  commands_run:
+    - command: exact controller, acquisition, start, registry, ready-entry, claim, lease, dependency, effect-lock, and branch-absence verification
+      result: passed; exact fresh authority, corrected F05 task digest, sole writer lease, and zero effect locks
+    - command: locked/source/package/task/context Git-blob SHA-256 verification
+      result: passed; all 200 locked blobs, all 15 source-package blobs, and entry-bound digests match
+    - command: exact F05 and F07 dependency binding and authorized-start ancestry verification
+      result: passed; integration, interface source, and interface implementation heads are exact ancestors; task heads are exact control identity bindings but are not ancestors
+    - command: git worktree add -b codex/v21-p23-student-notifications <isolated-worktree> cecc1c0dc6ff57562e5d89dd731289d860086bf7
+      result: passed; branch created from exact authorized start
+    - command: exact C00 reconciliation and resumed-head verification
+      result: passed; control 8172f8cd, sole parent 98cde826, and atomic claim head 05ef6060
+    - command: npx vitest run packages/domain/src/notifications/student/lifecycle.test.ts packages/db/src/notifications/student/repository.test.ts apps/web/src/server/features/notifications/student/service.test.ts apps/web/src/client/app/student/notifications/StudentNotificationCenter.test.tsx
+      result: passed; 4 files and 22 tests
+    - command: npm run typecheck -- --pretty false
+      result: passed
+    - command: focused ESLint and Prettier over all P23 source, test, runtime, and request paths
+      result: passed
+    - command: exact raw Git-blob artifact and steward-request digest reproduction
+      result: passed; 14 artifacts, two unchanged requests, artifact digest 14ab3136, request aggregate f984e5ee
+    - command: exact start-to-implementation changed-path audit and git diff --check
+      result: passed; only normalized P23 roots, P23 runtime memory, and structured steward requests
+    - command: npm run secret:scan
+      result: passed across 2876 repository text files
+    - command: npm run brand:check before visible UI work
+      result: inherited out-of-scope baseline failure at scripts/ops/validate-ot-launch-governance.ts; P23 adds no raw colors, styles, or brand primitives
+    - command: fresh correction controller/acquisition/head/claim/lease/effect verification
+      result: passed; exact containing authorization a9647720, acquisition 78626d9b, rejected head 39b05094, fresh claim and sole writer lease, and zero effect locks
+    - command: canonical correction READY-entry digest recomputation
+      result: passed; exact 2766-byte preimage and digest 2f57bb42123e7879658d8a063ea6c14b256bbef8c2b26b72e1714e3c9cf7ed97
+  known_baseline_failures:
+    - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings: []

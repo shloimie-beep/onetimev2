@@ -1,0 +1,135 @@
+{
+  "schema_version": 2,
+  "generated_at": "2026-07-22T08:16:20.0567273Z",
+  "source": {
+    "kind": "operator_execution_packet",
+    "path": "C:\\Users\\User\\.codex\\attachments\\80a94f87-16b0-400a-b1ea-1ddb76d07f95\\pasted-text.txt",
+    "sha256": "08d341bb4f6d9a51ad14824d5e9640feeb65de5db8f774eccf62740297309c53",
+    "bytes": 16175
+  },
+  "repository": "shloimie-beep/onetimev2",
+  "excluded_repository": "webcraft-media/onetimev2",
+  "integration_lane": {
+    "branch": "codex/full-app-staging-live",
+    "verified_application_head": "68b4d075c85f4023177b9363e04e23763f01d4f5",
+    "semantic_integration_commit": "7888306",
+    "worktree": "C:\\Users\\User\\.onetime-worktrees\\FULL-APP-STAGING-LIVE"
+  },
+  "runtime": {
+    "production": {
+      "url": "https://join.onetimeonetime.com",
+      "tisha_bav_url": "https://join.onetimeonetime.com/tisha-bav",
+      "version": "tisha-bav-2026-0a85f4f",
+      "source_sha": "0a85f4f8e8683bc19ac26fbdf1f6b8e91211429d",
+      "deployment_id": "8ae14b7f-7b79-4e05-8525-693000176462",
+      "image_digest": "sha256:a24314d54f67e24dbbc61247f81a2b6ebcecc09d60d02c797177225fec87ee3a",
+      "latest_migration": "2211_tisha_bav_provider_event_scope",
+      "health": "pass",
+      "ready": "pass",
+      "tisha_bav": "live",
+      "full_app_deployed": false
+    },
+    "persistent_staging": {
+      "url": "https://ot99-web-staging.up.railway.app",
+      "version": "full-app-staging-live-68b4d07",
+      "source_sha": "68b4d075c85f4023177b9363e04e23763f01d4f5",
+      "web_deployment_id": "49b866b8-fd67-47e6-9e27-d4d43b71ae0a",
+      "worker_deployment_id": "93a90788-2eb7-4678-88cf-84829fb72b01",
+      "latest_migration": "2213_learning_delivery_autotrim_transcripts",
+      "health": "pass",
+      "ready": "pass",
+      "tisha_bav": "live",
+      "rabbi_live_console": "integrated",
+      "vimeo_autotrim": "integrated"
+    },
+    "tisha_preview": {
+      "url": "https://ot99-web-onetimev2-pr-102.up.railway.app",
+      "version": "tisha-bav-pr102-999eb7c",
+      "source_sha": "999eb7c86ddadaa19009cb9a232fa65deeec11a4",
+      "deployment_id": "adc86748-f0d3-48be-83c0-6d63f4915d1f",
+      "image_digest": "sha256:d8ba14396cf481b42741950cb94093d1326b2da13100aac2221b69e82012d24a",
+      "latest_migration": "2211_tisha_bav_provider_event_scope",
+      "health": "pass",
+      "ready": "pass",
+      "tisha_bav": "live",
+      "tisha_bav_live": "live",
+      "raw_zoom_url_exposed": false
+    }
+  },
+  "highlevel": {
+    "location_id": "pBSnOK2nkdxp6gf9Rg3o",
+    "timezone": "Asia/Jerusalem",
+    "operator_contact_fingerprint": "fab156df2719852d",
+    "workflow_status": [
+      {
+        "key": "OT-E01",
+        "id": "a34ea513-4612-4f53-8bd8-49e89e6610f9",
+        "status": "published",
+        "live": true,
+        "operator_enrollments": 1
+      },
+      {
+        "key": "OT-C01",
+        "id": "f28d8b8a-c26a-4a4f-a9f2-d2a8e94af1ae",
+        "status": "draft",
+        "live": false,
+        "recipients": 0,
+        "messages_sent": 0
+      },
+      {
+        "key": "OTHER_CANONICAL_WORKFLOWS",
+        "status": "missing",
+        "expected": 17,
+        "live": 0
+      },
+      {
+        "key": "OT-A1_CONVERSATION_AI",
+        "status": "missing",
+        "expected": 1,
+        "live": 0
+      }
+    ],
+    "custom_fields": {
+      "verified": 33,
+      "deprecated_existing": 1,
+      "missing": 0
+    },
+    "tags": {
+      "verified": 37,
+      "deprecated_existing": 1,
+      "missing": 0
+    },
+    "custom_values": {
+      "verified": 33,
+      "blocked_copy_or_urls": 7,
+      "missing": 0
+    },
+    "broad_messages_sent": 0
+  },
+  "protected_staging_access": {
+    "handoff_path": "C:\\Users\\User\\.onetime-full-app-preview\\FULL-APP-HANDOFF.private.json",
+    "committed": false,
+    "admin_login": "ready_password_then_email_challenge",
+    "parent_login": "ready",
+    "student_logins": "ready",
+    "student_count": 3,
+    "fourth_student_cap_rejection": true,
+    "credentials_printed": false,
+    "raw_provider_links_printed": false
+  },
+  "release": {
+    "branch": "release/tisha-bav-2026-live",
+    "head": "0a85f4f8e8683bc19ac26fbdf1f6b8e91211429d",
+    "pr": 106,
+    "url": "https://github.com/shloimie-beep/onetimev2/pull/106",
+    "full_app_production": "not_deployed"
+  },
+  "guardrails": {
+    "ot_c01_warm_campaign": "draft_not_sent",
+    "student_data_in_highlevel": false,
+    "broad_messages_authorized": false,
+    "broad_messages_sent": 0,
+    "charges_created": 0,
+    "real_student_data_used": false
+  }
+}

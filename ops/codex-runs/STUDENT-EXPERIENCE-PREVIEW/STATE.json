@@ -1,0 +1,175 @@
+{
+  "schema_version": "onetime.student_experience_preview.state.v1",
+  "generated_at": "2026-07-20T17:16:25.5728777+03:00",
+  "branch": "codex/student-experience-preview",
+  "worktree": "C:/Users/User/.onetime-worktrees/STUDENT-EXPERIENCE-PREVIEW",
+  "base": {
+    "pr": 92,
+    "branch": "codex/one-time-finish-now-20260719",
+    "head": "5ddd7b604c01744dd562050ae9b51124f7732594"
+  },
+  "integrated_source": {
+    "pr": 94,
+    "branch": "codex/learning-product-portals-media",
+    "head": "ebd28c65fab5f11b2a334937ef10bdf1da7b62f3",
+    "method": "semantic_cherry_pick_plus_local_integration"
+  },
+  "checkpoint": "IMPLEMENTED_LOCAL_PREVIEW_READY_STAGING_BLOCKED",
+  "accepted": [
+    {
+      "id": "ACCEPTED_BRANCH",
+      "summary": "Created isolated worktree branch codex/student-experience-preview from current PR #92 head."
+    },
+    {
+      "id": "ACCEPTED_PR94_INTEGRATION",
+      "summary": "Integrated PR #94 learning product portal/media changes into the PR #92 branch without reviving provider transports."
+    },
+    {
+      "id": "ACCEPTED_LOGIN_IDENTIFIER",
+      "summary": "Login accepts a neutral identifier while preserving legacy email payload compatibility."
+    },
+    {
+      "id": "ACCEPTED_ROLE_ROUTING",
+      "summary": "Successful login defaults by role: owner/admin to the app dashboard, parent to parent portal, student to student portal, with safe return_to validation."
+    },
+    {
+      "id": "ACCEPTED_STUDENT_USERNAME_AUTH",
+      "summary": "Students can authenticate by parent-managed username against portal_student_access_state without requiring student email."
+    },
+    {
+      "id": "ACCEPTED_GENERIC_FAILURES",
+      "summary": "Invalid username, disabled student access, and bad password surface as generic INVALID_CREDENTIALS to callers."
+    },
+    {
+      "id": "ACCEPTED_OWNER_ADMIN_EMAIL_CHALLENGE",
+      "summary": "Owner/admin email challenge flow remains preserved for email-identified privileged users."
+    },
+    {
+      "id": "ACCEPTED_RESET_REVOCATION",
+      "summary": "Parent-managed password reset updates the linked student principal, revokes active student sessions, and preserves legacy linked email users when no username is supplied."
+    },
+    {
+      "id": "ACCEPTED_NO_PROVIDER_BLEED",
+      "summary": "Local verification ran with provider sinks/mocks; no GHL, LeadConnector, production data, provider, payment, or real-send mutation was performed."
+    },
+    {
+      "id": "ACCEPTED_LOCAL_BROWSER_EVIDENCE",
+      "summary": "Synthetic local browser journeys covered admin lab, parent portal, and student portal with responsive screenshots and zero critical/serious a11y findings."
+    }
+  ],
+  "blocked": [
+    {
+      "id": "BLOCKED_STAGING_DEPLOYMENT",
+      "reason": "No linked Railway project was present and this shell had no exact staging project/environment/service/database identifiers.",
+      "evidence": "railway status --json returned: No linked project found.",
+      "needed_action": "Provide exact isolated staging Railway project ID, environment ID, web service ID, worker service ID, database service ID, and deployment authorization."
+    },
+    {
+      "id": "BLOCKED_STAGING_MIGRATIONS",
+      "reason": "No safe staging DATABASE_URL or Railway staging service context was available.",
+      "evidence": "Environment presence check found no RAILWAY, DATABASE_URL, STAGING, OPERATOR, ONE_TIME, or ONETIME variables.",
+      "needed_action": "Provide protected staging database context or run the migration command through the exact authorized staging Railway service."
+    },
+    {
+      "id": "BLOCKED_PROTECTED_OPERATOR_INBOX",
+      "reason": "No protected operator inbox or approved send path was available in local runtime config.",
+      "evidence": "No protected operator/inbox environment names were present; no email send was attempted.",
+      "needed_action": "Provide a protected operator inbox destination and explicit staging-only send authorization if live handoff email delivery is required."
+    },
+    {
+      "id": "BLOCKED_REAL_PREVIEW_CREDENTIALS",
+      "reason": "No staging deployment was created, so no real staging identities or credentials were generated.",
+      "evidence": "Private handoff records blocker status only and contains no real credentials.",
+      "needed_action": "After staging deployment and migrations, create protected operator-only identities and store credentials only in the private handoff file."
+    },
+    {
+      "id": "BLOCKED_GITHUB_ACTIONS_ACCOUNT_BILLING",
+      "reason": "GitHub Actions did not start PR #96 jobs because repository account billing or spending limit requires owner action.",
+      "evidence": "Each failed check annotation said: The job was not started because recent account payments have failed or your spending limit needs to be increased.",
+      "needed_action": "Repository owner must resolve GitHub Billing & plans / Actions spending-limit state, then rerun PR #96 checks."
+    },
+    {
+      "id": "BLOCKED_REPO_WIDE_FORMAT_BASELINE",
+      "reason": "Repo-wide Prettier check fails across historical files outside this branch's scoped changes.",
+      "evidence": "npm run format reported style issues in 1316 files; changed non-SQL PR files pass npx prettier --check.",
+      "needed_action": "Do not include unrelated formatting churn in this preview branch; handle repo-wide Prettier baseline in a separate dedicated cleanup."
+    }
+  ],
+  "verification": [
+    {
+      "command": "npm ci",
+      "status": "passed",
+      "summary": "Installed isolated worktree dependencies; npm audit reported zero vulnerabilities."
+    },
+    {
+      "command": "npm run typecheck",
+      "status": "passed",
+      "summary": "TypeScript no-emit check passed after final edits."
+    },
+    {
+      "command": "npx prettier --check <changed non-SQL, non-PNG PR files>",
+      "status": "passed",
+      "summary": "All changed branch text files that Prettier can parse use Prettier style."
+    },
+    {
+      "command": "npm run format",
+      "status": "blocked_existing_repo_wide_format_baseline",
+      "summary": "Repo-wide check reports 1316 historical files needing formatting; this was not remediated to avoid unrelated churn."
+    },
+    {
+      "command": "npm run lint",
+      "status": "passed",
+      "summary": "ESLint passed after formatting the integrated PR payload."
+    },
+    {
+      "command": "npm run unit -- tests/unit/learning-product-portals.test.ts",
+      "status": "passed",
+      "summary": "4 unit tests passed."
+    },
+    {
+      "command": "npm run integration -- tests/integration/portals/portal-mount.test.ts tests/integration/auth-crm.test.ts",
+      "status": "passed",
+      "summary": "2 files and 14 integration tests passed, including username login, reset revocation, owner/admin email challenge, and CRM auth regression."
+    },
+    {
+      "command": "npm run build",
+      "status": "passed",
+      "summary": "Production public/app bundles and public pages built; final typecheck passed."
+    },
+    {
+      "command": "npm run brand:check",
+      "status": "passed",
+      "summary": "Brand manifest, token drift, route scan, ticker allowlist, and raw source scan passed."
+    },
+    {
+      "command": "npm run secret:scan",
+      "status": "passed",
+      "summary": "Secret scan passed across repo text files."
+    },
+    {
+      "command": "npx playwright test tests/e2e/w12-03-portal-test-lab.spec.ts",
+      "status": "passed",
+      "summary": "2 browser tests passed and produced admin, parent, and student screenshots with zero critical/serious a11y findings."
+    },
+    {
+      "command": "gh pr view 96 --json statusCheckRollup plus check-run annotations",
+      "status": "blocked_external_account_billing",
+      "summary": "All five GitHub Actions checks failed before any runner steps because GitHub reported account payment/spending-limit blockage."
+    }
+  ],
+  "screenshots": [
+    "ops/codex-runs/STUDENT-EXPERIENCE-PREVIEW/screenshots/admin-preview-1440x1000.png",
+    "ops/codex-runs/STUDENT-EXPERIENCE-PREVIEW/screenshots/parent-preview-1440x1000.png",
+    "ops/codex-runs/STUDENT-EXPERIENCE-PREVIEW/screenshots/student-preview-1440x1000.png"
+  ],
+  "private_handoff_path": "C:/Users/User/.onetime-student-preview/PREVIEW-HANDOFF.private.json",
+  "external_mutations": {
+    "railway_deployments": 0,
+    "staging_database_migrations": 0,
+    "production_database_writes": 0,
+    "provider_calls": 0,
+    "email_sends": 0,
+    "payments": 0,
+    "ghl_or_leadconnector_calls": 0
+  }
+}

@@ -1,0 +1,44 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+decision_id: ${DECISION_ID}
+task_id: R45
+canonical_path: ops/v2.1-execution/merge/FINAL-RELEASE-DECISION.yaml
+status: ${RELEASED_OR_RELEASE_BLOCKED}
+decision_phase: ${PHASE_A_FAILURE_PHASE_B_BLOCKED_OR_PHASE_B_RELEASED}
+canonical_candidate_digest: ${CANONICAL_CANDIDATE_DIGEST}
+candidate_manifest_digest: ${CANDIDATE_MANIFEST_DIGEST}
+decision_based_on_evidence_head_sha: ${EXACT_EVIDENCE_HEAD}
+decision_based_on_result_index_digest: ${EXACT_CURRENT_RESULT_INDEX_DIGEST}
+r45_result_digest: ${R45_CASE_RESULT_DIGEST}
+case_counts_observed:
+  expected: 265
+  passed: ${PASSED_COUNT}
+  failed: ${FAILED_COUNT}
+  blocked: ${BLOCKED_COUNT}
+  stale: ${STALE_COUNT}
+  waived: ${WAIVED_COUNT}
+release_invariants:
+  unexpected_effects: ${COUNT}
+  failed_visible_controls: ${COUNT}
+  untested_visible_controls: ${COUNT}
+  placeholder_visible_controls: ${COUNT}
+  fake_data_dependencies: ${COUNT}
+  unauthorized_visible_controls: ${COUNT}
+  student_ghl_contacts: ${COUNT}
+  exposed_zoom_or_vimeo_bearers: ${COUNT}
+blocking_gates: []
+external_authority_record_digests: []
+effect_ledger_digests: []
+cleanup_and_reconciliation_digests: []
+production_deployment_instance_digest: null
+observation_record_digest: null
+rollback_readiness_digest: ${ROLLBACK_READINESS_DIGEST_OR_NONE}
+decision_reason: ${EXACT_EVIDENCE_BACKED_REASON}
+released_at: null
+blocked_at: null
+assertions:
+  contains_waiver: false
+  claims_released_when_blocked: false
+  claims_production_ready_when_blocked: false
+  contains_secret_or_private_data: false
+state_based_on_head_sha: ${HEAD_BEFORE_THIS_DECISION_COMMIT}

@@ -1,0 +1,5 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+blockers: []
+rule: One precise blocker per entry with owner, affected tasks, safe work completed, required authority/input, and
+  next check.

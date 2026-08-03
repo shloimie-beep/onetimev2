@@ -1,0 +1,9 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+generated_by: C00
+authorities: {}
+entry_schema: templates/AUTHORITY-STATUS-ENTRY.yaml
+revocation_schema: templates/AUTHORITY-REVOCATION-RECORD.yaml
+rule: C00 records externally granted/revoked/expired authority; it does not grant it. Every update binds the known
+  parent control head. Before each effect reservation, a worker fetches this current remote file and requires the
+  ready lease, status entry, revocation head, and provider lock to match.

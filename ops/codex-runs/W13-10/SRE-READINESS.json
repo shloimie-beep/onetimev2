@@ -4,7 +4,7 @@
   "deployment_guard": "scripts/w13-10/staging-deploy-guard.ts",
   "deployment_mutations": 0,
   "required_checks": [
-    "web health/readiness/version",
+    "fixed public health/readiness/version and protected runtime identity",
     "worker heartbeat and drain state",
     "queue depth and oldest age",
     "database locks and migration drift",

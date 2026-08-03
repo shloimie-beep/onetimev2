@@ -59,11 +59,11 @@ values.
     "branch": "integration/w12-final-convergence-20260717T123715Z"
   },
   "predeploy": {
-    "expected_version": "<current-/version-version-before-deploy>",
-    "expected_commit_sha": "<current-/version-commit-before-deploy>"
+    "expected_version": "<current-protected-runtime-version-before-deploy>",
+    "expected_commit_sha": "<current-protected-runtime-commit-before-deploy>"
   },
   "rollback": {
-    "predeploy_commit_sha": "<same-current-/version-commit-before-deploy>",
+    "predeploy_commit_sha": "<same-current-protected-runtime-commit-before-deploy>",
     "predeploy_image_digest": "sha256:<64 lowercase hex chars>"
   },
   "provider_transports": {
@@ -94,4 +94,7 @@ values.
   because they can print raw environment values.
 - Evidence records deployment IDs, source SHAs, digests, statuses, counts, and
   hashes only.
+- Exact runtime identity and provider-readiness evidence come only from
+  authenticated `/api/internal/ops/diagnostics`; public `/health`, `/ready`, and
+  `/version` expose fixed availability codes.
 - Provider transports must remain disabled, sink, mock, off, or not configured.

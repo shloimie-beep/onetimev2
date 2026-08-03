@@ -1,0 +1,33 @@
+schema_version: 1
+goal_id: OT-LAUNCH-01
+received_at: 2026-07-23T08:06:52Z
+source: operator_voice_instruction
+sanitized_operator_wording:
+  - I want the Telegram bot to work and everything for Zoom to keep moving until the next real blocker.
+  - The Student and Parent portals should feel like full-screen applications with categories on the side, contextual subcategories or filters on top, a grid in the upper area, and one large focused rectangle below.
+  - Start moving proven pieces live gradually instead of leaving the whole product in staging indefinitely.
+observed_problem:
+  - Parent and Student portals render too many unrelated sections at once and feel like a wall of cards.
+  - Telegram durability/private-canary and real Zoom gates remain provider-off despite new staging-canary authority.
+  - Release status is staging-heavy and does not yet express an incremental accepted-slice production path.
+desired_user_outcome:
+  - Parent and Student portals behave as focused full-screen applications with clear category navigation.
+  - Telegram and Zoom proceed through bounded staging canaries until a real external or technical blocker is reached.
+  - Independently accepted, rollback-ready slices can be promoted gradually without implying the entire system is complete.
+acceptance_criteria:
+  - Desktop Parent and Student portals show a left category menu, contextual top controls, an upper summary grid, and one wide focused lower workspace.
+  - Mobile keeps the same categories discoverable through the application navigation and a compact horizontal category control without page overflow.
+  - Changing a category replaces the focused workspace body instead of adding another wall of content; sibling and content-access boundaries remain unchanged.
+  - Telegram preview durability and one private synthetic no-customer canary run only in the isolated BNA preview with a disposable database and sanitized readback.
+  - Zoom staging configuration and one bounded human canary run only after protected prerequisites, exact-origin allowlisting, and fail-closed gates are verified.
+  - A production promotion occurs only for a staging-proven, independently accepted slice with exact-head health, browser, rollback, and zero-unrelated-effect proof.
+affected_tracks:
+  - parent_student_portal_information_architecture
+  - bna_durability
+  - telegram_foundation
+  - telegram_customer_bridge
+  - zoom_meeting_sdk
+  - zoom_s2s_host_control
+  - persistent_staging
+decision_needed: false
+next_executable_task: Complete the focused Parent/Student workspace, validate it at desktop and mobile breakpoints, then deploy the exact governed checkpoint to persistent staging.

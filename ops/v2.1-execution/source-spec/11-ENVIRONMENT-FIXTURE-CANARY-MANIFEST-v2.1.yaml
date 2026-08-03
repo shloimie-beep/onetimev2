@@ -1,0 +1,507 @@
+schema_version: 1
+manifest_id: ONE-TIME-ENVIRONMENT-FIXTURE-CANARY-V2.1
+specification_id: ONE-TIME-PRODUCTION-V2.1
+status: normative
+effective_date: '2026-07-28'
+
+reviewed_baseline:
+  repository: shloimie-beep/onetimev2
+  pull_request: 130
+  reviewed_head: 73dda293079f602c83929d1bbccb8dd5b9d1a455
+  reviewed_branch: codex/one-time-launch-convergence-20260727
+  reviewed_migration_count: 64
+  reviewed_latest_migration_ordinal: 2233
+  package_digest_file: SHA256SUMS.txt
+  release_candidate_must_record:
+    - repository_sha
+    - application_content_sha
+    - web_image_digest
+    - worker_image_digest
+    - configuration_digest
+    - migration_inventory_digest
+    - highlevel_registry_digest
+    - message_catalog_digest
+    - acceptance_contract_digest
+
+environment_rules:
+  production_product_has_preview_mode: false
+  production_product_has_demo_mode: false
+  production_product_has_test_lane: false
+  fictional_customer_fixtures_allowed_in_production: false
+  automated_verification_required: true
+  real_operator_acceptance_required: true
+  raw_credentials_in_repository_allowed: false
+  unrelated_customer_or_child_records_allowed_for_canary: false
+
+environments:
+  - id: ci
+    runtime_tier: isolated_staging
+    purpose: deterministic_automated_verification
+    persistent: false
+    visible_to_customers: false
+    provider_mode: emulated_or_provider_off
+    real_messages_allowed: false
+    real_charges_allowed: false
+    customer_data_allowed: false
+    required_gates:
+      - format
+      - lint
+      - typecheck
+      - unit
+      - integration
+      - migration_checksum
+      - postgres_concurrency
+      - build
+      - browser
+      - accessibility
+      - security_regression
+
+  - id: provider_sandbox
+    runtime_tier: isolated_staging
+    purpose: provider_contract_and_failure_verification
+    persistent: bounded
+    visible_to_customers: false
+    provider_mode: provider_test_or_operator_owned_seed
+    real_messages_allowed: operator_owned_seed_only
+    real_charges_allowed: stripe_test_mode_only
+    customer_data_allowed: false
+    required_gates:
+      - signatures
+      - idempotency
+      - duplicate
+      - replay
+      - out_of_order
+      - timeout
+      - acceptance_unknown
+      - safe_retry
+      - reconciliation
+      - cleanup
+
+  - id: persistent_staging
+    runtime_tier: isolated_staging
+    purpose: exact_candidate_role_and_device_acceptance
+    persistent: true
+    visible_to_customers: false
+    provider_mode: test_or_sink_except_approved_sandbox_canary
+    real_messages_allowed: operator_owned_seed_only
+    real_charges_allowed: stripe_test_mode_only
+    customer_data_allowed: operator_owned_acceptance_records_only
+    must_match_candidate:
+      - repository_sha
+      - web_image_digest
+      - worker_image_digest
+      - migrations
+      - configuration_schema
+
+  - id: production_read_only
+    runtime_tier: production
+    purpose: identity_health_configuration_and_reconciliation
+    persistent: true
+    visible_to_customers: true
+    provider_mode: live_read_only
+    real_messages_allowed: false
+    real_charges_allowed: false
+    mutations_allowed: false
+
+  - id: production_operator_canary
+    runtime_tier: production
+    purpose: bounded_real_end_to_end_acceptance
+    persistent: true
+    visible_to_customers: restricted_to_operator_owned_accounts
+    provider_mode: live_bounded
+    mutations_allowed: true
+    broad_audience_allowed: false
+    explicit_authority_required: true
+    reconciliation_and_cleanup_required: true
+
+  - id: production_broad
+    runtime_tier: production
+    purpose: real_customer_operation
+    persistent: true
+    visible_to_customers: true
+    provider_mode: live
+    prerequisites:
+      - all_release_blocking_acceptance_cases_passed
+      - production_operator_canary_reconciled
+      - no_unexpected_external_effects
+      - backup_restore_and_rollback_gates_passed
+      - product_owner_approval
+      - rabbi_content_and_classroom_approval
+      - legal_policy_artifact_gate_closed
+
+environment_identity_contract:
+  verification_environment_id_field: verification_environment_id
+  runtime_tier_field: runtime_tier
+  mappings:
+    ci: isolated_staging
+    provider_sandbox: isolated_staging
+    persistent_staging: isolated_staging
+    production_read_only: production
+    production_operator_canary: production
+    production_broad: production
+  invariants:
+    - verification_environment_id_and_runtime_tier_are_separate_fields
+    - production_verification_modes_never_resolve_to_isolated_credentials
+    - isolated_verification_modes_never_resolve_to_live_credentials
+    - acceptance_results_record_both_fields
+
+fixture_manifest:
+  identities:
+    - id: admin_shloimie
+      kind: real_operator
+      person: Shloimie Dratler
+      roles: [admin]
+      credentials_location: approved_secret_or_identity_store
+      may_receive_canary_messages: true
+
+    - id: admin_rabbi_eli
+      kind: real_operator
+      person: Rabbi Eli Scheller
+      roles: [admin]
+      credentials_location: approved_secret_or_identity_store
+      may_receive_canary_messages: true
+
+    - id: parent_operator_canary
+      kind: real_operator_owned_parent
+      roles: [parent]
+      binding_rule: bind_to_an_address_controlled_by_the_operator
+      credentials_location: approved_secret_or_identity_store
+      may_receive_canary_messages: true
+      adult_identity_key: operator_adult_a
+      human_account_key: operator_adult_a_login
+      owns_households: [operator_family_primary, operator_family_secondary]
+      household_count: 2
+
+    - id: dual_role_operator_canary
+      kind: real_operator_owned_dual_role_adult
+      roles: [admin, parent]
+      binding_rule: bind_to_one_verified_operator_adult_identity_and_one_human_account
+      credentials_location: approved_secret_or_identity_store
+      adult_identity_key: operator_adult_dual_role
+      human_account_key: operator_adult_dual_role_login
+      owns_households: [dual_role_family]
+
+    - id: replacement_owner_canary
+      kind: real_operator_owned_replacement_adult
+      roles: [parent]
+      binding_rule: bind_to_a_different_verified_operator_controlled_adult_identity
+      credentials_location: approved_secret_or_identity_store
+      adult_identity_key: operator_adult_replacement
+      human_account_key: operator_adult_replacement_login
+      owns_households: []
+
+    - id: student_operator_canary_1
+      kind: real_operator_owned_student
+      roles: [student]
+      email: prohibited
+      parent_fixture: parent_operator_canary
+      household_key: operator_family_primary
+      relationship: dependent
+      device_slot: tablet_1
+
+    - id: student_operator_canary_2
+      kind: real_operator_owned_student
+      roles: [student]
+      email: prohibited
+      parent_fixture: parent_operator_canary
+      household_key: operator_family_primary
+      relationship: dependent
+      sibling_of: student_operator_canary_1
+      device_slot: tablet_2
+
+    - id: student_operator_canary_3
+      kind: real_operator_owned_student
+      roles: [student]
+      email: prohibited
+      parent_fixture: parent_operator_canary
+      household_key: operator_family_primary
+      relationship: self
+      adult_identity_key: operator_adult_a
+      credentials_are_separate_from: operator_adult_a_login
+      device_slot: tablet_3
+
+    - id: denial_household
+      kind: second_operator_owned_household
+      roles: [parent, student]
+      purpose: cross_household_and_sibling_denial
+      may_use_unrelated_customer_data: false
+      household_key: operator_denial_family
+      owner_fixture: denial_parent_canary
+      student_fixture: denial_student_canary
+
+    - id: denial_parent_canary
+      kind: real_operator_owned_parent
+      roles: [parent]
+      binding_rule: bind_to_a_verified_operator_controlled_identity_distinct_from_operator_adult_a
+      credentials_location: approved_secret_or_identity_store
+      adult_identity_key: operator_adult_denial
+      human_account_key: operator_adult_denial_login
+      owns_households: [operator_denial_family]
+
+    - id: denial_student_canary
+      kind: real_operator_owned_student
+      roles: [student]
+      email: prohibited
+      parent_fixture: denial_parent_canary
+      household_key: operator_denial_family
+      relationship: dependent
+      device_slot: tablet_denial
+
+  devices:
+    - id: desktop_admin
+      browsers: [chrome, edge, safari_where_available]
+      required_journeys: [admin_full_application]
+    - id: tablet_1
+      class_session_owner: student_operator_canary_1
+      required_journeys: [student_login, embedded_zoom, library_playback]
+    - id: tablet_2
+      class_session_owner: student_operator_canary_2
+      required_journeys: [student_login, embedded_zoom, sibling_denial]
+    - id: tablet_3
+      class_session_owner: student_operator_canary_3
+      required_journeys: [student_login, embedded_zoom, concurrent_seat_proof]
+    - id: mobile_parent
+      required_journeys: [signup, setup, student_management, billing_repair]
+    - id: tablet_denial
+      class_session_owner: denial_student_canary
+      required_journeys: [student_login, cross_household_denial]
+
+  provider_assets:
+    zoom:
+      account_owner: Rabbi Eli Scheller
+      meeting_canary_count: 1
+      registrant_canary_max: 3
+      raw_join_url_in_evidence: prohibited
+    stripe:
+      test_customer: operator_owned
+      live_customer: operator_owned
+      test_payment_method: provider_test_fixture
+      live_payment_method: operator_owned
+    highlevel:
+      workspace: one_time
+      seed_contacts: operator_owned_only
+      student_contacts: prohibited
+    resend:
+      recipients: operator_owned_only
+    drive:
+      representative_recording:
+        ownership: operator_controlled
+        language: English
+        minimum_target_size_gib: 3
+        maximum_supported_size_gib: 5
+    obs_capture:
+      launch_capture_source: true
+      zoom_cloud_recording_allowed: false
+      device: operator_controlled_encrypted
+      upload_deadline_after_occurrence_hours: 24
+      local_delete_requires:
+        - destination_checksum_match
+        - destination_readback
+        - ingest_record_linked
+    aws_s3:
+      region: eu-central-1
+      bucket_visibility: private
+      public_access_block: required
+      versioning: required
+      encryption: SSE-KMS
+      browser_credentials: prohibited
+      purpose: source_and_processing_artifacts
+    openai:
+      transcription_model: gpt-4o-transcribe
+      structured_output_model: gpt-4.1-mini
+      responses_api_structured_outputs: required
+      model_snapshot_or_alias_and_schema_digest_pin: required
+      customer_api_key_in_browser: prohibited
+    vimeo:
+      canary_asset_count: 1
+      privacy: private_domain_restricted
+    whatsapp:
+      live_canary_allowed: false
+      reason: provider_templates_consent_and_sender_not_yet_approved
+    telegram:
+      recipients: [admin_shloimie, admin_rabbi_eli]
+      customer_broadcast_allowed: false
+    independent_purge_ledger:
+      storage: separate_from_primary_database_and_backup_set
+      append_only: true
+      contains_deleted_content: false
+      minimum_fields:
+        - deletion_request_id
+        - subject_scope_hash
+        - system_or_provider
+        - object_reference_hash
+        - action
+        - completed_at
+        - verifier
+
+legal_policy_artifact_gate:
+  status: required_not_yet_recorded
+  production_broad_allowed: false
+  reason: product_owner_or_counsel_must_supply_and_approve_actual_legal_text
+  required_artifacts:
+    - key: terms
+      repository_path: legal/terms-of-service.html
+      public_route: /terms
+    - key: privacy
+      repository_path: legal/privacy-notice.html
+      public_route: /privacy
+    - key: student_data_and_recording_consent
+      repository_path: legal/student-data-and-recording-consent.html
+      public_route: null
+      production_render_surface: student_creation_and_prejoin_consent
+    - key: cancellation
+      repository_path: legal/cancellation-policy.html
+      public_route: /cancellation-refund
+    - key: refund
+      repository_path: legal/refund-policy.html
+      public_route: /cancellation-refund
+  approval_manifest:
+    repository_path: legal/legal-policy-manifest.json
+    immutable_digest_required: true
+    binds_all_five_artifacts: true
+  each_artifact_requires:
+    - stable_external_file_id
+    - immutable_content_digest
+    - effective_version
+    - approver_identity
+    - approval_timestamp
+    - production_render_readback
+  closure_rule: all_required_artifacts_have_concrete_values_and_match_the_production_render
+
+production_operator_canary_effect_budget:
+  one_time:
+    parent_accounts_created_or_updated_max: 2
+    households_created_or_updated_max: 2
+    student_accounts_created_or_updated_max: 6
+    support_tickets_max: 4
+    student_questions_max: 4
+    unexpected_cross_household_reads_max: 0
+  highlevel:
+    operator_contacts_created_or_updated_max: 2
+    workflow_enrollments_max: 4
+    broad_campaign_contacts_max: 0
+    student_contacts_max: 0
+  email:
+    resend_messages_max: 8
+    ghl_messages_max: 12
+    unrelated_recipients_max: 0
+  whatsapp:
+    messages_max: 0
+    workflow_executions_max: 0
+  zoom:
+    meetings_created_max: 1
+    registrants_created_max: 3
+    simultaneous_student_sessions_max: 3
+    raw_join_urls_exposed_max: 0
+  stripe:
+    live_checkout_sessions_max: 1
+    live_charge_total_usd_max: 67
+    live_refunds_max: 1
+    unrelated_customer_mutations_max: 0
+  drive:
+    files_ingested_max: 1
+    unrelated_files_moved_or_deleted_max: 0
+  vimeo:
+    assets_uploaded_max: 1
+    unrelated_assets_mutated_max: 0
+  telegram:
+    operator_notifications_max: 12
+    customer_messages_max: 0
+  destructive_effects:
+    customer_deletions_max: 0
+    provider_account_deletions_max: 0
+    broad_data_rewrites_max: 0
+
+canary_sequence:
+  - gate: C1
+    name: isolated_automated
+    environment: ci
+    next_requires: all_required_cases_pass
+  - gate: C2
+    name: persistent_staging_roles_and_devices
+    environment: persistent_staging
+    next_requires: exact_candidate_and_zero_placeholder_controls
+  - gate: C3
+    name: provider_sandbox
+    environment: provider_sandbox
+    next_requires: all_provider_effects_reconciled_and_cleaned
+  - gate: C4
+    name: production_read_only
+    environment: production_read_only
+    next_requires: healthy_identity_configuration_backup_and_migrations
+  - gate: C5
+    name: production_operator_end_to_end
+    environment: production_operator_canary
+    journeys:
+      - admin_login_and_global_search
+      - family_signup_and_immediate_login
+      - seven_day_legacy_or_ownership_setup_link
+      - parent_adds_three_students
+      - three_tablet_student_login
+      - embedded_zoom_join_and_one_concurrent_session_per_student
+      - attendance_reconciliation
+      - direct_app_recording_upload
+      - drive_recording_ingest
+      - compression_transcript_review_material_and_knowledge_artifact
+      - admin_approval_and_private_vimeo_publication
+      - student_library_search_resume_and_playback
+      - billing_checkout_event_access_and_repair
+      - parent_and_student_support
+      - email_only_workflow_with_whatsapp_safely_skipped
+    next_requires: explicit_product_owner_and_rabbi_signoff
+  - gate: C6
+    name: broad_production
+    environment: production_broad
+
+stop_conditions:
+  - unexpected_recipient_or_audience
+  - any_student_created_in_highlevel
+  - raw_zoom_or_vimeo_access_url_exposed
+  - any_whatsapp_send_before_channel_approval
+  - live_charge_above_budget
+  - duplicate_subscription
+  - unexpected_refund_or_deletion
+  - wrong_provider_workspace_or_account
+  - web_worker_or_configuration_digest_mismatch
+  - migration_checksum_or_readback_failure
+  - backup_or_restore_gate_failure
+  - provider_acceptance_unknown_without_quarantine
+  - cross_household_or_sibling_authorization_failure
+  - consent_missing_for_recorded_student_audio_or_video
+  - required_legal_policy_artifact_missing_or_digest_mismatch
+  - campaign_content_or_audience_digest_drift
+
+cleanup_and_reconciliation:
+  required_for_each_external_effect: true
+  cleanup_may_not_block_normal_product_path_after_safe_quarantine: true
+  retain:
+    - immutable_event_receipts
+    - redacted_audit_evidence
+    - acceptance_results
+    - authorized_canary_business_records_when_designated_persistent
+  remove_or_revoke:
+    - disposable_provider_resources
+    - temporary_tokens
+    - abandoned_test_checkouts
+    - unintended_workflow_enrollments
+  destructive_cleanup_requires_explicit_target_and_authority: true
+  production_customer_data_may_not_be_used_as_cleanup_fixture: true
+
+release_result_rules:
+  result_file_is_separate_from_specification: true
+  each_result_must_bind:
+    - acceptance_case_id
+    - candidate_digest
+    - environment
+    - timestamp
+    - actor_or_automation
+    - evidence_artifact
+    - external_effect_count
+    - cleanup_or_reconciliation
+  release_blocked_when:
+    - required_case_failed
+    - required_case_unverified
+    - required_evidence_stale
+    - unauthorized_waiver
+    - unexpected_external_effect
+    - unreconciled_provider_effect

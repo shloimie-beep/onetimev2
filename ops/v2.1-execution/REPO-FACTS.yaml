@@ -1,0 +1,106 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+reviewed_on: '2026-07-28'
+repository: shloimie-beep/onetimev2
+pull_request: 130
+reviewed_head: 73dda293079f602c83929d1bbccb8dd5b9d1a455
+reviewed_branch: codex/one-time-launch-convergence-20260727
+pull_request_base_branch: codex/full-app-staging-live
+pull_request_base_sha: 53a18e771488c61cf271cb33a0bcacee2c7135f4
+default_main_sha_at_review: 610b585f3d221addd4e7b824c92a5cc256cffcf9
+branching_invariants:
+- Never branch from main for v2.1 initial work.
+- Never use the pull request synthetic merge SHA as a task base.
+- Initial execution starts from reviewed_head; later tasks start only from a control-authorized exact SHA.
+stack:
+  runtime: Node.js 24 and TypeScript
+  server: Express 5
+  client: Vite and React 19
+  database: PostgreSQL through pg
+  migrations: forward-only checksummed SQL migrations
+  worker: transactional delivery/operations worker
+  canonical_repository_verification: npm run verify
+tracked_inventory:
+  repository_files: 2515
+  apps: 115
+  packages: 266
+  ops: 1592
+  tests: 219
+  integrations: 111
+migration_baseline:
+  reviewed_count: 64
+  latest_filename: 2233_zoom_class_occurrence_resources.sql
+  next_allowed_ordinal: 2234
+  ordinal_2231: intentionally absent; never fill
+  parallel_branch_rule: Use disposable databases; apply to shared staging only from a merged checkpoint.
+high_conflict_files:
+- path: apps/web/src/server/app.ts
+  approx_lines: 5808
+  owner: F01 then I36
+- path: apps/web/src/client/app/crm-entry.tsx
+  approx_lines: 3187
+  owner: F01 then I36
+- path: apps/web/src/client/app/portal-entry.tsx
+  approx_lines: 1394
+  owner: F01 then I36
+- path: apps/web/src/client/features/portals/PortalFeatures.tsx
+  approx_lines: 1910
+  owner: F01 then feature modules/I36
+- path: apps/web/src/client/app/content-workspace/ContentWorkspace.tsx
+  approx_lines: 1931
+  owner: F01 seam then content feature modules/I36
+- path: apps/web/src/client/app/classes/ClassManagementWorkspace.tsx
+  approx_lines: 1386
+  owner: F01 seam then classroom feature modules/I36
+- path: apps/web/src/client/app/crm.css
+  approx_lines: 1098
+  owner: F07
+- path: packages/config/src/index.ts
+  approx_lines: 768
+  owner: F01 then I36
+- path: packages/domain/src/index.ts
+  approx_lines: 646
+  owner: F01 then I36
+- path: packages/contracts/src/index.ts
+  approx_lines: 543
+  owner: F01 then I36
+- path: apps/worker/src/main/index.ts
+  approx_lines: 394
+  owner: F01 then I36
+- path: package.json and package-lock.json
+  owner: I36 after F01 bootstrap
+route_drift:
+  v2_1_canonical_route_count: 93
+  reviewed_brand_route_count: 32
+  reviewed_server_route_declarations_approx: 205
+  notable_missing_routes:
+  - /school
+  - /signup/received
+  - /select-role
+  - /app/contacts
+  - /app/households
+  - /app/students
+  - /app/classroom
+  - /app/tickets
+  - /app/billing-access
+  - /app/integrations
+  - /app/audit
+  legacy_equivalents:
+  - /app/crm
+  - /app/classes
+  - /app/live-console
+retired_runtime_present_at_review:
+- Portal Test Lab
+- Learning Delivery Demo
+- experience preview
+- Tisha B'Av active registration/join/redirect APIs
+- public WhatsApp assistant/webhook/account-link
+- Buffer/social publishing
+- routine MFA/email challenge
+- Parent reward-goal mutation
+- Class Helper
+- roles owner/rabbi/crm_agent/viewer
+- legacy direct Stripe path
+authority_drift:
+  problem: AGENTS.md at reviewed head names the old Board as the sole status authority.
+  required_first_fix: C00 and F01 install v2.1 authority and mark old Board/status artifacts historical.

@@ -1,0 +1,35 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+canonical_candidate_digest: ${CANONICAL_CANDIDATE_DIGEST}
+product_source_sha: ${PRODUCT_SOURCE_SHA}
+candidate_manifest_digest: ${CANDIDATE_MANIFEST_DIGEST}
+acceptance_environment_matrix_digest: ${ACCEPTANCE_ENVIRONMENT_MATRIX_DIGEST}
+evidence_branch: codex/v21-evidence-${CANDIDATE_SHORT_SHA}
+index_based_on_evidence_head_sha: ${PRE_INDEX_EVIDENCE_HEAD}
+deployment_instances: {}
+production_gate_deployment_digest: null
+lane_heads:
+  V37: null
+  V38: null
+  V39: null
+  V40: null
+  V41: null
+  V42: null
+  V43_phase_a: null
+  R44: null
+  V43_phase_b: null
+  R45_phase_a: null
+  R45_phase_b: null
+supporting_proof_heads:
+  P34_phase_b: null
+result_counts:
+  expected_total: 265
+  current_unique: 0
+  passed: 0
+  failed: 0
+  blocked: 0
+  stale: 0
+  waived: 0
+case_results: {}
+unexpected_external_effects: 0
+last_aggregated_at: ${UTC_TIMESTAMP}

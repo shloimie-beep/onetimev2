@@ -1,0 +1,243 @@
+{
+  "job_id": "GHL-UI-04",
+  "order": 4,
+  "title": "update workflow sender identities",
+  "ghl_location": {
+    "location_id": "pBSnOK2nkdxp6gf9Rg3o",
+    "location_fingerprint": "31fcbd2792f131dc",
+    "verification_required": true
+  },
+  "exact_target_ui_path": "HighLevel > Automation > Workflows > canonical One Time workflow folders",
+  "canonical_source_files": [
+    "integrations/highlevel/registry/current.json",
+    "integrations/highlevel/registry/sender-registry.yaml",
+    "integrations/highlevel/registry/message-class-registry.yaml",
+    "integrations/highlevel/registry/communications-contract.json",
+    "integrations/highlevel/registry/workflow-registry.yaml",
+    "integrations/highlevel/ai-workflow-prompts/OT-01-new-lead-intake.md",
+    "integrations/highlevel/workflow-checklists/OT-01-new-lead-intake.md",
+    "integrations/highlevel/ai-workflow-prompts/OT-02A-existing-subscriber-migration-2026-v1.md",
+    "integrations/highlevel/workflow-checklists/OT-02A-existing-subscriber-migration-2026-v1.md",
+    "integrations/highlevel/ai-workflow-prompts/OT-02B-new-lead-nurture-v1.md",
+    "integrations/highlevel/workflow-checklists/OT-02B-new-lead-nurture-v1.md",
+    "integrations/highlevel/ai-workflow-prompts/OT-03-checkout-started-abandoned.md",
+    "integrations/highlevel/workflow-checklists/OT-03-checkout-started-abandoned.md",
+    "integrations/highlevel/ai-workflow-prompts/OT-04-payment-active.md",
+    "integrations/highlevel/workflow-checklists/OT-04-payment-active.md",
+    "integrations/highlevel/ai-workflow-prompts/OT-05-payment-failed-grace.md",
+    "integrations/highlevel/workflow-checklists/OT-05-payment-failed-grace.md",
+    "integrations/highlevel/ai-workflow-prompts/OT-06-subscription-canceled.md",
+    "integrations/highlevel/workflow-checklists/OT-06-subscription-canceled.md",
+    "integrations/highlevel/ai-workflow-prompts/OT-07-parent-portal-invitation.md",
+    "integrations/highlevel/workflow-checklists/OT-07-parent-portal-invitation.md",
+    "integrations/highlevel/ai-workflow-prompts/OT-08-parent-portal-activated.md",
+    "integrations/highlevel/workflow-checklists/OT-08-parent-portal-activated.md",
+    "integrations/highlevel/ai-workflow-prompts/OT-09-parent-class-reminder.md",
+    "integrations/highlevel/workflow-checklists/OT-09-parent-class-reminder.md",
+    "integrations/highlevel/ai-workflow-prompts/OT-10-new-recording-available.md",
+    "integrations/highlevel/workflow-checklists/OT-10-new-recording-available.md",
+    "integrations/highlevel/ai-workflow-prompts/OT-13-refund-chargeback.md",
+    "integrations/highlevel/workflow-checklists/OT-13-refund-chargeback.md",
+    "integrations/highlevel/ai-workflow-prompts/OT-C01-tisha-b-av-2026-warm-invitation.md",
+    "integrations/highlevel/workflow-checklists/OT-C01-tisha-b-av-2026-warm-invitation.md",
+    "integrations/highlevel/ai-workflow-prompts/OT-E01-tisha-b-av-2026-registration-and-reminders.md",
+    "integrations/highlevel/workflow-checklists/OT-E01-tisha-b-av-2026-registration-and-reminders.md",
+    "integrations/highlevel/ai-workflow-prompts/OT-B01-complete-signup.md",
+    "integrations/highlevel/workflow-checklists/OT-B01-complete-signup.md",
+    "integrations/highlevel/ai-workflow-prompts/OT-B02-send-next-confirmed-class-info.md",
+    "integrations/highlevel/workflow-checklists/OT-B02-send-next-confirmed-class-info.md",
+    "integrations/highlevel/ai-workflow-prompts/OT-B03-send-member-login.md",
+    "integrations/highlevel/workflow-checklists/OT-B03-send-member-login.md",
+    "integrations/highlevel/ai-workflow-prompts/OT-B04-send-password-help.md",
+    "integrations/highlevel/workflow-checklists/OT-B04-send-password-help.md",
+    "integrations/highlevel/ai-workflow-prompts/OT-B05-apply-opt-out.md",
+    "integrations/highlevel/workflow-checklists/OT-B05-apply-opt-out.md"
+  ],
+  "exact_copy_paste_prompt": "Job GHL-UI-04: update workflow sender identities\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nUse only the immutable Commit A registry SHA embedded in integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md. Block if the executor is missing, the SHA is not immutable, or the checked-out registry differs.\nTarget UI path: HighLevel > Automation > Workflows > canonical One Time workflow folders\n\nRead these canonical source files first:\n- integrations/highlevel/registry/current.json\n- integrations/highlevel/registry/sender-registry.yaml\n- integrations/highlevel/registry/message-class-registry.yaml\n- integrations/highlevel/registry/communications-contract.json\n- integrations/highlevel/registry/workflow-registry.yaml\n- integrations/highlevel/ai-workflow-prompts/OT-01-new-lead-intake.md\n- integrations/highlevel/workflow-checklists/OT-01-new-lead-intake.md\n- integrations/highlevel/ai-workflow-prompts/OT-02A-existing-subscriber-migration-2026-v1.md\n- integrations/highlevel/workflow-checklists/OT-02A-existing-subscriber-migration-2026-v1.md\n- integrations/highlevel/ai-workflow-prompts/OT-02B-new-lead-nurture-v1.md\n- integrations/highlevel/workflow-checklists/OT-02B-new-lead-nurture-v1.md\n- integrations/highlevel/ai-workflow-prompts/OT-03-checkout-started-abandoned.md\n- integrations/highlevel/workflow-checklists/OT-03-checkout-started-abandoned.md\n- integrations/highlevel/ai-workflow-prompts/OT-04-payment-active.md\n- integrations/highlevel/workflow-checklists/OT-04-payment-active.md\n- integrations/highlevel/ai-workflow-prompts/OT-05-payment-failed-grace.md\n- integrations/highlevel/workflow-checklists/OT-05-payment-failed-grace.md\n- integrations/highlevel/ai-workflow-prompts/OT-06-subscription-canceled.md\n- integrations/highlevel/workflow-checklists/OT-06-subscription-canceled.md\n- integrations/highlevel/ai-workflow-prompts/OT-07-parent-portal-invitation.md\n- integrations/highlevel/workflow-checklists/OT-07-parent-portal-invitation.md\n- integrations/highlevel/ai-workflow-prompts/OT-08-parent-portal-activated.md\n- integrations/highlevel/workflow-checklists/OT-08-parent-portal-activated.md\n- integrations/highlevel/ai-workflow-prompts/OT-09-parent-class-reminder.md\n- integrations/highlevel/workflow-checklists/OT-09-parent-class-reminder.md\n- integrations/highlevel/ai-workflow-prompts/OT-10-new-recording-available.md\n- integrations/highlevel/workflow-checklists/OT-10-new-recording-available.md\n- integrations/highlevel/ai-workflow-prompts/OT-13-refund-chargeback.md\n- integrations/highlevel/workflow-checklists/OT-13-refund-chargeback.md\n- integrations/highlevel/ai-workflow-prompts/OT-C01-tisha-b-av-2026-warm-invitation.md\n- integrations/highlevel/workflow-checklists/OT-C01-tisha-b-av-2026-warm-invitation.md\n- integrations/highlevel/ai-workflow-prompts/OT-E01-tisha-b-av-2026-registration-and-reminders.md\n- integrations/highlevel/workflow-checklists/OT-E01-tisha-b-av-2026-registration-and-reminders.md\n- integrations/highlevel/ai-workflow-prompts/OT-B01-complete-signup.md\n- integrations/highlevel/workflow-checklists/OT-B01-complete-signup.md\n- integrations/highlevel/ai-workflow-prompts/OT-B02-send-next-confirmed-class-info.md\n- integrations/highlevel/workflow-checklists/OT-B02-send-next-confirmed-class-info.md\n- integrations/highlevel/ai-workflow-prompts/OT-B03-send-member-login.md\n- integrations/highlevel/workflow-checklists/OT-B03-send-member-login.md\n- integrations/highlevel/ai-workflow-prompts/OT-B04-send-password-help.md\n- integrations/highlevel/workflow-checklists/OT-B04-send-password-help.md\n- integrations/highlevel/ai-workflow-prompts/OT-B05-apply-opt-out.md\n- integrations/highlevel/workflow-checklists/OT-B05-apply-opt-out.md\n\nAllowed assets:\n- OT-01 New Lead Intake\n- OT-02A Existing Subscriber Migration 2026 v1\n- OT-02B New Lead Nurture v1\n- OT-03 Checkout Started / Abandoned\n- OT-04 Payment Active\n- OT-05 Payment Failed / Grace\n- OT-06 Subscription Canceled\n- OT-07 Parent Portal Invitation\n- OT-08 Parent Portal Activated\n- OT-09 Parent Class Reminder\n- OT-10 New Recording Available\n- OT-13 Refund / Chargeback\n- OT-C01 Tisha B'Av 2026 Warm Invitation\n- OT-E01 Tisha B'Av 2026 Registration and Reminders\n- OT-B01 Complete Signup\n- OT-B02 Send Next Confirmed Class Info\n- OT-B03 Send Member Login\n- OT-B04 Send Password Help\n- OT-B05 Apply Opt-Out\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- unregistered sender text\n- guessing a From address\n- activation/reset tokens in GHL\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Update every canonical workflow sender identity from its registered sender_key and exact custom-value picker entries.\n- Keep every workflow Draft/unpublished and do not enroll contacts.\n- Verify OT-07 GHL companion/welcome and separate One Time/Resend activation-token boundary.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-04.result.json\nIdempotency key: one-time-ghl:GHL-UI-04:4e8a6d184ba84c14",
+  "allowed_assets": [
+    "OT-01 New Lead Intake",
+    "OT-02A Existing Subscriber Migration 2026 v1",
+    "OT-02B New Lead Nurture v1",
+    "OT-03 Checkout Started / Abandoned",
+    "OT-04 Payment Active",
+    "OT-05 Payment Failed / Grace",
+    "OT-06 Subscription Canceled",
+    "OT-07 Parent Portal Invitation",
+    "OT-08 Parent Portal Activated",
+    "OT-09 Parent Class Reminder",
+    "OT-10 New Recording Available",
+    "OT-13 Refund / Chargeback",
+    "OT-C01 Tisha B'Av 2026 Warm Invitation",
+    "OT-E01 Tisha B'Av 2026 Registration and Reminders",
+    "OT-B01 Complete Signup",
+    "OT-B02 Send Next Confirmed Class Info",
+    "OT-B03 Send Member Login",
+    "OT-B04 Send Password Help",
+    "OT-B05 Apply Opt-Out"
+  ],
+  "forbidden_assets": [
+    "Student contacts",
+    "Student username fields",
+    "Student password fields",
+    "workflow publish actions",
+    "production workflow enrollment",
+    "message sends",
+    "Stripe or live payment mutations",
+    "duplicate tags, fields, values, workflows, bots, or knowledge bases",
+    "unregistered sender text",
+    "guessing a From address",
+    "activation/reset tokens in GHL"
+  ],
+  "prerequisites": [
+    "Read integrations/highlevel/registry/AGENT-HANDOFF.md.",
+    "Read integrations/highlevel/registry/current.json.",
+    "Read integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md and verify its immutable Commit A SHA before any action.",
+    "Verify HighLevel location ID is pBSnOK2nkdxp6gf9Rg3o.",
+    "Use only one canonical registry and do not create duplicate assets.",
+    "GHL-UI-02 and GHL-UI-03 saved and readback verified."
+  ],
+  "expected_ghl_ids_to_capture": [
+    "workflow_ids",
+    "sender_value_ids_selected",
+    "workflow_message_class_readback"
+  ],
+  "test_contact_rules": [
+    "No contact mutation is allowed for this job.",
+    "Do not use production contacts for verification."
+  ],
+  "defaults": {
+    "no_send": true,
+    "no_publish": true,
+    "no_production_workflow_enrollment": true,
+    "no_live_payment_mutation": true,
+    "no_student_contacts": true,
+    "save_required": true,
+    "readback_required": true
+  },
+  "completion_checklist": [
+    "Visible HighLevel location matched pBSnOK2nkdxp6gf9Rg3o.",
+    "Canonical source files for GHL-UI-04 were read before edits.",
+    "Only allowed assets were created, edited, or verified.",
+    "Forbidden assets and actions were not used.",
+    "Every changed asset was saved in the HighLevel UI.",
+    "Saved asset state was verified after save.",
+    "Safe GHL IDs and visible statuses were captured.",
+    "Messages sent = 0.",
+    "Workflow publish actions = 0.",
+    "Production contacts enrolled = 0.",
+    "Stripe or live payment mutations = 0.",
+    "Result JSON was saved to the BNA Agent Action drop-off lane.",
+    "Readback result ID was verified."
+  ],
+  "result_json_schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "job_id",
+      "status",
+      "ghl_location_id",
+      "saved",
+      "verified",
+      "captured_ids",
+      "messages_sent",
+      "workflows_published",
+      "production_contacts_enrolled",
+      "stripe_mutations",
+      "student_contacts_created",
+      "dropoff_result_id",
+      "readback_verified",
+      "idempotency_key",
+      "notes"
+    ],
+    "properties": {
+      "job_id": {
+        "const": "GHL-UI-04"
+      },
+      "status": {
+        "enum": ["done", "already_satisfied", "blocked", "partial", "failed"]
+      },
+      "ghl_location_id": {
+        "const": "pBSnOK2nkdxp6gf9Rg3o"
+      },
+      "saved": {
+        "type": "boolean"
+      },
+      "verified": {
+        "type": "boolean"
+      },
+      "captured_ids": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["asset_type", "name", "id", "status"],
+          "properties": {
+            "asset_type": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "messages_sent": {
+        "const": 0
+      },
+      "workflows_published": {
+        "const": 0
+      },
+      "production_contacts_enrolled": {
+        "const": 0
+      },
+      "stripe_mutations": {
+        "const": 0
+      },
+      "student_contacts_created": {
+        "const": 0
+      },
+      "dropoff_result_id": {
+        "type": "string",
+        "minLength": 1
+      },
+      "readback_verified": {
+        "type": "boolean"
+      },
+      "idempotency_key": {
+        "type": "string",
+        "minLength": 1
+      },
+      "blockers": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "notes": {
+        "type": "string"
+      }
+    }
+  },
+  "idempotency_key": "one-time-ghl:GHL-UI-04:4e8a6d184ba84c14",
+  "bna_agent_action_dropoff": {
+    "lane": "highlevel_agent_mode",
+    "return_surface": "BNA Agent Action drop-off page",
+    "return_route": "/ops/agent-actions/highlevel/drop-off",
+    "result_path": "integrations/highlevel/agent-mode/results/GHL-UI-04.result.json",
+    "readback_verification": "After saving the result, reopen/read it and record the returned result ID.",
+    "metadata": {
+      "repository": "shloimie-beep/onetimev2",
+      "registry_root": "integrations/highlevel/registry/",
+      "queue_file": "integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json",
+      "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-04-update-workflow-sender-identities.json",
+      "result_file": "integrations/highlevel/agent-mode/results/GHL-UI-04.result.json"
+    }
+  }
+}

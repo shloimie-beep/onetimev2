@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import {
   escapeHtml,
@@ -8,8 +8,6 @@ import {
   renderPublicHeader,
 } from '@onetime/brand-system/static';
 import {
-  campaign,
-  campaignTicker,
   communicationConsentNotice,
   landingContent,
   legalPolicyMetadata,
@@ -17,16 +15,25 @@ import {
   privacyDataCategories,
   privacyNotice,
   sharedNav,
-  successCopy,
   termsOfUse,
 } from '../packages/domain/src/index.ts';
 import type { LegalDocument, LegalSection } from '../packages/domain/src/legal/index.ts';
+import { schoolInquiryFormModel } from '../apps/web/src/client/public/school/model.ts';
 import { publicCanonicalUrl } from './public-page-metadata.ts';
 
 const outDir = path.resolve(process.cwd(), 'dist/apps/web/public');
 
+const landingHeroDesktopImage = '/assets/hero/landing-hero-desktop.webp';
+const landingHeroMobileImage = '/assets/hero/landing-hero-mobile.webp';
+const landingSocialImage = '/assets/social/mishnayos-made-memorable.png';
+const firstClassAtPlaceholder = '__ONE_TIME_FIRST_CLASS_AT__';
+const freeAccessExpiresAtPlaceholder = '__ONE_TIME_FREE_ACCESS_EXPIRES_AT__';
+
 const imageDimensions = new Map<string, readonly [number, number]>([
   ['/assets/brand/onetimelogo.webp', [400, 400]],
+  [landingHeroDesktopImage, [1920, 1080]],
+  [landingHeroMobileImage, [1080, 1920]],
+  [landingSocialImage, [1200, 630]],
   ['/assets/hero/hero-classroom-background.webp', [1680, 944]],
   ['/assets/students/smiley-kid.png', [337, 600]],
   ['/assets/outcomes/clarity-class.webp', [945, 2048]],
@@ -36,6 +43,11 @@ const imageDimensions = new Map<string, readonly [number, number]>([
   ['/assets/outcomes/excitement-learning-torah.webp', [945, 2048]],
   ['/assets/outcomes/accomplishment-toronto-class.jpg', [1200, 745]],
   ['/assets/rabbi/rabbi-eli-holding-book.jpg', [1600, 1067]],
+  ['/assets/press/torah-anytime.png', [133, 100]],
+  ['/assets/press/24six.png', [131, 100]],
+  ['/assets/press/the-loop.png', [202, 100]],
+  ['/assets/press/naki.webp', [244, 100]],
+  ['/assets/press/mishpacha.webp', [338, 100]],
   ['/assets/rabbi/teaching-locations/rabbi-scheller-atlanta-georgia.webp', [1600, 714]],
   ['/assets/rabbi/teaching-locations/rabbi-scheller-baltimore-maryland.webp', [1600, 1066]],
   ['/assets/rabbi/teaching-locations/rabbi-scheller-flatbush-ny.webp', [1600, 1200]],
@@ -67,8 +79,19 @@ function pageShell(
   options: {
     description?: string;
     canonicalPath?: string;
+    ogTitle?: string;
+    ogDescription?: string;
+    ogImage?: string;
+    ogImageSecureUrl?: string;
+    ogImageType?: string;
+    ogImageWidth?: number;
+    ogImageHeight?: number;
+    ogImageAlt?: string;
+    twitterImage?: string;
+    icon?: string;
+    appleTouchIcon?: string;
     app?: boolean;
-    appEntry?: 'crm' | 'portal';
+    appEntry?: 'crm' | 'live' | 'portal';
   } = {},
 ) {
   const description = options.description ?? landingContent.seo.description;
@@ -77,8 +100,19 @@ function pageShell(
     body,
     description,
     canonical: publicCanonicalUrl(options.canonicalPath ?? '/'),
-    ogTitle: landingContent.seo.ogTitle,
-    ogDescription: landingContent.seo.ogDescription,
+    ogTitle: options.ogTitle ?? landingContent.seo.ogTitle,
+    ogDescription: options.ogDescription ?? landingContent.seo.ogDescription,
+    ...(options.ogImage === undefined ? {} : { ogImage: options.ogImage }),
+    ...(options.ogImageSecureUrl === undefined
+      ? {}
+      : { ogImageSecureUrl: options.ogImageSecureUrl }),
+    ...(options.ogImageType === undefined ? {} : { ogImageType: options.ogImageType }),
+    ...(options.ogImageWidth === undefined ? {} : { ogImageWidth: options.ogImageWidth }),
+    ...(options.ogImageHeight === undefined ? {} : { ogImageHeight: options.ogImageHeight }),
+    ...(options.ogImageAlt === undefined ? {} : { ogImageAlt: options.ogImageAlt }),
+    ...(options.twitterImage === undefined ? {} : { twitterImage: options.twitterImage }),
+    ...(options.icon === undefined ? {} : { icon: options.icon }),
+    ...(options.appleTouchIcon === undefined ? {} : { appleTouchIcon: options.appleTouchIcon }),
     ...(options.app === undefined ? {} : { app: options.app }),
     ...(options.appEntry === undefined ? {} : { appEntry: options.appEntry }),
   });
@@ -93,7 +127,10 @@ function footer() {
 }
 
 function ticker() {
-  return renderCampaignTicker(campaignTicker(), campaign.deadlineDate);
+  return renderCampaignTicker(
+    'FREE ACCESS — CREATE YOUR FAMILY ACCOUNT',
+    freeAccessExpiresAtPlaceholder,
+  ).replace('class="campaign-ticker-shell"', 'class="campaign-ticker-shell" hidden');
 }
 
 function landingPage() {
@@ -123,7 +160,7 @@ function landingPage() {
           : visualCard.image
             ? `<img src="${visualCard.image}" alt="${escapeHtml(visualCard.alt)}"${mediaSizeAttributes(visualCard.image)}${srcSetAttributes(visualCard.srcset, visualCard.sizes)} loading="lazy" decoding="async" data-image-watch>${fallbackImageSpan()}`
             : `<div class="asset-blocker" role="img" aria-label="${escapeHtml(visualCard.assetBlocker ?? 'Missing assigned asset')}">Missing approved asset</div>`;
-      return `<article class="benefit-card" data-benefit="${escapeHtml(card.title)}">
+      return `<article class="benefit-card" data-benefit="${escapeHtml(card.title)}" data-scroll-reveal>
         <div class="benefit-visual">${visual}</div>
         <h3>${escapeHtml(card.title)}</h3>
         <p>${escapeHtml(card.body)}</p>
@@ -161,7 +198,22 @@ function landingPage() {
   const press = landingContent.press
     .map(
       ([label, src]) =>
-        `<span><img src="${src}" alt="${escapeHtml(label)}" loading="lazy" decoding="async"></span>`,
+        `<span><img src="${src}" alt="${escapeHtml(label)}"${mediaSizeAttributes(src)} loading="lazy" decoding="async"></span>`,
+    )
+    .join('');
+  const experienceCards = landingContent.experience.cards
+    .map(
+      (card) =>
+        `<article><h3>${escapeHtml(card.title)}</h3><p>${escapeHtml(card.body)}</p></article>`,
+    )
+    .join('');
+  const participationItems = landingContent.participation.bullets
+    .map((item) => `<li>${escapeHtml(item)}</li>`)
+    .join('');
+  const assuranceCards = landingContent.assurances.items
+    .map(
+      (item) =>
+        `<article><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.body)}</p></article>`,
     )
     .join('');
   const gallerySection = `<section class="section gallery-section" id="world">
@@ -175,33 +227,26 @@ function landingPage() {
         <button type="button" data-gallery-prev aria-label="Previous teaching photo">&lt;</button>
         <div>${dots}</div>
         <button type="button" data-gallery-next aria-label="Next teaching photo">&gt;</button>
+        <button type="button" class="gallery-playback" data-gallery-toggle aria-pressed="false">Pause slideshow</button>
       </div>
     </div>
-    <div class="press-strip" aria-label="Torah media and publication logos"><p>Torah media and publication mentions</p><div>${press}</div></div>
+    <div class="press-strip" aria-label="Torah media and publication logos"><div>${press}</div></div>
   </section>`;
-  const assistant = landingContent.whatsappAssistant;
-  const whatsappAssistant = `<aside class="whatsapp-assistant" data-whatsapp-assistant data-state="${escapeHtml(assistant.state)}">
-    <button class="whatsapp-assistant-button" type="button" data-whatsapp-toggle aria-expanded="false" aria-controls="whatsapp-assistant-panel">
-      <span aria-hidden="true">WA</span><span class="sr-only">${escapeHtml(assistant.buttonLabel)}</span>
-    </button>
-    <div class="whatsapp-assistant-panel" id="whatsapp-assistant-panel" data-whatsapp-panel hidden>
-      <button class="whatsapp-assistant-close" type="button" data-whatsapp-close aria-label="${escapeHtml(assistant.dismissLabel)}">x</button>
-      <p class="whatsapp-assistant-state">${escapeHtml(assistant.state === 'offline' ? 'Offline readiness' : 'Available')}</p>
-      <h2>${escapeHtml(assistant.heading)}</h2>
-      <p>${escapeHtml(assistant.body)}</p>
-      <a class="button button-primary" href="${escapeHtml(assistant.ctaHref)}">${escapeHtml(assistant.ctaLabel)}</a>
-    </div>
-  </aside>`;
 
   return pageShell(
     landingContent.seo.title,
-    `${header()}
-<main>
-  <section class="hero">
+    `${header()}${ticker()}
+<main class="landing-page">
+  <section class="hero" aria-labelledby="landing-hero-heading">
     <div class="hero-inner">
-      <p class="kicker">${landingContent.hero.kickerLines.map((line) => `<span>${escapeHtml(line)}</span>`).join('')}</p>
-      <h1>${escapeHtml(landingContent.hero.heading)}</h1>
-      <a class="button button-primary hero-cta" href="/signup">Sign Up Now</a>
+      <p class="hero-eyebrow">${escapeHtml(landingContent.hero.eyebrow)}</p>
+      <h1 id="landing-hero-heading" aria-label="${escapeHtml(landingContent.hero.titleLines.join(' '))}">${landingContent.hero.titleLines.map((line) => `<span>${escapeHtml(line)}</span>`).join('')}</h1>
+      <p class="hero-supporting">${escapeHtml(landingContent.hero.supporting)}</p>
+      <p class="schedule">${escapeHtml(landingContent.hero.schedule)}</p>
+      <p class="hero-note" data-first-class-at="${firstClassAtPlaceholder}">${escapeHtml(landingContent.hero.firstClass)}</p>
+      <p class="hero-note" data-free-access-cutoff="${freeAccessExpiresAtPlaceholder}">${escapeHtml(landingContent.hero.freeAccessCutoff)}</p>
+      <a class="button button-primary hero-cta" href="${escapeHtml(landingContent.hero.cta.href)}" data-ot-analytics-event="${escapeHtml(landingContent.hero.cta.analyticsEvent)}" data-ot-analytics-destination="${escapeHtml(landingContent.hero.cta.href)}" data-ot-analytics-placement="${escapeHtml(landingContent.hero.cta.analyticsPlacement)}">${escapeHtml(landingContent.hero.cta.label)}</a>
+      <p class="hero-note">${escapeHtml(landingContent.hero.note)}</p>
     </div>
   </section>
   <section class="section receive" id="receive">
@@ -220,18 +265,54 @@ function landingPage() {
     <p class="section-intro">${escapeHtml(landingContent.gain.intro)}</p>
     <div class="benefit-grid">${gainCards}</div>
   </section>
-  <section class="section how" id="how-it-works">
-    <h2>${escapeHtml(landingContent.how.heading)}</h2>
-    <p>${escapeHtml(landingContent.how.body)}</p>
-    <ol>${steps}</ol>
-  </section>
-  ${gallerySection}
   <section class="section who" id="who">
     <div>
       <h2>${escapeHtml(landingContent.who.heading)}</h2>
       <ul>${whoCards}</ul>
     </div>
   </section>
+  <section class="section how" id="how-it-works">
+    <h2>${escapeHtml(landingContent.how.heading)}</h2>
+    <p>${escapeHtml(landingContent.how.body)}</p>
+    <ol>${steps}</ol>
+  </section>
+  <section class="section experience" id="experience">
+    <h2>${escapeHtml(landingContent.experience.heading)}</h2>
+    <p class="section-intro">${escapeHtml(landingContent.experience.intro)}</p>
+    <div class="information-grid">${experienceCards}</div>
+  </section>
+  <section class="section participation" id="participation">
+    <h2>${escapeHtml(landingContent.participation.heading)}</h2>
+    <ul class="expectation-list">${participationItems}</ul>
+  </section>
+  <section class="section enrollment" id="enrollment">
+    <h2>${escapeHtml(landingContent.enrollment.heading)}</h2>
+    <div class="information-grid">
+      <article><h3>${escapeHtml(landingContent.enrollment.family.title)}</h3><p>${escapeHtml(landingContent.enrollment.family.body)}</p><a class="text-link" href="/signup">Pre-register your Family</a></article>
+    </div>
+  </section>
+  <section class="section access" id="access" data-access-boundary="${freeAccessExpiresAtPlaceholder}">
+    <h2>${escapeHtml(landingContent.access.heading)}</h2>
+    <div class="access-state" data-before-expiry hidden>
+      <p>${escapeHtml(landingContent.access.before)}</p>
+      <a class="button button-primary" href="/signup">Pre-register my Family</a>
+    </div>
+    <div class="access-state" data-at-or-after-expiry>
+      <p>${escapeHtml(landingContent.access.after)}</p>
+      <a class="button button-primary" href="/signup">Pre-register my Family</a>
+    </div>
+  </section>
+  <section class="section assurances" id="assurances">
+    <h2>${escapeHtml(landingContent.assurances.heading)}</h2>
+    <div class="information-grid">${assuranceCards}</div>
+    <nav class="assurance-links" aria-label="Account and policy links">
+      <a href="/terms">Terms, cancellation, and refunds</a>
+      <a href="/privacy">Privacy Notice</a>
+      <a href="/student-data">Student Data Notice</a>
+      <a href="/login">Member Login</a>
+    </nav>
+  </section>
+  ${gallerySection}
   <section class="section rabbi" id="rabbi">
     <div class="rabbi-bio">
       <div>
@@ -242,44 +323,133 @@ function landingPage() {
       <img src="/assets/rabbi/rabbi-eli-holding-book.jpg" alt="Rabbi Eli Scheller holding the One Time book"${mediaSizeAttributes('/assets/rabbi/rabbi-eli-holding-book.jpg')} loading="lazy" decoding="async">
     </div>
   </section>
-  <section class="final-cta"><h2>${escapeHtml(landingContent.finalCta.heading)}</h2><a class="button button-primary" href="/signup">Sign Up Now</a></section>
-</main>${whatsappAssistant}${ticker()}${footer()}`,
+  <section class="final-cta"><h2>${escapeHtml(landingContent.finalCta.heading)}</h2><a class="button button-primary" href="/signup">Pre-register my Family</a></section>
+</main>${footer()}`,
+    {
+      canonicalPath: '/',
+      ogTitle: landingContent.seo.ogTitle,
+      ogDescription: landingContent.seo.ogDescription,
+      ogImage: publicCanonicalUrl(landingSocialImage),
+      ogImageSecureUrl: publicCanonicalUrl(landingSocialImage),
+      ogImageType: 'image/png',
+      ogImageWidth: 1200,
+      ogImageHeight: 630,
+      ogImageAlt: 'Mishnayos Made Memorable with Rabbi Eli Scheller',
+      twitterImage: publicCanonicalUrl(landingSocialImage),
+    },
   );
 }
 
 function signupPage() {
-  const fallbackSuccess = successCopy('family');
   return pageShell(
-    'Sign Up Now | One Time Mishnayos',
+    'Pre-register Your Family | One Time Mishnayos',
     `${header()}<main class="signup-page">
   <section class="signup-intro">
-    <h1>Sign Up Now</h1>
-    <p>Join the live daily Mishnayos class and choose how you want to receive class information.</p>
+    <h1>Pre-register Your Family</h1>
+    <p>Adult pre-registration is open for One Time Mishnayos with Rabbi Eli Scheller.</p>
+    <p>This saves an adult contact for follow-up. It does not yet create portal access, a Student account, or a subscription.</p>
+    <p>No card is collected and there is no automatic charge.</p>
   </section>
   <section class="signup-shell">
-    <div class="noscript-panel" role="status" data-noscript-fallback><strong>JavaScript is required for secure signup submission.</strong><span>Please use a browser with JavaScript enabled or use the contact method supplied by the One Time team. Do not send student-sensitive information through this public form.</span></div>
-    <form class="signup-form" action="/api/v1/leads" method="post" data-signup-form data-consent-policy-version="${escapeHtml(legalPolicyMetadata.consentPolicyVersion)}" novalidate>
-      <div class="field"><label for="contact_name">Parent or contact name</label><input id="contact_name" name="contact_name" autocomplete="name" required><p tabindex="-1" class="error" data-error-for="contact_name"></p></div>
-      <div class="field"><label for="family_or_school">Family or School</label><input id="family_or_school" name="family_or_school" required><small>Do not include student names, ages, medical details, or private learner notes here.</small><p tabindex="-1" class="error" data-error-for="family_or_school"></p></div>
-      <fieldset><legend>Signing up as</legend><label><input type="radio" name="audience_type" value="family" checked> Family</label><label><input type="radio" name="audience_type" value="school"> School</label></fieldset>
-      <div class="field"><label for="location">Location</label><input id="location" name="location" autocomplete="address-level2" placeholder="City, country, ZIP/postal code, or area" required><small>Type a city, ZIP/postal code, area code, or neighborhood.</small><p tabindex="-1" class="error" data-error-for="location"></p></div>
-      <input id="timezone" name="timezone" type="hidden">
-      <div class="field"><label for="timezone_fallback">Time zone</label><input id="timezone_fallback" name="timezone_fallback" placeholder="America/New_York" hidden disabled><small>Use an IANA time zone such as America/New_York.</small><p tabindex="-1" class="error" data-error-for="timezone"></p></div>
-      <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="email" inputmode="email" required><p tabindex="-1" class="error" data-error-for="email"></p></div>
-      <div class="field"><label for="phone">Phone / WhatsApp</label><input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel"><small>Required only if you choose WhatsApp reminders.</small><p tabindex="-1" class="error" data-error-for="phone"></p></div>
-      <fieldset class="service-communications" aria-describedby="service_communications_note"><legend>Required service communications</legend><p id="service_communications_note">By submitting, you ask One Time Mishnayos to respond to this signup. Service messages about signup receipt, account/security, class access, or support may be sent when needed. Optional daily reminders are separate.</p></fieldset>
-      <fieldset class="optional-reminders" aria-describedby="optional_reminders_note"><legend>Optional class reminders</legend><p id="optional_reminders_note">Choose each reminder channel separately. No optional reminders are selected by default.</p><label><input id="email_reminder_consent" name="email_reminder_consent" type="checkbox" value="yes"> Email class reminders</label><label><input id="whatsapp_reminder_consent" name="whatsapp_reminder_consent" type="checkbox" value="yes"> WhatsApp class reminders</label><p class="policy-note">Reminder consent policy version: ${escapeHtml(legalPolicyMetadata.consentPolicyVersion)}. You can stop optional messages by using unsubscribe instructions, replying STOP where supported, or contacting the One Time team.</p></fieldset>
-      <p class="signup-policy-note">By submitting, you agree to the <a href="/terms">Terms</a> and acknowledge the <a href="/privacy">Privacy Notice</a>, including the <a href="/communications-consent">Communication and Reminder Consent</a> and <a href="/student-data">Parent/Guardian and Student Data Notice</a>.</p>
-      <button class="button button-primary" type="submit" data-enhanced-submit hidden>Sign Up Now</button>
+    <noscript><div class="noscript-panel" role="status"><strong>JavaScript is required for secure pre-registration submission.</strong><span>Please use a browser with JavaScript enabled or use the Support path. Do not send Student names or other Student information through this public form.</span></div></noscript>
+    <form class="signup-form" action="/api/v1/leads" method="post" data-signup-form data-signup-entry="preregistration" data-consent-policy-version="${escapeHtml(legalPolicyMetadata.consentPolicyVersion)}" novalidate>
+      <section data-preregistration-fields aria-labelledby="preregistration-fields-heading">
+        <h2 id="preregistration-fields-heading">Adult contact details</h2>
+        <p class="section-note">Enter adult information only. Do not include Student names, ages, email addresses, medical details, or private learner notes.</p>
+        <div class="field"><label for="contact_name">Adult name</label><input id="contact_name" name="contact_name" autocomplete="name" required><p tabindex="-1" class="error" data-error-for="contact_name"></p></div>
+        <div class="field"><label for="family_or_school">Family or household name</label><input id="family_or_school" name="family_or_school" required><p tabindex="-1" class="error" data-error-for="family_or_school"></p></div>
+        <input name="audience_type" type="hidden" value="family">
+        <div class="field"><label for="location">Adult location</label><input id="location" name="location" autocomplete="address-level2" placeholder="City or area" required><p tabindex="-1" class="error" data-error-for="location"></p></div>
+        <div class="field"><label for="timezone">Time zone</label><input id="timezone" name="timezone" autocomplete="off" placeholder="America/New_York" required><small>Use an IANA time zone. Your browser suggestion remains editable.</small><p tabindex="-1" class="error" data-error-for="timezone"></p></div>
+        <div class="field"><label for="email">Adult email</label><input id="email" name="email" type="email" autocomplete="email" inputmode="email" required><p tabindex="-1" class="error" data-error-for="email"></p></div>
+        <fieldset class="service-communications" aria-describedby="service_communications_note"><legend>Follow-up requested</legend><p id="service_communications_note">By submitting, you ask the One Time team to follow up at this adult email about Family access. This form does not opt you into marketing or WhatsApp messages.</p></fieldset>
+        <p class="signup-policy-note">By submitting, you acknowledge the <a href="/privacy">Privacy Notice</a>. No Student data should be entered here.</p>
+      </section>
+      <button class="button button-primary" type="submit" data-enhanced-submit hidden>Pre-register my Family</button>
       <p class="form-status" role="status" data-form-status></p>
     </form>
     <div class="success-panel" data-success-panel hidden tabindex="-1">
-      <h2 data-success-heading>${escapeHtml(fallbackSuccess.heading)}</h2>
-      <p data-success-body>${escapeHtml(fallbackSuccess.body)}</p>
+      <h2 data-success-heading>Adult pre-registration received</h2>
+      <p data-success-body>We saved the adult contact for follow-up. No portal account, Student account, subscription, or charge was created.</p>
     </div>
   </section>
 </main>${footer()}`,
-    { canonicalPath: '/signup' },
+    {
+      canonicalPath: '/signup',
+      description:
+        'Pre-register an adult contact for One Time Mishnayos Family access without creating a portal, Student account, subscription, or charge.',
+    },
+  );
+}
+
+function schoolPage() {
+  const model = schoolInquiryFormModel();
+  const required = new Set<string>(model.required_fields);
+  const descriptors: Record<
+    (typeof model.fields)[number],
+    { label: string; type: string; autocomplete: string; help?: string }
+  > = {
+    school_name: {
+      label: 'School name',
+      type: 'text',
+      autocomplete: 'organization',
+      help: 'Do not include Student names, ages, medical details, or private learner notes.',
+    },
+    contact_first_name: {
+      label: 'Contact first name',
+      type: 'text',
+      autocomplete: 'given-name',
+    },
+    contact_last_name: {
+      label: 'Contact last name',
+      type: 'text',
+      autocomplete: 'family-name',
+    },
+    email: { label: 'School contact email', type: 'email', autocomplete: 'email' },
+    phone: { label: 'Phone (optional)', type: 'tel', autocomplete: 'tel' },
+    note: { label: 'Note (optional)', type: 'text', autocomplete: 'off' },
+  };
+  const fields = model.fields
+    .map((name) => {
+      const descriptor = descriptors[name];
+      const requiredAttribute = required.has(name) ? ' required' : '';
+      const lengthAttribute =
+        name === 'phone' ? ' maxlength="40"' : name === 'note' ? ' maxlength="1000"' : '';
+      return `<div class="field">
+        <label for="school_${escapeHtml(name)}">${escapeHtml(descriptor.label)}</label>
+        <input id="school_${escapeHtml(name)}" name="${escapeHtml(name)}" type="${escapeHtml(descriptor.type)}" autocomplete="${escapeHtml(descriptor.autocomplete)}"${requiredAttribute}${lengthAttribute}>
+        ${descriptor.help ? `<small>${escapeHtml(descriptor.help)}</small>` : ''}
+        <p tabindex="-1" class="error" data-error-for="${escapeHtml(name)}"></p>
+      </div>`;
+    })
+    .join('');
+
+  return pageShell(
+    'School Inquiry | One Time Mishnayos',
+    `${header()}<main class="signup-page school-inquiry-page">
+  <section class="signup-shell" aria-labelledby="school-inquiry-title">
+    <p class="eyebrow">For School administrators</p>
+    <h1 id="school-inquiry-title">Send a School inquiry</h1>
+    <p>Ask the One Time team to follow up personally about School pricing, Student seats, and setup.</p>
+    <p class="section-note">This inquiry creates no account, access, subscription, credentials, nurture enrollment, School role, portal, roster, or provider effect.</p>
+    <form action="${escapeHtml(model.submission.endpoint)}" method="post" data-signup-form data-signup-entry="school" novalidate>
+      <section data-school-fields aria-label="School inquiry details">
+        ${fields}
+      </section>
+      <button class="button button-primary" type="submit">${escapeHtml(model.cta)}</button>
+      <p class="form-status" role="status" data-form-status></p>
+    </form>
+    <div class="success-panel" data-success-panel hidden tabindex="-1">
+      <h2 data-success-heading>Thank you â€” we received your School inquiry.</h2>
+      <p data-success-body>${escapeHtml(model.success)}</p>
+    </div>
+  </section>
+</main>${footer()}`,
+    {
+      canonicalPath: model.route,
+      description:
+        'Send a manual-follow-up School inquiry to the One Time Mishnayos team without creating an account or access.',
+    },
   );
 }
 
@@ -386,8 +556,35 @@ function legalPage(
 
 await mkdir(outDir, { recursive: true });
 await mkdir(path.join(outDir, 'app'), { recursive: true });
+await mkdir(path.join(outDir, 'signup'), { recursive: true });
+await mkdir(path.join(outDir, 'school'), { recursive: true });
+await Promise.all([
+  rm(path.join(outDir, 'tisha-bav.html'), { force: true }),
+  rm(path.join(outDir, 'tisha-bav-live.html'), { force: true }),
+]);
 await writeFile(path.join(outDir, 'index.html'), landingPage());
 await writeFile(path.join(outDir, 'signup.html'), signupPage());
+await writeFile(
+  path.join(outDir, 'signup', 'received.html'),
+  simplePage(
+    'Signup received | One Time Mishnayos',
+    'Signup received',
+    'Your Family signup was saved. Check your email for the secure next step.',
+    'noindex, nofollow',
+    '/signup/received',
+  ),
+);
+await writeFile(path.join(outDir, 'school.html'), schoolPage());
+await writeFile(
+  path.join(outDir, 'school', 'received.html'),
+  simplePage(
+    'School inquiry received | One Time Mishnayos',
+    'School inquiry received',
+    'Your inquiry was saved. Our team will follow up manually.',
+    'noindex, nofollow',
+    '/school/received',
+  ),
+);
 await writeFile(
   path.join(outDir, 'login.html'),
   simplePage(
@@ -446,6 +643,15 @@ await writeFile(
     app: true,
     canonicalPath: '/app/crm',
     description: 'One Time authenticated CRM.',
+  }).replace('index, follow', 'noindex, nofollow'),
+);
+await writeFile(
+  path.join(outDir, 'app', 'live.html'),
+  pageShell('Live Console | One Time Mishnayos', `<div id="live-root"></div>`, {
+    app: true,
+    appEntry: 'live',
+    canonicalPath: '/app/live-console',
+    description: 'One Time protected live classroom console and stage.',
   }).replace('index, follow', 'noindex, nofollow'),
 );
 for (const [fileName, title, description] of [

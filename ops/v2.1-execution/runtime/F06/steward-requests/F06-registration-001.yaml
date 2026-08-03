@@ -1,0 +1,33 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: F06-registration-001
+task_id: F06
+kind: registration
+requirement_ids:
+  - OTV2-PROVIDER-209
+  - OTV2-PROVIDER-231
+  - OTV2-PROVIDER-243
+acceptance_case_ids:
+  - OTV2-PROVIDER-209-AC01
+  - OTV2-PROVIDER-231-MULTI-HOUSEHOLD-MAPPING
+  - OTV2-PROVIDER-243-GHL-IDENTITY-QUARANTINE
+rationale: F06 cannot edit the worker composer or root package barrels.
+desired_semantic_change: >-
+  Register the provider-reconciliation batch runner after its migration is
+  active, and expose the F06 provider contract/domain/database modules from
+  central barrels if consumers require aliases. Bind only configured registry
+  entries and canonical readback adapters; do not register a Stripe mutation
+  adapter.
+proposed_symbols_routes_keys_or_dependencies:
+  - runProviderReconciliationBatch
+  - packages/contracts/src/providers/v21-provider-core.ts
+  - packages/domain/src/providers/shared/index.ts
+  - createPostgresProviderCoreRepository
+compatibility_assumptions:
+  - F05 worker/job foundation is already registered
+  - direct source imports remain stable until steward registration
+verification_performed:
+  - focused F06 tests and full TypeScript typecheck
+conflicts_or_risks:
+  - starting the runner before migrations are active would fail closed on missing tables
+contains_secret_or_private_data: false

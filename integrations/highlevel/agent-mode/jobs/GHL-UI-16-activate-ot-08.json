@@ -1,0 +1,23 @@
+{
+  "job_id": "GHL-UI-16",
+  "location_id": "pBSnOK2nkdxp6gf9Rg3o",
+  "workflow": {
+    "key": "OT-08",
+    "id": "eeca2efb-41be-40a7-bbc4-ee6fe8760dd9",
+    "name": "OT-08 Parent Portal Activated",
+    "full_folder_path": "One Time / 30 - Portal Lifecycle"
+  },
+  "deployed_contract": "parent.portal.activated@1.0.0",
+  "expected": {
+    "trigger": "Contact Tag added: OT | Portal Active",
+    "fields": [
+      "contact.one_time_crm_contact_id",
+      "contact.one_time_portal_status",
+      "contact.one_time_email_consent",
+      "contact.one_time_suppression_state"
+    ],
+    "sender_key": "brand",
+    "suppression": "Adult Parent only, portal status active, email consent granted, suppression active, email DND off."
+  },
+  "exact_copy_paste_prompt": "Use only location pBSnOK2nkdxp6gf9Rg3o. Reconcile OT-08 by exact ID eeca2efb-41be-40a7-bbc4-ee6fe8760dd9 and full path One Time / 30 - Portal Lifecycle in all states; do not create or rename an asset. Verify parent.portal.activated@1.0.0 is deployed or remain DRAFT_WAITING_EXTERNAL(parent.portal.activated@1.0.0 deployment). Before any trigger test, prove the application row is explicitly authorized by the exact protected canary run ID, delivery-key allowlist and budget; disabled, mock, held or non-allowlisted rows must remain unclaimed. Configure Contact Tag added OT | Portal Active with portal status active, email consent granted, suppression active and email DND off. Select sender_key brand only from registered custom values. Use only the protected One Time Parent portal URL and no provider URL. After the bounded action and application delivery receipt are complete, remove only OT | Portal Active; do not rely on a time-based replay lease. Save the action layer and outer workflow separately; navigate away, reload, reopen exact ID and compare all critical values before publish. Use one isolated synthetic Parent activation and the operator-owned destination only. Record the canary run hash and prove one execution, one bounded delivery, replay no duplicate, no Student contact and no credential data. Record ACTIVE_CONFIGURED or ACTIVE_TESTED from observed state; zero broad sends."
+}

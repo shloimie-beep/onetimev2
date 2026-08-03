@@ -1,0 +1,5 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+status: not_frozen
+populate_from: templates/CANDIDATE-MANIFEST.yaml
+canonical_path: ops/v2.1-execution/merge/candidates/<canonical-candidate-digest>/CANDIDATE.yaml

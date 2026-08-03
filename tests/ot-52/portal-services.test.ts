@@ -157,6 +157,8 @@ describe('OT-52P parent and student portal services', () => {
         ?.learner_status,
     ).toBe('archived');
     expect(dashboard.household.active_learner_count).toBe(3);
+    expect(dashboard.household.max_active_learners).toBe(3);
+    expect(dashboard.household.learner_limit_reached).toBe(true);
   });
 
   it('rejects cross-household IDs and owner/admin sessions without silently becoming parents', async () => {
@@ -309,14 +311,22 @@ describe('OT-52P parent and student portal services', () => {
       householdKey,
       learner.learner_key,
       'setup',
-      { idempotency_key: 'student-access-setup-001' },
+      {
+        idempotency_key: 'student-access-setup-001',
+        username: 'AccessLearner1',
+        password: 'AccessPass123',
+      },
     );
     const replay = await parentService.studentAccessOperation(
       parentActor,
       householdKey,
       learner.learner_key,
       'setup',
-      { idempotency_key: 'student-access-setup-001' },
+      {
+        idempotency_key: 'student-access-setup-001',
+        username: 'AccessLearner1',
+        password: 'AccessPass123',
+      },
     );
 
     expect(state.status).toBe('setup_requested');
@@ -360,12 +370,14 @@ describe('OT-52P parent and student portal services', () => {
     const leakyService = createParentPortalService({
       ...deps,
       credentialLifecycle: credentialAdapter({
-        setup: { operation_ref: 'hash_material', status: 'setup_requested' },
+        setup: { operation_ref: 'plain_password_test_value', status: 'setup_requested' },
       }),
     });
     await expect(
       leakyService.studentAccessOperation(parentActor, householdKey, learner.learner_key, 'setup', {
         idempotency_key: 'student-access-setup-002',
+        username: 'AccessLearner2',
+        password: 'AccessPass456',
       }),
     ).rejects.toMatchObject({ code: 'SERVER_ERROR' });
   });
@@ -385,7 +397,11 @@ describe('OT-52P parent and student portal services', () => {
       householdKey,
       learner.learner_key,
       'setup',
-      { idempotency_key: 'missing-state-setup-001' },
+      {
+        idempotency_key: 'missing-state-setup-001',
+        username: 'MissingState1',
+        password: 'MissingPass123',
+      },
     );
     const reset = await parentService.studentAccessOperation(
       parentActor,
@@ -458,7 +474,7 @@ describe('OT-52P parent and student portal services', () => {
     expect(dashboard.helper).toMatchObject({ available: false });
     expect(studentDashboard.helper).toMatchObject({ available: false });
     await expect(
-      parentService.helperQuery(parentActor, householdKey, {
+      parentService.helperQuery(parentActor, householdKey, learner.learner_key, {
         idempotency_key: 'helper-query-001',
         question: 'What is due?',
       }),

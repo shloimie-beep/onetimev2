@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "goal_id": "OT-LAUNCH-01",
+  "track_id": "operator_launch_dashboard",
+  "task_id": "OT-LAUNCH-01-OPERATOR-LAUNCH-DASHBOARD",
+  "source_of_status": "ops/goals/OT-LAUNCH-01/BOARD.yaml",
+  "result": {
+    "status": "deployed_verified_persistent_staging",
+    "deployed_source": "9546235f7669194dbc9497c493d61ada2547e5ed",
+    "web_deployment": "aa6e9c34-2edf-4c1c-ae49-fa36ad533dfb",
+    "route": "/app/launch-status",
+    "admin_only": true,
+    "board_derived": true,
+    "second_editable_status_model_created": false,
+    "external_effects": 0
+  },
+  "accepted_behavior": [
+    "Normal Admin Dashboard card and authenticated navigation discover the Launch Status route.",
+    "The generated read-only projection uses the canonical Board hash and one explicit current milestone.",
+    "The surface shows objective completed/total progress, latest sanitized change, what works now, remaining work, exact blockers, safe routes, and one next executable task.",
+    "Inactive future milestones are ignored; activating an incomplete milestone contract fails closed.",
+    "No credential, private destination, customer data, provider link, or diagnostic control is projected."
+  ],
+  "validation": {
+    "focused_unit_and_ui": "6/6 passed",
+    "owner_authorization_integration": "1/1 passed",
+    "real_chromium_admin_journey": "1/1 passed at desktop and 360px",
+    "typecheck": "passed",
+    "brand_check": "passed",
+    "scoped_eslint": "passed",
+    "scoped_prettier": "passed",
+    "scoped_diff_check": "passed",
+    "live_admin_discovery": "Dashboard card and authenticated navigation verified",
+    "live_projection": "percentage, works-now, remaining work, exact blocker, safe routes, and next task verified",
+    "admin_session_preserved": true
+  },
+  "remaining_work": [],
+  "sanitized_at": "2026-07-23T11:34:00Z"
+}

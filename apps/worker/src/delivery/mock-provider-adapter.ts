@@ -8,6 +8,7 @@ export type InMemoryProviderCall = {
 };
 
 export class InMemoryDeliveryProviderAdapter implements ResendProviderClient, WapiProviderClient {
+  readonly acceptanceRecovery = 'retry_same_key' as const;
   readonly calls: InMemoryProviderCall[] = [];
   private readonly receipts = new Map<string, { messageId: string; acceptedAt: Date }>();
 

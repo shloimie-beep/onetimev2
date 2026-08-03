@@ -1,0 +1,82 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: F07
+co_owner_task_id: P08
+task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
+task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+branch: codex/v21-lane3-landing-campaign
+start_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
+previous_phase_head_sha: 2650c75ea9a5edc222af8c61a6fed433b73ede28
+prior_terminal_head_sha: 97108442bb75f1b30455a8658c2c7ab55f4d9e5f
+implementation_commit_sha: 0937404a24cb1c880afc1d1a8a555a29936e735b
+controller_authorization_sha: f0ccbdc81e6962add93d0900dd159e24df7cf05f
+state_based_on_control_head_sha: 1b33b5d92a3cb59d64232050ffbe4eccfeb3d4ca
+ready_entry_payload_digest: 5c3f77395001c337ea5eb9e8602f5369c77efdbe1dba70c77760e543c8de3fc2
+status: ready_for_review
+phase: full_landing_brand_correction_repair_complete
+claimed_by: codex-lane-b-f07-d34ee5e7
+claim_id: d34ee5e7-ad86-49be-ad1e-236592ad3a0b
+lease_issued_at: '2026-07-30T16:25:00Z'
+lease_expires_at: '2026-07-30T18:25:00Z'
+writer_slot:
+  slot: DESIGN_SYSTEM
+  lease_id: aad71ba0-80e9-4a59-beeb-a4776bca0d85
+  phase_scope: public_landing_and_brand_correction_only
+dependency_heads:
+  I36:
+    required_integration_head_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
+    observed: true
+  P08:
+    compatible_unmerged_server_head_sha: 30de59df0555058fc021bc6002a3dffc4e3ea916
+    client_contract_implemented: true
+    merge_required_by: I36
+  P09:
+    canonical_registration_request: ops/v2.1-execution/runtime/P09/steward-requests/P09-registration-001.yaml
+    client_contract_implemented: true
+    merge_required_by: I36
+completed_steps:
+  - Fast-forwarded the clean phase branch from 2650c75e to exact integration c0a1e04b without reset, rebase, force, or discarded work.
+  - Implemented the complete public campaign composition with exact hero copy, Sunday–Thursday schedule, viewer-local conversion, protected live/library experience, participation expectations, Family/School entry, adult-as-Student seat rule, policies, cancellation/refund, login, and support.
+  - Implemented server-Date-offset free-period display at exact boundary 2026-09-13T16:24:00Z, with the exact pre-boundary free CTA/helper and exact at-or-after-boundary CTA Create account and continue to checkout; the $67/month disclosure remains separate.
+  - Replaced the legacy Family lead submission with the P08 bootstrap/idempotency/same-origin CSRF contract and makes no automatic-login claim.
+  - Corrected the School branch to POST only the exact P09 required and optional fields to same-origin /api/v2.1/signup/school-inquiry, with no Family, access, consent, nurture, attribution, or caller-generated idempotency fields.
+  - Removed the provisional Montserrat font registration/assets and restored Inter plus exact landing/signup black #090909, yellow #FFD400, cyan #67E8F9, and white tokens.
+  - Preserved canonical logo and approved real imagery, explicit dimensions/srcset/alt text, CTA analytics, keyboard/focus behavior, no-JS content, reduced motion, and the 1200x630 social derivative.
+  - Passed production build/typecheck, focused lint/format, secret scan, exact P09 contract/model tests, and the seven-case production-build browser/accessibility replay after the correction.
+remaining_steps:
+  - I36 must independently review and merge exact head 0937404a24cb1c880afc1d1a8a555a29936e735b after merging compatible P08 server head 30de59df0555058fc021bc6002a3dffc4e3ea916 and applying the canonical P09 route registration request.
+  - The shared test-server owner must register PostgreSQL btrim in pg-mem before the normal Playwright webServer can start; the first reproduced failure is migration 2235, while migration 2252 is stripped as PostgreSQL-only.
+  - Owners of stale out-of-scope suites must replace old lead-form, WhatsApp-launch, and September 11 ticker assertions with the accepted Family/School and exact-boundary contract.
+next_action: I36 independently reviews and admits exact Lane B implementation head 0937404a24cb1c880afc1d1a8a555a29936e735b after P08 server admission and P09 route registration.
+verification:
+  build: passed
+  typecheck: passed
+  focused_eslint: passed
+  focused_prettier: passed
+  p09_contract_and_form_model: 5_of_5_passed
+  brand_unit: 4_of_4_passed
+  secret_scan: passed_3090_files
+  focused_browser_and_accessibility: 7_of_7_passed
+  responsive_layout_matrix: 8_of_8_landing_signup_viewports_passed
+  public_performance: 2_of_2_passed
+  asset_dimensions:
+    landing_desktop: 1920x1080_webp
+    landing_mobile: 1080x1920_webp
+    social: 1200x630_png
+  known_baseline_failures:
+    - npm run brand:check reports the pre-existing raw-color finding in scripts/ops/validate-ot-launch-governance.ts outside authorized Lane B paths.
+    - Normal Playwright webServer startup fails before tests because pg-mem lacks btrim(text); direct replay fails first in migration 2235, not migration 2252.
+prior_visual_evidence:
+  source_head: 092941f165c35779a987b4e4477cc436a961563e
+  status: superseded_for_school_form_bytes
+  note: Prior responsive screenshot hashes remain in Git history; the corrected production build passed browser and accessibility checks at all required viewports without retaining new screenshots.
+external_effects:
+  authority: none_required
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings:
+  - The memory Playwright harness lacks btrim(text); direct migration replay fails first at migration 2235, while migration 2252's btrim calls are inside its stripped PostgreSQL-only block.
+  - Stale tests outside the Lane B path grant still require the removed WhatsApp controls, legacy /api/v1/leads Family flow, or September 11 ticker behavior.

@@ -1,0 +1,117 @@
+.ot-calendar {
+  display: grid;
+  gap: var(--ot-space-5);
+  color: var(--ot-v21-white);
+}
+
+.ot-calendar__heading,
+.ot-calendar__toolbar,
+.ot-calendar__view-switcher,
+.ot-calendar__event header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ot-space-3);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ot-calendar button,
+.ot-calendar input {
+  min-height: var(--ot-size-touch-target);
+  border: 1px solid var(--ot-v21-border);
+  border-radius: var(--ot-radius-control);
+  color: var(--ot-v21-white);
+  background: var(--ot-v21-raised);
+  padding: var(--ot-space-2) var(--ot-space-3);
+}
+
+.ot-calendar button:focus-visible,
+.ot-calendar input:focus-visible {
+  outline: var(--ot-focus-width) solid var(--ot-v21-focus);
+  outline-offset: var(--ot-focus-offset);
+}
+
+.ot-calendar button[aria-pressed='true'] {
+  border-color: var(--ot-v21-yellow);
+  color: var(--ot-v21-black);
+  background: var(--ot-v21-yellow);
+}
+
+.ot-calendar button:disabled {
+  color: var(--ot-v21-muted);
+  cursor: not-allowed;
+}
+
+.ot-calendar__toolbar label {
+  display: grid;
+  gap: var(--ot-space-1);
+}
+
+.ot-calendar__weekdays,
+.ot-calendar__grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.ot-calendar__weekdays span {
+  padding: var(--ot-space-2);
+  text-align: center;
+}
+
+.ot-calendar__grid > button {
+  display: grid;
+  align-content: start;
+  gap: var(--ot-space-1);
+  min-width: 0;
+  min-height: 112px;
+  border-radius: 0;
+  text-align: start;
+}
+
+.ot-calendar__grid > button[aria-current='date'] {
+  box-shadow: inset 0 0 0 var(--ot-focus-width) var(--ot-v21-cyan);
+}
+
+.ot-calendar__grid small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ot-calendar__agenda ol {
+  display: grid;
+  gap: var(--ot-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ot-calendar__event {
+  border: 1px solid var(--ot-v21-border);
+  border-radius: var(--ot-radius-panel);
+  background: var(--ot-v21-raised);
+  padding: var(--ot-space-4);
+}
+
+.ot-calendar__status {
+  text-transform: capitalize;
+}
+
+.ot-calendar__status--cancelled {
+  color: var(--ot-v21-danger);
+}
+
+.ot-calendar__announcement {
+  color: var(--ot-v21-muted);
+}
+
+@media (max-width: 639px) {
+  .ot-calendar__grid-region {
+    display: none;
+  }
+
+  .ot-calendar__heading,
+  .ot-calendar__toolbar {
+    align-items: stretch;
+  }
+}

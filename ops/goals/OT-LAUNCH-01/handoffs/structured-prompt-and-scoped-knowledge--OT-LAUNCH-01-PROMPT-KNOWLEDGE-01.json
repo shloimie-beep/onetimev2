@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "goal_id": "OT-LAUNCH-01",
+  "track_id": "structured_prompt_and_scoped_knowledge",
+  "task_id": "OT-LAUNCH-01-PROMPT-KNOWLEDGE-01",
+  "owner": {
+    "repository": "shloimie-beep/onetimev2",
+    "branch": "codex/structured-prompt-scoped-knowledge",
+    "pr": 121,
+    "system": "One Time structured prompts and Parent/Student scoped knowledge"
+  },
+  "write_scope": "Structured prompt contracts/domain/Admin UI, the existing Parent/Student Class Helper boundary, its existing portal routes and test-lab seed, focused tests, and this sanitized handoff; no BOARD, CURRENT, preview pointer, migration, provider configuration, credential, persistent-staging, or production mutation.",
+  "result": {
+    "status": "ready_for_convergence",
+    "governed_assignment_base": "00d3511e9d66aaaafc0e2031e56f9858bd332bb8",
+    "assignment_packet_commit": "91860774160667bf2cd7003f427df4ae1c8dbf4d",
+    "implementation_commit": "fc6ea3e393e82428292dde21fc46e7d5edfcddb0",
+    "summary": "Natural-language prompt feedback now produces reviewed, section-scoped immutable prompt versions with stable checksums, compare-and-swap activation and rollback, exact full-candidate and before/after review, reversible legacy rendering, immutable source/citation/privacy/safety guardrails, and generation binding. The existing Class Helper is the single canonical Parent/Student scoped knowledge adapter over currently entitled approved content, with exact household/learner authorization, audience-coupled learner and household entitlement selectors, entitlement and citation rechecks, sibling denial, prompt-injection resistance, database-backed multi-instance rate limits, no raw Q/A persistence, and an explicit approved-source provider-off fallback. A centralized fail-closed output boundary rejects protected provider URLs or values in indexed text, answer text, citation labels, generated source references, and deep links; only explicit first-party app deep-link forms are allowed.",
+    "prompt_guardrails_mutable": false,
+    "new_chat_ui_created": false,
+    "new_retrieval_store_created": false,
+    "new_migration_created": false,
+    "provider_calls": 0,
+    "customer_messages_sent": 0,
+    "persistent_staging_changed": false,
+    "production_changed": false,
+    "canonical_governance_files_changed": false
+  },
+  "acceptance_results": {
+    "PROMPT-KNOWLEDGE-001": {
+      "status": "passed",
+      "summary": "Structured schema and exact diffs, immutable versions, checksum/CAS/rollback, invalid-operation and concurrency denial, legacy rendering, Parent/Student/cross-household scope, current approved-source citation validation, protected-output abstention, injection and ungrounded-answer denial, revocation rechecks, database-backed rate limiting, provider-off fallback, and learner-switch UI isolation all passed.",
+      "independent_security_review": "The f1fe392 predecessor was rejected for output redaction and dc203dd was rejected for a mixed-selector sibling entitlement leak. Commit fc6ea3e393e82428292dde21fc46e7d5edfcddb0 repairs both findings and is pending independent successor re-audit."
+    }
+  },
+  "verification": [
+    "2 focused unit files / 15 tests passed",
+    "2 focused integration files / 8 tests passed",
+    "3 real Chromium journeys passed: admin prompt preview-save-activate-rollback plus Parent and three separate Student helper journeys",
+    "Parent learner-switch browser proof cleared the prior learner answer before Student 2 rendered",
+    "npm run typecheck passed",
+    "npm run build passed",
+    "scoped ESLint passed for all 25 implementation/test paths",
+    "repo-pinned Prettier check passed for all 25 implementation/test paths",
+    "npm run secret:scan passed across 2,117 repository text files",
+    "npm run ops06:migrations passed with no new migration",
+    "npm run goal:validate passed while BOARD/CURRENT/pointer remained unchanged",
+    "git diff --check and conflict-marker/debug-statement scan passed",
+    "the first post-review browser attempt served the prior compiled client and failed one new UI expectation; rebuilding the exact source followed by the same 3-test Chromium command passed 3/3",
+    "redaction repair unit test passed 24/24, including schemed, schemeless, protocol-relative, and encoded provider links; URL-bearing titles; protected query/value labels; post-provider citation revalidation; and fail-closed source references",
+    "redaction and entitlement repair database-backed portal integration passed 6/6, including approved-and-entitled unsafe rows, a learner-scoped row carrying both learner and household keys, exact-learner success, sibling abstention with no metadata, all three isolated Student principals, and no sibling disclosure",
+    "redaction repair npm run typecheck and npm run build passed",
+    "redaction repair scoped ESLint and repo-pinned Prettier checks passed for all 5 changed code/test paths",
+    "redaction repair npm run secret:scan passed across 2,119 repository text files",
+    "redaction repair git diff --check and conflict-marker scan passed"
+  ],
+  "evidence": [
+    {
+      "type": "structured_prompt_contract_and_domain",
+      "paths": [
+        "packages/contracts/src/content/admin-workspace.ts",
+        "packages/domain/src/content/structured-prompt.ts",
+        "packages/domain/src/content/admin-workspace.ts"
+      ],
+      "sanitized": true
+    },
+    {
+      "type": "scoped_knowledge_contract_and_domain",
+      "paths": [
+        "packages/contracts/src/portals/index.ts",
+        "packages/contracts/src/content/pipeline.ts",
+        "packages/domain/src/content/scoped-knowledge-redaction.ts",
+        "packages/domain/src/portals/student-class-helper.ts"
+      ],
+      "sanitized": true
+    },
+    {
+      "type": "focused_unit_contract",
+      "paths": [
+        "tests/unit/content/structured-prompt.test.ts",
+        "tests/unit/ot107-student-class-helper.test.ts"
+      ],
+      "sanitized": true
+    },
+    {
+      "type": "focused_database_and_api_contract",
+      "paths": [
+        "tests/integration/content/ot110a-admin-content-workspace.test.ts",
+        "tests/integration/portals/portal-test-lab.test.ts"
+      ],
+      "sanitized": true
+    },
+    {
+      "type": "real_chromium_acceptance",
+      "path": "tests/e2e/w12-03-portal-test-lab.spec.ts",
+      "sanitized": true
+    }
+  ],
+  "remaining_work": [
+    "Conductor independently reviews and semantically integrates PR #121 into the current codex/full-app-staging-live descendant.",
+    "Conductor updates the sole BOARD/pointer after acceptance and owns exact-head persistent-staging deployment/readback."
+  ],
+  "blocker": null,
+  "sanitized_at": "2026-07-24T16:16:24Z"
+}

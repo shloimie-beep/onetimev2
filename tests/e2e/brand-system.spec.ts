@@ -2,7 +2,10 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { expect, type Page, test } from '@playwright/test';
 
-const screenshotRoot = path.resolve(process.cwd(), 'ops/evidence/ot-82/screenshots');
+const evidenceRoot = path.resolve(
+  process.env.OT82_EVIDENCE_ROOT ?? path.join(process.cwd(), 'ops/evidence/ot-82'),
+);
+const screenshotRoot = path.join(evidenceRoot, 'screenshots');
 const viewports = [
   { id: '360x800', width: 360, height: 800 },
   { id: '390x844', width: 390, height: 844 },
@@ -22,10 +25,10 @@ test('OT82 canonical public shell, ticker, and mobile invariant', async ({ page 
     await expect(page.locator('.campaign-ticker')).toHaveAttribute('href', '/signup');
     await expect(page.locator('.campaign-ticker')).toHaveAttribute(
       'aria-label',
-      /JOIN NOW.*FREE UNTIL ROSH HASHANAH/i,
+      /FREE ACCESS.*remaining.*Pre-register your Family/i,
     );
     await expect(
-      page.getByLabel('Primary').getByRole('link', { name: 'Sign Up Now' }),
+      page.getByLabel('Primary').getByRole('link', { name: 'Pre-register' }),
     ).toBeVisible();
     await expect(page.locator('.brand-lockup img')).toBeVisible();
     await expect(page.locator('.site-header')).toBeVisible();
@@ -126,9 +129,9 @@ function expectForbiddenRequests(requests: string[]) {
 }
 
 test.afterAll(async () => {
-  await mkdir(path.resolve(process.cwd(), 'ops/evidence/ot-82'), { recursive: true });
+  await mkdir(evidenceRoot, { recursive: true });
   await writeFile(
-    path.resolve(process.cwd(), 'ops/evidence/ot-82/visual-index.md'),
+    path.join(evidenceRoot, 'visual-index.md'),
     [
       '# OT-82 Visual Index',
       '',

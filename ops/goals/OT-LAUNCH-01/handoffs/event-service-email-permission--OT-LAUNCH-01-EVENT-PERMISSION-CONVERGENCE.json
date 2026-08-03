@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "goal_id": "OT-LAUNCH-01",
+  "track_id": "event_service_email_permission",
+  "task_id": "OT-LAUNCH-01-EVENT-PERMISSION-CONVERGENCE",
+  "acceptance_ids": ["GHL-006"],
+  "owner": {
+    "repository": "shloimie-beep/onetimev2",
+    "branch": "codex/event-service-email-permission-convergence",
+    "conductor_branch": "codex/full-app-staging-live",
+    "conductor_pr": 97,
+    "system": "Application-authoritative event-service email permission and held HighLevel outbox"
+  },
+  "write_scope": "Event-only permission schema/domain, canonical held HighLevel event contract and dispatcher, read-only inspection, exact tag registry projection, focused assurance, and this sanitized handoff. Canonical BOARD, CURRENT, preview pointer, GHL, providers, customers, persistent staging, and production are out of scope and unchanged.",
+  "result": {
+    "status": "implementation_complete_pending_remote_postgresql_assurance",
+    "base_commit": "43e38a6f1d3aae7eff62781f75a49777ee325d5c",
+    "implementation_commit": "f5c81c3c4d7d69466ba2626d4c51af00b9f3cd02",
+    "postgresql_assurance_fix": {
+      "root_cause": "The real PostgreSQL contacts table requires public_contact_id; the event-only registration contact insert omitted it while pg-mem did not surface the constraint.",
+      "resolution": "Generate and insert one opaque public contact UUID within the serialized registration transaction.",
+      "diagnostic_only_code_retained": false
+    },
+    "projection_security_repair": {
+      "payload_scope": "Exact account, product, HighLevel location, and adult contact equality is required at both prepare and dispatch boundaries.",
+      "post_upsert_denial_audit": "A denial after contact upsert records provider_effect_performed=true, provider_effect_stage=contact_upsert_completed, and tags_written=false.",
+      "crash_window_audit": "A pre-call revocation after crash recovery derives provider effect truth from the exact completed contact-upsert receipt fenced by account, product, delivery, run, and operation key; the reclaimed attempt performs zero new adapter calls.",
+      "retired_direct_provider_block_removed": true
+    },
+    "migration": {
+      "path": "packages/db/migrations/2227_event_service_email_permission_convergence.sql",
+      "sha256": "746ea6efdd06ce5ff20ffbfbf7bb9bab759dea5e3976fbb3442140b8a0e29f86",
+      "forward_only": true,
+      "applied_migrations_modified": false
+    },
+    "application_db_authoritative": true,
+    "event_permission_scope": "event_service_email",
+    "shared_marketing_consent_granted": false,
+    "outbox_transport_mode": "disabled",
+    "provider_changed": false,
+    "customer_messages": 0,
+    "workflow_enrollments": 0,
+    "production_changed": false,
+    "persistent_staging_changed": false,
+    "board_current_pointer_changed": false
+  },
+  "contract": {
+    "event_name": "event.registration.recorded",
+    "outbox_event_type": "highlevel.event.registration.recorded.v1",
+    "event_code": "tisha-bav-2026",
+    "protected_path": "/tisha-bav",
+    "canonical_tags": [
+      "OT | Event | Tisha B'Av 2026 | Registered",
+      "OT | Source | Tisha B'Av 2026"
+    ],
+    "deny_precedence": [
+      "complaint",
+      "hard_bounce",
+      "global_suppression",
+      "global_dnd",
+      "global_unsubscribe",
+      "event_withdrawal",
+      "event_cancelled",
+      "identity_invalid_or_ambiguous",
+      "missing_active_event_permission"
+    ],
+    "exact_time_tie_policy": "applied denial wins over cleared; deterministic event key is used only within the same action",
+    "provider_readback": "Both exact normalized tags are required; missing, duplicate, or near-duplicate results are quarantined as uncertain with no automatic replay."
+  },
+  "changed_paths": [
+    "apps/worker/src/highlevel/adapter.ts",
+    "apps/worker/src/main/index.ts",
+    "integrations/highlevel/registry/current.json",
+    "integrations/highlevel/registry/tag-taxonomy.yaml",
+    "package.json",
+    "packages/contracts/src/highlevel/index.ts",
+    "packages/db/migrations/2227_event_service_email_permission_convergence.sql",
+    "packages/domain/src/events/event-email-permission.ts",
+    "packages/domain/src/events/tisha-bav-delivery.ts",
+    "packages/domain/src/events/tisha-bav.ts",
+    "packages/domain/src/highlevel/actions.ts",
+    "packages/domain/src/highlevel/dispatcher.ts",
+    "packages/domain/src/highlevel/producer.ts",
+    "packages/domain/src/index.ts",
+    "scripts/highlevel/canonical-registry-data.ts",
+    "scripts/postgres-assurance/run.ts",
+    "scripts/tisha-bav/inspect-registration-delivery.ts",
+    "scripts/tisha-bav/reprocess-registration-delivery.ts",
+    "tests/integration/highlevel/app-contracts.test.ts",
+    "tests/integration/tisha-bav-event-funnel.test.ts",
+    "tests/unit/highlevel/app-contracts.test.ts",
+    "tests/unit/highlevel/http-adapter.test.ts",
+    "tests/unit/tisha-bav-highlevel-client.test.ts"
+  ],
+  "verification": {
+    "focused_integration": "51/51 passed",
+    "focused_unit": "7/7 passed",
+    "full_unit": "75 files, 412 tests passed",
+    "full_integration": "67 files, 370 tests passed",
+    "typecheck": "passed",
+    "lint": "passed",
+    "build": "passed",
+    "scoped_prettier_check": "20 exact changed supported paths passed",
+    "secret_scan": "2,117 repository text files passed",
+    "migration_safety": "passed; the final crash-window audit repair is non-SQL and migration bytes/checksum remain unchanged",
+    "goal_validation": "32/32 checks passed",
+    "operator_launch_status": "passed",
+    "git_diff_check": "passed",
+    "independent_diff_audit": "prior findings repaired; final exact-head re-audit pending",
+    "independent_postgresql_scope_audit": "prior findings repaired; final exact-head re-audit pending",
+    "postgresql_16_18_execution": "required on exact-head remote assurance workflows"
+  },
+  "intentional_fail_closed_state": {
+    "registry_command": "npm run highlevel:registry:check",
+    "status": "failed_on_inherited_live_control_truth_only",
+    "details": [
+      "All registry schema, duplicate, tag, prompt, projection, sender, and asset-count checks passed.",
+      "Workflow control remains red because canonical OT-E01 truth is DRIFTED while the older observed inventory says ACTIVE_TESTED.",
+      "Archived and bot/knowledge-base inventory remain incomplete.",
+      "The two canonical Tisha tags intentionally retain blank immutable GHL IDs and pending_creation until an exact sanitized provider readback exists."
+    ],
+    "canary_blocked": true
+  },
+  "remaining_work": [
+    "Run the exact-head PostgreSQL 16 and 18 assurance workflows; the shared assurance now exercises concurrent registration/outbox idempotency, transactional restriction rollback/retry, and an equal-time applied-versus-cleared race.",
+    "Conductor must semantically port the feature range from the recorded base onto the current governed descendant without replacing BOARD, CURRENT, or the preview pointer.",
+    "A separately authorized GHL readback must prove immutable IDs and exact presence for both canonical Tisha tags before any exact-row provider canary can be prepared."
+  ],
+  "blocker": null,
+  "sanitized_at": "2026-07-24T17:49:00Z"
+}

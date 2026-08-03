@@ -1,0 +1,124 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P30
+title: Newsletter, Reactivation, and OT-16 Conversion
+outcome: Implement Parent newsletter, former-member reactivation, and OT-16 conversion definitions with exact audience,
+  suppression, approval, and School exclusion.
+kind: implementation
+wave: 7
+priority: launch_critical
+execution:
+  model: GPT-5.6-SOL
+  reasoning: HIGH
+  service_tier: PRIORITY
+  mode: START_OR_RESUME
+  branch_template: codex/v21-p30-{slug}
+  harness_branch_template: null
+  maximum_active_writers_in_group: 8
+dependencies:
+  start_after:
+  - P28
+  - P31
+  required_start_states:
+    P28: interface_ready_integrated
+    P31: interface_ready_integrated
+  merge_after:
+  - P28
+  - P31
+  candidate_integration_partners:
+  - P09
+  - P25
+  - P26
+  - P29
+  candidate_requires_all_implementation_tasks: false
+  acceptance_after: []
+  first_run_start_sha_source: origin/codex/v21-control:ops/v2.1-execution/control/READY-QUEUE.yaml authorized_start_sha
+interface_checkpoint:
+  required: false
+  unlocks: []
+  contract_schema_version: 1
+  required_export_roots: []
+  must_record_exact_realized_paths_symbols_versions_and_digests: true
+  rule: No downstream contract checkpoint required.
+scope:
+  writer_slots:
+  - GHL_CAMPAIGNS
+  normalized_owned_globs:
+  - apps/worker/src/runners/ghl-workflows/campaigns/**
+  - integrations/highlevel/v21/workflow-fragments/P30-campaigns.yaml
+  - packages/domain/src/communications/workflows/campaigns/**
+  scope_notes_only:
+  - newsletter/reactivation/conversion tests and readback fixtures
+  - steward request for canonical GHL registry registration
+  explicit_path_excludes: []
+  forbidden_shared_paths:
+  - applied migration edits
+  - new migration files outside F02
+  - central server/client/worker composer edits after F01 interface checkpoint
+  - root contract/domain barrel edits
+  - package manifests/lockfiles
+  - global styles/design tokens outside F07
+  - canonical GHL registry outside P28/I36
+  - global control/merge ledgers
+  - another task's runtime or evidence files
+  external_authority: none
+coverage:
+  primary_requirement_ids:
+  - OTV2-GHL-134
+  - OTV2-GHL-135
+  - OTV2-GHL-225
+  primary_acceptance_case_ids:
+  - OTV2-GHL-134-AC01
+  - OTV2-GHL-135-AC01
+  - OTV2-GHL-225-SCHEDULE
+  - OTV2-GHL-225-PAID-EXIT
+  - OTV2-GHL-225-SCHOOL-EXIT
+  - OTV2-GHL-225-SUPPRESSION
+  verification_of_tasks: []
+  verification_requirement_ids: []
+  verification_acceptance_case_ids: []
+  decision_ids:
+  - DEC-100
+  required_source_documents:
+  - 07-SOURCE-OF-TRUTH-AND-PROVIDER-CONTRACTS-v2.1.md
+  - 09-WORKFLOW-NOTIFICATION-COPY-CATALOG-v2.1.md
+  embedded_normative_sections:
+  - WNC-6.15–6.17 exact newsletter/reactivation/conversion definitions
+deliverables:
+- newsletter workflow
+- former-member reactivation workflow
+- OT-16 conversion workflow
+- approval/suppression/audience and no-School-nurture controls
+notes: []
+terminal_states:
+- ready_for_review
+definition_of_done:
+- Every assigned behavior is implemented or, for verification/release tasks, every assigned case has a schema-valid
+  candidate-bound result.
+- The diff remains inside owned paths plus structured steward requests.
+- Task-owned verification passes; ordinary in-scope failures are diagnosed and corrected.
+- No prohibited product surface, fake fallback, security/privacy weakening, or unauthorized external effect is introduced.
+- TASK-STATE.yaml, HANDOFF.md, and NEXT-PROMPT.md are current.
+- 'All checkpoints are committed and pushed; this task may end only in one of these exact task-local terminal states:
+  ready_for_review.'
+checkpoint_policy:
+  interval_minutes: 30-45
+  mandatory_before:
+  - long-running command
+  - authorized external effect
+  - window end
+  mandatory_after:
+  - interface contract
+  - migration or invariant
+  - meaningful milestone
+  - blocker discovery
+stop_conditions:
+- missing explicit authority or provider identity for a required live effect
+- writer/path/provider lock collision
+- non-fast-forward push
+- normative contradiction requiring operator decision
+- incompatible or absent upstream interface contract
+- applied migration would need modification
+- continuation would weaken a protected invariant
+- destructive operation lacks exact target/authority
+- reproduced out-of-scope failure blocks progress after all safe independent work is complete

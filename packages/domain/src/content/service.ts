@@ -11,6 +11,7 @@ import {
   type ContentOutcomePayload,
 } from '../../../contracts/src/content/index.ts';
 import type {
+  LessonConversationMessage,
   LibraryItem,
   ProtectedActionDescriptor,
 } from '../../../contracts/src/portals/index.ts';
@@ -19,6 +20,11 @@ import { inTransaction } from '../../../db/src/index.ts';
 import { stableKey } from '../lead/normalize.ts';
 import type { LearnerContentAccessAdapter } from '../portals/services.ts';
 import { householdHasLearningAccess } from '../billing/portal-access.ts';
+import { enqueueRecordingAvailableForEntitledAdults } from '../highlevel/producer.ts';
+import {
+  isContentFactoryDemoSource,
+  isContentFactorySyntheticPlaybackEnabled,
+} from './content-factory.ts';
 
 export class ContentIdempotencyConflictError extends Error {
   constructor() {
@@ -141,18 +147,16 @@ export function createContentPortalAccessAdapter(input: {
 }): LearnerContentAccessAdapter {
   return {
     publishedLibraryForLearner: async ({ actor, learner }) => {
-      if (
-        !(await householdHasLearningAccess({
-          pool: input.pool,
-          accountKey: actor.account_key,
-          productKey: actor.product_key,
-          householdKey: learner.household_key,
-        }))
-      ) {
-        return [];
-      }
+      const householdAccess = await householdHasLearningAccess({
+        pool: input.pool,
+        accountKey: actor.account_key,
+        productKey: actor.product_key,
+        householdKey: learner.household_key,
+      });
+      if (!householdAccess) return [];
       return portalItemsForLearner({
         pool: input.pool,
+        config: input.config,
         accountKey: actor.account_key,
         productKey: actor.product_key,
         actorRole: actor.actor_role,
@@ -162,18 +166,16 @@ export function createContentPortalAccessAdapter(input: {
       });
     },
     reviewSheetsForLearner: async ({ actor, learner }) => {
-      if (
-        !(await householdHasLearningAccess({
-          pool: input.pool,
-          accountKey: actor.account_key,
-          productKey: actor.product_key,
-          householdKey: learner.household_key,
-        }))
-      ) {
-        return [];
-      }
+      const householdAccess = await householdHasLearningAccess({
+        pool: input.pool,
+        accountKey: actor.account_key,
+        productKey: actor.product_key,
+        householdKey: learner.household_key,
+      });
+      if (!householdAccess) return [];
       return portalItemsForLearner({
         pool: input.pool,
+        config: input.config,
         accountKey: actor.account_key,
         productKey: actor.product_key,
         actorRole: actor.actor_role,
@@ -360,6 +362,11 @@ async function admitNewContentOutcome(input: {
     input.payload.entitlement_scope === 'all_active_learners'
   ) {
     await grantAllActiveLearnersEntitlement(input.client, input.config, itemKey, input.now);
+    await enqueueRecordingAvailableForEntitledAdults(input.client, input.config, {
+      contentItemKey: itemKey,
+      occurredAt: input.now,
+      approved: true,
+    });
   }
 
   await recordContentAudit(input.client, {
@@ -450,6 +457,7 @@ async function getContentItemDetailFrom(
 
 async function portalItemsForLearner(input: {
   pool: DbPool;
+  config: Pick<AppConfig, 'deliveryEnvironment' | 'oneTimeRuntimeEnvironment'>;
   accountKey: string;
   productKey: string;
   actorRole: string;
@@ -457,41 +465,236 @@ async function portalItemsForLearner(input: {
   householdKey: string;
   itemTypes: ContentItemType[];
 }): Promise<LibraryItem[]> {
+  const studentVisibility =
+    input.actorRole === 'student'
+      ? `AND COALESCE(
+            lessons.lesson_key,
+            factory.source_key,
+            CASE
+              WHEN items.item_type IN ('sheet', 'review') THEN items.content_item_key
+              ELSE NULL
+            END
+          ) IS NOT NULL`
+      : '';
+  const activeOccurrenceKeys = (
+    await input.pool.query(
+      `SELECT occurrence_key
+         FROM onetime.classroom_occurrence_learner_entitlements
+        WHERE account_key = $1
+          AND product_key = $2
+          AND household_key = $3
+          AND learner_key = $4
+          AND entitlement_state = 'active'
+        ORDER BY occurrence_key ASC`,
+      [input.accountKey, input.productKey, input.householdKey, input.learnerKey],
+    )
+  ).rows.map((row) => String(row.occurrence_key));
+  const occurrenceScopeFilter =
+    activeOccurrenceKeys.length > 0
+      ? `AND (
+           items.occurrence_key IS NULL
+           OR items.occurrence_key IN (${activeOccurrenceKeys
+             .map((_occurrenceKey, index) => `$${index + 6}`)
+             .join(', ')})
+         )`
+      : `AND items.occurrence_key IS NULL`;
+
   const result = await input.pool.query(
-    `SELECT items.*
+    `SELECT items.*,
+            lessons.lesson_key,
+            lessons.occurrence_key AS lesson_occurrence_key,
+            lessons.title AS lesson_title,
+            lessons.description AS lesson_description,
+            lessons.publication_state AS lesson_publication_state,
+            lessons.featured AS lesson_featured,
+            lessons.published_at AS lesson_published_at,
+            lessons.transcript_state AS lesson_transcript_state,
+            lessons.resource_count AS lesson_resource_count,
+            factory.draft_json AS factory_draft_json,
+            factory.captions_active AS factory_captions_active,
+            factory.progress_state AS factory_progress_state,
+            factory.processing_mode AS factory_processing_mode,
+            occurrence.local_class_date AS factory_class_date,
+            series.title AS factory_class_title
        FROM onetime.content_items AS items
-       JOIN onetime.content_item_entitlements AS entitlements
-         ON entitlements.account_key = items.account_key
-        AND entitlements.product_key = items.product_key
-        AND entitlements.content_item_key = items.content_item_key
+       LEFT JOIN onetime.classroom_lesson_publications AS lessons
+         ON lessons.account_key = items.account_key
+        AND lessons.product_key = items.product_key
+        AND lessons.content_item_key = items.content_item_key
+        AND lessons.publication_state = 'published'
+       LEFT JOIN onetime.learning_delivery_content_factory_items AS factory
+         ON factory.account_key = items.account_key
+        AND factory.product_key = items.product_key
+        AND factory.source_key = items.content_item_key
+        AND factory.factory_state = 'published'
+       LEFT JOIN onetime.class_occurrences AS occurrence
+         ON occurrence.account_key = items.account_key
+        AND occurrence.product_key = items.product_key
+        AND occurrence.occurrence_key = items.occurrence_key
+       LEFT JOIN onetime.class_series AS series
+         ON series.account_key = occurrence.account_key
+        AND series.product_key = occurrence.product_key
+        AND series.class_series_key = occurrence.class_series_key
       WHERE items.account_key = $1
         AND items.product_key = $2
         AND items.retention_state = 'active'
         AND items.published_revision_key IS NOT NULL
         AND items.item_type = ANY($3)
-        AND entitlements.entitlement_state = 'active'
-        AND (
-          entitlements.audience = 'all_active_learners'
-          OR entitlements.learner_key = $4
-          OR entitlements.household_key = $5
+        AND items.content_item_key IN (
+          SELECT entitlement.content_item_key
+            FROM onetime.content_item_entitlements AS entitlement
+           WHERE entitlement.account_key = $1
+             AND entitlement.product_key = $2
+             AND entitlement.entitlement_state = 'active'
+             AND (
+               entitlement.audience = 'all_active_learners'
+               OR (
+                 entitlement.audience = 'learner'
+                 AND entitlement.learner_key = $4
+               )
+               OR (
+                 entitlement.audience = 'household'
+                 AND entitlement.household_key = $5
+               )
+             )
         )
+        ${studentVisibility}
+        ${occurrenceScopeFilter}
       ORDER BY items.published_at DESC, items.content_item_key ASC
       LIMIT 25`,
-    [input.accountKey, input.productKey, input.itemTypes, input.learnerKey, input.householdKey],
-  );
-  return result.rows.map((row) => ({
-    item_key: String(row.content_item_key),
-    title: String(row.title),
-    item_type: String(row.item_type) as LibraryItem['item_type'],
-    status: 'published' as const,
-    open_action: contentOpenAction(
-      String(row.content_item_key),
-      String(row.item_type),
-      input.actorRole,
-      input.householdKey,
+    [
+      input.accountKey,
+      input.productKey,
+      input.itemTypes,
       input.learnerKey,
-    ),
-  }));
+      input.householdKey,
+      ...activeOccurrenceKeys,
+    ],
+  );
+  const messagesByLesson = await approvedMessagesByLesson(
+    input.pool,
+    input.accountKey,
+    input.productKey,
+    result.rows
+      .map((row) => nullableString((row as Record<string, unknown>).lesson_key))
+      .filter((lessonKey): lessonKey is string => Boolean(lessonKey)),
+  );
+  return result.rows.map((row) => {
+    const lessonKey = nullableString(row.lesson_key);
+    const factoryDraft = row.factory_draft_json
+      ? (row.factory_draft_json as Record<string, unknown>)
+      : null;
+    const factoryOccurrenceKey = nullableString(row.occurrence_key);
+    const factoryClassTitle = nullableString(row.factory_class_title);
+    const factoryClassDate = row.factory_class_date ? asDate(row.factory_class_date) : null;
+    const itemKey = String(row.content_item_key);
+    const isDemo = isContentFactoryDemoSource(itemKey);
+    const isSynthetic = isDemo || row.factory_processing_mode === 'synthetic';
+    const exposedFactoryDraft =
+      factoryDraft && (!isSynthetic || isContentFactorySyntheticPlaybackEnabled(input.config))
+        ? factoryDraft
+        : null;
+    const completeFactoryProjection =
+      exposedFactoryDraft && factoryOccurrenceKey && factoryClassTitle && factoryClassDate;
+    return {
+      item_key: itemKey,
+      title: String(row.title),
+      item_type: String(row.item_type) as LibraryItem['item_type'],
+      status: 'published' as const,
+      open_action: contentOpenAction(
+        String(row.content_item_key),
+        String(row.item_type),
+        input.actorRole,
+        input.householdKey,
+        input.learnerKey,
+      ),
+      featured: Boolean(row.lesson_featured),
+      published_at: nullableIso(row.published_at),
+      content_factory: completeFactoryProjection
+        ? {
+            occurrence_key: factoryOccurrenceKey,
+            class_title: factoryClassTitle,
+            class_date: factoryClassDate.toISOString().slice(0, 10),
+            approved_summary: String(exposedFactoryDraft.short_description ?? ''),
+            approved_review_questions: Array.isArray(exposedFactoryDraft.review_questions)
+              ? exposedFactoryDraft.review_questions.map(String)
+              : [],
+            captions_active: true as const,
+            progress_state: String(row.factory_progress_state ?? 'not_started') as
+              'not_started' | 'in_progress' | 'completed',
+            playback_route: `/app/learning/items/${encodeURIComponent(itemKey)}`,
+            raw_provider_url_present: false as const,
+            is_demo: isSynthetic,
+          }
+        : undefined,
+      lesson: lessonKey
+        ? {
+            lesson_key: lessonKey,
+            class_key: nullableString(row.lesson_occurrence_key),
+            title: String(row.lesson_title),
+            description: nullableString(row.lesson_description),
+            publication_state: 'published' as const,
+            featured: Boolean(row.lesson_featured),
+            published_at: nullableIso(row.lesson_published_at),
+            video_provider: 'vimeo' as const,
+            raw_private_url_present: false as const,
+            transcript_available: row.lesson_transcript_state === 'available',
+            resource_count: Number(row.lesson_resource_count ?? 0),
+            approved_messages: messagesByLesson.get(lessonKey) ?? [],
+          }
+        : null,
+    };
+  });
+}
+
+async function approvedMessagesByLesson(
+  pool: DbPool,
+  accountKey: string,
+  productKey: string,
+  lessonKeys: string[],
+) {
+  const messages = new Map<string, LessonConversationMessage[]>();
+  const uniqueLessonKeys = [...new Set(lessonKeys)];
+  if (uniqueLessonKeys.length === 0) return messages;
+  const result = await pool.query(
+    `SELECT submissions.lesson_key,
+            submissions.submission_key,
+            submissions.learner_key,
+            learners.display_name,
+            submissions.display_body_redacted,
+            submissions.moderation_state,
+            submissions.pinned,
+            submissions.approved_at
+       FROM onetime.classroom_lesson_conversation_submissions AS submissions
+       JOIN onetime.portal_learners AS learners
+         ON learners.account_key = submissions.account_key
+        AND learners.product_key = submissions.product_key
+        AND learners.learner_key = submissions.learner_key
+      WHERE submissions.account_key = $1
+        AND submissions.product_key = $2
+        AND submissions.lesson_key = ANY($3)
+        AND submissions.visibility_state = 'approved'
+        AND submissions.moderation_state IN ('approved_exact', 'approved_edited', 'redacted')
+      ORDER BY submissions.pinned DESC, submissions.approved_at DESC NULLS LAST
+      LIMIT 200`,
+    [accountKey, productKey, uniqueLessonKeys],
+  );
+  for (const row of result.rows) {
+    const lessonKey = String(row.lesson_key);
+    const current = messages.get(lessonKey) ?? [];
+    if (current.length >= 20) continue;
+    current.push({
+      message_key: String(row.submission_key),
+      learner_key: String(row.learner_key),
+      display_name: String(row.display_name),
+      body: String(row.display_body_redacted ?? 'Approved class question'),
+      moderation_state: row.moderation_state as LessonConversationMessage['moderation_state'],
+      pinned: Boolean(row.pinned),
+      approved_at: asDate(row.approved_at).toISOString(),
+    });
+    messages.set(lessonKey, current);
+  }
+  return messages;
 }
 
 function sanitizeOutcome(payload: ContentOutcomePayload): SanitizedOutcome {

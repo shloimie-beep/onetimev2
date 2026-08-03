@@ -1,0 +1,78 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P17-MIGRATION-002
+task_id: P17
+kind: migration
+requirement_ids:
+  - OTV2-CLASSROOM-068
+  - OTV2-CLASSROOM-069
+  - OTV2-CLASSROOM-070
+  - OTV2-CLASSROOM-072
+  - OTV2-CLASSROOM-074
+  - OTV2-CLASSROOM-079
+  - OTV2-CLASSROOM-188
+acceptance_case_ids:
+  - OTV2-CLASSROOM-068-AC01
+  - OTV2-CLASSROOM-069-AC01
+  - OTV2-CLASSROOM-070-AC01
+  - OTV2-CLASSROOM-072-AC01
+  - OTV2-CLASSROOM-074-AC01
+  - OTV2-CLASSROOM-079-AC01
+  - OTV2-CLASSROOM-188-AC01
+rationale: >-
+  P17 owns the corrected five-table Zoom preparation schema contract, but only
+  F02 may allocate and write a forward-only migration. P17-MIGRATION-001
+  remains immutable and withheld because it requested seven tables that
+  competed with P18 launch-grant and live-session ownership.
+desired_semantic_change: >-
+  Allocate the next safe migration ordinal and create exactly the five
+  P17-owned preparation tables: onetime.zoom_preparations,
+  onetime.zoom_roster_snapshots, onetime.zoom_classroom_resources,
+  onetime.zoom_student_registrants, and
+  onetime.zoom_preparation_commands. Reuse the existing canonical
+  onetime.job_outbox and onetime.provider_operation_binding tables from
+  migrations 2236 and 2238; do not create a P17 provider-operation table.
+proposed_symbols_routes_keys_or_dependencies:
+  - >-
+    onetime.zoom_preparations: unique scoped occurrence/schedule/roster
+    preparation, immutable preview confirmation, optimistic version, and
+    durable acceptance-unknown quarantine.
+  - >-
+    onetime.zoom_roster_snapshots: immutable scoped occurrence/roster snapshot
+    with exact Student, enrollment, household, access, and consent versions.
+  - >-
+    onetime.zoom_classroom_resources: one current normal-class Zoom resource
+    per scoped occurrence with protected provider references and exact registry
+    binding.
+  - >-
+    onetime.zoom_student_registrants: one current protected registrant per
+    scoped occurrence and Student; no shared-household registrant or routable
+    Student email.
+  - >-
+    onetime.zoom_preparation_commands: scoped idempotency receipt with canonical
+    request hash, exact result reference/version, and replay-conflict rejection.
+  - >-
+    Reuse migration 2236 job_outbox idempotency and transaction semantics and
+    migration 2238 provider_operation_binding exact registry/account/effect
+    fields.
+compatibility_assumptions:
+  - P17-MIGRATION-001 remains immutable, unapplied, and withheld.
+  - P18 solely owns launch grants, Meeting SDK bootstrap, live Student
+    sessions, attendance, and their persistence.
+  - Migrations 2236 and 2238 are applied prerequisites and remain immutable.
+  - P17 runtime code never creates or alters schema.
+verification_performed:
+  - focused P17 database contract and repository tests
+  - full workspace typecheck
+  - focused lint and formatting
+  - parameterized SQL inspection with no runtime DDL
+  - explicit five-table and forbidden-ownership assertions
+conflicts_or_risks:
+  - Do not allocate tables for P17 launch grants, bootstrap, live sessions,
+    attendance, devices, provider operations, or provider readback.
+  - Do not edit applied migrations 2236/2238 or any other applied migration.
+  - F02 must independently validate this immutable request and allocate the
+    next safe migration ordinal.
+  - Do not persist raw Zoom URLs, browser-transferable bearers, credentials,
+    or routable Student email aliases.
+contains_secret_or_private_data: false

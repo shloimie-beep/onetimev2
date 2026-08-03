@@ -1,0 +1,16 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+canonical_candidate_digest: ${CANONICAL_CANDIDATE_DIGEST}
+deployment_instance_id: ${OPAQUE_DEPLOYMENT_ID}
+environment_id: ${ALLOWED_ENVIRONMENT_ID}
+runtime_tier: ${RUNTIME_TIER}
+deployed_artifact_digest: ${DEPLOYED_ARTIFACT_SET_DIGEST}
+configuration_digest: ${EXACT_NON_SECRET_CONFIG_AND_SECRET_REFERENCE_DIGEST}
+migration_inventory_digest: ${MIGRATION_INVENTORY_DIGEST}
+route_action_inventory_digest: ${ROUTE_ACTION_DIGEST}
+provider_registry_digest: ${PROVIDER_REGISTRY_DIGEST}
+provider_asset_readback_digests: []
+deployed_at: ${UTC_TIMESTAMP}
+deployment_readback_digest: ${DEPLOYMENT_READBACK_DIGEST}
+production_specific_gate: ${TRUE_OR_FALSE}
+immutable: true

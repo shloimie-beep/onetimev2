@@ -1,0 +1,19 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: ${TASK_ID}
+interface_implementation_head_sha: ${IMPLEMENTATION_HEAD_BEFORE_METADATA_COMMIT}
+metadata_commit_sha: derive_from_git_and_record_in_control_registry
+task_packet_digest: ${TASK_PACKET_SHA256}
+contract_digest: ${CONTRACT_SHA256}
+contract_schema_version: 1
+semantic_contract_version: ${SEMANTIC_VERSION}
+state: interface_ready
+exports:
+  - path: ${EXACT_REALIZED_PATH}
+    symbols: []
+    sha256: ${ARTIFACT_SHA256}
+compatibility_invariants: []
+downstream_tasks: []
+verification_commands: []
+contains_product_completion_claim: false
+contains_external_effect: false

@@ -33,7 +33,10 @@ export async function processOutboxSink(pool: DbPool, limit = 25): Promise<SinkR
 async function selectPendingOutbox(client: Queryable, limit: number) {
   const lockedSql = `SELECT id, delivery_key
          FROM onetime.outbox_events
-        WHERE status = 'pending' AND next_attempt_at <= now()
+        WHERE status = 'pending'
+          AND next_attempt_at <= now()
+          AND transport_mode = 'sink'
+          AND channel IN ('email', 'whatsapp', 'internal_email')
         ORDER BY created_at ASC
         LIMIT $1
         FOR UPDATE SKIP LOCKED`;
@@ -44,7 +47,10 @@ async function selectPendingOutbox(client: Queryable, limit: number) {
       return client.query(
         `SELECT id, delivery_key
            FROM onetime.outbox_events
-          WHERE status = 'pending' AND next_attempt_at <= now()
+          WHERE status = 'pending'
+            AND next_attempt_at <= now()
+            AND transport_mode = 'sink'
+            AND channel IN ('email', 'whatsapp', 'internal_email')
           ORDER BY created_at ASC
           LIMIT $1`,
         [limit],

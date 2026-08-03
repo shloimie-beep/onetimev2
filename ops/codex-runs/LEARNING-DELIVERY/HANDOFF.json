@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "window_id": "LEARNING-DELIVERY",
+  "status": "ready_for_review_with_drive_zoom_blockers",
+  "repo": "webcraft-media/onetimev2",
+  "branch": "codex/learning-delivery-vimeo-zoom",
+  "base_branch": "codex/learning-product-portals-media",
+  "base_head_oid": "ebd28c65fab5f11b2a334937ef10bdf1da7b62f3",
+  "stacked_pr_number": 95,
+  "stacked_pr_url": "https://github.com/webcraft-media/onetimev2/pull/95",
+  "migration_prefix": "2208",
+  "migration_path": "packages/db/migrations/2208_learning_delivery_media_pipeline.sql",
+  "implemented": [
+    "learning delivery media state and safe payload contracts",
+    "Drive recording metadata normalization and raw URL rejection",
+    "ffprobe parse and FFmpeg render plan helpers",
+    "operator-approved trim decision helper",
+    "OpenAI audio transcription adapter boundary",
+    "HighLevel-safe provider-neutral business event builder",
+    "opt-in delivery worker hook with provider calls disabled",
+    "safe keyholder readiness diagnostic script"
+  ],
+  "canaries_completed": [
+    "local FFmpeg/ffprobe video review canary: 3-second MP4, reviewed no-trim render, WAV extract",
+    "OpenAI transcription transport canary: openaiv2.txt accepted, non-speech fixture returned zero text, no raw transcript saved",
+    "Vimeo private upload/playback canary: TUS upload 204, project add ok, privacy nobody, transcode complete"
+  ],
+  "not_implemented": [
+    "real Google Drive polling/downloading",
+    "real Zoom meeting/SDK canary",
+    "Vimeo webhook ingress canary",
+    "HighLevel consumer integration from PR #93 internals"
+  ],
+  "validation": [
+    "npx vitest run --config vitest.unit.config.ts tests/unit/content/learning-delivery.test.ts --reporter=dot",
+    "npm run unit",
+    "npm run typecheck",
+    "npm run secret:scan",
+    "npm run lint",
+    "npx prettier --check <touched TypeScript files>",
+    "git diff --check",
+    "npx tsx scripts/media/learning-delivery-readiness.ts",
+    "FFmpeg/ffprobe local canary using node_modules ffmpeg-static and ffprobe-static",
+    "OpenAI audio transcription canary using C:\\Users\\User\\BNA-Keyholder\\openaiv2.txt",
+    "Vimeo private TUS upload canary using C:\\Users\\User\\BNA-Keyholder\\vimeo-access-token.txt"
+  ],
+  "external_effects": {
+    "vimeo_calls": true,
+    "zoom_calls": false,
+    "openai_calls": true,
+    "google_drive_calls": false,
+    "highlevel_calls": false,
+    "production_db_mutations": false,
+    "provider_account_mutations": true
+  },
+  "next_operator_actions": [
+    "Provide the exact protected path names for the existing BNA Google Drive auth ID, folder ID, and service-account/OAuth credential.",
+    "Say exactly: approve one isolated Zoom canary meeting now; also provide the SDK key/secret path names or confirm which existing BNA auth files map to SDK key/secret."
+  ]
+}

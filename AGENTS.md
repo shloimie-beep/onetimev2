@@ -1,5 +1,49 @@
 # One Time Agent Operating Guide
 
+# One Time v2.1 current authority
+
+The sole current product repository is `shloimie-beep/onetimev2`.
+
+For One Time v2.1, authority is ordered:
+
+1. `ops/v2.1-execution/source-spec/03-DECISION-REGISTER-v2.1.md`;
+2. the remaining locked documents in `ops/v2.1-execution/source-spec/`, with
+   `02-ACCEPTANCE-CONTRACT-v2.1.yaml` defining acceptance;
+3. `ops/v2.1-execution/PACKAGE-LOCK.yaml` and `EXECUTION-CONTRACT.md`;
+4. the assigned task packet and checksum-bound task context;
+5. candidate-bound result records for status only.
+
+The old launch Board, old acceptance IDs, old goal/current files, v2.0 drafts,
+preview/demo/test-lane definitions, and historical handoffs are evidence only.
+They may not define product behavior, completion status, or work priority.
+
+The reviewed implementation baseline is commit `73dda293079f602c83929d1bbccb8dd5b9d1a455` on
+`codex/one-time-launch-convergence-20260727` (PR #130). Do not branch v2.1 work from default `main` and
+do not use a synthetic PR merge SHA. Every later task starts from the exact SHA
+authorized on remote `codex/v21-control` in
+`ops/v2.1-execution/control/READY-QUEUE.yaml`; never trust a stale worktree copy
+of that queue.
+
+Every Codex task is `START_OR_RESUME`. Its remote branch and committed files
+under `ops/v2.1-execution/runtime/<TASK-ID>/` are durable memory. If their
+digests match, resume `next_action`; do not repeat a repository-wide audit or
+reconsider locked v2.1 decisions.
+
+Only the control tower changes global execution ledgers. A worker changes only
+its own branch state/handoff/result files and its assigned code scope. Shared
+hotspots, migrations, generated registries, provider locks, and live effects
+obey `WRITER-SCOPES.yaml`, `MERGE-PROTOCOL.md`, and
+`EXTERNAL-AUTHORITY-MATRIX.yaml`.
+
+No task is complete because code exists or a branch check passed. Release
+completion requires every release-blocking acceptance case to pass against the
+same immutable candidate. Each case must run only in one of its own allowed
+environments from `ACCEPTANCE-ENVIRONMENT-MATRIX.yaml`; there is deliberately
+no requirement that all cases share one environment. Release also requires zero
+stale evidence, unexpected effects, unauthorized waivers, fictional fixtures,
+exposed child data, raw Zoom or Vimeo bearers, Student GHL contacts, or
+failed/untested/placeholder controls.
+
 ## Architecture Invariants
 
 - This repository is standalone. Do not copy BNA `server.js`, Operations shell,
@@ -40,12 +84,14 @@
   Card, form-control, table, badge, alert, or state primitives when the
   canonical package can be composed instead.
 
-## Director Handoff
+## Repository Integration Guidance
 
-- For fresh release-state context, start at `ops/director/START-HERE.md`. It
-  summarizes the current live/deployed source, capability classifications,
-  active branch fleet, and binding product invariants. It does not replace this
-  AGENTS file.
+- HighLevel automation desired state is edited only in
+  `integrations/highlevel/registry/workflow-registry.yaml`. Its
+  `integrations/highlevel/workflows.yaml`,
+  `integrations/highlevel/registry/current.json`, and
+  `integrations/highlevel/registry/WORKFLOW-CONTROL-REPORT.md` projections are
+  generated and read-only.
 
 ## Safety
 

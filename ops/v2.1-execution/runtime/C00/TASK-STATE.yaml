@@ -1,0 +1,58 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: C00
+task_packet_digest: 7c982879f3667c344a4c603b601ae3440bb9d429b45b24a2235c22ac9df2c970
+task_context_digest: ed58d8d92f8cd5ba75cb25dd3b5e801c6f2d7fb33ef58afcd3f507e91008ce96
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+branch: codex/v21-control
+start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
+dependency_heads: {}
+status: claimed
+phase: bootstrap
+claimed_by: codex-c00-a916ec3f7e8b
+claim_time: '2026-07-28T14:44:41Z'
+claim_id: 73f19375-44c3-4c37-86e6-fcf30d77e244
+lease_expires_at: '2026-07-28T15:49:55Z'
+last_heartbeat_at: '2026-07-28T14:49:55Z'
+controller_authorization_sha: 8d211ccdad296bb6db93f7f9328fe135045b58d8
+ready_entry_payload_digest: null
+state_based_on_head_sha: 8d211ccdad296bb6db93f7f9328fe135045b58d8
+last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
+completed_steps:
+- verified PR #130 head and reviewed source branch
+- verified delivery ZIP structure and all 214 delivery checksums
+- installed the complete execution package
+- seeded the serialized C00 lease and runtime memory
+- validated that AGENTS.md reaches the v2.1 authority first and retains compatible engineering guidance
+- passed the normal control-branch creation push permission canary
+- measured and fingerprinted the exact reviewed-head repository baseline
+remaining_steps:
+- validate AGENTS.md authority replacement
+- run and record the repository baseline
+- validate package coverage and control schemas
+- push the permission canary
+- create and verify the integration branch
+- initialize control ledgers and ready entries
+- mark the controller operational and release its lease
+next_action: Measure and record the bound repository command baseline, then create the integration branch.
+requirements: {}
+acceptance_cases: {}
+changed_paths:
+- AGENTS.md
+- ops/v2.1-execution/**
+migrations: []
+steward_requests: []
+verification:
+  commands_run:
+  - delivery SHA256SUMS.txt: 214/214 passed
+  - package inventory: 46 tasks, 46 contexts, 46 prompts, 16 source-spec files
+  - 'npm run verify at reviewed head: secret scan passed; Prettier failed on 1736 files; later stages did not run'
+  known_baseline_failures:
+  - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings: []

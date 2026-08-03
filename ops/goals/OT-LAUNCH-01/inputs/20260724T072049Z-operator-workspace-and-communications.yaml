@@ -1,0 +1,65 @@
+schema_version: 1
+goal_id: OT-LAUNCH-01
+received_at: 2026-07-24T07:20:49Z
+source_ref: protected-thread-reference:019f8895-f0ad-7860-b880-d5b8ac5e80c9
+source_sha256: 8019846cbfa5cf619553faadf390a7f2b053c1acc1eeb3d3640cf88a2dd1bc3f
+operator_wording: >-
+  Keep children in One Time and link only the Parent to GHL. The Rabbi should
+  run Parent and Student access and communications from the app or Telegram,
+  without opening GHL. Consolidate the application into clear menus instead
+  of many unrelated cards, finish real Zoom and Vimeo testing, and package the
+  remaining work as governed Codex tasks that continue until each bounded job
+  is complete.
+observed_problem:
+  - Admin navigation and several workspaces expose too many competing sections, repeated controls, and mixed-purpose cards.
+  - One Time has a current-access projection but not the complete Parent/Student administration flow required for complimentary grants, paused households, secure credential resets, and adult-only GHL projection.
+  - The Rabbi Telegram foundation exists, but the executable communication worker and confirmed Parent/Student conversation adapters are incomplete.
+  - Prompt versions exist, but natural-language feedback cannot yet produce a structured, section-scoped patch with guardrail preservation.
+  - Social drafts and provider ledgers exist, but the UI and worker do not yet provide one human-confirmed Facebook publishing path.
+  - The real operator-owned Drive video is not visible in the currently connected Drive scope; the visible Vimeo test folder contains only a small smoke fixture.
+desired_user_outcome: >-
+  The operator and Rabbi use one coherent One Time application: five clear
+  Admin areas, local Parent/Student administration, adult-only GHL linkage,
+  confirmed communications through the correct channel, a working real Zoom
+  pilot, a real private-video canary, scoped Parent/Student knowledge help, and
+  human-confirmed content publishing. Each capability is delivered by one
+  bounded task and converges through the existing OT-LAUNCH-01 Board.
+acceptance_criteria:
+  - Children and Student credentials remain exclusively in One Time; no Student GHL contact is created.
+  - A Parent is the single adult GHL contact and may own any positive number of local Student profiles.
+  - GHL owns invoices, charges, subscriptions, refunds, campaigns, and customer conversation history; One Time stores only access source states and one derived effective access projection.
+  - Rabbi actions in One Time or Telegram can invite a Parent, create a Student, grant or revoke complimentary access, suspend or release a household, and initiate secure credential recovery without revealing passwords.
+  - A paused Parent may authenticate into a limited recovery/support shell while Student learning access and sessions are denied.
+  - Admin primary navigation is exactly Dashboard, Contacts, Content, Classroom, and Live Console; contextual tabs show one selected workspace rather than simultaneous unrelated card groups.
+  - The One Time Rabbi Telegram bot and the BNA control-plane bot remain separate identities, scopes, data boundaries, and deployments.
+  - Every outbound reply or social post requires an exact preview and human confirmation; replay is idempotent and children never become GHL contacts.
+  - Structured prompt feedback produces a schema-valid section-scoped diff, immutable version, rollback path, and output provenance without deleting unrelated guardrails.
+  - Parent/Student knowledge answers use only approved scoped content, cite sources, abstain when unsupported, and recheck entitlement/revocation.
+  - Zoom uses a new disposable pilot meeting, never the protected Tisha event meeting, and media uses one private operator-owned canary without broad publication.
+affected_track:
+  - admin_information_architecture
+  - parent_student_contact_operations
+  - rabbi_telegram_communications
+  - structured_prompt_and_scoped_knowledge
+  - human_confirmed_social_publishing
+  - bna_control_plane_operations_bot
+  - zoom_real_control_operator_change_set
+  - media_external_canary
+decision:
+  status: not_needed
+  reason: The operator explicitly chose the authority boundaries, navigation model, human-confirmation policy, provider priorities, and staged task-dispatch approach.
+next_executable_task:
+  action: Commit the canonical task packets, assign non-overlapping executors, and begin conversations/Contacts, Admin information architecture, Zoom, media, and Telegram work from the exact governed base.
+  evidence_output:
+    - immutable task packet
+    - isolated branch and draft PR
+    - focused automated tests
+    - desktop and mobile browser evidence where visual
+    - sanitized provider readback where external
+    - one executor handoff for conductor convergence
+  write_scope: Existing OT-LAUNCH-01 goal and assigned repository-local task boundaries only; BOARD.yaml remains the sole current status map.
+privacy_review:
+  secrets_committed: false
+  private_destinations_committed: false
+  customer_or_student_data_committed: false
+  raw_message_copy_committed: false

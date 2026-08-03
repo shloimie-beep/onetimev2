@@ -1,0 +1,67 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P18-registration-002
+task_id: P18
+kind: server_feature_registration
+requirement_ids:
+  - OTV2-CLASSROOM-073
+  - OTV2-CLASSROOM-075
+  - OTV2-CLASSROOM-078
+  - OTV2-CLASSROOM-187
+  - OTV2-CLASSROOM-232
+acceptance_case_ids:
+  - OTV2-CLASSROOM-073-AC01
+  - OTV2-CLASSROOM-075-AC01
+  - OTV2-CLASSROOM-078-AC01
+  - OTV2-CLASSROOM-187-AC01
+  - OTV2-CLASSROOM-232-TIMING
+  - OTV2-CLASSROOM-232-BOOTSTRAP-LEASE
+rationale: P18-registration-001 is immutable, assigned, and path-incomplete. This successor preserves every original requirement and acceptance case, reconciles migration 2251 as the admitted P18 migration-003 successor, and supplies the complete repository-only server, Student client, attendance-intake, same-instance callback, and root-export ceiling. Repository composition is not deployed Zoom/provider, native-PostgreSQL, candidate, or production-canary proof.
+desired_semantic_change: Register the authenticated constant Student embedded-classroom route and same-origin CSRF-protected bootstrap and heartbeat APIs, the audited Admin reset API, verified-provider and embedded-client attendance intake, the protected Student workspace, and all three task roots. Construct exactly one PostgreSQL embedded-classroom repository with the existing P22 attendance-projection callback and share that captured instance across bootstrap, heartbeat, reset, attendance intake, and the mounted runtime. Preserve fail-closed provider and candidate gates.
+proposed_symbols_routes_keys_or_dependencies:
+  - |-
+    Exact immutable path inventory; SHA-256 of sorted LF-delimited paths with final LF is 2b21372b09476b9a029bced558f5d3856997b902cf9d69d6f1437ec0c862f551:
+    apps/web/src/client/app/portal-entry.tsx
+    apps/web/src/client/app/student/classroom/StudentClassroomWorkspace.test.tsx
+    apps/web/src/client/app/student/classroom/StudentClassroomWorkspace.tsx
+    apps/web/src/client/app/student/classroom/api.test.ts
+    apps/web/src/client/app/student/classroom/api.ts
+    apps/web/src/server/app.ts
+    apps/web/src/server/features/classroom/embedded/adapters.test.ts
+    apps/web/src/server/features/classroom/embedded/adapters.ts
+    apps/web/src/server/features/classroom/embedded/composition.test.ts
+    apps/web/src/server/features/classroom/embedded/composition.ts
+    apps/web/src/server/features/classroom/embedded/index.ts
+    apps/web/src/server/features/classroom/embedded/router.test.ts
+    apps/web/src/server/features/classroom/embedded/router.ts
+    apps/web/src/server/features/classroom/embedded/service.test.ts
+    apps/web/src/server/features/classroom/embedded/service.ts
+    packages/contracts/src/classroom/embedded/index.ts
+    packages/contracts/src/index.ts
+    packages/db/src/classroom/attendance/repository.test.ts
+    packages/db/src/classroom/attendance/repository.ts
+    packages/db/src/index.ts
+    packages/domain/src/index.ts
+    tests/integration/classroom/embedded-classroom-mount.test.ts
+  - Export the exact embedded classroom contract and domain roots plus the attendance database root without changing unrelated root APIs.
+  - Mount one constant authenticated Student classroom surface and server-derived bootstrap and heartbeat commands. Hash the body exchange secret immediately; accept no caller-supplied Student, household, occurrence, enrollment, registrant, environment, or authorization scope.
+  - Require the F03 Student session and exact device lineage, P16 occurrence/enrollment/effective-access/registrant proof, and current P32 service-account plus recording-participation consent at grant issue and redemption. Require same-origin CSRF for Student mutations.
+  - Require current Admin authorization and an immutable audit reference for reset; revoke the active session and outstanding grants before any later fresh launch.
+  - Construct createPostgresEmbeddedClassroomRepository exactly once with the existing P22 AttendanceProjectionChangePort. Share that captured repository with service and attendance intake. Expose only a P18-owned installed-runtime receipt for later P22 proof; do not accept caller-supplied equality, readiness booleans, or a second repository.
+  - Correlate verified Zoom events and embedded-client events by exact occurrence, Student, registrant, source-event digest, and connection lineage. Reconcile projections server-side, append Admin corrections with audit evidence, and reject stale, cross-Student, cross-scope, unverified-provider, or mismatched events without an oracle.
+  - Return only the minimum usable Meeting SDK bootstrap required by the Student client, never a raw Zoom URL. Enforce the specification timing and lease boundaries, including a bootstrap envelope no longer than 60 seconds, heartbeat every 30 seconds, and a 90-second server lease.
+  - Render the P18 Student workspace at the existing constant /app/classroom route, with camera guidance, recording disclosure and indicator, denial-safe states, bootstrap/heartbeat lifecycle, and no identity or bearer data in the URL or localStorage.
+compatibility_assumptions:
+  - Migration 2251 is the admitted path-complete successor to P18-migration-003 and remains an ancestor of integration; no migration or persistent-database effect is authorized here.
+  - The protected Zoom Meeting SDK credentials and canonical occurrence/registrant records remain server-only. If an exact provider webhook secret or signer contract is unavailable, provider intake and join bootstrap must remain fail closed for later candidate-bound binding; do not use a wrong credential, extend the 60-second envelope, or infer provider readiness.
+  - P22 remains separately gated by its own immutable server request, native migration 2254 proof, the admitted P21 content writer and population path, and deployed nonblank alias-HMAC-key readback. This request supplies only the P18-owned mounted-runtime receipt and same-instance construction proof.
+  - P18-registration-001 remains immutable and is superseded only by independent admission of this exact successor.
+verification_performed:
+  - Validated the 22-path inventory digest and eleven existing raw Git-blob preimages against integration 48182afe34d5b369b6fbbc05b6d6f788c34e5429; eleven new paths are explicitly absent.
+  - Repository verification must cover the prior P18 domain, repository, service, and Student view-model packet plus new adapter, composition, router, Student API/workspace, and integration proofs; exact single-repository construction; server-derived identity/scope; CSRF; F03/P16/P32 rechecks; reset fencing; bootstrap timing; attendance correlation/replay; callback behavior; root exports; typecheck; lint; format; secret; and diff controls.
+  - No provider inspection or mutation, network call, persistent database, candidate freeze, deployment, DNS, send, charge, customer mutation, cleanup, or external effect was performed while drafting this request.
+conflicts_or_risks:
+  - Never create a second P18 repository, treat object equality or a caller-supplied flag as mount proof, accept caller identity/scope, expose a raw Zoom URL or protected credential, weaken consent or lease timing, or accept unverified provider attendance.
+  - Do not add a new configuration or signer path outside this exact ceiling. If implementation proves one unavoidable, stop and return a precise successor request rather than broadening this immutable request.
+  - Do not enable P22, claim native-PostgreSQL deployment, perform provider work, or advance candidate/release gates from repository-only tests.
+contains_secret_or_private_data: false

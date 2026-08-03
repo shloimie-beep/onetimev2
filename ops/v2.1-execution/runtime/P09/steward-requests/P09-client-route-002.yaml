@@ -1,0 +1,42 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P09-client-route-002
+task_id: P09
+kind: client_route_registration
+requirement_ids:
+  - OTV2-SIGNUP-178
+  - OTV2-SIGNUP-229
+  - OTV2-SCHOOL-200
+  - OTV2-SCHOOL-214
+acceptance_case_ids:
+  - OTV2-SCHOOL-200-AC01
+  - OTV2-SCHOOL-214-AC01
+rationale: >-
+  P09 owns the pure signed-out School-inquiry form model but cannot edit the
+  public client route registry or application shell that renders it.
+desired_semantic_change: >-
+  Register signed-out GET /school from schoolInquiryFormModel with the approved
+  School-inquiry copy and exactly four required fields and two optional fields.
+  Keep the page a manual-follow-up inquiry only: it must not require
+  authentication, create product access or an account, offer credentials,
+  imply acceptance, expose a School role or portal, enroll nurture, render a
+  roster surface, or trigger a provider effect. Submit only to the existing
+  strict same-origin public School-inquiry POST route.
+proposed_symbols_routes_keys_or_dependencies:
+  - signed-out GET /school
+  - schoolInquiryFormModel
+  - exactly four required and two optional School-inquiry fields
+  - existing strict POST /api/v2.1/signup/school-inquiry route
+compatibility_assumptions:
+  - P08 supplies the mutually exclusive family or school public classification seam.
+  - The server remains authoritative for validation, normalization, deduplication, and durable acknowledgment.
+  - Ordinary Parent and Student account journeys remain separate and unchanged.
+verification_performed:
+  - Verified schoolInquiryFormModel exposes exactly four required and two optional fields.
+  - Verified the model copy describes manual follow-up without promising access or acceptance.
+  - Verified the model exposes no authentication, account, role, portal, roster, consent, or provider action.
+conflicts_or_risks:
+  - Do not infer School inquiry from missing or hybrid classification.
+  - Do not add hidden account, access, role, portal, credential, consent, or marketing fields.
+  - Do not register an authenticated School application surface.
+contains_secret_or_private_data: false

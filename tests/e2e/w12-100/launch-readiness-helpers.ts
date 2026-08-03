@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { expect, type Page } from '@playwright/test';
+import { W12_E2E_ADMIN_COOKIES } from '../../support/w12-portal-test-lab-session.ts';
 
 export type ViewportSpec = { label: string; width: number; height: number };
 export type RouteProbe = {
@@ -24,12 +25,17 @@ export const evidenceRoot = path.resolve(process.cwd(), 'ops/evidence/w12-100');
 export const screenshotRoot = path.join(evidenceRoot, 'screenshots');
 
 export const publicRouteProbes: RouteProbe[] = [
-  { id: 'landing', path: '/', audience: 'public', expectedHeading: /love for learning Torah/i },
+  {
+    id: 'landing',
+    path: '/',
+    audience: 'public',
+    expectedHeading: 'Worldwide Mishnah Learning / Live from Eretz Yisrael',
+  },
   {
     id: 'signup',
     path: '/signup',
     audience: 'public',
-    expectedHeading: 'Sign Up Now',
+    expectedHeading: 'Pre-register Your Family',
     collectionSurface: true,
   },
   { id: 'privacy', path: '/privacy', audience: 'public', expectedHeading: /Privacy/i },
@@ -97,7 +103,7 @@ export const ownerRouteProbes: RouteProbe[] = [
     id: 'billing',
     path: '/app/billing',
     audience: 'owner',
-    expectedHeading: 'Products/Billing status',
+    expectedHeading: 'Household Access',
   },
   { id: 'support', path: '/app/support', audience: 'owner', expectedHeading: 'Support' },
 ];
@@ -128,16 +134,7 @@ export async function loginAs(
 }
 
 export async function useW12AdminSession(page: Page) {
-  await page.context().addCookies([
-    {
-      name: 'otcrm_session',
-      value: 'w12-admin-session-token-local-only-2026-07-17',
-      domain: '127.0.0.1',
-      path: '/',
-      httpOnly: true,
-      sameSite: 'Lax',
-    },
-  ]);
+  await page.context().addCookies([...W12_E2E_ADMIN_COOKIES]);
 }
 
 export async function waitForProbeReady(page: Page, probe: RouteProbe) {
@@ -342,15 +339,15 @@ export async function createSyntheticContact(page: Page) {
   const email = `w12-100-${Date.now()}@example.test`;
   const contactName = `W12 100 Parent ${Date.now()}`;
   await page.goto('/signup');
-  await page.getByLabel('Parent or contact name').fill(contactName);
-  await page.getByLabel('Family or School').fill('W12 100 Synthetic Family');
-  await page.getByLabel('Location').fill('Jerusalem');
-  await page.getByRole('textbox', { name: 'Email' }).fill(email);
-  const submit = page.getByRole('button', { name: 'Sign Up Now' });
+  await page.getByLabel('Adult name').fill(contactName);
+  await page.getByLabel('Family or household name').fill('W12 100 Synthetic Family');
+  await page.getByLabel('Adult location').fill('Jerusalem');
+  await page.getByRole('textbox', { name: 'Adult email' }).fill(email);
+  const submit = page.getByRole('button', { name: 'Pre-register my Family' });
   await expect(submit).toBeVisible();
   await submit.click();
   await expect(
-    page.getByRole('heading', { name: 'Thank you - we received your Family signup.' }),
+    page.getByRole('heading', { name: 'Adult pre-registration received.' }),
   ).toBeVisible();
   return { email, contactName };
 }

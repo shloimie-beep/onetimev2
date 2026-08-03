@@ -1,6 +1,7 @@
 import type { AppConfig } from '../../../config/src/index.ts';
 import type {
   OwnerDashboard,
+  OwnerDashboardHouseholdAccess,
   OwnerDashboardSection,
   OwnerDashboardSectionState,
   VisibleAction,
@@ -105,15 +106,15 @@ export function ownerAdminVisibleActions(): VisibleAction[] {
     ),
     action(
       'dashboard.open_billing.button',
-      'Open Billing status',
+      'Open household access',
       'button',
       '/app/dashboard',
       ['owner', 'admin'],
       {
-        capability: 'billing:status:read',
+        capability: 'accounts:access:read',
         handler: ['GET', '/api/v1/dashboard/owner'],
         idempotency: [false, null],
-        audit: ['local_read', 'billing_status_read'],
+        audit: ['local_read', 'account_access_status_read'],
         states: readStates,
       },
     ),
@@ -308,29 +309,29 @@ export function ownerAdminVisibleActions(): VisibleAction[] {
     ),
     action(
       'billing.status.view.route',
-      'Products/Billing status',
+      'Household access',
       'route',
       '/app/billing',
       ['owner', 'admin'],
       {
-        capability: 'billing:status:read',
+        capability: 'accounts:access:read',
         handler: ['GET', '/api/v1/dashboard/owner'],
         idempotency: [false, null],
-        audit: ['local_read', 'billing_status_read'],
+        audit: ['local_read', 'account_access_status_read'],
         states: readStates,
       },
     ),
     action(
-      'billing.status.refresh.button',
-      'Refresh billing status',
+      'household.access.refresh.button',
+      'Refresh household access',
       'button',
       '/app/billing',
       ['owner', 'admin'],
       {
-        capability: 'billing:status:read',
+        capability: 'accounts:access:read',
         handler: ['GET', '/api/v1/dashboard/owner'],
         idempotency: [false, null],
-        audit: ['local_read', 'billing_status_read'],
+        audit: ['local_read', 'account_access_status_read'],
         states: readStates,
       },
     ),
@@ -379,15 +380,23 @@ export async function buildOwnerDashboard(input: {
   now?: Date;
 }): Promise<OwnerDashboard> {
   const now = input.now ?? new Date();
-  const [newLeads, nextClass, communications, content, portalAccounts, billingReadiness] =
-    await Promise.all([
-      newLeadsSection(input.pool, input.config),
-      nextClassSection(input.pool, input.config, now),
-      communicationsSection(input.pool, input.config),
-      contentReviewSection(input.pool, input.config),
-      portalAccountSection(input.pool, input.config),
-      billingSection(input.pool, input.config),
-    ]);
+  const [
+    newLeads,
+    nextClass,
+    communications,
+    content,
+    portalAccounts,
+    currentAccess,
+    householdAccess,
+  ] = await Promise.all([
+    newLeadsSection(input.pool, input.config),
+    nextClassSection(input.pool, input.config, now),
+    communicationsSection(input.pool, input.config),
+    contentReviewSection(input.pool, input.config),
+    portalAccountSection(input.pool, input.config),
+    currentAccessSection(input.pool, input.config),
+    currentHouseholdAccess(input.pool, input.config, now),
+  ]);
   return {
     generated_at: now.toISOString(),
     account_key: input.config.accountKey,
@@ -403,9 +412,10 @@ export async function buildOwnerDashboard(input: {
       communications,
       content,
       portalAccounts,
-      billingReadiness,
+      currentAccess,
       supportSection(),
     ],
+    household_access: householdAccess,
   };
 }
 
@@ -697,52 +707,167 @@ async function portalAccountSection(
   });
 }
 
-async function billingSection(pool: DbPool, config: AppConfig): Promise<OwnerDashboardSection> {
+async function currentAccessSection(
+  pool: DbPool,
+  config: AppConfig,
+): Promise<OwnerDashboardSection> {
   const row = await optionalCountRow(
     pool,
     `SELECT
-        (SELECT count(*)::int FROM onetime.billing_offer_prices
-          WHERE account_key = $1 AND product_key = $2 AND archived_at IS NULL) AS price_count,
-        (SELECT count(*)::int FROM onetime.billing_subscription_projections
-          WHERE account_key = $1 AND product_key = $2
-            AND status IN ('trialing', 'active', 'past_due', 'manual_review')) AS subscription_count,
-        (SELECT max(updated_at) FROM onetime.billing_subscription_projections
-          WHERE account_key = $1 AND product_key = $2) AS updated_at`,
+        sum(CASE
+          WHEN state IN ('active', 'grace', 'scheduled_end')
+            AND effective_at <= now()
+            AND (expires_at IS NULL OR expires_at > now())
+          THEN 1 ELSE 0
+        END)::int AS active_count,
+        sum(CASE WHEN source_kind = 'free_pilot' THEN 1 ELSE 0 END)::int AS free_pilot_count,
+        sum(CASE WHEN state IN ('manual_review', 'suspended') THEN 1 ELSE 0 END)::int AS review_count,
+        count(*)::int AS projection_count,
+        max(updated_at) AS updated_at
+       FROM onetime.account_access_projections
+      WHERE account_key = $1
+        AND product_key = $2`,
     [config.accountKey, config.productKey],
   );
   if (!row) {
     return unavailable(
       'billing_readiness',
-      'Payment setup',
-      'Billing state is temporarily unavailable.',
+      'Household access',
+      'Current household access is temporarily unavailable.',
     );
   }
-  const prices = numberValue(row.price_count);
-  const subscriptions = numberValue(row.subscription_count);
+  const active = numberValue(row.active_count);
+  const freePilots = numberValue(row.free_pilot_count);
+  const needsReview = numberValue(row.review_count);
+  const projections = numberValue(row.projection_count);
   return section({
     id: 'billing_readiness',
-    label: 'Payment setup',
-    state: prices > 0 ? 'ready' : 'not_connected',
-    value: subscriptions,
-    valueLabel:
-      prices > 0
-        ? `${subscriptions} subscription${subscriptions === 1 ? '' : 's'}`
-        : 'Not connected',
+    label: 'Household access',
+    state:
+      active > 0
+        ? needsReview > 0
+          ? 'action_needed'
+          : 'ready'
+        : projections > 0
+          ? 'action_needed'
+          : 'no_data_yet',
+    value: active,
+    valueLabel: `${active} household${active === 1 ? '' : 's'} with access`,
     detail:
-      prices > 0
-        ? 'Billing projections are readable; live payment actions remain disabled unless separately approved.'
-        : 'No billing price is configured for this product.',
-    nextAction: prices > 0 ? null : 'Configure approved billing products before taking payments.',
-    trendLabel: prices > 0 ? `${prices} configured price${prices === 1 ? '' : 's'}` : null,
+      projections > 0
+        ? `GHL owns payment history; One Time stores ${projections} current household access projection${projections === 1 ? '' : 's'}.`
+        : 'GHL owns payment history; One Time has no current household access projection yet.',
+    nextAction:
+      projections === 0
+        ? 'Grant a reviewed free pilot or ingest an approved GHL current-access state.'
+        : needsReview > 0
+          ? 'Review non-active household access states in GHL and reproject the result.'
+          : null,
+    trendLabel:
+      freePilots > 0 ? `${freePilots} complimentary pilot${freePilots === 1 ? '' : 's'}` : null,
     href: '/app/billing',
-    capability: 'billing:status:read',
+    capability: 'accounts:access:read',
     updatedAt: isoOrNull(row.updated_at),
     diagnostics: {
-      source: 'billing_offer_prices/billing_subscription_projections',
-      stateCode: `prices:${prices};subscriptions:${subscriptions}`,
-      detail: 'Billing projection only; no live charge is authorized by this view.',
+      source: 'account_access_projections',
+      stateCode: `active:${active};pilots:${freePilots};review:${needsReview};total:${projections}`,
+      detail: 'Current access only; GHL remains the payment-history system of record.',
     },
   });
+}
+
+async function currentHouseholdAccess(
+  pool: DbPool,
+  config: AppConfig,
+  now: Date,
+): Promise<OwnerDashboardHouseholdAccess[]> {
+  const rows = await optionalRows(
+    pool,
+    `SELECT households.household_key,
+            households.display_name AS household_label,
+            households.status AS household_status,
+            access.state,
+            access.source_kind,
+            access.effective_at,
+            access.expires_at,
+            access.revocation_reason,
+            coalesce(access.updated_at, households.updated_at) AS updated_at
+       FROM onetime.portal_households AS households
+       LEFT JOIN onetime.account_access_projections AS access
+         ON access.account_key = households.account_key
+        AND access.product_key = households.product_key
+        AND access.household_key = households.household_key
+      WHERE households.account_key = $1
+        AND households.product_key = $2
+      ORDER BY CASE households.status WHEN 'active' THEN 0 ELSE 1 END,
+               lower(households.display_name),
+               households.household_key`,
+    [config.accountKey, config.productKey],
+  );
+  if (!rows) return [];
+  return rows.map((row) => {
+    const state = accessState(row.state);
+    const sourceKind = accessSourceKind(row.source_kind);
+    const effectiveAt = isoOrNull(row.effective_at);
+    const expiresAt = isoOrNull(row.expires_at);
+    return {
+      household_key: String(row.household_key),
+      household_label: String(row.household_label),
+      household_status: row.household_status === 'archived' ? 'archived' : 'active',
+      state,
+      source_kind: sourceKind,
+      source_label: accessSourceLabel(sourceKind),
+      grants_access:
+        row.household_status === 'active' &&
+        ['active', 'grace', 'scheduled_end'].includes(state) &&
+        effectiveAt !== null &&
+        new Date(effectiveAt).getTime() <= now.getTime() &&
+        (expiresAt === null || new Date(expiresAt).getTime() > now.getTime()),
+      effective_at: effectiveAt,
+      expires_at: expiresAt,
+      review_or_revocation_reason:
+        typeof row.revocation_reason === 'string' && row.revocation_reason.trim()
+          ? row.revocation_reason.trim()
+          : null,
+      updated_at: isoOrNull(row.updated_at),
+    };
+  });
+}
+
+function accessState(value: unknown): OwnerDashboardHouseholdAccess['state'] {
+  if (
+    value === 'active' ||
+    value === 'grace' ||
+    value === 'scheduled_end' ||
+    value === 'suspended' ||
+    value === 'revoked' ||
+    value === 'manual_review'
+  ) {
+    return value;
+  }
+  return 'pending';
+}
+
+function accessSourceKind(value: unknown): OwnerDashboardHouseholdAccess['source_kind'] {
+  if (
+    value === 'free_pilot' ||
+    value === 'highlevel_payment_state' ||
+    value === 'admin_override' ||
+    value === 'legacy_preview'
+  ) {
+    return value;
+  }
+  return null;
+}
+
+function accessSourceLabel(
+  value: OwnerDashboardHouseholdAccess['source_kind'],
+): OwnerDashboardHouseholdAccess['source_label'] {
+  if (value === 'free_pilot') return 'Complimentary pilot';
+  if (value === 'highlevel_payment_state') return 'GHL current access';
+  if (value === 'admin_override') return 'Administrator override';
+  if (value === 'legacy_preview') return 'Legacy staging preview';
+  return 'No access projection';
 }
 
 function supportSection(): OwnerDashboardSection {

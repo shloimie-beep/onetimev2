@@ -6,9 +6,11 @@ import { createApp } from '../../../apps/web/src/server/app.ts';
 import {
   createAccountUser,
   createOwnerAdminInvitation,
+  createParentActivation,
   createSession,
   decryptLifecycleDeliveryPayloadForTests,
   getSessionByToken,
+  grantFreePilotAccess,
 } from '../../../packages/domain/src/index.ts';
 
 let pool: DbPool;
@@ -132,6 +134,56 @@ describe('OPS-03B email step-up account lifecycle web flow', () => {
     expect(replay.json).toMatchObject({ code: 'TOKEN_CONSUMED' });
   });
 
+  it('completes Parent activation into a safe paused session when access is absent', async () => {
+    await pool.query(
+      `INSERT INTO onetime.portal_households
+         (household_key, account_key, product_key, display_name)
+       VALUES ('activation_without_access',$1,$2,'Activation Without Access')`,
+      [appConfig.accountKey, appConfig.productKey],
+    );
+    const issued = await createParentActivation({
+      pool,
+      config: appConfig,
+      actor: { userKey: ownerUserKey, role: 'owner' },
+      includeLocalProofToken: true,
+      payload: {
+        idempotency_key: 'web-parent-no-access-001',
+        email: 'no-access.parent@example.test',
+        display_name: 'No Access Parent',
+        household_key: 'activation_without_access',
+        relationship_key: 'activation_without_access_parent',
+        relationship_label: 'Parent',
+        authority: 'primary_guardian',
+      },
+    });
+    const activationPage = await getCsrf('/activate');
+    const activated = await postJson(
+      '/api/v1/account-lifecycle/activate',
+      {
+        token: requiredToken(issued),
+        password: 'NoAccessParent!234',
+        csrf_token: activationPage.token,
+      },
+      activationPage.cookies,
+    );
+
+    expect(activated.response.status).toBe(200);
+    expect(activated.json).toMatchObject({
+      success: true,
+      return_to: '/app/parent',
+    });
+    expect(cookieHeader(activated.response.headers)).toContain('otcrm_session=');
+    const relationship = await pool.query(
+      `SELECT status, guardian_user_ref
+         FROM onetime.portal_guardian_relationships
+        WHERE relationship_key = 'activation_without_access_parent'`,
+    );
+    expect(relationship.rows[0]).toMatchObject({
+      status: 'active',
+    });
+    expect(String(relationship.rows[0]?.guardian_user_ref)).toBeTruthy();
+  });
+
   it('uses generic forgot-password responses and reset links revoke prior sessions', async () => {
     const parentUserKey = await createAccountUser({
       pool,
@@ -141,6 +193,36 @@ describe('OPS-03B email step-up account lifecycle web flow', () => {
       displayName: 'Reset Parent',
       role: 'parent',
       mfaCapable: false,
+    });
+    await pool.query(
+      `INSERT INTO onetime.portal_households
+         (household_key, account_key, product_key, display_name)
+       VALUES ('reset_parent_household',$1,$2,'Reset Parent Household')`,
+      [appConfig.accountKey, appConfig.productKey],
+    );
+    await pool.query(
+      `INSERT INTO onetime.portal_guardian_relationships
+         (relationship_key, account_key, product_key, household_key, guardian_user_ref,
+          relationship_label, authority)
+       VALUES ('reset_parent_relationship',$1,$2,'reset_parent_household',$3,
+          'Parent','primary_guardian')`,
+      [appConfig.accountKey, appConfig.productKey, parentUserKey],
+    );
+    const now = new Date();
+    await grantFreePilotAccess({
+      pool,
+      accountKey: appConfig.accountKey,
+      productKey: appConfig.productKey,
+      actorKind: 'admin',
+      now,
+      command: {
+        household_key: 'reset_parent_household',
+        idempotency_key: 'reset-parent-web-free-pilot',
+        effective_at: now.toISOString(),
+        expires_at: new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString(),
+        policy_version: 'account-lifecycle-web-free-pilot-v1',
+        opaque_source_reference: 'account_lifecycle_web_reset_parent',
+      },
     });
     const parentSession = await createSession({
       pool,

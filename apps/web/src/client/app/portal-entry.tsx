@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import type {
   LearnerProfile,
+  LiveClassQuestion,
   ParentLearnerMaterials,
   ParentPortalDashboard,
   ProtectedActionDescriptor,
@@ -10,33 +11,44 @@ import type {
   StudentPortalDashboard,
 } from '@onetime/contracts';
 import {
-  ParentPortalFeature,
-  StudentPortalFeature,
+  PARENT_PORTAL_SECTIONS,
+  STUDENT_PORTAL_SECTIONS,
+  type ParentPortalSection,
   type PortalViewState,
+  type StudentPortalSection,
 } from '../features/portals/PortalFeatures.js';
+import { ParentClientRoot, StudentClientRoot, resolveCurrentClientRoute } from './router/index.js';
+import { ParentHouseholdWorkspace, type ParentHouseholdView } from './parent/household/index.js';
+import { StudentLibraryWorkspace } from './student/library/index.js';
+import { StudentLearningOverview } from './student/learning/StudentLearningOverview.js';
+import { StudentClassroomWorkspace } from './student/classroom/StudentClassroomWorkspace.js';
+import { SupportFeature } from './support/SupportFeature.js';
 import { AppShell, type ShellNavItem, type ShellUser } from './shell/AppShell.js';
 import {
   PortalApiError,
-  createParentRewardGoal,
+  changeOwnPassword,
   createParentLearner,
+  getParentAccessShell,
   getParentDashboard,
   getParentMaterials,
+  getLiveClassQuestions,
   getSession,
   getStudentDashboard,
+  getStudentLearningSnapshot,
   invokeProtectedAction,
-  createBillingCheckoutSession,
-  createBillingPortalSession,
+  logoutSession,
+  markLiveClassQuestionReady,
   runStudentAccessOperation,
+  requestParentRecovery,
   setParentLearnerArchived,
   submitClassroomQuestion,
-  queryStudentHelper,
+  submitLearningQuestion,
   submitStudentQuestion,
   updateParentLearner,
+  type V21ApiSession,
+  type StudentLearningSnapshot,
 } from './portal-api.js';
 import './crm.css';
-
-const HELPER_PREPARING_MESSAGE =
-  'Class Helper is being prepared for this class. Send a private question and we will route it for review.';
 
 type Notice = {
   kind: 'info' | 'success' | 'error';
@@ -47,6 +59,11 @@ type LearnerFormValues = {
   displayName: string;
   hebrewName: string;
   gradeLabel: string;
+};
+
+type StudentAccessFormValues = {
+  username: string;
+  password: string;
 };
 
 type PortalDialog =
@@ -67,17 +84,31 @@ type PortalDialog =
     }
   | {
       type: 'student-access-confirm';
-      action: Extract<StudentAccessOperationType, 'suspend' | 'restore' | 'revoke_sessions'>;
+      action: Extract<
+        StudentAccessOperationType,
+        'reset' | 'suspend' | 'restore' | 'revoke_sessions'
+      >;
       learner: LearnerProfile;
     };
 
 function PortalApp() {
-  const portalRole = location.pathname.startsWith('/app/student') ? 'student' : 'parent';
+  const portalRole = portalRoleFromLocation(location.pathname);
+  const classroomRoute = location.pathname === '/app/classroom';
+  const supportRoute = location.pathname.match(/^\/app\/student\/support(?:\/([^/]+))?$/u);
+  const [activeSection, setActiveSection] = useState<ParentPortalSection | StudentPortalSection>(
+    () => portalSectionFromLocation(portalRole),
+  );
   const [session, setSession] = useState<Awaited<ReturnType<typeof getSession>> | null>(null);
+  const [v21ParentSession, setV21ParentSession] = useState<V21ApiSession | null>(null);
   const [sessionExpired, setSessionExpired] = useState(false);
   const [viewState, setViewState] = useState<PortalViewState>('loading');
   const [parentDashboard, setParentDashboard] = useState<ParentPortalDashboard | null>(null);
+  const [parentAccessShell, setParentAccessShell] = useState<Awaited<
+    ReturnType<typeof getParentAccessShell>
+  > | null>(null);
   const [studentDashboard, setStudentDashboard] = useState<StudentPortalDashboard | null>(null);
+  const [studentLearning, setStudentLearning] = useState<StudentLearningSnapshot | null>(null);
+  const [liveClassQuestions, setLiveClassQuestions] = useState<LiveClassQuestion[]>([]);
   const [selectedLearnerKey, setSelectedLearnerKey] = useState<string | null>(null);
   const [parentMaterials, setParentMaterials] = useState<Record<string, ParentLearnerMaterials>>(
     {},
@@ -93,14 +124,34 @@ function PortalApp() {
     null;
 
   useEffect(() => {
+    if (classroomRoute && (location.search || location.hash)) {
+      history.replaceState({}, '', '/app/classroom');
+    }
     void load();
   }, []);
+
+  useEffect(() => {
+    const onPopState = () => {
+      setActiveSection(portalSectionFromLocation(portalRole));
+      document.getElementById('app-main')?.focus();
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, [portalRole]);
 
   useEffect(() => {
     if (!parentDashboard || !selectedLearner) return;
     if (parentMaterials[selectedLearner.learner_key]) return;
     void loadMaterials(parentDashboard.household.household_key, selectedLearner.learner_key);
   }, [parentDashboard, selectedLearner?.learner_key]);
+
+  useEffect(() => {
+    if (!session || portalRole !== 'student' || !studentDashboard?.upcoming_classes[0]) {
+      return undefined;
+    }
+    const interval = window.setInterval(() => void loadLiveQuestions(studentDashboard), 4000);
+    return () => window.clearInterval(interval);
+  }, [session?.expires_at, portalRole, studentDashboard?.upcoming_classes[0]?.class_key]);
 
   async function load() {
     setViewState('loading');
@@ -110,19 +161,53 @@ function PortalApp() {
       setSession(nextSession);
       setSessionExpired(false);
       if (nextSession.user.role !== portalRole) {
+        setV21ParentSession(null);
         setViewState('permission');
         return;
       }
+      if (classroomRoute) {
+        setV21ParentSession(null);
+        setParentAccessShell(null);
+        setParentDashboard(null);
+        setStudentDashboard(null);
+        setStudentLearning(null);
+        setLiveClassQuestions([]);
+        setViewState('ready');
+        return;
+      }
+      if (nextSession.session_model === 'v21') {
+        setV21ParentSession(nextSession);
+        setParentAccessShell(null);
+        setParentDashboard(null);
+        setSelectedLearnerKey(null);
+        setViewState('ready');
+        return;
+      }
+      setV21ParentSession(null);
       if (portalRole === 'parent') {
-        const dashboard = await getParentDashboard();
-        setParentDashboard(dashboard);
-        setSelectedLearnerKey((current) =>
-          current && dashboard.learners.some((learner) => learner.learner_key === current)
-            ? current
-            : (dashboard.learners[0]?.learner_key ?? null),
-        );
+        const shell = await getParentAccessShell();
+        setParentAccessShell(shell);
+        if (shell.mode === 'active') {
+          const dashboard = await getParentDashboard();
+          setParentDashboard(dashboard);
+          setSelectedLearnerKey((current) =>
+            current && dashboard.learners.some((learner) => learner.learner_key === current)
+              ? current
+              : (dashboard.learners[0]?.learner_key ?? null),
+          );
+        } else {
+          setParentDashboard(null);
+          setSelectedLearnerKey(null);
+        }
       } else {
-        setStudentDashboard(await getStudentDashboard());
+        const dashboard = await getStudentDashboard();
+        setStudentDashboard(dashboard);
+        await loadLiveQuestions(dashboard);
+        try {
+          setStudentLearning(await getStudentLearningSnapshot());
+        } catch {
+          setStudentLearning(null);
+        }
       }
       setViewState('ready');
     } catch (error) {
@@ -137,6 +222,19 @@ function PortalApp() {
     } catch (error) {
       if (handleAuthError(error)) return;
       setViewState('partial-error');
+    }
+  }
+
+  async function loadLiveQuestions(dashboard = studentDashboard) {
+    const occurrenceKey = dashboard?.upcoming_classes[0]?.class_key;
+    if (!occurrenceKey) {
+      setLiveClassQuestions([]);
+      return;
+    }
+    try {
+      setLiveClassQuestions(await getLiveClassQuestions(occurrenceKey));
+    } catch {
+      setLiveClassQuestions([]);
     }
   }
 
@@ -183,7 +281,7 @@ function PortalApp() {
     const learner = findParentLearner(learnerKey);
     if (!learner) return;
     setDialogError('');
-    if (action === 'setup' || action === 'reset') {
+    if (action === 'setup') {
       setDialog({ type: 'student-access-form', action, learner });
       return;
     }
@@ -263,9 +361,12 @@ function PortalApp() {
     }
   }
 
-  async function submitStudentAccessForm(email: string) {
+  async function submitStudentAccessForm(values: StudentAccessFormValues) {
     if (!dialog || dialog.type !== 'student-access-form') return;
-    await submitStudentAccess(dialog.learner, dialog.action, trimOptional(email));
+    await submitStudentAccess(dialog.learner, dialog.action, {
+      username: trimOptional(values.username),
+      password: values.password,
+    });
   }
 
   async function submitStudentAccessConfirm() {
@@ -276,7 +377,7 @@ function PortalApp() {
   async function submitStudentAccess(
     learner: LearnerProfile,
     action: StudentAccessOperationType,
-    email?: string | undefined,
+    credentials?: { username?: string | undefined; password?: string | undefined } | undefined,
   ) {
     if (!session || !parentDashboard) return;
     setDialogSaving(true);
@@ -287,7 +388,8 @@ function PortalApp() {
         householdKey: parentDashboard.household.household_key,
         learnerKey: learner.learner_key,
         operation: action,
-        email,
+        username: credentials?.username,
+        password: credentials?.password,
         displayName: learner.display_name,
       });
       await reloadParentAfterMutation(learner.learner_key);
@@ -300,50 +402,6 @@ function PortalApp() {
       setViewState(stateForError(error));
     } finally {
       setDialogSaving(false);
-    }
-  }
-
-  async function handleBillingAction(kind: 'checkout' | 'portal') {
-    if (!session || !parentDashboard) return;
-    try {
-      setNotice(null);
-      const principalKey = parentDashboard.household.household_key;
-      const result =
-        kind === 'checkout'
-          ? await createBillingCheckoutSession({
-              csrfToken: session.csrf_token,
-              principalKey,
-            })
-          : await createBillingPortalSession({
-              csrfToken: session.csrf_token,
-              principalKey,
-            });
-      window.location.assign(result.redirect_url);
-    } catch (error) {
-      setNotice({ kind: 'error', message: errorMessage(error, 'Billing is unavailable.') });
-    }
-  }
-
-  async function handleCreateRewardGoal(
-    learnerKey: string,
-    goal: { title: string; description: string; pointsRequired: number },
-  ) {
-    if (!session || !parentDashboard) return;
-    try {
-      await createParentRewardGoal({
-        csrfToken: session.csrf_token,
-        learnerKey,
-        title: goal.title,
-        description: goal.description || undefined,
-        pointsRequired: goal.pointsRequired,
-      });
-      await reloadParentAfterMutation(learnerKey);
-      setNotice({ kind: 'success', message: 'Parent reward added.' });
-      setViewState('success');
-    } catch (error) {
-      if (handleAuthError(error)) return;
-      setNotice({ kind: 'error', message: errorMessage(error, 'Reward was not saved.') });
-      setViewState(stateForError(error));
     }
   }
 
@@ -388,23 +446,6 @@ function PortalApp() {
     }
   }
 
-  async function handleStudentHelper(question: string) {
-    if (!session || portalRole !== 'student') {
-      throw new Error(HELPER_PREPARING_MESSAGE);
-    }
-    try {
-      return await queryStudentHelper({
-        csrfToken: session.csrf_token,
-        question,
-      });
-    } catch (error) {
-      if (handleAuthError(error)) throw error;
-      setNotice({ kind: 'error', message: errorMessage(error, HELPER_PREPARING_MESSAGE) });
-      setViewState(stateForError(error));
-      throw error;
-    }
-  }
-
   async function handleClassroomQuestion(occurrenceKey: string, body: string) {
     if (!session || portalRole !== 'student') return;
     try {
@@ -413,12 +454,50 @@ function PortalApp() {
         occurrenceKey,
         body,
       });
+      await loadLiveQuestions();
       setNotice({ kind: 'success', message: 'Question sent.' });
       setViewState('success');
     } catch (error) {
       if (handleAuthError(error)) return;
       setNotice({ kind: 'error', message: errorMessage(error, 'Question was not sent.') });
       setViewState(stateForError(error));
+    }
+  }
+
+  async function handleLiveClassReady(questionKey: string, ready: boolean) {
+    if (!session || portalRole !== 'student') return;
+    try {
+      await markLiveClassQuestionReady({
+        csrfToken: session.csrf_token,
+        questionKey,
+        ready,
+      });
+      await loadLiveQuestions();
+      setNotice({
+        kind: ready ? 'success' : 'info',
+        message: ready ? 'Readiness sent.' : 'The Rabbi will keep your question private.',
+      });
+      setViewState('success');
+    } catch (error) {
+      if (handleAuthError(error)) return;
+      setNotice({ kind: 'error', message: errorMessage(error, 'Readiness was not sent.') });
+      setViewState(stateForError(error));
+    }
+  }
+
+  async function handlePasswordChange(input: { currentPassword: string; newPassword: string }) {
+    if (!session) throw new Error('Please sign in again.');
+    try {
+      const result = await changeOwnPassword({
+        csrfToken: session.csrf_token,
+        currentPassword: input.currentPassword,
+        newPassword: input.newPassword,
+      });
+      setNotice({ kind: 'success', message: 'Password changed securely.' });
+      return result;
+    } catch (error) {
+      if (handleAuthError(error)) throw error;
+      throw error;
     }
   }
 
@@ -432,6 +511,7 @@ function PortalApp() {
     if (error instanceof PortalApiError && error.status === 401) {
       setSessionExpired(true);
       setSession(null);
+      setV21ParentSession(null);
       setParentDashboard(null);
       setStudentDashboard(null);
       setDialog(null);
@@ -442,32 +522,103 @@ function PortalApp() {
   }
 
   function signIn() {
-    window.location.assign(`/login?return_to=${encodeURIComponent(location.pathname)}`);
+    window.location.assign(
+      classroomRoute
+        ? '/login?return_to=%2Fapp%2Fstudent'
+        : `/login?return_to=${encodeURIComponent(`${location.pathname}${location.search}`)}`,
+    );
   }
 
   async function logout() {
     if (!session) return;
-    setSessionExpired(true);
-    setSession(null);
-    await fetch('/api/v1/auth/logout', {
-      method: 'POST',
-      credentials: 'same-origin',
-      headers: { 'x-csrf-token': session.csrf_token },
-    }).catch(() => undefined);
-    window.location.assign('/login');
+    const currentSession = session;
+    setNotice({ kind: 'info', message: 'Signing out securely...' });
+    try {
+      await logoutSession(currentSession);
+      setSessionExpired(true);
+      setSession(null);
+      setV21ParentSession(null);
+      window.location.assign('/login');
+    } catch (error) {
+      setNotice({
+        kind: 'error',
+        message: errorMessage(
+          error,
+          'Sign out could not be verified. Check your connection and try again.',
+        ),
+      });
+    }
   }
 
-  const navItems = useMemo<ShellNavItem[]>(
-    () =>
-      portalRole === 'parent'
-        ? [{ id: 'parent', label: 'Parent Portal', href: '/app/parent', current: true }]
-        : [{ id: 'student', label: 'Student Portal', href: '/app/student', current: true }],
-    [portalRole],
-  );
-  const title = portalRole === 'parent' ? 'Parent Portal' : 'Student Portal';
-  const description =
-    portalRole === 'parent'
-      ? (parentDashboard?.household.display_name ?? 'Household')
+  const navItems = useMemo<ShellNavItem[]>(() => {
+    if (classroomRoute) {
+      return [
+        {
+          id: 'student-portal',
+          label: 'Student Portal',
+          href: '/app/student',
+          current: false,
+        },
+        {
+          id: 'student-classroom',
+          label: 'Classroom',
+          href: '/app/classroom',
+          current: true,
+        },
+      ];
+    }
+    if (v21ParentSession) {
+      return [
+        {
+          id: 'v21-parent-students',
+          label: 'Students',
+          href: '/app/parent/students',
+          current: location.pathname.startsWith('/app/parent/students'),
+        },
+      ];
+    }
+    if (portalRole === 'parent') {
+      return [
+        {
+          id: 'parent-students',
+          label: 'Students',
+          href: '/app/parent/students',
+          current: location.pathname.startsWith('/app/parent/students'),
+        },
+      ];
+    }
+    return [
+      {
+        id: 'student-today',
+        label: 'Today',
+        href: '/app/student',
+        current: activeSection === 'today',
+      },
+      {
+        id: 'student-library',
+        label: 'Library',
+        href: '/app/student/library',
+        current: activeSection === 'library',
+      },
+      {
+        id: 'student-support',
+        label: 'Support',
+        href: '/app/student/support',
+        current: location.pathname.startsWith('/app/student/support'),
+      },
+    ];
+  }, [activeSection, classroomRoute, portalRole, v21ParentSession]);
+  const title = classroomRoute
+    ? 'Classroom'
+    : portalRole === 'parent'
+      ? 'Parent Portal'
+      : 'Student Portal';
+  const description = classroomRoute
+    ? 'Protected Student classroom'
+    : portalRole === 'parent'
+      ? (v21ParentSession?.parent_context.household.display_name ??
+        parentDashboard?.household.display_name ??
+        'Household')
       : (studentDashboard?.learner.display_name ?? 'Learner');
 
   return (
@@ -476,8 +627,25 @@ function PortalApp() {
       navItems={navItems}
       title={title}
       description={description}
+      workspaceClassName="app-workspace--portal"
       notice={notice ? <NoticeBanner notice={notice} /> : undefined}
       onNavigate={(href) => {
+        if (href.startsWith('#')) {
+          history.pushState({}, '', href);
+          document.querySelector(href)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          return;
+        }
+        const target = new URL(href, location.origin);
+        const section = target.searchParams.get('section');
+        if (
+          target.pathname === location.pathname &&
+          section &&
+          isPortalSection(portalRole, section)
+        ) {
+          history.pushState({}, '', target);
+          setActiveSection(section);
+          return;
+        }
         history.pushState({}, '', href);
         void load();
       }}
@@ -485,41 +653,170 @@ function PortalApp() {
       sessionExpired={sessionExpired}
       onSignIn={signIn}
     >
-      {portalRole === 'parent' ? (
-        <ParentPortalFeature
-          viewState={viewState}
-          dashboard={parentDashboard}
-          selectedLearnerKey={selectedLearner?.learner_key ?? null}
-          learnerMaterials={parentMaterials}
-          actorFingerprint={actorFingerprint}
-          onSelectLearner={setSelectedLearnerKey}
-          onCreateLearner={openCreateLearnerDialog}
-          onEditLearner={openEditLearnerDialog}
-          onArchiveLearner={(learnerKey) => openLearnerStatusDialog(learnerKey, 'archive')}
-          onRestoreLearner={(learnerKey) => openLearnerStatusDialog(learnerKey, 'restore')}
-          onStudentAccessAction={openStudentAccessDialog}
-          onBillingCheckout={() => void handleBillingAction('checkout')}
-          onBillingPortal={() => void handleBillingAction('portal')}
-          onLaunchClass={(_learnerKey, action) => void handleProtectedAction(action)}
-          onOpenContent={(_learnerKey, action) => void handleProtectedAction(action)}
-          onPreviewSupport={() => window.location.assign('/app/support')}
-          onCreateRewardGoal={(learnerKey, goal) => void handleCreateRewardGoal(learnerKey, goal)}
-          onRetry={() => void load()}
+      {supportRoute ? (
+        <SupportFeature
+          receiptId={supportRoute[1] ? decodeURIComponent(supportRoute[1]) : undefined}
+          basePath="/app/student/support"
+          onProtectedStateCleared={() => {
+            setSessionExpired(true);
+            setSession(null);
+          }}
         />
+      ) : portalRole === 'parent' ? (
+        v21ParentSession ? (
+          <ParentHouseholdWorkspace view={parentHouseholdViewFromLocation(location.pathname)} />
+        ) : parentAccessShell?.mode === 'paused' ? (
+          <ParentPausedShell
+            displayName={parentAccessShell.display_name}
+            activeSection={activeSection as ParentPortalSection}
+            accountSecurity={
+              session ? (
+                <AccountSecurityPanel
+                  identifier={session.user.email}
+                  role={session.user.role}
+                  roleLabel={session.user.role_label}
+                  onChangePassword={handlePasswordChange}
+                />
+              ) : null
+            }
+            onRecovery={async () => {
+              if (!session) return;
+              try {
+                await requestParentRecovery({
+                  csrfToken: session.csrf_token,
+                  householdKey: parentAccessShell.primary_household_key,
+                });
+                setNotice({
+                  kind: 'success',
+                  message: 'If this Parent account is eligible, a secure reset link was queued.',
+                });
+              } catch (error) {
+                if (handleAuthError(error)) return;
+                setNotice({
+                  kind: 'error',
+                  message: errorMessage(error, 'Recovery could not be requested.'),
+                });
+              }
+            }}
+          />
+        ) : (
+          <ParentClientRoot
+            viewState={viewState}
+            dashboard={parentDashboard}
+            selectedLearnerKey={selectedLearner?.learner_key ?? null}
+            activeSection={activeSection as ParentPortalSection}
+            navigationMode="shell"
+            learnerMaterials={parentMaterials}
+            actorFingerprint={actorFingerprint}
+            onSelectSection={(section) => {
+              history.pushState(
+                {},
+                '',
+                section === 'learners' ? '/app/parent/students' : `/app/parent?section=${section}`,
+              );
+              setActiveSection(section);
+            }}
+            onSelectLearner={setSelectedLearnerKey}
+            onCreateLearner={openCreateLearnerDialog}
+            onEditLearner={openEditLearnerDialog}
+            onArchiveLearner={(learnerKey) => openLearnerStatusDialog(learnerKey, 'archive')}
+            onRestoreLearner={(learnerKey) => openLearnerStatusDialog(learnerKey, 'restore')}
+            onStudentAccessAction={openStudentAccessDialog}
+            onLaunchClass={(_learnerKey, action) => void handleProtectedAction(action)}
+            onOpenContent={(_learnerKey, action) => void handleProtectedAction(action)}
+            onRetry={() => void load()}
+            accountSecurity={
+              session ? (
+                <AccountSecurityPanel
+                  identifier={session.user.email}
+                  role={session.user.role}
+                  roleLabel={session.user.role_label}
+                  onChangePassword={handlePasswordChange}
+                />
+              ) : null
+            }
+          />
+        )
+      ) : classroomRoute ? (
+        session ? (
+          <StudentClassroomWorkspace
+            csrfToken={session.csrf_token}
+            actorFingerprint={actorFingerprint}
+            onProtectedStateCleared={() => void load()}
+          />
+        ) : null
       ) : (
-        <StudentPortalFeature
+        <StudentClientRoot
           viewState={viewState}
           dashboard={studentDashboard}
+          activeSection={activeSection as StudentPortalSection}
+          navigationMode="shell"
           actorFingerprint={actorFingerprint}
+          onSelectSection={(section) => {
+            const canonicalSectionPath: Partial<Record<StudentPortalSection, string>> = {
+              today: '/app/student',
+              library: '/app/student/library',
+            };
+            history.pushState(
+              {},
+              '',
+              canonicalSectionPath[section] ?? `/app/student?section=${section}`,
+            );
+            setActiveSection(section);
+          }}
           onLaunchClass={(action) => void handleProtectedAction(action)}
           onOpenContent={(action) => void handleProtectedAction(action)}
-          onQueryHelper={(question) => handleStudentHelper(question)}
           onSubmitQuestion={(question, classKey) => void handleStudentQuestion(question, classKey)}
           onSubmitClassroomQuestion={(occurrenceKey, body) =>
             void handleClassroomQuestion(occurrenceKey, body)
           }
-          onPreviewSupport={() => window.location.assign('/app/support')}
+          liveClassQuestions={liveClassQuestions}
+          onMarkLiveClassReady={(questionKey, ready) =>
+            void handleLiveClassReady(questionKey, ready)
+          }
+          onPreviewSupport={() => window.location.assign('/app/student/support')}
           onRetry={() => void load()}
+          accountSecurity={
+            session ? (
+              <AccountSecurityPanel
+                identifier={session.user.email}
+                role={session.user.role}
+                roleLabel={session.user.role_label}
+                onChangePassword={handlePasswordChange}
+              />
+            ) : null
+          }
+          libraryWorkspace={
+            session ? (
+              <StudentLibraryWorkspace
+                csrfToken={session.csrf_token}
+                actorFingerprint={actorFingerprint}
+                onProtectedStateCleared={() => void load()}
+              />
+            ) : null
+          }
+          learningOverview={
+            session ? (
+              studentLearning ? (
+                <StudentLearningOverview
+                  questions={studentLearning.questions}
+                  publishedQuestions={studentLearning.publishedQuestions}
+                  announcements={studentLearning.announcements}
+                  badges={studentLearning.badges}
+                  leaderboard={studentLearning.leaderboard}
+                  onSubmitQuestion={async (body) => {
+                    await submitLearningQuestion({ csrfToken: session.csrf_token, body });
+                    setStudentLearning(await getStudentLearningSnapshot());
+                  }}
+                />
+              ) : (
+                <section className="state-panel" role="status">
+                  <h2>Learning is not available yet</h2>
+                  <p>The protected learning service is waiting for its release gates.</p>
+                </section>
+              )
+            ) : null
+          }
         />
       )}
       <PortalDialogRenderer
@@ -533,11 +830,258 @@ function PortalApp() {
         }}
         onSubmitLearner={submitLearnerForm}
         onSubmitLearnerStatus={() => void submitLearnerStatusDialog()}
-        onSubmitStudentAccessForm={(email) => void submitStudentAccessForm(email)}
+        onSubmitStudentAccessForm={(values) => void submitStudentAccessForm(values)}
         onSubmitStudentAccessConfirm={() => void submitStudentAccessConfirm()}
       />
     </AppShell>
   );
+}
+
+function ParentPausedShell({
+  displayName,
+  activeSection,
+  accountSecurity,
+  onRecovery,
+}: {
+  displayName: string;
+  activeSection: ParentPortalSection;
+  accountSecurity: React.ReactNode;
+  onRecovery: () => void | Promise<void>;
+}) {
+  if (activeSection !== 'learners' && activeSection !== 'billing') {
+    return (
+      <section className="ot-portal-feature" aria-labelledby="paused-parent-title">
+        <div className="ot-panel">
+          <p className="ot-eyebrow">Parent portal</p>
+          <h2 id="paused-parent-title">{parentSectionLabel(activeSection)}</h2>
+          <p>
+            Learning access is paused, so this private area is unavailable. Your Parent identity
+            remains active; open Learners for account recovery or Billing for the access
+            explanation.
+          </p>
+        </div>
+      </section>
+    );
+  }
+
+  if (activeSection === 'billing') {
+    return (
+      <section className="ot-portal-feature" aria-labelledby="paused-parent-title">
+        <div className="ot-panel">
+          <p className="ot-eyebrow">Billing</p>
+          <h2 id="paused-parent-title">Learning access is paused</h2>
+          <p>
+            Current paid or complimentary access is not active. No learning content is available
+            until access is restored.
+          </p>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="ot-portal-feature" aria-labelledby="paused-parent-title">
+      <div className="ot-panel" id="identity">
+        <p className="ot-eyebrow">Parent account</p>
+        <h2 id="paused-parent-title">Learning access is paused</h2>
+        <p>
+          {displayName}, your Parent identity remains available. Student and learning routes stay
+          closed until current paid or complimentary access is restored.
+        </p>
+      </div>
+      <div className="ot-panel" id="recovery">
+        <h3>Secure recovery</h3>
+        <p>Request a protected reset link. Your password is never shown to an Administrator.</p>
+        <button
+          className="ot-button ot-button--primary"
+          type="button"
+          onClick={() => void onRecovery()}
+        >
+          Send reset link
+        </button>
+      </div>
+      <div id="account-security">{accountSecurity}</div>
+    </section>
+  );
+}
+
+function parentSectionLabel(section: ParentPortalSection) {
+  return PARENT_PORTAL_SECTIONS.find((entry) => entry.id === section)?.label ?? 'Parent portal';
+}
+
+function AccountSecurityPanel({
+  identifier,
+  role,
+  roleLabel,
+  onChangePassword,
+}: {
+  identifier: string;
+  role: SessionUser['role'];
+  roleLabel: string;
+  onChangePassword: (input: {
+    currentPassword: string;
+    newPassword: string;
+  }) => Promise<{ sessions_invalidated: number }>;
+}) {
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [status, setStatus] = useState<{ kind: 'success' | 'error'; message: string } | null>(null);
+  const passwordReady =
+    newPassword.length >= 10 && /[A-Za-z]/u.test(newPassword) && /[0-9]/u.test(newPassword);
+  const canSubmit =
+    !saving &&
+    currentPassword.length > 0 &&
+    passwordReady &&
+    newPassword === confirmPassword &&
+    newPassword !== currentPassword;
+
+  if (role === 'student') {
+    return (
+      <section className="ot-subsection" aria-labelledby="account-security-heading">
+        <div className="ot-section-title">
+          <div>
+            <h3 id="account-security-heading">Account &amp; security</h3>
+            <p>Student credentials are adult-managed.</p>
+          </div>
+          <span>{roleLabel}</span>
+        </div>
+        <dl className="ot-mini-metrics">
+          <div>
+            <dt>Sign-in identifier</dt>
+            <dd>{displaySignInIdentifier(identifier, role)}</dd>
+          </div>
+          <div>
+            <dt>Session</dt>
+            <dd>Secure and active</dd>
+          </div>
+        </dl>
+        <p className="ot-muted">
+          Student passwords are managed by a Parent or Administrator. Ask them to send a secure
+          reset.
+        </p>
+      </section>
+    );
+  }
+
+  return (
+    <section className="ot-subsection" aria-labelledby="account-security-heading">
+      <div className="ot-section-title">
+        <div>
+          <h3 id="account-security-heading">Account &amp; security</h3>
+          <p>Change the password for this signed-in account.</p>
+        </div>
+        <span>{roleLabel}</span>
+      </div>
+      <dl className="ot-mini-metrics">
+        <div>
+          <dt>Sign-in identifier</dt>
+          <dd>{displaySignInIdentifier(identifier, role)}</dd>
+        </div>
+        <div>
+          <dt>Session</dt>
+          <dd>Secure and active</dd>
+        </div>
+      </dl>
+      <p className="ot-muted">
+        Cannot use your current password? <a href="/forgot-password">Request a secure reset</a>.
+      </p>
+      <form
+        className="ot-dialog-form"
+        onSubmit={(event) => {
+          event.preventDefault();
+          if (!canSubmit) return;
+          setSaving(true);
+          setStatus(null);
+          void onChangePassword({ currentPassword, newPassword })
+            .then((result) => {
+              setCurrentPassword('');
+              setNewPassword('');
+              setConfirmPassword('');
+              setStatus({
+                kind: 'success',
+                message:
+                  result.sessions_invalidated > 0
+                    ? `Password changed. ${result.sessions_invalidated} other session${
+                        result.sessions_invalidated === 1 ? '' : 's'
+                      } signed out.`
+                    : 'Password changed. This session remains signed in.',
+              });
+            })
+            .catch((error) => {
+              setStatus({
+                kind: 'error',
+                message: errorMessage(error, 'Password was not changed.'),
+              });
+            })
+            .finally(() => setSaving(false));
+        }}
+      >
+        <label className="ot-field">
+          <span>Current password</span>
+          <input
+            type="password"
+            value={currentPassword}
+            autoComplete="current-password"
+            required
+            maxLength={256}
+            onChange={(event) => setCurrentPassword(event.currentTarget.value)}
+          />
+        </label>
+        <label className="ot-field">
+          <span>New password</span>
+          <input
+            type="password"
+            value={newPassword}
+            autoComplete="new-password"
+            required
+            minLength={10}
+            maxLength={256}
+            aria-describedby="new-password-help"
+            onChange={(event) => setNewPassword(event.currentTarget.value)}
+          />
+        </label>
+        <p id="new-password-help" className="ot-muted">
+          Use at least 10 characters with at least one letter and one number.
+        </p>
+        <label className="ot-field">
+          <span>Confirm new password</span>
+          <input
+            type="password"
+            value={confirmPassword}
+            autoComplete="new-password"
+            required
+            minLength={10}
+            maxLength={256}
+            onChange={(event) => setConfirmPassword(event.currentTarget.value)}
+          />
+        </label>
+        {confirmPassword && newPassword !== confirmPassword && (
+          <p className="notice-banner error" role="alert">
+            The new passwords do not match.
+          </p>
+        )}
+        {status && (
+          <p
+            className={`notice-banner ${status.kind}`}
+            role={status.kind === 'error' ? 'alert' : 'status'}
+          >
+            {status.message}
+          </p>
+        )}
+        <button type="submit" className="ot-button ot-button-primary" disabled={!canSubmit}>
+          {saving ? 'Changing password' : 'Change password'}
+        </button>
+      </form>
+    </section>
+  );
+}
+
+function displaySignInIdentifier(identifier: string, role: SessionUser['role']) {
+  return role === 'student' && identifier.startsWith('student:')
+    ? identifier.slice('student:'.length)
+    : identifier;
 }
 
 function PortalDialogRenderer({
@@ -556,7 +1100,7 @@ function PortalDialogRenderer({
   onClose: () => void;
   onSubmitLearner: (values: LearnerFormValues) => void | Promise<void>;
   onSubmitLearnerStatus: () => void;
-  onSubmitStudentAccessForm: (email: string) => void;
+  onSubmitStudentAccessForm: (values: StudentAccessFormValues) => void;
   onSubmitStudentAccessConfirm: () => void;
 }) {
   if (!dialog) return null;
@@ -701,15 +1245,19 @@ function StudentAccessFormDialog({
   saving: boolean;
   error: string;
   onClose: () => void;
-  onSubmit: (email: string) => void;
+  onSubmit: (values: StudentAccessFormValues) => void;
 }) {
-  const [email, setEmail] = useState('');
-  const emailRequired = action === 'setup';
-  const canSave = !saving && (!emailRequired || email.trim().length > 0);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const usernameRequired = action === 'setup';
+  const usernameReady = !usernameRequired || username.trim().length >= 3;
+  const passwordReady =
+    password.length >= 10 && /[A-Za-z]/.test(password) && /[0-9]/.test(password);
+  const canSave = !saving && usernameReady && passwordReady;
   return (
     <DialogFrame
       title={`${studentAccessLabel(action)} student access`}
-      description={`${studentAccessLabel(action)} login access for ${learner.display_name}.`}
+      description={`${studentAccessLabel(action)} parent-managed login access for ${learner.display_name}.`}
       error={error}
       onClose={onClose}
     >
@@ -718,20 +1266,38 @@ function StudentAccessFormDialog({
         onSubmit={(event) => {
           event.preventDefault();
           if (!canSave) return;
-          onSubmit(email);
+          onSubmit({ username, password });
         }}
       >
         <label className="ot-field">
-          <span>{emailRequired ? 'Student email' : 'Student email optional'}</span>
+          <span>{usernameRequired ? 'Student username' : 'Student username optional'}</span>
           <input
-            type="email"
-            value={email}
+            value={username}
             autoFocus
-            required={emailRequired}
-            maxLength={254}
-            onChange={(event) => setEmail(event.currentTarget.value)}
+            required={usernameRequired}
+            autoComplete="username"
+            inputMode="text"
+            maxLength={24}
+            pattern="[A-Za-z0-9][A-Za-z0-9._-]*[A-Za-z0-9]"
+            onChange={(event) => setUsername(event.currentTarget.value)}
           />
         </label>
+        <label className="ot-field">
+          <span>Student password</span>
+          <input
+            type="password"
+            value={password}
+            required
+            minLength={10}
+            maxLength={128}
+            autoComplete="new-password"
+            onChange={(event) => setPassword(event.currentTarget.value)}
+          />
+        </label>
+        <p className="ot-muted">
+          These parent-managed credentials are stored for student access. No student email is used
+          in this setup.
+        </p>
         <DialogActions
           saving={saving}
           confirmLabel={studentAccessLabel(action)}
@@ -917,6 +1483,44 @@ function studentAccessLabel(action: StudentAccessOperationType) {
 
 function label(value: string) {
   return value.replaceAll('_', ' ').replace(/^\w/, (letter) => letter.toUpperCase());
+}
+
+function portalSectionFromLocation(
+  role: 'parent' | 'student',
+): ParentPortalSection | StudentPortalSection {
+  const requested = new URLSearchParams(location.search).get('section');
+  if (requested && isPortalSection(role, requested)) return requested;
+  if (role === 'student') {
+    if (location.pathname === '/app/student/library') return 'library';
+    if (location.pathname.startsWith('/app/student/questions')) return 'questions';
+    if (location.pathname === '/app/student/updates') return 'updates';
+  }
+  return role === 'parent' ? 'learners' : 'today';
+}
+
+function portalRoleFromLocation(pathname: string): 'parent' | 'student' {
+  if (pathname === '/app/classroom') return 'student';
+  const route = resolveCurrentClientRoute(pathname);
+  if (route?.shell === 'parent') return 'parent';
+  if (route?.shell === 'student') return 'student';
+  throw new Error(`No current Parent or Student route is registered for "${pathname}".`);
+}
+
+function parentHouseholdViewFromLocation(pathname: string): ParentHouseholdView {
+  if (pathname === '/app/parent/students/new') return { kind: 'create' };
+  const studentMatch = /^\/app\/parent\/students\/([^/]+)$/u.exec(pathname);
+  if (studentMatch?.[1]) {
+    return { kind: 'student', student_id: decodeURIComponent(studentMatch[1]) };
+  }
+  return { kind: 'overview' };
+}
+
+function isPortalSection(
+  role: 'parent' | 'student',
+  value: string,
+): value is ParentPortalSection | StudentPortalSection {
+  const sections = role === 'parent' ? PARENT_PORTAL_SECTIONS : STUDENT_PORTAL_SECTIONS;
+  return sections.some((section) => section.id === value);
 }
 
 const root = document.getElementById('portal-root');

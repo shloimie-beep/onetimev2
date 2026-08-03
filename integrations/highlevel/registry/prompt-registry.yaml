@@ -1,0 +1,771 @@
+- prompt_id: 'incoming-ghl-one-time-rabbi-scheller-bot-paste-pack'
+  semantic_version: '1.0.0'
+  status: 'incoming'
+  title: 'Incoming GHL One Time Rabbi Scheller Bot Paste Pack'
+  file_path: 'integrations/highlevel/prompts/incoming/ghl-one-time-rabbi-scheller-bot-paste-pack-2026-07-20.md'
+  sha256: 'e451bcc30f08dbdf2ba990ec62dcca97b742ff0625059a9e9db1c783c2035992'
+  source: 'Codex pasted direction preserved as raw incoming source'
+  created_date: '2026-07-21'
+  approved_date: ''
+  ghl_asset_id: ''
+  required_fields:
+    - 'One Time Email Consent'
+    - 'One Time WhatsApp Consent'
+    - 'One Time Suppression State'
+    - 'One Time Signup Status'
+  required_tags:
+    - 'OT | Lead'
+    - 'OT | Marketing Suppressed'
+  required_custom_values:
+    - 'One Time Support Email'
+    - 'One Time Member Login URL'
+    - 'One Time Password Help URL'
+    - 'One Time Pricing Display Status'
+    - 'One Time Published Price Label'
+  required_workflows:
+    - 'OT-B01'
+    - 'OT-B02'
+    - 'OT-B03'
+    - 'OT-B04'
+    - 'OT-B05'
+  required_sender_keys:
+    - 'rabbi_campaign'
+    - 'rabbi_personal'
+    - 'office'
+    - 'brand'
+    - 'account_security'
+  required_message_classes: []
+  test_contact_reference: 'protected_operator_owned_test_contact'
+  last_tested_date: ''
+  supersedes: []
+  superseded_by: 'OT-A1-v1.0.0'
+- prompt_id: 'OT-A1'
+  semantic_version: '1.0.0'
+  status: 'candidate'
+  title: 'OT-A1 One Time Enrollment Assistant'
+  file_path: 'integrations/highlevel/prompts/candidates/OT-A1-v1.0.0.md'
+  sha256: 'c2ab9b5e2f7e573cf7da1ee4c046a4cef048b5036933df13921ab781bbc596fc'
+  source: 'Corrected candidate from incoming bot pack direction'
+  created_date: '2026-07-21'
+  approved_date: ''
+  ghl_asset_id: ''
+  required_fields:
+    - 'One Time Email Consent'
+    - 'One Time WhatsApp Consent'
+    - 'One Time Suppression State'
+    - 'One Time Signup Status'
+  required_tags:
+    - 'OT | Lead'
+    - 'OT | Marketing Suppressed'
+  required_custom_values:
+    - 'One Time Support Email'
+    - 'One Time Member Login URL'
+    - 'One Time Password Help URL'
+    - 'One Time Pricing Display Status'
+    - 'One Time Published Price Label'
+  required_workflows:
+    - 'OT-B01'
+    - 'OT-B02'
+    - 'OT-B03'
+    - 'OT-B04'
+    - 'OT-B05'
+  required_sender_keys:
+    - 'rabbi_campaign'
+    - 'rabbi_personal'
+    - 'office'
+    - 'brand'
+    - 'account_security'
+  required_message_classes: []
+  test_contact_reference: 'protected_operator_owned_test_contact'
+  last_tested_date: ''
+  supersedes:
+    - 'incoming-ghl-one-time-rabbi-scheller-bot-paste-pack'
+  superseded_by: ''
+- prompt_id: 'OT-A1'
+  semantic_version: '1.0.0'
+  status: 'active'
+  title: 'OT-A1 One Time Enrollment Assistant'
+  file_path: 'integrations/highlevel/prompts/active/OT-A1-v1.0.0.md'
+  sha256: 'c2ab9b5e2f7e573cf7da1ee4c046a4cef048b5036933df13921ab781bbc596fc'
+  source: 'Approved active canonical bot prompt'
+  created_date: '2026-07-21'
+  approved_date: '2026-07-21'
+  ghl_asset_id: ''
+  required_fields:
+    - 'One Time Email Consent'
+    - 'One Time WhatsApp Consent'
+    - 'One Time Suppression State'
+    - 'One Time Signup Status'
+  required_tags:
+    - 'OT | Lead'
+    - 'OT | Marketing Suppressed'
+  required_custom_values:
+    - 'One Time Support Email'
+    - 'One Time Member Login URL'
+    - 'One Time Password Help URL'
+    - 'One Time Pricing Display Status'
+    - 'One Time Published Price Label'
+  required_workflows:
+    - 'OT-B01'
+    - 'OT-B02'
+    - 'OT-B03'
+    - 'OT-B04'
+    - 'OT-B05'
+  required_sender_keys:
+    - 'rabbi_campaign'
+    - 'rabbi_personal'
+    - 'office'
+    - 'brand'
+    - 'account_security'
+  required_message_classes: []
+  test_contact_reference: 'protected_operator_owned_test_contact'
+  last_tested_date: ''
+  supersedes:
+    - 'incoming-ghl-one-time-rabbi-scheller-bot-paste-pack'
+  superseded_by: ''
+- prompt_id: 'OT-01'
+  semantic_version: '1.0.0'
+  status: 'active'
+  title: 'OT-01 New Lead Intake'
+  file_path: 'integrations/highlevel/ai-workflow-prompts/OT-01-new-lead-intake.md'
+  sha256: 'c55746d21fa96f3d84e919290fbc340211672bcf38d672b03210b8df294a1791'
+  source: 'Canonical workflow prompt generated from registry'
+  created_date: '2026-07-21'
+  approved_date: ''
+  ghl_asset_id: ''
+  required_fields:
+    - 'One Time Email Consent'
+    - 'One Time WhatsApp Consent'
+    - 'One Time Suppression State'
+    - 'One Time Signup Status'
+  required_tags:
+    - 'OT | Lead'
+    - 'OT | Marketing Suppressed'
+  required_custom_values:
+    - 'One Time Support Email'
+    - 'One Time Member Login URL'
+    - 'One Time Password Help URL'
+    - 'One Time Pricing Display Status'
+    - 'One Time Published Price Label'
+  required_workflows:
+    - 'OT-01'
+  required_sender_keys:
+    - 'brand'
+  required_message_classes:
+    - 'signup_confirmation'
+  test_contact_reference: 'protected_operator_owned_test_contact'
+  last_tested_date: ''
+  supersedes: []
+  superseded_by: ''
+- prompt_id: 'OT-02A'
+  semantic_version: '1.0.0'
+  status: 'active'
+  title: 'OT-02A Existing Subscriber Migration 2026 v1'
+  file_path: 'integrations/highlevel/ai-workflow-prompts/OT-02A-existing-subscriber-migration-2026-v1.md'
+  sha256: '6da439655218830f84aae6eef6c6cc11c646dd3e86d422d12b86ee74e5ea7e0b'
+  source: 'Canonical workflow prompt generated from registry'
+  created_date: '2026-07-21'
+  approved_date: ''
+  ghl_asset_id: ''
+  required_fields:
+    - 'One Time Email Consent'
+    - 'One Time WhatsApp Consent'
+    - 'One Time Suppression State'
+    - 'One Time Signup Status'
+  required_tags:
+    - 'OT | Lead'
+    - 'OT | Marketing Suppressed'
+  required_custom_values:
+    - 'One Time Support Email'
+    - 'One Time Member Login URL'
+    - 'One Time Password Help URL'
+    - 'One Time Pricing Display Status'
+    - 'One Time Published Price Label'
+  required_workflows:
+    - 'OT-02A'
+  required_sender_keys:
+    - 'rabbi_campaign'
+  required_message_classes:
+    - 'existing_subscriber_migration'
+  test_contact_reference: 'protected_operator_owned_test_contact'
+  last_tested_date: ''
+  supersedes: []
+  superseded_by: ''
+- prompt_id: 'OT-02B'
+  semantic_version: '1.0.0'
+  status: 'active'
+  title: 'OT-02B New Lead Nurture v1'
+  file_path: 'integrations/highlevel/ai-workflow-prompts/OT-02B-new-lead-nurture-v1.md'
+  sha256: '0461ed09934f0aebfe5f30bd9766a048bcedd1dfcdba5876f14157c7acca7d4e'
+  source: 'Canonical workflow prompt generated from registry'
+  created_date: '2026-07-21'
+  approved_date: ''
+  ghl_asset_id: ''
+  required_fields:
+    - 'One Time Email Consent'
+    - 'One Time WhatsApp Consent'
+    - 'One Time Suppression State'
+    - 'One Time Signup Status'
+  required_tags:
+    - 'OT | Lead'
+    - 'OT | Marketing Suppressed'
+  required_custom_values:
+    - 'One Time Support Email'
+    - 'One Time Member Login URL'
+    - 'One Time Password Help URL'
+    - 'One Time Pricing Display Status'
+    - 'One Time Published Price Label'
+  required_workflows:
+    - 'OT-02B'
+  required_sender_keys:
+    - 'rabbi_campaign'
+  required_message_classes:
+    - 'prelaunch_nurture'
+  test_contact_reference: 'protected_operator_owned_test_contact'
+  last_tested_date: ''
+  supersedes: []
+  superseded_by: ''
+- prompt_id: 'OT-03'
+  semantic_version: '1.0.0'
+  status: 'active'
+  title: 'OT-03 Checkout Started / Abandoned'
+  file_path: 'integrations/highlevel/ai-workflow-prompts/OT-03-checkout-started-abandoned.md'
+  sha256: '876fa4a3158d0fa7b6277f8d24a82d62c5f1c0d5789a1e6f20ea21c82cb7227d'
+  source: 'Canonical workflow prompt generated from registry'
+  created_date: '2026-07-21'
+  approved_date: ''
+  ghl_asset_id: ''
+  required_fields:
+    - 'One Time Email Consent'
+    - 'One Time WhatsApp Consent'
+    - 'One Time Suppression State'
+    - 'One Time Signup Status'
+  required_tags:
+    - 'OT | Lead'
+    - 'OT | Marketing Suppressed'
+  required_custom_values:
+    - 'One Time Support Email'
+    - 'One Time Member Login URL'
+    - 'One Time Password Help URL'
+    - 'One Time Pricing Display Status'
+    - 'One Time Published Price Label'
+  required_workflows:
+    - 'OT-03'
+  required_sender_keys:
+    - 'rabbi_campaign'
+  required_message_classes:
+    - 'warm_enrollment_campaign'
+  test_contact_reference: 'protected_operator_owned_test_contact'
+  last_tested_date: ''
+  supersedes: []
+  superseded_by: ''
+- prompt_id: 'OT-04'
+  semantic_version: '1.0.0'
+  status: 'active'
+  title: 'OT-04 Payment Active'
+  file_path: 'integrations/highlevel/ai-workflow-prompts/OT-04-payment-active.md'
+  sha256: 'd410846b373b164e3f5f215e01b92f00ea8ea69bcee7328a6b04d4dccbbd97b0'
+  source: 'Canonical workflow prompt generated from registry'
+  created_date: '2026-07-21'
+  approved_date: ''
+  ghl_asset_id: ''
+  required_fields:
+    - 'One Time Email Consent'
+    - 'One Time WhatsApp Consent'
+    - 'One Time Suppression State'
+    - 'One Time Signup Status'
+  required_tags:
+    - 'OT | Lead'
+    - 'OT | Marketing Suppressed'
+  required_custom_values:
+    - 'One Time Support Email'
+    - 'One Time Member Login URL'
+    - 'One Time Password Help URL'
+    - 'One Time Pricing Display Status'
+    - 'One Time Published Price Label'
+  required_workflows:
+    - 'OT-04'
+  required_sender_keys:
+    - 'brand'
+  required_message_classes:
+    - 'signup_confirmation'
+  test_contact_reference: 'protected_operator_owned_test_contact'
+  last_tested_date: ''
+  supersedes: []
+  superseded_by: ''
+- prompt_id: 'OT-05'
+  semantic_version: '1.0.0'
+  status: 'active'
+  title: 'OT-05 Payment Failed / Grace'
+  file_path: 'integrations/highlevel/ai-workflow-prompts/OT-05-payment-failed-grace.md'
+  sha256: '8d07d77d28ae027ea951fcce674ade8e9aa1fe4b9b1d63de95df34b56404c1dc'
+  source: 'Canonical workflow prompt generated from registry'
+  created_date: '2026-07-21'
+  approved_date: ''
+  ghl_asset_id: ''
+  required_fields:
+    - 'One Time Email Consent'
+    - 'One Time WhatsApp Consent'
+    - 'One Time Suppression State'
+    - 'One Time Signup Status'
+  required_tags:
+    - 'OT | Lead'
+    - 'OT | Marketing Suppressed'
+  required_custom_values:
+    - 'One Time Support Email'
+    - 'One Time Member Login URL'
+    - 'One Time Password Help URL'
+    - 'One Time Pricing Display Status'
+    - 'One Time Published Price Label'
+  required_workflows:
+    - 'OT-05'
+  required_sender_keys:
+    - 'office'
+  required_message_classes:
+    - 'payment_failed_support'
+  test_contact_reference: 'protected_operator_owned_test_contact'
+  last_tested_date: ''
+  supersedes: []
+  superseded_by: ''
+- prompt_id: 'OT-06'
+  semantic_version: '1.0.0'
+  status: 'active'
+  title: 'OT-06 Subscription Canceled'
+  file_path: 'integrations/highlevel/ai-workflow-prompts/OT-06-subscription-canceled.md'
+  sha256: 'c417698db62d628b9ab64e36a5719fce6fdaf998d287fa58aca251a74f2249f9'
+  source: 'Canonical workflow prompt generated from registry'
+  created_date: '2026-07-21'
+  approved_date: ''
+  ghl_asset_id: ''
+  required_fields:
+    - 'One Time Email Consent'
+    - 'One Time WhatsApp Consent'
+    - 'One Time Suppression State'
+    - 'One Time Signup Status'
+  required_tags:
+    - 'OT | Lead'
+    - 'OT | Marketing Suppressed'
+  required_custom_values:
+    - 'One Time Support Email'
+    - 'One Time Member Login URL'
+    - 'One Time Password Help URL'
+    - 'One Time Pricing Display Status'
+    - 'One Time Published Price Label'
+  required_workflows:
+    - 'OT-06'
+  required_sender_keys:
+    - 'office'
+  required_message_classes:
+    - 'cancellation_help'
+  test_contact_reference: 'protected_operator_owned_test_contact'
+  last_tested_date: ''
+  supersedes: []
+  superseded_by: ''
+- prompt_id: 'OT-07'
+  semantic_version: '1.0.0'
+  status: 'active'
+  title: 'OT-07 Parent Portal Invitation'
+  file_path: 'integrations/highlevel/ai-workflow-prompts/OT-07-parent-portal-invitation.md'
+  sha256: 'a8723e5b7e57647f92af9eadbf2223b1bb1752fbe49806d681a8fef27241f404'
+  source: 'Canonical workflow prompt generated from registry'
+  created_date: '2026-07-21'
+  approved_date: ''
+  ghl_asset_id: ''
+  required_fields:
+    - 'One Time Email Consent'
+    - 'One Time WhatsApp Consent'
+    - 'One Time Suppression State'
+    - 'One Time Signup Status'
+  required_tags:
+    - 'OT | Lead'
+    - 'OT | Marketing Suppressed'
+  required_custom_values:
+    - 'One Time Support Email'
+    - 'One Time Member Login URL'
+    - 'One Time Password Help URL'
+    - 'One Time Pricing Display Status'
+    - 'One Time Published Price Label'
+  required_workflows:
+    - 'OT-07'
+  required_sender_keys:
+    - 'brand'
+  required_message_classes:
+    - 'portal_welcome'
+  test_contact_reference: 'protected_operator_owned_test_contact'
+  last_tested_date: ''
+  supersedes: []
+  superseded_by: ''
+- prompt_id: 'OT-08'
+  semantic_version: '1.0.0'
+  status: 'active'
+  title: 'OT-08 Parent Portal Activated'
+  file_path: 'integrations/highlevel/ai-workflow-prompts/OT-08-parent-portal-activated.md'
+  sha256: 'f404a363731e22671b5ca5ac65a3351a23becb7c39154f72f7d8bfe0a99ad5fa'
+  source: 'Canonical workflow prompt generated from registry'
+  created_date: '2026-07-21'
+  approved_date: ''
+  ghl_asset_id: ''
+  required_fields:
+    - 'One Time Email Consent'
+    - 'One Time WhatsApp Consent'
+    - 'One Time Suppression State'
+    - 'One Time Signup Status'
+  required_tags:
+    - 'OT | Lead'
+    - 'OT | Marketing Suppressed'
+  required_custom_values:
+    - 'One Time Support Email'
+    - 'One Time Member Login URL'
+    - 'One Time Password Help URL'
+    - 'One Time Pricing Display Status'
+    - 'One Time Published Price Label'
+  required_workflows:
+    - 'OT-08'
+  required_sender_keys:
+    - 'brand'
+  required_message_classes:
+    - 'portal_activated'
+  test_contact_reference: 'protected_operator_owned_test_contact'
+  last_tested_date: ''
+  supersedes: []
+  superseded_by: ''
+- prompt_id: 'OT-09'
+  semantic_version: '1.0.0'
+  status: 'active'
+  title: 'OT-09 Parent Class Reminder'
+  file_path: 'integrations/highlevel/ai-workflow-prompts/OT-09-parent-class-reminder.md'
+  sha256: 'f4daf554a6f88b24ef9aa776a1804990970bfdc8557d821731bd606399aba3ef'
+  source: 'Canonical workflow prompt generated from registry'
+  created_date: '2026-07-21'
+  approved_date: ''
+  ghl_asset_id: ''
+  required_fields:
+    - 'One Time Email Consent'
+    - 'One Time WhatsApp Consent'
+    - 'One Time Suppression State'
+    - 'One Time Signup Status'
+  required_tags:
+    - 'OT | Lead'
+    - 'OT | Marketing Suppressed'
+  required_custom_values:
+    - 'One Time Support Email'
+    - 'One Time Member Login URL'
+    - 'One Time Password Help URL'
+    - 'One Time Pricing Display Status'
+    - 'One Time Published Price Label'
+  required_workflows:
+    - 'OT-09'
+  required_sender_keys:
+    - 'brand'
+  required_message_classes:
+    - 'class_reminder'
+  test_contact_reference: 'protected_operator_owned_test_contact'
+  last_tested_date: ''
+  supersedes: []
+  superseded_by: ''
+- prompt_id: 'OT-10'
+  semantic_version: '1.0.0'
+  status: 'active'
+  title: 'OT-10 New Recording Available'
+  file_path: 'integrations/highlevel/ai-workflow-prompts/OT-10-new-recording-available.md'
+  sha256: 'c94dd44bedf258b57d490571d3820de469c8d0354f772f5df1a8f2f12864c3a7'
+  source: 'Canonical workflow prompt generated from registry'
+  created_date: '2026-07-21'
+  approved_date: ''
+  ghl_asset_id: ''
+  required_fields:
+    - 'One Time Email Consent'
+    - 'One Time WhatsApp Consent'
+    - 'One Time Suppression State'
+    - 'One Time Signup Status'
+  required_tags:
+    - 'OT | Lead'
+    - 'OT | Marketing Suppressed'
+  required_custom_values:
+    - 'One Time Support Email'
+    - 'One Time Member Login URL'
+    - 'One Time Password Help URL'
+    - 'One Time Pricing Display Status'
+    - 'One Time Published Price Label'
+  required_workflows:
+    - 'OT-10'
+  required_sender_keys:
+    - 'brand'
+  required_message_classes:
+    - 'recording_available'
+  test_contact_reference: 'protected_operator_owned_test_contact'
+  last_tested_date: ''
+  supersedes: []
+  superseded_by: ''
+- prompt_id: 'OT-13'
+  semantic_version: '1.0.0'
+  status: 'active'
+  title: 'OT-13 Refund / Chargeback'
+  file_path: 'integrations/highlevel/ai-workflow-prompts/OT-13-refund-chargeback.md'
+  sha256: '993bf9260eb02b97b4b06b632ad2eeb1095fba60bdb89698330ade1768b9b560'
+  source: 'Canonical workflow prompt generated from registry'
+  created_date: '2026-07-21'
+  approved_date: ''
+  ghl_asset_id: ''
+  required_fields:
+    - 'One Time Email Consent'
+    - 'One Time WhatsApp Consent'
+    - 'One Time Suppression State'
+    - 'One Time Signup Status'
+  required_tags:
+    - 'OT | Lead'
+    - 'OT | Marketing Suppressed'
+  required_custom_values:
+    - 'One Time Support Email'
+    - 'One Time Member Login URL'
+    - 'One Time Password Help URL'
+    - 'One Time Pricing Display Status'
+    - 'One Time Published Price Label'
+  required_workflows:
+    - 'OT-13'
+  required_sender_keys:
+    - 'office'
+  required_message_classes:
+    - 'refund_help'
+  test_contact_reference: 'protected_operator_owned_test_contact'
+  last_tested_date: ''
+  supersedes: []
+  superseded_by: ''
+- prompt_id: 'OT-C01'
+  semantic_version: '1.0.0'
+  status: 'active'
+  title: "OT-C01 Tisha B'Av 2026 Warm Invitation"
+  file_path: 'integrations/highlevel/ai-workflow-prompts/OT-C01-tisha-b-av-2026-warm-invitation.md'
+  sha256: '381431b541e37f3d13f1c967d3be89848de7d81473983c60fd13404e6449dd60'
+  source: 'Canonical workflow prompt generated from registry'
+  created_date: '2026-07-21'
+  approved_date: ''
+  ghl_asset_id: ''
+  required_fields:
+    - 'One Time Email Consent'
+    - 'One Time WhatsApp Consent'
+    - 'One Time Suppression State'
+    - 'One Time Signup Status'
+  required_tags:
+    - 'OT | Lead'
+    - 'OT | Marketing Suppressed'
+  required_custom_values:
+    - 'One Time Support Email'
+    - 'One Time Member Login URL'
+    - 'One Time Password Help URL'
+    - 'One Time Pricing Display Status'
+    - 'One Time Published Price Label'
+  required_workflows:
+    - 'OT-C01'
+  required_sender_keys:
+    - 'rabbi_campaign'
+  required_message_classes:
+    - 'rabbi_event_invitation'
+  test_contact_reference: 'protected_operator_owned_test_contact'
+  last_tested_date: ''
+  supersedes: []
+  superseded_by: ''
+- prompt_id: 'OT-E01'
+  semantic_version: '1.0.0'
+  status: 'active'
+  title: "OT-E01 Tisha B'Av 2026 Registration and Reminders"
+  file_path: 'integrations/highlevel/ai-workflow-prompts/OT-E01-tisha-b-av-2026-registration-and-reminders.md'
+  sha256: 'a675a56e56b220e275e83fff16e89d5dc1ecc6ec21d759020056fee21b3736b6'
+  source: 'Canonical workflow prompt generated from registry'
+  created_date: '2026-07-21'
+  approved_date: ''
+  ghl_asset_id: ''
+  required_fields:
+    - 'One Time Email Consent'
+    - 'One Time WhatsApp Consent'
+    - 'One Time Suppression State'
+    - 'One Time Signup Status'
+  required_tags:
+    - 'OT | Lead'
+    - 'OT | Marketing Suppressed'
+  required_custom_values:
+    - 'One Time Support Email'
+    - 'One Time Member Login URL'
+    - 'One Time Password Help URL'
+    - 'One Time Pricing Display Status'
+    - 'One Time Published Price Label'
+  required_workflows:
+    - 'OT-E01'
+  required_sender_keys:
+    - 'brand'
+  required_message_classes:
+    - 'event_registration_confirmation'
+  test_contact_reference: 'protected_operator_owned_test_contact'
+  last_tested_date: ''
+  supersedes: []
+  superseded_by: ''
+- prompt_id: 'OT-B01'
+  semantic_version: '1.0.0'
+  status: 'active'
+  title: 'OT-B01 Complete Signup'
+  file_path: 'integrations/highlevel/ai-workflow-prompts/OT-B01-complete-signup.md'
+  sha256: '129109670eb1d6134dcf974858018ecfb1ab9cf6cdadfe9750c9246240739ebd'
+  source: 'Canonical workflow prompt generated from registry'
+  created_date: '2026-07-21'
+  approved_date: ''
+  ghl_asset_id: ''
+  required_fields:
+    - 'One Time Email Consent'
+    - 'One Time WhatsApp Consent'
+    - 'One Time Suppression State'
+    - 'One Time Signup Status'
+  required_tags:
+    - 'OT | Lead'
+    - 'OT | Marketing Suppressed'
+  required_custom_values:
+    - 'One Time Support Email'
+    - 'One Time Member Login URL'
+    - 'One Time Password Help URL'
+    - 'One Time Pricing Display Status'
+    - 'One Time Published Price Label'
+  required_workflows:
+    - 'OT-B01'
+  required_sender_keys:
+    - 'brand'
+  required_message_classes:
+    - 'signup_confirmation'
+  test_contact_reference: 'protected_operator_owned_test_contact'
+  last_tested_date: ''
+  supersedes: []
+  superseded_by: ''
+- prompt_id: 'OT-B02'
+  semantic_version: '1.0.0'
+  status: 'active'
+  title: 'OT-B02 Send Next Confirmed Class Info'
+  file_path: 'integrations/highlevel/ai-workflow-prompts/OT-B02-send-next-confirmed-class-info.md'
+  sha256: '1f9998579e734ba59d72f3afbbcb10b7bc899673adaaaf0ac8d87f1fb9c3c977'
+  source: 'Canonical workflow prompt generated from registry'
+  created_date: '2026-07-21'
+  approved_date: ''
+  ghl_asset_id: ''
+  required_fields:
+    - 'One Time Email Consent'
+    - 'One Time WhatsApp Consent'
+    - 'One Time Suppression State'
+    - 'One Time Signup Status'
+  required_tags:
+    - 'OT | Lead'
+    - 'OT | Marketing Suppressed'
+  required_custom_values:
+    - 'One Time Support Email'
+    - 'One Time Member Login URL'
+    - 'One Time Password Help URL'
+    - 'One Time Pricing Display Status'
+    - 'One Time Published Price Label'
+  required_workflows:
+    - 'OT-B02'
+  required_sender_keys:
+    - 'brand'
+  required_message_classes:
+    - 'class_reminder'
+  test_contact_reference: 'protected_operator_owned_test_contact'
+  last_tested_date: ''
+  supersedes: []
+  superseded_by: ''
+- prompt_id: 'OT-B03'
+  semantic_version: '1.0.0'
+  status: 'active'
+  title: 'OT-B03 Send Member Login'
+  file_path: 'integrations/highlevel/ai-workflow-prompts/OT-B03-send-member-login.md'
+  sha256: '8456d219d6b40b90a7247736b2c537ae77694b34d7fdb280be8509c6a86d9d06'
+  source: 'Canonical workflow prompt generated from registry'
+  created_date: '2026-07-21'
+  approved_date: ''
+  ghl_asset_id: ''
+  required_fields:
+    - 'One Time Email Consent'
+    - 'One Time WhatsApp Consent'
+    - 'One Time Suppression State'
+    - 'One Time Signup Status'
+  required_tags:
+    - 'OT | Lead'
+    - 'OT | Marketing Suppressed'
+  required_custom_values:
+    - 'One Time Support Email'
+    - 'One Time Member Login URL'
+    - 'One Time Password Help URL'
+    - 'One Time Pricing Display Status'
+    - 'One Time Published Price Label'
+  required_workflows:
+    - 'OT-B03'
+  required_sender_keys:
+    - 'office'
+  required_message_classes:
+    - 'access_help'
+  test_contact_reference: 'protected_operator_owned_test_contact'
+  last_tested_date: ''
+  supersedes: []
+  superseded_by: ''
+- prompt_id: 'OT-B04'
+  semantic_version: '1.0.0'
+  status: 'active'
+  title: 'OT-B04 Send Password Help'
+  file_path: 'integrations/highlevel/ai-workflow-prompts/OT-B04-send-password-help.md'
+  sha256: '09d2dacf2469d206bf1aba78114d7465829fe31e18b838f48ff461613dc0edfc'
+  source: 'Canonical workflow prompt generated from registry'
+  created_date: '2026-07-21'
+  approved_date: ''
+  ghl_asset_id: ''
+  required_fields:
+    - 'One Time Email Consent'
+    - 'One Time WhatsApp Consent'
+    - 'One Time Suppression State'
+    - 'One Time Signup Status'
+  required_tags:
+    - 'OT | Lead'
+    - 'OT | Marketing Suppressed'
+  required_custom_values:
+    - 'One Time Support Email'
+    - 'One Time Member Login URL'
+    - 'One Time Password Help URL'
+    - 'One Time Pricing Display Status'
+    - 'One Time Published Price Label'
+  required_workflows:
+    - 'OT-B04'
+  required_sender_keys:
+    - 'account_security'
+  required_message_classes:
+    - 'password_reset'
+  test_contact_reference: 'protected_operator_owned_test_contact'
+  last_tested_date: ''
+  supersedes: []
+  superseded_by: ''
+- prompt_id: 'OT-B05'
+  semantic_version: '1.0.0'
+  status: 'active'
+  title: 'OT-B05 Apply Opt-Out'
+  file_path: 'integrations/highlevel/ai-workflow-prompts/OT-B05-apply-opt-out.md'
+  sha256: '902e4d2f653a4d5a674d174c7eca4ab71238109ff88360d97e420239e35362c5'
+  source: 'Canonical workflow prompt generated from registry'
+  created_date: '2026-07-21'
+  approved_date: ''
+  ghl_asset_id: ''
+  required_fields:
+    - 'One Time Email Consent'
+    - 'One Time WhatsApp Consent'
+    - 'One Time Suppression State'
+    - 'One Time Signup Status'
+  required_tags:
+    - 'OT | Lead'
+    - 'OT | Marketing Suppressed'
+  required_custom_values:
+    - 'One Time Support Email'
+    - 'One Time Member Login URL'
+    - 'One Time Password Help URL'
+    - 'One Time Pricing Display Status'
+    - 'One Time Published Price Label'
+  required_workflows:
+    - 'OT-B05'
+  required_sender_keys:
+    - 'brand'
+  required_message_classes:
+    - 'support_acknowledgement'
+  test_contact_reference: 'protected_operator_owned_test_contact'
+  last_tested_date: ''
+  supersedes: []
+  superseded_by: ''

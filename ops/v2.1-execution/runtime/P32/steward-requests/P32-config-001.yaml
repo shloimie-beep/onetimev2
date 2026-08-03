@@ -1,0 +1,54 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P32-config-001
+task_id: P32
+kind: configuration
+requirement_ids:
+  - OTV2-PRIVACY-240
+acceptance_case_ids:
+  - OTV2-PRIVACY-240-RETENTION-PURGE-LEDGER
+rationale: >-
+  P32 defines hash-only purge records, durability readback, restore gates, and
+  database receipts, but has no infrastructure or secret-management authority.
+desired_semantic_change: >-
+  Provision an independent append-only purge-evidence primary and cross-boundary
+  replica outside the primary database and its backup/restore domain. Require
+  versioning, checksum readback, Object Lock compliance retention, replication
+  completion, narrowly scoped writer/read roles, HMAC identifier keys, and a
+  restore-only reader that cannot mutate evidence. Primary deletion must wait for
+  verified primary and replica readback; restored traffic remains closed until
+  every applicable record is replayed and negative queries pass.
+proposed_symbols_routes_keys_or_dependencies:
+  - >-
+    Configure separate primary and replica object stores/accounts with versioning,
+    Object Lock compliance mode, independent KMS keys, and retention at least as
+    long as the locked independent_purge_ledger schedule.
+  - >-
+    Configure a writer role that may append unique immutable objects and read back
+    exact versions/checksums but may not overwrite, delete, shorten retention, or
+    administer buckets or keys.
+  - >-
+    Configure a restore-auditor role that may list/read exact ledger versions and
+    validate replication but may not write, delete, invoke providers, or open
+    restored production traffic.
+  - >-
+    Store only HMAC-SHA-256 subject/provider/object identifiers with recorded key
+    versions; HMAC keys are secret-managed and are never written to the ledger,
+    logs, database receipt, repository, or evidence artifacts.
+  - >-
+    Alert on checksum mismatch, missing replica, replication lag, sequence/hash
+    chain gaps, Object Lock failure, restore replay mismatch, silent provider
+    orphan, or pending provider recreation.
+compatibility_assumptions:
+  - The application contract is PRIVACY_CONTRACT_VERSION 1.0.0.
+  - The primary database records only the non-authoritative purge_ledger_receipt.
+  - Provider effects remain disabled during restore verification.
+  - The exact F02 product/runtime/environment isolation scope is included in every purge record.
+verification_performed:
+  - focused hash-chain, dual-readback durability, and restore-traffic-gate assertions
+  - no live infrastructure or provider effect attempted
+conflicts_or_risks:
+  - Co-locating purge evidence with primary backups defeats the restore and deletion guarantee.
+  - Object version IDs alone are insufficient without checksum, compliance-retention, and replica readback.
+  - Never include deleted content, raw provider identifiers, private bodies, media, names, email, phone, or bearer material.
+contains_secret_or_private_data: false

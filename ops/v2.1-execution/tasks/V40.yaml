@@ -1,0 +1,162 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: V40
+title: Learning, Notifications, Consent, and Privacy Verification
+outcome: Verify questions, recognition, notifications, consent, child-data boundaries, data rights, retention, redaction,
+  and purge evidence against the immutable candidate.
+kind: verification
+wave: 9
+priority: launch_critical
+execution:
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+  service_tier: PRIORITY
+  mode: START_OR_RESUME
+  branch_template: codex/v21-verify-{candidate_short_sha}-v40
+  harness_branch_template: codex/v21-harness-{candidate_short_sha}-v40
+  maximum_active_writers_in_group: 1
+dependencies:
+  start_after:
+  - I36
+  required_start_states:
+    I36: candidate_frozen
+  merge_after: []
+  candidate_integration_partners: []
+  candidate_requires_all_implementation_tasks: false
+  acceptance_after: []
+  first_run_start_sha_source: origin/codex/v21-control:ops/v2.1-execution/control/READY-QUEUE.yaml authorized_start_sha
+interface_checkpoint:
+  required: false
+  unlocks: []
+  contract_schema_version: 1
+  required_export_roots: []
+  must_record_exact_realized_paths_symbols_versions_and_digests: true
+  rule: No downstream contract checkpoint required.
+scope:
+  writer_slots:
+  - VERIFY_LEARNING_PRIVACY
+  normalized_owned_globs:
+  - ops/v2.1-execution/results/<candidate-digest>/V40/**
+  - ops/v2.1-execution/verification-harness/V40/**
+  scope_notes_only:
+  - verification-only branch codex/v21-verify-<candidate-short-sha>-v40
+  explicit_path_excludes: []
+  forbidden_shared_paths: []
+  external_authority: none by default; scoped read-only provider access only with C00 authorization; bounded effects
+    require a task-specific authority record and exclusive provider lock
+coverage:
+  primary_requirement_ids: []
+  primary_acceptance_case_ids: []
+  verification_of_tasks:
+  - P22
+  - P23
+  - P32
+  verification_requirement_ids:
+  - OTV2-LEARNING-093
+  - OTV2-LEARNING-094
+  - OTV2-LEARNING-095
+  - OTV2-LEARNING-096
+  - OTV2-LEARNING-097
+  - OTV2-LEARNING-098
+  - OTV2-LEARNING-099
+  - OTV2-LEARNING-100
+  - OTV2-LEARNING-196
+  - OTV2-LEARNING-197
+  - OTV2-LEARNING-238
+  - OTV2-NOTIFY-203
+  - OTV2-NOTIFY-237
+  - OTV2-CONSENT-189
+  - OTV2-PRIVACY-212
+  - OTV2-PRIVACY-221
+  - OTV2-PRIVACY-239
+  - OTV2-PRIVACY-240
+  verification_acceptance_case_ids:
+  - OTV2-LEARNING-093-AC01
+  - OTV2-LEARNING-094-AC01
+  - OTV2-LEARNING-095-AC01
+  - OTV2-LEARNING-096-AC01
+  - OTV2-LEARNING-097-AC01
+  - OTV2-LEARNING-098-AC01
+  - OTV2-LEARNING-099-AC01
+  - OTV2-LEARNING-100-AC01
+  - OTV2-LEARNING-196-AC01
+  - OTV2-LEARNING-197-AC01
+  - OTV2-LEARNING-238-QUESTION-DEDUPE
+  - OTV2-LEARNING-238-RECOGNITION-CONSENT
+  - OTV2-NOTIFY-203-AC01
+  - OTV2-NOTIFY-237-CATEGORY-LIFETIME
+  - OTV2-NOTIFY-237-DEDUPE-READ-SOUND
+  - OTV2-CONSENT-189-DEPENDENT-STUDENT
+  - OTV2-CONSENT-189-SELF-MANAGED-ADULT-STUDENT
+  - OTV2-PRIVACY-212-AC01
+  - OTV2-PRIVACY-221-AC01
+  - OTV2-PRIVACY-239-ACTOR-ROUTES
+  - OTV2-PRIVACY-239-REQUEST-WORKFLOW
+  - OTV2-PRIVACY-240-SNAPSHOT-REDACTION
+  - OTV2-PRIVACY-240-RETENTION-PURGE-LEDGER
+  decision_ids:
+  - DEC-016
+  - DEC-021
+  - DEC-022
+  - DEC-030
+  - DEC-031
+  - DEC-068
+  - DEC-069
+  - DEC-080
+  - DEC-081
+  - DEC-083
+  - DEC-084
+  - DEC-085
+  - DEC-086
+  - DEC-087
+  - DEC-111
+  - DEC-112
+  - DEC-125
+  required_source_documents:
+  - 01-PRODUCT-SPEC-v2.1.md
+  - 03-DECISION-REGISTER-v2.1.md
+  - 05-ACTOR-ROLE-CAPABILITY-ROUTE-MATRIX-v2.1.md
+  - 06-DOMAIN-MODEL-AND-STATE-MACHINES-v2.1.md
+  - 08-SCREEN-CATALOG-AND-DESIGN-SYSTEM-v2.1.md
+  - 09-WORKFLOW-NOTIFICATION-COPY-CATALOG-v2.1.md
+  - 10-PRIVACY-CONSENT-RETENTION-DATA-RIGHTS-v2.1.md
+  - 13-OPERATIONS-SLO-DR-INCIDENT-v2.1.md
+  embedded_normative_sections: []
+deliverables:
+- one schema-valid candidate-bound result record per assigned acceptance case
+- lane summary with exact pass/fail/blocked counts
+- zero unrecorded external effects
+- reproduction packet for every failure
+notes: []
+terminal_states:
+- ready_for_evidence_merge
+definition_of_done:
+- Every assigned behavior is implemented or, for verification/release tasks, every assigned case has a schema-valid
+  candidate-bound result.
+- The diff remains inside owned paths plus structured steward requests.
+- Task-owned verification passes; ordinary in-scope failures are diagnosed and corrected.
+- No prohibited product surface, fake fallback, security/privacy weakening, or unauthorized external effect is introduced.
+- TASK-STATE.yaml, HANDOFF.md, and NEXT-PROMPT.md are current.
+- 'All checkpoints are committed and pushed; this task may end only in one of these exact task-local terminal states:
+  ready_for_evidence_merge.'
+checkpoint_policy:
+  interval_minutes: 30-45
+  mandatory_before:
+  - long-running command
+  - authorized external effect
+  - window end
+  mandatory_after:
+  - interface contract
+  - migration or invariant
+  - meaningful milestone
+  - blocker discovery
+stop_conditions:
+- missing explicit authority or provider identity for a required live effect
+- writer/path/provider lock collision
+- non-fast-forward push
+- normative contradiction requiring operator decision
+- incompatible or absent upstream interface contract
+- applied migration would need modification
+- continuation would weaken a protected invariant
+- destructive operation lacks exact target/authority
+- reproduced out-of-scope failure blocks progress after all safe independent work is complete

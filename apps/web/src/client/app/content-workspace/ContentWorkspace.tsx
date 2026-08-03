@@ -10,6 +10,7 @@ import type {
   ContentAdminProcessingResponse,
   ContentAdminPromptListResponse,
   ContentAdminPromptPreviewResponse,
+  ContentAdminStructuredPromptSection,
   ContentAdminPromptTemplate,
   ContentAdminPromptVersion,
   ContentAdminProviderPortStatus,
@@ -17,6 +18,9 @@ import type {
   ContentAdminSourceDetail,
   ContentAdminSourceDetailResponse,
   ContentAdminSourceSummary,
+  ContentFactoryEditPayload,
+  ContentFactorySafeItem,
+  ContentFactoryWorkspaceResponse,
 } from '@onetime/contracts';
 import {
   Badge,
@@ -30,10 +34,22 @@ import {
   Select,
   Table,
 } from '@onetime/brand-system/react';
+import { CONTENT_SECTIONS, contentSectionFromPath } from '../admin-ia.js';
+import { PublicationWorkspace } from '../admin/content/publication/index.js';
+import { WorkspaceTabs } from '../shell/WorkspaceTabs.js';
 import './content-workspace.css';
 
 type RouteKind =
-  'overview' | 'processing' | 'create' | 'social' | 'knowledge' | 'prompts' | 'activity' | 'detail';
+  | 'overview'
+  | 'publication'
+  | 'processing'
+  | 'factory'
+  | 'create'
+  | 'social'
+  | 'knowledge'
+  | 'prompts'
+  | 'activity'
+  | 'detail';
 
 type RouteState = {
   kind: RouteKind;
@@ -54,15 +70,10 @@ type FilterState = {
   sort: string;
 };
 
-const navItems: Array<{ href: string; label: string; kind: RouteKind }> = [
-  { href: '/app/content', label: 'Overview', kind: 'overview' },
-  { href: '/app/content/processing', label: 'Processing', kind: 'processing' },
-  { href: '/app/content/create', label: 'Create', kind: 'create' },
-  { href: '/app/content/social', label: 'Social', kind: 'social' },
-  { href: '/app/content/knowledge', label: 'Knowledge', kind: 'knowledge' },
-  { href: '/app/content/prompts', label: 'Prompts', kind: 'prompts' },
-  { href: '/app/content/activity', label: 'Activity', kind: 'activity' },
-];
+const studioViews = [
+  { id: 'create', label: 'Create', href: '/app/content/studio' },
+  { id: 'social', label: 'Social', href: '/app/content/studio/social' },
+] as const;
 
 const artifactKinds: ContentAdminArtifactKind[] = [
   'lesson_summary',
@@ -73,6 +84,18 @@ const artifactKinds: ContentAdminArtifactKind[] = [
   'short_clip_plan',
   'helper_knowledge',
   'classroom_resource',
+];
+
+const structuredPromptSectionOptions: Array<{
+  value: ContentAdminStructuredPromptSection;
+  label: string;
+}> = [
+  { value: 'objective', label: 'Objective' },
+  { value: 'audience', label: 'Audience' },
+  { value: 'tone_and_voice', label: 'Tone and voice' },
+  { value: 'channel_and_output_format', label: 'Channel and output format' },
+  { value: 'visual_camera_composition', label: 'Visual, camera, and composition' },
+  { value: 'required_elements', label: 'Required elements' },
 ];
 
 const defaultFilters: FilterState = {
@@ -96,6 +119,7 @@ export function ContentWorkspace({
   const [notice, setNotice] = useState('');
   const [overview, setOverview] = useState<ContentAdminOverviewResponse | null>(null);
   const [processing, setProcessing] = useState<ContentAdminProcessingResponse | null>(null);
+  const [factory, setFactory] = useState<ContentFactoryWorkspaceResponse | null>(null);
   const [createData, setCreateData] = useState<ContentAdminCreateWorkspaceResponse | null>(null);
   const [social, setSocial] = useState<ContentAdminSocialWorkspaceResponse | null>(null);
   const [knowledge, setKnowledge] = useState<ContentAdminKnowledgeResponse | null>(null);
@@ -128,6 +152,13 @@ export function ContentWorkspace({
         setProcessing(
           await apiGet<ContentAdminProcessingResponse>(
             '/api/v1/admin/content/processing',
+            onProtectedStateCleared,
+          ),
+        );
+      } else if (route.kind === 'factory') {
+        setFactory(
+          await apiGet<ContentFactoryWorkspaceResponse>(
+            '/api/v1/admin/content/factory',
             onProtectedStateCleared,
           ),
         );
@@ -194,21 +225,12 @@ export function ContentWorkspace({
 
   return (
     <section className="content-workspace" data-usable="content-workspace">
-      <nav className="content-tabs" aria-label="Content workspace">
-        {navItems.map((item) => (
-          <a
-            key={item.href}
-            href={item.href}
-            aria-current={route.kind === item.kind ? 'page' : undefined}
-            onClick={(event) => {
-              event.preventDefault();
-              onNavigate(item.href);
-            }}
-          >
-            {item.label}
-          </a>
-        ))}
-      </nav>
+      <WorkspaceTabs
+        tabs={CONTENT_SECTIONS}
+        currentId={contentSectionFromPath(path)}
+        label="Content area"
+        onNavigate={onNavigate}
+      />
       {notice && (
         <p className="notice-banner success" role="status">
           {notice}
@@ -227,32 +249,73 @@ export function ContentWorkspace({
         />
       )}
       {!loading && !error && route.kind === 'overview' && overview && (
-        <OverviewView
-          data={overview}
-          filters={filters}
-          onFiltersChange={setFilters}
-          onApplyFilters={() => setAppliedFilters(filters)}
-          onOpen={(sourceKey) => onNavigate(`/app/content/${encodeURIComponent(sourceKey)}`)}
+        <>
+          <LibraryViewSelector currentId="all" onNavigate={onNavigate} />
+          <OverviewView
+            data={overview}
+            filters={filters}
+            onFiltersChange={setFilters}
+            onApplyFilters={() => setAppliedFilters(filters)}
+            onOpen={(sourceKey) => onNavigate(`/app/content/${encodeURIComponent(sourceKey)}`)}
+          />
+        </>
+      )}
+      {!loading && !error && route.kind === 'publication' && (
+        <PublicationWorkspace
+          csrfToken={csrfToken}
+          onProtectedStateCleared={onProtectedStateCleared}
         />
       )}
       {!loading && !error && route.kind === 'processing' && processing && (
-        <ProcessingView
-          data={processing}
-          onRetry={(sourceKey) => postSourceAction(sourceKey, 'retry', 'Retry from admin queue')}
-        />
+        <>
+          <LibraryViewSelector currentId="processing" onNavigate={onNavigate} />
+          <ProcessingView
+            data={processing}
+            onRetry={(sourceKey) => postSourceAction(sourceKey, 'retry', 'Retry from admin queue')}
+          />
+        </>
       )}
-      {!loading && !error && route.kind === 'create' && createData && (
-        <CreateView
-          data={createData}
+      {!loading && !error && route.kind === 'factory' && factory && (
+        <FactoryView
+          data={factory}
           csrfToken={csrfToken}
           onProtectedStateCleared={onProtectedStateCleared}
-          onCreated={async () => {
-            setNotice('Draft generated for review.');
+          onChanged={async (message) => {
+            setNotice(message);
             await loadRoute();
           }}
         />
       )}
-      {!loading && !error && route.kind === 'social' && social && <SocialView data={social} />}
+      {!loading && !error && route.kind === 'create' && createData && (
+        <>
+          <WorkspaceTabs
+            tabs={studioViews}
+            currentId="create"
+            label="Studio view"
+            onNavigate={onNavigate}
+          />
+          <CreateView
+            data={createData}
+            csrfToken={csrfToken}
+            onProtectedStateCleared={onProtectedStateCleared}
+            onCreated={async () => {
+              setNotice('Draft generated for review.');
+              await loadRoute();
+            }}
+          />
+        </>
+      )}
+      {!loading && !error && route.kind === 'social' && social && (
+        <>
+          <WorkspaceTabs
+            tabs={studioViews}
+            currentId="social"
+            label="Studio view"
+            onNavigate={onNavigate}
+          />
+          <SocialView data={social} />
+        </>
+      )}
       {!loading && !error && route.kind === 'knowledge' && knowledge && (
         <KnowledgeView data={knowledge} />
       )}
@@ -268,7 +331,15 @@ export function ContentWorkspace({
         />
       )}
       {!loading && !error && route.kind === 'activity' && activity && (
-        <ActivityView events={activity.events} />
+        <EmptyState
+          title="Activity moved to item history"
+          body="Open a Library item to review its scoped history. The legacy Activity bookmark remains safe."
+          action={
+            <Button type="button" variant="primary" onClick={() => onNavigate('/app/content')}>
+              Return to Library
+            </Button>
+          }
+        />
       )}
       {!loading && !error && route.kind === 'detail' && detail && (
         <SourceDetailView
@@ -278,6 +349,31 @@ export function ContentWorkspace({
         />
       )}
     </section>
+  );
+}
+
+function LibraryViewSelector({
+  currentId,
+  onNavigate,
+}: {
+  currentId: 'all' | 'processing';
+  onNavigate: (href: string) => void;
+}) {
+  return (
+    <label className="content-library-view">
+      <span>Library view</span>
+      <Select
+        value={currentId}
+        onChange={(event) =>
+          onNavigate(
+            event.target.value === 'processing' ? '/app/content/processing' : '/app/content',
+          )
+        }
+      >
+        <option value="all">All items</option>
+        <option value="processing">Processing queue</option>
+      </Select>
+    </label>
   );
 }
 
@@ -406,6 +502,545 @@ function ProcessingView({
         </section>
       )}
     </>
+  );
+}
+
+function FactoryView({
+  data,
+  csrfToken,
+  onProtectedStateCleared,
+  onChanged,
+}: {
+  data: ContentFactoryWorkspaceResponse;
+  csrfToken: string;
+  onProtectedStateCleared: () => void;
+  onChanged: (message: string) => Promise<void>;
+}) {
+  const visibleItems = useMemo(() => data.items.filter((item) => !item.is_demo), [data.items]);
+  const [selectedKey, setSelectedKey] = useState(visibleItems[0]?.source_key ?? '');
+  const [showIntake, setShowIntake] = useState(false);
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [uploadOccurrence, setUploadOccurrence] = useState(
+    data.occurrences[0]?.occurrence_key ?? '',
+  );
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
+  const selected =
+    visibleItems.find((item) => item.source_key === selectedKey) ?? visibleItems[0] ?? null;
+
+  useEffect(() => {
+    if (selectedKey && visibleItems.some((item) => item.source_key === selectedKey)) return;
+    setSelectedKey(visibleItems[0]?.source_key ?? '');
+  }, [selectedKey, visibleItems]);
+
+  async function upload(event: React.FormEvent) {
+    event.preventDefault();
+    if (!uploadFile || !uploadOccurrence) return;
+    setUploading(true);
+    setUploadError('');
+    try {
+      await apiUpload(
+        '/api/v1/admin/content/factory/intake',
+        uploadFile,
+        { occurrenceKey: uploadOccurrence, idempotencyKey: crypto.randomUUID() },
+        csrfToken,
+        onProtectedStateCleared,
+      );
+      setUploadFile(null);
+      setShowIntake(false);
+      await onChanged('Video received securely. No external provider was contacted.');
+    } catch (error) {
+      setUploadError(errorMessage(error));
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  return (
+    <>
+      <Card className="content-factory-hero">
+        <div>
+          <p className="content-factory-kicker">Class video workflow</p>
+          <h1>Content Factory</h1>
+          <p>
+            Add a class video, review its transcript and lesson drafts, then publish approved
+            material to students.
+          </p>
+        </div>
+        <Button type="button" variant="primary" onClick={() => setShowIntake(!showIntake)}>
+          {showIntake ? 'Cancel' : 'Add class video'}
+        </Button>
+      </Card>
+      {showIntake && (
+        <Card className="content-panel content-factory-intake-panel">
+          <h2>Add class video</h2>
+          <p>
+            The original is streamed to durable private storage and bound to one existing class
+            occurrence. Provider-off processing does not contact OpenAI or Vimeo.
+          </p>
+          {uploadError && (
+            <p className="notice-banner" role="alert">
+              {uploadError}
+            </p>
+          )}
+          <form className="content-editor-form" onSubmit={(event) => void upload(event)}>
+            <label>
+              <span>Video file</span>
+              <input
+                required
+                type="file"
+                accept="video/mp4,video/quicktime,video/webm,video/x-msvideo,video/x-matroska,.m4v"
+                disabled={uploading}
+                onChange={(event) => setUploadFile(event.currentTarget.files?.[0] ?? null)}
+              />
+            </label>
+            <div className="content-factory-fields">
+              <label>
+                <span>Class occurrence</span>
+                <Select
+                  required
+                  disabled={uploading}
+                  value={uploadOccurrence}
+                  onChange={(event) => setUploadOccurrence(event.currentTarget.value)}
+                >
+                  <option value="">Select a class occurrence</option>
+                  {data.occurrences.map((occurrence) => (
+                    <option key={occurrence.occurrence_key} value={occurrence.occurrence_key}>
+                      {occurrence.class_title} · {occurrence.class_date} ·{' '}
+                      {occurrence.learner_count} learners
+                    </option>
+                  ))}
+                </Select>
+              </label>
+            </div>
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={!uploadFile || !uploadOccurrence || uploading}
+            >
+              {uploading ? 'Copying privately…' : 'Add to private storage'}
+            </Button>
+          </form>
+        </Card>
+      )}
+      <section className="provider-ports" aria-label="Private intake status">
+        <Card className="provider-port-card">
+          <strong>Private intake</strong>
+          <Badge>{data.input_adapter === 'DRIVE' ? 'Drive ready' : 'Local drop ready'}</Badge>
+          <span>
+            {data.input_adapter === 'DRIVE'
+              ? 'Incoming Drive files remain protected.'
+              : 'Uploads are streamed into durable private storage.'}
+          </span>
+        </Card>
+      </section>
+      {data.intakes.length > 0 && (
+        <section className="content-stack" aria-labelledby="received-videos-title">
+          <h2 id="received-videos-title">Received videos</h2>
+          {data.intakes.map((intake) => (
+            <Card className="content-row-card content-factory-intake" key={intake.intake_key}>
+              <div>
+                <strong>{intake.display_name}</strong>
+                <span>
+                  {intake.occurrence
+                    ? `${intake.occurrence.class_title} · ${intake.occurrence.class_date}`
+                    : 'Class occurrence required'}
+                </span>
+              </div>
+              <Badge>{readable(intake.state)}</Badge>
+              <span>{formatBytes(intake.byte_length)}</span>
+              {intake.retry_eligible && (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() =>
+                    void apiPost(
+                      `/api/v1/admin/content/factory/intakes/${encodeURIComponent(intake.intake_key)}/retry`,
+                      {},
+                      csrfToken,
+                      onProtectedStateCleared,
+                    ).then(() => onChanged('Failed processing step queued for retry.'))
+                  }
+                >
+                  Retry failed step
+                </Button>
+              )}
+            </Card>
+          ))}
+        </section>
+      )}
+      {visibleItems.length === 0 && data.intakes.length === 0 ? (
+        <EmptyState
+          title="No incoming videos"
+          body="Use Add class video to place a private source in the content factory."
+        />
+      ) : visibleItems.length > 0 ? (
+        <div className="content-factory-layout">
+          <section className="content-stack" aria-label="Content factory queue">
+            {visibleItems.map((item) => (
+              <button
+                type="button"
+                className="content-factory-item"
+                aria-pressed={selected?.source_key === item.source_key}
+                key={item.source_key}
+                onClick={() => setSelectedKey(item.source_key)}
+              >
+                <span>
+                  <strong>{item.draft.title}</strong>
+                  <small>{item.display_name}</small>
+                </span>
+                <Badge>{readable(item.state)}</Badge>
+              </button>
+            ))}
+          </section>
+          {selected && (
+            <FactoryEditor
+              key={`${selected.source_key}:${selected.updated_at}`}
+              item={selected}
+              occurrences={data.occurrences}
+              csrfToken={csrfToken}
+              onProtectedStateCleared={onProtectedStateCleared}
+              onChanged={onChanged}
+            />
+          )}
+        </div>
+      ) : null}
+    </>
+  );
+}
+
+const factoryTimeline = [
+  'received',
+  'inspecting',
+  'trimming',
+  'transcribing',
+  'drafting',
+  'uploading',
+  'review',
+  'approved',
+  'published',
+] as const;
+
+function FactoryTimeline({ state }: { state: (typeof factoryTimeline)[number] | 'failed' }) {
+  const currentIndex = state === 'failed' ? -1 : factoryTimeline.indexOf(state);
+  return (
+    <section className="content-factory-timeline" aria-label="Video processing status">
+      <ol>
+        {factoryTimeline.map((step, index) => (
+          <li
+            key={step}
+            data-state={
+              state === 'failed'
+                ? 'stopped'
+                : index < currentIndex
+                  ? 'complete'
+                  : index === currentIndex
+                    ? 'current'
+                    : 'upcoming'
+            }
+            aria-current={step === state ? 'step' : undefined}
+          >
+            <span aria-hidden="true">{index + 1}</span>
+            <strong>{readable(step)}</strong>
+          </li>
+        ))}
+        {state === 'failed' && (
+          <li data-state="failed" aria-current="step">
+            <span aria-hidden="true">!</span>
+            <strong>Failed</strong>
+          </li>
+        )}
+      </ol>
+    </section>
+  );
+}
+
+function factoryTimelineState(state: ContentFactorySafeItem['state']) {
+  if (state === 'incoming') return 'received' as const;
+  if (state === 'processing') return 'inspecting' as const;
+  if (state === 'transcribed') return 'drafting' as const;
+  if (state === 'rendered') return 'uploading' as const;
+  if (state === 'uploaded' || state === 'needs_review') return 'review' as const;
+  return state;
+}
+
+function FactoryEditor({
+  item,
+  occurrences,
+  csrfToken,
+  onProtectedStateCleared,
+  onChanged,
+}: {
+  item: ContentFactorySafeItem;
+  occurrences: ContentFactoryWorkspaceResponse['occurrences'];
+  csrfToken: string;
+  onProtectedStateCleared: () => void;
+  onChanged: (message: string) => Promise<void>;
+}) {
+  const [form, setForm] = useState({
+    title: item.draft.title,
+    short_description: item.draft.short_description,
+    class_label: item.draft.class_label ?? '',
+    class_date: item.draft.class_date ?? '',
+    topics: item.draft.topics.join(', '),
+    mishnah_terms: item.draft.mishnah_terms.join(', '),
+    normalized_transcript: item.normalized_transcript,
+    review_questions: item.draft.review_questions.join('\n'),
+    key_takeaways: item.draft.key_takeaways.join('\n'),
+    occurrence_key: item.occurrence?.occurrence_key ?? '',
+  });
+  const [busy, setBusy] = useState(false);
+  const [localError, setLocalError] = useState('');
+  const canEdit = item.state !== 'published';
+
+  async function save(event: React.FormEvent) {
+    event.preventDefault();
+    setBusy(true);
+    setLocalError('');
+    const payload: ContentFactoryEditPayload = {
+      title: form.title,
+      short_description: form.short_description,
+      class_label: form.class_label || null,
+      class_date: form.class_date || null,
+      topics: splitCommaList(form.topics),
+      mishnah_terms: splitCommaList(form.mishnah_terms),
+      normalized_transcript: form.normalized_transcript,
+      review_questions: splitLineList(form.review_questions),
+      key_takeaways: splitLineList(form.key_takeaways),
+      occurrence_key: form.occurrence_key,
+    };
+    try {
+      await apiPatch(
+        `/api/v1/admin/content/factory/${encodeURIComponent(item.source_key)}`,
+        payload,
+        csrfToken,
+        onProtectedStateCleared,
+      );
+      await onChanged('Factory draft saved; approval is required before publication.');
+    } catch (saveError) {
+      setLocalError(errorMessage(saveError));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function act(action: 'approve' | 'publish' | 'unpublish' | 'retry') {
+    setBusy(true);
+    setLocalError('');
+    try {
+      await apiPost(
+        `/api/v1/admin/content/factory/${encodeURIComponent(item.source_key)}/${action}`,
+        {},
+        csrfToken,
+        onProtectedStateCleared,
+      );
+      await onChanged(`${readable(action)} completed.`);
+    } catch (actionError) {
+      setLocalError(errorMessage(actionError));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Card className="content-panel content-factory-editor">
+      <header className="content-panel-heading">
+        <div>
+          <h2>{item.draft.title}</h2>
+          <p>
+            {item.is_demo
+              ? 'Demo — approved synthetic lesson data; no external provider media was used.'
+              : 'AI-assisted drafts are never authoritative Torah interpretation.'}
+          </p>
+        </div>
+        <Badge>{readable(item.state)}</Badge>
+      </header>
+      <FactoryTimeline state={factoryTimelineState(item.state)} />
+      <dl className="content-factory-metadata">
+        <div>
+          <dt>Occurrence</dt>
+          <dd>{item.occurrence?.class_date ?? 'Assignment required'}</dd>
+        </div>
+        <div>
+          <dt>Prepared duration</dt>
+          <dd>{formatDuration(item.trim.prepared_duration_ms)}</dd>
+        </div>
+        <div>
+          <dt>Trim confidence</dt>
+          <dd>{Math.round(item.trim.confidence * 100)}%</dd>
+        </div>
+        <div>
+          <dt>Captions</dt>
+          <dd>{item.vimeo.captions_active ? 'Active' : 'Needs attention'}</dd>
+        </div>
+        <div>
+          <dt>Transcript</dt>
+          <dd>{readable(item.transcript_review_state)}</dd>
+        </div>
+      </dl>
+      {localError && (
+        <p className="notice-banner" role="alert">
+          {localError}
+        </p>
+      )}
+      <form className="content-editor-form" onSubmit={(event) => void save(event)}>
+        <label>
+          <span>Title</span>
+          <Input
+            required
+            maxLength={180}
+            disabled={!canEdit || busy}
+            value={form.title}
+            onChange={(event) => setForm({ ...form, title: event.currentTarget.value })}
+          />
+        </label>
+        <label>
+          <span>Short description</span>
+          <textarea
+            required
+            rows={4}
+            maxLength={1200}
+            disabled={!canEdit || busy}
+            value={form.short_description}
+            onChange={(event) => setForm({ ...form, short_description: event.currentTarget.value })}
+          />
+        </label>
+        <div className="content-factory-fields">
+          <label>
+            <span>Class occurrence</span>
+            <Select
+              required
+              disabled={!canEdit || busy}
+              value={form.occurrence_key}
+              onChange={(event) => setForm({ ...form, occurrence_key: event.currentTarget.value })}
+            >
+              <option value="">Select a class occurrence</option>
+              {occurrences.map((occurrence) => (
+                <option key={occurrence.occurrence_key} value={occurrence.occurrence_key}>
+                  {occurrence.class_title} · {occurrence.class_date} · {occurrence.learner_count}{' '}
+                  learners
+                </option>
+              ))}
+            </Select>
+          </label>
+          <label>
+            <span>Class date</span>
+            <Input
+              required
+              type="date"
+              disabled
+              value={form.class_date}
+              onChange={(event) => setForm({ ...form, class_date: event.currentTarget.value })}
+            />
+          </label>
+        </div>
+        <label>
+          <span>Topics (comma separated)</span>
+          <Input
+            disabled={!canEdit || busy}
+            value={form.topics}
+            onChange={(event) => setForm({ ...form, topics: event.currentTarget.value })}
+          />
+        </label>
+        <label>
+          <span>Mishnah / masechta terms (comma separated)</span>
+          <Input
+            disabled={!canEdit || busy}
+            value={form.mishnah_terms}
+            onChange={(event) => setForm({ ...form, mishnah_terms: event.currentTarget.value })}
+          />
+        </label>
+        <label>
+          <span>Transcript</span>
+          <textarea
+            required
+            rows={12}
+            disabled={!canEdit || busy}
+            value={form.normalized_transcript}
+            onChange={(event) =>
+              setForm({ ...form, normalized_transcript: event.currentTarget.value })
+            }
+          />
+        </label>
+        <label>
+          <span>Review questions (5–10, one per line)</span>
+          <textarea
+            required
+            rows={10}
+            disabled={!canEdit || busy}
+            value={form.review_questions}
+            onChange={(event) => setForm({ ...form, review_questions: event.currentTarget.value })}
+          />
+        </label>
+        <label>
+          <span>Key takeaways (3–5, one per line)</span>
+          <textarea
+            required
+            rows={6}
+            disabled={!canEdit || busy}
+            value={form.key_takeaways}
+            onChange={(event) => setForm({ ...form, key_takeaways: event.currentTarget.value })}
+          />
+        </label>
+        <div className="content-action-row">
+          {canEdit && (
+            <Button type="submit" variant="secondary" disabled={busy}>
+              Save draft
+            </Button>
+          )}
+          {item.state === 'needs_review' && (
+            <Button
+              type="button"
+              variant="primary"
+              disabled={busy}
+              onClick={() => void act('approve')}
+            >
+              Approve transcript and drafts
+            </Button>
+          )}
+          {item.state === 'approved' && (
+            <Button
+              type="button"
+              variant="primary"
+              disabled={busy}
+              onClick={() => void act('publish')}
+            >
+              Publish
+            </Button>
+          )}
+          {item.state === 'published' && (
+            <>
+              <a
+                className="content-preview-link"
+                href={item.playback_route}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Preview approved playback
+              </a>
+              <Button
+                type="button"
+                variant="secondary"
+                disabled={busy}
+                onClick={() => void act('unpublish')}
+              >
+                Unpublish
+              </Button>
+            </>
+          )}
+          {item.retry_eligible && (
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={busy}
+              onClick={() => void act('retry')}
+            >
+              Retry failed step
+            </Button>
+          )}
+        </div>
+      </form>
+    </Card>
   );
 }
 
@@ -589,15 +1224,16 @@ function PromptRegistryView({
   const template = data.templates.find((entry) => entry.template_key === templateKey);
   const active = activeVersion(template);
   const [parentVersionKey, setParentVersionKey] = useState(active?.version_key ?? '');
-  const [findText, setFindText] = useState('approved transcript');
-  const [replaceText, setReplaceText] = useState('approved transcript with timestamp citations');
+  const [section, setSection] = useState<ContentAdminStructuredPromptSection>('required_elements');
+  const [feedback, setFeedback] = useState('Use exact source timestamps for every major point.');
   const [reason, setReason] = useState('Improve source-citation specificity.');
   const [preview, setPreview] = useState<ContentAdminPromptPreviewResponse['preview'] | null>(null);
 
   useEffect(() => {
     const nextActive = activeVersion(template);
     setParentVersionKey(nextActive?.version_key ?? template?.versions[0]?.version_key ?? '');
-  }, [templateKey]);
+    setPreview(null);
+  }, [active?.version_key, templateKey]);
 
   async function postPrompt(pathSuffix: string, body: Record<string, unknown>) {
     if (!template) return;
@@ -610,30 +1246,56 @@ function PromptRegistryView({
   }
 
   async function previewPatch() {
+    const parent = template?.versions.find((version) => version.version_key === parentVersionKey);
+    if (!parent || !feedback.trim()) return;
+    const operation = {
+      operation: 'append_item' as const,
+      section,
+      expected_section_checksum: await sha256(JSON.stringify(parent.structured_document[section])),
+      item: feedback.trim(),
+    };
     const result = await postPrompt('preview', {
       parent_version_key: parentVersionKey,
-      patch: { find: findText, replace: replaceText },
+      expected_latest_version_number: Math.max(
+        ...(template?.versions.map((version) => version.version_number) ?? [1]),
+      ),
+      operations: [operation],
       reason,
     });
     setPreview((result as ContentAdminPromptPreviewResponse).preview);
   }
 
   async function savePatch() {
+    if (!preview) return;
     await postPrompt('patch', {
       parent_version_key: parentVersionKey,
-      patch: { find: findText, replace: replaceText },
+      expected_latest_version_number: Math.max(
+        ...(template?.versions.map((version) => version.version_number) ?? [1]),
+      ),
+      operations: preview.proposed_operations,
+      reason,
+    });
+    setPreview(null);
+    await onChanged();
+  }
+
+  async function activate(version: ContentAdminPromptVersion) {
+    if (!active) return;
+    await postPrompt('activate', {
+      version_key: version.version_key,
+      expected_active_version_key: active.version_key,
       reason,
     });
     await onChanged();
   }
 
-  async function activate(version: ContentAdminPromptVersion) {
-    await postPrompt('activate', { version_key: version.version_key, reason });
-    await onChanged();
-  }
-
   async function rollback(version: ContentAdminPromptVersion) {
-    await postPrompt('rollback', { target_version_key: version.version_key, reason });
+    if (!active) return;
+    await postPrompt('rollback', {
+      target_version_key: version.version_key,
+      expected_active_version_key: active.version_key,
+      reason,
+    });
     await onChanged();
   }
 
@@ -655,25 +1317,34 @@ function PromptRegistryView({
           </Select>
         </label>
         <label>
-          <span>Parent version</span>
+          <span>Active parent version</span>
+          <Input value={active ? `v${active.version_number}` : 'Unavailable'} disabled />
+        </label>
+        <label>
+          <span>Prompt section</span>
           <Select
-            value={parentVersionKey}
-            onChange={(event) => setParentVersionKey(event.target.value)}
+            value={section}
+            onChange={(event) => {
+              setSection(event.target.value as ContentAdminStructuredPromptSection);
+              setPreview(null);
+            }}
           >
-            {template?.versions.map((version) => (
-              <option key={version.version_key} value={version.version_key}>
-                v{version.version_number} - {version.status}
+            {structuredPromptSectionOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
               </option>
             ))}
           </Select>
         </label>
-        <label>
-          <span>Find</span>
-          <Input value={findText} onChange={(event) => setFindText(event.target.value)} />
-        </label>
-        <label>
-          <span>Replace</span>
-          <Input value={replaceText} onChange={(event) => setReplaceText(event.target.value)} />
+        <label className="wide-field">
+          <span>Natural-language instruction</span>
+          <Input
+            value={feedback}
+            onChange={(event) => {
+              setFeedback(event.target.value);
+              setPreview(null);
+            }}
+          />
         </label>
         <label className="wide-field">
           <span>Reason</span>
@@ -691,7 +1362,7 @@ function PromptRegistryView({
           <Button
             type="button"
             variant="primary"
-            disabled={!canManage}
+            disabled={!canManage || !preview}
             onClick={() => void savePatch()}
           >
             Save draft
@@ -701,7 +1372,32 @@ function PromptRegistryView({
       {preview && (
         <Card className="content-preview-card">
           <h2>Preview</h2>
-          <pre>{preview.rendered_excerpt}</pre>
+          <p>
+            Review the complete candidate and exact changed instructions before saving this draft.
+          </p>
+          <h3>Complete candidate prompt</h3>
+          <pre>{preview.rendered_prompt}</pre>
+          {preview.diff.map((change, index) => (
+            <div key={`${change.section}:${index}`} data-prompt-diff={change.section}>
+              <h3>{readable(change.section)} exact change</h3>
+              <h4>Before</h4>
+              {change.before.length === 0 ? (
+                <p>No instructions.</p>
+              ) : (
+                <ol>
+                  {change.before.map((item, itemIndex) => (
+                    <li key={`before:${itemIndex}`}>{item}</li>
+                  ))}
+                </ol>
+              )}
+              <h4>After</h4>
+              <ol>
+                {change.after.map((item, itemIndex) => (
+                  <li key={`after:${itemIndex}`}>{item}</li>
+                ))}
+              </ol>
+            </div>
+          ))}
           <Badge>cannot publish</Badge>
         </Card>
       )}
@@ -1074,8 +1770,15 @@ function ProviderPorts({ ports }: { ports: ContentAdminProviderPortStatus[] }) {
 function routeFromPath(path: string): RouteState {
   const cleanPath = path.split('?')[0] ?? '/app/content';
   if (cleanPath === '/app/content') return { kind: 'overview' };
-  const segment = cleanPath.replace(/^\/app\/content\/?/, '').split('/')[0] ?? '';
+  const segments = cleanPath
+    .replace(/^\/app\/content\/?/, '')
+    .split('/')
+    .filter(Boolean);
+  const segment = segments[0] ?? '';
+  if (segment === 'publication') return { kind: 'publication' };
   if (segment === 'processing') return { kind: 'processing' };
+  if (segment === 'factory') return { kind: 'factory' };
+  if (segment === 'studio') return { kind: segments[1] === 'social' ? 'social' : 'create' };
   if (segment === 'create') return { kind: 'create' };
   if (segment === 'social') return { kind: 'social' };
   if (segment === 'knowledge') return { kind: 'knowledge' };
@@ -1100,6 +1803,47 @@ async function apiPost<T = unknown>(
       method: 'POST',
       headers: { 'content-type': 'application/json', 'x-csrf-token': csrfToken },
       body: JSON.stringify(body),
+    },
+    onProtectedStateCleared,
+  );
+}
+
+async function apiPatch<T = unknown>(
+  path: string,
+  body: Record<string, unknown>,
+  csrfToken: string,
+  onProtectedStateCleared: () => void,
+): Promise<T> {
+  return apiRequest<T>(
+    path,
+    {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json', 'x-csrf-token': csrfToken },
+      body: JSON.stringify(body),
+    },
+    onProtectedStateCleared,
+  );
+}
+
+async function apiUpload<T = unknown>(
+  path: string,
+  file: File,
+  metadata: { occurrenceKey: string; idempotencyKey: string },
+  csrfToken: string,
+  onProtectedStateCleared: () => void,
+): Promise<T> {
+  return apiRequest<T>(
+    path,
+    {
+      method: 'POST',
+      headers: {
+        'content-type': file.type || 'application/octet-stream',
+        'x-csrf-token': csrfToken,
+        'x-file-name': encodeURIComponent(file.name),
+        'x-occurrence-key': encodeURIComponent(metadata.occurrenceKey),
+        'x-idempotency-key': encodeURIComponent(metadata.idempotencyKey),
+      },
+      body: file,
     },
     onProtectedStateCleared,
   );
@@ -1144,11 +1888,41 @@ function activeVersion(template: ContentAdminPromptTemplate | undefined) {
   );
 }
 
+async function sha256(value: string) {
+  const bytes = new TextEncoder().encode(value);
+  const digest = await crypto.subtle.digest('SHA-256', bytes);
+  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, '0')).join('');
+}
+
+function formatBytes(value: number) {
+  if (value < 1024 * 1024) return `${Math.max(1, Math.round(value / 1024))} KB`;
+  return `${(value / (1024 * 1024)).toFixed(value >= 100 * 1024 * 1024 ? 0 : 1)} MB`;
+}
+
 function readable(value: string) {
   return value
     .replaceAll('_', ' ')
     .replaceAll('.', ' ')
     .replace(/^\w/, (letter) => letter.toUpperCase());
+}
+
+function splitLineList(value: string) {
+  return value
+    .split(/\r?\n/)
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+}
+
+function splitCommaList(value: string) {
+  return value
+    .split(',')
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+}
+
+function formatDuration(durationMs: number) {
+  const seconds = Math.round(durationMs / 1000);
+  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
 }
 
 function formatDate(value: string) {

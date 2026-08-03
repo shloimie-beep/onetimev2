@@ -1,0 +1,76 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P17-SERVER-WORKER-REGISTRATION-002
+task_id: P17
+kind: registration
+requirement_ids:
+  - OTV2-CLASSROOM-068
+  - OTV2-CLASSROOM-069
+  - OTV2-CLASSROOM-070
+  - OTV2-CLASSROOM-072
+  - OTV2-CLASSROOM-074
+  - OTV2-CLASSROOM-079
+  - OTV2-CLASSROOM-188
+acceptance_case_ids:
+  - OTV2-CLASSROOM-068-AC01
+  - OTV2-CLASSROOM-069-AC01
+  - OTV2-CLASSROOM-070-AC01
+  - OTV2-CLASSROOM-072-AC01
+  - OTV2-CLASSROOM-074-AC01
+  - OTV2-CLASSROOM-079-AC01
+  - OTV2-CLASSROOM-188-AC01
+rationale: >-
+  P17 cannot edit root barrels or central server/worker composers.
+  P17-SERVER-WORKER-REGISTRATION-001 remains immutable and withheld because it
+  mixed preparation registration with P18-owned bootstrap and live-session
+  responsibilities.
+desired_semantic_change: >-
+  Register only the P17 Zoom preparation server command seam and asynchronous
+  preparation worker. The server prepares and confirms the exact
+  occurrence/roster/resource/registrant plan and atomically writes canonical
+  job_outbox plus provider_operation_binding rows. The worker dispatches or
+  reconciles only meeting and registrant operations and durably quarantines
+  acceptance-unknown work.
+proposed_symbols_routes_keys_or_dependencies:
+  - >-
+    Export packages/contracts/src/classroom/zoom-preparation/index.ts,
+    packages/domain/src/classroom/zoom-preparation/index.ts, and
+    packages/db/src/classroom/zoom-preparation/index.ts from steward-owned root
+    barrels.
+  - >-
+    Register apps/web/src/server/features/classroom/zoom-preparation/index.ts
+    for scoped Admin/scheduler prepare-preview and Admin confirm-preparation
+    commands only.
+  - >-
+    Register apps/worker/src/runners/zoom-preparation/index.ts for canonical
+    zoom.meeting.create_or_reuse and zoom.registrant.create_or_reuse operations
+    only.
+  - >-
+    Require the exact active F06 Zoom registry/account binding and the F05
+    job_outbox contract before enabling the worker.
+  - >-
+    Leave constant Student classroom rendering, launch-grant redemption,
+    Meeting SDK signing/bootstrap, heartbeat, reconnect, reset, live-session,
+    and attendance routes exclusively to P18-registration-001.
+compatibility_assumptions:
+  - P17-SERVER-WORKER-REGISTRATION-001 remains immutable, unapplied, and
+    withheld.
+  - P18-registration-001 is the sole registration request for launch,
+    bootstrap, live-session, signer, heartbeat, reset, and attendance seams.
+  - Provider mutation remains outside web transactions; web transactions only
+    commit durable outbox intent and exact provider binding.
+  - No P17 route or response returns a raw Zoom URL, credential, Meeting SDK
+    bearer, launch grant, or live-session material.
+verification_performed:
+  - focused P17 domain, database, server, and worker tests
+  - full workspace typecheck
+  - focused lint and formatting
+  - no-provider secret and scope scans
+conflicts_or_risks:
+  - Do not register a P17 bootstrap, signer, heartbeat, reconnect, reset,
+    attendance, or embedded-classroom route.
+  - Do not edit root barrels or central composers from P17.
+  - Do not enable provider dispatch before the migration and exact registry
+    binding prerequisites are reconciled.
+  - Do not perform a provider sandbox or production effect from this request.
+contains_secret_or_private_data: false

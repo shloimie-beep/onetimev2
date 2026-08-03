@@ -1,0 +1,128 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: F04
+interface_implementation_head_sha: 2834f79b9e45f7c310de037adf07c8ffc7ed50b7
+metadata_commit_sha: derive_from_git_and_record_in_control_registry
+task_packet_digest: 8129731ba92e32991ceda7c9e729196e82c4d9c8ac2cb8dfbee33a7c169d81f5
+contract_digest: 79176042f6fef736e27c9280e89d116146c515bf3ab275360f31784fed587e33
+contract_digest_algorithm: >-
+  SHA-256 over UTF-8 lines containing semantic_contract_version=<version>
+  followed by exact path=<artifact SHA-256> lines sorted lexicographically by
+  path, with LF separators and no final newline.
+contract_schema_version: 1
+semantic_contract_version: 1.0.1
+supersedes_checkpoint_sha: 4cc95c29c6012174595ba1821e0554aca8572e08
+supersedes_contract_digest: a57837379bfc8210188887ff31937ed7882befe10b80941499dc7ba305e7984d
+state: interface_ready
+exports:
+  - path: packages/contracts/src/access/v21-household-authorization.ts
+    symbols:
+      - HOUSEHOLD_AUTHORIZATION_CONTRACT_VERSION
+      - ADULT_CAPABILITY_VALUES
+      - AdultCapability
+      - ADULT_ROLE_CAPABILITIES
+      - STUDENT_ONLY_CAPABILITIES
+      - StudentOnlyCapability
+      - AdultAuthorizationContext
+      - AdultAuthorizationDecision
+    sha256: ef152773ba5481a1a95b3ad2d1621ed6dc8e2fc07fc4cfa5a6ec1b14114f5df0
+  - path: packages/contracts/src/accounts/v21-household-identity.ts
+    symbols:
+      - HOUSEHOLD_IDENTITY_CONTRACT_VERSION
+      - ONE_TIME_PRODUCT_SCOPE
+      - ADULT_ROLE_VALUES
+      - AdultRole
+      - STUDENT_RELATIONSHIP_VALUES
+      - StudentRelationship
+      - ADULT_ACCOUNT_STATE_VALUES
+      - AdultAccountState
+      - HOUSEHOLD_STATE_VALUES
+      - HouseholdState
+      - STUDENT_STATE_VALUES
+      - StudentState
+      - OWNERSHIP_TRANSFER_STATE_VALUES
+      - OwnershipTransferState
+      - ADULT_SESSION_POLICY
+      - VersionedRecord
+      - AdultIdentity
+      - HumanAccount
+      - Household
+      - SafeHouseholdContext
+      - AdultSession
+      - StudentProfile
+      - RequiredTransferPolicySet
+      - DependentTransferAttestation
+      - HouseholdOwnershipTransfer
+      - OwnershipTransferAcceptance
+      - OwnershipTransferAuditEvent
+      - ProviderReassociationIntent
+      - AppliedOwnershipTransfer
+      - ReplayedOwnershipTransfer
+      - OwnershipTransferAcceptanceResult
+      - SelfStudentMoveResult
+      - ArchivedSelfStudentResult
+      - HOUSEHOLD_IDENTITY_ERROR_CODES
+      - HouseholdIdentityErrorCode
+    sha256: 447cc3a7dbe424172e79249532c869792215f69019152df32d1458ca5ec08b31
+  - path: packages/domain/src/access/index.ts
+    symbols:
+      - authorizeAdultCapability
+    sha256: f9a2027299f0f47168b77ad4657cc2db19700ab455354334215f38940aee7953
+  - path: packages/domain/src/access/v21-household-authorization.ts
+    symbols:
+      - authorizeAdultCapability
+    sha256: 15c518ef796c6edc99d791b69c5c19890f6dba22c09d053b4a84042fcc6dd323
+  - path: packages/domain/src/accounts/index.ts
+    symbols:
+      - HouseholdIdentityError
+      - normalizeAdultEmail
+      - createOrLinkAdultIdentity
+      - selectAdultRoleContext
+      - selectHouseholdContext
+      - acceptHouseholdOwnershipTransfer
+      - moveSelfStudentBetweenOwnedHouseholds
+      - archiveSelfStudentForOwnershipTransfer
+    sha256: f6d2e82013b785a03fc2b80362f46f96802236d4b528cb8b16afb781abf8c789
+  - path: packages/domain/src/accounts/v21-household-identity.ts
+    symbols:
+      - HouseholdIdentityError
+      - normalizeAdultEmail
+      - createOrLinkAdultIdentity
+      - selectAdultRoleContext
+      - selectHouseholdContext
+      - acceptHouseholdOwnershipTransfer
+      - moveSelfStudentBetweenOwnedHouseholds
+      - archiveSelfStudentForOwnershipTransfer
+    sha256: b58a787621e6379daa98dde87af879c8cc3a08b7646cdd3689fef148a66d337d
+compatibility_invariants:
+  - One normalized adult email resolves to one AdultIdentity and one HumanAccount; exact adult memberships are admin, parent, or both.
+  - Every adult request carries one explicit server-validated role context; role changes rotate the session and apply the exact Admin or Parent idle/absolute expiry policy.
+  - Parent household context is selected only from server-resolved ownership links; direct sibling or cross-household identifiers fail closed.
+  - Parent capability composition never includes Student class, library, recording, private-question, or Student-notice access; an adult learner remains a separate self Student with separate credentials and consumes one seat.
+  - Each household has one current owner while one adult may own several independently scoped households.
+  - Ownership transfer is Admin-assisted, seven-day, single-use, idempotent, version-checked, and atomic; an active outgoing-owner self Student blocks acceptance.
+  - A self Student is archived or moved only without changing its relationship, identifier, credential, or immutable history; cross-owner and full-seat moves fail closed and revoke Student sessions/grants.
+  - Remaining dependent Students require one current replacement-owner authority plus service-account and recording-participation attestation for each exact Student.
+  - Transfer to an existing Admin adds parent idempotently to that HumanAccount, creates no duplicate login, changes no financial identity, revokes old household-authorizing sessions and billing/action tokens, and emits audit/provider intents.
+  - Product, runtime tier, and verification environment use the F02 canonical isolation mapping and cannot cross scopes.
+  - Schema creation is migration-only; F04 requests F02 migration authority and I36 barrel/server registration without editing those hotspots.
+downstream_tasks:
+  - F06
+  - P08
+  - P10
+  - P12
+  - P14
+  - P16
+  - P24
+  - P25
+  - P26
+  - P27
+  - P32
+verification_commands:
+  - npm run typecheck
+  - focused Vitest assertions covering exact roles/policies, normalized identity linking, explicit role switching, server-derived household switching, Parent learning denial, active-self-Student transfer block, dependent attestations, existing-Admin transfer, revocation, idempotent replay, stale versions, seat limits, and cross-owner isolation
+  - focused ESLint over all F04 TypeScript artifacts
+  - focused Prettier check over all F04 TypeScript/YAML artifacts
+  - git diff --check
+contains_product_completion_claim: false
+contains_external_effect: false

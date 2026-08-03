@@ -1,0 +1,105 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P31
+generated_at: '2026-07-30T16:54:07Z'
+candidate:
+  status: not_frozen
+  digest: null
+effect_state:
+  authority_records_reserved: 0
+  locks_acquired: 0
+  provider_mutations: 0
+  sends: 0
+  contacts_created_or_updated: 0
+  enrollments: 0
+  charges_or_refunds: 0
+  deployments_or_dns_changes: 0
+candidate_bound_gates:
+  - gap_id: candidate-null
+    required_input: Freeze one immutable candidate digest after P08, P20/P21/F02, landing, and I36 registration corrections pass.
+    blocks: Candidate-bound provider verification, canaries, deployments, DNS changes, and release.
+  - gap_id: authority-bindings
+    required_input: Derive exact task/candidate/provider-bound authority records from the active source grant.
+    blocks: Every provider effect.
+  - gap_id: provider-locks
+    required_input: Acquire the exact exclusive provider lock and fencing token immediately before each live effect.
+    blocks: Every provider effect; read-only preflight remains allowed.
+credential_or_auth_gaps:
+  - provider: HighLevel
+    gap: Canonical account/agency identity is not registered; the exact location is live-confirmed.
+    reconnect_or_login_needed: false
+  - provider: GHL-managed Stripe
+    gap: Exact connected Stripe account, product, price, webhook, and signed projection identities are unknown.
+    reconnect_or_login_needed: unknown
+  - provider: Zoom
+    gap: No connector, CLI, signed-in readback, canonical account, app, meeting, or operator fixture was available.
+    reconnect_or_login_needed: true
+  - provider: Google Drive
+    gap: Connector is readable, but no unique canonical account and ingest-folder ID is registered; similarly named private folders are ambiguous.
+    reconnect_or_login_needed: false
+  - provider: Vimeo
+    gap: A signed-in account/folder was observed, but neither is bound by the canonical registry.
+    reconnect_or_login_needed: false
+  - provider: Resend/GHL email
+    gap: Domain and info mailbox receiving are live-confirmed; exact rabbielischeller@onetimeonetime.com governed GHL Conversations routing and accepted From/Reply-To are not proven.
+    reconnect_or_login_needed: false
+  - provider: Telegram
+    gap: Exact bot and operator destination are unknown; no provider connector or signed-in readback was available.
+    reconnect_or_login_needed: true
+  - provider: Railway deployment
+    gap: Account is authenticated but the worktree is unlinked and two One Time projects are plausible; exact project/environment/service/database identities are not registered.
+    reconnect_or_login_needed: false
+  - provider: DNS
+    gap: GoDaddy nameservers and public records are readable, but the exact GoDaddy account/zone identity and candidate-bound app/www targets are unknown.
+    reconnect_or_login_needed: unknown
+  - provider: S3/KMS
+    gap: Exact AWS account, region, bucket, prefix, and KMS key are unknown; no connector, CLI, or configured environment name was available.
+    reconnect_or_login_needed: true
+  - provider: OpenAI
+    gap: Exact project, model, operation, prompt, schema, token, and cost limits are unknown; no project-management connection was available.
+    reconnect_or_login_needed: true
+  - provider: Backup source
+    gap: Exact current production database/source identity is not registered.
+    reconnect_or_login_needed: depends_on_railway_registry
+  - provider: Restore target
+    gap: No exact isolated disposable target is allocated or registered.
+    reconnect_or_login_needed: depends_on_railway_registry
+  - provider: Alert destinations
+    gap: No exact operator-owned alert destination is registered.
+    reconnect_or_login_needed: unknown
+operator_fixture_gaps:
+  - One protected operator adult/guardian destination for GHL/Resend seed verification.
+  - One exact operator-controlled GHL contact identity or permission to create at most one under a later effect lock.
+  - One operator Family checkout fixture and payment method for the later maximum USD 67 GHL-managed checkout.
+  - Up to three operator-controlled Student fixtures for Zoom/classroom verification; never GHL contacts.
+  - One exact Zoom device/account fixture set for simultaneous-session verification.
+  - One exact Google Drive ingest file and immutable folder ID.
+  - One exact Telegram operator destination.
+  - One exact isolated restore target and cleanup identity.
+approval_gaps:
+  - Exact Rabbi sender route/acceptance plus one seed and controlled reply authorization.
+  - Exact audience and final-copy approval for OT-02A, OT-02B, OT-14, and OT-15 before any historical or broad enrollment/send.
+  - Exact candidate-bound effect budgets, cleanup, reconciliation, and rollback packet per provider.
+  - Final operator acceptance after candidate verification.
+legal_release_only_gap:
+  blocker_id: OPS-084-LEGAL-BUNDLE
+  scope: production_broad
+  required_input:
+    - approved legal/terms-of-service.html
+    - approved legal/privacy-notice.html
+    - approved legal/student-data-and-recording-consent.html
+    - approved legal/cancellation-policy.html
+    - approved legal/refund-policy.html
+    - approved legal/legal-policy-manifest.json with hashes, versions, dates, product-owner approval, and qualified legal reviewer
+  does_not_block:
+    - implementation corrections
+    - integration and shared registration
+    - candidate preparation
+    - persistent staging
+    - production read-only verification
+    - operator-only canaries within exact authority and locks
+  blocks:
+    - V43 legal acceptance case
+    - R45 broad release decision
+    - customer activation and broad production cutover
+consolidated_request_timing: Ask only after every independent implementation, integration, candidate-preparation, and read-only provider task is complete.

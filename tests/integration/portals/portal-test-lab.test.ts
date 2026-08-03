@@ -11,6 +11,7 @@ import {
 import { loadConfig, type AppConfig } from '../../../packages/config/src/index.ts';
 import { createMemoryPool, runMigrations, type DbPool } from '../../../packages/db/src/index.ts';
 import {
+  createDbStudentClassHelperRateLimitStore,
   createAccountUser,
   decryptAuthEmailChallengeDeliveryPayloadForTests,
 } from '../../../packages/domain/src/index.ts';
@@ -48,6 +49,45 @@ afterEach(async () => {
 });
 
 describe('W12-03 Portal Test Lab', () => {
+  it('404s and writes nothing when either explicit runtime classification is production', async () => {
+    for (const override of [
+      { deliveryEnvironment: 'production' as const },
+      { oneTimeRuntimeEnvironment: 'production' as const },
+    ]) {
+      const isolatedPool = createMemoryPool();
+      await runMigrations(isolatedPool);
+      const failClosedConfig: AppConfig = {
+        ...config,
+        ...override,
+        portalTestLabEnabled: true,
+      };
+      const server = await listenForTest(
+        createApp({ config: failClosedConfig, pool: isolatedPool, distDir }),
+      );
+      try {
+        const page = await fetch(`${server.baseUrl}${W12_PORTAL_TEST_LAB_ROUTE}`);
+        expect(page.status).toBe(404);
+        const reseed = await fetch(`${server.baseUrl}${W12_PORTAL_TEST_LAB_ROUTE}/reseed`, {
+          method: 'POST',
+        });
+        expect(reseed.status).toBe(404);
+
+        await seedPortalTestLab({ pool: isolatedPool, config: failClosedConfig });
+        const [users, accessRows] = await Promise.all([
+          isolatedPool.query(`SELECT count(*)::int AS count FROM onetime.account_users`),
+          isolatedPool.query(
+            `SELECT count(*)::int AS count FROM onetime.account_access_projections`,
+          ),
+        ]);
+        expect(users.rows[0]?.count).toBe(0);
+        expect(accessRows.rows[0]?.count).toBe(0);
+      } finally {
+        await server.close();
+        await isolatedPool.end();
+      }
+    }
+  });
+
   it('keeps the lab owner/admin-only and hides runnable secrets', async () => {
     const server = await listenForTest(createApp({ config, pool, distDir }));
     try {
@@ -128,7 +168,10 @@ describe('W12-03 Portal Test Lab', () => {
       const learner = W12_PORTAL_TEST_LAB.learners[0];
       const resetAccess = await parentStudentAccessAction(server.baseUrl, parent, learner, 'reset');
       expect(resetAccess.status).toBe(200);
-      expect((await resetAccess.json()).data.status).toBe('reset_requested');
+      expect((await resetAccess.json()).data).toMatchObject({
+        status: 'reset_requested',
+        credential_status: 'reset_required',
+      });
       const suspendAccess = await parentStudentAccessAction(
         server.baseUrl,
         parent,
@@ -157,6 +200,49 @@ describe('W12-03 Portal Test Lab', () => {
       expect(JSON.stringify(await parentLaunch.json())).not.toMatch(
         /https?:\/\/|zoom|vimeo|drive|meet/i,
       );
+
+      const parentHelper = await fetch(
+        `${server.baseUrl}/api/v1/portals/parent/households/${
+          W12_PORTAL_TEST_LAB.householdKey
+        }/learners/${W12_PORTAL_TEST_LAB.learners[0].learnerKey}/helper/query`,
+        {
+          method: 'POST',
+          headers: {
+            cookie: parent.cookies,
+            'content-type': 'application/json',
+            'x-csrf-token': parent.json.csrf_token,
+          },
+          body: JSON.stringify({
+            idempotency_key: 'w12-parent-helper-learner-one',
+            question: 'What should this learner review from the Mishnah lesson?',
+          }),
+        },
+      );
+      const parentHelperJson = await parentHelper.json();
+      expect(parentHelper.status, JSON.stringify(parentHelperJson)).toBe(200);
+      expect(parentHelperJson.data).toMatchObject({
+        abstained: false,
+        provider_mode: 'provider_off',
+        grounding_mode: 'approved_entitled_sections',
+      });
+      const crossHousehold = await fetch(
+        `${server.baseUrl}/api/v1/portals/parent/households/not_authorized_household/learners/${
+          W12_PORTAL_TEST_LAB.learners[0].learnerKey
+        }/helper/query`,
+        {
+          method: 'POST',
+          headers: {
+            cookie: parent.cookies,
+            'content-type': 'application/json',
+            'x-csrf-token': parent.json.csrf_token,
+          },
+          body: JSON.stringify({
+            idempotency_key: 'w12-parent-helper-cross-household',
+            question: 'What should this learner review?',
+          }),
+        },
+      );
+      expect(crossHousehold.status).toBe(404);
 
       for (const current of W12_PORTAL_TEST_LAB.learners) {
         const student = await loginAs(server.baseUrl, current.email, current.defaultPassword);
@@ -191,11 +277,270 @@ describe('W12-03 Portal Test Lab', () => {
         const helperJson = await helper.json();
         expect(helper.status, JSON.stringify(helperJson)).toBe(200);
         expect(helperJson.data.abstained).toBe(false);
+        expect(helperJson.data.provider_mode).toBe('provider_off');
+        expect(helperJson.data.grounding_mode).toBe('approved_entitled_sections');
         expect(JSON.stringify(helperJson)).not.toMatch(/https?:\/\/|zoom|vimeo|drive|meet/i);
       }
     } finally {
       await server.close();
     }
+  });
+
+  it('does not treat a learner entitlement household key as sibling access', async () => {
+    const [entitledLearner, siblingLearner] = W12_PORTAL_TEST_LAB.learners;
+    if (!entitledLearner || !siblingLearner) throw new Error('W12 learner fixtures are incomplete');
+    await pool.query(
+      `UPDATE onetime.content_item_entitlements
+          SET entitlement_state = 'revoked',
+              revoked_at = now()
+        WHERE account_key = $1
+          AND product_key = $2
+          AND content_item_key = $3`,
+      [config.accountKey, config.productKey, W12_PORTAL_TEST_LAB.recordingKey],
+    );
+    await pool.query(
+      `INSERT INTO onetime.content_item_entitlements
+         (entitlement_key, account_key, product_key, content_item_key, audience, household_key,
+          learner_key, entitlement_state)
+       VALUES
+         ('w12_recording_learner_one_scope',$1,$2,$3,'learner',$4,$5,'active')`,
+      [
+        config.accountKey,
+        config.productKey,
+        W12_PORTAL_TEST_LAB.recordingKey,
+        W12_PORTAL_TEST_LAB.householdKey,
+        entitledLearner.learnerKey,
+      ],
+    );
+    const stored = await pool.query(
+      `SELECT audience, household_key, learner_key
+         FROM onetime.content_item_entitlements
+        WHERE account_key = $1
+          AND product_key = $2
+          AND entitlement_key = 'w12_recording_learner_one_scope'`,
+      [config.accountKey, config.productKey],
+    );
+    expect(stored.rows[0]).toMatchObject({
+      audience: 'learner',
+      household_key: W12_PORTAL_TEST_LAB.householdKey,
+      learner_key: entitledLearner.learnerKey,
+    });
+
+    const server = await listenForTest(createApp({ config, pool, distDir }));
+    try {
+      const entitledSession = await loginAs(
+        server.baseUrl,
+        entitledLearner.email,
+        entitledLearner.defaultPassword,
+      );
+      const entitledResponse = await queryStudentHelper({
+        baseUrl: server.baseUrl,
+        session: entitledSession,
+        idempotencyKey: 'w12-learner-one-exact-entitlement',
+      });
+      expect(entitledResponse.status, JSON.stringify(entitledResponse.body)).toBe(200);
+      expect(entitledResponse.body.data).toMatchObject({
+        abstained: false,
+        safe_reason_code: 'supported_by_approved_section',
+        provider_mode: 'provider_off',
+      });
+      expect(entitledResponse.body.data.citations).toHaveLength(1);
+      expect(entitledResponse.body.data.citations[0]?.content_id).toBe(
+        W12_PORTAL_TEST_LAB.recordingKey,
+      );
+
+      const siblingSession = await loginAs(
+        server.baseUrl,
+        siblingLearner.email,
+        siblingLearner.defaultPassword,
+      );
+      const siblingResponse = await queryStudentHelper({
+        baseUrl: server.baseUrl,
+        session: siblingSession,
+        idempotencyKey: 'w12-learner-two-sibling-denial',
+      });
+      expect(siblingResponse.status, JSON.stringify(siblingResponse.body)).toBe(200);
+      expect(siblingResponse.body.data).toMatchObject({
+        abstained: true,
+        safe_reason_code: 'not_entitled',
+        citations: [],
+        source_refs: [],
+        provider_mode: 'provider_off',
+      });
+      const siblingPayload = JSON.stringify(siblingResponse.body);
+      for (const forbidden of [
+        W12_PORTAL_TEST_LAB.recordingKey,
+        W12_PORTAL_TEST_LAB.helperVersionId,
+        'w12_section_001',
+        'W12 fictional review section',
+        entitledLearner.learnerKey,
+        entitledLearner.displayName,
+      ]) {
+        expect(siblingPayload).not.toContain(forbidden);
+      }
+    } finally {
+      await server.close();
+    }
+  });
+
+  it('fails closed when approved entitled helper rows contain protected provider material', async () => {
+    const server = await listenForTest(createApp({ config, pool, distDir }));
+    try {
+      const students = await Promise.all(
+        W12_PORTAL_TEST_LAB.learners.map((learner) =>
+          loginAs(server.baseUrl, learner.email, learner.defaultPassword),
+        ),
+      );
+      const tenantId = config.accountKey;
+      const bodyPatterns = [
+        'https://zoom.us/j/123456789?pwd=forbidden-value',
+        'zoom.us/j/123456789?pwd=forbidden-value',
+        '//us02web.zoom.us/j/123456789',
+        'https://player.vimeo.com/video/123456?h=forbidden-value',
+        'player.vimeo.com/video/123456',
+        'API key forbidden-value',
+        'passcode 123456',
+        '?token=forbidden-value',
+      ];
+      for (const [index, unsafeValue] of bodyPatterns.entries()) {
+        await pool.query(
+          `UPDATE onetime.ot86_search_documents
+              SET body = $4,
+                  updated_at = now()
+            WHERE tenant_id = $1
+              AND content_id = $2
+              AND version_id = $3`,
+          [
+            tenantId,
+            W12_PORTAL_TEST_LAB.recordingKey,
+            W12_PORTAL_TEST_LAB.helperVersionId,
+            `This fictional Mishnah lesson is approved for review. ${unsafeValue}`,
+          ],
+        );
+        await expectUnsafeHelperResponse({
+          baseUrl: server.baseUrl,
+          session: students[0]!,
+          learnerIndex: 0,
+          idempotencyKey: `w12-unsafe-body-${index}`,
+        });
+      }
+
+      await pool.query(
+        `UPDATE onetime.ot86_search_documents
+            SET body = 'This fictional Mishnah lesson is approved for review.',
+                updated_at = now()
+          WHERE tenant_id = $1
+            AND content_id = $2
+            AND version_id = $3`,
+        [tenantId, W12_PORTAL_TEST_LAB.recordingKey, W12_PORTAL_TEST_LAB.helperVersionId],
+      );
+      const titlePatterns = [
+        'Review at https://zoom.us/j/123456789',
+        'Review at zoom.us/j/123456789',
+        'Review at player.vimeo.com/video/123456',
+        'Lesson API key forbidden-value',
+        'Lesson passcode 123456',
+      ];
+      for (const [index, unsafeTitle] of titlePatterns.entries()) {
+        await Promise.all([
+          pool.query(
+            `UPDATE onetime.ot86_search_documents
+                SET title = $4,
+                    updated_at = now()
+              WHERE tenant_id = $1
+                AND content_id = $2
+                AND version_id = $3`,
+            [
+              tenantId,
+              W12_PORTAL_TEST_LAB.recordingKey,
+              W12_PORTAL_TEST_LAB.helperVersionId,
+              unsafeTitle,
+            ],
+          ),
+          pool.query(
+            `UPDATE onetime.ot86_published_sections
+                SET title = $4
+              WHERE tenant_id = $1
+                AND content_id = $2
+                AND version_id = $3`,
+            [
+              tenantId,
+              W12_PORTAL_TEST_LAB.recordingKey,
+              W12_PORTAL_TEST_LAB.helperVersionId,
+              unsafeTitle,
+            ],
+          ),
+        ]);
+        await expectUnsafeHelperResponse({
+          baseUrl: server.baseUrl,
+          session: students[1]!,
+          learnerIndex: 1,
+          idempotencyKey: `w12-unsafe-title-${index}`,
+        });
+      }
+
+      await Promise.all([
+        pool.query(
+          `UPDATE onetime.ot86_search_documents
+              SET title = 'W12 fictional review section',
+                  updated_at = now()
+            WHERE tenant_id = $1
+              AND content_id = $2
+              AND version_id = $3`,
+          [tenantId, W12_PORTAL_TEST_LAB.recordingKey, W12_PORTAL_TEST_LAB.helperVersionId],
+        ),
+        pool.query(
+          `UPDATE onetime.ot86_published_sections
+              SET title = 'W12 fictional review section'
+            WHERE tenant_id = $1
+              AND content_id = $2
+              AND version_id = $3`,
+          [tenantId, W12_PORTAL_TEST_LAB.recordingKey, W12_PORTAL_TEST_LAB.helperVersionId],
+        ),
+      ]);
+      for (const [index, unsafeDeepLink] of [
+        '/app/admin#section-private',
+        '/library/classes/w12?api_key=forbidden-value#section-w12',
+      ].entries()) {
+        await pool.query(
+          `UPDATE onetime.ot86_published_sections
+              SET deep_link = $4
+            WHERE tenant_id = $1
+              AND content_id = $2
+              AND version_id = $3`,
+          [
+            tenantId,
+            W12_PORTAL_TEST_LAB.recordingKey,
+            W12_PORTAL_TEST_LAB.helperVersionId,
+            unsafeDeepLink,
+          ],
+        );
+        await expectUnsafeHelperResponse({
+          baseUrl: server.baseUrl,
+          session: students[2]!,
+          learnerIndex: 2,
+          idempotencyKey: `w12-unsafe-deep-link-${index}`,
+        });
+      }
+    } finally {
+      await server.close();
+    }
+  });
+
+  it('enforces one database-backed helper budget across independent adapter instances', async () => {
+    const first = createDbStudentClassHelperRateLimitStore(pool, config);
+    const second = createDbStudentClassHelperRateLimitStore(pool, config);
+    const request = {
+      accountKey: config.accountKey,
+      productKey: config.productKey,
+      principalKey: 'scoped_parent_learner_principal',
+      learnerKey: W12_PORTAL_TEST_LAB.learners[0].learnerKey,
+      now: new Date('2026-07-24T12:00:00.000Z'),
+    };
+    for (let index = 0; index < 10; index += 1) {
+      await (index % 2 === 0 ? first : second).assertAllowed(request);
+    }
+    await expect(second.assertAllowed(request)).rejects.toMatchObject({ code: 'RATE_LIMITED' });
   });
 });
 
@@ -214,9 +559,71 @@ async function parentStudentAccessAction(
         'content-type': 'application/json',
         'x-csrf-token': parent.json.csrf_token,
       },
-      body: JSON.stringify({ idempotency_key: `w12-${action}-${learner.learnerKey}` }),
+      body: JSON.stringify({
+        idempotency_key: `w12-${action}-${learner.learnerKey}`,
+      }),
     },
   );
+}
+
+async function expectUnsafeHelperResponse(input: {
+  baseUrl: string;
+  session: Awaited<ReturnType<typeof loginAs>>;
+  learnerIndex: number;
+  idempotencyKey: string;
+}) {
+  const response = await fetch(`${input.baseUrl}/api/v1/portals/student/helper/query`, {
+    method: 'POST',
+    headers: {
+      cookie: input.session.cookies,
+      'content-type': 'application/json',
+      'x-csrf-token': input.session.json.csrf_token,
+    },
+    body: JSON.stringify({
+      idempotency_key: input.idempotencyKey,
+      question: 'What should I review from this fictional Mishnah lesson?',
+    }),
+  });
+  const body = await response.json();
+  expect(response.status, JSON.stringify(body)).toBe(200);
+  expect(body.data).toMatchObject({
+    answer:
+      "I couldn't find that in Rabbi Scheller's approved class material. Try asking about this lesson, or send a private question.",
+    abstained: true,
+    safe_reason_code: 'unsafe_source_content',
+    citations: [],
+    source_refs: [],
+    provider_mode: 'provider_off',
+  });
+  const serialized = JSON.stringify(body);
+  expect(serialized).not.toMatch(
+    /forbidden-value|(?:https?:)?\/\/|zoom\.us|vimeo\.com|api[_ ]?key|passcode\s*[:=]?\s*\d|[?&]token=/i,
+  );
+  for (const [index, learner] of W12_PORTAL_TEST_LAB.learners.entries()) {
+    if (index === input.learnerIndex) continue;
+    expect(serialized).not.toContain(learner.learnerKey);
+    expect(serialized).not.toContain(learner.displayName);
+  }
+}
+
+async function queryStudentHelper(input: {
+  baseUrl: string;
+  session: Awaited<ReturnType<typeof loginAs>>;
+  idempotencyKey: string;
+}) {
+  const response = await fetch(`${input.baseUrl}/api/v1/portals/student/helper/query`, {
+    method: 'POST',
+    headers: {
+      cookie: input.session.cookies,
+      'content-type': 'application/json',
+      'x-csrf-token': input.session.json.csrf_token,
+    },
+    body: JSON.stringify({
+      idempotency_key: input.idempotencyKey,
+      question: 'What should I review from this fictional Mishnah lesson?',
+    }),
+  });
+  return { status: response.status, body: await response.json() };
 }
 
 async function writePortalShells(targetDir: string) {

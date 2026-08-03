@@ -1,16 +1,21 @@
-import { createHash, randomUUID } from 'node:crypto';
+import { createHash, createHmac, randomUUID } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
+import { isDeepStrictEqual } from 'node:util';
 import path from 'node:path';
 import express, { type Request, type Response } from 'express';
 import helmet from 'helmet';
 import { z, ZodError } from 'zod';
 import type { AppConfig } from '../../../../packages/config/src/index.ts';
 import { asBotKey } from '../../../../packages/contracts/src/telegram/types.ts';
-import type { DbPool } from '../../../../packages/db/src/index.ts';
+import { inTransaction, type DbPool, type Queryable } from '../../../../packages/db/src/index.ts';
 import { createPostgresBillingRepositories } from '../../../../packages/db/src/billing/repository.ts';
 import { createClassroomRepository } from '../../../../packages/db/src/classroom/repository.ts';
+import { createZoomClassOccurrenceRepository } from '../../../../packages/db/src/classroom/zoom-occurrence-repository.ts';
 import { createGamificationRepository } from '../../../../packages/db/src/gamification/repository.ts';
+import { createLiveClassRepository } from '../../../../packages/db/src/live-class/repository.ts';
+import { createZoomAdminTestResourceRepository } from '../../../../packages/db/src/live-class/zoom-admin-repository.ts';
 import { createPortalRepository } from '../../../../packages/db/src/portals/repository.ts';
+import { createPostgresSchoolSignupRepository } from '../../../../packages/db/src/signup/school/repository.ts';
 import { TelegramSqlInboxRepository } from '../../../../packages/db/src/telegram/repositories.ts';
 import type { BillingProviderAdapter } from '../../../../packages/contracts/src/billing/index.ts';
 import {
@@ -36,6 +41,26 @@ import {
   createContactSchema,
   ownerDashboardResponseSchema,
   leadPayloadSchema,
+  liveClassCommandResponseSchema,
+  liveClassConsoleSnapshotSchema,
+  liveClassObsCommandPayloadSchema,
+  liveClassObsCommandPollResponseSchema,
+  liveClassObsCommandReportPayloadSchema,
+  liveClassQuestionActionPayloadSchema,
+  liveClassQuestionCompletePayloadSchema,
+  liveClassQuestionListResponseSchema,
+  liveClassQuestionReadyPayloadSchema,
+  liveClassQuestionSubmitPayloadSchema,
+  liveClassQuestionSubmitResponseSchema,
+  liveClassStageResponseSchema,
+  liveClassZoomControlPayloadSchema,
+  liveClassZoomAdminActionPayloadSchema,
+  liveClassZoomAdminStatusResponseSchema,
+  liveClassZoomCommandPollResponseSchema,
+  liveClassZoomHostBootstrapResponseSchema,
+  liveClassZoomParticipantSyncPayloadSchema,
+  liveClassZoomParticipantSyncResponseSchema,
+  liveClassZoomTestParticipantBootstrapResponseSchema,
   loginPayloadSchema,
   publicFieldErrors,
   updateContactSchema,
@@ -43,6 +68,22 @@ import {
   classOccurrenceDetailResponseSchema,
   classOccurrenceListQuerySchema,
   classOccurrenceListResponseSchema,
+  attachClassRecordingPayloadSchema,
+  classEnrollmentCandidateListResponseSchema,
+  classEnrollmentListResponseSchema,
+  classEnrollmentPayloadSchema,
+  classEnrollmentResponseSchema,
+  classRecordingAccessListResponseSchema,
+  classRecordingListResponseSchema,
+  classRecordingResponseSchema,
+  classSeriesListResponseSchema,
+  classSeriesResponseSchema,
+  createClassOccurrencePayloadSchema,
+  createClassSeriesPayloadSchema,
+  managedClassOccurrenceResponseSchema,
+  setClassRecordingAccessPayloadSchema,
+  updateClassOccurrencePayloadSchema,
+  updateClassSeriesPayloadSchema,
   contentAdminActionPayloadSchema,
   contentAdminActionResponseSchema,
   contentAdminActivityResponseSchema,
@@ -59,19 +100,20 @@ import {
   contentAdminPromptPreviewPayloadSchema,
   contentAdminPromptPreviewResponseSchema,
   contentAdminPromptRollbackPayloadSchema,
-  contentAdminSocialWorkspaceResponseSchema,
   contentAdminSourceDetailResponseSchema,
   contentAdminWorkspaceQuerySchema,
+  contentFactoryActionSchema,
+  contentFactoryEditPayloadSchema,
+  contentFactoryIntakeResponseSchema,
+  contentFactoryMutationResponseSchema,
+  contentFactoryWorkspaceResponseSchema,
   accomplishmentEventSchema,
   adminGamificationDashboardResponseSchema,
   gamificationCorrectionAuditSchema,
   gamificationCorrectionPayloadSchema,
   gamificationLearningEventPayloadSchema,
-  parentRewardGoalPayloadSchema,
-  parentRewardGoalSchema,
-  ot86bReadinessResponseSchema,
-  ot86bSocialDraftListResponseSchema,
 } from '../../../../packages/contracts/src/index.ts';
+import type { SessionUser } from '../../../../packages/contracts/src/index.ts';
 import {
   providerCanaryPlanResponseSchema,
   providerControlCenterResponseSchema,
@@ -80,10 +122,19 @@ import type {
   PortalActorContext,
   PortalCapability,
 } from '../../../../packages/contracts/src/portals/index.ts';
+import { AUTH_SESSION_COOKIE } from '../../../../packages/contracts/src/identity/auth/index.ts';
+import type { SchoolSignupScope } from '../../../../packages/contracts/src/signup/school/index.ts';
+import {
+  CONTENT_PUBLICATION_PRODUCT_KEY,
+  type ContentPublicationPrincipal,
+} from '../../../../packages/contracts/src/content/publication/index.ts';
 import {
   CrmDuplicateError,
   CrmVersionConflictError,
+  ClassManagementError,
   ContentIdempotencyConflictError,
+  ContentFactoryError,
+  ContentFactoryPublicationError,
   Ot110aContentWorkspaceError,
   IdempotencyConflictError,
   AccountLifecycleError,
@@ -98,6 +149,7 @@ import {
   assignCrmTag,
   canEditContacts,
   captureLead,
+  changeOwnPassword,
   completePasswordReset,
   completeStudentReset,
   confirmSingleRecipientReply,
@@ -105,9 +157,21 @@ import {
   createContact,
   createCrmTag,
   createClassPortalAccessAdapter,
+  createManagedClassOccurrence,
+  createManagedClassSeries,
   createClassroomPortalAccessAdapter,
   createClassroomService,
+  createLiveClassService,
+  createZoomAdminProvider,
+  createZoomAdminService,
+  createZoomClassOccurrenceProvider,
+  createZoomClassOccurrenceHostLaunchPort,
+  createZoomClassOccurrenceService,
+  createZoomClassroomPorts,
+  createZoomHostLaunchPort,
   createContentPortalAccessAdapter,
+  createContentFactoryIntake,
+  contentFactoryStorageFromEnv,
   createGamificationService,
   createLoginCsrf,
   createOt110aGeneratedArtifact,
@@ -116,12 +180,14 @@ import {
   createParentPortalService,
   createPortalGamificationAdapter,
   createSession,
-  consumeWhatsAppAccountLink,
-  createStudentClassHelperAdapter,
+  currentApplicationAccessForUser,
+  createScopedKnowledgeHelperAdapter,
   createStudentPortalService,
-  resendEmailChallenge,
   getClassOccurrenceDetail,
+  getManagedClassOccurrence,
   getContentItemDetail,
+  getContentFactoryPlayback,
+  getContentFactoryWorkspace,
   getContactDetail,
   getOt110aContentCreateWorkspace,
   getOt110aContentProcessingQueue,
@@ -129,51 +195,63 @@ import {
   getOt110aContentWorkspaceOverview,
   getSessionUserByKey,
   getSessionByToken,
-  buildWhatsAppPublicAssistantStatus,
+  householdHasLearningAccess,
+  readHouseholdAccess,
   inspectAccountLifecycleToken,
   buildOwnerDashboard,
   listClassOccurrences,
+  listClassEnrollmentCandidates,
+  listClassEnrollments,
+  listClassRecordingAccess,
+  listClassRecordings,
+  listManagedClassSeries,
   listContentLibrary,
   listAssignableUsers,
   listContacts,
   listOt110aActivity,
   listOt110aKnowledgeWorkspace,
   listOt110aPromptTemplates,
-  listOt110aSocialWorkspace,
   ownerAdminVisibleActions,
   performOt110aContentAction,
+  performContentFactoryAction,
+  retryContentFactoryIntake,
   previewOt110aPromptPatch,
-  inspectOt86bBufferReadinessFromEnv,
   listCrmTags,
-  listOt86bSocialDrafts,
   previewSingleRecipientReply,
   receiveOt86PublicationManifest,
-  receiveOt86bSocialEvent,
   requestPasswordReset,
-  revokeTrustedDevice,
+  reactivateContact,
   resolveOt110aContentAdminActor,
   rollbackOt110aPromptVersion,
   revokeSession,
   rotateSessionCsrf,
   removeCrmTag,
-  receiveWhatsAppWebhook,
+  attachRecordingToClass,
+  enrollLearnerInClass,
+  setClassRecordingLearnerAccess,
+  stableKey,
+  unenrollLearnerFromClass,
+  updateManagedClassOccurrence,
+  updateManagedClassSeries,
   updateContact,
-  verifyEmailChallengeCode,
-  verifyEmailChallengeLink,
+  editContentFactoryItem,
+  inspectLearningDeliveryInputAdapters,
   CrmReplyError,
   verifyLoginCsrf,
   verifyRecentEmailAssurance,
   verifySessionCsrf,
-  verifyWhatsAppWebhookChallenge,
   type AuthenticatedSession,
   PortalServiceError,
   type PortalServiceDeps,
+  type ZoomAdminProviderPort,
+  type ZoomClassOccurrenceProvider,
 } from '../../../../packages/domain/src/index.ts';
 import {
   buildProviderControlCenter,
   planProviderCanary,
 } from '../../../../packages/domain/src/providers/control-center.ts';
 import { AesGcmPayloadCodec } from '../../../../packages/domain/src/telegram/crypto.ts';
+import { hashAuthPassword } from '../../../../packages/domain/src/auth/policy.ts';
 import { createTelegramWebhookHandler } from '../../../../apps/telegram-bot/src/ingress.ts';
 import {
   parseOt87StripeTestBillingConfig,
@@ -185,11 +263,11 @@ import { createStripeTestBillingProviderAdapter } from '../../../../packages/dom
 import type {
   BillingActorContext,
   BillingAuthorizationAdapter,
-  BillingFeatureConfig,
 } from '../../../../packages/domain/src/billing/types.ts';
 import {
   collectOpsReadiness,
   exposeServerTiming,
+  logger,
   publicError,
   traceMiddleware,
   withTiming,
@@ -200,23 +278,91 @@ import {
   type ReadOnlySessionScopePort,
 } from './communications/register.ts';
 import { createParentPortalRouter, createStudentPortalRouter } from './features/portals/routers.ts';
-import { registerPortalTestLabRoutes } from './features/portal-test-lab/router.ts';
 import { createResendWebhookRouter } from './features/delivery/resend-webhook-router.ts';
 import { createBillingRouter } from './features/billing/router.ts';
+import { createHighLevelActionsRouter } from './features/highlevel/actions-router.ts';
 import { registerSupportRoutes } from './features/support/router.ts';
 import { leadRateLimit } from './rate-limit.ts';
 import { registerOpsRoutes } from './ops-routes.ts';
+import { createContactOperationsRouter } from './features/contact-operations/router.ts';
+import { createAdminDirectoryRouter } from './features/admin-directory/router.ts';
+import {
+  authorizeV21ParentRoute,
+  createPostgresV21AdultSessionRuntime,
+  type V21AdultSessionRuntime,
+} from './features/auth/v21-adult-session.ts';
+import {
+  createFamilySignupRouter,
+  familySignupFeatureRegistration,
+  resolveFamilySignupScope,
+} from './features/signup/family/router.ts';
+import {
+  resolveSchoolSignupScope,
+  schoolInquiryFeatureRegistration,
+} from './features/signup/school/router.ts';
+import { createApprovedSchoolAdminRouter } from './features/signup/school/approved-school-router.ts';
+import {
+  installCanonicalProtectedRoutes,
+  type CanonicalProtectedRoute,
+  type CanonicalReadyProtectedRoute,
+} from './features/v21-canonical-routes/router.ts';
+import { createSchoolSignupService } from './features/signup/school/service.ts';
+import {
+  classifyDomain,
+  classifyDomainTransitionPath,
+  domainTransitionFeatureRegistration,
+  normalizeDomainTransitionPath,
+} from './features/domain-transition/index.ts';
+import {
+  createParentHouseholdRouter,
+  createParentHouseholdService,
+  createPostgresParentHouseholdRepository,
+} from './features/portals/parent-household/index.ts';
+import { clearSessionCookieHeader, sessionCookieHeader } from './features/auth/http-security.ts';
+import {
+  installServerFeatureRouters,
+  type ServerFeatureRegistration,
+} from './features/registry/index.ts';
+import {
+  createContentPublicationFeatureRegistration,
+  type ContentPublicationRequestIdentity,
+} from './features/content/publication/index.ts';
+import {
+  createLearningComposition,
+  createLearningRouter,
+  createPostgresLearningActorResolver,
+} from './features/learning/index.ts';
+import {
+  createEmbeddedClassroomFeatureComposition,
+  createEmbeddedClassroomRequestIdentityResolver,
+  EMBEDDED_CLASSROOM_FEATURE_ID,
+  EMBEDDED_CLASSROOM_MOUNT_PATH,
+  isEmbeddedClassroomInstalledRuntimeReceipt,
+  type EmbeddedClassroomCandidateRuntime,
+} from './features/classroom/embedded/index.ts';
 
 type AppDeps = {
   config: AppConfig;
   pool: DbPool;
   distDir?: string;
   clock?: () => Date;
+  contentFactoryJobNotifier?: (intakeKey: string) => Promise<void> | void;
+  zoomAdminProvider?: ZoomAdminProviderPort;
+  zoomClassOccurrenceProvider?: ZoomClassOccurrenceProvider;
+  featureRegistrations?: readonly ServerFeatureRegistration[];
+  v21AdultSessionRuntime?: V21AdultSessionRuntime;
+  learningRuntime?: {
+    nativePostgresSchemaProven: boolean;
+  };
+  embeddedClassroomRuntime?: EmbeddedClassroomCandidateRuntime;
+  /** @deprecated Retained only so historical test harnesses compile; no demo route is registered. */
+  learningDeliveryDemoReportPath?: string;
 };
 
 const SESSION_COOKIE = 'otcrm_session';
 const CSRF_COOKIE = 'otcrm_csrf';
-const TRUSTED_DEVICE_COOKIE = 'otcrm_trusted_device';
+const PARENT_STUDENT_PASSWORD_FINGERPRINT_DOMAIN =
+  'one-time-parent-student-password-idempotency-v1';
 type AccountLifecycleTokenType = z.infer<typeof accountLifecycleTokenTypeSchema>;
 const ACTIVATION_TOKEN_TYPES = accountLifecycleTokenTypeSchema.options.filter(
   (tokenType) => tokenType !== 'password_reset',
@@ -237,23 +383,18 @@ const forgotPasswordApiPayloadSchema = z.object({
 const resetPasswordApiPayloadSchema = tokenCompletionPayloadSchema.extend({
   csrf_token: z.string().trim().min(16).max(160),
 });
-const emailChallengeVerifyPayloadSchema = z.object({
-  challenge_token: z.string().trim().min(32).max(240),
-  code: z
-    .string()
-    .trim()
-    .regex(/^\d{6}$/),
-  trust_device: z.boolean().optional().default(false),
-  return_to: z.string().trim().max(400).optional(),
-});
-const emailChallengeLinkPayloadSchema = z.object({
-  link_token: z.string().trim().min(32).max(240),
-  trust_device: z.boolean().optional().default(false),
-  return_to: z.string().trim().max(400).optional(),
-});
-const emailChallengeResendPayloadSchema = z.object({
-  challenge_token: z.string().trim().min(32).max(240),
-});
+const authenticatedPasswordChangePayloadSchema = z
+  .object({
+    current_password: z.string().min(1).max(256),
+    new_password: z
+      .string()
+      .min(10, 'Use at least 10 characters.')
+      .max(256)
+      .refine((value) => /[A-Za-z]/u.test(value) && /[0-9]/u.test(value), {
+        message: 'Use at least one letter and one number.',
+      }),
+  })
+  .strict();
 const crmNotePayloadSchema = z.object({
   body: z.string().trim().min(1).max(4000),
 });
@@ -283,14 +424,76 @@ class PublicRouteError extends Error {
   }
 }
 
-type EmailChallengeVerificationResult = Awaited<ReturnType<typeof verifyEmailChallengeCode>>;
-
 export function createApp({
   config,
   pool,
   distDir = path.resolve(process.cwd(), 'dist/apps/web/public'),
   clock,
+  contentFactoryJobNotifier,
+  zoomAdminProvider,
+  zoomClassOccurrenceProvider,
+  featureRegistrations,
+  v21AdultSessionRuntime: injectedV21AdultSessionRuntime,
+  learningRuntime,
+  embeddedClassroomRuntime,
 }: AppDeps) {
+  const v21AdultSessionRuntime =
+    injectedV21AdultSessionRuntime ??
+    createPostgresV21AdultSessionRuntime({
+      db: pool,
+      hmacSecret: config.authCsrfSecret,
+      ...(clock ? { clock } : {}),
+    });
+  const centrallyBoundFamilySignupRegistration: ServerFeatureRegistration = {
+    ...familySignupFeatureRegistration,
+    createRouter: ({ config: featureConfig, pool: featurePool, clock: featureClock }) =>
+      createFamilySignupRouter({
+        config: featureConfig,
+        pool: featurePool,
+        ...(featureClock ? { clock: featureClock } : {}),
+        sessionEstablisher: v21AdultSessionRuntime,
+      }),
+  };
+  const centrallyBoundDomainTransitionRegistration: ServerFeatureRegistration = {
+    ...domainTransitionFeatureRegistration,
+    createRouter: (context) => {
+      const transitionRouter = domainTransitionFeatureRegistration.createRouter(context);
+      const router = express.Router();
+      router.use((req, res, next) => {
+        if (
+          (context.config.nodeEnv !== 'production' &&
+            classifyDomain(req.header('host') ?? '') === 'unknown') ||
+          isConfiguredIsolatedStagingHost(context.config, req.header('host'))
+        ) {
+          next();
+          return;
+        }
+        transitionRouter(req, res, next);
+      });
+      return router;
+    },
+  };
+  const centrallyBoundContentPublicationRegistration = createContentPublicationFeatureRegistration({
+    resolveIdentity: (req) => contentPublicationIdentityFromRequest(req, pool, config),
+    verifyCsrf: async (req, identity) => {
+      const csrfToken = req.header('x-csrf-token') ?? req.body?.csrf_token;
+      return verifySessionCsrf({ pool, sessionKey: identity.sessionKey, csrfToken });
+    },
+  });
+  const centrallyBoundFeatureRegistrations: readonly ServerFeatureRegistration[] = (
+    featureRegistrations ?? [
+      domainTransitionFeatureRegistration,
+      familySignupFeatureRegistration,
+      schoolInquiryFeatureRegistration,
+      centrallyBoundContentPublicationRegistration,
+    ]
+  ).map((registration) =>
+    registration.featureId === domainTransitionFeatureRegistration.featureId
+      ? centrallyBoundDomainTransitionRegistration
+      : registration.featureId === familySignupFeatureRegistration.featureId
+        ? centrallyBoundFamilySignupRegistration
+        : registration,
+  );
   const app = express();
   app.set('trust proxy', config.trustedProxyHops);
   app.set('etag', false);
@@ -307,11 +510,30 @@ export function createApp({
           objectSrc: ["'none'"],
           baseUri: ["'self'"],
           frameAncestors: ["'none'"],
+          frameSrc: ["'self'", 'https://player.vimeo.com'],
         },
       },
     }),
   );
   app.use(traceMiddleware);
+  app.get('/health', (_req, res) => {
+    setPrivateNoStore(res);
+    res.json({ ok: true, service: 'onetime-web', code: 'PUBLIC_HEALTH_OK' });
+  });
+  app.use((req, res, next) => {
+    if (
+      config.nodeEnv !== 'production' ||
+      classifyDomain(req.header('host') ?? '') !== 'unknown' ||
+      isConfiguredIsolatedStagingHost(config, req.header('host'))
+    ) {
+      next();
+      return;
+    }
+    setPrivateNoStore(res);
+    res.setHeader('Referrer-Policy', 'no-referrer');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.status(404).type('text').send('Not found.');
+  });
   app.use(
     '/api/v1/delivery/resend',
     createResendWebhookRouter({ config, pool, ...(clock ? { clock } : {}) }),
@@ -328,7 +550,7 @@ export function createApp({
       maxStringLength: 1000,
       maxArrayLength: 32,
       inbox: new TelegramSqlInboxRepository(pool),
-      codec: new AesGcmPayloadCodec(`${config.mfaSecretEncryptionKey}:telegram-payload-v1`),
+      codec: new AesGcmPayloadCodec(`${config.protectedPayloadEncryptionKey}:telegram-payload-v1`),
     });
     app.post('/api/v1/telegram/one-time/webhook', (req, res) => {
       void telegramWebhook(req, res).catch(() => {
@@ -336,43 +558,6 @@ export function createApp({
       });
     });
   }
-
-  app.get('/api/v1/whatsapp/meta/webhook', (req, res) => {
-    const challenge = verifyWhatsAppWebhookChallenge(config, req.query);
-    if (!challenge) {
-      res.status(403).json(publicError('INVALID_VERIFY_TOKEN', 'Webhook verification failed.'));
-      return;
-    }
-    res.status(200).type('text/plain').send(challenge);
-  });
-
-  app.get('/api/v1/whatsapp/public-assistant', (_req, res) => {
-    setPrivateNoStore(res);
-    res.status(200).json(buildWhatsAppPublicAssistantStatus(config));
-  });
-
-  app.post(
-    '/api/v1/whatsapp/meta/webhook',
-    express.raw({ type: '*/*', limit: '128kb' }),
-    async (req: RequestWithTrace, res) => {
-      const result = await withTiming(req, 'whatsapp_webhook', () =>
-        receiveWhatsAppWebhook({
-          pool,
-          config,
-          rawBody: req.body,
-          signatureHeader: req.header('x-hub-signature-256') ?? undefined,
-        }),
-      );
-      res.status(result.status).json({
-        success: result.ok,
-        code: result.code,
-        accepted: result.accepted,
-        duplicates: result.duplicates,
-        processed: result.processed,
-        request_id: req.traceId,
-      });
-    },
-  );
 
   app.post(
     '/internal/content-publications/v1/manifests',
@@ -411,42 +596,11 @@ export function createApp({
     },
   );
 
-  app.post(
-    '/internal/social-publishing/v1/events',
-    express.raw({ type: 'application/json', limit: '512kb' }),
-    async (req: RequestWithTrace, res) => {
-      setPrivateNoStore(res);
-      const secrets = ot86PublishSecrets(config);
-      if (secrets.length < 1) {
-        res.status(503).json({
-          success: false,
-          code: 'OT86_SOCIAL_SIGNING_UNCONFIGURED',
-          message: 'Social event intake is not configured.',
-          request_id: req.traceId,
-        });
-        return;
-      }
-      const result = await receiveOt86bSocialEvent({
-        pool,
-        rawBody: Buffer.isBuffer(req.body) ? req.body : Buffer.from(''),
-        headers: {
-          contentType: req.header('content-type') ?? null,
-          keyId: req.header('x-ot86-key-id') ?? null,
-          timestamp: req.header('x-ot86-timestamp') ?? null,
-          deliveryId: req.header('x-ot86-delivery-id') ?? null,
-          signature: req.header('x-ot86-signature') ?? null,
-        },
-        secrets,
-      });
-      res.status(result.status).json({
-        success: result.status === 200 || result.status === 202,
-        code: result.code,
-        message: result.message,
-        receipt_state: result.receipt_state,
-        request_id: req.traceId,
-      });
-    },
-  );
+  app.get('/app/support', (_req, res) => {
+    setPrivateNoStore(res);
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    res.status(404).type('text').send('Canonical Admin support is not available.');
+  });
 
   registerSupportRoutes({
     app,
@@ -462,31 +616,233 @@ export function createApp({
     },
   });
 
-  const billingRuntime = createBillingRuntime(config, pool);
-  app.use(
-    '/api/v1/billing',
-    createBillingRouter({
-      config: billingRuntime.config,
-      repositories: billingRuntime.repositories,
-      providerAdapter: billingRuntime.providerAdapter,
-      authorization: billingRuntime.authorization,
-      resolveActor: (req) => billingActorFromRequest(req, pool, config),
-      verifyCsrf: (req) => verifyBillingCsrf(req, pool, config),
-    }),
-  );
-  app.get(/^\/app\/billing\/(?:checkout|portal)\/redirect\/([^/]+)$/, async (req, res) => {
-    setPrivateNoStore(res);
-    const redirectKey = String(req.params[0] ?? '');
-    const providerUrl = await billingRuntime.repositories.consumeRedirect(redirectKey);
-    if (!providerUrl) {
-      res.status(404).type('text').send('Billing redirect expired.');
-      return;
-    }
-    res.redirect(302, providerUrl);
-  });
+  if (config.legacyBillingRuntimeEnabled) {
+    const billingRuntime = createBillingRuntime(config, pool);
+    app.use(
+      '/api/v1/billing',
+      createBillingRouter({
+        config: billingRuntime.config,
+        repositories: billingRuntime.repositories,
+        providerAdapter: billingRuntime.providerAdapter,
+        authorization: billingRuntime.authorization,
+        resolveActor: (req) => billingActorFromRequest(req, pool, config),
+        verifyCsrf: (req) => verifyBillingCsrf(req, pool, config),
+      }),
+    );
+    app.get(/^\/app\/billing\/(?:checkout|portal)\/redirect\/([^/]+)$/, async (req, res) => {
+      setPrivateNoStore(res);
+      const redirectKey = String(req.params[0] ?? '');
+      const providerUrl = await billingRuntime.repositories.consumeRedirect(redirectKey);
+      if (!providerUrl) {
+        res.status(404).type('text').send('Billing redirect expired.');
+        return;
+      }
+      res.redirect(302, providerUrl);
+    });
+  } else {
+    app.use('/api/v1/billing', (_req, res) => {
+      setPrivateNoStore(res);
+      res.status(404).json({
+        success: false,
+        code: 'LEGACY_BILLING_RUNTIME_UNAVAILABLE',
+        message: 'This application does not expose payment-history or payment-operation routes.',
+      });
+    });
+    app.all(/^\/app\/billing\/(?:checkout|portal)\/redirect\/[^/]+$/, (_req, res) => {
+      setPrivateNoStore(res);
+      res.status(404).type('text').send('Billing redirect unavailable.');
+    });
+  }
 
+  app.use(
+    '/internal/highlevel/v1/actions',
+    express.raw({ type: 'application/json', limit: '32kb' }),
+    createHighLevelActionsRouter({ config, pool }),
+  );
   app.use(express.json({ limit: '32kb' }));
   app.use(express.urlencoded({ extended: false, limit: '32kb' }));
+
+  const learningScope = {
+    accountKey: config.accountKey,
+    productKey: config.productKey,
+    runtimeTier: config.oneTimeRuntimeTier,
+    verificationEnvironmentId: config.oneTimeVerificationEnvironmentId,
+  };
+  const resolveLearningActor = createPostgresLearningActorResolver({
+    pool,
+    scope: learningScope,
+    resolveSession: async (request) => {
+      const session = await sessionFromRequest(request, pool, config);
+      return session
+        ? {
+            sessionKey: session.session_key,
+            principalId: session.user.user_key,
+            role: session.user.role,
+          }
+        : null;
+    },
+  });
+  const learningComposition = createLearningComposition({
+    pool,
+    scope: learningScope,
+    aliasHmacKey: config.learningAliasHmacKey,
+    aliasHmacKeyConfigured: config.learningAliasHmacKeyConfigured,
+    nativePostgresSchemaProven: learningRuntime?.nativePostgresSchemaProven === true,
+    contentPublicationWriterMounted: centrallyBoundFeatureRegistrations.some(
+      (registration) => registration.featureId === 'onetime.content-publication',
+    ),
+    ...(clock ? { clock } : {}),
+  });
+  if (
+    centrallyBoundFeatureRegistrations.some(
+      (registration) =>
+        registration.featureId === EMBEDDED_CLASSROOM_FEATURE_ID ||
+        registration.mountPath === EMBEDDED_CLASSROOM_MOUNT_PATH,
+    )
+  ) {
+    throw new Error('embedded_classroom_registration_is_centrally_owned');
+  }
+  const embeddedClassroomComposition = createEmbeddedClassroomFeatureComposition({
+    attendanceProjectionChanges: learningComposition.attendanceProjectionChanges,
+    identities: createEmbeddedClassroomRequestIdentityResolver({
+      scope: {
+        product: 'one_time_mishnayos',
+        runtime_tier: config.oneTimeRuntimeTier,
+        verification_environment_id: config.oneTimeVerificationEnvironmentId,
+      },
+      publicOrigin: config.publicBaseUrl,
+      lineageSecret: config.authCsrfSecret,
+      resolvePortalActor: (request) => portalActorFromRequest(request, pool, config),
+      verifyCsrf: (request, actor) =>
+        verifySessionCsrf({
+          pool,
+          sessionKey: actor.session_key,
+          csrfToken: request.header('x-csrf-token') ?? request.body?.csrf_token,
+        }),
+    }),
+    ...(embeddedClassroomRuntime ? { candidateRuntime: embeddedClassroomRuntime } : {}),
+  });
+  installServerFeatureRouters({
+    app,
+    context: {
+      config,
+      pool,
+      distDir,
+      ...(clock ? { clock } : {}),
+    },
+    registrations: centrallyBoundFeatureRegistrations,
+  });
+  installServerFeatureRouters({
+    app,
+    context: {
+      config,
+      pool,
+      distDir,
+      ...(clock ? { clock } : {}),
+    },
+    registrations: [embeddedClassroomComposition.registration],
+  });
+  const embeddedClassroomInstalledReceipt = embeddedClassroomComposition.readInstalledReceipt();
+  if (!isEmbeddedClassroomInstalledRuntimeReceipt(embeddedClassroomInstalledReceipt)) {
+    throw new Error('embedded_classroom_runtime_receipt_unavailable');
+  }
+  app.locals.embeddedClassroomInstalledRuntimeReceipt = embeddedClassroomInstalledReceipt;
+
+  app.use(
+    '/api/app/learning',
+    createLearningRouter({
+      service: learningComposition.service,
+      enabled: learningComposition.enabled,
+      blockers: learningComposition.blockers,
+      resolveActor: resolveLearningActor,
+      verifyCsrf: (request, authenticated) =>
+        verifySessionCsrf({
+          pool,
+          sessionKey: authenticated.sessionKey,
+          csrfToken: request.header('x-csrf-token') ?? request.body?.csrf_token,
+        }),
+      ...(clock ? { clock } : {}),
+    }),
+  );
+
+  const parentStudentServiceAccountVersion = config.parentStudentServiceAccountVersion;
+  const parentStudentServiceAccountEvidenceReference =
+    config.parentStudentServiceAccountEvidenceReference;
+  if (parentStudentServiceAccountVersion && parentStudentServiceAccountEvidenceReference) {
+    const parentHouseholdRepository = createPostgresParentHouseholdRepository(pool, {
+      acceptedServiceAccountVersion: parentStudentServiceAccountVersion,
+      immutableEvidenceReference: parentStudentServiceAccountEvidenceReference,
+      portalAccountKey: config.accountKey,
+      portalProductKey: config.productKey,
+      ...(clock ? { clock } : {}),
+    });
+    const parentHouseholdService = createParentHouseholdService({
+      repository: parentHouseholdRepository,
+      passwords: { hash: async (password) => hashAuthPassword(password) },
+      ids: { nextStudentId: () => `student_${randomUUID()}` },
+    });
+    app.use(
+      '/api/app/parent',
+      createParentHouseholdRouter({
+        service: parentHouseholdService,
+        sessions: v21AdultSessionRuntime,
+        fingerprintPasswordForIdempotency: async (password) =>
+          createHmac('sha256', config.authCsrfSecret)
+            .update(PARENT_STUDENT_PASSWORD_FINGERPRINT_DOMAIN, 'utf8')
+            .update('\0', 'utf8')
+            .update(password, 'utf8')
+            .digest('hex'),
+        ...(clock ? { clock } : {}),
+      }),
+    );
+  } else {
+    app.use('/api/app/parent', (_req, res) => {
+      setPrivateNoStore(res);
+      res.status(503).json({
+        success: false,
+        code: 'PARENT_HOUSEHOLD_UNAVAILABLE',
+        message: 'Parent access is temporarily unavailable.',
+      });
+    });
+  }
+
+  const schoolRuntimeBinding = resolveSchoolSignupScope(config);
+  const approvedSchoolService = createSchoolSignupService({
+    repository: createPostgresSchoolSignupRepository(pool),
+    allocateLeadId: () => `school-lead-${randomUUID()}`,
+  });
+  app.use(
+    '/api/v2.1/admin/approved-schools',
+    createApprovedSchoolAdminRouter({
+      runtimeBinding: schoolRuntimeBinding,
+      resolveSession: (req) =>
+        approvedSchoolAdminSessionFromRequest(req, pool, config, schoolRuntimeBinding),
+      verifyCsrf: async (req, approvedSession) => {
+        if (!isSameOriginPost(req, config)) return false;
+        const session = await sessionFromRequest(req, pool, config);
+        if (!session || session.user.role !== 'admin') return false;
+        const readback = await approvedSchoolAdminSessionFromRequest(
+          req,
+          pool,
+          config,
+          schoolRuntimeBinding,
+        );
+        if (
+          readback?.role !== 'admin' ||
+          readback.human_account_id !== approvedSession.human_account_id
+        ) {
+          return false;
+        }
+        return verifySessionCsrf({
+          pool,
+          sessionKey: session.session_key,
+          csrfToken: req.header('x-csrf-token') ?? req.body?.csrf_token,
+        });
+      },
+      now: () => (clock ? clock() : new Date()).toISOString(),
+      configurator: approvedSchoolService,
+    }),
+  );
 
   registerOpsRoutes({
     app,
@@ -497,52 +853,24 @@ export function createApp({
     ...(clock ? { clock } : {}),
   });
 
-  registerPortalTestLabRoutes({
-    app,
-    config,
-    pool,
-    session: {
-      sessionFromRequest: (req) => sessionFromRequest(req, pool, config),
-      ensureSessionCsrfCookie: (req, res, session) =>
-        ensureSessionCsrfCookie(req, res, pool, config, session),
-      requireSessionCsrf: (req, res, session) => requireSessionCsrf(req, res, pool, session),
-      setPrivateNoStore,
-    },
-  });
-
-  app.get('/health', (_req, res) => {
-    res.json({ ok: true, service: 'onetime-web' });
-  });
-
   app.get('/ready', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
     const readiness = await withTiming(req, 'ops_ready', () =>
       collectOpsReadiness({ pool, config, ...(clock ? { now: clock() } : {}) }),
     );
     res.status(readiness.ok ? 200 : 503).json({
       ok: readiness.ok,
       service: 'onetime-web',
-      generated_at: readiness.generated_at,
-      dependencies: readiness.dependencies,
-      optional_dependencies: readiness.optional_dependencies,
-      blockers: readiness.blockers,
+      code: readiness.ok ? 'PUBLIC_READY' : 'PUBLIC_NOT_READY',
     });
   });
 
   app.get('/version', (_req, res) => {
+    setPrivateNoStore(res);
     res.json({
-      version: config.appVersion,
-      commit_sha: config.commitSha,
-      target_app: 'one-time',
-      deployment: {
-        provider: 'railway',
-        deployment_id: config.railwayDeploymentId ?? null,
-        snapshot_id: config.railwaySnapshotId ?? null,
-        project_id: config.railwayProjectId ?? null,
-        environment_id: config.railwayEnvironmentId ?? null,
-        service_id: config.railwayServiceId ?? null,
-        service_name: config.railwayServiceName ?? null,
-        git_commit_sha: config.railwayGitCommitSha ?? null,
-      },
+      ok: true,
+      service: 'onetime-web',
+      code: 'PUBLIC_RELEASE_AVAILABLE',
     });
   });
 
@@ -552,21 +880,24 @@ export function createApp({
 
   app.get('/login', (req, res) => {
     const csrf = createLoginCsrf(config);
+    const requestedReturnTo = String(req.query.return_to ?? '');
+    const loginReturnTo =
+      safeReturnPath(requestedReturnTo, config) ?? (requestedReturnTo ? '/app/crm' : '');
     setCsrfCookie(res, config, csrf.csrf_cookie);
     setPrivateNoStore(res);
     res.setHeader('X-Robots-Tag', 'noindex, nofollow');
-    res
-      .status(200)
-      .type('html')
-      .send(
-        loginPageHtml(
-          csrf.csrf_token,
-          safeReturnPath(String(req.query.return_to ?? ''), config) ?? '/app/crm',
-        ),
-      );
+    res.status(200).type('html').send(loginPageHtml(csrf.csrf_token, loginReturnTo));
   });
 
   app.get('/activate', (_req, res) => {
+    const csrf = createLoginCsrf(config);
+    setCsrfCookie(res, config, csrf.csrf_cookie);
+    setPrivateNoStore(res);
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    res.status(200).type('html').send(activationPageHtml(csrf.csrf_token));
+  });
+
+  app.get('/setup/:token', (_req, res) => {
     const csrf = createLoginCsrf(config);
     setCsrfCookie(res, config, csrf.csrf_cookie);
     setPrivateNoStore(res);
@@ -588,6 +919,75 @@ export function createApp({
     setPrivateNoStore(res);
     res.setHeader('X-Robots-Tag', 'noindex, nofollow');
     res.status(200).type('html').send(resetPasswordPageHtml(csrf.csrf_token));
+  });
+
+  app.get('/reset-password/:token', (_req, res) => {
+    const csrf = createLoginCsrf(config);
+    setCsrfCookie(res, config, csrf.csrf_cookie);
+    setPrivateNoStore(res);
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    res.status(200).type('html').send(resetPasswordPageHtml(csrf.csrf_token));
+  });
+
+  app.get('/session-ended', (_req, res) => {
+    setPrivateNoStore(res);
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    res
+      .status(200)
+      .type('html')
+      .send(
+        canonicalAuthStatePageHtml(
+          'Session ended',
+          'Your session has ended. Sign in again to continue safely.',
+        ),
+      );
+  });
+
+  app.get('/access-denied', async (req: RequestWithTrace, res) => {
+    const session = await sessionFromRequest(req, pool, config);
+    if (!session) {
+      const cookieHeader = req.header('cookie');
+      if (cookieHeaderHasName(cookieHeader, AUTH_SESSION_COOKIE.name)) {
+        const resolution = await v21AdultSessionRuntime.resolveCookieHeader({
+          cookie_header: cookieHeader,
+          ...(clock ? { now: clock() } : {}),
+        });
+        if (resolution.status === 'unavailable') {
+          setPrivateNoStore(res);
+          res.status(503).type('text').send('Access verification is temporarily unavailable.');
+          return;
+        }
+        if (resolution.status !== 'resolved' || !resolution.context) {
+          res.redirect(302, '/login?return_to=%2Faccess-denied');
+          return;
+        }
+      } else {
+        res.redirect(302, '/login?return_to=%2Faccess-denied');
+        return;
+      }
+    }
+    setPrivateNoStore(res);
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    res
+      .status(403)
+      .type('html')
+      .send(
+        canonicalAuthStatePageHtml(
+          'Access denied',
+          'Your account does not have access to that page. No protected record was disclosed.',
+        ),
+      );
+  });
+
+  app.get('/select-role', async (req: RequestWithTrace, res) => {
+    const session = await sessionFromRequest(req, pool, config);
+    if (!session) {
+      res.redirect(302, '/login?return_to=%2Fselect-role');
+      return;
+    }
+    setPrivateNoStore(res);
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    res.status(404).type('text').send('Authorized role selection is not available.');
   });
 
   app.post('/api/v1/account-lifecycle/token-status', async (req: RequestWithTrace, res) => {
@@ -655,6 +1055,23 @@ export function createApp({
       if (!sessionUser) {
         throw new Error('Activated user was not available for session creation.');
       }
+      const currentAccess = await currentApplicationAccessForUser({
+        pool,
+        config,
+        userKey: sessionUser.user_key,
+        role: sessionUser.role,
+      });
+      if (!currentAccess.allowed) {
+        res.status(409).json({
+          success: false,
+          code: 'CURRENT_ACCESS_REQUIRED',
+          message:
+            'Account setup completed, but learning access is not active. Ask the Administrator to enable current access.',
+          activation_completed: true,
+          request_id: req.traceId,
+        });
+        return;
+      }
       const session = await createSession({
         pool,
         config,
@@ -666,7 +1083,7 @@ export function createApp({
       setAuthCookies(res, config, session.session_token, session.csrf_token);
       res.status(200).json({
         success: true,
-        mfa_required: false,
+        mfa_required: inspected.mfa_required,
         csrf_token: session.csrf_token,
         return_to: defaultRouteForRole(session.user.role),
       });
@@ -728,14 +1145,91 @@ export function createApp({
     }
   });
 
-  app.post('/api/v1/account-lifecycle/mfa/activate', async (req: RequestWithTrace, res) => {
-    setPrivateNoStore(res);
-    retiredAuthMethod(res, req);
-  });
+  installCanonicalProtectedRoutes({
+    app,
+    handlerFor: (route: CanonicalReadyProtectedRoute) => async (req: RequestWithTrace, res) => {
+      if (route.shell === 'parent') {
+        await serveV21CompatibleParentAppShell(req, res, {
+          pool,
+          config,
+          distDir,
+          fallbackPath: '/app/parent',
+          v21AdultSessionRuntime,
+          ...(clock ? { clock } : {}),
+        });
+        return;
+      }
+      if (route.shell === 'student') {
+        const legacySession = await sessionFromRequest(req, pool, config);
+        const cookieHeader = req.header('cookie');
+        if (!legacySession && cookieHeaderHasName(cookieHeader, AUTH_SESSION_COOKIE.name)) {
+          const resolution = await v21AdultSessionRuntime.resolveCookieHeader({
+            cookie_header: cookieHeader,
+            ...(clock ? { now: clock() } : {}),
+          });
+          if (resolution.status === 'unavailable') {
+            setPrivateNoStore(res);
+            res.status(503).type('text').send('Access verification is temporarily unavailable.');
+            return;
+          }
+          if (resolution.status === 'resolved' && resolution.context) {
+            setPrivateNoStore(res);
+            res.status(403).type('html').send(forbiddenAppHtml('student'));
+            return;
+          }
+        }
+        await serveProtectedAppShell(req, res, {
+          pool,
+          config,
+          distDir,
+          appPage: 'student',
+          allowedRoles: ['student'],
+          fallbackPath: '/app/student',
+        });
+        return;
+      }
 
-  app.post('/api/v1/account-lifecycle/mfa/ack', async (req: RequestWithTrace, res) => {
-    setPrivateNoStore(res);
-    retiredAuthMethod(res, req);
+      const session = await sessionFromRequest(req, pool, config);
+      if (!session) {
+        const cookieHeader = req.header('cookie');
+        if (cookieHeaderHasName(cookieHeader, AUTH_SESSION_COOKIE.name)) {
+          const resolution = await v21AdultSessionRuntime.resolveCookieHeader({
+            cookie_header: cookieHeader,
+            ...(clock ? { now: clock() } : {}),
+          });
+          if (resolution.status === 'unavailable') {
+            setPrivateNoStore(res);
+            res.status(503).type('text').send('Access verification is temporarily unavailable.');
+            return;
+          }
+          if (resolution.status === 'resolved' && resolution.context) {
+            setPrivateNoStore(res);
+            res.status(403).type('html').send(forbiddenOwnerAdminHtml(req.path));
+            return;
+          }
+        }
+        const returnTo = safeReturnPath(req.path, config) ?? '/app/dashboard';
+        res.redirect(302, `/login?return_to=${encodeURIComponent(returnTo)}`);
+        return;
+      }
+      const canonicalUser = currentClientUser(session.user);
+      if (canonicalUser?.role !== 'admin') {
+        setPrivateNoStore(res);
+        res.status(403).type('html').send(forbiddenOwnerAdminHtml(req.path));
+        return;
+      }
+      await ensureSessionCsrfCookie(req, res, pool, config, session);
+      setPrivateNoStore(res);
+      await sendAppHtml(res, distDir, route.shell === 'live' ? 'live' : 'crm', config);
+    },
+    unavailableHandlerFor: (route: CanonicalProtectedRoute) => (_req, res, next) => {
+      if (route.routeId === 'RT-ADM-030') {
+        next();
+        return;
+      }
+      setPrivateNoStore(res);
+      res.status(404).type('text').send(`Canonical route ${route.routeId} is not available.`);
+    },
   });
 
   app.get(/^\/app\/crm(?:\/.*)?$/, async (req: RequestWithTrace, res) => {
@@ -747,32 +1241,44 @@ export function createApp({
       );
       return;
     }
+    if (!canReadContacts(session.user.role)) {
+      setPrivateNoStore(res);
+      res.status(403).type('html').send(forbiddenOwnerAdminHtml(req.path));
+      return;
+    }
     await ensureSessionCsrfCookie(req, res, pool, config, session);
     setPrivateNoStore(res);
-    await sendAppHtml(res, distDir, 'crm');
+    await sendAppHtml(res, distDir, 'crm', config);
   });
 
-  app.get(
-    /^\/app\/billing\/checkout\/(?:success|cancel)(?:\/.*)?$/,
-    async (req: RequestWithTrace, res) => {
-      const session = await sessionFromRequest(req, pool, config);
-      if (!session) {
-        res.redirect(
-          302,
-          `/login?return_to=${encodeURIComponent(
-            safeReturnPath(req.path, config) ?? '/app/billing/checkout/success',
-          )}`,
-        );
-        return;
-      }
-      await ensureSessionCsrfCookie(req, res, pool, config, session);
+  if (config.legacyBillingRuntimeEnabled) {
+    app.get(
+      /^\/app\/billing\/checkout\/(?:success|cancel)(?:\/.*)?$/,
+      async (req: RequestWithTrace, res) => {
+        const session = await sessionFromRequest(req, pool, config);
+        if (!session) {
+          res.redirect(
+            302,
+            `/login?return_to=${encodeURIComponent(
+              safeReturnPath(req.path, config) ?? '/app/billing/checkout/success',
+            )}`,
+          );
+          return;
+        }
+        await ensureSessionCsrfCookie(req, res, pool, config, session);
+        setPrivateNoStore(res);
+        await sendAppHtml(res, distDir, session.user.role === 'parent' ? 'parent' : 'crm', config);
+      },
+    );
+  } else {
+    app.all(/^\/app\/billing\/checkout\/(?:success|cancel)(?:\/.*)?$/, (_req, res) => {
       setPrivateNoStore(res);
-      await sendAppHtml(res, distDir, session.user.role === 'parent' ? 'parent' : 'crm');
-    },
-  );
+      res.status(404).type('text').send('Billing completion route unavailable.');
+    });
+  }
 
   app.get(
-    /^\/app\/(?:dashboard|classes|content|billing|communications|rewards|support)(?:\/.*)?$/,
+    /^\/app\/(?:dashboard|classes|content|billing|communications|rewards|support|operations)(?:\/.*)?$/,
     async (req: RequestWithTrace, res) => {
       const session = await sessionFromRequest(req, pool, config);
       if (!session) {
@@ -784,27 +1290,123 @@ export function createApp({
         );
         return;
       }
-      if (!canUseOwnerDashboard(session.user.role)) {
+      if (
+        !canUseOwnerDashboard(session.user.role) &&
+        !canUseRabbiTeachingSurface(session.user.role, req.path)
+      ) {
         setPrivateNoStore(res);
         res.status(403).type('html').send(forbiddenOwnerAdminHtml(req.path));
         return;
       }
       await ensureSessionCsrfCookie(req, res, pool, config, session);
       setPrivateNoStore(res);
-      await sendAppHtml(res, distDir, 'crm');
+      await sendAppHtml(res, distDir, 'crm', config);
     },
   );
 
-  app.get(/^\/app\/parent(?:\/.*)?$/, async (req: RequestWithTrace, res) => {
-    await serveProtectedAppShell(req, res, {
+  app.get('/app/live-console/zoom-host', async (req: RequestWithTrace, res) => {
+    const session = await sessionFromRequest(req, pool, config);
+    if (!session) {
+      res.redirect(302, '/login?return_to=%2Fapp%2Flive-console%2Fzoom-host');
+      return;
+    }
+    if (!['owner', 'admin', 'rabbi'].includes(session.user.role)) {
+      setPrivateNoStore(res);
+      res.status(403).type('html').send(forbiddenOwnerAdminHtml(req.path));
+      return;
+    }
+    await ensureSessionCsrfCookie(req, res, pool, config, session);
+    setPrivateNoStore(res);
+    res.setHeader('Referrer-Policy', 'no-referrer');
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    res.setHeader('Permissions-Policy', 'camera=(self), microphone=(self), fullscreen=(self)');
+    res.setHeader(
+      'Content-Security-Policy',
+      [
+        "default-src 'self'",
+        "img-src 'self' data: blob: https://source.zoom.us",
+        "script-src 'self' https://source.zoom.us 'unsafe-eval' 'wasm-unsafe-eval'",
+        "style-src 'self' 'unsafe-inline' https://source.zoom.us",
+        "connect-src 'self' https://*.zoom.us wss://*.zoom.us",
+        "worker-src 'self' blob:",
+        "media-src 'self' blob: mediastream:",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "frame-ancestors 'none'",
+      ].join('; '),
+    );
+    res.status(200).type('html').send(zoomHostHtml());
+  });
+
+  app.get('/app/live-console/zoom-participant/:student', async (req: RequestWithTrace, res) => {
+    const session = await sessionFromRequest(req, pool, config);
+    if (!session) {
+      res.redirect(302, '/login?return_to=%2Fapp%2Flive-console');
+      return;
+    }
+    if (!['owner', 'admin', 'rabbi'].includes(session.user.role)) {
+      setPrivateNoStore(res);
+      res.status(403).type('html').send(forbiddenOwnerAdminHtml(req.path));
+      return;
+    }
+    setPrivateNoStore(res);
+    res.status(404).type('text').send('Use the protected Student portal to join class.');
+  });
+
+  app.get(/^\/app\/live-console(?:\/.*)?$/, async (req: RequestWithTrace, res) => {
+    const session = await sessionFromRequest(req, pool, config);
+    if (!session) {
+      res.redirect(
+        302,
+        `/login?return_to=${encodeURIComponent(
+          safeReturnPath(req.path, config) ?? '/app/live-console',
+        )}`,
+      );
+      return;
+    }
+    if (!['owner', 'admin', 'rabbi'].includes(session.user.role)) {
+      setPrivateNoStore(res);
+      res.status(403).type('html').send(forbiddenOwnerAdminHtml(req.path));
+      return;
+    }
+    await ensureSessionCsrfCookie(req, res, pool, config, session);
+    setPrivateNoStore(res);
+    await sendAppHtml(res, distDir, 'live', config);
+  });
+
+  app.get(/^\/app\/live-stage\/([^/]+)(?:\/.*)?$/, async (_req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    res.setHeader('Referrer-Policy', 'no-referrer');
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    res.setHeader('Permissions-Policy', 'camera=(self), microphone=(self), fullscreen=(self)');
+    res.setHeader(
+      'Content-Security-Policy',
+      [
+        "default-src 'self'",
+        "img-src 'self' data:",
+        "script-src 'self'",
+        "style-src 'self'",
+        "connect-src 'self'",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "frame-ancestors 'self'",
+      ].join('; '),
+    );
+    await sendAppHtml(res, distDir, 'live', config);
+  });
+
+  const serveParentAppShell = async (req: RequestWithTrace, res: Response) => {
+    await serveV21CompatibleParentAppShell(req, res, {
       pool,
       config,
       distDir,
-      appPage: 'parent',
-      allowedRoles: ['parent'],
       fallbackPath: '/app/parent',
+      v21AdultSessionRuntime,
+      ...(clock ? { clock } : {}),
     });
-  });
+  };
+  app.get(/^\/app\/parent(?:\/.*)?$/, serveParentAppShell);
+  app.get('/select-household', serveParentAppShell);
 
   app.get(/^\/app\/student(?:\/.*)?$/, async (req: RequestWithTrace, res) => {
     await serveProtectedAppShell(req, res, {
@@ -815,6 +1417,55 @@ export function createApp({
       allowedRoles: ['student'],
       fallbackPath: '/app/student',
     });
+  });
+
+  app.get('/app/classroom', async (req: RequestWithTrace, res) => {
+    const session = await sessionFromRequest(req, pool, config);
+    if (!session) {
+      res.redirect(302, '/login?return_to=%2Fapp%2Fstudent');
+      return;
+    }
+    if (session.user.role !== 'student') {
+      setPrivateNoStore(res);
+      res.status(403).type('html').send(forbiddenAppHtml('student'));
+      return;
+    }
+    await ensureSessionCsrfCookie(req, res, pool, config, session);
+    setPrivateNoStore(res);
+    res.setHeader('Referrer-Policy', 'no-referrer');
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    res.setHeader('Permissions-Policy', 'camera=(self), microphone=(self), fullscreen=(self)');
+    const providerReady = Boolean(
+      embeddedClassroomRuntime?.contextResolver && embeddedClassroomRuntime.sdkBootstrap,
+    );
+    res.setHeader(
+      'Content-Security-Policy',
+      (providerReady
+        ? [
+            "default-src 'self'",
+            "img-src 'self' data: blob: https://source.zoom.us",
+            "script-src 'self' https://source.zoom.us 'unsafe-eval' 'wasm-unsafe-eval'",
+            "style-src 'self' 'unsafe-inline' https://source.zoom.us",
+            "connect-src 'self' https://*.zoom.us wss://*.zoom.us",
+            "worker-src 'self' blob:",
+            "media-src 'self' blob: mediastream:",
+            "object-src 'none'",
+            "base-uri 'self'",
+            "frame-ancestors 'none'",
+          ]
+        : [
+            "default-src 'self'",
+            "img-src 'self' data:",
+            "script-src 'self'",
+            "style-src 'self'",
+            "connect-src 'self'",
+            "object-src 'none'",
+            "base-uri 'self'",
+            "frame-ancestors 'none'",
+          ]
+      ).join('; '),
+    );
+    await sendAppHtml(res, distDir, 'student', config);
   });
 
   const handleLeadPost = async (req: RequestWithTrace, res: express.Response) => {
@@ -869,41 +1520,355 @@ export function createApp({
           .json(publicError('CSRF_REQUIRED', 'Refresh the login page and try again.', req.traceId));
         return;
       }
+      const cookieHeader = req.header('cookie');
+      const hostCookiePresent = cookieHeaderHasName(cookieHeader, AUTH_SESSION_COOKIE.name);
+      if (hostCookiePresent) {
+        const existingV21Session = await v21AdultSessionRuntime.resolveCookieHeader({
+          cookie_header: cookieHeader,
+          ...(clock ? { now: clock() } : {}),
+        });
+        if (existingV21Session.status === 'unavailable') {
+          res
+            .status(503)
+            .json(publicError('SERVER_ERROR', 'Login is unavailable right now.', req.traceId));
+          return;
+        }
+        if (existingV21Session.status === 'invalid') {
+          clearAuthCookies(res, config);
+          res.status(401).json({
+            success: false,
+            code: 'INVALID_CREDENTIALS',
+            message:
+              'Email/username or password is not correct. If access was revoked, ask your Parent or an Administrator to restore it.',
+            request_id: req.traceId,
+          });
+          return;
+        }
+      }
+      const identifier = payload.identifier ?? payload.email ?? '';
+      const v21Scope = resolveFamilySignupScope(config);
+      const v21Recognition = await withTiming(req, 'db', () =>
+        v21AdultSessionRuntime.recognizedLoginEmail({
+          scope: v21Scope,
+          email: identifier,
+        }),
+      );
+      if (v21Recognition.status === 'unavailable') {
+        res
+          .status(503)
+          .json(publicError('SERVER_ERROR', 'Login is unavailable right now.', req.traceId));
+        return;
+      }
+      const recognizedV21ParentLogin =
+        v21Recognition.status === 'recognized' &&
+        !(await isApprovedSchoolLegacyAdminLoginBridge(
+          pool,
+          config,
+          v21Scope,
+          v21Recognition.normalized_email,
+        ))
+          ? v21Recognition
+          : null;
+      if (recognizedV21ParentLogin) {
+        const identifierHash = stableKey('login_identifier', [
+          recognizedV21ParentLogin.normalized_email,
+        ]);
+        const attemptNow = clock ? clock() : new Date();
+        const attemptIp = req.ip ?? 'unknown';
+        const v21LoginBudgets = [
+          {
+            scope: 'login_account_ip',
+            subject: stableKey('login_account_ip_subject', [
+              recognizedV21ParentLogin.normalized_email,
+              attemptIp,
+            ]),
+            limit: 5,
+            windowMs: config.loginRateLimitWindowMs,
+          },
+          {
+            scope: 'login_ip',
+            subject: attemptIp,
+            limit: 50,
+            windowMs: config.loginRateLimitWindowMs,
+          },
+          {
+            scope: 'login_account_product',
+            subject: `${config.accountKey}:${config.productKey}`,
+            limit: config.loginAccountRateLimitMax,
+            windowMs: config.loginRateLimitWindowMs,
+          },
+          {
+            scope: 'login_global',
+            subject: 'all',
+            limit: config.loginGlobalRateLimitMax,
+            windowMs: config.loginRateLimitWindowMs,
+          },
+        ];
+        let reservation: V21LoginAttemptReservation;
+        try {
+          reservation = await reserveV21LoginAttempt({
+            pool,
+            config,
+            budgets: v21LoginBudgets,
+            now: attemptNow,
+          });
+        } catch {
+          res
+            .status(503)
+            .json(publicError('SERVER_ERROR', 'Login is unavailable right now.', req.traceId));
+          return;
+        }
+        if (!reservation.allowed) {
+          await insertV21AuthAudit(pool, config, {
+            eventType: 'login_rate_limited',
+            success: false,
+            reason: 'RATE_LIMITED',
+            ip: req.ip,
+            userAgent: req.header('user-agent') ?? undefined,
+            metadata: {
+              identifier_hash: identifierHash,
+              budget_scope: reservation.scope ?? null,
+            },
+          });
+          if (reservation.retryAfterSeconds) {
+            res.setHeader('retry-after', String(reservation.retryAfterSeconds));
+          }
+          res.status(429).json({
+            success: false,
+            code: 'RATE_LIMITED',
+            message:
+              'Email/username or password is not correct. If access was revoked, ask your Parent or an Administrator to restore it.',
+            request_id: req.traceId,
+          });
+          return;
+        }
+        let v21Login: Awaited<ReturnType<V21AdultSessionRuntime['login']>>;
+        try {
+          v21Login = await withTiming(req, 'db', () =>
+            v21AdultSessionRuntime.login({
+              scope: v21Scope,
+              email: identifier,
+              password: payload.password,
+              ...(hostCookiePresent ? { cookie_header: cookieHeader } : {}),
+              now: attemptNow,
+            }),
+          );
+        } catch {
+          try {
+            await releaseV21LoginReservations(pool, reservation.reservations, attemptNow);
+          } catch {
+            // Login remains unavailable; no credential outcome was accepted.
+          }
+          res
+            .status(503)
+            .json(publicError('SERVER_ERROR', 'Login is unavailable right now.', req.traceId));
+          return;
+        }
+        if (!v21Login.handled || !v21Login.authenticated) {
+          const releaseReservation =
+            !v21Login.handled ||
+            v21Login.failure !== 'invalid_credentials' ||
+            v21Login.budget_disposition === 'release';
+          if (releaseReservation) {
+            try {
+              await releaseV21LoginReservations(pool, reservation.reservations, attemptNow);
+            } catch {
+              if (v21Login.handled && v21Login.session_mutated) {
+                clearAuthCookies(res, config);
+              }
+              res
+                .status(503)
+                .json(
+                  publicError(
+                    v21Login.handled && v21Login.failure === 'recovery_required'
+                      ? 'SESSION_RECOVERY_REQUIRED'
+                      : 'SERVER_ERROR',
+                    'Login is unavailable right now.',
+                    req.traceId,
+                  ),
+                );
+              return;
+            }
+          }
+          if (
+            v21Login.handled &&
+            (v21Login.failure === 'unavailable' || v21Login.failure === 'recovery_required')
+          ) {
+            if (v21Login.session_mutated) {
+              clearAuthCookies(res, config);
+            }
+            res
+              .status(503)
+              .json(
+                publicError(
+                  v21Login.failure === 'recovery_required'
+                    ? 'SESSION_RECOVERY_REQUIRED'
+                    : 'SERVER_ERROR',
+                  'Login is unavailable right now.',
+                  req.traceId,
+                ),
+              );
+            return;
+          }
+          await insertV21AuthAudit(pool, config, {
+            eventType: 'login_failed',
+            success: false,
+            reason: 'INVALID_CREDENTIALS',
+            ip: req.ip,
+            userAgent: req.header('user-agent') ?? undefined,
+            metadata: { identifier_hash: identifierHash, session_model: 'v21' },
+          });
+          if (v21Login.handled && v21Login.session_mutated) {
+            clearAuthCookies(res, config);
+          }
+          res.status(401).json({
+            success: false,
+            code: 'INVALID_CREDENTIALS',
+            message:
+              'Email/username or password is not correct. If access was revoked, ask your Parent or an Administrator to restore it.',
+            request_id: req.traceId,
+          });
+          return;
+        }
+        try {
+          await releaseV21LoginReservations(pool, reservation.reservations, attemptNow);
+        } catch {
+          const recoveryVerified = await revokeIssuedV21LoginSession(
+            v21AdultSessionRuntime,
+            v21Login.browser_session_token,
+            attemptNow,
+          );
+          clearAuthCookies(res, config);
+          res
+            .status(503)
+            .json(
+              publicError(
+                recoveryVerified ? 'SERVER_ERROR' : 'SESSION_RECOVERY_REQUIRED',
+                'Login is unavailable right now.',
+                req.traceId,
+              ),
+            );
+          return;
+        }
+        let legacyRotationVerified = false;
+        try {
+          legacyRotationVerified = await revokePresentedLegacySession(
+            req,
+            pool,
+            config,
+            'login_rotation',
+          );
+        } catch {
+          legacyRotationVerified = false;
+        }
+        if (!legacyRotationVerified) {
+          const recoveryVerified = await revokeIssuedV21LoginSession(
+            v21AdultSessionRuntime,
+            v21Login.browser_session_token,
+            attemptNow,
+          );
+          clearAuthCookies(res, config);
+          res
+            .status(503)
+            .json(
+              publicError(
+                recoveryVerified ? 'SERVER_ERROR' : 'SESSION_RECOVERY_REQUIRED',
+                'Login is unavailable right now.',
+                req.traceId,
+              ),
+            );
+          return;
+        }
+        try {
+          await insertV21AuthAudit(pool, config, {
+            eventType: 'login_succeeded',
+            userKey: v21Login.user.human_account_id,
+            success: true,
+            ip: req.ip,
+            userAgent: req.header('user-agent') ?? undefined,
+            metadata: { session_model: 'v21' },
+          });
+        } catch {
+          const recoveryVerified = await revokeIssuedV21LoginSession(
+            v21AdultSessionRuntime,
+            v21Login.browser_session_token,
+            attemptNow,
+          );
+          clearAuthCookies(res, config);
+          res
+            .status(503)
+            .json(
+              publicError(
+                recoveryVerified ? 'SERVER_ERROR' : 'SESSION_RECOVERY_REQUIRED',
+                'Login is unavailable right now.',
+                req.traceId,
+              ),
+            );
+          return;
+        }
+        clearAuthCookies(res, config);
+        res.append(
+          'Set-Cookie',
+          sessionCookieHeader({
+            token: v21Login.browser_session_token,
+            max_age_seconds: Math.max(
+              0,
+              Math.floor(
+                (Date.parse(v21Login.expires_at) - (clock ? clock().getTime() : Date.now())) / 1000,
+              ),
+            ),
+          }),
+        );
+        res.status(200).json({
+          success: true,
+          session_model: 'v21',
+          user: v21ClientUser(v21Login.user),
+          csrf_token: v21Login.csrf_token,
+          expires_at: v21Login.expires_at,
+          return_to: returnPathForRole(payload.return_to, 'parent', config),
+        });
+        return;
+      }
       const login = await withTiming(req, 'db', () =>
         authenticateUser({
           pool,
           config,
-          email: payload.email,
+          identifier,
           password: payload.password,
           ip: req.ip,
           userAgent: req.header('user-agent') ?? undefined,
-          trustedDeviceToken: getCookie(req, TRUSTED_DEVICE_COOKIE),
         }),
       );
       if (!login.ok) {
-        const status =
-          login.code === 'RATE_LIMITED'
-            ? 429
-            : login.code === 'EMAIL_CHALLENGE_REQUIRED'
-              ? 403
-              : 401;
+        const status = login.code === 'RATE_LIMITED' ? 429 : 401;
         if (login.retry_after_seconds)
           res.setHeader('retry-after', String(login.retry_after_seconds));
         res.status(status).json({
           success: false,
-          code: login.code,
+          code:
+            login.code === 'DISABLED' || login.code === 'EMAIL_CHALLENGE_REQUIRED'
+              ? 'INVALID_CREDENTIALS'
+              : login.code,
           message:
-            login.code === 'EMAIL_CHALLENGE_REQUIRED'
-              ? 'Check your email for a six-digit login code.'
-              : 'Email or password is not correct.',
-          challenge_token: login.challenge_token,
-          challenge_expires_at: login.challenge_expires_at,
-          delivery_state: login.delivery_state,
+            'Email/username or password is not correct. If access was revoked, ask your Parent or an Administrator to restore it.',
           request_id: req.traceId,
         });
         return;
       }
 
+      if (hostCookiePresent) {
+        const rotation = await v21AdultSessionRuntime.rotateCookieHeader({
+          cookie_header: cookieHeader,
+          ...(clock ? { now: clock() } : {}),
+        });
+        if (!rotation.revoked) {
+          clearAuthCookies(res, config);
+          res
+            .status(503)
+            .json(publicError('SERVER_ERROR', 'Login is unavailable right now.', req.traceId));
+          return;
+        }
+      }
       const rotatedFromSessionKey = await revokeSession({
         pool,
         config,
@@ -923,12 +1888,29 @@ export function createApp({
           assuranceMethod: login.assuranceMethod,
         }),
       );
+      const currentUser = currentClientUser(session.user);
+      if (!currentUser) {
+        await revokeSession({
+          pool,
+          config,
+          sessionToken: session.session_token,
+          reason: 'role_retired',
+          ip: req.ip,
+          userAgent: req.header('user-agent') ?? undefined,
+        });
+        clearAuthCookies(res, config);
+        res
+          .status(403)
+          .json(publicError('FORBIDDEN', 'This account role is not available.', req.traceId));
+        return;
+      }
+      clearAuthCookies(res, config);
       setAuthCookies(res, config, session.session_token, session.csrf_token);
       res.status(200).json({
         success: true,
-        user: session.user,
+        user: currentUser,
         csrf_token: session.csrf_token,
-        return_to: safeReturnPath(payload.return_to, config) ?? '/app/crm',
+        return_to: returnPathForRole(payload.return_to, session.user.role, config),
       });
     } catch (error) {
       if (error instanceof ZodError) {
@@ -947,129 +1929,241 @@ export function createApp({
     }
   });
 
-  app.post('/api/v1/auth/email-challenge/verify', async (req: RequestWithTrace, res) => {
+  app.post('/api/v1/auth/password', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
-    try {
-      const payload = emailChallengeVerifyPayloadSchema.parse(req.body);
-      const verified = await verifyEmailChallengeCode({
-        pool,
-        config,
-        challengeToken: payload.challenge_token,
-        code: payload.code,
-        trustDevice: payload.trust_device,
-        ip: req.ip,
-        userAgent: req.header('user-agent') ?? undefined,
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    if (session.user.role === 'student') {
+      res.status(403).json({
+        success: false,
+        code: 'STUDENT_PASSWORD_ADULT_MANAGED',
+        message: 'Student passwords are managed by a Parent or Administrator.',
+        request_id: req.traceId,
       });
-      await completeEmailChallengeLogin(req, res, pool, config, verified, payload.return_to);
-    } catch (error) {
-      handleEmailChallengeRouteError(error, req, res);
+      return;
     }
-  });
-
-  app.post('/api/v1/auth/email-challenge/link', async (req: RequestWithTrace, res) => {
-    setPrivateNoStore(res);
     try {
-      const payload = emailChallengeLinkPayloadSchema.parse(req.body);
-      const verified = await verifyEmailChallengeLink({
+      const payload = authenticatedPasswordChangePayloadSchema.parse(req.body);
+      const result = await changeOwnPassword({
         pool,
         config,
-        linkToken: payload.link_token,
-        trustDevice: payload.trust_device,
+        session,
+        currentPassword: payload.current_password,
+        newPassword: payload.new_password,
         ip: req.ip,
         userAgent: req.header('user-agent') ?? undefined,
       });
-      await completeEmailChallengeLogin(req, res, pool, config, verified, payload.return_to);
-    } catch (error) {
-      handleEmailChallengeRouteError(error, req, res);
-    }
-  });
-
-  app.post('/api/v1/auth/email-challenge/resend', async (req: RequestWithTrace, res) => {
-    setPrivateNoStore(res);
-    try {
-      const payload = emailChallengeResendPayloadSchema.parse(req.body);
-      const resent = await resendEmailChallenge({
-        pool,
-        config,
-        challengeToken: payload.challenge_token,
-        ip: req.ip,
-        userAgent: req.header('user-agent') ?? undefined,
-      });
-      if (!resent.ok) {
-        const status = resent.code === 'RATE_LIMITED' ? 429 : 401;
-        if (resent.retryAfterSeconds)
-          res.setHeader('retry-after', String(resent.retryAfterSeconds));
+      if (!result.ok) {
+        const status =
+          result.code === 'RATE_LIMITED'
+            ? 429
+            : result.code === 'PASSWORD_REUSE'
+              ? 409
+              : result.code === 'ACCOUNT_UNAVAILABLE'
+                ? 403
+                : 400;
+        if (result.retry_after_seconds) {
+          res.setHeader('retry-after', String(result.retry_after_seconds));
+        }
+        const message =
+          result.code === 'RATE_LIMITED'
+            ? 'Please wait before trying another password change.'
+            : result.code === 'PASSWORD_REUSE'
+              ? 'Choose a password you have not just used.'
+              : result.code === 'PASSWORD_POLICY_FAILED'
+                ? 'Use at least 10 characters with at least one letter and one number.'
+                : result.code === 'ACCOUNT_UNAVAILABLE'
+                  ? 'This account cannot change its password right now.'
+                  : 'The current password is not correct.';
         res.status(status).json({
           success: false,
-          code: resent.code,
-          message:
-            resent.code === 'RATE_LIMITED'
-              ? 'Please wait before requesting another code.'
-              : 'Email or password is not correct.',
+          code: result.code,
+          message,
           request_id: req.traceId,
         });
         return;
       }
       res.status(200).json({
         success: true,
-        challenge_token: resent.challengeToken,
-        challenge_expires_at: resent.expiresAt,
-        delivery_state: resent.deliveryState,
+        password_updated_at: result.password_updated_at,
+        sessions_invalidated: result.sessions_invalidated,
+        current_session_preserved: true,
       });
     } catch (error) {
-      handleEmailChallengeRouteError(error, req, res);
-    }
-  });
-
-  app.post('/api/v1/auth/mfa/enroll/activate', async (req: RequestWithTrace, res) => {
-    setPrivateNoStore(res);
-    retiredAuthMethod(res, req);
-  });
-
-  app.post('/api/v1/auth/mfa/challenge', async (req: RequestWithTrace, res) => {
-    setPrivateNoStore(res);
-    retiredAuthMethod(res, req);
-  });
-
-  app.post('/api/v1/auth/mfa/recovery', async (req: RequestWithTrace, res) => {
-    setPrivateNoStore(res);
-    retiredAuthMethod(res, req);
-  });
-
-  app.post('/api/v1/auth/mfa/recovery/replace', async (req: RequestWithTrace, res) => {
-    setPrivateNoStore(res);
-    retiredAuthMethod(res, req);
-  });
-
-  app.post('/api/v1/auth/mfa/revoke', async (req: RequestWithTrace, res) => {
-    setPrivateNoStore(res);
-    retiredAuthMethod(res, req);
-  });
-
-  app.post('/api/v1/auth/trusted-devices/revoke', async (req: RequestWithTrace, res) => {
-    setPrivateNoStore(res);
-    const session = await requireApiSession(req, res, pool, config);
-    if (!session) return;
-    if (!['owner', 'admin'].includes(session.user.role)) {
+      if (error instanceof ZodError) {
+        res.status(400).json({
+          success: false,
+          code: 'VALIDATION_ERROR',
+          message: 'Please check the password form.',
+          field_errors: publicFieldErrors(error),
+          request_id: req.traceId,
+        });
+        return;
+      }
       res
-        .status(403)
-        .json(publicError('FORBIDDEN', 'Your role cannot manage trusted devices.', req.traceId));
-      return;
+        .status(500)
+        .json(
+          publicError('SERVER_ERROR', 'Password change is unavailable right now.', req.traceId),
+        );
     }
-    if (!(await requireSessionCsrf(req, res, pool, session))) return;
-    if (!(await requireRecentEmailAssurance(req, res, pool, session))) return;
-    await revokeTrustedDevice({
-      pool,
-      config,
-      trustedDeviceToken: getCookie(req, TRUSTED_DEVICE_COOKIE),
-      userKey: session.user.user_key,
+  });
+
+  const sendV21Logout = async (req: RequestWithTrace, res: Response, requireHost: boolean) => {
+    setPrivateNoStore(res);
+    const cookieHeader = req.header('cookie');
+    if (!cookieHeaderHasName(cookieHeader, AUTH_SESSION_COOKIE.name)) {
+      if (requireHost) {
+        res
+          .status(404)
+          .json(publicError('V21_SESSION_NOT_PRESENT', 'No v2.1 session is active.', req.traceId));
+      }
+      return false;
+    }
+    const outcome = await v21AdultSessionRuntime.logoutCookieHeader({
+      cookie_header: cookieHeader,
+      csrf_token: req.header('x-csrf-token'),
+      ...(clock ? { now: clock() } : {}),
     });
-    clearTrustedDeviceCookie(res, config);
-    res.status(200).json({ success: true, trusted_device_revoked: true });
+    if (outcome.revoked) {
+      let legacyRevocationVerified = false;
+      try {
+        legacyRevocationVerified = await revokePresentedLegacySession(req, pool, config, 'logout');
+      } catch {
+        legacyRevocationVerified = false;
+      }
+      if (!legacyRevocationVerified) {
+        clearAuthCookies(res, config);
+        res
+          .status(503)
+          .json(
+            publicError(
+              'SESSION_RECOVERY_REQUIRED',
+              'Sign out could not be verified. Sign in again before continuing.',
+              req.traceId,
+            ),
+          );
+        return true;
+      }
+      try {
+        await insertV21AuthAudit(pool, config, {
+          eventType: 'logout_succeeded',
+          success: true,
+          ip: req.ip,
+          userAgent: req.header('user-agent') ?? undefined,
+          metadata: { session_model: 'v21' },
+        });
+      } catch {
+        clearAuthCookies(res, config);
+        res
+          .status(503)
+          .json(
+            publicError(
+              'SERVER_ERROR',
+              'Sign out completed, but its audit readback is unavailable.',
+              req.traceId,
+            ),
+          );
+        return true;
+      }
+      clearAuthCookies(res, config);
+      res.status(200).json({ success: true, session_model: 'v21' });
+      return true;
+    }
+    const invalidCsrf = outcome.reason === 'invalid_csrf';
+    if (outcome.reason === 'invalid_session') {
+      clearAuthCookies(res, config);
+    }
+    res
+      .status(invalidCsrf ? 403 : outcome.reason === 'revocation_unverified' ? 503 : 401)
+      .json(
+        publicError(
+          invalidCsrf
+            ? 'CSRF_REQUIRED'
+            : outcome.reason === 'revocation_unverified'
+              ? 'SERVER_ERROR'
+              : 'UNAUTHENTICATED',
+          invalidCsrf
+            ? 'Refresh the page and try again.'
+            : outcome.reason === 'revocation_unverified'
+              ? 'Sign out could not be verified. Sign in again before continuing.'
+              : 'Sign in to continue.',
+          req.traceId,
+        ),
+      );
+    return true;
+  };
+
+  const sendV21SessionBootstrap = async (
+    req: RequestWithTrace,
+    res: Response,
+    requireHost: boolean,
+  ) => {
+    setPrivateNoStore(res);
+    const cookieHeader = req.header('cookie');
+    if (!cookieHeaderHasName(cookieHeader, AUTH_SESSION_COOKIE.name)) {
+      if (requireHost) {
+        res
+          .status(404)
+          .json(publicError('V21_SESSION_NOT_PRESENT', 'No v2.1 session is active.', req.traceId));
+      }
+      return false;
+    }
+    const bootstrap = await v21AdultSessionRuntime.bootstrapCookieHeader({
+      cookie_header: cookieHeader,
+      ...(clock ? { now: clock() } : {}),
+    });
+    if (bootstrap.status === 'unavailable') {
+      res
+        .status(503)
+        .json(publicError('SERVER_ERROR', 'Session readback is unavailable.', req.traceId));
+      return true;
+    }
+    if (bootstrap.status === 'invalid') {
+      clearAuthCookies(res, config);
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Sign in to continue.', req.traceId));
+      return true;
+    }
+    res.status(200).json({
+      success: true,
+      authenticated: true,
+      session_model: 'v21',
+      user: v21ClientUser({
+        human_account_id: bootstrap.context.session.humanAccountId,
+        adult_id: bootstrap.context.adultId,
+        email: bootstrap.context.normalizedEmail,
+        display_name: bootstrap.context.ownerDisplayName,
+      }),
+      csrf_token: bootstrap.csrf_token,
+      expires_at: bootstrap.expires_at,
+      parent_context: {
+        adult_id: bootstrap.context.adultId,
+        human_account_id: bootstrap.context.session.humanAccountId,
+        owned_household_count: bootstrap.context.ownedHouseholdCount,
+        household: {
+          household_id: bootstrap.context.household.householdId,
+          display_name: bootstrap.context.household.displayName,
+          classification: bootstrap.context.household.classification,
+          access_state: bootstrap.context.household.accessState,
+          owner_relationship: bootstrap.context.household.ownerRelationship,
+        },
+      },
+    });
+    return true;
+  };
+
+  app.post('/api/v2.1/auth/logout', async (req: RequestWithTrace, res) => {
+    await sendV21Logout(req, res, true);
+  });
+
+  app.get('/api/v2.1/auth/session', async (req: RequestWithTrace, res) => {
+    await sendV21SessionBootstrap(req, res, true);
   });
 
   app.post('/api/v1/auth/logout', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
+    if (await sendV21Logout(req, res, false)) return;
     const session = await requireApiSession(req, res, pool, config);
     if (!session) return;
     if (!(await requireSessionCsrf(req, res, pool, session))) return;
@@ -1087,37 +2181,29 @@ export function createApp({
 
   app.get('/api/v1/auth/session', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
+    if (await sendV21SessionBootstrap(req, res, false)) return;
     const session = await requireApiSession(req, res, pool, config);
     if (!session) return;
     const csrfToken = await ensureSessionCsrfCookie(req, res, pool, config, session);
-    res.json({
-      authenticated: true,
-      user: session.user,
-      csrf_token: csrfToken,
-      expires_at: session.expires_at,
-    });
-  });
-
-  app.post('/api/v1/whatsapp/account-link/consume', async (req: RequestWithTrace, res) => {
-    setPrivateNoStore(res);
-    const session = await requireApiSession(req, res, pool, config);
-    if (!session) return;
-    if (!(await requireSessionCsrf(req, res, pool, session))) return;
-    const linkToken = typeof req.body?.link_token === 'string' ? req.body.link_token.trim() : '';
-    const householdKey =
-      typeof req.body?.household_key === 'string' ? req.body.household_key.trim() : '';
-    if (!linkToken || !householdKey) {
+    const currentUser = currentClientUser(session.user);
+    if (!currentUser) {
+      clearAuthCookies(res, config);
       res
-        .status(400)
-        .json(publicError('VALIDATION_ERROR', 'Submit a link token and household.', req.traceId));
+        .status(403)
+        .json(publicError('FORBIDDEN', 'This account role is not available.', req.traceId));
       return;
     }
-    const result = await withTiming(req, 'whatsapp_account_link', () =>
-      consumeWhatsAppAccountLink({ pool, config, session, linkToken, householdKey }),
-    );
-    res
-      .status(result.ok ? 200 : 403)
-      .json({ success: result.ok, ...result, request_id: req.traceId });
+    res.json({
+      authenticated: true,
+      user: currentUser,
+      csrf_token: csrfToken,
+      expires_at: session.expires_at,
+      capabilities: {
+        operator_experience: {
+          live_console: true,
+        },
+      },
+    });
   });
 
   app.get('/api/v1/dashboard/owner', async (req: RequestWithTrace, res) => {
@@ -1144,6 +2230,11 @@ export function createApp({
     } catch (error) {
       handleApiError(error, req, res);
     }
+  });
+
+  app.get('/api/v1/launch-status', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    res.status(404).json(publicError('NOT_FOUND', 'Launch status is unavailable.', req.traceId));
   });
 
   app.get(
@@ -1194,11 +2285,60 @@ export function createApp({
   );
 
   const portalRepository = createPortalRepository(pool);
+  const liveClassRepository = createLiveClassRepository(pool);
+  const zoomHostLaunchPort = createZoomHostLaunchPort(config);
+  const resolvedZoomAdminProvider = zoomAdminProvider ?? createZoomAdminProvider(config);
+  const zoomAdminService = createZoomAdminService({
+    config,
+    repository: createZoomAdminTestResourceRepository(pool),
+    ...(resolvedZoomAdminProvider ? { provider: resolvedZoomAdminProvider } : {}),
+    ...(clock ? { clock } : {}),
+  });
+  const zoomClassOccurrenceRepository = createZoomClassOccurrenceRepository(pool);
+  const resolvedZoomClassOccurrenceProvider =
+    zoomClassOccurrenceProvider ?? createZoomClassOccurrenceProvider(config);
+  const zoomClassOccurrenceHostLaunchPort = createZoomClassOccurrenceHostLaunchPort({
+    config,
+    repository: zoomClassOccurrenceRepository,
+    ...(resolvedZoomClassOccurrenceProvider
+      ? { provider: resolvedZoomClassOccurrenceProvider }
+      : {}),
+    ...(clock ? { clock } : {}),
+  });
+  const resolvedZoomHostLaunchPort = zoomClassOccurrenceHostLaunchPort ?? zoomHostLaunchPort;
+  const zoomClassOccurrenceService = createZoomClassOccurrenceService({
+    config,
+    repository: zoomClassOccurrenceRepository,
+    ...(resolvedZoomClassOccurrenceProvider
+      ? { provider: resolvedZoomClassOccurrenceProvider }
+      : {}),
+    ...(clock ? { clock } : {}),
+  });
+  const classroomZoomPorts = createZoomClassroomPorts({
+    config,
+    repository: zoomClassOccurrenceRepository,
+    ...(resolvedZoomClassOccurrenceProvider
+      ? { provider: resolvedZoomClassOccurrenceProvider }
+      : {}),
+    ...(clock ? { clock } : {}),
+  });
   const classroomRepository = createClassroomRepository(pool);
   const classroomService = createClassroomService({
     config,
     repository: classroomRepository,
-    questionCodec: new AesGcmPayloadCodec(`${config.mfaSecretEncryptionKey}:classroom-question-v1`),
+    questionCodec: new AesGcmPayloadCodec(
+      `${config.protectedPayloadEncryptionKey}:classroom-question-v1`,
+    ),
+    ...classroomZoomPorts,
+    ...(clock ? { clock } : {}),
+  });
+  const liveClassService = createLiveClassService({
+    config,
+    repository: liveClassRepository,
+    questionCodec: new AesGcmPayloadCodec(
+      `${config.protectedPayloadEncryptionKey}:live-class-question-v1`,
+    ),
+    ...(resolvedZoomHostLaunchPort ? { zoomHostLaunchPort: resolvedZoomHostLaunchPort } : {}),
     ...(clock ? { clock } : {}),
   });
   const gamificationRepository = createGamificationRepository(pool);
@@ -1209,14 +2349,24 @@ export function createApp({
   const portalServiceDeps: PortalServiceDeps = {
     repository: portalRepository,
     classAccess: config.zoomClassroomEnabled
-      ? createClassroomPortalAccessAdapter({ classroom: classroomService })
+      ? createClassroomPortalAccessAdapter({
+          classroom: classroomService,
+          currentAccess: ({ actor, learner }) =>
+            householdHasLearningAccess({
+              db: pool,
+              accountKey: actor.account_key,
+              productKey: actor.product_key,
+              householdKey: learner.household_key,
+              ...(clock ? { now: clock() } : {}),
+            }),
+        })
       : createClassPortalAccessAdapter({ pool, config }),
     contentAccess: createContentPortalAccessAdapter({ pool, config }),
     credentialLifecycle: createAccountLifecycleCredentialAdapter({ pool, config }),
     progress: createPortalProgressAdapter(pool),
     gamification: createPortalGamificationAdapter(gamificationService),
-    helper: createStudentClassHelperAdapter({ pool, config, ...(clock ? { clock } : {}) }),
-    billing: createParentBillingSummaryAdapter(billingRuntime.config, billingRuntime.repositories),
+    helper: createScopedKnowledgeHelperAdapter({ pool, config, ...(clock ? { clock } : {}) }),
+    billing: createParentAccessSummaryAdapter(pool, config),
   };
   const resolvePortalActor = (req: Request) => portalActorFromRequest(req, pool, config);
   const verifyPortalCsrf = (req: Request, actor: PortalActorContext) =>
@@ -1226,8 +2376,156 @@ export function createApp({
       sessionKey: actor.session_key,
       csrfToken: req.header('x-csrf-token') ?? req.body?.csrf_token,
     });
+  const verifyPortalRecentAssurance = async (_req: Request, actor: PortalActorContext) => {
+    const result = await pool.query(
+      `SELECT assurance_at
+         FROM onetime.user_sessions
+        WHERE account_key = $1
+          AND product_key = $2
+          AND session_key = $3
+          AND revoked_at IS NULL
+          AND expires_at > now()
+        LIMIT 1`,
+      [config.accountKey, config.productKey, actor.session_key],
+    );
+    const assuranceAt = result.rows[0]?.assurance_at;
+    return Boolean(
+      assuranceAt && Date.now() - new Date(String(assuranceAt)).getTime() <= 10 * 60 * 1000,
+    );
+  };
+  app.get(
+    '/api/v1/admin/classes/occurrences/:occurrenceKey/zoom',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      const actor = await resolvePortalActor(req);
+      if (!actor) {
+        res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+        return;
+      }
+      try {
+        const data = await zoomClassOccurrenceService.status(
+          actor,
+          String(req.params.occurrenceKey ?? ''),
+        );
+        res.json({ success: true, data });
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+    },
+  );
 
-  app.get('/classroom/launch/:grantKey/:secret', async (req: RequestWithTrace, res) => {
+  app.post(
+    '/api/v1/admin/classes/occurrences/:occurrenceKey/zoom/provision',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      if (!requireSameOriginPost(req, res, config)) return;
+      if (!(await requireSessionCsrf(req, res, pool, session))) return;
+      const actor = await resolvePortalActor(req);
+      if (!actor) {
+        res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+        return;
+      }
+      try {
+        const payload = z
+          .object({
+            purpose: z.enum(['normal_class', 'synthetic_acceptance']).default('normal_class'),
+            idempotency_key: z.string().trim().min(8).max(160),
+          })
+          .parse(stripCsrfField(req.body));
+        const data = await zoomClassOccurrenceService.provision(actor, {
+          occurrence_key: String(req.params.occurrenceKey ?? ''),
+          ...payload,
+        });
+        res.status(201).json({ success: true, data });
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+    },
+  );
+
+  app.post(
+    '/api/v1/admin/classes/occurrences/:occurrenceKey/zoom/delete-synthetic',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      if (!requireSameOriginPost(req, res, config)) return;
+      if (!(await requireSessionCsrf(req, res, pool, session))) return;
+      const actor = await resolvePortalActor(req);
+      if (!actor) {
+        res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+        return;
+      }
+      try {
+        const payload = z
+          .object({ idempotency_key: z.string().trim().min(8).max(160) })
+          .parse(stripCsrfField(req.body));
+        const data = await zoomClassOccurrenceService.deleteSynthetic(actor, {
+          occurrence_key: String(req.params.occurrenceKey ?? ''),
+          ...payload,
+        });
+        res.json({ success: true, data });
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+    },
+  );
+
+  app.use(
+    '/api/v1/contact-operations',
+    createContactOperationsRouter({
+      pool,
+      config,
+      resolveSession: (req) => sessionFromRequest(req, pool, config),
+      verifyCsrf: async (req, session) => {
+        if (!isSameOriginPost(req, config)) return false;
+        return verifySessionCsrf({
+          pool,
+          sessionKey: session.session_key,
+          csrfToken: req.header('x-csrf-token') ?? req.body?.csrf_token,
+        });
+      },
+      verifyRecentAssurance: async (session) => {
+        if (session.user.role === 'owner' || session.user.role === 'admin') {
+          return verifyRecentEmailAssurance({ pool, sessionKey: session.session_key });
+        }
+        if (!session.assurance_at) return false;
+        return Date.now() - new Date(session.assurance_at).getTime() <= 10 * 60 * 1000;
+      },
+      ...(clock ? { now: clock } : {}),
+    }),
+  );
+  app.use(
+    '/api/v1/admin-directory',
+    createAdminDirectoryRouter({
+      pool,
+      config,
+      resolveSession: (req) => sessionFromRequest(req, pool, config),
+      verifyCsrf: async (req, session) => {
+        if (!isSameOriginPost(req, config)) return false;
+        return verifySessionCsrf({
+          pool,
+          sessionKey: session.session_key,
+          csrfToken: req.header('x-csrf-token') ?? req.body?.csrf_token,
+        });
+      },
+      verifyRecentAssurance: (session) =>
+        verifyRecentEmailAssurance({ pool, sessionKey: session.session_key }),
+    }),
+  );
+
+  app.get(/^\/classroom\/launch\/.+$/, (_req, res) => {
+    setPrivateNoStore(res);
+    res.setHeader('Referrer-Policy', 'no-referrer');
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    res.status(410).type('html').send(expiredClassroomLaunchHtml());
+  });
+
+  app.get('/classroom/launch', async (req: RequestWithTrace, res) => {
     const session = await sessionFromRequest(req, pool, config);
     if (!session) {
       res.redirect(302, '/login?return_to=%2Fapp%2Fstudent');
@@ -1238,6 +2536,9 @@ export function createApp({
       res.status(403).type('html').send(forbiddenAppHtml('student'));
       return;
     }
+    const actor = await resolvePortalActor(req);
+    const zoomSdkAllowedForStudent =
+      resolvedZoomClassOccurrenceProvider !== undefined && actor?.actor_role === 'student';
     await ensureSessionCsrfCookie(req, res, pool, config, session);
     setPrivateNoStore(res);
     res.setHeader('Referrer-Policy', 'no-referrer');
@@ -1245,16 +2546,30 @@ export function createApp({
     res.setHeader('Permissions-Policy', 'camera=(self), microphone=(self), fullscreen=(self)');
     res.setHeader(
       'Content-Security-Policy',
-      [
-        "default-src 'self'",
-        "img-src 'self' data:",
-        "script-src 'self'",
-        "style-src 'self'",
-        "connect-src 'self'",
-        "object-src 'none'",
-        "base-uri 'self'",
-        "frame-ancestors 'none'",
-      ].join('; '),
+      (zoomSdkAllowedForStudent
+        ? [
+            "default-src 'self'",
+            "img-src 'self' data: blob: https://source.zoom.us",
+            "script-src 'self' https://source.zoom.us 'unsafe-eval' 'wasm-unsafe-eval'",
+            "style-src 'self' 'unsafe-inline' https://source.zoom.us",
+            "connect-src 'self' https://*.zoom.us wss://*.zoom.us",
+            "worker-src 'self' blob:",
+            "media-src 'self' blob: mediastream:",
+            "object-src 'none'",
+            "base-uri 'self'",
+            "frame-ancestors 'none'",
+          ]
+        : [
+            "default-src 'self'",
+            "img-src 'self' data:",
+            "script-src 'self'",
+            "style-src 'self'",
+            "connect-src 'self'",
+            "object-src 'none'",
+            "base-uri 'self'",
+            "frame-ancestors 'none'",
+          ]
+      ).join('; '),
     );
     res.status(200).type('html').send(classroomLaunchHtml());
   });
@@ -1345,6 +2660,359 @@ export function createApp({
     }
   });
 
+  app.get('/api/v1/live-class/questions', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const occurrenceKey = optionalQueryString(req.query.occurrence_key);
+      if (['owner', 'admin', 'rabbi'].includes(actor.actor_role)) {
+        const snapshot = await liveClassService.consoleSnapshot(actor, occurrenceKey);
+        res.json(liveClassConsoleSnapshotSchema.parse(snapshot));
+        return;
+      }
+      const questions = await liveClassService.listQuestions(actor, occurrenceKey);
+      res.json(liveClassQuestionListResponseSchema.parse({ success: true, data: { questions } }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/live-class/questions', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const payload = liveClassQuestionSubmitPayloadSchema.parse(req.body);
+      const result = await liveClassService.submitQuestion(actor, payload);
+      res.status(201).json(
+        liveClassQuestionSubmitResponseSchema.parse({
+          success: true,
+          data: result,
+        }),
+      );
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/live-class/questions/:id/select', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const payload = liveClassQuestionActionPayloadSchema.parse(req.body);
+      const data = await liveClassService.selectQuestion(
+        actor,
+        String(req.params.id),
+        payload.idempotency_key,
+      );
+      res.json(liveClassCommandResponseSchema.parse({ success: true, data }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/live-class/questions/:id/ready', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const payload = liveClassQuestionReadyPayloadSchema.parse(req.body);
+      const question = await liveClassService.markReady(actor, String(req.params.id), payload);
+      res.json({ success: true, data: { question } });
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/live-class/questions/:id/live', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const payload = liveClassQuestionActionPayloadSchema.parse(req.body);
+      const data = await liveClassService.goLive(
+        actor,
+        String(req.params.id),
+        payload.idempotency_key,
+      );
+      res.json(liveClassCommandResponseSchema.parse({ success: true, data }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/live-class/questions/:id/complete', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const payload = liveClassQuestionCompletePayloadSchema.parse(req.body);
+      const data = await liveClassService.completeQuestion(actor, String(req.params.id), payload);
+      res.json(liveClassCommandResponseSchema.parse({ success: true, data }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.get('/api/v1/live-class/zoom/admin/status', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const data = await zoomAdminService.status(actor);
+      res.json(liveClassZoomAdminStatusResponseSchema.parse({ success: true, data }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/live-class/zoom/admin/check', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      liveClassZoomAdminActionPayloadSchema.parse(req.body);
+      const data = await zoomAdminService.checkConnection(actor);
+      res.json(liveClassZoomAdminStatusResponseSchema.parse({ success: true, data }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/live-class/zoom/control', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const payload = liveClassZoomControlPayloadSchema.parse(req.body);
+      const data = await liveClassService.zoomControl(actor, payload);
+      res.json(liveClassCommandResponseSchema.parse({ success: true, data }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.get('/api/v1/live-class/zoom/host/bootstrap', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const data = await liveClassService.zoomHostBootstrap(
+        actor,
+        optionalQueryString(req.query.occurrence_key),
+      );
+      res.json(liveClassZoomHostBootstrapResponseSchema.parse({ success: true, data }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.get('/api/v1/live-class/zoom/participant/bootstrap', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const student = z.coerce.number().int().min(1).max(3).parse(req.query.student);
+      const data = await liveClassService.zoomTestParticipantBootstrap(
+        actor,
+        student,
+        optionalQueryString(req.query.occurrence_key),
+      );
+      res.json(liveClassZoomTestParticipantBootstrapResponseSchema.parse({ success: true, data }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.get('/api/v1/live-class/zoom/host/commands', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const occurrenceKey = String(req.query.occurrence_key ?? '');
+      const commands = await liveClassService.pollZoomCommands(actor, occurrenceKey);
+      res.json(liveClassZoomCommandPollResponseSchema.parse({ success: true, data: { commands } }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/live-class/zoom/host/participants', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const payload = liveClassZoomParticipantSyncPayloadSchema.parse(req.body);
+      const data = await liveClassService.syncZoomParticipants(actor, payload);
+      res.json(liveClassZoomParticipantSyncResponseSchema.parse({ success: true, data }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/live-class/zoom/host/commands/report', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const payload = liveClassObsCommandReportPayloadSchema.parse(req.body);
+      const data = await liveClassService.reportZoomCommand(actor, payload);
+      res.json({ success: true, data });
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.get('/api/v1/live-class/obs/commands', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    if (!requireObsBridgeToken(req, res, config)) return;
+    try {
+      const occurrenceKey = String(req.query.occurrence_key ?? '');
+      const commands = await liveClassService.pollObsCommands(
+        { account_key: config.accountKey, product_key: config.productKey },
+        occurrenceKey,
+      );
+      res.json(liveClassObsCommandPollResponseSchema.parse({ success: true, data: { commands } }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/live-class/obs/commands', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    if (req.body && typeof req.body === 'object' && 'command_key' in req.body) {
+      if (!requireObsBridgeToken(req, res, config)) return;
+      try {
+        const payload = liveClassObsCommandReportPayloadSchema.parse(req.body);
+        const result = await liveClassService.reportObsCommand(
+          { account_key: config.accountKey, product_key: config.productKey },
+          payload,
+        );
+        res.json({ success: true, data: result });
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+      return;
+    }
+
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const payload = liveClassObsCommandPayloadSchema.parse(req.body);
+      const data = await liveClassService.obsCommand(actor, payload);
+      res.json(liveClassCommandResponseSchema.parse({ success: true, data }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.get('/api/v1/live-class/stage/:stageSession', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    try {
+      const stage = await liveClassService.stageSnapshot(String(req.params.stageSession));
+      res.json(liveClassStageResponseSchema.parse({ success: true, data: stage }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
   app.get('/api/v1/gamification/admin', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
     const session = await requireApiSession(req, res, pool, config);
@@ -1408,38 +3076,19 @@ export function createApp({
     }
   });
 
-  app.post('/api/v1/gamification/parent-rewards', async (req: RequestWithTrace, res) => {
-    setPrivateNoStore(res);
-    const actor = await resolvePortalActor(req);
-    if (!actor) {
-      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
-      return;
-    }
-    if (!(await verifyPortalCsrf(req, actor))) {
-      res
-        .status(403)
-        .json(publicError('CSRF_REQUIRED', 'Refresh the portal and try again.', req.traceId));
-      return;
-    }
-    try {
-      const payload = parentRewardGoalPayloadSchema.parse(req.body);
-      const reward = await gamificationService.createParentRewardGoal(actor, payload);
-      res.status(201).json({ success: true, data: parentRewardGoalSchema.parse(reward) });
-    } catch (error) {
-      handleApiError(error, req, res);
-    }
-  });
-
   app.use(
     '/api/v1/portals/parent',
+    rejectRetiredPortalSurface,
     createParentPortalRouter({
       resolveActor: resolvePortalActor,
       verifyCsrf: verifyPortalCsrf,
+      verifyRecentAssurance: verifyPortalRecentAssurance,
       service: createParentPortalService(portalServiceDeps),
     }),
   );
   app.use(
     '/api/v1/portals/student',
+    rejectRetiredPortalSurface,
     createStudentPortalRouter({
       resolveActor: resolvePortalActor,
       verifyCsrf: verifyPortalCsrf,
@@ -1562,6 +3211,424 @@ export function createApp({
     }
   });
 
+  app.get('/api/v1/admin/classes/series', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!['owner', 'admin'].includes(session.user.role)) {
+      res
+        .status(403)
+        .json(publicError('FORBIDDEN', 'Owner or Admin access required.', req.traceId));
+      return;
+    }
+    try {
+      const series = await withTiming(req, 'db', () => listManagedClassSeries({ pool, config }));
+      res.json(classSeriesListResponseSchema.parse({ success: true, series }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/admin/classes/series', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!['owner', 'admin'].includes(session.user.role)) {
+      res
+        .status(403)
+        .json(publicError('FORBIDDEN', 'Owner or Admin access required.', req.traceId));
+      return;
+    }
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    try {
+      const payload = createClassSeriesPayloadSchema.parse(req.body);
+      const series = await withTiming(req, 'db', () =>
+        createManagedClassSeries({
+          pool,
+          config,
+          actor: { userKey: session.user.user_key, role: session.user.role as 'owner' | 'admin' },
+          payload,
+        }),
+      );
+      res.status(201).json(classSeriesResponseSchema.parse({ success: true, series }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.patch('/api/v1/admin/classes/series/:seriesKey', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!['owner', 'admin'].includes(session.user.role)) {
+      res
+        .status(403)
+        .json(publicError('FORBIDDEN', 'Owner or Admin access required.', req.traceId));
+      return;
+    }
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    try {
+      const payload = updateClassSeriesPayloadSchema.parse(req.body);
+      const series = await withTiming(req, 'db', () =>
+        updateManagedClassSeries({
+          pool,
+          config,
+          actor: { userKey: session.user.user_key, role: session.user.role as 'owner' | 'admin' },
+          seriesKey: String(req.params.seriesKey),
+          payload,
+        }),
+      );
+      res.json(classSeriesResponseSchema.parse({ success: true, series }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/admin/classes/occurrences', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!['owner', 'admin'].includes(session.user.role)) {
+      res
+        .status(403)
+        .json(publicError('FORBIDDEN', 'Owner or Admin access required.', req.traceId));
+      return;
+    }
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    try {
+      const payload = createClassOccurrencePayloadSchema.parse(req.body);
+      const occurrence = await withTiming(req, 'db', () =>
+        createManagedClassOccurrence({
+          pool,
+          config,
+          actor: { userKey: session.user.user_key, role: session.user.role as 'owner' | 'admin' },
+          payload,
+        }),
+      );
+      res
+        .status(201)
+        .json(managedClassOccurrenceResponseSchema.parse({ success: true, occurrence }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.get(
+    '/api/v1/admin/classes/occurrences/:occurrenceKey',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      if (!['owner', 'admin'].includes(session.user.role)) {
+        res
+          .status(403)
+          .json(publicError('FORBIDDEN', 'Owner or Admin access required.', req.traceId));
+        return;
+      }
+      try {
+        const occurrence = await withTiming(req, 'db', () =>
+          getManagedClassOccurrence({
+            pool,
+            config,
+            occurrenceKey: String(req.params.occurrenceKey),
+          }),
+        );
+        if (!occurrence) {
+          res
+            .status(404)
+            .json(publicError('NOT_FOUND', 'Class occurrence was not found.', req.traceId));
+          return;
+        }
+        res.json(managedClassOccurrenceResponseSchema.parse({ success: true, occurrence }));
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+    },
+  );
+
+  app.patch(
+    '/api/v1/admin/classes/occurrences/:occurrenceKey',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      if (!['owner', 'admin'].includes(session.user.role)) {
+        res
+          .status(403)
+          .json(publicError('FORBIDDEN', 'Owner or Admin access required.', req.traceId));
+        return;
+      }
+      if (!(await requireSessionCsrf(req, res, pool, session))) return;
+      try {
+        const payload = updateClassOccurrencePayloadSchema.parse(req.body);
+        const occurrence = await withTiming(req, 'db', () =>
+          updateManagedClassOccurrence({
+            pool,
+            config,
+            actor: {
+              userKey: session.user.user_key,
+              role: session.user.role as 'owner' | 'admin',
+            },
+            occurrenceKey: String(req.params.occurrenceKey),
+            payload,
+          }),
+        );
+        res.json(managedClassOccurrenceResponseSchema.parse({ success: true, occurrence }));
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+    },
+  );
+
+  app.get(
+    '/api/v1/admin/classes/occurrences/:occurrenceKey/enrollment-candidates',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      if (!['owner', 'admin'].includes(session.user.role)) {
+        res
+          .status(403)
+          .json(publicError('FORBIDDEN', 'Owner or Admin access required.', req.traceId));
+        return;
+      }
+      try {
+        const candidates = await withTiming(req, 'db', () =>
+          listClassEnrollmentCandidates({
+            pool,
+            config,
+            occurrenceKey: String(req.params.occurrenceKey),
+          }),
+        );
+        res.json(classEnrollmentCandidateListResponseSchema.parse({ success: true, candidates }));
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+    },
+  );
+
+  app.get(
+    '/api/v1/admin/classes/occurrences/:occurrenceKey/enrollments',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      if (!['owner', 'admin'].includes(session.user.role)) {
+        res
+          .status(403)
+          .json(publicError('FORBIDDEN', 'Owner or Admin access required.', req.traceId));
+        return;
+      }
+      try {
+        const enrollments = await withTiming(req, 'db', () =>
+          listClassEnrollments({
+            pool,
+            config,
+            occurrenceKey: String(req.params.occurrenceKey),
+          }),
+        );
+        res.json(classEnrollmentListResponseSchema.parse({ success: true, enrollments }));
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+    },
+  );
+
+  app.get(
+    '/api/v1/admin/classes/occurrences/:occurrenceKey/recordings/:itemKey/access',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      if (!['owner', 'admin'].includes(session.user.role)) {
+        res
+          .status(403)
+          .json(publicError('FORBIDDEN', 'Owner or Admin access required.', req.traceId));
+        return;
+      }
+      try {
+        const access = await withTiming(req, 'db', () =>
+          listClassRecordingAccess({
+            pool,
+            config,
+            occurrenceKey: String(req.params.occurrenceKey),
+            itemKey: String(req.params.itemKey),
+          }),
+        );
+        res.json(classRecordingAccessListResponseSchema.parse({ success: true, access }));
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+    },
+  );
+
+  app.post(
+    '/api/v1/admin/classes/occurrences/:occurrenceKey/enrollments',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      if (!['owner', 'admin'].includes(session.user.role)) {
+        res
+          .status(403)
+          .json(publicError('FORBIDDEN', 'Owner or Admin access required.', req.traceId));
+        return;
+      }
+      if (!(await requireSessionCsrf(req, res, pool, session))) return;
+      try {
+        const payload = classEnrollmentPayloadSchema.parse(req.body);
+        const enrollment = await withTiming(req, 'db', () =>
+          enrollLearnerInClass({
+            pool,
+            config,
+            actor: {
+              userKey: session.user.user_key,
+              role: session.user.role as 'owner' | 'admin',
+            },
+            occurrenceKey: String(req.params.occurrenceKey),
+            payload,
+          }),
+        );
+        res.status(201).json(classEnrollmentResponseSchema.parse({ success: true, enrollment }));
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+    },
+  );
+
+  app.post(
+    '/api/v1/admin/classes/occurrences/:occurrenceKey/enrollments/:learnerKey/revoke',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      if (!['owner', 'admin'].includes(session.user.role)) {
+        res
+          .status(403)
+          .json(publicError('FORBIDDEN', 'Owner or Admin access required.', req.traceId));
+        return;
+      }
+      if (!(await requireSessionCsrf(req, res, pool, session))) return;
+      try {
+        const payload = z
+          .object({ idempotency_key: z.string().trim().min(8).max(180) })
+          .parse(req.body);
+        const enrollment = await withTiming(req, 'db', () =>
+          unenrollLearnerFromClass({
+            pool,
+            config,
+            actor: {
+              userKey: session.user.user_key,
+              role: session.user.role as 'owner' | 'admin',
+            },
+            occurrenceKey: String(req.params.occurrenceKey),
+            learnerKey: String(req.params.learnerKey),
+            idempotencyKey: payload.idempotency_key,
+          }),
+        );
+        res.json(classEnrollmentResponseSchema.parse({ success: true, enrollment }));
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+    },
+  );
+
+  app.get(
+    '/api/v1/admin/classes/occurrences/:occurrenceKey/recordings',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      if (!['owner', 'admin'].includes(session.user.role)) {
+        res
+          .status(403)
+          .json(publicError('FORBIDDEN', 'Owner or Admin access required.', req.traceId));
+        return;
+      }
+      try {
+        const recordings = await withTiming(req, 'db', () =>
+          listClassRecordings({
+            pool,
+            config,
+            occurrenceKey: String(req.params.occurrenceKey),
+          }),
+        );
+        res.json(classRecordingListResponseSchema.parse({ success: true, recordings }));
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+    },
+  );
+
+  app.post(
+    '/api/v1/admin/classes/occurrences/:occurrenceKey/recordings',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      if (!['owner', 'admin'].includes(session.user.role)) {
+        res
+          .status(403)
+          .json(publicError('FORBIDDEN', 'Owner or Admin access required.', req.traceId));
+        return;
+      }
+      if (!(await requireSessionCsrf(req, res, pool, session))) return;
+      try {
+        const payload = attachClassRecordingPayloadSchema.parse(req.body);
+        const recording = await withTiming(req, 'db', () =>
+          attachRecordingToClass({
+            pool,
+            config,
+            actor: {
+              userKey: session.user.user_key,
+              role: session.user.role as 'owner' | 'admin',
+            },
+            occurrenceKey: String(req.params.occurrenceKey),
+            payload,
+          }),
+        );
+        res.status(201).json(classRecordingResponseSchema.parse({ success: true, recording }));
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+    },
+  );
+
+  app.post(
+    '/api/v1/admin/classes/occurrences/:occurrenceKey/recordings/:itemKey/access',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      if (!['owner', 'admin'].includes(session.user.role)) {
+        res
+          .status(403)
+          .json(publicError('FORBIDDEN', 'Owner or Admin access required.', req.traceId));
+        return;
+      }
+      if (!(await requireSessionCsrf(req, res, pool, session))) return;
+      try {
+        const payload = setClassRecordingAccessPayloadSchema.parse(req.body);
+        const recording = await withTiming(req, 'db', () =>
+          setClassRecordingLearnerAccess({
+            pool,
+            config,
+            actor: {
+              userKey: session.user.user_key,
+              role: session.user.role as 'owner' | 'admin',
+            },
+            occurrenceKey: String(req.params.occurrenceKey),
+            itemKey: String(req.params.itemKey),
+            payload,
+          }),
+        );
+        res.json(classRecordingResponseSchema.parse({ success: true, recording }));
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+    },
+  );
+
   app.get('/api/v1/content/library', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
     const session = await requireApiSession(req, res, pool, config);
@@ -1605,7 +3672,7 @@ export function createApp({
     setPrivateNoStore(res);
     const session = await requireApiSession(req, res, pool, config);
     if (!session) return;
-    if (!canReadContentLibrary(session.user.role)) {
+    if (!canUseOwnerDashboard(session.user.role)) {
       res
         .status(403)
         .json(publicError('FORBIDDEN', 'Your role cannot admit content.', req.traceId));
@@ -1646,6 +3713,223 @@ export function createApp({
         }),
       );
       res.json(contentAdminOverviewResponseSchema.parse({ success: true, ...workspace }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.get('/api/v1/admin/content/factory', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!isContentFactoryAdmin(session)) {
+      res
+        .status(403)
+        .json(publicError('FORBIDDEN', 'Owner or Admin access required.', req.traceId));
+      return;
+    }
+    try {
+      const workspace = await withTiming(req, 'db', () =>
+        getContentFactoryWorkspace({ pool, config }),
+      );
+      const adapter = inspectLearningDeliveryInputAdapters({
+        driveFolderIdPresent: Boolean(process.env.GOOGLE_DRIVE_FOLDER_ID),
+        driveServiceAccountPresent: Boolean(process.env.GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON),
+      });
+      res.json(
+        contentFactoryWorkspaceResponseSchema.parse({
+          success: true,
+          input_adapter: adapter.inputAdapter,
+          adapters: adapter.adapters,
+          ...workspace,
+        }),
+      );
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/admin/content/factory/intake', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    if (!isContentFactoryAdmin(session)) {
+      res
+        .status(403)
+        .json(publicError('FORBIDDEN', 'Owner or Admin access required.', req.traceId));
+      return;
+    }
+    try {
+      const staged = await stageProtectedContentFactoryUpload(req);
+      let intake;
+      try {
+        intake = await withTiming(req, 'db', () =>
+          createContentFactoryIntake({
+            pool,
+            config,
+            actorUserKey: session.user.user_key,
+            actorRole: session.user.role,
+            displayName: staged.displayName,
+            mimeType: staged.mimeType,
+            byteLength: staged.byteLength,
+            sourceSha256: staged.sourceSha256,
+            privateRefDigest: staged.privateRefDigest,
+            storageLocator: staged.storageLocator,
+            occurrenceKey: safeDecodedHeader(req.header('x-occurrence-key')) ?? '',
+            idempotencyKey: safeDecodedHeader(req.header('x-idempotency-key')) ?? '',
+          }),
+        );
+        if (intake.private_ref_digest !== staged.privateRefDigest) {
+          await contentFactoryStorageFromEnv().remove(staged.storageLocator);
+        }
+      } catch (error) {
+        await contentFactoryStorageFromEnv().remove(staged.storageLocator);
+        throw error;
+      }
+      await contentFactoryJobNotifier?.(intake.intake_key);
+      res.status(201).json(contentFactoryIntakeResponseSchema.parse({ success: true, intake }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.patch('/api/v1/admin/content/factory/:sourceKey', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    try {
+      const payload = contentFactoryEditPayloadSchema.parse(req.body);
+      const item = await withTiming(req, 'db', () =>
+        editContentFactoryItem({
+          pool,
+          config,
+          sourceKey: String(req.params.sourceKey),
+          actorUserKey: session.user.user_key,
+          actorRole: session.user.role,
+          payload,
+        }),
+      );
+      res.json(contentFactoryMutationResponseSchema.parse({ success: true, item }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post(
+    '/api/v1/admin/content/factory/:sourceKey/:action',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      if (!(await requireSessionCsrf(req, res, pool, session))) return;
+      try {
+        const action = contentFactoryActionSchema.parse(req.params.action);
+        const item = await withTiming(req, 'db', () =>
+          performContentFactoryAction({
+            pool,
+            config,
+            sourceKey: String(req.params.sourceKey),
+            actorUserKey: session.user.user_key,
+            actorRole: session.user.role,
+            action,
+          }),
+        );
+        res.json(contentFactoryMutationResponseSchema.parse({ success: true, item }));
+      } catch (error) {
+        if (error instanceof ContentFactoryPublicationError) {
+          logger.error(
+            { stage: error.stage, safe_error_code: error.safeErrorCode },
+            'content_factory_publication_failed',
+          );
+        }
+        handleApiError(error, req, res);
+      }
+    },
+  );
+
+  app.post(
+    '/api/v1/admin/content/factory/intakes/:intakeKey/retry',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      if (!(await requireSessionCsrf(req, res, pool, session))) return;
+      try {
+        await retryContentFactoryIntake({
+          pool,
+          config,
+          intakeKey: String(req.params.intakeKey),
+          actorUserKey: session.user.user_key,
+          actorRole: session.user.role,
+        });
+        res.json({ success: true });
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+    },
+  );
+
+  app.get('/app/learning/items/:sourceKey', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await sessionFromRequest(req, pool, config);
+    if (!session) {
+      res.redirect(302, `/login?return_to=${encodeURIComponent(req.originalUrl)}`);
+      return;
+    }
+    if (!['owner', 'admin', 'parent', 'student'].includes(session.user.role)) {
+      res.status(403).type('html').send('Protected learning access required.');
+      return;
+    }
+    try {
+      const actor = await resolvePortalActor(req);
+      if (!actor) throw new ContentFactoryError('NOT_FOUND', 'Content was not found.');
+      const playback = await getContentFactoryPlayback({
+        pool,
+        config,
+        sourceKey: String(req.params.sourceKey),
+        actor,
+      });
+      if (playback.isDemo || playback.processingMode === 'synthetic') {
+        throw new ContentFactoryError('NOT_FOUND', 'Content was not found.');
+      }
+      res.status(200).type('html').send(contentFactoryPlayerHtml(playback));
+    } catch (error) {
+      const status = error instanceof ContentFactoryError && error.code === 'NOT_FOUND' ? 404 : 409;
+      res.status(status).type('html').send('Approved lesson playback is unavailable.');
+    }
+  });
+
+  app.get('/api/v1/content/factory/:sourceKey/embed', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!['owner', 'admin', 'parent', 'student'].includes(session.user.role)) {
+      res
+        .status(403)
+        .json(publicError('FORBIDDEN', 'Protected learning access required.', req.traceId));
+      return;
+    }
+    try {
+      const actor = await resolvePortalActor(req);
+      if (!actor) throw new ContentFactoryError('NOT_FOUND', 'Content was not found.');
+      const playback = await getContentFactoryPlayback({
+        pool,
+        config,
+        sourceKey: String(req.params.sourceKey),
+        actor,
+      });
+      if (playback.isDemo || playback.processingMode === 'synthetic') {
+        throw new ContentFactoryError('NOT_FOUND', 'Content was not found.');
+      }
+      if (!playback.privateProviderAssetId) {
+        throw new ContentFactoryError('PLAYBACK_UNAVAILABLE', 'Protected playback is unavailable.');
+      }
+      res.redirect(
+        302,
+        `https://player.vimeo.com/video/${encodeURIComponent(playback.privateProviderAssetId)}`,
+      );
     } catch (error) {
       handleApiError(error, req, res);
     }
@@ -1715,26 +3999,6 @@ export function createApp({
           provider_ports: [createOt110aIntegratedProviderPorts(config).generation.inspect()],
         }),
       );
-    } catch (error) {
-      handleApiError(error, req, res);
-    }
-  });
-
-  app.get('/api/v1/admin/content/social', async (req: RequestWithTrace, res) => {
-    setPrivateNoStore(res);
-    const session = await requireApiSession(req, res, pool, config);
-    if (!session) return;
-    try {
-      const actor = await ot110aActorFromSession(pool, config, session);
-      const workspace = await withTiming(req, 'db', () =>
-        listOt110aSocialWorkspace({
-          pool,
-          config,
-          actor,
-          ports: createOt110aIntegratedProviderPorts(config),
-        }),
-      );
-      res.json(contentAdminSocialWorkspaceResponseSchema.parse({ success: true, ...workspace }));
     } catch (error) {
       handleApiError(error, req, res);
     }
@@ -1847,6 +4111,7 @@ export function createApp({
           actor,
           templateKey: String(request.params.templateKey),
           versionKey: payload.version_key,
+          expectedActiveVersionKey: payload.expected_active_version_key,
           reason: payload.reason,
         }),
       );
@@ -1872,6 +4137,7 @@ export function createApp({
           actor,
           templateKey: String(request.params.templateKey),
           targetVersionKey: payload.target_version_key,
+          expectedActiveVersionKey: payload.expected_active_version_key,
           reason: payload.reason,
         }),
       );
@@ -1934,27 +4200,6 @@ export function createApp({
     },
   );
 
-  app.post(
-    '/api/v1/admin/content/sources/:sourceKey/social/approve',
-    async (req: RequestWithTrace, res) => {
-      await handleOt110aSourceAction(req, res, pool, config, 'social.approve');
-    },
-  );
-
-  app.post(
-    '/api/v1/admin/content/sources/:sourceKey/social/schedule',
-    async (req: RequestWithTrace, res) => {
-      await handleOt110aSourceAction(req, res, pool, config, 'social.schedule');
-    },
-  );
-
-  app.post(
-    '/api/v1/admin/content/sources/:sourceKey/social/retract',
-    async (req: RequestWithTrace, res) => {
-      await handleOt110aSourceAction(req, res, pool, config, 'social.retract');
-    },
-  );
-
   app.get('/api/v1/admin/content/sources/:sourceKey', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
     const session = await requireApiSession(req, res, pool, config);
@@ -1980,38 +4225,6 @@ export function createApp({
     } catch (error) {
       handleApiError(error, req, res);
     }
-  });
-
-  app.get('/api/v1/social-publishing/readiness', async (req: RequestWithTrace, res) => {
-    setPrivateNoStore(res);
-    const session = await requireApiSession(req, res, pool, config);
-    if (!session) return;
-    if (!canUseSocialPublishing(session.user.role)) {
-      res
-        .status(403)
-        .json(publicError('FORBIDDEN', 'Your role cannot manage social publishing.', req.traceId));
-      return;
-    }
-    const readiness = inspectOt86bBufferReadinessFromEnv(ot86bBufferEnv(config));
-    res.json(ot86bReadinessResponseSchema.parse({ success: true, readiness }));
-  });
-
-  app.get('/api/v1/social-publishing/drafts', async (req: RequestWithTrace, res) => {
-    setPrivateNoStore(res);
-    const session = await requireApiSession(req, res, pool, config);
-    if (!session) return;
-    if (!canUseSocialPublishing(session.user.role)) {
-      res
-        .status(403)
-        .json(publicError('FORBIDDEN', 'Your role cannot view social drafts.', req.traceId));
-      return;
-    }
-    const drafts = await withTiming(req, 'db', () =>
-      listOt86bSocialDrafts({ pool, tenantId: config.accountKey, limit: 25 }),
-    );
-    res.json(
-      ot86bSocialDraftListResponseSchema.parse({ success: true, drafts, next_cursor: null }),
-    );
   });
 
   app.post('/api/v1/crm/contacts', async (req: RequestWithTrace, res) => {
@@ -2127,6 +4340,36 @@ export function createApp({
           contactId: String(req.params.contactId),
           actorUserKey: session.user.user_key,
           reason: payload.reason,
+        }),
+      );
+      if (!result) {
+        res.status(404).json(publicError('NOT_FOUND', 'Contact was not found.', req.traceId));
+        return;
+      }
+      res.json({ success: true, ...result });
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/crm/contacts/:contactId/reactivate', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!canEditContacts(session.user.role)) {
+      res
+        .status(403)
+        .json(publicError('FORBIDDEN', 'Your role can view CRM contacts only.', req.traceId));
+      return;
+    }
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    try {
+      const result = await withTiming(req, 'db', () =>
+        reactivateContact({
+          pool,
+          config,
+          contactId: String(req.params.contactId),
+          actorUserKey: session.user.user_key,
         }),
       );
       if (!result) {
@@ -2358,6 +4601,21 @@ export function createApp({
     distDir,
   });
 
+  app.use((req, res, next) => {
+    const rawPath = req.originalUrl || req.url;
+    const normalizedPath = normalizeDomainTransitionPath(rawPath);
+    if (
+      classifyDomainTransitionPath(rawPath) === 'tisha_bav_archived_asset' ||
+      (normalizedPath !== null &&
+        /^\/assets\/app-experience-preview(?:-|\.|$)/u.test(normalizedPath))
+    ) {
+      setPrivateNoStore(res);
+      res.status(404).type('text').send('Not found.');
+      return;
+    }
+    next();
+  });
+
   app.use(async (req, res, next) => {
     if (req.method !== 'GET' && req.method !== 'HEAD') {
       next();
@@ -2372,7 +4630,16 @@ export function createApp({
   });
 
   app.use(
-    express.static(distDir, { extensions: ['html'], maxAge: config.isProduction ? '1h' : 0 }),
+    express.static(distDir, {
+      extensions: ['html'],
+      maxAge: config.isProduction ? '1h' : 0,
+      setHeaders: (response, filePath) => {
+        if (!isMutableBuiltClientAsset(filePath)) return;
+        response.setHeader('Cache-Control', 'no-cache, max-age=0, must-revalidate');
+        response.setHeader('Pragma', 'no-cache');
+        response.setHeader('Expires', '0');
+      },
+    }),
   );
 
   app.use(async (_req, res) => {
@@ -2383,10 +4650,34 @@ export function createApp({
   return app;
 }
 
+function isConfiguredIsolatedStagingHost(
+  config: AppConfig,
+  hostHeader: string | undefined,
+): boolean {
+  if (config.oneTimeRuntimeEnvironment !== 'isolated_staging' || !hostHeader) return false;
+  try {
+    return hostHeader.toLowerCase() === new URL(config.publicBaseUrl).host.toLowerCase();
+  } catch {
+    return false;
+  }
+}
+
+function isMutableBuiltClientAsset(filePath: string) {
+  return (
+    filePath.includes(`${path.sep}assets${path.sep}`) &&
+    ['.css', '.js', '.json'].includes(path.extname(filePath).toLowerCase())
+  );
+}
+
 function publicHtmlFileForPath(pathname: string) {
   if (pathname === '/') return 'index.html';
+  if (pathname.startsWith('/app/content/')) return 'app/content.html';
+  if (pathname === '/app/classroom') return 'app/student.html';
   const staticPages = new Set([
     '/signup',
+    '/signup/received',
+    '/school',
+    '/school/received',
     '/login',
     '/privacy',
     '/terms',
@@ -2401,6 +4692,7 @@ function publicHtmlFileForPath(pathname: string) {
     '/app/classes',
     '/app/content',
     '/app/billing',
+    '/app/live-console',
     '/app/parent',
     '/app/student',
   ]);
@@ -2415,20 +4707,149 @@ async function sendPublicHtml(
   canonicalPath: string,
 ) {
   const html = await readFile(filePath, 'utf8');
-  res
-    .type('html')
-    .set('Cache-Control', config.isProduction ? 'public, max-age=3600' : 'no-cache')
-    .send(rewritePublicMetadata(html, config.publicBaseUrl, canonicalPath));
+  const response = res.type('html');
+  if (canonicalPath.startsWith('/app/')) {
+    response
+      .set('Cache-Control', 'no-store, private')
+      .set('Pragma', 'no-cache')
+      .set('Expires', '0');
+  } else {
+    response.set('Cache-Control', config.isProduction ? 'public, max-age=3600' : 'no-cache');
+  }
+  response.send(rewritePublicMetadata(html, config, canonicalPath));
 }
 
-function rewritePublicMetadata(html: string, publicBaseUrl: string, canonicalPath: string) {
-  const metadataUrl = publicMetadataUrl(publicBaseUrl, canonicalPath);
-  return html
+function rewritePublicMetadata(html: string, config: AppConfig, canonicalPath: string) {
+  const metadataUrl = publicMetadataUrl(config.publicBaseUrl, canonicalPath);
+  const rewrittenMetadata = html
     .replace(/<link rel="canonical" href="[^"]*">/, `<link rel="canonical" href="${metadataUrl}">`)
     .replace(
       /<meta property="og:url" content="[^"]*">/,
       `<meta property="og:url" content="${metadataUrl}">`,
     );
+  return rewriteAppAssetUrls(rewriteLaunchTiming(rewrittenMetadata, config), config);
+}
+
+function rewriteLaunchTiming(html: string, config: AppConfig) {
+  return html
+    .replaceAll('__ONE_TIME_FIRST_CLASS_AT__', escapeHtml(config.oneTimeFirstClassAt ?? ''))
+    .replaceAll(
+      '__ONE_TIME_FREE_ACCESS_EXPIRES_AT__',
+      escapeHtml(config.oneTimeFreeAccessExpiresAt ?? ''),
+    );
+}
+
+function rewriteAppAssetUrls(html: string, config: AppConfig) {
+  const assetVersion = (config.railwayGitCommitSha ?? config.commitSha ?? config.appVersion)
+    .replace(/[^A-Za-z0-9._-]/g, '')
+    .slice(0, 64);
+  return html.replace(
+    /(["'])\/assets\/(app-[^"'?#]+\.(?:js|css))(?:\?[^"']*)?\1/g,
+    (_match, quote: string, assetPath: string) =>
+      `${quote}/assets/${assetPath}?v=${assetVersion}${quote}`,
+  );
+}
+
+async function isApprovedSchoolLegacyAdminLoginBridge(
+  pool: DbPool,
+  config: AppConfig,
+  runtimeBinding: SchoolSignupScope,
+  normalizedEmail: string,
+) {
+  const result = await pool.query(
+    `SELECT account.human_account_id
+       FROM onetime.v21_adult_identities AS adult
+       JOIN onetime.v21_human_accounts AS account
+         ON account.adult_id = adult.adult_id
+        AND account.product_key = adult.product_key
+        AND account.runtime_tier = adult.runtime_tier
+        AND account.verification_environment_id = adult.verification_environment_id
+       JOIN onetime.v21_human_account_role_memberships AS membership
+         ON membership.human_account_id = account.human_account_id
+        AND membership.product_key = account.product_key
+        AND membership.runtime_tier = account.runtime_tier
+        AND membership.verification_environment_id = account.verification_environment_id
+       AND membership.role = 'admin'
+        AND membership.revoked_at IS NULL
+       LEFT JOIN onetime.v21_human_account_role_memberships AS parent_membership
+         ON parent_membership.human_account_id = account.human_account_id
+        AND parent_membership.product_key = account.product_key
+        AND parent_membership.runtime_tier = account.runtime_tier
+        AND parent_membership.verification_environment_id =
+            account.verification_environment_id
+        AND parent_membership.role = 'parent'
+        AND parent_membership.revoked_at IS NULL
+       JOIN onetime.account_users AS legacy
+         ON legacy.account_key = $5
+        AND legacy.product_key = $6
+        AND legacy.email_normalized = adult.normalized_email
+        AND legacy.role = 'admin'
+        AND legacy.status = 'active'
+      WHERE adult.normalized_email = $1
+        AND adult.product_key = $2
+        AND adult.runtime_tier = $3
+        AND adult.verification_environment_id = $4
+        AND adult.state = 'active'
+        AND account.state = 'active'
+        AND parent_membership.human_account_id IS NULL
+      LIMIT 2`,
+    [
+      normalizedEmail,
+      runtimeBinding.product,
+      runtimeBinding.runtime_tier,
+      runtimeBinding.verification_environment_id,
+      config.accountKey,
+      config.productKey,
+    ],
+  );
+  return result.rowCount === 1 && typeof result.rows[0]?.human_account_id === 'string';
+}
+
+async function approvedSchoolAdminSessionFromRequest(
+  req: Request,
+  pool: DbPool,
+  config: AppConfig,
+  runtimeBinding: SchoolSignupScope,
+) {
+  const session = await sessionFromRequest(req, pool, config);
+  if (!session) return null;
+  if (session.user.role !== 'admin') {
+    return {
+      human_account_id: session.user.user_key,
+      role: session.user.role === 'student' ? ('student' as const) : ('parent' as const),
+    };
+  }
+  const result = await pool.query(
+    `SELECT account.human_account_id
+       FROM onetime.v21_adult_identities AS adult
+       JOIN onetime.v21_human_accounts AS account
+         ON account.adult_id = adult.adult_id
+        AND account.product_key = adult.product_key
+        AND account.runtime_tier = adult.runtime_tier
+        AND account.verification_environment_id = adult.verification_environment_id
+       JOIN onetime.v21_human_account_role_memberships AS membership
+         ON membership.human_account_id = account.human_account_id
+        AND membership.product_key = account.product_key
+        AND membership.runtime_tier = account.runtime_tier
+        AND membership.verification_environment_id = account.verification_environment_id
+        AND membership.role = 'admin'
+        AND membership.revoked_at IS NULL
+      WHERE adult.normalized_email = $1
+        AND adult.product_key = $2
+        AND adult.runtime_tier = $3
+        AND adult.verification_environment_id = $4
+        AND adult.state = 'active'
+        AND account.state = 'active'
+      LIMIT 2`,
+    [
+      session.user.email.trim().toLowerCase(),
+      runtimeBinding.product,
+      runtimeBinding.runtime_tier,
+      runtimeBinding.verification_environment_id,
+    ],
+  );
+  if (result.rowCount !== 1 || typeof result.rows[0]?.human_account_id !== 'string') return null;
+  return { human_account_id: result.rows[0].human_account_id, role: 'admin' as const };
 }
 
 function publicMetadataUrl(publicBaseUrl: string, canonicalPath: string) {
@@ -2514,10 +4935,7 @@ async function handleOt110aSourceAction(
     | 'artifact.approve'
     | 'artifact.publish'
     | 'content.retry'
-    | 'content.retract'
-    | 'social.approve'
-    | 'social.schedule'
-    | 'social.retract',
+    | 'content.retract',
 ) {
   setPrivateNoStore(res);
   const session = await requireApiSession(req, res, pool, config);
@@ -2545,95 +4963,38 @@ async function handleOt110aSourceAction(
   }
 }
 
-async function completeEmailChallengeLogin(
-  req: RequestWithTrace,
-  res: Response,
-  pool: DbPool,
-  config: AppConfig,
-  verified: EmailChallengeVerificationResult,
-  returnTo: string | undefined,
-) {
-  if (!verified.ok) {
-    const status = verified.code === 'RATE_LIMITED' ? 429 : 401;
-    if (verified.retry_after_seconds) {
-      res.setHeader('retry-after', String(verified.retry_after_seconds));
-    }
-    res.status(status).json({
-      success: false,
-      code: verified.code,
-      message:
-        verified.code === 'RATE_LIMITED'
-          ? 'Please wait before trying another code.'
-          : 'Email or password is not correct.',
-      request_id: req.traceId,
-    });
-    return;
-  }
-
-  const rotatedFromSessionKey = await revokeSession({
-    pool,
-    config,
-    sessionToken: getCookie(req, SESSION_COOKIE),
-    reason: 'email_challenge_login_rotation',
-    ip: req.ip,
-    userAgent: req.header('user-agent') ?? undefined,
-  });
-  const session = await createSession({
-    pool,
-    config,
-    user: verified.user,
-    ip: req.ip,
-    userAgent: req.header('user-agent') ?? undefined,
-    rotatedFromSessionKey: rotatedFromSessionKey ?? undefined,
-    assuranceMethod: verified.assuranceMethod,
-  });
-  setAuthCookies(res, config, session.session_token, session.csrf_token);
-  if (verified.trustedDeviceToken && verified.trustedDeviceExpiresAt) {
-    setTrustedDeviceCookie(
-      res,
-      config,
-      verified.trustedDeviceToken,
-      verified.trustedDeviceExpiresAt,
-    );
-  }
-  res.status(200).json({
-    success: true,
-    user: session.user,
-    csrf_token: session.csrf_token,
-    return_to: safeReturnPath(returnTo, config) ?? defaultRouteForRole(session.user.role),
-  });
-}
-
-function handleEmailChallengeRouteError(error: unknown, req: RequestWithTrace, res: Response) {
-  if (res.headersSent) return;
-  if (error instanceof ZodError) {
-    res.status(400).json({
-      success: false,
-      code: 'VALIDATION_ERROR',
-      message: 'Please check the submitted fields.',
-      field_errors: publicFieldErrors(error),
-      request_id: req.traceId,
-    });
-    return;
-  }
-  res
-    .status(500)
-    .json(publicError('SERVER_ERROR', 'Email confirmation is unavailable right now.', req.traceId));
-}
-
-function retiredAuthMethod(res: Response, req: RequestWithTrace) {
-  res.status(410).json({
-    success: false,
-    code: 'AUTH_METHOD_RETIRED',
-    message: 'This sign-in method has been retired. Please use email login.',
-    request_id: req.traceId,
-  });
-}
-
 function requireSameOriginPost(req: RequestWithTrace, res: Response, config: AppConfig) {
   if (isSameOriginPost(req, config)) return true;
   res.status(403).json(publicError('FORBIDDEN', 'Refresh the page and try again.', req.traceId));
   return false;
+}
+
+function requireObsBridgeToken(req: RequestWithTrace, res: Response, config: AppConfig) {
+  const expected = config.liveClassObsBridgeToken;
+  const submitted =
+    req.header('x-ot-live-bridge-token') ?? optionalQueryString(req.query.bridge_token);
+  if (!expected || !submitted || !constantDigestEqual(expected, submitted)) {
+    res
+      .status(403)
+      .json(publicError('FORBIDDEN', 'Live OBS bridge token is required.', req.traceId));
+    return false;
+  }
+  return true;
+}
+
+function optionalQueryString(value: unknown) {
+  if (typeof value === 'string' && value.trim()) return value.trim();
+  if (Array.isArray(value) && typeof value[0] === 'string' && value[0].trim()) {
+    return value[0].trim();
+  }
+  return undefined;
+}
+
+function constantDigestEqual(left: string, right: string) {
+  return (
+    createHash('sha256').update(left).digest('hex') ===
+    createHash('sha256').update(right).digest('hex')
+  );
 }
 
 function providerCanaryAllowlist(config: AppConfig, env: NodeJS.ProcessEnv) {
@@ -2643,8 +5004,6 @@ function providerCanaryAllowlist(config: AppConfig, env: NodeJS.ProcessEnv) {
     config.whatsappCanaryRecipientE164,
     env.ONE_TIME_TELEGRAM_CANARY_CHAT_REF,
     env.ONE_TIME_STRIPE_TEST_CANARY_FIXTURE,
-    env.ONE_TIME_HELPER_FIXTURE_ALLOWLIST,
-    env.BUFFER_CANARY_DESTINATION_ALLOWLIST,
   ];
   return values.filter(
     (value): value is string => typeof value === 'string' && value.trim() !== '',
@@ -2678,12 +5037,15 @@ function isSameOriginPost(req: Request, config: AppConfig) {
 }
 
 async function sessionFromRequest(req: Request, pool: DbPool, config: AppConfig) {
-  return getSessionByToken({
+  const session = await getSessionByToken({
     pool,
     config,
     sessionToken: getCookie(req, SESSION_COOKIE),
     userAgent: req.header('user-agent') ?? undefined,
   });
+  if (!session) return null;
+  const currentUser = currentClientUser(session.user);
+  return currentUser ? { ...session, user: currentUser } : null;
 }
 
 async function ensureSessionCsrfCookie(
@@ -2722,7 +5084,7 @@ async function serveProtectedAppShell(
     res.redirect(
       302,
       `/login?return_to=${encodeURIComponent(
-        safeReturnPath(req.path, input.config) ?? input.fallbackPath,
+        safeReturnPath(req.originalUrl, input.config) ?? input.fallbackPath,
       )}`,
     );
     return;
@@ -2734,13 +5096,80 @@ async function serveProtectedAppShell(
   }
   await ensureSessionCsrfCookie(req, res, input.pool, input.config, session);
   setPrivateNoStore(res);
-  await sendAppHtml(res, input.distDir, input.appPage);
+  await sendAppHtml(res, input.distDir, input.appPage, input.config);
 }
 
-async function sendAppHtml(res: Response, distDir: string, appPage: 'crm' | 'parent' | 'student') {
+async function serveV21CompatibleParentAppShell(
+  req: RequestWithTrace,
+  res: Response,
+  input: {
+    pool: DbPool;
+    config: AppConfig;
+    distDir: string;
+    fallbackPath: string;
+    v21AdultSessionRuntime: V21AdultSessionRuntime;
+    clock?: (() => Date) | undefined;
+  },
+) {
+  const cookieHeader = req.header('cookie');
+  if (!cookieHeaderHasName(cookieHeader, AUTH_SESSION_COOKIE.name)) {
+    await serveProtectedAppShell(req, res, {
+      pool: input.pool,
+      config: input.config,
+      distDir: input.distDir,
+      appPage: 'parent',
+      allowedRoles: ['parent'],
+      fallbackPath: input.fallbackPath,
+    });
+    return;
+  }
+
+  const resolution = await input.v21AdultSessionRuntime.resolveCookieHeader({
+    cookie_header: cookieHeader,
+    ...(input.clock ? { now: input.clock() } : {}),
+  });
+  if (resolution.status === 'unavailable') {
+    setPrivateNoStore(res);
+    res.status(503).type('text').send('Parent access is temporarily unavailable.');
+    return;
+  }
+  const context = resolution.status === 'resolved' ? resolution.context : null;
+  const authorization = context
+    ? authorizeV21ParentRoute({
+        context,
+        requested_path: req.originalUrl,
+      })
+    : null;
+  if (!context || !authorization?.allowed) {
+    if (!context) clearAuthCookies(res, input.config);
+    setPrivateNoStore(res);
+    res.status(403).type('html').send(forbiddenAppHtml('parent'));
+    return;
+  }
+
+  if (req.path === '/select-household') {
+    setPrivateNoStore(res);
+    if (context.ownedHouseholdCount === 1) {
+      res.redirect(302, '/app/parent');
+      return;
+    }
+    res.status(409).type('html').send(forbiddenAppHtml('parent'));
+    return;
+  }
+
+  setPrivateNoStore(res);
+  await sendAppHtml(res, input.distDir, 'parent', input.config);
+}
+
+async function sendAppHtml(
+  res: Response,
+  distDir: string,
+  appPage: 'crm' | 'live' | 'parent' | 'student',
+  config: AppConfig,
+) {
   try {
     const html = await readFile(path.join(distDir, 'app', `${appPage}.html`), 'utf8');
-    res.status(200).type('html').send(html);
+    res.status(200).type('html').send(rewriteAppAssetUrls(html, config));
   } catch {
     res
       .status(500)
@@ -2862,7 +5291,7 @@ async function billingActorFromRequest(
   if (!session) return { actor_key: 'anonymous', role: 'public', active: false };
   return {
     actor_key: session.user.user_key,
-    role: session.user.role,
+    role: session.user.role === 'rabbi' ? 'public' : session.user.role,
     active: true,
   };
 }
@@ -2885,34 +5314,7 @@ function createBillingAuthorizationAdapter(
     async resolvePrincipal({ actor, requested_principal_key }) {
       if (!actor.active || actor.role === 'public') return { ok: false, reason: 'anonymous' };
       if (actor.role === 'parent') {
-        const household = await pool.query(
-          `SELECT 1
-             FROM onetime.portal_guardian_relationships AS relationships
-             JOIN onetime.portal_households AS households
-               ON households.account_key = relationships.account_key
-              AND households.product_key = relationships.product_key
-              AND households.household_key = relationships.household_key
-            WHERE relationships.account_key = $1
-              AND relationships.product_key = $2
-              AND relationships.guardian_user_ref = $3
-              AND relationships.household_key = $4
-              AND relationships.status = 'active'
-              AND relationships.authority <> 'support_only'
-              AND households.status = 'active'
-            LIMIT 1`,
-          [config.accountKey, config.productKey, actor.actor_key, requested_principal_key],
-        );
-        if (!household.rowCount) return { ok: false, reason: 'wrong_scope' };
-        return {
-          ok: true,
-          principal: {
-            principal_key: requested_principal_key,
-            principal_type: 'opaque',
-            account_key: config.accountKey,
-            product_key: config.productKey,
-          },
-          capabilities: ['billing:read', 'billing:checkout', 'billing:portal'],
-        };
+        return { ok: false, reason: 'insufficient_capability' };
       }
       if (actor.role === 'owner' || actor.role === 'admin') {
         const household = await pool.query(
@@ -2941,38 +5343,43 @@ function createBillingAuthorizationAdapter(
   };
 }
 
-function createParentBillingSummaryAdapter(
-  config: BillingFeatureConfig,
-  repositories: ReturnType<typeof createPostgresBillingRepositories>,
+function createParentAccessSummaryAdapter(
+  pool: DbPool,
+  config: AppConfig,
 ): NonNullable<PortalServiceDeps['billing']> {
   return {
     summaryForHousehold: async ({ household }) => {
-      const principal = {
-        principal_key: household.household_key,
-        principal_type: 'opaque' as const,
-        account_key: config.offerMappings[0]?.account_key ?? 'one_time',
-        product_key: config.offerMappings[0]?.product_key ?? 'one_time_mishnah_class',
-      };
-      const summary = await repositories.summary(principal);
-      const customerPortalAvailable =
-        config.transportEnabled && config.customerPortalEnabled && Boolean(summary.customer);
+      const access = await readHouseholdAccess({
+        db: pool,
+        accountKey: config.accountKey,
+        productKey: config.productKey,
+        householdKey: household.household_key,
+      });
+      const state = access?.state ?? 'pending';
+      const sourceLabel =
+        access?.source_kind === 'free_pilot' || access?.source_kind === 'complimentary'
+          ? 'Complimentary access'
+          : 'Current learning access';
       return {
-        enabled: config.foundationEnabled,
-        summary_label: summary.entitlement?.status ?? 'Not active',
-        plan_truth: 'Family plan — $67/month — up to 3 active learners in one household.',
-        entitlement_status: summary.entitlement?.status ?? null,
-        grants_access: summary.entitlement?.grants_access === true,
-        checkout_available:
-          config.transportEnabled && config.checkoutEnabled && config.offerMappings.length === 1,
-        customer_portal_available: customerPortalAvailable,
-        recovery_required:
-          summary.entitlement?.status === 'suspended' ||
-          summary.subscription?.status === 'past_due' ||
-          summary.subscription?.status === 'unpaid',
-        current_period_end: summary.subscription?.current_period_end
-          ? toIso(summary.subscription.current_period_end)
-          : null,
-        cancel_at_period_end: summary.subscription?.cancel_at_period_end === true,
+        enabled: true,
+        summary_label: access?.grants_access ? sourceLabel : 'Access not active',
+        plan_truth:
+          'GHL manages billing. One Time stores only the household’s current learning-access state.',
+        entitlement_status: state as
+          | 'pending'
+          | 'paused'
+          | 'active'
+          | 'grace'
+          | 'suspended'
+          | 'scheduled_end'
+          | 'revoked'
+          | 'manual_review',
+        grants_access: access?.grants_access ?? false,
+        checkout_available: false,
+        customer_portal_available: false,
+        recovery_required: ['suspended', 'manual_review'].includes(state),
+        current_period_end: access?.expires_at ?? null,
+        cancel_at_period_end: state === 'scheduled_end',
       };
     },
   };
@@ -2987,10 +5394,18 @@ async function parentHouseholdSubjects(pool: DbPool, config: AppConfig, userKey:
          ON households.account_key = relationships.account_key
         AND households.product_key = relationships.product_key
         AND households.household_key = relationships.household_key
+       JOIN onetime.account_access_projections AS access
+         ON access.account_key = relationships.account_key
+        AND access.product_key = relationships.product_key
+        AND access.household_key = relationships.household_key
+        AND access.state IN ('active', 'grace', 'scheduled_end')
+        AND access.effective_at <= $4
+        AND (access.expires_at IS NULL OR access.expires_at > $4)
       WHERE relationships.account_key = $1
         AND relationships.product_key = $2
         AND relationships.guardian_user_ref = $3
         AND relationships.status = 'active'
+        AND relationships.authority <> 'support_only'
         AND households.status = 'active'
       ORDER BY CASE relationships.authority
           WHEN 'primary_guardian' THEN 0
@@ -2999,7 +5414,7 @@ async function parentHouseholdSubjects(pool: DbPool, config: AppConfig, userKey:
         END,
         relationships.created_at ASC,
         relationships.relationship_key ASC`,
-    [config.accountKey, config.productKey, userKey],
+    [config.accountKey, config.productKey, userKey, new Date()],
   );
   return result.rows.map((row) => ({
     household_key: String(row.household_key),
@@ -3011,7 +5426,8 @@ async function parentHouseholdSubjects(pool: DbPool, config: AppConfig, userKey:
 
 async function studentLearnerSubject(pool: DbPool, config: AppConfig, userKey: string) {
   const result = await pool.query(
-    `SELECT links.learner_key, links.household_key, access_state.access_state_key
+    `SELECT links.learner_key, links.household_key, access_state.access_state_key,
+            account_access.state AS account_access_state
        FROM onetime.account_learner_identity_links AS links
        JOIN onetime.portal_student_access_state AS access_state
          ON access_state.account_key = links.account_key
@@ -3021,7 +5437,15 @@ async function studentLearnerSubject(pool: DbPool, config: AppConfig, userKey: s
        JOIN onetime.portal_learners AS learners
          ON learners.account_key = links.account_key
         AND learners.product_key = links.product_key
+        AND learners.household_key = links.household_key
         AND learners.learner_key = links.learner_key
+       JOIN onetime.account_access_projections AS account_access
+         ON account_access.account_key = links.account_key
+        AND account_access.product_key = links.product_key
+        AND account_access.household_key = links.household_key
+        AND account_access.state IN ('active', 'grace', 'scheduled_end')
+        AND account_access.effective_at <= $4
+        AND (account_access.expires_at IS NULL OR account_access.expires_at > $4)
       WHERE links.account_key = $1
         AND links.product_key = $2
         AND links.user_key = $3
@@ -3029,15 +5453,60 @@ async function studentLearnerSubject(pool: DbPool, config: AppConfig, userKey: s
         AND access_state.status = 'active'
         AND learners.learner_status = 'active'
       ORDER BY links.created_at ASC
-      LIMIT 1`,
-    [config.accountKey, config.productKey, userKey],
+      LIMIT 2`,
+    [config.accountKey, config.productKey, userKey, new Date()],
   );
   const row = result.rows[0];
-  if (!row) return null;
+  if (!row || result.rows.length !== 1) return null;
   return {
     learner_key: String(row.learner_key),
     household_key: String(row.household_key),
     access_state_key: String(row.access_state_key),
+    access_state:
+      String(row.account_access_state) === 'grace' ? ('grace' as const) : ('active' as const),
+  };
+}
+
+async function contentPublicationIdentityFromRequest(
+  req: Request,
+  pool: DbPool,
+  config: AppConfig,
+): Promise<ContentPublicationRequestIdentity | null> {
+  if (config.productKey !== CONTENT_PUBLICATION_PRODUCT_KEY) return null;
+  const session = await sessionFromRequest(req, pool, config);
+  if (!session) return null;
+
+  let student: Awaited<ReturnType<typeof studentLearnerSubject>> | null = null;
+  if (session.user.role === 'student') {
+    student = await studentLearnerSubject(pool, config, session.user.user_key);
+    if (
+      !student ||
+      !Number.isSafeInteger(session.session_security_version) ||
+      Number(session.session_security_version) < 1
+    ) {
+      return null;
+    }
+  }
+
+  const role: ContentPublicationPrincipal['role'] =
+    session.user.role === 'admin'
+      ? 'admin'
+      : session.user.role === 'student'
+        ? 'student'
+        : 'parent';
+  return {
+    sessionKey: session.session_key,
+    principal: {
+      actorId: session.user.user_key,
+      role,
+      accountKey: config.accountKey,
+      productKey: CONTENT_PUBLICATION_PRODUCT_KEY,
+      householdId: student?.household_key ?? '',
+      studentId: student?.learner_key ?? null,
+      sessionId: role === 'student' ? session.session_key : null,
+      sessionVersion: role === 'student' ? Number(session.session_security_version) : null,
+      accessState: role === 'admin' ? 'active' : (student?.access_state ?? 'inactive'),
+    },
   };
 }
 
@@ -3181,6 +5650,17 @@ function handleApiError(error: unknown, req: RequestWithTrace, res: Response) {
     });
     return;
   }
+  if (error instanceof ClassManagementError) {
+    const status = error.code === 'NOT_FOUND' ? 404 : error.code === 'INVALID_STATE' ? 400 : 409;
+    res.status(status).json({
+      success: false,
+      code: error.code,
+      message: error.message,
+      ...(error.currentVersion ? { current_version: error.currentVersion } : {}),
+      request_id: req.traceId,
+    });
+    return;
+  }
   if (error instanceof IdempotencyConflictError) {
     res.status(409).json({
       success: false,
@@ -3195,6 +5675,23 @@ function handleApiError(error: unknown, req: RequestWithTrace, res: Response) {
       success: false,
       code: 'IDEMPOTENCY_CONFLICT',
       message: 'This content outcome key was already used for a different request.',
+      request_id: req.traceId,
+    });
+    return;
+  }
+  if (error instanceof ContentFactoryError) {
+    const status =
+      error.code === 'FORBIDDEN'
+        ? 403
+        : error.code === 'NOT_FOUND'
+          ? 404
+          : error.code === 'VALIDATION_ERROR'
+            ? 400
+            : 409;
+    res.status(status).json({
+      success: false,
+      code: error.code,
+      message: error.message,
       request_id: req.traceId,
     });
     return;
@@ -3227,19 +5724,22 @@ function statusForPortalError(code: string) {
   if (code === 'UNAUTHENTICATED') return 401;
   if (code === 'FORBIDDEN' || code === 'CSRF_REQUIRED') return 403;
   if (code === 'NOT_FOUND') return 404;
-  if (code === 'VALIDATION_ERROR') return 400;
+  if (code === 'VALIDATION_ERROR' || code === 'PASSWORD_POLICY_FAILED') return 400;
   if (code === 'RATE_LIMITED') return 429;
   if (
     code === 'IDEMPOTENCY_CONFLICT' ||
     code === 'VERSION_CONFLICT' ||
     code === 'LEARNER_LIMIT_REACHED' ||
     code === 'ENTITLEMENT_REQUIRED' ||
-    code === 'CONSENT_REQUIRED'
+    code === 'CONSENT_REQUIRED' ||
+    code === 'USERNAME_UNAVAILABLE'
   ) {
     return 409;
   }
   if (code === 'OCCURRENCE_UNAVAILABLE' || code === 'LAUNCH_EXPIRED') return 410;
-  if (code === 'ADAPTER_UNAVAILABLE') return 503;
+  if (code === 'ADAPTER_UNAVAILABLE' || code === 'PROVIDER_OFF' || code === 'PROVIDER_NOT_READY') {
+    return 503;
+  }
   return 500;
 }
 
@@ -3252,23 +5752,266 @@ function statusForOt110aError(code: string) {
 }
 
 function canReadClasses(role: string) {
-  return role === 'owner' || role === 'admin';
+  return role === 'owner' || role === 'admin' || role === 'rabbi';
 }
 
 function canReadContacts(role: string) {
-  return role === 'owner' || role === 'admin' || role === 'crm_agent' || role === 'viewer';
+  return role === 'owner' || role === 'admin';
 }
 
 function canReadContentLibrary(role: string) {
-  return role === 'owner' || role === 'admin';
+  return role === 'owner' || role === 'admin' || role === 'rabbi';
+}
+
+function currentClientUser(user: SessionUser): SessionUser | null {
+  if (user.role === 'owner' || user.role === 'rabbi') {
+    return { ...user, role: 'admin', role_label: 'Admin' };
+  }
+  if (user.role === 'admin') {
+    return { ...user, role_label: 'Admin' };
+  }
+  if (user.role === 'parent' || user.role === 'student') return user;
+  return null;
+}
+
+function v21ClientUser(input: {
+  human_account_id: string;
+  adult_id: string;
+  email: string;
+  display_name: string;
+}): SessionUser {
+  return {
+    user_key: input.human_account_id,
+    email: input.email,
+    display_name: input.display_name,
+    role: 'parent',
+    role_label: 'Parent',
+    mfa_capable: false,
+  };
+}
+
+async function insertV21AuthAudit(
+  pool: DbPool,
+  config: AppConfig,
+  event: {
+    eventType: 'login_rate_limited' | 'login_failed' | 'login_succeeded' | 'logout_succeeded';
+    userKey?: string | undefined;
+    success: boolean;
+    reason?: string | undefined;
+    ip?: string | undefined;
+    userAgent?: string | undefined;
+    metadata?: Record<string, unknown> | undefined;
+  },
+) {
+  const eventKey = stableKey('auth_audit', [
+    config.accountKey,
+    config.productKey,
+    event.eventType,
+    event.userKey ?? 'anonymous',
+    randomUUID(),
+  ]);
+  const ipHash = event.ip ? createHash('sha256').update(event.ip).digest('hex') : null;
+  const userAgentHash = event.userAgent
+    ? createHash('sha256').update(event.userAgent).digest('hex')
+    : null;
+  await pool.query(
+    `INSERT INTO onetime.auth_audit_events
+       (event_key, account_key, product_key, user_key, event_type, success, reason,
+        ip_hash, user_agent_hash, metadata)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10::jsonb)`,
+    [
+      eventKey,
+      config.accountKey,
+      config.productKey,
+      event.userKey ?? null,
+      event.eventType,
+      event.success,
+      event.reason ?? null,
+      ipHash,
+      userAgentHash,
+      JSON.stringify(event.metadata ?? {}),
+    ],
+  );
+  const readback = await pool.query(
+    `SELECT user_key, event_type, success, reason, ip_hash, user_agent_hash, metadata
+       FROM onetime.auth_audit_events
+      WHERE event_key = $1
+        AND account_key = $2
+        AND product_key = $3
+      LIMIT 1`,
+    [eventKey, config.accountKey, config.productKey],
+  );
+  const row = readback.rows[0];
+  if (
+    readback.rowCount !== 1 ||
+    (row?.user_key ?? null) !== (event.userKey ?? null) ||
+    row?.event_type !== event.eventType ||
+    row?.success !== event.success ||
+    (row?.reason ?? null) !== (event.reason ?? null) ||
+    (row?.ip_hash ?? null) !== ipHash ||
+    (row?.user_agent_hash ?? null) !== userAgentHash ||
+    !isDeepStrictEqual(row?.metadata ?? {}, event.metadata ?? {})
+  ) {
+    throw new Error('The v2.1 auth-audit event failed exact redacted readback.');
+  }
+}
+
+type V21LoginBudget = {
+  scope: string;
+  subject: string;
+  limit: number;
+  windowMs: number;
+};
+
+type V21LoginReservation = {
+  key: string;
+  resetAt: Date;
+};
+
+type V21LoginAttemptReservation =
+  | { allowed: true; reservations: V21LoginReservation[] }
+  | {
+      allowed: false;
+      reservations: [];
+      scope?: string;
+      retryAfterSeconds?: number;
+    };
+
+async function reserveV21LoginAttempt(input: {
+  pool: DbPool;
+  config: AppConfig;
+  budgets: V21LoginBudget[];
+  now: Date;
+}): Promise<V21LoginAttemptReservation> {
+  return inTransaction(input.pool, async (db) => {
+    const reservations: V21LoginReservation[] = [];
+    const reservationKeys = new Set<string>();
+    for (const budget of input.budgets) {
+      if (budget.limit <= 0) continue;
+      const key = v21LoginBudgetKey(input.config, budget);
+      if (reservationKeys.has(key)) {
+        throw new Error('The login-attempt reservation contained a duplicate budget key.');
+      }
+      reservationKeys.add(key);
+      const resetAt = new Date(input.now.getTime() + budget.windowMs);
+      const expiresAt = new Date(resetAt.getTime() + budget.windowMs);
+      const result = await db.query(
+        `INSERT INTO onetime.rate_limit_buckets
+           (budget_key, account_key, product_key, scope, count, reset_at, expires_at)
+         VALUES ($1,$2,$3,$4,1,$5,$6)
+         ON CONFLICT (budget_key)
+         DO UPDATE SET
+           count = CASE
+             WHEN onetime.rate_limit_buckets.reset_at <= $7 THEN 1
+             ELSE onetime.rate_limit_buckets.count + 1
+           END,
+           reset_at = CASE
+             WHEN onetime.rate_limit_buckets.reset_at <= $7 THEN $5
+             ELSE onetime.rate_limit_buckets.reset_at
+           END,
+           expires_at = CASE
+             WHEN onetime.rate_limit_buckets.reset_at <= $7 THEN $6
+             ELSE onetime.rate_limit_buckets.expires_at
+           END,
+           updated_at = $7
+         RETURNING count, reset_at`,
+        [
+          key,
+          input.config.accountKey,
+          input.config.productKey,
+          budget.scope,
+          resetAt,
+          expiresAt,
+          input.now,
+        ],
+      );
+      const row = result.rows[0];
+      const reservedResetAt = new Date(String(row?.reset_at));
+      if (!Number.isFinite(reservedResetAt.getTime())) {
+        throw new Error('The login-attempt reservation returned an invalid reset time.');
+      }
+      reservations.push({ key, resetAt: reservedResetAt });
+      if (Number(row?.count ?? 0) <= budget.limit) continue;
+      await releaseV21LoginReservations(db, reservations, input.now);
+      return {
+        allowed: false,
+        reservations: [],
+        scope: budget.scope,
+        retryAfterSeconds: Math.max(
+          1,
+          Math.ceil((reservedResetAt.getTime() - input.now.getTime()) / 1000),
+        ),
+      };
+    }
+    return { allowed: true, reservations };
+  });
+}
+
+async function releaseV21LoginReservations(
+  db: Queryable,
+  reservations: readonly V21LoginReservation[],
+  now: Date,
+): Promise<void> {
+  if (reservations.length === 0) return;
+  const values: unknown[] = [now];
+  const predicates = reservations.map((reservation, index) => {
+    values.push(reservation.key, reservation.resetAt);
+    const keyParameter = index * 2 + 2;
+    return `(budget_key = $${keyParameter} AND reset_at = $${keyParameter + 1})`;
+  });
+  const result = await db.query(
+    `UPDATE onetime.rate_limit_buckets
+        SET count = GREATEST(count - 1, 0),
+            updated_at = $1
+      WHERE ${predicates.join(' OR ')}
+      RETURNING budget_key, count, reset_at`,
+    values,
+  );
+  if (result.rowCount !== reservations.length) {
+    throw new Error('The login-attempt reservation release did not match every exact budget.');
+  }
+  const released = new Map(
+    result.rows.map((row) => [
+      String(row.budget_key),
+      { count: Number(row.count), resetAt: new Date(String(row.reset_at)) },
+    ]),
+  );
+  for (const reservation of reservations) {
+    const row = released.get(reservation.key);
+    if (
+      !row ||
+      !Number.isSafeInteger(row.count) ||
+      row.count < 0 ||
+      !Number.isFinite(row.resetAt.getTime()) ||
+      row.resetAt.getTime() !== reservation.resetAt.getTime()
+    ) {
+      throw new Error('The login-attempt reservation release failed exact readback.');
+    }
+  }
+}
+
+function v21LoginBudgetKey(config: AppConfig, budget: V21LoginBudget): string {
+  return createHash('sha256')
+    .update([config.accountKey, config.productKey, budget.scope, budget.subject].join('\0'))
+    .digest('hex');
+}
+
+function isContentFactoryAdmin(session: AuthenticatedSession) {
+  return session.user.role === 'owner' || session.user.role === 'admin';
 }
 
 function canUseOwnerDashboard(role: string) {
   return role === 'owner' || role === 'admin';
 }
 
-function canUseSocialPublishing(role: string) {
-  return role === 'owner' || role === 'admin';
+function canUseRabbiTeachingSurface(role: string, path: string) {
+  return (
+    role === 'rabbi' &&
+    (path === '/app/dashboard' ||
+      path === '/app/content' ||
+      path === '/app/classes' ||
+      path.startsWith('/app/classes/'))
+  );
 }
 
 function ot86PublishSecrets(config: AppConfig) {
@@ -3288,32 +6031,95 @@ function ot86PublishSecrets(config: AppConfig) {
   return [...current, ...previous];
 }
 
-function ot86bBufferEnv(config: AppConfig): NodeJS.ProcessEnv {
-  return {
-    BUFFER_ACCESS_TOKEN: config.bufferAccessToken,
-    BUFFER_ORGANIZATION_ID: config.bufferOrganizationId,
-    BUFFER_DESTINATION_IDS: config.bufferDestinationIds,
-  };
-}
-
 function hashCookieValue(value: string) {
   return createHash('sha256').update(value).digest('hex');
 }
 
 function getCookie(req: Request, name: string) {
+  const result = readCookie(req, name);
+  return result.status === 'value' ? result.value : undefined;
+}
+
+function readCookie(
+  req: Request,
+  name: string,
+): { status: 'absent' } | { status: 'invalid' } | { status: 'value'; value: string } {
   const header = req.header('cookie');
-  if (!header) return undefined;
+  if (!header) return { status: 'absent' };
+  const encodedValues: string[] = [];
   for (const part of header.split(';')) {
     const [rawName, ...rawValue] = part.trim().split('=');
-    if (rawName === name) return decodeURIComponent(rawValue.join('='));
+    if (rawName === name) encodedValues.push(rawValue.join('='));
   }
-  return undefined;
+  if (encodedValues.length === 0) return { status: 'absent' };
+  if (encodedValues.length !== 1 || !encodedValues[0]) return { status: 'invalid' };
+  try {
+    const value = decodeURIComponent(encodedValues[0]);
+    return value ? { status: 'value', value } : { status: 'invalid' };
+  } catch {
+    return { status: 'invalid' };
+  }
+}
+
+function cookieHeaderHasName(header: string | undefined, name: string) {
+  if (!header) return false;
+  return header.split(';').some((part) => {
+    const separator = part.indexOf('=');
+    return separator >= 0 && part.slice(0, separator).trim() === name;
+  });
+}
+
+async function revokePresentedLegacySession(
+  req: Request,
+  pool: DbPool,
+  config: AppConfig,
+  reason: 'login_rotation' | 'logout',
+) {
+  const presented = readCookie(req, SESSION_COOKIE);
+  if (presented.status === 'invalid') return false;
+  if (presented.status === 'absent') return true;
+  const sessionToken = presented.value;
+  await revokeSession({
+    pool,
+    config,
+    sessionToken,
+    reason,
+    ip: req.ip,
+    userAgent: req.header('user-agent') ?? undefined,
+  });
+  const readback = await pool.query(
+    `SELECT 1
+       FROM onetime.user_sessions
+      WHERE account_key = $1
+        AND product_key = $2
+        AND token_hash = $3
+        AND revoked_at IS NULL
+      LIMIT 1`,
+    [config.accountKey, config.productKey, createHash('sha256').update(sessionToken).digest('hex')],
+  );
+  return readback.rowCount === 0;
+}
+
+async function revokeIssuedV21LoginSession(
+  runtime: V21AdultSessionRuntime,
+  browserSessionToken: string,
+  now: Date,
+): Promise<boolean> {
+  try {
+    const outcome = await runtime.rotateCookieHeader({
+      cookie_header: `${AUTH_SESSION_COOKIE.name}=${encodeURIComponent(browserSessionToken)}`,
+      now,
+    });
+    return outcome.revoked;
+  } catch {
+    return false;
+  }
 }
 
 function setAuthCookies(res: Response, config: AppConfig, sessionToken: string, csrfToken: string) {
   res.cookie(SESSION_COOKIE, sessionToken, {
     httpOnly: true,
-    secure: config.isProduction,
+    secure: config.runtime.requiresSecureCookies,
     sameSite: 'strict',
     path: '/',
     maxAge: 8 * 60 * 60 * 1000,
@@ -3324,52 +6130,27 @@ function setAuthCookies(res: Response, config: AppConfig, sessionToken: string, 
 function setCsrfCookie(res: Response, config: AppConfig, csrfToken: string) {
   res.cookie(CSRF_COOKIE, csrfToken, {
     httpOnly: false,
-    secure: config.isProduction,
+    secure: config.runtime.requiresSecureCookies,
     sameSite: 'strict',
     path: '/',
     maxAge: 8 * 60 * 60 * 1000,
   });
 }
 
-function setTrustedDeviceCookie(
-  res: Response,
-  config: AppConfig,
-  trustedDeviceToken: string,
-  trustedUntil: string,
-) {
-  const maxAge = Math.max(0, new Date(trustedUntil).getTime() - Date.now());
-  if (maxAge <= 0) return;
-  res.cookie(TRUSTED_DEVICE_COOKIE, trustedDeviceToken, {
-    httpOnly: true,
-    secure: config.isProduction,
-    sameSite: 'strict',
-    path: '/',
-    maxAge,
-  });
-}
-
-function clearTrustedDeviceCookie(res: Response, config: AppConfig) {
-  res.clearCookie(TRUSTED_DEVICE_COOKIE, {
-    httpOnly: true,
-    secure: config.isProduction,
-    sameSite: 'strict',
-    path: '/',
-  });
-}
-
 function clearAuthCookies(res: Response, config: AppConfig) {
   res.clearCookie(SESSION_COOKIE, {
     httpOnly: true,
-    secure: config.isProduction,
+    secure: config.runtime.requiresSecureCookies,
     sameSite: 'strict',
     path: '/',
   });
   res.clearCookie(CSRF_COOKIE, {
     httpOnly: false,
-    secure: config.isProduction,
+    secure: config.runtime.requiresSecureCookies,
     sameSite: 'strict',
     path: '/',
   });
+  res.append('Set-Cookie', clearSessionCookieHeader());
 }
 
 function setPrivateNoStore(res: Response) {
@@ -3378,6 +6159,19 @@ function setPrivateNoStore(res: Response) {
   res.setHeader('Expires', '0');
   res.removeHeader('ETag');
   res.removeHeader('Last-Modified');
+}
+
+function rejectRetiredPortalSurface(req: Request, res: Response, next: express.NextFunction) {
+  if (req.path.endsWith('/helper/query')) {
+    setPrivateNoStore(res);
+    res.status(404).json({
+      success: false,
+      code: 'NOT_FOUND',
+      message: 'This portal action is not available.',
+    });
+    return;
+  }
+  next();
 }
 
 function toIso(value: unknown) {
@@ -3418,6 +6212,7 @@ function statusForLifecycleCode(code: string) {
   if (code === 'TOKEN_EXPIRED' || code === 'TOKEN_CONSUMED') return 410;
   if (code === 'RATE_LIMITED') return 429;
   if (code === 'FORBIDDEN') return 403;
+  if (code === 'IDENTITY_CONFLICT') return 409;
   if (code === 'IDEMPOTENCY_CONFLICT') return 409;
   if (code === 'NOT_FOUND') return 404;
   return 400;
@@ -3471,9 +6266,34 @@ function handleLifecycleRouteError(
 
 function defaultRouteForRole(role: string) {
   if (role === 'owner' || role === 'admin') return '/app/dashboard';
+  if (role === 'rabbi') return '/app/dashboard';
   if (role === 'parent') return '/app/parent';
   if (role === 'student') return '/app/student';
   return '/app/crm';
+}
+
+function returnPathForRole(value: string | undefined, role: string, config: AppConfig) {
+  const safe = safeReturnPath(value, config);
+  if (!safe) return defaultRouteForRole(role);
+  const pathname = new URL(safe, config.publicBaseUrl).pathname;
+  const startsWithRoute = (route: string) => pathname === route || pathname.startsWith(`${route}/`);
+  if (role === 'owner' || role === 'admin') {
+    return !startsWithRoute('/app') ||
+      startsWithRoute('/app/parent') ||
+      startsWithRoute('/app/student') ||
+      startsWithRoute('/app/support')
+      ? defaultRouteForRole(role)
+      : safe;
+  }
+  if (role === 'parent') {
+    return startsWithRoute('/app/parent') || startsWithRoute('/app/billing/checkout')
+      ? safe
+      : defaultRouteForRole(role);
+  }
+  if (role === 'student') {
+    return startsWithRoute('/app/student') ? safe : defaultRouteForRole(role);
+  }
+  return startsWithRoute('/app/crm') ? safe : defaultRouteForRole(role);
 }
 
 function forbiddenAppHtml(appPage: 'parent' | 'student') {
@@ -3514,14 +6334,33 @@ function forbiddenOwnerAdminHtml(requestPath: string) {
 <body>
   <main class="app-workspace">
     <section class="state-panel error" aria-labelledby="dashboard-forbidden-title">
-      <h1 id="dashboard-forbidden-title">Owner dashboard access unavailable</h1>
-      <p>This signed-in account cannot open the owner/admin shell.</p>
+      <h1 id="dashboard-forbidden-title">Admin dashboard access unavailable</h1>
+      <p>This signed-in account cannot open the Admin shell.</p>
       <a class="button-primary" href="/login?return_to=${encodeURIComponent(
         requestPath,
       )}">Sign in</a>
     </section>
   </main>
 </body>
+</html>`;
+}
+
+function canonicalAuthStatePageHtml(title: string, message: string) {
+  return `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <title>${escapeHtml(title)} | One Time Mishnayos</title>
+  </head>
+  <body>
+    <main>
+      <h1>${escapeHtml(title)}</h1>
+      <p>${escapeHtml(message)}</p>
+      <p><a href="/login">Return to login</a></p>
+    </main>
+  </body>
 </html>`;
 }
 
@@ -3548,29 +6387,14 @@ function loginPageHtml(csrfToken: string, returnTo: string) {
         <input type="hidden" name="csrf_token" value="${escapeHtml(csrfToken)}">
         <input type="hidden" name="return_to" value="${escapeHtml(returnTo)}">
         <div class="field">
-          <label for="email">Email</label>
-          <input id="email" name="email" type="email" autocomplete="username" required>
-          <p tabindex="-1" class="error" data-error-for="email"></p>
+          <label for="identifier">Email or student username</label>
+          <input id="identifier" name="identifier" type="text" autocomplete="username" required>
+          <p tabindex="-1" class="error" data-error-for="identifier"></p>
         </div>
         <div class="field">
           <label for="password">Password</label>
           <input id="password" name="password" type="password" autocomplete="current-password" required>
           <p tabindex="-1" class="error" data-error-for="password"></p>
-        </div>
-        <div class="email-challenge" data-email-challenge hidden>
-          <div class="field">
-            <label for="email_code">Verification code</label>
-            <input id="email_code" name="email_code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}">
-            <p tabindex="-1" class="error" data-error-for="email_code"></p>
-          </div>
-          <label class="consent trusted-device">
-            <input type="checkbox" name="trust_device" value="true">
-            <span>Trust this device for 30 days</span>
-          </label>
-          <div class="email-challenge-actions">
-            <button class="button" type="button" data-resend-challenge disabled>Resend code</button>
-            <span class="form-status" role="status" data-resend-status></span>
-          </div>
         </div>
         <button class="button button-primary" type="submit">Login</button>
         <a class="form-link" href="/forgot-password">Forgot password?</a>
@@ -3727,7 +6551,7 @@ function classroomLaunchHtml() {
     <section class="state-panel" aria-labelledby="classroom-launch-title">
       <h1 id="classroom-launch-title">Classroom</h1>
       <p data-classroom-status role="status">Opening protected classroom.</p>
-      <div data-classroom-sdk-root aria-live="polite"></div>
+      <div id="zmmtg-root" data-classroom-sdk-root aria-live="polite"></div>
       <button class="button button-primary" type="button" data-classroom-retry hidden>Retry</button>
       <button class="button" type="button" data-classroom-leave hidden>Leave</button>
     </section>
@@ -3735,6 +6559,128 @@ function classroomLaunchHtml() {
   <script type="module" src="/assets/app-classroom-launch.js"></script>
 </body>
 </html>`;
+}
+
+function expiredClassroomLaunchHtml() {
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#050505">
+  <title>Classroom link expired | One Time Mishnayos</title>
+  <link rel="stylesheet" href="/assets/app-crm.css">
+</head>
+<body>
+  <main class="app-workspace classroom-launch-page">
+    <section class="state-panel error" aria-labelledby="classroom-launch-expired-title">
+      <h1 id="classroom-launch-expired-title">Classroom link expired</h1>
+      <p>Return to the Student Portal and choose Join class again.</p>
+      <a class="button button-primary" href="/app/student">Return to Student Portal</a>
+    </section>
+  </main>
+</body>
+</html>`;
+}
+
+function contentFactoryPlayerHtml(playback: Awaited<ReturnType<typeof getContentFactoryPlayback>>) {
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#050505">
+  <title>${escapeHtml(playback.title)} | One Time Mishnayos</title>
+  <link rel="stylesheet" href="/assets/app-crm.css">
+</head>
+<body>
+  <main class="app-workspace learning-player-page" data-protected-player="true">
+    <section class="state-panel learning-player-shell" aria-labelledby="learning-player-title">
+      <p class="eyebrow">${playback.isDemo ? 'Protected synthetic demo lesson' : 'Protected One Time lesson'}</p>
+      <h1 id="learning-player-title">${escapeHtml(playback.title)}</h1>
+      <p><strong>${escapeHtml(playback.classTitle)}</strong> · ${escapeHtml(playback.classDate)}</p>
+      <p>${escapeHtml(playback.summary)}</p>
+      <div class="protected-player-frame">
+        <iframe
+          src="${escapeHtml(playback.playbackRoute)}"
+          title="${escapeHtml(playback.title)}"
+          allow="autoplay; fullscreen; picture-in-picture"
+          allowfullscreen
+          loading="eager"
+        ></iframe>
+      </div>
+      <dl class="content-factory-safe-metadata">
+        <div><dt>Captions</dt><dd>${playback.captionsActive ? 'Active' : 'Unavailable'}</dd></div>
+        <div><dt>Progress</dt><dd>${escapeHtml(playback.progressState.replaceAll('_', ' '))}</dd></div>
+      </dl>
+      <section aria-labelledby="review-questions-title">
+        <h2 id="review-questions-title">Review questions</h2>
+        <ol>${playback.reviewQuestions.map((question) => `<li>${escapeHtml(question)}</li>`).join('')}</ol>
+      </section>
+      <p class="ot-guardrail-note">${
+        playback.isDemo
+          ? 'Approved synthetic demo data only. No external provider media was used.'
+          : 'Approved class material only. No raw Vimeo link is displayed.'
+      }</p>
+    </section>
+  </main>
+</body>
+</html>`;
+}
+
+function zoomHostHtml() {
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#050505">
+  <title>Zoom Stage Host | One Time Mishnayos</title>
+  <link rel="stylesheet" href="/assets/app-crm.css">
+</head>
+<body>
+  <main class="app-workspace classroom-launch-page">
+    <section class="state-panel" aria-labelledby="zoom-host-title">
+      <h1 id="zoom-host-title">One Time Zoom Stage Host</h1>
+      <p>Participant video remains participant-controlled. The host can ask to unmute, mute, and manage spotlight only after the roster is mapped.</p>
+      <p data-zoom-host-status role="status">Checking protected Meeting SDK configuration.</p>
+      <div id="zmmtg-root" data-zoom-host-root aria-live="polite"></div>
+      <a class="button" href="/app/live-console">Return to Rabbi Live Console</a>
+    </section>
+  </main>
+  <script type="module" src="/assets/app-zoom-host.js?v=zoom-real-control-3"></script>
+</body>
+</html>`;
+}
+
+async function stageProtectedContentFactoryUpload(req: Request) {
+  const declaredLength = Number(req.header('content-length') ?? 0);
+  return contentFactoryStorageFromEnv().stage({
+    stream: req,
+    displayName: safeDecodedHeader(req.header('x-file-name')) ?? '',
+    declaredMimeType: String(req.header('content-type') ?? ''),
+    ...(declaredLength > 0 ? { declaredLength } : {}),
+  });
+}
+
+function safeDecodedHeader(value: string | undefined) {
+  if (!value) return null;
+  try {
+    const decoded = decodeURIComponent(value).trim();
+    for (const character of decoded) {
+      const code = character.charCodeAt(0);
+      if (code <= 0x1f || code === 0x7f) return null;
+    }
+    return decoded || null;
+  } catch {
+    return null;
+  }
 }
 
 function escapeHtml(value: string) {

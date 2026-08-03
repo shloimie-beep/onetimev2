@@ -1,0 +1,1492 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+optimization_goal: minimum safe calendar time with no overlapping writers and no stale evidence
+default_total_active_windows: 8
+maximum_active_implementation_writers: 8
+controller_writers_when_active: 1
+integration_writers_when_active: 1
+capacity_rule: C00 is episodic and normally closes before dispatch. I36 consumes one of the eight total active windows
+  while running; otherwise all eight may be disjoint implementation writers. Never exceed eight implementation writers
+  even if the UI supports more total windows.
+verification_lanes: 7
+initial_base_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
+initial_sequence:
+- C00
+- F01
+continuous_integration_rule: Resume I36 after each queued interface, full implementation, or evidence merge batch.
+  Downstream tasks start only from an integration SHA containing all required interfaces.
+critical_path_hint:
+- C00
+- F01
+- F02
+- F04/F05
+- F06
+- P27
+- P28
+- P29/P30
+- I36
+- V37-V43
+- R44
+- P34-post-operator
+- V43-phase-b
+- R45-phase-a
+- I36-265-index
+- R45-phase-b
+- I36-final-evidence
+- C00-global-close
+tasks:
+- task_id: C00
+  title: Execution Control Tower and Authority Bootstrap
+  kind: controller
+  wave: 0
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+  start_after: []
+  required_start_states: {}
+  merge_after: []
+  candidate_integration_partners: []
+  acceptance_after: []
+  publishes_interface_for: []
+  writer_slots:
+  - AUTHORITY
+  - CONTROL_PLANE
+  primary_requirement_count: 0
+  primary_case_count: 0
+  verification_of: []
+  prompt: prompts/C00-START-OR-RESUME.md
+  task_packet: tasks/C00.yaml
+  context: contexts/C00-CONTEXT.md
+- task_id: F01
+  title: Repository Convergence, Architecture Seams, and Retired-Surface Closure
+  kind: foundation
+  wave: 1
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+  start_after:
+  - C00
+  required_start_states:
+    C00: operational
+  merge_after: []
+  candidate_integration_partners: []
+  acceptance_after: []
+  publishes_interface_for:
+  - F02
+  - F07
+  - P31
+  - P35
+  writer_slots:
+  - SERVER_COMPOSER
+  - CLIENT_COMPOSER
+  - WORKER_COMPOSER
+  - CONFIG_DEPS
+  - BARREL_REGISTRAR
+  - RETIRED_SURFACES
+  primary_requirement_count: 8
+  primary_case_count: 8
+  verification_of: []
+  prompt: prompts/F01-START-OR-RESUME.md
+  task_packet: tasks/F01.yaml
+  context: contexts/F01-CONTEXT.md
+- task_id: F02
+  title: Canonical Schema, State Machines, and Migration Stewardship
+  kind: foundation
+  wave: 2
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+  start_after:
+  - F01
+  required_start_states:
+    F01: interface_ready_integrated
+  merge_after:
+  - F01
+  candidate_integration_partners: []
+  acceptance_after: []
+  publishes_interface_for:
+  - F03
+  - F04
+  - F05
+  - P15
+  - P22
+  - P32
+  writer_slots:
+  - MIGRATION_AUTHORITY
+  - SCHEMA_CONTRACT
+  primary_requirement_count: 1
+  primary_case_count: 1
+  verification_of: []
+  prompt: prompts/F02-START-OR-RESUME.md
+  task_packet: tasks/F02.yaml
+  context: contexts/F02-CONTEXT.md
+- task_id: F03
+  title: Adult and Student Authentication
+  kind: foundation
+  wave: 3
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+  start_after:
+  - F02
+  required_start_states:
+    F02: interface_ready_integrated
+  merge_after:
+  - F02
+  candidate_integration_partners:
+  - F07
+  acceptance_after: []
+  publishes_interface_for:
+  - P08
+  - P10
+  - P12
+  - P14
+  - P24
+  - P26
+  - P32
+  writer_slots:
+  - IDENTITY_AUTH_ACCESS
+  primary_requirement_count: 16
+  primary_case_count: 22
+  verification_of: []
+  prompt: prompts/F03-START-OR-RESUME.md
+  task_packet: tasks/F03.yaml
+  context: contexts/F03-CONTEXT.md
+- task_id: F04
+  title: Adult Identity, Household Ownership, Roles, and Context Switching
+  kind: foundation
+  wave: 3
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+  start_after:
+  - F02
+  required_start_states:
+    F02: interface_ready_integrated
+  merge_after:
+  - F02
+  candidate_integration_partners:
+  - F03
+  acceptance_after: []
+  publishes_interface_for:
+  - F06
+  - P08
+  - P10
+  - P12
+  - P14
+  - P16
+  - P24
+  - P25
+  - P26
+  - P27
+  - P32
+  writer_slots:
+  - ACCOUNT_HOUSEHOLD_IDENTITY
+  primary_requirement_count: 4
+  primary_case_count: 4
+  verification_of: []
+  prompt: prompts/F04-START-OR-RESUME.md
+  task_packet: tasks/F04.yaml
+  context: contexts/F04-CONTEXT.md
+- task_id: F05
+  title: Typed API, Outbox, Sagas, Retry, and Quarantine
+  kind: foundation
+  wave: 3
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+  start_after:
+  - F02
+  required_start_states:
+    F02: interface_ready_integrated
+  merge_after:
+  - F02
+  candidate_integration_partners:
+  - F03
+  acceptance_after: []
+  publishes_interface_for:
+  - F06
+  - P11
+  - P16
+  - P17
+  - P18
+  - P19
+  - P20
+  - P21
+  - P22
+  - P23
+  - P24
+  - P25
+  - P26
+  - P32
+  - P33
+  writer_slots:
+  - API_JOB_FOUNDATION
+  primary_requirement_count: 3
+  primary_case_count: 3
+  verification_of: []
+  prompt: prompts/F05-START-OR-RESUME.md
+  task_packet: tasks/F05.yaml
+  context: contexts/F05-CONTEXT.md
+- task_id: F06
+  title: Provider Truth, Idempotency, Reconciliation, and Mapping
+  kind: foundation
+  wave: 4
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+  start_after:
+  - F04
+  - F05
+  required_start_states:
+    F04: interface_ready_integrated
+    F05: interface_ready_integrated
+  merge_after:
+  - F04
+  - F05
+  candidate_integration_partners:
+  - F03
+  acceptance_after: []
+  publishes_interface_for:
+  - P08
+  - P17
+  - P19
+  - P21
+  - P25
+  - P26
+  - P27
+  - P28
+  - P33
+  writer_slots:
+  - PROVIDER_CORE
+  - PROVIDER_REGISTRY
+  primary_requirement_count: 3
+  primary_case_count: 3
+  verification_of: []
+  prompt: prompts/F06-START-OR-RESUME.md
+  task_packet: tasks/F06.yaml
+  context: contexts/F06-CONTEXT.md
+- task_id: F07
+  title: Design System, App Shells, Navigation, and Accessibility
+  kind: foundation
+  wave: 2
+  model: GPT-5.6-TERRA
+  reasoning: HIGH
+  start_after:
+  - F01
+  required_start_states:
+    F01: interface_ready_integrated
+  merge_after:
+  - F01
+  candidate_integration_partners: []
+  acceptance_after: []
+  publishes_interface_for:
+  - P08
+  - P10
+  - P11
+  - P12
+  - P13
+  - P14
+  - P15
+  - P22
+  - P23
+  - P24
+  - P25
+  - P32
+  writer_slots:
+  - DESIGN_SYSTEM
+  primary_requirement_count: 9
+  primary_case_count: 9
+  verification_of: []
+  prompt: prompts/F07-START-OR-RESUME.md
+  task_packet: tasks/F07.yaml
+  context: contexts/F07-CONTEXT.md
+- task_id: P08
+  title: Family Signup, Deduplication, Expiry, and Recovery
+  kind: implementation
+  wave: 5
+  model: GPT-5.6-SOL
+  reasoning: HIGH
+  start_after:
+  - F03
+  - F04
+  - F06
+  - F07
+  required_start_states:
+    F03: interface_ready_integrated
+    F04: interface_ready_integrated
+    F06: interface_ready_integrated
+    F07: interface_ready_integrated
+  merge_after:
+  - F03
+  - F04
+  - F06
+  - F07
+  candidate_integration_partners:
+  - P25
+  - P27
+  acceptance_after: []
+  publishes_interface_for:
+  - P09
+  writer_slots:
+  - FAMILY_SIGNUP
+  primary_requirement_count: 5
+  primary_case_count: 6
+  verification_of: []
+  prompt: prompts/P08-START-OR-RESUME.md
+  task_packet: tasks/P08.yaml
+  context: contexts/P08-CONTEXT.md
+- task_id: P09
+  title: School Inquiry and Approved-School Accounts
+  kind: implementation
+  wave: 6
+  model: GPT-5.6-SOL
+  reasoning: HIGH
+  start_after:
+  - P08
+  required_start_states:
+    P08: interface_ready_integrated
+  merge_after:
+  - P08
+  candidate_integration_partners:
+  - F06
+  - P27
+  - P30
+  acceptance_after: []
+  publishes_interface_for: []
+  writer_slots:
+  - SCHOOL_INQUIRY
+  primary_requirement_count: 4
+  primary_case_count: 4
+  verification_of: []
+  prompt: prompts/P09-START-OR-RESUME.md
+  task_packet: tasks/P09.yaml
+  context: contexts/P09-CONTEXT.md
+- task_id: P10
+  title: Admin Adult, Household, Parent, and Student Management
+  kind: implementation
+  wave: 4
+  model: GPT-5.6-SOL
+  reasoning: HIGH
+  start_after:
+  - F03
+  - F04
+  - F07
+  required_start_states:
+    F03: interface_ready_integrated
+    F04: interface_ready_integrated
+    F07: interface_ready_integrated
+  merge_after:
+  - F03
+  - F04
+  - F07
+  candidate_integration_partners:
+  - P32
+  acceptance_after: []
+  publishes_interface_for: []
+  writer_slots:
+  - ADMIN_DIRECTORY
+  primary_requirement_count: 8
+  primary_case_count: 8
+  verification_of: []
+  prompt: prompts/P10-START-OR-RESUME.md
+  task_packet: tasks/P10.yaml
+  context: contexts/P10-CONTEXT.md
+- task_id: P11
+  title: Admin Dashboard, Operational Views, and Global Search
+  kind: implementation
+  wave: 4
+  model: GPT-5.6-SOL
+  reasoning: HIGH
+  start_after:
+  - F05
+  - F07
+  required_start_states:
+    F05: interface_ready_integrated
+    F07: interface_ready_integrated
+  merge_after:
+  - F05
+  - F07
+  candidate_integration_partners:
+  - P10
+  - F06
+  - P22
+  - P24
+  - P26
+  - P33
+  acceptance_after: []
+  publishes_interface_for: []
+  writer_slots:
+  - ADMIN_OPERATIONS_UI
+  primary_requirement_count: 3
+  primary_case_count: 3
+  verification_of: []
+  prompt: prompts/P11-START-OR-RESUME.md
+  task_packet: tasks/P11.yaml
+  context: contexts/P11-CONTEXT.md
+- task_id: P12
+  title: Parent Household and Student-Seat Management
+  kind: implementation
+  wave: 4
+  model: GPT-5.6-SOL
+  reasoning: HIGH
+  start_after:
+  - F03
+  - F04
+  - F07
+  required_start_states:
+    F03: interface_ready_integrated
+    F04: interface_ready_integrated
+    F07: interface_ready_integrated
+  merge_after:
+  - F03
+  - F04
+  - F07
+  candidate_integration_partners:
+  - P16
+  - P32
+  acceptance_after: []
+  publishes_interface_for:
+  - P13
+  writer_slots:
+  - PARENT_HOUSEHOLD_UI
+  primary_requirement_count: 7
+  primary_case_count: 7
+  verification_of: []
+  prompt: prompts/P12-START-OR-RESUME.md
+  task_packet: tasks/P12.yaml
+  context: contexts/P12-CONTEXT.md
+- task_id: P13
+  title: Parent Schedule, Progress, Updates, and Support Boundary
+  kind: implementation
+  wave: 5
+  model: GPT-5.6-SOL
+  reasoning: HIGH
+  start_after:
+  - P12
+  - F07
+  required_start_states:
+    P12: interface_ready_integrated
+    F07: interface_ready_integrated
+  merge_after:
+  - P12
+  - F07
+  candidate_integration_partners:
+  - P15
+  - P22
+  - P24
+  - P26
+  acceptance_after: []
+  publishes_interface_for: []
+  writer_slots:
+  - PARENT_SUMMARY_UI
+  primary_requirement_count: 3
+  primary_case_count: 3
+  verification_of: []
+  prompt: prompts/P13-START-OR-RESUME.md
+  task_packet: tasks/P13.yaml
+  context: contexts/P13-CONTEXT.md
+- task_id: P14
+  title: Student Application and Isolation
+  kind: implementation
+  wave: 4
+  model: GPT-5.6-SOL
+  reasoning: HIGH
+  start_after:
+  - F03
+  - F04
+  - F07
+  required_start_states:
+    F03: interface_ready_integrated
+    F04: interface_ready_integrated
+    F07: interface_ready_integrated
+  merge_after:
+  - F03
+  - F04
+  - F07
+  candidate_integration_partners:
+  - P16
+  - P21
+  - P22
+  - P23
+  - P26
+  acceptance_after: []
+  publishes_interface_for:
+  - P21
+  writer_slots:
+  - STUDENT_APP
+  primary_requirement_count: 10
+  primary_case_count: 10
+  verification_of: []
+  prompt: prompts/P14-START-OR-RESUME.md
+  task_packet: tasks/P14.yaml
+  context: contexts/P14-CONTEXT.md
+- task_id: P15
+  title: Calendar, Recurrence, Timezone, and DST
+  kind: implementation
+  wave: 3
+  model: GPT-5.6-SOL
+  reasoning: HIGH
+  start_after:
+  - F02
+  - F07
+  required_start_states:
+    F02: interface_ready_integrated
+    F07: interface_ready_integrated
+  merge_after:
+  - F02
+  - F07
+  candidate_integration_partners:
+  - F03
+  acceptance_after: []
+  publishes_interface_for:
+  - P16
+  writer_slots:
+  - CALENDAR
+  primary_requirement_count: 14
+  primary_case_count: 14
+  verification_of: []
+  prompt: prompts/P15-START-OR-RESUME.md
+  task_packet: tasks/P15.yaml
+  context: contexts/P15-CONTEXT.md
+- task_id: P16
+  title: Class Series, Occurrences, and Canonical Enrollment
+  kind: implementation
+  wave: 5
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+  start_after:
+  - F04
+  - F05
+  - P15
+  required_start_states:
+    F04: interface_ready_integrated
+    F05: interface_ready_integrated
+    P15: interface_ready_integrated
+  merge_after:
+  - F04
+  - F05
+  - P15
+  candidate_integration_partners:
+  - P12
+  - P14
+  acceptance_after: []
+  publishes_interface_for:
+  - P17
+  - P18
+  - P19
+  writer_slots:
+  - CLASSROOM_CORE
+  primary_requirement_count: 7
+  primary_case_count: 7
+  verification_of: []
+  prompt: prompts/P16-START-OR-RESUME.md
+  task_packet: tasks/P16.yaml
+  context: contexts/P16-CONTEXT.md
+- task_id: P17
+  title: Zoom Preparation, Settings, Registrants, and Access Delivery
+  kind: implementation
+  wave: 6
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+  start_after:
+  - F05
+  - F06
+  - P16
+  required_start_states:
+    F05: interface_ready_integrated
+    F06: interface_ready_integrated
+    P16: interface_ready_integrated
+  merge_after:
+  - F05
+  - F06
+  - P16
+  candidate_integration_partners:
+  - P23
+  - P28
+  acceptance_after: []
+  publishes_interface_for: []
+  writer_slots:
+  - ZOOM_PREPARATION
+  primary_requirement_count: 10
+  primary_case_count: 10
+  verification_of: []
+  prompt: prompts/P17-START-OR-RESUME.md
+  task_packet: tasks/P17.yaml
+  context: contexts/P17-CONTEXT.md
+- task_id: P18
+  title: Embedded Classroom Join, Session Leases, Consent, and Attendance
+  kind: implementation
+  wave: 6
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+  start_after:
+  - F05
+  - P16
+  - P32
+  required_start_states:
+    F05: interface_ready_integrated
+    P16: interface_ready_integrated
+    P32: interface_ready_integrated
+  merge_after:
+  - F05
+  - P16
+  - P32
+  candidate_integration_partners:
+  - F03
+  - P17
+  acceptance_after: []
+  publishes_interface_for: []
+  writer_slots:
+  - EMBEDDED_CLASSROOM
+  primary_requirement_count: 5
+  primary_case_count: 6
+  verification_of: []
+  prompt: prompts/P18-START-OR-RESUME.md
+  task_packet: tasks/P18.yaml
+  context: contexts/P18-CONTEXT.md
+- task_id: P19
+  title: Direct Upload, Drive Intake, and Source Deduplication
+  kind: implementation
+  wave: 6
+  model: GPT-5.6-SOL
+  reasoning: HIGH
+  start_after:
+  - F05
+  - F06
+  - P16
+  required_start_states:
+    F05: interface_ready_integrated
+    F06: interface_ready_integrated
+    P16: interface_ready_integrated
+  merge_after:
+  - F05
+  - F06
+  - P16
+  candidate_integration_partners:
+  - P33
+  acceptance_after: []
+  publishes_interface_for:
+  - P20
+  writer_slots:
+  - CONTENT_INGEST
+  primary_requirement_count: 6
+  primary_case_count: 6
+  verification_of: []
+  prompt: prompts/P19-START-OR-RESUME.md
+  task_packet: tasks/P19.yaml
+  context: contexts/P19-CONTEXT.md
+- task_id: P20
+  title: Media Processing, Compression, Transcription, and Draft Generation
+  kind: implementation
+  wave: 7
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+  start_after:
+  - F05
+  - P19
+  required_start_states:
+    F05: interface_ready_integrated
+    P19: interface_ready_integrated
+  merge_after:
+  - F05
+  - P19
+  candidate_integration_partners:
+  - F06
+  - P33
+  acceptance_after: []
+  publishes_interface_for: []
+  writer_slots:
+  - CONTENT_PROCESSING
+  primary_requirement_count: 6
+  primary_case_count: 7
+  verification_of: []
+  prompt: prompts/P20-START-OR-RESUME.md
+  task_packet: tasks/P20.yaml
+  context: contexts/P20-CONTEXT.md
+- task_id: P21
+  title: Vimeo Publication, Protected Library, Search, and Resume
+  kind: implementation
+  wave: 5
+  model: GPT-5.6-SOL
+  reasoning: HIGH
+  start_after:
+  - F05
+  - F06
+  - P14
+  required_start_states:
+    F05: interface_ready_integrated
+    F06: interface_ready_integrated
+    P14: interface_ready_integrated
+  merge_after:
+  - F05
+  - F06
+  - P14
+  candidate_integration_partners:
+  - P20
+  - P23
+  - P26
+  acceptance_after: []
+  publishes_interface_for: []
+  writer_slots:
+  - CONTENT_PUBLICATION
+  primary_requirement_count: 8
+  primary_case_count: 9
+  verification_of: []
+  prompt: prompts/P21-START-OR-RESUME.md
+  task_packet: tasks/P21.yaml
+  context: contexts/P21-CONTEXT.md
+- task_id: P22
+  title: Questions, Announcements, Badges, Leaderboard, and Recognition
+  kind: implementation
+  wave: 4
+  model: GPT-5.6-SOL
+  reasoning: HIGH
+  start_after:
+  - F02
+  - F05
+  - F07
+  required_start_states:
+    F02: interface_ready_integrated
+    F05: interface_ready_integrated
+    F07: interface_ready_integrated
+  merge_after:
+  - F02
+  - F05
+  - F07
+  candidate_integration_partners:
+  - P14
+  - P18
+  - P21
+  - P32
+  acceptance_after: []
+  publishes_interface_for: []
+  writer_slots:
+  - LEARNING_ENGAGEMENT
+  primary_requirement_count: 11
+  primary_case_count: 12
+  verification_of: []
+  prompt: prompts/P22-START-OR-RESUME.md
+  task_packet: tasks/P22.yaml
+  context: contexts/P22-CONTEXT.md
+- task_id: P23
+  title: Student In-App Notifications and Audible Cue
+  kind: implementation
+  wave: 4
+  model: GPT-5.6-SOL
+  reasoning: HIGH
+  start_after:
+  - F05
+  - F07
+  required_start_states:
+    F05: interface_ready_integrated
+    F07: interface_ready_integrated
+  merge_after:
+  - F05
+  - F07
+  candidate_integration_partners:
+  - P17
+  - P21
+  - P22
+  acceptance_after: []
+  publishes_interface_for: []
+  writer_slots:
+  - STUDENT_NOTIFICATIONS
+  primary_requirement_count: 2
+  primary_case_count: 3
+  verification_of: []
+  prompt: prompts/P23-START-OR-RESUME.md
+  task_packet: tasks/P23.yaml
+  context: contexts/P23-CONTEXT.md
+- task_id: P24
+  title: Adult and Student Support, Rabbi Questions, and Telegram Routing
+  kind: implementation
+  wave: 4
+  model: GPT-5.6-SOL
+  reasoning: HIGH
+  start_after:
+  - F03
+  - F04
+  - F05
+  - F07
+  required_start_states:
+    F03: interface_ready_integrated
+    F04: interface_ready_integrated
+    F05: interface_ready_integrated
+    F07: interface_ready_integrated
+  merge_after:
+  - F03
+  - F04
+  - F05
+  - F07
+  candidate_integration_partners:
+  - F06
+  - P22
+  acceptance_after: []
+  publishes_interface_for: []
+  writer_slots:
+  - SUPPORT
+  primary_requirement_count: 7
+  primary_case_count: 7
+  verification_of: []
+  prompt: prompts/P24-START-OR-RESUME.md
+  task_packet: tasks/P24.yaml
+  context: contexts/P24-CONTEXT.md
+- task_id: P25
+  title: Family Plan, Free Period, Hosted Checkout, Portal, Cancellation, and Refund
+  kind: implementation
+  wave: 5
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+  start_after:
+  - F04
+  - F05
+  - F06
+  - F07
+  required_start_states:
+    F04: interface_ready_integrated
+    F05: interface_ready_integrated
+    F06: interface_ready_integrated
+    F07: interface_ready_integrated
+  merge_after:
+  - F04
+  - F05
+  - F06
+  - F07
+  candidate_integration_partners:
+  - P08
+  - P28
+  acceptance_after: []
+  publishes_interface_for: []
+  writer_slots:
+  - BILLING_COMMERCIAL
+  primary_requirement_count: 12
+  primary_case_count: 13
+  verification_of: []
+  prompt: prompts/P25-START-OR-RESUME.md
+  task_packet: tasks/P25.yaml
+  context: contexts/P25-CONTEXT.md
+- task_id: P26
+  title: Billing Projection, Grace, Recovery, and Inactive Authorization
+  kind: implementation
+  wave: 5
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+  start_after:
+  - F03
+  - F04
+  - F05
+  - F06
+  required_start_states:
+    F03: interface_ready_integrated
+    F04: interface_ready_integrated
+    F05: interface_ready_integrated
+    F06: interface_ready_integrated
+  merge_after:
+  - F03
+  - F04
+  - F05
+  - F06
+  candidate_integration_partners:
+  - P13
+  - P14
+  - P25
+  - P28
+  acceptance_after: []
+  publishes_interface_for: []
+  writer_slots:
+  - BILLING_ACCESS
+  primary_requirement_count: 9
+  primary_case_count: 10
+  verification_of: []
+  prompt: prompts/P26-START-OR-RESUME.md
+  task_packet: tasks/P26.yaml
+  context: contexts/P26-CONTEXT.md
+- task_id: P27
+  title: GHL Adult Classification and Student-Contact Prohibition
+  kind: implementation
+  wave: 5
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+  start_after:
+  - F04
+  - F06
+  required_start_states:
+    F04: interface_ready_integrated
+    F06: interface_ready_integrated
+  merge_after:
+  - F04
+  - F06
+  candidate_integration_partners:
+  - P08
+  - P09
+  acceptance_after: []
+  publishes_interface_for:
+  - P28
+  writer_slots:
+  - GHL_IDENTITY
+  primary_requirement_count: 3
+  primary_case_count: 3
+  verification_of: []
+  prompt: prompts/P27-START-OR-RESUME.md
+  task_packet: tasks/P27.yaml
+  context: contexts/P27-CONTEXT.md
+- task_id: P28
+  title: Communication Foundation, Suppression, Readback, Website Bot, and WhatsApp Preference
+  kind: implementation
+  wave: 6
+  model: GPT-5.6-SOL
+  reasoning: HIGH
+  start_after:
+  - F06
+  - P27
+  - P31
+  required_start_states:
+    F06: interface_ready_integrated
+    P27: interface_ready_integrated
+    P31: interface_ready_integrated
+  merge_after:
+  - F06
+  - P27
+  - P31
+  candidate_integration_partners:
+  - P17
+  - P25
+  - P26
+  acceptance_after: []
+  publishes_interface_for:
+  - P29
+  - P30
+  writer_slots:
+  - GHL_REGISTRY
+  - COMMUNICATION_FOUNDATION
+  primary_requirement_count: 9
+  primary_case_count: 10
+  verification_of: []
+  prompt: prompts/P28-START-OR-RESUME.md
+  task_packet: tasks/P28.yaml
+  context: contexts/P28-CONTEXT.md
+- task_id: P29
+  title: Core GHL Lifecycle Workflows OT-01–OT-10 and OT-13
+  kind: implementation
+  wave: 7
+  model: GPT-5.6-SOL
+  reasoning: HIGH
+  start_after:
+  - P28
+  - P31
+  required_start_states:
+    P28: interface_ready_integrated
+    P31: interface_ready_integrated
+  merge_after:
+  - P28
+  - P31
+  candidate_integration_partners:
+  - P25
+  - P26
+  acceptance_after: []
+  publishes_interface_for: []
+  writer_slots:
+  - GHL_CORE_WORKFLOWS
+  primary_requirement_count: 12
+  primary_case_count: 12
+  verification_of: []
+  prompt: prompts/P29-START-OR-RESUME.md
+  task_packet: tasks/P29.yaml
+  context: contexts/P29-CONTEXT.md
+- task_id: P30
+  title: Newsletter, Reactivation, and OT-16 Conversion
+  kind: implementation
+  wave: 7
+  model: GPT-5.6-SOL
+  reasoning: HIGH
+  start_after:
+  - P28
+  - P31
+  required_start_states:
+    P28: interface_ready_integrated
+    P31: interface_ready_integrated
+  merge_after:
+  - P28
+  - P31
+  candidate_integration_partners:
+  - P09
+  - P25
+  - P26
+  - P29
+  acceptance_after: []
+  publishes_interface_for: []
+  writer_slots:
+  - GHL_CAMPAIGNS
+  primary_requirement_count: 3
+  primary_case_count: 6
+  verification_of: []
+  prompt: prompts/P30-START-OR-RESUME.md
+  task_packet: tasks/P30.yaml
+  context: contexts/P30-CONTEXT.md
+- task_id: P31
+  title: Resend/GHL Email Copy and Approval Catalog
+  kind: implementation
+  wave: 2
+  model: GPT-5.6-TERRA
+  reasoning: HIGH
+  start_after:
+  - F01
+  required_start_states:
+    F01: interface_ready_integrated
+  merge_after:
+  - F01
+  candidate_integration_partners:
+  - F03
+  - P28
+  - P29
+  - P30
+  acceptance_after: []
+  publishes_interface_for:
+  - P28
+  - P29
+  - P30
+  writer_slots:
+  - COPY_CATALOG
+  primary_requirement_count: 8
+  primary_case_count: 8
+  verification_of: []
+  prompt: prompts/P31-START-OR-RESUME.md
+  task_packet: tasks/P31.yaml
+  context: contexts/P31-CONTEXT.md
+- task_id: P32
+  title: Consent, Privacy, Data Rights, Retention, Redaction, and Purge Ledger
+  kind: implementation
+  wave: 4
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+  start_after:
+  - F02
+  - F03
+  - F04
+  - F05
+  - F07
+  required_start_states:
+    F02: interface_ready_integrated
+    F03: interface_ready_integrated
+    F04: interface_ready_integrated
+    F05: interface_ready_integrated
+    F07: interface_ready_integrated
+  merge_after:
+  - F02
+  - F03
+  - F04
+  - F05
+  - F07
+  candidate_integration_partners:
+  - F06
+  - P10
+  - P12
+  - P18
+  - P22
+  acceptance_after: []
+  publishes_interface_for:
+  - P18
+  writer_slots:
+  - PRIVACY_DATA_RIGHTS
+  primary_requirement_count: 5
+  primary_case_count: 8
+  verification_of: []
+  prompt: prompts/P32-START-OR-RESUME.md
+  task_packet: tasks/P32.yaml
+  context: contexts/P32-CONTEXT.md
+- task_id: P33
+  title: Runtime Identity, Migrations, Queues, Health, and Leakage Monitoring
+  kind: implementation
+  wave: 5
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+  start_after:
+  - F05
+  - F06
+  required_start_states:
+    F05: interface_ready_integrated
+    F06: interface_ready_integrated
+  merge_after:
+  - F05
+  - F06
+  candidate_integration_partners:
+  - P17
+  - P19
+  - P20
+  - P21
+  - P24
+  - P25
+  - P26
+  - P27
+  - P28
+  - P29
+  - P30
+  acceptance_after: []
+  publishes_interface_for:
+  - P34
+  writer_slots:
+  - OPERATIONS_RUNTIME
+  primary_requirement_count: 5
+  primary_case_count: 5
+  verification_of: []
+  prompt: prompts/P33-START-OR-RESUME.md
+  task_packet: tasks/P33.yaml
+  context: contexts/P33-CONTEXT.md
+- task_id: P34
+  title: Backup, Restore, Rollback, Canary Budgets, and Legal Gate
+  kind: implementation
+  wave: 6
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+  start_after:
+  - P33
+  required_start_states:
+    P33: interface_ready_integrated
+  merge_after:
+  - P33
+  candidate_integration_partners:
+  - P35
+  acceptance_after:
+  - R44
+  publishes_interface_for: []
+  writer_slots:
+  - OPERATIONS_RECOVERY
+  primary_requirement_count: 6
+  primary_case_count: 7
+  verification_of: []
+  prompt: prompts/P34-START-OR-RESUME.md
+  task_packet: tasks/P34.yaml
+  context: contexts/P34-CONTEXT.md
+- task_id: P35
+  title: Domains, Transition, Legacy Re-Registration, and Tisha B’Av Archive
+  kind: implementation
+  wave: 2
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+  start_after:
+  - F01
+  required_start_states:
+    F01: interface_ready_integrated
+  merge_after:
+  - F01
+  candidate_integration_partners:
+  - F04
+  - F06
+  - P27
+  - P33
+  acceptance_after: []
+  publishes_interface_for: []
+  writer_slots:
+  - DOMAIN_TRANSITION
+  primary_requirement_count: 8
+  primary_case_count: 8
+  verification_of: []
+  prompt: prompts/P35-START-OR-RESUME.md
+  task_packet: tasks/P35.yaml
+  context: contexts/P35-CONTEXT.md
+- task_id: I36
+  title: Merge Captain, Shared Registration, and Immutable Candidate
+  kind: integration
+  wave: 1
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+  start_after:
+  - C00
+  required_start_states:
+    C00: operational
+  merge_after: []
+  candidate_integration_partners:
+  - F01
+  - F02
+  - F03
+  - F04
+  - F05
+  - F06
+  - F07
+  - P08
+  - P09
+  - P10
+  - P11
+  - P12
+  - P13
+  - P14
+  - P15
+  - P16
+  - P17
+  - P18
+  - P19
+  - P20
+  - P21
+  - P22
+  - P23
+  - P24
+  - P25
+  - P26
+  - P27
+  - P28
+  - P29
+  - P30
+  - P31
+  - P32
+  - P33
+  - P34
+  - P35
+  acceptance_after: []
+  publishes_interface_for: []
+  writer_slots:
+  - RELEASE_INTEGRATOR
+  - SERVER_COMPOSER
+  - CLIENT_COMPOSER
+  - WORKER_COMPOSER
+  - CONFIG_DEPS
+  - BARREL_REGISTRAR
+  - DESIGN_SYSTEM
+  - GHL_REGISTRY
+  primary_requirement_count: 0
+  primary_case_count: 0
+  verification_of: []
+  prompt: prompts/I36-START-OR-RESUME.md
+  task_packet: tasks/I36.yaml
+  context: contexts/I36-CONTEXT.md
+- task_id: V37
+  title: Identity, Public Entry, and Admin Verification
+  kind: verification
+  wave: 9
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+  start_after:
+  - I36
+  required_start_states:
+    I36: candidate_frozen
+  merge_after: []
+  candidate_integration_partners: []
+  acceptance_after: []
+  publishes_interface_for: []
+  writer_slots:
+  - VERIFY_IDENTITY_ADMIN
+  primary_requirement_count: 0
+  primary_case_count: 0
+  verification_of:
+  - F01
+  - F03
+  - F04
+  - P08
+  - P09
+  - P10
+  - P11
+  prompt: prompts/V37-START-OR-RESUME.md
+  task_packet: tasks/V37.yaml
+  context: contexts/V37-CONTEXT.md
+- task_id: V38
+  title: UX, Parent, Student, Calendar, Support, and Copy Verification
+  kind: verification
+  wave: 9
+  model: GPT-5.6-SOL
+  reasoning: HIGH
+  start_after:
+  - I36
+  required_start_states:
+    I36: candidate_frozen
+  merge_after: []
+  candidate_integration_partners: []
+  acceptance_after: []
+  publishes_interface_for: []
+  writer_slots:
+  - VERIFY_PORTALS_UX
+  primary_requirement_count: 0
+  primary_case_count: 0
+  verification_of:
+  - F07
+  - P12
+  - P13
+  - P14
+  - P15
+  - P24
+  - P31
+  prompt: prompts/V38-START-OR-RESUME.md
+  task_packet: tasks/V38.yaml
+  context: contexts/V38-CONTEXT.md
+- task_id: V39
+  title: Schema, Jobs, Classroom, Zoom, and Content Verification
+  kind: verification
+  wave: 9
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+  start_after:
+  - I36
+  required_start_states:
+    I36: candidate_frozen
+  merge_after: []
+  candidate_integration_partners: []
+  acceptance_after: []
+  publishes_interface_for: []
+  writer_slots:
+  - VERIFY_CLASSROOM_CONTENT
+  primary_requirement_count: 0
+  primary_case_count: 0
+  verification_of:
+  - F02
+  - F05
+  - P16
+  - P17
+  - P18
+  - P19
+  - P20
+  - P21
+  prompt: prompts/V39-START-OR-RESUME.md
+  task_packet: tasks/V39.yaml
+  context: contexts/V39-CONTEXT.md
+- task_id: V40
+  title: Learning, Notifications, Consent, and Privacy Verification
+  kind: verification
+  wave: 9
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+  start_after:
+  - I36
+  required_start_states:
+    I36: candidate_frozen
+  merge_after: []
+  candidate_integration_partners: []
+  acceptance_after: []
+  publishes_interface_for: []
+  writer_slots:
+  - VERIFY_LEARNING_PRIVACY
+  primary_requirement_count: 0
+  primary_case_count: 0
+  verification_of:
+  - P22
+  - P23
+  - P32
+  prompt: prompts/V40-START-OR-RESUME.md
+  task_packet: tasks/V40.yaml
+  context: contexts/V40-CONTEXT.md
+- task_id: V41
+  title: Provider Foundation, Billing, Access, and GHL Identity Verification
+  kind: verification
+  wave: 9
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+  start_after:
+  - I36
+  required_start_states:
+    I36: candidate_frozen
+  merge_after: []
+  candidate_integration_partners: []
+  acceptance_after: []
+  publishes_interface_for: []
+  writer_slots:
+  - VERIFY_BILLING_PROVIDERS
+  primary_requirement_count: 0
+  primary_case_count: 0
+  verification_of:
+  - F06
+  - P25
+  - P26
+  - P27
+  prompt: prompts/V41-START-OR-RESUME.md
+  task_packet: tasks/V41.yaml
+  context: contexts/V41-CONTEXT.md
+- task_id: V42
+  title: GHL Communications and Workflow Verification
+  kind: verification
+  wave: 9
+  model: GPT-5.6-SOL
+  reasoning: HIGH
+  start_after:
+  - I36
+  required_start_states:
+    I36: candidate_frozen
+  merge_after: []
+  candidate_integration_partners: []
+  acceptance_after: []
+  publishes_interface_for: []
+  writer_slots:
+  - VERIFY_GHL_WORKFLOWS
+  primary_requirement_count: 0
+  primary_case_count: 0
+  verification_of:
+  - P28
+  - P29
+  - P30
+  prompt: prompts/V42-START-OR-RESUME.md
+  task_packet: tasks/V42.yaml
+  context: contexts/V42-CONTEXT.md
+- task_id: V43
+  title: Operations, Domain, Migration, Recovery, and Retired-Surface Verification
+  kind: verification
+  wave: 9
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+  start_after:
+  - I36
+  required_start_states:
+    I36: candidate_frozen
+  merge_after: []
+  candidate_integration_partners: []
+  acceptance_after: []
+  publishes_interface_for: []
+  writer_slots:
+  - VERIFY_OPERATIONS
+  primary_requirement_count: 0
+  primary_case_count: 0
+  verification_of:
+  - P33
+  - P34
+  - P35
+  prompt: prompts/V43-START-OR-RESUME.md
+  task_packet: tasks/V43.yaml
+  context: contexts/V43-CONTEXT.md
+- task_id: R44
+  title: Real Operator Admin, Parent, and Three-Student Journey
+  kind: operator_acceptance
+  wave: 10
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+  start_after:
+  - V37
+  - V38
+  - V39
+  - V40
+  - V41
+  - V42
+  - V43
+  required_start_states:
+    V37: candidate_verified_passed_and_aggregated
+    V38: candidate_verified_passed_and_aggregated
+    V39: candidate_verified_passed_and_aggregated
+    V40: candidate_verified_passed_and_aggregated
+    V41: candidate_verified_passed_and_aggregated
+    V42: candidate_verified_passed_and_aggregated
+    V43: preoperator_cases_passed_and_aggregated
+  merge_after: []
+  candidate_integration_partners:
+  - P34
+  acceptance_after: []
+  publishes_interface_for: []
+  writer_slots:
+  - REAL_OPERATOR_ACCEPTANCE
+  primary_requirement_count: 2
+  primary_case_count: 2
+  verification_of: []
+  prompt: prompts/R44-START-OR-RESUME.md
+  task_packet: tasks/R44.yaml
+  context: contexts/R44-CONTEXT.md
+- task_id: R45
+  title: Final Interactive Certification and Cutover Decision
+  kind: release
+  wave: 11
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+  start_after:
+  - R44
+  - V43
+  required_start_states:
+    R44: operator_accepted_and_evidence_aggregated
+    V43: phase_b_candidate_verified_passed_and_aggregated
+  merge_after: []
+  candidate_integration_partners: []
+  acceptance_after: []
+  publishes_interface_for: []
+  writer_slots:
+  - FINAL_RELEASE_AUTHORITY
+  primary_requirement_count: 1
+  primary_case_count: 1
+  verification_of: []
+  prompt: prompts/R45-START-OR-RESUME.md
+  task_packet: tasks/R45.yaml
+  context: contexts/R45-CONTEXT.md

@@ -1,0 +1,108 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P27
+task_packet_digest: 77c5a4de58a57dffea3f9cbe4aa7646ac75bc1f0462afebfff2c0279dc527a74
+task_context_digest: c1016b9b4f97895cc60c173a0cc69d409f16eef2d83d7680e35ee4d604cadf48
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+branch: codex/v21-p27-ghl-identity
+start_sha: d35166838267711a514cf73822cd2ca49a3f3ded
+dependency_heads:
+  F04:
+    required_state: interface_ready_integrated
+    task_head_sha: 54a0ac28b51d271aacab60003451dbcc66ffcac8
+    integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+    interface_source_head_sha: 4cc95c29c6012174595ba1821e0554aca8572e08
+    interface_implementation_head_sha: 81c0ee64072386db41aa5a40243c693762ab493a
+    interface_checkpoint_digest: a57837379bfc8210188887ff31937ed7882befe10b80941499dc7ba305e7984d
+  F06:
+    required_state: interface_ready_integrated
+    task_head_sha: ce061ca5b208cfb2a41e0c2f439a7a4b91e8ca57
+    integration_head_sha: d35166838267711a514cf73822cd2ca49a3f3ded
+    interface_source_head_sha: 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
+    interface_implementation_head_sha: 94281de13063203808ecabef8a818762e5ff1e2e
+    interface_checkpoint_digest: 7d0e2e360036fa6e3b742053c714b13f442e29c9ff3e83ad7b6bf02c005694a0
+status: ready_for_review
+phase: complete
+claimed_by: codex-p27-worker-83580db4
+claim_time: '2026-07-28T20:44:57Z'
+claim_id: 83580db4-4a47-44d0-8d6d-83969ae7ccf5
+writer_slot_lease_id: 62f708f5-43b5-4f50-8cc8-623c8f448a0a
+lease_issued_at: '2026-07-28T20:34:49Z'
+lease_expires_at: '2026-07-28T21:34:49Z'
+last_heartbeat_at: '2026-07-28T21:13:03Z'
+lease_released_at: '2026-07-28T21:13:03Z'
+controller_authorization_sha: 1b1ecf75213617df552831df6ca8b04478a60211
+continuation_authorization_sha: 538ee781fb805ac13b020a66dadf5573451d7af9
+state_based_on_control_head_sha: 538ee781fb805ac13b020a66dadf5573451d7af9
+ready_entry_payload_digest: cade386eb849cf7481bb51c7e8d443f5bb10ab8a2698c565b5856f139be23110
+state_based_on_head_sha: e706587bfe581f881fb072271b15b4123f9aabe6
+last_implementation_commit_sha: 7d5edd687016b827769cc931b3766b2ae566507c
+interface_contract_digest: 788e150f7819431fecd8036701d1e78d6fe0a39b818795b318d54e70998d5ce6
+completed_steps:
+  - Verified exact continuation authority, consumed ready entry, unchanged claim, sole live GHL_IDENTITY lease, branch head, and zero effect authority.
+  - Implemented a versioned Adult-only GHL identity synchronization contract and classification planner.
+  - Implemented verified-link precedence, exact normalized-email matching, visible ambiguity quarantine, and zero name or phone merging.
+  - Implemented household-keyed projections with lifecycle, access, and applicable Stripe reference preservation.
+  - Implemented local-first parameterized PostgreSQL persistence with optimistic fencing and transactional review persistence.
+  - Implemented a local-first worker boundary that rejects Student input before persistence or provider invocation and schedules retry without rolling back durable local state.
+  - Implemented a pure HighLevel desired-state projection without live provider access.
+  - Published migration and registration steward requests without editing shared hotspots.
+  - Passed 10 focused assertions, full typecheck, focused lint and format, and diff checks.
+  - Published the exact semantic interface checkpoint for downstream P28 integration.
+  - Re-ran the final verification suite against the clean interface head and released the GHL_IDENTITY lease in task-local metadata.
+remaining_steps:
+  - I36 must validate and integrate the exact interface checkpoint.
+  - F02 and I36 must adjudicate the migration and registration steward requests.
+next_action: C00 and I36 validate this ready_for_review checkpoint, integrate exact interface head e706587bfe581f881fb072271b15b4123f9aabe6, and adjudicate the two structured steward requests.
+requirements:
+  OTV2-GHL-117: implementation_verified
+  OTV2-GHL-118: implementation_verified
+  OTV2-GHL-119: implementation_verified
+acceptance_cases:
+  OTV2-GHL-117-AC01: task_owned_assertions_passed
+  OTV2-GHL-118-AC01: task_owned_assertions_passed
+  OTV2-GHL-119-AC01: task_owned_assertions_passed
+changed_paths:
+  - apps/worker/src/runners/ghl-identity/index.ts
+  - apps/worker/src/runners/ghl-identity/runner.test.ts
+  - apps/worker/src/runners/ghl-identity/runner.ts
+  - integrations/highlevel/v21/identity/desired-state.ts
+  - integrations/highlevel/v21/identity/index.ts
+  - packages/contracts/src/communications/ghl-identity/index.ts
+  - packages/db/src/communications/ghl-identity/index.ts
+  - packages/db/src/communications/ghl-identity/repository.test.ts
+  - packages/db/src/communications/ghl-identity/repository.ts
+  - packages/domain/src/communications/ghl-identity/classification.ts
+  - packages/domain/src/communications/ghl-identity/errors.ts
+  - packages/domain/src/communications/ghl-identity/index.ts
+  - packages/domain/src/communications/ghl-identity/planner.test.ts
+  - packages/domain/src/communications/ghl-identity/planner.ts
+  - ops/v2.1-execution/runtime/P27/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/P27/steward-requests/P27-migration-001.yaml
+  - ops/v2.1-execution/runtime/P27/steward-requests/P27-registration-001.yaml
+  - ops/v2.1-execution/runtime/P27/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P27/HANDOFF.md
+  - ops/v2.1-execution/runtime/P27/NEXT-PROMPT.md
+migrations: []
+steward_requests:
+  - request_id: P27-migration-001
+    sha256: a1d8d5bb025ed060673b2d3467a4be61d382e4a27ca4b410982210ace5be9474
+  - request_id: P27-registration-001
+    sha256: d0b373150a99d03272b5b136510011adae603f5d66f27232965e135217522720
+verification:
+  commands_run:
+    - Verified exact continuation authority, branch parent, claim, lease, dependencies, owned paths, and zero-effect constraints.
+    - npm run typecheck
+    - npm exec -- vitest run packages/domain/src/communications/ghl-identity/planner.test.ts packages/db/src/communications/ghl-identity/repository.test.ts apps/worker/src/runners/ghl-identity/runner.test.ts
+    - focused ESLint over all P27 TypeScript artifacts
+    - focused Prettier check over all P27 TypeScript/YAML artifacts
+    - canonical contract digest and per-artifact SHA-256 verification
+    - git diff --check
+  known_baseline_failures: []
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings: []

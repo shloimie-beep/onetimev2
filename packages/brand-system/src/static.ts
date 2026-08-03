@@ -35,7 +35,7 @@ export function renderPublicHeader(navLinks: readonly StaticLink[]) {
   ${renderLogo()}
   <nav class="header-actions" aria-label="Primary">
     <a class="text-link" href="/login">Member Login</a>
-    <a class="button button-primary" href="/signup" data-ot-primitive="Button">Sign Up Now</a>
+    <a class="button button-primary" href="/signup" data-ot-primitive="Button">Pre-register</a>
     <button class="icon-button" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="site-drawer" data-drawer-toggle data-ot-primitive="DrawerTrigger"><span></span><span></span><span></span></button>
   </nav>
 </header>
@@ -77,6 +77,15 @@ export function renderPageShell({
   canonical,
   ogTitle,
   ogDescription,
+  ogImage,
+  ogImageSecureUrl,
+  ogImageType,
+  ogImageWidth,
+  ogImageHeight,
+  ogImageAlt,
+  twitterImage,
+  icon,
+  appleTouchIcon,
   app = false,
   appEntry = 'crm',
 }: {
@@ -86,11 +95,34 @@ export function renderPageShell({
   canonical: string;
   ogTitle: string;
   ogDescription: string;
+  ogImage?: string;
+  ogImageSecureUrl?: string;
+  ogImageType?: string;
+  ogImageWidth?: number;
+  ogImageHeight?: number;
+  ogImageAlt?: string;
+  twitterImage?: string;
+  icon?: string;
+  appleTouchIcon?: string;
   app?: boolean;
-  appEntry?: 'crm' | 'portal';
+  appEntry?: 'crm' | 'live' | 'portal' | 'experience-preview-student';
 }) {
   const script = app ? `/assets/app-${appEntry}.js` : '/assets/public.js';
   const stylesheet = app ? '/assets/app-crm.css' : '/assets/public.css';
+  const imageMetadata = ogImage
+    ? `
+  <meta property="og:image" content="${escapeHtml(ogImage)}">
+  <meta property="og:image:secure_url" content="${escapeHtml(ogImageSecureUrl ?? ogImage)}">
+  <meta property="og:image:type" content="${escapeHtml(ogImageType ?? 'image/png')}">
+  ${ogImageWidth ? `<meta property="og:image:width" content="${ogImageWidth}">` : ''}
+  ${ogImageHeight ? `<meta property="og:image:height" content="${ogImageHeight}">` : ''}
+  ${ogImageAlt ? `<meta property="og:image:alt" content="${escapeHtml(ogImageAlt)}">` : ''}
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="${escapeHtml(twitterImage ?? ogImage)}">`
+    : '';
+  const iconMetadata = `${icon ? `\n  <link rel="icon" type="image/png" href="${escapeHtml(icon)}">` : ''}${
+    appleTouchIcon ? `\n  <link rel="apple-touch-icon" href="${escapeHtml(appleTouchIcon)}">` : ''
+  }`;
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -104,7 +136,9 @@ export function renderPageShell({
   <meta property="og:description" content="${escapeHtml(ogDescription)}">
   <meta property="og:type" content="website">
   <meta property="og:url" content="${escapeHtml(canonical)}">
+  ${imageMetadata}
   <meta name="theme-color" content="#050505">
+  ${iconMetadata}
   <link rel="preload" href="/assets/fonts/dm-serif-display-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="${stylesheet}">
 </head>

@@ -1,23 +1,25 @@
 import { expect, type Page, test } from '@playwright/test';
 
-test('support route stays lead-only for anonymous and non-subscriber users', async ({ page }) => {
+test('support route stays lead-only for anonymous users and users without learning access', async ({
+  page,
+}) => {
   await page.goto('/app/support');
-  await expect(page.getByRole('heading', { name: 'Sign in for subscriber support' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Sign in for learning support' })).toBeVisible();
   await expect(page.locator('[data-support-form]')).toHaveCount(0);
-  await expect(page.getByRole('link', { name: /public WhatsApp lead path/i })).toHaveAttribute(
+  await expect(page.getByRole('link', { name: /signup and help/i })).toHaveAttribute(
     'href',
     '/signup',
   );
 
-  await login(page, 'ot-student@example.test', 'StudentPassword!234');
+  await login(page, 'viewer@example.test', 'ViewerPass!234');
   await page.goto('/app/support');
   await expect(
-    page.getByRole('heading', { name: 'Subscriber support is unavailable' }),
+    page.getByRole('heading', { name: 'Learning support is unavailable' }),
   ).toBeVisible();
   await expect(page.locator('[data-support-form]')).toHaveCount(0);
 });
 
-test('active subscriber support form works at 360 and 390 mobile widths without overflow', async ({
+test('active learning-access support form works at 360 and 390 mobile widths without overflow', async ({
   page,
 }) => {
   await login(page, 'ot-parent@example.test', 'ParentPassword!234');
@@ -27,7 +29,7 @@ test('active subscriber support form works at 360 and 390 mobile widths without 
   ]) {
     await page.setViewportSize(size);
     await page.goto('/app/support');
-    await expect(page.getByRole('heading', { name: 'Subscriber Support' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Member Support' })).toBeVisible();
     await expect(page.locator('[data-support-form]')).toBeVisible();
     await expect(page.getByLabel('Category')).toBeVisible();
     await expect(page.getByRole('button', { name: 'Submit support request' })).toBeVisible();
@@ -38,9 +40,7 @@ test('active subscriber support form works at 360 and 390 mobile widths without 
   }
 });
 
-test('active subscriber can submit by keyboard and receives a durable receipt', async ({
-  page,
-}) => {
+test('active member can submit by keyboard and receives a durable receipt', async ({ page }) => {
   await login(page, 'ot-parent@example.test', 'ParentPassword!234');
   await page.goto('/app/support');
   await fillSupportForm(page, 'keyboard-success');
@@ -82,11 +82,11 @@ test('support form reports server, network, and file failures accessibly', async
     await route.fulfill({
       status: 503,
       contentType: 'application/json',
-      body: JSON.stringify({ success: false, message: 'Subscriber support is unavailable.' }),
+      body: JSON.stringify({ success: false, message: 'Member support is unavailable.' }),
     });
   });
   await page.getByRole('button', { name: 'Submit support request' }).click();
-  await expect(page.getByRole('status')).toHaveText('Subscriber support is unavailable.');
+  await expect(page.getByRole('status')).toHaveText('Member support is unavailable.');
   await expect(page.getByRole('button', { name: 'Submit support request' })).toBeEnabled();
   await page.unroute('/api/v1/support/tickets');
 

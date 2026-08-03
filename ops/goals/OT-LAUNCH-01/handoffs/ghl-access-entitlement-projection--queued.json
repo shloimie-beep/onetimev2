@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "goal_id": "OT-LAUNCH-01",
+  "track_id": "ghl_access_entitlement_projection",
+  "task_id": "OT-LAUNCH-01-ACCESS-PROJECTION-01",
+  "source_of_status": "ops/goals/OT-LAUNCH-01/BOARD.yaml",
+  "result": {
+    "status": "implementation_green_pending_deploy",
+    "payment_history_authority": "GHL",
+    "one_time_scope": "Current account/product/household access state only",
+    "free_pilot_is_payment": false,
+    "payment_canary_required": false,
+    "external_effects": 0,
+    "production_changed": false,
+    "focused_tests_passed": 127,
+    "focused_tests_failed": 0,
+    "legacy_billing_runtime_enabled": false
+  },
+  "canonical_projection": {
+    "states": [
+      "pending",
+      "active",
+      "grace",
+      "scheduled_end",
+      "suspended",
+      "revoked",
+      "manual_review"
+    ],
+    "source_kinds": ["free_pilot", "highlevel_payment_state", "admin_override", "legacy_preview"],
+    "scope_key": ["account_key", "product_key", "household_key"],
+    "required_metadata": [
+      "effective_at",
+      "expires_at",
+      "opaque_source_reference",
+      "source_revision",
+      "source_updated_at",
+      "policy_version",
+      "revocation_reason"
+    ],
+    "forbidden_payment_history": [
+      "invoice",
+      "charge",
+      "card",
+      "subscription",
+      "amount",
+      "payment_event_history"
+    ]
+  },
+  "highlevel_contract": {
+    "direction": "GHL signed current-state input to One Time; One Time outbox projects sanitized access status back to GHL",
+    "action": "access.apply_current_state",
+    "security": [
+      "HMAC authentication",
+      "account/product/location scope",
+      "nonce replay denial",
+      "idempotency receipt",
+      "monotonic source revision",
+      "ambiguous identity denial",
+      "audit event"
+    ],
+    "provider_modes_default": "disabled",
+    "customer_messages": 0
+  },
+  "free_pilot_acceptance": [
+    "Verified adult activation creates one explicit, time-bounded free_pilot access projection.",
+    "Parent creates up to three separate Student identities with separate credentials.",
+    "A Student signs in from another device and sees only approved content for that learner.",
+    "Revocation or expiry invalidates Student sessions and blocks learning access.",
+    "No public form submission, learner identity, GHL tag, or legacy billing row can grant access by itself."
+  ],
+  "migration": {
+    "prefix": 2223,
+    "path": "packages/db/migrations/2223_account_product_access_projection.sql",
+    "canonical_lf_sha256": "997795e26b182b921ae825f74d3b7bdf9696c712ed79221ef467dcd5212f2e88",
+    "source_uniqueness_verified": true,
+    "known_reserved_prefixes": [2221, 2222],
+    "historical_migrations_are_immutable": true
+  },
+  "validated_checkpoint": {
+    "focused_vitest": "22 files; 127 passed; 0 failed",
+    "focused_playwright": "2 files; 7 passed; 0 failed",
+    "security_review": "terminal P0/P1 PASS; all 3 findings repaired and regression-covered before checkpoint",
+    "typecheck": "passed",
+    "lint": "passed",
+    "build": "passed",
+    "secret_scan": "passed across 2051 repository text files",
+    "ops06_migration_safety": "passed",
+    "highlevel_registry": "passed",
+    "highlevel_projection": "passed",
+    "goal_launch_status": "passed",
+    "highlevel_control": "fail_closed_known_inventory_gap_no_canonical_drift"
+  },
+  "validation_required": [
+    "State transition, expiry, precedence, replay, cross-account, and ambiguous-identity tests",
+    "Free Parent activation through another-device Student login and revocation",
+    "Sibling isolation and approved-only playback",
+    "No fallback authorization from legacy entitlement rows",
+    "No writes to payment-history or Stripe-shaped tables",
+    "PostgreSQL 16/18 migration and restore proof",
+    "Typecheck, build, lint, secret scan, exact-head staging deployment, and browser acceptance"
+  ],
+  "remaining_work": [
+    "Push one immutable governed checkpoint and obtain PostgreSQL 16/18 exact-head CI.",
+    "Deploy migration 2223 to persistent staging and read back the exact ledger entry.",
+    "Run the reviewed staging-private free-pilot grant and verify Parent/Student another-device login, approved playback, revocation denial, and zero legacy billing writes.",
+    "GHL UI and payment-history work remains in the separately controlled GHL lane."
+  ],
+  "sanitized_at": "2026-07-23T14:24:21Z"
+}

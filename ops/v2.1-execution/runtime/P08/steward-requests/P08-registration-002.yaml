@@ -1,0 +1,67 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P08-registration-002
+task_id: P08
+kind: server_client_worker_registration
+requirement_ids:
+  - OTV2-SIGNUP-176
+  - OTV2-SIGNUP-177
+  - OTV2-SIGNUP-179
+  - OTV2-SIGNUP-213
+  - OTV2-SIGNUP-228
+acceptance_case_ids:
+  - OTV2-SIGNUP-176-FAMILY-OR-SCHOOL-BRANCH
+  - OTV2-SIGNUP-177-AC01
+  - OTV2-SIGNUP-179-AC01
+  - OTV2-SIGNUP-213-AC01
+  - OTV2-SIGNUP-228-BEFORE-EXPIRY
+  - OTV2-SIGNUP-228-AT-AND-AFTER-EXPIRY
+rationale: >-
+  P08-registration-001 is immutable and remains evidence of the earlier
+  interface request, but its statement that unavailable provider evidence is
+  identity_review would block every fresh unambiguous post-expiry signup.
+  P08 also cannot edit the central server/client/worker composers. This
+  successor preserves actual identity_review quarantine while registering the
+  corrected local-first session, P27 identity-readback, and P25 hosted-checkout
+  seams.
+desired_semantic_change: >-
+  Register the P08 Family route and public-entry response handling. A fresh
+  signup must commit one adult login, Parent membership, household, access
+  projection, adult-only GHL handoff, and exact P25 commercial projection in
+  one local transaction. Before expiry, establish a browser session readable
+  by the same authenticated middleware and continue to the Parent overview.
+  At or after expiry, persist inactive access and the P25 standard
+  HighLevel-orchestrated Stripe-hosted checkout command. Missing GHL evidence is
+  readback_required, not ambiguity; actual conflicting evidence remains
+  identity_review and blocks the checkout effect. No registration step may
+  perform a provider effect.
+proposed_symbols_routes_keys_or_dependencies:
+  - Admit a superseding semantic-contract 2.1.0 checkpoint for packages/contracts/src/signup/family/index.ts after recomputing its exact artifact and contract digests; do not rewrite the prior 2.0.0 checkpoint.
+  - Register familySignupFeatureRegistration from apps/web/src/server/features/signup/family/router.ts at /api/v1/signup/family in the central web composer.
+  - Inject the exact centrally validated FamilySignupScope and the F03/F04 v2.1 FamilySignupSessionEstablisher; do not use the legacy account_users/user_sessions resolver.
+  - Treat session_established=true as valid only when the response also sets the v2.1 session cookie and returns code FAMILY_SIGNUP_COMPLETE, next_action parent_overview, a response-body CSRF token, session_expires_at, and the same-origin continue_to path /app/parent.
+  - Assign the public-entry client change to F07/I36. It may navigate to /app/parent only when session_established=true and continue_to is an allowlisted same-origin path; it must render the durable 202 recovery state when session establishment is unavailable.
+  - Consume FamilySignupOutboxIntent.ghl_handoff through P27 only after local commit. Require canonical provider readback before classification or any effect; accept only subject.kind=adult and student_contact_prohibited=true.
+  - Interpret family_signup_outbox dispatch_state=ready as local handoff readiness, never provider authorization. provider_effect_authorized, message_delivery_authorized, and billing_effect_authorized remain false in the handoff.
+  - Register billing.commercial.checkout.request only after F06 supplies an exact canonical provider_operation_binding and the worker acquires the provider lock/fencing token. A missing or stale binding must leave the job non-dispatchable.
+  - Load the exact P25 HostedCommercialBillingIntent from the command receipt, require provider=highlevel, financialProvider=stripe, providerMutationByOneTime=false, mode=standard, and reconcile before retry after an unknown outcome.
+  - Never return or fabricate a provider URL from the signup transaction. While the intent is not reconciled ready, return code SIGNUP_COMMITTED_CHECKOUT_HANDOFF_QUEUED, next_action checkout_handoff_queued, checkout_handoff_state queued, provider names, effects=0, and no URL.
+  - After canonical hosted-checkout creation/readback, expose only a short-lived, single-use, session-and-household-bound checkout_redirect_handle in a no-store authenticated response. Do not expose the provider URL, account ID, contact ID, or billing ID.
+  - Assign the public-entry checkout change to F07/I36. The client sends checkout_redirect_handle in the CSRF-protected body of a same-origin continuation POST; the server consumes it once and issues the provider redirect only after session, household, provider binding, fence, and reconciliation checks. Never place the handle in a URL, referrer, log, analytics event, or browser storage.
+  - Keep actual multiple-match/provider-email-disagreement identity_review visibly pending with no checkout handle, provider dispatch, workflow enrollment, message, or charge.
+compatibility_assumptions:
+  - P08-config-002 supplies the central runtime and verification-environment fields.
+  - P08-auth-household-002 supplies the v2.1 session writer/resolver and a valid household-context label.
+  - P25 owns the hosted commercial intent semantics; P27 owns GHL identity planning; F06 owns canonical provider bindings, locks, fencing, and reconciliation.
+  - P08-registration-001 remains byte-identical and is superseded only where this request explicitly corrects unavailable-evidence and continuation behavior.
+verification_performed:
+  - Focused P08 contract, domain, repository, service, and route tests.
+  - Workspace TypeScript typecheck.
+  - Zero provider, message, enrollment, billing, deployment, and migration effects.
+conflicts_or_risks:
+  - Do not claim session_established=true for a v2.1 session token that the active middleware cannot read.
+  - Do not equate evidence_unavailable with identity ambiguity or a verified unlinked provider observation.
+  - Do not dispatch the P25 job without the exact F06 provider operation binding and fence.
+  - Do not fabricate a checkout URL or treat browser return, queued intent, HighLevel tag, or card collection as paid access.
+  - Do not create a Student contact, send a message, enroll a workflow, charge, or mutate Stripe directly.
+contains_secret_or_private_data: false

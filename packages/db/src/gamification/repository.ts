@@ -10,7 +10,11 @@ import type {
   ParentRewardGoalPayload,
 } from '../../../contracts/src/gamification/index.ts';
 import { gamificationReasonCodeSchema } from '../../../contracts/src/gamification/index.ts';
-import type { LearnerProfile, PortalActorContext } from '../../../contracts/src/portals/index.ts';
+import type {
+  ClassLeaderboardSummary,
+  LearnerProfile,
+  PortalActorContext,
+} from '../../../contracts/src/portals/index.ts';
 import {
   PortalServiceError,
   type GamificationEventRow,
@@ -44,6 +48,7 @@ export function createGamificationRepository(pool: DbPool): GamificationReposito
         requestFingerprint: args.request_fingerprint,
       }),
     loadAdminDashboard: (args) => loadAdminDashboard(pool, args.actor),
+    loadClassLeaderboard: (args) => loadClassLeaderboard(pool, args.actor),
   };
 }
 
@@ -382,6 +387,119 @@ async function loadAdminDashboard(pool: DbPool, actor: PortalActorContext) {
   };
 }
 
+async function loadClassLeaderboard(
+  target: DbPool | Queryable,
+  actor: PortalActorContext,
+): Promise<ClassLeaderboardSummary> {
+  assertActorCanReadClassBoard(actor);
+  const control = await target.query(
+    `SELECT board_key, class_series_key, title, publication_state, updated_at
+       FROM onetime.classroom_leaderboard_publication_controls
+      WHERE account_key = $1
+        AND product_key = $2
+      ORDER BY updated_at DESC, board_key DESC
+      LIMIT 1`,
+    [actor.account_key, actor.product_key],
+  );
+  const controlRow = control.rows[0] as Record<string, unknown> | undefined;
+  const published = controlRow?.publication_state === 'published';
+  const entries =
+    published || actor.actor_role === 'owner' || actor.actor_role === 'admin'
+      ? await loadClassLeaderboardEntries(target, actor)
+      : [];
+  return {
+    board_key: controlRow ? String(controlRow.board_key) : 'leaderboard_one_time_daily',
+    class_series_key: controlRow
+      ? String(controlRow.class_series_key)
+      : 'class_series_one_time_daily',
+    title: controlRow ? String(controlRow.title) : 'Daily One Time Mishnayos',
+    scope: 'authenticated_class_only',
+    time_basis: 'all_time_no_reset',
+    published,
+    actual_names_visible: true,
+    negative_labels_present: false,
+    ai_judgment_present: false,
+    corrected_by_rabbi_audit_available: true,
+    updated_at: toNullableIso(controlRow?.updated_at),
+    entries,
+  };
+}
+
+async function loadClassLeaderboardEntries(
+  target: DbPool | Queryable,
+  actor: PortalActorContext,
+): Promise<ClassLeaderboardSummary['entries']> {
+  const result = await target.query(
+    `WITH event_totals AS (
+       SELECT learner_key,
+              COALESCE(sum(points_delta), 0)::int AS points,
+              COALESCE(sum(CASE WHEN reason_code IN ('lesson_completed', 'mishnah_completed') AND points_delta > 0 THEN 1 ELSE 0 END), 0)::int AS completed_lessons,
+              COALESCE(sum(CASE WHEN reason_code IN ('question_approved', 'excellent_question') AND points_delta > 0 THEN 1 ELSE 0 END), 0)::int AS approved_questions,
+              COALESCE(sum(CASE WHEN reason_code = 'excellent_question' AND points_delta > 0 THEN 1 ELSE 0 END), 0)::int AS excellent_questions,
+              COALESCE(sum(CASE WHEN reason_code = 'consistency_bonus' AND points_delta > 0 THEN 1 ELSE 0 END), 0)::int AS consistency_bonus_count,
+              max(occurred_at) AS last_activity_at
+         FROM onetime.portal_reward_events
+        WHERE account_key = $1
+          AND product_key = $2
+        GROUP BY learner_key
+     ),
+     attendance_totals AS (
+       SELECT learner_key,
+              count(DISTINCT occurrence_key)::int AS attendance_count,
+              max(recorded_at) AS last_attendance_at
+         FROM onetime.class_attendance_marks
+        WHERE account_key = $1
+          AND product_key = $2
+          AND attendance_state = 'present'
+        GROUP BY learner_key
+     )
+     SELECT learners.learner_key,
+            learners.display_name,
+            COALESCE(event_totals.points, 0)::int AS points,
+            COALESCE(attendance_totals.attendance_count, 0)::int AS attendance_count,
+            COALESCE(event_totals.completed_lessons, 0)::int AS completed_lessons,
+            COALESCE(event_totals.approved_questions, 0)::int AS approved_questions,
+            COALESCE(event_totals.excellent_questions, 0)::int AS excellent_questions,
+            COALESCE(event_totals.consistency_bonus_count, 0)::int AS consistency_bonus_count,
+            COALESCE(event_totals.last_activity_at, attendance_totals.last_attendance_at) AS last_activity_at
+       FROM onetime.portal_learners AS learners
+       JOIN onetime.portal_student_access_state AS access_state
+         ON access_state.account_key = learners.account_key
+        AND access_state.product_key = learners.product_key
+        AND access_state.learner_key = learners.learner_key
+        AND access_state.status = 'active'
+       LEFT JOIN event_totals
+         ON event_totals.learner_key = learners.learner_key
+       LEFT JOIN attendance_totals
+         ON attendance_totals.learner_key = learners.learner_key
+      WHERE learners.account_key = $1
+        AND learners.product_key = $2
+        AND learners.learner_status = 'active'
+      ORDER BY COALESCE(event_totals.points, 0) DESC,
+               COALESCE(event_totals.last_activity_at, attendance_totals.last_attendance_at) DESC NULLS LAST,
+               learners.display_name ASC
+      LIMIT 50`,
+    [actor.account_key, actor.product_key],
+  );
+  return result.rows.map((row) => {
+    const learnerKey = String(row.learner_key);
+    return {
+      learner_key: learnerKey,
+      display_name: String(row.display_name),
+      points: Math.max(0, Number(row.points)),
+      attendance_count: Number(row.attendance_count),
+      completed_lessons: Number(row.completed_lessons),
+      approved_questions: Number(row.approved_questions),
+      excellent_questions: Number(row.excellent_questions),
+      consistency_bonus_count: Number(row.consistency_bonus_count),
+      last_activity_at: toNullableIso(row.last_activity_at),
+      ...(actor.actor_role === 'student'
+        ? { own_entry: actor.student_learner?.learner_key === learnerKey }
+        : {}),
+    };
+  });
+}
+
 async function findLearner(
   target: DbPool | Queryable,
   actor: PortalActorContext,
@@ -658,6 +776,13 @@ function assertActorCanReadLearner(
   }
   if (actor.actor_role === 'owner' || actor.actor_role === 'admin') return;
   throw new PortalServiceError('FORBIDDEN', 'This session cannot view learning progress.');
+}
+
+function assertActorCanReadClassBoard(actor: PortalActorContext) {
+  if (actor.actor_role === 'student' && actor.student_learner) return;
+  if (actor.actor_role === 'parent' && actor.authorized_households.length > 0) return;
+  if (actor.actor_role === 'owner' || actor.actor_role === 'admin') return;
+  throw new PortalServiceError('FORBIDDEN', 'Class leaderboard requires a portal session.');
 }
 
 function assertActorCanAdminLearner(

@@ -6,7 +6,7 @@ import {
   W12_PORTAL_TEST_LAB,
   W12_PORTAL_TEST_LAB_ROUTE,
 } from '../../apps/web/src/server/features/portal-test-lab/router.ts';
-import { W12_E2E_ADMIN_SESSION_TOKEN } from '../support/w12-portal-test-lab-session.ts';
+import { W12_E2E_ADMIN_COOKIES } from '../support/w12-portal-test-lab-session.ts';
 
 test.describe.configure({ mode: 'serial' });
 
@@ -16,16 +16,7 @@ const evidence: Array<Record<string, unknown>> = [];
 
 test('W12-03 admin lab page is owner/admin-only and secret-free', async ({ browser }) => {
   const adminContext = await browser.newContext();
-  await adminContext.addCookies([
-    {
-      name: 'otcrm_session',
-      value: W12_E2E_ADMIN_SESSION_TOKEN,
-      domain: '127.0.0.1',
-      path: '/',
-      httpOnly: true,
-      sameSite: 'Lax',
-    },
-  ]);
+  await adminContext.addCookies([...W12_E2E_ADMIN_COOKIES]);
   const adminPage = await adminContext.newPage();
   const requests = collectRequests(adminPage);
   await adminPage.goto(W12_PORTAL_TEST_LAB_ROUTE);
@@ -45,10 +36,70 @@ test('W12-03 admin lab page is owner/admin-only and secret-free', async ({ brows
   const parentContext = await browser.newContext();
   const parentPage = await parentContext.newPage();
   await loginAs(parentPage, 'parent', W12_PORTAL_TEST_LAB_ROUTE, { waitForReturnTo: false });
+  await parentPage.waitForURL('**/app/parent');
   await expect(
-    parentPage.getByRole('heading', { name: 'Portal Test Lab access unavailable' }),
+    parentPage.locator('#app-main').getByRole('heading', { name: 'Parent Portal' }),
   ).toBeVisible();
+  const forbidden = await parentPage.request.get(W12_PORTAL_TEST_LAB_ROUTE);
+  expect(forbidden.status()).toBe(403);
+  expect(await forbidden.text()).toContain('Portal Test Lab access unavailable');
   await parentContext.close();
+});
+
+test('PROMPT-KNOWLEDGE-001 Admin reviews, saves, activates, and rolls back one section patch', async ({
+  browser,
+}) => {
+  const adminContext = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+  await adminContext.addCookies([...W12_E2E_ADMIN_COOKIES]);
+  const page = await adminContext.newPage();
+  const requests = collectRequests(page);
+  await page.goto('/app/content/prompts');
+  await expect(
+    page.getByRole('navigation', { name: 'Content area' }).getByRole('link', { name: 'Prompts' }),
+  ).toHaveAttribute('aria-current', 'page');
+  await page.getByRole('combobox', { name: 'Prompt section' }).selectOption('tone_and_voice');
+  await page
+    .getByRole('textbox', { name: 'Natural-language instruction' })
+    .fill('Use a warm, precise classroom voice.');
+  await page.getByRole('textbox', { name: 'Reason' }).fill('Browser review of one scoped section.');
+  const saveDraft = page.getByRole('button', { name: 'Save draft' });
+  await expect(saveDraft).toBeDisabled();
+  await page.getByRole('button', { name: 'Preview/test' }).click();
+  const preview = page.getByRole('heading', { name: 'Preview' }).locator('..');
+  await expect(preview).toContainText('Tone and voice');
+  await expect(preview.getByRole('heading', { name: 'Complete candidate prompt' })).toBeVisible();
+  await expect(preview.locator('pre')).toContainText('Use a warm, precise classroom voice.');
+  const exactDiff = preview.locator('[data-prompt-diff="tone_and_voice"]');
+  await expect(exactDiff.getByRole('heading', { name: 'Before' })).toBeVisible();
+  await expect(exactDiff.getByRole('heading', { name: 'After' })).toBeVisible();
+  await expect(
+    exactDiff.getByRole('listitem').filter({ hasText: 'Use a warm, precise classroom voice.' }),
+  ).toHaveCount(1);
+  await expect(preview).toContainText('cannot publish');
+  await expect(saveDraft).toBeEnabled();
+  await saveDraft.click();
+  await expect(
+    page.getByRole('status').filter({ hasText: 'Prompt registry updated.' }),
+  ).toBeVisible();
+
+  let versionTwo = page.locator('.content-row-card').filter({ hasText: 'Version 2' });
+  await expect(versionTwo).toContainText('draft');
+  await versionTwo.getByRole('button', { name: 'Activate', exact: true }).click();
+  versionTwo = page.locator('.content-row-card').filter({ hasText: 'Version 2' });
+  await expect(versionTwo).toContainText('active');
+
+  let versionOne = page.locator('.content-row-card').filter({ hasText: 'Version 1' });
+  await expect(versionOne).toContainText('retired');
+  await versionOne.getByRole('button', { name: 'Rollback/reactivate', exact: true }).click();
+  versionOne = page.locator('.content-row-card').filter({ hasText: 'Version 1' });
+  await expect(versionOne).toContainText('active');
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
+    ),
+  ).toBe(false);
+  expectForbiddenRequests(requests);
+  await adminContext.close();
 });
 
 test('W12-03 parent and three separate learners complete portal journeys', async ({ browser }) => {
@@ -60,12 +111,14 @@ test('W12-03 parent and three separate learners complete portal journeys', async
   await expect(
     parentPage.locator('#app-main').getByRole('heading', { name: 'Parent Portal' }),
   ).toBeVisible();
-  await expect(parentPage.getByText('3/3 active learners')).toBeVisible();
-  await expect(parentPage.getByRole('heading', { name: 'Billing' })).toBeVisible();
-  await expect(parentPage.getByText(/Billing is unavailable|Family plan/i)).toBeVisible();
+  await expect(parentPage.getByText('3 active learners')).toBeVisible();
+  await parentPage.getByRole('link', { name: 'Billing' }).click();
+  await expect(parentPage.getByRole('heading', { name: 'Learning access' })).toBeVisible();
+  await expect(
+    parentPage.getByText(/GHL manages billing|Complimentary pilot access/i),
+  ).toBeVisible();
+  await parentPage.getByRole('link', { name: 'Learners' }).click();
   await parentPage.getByRole('button', { name: /W12 Learner One/i }).click();
-  await expect(parentPage.getByText('W12 Fictional Recording')).toBeVisible();
-  await expect(parentPage.getByText('W12 Fictional Review Sheet')).toBeVisible();
 
   await parentPage.getByRole('button', { name: 'Reset' }).click();
   let dialog = parentPage.getByRole('dialog', { name: 'Reset student access' });
@@ -81,6 +134,27 @@ test('W12-03 parent and three separate learners complete portal journeys', async
   dialog = parentPage.getByRole('dialog', { name: 'Restore student access' });
   await dialog.getByRole('button', { name: 'Restore' }).click();
   await expect(parentPage.getByText('Status: Active')).toBeVisible();
+
+  await parentPage.getByRole('link', { name: 'Classes & materials' }).click();
+  const parentMaterials = parentPage.getByRole('region', { name: 'Classes & materials' });
+  await expect(parentMaterials.getByText('W12 Fictional Recording')).toBeVisible();
+  await expect(parentMaterials.getByText('W12 Fictional Review Sheet')).toBeVisible();
+  await parentMaterials
+    .getByRole('textbox', { name: 'Ask Class Helper' })
+    .fill('What should this learner review from the Mishnah lesson?');
+  await parentMaterials.getByRole('button', { name: 'Ask helper' }).click();
+  await expect(parentMaterials.locator('.ot-helper-answer')).toContainText(
+    'fictional Mishnah lesson',
+  );
+  await expect(parentMaterials.locator('.ot-helper-answer')).toContainText(
+    'Approved-source fallback is active while the model provider is off.',
+  );
+  await parentPage.getByRole('link', { name: 'Learners' }).click();
+  await parentPage.getByRole('button', { name: /W12 Learner Two/i }).click();
+  await parentPage.getByRole('link', { name: 'Classes & materials' }).click();
+  await expect(
+    parentPage.getByRole('region', { name: 'Classes & materials' }).locator('.ot-helper-answer'),
+  ).toHaveCount(0);
 
   const parentLaunch = await samePagePostJson(
     parentPage,
@@ -108,22 +182,30 @@ test('W12-03 parent and three separate learners complete portal journeys', async
       await expect(studentPage.getByText(sibling.displayName)).toHaveCount(0);
       await expect(studentPage.getByText(sibling.learnerKey)).toHaveCount(0);
     }
-    await expect(studentPage.getByText('W12 Fictional Recording')).toBeVisible();
-    await expect(studentPage.getByText('W12 Fictional Review Sheet')).toBeVisible();
+    await studentPage.getByRole('link', { name: 'Library' }).click();
+    const studentLibrary = studentPage.getByRole('region', { name: 'Library' });
+    await expect(studentLibrary.getByText('W12 Fictional Recording')).toBeVisible();
+    await expect(studentLibrary.getByText('W12 Fictional Review Sheet')).toBeVisible();
+    await studentPage.getByRole('link', { name: 'Progress' }).click();
     const progress = studentPage.getByRole('region', { name: 'Progress' });
     const metrics = progress.locator('.ot-metrics');
     await expect(metrics.locator('div').nth(0)).toHaveText('Classes1');
     await expect(metrics.locator('div').nth(3)).toHaveText('Points5');
+    await studentPage.getByRole('link', { name: 'Questions' }).click();
     await expect(
       studentPage.getByText(/What should I review before the next fictional class/i),
     ).toBeVisible();
 
+    await studentPage.getByRole('link', { name: 'Class Helper' }).click();
     await studentPage
       .getByRole('textbox', { name: 'Ask Class Helper' })
       .fill('What should I review from the Mishnah lesson?');
     await studentPage.getByRole('button', { name: 'Ask helper' }).click();
     await expect(studentPage.locator('.ot-helper-answer')).toContainText(
       'fictional Mishnah lesson',
+    );
+    await expect(studentPage.locator('.ot-helper-answer')).toContainText(
+      'Approved-source fallback is active while the model provider is off.',
     );
 
     if (learner.learnerKey === W12_PORTAL_TEST_LAB.learners[0].learnerKey) {
@@ -150,16 +232,17 @@ async function loginAs(
   page: Page,
   roleOrEmail: 'admin' | 'parent' | string,
   returnTo: string,
-  options: { waitForReturnTo?: boolean } = {},
+  options: { waitForReturnTo?: boolean; password?: string | undefined } = {},
 ) {
   const credentials: Record<string, [string, string]> = {
     admin: [W12_PORTAL_TEST_LAB.admin.email, W12_PORTAL_TEST_LAB.admin.defaultPassword],
     parent: [W12_PORTAL_TEST_LAB.parent.email, W12_PORTAL_TEST_LAB.parent.defaultPassword],
   };
-  const [email, password] = credentials[roleOrEmail] ?? [
+  const [email, defaultPassword] = credentials[roleOrEmail] ?? [
     roleOrEmail,
     W12_PORTAL_TEST_LAB.learners.find((learner) => learner.email === roleOrEmail)?.defaultPassword,
   ];
+  const password = options.password ?? defaultPassword;
   if (!password) throw new Error(`Missing W12 test credential for ${roleOrEmail}`);
   await page.goto(`/login?return_to=${encodeURIComponent(returnTo)}`);
   await page.getByLabel('Email').fill(email);
@@ -183,6 +266,9 @@ async function captureResponsiveA11y(page: Page, name: string, route: string) {
     await page.setViewportSize({ width: size.width, height: size.height });
     if (!page.url().endsWith(route)) await page.goto(route);
     await page.waitForLoadState('domcontentloaded');
+    if (route === '/app/parent' || route === '/app/student') {
+      await page.locator('[data-portal-role][data-state="ready"]').waitFor();
+    }
     await page.evaluate(() => {
       if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
     });
@@ -200,7 +286,7 @@ async function captureResponsiveA11y(page: Page, name: string, route: string) {
     evidence.push({
       name,
       viewport: size.label,
-      screenshot: screenshotPath,
+      screenshot: path.relative(process.cwd(), screenshotPath).replaceAll('\\', '/'),
       critical_or_serious_a11y: serious.length,
       horizontal_overflow: overflow,
       forbidden_external_text: /https?:\/\/|zoom|vimeo|drive|meet/i.test(text),
@@ -218,9 +304,13 @@ function collectRequests(page: Page) {
 }
 
 function expectForbiddenRequests(requests: string[]) {
-  const forbidden = requests.filter((url) =>
-    /bna|operations|leadconnector|gohighlevel|fonts\.googleapis|fonts\.gstatic/i.test(url),
-  );
+  const forbidden = requests.filter((url) => {
+    const parsed = new URL(url);
+    return (
+      /\/(bna|operations)(\/|$)/i.test(parsed.pathname) ||
+      /leadconnector|gohighlevel|fonts\.googleapis|fonts\.gstatic/i.test(parsed.hostname)
+    );
+  });
   expect(forbidden).toEqual([]);
 }
 
@@ -234,6 +324,7 @@ test.afterAll(async () => {
         generated_at: new Date().toISOString(),
         journeys: [
           'admin-only W12 lab status/reset page without visible secrets',
+          'Admin reviews, saves, activates, and rolls back one structured prompt section patch',
           'parent manages W12 household and learner access without student impersonation',
           'three separate student identities resolve to exactly one learner each',
           'student class, recording, review, progress, reward, private question, and helper examples',

@@ -2,8 +2,11 @@ import { createHash } from 'node:crypto';
 import type { Express, Request, Response } from 'express';
 import type { AppConfig } from '../../../../../../packages/config/src/index.ts';
 import type { DbPool } from '../../../../../../packages/db/src/index.ts';
+import { RABBI_TELEGRAM_SYNTHETIC_STUDENT_ANSWER } from '../../../../../../packages/contracts/src/telegram/rabbi-communications.ts';
 import {
   createAccountUser,
+  grantOt110aContentAdminCapability,
+  grantFreePilotAccess,
   type AuthenticatedSession,
 } from '../../../../../../packages/domain/src/index.ts';
 
@@ -89,7 +92,11 @@ type PortalTestLabStatus = {
 };
 
 export function isPortalTestLabEnabled(config: AppConfig) {
-  return config.portalTestLabEnabled === true && !config.isProduction;
+  return (
+    config.portalTestLabEnabled === true &&
+    ['isolated_staging', 'test'].includes(config.deliveryEnvironment) &&
+    ['isolated_staging', 'test'].includes(config.oneTimeRuntimeEnvironment)
+  );
 }
 
 export function registerPortalTestLabRoutes(input: {
@@ -144,7 +151,13 @@ export async function seedPortalTestLab(input: { pool: DbPool; config: AppConfig
     displayName: W12_PORTAL_TEST_LAB.admin.displayName,
     role: 'admin',
   });
-  void adminUserKey;
+  await grantOt110aContentAdminCapability({
+    pool: input.pool,
+    config: input.config,
+    userKey: adminUserKey,
+    capability: 'prompt.manage',
+    grantedByUserKey: adminUserKey,
+  });
 
   const parentUserKey = await createAccountUser({
     pool: input.pool,
@@ -199,6 +212,46 @@ export async function seedPortalTestLab(input: { pool: DbPool; config: AppConfig
       input.config.productKey,
       W12_PORTAL_TEST_LAB.householdKey,
       parentUserKey,
+    ],
+  );
+  await input.pool.query(
+    `INSERT INTO onetime.contacts
+       (contact_key, account_key, product_key, display_name, family_school_classification,
+        family_or_school, location_text, timezone, email_normalized, reminder_preference, source)
+     VALUES ($1,$2,$3,$4,'family',$5,'Jerusalem','Asia/Jerusalem',$6,'none','portal_test_lab')
+     ON CONFLICT (account_key, product_key, contact_key)
+     DO UPDATE SET display_name = EXCLUDED.display_name,
+                   family_or_school = EXCLUDED.family_or_school,
+                   email_normalized = EXCLUDED.email_normalized,
+                   archived_at = NULL,
+                   updated_at = now()`,
+    [
+      'w12_portal_test_lab_parent_contact',
+      input.config.accountKey,
+      input.config.productKey,
+      W12_PORTAL_TEST_LAB.parent.displayName,
+      W12_PORTAL_TEST_LAB.householdName,
+      W12_PORTAL_TEST_LAB.parent.email,
+    ],
+  );
+  await input.pool.query(
+    `INSERT INTO onetime.adult_household_contact_links
+       (link_key, account_key, product_key, contact_key, household_key, guardian_user_ref,
+        highlevel_location_id, sync_state)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,'sync_pending')
+     ON CONFLICT (account_key, product_key, household_key)
+     DO UPDATE SET contact_key = EXCLUDED.contact_key,
+                   guardian_user_ref = EXCLUDED.guardian_user_ref,
+                   highlevel_location_id = EXCLUDED.highlevel_location_id,
+                   updated_at = now()`,
+    [
+      'w12_portal_test_lab_adult_link',
+      input.config.accountKey,
+      input.config.productKey,
+      'w12_portal_test_lab_parent_contact',
+      W12_PORTAL_TEST_LAB.householdKey,
+      parentUserKey,
+      input.config.highLevelLocationId,
     ],
   );
 
@@ -267,7 +320,7 @@ export async function seedPortalTestLab(input: { pool: DbPool; config: AppConfig
 
   await seedPortalLabClassAndContent(input);
   await seedPortalLabActivity(input, parentUserKey, studentUserKeys);
-  await seedPortalLabBilling(input);
+  await seedPortalLabAccess(input);
   await seedPortalLabHelperContent(input);
   return portalTestLabStatus(input.pool, input.config);
 }
@@ -430,13 +483,14 @@ export async function portalTestLabStatus(
     ),
     pool.query(
       `SELECT count(*)::int AS count
-         FROM onetime.billing_entitlement_projections
+         FROM onetime.account_access_projections
         WHERE account_key = $1
           AND product_key = $2
-          AND principal_key = $3
-          AND status = 'active'
-          AND grants_access = true`,
-      [config.accountKey, config.productKey, W12_PORTAL_TEST_LAB.householdKey],
+          AND household_key = $3
+          AND state IN ('active', 'grace', 'scheduled_end')
+          AND effective_at <= $4
+          AND (expires_at IS NULL OR expires_at > $4)`,
+      [config.accountKey, config.productKey, W12_PORTAL_TEST_LAB.householdKey, new Date()],
     ),
     pool.query(
       `SELECT count(*)::int AS count
@@ -587,6 +641,26 @@ async function seedPortalLabClassAndContent(input: { pool: DbPool; config: AppCo
       new Date('2026-07-20T17:00:00.000Z'),
     ],
   );
+  for (const learner of W12_PORTAL_TEST_LAB.learners) {
+    await input.pool.query(
+      `INSERT INTO onetime.classroom_occurrence_learner_entitlements
+         (occurrence_entitlement_key, account_key, product_key, occurrence_key,
+          household_key, learner_key, entitlement_state, source)
+       VALUES ($1,$2,$3,$4,$5,$6,'active','isolated_acceptance')
+       ON CONFLICT (account_key, product_key, occurrence_key, learner_key)
+       DO UPDATE SET entitlement_state = 'active',
+                     source = 'isolated_acceptance',
+                     updated_at = now()`,
+      [
+        `w12_occurrence_${learner.learnerKey}`,
+        input.config.accountKey,
+        input.config.productKey,
+        W12_PORTAL_TEST_LAB.occurrenceKey,
+        W12_PORTAL_TEST_LAB.householdKey,
+        learner.learnerKey,
+      ],
+    );
+  }
   await input.pool.query(
     `INSERT INTO onetime.content_items
        (content_item_key, account_key, product_key, occurrence_key, title, item_type,
@@ -648,6 +722,29 @@ async function seedPortalLabClassAndContent(input: { pool: DbPool; config: AppCo
       input.config.productKey,
       W12_PORTAL_TEST_LAB.recordingKey,
       W12_PORTAL_TEST_LAB.reviewKey,
+    ],
+  );
+  await input.pool.query(
+    `INSERT INTO onetime.classroom_lesson_publications
+       (lesson_key, account_key, product_key, class_series_key, occurrence_key, content_item_key,
+        title, description, publication_state, featured, published_at,
+        controlled_by_actor_ref, raw_private_url_present, transcript_state, resource_count,
+        resources_json)
+     VALUES ('w12_lesson_recording',$1,$2,$3,$4,$5,'W12 Fictional Recording',
+             'Deterministic approved W12 fictional recording.','published',false,now(),
+             'w12_test_fixture',false,'not_available',0,'[]'::jsonb)
+     ON CONFLICT (lesson_key)
+     DO UPDATE SET publication_state = 'published',
+                   published_at = EXCLUDED.published_at,
+                   controlled_by_actor_ref = 'w12_test_fixture',
+                   raw_private_url_present = false,
+                   updated_at = now()`,
+    [
+      input.config.accountKey,
+      input.config.productKey,
+      W12_PORTAL_TEST_LAB.classSeriesKey,
+      W12_PORTAL_TEST_LAB.occurrenceKey,
+      W12_PORTAL_TEST_LAB.recordingKey,
     ],
   );
   await input.pool.query(
@@ -752,7 +849,7 @@ async function seedPortalLabActivity(
         studentUserKeys[index],
         W12_PORTAL_TEST_LAB.occurrenceKey,
         'What should I review before the next fictional class?',
-        'Review the fictional Mishnah terms and bring one prepared example.',
+        `${RABBI_TELEGRAM_SYNTHETIC_STUDENT_ANSWER} Learner ${ordinal}.`,
         new Date('2026-07-20T17:25:00.000Z'),
         `w12_question_${ordinal}`,
         sha256Hex(`w12_question_${ordinal}`),
@@ -761,55 +858,22 @@ async function seedPortalLabActivity(
   }
 }
 
-async function seedPortalLabBilling(input: { pool: DbPool; config: AppConfig }) {
-  await input.pool.query(
-    `INSERT INTO onetime.billing_entitlement_projections
-       (entitlement_key, account_key, product_key, principal_key, principal_type, status,
-        policy_version, source, reason, effective_at, evaluated_at, grants_access)
-     VALUES ('w12_billing_entitlement',$1,$2,$3,'opaque','active','w12-test-policy',
-        'w12_test_fixture','active_synthetic_test_subscription',$4,$5,true)
-     ON CONFLICT (entitlement_key)
-     DO UPDATE SET status = 'active',
-                   source = 'w12_test_fixture',
-                   reason = 'active_synthetic_test_subscription',
-                   effective_at = EXCLUDED.effective_at,
-                   evaluated_at = EXCLUDED.evaluated_at,
-                   grants_access = true,
-                   updated_at = now()`,
-    [
-      input.config.accountKey,
-      input.config.productKey,
-      W12_PORTAL_TEST_LAB.householdKey,
-      new Date('2026-07-17T12:00:00.000Z'),
-      new Date('2026-07-17T12:00:01.000Z'),
-    ],
-  );
-  await input.pool.query(
-    `INSERT INTO onetime.billing_subscription_projections
-       (account_key, product_key, principal_key, principal_type, provider, mode,
-        provider_account_ref, provider_customer_ref, provider_subscription_ref, status,
-        current_period_start, current_period_end, provider_updated_at, source_event_key,
-        latest_invoice_ref, collection_state)
-     VALUES ($1,$2,$3,'opaque','stripe','test','acct_w12_fixture','cus_w12_fixture',
-        'sub_w12_fixture_test','active',$4,$5,$6,'evt_w12_fixture_paid_test',
-        'in_w12_fixture_test','paid')
-     ON CONFLICT (account_key, product_key, provider, mode, provider_subscription_ref)
-     DO UPDATE SET status = 'active',
-                   current_period_start = EXCLUDED.current_period_start,
-                   current_period_end = EXCLUDED.current_period_end,
-                   provider_updated_at = EXCLUDED.provider_updated_at,
-                   latest_invoice_ref = EXCLUDED.latest_invoice_ref,
-                   collection_state = 'paid',
-                   updated_at = now()`,
-    [
-      input.config.accountKey,
-      input.config.productKey,
-      W12_PORTAL_TEST_LAB.householdKey,
-      new Date('2026-07-17T12:00:00.000Z'),
-      new Date('2026-08-17T12:00:00.000Z'),
-      new Date('2026-07-17T12:00:02.000Z'),
-    ],
-  );
+async function seedPortalLabAccess(input: { pool: DbPool; config: AppConfig }) {
+  await grantFreePilotAccess({
+    pool: input.pool,
+    accountKey: input.config.accountKey,
+    productKey: input.config.productKey,
+    actorKind: 'provisioner',
+    now: new Date('2026-07-15T12:00:01.000Z'),
+    command: {
+      household_key: W12_PORTAL_TEST_LAB.householdKey,
+      idempotency_key: 'w12-portal-test-lab-free-pilot-v1',
+      effective_at: '2026-07-15T12:00:00.000Z',
+      expires_at: '2026-08-17T12:00:00.000Z',
+      opaque_source_reference: 'w12_portal_test_lab_free_pilot',
+      policy_version: 'w12-current-access-v1',
+    },
+  });
 }
 
 async function seedPortalLabHelperContent(input: { pool: DbPool; config: AppConfig }) {
@@ -836,7 +900,15 @@ async function seedPortalLabHelperContent(input: { pool: DbPool; config: AppConf
       sha256Hex('w12-helper-source'),
       sha256Hex('w12-helper-manifest'),
       JSON.stringify({ approved_by: 'w12_fixture', synthetic: true }),
-      JSON.stringify({ learner_safe: true, production_data: false }),
+      JSON.stringify({
+        source_scope: 'approved_rabbi_content',
+        contains_learner_name: false,
+        contains_learner_voice: false,
+        contains_learner_face: false,
+        contains_learner_question: false,
+        contains_private_data: false,
+        approved_for_student_kb: true,
+      }),
       new Date('2026-07-17T12:05:00.000Z'),
     ],
   );

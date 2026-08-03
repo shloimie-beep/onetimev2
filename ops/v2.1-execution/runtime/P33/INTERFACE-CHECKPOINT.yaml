@@ -1,0 +1,118 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P33
+interface_implementation_head_sha: 7765a3758a3e3aa7d311119b5d86da1e943b68d7
+metadata_commit_sha: derive_from_git_and_record_in_control_registry
+task_packet_digest: 058bb36226c82ae8717fd85d17adee2926cf834da581b1d5a3ea2871aec30940
+contract_digest: a0aa9fd8c8d4108a0f877966f8e8a0614be7e30feb9699ac48e6506df369ee43
+contract_digest_algorithm: >-
+  SHA-256 over UTF-8 lines containing semantic_contract_version=<version>
+  followed by exact path=<artifact SHA-256> lines sorted lexicographically by
+  path, with LF separators and no final newline.
+contract_schema_version: 1
+semantic_contract_version: 3.0.0
+state: interface_ready
+exports:
+  - path: apps/web/src/server/operations/index.ts
+    symbols:
+      - createOperationsDiagnosticsRouter
+      - OperationsAdminAuthorization
+      - OperationsAdminPrincipal
+      - OperationsDiagnosticsPorts
+    sha256: 6f47a8ca18fcb8d3280e4010cdb83dd7eaedb7414dcd222877f4b6fc27899b98
+  - path: apps/web/src/server/operations/router.ts
+    symbols:
+      - createOperationsDiagnosticsRouter
+      - OperationsAdminAuthorization
+      - OperationsAdminPrincipal
+      - OperationsDiagnosticsPorts
+    sha256: 54d4678dfd3f6f88e800c3ba0fa04b9b407823a7c25f14a47f8d20c02c784d0a
+  - path: packages/observability/v21/contracts.ts
+    symbols:
+      - OPERATIONS_CONTRACT_VERSION
+      - RUNTIME_TIERS
+      - RuntimeTier
+      - VERIFICATION_ENVIRONMENTS
+      - VerificationEnvironmentId
+      - ENVIRONMENT_RUNTIME_TIERS
+      - OPERATIONS_SERVICE_ROLES
+      - OperationsServiceRole
+      - RuntimeIdentity
+      - RuntimeExpectation
+      - CandidateIdentity
+      - OperationsInventoryContract
+      - QueueExpectation
+      - WorkerExpectation
+      - ProviderExpectation
+      - OPERATIONS_PROVIDER_KEYS
+      - OperationsProviderKey
+      - OperationsSeverity
+      - OperationsIssue
+      - MigrationLedgerEntry
+      - MigrationHealthObservation
+      - QUEUE_CLASSES
+      - QueueClass
+      - QueueHealthObservation
+      - WorkerHealthObservation
+      - ProviderHealthObservation
+      - DatabaseHealthObservation
+      - OperationsHealthInput
+      - OperationsHealthSnapshot
+      - OperationsAlert
+    sha256: 32080d86eb449bc3a8c116b74207751ed3708ec35ec6e793f08f260f8a274aad
+  - path: packages/observability/v21/health.ts
+    symbols:
+      - QUEUE_ACTIVE_LEASE_MAX_AGE_MS
+      - QUEUE_AGE_THRESHOLDS_MS
+      - buildOperationsHealthSnapshot
+      - computeMigrationInventoryDigest
+      - evaluateMigrationHealth
+      - evaluateOperationsAlerts
+    sha256: 348b35d7dbef07af8d7d8ad5cf249260d43429fbb0ffdcb4febe39824dcf1757
+  - path: packages/observability/v21/index.ts
+    symbols:
+      - all public v2.1 operations contract, health, runtime identity, and redaction exports
+    sha256: e1774cff0c38966cf81c569ba5117f430fd73de930cf8d2ba8f87146ddea751a
+  - path: packages/observability/v21/redaction.ts
+    symbols:
+      - LeakageFindingCode
+      - LeakageScanResult
+      - redactOperationalData
+      - scanOperationalLeakage
+    sha256: c810efcffb774d082bf131fa325af9116b4562e081c88042472a10783320ca7d
+  - path: packages/observability/v21/runtime-identity.ts
+    symbols:
+      - OperationsIdentityError
+      - assertRuntimeIdentity
+      - assertCandidateIdentity
+      - assertRuntimeMatchesCandidate
+      - evaluateRuntimeAgreement
+      - isSafeOperationsIdentifier
+    sha256: 47c8f63189b75922fe4a55de1f3dda1c50faa5f9a7946f14885358cb5de6344a
+compatibility_invariants:
+  - Runtime tier and verification environment are mandatory, separate, and fail closed when unknown or mismatched.
+  - Candidate configuration declares exact runtime, queue, worker, and seven-provider inventories; missing, duplicate, extra, malformed, stale, or unqualified evidence is Sev1 and never ready.
+  - Every declared runtime ID and role uses its candidate artifact expectation; no runtime role may compare an artifact value to itself.
+  - Migration inventory is nonempty when required, structurally valid, forward-only, qualified and fresh, and its deterministic digest equals the exact candidate migration digest.
+  - Queue observations preserve acceptance-unknown, dead-letter, expired-lease, and duplicate-effect-risk states; duplicate-effect risk is Sev1.
+  - Provider status is truthful for Resend, GHL, Stripe, Zoom, Vimeo, Drive, and Telegram; absent or not-configured status is never replaced by a fabricated ready state.
+  - Diagnostics and alerts use allowlisted schemas and safe identifiers; credential-shaped keys, Basic/Bearer/JWT material, secret hashes, signed URLs, PII, cards, database URLs, provider URLs, and secret-bearing context or errors are prohibited.
+  - Runtime identity, health, and alert endpoints redact and scan their exact serialized final bodies; any source or final-body finding emits only a fixed safe 503 body.
+  - Operations HTTP diagnostics require a typed, current, server-session-derived exact Admin principal; anonymous, Parent, Student, stale, and client-asserted roles are concealed without invoking observers.
+  - Worker heartbeat readiness is derived only from the validated health snapshot and cannot be asserted by a caller.
+  - Candidate and runtime identity include the exact canonical build timestamp and migration schema version.
+  - Heartbeat freshness is measured against the actual publication clock; a stale or future caller-generated health snapshot cannot publish.
+  - Queue readiness requires exact lease cardinality/age, fencing, retry, and content-progress evidence; inconsistent or stalled queues are non-ready.
+  - Every alert carries runtime tier and verification environment, and leakage monitoring covers secret/PII keys plus raw links for all seven providers.
+  - Retry count equals the sum of scheduled and exhausted retry evidence; unmatched retry counts fail readiness.
+  - An active queue lease is stale and Sev1 at the exact five-minute worker-lease expiry, even when fencing evidence is otherwise valid.
+  - Common address PII includes street-address, address-line, street-line, and qualified mailing, billing, shipping, home, residential, physical, and postal-address keys without weakening safe operational allowlists.
+  - Central route registration, configuration, deployment, dependency, package, migration, and shared composer changes remain gated by P33 steward requests.
+downstream_tasks:
+  - P34
+verification_commands:
+  - npm run typecheck
+  - focused ESLint and Prettier checks over all interface implementation artifacts
+  - git diff --check
+contains_product_completion_claim: false
+contains_external_effect: false

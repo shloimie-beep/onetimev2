@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "goal_id": "OT-LAUNCH-01",
+  "track_id": "rabbi_telegram_communications",
+  "task_id": "OT-LAUNCH-01-RABBI-TELEGRAM-01",
+  "owner": {
+    "repository": "shloimie-beep/onetimev2",
+    "branch": "codex/rabbi-telegram-communications",
+    "system": "One Time Rabbi Telegram bot"
+  },
+  "write_scope": "Executable Telegram worker, typed communication capabilities, same-GHL-conversation adapter, Student-question answer projection, internal tasks, preview/confirm, lease/replay/audit, and synthetic tests",
+  "result": {
+    "status": "implemented_semantic_audit_repaired_and_validated",
+    "summary": "The distinct One Time Rabbi Telegram worker handles scoped Parent communication previews and confirmations, local Student question answers, and internal Rabbi/operator tasks with one leased consumer, deterministic idempotency, replay denial, durable audit, synthetic same-conversation delivery proof, and truthful provider-off startup. A terminal failure may now update the conversation projection and failure audit only after exactly one owner-and-generation-fenced outbox transition; a stale generation is lease loss with no downstream mutation.",
+    "customer_messages_sent": 0,
+    "production_mutations": 0,
+    "child_ghl_contacts_created": 0,
+    "duplicate_customer_transcripts_created": 0,
+    "customer_provider_status": "provider_off"
+  },
+  "acceptance_results": {
+    "RABBI-TELEGRAM-001": {
+      "status": "passed",
+      "summary": "Focused worker, domain, database, browser, scope-denial, replay, and synthetic-provider gates passed without a customer send or production mutation."
+    }
+  },
+  "evidence": [
+    {
+      "type": "unit_test",
+      "path": "tests/unit/telegram-rabbi-runtime.test.ts",
+      "result": "3 passed; provider-off boot, distinct identity prerequisites, and synthetic-mode environment restriction verified"
+    },
+    {
+      "type": "integration_test",
+      "path": "tests/integration/telegram-rabbi-communications.test.ts",
+      "result": "4 passed; Parent preview/confirm, Student answer, internal task, cross-scope denial, stale confirmation, lease, retry, replay, and same-owner newer-generation failure fencing verified"
+    },
+    {
+      "type": "semantic_audit_repair",
+      "path": "packages/domain/src/telegram/rabbi-worker.ts",
+      "result": "an adversarial same-owner reclaim delivered generation 2 before generation 1 failed terminally; the stale attempt returned lease_lost, preserved delivered outbox/conversation state, and created zero failed or dead-letter audit rows"
+    },
+    {
+      "type": "database_readback",
+      "path": "tests/integration/telegram-rabbi-communications.test.ts",
+      "result": "confirmed Student answer read from the canonical portal question table; internal task read from its contact-independent aggregate; no GHL contact or CRM task created"
+    },
+    {
+      "type": "restart_readback",
+      "path": "tests/integration/telegram-rabbi-communications.test.ts",
+      "result": "consumer lease and delivered idempotency state survived worker reconstruction and rejected duplicate delivery"
+    },
+    {
+      "type": "synthetic_provider_readback",
+      "path": "tests/integration/telegram-rabbi-communications.test.ts",
+      "result": "one confirmed Parent reply produced exactly one synthetic delivery in the original adult conversation; unconfirmed and replayed actions produced no additional delivery"
+    },
+    {
+      "type": "browser_test",
+      "path": "tests/e2e/rabbi-telegram-communications.spec.ts",
+      "result": "1 passed; the intended Student portal API returned the confirmed answer and a sibling session could not read it"
+    },
+    {
+      "type": "migration_safety",
+      "path": "packages/db/migrations/2226_rabbi_telegram_communications.sql",
+      "sha256": "82b609978f4ab6efeb7860810c987003fe44e0f3326813dff6587ff9a3a1bdeb",
+      "result": "forward-only migration safety passed"
+    },
+    {
+      "type": "static_gates",
+      "result": "format, brand, lint, typecheck, build, secret scan, bundle budgets, migration safety, governance validation, launch-status projection, workflow-control projection, conflict-marker scan, and git diff check passed"
+    },
+    {
+      "type": "governed_base",
+      "reference": "415d7e49d7567d3e211fb725c0916ece78da4dd0",
+      "result": "rebased without conflicts onto the conductor-owned portal projection repair on codex/full-app-staging-live; merge-base matches the exact governed descendant, the Rabbi diff contains no copy of the repair, and BOARD.yaml remains untouched"
+    },
+    {
+      "type": "regression_suite",
+      "result": "75 unit files with 413 tests and 64 integration files with 332 tests passed; the repaired Experience Preview file passed 18/18, including protected synthetic lesson playback, sibling denial, and fixed-demo 409 semantics"
+    },
+    {
+      "type": "timeout_recheck",
+      "result": "three unrelated migration setup hooks that timed out under the first parallel integration run passed independently at 25/25; the complete integration retry then passed 331/331"
+    },
+    {
+      "type": "superseded_ci_failure",
+      "reference": "PR #119 / Actions run 30082515837",
+      "result": "the inherited portal/classroom browser failure on the prior governed base was documented before rebase; all pre-browser Node gates and four infrastructure checks passed"
+    },
+    {
+      "type": "repaired_browser_validation",
+      "reference": "415d7e49d7567d3e211fb725c0916ece78da4dd0",
+      "result": "the repaired 13-test portal/content/Zoom set passed within the two-worker full browser run; the scoped Rabbi Chromium proof passed, and the three route-inventory journeys passed independently after the local Windows shared server exited late in the combined run"
+    },
+    {
+      "type": "accessibility_validation",
+      "result": "24 browser accessibility tests passed"
+    },
+    {
+      "type": "complete_browser_validation",
+      "result": "the full 63-case E2E command completed successfully at bounded local concurrency; all 10 performance tests and bundle checks passed"
+    }
+  ],
+  "remaining_work": [],
+  "blocker": null,
+  "sanitized_at": "2026-07-24T10:58:42Z"
+}

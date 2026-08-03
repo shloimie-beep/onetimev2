@@ -1,0 +1,232 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: V39
+title: Schema, Jobs, Classroom, Zoom, and Content Verification
+outcome: Verify schema/state invariants, jobs, canonical enrollment, embedded Zoom, attendance, upload/processing/publication/playback,
+  and denial paths against the immutable candidate.
+kind: verification
+wave: 9
+priority: launch_critical
+execution:
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+  service_tier: PRIORITY
+  mode: START_OR_RESUME
+  branch_template: codex/v21-verify-{candidate_short_sha}-v39
+  harness_branch_template: codex/v21-harness-{candidate_short_sha}-v39
+  maximum_active_writers_in_group: 1
+dependencies:
+  start_after:
+  - I36
+  required_start_states:
+    I36: candidate_frozen
+  merge_after: []
+  candidate_integration_partners: []
+  candidate_requires_all_implementation_tasks: false
+  acceptance_after: []
+  first_run_start_sha_source: origin/codex/v21-control:ops/v2.1-execution/control/READY-QUEUE.yaml authorized_start_sha
+interface_checkpoint:
+  required: false
+  unlocks: []
+  contract_schema_version: 1
+  required_export_roots: []
+  must_record_exact_realized_paths_symbols_versions_and_digests: true
+  rule: No downstream contract checkpoint required.
+scope:
+  writer_slots:
+  - VERIFY_CLASSROOM_CONTENT
+  normalized_owned_globs:
+  - ops/v2.1-execution/results/<candidate-digest>/V39/**
+  - ops/v2.1-execution/verification-harness/V39/**
+  scope_notes_only:
+  - verification-only branch codex/v21-verify-<candidate-short-sha>-v39
+  explicit_path_excludes: []
+  forbidden_shared_paths: []
+  external_authority: none by default; scoped read-only provider access only with C00 authorization; bounded effects
+    require a task-specific authority record and exclusive provider lock
+coverage:
+  primary_requirement_ids: []
+  primary_acceptance_case_ids: []
+  verification_of_tasks:
+  - F02
+  - F05
+  - P16
+  - P17
+  - P18
+  - P19
+  - P20
+  - P21
+  verification_requirement_ids:
+  - OTV2-STATE-202
+  - OTV2-API-217
+  - OTV2-JOBS-210
+  - OTV2-JOBS-211
+  - OTV2-CLASSROOM-065
+  - OTV2-CLASSROOM-066
+  - OTV2-CLASSROOM-067
+  - OTV2-CLASSROOM-184
+  - OTV2-CLASSROOM-223
+  - OTV2-CLASSROOM-234
+  - OTV2-CLASSROOM-235
+  - OTV2-CLASSROOM-068
+  - OTV2-CLASSROOM-069
+  - OTV2-CLASSROOM-070
+  - OTV2-CLASSROOM-071
+  - OTV2-CLASSROOM-072
+  - OTV2-CLASSROOM-074
+  - OTV2-CLASSROOM-076
+  - OTV2-CLASSROOM-077
+  - OTV2-CLASSROOM-079
+  - OTV2-CLASSROOM-188
+  - OTV2-CLASSROOM-073
+  - OTV2-CLASSROOM-075
+  - OTV2-CLASSROOM-078
+  - OTV2-CLASSROOM-187
+  - OTV2-CLASSROOM-232
+  - OTV2-CONTENT-080
+  - OTV2-CONTENT-081
+  - OTV2-CONTENT-082
+  - OTV2-CONTENT-083
+  - OTV2-CONTENT-190
+  - OTV2-CONTENT-192
+  - OTV2-CONTENT-084
+  - OTV2-CONTENT-085
+  - OTV2-CONTENT-086
+  - OTV2-CONTENT-191
+  - OTV2-CONTENT-193
+  - OTV2-CONTENT-233
+  - OTV2-CONTENT-087
+  - OTV2-CONTENT-088
+  - OTV2-CONTENT-089
+  - OTV2-CONTENT-090
+  - OTV2-CONTENT-091
+  - OTV2-CONTENT-092
+  - OTV2-CONTENT-194
+  - OTV2-CONTENT-195
+  verification_acceptance_case_ids:
+  - OTV2-STATE-202-AC01
+  - OTV2-API-217-AC01
+  - OTV2-JOBS-210-AC01
+  - OTV2-JOBS-211-AC01
+  - OTV2-CLASSROOM-065-SERIES-LIFECYCLE
+  - OTV2-CLASSROOM-066-AC01
+  - OTV2-CLASSROOM-067-AC01
+  - OTV2-CLASSROOM-184-AC01
+  - OTV2-CLASSROOM-223-DRAFT-THEN-ACTIVATE
+  - OTV2-CLASSROOM-234-FULL-LIFECYCLE
+  - OTV2-CLASSROOM-235-ATOMIC-ENROLLMENT
+  - OTV2-CLASSROOM-068-AC01
+  - OTV2-CLASSROOM-069-AC01
+  - OTV2-CLASSROOM-070-AC01
+  - OTV2-CLASSROOM-071-AC01
+  - OTV2-CLASSROOM-072-AC01
+  - OTV2-CLASSROOM-074-AC01
+  - OTV2-CLASSROOM-076-AC01
+  - OTV2-CLASSROOM-077-AC01
+  - OTV2-CLASSROOM-079-AC01
+  - OTV2-CLASSROOM-188-AC01
+  - OTV2-CLASSROOM-073-AC01
+  - OTV2-CLASSROOM-075-AC01
+  - OTV2-CLASSROOM-078-AC01
+  - OTV2-CLASSROOM-187-AC01
+  - OTV2-CLASSROOM-232-TIMING
+  - OTV2-CLASSROOM-232-BOOTSTRAP-LEASE
+  - OTV2-CONTENT-080-AC01
+  - OTV2-CONTENT-081-AC01
+  - OTV2-CONTENT-082-AC01
+  - OTV2-CONTENT-083-AC01
+  - OTV2-CONTENT-190-AC01
+  - OTV2-CONTENT-192-AC01
+  - OTV2-CONTENT-084-AC01
+  - OTV2-CONTENT-085-AC01
+  - OTV2-CONTENT-086-AC01
+  - OTV2-CONTENT-191-AC01
+  - OTV2-CONTENT-193-AC01
+  - OTV2-CONTENT-233-OBS-CAPTURE
+  - OTV2-CONTENT-233-STORAGE-MODELS-TRANSCODE
+  - OTV2-CONTENT-087-AC01
+  - OTV2-CONTENT-088-AC01
+  - OTV2-CONTENT-089-STUDENT
+  - OTV2-CONTENT-089-PARENT-DENY
+  - OTV2-CONTENT-090-AC01
+  - OTV2-CONTENT-091-AC01
+  - OTV2-CONTENT-092-AC01
+  - OTV2-CONTENT-194-AC01
+  - OTV2-CONTENT-195-AC01
+  decision_ids:
+  - DEC-016
+  - DEC-055
+  - DEC-060
+  - DEC-061
+  - DEC-062
+  - DEC-063
+  - DEC-064
+  - DEC-065
+  - DEC-066
+  - DEC-067
+  - DEC-068
+  - DEC-069
+  - DEC-070
+  - DEC-071
+  - DEC-072
+  - DEC-073
+  - DEC-074
+  - DEC-075
+  - DEC-076
+  - DEC-077
+  - DEC-078
+  - DEC-079
+  - DEC-120
+  - DEC-121
+  - DEC-122
+  - DEC-123
+  - DEC-124
+  - DEC-125
+  - DEC-126
+  required_source_documents:
+  - 01-PRODUCT-SPEC-v2.1.md
+  - 03-DECISION-REGISTER-v2.1.md
+  - 05-ACTOR-ROLE-CAPABILITY-ROUTE-MATRIX-v2.1.md
+  - 06-DOMAIN-MODEL-AND-STATE-MACHINES-v2.1.md
+  - 07-SOURCE-OF-TRUTH-AND-PROVIDER-CONTRACTS-v2.1.md
+  - 08-SCREEN-CATALOG-AND-DESIGN-SYSTEM-v2.1.md
+  - 11-ENVIRONMENT-FIXTURE-CANARY-MANIFEST-v2.1.yaml
+  embedded_normative_sections: []
+deliverables:
+- one schema-valid candidate-bound result record per assigned acceptance case
+- lane summary with exact pass/fail/blocked counts
+- zero unrecorded external effects
+- reproduction packet for every failure
+notes: []
+terminal_states:
+- ready_for_evidence_merge
+definition_of_done:
+- Every assigned behavior is implemented or, for verification/release tasks, every assigned case has a schema-valid
+  candidate-bound result.
+- The diff remains inside owned paths plus structured steward requests.
+- Task-owned verification passes; ordinary in-scope failures are diagnosed and corrected.
+- No prohibited product surface, fake fallback, security/privacy weakening, or unauthorized external effect is introduced.
+- TASK-STATE.yaml, HANDOFF.md, and NEXT-PROMPT.md are current.
+- 'All checkpoints are committed and pushed; this task may end only in one of these exact task-local terminal states:
+  ready_for_evidence_merge.'
+checkpoint_policy:
+  interval_minutes: 30-45
+  mandatory_before:
+  - long-running command
+  - authorized external effect
+  - window end
+  mandatory_after:
+  - interface contract
+  - migration or invariant
+  - meaningful milestone
+  - blocker discovery
+stop_conditions:
+- missing explicit authority or provider identity for a required live effect
+- writer/path/provider lock collision
+- non-fast-forward push
+- normative contradiction requiring operator decision
+- incompatible or absent upstream interface contract
+- applied migration would need modification
+- continuation would weaken a protected invariant
+- destructive operation lacks exact target/authority
+- reproduced out-of-scope failure blocks progress after all safe independent work is complete

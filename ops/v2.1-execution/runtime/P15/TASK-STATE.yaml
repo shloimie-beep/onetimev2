@@ -1,0 +1,122 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P15
+task_packet_digest: cc6d395e0cb231a5180c9f927a64c814148b4946f869d68ee6afc1b74bc5c8df
+task_context_digest: 0f4326a4a2c00120ae85466af822e8dc1304c2d6f6d975699991e8db75778a6a
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+branch: codex/v21-p15-calendar
+start_sha: 81602ccc44e134288d2e8cd8d6ad71a249553be2
+dependency_heads:
+  F02:
+    state: interface_ready_integrated
+    task_head_sha: e4673ff1c2e621e26ac93034be245b280c4da4fa
+    integration_head_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
+    interface_implementation_head_sha: 191dac288ea1721bdc0252bd012060ca974d2242
+    interface_checkpoint_digest: c03e01d7e16bdc252b9964f1acfc60d40e772de98776023c20f7589e467b5ccd
+  F07:
+    state: interface_ready_integrated
+    task_head_sha: 2c451d7b1f59eece1ae8df505d4eeec19f42e1ef
+    integration_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
+    interface_implementation_head_sha: a90baae8cf69d6823af6d741161fe0e9e7441321
+    interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
+status: ready_for_review
+phase: complete
+claimed_by: codex-p15-worker-dc9b1096
+claim_time: '2026-07-28T19:16:53Z'
+claim_id: dc9b1096-19bc-4d6a-91e0-e15dc06d2705
+writer_slot_lease_id: 83e9dbb8-9007-4c75-bc14-5b0accfe90a1
+lease_expires_at: '2026-07-28T20:05:27Z'
+lease_released_at: '2026-07-28T19:32:00Z'
+last_heartbeat_at: '2026-07-28T19:32:00Z'
+controller_authorization_sha: 44202fc53db9781c91e4015d6af004bac4ab037b
+state_based_on_control_head_sha: fe5219b4533fc7d7075f209f262e579906cf1e34
+ready_entry_payload_digest: b78cc45bd737dc76a8161321f1a656611e6cf59cdc8064eeb7de15cafc05780f
+state_based_on_head_sha: 81602ccc44e134288d2e8cd8d6ad71a249553be2
+last_implementation_commit_sha: ab71afb032b8e004cc655e3e5f5a6b8286aec380
+interface_checkpoint_digest: 2ebe108d2aa39a90908889bf9cf8f96cffb93d296e7ee9614e0d1bb5b351c3eb
+completed_steps:
+  - Verified exact control, ready-entry, package, source, task, context, branch absence, claim, and unexpired CALENDAR lease bindings.
+  - Verified F02 and F07 interface implementation ancestry at the authorized integration start.
+  - Read the locked P15 prompt, packet, context, required source sections, execution contract, and dependency interfaces.
+  - Implemented the versioned calendar contract, DST-safe recurrence/edit domain, tenant-scoped query repository/service, role projections, and accessible responsive UI.
+  - Passed focused domain/UI tests, full workspace typecheck, full lint, formatting, diff hygiene, and prohibited-provider absence inventory.
+  - Published exact P15 interface artifact hashes and combined digest for P16, plus structured migration and registration steward requests.
+remaining_steps:
+  - I36 must review and integrate the P15 interface checkpoint before C00 authorizes P16.
+  - I36 must disposition P15-MIGRATION-001 and P15-REGISTRATION-001 in shared owner paths.
+next_action: Review and integrate P15 interface checkpoint 2ebe108d2aa39a90908889bf9cf8f96cffb93d296e7ee9614e0d1bb5b351c3eb from implementation head ab71afb032b8e004cc655e3e5f5a6b8286aec380, then disposition the two steward requests.
+requirements:
+  OTV2-CALENDAR-051: implementation_ready
+  OTV2-CALENDAR-052: implementation_ready
+  OTV2-CALENDAR-053: implementation_ready
+  OTV2-CALENDAR-054: implementation_ready
+  OTV2-CALENDAR-055: implementation_ready
+  OTV2-CALENDAR-056: implementation_ready
+  OTV2-CALENDAR-057: implementation_ready
+  OTV2-CALENDAR-058: implementation_ready
+  OTV2-CALENDAR-059: implementation_ready
+  OTV2-CALENDAR-060: implementation_ready
+  OTV2-CALENDAR-061: implementation_ready
+  OTV2-CALENDAR-062: implementation_ready
+  OTV2-CALENDAR-063: implementation_ready
+  OTV2-CALENDAR-064: implementation_ready
+acceptance_cases:
+  OTV2-CALENDAR-051-AC01: implementation_ready
+  OTV2-CALENDAR-052-AC01: implementation_ready
+  OTV2-CALENDAR-053-AC01: implementation_ready
+  OTV2-CALENDAR-054-AC01: implementation_ready
+  OTV2-CALENDAR-055-AC01: implementation_ready
+  OTV2-CALENDAR-056-AC01: implementation_ready
+  OTV2-CALENDAR-057-AC01: implementation_ready
+  OTV2-CALENDAR-058-AC01: implementation_ready
+  OTV2-CALENDAR-059-AC01: implementation_ready
+  OTV2-CALENDAR-060-AC01: implementation_ready
+  OTV2-CALENDAR-061-AC01: implementation_ready
+  OTV2-CALENDAR-062-AC01: implementation_ready
+  OTV2-CALENDAR-063-AC01: implementation_ready
+  OTV2-CALENDAR-064-AC01: implementation_ready
+changed_paths:
+  - apps/web/src/client/features/calendar/CalendarWorkspace.test.tsx
+  - apps/web/src/client/features/calendar/CalendarWorkspace.tsx
+  - apps/web/src/client/features/calendar/calendar.css
+  - apps/web/src/client/features/calendar/index.ts
+  - apps/web/src/server/features/calendar/index.ts
+  - apps/web/src/server/features/calendar/service.ts
+  - packages/contracts/src/calendar/index.ts
+  - packages/db/src/calendar/index.ts
+  - packages/db/src/calendar/repository.ts
+  - packages/db/src/calendar/schema-contract.ts
+  - packages/domain/src/calendar/calendar.test.ts
+  - packages/domain/src/calendar/errors.ts
+  - packages/domain/src/calendar/index.ts
+  - packages/domain/src/calendar/recurrence.ts
+  - packages/domain/src/calendar/time-zone.ts
+  - packages/domain/src/calendar/views.ts
+  - ops/v2.1-execution/runtime/P15/HANDOFF.md
+  - ops/v2.1-execution/runtime/P15/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/P15/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P15/STEWARD-REQUESTS.yaml
+  - ops/v2.1-execution/runtime/P15/TASK-STATE.yaml
+migrations: []
+steward_requests:
+  - P15-MIGRATION-001
+  - P15-REGISTRATION-001
+verification:
+  commands_run:
+    - Canonical READY-QUEUE P15 digest and F02/F07 interface ancestry verification: passed.
+    - LOCKED-SHA256SUMS immutable Git-blob verification: 200/200 passed; source 15/15 passed.
+    - npm run typecheck: passed.
+    - npm run lint -- --quiet: passed.
+    - npx vitest run packages/domain/src/calendar/calendar.test.ts apps/web/src/client/features/calendar/CalendarWorkspace.test.tsx --environment node: passed, 12 tests.
+    - Prettier write/check for all P15 TypeScript, TSX, CSS, and YAML artifacts: passed.
+    - git diff --check: passed.
+    - Google Calendar/provider route, action, configuration, and job inventory under P15-owned implementation roots: absent.
+  known_baseline_failures: []
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings:
+  - Shared migration, root barrel, and central route composition changes are captured in STEWARD-REQUESTS.yaml and were not edited by P15.

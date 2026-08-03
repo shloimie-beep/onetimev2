@@ -1,0 +1,49 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P09-migration-001
+task_id: P09
+kind: migration
+requirement_ids:
+  - OTV2-SIGNUP-178
+  - OTV2-SIGNUP-229
+  - OTV2-SCHOOL-200
+acceptance_case_ids:
+  - OTV2-SIGNUP-178-SCHOOL-INQUIRY-NO-ACCESS
+  - OTV2-SIGNUP-229-PUBLIC-SCHOOL-INQUIRY
+  - OTV2-SCHOOL-200-AC01
+rationale: >-
+  P09 supplies transaction-neutral policy and service ports but only the
+  migration steward may allocate forward-only persistence for durable School
+  inquiry receipts and approved-school configuration.
+desired_semantic_change: >-
+  Add environment-scoped School inquiry persistence with one normalized adult
+  email per exact scope, an immutable canonical request digest, one manual-sales
+  adult lead, and one durable acknowledgment intent. Add approval-bound,
+  optimistic-versioned school allowance/pricing/billing-start/terms
+  configuration linked to an existing adult account manager and household.
+  No row may grant access, create credentials, define a School role, enroll
+  nurture, or store raw provider identity.
+proposed_symbols_routes_keys_or_dependencies:
+  - unique exact product/runtime/verification-environment plus normalized-email inquiry key
+  - immutable canonical request digest covering normalized school/contact/email and optional phone/note
+  - adult manual-sales lead state fixed to pending_manual_follow_up
+  - exactly one acknowledgment intent and receipt per inquiry key, committed atomically
+  - explicit false/zero projections for account, login, household, Student, subscription, and access creation
+  - no nurture workflow, campaign, conversion, newsletter, reactivation, or provider-enrollment column or intent
+  - approved-school row requires approval_state approved, existing adult account manager, and existing household
+  - optimistic configuration_version for manual seat allowance, price minor units, currency, billing start, and terms reference
+  - approved-school configuration persists account_model parent_student and never a School role, portal, or bulk-roster capability
+  - scope, approval state, account manager, household, and expected version are locked and rechecked in one transaction
+compatibility_assumptions:
+  - Reuse F02 transaction and tenant/environment isolation conventions.
+  - Reuse existing adult, HumanAccount, household, Parent, and Student foreign keys without changing their role enums.
+  - A downstream P28/I36 outbox dispatcher may deliver the single acknowledgment and create or match the adult CRM lead only under separate provider authority.
+verification_performed:
+  - focused P09 contract, domain, service, and client-model tests
+  - repository TypeScript typecheck
+conflicts_or_risks:
+  - A normalized-email retry with changed canonical fields must fail closed instead of overwriting or duplicating the lead.
+  - Approval, environment, account-manager, household, or configuration-version mismatch must produce zero writes.
+  - No password, credential, Student data, provider identifier, access projection, subscription, or nurture enrollment may be stored by this migration.
+  - Do not edit an applied migration or allocate an ordinal outside the migration steward.
+contains_secret_or_private_data: false

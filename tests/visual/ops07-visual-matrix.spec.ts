@@ -3,7 +3,7 @@ import path from 'node:path';
 import sharp from 'sharp';
 import { expect, test, type Page } from '@playwright/test';
 
-const evidenceDir = path.resolve(process.cwd(), 'ops/evidence/ops-07');
+const evidenceDir = path.resolve(process.cwd(), 'test-results/f07-public-responsive');
 const screenshotDir = path.join(evidenceDir, 'screenshots');
 const matrixPath = path.join(evidenceDir, 'visual-matrix.json');
 
@@ -20,27 +20,30 @@ test.describe('OPS-07 visual matrix', () => {
   test('asserts nonblank screenshots, no overflow, and stable usable state across core routes', async ({
     page,
   }) => {
+    await page.route('**/api/v1/signup/family/bootstrap', (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          idempotency_key: 'a'.repeat(43),
+          csrf_token: `1789315200.${'b'.repeat(43)}.${'c'.repeat(43)}`,
+          expires_at: '2026-09-13T16:40:00.000Z',
+          writes_allowed: true,
+        }),
+      }),
+    );
     await mkdir(screenshotDir, { recursive: true });
     const results = [];
     for (const viewport of viewports) {
       await page.setViewportSize(viewport);
       results.push(
-        await captureRoute(
-          page,
-          `landing-${viewport.name}`,
-          '/',
-          'Give your son a love for learning Torah.',
-        ),
+        await captureRoute(page, `landing-${viewport.name}`, '/', 'MISHNAYOS MADE MEMORABLE'),
       );
-      results.push(await captureRoute(page, `signup-${viewport.name}`, '/signup', 'Sign Up Now'));
+      results.push(
+        await captureRoute(page, `signup-${viewport.name}`, '/signup', 'Pre-register Your Family'),
+      );
     }
-
-    await page.setViewportSize({ width: 390, height: 844 });
-    await login(page, 'ot-parent@example.test', 'ParentPassword!234', '/app/parent');
-    results.push(await captureCurrent(page, 'parent-mobile', 'Parent Portal'));
-    await page.context().clearCookies();
-    await login(page, 'ot-student@example.test', 'StudentPassword!234', '/app/student');
-    results.push(await captureCurrent(page, 'student-mobile', 'Student Portal'));
 
     const evidence = {
       generated_at: new Date().toISOString(),
@@ -67,6 +70,14 @@ async function captureCurrent(page: Page, label: string, heading: string) {
   const screenshotPath = path.join(screenshotDir, `${label}.png`);
   try {
     await page.getByRole('heading', { name: heading }).first().waitFor({ timeout: 15_000 });
+    await page.locator('img[loading="lazy"]').evaluateAll((images) => {
+      images.forEach((image) => ((image as HTMLImageElement).loading = 'eager'));
+    });
+    await page.waitForFunction(
+      () => [...document.images].every((image) => image.complete && image.naturalWidth > 0),
+      undefined,
+      { timeout: 15_000 },
+    );
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
     );
@@ -99,12 +110,4 @@ async function captureCurrent(page: Page, label: string, heading: string) {
       findings: [error instanceof Error ? error.message : String(error)],
     };
   }
-}
-
-async function login(page: Page, email: string, password: string, returnTo: string) {
-  await page.goto(`/login?return_to=${encodeURIComponent(returnTo)}`);
-  await page.getByLabel('Email').fill(email);
-  await page.getByLabel('Password').fill(password);
-  await page.getByRole('button', { name: 'Login' }).click();
-  await page.waitForURL(`**${returnTo}`);
 }

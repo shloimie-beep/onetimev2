@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { loadConfig } from '../../../packages/config/src/index.ts';
-import { classroomLaunchBootstrapResponseSchema } from '../../../packages/contracts/src/classroom/index.ts';
+import {
+  classroomLaunchBootstrapPayloadSchema,
+  classroomLaunchBootstrapResponseSchema,
+} from '../../../packages/contracts/src/classroom/index.ts';
 import {
   createClassroomService,
   type ClassroomEligibility,
@@ -19,6 +22,30 @@ import {
 import { DeterministicTestPayloadCodec } from '../../../packages/domain/src/telegram/crypto.ts';
 
 describe('OT-88 classroom contracts and policy', () => {
+  it('accepts only non-bearing launch bootstrap context', () => {
+    expect(
+      classroomLaunchBootstrapPayloadSchema.parse({
+        viewport_width: 390,
+        user_agent_hint: 'test-browser',
+      }),
+    ).toEqual({
+      viewport_width: 390,
+      user_agent_hint: 'test-browser',
+    });
+    expect(() =>
+      classroomLaunchBootstrapPayloadSchema.parse({
+        viewport_width: 390,
+        launch_path: '/classroom/launch/grant/secret',
+      }),
+    ).toThrow();
+    expect(() =>
+      classroomLaunchBootstrapPayloadSchema.parse({
+        viewport_width: 390,
+        launch_token_ref: 'classroom_grant_contract',
+      }),
+    ).toThrow();
+  });
+
   it('keeps the daily class at 19:00 Asia/Jerusalem across seasonal offsets', () => {
     const summer = resolveDailyClassWindow(new Date('2026-07-16T10:00:00.000Z'));
     const winter = resolveDailyClassWindow(new Date('2026-01-16T10:00:00.000Z'));
@@ -54,6 +81,7 @@ describe('OT-88 classroom contracts and policy', () => {
       selected_view: 'client',
       attempt_key: 'classroom_attempt_contract',
       sdk: {
+        mode: 'sink',
         sdk_key_ref: 'sdk_key_contract',
         meeting_number: '9123456789',
         signature: 'sink_sig_contract_1234567890',
@@ -85,6 +113,38 @@ describe('OT-88 classroom contracts and policy', () => {
         provider: { ...base.provider, raw_join_url_present: true },
       }),
     ).toThrow();
+
+    const real = classroomLaunchBootstrapResponseSchema.parse({
+      ...base,
+      occurrence: { ...base.occurrence, provider_state: 'ready' },
+      sdk: {
+        mode: 'real',
+        sdk_web_version: '6.2.0',
+        meeting_number: '9123456789',
+        signature: 'real_signature_contract_1234567890',
+        meeting_password: 'protected-passcode',
+        registrant_token: 'registrant-token-contract',
+        user_email: 'zoom-registration@example.test',
+        customer_key: 'zoom_ck_1234567890abcdef12345678',
+        role: 0,
+        user_display_name: 'Learner',
+        user_email_required: true,
+        leave_url: '/app/student',
+        video_start_model: 'PARTICIPANT_CONSENT',
+      },
+      provider: { mode: 'real', state: 'ready', raw_join_url_present: false },
+    });
+    expect(real.sdk).toMatchObject({
+      mode: 'real',
+      role: 0,
+      video_start_model: 'PARTICIPANT_CONSENT',
+    });
+    expect(() =>
+      classroomLaunchBootstrapResponseSchema.parse({
+        ...real,
+        sdk: { ...real.sdk, customer_key: 'wrong-or-cross-account-key' },
+      }),
+    ).toThrow();
   });
 
   it('keeps real provider mode fail-closed and only enables sink readiness', () => {
@@ -93,9 +153,13 @@ describe('OT-88 classroom contracts and policy', () => {
       ZOOM_CLASSROOM_ENABLED: 'true',
       ZOOM_CLASSROOM_PROVIDER_MODE: 'real',
       ZOOM_CLASSROOM_REAL_PROVIDER_ENABLED: 'true',
-      ZOOM_MEETING_SDK_KEY: 'configured',
-      ZOOM_MEETING_SDK_SECRET: 'configured',
-      ZOOM_ACCOUNT_ID: 'configured',
+      ZOOM_CLASSROOM_CANARY_LEARNER_KEY: 'learner_contract',
+      ZOOM_MEETING_SDK_CLIENT_ID: 'configured',
+      ZOOM_MEETING_SDK_CLIENT_SECRET: 'configured',
+      ZOOM_MEETING_SDK_WEB_VERSION: '3.11.2',
+      ZOOM_S2S_ACCOUNT_ID: 'configured',
+      ZOOM_S2S_CLIENT_ID: 'configured',
+      ZOOM_S2S_CLIENT_SECRET: 'configured',
     });
     const sinkConfig = loadConfig({
       NODE_ENV: 'test',
@@ -104,7 +168,48 @@ describe('OT-88 classroom contracts and policy', () => {
     });
 
     expect(serviceFor(realConfig).providerState()).toBe('unconfigured');
+    expect(serviceFor(realConfig, true).providerState()).toBe('ready');
     expect(serviceFor(sinkConfig).providerState()).toBe('sink_ready');
+  });
+
+  it('keeps Meeting SDK aliases separate from canonical S2S OAuth readiness', () => {
+    const legacySdkOnly = loadConfig({
+      NODE_ENV: 'test',
+      ZOOM_MEETING_SDK_KEY: 'legacy-client-id-alias',
+      ZOOM_MEETING_SDK_SECRET: 'legacy-client-secret-alias',
+      ZOOM_MEETING_SDK_WEB_VERSION: '3.11.2',
+      ZOOM_ACCOUNT_ID: 'legacy-s2s-account-id-alias',
+    });
+    expect(legacySdkOnly).toMatchObject({
+      zoomMeetingSdkClientIdConfigured: true,
+      zoomMeetingSdkClientSecretConfigured: true,
+      zoomMeetingSdkWebVersionConfigured: true,
+      zoomMeetingSdkLegacyAliasUsed: true,
+      zoomAccountId: 'legacy-s2s-account-id-alias',
+      zoomAccountIdConfigured: true,
+      zoomS2sAccountIdConfigured: false,
+      zoomS2sClientIdConfigured: false,
+      zoomS2sClientSecretConfigured: false,
+    });
+
+    const canonical = loadConfig({
+      NODE_ENV: 'test',
+      ZOOM_MEETING_SDK_CLIENT_ID: 'meeting-sdk-client-id',
+      ZOOM_MEETING_SDK_CLIENT_SECRET: 'meeting-sdk-client-secret',
+      ZOOM_MEETING_SDK_WEB_VERSION: '3.11.2',
+      ZOOM_S2S_ACCOUNT_ID: 's2s-account-id',
+      ZOOM_S2S_CLIENT_ID: 's2s-client-id',
+      ZOOM_S2S_CLIENT_SECRET: 's2s-client-secret',
+    });
+    expect(canonical).toMatchObject({
+      zoomMeetingSdkClientIdConfigured: true,
+      zoomMeetingSdkClientSecretConfigured: true,
+      zoomMeetingSdkWebVersionConfigured: true,
+      zoomMeetingSdkLegacyAliasUsed: false,
+      zoomS2sAccountIdConfigured: true,
+      zoomS2sClientIdConfigured: true,
+      zoomS2sClientSecretConfigured: true,
+    });
   });
 
   it('keeps the official Zoom Meeting SDK boundary deterministic and strips internal fields', async () => {
@@ -269,11 +374,12 @@ describe('OT-88 classroom contracts and policy', () => {
   });
 });
 
-function serviceFor(config: ReturnType<typeof loadConfig>) {
+function serviceFor(config: ReturnType<typeof loadConfig>, zoomRealProviderReady = false) {
   return createClassroomService({
     config,
     repository: failingRepository(),
     questionCodec: new DeterministicTestPayloadCodec(),
+    zoomRealProviderReady,
   });
 }
 
@@ -286,7 +392,7 @@ function failingRepository(): ClassroomRepository {
     getOccurrence: fail,
     getLearnerEligibility: fail,
     issueLaunchGrant: fail,
-    consumeLaunchGrant: fail,
+    consumePendingLaunchGrant: fail,
     upsertAttendanceAttempt: fail,
     recordAttendanceEvent: fail,
     submitQuestion: fail,

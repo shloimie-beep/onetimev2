@@ -1,0 +1,1812 @@
+workflow_root: 'One Time'
+workflow_folders:
+  - order: 0
+    name: '00 - Intake & Data'
+    children: []
+  - order: 10
+    name: '10 - Enrollment & Nurture'
+    children: []
+  - order: 20
+    name: '20 - Billing & Access'
+    children: []
+  - order: 30
+    name: '30 - Portal Lifecycle'
+    children: []
+  - order: 40
+    name: '40 - Learning Operations'
+    children:
+      - order: 0
+        name: 'Classes'
+        children: []
+      - order: 1
+        name: 'Content'
+        children: []
+  - order: 45
+    name: '45 - Events'
+    children:
+      - order: 2026
+        name: '2026'
+        children:
+          - order: 0
+            name: "Tisha B'Av 2026"
+            children: []
+  - order: 50
+    name: '50 - Support'
+    children: []
+  - order: 60
+    name: '60 - Bot Actions'
+    children: []
+  - order: 90
+    name: '90 - Internal Operations'
+    children: []
+  - order: 99
+    name: '99 - Deprecated'
+    children: []
+business_workflows:
+  - key: 'OT-01'
+    canonicalName: 'OT-01 New Lead Intake'
+    normalizedName: 'ot_01_new_lead_intake'
+    ghlId: '95a6f461-1a04-4260-b379-246fdcc45af7'
+    ghlKey: 'ot_01_new_lead_intake'
+    objectType: 'business_workflow'
+    dataType: 'workflow'
+    asset_kind: 'workflow'
+    category: 'business_workflow'
+    folder: '00 - Intake & Data'
+    purpose: 'Adult receipt after successful durable Family-account creation and immediate-free-access commit.'
+    sourceOfTruth: 'Shared'
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases: []
+    assetLifecycle: 'canonical'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-23'
+    lastTestedDate: ''
+    promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-01-new-lead-intake.md'
+    checklistPath: 'integrations/highlevel/workflow-checklists/OT-01-new-lead-intake.md'
+    messageClass: 'access_help'
+    senderKey: 'office'
+    transport: 'GHL'
+    exactTrigger: 'successful durable Family-account creation committed with immediate free access'
+    companionDelivery: ''
+    providerContract:
+      exactTriggerFilter: 'One Time confirms successful durable Family-account creation and immediate free access for the adult account owner'
+      orderedCriticalActions:
+        - 'require durable Family-account creation and immediate-free-access local readback'
+        - 'confirm immediate free access with no card and no automatic charge'
+        - 'confirm capacity for up to three Student seats without creating Student contacts in GHL'
+        - 'send the exact canonical adult receipt only after local readback'
+      deliveryCategory: 'access_help'
+      senderKey: 'office'
+    displayOrder: 1
+    desiredStatus: 'DRAFT_WAITING_EXTERNAL'
+    observedStatus: 'DRAFT_SHELL'
+    exactOrderedTriggers:
+      - 'Receive only the successful durable Family-account creation commit from One Time.'
+      - 'Require immediate-free-access local readback for the same adult account owner.'
+    exactOrderedActions:
+      - 'Confirm the durable Family account and immediate free access without a card or automatic charge.'
+      - 'Confirm capacity for up to three Student seats without creating any Student contact in GHL.'
+      - 'Send canonical copy ghl.signup_confirmation.v1 through the office sender.'
+      - 'Keep School inquiries separate and manual; never enroll them in OT-01 or automatic nurture.'
+    essentialValues:
+      canonical_copy_ids:
+        - 'ghl.signup_confirmation.v1'
+      cta_custom_value: 'One Time Member Login URL'
+      school_handling: 'separate manual path; no OT-01 entry and no automatic nurture'
+      enrollment_authorized: false
+      publication_authorized: false
+    observedTriggers: []
+    observedActions: []
+    enrollmentReadback:
+      status: 'available'
+      at: '2026-07-23T18:39:39.794Z'
+      total: 0
+      active: 0
+      reference: 'integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json'
+      reason: 'Exact visible Draft workflow enrollment counters were read back as zero.'
+    lastReadback:
+      at: '2026-07-23T18:39:39.794Z'
+      method: 'live authenticated UI exact-ID, folder, status, enrollment-counter, and empty-canvas readback; no workflow mutation'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json'
+    canary:
+      result: 'not_run'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json'
+      detail: 'GHL-UI-14 is not in the reviewed queue/export and does not define the exact bounded delivery action or message template; no safe configuration or test was possible.'
+    blocker: 'DRAFT_REPOSITORY_ONLY: exact durable Family-account trigger and canonical receipt are registered; provider configuration and save/reopen readback remain separately authorized.'
+    evidence:
+      - 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
+      - 'integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json'
+      - 'integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json'
+  - key: 'OT-02A'
+    canonicalName: 'OT-02A Existing Subscriber Migration 2026 v1'
+    normalizedName: 'ot_02a_existing_subscriber_migration_2026_v1'
+    ghlId: '368d47ca-c6d2-4545-acb0-664f98bac8f2'
+    ghlKey: 'ot_02a_existing_subscriber_migration_2026_v1'
+    objectType: 'business_workflow'
+    dataType: 'workflow'
+    asset_kind: 'workflow'
+    category: 'business_workflow'
+    folder: '10 - Enrollment & Nurture'
+    purpose: 'Three-email existing-subscriber migration sequence.'
+    sourceOfTruth: 'Shared'
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases: []
+    assetLifecycle: 'canonical'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-22'
+    lastTestedDate: ''
+    promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-02A-existing-subscriber-migration-2026-v1.md'
+    checklistPath: 'integrations/highlevel/workflow-checklists/OT-02A-existing-subscriber-migration-2026-v1.md'
+    messageClass: 'existing_subscriber_migration'
+    senderKey: 'rabbi_campaign'
+    transport: 'GHL'
+    exactTrigger: 'registered existing subscriber migration audience entry'
+    companionDelivery: ''
+    displayOrder: 2
+    desiredStatus: 'DRAFT_WAITING_EXTERNAL'
+    observedStatus: 'DRAFT_SHELL'
+    exactOrderedTriggers:
+      - 'Enter only an explicitly approved 2026 existing-subscriber migration audience.'
+      - 'Require service/marketing eligibility and no suppression before each message.'
+    exactOrderedActions:
+      - 'Mark the registered migration sequence/version active.'
+      - 'Send migration email one with the registered rabbi_campaign sender.'
+      - 'Wait the approved cadence, then recheck activation and suppression.'
+      - 'Send migration email two only while still eligible.'
+      - 'Wait the approved cadence, recheck, and send migration email three only while still eligible.'
+      - 'Exit immediately on activation, opt-out, or suppression.'
+    observedTriggers: []
+    observedActions: []
+    essentialValues:
+      configured_state: 'draft_waiting_external'
+      audience_scope: 'explicitly approved 2026 existing-subscriber migration segment only'
+      audience_authority: 'operator-selected adult migration list only; historic payment, attendance, event registration, portal state, deliverability, and legacy tags never grant authority'
+      sequence_length: 3
+      sender_registry_key: 'rabbi_campaign'
+      canonical_public_rabbi_identity: 'Rabbi Eli Scheller <rabbielischeller@onetimeonetime.com>'
+      desired_from_after_acceptance: 'Rabbi Eli Scheller <rabbielischeller@onetimeonetime.com>'
+      current_fallback_from: 'none; provider-era fallback is superseded and retained only as historical data'
+      reply_to: 'rabbielischeller@onetimeonetime.com only'
+      sender_decision_status: 'fixed; not an operator decision gate'
+      sender_acceptance_job: 'GHL-UI-24-rabbi-campaign-one-seed-reply-acceptance'
+      reviewed_sequence_version: 'ot_02a_existing_subscriber_migration_three_email_v1'
+      reviewed_email_one_identity: 'ghl.legacy_member_migration.step_1.v1'
+      reviewed_email_one_cta: 'One Time Home URL custom value only'
+      reviewed_email_two_identity: 'ghl.legacy_member_migration.step_2.v1'
+      reviewed_email_two_cta: 'One Time Home URL custom value only'
+      reviewed_email_two_verified_scope: 'restart reminder covering live Mishnah, on-demand review, progress, and secure family access only'
+      reviewed_email_three_identity: 'ghl.legacy_member_migration.step_3.v1'
+      reviewed_email_three_cta: 'One Time Signup URL custom value only'
+      reviewed_email_three_verified_scope: 'secure durable Family-account activation reminder with immediate free access, up to three Student seats, no card, and no automatic charge'
+      standard_unsubscribe_required: true
+      cadence_configured: false
+      workflow_draft_unpublished_inactive_unenrolled: true
+      price_and_offer_source: 'registered custom values only'
+      enrollment_authorized: false
+      publication_authorized: false
+    lastReadback:
+      at: '2026-07-22T14:00:12.763Z'
+      method: 'read-only exhaustive visible UI inventory and exact empty-canvas readback'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json'
+    canary:
+      result: 'not_run'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
+      detail: 'Draft preserved; no contact enrolled and no send authorized.'
+    blocker: 'Approved migration audience, cadence, and separately authorized test are absent.'
+    evidence:
+      - 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
+  - key: 'OT-02B'
+    canonicalName: 'OT-02B New Lead Nurture v1'
+    normalizedName: 'ot_02b_new_lead_nurture_v1'
+    ghlId: 'a7038e32-79d2-4d2d-b103-5722ab0abcfc'
+    ghlKey: 'ot_02b_new_lead_nurture_v1'
+    objectType: 'business_workflow'
+    dataType: 'workflow'
+    asset_kind: 'workflow'
+    category: 'business_workflow'
+    folder: '10 - Enrollment & Nurture'
+    purpose: 'New lead nurture separate from migration.'
+    sourceOfTruth: 'Shared'
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases: []
+    assetLifecycle: 'canonical'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-22'
+    lastTestedDate: ''
+    promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-02B-new-lead-nurture-v1.md'
+    checklistPath: 'integrations/highlevel/workflow-checklists/OT-02B-new-lead-nurture-v1.md'
+    messageClass: 'prelaunch_nurture'
+    senderKey: 'rabbi_campaign'
+    transport: 'GHL'
+    exactTrigger: 'registered new lead nurture audience entry'
+    companionDelivery: ''
+    displayOrder: 3
+    desiredStatus: 'DRAFT_WAITING_EXTERNAL'
+    observedStatus: 'DRAFT_SHELL'
+    exactOrderedTriggers:
+      - 'Enter only the canonical new-lead nurture audience.'
+      - 'Require explicit consent and no suppression before each message.'
+    exactOrderedActions:
+      - 'Send the approved first nurture message with the registered rabbi_campaign sender.'
+      - 'Wait the approved cadence and recheck checkout, customer, consent, and suppression state.'
+      - 'Send each next approved nurture step only while eligible.'
+      - 'Exit on checkout start, Active status, opt-out, or suppression.'
+    observedTriggers: []
+    observedActions: []
+    essentialValues:
+      configured_state: 'draft_waiting_external'
+      audience_scope: 'consented unsuppressed new leads only'
+      audience_authority: 'independently proven general-marketing permission only; Tisha registration, attendance, payment, portal state, deliverability, and legacy tags never grant authority'
+      sender_registry_key: 'rabbi_campaign'
+      canonical_public_rabbi_identity: 'Rabbi Eli Scheller <rabbielischeller@onetimeonetime.com>'
+      desired_from_after_acceptance: 'Rabbi Eli Scheller <rabbielischeller@onetimeonetime.com>'
+      current_fallback_from: 'none; provider-era fallback is superseded and retained only as historical data'
+      reply_to: 'rabbielischeller@onetimeonetime.com only'
+      sender_decision_status: 'fixed; not an operator decision gate'
+      sender_acceptance_job: 'GHL-UI-24-rabbi-campaign-one-seed-reply-acceptance'
+      reviewed_sequence_version: 'ot_02b_new_lead_nurture_three_email_v1'
+      reviewed_email_one_identity: 'ghl.prelaunch_nurture.step_1.v1'
+      reviewed_email_one_cta: 'One Time Home URL custom value only'
+      reviewed_email_two_identity: 'ghl.prelaunch_nurture.step_2.v1'
+      reviewed_email_two_cta: 'One Time Home URL custom value only'
+      reviewed_email_three_identity: 'ghl.prelaunch_nurture.step_3.v1'
+      reviewed_email_three_cta: 'One Time Signup URL custom value only'
+      stop_states: ['checkout_started', 'active', 'opt_out', 'suppressed']
+      enrollment_authorized: false
+      publication_authorized: false
+    lastReadback:
+      at: '2026-07-22T14:00:12.763Z'
+      method: 'read-only exhaustive visible UI inventory and exact empty-canvas readback'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json'
+    canary:
+      result: 'not_run'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
+      detail: 'Draft preserved; no contact enrolled and no send authorized.'
+    blocker: 'Approved nurture audience, cadence, content, and controlled-test authorization are absent.'
+    evidence:
+      - 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
+  - key: 'OT-03'
+    canonicalName: 'OT-03 Checkout Started / Abandoned'
+    normalizedName: 'ot_03_checkout_started_abandoned'
+    ghlId: 'b5c3e702-a7e6-415d-9ffc-fa2b0027a27f'
+    ghlKey: 'ot_03_checkout_started_abandoned'
+    objectType: 'business_workflow'
+    dataType: 'workflow'
+    asset_kind: 'workflow'
+    category: 'business_workflow'
+    folder: '20 - Billing & Access'
+    purpose: 'Checkout started and abandoned checkout handling.'
+    sourceOfTruth: 'Shared'
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases: []
+    assetLifecycle: 'canonical'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-22'
+    lastTestedDate: ''
+    promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-03-checkout-started-abandoned.md'
+    checklistPath: 'integrations/highlevel/workflow-checklists/OT-03-checkout-started-abandoned.md'
+    messageClass: 'warm_enrollment_campaign'
+    senderKey: 'rabbi_campaign'
+    transport: 'GHL'
+    exactTrigger: 'checkout started and not completed within the registered wait window'
+    companionDelivery: ''
+    displayOrder: 4
+    desiredStatus: 'SAVED_REOPENED'
+    observedStatus: 'DRAFT_SHELL'
+    exactOrderedTriggers:
+      - 'Receive the canonical checkout-started event.'
+      - 'Wait the registered abandonment window.'
+      - 'Continue only when checkout has not completed and the adult remains eligible.'
+    exactOrderedActions:
+      - 'Record canonical checkout-started state.'
+      - 'Exit when completion or Active status is observed.'
+      - 'Read price only from published canonical custom values.'
+      - 'Send the single approved abandonment message only with valid consent and no suppression.'
+    observedTriggers: []
+    observedActions: []
+    essentialValues:
+      configured_state: 'draft_saved_reopened'
+      abandonment_window_source: 'registered value required; no hardcoded fallback'
+      price_source: 'published canonical custom values only'
+      sender_registry_key: 'rabbi_campaign'
+      enrollment_authorized: false
+      publication_authorized: false
+    lastReadback:
+      at: '2026-07-22T14:00:12.763Z'
+      method: 'read-only exhaustive visible UI inventory and exact empty-canvas readback'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json'
+    canary:
+      result: 'not_run'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
+      detail: 'Draft preserved; no contact enrolled and no send authorized.'
+    blocker: 'Checkout event, abandonment window, and payment-provider acceptance are not configured.'
+    evidence:
+      - 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
+  - key: 'OT-04'
+    canonicalName: 'OT-04 Payment Active'
+    normalizedName: 'ot_04_payment_active'
+    ghlId: 'dd1e90ea-f9bd-4c3b-97de-2230f119f38b'
+    ghlKey: 'ot_04_payment_active'
+    objectType: 'business_workflow'
+    dataType: 'workflow'
+    asset_kind: 'workflow'
+    category: 'business_workflow'
+    folder: '20 - Billing & Access'
+    purpose: 'Active payment state handling.'
+    sourceOfTruth: 'Shared'
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases: []
+    assetLifecycle: 'canonical'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-22'
+    lastTestedDate: ''
+    promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-04-payment-active.md'
+    checklistPath: 'integrations/highlevel/workflow-checklists/OT-04-payment-active.md'
+    messageClass: 'signup_confirmation'
+    senderKey: 'brand'
+    transport: 'GHL'
+    exactTrigger: 'One Time payment/access projection becomes Active'
+    companionDelivery: ''
+    displayOrder: 5
+    desiredStatus: 'SAVED_REOPENED'
+    observedStatus: 'DRAFT_SHELL'
+    exactOrderedTriggers:
+      - 'Receive the canonical One Time payment/access projection becoming Active.'
+    exactOrderedActions:
+      - 'Record canonical customer and access status as Active.'
+      - 'Clear obsolete grace state and apply only the registered active tag.'
+      - 'Invoke the protected One Time billing/access adapter idempotently.'
+      - 'Send the approved confirmation only when separately authorized.'
+    observedTriggers: []
+    observedActions: []
+    essentialValues:
+      configured_state: 'draft_saved_reopened'
+      access_authority: 'One Time protected billing/access adapter only'
+      sender_registry_key: 'brand'
+      customer_send_authorized: false
+      enrollment_authorized: false
+      publication_authorized: false
+    lastReadback:
+      at: '2026-07-22T14:00:12.763Z'
+      method: 'read-only exhaustive visible UI inventory and exact empty-canvas readback'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json'
+    canary:
+      result: 'not_run'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
+      detail: 'Draft preserved; no contact enrolled and no send authorized.'
+    blocker: 'Payment-active projection and protected adapter acceptance are not configured.'
+    evidence:
+      - 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
+  - key: 'OT-05'
+    canonicalName: 'OT-05 Payment Failed / Grace'
+    normalizedName: 'ot_05_payment_failed_grace'
+    ghlId: '8c7a0a37-6747-492f-99f6-1a1fb90518de'
+    ghlKey: 'ot_05_payment_failed_grace'
+    objectType: 'business_workflow'
+    dataType: 'workflow'
+    asset_kind: 'workflow'
+    category: 'business_workflow'
+    folder: '20 - Billing & Access'
+    purpose: 'Payment failure and grace handling.'
+    sourceOfTruth: 'Shared'
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases: []
+    assetLifecycle: 'canonical'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-22'
+    lastTestedDate: ''
+    promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-05-payment-failed-grace.md'
+    checklistPath: 'integrations/highlevel/workflow-checklists/OT-05-payment-failed-grace.md'
+    messageClass: 'payment_failed_support'
+    senderKey: 'office'
+    transport: 'GHL'
+    exactTrigger: 'One Time payment/access projection becomes Grace after payment failure'
+    companionDelivery: ''
+    displayOrder: 6
+    desiredStatus: 'SAVED_REOPENED'
+    observedStatus: 'DRAFT_SHELL'
+    exactOrderedTriggers:
+      - 'Receive the canonical payment-failure projection that places access in Grace.'
+    exactOrderedActions:
+      - 'Record customer/access Grace state and the canonical grace-until value.'
+      - 'Apply only the registered grace/payment-failed tags.'
+      - 'Send pressure-free support copy only when separately authorized.'
+      - 'Never charge, retry, or mutate Stripe from GHL.'
+    observedTriggers: []
+    observedActions: []
+    essentialValues:
+      configured_state: 'draft_saved_reopened'
+      grace_timing_source: 'canonical One Time projection only'
+      payment_mutation_allowed: false
+      sender_registry_key: 'office'
+      customer_send_authorized: false
+      enrollment_authorized: false
+      publication_authorized: false
+    lastReadback:
+      at: '2026-07-22T14:00:12.763Z'
+      method: 'read-only exhaustive visible UI inventory and exact empty-canvas readback'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json'
+    canary:
+      result: 'not_run'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
+      detail: 'Draft preserved; no contact enrolled and no send authorized.'
+    blocker: 'Payment-failure projection, approved grace timing, and provider acceptance are absent.'
+    evidence:
+      - 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
+  - key: 'OT-06'
+    canonicalName: 'OT-06 Subscription Canceled'
+    normalizedName: 'ot_06_subscription_canceled'
+    ghlId: '7421cd97-a61b-4434-b7f3-163b8cc7237c'
+    ghlKey: 'ot_06_subscription_canceled'
+    objectType: 'business_workflow'
+    dataType: 'workflow'
+    asset_kind: 'workflow'
+    category: 'business_workflow'
+    folder: '20 - Billing & Access'
+    purpose: 'Cancellation handling.'
+    sourceOfTruth: 'Shared'
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases: []
+    assetLifecycle: 'canonical'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-22'
+    lastTestedDate: ''
+    promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-06-subscription-canceled.md'
+    checklistPath: 'integrations/highlevel/workflow-checklists/OT-06-subscription-canceled.md'
+    messageClass: 'cancellation_help'
+    senderKey: 'office'
+    transport: 'GHL'
+    exactTrigger: 'One Time subscription projection becomes Canceled when support context is required'
+    companionDelivery: ''
+    displayOrder: 7
+    desiredStatus: 'SAVED_REOPENED'
+    observedStatus: 'DRAFT_SHELL'
+    exactOrderedTriggers:
+      - 'Receive the canonical Canceled subscription projection when support context is required.'
+    exactOrderedActions:
+      - 'Record canceled customer state and current-period end when present.'
+      - 'Apply only the registered cancellation tags.'
+      - 'Invoke the protected One Time adapter idempotently.'
+      - 'Send cancellation help only when separately authorized.'
+      - 'Never revoke One Time access from a GHL tag alone.'
+    observedTriggers: []
+    observedActions: []
+    essentialValues:
+      configured_state: 'draft_saved_reopened'
+      access_revocation_authority: 'One Time only; never a GHL tag'
+      current_period_end_source: 'canonical One Time projection when present'
+      sender_registry_key: 'office'
+      customer_send_authorized: false
+      enrollment_authorized: false
+      publication_authorized: false
+    lastReadback:
+      at: '2026-07-22T14:00:12.763Z'
+      method: 'read-only exhaustive visible UI inventory and exact empty-canvas readback'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json'
+    canary:
+      result: 'not_run'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
+      detail: 'Draft preserved; no contact enrolled and no send authorized.'
+    blocker: 'Cancellation projection and protected adapter acceptance are not configured.'
+    evidence:
+      - 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
+  - key: 'OT-07'
+    canonicalName: 'OT-07 Parent Portal Invitation'
+    normalizedName: 'ot_07_parent_portal_invitation'
+    ghlId: 'fb48c3bf-7154-44c9-825e-88afb5bb7942'
+    ghlKey: 'ot_07_parent_portal_invitation'
+    objectType: 'business_workflow'
+    dataType: 'workflow'
+    asset_kind: 'workflow'
+    category: 'business_workflow'
+    folder: '30 - Portal Lifecycle'
+    purpose: 'Parent portal invitation after One Time access confirmation.'
+    sourceOfTruth: 'Shared'
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases: []
+    assetLifecycle: 'canonical'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-23'
+    lastTestedDate: ''
+    promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-07-parent-portal-invitation.md'
+    checklistPath: 'integrations/highlevel/workflow-checklists/OT-07-parent-portal-invitation.md'
+    messageClass: 'portal_welcome'
+    senderKey: 'brand'
+    transport: 'GHL'
+    exactTrigger: 'One Time access confirmation requests the parent portal companion email'
+    companionDelivery: 'One Time/Resend separately sends activation_token through account_security; GHL never stores or sends the token.'
+    providerContract:
+      exactTriggerFilter: 'One Time access confirmation requests the eligible parent portal companion email'
+      orderedCriticalActions:
+        - 'send or record a non-token parent portal companion only after One Time confirms eligibility'
+        - 'never store or send credentials or activation/reset tokens'
+      deliveryCategory: 'portal_welcome_companion'
+      senderKey: 'brand'
+    displayOrder: 9
+    desiredStatus: 'DRAFT_WAITING_EXTERNAL'
+    observedStatus: 'DRAFT_SHELL'
+    exactOrderedTriggers:
+      - 'Receive One Time access confirmation for an eligible adult parent contact.'
+    exactOrderedActions:
+      - 'Send or record only the non-token parent portal companion.'
+      - 'Never store or send credentials, activation tokens, reset tokens, or Student data.'
+    observedTriggers: []
+    observedActions: []
+    enrollmentReadback:
+      status: 'available'
+      at: '2026-07-23T18:40:09.780Z'
+      total: 0
+      active: 0
+      reference: 'integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json'
+      reason: 'Exact visible Draft workflow enrollment counters were read back as zero.'
+    lastReadback:
+      at: '2026-07-23T18:40:09.780Z'
+      method: 'live authenticated UI exact-ID, folder, status, enrollment-counter, and empty-canvas readback; no workflow mutation'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json'
+    canary:
+      result: 'not_run'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json'
+      detail: 'GHL-UI-15 is not in the reviewed queue/export and does not define the exact non-token companion action or message template; no safe configuration or test was possible.'
+    blocker: 'BLOCKED_GIT_JOB_INCOMPLETE: GHL-UI-15 defines the trigger and gates but not an exact non-token companion action/template, and it is absent from the reviewed queue/export; keep the empty Draft shell.'
+    evidence:
+      - 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
+      - 'integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json'
+      - 'integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json'
+  - key: 'OT-08'
+    canonicalName: 'OT-08 Parent Portal Activated'
+    normalizedName: 'ot_08_parent_portal_activated'
+    ghlId: 'eeca2efb-41be-40a7-bbc4-ee6fe8760dd9'
+    ghlKey: 'ot_08_parent_portal_activated'
+    objectType: 'business_workflow'
+    dataType: 'workflow'
+    asset_kind: 'workflow'
+    category: 'business_workflow'
+    folder: '30 - Portal Lifecycle'
+    purpose: 'Parent portal activation projection.'
+    sourceOfTruth: 'Shared'
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases: []
+    assetLifecycle: 'canonical'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-23'
+    lastTestedDate: ''
+    promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-08-parent-portal-activated.md'
+    checklistPath: 'integrations/highlevel/workflow-checklists/OT-08-parent-portal-activated.md'
+    messageClass: 'portal_activated'
+    senderKey: 'brand'
+    transport: 'GHL'
+    exactTrigger: 'One Time parent portal projection becomes Active'
+    companionDelivery: ''
+    providerContract:
+      exactTriggerFilter: 'One Time parent portal projection becomes Active for the eligible adult contact'
+      orderedCriticalActions:
+        - 'record the adult parent portal activation'
+        - 'exclude Student data and learning progress'
+      deliveryCategory: 'portal_activated'
+      senderKey: 'brand'
+    displayOrder: 10
+    desiredStatus: 'DRAFT_WAITING_EXTERNAL'
+    observedStatus: 'DRAFT_SHELL'
+    exactOrderedTriggers:
+      - 'Receive the One Time parent-portal projection becoming Active for the eligible adult.'
+    exactOrderedActions:
+      - 'Record the adult parent-portal activation.'
+      - 'Exclude Student identities, credentials, learning progress, and entitlement data.'
+    observedTriggers: []
+    observedActions: []
+    enrollmentReadback:
+      status: 'available'
+      at: '2026-07-23T18:40:19.523Z'
+      total: 0
+      active: 0
+      reference: 'integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json'
+      reason: 'Exact visible Draft workflow enrollment counters were read back as zero.'
+    lastReadback:
+      at: '2026-07-23T18:40:19.523Z'
+      method: 'live authenticated UI exact-ID, folder, status, enrollment-counter, and empty-canvas readback; no workflow mutation'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json'
+    canary:
+      result: 'not_run'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json'
+      detail: 'GHL-UI-16 is not in the reviewed queue/export and does not define the exact bounded delivery action or message template; no safe configuration or test was possible.'
+    blocker: 'BLOCKED_GIT_JOB_INCOMPLETE: GHL-UI-16 defines the trigger and gates but not an exact bounded delivery action/template, and it is absent from the reviewed queue/export; keep the empty Draft shell.'
+    evidence:
+      - 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
+      - 'integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json'
+      - 'integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json'
+  - key: 'OT-09'
+    canonicalName: 'OT-09 Parent Class Reminder'
+    normalizedName: 'ot_09_parent_class_reminder'
+    ghlId: 'bc8af9fc-22d5-4b4f-b71a-121eeff87f5b'
+    ghlKey: 'ot_09_parent_class_reminder'
+    objectType: 'business_workflow'
+    dataType: 'workflow'
+    asset_kind: 'workflow'
+    category: 'business_workflow'
+    folder: '40 - Learning Operations / Classes'
+    purpose: 'Parent class reminder gated by access and consent.'
+    sourceOfTruth: 'Shared'
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases: []
+    assetLifecycle: 'canonical'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-23'
+    lastTestedDate: ''
+    promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-09-parent-class-reminder.md'
+    checklistPath: 'integrations/highlevel/workflow-checklists/OT-09-parent-class-reminder.md'
+    messageClass: 'class_reminder'
+    senderKey: 'brand'
+    transport: 'GHL'
+    exactTrigger: 'registered confirmed class reminder schedule and consent gate pass'
+    companionDelivery: ''
+    providerContract:
+      exactTriggerFilter: 'registered confirmed class reminder schedule and consent gate pass for an entitled adult household'
+      orderedCriticalActions:
+        - 'send only current confirmed class information supplied by One Time'
+        - 'use only a canonical protected One Time URL'
+        - 'never store or send a permanent raw Zoom URL'
+      deliveryCategory: 'class_reminder'
+      senderKey: 'brand'
+    displayOrder: 11
+    desiredStatus: 'DRAFT_WAITING_EXTERNAL'
+    observedStatus: 'DRAFT_SHELL'
+    exactOrderedTriggers:
+      - 'Receive a confirmed-class reminder event for an entitled adult household after consent passes.'
+    exactOrderedActions:
+      - 'Send only current confirmed class information supplied by One Time.'
+      - 'Use only the canonical protected One Time class URL.'
+      - 'Never store or send a permanent raw Zoom URL.'
+    observedTriggers: []
+    observedActions: []
+    enrollmentReadback:
+      status: 'available'
+      at: '2026-07-23T18:38:15.108Z'
+      total: 0
+      active: 0
+      reference: 'integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json'
+      reason: 'Exact visible Draft workflow enrollment counters were read back as zero.'
+    lastReadback:
+      at: '2026-07-23T18:38:15.108Z'
+      method: 'live authenticated UI exact-ID, folder, status, enrollment-counter, and empty-canvas readback; no workflow mutation'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json'
+    canary:
+      result: 'not_run'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json'
+      detail: 'GHL-UI-17 is not in the reviewed queue/export and does not define an exact email action/template or UI wait/offset semantics; no safe configuration or test was possible.'
+    blocker: 'BLOCKED_GIT_JOB_INCOMPLETE: GHL-UI-17 defines the trigger and gates but not an exact reminder action/template or UI wait/offset, and it is absent from the reviewed queue/export; keep the empty Draft shell.'
+    evidence:
+      - 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
+      - 'integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json'
+      - 'integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json'
+  - key: 'OT-10'
+    canonicalName: 'OT-10 New Recording Available'
+    normalizedName: 'ot_10_new_recording_available'
+    ghlId: '1bca5210-a3b9-496b-b3cd-48c60c0e33ca'
+    ghlKey: 'ot_10_new_recording_available'
+    objectType: 'business_workflow'
+    dataType: 'workflow'
+    asset_kind: 'workflow'
+    category: 'business_workflow'
+    folder: '40 - Learning Operations / Content'
+    purpose: 'Protected recording availability notice.'
+    sourceOfTruth: 'Shared'
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases: []
+    assetLifecycle: 'canonical'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-23'
+    lastTestedDate: ''
+    promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-10-new-recording-available.md'
+    checklistPath: 'integrations/highlevel/workflow-checklists/OT-10-new-recording-available.md'
+    messageClass: 'recording_available'
+    senderKey: 'brand'
+    transport: 'GHL'
+    exactTrigger: 'One Time marks a protected recording available for an entitled household'
+    companionDelivery: ''
+    providerContract:
+      exactTriggerFilter: 'One Time marks a protected recording available for an entitled household'
+      orderedCriticalActions:
+        - 'send the approved recording-available notice to the eligible adult'
+        - 'use only the protected One Time recording URL'
+        - 'never expose a raw Vimeo provider URL'
+      deliveryCategory: 'recording_available'
+      senderKey: 'brand'
+    displayOrder: 12
+    desiredStatus: 'DRAFT_WAITING_EXTERNAL'
+    observedStatus: 'DRAFT_SHELL'
+    exactOrderedTriggers:
+      - 'Receive recording.available after Admin approval for an entitled household.'
+    exactOrderedActions:
+      - 'Send the approved recording-available notice only to the eligible adult.'
+      - 'Use only the protected One Time recording URL.'
+      - 'Never expose a raw Vimeo provider URL.'
+    observedTriggers: []
+    observedActions: []
+    enrollmentReadback:
+      status: 'available'
+      at: '2026-07-23T18:39:15.410Z'
+      total: 0
+      active: 0
+      reference: 'integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json'
+      reason: 'Exact visible Draft workflow enrollment counters were read back as zero.'
+    lastReadback:
+      at: '2026-07-23T18:39:15.410Z'
+      method: 'live authenticated UI exact-ID, folder, status, enrollment-counter, and empty-canvas readback; no workflow mutation'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json'
+    canary:
+      result: 'not_run'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json'
+      detail: 'GHL-UI-18 is not in the reviewed queue/export, does not define the exact email action/template, and the protected recording portal custom value is unresolved; no safe configuration or test was possible.'
+    blocker: 'BLOCKED_GIT_JOB_INCOMPLETE: GHL-UI-18 defines the trigger and gates but not an exact delivery action/template, is absent from the reviewed queue/export, and one_time_recording_portal_url has no verified ID or value; keep the empty Draft shell.'
+    evidence:
+      - 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
+      - 'integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json'
+      - 'integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json'
+  - key: 'OT-12'
+    canonicalName: 'OT-12 Adult Support Intake'
+    normalizedName: 'ot_12_adult_support_intake'
+    ghlId: ''
+    ghlKey: 'ot_12_adult_support_intake'
+    objectType: 'business_workflow'
+    dataType: 'workflow'
+    asset_kind: 'workflow'
+    category: 'business_workflow'
+    folder: '50 - Support'
+    purpose: 'Adult Parent/public support intake and GHL conversation continuation; Student support remains in One Time.'
+    sourceOfTruth: 'Shared'
+    allowedValues:
+      - 'adult_only'
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies:
+      - 'packages/contracts/src/communications/foundation/index.ts'
+    aliases:
+      - 'ot_12_support_intake_technical_escalation'
+    assetLifecycle: 'canonical'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-28'
+    lastTestedDate: ''
+    promptPath: 'integrations/highlevel/v21/foundation/prompts/OT-12-adult-support-intake.md'
+    checklistPath: 'integrations/highlevel/v21/foundation/checklists/OT-12-adult-support-intake.md'
+    messageClass: 'support_reply'
+    senderKey: 'office'
+    transport: 'GHL'
+    exactTrigger: 'verified adult Parent or public support intake is recorded'
+    companionDelivery: 'Student support stays inside One Time and never creates or continues a GHL conversation.'
+    providerContract:
+      exactTriggerFilter: 'verified adult Parent or public support intake with a current adult GHL identity'
+      orderedCriticalActions:
+        - 'hard-stop Student subjects before provider access'
+        - 'create or continue only the adult GHL conversation'
+        - 'store only the safe GHL reference in One Time'
+        - 'recheck suppression before an optional acknowledgment'
+      deliveryCategory: 'support_reply'
+      senderKey: 'office'
+    displayOrder: 20
+    desiredStatus: 'DRAFT_WAITING_EXTERNAL'
+    observedStatus: 'MISSING'
+    exactOrderedTriggers:
+      - 'Receive a verified adult Parent/public support intake.'
+      - 'Reject every Student subject before any GHL contact or conversation operation.'
+    exactOrderedActions:
+      - 'Create or continue the adult GHL conversation idempotently.'
+      - 'Store the One Time ticket and sanitized GHL reference.'
+      - 'Send an approved adult acknowledgment only after a current suppression readback.'
+    observedTriggers: []
+    observedActions: []
+    lastReadback:
+      at: '2026-07-28T20:00:00Z'
+      method: 'Git-authored canonical registry migration; no provider mutation or claimed provider readback'
+      reference: 'ops/v2.1-execution/runtime/P28/HANDOFF.md'
+    canary:
+      result: 'not_run'
+      reference: 'ops/v2.1-execution/runtime/P28/HANDOFF.md'
+      detail: 'No external effect is authorized in P28; adult-support provider realization remains gated.'
+    blocker: 'Provider workflow identity is not yet assigned; keep non-executable until the reviewed adult-support definition, provider ID, save/reopen readback, and approval gates agree.'
+    evidence:
+      - 'integrations/highlevel/v21/foundation/desired-state.ts'
+      - 'packages/contracts/src/communications/foundation/index.ts'
+  - key: 'OT-14'
+    canonicalName: 'OT-14 Parent Newsletter'
+    normalizedName: 'ot_14_parent_newsletter'
+    ghlId: ''
+    ghlKey: 'ot_14_parent_newsletter'
+    objectType: 'business_workflow'
+    dataType: 'workflow'
+    asset_kind: 'workflow'
+    category: 'business_workflow'
+    folder: '10 - Enrollment & Nurture'
+    purpose: 'Weekly Parent newsletter for current adult account owners with newsletter permission.'
+    sourceOfTruth: 'HighLevel'
+    allowedValues:
+      - 'adult_only'
+      - 'newsletter_permission_required'
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies:
+      - 'packages/contracts/src/communications/foundation/index.ts'
+      - 'P30 workflow fragment'
+    aliases: []
+    assetLifecycle: 'canonical'
+    createdDate: '2026-07-28'
+    lastVerifiedDate: '2026-07-28'
+    lastTestedDate: ''
+    promptPath: 'integrations/highlevel/v21/foundation/prompts/OT-14-parent-newsletter.md'
+    checklistPath: 'integrations/highlevel/v21/foundation/checklists/OT-14-parent-newsletter.md'
+    messageClass: 'torah_newsletter'
+    senderKey: 'rabbi_campaign'
+    transport: 'GHL'
+    exactTrigger: 'approved weekly Parent newsletter audience enters at Thursday 12:00 household local time'
+    companionDelivery: 'Drafting and execution remain in GHL; One Time exposes sanitized readback and governed Start/Pause requests only.'
+    providerContract:
+      exactTriggerFilter: 'current adult account owner with current newsletter permission and current send-time suppression eligibility'
+      orderedCriticalActions:
+        - 'recheck audience, permission, and suppression immediately before send'
+        - 'send exact approved newsletter copy from rabbi_campaign'
+        - 'exclude all Student, private-child, billing, and cross-household information'
+        - 'never expose ordinary product test-send, seed-send, or provider-canary actions'
+      deliveryCategory: 'torah_newsletter'
+      senderKey: 'rabbi_campaign'
+    displayOrder: 23
+    desiredStatus: 'DRAFT_WAITING_EXTERNAL'
+    observedStatus: 'MISSING'
+    exactOrderedTriggers:
+      - 'Require the registered P30 workflow fragment, exact audience/copy digests, and explicit Rabbi/Admin approval.'
+      - 'At Thursday 12:00 household local time, recheck adult ownership, newsletter permission, dedupe, and every suppression gate.'
+    exactOrderedActions:
+      - 'Render the approved Rabbi note, recap, schedule, recording/review, approved question highlight, and one CTA.'
+      - 'Send through rabbi_campaign only after every approval and send-time gate passes.'
+      - 'Keep first broad send blocked until the release-verification harness records its bounded operator-only canary.'
+    observedTriggers: []
+    observedActions: []
+    lastReadback:
+      at: '2026-07-28T20:00:00Z'
+      method: 'Git-authored canonical registry reservation; no provider mutation or claimed provider readback'
+      reference: 'ops/v2.1-execution/runtime/P28/HANDOFF.md'
+    canary:
+      result: 'not_run'
+      reference: 'ops/v2.1-execution/runtime/P28/HANDOFF.md'
+      detail: 'P28 authorizes no provider canary; P30 realization and release-verification authority are pending.'
+    blocker: 'Provider identity, exact copy/audience approvals, and release-verification canary are pending.'
+    evidence:
+      - 'integrations/highlevel/v21/foundation/desired-state.ts'
+      - 'packages/contracts/src/communications/foundation/index.ts'
+  - key: 'OT-15'
+    canonicalName: 'OT-15 Former Member Reactivation'
+    normalizedName: 'ot_15_former_member_reactivation'
+    ghlId: ''
+    ghlKey: 'ot_15_former_member_reactivation'
+    objectType: 'business_workflow'
+    dataType: 'workflow'
+    asset_kind: 'workflow'
+    category: 'business_workflow'
+    folder: '10 - Enrollment & Nurture'
+    purpose: 'Former/canceled adult reactivation after exact segment, copy, consent, and suppression approval.'
+    sourceOfTruth: 'HighLevel'
+    allowedValues:
+      - 'adult_only'
+      - 'former_or_canceled'
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies:
+      - 'packages/contracts/src/communications/foundation/index.ts'
+      - 'P30 workflow fragment'
+    aliases: []
+    assetLifecycle: 'canonical'
+    createdDate: '2026-07-28'
+    lastVerifiedDate: '2026-07-28'
+    lastTestedDate: ''
+    promptPath: 'integrations/highlevel/v21/foundation/prompts/OT-15-former-member-reactivation.md'
+    checklistPath: 'integrations/highlevel/v21/foundation/checklists/OT-15-former-member-reactivation.md'
+    messageClass: 'warm_enrollment_campaign'
+    senderKey: 'rabbi_campaign'
+    transport: 'GHL'
+    exactTrigger: 'approved former/canceled adult segment enters the approved reactivation launch'
+    companionDelivery: 'WhatsApp is dormant; email completes each eligible step without delay.'
+    providerContract:
+      exactTriggerFilter: 'former/canceled adult with current marketing permission who is not an active Parent and not a School contact'
+      orderedCriticalActions:
+        - 'send the approved launch, day 4, and day 9 email sequence'
+        - 'recheck permission and every suppression gate before each email'
+        - 'exit on signup, suppression, active membership, school classification, or completion'
+        - 'record requested WhatsApp as channel_skipped_not_configured with zero provider calls'
+      deliveryCategory: 'warm_enrollment_campaign'
+      senderKey: 'rabbi_campaign'
+    displayOrder: 24
+    desiredStatus: 'DRAFT_WAITING_EXTERNAL'
+    observedStatus: 'MISSING'
+    exactOrderedTriggers:
+      - 'Require the registered P30 workflow fragment and exact segment/copy approval.'
+      - 'Enter only a currently permitted former/canceled adult who is neither active Parent nor School.'
+    exactOrderedActions:
+      - 'Send canonical step 1 ghl.former_member_reactivation.step_1.v1 at approval launch through rabbi_campaign.'
+      - 'Wait 4 days, recheck every gate, then send canonical step 2 ghl.former_member_reactivation.step_2.v1 only while eligible.'
+      - 'Wait 5 additional days, recheck every gate, then send canonical step 3 ghl.former_member_reactivation.step_3.v1 only while eligible.'
+      - 'Recheck suppression and exit conditions immediately before each step.'
+      - 'Record dormant WhatsApp intent truthfully and make zero WhatsApp provider calls.'
+    observedTriggers: []
+    observedActions: []
+    essentialValues:
+      canonical_copy_ids:
+        - 'ghl.former_member_reactivation.step_1.v1'
+        - 'ghl.former_member_reactivation.step_2.v1'
+        - 'ghl.former_member_reactivation.step_3.v1'
+      canonical_subjects:
+        - 'Help your son remember what he learns'
+        - 'Live Mishnah learning, with recordings ready for review'
+        - 'Come back to One Time with free access now'
+      canonical_cta_custom_values:
+        - 'One Time Home URL'
+        - 'One Time Home URL'
+        - 'One Time Signup URL'
+      canonical_timing_days:
+        - '0'
+        - '4'
+        - '9'
+      copy_registration_status: 'all three exact canonical copy entries registered; no send authorized'
+    lastReadback:
+      at: '2026-07-28T20:00:00Z'
+      method: 'Git-authored canonical registry reservation; no provider mutation or claimed provider readback'
+      reference: 'ops/v2.1-execution/runtime/P28/HANDOFF.md'
+    canary:
+      result: 'not_run'
+      reference: 'ops/v2.1-execution/runtime/P28/HANDOFF.md'
+      detail: 'P28 authorizes no provider canary; P30 realization and release-verification authority are pending.'
+    blocker: 'Provider identity, exact segment/copy approvals, and save/reopen readback are pending.'
+    evidence:
+      - 'integrations/highlevel/v21/foundation/desired-state.ts'
+      - 'packages/contracts/src/communications/foundation/index.ts'
+      - 'packages/domain/src/communications/copy/catalog.ts'
+  - key: 'OT-16'
+    canonicalName: 'OT-16 Free-Period Conversion'
+    normalizedName: 'ot_16_free_period_conversion'
+    ghlId: ''
+    ghlKey: 'ot_16_free_period_conversion'
+    objectType: 'business_workflow'
+    dataType: 'workflow'
+    asset_kind: 'workflow'
+    category: 'business_workflow'
+    folder: '20 - Billing & Access'
+    purpose: 'Adult-only free-period conversion checkpoints with exact price/expiry truth, send-time suppression, and paid/decline/School exits.'
+    sourceOfTruth: 'Shared'
+    allowedValues:
+      - 'adult_only'
+      - 'family_standard_price'
+      - 'checkpoint_14_7_3_1_0'
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies:
+      - 'packages/contracts/src/communications/foundation/index.ts'
+      - 'packages/domain/src/communications/workflows/campaigns/definitions.ts'
+      - 'integrations/highlevel/v21/workflow-fragments/P30-campaigns.yaml'
+    aliases: []
+    assetLifecycle: 'canonical'
+    createdDate: '2026-07-30'
+    lastVerifiedDate: ''
+    lastTestedDate: ''
+    promptPath: 'integrations/highlevel/registry/workflow-registry.yaml'
+    checklistPath: 'integrations/highlevel/registry/workflow-registry.yaml'
+    messageClass: 'billing_help'
+    senderKey: 'office'
+    transport: 'GHL'
+    exactTrigger: '14, 7, 3, and 1 days before canonical free-period expiry and at expiry'
+    companionDelivery: 'WhatsApp is dormant; eligible email checkpoints proceed without waiting for WhatsApp.'
+    providerContract:
+      exactTriggerFilter: 'eligible adult Family subject at one exact canonical expiry checkpoint'
+      orderedCriticalActions:
+        - 'recompute the deterministic adult, expiry, and checkpoint operation identity'
+        - 'refresh verified paid, explicit decline, custom School, consent, and suppression state immediately before dispatch'
+        - 'deliver exact price, expiry, no-card, no-auto-charge, and Checkout CTA copy only while eligible'
+        - 'deduplicate by adult, expiry, and checkpoint'
+        - 'record dormant WhatsApp with zero provider calls'
+      deliveryCategory: 'billing_help'
+      senderKey: 'office'
+    displayOrder: 25
+    desiredStatus: 'DRAFT_WAITING_EXTERNAL'
+    observedStatus: 'MISSING'
+    exactOrderedTriggers:
+      - 'Evaluate only the deterministic 14-day, 7-day, 3-day, 1-day, or expiry checkpoint.'
+      - 'Enter only an eligible adult Family subject with no paid-access, decline, School, consent, or suppression exit.'
+    exactOrderedActions:
+      - 'Recompute and validate the deterministic OT-16 operation identity before persistence or provider access.'
+      - 'Resolve canonical expiry and the standard Family price from controlled configuration.'
+      - 'Read back the adult-only audience and recheck every exit and suppression gate immediately before dispatch.'
+      - 'Deliver exact price, expiry, no-card, no-auto-charge, and Checkout CTA copy only while eligible.'
+      - 'Deduplicate by adult, expiry, and checkpoint and record dormant WhatsApp with zero provider calls.'
+    observedTriggers: []
+    observedActions: []
+    essentialValues:
+      checkpoint_days:
+        - '14'
+        - '7'
+        - '3'
+        - '1'
+        - '0'
+      standard_family_price_amount: 67
+      standard_family_price_currency: 'USD'
+      automatic_charge_without_checkout: false
+      idempotency_scope: 'OT-16:adult_id:expiry_at:checkpoint_days'
+      registry_only_no_send_authority: true
+    lastReadback:
+      at: '2026-07-30T00:00:00Z'
+      method: 'Git-authored canonical registry registration; no provider mutation or claimed provider readback'
+      reference: 'ops/v2.1-execution/runtime/P30/steward-requests/P30-registry-registration-001.yaml'
+    canary:
+      result: 'not_run'
+      reference: 'ops/v2.1-execution/runtime/P30/steward-requests/P30-registry-registration-001.yaml'
+      detail: 'Repository registration authorizes no provider canary, activation, enrollment, or send.'
+    blocker: 'Batch A durable runOt16Checkpoint worker composition, provider workflow identity, dedicated provider build packet, exact save/reopen readback, and separate effect authority are absent.'
+    evidence:
+      - 'integrations/highlevel/v21/workflow-fragments/P30-campaigns.yaml'
+      - 'packages/domain/src/communications/workflows/campaigns/definitions.ts'
+      - 'Exact workflow: OT-16 Free-Period Conversion'
+      - 'Folder: 20 - Billing & Access'
+      - 'Exact trigger: 14, 7, 3, and 1 days before canonical free-period expiry and at expiry'
+      - 'message_class: billing_help'
+      - 'sender_key: office'
+      - 'Registry dependencies: sender-registry.yaml and message-class-registry.yaml'
+      - 'Do not publish, activate, enroll, or send from this registry-only registration.'
+      - 'Do not type or guess sender identity or provider text.'
+  - key: 'OT-13'
+    canonicalName: 'OT-13 Refund / Chargeback'
+    normalizedName: 'ot_13_refund_chargeback'
+    ghlId: '9459a4a1-c5fa-4912-920e-e30c86f1fbe9'
+    ghlKey: 'ot_13_refund_chargeback'
+    objectType: 'business_workflow'
+    dataType: 'workflow'
+    asset_kind: 'workflow'
+    category: 'business_workflow'
+    folder: '20 - Billing & Access'
+    purpose: 'Refund and chargeback handling.'
+    sourceOfTruth: 'Shared'
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases: []
+    assetLifecycle: 'canonical'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-22'
+    lastTestedDate: ''
+    promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-13-refund-chargeback.md'
+    checklistPath: 'integrations/highlevel/workflow-checklists/OT-13-refund-chargeback.md'
+    messageClass: 'refund_help'
+    senderKey: 'office'
+    transport: 'GHL'
+    exactTrigger: 'refund or chargeback support state is recorded'
+    companionDelivery: ''
+    displayOrder: 8
+    desiredStatus: 'SAVED_REOPENED'
+    observedStatus: 'DRAFT_SHELL'
+    exactOrderedTriggers:
+      - 'Receive a verified refund or chargeback support projection.'
+    exactOrderedActions:
+      - 'Record the canonical refund or chargeback state.'
+      - 'Apply only registered support/status tags.'
+      - 'Invoke the protected One Time adapter idempotently when configured.'
+      - 'Never mutate Stripe or send a customer message from this workflow without separate approval.'
+    observedTriggers: []
+    observedActions: []
+    essentialValues:
+      configured_state: 'draft_saved_reopened'
+      payment_mutation_allowed: false
+      sender_registry_key: 'office'
+      customer_send_authorized: false
+      enrollment_authorized: false
+      publication_authorized: false
+    lastReadback:
+      at: '2026-07-22T14:00:12.763Z'
+      method: 'read-only exhaustive visible UI inventory and exact empty-canvas readback'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json'
+    canary:
+      result: 'not_run'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
+      detail: 'Draft preserved; no contact enrolled and no send authorized.'
+    blocker: 'Refund/chargeback projection and protected adapter acceptance are not configured.'
+    evidence:
+      - 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
+  - key: 'OT-C01'
+    canonicalName: "OT-C01 Tisha B'Av 2026 Warm Invitation"
+    normalizedName: 'ot_c01_tisha_b_av_2026_warm_invitation'
+    ghlId: '6a5f750b557817806a14b19e'
+    ghlKey: 'ot_c01_tisha_b_av_2026_warm_invitation'
+    objectType: 'email_marketing_campaign'
+    dataType: 'campaign'
+    asset_kind: 'email_marketing_campaign'
+    category: 'email_marketing_campaign'
+    folder: 'Marketing / Email Campaigns / Home'
+    purpose: "Registered Tisha B'Av 2026 Rabbi-authored warm invitation campaign."
+    sourceOfTruth: 'Shared'
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases: []
+    assetLifecycle: 'canonical'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-22'
+    lastTestedDate: ''
+    promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-C01-tisha-b-av-2026-warm-invitation.md'
+    checklistPath: 'integrations/highlevel/workflow-checklists/OT-C01-tisha-b-av-2026-warm-invitation.md'
+    messageClass: 'rabbi_event_invitation'
+    senderKey: 'rabbi_campaign'
+    transport: 'GHL'
+    exactTrigger: "approved Tisha B'Av 2026 warm invitation audience enters the registered campaign"
+    companionDelivery: ''
+    displayOrder: 14
+    desiredStatus: 'SAVED_REOPENED'
+    observedStatus: 'SAVED_REOPENED'
+    exactOrderedTriggers:
+      - 'Keep exact existing OT-C01 in Draft while the independently permissioned invitation audience is classified read-only.'
+      - 'Never infer newsletter/general marketing consent from provider email eligibility or Tisha event registration.'
+      - 'Exclude every Student identity and fail closed when defensible permission evidence or suppression readback is unavailable.'
+    exactOrderedActions:
+      - 'Read back the exact campaign, canonical sender key, content identity, and public CTA without selecting an audience.'
+      - 'Classify invitation eligibility only from independently proven permission plus DND, suppression, unsubscribe, complaint, hard-bounce, dedupe, and Student-exclusion evidence.'
+      - 'Record exact sanitized eligible, excluded, unknown-permission, enrollment, and send counts.'
+      - 'Keep the campaign unscheduled and unsent; perform no proof send, customer send, enrollment, or WhatsApp action.'
+    observedTriggers: []
+    observedActions: []
+    essentialValues:
+      channel: 'email_only'
+      public_cta: 'https://join.onetimeonetime.com/tisha-bav'
+      sender_registry_key: 'rabbi_campaign'
+      content_identity: '55517d8f236dec6dc069756e3c681350cdc385c44a4c112f1dec582e9a5d57f2'
+      audience_scope: 'independently permissioned deduplicated adults only; provider eligibility is insufficient'
+      require_dnd_suppression_unsubscribe_exclusion: true
+      require_student_exclusion: true
+      whatsapp_allowed: false
+      bounded_operator_proofs: 0
+      authorized_invitation_sends: 0
+      audience_selection_allowed: false
+      scheduling_allowed: false
+      synthetic_or_operator_owned_verification_only: true
+    lastReadback:
+      at: '2026-07-22T14:00:12.763Z'
+      method: 'read-only exhaustive visible UI inventory and exact campaign reopen/readback'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json'
+    canary:
+      result: 'not_run'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json'
+      detail: 'Draft preserved; exact saved all-AND selector returned zero eligible contacts and was never selected, tested, scheduled, seeded, or sent.'
+    blocker: 'No nonzero independently permissioned invitation audience is proven; the exact saved all-AND selector count is zero and send authority is withdrawn. Observed state remains DRAFT_NOT_SENT with zero sends.'
+    audienceReadback:
+      status: 'DRAFT_NOT_SENT'
+      audienceConfigured: false
+      scheduled: false
+      sends: 0
+      reference: 'integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json'
+    evidence:
+      - 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
+      - 'integrations/highlevel/agent-mode/results/GHL-TISHA-BAV-ACTIVATION-20260722.result.json'
+      - 'integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json'
+  - key: 'OT-E01'
+    canonicalName: "OT-E01 Tisha B'Av 2026 Registration and Reminders"
+    normalizedName: 'ot_e01_tisha_b_av_2026_registration_and_reminders'
+    ghlId: 'a34ea513-4612-4f53-8bd8-49e89e6610f9'
+    ghlKey: 'ot_e01_tisha_b_av_2026_registration_and_reminders'
+    objectType: 'business_workflow'
+    dataType: 'workflow'
+    asset_kind: 'workflow'
+    category: 'business_workflow'
+    folder: "One Time / 45 - Events / 2026 / Tisha B'Av 2026"
+    purpose: "Registered Tisha B'Av 2026 registration and reminder workflow."
+    sourceOfTruth: 'Shared'
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases: []
+    assetLifecycle: 'canonical'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-23'
+    lastTestedDate: '2026-07-22'
+    promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-E01-tisha-b-av-2026-registration-and-reminders.md'
+    checklistPath: 'integrations/highlevel/workflow-checklists/OT-E01-tisha-b-av-2026-registration-and-reminders.md'
+    messageClass: 'event_registration_confirmation'
+    senderKey: 'brand'
+    transport: 'GHL'
+    exactTrigger: "Contact Tag added — OT | Event | Tisha B'Av 2026 | Registered"
+    companionDelivery: ''
+    displayOrder: 13
+    desiredStatus: 'ACTIVE_TESTED'
+    observedStatus: 'DRIFTED'
+    exactOrderedTriggers:
+      - "Contact Tag added — OT | Event | Tisha B'Av 2026 | Registered."
+      - 'Require exact event-registration communications permission plus no email DND, suppression, unsubscribe, complaint, or hard-bounce state; do not require or create newsletter/general marketing consent.'
+      - 'Reject a duplicate active registration run for the same idempotency scope.'
+      - 'Enter each approved reminder milestone only when it is still in the future.'
+    exactOrderedActions:
+      - 'Email A - Immediate Confirmation: exact approved subject/preheader/body, rabbi_campaign sender, canonical One Time Tisha page, event-only permission gates, and no provider link.'
+      - 'Wait until exactly one hour before the event; skip when already past.'
+      - 'Email C - One Hour: send only to the still-eligible registered-event enrollment with the protected registered-attendee class link.'
+      - 'Wait until exactly ten minutes before the event; skip when already past.'
+      - 'Email D - Join Now: send only to the still-eligible registered-event enrollment with the protected registered-attendee class link; preserve one active run on replay.'
+    observedTriggers:
+      - "Published workflow trigger is exactly Contact Tag added — OT | Event | Tisha B'Av 2026 | Registered."
+      - 'Fresh production signup did not receive that tag and therefore created no new workflow enrollment.'
+    observedActions:
+      - 'Email A saved and reopened on the same workflow ID with the approved copy, rabbi_campaign sender, canonical One Time Tisha page, and no provider link.'
+      - 'Workflow remained Published; existing operator enrollment remained at the one-hour wait; counts stayed one active / two historical.'
+      - 'Terminal run sent zero messages and applied no manual tag, enrollment, fallback, or duplicate signup.'
+      - 'Current live readback found Email A - Immediate Confirmation disabled while the workflow remained Published; current immediate delivery is not operational.'
+      - 'The repair subphase opened the disabled action, but the GHL editor did not render its subject, sender, body, or link controls; no action/workflow save was performed and a fresh reopen still showed the action disabled.'
+    essentialValues:
+      registration_trigger_tag: "OT | Event | Tisha B'Av 2026 | Registered"
+      immediate_confirmation_count: 1
+      immediate_email_subject: "You're registered — let's strengthen ourselves together"
+      immediate_email_preheader: "Join Rabbi Eli Scheller live from the Holy Land this Tisha B'Av."
+      immediate_email_sender_key: 'rabbi_campaign'
+      immediate_email_link_custom_value_key: 'one_time_tisha_bav_landing_url'
+      immediate_email_live_link_readback: 'sanitized_present_valid'
+      immediate_email_provider_link_present: false
+      immediate_email_action_enabled: false
+      immediate_email_identity_reverified: false
+      repair_subphase_mutation_applied: false
+      one_hour_reminder_scheduled_at: '2026-07-23T21:00:00+03:00'
+      ten_minute_reminder_scheduled_at: '2026-07-23T21:50:00+03:00'
+      historical_enrollments: 2
+      active_enrollments: 1
+      messages_sent_terminal_run: 0
+      fresh_signup_registered_tag_observed: false
+      fresh_signup_new_enrollment_observed: false
+      manual_tag_enrollment_or_send_applied: false
+      duplicate_active_run_created: false
+      late_past_actions_skipped: true
+      protected_direct_class_link: 'sanitized_present_valid_operator_authorized'
+      protected_link_may_appear_in_public_campaign: false
+      event_communications_permission_required: true
+      registration_disclosure: 'By reserving, you’ll receive emails about this event.'
+      newsletter_checkbox_present: false
+      newsletter_or_general_marketing_consent_created: false
+      provider_email_eligibility_is_consent: false
+      suppression_dnd_unsubscribe_complaint_hard_bounce_win: true
+      synthetic_or_operator_owned_verification_only: true
+      whatsapp_allowed: false
+    lastReadback:
+      at: '2026-07-23T19:12:15.375Z'
+      method: 'live authenticated exact-ID action-open attempt plus clean builder reopen/readback; Published switch on, Email A visibly disabled, Save remained Saved/disabled, and no mutation was applied'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json'
+    canary:
+      result: 'passed'
+      reference: 'GHL-E01-operator-fab156df2719852d'
+      detail: 'Historical bounded GHL-only execution/replay proof passed, but current live readback is DRIFTED because Email A is disabled; the repair subphase could not reverify action identity and made no mutation.'
+    blocker: 'DRIFTED_BLOCKED_ACTION_IDENTITY_UNVERIFIED: GHL did not render the disabled action subject, sender, body, or link controls, so identity against the accepted configuration could not be proven and the action was not re-enabled or saved.'
+    evidence:
+      - 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
+      - 'integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json'
+      - 'integrations/highlevel/agent-mode/results/GHL-TISHA-BAV-ACTIVATION-20260722.result.json'
+      - 'integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json'
+      - 'integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json'
+bot_action_workflows:
+  - key: 'OT-B01'
+    canonicalName: 'OT-B01 Website Lead-Capture Bot'
+    normalizedName: 'ot_b01_website_lead_capture_bot'
+    ghlId: ''
+    ghlKey: 'ot_b01_website_lead_capture_bot'
+    objectType: 'bot_action_workflow'
+    dataType: 'workflow'
+    asset_kind: 'workflow'
+    category: 'bot_action_workflow'
+    folder: '60 - Bot Actions'
+    purpose: 'Public website Family/School adult lead capture; never WhatsApp qualification or Student creation.'
+    sourceOfTruth: 'Shared'
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases: []
+    assetLifecycle: 'canonical'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-22'
+    lastTestedDate: ''
+    promptPath: 'integrations/highlevel/v21/foundation/prompts/OT-B01-website-lead-capture.md'
+    checklistPath: 'integrations/highlevel/v21/foundation/checklists/OT-B01-website-lead-capture.md'
+    messageClass: 'signup_confirmation'
+    senderKey: 'brand'
+    transport: 'GHL'
+    exactTrigger: 'an adult submits Family or School lead details through the public One Time website assistant'
+    companionDelivery: 'No WhatsApp qualification, Student contact, access grant, or school-pricing promise is permitted.'
+    providerContract:
+      exactTriggerFilter: 'public One Time website assistant submits name, email, family|school, timezone, and optional phone for an adult'
+      orderedCriticalActions:
+        - 'identify as the One Time website assistant and answer only from approved public knowledge'
+        - 'offer family signup or record a school inquiry'
+        - 'escalate uncertain answers to adult support'
+        - 'never create a Student contact'
+      deliveryCategory: 'signup_confirmation'
+      senderKey: 'brand'
+    displayOrder: 15
+    desiredStatus: 'DRAFT_WAITING_EXTERNAL'
+    observedStatus: 'MISSING'
+    exactOrderedTriggers:
+      - 'Receive an adult Family or School lead from the public One Time website assistant.'
+    exactOrderedActions:
+      - 'Validate name, email, family|school, timezone, optional phone, and transcript retention reference.'
+      - 'Offer Family signup or record a School inquiry; escalate uncertain answers to adult support.'
+      - 'Never qualify through WhatsApp, create a Student, promise School pricing, or grant access.'
+    observedTriggers: []
+    observedActions: []
+    lastReadback:
+      at: '2026-07-22T14:00:12.763Z'
+      method: 'read-only historical collision readback; the prior Complete Signup provider ID is intentionally not reused'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json'
+    canary:
+      result: 'not_run'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json'
+      detail: 'The prior provider asset has a different purpose and is not the canonical website lead-capture bot; no executable canonical provider asset exists.'
+    blocker: 'DRAFT_BLOCKED_IDENTITY_COLLISION: the historical Complete Signup provider ID is reserved to its observed purpose and cannot be reused; a separately identified website lead-capture asset plus save/reopen readback is required.'
+    evidence:
+      - 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
+      - 'integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json'
+  - key: 'OT-B02'
+    canonicalName: 'OT-B02 Send Next Confirmed Class Info'
+    normalizedName: 'ot_b02_send_next_confirmed_class_info'
+    ghlId: 'cc766d32-0a47-47b5-818c-de45fefa83a7'
+    ghlKey: 'ot_b02_send_next_confirmed_class_info'
+    objectType: 'bot_action_workflow'
+    dataType: 'workflow'
+    asset_kind: 'workflow'
+    category: 'bot_action_workflow'
+    folder: '60 - Bot Actions'
+    purpose: 'Safe next confirmed class info adapter.'
+    sourceOfTruth: 'Shared'
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases: []
+    assetLifecycle: 'canonical'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-22'
+    lastTestedDate: ''
+    promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-B02-send-next-confirmed-class-info.md'
+    checklistPath: 'integrations/highlevel/workflow-checklists/OT-B02-send-next-confirmed-class-info.md'
+    messageClass: 'class_reminder'
+    senderKey: 'brand'
+    transport: 'GHL'
+    exactTrigger: 'OT-A1 invokes the typed next-confirmed-class-info adapter'
+    companionDelivery: ''
+    providerContract:
+      exactTriggerFilter: 'OT-A1 invokes the typed next-confirmed-class-info adapter'
+      orderedCriticalActions:
+        - 'query safe current class state from One Time'
+        - 'return or send only the protected confirmed class information'
+        - 'never expose a raw provider URL'
+      deliveryCategory: 'class_reminder'
+      senderKey: 'brand'
+    displayOrder: 16
+    desiredStatus: 'DRAFT_WAITING_EXTERNAL'
+    observedStatus: 'DRAFT_SHELL'
+    exactOrderedTriggers:
+      - 'Receive the typed OT-A1 next-confirmed-class-info invocation.'
+    exactOrderedActions:
+      - 'Query safe current class state from One Time.'
+      - 'Return or send only protected confirmed class information.'
+      - 'Never expose a raw provider URL.'
+    observedTriggers: []
+    observedActions: []
+    lastReadback:
+      at: '2026-07-22T14:00:12.763Z'
+      method: 'read-only exhaustive visible UI inventory and exact empty-canvas readback'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json'
+    canary:
+      result: 'not_run'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json'
+      detail: 'No executable trigger or critical action exists; controlled execution is not possible.'
+    blocker: 'DRAFT_BLOCKED_APP_CONTRACT: typed next-class adapter is absent.'
+    evidence:
+      - 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
+      - 'integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json'
+  - key: 'OT-B03'
+    canonicalName: 'OT-B03 Send Member Login'
+    normalizedName: 'ot_b03_send_member_login'
+    ghlId: '8ff00774-82fd-42d7-992b-4e9aca0a5091'
+    ghlKey: 'ot_b03_send_member_login'
+    objectType: 'bot_action_workflow'
+    dataType: 'workflow'
+    asset_kind: 'workflow'
+    category: 'bot_action_workflow'
+    folder: '60 - Bot Actions'
+    purpose: 'Send canonical member login URL.'
+    sourceOfTruth: 'Shared'
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases: []
+    assetLifecycle: 'canonical'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-22'
+    lastTestedDate: ''
+    promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-B03-send-member-login.md'
+    checklistPath: 'integrations/highlevel/workflow-checklists/OT-B03-send-member-login.md'
+    messageClass: 'access_help'
+    senderKey: 'office'
+    transport: 'GHL'
+    exactTrigger: 'OT-A1 invokes the typed member-login adapter'
+    companionDelivery: ''
+    providerContract:
+      exactTriggerFilter: 'OT-A1 invokes the typed member-login adapter for an adult contact'
+      orderedCriticalActions:
+        - 'send only https://join.onetimeonetime.com/login'
+        - 'do not claim the account is active'
+        - 'never send credentials or tokens'
+      deliveryCategory: 'access_help_companion'
+      senderKey: 'office'
+    displayOrder: 17
+    desiredStatus: 'DRAFT_WAITING_EXTERNAL'
+    observedStatus: 'DRAFT_SHELL'
+    exactOrderedTriggers:
+      - 'Receive the typed OT-A1 member-login invocation for an adult contact.'
+    exactOrderedActions:
+      - 'Return or send only https://join.onetimeonetime.com/login.'
+      - 'Do not claim that the account is active.'
+      - 'Never send credentials or tokens.'
+    observedTriggers: []
+    observedActions: []
+    lastReadback:
+      at: '2026-07-22T14:00:12.763Z'
+      method: 'read-only exhaustive visible UI inventory and exact empty-canvas readback'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json'
+    canary:
+      result: 'not_run'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json'
+      detail: 'No executable trigger or critical action exists; controlled execution is not possible.'
+    blocker: 'DRAFT_BLOCKED_APP_CONTRACT: typed member-login companion adapter is absent.'
+    evidence:
+      - 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
+      - 'integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json'
+  - key: 'OT-B04'
+    canonicalName: 'OT-B04 Send Password Help'
+    normalizedName: 'ot_b04_send_password_help'
+    ghlId: '9f96c105-a298-4b5d-a5e5-8c573624d242'
+    ghlKey: 'ot_b04_send_password_help'
+    objectType: 'bot_action_workflow'
+    dataType: 'workflow'
+    asset_kind: 'workflow'
+    category: 'bot_action_workflow'
+    folder: '60 - Bot Actions'
+    purpose: 'Send canonical password-help URL.'
+    sourceOfTruth: 'Shared'
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases: []
+    assetLifecycle: 'canonical'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-22'
+    lastTestedDate: ''
+    promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-B04-send-password-help.md'
+    checklistPath: 'integrations/highlevel/workflow-checklists/OT-B04-send-password-help.md'
+    messageClass: 'password_reset'
+    senderKey: 'account_security'
+    transport: 'Resend'
+    exactTrigger: 'OT-A1 invokes the typed password-help adapter'
+    companionDelivery: 'GHL may request the One Time adapter but never stores or sends a reset token.'
+    providerContract:
+      exactTriggerFilter: 'OT-A1 invokes the typed password-help adapter without account enumeration'
+      orderedCriticalActions:
+        - 'request the One Time password-help boundary'
+        - 'send only the canonical forgot-password URL as a non-token companion when eligible'
+        - 'leave reset-token creation and delivery to One Time and Resend'
+      deliveryCategory: 'password_help_companion'
+      senderKey: 'account_security'
+    displayOrder: 18
+    desiredStatus: 'DRAFT_WAITING_EXTERNAL'
+    observedStatus: 'DRAFT_SHELL'
+    exactOrderedTriggers:
+      - 'Receive the typed OT-A1 password-help invocation without account enumeration.'
+    exactOrderedActions:
+      - 'Request the One Time password-help boundary.'
+      - 'Return only the canonical non-token forgot-password URL when eligible.'
+      - 'Leave reset-token creation and delivery to One Time and Resend.'
+    observedTriggers: []
+    observedActions: []
+    lastReadback:
+      at: '2026-07-22T14:00:12.763Z'
+      method: 'read-only exhaustive visible UI inventory and exact empty-canvas readback'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json'
+    canary:
+      result: 'not_run'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json'
+      detail: 'No executable trigger or critical action exists; controlled execution is not possible.'
+    blocker: 'DRAFT_BLOCKED_APP_CONTRACT: typed password-help companion adapter is absent.'
+    evidence:
+      - 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
+      - 'integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json'
+  - key: 'OT-B05'
+    canonicalName: 'OT-B05 Apply Opt-Out'
+    normalizedName: 'ot_b05_apply_opt_out'
+    ghlId: 'badd7521-913c-43b8-9b7a-1c1ccedac63c'
+    ghlKey: 'ot_b05_apply_opt_out'
+    objectType: 'bot_action_workflow'
+    dataType: 'workflow'
+    asset_kind: 'workflow'
+    category: 'bot_action_workflow'
+    folder: '60 - Bot Actions'
+    purpose: 'Apply opt-out, DND, suppression and stop bot follow-up.'
+    sourceOfTruth: 'Shared'
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases: []
+    assetLifecycle: 'canonical'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-22'
+    lastTestedDate: ''
+    promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-B05-apply-opt-out.md'
+    checklistPath: 'integrations/highlevel/workflow-checklists/OT-B05-apply-opt-out.md'
+    messageClass: 'support_acknowledgement'
+    senderKey: 'brand'
+    transport: 'GHL'
+    exactTrigger: 'OT-A1 invokes the typed opt-out adapter; no acknowledgement send is authorized by this registry lane'
+    companionDelivery: ''
+    providerContract:
+      exactTriggerFilter: 'OT-A1 invokes the typed opt-out adapter for STOP, unsubscribe, remove me, do not contact me, wrong number, or equivalent intent'
+      orderedCriticalActions:
+        - 'set relevant channel DND'
+        - 'update consent and suppression fields'
+        - 'remove related opt-in tag'
+        - 'apply OT | Marketing Suppressed when appropriate'
+        - 'remove from marketing and nurture workflows'
+        - 'stop bot auto-follow-up'
+      deliveryCategory: 'preference_enforcement'
+      senderKey: 'brand'
+    displayOrder: 19
+    desiredStatus: 'DRAFT_WAITING_EXTERNAL'
+    observedStatus: 'DRAFT_SHELL'
+    exactOrderedTriggers:
+      - 'Receive the typed OT-A1 opt-out invocation for STOP or equivalent intent.'
+    exactOrderedActions:
+      - 'Set the relevant channel DND state.'
+      - 'Update canonical consent and suppression fields.'
+      - 'Remove related opt-in tags and apply OT | Marketing Suppressed when appropriate.'
+      - 'Remove the adult from marketing/nurture workflows and stop bot auto-follow-up.'
+      - 'Send no acknowledgement; any future confirmation requires a separately reviewed and authorized delivery contract.'
+    observedTriggers: []
+    observedActions: []
+    lastReadback:
+      at: '2026-07-22T14:00:12.763Z'
+      method: 'read-only exhaustive visible UI inventory and exact empty-canvas/no-acknowledgement readback'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json'
+    canary:
+      result: 'not_run'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json'
+      detail: 'No executable trigger or critical action exists; controlled execution is not possible.'
+    blocker: 'DRAFT_BLOCKED_APP_CONTRACT: typed opt-out adapter and suppression mapping are absent.'
+    evidence:
+      - 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
+      - 'integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json'
+deprecated_workflows:
+  - key: 'OT-11'
+    canonicalName: 'OT-11 Retired / Reserved'
+    normalizedName: 'ot_11_retired_reserved'
+    ghlId: ''
+    ghlKey: 'ot_11_retired_reserved'
+    objectType: 'deprecated_workflow'
+    dataType: 'workflow'
+    asset_kind: 'workflow'
+    category: 'deprecated_workflow'
+    folder: '99 - Deprecated'
+    purpose: 'Permanently retired and reserved; this identifier may never execute or be reused.'
+    sourceOfTruth: 'Shared'
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases:
+      - 'ot_11_whatsapp_lead_qualification'
+    assetLifecycle: 'deprecated'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-22'
+    lastTestedDate: ''
+    promptPath: ''
+    checklistPath: ''
+    messageClass: 'support_acknowledgement'
+    senderKey: 'brand'
+    transport: 'GHL'
+    exactTrigger: 'permanently retired and reserved; no active trigger is allowed'
+    companionDelivery: ''
+    displayOrder: 20
+    desiredStatus: 'BLOCKED'
+    observedStatus: 'MISSING'
+    exactOrderedTriggers:
+      - 'No active trigger is allowed.'
+    exactOrderedActions:
+      - 'Do not create, activate, or reuse this identifier for any purpose.'
+    observedTriggers: []
+    observedActions: []
+    lastReadback:
+      at: '2026-07-22T09:09:54.117Z'
+      method: 'navigate-away/reopen plus sanitized UI/API readback'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
+    canary:
+      result: 'not_applicable'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
+      detail: 'Permanently retired/reserved contract; execution is prohibited.'
+    blocker: 'Permanently retired and reserved; dependency-check before any safe quarantine of an unknown historical asset.'
+    evidence:
+      - 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
+  - key: 'OT-HUMAN-HANDOFF'
+    canonicalName: 'OT - Human Handoff'
+    normalizedName: 'ot_human_handoff'
+    ghlId: ''
+    ghlKey: 'ot_human_handoff'
+    objectType: 'deprecated_workflow'
+    dataType: 'workflow'
+    asset_kind: 'workflow'
+    category: 'deprecated_workflow'
+    folder: '99 - Deprecated'
+    purpose: 'Human handoff workflow is not active for OT-A1.'
+    sourceOfTruth: 'Shared'
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases: []
+    assetLifecycle: 'deprecated'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-22'
+    lastTestedDate: ''
+    promptPath: ''
+    checklistPath: ''
+    messageClass: 'support_acknowledgement'
+    senderKey: 'brand'
+    transport: 'GHL'
+    exactTrigger: 'forbidden and deprecated; no active trigger is allowed'
+    companionDelivery: ''
+    displayOrder: 22
+    desiredStatus: 'BLOCKED'
+    observedStatus: 'MISSING'
+    exactOrderedTriggers:
+      - 'No active trigger is allowed.'
+    exactOrderedActions:
+      - 'Do not create, activate, or silently delete a historical asset.'
+    observedTriggers: []
+    observedActions: []
+    lastReadback:
+      at: '2026-07-22T09:09:54.117Z'
+      method: 'navigate-away/reopen plus sanitized UI/API readback'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
+    canary:
+      result: 'not_applicable'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
+      detail: 'Forbidden/deprecated contract.'
+    blocker: 'Forbidden; dependency-check before any safe quarantine of an unknown historical asset.'
+    evidence:
+      - 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
+non_workflow_assets:
+  - key: 'OT-A1'
+    asset_kind: 'conversation_ai_bot'
+    canonicalName: 'OT-A1 One Time Enrollment Assistant'
+    ghlId: '0Z5YvlziuXqZmBntYFU0'
+    folder: 'One Time / 60 - Bot Actions'
+    desiredStatus: 'OFF'
+    observedStatus: 'UNVERIFIED_NOT_VISIBLE'
+    lastReadback:
+      at: '2026-07-22T14:00:12.763Z'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json'
+    evidence:
+      - 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
+      - 'integrations/highlevel/agent-mode/results/GHL-ASSET-KIND-READBACK-20260722.result.json'
+      - 'integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json'
+  - key: 'one-time-public-kb-v1'
+    asset_kind: 'knowledge_base'
+    canonicalName: 'One Time Mishnayos - Public Program and Support'
+    ghlId: 'ps6jttZ8WUGycLeQX6uF'
+    folder: 'AI Agents / Knowledge Base'
+    desiredStatus: 'ACTIVE_REFERENCE'
+    observedStatus: 'ACTIVE_REFERENCE'
+    lastReadback:
+      at: '2026-07-22T14:00:12.763Z'
+      reference: 'integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json'
+    evidence:
+      - 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
+      - 'integrations/highlevel/agent-mode/results/GHL-ASSET-KIND-READBACK-20260722.result.json'
+      - 'integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json'
+workflow_control:
+  canonicalDesiredState: 'GitHub repository registry on the reviewed PR head'
+  browserMutationAuthority: 'exact reviewed Git-authored Agent Mode job only'
+  closedLoop:
+    - 'reviewed_git_job'
+    - 'permitted_browser_change'
+    - 'save'
+    - 'navigate_away_or_reload'
+    - 'reopen_and_read_back'
+    - 'bounded_safe_canary'
+    - 'sanitized_result_committed'
+    - 'drift_validator_compares_observation_to_registry'
+  approvalGates:
+    - 'enrollment'
+    - 'publication_or_activation'
+    - 'broad_send'
+    - 'payment'
+    - 'production_change'
+    - 'quarantine_or_deprecation'
+    - 'destructive_action'
+  unknownWorkflowPolicy:
+    report: true
+    dependencyCheckRequired: true
+    quarantineFolder: '99 - Deprecated'
+    quarantineOnlyWhenSafeAndAuthorized: true
+    silentlyDelete: false
+  allowed_states:
+    - 'MISSING'
+    - 'DRAFT_SHELL'
+    - 'DRAFT_WAITING_EXTERNAL'
+    - 'SAVED_REOPENED'
+    - 'ACTIVE_CONFIGURED'
+    - 'ACTIVE_TESTED'
+    - 'DRIFTED'
+    - 'BLOCKED'
+  generated_report: 'integrations/highlevel/registry/WORKFLOW-CONTROL-REPORT.md'
+  observed_evidence:
+    - 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
+    - 'integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json'
+    - 'integrations/highlevel/agent-mode/results/GHL-ASSET-KIND-READBACK-20260722.result.json'
+    - 'integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json'
+publishing_authorized: false
+production_enrollment_authorized: false
+duplicate_workflows_disabled_in_this_run: 0
+human_task_workflows_active: 0

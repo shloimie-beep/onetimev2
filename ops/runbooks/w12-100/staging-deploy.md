@@ -109,7 +109,8 @@ Combine the web and worker deployment JSON arrays into
 ## Stop Conditions
 
 - Railway status does not contain all exact IDs.
-- `/version` before deploy does not match the manifest predeploy source.
+- Protected diagnostics runtime before deploy does not match the manifest
+  predeploy source.
 - Provider transports are not off/sink/mock/not configured.
 - Backup metadata is missing or stale.
 - Migration status cannot be collected.

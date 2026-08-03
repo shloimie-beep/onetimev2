@@ -1,0 +1,67 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P21-registration-004
+task_id: P21
+kind: server_feature_registration
+requirement_ids:
+  - OTV2-CONTENT-087
+  - OTV2-CONTENT-088
+  - OTV2-CONTENT-089
+  - OTV2-CONTENT-090
+  - OTV2-CONTENT-091
+  - OTV2-CONTENT-092
+  - OTV2-CONTENT-194
+  - OTV2-CONTENT-195
+acceptance_case_ids:
+  - OTV2-CONTENT-087-AC01
+  - OTV2-CONTENT-088-AC01
+  - OTV2-CONTENT-089-STUDENT
+  - OTV2-CONTENT-089-PARENT-DENY
+  - OTV2-CONTENT-090-AC01
+  - OTV2-CONTENT-091-AC01
+  - OTV2-CONTENT-092-AC01
+  - OTV2-CONTENT-194-AC01
+  - OTV2-CONTENT-195-AC01
+rationale: P21-registration-003 is immutable, unapplied, and path-incomplete. This successor preserves every original requirement and acceptance case, restores the two exact OTV2-CONTENT-089 cases, and provides the complete server plus Admin and Student client registration ceiling. Repository evidence proves only code composition; it does not prove a deployed native-PostgreSQL migration, provider identity/readback, or Vimeo effect.
+desired_semantic_change: Register the isolated P21 publication repository and service, authenticated Admin publication commands, protected Student library reads, and the internal publication reconciler. Preserve the canonical aggregate writer, source-derived scope, transactional state changes, server-owned authorization, neutral denial, and provider fail-closed behavior. This request authorizes repository changes only and no provider, deployment, DNS, send, or migration effect.
+proposed_symbols_routes_keys_or_dependencies:
+  - |-
+    Exact immutable path inventory; SHA-256 of sorted LF-delimited paths with final LF is 0aaeaf416d916eb2dc806fe21ba05914ef7ae57acd3c9307f45489c06333b824:
+    apps/web/src/client/app/admin-ia.ts
+    apps/web/src/client/app/admin/content/publication/PublicationWorkspace.test.tsx
+    apps/web/src/client/app/admin/content/publication/PublicationWorkspace.tsx
+    apps/web/src/client/app/admin/content/publication/index.ts
+    apps/web/src/client/app/content-workspace/ContentWorkspace.tsx
+    apps/web/src/client/app/portal-api.ts
+    apps/web/src/client/app/portal-entry.tsx
+    apps/web/src/client/app/student/library/StudentLibraryWorkspace.test.tsx
+    apps/web/src/client/app/student/library/StudentLibraryWorkspace.tsx
+    apps/web/src/client/app/student/library/index.ts
+    apps/web/src/client/features/portals/PortalFeatures.tsx
+    apps/web/src/server/app.ts
+    apps/web/src/server/features/content/publication/composition.test.ts
+    apps/web/src/server/features/content/publication/composition.ts
+    apps/web/src/server/features/content/publication/index.ts
+    apps/web/src/server/features/content/publication/router.test.ts
+    apps/web/src/server/features/content/publication/router.ts
+    tests/integration/content/content-publication-composition.test.ts
+  - Register createPostgresContentPublicationRepository and createContentPublicationService in the central web composition; do not duplicate lifecycle logic.
+  - Register authenticated, CSRF-protected Admin /api/app/content/publication commands for approved-projection registration, approval, publish request, attachment, unpublish, and archive.
+  - Register authenticated Student /api/app/student/library search, five-minute bootstrap, protected media read and renewal, and resume handling. Derive all Student scope server-side and return neutral no-store denials.
+  - Register the internal reconciler only through the locked F05 operation, active exact F06 Vimeo binding, original outbox record, and canonical provider readback. The web request path must never mutate Vimeo directly.
+  - Preserve exact canonical content events, raw content_id aggregate keys, independently locked aggregate expected_version values, operation-namespaced idempotency, and the exact content_processing_versions to content_sources_v21 source join.
+  - Register Admin UI at /app/content/publication and Student UI at /app/student?section=library. Register no Parent playback surface and expose no provider reference or approval evidence.
+compatibility_assumptions:
+  - Migration 2253, the P20 approved projection, F05 provider-operation boundary, and F06 provider binding remain exact fail-closed dependencies.
+  - The integrated repository, PGlite, or captured-query evidence is not candidate native-PostgreSQL deployment evidence; candidate preparation must separately prove migration 2253 on the native target.
+  - Provider configuration remains disabled until the exact canonical identity, active binding, fencing token, operation scope, save/readback, and reconciliation evidence exist.
+  - P21-registration-003 remains immutable and is superseded only by admission of this exact successor.
+verification_performed:
+  - Validated the inventory digest against integration 3ea1a32ef971947ab10c129e1de74b54e7311834.
+  - Repository verification must cover focused service/repository/router/client/integration tests, typecheck, exact bootstrap order and replay, independent aggregate versions, source joins, scope fencing, idempotency, no-direct-DML, rollback, neutral denial, and secret/diff controls.
+  - No native-PostgreSQL deployment or provider readback was performed or claimed while drafting this request.
+conflicts_or_risks:
+  - Never infer canonical expected_version from content_publications.version and never accept caller-supplied scope, approval, or provider identity.
+  - Do not expose raw Vimeo URLs, signed URLs outside the protected read boundary, credentials, approval evidence, or Parent playback.
+  - Do not mutate a provider, deploy, send, edit a migration or domain file, or perform any external effect under this request.
+contains_secret_or_private_data: false

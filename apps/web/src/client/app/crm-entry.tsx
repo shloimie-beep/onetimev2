@@ -6,16 +6,37 @@ import type {
   ClassOccurrenceSummary,
   ContactDetail,
   ContactListItem,
+  ContentLibraryItemSummary,
   OwnerDashboardResponse,
   SessionUser,
 } from '@onetime/contracts';
+import { Button, Card, EmptyState, Select } from '@onetime/brand-system/react';
+import {
+  CLASSROOM_SECTIONS,
+  CONTACTS_SECTIONS,
+  DASHBOARD_SECTIONS,
+  adminPrimaryNav,
+  classroomHref,
+  classroomOccurrenceFromLocation,
+  classroomSectionFromPath,
+  contactsSectionFromPath,
+  dashboardSectionFromPath,
+  type DashboardSectionId,
+  type ClassroomSectionId,
+} from './admin-ia.js';
 import {
   communicationsRouteDescriptor,
   contactCommunicationsTabDescriptor,
 } from './communications/route-descriptor.js';
 import { AppShell, type ShellNavItem, type ShellUser } from './shell/AppShell.js';
+import { WorkspaceTabs } from './shell/WorkspaceTabs.js';
 import { GamificationAdminPanel } from './gamification-admin/GamificationAdminPanel.js';
+import { AdminLearningWorkspace } from './admin/learning/AdminLearningWorkspace.js';
+import { ClassManagementWorkspace } from './classes/ClassManagementWorkspace.js';
 import { SupportFeature } from './support/SupportFeature.js';
+import { changeOwnPassword } from './portal-api.js';
+import { resolveCurrentClientRoute } from './router/index.js';
+import { compatibilityPathForRoute } from './router/canonical-route-views.js';
 import {
   AuthExpiredError,
   appendNote,
@@ -28,16 +49,20 @@ import {
   getClassDetail,
   getClasses,
   getContact,
+  getContentLibrary,
   getGamificationAdminDashboard,
+  getAdminLearningSnapshot,
   getOwnerDashboard,
   getSession,
   listContacts,
   logoutSession,
   previewReply,
+  reactivateContactRequest,
   resolveCrmCapabilities,
   saveContactRequest,
   type Assignee,
   type ApiSession,
+  type AdminLearningSnapshot,
   type QueryState,
 } from './crm-api.js';
 import './crm.css';
@@ -51,6 +76,18 @@ const CommunicationsPanel = React.lazy(() =>
 const ContentWorkspace = React.lazy(() =>
   import('./content-workspace/ContentWorkspace.js').then((module) => ({
     default: module.ContentWorkspace,
+  })),
+);
+
+const ContactOperationsPanel = React.lazy(() =>
+  import('./contact-operations/ContactOperationsPanel.js').then((module) => ({
+    default: module.ContactOperationsPanel,
+  })),
+);
+
+const AdminDirectoryPanel = React.lazy(() =>
+  import('./admin-directory/AdminDirectoryPanel.js').then((module) => ({
+    default: module.AdminDirectoryPanel,
   })),
 );
 
@@ -73,7 +110,8 @@ type Notice = {
 };
 
 type CommunicationsMode = { kind: 'global' } | { kind: 'contact'; contactId: string };
-type OwnerSurface = 'dashboard' | 'crm' | 'classes' | 'content' | 'billing' | 'rewards' | 'support';
+type OwnerSurface =
+  'dashboard' | 'crm' | 'classes' | 'content' | 'billing' | 'support' | 'operations';
 type AsyncPanelState = {
   loading: boolean;
   error: string;
@@ -112,6 +150,10 @@ function CrmApp() {
   const [selected, setSelected] = useState<ContactDetail | null>(null);
   const [creating, setCreating] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [contactOperationsMode, setContactOperationsMode] = useState(false);
+  const [contactOperationsHouseholdKey, setContactOperationsHouseholdKey] = useState<string | null>(
+    null,
+  );
   const [surface, setSurface] = useState<OwnerSurface>('crm');
   const [communicationsMode, setCommunicationsMode] = useState<CommunicationsMode | null>(null);
   const [supportReceiptId, setSupportReceiptId] = useState<string | null>(null);
@@ -126,6 +168,11 @@ function CrmApp() {
     loading: false,
     error: '',
   });
+  const [adminLearning, setAdminLearning] = useState<AdminLearningSnapshot | null>(null);
+  const [adminLearningState, setAdminLearningState] = useState<AsyncPanelState>({
+    loading: false,
+    error: '',
+  });
   const [classes, setClasses] = useState<ClassOccurrenceSummary[]>([]);
   const [classesState, setClassesState] = useState<AsyncPanelState>({
     loading: false,
@@ -136,8 +183,24 @@ function CrmApp() {
     loading: false,
     error: '',
   });
+  const [teachingContent, setTeachingContent] = useState<ContentLibraryItemSummary[]>([]);
+  const [teachingContentState, setTeachingContentState] = useState<AsyncPanelState>({
+    loading: false,
+    error: '',
+  });
   const [contentRoutePath, setContentRoutePath] = useState(
     location.pathname.startsWith('/app/content') ? location.pathname : '/app/content',
+  );
+  const [dashboardRoutePath, setDashboardRoutePath] = useState(
+    location.pathname.startsWith('/app/dashboard') ? location.pathname : '/app/dashboard',
+  );
+  const [contactsRoutePath, setContactsRoutePath] = useState(
+    location.pathname.startsWith('/app/crm') ? location.pathname : '/app/crm',
+  );
+  const [classroomRoutePath, setClassroomRoutePath] = useState(
+    location.pathname === '/app/rewards' || location.pathname.startsWith('/app/classes')
+      ? `${location.pathname}${location.search}`
+      : '/app/classes',
   );
   const [assignees, setAssignees] = useState<Assignee[]>([]);
   const [focusContactId, setFocusContactId] = useState<string | null>(null);
@@ -151,13 +214,10 @@ function CrmApp() {
   const canCreate = capabilities.contacts.create;
   const canEdit = capabilities.contacts.update;
   const canAssign = capabilities.contacts.assign;
-  const canReadCommunications = session?.user.role === 'owner' || session?.user.role === 'admin';
+  const canReadCommunications = session?.user.role === 'admin';
   const canReadOwnerShell = canReadCommunications;
-  const canReadCrm =
-    session?.user.role === 'owner' ||
-    session?.user.role === 'admin' ||
-    session?.user.role === 'crm_agent' ||
-    session?.user.role === 'viewer';
+  const isRabbi = false;
+  const canReadCrm = session?.user.role === 'admin';
 
   useEffect(() => {
     void loadSession();
@@ -194,7 +254,7 @@ function CrmApp() {
     try {
       const json = await getSession();
       setSession(json);
-      if (['owner', 'admin'].includes(json.user.role)) {
+      if (json.user.role === 'admin') {
         const assigneeJson = await getAssignees();
         setAssignees(assigneeJson.assignees);
       }
@@ -210,8 +270,20 @@ function CrmApp() {
 
   async function routeFromLocation() {
     if (sessionExpired) return;
-    const supportReceiptMatch = location.pathname.match(/^\/app\/support\/receipts\/([^/]+)$/);
-    if (location.pathname === '/app/support' || supportReceiptMatch?.[1]) {
+    const canonicalRoute = resolveCurrentClientRoute(location.pathname, 'admin');
+    const compatibilityTarget =
+      canonicalRoute?.readiness === 'ready'
+        ? compatibilityPathForRoute(canonicalRoute, location.pathname)
+        : null;
+    const effectiveLocation = new URL(
+      compatibilityTarget ?? `${location.pathname}${location.search}`,
+      location.origin,
+    );
+    const routePath = effectiveLocation.pathname;
+    const routeSearch = effectiveLocation.search;
+    const supportReceiptMatch = routePath.match(/^\/app\/support\/receipts\/([^/]+)$/);
+    if (routePath === '/app/support' || supportReceiptMatch?.[1]) {
+      setContactOperationsMode(false);
       setSurface('support');
       setSupportReceiptId(
         supportReceiptMatch?.[1] ? decodeURIComponent(supportReceiptMatch[1]) : null,
@@ -223,9 +295,28 @@ function CrmApp() {
       setListLoading(false);
       return;
     }
-    const ownerSurface = ownerSurfaceFromPath(location.pathname);
+    if (
+      routePath === '/app/crm/households' ||
+      routePath === '/app/crm/users' ||
+      routePath === '/app/crm/learners' ||
+      routePath === '/app/crm/audit'
+    ) {
+      setSurface('crm');
+      setContactOperationsMode(false);
+      setContactOperationsHouseholdKey(null);
+      setContactsRoutePath(routePath);
+      setCommunicationsMode(null);
+      setSupportReceiptId(null);
+      setSelected(null);
+      setEditing(false);
+      setCreating(false);
+      setListLoading(false);
+      return;
+    }
+    const ownerSurface = ownerSurfaceFromPath(routePath);
     if (ownerSurface && ownerSurface !== 'crm') {
-      const classDetailMatch = location.pathname.match(/^\/app\/classes\/([^/]+)$/);
+      setContactOperationsMode(false);
+      setContactOperationsHouseholdKey(null);
       setSurface(ownerSurface);
       setCommunicationsMode(null);
       setSupportReceiptId(null);
@@ -233,24 +324,33 @@ function CrmApp() {
       setEditing(false);
       setCreating(false);
       setListLoading(false);
-      if (ownerSurface === 'dashboard' || ownerSurface === 'billing') await loadDashboard();
+      if ((ownerSurface === 'dashboard' || ownerSurface === 'billing') && !isRabbi) {
+        await loadDashboard();
+      }
+      if (ownerSurface === 'dashboard') setDashboardRoutePath(routePath);
       if (ownerSurface === 'classes') {
-        await loadClasses();
-        if (classDetailMatch?.[1]) {
-          await loadClassDetail(decodeURIComponent(classDetailMatch[1]));
-        } else {
-          setSelectedClass(null);
-          setClassDetailState({ loading: false, error: '' });
+        const nextClassroomPath = `${routePath}${routeSearch}`;
+        const occurrenceKey = classroomOccurrenceFromLocation(routePath, routeSearch);
+        setClassroomRoutePath(nextClassroomPath);
+        await loadClasses(occurrenceKey);
+        if (classroomSectionFromPath(routePath) === 'rewards' && !isRabbi) {
+          await loadGamificationDashboard();
+        }
+        if (!isRabbi && ['questions', 'rewards'].includes(classroomSectionFromPath(routePath))) {
+          await loadAdminLearning();
         }
       } else {
         setSelectedClass(null);
         setClassDetailState({ loading: false, error: '' });
       }
-      if (ownerSurface === 'content') setContentRoutePath(location.pathname);
-      if (ownerSurface === 'rewards') await loadGamificationDashboard();
+      if (ownerSurface === 'content') {
+        setContentRoutePath(routePath);
+        if (isRabbi) await loadTeachingContent();
+      }
       return;
     }
-    if (location.pathname === communicationsRouteDescriptor.path) {
+    if (routePath === communicationsRouteDescriptor.path) {
+      setContactOperationsMode(false);
       setSurface('crm');
       setCommunicationsMode({ kind: 'global' });
       setSelected(null);
@@ -259,10 +359,11 @@ function CrmApp() {
       setListLoading(false);
       return;
     }
-    const contactCommunicationsMatch = location.pathname.match(
+    const contactCommunicationsMatch = routePath.match(
       /^\/app\/crm\/contacts\/([^/]+)\/communications$/,
     );
     if (contactCommunicationsMatch?.[1]) {
+      setContactOperationsMode(false);
       setSurface('crm');
       setCommunicationsMode({
         kind: 'contact',
@@ -274,10 +375,28 @@ function CrmApp() {
       setListLoading(false);
       return;
     }
+    if (routePath === '/app/crm/contact-operations') {
+      setSurface('crm');
+      setContactsRoutePath('/app/crm');
+      setContactOperationsMode(true);
+      setContactOperationsHouseholdKey(
+        new URLSearchParams(routeSearch).get('household')?.trim() || null,
+      );
+      setCommunicationsMode(null);
+      setSupportReceiptId(null);
+      setSelected(null);
+      setEditing(false);
+      setCreating(false);
+      setListLoading(false);
+      return;
+    }
     setSurface('crm');
+    setContactOperationsMode(false);
+    setContactOperationsHouseholdKey(null);
+    setContactsRoutePath(routePath);
     setCommunicationsMode(null);
     setSupportReceiptId(null);
-    const match = location.pathname.match(/^\/app\/crm\/contacts\/([^/]+)$/);
+    const match = routePath.match(/^\/app\/crm\/contacts\/([^/]+)$/);
     const contactId = match?.[1];
     if (contactId) {
       setCreating(false);
@@ -361,11 +480,55 @@ function CrmApp() {
     }
   }
 
-  async function loadClasses() {
+  async function loadAdminLearning() {
+    setAdminLearningState({ loading: true, error: '' });
+    try {
+      setAdminLearning(await getAdminLearningSnapshot());
+      setAdminLearningState({ loading: false, error: '' });
+    } catch (error) {
+      if (handleAuthError(error)) return;
+      setAdminLearningState({
+        loading: false,
+        error: errorMessage(error, 'Learning engagement could not load.'),
+      });
+    }
+  }
+
+  async function loadTeachingContent() {
+    setTeachingContentState({ loading: true, error: '' });
+    try {
+      const result = await getContentLibrary();
+      setTeachingContent(result.items);
+      setTeachingContentState({ loading: false, error: '' });
+    } catch (error) {
+      if (handleAuthError(error)) return;
+      setTeachingContentState({
+        loading: false,
+        error: errorMessage(error, 'Teaching content could not load.'),
+      });
+    }
+  }
+
+  async function loadClasses(preferredOccurrenceKey?: string | null) {
     setClassesState({ loading: true, error: '' });
     try {
       const json = await getClasses();
       setClasses(json.occurrences);
+      const occurrenceKey =
+        preferredOccurrenceKey ??
+        selectedClass?.occurrence_key ??
+        json.occurrences[0]?.occurrence_key ??
+        null;
+      if (preferredOccurrenceKey || selectedClass?.occurrence_key) {
+        if (occurrenceKey) await loadClassDetail(occurrenceKey);
+      } else if (occurrenceKey) {
+        for (const occurrence of json.occurrences) {
+          if (await loadClassDetail(occurrence.occurrence_key)) break;
+        }
+      } else {
+        setSelectedClass(null);
+        setClassDetailState({ loading: false, error: '' });
+      }
     } catch (error) {
       if (handleAuthError(error)) return;
       setClassesState({
@@ -383,18 +546,20 @@ function CrmApp() {
       const json = await getClassDetail(occurrenceKey);
       setSelectedClass(json.occurrence);
     } catch (error) {
-      if (handleAuthError(error)) return;
+      if (handleAuthError(error)) return false;
       setSelectedClass(null);
       setClassDetailState({
         loading: false,
         error: errorMessage(error, 'Class details could not load.'),
       });
-      return;
+      return false;
     }
     setClassDetailState({ loading: false, error: '' });
+    return true;
   }
 
   function openContact(contactId: string) {
+    setContactOperationsMode(false);
     returnFocusContactId.current = contactId;
     history.pushState({}, '', `/app/crm/contacts/${encodeURIComponent(contactId)}`);
     setCreating(false);
@@ -405,6 +570,9 @@ function CrmApp() {
   async function backToList() {
     history.pushState({}, '', '/app/crm');
     setSurface('crm');
+    setContactOperationsMode(false);
+    setContactOperationsHouseholdKey(null);
+    setContactsRoutePath('/app/crm');
     setSelected(null);
     setEditing(false);
     setCreating(false);
@@ -428,17 +596,39 @@ function CrmApp() {
 
   function startCreate() {
     setSurface('crm');
+    setContactsRoutePath('/app/crm');
     setSelected(null);
     setEditing(false);
     setCreating(true);
+    setContactOperationsMode(false);
     setCommunicationsMode(null);
     setSupportReceiptId(null);
     history.pushState({}, '', '/app/crm');
   }
 
+  function startContactOperations(householdKey?: string) {
+    const href = householdKey
+      ? `/app/crm/contact-operations?household=${encodeURIComponent(householdKey)}`
+      : '/app/crm/contact-operations';
+    history.pushState({}, '', href);
+    setSurface('crm');
+    setContactsRoutePath('/app/crm');
+    setContactOperationsMode(true);
+    setContactOperationsHouseholdKey(householdKey ?? null);
+    setCommunicationsMode(null);
+    setSupportReceiptId(null);
+    setSelected(null);
+    setEditing(false);
+    setCreating(false);
+    setListLoading(false);
+  }
+
   function openGlobalCommunications() {
+    setContactOperationsMode(false);
+    setContactOperationsHouseholdKey(null);
     history.pushState({}, '', communicationsRouteDescriptor.path);
     setSurface('crm');
+    setContactsRoutePath('/app/crm');
     setCommunicationsMode({ kind: 'global' });
     setSupportReceiptId(null);
     setSelected(null);
@@ -448,12 +638,15 @@ function CrmApp() {
   }
 
   function openContactCommunications(contactId: string) {
+    setContactOperationsMode(false);
+    setContactOperationsHouseholdKey(null);
     history.pushState(
       {},
       '',
       `/app/crm/contacts/${encodeURIComponent(contactId)}/${contactCommunicationsTabDescriptor.id}`,
     );
     setSurface('crm');
+    setContactsRoutePath('/app/crm');
     setCommunicationsMode({ kind: 'contact', contactId });
     setSupportReceiptId(null);
     setSelected(null);
@@ -466,9 +659,10 @@ function CrmApp() {
     nextSurface: Exclude<OwnerSurface, 'crm'>,
     href = ownerSurfacePath(nextSurface),
   ) {
-    const classDetailMatch = href.match(/^\/app\/classes\/([^/]+)$/);
     history.pushState({}, '', href);
     setSurface(nextSurface);
+    setContactOperationsMode(false);
+    setContactOperationsHouseholdKey(null);
     setCommunicationsMode(null);
     setSupportReceiptId(null);
     setSelected(null);
@@ -476,13 +670,17 @@ function CrmApp() {
     setCreating(false);
     setListLoading(false);
     if (nextSurface === 'dashboard' || nextSurface === 'billing') void loadDashboard();
-    if (nextSurface === 'rewards') void loadGamificationDashboard();
+    if (nextSurface === 'dashboard') setDashboardRoutePath(new URL(href, location.origin).pathname);
     if (nextSurface === 'classes') {
-      void loadClasses();
-      if (classDetailMatch?.[1]) void loadClassDetail(decodeURIComponent(classDetailMatch[1]));
-      else {
-        setSelectedClass(null);
-        setClassDetailState({ loading: false, error: '' });
+      const target = new URL(href, location.origin);
+      const occurrenceKey = classroomOccurrenceFromLocation(target.pathname, target.search);
+      setClassroomRoutePath(`${target.pathname}${target.search}`);
+      void loadClasses(occurrenceKey);
+      if (classroomSectionFromPath(target.pathname) === 'rewards') {
+        void loadGamificationDashboard();
+      }
+      if (['questions', 'rewards'].includes(classroomSectionFromPath(target.pathname))) {
+        void loadAdminLearning();
       }
     } else {
       setSelectedClass(null);
@@ -491,19 +689,32 @@ function CrmApp() {
     if (nextSurface === 'content') setContentRoutePath(href);
   }
 
-  function openClassDetail(occurrenceKey: string) {
-    const href = `/app/classes/${encodeURIComponent(occurrenceKey)}`;
+  function selectClassOccurrence(occurrenceKey: string) {
+    const target = new URL(classroomRoutePath, location.origin);
+    const section = classroomSectionFromPath(target.pathname);
+    const href = classroomHref(section, occurrenceKey);
     history.pushState({}, '', href);
     setSurface('classes');
+    setClassroomRoutePath(href);
     void loadClassDetail(occurrenceKey);
   }
 
-  function backToClasses() {
-    history.pushState({}, '', '/app/classes');
-    setSurface('classes');
-    setSelectedClass(null);
-    setClassDetailState({ loading: false, error: '' });
-    void loadClasses();
+  function openContactSection(href: string) {
+    if (href === '/app/crm') {
+      void backToList();
+      return;
+    }
+    history.pushState({}, '', href);
+    setSurface('crm');
+    setContactOperationsMode(false);
+    setContactOperationsHouseholdKey(null);
+    setContactsRoutePath(href);
+    setCommunicationsMode(null);
+    setSupportReceiptId(null);
+    setSelected(null);
+    setEditing(false);
+    setCreating(false);
+    setListLoading(false);
   }
 
   async function logout() {
@@ -567,6 +778,8 @@ function CrmApp() {
     setSelected(null);
     setCreating(false);
     setEditing(false);
+    setContactOperationsMode(false);
+    setContactOperationsHouseholdKey(null);
     setSurface('crm');
     setCommunicationsMode(null);
     setSupportReceiptId(null);
@@ -577,6 +790,9 @@ function CrmApp() {
     setSelectedClass(null);
     setClassDetailState({ loading: false, error: '' });
     setContentRoutePath('/app/content');
+    setDashboardRoutePath('/app/dashboard');
+    setContactsRoutePath('/app/crm');
+    setClassroomRoutePath('/app/classes');
     setListLoading(false);
     setDetailLoading(false);
     setSession(null);
@@ -607,90 +823,46 @@ function CrmApp() {
         })),
     [query],
   );
+  const dashboardSection = dashboardSectionFromPath(dashboardRoutePath);
+  const contactsSection = contactsSectionFromPath(contactsRoutePath);
+  const classroomPath = new URL(classroomRoutePath, location.origin);
+  const classroomSection = classroomSectionFromPath(classroomPath.pathname);
 
-  const navItems: ShellNavItem[] = [
-    ...(canReadOwnerShell
-      ? [
-          {
-            id: 'dashboard',
-            label: 'Dashboard',
-            href: '/app/dashboard',
-            current: surface === 'dashboard',
-          },
-        ]
-      : []),
-    ...(canReadCrm
-      ? [
-          {
-            id: 'crm',
-            label: 'CRM',
-            href: '/app/crm',
-            current: surface === 'crm' && !communicationsMode,
-          },
-        ]
-      : []),
-    ...(canReadOwnerShell
-      ? [
-          {
-            id: 'classes',
-            label: 'Classes',
-            href: '/app/classes',
-            current: surface === 'classes',
-          },
-          {
-            id: 'content',
-            label: 'Content',
-            href: '/app/content',
-            current: surface === 'content',
-          },
-          {
-            id: 'billing',
-            label: 'Products/Billing',
-            href: '/app/billing',
-            current: surface === 'billing',
-          },
-          {
-            id: 'rewards',
-            label: 'Rewards',
-            href: '/app/rewards',
-            current: surface === 'rewards',
-          },
-        ]
-      : []),
-    ...(canReadCommunications
-      ? [
-          {
-            id: communicationsRouteDescriptor.id,
-            label: communicationsRouteDescriptor.label,
-            href: communicationsRouteDescriptor.path,
-            current: communicationsMode?.kind === 'global',
-          },
-        ]
-      : []),
-    ...(session
-      ? [
-          {
-            id: 'support',
-            label: 'Support',
-            href: '/app/support',
-            current: surface === 'support',
-          },
-        ]
-      : []),
-  ];
+  const adminCurrentArea =
+    surface === 'dashboard'
+      ? 'dashboard'
+      : surface === 'crm' || surface === 'billing'
+        ? 'contacts'
+        : surface === 'content'
+          ? 'content'
+          : surface === 'classes'
+            ? 'classroom'
+            : null;
+  const liveConsoleReady =
+    isRabbi || session?.capabilities?.operator_experience?.live_console === true;
+  const navItems: ShellNavItem[] = canReadOwnerShell
+    ? adminPrimaryNav(adminCurrentArea, liveConsoleReady)
+    : canReadCrm
+      ? [{ id: 'contacts', label: 'Contacts', href: '/app/crm', current: true }]
+      : [];
+  const utilityItems: ShellNavItem[] = [];
   const shellUser = session ? shellUserFromSession(session.user) : null;
   const pageTitle =
     surface !== 'crm'
       ? ownerSurfaceTitle(surface)
       : communicationsMode
         ? 'Communications'
-        : creating
-          ? 'Add contact'
-          : editing
-            ? 'Edit contact'
-            : selected
-              ? selected.display_name
-              : 'CRM';
+        : contactOperationsMode
+          ? 'Parent household'
+          : contactsSection !== 'people'
+            ? (CONTACTS_SECTIONS.find((item) => item.id === contactsSection)?.label ?? 'Contacts')
+            : creating
+              ? 'Add contact'
+              : editing
+                ? 'Edit contact'
+                : selected
+                  ? selected.display_name
+                  : 'Contacts';
   const pageDescription =
     surface !== 'crm'
       ? ownerSurfaceDescription(surface)
@@ -698,15 +870,25 @@ function CrmApp() {
         ? communicationsMode.kind === 'contact'
           ? 'Communication history and draft activity for this contact.'
           : 'One Time communication activity and draft follow-up status.'
-        : creating
-          ? 'Create a One Time contact without sending messages or granting access.'
-          : editing
-            ? 'Update CRM fields backed by the One Time contact API.'
-            : selected
-              ? contactSummary(selected)
-              : 'One Time signup and contact review.';
+        : contactOperationsMode
+          ? 'Invite a Parent, create local-only Students, and manage access and adult-only GHL sync.'
+          : contactsSection !== 'people'
+            ? contactsSection === 'households'
+              ? 'Create and maintain family records, guardians, access, and account setup.'
+              : contactsSection === 'users'
+                ? 'Manage secure account setup, roles, password reset, and access state.'
+                : contactsSection === 'learners'
+                  ? 'Manage local learners, Student setup, status, and the three-active-learner limit.'
+                  : 'Review timestamped local CRM and account administration activity.'
+            : creating
+              ? 'Create a One Time contact without sending messages or granting access.'
+              : editing
+                ? 'Update CRM fields backed by the One Time contact API.'
+                : selected
+                  ? contactSummary(selected)
+                  : 'Parent and adult contact review. Students remain One Time-only.';
   const toolbar =
-    surface === 'dashboard' ? (
+    surface === 'dashboard' && dashboardSection === 'overview' ? (
       <ReadOnlyToolbar
         label="Refresh dashboard"
         actionId="dashboard.refresh.button"
@@ -715,26 +897,23 @@ function CrmApp() {
       />
     ) : surface === 'classes' ? (
       <ReadOnlyToolbar
-        label="Refresh classes"
+        label="Refresh classroom"
         actionId="classes.refresh.button"
         loading={classesState.loading}
         onRefresh={() => void loadClasses()}
       />
     ) : surface === 'billing' ? (
       <ReadOnlyToolbar
-        label="Refresh billing status"
-        actionId="billing.status.refresh.button"
+        label="Refresh household access"
+        actionId="household.access.refresh.button"
         loading={dashboardState.loading}
         onRefresh={() => void loadDashboard()}
       />
-    ) : surface === 'rewards' ? (
-      <ReadOnlyToolbar
-        label="Refresh rewards"
-        actionId="rewards.refresh.button"
-        loading={gamificationState.loading}
-        onRefresh={() => void loadGamificationDashboard()}
-      />
-    ) : surface === 'support' ? null : communicationsMode?.kind === 'contact' ? (
+    ) : surface === 'support' ||
+      surface === 'operations' ||
+      (surface === 'crm' &&
+        !communicationsMode &&
+        contactsSection !== 'people') ? null : communicationsMode?.kind === 'contact' ? (
       <ContactCommunicationsToolbar
         onBack={() => {
           history.pushState(
@@ -746,14 +925,21 @@ function CrmApp() {
           void loadContact(communicationsMode.contactId);
         }}
       />
+    ) : contactOperationsMode ? (
+      <FormToolbar onCancel={() => void backToList()} />
     ) : selected ? (
       <DetailToolbar
         contact={selected}
-        canEdit={canEdit}
+        canEdit={canEdit && selected.lead_status !== 'archived'}
         canReadCommunications={canReadCommunications}
         onBack={backToList}
         onEdit={() => setEditing(true)}
         onCommunications={() => openContactCommunications(selected.contact_id)}
+        onManageHousehold={
+          selected.managed_household
+            ? () => startContactOperations(selected.managed_household?.household_key)
+            : undefined
+        }
       />
     ) : creating || editing ? (
       <FormToolbar onCancel={() => (editing ? setEditing(false) : setCreating(false))} />
@@ -762,6 +948,7 @@ function CrmApp() {
         query={query}
         activeChips={activeChips}
         canEdit={canCreate}
+        canOperateHouseholds={canReadOwnerShell}
         onChange={setQuery}
         onApply={(nextQuery) => void loadList(undefined, nextQuery)}
         onClear={() => {
@@ -769,6 +956,7 @@ function CrmApp() {
           void loadList(undefined, defaultQuery);
         }}
         onCreate={startCreate}
+        onHouseholdOperations={startContactOperations}
       />
     );
 
@@ -776,11 +964,16 @@ function CrmApp() {
     <AppShell
       user={shellUser}
       navItems={navItems}
+      utilityItems={utilityItems}
       title={pageTitle}
       description={pageDescription}
       toolbar={toolbar}
       notice={notice ? <NoticeBanner notice={notice} /> : undefined}
       onNavigate={(href) => {
+        if (href === '/app/live-console') {
+          window.location.assign(href);
+          return;
+        }
         const ownerSurface = ownerSurfaceFromPath(href);
         if (ownerSurface && ownerSurface !== 'crm') openOwnerSurface(ownerSurface, href);
         if (href === '/app/crm') void backToList();
@@ -790,50 +983,69 @@ function CrmApp() {
       sessionExpired={sessionExpired}
       onSignIn={signIn}
     >
-      {surface === 'dashboard' && (
-        <DashboardPanel
-          dashboard={dashboard}
-          loading={dashboardState.loading}
-          error={dashboardState.error}
-          onRetry={() => void loadDashboard()}
-          onOpen={(href) => {
-            const ownerSurface = ownerSurfaceFromPath(href);
-            if (ownerSurface && ownerSurface !== 'crm') openOwnerSurface(ownerSurface, href);
-            if (href === '/app/crm') void backToList();
-            if (href === communicationsRouteDescriptor.path) openGlobalCommunications();
-          }}
-        />
-      )}
+      {surface === 'dashboard' &&
+        (isRabbi ? (
+          <RabbiDashboardPanel />
+        ) : (
+          <DashboardPanel
+            dashboard={dashboard}
+            loading={dashboardState.loading}
+            error={dashboardState.error}
+            section={dashboardSection}
+            onNavigate={(href) => openOwnerSurface('dashboard', href)}
+            onRetry={() => void loadDashboard()}
+          />
+        ))}
       {surface === 'classes' && (
         <ClassesPanel
+          csrfToken={session?.csrf_token ?? ''}
+          section={classroomSection}
+          teachingOnly={isRabbi}
           classes={classes}
           selectedClass={selectedClass}
+          gamificationDashboard={gamificationDashboard}
+          gamificationLoading={gamificationState.loading}
+          gamificationError={gamificationState.error}
+          adminLearning={adminLearning}
+          adminLearningLoading={adminLearningState.loading}
+          adminLearningError={adminLearningState.error}
           loading={classesState.loading}
           error={classesState.error}
           detailLoading={classDetailState.loading}
           detailError={classDetailState.error}
-          onOpen={openClassDetail}
-          onBack={backToClasses}
+          onNavigate={(href) => openOwnerSurface('classes', href)}
+          onSelectOccurrence={selectClassOccurrence}
           onRetry={() => void loadClasses()}
+          onRefreshOccurrences={loadClasses}
           onRetryDetail={(occurrenceKey) => void loadClassDetail(occurrenceKey)}
+          onRetryRewards={() => void loadGamificationDashboard()}
+          onRetryLearning={() => void loadAdminLearning()}
         />
       )}
-      {surface === 'content' && (
-        <Suspense
-          fallback={
-            <p className="state-panel" role="status">
-              Loading Content Workspace...
-            </p>
-          }
-        >
-          <ContentWorkspace
-            csrfToken={session?.csrf_token ?? ''}
-            path={contentRoutePath}
-            onNavigate={(href) => openOwnerSurface('content', href)}
-            onProtectedStateCleared={clearProtectedState}
+      {surface === 'content' &&
+        (isRabbi ? (
+          <RabbiTeachingContentPanel
+            items={teachingContent}
+            loading={teachingContentState.loading}
+            error={teachingContentState.error}
+            onRetry={() => void loadTeachingContent()}
           />
-        </Suspense>
-      )}
+        ) : (
+          <Suspense
+            fallback={
+              <p className="state-panel" role="status">
+                Loading Content Workspace...
+              </p>
+            }
+          >
+            <ContentWorkspace
+              csrfToken={session?.csrf_token ?? ''}
+              path={contentRoutePath}
+              onNavigate={(href) => openOwnerSurface('content', href)}
+              onProtectedStateCleared={clearProtectedState}
+            />
+          </Suspense>
+        ))}
       {surface === 'billing' && (
         <BillingPanel
           dashboard={dashboard}
@@ -842,12 +1054,21 @@ function CrmApp() {
           onRetry={() => void loadDashboard()}
         />
       )}
-      {surface === 'rewards' && (
-        <GamificationAdminPanel
-          dashboard={gamificationDashboard}
-          loading={gamificationState.loading}
-          error={gamificationState.error}
-          onRetry={() => void loadGamificationDashboard()}
+      {surface === 'operations' && (
+        <OperationsPanel
+          csrfToken={session?.csrf_token ?? ''}
+          dashboard={dashboard}
+          loading={dashboardState.loading}
+          error={dashboardState.error}
+          onNavigate={(href) => {
+            const nextSurface = ownerSurfaceFromPath(href);
+            if (nextSurface && nextSurface !== 'crm') {
+              openOwnerSurface(nextSurface, href);
+              return;
+            }
+            window.location.assign(href);
+          }}
+          onRetry={() => void loadDashboard()}
         />
       )}
       {surface === 'support' && (
@@ -872,18 +1093,68 @@ function CrmApp() {
           />
         </Suspense>
       )}
-      {surface === 'crm' && !communicationsMode && creating && (
-        <ContactForm
-          title="Add contact"
-          initial={emptyForm}
-          canAssign={canAssign}
-          assignees={assignees}
-          onCancel={() => setCreating(false)}
-          onSave={(form, idempotencyKey) => saveContact(form, 'create', idempotencyKey)}
+      {surface === 'crm' && (
+        <WorkspaceTabs
+          tabs={CONTACTS_SECTIONS}
+          currentId={contactsSection}
+          label="People and family management"
+          onNavigate={openContactSection}
         />
       )}
       {surface === 'crm' &&
         !communicationsMode &&
+        !contactOperationsMode &&
+        contactsSection !== 'people' && (
+          <Suspense
+            fallback={
+              <p className="state-panel" role="status">
+                Loading {CONTACTS_SECTIONS.find((item) => item.id === contactsSection)?.label}...
+              </p>
+            }
+          >
+            <AdminDirectoryPanel
+              mode={contactsSection}
+              csrfToken={session?.csrf_token ?? ''}
+              onSessionExpired={clearProtectedState}
+            />
+          </Suspense>
+        )}
+      {surface === 'crm' &&
+        contactsSection === 'people' &&
+        contactOperationsMode &&
+        !communicationsMode && (
+          <Suspense
+            fallback={
+              <p className="state-panel" role="status">
+                Loading Parent household operations...
+              </p>
+            }
+          >
+            <ContactOperationsPanel
+              csrfToken={session?.csrf_token ?? ''}
+              initialHouseholdKey={contactOperationsHouseholdKey}
+              onProtectedStateCleared={clearProtectedState}
+            />
+          </Suspense>
+        )}
+      {surface === 'crm' &&
+        contactsSection === 'people' &&
+        !contactOperationsMode &&
+        !communicationsMode &&
+        creating && (
+          <ContactForm
+            title="Add contact"
+            initial={emptyForm}
+            canAssign={canAssign}
+            assignees={assignees}
+            onCancel={() => setCreating(false)}
+            onSave={(form, idempotencyKey) => saveContact(form, 'create', idempotencyKey)}
+          />
+        )}
+      {surface === 'crm' &&
+        contactsSection === 'people' &&
+        !communicationsMode &&
+        !contactOperationsMode &&
         selected &&
         (editing ? (
           <ContactForm
@@ -905,24 +1176,33 @@ function CrmApp() {
             onRetry={() => void loadContact(selected.contact_id)}
             onChanged={() => void loadContact(selected.contact_id)}
             onArchived={() => void backToList()}
+            onRestored={() => void loadContact(selected.contact_id)}
           />
         ))}
-      {surface === 'crm' && !communicationsMode && !creating && !selected && !editing && (
-        <ContactList
-          contacts={contacts}
-          loading={listLoading}
-          error={listError}
-          nextCursor={nextCursor}
-          query={query}
-          canEdit={canEdit}
-          onOpen={openContact}
-          onRetry={() => void loadList(undefined, query)}
-          onLoadMore={() => void loadList(nextCursor ?? undefined, query)}
-          onCreate={startCreate}
-        />
-      )}
       {surface === 'crm' &&
+        contactsSection === 'people' &&
         !communicationsMode &&
+        !contactOperationsMode &&
+        !creating &&
+        !selected &&
+        !editing && (
+          <ContactList
+            contacts={contacts}
+            loading={listLoading}
+            error={listError}
+            nextCursor={nextCursor}
+            query={query}
+            canEdit={canEdit}
+            onOpen={openContact}
+            onRetry={() => void loadList(undefined, query)}
+            onLoadMore={() => void loadList(nextCursor ?? undefined, query)}
+            onCreate={startCreate}
+          />
+        )}
+      {surface === 'crm' &&
+        contactsSection === 'people' &&
+        !communicationsMode &&
+        !contactOperationsMode &&
         !creating &&
         !selected &&
         !editing &&
@@ -966,307 +1246,588 @@ function ReadOnlyToolbar({
   );
 }
 
-function DashboardPanel({
-  dashboard,
+function RabbiDashboardPanel() {
+  const destinations = [
+    {
+      title: 'Classroom and schedule',
+      detail: 'Review upcoming classes, learner questions, attendance, and progress.',
+      href: '/app/classes',
+    },
+    {
+      title: 'Teaching content',
+      detail: 'Open the current read-only lesson and media library.',
+      href: '/app/content',
+    },
+    {
+      title: 'Live Console',
+      detail: 'Run the current class, learner questions, and approved Zoom controls.',
+      href: '/app/live-console',
+    },
+  ];
+  return (
+    <section className="dashboard-surface" data-usable="rabbi-dashboard">
+      <Card className="dashboard-overview-card">
+        <h2>Rabbi teaching workspace</h2>
+        <p>
+          This account is limited to teaching operations. Billing, contact administration,
+          credentials, and role assignment are not available.
+        </p>
+        <ul className="dashboard-overview-list">
+          {destinations.map((destination) => (
+            <li key={destination.href}>
+              <span>
+                <strong>{destination.title}</strong>
+                <small>{destination.detail}</small>
+              </span>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => window.location.assign(destination.href)}
+              >
+                Open
+              </Button>
+            </li>
+          ))}
+        </ul>
+      </Card>
+    </section>
+  );
+}
+
+function RabbiTeachingContentPanel({
+  items,
   loading,
   error,
   onRetry,
-  onOpen,
 }: {
-  dashboard: OwnerDashboardResponse | null;
+  items: ContentLibraryItemSummary[];
   loading: boolean;
   error: string;
   onRetry: () => void;
-  onOpen: (href: string) => void;
 }) {
-  if (loading && !dashboard) return <ReadOnlySkeleton label="Loading dashboard" />;
+  if (loading && !items.length) return <ReadOnlySkeleton label="Loading teaching content" />;
   if (error) {
     return (
       <StatePanel
         kind="error"
-        title="Dashboard could not load"
+        title="Teaching content could not load"
         body={error}
         actionLabel="Retry"
         onAction={onRetry}
       />
     );
   }
-  if (!dashboard) {
+  if (!items.length) {
     return (
-      <StatePanel
-        kind="empty"
-        title="Dashboard unavailable"
-        body="The owner dashboard source did not return data."
-        actionLabel="Retry"
-        onAction={onRetry}
+      <EmptyState
+        title="No teaching content yet"
+        body="Published lesson and media items will appear here."
       />
     );
   }
-  const actionIds = new Set(dashboard.actions.map((action) => action.action_id));
+  return (
+    <section className="dashboard-surface" data-usable="rabbi-teaching-content">
+      <Card className="dashboard-overview-card">
+        <h2>Teaching content</h2>
+        <p>Read-only lesson and media library for classroom preparation.</p>
+        <ul className="dashboard-overview-list">
+          {items.map((item) => (
+            <li key={item.item_key}>
+              <span>
+                <strong>{item.title}</strong>
+                <small>
+                  {productStateLabel(item.lifecycle_state)} · {item.item_type.replaceAll('_', ' ')}
+                </small>
+              </span>
+              <span>
+                <Chip label={`Revision ${item.latest_revision_number}`} tone="status" />
+              </span>
+            </li>
+          ))}
+        </ul>
+      </Card>
+    </section>
+  );
+}
+
+function DashboardPanel({
+  dashboard,
+  loading,
+  error,
+  section,
+  onNavigate,
+  onRetry,
+}: {
+  dashboard: OwnerDashboardResponse | null;
+  loading: boolean;
+  error: string;
+  section: DashboardSectionId;
+  onNavigate: (href: string) => void;
+  onRetry: () => void;
+}) {
   return (
     <section className="dashboard-surface" data-usable="owner-dashboard" aria-busy={loading}>
-      <div className="dashboard-grid">
-        {dashboard.dashboard.sections.map((section) => {
-          const href = section.href;
-          const actionId = dashboardOpenActionId(href);
-          return (
-            <article key={section.id} className={`dashboard-card state-${section.state}`}>
-              <header>
-                <h2>{section.label}</h2>
-                <Chip label={productStateLabel(section.state)} tone="status" />
-              </header>
-              <strong>{section.value_label}</strong>
-              <p>{section.detail}</p>
-              {section.trend_label && <p>{section.trend_label}</p>}
-              {section.next_action && <small>Next: {section.next_action}</small>}
-              {section.updated_at && <small>Last updated {formatDate(section.updated_at)}</small>}
-              {href && actionId && actionIds.has(actionId) && (
-                <button
-                  type="button"
-                  className="button-secondary"
-                  data-action-id={actionId}
-                  onClick={() => onOpen(href)}
-                >
-                  {dashboardOpenLabel(href)}
-                </button>
-              )}
-            </article>
-          );
-        })}
-      </div>
-      <DiagnosticsDisclosure dashboard={dashboard} />
+      <WorkspaceTabs
+        tabs={DASHBOARD_SECTIONS}
+        currentId={section}
+        label="Dashboard area"
+        onNavigate={onNavigate}
+      />
+      {loading && !dashboard ? (
+        <ReadOnlySkeleton label="Loading dashboard" />
+      ) : error ? (
+        <StatePanel
+          kind="error"
+          title="Dashboard could not load"
+          body={error}
+          actionLabel="Retry"
+          onAction={onRetry}
+        />
+      ) : !dashboard ? (
+        <StatePanel
+          kind="empty"
+          title="Dashboard unavailable"
+          body="The owner dashboard source did not return data."
+          actionLabel="Retry"
+          onAction={onRetry}
+        />
+      ) : (
+        <>
+          <Card className="dashboard-overview-card">
+            <h2>Workspace overview</h2>
+            <ul className="dashboard-overview-list">
+              {dashboard.dashboard.sections
+                .filter(
+                  (item) =>
+                    !(
+                      item.id === 'support' &&
+                      item.state === 'no_data_yet' &&
+                      /not mounted|not available/i.test(item.detail)
+                    ),
+                )
+                .map((item) => (
+                  <li key={item.id}>
+                    <span>
+                      <strong>{item.label}</strong>
+                      <small>{item.detail}</small>
+                    </span>
+                    <span>
+                      <Chip label={productStateLabel(item.state)} tone="status" />
+                      <strong>{item.value_label}</strong>
+                    </span>
+                  </li>
+                ))}
+            </ul>
+          </Card>
+        </>
+      )}
+    </section>
+  );
+}
+
+function OperationsPanel({
+  csrfToken,
+  dashboard,
+  loading,
+  error,
+  onNavigate,
+  onRetry,
+}: {
+  csrfToken: string;
+  dashboard: OwnerDashboardResponse | null;
+  loading: boolean;
+  error: string;
+  onNavigate: (href: string) => void;
+  onRetry: () => void;
+}) {
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [savingPassword, setSavingPassword] = useState(false);
+  const [passwordNotice, setPasswordNotice] = useState<Notice | null>(null);
+  const passwordReady =
+    newPassword.length >= 10 && /[A-Za-z]/u.test(newPassword) && /[0-9]/u.test(newPassword);
+  const passwordMatches = newPassword === confirmPassword;
+  const canChangePassword =
+    !savingPassword &&
+    currentPassword.length > 0 &&
+    passwordReady &&
+    passwordMatches &&
+    newPassword !== currentPassword;
+
+  return (
+    <section className="dashboard-surface" data-usable="application-operations" aria-busy={loading}>
+      <Card className="dashboard-overview-card">
+        <h2>Application operations</h2>
+        <p>Live application state and direct access to persistent administrative workflows.</p>
+        {loading && !dashboard ? (
+          <ReadOnlySkeleton label="Loading application operations" />
+        ) : error ? (
+          <StatePanel
+            kind="error"
+            title="Application operations could not load"
+            body={error}
+            actionLabel="Retry"
+            onAction={onRetry}
+          />
+        ) : dashboard ? (
+          <ul className="dashboard-overview-list">
+            {dashboard.dashboard.sections.map((item) => (
+              <li key={item.id}>
+                <span>
+                  <strong>{item.label}</strong>
+                  <small>{item.detail}</small>
+                </span>
+                <span>
+                  <Chip label={productStateLabel(item.state)} tone="status" />
+                  <strong>{item.value_label}</strong>
+                </span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <StatePanel
+            kind="empty"
+            title="No application state is available"
+            body="Refresh to load the current persistent application state."
+            actionLabel="Refresh"
+            onAction={onRetry}
+          />
+        )}
+        <div className="form-actions">
+          <Button type="button" onClick={() => onNavigate('/app/crm/audit')}>
+            Audit History
+          </Button>
+          <Button type="button" onClick={() => onNavigate('/app/crm/users')}>
+            Users &amp; Roles
+          </Button>
+          <Button type="button" onClick={() => onNavigate('/app/classes/occurrences')}>
+            Classes &amp; Zoom
+          </Button>
+          <Button type="button" onClick={() => onNavigate('/app/live-console')}>
+            Live Console
+          </Button>
+          <Button type="button" onClick={onRetry}>
+            Refresh status
+          </Button>
+        </div>
+      </Card>
+
+      <Card className="dashboard-overview-card">
+        <h2>Account Security</h2>
+        <p>Change the password for this signed-in Administrator account.</p>
+        <form
+          className="contact-form"
+          onSubmit={(event) => {
+            event.preventDefault();
+            if (!canChangePassword) return;
+            setSavingPassword(true);
+            setPasswordNotice(null);
+            void changeOwnPassword({
+              csrfToken,
+              currentPassword,
+              newPassword,
+            })
+              .then((result) => {
+                setCurrentPassword('');
+                setNewPassword('');
+                setConfirmPassword('');
+                setPasswordNotice({
+                  kind: 'success',
+                  message:
+                    result.sessions_invalidated > 0
+                      ? `Password changed. ${result.sessions_invalidated} other session${
+                          result.sessions_invalidated === 1 ? '' : 's'
+                        } signed out.`
+                      : 'Password changed. This session remains signed in.',
+                });
+              })
+              .catch((caught) => {
+                setPasswordNotice({
+                  kind: 'error',
+                  message: errorMessage(caught, 'Password was not changed.'),
+                });
+              })
+              .finally(() => setSavingPassword(false));
+          }}
+        >
+          <label>
+            <span>Current password</span>
+            <input
+              type="password"
+              autoComplete="current-password"
+              value={currentPassword}
+              required
+              maxLength={256}
+              onChange={(event) => setCurrentPassword(event.currentTarget.value)}
+            />
+          </label>
+          <label>
+            <span>New password</span>
+            <input
+              type="password"
+              autoComplete="new-password"
+              value={newPassword}
+              required
+              minLength={10}
+              maxLength={256}
+              aria-describedby="admin-password-help"
+              onChange={(event) => setNewPassword(event.currentTarget.value)}
+            />
+          </label>
+          <label>
+            <span>Confirm new password</span>
+            <input
+              type="password"
+              autoComplete="new-password"
+              value={confirmPassword}
+              required
+              minLength={10}
+              maxLength={256}
+              onChange={(event) => setConfirmPassword(event.currentTarget.value)}
+            />
+          </label>
+          <p id="admin-password-help">
+            Use at least 10 characters with at least one letter and one number.
+            {confirmPassword && !passwordMatches ? ' The new passwords do not match.' : ''}
+          </p>
+          {passwordNotice && <NoticeBanner notice={passwordNotice} />}
+          <div className="form-actions">
+            <Button type="submit" variant="primary" disabled={!canChangePassword}>
+              {savingPassword ? 'Changing password' : 'Change password'}
+            </Button>
+          </div>
+        </form>
+        <p>
+          Cannot use the current password? <a href="/forgot-password">Request a secure reset</a>.
+        </p>
+      </Card>
     </section>
   );
 }
 
 function ClassesPanel({
+  csrfToken,
+  section,
+  teachingOnly,
   classes,
   selectedClass,
+  gamificationDashboard,
+  gamificationLoading,
+  gamificationError,
+  adminLearning,
+  adminLearningLoading,
+  adminLearningError,
   loading,
   error,
   detailLoading,
   detailError,
-  onOpen,
-  onBack,
+  onNavigate,
+  onSelectOccurrence,
   onRetry,
+  onRefreshOccurrences,
   onRetryDetail,
+  onRetryRewards,
+  onRetryLearning,
 }: {
+  csrfToken: string;
+  section: ClassroomSectionId;
+  teachingOnly: boolean;
   classes: ClassOccurrenceSummary[];
   selectedClass: ClassOccurrenceDetail | null;
+  gamificationDashboard: AdminGamificationDashboardResponse | null;
+  gamificationLoading: boolean;
+  gamificationError: string;
+  adminLearning: AdminLearningSnapshot | null;
+  adminLearningLoading: boolean;
+  adminLearningError: string;
   loading: boolean;
   error: string;
   detailLoading: boolean;
   detailError: string;
-  onOpen: (occurrenceKey: string) => void;
-  onBack: () => void;
+  onNavigate: (href: string) => void;
+  onSelectOccurrence: (occurrenceKey: string) => void;
   onRetry: () => void;
+  onRefreshOccurrences: (preferredOccurrenceKey?: string | null) => Promise<void>;
   onRetryDetail: (occurrenceKey: string) => void;
+  onRetryRewards: () => void;
+  onRetryLearning: () => void;
 }) {
-  if (loading && classes.length === 0) return <ReadOnlySkeleton label="Loading classes" />;
-  if (error) {
-    return (
-      <StatePanel
-        kind="error"
-        title="Classes could not load"
-        body={error}
-        actionLabel="Retry"
-        onAction={onRetry}
-      />
-    );
-  }
-  if (detailLoading && !selectedClass) return <ReadOnlySkeleton label="Loading class details" />;
-  if (detailError && !selectedClass) {
-    return (
-      <StatePanel
-        kind="error"
-        title="Class details could not load"
-        body={detailError}
-        actionLabel="Back to classes"
-        onAction={onBack}
-      />
-    );
-  }
-  if (selectedClass) {
-    return (
-      <section className="class-detail" aria-busy={loading || detailLoading}>
-        <button
-          type="button"
-          className="button-secondary"
-          data-action-id="classes.back_to_list.button"
-          onClick={onBack}
-        >
-          Back to classes
-        </button>
-        {detailError && (
-          <p className="notice-banner error" role="alert">
-            {detailError}
-          </p>
-        )}
-        <article
-          className={`readonly-row state-${productStateClass(selectedClass.product_state.label)}`}
-        >
-          <div>
-            <h2>{selectedClass.title}</h2>
-            <p>{formatDate(selectedClass.starts_at)}</p>
-            <div className="chip-row">
-              <Chip label={selectedClass.product_state.label} tone="status" />
-              <Chip label={readableState(selectedClass.status)} tone="source" />
-            </div>
-            <p>{selectedClass.product_state.explanation}</p>
-          </div>
-          <dl>
-            <div>
-              <dt>Next action</dt>
-              <dd>{selectedClass.next_action ?? 'No owner action needed right now'}</dd>
-            </div>
-            <div>
-              <dt>Protected access</dt>
-              <dd>{selectedClass.protected_access_state.label}</dd>
-            </div>
-            <div>
-              <dt>Classroom link</dt>
-              <dd>
-                {selectedClass.readiness.raw_provider_target_present
-                  ? 'Protected link available'
-                  : 'Not connected yet'}
-              </dd>
-            </div>
-          </dl>
-        </article>
-        <div className="class-detail-grid">
-          <ClassMetricGroup
-            title="Enrollment"
-            rows={[
-              ['Households', selectedClass.enrollment_counts.households],
-              ['Learners', selectedClass.enrollment_counts.learners],
-            ]}
-          />
-          <ClassMetricGroup
-            title="Attendance"
-            rows={[
-              ['Manual marks', selectedClass.attendance_summary.manual_marks],
-              ['Classroom launches', selectedClass.attendance_summary.launch_attempts],
-              ['Joined sessions', selectedClass.attendance_summary.joined_attempts],
-            ]}
-          />
-          <ClassMetricGroup
-            title="Content"
-            rows={[
-              ['Recordings', selectedClass.content_summary.videos],
-              ['Review sheets', selectedClass.content_summary.review_sheets],
-              ['Processing', selectedClass.content_summary.processing],
-              ['Needs review', selectedClass.content_summary.needs_review],
-            ]}
-          />
-          <ClassMetricGroup
-            title="Questions"
-            rows={[
-              ['New questions', selectedClass.question_summary.new_questions],
-              ['Featured', selectedClass.question_summary.featured_questions],
-              ['Answered', selectedClass.question_summary.answered_questions],
-            ]}
-          />
-          <ClassMetricGroup
-            title="Reminder progress"
-            rows={[
-              ['Queued', selectedClass.fulfillment_counts.queued],
-              ['Satisfied', selectedClass.fulfillment_counts.satisfied],
-              ['Suppressed', selectedClass.fulfillment_counts.suppressed],
-              ['Skipped', selectedClass.fulfillment_counts.skipped],
-              ['Access not connected', selectedClass.fulfillment_counts.provider_unavailable],
-            ]}
-          />
-          <article className="readonly-row">
-            <div>
-              <h2>Protected classroom</h2>
-              <p>{selectedClass.readiness.reason}</p>
-            </div>
-            <dl>
-              <div>
-                <dt>Access state</dt>
-                <dd>{selectedClass.protected_access_state.explanation}</dd>
-              </div>
-              <div>
-                <dt>Launch requirement</dt>
-                <dd>Protected access required</dd>
-              </div>
-              <div>
-                <dt>Classroom target</dt>
-                <dd>No classroom link is shown until access is connected.</dd>
-              </div>
-            </dl>
-          </article>
-        </div>
-        <button
-          type="button"
-          className="button-secondary"
-          data-action-id="classes.open_detail.button"
-          disabled={detailLoading}
-          onClick={() => onRetryDetail(selectedClass.occurrence_key)}
-        >
-          {detailLoading ? 'Refreshing...' : 'Refresh class details'}
-        </button>
-      </section>
-    );
-  }
-  if (classes.length === 0) {
-    return (
-      <StatePanel
-        kind="empty"
-        title="No classes yet"
-        body="No class schedule has been recorded yet."
-      />
-    );
-  }
+  const teachingSections = [
+    'classes',
+    'occurrences',
+    'questions',
+    'rewards',
+  ] as ClassroomSectionId[];
+  const focusedSection = teachingOnly && !teachingSections.includes(section) ? 'classes' : section;
+  const isManagementSection =
+    !teachingOnly &&
+    (
+      ['classes', 'occurrences', 'enrollments', 'recordings', 'access'] as ClassroomSectionId[]
+    ).includes(section);
   return (
-    <section className="readonly-list" aria-busy={loading}>
-      {classes.map((classItem) => (
-        <article
-          className={`readonly-row state-${productStateClass(classItem.product_state.label)}`}
-          key={classItem.occurrence_key}
-        >
-          <div>
-            <h2>{classItem.title}</h2>
-            <p>{formatDate(classItem.starts_at)}</p>
-            <div className="chip-row">
-              <Chip label={classItem.product_state.label} tone="status" />
-              <Chip label={readableState(classItem.status)} tone="source" />
-            </div>
-            <p>{classItem.product_state.explanation}</p>
-          </div>
-          <dl>
-            <div>
-              <dt>Class state</dt>
-              <dd>{readableState(classItem.status)}</dd>
-            </div>
-            <div>
-              <dt>Protected access</dt>
-              <dd>{classItem.protected_access_state.label}</dd>
-            </div>
-            <div>
-              <dt>Next action</dt>
-              <dd>{classItem.next_action ?? 'No owner action needed right now'}</dd>
-            </div>
-          </dl>
-          <button
-            type="button"
-            className="button-secondary"
-            data-action-id="classes.open_detail.button"
-            onClick={() => onOpen(classItem.occurrence_key)}
-          >
-            Open class details
-          </button>
-        </article>
-      ))}
+    <section className="classroom-workspace" aria-busy={loading || detailLoading}>
+      <WorkspaceTabs
+        tabs={(teachingOnly
+          ? CLASSROOM_SECTIONS.filter((item) => teachingSections.includes(item.id))
+          : CLASSROOM_SECTIONS
+        ).map((item) => ({
+          ...item,
+          href: classroomHref(item.id, selectedClass?.occurrence_key),
+        }))}
+        currentId={focusedSection}
+        label="Classroom area"
+        onNavigate={onNavigate}
+      />
+      {!teachingOnly && section === 'questions' ? (
+        <AdminLearningPanel
+          snapshot={adminLearning}
+          loading={adminLearningLoading}
+          error={adminLearningError}
+          onRetry={onRetryLearning}
+        />
+      ) : !teachingOnly && section === 'rewards' ? (
+        <>
+          <AdminLearningPanel
+            snapshot={adminLearning}
+            loading={adminLearningLoading}
+            error={adminLearningError}
+            onRetry={onRetryLearning}
+          />
+          <GamificationAdminPanel
+            dashboard={gamificationDashboard}
+            loading={gamificationLoading}
+            error={gamificationError}
+            onRetry={onRetryRewards}
+          />
+        </>
+      ) : isManagementSection ? (
+        <ClassManagementWorkspace
+          csrfToken={csrfToken}
+          section={section}
+          occurrences={classes}
+          selectedOccurrenceKey={selectedClass?.occurrence_key ?? null}
+          occurrencesLoading={loading}
+          occurrencesError={error}
+          onSelectOccurrence={onSelectOccurrence}
+          onRefreshOccurrences={onRefreshOccurrences}
+          onNavigate={onNavigate}
+        />
+      ) : loading && classes.length === 0 ? (
+        <ReadOnlySkeleton label="Loading classroom" />
+      ) : error ? (
+        <StatePanel
+          kind="error"
+          title="Classroom could not load"
+          body={error}
+          actionLabel="Retry"
+          onAction={onRetry}
+        />
+      ) : classes.length === 0 ? (
+        <StatePanel
+          kind="empty"
+          title="No classes yet"
+          body="No class schedule has been recorded yet."
+        />
+      ) : (
+        <>
+          <label className="classroom-occurrence-selector">
+            <span>Class occurrence</span>
+            <Select
+              value={selectedClass?.occurrence_key ?? ''}
+              onChange={(event) => onSelectOccurrence(event.currentTarget.value)}
+            >
+              {!selectedClass && (
+                <option value="" disabled>
+                  Choose an occurrence
+                </option>
+              )}
+              {classes.map((classItem) => (
+                <option key={classItem.occurrence_key} value={classItem.occurrence_key}>
+                  {classItem.title} - {formatDate(classItem.starts_at)}
+                </option>
+              ))}
+            </Select>
+          </label>
+          {detailLoading && !selectedClass ? (
+            <ReadOnlySkeleton label="Loading class details" />
+          ) : detailError && !selectedClass ? (
+            <StatePanel
+              kind="error"
+              title="Class details could not load"
+              body={detailError}
+              actionLabel="Retry"
+              onAction={() => onRetryDetail(classes[0]?.occurrence_key ?? '')}
+            />
+          ) : selectedClass ? (
+            <ClassroomFocusedBody
+              section={focusedSection}
+              occurrence={selectedClass}
+              gamificationDashboard={gamificationDashboard}
+              gamificationLoading={gamificationLoading}
+              gamificationError={gamificationError}
+              onRetryRewards={onRetryRewards}
+            />
+          ) : null}
+        </>
+      )}
     </section>
   );
 }
 
-function ClassMetricGroup({ title, rows }: { title: string; rows: Array<[string, number]> }) {
+function ClassroomFocusedBody({
+  section,
+  occurrence,
+  gamificationDashboard,
+  gamificationLoading,
+  gamificationError,
+  onRetryRewards,
+}: {
+  section: ClassroomSectionId;
+  occurrence: ClassOccurrenceDetail;
+  gamificationDashboard: AdminGamificationDashboardResponse | null;
+  gamificationLoading: boolean;
+  gamificationError: string;
+  onRetryRewards: () => void;
+}) {
+  if (section === 'rewards') {
+    return (
+      <GamificationAdminPanel
+        dashboard={gamificationDashboard}
+        loading={gamificationLoading}
+        error={gamificationError}
+        onRetry={onRetryRewards}
+      />
+    );
+  }
+
+  const rows =
+    section === 'questions'
+      ? [
+          ['New questions', occurrence.question_summary.new_questions],
+          ['Featured', occurrence.question_summary.featured_questions],
+          ['Answered', occurrence.question_summary.answered_questions],
+        ]
+      : [
+          ['Households', occurrence.enrollment_counts.households],
+          ['Learners', occurrence.enrollment_counts.learners],
+          ['Joined sessions', occurrence.attendance_summary.joined_attempts],
+          ['Recordings', occurrence.content_summary.videos],
+        ];
+
   return (
-    <article className="readonly-row">
+    <article
+      className={`readonly-row classroom-focused state-${productStateClass(
+        occurrence.product_state.label,
+      )}`}
+    >
       <div>
-        <h2>{title}</h2>
+        <h2>{occurrence.title}</h2>
+        <p>{occurrence.product_state.explanation}</p>
+        <div className="chip-row">
+          <Chip label={occurrence.product_state.label} tone="status" />
+          <Chip label={readableState(occurrence.status)} tone="source" />
+        </div>
       </div>
       <dl>
         {rows.map(([label, value]) => (
@@ -1280,6 +1841,33 @@ function ClassMetricGroup({ title, rows }: { title: string; rows: Array<[string,
   );
 }
 
+function AdminLearningPanel({
+  snapshot,
+  loading,
+  error,
+  onRetry,
+}: {
+  snapshot: AdminLearningSnapshot | null;
+  loading: boolean;
+  error: string;
+  onRetry: () => void;
+}) {
+  if (loading && !snapshot) return <ReadOnlySkeleton label="Loading learning engagement" />;
+  if (error && !snapshot) {
+    return (
+      <StatePanel
+        kind="error"
+        title="Learning engagement could not load"
+        body={error}
+        actionLabel="Retry"
+        onAction={onRetry}
+      />
+    );
+  }
+  if (!snapshot) return null;
+  return <AdminLearningWorkspace {...snapshot} />;
+}
+
 function BillingPanel({
   dashboard,
   loading,
@@ -1291,12 +1879,12 @@ function BillingPanel({
   error: string;
   onRetry: () => void;
 }) {
-  if (loading && !dashboard) return <ReadOnlySkeleton label="Loading billing status" />;
+  if (loading && !dashboard) return <ReadOnlySkeleton label="Loading household access" />;
   if (error) {
     return (
       <StatePanel
         kind="error"
-        title="Billing status could not load"
+        title="Household access could not load"
         body={error}
         actionLabel="Retry"
         onAction={onRetry}
@@ -1310,8 +1898,8 @@ function BillingPanel({
     return (
       <StatePanel
         kind="empty"
-        title="Billing status unavailable"
-        body="Billing readiness did not return a dashboard section."
+        title="Household access unavailable"
+        body="Current access did not return a dashboard section."
         actionLabel="Retry"
         onAction={onRetry}
       />
@@ -1334,78 +1922,59 @@ function BillingPanel({
             <dd>{billing.value_label}</dd>
           </div>
           <div>
-            <dt>Live payments</dt>
-            <dd>Off unless explicitly approved</dd>
+            <dt>Payment history</dt>
+            <dd>Managed in GHL</dd>
           </div>
         </dl>
       </article>
+      {dashboard?.dashboard.household_access.map((access) => (
+        <article
+          className={`readonly-row state-${access.grants_access ? 'ready' : 'action_needed'}`}
+          key={access.household_key}
+        >
+          <div>
+            <h2>{access.household_label}</h2>
+            <p>
+              {access.household_status === 'archived'
+                ? 'Archived household'
+                : access.grants_access
+                  ? 'Learning access is active.'
+                  : 'Learning access is not active.'}
+            </p>
+          </div>
+          <dl>
+            <div>
+              <dt>Current state</dt>
+              <dd>{readableState(access.state)}</dd>
+            </div>
+            <div>
+              <dt>Source</dt>
+              <dd>{access.source_label}</dd>
+            </div>
+            <div>
+              <dt>Effective</dt>
+              <dd>{formatOptionalDate(access.effective_at)}</dd>
+            </div>
+            <div>
+              <dt>Expires</dt>
+              <dd>{formatOptionalDate(access.expires_at)}</dd>
+            </div>
+            <div>
+              <dt>Review / revocation reason</dt>
+              <dd>{access.review_or_revocation_reason ?? 'None'}</dd>
+            </div>
+            <div>
+              <dt>Updated</dt>
+              <dd>{formatOptionalDate(access.updated_at)}</dd>
+            </div>
+          </dl>
+        </article>
+      ))}
+      {dashboard?.dashboard.household_access.length === 0 && (
+        <p className="state-panel">No scoped households are available yet.</p>
+      )}
     </section>
   );
-}
-
-function DiagnosticsDisclosure({ dashboard }: { dashboard: OwnerDashboardResponse }) {
-  const visible = dashboard.actions.filter((action) => action.roles.includes('owner'));
-  return (
-    <details className="diagnostics-disclosure action-registry">
-      <summary>Diagnostics</summary>
-      <div className="action-registry-grid">
-        {dashboard.dashboard.sections.map((section) => (
-          <article key={section.id}>
-            <h3>{section.label}</h3>
-            <dl>
-              <div>
-                <dt>Source</dt>
-                <dd>{formatRegistryLabel(section.diagnostics.source)}</dd>
-              </div>
-              <div>
-                <dt>State code</dt>
-                <dd>{formatRegistryLabel(section.diagnostics.state_code)}</dd>
-              </div>
-              <div>
-                <dt>Checked</dt>
-                <dd>
-                  {section.diagnostics.checked_at
-                    ? formatDate(section.diagnostics.checked_at)
-                    : 'Not checked yet'}
-                </dd>
-              </div>
-            </dl>
-          </article>
-        ))}
-        {visible.map((action) => (
-          <article key={action.action_id}>
-            <h3>{action.label}</h3>
-            <dl>
-              <div>
-                <dt>Area</dt>
-                <dd>{formatRegistryLabel(action.capability)}</dd>
-              </div>
-              <div>
-                <dt>Control</dt>
-                <dd>{action.handler.method === 'GET' ? 'View' : 'Protected update'}</dd>
-              </div>
-              <div>
-                <dt>Activity record</dt>
-                <dd>Recorded for admin review.</dd>
-              </div>
-              <div>
-                <dt>Duplicate protection</dt>
-                <dd>{action.idempotency.required ? 'Enabled' : 'Not required'}</dd>
-              </div>
-            </dl>
-          </article>
-        ))}
-      </div>
-    </details>
-  );
-}
-
-function formatRegistryLabel(value: string) {
-  return value
-    .replace(/[_:/.-]+/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
 function ReadOnlySkeleton({ label }: { label: string }) {
@@ -1427,18 +1996,22 @@ function ListToolbar({
   query,
   activeChips,
   canEdit,
+  canOperateHouseholds,
   onChange,
   onApply,
   onClear,
   onCreate,
+  onHouseholdOperations,
 }: {
   query: QueryState;
   activeChips: { key: string; label: string }[];
   canEdit: boolean;
+  canOperateHouseholds: boolean;
   onChange: (query: QueryState) => void;
   onApply: (query: QueryState) => void;
   onClear: () => void;
   onCreate: () => void;
+  onHouseholdOperations: () => void;
 }) {
   return (
     <form
@@ -1509,10 +2082,23 @@ function ListToolbar({
           </button>
         </div>
       )}
-      {canEdit && (
-        <button type="button" className="button-primary toolbar-primary" onClick={onCreate}>
-          Add contact
-        </button>
+      {(canEdit || canOperateHouseholds) && (
+        <div className="toolbar-primary toolbar-primary--group">
+          {canOperateHouseholds && (
+            <button
+              type="button"
+              className="button-secondary"
+              onClick={() => onHouseholdOperations()}
+            >
+              Parent household
+            </button>
+          )}
+          {canEdit && (
+            <button type="button" className="button-primary" onClick={onCreate}>
+              Add contact
+            </button>
+          )}
+        </div>
       )}
     </form>
   );
@@ -1525,6 +2111,7 @@ function DetailToolbar({
   onBack,
   onEdit,
   onCommunications,
+  onManageHousehold,
 }: {
   contact: ContactDetail;
   canEdit: boolean;
@@ -1532,6 +2119,7 @@ function DetailToolbar({
   onBack: () => void;
   onEdit: () => void;
   onCommunications: () => void;
+  onManageHousehold?: (() => void) | undefined;
 }) {
   return (
     <div className="detail-toolbar">
@@ -1546,6 +2134,11 @@ function DetailToolbar({
       {canReadCommunications && (
         <button type="button" className="button-secondary" onClick={onCommunications}>
           Communications
+        </button>
+      )}
+      {onManageHousehold && (
+        <button type="button" className="button-secondary" onClick={onManageHousehold}>
+          Manage household
         </button>
       )}
       {canEdit && (
@@ -1745,6 +2338,7 @@ function ContactOverview({
   onRetry,
   onChanged,
   onArchived,
+  onRestored,
 }: {
   contact: ContactDetail;
   loading: boolean;
@@ -1755,7 +2349,9 @@ function ContactOverview({
   onRetry: () => void;
   onChanged: () => void;
   onArchived: () => void;
+  onRestored: () => void;
 }) {
+  const [statusError, setStatusError] = useState('');
   const facts = [
     ['Family / School', capitalize(contact.family_school_classification)],
     ['Lead status', labelStatus(contact.lead_status)],
@@ -1790,6 +2386,11 @@ function ContactOverview({
       )}
       {!loading && !error && (
         <>
+          {statusError && (
+            <p className="notice-banner error" role="alert">
+              {statusError}
+            </p>
+          )}
           <dl className="detail-grid">
             {facts.map(([label, value]) => (
               <div key={label}>
@@ -1833,8 +2434,8 @@ function ContactOverview({
               }))}
             />
             <DetailList
-              title="Enrollment / subscription"
-              empty="No enrollment summary available."
+              title="Enrollment / access"
+              empty="No enrollment or access summary available."
               items={contact.enrollment_summary.map((item) => ({
                 key: item.label,
                 title: item.label,
@@ -1911,20 +2512,43 @@ function ContactOverview({
             )}
           </section>
 
-          {canEdit && (
+          {canEdit && contact.lead_status !== 'archived' && (
             <button
               type="button"
               className="button-secondary"
               onClick={async () => {
-                await archiveContactRequest(
-                  csrfToken,
-                  contact.contact_id,
-                  'Archived from CRM detail',
-                );
-                onArchived();
+                if (!window.confirm(`Archive ${contact.display_name}?`)) return;
+                setStatusError('');
+                try {
+                  await archiveContactRequest(
+                    csrfToken,
+                    contact.contact_id,
+                    'Archived from CRM detail',
+                  );
+                  onArchived();
+                } catch (caught) {
+                  setStatusError(errorMessage(caught, 'Contact could not be archived.'));
+                }
               }}
             >
               Archive contact
+            </button>
+          )}
+          {canEdit && contact.lead_status === 'archived' && (
+            <button
+              type="button"
+              className="button-secondary"
+              onClick={async () => {
+                setStatusError('');
+                try {
+                  await reactivateContactRequest(csrfToken, contact.contact_id);
+                  onRestored();
+                } catch (caught) {
+                  setStatusError(errorMessage(caught, 'Contact could not be restored.'));
+                }
+              }}
+            >
+              Restore contact
             </button>
           )}
         </>
@@ -2395,8 +3019,7 @@ function shellUserFromSession(user: SessionUser): ShellUser {
 }
 
 function roleLabel(user: SessionUser) {
-  if (user.role === 'owner') return 'Owner';
-  if (user.role === 'admin') return 'Administrator';
+  if (user.role === 'admin') return 'Admin';
   return user.role_label;
 }
 
@@ -2427,11 +3050,12 @@ function sourceLabel(value: string) {
 }
 
 function ownerSurfaceFromPath(pathname: string): OwnerSurface | null {
-  if (pathname === '/app/dashboard') return 'dashboard';
+  if (pathname === '/app/dashboard' || pathname.startsWith('/app/dashboard/')) return 'dashboard';
+  if (pathname === '/app/operations') return 'operations';
   if (pathname === '/app/classes' || pathname.startsWith('/app/classes/')) return 'classes';
   if (pathname === '/app/content' || pathname.startsWith('/app/content/')) return 'content';
   if (pathname === '/app/billing') return 'billing';
-  if (pathname === '/app/rewards') return 'rewards';
+  if (pathname === '/app/rewards') return 'classes';
   if (pathname === '/app/support' || pathname.startsWith('/app/support/receipts/')) {
     return 'support';
   }
@@ -2446,49 +3070,31 @@ function ownerSurfacePath(surface: Exclude<OwnerSurface, 'crm'>) {
 
 function ownerSurfaceTitle(surface: OwnerSurface) {
   if (surface === 'dashboard') return 'Dashboard';
-  if (surface === 'classes') return 'Classes';
-  if (surface === 'content') return 'Content Workspace';
-  if (surface === 'billing') return 'Products/Billing status';
-  if (surface === 'rewards') return 'Learning Rewards';
+  if (surface === 'operations') return 'Operations';
+  if (surface === 'classes') return 'Classroom';
+  if (surface === 'content') return 'Content';
+  if (surface === 'billing') return 'Household Access';
   if (surface === 'support') return 'Support';
-  return 'CRM';
+  return 'Contacts';
 }
 
 function ownerSurfaceDescription(surface: OwnerSurface) {
   if (surface === 'dashboard') {
-    return 'Workspace snapshot for leads, classes, communications, content, members, support, and billing.';
+    return 'A focused overview of the One Time workspace.';
+  }
+  if (surface === 'operations') {
+    return 'Account security, audit history, provider status, and application operations.';
   }
   if (surface === 'classes')
-    return 'Class schedule, access, content, questions, and learner readiness.';
+    return 'One occurrence at a time across schedule, questions, and rewards.';
   if (surface === 'content') {
-    return 'Rabbi and One Time content review, prompts, artifacts, social drafts, and provider-off status.';
+    return 'Library, factory, studio, knowledge, and prompt workspaces.';
   }
-  if (surface === 'billing') return 'Billing setup and access projection status.';
-  if (surface === 'rewards') {
-    return 'Private learner progress, rewards, guardrails, and correction audit.';
+  if (surface === 'billing') {
+    return 'Current household learning access; payment history remains in GHL.';
   }
   if (surface === 'support') return 'Subscriber-only technical support inside the One Time shell.';
-  return 'One Time signup and contact review.';
-}
-
-function dashboardOpenActionId(href: string | null) {
-  if (href === '/app/crm') return 'dashboard.open_crm.button';
-  if (href === '/app/classes') return 'dashboard.open_classes.button';
-  if (href === communicationsRouteDescriptor.path) return 'dashboard.open_communications.button';
-  if (href === '/app/content') return 'dashboard.open_content.button';
-  if (href === '/app/billing') return 'dashboard.open_billing.button';
-  if (href === '/app/rewards') return 'dashboard.open_rewards.button';
-  return null;
-}
-
-function dashboardOpenLabel(href: string) {
-  if (href === '/app/crm') return 'Review leads';
-  if (href === '/app/classes') return 'Open classroom';
-  if (href === communicationsRouteDescriptor.path) return 'Review communications';
-  if (href === '/app/content') return 'Configure content';
-  if (href === '/app/billing') return 'Open billing';
-  if (href === '/app/rewards') return 'Review rewards';
-  return 'Open';
+  return 'Parent and adult contact review.';
 }
 
 function productStateLabel(value: string) {
@@ -2539,6 +3145,10 @@ function formatDate(value: string) {
   return new Intl.DateTimeFormat('en', { dateStyle: 'medium', timeStyle: 'short' }).format(
     new Date(value),
   );
+}
+
+function formatOptionalDate(value: string | null) {
+  return value ? formatDate(value) : 'Not set';
 }
 
 function errorMessage(error: unknown, fallback: string) {

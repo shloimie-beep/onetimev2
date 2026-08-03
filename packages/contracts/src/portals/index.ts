@@ -1,11 +1,16 @@
 import { z } from 'zod';
+
+export * from './parent-household/index.ts';
 import { gamificationSummarySchema } from '../gamification/index.ts';
+import { contentFactoryPortalProjectionSchema } from '../content/content-factory.ts';
+import { sameOriginPathSchema } from '../content/pipeline.ts';
 
 export const portalActorRoleSchema = z.enum([
   'parent',
   'student',
   'owner',
   'admin',
+  'rabbi',
   'crm_agent',
   'viewer',
   'support',
@@ -20,10 +25,12 @@ export const portalCapabilitySchema = z.enum([
   'parent:student-access:manage',
   'parent:class:launch',
   'parent:content:open',
+  'parent:leaderboard:read',
   'parent:support:preview',
   'student:dashboard:read',
   'student:class:launch',
   'student:content:open',
+  'student:leaderboard:read',
   'student:question:create',
   'student:class:question',
   'student:support:preview',
@@ -81,6 +88,15 @@ export const studentAccessStatusSchema = z.enum([
 ]);
 export type StudentAccessStatus = z.infer<typeof studentAccessStatusSchema>;
 
+export const studentCredentialStatusSchema = z.enum([
+  'not_configured',
+  'parent_managed',
+  'reset_required',
+  'suspended',
+  'disabled',
+]);
+export type StudentCredentialStatus = z.infer<typeof studentCredentialStatusSchema>;
+
 export const studentAccessOperationTypeSchema = z.enum([
   'setup',
   'reset',
@@ -109,19 +125,41 @@ export type LearnerProfile = z.infer<typeof learnerProfileSchema>;
 export const householdOverviewSchema = z.object({
   household_key: opaqueIdSchema,
   display_name: z.string().trim().min(1).max(180),
-  active_learner_count: z.number().int().min(0).max(3),
-  max_active_learners: z.literal(3),
+  active_learner_count: z.number().int().min(0),
+  max_active_learners: z.number().int().positive().nullable(),
   consent_status: consentStatusSchema,
   learner_limit_reached: z.boolean(),
   version: optimisticVersionSchema,
 });
 export type HouseholdOverview = z.infer<typeof householdOverviewSchema>;
 
+export const studentUsernameSchema = z
+  .string()
+  .trim()
+  .min(3)
+  .max(24)
+  .regex(/^[A-Za-z0-9][A-Za-z0-9._-]*[A-Za-z0-9]$/);
+export type StudentUsername = z.infer<typeof studentUsernameSchema>;
+
+export const studentPasswordSchema = z
+  .string()
+  .min(10)
+  .max(128)
+  .regex(/[A-Za-z]/)
+  .regex(/[0-9]/);
+export type StudentPassword = z.infer<typeof studentPasswordSchema>;
+
 export const studentAccessStateSchema = z.object({
   access_state_key: opaqueIdSchema,
   learner_key: opaqueIdSchema,
   status: studentAccessStatusSchema,
   student_user_ref: opaqueIdSchema.nullable(),
+  username_display: studentUsernameSchema.nullable().optional(),
+  credential_status: studentCredentialStatusSchema.nullable().optional(),
+  password_version: z.number().int().min(0).optional(),
+  security_version: z.number().int().min(1).optional(),
+  last_reset_at: z.string().nullable().optional(),
+  last_session_revoked_at: z.string().nullable().optional(),
   last_operation_type: studentAccessOperationTypeSchema.nullable(),
   last_operation_at: z.string().nullable(),
   version: optimisticVersionSchema,
@@ -143,10 +181,71 @@ export const upcomingClassSummarySchema = z.object({
   class_key: opaqueIdSchema,
   title: z.string().trim().min(1).max(160),
   starts_at: z.string().nullable(),
+  local_time: z.literal('19:00').optional(),
+  timezone: z.literal('Asia/Jerusalem').optional(),
+  protected_launch_required: z.literal(true).optional(),
+  provider_state: z.enum(['sink_ready', 'configured', 'not_configured', 'disabled']).optional(),
   status: z.enum(['upcoming', 'live', 'available', 'unavailable']),
   launch_action: protectedActionDescriptorSchema.nullable(),
 });
 export type UpcomingClassSummary = z.infer<typeof upcomingClassSummarySchema>;
+
+export const lessonConversationMessageSchema = z.object({
+  message_key: opaqueIdSchema,
+  learner_key: opaqueIdSchema,
+  display_name: z.string().trim().min(1).max(160),
+  body: z.string().trim().min(1).max(1200),
+  moderation_state: z.enum(['approved_exact', 'approved_edited', 'redacted']),
+  pinned: z.boolean(),
+  approved_at: z.string(),
+});
+export type LessonConversationMessage = z.infer<typeof lessonConversationMessageSchema>;
+
+export const lessonPublicationSummarySchema = z.object({
+  lesson_key: opaqueIdSchema,
+  class_key: opaqueIdSchema.nullable(),
+  title: z.string().trim().min(1).max(180),
+  description: z.string().trim().max(800).nullable(),
+  publication_state: z.enum(['published', 'unpublished']),
+  featured: z.boolean(),
+  published_at: z.string().nullable(),
+  video_provider: z.literal('vimeo'),
+  raw_private_url_present: z.literal(false),
+  transcript_available: z.boolean(),
+  resource_count: z.number().int().min(0),
+  approved_messages: z.array(lessonConversationMessageSchema).max(20),
+});
+export type LessonPublicationSummary = z.infer<typeof lessonPublicationSummarySchema>;
+
+export const classLeaderboardEntrySchema = z.object({
+  learner_key: opaqueIdSchema,
+  display_name: z.string().trim().min(1).max(160),
+  points: z.number().int().min(0),
+  attendance_count: z.number().int().min(0),
+  completed_lessons: z.number().int().min(0),
+  approved_questions: z.number().int().min(0),
+  excellent_questions: z.number().int().min(0),
+  consistency_bonus_count: z.number().int().min(0),
+  last_activity_at: z.string().nullable(),
+  own_entry: z.boolean().optional(),
+});
+export type ClassLeaderboardEntry = z.infer<typeof classLeaderboardEntrySchema>;
+
+export const classLeaderboardSummarySchema = z.object({
+  board_key: opaqueIdSchema,
+  class_series_key: opaqueIdSchema,
+  title: z.string().trim().min(1).max(180),
+  scope: z.literal('authenticated_class_only'),
+  time_basis: z.literal('all_time_no_reset'),
+  published: z.boolean(),
+  actual_names_visible: z.literal(true),
+  negative_labels_present: z.literal(false),
+  ai_judgment_present: z.literal(false),
+  corrected_by_rabbi_audit_available: z.literal(true),
+  updated_at: z.string().nullable(),
+  entries: z.array(classLeaderboardEntrySchema).max(50),
+});
+export type ClassLeaderboardSummary = z.infer<typeof classLeaderboardSummarySchema>;
 
 export const libraryItemSchema = z.object({
   item_key: opaqueIdSchema,
@@ -154,6 +253,10 @@ export const libraryItemSchema = z.object({
   item_type: z.enum(['video', 'sheet', 'source', 'review']),
   status: z.enum(['published', 'unavailable']),
   open_action: protectedActionDescriptorSchema.nullable(),
+  lesson: lessonPublicationSummarySchema.nullable().optional(),
+  content_factory: contentFactoryPortalProjectionSchema.optional(),
+  featured: z.boolean().optional(),
+  published_at: z.string().nullable().optional(),
 });
 export type LibraryItem = z.infer<typeof libraryItemSchema>;
 
@@ -209,7 +312,7 @@ export const helperCitationSchema = z
     version_id: opaqueIdSchema,
     section_id: opaqueIdSchema,
     section_title: z.string().trim().min(1).max(240),
-    deep_link: z.string().trim().regex(/^\//).max(768),
+    deep_link: sameOriginPathSchema,
     section_sha256: z
       .string()
       .trim()
@@ -227,6 +330,8 @@ export const helperAnswerSchema = z
     safe_reason_code: z.string().trim().min(1).max(80),
     private_question_available: z.literal(true),
     policy: z.literal('ot107-student-class-helper-v1'),
+    provider_mode: z.enum(['provider_off', 'ready']),
+    grounding_mode: z.literal('approved_entitled_sections'),
   })
   .strict()
   .superRefine((answer, ctx) => {
@@ -251,15 +356,14 @@ export type SupportPreview = z.infer<typeof supportPreviewSchema>;
 export const billingSummarySchema = z.object({
   enabled: z.boolean(),
   summary_label: z.string().trim().max(180).nullable(),
-  plan_truth: z
-    .literal('Family plan — $67/month — up to 3 active learners in one household.')
-    .nullable()
-    .optional(),
+  plan_truth: z.string().trim().max(240).nullable().optional(),
   entitlement_status: z
     .enum([
       'pending',
+      'paused',
       'billing_eligible',
       'active',
+      'grace',
       'suspended',
       'scheduled_end',
       'revoked',
@@ -298,11 +402,12 @@ export type StudentQuestion = z.infer<typeof studentQuestionSchema>;
 
 export const parentPortalDashboardSchema = z.object({
   household: householdOverviewSchema,
-  learners: z.array(learnerProfileSchema).max(12),
+  learners: z.array(learnerProfileSchema),
   student_access: z.array(studentAccessStateSchema),
   upcoming_classes: z.record(z.string(), z.array(upcomingClassSummarySchema)),
   rewards: z.record(z.string(), rewardBalanceSchema),
   gamification: z.record(z.string(), gamificationSummarySchema).optional(),
+  leaderboard: classLeaderboardSummarySchema.optional(),
   updates: z.record(z.string(), z.array(administrativeUpdateSchema)),
   helper: helperAvailabilitySchema,
   billing: billingSummarySchema,
@@ -317,6 +422,7 @@ export const parentLearnerMaterialsSchema = z.object({
   rewards: rewardBalanceSchema,
   gamification: gamificationSummarySchema.optional(),
   updates: z.array(administrativeUpdateSchema),
+  helper: helperAvailabilitySchema,
 });
 export type ParentLearnerMaterials = z.infer<typeof parentLearnerMaterialsSchema>;
 
@@ -324,6 +430,8 @@ export const studentPortalDashboardSchema = z.object({
   learner: learnerProfileSchema,
   upcoming_classes: z.array(upcomingClassSummarySchema),
   library_items: z.array(libraryItemSchema),
+  featured_lesson: lessonPublicationSummarySchema.nullable().optional(),
+  leaderboard: classLeaderboardSummarySchema.optional(),
   progress: progressSummarySchema,
   rewards: rewardBalanceSchema,
   gamification: gamificationSummarySchema.optional(),
@@ -352,7 +460,8 @@ export type UpdateLearnerPayload = z.infer<typeof updateLearnerPayloadSchema>;
 
 export const studentAccessOperationPayloadSchema = z.object({
   idempotency_key: idempotencyKeySchema,
-  email: z.string().trim().email().max(254).optional(),
+  username: studentUsernameSchema.optional(),
+  password: studentPasswordSchema.optional(),
   display_name: z.string().trim().min(1).max(180).optional(),
 });
 export type StudentAccessOperationPayload = z.infer<typeof studentAccessOperationPayloadSchema>;
@@ -389,9 +498,13 @@ export const portalErrorCodeSchema = z.enum([
   'LEARNER_LIMIT_REACHED',
   'ENTITLEMENT_REQUIRED',
   'CONSENT_REQUIRED',
+  'USERNAME_UNAVAILABLE',
+  'PASSWORD_POLICY_FAILED',
   'OCCURRENCE_UNAVAILABLE',
   'LAUNCH_EXPIRED',
   'ADAPTER_UNAVAILABLE',
+  'PROVIDER_OFF',
+  'PROVIDER_NOT_READY',
   'SERVER_ERROR',
 ]);
 export type PortalErrorCode = z.infer<typeof portalErrorCodeSchema>;
@@ -413,4 +526,8 @@ export function hasPortalCapability(
   capability: PortalCapability,
 ) {
   return actor.capabilities.includes(capability);
+}
+
+export function normalizeStudentUsername(value: string) {
+  return value.trim().toLowerCase();
 }

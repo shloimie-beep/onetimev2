@@ -5,6 +5,8 @@ test-results
 bin/ot86-vimeo-canary
 ops/audit-inputs/**
 ops/evidence/**
+# Imported audit source snapshots are byte-preserved by their SHA256SUMS manifest.
+ops/audits/2026-07-26/parallel-control-tower/source-reports/**
 ops/execution/**/ORIGINAL-PROMPT.md
 ops/codex-runs/**/ORIGINAL-PROMPT.md
 ops/codex-runs/**/packet/**

@@ -1,8 +1,15 @@
 import 'dotenv/config';
 import { createPgPool } from '../../../../packages/db/src/index.ts';
 import {
-  runAuthEmailChallengeDeliveryOutboxBatch,
+  applyNextOt86Publication,
+  createDisabledOt109TranscriptionPort,
+  createDisabledOt109VimeoPort,
+  contentFactoryStorageFromEnv,
+  DeterministicFakeHighLevelAdapter,
+  runHighLevelProjectionBatch,
   runLifecycleDeliveryOutboxBatch,
+  runOt109PublisherWorkerOnce,
+  runContentFactoryWorkerOnce,
   runSupportDeliveryBatch,
 } from '../../../../packages/domain/src/index.ts';
 import {
@@ -18,6 +25,8 @@ import { OneTimeProviderDeliveryRouter } from '../delivery/provider-router.ts';
 import { PostgresDeliveryRepository } from '../delivery/repository.ts';
 import { SinkDeliveryRouter } from '../delivery/sink-router.ts';
 import { runDeliveryBatch } from '../delivery/worker.ts';
+import { HighLevelHttpAdapter } from '../highlevel/adapter.ts';
+import { runWorkerRunners, workerRunnerRegistrations } from '../runners/registry/index.ts';
 
 const WORKER_TYPE = 'delivery_outbox';
 
@@ -79,13 +88,43 @@ export async function runOutboxWorkerOnce(source: NodeJS.ProcessEnv = process.en
       limit: config.batchSize,
       leaseMs: config.claimLeaseMs,
     });
-    const authEmail = await runAuthEmailChallengeDeliveryOutboxBatch({
+    const highLevel = await runHighLevelProjectionBatch({
       pool,
       config: config.appConfig,
+      ...highLevelAdapter(config.appConfig),
       limit: config.batchSize,
-      leaseMs: config.claimLeaseMs,
     });
-    return { ...delivery, support, lifecycle, authEmail };
+    const learningDelivery = await runLearningDeliveryWorkerOnce({
+      pool,
+      source,
+      logger,
+    });
+    const contentFactory = await runDurableContentFactoryWorkerOnce({
+      pool,
+      config: config.appConfig,
+      source,
+      workerInstanceKey,
+      logger,
+    });
+    const registeredRunners = await runWorkerRunners({
+      context: {
+        config: config.appConfig,
+        pool,
+        source,
+        workerInstanceKey,
+        logger,
+      },
+      registrations: workerRunnerRegistrations,
+    });
+    return {
+      ...delivery,
+      support,
+      lifecycle,
+      highLevel,
+      learningDelivery,
+      contentFactory,
+      registeredRunners,
+    };
   } finally {
     await safeHeartbeat(
       () => markOpsWorkerStopped({ pool, workerType: WORKER_TYPE, workerInstanceKey }),
@@ -184,11 +223,29 @@ async function runContinuously(source: NodeJS.ProcessEnv = process.env) {
             limit: config.batchSize,
             leaseMs: config.claimLeaseMs,
           });
-          await runAuthEmailChallengeDeliveryOutboxBatch({
+          await runHighLevelProjectionBatch({
             pool,
             config: config.appConfig,
+            ...highLevelAdapter(config.appConfig),
             limit: config.batchSize,
-            leaseMs: config.claimLeaseMs,
+          });
+          await runLearningDeliveryWorkerOnce({ pool, source, logger });
+          await runDurableContentFactoryWorkerOnce({
+            pool,
+            config: config.appConfig,
+            source,
+            workerInstanceKey,
+            logger,
+          });
+          await runWorkerRunners({
+            context: {
+              config: config.appConfig,
+              pool,
+              source,
+              workerInstanceKey,
+              logger,
+            },
+            registrations: workerRunnerRegistrations,
           });
         } catch (error) {
           void error;
@@ -232,6 +289,106 @@ function createOutboxRouter(config: ReturnType<typeof loadDeliveryWorkerConfig>)
   return new OneTimeProviderDeliveryRouter(config.provider, {});
 }
 
+function highLevelAdapter(config: ReturnType<typeof loadDeliveryWorkerConfig>['appConfig']) {
+  if (config.highLevelEventSyncMode === 'mock') {
+    return { adapter: new DeterministicFakeHighLevelAdapter() };
+  }
+  if (config.highLevelEventSyncMode === 'provider') {
+    return { adapter: new HighLevelHttpAdapter(config) };
+  }
+  return {};
+}
+
+async function runLearningDeliveryWorkerOnce(input: {
+  pool: ReturnType<typeof createPgPool>;
+  source: NodeJS.ProcessEnv;
+  logger: ReturnType<typeof createDeliveryLogger>;
+}) {
+  if (input.source.LEARNING_DELIVERY_WORKER_ENABLED !== 'true') {
+    return { enabled: false as const };
+  }
+  const ot86 = await safeLearningDeliveryStep(
+    () => applyNextOt86Publication({ pool: input.pool }),
+    input.logger,
+    'ot86_publication_apply',
+  );
+  const ot109 = await safeLearningDeliveryStep(
+    () =>
+      runOt109PublisherWorkerOnce({
+        pool: input.pool,
+        vimeo: createDisabledOt109VimeoPort(),
+        transcription: createDisabledOt109TranscriptionPort(),
+        actorId: 'learning_delivery_worker',
+      }),
+    input.logger,
+    'ot109_publisher_advance',
+  );
+  return {
+    enabled: true as const,
+    provider_calls_performed: false,
+    ot86,
+    ot109,
+  };
+}
+
+async function runDurableContentFactoryWorkerOnce(input: {
+  pool: ReturnType<typeof createPgPool>;
+  config: ReturnType<typeof loadDeliveryWorkerConfig>['appConfig'];
+  source: NodeJS.ProcessEnv;
+  workerInstanceKey: string;
+  logger: ReturnType<typeof createDeliveryLogger>;
+}) {
+  if (input.source.CONTENT_FACTORY_WORKER_ENABLED !== 'true') {
+    return { enabled: false as const, provider_calls_performed: false as const };
+  }
+  if (input.source.CONTENT_FACTORY_PROCESSING_MODE !== 'vimeo') {
+    return {
+      enabled: false as const,
+      provider_calls_performed: false as const,
+      safe_error_code: 'retired_processing_mode',
+    };
+  }
+  try {
+    const result = await runContentFactoryWorkerOnce({
+      pool: input.pool,
+      config: input.config,
+      storage: contentFactoryStorageFromEnv(input.source),
+      workerIdentity: input.workerInstanceKey,
+      mode: 'vimeo',
+    });
+    return { enabled: true as const, provider_calls_performed: false as const, result };
+  } catch (error) {
+    void error;
+    input.logger.warn('content_factory_worker_step_failed', {
+      worker: 'content_factory',
+      failure_code: 'content_factory_worker_step_failed',
+    });
+    return {
+      enabled: true as const,
+      provider_calls_performed: false as const,
+      safe_error_code: 'content_factory_worker_step_failed',
+    };
+  }
+}
+
+async function safeLearningDeliveryStep<T>(
+  run: () => Promise<T>,
+  logger: ReturnType<typeof createDeliveryLogger>,
+  step: string,
+): Promise<{ ok: true; result: T } | { ok: false; safe_error_code: string }> {
+  try {
+    return { ok: true, result: await run() };
+  } catch (error) {
+    void error;
+    logger.warn('learning_delivery_worker_step_failed', {
+      worker: 'learning_delivery',
+      step,
+      failure_code: 'learning_delivery_step_failed',
+    });
+    return { ok: false, safe_error_code: 'learning_delivery_step_failed' };
+  }
+}
+
 if (process.argv.includes('--once')) {
   const summary = await runOutboxWorkerOnce();
   process.stdout.write(
@@ -240,8 +397,9 @@ if (process.argv.includes('--once')) {
       `support_delivered=${summary.support.delivered}`,
       `lifecycle_sink_delivered=${summary.lifecycle.sink_delivered}`,
       `lifecycle_expired=${summary.lifecycle.expired}`,
-      `auth_email_sink_delivered=${summary.authEmail.sink_delivered}`,
-      `auth_email_expired=${summary.authEmail.expired}`,
+      `highlevel_adapter_calls=${summary.highLevel.adapterCalls}`,
+      `learning_delivery_enabled=${summary.learningDelivery.enabled}`,
+      `content_factory_enabled=${summary.contentFactory.enabled}`,
     ].join('\n') + '\n',
   );
 } else {

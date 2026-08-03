@@ -1,0 +1,335 @@
+schema_version: 1
+goal_id: OT-LAUNCH-01
+source_of_status: ops/goals/OT-LAUNCH-01/BOARD.yaml
+evidence_types:
+  api: status, headers, sanitized response shape, and audit/readback query
+  browser_desktop: Playwright trace or screenshot at 1280px or wider
+  browser_mobile: Playwright trace or screenshot at 360px
+  provider_readback: sanitized ID, full path, state, reload/reopen proof, and execution reference
+  migration_proof: prefix inventory, SHA-256, applied-ledger readback, and clean duplicate-prefix check
+
+criteria:
+  - id: GOAL-001
+    track: goal_system
+    observable: CURRENT, GOAL, SPEC, ACCEPTANCE, BOARD, DECISIONS, RAMBLE-PROTOCOL, stable inputs/handoffs, and pointer-only ops/previews/current.json validate from disk.
+    proof: [repository_diff, yaml_json_parse, official_skill_validator]
+  - id: UX-001
+    track: goal_system
+    observable: A visual request records exact routes and breakpoint checks, inspects current screenshots/page state, automatically repairs obvious in-scope violations, retests each breakpoint, and verifies the deployed URL; only a real product choice is returned to the operator.
+    proof: [ramble_intake, browser_desktop, browser_mobile, deployed_url_readback]
+  - id: OPS-LAUNCH-001
+    track: operator_launch_dashboard
+    observable: Admin opens one visible Launch Status surface generated from the exact BOARD source hash and sees the named current milestone, objective completed/total acceptance count and percentage, latest sanitized change, what works now, exact blockers, safe role/route links, and one next executable task; no displayed value is separately editable status.
+    proof: [repository_diff, source_hash_validation, browser_desktop, browser_mobile]
+  - id: GHL-001
+    track: ghl_organization
+    observable: The 19 canonical desired automation assets remain separately accounted from observed drift; OT-C01 workflow wrapper f28d8b8a-c26a-4a4f-a9f2-d2a8e94af1ae and Email Marketing campaign 6a5f750b557817806a14b19e have distinct exact kind/path/configuration/state evidence, neither is collapsed/activated/quarantined/deleted, and every additional visible asset is reported while unexposed archived/hidden-AI scope fails closed. OT-A1 and knowledge bases remain separate non-workflow assets.
+    proof: [provider_readback, PR_107_result_artifact]
+  - id: GHL-002
+    track: ghl_ot_e01
+    observable: OT-E01 remains the same Published workflow ID and retains its historical controlled GHL-only canary; the exact registered-event-tag trigger, approved Email A copy/rabbi_campaign sender/canonical One Time page, one-hour/ten-minute waits, suppression gates, and one-active/two-historical enrollment state save/reopen/read back exactly with zero messages in the terminal run. Current registration end to end is not accepted until the application adds the exact tag, creates the expected enrollment, reprocesses the one affected operator contact after repair proof, and delivers one event confirmation without duplicate enrollment/delivery; protected links remain sanitized and no provider URL is committed.
+    proof: [provider_readback, sanitized_execution_reference]
+  - id: GHL-003
+    track: ghl_app_contract_shells
+    observable: Every non-Tisha canonical workflow is observed DRAFT_SHELL with exact zero-trigger/zero-action/zero-enrollment readback; desired future contracts remain DRAFT_WAITING_EXTERNAL where applicable, with no claimed configuration, publication, enrollment, or canary readiness.
+    proof: [provider_readback, board_state]
+  - id: GHL-SENDER-DESIGN-001
+    track: audit_wave_03_ghl_sender_design
+    observable: One current-head repository-only design reuses the canonical rabbi_campaign, rabbi_personal, office, brand, and account_security identities; preserves phase-one office routing; keeps OT-02A operational migration separate from independently consented OT-02B nurture; preserves GHL-UI-13 as zero-send; adds at most one separately authorized one-operator-seed/one-reply successor job; regenerates projections canonically; and performs zero HighLevel, customer, contact, enrollment, payment, access, production, or provider effects.
+    proof: [registry_validation, projection_sync, focused_test, secret_scan, sanitized_handoff]
+  - id: GHL-004
+    track: ghl_event_dispatcher
+    observable: One outbox-backed dispatcher emits canonical exact-key events/tags/bot invocations for controlled golden-path producers with dedupe, retry, replay, and readback proof before any waiting workflow is eligible for activation.
+    proof: [integration_test, database_readback, controlled_GHL_test]
+  - id: GHL-005
+    track: ghl_organization
+    observable: Canonical workflow-registry.yaml contains all 19 automation IDs and exact asset kinds, literal One Time root, full nested folder/order, exact provider trigger plus ordered actions/essential values, DRAFT_WAITING_EXTERNAL where applicable, desired/observed state, readback, canary, blocker, and evidence; an exhaustive live-location inventory covers root-level, nested, archived, and 99 Deprecated assets; source-hashed current.json/workflows.yaml projections and the generated report match across LF/CRLF checkouts, while drift/unknown assets fail closed without mutating GHL.
+    proof:
+      [repository_diff, registry_validation, generated_control_report, sanitized_provider_readback]
+  - id: GHL-006
+    track: event_service_email_permission
+    observable: Application DB stores append-only account/product/event/contact-scoped event_service_email permission history and current projection; Tisha registration atomically and idempotently grants only the disclosed event scope, queues the exact registered-event tag, never infers/backfills marketing permission, and cannot override withdrawal/suppression. OT-E01 requires matching registration plus active event permission and rechecks typed deny precedence at send time; the newest production signup currently fails this acceptance because no tag/enrollment arrived. After repair proof, the one affected operator contact is reprocessed exactly once with no duplicate delivery. OT-C01 remains Draft/unseeded/unscheduled/unsent, and the 207 contacts remain read-only classified rather than consented.
+    proof:
+      [
+        synthetic_transaction_tests,
+        typed_denial_tests,
+        database_readback,
+        zero_provider_mutation_readback,
+        forward_only_next_free_migration_proof,
+      ]
+  - id: CONTENT-001
+    track: media_staging_integration
+    observable: /app/content proves private intake -> conservative trim -> transcript/VTT -> editable metadata/questions draft -> private Vimeo -> Admin approval -> protected Student playback for one operator-owned asset.
+    proof: [api, browser_desktop, browser_mobile, migration_proof]
+  - id: CONTENT-002
+    track: media_external_canary
+    observable: Exact external Vimeo canary readback proves private provider state and protected Student playback without a raw provider URL.
+    proof: [provider_readback, browser_desktop]
+  - id: ZOOM-SDK-001
+    track: zoom_meeting_sdk
+    observable: ZOOM_UI_PREVIEW truthfully renders the fictional protected/provider-off path; ZOOM_REAL_CONTROL remains false until the canonical CLIENT_ID/CLIENT_SECRET/WEB_VERSION contract and a human-cleared exact fictional Student consent/join canary pass, with replay/cross-student denial.
+    proof: [api, browser_desktop, authorization_negative_tests]
+  - id: ZOOM-S2S-001
+    track: zoom_s2s_host_control
+    observable: ZOOM_REAL_CONTROL becomes true only when separate canonical S2S OAuth account/client credentials plus exact meeting/registrant/host identity are read back and /app/live-console performs scoped mute, unmute, and spotlight in a human-cleared canary with provider/audit evidence.
+    proof: [browser_desktop, provider_readback, audit_readback]
+  - id: ZOOM-SCOPE-DIAGNOSTIC-001
+    track: zoom_scope_mismatch_diagnostic_tool
+    observable: One exact-repair-base repository-only command classifies every preserved disposable-meeting reconciliation predicate using safe booleans and a start-delta class, hard-prevents POST/PATCH/DELETE and journal mutation, exposes no protected/provider value, and produces a separately gated one-OAuth/one-GET executor prompt without running it.
+    proof: [unit_test, authorization_negative_tests, secret_scan, changed_file_allowlist]
+  - id: BNA-001
+    track: bna_foundation
+    observable: Agent Action Hub is ready and 14 canonical jobs import and read back without a second job registry.
+    proof: [BNA_terminal_handoff]
+  - id: BNA-002
+    track: bna_durability
+    observable: A durable job/queue write survives process restart, reads back identically, and remains pinned in the current queue.
+    proof: [BNA_terminal_handoff, database_readback, restart_readback]
+  - id: TELEGRAM-001
+    track: telegram_foundation
+    observable: Token/webhook/owner mapping/single-consumer lease and private canary are all proven; polling conflicts and partial flag-only states report provider_off.
+    proof: [provider_readback, integration_test, private_canary]
+  - id: TELEGRAM-002
+    track: telegram_customer_bridge
+    observable: Private synthetic question reaches a GHL draft/readback through the canonical bridge; customer sends are still zero unless separately authorized.
+    proof: [provider_readback, audit_readback, send_count]
+  - id: ACCESS-001
+    track: ghl_access_entitlement_projection
+    observable: GHL remains the only payment-history ledger while One Time idempotently projects exact account/product access state, effective/expiry timestamps, source reference, and revocation reason; a free-pilot entitlement grants access without a fabricated payment, and missing/expired/revoked/ambiguous state denies Parent and Student access.
+    proof:
+      [
+        domain_contract_test,
+        integration_test,
+        database_readback,
+        replay_test,
+        authorization_negative_tests,
+      ]
+  - id: CONTACT-OPS-001
+    track: parent_student_contact_operations
+    observable: An authorized operator or school administrator atomically enrolls one adult Parent, any explicitly selected number of local-only Students, optional complimentary access, and one adult-only GHL projection; paused Parents retain a limited recovery/support login while every Student learning session is denied, and no payment ledger or child GHL contact is created.
+    proof:
+      [
+        domain_contract_test,
+        integration_test,
+        database_readback,
+        browser_desktop,
+        browser_mobile,
+        authorization_negative_tests,
+      ]
+  - id: ADMIN-IA-001
+    track: admin_information_architecture
+    observable: Desktop and mobile Admin primary navigation contains exactly Dashboard, Contacts, Content, Classroom, and Live Console; one selected contextual category fills the workspace, Studio is under Content, Rewards is under Classroom, legacy URLs remain safe, and no duplicate navigation, card wall, BNA bridge copy, or invented data control appears.
+    proof:
+      [
+        component_contract_test,
+        browser_desktop,
+        browser_mobile,
+        screenshot_review,
+        accessibility_scan,
+      ]
+  - id: RABBI-TELEGRAM-001
+    track: rabbi_telegram_communications
+    observable: The distinct One Time Rabbi bot durably previews and explicitly confirms one synthetic Parent conversation reply and one exact Student-question answer with replay safety, sibling/account denial, same-GHL-conversation truth, Student portal readback, and one internal Rabbi-to-operator task; no child GHL contact, duplicate transcript, unconfirmed send, or customer message is created.
+    proof: [integration_test, database_readback, restart_readback, synthetic_provider_readback]
+  - id: PROMPT-KNOWLEDGE-001
+    track: structured_prompt_and_scoped_knowledge
+    observable: Natural-language feedback yields a reviewed schema-valid section patch and immutable prompt version without losing unrelated guardrails, while Parent and Student helpers answer only from approved exact-scope content with citations, abstention, injection resistance, revocation recheck, and provider-off fallback.
+    proof: [domain_contract_test, integration_test, authorization_negative_tests, browser_desktop]
+  - id: SOCIAL-001
+    track: human_confirmed_social_publishing
+    observable: One immutable Facebook text/image revision can be previewed, explicitly approved, scheduled, delivered once by a leased worker, and read back; edits invalidate approval, replay is idempotent, zero provider calls occur before confirmation, and unsupported YouTube remains truthful.
+    proof: [integration_test, worker_readback, synthetic_provider_readback, browser_desktop]
+  - id: BNA-CP-001
+    track: bna_control_plane_operations_bot
+    observable: The separate BNA control-plane bot exposes only allowlisted redacted status notifications and links by default; forbidden callbacks are rejected/audited, missing ownership keeps delivery off, and any future mutation is impossible without an accepted replacement ADR and bounded capability proof.
+    proof: [architecture_decision, integration_test, authorization_negative_tests]
+  - id: LEAD-001
+    track: public_lead_capture_bot
+    observable: The landing page contains no placeholder WhatsApp/offline helper; the future provider-backed website assistant creates only a consented deduplicated GHL lead/conversation, remains provider_off until configured, and routes only explicitly classified substantive Torah questions to the private Rabbi Telegram queue.
+    proof: [browser_desktop, browser_mobile, integration_test, provider_readback]
+  - id: LANDING-001
+    track: main_landing_polish
+    observable: The main landing hero, in-flow Jerusalem countdown, CTA, section order, equal outcome media, autoplay teaching gallery, full-width white publication cards, square Rabbi media, and yellow/black/white accents match the operator specification at 360x800, 390x844, 768x1024, 1366x768, and 1440x900 with no placeholder assistant or horizontal overflow.
+    proof: [browser_mobile, browser_desktop, screenshot_review, asset_http_readback]
+  - id: LANDING-002
+    track: main_landing_polish
+    observable: Countdown rollover/expiry, no-JS content visibility, reduced motion, carousel pause conditions, accessibility, LCP/CLS, CSS and public-JS budgets, bundle separation, signup/login links, consent, and zero real submissions/provider effects all pass without weakening a gate.
+    proof:
+      [unit_test, accessibility_scan, performance_test, bundle_budget, intercepted_browser_test]
+  - id: EXP-001
+    track: admin_experience_preview
+    observable: Owner/Admin Dashboard shows the explicit card/CTA Preview Parent & Student portals and opens /app/experience-preview; the same capability remains discoverable through the mobile hamburger, while non-admin and production see no card/nav/dead link and the route fails closed in production.
+    proof: [api, browser_desktop, browser_mobile, production_negative_test]
+  - id: EXP-002
+    track: admin_experience_preview
+    observable: /app/experience-preview shows five exact role cards and renders only exact seeded credential, enrollment, attendance, progress/reward, lesson, review-question, occurrence/Zoom, private-question, and Tisha rows; missing rows become unavailable/provider_off.
+    proof: [api, browser_desktop, exact_row_negative_tests]
+  - id: EXP-003
+    track: fictional_student_session
+    observable: One explicit user-click opens a dedicated no-opener GET-only shell rendering the actual exact sibling-scoped StudentPortalFeature data inside a visibly labeled inert Read-only preview, with no Admin nav/logout/mutation path; opaque exchange is one-use, session-bound, account-bound, route-scoped, <=5 minutes, no-store, and audited.
+    proof: [api, browser_desktop, security_negative_tests]
+  - id: EXP-004
+    track: fictional_student_session
+    observable: Student 1 and Student 2 stay isolated in simultaneous tabs, cross-route/cross-account access is denied, and the original Admin tab/session remains usable.
+    proof: [browser_desktop, api, sibling_isolation_test]
+  - id: ROLE-001
+    track: coherent_demo
+    observable: Ordinary Admin landing has no engineering/diagnostic/dead test panels and provides functional Experience Preview and Live Console nav according to server capabilities.
+    proof: [browser_desktop, browser_mobile]
+  - id: ROLE-002
+    track: coherent_demo
+    observable: Parent landing shows only the fictional Cohen household and all three siblings with exact scoped progress; no engineering/test cards appear.
+    proof: [browser_desktop, browser_mobile]
+  - id: ROLE-003
+    track: coherent_demo
+    observable: Each Student landing shows only that sibling, protected class/content/progress/question state, and no sibling or engineering/test cards.
+    proof: [browser_desktop, browser_mobile, sibling_isolation_test]
+  - id: PORTAL-IA-001
+    track: parent_student_portal_information_architecture
+    observable: Parent uses the exact Learners, Classes & materials, Progress & rewards, Billing, and Updates categories; desktop provides persistent category navigation, one contextual learner filter, a four-card upper summary grid, and one wide focused lower workspace with no duplicate role controls or simultaneous category bodies.
+    proof: [component_contract_test, browser_desktop, screenshot_review]
+  - id: PORTAL-IA-002
+    track: parent_student_portal_information_architecture
+    observable: Student uses the exact Today, Library, Class Helper, Progress, Questions, and Updates categories; selecting one replaces the focused workspace body while preserving approved-content, entitlement, sibling-isolation, private-question, and provider-off boundaries at 360x800, 390x844, 768x1024, and 1440x1000 with no horizontal page overflow or serious accessibility violation.
+    proof:
+      [
+        component_contract_test,
+        browser_desktop,
+        browser_mobile,
+        screenshot_review,
+        sibling_isolation_test,
+        accessibility_scan,
+      ]
+  - id: DEMO-001
+    track: coherent_demo
+    observable: Exact fictional seed/readback includes one Admin, one Parent, three separate Student credentials, one upcoming class/occurrence, approved prepared lesson, three progress projections, three approved review questions, one exact private question, and one Tisha registration.
+    proof: [sanitized_seed_readback, api]
+  - id: MIG-001
+    track: admin_experience_preview
+    observable: 'PR #104 retains 2214_learning_delivery_content_factory; Experience Preview is unique source prefix 2215 with exact SHA-256 e2a9f039e66b659ee630f232ad88fbbfbd4d9dc06d1437256ca07f2655483d56 and post-deploy ledger readback, while historical live 2209/2210 rows remain untouched.'
+    proof: [migration_proof]
+  - id: DEPLOY-001
+    track: persistent_staging
+    observable: 'PR #97 head equals /version commit, /health and /ready pass at latest migration, worker heartbeat is fresh, and the complete desktop/360px journey passes without production mutation.'
+    proof: [version_health_ready, worker_heartbeat, browser_desktop, browser_mobile]
+  - id: TISHA-001
+    track: tisha_landing_polish
+    observable: /tisha-bav shows exact H1 Bringing Knowledge of Hashem into the World with no trailing period, includes exact phrase No charge, removes the large mobile middle gap, loads fresh nonzero assets, has no horizontal overflow, and keeps the CTA visible at 375x667, 390x844, 430x932, 1366x768, and 1440x900; persistent staging passes before the separately authorized narrow production promotion is verified.
+    proof:
+      [browser_mobile, browser_desktop, asset_http_readback, persistent_staging_url, production_url]
+  - id: VIDEO-E2E-001
+    track: VIDEO-TO-CLASSROOM-E2E
+    observable: Admin selects an exact class occurrence, uploads to durable opaque source storage, and an idempotent restart-safe worker reaches editable review without duplicate transcription/upload; publish/unpublish grants/revokes only occurrence-enrolled Parent/Student Classroom access and denies unrelated siblings, with a fully usable synthetic provider-off path. The separately gated real OpenAI/private-Vimeo canary remains CONTENT-002 and is not required to accept this synthetic pipeline.
+    proof:
+      [
+        integration_test,
+        database_readback,
+        restart_readback,
+        browser_desktop,
+        browser_mobile,
+        sibling_isolation_test,
+      ]
+  - id: PROD-PILOT-001
+    track: production_pilot
+    observable: One immutable semantic production candidate proves exact web/worker source, forward-only migrations/checksums, backup/restore and rollback, real operator Administrator access, one operator-owned Parent and Student free-pilot entitlement, approved content playback on another device, provider fail-closed defaults, and live health/readiness without broad customer enrollment or messaging.
+    proof:
+      [
+        release_diff_review,
+        migration_proof,
+        backup_restore_readback,
+        version_health_ready,
+        browser_desktop,
+        browser_mobile,
+        separate_device_role_proof,
+      ]
+  - id: AUDIT-GHL-INVENTORY-001
+    track: audit_wave_03_ghl_full_inventory
+    observable: One protected read-only HighLevel pass accounts for every visible workflow, campaign, Conversation AI asset, knowledge base, folder ancestry, duplicate, archived/deprecated surface, and cross-kind collision or returns explicit UNPROVEN_UI_SCOPE_UNAVAILABLE; all mutation, save, publication, enrollment, send, contact-change, and deletion counters equal zero.
+    proof: [sanitized_provider_readback, coverage_matrix, zero_effect_counters]
+  - id: QUEUE-SELF-DRIVING-001
+    track: self_driving_execution_queue
+    observable: Seven permanent numbered lanes fetch and reread one canonical remote Git queue and Board before every claim and successor, claim only dependency-satisfied assigned work, preserve exclusive non-expiring locks, commit/push terminal results and queue state, continue ordinary repository work without operator relay, and surface only the six enumerated genuine manual handoffs; BOARD.yaml remains the sole goal-status map.
+    proof:
+      [
+        yaml_parse,
+        goal_governance,
+        lock_invariant_scan,
+        dependency_validation,
+        bootstrap_prompt_scan,
+      ]
+  - id: SEC-RUNTIME-001
+    track: audit_wave_04_runtime_classification
+    observable: One canonical runtime/deployment classification rejects every incoherent tuple and applies production cookie, startup migration, mock/demo, provider, and required-secret gates from that classification, with no provider or deployment mutation.
+    proof: [unit_test, integration_test, authorization_negative_tests, typecheck, build]
+  - id: SEC-PUBLIC-DIAGNOSTICS-001
+    track: audit_wave_04_public_diagnostics
+    observable: Public health, readiness, and release routes expose only fixed noncorrelatable availability codes with no-store caching; exact runtime identity, dependency detail, topology, and safe operational errors are available only through authenticated machine or owner/admin diagnostics, and every active launch probe/runbook consumes that protected contract.
+    proof:
+      [
+        integration_test,
+        authorization_negative_tests,
+        failure_serialization_test,
+        operations_projection_check,
+        typecheck,
+        build,
+      ]
+  - id: SEC-MIGRATION-VERIFY-001
+    track: audit_wave_04_read_only_migration_verification
+    observable: db:migrate is the only migration-apply command; db:verify performs only read queries, validates the ordered file/checksum/prefix inventory against the existing ledger, fails closed on missing/unreadable/mismatched/reordered/pending state, and leaves schema objects plus ledger rows/checksums unchanged.
+    proof:
+      [
+        unit_test,
+        disposable_postgresql_16,
+        schema_fingerprint,
+        ledger_fingerprint,
+        concurrent_apply_serialization,
+        changed_migration_allowlist,
+      ]
+  - id: SEC-DELIVERY-IDEMPOTENCY-001
+    track: audit_wave_04_delivery_provider_idempotency
+    observable: Every general-delivery provider attempt uses one stable provider idempotency key per logical delivery; durable operation state distinguishes not-started, in-flight, accepted, rejected, and acceptance-unknown outcomes; recovery retries only with the same key when explicitly safe and otherwise quarantines without a second provider effect.
+    proof:
+      [
+        unit_test,
+        fault_injection,
+        durable_state_test,
+        lease_fencing_test,
+        provider_sink_only,
+        zero_real_send,
+      ]
+  - id: SEC-CLASSROOM-BEARER-FREE-001
+    track: audit_wave_04_classroom_bearer_free_transport
+    observable: The authenticated Student classroom uses one constant protected browser route and a strict same-origin CSRF-protected bootstrap POST with no launch reference in the URL or payload; the server consumes one durable pending grant bound to the exact account, product, actor, session, learner, occurrence, TTL, and one-time state, while stale compound URLs, replay, expiry, wrong-session, sibling, and cross-account attempts fail closed without provider calls or sensitive route labels.
+    proof:
+      [
+        integration_test,
+        browser_desktop,
+        browser_mobile,
+        authorization_negative_tests,
+        concurrent_consume_test,
+        request_target_redaction_test,
+        provider_sink_only,
+        zero_real_provider_call,
+      ]
+  - id: PORTAL-THREE-ACTIVE-LEARNERS-001
+    track: audit_wave_04_three_active_learner_enforcement
+    observable: Parent portal household projection reports a maximum of three active learners and a truthful reached flag; create and inactive-to-active restore enforce that maximum atomically under the exact account/product/household lock, including a final-seat race where exactly one request succeeds, while rejected operations leave no learner, access-state, audit, or idempotency partial writes and synthetic legacy over-limit state remains unchanged pending a separately authorized aggregate-only readback.
+    proof:
+      [
+        unit_test,
+        integration_test,
+        disposable_postgres_concurrency,
+        idempotency_test,
+        no_partial_write_test,
+        authorization_negative_tests,
+        legacy_state_non_mutation,
+        zero_external_effect,
+      ]
+  - id: HYGIENE-CENSUS-001
+    track: audit_wave_05_preservation_census
+    observable: A metadata-only protected census separates One Time, BNA, legacy One Time, and unknown checkouts; records hashed paths, repository identities, status/ref/worktree/stash counts and local-only commit metadata; proves every source status hash unchanged; and performs zero source mutation, PR closure, deletion, reset, prune, stash, or force-push.
+    proof: [sanitized_inventory, checksum_manifest, source_status_readback, zero_effect_counters]
+  - id: BNA-CONTROL-POINTER-001
+    track: audit_wave_06_bna_control_pointer
+    observable: BNA has exactly one pointer-only current entrypoint and one mutable Board, explicitly demotes historical execution-run/task/system-state prose to evidence, records audit-first execution precedence, and changes no application, runtime, migration, provider, deployment, or One Time control source.
+    proof: [yaml_parse, pointer_resolution, stale_status_scan, changed_file_allowlist, diff_check]

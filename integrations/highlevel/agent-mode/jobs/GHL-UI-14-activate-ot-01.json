@@ -1,0 +1,26 @@
+{
+  "job_id": "GHL-UI-14",
+  "location_id": "pBSnOK2nkdxp6gf9Rg3o",
+  "workflow": {
+    "key": "OT-01",
+    "id": "95a6f461-1a04-4260-b379-246fdcc45af7",
+    "name": "OT-01 New Lead Intake",
+    "full_folder_path": "One Time / 00 - Intake & Data"
+  },
+  "deployed_contract": "adult.signup.submitted@1.0.0",
+  "expected": {
+    "trigger": "Contact Tag added: OT | Lead",
+    "fields": [
+      "contact.one_time_crm_contact_id",
+      "contact.one_time_email_consent",
+      "contact.one_time_whatsapp_consent",
+      "contact.one_time_consent_policy_version",
+      "contact.one_time_consent_captured_at",
+      "contact.one_time_suppression_state",
+      "contact.one_time_source_classification"
+    ],
+    "sender_key": "brand",
+    "suppression": "Require email consent granted, suppression active, and email DND off before communication."
+  },
+  "exact_copy_paste_prompt": "Use only location pBSnOK2nkdxp6gf9Rg3o. Reconcile OT-01 by exact workflow ID 95a6f461-1a04-4260-b379-246fdcc45af7 and full folder ancestry One Time / 00 - Intake & Data across active, draft, archived and deprecated assets; fail closed and create a dedupe record if any second normalized match exists. Do not create a workflow. Verify adult.signup.submitted@1.0.0 is deployed; otherwise leave Draft as DRAFT_WAITING_EXTERNAL(adult.signup.submitted@1.0.0 deployment). Before any trigger test, prove the application row is explicitly authorized by the exact protected canary run ID, delivery-key allowlist and budget; disabled, mock, held or non-allowlisted rows must remain unclaimed. Configure Contact Tag added OT | Lead, read only the registered fields listed in this job, require email consent granted, suppression active and email DND off, and select sender_key brand through registered custom-value pickers. Preserve unrelated tags and fields. After the bounded action and application delivery receipt are complete, remove only OT | Lead so a future distinct event can trigger; do not rely on a time-based replay lease. Save the action layer, save the outer workflow, navigate away, reload, reopen by exact ID and compare trigger, fields, sender and suppression. Publish only after readback. Run at most one operator-owned adult test, record the canary run hash, application event ID and workflow execution reference, verify one enrollment and one bounded delivery, then replay the same application event and verify no second enrollment or delivery. Zero broad sends and zero Student contacts. Record ACTIVE_CONFIGURED if publication/readback succeeds without a completed controlled trigger; record ACTIVE_TESTED only after delivery, suppression and replay proof."
+}

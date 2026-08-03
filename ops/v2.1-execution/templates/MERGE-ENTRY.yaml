@@ -1,0 +1,23 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+merge_id: ${MERGE_ID}
+kind: ${INTERFACE_FULL_OR_EVIDENCE}
+task_id: ${TASK_ID}
+source_branch: ${EXACT_SOURCE_BRANCH}
+source_head_sha: ${EXACT_SOURCE_HEAD}
+target_branch: ${INTEGRATION_OR_EVIDENCE_BRANCH}
+expected_target_head_sha: ${EXACT_TARGET_HEAD}
+source_delta_base_head_sha: ${EXACT_VERIFIED_SOURCE_DELTA_BASE_HEAD}
+required_merge_base_sha: ${EXACT_VERIFIED_SOURCE_DELTA_BASE_HEAD}
+preserve_source_ancestry: ${TRUE_FOR_EVIDENCE_AND_INTERFACE}
+required_postmerge_ancestor_sha: ${EXACT_SOURCE_HEAD}
+merge_after_heads: {}
+allowed_paths: []
+writer_slot_leases: []
+task_packet_digest: ${TASK_PACKET_DIGEST}
+state_handoff_digest: ${STATE_HANDOFF_DIGEST}
+external_effect_summary:
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+state_based_on_control_head_sha: ${PARENT_CONTROL_HEAD_SHA}

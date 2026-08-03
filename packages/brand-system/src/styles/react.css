@@ -198,6 +198,35 @@ button {
   padding: 16px;
 }
 
+.app-workspace--portal {
+  display: flex;
+  min-height: calc(100vh - 60px);
+  flex-direction: column;
+  padding: 0;
+}
+
+.app-workspace--portal .page-header,
+.app-workspace--portal .app-main,
+.app-workspace--portal .app-footer {
+  width: 100%;
+  max-width: none;
+}
+
+.app-workspace--portal .page-header {
+  align-items: center;
+  margin-bottom: 0;
+  padding: 16px 24px 0;
+}
+
+.app-workspace--portal .app-main {
+  flex: 1;
+}
+
+.app-workspace--portal .app-footer {
+  margin-top: 0;
+  padding: 16px 24px;
+}
+
 .page-header {
   display: flex;
   align-items: flex-end;
@@ -372,6 +401,22 @@ textarea:focus-visible,
 .shell-nav {
   display: grid;
   gap: 8px;
+}
+
+.shell-utility-section {
+  display: grid;
+  gap: 10px;
+  margin-top: 20px;
+  border-top: 1px solid #34464d;
+  padding-top: 16px;
+}
+
+.shell-utility-section h2 {
+  margin: 0;
+  color: #c8d6d9;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .shell-nav a {
@@ -911,6 +956,24 @@ textarea:focus-visible,
   color: #ffffff;
 }
 
+.workspace-tabs {
+  display: grid;
+  min-width: 0;
+  gap: 8px;
+}
+
+.workspace-tabs__select {
+  display: none;
+  gap: 6px;
+  color: #c8d6d9;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.workspace-tabs__select select {
+  width: 100%;
+}
+
 .ot-metric-row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
@@ -1383,6 +1446,10 @@ textarea:focus-visible,
     padding: 24px;
   }
 
+  .app-workspace--portal {
+    padding: 0;
+  }
+
   .page-header h1 {
     font-size: 1.875rem;
   }
@@ -1480,6 +1547,19 @@ textarea:focus-visible,
     padding: 32px;
   }
 
+  .app-workspace--portal {
+    min-height: calc(100vh - 64px);
+    padding: 0;
+  }
+
+  .app-workspace--portal .ot-portal-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .app-workspace--portal .ot-portal-menu {
+    display: none;
+  }
+
   .toolbar-grid {
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: start;
@@ -1514,5 +1594,15 @@ textarea:focus-visible,
 
   .skeleton-row {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .workspace-tabs .ot-section-tabs {
+    display: none;
+  }
+
+  .workspace-tabs__select {
+    display: grid;
   }
 }

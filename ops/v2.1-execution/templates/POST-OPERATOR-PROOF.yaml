@@ -1,0 +1,21 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+proof_id: ${PROOF_ID}
+task_id: P34
+canonical_path: ops/v2.1-execution/proofs/${CANONICAL_CANDIDATE_DIGEST}/P34/POST-OPERATOR-PROOF.yaml
+canonical_candidate_digest: ${CANONICAL_CANDIDATE_DIGEST}
+r44_evidence_head_sha: ${R44_EVIDENCE_HEAD}
+current_evidence_head_sha: ${CURRENT_EVIDENCE_HEAD}
+supports_case_ids:
+  - OTV2-OPS-219-AC01
+  - OTV2-OPS-241-ENVIRONMENT-MAPPING
+  - OTV2-OPS-241-LEGAL-ARTIFACT-GATE
+environment_and_deployment_digests: []
+canary_budget_and_effect_ledger_digests: []
+backup_restore_rollback_proof_digests: []
+legal_artifact_and_approval_digests: []
+provider_and_runtime_readback_digests: []
+cleanup_and_reconciliation_digests: []
+contains_acceptance_result: false
+claims_case_passed: false
+produced_at: ${UTC_TIMESTAMP}

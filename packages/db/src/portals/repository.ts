@@ -13,6 +13,7 @@ import type {
   StudentQuestionPayload,
   UpdateLearnerPayload,
 } from '../../../contracts/src/portals/index.ts';
+import { normalizeStudentUsername } from '../../../contracts/src/portals/index.ts';
 import {
   PortalServiceError,
   type CredentialLifecycleResult,
@@ -173,13 +174,15 @@ async function createLearner(
     if (replay) return replay;
 
     await lockHousehold(client, actor, householdKey);
-    const count = await activeLearnerCount(client, actor, householdKey);
-    if (count >= MAX_ACTIVE_LEARNERS) {
-      throw new PortalServiceError(
-        'LEARNER_LIMIT_REACHED',
-        'A household can have at most three active learners in V1.',
-      );
-    }
+    const lockedReplay = await readIdempotency<LearnerProfile>(
+      client,
+      actor,
+      scope,
+      payload.idempotency_key,
+      requestFingerprint,
+    );
+    if (lockedReplay) return lockedReplay;
+    await requireLearnerSeatAvailable(client, actor, householdKey);
 
     const learnerKey = `learner_${randomUUID()}`;
     const accessStateKey = `student_access_${randomUUID()}`;
@@ -320,6 +323,14 @@ async function setLearnerStatus(
     );
     if (replay) return replay;
     await lockHousehold(client, args.actor, args.householdKey);
+    const lockedReplay = await readIdempotency<LearnerProfile>(
+      client,
+      args.actor,
+      scope,
+      args.idempotencyKey,
+      args.requestFingerprint,
+    );
+    if (lockedReplay) return lockedReplay;
     const current = await lockLearner(client, args.actor, args.householdKey, args.learnerKey);
     if (Number(current.version) !== args.version) {
       throw new PortalServiceError(
@@ -329,13 +340,7 @@ async function setLearnerStatus(
       );
     }
     if (args.status === 'active' && String(current.learner_status) !== 'active') {
-      const count = await activeLearnerCount(client, args.actor, args.householdKey);
-      if (count >= MAX_ACTIVE_LEARNERS) {
-        throw new PortalServiceError(
-          'LEARNER_LIMIT_REACHED',
-          'A household can have at most three active learners in V1.',
-        );
-      }
+      await requireLearnerSeatAvailable(client, args.actor, args.householdKey);
     }
     const updated = await client.query(
       `UPDATE onetime.portal_learners
@@ -405,6 +410,8 @@ async function getStudentAccessState(
 ): Promise<StudentAccessState> {
   const result = await target.query(
     `SELECT access_state_key, learner_key, status, student_user_ref,
+            username_display, credential_status, password_version, security_version,
+            last_reset_at, last_session_revoked_at,
             last_operation_type, last_operation_at, version
        FROM onetime.portal_student_access_state
       WHERE account_key = $1
@@ -421,6 +428,12 @@ async function getStudentAccessState(
       learner_key: learnerKey,
       status: 'not_configured',
       student_user_ref: null,
+      username_display: null,
+      credential_status: 'not_configured',
+      password_version: 0,
+      security_version: 1,
+      last_reset_at: null,
+      last_session_revoked_at: null,
       last_operation_type: null,
       last_operation_at: null,
       version: 1,
@@ -483,6 +496,19 @@ async function recordStudentAccessOperation(
       `UPDATE onetime.portal_student_access_state
           SET status = $5,
               last_operation_type = $6,
+              student_user_ref = COALESCE($7, student_user_ref),
+              username_display = COALESCE($8, username_display),
+              normalized_username = COALESCE($9, normalized_username),
+              password_hash_ref = COALESCE($10, password_hash_ref),
+              credential_status = COALESCE($11, credential_status),
+              password_version = CASE
+                WHEN $10 IS NOT NULL THEN password_version + 1
+                ELSE password_version
+              END,
+              security_version = COALESCE($12, security_version),
+              last_reset_at = COALESCE($13::timestamptz, last_reset_at),
+              last_session_revoked_at = COALESCE($14::timestamptz, last_session_revoked_at),
+              last_parent_actor_ref = $15,
               last_operation_at = now(),
               version = version + 1,
               updated_at = now()
@@ -491,6 +517,8 @@ async function recordStudentAccessOperation(
           AND household_key = $3
           AND learner_key = $4
         RETURNING access_state_key, learner_key, status, student_user_ref,
+                  username_display, credential_status, password_version, security_version,
+                  last_reset_at, last_session_revoked_at,
                   last_operation_type, last_operation_at, version`,
       [
         args.actor.account_key,
@@ -499,6 +527,17 @@ async function recordStudentAccessOperation(
         args.learnerKey,
         args.adapterResult.status,
         args.operationType,
+        args.adapterResult.student_user_ref ?? null,
+        args.adapterResult.username_display ?? null,
+        args.adapterResult.username_display
+          ? normalizeStudentUsername(args.adapterResult.username_display)
+          : null,
+        args.adapterResult.password_hash_ref ?? null,
+        credentialStatusFor(args.operationType, args.adapterResult),
+        args.adapterResult.security_version ?? null,
+        args.adapterResult.last_reset_at ?? null,
+        args.adapterResult.last_session_revoked_at ?? null,
+        args.actor.actor_user_ref,
       ],
     );
     let stateRow = updated.rows[0] as Record<string, unknown> | undefined;
@@ -506,9 +545,14 @@ async function recordStudentAccessOperation(
       const inserted = await client.query(
         `INSERT INTO onetime.portal_student_access_state
          (access_state_key, account_key, product_key, household_key, learner_key, status,
-          last_operation_type, last_operation_at, version)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,now(),2)
+          student_user_ref, username_display, normalized_username, password_hash_ref,
+          credential_status, password_version, security_version, last_reset_at,
+          last_session_revoked_at, last_parent_actor_ref, last_operation_type,
+          last_operation_at, version)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,now(),2)
          RETURNING access_state_key, learner_key, status, student_user_ref,
+                   username_display, credential_status, password_version, security_version,
+                   last_reset_at, last_session_revoked_at,
                    last_operation_type, last_operation_at, version`,
         [
           `student_access_${randomUUID()}`,
@@ -517,11 +561,48 @@ async function recordStudentAccessOperation(
           String(learner.household_key),
           args.learnerKey,
           args.adapterResult.status,
+          args.adapterResult.student_user_ref ?? null,
+          args.adapterResult.username_display ?? null,
+          args.adapterResult.username_display
+            ? normalizeStudentUsername(args.adapterResult.username_display)
+            : null,
+          args.adapterResult.password_hash_ref ?? null,
+          credentialStatusFor(args.operationType, args.adapterResult),
+          args.adapterResult.password_hash_ref ? 1 : 0,
+          args.adapterResult.security_version ?? 1,
+          args.adapterResult.last_reset_at ?? null,
+          args.adapterResult.last_session_revoked_at ?? null,
+          args.actor.actor_user_ref,
           args.operationType,
         ],
       );
       stateRow = inserted.rows[0] as Record<string, unknown>;
     }
+    await client.query(
+      `INSERT INTO onetime.portal_student_credential_audit
+       (audit_key, account_key, product_key, household_key, learner_key, operation_type,
+        actor_user_ref, username_digest, password_hash_ref_digest, session_revoked_at,
+        metadata)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11::jsonb)`,
+      [
+        `student_credential_audit_${randomUUID()}`,
+        args.actor.account_key,
+        args.actor.product_key,
+        String(learner.household_key),
+        args.learnerKey,
+        args.operationType,
+        args.actor.actor_user_ref,
+        args.adapterResult.username_display
+          ? digest(normalizeStudentUsername(args.adapterResult.username_display))
+          : null,
+        args.adapterResult.password_hash_ref ? digest(args.adapterResult.password_hash_ref) : null,
+        args.adapterResult.last_session_revoked_at ?? null,
+        JSON.stringify({
+          status: args.adapterResult.status,
+          credential_status: credentialStatusFor(args.operationType, args.adapterResult),
+        }),
+      ],
+    );
     const state = mapStudentAccess(stateRow);
     await writeIdempotency(
       client,
@@ -780,6 +861,29 @@ async function lockHousehold(client: Queryable, actor: PortalActorContext, house
   }
 }
 
+async function requireLearnerSeatAvailable(
+  client: Queryable,
+  actor: PortalActorContext,
+  householdKey: string,
+) {
+  const result = await client.query(
+    `SELECT count(*)::int AS active_learner_count
+       FROM onetime.portal_learners
+      WHERE account_key = $1
+        AND product_key = $2
+        AND household_key = $3
+        AND learner_status = 'active'`,
+    [actor.account_key, actor.product_key, householdKey],
+  );
+  const activeLearnerCount = Number(result.rows[0]?.active_learner_count ?? 0);
+  if (activeLearnerCount >= MAX_ACTIVE_LEARNERS) {
+    throw new PortalServiceError(
+      'LEARNER_LIMIT_REACHED',
+      'A household can have at most three active learners.',
+    );
+  }
+}
+
 async function lockLearner(
   client: Queryable,
   actor: PortalActorContext,
@@ -819,23 +923,6 @@ async function findLearnerForUpdate(
     [actor.account_key, actor.product_key, learnerKey],
   );
   return result.rows[0] as Record<string, unknown> | undefined;
-}
-
-async function activeLearnerCount(
-  client: Queryable,
-  actor: PortalActorContext,
-  householdKey: string,
-) {
-  const result = await client.query(
-    `SELECT count(*)::int AS count
-       FROM onetime.portal_learners
-      WHERE account_key = $1
-        AND product_key = $2
-        AND household_key = $3
-        AND learner_status = 'active'`,
-    [actor.account_key, actor.product_key, householdKey],
-  );
-  return Number((result.rows[0] as Record<string, unknown> | undefined)?.count ?? 0);
 }
 
 async function readIdempotency<T>(
@@ -933,6 +1020,14 @@ function mapStudentAccess(row: Record<string, unknown>): StudentAccessState {
     learner_key: String(row.learner_key),
     status: row.status as StudentAccessState['status'],
     student_user_ref: nullableString(row.student_user_ref),
+    username_display: nullableString(row.username_display),
+    credential_status: nullableString(
+      row.credential_status,
+    ) as StudentAccessState['credential_status'],
+    password_version: numberOrDefault(row.password_version, 0),
+    security_version: numberOrDefault(row.security_version, 1),
+    last_reset_at: toNullableIso(row.last_reset_at),
+    last_session_revoked_at: toNullableIso(row.last_session_revoked_at),
     last_operation_type: row.last_operation_type as StudentAccessState['last_operation_type'],
     last_operation_at: toNullableIso(row.last_operation_at),
     version: Number(row.version),
@@ -979,8 +1074,24 @@ function nullableString(value: unknown) {
   return typeof value === 'string' && value.length > 0 ? value : null;
 }
 
+function numberOrDefault(value: unknown, fallback: number) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
 function digest(value: string) {
   return createHash('sha256').update(value).digest('hex');
+}
+
+function credentialStatusFor(
+  operationType: StudentAccessOperationType,
+  result: CredentialLifecycleResult,
+): StudentAccessState['credential_status'] {
+  if (result.credential_status) return result.credential_status;
+  if (operationType === 'suspend') return 'suspended';
+  if (operationType === 'restore' || operationType === 'revoke_sessions') return 'parent_managed';
+  if (operationType === 'setup' || operationType === 'reset') return 'parent_managed';
+  return null;
 }
 
 function assertActorCanAccessLearner(actor: PortalActorContext, learner: Record<string, unknown>) {

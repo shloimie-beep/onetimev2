@@ -22,6 +22,7 @@ describe('delivery retry policy', () => {
     expect(failure).toEqual({
       code: 'resend_rate_limit_exceeded',
       category: 'transient',
+      acceptance: 'not_accepted',
       provider: 'resend',
       httpStatus: 429,
       retryAfterMs: 90_000,
@@ -56,8 +57,26 @@ describe('delivery retry policy', () => {
   });
 
   it('dead-letters permanent failures immediately and transient failures at the limit', () => {
-    expect(shouldDeadLetter({ code: 'bad_request', category: 'permanent' }, 1, 5)).toBe(true);
-    expect(shouldDeadLetter({ code: 'timeout', category: 'transient' }, 4, 5)).toBe(false);
-    expect(shouldDeadLetter({ code: 'timeout', category: 'transient' }, 5, 5)).toBe(true);
+    expect(
+      shouldDeadLetter(
+        { code: 'bad_request', category: 'permanent', acceptance: 'not_accepted' },
+        1,
+        5,
+      ),
+    ).toBe(true);
+    expect(
+      shouldDeadLetter(
+        { code: 'timeout', category: 'transient', acceptance: 'not_accepted' },
+        4,
+        5,
+      ),
+    ).toBe(false);
+    expect(
+      shouldDeadLetter(
+        { code: 'timeout', category: 'transient', acceptance: 'not_accepted' },
+        5,
+        5,
+      ),
+    ).toBe(true);
   });
 });

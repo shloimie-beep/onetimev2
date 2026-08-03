@@ -3,6 +3,7 @@ import type { Ot86RetrievalResponse } from '../../../contracts/src/content/index
 import {
   hasPortalCapability,
   helperAnswerSchema,
+  helperCitationSchema,
   type HelperAnswer,
   type HelperCitation,
   type LearnerProfile,
@@ -11,6 +12,11 @@ import {
 import type { DbPool } from '../../../db/src/index.ts';
 import { householdHasLearningAccess } from '../billing/portal-access.ts';
 import { retrieveOt86ApprovedContent, stableOt86Key } from '../content/pipeline.ts';
+import {
+  SCOPED_KNOWLEDGE_UNSAFE_SOURCE_REASON,
+  sanitizeScopedKnowledgeProjection,
+} from '../content/scoped-knowledge-redaction.ts';
+import { consumeRateLimitBudgets } from '../security/rate-limit.ts';
 import { PortalServiceError, fingerprint, type ScopedPortalHelperAdapter } from './services.ts';
 
 export const STUDENT_CLASS_HELPER_POLICY = 'ot107-student-class-helper-v1' as const;
@@ -32,6 +38,7 @@ export type StudentClassHelperProviderOutput = {
 };
 
 export type StudentClassHelperProviderPort = {
+  mode: 'provider_off' | 'ready';
   answer(input: StudentClassHelperProviderInput): Promise<StudentClassHelperProviderOutput>;
 };
 
@@ -39,6 +46,7 @@ export type StudentClassHelperRateLimitStore = {
   assertAllowed(input: {
     accountKey: string;
     productKey: string;
+    principalKey: string;
     learnerKey: string;
     now: Date;
   }): Promise<void> | void;
@@ -59,26 +67,20 @@ type RateLimitWindow = {
   dayCount: number;
 };
 
-export function createStudentClassHelperAdapter(
+export function createScopedKnowledgeHelperAdapter(
   deps: StudentClassHelperAdapterDeps,
 ): ScopedPortalHelperAdapter {
-  const provider = deps.provider ?? deterministicStudentClassHelperProvider();
+  const provider = deps.provider ?? deterministicProviderOffKnowledgeHelper();
   const rateLimitStore =
-    deps.rateLimitStore ??
-    createInMemoryStudentClassHelperRateLimitStore({
-      windowMs: 5 * 60_000,
-      windowMax: 10,
-      dayMs: 24 * 60 * 60_000,
-      dayMax: 60,
-    });
+    deps.rateLimitStore ?? createDbStudentClassHelperRateLimitStore(deps.pool, deps.config);
   const clock = deps.clock ?? (() => new Date());
 
   return {
     availability: async ({ actor, learner }) => {
-      if (!learner || actor.actor_role !== 'student') {
+      if (!learner || !isAuthorizedForLearner(actor, learner)) {
         return {
           available: false,
-          reason: 'Class Helper is available in the student portal.',
+          reason: 'Select an authorized learner to use Class Helper.',
           scope_label: 'Class Helper',
         };
       }
@@ -89,14 +91,14 @@ export function createStudentClassHelperAdapter(
           scope_label: 'Class Helper',
         };
       }
-      if (
-        !(await householdHasLearningAccess({
-          pool: deps.pool,
-          accountKey: actor.account_key,
-          productKey: actor.product_key,
-          householdKey: learner.household_key,
-        }))
-      ) {
+      if (!(await currentPrincipalCanAccessLearner(deps.pool, actor, learner))) {
+        return {
+          available: false,
+          reason: 'Select an authorized learner to use Class Helper.',
+          scope_label: 'Class Helper',
+        };
+      }
+      if (!(await hasActiveAccess(deps.pool, actor, learner))) {
         return {
           available: false,
           reason: 'Class Helper becomes available with active class access.',
@@ -114,46 +116,46 @@ export function createStudentClassHelperAdapter(
 
     query: async ({ actor, learner, payload }) => {
       const started = Date.now();
-      if (!learner || actor.actor_role !== 'student' || !actor.student_learner) {
-        throw new PortalServiceError(
-          'ADAPTER_UNAVAILABLE',
-          'Class Helper is only available in the student portal.',
-        );
+      if (!learner || !isAuthorizedForLearner(actor, learner)) {
+        throw new PortalServiceError('NOT_FOUND', 'The requested portal record was not found.');
       }
-      if (actor.student_learner.learner_key !== learner.learner_key) {
+      if (!hasPortalCapability(actor, 'helper:query')) {
+        throw new PortalServiceError('FORBIDDEN', 'Class Helper is unavailable for this session.');
+      }
+      if (!(await currentPrincipalCanAccessLearner(deps.pool, actor, learner))) {
         throw new PortalServiceError('NOT_FOUND', 'The requested portal record was not found.');
       }
 
       const now = clock();
+      const principalId = scopedPrincipalId(actor, learner);
       await rateLimitStore.assertAllowed({
         accountKey: actor.account_key,
         productKey: actor.product_key,
+        principalKey: principalId,
         learnerKey: learner.learner_key,
         now,
       });
 
       const tenantId = tenantIdFor(deps.config);
-      const principalId = learner.learner_key;
       const correlationId = stableOt86Key('class_helper_corr', [
         actor.account_key,
         actor.product_key,
+        principalId,
         learner.learner_key,
         payload.idempotency_key,
       ]);
+      const authorizationDecisionId = authorizationDecisionIdFor(
+        tenantId,
+        principalId,
+        correlationId,
+      );
 
-      if (
-        !(await householdHasLearningAccess({
-          pool: deps.pool,
-          accountKey: actor.account_key,
-          productKey: actor.product_key,
-          householdKey: learner.household_key,
-        }))
-      ) {
+      if (!(await hasActiveAccess(deps.pool, actor, learner))) {
         await recordHelperAudit(deps.pool, {
           tenantId,
           principalId,
           correlationId,
-          authorizationDecisionId: authorizationDecisionIdFor(tenantId, principalId, correlationId),
+          authorizationDecisionId,
           entitlementScope: 'billing_denied',
           outcome: 'denied',
           safeReasonCode: 'not_entitled',
@@ -168,15 +170,16 @@ export function createStudentClassHelperAdapter(
       }
 
       const entitlementContentIds = await listEntitledApprovedContentIds(deps.pool, actor, learner);
-      if (isOutsideClassScope(payload.question)) {
+      const unsafeQuestionReason = questionSafetyReason(payload.question);
+      if (unsafeQuestionReason) {
         await recordHelperAudit(deps.pool, {
           tenantId,
           principalId,
           correlationId,
-          authorizationDecisionId: authorizationDecisionIdFor(tenantId, principalId, correlationId),
+          authorizationDecisionId,
           entitlementScope: entitlementContentIds.length > 0 ? 'content_list' : 'none',
           outcome: 'abstained',
-          safeReasonCode: 'outside_class_scope',
+          safeReasonCode: unsafeQuestionReason,
           selectedCitationCount: 0,
           latencyMs: Date.now() - started,
           now,
@@ -185,7 +188,8 @@ export function createStudentClassHelperAdapter(
           answer: STUDENT_CLASS_HELPER_OUTSIDE_SCOPE,
           citations: [],
           abstained: true,
-          safeReasonCode: 'outside_class_scope',
+          safeReasonCode: unsafeQuestionReason,
+          providerMode: provider.mode,
         });
       }
 
@@ -205,6 +209,7 @@ export function createStudentClassHelperAdapter(
           citations: [],
           abstained: true,
           safeReasonCode: retrieval.safe_reason_code,
+          providerMode: provider.mode,
         });
       }
 
@@ -213,15 +218,59 @@ export function createStudentClassHelperAdapter(
         retrieval,
         policy: STUDENT_CLASS_HELPER_POLICY,
       });
-      if (!citationsAreFromRetrieval(providerResult.citations, retrieval.citations)) {
+
+      if (
+        !(await currentPrincipalCanAccessLearner(deps.pool, actor, learner)) ||
+        !(await hasActiveAccess(deps.pool, actor, learner))
+      ) {
         await recordHelperAudit(deps.pool, {
           tenantId,
           principalId,
           correlationId,
-          authorizationDecisionId: authorizationDecisionIdFor(tenantId, principalId, correlationId),
-          entitlementScope: 'content_list',
+          authorizationDecisionId,
+          entitlementScope: 'revoked_during_request',
           outcome: 'denied',
-          safeReasonCode: 'invalid_citation',
+          safeReasonCode: 'authorization_changed',
+          selectedCitationCount: 0,
+          latencyMs: Date.now() - started,
+          now,
+        });
+        throw new PortalServiceError(
+          'ENTITLEMENT_REQUIRED',
+          'Class Helper access changed. Refresh before trying again.',
+        );
+      }
+      const canonicalProviderCitations = canonicalizeProviderCitations(
+        providerResult.citations,
+        retrieval.citations,
+      );
+      const currentCitations = canonicalProviderCitations
+        ? await listCurrentEntitledApprovedCitations(
+            deps.pool,
+            actor,
+            learner,
+            canonicalProviderCitations,
+          )
+        : [];
+      const invalidCitation = canonicalProviderCitations === null;
+      const revokedCitation =
+        canonicalProviderCitations !== null &&
+        currentCitations.length !== canonicalProviderCitations.length;
+      const ungroundedAnswer = !providerAnswerIsGrounded(providerResult.answer, retrieval.answer);
+      if (invalidCitation || revokedCitation || ungroundedAnswer) {
+        const safeReasonCode = invalidCitation
+          ? 'invalid_citation'
+          : revokedCitation
+            ? 'authorization_changed'
+            : 'ungrounded_provider_answer';
+        await recordHelperAudit(deps.pool, {
+          tenantId,
+          principalId,
+          correlationId,
+          authorizationDecisionId,
+          entitlementScope: 'content_list',
+          outcome: ungroundedAnswer ? 'abstained' : 'denied',
+          safeReasonCode,
           selectedCitationCount: 0,
           latencyMs: Date.now() - started,
           now,
@@ -230,16 +279,95 @@ export function createStudentClassHelperAdapter(
           answer: STUDENT_CLASS_HELPER_NO_SOURCE,
           citations: [],
           abstained: true,
-          safeReasonCode: 'invalid_citation',
+          safeReasonCode,
+          providerMode: provider.mode,
         });
       }
 
-      return helperAnswer({
+      const safeProjection = sanitizeScopedKnowledgeProjection({
         answer: providerResult.answer,
-        citations: providerResult.citations,
-        abstained: false,
-        safeReasonCode: providerResult.safe_reason_code,
+        citations: currentCitations,
       });
+      if (!safeProjection.safe) {
+        await recordHelperAudit(deps.pool, {
+          tenantId,
+          principalId,
+          correlationId,
+          authorizationDecisionId,
+          entitlementScope: 'content_list',
+          outcome: 'abstained',
+          safeReasonCode: SCOPED_KNOWLEDGE_UNSAFE_SOURCE_REASON,
+          selectedCitationCount: 0,
+          latencyMs: Date.now() - started,
+          now,
+        });
+        return helperAnswer({
+          answer: STUDENT_CLASS_HELPER_NO_SOURCE,
+          citations: [],
+          abstained: true,
+          safeReasonCode: SCOPED_KNOWLEDGE_UNSAFE_SOURCE_REASON,
+          providerMode: provider.mode,
+        });
+      }
+
+      const safeReasonCode = safeProviderReasonCode(providerResult.safe_reason_code);
+      await recordHelperAudit(deps.pool, {
+        tenantId,
+        principalId,
+        correlationId,
+        authorizationDecisionId,
+        entitlementScope: 'content_list',
+        outcome: 'answered',
+        safeReasonCode,
+        selectedCitationCount: currentCitations.length,
+        latencyMs: Date.now() - started,
+        now,
+      });
+      return helperAnswer({
+        answer: safeProjection.answer,
+        citations: safeProjection.citations,
+        abstained: false,
+        safeReasonCode,
+        providerMode: provider.mode,
+      });
+    },
+  };
+}
+
+/** @deprecated Use createScopedKnowledgeHelperAdapter. */
+export const createStudentClassHelperAdapter = createScopedKnowledgeHelperAdapter;
+
+export function createDbStudentClassHelperRateLimitStore(
+  pool: DbPool,
+  config: Pick<AppConfig, 'accountKey' | 'productKey'>,
+): StudentClassHelperRateLimitStore {
+  return {
+    assertAllowed: async ({ principalKey, learnerKey, now }) => {
+      const result = await consumeRateLimitBudgets({
+        pool,
+        config,
+        budgets: [
+          {
+            scope: 'scoped_knowledge_helper_5m',
+            subject: `${principalKey}:${learnerKey}`,
+            limit: 10,
+            windowMs: 5 * 60_000,
+          },
+          {
+            scope: 'scoped_knowledge_helper_24h',
+            subject: `${principalKey}:${learnerKey}`,
+            limit: 60,
+            windowMs: 24 * 60 * 60_000,
+          },
+        ],
+        now,
+      });
+      if (!result.allowed) {
+        throw new PortalServiceError(
+          'RATE_LIMITED',
+          'Class Helper is taking a short break. Try again soon.',
+        );
+      }
     },
   };
 }
@@ -252,8 +380,8 @@ export function createInMemoryStudentClassHelperRateLimitStore(input: {
 }): StudentClassHelperRateLimitStore {
   const buckets = new Map<string, RateLimitWindow>();
   return {
-    assertAllowed: ({ accountKey, productKey, learnerKey, now }) => {
-      const key = `${accountKey}:${productKey}:${learnerKey}`;
+    assertAllowed: ({ accountKey, productKey, principalKey, learnerKey, now }) => {
+      const key = `${accountKey}:${productKey}:${principalKey}:${learnerKey}`;
       const nowMs = now.getTime();
       const bucket =
         buckets.get(key) ??
@@ -284,8 +412,9 @@ export function createInMemoryStudentClassHelperRateLimitStore(input: {
   };
 }
 
-function deterministicStudentClassHelperProvider(): StudentClassHelperProviderPort {
+function deterministicProviderOffKnowledgeHelper(): StudentClassHelperProviderPort {
   return {
+    mode: 'provider_off',
     answer: async ({ retrieval }) => ({
       answer: retrieval.answer,
       citations: retrieval.citations,
@@ -315,10 +444,23 @@ async function listEntitledApprovedContentIds(
         AND items.retention_state = 'active'
         AND items.published_revision_key IS NOT NULL
         AND entitlements.entitlement_state = 'active'
+        AND versions.privacy_json->>'source_scope' = 'approved_rabbi_content'
+        AND versions.privacy_json->>'approved_for_student_kb' = 'true'
+        AND versions.privacy_json->>'contains_learner_name' = 'false'
+        AND versions.privacy_json->>'contains_learner_voice' = 'false'
+        AND versions.privacy_json->>'contains_learner_face' = 'false'
+        AND versions.privacy_json->>'contains_learner_question' = 'false'
+        AND versions.privacy_json->>'contains_private_data' = 'false'
         AND (
           entitlements.audience = 'all_active_learners'
-          OR entitlements.learner_key = $3
-          OR entitlements.household_key = $4
+          OR (
+            entitlements.audience = 'learner'
+            AND entitlements.learner_key = $3
+          )
+          OR (
+            entitlements.audience = 'household'
+            AND entitlements.household_key = $4
+          )
         )
       ORDER BY items.content_item_key ASC
       LIMIT 50`,
@@ -331,6 +473,103 @@ async function listEntitledApprovedContentIds(
     ],
   );
   return result.rows.map((row) => String(row.content_item_key));
+}
+
+async function hasActiveAccess(pool: DbPool, actor: PortalActorContext, learner: LearnerProfile) {
+  return householdHasLearningAccess({
+    pool,
+    accountKey: actor.account_key,
+    productKey: actor.product_key,
+    householdKey: learner.household_key,
+  });
+}
+
+async function currentPrincipalCanAccessLearner(
+  pool: DbPool,
+  actor: PortalActorContext,
+  learner: LearnerProfile,
+) {
+  if (actor.actor_role === 'student') {
+    const result = await pool.query(
+      `SELECT 1
+         FROM onetime.portal_learners AS learners
+         JOIN onetime.portal_student_access_state AS access
+           ON access.account_key = learners.account_key
+          AND access.product_key = learners.product_key
+          AND access.household_key = learners.household_key
+          AND access.learner_key = learners.learner_key
+        WHERE learners.account_key = $1
+          AND learners.product_key = $2
+          AND learners.household_key = $3
+          AND learners.learner_key = $4
+          AND learners.learner_status = 'active'
+          AND access.student_user_ref = $5
+          AND access.status = 'active'
+        LIMIT 1`,
+      [
+        actor.account_key,
+        actor.product_key,
+        learner.household_key,
+        learner.learner_key,
+        actor.actor_user_ref,
+      ],
+    );
+    return Boolean(result.rowCount);
+  }
+  if (actor.actor_role === 'parent') {
+    const result = await pool.query(
+      `SELECT 1
+         FROM onetime.portal_learners AS learners
+         JOIN onetime.portal_guardian_relationships AS guardians
+           ON guardians.account_key = learners.account_key
+          AND guardians.product_key = learners.product_key
+          AND guardians.household_key = learners.household_key
+        WHERE learners.account_key = $1
+          AND learners.product_key = $2
+          AND learners.household_key = $3
+          AND learners.learner_key = $4
+          AND learners.learner_status = 'active'
+          AND guardians.guardian_user_ref = $5
+          AND guardians.status = 'active'
+          AND guardians.authority <> 'support_only'
+        LIMIT 1`,
+      [
+        actor.account_key,
+        actor.product_key,
+        learner.household_key,
+        learner.learner_key,
+        actor.actor_user_ref,
+      ],
+    );
+    return Boolean(result.rowCount);
+  }
+  return false;
+}
+
+function isAuthorizedForLearner(actor: PortalActorContext, learner: LearnerProfile) {
+  if (learner.learner_status !== 'active') return false;
+  if (actor.actor_role === 'student') {
+    return (
+      actor.student_learner?.learner_key === learner.learner_key &&
+      actor.student_learner.household_key === learner.household_key
+    );
+  }
+  if (actor.actor_role === 'parent') {
+    return actor.authorized_households.some(
+      (subject) =>
+        subject.household_key === learner.household_key && subject.authority !== 'support_only',
+    );
+  }
+  return false;
+}
+
+function scopedPrincipalId(actor: PortalActorContext, learner: LearnerProfile) {
+  return stableOt86Key('scoped_helper_principal', [
+    actor.actor_role,
+    actor.actor_user_ref,
+    learner.household_key,
+    learner.learner_key,
+  ]);
 }
 
 async function recordHelperAudit(
@@ -379,47 +618,113 @@ function helperAnswer(input: {
   citations: HelperCitation[];
   abstained: boolean;
   safeReasonCode: string;
+  providerMode: StudentClassHelperProviderPort['mode'];
 }): HelperAnswer {
-  const citations = input.citations.slice(0, 10);
+  const safeProjection = sanitizeScopedKnowledgeProjection({
+    answer: input.answer,
+    citations: input.citations.slice(0, 10),
+  });
+  if (!safeProjection.safe) {
+    return helperAnswerSchema.parse({
+      answer: STUDENT_CLASS_HELPER_NO_SOURCE,
+      source_refs: [],
+      citations: [],
+      abstained: true,
+      safe_reason_code: SCOPED_KNOWLEDGE_UNSAFE_SOURCE_REASON,
+      private_question_available: true,
+      policy: STUDENT_CLASS_HELPER_POLICY,
+      provider_mode: input.providerMode,
+      grounding_mode: 'approved_entitled_sections',
+    });
+  }
   return helperAnswerSchema.parse({
-    answer: normalizeAnswer(input.answer),
-    source_refs: citations.map(sourceRefForCitation).filter(Boolean).slice(0, 20),
-    citations,
+    answer: normalizeAnswer(safeProjection.answer),
+    source_refs: safeProjection.sourceRefs.slice(0, 20),
+    citations: safeProjection.citations,
     abstained: input.abstained,
     safe_reason_code: input.safeReasonCode,
     private_question_available: true,
     policy: STUDENT_CLASS_HELPER_POLICY,
+    provider_mode: input.providerMode,
+    grounding_mode: 'approved_entitled_sections',
   });
 }
 
 function normalizeAnswer(value: string) {
-  const withoutExternalUrls = value.replaceAll(/https?:\/\/\S+/gi, '[link removed]');
-  const words = withoutExternalUrls.replaceAll(/\s+/g, ' ').trim().split(' ').filter(Boolean);
+  const words = value.replaceAll(/\s+/g, ' ').trim().split(' ').filter(Boolean);
   const limited = words.slice(0, 450).join(' ');
   return limited.slice(0, 2400) || STUDENT_CLASS_HELPER_NO_SOURCE;
 }
 
-function sourceRefForCitation(citation: HelperCitation) {
-  const ref = `${citation.section_title} (${citation.deep_link})`;
-  return ref.length <= 180 ? ref : `${citation.section_title} (${citation.section_id})`;
-}
-
-function citationsAreFromRetrieval(
+function canonicalizeProviderCitations(
   providerCitations: HelperCitation[],
   retrievalCitations: Ot86RetrievalResponse['citations'],
 ) {
-  if (providerCitations.length < 1) return false;
-  const allowed = new Set(
-    retrievalCitations.map((citation) =>
-      citationKey({
-        content_id: citation.content_id,
-        version_id: citation.version_id,
-        section_id: citation.section_id,
-        section_sha256: citation.section_sha256,
-      }),
-    ),
+  if (providerCitations.length < 1) return null;
+  const allowed = new Map(
+    retrievalCitations.map((citation) => [
+      citationKey(citation),
+      helperCitationSchema.parse(citation),
+    ]),
   );
-  return providerCitations.every((citation) => allowed.has(citationKey(citation)));
+  const seen = new Set<string>();
+  const canonical: HelperCitation[] = [];
+  for (const citation of providerCitations) {
+    const key = citationKey(citation);
+    const matched = allowed.get(key);
+    if (!matched || seen.has(key)) return null;
+    seen.add(key);
+    canonical.push(matched);
+  }
+  return canonical;
+}
+
+async function listCurrentEntitledApprovedCitations(
+  pool: DbPool,
+  actor: PortalActorContext,
+  learner: LearnerProfile,
+  requested: HelperCitation[],
+) {
+  const contentIds = [...new Set(requested.map((citation) => citation.content_id))];
+  const currentlyEntitledContentIds = new Set(
+    await listEntitledApprovedContentIds(pool, actor, learner),
+  );
+  if (contentIds.some((contentId) => !currentlyEntitledContentIds.has(contentId))) {
+    return [];
+  }
+  const result = await pool.query(
+    `SELECT sections.content_id, sections.version_id, sections.section_id,
+            sections.title AS section_title, sections.deep_link,
+            sections.text_sha256 AS section_sha256
+       FROM onetime.ot86_published_content_versions AS versions
+       JOIN onetime.ot86_published_sections AS sections
+         ON sections.tenant_id = versions.tenant_id
+        AND sections.content_id = versions.content_id
+        AND sections.version_id = versions.version_id
+      WHERE versions.tenant_id = $1
+        AND versions.active_state = 'active'
+        AND sections.active = true
+        AND versions.privacy_json->>'source_scope' = 'approved_rabbi_content'
+        AND versions.privacy_json->>'approved_for_student_kb' = 'true'
+        AND versions.privacy_json->>'contains_learner_name' = 'false'
+        AND versions.privacy_json->>'contains_learner_voice' = 'false'
+        AND versions.privacy_json->>'contains_learner_face' = 'false'
+        AND versions.privacy_json->>'contains_learner_question' = 'false'
+        AND versions.privacy_json->>'contains_private_data' = 'false'
+        AND versions.content_id = ANY($2::text[])
+      ORDER BY sections.content_id ASC, sections.version_id ASC, sections.section_id ASC
+      LIMIT 50`,
+    [tenantIdFor(actor), contentIds],
+  );
+  const current = new Map<string, HelperCitation>();
+  for (const row of result.rows) {
+    const parsed = helperCitationSchema.safeParse(row);
+    if (parsed.success) current.set(citationKey(parsed.data), parsed.data);
+  }
+  return requested.flatMap((citation) => {
+    const currentCitation = current.get(citationKey(citation));
+    return currentCitation ? [currentCitation] : [];
+  });
 }
 
 function citationKey(
@@ -428,26 +733,75 @@ function citationKey(
   return `${citation.content_id}:${citation.version_id}:${citation.section_id}:${citation.section_sha256}`;
 }
 
-function isOutsideClassScope(question: string) {
+function questionSafetyReason(question: string) {
   const normalized = ` ${question.toLowerCase().replaceAll(/[^a-z0-9\s]/g, ' ')} `;
-  return [
-    ' internet ',
-    ' google ',
-    ' browsing ',
-    ' news ',
-    ' weather ',
-    ' stock ',
-    ' bitcoin ',
-    ' password ',
-    ' secret ',
-    ' token ',
-    ' api key ',
-    ' sibling ',
-    ' household ',
-    ' parent account ',
-    ' billing ',
-    ' payment ',
-  ].some((pattern) => normalized.includes(pattern));
+  const exactInjectionPatterns = [
+    ' ignore previous ',
+    ' ignore all ',
+    ' system prompt ',
+    ' developer message ',
+    ' reveal instructions ',
+    ' jailbreak ',
+    ' act as ',
+    ' override policy ',
+    ' hidden prompt ',
+  ];
+  const attemptsInstructionOverride =
+    /\b(ignore|disregard|forget|override|bypass|supersede|violate|break|skip)\b/.test(normalized) &&
+    /\b(previous|prior|earlier|above|system|developer|instruction|direction|rule|policy|guardrail|prompt)\b/.test(
+      normalized,
+    );
+  const attemptsRoleSwitch =
+    /\b(act|pretend|roleplay|behave)\b/.test(normalized) && /\bas\b/.test(normalized);
+  if (
+    exactInjectionPatterns.some((pattern) => normalized.includes(pattern)) ||
+    attemptsInstructionOverride ||
+    attemptsRoleSwitch
+  ) {
+    return 'prompt_injection';
+  }
+  if (
+    [
+      ' internet ',
+      ' google ',
+      ' browsing ',
+      ' news ',
+      ' weather ',
+      ' stock ',
+      ' bitcoin ',
+      ' password ',
+      ' secret ',
+      ' token ',
+      ' api key ',
+      ' sibling ',
+      ' household ',
+      ' parent account ',
+      ' billing ',
+      ' payment ',
+    ].some((pattern) => normalized.includes(pattern))
+  ) {
+    return 'outside_class_scope';
+  }
+  return null;
+}
+
+function safeProviderReasonCode(value: string) {
+  return new Set([
+    'supported_by_approved_section',
+    'provider_answer_grounded',
+    'provider_off_approved_source_fallback',
+  ]).has(value)
+    ? value
+    : 'provider_reason_redacted';
+}
+
+function providerAnswerIsGrounded(providerAnswer: string, retrievalAnswer: string) {
+  const normalizedProvider = providerAnswer.replaceAll(/\s+/g, ' ').trim();
+  const normalizedRetrieval = retrievalAnswer.replaceAll(/\s+/g, ' ').trim();
+  return (
+    normalizedProvider.length > 0 &&
+    (normalizedProvider === normalizedRetrieval || normalizedRetrieval.includes(normalizedProvider))
+  );
 }
 
 function authorizationDecisionIdFor(tenantId: string, principalId: string, correlationId: string) {

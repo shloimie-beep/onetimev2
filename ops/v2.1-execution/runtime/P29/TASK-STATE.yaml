@@ -1,0 +1,140 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P29
+task_packet_digest: f32a6fae95aa2b14f58c3bdfd17a5639580d049e5daa369ee8dcc43173197b20
+task_context_digest: 0e9928a67c5f82b97ff1ef54802e90334c7d7958bc0a4f9349b2534fc603fa27
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+branch: codex/v21-p29-core-workflows
+start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
+dependency_heads:
+  P28:
+    state: interface_ready_integrated
+    task_head_sha: f891f16eb13593d0eb3bbe53c076513d12b07c23
+    integration_head_sha: 49431959f58f284bdc13ca931acf09f980fc483a
+    interface_source_head_sha: aaedc3f2ec0a857658c943ea6e00dc6c1e97c46c
+    interface_implementation_head_sha: 83355a7b6981073662d71f44a2c8f68264a307d8
+    interface_checkpoint_digest: 2b8b685495e654dd1369a55086d8709f9612df26f042db676df9f0560a606c86
+  P31:
+    state: interface_ready_integrated
+    task_head_sha: ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
+    integration_head_sha: eefca0644e57dca48609682cbc3e1b01992d286d
+    interface_source_head_sha: ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
+    interface_implementation_head_sha: 0e1f7bc6debb57826420f55f7f5c6e937761fca0
+    interface_checkpoint_digest: d66db4101eb4b3f4a28696e6741e5f3b9a4790650c6ddc4369a13813800f4e59
+status: ready_for_review
+phase: correction_complete
+claimed_by: codex-p29-worker-308031d1
+claim_time: '2026-07-29T00:20:46Z'
+claim_id: 308031d1-15e8-4ff5-aca0-6560e9a8c93d
+writer_slot_lease_id: 8f82be8b-7a99-4edb-a079-d485b402729a
+lease_issued_at: '2026-07-29T00:13:59Z'
+lease_expires_at: '2026-07-29T01:13:59Z'
+last_heartbeat_at: '2026-07-29T00:31:30Z'
+lease_released_at: '2026-07-29T00:31:30Z'
+claim_authorization_sha: 0c911664217efe3dbb89b93b6fe29eb9eda2fec3
+controller_authorization_sha: 268ab601b89573238befe70de7995908925575cc
+reconciliation_acquisition_parent_sha: 5b0356cc30baf4062e50664f9749ebcf97f9d7f4
+ready_entry_state_based_on_control_head_sha: e54ea923a743caf760ef47638a2c8d8a875faf34
+ready_entry_payload_digest: 634d4c807f31e08fd411457021d1bec960d70764cbe88b3c8339111a283455c2
+claim_mode: resume_existing_branch
+expected_existing_head_sha: d5c779caa1859ef308fa009e6558076cf2031771
+correction_parent_head_sha: d5c779caa1859ef308fa009e6558076cf2031771
+prior_claim_id: 22467835-84ad-4d38-8187-a3b64d88d132
+prior_claim_checkpoint_sha: d5c779caa1859ef308fa009e6558076cf2031771
+prior_ready_for_review_head_sha: 15dc7c87948c3df9dc6c77be89c79b706860448f
+state_based_on_head_sha: cad2c6f2a8aeb875dcf5122ae1ebe9ca012bf507
+last_implementation_commit_sha: cad2c6f2a8aeb875dcf5122ae1ebe9ca012bf507
+workflow_fragment_sha256: 72f8fdbc09638d028da91960da0841eb9c14d7ae51d5861f8788b7111a479dec
+completed_steps:
+  - Verified reconciled control authorization 268ab601b89573238befe70de7995908925575cc with sole parent/acquisition 5b0356cc30baf4062e50664f9749ebcf97f9d7f4.
+  - Restored only the named P29 bounded-repair stash onto exact atomic claim head 56fcfceed0c6dcf5ff6107ee1987c1047dbb404a.
+  - Enforced trusted audience and copy approval for all 12 workflows, including OT-02B, before reservation or delivery.
+  - Compared actual content and audience digests against independently read trusted approved digests and failed closed on mismatch.
+  - Replaced truncated traceability labels with exact requirement IDs and separate exact acceptance-case IDs across TypeScript, YAML, and tests.
+  - Added the explicit OT-01 one_time_family_signup lifecycle projection.
+  - Required OT-10 Admin approval and provider-readback evidence before planning, reservation, delivery, or provider readback.
+  - Updated all three P29 steward requests with corrected contracts and refreshed their SHA-256 digests.
+  - Passed 58 task-owned assertions, targeted ESLint, repository typecheck, Prettier, secret scan, YAML validation, and exact-label validation.
+  - Re-ran the full unit suite with 566 of 567 passing; the sole failure is the inherited sender-registry count assertion outside P29 ownership.
+  - Released the GHL_CORE_WORKFLOWS writer lease with zero external effects.
+remaining_steps: []
+next_action: C00/I36 should verify the exact pushed final head, review the bounded correction, and route the three steward requests to their owners before integration.
+requirements:
+  OTV2-GHL-123: implementation_verified
+  OTV2-GHL-124: implementation_verified
+  OTV2-GHL-125: implementation_verified
+  OTV2-GHL-126: implementation_verified
+  OTV2-GHL-127: implementation_verified
+  OTV2-GHL-128: implementation_verified
+  OTV2-GHL-129: implementation_verified
+  OTV2-GHL-130: implementation_verified
+  OTV2-GHL-131: implementation_verified
+  OTV2-GHL-132: implementation_verified
+  OTV2-GHL-133: implementation_verified
+  OTV2-GHL-136: implementation_verified
+acceptance_cases:
+  OTV2-GHL-123-AC01: task_owned_assertions_passed
+  OTV2-GHL-124-AC01: task_owned_assertions_passed
+  OTV2-GHL-125-AC01: task_owned_assertions_passed
+  OTV2-GHL-126-AC01: task_owned_assertions_passed
+  OTV2-GHL-127-AC01: task_owned_assertions_passed
+  OTV2-GHL-128-AC01: task_owned_assertions_passed
+  OTV2-GHL-129-AC01: task_owned_assertions_passed
+  OTV2-GHL-130-AC01: task_owned_assertions_passed
+  OTV2-GHL-131-AC01: task_owned_assertions_passed
+  OTV2-GHL-132-AC01: task_owned_assertions_passed
+  OTV2-GHL-133-AC01: task_owned_assertions_passed
+  OTV2-GHL-136-AC01: task_owned_assertions_passed
+changed_paths:
+  - apps/worker/src/runners/ghl-workflows/core/runner.test.ts
+  - apps/worker/src/runners/ghl-workflows/core/runner.ts
+  - integrations/highlevel/v21/workflow-fragments/P29-core-lifecycle.yaml
+  - ops/v2.1-execution/runtime/P29/steward-requests/P29-config-001.yaml
+  - ops/v2.1-execution/runtime/P29/steward-requests/P29-registration-001.yaml
+  - ops/v2.1-execution/runtime/P29/steward-requests/P29-registry-projection-001.yaml
+  - packages/domain/src/communications/workflows/core/core-workflows.test.ts
+  - packages/domain/src/communications/workflows/core/definitions.ts
+  - packages/domain/src/communications/workflows/core/execution.ts
+  - packages/domain/src/communications/workflows/core/index.ts
+  - packages/domain/src/communications/workflows/core/types.ts
+  - ops/v2.1-execution/runtime/P29/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P29/HANDOFF.md
+  - ops/v2.1-execution/runtime/P29/NEXT-PROMPT.md
+migrations: []
+steward_requests:
+  - request_id: P29-config-001
+    sha256: 10eb53f6f54fd3d8a7e32ea48452205c1b7c55a98f67f8e81ec434b83e50da0e
+  - request_id: P29-registration-001
+    sha256: cf2b8dc9a552dd296ab9f1236b7c84c56a895f6a9d4a14fac3fc7c53c15efd82
+  - request_id: P29-registry-projection-001
+    sha256: e42a3ef91712ae0852c4dfe516c260ba7112eeec2737668087af3d15816c5919
+verification:
+  commands_run:
+    - command: npx vitest run packages/domain/src/communications/workflows/core/core-workflows.test.ts apps/worker/src/runners/ghl-workflows/core/runner.test.ts
+      result: passed; 2 files and 58 assertions
+    - command: npx eslint on all P29 TypeScript implementation and test files
+      result: passed
+    - command: npm run typecheck
+      result: passed
+    - command: npx prettier --check on all P29 implementation, fragment, and steward-request files
+      result: passed
+    - command: npm run secret:scan
+      result: passed; 2720 repository text files scanned
+    - command: P29 YAML and exact traceability validation
+      result: passed; 12 workflows with exact requirement/acceptance IDs and approval flags
+    - command: npm run unit
+      result: 566 passed, 1 inherited out-of-scope registry-count assertion failed
+    - command: isolated Tisha BAv public-copy unit test after one parallel-load timeout
+      result: passed; 1 of 1
+    - command: git diff --check
+      result: passed
+  known_baseline_failures:
+    - tests/unit/highlevel/sender-registry-v1-1.test.ts expects 19 automation assets but the integrated P28 registry contains 22.
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings:
+  - P29 does not own the sender-registry test or integrated P28 registry count; the corresponding full-suite failure remains for the registry steward.

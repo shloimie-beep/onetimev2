@@ -26,12 +26,14 @@ test.describe('OT81 responsive accessibility matrix', () => {
       await page.setViewportSize(viewport);
       await page.goto('/');
       await expect(
-        page.getByRole('heading', { name: 'Give your son a love for learning Torah.' }),
+        page.getByRole('heading', {
+          name: 'MISHNAYOS MADE MEMORABLE',
+        }),
       ).toBeVisible();
       evidence.push(await inspectPage(page, `landing-${viewport.name}`));
 
       await page.goto('/signup');
-      await expect(page.getByRole('heading', { name: 'Sign Up Now' })).toBeVisible();
+      await expect(page.getByRole('heading', { name: 'Pre-register Your Family' })).toBeVisible();
       evidence.push(await inspectPage(page, `signup-${viewport.name}`));
     }
 
@@ -42,7 +44,7 @@ test.describe('OT81 responsive accessibility matrix', () => {
     evidence.push(await inspectPage(page, 'landing-reduced-motion'));
 
     await login(page, 'ot-admin@example.test', 'TestPassword!234', '/app/crm');
-    await expect(page.getByRole('heading', { name: 'CRM' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Contacts', exact: true })).toBeVisible();
     evidence.push(await inspectPage(page, 'crm-mobile'));
 
     await page.evaluate(() => {
@@ -83,7 +85,7 @@ test.describe('OT81 responsive accessibility matrix', () => {
       });
     });
     await login(page, 'ot-admin@example.test', 'TestPassword!234', '/app/crm');
-    await expect(page.getByRole('heading', { name: 'CRM' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Contacts', exact: true })).toBeVisible();
     await expect.poll(() => interceptedCrmError).toBeGreaterThan(0);
     await expect(page.getByRole('heading', { name: 'CRM contacts could not load' })).toBeVisible();
     evidence.push(await inspectPage(page, 'crm-error-state'));

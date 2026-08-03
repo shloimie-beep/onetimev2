@@ -1,6 +1,8 @@
 import { providerError } from '../../../../packages/contracts/src/delivery/errors.ts';
 import type {
   DeliveryProviderRouter,
+  DeliveryProviderAcceptanceRecovery,
+  DeliveryProviderOperation,
   DeliveryRequest,
   EmailDeliveryRequest,
   ProviderReceipt,
@@ -10,7 +12,7 @@ import type {
 import {
   InMemoryDeliveryProviderBudget,
   evaluateProviderActivationPolicy,
-  providerAttemptIdempotencyKey,
+  providerOperationIdempotencyKey,
   type DeliveryProviderAuthorization,
   type DeliveryProviderIdentifier,
 } from '../../../../packages/domain/src/delivery/activation-policy.ts';
@@ -18,6 +20,7 @@ import { safeFingerprint } from '../../../../packages/domain/src/providers/share
 import type { DeliveryProviderFeatureConfig } from './provider-config.ts';
 
 export type ResendProviderClient = {
+  readonly acceptanceRecovery?: DeliveryProviderAcceptanceRecovery | undefined;
   sendEmail(
     request: Omit<EmailDeliveryRequest, 'provider'>,
     options: { idempotencyKey: string; signal: AbortSignal },
@@ -25,6 +28,7 @@ export type ResendProviderClient = {
 };
 
 export type WapiProviderClient = {
+  readonly acceptanceRecovery?: DeliveryProviderAcceptanceRecovery | undefined;
   sendWhatsApp(
     request: Omit<WhatsAppDeliveryRequest, 'provider'>,
     options: { idempotencyKey: string; signal: AbortSignal },
@@ -60,6 +64,22 @@ export class OneTimeProviderDeliveryRouter implements DeliveryProviderRouter {
         resend: this.budget.snapshot('resend'),
         one_time_wapi: this.budget.snapshot('one_time_wapi'),
       },
+    };
+  }
+
+  providerOperation(request: DeliveryRequest): DeliveryProviderOperation {
+    const provider = providerForRequest(request);
+    if (!provider) {
+      throw providerError('unsupported_provider_channel', {
+        retryable: false,
+        provider: 'worker',
+      });
+    }
+    const client = provider === 'resend' ? this.clients.resend : this.clients.wapi;
+    return {
+      provider,
+      idempotencyKey: providerOperationIdempotencyKey(request.idempotencyKey),
+      acceptanceRecovery: client?.acceptanceRecovery ?? 'quarantine',
     };
   }
 
@@ -160,7 +180,7 @@ export class OneTimeProviderDeliveryRouter implements DeliveryProviderRouter {
       consentRequired: request.recipientClass === 'public',
     });
     const receipt = await this.clients.resend.sendEmail(withoutProvider(request), {
-      idempotencyKey: providerAttemptIdempotencyKey(request.idempotencyKey, context.attempt),
+      idempotencyKey: providerOperationIdempotencyKey(request.idempotencyKey),
       signal: context.signal,
     });
     return this.cacheReceipt('resend', request.idempotencyKey, {
@@ -195,7 +215,7 @@ export class OneTimeProviderDeliveryRouter implements DeliveryProviderRouter {
       consentRequired: true,
     });
     const receipt = await this.clients.wapi.sendWhatsApp(withoutProvider(request), {
-      idempotencyKey: providerAttemptIdempotencyKey(request.idempotencyKey, context.attempt),
+      idempotencyKey: providerOperationIdempotencyKey(request.idempotencyKey),
       signal: context.signal,
     });
     return this.cacheReceipt('one_time_wapi', request.idempotencyKey, {

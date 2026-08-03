@@ -1,6 +1,26 @@
 import './styles.css';
+import { schoolInquiryFormModel } from './school/model.js';
 
-import { COMMUNICATION_CONSENT_POLICY_VERSION } from '../../../../../packages/domain/src/legal/policies.ts';
+const schoolInquiryModel = schoolInquiryFormModel();
+
+const analyticsTargets = document.querySelectorAll<HTMLElement>('[data-ot-analytics-event]');
+for (const target of analyticsTargets) {
+  target.addEventListener('click', () => {
+    const eventName = target.dataset.otAnalyticsEvent;
+    const destination = target.dataset.otAnalyticsDestination;
+    const placement = target.dataset.otAnalyticsPlacement;
+    if (!eventName || !destination || !placement) return;
+    window.dispatchEvent(
+      new CustomEvent('ot:analytics', {
+        detail: {
+          event_name: eventName,
+          destination,
+          placement,
+        },
+      }),
+    );
+  });
+}
 
 const drawer = document.querySelector<HTMLElement>('[data-drawer]');
 const drawerOverlay = document.querySelector<HTMLElement>('[data-drawer-overlay]');
@@ -52,17 +72,106 @@ document.addEventListener('keydown', (event) => {
   }
 });
 
-const campaign = document.querySelector<HTMLElement>('[data-campaign-deadline]');
-if (campaign) {
-  const deadline = campaign.dataset.campaignDeadline;
-  const today = new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Asia/Jerusalem',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  }).format(new Date());
-  if (deadline && today >= deadline) campaign.hidden = true;
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let serverClockOffsetMs = 0;
+
+function serverNow() {
+  return new Date(Date.now() + serverClockOffsetMs);
 }
+
+async function synchronizeServerClock() {
+  const requestStartedAt = Date.now();
+  try {
+    const response = await fetch(window.location.pathname, {
+      method: 'HEAD',
+      cache: 'no-store',
+      credentials: 'same-origin',
+    });
+    const serverDate = response.headers.get('date');
+    if (!serverDate) return;
+    const parsed = Date.parse(serverDate);
+    if (!Number.isFinite(parsed)) return;
+    const midpoint = requestStartedAt + (Date.now() - requestStartedAt) / 2;
+    serverClockOffsetMs = parsed - midpoint;
+  } catch {
+    // The local clock remains a useful display fallback. Server/domain rules
+    // remain authoritative for account access and checkout.
+  }
+}
+
+function renderTimedAccessState() {
+  document.querySelectorAll<HTMLElement>('[data-access-boundary]').forEach((container) => {
+    const boundary = Date.parse(container.dataset.accessBoundary ?? '');
+    if (!Number.isFinite(boundary)) return;
+    const expired = serverNow().getTime() >= boundary;
+    container.querySelectorAll<HTMLElement>('[data-before-expiry]').forEach((node) => {
+      node.hidden = expired;
+    });
+    container.querySelectorAll<HTMLElement>('[data-at-or-after-expiry]').forEach((node) => {
+      node.hidden = !expired;
+    });
+    if (container.matches('[data-signup-form]')) {
+      const submit = container.querySelector<HTMLButtonElement>('button[type="submit"]');
+      if (submit && !submit.disabled) {
+        submit.textContent = expired
+          ? 'Create account and continue to checkout'
+          : 'Create my free family account';
+      }
+    }
+  });
+}
+
+const campaign = document.querySelector<HTMLElement>('[data-campaign-deadline]');
+function renderCampaignCountdown() {
+  if (!campaign) return;
+  const shell = campaign.closest<HTMLElement>('.campaign-ticker-shell');
+  const boundary = Date.parse(campaign.dataset.campaignDeadline ?? '');
+  if (!Number.isFinite(boundary)) {
+    if (shell) shell.hidden = true;
+    return;
+  }
+  const remainingMs = boundary - serverNow().getTime();
+  if (shell) shell.hidden = remainingMs <= 0;
+  campaign.hidden = false;
+  if (remainingMs <= 0) return;
+  const totalMinutes = Math.max(0, Math.ceil(remainingMs / 60_000));
+  const days = Math.floor(totalMinutes / 1440);
+  const hours = Math.floor((totalMinutes % 1440) / 60);
+  const minutes = totalMinutes % 60;
+  const copy = `FREE ACCESS — ${days}d ${hours}h ${minutes}m remaining`;
+  campaign.setAttribute('aria-label', `${copy}. Pre-register your Family.`);
+  campaign
+    .querySelectorAll<HTMLElement>('.campaign-ticker-item')
+    .forEach((item) => (item.textContent = copy));
+}
+
+function renderLocalClassTime() {
+  const target = document.querySelector<HTMLElement>('[data-local-class-time]');
+  if (!target) return;
+  const firstClassAt = Date.parse(target.dataset.firstClassAt ?? '');
+  if (!Number.isFinite(firstClassAt)) {
+    target.textContent = '';
+    return;
+  }
+  target.textContent = ` — first class: ${new Intl.DateTimeFormat(undefined, {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    timeZoneName: 'short',
+  }).format(new Date(firstClassAt))}`;
+}
+
+function renderTimedPublicState() {
+  renderCampaignCountdown();
+  renderTimedAccessState();
+  renderLocalClassTime();
+}
+
+renderTimedPublicState();
+void synchronizeServerClock().finally(renderTimedPublicState);
+window.setInterval(renderTimedPublicState, 60_000);
 
 const carousel = document.querySelector<HTMLElement>('[data-gallery]');
 if (carousel) {
@@ -71,15 +180,19 @@ if (carousel) {
   const track = carousel.querySelector<HTMLElement>('[data-gallery-track]');
   const viewport = carousel.querySelector<HTMLElement>('[data-gallery-viewport]');
   const status = carousel.querySelector<HTMLElement>('[data-gallery-status]');
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const toggle = carousel.querySelector<HTMLButtonElement>('[data-gallery-toggle]');
   let index = 0;
   let pointerStartX: number | null = null;
+  let autoplayTimer: number | undefined;
+  let userPaused = reducedMotion;
+  let pointerInside = false;
+  let focusInside = false;
   const positionTrack = () => {
     if (!track || !viewport) return;
     const offset = index * viewport.getBoundingClientRect().width;
     track.style.transform = `translate3d(${-offset}px, 0, 0)`;
   };
-  const show = (next: number) => {
+  const show = (next: number, announce = true) => {
     index = (next + slides.length) % slides.length;
     slides.forEach((slide, slideIndex) => {
       const active = slideIndex === index;
@@ -96,32 +209,53 @@ if (carousel) {
     });
     positionTrack();
     const current = slides[index];
-    if (prefersReducedMotion) track?.classList.add('is-reduced-motion');
     const caption = current?.querySelector('figcaption')?.textContent?.trim();
-    if (status && caption) status.textContent = `Showing ${caption}`;
+    if (announce && status && caption) status.textContent = `Showing ${caption}`;
+  };
+  const stopAutoplay = () => {
+    window.clearInterval(autoplayTimer);
+    autoplayTimer = undefined;
+  };
+  const syncAutoplay = () => {
+    stopAutoplay();
+    if (
+      reducedMotion ||
+      userPaused ||
+      pointerInside ||
+      focusInside ||
+      document.hidden ||
+      slides.length < 2
+    ) {
+      return;
+    }
+    autoplayTimer = window.setInterval(() => show(index + 1, false), 6000);
+  };
+  const showFromControl = (next: number) => {
+    show(next);
+    syncAutoplay();
   };
   buttons.forEach((button, buttonIndex) =>
-    button.addEventListener('click', () => show(buttonIndex)),
+    button.addEventListener('click', () => showFromControl(buttonIndex)),
   );
   carousel
     .querySelector<HTMLButtonElement>('[data-gallery-prev]')
-    ?.addEventListener('click', () => show(index - 1));
+    ?.addEventListener('click', () => showFromControl(index - 1));
   carousel
     .querySelector<HTMLButtonElement>('[data-gallery-next]')
-    ?.addEventListener('click', () => show(index + 1));
+    ?.addEventListener('click', () => showFromControl(index + 1));
   carousel.addEventListener('keydown', (event) => {
     if (event.key === 'ArrowLeft') {
       event.preventDefault();
-      show(index - 1);
+      showFromControl(index - 1);
     } else if (event.key === 'ArrowRight') {
       event.preventDefault();
-      show(index + 1);
+      showFromControl(index + 1);
     } else if (event.key === 'Home') {
       event.preventDefault();
-      show(0);
+      showFromControl(0);
     } else if (event.key === 'End') {
       event.preventDefault();
-      show(slides.length - 1);
+      showFromControl(slides.length - 1);
     }
   });
   viewport?.addEventListener('pointerdown', (event) => {
@@ -132,10 +266,46 @@ if (carousel) {
     const delta = event.clientX - pointerStartX;
     pointerStartX = null;
     if (Math.abs(delta) < 36) return;
-    show(index + (delta < 0 ? 1 : -1));
+    showFromControl(index + (delta < 0 ? 1 : -1));
   });
+  viewport?.addEventListener('pointercancel', () => (pointerStartX = null));
+  carousel.addEventListener('mouseenter', () => {
+    pointerInside = true;
+    syncAutoplay();
+  });
+  carousel.addEventListener('mouseleave', () => {
+    pointerInside = false;
+    syncAutoplay();
+  });
+  carousel.addEventListener('focusin', () => {
+    focusInside = true;
+    syncAutoplay();
+  });
+  carousel.addEventListener('focusout', () => {
+    window.requestAnimationFrame(() => {
+      focusInside = carousel.contains(document.activeElement);
+      syncAutoplay();
+    });
+  });
+  document.addEventListener('visibilitychange', syncAutoplay);
+  if (toggle) {
+    if (reducedMotion) {
+      toggle.textContent = 'Slideshow paused';
+      toggle.setAttribute('aria-pressed', 'true');
+      toggle.disabled = true;
+    } else {
+      toggle.addEventListener('click', () => {
+        userPaused = !userPaused;
+        toggle.textContent = userPaused ? 'Play slideshow' : 'Pause slideshow';
+        toggle.setAttribute('aria-pressed', String(userPaused));
+        syncAutoplay();
+      });
+    }
+  }
+  if (reducedMotion) track?.classList.add('is-reduced-motion');
   window.addEventListener('resize', positionTrack);
-  show(0);
+  show(0, false);
+  syncAutoplay();
 }
 
 document.querySelectorAll<HTMLImageElement>('[data-image-watch]').forEach((image) => {
@@ -150,26 +320,26 @@ document.querySelectorAll<HTMLImageElement>('[data-image-watch]').forEach((image
   );
 });
 
-const whatsappAssistant = document.querySelector<HTMLElement>('[data-whatsapp-assistant]');
-if (whatsappAssistant) {
-  const toggle = whatsappAssistant.querySelector<HTMLButtonElement>('[data-whatsapp-toggle]');
-  const panel = whatsappAssistant.querySelector<HTMLElement>('[data-whatsapp-panel]');
-  const close = whatsappAssistant.querySelector<HTMLButtonElement>('[data-whatsapp-close]');
-  let assistantDismissed = false;
-  const setPanel = (open: boolean) => {
-    if (!toggle || !panel) return;
-    panel.hidden = !open;
-    toggle.setAttribute('aria-expanded', String(open));
-  };
-  toggle?.addEventListener('click', () => setPanel(Boolean(panel?.hidden)));
-  close?.addEventListener('click', () => {
-    assistantDismissed = true;
-    setPanel(false);
-    toggle?.focus();
+if (!reducedMotion && 'IntersectionObserver' in window) {
+  const revealObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const target = entry.target as HTMLElement;
+        target.dataset.scrollReveal = 'visible';
+        revealObserver.unobserve(target);
+      });
+    },
+    { threshold: 0.18 },
+  );
+  document.querySelectorAll<HTMLElement>('[data-scroll-reveal]').forEach((target) => {
+    if (target.getBoundingClientRect().top < window.innerHeight * 0.92) {
+      target.dataset.scrollReveal = 'visible';
+      return;
+    }
+    target.dataset.scrollReveal = 'pending';
+    revealObserver.observe(target);
   });
-  window.setTimeout(() => {
-    if (!assistantDismissed) setPanel(true);
-  }, 6500);
 }
 
 const form = document.querySelector<HTMLFormElement>('[data-signup-form]');
@@ -177,14 +347,16 @@ if (form) {
   const status = form.querySelector<HTMLElement>('[data-form-status]');
   const success = document.querySelector<HTMLElement>('[data-success-panel]');
   const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
-  const noScriptFallback = document.querySelector<HTMLElement>('[data-noscript-fallback]');
-  const phone = form.querySelector<HTMLInputElement>('#phone');
-  const emailReminder = form.querySelector<HTMLInputElement>('#email_reminder_consent');
-  const whatsappReminder = form.querySelector<HTMLInputElement>('#whatsapp_reminder_consent');
   const timezone = form.querySelector<HTMLInputElement>('#timezone');
-  const timezoneFallback = form.querySelector<HTMLInputElement>('#timezone_fallback');
-  const idempotencyKey = crypto.randomUUID();
-  if (noScriptFallback) noScriptFallback.hidden = true;
+  const schoolOnly = form.dataset.signupEntry === 'school';
+  const preregistrationOnly = form.dataset.signupEntry === 'preregistration';
+  const preregistrationIdempotencyKey = `family-preregistration-${crypto.randomUUID()}`;
+  const familyBootstrap: {
+    idempotency_key: string;
+    csrf_token: string;
+    expires_at: string;
+    writes_allowed: boolean;
+  }[] = [];
   if (submit) submit.hidden = false;
 
   const setError = (name: string, message: string) => {
@@ -195,114 +367,276 @@ if (form) {
     form
       .querySelectorAll<HTMLElement>('[data-error-for]')
       .forEach((node) => (node.textContent = ''));
-  const reminderChannels = () => [
-    ...(emailReminder?.checked ? (['email'] as const) : []),
-    ...(whatsappReminder?.checked ? (['whatsapp'] as const) : []),
-  ];
-  const currentReminder = () => {
-    const channels = reminderChannels();
-    if (channels.includes('email') && channels.includes('whatsapp')) return 'both';
-    if (channels.includes('email')) return 'email';
-    if (channels.includes('whatsapp')) return 'whatsapp';
-    return 'none';
-  };
-
-  const syncConditionalFields = () => {
-    const reminder = currentReminder();
-    const needsPhone = reminder === 'whatsapp' || reminder === 'both';
-    if (phone) {
-      phone.required = needsPhone;
-      phone.setAttribute('aria-required', String(needsPhone));
-    }
+  const currentEntry = () =>
+    schoolOnly ? 'school' : preregistrationOnly ? 'preregistration' : 'family';
+  const familyButtonCopy = () => {
+    const boundary = Date.parse(form.dataset.accessBoundary ?? '');
+    return Number.isFinite(boundary) && serverNow().getTime() < boundary
+      ? 'Create my free family account'
+      : 'Create account and continue to checkout';
   };
 
   const detectedTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  if (timezone && detectedTimezone) {
-    timezone.value = detectedTimezone;
-  } else if (timezoneFallback) {
-    timezoneFallback.hidden = false;
-    timezoneFallback.required = true;
-    timezoneFallback.disabled = false;
+  if (timezone && detectedTimezone) timezone.value = detectedTimezone;
+  if (submit) {
+    submit.textContent = schoolOnly
+      ? schoolInquiryModel.cta
+      : preregistrationOnly
+        ? 'Pre-register my Family'
+        : familyButtonCopy();
   }
 
-  emailReminder?.addEventListener('change', syncConditionalFields);
-  whatsappReminder?.addEventListener('change', syncConditionalFields);
-  syncConditionalFields();
+  const loadFamilyBootstrap = async () => {
+    const current = familyBootstrap[0];
+    if (current && Date.parse(current.expires_at) > serverNow().getTime() + 10_000) return current;
+    const response = await fetch('/api/v1/signup/family/bootstrap', {
+      method: 'GET',
+      cache: 'no-store',
+      credentials: 'same-origin',
+      headers: { accept: 'application/json' },
+    });
+    const json = (await response.json()) as (typeof familyBootstrap)[number] & {
+      success?: boolean;
+      message?: string;
+    };
+    if (!response.ok || !json.success) {
+      throw new Error(json.message ?? 'Refresh the page and try again.');
+    }
+    familyBootstrap.splice(0, familyBootstrap.length, json);
+    return json;
+  };
+  if (!schoolOnly && !preregistrationOnly) {
+    void loadFamilyBootstrap().catch(() => {
+      if (status)
+        status.textContent = 'Secure Family signup is still loading. You can retry shortly.';
+    });
+  }
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
     clearErrors();
+    const entry = currentEntry();
+    const password = form.querySelector<HTMLInputElement>('#password');
+    const passwordConfirmation = form.querySelector<HTMLInputElement>('#password_confirmation');
+    if (
+      entry === 'family' &&
+      password &&
+      passwordConfirmation &&
+      password.value !== passwordConfirmation.value
+    ) {
+      setError('password_confirmation', 'Passwords must match.');
+      passwordConfirmation.focus();
+      return;
+    }
     if (!form.reportValidity()) return;
     const data = new FormData(form);
-    const reminder = currentReminder();
-    const optionalReminderConsent = reminder !== 'none';
-    const payload = {
-      contact_name: String(data.get('contact_name') ?? ''),
-      family_or_school: String(data.get('family_or_school') ?? ''),
-      audience_type: String(data.get('audience_type') ?? 'family'),
-      location: String(data.get('location') ?? ''),
-      timezone: String(data.get('timezone') || data.get('timezone_fallback') || ''),
-      browser_timezone: detectedTimezone || undefined,
-      email: String(data.get('email') ?? ''),
-      phone: String(data.get('phone') ?? ''),
-      reminder_preference: reminder,
-      reminder_consent: optionalReminderConsent,
-      consent_context: {
-        policy_version: COMMUNICATION_CONSENT_POLICY_VERSION,
-        purpose: 'optional_class_reminders',
-        source: 'public_signup',
-        channels: reminderChannels(),
-        captured_at: new Date().toISOString(),
-        withdrawal_state: 'not_withdrawn',
-        suppression_state: 'active',
-      },
-      idempotency_key: idempotencyKey,
-      attribution: {
-        landing_path: '/signup',
-        referrer: document.referrer.slice(0, 500),
-      },
-    };
 
     if (submit) {
       submit.disabled = true;
-      submit.textContent = 'Signing you up...';
+      submit.textContent =
+        entry === 'family'
+          ? 'Creating account…'
+          : entry === 'preregistration'
+            ? 'Saving pre-registration…'
+            : 'Sending inquiry…';
     }
     if (status) status.textContent = '';
 
     try {
-      const response = await fetch('/api/v1/leads', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      const json = await response.json();
+      let response: Response;
+      if (entry === 'preregistration') {
+        response = await fetch('/api/v1/leads', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'content-type': 'application/json', accept: 'application/json' },
+          body: JSON.stringify({
+            contact_name: String(data.get('contact_name') ?? ''),
+            family_or_school: String(data.get('family_or_school') ?? ''),
+            audience_type: 'family',
+            location: String(data.get('location') ?? ''),
+            timezone: String(data.get('timezone') ?? ''),
+            ...(detectedTimezone ? { browser_timezone: detectedTimezone } : {}),
+            email: String(data.get('email') ?? ''),
+            reminder_preference: 'none',
+            reminder_consent: false,
+            idempotency_key: preregistrationIdempotencyKey,
+            attribution: {
+              landing_path: '/signup',
+              referrer: document.referrer.slice(0, 500),
+            },
+          }),
+        });
+      } else if (entry === 'family') {
+        const bootstrap = await loadFamilyBootstrap();
+        if (!bootstrap.writes_allowed) {
+          throw new Error('Signup writes are disabled in this verification environment.');
+        }
+        response = await fetch('/api/v1/signup/family', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: {
+            'content-type': 'application/json',
+            accept: 'application/json',
+            'x-csrf-token': bootstrap.csrf_token,
+          },
+          body: JSON.stringify({
+            classification: 'family',
+            idempotency_key: bootstrap.idempotency_key,
+            first_name: String(data.get('first_name') ?? ''),
+            last_name: String(data.get('last_name') ?? ''),
+            email: String(data.get('email') ?? ''),
+            password: String(data.get('password') ?? ''),
+            password_confirmation: String(data.get('password_confirmation') ?? ''),
+            timezone: String(data.get('timezone') ?? ''),
+            terms_accepted: data.get('terms_accepted') === 'on',
+            privacy_accepted: data.get('privacy_accepted') === 'on',
+            general_marketing_consent: data.get('general_marketing_consent') === 'on',
+            parent_newsletter_consent: data.get('parent_newsletter_consent') === 'on',
+          }),
+        });
+      } else {
+        const phone = String(data.get('phone') ?? '').trim();
+        const note = String(data.get('note') ?? '').trim();
+        response = await fetch('/api/v2.1/signup/school-inquiry', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'content-type': 'application/json', accept: 'application/json' },
+          body: JSON.stringify({
+            school_name: String(data.get('school_name') ?? ''),
+            contact_first_name: String(data.get('contact_first_name') ?? ''),
+            contact_last_name: String(data.get('contact_last_name') ?? ''),
+            email: String(data.get('email') ?? ''),
+            ...(phone ? { phone } : {}),
+            ...(note ? { note } : {}),
+          }),
+        });
+      }
+      const json = (await response.json()) as {
+        success?: boolean;
+        message?: string | { heading?: string; body?: string };
+        field_errors?: Record<string, string>;
+        code?: string;
+        session_established?: boolean;
+        continue_to?: string;
+      };
       if (!response.ok || !json.success) {
         if (json.field_errors) {
-          Object.entries(json.field_errors as Record<string, string>).forEach(([name, message]) =>
-            setError(name, message),
-          );
+          Object.entries(json.field_errors).forEach(([name, message]) => setError(name, message));
           form.querySelector<HTMLElement>('[data-error-for]:not(:empty)')?.focus();
         } else if (status) {
-          status.textContent = json.message ?? 'We could not save that signup yet.';
+          status.textContent =
+            typeof json.message === 'string'
+              ? json.message
+              : (json.code ?? 'We could not save that request yet.');
         }
         return;
+      }
+      if (entry === 'family' && json.session_established === true) {
+        const search = new URLSearchParams(window.location.search);
+        const requestedContinueTo = search.get('continue_to');
+        const continuation = search.has('continue_to')
+          ? safeParentContinueTo(requestedContinueTo)
+          : safeParentContinueTo(json.continue_to);
+        if (continuation) {
+          window.location.assign(continuation);
+          return;
+        }
       }
       form.hidden = true;
       if (success) {
         success.hidden = false;
-        success.querySelector('[data-success-heading]')!.textContent = json.message.heading;
-        success.querySelector('[data-success-body]')!.textContent = json.message.body;
+        const heading = success.querySelector<HTMLElement>('[data-success-heading]');
+        const body = success.querySelector<HTMLElement>('[data-success-body]');
+        if (heading) {
+          heading.textContent =
+            entry === 'preregistration'
+              ? typeof json.message === 'object' && json.message.heading
+                ? json.message.heading
+                : 'Adult pre-registration received.'
+              : entry === 'family'
+                ? 'Your Family account was saved.'
+                : (typeof json.message === 'object' && json.message.heading) ||
+                  'Thank you — we received your School inquiry.';
+        }
+        if (body) {
+          body.textContent =
+            entry === 'preregistration'
+              ? typeof json.message === 'object' && json.message.body
+                ? json.message.body
+                : 'We saved the adult contact for follow-up. No portal account, Student account, subscription, or charge was created.'
+              : entry === 'family'
+                ? typeof json.message === 'string'
+                  ? json.message
+                  : 'Automatic sign-in is not available yet. Use Member Login when session setup is available.'
+                : typeof json.message === 'string'
+                  ? json.message
+                  : (json.message?.body ?? schoolInquiryModel.success);
+        }
         success.focus();
       }
-    } catch {
-      if (status) status.textContent = 'We could not save that signup yet.';
+    } catch (error) {
+      if (status) {
+        status.textContent =
+          error instanceof Error ? error.message : 'We could not save that request yet.';
+      }
     } finally {
       if (submit) {
         submit.disabled = false;
-        submit.textContent = 'Sign Up Now';
+        submit.textContent =
+          entry === 'family'
+            ? familyButtonCopy()
+            : entry === 'preregistration'
+              ? 'Pre-register my Family'
+              : schoolInquiryModel.cta;
       }
     }
   });
+}
+
+function safeParentContinueTo(value: string | null | undefined): string | null {
+  if (!value || !value.startsWith('/') || value.startsWith('//')) return null;
+  let decoded = value;
+  for (let pass = 0; pass < 3; pass += 1) {
+    if (unsafeContinuationText(decoded)) return null;
+    try {
+      const next = decodeURIComponent(decoded);
+      if (next === decoded) break;
+      decoded = next;
+    } catch {
+      return null;
+    }
+  }
+  if (unsafeContinuationText(decoded)) return null;
+  try {
+    if (decodeURIComponent(decoded) !== decoded) return null;
+  } catch {
+    return null;
+  }
+  try {
+    const target = new URL(decoded, window.location.origin);
+    if (
+      target.origin !== window.location.origin ||
+      target.username ||
+      target.password ||
+      (target.pathname !== '/app/parent' && !target.pathname.startsWith('/app/parent/'))
+    ) {
+      return null;
+    }
+    return `${target.pathname}${target.search}${target.hash}`;
+  } catch {
+    return null;
+  }
+}
+
+function unsafeContinuationText(value: string) {
+  return (
+    value.startsWith('//') ||
+    value.includes('\\') ||
+    [...value].some((character) => {
+      const codePoint = character.codePointAt(0);
+      return codePoint !== undefined && (codePoint <= 31 || codePoint === 127);
+    })
+  );
 }
 
 const loginForm = document.querySelector<HTMLFormElement>('[data-login-form]');
@@ -314,6 +648,8 @@ if (loginForm) {
   const trustDevice = loginForm.querySelector<HTMLInputElement>('input[name="trust_device"]');
   const resendButton = loginForm.querySelector<HTMLButtonElement>('[data-resend-challenge]');
   const resendStatus = loginForm.querySelector<HTMLElement>('[data-resend-status]');
+  const emailLinkConfirm = loginForm.querySelector<HTMLElement>('[data-email-link-confirm]');
+  const emailLinkConfirmButton = emailLinkConfirm?.querySelector<HTMLButtonElement>('button');
   let challengeToken = '';
   let resendTimer: number | undefined;
   const setError = (name: string, message: string) => {
@@ -324,8 +660,7 @@ if (loginForm) {
     loginForm
       .querySelectorAll<HTMLElement>('[data-error-for]')
       .forEach((node) => (node.textContent = ''));
-  const returnTo = () =>
-    String(new FormData(loginForm).get('return_to') ?? '/app/crm') || '/app/crm';
+  const returnTo = () => String(new FormData(loginForm).get('return_to') ?? '');
   const revealEmailChallenge = (token: string) => {
     challengeToken = token;
     if (emailPanel) emailPanel.hidden = false;
@@ -358,16 +693,21 @@ if (loginForm) {
 
   const emailLinkToken = consumeFragmentValue(['email_challenge_token', 'link_token']);
   if (emailLinkToken) {
-    if (status) status.textContent = 'Confirming email sign-in...';
-    void postJson('/api/v1/auth/email-challenge/link', {
-      link_token: emailLinkToken,
-      return_to: returnTo(),
-      trust_device: false,
-    }).then((response) => {
+    if (emailLinkConfirm) emailLinkConfirm.hidden = false;
+    if (status) status.textContent = 'Confirm this email sign-in to continue.';
+    emailLinkConfirmButton?.addEventListener('click', async () => {
+      emailLinkConfirmButton.disabled = true;
+      if (status) status.textContent = 'Confirming email sign-in...';
+      const response = await postJson('/api/v1/auth/email-challenge/link', {
+        link_token: emailLinkToken,
+        return_to: returnTo(),
+        trust_device: false,
+      });
       if (response.ok && response.json.success) {
         window.location.assign(String(response.json.return_to ?? '/app/crm'));
         return;
       }
+      emailLinkConfirmButton.disabled = false;
       if (status)
         status.textContent = String(
           response.json.message ?? 'Email confirmation was not accepted.',
@@ -414,10 +754,10 @@ if (loginForm) {
           'x-csrf-token': String(data.get('csrf_token') ?? ''),
         },
         body: JSON.stringify({
-          email: String(data.get('email') ?? ''),
+          identifier: String(data.get('identifier') ?? ''),
           password: String(data.get('password') ?? ''),
           csrf_token: String(data.get('csrf_token') ?? ''),
-          return_to: String(data.get('return_to') ?? '/app/crm'),
+          return_to: String(data.get('return_to') ?? ''),
         }),
       });
       const json = await response.json();
@@ -431,7 +771,9 @@ if (loginForm) {
             setError(name, message),
           );
         } else if (status) {
-          status.textContent = json.message ?? 'Email or password is not correct.';
+          status.textContent =
+            json.message ??
+            'Email/username or password is not correct. If access was revoked, ask your Parent or an Administrator to restore it.';
         }
         return;
       }
@@ -608,12 +950,15 @@ async function checkLifecycleToken(
 function consumeFragmentValue(names: string | string[] = 'token') {
   const params = new URLSearchParams(window.location.hash.replace(/^#/, ''));
   const candidates = Array.isArray(names) ? names : [names];
-  const token = candidates.map((name) => params.get(name) ?? '').find(Boolean) ?? '';
-  if (token && window.location.hash) {
+  const fragmentToken = candidates.map((name) => params.get(name) ?? '').find(Boolean) ?? '';
+  const tokenRoute = window.location.pathname.match(/^\/(setup|reset-password)\/([^/]+)$/u);
+  const pathToken = tokenRoute ? decodeURIComponent(tokenRoute[2] ?? '') : '';
+  const token = fragmentToken || pathToken;
+  if (token && (window.location.hash || tokenRoute)) {
     window.history.replaceState(
       null,
       document.title,
-      window.location.pathname + window.location.search,
+      `${tokenRoute ? `/${tokenRoute[1]}` : window.location.pathname}${window.location.search}`,
     );
   }
   return token;

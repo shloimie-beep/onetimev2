@@ -62,7 +62,7 @@ export type ZoomLaunchDescriptor = {
 export type ZoomRegistrantResolution = {
   provider: 'zoom';
   mode: 'sink' | 'real';
-  registration_state: 'sink_ready' | 'disabled' | 'not_configured';
+  registration_state: 'sink_ready' | 'real_ready' | 'disabled' | 'not_configured';
   registrant_token_ref: string;
   provider_registrant_ref_digest: string;
   raw_join_url_present: false;
@@ -247,6 +247,7 @@ export function createDeterministicZoomMeetingLaunchPort(): ZoomMeetingLaunchPor
           ? 'ZoomMtgEmbedded.createClient.init.join'
           : 'ZoomMtg.preLoadWasm.prepareWebSDK.init.join';
       return {
+        mode: 'sink',
         sdk_key_ref: stableProviderKey('sdk_key', [
           'sink',
           input.config.accountKey,

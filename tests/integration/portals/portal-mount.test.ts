@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { createApp } from '../../../apps/web/src/server/app.ts';
+import { resolveCurrentClientRoute } from '../../../apps/web/src/client/app/router/registry.ts';
 import { loadConfig, type AppConfig } from '../../../packages/config/src/index.ts';
 import { createMemoryPool, runMigrations, type DbPool } from '../../../packages/db/src/index.ts';
 import { createAccountUser } from '../../../packages/domain/src/index.ts';
@@ -44,11 +45,12 @@ beforeEach(async () => {
   await createAccountUser({
     pool,
     config,
-    email: 'viewer@example.test',
-    password: 'ViewerPass!234',
-    displayName: 'Viewer User',
-    role: 'viewer',
+    email: 'admin@example.test',
+    password: 'AdminPass!234',
+    displayName: 'Admin User',
+    role: 'admin',
   });
+  await seedV21AdminIdentity();
   await seedPortalRecords();
 });
 
@@ -58,15 +60,232 @@ afterEach(async () => {
 });
 
 describe('OT-71 mounted parent and student portals', () => {
-  it('mounts parent shell and APIs through canonical parent sessions only', async () => {
+  it('resolves exact locked Parent routes without a generic prefix fallback', () => {
+    expect(resolveCurrentClientRoute('/app/parent', 'parent')?.routeId).toBe('RT-PAR-001');
+    expect(resolveCurrentClientRoute('/app/parent/students', 'parent')?.routeId).toBe('RT-PAR-002');
+    expect(resolveCurrentClientRoute('/app/parent/students/new', 'parent')?.routeId).toBe(
+      'RT-PAR-003',
+    );
+    expect(resolveCurrentClientRoute('/app/parent/students/student-1', 'parent')?.routeId).toBe(
+      'RT-PAR-004',
+    );
+    expect(resolveCurrentClientRoute('/app/parent/not-locked', 'parent')).toBeNull();
+  });
+
+  it('never admits the missing legacy support route as a post-login destination', async () => {
+    const server = await listenForTest(createApp({ config, pool, distDir }));
+    try {
+      const parent = await postLogin(
+        server.baseUrl,
+        'parent@example.test',
+        'ParentPass!234',
+        '/app/support',
+      );
+      expect(parent.status).toBe(200);
+      expect(parent.json.return_to).toBe('/app/parent');
+
+      const student = await postLogin(
+        server.baseUrl,
+        'student@example.test',
+        'StudentPass!234',
+        '/app/support',
+      );
+      expect(student.status).toBe(200);
+      expect(student.json.return_to).toBe('/app/student');
+
+      const canonicalStudent = await postLogin(
+        server.baseUrl,
+        'student@example.test',
+        'StudentPass!234',
+        '/app/student/support',
+      );
+      expect(canonicalStudent.status).toBe(200);
+      expect(canonicalStudent.json.return_to).toBe('/app/student/support');
+
+      const admin = await postLogin(
+        server.baseUrl,
+        'admin@example.test',
+        'AdminPass!234',
+        '/app/support',
+      );
+      expect(admin.status).toBe(200);
+      expect(admin.json.return_to).toBe('/app/dashboard');
+    } finally {
+      await server.close();
+    }
+  });
+
+  it('mounts the public School inquiry and keeps unconfigured Parent Student policy fail closed', async () => {
+    const server = await listenForTest(createApp({ config, pool, distDir }));
+    try {
+      const unavailableParent = await fetch(`${server.baseUrl}/api/app/parent/household`);
+      expect(unavailableParent.status).toBe(503);
+      expect(unavailableParent.headers.get('cache-control')).toContain('no-store');
+      await expect(unavailableParent.json()).resolves.toEqual({
+        success: false,
+        code: 'PARENT_HOUSEHOLD_UNAVAILABLE',
+        message: 'Parent access is temporarily unavailable.',
+      });
+
+      const school = await fetch(`${server.baseUrl}/api/v2.1/signup/school-inquiry`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          school_name: 'Portal mount School',
+          contact_first_name: 'School',
+          contact_last_name: 'Administrator',
+          email: 'portal-mount-school@example.test',
+        }),
+      });
+      expect(school.status, await school.clone().text()).toBe(201);
+      await expect(school.json()).resolves.toMatchObject({
+        success: true,
+        code: 'SCHOOL_INQUIRY_ACCEPTED',
+        provider_effects_completed_inline: 0,
+        product_accounts_created: 0,
+        households_created: 0,
+        student_accounts_created: 0,
+        subscriptions_created: 0,
+        access_grants_created: 0,
+        nurture_workflow_intent_ids: [],
+      });
+    } finally {
+      await server.close();
+    }
+  });
+
+  it('keeps missing Admin support private and preserves only the protected legacy Student classroom', async () => {
+    const server = await listenForTest(createApp({ config, pool, distDir }));
+    try {
+      const publicSupport = await fetch(`${server.baseUrl}/app/support`, { redirect: 'manual' });
+      expect(publicSupport.status).toBe(404);
+      expect(await publicSupport.text()).not.toContain('Sign in for learning support');
+
+      const anonymousClassroom = await fetch(`${server.baseUrl}/app/classroom`, {
+        redirect: 'manual',
+      });
+      expect(anonymousClassroom.status).toBe(302);
+      expect(anonymousClassroom.headers.get('location')).toBe('/login?return_to=%2Fapp%2Fstudent');
+
+      const student = await loginAs(server.baseUrl, 'student@example.test', 'StudentPass!234');
+      const studentClassroom = await fetch(`${server.baseUrl}/app/classroom`, {
+        headers: { cookie: student.cookies },
+      });
+      expect(studentClassroom.status).toBe(200);
+      expect(studentClassroom.headers.get('cache-control')).toContain('no-store');
+      expect(studentClassroom.headers.get('referrer-policy')).toBe('no-referrer');
+      expect(studentClassroom.headers.get('x-robots-tag')).toBe('noindex, nofollow');
+
+      const parent = await loginAs(server.baseUrl, 'parent@example.test', 'ParentPass!234');
+      expect(
+        (
+          await fetch(`${server.baseUrl}/app/classroom`, {
+            headers: { cookie: parent.cookies },
+          })
+        ).status,
+      ).toBe(403);
+
+      const admin = await loginAs(server.baseUrl, 'admin@example.test', 'AdminPass!234');
+      expect(
+        (
+          await fetch(`${server.baseUrl}/app/classroom`, {
+            headers: { cookie: admin.cookies },
+          })
+        ).status,
+      ).toBe(403);
+    } finally {
+      await server.close();
+    }
+  });
+
+  it('keeps a resolved v2.1 Parent session authenticated while returning denial semantics', async () => {
+    const v21AdultSessionRuntime = {
+      resolveCookieHeader: async () => ({ status: 'resolved', context: {} }),
+    } as never;
+    const server = await listenForTest(
+      createApp({ config, pool, distDir, v21AdultSessionRuntime }),
+    );
+    const cookie = '__Host-onetime-session=resolved-v21-parent';
+    try {
+      for (const requestPath of ['/access-denied', '/app/contacts']) {
+        const denied = await fetch(`${server.baseUrl}${requestPath}`, {
+          headers: { cookie },
+          redirect: 'manual',
+        });
+        expect(denied.status, requestPath).toBe(403);
+        expect(denied.headers.get('cache-control'), requestPath).toContain('no-store');
+        expect(denied.headers.getSetCookie().join(';'), requestPath).not.toContain(
+          '__Host-onetime-session=;',
+        );
+      }
+      const isolatedStudentQuestions = await fetch(`${server.baseUrl}/app/student/questions`, {
+        headers: { cookie },
+        redirect: 'manual',
+      });
+      expect(isolatedStudentQuestions.status).toBe(404);
+      expect(isolatedStudentQuestions.headers.get('cache-control')).toContain('no-store');
+      expect(isolatedStudentQuestions.headers.getSetCookie().join(';')).not.toContain(
+        '__Host-onetime-session=;',
+      );
+    } finally {
+      await server.close();
+    }
+  });
+
+  it('denies Student self-password mutation without changing the credential', async () => {
+    const server = await listenForTest(createApp({ config, pool, distDir }));
+    try {
+      const student = await loginAs(server.baseUrl, 'student@example.test', 'StudentPass!234');
+      const denied = await fetch(`${server.baseUrl}/api/v1/auth/password`, {
+        method: 'POST',
+        headers: {
+          cookie: student.cookies,
+          'content-type': 'application/json',
+          'x-csrf-token': student.json.csrf_token,
+        },
+        body: JSON.stringify({
+          current_password: 'StudentPass!234',
+          new_password: 'StudentChanged!234',
+        }),
+      });
+      expect(denied.status).toBe(403);
+      await expect(denied.json()).resolves.toMatchObject({
+        success: false,
+        code: 'STUDENT_PASSWORD_ADULT_MANAGED',
+      });
+      expect(
+        (await postLogin(server.baseUrl, 'student@example.test', 'StudentPass!234')).status,
+      ).toBe(200);
+      expect(
+        (await postLogin(server.baseUrl, 'student@example.test', 'StudentChanged!234')).status,
+      ).toBe(401);
+    } finally {
+      await server.close();
+    }
+  });
+
+  it('mounts the ready Parent overview, children, and APIs behind authentication', async () => {
     const server = await listenForTest(createApp({ config, pool, distDir }));
     try {
       const anonymousShell = await fetch(`${server.baseUrl}/app/parent`, { redirect: 'manual' });
       expect(anonymousShell.status).toBe(302);
       expect(anonymousShell.headers.get('location')).toContain('return_to=%2Fapp%2Fparent');
+      const anonymousStudents = await fetch(`${server.baseUrl}/app/parent/students`, {
+        redirect: 'manual',
+      });
+      expect(anonymousStudents.status).toBe(302);
+      expect(anonymousStudents.headers.get('location')).toContain(
+        'return_to=%2Fapp%2Fparent%2Fstudents',
+      );
 
       const parent = await loginAs(server.baseUrl, 'parent@example.test', 'ParentPass!234');
-      const parentShell = await fetch(`${server.baseUrl}/app/parent`, {
+      const parentRoot = await fetch(`${server.baseUrl}/app/parent`, {
+        headers: { cookie: parent.cookies },
+      });
+      expect(parentRoot.status).toBe(200);
+      expect(parentRoot.headers.get('cache-control')).toContain('no-store');
+      expect(await parentRoot.text()).toContain('portal-root');
+      const parentShell = await fetch(`${server.baseUrl}/app/parent/students`, {
         headers: { cookie: parent.cookies },
       });
       expect(parentShell.status).toBe(200);
@@ -109,7 +328,8 @@ describe('OT-71 mounted parent and student portals', () => {
           },
           body: JSON.stringify({
             idempotency_key: 'portal-student-setup-001',
-            email: 'new.student@example.test',
+            username: 'setup_learner',
+            password: 'Mishnah12345',
             display_name: 'Setup Learner',
           }),
         },
@@ -117,21 +337,33 @@ describe('OT-71 mounted parent and student portals', () => {
       const setupText = await setup.text();
       expect(setup.status, setupText).toBe(200);
       expect(setupText).not.toContain('token_for_local_proof');
+      expect(setupText).not.toContain('Mishnah12345');
       expect(JSON.parse(setupText)).toMatchObject({
         success: true,
-        data: { learner_key: 'learner_setup', status: 'setup_requested' },
+        data: {
+          learner_key: 'learner_setup',
+          status: 'active',
+          username_display: 'setup_learner',
+          credential_status: 'parent_managed',
+        },
       });
       const repairedAccessRows = await pool.query(
-        `SELECT status, last_operation_type
+        `SELECT status, last_operation_type, username_display, credential_status,
+                password_hash_ref
            FROM onetime.portal_student_access_state
           WHERE account_key = $1
             AND product_key = $2
             AND learner_key = 'learner_setup'`,
         [config.accountKey, config.productKey],
       );
-      expect(repairedAccessRows.rows).toEqual([
-        { status: 'setup_requested', last_operation_type: 'setup' },
-      ]);
+      expect(repairedAccessRows.rows[0]).toMatchObject({
+        status: 'active',
+        last_operation_type: 'setup',
+        username_display: 'setup_learner',
+        credential_status: 'parent_managed',
+      });
+      expect(String(repairedAccessRows.rows[0].password_hash_ref)).toMatch(/^scrypt:v1:/);
+      expect(String(repairedAccessRows.rows[0].password_hash_ref)).not.toContain('Mishnah12345');
 
       const tokenRows = await pool.query(
         `SELECT token_hash, metadata
@@ -139,15 +371,97 @@ describe('OT-71 mounted parent and student portals', () => {
           WHERE token_type = 'student_setup'
             AND learner_key = 'learner_setup'`,
       );
-      expect(tokenRows.rows).toHaveLength(1);
-      expect(tokenRows.rows[0].token_hash).toMatch(/^[a-f0-9]{64}$/);
+      expect(tokenRows.rows).toHaveLength(0);
       expect(JSON.stringify(tokenRows.rows)).not.toContain('token_for_local_proof');
 
-      const viewer = await loginAs(server.baseUrl, 'viewer@example.test', 'ViewerPass!234');
+      const setupStudent = await loginAs(server.baseUrl, 'setup_learner', 'Mishnah12345');
+      expect(setupStudent.json.user.role).toBe('student');
+      const setupStudentDashboard = await fetch(
+        `${server.baseUrl}/api/v1/portals/student/dashboard`,
+        {
+          headers: { cookie: setupStudent.cookies },
+        },
+      );
+      expect(setupStudentDashboard.status).toBe(200);
+      expect((await setupStudentDashboard.json()).data.learner.learner_key).toBe('learner_setup');
+
+      const reset = await fetch(
+        `${server.baseUrl}/api/v1/portals/parent/households/household_alpha/learners/learner_setup/student-access/reset`,
+        {
+          method: 'POST',
+          headers: {
+            cookie: parent.cookies,
+            'content-type': 'application/json',
+            'x-csrf-token': parent.json.csrf_token,
+          },
+          body: JSON.stringify({
+            idempotency_key: 'portal-student-reset-username-001',
+          }),
+        },
+      );
+      const resetText = await reset.text();
+      expect(reset.status, resetText).toBe(200);
+      expect(JSON.parse(resetText)).toMatchObject({
+        success: true,
+        data: {
+          learner_key: 'learner_setup',
+          status: 'reset_requested',
+          username_display: 'setup_learner',
+          credential_status: 'reset_required',
+          last_operation_type: 'reset',
+        },
+      });
+
+      const existingStudentSession = await fetch(
+        `${server.baseUrl}/api/v1/portals/student/dashboard`,
+        {
+          headers: { cookie: setupStudent.cookies },
+        },
+      );
+      expect(existingStudentSession.status).toBe(401);
+
+      const oldStudentPassword = await postLogin(server.baseUrl, 'setup_learner', 'Mishnah12345');
+      expect(oldStudentPassword.status).toBe(401);
+      expect(oldStudentPassword.json).toMatchObject({
+        success: false,
+        code: 'INVALID_CREDENTIALS',
+      });
+
+      const resetStudent = await postLogin(server.baseUrl, 'setup_learner', 'Mishnah54321');
+      expect(resetStudent.status).toBe(401);
+      expect(resetStudent.json).toMatchObject({
+        success: false,
+        code: 'INVALID_CREDENTIALS',
+      });
+
+      const resetTokens = await pool.query(
+        `SELECT token_hash, consumed_at
+           FROM onetime.account_lifecycle_tokens
+          WHERE account_key = $1
+            AND product_key = $2
+            AND learner_key = 'learner_setup'
+            AND token_type = 'student_reset'`,
+        [config.accountKey, config.productKey],
+      );
+      expect(resetTokens.rows).toHaveLength(1);
+      expect(String(resetTokens.rows[0]?.token_hash)).toMatch(/^[a-f0-9]{64}$/);
+      expect(resetTokens.rows[0]?.consumed_at).toBeNull();
+      expect(JSON.stringify(resetTokens.rows)).not.toContain('Mishnah54321');
+
+      const admin = await loginAs(server.baseUrl, 'admin@example.test', 'AdminPass!234');
       const denied = await fetch(`${server.baseUrl}/api/v1/portals/parent/dashboard`, {
-        headers: { cookie: viewer.cookies },
+        headers: { cookie: admin.cookies },
       });
       expect(denied.status).toBe(403);
+      const approvedSchoolRead = await fetch(
+        `${server.baseUrl}/api/v2.1/admin/approved-schools/missing-school`,
+        { headers: { cookie: admin.cookies } },
+      );
+      expect(approvedSchoolRead.status).toBe(404);
+      await expect(approvedSchoolRead.json()).resolves.toMatchObject({
+        success: false,
+        code: 'APPROVED_SCHOOL_NOT_FOUND',
+      });
     } finally {
       await server.close();
     }
@@ -187,7 +501,7 @@ describe('OT-71 mounted parent and student portals', () => {
       const launchJson = await launch.json();
       expect(launchJson).toMatchObject({
         success: true,
-        data: { kind: 'class_launch', launch_token_ref: 'provider_unavailable' },
+        data: { kind: 'class_launch', launch_token_ref: 'class_access_denied' },
       });
       expect(JSON.stringify(launchJson)).not.toMatch(/https?:\/\/|zoom|vimeo|drive/i);
 
@@ -241,11 +555,50 @@ describe('OT-71 mounted parent and student portals', () => {
         headers: { cookie: studentAfterRevoke.cookies },
       });
       expect(expired.status).toBe(401);
+      const suspendedLogin = await postLogin(
+        server.baseUrl,
+        'student@example.test',
+        'StudentPass!234',
+      );
+      expect(suspendedLogin.status).toBe(401);
+      expect(suspendedLogin.json).toMatchObject({
+        success: false,
+        code: 'INVALID_CREDENTIALS',
+      });
+      expect(String(suspendedLogin.json.message)).toContain('access was revoked');
     } finally {
       await server.close();
     }
   });
 });
+
+async function seedV21AdminIdentity() {
+  const now = new Date('2026-07-31T12:00:00.000Z');
+  await pool.query(
+    `INSERT INTO onetime.v21_adult_identities
+       (adult_id, normalized_email, display_name, state, version, product_key,
+        runtime_tier, verification_environment_id, created_at, updated_at)
+     VALUES ('adult_portal_admin', 'admin@example.test', 'Admin User', 'active', 1,
+             'one_time_mishnayos', 'isolated_staging', 'ci', $1, $1)`,
+    [now],
+  );
+  await pool.query(
+    `INSERT INTO onetime.v21_human_accounts
+       (human_account_id, adult_id, state, security_version, version, product_key,
+        runtime_tier, verification_environment_id, created_at, updated_at)
+     VALUES ('human_portal_admin', 'adult_portal_admin', 'active', 1, 1,
+             'one_time_mishnayos', 'isolated_staging', 'ci', $1, $1)`,
+    [now],
+  );
+  await pool.query(
+    `INSERT INTO onetime.v21_human_account_role_memberships
+       (human_account_id, role, granted_at, granted_reason, product_key,
+        runtime_tier, verification_environment_id)
+     VALUES ('human_portal_admin', 'admin', $1, 'I36 central registration proof',
+             'one_time_mishnayos', 'isolated_staging', 'ci')`,
+    [now],
+  );
+}
 
 async function seedPortalRecords() {
   await pool.query(
@@ -263,6 +616,25 @@ async function seedPortalRecords() {
      VALUES
        ('relationship_alpha', $1, $2, 'household_alpha', $3, 'Parent', 'primary_guardian')`,
     [config.accountKey, config.productKey, parentUserKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.contacts
+       (contact_key, account_key, product_key, display_name, family_school_classification,
+        family_or_school, location_text, timezone, email_normalized, reminder_preference, source)
+     VALUES
+       ('portal_parent_contact', $1, $2, 'Parent User', 'family',
+        'Alpha Family', 'Jerusalem', 'Asia/Jerusalem',
+        'parent@example.test', 'none', 'test')`,
+    [config.accountKey, config.productKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.adult_household_contact_links
+       (link_key, account_key, product_key, contact_key, household_key, guardian_user_ref,
+        highlevel_location_id, sync_state)
+     VALUES
+       ('portal_parent_adult_link', $1, $2, 'portal_parent_contact', 'household_alpha', $3,
+        $4, 'sync_pending')`,
+    [config.accountKey, config.productKey, parentUserKey, config.highLevelLocationId],
   );
   await pool.query(
     `INSERT INTO onetime.portal_learners
@@ -292,24 +664,27 @@ async function seedPortalRecords() {
     [config.accountKey, config.productKey, studentUserKey],
   );
   await pool.query(
-    `INSERT INTO onetime.billing_entitlement_projections
-       (entitlement_key, account_key, product_key, principal_key, principal_type,
-        status, policy_version, source, reason, effective_at, evaluated_at, grants_access)
+    `INSERT INTO onetime.account_access_projections
+       (access_key, account_key, product_key, household_key, state, source_kind,
+        effective_at, expires_at, opaque_source_reference, source_revision,
+        source_updated_at, source_request_hash, policy_version, last_event_key)
      VALUES (
-       'billing_entitlement:' || $1 || ':' || $2 || ':household_alpha',
+       'portal_access_alpha',
        $1,
        $2,
        'household_alpha',
-       'opaque',
        'active',
-       '2026-07-15.1',
-       'test_fixture_paid_invoice',
-       'active_paid_current_invoice',
+       'free_pilot',
        '2026-07-15T12:00:00.000Z',
+       '2027-07-15T12:00:00.000Z',
+       'portal_free_pilot_alpha',
+       1,
        '2026-07-15T12:00:01.000Z',
-       true
+       $3,
+       'portal-current-access-v1',
+       'portal_access_event_alpha'
      )`,
-    [config.accountKey, config.productKey],
+    [config.accountKey, config.productKey, 'a'.repeat(64)],
   );
 }
 
@@ -338,7 +713,16 @@ async function listenForTest(app: ReturnType<typeof createApp>) {
   };
 }
 
-async function loginAs(baseUrl: string, email: string, password: string) {
+async function loginAs(baseUrl: string, identifier: string, password: string) {
+  const login = await postLogin(baseUrl, identifier, password);
+  expect(login.status, JSON.stringify(login.json)).toBe(200);
+  return {
+    cookies: login.cookies,
+    json: login.json as { csrf_token: string; user: { role: string } },
+  };
+}
+
+async function postLogin(baseUrl: string, identifier: string, password: string, returnTo?: string) {
   const csrf = await getLoginCsrf(baseUrl);
   const response = await fetch(`${baseUrl}/api/v1/auth/login`, {
     method: 'POST',
@@ -347,13 +731,18 @@ async function loginAs(baseUrl: string, email: string, password: string) {
       'content-type': 'application/json',
       'x-csrf-token': csrf.token,
     },
-    body: JSON.stringify({ email, password, csrf_token: csrf.token }),
+    body: JSON.stringify({
+      identifier,
+      password,
+      csrf_token: csrf.token,
+      ...(returnTo ? { return_to: returnTo } : {}),
+    }),
   });
   const text = await response.text();
-  expect(response.status, text).toBe(200);
   return {
+    status: response.status,
     cookies: mergeCookies(csrf.cookies, cookieHeader(response.headers)),
-    json: JSON.parse(text) as { csrf_token: string },
+    json: JSON.parse(text) as Record<string, unknown>,
   };
 }
 

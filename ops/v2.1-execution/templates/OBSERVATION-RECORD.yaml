@@ -1,0 +1,31 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: R45
+canonical_candidate_digest: ${CANONICAL_CANDIDATE_DIGEST}
+production_deployment_instance_digest: ${DEPLOYMENT_INSTANCE_DIGEST}
+canonical_path: ops/v2.1-execution/observations/${CANONICAL_CANDIDATE_DIGEST}/${DEPLOYMENT_INSTANCE_DIGEST}/OBSERVATION-RECORD.yaml
+observation_started_at: ${UTC_TIMESTAMP}
+required_continuous_minutes: 60
+latest_observed_at: ${UTC_TIMESTAMP}
+observation_completed_at: null
+metric_sources: []
+sample_evidence_digests: []
+continuity_proven: false
+gap_detected: false
+gap_reason: null
+clock_restart_count: 0
+last_clock_restart_at: null
+prior_artifact_digest: ${PRIOR_ARTIFACT_DIGEST}
+prior_artifact_remains_deployable: true
+nonessential_second_deployment_count: 0
+admin_parent_three_student_readback_digest: null
+critical_queue_readback_digest: null
+alert_summary:
+  sev1: 0
+  sev2: 0
+migration_drift_count: 0
+unexpected_provider_effect_count: 0
+identity_duplication_or_orphan_count: 0
+rollback_readiness_digest: ${ROLLBACK_READINESS_DIGEST}
+stop_condition_events: []
+state_based_on_head_sha: ${HEAD_BEFORE_THIS_OBSERVATION_COMMIT}
