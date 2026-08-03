@@ -1,13 +1,15 @@
-# OT-LIVE-003.02 migration proposal — held, not allocated
+# OT-LIVE-003.02 migration proposal — rejected for now, not allocated
 
-Status: `HOLD / NOT GRANTED` by C00. This document is a proposal only. It does not reserve a number and no SQL file may be created until F02/C00 issues migration authority.
+Status: `REJECTED FOR NOW / NOT GRANTED` by C00 at the reconciled safe checkpoint. This document is a proposal only. It does not reserve a number and no SQL file may be created until F02 approves this exact semantic purpose and C00 mirrors that allocation.
+
+Decision evidence: the production deployment fence is terminal/released at control SHA `d51d317c0a97549345ec557f6fabbbbbce309915`, and both source and live censuses end at `2259`. The rejection is semantic, not numeric: the canonical C00 mirror is stale at `next_available_ordinal: 2257`, and the last valid F02 proposal allocates only 2257/2258 and ends at `next_available_ordinal: 2259`. No valid F02 record allocates the OT-LIVE-003 purpose for 2260.
 
 ## Fresh census
 
 - Integration base: `cf30a6ca10695fb4e6b9859e7e4aba9c77831b2f`
 - Highest migration on the branch at the 2026-08-03 checkpoint: `2259_vimeo_mishnayos_catalog_adoption.sql`
 - Requested candidate: `2260_ot_live_003_reply_copilot.sql`
-- Allocation authority: F02 under the C00 lease protocol
+- Allocation authority: F02 under the C00 lease protocol; C00 may mirror only an exact approved allocation without semantic change
 
 ## Additive isolated scope
 
@@ -60,6 +62,10 @@ The migration would add only OT-LIVE-003 tables in the existing `onetime` schema
 - same-thread provider-reference digests;
 - append-only audit guard;
 - migration ledger/checksum verification.
+
+## Exact allocation request
+
+Submit this unchanged proposal to the F02 allocation lane for the exact path `packages/db/migrations/2260_ot_live_003_reply_copilot.sql`. If F02 assigns a different number or scope, update the proposal and census before creating any migration file. Do not infer a reservation from the collision-free number.
 
 ## Rollback
 

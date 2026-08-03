@@ -68,9 +68,10 @@ The runtime reads only `ONE_TIME_RABBI_TELEGRAM_BOT_TOKEN`; generic and BNA toke
 
 - Current branch census maximum: `2259`
 - Candidate requested: `2260_ot_live_003_reply_copilot.sql`
-- Status: `HOLD / NOT GRANTED`; no migration file, SQL adapter, or shared registration was created
+- Status: `REJECTED FOR NOW / NOT GRANTED`; no migration file, SQL adapter, or shared registration was created
 - Exact additive schema proposal: `ops/codex-runs/OT-LIVE-003/MIGRATION-PROPOSAL.md`
-- Authority required: an explicit F02/C00 allocation under the current migration lease protocol
+- Decision evidence: production fence terminal/released at control SHA `d51d317c0a97549345ec557f6fabbbbbce309915`; the collision-free census ends at 2259, but no valid F02 semantic proposal allocates this purpose
+- Authority required: exact F02 approval for `packages/db/migrations/2260_ot_live_003_reply_copilot.sql`, followed by a no-semantic-change C00 mirror under the current lease protocol
 
 Until that authority exists, persistent storage, migration verification, the final executable composition, and any staging provider canary remain blocked. The memory store is test/canary-only and is not a production fallback.
 
@@ -111,7 +112,7 @@ No controller, existing route registration, shared deployment, GHL UI, productio
 
 ## Controller integration
 
-1. F02/C00 performs a fresh migration census and either allocates the requested additive migration or returns a replacement number/scope.
+1. Submit the unchanged `MIGRATION-PROPOSAL.md` to F02. F02 performs a fresh census and either allocates the exact requested path/purpose or returns a replacement number/scope; C00 may then mirror the exact decision without semantic change.
 2. OT-LIVE-003 adds only the allocated migration, isolated PostgreSQL store, migration tests, and distinct-service executable; it reruns this entire focused evidence set and pushes the result.
 3. OT-LIVE-001 reviews/merges the clean branch, creates the distinct service, mounts only the listed routes, supplies protected config through the provider secret manager, and retains production deployment authority.
 4. OT-LIVE-002 alone configures the temporary GHL workflow path if it is still needed. The canonical OAuth route remains preferred.
