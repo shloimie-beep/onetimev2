@@ -153,24 +153,29 @@ locks:
   effect_budget: null
   cleanup_state: not_applicable
 - lock: production:deployment
-  status: unclaimed
-  holder_task_id: null
-  holder_claim_id: null
-  lease_id: null
-  fencing_token: null
-  canonical_candidate_digest: null
-  provider_identity: null
-  authorized_operation: null
-  claimed_at: null
-  lease_expires_at: null
-  authority_id: null
-  authority_grant_digest: null
-  authority_status_index_digest: null
-  authority_status_entry_digest: null
+  status: claimed
+  holder_task_id: C00
+  holder_claim_id: 98ff5a3a-1431-4314-9ed7-b9a95bee6bb9
+  lease_id: 1c0174e9-c098-4800-a468-84c8c346d34c
+  fencing_token: fence-3ebfc319-f600-46db-81fd-1c85d4e1388e
+  canonical_candidate_digest: 43592b5ee03fe5b0f1ac2cbadcaa76a7d7e0f941a9a2ec12c8154190549c06da
+  provider_identity: railway:7c8eee26-7a6a-4684-826d-9f4377d67d46:11edf8a2-0160-45b4-a039-b15b4beb4c10:web-9fb6d9f4:worker-76e7fdc2
+  authorized_operation: read_exact_non_secret_safety_configuration_then_fast_forward_exact_host_fix_candidate_to_staging_web_and_worker
+  claimed_at: '2026-08-03T08:58:43Z'
+  lease_expires_at: '2026-08-03T09:43:43Z'
+  authority_id: c00-launch-staging-20260803085843
+  authority_grant_digest: 32b25127ac28ba28b983d84fa0b71b5a91871537507d690e4455edf2f922f5e3
+  authority_status_index_digest: b58f71acbbeb047d280021912af3bcf938ce8580b6f203a41d4c6859f6353ad5
+  authority_status_entry_digest: 7e7d90c191b7362d8fe05dce61280a224ea5a51a1ed0bc4b0350a840e6fe47a5
   latest_revocation_digest: null
-  authority_checked_at: null
-  effect_budget: null
-  cleanup_state: not_applicable
+  authority_checked_at: '2026-08-03T08:58:43Z'
+  effect_budget:
+    variable_assignments_max: 0
+    deployments_max: 2
+    production_deployments_max: 0
+    dns_changes_max: 0
+    sends_or_enrollments_max: 0
+  cleanup_state: pending_staging_deployment_reconciliation
 - lock: provider:s3-kms
   status: unclaimed
   holder_task_id: null

@@ -1,0 +1,85 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+authority_id: c00-launch-staging-20260803085843
+authority_kind: derived_candidate_bound_staging_deployment
+task_id: C00
+candidate_digest: 43592b5ee03fe5b0f1ac2cbadcaa76a7d7e0f941a9a2ec12c8154190549c06da
+candidate_binding_status: exact_candidate_bound
+candidate_manifest_commit_sha: 7485b834b03ae0c91122186818b91f427efeb24e
+repository_source_sha: 7485b834b03ae0c91122186818b91f427efeb24e
+canonical_path: ops/v2.1-execution/authority/43592b5ee03fe5b0f1ac2cbadcaa76a7d7e0f941a9a2ec12c8154190549c06da/C00/c00-launch-staging-20260803085843/GRANT.yaml
+source_grant_id: ot-v21-production-source-grant-20260729
+source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+source_approval_evidence_path: ops/v2.1-execution/authority/none/C00/ot-v21-production-source-grant-20260729/APPROVAL.md
+source_approval_evidence_digest: 8c95a959f79aba0ac34fa0fcb6cb463cceac9aeb2bb52da1603d39db3e2c33c2
+grant_status_at_issue: active
+approved_by: Shloimie Dratler
+scope:
+  provider: Railway
+  workspace_id: d2428a88-aa7e-4369-b396-72060bf720f4
+  project_id: 7c8eee26-7a6a-4684-826d-9f4377d67d46
+  project_name: one-time-ot99-staging-96b42905
+  environment_id: 11edf8a2-0160-45b4-a039-b15b4beb4c10
+  environment_name: staging
+  repository: shloimie-beep/onetimev2
+  source_branch: codex/full-app-staging-live
+  source_branch_before_sha: 2c6a636aaee2b3cb604239d55055e9939ebfa9b8
+  source_branch_after_sha: 7485b834b03ae0c91122186818b91f427efeb24e
+  web_service_id: 9fb6d9f4-4f50-4df6-868b-c18a9b83d2f2
+  worker_service_id: 76e7fdc2-99b9-4a82-ba55-5dff3723398f
+  required_non_secret_configuration_readback:
+    ONE_TIME_FIRST_CLASS_AT: '2026-08-16T19:00:00+03:00'
+    ONE_TIME_FREE_ACCESS_EXPIRES_AT: '2026-09-11T18:00:00+03:00'
+    PUBLIC_BASE_URL: https://ot99-web-staging.up.railway.app
+    OUTBOX_TRANSPORT_MODE: sink
+  production_project_or_environment_access: prohibited
+fencing_token: fence-3ebfc319-f600-46db-81fd-1c85d4e1388e
+lock: production:deployment
+provider_lock_lease_id: 1c0174e9-c098-4800-a468-84c8c346d34c
+provider_account_location_or_asset_id:
+  provider: Railway
+  project_id: 7c8eee26-7a6a-4684-826d-9f4377d67d46
+  environment_id: 11edf8a2-0160-45b4-a039-b15b4beb4c10
+  service_ids:
+    - 9fb6d9f4-4f50-4df6-868b-c18a9b83d2f2
+    - 76e7fdc2-99b9-4a82-ba55-5dff3723398f
+allowed_operation: read back the exact non-secret staging safety configuration, then fast-forward codex/full-app-staging-live from 2c6a636aaee2b3cb604239d55055e9939ebfa9b8 to 7485b834b03ae0c91122186818b91f427efeb24e causing at most one web and one worker staging deployment, followed by exact readback and reconciliation
+maximum_effect_count: 2
+maximum_effect_value: not_applicable
+approved_fixture_ids:
+  - canonical_persistent_staging_environment_11edf8a2
+operator_identity: C00
+approved_at: '2026-08-03T08:58:43Z'
+recorded_at: '2026-08-03T08:58:43Z'
+expires_at: '2026-08-03T09:43:43Z'
+prerequisite_review:
+  canonical_candidate_digest: 43592b5ee03fe5b0f1ac2cbadcaa76a7d7e0f941a9a2ec12c8154190549c06da
+  repository_source_sha: 7485b834b03ae0c91122186818b91f427efeb24e
+  candidate_review: isolated_staging_exact_host_regression_passed
+  applicable_postgresql_18_4_run_id: 30748901653
+  candidate_migration_inventory_digest: 1598fc0f7f18e172b9566c65dbb81593ba2b5b1339e1dbca312aa01b53383f6b
+  migration_delta_from_last_successful_staging_candidate: none
+  deterministic_candidate_builder: 4_of_4_passed
+  auth_browser_boundaries: 3_of_3_passed
+  isolated_staging_exact_host_bootstrap: passed
+  isolated_staging_near_match_rejection: passed
+  production_runtime_unknown_host_rejection: passed
+  scoped_format_and_lint: passed
+  repository_typecheck: same_four_disclosed_baseline_errors_no_delta
+rollback_and_reconciliation:
+  - require exact timing, PUBLIC_BASE_URL, and sink-mode readback without displaying any secret
+  - require both new deployments to report exact commit 7485b834b03ae0c91122186818b91f427efeb24e
+  - require web health, version, landing, signup, Family-account, and Parent-session readback using the normal staging hostname
+  - require worker success with zero broad sends or audience enrollment
+  - on failed or ambiguous deployment, stop and reconcile before any retry
+  - release the exclusive lock only after provider readback and ledger reconciliation
+stop_conditions:
+  - source grant is revoked or expired
+  - origin/codex/v21-integration differs from 7485b834b03ae0c91122186818b91f427efeb24e
+  - origin/codex/full-app-staging-live differs from 2c6a636aaee2b3cb604239d55055e9939ebfa9b8 before the effect
+  - target project, environment, or either service identity differs from the exact bound identity
+  - another effect holds the production:deployment lock
+  - the update is not a fast-forward
+  - the operation would target production, DNS, GHL, email sending, audience enrollment, billing, variable mutation, or more than two deployments
+contains_secret: false
+immutable: true

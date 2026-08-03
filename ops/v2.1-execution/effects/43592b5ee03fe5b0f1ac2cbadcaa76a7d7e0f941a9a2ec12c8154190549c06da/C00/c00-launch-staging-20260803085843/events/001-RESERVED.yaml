@@ -1,0 +1,35 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-launch-staging-20260803085843
+event_sequence: 1
+previous_event_digest: none
+state: RESERVED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/43592b5ee03fe5b0f1ac2cbadcaa76a7d7e0f941a9a2ec12c8154190549c06da/C00/c00-launch-staging-20260803085843/events/001-RESERVED.yaml
+current_pointer_path: ops/v2.1-execution/effects/43592b5ee03fe5b0f1ac2cbadcaa76a7d7e0f941a9a2ec12c8154190549c06da/C00/c00-launch-staging-20260803085843/CURRENT.yaml
+candidate_digest: 43592b5ee03fe5b0f1ac2cbadcaa76a7d7e0f941a9a2ec12c8154190549c06da
+candidate_manifest_commit_sha: 7485b834b03ae0c91122186818b91f427efeb24e
+repository_source_sha: 7485b834b03ae0c91122186818b91f427efeb24e
+deployment_instance_digest: none_before_effect
+authority_grant_digest: 32b25127ac28ba28b983d84fa0b71b5a91871537507d690e4455edf2f922f5e3
+authority_status_index_digest: b58f71acbbeb047d280021912af3bcf938ce8580b6f203a41d4c6859f6353ad5
+authority_status_entry_digest: 7e7d90c191b7362d8fe05dce61280a224ea5a51a1ed0bc4b0350a840e6fe47a5
+latest_revocation_digest: none
+authority_checked_at: '2026-08-03T08:58:43Z'
+lock: production:deployment
+lock_lease_id: 1c0174e9-c098-4800-a468-84c8c346d34c
+fencing_token: fence-3ebfc319-f600-46db-81fd-1c85d4e1388e
+provider_identity: railway:7c8eee26-7a6a-4684-826d-9f4377d67d46:11edf8a2-0160-45b4-a039-b15b4beb4c10:web-9fb6d9f4:worker-76e7fdc2
+operation: read_exact_non_secret_safety_configuration_then_fast_forward_codex_full_app_staging_live_2c6a636a_to_7485b834_triggering_at_most_two_staging_deployments
+budget_reservation:
+  variable_assignments: 0
+  deployments: 2
+  production_deployments: 0
+  DNS_changes: 0
+  sends_or_enrollments: 0
+provider_request_or_operation_id: none_before_effect
+provider_readback_digest: none_before_effect
+cleanup_state: pending_staging_deployment_reconciliation
+state_based_on_head_sha: c1c59c68b8119692607f94d2207ebd4eb01e3793
+event_at: '2026-08-03T08:58:43Z'
+immutable: true
