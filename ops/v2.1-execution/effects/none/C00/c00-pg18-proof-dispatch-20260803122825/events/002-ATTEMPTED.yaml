@@ -1,0 +1,33 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-pg18-proof-dispatch-20260803122825
+event_sequence: 2
+previous_event_digest: 12d5e8d7d089f5ba4601ed2509b92758e90b8cb514778e74a3e5b3686f83cc9d
+state: ATTEMPTED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/none/C00/c00-pg18-proof-dispatch-20260803122825/events/002-ATTEMPTED.yaml
+current_pointer_path: ops/v2.1-execution/effects/none/C00/c00-pg18-proof-dispatch-20260803122825/CURRENT.yaml
+candidate_digest: not_applicable_pre_freeze_exact_source_sha
+repository_source_sha: e816aa28a97aff32849bab4fe5ae7fc4663e2498
+integration_head_sha: e816aa28a97aff32849bab4fe5ae7fc4663e2498
+deployment_instance_digest: none
+authority_grant_digest: ba1b044c20ee89002a424ddfe04db9805a84cb4b12b8bd455f55c0a22f0fe02d
+authority_status_index_digest: 1ce6f83803441ba3b5fb937d5929786456f839ea1803451281a124af40bcc090
+authority_status_entry_digest: c9d3682764accc4a1521fef19b3e63addfd1fd0b45c84d52c34f924fcb004465
+latest_revocation_digest: none
+authority_checked_at: '2026-08-03T12:34:17Z'
+lock: production:deployment
+lock_lease_id: 28546f19-c665-485c-9698-a4476a637923
+fencing_token: fence-aa16b055-373e-4ba8-af61-68435379391e
+provider_identity: github_actions:shloimie-beep/onetimev2:ops11-postgres-18-assurance.yml
+operation: workflow_dispatch_exact_SHA_disposable_PostgreSQL_18_4_proof
+budget_reservation:
+  count: 1
+  value: not_applicable
+provider_request_or_operation_id: github_actions_run_30814122202
+provider_readback_digest: 0937b227a2f56ec0841262af53dc7fd59c3ad6d323005f9ba6e3e4c8a546c5c7
+provider_readback_state: in_progress
+cleanup_state: pending_ephemeral_runner_completion
+state_based_on_head_sha: f753b9989deb62df6a639e36b4608e52729d214b
+event_at: '2026-08-03T12:34:42Z'
+immutable: true
