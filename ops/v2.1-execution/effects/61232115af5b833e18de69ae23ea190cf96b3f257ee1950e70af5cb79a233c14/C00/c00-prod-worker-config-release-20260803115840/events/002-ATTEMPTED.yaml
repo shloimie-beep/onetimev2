@@ -1,0 +1,75 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prod-worker-config-release-20260803115840
+event_sequence: 2
+previous_event_digest: bd6e39396ff5da2b825317fd80a4de074049f83947764889b0e16b7347ab0f1b
+state: ATTEMPTED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14/C00/c00-prod-worker-config-release-20260803115840/events/002-ATTEMPTED.yaml
+candidate_digest: 61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14
+repository_source_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+authority_id: c00-prod-worker-config-release-20260803115840
+lock_lease_id: bba3e624-5b1f-4562-bde3-699770de36a4
+fencing_token: fence-e578e74c-57e3-4f15-b0d2-9d739a136039
+operation_results:
+  worker_config_file: railway.worker.staging.json
+  worker_config_mutation_api: Railway_serviceInstanceUpdate
+  worker_config_mutation_success: true
+  config_mutation_triggered_deployments: 0
+  source_connection_attempts_with_effect: 1
+  source_disconnections: 1
+  worker_deployment_id: 901724db-951b-41c6-8265-6faa06ab676e
+  worker_deployment_created_at: '2026-08-03T12:05:48.871Z'
+  worker_deployment_status: SUCCESS
+  worker_source_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+  worker_image_digest: sha256:8aef5702fae96ee90c8962f261944e5b17d13e13c340c282655aab7290cff810
+  worker_source_disconnected: true
+  worker_http_healthcheck: null
+  worker_log_records: 2
+  worker_delivery_batches: 1
+  worker_error_or_fatal_matches: 0
+  worker_send_success_matches: 0
+  web_deployment_id: 1635d06a-4ee7-4afd-9501-34a943a0d3c7
+  web_deployment_status: SUCCESS
+  web_source_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+  web_image_digest: sha256:1cc2a43de97c80c8e76c1eed23578980ff64613561895e53a5d15b1c94bf18b8
+  canonical_health: 200
+  canonical_ready: 200
+  canonical_version_code: PUBLIC_RELEASE_AVAILABLE
+  initial_canary_http: 200
+  initial_duplicate_submission: false
+  replay_canary_http: 200
+  replay_duplicate_submission: true
+  replay_same_contact_signup_and_outbox: true
+  protected_fixture_destination_sha256: 53ea91a56760d0c225f1fb77e8ff89a810a867ece008859d43e20363b77744b4
+  contact_key_sha256: fba623dc674b8c7e8e45b1130421a5619f5109fefbf563ad5f203b0b9daddc3d
+  signup_key_sha256: 3695c542a0002866fb352e35544f0b0c66f477a9d35a5f006b885a4249e8152f
+  adult_contacts: 1
+  signup_leads: 1
+  local_sink_intents: 2
+  delivery_attempts: 0
+  whatsapp_intents: 0
+  highlevel_intents: 0
+  handoff_integration_commit: b2f427f3009b2bcc26e8a6dd3c17644cea464ece
+  email_campaign_may_send: false
+budget_consumed:
+  worker_service_config_mutations: 1
+  source_connections: 1
+  source_disconnections: 1
+  production_deployments: 1
+  signup_posts: 2
+  local_adult_contacts: 1
+  local_signup_leads: 1
+  local_sink_intents: 2
+  portal_accounts: 0
+  student_accounts: 0
+  external_provider_sends_or_enrollments: 0
+  charges: 0
+  variable_assignments: 0
+  migrations: 0
+  DNS_changes: 0
+  GHL_mutations: 0
+provider_request_or_operation_id: railway_worker_deployment_901724db_and_production_canary_c00_prod_prereg_61232115_20260803a
+cleanup_state: pending_final_control_reconciliation
+event_at: '2026-08-03T12:11:51.5002192Z'
+immutable: true

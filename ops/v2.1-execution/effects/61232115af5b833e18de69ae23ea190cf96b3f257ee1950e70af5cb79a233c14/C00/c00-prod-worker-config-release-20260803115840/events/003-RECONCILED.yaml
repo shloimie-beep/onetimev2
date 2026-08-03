@@ -1,0 +1,61 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prod-worker-config-release-20260803115840
+event_sequence: 3
+previous_event_digest: 48ad6ce26b6c6f274a8bc531f80637fba10d1c618909d9134c99054934cd01f9
+state: RECONCILED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14/C00/c00-prod-worker-config-release-20260803115840/events/003-RECONCILED.yaml
+candidate_digest: 61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14
+repository_source_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+authority_id: c00-prod-worker-config-release-20260803115840
+lock_lease_id: bba3e624-5b1f-4562-bde3-699770de36a4
+fencing_token: fence-e578e74c-57e3-4f15-b0d2-9d739a136039
+provider_request_or_operation_id: railway_worker_deployment_901724db_and_production_canary_c00_prod_prereg_61232115_20260803a
+provider_readback:
+  production_commit_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+  web_deployment_id: 1635d06a-4ee7-4afd-9501-34a943a0d3c7
+  web_deployment_status: SUCCESS
+  web_image_digest: sha256:1cc2a43de97c80c8e76c1eed23578980ff64613561895e53a5d15b1c94bf18b8
+  worker_deployment_id: 901724db-951b-41c6-8265-6faa06ab676e
+  worker_deployment_status: SUCCESS
+  worker_image_digest: sha256:8aef5702fae96ee90c8962f261944e5b17d13e13c340c282655aab7290cff810
+  worker_config_file: railway.worker.staging.json
+  web_and_worker_sources_disconnected: true
+  web_and_worker_sink_controls: held
+  highlevel_event_sync_mode: disabled_web_and_worker
+  protected_payload_key_present_web_and_worker: true
+  canonical_health: 200
+  canonical_ready: 200
+  canonical_version_code: PUBLIC_RELEASE_AVAILABLE
+  landing_product_and_schedule_truth: passed
+  adult_only_form: passed
+  no_card_or_automatic_charge: passed
+  canary_initial_and_idempotent_replay: passed
+  production_http_post_count: 2
+  production_http_statuses: 200_200
+  idempotency_records: 1
+  adult_contacts: 1
+  signup_leads: 1
+  local_sink_intents: 2
+  external_provider_sends_or_enrollments: 0
+  provider_delivery_attempts: 0
+  portal_accounts: 0
+  student_accounts: 0
+  GHL_intents_or_mutations: 0
+  whatsapp_intents_or_enrollments: 0
+  charges: 0
+  handoff_path: ops/launch/2026-08-03/LIVE-SEND-GATE.json
+  handoff_integration_commit: b2f427f3009b2bcc26e8a6dd3c17644cea464ece
+  legal_gate: OPS-084-LEGAL-BUNDLE_open_scope_production_broad
+  email_campaign_may_send: false
+provider_readback_state: exact_production_preregistration_release_web_worker_success_canary_idempotent_zero_external_send_handoff_published
+disposition: consumed_and_reconciled_production_preregistration_release_complete_broad_campaign_send_held_by_legal_gate
+production_promotion_complete: true
+email_campaign_may_send: false
+unexpected_external_effects: 0
+cleanup_state: complete_terminal_readback_no_retry_required
+lock_release_state: released
+lock_released_at: '2026-08-03T12:11:51.5002192Z'
+event_at: '2026-08-03T12:11:51.5002192Z'
+immutable: true

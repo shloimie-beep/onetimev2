@@ -475,14 +475,14 @@ authorities:
     authority_kind: derived_candidate_bound_production_worker_config_registration_deployment_and_operator_canary
     grant_digest: 82d9868d39df8cd01976de4442be7472eccebb69dccc421927d37d5a6b2b8f7c
     source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
-    status: active
+    status: consumed
     expires_at: '2026-08-03T12:43:40Z'
     latest_revocation_path: null
     latest_revocation_digest: null
     provider_lock: production:deployment
     provider_lock_lease_id: bba3e624-5b1f-4562-bde3-699770de36a4
     fencing_token: fence-e578e74c-57e3-4f15-b0d2-9d739a136039
-    effect_authority_usable: true
+    effect_authority_usable: false
     candidate_binding_status: exact_candidate_bound
     canonical_candidate_digest: 61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14
     candidate_manifest_commit_sha: f95b30d830d57a29b123949134e9ee3077a945a1
@@ -496,6 +496,8 @@ authorities:
     prerequisite_review: exact_web_success_worker_runtime_passed_invalid_web_healthcheck_and_canonical_staging_worker_config_file_read_back
     checked_at: '2026-08-03T11:58:40Z'
     state_based_on_control_head_sha: a0f40407e6c5b73540c6936347edc947861b539d
+    disposition: consumed_and_reconciled_exact_production_preregistration_release_web_worker_success_canary_passed_handoff_published
+    lock_released_at: '2026-08-03T12:11:51.5002192Z'
 entry_schema: templates/AUTHORITY-STATUS-ENTRY.yaml
 revocation_schema: templates/AUTHORITY-REVOCATION-RECORD.yaml
 rule: C00 records externally granted/revoked/expired authority; it does not grant it. Every update binds the known
