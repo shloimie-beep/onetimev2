@@ -184,6 +184,56 @@ describe('OT-LIVE-003 human-approved reply-copilot synthetic flow', () => {
     expect(provider.reconcileCalls).toBe(1);
   });
 
+  it('retries a definitely failed Telegram request and records one delivered card', async () => {
+    const harness = createHarness();
+    await harness.service.ingest(inbound(), { now: at(0), actionIdFactory: ids() });
+    let attempts = 0;
+    const provider: ReplyCopilotTelegramProvider = {
+      async send() {
+        attempts += 1;
+        return attempts === 1
+          ? { outcome: 'retry' as const, errorCode: 'TELEGRAM_HTTP_503' }
+          : { outcome: 'sent' as const, providerMessageRef: 'telegram:retry-success' };
+      },
+      async reconcile() {
+        return { outcome: 'absent' as const };
+      },
+    };
+    const dispatcher = new ReplyCopilotTelegramDispatcher(harness.store, harness.codec, provider, {
+      environment: 'local',
+      ownerId: 'telegram-retry-test',
+    });
+
+    expect(await dispatcher.runOnce(at(1))).toMatchObject({ state: 'retry', attempts: 1 });
+    expect(await dispatcher.runOnce(at(3))).toMatchObject({ state: 'sent', attempts: 2 });
+    expect(attempts).toBe(2);
+    expect(
+      (await harness.store.getIntent(harness.store.telegramDeliveries()[0]!.intentKey))?.state,
+    ).toBe('card_delivered');
+  });
+
+  it('records dismissal only as a rejected, non-voice outcome', async () => {
+    const harness = createHarness();
+    await harness.service.ingest(inbound(), { now: at(0), actionIdFactory: ids() });
+    await harness.telegramDispatcher.runOnce(at(1));
+    const dismissed = await harness.service.handleAction({
+      callbackData: button(harness.telegram.calls[0]!.card, 'Dismiss'),
+      chatRef: 'chat-rabbi',
+      userRef: 'user-rabbi',
+      now: at(2),
+    });
+
+    expect(dismissed).toMatchObject({ status: 'dismissed' });
+    expect(harness.store.ghlDeliveries()).toHaveLength(0);
+    expect(await harness.store.listVoiceExamples()).toMatchObject([
+      {
+        outcome: 'rejected',
+        approvedForVoice: false,
+        finalTextRef: null,
+      },
+    ]);
+  });
+
   it('dead-letters a provider readback that drifted into a new thread', async () => {
     const harness = createHarness();
     harness.ghl.readbackThread = 'wrong_thread';
