@@ -325,14 +325,14 @@ authorities:
     authority_kind: derived_candidate_bound_operator_adult_preregistration_canary
     grant_digest: 68ef7a7d75c4a896a5dbe7bbfafdbbd8179302ce8137041fac00080db6119323
     source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
-    status: active
+    status: consumed
     expires_at: '2026-08-03T11:03:52Z'
     latest_revocation_path: null
     latest_revocation_digest: null
     provider_lock: production:deployment
     provider_lock_lease_id: c59a7b01-26f0-46f4-906b-6c22e9a98077
     fencing_token: fence-2c2a1ebc-ec8c-47fc-9c1d-16e25691e943
-    effect_authority_usable: true
+    effect_authority_usable: false
     candidate_binding_status: exact_candidate_bound
     canonical_candidate_digest: 61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14
     candidate_manifest_commit_sha: f95b30d830d57a29b123949134e9ee3077a945a1
@@ -343,8 +343,10 @@ authorities:
       - 9fb6d9f4-4f50-4df6-868b-c18a9b83d2f2
     maximum_effect_count: 2
     prerequisite_review: exact_adult_preregistration_staging_deployment_and_operator_fixture_sink_gates_passed
-    checked_at: '2026-08-03T10:33:52Z'
-    state_based_on_control_head_sha: 2da2bf70b7f849eb00ca473da878524dc9105a2f
+    checked_at: '2026-08-03T10:44:51.4268235Z'
+    state_based_on_control_head_sha: 77b14aa60cb1f10c78b265d7e415bbd06602d73e
+    disposition: consumed_and_reconciled_exact_adult_preregistration_canary_passed_zero_external_send_zero_account_zero_student_zero_charge
+    lock_released_at: '2026-08-03T10:44:51.4268235Z'
 entry_schema: templates/AUTHORITY-STATUS-ENTRY.yaml
 revocation_schema: templates/AUTHORITY-REVOCATION-RECORD.yaml
 rule: C00 records externally granted/revoked/expired authority; it does not grant it. Every update binds the known

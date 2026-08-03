@@ -1,0 +1,71 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prereg-canary-20260803103352
+event_sequence: 3
+previous_event_digest: eb9037a15d8f17c4232991723b08360b76d504f804b6b39a1dfa78663777c138
+state: RECONCILED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14/C00/c00-prereg-canary-20260803103352/events/003-RECONCILED.yaml
+candidate_digest: 61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14
+candidate_manifest_commit_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+repository_source_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+authority_id: c00-prereg-canary-20260803103352
+lock: production:deployment
+lock_lease_id: c59a7b01-26f0-46f4-906b-6c22e9a98077
+fencing_token: fence-2c2a1ebc-ec8c-47fc-9c1d-16e25691e943
+provider_request_or_operation_id: staging_http_post_api_v1_leads_200_c00_prereg_canary_61232115_20260803a
+provider_readback:
+  web_deployment_id: 6127e53a-428f-462e-a2ea-e853f6df5f09
+  web_deployment_status: SUCCESS
+  web_source_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+  web_image_digest: sha256:4837a7f8cc886a599835943dd3f5d3a7d23125accb6c7fcd4b4687d3cb78c30f
+  worker_deployment_id: 54115c9b-f7fd-43a9-b564-8800c401d637
+  worker_deployment_status: SUCCESS
+  worker_source_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+  worker_image_digest: sha256:cc472476b21d9028158140b9d66748bdd111033030cd5c3160d68c57d897bb26
+  web_and_worker_runtime_environment: isolated_staging
+  web_and_worker_outbox_transport_mode: sink
+  web_and_worker_delivery_provider_mode: sink
+  web_and_worker_real_email_transport: disabled
+  parent_student_service_account_policy_pair: absent
+  protected_fixture_destination_sha256: 96ed33f9b88f320bedc82908c3ede347207f91856d019973e392630aaedfb975
+  http_matching_record_count: 1
+  http_statuses:
+    - 200
+  adult_contact_response_success: true
+  duplicate_submission: false
+  classification: family
+  confirmation_queued: true
+  local_outbox_intent_count: 2
+  contact_key_sha256: c238667aaf0088f1a1eeb131cc5dd659796122d74c613bc495ef74a1d689488f
+  signup_key_sha256: c3f8d81d9285eb389321aa49bf39eb1f2dac5bcf193c7439a781f7e7baed8c48
+  worker_log_record_count: 4
+  worker_log_sha256: b6caf90db88f388a2a03fd4a44a96dcf175d0e9c23757a39e3ab95fb3ef2a30e
+  worker_send_success_matches: 0
+  worker_nonzero_delivery_matches: 0
+  worker_provider_message_id_matches: 0
+  worker_broad_send_or_enrollment_matches: 0
+  worker_error_or_fatal_matches: 0
+  external_provider_sends_observed: 0
+  provider_enrollments_observed: 0
+  portal_accounts_observed: 0
+  student_accounts_observed: 0
+  charges_observed: 0
+budget_consumed:
+  signup_posts: 1
+  local_adult_contacts: 1
+  local_signup_leads: 1
+  portal_accounts: 0
+  student_accounts: 0
+  external_provider_sends_or_enrollments: 0
+  deployments: 0
+  production_mutations: 0
+provider_readback_state: exact_operator_adult_preregistration_recorded_sink_controls_held_zero_external_sends_zero_account_zero_student_zero_charge
+disposition: preregistration_fallback_canary_passed_ready_for_operator_send_gate_handoff_and_production_promotion_decision
+production_promotion_authorized: false
+unexpected_external_effects: 0
+cleanup_state: complete_terminal_readback_no_retry_required
+lock_release_state: released
+lock_released_at: '2026-08-03T10:44:51.4268235Z'
+event_at: '2026-08-03T10:44:51.4268235Z'
+immutable: true

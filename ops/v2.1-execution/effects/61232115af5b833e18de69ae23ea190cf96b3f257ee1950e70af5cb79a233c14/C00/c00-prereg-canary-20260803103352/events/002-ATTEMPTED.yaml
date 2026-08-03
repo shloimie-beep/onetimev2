@@ -1,0 +1,64 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prereg-canary-20260803103352
+event_sequence: 2
+previous_event_digest: 790af807a5c366c22538f7a910fb5bf0045cae083612798349916968d9a7db20
+state: ATTEMPTED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14/C00/c00-prereg-canary-20260803103352/events/002-ATTEMPTED.yaml
+candidate_digest: 61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14
+candidate_manifest_commit_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+repository_source_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+authority_id: c00-prereg-canary-20260803103352
+lock: production:deployment
+lock_lease_id: c59a7b01-26f0-46f4-906b-6c22e9a98077
+fencing_token: fence-2c2a1ebc-ec8c-47fc-9c1d-16e25691e943
+provider_identity: railway:7c8eee26-7a6a-4684-826d-9f4377d67d46:11edf8a2-0160-45b4-a039-b15b4beb4c10:web-9fb6d9f4:deployment-6127e53a
+operation: one_operator_controlled_adult_preregistration_post_local_contact_and_lead_zero_account_zero_student_zero_send
+fixture:
+  fixture_id: c00_prereg_canary_61232115_20260803a
+  destination_sha256: 96ed33f9b88f320bedc82908c3ede347207f91856d019973e392630aaedfb975
+  destination_disclosed: false
+request:
+  method: POST
+  path: /api/v1/leads
+  idempotency_key: c00-prereg-61232115-20260803a
+  audience_type: family
+  reminder_preference: none
+  reminder_consent: false
+  phone_supplied: false
+  student_data_supplied: false
+  password_supplied: false
+  payment_data_supplied: false
+  account_creation_requested: false
+response:
+  http_status: 200
+  json_parsed: true
+  success: true
+  duplicate_submission: false
+  classification: family
+  confirmation_queued: true
+  outbox_intent_count: 2
+  outbox_intent_digests:
+    - ab5398ae83825010ca411ab191d270e7f2ec4839bfdb8fbbea27a06beb435b03
+    - c3804fb2be0eb17aaecaaecc308c15e3f3b5c5fb86edae7a2ba5938ce6380884
+  contact_key_sha256: c238667aaf0088f1a1eeb131cc5dd659796122d74c613bc495ef74a1d689488f
+  signup_key_sha256: c3f8d81d9285eb389321aa49bf39eb1f2dac5bcf193c7439a781f7e7baed8c48
+  message_heading: Adult pre-registration received.
+  message_body: We saved the adult contact for personal follow-up. This did not create a portal account, Student account, subscription, charge, marketing enrollment, or WhatsApp enrollment.
+  unexpected_response_fields: 0
+budget_consumed:
+  signup_posts: 1
+  local_adult_contacts: 1
+  local_signup_leads: 1
+  portal_accounts: 0
+  student_accounts: 0
+  external_provider_sends_or_enrollments: 0
+  deployments: 0
+  production_mutations: 0
+provider_request_or_operation_id: staging_http_post_api_v1_leads_200_c00_prereg_canary_61232115_20260803a
+cleanup_state: pending_exact_worker_and_http_readback
+attempted_at: '2026-08-03T10:43:01.4346455Z'
+completed_at: '2026-08-03T10:43:02.5651851Z'
+event_at: '2026-08-03T10:43:02.5651851Z'
+immutable: true
