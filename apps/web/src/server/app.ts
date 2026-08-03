@@ -772,6 +772,8 @@ export function createApp({
     const parentHouseholdRepository = createPostgresParentHouseholdRepository(pool, {
       acceptedServiceAccountVersion: parentStudentServiceAccountVersion,
       immutableEvidenceReference: parentStudentServiceAccountEvidenceReference,
+      portalAccountKey: config.accountKey,
+      portalProductKey: config.productKey,
       ...(clock ? { clock } : {}),
     });
     const parentHouseholdService = createParentHouseholdService({

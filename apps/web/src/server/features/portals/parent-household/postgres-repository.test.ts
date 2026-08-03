@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import pg from 'pg';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { loadConfig } from '../../../../../../../packages/config/src/index.ts';
 import type {
   ParentHouseholdMutationContext,
   ParentHouseholdPrincipal,
@@ -11,15 +12,29 @@ import {
   type DbPool,
   type Queryable,
 } from '../../../../../../../packages/db/src/index.ts';
+import {
+  authenticateUser,
+  createSession,
+} from '../../../../../../../packages/domain/src/auth/service.ts';
+import { hashAuthPassword } from '../../../../../../../packages/domain/src/auth/policy.ts';
 import { createPostgresParentHouseholdRepository } from './postgres-repository.ts';
 import { createParentHouseholdService } from './service.ts';
 
 const now = new Date('2026-07-31T14:00:00.000Z');
 const passwordHash = `argon2id-v1$v=19$m=19456,t=2,p=1$${'a'.repeat(22)}$${'b'.repeat(43)}`;
 const migrationFiles = [
+  '0001_onetime_lead_slice.sql',
+  '0002_crm_auth_core.sql',
+  '0003_ot27_security_crm_repair.sql',
+  '1500_ot52_portal_households_learners.sql',
+  '1700_ot71_account_lifecycle.sql',
+  '1900_ot83_household_portal_foundation.sql',
+  '2206_student_non_email_credentials.sql',
+  '2223_account_product_access_projection.sql',
   '2234_canonical_state_machines.sql',
   '2235_v21_household_identity.sql',
   '2241_v21_admin_directory.sql',
+  '2248_v21_family_signup.sql',
   '2251_v21_embedded_classroom.sql',
   '2255_v21_student_actual_name.sql',
 ] as const;
@@ -76,6 +91,45 @@ describe('P12 concrete PostgreSQL Parent household repository', () => {
     await expect(count(pool, 'admin_directory_audit_events')).resolves.toBe(1);
     await expect(count(pool, 'admin_directory_receipts')).resolves.toBe(1);
     await expect(count(pool, 'admin_student_credential_resets')).resolves.toBe(1);
+    await expect(
+      countWhere(pool, 'portal_households', 'household_key', fixture.householdId),
+    ).resolves.toBe(1);
+    await expect(
+      countWhere(pool, 'portal_learners', 'learner_key', 'student-create'),
+    ).resolves.toBe(1);
+    await expect(
+      countWhere(pool, 'account_learner_identity_links', 'learner_key', 'student-create'),
+    ).resolves.toBe(1);
+    await expect(
+      countWhere(pool, 'portal_student_access_state', 'learner_key', 'student-create'),
+    ).resolves.toBe(1);
+    await expect(
+      countWhere(pool, 'account_access_projections', 'household_key', fixture.householdId),
+    ).resolves.toBe(1);
+    const projectedIdentity = await pool.query(
+      `SELECT users.email_normalized, users.status AS user_status,
+              access.normalized_username, access.credential_status,
+              access.password_hash_ref, links.link_state
+         FROM onetime.portal_student_access_state AS access
+         JOIN onetime.account_learner_identity_links AS links
+           ON links.account_key = access.account_key
+          AND links.product_key = access.product_key
+          AND links.learner_key = access.learner_key
+          AND links.user_key = access.student_user_ref
+         JOIN onetime.account_users AS users
+           ON users.account_key = access.account_key
+          AND users.product_key = access.product_key
+          AND users.user_key = access.student_user_ref
+        WHERE access.learner_key = 'student-create'`,
+    );
+    expect(projectedIdentity.rows[0]).toEqual({
+      email_normalized: 'student:actual.student',
+      user_status: 'active',
+      normalized_username: 'actual.student',
+      credential_status: 'parent_managed',
+      password_hash_ref: passwordHash,
+      link_state: 'active',
+    });
 
     const replay = await service.createStudent(fixture.principal, command, context);
     expect(replay.snapshot.revision).toBe(2);
@@ -242,6 +296,159 @@ describe('P12 concrete PostgreSQL Parent household repository', () => {
         WHERE student_id = 'student-archive'`,
     );
     expect(enrollment.rows[0]?.state).toBe('revoked');
+    const disabledProjection = await pool.query(
+      `SELECT users.status AS user_status, links.link_state,
+              access.status AS access_status, access.credential_status
+         FROM onetime.portal_student_access_state AS access
+         JOIN onetime.account_learner_identity_links AS links
+           ON links.account_key = access.account_key
+          AND links.product_key = access.product_key
+          AND links.learner_key = access.learner_key
+         JOIN onetime.account_users AS users
+           ON users.account_key = access.account_key
+          AND users.product_key = access.product_key
+          AND users.user_key = access.student_user_ref
+        WHERE access.learner_key = 'student-archive'`,
+    );
+    expect(disabledProjection.rows[0]).toEqual({
+      user_status: 'disabled',
+      link_state: 'disabled',
+      access_status: 'disabled',
+      credential_status: 'disabled',
+    });
+
+    const restored = await service.restoreStudent(
+      fixture.principal,
+      { expected_revision: archived.snapshot.revision, student_id: 'student-archive' },
+      mutationContext('archive-restore', '0'),
+    );
+    expect(restored.snapshot.students[0]?.state).toBe('active');
+    const restoredProjection = await pool.query(
+      `SELECT users.status AS user_status, links.link_state,
+              access.status AS access_status, access.credential_status
+         FROM onetime.portal_student_access_state AS access
+         JOIN onetime.account_learner_identity_links AS links
+           ON links.account_key = access.account_key
+          AND links.product_key = access.product_key
+          AND links.learner_key = access.learner_key
+         JOIN onetime.account_users AS users
+           ON users.account_key = access.account_key
+          AND users.product_key = access.product_key
+          AND users.user_key = access.student_user_ref
+        WHERE access.learner_key = 'student-archive'`,
+    );
+    expect(restoredProjection.rows[0]).toEqual({
+      user_status: 'active',
+      link_state: 'active',
+      access_status: 'active',
+      credential_status: 'parent_managed',
+    });
+  });
+
+  it('projects a v2.1 Parent-created Student into working login, session, and reset state', async () => {
+    const fixture = await seedParent(pool, 'login-projection', 0);
+    const service = concreteService(pool, 'student-login-projection', async (password) =>
+      hashAuthPassword(password),
+    );
+    const initialPassword = 'Student passphrase 123!';
+    const replacementPassword = 'Different student passphrase 456!';
+    const created = await service.createStudent(
+      fixture.principal,
+      {
+        expected_revision: 1,
+        actual_name: 'Login Projection Student',
+        username: 'login.projection.student',
+        relationship: 'dependent',
+        new_password: initialPassword,
+        password_confirmation: initialPassword,
+      },
+      mutationContext('login-projection-create', '6'),
+    );
+    const config = loadConfig({
+      NODE_ENV: 'test',
+      PUBLIC_BASE_URL: 'https://join.onetimeonetime.com',
+      APP_VERSION: 'test',
+      COMMIT_SHA: 'test',
+      OUTBOX_TRANSPORT_MODE: 'sink',
+      ONE_TIME_ACCOUNT_KEY: 'account-test',
+      ONE_TIME_PRODUCT_KEY: 'product-test',
+    });
+    const login = await authenticateUser({
+      pool,
+      config,
+      identifier: 'login.projection.student',
+      password: initialPassword,
+    });
+    expect(login).toMatchObject({ ok: true, user: { role: 'student' } });
+    if (!login.ok) throw new Error(`Expected Student login, got ${login.code}`);
+    await createSession({ pool, config, user: login.user });
+
+    const reset = await service.resetStudentCredential(
+      fixture.principal,
+      {
+        expected_revision: created.snapshot.revision,
+        student_id: 'student-login-projection',
+        new_password: replacementPassword,
+        password_confirmation: replacementPassword,
+      },
+      mutationContext('login-projection-reset', '7'),
+    );
+    expect(reset.snapshot.revision).toBe(3);
+    await expect(
+      authenticateUser({
+        pool,
+        config,
+        identifier: 'login.projection.student',
+        password: initialPassword,
+      }),
+    ).resolves.toMatchObject({ ok: false, code: 'INVALID_CREDENTIALS' });
+    await expect(
+      authenticateUser({
+        pool,
+        config,
+        identifier: 'login.projection.student',
+        password: replacementPassword,
+      }),
+    ).resolves.toMatchObject({ ok: true, user: { role: 'student' } });
+    const sessionReadback = await pool.query(
+      `SELECT revoked_at
+         FROM onetime.user_sessions
+        WHERE user_key = (
+          SELECT student_user_ref
+            FROM onetime.portal_student_access_state
+           WHERE learner_key = 'student-login-projection'
+        )`,
+    );
+    expect(sessionReadback.rows).toHaveLength(1);
+    expect(sessionReadback.rows[0]?.revoked_at).not.toBeNull();
+  });
+
+  it('preserves the exact unexpired family-signup window in the portal access projection', async () => {
+    const fixture = await seedParent(pool, 'free-access-projection', 0, 'free');
+    await concreteService(pool, 'student-free-access-projection').createStudent(
+      fixture.principal,
+      {
+        expected_revision: 1,
+        actual_name: 'Free Access Student',
+        username: 'free.access.student',
+        relationship: 'dependent',
+        new_password: 'safe-password-123',
+        password_confirmation: 'safe-password-123',
+      },
+      mutationContext('free-access-projection', '5'),
+    );
+    const projection = await pool.query(
+      `SELECT state, source_kind, effective_at, expires_at
+         FROM onetime.account_access_projections
+        WHERE household_key = $1`,
+      [fixture.householdId],
+    );
+    expect(projection.rows[0]).toMatchObject({
+      state: 'active',
+      source_kind: 'legacy_preview',
+      effective_at: now,
+      expires_at: new Date('2026-09-13T16:24:00.000Z'),
+    });
   });
 });
 
@@ -424,6 +631,8 @@ function concreteRepository(pool: DbPool) {
   return createPostgresParentHouseholdRepository(pool, {
     acceptedServiceAccountVersion: 'student-service-account-v1',
     immutableEvidenceReference: 'policy://student-service-account/v1',
+    portalAccountKey: 'account-test',
+    portalProductKey: 'product-test',
     clock: () => now,
   });
 }
@@ -462,7 +671,12 @@ async function applyMigrations(pool: DbPool, memory: boolean) {
   }
 }
 
-async function seedParent(pool: DbPool, suffix: string, activeStudents: number) {
+async function seedParent(
+  pool: DbPool,
+  suffix: string,
+  activeStudents: number,
+  accessState: 'active' | 'free' = 'active',
+) {
   const adultId = `adult-${suffix}`;
   const accountId = `account-${suffix}`;
   const householdId = `household-${suffix}`;
@@ -503,10 +717,23 @@ async function seedParent(pool: DbPool, suffix: string, activeStudents: number) 
         runtime_tier, verification_environment_id, last_transition_key,
         created_by_actor_kind, created_by_actor_key, last_mutated_by_actor_kind,
         last_mutated_by_actor_key, created_at, updated_at)
-     VALUES ('access',$1,'active',1,'one_time_mishnayos','isolated_staging','ci',$2,
-             'system','P12-test','system','P12-test',$3,$3)`,
-    [householdId, `transition-${householdId}`, now.toISOString()],
+     VALUES ('access',$1,$2,1,'one_time_mishnayos','isolated_staging','ci',$3,
+             'system','P12-test','system','P12-test',$4,$4)`,
+    [householdId, accessState, `transition-${householdId}`, now.toISOString()],
   );
+  if (accessState === 'free') {
+    await pool.query(
+      `INSERT INTO onetime.family_signup_access_projections
+         (household_id, product, runtime_tier, verification_environment_id,
+          access_branch, access_state, seat_limit, active_seat_count,
+          free_access_expires_at, checkout_required,
+          checkout_blocked_by_identity_review, rolling_trial_granted,
+          card_collected, signup_committed_at)
+       VALUES ($1,'one_time_mishnayos','isolated_staging','ci','immediate_free','free',
+               3,0,'2026-09-13T16:24:00.000Z',false,false,false,false,$2)`,
+      [householdId, now.toISOString()],
+    );
+  }
   await pool.query(
     `INSERT INTO onetime.v21_adult_sessions
        (session_id, human_account_id, active_role, active_household_id,

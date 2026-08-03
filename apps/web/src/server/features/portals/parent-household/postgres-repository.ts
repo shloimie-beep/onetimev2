@@ -29,6 +29,8 @@ type Scope = {
 export type ParentHouseholdPostgresOptions = {
   acceptedServiceAccountVersion: string;
   immutableEvidenceReference: string;
+  portalAccountKey: string;
+  portalProductKey: string;
   clock?: () => Date;
 };
 
@@ -43,6 +45,8 @@ export function createPostgresParentHouseholdRepository(
   const clock = options.clock ?? (() => new Date());
   assertOption(options.acceptedServiceAccountVersion, 'service-account policy version');
   assertOption(options.immutableEvidenceReference, 'service-account evidence reference');
+  assertOption(options.portalAccountKey, 'portal account key');
+  assertOption(options.portalProductKey, 'portal product key');
 
   return {
     async loadOwnedHousehold(principal) {
@@ -71,7 +75,24 @@ export function createPostgresParentHouseholdRepository(
           input.except_student_id ?? null,
         ],
       );
-      return (result.rowCount ?? 0) === 0;
+      if ((result.rowCount ?? 0) !== 0) return false;
+      const projected = await pool.query(
+        `SELECT learner_key
+           FROM onetime.portal_student_access_state
+          WHERE account_key = $1
+            AND product_key = $2
+            AND normalized_username = $3
+            AND status <> 'disabled'
+            AND ($4::text IS NULL OR learner_key <> $4)
+          LIMIT 1`,
+        [
+          options.portalAccountKey,
+          options.portalProductKey,
+          normalized,
+          input.except_student_id ?? null,
+        ],
+      );
+      return (projected.rowCount ?? 0) === 0;
     },
 
     async findMutation(input) {
@@ -119,7 +140,13 @@ export function createPostgresParentHouseholdRepository(
         const current = loaded.record.students.find(
           (student) => student.student_id === input.audit.student_id,
         );
-        await assertUsernameAvailable(client, loaded.scope, target.username, target.student_id);
+        await assertUsernameAvailable(
+          client,
+          loaded.scope,
+          options,
+          target.username,
+          target.student_id,
+        );
         const passwordHash = input.password_hash_factory
           ? await input.password_hash_factory()
           : null;
@@ -162,6 +189,15 @@ export function createPostgresParentHouseholdRepository(
             });
           }
         }
+
+        await synchronizePortalStudentProjection(
+          client,
+          loaded,
+          target,
+          input,
+          passwordHash,
+          options,
+        );
 
         await insertAudit(client, loaded, input, auditId);
         const readbackId = input.revoke_student_sessions
@@ -533,6 +569,7 @@ function validateStudent(student: ParentManagedStudent) {
 async function assertUsernameAvailable(
   db: Queryable,
   scope: Scope,
+  options: ParentHouseholdPostgresOptions,
   username: string,
   studentId: string,
 ) {
@@ -549,6 +586,24 @@ async function assertUsernameAvailable(
     [scope.product, scope.runtimeTier, scope.verificationEnvironmentId, username, studentId],
   );
   if ((result.rowCount ?? 0) > 0) {
+    throw new ParentHouseholdError(
+      PARENT_HOUSEHOLD_ERROR_CODES.usernameUnavailable,
+      'Choose another Student username.',
+    );
+  }
+  const projected = await db.query(
+    `SELECT learner_key
+       FROM onetime.portal_student_access_state
+      WHERE account_key = $1
+        AND product_key = $2
+        AND normalized_username = $3
+        AND learner_key <> $4
+        AND status <> 'disabled'
+      LIMIT 1
+      FOR UPDATE`,
+    [options.portalAccountKey, options.portalProductKey, username, studentId],
+  );
+  if ((projected.rowCount ?? 0) > 0) {
     throw new ParentHouseholdError(
       PARENT_HOUSEHOLD_ERROR_CODES.usernameUnavailable,
       'Choose another Student username.',
@@ -638,6 +693,400 @@ async function updateStudent(
     ],
   );
   if (result.rowCount !== 1) conflict();
+}
+
+async function synchronizePortalStudentProjection(
+  db: Queryable,
+  loaded: { record: ParentHouseholdRecord; scope: Scope },
+  target: ParentManagedStudent,
+  input: Parameters<ParentHouseholdRepository['commitMutation']>[0],
+  replacementPasswordHash: string | null,
+  options: ParentHouseholdPostgresOptions,
+) {
+  const occurredAt = input.context.occurred_at;
+  const accountKey = options.portalAccountKey;
+  const productKey = options.portalProductKey;
+  const household = await db.query(
+    `INSERT INTO onetime.portal_households
+       (household_key, account_key, product_key, display_name, status, version,
+        created_at, updated_at)
+     VALUES ($1,$2,$3,$4,'active',$5,$6,$6)
+     ON CONFLICT (household_key)
+     DO UPDATE SET
+       display_name = EXCLUDED.display_name,
+       status = 'active',
+       version = onetime.portal_households.version + 1,
+       updated_at = EXCLUDED.updated_at
+     WHERE onetime.portal_households.account_key = EXCLUDED.account_key
+       AND onetime.portal_households.product_key = EXCLUDED.product_key
+     RETURNING household_key`,
+    [
+      loaded.record.household_id,
+      accountKey,
+      productKey,
+      loaded.record.display_name,
+      input.next.revision,
+      occurredAt,
+    ],
+  );
+  if (household.rowCount !== 1) {
+    throw invariant('The portal household projection conflicts with another scope.');
+  }
+
+  await ensurePortalHouseholdAccessProjection(db, loaded, input, options);
+
+  const canonicalCredential = await db.query(
+    `SELECT credential_hash
+       FROM onetime.v21_student_profiles
+      WHERE student_id = $1
+        AND household_id = $2
+        AND product_key = $3
+        AND runtime_tier = $4
+        AND verification_environment_id = $5
+      LIMIT 1
+      FOR UPDATE`,
+    [
+      target.student_id,
+      loaded.record.household_id,
+      loaded.scope.product,
+      loaded.scope.runtimeTier,
+      loaded.scope.verificationEnvironmentId,
+    ],
+  );
+  if (canonicalCredential.rowCount !== 1) {
+    throw invariant('The canonical Student credential is unavailable for portal projection.');
+  }
+  const credentialHash = text(
+    (canonicalCredential.rows[0] as Row).credential_hash,
+    'canonical Student credential hash',
+  );
+  validatePasswordHash(credentialHash);
+  if (replacementPasswordHash !== null && replacementPasswordHash !== credentialHash) {
+    throw invariant('The canonical and replacement Student credential hashes disagree.');
+  }
+
+  const projectedLinks = await db.query(
+    `SELECT user_key
+       FROM onetime.account_learner_identity_links
+      WHERE account_key = $1
+        AND product_key = $2
+        AND learner_key = $3
+      LIMIT 2
+      FOR UPDATE`,
+    [accountKey, productKey, target.student_id],
+  );
+  if ((projectedLinks.rowCount ?? 0) > 1) {
+    throw invariant('The Student identity link is ambiguous.');
+  }
+  const projectedAccess = await db.query(
+    `SELECT access_state_key, student_user_ref
+       FROM onetime.portal_student_access_state
+      WHERE account_key = $1
+        AND product_key = $2
+        AND learner_key = $3
+      LIMIT 2
+      FOR UPDATE`,
+    [accountKey, productKey, target.student_id],
+  );
+  if ((projectedAccess.rowCount ?? 0) > 1) {
+    throw invariant('The Student access projection is ambiguous.');
+  }
+  const linkedUserKey = nullableText((projectedLinks.rows[0] as Row | undefined)?.user_key);
+  const accessUserKey = nullableText(
+    (projectedAccess.rows[0] as Row | undefined)?.student_user_ref,
+  );
+  if (linkedUserKey && accessUserKey && linkedUserKey !== accessUserKey) {
+    throw invariant('The Student identity projections disagree.');
+  }
+  const userKey =
+    linkedUserKey ??
+    accessUserKey ??
+    stableId('student_user', accountKey, productKey, target.student_id);
+  const accessStateKey =
+    nullableText((projectedAccess.rows[0] as Row | undefined)?.access_state_key) ??
+    stableId('student_access', accountKey, productKey, target.student_id);
+  const archived = target.state === 'archived';
+  const displayName = target.display_name ?? target.actual_name;
+
+  const learner = await db.query(
+    `INSERT INTO onetime.portal_learners
+       (learner_key, account_key, product_key, household_key, display_name,
+        learner_status, version, created_at, updated_at, archived_at)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$8,$9)
+     ON CONFLICT (learner_key)
+     DO UPDATE SET
+       household_key = EXCLUDED.household_key,
+       display_name = EXCLUDED.display_name,
+       learner_status = EXCLUDED.learner_status,
+       version = onetime.portal_learners.version + 1,
+       updated_at = EXCLUDED.updated_at,
+       archived_at = EXCLUDED.archived_at,
+       suspended_at = NULL
+     WHERE onetime.portal_learners.account_key = EXCLUDED.account_key
+       AND onetime.portal_learners.product_key = EXCLUDED.product_key
+     RETURNING learner_key`,
+    [
+      target.student_id,
+      accountKey,
+      productKey,
+      loaded.record.household_id,
+      displayName,
+      archived ? 'archived' : 'active',
+      target.version,
+      occurredAt,
+      archived ? occurredAt : null,
+    ],
+  );
+  if (learner.rowCount !== 1) {
+    throw invariant('The portal learner projection conflicts with another scope.');
+  }
+
+  const accountUser = await db.query(
+    `INSERT INTO onetime.account_users
+       (user_key, account_key, product_key, email_normalized, display_name, role,
+        password_hash, password_updated_at, mfa_capable, status, security_version,
+        security_policy_updated_at, created_at, updated_at)
+     VALUES ($1,$2,$3,$4,$5,'student',$6,$7,false,$8,$9,$7,$7,$7)
+     ON CONFLICT (user_key)
+     DO UPDATE SET
+       email_normalized = EXCLUDED.email_normalized,
+       display_name = EXCLUDED.display_name,
+       role = 'student',
+       password_hash = EXCLUDED.password_hash,
+       password_updated_at = CASE
+         WHEN $10::boolean THEN EXCLUDED.password_updated_at
+         ELSE onetime.account_users.password_updated_at
+       END,
+       mfa_capable = false,
+       status = EXCLUDED.status,
+       security_version = onetime.account_users.security_version +
+         CASE WHEN $11::boolean THEN 1 ELSE 0 END,
+       security_policy_updated_at = CASE
+         WHEN $11::boolean THEN EXCLUDED.security_policy_updated_at
+         ELSE onetime.account_users.security_policy_updated_at
+       END,
+       updated_at = EXCLUDED.updated_at
+     WHERE onetime.account_users.account_key = EXCLUDED.account_key
+       AND onetime.account_users.product_key = EXCLUDED.product_key
+       AND onetime.account_users.role = 'student'
+     RETURNING security_version`,
+    [
+      userKey,
+      accountKey,
+      productKey,
+      `student:${target.username}`,
+      displayName,
+      credentialHash,
+      occurredAt,
+      archived ? 'disabled' : 'active',
+      target.credential_version,
+      replacementPasswordHash !== null,
+      input.revoke_student_sessions,
+    ],
+  );
+  if (accountUser.rowCount !== 1) {
+    throw invariant('The Student account projection conflicts with another identity.');
+  }
+  const securityVersion = integer(
+    (accountUser.rows[0] as Row).security_version,
+    'Student security version',
+  );
+
+  if (input.revoke_student_sessions) {
+    await db.query(
+      `UPDATE onetime.user_sessions
+          SET revoked_at = COALESCE(revoked_at, $4)
+        WHERE account_key = $1
+          AND product_key = $2
+          AND user_key = $3
+          AND revoked_at IS NULL`,
+      [accountKey, productKey, userKey, occurredAt],
+    );
+  }
+
+  await exactlyOne(
+    db,
+    `INSERT INTO onetime.account_learner_identity_links
+       (link_key, account_key, product_key, household_key, learner_key, user_key,
+        link_state, created_at, suspended_at, disabled_at)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,NULL,$9)
+     ON CONFLICT (account_key, product_key, learner_key)
+     DO UPDATE SET
+       household_key = EXCLUDED.household_key,
+       user_key = EXCLUDED.user_key,
+       link_state = EXCLUDED.link_state,
+       suspended_at = NULL,
+       disabled_at = EXCLUDED.disabled_at`,
+    [
+      stableId('student_link', accountKey, productKey, target.student_id),
+      accountKey,
+      productKey,
+      loaded.record.household_id,
+      target.student_id,
+      userKey,
+      archived ? 'disabled' : 'active',
+      occurredAt,
+      archived ? occurredAt : null,
+    ],
+    'Student identity link projection',
+  );
+
+  const operation = portalCredentialOperation(input.audit.action);
+  await exactlyOne(
+    db,
+    `INSERT INTO onetime.portal_student_access_state
+       (access_state_key, account_key, product_key, household_key, learner_key,
+        student_user_ref, status, last_operation_type, last_operation_at, version,
+        created_at, updated_at, username_display, normalized_username,
+        password_hash_ref, credential_status, password_version, security_version,
+        failed_login_count, rate_limited_until, last_reset_at,
+        last_session_revoked_at, last_parent_actor_ref, credential_policy_version)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,CASE WHEN $8::text IS NULL THEN NULL ELSE $9 END,
+             $10,$9,$9,$11,$11,$12,$13,$14,$15,
+             0,NULL,$16,$17,$18,'v21-parent-managed-argon2id-v1')
+     ON CONFLICT (access_state_key)
+     DO UPDATE SET
+       household_key = EXCLUDED.household_key,
+       learner_key = EXCLUDED.learner_key,
+       student_user_ref = EXCLUDED.student_user_ref,
+       status = EXCLUDED.status,
+       last_operation_type = COALESCE(EXCLUDED.last_operation_type,
+                                      onetime.portal_student_access_state.last_operation_type),
+       last_operation_at = COALESCE(EXCLUDED.last_operation_at,
+                                    onetime.portal_student_access_state.last_operation_at),
+       version = onetime.portal_student_access_state.version + 1,
+       updated_at = EXCLUDED.updated_at,
+       username_display = EXCLUDED.username_display,
+       normalized_username = EXCLUDED.normalized_username,
+       password_hash_ref = EXCLUDED.password_hash_ref,
+       credential_status = EXCLUDED.credential_status,
+       password_version = EXCLUDED.password_version,
+       security_version = EXCLUDED.security_version,
+       failed_login_count = CASE WHEN $19::boolean THEN 0
+                                 ELSE onetime.portal_student_access_state.failed_login_count END,
+       rate_limited_until = CASE WHEN $19::boolean THEN NULL
+                                 ELSE onetime.portal_student_access_state.rate_limited_until END,
+       last_reset_at = COALESCE(EXCLUDED.last_reset_at,
+                                onetime.portal_student_access_state.last_reset_at),
+       last_session_revoked_at = COALESCE(EXCLUDED.last_session_revoked_at,
+                                          onetime.portal_student_access_state.last_session_revoked_at),
+       last_parent_actor_ref = EXCLUDED.last_parent_actor_ref,
+       credential_policy_version = EXCLUDED.credential_policy_version
+     WHERE onetime.portal_student_access_state.account_key = EXCLUDED.account_key
+       AND onetime.portal_student_access_state.product_key = EXCLUDED.product_key`,
+    [
+      accessStateKey,
+      accountKey,
+      productKey,
+      loaded.record.household_id,
+      target.student_id,
+      userKey,
+      archived ? 'disabled' : 'active',
+      operation,
+      occurredAt,
+      target.version,
+      target.username,
+      credentialHash,
+      archived ? 'disabled' : 'parent_managed',
+      target.credential_version,
+      securityVersion,
+      input.audit.action === 'student_credential_reset' ? occurredAt : null,
+      input.revoke_student_sessions ? occurredAt : null,
+      loaded.scope.ownerHumanAccountId,
+      input.audit.action === 'student_credential_reset',
+    ],
+    'Student access projection',
+  );
+}
+
+async function ensurePortalHouseholdAccessProjection(
+  db: Queryable,
+  loaded: { record: ParentHouseholdRecord; scope: Scope },
+  input: Parameters<ParentHouseholdRepository['commitMutation']>[0],
+  options: ParentHouseholdPostgresOptions,
+) {
+  const current = await db.query(
+    `SELECT access_key
+       FROM onetime.account_access_projections
+      WHERE account_key = $1
+        AND product_key = $2
+        AND household_key = $3
+      LIMIT 2
+      FOR UPDATE`,
+    [options.portalAccountKey, options.portalProductKey, loaded.record.household_id],
+  );
+  if (current.rowCount === 1) return;
+  if ((current.rowCount ?? 0) > 1) {
+    throw invariant('The portal household access projection is ambiguous.');
+  }
+
+  let effectiveAt = input.context.occurred_at;
+  let expiresAt: string | null = null;
+  if (loaded.record.access_state === 'free' || loaded.record.access_state === 'grace') {
+    const signup = await db.query(
+      `SELECT free_access_expires_at, signup_committed_at
+         FROM onetime.family_signup_access_projections
+        WHERE household_id = $1
+          AND product = $2
+          AND runtime_tier = $3
+          AND verification_environment_id = $4
+        LIMIT 2
+        FOR UPDATE`,
+      [
+        loaded.record.household_id,
+        loaded.scope.product,
+        loaded.scope.runtimeTier,
+        loaded.scope.verificationEnvironmentId,
+      ],
+    );
+    if (signup.rowCount !== 1) {
+      throw invariant('The time-bounded household access source is unavailable.');
+    }
+    expiresAt = timestamp((signup.rows[0] as Row).free_access_expires_at, 'free-access expiration');
+    effectiveAt = timestamp((signup.rows[0] as Row).signup_committed_at, 'signup commit time');
+    if (Date.parse(expiresAt) <= Date.parse(input.context.occurred_at)) {
+      throw invariant('The time-bounded household access source has expired.');
+    }
+  }
+
+  await exactlyOne(
+    db,
+    `INSERT INTO onetime.account_access_projections
+       (access_key, account_key, product_key, household_key, state, source_kind,
+        effective_at, expires_at, opaque_source_reference, source_revision,
+        source_updated_at, source_request_hash, policy_version, revocation_reason,
+        access_version, last_event_key, created_at, updated_at)
+     VALUES ($1,$2,$3,$4,$5,'legacy_preview',$6,$7,$8,$9,$10,$11,
+             'v21-parent-student-compatibility-v1',NULL,1,$12,$10,$10)`,
+    [
+      stableId(
+        'account_access',
+        options.portalAccountKey,
+        options.portalProductKey,
+        loaded.record.household_id,
+      ),
+      options.portalAccountKey,
+      options.portalProductKey,
+      loaded.record.household_id,
+      loaded.record.access_state === 'free' ? 'active' : loaded.record.access_state,
+      effectiveAt,
+      expiresAt,
+      stableId('v21_access_source', loaded.record.household_id),
+      input.expected_revision,
+      input.context.occurred_at,
+      input.context.canonical_request_hash,
+      stableId('v21_access_event', input.context.idempotency_key),
+    ],
+    'portal household access projection',
+  );
+}
+
+function portalCredentialOperation(operation: ParentHouseholdMutationOperation) {
+  if (operation === 'student_created') return 'setup' as const;
+  if (operation === 'student_archived') return 'suspend' as const;
+  if (operation === 'student_restored') return 'restore' as const;
+  if (operation === 'student_credential_reset') return 'reset' as const;
+  return null;
 }
 
 async function insertServiceAcceptance(
@@ -990,6 +1439,14 @@ function text(value: unknown, name: string) {
 function nullableText(value: unknown) {
   if (value === null || value === undefined) return null;
   return text(value, 'nullable text');
+}
+
+function timestamp(value: unknown, name: string) {
+  const parsed = value instanceof Date ? value : typeof value === 'string' ? new Date(value) : null;
+  if (!parsed || !Number.isFinite(parsed.getTime())) {
+    throw invariant(`The ${name} is missing or invalid.`);
+  }
+  return parsed.toISOString();
 }
 
 function integer(value: unknown, name: string) {

@@ -22,7 +22,12 @@ import { inTransaction } from '../../../db/src/index.ts';
 import { householdHasLearningAccess } from '../access/service.ts';
 import { normalizeEmail, stableKey } from '../lead/normalize.ts';
 import { consumeRateLimitBudgets } from '../security/rate-limit.ts';
-import { evaluatePassword, normalizeLegacyAuthRole, unicodeCodePointLength } from './policy.ts';
+import {
+  evaluatePassword,
+  normalizeLegacyAuthRole,
+  unicodeCodePointLength,
+  verifyAuthPassword,
+} from './policy.ts';
 
 const ARGON2_MEMORY_KIB = 19_456;
 const ARGON2_PASSES = 2;
@@ -122,6 +127,9 @@ export function hashPassword(password: string) {
 }
 
 export function verifyPassword(password: string, storedHash: string) {
+  if (storedHash.startsWith('argon2id-v1$')) {
+    return verifyAuthPassword(password, storedHash);
+  }
   const parts = storedHash.split('$');
   if (parts.length !== 5 || parts[0] !== 'argon2id' || parts[1] !== 'v=19') return false;
   const encodedParams = parts[2];
@@ -2102,6 +2110,9 @@ function looksLikeEmail(value: string) {
 }
 
 function verifyStudentPasswordHashRef(password: string, storedHashRef: string) {
+  if (storedHashRef.startsWith('argon2id-v1$')) {
+    return verifyAuthPassword(password, storedHashRef);
+  }
   if (storedHashRef.startsWith('argon2id$')) return verifyPassword(password, storedHashRef);
   const parts = storedHashRef.split(':');
   if (parts.length !== 4 || parts[0] !== 'scrypt' || parts[1] !== 'v1') {
