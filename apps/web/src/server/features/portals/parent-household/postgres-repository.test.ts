@@ -26,6 +26,7 @@ const migrationFiles = [
   '0001_onetime_lead_slice.sql',
   '0002_crm_auth_core.sql',
   '0003_ot27_security_crm_repair.sql',
+  '1300_ot46_billing_foundation.sql',
   '1500_ot52_portal_households_learners.sql',
   '1700_ot71_account_lifecycle.sql',
   '1900_ot83_household_portal_foundation.sql',
