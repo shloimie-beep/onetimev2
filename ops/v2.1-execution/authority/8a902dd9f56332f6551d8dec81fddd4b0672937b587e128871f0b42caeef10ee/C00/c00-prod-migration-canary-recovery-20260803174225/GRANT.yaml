@@ -1,0 +1,95 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+authority_id: c00-prod-migration-canary-recovery-20260803174225
+authority_kind: derived_candidate_bound_single_forward_migration_then_progressive_canary_recovery
+task_id: C00
+candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+candidate_binding_status: exact_frozen_candidate_active_on_both_services_sources_disconnected
+candidate_manifest_commit_sha: ca930d456f3739af5ce3303f4fe880325136d56a
+repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+canonical_path: ops/v2.1-execution/authority/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-migration-canary-recovery-20260803174225/GRANT.yaml
+source_grant_id: ot-v21-production-source-grant-20260729
+source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+source_approval_evidence_path: ops/v2.1-execution/authority/none/C00/ot-v21-production-source-grant-20260729/APPROVAL.md
+source_approval_evidence_digest: 8c95a959f79aba0ac34fa0fcb6cb463cceac9aeb2bb52da1603d39db3e2c33c2
+predecessor_authority_id: c00-prod-migration-canary-recovery-20260803173436
+predecessor_effect_event_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-migration-canary-recovery-20260803173436/events/003-CLOSED.yaml
+predecessor_stop_reason: read_only_preflight_cancelled_before_effect_because_predecessor_bound_Windows_CRLF_working_tree_hash_not_candidate_Git_artifact_hash
+grant_status_at_issue: active
+approved_by: Shloimie Dratler
+scope:
+  provider: One Time application and database on Railway production
+  workspace_id: d2428a88-aa7e-4369-b396-72060bf720f4
+  project_id: ce55ef20-1418-4ad3-aafa-f877fb992dc8
+  environment_id: f911acfc-e206-44df-a569-9d69d709b94b
+  web_service_id: d175ad94-5e3c-41c2-8cbc-daa1a299077d
+  worker_service_id: 742f60ed-dc2f-4321-85d0-019003d4e9b9
+  web_candidate_deployment_id: 7e355bb1-1938-4689-8723-7fd83b48719d
+  worker_candidate_deployment_id: 64a4edff-f566-4057-8ebe-c350bba5314a
+  migration_id: 2259_vimeo_mishnayos_catalog_adoption
+  migration_git_blob_sha1: 7525345bbe69fcf79e8b7728b0e704ec0f915034
+  migration_git_artifact_raw_sha256: fae76e3a62930a099bbbe679e9d0ba6bb977587b5eacfeca50984f26fc851b2b
+  migration_normalized_lf_sha256: fae76e3a62930a099bbbe679e9d0ba6bb977587b5eacfeca50984f26fc851b2b
+  migration_runtime_artifact_sha256: fae76e3a62930a099bbbe679e9d0ba6bb977587b5eacfeca50984f26fc851b2b
+  application_origin: https://app.onetimeonetime.com
+  fixture_id: c00_prod_portal_canary_8a902dd9_20260803a
+  fixture_destination_sha256: 668a11adfc0081d872327eb23b0248cee690cb96270ecaa63d8087401b33ff21
+fencing_token: fence-2907caac-c4db-4277-96d3-7a9bcda5ddf0
+lock: production:deployment
+provider_lock_lease_id: 08428d09-15b9-46d2-b2e8-3283fdeb0405
+allowed_operation: from the exact cancelled predecessor state only, read back an 89-row migration ledger ending at 2258 with 2259 absent and runtime migration bytes matching the bound candidate Git artifact; run the active candidate artifact's sole npm run db:migrate command once so only immutable migration 2259 applies; verify 90 rows ending at 2259 with exact checksum, zero pending, and zero issues; then resume only the existing protected fixture with one Parent-managed Student lifecycle canary, delete ONE_TIME_VERIFICATION_ENVIRONMENT_ID from both exact services, accept at most one exact-candidate restoration deployment per service, and reconcile production_read_only behavior with zero external provider effects
+maximum_effect_count: 8
+maximum_effect_value: one_exact_forward_migration_zero_additional_Parents_or_households_one_Student_two_variable_deletions_at_most_two_exact_candidate_restoration_deployments_zero_source_domain_provider_GHL_or_billing_effects
+approved_fixture_ids:
+  - c00_prod_portal_canary_8a902dd9_20260803a
+operator_identity: C00
+approved_at: '2026-08-03T17:42:25Z'
+recorded_at: '2026-08-03T17:42:25Z'
+expires_at: '2026-08-03T18:37:25Z'
+effect_budget:
+  database_migrations_max: 1
+  exact_allowed_migration_id: 2259_vimeo_mishnayos_catalog_adoption
+  additional_parent_accounts_created_or_updated_max: 0
+  additional_households_created_or_updated_max: 0
+  student_accounts_created_or_updated_max: 1
+  student_credential_rotations_max: 1
+  student_lifecycle_transitions_max: 4
+  variable_deletions_max: 2
+  production_deployments_max: 2
+  source_connections_or_disconnections_max: 0
+  Railway_or_DNS_domain_mutations_max: 0
+  external_provider_sends_or_enrollments_max: 0
+  GHL_mutations_max: 0
+  charges_max: 0
+  broad_audience_activations_max: 0
+prerequisite_review:
+  control_head_sha: 51781a810e7cffaa8093ccc648315c77c1a95514
+  candidate_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+  candidate_hosted_pg18: 90_of_90_through_2259_replay_and_restore_equal
+  live_migration_ledger: 89_rows_through_2258_2259_absent
+  runtime_and_candidate_migration_2259_bytes: exact_fae76e3a62930a099bbbe679e9d0ba6bb977587b5eacfeca50984f26fc851b2b
+  partial_canary_readback: one_Parent_one_household_zero_Student_one_sink_outbox_intent
+  fixture_hash_verified: true
+  delivery_controls: sink_sink_sink_resend_false_highlevel_disabled_real_transports_false
+  app_TLS: pending_read_only_provider_validation
+  broad_activation_authorized: false
+rollback_and_reconciliation:
+  - perform a fresh live ledger and runtime artifact preflight immediately before migration and stop unless it is exactly 89 through 2258 with 2259 absent and SHA-256 fae76e3a62930a099bbbe679e9d0ba6bb977587b5eacfeca50984f26fc851b2b
+  - invoke only npm run db:migrate from the active exact-candidate web artifact and stop if output names any applied migration other than 2259
+  - migration 2259 is forward-only; never edit, delete, or rewrite any applied migration or live row
+  - verify ledger count 90, latest 2259, exact checksum fae76e3a62930a099bbbe679e9d0ba6bb977587b5eacfeca50984f26fc851b2b, pending zero, and candidate verification status verified after the call
+  - preserve the existing Parent and household; create no additional Parent or household and no Student email
+  - keep both deployment-trigger queries empty and preserve exact ca442fa43544c89e135fe751b177e1ff473b9e57 source
+  - restore ONE_TIME_VERIFICATION_ENVIRONMENT_ID to absent production_read_only behavior on both services
+  - require zero email, WhatsApp, Telegram, payment, GHL, audience, or broad activation effect
+  - release the lock only after exact migration, canary, runtime, deployment, and provider readback reconciliation
+stop_conditions:
+  - source grant is revoked or expired
+  - live ledger preflight is not exactly 89 rows ending at 2258 with 2259 absent
+  - candidate Git artifact, runtime artifact, or normalized migration 2259 SHA-256 differs from fae76e3a62930a099bbbe679e9d0ba6bb977587b5eacfeca50984f26fc851b2b
+  - any migration other than 2259 would apply or the migration command reports more than one applied row
+  - either active service differs from the bound exact candidate or any deployment trigger exists
+  - the existing fixture readback differs from one Parent, one household, zero Student, and the approved fixture SHA-256
+  - the operation would send, enroll, mutate GHL, charge, touch a customer, collect a Student email, modify DNS, connect a source, or change the disputed public cutoff
+contains_secret: false
+immutable: true

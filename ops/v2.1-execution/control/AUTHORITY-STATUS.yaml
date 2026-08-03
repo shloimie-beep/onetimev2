@@ -759,23 +759,51 @@ authorities:
     grant_digest: d644cc3c6144f9828c8e3b3db0711ec43d2961df67b2b5df7b06b7f35d0975c9
     source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
     predecessor_authority_id: c00-prod-progressive-recovery-20260803170559
-    status: active
+    status: consumed
     expires_at: '2026-08-03T18:29:36Z'
     latest_revocation_path: null
     latest_revocation_digest: null
     provider_lock: production:deployment
     provider_lock_lease_id: 165c1b12-5a33-4913-94c2-d4c61e7809f2
     fencing_token: fence-eafc384b-0e14-45a9-ad17-9357f18395f1
-    effect_authority_usable: true
+    effect_authority_usable: false
     candidate_binding_status: exact_frozen_candidate_active_on_both_services_sources_disconnected
     candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
     repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
     source_branch: codex/ot-live-progressive-portal-20260803
     maximum_effect_count: 8
     prerequisite_review: exact_candidate_active_hosted_pg18_90_through_2259_live_89_through_2258_one_Parent_one_household_zero_Student_sink_controls
+    disposition: cancelled_and_closed_before_effect_after_read_only_preflight_found_CRLF_working_tree_hash_was_not_candidate_Git_artifact_hash
+    stop_event_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-migration-canary-recovery-20260803173436/events/003-CLOSED.yaml
+    successor_authority_id: c00-prod-migration-canary-recovery-20260803174225
+    lock_released_at: '2026-08-03T17:42:25Z'
+    checked_at: '2026-08-03T17:42:25Z'
+    state_based_on_control_head_sha: 51781a810e7cffaa8093ccc648315c77c1a95514
+  c00-prod-migration-canary-recovery-20260803174225:
+    schema_version: 1
+    execution_id: OT-V21-PRODUCTION
+    authority_id: c00-prod-migration-canary-recovery-20260803174225
+    authority_kind: derived_candidate_bound_single_forward_migration_then_progressive_canary_recovery
+    grant_digest: db4b7377ff4e1b23ab4b1c2b1c318cbe5164cfa080df37497c114d27a1e8648d
+    source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+    predecessor_authority_id: c00-prod-migration-canary-recovery-20260803173436
+    status: active
+    expires_at: '2026-08-03T18:37:25Z'
+    latest_revocation_path: null
+    latest_revocation_digest: null
+    provider_lock: production:deployment
+    provider_lock_lease_id: 08428d09-15b9-46d2-b2e8-3283fdeb0405
+    fencing_token: fence-2907caac-c4db-4277-96d3-7a9bcda5ddf0
+    effect_authority_usable: true
+    candidate_binding_status: exact_frozen_candidate_active_on_both_services_sources_disconnected
+    candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+    repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+    source_branch: codex/ot-live-progressive-portal-20260803
+    maximum_effect_count: 8
+    prerequisite_review: exact_candidate_active_Git_and_runtime_2259_artifact_fae76e_live_89_through_2258_one_Parent_one_household_zero_Student_sink_controls
     disposition: reserved_for_one_exact_forward_migration_2259_then_remaining_Student_canary_and_two_read_only_restoration_deployments
-    checked_at: '2026-08-03T17:34:36Z'
-    state_based_on_control_head_sha: aa54f59a43b16402ed6712744286146a9c85c24b
+    checked_at: '2026-08-03T17:42:25Z'
+    state_based_on_control_head_sha: 51781a810e7cffaa8093ccc648315c77c1a95514
   c00-prod-progressive-dns-20260803162734:
     schema_version: 1
     execution_id: OT-V21-PRODUCTION

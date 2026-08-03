@@ -1,0 +1,56 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prod-migration-canary-recovery-20260803174225
+event_sequence: 1
+previous_event_digest: none
+state: RESERVED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-migration-canary-recovery-20260803174225/events/001-RESERVED.yaml
+current_pointer_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-migration-canary-recovery-20260803174225/CURRENT.yaml
+candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+candidate_manifest_commit_sha: ca930d456f3739af5ce3303f4fe880325136d56a
+repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+source_branch: codex/ot-live-progressive-portal-20260803
+authority_id: c00-prod-migration-canary-recovery-20260803174225
+authority_grant_digest: db4b7377ff4e1b23ab4b1c2b1c318cbe5164cfa080df37497c114d27a1e8648d
+authority_status_index_digest: f4b92a273f4ef061be7edda04008f9059ee845faa9f2ef89cc30162d3bcd9a60
+authority_status_entry_digest: 5d56ba3b04b7c994160f55050a410c9c84e517c933a62319330e18e88e77f74d
+latest_revocation_digest: none
+lock: production:deployment
+lock_lease_id: 08428d09-15b9-46d2-b2e8-3283fdeb0405
+holder_claim_id: 58d077b3-7d0c-45b9-9e34-f9a15d405471
+fencing_token: fence-2907caac-c4db-4277-96d3-7a9bcda5ddf0
+provider_identity:
+  project_id: ce55ef20-1418-4ad3-aafa-f877fb992dc8
+  environment_id: f911acfc-e206-44df-a569-9d69d709b94b
+  web_service_id: d175ad94-5e3c-41c2-8cbc-daa1a299077d
+  worker_service_id: 742f60ed-dc2f-4321-85d0-019003d4e9b9
+operation: apply_only_exact_candidate_Git_artifact_migration_2259_then_resume_existing_Student_canary_and_read_only_restore
+effect_budget:
+  database_migrations_max: 1
+  exact_allowed_migration_id: 2259_vimeo_mishnayos_catalog_adoption
+  additional_Parent_household_Student_canaries_max: 0_0_1
+  variable_deletions_max: 2
+  production_deployments_max: 2
+  source_domain_provider_GHL_billing_effects_max: 0
+provider_readback_before:
+  web_deployment_id: 7e355bb1-1938-4689-8723-7fd83b48719d
+  web_status_and_source: SUCCESS_ca442fa43544c89e135fe751b177e1ff473b9e57
+  worker_deployment_id: 64a4edff-f566-4057-8ebe-c350bba5314a
+  worker_status_and_source: SUCCESS_ca442fa43544c89e135fe751b177e1ff473b9e57
+  deployment_trigger_count_web_worker: 0_0
+  production_migration_ledger_count: 89
+  production_latest_migration: 2258_v21_configurable_launch_timing
+  candidate_migration_file_count: 90
+  candidate_latest_migration: 2259_vimeo_mishnayos_catalog_adoption
+  migration_2259_git_blob_sha1: 7525345bbe69fcf79e8b7728b0e704ec0f915034
+  migration_2259_candidate_and_runtime_sha256: fae76e3a62930a099bbbe679e9d0ba6bb977587b5eacfeca50984f26fc851b2b
+  existing_fixture_counts: one_Parent_one_household_zero_Student_one_sink_outbox_intent
+  fixture_destination_sha256: 668a11adfc0081d872327eb23b0248cee690cb96270ecaa63d8087401b33ff21
+  delivery_controls: sink_sink_sink_resend_false_highlevel_disabled_real_transports_false
+  app_TLS: pending_Railway_certificate_validation
+reserved_at: '2026-08-03T17:42:25Z'
+lease_expires_at: '2026-08-03T18:37:25Z'
+state_based_on_head_sha: 51781a810e7cffaa8093ccc648315c77c1a95514
+contains_secret: false
+immutable: true
