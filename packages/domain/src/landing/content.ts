@@ -6,30 +6,36 @@ export const campaign = {
 
 export const landingContent = {
   seo: {
-    title: 'Mishnayos Made Memorable | One Time Mishnayos',
-    description: 'Join Rabbi Eli Scheller live from anywhere, then review every class anytime.',
+    title: 'Help Your Son Love Learning Mishnayos | One Time Mishnayos',
+    description:
+      'A fast-paced live-streamed class with Rabbi Eli Scheller, with clear explanations and review so boys understand and remember what they learn.',
     canonical: 'https://join.onetimeonetime.com/',
-    ogTitle: 'Mishnayos Made Memorable',
-    ogDescription: 'Join Rabbi Eli Scheller live from anywhere, then review every class anytime.',
+    ogTitle: 'Help Your Son Love Learning Mishnayos',
+    ogDescription:
+      'A fast-paced live-streamed class with Rabbi Eli Scheller. One perek each class day, with clear explanations and review.',
   },
   hero: {
     eyebrow: 'LIVE ONLINE + ON-DEMAND',
-    titleLines: ['MISHNAYOS', 'MADE MEMORABLE'],
-    supporting: 'Join Rabbi Eli Scheller live from anywhere, then review every class anytime.',
-    schedule: 'Sunday–Thursday at 7:00 PM Jerusalem time',
+    titleLines: ['HELP YOUR SON', 'LOVE LEARNING', 'MISHNAYOS'],
+    supporting:
+      'A fast-paced live-streamed class with Rabbi Eli Scheller. The boys complete one perek each class day, with clear explanations and review so they understand and remember what they learn.',
+    schedule: 'LIVE SUNDAY–THURSDAY · 7:00 PM ISRAEL TIME',
+    firstClass: 'Class begins Sunday, August 16, 2026 at 7:00 PM Asia/Jerusalem.',
+    freeAccessCutoff: 'Free access cutoff: Friday, September 11, 2026 at 6:00 PM Asia/Jerusalem.',
     cta: {
-      label: 'JOIN FREE',
+      label: 'Enroll Your Son Free',
       href: '/signup',
       analyticsEvent: 'landing.signup.cta.clicked',
       analyticsPlacement: 'hero',
     },
-    note: 'No credit card • Up to three learners per family',
+    note: 'No credit card • Up to three Students per Family • No automatic charge',
     kickerLines: ['LIVE ONLINE', 'ON-DEMAND REVIEW'],
     heading: 'Mishnayos made memorable.',
   },
   receive: {
     heading: 'Everything He Needs to Learn, Review, and Remember',
-    detailLine: 'Live Sunday–Thursday at 7:00 p.m. Jerusalem time.',
+    detailLine:
+      'Live Sunday–Thursday at 7:00 p.m. Israel time, completing one perek each class day.',
     eyebrow: 'A COMPLETE DIGITAL TORAH-LEARNING EXPERIENCE',
     iconLabel: 'Live class',
     title: 'Live Mishnayos—plus the tools to make it stick.',
@@ -122,10 +128,6 @@ export const landingContent = {
         body: 'A real live class, connection with a rabbi, and a wider learning community.',
       },
       {
-        lead: 'SCHOOLS',
-        body: 'Add a complete live Mishnayos class to the school day.',
-      },
-      {
         lead: 'LOCAL STUDENTS',
         body: "Join Rabbi Scheller's daily learning community from Ramat Beit Shemesh.",
       },
@@ -163,14 +165,10 @@ export const landingContent = {
     ],
   },
   enrollment: {
-    heading: 'Choose the right entry',
+    heading: 'Enroll your Family',
     family: {
       title: 'Family',
       body: 'Create one adult-managed account with up to three learner seats. The adult supplies the account email; Student email is not required.',
-    },
-    school: {
-      title: 'School',
-      body: 'Send a School inquiry for manual follow-up. A School inquiry does not create learner access, enroll an audience, or start messages.',
     },
   },
   access: {

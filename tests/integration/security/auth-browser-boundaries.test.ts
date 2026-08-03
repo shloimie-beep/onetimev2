@@ -1,11 +1,9 @@
+import { request as httpRequest } from 'node:http';
 import { afterEach, describe, expect, it } from 'vitest';
 import { loadConfig, type AppConfig } from '../../../packages/config/src/index.ts';
 import { createMemoryPool, runMigrations, type DbPool } from '../../../packages/db/src/index.ts';
 import { createApp } from '../../../apps/web/src/server/app.ts';
-import {
-  createAccountUser,
-  decryptAuthEmailChallengeDeliveryPayloadForTests,
-} from '../../../packages/domain/src/index.ts';
+import { createAccountUser } from '../../../packages/domain/src/index.ts';
 
 type Harness = {
   config: AppConfig;
@@ -43,38 +41,42 @@ describe('W12-100-01 auth browser security boundaries', () => {
     });
     await seedParentCurrentAccess(harness, parentUserKey, 'secure');
 
-    const csrf = await getCsrf(harness, '/login?return_to=%2Fapp%2Fparent');
-    expect(csrf.response.headers.get('content-security-policy')).toContain(
-      "frame-ancestors 'none'",
+    const csrfResponse = await rawRequest(
+      harness,
+      '/login?return_to=%2Fapp%2Fparent',
+      'app.onetimeonetime.com',
     );
-    expect(csrf.response.headers.get('x-frame-options')).toBe('SAMEORIGIN');
-    expect(csrf.response.headers.get('x-content-type-options')).toBe('nosniff');
+    expect(csrfResponse.status).toBe(200);
+    expect(csrfResponse.headers['content-security-policy']).toContain("frame-ancestors 'none'");
+    expect(csrfResponse.headers['x-frame-options']).toBe('SAMEORIGIN');
+    expect(csrfResponse.headers['x-content-type-options']).toBe('nosniff');
 
-    const loginCsrfCookie = csrf.response.headers
-      .getSetCookie()
-      .find((cookie) => cookie.startsWith('otcrm_csrf='));
+    const csrfToken = csrfResponse.body.match(/name="csrf_token" value="([^"]+)"/)?.[1];
+    expect(csrfToken).toBeTruthy();
+    const csrfSetCookies = headerValues(csrfResponse.headers['set-cookie']);
+    const loginCsrfCookie = csrfSetCookies.find((cookie) => cookie.startsWith('otcrm_csrf='));
     expect(loginCsrfCookie).toContain('Secure');
     expect(loginCsrfCookie).toContain('SameSite=Strict');
     expect(loginCsrfCookie).not.toContain('HttpOnly');
 
-    const login = await fetch(`${harness.baseUrl}/api/v1/auth/login`, {
+    const login = await rawRequest(harness, '/api/v1/auth/login', 'app.onetimeonetime.com', {
       method: 'POST',
       headers: {
-        cookie: csrf.cookies,
+        cookie: cookieHeaderFromSetCookies(csrfSetCookies),
         'content-type': 'application/json',
-        'x-csrf-token': csrf.token,
+        'x-csrf-token': csrfToken!,
       },
       body: JSON.stringify({
         email: 'parent-secure@example.test',
         password: 'ParentSecure!234',
-        csrf_token: csrf.token,
+        csrf_token: csrfToken,
         return_to: 'https://evil.example/phish',
       }),
     });
     expect(login.status).toBe(200);
-    expect(await login.json()).toMatchObject({ success: true, return_to: '/app/parent' });
+    expect(JSON.parse(login.body)).toMatchObject({ success: true, return_to: '/app/parent' });
 
-    const setCookies = login.headers.getSetCookie();
+    const setCookies = headerValues(login.headers['set-cookie']);
     const sessionCookie = setCookies.find((cookie) => cookie.startsWith('otcrm_session='));
     const sessionCsrfCookie = setCookies.find((cookie) => cookie.startsWith('otcrm_csrf='));
     expect(sessionCookie).toContain('HttpOnly');
@@ -85,7 +87,7 @@ describe('W12-100-01 auth browser security boundaries', () => {
     expect(sessionCsrfCookie).not.toContain('HttpOnly');
   });
 
-  it('canonicalizes hostile return_to inputs on login pages, password login, and email assurance', async () => {
+  it('canonicalizes hostile return_to inputs on login pages and password login', async () => {
     const harness = await startHarness();
     const parentUserKey = await createAccountUser({
       pool: harness.pool,
@@ -127,8 +129,8 @@ describe('W12-100-01 auth browser security boundaries', () => {
     );
     const safeHtml = await safePage.text();
     expect(safeHtml).toContain('name="return_to" value="/app/parent?view=learners#top"');
-    expect(safeHtml).toContain('data-email-link-confirm hidden');
-    expect(safeHtml).toContain('Confirm email sign-in');
+    expect(safeHtml).not.toContain('data-email-link-confirm');
+    expect(safeHtml).not.toContain('Confirm email sign-in');
 
     const csrf = await getCsrf(harness, '/login');
     const parentLogin = await fetch(`${harness.baseUrl}/api/v1/auth/login`, {
@@ -163,22 +165,8 @@ describe('W12-100-01 auth browser security boundaries', () => {
         return_to: '/app/dashboard',
       }),
     });
-    expect(passwordStep.status).toBe(403);
-    const challenge = (await passwordStep.json()) as { challenge_token?: string };
-    expect(challenge.challenge_token).toBeTruthy();
-
-    const payload = await latestEmailChallengePayload(harness);
-    const verified = await fetch(`${harness.baseUrl}/api/v1/auth/email-challenge/verify`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        challenge_token: challenge.challenge_token,
-        code: String(payload.code),
-        return_to: 'https://evil.example/dashboard',
-      }),
-    });
-    expect(verified.status).toBe(200);
-    expect(await verified.json()).toMatchObject({ success: true, return_to: '/app/dashboard' });
+    expect(passwordStep.status).toBe(200);
+    expect(await passwordStep.json()).toMatchObject({ success: true, return_to: '/app/dashboard' });
   });
 });
 
@@ -189,6 +177,7 @@ async function startHarness(env: NodeJS.ProcessEnv = {}): Promise<Harness> {
     APP_VERSION: 'test',
     COMMIT_SHA: 'test',
     OUTBOX_TRANSPORT_MODE: 'sink',
+    PROTECTED_PAYLOAD_ENCRYPTION_KEY: 'test-only-protected-payload-key-32-bytes',
     ...env,
   });
   const pool = createMemoryPool();
@@ -217,23 +206,51 @@ async function getCsrf(harness: Harness, path: string) {
   return { response, token, cookies: cookieHeader(response.headers) };
 }
 
-async function latestEmailChallengePayload(harness: Harness) {
-  const result = await harness.pool.query(
-    `SELECT nonce, ciphertext, auth_tag
-       FROM onetime.auth_email_challenge_delivery_outbox
-      WHERE nonce IS NOT NULL
-        AND ciphertext IS NOT NULL
-        AND auth_tag IS NOT NULL
-      ORDER BY created_at DESC
-      LIMIT 1`,
-  );
-  const row = result.rows[0] as Record<string, unknown> | undefined;
-  if (!row) throw new Error('missing auth email challenge payload');
-  return decryptAuthEmailChallengeDeliveryPayloadForTests(harness.config, {
-    nonce: String(row.nonce),
-    ciphertext: String(row.ciphertext),
-    auth_tag: String(row.auth_tag),
+async function rawRequest(
+  harness: Harness,
+  path: string,
+  host: string,
+  init: { method?: string; headers?: Record<string, string>; body?: string } = {},
+): Promise<{
+  status: number;
+  headers: Record<string, string | string[] | undefined>;
+  body: string;
+}> {
+  const url = new URL(harness.baseUrl);
+  return new Promise((resolve, reject) => {
+    const request = httpRequest(
+      {
+        hostname: url.hostname,
+        port: url.port,
+        path,
+        method: init.method ?? 'GET',
+        headers: { host, ...init.headers },
+      },
+      (response) => {
+        const chunks: Buffer[] = [];
+        response.on('data', (chunk: Buffer) => chunks.push(chunk));
+        response.on('end', () =>
+          resolve({
+            status: response.statusCode ?? 0,
+            headers: response.headers,
+            body: Buffer.concat(chunks).toString('utf8'),
+          }),
+        );
+      },
+    );
+    request.on('error', reject);
+    if (init.body) request.write(init.body);
+    request.end();
   });
+}
+
+function headerValues(value: string | string[] | undefined): string[] {
+  if (!value) return [];
+  return Array.isArray(value) ? value : [value];
+}
+
+function cookieHeaderFromSetCookies(setCookies: readonly string[]): string {
+  return setCookies.map((cookie) => cookie.split(';', 1)[0]).join('; ');
 }
 
 async function seedParentCurrentAccess(

@@ -32,6 +32,8 @@ export default defineConfig({
             ZOOM_CLASSROOM_PROVIDER_MODE: 'sink',
             PORTAL_TEST_LAB_ENABLED: 'true',
             OT_TEST_CLOCK: '2026-07-16T16:05:00.000Z',
+            ONE_TIME_FIRST_CLASS_AT: '2026-08-16T19:00:00+03:00',
+            ONE_TIME_FREE_ACCESS_EXPIRES_AT: '2026-09-11T18:00:00+03:00',
           },
         },
       }),

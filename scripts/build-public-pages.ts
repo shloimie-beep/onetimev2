@@ -242,7 +242,9 @@ function landingPage() {
       <p class="hero-eyebrow">${escapeHtml(landingContent.hero.eyebrow)}</p>
       <h1 id="landing-hero-heading" aria-label="${escapeHtml(landingContent.hero.titleLines.join(' '))}">${landingContent.hero.titleLines.map((line) => `<span>${escapeHtml(line)}</span>`).join('')}</h1>
       <p class="hero-supporting">${escapeHtml(landingContent.hero.supporting)}</p>
-      <p class="schedule">${escapeHtml(landingContent.hero.schedule)}<span data-local-class-time data-first-class-at="${firstClassAtPlaceholder}"></span></p>
+      <p class="schedule">${escapeHtml(landingContent.hero.schedule)}</p>
+      <p class="hero-note" data-first-class-at="${firstClassAtPlaceholder}">${escapeHtml(landingContent.hero.firstClass)}</p>
+      <p class="hero-note" data-free-access-cutoff="${freeAccessExpiresAtPlaceholder}">${escapeHtml(landingContent.hero.freeAccessCutoff)}</p>
       <a class="button button-primary hero-cta" href="${escapeHtml(landingContent.hero.cta.href)}" data-ot-analytics-event="${escapeHtml(landingContent.hero.cta.analyticsEvent)}" data-ot-analytics-destination="${escapeHtml(landingContent.hero.cta.href)}" data-ot-analytics-placement="${escapeHtml(landingContent.hero.cta.analyticsPlacement)}">${escapeHtml(landingContent.hero.cta.label)}</a>
       <p class="hero-note">${escapeHtml(landingContent.hero.note)}</p>
     </div>
@@ -286,8 +288,7 @@ function landingPage() {
   <section class="section enrollment" id="enrollment">
     <h2>${escapeHtml(landingContent.enrollment.heading)}</h2>
     <div class="information-grid">
-      <article><h3>${escapeHtml(landingContent.enrollment.family.title)}</h3><p>${escapeHtml(landingContent.enrollment.family.body)}</p><a class="text-link" href="/signup?entry=family">Create a Family account</a></article>
-      <article><h3>${escapeHtml(landingContent.enrollment.school.title)}</h3><p>${escapeHtml(landingContent.enrollment.school.body)}</p><a class="text-link" href="/school">Send a School inquiry</a></article>
+      <article><h3>${escapeHtml(landingContent.enrollment.family.title)}</h3><p>${escapeHtml(landingContent.enrollment.family.body)}</p><a class="text-link" href="/signup?entry=family">Enroll your son free</a></article>
     </div>
   </section>
   <section class="section access" id="access" data-access-boundary="${freeAccessExpiresAtPlaceholder}">
@@ -341,12 +342,12 @@ function landingPage() {
 
 function signupPage() {
   return pageShell(
-    'Sign Up Now | One Time Mishnayos',
+    'Enroll Your Son Free | One Time Mishnayos',
     `${header()}<main class="signup-page">
   <section class="signup-intro">
-    <h1>Sign Up Now</h1>
-    <p>Create one adult-managed Family account for up to three learners.</p>
-    <p>Contacting us for a School? <a href="/school">Use the separate School inquiry form.</a></p>
+    <h1>Enroll Your Son Free</h1>
+    <p>Create one adult-managed Family account, then add up to three Students without supplying Student email addresses.</p>
+    <p>Free access ends Friday, September 11, 2026 at 6:00 PM Asia/Jerusalem. No card is collected and there is no automatic charge.</p>
   </section>
   <section class="signup-shell">
     <noscript><div class="noscript-panel" role="status"><strong>JavaScript is required for secure signup submission.</strong><span>Please use a browser with JavaScript enabled or use the Support path. Do not send student-sensitive information through this public form.</span></div></noscript>
