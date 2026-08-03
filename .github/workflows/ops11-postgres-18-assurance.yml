@@ -73,6 +73,14 @@ jobs:
           CANDIDATE_PG18_OUTPUT_DIR: ops/evidence/ops-11/pg18/candidate
         run: npx tsx scripts/postgres-assurance/candidate-pg18-proof.ts
 
+      - name: Run native Parent-created Student identity projection proof
+        env:
+          P12_NATIVE_POSTGRES_DISPOSABLE: 'true'
+          P12_NATIVE_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/postgres
+        run: >-
+          npx vitest run
+          apps/web/src/server/features/portals/parent-household/postgres-repository.test.ts
+
       - name: Run OT-37 harness on PostgreSQL 18
         env:
           PGHOST: 127.0.0.1
