@@ -1,0 +1,84 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+authority_id: c00-prereg-canary-20260803103352
+authority_kind: derived_candidate_bound_operator_adult_preregistration_canary
+task_id: C00
+candidate_digest: 61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14
+candidate_binding_status: exact_candidate_bound
+candidate_manifest_commit_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+repository_source_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+canonical_path: ops/v2.1-execution/authority/61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14/C00/c00-prereg-canary-20260803103352/GRANT.yaml
+source_grant_id: ot-v21-production-source-grant-20260729
+source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+source_approval_evidence_path: ops/v2.1-execution/authority/none/C00/ot-v21-production-source-grant-20260729/APPROVAL.md
+source_approval_evidence_digest: 8c95a959f79aba0ac34fa0fcb6cb463cceac9aeb2bb52da1603d39db3e2c33c2
+grant_status_at_issue: active
+approved_by: Shloimie Dratler
+scope:
+  provider: One Time application on Railway persistent staging
+  workspace_id: d2428a88-aa7e-4369-b396-72060bf720f4
+  project_id: 7c8eee26-7a6a-4684-826d-9f4377d67d46
+  environment_id: 11edf8a2-0160-45b4-a039-b15b4beb4c10
+  environment_name: staging
+  web_service_id: 9fb6d9f4-4f50-4df6-868b-c18a9b83d2f2
+  web_deployment_id: 6127e53a-428f-462e-a2ea-e853f6df5f09
+  public_base_url: https://ot99-web-staging.up.railway.app
+  preregistration_endpoint: https://ot99-web-staging.up.railway.app/api/v1/leads
+  fixture_id: c00_prereg_canary_61232115_20260803a
+  fixture_destination_source: derived_plus_alias_from_ONE_TIME_OWNER_TEST_EMAIL
+  fixture_plus_alias_suffix: otv21-prereg-61232115-20260803a
+  fixture_destination_sha256: 96ed33f9b88f320bedc82908c3ede347207f91856d019973e392630aaedfb975
+  local_adult_contacts_created_or_updated_max: 1
+  local_signup_leads_created_or_updated_max: 1
+  portal_accounts_created_or_updated_max: 0
+  student_accounts_created_or_updated_max: 0
+  provider_sends_or_enrollments_max: 0
+  production_project_or_environment_access: prohibited
+fencing_token: fence-2c2a1ebc-ec8c-47fc-9c1d-16e25691e943
+lock: production:deployment
+provider_lock_lease_id: c59a7b01-26f0-46f4-906b-6c22e9a98077
+provider_account_location_or_asset_id:
+  provider: Railway
+  project_id: 7c8eee26-7a6a-4684-826d-9f4377d67d46
+  environment_id: 11edf8a2-0160-45b4-a039-b15b4beb4c10
+  service_id: 9fb6d9f4-4f50-4df6-868b-c18a9b83d2f2
+  deployment_id: 6127e53a-428f-462e-a2ea-e853f6df5f09
+allowed_operation: use the protected operator-controlled destination bound only by its SHA-256 to perform one adult Family pre-registration transaction on the exact persistent-staging deployment, create at most one local adult contact and one local signup lead with sink-mode outbox intents, read back the truthful success response and worker safety state, create no portal account or Student, send no email, create no external GHL contact or enrollment, and perform no cleanup mutation
+maximum_effect_count: 2
+maximum_effect_value: one_local_adult_contact_and_one_local_signup_lead
+approved_fixture_ids:
+  - c00_prereg_canary_61232115_20260803a
+operator_identity: C00
+approved_at: '2026-08-03T10:33:52Z'
+recorded_at: '2026-08-03T10:33:52Z'
+expires_at: '2026-08-03T11:03:52Z'
+prerequisite_review:
+  canonical_candidate_digest: 61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14
+  repository_source_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+  exact_web_deployment_status: SUCCESS
+  exact_web_image_digest: sha256:4837a7f8cc886a599835943dd3f5d3a7d23125accb6c7fcd4b4687d3cb78c30f
+  normal_staging_host_adult_preregistration_form: passed
+  local_no_optional_reminder_lead_path: passed
+  outbox_transport_mode: sink
+  delivery_provider_mode: sink
+  real_email_transport_enabled: false
+  protected_fixture_control: confirmed_by_configured_ONE_TIME_OWNER_TEST_EMAIL
+  parent_student_service_account_policy: absent_not_required_for_adult_preregistration
+rollback_and_reconciliation:
+  - require one response with adult pre-registration success copy and no session, account, Student, billing, or private link data
+  - record returned local contact and signup immutable IDs only as hashes
+  - require worker readback proving zero email sends, external GHL contact creation, or audience enrollment
+  - retain the clearly marked isolated-staging operator fixture; any later cleanup requires exact immutable IDs and separate authority
+  - on failed or ambiguous submission, read back the exact fixture before any retry; this grant does not authorize a retry
+  - release the exclusive lock only after application and provider readback plus ledger reconciliation
+stop_conditions:
+  - source grant is revoked or expired
+  - origin/codex/v21-integration differs from f95b30d830d57a29b123949134e9ee3077a945a1
+  - codex/full-app-staging-live differs from f95b30d830d57a29b123949134e9ee3077a945a1
+  - the exact web deployment is no longer SUCCESS or current
+  - protected fixture hash or source differs from the bound identity
+  - sink mode, provider mode, or real-email-transport safety readback differs
+  - another effect holds the production:deployment lock
+  - the operation would create a portal account, Student, external GHL contact, provider enrollment, email, payment, production mutation, or more than one local adult contact and signup lead
+contains_secret: false
+immutable: true

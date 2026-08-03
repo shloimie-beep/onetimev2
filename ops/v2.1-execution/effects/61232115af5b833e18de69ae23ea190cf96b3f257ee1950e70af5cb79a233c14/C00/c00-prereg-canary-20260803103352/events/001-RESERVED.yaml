@@ -1,0 +1,40 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prereg-canary-20260803103352
+event_sequence: 1
+previous_event_digest: none
+state: RESERVED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14/C00/c00-prereg-canary-20260803103352/events/001-RESERVED.yaml
+current_pointer_path: ops/v2.1-execution/effects/61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14/C00/c00-prereg-canary-20260803103352/CURRENT.yaml
+candidate_digest: 61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14
+candidate_manifest_commit_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+repository_source_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+deployment_instance_digest: sha256:4837a7f8cc886a599835943dd3f5d3a7d23125accb6c7fcd4b4687d3cb78c30f
+authority_grant_digest: 68ef7a7d75c4a896a5dbe7bbfafdbbd8179302ce8137041fac00080db6119323
+authority_status_index_digest: 242ebc7ffef77dd96c27160002316915016e6ddb3797bb1b1c3e430af6d894f1
+authority_status_entry_digest: 16a36c1ee2d069ee9a0e4140602c5957888f5f0daa4e4e94885582206e010f02
+latest_revocation_digest: none
+authority_checked_at: '2026-08-03T10:33:52Z'
+lock: production:deployment
+lock_lease_id: c59a7b01-26f0-46f4-906b-6c22e9a98077
+fencing_token: fence-2c2a1ebc-ec8c-47fc-9c1d-16e25691e943
+provider_identity: railway:7c8eee26-7a6a-4684-826d-9f4377d67d46:11edf8a2-0160-45b4-a039-b15b4beb4c10:web-9fb6d9f4:deployment-6127e53a
+operation: one_operator_controlled_adult_preregistration_post_local_contact_and_lead_zero_account_zero_student_zero_send
+approved_fixture_id: c00_prereg_canary_61232115_20260803a
+fixture_destination_sha256: 96ed33f9b88f320bedc82908c3ede347207f91856d019973e392630aaedfb975
+budget_reservation:
+  signup_posts: 1
+  local_adult_contacts: 1
+  local_signup_leads: 1
+  portal_accounts: 0
+  student_accounts: 0
+  provider_sends_or_enrollments: 0
+  deployments: 0
+  production_mutations: 0
+provider_request_or_operation_id: none_before_effect
+provider_readback_digest: none_before_effect
+cleanup_state: pending_preregistration_canary_reconciliation
+state_based_on_head_sha: 2da2bf70b7f849eb00ca473da878524dc9105a2f
+event_at: '2026-08-03T10:33:52Z'
+immutable: true
