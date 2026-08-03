@@ -1,0 +1,49 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prod-protected-key-release-20260803114707
+event_sequence: 2
+previous_event_digest: d14920992767b1085864e65d22fb57a32e40d51079a2859f3b8e1e9a7b386598
+state: ATTEMPTED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14/C00/c00-prod-protected-key-release-20260803114707/events/002-ATTEMPTED.yaml
+candidate_digest: 61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14
+repository_source_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+authority_id: c00-prod-protected-key-release-20260803114707
+lock_lease_id: c8388ddd-bb1f-4354-b996-b1ab4bd6c31a
+fencing_token: fence-4e9df5a5-94a7-4171-b387-3307bca2f4fc
+operation_results:
+  generated_secret_bytes: 32
+  protected_payload_key_fingerprint_sha256: d76f27ace9c9be2427d3ad73d2d8d0938c8d9f25b81f40290606548b330a6f22
+  key_value_match_web_and_worker: true
+  secret_assignments_triggered_deployments: 0
+  exact_source_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+  web_deployment_id: 1635d06a-4ee7-4afd-9501-34a943a0d3c7
+  web_deployment_status: SUCCESS
+  web_image_digest: sha256:1cc2a43de97c80c8e76c1eed23578980ff64613561895e53a5d15b1c94bf18b8
+  worker_deployment_id: c25922c4-98b0-4668-ac1f-564ad060be04
+  worker_deployment_status: FAILED
+  worker_runtime_started_and_completed_sink_batch: true
+  worker_failure_cause: root_railway_json_web_healthcheck_path_applied_to_non_HTTP_worker
+  production_worker_missing_canonical_config_file_pointer: railway.worker.staging.json
+  canonical_web_health: 200
+  canonical_web_version_code: PUBLIC_RELEASE_AVAILABLE
+  prior_worker_still_serving: true
+budget_consumed:
+  generated_production_secrets: 1
+  exact_secret_variable_assignments: 2
+  production_redeployments: 2
+  signup_posts: 0
+  local_adult_contacts: 0
+  local_signup_leads: 0
+  local_sink_intents: 0
+  portal_accounts: 0
+  student_accounts: 0
+  external_provider_sends_or_enrollments: 0
+  charges: 0
+  migrations: 0
+  DNS_changes: 0
+  GHL_mutations: 0
+provider_request_or_operation_id: railway_redeployments_1635d06a_c25922c4
+cleanup_state: terminal_web_success_worker_failed_invalid_healthcheck_old_worker_serving_no_canary
+event_at: '2026-08-03T11:56:44.9009564Z'
+immutable: true
