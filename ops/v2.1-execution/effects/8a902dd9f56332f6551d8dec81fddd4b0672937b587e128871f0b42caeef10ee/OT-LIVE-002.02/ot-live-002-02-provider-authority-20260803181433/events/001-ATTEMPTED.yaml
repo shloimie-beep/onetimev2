@@ -1,0 +1,60 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: ot-live-002-02-provider-authority-20260803181433
+event_sequence: 1
+previous_event_digest: none
+state: ATTEMPTED
+task_id: OT-LIVE-002.02
+owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+canonical_event_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/OT-LIVE-002.02/ot-live-002-02-provider-authority-20260803181433/events/001-ATTEMPTED.yaml
+current_pointer_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/OT-LIVE-002.02/ot-live-002-02-provider-authority-20260803181433/CURRENT.yaml
+candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+authority_id: ot-live-002-02-provider-authority-20260803181433
+authority_grant_digest: 20a3f775c230e531d950759fcd93fb034f2f6ae48d889459e9c5d1903186e4dc
+provider_locks:
+  provider:ghl-location:
+    lease_id: 7923759d-8739-4185-9aa3-c3a45d08b145
+    fencing_token: fence-984cc94d-9efc-43e2-baa3-7295b5396823
+  provider:resend-domain:
+    lease_id: bb3699e2-d87d-49a3-98ae-5680021fb994
+    fencing_token: fence-846fd724-9870-4163-9344-c0050775eabc
+pre_effect_control_readback:
+  remote_control_sha: 4de45778d9e579474ec6d18181cbad73c29abd67
+  authority_status_index_digest: 7655eee2546ebae4a3f0795ce3b01553b3994729018fa05d3f12b52449206163
+  controller_reservation_limitation: owner_revalidated_grant_leases_and_fences_but_no_separate_immutable_effect_reservation_was_written_before_the_bounded_provider_saves
+operation: bounded_GHL_sender_campaign_and_inactive_workflow_configuration_plus_Resend_readback
+attempt_readback:
+  GHL_location_id: pBSnOK2nkdxp6gf9Rg3o
+  GHL_configuration_saves: 5
+  canonical_campaign_id: 6a5f750b557817806a14b19e
+  canonical_campaign_state: Draft
+  canonical_campaign_selected_contacts: 0
+  canonical_workflow_id: a34ea513-4612-4f53-8bd8-49e89e6610f9
+  canonical_workflow_state: Draft
+  canonical_workflow_reentry_multiple_opportunities_stop_on_response: false_false_false
+  historical_same_name_automation_preserved_id: f28d8b8a-c26a-4a4f-a9f2-d2a8e94af1ae
+  custom_sender_value: rabbielischeller@onetimeonetime.com
+  custom_reply_to_value: rabbielischeller@onetimeonetime.com
+  eligible_audience_count: 0
+  eligible_audience_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  Resend_domain_id: ce42fdec-d889-4c91-bcdc-c3ab44302857
+  Resend_status: verified_read_only_no_mutation
+  inactive_webhooks_created: 0
+  operator_seed_emails: 0
+  operator_seed_replies: 0
+  contacts_selected_or_enrolled: 0
+  broad_campaign_sends: 0
+  Forward_Email_mutations: 0
+  DNS_mutations_under_this_authority: 0
+  charges_or_billing: 0
+effect_count_after: 5
+unexpected_effects: 0
+cleanup_state: exact_GHL_assets_saved_Draft_zero_contacts_Resend_read_only_no_send_or_enrollment_pending
+stop_reason: current_body_date_SPF_reply_route_audience_suppression_seed_and_reply_gates_not_satisfied
+handoff_evidence_path: C:/Users/User/Documents/Codex/2026-08-03/files-mentioned-by-the-user-ot/outputs/OT-LIVE-002.02-COLLISION-HANDOFF.md
+handoff_evidence_sha256: f49b895dbc84d90fc8435acf2879dcf25e65d6981af4a69f58d2598c2a7534e4
+event_at: '2026-08-03T18:56:00Z'
+state_based_on_head_sha: 4de45778d9e579474ec6d18181cbad73c29abd67
+contains_secret: false
+immutable: true

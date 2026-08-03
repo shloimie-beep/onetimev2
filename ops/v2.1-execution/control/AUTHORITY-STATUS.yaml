@@ -898,7 +898,7 @@ authorities:
     authority_kind: derived_candidate_bound_governed_email_configuration_and_bounded_acceptance
     grant_digest: 20a3f775c230e531d950759fcd93fb034f2f6ae48d889459e9c5d1903186e4dc
     source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
-    status: active
+    status: consumed
     expires_at: '2026-08-04T18:14:33Z'
     latest_revocation_path: null
     latest_revocation_digest: null
@@ -930,9 +930,14 @@ authorities:
     Forward_Email_effect_usable: false
     Forward_Email_blocker: authenticated_Google_account_has_zero_managed_domains_and_no_canonical_Forward_Email_ownership_or_destination_evidence
     prerequisite_review: prior_DNS_effect_terminal_GHL_and_Resend_exact_ids_recorded_zero_Students_minors_Schools_current_subscribers_suppressed_or_ambiguous
-    disposition: reserved_for_governed_configuration_bounded_email_auth_alias_seed_reply_and_inactive_asset_reconciliation_zero_broad_send
-    checked_at: '2026-08-03T18:36:07Z'
-    state_based_on_control_head_sha: 1c639d4299fac1d125c489bf14fbc8c8f80b9102
+    disposition: PARTIALLY_RECONCILED_SEND_BLOCKED_five_bounded_GHL_saves_Draft_zero_contacts_Resend_read_only_zero_seed_or_send
+    terminal_event_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/OT-LIVE-002.02/ot-live-002-02-provider-authority-20260803181433/events/002-RECONCILED.yaml
+    terminal_event_digest: f29d1b7ed632cd286acfd6f9691a877bed2bb2154a0eab66a53197989aa13397
+    handoff_evidence_sha256: f49b895dbc84d90fc8435acf2879dcf25e65d6981af4a69f58d2598c2a7534e4
+    successor_authority_required_for_any_further_effect: true
+    GHL_and_Resend_locks_released_at: '2026-08-03T19:02:11Z'
+    checked_at: '2026-08-03T19:02:11Z'
+    state_based_on_control_head_sha: 68629660aa0234cc9c600b7e78908875393f3440
   ot-live-002-02-spf-repair-20260803182729:
     schema_version: 1
     execution_id: OT-V21-PRODUCTION

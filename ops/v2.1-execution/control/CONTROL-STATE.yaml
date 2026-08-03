@@ -25,6 +25,20 @@ next_action: >-
   366c57eb frozen at source a64d9052. A successor may deploy only by exact clean local upload with explicit Dockerfile
   manifest and pre/post artifact readback; never use from-source or down. Keep broad communication held on Sep 11/Sep
   13 and the failed SPF deletion blockers.
+ot_live_002_02_provider_handoff:
+  reconciled_at: '2026-08-03T19:02:11Z'
+  owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+  authority_id: ot-live-002-02-provider-authority-20260803181433
+  terminal_disposition: PARTIALLY_RECONCILED_SEND_BLOCKED
+  terminal_event_digest: f29d1b7ed632cd286acfd6f9691a877bed2bb2154a0eab66a53197989aa13397
+  handoff_evidence_sha256: f49b895dbc84d90fc8435acf2879dcf25e65d6981af4a69f58d2598c2a7534e4
+  GHL_configuration_saves: 5
+  canonical_campaign: 6a5f750b557817806a14b19e_Draft_zero_contacts
+  canonical_workflow: a34ea513-4612-4f53-8bd8-49e89e6610f9_Draft_reentry_off_multiple_opportunities_off
+  Resend: verified_read_only_zero_mutations
+  audience_seed_reply_broad_send: 0_0_0_0
+  provider_locks_released: GHL_and_Resend
+  successor_required: true_for_any_seed_webhook_activation_audience_selection_or_send
 ot_live_001_02_login_timestamp_candidate_freeze:
   recorded_at: '2026-08-03T18:43:39Z'
   control_parent_sha: f1ece8f500e0ec6901e388ab02e52aaaeac73d66

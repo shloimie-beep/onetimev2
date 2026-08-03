@@ -1,31 +1,24 @@
 schema_version: 1
 locks:
 - lock: provider:ghl-location
-  status: claimed
-  holder_task_id: OT-LIVE-002.02
-  holder_claim_id: d0da8b7c-029d-421f-b180-ffeec7829be5
-  lease_id: 7923759d-8739-4185-9aa3-c3a45d08b145
-  fencing_token: fence-984cc94d-9efc-43e2-baa3-7295b5396823
-  canonical_candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
-  provider_identity: ghl-location:pBSnOK2nkdxp6gf9Rg3o
-  authorized_operation: governed_GHL_configuration_inactive_workflow_and_webhook_adult_audience_reconciliation_one_operator_seed_and_reply_zero_broad_send_until_successor_gate
-  claimed_at: '2026-08-03T18:14:33Z'
-  lease_expires_at: '2026-08-04T18:14:33Z'
-  authority_id: ot-live-002-02-provider-authority-20260803181433
-  authority_grant_digest: 20a3f775c230e531d950759fcd93fb034f2f6ae48d889459e9c5d1903186e4dc
-  authority_status_index_digest: 7655eee2546ebae4a3f0795ce3b01553b3994729018fa05d3f12b52449206163
-  authority_status_entry_digest: 0d953a8f2427ee0a37cf992b844c08901ecaea2132e44098f78e1a0414c5a60b
-  latest_revocation_digest: none
-  authority_checked_at: '2026-08-03T18:14:33Z'
-  effect_budget:
-    GHL_configuration_mutations_max: 20
-    inactive_workflows_created_or_corrected_max: 4
-    inactive_webhooks_max: 1
-    operator_controlled_seed_emails_max: 1
-    operator_controlled_seed_replies_max: 1
-    broad_campaign_sends_max: 0
-    Student_minor_School_current_subscriber_suppressed_or_ambiguous_recipients_max: 0
-  cleanup_state: pending_exact_asset_ID_readback_and_terminal_reconciliation_by_sole_owner_thread_019fc8aa_42c8_7082_9a89_e7a66803f42a
+  status: unclaimed
+  holder_task_id: null
+  holder_claim_id: null
+  lease_id: null
+  fencing_token: null
+  canonical_candidate_digest: null
+  provider_identity: null
+  authorized_operation: null
+  claimed_at: null
+  lease_expires_at: null
+  authority_id: null
+  authority_grant_digest: null
+  authority_status_index_digest: null
+  authority_status_entry_digest: null
+  latest_revocation_digest: null
+  authority_checked_at: null
+  effect_budget: null
+  cleanup_state: not_applicable
 - lock: provider:stripe-account
   status: unclaimed
   holder_task_id: null
@@ -103,28 +96,24 @@ locks:
   effect_budget: null
   cleanup_state: not_applicable
 - lock: provider:resend-domain
-  status: claimed
-  holder_task_id: OT-LIVE-002.02
-  holder_claim_id: 5a85348c-6acf-4741-977d-1b6b28f948f0
-  lease_id: bb3699e2-d87d-49a3-98ae-5680021fb994
-  fencing_token: fence-846fd724-9870-4163-9344-c0050775eabc
-  canonical_candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
-  provider_identity: resend-domain:ce42fdec-d889-4c91-bcdc-c3ab44302857
-  authorized_operation: bounded_onetimeonetime_com_domain_sender_SPF_DKIM_DMARC_and_verification_reconciliation_zero_customer_send
-  claimed_at: '2026-08-03T18:14:33Z'
-  lease_expires_at: '2026-08-04T18:14:33Z'
-  authority_id: ot-live-002-02-provider-authority-20260803181433
-  authority_grant_digest: 20a3f775c230e531d950759fcd93fb034f2f6ae48d889459e9c5d1903186e4dc
-  authority_status_index_digest: 7655eee2546ebae4a3f0795ce3b01553b3994729018fa05d3f12b52449206163
-  authority_status_entry_digest: 0d953a8f2427ee0a37cf992b844c08901ecaea2132e44098f78e1a0414c5a60b
-  latest_revocation_digest: none
-  authority_checked_at: '2026-08-03T18:14:33Z'
-  effect_budget:
-    domain_or_sender_configuration_mutations_max: 6
-    operator_controlled_seed_emails_max: 1
-    broad_or_customer_sends_max: 0
-    billing_mutations_max: 0
-  cleanup_state: pending_exact_domain_sender_ID_readback_and_terminal_reconciliation_by_sole_owner_thread_019fc8aa_42c8_7082_9a89_e7a66803f42a
+  status: unclaimed
+  holder_task_id: null
+  holder_claim_id: null
+  lease_id: null
+  fencing_token: null
+  canonical_candidate_digest: null
+  provider_identity: null
+  authorized_operation: null
+  claimed_at: null
+  lease_expires_at: null
+  authority_id: null
+  authority_grant_digest: null
+  authority_status_index_digest: null
+  authority_status_entry_digest: null
+  latest_revocation_digest: null
+  authority_checked_at: null
+  effect_budget: null
+  cleanup_state: not_applicable
 - lock: provider:telegram-bot
   status: unclaimed
   holder_task_id: null

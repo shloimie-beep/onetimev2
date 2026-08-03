@@ -1,0 +1,61 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: ot-live-002-02-provider-authority-20260803181433
+event_sequence: 2
+previous_event_digest: c5bc67949fbf8272966197957e499eb0ecbc5aace6639378e8dc0d2323ea8b6f
+state: RECONCILED
+task_id: OT-LIVE-002.02
+owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+canonical_event_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/OT-LIVE-002.02/ot-live-002-02-provider-authority-20260803181433/events/002-RECONCILED.yaml
+current_pointer_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/OT-LIVE-002.02/ot-live-002-02-provider-authority-20260803181433/CURRENT.yaml
+candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+authority_id: ot-live-002-02-provider-authority-20260803181433
+authority_grant_digest: 20a3f775c230e531d950759fcd93fb034f2f6ae48d889459e9c5d1903186e4dc
+provider_locks:
+  provider:ghl-location:
+    lease_id: 7923759d-8739-4185-9aa3-c3a45d08b145
+    fencing_token: fence-984cc94d-9efc-43e2-baa3-7295b5396823
+  provider:resend-domain:
+    lease_id: bb3699e2-d87d-49a3-98ae-5680021fb994
+    fencing_token: fence-846fd724-9870-4163-9344-c0050775eabc
+operation: terminally_reconcile_bounded_GHL_configuration_and_Resend_readback_then_release_provider_locks
+terminal_readback:
+  GHL_configuration_saves: 5_of_20
+  campaign_id_state_and_selected_contacts: 6a5f750b557817806a14b19e_Draft_0
+  workflow_id_and_state: a34ea513-4612-4f53-8bd8-49e89e6610f9_Draft
+  workflow_reentry_multiple_opportunities_stop_on_response: false_false_false
+  sender_and_reply_to: rabbielischeller@onetimeonetime.com
+  eligible_audience_count: 0
+  eligible_audience_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  Resend_domain_verified: true
+  Resend_mutations: 0
+  Students_minors_Schools_current_subscribers_suppressed_or_ambiguous_included: 0
+  operator_seed_emails_or_replies: 0_0
+  contacts_selected_enrolled_or_broad_sends: 0_0_0
+  inactive_webhooks_created: 0
+  Forward_Email_alias_or_route_mutations: 0
+  info_alias_preserved: true
+  billing_charges_or_ad_spend: 0
+  application_Railway_or_production_database_changes: 0
+  email_campaign_may_send: false
+remaining_blockers:
+  - unresolved_September_11_versus_September_13_launch_date_and_matching_copy
+  - duplicate_SPF_owner_after_GoDaddy_protected_deletion_failed_and_rolled_back
+  - unproven_Forward_Email_or_GHL_reply_route
+  - stale_campaign_body_and_workflow_schedules
+  - incomplete_adult_consent_subscription_and_suppression_join
+  - protected_seed_and_reply_proof_absent
+  - broad_send_budget_zero_and_successor_send_gate_false
+effect_count_after: 5
+unexpected_effects: 0
+cleanup_state: GHL_campaign_and_workflow_remain_Draft_zero_contacts_no_provider_effect_pending
+terminal_disposition: PARTIALLY_RECONCILED_SEND_BLOCKED
+lock_release_state: GHL_and_Resend_leases_released_after_exact_asset_and_zero_send_readback
+successor_authority_required_for_any_seed_webhook_activation_audience_selection_or_send: true
+handoff_evidence_path: C:/Users/User/Documents/Codex/2026-08-03/files-mentioned-by-the-user-ot/outputs/OT-LIVE-002.02-COLLISION-HANDOFF.md
+handoff_evidence_sha256: f49b895dbc84d90fc8435acf2879dcf25e65d6981af4a69f58d2598c2a7534e4
+event_at: '2026-08-03T19:02:11Z'
+state_based_on_head_sha: 68629660aa0234cc9c600b7e78908875393f3440
+contains_secret: false
+immutable: true
