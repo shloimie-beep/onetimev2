@@ -1,0 +1,47 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prod-app-tls-verification-20260803171615
+event_sequence: 3
+previous_event_digest: c8de41bd7cbbad2a2cc71fa94636b356b39f88c4100577eb4a6250e98f37aa92
+state: RECONCILED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-app-tls-verification-20260803171615/events/003-RECONCILED.yaml
+current_pointer_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-app-tls-verification-20260803171615/CURRENT.yaml
+candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+authority_id: c00-prod-app-tls-verification-20260803171615
+authority_grant_digest: f1f9019e1cf44c0000dda2a081354986bb2ae096b15fec3f4eacf9a04c701783
+lock: infra:dns
+lock_lease_id: 7d0bd091-6623-4255-a3a2-92fbe54bbd0d
+fencing_token: fence-83e97c67-0d6c-45ca-9e85-e442e35eb93c
+operation: reconcile_exact_Railway_ownership_TXT_certificate_TLS_and_release_expired_DNS_lease
+provider_request_or_operation_id: GoDaddy_TXT__railway-verify_app_exact_Railway_token
+provider_readback:
+  exact_TXT_fqdn: _railway-verify.app.onetimeonetime.com
+  exact_TXT_value: railway-verify=0cf7b735fcca11fec7e7296bfbc9d0d8ef46e8f969cdad690ef15cefb2daa083
+  exact_TXT_public_status: present
+  exact_CNAME_fqdn: app.onetimeonetime.com
+  exact_CNAME_target: 3vp17vx5.up.railway.app
+  exact_CNAME_public_status: present
+  Railway_domain_id: 9f1f5d7a-1176-4f67-aa53-5ebe59234dad
+  Railway_domain_sync_status: ACTIVE
+  Railway_verified: true
+  Railway_certificate_status: VALID_COMPLETE
+  Railway_certificate_fingerprint: 867730e988f4c252409566910484389635ce642a6f4c2a3e8b0e05574dd71f36
+  Railway_certificate_expires_at: '2026-11-01T00:00:00Z'
+  Railway_web_deployment_status: SUCCESS
+  Railway_web_repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+  application_health_url: https://app.onetimeonetime.com/api/health
+  application_health_HTTP_status: 200
+  existing_app_CNAME_changed_during_reconciliation: false
+  existing_join_domain_changed: false
+effect_count_after: 1
+unexpected_effects: 0
+cleanup_state: exact_TXT_retained_as_required_Railway_ownership_record_TLS_and_health_reconciled
+lock_release_state: released_and_transferred_to_OT-LIVE-002.02_under_fresh_lease
+production_deployment_lock_changed: false
+successor_authority_id: ot-live-002-02-provider-authority-20260803181433
+event_at: '2026-08-03T18:14:33Z'
+state_based_on_head_sha: ff178642bdd2a0d69c8f973cbd636b81b84430c1
+contains_secret: false
+immutable: true

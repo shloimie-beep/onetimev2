@@ -1,24 +1,31 @@
 schema_version: 1
 locks:
 - lock: provider:ghl-location
-  status: unclaimed
-  holder_task_id: null
-  holder_claim_id: null
-  lease_id: null
-  fencing_token: null
-  canonical_candidate_digest: null
-  provider_identity: null
-  authorized_operation: null
-  claimed_at: null
-  lease_expires_at: null
-  authority_id: null
-  authority_grant_digest: null
-  authority_status_index_digest: null
-  authority_status_entry_digest: null
-  latest_revocation_digest: null
-  authority_checked_at: null
-  effect_budget: null
-  cleanup_state: not_applicable
+  status: claimed
+  holder_task_id: OT-LIVE-002.02
+  holder_claim_id: d0da8b7c-029d-421f-b180-ffeec7829be5
+  lease_id: 7923759d-8739-4185-9aa3-c3a45d08b145
+  fencing_token: fence-984cc94d-9efc-43e2-baa3-7295b5396823
+  canonical_candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+  provider_identity: ghl-location:pBSnOK2nkdxp6gf9Rg3o
+  authorized_operation: governed_GHL_configuration_inactive_workflow_and_webhook_adult_audience_reconciliation_one_operator_seed_and_reply_zero_broad_send_until_successor_gate
+  claimed_at: '2026-08-03T18:14:33Z'
+  lease_expires_at: '2026-08-04T18:14:33Z'
+  authority_id: ot-live-002-02-provider-authority-20260803181433
+  authority_grant_digest: 20a3f775c230e531d950759fcd93fb034f2f6ae48d889459e9c5d1903186e4dc
+  authority_status_index_digest: 124ea859d58712b66de394548c1261f5ba5d9bcc4a13c9fbf6926f9ed6bef959
+  authority_status_entry_digest: 0d953a8f2427ee0a37cf992b844c08901ecaea2132e44098f78e1a0414c5a60b
+  latest_revocation_digest: none
+  authority_checked_at: '2026-08-03T18:14:33Z'
+  effect_budget:
+    GHL_configuration_mutations_max: 20
+    inactive_workflows_created_or_corrected_max: 4
+    inactive_webhooks_max: 1
+    operator_controlled_seed_emails_max: 1
+    operator_controlled_seed_replies_max: 1
+    broad_campaign_sends_max: 0
+    Student_minor_School_current_subscriber_suppressed_or_ambiguous_recipients_max: 0
+  cleanup_state: pending_exact_asset_ID_readback_and_terminal_reconciliation_by_sole_owner_thread_019fc8aa_42c8_7082_9a89_e7a66803f42a
 - lock: provider:stripe-account
   status: unclaimed
   holder_task_id: null
@@ -96,24 +103,28 @@ locks:
   effect_budget: null
   cleanup_state: not_applicable
 - lock: provider:resend-domain
-  status: unclaimed
-  holder_task_id: null
-  holder_claim_id: null
-  lease_id: null
-  fencing_token: null
-  canonical_candidate_digest: null
-  provider_identity: null
-  authorized_operation: null
-  claimed_at: null
-  lease_expires_at: null
-  authority_id: null
-  authority_grant_digest: null
-  authority_status_index_digest: null
-  authority_status_entry_digest: null
-  latest_revocation_digest: null
-  authority_checked_at: null
-  effect_budget: null
-  cleanup_state: not_applicable
+  status: claimed
+  holder_task_id: OT-LIVE-002.02
+  holder_claim_id: 5a85348c-6acf-4741-977d-1b6b28f948f0
+  lease_id: bb3699e2-d87d-49a3-98ae-5680021fb994
+  fencing_token: fence-846fd724-9870-4163-9344-c0050775eabc
+  canonical_candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+  provider_identity: resend-domain:ce42fdec-d889-4c91-bcdc-c3ab44302857
+  authorized_operation: bounded_onetimeonetime_com_domain_sender_SPF_DKIM_DMARC_and_verification_reconciliation_zero_customer_send
+  claimed_at: '2026-08-03T18:14:33Z'
+  lease_expires_at: '2026-08-04T18:14:33Z'
+  authority_id: ot-live-002-02-provider-authority-20260803181433
+  authority_grant_digest: 20a3f775c230e531d950759fcd93fb034f2f6ae48d889459e9c5d1903186e4dc
+  authority_status_index_digest: 124ea859d58712b66de394548c1261f5ba5d9bcc4a13c9fbf6926f9ed6bef959
+  authority_status_entry_digest: 0d953a8f2427ee0a37cf992b844c08901ecaea2132e44098f78e1a0414c5a60b
+  latest_revocation_digest: none
+  authority_checked_at: '2026-08-03T18:14:33Z'
+  effect_budget:
+    domain_or_sender_configuration_mutations_max: 6
+    operator_controlled_seed_emails_max: 1
+    broad_or_customer_sends_max: 0
+    billing_mutations_max: 0
+  cleanup_state: pending_exact_domain_sender_ID_readback_and_terminal_reconciliation_by_sole_owner_thread_019fc8aa_42c8_7082_9a89_e7a66803f42a
 - lock: provider:telegram-bot
   status: unclaimed
   holder_task_id: null
@@ -135,27 +146,29 @@ locks:
   cleanup_state: not_applicable
 - lock: infra:dns
   status: claimed
-  holder_task_id: C00
-  holder_claim_id: 12bc9c9a-a8ee-474c-9250-ac39565dac37
-  lease_id: 7d0bd091-6623-4255-a3a2-92fbe54bbd0d
-  fencing_token: fence-83e97c67-0d6c-45ca-9e85-e442e35eb93c
+  holder_task_id: OT-LIVE-002.02
+  holder_claim_id: 2769f974-f736-4529-90b5-ac6945e3b236
+  lease_id: 075ce00a-fd6a-4a47-85a8-7a20bfde0a19
+  fencing_token: fence-a5e9f3dc-ca0d-4761-b382-3b67318c0ef8
   canonical_candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
   provider_identity: godaddy:canonical-account:onetimeonetime.com
-  authorized_operation: create_only_exact_Railway_returned__railway-verify.app_TXT_then_TLS_and_login_reconciliation
-  claimed_at: '2026-08-03T17:16:15Z'
-  lease_expires_at: '2026-08-03T18:11:15Z'
-  authority_id: c00-prod-app-tls-verification-20260803171615
-  authority_grant_digest: f1f9019e1cf44c0000dda2a081354986bb2ae096b15fec3f4eacf9a04c701783
-  authority_status_index_digest: 41fe9fed78d0de858582c887bbf9d2ea082a2fa0fcc1a46afba87384bf7639b4
-  authority_status_entry_digest: b7615d8e883dbf3c203ff6190b58ebc4ad196e186f4f97411895a798b6340ddc
+  authorized_operation: bounded_email_SPF_DKIM_DMARC_Mailgun_Resend_records_and_conditional_Forward_Email_exact_alias_route_after_live_identity_readback_no_nameserver_or_unrelated_changes
+  claimed_at: '2026-08-03T18:14:33Z'
+  lease_expires_at: '2026-08-04T18:14:33Z'
+  authority_id: ot-live-002-02-provider-authority-20260803181433
+  authority_grant_digest: 20a3f775c230e531d950759fcd93fb034f2f6ae48d889459e9c5d1903186e4dc
+  authority_status_index_digest: 124ea859d58712b66de394548c1261f5ba5d9bcc4a13c9fbf6926f9ed6bef959
+  authority_status_entry_digest: 0d953a8f2427ee0a37cf992b844c08901ecaea2132e44098f78e1a0414c5a60b
   latest_revocation_digest: none
-  authority_checked_at: '2026-08-03T17:16:15Z'
+  authority_checked_at: '2026-08-03T18:14:33Z'
   effect_budget:
-    DNS_records_created_max: 1
-    DNS_records_updated_max: 0
-    allowed_name_type: _railway-verify.app_TXT
-    allowed_value_source: exact_Railway_domain_status_readback
-  cleanup_state: pending_exact_TXT_TLS_and_application_login_reconciliation
+    DNS_records_created_or_updated_max: 12
+    DNS_records_deleted_max: 0
+    Forward_Email_alias_or_route_mutations_max: 2
+    nameserver_changes_max: 0
+    unrelated_record_changes_max: 0
+    broad_or_customer_sends_max: 0
+  cleanup_state: prior_Railway_TXT_TLS_terminal_exact_new_email_auth_and_alias_effects_pending_per_effect_readback_and_reconciliation
 - lock: production:deployment
   status: claimed
   holder_task_id: C00

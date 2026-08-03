@@ -1,0 +1,35 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-002.02
+claim_id: dbef8dfa-6b07-4e07-90f1-f3d04b1a8c61
+owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+owner_title: Configure governed GHL campaign
+owner_worktree: C:/Users/User/Documents/Codex/2026-08-03/files-mentioned-by-the-user-ot
+ownership: sole_non_colliding_provider_owner
+authority_id: ot-live-002-02-provider-authority-20260803181433
+canonical_candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+locks:
+  provider:ghl-location:
+    exact_identity: pBSnOK2nkdxp6gf9Rg3o
+    holder_claim_id: d0da8b7c-029d-421f-b180-ffeec7829be5
+    lease_id: 7923759d-8739-4185-9aa3-c3a45d08b145
+    fencing_token: fence-984cc94d-9efc-43e2-baa3-7295b5396823
+  provider:resend-domain:
+    exact_identity: ce42fdec-d889-4c91-bcdc-c3ab44302857
+    holder_claim_id: 5a85348c-6acf-4741-977d-1b6b28f948f0
+    lease_id: bb3699e2-d87d-49a3-98ae-5680021fb994
+    fencing_token: fence-846fd724-9870-4163-9344-c0050775eabc
+  infra:dns:
+    exact_identity: godaddy:canonical-account:onetimeonetime.com
+    holder_claim_id: 2769f974-f736-4529-90b5-ac6945e3b236
+    lease_id: 075ce00a-fd6a-4a47-85a8-7a20bfde0a19
+    fencing_token: fence-a5e9f3dc-ca0d-4761-b382-3b67318c0ef8
+    includes_conditional_Forward_Email_route_work: true
+    Forward_Email_identity_must_be_live_confirmed_before_effect: true
+claimed_at: '2026-08-03T18:14:33Z'
+expires_at: '2026-08-04T18:14:33Z'
+broad_send_authorized: false
+production_deployment_lock_changed: false
+instruction: STEER EXISTING OT-LIVE-002
+contains_secret: false

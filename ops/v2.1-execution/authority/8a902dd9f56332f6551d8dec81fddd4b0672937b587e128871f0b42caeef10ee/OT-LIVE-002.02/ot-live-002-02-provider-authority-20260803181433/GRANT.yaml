@@ -1,0 +1,139 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+authority_id: ot-live-002-02-provider-authority-20260803181433
+authority_kind: derived_candidate_bound_governed_email_configuration_and_bounded_acceptance
+task_id: OT-LIVE-002.02
+owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+owner_title: Configure governed GHL campaign
+owner_worktree: C:/Users/User/Documents/Codex/2026-08-03/files-mentioned-by-the-user-ot
+owner_exclusivity: sole_OT-LIVE-002.02_provider_owner
+candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+candidate_binding_status: exact_frozen_candidate_currently_active_on_web_and_worker
+candidate_manifest_commit_sha: ca930d456f3739af5ce3303f4fe880325136d56a
+repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+canonical_path: ops/v2.1-execution/authority/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/OT-LIVE-002.02/ot-live-002-02-provider-authority-20260803181433/GRANT.yaml
+source_grant_id: ot-v21-production-source-grant-20260729
+source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+source_approval_evidence_path: ops/v2.1-execution/authority/none/C00/ot-v21-production-source-grant-20260729/APPROVAL.md
+source_approval_evidence_digest: 8c95a959f79aba0ac34fa0fcb6cb463cceac9aeb2bb52da1603d39db3e2c33c2
+operator_authorization_source_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+operator_authorization_evidence: operator_signed_control_tower_delegation_received_2026-08-03
+approved_by: Shloimie Dratler
+approved_at: '2026-08-03T18:14:33Z'
+recorded_at: '2026-08-03T18:14:33Z'
+expires_at: '2026-08-04T18:14:33Z'
+scope:
+  GHL:
+    provider_identity: ghl-location:pBSnOK2nkdxp6gf9Rg3o
+    exact_location_id: pBSnOK2nkdxp6gf9Rg3o
+    allowed_operations:
+      - read_only_provider_inspection_and_reconciliation
+      - configure_or_correct_canonical_sender_reply_to_and_required_inactive_workflows
+      - reconcile_eligible_adult_audience_and_suppressions
+      - perform_one_operator_controlled_seed_delivery_and_reply_test
+      - create_or_correct_inactive_Customer_Replied_webhook
+      - activate_or_send_only_after_every_named_release_gate_passes_and_a_successor_send_budget_is_recorded
+  Resend:
+    provider_identity: resend-domain:ce42fdec-d889-4c91-bcdc-c3ab44302857
+    exact_domain_id: ce42fdec-d889-4c91-bcdc-c3ab44302857
+    exact_domain: onetimeonetime.com
+    allowed_operations:
+      - read_only_domain_and_sender_reconciliation
+      - bounded_SPF_DKIM_DMARC_and_provider_verification_configuration
+  DNS:
+    provider_identity: godaddy:canonical-account:onetimeonetime.com
+    exact_zone: onetimeonetime.com
+    allowed_operations:
+      - read_only_zone_reconciliation
+      - bounded_email_authentication_records_required_by_confirmed_GHL_Mailgun_Resend_and_DMARC_readback
+      - no_nameserver_change
+  Forward_Email:
+    requested_identity: Forward_Email_canonical_account_for_onetimeonetime.com
+    identity_status: must_be_confirmed_by_live_readback_before_effect
+    exact_alias: rabbielischeller@onetimeonetime.com
+    preserved_alias: info@onetimeonetime.com
+    allowed_operations:
+      - create_or_correct_only_the_exact_alias_and_governed_reply_route_after_identity_and_destination_readback
+      - verify_one_operator_controlled_reply_route
+  sender:
+    display_name: Rabbi Eli Scheller | One Time Mishnayos
+    from_email: rabbielischeller@onetimeonetime.com
+    reply_to: rabbielischeller@onetimeonetime.com
+    status: pending_alias_sender_auth_seed_and_reply_acceptance
+provider_locks:
+  provider:ghl-location:
+    holder_claim_id: d0da8b7c-029d-421f-b180-ffeec7829be5
+    lease_id: 7923759d-8739-4185-9aa3-c3a45d08b145
+    fencing_token: fence-984cc94d-9efc-43e2-baa3-7295b5396823
+  provider:resend-domain:
+    holder_claim_id: 5a85348c-6acf-4741-977d-1b6b28f948f0
+    lease_id: bb3699e2-d87d-49a3-98ae-5680021fb994
+    fencing_token: fence-846fd724-9870-4163-9344-c0050775eabc
+  infra:dns:
+    holder_claim_id: 2769f974-f736-4529-90b5-ac6945e3b236
+    lease_id: 075ce00a-fd6a-4a47-85a8-7a20bfde0a19
+    fencing_token: fence-a5e9f3dc-ca0d-4761-b382-3b67318c0ef8
+effect_budget:
+  GHL_configuration_mutations_max: 20
+  DNS_record_creations_or_updates_max: 12
+  DNS_record_deletions_max: 0
+  Forward_Email_alias_or_route_mutations_max: 2
+  operator_controlled_seed_emails_max: 1
+  operator_controlled_seed_replies_max: 1
+  inactive_webhooks_max: 1
+  inactive_workflows_created_or_corrected_max: 4
+  broad_campaign_sends_max: 0
+  billing_or_charges_max: 0
+  ad_spend_max: 0
+  app_code_changes_max: 0
+  Railway_or_application_deployments_max: 0
+current_send_gate:
+  email_campaign_may_send: false
+  reason: unresolved_Sep_11_Sep_13_launch_date_and_named_landing_legal_sender_auth_audience_suppression_seed_reply_gates
+  successor_authority_required_for_broad_send: true
+eligible_population:
+  allow: explicitly_eligible_unsuppressed_adults_only
+  deny:
+    - Students_or_minors
+    - Schools
+    - active_or_current_subscribers
+    - suppressed_contacts
+    - ambiguous_contacts
+standing_prohibitions:
+  - no_charges_billing_or_direct_Stripe_effects
+  - no_ad_spend
+  - no_nameserver_changes
+  - no_unrelated_deletion_or_broad_rewrite
+  - no_app_code_or_Railway_deployment
+  - no_WhatsApp_send_or_activation
+  - no_historical_audience_enrollment
+  - never_guess_provider_account_location_domain_folder_route_destination_or_asset_identity
+prerequisite_gates:
+  - landing_page_passed
+  - legal_documents_passed_for_broad_release
+  - canonical_sender_and_reply_to_passed
+  - SPF_DKIM_DMARC_and_provider_auth_passed
+  - exact_adult_audience_passed
+  - suppression_and_exclusion_passed
+  - operator_seed_delivery_passed
+  - operator_reply_to_GHL_Conversations_passed
+  - launch_date_conflict_resolved
+  - email_campaign_may_send_true_under_successor_budget
+rollback_and_reconciliation:
+  - acquire_and_revalidate_the_exact_lock_and_fencing_token_immediately_before_each_effect
+  - capture_provider_request_or_immutable_asset_ID_for_every_created_or_updated_asset
+  - read_back_each_effect_from_the_canonical_provider
+  - stop_on_unknown_result_and_reconcile_before_retry
+  - cleanup_only_exact_canary_created_assets_by_immutable_ID
+  - preserve_info_at_onetimeonetime.com_and_every_unrelated_record_route_contact_and_asset
+  - record_terminal_effect_evidence_before_releasing_any_lock
+stop_conditions:
+  - source_grant_or_this_authority_is_revoked_or_expired
+  - candidate_digest_owner_thread_lease_or_fencing_token_mismatch
+  - provider_identity_or_exact_resource_differs_from_this_record
+  - Forward_Email_account_or_governed_destination_is_not_confirmed_by_live_readback
+  - operation_would_include_a_Student_minor_School_current_subscriber_suppressed_or_ambiguous_recipient
+  - operation_would_send_broadly_while_email_campaign_may_send_is_false
+  - result_is_unknown_or_readback_does_not_match
+contains_secret: false
+immutable: true
