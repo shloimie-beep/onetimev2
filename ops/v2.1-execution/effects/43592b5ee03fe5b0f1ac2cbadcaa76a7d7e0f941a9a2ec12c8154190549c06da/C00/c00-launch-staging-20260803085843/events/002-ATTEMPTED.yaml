@@ -1,0 +1,59 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-launch-staging-20260803085843
+event_sequence: 2
+previous_event_digest: 42c51a38ea5ac151dc5a1adb67b1036d9bfcd73b265d2cb8ce2ef96a8ac37788
+state: ATTEMPTED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/43592b5ee03fe5b0f1ac2cbadcaa76a7d7e0f941a9a2ec12c8154190549c06da/C00/c00-launch-staging-20260803085843/events/002-ATTEMPTED.yaml
+candidate_digest: 43592b5ee03fe5b0f1ac2cbadcaa76a7d7e0f941a9a2ec12c8154190549c06da
+candidate_manifest_commit_sha: 7485b834b03ae0c91122186818b91f427efeb24e
+repository_source_sha: 7485b834b03ae0c91122186818b91f427efeb24e
+authority_id: c00-launch-staging-20260803085843
+lock: production:deployment
+lock_lease_id: 1c0174e9-c098-4800-a468-84c8c346d34c
+fencing_token: fence-3ebfc319-f600-46db-81fd-1c85d4e1388e
+provider_identity: railway:7c8eee26-7a6a-4684-826d-9f4377d67d46:11edf8a2-0160-45b4-a039-b15b4beb4c10:web-9fb6d9f4:worker-76e7fdc2
+operation_results:
+  staging_branch_before_sha: 2c6a636aaee2b3cb604239d55055e9939ebfa9b8
+  first_ref_update_transport_result: github_http_503
+  first_ref_update_remote_readback_sha: 2c6a636aaee2b3cb604239d55055e9939ebfa9b8
+  first_ref_update_effect_accepted: false
+  retry_authority_revalidated_after_no_effect_readback: true
+  staging_branch_after_sha: 7485b834b03ae0c91122186818b91f427efeb24e
+  variable_assignments_completed: 0
+  safety_configuration_readback_exact_on_web: true
+  safety_configuration_readback_exact_on_worker: true
+  web_deployment_id: a9d35645-74d7-4963-b888-5a7ca959a676
+  web_deployment_status: SUCCESS
+  web_image_digest: sha256:0ec9cbda304b79dab3011140d3aa6b2bcb3dbdc249027744314ffb05819ff3ee
+  worker_deployment_id: 2c7cf29a-20cf-4775-b9b6-7808c32dc005
+  worker_deployment_status: SUCCESS
+  worker_image_digest: sha256:2570d8c4e027355ccd182c5985f3d475d58ce3490f17c1cd95b8db211297cbf6
+  worker_log_records_observed: 12
+  worker_delivery_batch_records_observed: 0
+  worker_nonzero_delivery_batch_records: 0
+  worker_provider_send_observed: false
+  health_status: 200
+  public_version_status: 200
+  normal_staging_host_landing_status: 200
+  normal_staging_host_signup_status: 200
+  normal_staging_host_family_bootstrap_status: 200
+  normal_staging_host_family_bootstrap_writes_allowed: true
+  campaign_identity_present: true
+  exact_first_class_timestamp_present: true
+  exact_free_cutoff_timestamp_present: true
+  no_card_copy_present: true
+  family_signup_post_attempted: false
+  account_or_student_created: false
+  email_send_or_provider_enrollment: false
+budget_consumed:
+  variable_assignments: 0
+  deployments: 2
+  production_deployments: 0
+  DNS_changes: 0
+  sends_or_enrollments: 0
+provider_request_or_operation_id: github_ref_update_and_railway_deployments_a9d35645_2c7cf29a
+cleanup_state: terminal_provider_readback_complete_deployment_successful
+event_at: '2026-08-03T09:10:42Z'
+immutable: true
