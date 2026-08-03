@@ -1,0 +1,34 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-launch-staging-20260803102307
+event_sequence: 2
+previous_event_digest: b0c5eca9e305e93ef3357491b2ccc7b07d5b6297c43873324946a447dcc4b76c
+state: ATTEMPTED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14/C00/c00-launch-staging-20260803102307/events/002-ATTEMPTED.yaml
+candidate_digest: 61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14
+candidate_manifest_commit_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+repository_source_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+authority_id: c00-launch-staging-20260803102307
+lock: production:deployment
+lock_lease_id: a24c5658-5aa7-49b2-bff0-fd31012b5e7e
+fencing_token: fence-644c9d71-72b5-4a92-8b49-921df59a1429
+provider_identity: railway:7c8eee26-7a6a-4684-826d-9f4377d67d46:11edf8a2-0160-45b4-a039-b15b4beb4c10:web-9fb6d9f4:worker-76e7fdc2
+operation_results:
+  github_source_ref_before_sha: 7485b834b03ae0c91122186818b91f427efeb24e
+  github_source_ref_after_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+  github_source_ref_update: succeeded_fast_forward
+  web_deployment_id: 6127e53a-428f-462e-a2ea-e853f6df5f09
+  web_deployment_initial_status: QUEUED
+  worker_deployment_id: 54115c9b-f7fd-43a9-b564-8800c401d637
+  worker_deployment_initial_status: QUEUED
+budget_consumed:
+  variable_assignments: 0
+  deployments: 2
+  production_deployments: 0
+  DNS_changes: 0
+  sends_or_enrollments: 0
+provider_request_or_operation_id: github_ref_update_and_railway_deployments_6127e53a_54115c9b
+cleanup_state: pending_exact_deployment_and_runtime_readback
+event_at: '2026-08-03T10:28:15Z'
+immutable: true
