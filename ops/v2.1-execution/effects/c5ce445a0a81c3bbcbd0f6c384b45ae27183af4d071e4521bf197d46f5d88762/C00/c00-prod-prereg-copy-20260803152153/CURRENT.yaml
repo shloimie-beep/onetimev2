@@ -1,0 +1,14 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prod-prereg-copy-20260803152153
+current_event_sequence: 1
+current_event_state: RESERVED
+current_event_path: ops/v2.1-execution/effects/c5ce445a0a81c3bbcbd0f6c384b45ae27183af4d071e4521bf197d46f5d88762/C00/c00-prod-prereg-copy-20260803152153/events/001-RESERVED.yaml
+current_event_digest: 4e462e72e46fb1be4f4fc7a1fa02dccdbc86fc13064d18c6f093fe83f31612fd
+candidate_digest: c5ce445a0a81c3bbcbd0f6c384b45ae27183af4d071e4521bf197d46f5d88762
+repository_source_sha: 801af7ec1a3513d28c921ca2b8d08d8c1bca21d1
+authority_id: c00-prod-prereg-copy-20260803152153
+lock_lease_id: 9c415ddc-0840-42c0-92fd-9d77e9b530d3
+fencing_token: fence-82f7ab88-168b-49d7-81b9-f89025d42349
+updated_at: '2026-08-03T15:21:53Z'
+immutable_event_chain: true

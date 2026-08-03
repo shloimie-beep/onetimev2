@@ -1,0 +1,99 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+authority_id: c00-prod-prereg-copy-20260803152153
+authority_kind: derived_candidate_bound_production_preregistration_copy_only_deployment
+task_id: C00
+candidate_digest: c5ce445a0a81c3bbcbd0f6c384b45ae27183af4d071e4521bf197d46f5d88762
+candidate_binding_status: lean_exact_source_bound_from_full_pg18_proof
+candidate_manifest_commit_sha: 801af7ec1a3513d28c921ca2b8d08d8c1bca21d1
+repository_source_sha: 801af7ec1a3513d28c921ca2b8d08d8c1bca21d1
+canonical_path: ops/v2.1-execution/authority/c5ce445a0a81c3bbcbd0f6c384b45ae27183af4d071e4521bf197d46f5d88762/C00/c00-prod-prereg-copy-20260803152153/GRANT.yaml
+source_grant_id: ot-v21-production-source-grant-20260729
+source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+source_approval_evidence_path: ops/v2.1-execution/authority/none/C00/ot-v21-production-source-grant-20260729/APPROVAL.md
+source_approval_evidence_digest: 8c95a959f79aba0ac34fa0fcb6cb463cceac9aeb2bb52da1603d39db3e2c33c2
+grant_status_at_issue: active
+approved_by: Shloimie Dratler
+scope:
+  provider: One Time application on Railway production
+  project_id: ce55ef20-1418-4ad3-aafa-f877fb992dc8
+  environment_id: f911acfc-e206-44df-a569-9d69d709b94b
+  web_service_id: d175ad94-5e3c-41c2-8cbc-daa1a299077d
+  worker_service_id: 742f60ed-dc2f-4321-85d0-019003d4e9b9
+  source_repository: shloimie-beep/onetimev2
+  source_branch: codex/ot-live-prereg-copy-20260803
+  source_branch_sha: 801af7ec1a3513d28c921ca2b8d08d8c1bca21d1
+  public_base_url: https://join.onetimeonetime.com
+  prior_web_deployment_id: 1635d06a-4ee7-4afd-9501-34a943a0d3c7
+  prior_web_image_digest: sha256:1cc2a43de97c80c8e76c1eed23578980ff64613561895e53a5d15b1c94bf18b8
+  prior_worker_deployment_id: 901724db-951b-41c6-8265-6faa06ab676e
+  prior_worker_image_digest: sha256:8aef5702fae96ee90c8962f261944e5b17d13e13c340c282655aab7290cff810
+  signup_posts_max: 0
+  local_adult_contacts_created_or_updated_max: 0
+  local_signup_leads_created_or_updated_max: 0
+  portal_accounts_created_or_updated_max: 0
+  student_accounts_created_or_updated_max: 0
+  external_provider_sends_or_enrollments_max: 0
+fencing_token: fence-82f7ab88-168b-49d7-81b9-f89025d42349
+lock: production:deployment
+provider_lock_lease_id: 9c415ddc-0840-42c0-92fd-9d77e9b530d3
+allowed_operation: connect only the exact production web and worker services to shloimie-beep/onetimev2 branch codex/ot-live-prereg-copy-20260803 while its immutable head is 801af7ec1a3513d28c921ca2b8d08d8c1bca21d1, accept at most one source-triggered deployment per service, immediately disconnect each source after its deployment snapshot is created, then prove exact source SUCCESS and the corrected adult-only preregistration fingerprint without submitting the unchanged form or performing any provider, DNS, variable, billing, audience, or customer effect
+maximum_effect_count: 6
+maximum_effect_value: 2_source_connections_2_source_disconnections_2_exact_candidate_deployments_zero_form_or_provider_effects
+approved_fixture_ids: []
+operator_identity: C00
+approved_at: '2026-08-03T15:21:53Z'
+recorded_at: '2026-08-03T15:21:53Z'
+expires_at: '2026-08-03T16:06:53Z'
+effect_budget:
+  source_connections_max: 2
+  source_disconnections_max: 2
+  production_deployments_max: 2
+  signup_posts_max: 0
+  local_adult_contacts_max: 0
+  local_signup_leads_max: 0
+  local_sink_intents_max: 0
+  portal_accounts_max: 0
+  student_accounts_max: 0
+  external_provider_sends_or_enrollments_max: 0
+  charges_max: 0
+  variable_assignments_max: 0
+  migrations_max: 0
+  DNS_changes_max: 0
+  GHL_mutations_max: 0
+prerequisite_review:
+  exact_candidate_source: 801af7ec1a3513d28c921ca2b8d08d8c1bca21d1
+  exact_candidate_diff: packages_domain_landing_content_plus_unit_and_e2e_assertions_only
+  candidate_pg18_run_id: 30826684363
+  candidate_pg18_result: success_PostgreSQL_18_4_apply_replay_restore_secret_scan_format_lint_typecheck
+  candidate_pg18_artifact_id: '8861165705'
+  candidate_pg18_artifact_digest: sha256:d9740e68ccf871683d35b1144375366d895cc4ba6da5ce6f47ef058865d4221a
+  candidate_migrations: 89_apply_89_replay_89_ledger_0_pending_0_issues_through_2258
+  local_verification: build_client_pass_build_pages_pass_unit_9_of_9_e2e_10_of_10_copy_assertion_pass_secret_scan_3199
+  clean_ci_typecheck: passed
+  accepted_form_canary: f95b30d8_idempotent_adult_only_one_contact_zero_student_GHL_zero_external_send
+  canary_reuse_basis: no_form_server_provider_analytics_or_runtime_file_changed
+  production_runtime: web_and_worker_success_exact_f95b30d8_sources_disconnected
+  production_delivery_controls: provider_mode_sink_resend_false_highlevel_disabled
+  production_migrations: 89_applied_0_pending_no_candidate_migration_delta
+  legal_gate: OPS-084-LEGAL-BUNDLE_open_scope_production_broad_only
+  broad_email_campaign_may_send: false
+rollback_and_reconciliation:
+  - require origin/codex/ot-live-prereg-copy-20260803 exact 801af7ec1a3513d28c921ca2b8d08d8c1bca21d1 before each source connection
+  - require current production web and worker deployments remain exact f95b30d8 SUCCESS and serving before the first effect
+  - record each source-triggered deployment ID before disconnecting that service source; never explicitly redeploy if connection already created it
+  - require exact source metadata, SUCCESS, health, readiness, version, corrected rendered copy, unchanged CTA/form contract, and clean bounded logs
+  - require zero signup post, Student, portal, charge, GHL, provider-send, audience-enrollment, DNS, variable, or migration effect
+  - preserve web 1635d06a-4ee7-4afd-9501-34a943a0d3c7 and worker 901724db-951b-41c6-8265-6faa06ab676e as rollback targets
+  - on regression restore only those bound deployments and keep the preregistration form available
+  - release the lock only after source disconnection and exact provider readback reconciliation
+stop_conditions:
+  - source grant is revoked or expired
+  - origin/codex/ot-live-prereg-copy-20260803 differs from 801af7ec1a3513d28c921ca2b8d08d8c1bca21d1
+  - current production web or worker deployment, source-disconnected state, health, migrations, fail-closed controls, service identity, or rollback target differs
+  - another effect holds the production:deployment lock
+  - source connection creates more than one deployment for a service
+  - any deployment reports a source other than exact 801af7ec1a3513d28c921ca2b8d08d8c1bca21d1
+  - the operation would submit a form, activate delivery, send, enroll, mutate GHL/DNS/variables/migrations, charge, touch a customer, collect Student/card data, create portal access, or broaden beyond the preregistration copy correction
+contains_secret: false
+immutable: true
