@@ -264,11 +264,12 @@ describe('OT-71 mounted parent and student portals', () => {
     }
   });
 
-  it('fails the isolated Parent root closed while mounting ready Parent children and APIs', async () => {
+  it('mounts the ready Parent overview, children, and APIs behind authentication', async () => {
     const server = await listenForTest(createApp({ config, pool, distDir }));
     try {
       const anonymousShell = await fetch(`${server.baseUrl}/app/parent`, { redirect: 'manual' });
-      expect(anonymousShell.status).toBe(404);
+      expect(anonymousShell.status).toBe(302);
+      expect(anonymousShell.headers.get('location')).toContain('return_to=%2Fapp%2Fparent');
       const anonymousStudents = await fetch(`${server.baseUrl}/app/parent/students`, {
         redirect: 'manual',
       });
@@ -281,7 +282,9 @@ describe('OT-71 mounted parent and student portals', () => {
       const parentRoot = await fetch(`${server.baseUrl}/app/parent`, {
         headers: { cookie: parent.cookies },
       });
-      expect(parentRoot.status).toBe(404);
+      expect(parentRoot.status).toBe(200);
+      expect(parentRoot.headers.get('cache-control')).toContain('no-store');
+      expect(await parentRoot.text()).toContain('portal-root');
       const parentShell = await fetch(`${server.baseUrl}/app/parent/students`, {
         headers: { cookie: parent.cookies },
       });
