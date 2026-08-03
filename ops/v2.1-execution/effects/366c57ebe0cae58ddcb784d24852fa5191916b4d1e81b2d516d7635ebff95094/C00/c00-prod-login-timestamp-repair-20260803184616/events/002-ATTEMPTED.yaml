@@ -1,0 +1,74 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prod-login-timestamp-repair-20260803184616
+event_sequence: 2
+previous_event_digest: 3b65f38efc7b93805b7157724dc88f67c8a278feb889d00c428dbee47801ba40
+state: ATTEMPTED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094/C00/c00-prod-login-timestamp-repair-20260803184616/events/002-ATTEMPTED.yaml
+current_pointer_path: ops/v2.1-execution/effects/366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094/C00/c00-prod-login-timestamp-repair-20260803184616/CURRENT.yaml
+candidate_digest: 366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094
+repository_source_sha: a64d9052305e6a0a31cc9bf3268fb634000c8f8a
+authority_id: c00-prod-login-timestamp-repair-20260803184616
+authority_grant_digest: 525e1c0caa6902d1d60435d8d1a31e788952fa19de8d3dbb022bc3ca7ac0ace3
+lock: production:deployment
+lock_lease_id: 49245f79-0d76-4f53-85ce-84ea68c17f01
+fencing_token: fence-59b0975a-0ef4-42fb-a118-430a35049fab
+operation: attempt_exact_a64_from_source_web_worker_deploy_then_stop_and_restore_known_good_ca442
+attempt_readback:
+  requested_Railway_operation: redeploy_from_source_once_per_exact_web_and_worker_service
+  web_attempt_deployment_id: d691b3ba-b2b5-4523-b598-dc5eff668576
+  web_attempt_status_before_cleanup: DEPLOYING
+  worker_attempt_deployment_id: 881ff8a4-17fd-4d66-b2bb-a83c0d3cd682
+  worker_attempt_status_before_cleanup: FAILED
+  returned_source_branch: main
+  returned_source_sha: 610b585f3d221addd4e7b824c92a5cc256cffcf9
+  returned_builder: RAILPACK
+  expected_source_branch: codex/ot-live-progressive-portal-20260803
+  expected_source_sha: a64d9052305e6a0a31cc9bf3268fb634000c8f8a
+  stop_condition_triggered: replacement_deployment_reported_source_other_than_exact_a64
+  candidate_a64_deployed: false
+cleanup_and_outage:
+  requested_cleanup: Railway_down_on_each_exact_service_after_latest_attempt_identity_readback
+  Railway_down_response: No_deployments_found
+  unexpected_provider_behavior: down_removed_the_prior_active_successful_deployments_instead_of_only_the_visible_latest_attempts
+  prior_web_deployment_removed: 7e355bb1-1938-4689-8723-7fd83b48719d
+  prior_worker_deployment_removed: 64a4edff-f566-4057-8ebe-c350bba5314a
+  web_attempt_terminal_status_before_rollback: CRASHED
+  worker_attempt_terminal_status_before_rollback: FAILED
+  public_health_during_incident: HTTP_502
+  database_or_provider_data_effect: 0
+rollback:
+  mechanism: Railway_deploymentRollback_exact_named_prior_deployment_IDs
+  web_prior_deployment_id: 7e355bb1-1938-4689-8723-7fd83b48719d
+  web_rollback_api_result: true
+  restored_web_deployment_id: ad3a52fc-902a-41ca-b480-ca92bc3022d8
+  restored_web_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+  restored_web_image_digest: sha256:aec85be766e201bdbc2542609d3f0d1a415e92787c8fb59464f932d86225fae5
+  worker_prior_deployment_id: 64a4edff-f566-4057-8ebe-c350bba5314a
+  worker_rollback_api_result: true
+  restored_worker_deployment_id: 48045084-211a-4082-bbc3-9c03830b80ff
+  restored_worker_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+  restored_worker_image_digest: sha256:4df4d1b96b800ec2bba9cf31398d47ba733b27625d42ed0551724b7f342dc17d
+  public_health_after: HTTP_200_PUBLIC_HEALTH_OK
+  public_readiness_after: HTTP_200_PUBLIC_READY
+  public_version_after: HTTP_200_PUBLIC_RELEASE_AVAILABLE
+effect_count_after: 6
+effect_budget_readback:
+  initial_production_deployments: 2_of_2
+  cleanup_down_operations: 2
+  rollback_to_exact_prior_deployments: 2_of_2
+  database_migrations: 0
+  Parent_household_Student_mutations: 0_0_0
+  variable_deletions: 0
+  external_provider_sends_or_enrollments: 0
+  GHL_mutations: 0
+  charges: 0
+unexpected_effects: 2
+cleanup_state: exact_known_good_ca442_web_and_worker_images_restored_public_health_ready_version_200
+stop_reason: configured_Railway_source_resolved_to_main_610b_and_cleanup_down_removed_prior_active_deployments
+successor_requirement: terminalize_and_use_new_authority_for_exact_clean_local_upload_never_from_source_or_down
+event_at: '2026-08-03T18:56:03Z'
+state_based_on_head_sha: 4de45778d9e579474ec6d18181cbad73c29abd67
+contains_secret: false
+immutable: true

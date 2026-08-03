@@ -18,12 +18,13 @@ candidate: 366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094
 active_writer_limit: 4
 controller_authorization_sha: 76692fbb6e65cdeb68e32862dd0c03490b5e5750
 next_action: >-
-  Preserve the healthy live ca442 application, exact app domain/TLS, one Parent and household, zero Student state, and
-  zero external delivery controls. The failed Parent login canary proved exact reset_at millisecond loss and is
-  terminally reconciled. The three-file repair is frozen at source a64d9052 and candidate 366c57eb. Acquire a fresh
-  production:deployment fence, deploy only that exact source to the existing web and worker, require health/source/log
-  readback, then resume the existing protected Parent/Student canary without any migration, provider, GHL, billing, or
-  broad communication effect. Keep broad communication held on the Sep 11/Sep 13 and failed SPF deletion blockers.
+  Preserve the restored healthy live ca442 application, exact app domain/TLS, one Parent and household, zero Student
+  state, and zero external delivery controls. Railway from-source unexpectedly selected main 610b; the cleanup down
+  path removed the prior active deployments and caused a bounded 502 outage before exact deploymentRollback restored
+  both ca442 images and health/readiness/version 200. The attempt is terminally FAILED_ROLLED_BACK. Keep candidate
+  366c57eb frozen at source a64d9052. A successor may deploy only by exact clean local upload with explicit Dockerfile
+  manifest and pre/post artifact readback; never use from-source or down. Keep broad communication held on Sep 11/Sep
+  13 and the failed SPF deletion blockers.
 ot_live_001_02_login_timestamp_candidate_freeze:
   recorded_at: '2026-08-03T18:43:39Z'
   control_parent_sha: f1ece8f500e0ec6901e388ab02e52aaaeac73d66

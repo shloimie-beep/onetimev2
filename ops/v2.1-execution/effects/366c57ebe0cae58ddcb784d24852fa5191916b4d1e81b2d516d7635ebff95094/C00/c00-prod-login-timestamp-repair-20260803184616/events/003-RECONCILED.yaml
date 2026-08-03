@@ -1,0 +1,52 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prod-login-timestamp-repair-20260803184616
+event_sequence: 3
+previous_event_digest: f1d8d9b7d7e326004087038969d4d9b7afdd6ac4edc1d232812c4f8b26bfff73
+state: RECONCILED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094/C00/c00-prod-login-timestamp-repair-20260803184616/events/003-RECONCILED.yaml
+current_pointer_path: ops/v2.1-execution/effects/366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094/C00/c00-prod-login-timestamp-repair-20260803184616/CURRENT.yaml
+candidate_digest: 366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094
+repository_source_sha: a64d9052305e6a0a31cc9bf3268fb634000c8f8a
+authority_id: c00-prod-login-timestamp-repair-20260803184616
+authority_grant_digest: 525e1c0caa6902d1d60435d8d1a31e788952fa19de8d3dbb022bc3ca7ac0ace3
+lock: production:deployment
+lock_lease_id: 49245f79-0d76-4f53-85ce-84ea68c17f01
+fencing_token: fence-59b0975a-0ef4-42fb-a118-430a35049fab
+operation: terminally_reconcile_wrong_source_attempt_restore_exact_prior_images_and_release_deployment_lock
+terminal_readback:
+  live_web_deployment_id: ad3a52fc-902a-41ca-b480-ca92bc3022d8
+  live_web_status: SUCCESS
+  live_web_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+  live_web_image_digest: sha256:aec85be766e201bdbc2542609d3f0d1a415e92787c8fb59464f932d86225fae5
+  live_worker_deployment_id: 48045084-211a-4082-bbc3-9c03830b80ff
+  live_worker_status: SUCCESS
+  live_worker_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+  live_worker_image_digest: sha256:4df4d1b96b800ec2bba9cf31398d47ba733b27625d42ed0551724b7f342dc17d
+  wrong_source_web_deployment_id_and_state: d691b3ba-b2b5-4523-b598-dc5eff668576_REMOVED
+  wrong_source_worker_deployment_id_and_state: 881ff8a4-17fd-4d66-b2bb-a83c0d3cd682_FAILED
+  public_health: HTTP_200_PUBLIC_HEALTH_OK
+  public_readiness: HTTP_200_PUBLIC_READY
+  public_version: HTTP_200_PUBLIC_RELEASE_AVAILABLE
+  target_candidate_deployed: false
+  database_migrations: 0
+  Parent_household_Student_mutations: 0_0_0
+  variable_deletions: 0
+  external_provider_sends_or_enrollments: 0
+  GHL_mutations: 0
+  charges: 0
+  broad_audience_activations: 0
+effect_count_after: 6
+unexpected_effects: 2
+cleanup_state: reconciled_exact_prior_web_worker_images_restored_and_public_application_healthy
+lock_release_state: released_after_terminal_failed_wrong_source_and_rollback_reconciliation
+terminal_disposition: FAILED_ROLLED_BACK
+stop_reason: Railway_from_source_resolved_main_610b_not_exact_candidate_and_Railway_down_removed_prior_active_deployments
+successor_candidate_digest: 366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094
+successor_source_sha: a64d9052305e6a0a31cc9bf3268fb634000c8f8a
+successor_requirement: new_fence_and_exact_clean_local_upload_with_explicit_Dockerfile_manifest_and_no_from_source_or_down
+event_at: '2026-08-03T18:57:00Z'
+state_based_on_head_sha: 4de45778d9e579474ec6d18181cbad73c29abd67
+contains_secret: false
+immutable: true

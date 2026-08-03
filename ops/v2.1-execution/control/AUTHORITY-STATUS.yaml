@@ -27,7 +27,7 @@ authorities:
     authority_kind: derived_candidate_preparation_effect
     grant_digest: 533cd4cd0409a150ddf9389f25e5d3403422ec4b1f3107cd2c9a9c8249a05115
     source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
-    status: active
+    status: consumed
     expires_at: '2026-08-02T11:13:29Z'
     latest_revocation_path: null
     latest_revocation_digest: null
@@ -912,7 +912,7 @@ authorities:
       infra:dns:
         provider_lock_lease_id: 075ce00a-fd6a-4a47-85a8-7a20bfde0a19
         fencing_token: fence-a5e9f3dc-ca0d-4761-b382-3b67318c0ef8
-    effect_authority_usable: true
+    effect_authority_usable: false
     candidate_binding_status: exact_frozen_candidate_currently_active_on_web_and_worker
     candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
     repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
@@ -994,11 +994,15 @@ authorities:
     source_branch: codex/ot-live-progressive-portal-20260803
     maximum_effect_count: 11
     prerequisite_review: exact_live_ca442_both_services_target_a64_remote_head_three_file_auth_delta_tests_build_secret_scan_migration_inventory_unchanged_one_Parent_household_zero_Student_sink_controls
-    disposition: reserved_for_two_exact_source_deployments_existing_fixture_Student_canary_two_variable_deletions_at_most_two_restoration_deployments_and_exact_prior_deployment_rollback_only
+    disposition: FAILED_ROLLED_BACK_wrong_main_source_attempt_and_unexpected_down_removal_exact_ca442_images_restored_health_ready_version_200
     status_entry_path: ops/v2.1-execution/authority/366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094/C00/c00-prod-login-timestamp-repair-20260803184616/STATUS-ENTRY.yaml
-    status_entry_digest: 17aeaf7d2f99f94d0d78650b8ae77f1926b4bde01ef820e27fc69c225041b042
-    checked_at: '2026-08-03T18:46:16Z'
-    state_based_on_control_head_sha: 23746c8b1c7fc7d1db8109266d74a321a574781c
+    status_entry_digest: 7937b4ff8413f77ae3c4f2ba92992a6c7824e12c8d56772dd5841ce72d9b4c98
+    terminal_event_path: ops/v2.1-execution/effects/366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094/C00/c00-prod-login-timestamp-repair-20260803184616/events/003-RECONCILED.yaml
+    terminal_event_digest: 2c4c0015a23cc8f209072512130acb7be081ffc2d27306b5af4ff34009e94648
+    provider_blocker: Railway_from_source_resolved_main_610b_and_down_removed_prior_active_deployments
+    lock_released_at: '2026-08-03T18:57:00Z'
+    checked_at: '2026-08-03T18:57:00Z'
+    state_based_on_control_head_sha: 4de45778d9e579474ec6d18181cbad73c29abd67
 entry_schema: templates/AUTHORITY-STATUS-ENTRY.yaml
 revocation_schema: templates/AUTHORITY-REVOCATION-RECORD.yaml
 rule: C00 records externally granted/revoked/expired authority; it does not grant it. Every update binds the known
