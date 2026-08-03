@@ -1,0 +1,46 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prod-app-tls-verification-20260803171615
+event_sequence: 2
+previous_event_digest: 64487e938cbf6d7c34a83f881bfe59e595f643eca3250c8813945468bd1f1516
+state: ATTEMPTED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-app-tls-verification-20260803171615/events/002-ATTEMPTED.yaml
+current_pointer_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-app-tls-verification-20260803171615/CURRENT.yaml
+candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+authority_id: c00-prod-app-tls-verification-20260803171615
+authority_grant_digest: f1f9019e1cf44c0000dda2a081354986bb2ae096b15fec3f4eacf9a04c701783
+lock: infra:dns
+lock_lease_id: 7d0bd091-6623-4255-a3a2-92fbe54bbd0d
+fencing_token: fence-83e97c67-0d6c-45ca-9e85-e442e35eb93c
+operation: create_one_exact_Railway_ownership_TXT_then_verify_DNS_certificate_TLS_and_app_login
+provider_request_or_operation_id: GoDaddy_TXT__railway-verify_app_exact_Railway_token
+provider_readback:
+  GoDaddy_result: success_DNS_record_updated_successfully
+  GoDaddy_record_count_after: 28
+  record_name: _railway-verify.app
+  record_fqdn: _railway-verify.app.onetimeonetime.com
+  record_type: TXT
+  record_value: railway-verify=0cf7b735fcca11fec7e7296bfbc9d0d8ef46e8f969cdad690ef15cefb2daa083
+  TTL_selected: 1_2_Hour
+  authoritative_ns37_status: exact_value_present
+  authoritative_ns38_status: exact_value_present
+  public_Cloudflare_status: exact_value_present
+  public_Google_status: exact_value_present
+  public_TTL_seconds_at_readback: 3600
+  Railway_domain_id: 9f1f5d7a-1176-4f67-aa53-5ebe59234dad
+  Railway_domain_sync_status: ACTIVE
+  Railway_CNAME_status: DNS_RECORD_STATUS_PROPAGATED
+  Railway_verified_at_event: false_pending_provider_poll
+  Railway_certificate_status_at_event: CERTIFICATE_STATUS_TYPE_VALIDATING_OWNERSHIP
+  certificate_retry_result: rejected_expected_only_available_after_issuance_failure_no_provider_change
+  existing_app_CNAME_changed: false
+  existing_join_domain_changed: false
+effect_count_after: 1
+unexpected_effects: 0
+cleanup_state: exact_TXT_created_and_globally_visible_Railway_poll_certificate_and_app_login_pending
+event_at: '2026-08-03T17:24:57Z'
+state_based_on_head_sha: 848ec5de0eca5280aee2a478d7ec41aa413929ca
+contains_secret: false
+immutable: true
