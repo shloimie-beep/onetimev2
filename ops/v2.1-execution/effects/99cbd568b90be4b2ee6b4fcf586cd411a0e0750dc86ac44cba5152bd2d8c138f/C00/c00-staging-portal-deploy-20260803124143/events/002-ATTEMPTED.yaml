@@ -1,0 +1,38 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-staging-portal-deploy-20260803124143
+event_sequence: 2
+previous_event_digest: 3de3819d7e0ac64a36ae33788e5f19bf72e20b58ae6546ac3e2373053ae8cc74
+state: ATTEMPTED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/99cbd568b90be4b2ee6b4fcf586cd411a0e0750dc86ac44cba5152bd2d8c138f/C00/c00-staging-portal-deploy-20260803124143/events/002-ATTEMPTED.yaml
+current_pointer_path: ops/v2.1-execution/effects/99cbd568b90be4b2ee6b4fcf586cd411a0e0750dc86ac44cba5152bd2d8c138f/C00/c00-staging-portal-deploy-20260803124143/CURRENT.yaml
+candidate_digest: 99cbd568b90be4b2ee6b4fcf586cd411a0e0750dc86ac44cba5152bd2d8c138f
+candidate_manifest_commit_sha: not_materialized_lean_exact_source_binding
+repository_source_sha: e816aa28a97aff32849bab4fe5ae7fc4663e2498
+deployment_instance_digest: pending_terminal_deployment_readback
+authority_grant_digest: 8aa77065d5eb1d934bcad604a6387843e9c63c409cc9bb7adaa94438538b265a
+authority_status_index_digest: 971ece359955c46871e584ca963ec2d6b8ded0edd1ed0e4d90b24acf106f6faa
+authority_status_entry_digest: 2e56083993be3231668a6507b479ebaff8d8414c9a777373b16508331ef9af29
+latest_revocation_digest: none
+authority_checked_at: '2026-08-03T12:45:53Z'
+lock: production:deployment
+lock_lease_id: c115f426-5170-4c3f-8e57-b24bc46ff3d5
+fencing_token: fence-419cb224-ed29-42bc-99e2-43ecbb3000bb
+provider_identity: railway:7c8eee26-7a6a-4684-826d-9f4377d67d46:11edf8a2-0160-45b4-a039-b15b4beb4c10:web-9fb6d9f4:worker-76e7fdc2
+operation: exact_staging_policy_pair_skip_deploy_fast_forward_f95b30d8_to_e816aa28_two_deployments_and_sink_portal_canary
+budget_reservation:
+  maximum_effect_count: 7
+  configuration_writes: 1
+  source_ref_updates: 1
+  staging_deployments: 2
+  production_deployments: 0
+  DNS_changes: 0
+  sends_or_enrollments: 0
+provider_request_or_operation_id: railway_web_4d01c1c6_worker_8daf16ec_after_github_ref_fast_forward
+provider_readback_digest: 13970a5ebe98f24283a877e5f387a8684ef6836833174a85d7f0f9b17edbeafc
+provider_readback_state: exact_branch_and_pair_web_queued_worker_queued
+cleanup_state: pending_staging_deployment_and_canary_reconciliation
+state_based_on_head_sha: e1e0f32fa60e19842acea47e1ddfff45bff89d93
+event_at: '2026-08-03T12:46:28.8014892Z'
+immutable: true
