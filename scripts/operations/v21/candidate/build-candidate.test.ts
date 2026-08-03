@@ -40,7 +40,7 @@ function requestFixture(): CandidateBuildRequest {
     ],
     native_postgresql: {
       engine_version: '18.4',
-      migration_count: 89,
+      migration_count: 90,
       ledger_digest: sha256('immutable migration ledger'),
       pending_count: 0,
       issue_count: 0,
@@ -68,9 +68,9 @@ describe('I36 deterministic candidate builder', () => {
     expect(sets.route_action_inventory.files).toEqual([
       { path: 'ops/day-one/visible-action-registry.json', sha256: sha256(registry) },
     ]);
-    expect(sets.application_content.expected_paths).toHaveLength(1148);
-    expect(sets.web_artifact.expected_paths).toHaveLength(1014);
-    expect(sets.worker_artifact.expected_paths).toHaveLength(1014);
+    expect(sets.application_content.expected_paths).toHaveLength(1156);
+    expect(sets.web_artifact.expected_paths).toHaveLength(1022);
+    expect(sets.worker_artifact.expected_paths).toHaveLength(1022);
     expect(sets.application_content.expected_paths).toEqual(
       [...sets.application_content.expected_paths].sort((left, right) =>
         Buffer.compare(Buffer.from(left), Buffer.from(right)),
@@ -184,11 +184,11 @@ describe('I36 deterministic candidate builder', () => {
       /passed named probe/,
     );
 
-    const pre2258MigrationCount = requestFixture();
-    pre2258MigrationCount.native_postgresql.migration_count = 88;
+    const pre2259MigrationCount = requestFixture();
+    pre2259MigrationCount.native_postgresql.migration_count = 89;
     expect(() =>
-      buildCandidate(pre2258MigrationCount, { repository_root: repositoryRoot }),
-    ).toThrow(/exactly 89 migrations/);
+      buildCandidate(pre2259MigrationCount, { repository_root: repositoryRoot }),
+    ).toThrow(/exactly 90 migrations/);
   });
 
   it('renders later-freeze documents outside candidate identity', () => {
