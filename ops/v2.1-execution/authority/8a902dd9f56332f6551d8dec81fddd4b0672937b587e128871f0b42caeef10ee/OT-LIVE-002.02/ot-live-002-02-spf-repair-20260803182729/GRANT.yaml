@@ -1,0 +1,88 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+authority_id: ot-live-002-02-spf-repair-20260803182729
+authority_kind: derived_candidate_bound_exact_duplicate_SPF_repair
+task_id: OT-LIVE-002.02
+owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+owner_exclusivity: sole_OT-LIVE-002.02_provider_owner
+candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+candidate_binding_status: exact_frozen_candidate_currently_active_on_web_and_worker
+repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+canonical_path: ops/v2.1-execution/authority/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/OT-LIVE-002.02/ot-live-002-02-spf-repair-20260803182729/GRANT.yaml
+source_grant_id: ot-v21-production-source-grant-20260729
+source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+source_approval_evidence_path: ops/v2.1-execution/authority/none/C00/ot-v21-production-source-grant-20260729/APPROVAL.md
+source_approval_evidence_digest: 8c95a959f79aba0ac34fa0fcb6cb463cceac9aeb2bb52da1603d39db3e2c33c2
+predecessor_authority_id: ot-live-002-02-provider-authority-20260803181433
+predecessor_grant_digest: 20a3f775c230e531d950759fcd93fb034f2f6ae48d889459e9c5d1903186e4dc
+operator_authorization_source_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+operator_authorization_evidence: bounded_successor_request_after_live_readback_at_control_d51d317c
+approved_by: Shloimie Dratler
+approved_at: '2026-08-03T18:27:28Z'
+recorded_at: '2026-08-03T18:27:28Z'
+expires_at: '2026-08-04T18:14:33Z'
+provider_identity: godaddy:canonical-account:onetimeonetime.com
+lock: infra:dns
+holder_claim_id: ba570eaf-9dbd-4c7f-8357-0b902d7342a0
+provider_lock_lease_id: e360ff02-e3a9-428f-8ace-32d8a3882801
+fencing_token: fence-633f042e-c489-4d7b-9104-fba8c08151de
+scope:
+  exact_zone: onetimeonetime.com
+  exact_owner: send.onetimeonetime.com
+  exact_type: TXT
+  before_records:
+    retained_and_updated_value: v=spf1 include:amazonses.com ~all
+    redundant_deleted_value: v=spf1 include:dc-7415a7219d._spfm.send.onetimeonetime.com ~all
+  exact_after_value: v=spf1 include:amazonses.com include:dc-7415a7219d._spfm.send.onetimeonetime.com ~all
+  exact_after_record_count_at_owner_for_spf: 1
+allowed_operation: as one fenced repair unit, update only the exact retained SPF TXT value to the exact merged value, delete only the exact redundant SPF TXT value, then require authoritative and public readback proving exactly one SPF record at send.onetimeonetime.com; preserve every other record and make no nameserver, provider, application, or customer change
+execution_order:
+  - revalidate_both_exact_before_values_at_the_exact_owner
+  - update_the_amazonses_value_to_the_exact_merged_value
+  - read_back_the_exact_merged_value_before_deletion
+  - delete_only_the_exact_dc_7415a7219d_redundant_value
+  - read_back_exactly_one_SPF_value_from_GoDaddy_authoritative_nameservers_and_public_resolvers
+effect_budget:
+  DNS_TXT_updates_max: 1
+  DNS_TXT_deletions_max: 1
+  DNS_TXT_creations_max: 0
+  allowed_owner: send.onetimeonetime.com
+  allowed_type: TXT
+  nameserver_changes_max: 0
+  unrelated_record_changes_max: 0
+  application_or_Railway_changes_max: 0
+  provider_sends_or_customer_effects_max: 0
+  broad_campaign_sends_max: 0
+rollback_budget:
+  usable_only_after_failed_or_mismatched_post_effect_readback: true
+  restore_updated_value_max: 1
+  recreate_exact_redundant_value_max: 1
+  exact_restored_values:
+    - v=spf1 include:amazonses.com ~all
+    - v=spf1 include:dc-7415a7219d._spfm.send.onetimeonetime.com ~all
+  require_terminal_authoritative_readback: true
+Forward_Email:
+  effect_authority_usable: false
+  reason: Google_authenticated_account_has_zero_managed_domains_no_ownership_evidence_and_canonical_account_destination_not_confirmed
+  alias_or_route_mutations_max: 0
+  preserve_info_alias: true
+send_gate:
+  broad_send_authorized: false
+  broad_send_budget: 0
+  unresolved_date_gate_preserved: Sep_11_vs_Sep_13
+rollback_and_reconciliation:
+  - acquire_and_revalidate_this_exact_lease_and_fencing_token_immediately_before_the_repair
+  - stop_without_change_if_either_exact_before_value_or_owner_differs
+  - capture_the_immutable_provider_record_identifiers_or_exact_before_after_tuples
+  - treat_the_update_and_deletion_as_one_effect_chain_with_no_other_operation_between_them
+  - stop_on_unknown_result_and_reconcile_before_retry
+  - if_post_effect_readback_fails_use_only_the_exact_rollback_budget_above
+  - release_the_lock_only_after_terminal_authoritative_and_public_readback
+stop_conditions:
+  - source_grant_predecessor_authority_this_authority_lease_or_fence_is_revoked_expired_or_mismatched
+  - canonical_GoDaddy_account_zone_owner_type_or_either_exact_before_value_differs
+  - any_third_SPF_value_exists_at_the_owner
+  - the_operation_would_change_a_nameserver_application_record_unrelated_record_or_customer_state
+  - Forward_Email_alias_or_route_work_is_attempted
+contains_secret: false
+immutable: true

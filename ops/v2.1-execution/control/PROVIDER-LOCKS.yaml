@@ -13,7 +13,7 @@ locks:
   lease_expires_at: '2026-08-04T18:14:33Z'
   authority_id: ot-live-002-02-provider-authority-20260803181433
   authority_grant_digest: 20a3f775c230e531d950759fcd93fb034f2f6ae48d889459e9c5d1903186e4dc
-  authority_status_index_digest: f0da5bd884da088b3017ce6f38a712aec08491f4d54908ffaa937902079ff56b
+  authority_status_index_digest: f6c9c5a6290d03cd8fddea217e503d059bedfaad20e183496e5e6457a5e30b1b
   authority_status_entry_digest: 0d953a8f2427ee0a37cf992b844c08901ecaea2132e44098f78e1a0414c5a60b
   latest_revocation_digest: none
   authority_checked_at: '2026-08-03T18:14:33Z'
@@ -115,7 +115,7 @@ locks:
   lease_expires_at: '2026-08-04T18:14:33Z'
   authority_id: ot-live-002-02-provider-authority-20260803181433
   authority_grant_digest: 20a3f775c230e531d950759fcd93fb034f2f6ae48d889459e9c5d1903186e4dc
-  authority_status_index_digest: f0da5bd884da088b3017ce6f38a712aec08491f4d54908ffaa937902079ff56b
+  authority_status_index_digest: f6c9c5a6290d03cd8fddea217e503d059bedfaad20e183496e5e6457a5e30b1b
   authority_status_entry_digest: 0d953a8f2427ee0a37cf992b844c08901ecaea2132e44098f78e1a0414c5a60b
   latest_revocation_digest: none
   authority_checked_at: '2026-08-03T18:14:33Z'
@@ -147,28 +147,31 @@ locks:
 - lock: infra:dns
   status: claimed
   holder_task_id: OT-LIVE-002.02
-  holder_claim_id: 2769f974-f736-4529-90b5-ac6945e3b236
-  lease_id: 075ce00a-fd6a-4a47-85a8-7a20bfde0a19
-  fencing_token: fence-a5e9f3dc-ca0d-4761-b382-3b67318c0ef8
+  holder_claim_id: ba570eaf-9dbd-4c7f-8357-0b902d7342a0
+  lease_id: e360ff02-e3a9-428f-8ace-32d8a3882801
+  fencing_token: fence-633f042e-c489-4d7b-9104-fba8c08151de
   canonical_candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
   provider_identity: godaddy:canonical-account:onetimeonetime.com
-  authorized_operation: bounded_email_SPF_DKIM_DMARC_Mailgun_Resend_records_and_conditional_Forward_Email_exact_alias_route_after_live_identity_readback_no_nameserver_or_unrelated_changes
-  claimed_at: '2026-08-03T18:14:33Z'
+  authorized_operation: exact_send_onetimeonetime_com_TXT_update_to_merged_SPF_then_delete_only_exact_redundant_dc_7415a7219d_SPF_with_authoritative_public_readback_and_exact_rollback_only
+  claimed_at: '2026-08-03T18:27:28Z'
   lease_expires_at: '2026-08-04T18:14:33Z'
-  authority_id: ot-live-002-02-provider-authority-20260803181433
-  authority_grant_digest: 20a3f775c230e531d950759fcd93fb034f2f6ae48d889459e9c5d1903186e4dc
-  authority_status_index_digest: f0da5bd884da088b3017ce6f38a712aec08491f4d54908ffaa937902079ff56b
-  authority_status_entry_digest: 0d953a8f2427ee0a37cf992b844c08901ecaea2132e44098f78e1a0414c5a60b
+  authority_id: ot-live-002-02-spf-repair-20260803182729
+  authority_grant_digest: 3c653690b8067633d050286d03f0faef52febf1d12711a4cf9a565723fa4b3b8
+  authority_status_index_digest: f6c9c5a6290d03cd8fddea217e503d059bedfaad20e183496e5e6457a5e30b1b
+  authority_status_entry_digest: ae32d371fe992dc246b0c5646dd245a46d57a04864a1f9de183a708ffb73363d
   latest_revocation_digest: none
-  authority_checked_at: '2026-08-03T18:14:33Z'
+  authority_checked_at: '2026-08-03T18:27:28Z'
   effect_budget:
-    DNS_records_created_or_updated_max: 12
-    DNS_records_deleted_max: 0
-    Forward_Email_alias_or_route_mutations_max: 2
+    exact_owner_and_type: send.onetimeonetime.com_TXT
+    DNS_TXT_updates_max: 1
+    DNS_TXT_deletions_max: 1
+    DNS_TXT_creations_max: 0
+    exact_after_value: v=spf1 include:amazonses.com include:dc-7415a7219d._spfm.send.onetimeonetime.com ~all
+    Forward_Email_alias_or_route_mutations_max: 0
     nameserver_changes_max: 0
     unrelated_record_changes_max: 0
     broad_or_customer_sends_max: 0
-  cleanup_state: prior_Railway_TXT_TLS_terminal_exact_new_email_auth_and_alias_effects_pending_per_effect_readback_and_reconciliation
+  cleanup_state: pending_one_exact_duplicate_SPF_repair_authoritative_public_readback_and_terminal_reconciliation
 - lock: production:deployment
   status: unclaimed
   holder_task_id: null

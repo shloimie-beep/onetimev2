@@ -923,11 +923,47 @@ authorities:
     claim_digest: 0d953a8f2427ee0a37cf992b844c08901ecaea2132e44098f78e1a0414c5a60b
     broad_campaign_send_usable: false
     broad_send_blocker: unresolved_Sep_11_Sep_13_and_all_named_release_gates_require_successor_send_budget
-    Forward_Email_effect_usable: conditional_after_canonical_account_and_destination_live_readback
+    infra_dns_effect_usable: false
+    infra_dns_successor_authority_id: ot-live-002-02-spf-repair-20260803182729
+    infra_dns_successor_reason: exact_duplicate_SPF_repair_requires_one_previously_unbudgeted_TXT_deletion
+    Forward_Email_effect_usable: false
+    Forward_Email_blocker: authenticated_Google_account_has_zero_managed_domains_and_no_canonical_Forward_Email_ownership_or_destination_evidence
     prerequisite_review: prior_DNS_effect_terminal_GHL_and_Resend_exact_ids_recorded_zero_Students_minors_Schools_current_subscribers_suppressed_or_ambiguous
     disposition: reserved_for_governed_configuration_bounded_email_auth_alias_seed_reply_and_inactive_asset_reconciliation_zero_broad_send
-    checked_at: '2026-08-03T18:14:33Z'
-    state_based_on_control_head_sha: ff178642bdd2a0d69c8f973cbd636b81b84430c1
+    checked_at: '2026-08-03T18:27:28Z'
+    state_based_on_control_head_sha: d51d317c0a97549345ec557f6fabbbbbce309915
+  ot-live-002-02-spf-repair-20260803182729:
+    schema_version: 1
+    execution_id: OT-V21-PRODUCTION
+    authority_id: ot-live-002-02-spf-repair-20260803182729
+    authority_kind: derived_candidate_bound_exact_duplicate_SPF_repair
+    grant_digest: 3c653690b8067633d050286d03f0faef52febf1d12711a4cf9a565723fa4b3b8
+    source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+    predecessor_authority_id: ot-live-002-02-provider-authority-20260803181433
+    status: active
+    expires_at: '2026-08-04T18:14:33Z'
+    latest_revocation_path: null
+    latest_revocation_digest: null
+    provider_lock: infra:dns
+    provider_lock_lease_id: e360ff02-e3a9-428f-8ace-32d8a3882801
+    fencing_token: fence-633f042e-c489-4d7b-9104-fba8c08151de
+    effect_authority_usable: true
+    candidate_binding_status: exact_frozen_candidate_currently_active_on_web_and_worker
+    candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+    repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+    owner_task_id: OT-LIVE-002.02
+    owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+    claim_path: ops/v2.1-execution/control/OT-LIVE-002.02-SPF-REPAIR-CLAIM.yaml
+    claim_digest: ae32d371fe992dc246b0c5646dd245a46d57a04864a1f9de183a708ffb73363d
+    exact_owner_and_type: send.onetimeonetime.com_TXT
+    maximum_primary_effect_count: one_update_plus_one_exact_redundant_deletion
+    exact_after_value: v=spf1 include:amazonses.com include:dc-7415a7219d._spfm.send.onetimeonetime.com ~all
+    Forward_Email_effect_usable: false
+    broad_campaign_send_usable: false
+    prerequisite_review: live_GoDaddy_readback_proved_two_exact_SPF_values_at_same_owner_and_no_other_change_requested
+    disposition: reserved_for_one_fenced_duplicate_SPF_repair_with_exact_authoritative_public_readback_and_exact_rollback_only
+    checked_at: '2026-08-03T18:27:28Z'
+    state_based_on_control_head_sha: d51d317c0a97549345ec557f6fabbbbbce309915
 entry_schema: templates/AUTHORITY-STATUS-ENTRY.yaml
 revocation_schema: templates/AUTHORITY-REVOCATION-RECORD.yaml
 rule: C00 records externally granted/revoked/expired authority; it does not grant it. Every update binds the known
