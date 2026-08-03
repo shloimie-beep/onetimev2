@@ -1,0 +1,14 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prod-public-support-repair-20260803201419
+current_event_sequence: 1
+current_event_state: RESERVED
+current_event_path: ops/v2.1-execution/effects/99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098/C00/c00-prod-public-support-repair-20260803201419/events/001-RESERVED.yaml
+current_event_digest: 56dc04f8ca03021d8899a65471445957bbdb48f9c79a07b7ebc62ce990ad5b90
+candidate_digest: 99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098
+repository_source_sha: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+authority_id: c00-prod-public-support-repair-20260803201419
+lock_lease_id: c48f08bd-db24-41b6-b864-a89ad67dc0ee
+fencing_token: fence-bd0d6c96-24ec-4fc9-8a9f-8bd95d658b40
+updated_at: '2026-08-03T20:14:19Z'
+immutable_event_chain: true

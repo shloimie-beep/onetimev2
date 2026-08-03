@@ -47,6 +47,17 @@ ot_live_001_02_public_support_repair_candidate_freeze:
   hosted_pg18_result: reused_exact_90_migration_inventory_8_probes_restore_equal
   production_dependency_audit: inherited_zero_vulnerabilities_no_dependency_changes
   provider_or_external_effects: 0/0/0
+ot_live_001_02_public_support_repair_deployment_authority:
+  recorded_at: '2026-08-03T20:14:19Z'
+  state_based_on_control_head_sha: 661836f9d0cbbb17a283ca933ac3175eff4fc157
+  authority_id: c00-prod-public-support-repair-20260803201419
+  candidate_digest: 99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098
+  repository_source_sha: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+  production_lock_lease_id: c48f08bd-db24-41b6-b864-a89ad67dc0ee
+  fencing_token: fence-bd0d6c96-24ec-4fc9-8a9f-8bd95d658b40
+  state: ACTIVE_RESERVED
+  effect_budget: two_exact_local_uploads_and_exact_ID_cancel_or_rollback_only_if_required
+  customer_provider_DNS_email_billing_effects: 0
 ot_live_002_02_provider_handoff:
   reconciled_at: '2026-08-03T19:02:11Z'
   owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a

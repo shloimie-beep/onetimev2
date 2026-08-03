@@ -1,0 +1,85 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+authority_id: c00-prod-public-support-repair-20260803201419
+authority_kind: derived_candidate_bound_exact_local_upload_public_support_repair_and_readback
+task_id: C00
+candidate_digest: 99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098
+candidate_binding_status: exact_frozen_public_support_route_repair_clean_local_archive
+candidate_manifest_commit_sha: ea64afeb98d02ea315382f8b899a9b61e44ee6ca
+repository_source_sha: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+source_branch: codex/ot-live-progressive-portal-20260803
+canonical_path: ops/v2.1-execution/authority/99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098/C00/c00-prod-public-support-repair-20260803201419/GRANT.yaml
+source_grant_id: ot-v21-production-source-grant-20260729
+source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+source_approval_evidence_path: ops/v2.1-execution/authority/none/C00/ot-v21-production-source-grant-20260729/APPROVAL.md
+source_approval_evidence_digest: 8c95a959f79aba0ac34fa0fcb6cb463cceac9aeb2bb52da1603d39db3e2c33c2
+predecessor_authority_id: c00-prod-local-build-repair-20260803191618
+predecessor_terminal_event_digest: 1436924917a16bc015bc4b86bb2a28eb1321575011b4a97b8c49a9e8eca99da5
+grant_status_at_issue: active
+approved_by: Shloimie Dratler
+approved_at: '2026-08-03T20:14:19Z'
+recorded_at: '2026-08-03T20:14:19Z'
+expires_at: '2026-08-03T21:44:19Z'
+scope:
+  provider: One Time application on Railway production
+  project_id: ce55ef20-1418-4ad3-aafa-f877fb992dc8
+  environment_id: f911acfc-e206-44df-a569-9d69d709b94b
+  web_service_id: d175ad94-5e3c-41c2-8cbc-daa1a299077d
+  worker_service_id: 742f60ed-dc2f-4321-85d0-019003d4e9b9
+  current_web_deployment_id: 7641a4a8-d45a-4790-947c-514c578ab9a4
+  current_web_image_digest: sha256:d25ab755a139247b11af3b2b7dbf53e92b8b5a7543d037cdc86b3e1a9d54b529
+  current_worker_deployment_id: 40995011-901e-4a1b-95b9-e00c6c5ecfdb
+  current_worker_image_digest: sha256:57bb789dbbb1e65e21ffdb1d1f213fa80a62bf148e86015a109eb070f137bcfd
+  current_source_sha: a64d9052305e6a0a31cc9bf3268fb634000c8f8a
+  target_source_sha: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+  exact_clean_worktree_path: C:/Users/User/Documents/Codex/2026-07-28/files-mentioned-by-the-user-one/work/ot-live-progressive-portal-20260803
+  railway_web_manifest_sha256: 53c89d863cf679f62bf4911ded79ab72e6c35a0b7e462b46d7aa25cb12e32c9f
+  railway_worker_manifest_sha256: c4eb14dbbaec127cdfa7e395b6e7d3f8176da1d410b4adbcedbb7b7cab9e7e51
+  Dockerfile_sha256: beda32f7f842d9412552ecfafb8fb0bcb7faab6eb90dde310c658d9bacdf73f5
+  exact_latest_migration_id: 2259_vimeo_mishnayos_catalog_adoption
+  exact_migration_inventory_digest: abdbfd5837ed54751e55458a3a79886ca9799e3d738344b40d6f95aad621a5ea
+  application_origin: https://app.onetimeonetime.com
+fencing_token: fence-bd0d6c96-24ec-4fc9-8a9f-8bd95d658b40
+lock: production:deployment
+holder_claim_id: 0a8648c0-dc8e-476c-b405-80bec986d30b
+provider_lock_lease_id: c48f08bd-db24-41b6-b864-a89ad67dc0ee
+allowed_operation: upload the exact clean ffd1c55a local archive once to the web and once to the worker using their exact Dockerfile manifests; require SUCCESS, running instances, new image digests, exact candidate version response, public health readiness support redirect and member support readback, unchanged migration state, and zero worker delivery sink; cancel only an exact new deployment on identity or build mismatch and roll back only to the exact prior deployment IDs if an unhealthy replacement cuts over
+maximum_effect_count: 6
+maximum_effect_value: two_exact_local_archive_deployments_two_exact_ID_cancels_before_cutover_and_two_exact_prior_deployment_rollbacks_only_if_required
+approved_fixture_ids: []
+operator_identity: C00
+effect_budget:
+  database_migrations_max: 0
+  parent_household_student_mutations_max: 0
+  source_connections_or_disconnections_max: 0
+  local_archive_production_deployments_max: 2
+  exact_pre_cutover_deployment_cancels_max: 2
+  variable_mutations_max: 0
+  rollback_to_exact_prior_deployments_max: 2
+  Railway_or_DNS_domain_mutations_max: 0
+  external_provider_GHL_billing_broad_effects_max: 0
+prerequisite_review:
+  control_head_sha: 661836f9d0cbbb17a283ca933ac3175eff4fc157
+  clean_source_and_remote_head: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+  source_delta_and_validation: support_11_portal_8_registry_4_routes_4_candidate_builder_4_build_typecheck_lint_prettier_secret_scan_passed
+  migration_inventory: unchanged_90_files_90_live_ledger_rows_pending_zero
+  live_web_and_worker: exact_a64_local_images_SUCCESS_RUNNING_health_200
+  deployment_method: exact_clean_local_upload_with_explicit_Dockerfile_manifests_only
+  delivery_controls: inherited_sink_sink_sink_resend_false_highlevel_disabled_real_transports_false
+rollback_and_reconciliation:
+  - record immutable reservation and active exclusive production deployment lock before upload
+  - recheck exact clean worktree manifest Dockerfile remote control and source heads before each upload
+  - use local archive upload only and never from_source down source_connect source_disconnect or variable mutation
+  - require candidate-bound CLI message and resolved Dockerfile service manifest before permitting cutover
+  - preserve the exact current deployment during build and roll back only to its exact ID if a replacement is unhealthy
+  - require health readiness version support route migration and worker sink readback after deployment
+  - do not run the protected Parent canary without an already available bound credential or session
+  - require zero customer Student provider GHL billing DNS audience or broad communication mutation
+stop_conditions:
+  - grant lock lease fence candidate worktree hashes source head or remote control mismatch
+  - build metadata does not resolve the exact Dockerfile and candidate-bound CLI message
+  - final deployment metadata service identity healthcheck or builder differs from the exact bound inputs
+  - migration ledger differs from 90 rows pending zero or delivery sink controls fail
+  - any variable migration source connection provider GHL billing DNS customer or communication mutation would occur
+contains_secret: false
+immutable: true
