@@ -1,0 +1,42 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prod-local-build-repair-20260803191618
+event_sequence: 3
+previous_event_digest: 0812f369cd9271819d8ec99cb6f8ddbcf073fba423eb54fd8089f7c506b1411b
+state: RECONCILED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094/C00/c00-prod-local-build-repair-20260803191618/events/003-RECONCILED.yaml
+current_pointer_path: ops/v2.1-execution/effects/366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094/C00/c00-prod-local-build-repair-20260803191618/CURRENT.yaml
+candidate_digest: 366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094
+repository_source_sha: a64d9052305e6a0a31cc9bf3268fb634000c8f8a
+authority_id: c00-prod-local-build-repair-20260803191618
+authority_grant_digest: 594872a1e7effdf4681c20daa408f5a95f159fe2a9ccc8abb1c0414ee1301a21
+lock: production:deployment
+lock_lease_id: 920dd6d4-3c2b-41c1-8cb7-2ad27fcf11b3
+fencing_token: fence-e23c0008-7d4d-41d2-ab05-3a16c9c6a342
+operation: terminally_reconcile_exact_a64_local_deployment_success_and_unstarted_protected_fixture_canary
+terminal_readback:
+  live_web_deployment_id: 7641a4a8-d45a-4790-947c-514c578ab9a4
+  live_web_status_builder_and_image: SUCCESS_DOCKERFILE_sha256_d25ab755
+  live_worker_deployment_id: 40995011-901e-4a1b-95b9-e00c6c5ecfdb
+  live_worker_status_builder_and_image: SUCCESS_DOCKERFILE_sha256_57bb789d
+  exact_candidate_source_sha: a64d9052305e6a0a31cc9bf3268fb634000c8f8a
+  public_health_readiness_version: HTTP_200_HTTP_200_HTTP_200
+  migration_inventory: 90_files_90_live_rows_pending_zero
+  Parent_household_Student_counts: 1_1_0
+  Parent_login_or_session_effect: 0
+  Student_lifecycle_effect: 0
+  delivery_transport: sink_no_external_send
+  variable_mutations: 0
+  database_migrations: 0
+  external_provider_GHL_billing_DNS_or_broad_effects: 0
+effect_count_after: 2
+unexpected_effects: 0
+cleanup_state: exact_candidate_live_healthy_no_unresolved_deployment_effect_fixture_preserved_unchanged
+lock_release_state: released_after_exact_deployment_and_zero_canary_effect_readback
+terminal_disposition: DEPLOYMENT_SUCCESS_CANARY_NOT_RUN_MISSING_PROTECTED_PARENT_CREDENTIAL
+remaining_requirement: existing_fixture_Parent_password_or_operator_sign_in_then_new_exact_candidate_bound_canary_only_authority
+event_at: '2026-08-03T19:40:47Z'
+state_based_on_head_sha: 5196a5fbd03ac8f4a5465a373bdebf0d71e92d62
+contains_secret: false
+immutable: true

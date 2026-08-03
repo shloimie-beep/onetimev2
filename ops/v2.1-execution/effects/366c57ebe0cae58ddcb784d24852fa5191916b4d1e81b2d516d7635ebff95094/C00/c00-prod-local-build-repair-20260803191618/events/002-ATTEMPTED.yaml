@@ -1,0 +1,74 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prod-local-build-repair-20260803191618
+event_sequence: 2
+previous_event_digest: 1cda5b897880c3ba401d1953308cdf2e479bd841d2f76280a6f31f7b3d91a216
+state: ATTEMPTED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094/C00/c00-prod-local-build-repair-20260803191618/events/002-ATTEMPTED.yaml
+current_pointer_path: ops/v2.1-execution/effects/366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094/C00/c00-prod-local-build-repair-20260803191618/CURRENT.yaml
+candidate_digest: 366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094
+repository_source_sha: a64d9052305e6a0a31cc9bf3268fb634000c8f8a
+authority_id: c00-prod-local-build-repair-20260803191618
+authority_grant_digest: 594872a1e7effdf4681c20daa408f5a95f159fe2a9ccc8abb1c0414ee1301a21
+lock: production:deployment
+lock_lease_id: 920dd6d4-3c2b-41c1-8cb7-2ad27fcf11b3
+fencing_token: fence-e23c0008-7d4d-41d2-ab05-3a16c9c6a342
+operation: deploy_exact_clean_a64_local_archives_to_web_and_worker_then_preflight_existing_protected_Parent_Student_canary
+deployment_readback:
+  web_deployment_id: 7641a4a8-d45a-4790-947c-514c578ab9a4
+  web_status: SUCCESS
+  web_builder_and_Dockerfile: DOCKERFILE_/Dockerfile
+  web_candidate_bound_message: C00_candidate_366c57ebe0cae_source_a64d9052305e_Dockerfile_web
+  web_image_digest: sha256:d25ab755a139247b11af3b2b7dbf53e92b8b5a7543d037cdc86b3e1a9d54b529
+  worker_deployment_id: 40995011-901e-4a1b-95b9-e00c6c5ecfdb
+  worker_status: SUCCESS
+  worker_builder_and_Dockerfile: DOCKERFILE_Dockerfile
+  worker_candidate_bound_message: C00_candidate_366c57ebe0cae_source_a64d9052305e_Dockerfile_worker
+  worker_image_digest: sha256:57bb789dbbb1e65e21ffdb1d1f213fa80a62bf148e86015a109eb070f137bcfd
+  public_health: HTTP_200
+  public_readiness: HTTP_200
+  public_version: HTTP_200
+  worker_runtime: started_delivery_sink_batch_claimed_0_delivered_0
+  migration_inventory: unchanged_90_files_90_live_rows_pending_zero
+  delivery_controls: sink_sink_sink_resend_false_highlevel_disabled_real_transports_false
+build_security_readback:
+  immutable_frozen_source: a64d9052305e6a0a31cc9bf3268fb634000c8f8a
+  source_and_remote_match: true
+  npm_audit_omit_dev_high_or_critical: 0
+  npm_audit_omit_dev_moderate: 1
+  moderate_advisory: indirect_postcss_sourceMappingURL_local_map_read_build_time_only
+  runtime_exposure_assessment: not_runtime_reachable_in_frozen_CSS_build_input
+protected_canary_preflight:
+  fixture_id: c00_prod_portal_canary_8a902dd9_20260803a
+  existing_fixture_counts: one_Parent_one_household_zero_Student
+  in_app_browser_authenticated_or_autofilled: false
+  existing_Chrome_authenticated_or_autofilled: false
+  approved_secret_configuration_contains_bound_identity: true
+  approved_secret_configuration_contains_reusable_Parent_credential: false
+  Parent_login_attempted: false
+  reason_not_attempted: no_approved_reusable_Parent_password_or_live_session_and_Parent_credential_mutation_not_authorized
+  Student_created: false
+  Student_credential_rotated: false
+  Student_lifecycle_transitions: 0
+stop_condition:
+  triggered: true
+  reason: protected_existing_Parent_credential_or_live_session_genuinely_unavailable_after_approved_browser_and_configured_secret_readback
+  safe_state: exact_candidate_live_web_worker_healthy_one_Parent_one_household_zero_Student_transports_sink
+  required_input: existing_fixture_Parent_password_or_operator_sign_in_to_exact_app_onetimeonetime_com_fixture_account
+effect_counts_after:
+  local_archive_production_deployments: 2_of_2
+  exact_pre_cutover_deployment_cancels: 0_of_2
+  rollback_to_exact_prior_deployments: 0_of_2
+  database_migrations: 0
+  Parent_household_Student_mutations: 0_0_0
+  Student_credential_rotations: 0
+  Student_lifecycle_transitions: 0
+  variable_mutations: 0
+  external_provider_GHL_billing_DNS_or_broad_effects: 0
+unexpected_effects: 0
+cleanup_state: exact_candidate_web_and_worker_remain_live_healthy_no_unresolved_deployment_effect_canary_not_started
+event_at: '2026-08-03T19:39:34Z'
+state_based_on_head_sha: 5196a5fbd03ac8f4a5465a373bdebf0d71e92d62
+contains_secret: false
+immutable: true
