@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: operational
-active_phase: ot_live_001_02_copy_truth_live_portal_dns_and_candidate_next
+active_phase: ot_live_001_02_login_timestamp_fix_candidate_and_protected_canary
 bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
@@ -14,16 +14,38 @@ bootstrap_phase_order:
 reviewed_head: ecaf7b153f2b5323fd11859204a6db5c2a20fc6a
 integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
-candidate: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+candidate: 366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094
 active_writer_limit: 4
 controller_authorization_sha: 76692fbb6e65cdeb68e32862dd0c03490b5e5750
 next_action: >-
-  Preserve exact live adult-only preregistration copy release 801af7ec and its inherited unchanged-form canary binding.
-  Railway and signed-in GoDaddy readback have resolved the canonical app.onetimeonetime.com provider identities without
-  mutation and proved the app binding is absent. The smallest progressive Parent/Student candidate is now frozen at
-  source ca442fa4 and digest 8a902dd9. Bind the app domain and run one protected production canary under fresh
-  candidate-bound authority and both production:deployment and infra:dns locks.
-  Keep broad communication held until Shloimie selects the single free-access cutoff.
+  Preserve the healthy live ca442 application, exact app domain/TLS, one Parent and household, zero Student state, and
+  zero external delivery controls. The failed Parent login canary proved exact reset_at millisecond loss and is
+  terminally reconciled. The three-file repair is frozen at source a64d9052 and candidate 366c57eb. Acquire a fresh
+  production:deployment fence, deploy only that exact source to the existing web and worker, require health/source/log
+  readback, then resume the existing protected Parent/Student canary without any migration, provider, GHL, billing, or
+  broad communication effect. Keep broad communication held on the Sep 11/Sep 13 and failed SPF deletion blockers.
+ot_live_001_02_login_timestamp_candidate_freeze:
+  recorded_at: '2026-08-03T18:43:39Z'
+  control_parent_sha: f1ece8f500e0ec6901e388ab02e52aaaeac73d66
+  freeze_record_commit_sha: 8b1d9c3c277da59ea7d372a5b491a1ce0bf65879
+  source_branch: codex/ot-live-progressive-portal-20260803
+  source_sha: a64d9052305e6a0a31cc9bf3268fb634000c8f8a
+  base_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+  canonical_candidate_digest: 366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094
+  application_content_sha256: 3d6f38530aeae003dbfb811764bd86c16266121360fd4687a76b0ebd1661a067
+  candidate_manifest_sha256: d43104bd84bbe5d981e3077cd704e6733ddc98e0c1fd87372ee9b82143c4258d
+  candidate_derivation_sha256: 72b357ff1fbbd8af0f88be7cb0bc4439b38b4453d5ce0e1d9cfb0f4c184fc760
+  candidate_manifest_path: ops/v2.1-execution/merge/candidates/366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094/CANDIDATE.yaml
+  frozen_at: '2026-08-03T18:39:54.567Z'
+  exact_delta: apps_web_server_app_plus_database_instant_helper_and_unit_test
+  focused_auth_tests: 5_passed_1_native_opt_in_skipped
+  typecheck_lint_prettier_build: passed
+  secret_scan: passed_3219_text_files
+  database_migrations_changed: 0
+  migration_inventory_digest: abdbfd5837ed54751e55458a3a79886ca9799e3d738344b40d6f95aad621a5ea
+  hosted_pg18_result: reused_exact_90_migration_inventory_8_probes_restore_equal
+  production_dependency_audit: inherited_zero_vulnerabilities_no_dependency_changes
+  provider_or_external_effects: 0/0/0
 ot_live_001_02_progressive_candidate_freeze:
   recorded_at: '2026-08-03T16:18:17Z'
   control_parent_sha: 795c743bdae39d878dd8528c21eeb769f61998a4
