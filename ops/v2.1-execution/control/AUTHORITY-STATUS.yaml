@@ -703,23 +703,51 @@ authorities:
     authority_kind: derived_candidate_bound_progressive_production_domain_deployment_operator_canary
     grant_digest: ea44463a56ca0566624b1704a3a998fffdf6439b361d0a7c717196bd7acdf0ed
     source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
-    status: active
+    status: consumed
     expires_at: '2026-08-03T17:22:34Z'
     latest_revocation_path: null
     latest_revocation_digest: null
     provider_lock: production:deployment
     provider_lock_lease_id: 075d7564-8660-4fa0-8420-9655757b8da3
     fencing_token: fence-8311372a-a931-4769-a53d-f37a561b3ffd
-    effect_authority_usable: true
+    effect_authority_usable: false
     candidate_binding_status: exact_frozen_candidate_bound_from_hosted_pg18_and_browser_evidence
     candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
     repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
     source_branch: codex/ot-live-progressive-portal-20260803
     maximum_effect_count: 20
     prerequisite_review: candidate_frozen_hosted_pg18_passed_domains_and_current_production_read_back_sources_disconnected_fail_closed_transports
-    disposition: reserved_not_yet_attempted
-    checked_at: '2026-08-03T16:27:34Z'
-    state_based_on_control_head_sha: 5d80c3413bfa138430af99e198a67ad5e0257246
+    disposition: stopped_on_Railway_partial_success_duplicate_exact_web_candidate_one_REMOVED_one_SUCCESS_no_wrong_source_successor_recovery_authority_bound
+    stop_event_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-progressive-railway-20260803162734/events/003-ATTEMPTED.yaml
+    successor_authority_id: c00-prod-progressive-recovery-20260803170559
+    lock_released_at: '2026-08-03T17:05:59Z'
+    checked_at: '2026-08-03T17:05:59Z'
+    state_based_on_control_head_sha: 2fa012aa713a03a15e8c04bc0fe799987194370e
+  c00-prod-progressive-recovery-20260803170559:
+    schema_version: 1
+    execution_id: OT-V21-PRODUCTION
+    authority_id: c00-prod-progressive-recovery-20260803170559
+    authority_kind: derived_candidate_bound_progressive_canary_and_read_only_recovery_after_provider_partial_success
+    grant_digest: 11e35de1b9cb1b7d4003c48990305d96d38015eeef00aee8eb3366fc306a2bbe
+    source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+    predecessor_authority_id: c00-prod-progressive-railway-20260803162734
+    status: active
+    expires_at: '2026-08-03T18:00:59Z'
+    latest_revocation_path: null
+    latest_revocation_digest: null
+    provider_lock: production:deployment
+    provider_lock_lease_id: 6bc3afe2-edc7-4d90-a5aa-ad72829d545a
+    fencing_token: fence-72da07d4-388e-448a-b7ca-6a5260af0174
+    effect_authority_usable: true
+    candidate_binding_status: exact_frozen_candidate_active_on_both_services_sources_disconnected
+    candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+    repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+    source_branch: codex/ot-live-progressive-portal-20260803
+    maximum_effect_count: 10
+    prerequisite_review: predecessor_stopped_duplicate_exact_web_candidate_REMOVED_active_web_and_worker_exact_SUCCESS_sources_disconnected_protected_variables_set_zero_provider_effects
+    disposition: recovery_reserved_for_one_operator_canary_and_two_read_only_restoration_deployments_only
+    checked_at: '2026-08-03T17:05:59Z'
+    state_based_on_control_head_sha: 2fa012aa713a03a15e8c04bc0fe799987194370e
   c00-prod-progressive-dns-20260803162734:
     schema_version: 1
     execution_id: OT-V21-PRODUCTION
