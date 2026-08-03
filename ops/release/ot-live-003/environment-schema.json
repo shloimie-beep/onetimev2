@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "task_id": "OT-LIVE-003.02",
+  "secret_policy": {
+    "print_values": false,
+    "store_values_in_git": false,
+    "allowed_evidence": ["present", "absent", "different_from_BNA", "count"]
+  },
+  "defaults": {
+    "ONE_TIME_REPLY_COPILOT_ENABLED": "false",
+    "ONE_TIME_REPLY_COPILOT_WORKFLOW_INGRESS_ENABLED": "false",
+    "ONE_TIME_REPLY_COPILOT_OAUTH_INGRESS_ENABLED": "false",
+    "ONE_TIME_REPLY_COPILOT_TELEGRAM_DELIVERY_ENABLED": "false",
+    "ONE_TIME_REPLY_COPILOT_GHL_DELIVERY_ENABLED": "false",
+    "ONE_TIME_TELEGRAM_ENVIRONMENT": "staging",
+    "ONE_TIME_REPLY_COPILOT_WORKSPACE_KEY": "one_time_primary",
+    "ONE_TIME_REPLY_COPILOT_GHL_LOCATION_ID": "pBSnOK2nkdxp6gf9Rg3o",
+    "ONE_TIME_REPLY_COPILOT_GHL_API_BASE_URL": "https://services.leadconnectorhq.com",
+    "ONE_TIME_REPLY_COPILOT_GHL_API_VERSION": "2021-07-28",
+    "PORT": "3103"
+  },
+  "protected_variables": [
+    {
+      "name": "ONE_TIME_RABBI_TELEGRAM_BOT_TOKEN",
+      "kind": "secret",
+      "required_for": ["telegram_delivery"],
+      "must_be_distinct_from": ["TELEGRAM_BOT_TOKEN", "BNA_TELEGRAM_BOT_TOKEN"]
+    },
+    {
+      "name": "ONE_TIME_RABBI_TELEGRAM_WEBHOOK_SECRET",
+      "kind": "secret",
+      "required_for": ["telegram_webhook_ingress"]
+    },
+    {
+      "name": "ONE_TIME_REPLY_COPILOT_WORKFLOW_SHARED_SECRET",
+      "kind": "secret",
+      "required_for": ["temporary_workflow_ingress"]
+    },
+    {
+      "name": "ONE_TIME_REPLY_COPILOT_PAYLOAD_KEY",
+      "kind": "secret",
+      "required_for": ["encrypted_private_payloads"]
+    },
+    {
+      "name": "ONE_TIME_REPLY_COPILOT_ACTION_SIGNING_SECRET",
+      "kind": "secret",
+      "required_for": ["telegram_action_binding"]
+    },
+    {
+      "name": "ONE_TIME_REPLY_COPILOT_GHL_TOKEN",
+      "kind": "secret",
+      "required_for": ["ghl_same_thread_delivery_and_readback"]
+    },
+    {
+      "name": "DATABASE_URL",
+      "kind": "secret_reference",
+      "required_for": ["persistent_store_after_migration_authority"]
+    }
+  ],
+  "private_mappings": [
+    {
+      "name": "ONE_TIME_RABBI_TELEGRAM_CHAT_ID",
+      "paired_with": "ONE_TIME_RABBI_TELEGRAM_USER_ID",
+      "required_for": ["RABBI_route"]
+    },
+    {
+      "name": "ONE_TIME_SHLOIMIE_TELEGRAM_CHAT_ID",
+      "paired_with": "ONE_TIME_SHLOIMIE_TELEGRAM_USER_ID",
+      "required_for": ["SHLOIMIE_route"]
+    }
+  ],
+  "prohibited_inputs": [
+    "TELEGRAM_BOT_TOKEN",
+    "BNA_TELEGRAM_BOT_TOKEN",
+    "BNA chat mappings",
+    "BNA database or session references"
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "task_id": "OT-LIVE-003.02",
+  "descriptor_id": "ot-live-003-one-time-rabbi-reply-copilot",
+  "service_key": "one-time-rabbi-reply-copilot",
+  "runtime_identity": "one_time_rabbi_torah_console",
+  "mode": "descriptor_only_not_deployed",
+  "production_deployment_authority": "OT-LIVE-001_only",
+  "ghl_workflow_configuration_authority": "OT-LIVE-002_only",
+  "source_integration_status": "isolated_paths_only",
+  "start_command": {
+    "status": "blocked_until_migration_and_persistent_store_are_integrated",
+    "planned": ["node", "--import", "tsx", "apps/telegram-bot/src/reply-copilot/main.ts"]
+  },
+  "http_contract": {
+    "transport": "webhook_only",
+    "polling": false,
+    "set_webhook_from_runtime": false,
+    "routes_to_mount_in_the_distinct_service": [
+      {
+        "method": "POST",
+        "path": "/webhooks/ghl/customer-replied",
+        "event": "temporary_workflow_customer_replied",
+        "authentication": "x-onetime-webhook-secret"
+      },
+      {
+        "method": "POST",
+        "path": "/webhooks/ghl/inbound-message",
+        "event": "official_oauth_InboundMessage",
+        "authentication": "x-ghl-signature_ed25519_raw_body"
+      },
+      {
+        "method": "POST",
+        "path": "/webhooks/telegram/one-time-rabbi",
+        "event": "callback_or_private_reply",
+        "authentication": "x-telegram-bot-api-secret-token"
+      }
+    ]
+  },
+  "provider_boundaries": {
+    "telegram_identity": "distinct_One_Time_Rabbi_bot",
+    "bna_token_allowed": false,
+    "bna_webhook_or_poller_allowed": false,
+    "shared_database_or_session_with_bna_allowed": false,
+    "allowed_ghl_location_id": "pBSnOK2nkdxp6gf9Rg3o",
+    "initial_ghl_channel": "Email",
+    "customer_transcript_source_of_truth": "GHL"
+  },
+  "activation_gates": [
+    "migration_authority_granted_and_migration_verified",
+    "persistent_store_integrated",
+    "distinct_rabbi_token_present",
+    "telegram_webhook_secret_present",
+    "rabbi_private_chat_and_user_mapping_present",
+    "shloimie_private_chat_and_user_mapping_present",
+    "ghl_token_present",
+    "payload_and_action_keys_present",
+    "isolated_staging_canary_passed",
+    "OT-LIVE-001_controller_approval"
+  ],
+  "default_effect_policy": {
+    "all_feature_flags": false,
+    "telegram_messages": 0,
+    "ghl_messages": 0,
+    "provider_mutations": 0,
+    "production_deployments": 0
+  },
+  "must_not_modify_or_consume": [
+    "BNA runtime, token, webhook, poller, database, sessions, or mappings",
+    "existing Telegram process registration",
+    "GHL workflow UI",
+    "production or DNS state",
+    "signup, landing, portal, billing, Vimeo, or campaign paths"
+  ]
+}

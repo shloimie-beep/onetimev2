@@ -2,7 +2,9 @@ import { generateKeyPairSync, sign } from 'node:crypto';
 import { createServer, type RequestListener } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { readReplyCopilotRuntimeConfig } from '../../../../apps/telegram-bot/src/reply-copilot/config.ts';
 import { createGhlReplyCopilotWebhookHandler } from '../../../../apps/telegram-bot/src/reply-copilot/http.ts';
+import { createReplyCopilotHttpRuntime } from '../../../../apps/telegram-bot/src/reply-copilot/runtime.ts';
 import type { ReplyCopilotService } from '../../../../packages/domain/src/telegram/reply-copilot/service.ts';
 
 const servers: ReturnType<typeof createServer>[] = [];
@@ -99,6 +101,33 @@ describe('OT-LIVE-003 HTTP ingress', () => {
     const response = await fetch(endpoint, { method: 'POST' });
     expect(response.status).toBe(404);
     expect(ingest).not.toHaveBeenCalled();
+  });
+
+  it('serves health while provider-off and keeps uncomposed webhook routes inert', async () => {
+    const config = readReplyCopilotRuntimeConfig({});
+    const endpoint = await serve(createReplyCopilotHttpRuntime({ config }));
+
+    const health = await fetch(`${endpoint}/health`);
+    expect(health.status).toBe(200);
+    expect(await health.json()).toMatchObject({
+      ok: true,
+      service: 'one-time-rabbi-reply-copilot',
+      loopEnabled: false,
+    });
+    const ready = await fetch(`${endpoint}/ready`);
+    expect(ready.status).toBe(503);
+    expect(await ready.json()).toMatchObject({
+      ok: false,
+      status: 'provider_off',
+      customerDeliveryAuthorized: false,
+      tokenPresence: 'absent',
+      rabbiMappingPresence: 'absent',
+      blockers: expect.arrayContaining(['loop_disabled', 'persistent_store_absent']),
+    });
+    const webhook = await fetch(`${endpoint}/webhooks/ghl/customer-replied`, {
+      method: 'POST',
+    });
+    expect(webhook.status).toBe(404);
   });
 });
 

@@ -40,11 +40,13 @@ export type ReplyCopilotServiceConfig = Readonly<{
   ghlDeliveryEnabled: boolean;
   ghlConversationBaseUrl: string;
   maxAttempts?: number;
+  privatePayloadRetentionMs?: number;
 }>;
 
 export class ReplyCopilotService {
   private readonly botKey: BotKey;
   private readonly maxAttempts: number;
+  private readonly privatePayloadRetentionMs: number;
 
   constructor(
     private readonly store: ReplyCopilotStore,
@@ -54,11 +56,18 @@ export class ReplyCopilotService {
   ) {
     this.botKey = asBotKey(config.botKey ?? 'one_time_rabbi_torah_console');
     this.maxAttempts = config.maxAttempts ?? 5;
+    this.privatePayloadRetentionMs = config.privatePayloadRetentionMs ?? 30 * 24 * 60 * 60 * 1000;
     if (config.actionSigningSecret.length < 32) {
       throw new Error('REPLY_COPILOT_ACTION_SECRET_TOO_SHORT');
     }
     if (config.intentTtlMs < 60_000 || config.intentTtlMs > 7 * 24 * 60 * 60 * 1000) {
       throw new Error('REPLY_COPILOT_INTENT_TTL_INVALID');
+    }
+    if (
+      this.privatePayloadRetentionMs < config.intentTtlMs ||
+      this.privatePayloadRetentionMs > 30 * 24 * 60 * 60 * 1000
+    ) {
+      throw new Error('REPLY_COPILOT_PAYLOAD_RETENTION_INVALID');
     }
   }
 
@@ -79,7 +88,8 @@ export class ReplyCopilotService {
       ...(suggestion.state === 'suggested' ? { suggestionText: suggestion.text } : {}),
     };
     const intentKey = `ot3_intent_${sha256(`${inbound.locationId}:${inbound.emailMessageId}`).slice(0, 32)}`;
-    const payloadRef = await this.encrypt(privatePayload, intentKey);
+    const expiresAt = new Date(now.getTime() + this.config.intentTtlMs).toISOString();
+    const payloadRef = await this.encrypt(privatePayload, intentKey, expiresAt);
     const intent: ReplyCopilotIntent = {
       intentKey,
       productKey: REPLY_COPILOT_PRODUCT_KEY,
@@ -101,7 +111,7 @@ export class ReplyCopilotService {
       openInGhlUrl: ghlConversationUrl(this.config.ghlConversationBaseUrl, inbound.conversationId),
       version: 1,
       state: mappedActor ? 'pending_card' : 'blocked_mapping',
-      expiresAt: new Date(now.getTime() + this.config.intentTtlMs).toISOString(),
+      expiresAt,
       payloadRef,
       createdAt: now.toISOString(),
       updatedAt: now.toISOString(),
@@ -210,6 +220,7 @@ export class ReplyCopilotService {
       payloadRef: await this.encrypt(
         { ...payload, draftText: finalText, finalText },
         intent.intentKey,
+        intent.expiresAt,
       ),
       updatedAt: now.toISOString(),
     };
@@ -354,7 +365,7 @@ export class ReplyCopilotService {
     const payload = await this.decrypt(intent);
     const reply = buildGhlReply(payload.inbound, validReplyText(finalText), intent, now);
     const outboxKey = `ot3_ghl_${sha256(intent.intentKey).slice(0, 32)}`;
-    const deliveryPayload = await this.encrypt(reply, outboxKey);
+    const deliveryPayload = await this.encrypt(reply, outboxKey, this.retentionExpiry(now));
     const delivery: ReplyCopilotGhlDelivery = {
       outboxKey,
       intentKey: intent.intentKey,
@@ -378,7 +389,11 @@ export class ReplyCopilotService {
       ...intent,
       version: intent.version + 1,
       state: 'send_queued',
-      payloadRef: await this.encrypt({ ...payload, finalText: reply.message }, intent.intentKey),
+      payloadRef: await this.encrypt(
+        { ...payload, finalText: reply.message },
+        intent.intentKey,
+        intent.expiresAt,
+      ),
       updatedAt: now.toISOString(),
     };
     await this.store.updateIntent(next);
@@ -398,7 +413,7 @@ export class ReplyCopilotService {
     const finalText =
       payload.finalText ?? (outcome === 'accepted_exact' ? payload.suggestionText : undefined);
     const finalTextRef = finalText
-      ? await this.encrypt({ finalText }, `${intent.intentKey}:voice`)
+      ? await this.encrypt({ finalText }, `${intent.intentKey}:voice`, this.retentionExpiry(now))
       : null;
     const example: ReplyCopilotVoiceExample = {
       exampleKey: `ot3_voice_${sha256(`${intent.intentKey}:${outcome}`).slice(0, 32)}`,
@@ -423,7 +438,7 @@ export class ReplyCopilotService {
     now: Date,
   ) {
     const outboxKey = `ot3_tg_${sha256(`${intent.intentKey}:${card.kind}:${intent.version}`).slice(0, 32)}`;
-    const payloadRef = await this.encrypt(card, outboxKey);
+    const payloadRef = await this.encrypt(card, outboxKey, intent.expiresAt);
     const delivery: ReplyCopilotTelegramDelivery = {
       outboxKey,
       intentKey: intent.intentKey,
@@ -443,14 +458,23 @@ export class ReplyCopilotService {
     return this.store.enqueueTelegram(delivery);
   }
 
-  private async encrypt(payload: unknown, actorKey: string): Promise<SensitivePayloadRef> {
-    return this.codec.encrypt(payload, {
+  private async encrypt(
+    payload: unknown,
+    actorKey: string,
+    expiresAt: string,
+  ): Promise<SensitivePayloadRef> {
+    const ref = await this.codec.encrypt(payload, {
       botKey: this.botKey,
       environment: this.config.environment,
       productKey: REPLY_COPILOT_PRODUCT_KEY,
       actorKey,
       classification: 'intent_payload',
     });
+    return { ...ref, expiresAt };
+  }
+
+  private retentionExpiry(now: Date) {
+    return new Date(now.getTime() + this.privatePayloadRetentionMs).toISOString();
   }
 
   private async decrypt(intent: ReplyCopilotIntent) {

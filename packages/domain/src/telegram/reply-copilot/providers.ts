@@ -171,11 +171,13 @@ export class HighLevelReplyCopilotProvider implements ReplyCopilotGhlProvider {
       );
       if (!response.ok) return null;
       const body = objectRecord((await response.json()) as unknown);
-      const normalized = normalizeProviderMessage(isRecord(body.message) ? body.message : body);
-      if (!normalized) return null;
-      if (normalized.threadId) return normalized;
+      const message = isRecord(body.message) ? body.message : body;
+      const normalized = normalizeProviderMessage(message);
+      if (normalized) return normalized;
+      const emailMessageId = optionalProviderText(message.emailMessageId ?? message.id);
+      if (!emailMessageId) return null;
       const emailResponse = await this.request(
-        `/conversations/messages/email/${encodeURIComponent(normalized.emailMessageId)}`,
+        `/conversations/messages/email/${encodeURIComponent(emailMessageId)}`,
         { method: 'GET' },
       );
       if (!emailResponse.ok) return null;

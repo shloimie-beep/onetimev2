@@ -114,6 +114,44 @@ describe('OT-LIVE-003 provider and runtime boundaries', () => {
     });
   });
 
+  it('uses the email-message readback endpoint when the generic message omits thread identity', async () => {
+    const calls: string[] = [];
+    const fetchImpl = vi.fn(async (url: string | URL | Request) => {
+      calls.push(String(url));
+      if (String(url).endsWith('/conversations/messages/outbound_message_1')) {
+        return Response.json({
+          id: 'outbound_message_1',
+          conversationId: 'conversation_1',
+          emailMessageId: 'outbound_email_1',
+          direction: 'outbound',
+          body: 'Approved reply',
+        });
+      }
+      return Response.json({
+        id: 'outbound_message_1',
+        conversationId: 'conversation_1',
+        emailMessageId: 'outbound_email_1',
+        threadId: 'thread_1',
+        direction: 'outbound',
+        body: 'Approved reply',
+      });
+    });
+    const provider = new HighLevelReplyCopilotProvider({
+      apiBaseUrl: 'https://services.leadconnectorhq.com',
+      apiVersion: '2021-07-28',
+      token: 'protected-token',
+      allowedLocationId: 'pBSnOK2nkdxp6gf9Rg3o',
+      fetchImpl: fetchImpl as typeof fetch,
+    });
+
+    expect(await provider.readMessage('outbound_message_1')).toMatchObject({
+      conversationId: 'conversation_1',
+      threadId: 'thread_1',
+    });
+    expect(calls).toHaveLength(2);
+    expect(calls[1]).toMatch(/\/conversations\/messages\/email\/outbound_email_1$/);
+  });
+
   it('uses only allowlisted chat refs and keeps unknown Telegram results non-duplicating', async () => {
     const fetchImpl = vi
       .fn()

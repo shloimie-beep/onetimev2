@@ -90,9 +90,10 @@ export class ReplyCopilotTelegramDispatcher {
   }
 
   private async markUnknown(delivery: ReplyCopilotTelegramDelivery, code: string, now: Date) {
+    const terminal = delivery.attempts >= delivery.maxAttempts;
     const unknown: ReplyCopilotTelegramDelivery = {
       ...delivery,
-      state: 'unknown',
+      state: terminal ? 'dead_letter' : 'unknown',
       leaseOwner: null,
       leaseExpiresAt: null,
       nextAttemptAt: new Date(
@@ -104,7 +105,7 @@ export class ReplyCopilotTelegramDispatcher {
     await audit(
       this.store,
       delivery.intentKey,
-      'telegram_unknown',
+      terminal ? 'telegram_dead_letter' : 'telegram_unknown',
       unknown.lastErrorCode ?? 'UNKNOWN',
       now,
     );
@@ -224,9 +225,10 @@ export class ReplyCopilotGhlDispatcher {
   }
 
   private async markUnknown(delivery: ReplyCopilotGhlDelivery, code: string, now: Date) {
+    const terminal = delivery.attempts >= delivery.maxAttempts;
     const unknown: ReplyCopilotGhlDelivery = {
       ...delivery,
-      state: 'unknown',
+      state: terminal ? 'dead_letter' : 'unknown',
       leaseOwner: null,
       leaseExpiresAt: null,
       nextAttemptAt: new Date(
@@ -238,7 +240,7 @@ export class ReplyCopilotGhlDispatcher {
     await audit(
       this.store,
       delivery.intentKey,
-      'ghl_unknown',
+      terminal ? 'ghl_dead_letter' : 'ghl_unknown',
       unknown.lastErrorCode ?? 'UNKNOWN',
       now,
     );

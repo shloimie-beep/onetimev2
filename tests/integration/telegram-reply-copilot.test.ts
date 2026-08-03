@@ -26,6 +26,8 @@ describe('OT-LIVE-003 human-approved reply-copilot synthetic flow', () => {
     expect(first).toMatchObject({ duplicate: false, cardEnqueued: true });
     expect(duplicate).toMatchObject({ duplicate: true, cardEnqueued: false });
     expect(harness.store.telegramDeliveries()).toHaveLength(1);
+    expect(first.intent.payloadRef.expiresAt).toBe(first.intent.expiresAt);
+    expect(first.intent.payloadRef.ciphertext).not.toContain(inbound().body);
 
     await harness.telegramDispatcher.runOnce(at(2));
     expect(harness.telegram.calls).toHaveLength(1);
@@ -66,6 +68,9 @@ describe('OT-LIVE-003 human-approved reply-copilot synthetic flow', () => {
     expect(await harness.store.listVoiceExamples()).toMatchObject([
       { outcome: 'accepted_exact', approvedForVoice: true },
     ]);
+    expect((await harness.store.listVoiceExamples())[0]?.finalTextRef?.expiresAt).toBe(
+      '2026-09-02T17:00:04.000Z',
+    );
 
     const replay = await harness.service.handleAction({
       callbackData: callback,
@@ -153,6 +158,32 @@ describe('OT-LIVE-003 human-approved reply-copilot synthetic flow', () => {
     expect(harness.ghl.reconcileCalls).toBe(1);
   });
 
+  it('bounds an unreconcilable Telegram result without blindly sending a second card', async () => {
+    const harness = createHarness({ maxAttempts: 2 });
+    await harness.service.ingest(inbound(), { now: at(0), actionIdFactory: ids() });
+    const provider: ReplyCopilotTelegramProvider & { sendCalls: number; reconcileCalls: number } = {
+      sendCalls: 0,
+      reconcileCalls: 0,
+      async send() {
+        this.sendCalls += 1;
+        return { outcome: 'unknown' as const, errorCode: 'UNKNOWN_TELEGRAM_TIMEOUT' };
+      },
+      async reconcile() {
+        this.reconcileCalls += 1;
+        return { outcome: 'unknown' as const };
+      },
+    };
+    const dispatcher = new ReplyCopilotTelegramDispatcher(harness.store, harness.codec, provider, {
+      environment: 'local',
+      ownerId: 'telegram-unknown-test',
+    });
+
+    expect(await dispatcher.runOnce(at(1))).toMatchObject({ state: 'unknown', attempts: 1 });
+    expect(await dispatcher.runOnce(at(40))).toMatchObject({ state: 'dead_letter', attempts: 2 });
+    expect(provider.sendCalls).toBe(1);
+    expect(provider.reconcileCalls).toBe(1);
+  });
+
   it('dead-letters a provider readback that drifted into a new thread', async () => {
     const harness = createHarness();
     harness.ghl.readbackThread = 'wrong_thread';
@@ -214,7 +245,7 @@ describe('OT-LIVE-003 human-approved reply-copilot synthetic flow', () => {
   });
 });
 
-function createHarness() {
+function createHarness(options: { maxAttempts?: number } = {}) {
   const store = new MemoryReplyCopilotStore();
   const codec = new DeterministicTestPayloadCodec();
   const telegram = new SyntheticTelegramProvider();
@@ -238,10 +269,12 @@ function createHarness() {
       ghlDeliveryEnabled: true,
       ghlConversationBaseUrl:
         'https://app.gohighlevel.com/v2/location/pBSnOK2nkdxp6gf9Rg3o/conversations/conversations',
+      ...(options.maxAttempts ? { maxAttempts: options.maxAttempts } : {}),
     },
   );
   return {
     store,
+    codec,
     telegram,
     ghl,
     service,
