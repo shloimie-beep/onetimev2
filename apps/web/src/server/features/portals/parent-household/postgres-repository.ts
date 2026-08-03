@@ -941,7 +941,7 @@ async function synchronizePortalStudentProjection(
         password_hash_ref, credential_status, password_version, security_version,
         failed_login_count, rate_limited_until, last_reset_at,
         last_session_revoked_at, last_parent_actor_ref, credential_policy_version)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,CASE WHEN $8::text IS NULL THEN NULL ELSE $9 END,
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,CASE WHEN $8::text IS NULL THEN NULL ELSE $9::timestamptz END,
              $10,$9,$9,$11,$11,$12,$13,$14,$15,
              0,NULL,$16,$17,$18,'v21-parent-managed-argon2id-v1')
      ON CONFLICT (access_state_key)
