@@ -461,8 +461,9 @@ export function createApp({
       const router = express.Router();
       router.use((req, res, next) => {
         if (
-          context.config.nodeEnv !== 'production' &&
-          classifyDomain(req.header('host') ?? '') === 'unknown'
+          (context.config.nodeEnv !== 'production' &&
+            classifyDomain(req.header('host') ?? '') === 'unknown') ||
+          isConfiguredIsolatedStagingHost(context.config, req.header('host'))
         ) {
           next();
           return;
@@ -520,7 +521,11 @@ export function createApp({
     res.json({ ok: true, service: 'onetime-web', code: 'PUBLIC_HEALTH_OK' });
   });
   app.use((req, res, next) => {
-    if (config.nodeEnv !== 'production' || classifyDomain(req.header('host') ?? '') !== 'unknown') {
+    if (
+      config.nodeEnv !== 'production' ||
+      classifyDomain(req.header('host') ?? '') !== 'unknown' ||
+      isConfiguredIsolatedStagingHost(config, req.header('host'))
+    ) {
       next();
       return;
     }
@@ -4641,6 +4646,18 @@ export function createApp({
   });
 
   return app;
+}
+
+function isConfiguredIsolatedStagingHost(
+  config: AppConfig,
+  hostHeader: string | undefined,
+): boolean {
+  if (config.oneTimeRuntimeEnvironment !== 'isolated_staging' || !hostHeader) return false;
+  try {
+    return hostHeader.toLowerCase() === new URL(config.publicBaseUrl).host.toLowerCase();
+  } catch {
+    return false;
+  }
 }
 
 function isMutableBuiltClientAsset(filePath: string) {

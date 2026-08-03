@@ -168,6 +168,50 @@ describe('W12-100-01 auth browser security boundaries', () => {
     expect(passwordStep.status).toBe(200);
     expect(await passwordStep.json()).toMatchObject({ success: true, return_to: '/app/dashboard' });
   });
+
+  it('serves only the exact configured isolated-staging host under production Node mode', async () => {
+    const stagingHost = 'ot99-web-staging.up.railway.app';
+    const stagingPublicBaseUrl = `https://${stagingHost}`;
+    const stagingHarness = await startHarness({
+      NODE_ENV: 'production',
+      ONE_TIME_RUNTIME_ENVIRONMENT: 'isolated_staging',
+      PUBLIC_BASE_URL: stagingPublicBaseUrl,
+      AUTH_CSRF_SECRET: 'test-only-auth-csrf-secret-for-staging-host-proof',
+      MFA_SECRET_ENCRYPTION_KEY: 'test-only-mfa-secret-for-staging-host-proof',
+      ONE_TIME_LIFECYCLE_DELIVERY_KEY: 'test-only-lifecycle-key-for-staging-host-proof',
+    });
+
+    const bootstrap = await rawRequest(
+      stagingHarness,
+      '/api/v1/signup/family/bootstrap',
+      stagingHost,
+    );
+    expect(bootstrap.status).toBe(200);
+    expect(JSON.parse(bootstrap.body)).toMatchObject({ success: true, writes_allowed: true });
+
+    const nearMatch = await rawRequest(
+      stagingHarness,
+      '/api/v1/signup/family/bootstrap',
+      `${stagingHost}.attacker.invalid`,
+    );
+    expect(nearMatch.status).toBe(404);
+    expect(nearMatch.body).toBe('Not found.');
+
+    const productionHarness = await startHarness({
+      NODE_ENV: 'production',
+      PUBLIC_BASE_URL: stagingPublicBaseUrl,
+      AUTH_CSRF_SECRET: 'test-only-auth-csrf-secret-for-production-host-proof',
+      MFA_SECRET_ENCRYPTION_KEY: 'test-only-mfa-secret-for-production-host-proof',
+      ONE_TIME_LIFECYCLE_DELIVERY_KEY: 'test-only-lifecycle-key-for-production-host-proof',
+    });
+    const productionResponse = await rawRequest(
+      productionHarness,
+      '/api/v1/signup/family/bootstrap',
+      stagingHost,
+    );
+    expect(productionResponse.status).toBe(404);
+    expect(productionResponse.body).toBe('Not found.');
+  });
 });
 
 async function startHarness(env: NodeJS.ProcessEnv = {}): Promise<Harness> {
