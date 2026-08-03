@@ -74,6 +74,8 @@ describe('OPS-03B email step-up account lifecycle web flow', () => {
     expect(clientSource).toContain('window.history.replaceState');
     expect(clientSource).not.toMatch(/localStorage|sessionStorage/);
     expect(clientSource).not.toMatch(/auth\/mfa|account-lifecycle\/mfa|totp_code/);
+    expect(clientSource).toContain("fetch('/health'");
+    expect(clientSource).not.toContain('fetch(window.location.pathname');
   });
 
   it('activates an owner/admin invite directly after password setup', async () => {

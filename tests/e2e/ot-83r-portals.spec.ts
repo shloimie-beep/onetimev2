@@ -88,6 +88,13 @@ test('OT83R parent portal enforces the learner cap across add, archive, and rest
   await dialog.getByRole('button', { name: 'Restore' }).click();
   await expect(page.getByText('Status: Active')).toBeVisible();
 
+  await expect(page.getByRole('heading', { name: 'Household' })).toBeVisible();
+  await expect(page.getByText('Daily One Time Mishnayos')).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Request a secure reset' })).toHaveAttribute(
+    'href',
+    '/forgot-password',
+  );
+
   await page.getByRole('link', { name: 'Classes & materials' }).click();
   const materialsWorkspace = page.getByRole('region', { name: 'Classes & materials' });
   await expect(materialsWorkspace.getByText('E2E Recording')).toBeVisible();
@@ -172,14 +179,12 @@ test('OT83R student portal routes content open, questions, session expiry, sibli
   );
   expect(siblingContent.status()).toBe(404);
 
-  const viewerContext = await browser.newContext();
-  const viewerPage = await viewerContext.newPage();
-  await loginAs(viewerPage, 'viewer', '/app/crm');
-  await viewerPage.goto('/app/parent');
+  const deniedParentPage = await studentContext.newPage();
+  await deniedParentPage.goto('/app/parent');
   await expect(
-    viewerPage.getByRole('heading', { name: 'Parent Portal access unavailable' }),
+    deniedParentPage.getByRole('heading', { name: 'Parent Portal access unavailable' }),
   ).toBeVisible();
-  await viewerContext.close();
+  await deniedParentPage.close();
 
   const parentContext = await browser.newContext();
   const parentPage = await parentContext.newPage();
@@ -208,11 +213,10 @@ async function openAddLearner(page: Page, displayName: string, gradeLabel: strin
   await expect(page.getByText('Learner added.')).toBeVisible();
 }
 
-async function loginAs(page: Page, role: 'parent' | 'student' | 'viewer', returnTo: string) {
+async function loginAs(page: Page, role: 'parent' | 'student', returnTo: string) {
   const credentials = {
     parent: ['ot-parent@example.test', 'ParentPassword!234'],
     student: ['ot-student@example.test', 'StudentPassword!234'],
-    viewer: ['viewer@example.test', 'ViewerPass!234'],
   } as const;
   const [email, password] = credentials[role];
   await page.goto(`/login?return_to=${encodeURIComponent(returnTo)}`);

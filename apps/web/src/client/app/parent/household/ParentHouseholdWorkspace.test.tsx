@@ -39,6 +39,8 @@ describe('P12 persisted Parent household client workspace', () => {
       <ParentHouseholdWorkspace snapshot={snapshot} relationship="dependent" />,
     );
     expect(html).toContain('1 of 3 active Student seats used');
+    expect(html).toContain('Live classes run Sundayâ€“Thursday');
+    expect(html).toContain('href="/forgot-password"');
     expect(html).toContain(STUDENT_ACTUAL_NAME_INSTRUCTIONS.dependent);
     expect(html).toContain('/app/parent/students/student-1');
     expect(html).not.toMatch(/password_hash|current password/i);

@@ -117,6 +117,21 @@ export function ParentHouseholdWorkspace({
       {message ? <p role="status">{message}</p> : null}
       {error ? <p role="alert">{error}</p> : null}
 
+      <section id="parent-program-schedule" aria-labelledby="parent-program-schedule-heading">
+        <h2 id="parent-program-schedule-heading">Program schedule</h2>
+        <p>
+          Live classes run Sundayâ€“Thursday, with the protected lesson library available anytime.
+        </p>
+        <p>Students sign in with the separate username and password managed below.</p>
+      </section>
+
+      <section aria-labelledby="parent-account-access-heading">
+        <h2 id="parent-account-access-heading">Parent account access</h2>
+        <p>
+          Need a new Parent password? <a href="/forgot-password">Use secure account recovery</a>.
+        </p>
+      </section>
+
       {effectiveView.kind === 'create' ? (
         <CreateStudentForm
           disabled={

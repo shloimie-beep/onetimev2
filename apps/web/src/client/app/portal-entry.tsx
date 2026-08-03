@@ -19,7 +19,6 @@ import {
 } from '../features/portals/PortalFeatures.js';
 import { ParentClientRoot, StudentClientRoot, resolveCurrentClientRoute } from './router/index.js';
 import { ParentHouseholdWorkspace, type ParentHouseholdView } from './parent/household/index.js';
-import { StudentLibraryWorkspace } from './student/library/index.js';
 import { StudentLearningOverview } from './student/learning/StudentLearningOverview.js';
 import { StudentClassroomWorkspace } from './student/classroom/StudentClassroomWorkspace.js';
 import { SupportFeature } from './support/SupportFeature.js';
@@ -575,6 +574,12 @@ function PortalApp() {
           href: '/app/parent/students',
           current: location.pathname.startsWith('/app/parent/students'),
         },
+        {
+          id: 'v21-parent-schedule',
+          label: 'Schedule',
+          href: '#parent-program-schedule',
+          current: false,
+        },
       ];
     }
     if (portalRole === 'parent') {
@@ -583,7 +588,31 @@ function PortalApp() {
           id: 'parent-students',
           label: 'Students',
           href: '/app/parent/students',
-          current: location.pathname.startsWith('/app/parent/students'),
+          current: activeSection === 'learners',
+        },
+        {
+          id: 'parent-classes',
+          label: 'Classes & materials',
+          href: '/app/parent?section=classes',
+          current: activeSection === 'classes',
+        },
+        {
+          id: 'parent-progress',
+          label: 'Progress & rewards',
+          href: '/app/parent?section=progress',
+          current: activeSection === 'progress',
+        },
+        {
+          id: 'parent-billing',
+          label: 'Billing',
+          href: '/app/parent?section=billing',
+          current: activeSection === 'billing',
+        },
+        {
+          id: 'parent-updates',
+          label: 'Updates',
+          href: '/app/parent?section=updates',
+          current: activeSection === 'updates',
         },
       ];
     }
@@ -599,6 +628,24 @@ function PortalApp() {
         label: 'Library',
         href: '/app/student/library',
         current: activeSection === 'library',
+      },
+      {
+        id: 'student-progress',
+        label: 'Progress',
+        href: '/app/student/progress',
+        current: activeSection === 'progress',
+      },
+      {
+        id: 'student-questions',
+        label: 'Questions',
+        href: '/app/student/questions',
+        current: activeSection === 'questions',
+      },
+      {
+        id: 'student-updates',
+        label: 'Updates',
+        href: '/app/student/updates',
+        current: activeSection === 'updates',
       },
       {
         id: 'student-support',
@@ -647,6 +694,7 @@ function PortalApp() {
           return;
         }
         history.pushState({}, '', href);
+        setActiveSection(portalSectionFromLocation(portalRole));
         void load();
       }}
       onLogout={() => void logout()}
@@ -786,36 +834,20 @@ function PortalApp() {
               />
             ) : null
           }
-          libraryWorkspace={
-            session ? (
-              <StudentLibraryWorkspace
-                csrfToken={session.csrf_token}
-                actorFingerprint={actorFingerprint}
-                onProtectedStateCleared={() => void load()}
-              />
-            ) : null
-          }
           learningOverview={
-            session ? (
-              studentLearning ? (
-                <StudentLearningOverview
-                  questions={studentLearning.questions}
-                  publishedQuestions={studentLearning.publishedQuestions}
-                  announcements={studentLearning.announcements}
-                  badges={studentLearning.badges}
-                  leaderboard={studentLearning.leaderboard}
-                  onSubmitQuestion={async (body) => {
-                    await submitLearningQuestion({ csrfToken: session.csrf_token, body });
-                    setStudentLearning(await getStudentLearningSnapshot());
-                  }}
-                />
-              ) : (
-                <section className="state-panel" role="status">
-                  <h2>Learning is not available yet</h2>
-                  <p>The protected learning service is waiting for its release gates.</p>
-                </section>
-              )
-            ) : null
+            session && studentLearning ? (
+              <StudentLearningOverview
+                questions={studentLearning.questions}
+                publishedQuestions={studentLearning.publishedQuestions}
+                announcements={studentLearning.announcements}
+                badges={studentLearning.badges}
+                leaderboard={studentLearning.leaderboard}
+                onSubmitQuestion={async (body) => {
+                  await submitLearningQuestion({ csrfToken: session.csrf_token, body });
+                  setStudentLearning(await getStudentLearningSnapshot());
+                }}
+              />
+            ) : undefined
           }
         />
       )}
@@ -1492,6 +1524,7 @@ function portalSectionFromLocation(
   if (requested && isPortalSection(role, requested)) return requested;
   if (role === 'student') {
     if (location.pathname === '/app/student/library') return 'library';
+    if (location.pathname === '/app/student/progress') return 'progress';
     if (location.pathname.startsWith('/app/student/questions')) return 'questions';
     if (location.pathname === '/app/student/updates') return 'updates';
   }

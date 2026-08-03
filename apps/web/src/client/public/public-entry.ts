@@ -82,7 +82,7 @@ function serverNow() {
 async function synchronizeServerClock() {
   const requestStartedAt = Date.now();
   try {
-    const response = await fetch(window.location.pathname, {
+    const response = await fetch('/health', {
       method: 'HEAD',
       cache: 'no-store',
       credentials: 'same-origin',
