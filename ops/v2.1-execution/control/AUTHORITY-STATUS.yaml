@@ -622,6 +622,28 @@ authorities:
     lock_released_at: '2026-08-03T13:44:36.7314230Z'
     checked_at: '2026-08-03T13:44:36.7314230Z'
     state_based_on_control_head_sha: 52fe72d08215d0ae2206c0ede00a320d5b0579f7
+  c00-pg18-student-proof-20260803134647:
+    schema_version: 1
+    execution_id: OT-V21-PRODUCTION
+    authority_id: c00-pg18-student-proof-20260803134647
+    authority_kind: derived_candidate_preparation_effect
+    grant_digest: 1752b4bf5c0e3bb3d7975d29dbb61a3f446198b6390d2b5a527f04cc131b32c1
+    source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+    status: active
+    expires_at: '2026-08-03T14:31:47Z'
+    latest_revocation_path: null
+    latest_revocation_digest: null
+    provider_lock: production:deployment
+    provider_lock_lease_id: 070a49c8-b9bf-45a9-9586-3546175d090f
+    fencing_token: fence-9f73a524-55b9-48e6-86d4-2cda82e3ddec
+    effect_authority_usable: true
+    candidate_binding_status: exact_source_sha_bound_pre_freeze
+    repository_source_sha: badd8a6198b0072495fdcd1f3e37787505513065
+    integration_head_sha: badd8a6198b0072495fdcd1f3e37787505513065
+    maximum_effect_count: 1
+    prerequisite_review: pg18_functional_10_of_10_restore_pass_secret_scan_3217_passed_expected_90_through_2259
+    checked_at: '2026-08-03T13:46:47Z'
+    state_based_on_control_head_sha: d6d2dd92249826b69bb58df89cc6830e1a23716a
 entry_schema: templates/AUTHORITY-STATUS-ENTRY.yaml
 revocation_schema: templates/AUTHORITY-REVOCATION-RECORD.yaml
 rule: C00 records externally granted/revoked/expired authority; it does not grant it. Every update binds the known
