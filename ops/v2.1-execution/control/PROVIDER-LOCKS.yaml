@@ -153,30 +153,24 @@ locks:
   effect_budget: null
   cleanup_state: not_applicable
 - lock: production:deployment
-  status: claimed
-  holder_task_id: C00
-  holder_claim_id: c00-staging-student-correction-20260803140528
-  lease_id: 6e4ab9ab-d284-41d6-987c-efa8654167d2
-  fencing_token: fence-ee95cbf2-3abb-4d55-832a-e3f37c077330
-  canonical_candidate_digest: f585ef3deaf6cfac8cbb59e4f17c26247a50ab4188032a630f72579476f9fe06
-  provider_identity: railway:7c8eee26-7a6a-4684-826d-9f4377d67d46:11edf8a2-0160-45b4-a039-b15b4beb4c10:web-9fb6d9f4:worker-76e7fdc2
-  authorized_operation: exact_staging_worker_fail_close_fast_forward_two_deployments_and_sink_student_lifecycle_canary
-  claimed_at: '2026-08-03T14:05:28Z'
-  lease_expires_at: '2026-08-03T14:50:28Z'
-  authority_id: c00-staging-student-correction-20260803140528
-  authority_grant_digest: 02bb7e440d2618f926de52408caa22388d73467c24461a34536298affc273d6e
-  authority_status_index_digest: 728579b4d95120078eeee0124e245149ad678273535fb83bec4154ff7d359b7a
-  authority_status_entry_digest: dc1c10a45bddd5eff5d9a42ee9c363c757c051a741342ebb35d05694a5baf845
+  status: unclaimed
+  holder_task_id: null
+  holder_claim_id: null
+  lease_id: null
+  fencing_token: null
+  canonical_candidate_digest: null
+  provider_identity: null
+  authorized_operation: null
+  claimed_at: null
+  lease_expires_at: null
+  authority_id: null
+  authority_grant_digest: null
+  authority_status_index_digest: null
+  authority_status_entry_digest: null
   latest_revocation_digest: null
-  authority_checked_at: '2026-08-03T14:05:28Z'
-  effect_budget:
-    count: 18
-    staging_deployments: 2
-    production_deployments: 0
-    DNS_changes: 0
-    sends_or_enrollments: 0
-    billing_effects: 0
-  cleanup_state: pending_staging_deployment_and_canary_reconciliation
+  authority_checked_at: null
+  effect_budget: null
+  cleanup_state: not_applicable
 - lock: provider:s3-kms
   status: unclaimed
   holder_task_id: null

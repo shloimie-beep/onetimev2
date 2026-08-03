@@ -667,9 +667,10 @@ authorities:
     integration_head_sha: badd8a6198b0072495fdcd1f3e37787505513065
     maximum_effect_count: 18
     prerequisite_review: full_pg18_proof_success_10_of_10_restore_secret_scan_migrations_90_of_90_staging_sink_readback
-    disposition: consumed_after_exact_fail_closed_worker_configuration_lock_retained_for_deployment_and_canary_reconciliation
-    checked_at: '2026-08-03T14:09:40Z'
-    state_based_on_control_head_sha: c3049d8d7f0089e196a5df9b2574bf9591c60948
+    disposition: consumed_and_reconciled_success_exact_source_staging_student_lifecycle_canary
+    lock_released_at: '2026-08-03T14:22:07Z'
+    checked_at: '2026-08-03T14:22:07Z'
+    state_based_on_control_head_sha: a2b72a0bba484aec4be3c743de888fbec7bc7f9b
 entry_schema: templates/AUTHORITY-STATUS-ENTRY.yaml
 revocation_schema: templates/AUTHORITY-REVOCATION-RECORD.yaml
 rule: C00 records externally granted/revoked/expired authority; it does not grant it. Every update binds the known
