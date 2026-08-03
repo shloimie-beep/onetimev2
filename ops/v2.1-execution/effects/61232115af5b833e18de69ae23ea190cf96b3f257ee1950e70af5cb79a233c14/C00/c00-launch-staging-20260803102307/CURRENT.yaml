@@ -2,10 +2,10 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 effect_id: c00-launch-staging-20260803102307
 task_id: C00
-state: ATTEMPTED
-event_sequence: 2
-current_event_path: ops/v2.1-execution/effects/61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14/C00/c00-launch-staging-20260803102307/events/002-ATTEMPTED.yaml
-current_event_digest: 30f10780cbf4ba6d6bab1db0311f99bb2925169155b997bd98d796ab2fe4987a
+state: RECONCILED
+event_sequence: 3
+current_event_path: ops/v2.1-execution/effects/61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14/C00/c00-launch-staging-20260803102307/events/003-RECONCILED.yaml
+current_event_digest: 6befe10475c0691e4cffc275af4c2564d21f1cc4202513c4fb0d76b2090ddd7c
 authority_id: c00-launch-staging-20260803102307
 lock: production:deployment
 lock_lease_id: a24c5658-5aa7-49b2-bff0-fd31012b5e7e
@@ -13,7 +13,7 @@ fencing_token: fence-644c9d71-72b5-4a92-8b49-921df59a1429
 candidate_digest: 61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14
 candidate_manifest_commit_sha: f95b30d830d57a29b123949134e9ee3077a945a1
 provider_request_or_operation_id: github_ref_update_and_railway_deployments_6127e53a_54115c9b
-provider_readback_state: source_ref_exact_deployments_queued
-cleanup_state: pending_staging_deployment_reconciliation
-lock_release_state: held
-updated_at: '2026-08-03T10:28:15Z'
+provider_readback_state: exact_source_web_worker_SUCCESS_adult_only_preregistration_truthful_zero_sends
+cleanup_state: complete_terminal_readback_no_retry_required
+lock_release_state: released
+updated_at: '2026-08-03T10:31:42Z'
