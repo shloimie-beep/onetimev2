@@ -465,3 +465,4 @@ export {
   LEARNING_ENGAGEMENT_SCHEMA_CONTRACT_VERSION,
 } from './learning/schema-contract.ts';
 export * from './classroom/attendance/index.ts';
+export * from './content/vimeo-mishnayos-catalog/index.ts';
