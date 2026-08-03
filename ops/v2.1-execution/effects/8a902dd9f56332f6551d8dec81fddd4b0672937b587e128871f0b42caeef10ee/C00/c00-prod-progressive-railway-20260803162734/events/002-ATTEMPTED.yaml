@@ -1,0 +1,40 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prod-progressive-railway-20260803162734
+event_sequence: 2
+previous_event_digest: e6174ff63425338b7217b28d92ab76aea2027e75de3effe588adf4b10c264173
+state: ATTEMPTED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-progressive-railway-20260803162734/events/002-ATTEMPTED.yaml
+current_pointer_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-progressive-railway-20260803162734/CURRENT.yaml
+candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+authority_id: c00-prod-progressive-railway-20260803162734
+authority_grant_digest: ea44463a56ca0566624b1704a3a998fffdf6439b361d0a7c717196bd7acdf0ed
+lock: production:deployment
+lock_lease_id: 075d7564-8660-4fa0-8420-9655757b8da3
+fencing_token: fence-8311372a-a931-4769-a53d-f37a561b3ffd
+operation: create_exact_Railway_app_custom_domain_and_read_required_DNS_target
+provider_request_or_operation_id: 9f1f5d7a-1176-4f67-aa53-5ebe59234dad
+provider_readback:
+  domain_id: 9f1f5d7a-1176-4f67-aa53-5ebe59234dad
+  domain: app.onetimeonetime.com
+  service_id: d175ad94-5e3c-41c2-8cbc-daa1a299077d
+  environment_id: f911acfc-e206-44df-a569-9d69d709b94b
+  project_id: ce55ef20-1418-4ad3-aafa-f877fb992dc8
+  record_hostlabel: app
+  record_type: CNAME
+  required_value: 3vp17vx5.up.railway.app
+  current_value: absent
+  DNS_status: requires_update_expected
+  domain_sync_status: CREATING_expected_pending_DNS
+  certificate_status: validating_ownership_expected_pending_DNS
+  existing_join_domain_id: 4447443b-bac4-4f16-a390-795d7e9bd811
+  existing_join_domain_changed: false
+effect_count_after: 1
+unexpected_effects: 0
+cleanup_state: exact_domain_ID_bound_for_rollback_DNS_pending
+event_at: '2026-08-03T16:37:59Z'
+state_based_on_head_sha: 32173fa4cb77d0371d6df947f4e9ff865564c09a
+contains_secret: false
+immutable: true
