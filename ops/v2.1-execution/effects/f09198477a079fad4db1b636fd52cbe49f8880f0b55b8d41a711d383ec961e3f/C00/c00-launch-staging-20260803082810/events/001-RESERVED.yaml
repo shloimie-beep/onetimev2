@@ -1,0 +1,35 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-launch-staging-20260803082810
+event_sequence: 1
+previous_event_digest: none
+state: RESERVED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/f09198477a079fad4db1b636fd52cbe49f8880f0b55b8d41a711d383ec961e3f/C00/c00-launch-staging-20260803082810/events/001-RESERVED.yaml
+current_pointer_path: ops/v2.1-execution/effects/f09198477a079fad4db1b636fd52cbe49f8880f0b55b8d41a711d383ec961e3f/C00/c00-launch-staging-20260803082810/CURRENT.yaml
+candidate_digest: f09198477a079fad4db1b636fd52cbe49f8880f0b55b8d41a711d383ec961e3f
+candidate_manifest_commit_sha: 2c6a636aaee2b3cb604239d55055e9939ebfa9b8
+repository_source_sha: 2c6a636aaee2b3cb604239d55055e9939ebfa9b8
+deployment_instance_digest: none_before_effect
+authority_grant_digest: 1be2be26468317105d65543fb3da3c11f7251847fb5763d0c26f69163f4dad9c
+authority_status_index_digest: 90b0a4fd2a1a6cb19df38e5d3db44551493f5fcbf0962271d547bae46c4a3e6d
+authority_status_entry_digest: e624aa8cd3f4aac26b6cf7f9eb9a910e32601c988018c3e18de3d5041b8fddea
+latest_revocation_digest: none
+authority_checked_at: '2026-08-03T08:28:10Z'
+lock: production:deployment
+lock_lease_id: 0f283014-accd-4732-92fc-d2b560a3aab7
+fencing_token: fence-cd6f9649-d9d9-4872-97e8-2874b970a671
+provider_identity: railway:7c8eee26-7a6a-4684-826d-9f4377d67d46:11edf8a2-0160-45b4-a039-b15b4beb4c10:web-9fb6d9f4:worker-76e7fdc2
+operation: set_four_exact_non_secret_launch_timing_assignments_with_deploys_skipped_then_fast_forward_codex_full_app_staging_live_97c38375_to_2c6a636a_triggering_at_most_two_staging_deployments
+budget_reservation:
+  variable_assignments: 4
+  deployments: 2
+  production_deployments: 0
+  DNS_changes: 0
+  sends_or_enrollments: 0
+provider_request_or_operation_id: none_before_effect
+provider_readback_digest: none_before_effect
+cleanup_state: pending_staging_configuration_and_deployment_reconciliation
+state_based_on_head_sha: d041ab6f1e1c81ba74fd433275766f940feb31a3
+event_at: '2026-08-03T08:28:10Z'
+immutable: true
