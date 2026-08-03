@@ -1,0 +1,45 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-production-prereg-release-20260803105309
+event_sequence: 3
+previous_event_digest: 99a0506e587ba166002d1fc8a0d9c698dc95f0db1c4949eb5038651988b1e4f1
+state: RECONCILED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14/C00/c00-production-prereg-release-20260803105309/events/003-RECONCILED.yaml
+candidate_digest: 61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14
+repository_source_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+authority_id: c00-production-prereg-release-20260803105309
+lock_lease_id: 12d7de4e-11a4-4995-acfb-7e1433974c22
+fencing_token: fence-ff754288-c12a-4c06-980c-4c7475d97c06
+provider_request_or_operation_id: railway_upload_deployments_4ecb7d33_6daf9f05
+provider_readback:
+  protected_backup_complete: true
+  migration_files_applied: 89
+  migration_files_pending: 0
+  migration_ledger_rows: 89
+  migration_ledger_order_warning_preserved: true
+  exact_release_variables_configured: true
+  delivery_controls_sink_and_disabled: true
+  web_upload_has_associated_build: false
+  worker_upload_has_associated_build: false
+  web_upload_terminal_disposition: orphaned_INITIALIZING_not_serving
+  worker_upload_terminal_disposition: orphaned_INITIALIZING_not_serving
+  canonical_health_status: 200
+  canonical_version_status: 200
+  canonical_live_version: 0d69de15e3c5e7a5e51f2b9262c992ea153c51fb
+  prior_web_deployment_still_serving: f8ba23d3-311b-4277-a85d-6695611fedfd
+  prior_worker_deployment_still_serving: 26bf7d62-db73-41d6-9887-1d2215ddfaff
+  signup_posts: 0
+  external_provider_sends_or_enrollments: 0
+  portal_or_student_accounts: 0
+  charges: 0
+provider_readback_state: backup_and_migrations_and_variables_complete_upload_transport_failed_prior_runtime_healthy_no_canary_zero_external_send
+disposition: consumed_and_reconciled_retry_requires_fresh_authority_and_git_source_transport
+production_promotion_complete: false
+email_campaign_may_send: false
+unexpected_external_effects: 0
+cleanup_state: terminal_prior_runtime_healthy_backup_retained_migrations_additive_variables_safe_orphan_uploads_nonserving
+lock_release_state: released
+lock_released_at: '2026-08-03T11:11:55.1457644Z'
+event_at: '2026-08-03T11:11:55.1457644Z'
+immutable: true

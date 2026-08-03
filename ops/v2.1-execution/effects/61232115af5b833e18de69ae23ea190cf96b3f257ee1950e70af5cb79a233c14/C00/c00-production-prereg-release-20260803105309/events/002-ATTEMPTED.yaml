@@ -1,0 +1,55 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-production-prereg-release-20260803105309
+event_sequence: 2
+previous_event_digest: 1a59b6988f28f48e0137ba8c3148d1a9fe343d55bf266c274938315308a002b4
+state: ATTEMPTED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14/C00/c00-production-prereg-release-20260803105309/events/002-ATTEMPTED.yaml
+candidate_digest: 61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14
+repository_source_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+authority_id: c00-production-prereg-release-20260803105309
+lock_lease_id: 12d7de4e-11a4-4995-acfb-7e1433974c22
+fencing_token: fence-ff754288-c12a-4c06-980c-4c7475d97c06
+operation_results:
+  protected_logical_backup: succeeded
+  protected_backup_path: /var/lib/postgresql/data/otv21-backups/pre-f95b30d8-20260803T1100Z.dump
+  protected_backup_sha256: 694c1c888bf0931f19f7a6d7fb84b0560b3e79e276af9e0c7b6353f79eb5e1ae
+  protected_backup_bytes: 4236475
+  protected_backup_catalog_entries: 5004
+  protected_backup_permissions: '0600'
+  migration_transaction: committed
+  migrations_already_applied: 43
+  migrations_newly_applied: 46
+  migrations_total: 89
+  migrations_pending_after: 0
+  migrations_newly_applied_ids_sha256: a4a4e015e4b7e189bafbbe8d1bbcc5e630dc3253d9e635dda0e5bcf62fcc6b8d
+  migration_verifier_issue: MIGRATION_LEDGER_ORDER_MISMATCH_historical_gaps_preserved
+  exact_variable_assignments: 8
+  variable_readback: exact_source_timing_sink_and_real_email_disabled
+  web_upload_deployment_id: 4ecb7d33-3144-467c-9338-55d7fc5a7378
+  web_upload_state: INITIALIZING_without_associated_build
+  worker_upload_deployment_id: 6daf9f05-9ad7-4633-90f6-204c587d2586
+  worker_upload_state: INITIALIZING_without_associated_build
+  production_health_after_upload_failure: 200
+  production_live_version_after_upload_failure: 0d69de15e3c5e7a5e51f2b9262c992ea153c51fb
+  production_runtime_disposition: prior_healthy_web_and_worker_remain_serving
+budget_consumed:
+  protected_logical_backups: 1
+  pending_migrations_applied: 46
+  exact_variable_assignments: 8
+  production_deployment_upload_attempts: 2
+  successful_production_deployments: 0
+  signup_posts: 0
+  local_adult_contacts: 0
+  local_signup_leads: 0
+  external_provider_sends_or_enrollments: 0
+  portal_accounts: 0
+  student_accounts: 0
+  charges: 0
+  DNS_changes: 0
+  GHL_mutations: 0
+provider_request_or_operation_id: railway_upload_deployments_4ecb7d33_6daf9f05
+cleanup_state: terminal_upload_failure_prior_runtime_healthy_backup_retained_migrations_additive_variables_safe_no_canary
+event_at: '2026-08-03T11:11:13.4538727Z'
+immutable: true

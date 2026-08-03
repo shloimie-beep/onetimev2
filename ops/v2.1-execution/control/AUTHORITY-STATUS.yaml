@@ -354,14 +354,14 @@ authorities:
     authority_kind: derived_candidate_bound_production_preregistration_release_and_operator_canary
     grant_digest: 256a8b0cb26844f14688ecdf8177cd1ee262200aa7f43d75fb9ef748211959b7
     source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
-    status: active
+    status: consumed
     expires_at: '2026-08-03T11:43:09Z'
     latest_revocation_path: null
     latest_revocation_digest: null
     provider_lock: production:deployment
     provider_lock_lease_id: 12d7de4e-11a4-4995-acfb-7e1433974c22
     fencing_token: fence-ff754288-c12a-4c06-980c-4c7475d97c06
-    effect_authority_usable: true
+    effect_authority_usable: false
     candidate_binding_status: exact_candidate_bound
     canonical_candidate_digest: 61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14
     candidate_manifest_commit_sha: f95b30d830d57a29b123949134e9ee3077a945a1
@@ -374,8 +374,10 @@ authorities:
       - db590e4a-7dc5-40cb-a243-5206ce21b746
     maximum_effect_count: 64
     prerequisite_review: exact_candidate_and_staging_canary_passed_production_sink_43_of_89_migrations_protected_backup_required_legal_broad_gate_open
-    checked_at: '2026-08-03T10:53:09Z'
-    state_based_on_control_head_sha: e3a18c43e625783b49e88ddb8c98d67f1a2b6c44
+    checked_at: '2026-08-03T11:11:55.1457644Z'
+    state_based_on_control_head_sha: badbcacd6c826185fbfe2fee301008d07bff7f32
+    disposition: consumed_and_reconciled_backup_migrations_variables_complete_upload_transport_failed_prior_runtime_healthy_no_canary
+    lock_released_at: '2026-08-03T11:11:55.1457644Z'
 entry_schema: templates/AUTHORITY-STATUS-ENTRY.yaml
 revocation_schema: templates/AUTHORITY-REVOCATION-RECORD.yaml
 rule: C00 records externally granted/revoked/expired authority; it does not grant it. Every update binds the known
