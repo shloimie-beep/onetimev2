@@ -647,6 +647,29 @@ authorities:
     lock_released_at: '2026-08-03T13:50:59.9211757Z'
     checked_at: '2026-08-03T13:50:59.9211757Z'
     state_based_on_control_head_sha: 25ffc3f30cd1a97c0e343c11b158756493496b3d
+  c00-staging-student-correction-20260803140528:
+    schema_version: 1
+    execution_id: OT-V21-PRODUCTION
+    authority_id: c00-staging-student-correction-20260803140528
+    authority_kind: derived_candidate_bound_staging_student_correction_deployment_and_operator_canary
+    grant_digest: 02bb7e440d2618f926de52408caa22388d73467c24461a34536298affc273d6e
+    source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+    status: active
+    expires_at: '2026-08-03T14:50:28Z'
+    latest_revocation_path: null
+    latest_revocation_digest: null
+    provider_lock: production:deployment
+    provider_lock_lease_id: 6e4ab9ab-d284-41d6-987c-efa8654167d2
+    fencing_token: fence-ee95cbf2-3abb-4d55-832a-e3f37c077330
+    effect_authority_usable: true
+    candidate_binding_status: lean_exact_source_bound_from_full_pg18_proof
+    repository_source_sha: badd8a6198b0072495fdcd1f3e37787505513065
+    integration_head_sha: badd8a6198b0072495fdcd1f3e37787505513065
+    maximum_effect_count: 18
+    prerequisite_review: full_pg18_proof_success_10_of_10_restore_secret_scan_migrations_90_of_90_staging_sink_readback
+    disposition: active_reserved_for_exact_staging_correction_deployment_and_sink_only_operator_canary
+    checked_at: '2026-08-03T14:05:28Z'
+    state_based_on_control_head_sha: ed6c2665d8e560e481687bfb825ef25869f75677
 entry_schema: templates/AUTHORITY-STATUS-ENTRY.yaml
 revocation_schema: templates/AUTHORITY-REVOCATION-RECORD.yaml
 rule: C00 records externally granted/revoked/expired authority; it does not grant it. Every update binds the known
