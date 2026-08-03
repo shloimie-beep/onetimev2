@@ -1,0 +1,50 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-launch-staging-20260803082810
+event_sequence: 2
+previous_event_digest: ba7e209281beb416670f0af74f4f770fe025b47a0dab8b40833c29f2a0ecbe32
+state: ATTEMPTED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/f09198477a079fad4db1b636fd52cbe49f8880f0b55b8d41a711d383ec961e3f/C00/c00-launch-staging-20260803082810/events/002-ATTEMPTED.yaml
+candidate_digest: f09198477a079fad4db1b636fd52cbe49f8880f0b55b8d41a711d383ec961e3f
+candidate_manifest_commit_sha: 2c6a636aaee2b3cb604239d55055e9939ebfa9b8
+repository_source_sha: 2c6a636aaee2b3cb604239d55055e9939ebfa9b8
+authority_id: c00-launch-staging-20260803082810
+lock: production:deployment
+lock_lease_id: 0f283014-accd-4732-92fc-d2b560a3aab7
+fencing_token: fence-cd6f9649-d9d9-4872-97e8-2874b970a671
+provider_identity: railway:7c8eee26-7a6a-4684-826d-9f4377d67d46:11edf8a2-0160-45b4-a039-b15b4beb4c10:web-9fb6d9f4:worker-76e7fdc2
+operation_results:
+  staging_branch_before_sha: 97c38375ac7d57bc3ef5beab0bc67e6b1fe5b0e9
+  staging_branch_after_sha: 2c6a636aaee2b3cb604239d55055e9939ebfa9b8
+  variable_assignments_completed: 4
+  timing_readback_exact_on_web: true
+  timing_readback_exact_on_worker: true
+  web_deployment_id: 6a53b966-6365-410b-8acb-cb3004868eb6
+  web_deployment_status: SUCCESS
+  web_image_digest: sha256:3603a0ae308921b1489428efb1a196d3456e904bca6e779481f3bca3133373de
+  worker_deployment_id: f5c77736-4016-4944-9c74-2d2ce9fa4a21
+  worker_deployment_status: SUCCESS
+  worker_image_digest: sha256:092348c9e934269f1ba8278954cbed21438c7ce83e972566653d470ad621c70a
+  worker_delivery_batches_observed: 24
+  worker_claimed_messages: 0
+  worker_delivered_messages: 0
+  worker_sink_delivered_messages: 0
+  health_status: 200
+  generated_staging_host_application_status: 404
+  canary_blocker: isolated_staging_generated_host_rejected_by_production_host_guard
+  host_override_readback_routed_to_old_production_landing: true
+  family_bootstrap_status_on_host_override: 404
+  family_signup_post_attempted: false
+  account_or_student_created: false
+  email_send_or_provider_enrollment: false
+budget_consumed:
+  variable_assignments: 4
+  deployments: 2
+  production_deployments: 0
+  DNS_changes: 0
+  sends_or_enrollments: 0
+provider_request_or_operation_id: github_ref_update_and_railway_deployments_6a53b966_f5c77736
+cleanup_state: terminal_provider_readback_complete_canary_blocked_no_retry
+event_at: '2026-08-03T08:43:23Z'
+immutable: true
