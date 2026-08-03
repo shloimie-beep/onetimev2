@@ -1,0 +1,48 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prod-protected-key-release-20260803114707
+event_sequence: 1
+previous_event_digest: none
+state: RESERVED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14/C00/c00-prod-protected-key-release-20260803114707/events/001-RESERVED.yaml
+current_pointer_path: ops/v2.1-execution/effects/61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14/C00/c00-prod-protected-key-release-20260803114707/CURRENT.yaml
+candidate_digest: 61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14
+candidate_manifest_commit_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+repository_source_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+authority_grant_digest: e8d7de5037cc653848f8e2ddfcb5e7403fc9fa5be3a5dd270f81d45d8d43e7bf
+authority_status_index_digest: 14dbf1cd549cef1b27910fdb035dad58038617785f9ff0df57a200444bd8155d
+authority_status_entry_digest: faa48076bc08cbfef8326c18ac2726868a8cef32a4dc48fda606f3c2b114e845
+latest_revocation_digest: none
+authority_checked_at: '2026-08-03T11:47:07Z'
+lock: production:deployment
+lock_lease_id: c8388ddd-bb1f-4354-b996-b1ab4bd6c31a
+fencing_token: fence-4e9df5a5-94a7-4171-b387-3307bca2f4fc
+provider_identity: railway:ce55ef20-1418-4ad3-aafa-f877fb992dc8:f911acfc-e206-44df-a569-9d69d709b94b:web-d175ad94:worker-742f60ed
+operation: one_fresh_production_protected_payload_key_two_secret_assignments_two_exact_snapshot_redeployments_two_idempotency_canary_posts_zero_external_send
+web_redeploy_source_id: 83b24eba-efcb-410c-883d-b50917745239
+worker_redeploy_source_id: 8d4e1cc9-fd1f-477a-bd89-28513055d306
+rollback_web_deployment_id: f8ba23d3-311b-4277-a85d-6695611fedfd
+rollback_worker_deployment_id: 26bf7d62-db73-41d6-9887-1d2215ddfaff
+fixture_id: c00_prod_prereg_canary_61232115_20260803a
+fixture_destination_sha256: 53ea91a56760d0c225f1fb77e8ff89a810a867ece008859d43e20363b77744b4
+budget_reservation:
+  generated_production_secrets: 1
+  exact_secret_variable_assignments: 2
+  production_redeployments: 2
+  signup_posts: 2
+  local_adult_contacts: 1
+  local_signup_leads: 1
+  local_sink_intents: 2
+  portal_accounts: 0
+  student_accounts: 0
+  external_provider_sends_or_enrollments: 0
+  charges: 0
+  migrations: 0
+  DNS_changes: 0
+  GHL_mutations: 0
+provider_request_or_operation_id: none_before_effect
+cleanup_state: pending_secret_redeployments_canary_handoff_and_readback
+state_based_on_head_sha: 422ebd6303925384a4da2d7438c931ecac4da057
+event_at: '2026-08-03T11:47:07Z'
+immutable: true

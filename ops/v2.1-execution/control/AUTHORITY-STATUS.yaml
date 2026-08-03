@@ -438,6 +438,34 @@ authorities:
     state_based_on_control_head_sha: 6bac0a3744b6f2b665c1e18448f92bde7e6cca4c
     disposition: consumed_and_reconciled_exact_source_builds_failed_missing_protected_payload_key_prior_runtime_healthy_no_canary
     lock_released_at: '2026-08-03T11:45:04.5315130Z'
+  c00-prod-protected-key-release-20260803114707:
+    schema_version: 1
+    execution_id: OT-V21-PRODUCTION
+    authority_id: c00-prod-protected-key-release-20260803114707
+    authority_kind: derived_candidate_bound_production_protected_payload_key_and_redeploy_canary
+    grant_digest: e8d7de5037cc653848f8e2ddfcb5e7403fc9fa5be3a5dd270f81d45d8d43e7bf
+    source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+    status: active
+    expires_at: '2026-08-03T12:37:07Z'
+    latest_revocation_path: null
+    latest_revocation_digest: null
+    provider_lock: production:deployment
+    provider_lock_lease_id: c8388ddd-bb1f-4354-b996-b1ab4bd6c31a
+    fencing_token: fence-4e9df5a5-94a7-4171-b387-3307bca2f4fc
+    effect_authority_usable: true
+    candidate_binding_status: exact_candidate_bound
+    canonical_candidate_digest: 61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14
+    candidate_manifest_commit_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+    repository_source_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+    provider_project_id: ce55ef20-1418-4ad3-aafa-f877fb992dc8
+    provider_environment_id: f911acfc-e206-44df-a569-9d69d709b94b
+    provider_service_ids:
+      - d175ad94-5e3c-41c2-8cbc-daa1a299077d
+      - 742f60ed-dc2f-4321-85d0-019003d4e9b9
+    maximum_effect_count: 6
+    prerequisite_review: exact_startup_failure_reconciled_fresh_production_protected_payload_key_and_exact_snapshot_redeploy_required
+    checked_at: '2026-08-03T11:47:07Z'
+    state_based_on_control_head_sha: 422ebd6303925384a4da2d7438c931ecac4da057
 entry_schema: templates/AUTHORITY-STATUS-ENTRY.yaml
 revocation_schema: templates/AUTHORITY-REVOCATION-RECORD.yaml
 rule: C00 records externally granted/revoked/expired authority; it does not grant it. Every update binds the known

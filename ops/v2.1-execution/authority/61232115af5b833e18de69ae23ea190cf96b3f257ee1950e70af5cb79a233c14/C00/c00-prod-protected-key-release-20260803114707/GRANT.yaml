@@ -1,0 +1,89 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+authority_id: c00-prod-protected-key-release-20260803114707
+authority_kind: derived_candidate_bound_production_protected_payload_key_and_redeploy_canary
+task_id: C00
+candidate_digest: 61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14
+candidate_binding_status: exact_candidate_bound
+candidate_manifest_commit_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+repository_source_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+canonical_path: ops/v2.1-execution/authority/61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14/C00/c00-prod-protected-key-release-20260803114707/GRANT.yaml
+source_grant_id: ot-v21-production-source-grant-20260729
+source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+source_approval_evidence_path: ops/v2.1-execution/authority/none/C00/ot-v21-production-source-grant-20260729/APPROVAL.md
+source_approval_evidence_digest: 8c95a959f79aba0ac34fa0fcb6cb463cceac9aeb2bb52da1603d39db3e2c33c2
+grant_status_at_issue: active
+approved_by: Shloimie Dratler
+scope:
+  provider: One Time application on Railway production
+  project_id: ce55ef20-1418-4ad3-aafa-f877fb992dc8
+  environment_id: f911acfc-e206-44df-a569-9d69d709b94b
+  web_service_id: d175ad94-5e3c-41c2-8cbc-daa1a299077d
+  worker_service_id: 742f60ed-dc2f-4321-85d0-019003d4e9b9
+  web_redeploy_source_id: 83b24eba-efcb-410c-883d-b50917745239
+  worker_redeploy_source_id: 8d4e1cc9-fd1f-477a-bd89-28513055d306
+  public_base_url: https://join.onetimeonetime.com
+  fixture_id: c00_prod_prereg_canary_61232115_20260803a
+  fixture_destination_sha256: 53ea91a56760d0c225f1fb77e8ff89a810a867ece008859d43e20363b77744b4
+fencing_token: fence-4e9df5a5-94a7-4171-b387-3307bca2f4fc
+lock: production:deployment
+provider_lock_lease_id: c8388ddd-bb1f-4354-b996-b1ab4bd6c31a
+allowed_operation: generate one fresh cryptographically random 32-byte production-only protected-payload encryption key entirely in process memory, set PROTECTED_PAYLOAD_ENCRYPTION_KEY to that same undisplayed value on the exact production web and worker services without triggering deployment, redeploy each exact latest failed f95b30d830d57a29b123949134e9ee3077a945a1 source snapshot once, verify exact source SUCCESS and corrected adult-only no-card pre-registration on the canonical domain, submit one protected operator registration and one identical idempotent replay, publish the single LIVE-SEND-GATE handoff, and roll back only to the bound prior deployments on regression
+maximum_effect_count: 6
+maximum_effect_value: 2_secret_variable_assignments_2_exact_snapshot_redeployments_2_canary_posts_one_adult_contact_and_lead_zero_external_send
+approved_fixture_ids:
+  - c00_prod_prereg_canary_61232115_20260803a
+operator_identity: C00
+approved_at: '2026-08-03T11:47:07Z'
+recorded_at: '2026-08-03T11:47:07Z'
+expires_at: '2026-08-03T12:37:07Z'
+effect_budget:
+  generated_production_secrets_max: 1
+  exact_secret_variable_assignments_max: 2
+  production_redeployments_max: 2
+  signup_posts_max: 2
+  local_adult_contacts_max: 1
+  local_signup_leads_max: 1
+  local_sink_intents_max: 2
+  portal_accounts_max: 0
+  student_accounts_max: 0
+  external_provider_sends_or_enrollments_max: 0
+  charges_max: 0
+  migrations_max: 0
+  DNS_changes_max: 0
+  GHL_mutations_max: 0
+prerequisite_review:
+  protected_backup: complete_sha256_694c1c888bf0931f19f7a6d7fb84b0560b3e79e276af9e0c7b6353f79eb5e1ae
+  production_migrations: 89_applied_0_pending_historical_order_warning_preserved
+  exact_release_and_timing_variables: configured
+  production_delivery_controls: sink_sink_real_email_false
+  highlevel_event_sync_mode: disabled_web_and_worker
+  focused_startup_failure: PROTECTED_PAYLOAD_ENCRYPTION_KEY_missing_web_and_worker
+  key_requirement: frozen_runtime_production_required_and_used_for_protected_payload_and_MFA_encryption
+  exact_failed_web_snapshot: 83b24eba-efcb-410c-883d-b50917745239_at_f95b30d8
+  exact_failed_worker_snapshot: 8d4e1cc9-fd1f-477a-bd89-28513055d306_at_f95b30d8
+  rollback_web_deployment: f8ba23d3-311b-4277-a85d-6695611fedfd
+  rollback_worker_deployment: 26bf7d62-db73-41d6-9887-1d2215ddfaff
+  prior_runtime: healthy_version_0d69de15
+  legal_gate: OPS-084-LEGAL-BUNDLE_open_scope_production_broad
+  email_campaign_may_send: false
+rollback_and_reconciliation:
+  - never display, log, commit, or persist the generated key outside the two exact Railway service variables
+  - record only the key SHA256 fingerprint and same-value readback assertion
+  - require the two exact failed snapshots to remain latest and exact f95b30d830d57a29b123949134e9ee3077a945a1 immediately before redeploy
+  - require one new redeployment per service, SUCCESS, health/version, canonical landing/form, sink controls, and clean logs before canary
+  - require initial duplicate false and identical replay duplicate true with matching contact/signup hashes and no new outbox intents
+  - require zero Student, portal, charge, GHL, provider-send, audience-enrollment, DNS, source-connection, or migration effect
+  - on regression restore prior web and worker deployments and preserve additive migrations and protected backup
+  - release lock only after deployment, canary, handoff, and provider readback reconciliation
+stop_conditions:
+  - source grant is revoked or expired
+  - remote source, integration, or control head differs from the bound reservation
+  - production health, migrations, exact variables, sink controls, service identities, rollback targets, or failed snapshot identities differ
+  - either exact failed source snapshot is no longer the latest deployment before redeploy
+  - either redeploy creates more than one new deployment
+  - protected fixture hash differs
+  - another effect holds the production:deployment lock
+  - the operation would display the generated key, activate delivery, send, enroll, mutate GHL or DNS, charge, touch a legacy user, collect Student/card data, create a portal/Student, or exceed one adult contact/lead
+contains_secret: false
+immutable: true
