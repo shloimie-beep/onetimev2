@@ -54,7 +54,7 @@ export const landingContent = {
       },
       {
         lead: 'STAY ON TRACK',
-        body: 'Daily reminders help keep the learning consistent.',
+        body: 'Sunday-through-Thursday reminders help keep the learning consistent.',
       },
       {
         lead: 'STUDENT PORTAL',
@@ -91,7 +91,7 @@ export const landingContent = {
       },
       {
         title: 'Progress',
-        body: 'A clear daily rhythm gives him confidence, consistent progress, and something real to build on.',
+        body: 'A clear Sunday-through-Thursday rhythm gives him confidence, consistent progress, and something real to build on.',
         image: '/assets/outcomes/accomplishment-toronto-class.jpg',
         alt: 'Rabbi Scheller smiling with boys after a Toronto One Time Torah class',
         assetBlocker: null,
@@ -121,7 +121,7 @@ export const landingContent = {
     audiences: [
       {
         lead: 'FAMILIES',
-        body: 'A dependable daily Torah-learning routine without having to build the entire program yourself.',
+        body: 'A dependable Sunday-through-Thursday Torah-learning routine without having to build the entire program yourself.',
       },
       {
         lead: 'HOMESCHOOLERS',
@@ -129,7 +129,7 @@ export const landingContent = {
       },
       {
         lead: 'LOCAL STUDENTS',
-        body: "Join Rabbi Scheller's daily learning community from Ramat Beit Shemesh.",
+        body: "Join Rabbi Scheller's Sunday-through-Thursday learning community from Ramat Beit Shemesh.",
       },
       {
         lead: 'ADULT LEARNERS',
@@ -197,7 +197,7 @@ export const landingContent = {
   },
   rabbi: {
     eyebrow: 'Meet Rabbi Scheller',
-    heading: 'A world-renowned Torah teacher.',
+    heading: 'Clear Torah teaching with warmth and energy.',
     body: 'Rabbi Eli Scheller has taught Torah to students and audiences across the Jewish world. His clarity, warmth, and energy help boys understand what they are learning and look forward to coming back.',
   },
   gallery: {

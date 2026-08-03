@@ -90,6 +90,14 @@ describe('lead validation and content contracts', () => {
     expect(JSON.stringify(landingContent)).not.toContain('Questions with Rabbi Scheller');
   });
 
+  it('keeps schedule and Rabbi claims bounded to approved public truth', () => {
+    const publicCopy = JSON.stringify(landingContent);
+    expect(publicCopy).not.toMatch(
+      /world-renowned|Master Shas|guaranteed|daily reminders|daily rhythm|daily Torah-learning routine|daily learning community/i,
+    );
+    expect(publicCopy.match(/Sunday-through-Thursday/gi)?.length).toBeGreaterThanOrEqual(4);
+  });
+
   it('assigns approved gain assets and avoids duplicate student imagery', () => {
     const clarity = landingContent.gain.cards.find((card) => card.title === 'Clarity');
     const retention = landingContent.gain.cards.find((card) => card.title === 'Retention');

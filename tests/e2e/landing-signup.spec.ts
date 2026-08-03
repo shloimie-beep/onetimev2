@@ -22,6 +22,17 @@ test('public landing implements the complete accepted campaign contract', async 
   await expect(
     page.getByRole('heading', { name: 'HELP YOUR SON LOVE LEARNING MISHNAYOS' }),
   ).toBeVisible();
+  await expect(
+    page.getByText('Sunday-through-Thursday reminders help keep the learning consistent.'),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Clear Torah teaching with warmth and energy.' }),
+  ).toBeVisible();
+  await expect(
+    page.getByText(
+      /world-renowned|Master Shas|daily reminders|daily rhythm|daily Torah-learning routine|daily learning community/i,
+    ),
+  ).toHaveCount(0);
   await expect(page.locator('.hero-eyebrow')).toHaveText('LIVE ONLINE + ON-DEMAND');
   await expect(page.locator('.hero-supporting')).toHaveText(
     'A fast-paced live-streamed class with Rabbi Eli Scheller. The boys complete one perek each class day, with clear explanations and review so they understand and remember what they learn.',
