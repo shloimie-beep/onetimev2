@@ -1,0 +1,100 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+record_id: OT-LIVE-001.02-PRODUCTION-FINGERPRINT
+owner: C00
+captured_at: '2026-08-03T18:03:13+03:00'
+control_sha: 4e76166cbe637103ad0d211f5abdcdfabb471e61
+integration_sha: 78132ba1854f5e005bbdb74aa355b87a9f291cbd
+production:
+  project_id: ce55ef20-1418-4ad3-aafa-f877fb992dc8
+  environment_id: f911acfc-e206-44df-a569-9d69d709b94b
+  base_url: https://join.onetimeonetime.com
+  source_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+  web_service_id: d175ad94-5e3c-41c2-8cbc-daa1a299077d
+  web_deployment_id: 1635d06a-4ee7-4afd-9501-34a943a0d3c7
+  worker_service_id: 742f60ed-dc2f-4321-85d0-019003d4e9b9
+  worker_deployment_id: 901724db-951b-41c6-8265-6faa06ab676e
+  registration_mode: pre_registration
+http_fingerprint:
+  cache_busted_root_reads: 3
+  root_statuses: [200, 200, 200]
+  root_lengths: [21897, 21897, 21897]
+  root_sha256_base64:
+  - 6Cvia9uMlezm1u26oObaXASN7cLaMqlvBFrR38IdV6k=
+  - 6Cvia9uMlezm1u26oObaXASN7cLaMqlvBFrR38IdV6k=
+  - 6Cvia9uMlezm1u26oObaXASN7cLaMqlvBFrR38IdV6k=
+  alternating_variant_detected: false
+  routes:
+    signup: {status: 200, length: 6690, sha256_base64: f5VugsHDfifiK3LhZBpwCfDbnPn9OKCMvX73uq+zbcI=}
+    privacy: {status: 200, length: 18415, sha256_base64: gyWPcFZv8o0fYOGQe4PyXdBoJDYl5qJXEQYY7TFo+Lo=}
+    terms: {status: 200, length: 10488, sha256_base64: MA8E0896d7GExerY01av2xLGtzNkdUGKm6RxAYKp+oc=}
+    student_data: {status: 200, length: 5529, sha256_base64: OenG9CdjRColU4tnhnrSQ5EajfX0wnKsAjb4ZaBSt6E=}
+    health: {status: 200, code: PUBLIC_HEALTH_OK}
+    ready: {status: 200, code: PUBLIC_READY}
+    version: {status: 200, code: PUBLIC_RELEASE_AVAILABLE}
+browser_fingerprint:
+  desktop:
+    viewport: 1440x1000
+    root_h1: HELP YOUR SON LOVE LEARNING MISHNAYOS
+    overflow: false
+    repeated_cache_busted_reads: 3
+    primary_cta_destination: /signup
+  responsive:
+    tested_viewports: [390x844, 360x800]
+    root_status: 200
+    signup_status: 200
+    root_overflow: false
+    signup_overflow: false
+    note: Exact live headless Chromium viewport checks; the in-app browser viewport override was not used as proof because its reported dimensions did not change.
+  legal_pages:
+  - {path: /privacy, h1: Privacy Notice, overflow: false}
+  - {path: /terms, h1: Terms of Use, overflow: false}
+  - {path: /student-data, h1: Parent/Guardian and Student Data Notice, overflow: false}
+signup_contract:
+  path: /signup
+  h1: Pre-register Your Family
+  form_method: post
+  form_action: /api/v1/leads
+  signup_entry: preregistration
+  input_names: [contact_name, family_or_school, audience_type, location, timezone, email]
+  adult_only: true
+  student_field_count: 0
+  school_signup_control_count: 0
+  password_field_count: 0
+  payment_field_count: 0
+  phone_whatsapp_marketing_field_count: 0
+  promises_immediate_portal_access: false
+  collects_card_or_autocharge: false
+  exposes_raw_zoom_url: false
+  confirmation_destination: same_signup_route_in_page_success_panel_after_persistence
+  confirmation_copy: Adult pre-registration received. We saved the adult contact for follow-up. No portal account, Student account, subscription, or charge was created.
+accepted_canary_binding:
+  evidence_path: ops/launch/2026-08-03/LIVE-SEND-GATE.json
+  source_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+  registration_mode: pre_registration
+  idempotent_replay: passed
+  adult_lifecycle: one_adult_contact_two_local_sink_intents_zero_external_send
+  student_ghl_contacts: 0
+  bindings_changed_since_canary: false
+  repeat_canary_required: false
+login_readback:
+  requested_path: /login
+  response_status: 302
+  location: https://app.onetimeonetime.com/login
+  destination_dns_resolves: false
+  classification: portal_activation_blocker_not_preregistration_canary_invalidation
+content_conflicts_observed:
+  unsupported_claims: [world-renowned]
+  schedule_implications:
+  - Daily reminders
+  - dependable daily Torah-learning routine
+  - daily learning community
+  - clear daily rhythm
+  deployed_cutoff: '2026-09-11T18:00:00+03:00'
+  conflicting_older_cutoff: '2026-09-13T19:24:00+03:00'
+  broad_communication_allowed_before_cutoff_decision: false
+conclusion:
+  live_preregistration_release_unchanged: true
+  cache_or_cdn_inconsistency_demonstrated: false
+  preregistration_release_may_remain_live: true
+  portal_or_broad_campaign_activation_allowed: false

@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: operational
-active_phase: launch_priority_candidate_staged_waiting_exact_launch_inputs
+active_phase: ot_live_001_02_prereg_fingerprinted_copy_and_portal_gates
 bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
@@ -18,11 +18,11 @@ candidate: e7fb4021d9bf4dbc9c38dbcadcc6eb9139082acf494416ce970c7c503f757456
 active_writer_limit: 4
 controller_authorization_sha: 76692fbb6e65cdeb68e32862dd0c03490b5e5750
 next_action: >-
-  Preserve exact staged candidate 97c38375ac7d57bc3ef5beab0bc67e6b1fe5b0e9 and obtain the exact first-class
-  date/time, the September 11 cutoff time, authenticated Forward Email alias routing, and a canonical adult-only GHL
-  discriminator/exhaustive current audience source. Then bind fresh candidate/provider authority for one operator Family
-  signup, GHL adult-contact readback, and draft-only sender/workflow configuration. Do not deploy production, enroll, or
-  send broadly before the required canary and Shloimie's exact copy/audience approval.
+  Preserve exact live adult-only preregistration f95b30d8 and its accepted idempotent canary. Prepare the smallest
+  copy-only preregistration correction for unsupported and daily/seven-day claims without changing the form contract.
+  Resolve exact canonical app.onetimeonetime.com Railway/DNS identity and acquire fresh candidate-bound authority only
+  when the progressive portal candidate, rollback, and one production canary are ready. Keep broad communication held
+  until Shloimie selects the single free-access cutoff.
 launch_priority_verification_integration:
   recorded_at: '2026-08-02T16:35:29Z'
   source_parent_sha: 2e514a73773bd97f20e423076539ed7224948552

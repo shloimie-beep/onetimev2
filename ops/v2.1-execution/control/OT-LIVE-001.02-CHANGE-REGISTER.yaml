@@ -1,0 +1,188 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+register_id: OT-LIVE-001.02-CHANGE-REGISTER
+owner: C00
+recorded_at: '2026-08-03T18:03:13+03:00'
+acceptance_state: accepted_for_registration_only
+implementation_rule: No request below authorizes a shared-code or provider writer until C00 assigns an exact non-overlapping lease and candidate-bound authority where an external effect is required.
+items:
+- permanent_id: OT-LIVE-DEC-001
+  kind: decision
+  objective: Keep public conversion truth aligned to adult Family preregistration until real Parent access is successfully provisioned.
+  dependencies: [current_registration_mode_readback, successful_server_persistence]
+  source_of_truth_impact: landing CTA copy, signup confirmation, browser analytics, server/CRM event registry
+  exact_writer_scope: [landing_and_signup_copy, canonical_conversion_event_contract, analytics_tests]
+  owner_and_available_writer_slot: {owner: C00, slot: integration_release_writer, available: true}
+  release_order: before_any_campaign_or_tracking_activation
+  acceptance_proof: Lead or CompleteRegistration only after persistence; StartTrial only after confirmed access activation; one canonical event ID deduplicates browser and server events.
+  privacy_measurement_requirements: no Student or sensitive data; no conversion on button click
+  stop_condition: any event fires before persistence or StartTrial fires without provisioned access
+  non_blocking_relationship_to_current_launch: current preregistration remains live; blocks only contradictory measurement and campaign copy
+- permanent_id: OT-LIVE-DEC-002
+  kind: decision
+  objective: Make all offer copy truthful to live Sunday-through-Thursday classes plus the library.
+  dependencies: [published_schedule]
+  source_of_truth_impact: landing, confirmation, workflows, campaign copy
+  exact_writer_scope: [public_copy, transactional_templates, focused_copy_tests]
+  owner_and_available_writer_slot: {owner: C00, slot: prereg_copy_hotfix, available: true}
+  release_order: before_broad_communication
+  acceptance_proof: no seven-day or daily-live implication remains; Sunday-through-Thursday is visible and tested
+  privacy_measurement_requirements: none_beyond_existing_copy_policy
+  stop_condition: schedule meaning becomes broader than Sunday-through-Thursday
+  non_blocking_relationship_to_current_launch: does not block persistence; correction is required before broad promotion
+- permanent_id: OT-LIVE-DEC-003
+  kind: decision_required
+  objective: Establish one approved free-access cutoff across the decision register, configuration, landing, confirmation, workflows, and campaigns.
+  dependencies: [Shloimie_exact_cutoff_choice]
+  source_of_truth_impact: normative decision register, launch ledger, runtime configuration, copy, campaign schedule
+  exact_writer_scope: [decision_register, launch_configuration, landing_and_confirmation_copy, workflow_and_campaign_schedule]
+  owner_and_available_writer_slot: {owner: Shloimie_then_C00, slot: decision_then_integration, available: true_after_decision}
+  release_order: before_broad_communication
+  acceptance_proof: one ISO-8601 Asia/Jerusalem value is identical in every named source and live readback
+  privacy_measurement_requirements: no_new_data
+  stop_condition: September 11 and September 13 values remain mixed or a value is selected without approval
+  non_blocking_relationship_to_current_launch: preregistration and controlled portal canary may continue; broad communication remains blocked
+- permanent_id: OT-LIVE-DEC-004
+  kind: decision
+  objective: Keep Family and School marketing and intake as separate segments.
+  dependencies: [Family_preregistration_mode]
+  source_of_truth_impact: public CTA, lead schema, routing, campaigns
+  exact_writer_scope: [Family_public_form, School_dedicated_route_only, segmentation_tests]
+  owner_and_available_writer_slot: {owner: C00, slot: integration_release_writer, available: true}
+  release_order: before_any_School_campaign
+  acceptance_proof: Family form contains no School CTA or Student data; School uses its exact dedicated route
+  privacy_measurement_requirements: no Student contact in GHL; adult-only Family lifecycle
+  stop_condition: School enrollment or fields enter the temporary Family form
+  non_blocking_relationship_to_current_launch: current Family preregistration remains valid
+- permanent_id: OT-LIVE-CHG-001
+  kind: copy_correction
+  objective: Remove unsupported claims and the demonstrated daily/seven-day implications from the live preregistration presentation.
+  dependencies: [OT-LIVE-DEC-002]
+  source_of_truth_impact: public landing copy and copy assertions
+  exact_writer_scope: [apps/web_public_landing_copy, landing_copy_tests]
+  owner_and_available_writer_slot: {owner: C00, slot: prereg_copy_hotfix, available: true}
+  release_order: first_source_correction_before_portal_activation
+  acceptance_proof: world-renowned, Master Shas, guarantees, and four recorded daily implications absent from rendered production bytes
+  privacy_measurement_requirements: no_tracking_change_in_this_slice
+  stop_condition: correction changes registration mode, form contract, provider binding, or approved person imagery
+  non_blocking_relationship_to_current_launch: working preregistration stays available while exact correction is prepared
+- permanent_id: OT-LIVE-PORTAL-001
+  kind: progressive_release
+  objective: Promote the minimum usable Parent/Student portal with one protected production canary before broad activation.
+  dependencies: [accepted_badd8a61_staging_lifecycle, OT-LIVE-OPS-001, exact_production_candidate, rollback_and_fail_closed_worker]
+  source_of_truth_impact: Parent and Student routes, authentication, household isolation, protected class/library access
+  exact_writer_scope: [candidate_promotion_and_runtime_registration_only, no_advanced_gamification_or_School_automation]
+  owner_and_available_writer_slot: {owner: C00, slot: sole_production_deployment_owner, available: true_after_gates}
+  release_order: after_prereg_copy_truth_and_login_destination_ready_before_public_portal_CTA
+  acceptance_proof: one operator Parent creates/manages up to three Students; Student login/recovery/isolation/attendance pass; zero provider sends, billing, raw meeting URLs, or Student GHL contacts
+  privacy_measurement_requirements: Parent-managed Student credentials; no Student email; fail-closed policies and no classroom impersonation
+  stop_condition: DNS, candidate, rollback, household isolation, security, or fail-closed provider readback differs
+  non_blocking_relationship_to_current_launch: distinct from and does not disable current preregistration
+- permanent_id: OT-LIVE-OPS-001
+  kind: portal_activation_blocker
+  objective: Make the canonical Member Login destination resolve and bind it to the approved production portal service before portal activation.
+  dependencies: [canonical_domain_registry, Railway_service_readback, DNS_owner_lock]
+  source_of_truth_impact: APP_BASE_URL, Railway custom domain, DNS, public login links
+  exact_writer_scope: [exact_app.onetimeonetime.com_DNS_record, exact_Railway_custom_domain_binding, no_other_DNS]
+  owner_and_available_writer_slot: {owner: C00, slot: production_deployment_DNS_effect, available: false_until_exact_lock}
+  release_order: before_OT-LIVE-PORTAL-001_canary
+  acceptance_proof: app.onetimeonetime.com resolves; TLS is valid; /login returns the intended portal shell; join /login redirect succeeds
+  privacy_measurement_requirements: no credentials or session data in evidence
+  stop_condition: provider identity is ambiguous, lock is unavailable, or DNS target differs from canonical registry
+  non_blocking_relationship_to_current_launch: preregistration and legal pages remain available; only portal activation is blocked
+- permanent_id: OT-LIVE-IMG-001
+  kind: landing_media
+  objective: Integrate approved father registration landscape and square originals as one responsive Parent-registration image treatment.
+  dependencies: [unambiguous_original_source, Shloimie_asset_approval]
+  source_of_truth_impact: landing asset manifest and responsive picture markup
+  exact_writer_scope: [approved_original_and_non_generative_derivatives, landing_picture_markup, asset_tests]
+  owner_and_available_writer_slot: {owner: unassigned_media_then_C00_integration, slot: media_preparation, available: false}
+  release_order: progressive_after_working_form
+  acceptance_proof: provenance/dimensions/checksums/approval recorded; both assets 200 with correct type; no 360px or 390px overflow
+  privacy_measurement_requirements: accurate alt text; no identity-altering generation
+  stop_condition: ambiguous source, altered person pixels, missing approval, or image blocks form
+  non_blocking_relationship_to_current_launch: never blocks form or portal
+- permanent_id: OT-LIVE-IMG-002
+  kind: landing_media
+  objective: Produce a real-student tablet composite using a genuine naturally posed source and a privacy-scrubbed authentic portal screenshot.
+  dependencies: [approved_original_student_source, synthetic_portal_fixture, privacy_review, Shloimie_asset_approval]
+  source_of_truth_impact: landing asset manifest and responsive picture markup
+  exact_writer_scope: [device_screen_mask_and_perspective_only, text_free_landscape_and_square_derivatives]
+  owner_and_available_writer_slot: {owner: unassigned_media_then_C00_integration, slot: media_preparation, available: false}
+  release_order: after_portal_screenshot_matches_accepted_functionality
+  acceptance_proof: human raster unchanged; screenshot contains no real names/email/household/session/token/raw meeting data; provenance and derivative checksums approved
+  privacy_measurement_requirements: synthetic test data only; no Student data; accurate alt text
+  stop_condition: no genuine naturally posed source or privacy scrub cannot be proven
+  non_blocking_relationship_to_current_launch: photography request replaces fabrication; never blocks working product
+- permanent_id: OT-LIVE-IMG-003
+  kind: landing_media
+  objective: Integrate one authoritative real Rabbi-and-engaged-students learning image in landscape and square crops.
+  dependencies: [provable_original_photo_or_video_frame, Shloimie_asset_approval]
+  source_of_truth_impact: landing asset manifest and responsive picture markup
+  exact_writer_scope: [ordinary_crop_scale_color_and_compression_only, landing_picture_markup]
+  owner_and_available_writer_slot: {owner: unassigned_media_then_C00_integration, slot: media_preparation, available: false}
+  release_order: progressive_after_working_form
+  acceptance_proof: authoritative source and checksums recorded; faces/hands/person pixels unchanged; derivatives separately approved
+  privacy_measurement_requirements: approval for recognizable people; accurate alt text
+  stop_condition: source provenance or identity approval is ambiguous
+  non_blocking_relationship_to_current_launch: never blocks form or portal
+- permanent_id: OT-LIVE-ADMIN-001
+  kind: product_change_request
+  objective: Add the normalized Shared Work surface with Decisions, Pending, Tasks, Done, role defaults, evidence-backed progress, and a complete detail drawer.
+  dependencies: [control_tower_assignment, canonical_work_item_contract]
+  source_of_truth_impact: canonical admin work-item read model and UI only
+  exact_writer_scope: [new_Shared_Work_feature_paths_to_be_assigned, no_control_registry_or_provider_writes]
+  owner_and_available_writer_slot: {owner: unassigned, slot: shared_work_writer, available: false}
+  release_order: after_minimum_portal_release
+  acceptance_proof: role defaults, all-work switch, normalized Source values, drawer fields, evidence links, and observed-state progress pass acceptance tests
+  privacy_measurement_requirements: role authorization; no raw secrets or private School data
+  stop_condition: a second work database, stale agent list, shared hotspot collision, or unassigned edit is proposed
+  non_blocking_relationship_to_current_launch: explicitly non-blocking
+- permanent_id: OT-LIVE-SETUP-001
+  kind: product_change_request
+  objective: Add a Setup Center whose provider cards expose purpose, owner, live truth, blocker, exact safe action/value/destination, deep link, and verified evidence without secrets.
+  dependencies: [control_tower_assignment, canonical_provider_registry, explicit_ownership_decisions]
+  source_of_truth_impact: read-only canonical provider readiness projection and guarded operator actions
+  exact_writer_scope: [new_Setup_Center_feature_paths_to_be_assigned, no_provider_mutation_without_separate_authority]
+  owner_and_available_writer_slot: {owner: unassigned, slot: setup_center_writer, available: false}
+  release_order: after_minimum_portal_release
+  acceptance_proof: all named cards answer required questions; payer/controller/ownership stay Decisions; tracking truth and deduplication tests pass
+  privacy_measurement_requirements: never display secrets; no Student/sensitive analytics; StartTrial only after activation
+  stop_condition: guessed provider identity, exposed secret, or silent ownership assignment
+  non_blocking_relationship_to_current_launch: explicitly non-blocking
+- permanent_id: OT-LIVE-STUDIO-001
+  kind: product_change_request
+  objective: Add Studio Settings backed only by canonical workflow/revision/approval/readiness/failure/evidence state.
+  dependencies: [control_tower_assignment, canonical_media_state_contract]
+  source_of_truth_impact: canonical Studio read model and manual-export workflow
+  exact_writer_scope: [new_Studio_Settings_feature_paths_to_be_assigned, no_BNA_copy_or_second_media_database]
+  owner_and_available_writer_slot: {owner: unassigned, slot: studio_settings_writer, available: false}
+  release_order: after_minimum_portal_release
+  acceptance_proof: Uploaded-to-Manual-Export states, immutable fingerprints, diffs/approvals/rollback, readiness, failures, evidence and deep links render from canonical state
+  privacy_measurement_requirements: no private media/source content leak; no secret display
+  stop_condition: Publish/Schedule/Boost/Create-Ad control, legacy social revival, or unassigned shared edit appears
+  non_blocking_relationship_to_current_launch: explicitly non-blocking
+- permanent_id: OT-LIVE-MKT-001
+  kind: discovery_change_request
+  objective: Define preregistration-first marketing measurement and a truthful manual CapCut/export discovery path without claiming automation exists.
+  dependencies: [OT-LIVE-DEC-001, OT-LIVE-DEC-003, exact_audience_and_final_copy_approval]
+  source_of_truth_impact: marketing measurement plan and future Studio workflow only
+  exact_writer_scope: [discovery_documents_and_measurement_contract_only_until_assigned]
+  owner_and_available_writer_slot: {owner: unassigned, slot: marketing_discovery, available: false}
+  release_order: after_date_decision_before_broad_campaign
+  acceptance_proof: persistence-based Lead/CompleteRegistration, activation-only StartTrial, canonical event ID dedupe, no Student data, manual export truth
+  privacy_measurement_requirements: consent-gated adult events only; exact audience and copy approval for broad marketing
+  stop_condition: button-click conversion, Student data, invented CapCut/social automation, or unapproved audience send
+  non_blocking_relationship_to_current_launch: does not block registration or portal canary
+- permanent_id: OT-LIVE-BNA-001
+  kind: external_contract_change_request
+  objective: Consume only reviewed sanitized signed idempotent BNA summary events and deep links asynchronously.
+  dependencies: [reviewed_BNA_contract, separate_signing_and_replay_acceptance]
+  source_of_truth_impact: optional One Time event consumer/producer boundary only
+  exact_writer_scope: [signed_summary_contract_and_async_adapter_to_be_assigned, no_shared_database_session_cookie_or_token]
+  owner_and_available_writer_slot: {owner: unassigned_after_BNA_contract_review, slot: external_summary_adapter, available: false}
+  release_order: after_minimum_portal_release
+  acceptance_proof: signature/replay/sanitization/failure-isolation tests; BNA outage does not block any One Time path
+  privacy_measurement_requirements: no private School data, sessions, cookies, bot tokens, or runtime dependency
+  stop_condition: unsigned/unreviewed contract, shared identity/storage, or synchronous availability dependency
+  non_blocking_relationship_to_current_launch: explicitly non-blocking

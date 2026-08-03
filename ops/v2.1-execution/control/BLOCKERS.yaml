@@ -473,5 +473,55 @@ blockers:
     recursively decode percent encoding, keep unrelated canonical-host routes functional, and permit no candidate,
     provider, deployment, DNS, contact, send, billing, cleanup, or other external effect.
   next_check: Revalidate only after a later domain-transition, static-serving, host-validation, or server bootstrap change and once at candidate freeze.
+- blocker_id: OT-LIVE-001-CUTOFF-CONFLICT
+  status: open
+  scope: production_broad_communication
+  owner: Shloimie_then_C00
+  affected_tasks:
+  - OT-LIVE-DEC-003
+  - OT-LIVE-MKT-001
+  safe_work_completed: >-
+    Fingerprinted exact current production at f95b30d8 and confirmed the deployed landing says September 11, 2026 at
+    6:00 PM Asia/Jerusalem. Preserved the older normative September 13, 2026 at 7:24 PM conflict without silently
+    selecting either value. Current preregistration persistence and a protected portal canary can continue.
+  required_authority_or_input:
+  - Shloimie's exact approved free-access cutoff in Asia/Jerusalem
+  protection: >-
+    No broad campaign, workflow schedule, confirmation change, or final offer publication may proceed while the two
+    values conflict. Do not alter the live value merely to make the records agree.
+  next_check: Reconcile every named source after the exact human decision is recorded.
+- blocker_id: OT-LIVE-001-APP-DNS
+  status: open
+  scope: production_portal_activation
+  owner: C00
+  affected_tasks:
+  - OT-LIVE-OPS-001
+  - OT-LIVE-PORTAL-001
+  safe_work_completed: >-
+    Read-only production checks proved join /login returns 302 to https://app.onetimeonetime.com/login while the target
+    hostname has no DNS resolution. Landing, signup, legal, health, readiness, version, and adult-only preregistration
+    remain healthy and unchanged.
+  required_authority_or_input: []
+  protection: >-
+    Resolve the canonical Railway custom-domain and DNS identities from live registry/readback, then acquire the exact
+    production deployment/DNS lock and fencing token immediately before a bounded effect. Do not guess a record target
+    or redirect the working preregistration origin.
+  next_check: Exact custom-domain and DNS readback before the progressive production portal canary.
+- blocker_id: OT-LIVE-001-COPY-TRUTH
+  status: open
+  scope: production_broad_promotion
+  owner: C00
+  affected_tasks:
+  - OT-LIVE-DEC-002
+  - OT-LIVE-CHG-001
+  safe_work_completed: >-
+    Repeated browser and HTTP fingerprinting found stable Sunday-through-Thursday schedule text but also the unsupported
+    world-renowned claim and four daily/seven-day implications. No cache alternation, form defect, Student field,
+    payment field, raw Zoom URL, or provider effect was found.
+  required_authority_or_input: []
+  protection: >-
+    Prepare an exact preregistration copy-only correction that cannot change registration mode, persistence, provider
+    bindings, legal pages, approved-person raster assets, or the accepted canary semantics.
+  next_check: Candidate-bound rendered-copy assertions and production readback after a later authorized deployment.
 rule: One precise blocker per entry with owner, affected tasks, safe work completed, required authority/input, and
   next check.
