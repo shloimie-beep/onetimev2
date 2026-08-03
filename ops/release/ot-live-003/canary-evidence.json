@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "task_id": "OT-LIVE-003.02",
+  "source_sha": "dd32f14011bb59239a43cb90d566c5415b060209",
+  "executed_at": "2026-08-03T18:14:17Z",
+  "mode": "isolated_synthetic_no_provider_effects",
+  "command": "npx tsx ops/release/ot-live-003/synthetic-canary.ts",
+  "status": "passed",
+  "checks": {
+    "protectedSeedInCorrectConversation": true,
+    "webhookVerified": true,
+    "duplicateFenced": true,
+    "hardRoutingExpected": true,
+    "exactlyOneInitialTelegramCard": true,
+    "editedRequiresPreviewAndConfirmation": true,
+    "exactlyOneOutboundGhlMessage": true,
+    "sameConversationAndThread": true,
+    "readbackMatches": true,
+    "approvedExampleRecorded": true,
+    "replayCreatesNoDuplicate": true,
+    "noPollingLoop": true,
+    "bnaConsumedNothing": true,
+    "signupIndependentWhenTelegramDisabled": true
+  },
+  "simulated": {
+    "telegramCards": 2,
+    "ghlMessages": 1,
+    "voiceExamples": 1
+  },
+  "actualExternalEffects": {
+    "telegramMessages": 0,
+    "ghlMessages": 0,
+    "bnaEvents": 0,
+    "providerMutations": 0,
+    "productionDeployments": 0
+  }
+}
