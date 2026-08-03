@@ -1,0 +1,57 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prod-progressive-railway-20260803162734
+event_sequence: 1
+previous_event_digest: none
+state: RESERVED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-progressive-railway-20260803162734/events/001-RESERVED.yaml
+current_pointer_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-progressive-railway-20260803162734/CURRENT.yaml
+candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+candidate_manifest_commit_sha: ca930d456f3739af5ce3303f4fe880325136d56a
+repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+source_branch: codex/ot-live-progressive-portal-20260803
+authority_id: c00-prod-progressive-railway-20260803162734
+authority_grant_digest: ea44463a56ca0566624b1704a3a998fffdf6439b361d0a7c717196bd7acdf0ed
+authority_status_index_digest: c0ec055fbfc52b19010affb0e9cad8517821e6024b704214034750336a0f9dbf
+authority_status_entry_digest: 088f159b5effaaaa7f5a729a4f78fb2fe30a2a87efcb3e6f1399b380473556f1
+latest_revocation_digest: none
+lock: production:deployment
+lock_lease_id: 075d7564-8660-4fa0-8420-9655757b8da3
+holder_claim_id: 2ee6c8d2-d993-4fda-81b9-571a92bc5d56
+fencing_token: fence-8311372a-a931-4769-a53d-f37a561b3ffd
+provider_identity:
+  project_id: ce55ef20-1418-4ad3-aafa-f877fb992dc8
+  environment_id: f911acfc-e206-44df-a569-9d69d709b94b
+  web_service_id: d175ad94-5e3c-41c2-8cbc-daa1a299077d
+  worker_service_id: 742f60ed-dc2f-4321-85d0-019003d4e9b9
+operation: create_app_domain_then_exact_candidate_deploy_operator_canary_and_restore_read_only
+effect_budget:
+  railway_custom_domains_created_max: 1
+  variable_assignments_max: 4
+  source_connections_max: 2
+  source_disconnections_max: 2
+  production_deployments_max: 4
+  Parent_household_Student_canaries_max: 1_1_1
+  external_provider_or_billing_effects_max: 0
+provider_readback_before:
+  remote_source_branch_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+  web_source_connected: false
+  worker_source_connected: false
+  web_deployment_id: 0acdbf58-658a-40df-bca3-7e7dd847a2b1
+  web_source_sha: 801af7ec1a3513d28c921ca2b8d08d8c1bca21d1
+  web_state: SUCCESS_RUNNING
+  worker_deployment_id: 988c7df1-a92a-48c4-aa6b-74fd46a9f4c2
+  worker_source_sha: 801af7ec1a3513d28c921ca2b8d08d8c1bca21d1
+  worker_state: SUCCESS_RUNNING
+  existing_join_domain_id: 4447443b-bac4-4f16-a390-795d7e9bd811
+  app_domain_present: false
+  verification_environment: production_read_only_by_default
+  configured_free_access_expiry: '2026-09-11T18:00:00+03:00'
+  delivery_controls: sink_sink_sink_resend_false_highlevel_disabled_real_transports_false
+  operator_fixture_sha256: 668a11adfc0081d872327eb23b0248cee690cb96270ecaa63d8087401b33ff21
+reserved_at: '2026-08-03T16:27:34Z'
+lease_expires_at: '2026-08-03T17:22:34Z'
+state_based_on_head_sha: 5d80c3413bfa138430af99e198a67ad5e0257246
+contains_secret: false
+immutable: true

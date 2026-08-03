@@ -1,0 +1,67 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+authority_id: c00-prod-progressive-dns-20260803162734
+authority_kind: derived_candidate_bound_exact_production_app_dns_binding
+task_id: C00
+candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+candidate_binding_status: exact_frozen_candidate_bound_from_hosted_pg18_and_domain_preflight
+candidate_manifest_commit_sha: ca930d456f3739af5ce3303f4fe880325136d56a
+repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+canonical_path: ops/v2.1-execution/authority/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-progressive-dns-20260803162734/GRANT.yaml
+source_grant_id: ot-v21-production-source-grant-20260729
+source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+source_approval_evidence_path: ops/v2.1-execution/authority/none/C00/ot-v21-production-source-grant-20260729/APPROVAL.md
+source_approval_evidence_digest: 8c95a959f79aba0ac34fa0fcb6cb463cceac9aeb2bb52da1603d39db3e2c33c2
+grant_status_at_issue: active
+approved_by: Shloimie Dratler
+scope:
+  provider: GoDaddy canonical DNS account
+  zone: onetimeonetime.com
+  authoritative_nameservers: ns37.domaincontrol.com_and_ns38.domaincontrol.com
+  exact_record_name: app
+  exact_record_fqdn: app.onetimeonetime.com
+  exact_record_type: CNAME
+  exact_record_value: read_only_from_new_Railway_custom_domain_after_creation
+  existing_join_record_and_domain: preserve_unchanged
+fencing_token: fence-a437d346-02fe-43ec-aa51-2d7524d96460
+lock: infra:dns
+provider_lock_lease_id: 639857f4-e808-4bc6-93c2-e65acc065fd9
+allowed_operation: after the exact Railway app custom domain is created under the paired production authority, read its returned required CNAME target and create only one app CNAME with that exact value in the confirmed onetimeonetime.com GoDaddy zone; then verify authoritative and public propagation, Railway sync, TLS, and application login; never modify join, apex, mail, Resend, or any unrelated record
+maximum_effect_count: 1
+maximum_effect_value: one_exact_app_CNAME_zero_other_DNS_changes
+approved_fixture_ids: []
+operator_identity: C00
+approved_at: '2026-08-03T16:27:34Z'
+recorded_at: '2026-08-03T16:27:34Z'
+expires_at: '2026-08-03T17:22:34Z'
+effect_budget:
+  DNS_records_created_max: 1
+  DNS_records_updated_max: 0
+  DNS_records_deleted_max: 1
+  allowed_name: app
+  allowed_type: CNAME
+  allowed_value_source: immutable_new_Railway_custom_domain_readback
+  other_provider_or_customer_effects_max: 0
+prerequisite_review:
+  control_head_sha: 5d80c3413bfa138430af99e198a67ad5e0257246
+  candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+  domain_preflight_record: OT-LIVE-001.02-APP-DOMAIN-PREFLIGHT
+  provider_identity: confirmed_signed_in_GoDaddy_account_and_owned_zone
+  current_app_domain: absent_Railway_GoDaddy_and_public_DNS
+  existing_join_domain: ACTIVE_VALID_preserve_unchanged
+  broad_activation_authorized: false
+rollback_and_reconciliation:
+  - require the Railway app domain ID and exact required CNAME target before the GoDaddy effect
+  - record the exact GoDaddy record identity or immutable before-and-after tuple
+  - delete only the exact created app record if rollback is required
+  - verify authoritative nameservers, public CNAME, Railway ACTIVE sync, valid TLS, and app login before release
+  - release the lock only after exact DNS and Railway readback reconciliation
+stop_conditions:
+  - source grant is revoked or expired
+  - the paired Railway authority or production:deployment lock is absent, expired, or mismatched
+  - app.onetimeonetime.com already exists or the Railway target is unavailable or ambiguous
+  - the confirmed GoDaddy account, zone, nameservers, or current record set differs
+  - another effect holds infra:dns or production:deployment
+  - the operation would edit an existing record, modify join/apex/mail/Resend, or create anything except one exact app CNAME
+contains_secret: false
+immutable: true

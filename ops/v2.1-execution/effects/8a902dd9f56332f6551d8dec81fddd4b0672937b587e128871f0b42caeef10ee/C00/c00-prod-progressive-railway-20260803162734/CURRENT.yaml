@@ -1,0 +1,14 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prod-progressive-railway-20260803162734
+current_event_sequence: 1
+current_event_state: RESERVED
+current_event_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-progressive-railway-20260803162734/events/001-RESERVED.yaml
+current_event_digest: e6174ff63425338b7217b28d92ab76aea2027e75de3effe588adf4b10c264173
+candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+authority_id: c00-prod-progressive-railway-20260803162734
+lock_lease_id: 075d7564-8660-4fa0-8420-9655757b8da3
+fencing_token: fence-8311372a-a931-4769-a53d-f37a561b3ffd
+updated_at: '2026-08-03T16:27:34Z'
+immutable_event_chain: true

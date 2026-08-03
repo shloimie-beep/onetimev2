@@ -1,0 +1,107 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+authority_id: c00-prod-progressive-railway-20260803162734
+authority_kind: derived_candidate_bound_progressive_production_domain_deployment_operator_canary
+task_id: C00
+candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+candidate_binding_status: exact_frozen_candidate_bound_from_hosted_pg18_and_browser_evidence
+candidate_manifest_commit_sha: ca930d456f3739af5ce3303f4fe880325136d56a
+repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+canonical_path: ops/v2.1-execution/authority/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-progressive-railway-20260803162734/GRANT.yaml
+source_grant_id: ot-v21-production-source-grant-20260729
+source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+source_approval_evidence_path: ops/v2.1-execution/authority/none/C00/ot-v21-production-source-grant-20260729/APPROVAL.md
+source_approval_evidence_digest: 8c95a959f79aba0ac34fa0fcb6cb463cceac9aeb2bb52da1603d39db3e2c33c2
+grant_status_at_issue: active
+approved_by: Shloimie Dratler
+scope:
+  provider: One Time application on Railway production
+  workspace_id: d2428a88-aa7e-4369-b396-72060bf720f4
+  project_id: ce55ef20-1418-4ad3-aafa-f877fb992dc8
+  environment_id: f911acfc-e206-44df-a569-9d69d709b94b
+  web_service_id: d175ad94-5e3c-41c2-8cbc-daa1a299077d
+  worker_service_id: 742f60ed-dc2f-4321-85d0-019003d4e9b9
+  source_repository: shloimie-beep/onetimev2
+  source_branch: codex/ot-live-progressive-portal-20260803
+  source_branch_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+  transition_origin: https://join.onetimeonetime.com
+  application_origin: https://app.onetimeonetime.com
+  prior_web_deployment_id: 0acdbf58-658a-40df-bca3-7e7dd847a2b1
+  prior_web_image_digest: sha256:d2a05738991e51eab7c970813ec9c3d251656347fddc0fffbf6d03d0360ada15
+  prior_worker_deployment_id: 988c7df1-a92a-48c4-aa6b-74fd46a9f4c2
+  prior_worker_image_digest: sha256:8270c96d4f4c3d34501c60f1f45a7d961ec4aa1e8d122f215f6c1d7a0514f61d
+  existing_join_domain_id: 4447443b-bac4-4f16-a390-795d7e9bd811
+  exact_new_domain: app.onetimeonetime.com
+  fixture_id: c00_prod_portal_canary_8a902dd9_20260803a
+  fixture_destination_source: derived_plus_alias_from_ONE_TIME_OWNER_TEST_EMAIL
+  fixture_plus_alias_suffix: otv21-prod-8a902dd9-20260803a
+  fixture_destination_sha256: 668a11adfc0081d872327eb23b0248cee690cb96270ecaa63d8087401b33ff21
+fencing_token: fence-8311372a-a931-4769-a53d-f37a561b3ffd
+lock: production:deployment
+provider_lock_lease_id: 075d7564-8660-4fa0-8420-9655757b8da3
+allowed_operation: create only app.onetimeonetime.com on the exact production web service and read its immutable domain ID and required DNS target; temporarily set both exact services to production_operator_canary; connect each exact service only to codex/ot-live-progressive-portal-20260803 while its head is ca442fa43544c89e135fe751b177e1ff473b9e57, accept at most one candidate deployment per service, and disconnect each source immediately after its deployment snapshot exists; run one operator-controlled Parent and one Parent-managed Student lifecycle canary with no external sends or billing; then restore both services to the production_read_only default and reconcile exact source, runtime, domain, health, logs, migration, and provider state
+maximum_effect_count: 20
+maximum_effect_value: one_Railway_app_domain_four_variable_assignments_two_source_connections_two_source_disconnections_at_most_four_service_deployments_one_Parent_household_one_Student_zero_external_provider_or_billing_effects
+approved_fixture_ids:
+  - c00_prod_portal_canary_8a902dd9_20260803a
+operator_identity: C00
+approved_at: '2026-08-03T16:27:34Z'
+recorded_at: '2026-08-03T16:27:34Z'
+expires_at: '2026-08-03T17:22:34Z'
+effect_budget:
+  railway_custom_domains_created_max: 1
+  railway_custom_domains_deleted_max: 1
+  variable_assignments_max: 4
+  source_connections_max: 2
+  source_disconnections_max: 2
+  production_deployments_max: 4
+  database_migrations_max: 1
+  parent_accounts_created_or_updated_max: 1
+  households_created_or_updated_max: 1
+  student_accounts_created_or_updated_max: 1
+  student_credential_rotations_max: 1
+  student_lifecycle_transitions_max: 4
+  external_provider_sends_or_enrollments_max: 0
+  GHL_mutations_max: 0
+  charges_max: 0
+  broad_audience_activations_max: 0
+prerequisite_review:
+  control_head_sha: 5d80c3413bfa138430af99e198a67ad5e0257246
+  candidate_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+  candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+  hosted_pg18_run_id: 30831028321
+  hosted_pg18_result: success_PostgreSQL_18_4_90_migrations_8_probes_restore_equal
+  local_verification: typecheck_build_parent_student_2_of_2_landing_10_of_10_account_lifecycle_4_of_4_secret_scan_clean
+  current_web: 0acdbf58_SUCCESS_exact_801af7ec_source_disconnected
+  current_worker: 988c7df1_SUCCESS_exact_801af7ec_source_disconnected
+  current_app_domain: absent_Railway_and_public_DNS
+  current_join_domain: 4447443b_ACTIVE_preserve_unchanged
+  production_runtime_default: production_read_only
+  configured_free_access_expiry: 2026-09-11T18:00:00+03:00_held_from_broad_copy_pending_decision
+  delivery_controls: outbox_sink_delivery_sink_provider_sink_resend_false_highlevel_disabled_real_transports_false
+  operator_fixture: configured_and_bound_only_by_sha256
+  legal_gate: OPS-084-LEGAL-BUNDLE_open_broad_release_only_not_bounded_canary
+  broad_email_or_portal_activation_authorized: false
+rollback_and_reconciliation:
+  - require origin/codex/ot-live-progressive-portal-20260803 exact ca442fa43544c89e135fe751b177e1ff473b9e57 before every source connection
+  - preserve web deployment 0acdbf58-658a-40df-bca3-7e7dd847a2b1 and worker deployment 988c7df1-a92a-48c4-aa6b-74fd46a9f4c2 as rollback targets
+  - record the created Railway app custom-domain ID and delete only that exact ID on rollback
+  - never edit or delete join domain 4447443b-bac4-4f16-a390-795d7e9bd811
+  - record each source-triggered deployment ID before disconnecting its source
+  - after the canary restore ONE_TIME_VERIFICATION_ENVIRONMENT_ID to absent production_read_only behavior on both services
+  - require exact candidate source, SUCCESS, health, readiness, migration 2259, clean bounded logs, application login, and preserved preregistration truth
+  - require zero email, WhatsApp, Telegram, payment, GHL, audience, or broad activation effect
+  - on regression restore only the bound prior deployments, revert both canary variables, and keep preregistration available
+  - release the lock only after source disconnection, read-only restoration, and exact provider readback reconciliation
+stop_conditions:
+  - source grant is revoked or expired
+  - origin/codex/ot-live-progressive-portal-20260803 differs from ca442fa43544c89e135fe751b177e1ff473b9e57
+  - current production service, deployment, source-disconnected, fail-closed delivery, free-access expiry, domain, or rollback identity differs
+  - another effect holds production:deployment or infra:dns
+  - the new Railway domain returns any hostname other than app.onetimeonetime.com
+  - a source connection creates more than one candidate deployment for a service
+  - any deployment reports a source other than exact ca442fa43544c89e135fe751b177e1ff473b9e57
+  - the protected operator fixture or its SHA-256 binding differs
+  - the operation would activate broad access, send, enroll, mutate GHL, charge, touch a customer, create more than one Parent or Student, collect a Student email, or change the disputed public cutoff
+contains_secret: false
+immutable: true

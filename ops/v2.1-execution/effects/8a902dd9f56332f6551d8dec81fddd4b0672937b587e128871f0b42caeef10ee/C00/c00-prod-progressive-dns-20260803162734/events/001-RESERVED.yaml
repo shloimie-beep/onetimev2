@@ -1,0 +1,43 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prod-progressive-dns-20260803162734
+event_sequence: 1
+previous_event_digest: none
+state: RESERVED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-progressive-dns-20260803162734/events/001-RESERVED.yaml
+current_pointer_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-progressive-dns-20260803162734/CURRENT.yaml
+candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+candidate_manifest_commit_sha: ca930d456f3739af5ce3303f4fe880325136d56a
+repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+authority_id: c00-prod-progressive-dns-20260803162734
+authority_grant_digest: bf3bb7bbdf3c5b6b59f148dea702528be54aec03985143b62eaf56e7d75d08ff
+authority_status_index_digest: c0ec055fbfc52b19010affb0e9cad8517821e6024b704214034750336a0f9dbf
+authority_status_entry_digest: 9fbe2611cba3f06858607b5375eea7dff9e5a712e35ad5fbb49df3fd83d4c015
+latest_revocation_digest: none
+lock: infra:dns
+lock_lease_id: 639857f4-e808-4bc6-93c2-e65acc065fd9
+holder_claim_id: 13222419-e93c-42f4-a437-d8bcdc191f9a
+fencing_token: fence-a437d346-02fe-43ec-aa51-2d7524d96460
+provider_identity:
+  provider: GoDaddy
+  zone: onetimeonetime.com
+  record_name: app
+  record_type: CNAME
+operation: create_exact_app_CNAME_from_new_Railway_domain_target_then_verify_and_reconcile
+effect_budget:
+  DNS_records_created_max: 1
+  DNS_records_updated_max: 0
+  other_DNS_or_provider_effects_max: 0
+provider_readback_before:
+  provider_account_and_zone: confirmed
+  authoritative_nameservers: ns37.domaincontrol.com_and_ns38.domaincontrol.com
+  Railway_app_domain_present: false
+  GoDaddy_app_record_present: false
+  public_app_DNS_present: false
+  existing_join_domain_and_record: ACTIVE_preserve_unchanged
+reserved_at: '2026-08-03T16:27:34Z'
+lease_expires_at: '2026-08-03T17:22:34Z'
+state_based_on_head_sha: 5d80c3413bfa138430af99e198a67ad5e0257246
+contains_secret: false
+immutable: true

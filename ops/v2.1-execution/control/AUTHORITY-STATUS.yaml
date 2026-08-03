@@ -678,7 +678,7 @@ authorities:
     authority_kind: derived_candidate_bound_production_preregistration_copy_only_deployment
     grant_digest: ef183a7c968d519bbc6b48575d55cd51d07034c11ea147f3b46c479c34deaafe
     source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
-    status: active
+    status: consumed
     expires_at: '2026-08-03T16:06:53Z'
     latest_revocation_path: null
     latest_revocation_digest: null
@@ -696,6 +696,54 @@ authorities:
     lock_released_at: '2026-08-03T15:30:43Z'
     checked_at: '2026-08-03T15:30:43Z'
     state_based_on_control_head_sha: 3aaca62eb98661c38530abc7d266241d04a1f578
+  c00-prod-progressive-railway-20260803162734:
+    schema_version: 1
+    execution_id: OT-V21-PRODUCTION
+    authority_id: c00-prod-progressive-railway-20260803162734
+    authority_kind: derived_candidate_bound_progressive_production_domain_deployment_operator_canary
+    grant_digest: ea44463a56ca0566624b1704a3a998fffdf6439b361d0a7c717196bd7acdf0ed
+    source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+    status: active
+    expires_at: '2026-08-03T17:22:34Z'
+    latest_revocation_path: null
+    latest_revocation_digest: null
+    provider_lock: production:deployment
+    provider_lock_lease_id: 075d7564-8660-4fa0-8420-9655757b8da3
+    fencing_token: fence-8311372a-a931-4769-a53d-f37a561b3ffd
+    effect_authority_usable: true
+    candidate_binding_status: exact_frozen_candidate_bound_from_hosted_pg18_and_browser_evidence
+    candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+    repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+    source_branch: codex/ot-live-progressive-portal-20260803
+    maximum_effect_count: 20
+    prerequisite_review: candidate_frozen_hosted_pg18_passed_domains_and_current_production_read_back_sources_disconnected_fail_closed_transports
+    disposition: reserved_not_yet_attempted
+    checked_at: '2026-08-03T16:27:34Z'
+    state_based_on_control_head_sha: 5d80c3413bfa138430af99e198a67ad5e0257246
+  c00-prod-progressive-dns-20260803162734:
+    schema_version: 1
+    execution_id: OT-V21-PRODUCTION
+    authority_id: c00-prod-progressive-dns-20260803162734
+    authority_kind: derived_candidate_bound_exact_production_app_dns_binding
+    grant_digest: bf3bb7bbdf3c5b6b59f148dea702528be54aec03985143b62eaf56e7d75d08ff
+    source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+    status: active
+    expires_at: '2026-08-03T17:22:34Z'
+    latest_revocation_path: null
+    latest_revocation_digest: null
+    provider_lock: infra:dns
+    provider_lock_lease_id: 639857f4-e808-4bc6-93c2-e65acc065fd9
+    fencing_token: fence-a437d346-02fe-43ec-aa51-2d7524d96460
+    effect_authority_usable: true
+    candidate_binding_status: exact_frozen_candidate_bound_from_hosted_pg18_and_domain_preflight
+    candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+    repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+    paired_authority_id: c00-prod-progressive-railway-20260803162734
+    maximum_effect_count: 1
+    prerequisite_review: canonical_GoDaddy_zone_confirmed_app_absent_Railway_target_must_be_read_back_after_creation
+    disposition: reserved_not_yet_attempted
+    checked_at: '2026-08-03T16:27:34Z'
+    state_based_on_control_head_sha: 5d80c3413bfa138430af99e198a67ad5e0257246
 entry_schema: templates/AUTHORITY-STATUS-ENTRY.yaml
 revocation_schema: templates/AUTHORITY-REVOCATION-RECORD.yaml
 rule: C00 records externally granted/revoked/expired authority; it does not grant it. Every update binds the known
