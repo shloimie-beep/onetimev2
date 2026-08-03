@@ -10,16 +10,14 @@ test('synthetic signup appears once in authenticated CRM and opens detail on mob
   const contactName = `CRM Browser Parent ${Date.now()}`;
 
   await page.goto('/signup');
-  await page.getByLabel('Parent or contact name').fill(contactName);
-  await page.getByLabel('Family or School').fill('CRM Browser Family');
-  await page.getByLabel('Location').fill('Jerusalem');
-  await page.getByRole('textbox', { name: 'Email' }).fill(email);
-  await expect(page.getByLabel('Email class reminders')).not.toBeChecked();
-  await expect(page.getByLabel('WhatsApp class reminders')).not.toBeChecked();
-  await page.getByLabel('Email class reminders').check();
-  await page.getByRole('button', { name: 'Sign Up Now' }).click();
+  await page.getByLabel('Adult name').fill(contactName);
+  await page.getByLabel('Family or household name').fill('CRM Browser Family');
+  await page.getByLabel('Adult location').fill('Jerusalem');
+  await page.getByRole('textbox', { name: 'Adult email' }).fill(email);
+  await expect(page.getByLabel(/Student|WhatsApp|marketing/i)).toHaveCount(0);
+  await page.getByRole('button', { name: 'Pre-register my Family' }).click();
   await expect(
-    page.getByRole('heading', { name: 'Thank you - we received your Family signup.' }),
+    page.getByRole('heading', { name: 'Adult pre-registration received.' }),
   ).toBeVisible();
 
   await login(page);

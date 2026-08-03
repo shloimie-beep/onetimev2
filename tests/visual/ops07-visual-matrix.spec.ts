@@ -40,7 +40,9 @@ test.describe('OPS-07 visual matrix', () => {
       results.push(
         await captureRoute(page, `landing-${viewport.name}`, '/', 'MISHNAYOS MADE MEMORABLE'),
       );
-      results.push(await captureRoute(page, `signup-${viewport.name}`, '/signup', 'Sign Up Now'));
+      results.push(
+        await captureRoute(page, `signup-${viewport.name}`, '/signup', 'Pre-register Your Family'),
+      );
     }
 
     const evidence = {

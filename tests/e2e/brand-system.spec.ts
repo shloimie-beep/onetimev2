@@ -25,10 +25,10 @@ test('OT82 canonical public shell, ticker, and mobile invariant', async ({ page 
     await expect(page.locator('.campaign-ticker')).toHaveAttribute('href', '/signup');
     await expect(page.locator('.campaign-ticker')).toHaveAttribute(
       'aria-label',
-      /FREE UNTIL ROSH HASHANAH.*DAYS? TO ROSH HASHANAH/i,
+      /FREE ACCESS.*remaining.*Pre-register your Family/i,
     );
     await expect(
-      page.getByLabel('Primary').getByRole('link', { name: 'Sign Up Now' }),
+      page.getByLabel('Primary').getByRole('link', { name: 'Pre-register' }),
     ).toBeVisible();
     await expect(page.locator('.brand-lockup img')).toBeVisible();
     await expect(page.locator('.site-header')).toBeVisible();

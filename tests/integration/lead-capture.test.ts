@@ -44,10 +44,8 @@ describe('lead capture transaction', () => {
     const result = await captureLead({ pool, config, payload, now: beforeReminder });
     expect(result.success).toBe(true);
     expect(result.duplicate_submission).toBe(false);
-    expect(result.message.heading).toBe('Thank you - we received your Family signup.');
-    expect(result.message.body).toContain(
-      'Class access and member login details are sent separately',
-    );
+    expect(result.message.heading).toBe('Adult pre-registration received.');
+    expect(result.message.body).toContain('did not create a portal account');
     expect(result.outbox_intents).toHaveLength(3);
 
     await expectCount('contacts', 1);

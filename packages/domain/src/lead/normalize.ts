@@ -45,8 +45,8 @@ export function successCopy(classification: 'family' | 'school') {
     };
   }
   return {
-    heading: 'Thank you - we received your Family signup.',
-    body: 'Your information has been saved. You may receive an acknowledgement by email and, only if you consented, by WhatsApp. Class access and member login details are sent separately when they are ready.',
+    heading: 'Adult pre-registration received.',
+    body: 'We saved the adult contact for personal follow-up. This did not create a portal account, Student account, subscription, charge, marketing enrollment, or WhatsApp enrollment.',
   };
 }
 

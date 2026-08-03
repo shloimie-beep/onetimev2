@@ -23,12 +23,12 @@ export const landingContent = {
     firstClass: 'Class begins Sunday, August 16, 2026 at 7:00 PM Asia/Jerusalem.',
     freeAccessCutoff: 'Free access cutoff: Friday, September 11, 2026 at 6:00 PM Asia/Jerusalem.',
     cta: {
-      label: 'Enroll Your Son Free',
+      label: 'Pre-register Your Family',
       href: '/signup',
       analyticsEvent: 'landing.signup.cta.clicked',
       analyticsPlacement: 'hero',
     },
-    note: 'No credit card • Up to three Students per Family • No automatic charge',
+    note: 'Adult email only • No Student details • No credit card or automatic charge',
     kickerLines: ['LIVE ONLINE', 'ON-DEMAND REVIEW'],
     heading: 'Mishnayos made memorable.',
   },
@@ -109,11 +109,11 @@ export const landingContent = {
   },
   how: {
     heading: 'How It Works',
-    body: 'Create a Family account, add up to three learner seats, and join live or review securely on demand.',
+    body: 'Pre-register one adult contact now. The One Time team will follow up when Family portal access is ready.',
     steps: [
-      'Create the adult Family account',
-      'Add separate Student seats',
-      'Join live or review on demand',
+      'Pre-register the adult Family contact',
+      'Receive a personal access-readiness follow-up',
+      'Add separate Student seats only after secure access opens',
     ],
   },
   who: {
@@ -165,25 +165,25 @@ export const landingContent = {
     ],
   },
   enrollment: {
-    heading: 'Enroll your Family',
+    heading: 'Pre-register your Family',
     family: {
       title: 'Family',
-      body: 'Create one adult-managed account with up to three learner seats. The adult supplies the account email; Student email is not required.',
+      body: 'Save one adult contact for launch follow-up. This does not yet create an account or learner seat, and no Student information is collected.',
     },
   },
   access: {
-    heading: 'Family access and billing',
+    heading: 'Pre-registration and future access',
     before:
-      'Create a Family account without a credit card during the configured free-access period.',
+      'Pre-register an adult contact during the configured free-access period. No credit card is collected, and portal access is not created by this form.',
     after:
-      'After the free period, continued Family access is $67/month through the secure hosted billing flow. Creating an account does not charge a card.',
+      'Pre-registration remains cardless. If paid Family access is offered later, it is $67/month through a separate secure hosted billing flow; this form creates no charge.',
   },
   assurances: {
     heading: 'Clear expectations before you join',
     items: [
       {
         title: 'Privacy and Student data',
-        body: 'Review the Privacy Notice, Terms, and Parent/Guardian and Student Data Notice before creating learner seats.',
+        body: 'This pre-registration collects adult contact details only. Review the Privacy Notice now; Student data is requested only after secure Family access is ready.',
       },
       {
         title: 'Cancellation and refunds',
@@ -233,13 +233,13 @@ export const landingContent = {
     ['Mishpacha', '/assets/press/mishpacha.webp'],
   ],
   finalCta: {
-    heading: 'Ready to join the live class?',
+    heading: 'Ready to pre-register your Family?',
   },
   footer: {
     line: 'One Time Mishnayos with Rabbi Eli Scheller.',
     links: [
       ['Home', '/'],
-      ['Sign Up Now', '/signup'],
+      ['Pre-register', '/signup'],
       ['Privacy', '/privacy'],
       ['Terms', '/terms'],
       ['Student Data', '/student-data'],

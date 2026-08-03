@@ -50,8 +50,8 @@ describe('lead validation and content contracts', () => {
   });
 
   it('uses distinct family and school success copy', () => {
-    expect(successCopy('family').heading).toBe('Thank you - we received your Family signup.');
-    expect(successCopy('family').body).toContain('Class access and member login details');
+    expect(successCopy('family').heading).toBe('Adult pre-registration received.');
+    expect(successCopy('family').body).toContain('did not create a portal account');
     expect(successCopy('school').heading).toBe('Thank you - we received your school inquiry.');
     expect(successCopy('school').body).toContain('does not create class access');
   });

@@ -4,14 +4,6 @@ import { expect, test, type Page } from '@playwright/test';
 const testBaseUrl =
   process.env.PLAYWRIGHT_BASE_URL ?? `http://127.0.0.1:${process.env.PORT ?? '3100'}`;
 
-const bootstrap = {
-  success: true,
-  idempotency_key: 'a'.repeat(43),
-  csrf_token: `1789315200.${'b'.repeat(43)}.${'c'.repeat(43)}`,
-  expires_at: '2026-09-11T15:20:00.000Z',
-  writes_allowed: true,
-};
-
 test('public landing implements the complete accepted campaign contract', async ({ page }) => {
   await useServerDate(page, '2026-08-01T12:00:00.000Z');
   await page.setViewportSize({ width: 1440, height: 1000 });
@@ -36,7 +28,7 @@ test('public landing implements the complete accepted campaign contract', async 
     'Free access cutoff: Friday, September 11, 2026 at 6:00 PM Asia/Jerusalem.',
   );
   const heroCta = page.locator('.hero .hero-cta');
-  await expect(heroCta).toHaveText('Enroll Your Son Free');
+  await expect(heroCta).toHaveText('Pre-register Your Family');
   await expect(heroCta).toHaveAttribute('href', '/signup');
   await expect(heroCta).toHaveCSS('background-color', 'rgb(255, 212, 0)');
   await expect(page.locator('.hero h1')).toHaveCSS('font-family', /Inter/);
@@ -44,24 +36,28 @@ test('public landing implements the complete accepted campaign contract', async 
   await expect(page.locator('.hero h1 span').last()).toHaveCSS('color', 'rgb(255, 212, 0)');
   await expect(
     page.locator('.hero-note:not([data-first-class-at]):not([data-free-access-cutoff])'),
-  ).toHaveText('No credit card • Up to three Students per Family • No automatic charge');
+  ).toHaveText('Adult email only • No Student details • No credit card or automatic charge');
 
   await expect(
     page.getByRole('heading', { name: 'One protected place for live class and review' }),
   ).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Live class', exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'On-demand library', exact: true })).toBeVisible();
-  await expect(page.getByText('Student email is not required.', { exact: false })).toHaveCount(2);
+  await expect(page.getByText('Student email is not required.', { exact: false })).toHaveCount(1);
   await expect(page.getByText(/adult may learn as a Student/i)).toBeVisible();
   await expect(page.getByText(/current desktop or mobile browser/i)).toBeVisible();
   await expect(page.getByText(/camera is optional/i)).toBeVisible();
   await expect(page.getByText(/class recordings may be made available/i)).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Enroll your Family' })).toBeVisible();
   await expect(
-    page.locator('.enrollment').getByRole('link', { name: 'Enroll your son free' }),
-  ).toHaveAttribute('href', '/signup?entry=family');
+    page.getByRole('heading', { name: 'Pre-register your Family', exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.locator('.enrollment').getByRole('link', { name: 'Pre-register your Family' }),
+  ).toHaveAttribute('href', '/signup');
   await expect(page.getByRole('link', { name: /School inquiry/i })).toHaveCount(0);
-  await expect(page.getByRole('heading', { name: 'Family access and billing' })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Pre-registration and future access' }),
+  ).toBeVisible();
   await expect(page.locator('#access [data-before-expiry]')).toBeVisible();
   await expect(page.locator('#access [data-at-or-after-expiry]')).toBeHidden();
   await expect(page.getByRole('link', { name: 'Terms, cancellation, and refunds' })).toBeVisible();
@@ -135,133 +131,98 @@ test('canonical free-period configuration controls the countdown and access boun
   await expect(page.locator('#access [data-at-or-after-expiry]')).toContainText('$67/month');
 
   await page.goto('/signup');
-  await expect(page.locator('[data-family-fields] [data-before-expiry]')).toBeHidden();
-  await expect(page.locator('[data-family-fields] [data-at-or-after-expiry]')).toBeVisible();
-  await expect(
-    page.getByRole('button', { name: 'Create account and continue to checkout' }),
-  ).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Pre-register Your Family' })).toBeVisible();
+  await expect(page.locator('[data-family-fields]')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Pre-register my Family' })).toBeVisible();
 });
 
-test('Family submission uses the P08 bootstrap, exact CSRF binding, and no Student or card fields', async ({
+test('adult-only pre-registration captures a local Family lead with no account, Student, card, or optional-channel fields', async ({
   page,
 }) => {
   await useServerDate(page, '2026-08-01T12:00:00.000Z');
   let observedPayload: Record<string, unknown> | null = null;
-  let observedCsrf = '';
-  await page.route('**/api/v1/signup/family/bootstrap', (route) =>
-    route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify(bootstrap),
-    }),
-  );
-  await page.route('**/api/v1/signup/family', async (route) => {
-    observedCsrf = route.request().headers()['x-csrf-token'] ?? '';
+  let familyBootstrapCalls = 0;
+  let familySignupCalls = 0;
+  await page.route('**/api/v1/signup/family/bootstrap', (route) => {
+    familyBootstrapCalls += 1;
+    return route.fulfill({ status: 500, contentType: 'application/json', body: '{}' });
+  });
+  await page.route('**/api/v1/signup/family', (route) => {
+    familySignupCalls += 1;
+    return route.fulfill({ status: 500, contentType: 'application/json', body: '{}' });
+  });
+  await page.route('**/api/v1/leads', async (route) => {
     observedPayload = JSON.parse(route.request().postData() ?? '{}') as Record<string, unknown>;
     await route.fulfill({
-      status: 202,
+      status: 200,
       contentType: 'application/json',
       body: JSON.stringify({
         success: true,
-        code: 'SIGNUP_COMMITTED_SESSION_UNAVAILABLE',
-        local_commit_state: 'committed',
-        local_access_state: 'free',
-        next_action: 'session_integration_pending',
-        session_established: false,
-        provider_effects_completed_inline: 0,
-        message:
-          'Your family account and free access were saved. Automatic sign-in is not available yet.',
+        message: {
+          heading: 'Adult pre-registration received.',
+          body: 'No portal account, Student account, subscription, or charge was created.',
+        },
       }),
     });
   });
 
   await page.goto('/signup?entry=family');
-  await expect(page.locator('input[name="classification_choice"]')).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: 'Pre-register Your Family' })).toBeVisible();
   await expect(page.locator('[data-school-fields]')).toHaveCount(0);
-  await expect(page.getByRole('link', { name: /School inquiry/i })).toHaveCount(0);
-  await expect(page.getByText('Student email is not required.')).toBeVisible();
-  await expect(page.getByLabel(/student.*email/i)).toHaveCount(0);
-  await page.getByLabel('First name', { exact: true }).fill('Playwright');
-  await page.getByLabel('Last name', { exact: true }).fill('Parent');
-  await page.getByLabel('Adult account email').fill('family@example.test');
-  await page.getByLabel('Password', { exact: true }).fill('StrongPassword!234');
-  await page.getByLabel('Confirm password').fill('StrongPassword!234');
-  await page.getByLabel(/I agree to the Terms/).check();
-  await page.getByLabel(/I acknowledge the Privacy Notice/).check();
-  await expect(page.getByLabel('General marketing')).not.toBeChecked();
-  await expect(page.getByLabel('Parent newsletter')).not.toBeChecked();
-  await page.getByRole('button', { name: 'Create my free family account' }).click();
+  await expect(page.getByLabel(/student|password|phone|whatsapp|card/i)).toHaveCount(0);
+  await page.getByLabel('Adult name').fill('Playwright Parent');
+  await page.getByLabel('Family or household name').fill('Playwright Family');
+  await page.getByLabel('Adult location').fill('Jerusalem');
+  await page.getByLabel('Adult email').fill('family@example.test');
+  await page.getByRole('button', { name: 'Pre-register my Family' }).click();
 
-  await expect(page.getByRole('heading', { name: 'Your Family account was saved.' })).toBeVisible();
-  await expect(page.getByText(/Automatic sign-in is not available yet/)).toBeVisible();
-  expect(observedCsrf).toBe(bootstrap.csrf_token);
-  expect(observedPayload).toEqual({
-    classification: 'family',
-    idempotency_key: bootstrap.idempotency_key,
-    first_name: 'Playwright',
-    last_name: 'Parent',
+  await expect(
+    page.getByRole('heading', { name: 'Adult pre-registration received.' }),
+  ).toBeVisible();
+  await expect(page.getByText(/No portal account, Student account, subscription/)).toBeVisible();
+  expect(familyBootstrapCalls).toBe(0);
+  expect(familySignupCalls).toBe(0);
+  expect(observedPayload).toMatchObject({
+    contact_name: 'Playwright Parent',
+    family_or_school: 'Playwright Family',
+    audience_type: 'family',
+    location: 'Jerusalem',
     email: 'family@example.test',
-    password: 'StrongPassword!234',
-    password_confirmation: 'StrongPassword!234',
     timezone: expect.any(String),
-    terms_accepted: true,
-    privacy_accepted: true,
-    general_marketing_consent: false,
-    parent_newsletter_consent: false,
+    reminder_preference: 'none',
+    reminder_consent: false,
+    idempotency_key: expect.stringMatching(/^family-preregistration-/),
+    attribution: { landing_path: '/signup', referrer: expect.any(String) },
   });
   const serialized = JSON.stringify(observedPayload);
-  expect(serialized).not.toMatch(/student|phone|whatsapp|card|payment_method/i);
+  expect(serialized).not.toMatch(/student|password|whatsapp|card|payment_method|marketing/i);
 });
 
-test('verified Family signup follows only an allowlisted same-origin Parent continuation', async ({
+test('adult-only pre-registration never follows a Parent continuation or creates a session', async ({
   page,
 }) => {
-  await useServerDate(page, '2026-08-01T12:00:00.000Z');
-  await page.route('**/api/v1/signup/family/bootstrap', (route) =>
+  await page.route('**/api/v1/leads', (route) =>
     route.fulfill({
       status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify(bootstrap),
-    }),
-  );
-  await page.route('**/api/v1/signup/family', (route) =>
-    route.fulfill({
-      status: 201,
       contentType: 'application/json',
       body: JSON.stringify({
         success: true,
-        code: 'FAMILY_SIGNUP_COMPLETE',
-        session_established: true,
+        session_established: false,
         continue_to: '/app/parent',
-        message: 'Your family account and free access are ready.',
+        message: {
+          heading: 'Adult pre-registration received.',
+          body: 'No portal account was created.',
+        },
       }),
     }),
   );
-  await page.route('**/app/parent/account', (route) =>
-    route.fulfill({
-      status: 200,
-      contentType: 'text/html',
-      body: '<!doctype html><title>Parent account</title><h1>Parent account</h1>',
-    }),
-  );
-
-  await page.goto('/signup?entry=family&continue_to=%2Fapp%2Fparent%2Faccount');
-  await completeFamilySignupForm(page, 'continued-family@example.test');
-  await expect(page).toHaveURL(`${testBaseUrl}/app/parent/account`);
-
-  await page.goto('/signup?entry=family&continue_to=%252F%252Fevil.example%252Fapp%252Fparent');
-  await completeFamilySignupForm(page, 'rejected-continuation@example.test');
-  await expect(page).toHaveURL(
-    `${testBaseUrl}/signup?entry=family&continue_to=%252F%252Fevil.example%252Fapp%252Fparent`,
-  );
-  await expect(page.getByRole('heading', { name: 'Your Family account was saved.' })).toBeVisible();
-
-  const encodedTraversal =
-    '/signup?entry=family&continue_to=%2Fapp%2Fparent%2F%25252e%25252e%2Fcrm';
-  await page.goto(encodedTraversal);
-  await completeFamilySignupForm(page, 'rejected-traversal@example.test');
-  await expect(page).toHaveURL(`${testBaseUrl}${encodedTraversal}`);
-  await expect(page.getByRole('heading', { name: 'Your Family account was saved.' })).toBeVisible();
+  const route = '/signup?continue_to=%2Fapp%2Fparent%2Faccount';
+  await page.goto(route);
+  await completePreregistrationForm(page, 'continued-family@example.test');
+  await expect(page).toHaveURL(`${testBaseUrl}${route}`);
+  await expect(
+    page.getByRole('heading', { name: 'Adult pre-registration received.' }),
+  ).toBeVisible();
 });
 
 test('the real Parent bundle keeps a v2.1 session isolated from every legacy Parent API', async ({
@@ -469,24 +430,15 @@ test('campaign remains useful without JavaScript and honors reduced motion and m
   await expect(noJsPage.getByText(/September 13, 2026/)).toHaveCount(0);
   await noJsPage.goto('/signup');
   await expect(noJsPage.locator('noscript > .noscript-panel')).toContainText(
-    'JavaScript is required for secure signup submission.',
+    'JavaScript is required for secure pre-registration submission.',
   );
-  await expect(
-    noJsPage.getByRole('button', { name: 'Create account and continue to checkout' }),
-  ).toBeHidden();
+  await expect(noJsPage.getByRole('button', { name: 'Pre-register my Family' })).toBeHidden();
   await context.close();
 });
 
-test('landing and signup pass automated accessibility checks at all required viewports', async ({
+test('landing and adult pre-registration pass automated accessibility checks at all required viewports', async ({
   page,
 }) => {
-  await page.route('**/api/v1/signup/family/bootstrap', (route) =>
-    route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify(bootstrap),
-    }),
-  );
   for (const viewport of [
     { width: 360, height: 800 },
     { width: 390, height: 844 },
@@ -507,7 +459,7 @@ test('landing and signup pass automated accessibility checks at all required vie
   }
 });
 
-test('hero CTA emits the bounded analytics event before canonical Family signup', async ({
+test('hero CTA emits the bounded analytics event before canonical adult pre-registration', async ({
   page,
 }) => {
   const events: unknown[] = [];
@@ -564,17 +516,10 @@ async function assertGalleryControls(page: Page) {
   await expect(galleryToggle).toHaveAttribute('aria-pressed', 'true');
 }
 
-async function completeFamilySignupForm(page: Page, email: string) {
-  await page.getByLabel('First name', { exact: true }).fill('Playwright');
-  await page.getByLabel('Last name', { exact: true }).fill('Parent');
-  await page.getByLabel('Adult account email').fill(email);
-  await page.getByLabel('Password', { exact: true }).fill('StrongPassword!234');
-  await page.getByLabel('Confirm password').fill('StrongPassword!234');
-  await page.getByLabel(/I agree to the Terms/).check();
-  await page.getByLabel(/I acknowledge the Privacy Notice/).check();
-  await page
-    .getByRole('button', {
-      name: /Create my free family account|Create account and continue to checkout/,
-    })
-    .click();
+async function completePreregistrationForm(page: Page, email: string) {
+  await page.getByLabel('Adult name').fill('Playwright Parent');
+  await page.getByLabel('Family or household name').fill('Playwright Family');
+  await page.getByLabel('Adult location').fill('Jerusalem');
+  await page.getByLabel('Adult email').fill(email);
+  await page.getByRole('button', { name: 'Pre-register my Family' }).click();
 }

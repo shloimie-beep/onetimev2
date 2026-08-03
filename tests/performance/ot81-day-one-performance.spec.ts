@@ -47,7 +47,7 @@ test.describe('OT81 integrated 30-sample performance matrix', () => {
     results.push(
       await measureRoute(page, 'signup', async () => {
         await page.goto('/signup');
-        await page.getByRole('heading', { name: 'Sign Up Now' }).waitFor();
+        await page.getByRole('heading', { name: 'Pre-register Your Family' }).waitFor();
       }),
     );
     results.push(

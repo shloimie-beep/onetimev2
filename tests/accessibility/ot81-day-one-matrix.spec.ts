@@ -33,7 +33,7 @@ test.describe('OT81 responsive accessibility matrix', () => {
       evidence.push(await inspectPage(page, `landing-${viewport.name}`));
 
       await page.goto('/signup');
-      await expect(page.getByRole('heading', { name: 'Sign Up Now' })).toBeVisible();
+      await expect(page.getByRole('heading', { name: 'Pre-register Your Family' })).toBeVisible();
       evidence.push(await inspectPage(page, `signup-${viewport.name}`));
     }
 
