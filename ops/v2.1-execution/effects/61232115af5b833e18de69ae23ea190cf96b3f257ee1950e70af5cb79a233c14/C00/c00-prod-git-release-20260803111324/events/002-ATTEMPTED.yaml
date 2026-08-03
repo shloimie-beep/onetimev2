@@ -1,0 +1,47 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prod-git-release-20260803111324
+event_sequence: 2
+previous_event_digest: 4abf6f184b8e3407d234271f30f872f4ed01d4f32d19a0af5863a3953802ce7d
+state: ATTEMPTED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14/C00/c00-prod-git-release-20260803111324/events/002-ATTEMPTED.yaml
+candidate_digest: 61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14
+repository_source_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+authority_id: c00-prod-git-release-20260803111324
+lock_lease_id: 30b4216e-1d87-4a86-a136-ff1cfd793129
+fencing_token: fence-e45cfa2a-1818-4761-a36d-b35d41df0a78
+operation_results:
+  web_source_repository: shloimie-beep/onetimev2
+  web_source_branch: codex/full-app-staging-live
+  exact_source_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+  web_deployment_ids:
+    - 255b6cdb-3ad5-4068-bcdd-42a63bfdb745
+    - 894d841f-9325-499f-a819-91d183d261a2
+  web_deployment_statuses:
+    - FAILED
+    - FAILED
+  build_image_digest_before_health_failure: sha256:df58a760be509f95005bb0a115b880e8c1372f5b6a9360058810dc23a08cc346
+  failure_phase: startup_healthcheck
+  failure_cause: HIGHLEVEL_EVENT_SYNC_MODE_provider_without_exact_canary_run_delivery_key_allowlist_and_budget
+  source_disconnected_after_failure: true
+  worker_source_connected: false
+  worker_deployments_created: 0
+  canonical_live_version_after_failure: 0d69de15e3c5e7a5e51f2b9262c992ea153c51fb
+  prior_web_and_worker_still_serving: true
+budget_consumed:
+  source_connections: 2
+  source_disconnections: 1
+  production_deployments: 2
+  signup_posts: 0
+  local_adult_contacts: 0
+  local_signup_leads: 0
+  external_provider_sends_or_enrollments: 0
+  variable_assignments: 0
+  migrations: 0
+  DNS_changes: 0
+  GHL_mutations: 0
+provider_request_or_operation_id: railway_git_deployments_255b6cdb_894d841f
+cleanup_state: terminal_web_source_disconnected_failed_deployments_nonserving_prior_runtime_healthy_no_canary
+event_at: '2026-08-03T11:22:01.4854850Z'
+immutable: true

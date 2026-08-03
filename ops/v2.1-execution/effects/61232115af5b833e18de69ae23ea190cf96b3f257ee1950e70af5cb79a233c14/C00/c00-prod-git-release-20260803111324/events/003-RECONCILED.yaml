@@ -1,0 +1,38 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prod-git-release-20260803111324
+event_sequence: 3
+previous_event_digest: 85b3b317a6e46ebfb769eb5b22f6106ed918e125ece51631fd031b018db3d3c9
+state: RECONCILED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14/C00/c00-prod-git-release-20260803111324/events/003-RECONCILED.yaml
+candidate_digest: 61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14
+repository_source_sha: f95b30d830d57a29b123949134e9ee3077a945a1
+authority_id: c00-prod-git-release-20260803111324
+lock_lease_id: 30b4216e-1d87-4a86-a136-ff1cfd793129
+fencing_token: fence-e45cfa2a-1818-4761-a36d-b35d41df0a78
+provider_request_or_operation_id: railway_git_deployments_255b6cdb_894d841f
+provider_readback:
+  exact_source_build_completed: true
+  exact_source_runtime_started: false
+  failure_cause_reconciled: HIGHLEVEL_EVENT_SYNC_MODE_provider_incomplete_canary_fence
+  web_source_disconnected: true
+  worker_source_unchanged: true
+  canonical_live_version: 0d69de15e3c5e7a5e51f2b9262c992ea153c51fb
+  canonical_live_health: 200
+  prior_web_deployment_still_serving: f8ba23d3-311b-4277-a85d-6695611fedfd
+  prior_worker_deployment_still_serving: 26bf7d62-db73-41d6-9887-1d2215ddfaff
+  signup_posts: 0
+  external_provider_sends_or_enrollments: 0
+  portal_or_student_accounts: 0
+  charges: 0
+provider_readback_state: exact_source_builds_failed_startup_web_disconnected_prior_runtime_healthy_no_canary_zero_external_send
+disposition: consumed_and_reconciled_focused_safe_config_repair_required_before_fresh_deployment_authority
+production_promotion_complete: false
+email_campaign_may_send: false
+unexpected_external_effects: 0
+cleanup_state: terminal_web_source_disconnected_failed_deployments_nonserving_prior_runtime_healthy
+lock_release_state: released
+lock_released_at: '2026-08-03T11:22:01.4854850Z'
+event_at: '2026-08-03T11:22:01.4854850Z'
+immutable: true
