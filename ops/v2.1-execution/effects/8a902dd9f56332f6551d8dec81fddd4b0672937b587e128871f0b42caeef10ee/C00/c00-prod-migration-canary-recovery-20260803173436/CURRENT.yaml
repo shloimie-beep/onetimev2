@@ -1,0 +1,14 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prod-migration-canary-recovery-20260803173436
+current_event_sequence: 1
+current_event_state: RESERVED
+current_event_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-migration-canary-recovery-20260803173436/events/001-RESERVED.yaml
+current_event_digest: 98e52976b32a7ff1d4d33e11f3aa00eab134cd9b55dfa1c5d7dc32ce66b978a8
+candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+authority_id: c00-prod-migration-canary-recovery-20260803173436
+lock_lease_id: 165c1b12-5a33-4913-94c2-d4c61e7809f2
+fencing_token: fence-eafc384b-0e14-45a9-ad17-9357f18395f1
+updated_at: '2026-08-03T17:34:36Z'
+immutable_event_chain: true

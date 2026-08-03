@@ -1,0 +1,53 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prod-progressive-recovery-20260803170559
+event_sequence: 2
+previous_event_digest: 30812f50e66ce9edce70016be446dffa605f268c01dfae54cddd75d84b37142c
+state: ATTEMPTED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-progressive-recovery-20260803170559/events/002-ATTEMPTED.yaml
+current_pointer_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-progressive-recovery-20260803170559/CURRENT.yaml
+candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+authority_id: c00-prod-progressive-recovery-20260803170559
+authority_grant_digest: 11e35de1b9cb1b7d4003c48990305d96d38015eeef00aee8eb3366fc306a2bbe
+lock: production:deployment
+lock_lease_id: 6bc3afe2-edc7-4d90-a5aa-ad72829d545a
+fencing_token: fence-72da07d4-388e-448a-b7ca-6a5260af0174
+operation: protected_Parent_household_Student_canary_then_two_variable_deletions_and_read_only_restore
+provider_readback:
+  fixture_destination_sha256: 668a11adfc0081d872327eb23b0248cee690cb96270ecaa63d8087401b33ff21
+  family_signup_status: succeeded
+  parent_count: 1
+  household_count: 1
+  student_learner_count: 0
+  family_signup_outbox_intent_count: 1
+  delivery_transport: sink_no_external_send
+  marketing_consent: false
+  newsletter_consent: false
+  join_parent_session: succeeded
+  app_parent_dashboard: blocked_by_pending_TLS_redirect_before_Student_creation
+  production_migration_ledger_count: 89
+  production_latest_migration: 2258_v21_configurable_launch_timing
+  expected_candidate_migration_ledger_count: 90
+  expected_candidate_latest_migration: 2259_vimeo_mishnayos_catalog_adoption
+stop_condition:
+  triggered: true
+  reason: live_database_missing_exact_candidate_migration_2259
+  further_effects_under_this_authority: stopped
+  safe_state: exact_candidate_active_sources_disconnected_one_Parent_one_household_zero_Student_transports_sink
+  required_next_control_action: derive_exact_single_migration_successor_authority_then_verify_90_through_2259_before_resuming_Student_canary
+effect_counts_after:
+  Parent_accounts_created: 1
+  households_created: 1
+  Student_accounts_created: 0
+  sink_outbox_intents_created: 1
+  external_provider_sends_or_enrollments: 0
+  GHL_mutations: 0
+  billing_effects: 0
+unexpected_customer_or_provider_effects: 0
+cleanup_state: existing_fixture_preserved_pending_exact_migration_TLS_Student_canary_and_read_only_restore_under_successor
+event_at: '2026-08-03T17:34:36Z'
+state_based_on_head_sha: aa54f59a43b16402ed6712744286146a9c85c24b
+contains_secret: false
+immutable: true
