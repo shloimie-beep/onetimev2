@@ -153,24 +153,39 @@ locks:
   effect_budget: null
   cleanup_state: not_applicable
 - lock: production:deployment
-  status: unclaimed
-  holder_task_id: null
-  holder_claim_id: null
-  lease_id: null
-  fencing_token: null
-  canonical_candidate_digest: null
-  provider_identity: null
-  authorized_operation: null
-  claimed_at: null
-  lease_expires_at: null
-  authority_id: null
-  authority_grant_digest: null
-  authority_status_index_digest: null
-  authority_status_entry_digest: null
+  status: claimed
+  holder_task_id: C00
+  holder_claim_id: b4aa25bd-c41c-4742-9fae-bdf998c699ec
+  lease_id: 30b4216e-1d87-4a86-a136-ff1cfd793129
+  fencing_token: fence-e45cfa2a-1818-4761-a36d-b35d41df0a78
+  canonical_candidate_digest: 61232115af5b833e18de69ae23ea190cf96b3f257ee1950e70af5cb79a233c14
+  provider_identity: railway:ce55ef20-1418-4ad3-aafa-f877fb992dc8:f911acfc-e206-44df-a569-9d69d709b94b:web-d175ad94:worker-742f60ed
+  authorized_operation: two_exact_git_source_connections_two_source_disconnections_two_exact_candidate_deployments_two_idempotency_canary_posts_zero_external_send
+  claimed_at: '2026-08-03T11:13:24Z'
+  lease_expires_at: '2026-08-03T11:58:24Z'
+  authority_id: c00-prod-git-release-20260803111324
+  authority_grant_digest: 88b7c866ab8fb7295eeadaa411c60d2c5f6162927a00aa996e7b826f69d7d707
+  authority_status_index_digest: 39ecd9d60ad144952a0fcee9f89a5225280ed701bd6792b46bfcc8d5ac59e472
+  authority_status_entry_digest: 3ecd4012c01aecf4a22210645e75a8bea2ecfac85fd4a3e697a8af1a46c59566
   latest_revocation_digest: null
-  authority_checked_at: null
-  effect_budget: null
-  cleanup_state: not_applicable
+  authority_checked_at: '2026-08-03T11:13:24Z'
+  effect_budget:
+    source_connections_max: 2
+    source_disconnections_max: 2
+    production_deployments_max: 2
+    signup_posts_max: 2
+    local_adult_contacts_max: 1
+    local_signup_leads_max: 1
+    local_sink_intents_max: 2
+    portal_accounts_max: 0
+    student_accounts_max: 0
+    external_provider_sends_or_enrollments_max: 0
+    charges_max: 0
+    variable_assignments_max: 0
+    migrations_max: 0
+    DNS_changes_max: 0
+    GHL_mutations_max: 0
+  cleanup_state: pending_git_source_deployments_disconnections_canary_and_handoff
 - lock: provider:s3-kms
   status: unclaimed
   holder_task_id: null
