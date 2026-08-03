@@ -25,6 +25,10 @@ import {
   W12_E2E_ADMIN_CSRF_TOKEN,
   W12_E2E_ADMIN_SESSION_TOKEN,
 } from './w12-portal-test-lab-session.ts';
+import {
+  VIMEO_CATALOG_E2E_STUDENT_CSRF_TOKEN,
+  VIMEO_CATALOG_E2E_STUDENT_SESSION_TOKEN,
+} from './vimeo-mishnayos-catalog-session.ts';
 
 const config = loadConfig({
   ...process.env,
@@ -147,6 +151,7 @@ if (isPortalTestLabEnabled(config)) {
   await seedW12AdminSession();
 }
 await seedContactOperationsOwnerSession();
+await seedVimeoCatalogStudentSession();
 const testClock = process.env.OT_TEST_CLOCK
   ? () => new Date(String(process.env.OT_TEST_CLOCK))
   : undefined;
@@ -616,6 +621,45 @@ async function seedContactOperationsOwnerSession() {
       ownerUserKey,
       sha256(CONTACT_OPERATIONS_E2E_OWNER_SESSION_TOKEN),
       sha256('contact-operations-owner-csrf-local-only'),
+      new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+      Number(row.security_version ?? 1),
+    ],
+  );
+}
+
+async function seedVimeoCatalogStudentSession() {
+  const user = await pool.query(
+    `SELECT security_version
+       FROM onetime.account_users
+      WHERE account_key = $1
+        AND product_key = $2
+        AND user_key = $3
+      LIMIT 1`,
+    [config.accountKey, config.productKey, studentUserKey],
+  );
+  const row = user.rows[0];
+  if (!row) throw new Error('missing Vimeo catalog browser Student');
+  await pool.query(
+    `INSERT INTO onetime.user_sessions
+       (session_key, account_key, product_key, user_key, token_hash, csrf_token_hash,
+        user_agent_hash, ip_hash, expires_at, rotated_from_session_key, security_version,
+        assurance_method, assurance_at)
+     VALUES ($1,$2,$3,$4,$5,$6,NULL,NULL,$7,NULL,$8,'password',now())
+     ON CONFLICT (session_key)
+     DO UPDATE SET token_hash = EXCLUDED.token_hash,
+                   csrf_token_hash = EXCLUDED.csrf_token_hash,
+                   expires_at = EXCLUDED.expires_at,
+                   revoked_at = NULL,
+                   security_version = EXCLUDED.security_version,
+                   assurance_method = 'password',
+                   assurance_at = now()`,
+    [
+      'sess_vimeo_catalog_student',
+      config.accountKey,
+      config.productKey,
+      studentUserKey,
+      sha256(VIMEO_CATALOG_E2E_STUDENT_SESSION_TOKEN),
+      sha256(VIMEO_CATALOG_E2E_STUDENT_CSRF_TOKEN),
       new Date(Date.now() + 60 * 60 * 1000).toISOString(),
       Number(row.security_version ?? 1),
     ],
