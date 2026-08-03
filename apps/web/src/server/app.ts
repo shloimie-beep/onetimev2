@@ -291,6 +291,7 @@ import {
   createPostgresV21AdultSessionRuntime,
   type V21AdultSessionRuntime,
 } from './features/auth/v21-adult-session.ts';
+import { databaseInstant } from './features/auth/database-instant.ts';
 import {
   createFamilySignupRouter,
   familySignupFeatureRegistration,
@@ -5926,10 +5927,7 @@ async function reserveV21LoginAttempt(input: {
         ],
       );
       const row = result.rows[0];
-      const reservedResetAt = new Date(String(row?.reset_at));
-      if (!Number.isFinite(reservedResetAt.getTime())) {
-        throw new Error('The login-attempt reservation returned an invalid reset time.');
-      }
+      const reservedResetAt = databaseInstant(row?.reset_at, 'Login-attempt reservation');
       reservations.push({ key, resetAt: reservedResetAt });
       if (Number(row?.count ?? 0) <= budget.limit) continue;
       await releaseV21LoginReservations(db, reservations, input.now);
@@ -5973,7 +5971,7 @@ async function releaseV21LoginReservations(
   const released = new Map(
     result.rows.map((row) => [
       String(row.budget_key),
-      { count: Number(row.count), resetAt: new Date(String(row.reset_at)) },
+      { count: Number(row.count), resetAt: databaseInstant(row.reset_at, 'Login-attempt release') },
     ]),
   );
   for (const reservation of reservations) {
