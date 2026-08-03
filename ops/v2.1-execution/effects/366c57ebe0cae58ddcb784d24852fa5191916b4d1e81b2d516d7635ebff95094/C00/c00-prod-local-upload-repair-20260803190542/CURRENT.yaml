@@ -1,0 +1,14 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prod-local-upload-repair-20260803190542
+current_event_sequence: 1
+current_event_state: RESERVED
+current_event_path: ops/v2.1-execution/effects/366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094/C00/c00-prod-local-upload-repair-20260803190542/events/001-RESERVED.yaml
+current_event_digest: 68e867251c39edf243534ce48bc6c9835d2c6acfa102575b6210b2d9837c66f7
+candidate_digest: 366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094
+repository_source_sha: a64d9052305e6a0a31cc9bf3268fb634000c8f8a
+authority_id: c00-prod-local-upload-repair-20260803190542
+lock_lease_id: 399e3a47-3316-4aa6-be71-4bec1611ec74
+fencing_token: fence-a3e859ca-4080-471d-bebb-15572c412280
+updated_at: '2026-08-03T19:05:42Z'
+immutable_event_chain: true

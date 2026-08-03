@@ -984,14 +984,14 @@ authorities:
     grant_digest: 525e1c0caa6902d1d60435d8d1a31e788952fa19de8d3dbb022bc3ca7ac0ace3
     source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
     predecessor_authority_id: c00-prod-canary-restoration-20260803175056
-    status: active
+    status: consumed
     expires_at: '2026-08-03T20:16:16Z'
     latest_revocation_path: null
     latest_revocation_digest: null
     provider_lock: production:deployment
     provider_lock_lease_id: 49245f79-0d76-4f53-85ce-84ea68c17f01
     fencing_token: fence-59b0975a-0ef4-42fb-a118-430a35049fab
-    effect_authority_usable: true
+    effect_authority_usable: false
     candidate_binding_status: exact_frozen_three_file_login_timestamp_repair
     candidate_digest: 366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094
     candidate_manifest_commit_sha: 8b1d9c3c277da59ea7d372a5b491a1ce0bf65879
@@ -1008,6 +1008,34 @@ authorities:
     lock_released_at: '2026-08-03T18:57:00Z'
     checked_at: '2026-08-03T18:57:00Z'
     state_based_on_control_head_sha: 4de45778d9e579474ec6d18181cbad73c29abd67
+  c00-prod-local-upload-repair-20260803190542:
+    schema_version: 1
+    execution_id: OT-V21-PRODUCTION
+    authority_id: c00-prod-local-upload-repair-20260803190542
+    authority_kind: derived_candidate_bound_exact_clean_local_upload_and_protected_existing_fixture_canary
+    grant_digest: 1d8fcd62711f11ed9df64fb1c6787098a8221acb9826fff68f42275b5e868516
+    source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+    predecessor_authority_id: c00-prod-login-timestamp-repair-20260803184616
+    status: active
+    expires_at: '2026-08-03T20:35:42Z'
+    latest_revocation_path: null
+    latest_revocation_digest: null
+    provider_lock: production:deployment
+    provider_lock_lease_id: 399e3a47-3316-4aa6-be71-4bec1611ec74
+    fencing_token: fence-a3e859ca-4080-471d-bebb-15572c412280
+    effect_authority_usable: true
+    candidate_binding_status: exact_frozen_three_file_login_timestamp_repair_clean_local_archive
+    candidate_digest: 366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094
+    candidate_manifest_commit_sha: 8b1d9c3c277da59ea7d372a5b491a1ce0bf65879
+    repository_source_sha: a64d9052305e6a0a31cc9bf3268fb634000c8f8a
+    source_branch: codex/ot-live-progressive-portal-20260803
+    maximum_effect_count: 10
+    prerequisite_review: exact_live_ca442_images_both_services_clean_local_a64_remote_head_Dockerfile_manifest_hashes_three_file_auth_delta_tests_build_secret_scan_migration_inventory_unchanged_one_Parent_household_zero_Student_sink_controls
+    disposition: reserved_for_two_exact_clean_local_archive_deployments_existing_fixture_Student_canary_and_exact_prior_deploymentRollback_only
+    status_entry_path: ops/v2.1-execution/authority/366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094/C00/c00-prod-local-upload-repair-20260803190542/STATUS-ENTRY.yaml
+    status_entry_digest: 9a5d91aec0b6731abdeffa11bf8262c1cc38fc2776b61154fa3f60f49281eb93
+    checked_at: '2026-08-03T19:05:42Z'
+    state_based_on_control_head_sha: b1b9ceea1f9892359fc0d18045bc43b04e16e49d
 entry_schema: templates/AUTHORITY-STATUS-ENTRY.yaml
 revocation_schema: templates/AUTHORITY-REVOCATION-RECORD.yaml
 rule: C00 records externally granted/revoked/expired authority; it does not grant it. Every update binds the known

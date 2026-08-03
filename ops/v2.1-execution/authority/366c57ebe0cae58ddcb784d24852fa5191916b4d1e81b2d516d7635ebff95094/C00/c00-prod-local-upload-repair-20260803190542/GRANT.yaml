@@ -1,0 +1,103 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+authority_id: c00-prod-local-upload-repair-20260803190542
+authority_kind: derived_candidate_bound_exact_clean_local_upload_and_protected_existing_fixture_canary
+task_id: C00
+candidate_digest: 366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094
+candidate_binding_status: exact_frozen_three_file_login_timestamp_repair_clean_local_archive
+candidate_manifest_commit_sha: 8b1d9c3c277da59ea7d372a5b491a1ce0bf65879
+repository_source_sha: a64d9052305e6a0a31cc9bf3268fb634000c8f8a
+source_branch: codex/ot-live-progressive-portal-20260803
+canonical_path: ops/v2.1-execution/authority/366c57ebe0cae58ddcb784d24852fa5191916b4d1e81b2d516d7635ebff95094/C00/c00-prod-local-upload-repair-20260803190542/GRANT.yaml
+source_grant_id: ot-v21-production-source-grant-20260729
+source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+source_approval_evidence_path: ops/v2.1-execution/authority/none/C00/ot-v21-production-source-grant-20260729/APPROVAL.md
+source_approval_evidence_digest: 8c95a959f79aba0ac34fa0fcb6cb463cceac9aeb2bb52da1603d39db3e2c33c2
+predecessor_authority_id: c00-prod-login-timestamp-repair-20260803184616
+predecessor_terminal_event_digest: 2c4c0015a23cc8f209072512130acb7be081ffc2d27306b5af4ff34009e94648
+grant_status_at_issue: active
+approved_by: Shloimie Dratler
+approved_at: '2026-08-03T19:05:42Z'
+recorded_at: '2026-08-03T19:05:42Z'
+expires_at: '2026-08-03T20:35:42Z'
+scope:
+  provider: One Time application on Railway production
+  workspace_id: d2428a88-aa7e-4369-b396-72060bf720f4
+  project_id: ce55ef20-1418-4ad3-aafa-f877fb992dc8
+  environment_id: f911acfc-e206-44df-a569-9d69d709b94b
+  web_service_id: d175ad94-5e3c-41c2-8cbc-daa1a299077d
+  worker_service_id: 742f60ed-dc2f-4321-85d0-019003d4e9b9
+  current_web_deployment_id: ad3a52fc-902a-41ca-b480-ca92bc3022d8
+  current_worker_deployment_id: 48045084-211a-4082-bbc3-9c03830b80ff
+  current_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+  target_source_sha: a64d9052305e6a0a31cc9bf3268fb634000c8f8a
+  exact_clean_worktree_path: C:/Users/User/Documents/Codex/2026-07-28/files-mentioned-by-the-user-one/work/ot-live-progressive-portal-20260803
+  railway_manifest_sha256: 53c89d863cf679f62bf4911ded79ab72e6c35a0b7e462b46d7aa25cb12e32c9f
+  Dockerfile_sha256: beda32f7f842d9412552ecfafb8fb0bcb7faab6eb90dde310c658d9bacdf73f5
+  exact_latest_migration_id: 2259_vimeo_mishnayos_catalog_adoption
+  exact_migration_inventory_digest: abdbfd5837ed54751e55458a3a79886ca9799e3d738344b40d6f95aad621a5ea
+  application_origin: https://app.onetimeonetime.com
+  fixture_id: c00_prod_portal_canary_8a902dd9_20260803a
+  fixture_destination_sha256: 668a11adfc0081d872327eb23b0248cee690cb96270ecaa63d8087401b33ff21
+fencing_token: fence-a3e859ca-4080-471d-bebb-15572c412280
+lock: production:deployment
+holder_claim_id: ae8b63ad-fede-44be-b665-9c9119f9a9e5
+provider_lock_lease_id: 399e3a47-3316-4aa6-be71-4bec1611ec74
+allowed_operation: from exact clean source a64 worktree only, use Railway deployment up local archive once for the exact web service and once for the exact worker service with explicit project environment service and candidate-bound message; accept only Dockerfile manifests, successful running instances, new image digests, public health readiness version, bounded clean logs, and unchanged migration state; then resume only the existing protected fixture by logging in the existing Parent, creating one Parent-managed Student, and exercising bounded Student credential rotation, session revocation, suspension, restoration, and relogin lifecycle
+maximum_effect_count: 10
+maximum_effect_value: two_exact_local_archive_deployments_one_existing_fixture_Student_canary_and_two_exact_prior_image_rollbacks_only_if_required
+approved_fixture_ids:
+  - c00_prod_portal_canary_8a902dd9_20260803a
+operator_identity: C00
+effect_budget:
+  database_migrations_max: 0
+  additional_parent_accounts_created_or_updated_max: 0
+  additional_households_created_or_updated_max: 0
+  student_accounts_created_or_updated_max: 1
+  student_credential_rotations_max: 1
+  student_lifecycle_transitions_max: 4
+  source_connections_or_disconnections_max: 0
+  local_archive_production_deployments_max: 2
+  variable_mutations_max: 0
+  rollback_to_exact_prior_deployments_max: 2
+  Railway_or_DNS_domain_mutations_max: 0
+  external_provider_sends_or_enrollments_max: 0
+  GHL_mutations_max: 0
+  charges_max: 0
+  broad_audience_activations_max: 0
+prerequisite_review:
+  control_head_sha: b1b9ceea1f9892359fc0d18045bc43b04e16e49d
+  candidate_manifest_commit_sha: 8b1d9c3c277da59ea7d372a5b491a1ce0bf65879
+  target_worktree_and_remote_head: clean_a64d9052305e6a0a31cc9bf3268fb634000c8f8a
+  source_delta: three_files_login_timestamp_precision_only
+  focused_auth_tests: 5_passed_1_native_opt_in_skipped
+  typecheck_lint_prettier_build_secret_scan: passed
+  migration_inventory: unchanged_90_files_90_live_ledger_rows_pending_zero
+  live_web_status_source_and_image: SUCCESS_ca442_sha256_aec85be7
+  live_worker_status_source_and_image: SUCCESS_ca442_sha256_4df4d1b9
+  prior_wrong_source_attempt: terminal_FAILED_ROLLED_BACK
+  live_fixture_state: one_Parent_one_household_zero_Student_failed_login_session_revoked
+  delivery_controls: sink_sink_sink_resend_false_highlevel_disabled_real_transports_false
+  app_domain_TLS_health: valid_HTTP_200
+  broad_activation_authorized: false
+rollback_and_reconciliation:
+  - record an immutable reservation before the first Railway local upload effect
+  - recheck clean exact a64 worktree manifest and Dockerfile hashes before each upload
+  - use only deployment_up_local_archive and never from_source down source_connect source_disconnect or variable mutation
+  - attach the exact candidate source and digest in the CLI deployment message and require returned local archive metadata and Dockerfile service manifest
+  - leave the current successful ca442 deployment active if any replacement build fails before cutover
+  - if a successful replacement cuts over but fails health or protected login, use only deploymentRollback on the exact current deployment IDs named above and terminally reconcile
+  - preserve the existing Parent and household and create no additional Parent or household and no Student email
+  - require exact candidate SUCCESS health readiness clean bounded logs valid app TLS application login and preserved preregistration truth
+  - require zero variable email WhatsApp Telegram payment GHL audience DNS or broad activation effect
+  - release the lock only after exact deployment canary and provider readback reconciliation
+stop_conditions:
+  - source grant this authority lock lease or fencing token is revoked expired absent or mismatched
+  - either current service differs from healthy ca442 before the first local upload or the clean worktree or remote head differs from exact a64
+  - either uploaded deployment does not report the exact candidate-bound CLI message Dockerfile manifest or expected service identity
+  - migration inventory or live ledger differs from 90 rows pending zero and exact 2259 position 90
+  - the existing fixture differs from one Parent one household zero Student before Student creation
+  - app TLS health or Parent login is not valid before Student creation
+  - the operation would migrate mutate variables send enroll mutate GHL charge touch a customer collect a Student email modify DNS connect a source or change the disputed public cutoff
+contains_secret: false
+immutable: true
