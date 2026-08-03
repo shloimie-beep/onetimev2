@@ -1,0 +1,14 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prod-app-tls-verification-20260803171615
+current_event_sequence: 1
+current_event_state: RESERVED
+current_event_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-app-tls-verification-20260803171615/events/001-RESERVED.yaml
+current_event_digest: 64487e938cbf6d7c34a83f881bfe59e595f643eca3250c8813945468bd1f1516
+candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+authority_id: c00-prod-app-tls-verification-20260803171615
+lock_lease_id: 7d0bd091-6623-4255-a3a2-92fbe54bbd0d
+fencing_token: fence-83e97c67-0d6c-45ca-9e85-e442e35eb93c
+updated_at: '2026-08-03T17:16:15Z'
+immutable_event_chain: true

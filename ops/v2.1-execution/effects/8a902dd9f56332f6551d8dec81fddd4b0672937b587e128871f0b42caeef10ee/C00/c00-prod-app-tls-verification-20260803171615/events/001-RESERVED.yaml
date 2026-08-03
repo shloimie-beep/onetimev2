@@ -1,0 +1,48 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: c00-prod-app-tls-verification-20260803171615
+event_sequence: 1
+previous_event_digest: none
+state: RESERVED
+task_id: C00
+canonical_event_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-app-tls-verification-20260803171615/events/001-RESERVED.yaml
+current_pointer_path: ops/v2.1-execution/effects/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-app-tls-verification-20260803171615/CURRENT.yaml
+candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+candidate_manifest_commit_sha: ca930d456f3739af5ce3303f4fe880325136d56a
+repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+authority_id: c00-prod-app-tls-verification-20260803171615
+authority_grant_digest: f1f9019e1cf44c0000dda2a081354986bb2ae096b15fec3f4eacf9a04c701783
+authority_status_index_digest: 41fe9fed78d0de858582c887bbf9d2ea082a2fa0fcc1a46afba87384bf7639b4
+authority_status_entry_digest: b7615d8e883dbf3c203ff6190b58ebc4ad196e186f4f97411895a798b6340ddc
+latest_revocation_digest: none
+lock: infra:dns
+lock_lease_id: 7d0bd091-6623-4255-a3a2-92fbe54bbd0d
+holder_claim_id: 12bc9c9a-a8ee-474c-9250-ac39565dac37
+fencing_token: fence-83e97c67-0d6c-45ca-9e85-e442e35eb93c
+provider_identity:
+  provider: GoDaddy
+  zone: onetimeonetime.com
+  record_name: _railway-verify.app
+  record_type: TXT
+operation: create_one_exact_Railway_ownership_TXT_then_verify_DNS_certificate_TLS_and_app_login
+effect_budget:
+  DNS_records_created_max: 1
+  DNS_records_updated_max: 0
+  other_DNS_or_provider_effects_max: 0
+provider_readback_before:
+  provider_account_and_zone: confirmed
+  authoritative_nameservers: ns37.domaincontrol.com_and_ns38.domaincontrol.com
+  app_CNAME: app_to_3vp17vx5.up.railway.app_exact_publicly_propagated
+  Railway_domain_id: 9f1f5d7a-1176-4f67-aa53-5ebe59234dad
+  Railway_domain_sync: ACTIVE
+  Railway_verified: false
+  Railway_certificate_status: CERTIFICATE_STATUS_TYPE_VALIDATING_OWNERSHIP
+  exact_required_record_name: _railway-verify.app
+  exact_required_record_type: TXT
+  exact_required_record_value: railway-verify=0cf7b735fcca11fec7e7296bfbc9d0d8ef46e8f969cdad690ef15cefb2daa083
+  existing_join_domain_and_record: ACTIVE_preserve_unchanged
+reserved_at: '2026-08-03T17:16:15Z'
+lease_expires_at: '2026-08-03T18:11:15Z'
+state_based_on_head_sha: 1f4e91b47b41a7befc4ade1f0788e09e7ca239f6
+contains_secret: false
+immutable: true

@@ -1,0 +1,80 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+authority_id: c00-prod-app-tls-verification-20260803171615
+authority_kind: derived_candidate_bound_exact_Railway_custom_domain_ownership_TXT
+task_id: C00
+candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+candidate_binding_status: exact_candidate_active_Railway_app_domain_and_CNAME_propagated_TLS_waiting_on_explicit_TXT
+candidate_manifest_commit_sha: ca930d456f3739af5ce3303f4fe880325136d56a
+repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+canonical_path: ops/v2.1-execution/authority/8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee/C00/c00-prod-app-tls-verification-20260803171615/GRANT.yaml
+source_grant_id: ot-v21-production-source-grant-20260729
+source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+source_approval_evidence_path: ops/v2.1-execution/authority/none/C00/ot-v21-production-source-grant-20260729/APPROVAL.md
+source_approval_evidence_digest: 8c95a959f79aba0ac34fa0fcb6cb463cceac9aeb2bb52da1603d39db3e2c33c2
+predecessor_authority_id: c00-prod-progressive-dns-20260803162734
+paired_recovery_authority_id: c00-prod-progressive-recovery-20260803170559
+grant_status_at_issue: active
+approved_by: Shloimie Dratler
+scope:
+  provider: GoDaddy canonical DNS account
+  zone: onetimeonetime.com
+  authoritative_nameservers: ns37.domaincontrol.com_and_ns38.domaincontrol.com
+  Railway_project_id: ce55ef20-1418-4ad3-aafa-f877fb992dc8
+  Railway_environment_id: f911acfc-e206-44df-a569-9d69d709b94b
+  Railway_web_service_id: d175ad94-5e3c-41c2-8cbc-daa1a299077d
+  Railway_domain_id: 9f1f5d7a-1176-4f67-aa53-5ebe59234dad
+  Railway_domain: app.onetimeonetime.com
+  exact_record_name: _railway-verify.app
+  exact_record_fqdn: _railway-verify.app.onetimeonetime.com
+  exact_record_type: TXT
+  exact_record_value: railway-verify=0cf7b735fcca11fec7e7296bfbc9d0d8ef46e8f969cdad690ef15cefb2daa083
+  existing_app_CNAME: app_to_3vp17vx5.up.railway.app_preserve_unchanged
+  existing_join_record_and_domain: preserve_unchanged
+fencing_token: fence-83e97c67-0d6c-45ca-9e85-e442e35eb93c
+lock: infra:dns
+provider_lock_lease_id: 7d0bd091-6623-4255-a3a2-92fbe54bbd0d
+allowed_operation: in the confirmed onetimeonetime.com GoDaddy zone, create only the exact Railway-returned _railway-verify.app TXT value above; then verify GoDaddy, authoritative and public TXT readback, Railway ownership verification, certificate issuance, valid app TLS, and application login; never modify app CNAME, join, apex, mail, Resend, or any unrelated record
+maximum_effect_count: 1
+maximum_effect_value: one_exact_Railway_verification_TXT_zero_other_DNS_or_provider_changes
+approved_fixture_ids: []
+operator_identity: C00
+approved_at: '2026-08-03T17:16:15Z'
+recorded_at: '2026-08-03T17:16:15Z'
+expires_at: '2026-08-03T18:11:15Z'
+effect_budget:
+  DNS_records_created_max: 1
+  DNS_records_updated_max: 0
+  DNS_records_deleted_max: 1
+  allowed_name: _railway-verify.app
+  allowed_type: TXT
+  allowed_value: railway-verify=0cf7b735fcca11fec7e7296bfbc9d0d8ef46e8f969cdad690ef15cefb2daa083
+  other_provider_or_customer_effects_max: 0
+prerequisite_review:
+  control_head_sha: 1f4e91b47b41a7befc4ade1f0788e09e7ca239f6
+  candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+  provider_identity: confirmed_signed_in_GoDaddy_account_and_owned_zone
+  current_app_CNAME: exact_and_publicly_propagated
+  Railway_domain_sync: ACTIVE
+  Railway_DNS_status: DNS_RECORD_STATUS_PROPAGATED
+  Railway_verified: false
+  Railway_certificate_status: CERTIFICATE_STATUS_TYPE_VALIDATING_OWNERSHIP
+  Railway_exact_additional_DNS_instruction: TXT__railway-verify.app_with_bound_value
+  existing_join_domain: ACTIVE_VALID_preserve_unchanged
+  protected_canary_state: one_Parent_household_created_zero_Students_waiting_on_app_TLS
+  broad_activation_authorized: false
+rollback_and_reconciliation:
+  - record the exact GoDaddy TXT identity or immutable before-and-after tuple
+  - delete only the exact created verification TXT if rollback is required
+  - preserve app CNAME, join, apex, mail, and every unrelated record
+  - verify authoritative nameservers, public TXT, Railway verified state, valid certificate, HTTPS health, and app login before release
+  - release the lock only after exact DNS and Railway readback reconciliation
+stop_conditions:
+  - source grant is revoked or expired
+  - the paired recovery authority or production deployment lock is absent, expired, or mismatched
+  - the confirmed GoDaddy account, zone, nameservers, app CNAME, Railway domain ID, or current record set differs
+  - _railway-verify.app already exists with a different value
+  - another effect holds infra:dns or production:deployment
+  - the operation would edit an existing record, modify app CNAME, join, apex, mail, Resend, or create anything except the one exact TXT
+contains_secret: false
+immutable: true

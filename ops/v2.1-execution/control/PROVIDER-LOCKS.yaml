@@ -136,26 +136,26 @@ locks:
 - lock: infra:dns
   status: claimed
   holder_task_id: C00
-  holder_claim_id: 13222419-e93c-42f4-a437-d8bcdc191f9a
-  lease_id: 639857f4-e808-4bc6-93c2-e65acc065fd9
-  fencing_token: fence-a437d346-02fe-43ec-aa51-2d7524d96460
+  holder_claim_id: 12bc9c9a-a8ee-474c-9250-ac39565dac37
+  lease_id: 7d0bd091-6623-4255-a3a2-92fbe54bbd0d
+  fencing_token: fence-83e97c67-0d6c-45ca-9e85-e442e35eb93c
   canonical_candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
   provider_identity: godaddy:canonical-account:onetimeonetime.com
-  authorized_operation: create_only_app_CNAME_from_exact_new_Railway_domain_target_then_verify_and_reconcile
-  claimed_at: '2026-08-03T16:27:34Z'
-  lease_expires_at: '2026-08-03T17:22:34Z'
-  authority_id: c00-prod-progressive-dns-20260803162734
-  authority_grant_digest: bf3bb7bbdf3c5b6b59f148dea702528be54aec03985143b62eaf56e7d75d08ff
-  authority_status_index_digest: c0ec055fbfc52b19010affb0e9cad8517821e6024b704214034750336a0f9dbf
-  authority_status_entry_digest: 9fbe2611cba3f06858607b5375eea7dff9e5a712e35ad5fbb49df3fd83d4c015
+  authorized_operation: create_only_exact_Railway_returned__railway-verify.app_TXT_then_TLS_and_login_reconciliation
+  claimed_at: '2026-08-03T17:16:15Z'
+  lease_expires_at: '2026-08-03T18:11:15Z'
+  authority_id: c00-prod-app-tls-verification-20260803171615
+  authority_grant_digest: f1f9019e1cf44c0000dda2a081354986bb2ae096b15fec3f4eacf9a04c701783
+  authority_status_index_digest: 41fe9fed78d0de858582c887bbf9d2ea082a2fa0fcc1a46afba87384bf7639b4
+  authority_status_entry_digest: b7615d8e883dbf3c203ff6190b58ebc4ad196e186f4f97411895a798b6340ddc
   latest_revocation_digest: none
-  authority_checked_at: '2026-08-03T16:27:34Z'
+  authority_checked_at: '2026-08-03T17:16:15Z'
   effect_budget:
     DNS_records_created_max: 1
     DNS_records_updated_max: 0
-    allowed_name_type: app_CNAME
-    allowed_value_source: exact_new_Railway_domain_readback
-  cleanup_state: pending_exact_record_readback_and_reconciliation
+    allowed_name_type: _railway-verify.app_TXT
+    allowed_value_source: exact_Railway_domain_status_readback
+  cleanup_state: pending_exact_TXT_TLS_and_application_login_reconciliation
 - lock: production:deployment
   status: claimed
   holder_task_id: C00

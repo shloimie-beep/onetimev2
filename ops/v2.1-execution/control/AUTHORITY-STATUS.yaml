@@ -755,23 +755,50 @@ authorities:
     authority_kind: derived_candidate_bound_exact_production_app_dns_binding
     grant_digest: bf3bb7bbdf3c5b6b59f148dea702528be54aec03985143b62eaf56e7d75d08ff
     source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
-    status: active
+    status: consumed
     expires_at: '2026-08-03T17:22:34Z'
     latest_revocation_path: null
     latest_revocation_digest: null
     provider_lock: infra:dns
     provider_lock_lease_id: 639857f4-e808-4bc6-93c2-e65acc065fd9
     fencing_token: fence-a437d346-02fe-43ec-aa51-2d7524d96460
-    effect_authority_usable: true
+    effect_authority_usable: false
     candidate_binding_status: exact_frozen_candidate_bound_from_hosted_pg18_and_domain_preflight
     candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
     repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
     paired_authority_id: c00-prod-progressive-railway-20260803162734
     maximum_effect_count: 1
     prerequisite_review: canonical_GoDaddy_zone_confirmed_app_absent_Railway_target_must_be_read_back_after_creation
-    disposition: reserved_not_yet_attempted
-    checked_at: '2026-08-03T16:27:34Z'
-    state_based_on_control_head_sha: 5d80c3413bfa138430af99e198a67ad5e0257246
+    disposition: exact_app_CNAME_created_and_propagated_scope_consumed_Railway_explicitly_requires_separate_ownership_TXT_successor_bound
+    successor_authority_id: c00-prod-app-tls-verification-20260803171615
+    lock_released_at: '2026-08-03T17:16:15Z'
+    checked_at: '2026-08-03T17:16:15Z'
+    state_based_on_control_head_sha: 1f4e91b47b41a7befc4ade1f0788e09e7ca239f6
+  c00-prod-app-tls-verification-20260803171615:
+    schema_version: 1
+    execution_id: OT-V21-PRODUCTION
+    authority_id: c00-prod-app-tls-verification-20260803171615
+    authority_kind: derived_candidate_bound_exact_Railway_custom_domain_ownership_TXT
+    grant_digest: f1f9019e1cf44c0000dda2a081354986bb2ae096b15fec3f4eacf9a04c701783
+    source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+    predecessor_authority_id: c00-prod-progressive-dns-20260803162734
+    paired_authority_id: c00-prod-progressive-recovery-20260803170559
+    status: active
+    expires_at: '2026-08-03T18:11:15Z'
+    latest_revocation_path: null
+    latest_revocation_digest: null
+    provider_lock: infra:dns
+    provider_lock_lease_id: 7d0bd091-6623-4255-a3a2-92fbe54bbd0d
+    fencing_token: fence-83e97c67-0d6c-45ca-9e85-e442e35eb93c
+    effect_authority_usable: true
+    candidate_binding_status: exact_candidate_active_Railway_app_domain_and_CNAME_propagated_TLS_waiting_on_explicit_TXT
+    candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
+    repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+    maximum_effect_count: 1
+    prerequisite_review: GoDaddy_zone_confirmed_app_CNAME_exact_Railway_ACTIVE_PROPAGATED_verified_false_exact_TXT_instruction_read_back
+    disposition: reserved_for_one_exact_Railway_ownership_TXT_and_TLS_reconciliation
+    checked_at: '2026-08-03T17:16:15Z'
+    state_based_on_control_head_sha: 1f4e91b47b41a7befc4ade1f0788e09e7ca239f6
 entry_schema: templates/AUTHORITY-STATUS-ENTRY.yaml
 revocation_schema: templates/AUTHORITY-REVOCATION-RECORD.yaml
 rule: C00 records externally granted/revoked/expired authority; it does not grant it. Every update binds the known
