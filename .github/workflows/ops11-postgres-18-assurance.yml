@@ -76,10 +76,17 @@ jobs:
       - name: Run native Parent-created Student identity projection proof
         env:
           P12_NATIVE_POSTGRES_DISPOSABLE: 'true'
-          P12_NATIVE_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/postgres
-        run: >-
-          npx vitest run
-          apps/web/src/server/features/portals/parent-household/postgres-repository.test.ts
+          PGHOST: 127.0.0.1
+          PGPORT: 5432
+          PGDATABASE: postgres
+          PGUSER: postgres
+          PGPASSWORD: postgres
+        run: |
+          printf -v P12_NATIVE_DATABASE_URL '%s://%s:%s@%s:%s/%s' \
+            postgresql "$PGUSER" "$PGPASSWORD" "$PGHOST" "$PGPORT" "$PGDATABASE"
+          export P12_NATIVE_DATABASE_URL
+          npx vitest run \
+            apps/web/src/server/features/portals/parent-household/postgres-repository.test.ts
 
       - name: Run OT-37 harness on PostgreSQL 18
         env:
