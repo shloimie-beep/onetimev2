@@ -1,0 +1,39 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-001.03
+authority_id: c00-prod-operator-fixture-data-successor-20260804111611
+candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
+repository_source_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
+fixture_design_source_sha: a6ee2f7ab41196a63d175a1dbcc2fe897a3e088b
+lease_id: e8eff0c0-098e-4a1d-b520-7dff2e60bc99
+fencing_token: fence-33ed6005-69f1-4553-a209-fe7ca809f7a1
+disposition: FAILED_ROLLED_BACK_ZERO_COMMITTED_EFFECTS
+connection_succeeded: true
+begin_serializable_succeeded: true
+transaction_scoped_advisory_lock_succeeded: true
+first_failing_statement: exact_PREFLIGHT_SQL
+postgresql_error_code: 42P08
+sanitized_root_cause: protected_expected_active_legacy_session_hash_parameter_4_lacked_an_unambiguous_text_cast
+preflight_row_returned: false
+insert_statements_attempted: 0
+explicit_rows_acknowledged: 0
+trigger_derived_effects: 0
+total_row_effects: 0
+commit_attempted: 0
+rollback_attempted: 1
+rollback_acknowledged: true
+post_rollback_readback:
+  asserted: false
+  reason: preflight_produced_no_row_and_grant_forbade_inference_from_earlier_readback
+effects:
+  transient_advisory_locks_acquired_and_released: 1
+  committed_database_rows: 0
+  migrations: 0
+  legacy_or_session_rows: 0
+  browser_Student_customer_provider_deployment_DNS_send_or_charge: 0
+  post_commit_compensation: 0
+unresolved_effects: 0
+source_patch_or_data_retry_attempted: false
+recorded_at: '2026-08-04T11:30:13Z'
+contains_secret: false
+immutable: true

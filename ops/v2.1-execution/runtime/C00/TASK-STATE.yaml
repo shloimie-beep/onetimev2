@@ -14,7 +14,7 @@ claim_time: '2026-08-04T09:12:43Z'
 claim_id: f514d50f-081c-48e0-8906-1c6e872519b0
 lease_expires_at: '2026-08-04T12:51:01Z'
 lease_released_at: null
-last_heartbeat_at: '2026-08-04T11:16:11Z'
+last_heartbeat_at: '2026-08-04T11:30:13Z'
 controller_authorization_sha: 65d343162df0bb404ade1e4d1460f0ad808411ef
 ready_entry_payload_digest: null
 state_based_on_head_sha: 65d343162df0bb404ade1e4d1460f0ad808411ef
@@ -62,9 +62,15 @@ ot_live_terminal_convergence_resume_20260804:
     data_successor_authority_id: c00-prod-operator-fixture-data-successor-20260804111611
     data_successor_claim_lease_fence: 2fc39977-71c7-4bd4-9aaf-d54267d99ef3_e8eff0c0-098e-4a1d-b520-7dff2e60bc99_fence-33ed6005-69f1-4553-a209-fe7ca809f7a1
     data_successor_grant_digest: a88a67537a939f1fd6a8c1dce95f27261e4c824e19e55fe0de8a711ebdc8d502
-    data_successor_status_entry_digest: e77e64a39227e76c0e11d53cf73a11fb378de7946374156e154b2017ba56e7c2
-    data_successor_authority_status_index_digest: 8d5d51c921bb6201dacebac49569c9671ec3d01d451e3a594611af5cb6ea4e33
-    next_boundary: execute_exact_ten_effect_data_successor_then_reconcile_then_separate_signed_in_Admin_Parent_Admin_canary_authority
+    data_successor_status_entry_digest: a3b121f154952d970f43be7f7ef634f745e189ecdff9d64aa709dce4c55471b8
+    data_successor_authority_status_index_digest: 80626df14b1ea1eb1bbcf1e428a3c11961e315887a0026b6f857568bdaa6440d
+    data_successor_terminal_event_digest: 8981022b331a1140c47167ef2cbec3f69dc43cb0b7d9b1bf727f39bf70ced3dc
+    data_successor_terminal_disposition: FAILED_ROLLED_BACK_ZERO_COMMITTED_EFFECTS
+    data_successor_postgresql_error_code: 42P08
+    data_successor_lock_released_at: '2026-08-04T11:30:13Z'
+    fixture_parameter_cast_correction_claim_id: 661628f9-2abb-4587-9885-b2b349e25157
+    fixture_parameter_cast_correction_claim_digest: aa9ab02bde31d79550c678f65a69dc6a0beae866f3bb7befd854de99722537af
+    next_boundary: correct_and_verify_parameter_4_text_cast_then_issue_fresh_production_data_successor_then_reconcile_then_separate_signed_in_Admin_Parent_Admin_canary_authority
     provider_database_deploy_effects: 0_0_0
   OT_LIVE_002_02:
     owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a

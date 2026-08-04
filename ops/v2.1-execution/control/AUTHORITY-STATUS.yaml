@@ -1289,14 +1289,14 @@ authorities:
     authority_kind: derived_candidate_bound_exact_operator_fixture_production_data_canonical_state_successor
     grant_digest: a88a67537a939f1fd6a8c1dce95f27261e4c824e19e55fe0de8a711ebdc8d502
     source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
-    status: active
+    status: consumed
     expires_at: '2026-08-04T12:01:11Z'
     latest_revocation_path: null
     latest_revocation_digest: null
     provider_lock: production:data
     provider_lock_lease_id: e8eff0c0-098e-4a1d-b520-7dff2e60bc99
     fencing_token: fence-33ed6005-69f1-4553-a209-fe7ca809f7a1
-    effect_authority_usable: true
+    effect_authority_usable: false
     candidate_binding_status: exact_deployed_frozen_candidate
     candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
     candidate_manifest_commit_sha: eb085d6e0d1a32039d6514c90c49e0b1b14a83fa
@@ -1308,7 +1308,7 @@ authorities:
     claim_path: ops/v2.1-execution/control/OT-LIVE-001.03-PRODUCTION-DATA-SUCCESSOR-CLAIM.yaml
     claim_digest: 0a038e8578b3aa4e157b881fd4bdcf62239f488636781972e2072dd4759f7b32
     status_entry_path: ops/v2.1-execution/authority/9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c/OT-LIVE-001.03/c00-prod-operator-fixture-data-successor-20260804111611/STATUS-ENTRY.yaml
-    status_entry_digest: e77e64a39227e76c0e11d53cf73a11fb378de7946374156e154b2017ba56e7c2
+    status_entry_digest: a3b121f154952d970f43be7f7ef634f745e189ecdff9d64aa709dce4c55471b8
     maximum_effect_count: 10
     explicit_rows_inserted_exact: 8
     trigger_derived_aggregate_rows_inserted_exact: 2
@@ -1316,8 +1316,18 @@ authorities:
     post_commit_compensation_rows_mutated_max: 0
     migration_legacy_session_Student_customer_provider_deployment_DNS_send_charge_effects_max: 0
     prerequisite_review: exact_deployed_candidate_zero_v21_identity_session_transition_state_one_legacy_Admin_and_session_fixture_design_a6ee2f7a_independent_29_test_canonical_state_review
-    checked_at: '2026-08-04T11:16:11Z'
-    state_based_on_control_head_sha: 72adc9020c7ca6683c7128a6f105028f6add10fe
+    disposition: FAILED_ROLLED_BACK_ZERO_COMMITTED_EFFECTS
+    terminal_event_path: ops/v2.1-execution/effects/9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c/OT-LIVE-001.03/c00-prod-operator-fixture-data-successor-20260804111611/events/001-RECONCILED.yaml
+    terminal_event_digest: 8981022b331a1140c47167ef2cbec3f69dc43cb0b7d9b1bf727f39bf70ced3dc
+    postgresql_error_code: 42P08
+    insert_statements_attempted: 0
+    committed_rows: 0
+    rollback_acknowledged: true
+    unresolved_effects: 0
+    lock_released_at: '2026-08-04T11:30:13Z'
+    successor_source_claim_id: 661628f9-2abb-4587-9885-b2b349e25157
+    checked_at: '2026-08-04T11:30:13Z'
+    state_based_on_control_head_sha: 2168bc84cb26089eff2a3a4655237836992fdc0a
 entry_schema: templates/AUTHORITY-STATUS-ENTRY.yaml
 revocation_schema: templates/AUTHORITY-REVOCATION-RECORD.yaml
 rule: C00 records externally granted/revoked/expired authority; it does not grant it. Every update binds the known

@@ -1,0 +1,34 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-001.03
+owner_thread_id: 019fc7e8-b506-7d30-a36a-4d7a9641f4fd
+claim_id: 661628f9-2abb-4587-9885-b2b349e25157
+writer_id: codex-ot-live-001-03-fixture-parameter-cast-661628f9
+status: active
+branch: codex/ot-live-001-operator-fixture-design-20260804
+base_sha: a6ee2f7ab41196a63d175a1dbcc2fe897a3e088b
+candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
+control_parent_sha: 2168bc84cb26089eff2a3a4655237836992fdc0a
+predecessor_authority_id: c00-prod-operator-fixture-data-successor-20260804111611
+predecessor_terminal_event_path: ops/v2.1-execution/effects/9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c/OT-LIVE-001.03/c00-prod-operator-fixture-data-successor-20260804111611/events/001-RECONCILED.yaml
+predecessor_terminal_event_digest: 8981022b331a1140c47167ef2cbec3f69dc43cb0b7d9b1bf727f39bf70ced3dc
+exact_paths:
+  - ops/release/ot-live-001/operator-fixture-reconciliation/fixture-reconciliation.test.ts
+  - ops/release/ot-live-001/operator-fixture-reconciliation/transaction-proposal.ts
+allowed_operation: correct_test_commit_and_normally_push_only_the_inert_preflight_parameter_4_text_cast
+required_corrections:
+  - cast_the_expected_active_legacy_session_hash_binding_parameter_4_to_text_in_every_null_and_equality_use
+  - add_a_regression_that_requires_the_unambiguous_text_cast_and_rejects_the_prior_untyped_parameter_4_form
+  - preserve_all_23_protected_bindings_alias_hash_password_canonical_state_parent_context_effect_budget_replay_and_compensation_semantics_byte_for_byte_except_required_cast_and_test
+publish_authority:
+  normal_push_to_exact_branch: true
+  force_push_amend_rebase_merge: false
+prohibitions:
+  - no_database_connection_SQL_execution_retry_migration_shared_runtime_candidate_or_application_edit
+  - no_raw_email_identifier_password_hash_session_cookie_token_or_secret_disclosure
+  - no_browser_session_provider_deployment_DNS_send_charge_customer_or_Student_effect
+  - no_inference_that_corrected_source_is_data_effect_or_compensation_authority
+issued_at: '2026-08-04T11:30:13Z'
+expires_at: '2026-08-04T12:15:13Z'
+contains_secret: false
+immutable: true
