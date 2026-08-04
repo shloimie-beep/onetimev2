@@ -1,0 +1,126 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+authority_id: c00-prod-operator-fixture-data-successor-2-20260804114208
+authority_kind: derived_candidate_bound_exact_operator_fixture_production_data_parameter_cast_successor
+task_id: OT-LIVE-001.03
+owner_thread_id: 019fc7e8-b506-7d30-a36a-4d7a9641f4fd
+candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
+candidate_binding_status: exact_deployed_frozen_candidate
+candidate_manifest_commit_sha: eb085d6e0d1a32039d6514c90c49e0b1b14a83fa
+repository_source_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
+source_branch: codex/ot-live-001-product-repair-20260804
+fixture_design_branch: codex/ot-live-001-operator-fixture-design-20260804
+fixture_design_source_sha: 72f9caceb53353f968b2e17bf584c4d340e41bb8
+fixture_design_tree_sha: cdf902d386843be6254131497e6cb25f13d89f89
+fixture_design_transaction_path: ops/release/ot-live-001/operator-fixture-reconciliation/transaction-proposal.ts
+fixture_design_terminal_path: ops/v2.1-execution/control/OT-LIVE-001.03-FIXTURE-PARAMETER-CAST-CORRECTION-TERMINAL.yaml
+fixture_design_terminal_digest: 3ed0ea59178751c526822d8218b928d14dee3c0f452a4885b338066210f46745
+canonical_path: ops/v2.1-execution/authority/9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c/OT-LIVE-001.03/c00-prod-operator-fixture-data-successor-2-20260804114208/GRANT.yaml
+predecessor_authority_id: c00-prod-operator-fixture-data-successor-20260804111611
+predecessor_terminal_event_digest: 8981022b331a1140c47167ef2cbec3f69dc43cb0b7d9b1bf727f39bf70ced3dc
+predecessor_insert_statements_committed_rows_unresolved_effects: 0_0_0
+source_grant_id: ot-v21-production-source-grant-20260729
+source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+source_approval_evidence_path: ops/v2.1-execution/authority/none/C00/ot-v21-production-source-grant-20260729/APPROVAL.md
+source_approval_evidence_digest: 8c95a959f79aba0ac34fa0fcb6cb463cceac9aeb2bb52da1603d39db3e2c33c2
+grant_status_at_issue: active
+approved_by: Shloimie Dratler
+approved_at: '2026-08-04T11:42:08Z'
+recorded_at: '2026-08-04T11:42:08Z'
+expires_at: '2026-08-04T12:27:08Z'
+scope:
+  provider: One Time application PostgreSQL on canonical Railway production
+  project_id: ce55ef20-1418-4ad3-aafa-f877fb992dc8
+  environment_id: f911acfc-e206-44df-a569-9d69d709b94b
+  database_service_id: db590e4a-7dc5-40cb-a243-5206ce21b746
+  database_deployment_id: 62583cef-572b-40ae-b1d3-0194a2ccbf27
+  product_key: one_time_mishnayos
+  runtime_tier: production
+  verification_environment_id: production_operator_canary
+  protected_normalized_fixture: supplied_at_runtime_never_logged_or_committed
+  required_live_legacy_active_Admin_accounts: 1
+  required_live_legacy_active_sessions: 1
+  expected_legacy_account_row_sha256: 61a85b43da371c459174e10bc8b5bce61e3b61115df880a8646cb419989270a8
+  expected_legacy_user_key_sha256: ac9bf407d472d28d7bbc22baf7caed76717289f46037ac33fe31da2583f77218
+  expected_active_legacy_session_sha256: fba73376202ae0a3900108e9cc98ba3b557715e34691863f7f91f3e6868018e7
+  proposed_adult_id: adult_8781c636-69b0-48ad-a1a9-843d7ffc8b24
+  proposed_human_account_id: account_8ab012c2-2293-40e4-9e07-97dc5da74f50
+  proposed_admin_membership_id: 3005699d-1950-4f85-97e3-c9d1b5b13128
+  proposed_parent_membership_id: 7d86732f-016e-4af5-b9e3-160be3b70dc3
+  proposed_household_id: household_1393fe08-69cb-430b-9e14-469fd2918dd9
+  proposed_household_access_aggregate_ref: access:household_1393fe08-69cb-430b-9e14-469fd2918dd9
+  proposed_household_seat_limit: 3
+  create_occurred_at: '2026-08-04T11:42:08Z'
+  human_account_create_transition_key: ot-live-001-03:6d4b9244-deb7-4593-b787-76ab5d5889ab:human-account-active
+  human_account_create_idempotency_key: ot-live-001-03:6d4b9244-deb7-4593-b787-76ab5d5889ab:human-account-create
+  access_create_transition_key: ot-live-001-03:6d4b9244-deb7-4593-b787-76ab5d5889ab:access-free
+  access_create_idempotency_key: ot-live-001-03:6d4b9244-deb7-4593-b787-76ab5d5889ab:access-create
+  create_canonical_request_hash: f0a04dae0c6e83226f6377b0b2fea9e098d0583a0e1adf957e8df96639826630
+  compensation_occurred_at_binding_only: '2026-08-04T11:42:09Z'
+  human_account_compensation_transition_key_binding_only: ot-live-001-03:df3658ff-cda8-47b8-bc59-1a428bd79ee1:human-account-archived
+  human_account_compensation_idempotency_key_binding_only: ot-live-001-03:df3658ff-cda8-47b8-bc59-1a428bd79ee1:human-account-compensation
+  access_compensation_transition_key_binding_only: ot-live-001-03:df3658ff-cda8-47b8-bc59-1a428bd79ee1:access-inactive
+  access_compensation_idempotency_key_binding_only: ot-live-001-03:df3658ff-cda8-47b8-bc59-1a428bd79ee1:access-compensation
+  compensation_canonical_request_hash_binding_only: 0f4ca9ff987545379e271d19829bf91215398731c17c38ce2c3fbd1820e3ab7d
+fencing_token: fence-23ac700e-b593-43e1-9607-abd3704065de
+lock: production:data
+holder_claim_id: fa32b1b1-5887-4a86-a8ec-537c0c13acaf
+provider_lock_lease_id: a50af598-b03c-4885-ba6d-ff86974b6e0d
+allowed_operation: >-
+  Execute one SERIALIZABLE transaction under the accepted corrected transaction proposal and exact advisory lock;
+  require fresh live canonical prefixed protected legacy hashes/cardinality, zero matching v2.1 identity/session/
+  transition/state rows, and the exact protected fixture/transition bindings; insert exactly six proposal identity/
+  account/membership/household/credential rows plus exactly two canonical transition events whose triggers create
+  exactly two aggregate states; require exact ten-effect, Parent-context, credential-equivalence, canonical-state,
+  and unchanged-legacy readback before commit; or accept an exact zero-statement zero-write replay.
+maximum_effect_count: 10
+maximum_effect_value: exactly_eight_explicit_inserts_plus_two_trigger_derived_aggregate_rows_or_zero_write_exact_replay
+approved_fixture_ids:
+  - adult_8781c636-69b0-48ad-a1a9-843d7ffc8b24
+  - account_8ab012c2-2293-40e4-9e07-97dc5da74f50
+  - 3005699d-1950-4f85-97e3-c9d1b5b13128
+  - 7d86732f-016e-4af5-b9e3-160be3b70dc3
+  - household_1393fe08-69cb-430b-9e14-469fd2918dd9
+effect_budget:
+  explicit_rows_inserted_exact: 8
+  trigger_derived_aggregate_rows_inserted_exact: 2
+  total_application_database_row_effects_exact: 10
+  idempotent_replay_statements_and_rows_mutated_max: 0
+  open_transaction_failure_committed_rows_max: 0
+  post_commit_compensation_rows_mutated_max: 0
+  migrations_max: 0
+  legacy_rows_mutated_max: 0
+  session_rows_mutated_max: 0
+  Student_or_customer_rows_mutated_max: 0
+  provider_deployment_DNS_send_charge_effects_max: 0
+prerequisite_review:
+  control_parent_sha: 1221c4957009b1d8b9d2a2c6b5a5b6b6ff7280f3
+  deployed_web_id: ea1b663f-f892-4137-9ebf-8a4509bf7cd8
+  deployed_worker_id: f68df357-7be5-4ded-936b-fbc915c42261
+  deployed_source_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
+  product_health_ready_version_domains_assets_and_logs: passed
+  original_pre_effect_readback_digest_reference_only: 45f99010b4a5b8fa7e4c2172d8d06c736a83ef91964f46d8bce84fd9c45a79b4
+  fixture_design_source_sha: 72f9caceb53353f968b2e17bf584c4d340e41bb8
+  fixture_design_independent_review: 30_tests_typecheck_lint_prettier_diff_secret_and_exact_parameter_cast_review_passed
+  current_database_state_asserted_before_transaction: false
+  current_database_state_rule: exact_live_preflight_required_before_every_insert_and_no_inference_from_prior_readback
+rollback_and_reconciliation:
+  - re-read current remote control authority status and production:data lock immediately before opening the transaction
+  - bind all twenty_three protected parameters only in process memory and redact SQL parameters and sensitive results
+  - require exact live legacy hashes and zero identity session transition and aggregate-state collision counts before any INSERT
+  - execute all eight explicit inserts and exact readback in one SERIALIZABLE transaction under the advisory lock
+  - if any statement count trigger-derived state or readback differs ROLLBACK the still-open transaction and record zero committed effects
+  - if a committed-state mismatch is discovered only after commit stop and request a fresh exact compensation authority; this grant authorizes zero post-commit compensation effects
+  - release production:data only after exact counts hashes transition/state proof and terminal disposition are recorded
+stop_conditions:
+  - source_grant_authority_status_control_head_lock_lease_or_fencing_token_is_revoked_expired_absent_or_mismatched
+  - candidate_source_deployment_database_service_or_fixture_design_source_differs_from_exact_bindings
+  - protected_legacy_account_session_hash_or_cardinality_differs_from_expected_live_state
+  - any_proposed_ID_normalized_email_ownership_transition_idempotency_or_aggregate_key_collides
+  - password_hash_is_not_the_proven_legacy_shape_or_prefix_normalization_would_change_its_suffix_or_leave_PostgreSQL
+  - transaction_cannot_be_SERIALIZABLE_or_advisory_lock_cannot_be_acquired
+  - any matching v2_1 identity session transition or aggregate state exists other_than_an_exact_ten_effect_zero_write_replay
+  - any direct canonical_aggregate_state write or transition history update or delete would occur
+  - operation_would_mutate_a_legacy_or_session_row_migration_Student_customer_provider_deployment_DNS_send_or_charge
+contains_secret: false
+immutable: true

@@ -172,24 +172,30 @@ locks:
   effect_budget: null
   cleanup_state: candidate_9d6_source_27576fa6_web_ea1b663f_worker_f68df357_SUCCESS_health_ready_domains_assets_logs_reconciled_lock_released_2026-08-04T10:01:35Z
 - lock: production:data
-  status: unclaimed
-  holder_task_id: null
-  holder_claim_id: null
-  lease_id: null
-  fencing_token: null
-  canonical_candidate_digest: null
-  provider_identity: null
-  authorized_operation: null
-  claimed_at: null
-  lease_expires_at: null
-  authority_id: null
-  authority_grant_digest: null
-  authority_status_index_digest: null
-  authority_status_entry_digest: null
+  status: claimed
+  holder_task_id: OT-LIVE-001.03
+  holder_claim_id: fa32b1b1-5887-4a86-a8ec-537c0c13acaf
+  lease_id: a50af598-b03c-4885-ba6d-ff86974b6e0d
+  fencing_token: fence-23ac700e-b593-43e1-9607-abd3704065de
+  canonical_candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
+  provider_identity: Railway_project_ce55ef20_environment_f911acfc_Postgres_db590e4a_deployment_62583cef
+  authorized_operation: exact_ten_effect_operator_fixture_transaction_and_readback_or_zero_statement_zero_write_exact_replay
+  claimed_at: '2026-08-04T11:42:08Z'
+  lease_expires_at: '2026-08-04T12:27:08Z'
+  authority_id: c00-prod-operator-fixture-data-successor-2-20260804114208
+  authority_grant_digest: 07c57c9d6ec1ea17006e40cbf4f085bf57a97d9a7d030ed6e9f1d281641928e5
+  authority_status_index_digest: 187faf1fec0e4875a4b801580ac420601bc2c31075773254c7a6fbb73bb73aaa
+  authority_status_entry_digest: 5cd215b6f01e752f9fc251cc877736493bc9c9986c01ea34a7e25105a869ae45
   latest_revocation_digest: null
-  authority_checked_at: null
-  effect_budget: null
-  cleanup_state: successor_FAILED_ROLLED_BACK_zero_committed_effects_lock_released_2026-08-04T11:30:13Z
+  authority_checked_at: '2026-08-04T11:42:08Z'
+  effect_budget:
+    explicit_rows_inserted_exact: 8
+    trigger_derived_aggregate_rows_inserted_exact: 2
+    total_application_database_row_effects_exact: 10
+    idempotent_replay_statements_and_rows_mutated_max: 0
+    post_commit_compensation_rows_mutated_max: 0
+    all_other_effects: 0
+  cleanup_state: two_predecessors_FAILED_ROLLED_BACK_zero_committed_effects; parameter_cast_successor_active_no_effect_started
 - lock: provider:s3-kms
   status: unclaimed
   holder_task_id: null

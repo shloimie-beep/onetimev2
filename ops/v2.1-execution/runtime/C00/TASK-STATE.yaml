@@ -14,7 +14,7 @@ claim_time: '2026-08-04T09:12:43Z'
 claim_id: f514d50f-081c-48e0-8906-1c6e872519b0
 lease_expires_at: '2026-08-04T12:51:01Z'
 lease_released_at: null
-last_heartbeat_at: '2026-08-04T11:30:13Z'
+last_heartbeat_at: '2026-08-04T11:42:08Z'
 controller_authorization_sha: 65d343162df0bb404ade1e4d1460f0ad808411ef
 ready_entry_payload_digest: null
 state_based_on_head_sha: 65d343162df0bb404ade1e4d1460f0ad808411ef
@@ -70,7 +70,16 @@ ot_live_terminal_convergence_resume_20260804:
     data_successor_lock_released_at: '2026-08-04T11:30:13Z'
     fixture_parameter_cast_correction_claim_id: 661628f9-2abb-4587-9885-b2b349e25157
     fixture_parameter_cast_correction_claim_digest: aa9ab02bde31d79550c678f65a69dc6a0beae866f3bb7befd854de99722537af
-    next_boundary: correct_and_verify_parameter_4_text_cast_then_issue_fresh_production_data_successor_then_reconcile_then_separate_signed_in_Admin_Parent_Admin_canary_authority
+    fixture_parameter_cast_source_sha: 72f9caceb53353f968b2e17bf584c4d340e41bb8
+    fixture_parameter_cast_source_tree: cdf902d386843be6254131497e6cb25f13d89f89
+    fixture_parameter_cast_terminal_digest: 3ed0ea59178751c526822d8218b928d14dee3c0f452a4885b338066210f46745
+    fixture_parameter_cast_verification: 30_tests_typecheck_lint_prettier_diff_secret_passed
+    data_successor_2_authority_id: c00-prod-operator-fixture-data-successor-2-20260804114208
+    data_successor_2_claim_lease_fence: fa32b1b1-5887-4a86-a8ec-537c0c13acaf_a50af598-b03c-4885-ba6d-ff86974b6e0d_fence-23ac700e-b593-43e1-9607-abd3704065de
+    data_successor_2_grant_digest: 07c57c9d6ec1ea17006e40cbf4f085bf57a97d9a7d030ed6e9f1d281641928e5
+    data_successor_2_status_entry_digest: 5cd215b6f01e752f9fc251cc877736493bc9c9986c01ea34a7e25105a869ae45
+    data_successor_2_authority_status_index_digest: 187faf1fec0e4875a4b801580ac420601bc2c31075773254c7a6fbb73bb73aaa
+    next_boundary: execute_fresh_live_preflight_exact_ten_effect_parameter_cast_successor_then_reconcile_then_separate_signed_in_Admin_Parent_Admin_canary_authority
     provider_database_deploy_effects: 0_0_0
   OT_LIVE_002_02:
     owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
