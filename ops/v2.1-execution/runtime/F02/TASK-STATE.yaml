@@ -4,8 +4,8 @@ task_id: F02
 task_packet_digest: 7f76d84250d7c117eb78f1bbe70419d9395f46d2ef496527332d5140ad049bce
 task_context_digest: 0d581af766419d9c448774279a5b4bd9f7883378f91e2dcb2666ac057ff369fc
 spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
-branch: codex/v21-f02-launch-timing-2258
-start_sha: d61f4e49349ed4b63618513ce6642337690d55d0
+branch: codex/v21-f02-ot-live-ledger-regularization-20260804
+start_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
 dependency_heads:
   C00:
     required_state: full_production_completion_convergence
@@ -655,6 +655,36 @@ migration_2254_2256_P22_P12_P09_atomic_claim:
   sql_authored: true
   later_migration_authority_latent: false
   external_effects: 0/0/0
+ot_live_ledger_regularization_checkpoint:
+  disposition: source_only_semantic_ledger_regularization_ready_for_C00_review
+  control_head_sha: fb70bd65344513161c240e3ed6dfa30e0ad7fb54
+  control_parent_sha: caa85bde4d1bcba6e9eb95d1916a49182507f3fd
+  candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
+  claim_id: c172ba4d-1098-4d72-910f-5048a678e4f9
+  claim_raw_sha256: e4c86171314af866512c001628d7aaaad8b072de23d078ed07c4b7d699e8e005
+  writer_id: codex-f02-ledger-regularization-c172ba4d
+  issued_at: '2026-08-04T12:59:57Z'
+  expires_at: '2026-08-05T08:59:57Z'
+  exact_base_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
+  exact_path_count: 6
+  exact_paths:
+    - ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
+    - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
+    - ops/v2.1-execution/runtime/F02/HANDOFF.md
+    - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
+    - ops/codex-runs/OT-LIVE-F02/MIGRATION-2257-2259-REGULARIZATION.md
+    - ops/codex-runs/VIMEO-MISHNAYOS-CATALOG-ADOPTION/MIGRATION-REQUEST.yaml
+  regularized_ordinals: [2257, 2258, 2259]
+  next_available_ordinal: 2260
+  next_available_is_not_an_allocation: true
+  OT_LIVE_003_2260: rejected_unallocated_default_off
+  OT_LIVE_002_2260: not_allocated_pending_corrected_immutable_request_and_independent_acceptance
+  migration_bytes_changed: false
+  migration_SQL_authored_or_applied: false
+  database_connections: 0
+  provider_or_external_effects: 0/0/0
+  writer_slot_leases: []
+  effect_lock_leases: []
 launch_timing_2258_checkpoint:
   disposition: implementation_complete_pending_independent_C00_admission
   authorized_start_sha: d61f4e49349ed4b63618513ce6642337690d55d0
@@ -699,36 +729,25 @@ launch_timing_2258_checkpoint:
   effect_lock_leases: []
   external_effects: 0/0/0
 status: ready_for_review
-phase: configurable_launch_timing_migration_2258_complete
-claimed_by: codex-f02-launch-timing-197eba4d
-claim_time: '2026-08-02T09:08:39Z'
-claim_id: 197eba4d-bbf3-4942-9716-da8d44fca85c
-writer_slot_lease_id: b344b5ec-97bd-44ef-ae6f-f473bd8dbf86
-lease_issued_at: '2026-08-02T09:08:39Z'
-lease_expires_at: '2026-08-02T13:08:39Z'
-last_heartbeat_at: '2026-08-02T09:27:26Z'
-lease_released_at: '2026-08-02T09:27:26Z'
-controller_authorization_sha: 5cd292a9e4fab2730435192d1ac6ca27a93a4381
-containing_control_head_sha: cb5fe3bd55941316a80fbeb1b2d20923b95dd712
-ready_entry_parent_control_sha: 5cd292a9e4fab2730435192d1ac6ca27a93a4381
-state_based_on_control_head_sha: cb5fe3bd55941316a80fbeb1b2d20923b95dd712
-ready_entry_payload_digest: 388c28b5c4c946a75f9f4e9ddb103e69193a505e3889a88aaad744ac9e5388c7
-writer_slot_leases:
-  MIGRATION_AUTHORITY:
-    lease_id: b344b5ec-97bd-44ef-ae6f-f473bd8dbf86
-    lease_issued_at: '2026-08-02T09:08:39Z'
-    lease_expires_at: '2026-08-02T13:08:39Z'
-    phase_scope: F02_configurable_launch_timing_migration_2258
-    released_at: '2026-08-02T09:27:26Z'
-  SCHEMA_CONTRACT:
-    lease_id: 1535d824-beb1-4d9a-9536-be5c79214c74
-    lease_issued_at: '2026-08-02T09:08:39Z'
-    lease_expires_at: '2026-08-02T13:08:39Z'
-    phase_scope: F02_configurable_launch_timing_migration_2258
-    released_at: '2026-08-02T09:27:26Z'
-state_based_on_head_sha: d61f4e49349ed4b63618513ce6642337690d55d0
+phase: migration_2257_2259_semantic_ledger_regularization_complete
+claimed_by: codex-f02-ledger-regularization-c172ba4d
+claim_time: '2026-08-04T12:59:57Z'
+claim_id: c172ba4d-1098-4d72-910f-5048a678e4f9
+lease_expires_at: '2026-08-05T08:59:57Z'
+last_heartbeat_at: '2026-08-04T13:13:32Z'
+controller_authorization_sha: fb70bd65344513161c240e3ed6dfa30e0ad7fb54
+containing_control_head_sha: fb70bd65344513161c240e3ed6dfa30e0ad7fb54
+state_based_on_control_head_sha: fb70bd65344513161c240e3ed6dfa30e0ad7fb54
+writer_slot_leases: {}
+state_based_on_head_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
 last_implementation_commit_sha: null
 completed_steps:
+  - Verified remote control fb70bd65, exact claim c172ba4d, raw claim digest e4c86171, authorized six-path scope, exact base 27576fa6, and the prohibition on SQL, database, control, and provider effects.
+  - Reconstructed exact raw/repository, pg-mem, and Git-blob identities for immutable migrations 2257 through 2259 without editing or executing any migration.
+  - Bound 2257 and 2258 to stable semantic-interface digests derived only from their already-recorded ordinal, file, owner, request, and purpose identities.
+  - Published an immutable evidence-backed 2259 steward request describing only the existing protected catalog ledger, current pointer, and review-intake semantics.
+  - Recorded 2260 only as numerically next available; preserved OT-LIVE-003 rejected/unallocated/default-off and kept OT-LIVE-002 unallocated pending its corrected immutable request and independent acceptance.
+  - Preserved database connections, SQL executions, migration applications, and all provider or external effects at zero.
   - Re-fetched subsequent control descendant 4105c365 and verified it explicitly continued F02 while preserving the exact claim, dual leases, expiry, authorized integration start, expected F02 head, seven paths, inventory digest, and zero effect locks.
   - Revalidated live continuation control 30229697, sole parent/controller 70b12ea3, reconciled claim head 216c983b, integration 392cc119, exact claim and dual leases, seven-path inventory digest a28d4c79, and zero effect locks.
   - Created disposable integration descendant b46ff339 with exact parents 392cc119 and 216c983b, preserving claim ancestry without modifying the shared integration branch.

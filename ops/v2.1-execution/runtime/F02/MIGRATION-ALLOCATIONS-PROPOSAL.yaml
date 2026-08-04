@@ -260,20 +260,60 @@ allocations:
     file: packages/db/migrations/2257_v21_provider_registry_bindings.sql
     owner_task_id: F06
     request_id: C00-F06-active-binding-source-001
-    state: allocated
+    request_digest: 0b7bbb3f2bd5bef88563605de3819fc0a524f9701cbc8b3f18059ffcca78fda4
+    interface_digest: 0b7bbb3f2bd5bef88563605de3819fc0a524f9701cbc8b3f18059ffcca78fda4
+    digest_kind: recursively_sorted_compact_UTF8_JSON_semantic_identity_SHA256
+    state: integrated
     purpose: Canonical non-secret active provider-registry binding authority with exact account, scope, operation, mutation-policy, evidence-digest, freshness, and optimistic-version fences.
     replaces_applied_migration: false
     destructive: false
     checksum_sha256: 04e348e04c4c794147a678d03167df51cd21872d350c73c83b2181b68bc0619e
     pg_mem_checksum_sha256: 3961d3d0b946ac3e4ae318fa0bd3f275aff6d423cd4d80a1bdd9ea933842b1ef
+    authored_source_sha: 701ef6e19d0cb640677c066c2d49fb2f453bb6bc
+    source_head_sha: 951c151c28f905ad7458973a750c3887edc38ddc
+    integrated_merge_sha: 951c151c28f905ad7458973a750c3887edc38ddc
+    deployed_source_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
   - ordinal: 2258
     file: packages/db/migrations/2258_v21_configurable_launch_timing.sql
     owner_task_id: F02
     request_id: C00-launch-configurable-timing-001
-    state: allocated
+    request_digest: 7270d64d9fd77c181e021426c628448277639413d54485822b689e5cc794aa93
+    interface_digest: 7270d64d9fd77c181e021426c628448277639413d54485822b689e5cc794aa93
+    digest_kind: recursively_sorted_compact_UTF8_JSON_semantic_identity_SHA256
+    state: integrated
     purpose: Replace the fixed Family free-access cutoff check with forward-only date-agnostic structural invariants so one protected runtime expiry can govern signup, billing, landing, and communications without rewriting existing rows.
     replaces_applied_migration: false
     destructive: false
     checksum_sha256: 8a0bf65c9ac8f383a6a0167706e360157664fa5327e7e6855641b326e724e5c7
     pg_mem_checksum_sha256: ec63a25f07819b66dba2f70f1609283318a0295c46316861fd67cfacf9de352e
-next_available_ordinal: 2259
+    authored_source_sha: 80f11d40b394275afde02e73ddf53a4ac7505473
+    source_head_sha: 0f9422fc3c09d0c19ef91f61058955f5a80b7870
+    integrated_merge_sha: 411790eb2b2b705f5487e58567dcd72d31f06cea
+    integration_release_sha: 836340a7db094b5024e25bd3bc31f87f2c9cdbde
+    deployed_source_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
+  - ordinal: 2259
+    file: packages/db/migrations/2259_vimeo_mishnayos_catalog_adoption.sql
+    owner_task_id: VIMEO-MISHNAYOS-CATALOG-ADOPTION
+    request_id: VIMEO-MISHNAYOS-CATALOG-ADOPTION-migration-001
+    request_digest: 6ae5c19200f871f87ff5954e9471d16ecc5ab9c7cca8e621b17d48afdca7eedf
+    interface_digest: 6ae5c19200f871f87ff5954e9471d16ecc5ab9c7cca8e621b17d48afdca7eedf
+    digest_kind: recursively_sorted_compact_UTF8_JSON_request_SHA256
+    state: integrated
+    purpose: Preserve an append-only protected Vimeo Mishnayos catalog revision ledger, current pointer, and included-only review intake bridge to canonical P19/P20/P21 review and publication without exposing raw provider identity or Vimeo URLs.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: fae76e3a62930a099bbbe679e9d0ba6bb977587b5eacfeca50984f26fc851b2b
+    pg_mem_checksum_sha256: d53756277fac7c7033bc9449cdf58a83dc48d9527834d90d6eff3540bec6a3a9
+    authored_source_sha: 297615d5196da3547fc1d4a97307aa20f1614942
+    source_head_sha: 635a94b09f58997b4a17366dc86dde8646aceb26
+    integrated_merge_sha: 1e1a5ef1fcb5a2b125797c357d14db64b9948b0f
+    deployed_source_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
+next_available_ordinal: 2260
+next_available_is_not_an_allocation: true
+held_unallocated_proposals:
+  - request_id: OT-LIVE-003.02-migration-proposal
+    proposed_ordinal: 2260
+    state: rejected_unallocated_default_off
+  - request_id: OT-LIVE-002-migration-001
+    proposed_ordinal: 2260
+    state: not_allocated_pending_corrected_immutable_request_and_independent_acceptance

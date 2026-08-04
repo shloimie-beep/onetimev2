@@ -3,6 +3,37 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
+Audit the exact F02 OT-LIVE migration-ledger regularization terminal.
+
+Require control `fb70bd65344513161c240e3ed6dfa30e0ad7fb54`, claim
+`c172ba4d-1098-4d72-910f-5048a678e4f9`, claim raw SHA-256
+`e4c86171314af866512c001628d7aaaad8b072de23d078ed07c4b7d699e8e005`,
+and exact base `27576fa64f0b37095e61ccca932c2e77cbf38844`.
+
+Require exactly the six claim-authorized metadata/request paths. Recompute the
+2257–2259 raw/repository and pg-mem checksums and Git blobs, and prove every
+migration SQL byte is identical to the base. Verify owner, request, purpose,
+interface digest, source/integration provenance, deployed ancestry, the exact
+2259 canonical request digest, unique contiguous ordinals through 2259, and
+`next_available_ordinal: 2260`.
+
+Confirm 2260 is not allocated: OT-LIVE-003 remains rejected/unallocated and
+default-off, and OT-LIVE-002 remains pending its corrected immutable request
+and independent acceptance. Require YAML, formatting, diff hygiene, secret
+scan, clean local/tracking/remote equality, and zero SQL, database, provider,
+contact, send, deployment, DNS, billing, Customer, or Student effects.
+
+Do not edit or execute a migration, allocate 2260, change control, merge,
+deploy, inspect or mutate providers, or perform an external effect. Return
+findings by severity and stop for C00 disposition.
+
+---
+
+MODEL: GPT-5.6-SOL
+REASONING: XHIGH
+SERVICE TIER: PRIORITY
+MODE: START_OR_RESUME
+
 Audit the exact F02 configurable launch-timing migration 2258 terminal.
 
 Require authorized start `d61f4e49349ed4b63618513ce6642337690d55d0`,

@@ -1,3 +1,35 @@
+# F02 OT-LIVE migration-ledger regularization terminal
+
+- Control: `fb70bd65344513161c240e3ed6dfa30e0ad7fb54`
+- Claim: `c172ba4d-1098-4d72-910f-5048a678e4f9`
+- Claim raw SHA-256:
+  `e4c86171314af866512c001628d7aaaad8b072de23d078ed07c4b7d699e8e005`
+- Exact base: `27576fa64f0b37095e61ccca932c2e77cbf38844`
+- Branch: `codex/v21-f02-ot-live-ledger-regularization-20260804`
+- Scope: exact six metadata/request paths
+- Effects: `0/0/0`
+
+This source-only checkpoint reconstructs the missing F02 ledger identities for
+exact immutable migrations 2257, 2258, and 2259. All three migration SQL files
+remain byte-identical. Their allocation records now bind formal owner, request,
+purpose, interface digest, exact raw/repository and pg-mem checksums, source
+head, integration evidence, and deployed-source ancestry.
+
+The 2259 request is supported by the exact existing SQL, contract, repository,
+tests, implementation/verification records, and Git history. It describes only
+the existing append-only protected Vimeo Mishnayos revision ledger, current
+pointer, and included-only review intake bridge. It does not authorize a Vimeo
+request, database connection/application, publication, assignment, or SQL
+change.
+
+Ordinal 2260 is only the next numerically available value. OT-LIVE-003 remains
+rejected, unallocated, and default-off. OT-LIVE-002 remains unallocated until
+its corrected immutable request is published and independently accepted.
+
+Stop for independent C00 review and exact control-mirror reconciliation. No
+2260 allocation, integration, candidate, database, provider, deployment, DNS,
+send, billing, Customer, or Student authority is latent.
+
 # F02 Configurable Launch Timing Migration 2258 Release
 
 - Authorized start: `d61f4e49349ed4b63618513ce6642337690d55d0`

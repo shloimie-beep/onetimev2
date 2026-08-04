@@ -1,0 +1,77 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: VIMEO-MISHNAYOS-CATALOG-ADOPTION-migration-001
+task_id: VIMEO-MISHNAYOS-CATALOG-ADOPTION
+kind: migration
+requirement_ids:
+  - OTV2-CONTENT-088
+  - OTV2-CONTENT-089
+  - OTV2-CONTENT-193
+  - OTV2-CONTENT-194
+acceptance_case_ids:
+  - OTV2-CONTENT-088-AC01
+  - OTV2-CONTENT-089-STUDENT
+  - OTV2-CONTENT-089-PARENT-DENY
+  - OTV2-CONTENT-193-AC01
+  - OTV2-CONTENT-194-AC01
+rationale: >-
+  Migration 2259 already exists byte-for-byte in the deployed source lineage,
+  but its Vimeo Mishnayos catalog lane did not publish the immutable F02
+  steward request required by the migration ledger. This request regularizes
+  only the semantics proven by the exact existing SQL, contract, repository,
+  tests, and source history. It does not authorize an SQL edit, a provider
+  request, a database application, a publication, an assignment, or a Vimeo
+  mutation.
+desired_semantic_change: >-
+  Preserve exact forward-only migration 2259. It creates an append-only,
+  account- and one_time_mishnayos-product-scoped Vimeo Mishnayos catalog
+  revision ledger; a current-revision pointer; and an included-only review
+  queue that remains an intake bridge to the canonical P19/P20/P21 review and
+  publication path. Provider identities remain lowercase SHA-256 digests,
+  provider references remain protected v1 ciphertext references, and stored
+  JSON cannot expose a Vimeo URL or raw provider identity. Every revision
+  starts with participant and privacy review pending. Only the current
+  include_mishnayos revision may advance to approved or published, approval
+  requires complete participant review and clear privacy review, and published
+  state requires a canonical publication content binding.
+proposed_symbols_routes_keys_or_dependencies:
+  - onetime.vimeo_mishnayos_catalog_revisions
+  - onetime.vimeo_mishnayos_catalog_current
+  - onetime.vimeo_mishnayos_catalog_review_queue
+  - account_key + product_key + schema_version + provider_identity_digest revision identity
+  - provider_identity_digest + metadata_digest exact replay fence
+  - protected_provider_reference v1 ciphertext reference
+  - include_mishnayos + needs_review intake boundary
+  - participant_review_state + privacy_review_state approval boundary
+  - canonical_publication_content_id publication bridge
+  - P19/P20/P21 remain the canonical processing, review, and publication path
+compatibility_assumptions:
+  - >-
+    Exact migration 2259 is already an immutable ancestor of deployed source
+    27576fa64f0b37095e61ccca932c2e77cbf38844 and may not be renamed,
+    renumbered, or edited by this regularization.
+  - >-
+    Migration 2259 neither uploads nor downloads video bytes and does not
+    replace the P19/P20/P21 publication authority.
+  - >-
+    Actual provider inventory remains absent because the source lane stopped
+    before its first provider request when canonical Vimeo read authorization
+    was unavailable.
+  - >-
+    Any later scope hardening or schema correction must use a separately
+    allocated forward-only migration; it may not rewrite migration 2259.
+verification_performed:
+  - exact SQL raw and pg-mem checksum reconstruction
+  - exact source, source-terminal, integration-merge, and deployed ancestry verification
+  - 40 focused taxonomy, classifier, pagination, retry, encryption, and idempotency tests recorded by the source lane
+  - 9 migration allocation, inventory, and status tests recorded by the source lane
+  - 1 disposable PostgreSQL-compatible adoption repository test recorded by the source lane
+  - 1 synthetic Student protected-playback boundary test recorded by the source lane
+  - source-lane typecheck, build, lint, formatting, secret scan, and diff checks recorded as passed
+conflicts_or_risks:
+  - Do not infer Vimeo read authority or actual catalog counts from this request.
+  - Do not expose a raw Vimeo URL, provider identity, bearer, caption body, or protected reference.
+  - Do not bypass participant, privacy, Admin-review, canonical-publication, or Student authorization gates.
+  - Do not treat the review queue as a competing publication system.
+  - Do not edit, rename, renumber, recreate, or reapply migration 2259 from this request.
+contains_secret_or_private_data: false
