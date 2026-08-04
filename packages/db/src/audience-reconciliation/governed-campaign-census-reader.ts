@@ -5,6 +5,7 @@ import {
   type GovernedCensusDecisionHistory,
   type GovernedCensusReason,
   type GovernedCensusSha256,
+  type ProtectedGovernedCensusProviderContact,
 } from '../../../domain/src/audience-reconciliation/governed-campaign-census.ts';
 import {
   GOVERNED_CAMPAIGN_PROVIDER_BINDING,
@@ -54,6 +55,14 @@ export class GovernedCampaignCensusReaderError extends Error {
 
 interface FactRow extends Record<string, unknown> {
   provider_contact_ref_hash: string;
+  identity_source: string | null;
+  mapped_household_key: string | null;
+  mapping_sync_state: string | null;
+  provider_email_match_count: string | number;
+  provider_email_matches_contact: boolean | null;
+  legacy_hash_match_count: string | number;
+  legacy_hash_other_adult_count: string | number;
+  selected_link_email_matches_adult: boolean | null;
   adult_id: string | null;
   link_state: string | null;
   suppression_json: unknown;
@@ -95,17 +104,20 @@ export function createPostgresGovernedCampaignCensusReader(
   return {
     async read(input: {
       scope: GovernedCampaignCensusReadScope;
-      providerContactRefHashes: readonly GovernedCensusSha256[];
+      providerContacts: readonly ProtectedGovernedCensusProviderContact[];
       maximumProviderContacts: number;
     }): Promise<GovernedCampaignCensusReadResult> {
       validateInput(input);
-      const hashes = [...input.providerContactRefHashes].sort();
+      const contacts = [...input.providerContacts].sort((left, right) =>
+        left.providerContactRefHash.localeCompare(right.providerContactRefHash),
+      );
+      const hashes = contacts.map((contact) => contact.providerContactRefHash);
       const client = await pool.connect();
       let transactionOpen = false;
       try {
         await client.query('BEGIN TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY');
         transactionOpen = true;
-        const factRows = await readFactRows(client, input.scope, hashes);
+        const factRows = await readFactRows(client, input.scope, contacts);
         const historyRows = await readHistoryRows(client, input.scope, hashes);
         const currentProjectionRows = await readCurrentProjectionCount(client, input.scope);
         const databaseFacts = groupFacts(hashes, factRows);
@@ -131,21 +143,99 @@ export function createPostgresGovernedCampaignCensusReader(
 async function readFactRows(
   client: GovernedCampaignCensusReaderSqlClient,
   scope: GovernedCampaignCensusReadScope,
-  hashes: readonly GovernedCensusSha256[],
+  contacts: readonly ProtectedGovernedCensusProviderContact[],
 ) {
-  const requested = requestedValues(hashes);
+  const requested = requestedContactValues(contacts);
   const result = await client.query<FactRow>(
-    `WITH requested(provider_contact_ref_hash) AS (
+    `WITH requested(provider_contact_ref_hash, normalized_email_hash) AS (
        VALUES ${requested.sql}
+     ), requested_with_counts AS (
+       SELECT requested.*,
+              CASE
+                WHEN normalized_email_hash IS NULL THEN 0
+                ELSE count(*) OVER (PARTITION BY normalized_email_hash)
+              END AS provider_email_match_count
+         FROM requested
      ), exact_scope AS (
        SELECT $1::text AS account_key, $2::text AS product_key,
               $3::text AS runtime_tier, $4::text AS verification_environment_id,
               $5::text AS campaign_key, $6::text AS provider_location_id,
               $7::text AS provider_campaign_id, $8::text AS provider_workflow_id,
               $9::text AS provider_launch_tag_id
+     ), durable_matches AS (
+       SELECT requested.provider_contact_ref_hash,
+              requested.normalized_email_hash,
+               requested.provider_email_match_count,
+               mapping.contact_key,
+               mapping.household_key AS mapped_household_key,
+               mapping.sync_state AS mapping_sync_state,
+              'durable_mapping'::text AS identity_source
+         FROM requested_with_counts AS requested
+         CROSS JOIN exact_scope
+         JOIN onetime.adult_household_contact_links AS mapping
+           ON mapping.account_key = exact_scope.account_key
+          AND mapping.product_key = exact_scope.product_key
+          AND mapping.highlevel_location_id = exact_scope.provider_location_id
+          AND mapping.highlevel_contact_id IS NOT NULL
+          AND encode(
+                sha256(
+                  convert_to('governed-ghl-contact-v1', 'UTF8')
+                  || decode('00', 'hex')
+                  || convert_to(mapping.highlevel_location_id, 'UTF8')
+                  || decode('00', 'hex')
+                  || convert_to(mapping.highlevel_contact_id, 'UTF8')
+                ),
+                'hex'
+              ) = requested.provider_contact_ref_hash
+     ), normalized_email_matches AS (
+       SELECT requested.provider_contact_ref_hash,
+              requested.normalized_email_hash,
+               requested.provider_email_match_count,
+               contact.contact_key,
+               NULL::text AS mapped_household_key,
+               NULL::text AS mapping_sync_state,
+              'normalized_email_fallback'::text AS identity_source
+         FROM requested_with_counts AS requested
+         CROSS JOIN exact_scope
+         JOIN onetime.contacts AS contact
+           ON contact.account_key = exact_scope.account_key
+          AND contact.product_key = exact_scope.product_key
+          AND requested.normalized_email_hash IS NOT NULL
+          AND encode(
+                sha256(convert_to(lower(btrim(contact.email_normalized)), 'UTF8')),
+                'hex'
+              ) = requested.normalized_email_hash
+        WHERE NOT EXISTS (
+          SELECT 1
+            FROM durable_matches AS durable
+           WHERE durable.provider_contact_ref_hash = requested.provider_contact_ref_hash
+        )
+     ), identity_candidates AS (
+       SELECT * FROM durable_matches
+       UNION ALL
+       SELECT * FROM normalized_email_matches
      )
-     SELECT requested.provider_contact_ref_hash,
-            link.adult_id, link.state AS link_state, link.suppression_json,
+      SELECT requested.provider_contact_ref_hash,
+            identity.identity_source, identity.mapped_household_key,
+            identity.mapping_sync_state,
+            requested.provider_email_match_count::text,
+            CASE
+              WHEN requested.normalized_email_hash IS NULL OR contact.contact_key IS NULL THEN NULL
+              ELSE encode(
+                sha256(convert_to(lower(btrim(contact.email_normalized)), 'UTF8')),
+                'hex'
+              ) = requested.normalized_email_hash
+            END AS provider_email_matches_contact,
+            legacy_hash.rows::text AS legacy_hash_match_count,
+            legacy_hash.other_adult_rows::text AS legacy_hash_other_adult_count,
+            CASE
+              WHEN selected_link.adult_id IS NULL OR adult.adult_id IS NULL THEN NULL
+              ELSE selected_link.normalized_email_hash = encode(
+                sha256(convert_to(lower(btrim(adult.normalized_email)), 'UTF8')),
+                'hex'
+              )
+            END AS selected_link_email_matches_adult,
+            adult.adult_id, selected_link.state AS link_state, selected_link.suppression_json,
             adult.state AS adult_state,
             household.household_id, household.classification,
             household.access_projection,
@@ -161,25 +251,24 @@ async function readFactRows(
             (preferences.contact_key IS NOT NULL) AS preferences_present,
             preferences.email_dnd, preferences.all_dnd,
             COALESCE(self_students.rows, 0)::text AS self_student_count
-       FROM requested
+       FROM requested_with_counts AS requested
        CROSS JOIN exact_scope
-       LEFT JOIN onetime.adult_ghl_identity_link AS link
-         ON link.verified_contact_ref_hash = requested.provider_contact_ref_hash
-        AND link.product_key = exact_scope.product_key
-        AND link.runtime_tier = exact_scope.runtime_tier
-        AND link.verification_environment_id = exact_scope.verification_environment_id
-       LEFT JOIN onetime.v21_adult_identities AS adult
-         ON adult.adult_id = link.adult_id
-        AND adult.product_key = exact_scope.product_key
-        AND adult.runtime_tier = exact_scope.runtime_tier
-        AND adult.verification_environment_id = exact_scope.verification_environment_id
+       LEFT JOIN identity_candidates AS identity
+         ON identity.provider_contact_ref_hash = requested.provider_contact_ref_hash
        LEFT JOIN onetime.contacts AS contact
          ON contact.account_key = exact_scope.account_key
         AND contact.product_key = exact_scope.product_key
-        AND encode(
-              sha256(convert_to(lower(btrim(contact.email_normalized)), 'UTF8')),
-              'hex'
-            ) = link.normalized_email_hash
+        AND contact.contact_key = identity.contact_key
+       LEFT JOIN onetime.v21_adult_identities AS adult
+         ON adult.product_key = exact_scope.product_key
+        AND adult.runtime_tier = exact_scope.runtime_tier
+        AND adult.verification_environment_id = exact_scope.verification_environment_id
+        AND adult.normalized_email = lower(btrim(contact.email_normalized))
+       LEFT JOIN onetime.adult_ghl_identity_link AS selected_link
+         ON selected_link.adult_id = adult.adult_id
+        AND selected_link.product_key = exact_scope.product_key
+        AND selected_link.runtime_tier = exact_scope.runtime_tier
+        AND selected_link.verification_environment_id = exact_scope.verification_environment_id
        LEFT JOIN onetime.highlevel_contact_preferences AS preferences
          ON preferences.account_key = contact.account_key
         AND preferences.product_key = contact.product_key
@@ -199,7 +288,19 @@ async function readFactRows(
             AND student.runtime_tier = exact_scope.runtime_tier
             AND student.verification_environment_id = exact_scope.verification_environment_id
        ) AS self_students ON true
-      ORDER BY requested.provider_contact_ref_hash, link.adult_id, household.household_id`,
+       LEFT JOIN LATERAL (
+         SELECT count(*) AS rows,
+                count(*) FILTER (
+                  WHERE adult.adult_id IS NULL OR legacy.adult_id <> adult.adult_id
+                ) AS other_adult_rows
+           FROM onetime.adult_ghl_identity_link AS legacy
+          WHERE legacy.product_key = exact_scope.product_key
+            AND legacy.runtime_tier = exact_scope.runtime_tier
+            AND legacy.verification_environment_id = exact_scope.verification_environment_id
+            AND legacy.verified_contact_ref_hash = requested.provider_contact_ref_hash
+       ) AS legacy_hash ON true
+      ORDER BY requested.provider_contact_ref_hash, identity.identity_source,
+               identity.contact_key, adult.adult_id, household.household_id`,
     [...scopeValues(scope), ...requested.values],
   );
   return result.rows;
@@ -210,7 +311,7 @@ async function readHistoryRows(
   scope: GovernedCampaignCensusReadScope,
   hashes: readonly GovernedCensusSha256[],
 ) {
-  const requested = requestedValues(hashes);
+  const requested = requestedHashValues(hashes);
   const result = await client.query<HistoryRow>(
     `WITH requested(provider_contact_ref_hash) AS (
        VALUES ${requested.sql}
@@ -264,12 +365,56 @@ function groupFacts(hashes: readonly GovernedCensusSha256[], rows: readonly Fact
   return new Map(
     hashes.map((hash) => {
       const candidates = grouped.get(hash) ?? [];
-      const linkedRows = candidates.filter((row) => row.adult_id !== null);
+      const identityRows = candidates.filter((row) => row.identity_source !== null);
+      const linkedRows = identityRows.filter(
+        (row) => row.adult_id !== null && row.contact_key !== null,
+      );
       const adultIds = unique(linkedRows.map((row) => row.adult_id).filter(isString));
       const linkStates = unique(linkedRows.map((row) => row.link_state).filter(isString));
       const adultRows = linkedRows.filter((row) => row.adult_state !== null);
       const contactKeys = unique(linkedRows.map((row) => row.contact_key).filter(isString));
-      const identityMatchState = identityState(adultIds, linkStates, contactKeys);
+      const identitySources = unique(
+        identityRows.map((row) => row.identity_source).filter(isString),
+      );
+      const mappingStates = unique(
+        identityRows.map((row) => row.mapping_sync_state).filter(isString),
+      );
+      const providerEmailCounts = unique(
+        candidates.map((row) => nonnegativeCount(row.provider_email_match_count, 'provider email')),
+      );
+      const legacyMatchCounts = unique(
+        candidates.map((row) => nonnegativeCount(row.legacy_hash_match_count, 'legacy hash')),
+      );
+      const legacyOtherAdultCounts = unique(
+        candidates.map((row) =>
+          nonnegativeCount(row.legacy_hash_other_adult_count, 'legacy other-adult'),
+        ),
+      );
+      if (
+        providerEmailCounts.length !== 1 ||
+        legacyMatchCounts.length !== 1 ||
+        legacyOtherAdultCounts.length !== 1
+      ) {
+        ambiguous('identity evidence counts are inconsistent');
+      }
+      const identityBindings = unique(
+        identityRows.map(
+          (row) =>
+            `${row.identity_source ?? ''}\u001f${row.contact_key ?? ''}\u001f${row.adult_id ?? ''}\u001f${row.mapped_household_key ?? ''}`,
+        ),
+      );
+      const identityMatchState = identityState({
+        adultIds,
+        contactKeys,
+        identitySources,
+        identityBindings,
+        mappingStates,
+        selectedLinkStates: linkStates,
+        providerEmailMatchCount: providerEmailCounts[0]!,
+        providerEmailMatches: candidates.map((row) => row.provider_email_matches_contact),
+        selectedLinkEmailMatches: candidates.map((row) => row.selected_link_email_matches_adult),
+        legacyOtherAdultCount: legacyOtherAdultCounts[0]!,
+      });
       const adultEvidenceState =
         identityMatchState === 'exact' &&
         adultRows.length > 0 &&
@@ -369,7 +514,7 @@ function groupFacts(hashes: readonly GovernedCensusSha256[], rows: readonly Fact
         sourceJoinCount: unique(
           linkedRows.map(
             (row) =>
-              `${row.adult_id ?? ''}\u001f${row.household_id ?? ''}\u001f${row.link_state ?? ''}`,
+              `${row.identity_source ?? ''}\u001f${row.contact_key ?? ''}\u001f${row.adult_id ?? ''}\u001f${row.household_id ?? ''}\u001f${row.link_state ?? ''}`,
           ),
         ).length,
       };
@@ -433,7 +578,7 @@ function groupHistory(hashes: readonly GovernedCensusSha256[], rows: readonly Hi
 
 function validateInput(input: {
   scope: GovernedCampaignCensusReadScope;
-  providerContactRefHashes: readonly GovernedCensusSha256[];
+  providerContacts: readonly ProtectedGovernedCensusProviderContact[];
   maximumProviderContacts: number;
 }) {
   for (const value of [
@@ -463,21 +608,39 @@ function validateInput(input: {
     invalid('maximumProviderContacts must be positive');
   }
   if (
-    input.providerContactRefHashes.length === 0 ||
-    input.providerContactRefHashes.length > input.maximumProviderContacts
+    input.providerContacts.length === 0 ||
+    input.providerContacts.length > input.maximumProviderContacts
   ) {
     invalid('protected provider contact count is outside the operator ceiling');
   }
-  const uniqueHashes = new Set(input.providerContactRefHashes);
+  const uniqueHashes = new Set(
+    input.providerContacts.map((contact) => contact.providerContactRefHash),
+  );
   if (
-    uniqueHashes.size !== input.providerContactRefHashes.length ||
-    input.providerContactRefHashes.some((hash) => !SHA256_PATTERN.test(hash))
+    uniqueHashes.size !== input.providerContacts.length ||
+    input.providerContacts.some(
+      (contact) =>
+        !SHA256_PATTERN.test(contact.providerContactRefHash) ||
+        (contact.normalizedEmailHash !== null && !SHA256_PATTERN.test(contact.normalizedEmailHash)),
+    )
   ) {
-    invalid('protected provider hashes are invalid or duplicated');
+    invalid('protected provider identity hashes are invalid or duplicated');
   }
 }
 
-function requestedValues(hashes: readonly GovernedCensusSha256[]) {
+function requestedContactValues(contacts: readonly ProtectedGovernedCensusProviderContact[]) {
+  return {
+    sql: contacts
+      .map((_, index) => `($${10 + index * 2}::text, $${11 + index * 2}::text)`)
+      .join(', '),
+    values: contacts.flatMap((contact) => [
+      contact.providerContactRefHash,
+      contact.normalizedEmailHash,
+    ]),
+  };
+}
+
+function requestedHashValues(hashes: readonly GovernedCensusSha256[]) {
   return {
     sql: hashes.map((_, index) => `($${index + 10}::text)`).join(', '),
     values: hashes,
@@ -510,18 +673,41 @@ function decisionScopePredicate(alias: string) {
     AND ${alias}.provider_launch_tag_id = $9`;
 }
 
-function identityState(
-  adultIds: readonly string[],
-  linkStates: readonly string[],
-  contactKeys: readonly string[],
-): GovernedCensusDatabaseFacts['identityMatchState'] {
-  if (adultIds.length > 1 || contactKeys.length > 1) return 'duplicate';
-  if (linkStates.includes('identity_review')) return 'ambiguous';
+function identityState(input: {
+  adultIds: readonly string[];
+  contactKeys: readonly string[];
+  identitySources: readonly string[];
+  identityBindings: readonly string[];
+  mappingStates: readonly string[];
+  selectedLinkStates: readonly string[];
+  providerEmailMatchCount: number;
+  providerEmailMatches: readonly (boolean | null)[];
+  selectedLinkEmailMatches: readonly (boolean | null)[];
+  legacyOtherAdultCount: number;
+}): GovernedCensusDatabaseFacts['identityMatchState'] {
   if (
-    adultIds.length === 1 &&
-    contactKeys.length === 1 &&
-    linkStates.length === 1 &&
-    linkStates[0] === 'linked'
+    input.adultIds.length > 1 ||
+    input.contactKeys.length > 1 ||
+    input.identityBindings.length > 1 ||
+    input.providerEmailMatchCount > 1
+  ) {
+    return 'duplicate';
+  }
+  if (
+    input.mappingStates.some((state) => state !== 'synced') ||
+    input.selectedLinkStates.some((state) => state !== 'linked') ||
+    input.providerEmailMatches.includes(false) ||
+    input.selectedLinkEmailMatches.includes(false) ||
+    input.legacyOtherAdultCount > 0
+  ) {
+    return 'ambiguous';
+  }
+  if (
+    input.adultIds.length === 1 &&
+    input.contactKeys.length === 1 &&
+    input.identitySources.length === 1 &&
+    (input.identitySources[0] === 'durable_mapping' ||
+      input.identitySources[0] === 'normalized_email_fallback')
   ) {
     return 'exact';
   }
@@ -529,6 +715,30 @@ function identityState(
 }
 
 function validateFactRowEnums(row: FactRow) {
+  requireDatabaseEnum(
+    row.identity_source,
+    ['durable_mapping', 'normalized_email_fallback'],
+    'identity source',
+  );
+  requireDatabaseEnum(
+    row.mapping_sync_state,
+    ['sync_pending', 'synced', 'conflict'],
+    'mapping sync state',
+  );
+  if (
+    (row.identity_source === 'durable_mapping' &&
+      (!isString(row.mapped_household_key) ||
+        row.mapped_household_key.length === 0 ||
+        row.mapping_sync_state === null)) ||
+    (row.identity_source === 'normalized_email_fallback' &&
+      (row.mapped_household_key !== null ||
+        row.mapping_sync_state !== null ||
+        row.provider_email_matches_contact !== true)) ||
+    (row.identity_source === null &&
+      (row.mapped_household_key !== null || row.mapping_sync_state !== null))
+  ) {
+    ambiguous('identity source evidence is incoherent');
+  }
   requireDatabaseEnum(row.link_state, ['unlinked', 'linked', 'identity_review'], 'link state');
   requireDatabaseEnum(row.adult_state, ['active', 'archived'], 'adult state');
   requireDatabaseEnum(
@@ -554,6 +764,8 @@ function validateFactRowEnums(row: FactRow) {
     ['preferences presence', row.preferences_present],
     ['email DND', row.email_dnd],
     ['all DND', row.all_dnd],
+    ['provider email match', row.provider_email_matches_contact],
+    ['selected link email match', row.selected_link_email_matches_adult],
   ] as const) {
     if (value !== null && value !== undefined && typeof value !== 'boolean') {
       ambiguous(`${field} is invalid`);
@@ -706,6 +918,14 @@ function record(value: unknown): Record<string, unknown> {
 
 function unique<T>(values: readonly T[]) {
   return [...new Set(values)];
+}
+
+function nonnegativeCount(value: unknown, field: string) {
+  const parsed = Number(value);
+  if (!Number.isSafeInteger(parsed) || parsed < 0) {
+    ambiguous(`${field} count is invalid`);
+  }
+  return parsed;
 }
 
 function isString(value: unknown): value is string {

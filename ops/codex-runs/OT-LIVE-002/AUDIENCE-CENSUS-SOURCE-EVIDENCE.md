@@ -1,17 +1,17 @@
 # OT-LIVE-002 governed audience census runner source evidence
 
-Disposition: `SOURCE_ONLY_DEFAULT_OFF_CENSUS_PROOF_GREEN`.
+Disposition: `SOURCE_ONLY_IDENTITY_CONTRACT_CORRECTION_PROOF_GREEN`.
 
 ## Authority and immutable source binding
 
-- Claim: `72ae541e-cc5b-464a-881d-62f92b857479`
-- Claim raw SHA-256: `9fa41a197f05d1aa848fdc1a45031121391a7debd241384b2a7b76c239aed9d1`
-- Claim branch: `codex/ot-live-002-decision-store-implementation-20260804`
-- Exact base/source before this successor: `6149907cb2611835514b1ffa5622c8fb7d5927e8`
-- Exact base tree: `9abda7772ec7e3af78abdcc24a0657d8f49ccaf6`
-- Latest control readback before terminal validation: `96969eb099041c6837d0c9b5e7d1e9b392394fdb`
-- Control movement after issuance: only `CONTROL-LEASE.yaml`; the claim remains active and unchanged.
-- Remote source branch before the one authorized push: exact base `6149907cb2611835514b1ffa5622c8fb7d5927e8`.
+- Claim: `da761d28-6c24-4fa6-b531-d927544fbb62`
+- Claim raw SHA-256: `b8ce9ca078bbd412ce812ef72c1b1be4bde64befe18fd009c3d44204e64387fc`
+- Claim branch: `codex/ot-live-002-census-identity-contract-correction-20260804`
+- Exact base/source before this successor: `032637395a9ab791b85c13fa6f1cffccfaa9e753`
+- Exact base tree: `4f0b2adf49ed9d34c6788b21b6f4dd49a546d404`
+- Accepted predecessor source: `5110bee2b06145d6cd6ad596dd4f42e748bda75e`
+- Control readback at issuance: `2083e5c8283cac67cf0ffe7194f99b4d839301fe`
+- Remote correction branch before the one authorized push: absent.
 
 The terminal source head/tree and the raw SHA-256 of all eight paths are read
 back after the normal fast-forward push and returned to C00. They are not
@@ -34,7 +34,8 @@ SHA-256 is still
 
 ## Source verdict
 
-The successor implements a default-off, read-only census preparation boundary:
+The successor preserves the default-off, read-only census boundary and corrects
+its identity contract:
 
 - exact OT-15 location, campaign, workflow, and launch-tag binding;
 - positive operator-supplied `maximumProviderContacts` and
@@ -45,8 +46,16 @@ The successor implements a default-off, read-only census preparation boundary:
 - an explicit `REPEATABLE READ READ ONLY` database transaction across exact
   account, product, runtime, verification environment, campaign, and provider
   binding;
-- account-scoped canonical contact matching by in-SQL normalized-email SHA-256,
-  without selecting or returning the raw email;
+- durable `adult_household_contact_links` matching first, in exact account,
+  product, and HighLevel location scope;
+- campaign-domain provider hashes computed inside PostgreSQL from the durable
+  provider binding without selecting or returning the raw provider identifier;
+- unique account/product contact matching by normalized-email SHA-256 as the
+  only fallback, followed by unique exact scoped adult identity readback;
+- durable mapping duplicates, non-synced mappings, duplicate contact/adult/email
+  matches, archived adults, and cross-scope decoys fail closed;
+- the unversioned `adult_ghl_identity_link.verified_contact_ref_hash` is never
+  positive identity proof and can only make a conflicting match more restrictive;
 - exact canonical contact consent, suppression, email-DND, deliverability,
   active-adult, family/school, access, and active self-Student evidence;
 - exact validated `{marketing_suppressed, service_suppressed,
@@ -65,11 +74,12 @@ evidence_digest, version}` link suppression envelope;
 - the real decision-store capability is composed but never called; results fix
   database, provider, contact, Student, and send effects at zero.
 
-The repository does not define how the existing
-`adult_ghl_identity_link.verified_contact_ref_hash` producer hashes raw GHL
-contact IDs. The new domain-separated hash therefore records provider hash
-compatibility as unproven for real transport rows and forces those rows to
-`review`. It cannot silently create an eligible audience.
+The provider transport now supplies only the full campaign-domain contact hash,
+the full normalized-email hash when a canonical deliverable address exists, and
+typed consent/deliverability/suppression states. Neither protected input is
+included in the decision source-facts envelope except for the already-governed
+campaign contact hash; raw provider identifiers and normalized addresses never
+leave their read boundaries.
 
 ## HighLevel contract evidence
 
@@ -97,18 +107,21 @@ compatibility as unproven for real transport rows and forces those rows to
 ## Validation
 
 - TypeScript strict no-emit: `PASS`
-- Focused domain/reader/runner/integration suite: `30/30 PASS`
+- Focused domain/reader/runner/integration suite without native opt-in: `33/33 PASS`
 - pg-mem fresh migration plus real decision-store composition: `PASS`, zero
   decision rows
 - Disposable PostgreSQL: exact `18.4` / `180004`
-- Native exact-account/cross-account-decoy hash join: `PASS`
-- Native active-adult, active-self-Student absence, canonical suppression/DND,
-  and malformed-envelope fail-closed probes: `PASS`
+- Native campaign-hash parity, durable mapping precedence, exact normalized-email
+  fallback, account/product/location decoys, duplicate binding/email/adult,
+  legacy-hash-only, archived adult, active self-Student scope, canonical
+  suppression/DND, and malformed-envelope fail-closed probes: `1/1 PASS`
 - Provider DND status/casing/contradiction, count/cursor/page/total ceiling,
   origin/version pin, timeout sanitization, pool cleanup, replay cardinality,
   reintroduction, and hash-compatibility regressions: `PASS`
-- Formatting, whitespace, exact path scope, migration integrity, diff, and
-  secret/static scans: `PASS`
+- Deterministic candidate builder: `4/4 PASS`
+- Identity-contract static assertions: `12/12 PASS`
+- Repository build, exact-path ESLint, formatting, whitespace, path scope,
+  migration integrity, diff, and secret/static scans: `PASS`
 - Disposable database/cluster: stopped and removed
 
 ## Zero-effect ledger

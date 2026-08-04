@@ -1,9 +1,8 @@
-import { createHash } from 'node:crypto';
-
 import { Pool } from 'pg';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 
 import {
+  governedCampaignNormalizedEmailHash,
   governedCampaignProviderContactRefHash,
   type GovernedCensusDatabaseFacts,
   type GovernedCensusDecisionHistory,
@@ -22,8 +21,14 @@ import {
 } from '../../scripts/highlevel/governed-campaign-audience-census.ts';
 
 const LOCATION = GOVERNED_CAMPAIGN_PROVIDER_BINDING.providerLocationId;
-const HASH_A = governedCampaignProviderContactRefHash(LOCATION, 'synthetic-integration-a');
-const HASH_B = governedCampaignProviderContactRefHash(LOCATION, 'synthetic-integration-b');
+const RAW_A = 'synthetic-integration-a';
+const RAW_B = 'synthetic-integration-b';
+const EMAIL_A = 'synthetic-integration-a@example.invalid';
+const EMAIL_B = 'synthetic-integration-b@example.invalid';
+const HASH_A = governedCampaignProviderContactRefHash(LOCATION, RAW_A);
+const HASH_B = governedCampaignProviderContactRefHash(LOCATION, RAW_B);
+const EMAIL_HASH_A = governedCampaignNormalizedEmailHash(EMAIL_A);
+const EMAIL_HASH_B = governedCampaignNormalizedEmailHash(EMAIL_B);
 const SCOPE = {
   runtimeTier: 'isolated_staging' as const,
   verificationEnvironmentId: 'ci',
@@ -154,18 +159,30 @@ describe.skipIf(!nativeUrl)('governed census disposable PostgreSQL 18 reader', (
   const pool = new Pool({ connectionString: nativeUrl });
   afterAll(async () => pool.end());
 
-  it('proves exact account joins, canonical suppression, and Student absence without raw output', async () => {
+  it('proves durable mapping, scoped fallback, legacy conflict, and no raw output', async () => {
     assertDisposableLoopback(nativeUrl!);
     await pool.query('DROP SCHEMA IF EXISTS onetime CASCADE');
     await pool.query('CREATE SCHEMA onetime');
     await createNativeSchema(pool);
-    const email = 'adult-census@example.invalid';
-    const emailHash = createHash('sha256').update(email).digest('hex');
+    const databaseHash = await pool.query<{ hash: string }>(
+      `SELECT encode(
+         sha256(
+           convert_to('governed-ghl-contact-v1', 'UTF8')
+           || decode('00', 'hex')
+           || convert_to($1, 'UTF8')
+           || decode('00', 'hex')
+           || convert_to($2, 'UTF8')
+         ),
+         'hex'
+       ) AS hash`,
+      [LOCATION, RAW_A],
+    );
+    expect(databaseHash.rows[0]?.hash).toBe(HASH_A);
     await pool.query(
       `INSERT INTO onetime.v21_adult_identities VALUES
-         ('adult-1', 'active', $1, $2, $3),
-         ('adult-decoy', 'active', $1, $2, $3)`,
-      [SCOPE.productKey, SCOPE.runtimeTier, SCOPE.verificationEnvironmentId],
+         ('adult-1', $1, 'active', $2, $3, $4),
+         ('adult-cross-scope', $1, 'active', 'another-product', $3, $4)`,
+      [EMAIL_A, SCOPE.productKey, SCOPE.runtimeTier, SCOPE.verificationEnvironmentId],
     );
     await pool.query(
       `INSERT INTO onetime.adult_ghl_identity_link
@@ -179,13 +196,21 @@ describe.skipIf(!nativeUrl)('governed census disposable PostgreSQL 18 reader', (
             'evidence_digest', repeat('a', 64),
             'version', 1
           ), $3, $4, $5)`,
-      [emailHash, HASH_A, SCOPE.productKey, SCOPE.runtimeTier, SCOPE.verificationEnvironmentId],
+      [
+        EMAIL_HASH_A,
+        'f'.repeat(64),
+        SCOPE.productKey,
+        SCOPE.runtimeTier,
+        SCOPE.verificationEnvironmentId,
+      ],
     );
     await pool.query(
       `INSERT INTO onetime.contacts VALUES
          ('contact-canonical', $1, $2, $3, 'family', 'active', 'policy-v1', now()),
-         ('contact-cross-account-decoy', 'another-account', $2, $3, 'school', 'suppressed', NULL, NULL)`,
-      [SCOPE.accountKey, SCOPE.productKey, email],
+         ('contact-cross-account-decoy', 'another-account', $2, $3, 'school', 'suppressed', NULL, NULL),
+         ('contact-cross-product-decoy', $1, 'another-product', $4, 'school', 'suppressed', NULL, NULL),
+         ('contact-cross-location-decoy', $1, $2, $4, 'school', 'suppressed', NULL, NULL)`,
+      [SCOPE.accountKey, SCOPE.productKey, EMAIL_A, EMAIL_B],
     );
     await pool.query(
       `INSERT INTO onetime.highlevel_contact_preferences VALUES
@@ -197,9 +222,22 @@ describe.skipIf(!nativeUrl)('governed census disposable PostgreSQL 18 reader', (
          ('household-1', 'adult-1', 'family', 'inactive', $1, $2, $3)`,
       [SCOPE.productKey, SCOPE.runtimeTier, SCOPE.verificationEnvironmentId],
     );
+    await pool.query(
+      `INSERT INTO onetime.adult_household_contact_links VALUES
+         ('link-canonical', $1, $2, 'contact-canonical', 'household-1', $3, $4, 'synced'),
+         ('link-account-decoy', 'another-account', $2, 'contact-cross-account-decoy', 'household-decoy', $3, $4, 'synced'),
+         ('link-product-decoy', $1, 'another-product', 'contact-cross-product-decoy', 'household-product-decoy', $3, $4, 'synced'),
+         ('link-location-decoy', $1, $2, 'contact-cross-location-decoy', 'household-location-decoy', 'another-location', $4, 'synced')`,
+      [SCOPE.accountKey, SCOPE.productKey, LOCATION, RAW_A],
+    );
+    await pool.query(
+      `INSERT INTO onetime.v21_student_profiles VALUES
+         ('adult-1', 'self', 'active', 'another-product', $1, $2)`,
+      [SCOPE.runtimeTier, SCOPE.verificationEnvironmentId],
+    );
     const result = await createPostgresGovernedCampaignCensusReader(pool).read({
       scope: SCOPE,
-      providerContactRefHashes: [HASH_A],
+      providerContacts: [provider(HASH_A)],
       maximumProviderContacts: 10,
     });
     expect(result.databaseFacts.get(HASH_A)).toMatchObject({
@@ -210,8 +248,70 @@ describe.skipIf(!nativeUrl)('governed census disposable PostgreSQL 18 reader', (
       consentState: 'opted_in',
       deliverabilityState: 'deliverable',
       providerSuppressionState: 'active',
+      identityMatchState: 'exact',
     });
-    expect(JSON.stringify(result)).not.toContain(email);
+    expect(JSON.stringify(result)).not.toContain(EMAIL_A);
+    expect(JSON.stringify(result)).not.toContain(RAW_A);
+
+    await pool.query(
+      `DELETE FROM onetime.adult_household_contact_links
+        WHERE account_key = $1 AND product_key = $2`,
+      [SCOPE.accountKey, SCOPE.productKey],
+    );
+    const fallback = await createPostgresGovernedCampaignCensusReader(pool).read({
+      scope: SCOPE,
+      providerContacts: [provider(HASH_A)],
+      maximumProviderContacts: 10,
+    });
+    expect(fallback.databaseFacts.get(HASH_A)).toMatchObject({
+      contactKey: 'contact-canonical',
+      identityMatchState: 'exact',
+      adultEvidenceState: 'proven',
+    });
+
+    await pool.query(
+      `INSERT INTO onetime.v21_adult_identities VALUES
+         ('adult-duplicate', $1, 'active', $2, $3, $4)`,
+      [EMAIL_A, SCOPE.productKey, SCOPE.runtimeTier, SCOPE.verificationEnvironmentId],
+    );
+    const duplicateAdult = await createPostgresGovernedCampaignCensusReader(pool).read({
+      scope: SCOPE,
+      providerContacts: [provider(HASH_A)],
+      maximumProviderContacts: 10,
+    });
+    expect(duplicateAdult.databaseFacts.get(HASH_A)).toMatchObject({
+      identityMatchState: 'duplicate',
+      adultEvidenceState: 'conflicting',
+    });
+    await pool.query("DELETE FROM onetime.v21_adult_identities WHERE adult_id = 'adult-duplicate'");
+
+    await pool.query(
+      `UPDATE onetime.adult_ghl_identity_link
+          SET verified_contact_ref_hash = $1
+        WHERE adult_id = 'adult-1'`,
+      [HASH_A],
+    );
+    const legacyOnly = await createPostgresGovernedCampaignCensusReader(pool).read({
+      scope: SCOPE,
+      providerContacts: [{ ...provider(HASH_A), normalizedEmailHash: null }],
+      maximumProviderContacts: 10,
+    });
+    expect(legacyOnly.databaseFacts.get(HASH_A)).toMatchObject({
+      contactKey: null,
+      identityMatchState: 'ambiguous',
+    });
+
+    const duplicateProviderEmail = await createPostgresGovernedCampaignCensusReader(pool).read({
+      scope: SCOPE,
+      providerContacts: [
+        provider(HASH_A),
+        { ...provider(HASH_B), normalizedEmailHash: EMAIL_HASH_A },
+      ],
+      maximumProviderContacts: 10,
+    });
+    expect(duplicateProviderEmail.databaseFacts.get(HASH_A)).toMatchObject({
+      identityMatchState: 'duplicate',
+    });
 
     await pool.query(
       `UPDATE onetime.adult_ghl_identity_link
@@ -220,12 +320,24 @@ describe.skipIf(!nativeUrl)('governed census disposable PostgreSQL 18 reader', (
     );
     const malformed = await createPostgresGovernedCampaignCensusReader(pool).read({
       scope: SCOPE,
-      providerContactRefHashes: [HASH_A],
+      providerContacts: [provider(HASH_A)],
       maximumProviderContacts: 10,
     });
     expect(malformed.databaseFacts.get(HASH_A)).toMatchObject({
       consentState: 'unknown',
       providerSuppressionState: 'unknown',
+    });
+
+    await pool.query(
+      `UPDATE onetime.v21_adult_identities SET state = 'archived' WHERE adult_id = 'adult-1'`,
+    );
+    const archived = await createPostgresGovernedCampaignCensusReader(pool).read({
+      scope: SCOPE,
+      providerContacts: [provider(HASH_A)],
+      maximumProviderContacts: 10,
+    });
+    expect(archived.databaseFacts.get(HASH_A)).toMatchObject({
+      adultEvidenceState: 'not_proven',
     });
     await pool.query('DROP SCHEMA onetime CASCADE');
   });
@@ -286,7 +398,7 @@ function basePreparationInput(
 function provider(hash: GovernedCensusSha256): ProtectedGovernedCensusProviderContact {
   return {
     providerContactRefHash: hash,
-    identityHashContractState: 'compatible',
+    normalizedEmailHash: hash === HASH_A ? EMAIL_HASH_A : EMAIL_HASH_B,
     consentState: 'opted_in',
     deliverabilityState: 'deliverable',
     providerSuppressionState: 'active',
@@ -324,7 +436,8 @@ function assertDisposableLoopback(value: string) {
 async function createNativeSchema(pool: Pool) {
   await pool.query(`
     CREATE TABLE onetime.v21_adult_identities (
-      adult_id text PRIMARY KEY, state text NOT NULL, product_key text NOT NULL,
+      adult_id text PRIMARY KEY, normalized_email text NOT NULL,
+      state text NOT NULL, product_key text NOT NULL,
       runtime_tier text NOT NULL,
       verification_environment_id text NOT NULL
     );
@@ -332,6 +445,12 @@ async function createNativeSchema(pool: Pool) {
       adult_id text PRIMARY KEY, normalized_email_hash text NOT NULL, state text NOT NULL,
       verified_contact_ref_hash text, suppression_json jsonb NOT NULL,
       product_key text NOT NULL, runtime_tier text NOT NULL, verification_environment_id text NOT NULL
+    );
+    CREATE TABLE onetime.adult_household_contact_links (
+      link_key text PRIMARY KEY, account_key text NOT NULL, product_key text NOT NULL,
+      contact_key text NOT NULL, household_key text NOT NULL,
+      highlevel_location_id text NOT NULL,
+      highlevel_contact_id text, sync_state text NOT NULL
     );
     CREATE TABLE onetime.contacts (
       contact_key text NOT NULL, account_key text NOT NULL, product_key text NOT NULL,

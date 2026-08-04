@@ -2,10 +2,10 @@ import { pathToFileURL } from 'node:url';
 
 import {
   buildGovernedCampaignCensusPlan,
+  governedCampaignNormalizedEmailHash,
   governedCampaignProviderContactRefHash,
   type GovernedCampaignCensusPlan,
   type GovernedCensusDecisionHistory,
-  type GovernedCensusSha256,
   type ProtectedGovernedCensusProviderContact,
 } from '../../packages/domain/src/audience-reconciliation/governed-campaign-census.ts';
 import {
@@ -48,7 +48,7 @@ export interface GovernedCampaignCensusProviderTransport {
 export interface GovernedCampaignCensusReader {
   read(input: {
     scope: GovernedCampaignCensusReadScope;
-    providerContactRefHashes: readonly GovernedCensusSha256[];
+    providerContacts: readonly ProtectedGovernedCensusProviderContact[];
     maximumProviderContacts: number;
   }): Promise<GovernedCampaignCensusReadResult>;
 }
@@ -100,10 +100,9 @@ export async function prepareGovernedCampaignAudienceCensus(
 ): Promise<PreparedGovernedCampaignAudienceCensus> {
   validateOperatorInput(input);
   const contacts = await readBoundedProviderContacts(input.provider, input.maximumProviderContacts);
-  const providerContactRefHashes = contacts.map((row) => row.providerContactRefHash);
   const readback = await input.reader.read({
     scope: input.scope,
-    providerContactRefHashes,
+    providerContacts: contacts,
     maximumProviderContacts: input.maximumProviderContacts,
   });
   if (readback.readOnlyTransaction !== true)
@@ -384,19 +383,19 @@ function protectHighLevelContact(
   const emailStatus = dndSettings.Email === undefined ? 'unknown' : officialStatus;
   const suppressed = emailStatus === 'suppressed';
   const explicitlyActive = emailStatus === 'active';
+  const deliverabilityState =
+    email === ''
+      ? 'missing'
+      : /^[^@\s]+@[^@\s]+\.[^@\s]+$/u.test(email)
+        ? 'deliverable'
+        : 'invalid';
   return {
     providerContactRefHash: governedCampaignProviderContactRefHash(expectedLocationId, row.id),
-    // No repository producer defines this domain-separated hash contract yet.
-    // Therefore real provider rows can only classify as review, never include.
-    identityHashContractState: 'unproven',
+    normalizedEmailHash:
+      deliverabilityState === 'deliverable' ? governedCampaignNormalizedEmailHash(email) : null,
     // Channel inactivity proves only that email DND is inactive; it is not marketing opt-in proof.
     consentState: suppressed ? 'opted_out' : 'unknown',
-    deliverabilityState:
-      email === ''
-        ? 'missing'
-        : /^[^@\s]+@[^@\s]+\.[^@\s]+$/u.test(email)
-          ? 'deliverable'
-          : 'invalid',
+    deliverabilityState,
     providerSuppressionState: suppressed ? 'suppressed' : explicitlyActive ? 'active' : 'unknown',
   };
 }

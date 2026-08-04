@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import {
+  governedCampaignNormalizedEmailHash,
   governedCampaignProviderContactRefHash,
   type GovernedCensusDatabaseFacts,
   type GovernedCensusSha256,
@@ -22,6 +23,7 @@ import {
 const LOCATION = GOVERNED_CAMPAIGN_PROVIDER_BINDING.providerLocationId;
 const HASH_A = governedCampaignProviderContactRefHash(LOCATION, 'synthetic-a');
 const HASH_B = governedCampaignProviderContactRefHash(LOCATION, 'synthetic-b');
+const EMAIL_HASH = governedCampaignNormalizedEmailHash('synthetic-census@example.invalid');
 
 describe('governed campaign audience census runner', () => {
   it('is default off before dependency creation or connection', async () => {
@@ -107,7 +109,7 @@ describe('governed campaign audience census runner', () => {
     expect(inactive.contacts[0]).toMatchObject({
       consentState: 'unknown',
       providerSuppressionState: 'active',
-      identityHashContractState: 'unproven',
+      normalizedEmailHash: governedCampaignNormalizedEmailHash('provider-inactive@example.invalid'),
     });
     for (const status of ['active', 'permanent']) {
       expect(
@@ -252,14 +254,25 @@ describe('governed campaign audience census runner', () => {
     expect(JSON.stringify(result)).not.toContain('synthetic-a');
   });
 
-  it('forces real provider hashes to review while producer compatibility is unproven', async () => {
+  it('passes only protected identity inputs to the reader and never emits email evidence', async () => {
     const protectedContact = parseHighLevelPage(
-      { contacts: [rawContact('provider-unproven-contract', 'inactive')], count: 1 },
+      { contacts: [rawContact('provider-protected-contract', 'inactive')], count: 1 },
       LOCATION,
       10,
     ).contacts[0]!;
-    const result = await prepareGovernedCampaignAudienceCensus(
-      preparationInput(
+    const reader = vi.fn(async () => ({
+      databaseFacts: new Map([
+        [
+          protectedContact.providerContactRefHash,
+          database(protectedContact.providerContactRefHash),
+        ],
+      ]),
+      history: new Map(),
+      currentProjectionRows: 0,
+      readOnlyTransaction: true as const,
+    }));
+    const result = await prepareGovernedCampaignAudienceCensus({
+      ...preparationInput(
         [protectedContact],
         new Map([
           [
@@ -269,11 +282,16 @@ describe('governed campaign audience census runner', () => {
         ]),
         vi.fn(),
       ),
-    );
+      reader: { read: reader },
+    });
     expect(result.request.decisions[0]).toMatchObject({
       decision: 'review',
-      primaryReason: 'ambiguous_identity',
+      primaryReason: 'unknown_consent',
     });
+    expect(reader).toHaveBeenCalledWith(
+      expect.objectContaining({ providerContacts: [protectedContact] }),
+    );
+    expect(JSON.stringify(result)).not.toContain(protectedContact.normalizedEmailHash);
   });
 
   it('fails before any write capability when maximumAffectedRows is insufficient', async () => {
@@ -348,7 +366,7 @@ function page(
 function provider(hash: GovernedCensusSha256): ProtectedGovernedCensusProviderContact {
   return {
     providerContactRefHash: hash,
-    identityHashContractState: 'compatible',
+    normalizedEmailHash: EMAIL_HASH,
     consentState: 'opted_in',
     deliverabilityState: 'deliverable',
     providerSuppressionState: 'active',

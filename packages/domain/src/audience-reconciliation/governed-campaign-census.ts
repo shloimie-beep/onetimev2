@@ -30,7 +30,7 @@ export interface GovernedCensusSourceFacts {
 
 export interface ProtectedGovernedCensusProviderContact {
   providerContactRefHash: GovernedCensusSha256;
-  identityHashContractState: 'compatible' | 'unproven';
+  normalizedEmailHash: GovernedCensusSha256 | null;
   consentState: GovernedCensusSourceFacts['consentState'];
   deliverabilityState: GovernedCensusSourceFacts['deliverabilityState'];
   providerSuppressionState: GovernedCensusSourceFacts['providerSuppressionState'];
@@ -125,6 +125,16 @@ export function governedCampaignProviderContactRefHash(
     invalid('location and provider contact identifiers must be non-empty');
   }
   return sha256(`governed-ghl-contact-v1\u0000${locationId}\u0000${rawProviderContactId}`);
+}
+
+export function governedCampaignNormalizedEmailHash(normalizedEmail: string): GovernedCensusSha256 {
+  if (
+    normalizedEmail !== normalizedEmail.trim().toLowerCase() ||
+    !/^[^@\s]+@[^@\s]+\.[^@\s]+$/u.test(normalizedEmail)
+  ) {
+    invalid('normalizedEmail must be a canonical valid email');
+  }
+  return sha256(normalizedEmail);
 }
 
 export function governedCampaignCensusDecisionKey(
@@ -268,10 +278,7 @@ function composeSourceFacts(
       provider.providerSuppressionState,
       database.providerSuppressionState,
     ),
-    identityMatchState:
-      provider.identityHashContractState === 'compatible'
-        ? database.identityMatchState
-        : 'ambiguous',
+    identityMatchState: database.identityMatchState,
     sourceJoinCount: database.sourceJoinCount + 1,
   } as const;
   return {
@@ -458,11 +465,9 @@ function validateDatabaseFacts(
 }
 
 function validateProviderContact(contact: ProtectedGovernedCensusProviderContact) {
-  requireEnum(
-    contact.identityHashContractState,
-    ['compatible', 'unproven'],
-    'provider.identityHashContractState',
-  );
+  if (contact.normalizedEmailHash !== null) {
+    requireSha256(contact.normalizedEmailHash, 'provider.normalizedEmailHash');
+  }
   requireEnum(contact.consentState, ['opted_in', 'opted_out', 'unknown'], 'provider.consentState');
   requireEnum(
     contact.deliverabilityState,

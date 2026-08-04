@@ -2,7 +2,9 @@ import { describe, expect, it, vi } from 'vitest';
 
 import {
   governedCampaignCanonicalSha256,
+  governedCampaignNormalizedEmailHash,
   governedCampaignProviderContactRefHash,
+  type ProtectedGovernedCensusProviderContact,
   type GovernedCensusSha256,
 } from '../../../domain/src/audience-reconciliation/governed-campaign-census.ts';
 import { GOVERNED_CAMPAIGN_PROVIDER_BINDING } from './governed-campaign-decision-store.ts';
@@ -16,6 +18,14 @@ const HASH = governedCampaignProviderContactRefHash(
   'synthetic-protected-contact',
 );
 const DIGEST = 'a'.repeat(64) as GovernedCensusSha256;
+const EMAIL_HASH = governedCampaignNormalizedEmailHash('synthetic-adult@example.invalid');
+const PROVIDER_CONTACT: ProtectedGovernedCensusProviderContact = {
+  providerContactRefHash: HASH,
+  normalizedEmailHash: EMAIL_HASH,
+  consentState: 'opted_in',
+  deliverabilityState: 'deliverable',
+  providerSuppressionState: 'active',
+};
 const scope = {
   runtimeTier: 'isolated_staging' as const,
   verificationEnvironmentId: 'ci',
@@ -38,11 +48,17 @@ describe('governed campaign census read-only repository', () => {
 
     const result = await reader.read({
       scope,
-      providerContactRefHashes: [HASH],
+      providerContacts: [PROVIDER_CONTACT],
       maximumProviderContacts: 10,
     });
 
     expect(sql[0]!.text).toBe('BEGIN TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY');
+    expect(sql[1]!.text).toContain('onetime.adult_household_contact_links AS mapping');
+    expect(sql[1]!.text).toContain('mapping.household_key AS mapped_household_key');
+    expect(sql[1]!.text).toContain("convert_to('governed-ghl-contact-v1', 'UTF8')");
+    expect(sql[1]!.text).toContain("decode('00', 'hex')");
+    expect(sql[1]!.text).toContain('mapping.highlevel_location_id');
+    expect(sql[1]!.text).toContain('normalized_email_matches');
     expect(sql[1]!.text).toContain('onetime.contacts AS contact');
     expect(sql[1]!.text).toContain('contact.account_key = exact_scope.account_key');
     expect(sql[1]!.text).toContain(
@@ -87,13 +103,128 @@ describe('governed campaign census read-only repository', () => {
     });
     const result = await createPostgresGovernedCampaignCensusReader({
       connect: vi.fn(async () => client),
-    }).read({ scope, providerContactRefHashes: [HASH], maximumProviderContacts: 10 });
+    }).read({ scope, providerContacts: [PROVIDER_CONTACT], maximumProviderContacts: 10 });
 
     expect(result.databaseFacts.get(HASH)).toMatchObject({
       adultEvidenceState: 'not_proven',
       consentState: 'unknown',
       providerSuppressionState: 'unknown',
     });
+  });
+
+  it('accepts only unique scoped fallback identity and fails closed on mapping or legacy ambiguity', async () => {
+    const fallbackClient = fakeClient({
+      facts: [
+        factRow({
+          identity_source: 'normalized_email_fallback',
+          mapped_household_key: null,
+          mapping_sync_state: null,
+        }),
+      ],
+      history: [],
+      currentRows: 0,
+    }).client;
+    const fallback = await createPostgresGovernedCampaignCensusReader({
+      connect: vi.fn(async () => fallbackClient),
+    }).read({ scope, providerContacts: [PROVIDER_CONTACT], maximumProviderContacts: 10 });
+    expect(fallback.databaseFacts.get(HASH)).toMatchObject({ identityMatchState: 'exact' });
+
+    const conflictClient = fakeClient({
+      facts: [factRow({ mapping_sync_state: 'conflict' })],
+      history: [],
+      currentRows: 0,
+    }).client;
+    const conflict = await createPostgresGovernedCampaignCensusReader({
+      connect: vi.fn(async () => conflictClient),
+    }).read({ scope, providerContacts: [PROVIDER_CONTACT], maximumProviderContacts: 10 });
+    expect(conflict.databaseFacts.get(HASH)).toMatchObject({ identityMatchState: 'ambiguous' });
+
+    const contradictoryLegacyStateClient = fakeClient({
+      facts: [factRow({ link_state: 'unlinked' })],
+      history: [],
+      currentRows: 0,
+    }).client;
+    const contradictoryLegacyState = await createPostgresGovernedCampaignCensusReader({
+      connect: vi.fn(async () => contradictoryLegacyStateClient),
+    }).read({ scope, providerContacts: [PROVIDER_CONTACT], maximumProviderContacts: 10 });
+    expect(contradictoryLegacyState.databaseFacts.get(HASH)).toMatchObject({
+      identityMatchState: 'ambiguous',
+    });
+
+    const duplicateMappingClient = fakeClient({
+      facts: [
+        factRow(),
+        factRow({
+          mapped_household_key: 'household-synthetic-2',
+          household_id: 'household-synthetic-2',
+        }),
+      ],
+      history: [],
+      currentRows: 0,
+    }).client;
+    const duplicateMapping = await createPostgresGovernedCampaignCensusReader({
+      connect: vi.fn(async () => duplicateMappingClient),
+    }).read({ scope, providerContacts: [PROVIDER_CONTACT], maximumProviderContacts: 10 });
+    expect(duplicateMapping.databaseFacts.get(HASH)).toMatchObject({
+      identityMatchState: 'duplicate',
+    });
+
+    const legacyOnlyClient = fakeClient({
+      facts: [
+        factRow({
+          identity_source: null,
+          mapped_household_key: null,
+          mapping_sync_state: null,
+          provider_email_match_count: '0',
+          provider_email_matches_contact: null,
+          legacy_hash_match_count: '1',
+          legacy_hash_other_adult_count: '1',
+          selected_link_email_matches_adult: null,
+          adult_id: null,
+          link_state: null,
+          suppression_json: null,
+          adult_state: null,
+          household_id: null,
+          classification: null,
+          access_projection: null,
+          contact_key: null,
+          contact_classification: null,
+          contact_suppression_state: null,
+          consent_proven: null,
+          contact_email_present: null,
+          contact_email_shape_valid: null,
+          preferences_present: null,
+          email_dnd: null,
+          all_dnd: null,
+          self_student_count: '0',
+        }),
+      ],
+      history: [],
+      currentRows: 0,
+    }).client;
+    const legacyOnly = await createPostgresGovernedCampaignCensusReader({
+      connect: vi.fn(async () => legacyOnlyClient),
+    }).read({
+      scope,
+      providerContacts: [{ ...PROVIDER_CONTACT, normalizedEmailHash: null }],
+      maximumProviderContacts: 10,
+    });
+    expect(legacyOnly.databaseFacts.get(HASH)).toMatchObject({
+      contactKey: null,
+      identityMatchState: 'ambiguous',
+    });
+  });
+
+  it('classifies repeated provider email bindings as duplicate identity', async () => {
+    const { client } = fakeClient({
+      facts: [factRow({ provider_email_match_count: '2' })],
+      history: [],
+      currentRows: 0,
+    });
+    const result = await createPostgresGovernedCampaignCensusReader({
+      connect: vi.fn(async () => client),
+    }).read({ scope, providerContacts: [PROVIDER_CONTACT], maximumProviderContacts: 10 });
+    expect(result.databaseFacts.get(HASH)).toMatchObject({ identityMatchState: 'duplicate' });
   });
 
   it('returns coherent replay metadata and validates the full source-facts hash', async () => {
@@ -133,7 +264,7 @@ describe('governed campaign census read-only repository', () => {
     });
     const result = await createPostgresGovernedCampaignCensusReader({
       connect: vi.fn(async () => client),
-    }).read({ scope, providerContactRefHashes: [HASH], maximumProviderContacts: 10 });
+    }).read({ scope, providerContacts: [PROVIDER_CONTACT], maximumProviderContacts: 10 });
 
     expect(result.history.get(HASH)).toMatchObject({
       maximumDecisionVersion: 7,
@@ -156,7 +287,7 @@ describe('governed campaign census read-only repository', () => {
     const reader = createPostgresGovernedCampaignCensusReader({ connect });
 
     await expect(
-      reader.read({ scope, providerContactRefHashes: [HASH], maximumProviderContacts: 10 }),
+      reader.read({ scope, providerContacts: [PROVIDER_CONTACT], maximumProviderContacts: 10 }),
     ).rejects.toMatchObject({ code: 'READ_ONLY_TRANSACTION_FAILED' });
     expect(query.mock.calls.map(([text]) => text)).toEqual([
       'BEGIN TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY',
@@ -170,6 +301,14 @@ describe('governed campaign census read-only repository', () => {
 function factRow(override: Record<string, unknown> = {}) {
   return {
     provider_contact_ref_hash: HASH,
+    identity_source: 'durable_mapping',
+    mapped_household_key: 'household-synthetic-1',
+    mapping_sync_state: 'synced',
+    provider_email_match_count: '1',
+    provider_email_matches_contact: true,
+    legacy_hash_match_count: '0',
+    legacy_hash_other_adult_count: '0',
+    selected_link_email_matches_adult: true,
     adult_id: 'adult-synthetic-1',
     link_state: 'linked',
     suppression_json: {

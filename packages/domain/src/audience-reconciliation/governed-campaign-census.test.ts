@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   buildGovernedCampaignCensusPlan,
   governedCampaignCensusDecisionKey,
+  governedCampaignNormalizedEmailHash,
   governedCampaignProviderContactRefHash,
   type GovernedCensusDatabaseFacts,
   type GovernedCensusDecisionHistory,
@@ -14,6 +15,7 @@ const LOCATION_ID = 'pBSnOK2nkdxp6gf9Rg3o';
 const HASH_A = governedCampaignProviderContactRefHash(LOCATION_ID, 'synthetic-provider-a');
 const HASH_B = governedCampaignProviderContactRefHash(LOCATION_ID, 'synthetic-provider-b');
 const HASH_C = governedCampaignProviderContactRefHash(LOCATION_ID, 'synthetic-provider-c');
+const EMAIL_HASH = governedCampaignNormalizedEmailHash('synthetic-adult@example.invalid');
 
 describe('governed campaign census policy', () => {
   it('includes only a fully proven inactive adult', () => {
@@ -185,6 +187,20 @@ describe('governed campaign census policy', () => {
     ).toThrow(/identityMatchState is invalid/iu);
   });
 
+  it('requires an exact full normalized-email hash and rejects noncanonical input', () => {
+    expect(EMAIL_HASH).toMatch(/^[a-f0-9]{64}$/u);
+    expect(governedCampaignNormalizedEmailHash('synthetic-adult@example.invalid')).toBe(EMAIL_HASH);
+    expect(() => governedCampaignNormalizedEmailHash('Synthetic-Adult@example.invalid')).toThrow(
+      /canonical valid email/iu,
+    );
+    expect(() =>
+      planFor(
+        [provider(HASH_A, { normalizedEmailHash: 'not-a-full-hash' as GovernedCensusSha256 })],
+        new Map([[HASH_A, database(HASH_A)]]),
+      ),
+    ).toThrow(/normalizedEmailHash must be a full lowercase SHA-256/iu);
+  });
+
   it('rejects incoherent history, mismatched hashes, and unsafe increments', () => {
     const initial = planFor([provider(HASH_A)], new Map([[HASH_A, database(HASH_A)]]));
     const first = initial.decisions[0]!;
@@ -259,7 +275,7 @@ function provider(
 ): ProtectedGovernedCensusProviderContact {
   return {
     providerContactRefHash,
-    identityHashContractState: 'compatible',
+    normalizedEmailHash: EMAIL_HASH,
     consentState: 'opted_in',
     deliverabilityState: 'deliverable',
     providerSuppressionState: 'active',
