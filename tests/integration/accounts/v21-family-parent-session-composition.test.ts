@@ -1056,7 +1056,9 @@ function createDbBackedTestAdultSessionRepository(db: DbPool): V21AdultSessionRe
   const productionRepository = createPostgresV21AdultSessionRepository(db);
   return {
     create: async (input) => {
-      const identity = await readExactParentIdentity(db, input);
+      if (input.householdId === null) throw new Error('Parent-session household is required');
+      const parentInput = { ...input, householdId: input.householdId };
+      const identity = await readExactParentIdentity(db, parentInput);
       if (!identity) throw new Error('Parent-session identity binding is not eligible');
       const idleExpiresAt = new Date(
         input.issuedAt.getTime() + ADULT_SESSION_POLICY.parent.idleMilliseconds,
@@ -1092,6 +1094,8 @@ function createDbBackedTestAdultSessionRepository(db: DbPool): V21AdultSessionRe
       return resolvedParentSession(input.adultId, identity, session);
     },
     resolve: async (input) => {
+      if (input.householdId === null) return null;
+      const parentInput = { ...input, householdId: input.householdId };
       const digestColumn =
         input.tokenKind === 'access' ? 'access_token_digest' : 'refresh_token_digest';
       const result = await db.query(
@@ -1122,10 +1126,11 @@ function createDbBackedTestAdultSessionRepository(db: DbPool): V21AdultSessionRe
       );
       const session = result.rows[0] as Record<string, unknown> | undefined;
       if (result.rowCount !== 1 || !session) return null;
-      const identity = await readExactParentIdentity(db, input);
+      const identity = await readExactParentIdentity(db, parentInput);
       return identity ? resolvedParentSession(input.adultId, identity, session) : null;
     },
     revoke: async (input) => {
+      if (input.householdId === null) return false;
       const digestColumn =
         input.tokenKind === 'access' ? 'access_token_digest' : 'refresh_token_digest';
       const result = await db.query(
@@ -1346,6 +1351,7 @@ function resolvedParentSession(
     normalizedEmail: identity.normalizedEmail,
     ownerDisplayName: identity.ownerDisplayName,
     ownedHouseholdCount: 1,
+    memberships: ['parent'],
     session: {
       sessionId: String(session.session_id),
       product: 'one_time_mishnayos',

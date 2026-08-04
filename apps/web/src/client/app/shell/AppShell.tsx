@@ -28,6 +28,13 @@ type AppShellProps = {
   onLogout?: (() => void) | undefined;
   sessionExpired?: boolean;
   onSignIn?: (() => void) | undefined;
+  roleContext?:
+    | {
+        activeRole: 'admin' | 'parent';
+        availableRoles: readonly ('admin' | 'parent')[];
+        csrfToken: string;
+      }
+    | undefined;
 };
 
 export function AppShell({
@@ -44,8 +51,10 @@ export function AppShell({
   onLogout,
   sessionExpired = false,
   onSignIn,
+  roleContext,
 }: AppShellProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [switchingRole, setSwitchingRole] = useState<'admin' | 'parent' | null>(null);
   const menuButtonRef = useRef<HTMLButtonElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const drawerRef = useRef<HTMLElement | null>(null);
@@ -107,6 +116,30 @@ export function AppShell({
     };
   const homeHref = navItems[0]?.href ?? '/app/dashboard';
 
+  async function switchRole(requestedRole: 'admin' | 'parent') {
+    if (!roleContext || requestedRole === roleContext.activeRole || switchingRole) return;
+    setSwitchingRole(requestedRole);
+    try {
+      const response = await fetch('/api/v2.1/account-context/role', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+          accept: 'application/json',
+          'content-type': 'application/json',
+          'x-csrf-token': roleContext.csrfToken,
+        },
+        body: JSON.stringify({ requested_role: requestedRole, csrf_token: roleContext.csrfToken }),
+      });
+      const payload = (await response.json()) as { return_to?: string; message?: string };
+      if (!response.ok || !payload.return_to) {
+        throw new Error(payload.message ?? 'Role switching is unavailable.');
+      }
+      window.location.assign(payload.return_to);
+    } catch {
+      setSwitchingRole(null);
+    }
+  }
+
   return (
     <div className="app-shell">
       <a className="skip-link" href="#app-main">
@@ -147,6 +180,21 @@ export function AppShell({
         <div className="app-context" aria-label="Current account">
           <span>{shellUser.roleLabel}</span>
         </div>
+        {roleContext && roleContext.availableRoles.length > 1 && (
+          <div className="app-role-switcher" role="group" aria-label="Switch account role">
+            {(['admin', 'parent'] as const).map((role) => (
+              <button
+                key={role}
+                type="button"
+                aria-pressed={roleContext.activeRole === role}
+                disabled={switchingRole !== null || roleContext.activeRole === role}
+                onClick={() => void switchRole(role)}
+              >
+                {switchingRole === role ? 'Switching…' : role === 'admin' ? 'Admin' : 'Parent'}
+              </button>
+            ))}
+          </div>
+        )}
         <div className="app-user" aria-label="Signed-in user">
           <strong>{shellUser.displayName}</strong>
           <span>{shellUser.email}</span>

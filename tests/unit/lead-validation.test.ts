@@ -61,14 +61,14 @@ describe('lead validation and content contracts', () => {
     expect(campaign.id).toBe('configured-free-access');
     expect(campaign.timezone).toBe('Asia/Jerusalem');
     expect(campaignTicker(new Date('2026-09-10T20:59:00Z'))).toBeNull();
-    expect(campaignTicker(new Date('2026-09-10T20:59:00Z'), '2026-09-13T19:24:00+03:00')).toContain(
+    expect(campaignTicker(new Date('2026-09-11T14:59:00Z'), '2026-09-11T18:00:00+03:00')).toContain(
       'FREE ACCESS',
     );
     expect(
-      campaignTicker(new Date('2026-09-13T19:24:00+03:00'), '2026-09-13T19:24:00+03:00'),
+      campaignTicker(new Date('2026-09-11T18:00:00+03:00'), '2026-09-11T18:00:00+03:00'),
     ).toBeNull();
-    expect(landingContent.hero.kickerLines).toEqual(['LIVE ONLINE', 'ON-DEMAND REVIEW']);
-    expect(landingContent.hero.heading).toBe('Mishnayos made memorable.');
+    expect(landingContent.hero.eyebrow).toBe('LIVE, ONLINE + ON-DEMAND');
+    expect(landingContent.hero.headline).toBe('Help your son love learning Mishnayos.');
     expect(landingContent).not.toHaveProperty('whatsappAssistant');
     expect(publicCopy).not.toMatch(/September 13|2026-09-13|LIVE EVERY DAY/i);
   });

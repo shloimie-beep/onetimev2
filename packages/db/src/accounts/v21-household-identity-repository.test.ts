@@ -70,6 +70,39 @@ describe('F04 PostgreSQL v2.1 adult-session repository', () => {
     expect(JSON.stringify(query.values)).not.toContain('raw-session-material');
   });
 
+  it('creates an exact Admin context with no household and the shorter Admin session policy', async () => {
+    const capture = capturingDb(() => [
+      sessionRow({
+        active_role: 'admin',
+        active_household_id: null,
+        idle_expires_at: '2026-07-30T19:00:00.000Z',
+        absolute_expires_at: '2026-07-31T06:30:00.000Z',
+        memberships: ['admin', 'parent'],
+      }),
+    ]);
+    const repository = createPostgresV21AdultSessionRepository(capture.db);
+    const created = await repository.create({
+      ...binding,
+      activeRole: 'admin',
+      householdId: null,
+      accessTokenDigest: accessDigest,
+      refreshTokenDigest: refreshDigest,
+      issuedAt,
+    });
+    expect(created).toMatchObject({
+      memberships: ['admin', 'parent'],
+      session: {
+        activeRole: 'admin',
+        activeHouseholdId: null,
+        idleExpiresAt: '2026-07-30T19:00:00.000Z',
+        absoluteExpiresAt: '2026-07-31T06:30:00.000Z',
+      },
+      household: null,
+    });
+    expect(capture.queries[0]!.text).toContain("membership.role = 'admin'");
+    expect(capture.queries[0]!.text).toContain("'admin', NULL");
+  });
+
   it('resolves access and refresh digests only through the exact live binding', async () => {
     const capture = capturingDb(() => [sessionRow({ access_state: 'inactive' })]);
 

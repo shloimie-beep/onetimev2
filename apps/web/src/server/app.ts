@@ -975,14 +975,39 @@ export function createApp({
   });
 
   app.get('/select-role', async (req: RequestWithTrace, res) => {
+    const cookieHeader = req.header('cookie');
+    if (cookieHeaderHasName(cookieHeader, AUTH_SESSION_COOKIE.name)) {
+      const resolution = await v21AdultSessionRuntime.resolveCookieHeader({
+        cookie_header: cookieHeader,
+        ...(clock ? { now: clock() } : {}),
+      });
+      if (resolution.status === 'unavailable') {
+        setPrivateNoStore(res);
+        res.status(503).type('text').send('Role selection is temporarily unavailable.');
+        return;
+      }
+      if (resolution.status === 'resolved') {
+        if (resolution.context.memberships.length < 2) {
+          res.redirect(302, defaultRouteForRole(resolution.context.session.activeRole));
+          return;
+        }
+        setPrivateNoStore(res);
+        res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+        res
+          .status(200)
+          .type('html')
+          .send(roleSelectionPageHtml(resolution.context.session.activeRole));
+        return;
+      }
+      clearAuthCookies(res, config);
+    }
     const session = await sessionFromRequest(req, pool, config);
-    if (!session) {
-      res.redirect(302, '/login?return_to=%2Fselect-role');
+    if (session) {
+      res.redirect(302, defaultRouteForRole(session.user.role));
       return;
     }
-    setPrivateNoStore(res);
-    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
-    res.status(404).type('text').send('Authorized role selection is not available.');
+    res.redirect(302, '/login?return_to=%2Fselect-role');
+    return;
   });
 
   app.post('/api/v1/account-lifecycle/token-status', async (req: RequestWithTrace, res) => {
@@ -1198,6 +1223,11 @@ export function createApp({
             return;
           }
           if (resolution.status === 'resolved' && resolution.context) {
+            if (resolution.context.session.activeRole === 'admin') {
+              setPrivateNoStore(res);
+              await sendAppHtml(res, distDir, route.shell === 'live' ? 'live' : 'crm', config);
+              return;
+            }
             setPrivateNoStore(res);
             res.status(403).type('html').send(forbiddenOwnerAdminHtml(req.path));
             return;
@@ -1817,10 +1847,16 @@ export function createApp({
         res.status(200).json({
           success: true,
           session_model: 'v21',
-          user: v21ClientUser(v21Login.user),
+          user: v21ClientUser({ ...v21Login.user, active_role: v21Login.active_role }),
           csrf_token: v21Login.csrf_token,
           expires_at: v21Login.expires_at,
-          return_to: returnPathForRole(payload.return_to, 'parent', config),
+          account_context: {
+            active_role: v21Login.active_role,
+            available_roles: v21Login.memberships,
+          },
+          return_to: v21Login.role_selection_required
+            ? '/select-role'
+            : returnPathForRole(payload.return_to, v21Login.active_role, config),
         });
         return;
       }
@@ -2129,21 +2165,30 @@ export function createApp({
         adult_id: bootstrap.context.adultId,
         email: bootstrap.context.normalizedEmail,
         display_name: bootstrap.context.ownerDisplayName,
+        active_role: bootstrap.context.session.activeRole,
       }),
       csrf_token: bootstrap.csrf_token,
       expires_at: bootstrap.expires_at,
-      parent_context: {
-        adult_id: bootstrap.context.adultId,
-        human_account_id: bootstrap.context.session.humanAccountId,
-        owned_household_count: bootstrap.context.ownedHouseholdCount,
-        household: {
-          household_id: bootstrap.context.household.householdId,
-          display_name: bootstrap.context.household.displayName,
-          classification: bootstrap.context.household.classification,
-          access_state: bootstrap.context.household.accessState,
-          owner_relationship: bootstrap.context.household.ownerRelationship,
-        },
+      account_context: {
+        active_role: bootstrap.context.session.activeRole,
+        available_roles: bootstrap.context.memberships,
       },
+      ...(bootstrap.context.household
+        ? {
+            parent_context: {
+              adult_id: bootstrap.context.adultId,
+              human_account_id: bootstrap.context.session.humanAccountId,
+              owned_household_count: bootstrap.context.ownedHouseholdCount,
+              household: {
+                household_id: bootstrap.context.household.householdId,
+                display_name: bootstrap.context.household.displayName,
+                classification: bootstrap.context.household.classification,
+                access_state: bootstrap.context.household.accessState,
+                owner_relationship: bootstrap.context.household.ownerRelationship,
+              },
+            },
+          }
+        : {}),
     });
     return true;
   };
@@ -2154,6 +2199,62 @@ export function createApp({
 
   app.get('/api/v2.1/auth/session', async (req: RequestWithTrace, res) => {
     await sendV21SessionBootstrap(req, res, true);
+  });
+
+  app.post('/api/v2.1/account-context/role', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    if (!isSameOriginPost(req, config)) {
+      res.status(403).json(publicError('FORBIDDEN', 'Same-origin request required.', req.traceId));
+      return;
+    }
+    const requestedRole = req.body?.requested_role;
+    if (requestedRole !== 'admin' && requestedRole !== 'parent') {
+      res.status(400).json(publicError('VALIDATION_ERROR', 'Choose Admin or Parent.', req.traceId));
+      return;
+    }
+    const outcome = await v21AdultSessionRuntime.switchRoleCookieHeader({
+      cookie_header: req.header('cookie'),
+      csrf_token: req.header('x-csrf-token') ?? req.body?.csrf_token,
+      requested_role: requestedRole,
+      ...(clock ? { now: clock() } : {}),
+    });
+    if (!outcome.switched) {
+      const status =
+        outcome.reason === 'invalid_session' ? 401 : outcome.reason === 'unavailable' ? 503 : 403;
+      res
+        .status(status)
+        .json(
+          publicError(
+            outcome.reason === 'invalid_session' ? 'UNAUTHENTICATED' : 'FORBIDDEN',
+            outcome.reason === 'unavailable'
+              ? 'Role switching is temporarily unavailable.'
+              : 'That role is not available for this account.',
+            req.traceId,
+          ),
+        );
+      return;
+    }
+    clearAuthCookies(res, config);
+    res.append(
+      'Set-Cookie',
+      sessionCookieHeader({
+        token: outcome.browser_session_token,
+        max_age_seconds: Math.max(
+          0,
+          Math.floor(
+            (Date.parse(outcome.expires_at) - (clock ? clock().getTime() : Date.now())) / 1000,
+          ),
+        ),
+      }),
+    );
+    res.status(200).json({
+      success: true,
+      active_role: outcome.active_role,
+      available_roles: outcome.memberships,
+      csrf_token: outcome.csrf_token,
+      expires_at: outcome.expires_at,
+      return_to: defaultRouteForRole(outcome.active_role),
+    });
   });
 
   app.post('/api/v1/auth/logout', async (req: RequestWithTrace, res) => {
@@ -2203,7 +2304,12 @@ export function createApp({
 
   app.get('/api/v1/dashboard/owner', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
-    const session = await requireApiSession(req, res, pool, config);
+    const session = await requireAdminDashboardSession(req, res, {
+      pool,
+      config,
+      v21AdultSessionRuntime,
+      ...(clock ? { clock } : {}),
+    });
     if (!session) return;
     if (!canUseOwnerDashboard(session.user.role)) {
       res
@@ -4871,6 +4977,55 @@ async function requireApiSession(
   return session;
 }
 
+async function requireAdminDashboardSession(
+  req: RequestWithTrace,
+  res: Response,
+  input: {
+    pool: DbPool;
+    config: AppConfig;
+    v21AdultSessionRuntime: V21AdultSessionRuntime;
+    clock?: (() => Date) | undefined;
+  },
+): Promise<AuthenticatedSession | null> {
+  const legacy = await sessionFromRequest(req, input.pool, input.config);
+  if (legacy) return legacy;
+  const cookieHeader = req.header('cookie');
+  if (!cookieHeaderHasName(cookieHeader, AUTH_SESSION_COOKIE.name)) {
+    setPrivateNoStore(res);
+    res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+    return null;
+  }
+  const resolution = await input.v21AdultSessionRuntime.resolveCookieHeader({
+    cookie_header: cookieHeader,
+    ...(input.clock ? { now: input.clock() } : {}),
+  });
+  if (resolution.status === 'unavailable') {
+    res
+      .status(503)
+      .json(publicError('SERVER_ERROR', 'Session readback is unavailable.', req.traceId));
+    return null;
+  }
+  if (resolution.status !== 'resolved' || resolution.context.session.activeRole !== 'admin') {
+    res.status(403).json(publicError('FORBIDDEN', 'Admin context is required.', req.traceId));
+    return null;
+  }
+  const context = resolution.context;
+  return {
+    session_key: context.session.sessionId,
+    session_security_version: context.session.securityVersion,
+    user: v21ClientUser({
+      human_account_id: context.session.humanAccountId,
+      adult_id: context.adultId,
+      email: context.normalizedEmail,
+      display_name: context.ownerDisplayName,
+      active_role: 'admin',
+    }),
+    expires_at: context.session.absoluteExpiresAt,
+    assurance_method: 'password',
+    assurance_at: null,
+  };
+}
+
 async function requireSessionCsrf(
   req: RequestWithTrace,
   res: Response,
@@ -5774,13 +5929,15 @@ function v21ClientUser(input: {
   adult_id: string;
   email: string;
   display_name: string;
+  active_role?: 'admin' | 'parent';
 }): SessionUser {
+  const role = input.active_role ?? 'parent';
   return {
     user_key: input.human_account_id,
     email: input.email,
     display_name: input.display_name,
-    role: 'parent',
-    role_label: 'Parent',
+    role,
+    role_label: role === 'admin' ? 'Admin' : 'Parent',
     mfa_capable: false,
   };
 }
@@ -6353,6 +6510,39 @@ function canonicalAuthStatePageHtml(title: string, message: string) {
       <p><a href="/login">Return to login</a></p>
     </main>
   </body>
+</html>`;
+}
+
+function roleSelectionPageHtml(activeRole: 'admin' | 'parent') {
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Choose account context | One Time Mishnayos</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#050505">
+  <link rel="stylesheet" href="/assets/public.css">
+</head>
+<body>
+  <main class="login-page role-selection-page">
+    <section class="login-panel role-selection-panel" data-role-selector data-active-role="${activeRole}">
+      <a class="brand-lockup login-brand" href="/" aria-label="One Time Mishnayos home">
+        <img src="/assets/brand/onetimelogo.webp" width="56" height="56" alt="" aria-hidden="true">
+        <span><strong>One Time Mishnayos</strong><small>Account context</small></span>
+      </a>
+      <p class="eyebrow">Signed in once</p>
+      <h1>How would you like to continue?</h1>
+      <p>Choose one role now. You can switch again from the signed-in header.</p>
+      <div class="role-selection-actions">
+        <button class="button button-primary" type="button" data-select-role="admin">Continue as Admin</button>
+        <button class="button button-secondary" type="button" data-select-role="parent">Continue as Parent</button>
+      </div>
+      <p class="form-status" role="status" data-role-status></p>
+    </section>
+  </main>
+  <script type="module" src="/assets/public.js"></script>
+</body>
 </html>`;
 }
 

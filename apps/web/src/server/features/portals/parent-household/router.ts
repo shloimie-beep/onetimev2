@@ -209,6 +209,7 @@ async function requireMutationPrincipal(
 
 function principalFrom(context: V21ParentSessionContext): ParentHouseholdPrincipal {
   if (
+    !context.household ||
     context.session.activeRole !== 'parent' ||
     context.session.activeHouseholdId !== context.household.householdId ||
     context.household.ownerRelationship !== 'account_owner'

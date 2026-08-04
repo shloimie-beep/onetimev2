@@ -4,7 +4,7 @@ import { expect, test, type Page } from '@playwright/test';
 const testBaseUrl =
   process.env.PLAYWRIGHT_BASE_URL ?? `http://127.0.0.1:${process.env.PORT ?? '3100'}`;
 
-test('public landing implements the complete accepted campaign contract', async ({ page }) => {
+test('public landing implements the bounded product-repair contract', async ({ page }) => {
   await useServerDate(page, '2026-08-01T12:00:00.000Z');
   await page.setViewportSize({ width: 1440, height: 1000 });
   const requests: string[] = [];
@@ -12,7 +12,7 @@ test('public landing implements the complete accepted campaign contract', async 
   await page.goto('/');
 
   await expect(
-    page.getByRole('heading', { name: 'HELP YOUR SON LOVE LEARNING MISHNAYOS' }),
+    page.getByRole('heading', { name: 'Help your son love learning Mishnayos.' }),
   ).toBeVisible();
   await expect(
     page.getByText('Sunday-through-Thursday reminders help keep the learning consistent.'),
@@ -25,52 +25,41 @@ test('public landing implements the complete accepted campaign contract', async 
       /world-renowned|Master Shas|daily reminders|daily rhythm|daily Torah-learning routine|daily learning community/i,
     ),
   ).toHaveCount(0);
-  await expect(page.locator('.hero-eyebrow')).toHaveText('LIVE ONLINE + ON-DEMAND');
-  await expect(page.locator('.hero-supporting')).toHaveText(
-    'A fast-paced live-streamed class with Rabbi Eli Scheller. The boys complete one perek each class day, with clear explanations and review so they understand and remember what they learn.',
-  );
-  await expect(page.locator('.hero .schedule')).toHaveText(
-    'LIVE SUNDAY–THURSDAY · 7:00 PM ISRAEL TIME',
-  );
-  await expect(page.locator('[data-first-class-at]')).toHaveText(
-    'Class begins Sunday, August 16, 2026 at 7:00 PM Asia/Jerusalem.',
-  );
-  await expect(page.locator('[data-free-access-cutoff]')).toHaveText(
-    'Free access cutoff: Friday, September 11, 2026 at 6:00 PM Asia/Jerusalem.',
-  );
+  await expect(page.locator('.hero-eyebrow')).toHaveText('LIVE, ONLINE + ON-DEMAND');
+  await expect(page.locator('.hero-supporting, .hero .schedule, .hero-note')).toHaveCount(0);
   const heroCta = page.locator('.hero .hero-cta');
-  await expect(heroCta).toHaveText('Pre-register Your Family');
+  await expect(heroCta).toHaveText('Pre-register your Family');
   await expect(heroCta).toHaveAttribute('href', '/signup');
+  await expect(page.locator('.hero .hero-cta')).toHaveCount(1);
   await expect(heroCta).toHaveCSS('background-color', 'rgb(255, 212, 0)');
   await expect(page.locator('.hero h1')).toHaveCSS('font-family', /Inter/);
   await expect(page.locator('.hero h1')).toHaveCSS('font-weight', '900');
-  await expect(page.locator('.hero h1 span').last()).toHaveCSS('color', 'rgb(255, 212, 0)');
-  await expect(
-    page.locator('.hero-note:not([data-first-class-at]):not([data-free-access-cutoff])'),
-  ).toHaveText('Adult email only • No Student details • No credit card or automatic charge');
+  await expect(page.locator('.hero-photo img')).toHaveAttribute(
+    'src',
+    '/assets/rabbi/rabbi-eli-holding-book.jpg',
+  );
+  await expect(page.locator('.hero-photo img')).toHaveAttribute('width', '1600');
+  await expect(page.locator('.hero-photo img')).toHaveAttribute('height', '1067');
+  await expect(page.locator('.hero [src*="composite"], .hero [style*="composite"]')).toHaveCount(0);
 
   await expect(
-    page.getByRole('heading', { name: 'One protected place for live class and review' }),
-  ).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Live class', exact: true })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'On-demand library', exact: true })).toBeVisible();
-  await expect(page.getByText('Student email is not required.', { exact: false })).toHaveCount(1);
+    page.locator('.experience, .participation, .enrollment, #access, .assurances'),
+  ).toHaveCount(0);
+  await expect(page.getByRole('link', { name: 'Experience', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('link', { name: 'Pricing', exact: true })).toHaveCount(0);
   await expect(page.getByText(/adult may learn as a Student/i)).toBeVisible();
-  await expect(page.getByText(/current desktop or mobile browser/i)).toBeVisible();
-  await expect(page.getByText(/camera is optional/i)).toBeVisible();
-  await expect(page.getByText(/class recordings may be made available/i)).toBeVisible();
-  await expect(
-    page.getByRole('heading', { name: 'Pre-register your Family', exact: true }),
-  ).toBeVisible();
-  await expect(
-    page.locator('.enrollment').getByRole('link', { name: 'Pre-register your Family' }),
-  ).toHaveAttribute('href', '/signup');
-  await expect(page.getByRole('link', { name: /School inquiry/i })).toHaveCount(0);
-  await expect(
-    page.getByRole('heading', { name: 'Pre-registration and future access' }),
-  ).toBeVisible();
-  await expect(page.locator('#access [data-before-expiry]')).toBeVisible();
-  await expect(page.locator('#access [data-at-or-after-expiry]')).toBeHidden();
+  await expect(page.getByRole('heading', { name: 'How It Works' })).toBeVisible();
+  await expect(page.locator('#how-it-works .how-intro > img')).toHaveAttribute(
+    'src',
+    '/assets/how-it-works/family-learning-overview.png',
+  );
+  for (const image of [
+    'parent-manages-students.png',
+    'student-opens-live-class.png',
+    'student-opens-library.png',
+  ]) {
+    await expect(page.locator(`#how-it-works img[src$="${image}"]`)).toBeVisible();
+  }
   await expect(page.getByRole('link', { name: 'Terms, cancellation, and refunds' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Privacy Notice' }).last()).toBeVisible();
   await expect(page.getByRole('link', { name: 'Student Data Notice' })).toBeVisible();
@@ -82,7 +71,6 @@ test('public landing implements the complete accepted campaign contract', async 
     'href',
     '/support',
   );
-  await expect(page.getByText('WhatsApp is not an active launch support channel.')).toBeVisible();
   await expect(page.getByText(/fake|testimonial/i)).toHaveCount(0);
   expect(requests.some((url) => /(?:operations|bna)/i.test(url))).toBe(false);
 
@@ -92,7 +80,6 @@ test('public landing implements the complete accepted campaign contract', async 
     'content',
     'https://join.onetimeonetime.com/assets/social/mishnayos-made-memorable.png',
   );
-  await expect(page.locator('img')).toHaveCount(21);
   const brokenImages = await page.locator('img').evaluateAll((images) =>
     images
       .filter((image) => (image as HTMLImageElement).loading !== 'lazy')
@@ -120,26 +107,34 @@ test('gallery selection and playback controls update their rendered state', asyn
   await assertGalleryControls(page);
 });
 
-test('canonical free-period configuration controls the countdown and access boundary', async ({
-  page,
-}) => {
+test('canonical launch timing controls the animated ribbon boundary', async ({ page }) => {
   await useServerDate(page, '2026-09-11T14:59:00.000Z');
   await page.goto('/');
   await expect(page.locator('.campaign-ticker-shell')).toBeVisible();
-  await expect(page.locator('#access')).toHaveAttribute(
-    'data-access-boundary',
-    '2026-09-11T18:00:00+03:00',
+  await expect(page.locator('.campaign-ticker')).toHaveAttribute(
+    'aria-label',
+    'CLASSES START AUG 16 · 7 PM · FREE ACCESS THROUGH SEP 11 · 6 PM · JERUSALEM TIME',
   );
-  await expect(page.locator('#access [data-before-expiry]')).toBeVisible();
-  await expect(page.locator('#access [data-at-or-after-expiry]')).toBeHidden();
+  await expect(page.locator('.campaign-ticker-track')).toHaveCSS(
+    'animation-name',
+    'campaign-ticker-scroll',
+  );
+  const initialTransform = await page
+    .locator('.campaign-ticker-track')
+    .evaluate((element) => getComputedStyle(element).transform);
+  await page.waitForTimeout(500);
+  await expect
+    .poll(() =>
+      page
+        .locator('.campaign-ticker-track')
+        .evaluate((element) => getComputedStyle(element).transform),
+    )
+    .not.toBe(initialTransform);
 
   await page.unrouteAll({ behavior: 'wait' });
   await useServerDate(page, '2026-09-11T15:00:01.000Z');
   await page.reload();
   await expect(page.locator('.campaign-ticker-shell')).toBeHidden();
-  await expect(page.locator('#access [data-before-expiry]')).toBeHidden();
-  await expect(page.locator('#access [data-at-or-after-expiry]')).toBeVisible();
-  await expect(page.locator('#access [data-at-or-after-expiry]')).toContainText('$67/month');
 
   await page.goto('/signup');
   await expect(page.getByRole('heading', { name: 'Pre-register Your Family' })).toBeVisible();
@@ -417,7 +412,7 @@ test('campaign remains useful without JavaScript and honors reduced motion and m
     await page.setViewportSize(viewport);
     await page.goto('/');
     await expect(
-      page.getByRole('heading', { name: 'HELP YOUR SON LOVE LEARNING MISHNAYOS' }),
+      page.getByRole('heading', { name: 'Help your son love learning Mishnayos.' }),
     ).toBeVisible();
     expect(
       await page.evaluate(
@@ -434,10 +429,9 @@ test('campaign remains useful without JavaScript and honors reduced motion and m
   const noJsPage = await context.newPage();
   await noJsPage.goto('/');
   await expect(
-    noJsPage.getByRole('heading', { name: 'HELP YOUR SON LOVE LEARNING MISHNAYOS' }),
+    noJsPage.getByRole('heading', { name: 'Help your son love learning Mishnayos.' }),
   ).toBeVisible();
-  await expect(noJsPage.getByText(/Sunday, August 16, 2026/)).toBeVisible();
-  await expect(noJsPage.getByText(/Friday, September 11, 2026/)).toHaveCount(1);
+  await expect(noJsPage.getByText(/CLASSES START AUG 16/)).toHaveCount(6);
   await expect(noJsPage.getByText(/September 13, 2026/)).toHaveCount(0);
   await noJsPage.goto('/signup');
   await expect(noJsPage.locator('noscript > .noscript-panel')).toContainText(

@@ -133,16 +133,69 @@ function renderCampaignCountdown() {
   const remainingMs = boundary - serverNow().getTime();
   if (shell) shell.hidden = remainingMs <= 0;
   campaign.hidden = false;
-  if (remainingMs <= 0) return;
-  const totalMinutes = Math.max(0, Math.ceil(remainingMs / 60_000));
-  const days = Math.floor(totalMinutes / 1440);
-  const hours = Math.floor((totalMinutes % 1440) / 60);
-  const minutes = totalMinutes % 60;
-  const copy = `FREE ACCESS — ${days}d ${hours}h ${minutes}m remaining`;
-  campaign.setAttribute('aria-label', `${copy}. Pre-register your Family.`);
-  campaign
-    .querySelectorAll<HTMLElement>('.campaign-ticker-item')
-    .forEach((item) => (item.textContent = copy));
+}
+
+const roleSelector = document.querySelector<HTMLElement>('[data-role-selector]');
+if (roleSelector) void installRoleSelector(roleSelector);
+
+async function installRoleSelector(root: HTMLElement) {
+  const status = root.querySelector<HTMLElement>('[data-role-status]');
+  const buttons = [...root.querySelectorAll<HTMLButtonElement>('[data-select-role]')];
+  let csrfToken = '';
+  try {
+    const response = await fetch('/api/v2.1/auth/session', {
+      credentials: 'same-origin',
+      headers: { accept: 'application/json' },
+    });
+    const payload = (await response.json()) as {
+      csrf_token?: string;
+      account_context?: { available_roles?: string[] };
+    };
+    if (!response.ok || !payload.csrf_token) throw new Error('session_unavailable');
+    csrfToken = payload.csrf_token;
+    const available = new Set(payload.account_context?.available_roles ?? []);
+    buttons.forEach((button) => {
+      button.disabled = !available.has(button.dataset.selectRole ?? '');
+    });
+  } catch {
+    if (status)
+      status.textContent = 'Your signed-in account could not be verified. Please sign in again.';
+    buttons.forEach((button) => (button.disabled = true));
+    return;
+  }
+
+  buttons.forEach((button) =>
+    button.addEventListener('click', async () => {
+      const requestedRole = button.dataset.selectRole;
+      if (requestedRole !== 'admin' && requestedRole !== 'parent') return;
+      buttons.forEach((candidate) => (candidate.disabled = true));
+      if (status)
+        status.textContent = `Opening the ${requestedRole === 'admin' ? 'Admin' : 'Parent'} workspace…`;
+      try {
+        const response = await fetch('/api/v2.1/account-context/role', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: {
+            accept: 'application/json',
+            'content-type': 'application/json',
+            'x-csrf-token': csrfToken,
+          },
+          body: JSON.stringify({ requested_role: requestedRole, csrf_token: csrfToken }),
+        });
+        const payload = (await response.json()) as { return_to?: string; message?: string };
+        if (!response.ok || !payload.return_to) {
+          throw new Error(payload.message ?? 'Role switch failed.');
+        }
+        window.location.assign(payload.return_to);
+      } catch (error) {
+        if (status) {
+          status.textContent =
+            error instanceof Error ? error.message : 'Role switching is unavailable right now.';
+        }
+        buttons.forEach((candidate) => (candidate.disabled = false));
+      }
+    }),
+  );
 }
 
 function renderLocalClassTime() {

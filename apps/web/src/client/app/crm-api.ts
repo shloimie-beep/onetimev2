@@ -33,9 +33,14 @@ import type {
 
 export type ApiSession = {
   authenticated: true;
+  session_model?: 'v21';
   user: SessionUser;
   csrf_token: string;
   expires_at: string;
+  account_context?: {
+    active_role: 'admin' | 'parent';
+    available_roles: readonly ('admin' | 'parent')[];
+  };
   capabilities?: {
     crm?: {
       contacts?: {

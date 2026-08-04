@@ -56,7 +56,8 @@ export type V21AdultSessionRevocationReason =
 export interface V21ParentSessionBinding {
   adultId: string;
   humanAccountId: string;
-  householdId: string;
+  activeRole?: AdultRole;
+  householdId: string | null;
   runtimeTier: RuntimeTier;
   verificationEnvironmentId: VerificationEnvironmentId;
   securityVersion: number;
@@ -85,8 +86,9 @@ export interface ResolvedV21ParentSession {
   normalizedEmail: string;
   ownerDisplayName: string;
   ownedHouseholdCount: number;
+  memberships: readonly AdultRole[];
   session: AdultSession;
-  household: SafeHouseholdContext;
+  household: SafeHouseholdContext | null;
 }
 
 export interface V21AdultLoginIdentity {
@@ -97,6 +99,7 @@ export interface V21AdultLoginIdentity {
   humanAccountId: string | null;
   accountState: HumanAccount['state'] | null;
   securityVersion: number | null;
+  memberships: readonly AdultRole[];
   parentMembershipActive: boolean;
   passwordHash: string | null;
   credentialState: 'active' | 'reset_required' | 'disabled' | null;
@@ -139,9 +142,18 @@ export interface V21AdultSessionRepository {
  */
 export function createPostgresV21AdultSessionRepository(db: Queryable): V21AdultSessionRepository {
   return {
-    create: (input) => createV21ParentSession(db, input),
-    resolve: (input) => resolveV21ParentSession(db, input),
-    revoke: (input) => revokeV21ParentSession(db, input),
+    create: (input) =>
+      input.activeRole === 'admin'
+        ? createV21AdminSession(db, input)
+        : createV21ParentSession(db, input),
+    resolve: (input) =>
+      input.activeRole === 'admin'
+        ? resolveV21AdminSession(db, input)
+        : resolveV21ParentSession(db, input),
+    revoke: (input) =>
+      input.activeRole === 'admin'
+        ? revokeV21AdminSession(db, input)
+        : revokeV21ParentSession(db, input),
     findLoginIdentity: (input) => findV21AdultLoginIdentity(db, input),
     upgradeCredentialPasswordHash: (input) => upgradeV21AdultCredentialPasswordHash(db, input),
   };
@@ -187,7 +199,18 @@ export async function createV21ParentSession(
                    AND owned_household.verification_environment_id =
                        account.verification_environment_id
                    AND owned_household.state = 'active'
-              ) AS owned_household_count
+              ) AS owned_household_count,
+              ARRAY(
+                SELECT role_membership.role
+                  FROM onetime.v21_human_account_role_memberships AS role_membership
+                 WHERE role_membership.human_account_id = account.human_account_id
+                   AND role_membership.product_key = account.product_key
+                   AND role_membership.runtime_tier = account.runtime_tier
+                   AND role_membership.verification_environment_id =
+                       account.verification_environment_id
+                   AND role_membership.revoked_at IS NULL
+                 ORDER BY role_membership.role
+              ) AS memberships
          FROM onetime.v21_human_accounts AS account
          JOIN onetime.v21_adult_identities AS adult
            ON adult.adult_id = account.adult_id
@@ -255,7 +278,8 @@ export async function createV21ParentSession(
             eligible.owner_display_name,
             eligible.classification,
             eligible.access_state,
-            eligible.owned_household_count
+            eligible.owned_household_count,
+            eligible.memberships
        FROM inserted
        JOIN eligible
          ON eligible.human_account_id = inserted.human_account_id
@@ -285,6 +309,212 @@ export async function createV21ParentSession(
   return resolvedParentSession(row);
 }
 
+async function createV21AdminSession(
+  db: Queryable,
+  input: CreateV21ParentSessionInput,
+): Promise<ResolvedV21ParentSession> {
+  assertAdminSessionBinding(input);
+  assertDigest(input.accessTokenDigest, 'access');
+  assertDigest(input.refreshTokenDigest, 'refresh');
+  if (input.accessTokenDigest === input.refreshTokenDigest) {
+    throw new HouseholdIdentityRepositoryError(
+      'invalid_session_input',
+      'Access and refresh session digests must be domain-separated.',
+    );
+  }
+  const issuedAt = inputInstant(input.issuedAt);
+  const idleExpiresAt = new Date(
+    input.issuedAt.getTime() + ADULT_SESSION_POLICY.admin.idleMilliseconds,
+  ).toISOString();
+  const absoluteExpiresAt = new Date(
+    input.issuedAt.getTime() + ADULT_SESSION_POLICY.admin.absoluteMilliseconds,
+  ).toISOString();
+  const result = await db.query(
+    `WITH eligible AS (
+       SELECT account.human_account_id,
+              adult.adult_id,
+              adult.normalized_email,
+              adult.display_name AS owner_display_name,
+              (
+                SELECT count(*)::integer
+                  FROM onetime.v21_households AS owned_household
+                 WHERE owned_household.owner_human_account_id = account.human_account_id
+                   AND owned_household.owner_adult_id = adult.adult_id
+                   AND owned_household.product_key = account.product_key
+                   AND owned_household.runtime_tier = account.runtime_tier
+                   AND owned_household.verification_environment_id =
+                       account.verification_environment_id
+                   AND owned_household.state = 'active'
+              ) AS owned_household_count,
+              ARRAY(
+                SELECT role_membership.role
+                  FROM onetime.v21_human_account_role_memberships AS role_membership
+                 WHERE role_membership.human_account_id = account.human_account_id
+                   AND role_membership.product_key = account.product_key
+                   AND role_membership.runtime_tier = account.runtime_tier
+                   AND role_membership.verification_environment_id =
+                       account.verification_environment_id
+                   AND role_membership.revoked_at IS NULL
+                 ORDER BY role_membership.role
+              ) AS memberships
+         FROM onetime.v21_human_accounts AS account
+         JOIN onetime.v21_adult_identities AS adult
+           ON adult.adult_id = account.adult_id
+          AND adult.product_key = account.product_key
+          AND adult.runtime_tier = account.runtime_tier
+          AND adult.verification_environment_id = account.verification_environment_id
+          AND adult.state = 'active'
+         JOIN onetime.v21_human_account_role_memberships AS membership
+           ON membership.human_account_id = account.human_account_id
+          AND membership.role = 'admin'
+          AND membership.revoked_at IS NULL
+          AND membership.product_key = account.product_key
+          AND membership.runtime_tier = account.runtime_tier
+          AND membership.verification_environment_id = account.verification_environment_id
+        WHERE account.human_account_id = $2
+          AND adult.adult_id = $3
+          AND account.state = 'active'
+          AND account.security_version = $7
+          AND account.product_key = '${ONE_TIME_PRODUCT_SCOPE}'
+          AND account.runtime_tier = $5
+          AND account.verification_environment_id = $6
+     ),
+     inserted AS (
+       INSERT INTO onetime.v21_adult_sessions
+         (session_id, human_account_id, active_role, active_household_id,
+          access_token_digest, refresh_token_digest, security_version, version,
+          idle_expires_at, absolute_expires_at, product_key, runtime_tier,
+          verification_environment_id, created_at, updated_at)
+       SELECT $1, eligible.human_account_id, 'admin', NULL,
+              $8, $9, $7, 1, $10, $11, '${ONE_TIME_PRODUCT_SCOPE}', $5, $6, $12, $12
+         FROM eligible
+       ON CONFLICT (session_id) DO NOTHING
+       RETURNING *
+     )
+     SELECT inserted.*,
+            eligible.adult_id,
+            eligible.normalized_email,
+            eligible.owner_display_name,
+            eligible.owned_household_count,
+            eligible.memberships
+       FROM inserted
+       JOIN eligible ON eligible.human_account_id = inserted.human_account_id`,
+    [
+      input.sessionId,
+      input.humanAccountId,
+      input.adultId,
+      null,
+      input.runtimeTier,
+      input.verificationEnvironmentId,
+      input.securityVersion,
+      input.accessTokenDigest,
+      input.refreshTokenDigest,
+      idleExpiresAt,
+      absoluteExpiresAt,
+      issuedAt,
+    ],
+  );
+  const row = result.rows[0] as Record<string, unknown> | undefined;
+  if (!row) {
+    throw new HouseholdIdentityRepositoryError(
+      'session_not_created',
+      'The exact active Admin and security binding was not eligible.',
+    );
+  }
+  return resolvedAdminSession(row);
+}
+
+async function resolveV21AdminSession(
+  db: Queryable,
+  input: ResolveV21ParentSessionInput,
+): Promise<ResolvedV21ParentSession | null> {
+  assertAdminSessionBinding(input);
+  assertTokenKind(input.tokenKind);
+  assertDigest(input.tokenDigest, input.tokenKind);
+  const now = inputInstant(input.now);
+  const result = await db.query(
+    `SELECT session.*,
+            adult.adult_id,
+            adult.normalized_email,
+            adult.display_name AS owner_display_name,
+            (
+              SELECT count(*)::integer
+                FROM onetime.v21_households AS owned_household
+               WHERE owned_household.owner_human_account_id = account.human_account_id
+                 AND owned_household.owner_adult_id = adult.adult_id
+                 AND owned_household.product_key = account.product_key
+                 AND owned_household.runtime_tier = account.runtime_tier
+                 AND owned_household.verification_environment_id =
+                     account.verification_environment_id
+                 AND owned_household.state = 'active'
+            ) AS owned_household_count,
+            ARRAY(
+              SELECT role_membership.role
+                FROM onetime.v21_human_account_role_memberships AS role_membership
+               WHERE role_membership.human_account_id = account.human_account_id
+                 AND role_membership.product_key = account.product_key
+                 AND role_membership.runtime_tier = account.runtime_tier
+                 AND role_membership.verification_environment_id =
+                     account.verification_environment_id
+                 AND role_membership.revoked_at IS NULL
+               ORDER BY role_membership.role
+            ) AS memberships
+       FROM onetime.v21_adult_sessions AS session
+       JOIN onetime.v21_human_accounts AS account
+         ON account.human_account_id = session.human_account_id
+        AND account.product_key = session.product_key
+        AND account.runtime_tier = session.runtime_tier
+        AND account.verification_environment_id = session.verification_environment_id
+        AND account.state = 'active'
+        AND account.security_version = session.security_version
+       JOIN onetime.v21_adult_identities AS adult
+         ON adult.adult_id = account.adult_id
+        AND adult.product_key = account.product_key
+        AND adult.runtime_tier = account.runtime_tier
+        AND adult.verification_environment_id = account.verification_environment_id
+        AND adult.state = 'active'
+       JOIN onetime.v21_human_account_role_memberships AS membership
+         ON membership.human_account_id = account.human_account_id
+        AND membership.role = 'admin'
+        AND membership.revoked_at IS NULL
+        AND membership.product_key = account.product_key
+        AND membership.runtime_tier = account.runtime_tier
+        AND membership.verification_environment_id = account.verification_environment_id
+      WHERE session.session_id = $1
+        AND session.human_account_id = $2
+        AND adult.adult_id = $3
+        AND session.active_role = 'admin'
+        AND session.active_household_id IS NULL
+        AND session.product_key = '${ONE_TIME_PRODUCT_SCOPE}'
+        AND session.runtime_tier = $5
+        AND session.verification_environment_id = $6
+        AND session.security_version = $7
+        AND CASE $8::text
+              WHEN 'access' THEN session.access_token_digest = $9
+              WHEN 'refresh' THEN session.refresh_token_digest = $9
+              ELSE false
+            END
+        AND session.revoked_at IS NULL
+        AND session.idle_expires_at > $10
+        AND session.absolute_expires_at > $10
+      LIMIT 1`,
+    [
+      input.sessionId,
+      input.humanAccountId,
+      input.adultId,
+      null,
+      input.runtimeTier,
+      input.verificationEnvironmentId,
+      input.securityVersion,
+      input.tokenKind,
+      input.tokenDigest,
+      now,
+    ],
+  );
+  const row = result.rows[0] as Record<string, unknown> | undefined;
+  return row ? resolvedAdminSession(row) : null;
+}
+
 export async function resolveV21ParentSession(
   db: Queryable,
   input: ResolveV21ParentSessionInput,
@@ -310,7 +540,18 @@ export async function resolveV21ParentSession(
                  AND owned_household.verification_environment_id =
                      account.verification_environment_id
                  AND owned_household.state = 'active'
-            ) AS owned_household_count
+            ) AS owned_household_count,
+            ARRAY(
+              SELECT role_membership.role
+                FROM onetime.v21_human_account_role_memberships AS role_membership
+               WHERE role_membership.human_account_id = account.human_account_id
+                 AND role_membership.product_key = account.product_key
+                 AND role_membership.runtime_tier = account.runtime_tier
+                 AND role_membership.verification_environment_id =
+                     account.verification_environment_id
+                 AND role_membership.revoked_at IS NULL
+               ORDER BY role_membership.role
+            ) AS memberships
        FROM onetime.v21_adult_sessions AS session
        JOIN onetime.v21_human_accounts AS account
          ON account.human_account_id = session.human_account_id
@@ -381,6 +622,83 @@ export async function resolveV21ParentSession(
   );
   const row = result.rows[0] as Record<string, unknown> | undefined;
   return row ? resolvedParentSession(row) : null;
+}
+
+async function revokeV21AdminSession(
+  db: Queryable,
+  input: RevokeV21ParentSessionInput,
+): Promise<boolean> {
+  assertAdminSessionBinding(input);
+  assertTokenKind(input.tokenKind);
+  assertDigest(input.tokenDigest, input.tokenKind);
+  assertRevocationReason(input.reason);
+  const now = inputInstant(input.now);
+  const result = await db.query(
+    `WITH eligible_session AS (
+       SELECT session.session_id
+         FROM onetime.v21_adult_sessions AS session
+         JOIN onetime.v21_human_accounts AS account
+           ON account.human_account_id = session.human_account_id
+          AND account.product_key = session.product_key
+          AND account.runtime_tier = session.runtime_tier
+          AND account.verification_environment_id = session.verification_environment_id
+          AND account.state = 'active'
+          AND account.security_version = session.security_version
+         JOIN onetime.v21_adult_identities AS adult
+           ON adult.adult_id = account.adult_id
+          AND adult.product_key = account.product_key
+          AND adult.runtime_tier = account.runtime_tier
+          AND adult.verification_environment_id = account.verification_environment_id
+          AND adult.state = 'active'
+         JOIN onetime.v21_human_account_role_memberships AS membership
+           ON membership.human_account_id = account.human_account_id
+          AND membership.role = 'admin'
+          AND membership.revoked_at IS NULL
+          AND membership.product_key = account.product_key
+          AND membership.runtime_tier = account.runtime_tier
+          AND membership.verification_environment_id = account.verification_environment_id
+        WHERE session.session_id = $1
+          AND session.human_account_id = $2
+          AND adult.adult_id = $3
+          AND session.active_role = 'admin'
+          AND session.active_household_id IS NULL
+          AND session.product_key = '${ONE_TIME_PRODUCT_SCOPE}'
+          AND session.runtime_tier = $5
+          AND session.verification_environment_id = $6
+          AND session.security_version = $7
+          AND CASE $8::text
+                WHEN 'access' THEN session.access_token_digest = $9
+                WHEN 'refresh' THEN session.refresh_token_digest = $9
+                ELSE false
+              END
+          AND session.revoked_at IS NULL
+          AND session.idle_expires_at > $10
+          AND session.absolute_expires_at > $10
+        FOR UPDATE OF session
+     )
+     UPDATE onetime.v21_adult_sessions AS session
+        SET revoked_at = $10,
+            revoke_reason = $11,
+            version = session.version + 1,
+            updated_at = $10
+       FROM eligible_session
+      WHERE session.session_id = eligible_session.session_id
+      RETURNING session.session_id`,
+    [
+      input.sessionId,
+      input.humanAccountId,
+      input.adultId,
+      null,
+      input.runtimeTier,
+      input.verificationEnvironmentId,
+      input.securityVersion,
+      input.tokenKind,
+      input.tokenDigest,
+      now,
+      input.reason,
+    ],
+  );
+  return result.rowCount === 1;
 }
 
 export async function revokeV21ParentSession(
@@ -504,6 +822,7 @@ export async function findV21AdultLoginIdentity(
             credential.credential_state,
             credential.credential_version,
             (membership.human_account_id IS NOT NULL) AS parent_membership_active,
+            role_membership.role AS membership_role,
             household.household_id,
             household.classification,
             access.current_state AS access_state
@@ -526,6 +845,12 @@ export async function findV21AdultLoginIdentity(
         AND membership.product_key = adult.product_key
         AND membership.runtime_tier = adult.runtime_tier
         AND membership.verification_environment_id = adult.verification_environment_id
+       LEFT JOIN onetime.v21_human_account_role_memberships AS role_membership
+         ON role_membership.human_account_id = account.human_account_id
+        AND role_membership.revoked_at IS NULL
+        AND role_membership.product_key = adult.product_key
+        AND role_membership.runtime_tier = adult.runtime_tier
+        AND role_membership.verification_environment_id = adult.verification_environment_id
        LEFT JOIN onetime.v21_households AS household
          ON household.owner_human_account_id = account.human_account_id
         AND household.owner_adult_id = adult.adult_id
@@ -553,7 +878,8 @@ export async function findV21AdultLoginIdentity(
 
   const adultId = text(first.adult_id);
   const humanAccountId = nullableText(first.human_account_id);
-  const ownedHouseholds = result.rows.flatMap((candidate) => {
+  const ownedHouseholdMap = new Map<string, SafeHouseholdContext>();
+  for (const candidate of result.rows) {
     const row = candidate as Record<string, unknown>;
     if (
       text(row.adult_id) !== adultId ||
@@ -563,28 +889,30 @@ export async function findV21AdultLoginIdentity(
       row.access_state === null ||
       row.access_state === undefined
     ) {
-      return [];
+      continue;
     }
     const classification = enumValue(row.classification, ['family', 'school']);
-    return [
-      {
-        householdId: text(row.household_id),
-        displayName: householdDisplayName(first.owner_display_name, classification),
-        classification,
-        accessState: enumValue(row.access_state, ['free', 'active', 'grace', 'inactive']),
-        ownerRelationship: 'account_owner' as const,
-      },
-    ];
-  });
-  if (
-    new Set(ownedHouseholds.map((household) => household.householdId)).size !==
-    ownedHouseholds.length
-  ) {
-    throw new HouseholdIdentityRepositoryError(
-      'persistence_invariant',
-      'The adult login identity resolved duplicate owned households.',
-    );
+    const householdId = text(row.household_id);
+    ownedHouseholdMap.set(householdId, {
+      householdId,
+      displayName: householdDisplayName(first.owner_display_name, classification),
+      classification,
+      accessState: enumValue(row.access_state, ['free', 'active', 'grace', 'inactive']),
+      ownerRelationship: 'account_owner',
+    });
   }
+  const ownedHouseholds = [...ownedHouseholdMap.values()];
+  const memberships = canonicalAdultMemberships(
+    [
+      ...new Set(
+        result.rows.flatMap((candidate) => {
+          const role = (candidate as Record<string, unknown>).membership_role;
+          return role === null || role === undefined ? [] : [text(role)];
+        }),
+      ),
+    ].sort(),
+    first.parent_membership_active === true ? ['parent'] : [],
+  );
   return {
     adultId,
     normalizedEmail: text(first.normalized_email),
@@ -599,6 +927,7 @@ export async function findV21AdultLoginIdentity(
       first.security_version === null || first.security_version === undefined
         ? null
         : integer(first.security_version),
+    memberships,
     parentMembershipActive: first.parent_membership_active === true,
     passwordHash: nullableText(first.password_hash),
     credentialState:
@@ -609,10 +938,7 @@ export async function findV21AdultLoginIdentity(
       first.credential_version === null || first.credential_version === undefined
         ? null
         : integer(first.credential_version),
-    activeOwnedHouseholdCount: result.rows.filter((candidate) => {
-      const row = candidate as Record<string, unknown>;
-      return row.household_id !== null && row.household_id !== undefined;
-    }).length,
+    activeOwnedHouseholdCount: ownedHouseholds.length,
     ownedHouseholds,
   };
 }
@@ -981,14 +1307,51 @@ export async function persistAppliedOwnershipTransfer(
   );
 }
 
+function resolvedAdminSession(row: Record<string, unknown>): ResolvedV21ParentSession {
+  return {
+    adultId: text(row.adult_id),
+    normalizedEmail: text(row.normalized_email),
+    ownerDisplayName: ownerName(row.owner_display_name),
+    ownedHouseholdCount: integer(row.owned_household_count),
+    memberships: canonicalAdultMemberships(row.memberships, ['admin']),
+    session: {
+      sessionId: text(row.session_id),
+      product: enumValue(row.product_key, [ONE_TIME_PRODUCT_SCOPE]),
+      runtimeTier: enumValue(row.runtime_tier, ['isolated_staging', 'production']),
+      verificationEnvironmentId: enumValue(row.verification_environment_id, [
+        'ci',
+        'provider_sandbox',
+        'persistent_staging',
+        'production_read_only',
+        'production_operator_canary',
+        'production_broad',
+      ]),
+      humanAccountId: text(row.human_account_id),
+      activeRole: enumValue(row.active_role, ['admin']),
+      activeHouseholdId: null,
+      securityVersion: integer(row.security_version),
+      version: integer(row.version),
+      idleExpiresAt: timestamp(row.idle_expires_at),
+      absoluteExpiresAt: timestamp(row.absolute_expires_at),
+      revokedAt: nullableTimestamp(row.revoked_at),
+      revocationReason: nullableText(row.revoke_reason),
+      createdAt: timestamp(row.created_at),
+      updatedAt: timestamp(row.updated_at),
+    },
+    household: null,
+  };
+}
+
 function resolvedParentSession(row: Record<string, unknown>): ResolvedV21ParentSession {
   const classification = enumValue(row.classification, ['family', 'school']);
   const ownerDisplayName = ownerName(row.owner_display_name);
+  const memberships = canonicalAdultMemberships(row.memberships, ['parent']);
   return {
     adultId: text(row.adult_id),
     normalizedEmail: text(row.normalized_email),
     ownerDisplayName,
     ownedHouseholdCount: integer(row.owned_household_count),
+    memberships,
     session: {
       sessionId: text(row.session_id),
       product: enumValue(row.product_key, [ONE_TIME_PRODUCT_SCOPE]),
@@ -1023,10 +1386,41 @@ function resolvedParentSession(row: Record<string, unknown>): ResolvedV21ParentS
   };
 }
 
+function assertAdminSessionBinding(input: V21ParentSessionBinding & { sessionId: string }) {
+  inputIdentifier(input.sessionId, 'session');
+  inputIdentifier(input.adultId, 'adult');
+  inputIdentifier(input.humanAccountId, 'HumanAccount');
+  if (input.activeRole !== 'admin' || input.householdId !== null) {
+    throw new HouseholdIdentityRepositoryError(
+      'invalid_session_input',
+      'Admin-session binding requires the Admin role and no household context.',
+    );
+  }
+  assertRuntimeBinding(input.runtimeTier, input.verificationEnvironmentId);
+  if (!Number.isSafeInteger(input.securityVersion) || input.securityVersion < 1) {
+    throw new HouseholdIdentityRepositoryError(
+      'invalid_session_input',
+      'Adult session security version must be a positive integer.',
+    );
+  }
+}
+
 function assertParentSessionBinding(input: V21ParentSessionBinding & { sessionId: string }) {
   inputIdentifier(input.sessionId, 'session');
   inputIdentifier(input.adultId, 'adult');
   inputIdentifier(input.humanAccountId, 'HumanAccount');
+  if (input.activeRole !== undefined && input.activeRole !== 'parent') {
+    throw new HouseholdIdentityRepositoryError(
+      'invalid_session_input',
+      'Parent-session binding requires the Parent role.',
+    );
+  }
+  if (input.householdId === null) {
+    throw new HouseholdIdentityRepositoryError(
+      'invalid_session_input',
+      'Parent-session binding requires a household context.',
+    );
+  }
   inputIdentifier(input.householdId, 'household');
   if (VERIFICATION_RUNTIME_TIER[input.verificationEnvironmentId] !== input.runtimeTier) {
     throw new HouseholdIdentityRepositoryError(
@@ -1235,6 +1629,21 @@ function nullableText(value: unknown) {
 
 function stringArray(value: unknown) {
   return Array.isArray(value) ? value.map(text) : [];
+}
+
+function canonicalAdultMemberships(value: unknown, fallback: readonly AdultRole[] = []) {
+  const memberships = stringArray(value);
+  const resolved = memberships.length > 0 ? memberships : [...fallback];
+  if (
+    resolved.length < 1 ||
+    resolved.some((membership) => membership !== 'admin' && membership !== 'parent')
+  ) {
+    throw new HouseholdIdentityRepositoryError(
+      'persistence_invariant',
+      'Adult account membership is outside the canonical Admin/Parent role set.',
+    );
+  }
+  return [...new Set(resolved)].sort() as AdultRole[];
 }
 
 function enumValue<const T extends readonly string[]>(value: unknown, allowed: T): T[number] {

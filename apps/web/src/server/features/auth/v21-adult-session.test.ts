@@ -35,6 +35,7 @@ describe('F03 v2.1 Parent host-cookie session runtime', () => {
       sessionId: `session_${Buffer.alloc(32, 1).toString('base64url')}`,
       adultId: 'adult_one',
       humanAccountId: 'account_one',
+      activeRole: 'parent',
       householdId: 'household_one',
       runtimeTier: 'isolated_staging',
       verificationEnvironmentId: 'ci',
@@ -53,6 +54,7 @@ describe('F03 v2.1 Parent host-cookie session runtime', () => {
       sessionId: persistedInput.sessionId,
       adultId: 'adult_one',
       humanAccountId: 'account_one',
+      activeRole: 'parent',
       householdId: 'household_one',
       runtimeTier: 'isolated_staging',
       verificationEnvironmentId: 'ci',
@@ -127,6 +129,7 @@ describe('F03 v2.1 Parent host-cookie session runtime', () => {
       sessionId: createInput.sessionId,
       adultId: 'adult_one',
       humanAccountId: 'account_one',
+      activeRole: 'parent',
       householdId: 'household_one',
       runtimeTier: 'isolated_staging',
       verificationEnvironmentId: 'ci',
@@ -552,6 +555,7 @@ describe('F03 v2.1 Parent host-cookie session runtime', () => {
       humanAccountId: 'account_one',
       accountState: 'active',
       securityVersion: 1,
+      memberships: ['parent'],
       parentMembershipActive: true,
       passwordHash: 'argon2id-placeholder',
       credentialState: 'active',
@@ -655,6 +659,66 @@ describe('F03 v2.1 Parent host-cookie session runtime', () => {
     });
   });
 
+  it('rotates one dual-role session between Parent and Admin without duplicating identity or sessions', async () => {
+    const sessions = new Map<string, V21ParentSessionContext>();
+    const dualIdentity = loginIdentity({ memberships: ['admin', 'parent'] });
+    const repository: V21AdultSessionRepository = {
+      create: async (input) => {
+        const context = sessionResult(input, { memberships: ['admin', 'parent'] });
+        sessions.set(input.sessionId, context);
+        return context;
+      },
+      resolve: async (input) => sessions.get(input.sessionId) ?? null,
+      revoke: async (input) => sessions.delete(input.sessionId),
+      findLoginIdentity: async () => dualIdentity,
+      upgradeCredentialPasswordHash: async () => true,
+    };
+    const runtime = createV21AdultSessionRuntime({
+      repository,
+      hmacSecret,
+      randomBytes: deterministicRandom(),
+    });
+    const login = await runtime.login({
+      scope: establishmentInput().scope,
+      email: dualIdentity.normalizedEmail,
+      password: 'correct horse battery staple',
+      now,
+    });
+    expect(login).toMatchObject({
+      handled: true,
+      authenticated: true,
+      active_role: 'parent',
+      role_selection_required: true,
+      memberships: ['admin', 'parent'],
+    });
+    if (!login.handled || !login.authenticated) throw new Error('Dual-role login was not issued.');
+    const switched = await runtime.switchRoleCookieHeader({
+      cookie_header: hostCookie(login.browser_session_token),
+      csrf_token: login.csrf_token,
+      requested_role: 'admin',
+      now: new Date(now.getTime() + 1_000),
+    });
+    expect(switched).toMatchObject({
+      switched: true,
+      active_role: 'admin',
+      memberships: ['admin', 'parent'],
+    });
+    expect(sessions.size).toBe(1);
+    if (!switched.switched) throw new Error('Admin role switch was not issued.');
+    const readback = await runtime.resolveCookieHeader({
+      cookie_header: hostCookie(switched.browser_session_token),
+      now: new Date(now.getTime() + 1_000),
+    });
+    expect(readback).toMatchObject({
+      status: 'resolved',
+      context: {
+        memberships: ['admin', 'parent'],
+        session: { activeRole: 'admin', activeHouseholdId: null },
+        household: null,
+      },
+    });
+  });
+
   it('enforces the exact segment-safe inactive-Parent route allowlist', () => {
     const context = sessionResult(
       {
@@ -710,7 +774,7 @@ describe('F03 v2.1 Parent host-cookie session runtime', () => {
 
     const active = {
       ...context,
-      household: { ...context.household, accessState: 'active' as const },
+      household: { ...context.household!, accessState: 'active' as const },
     };
     expect(
       authorizeV21ParentRoute({
@@ -746,6 +810,7 @@ function loginIdentity(overrides: Partial<V21AdultLoginIdentity> = {}): V21Adult
     humanAccountId: 'account_one',
     accountState: 'active',
     securityVersion: 1,
+    memberships: ['parent'],
     parentMembershipActive: true,
     passwordHash: hashAuthPassword('correct horse battery staple'),
     credentialState: 'active',
@@ -836,20 +901,26 @@ function sessionResult(
   overrides: {
     accessState?: 'free' | 'active' | 'grace' | 'inactive';
     session?: Partial<V21ParentSessionContext['session']>;
-    household?: Partial<V21ParentSessionContext['household']>;
+    household?: Partial<NonNullable<V21ParentSessionContext['household']>>;
+    memberships?: readonly ('admin' | 'parent')[];
   } = {},
 ): V21ParentSessionContext {
   const issuedAt = input.issuedAt.toISOString();
+  const activeRole = input.activeRole ?? 'parent';
+  if (activeRole === 'parent' && input.householdId === null) {
+    throw new Error('Parent session requires a household.');
+  }
   return {
     adultId: input.adultId,
     normalizedEmail: 'owner@example.test',
     ownerDisplayName: 'Owner One',
     ownedHouseholdCount: 1,
+    memberships: overrides.memberships ?? (activeRole === 'admin' ? ['admin'] : ['parent']),
     session: {
       sessionId: input.sessionId,
       humanAccountId: input.humanAccountId,
-      activeRole: 'parent',
-      activeHouseholdId: input.householdId,
+      activeRole,
+      activeHouseholdId: activeRole === 'admin' ? null : input.householdId,
       securityVersion: input.securityVersion,
       idleExpiresAt: new Date(input.issuedAt.getTime() + 24 * 60 * 60 * 1000).toISOString(),
       absoluteExpiresAt: new Date(
@@ -865,14 +936,17 @@ function sessionResult(
       updatedAt: issuedAt,
       ...overrides.session,
     },
-    household: {
-      householdId: input.householdId,
-      displayName: 'Owner One household',
-      classification: 'family',
-      accessState: overrides.accessState ?? 'free',
-      ownerRelationship: 'account_owner',
-      ...overrides.household,
-    },
+    household:
+      activeRole === 'admin'
+        ? null
+        : {
+            householdId: input.householdId!,
+            displayName: 'Owner One household',
+            classification: 'family',
+            accessState: overrides.accessState ?? 'free',
+            ownerRelationship: 'account_owner',
+            ...overrides.household,
+          },
   };
 }
 

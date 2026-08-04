@@ -1,5 +1,6 @@
 import { createHash, createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 import { z } from 'zod';
+import type { AdultRole } from '../../../../../../packages/contracts/src/accounts/v21-household-identity.ts';
 import { AUTH_SESSION_COOKIE } from '../../../../../../packages/contracts/src/identity/auth/index.ts';
 import {
   ONE_TIME_PRODUCT_SCOPE,
@@ -45,7 +46,8 @@ const browserEnvelopeSchema = z
     session_id: exactIdentifierSchema,
     adult_id: exactIdentifierSchema,
     human_account_id: exactIdentifierSchema,
-    household_id: exactIdentifierSchema,
+    active_role: z.enum(['admin', 'parent']).default('parent'),
+    household_id: exactIdentifierSchema.nullable(),
     runtime_tier: runtimeTierSchema,
     verification_environment_id: verificationEnvironmentSchema,
     security_version: z.number().int().positive().safe(),
@@ -64,6 +66,15 @@ const browserEnvelopeSchema = z
       context.addIssue({
         code: z.ZodIssueCode.custom,
         message: 'Access and refresh material must be independent.',
+      });
+    }
+    if (
+      (value.active_role === 'admin' && value.household_id !== null) ||
+      (value.active_role === 'parent' && value.household_id === null)
+    ) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'The active adult role and household context do not match.',
       });
     }
   });
@@ -100,8 +111,8 @@ export type V21ParentSessionEstablishmentInput = {
   };
   adult_id: string;
   human_account_id: string;
-  household_id: string;
-  active_role: 'parent';
+  household_id: string | null;
+  active_role: AdultRole;
   security_version: number;
   now: Date;
 };
@@ -137,6 +148,9 @@ export type V21AdultLoginOutcome =
         display_name: string;
       };
       household: V21ParentSessionContext['household'];
+      memberships: readonly AdultRole[];
+      active_role: AdultRole;
+      role_selection_required: boolean;
     };
 
 export type V21SessionRevocationOutcome =
@@ -178,6 +192,25 @@ export interface V21AdultSessionRuntime {
     cookie_header?: string | null | undefined;
     now?: Date | undefined;
   }): Promise<V21AdultLoginOutcome>;
+  switchRoleCookieHeader(input: {
+    cookie_header?: string | null | undefined;
+    csrf_token?: string | null | undefined;
+    requested_role: AdultRole;
+    now?: Date | undefined;
+  }): Promise<
+    | {
+        switched: true;
+        browser_session_token: string;
+        csrf_token: string;
+        expires_at: string;
+        active_role: AdultRole;
+        memberships: readonly AdultRole[];
+      }
+    | {
+        switched: false;
+        reason: 'invalid_session' | 'invalid_csrf' | 'invalid_role' | 'unavailable';
+      }
+  >;
   bootstrapCookieHeader(input: {
     cookie_header?: string | null | undefined;
     now?: Date | undefined;
@@ -213,7 +246,7 @@ export function createV21AdultSessionRuntime(
   input: V21AdultSessionRuntimeInput,
 ): V21AdultSessionRuntime {
   if (Buffer.byteLength(input.hmacSecret, 'utf8') < 32) {
-    throw new Error('The v2.1 Parent-session HMAC secret must contain at least 32 bytes.');
+    throw new Error('The v2.1 adult-session HMAC secret must contain at least 32 bytes.');
   }
   const randomSource = input.randomBytes ?? randomBytes;
   const clock = input.clock ?? (() => new Date());
@@ -255,12 +288,13 @@ export function createV21AdultSessionRuntime(
         randomMaterial(randomSource),
       ];
       if (new Set(material).size !== material.length) {
-        throw new Error('Parent-session random material must be independent.');
+        throw new Error('Adult-session random material must be independent.');
       }
       claims = browserEnvelopeSchema.parse({
         session_id: `session_${material[0]}`,
         adult_id: establishmentInput.adult_id,
         human_account_id: establishmentInput.human_account_id,
+        active_role: establishmentInput.active_role,
         household_id: establishmentInput.household_id,
         runtime_tier: establishmentInput.scope.runtime_tier,
         verification_environment_id: establishmentInput.scope.verification_environment_id,
@@ -276,7 +310,7 @@ export function createV21AdultSessionRuntime(
         issuedAt: establishmentInput.now,
       });
       if (!exactReadback(createdSession, claims, establishmentInput.now)) {
-        throw new Error('Created Parent session did not match its exact binding.');
+        throw new Error('Created adult session did not match its exact binding.');
       }
 
       const signedBrowserToken = signBrowserEnvelope(claims, input.hmacSecret);
@@ -284,15 +318,15 @@ export function createV21AdultSessionRuntime(
         `${AUTH_SESSION_COOKIE.name}=${encodeURIComponent(signedBrowserToken)}`,
       );
       if (!parsedReadback) {
-        throw new Error('Issued Parent session was not readable through the host-cookie parser.');
+        throw new Error('Issued adult session was not readable through the host-cookie parser.');
       }
       const middlewareReadback = await resolveEnvelope(parsedReadback, establishmentInput.now);
       if (middlewareReadback.status !== 'resolved') {
-        throw new Error('Issued Parent session failed middleware repository readback.');
+        throw new Error('Issued adult session failed middleware repository readback.');
       }
       const expiresAt = currentExpiry(middlewareReadback.context);
       if (Date.parse(expiresAt) <= establishmentInput.now.getTime()) {
-        throw new Error('Issued Parent session is already expired.');
+        throw new Error('Issued adult session is already expired.');
       }
       return {
         established: true,
@@ -315,7 +349,7 @@ export function createV21AdultSessionRuntime(
   const exactRevoke = async (
     parsed: ParsedBrowserEnvelope,
     now: Date,
-    reason: 'adult_logout' | 'session_rotation' | 'explicit_revocation',
+    reason: 'adult_logout' | 'session_rotation' | 'explicit_revocation' | 'role_context_switch',
   ): Promise<'revoked' | 'invalid' | 'unavailable' | 'revocation_unverified'> => {
     const resolution = await resolveEnvelope(parsed, now);
     if (resolution.status !== 'resolved') return resolution.status;
@@ -379,17 +413,29 @@ export function createV21AdultSessionRuntime(
         });
         const proof = verifyAuthPasswordWithUpgrade(password, identity?.passwordHash ?? '');
         if (!identity) return { handled: false };
+        const memberships = [
+          ...new Set(
+            identity.memberships?.length
+              ? identity.memberships
+              : identity.parentMembershipActive
+                ? (['parent'] as const)
+                : [],
+          ),
+        ].sort() as AdultRole[];
+        const parentContextAvailable =
+          identity.parentMembershipActive &&
+          identity.activeOwnedHouseholdCount === 1 &&
+          identity.ownedHouseholds.length === 1;
         if (
           identity.adultState !== 'active' ||
           identity.humanAccountId === null ||
           identity.accountState !== 'active' ||
           identity.securityVersion === null ||
-          !identity.parentMembershipActive ||
+          memberships.length < 1 ||
+          (!memberships.includes('admin') && !parentContextAvailable) ||
           identity.credentialState !== 'active' ||
           identity.credentialVersion === null ||
-          identity.passwordHash === null ||
-          identity.activeOwnedHouseholdCount !== 1 ||
-          identity.ownedHouseholds.length !== 1
+          identity.passwordHash === null
         ) {
           return {
             handled: true,
@@ -429,13 +475,14 @@ export function createV21AdultSessionRuntime(
           }
           sessionMutated = true;
         }
-        const household = identity.ownedHouseholds[0]!;
+        const activeRole: AdultRole = parentContextAvailable ? 'parent' : 'admin';
+        const household = activeRole === 'parent' ? identity.ownedHouseholds[0]! : null;
         const established = await establish({
           scope,
           adult_id: identity.adultId,
           human_account_id: humanAccountId,
-          household_id: household.householdId,
-          active_role: 'parent',
+          household_id: household?.householdId ?? null,
+          active_role: activeRole,
           security_version: securityVersion,
           now,
         });
@@ -477,15 +524,17 @@ export function createV21AdultSessionRuntime(
               currentIdentity.humanAccountId === humanAccountId &&
               currentIdentity.accountState === 'active' &&
               currentIdentity.securityVersion === securityVersion &&
-              currentIdentity.parentMembershipActive &&
+              currentIdentity.memberships.length > 0 &&
               currentIdentity.credentialState === 'active' &&
               currentIdentity.credentialVersion !== null &&
               currentIdentity.credentialVersion > credentialVersion &&
               currentIdentity.passwordHash !== null &&
               currentIdentity.passwordHash !== passwordHash &&
-              currentIdentity.activeOwnedHouseholdCount === 1 &&
-              currentIdentity.ownedHouseholds.length === 1 &&
-              currentIdentity.ownedHouseholds[0]?.householdId === household.householdId &&
+              (activeRole === 'admin' ||
+                (currentIdentity.parentMembershipActive &&
+                  currentIdentity.activeOwnedHouseholdCount === 1 &&
+                  currentIdentity.ownedHouseholds.length === 1 &&
+                  currentIdentity.ownedHouseholds[0]?.householdId === household?.householdId)) &&
               currentProof.valid &&
               currentProof.replacement_hash === null,
             );
@@ -518,6 +567,9 @@ export function createV21AdultSessionRuntime(
             display_name: identity.ownerDisplayName,
           },
           household,
+          memberships,
+          active_role: activeRole,
+          role_selection_required: memberships.length > 1,
         };
       } catch {
         let cleanup: 'revoked' | 'invalid' | 'unavailable' | 'revocation_unverified' | null = null;
@@ -535,6 +587,76 @@ export function createV21AdultSessionRuntime(
           failure: cleanup === null || cleanup === 'revoked' ? 'unavailable' : 'recovery_required',
           ...(sessionMutated ? { session_mutated: true as const } : {}),
         };
+      }
+    },
+
+    switchRoleCookieHeader: async ({
+      cookie_header: cookieHeader,
+      csrf_token: csrfToken,
+      requested_role: requestedRole,
+      now = clock(),
+    }) => {
+      if (requestedRole !== 'admin' && requestedRole !== 'parent') {
+        return { switched: false, reason: 'invalid_role' };
+      }
+      const parsed = parseCookie(cookieHeader);
+      if (!parsed) return { switched: false, reason: 'invalid_session' };
+      if (!verifyCsrfProof(parsed.payloadSegment, csrfToken, input.hmacSecret)) {
+        return { switched: false, reason: 'invalid_csrf' };
+      }
+      const resolution = await resolveEnvelope(parsed, now);
+      if (resolution.status !== 'resolved') {
+        return {
+          switched: false,
+          reason: resolution.status === 'invalid' ? 'invalid_session' : 'unavailable',
+        };
+      }
+      const current = resolution.context;
+      try {
+        const identity = await input.repository.findLoginIdentity({
+          normalizedEmail: current.normalizedEmail,
+          runtimeTier: current.session.runtimeTier,
+          verificationEnvironmentId: current.session.verificationEnvironmentId,
+        });
+        if (!identity || !identity.memberships.includes(requestedRole)) {
+          return { switched: false, reason: 'invalid_role' };
+        }
+        const household =
+          requestedRole === 'parent' &&
+          identity.parentMembershipActive &&
+          identity.activeOwnedHouseholdCount === 1 &&
+          identity.ownedHouseholds.length === 1
+            ? identity.ownedHouseholds[0]!
+            : null;
+        if (requestedRole === 'parent' && !household) {
+          return { switched: false, reason: 'invalid_role' };
+        }
+        const revoked = await exactRevoke(parsed, now, 'role_context_switch');
+        if (revoked !== 'revoked') return { switched: false, reason: 'unavailable' };
+        const established = await establish({
+          scope: {
+            product: ONE_TIME_PRODUCT_SCOPE,
+            runtime_tier: current.session.runtimeTier,
+            verification_environment_id: current.session.verificationEnvironmentId,
+          },
+          adult_id: current.adultId,
+          human_account_id: current.session.humanAccountId,
+          active_role: requestedRole,
+          household_id: household?.householdId ?? null,
+          security_version: current.session.securityVersion,
+          now,
+        });
+        if (!established.established) return { switched: false, reason: 'unavailable' };
+        return {
+          switched: true,
+          browser_session_token: established.browser_session_token,
+          csrf_token: established.csrf_token,
+          expires_at: established.expires_at,
+          active_role: requestedRole,
+          memberships: identity.memberships,
+        };
+      } catch {
+        return { switched: false, reason: 'unavailable' };
       }
     },
 
@@ -614,6 +736,9 @@ export function authorizeV21ParentRoute(input: {
   context: V21ParentSessionContext;
   requested_path: string;
 }): V21ParentRouteAuthorization {
+  if (input.context.session.activeRole !== 'parent' || !input.context.household) {
+    return { allowed: false, reason: 'inactive_household' };
+  }
   if (input.context.household.accessState !== 'inactive') return { allowed: true };
   const pathname = canonicalPathname(input.requested_path);
   if (!pathname) return { allowed: false, reason: 'inactive_household' };
@@ -640,16 +765,19 @@ function assertEstablishmentInput(input: V21ParentSessionEstablishmentInput): vo
     input.scope.product !== ONE_TIME_PRODUCT_SCOPE ||
     VERIFICATION_RUNTIME_TIER[input.scope.verification_environment_id] !==
       input.scope.runtime_tier ||
-    input.active_role !== 'parent' ||
+    !['admin', 'parent'].includes(input.active_role) ||
+    (input.active_role === 'admin' && input.household_id !== null) ||
+    (input.active_role === 'parent' && input.household_id === null) ||
     !Number.isSafeInteger(input.security_version) ||
     input.security_version < 1 ||
     !validInstant(input.now)
   ) {
-    throw new Error('Invalid v2.1 Parent-session establishment binding.');
+    throw new Error('Invalid v2.1 adult-session establishment binding.');
   }
-  for (const identifier of [input.adult_id, input.human_account_id, input.household_id]) {
+  for (const identifier of [input.adult_id, input.human_account_id]) {
     exactIdentifierSchema.parse(identifier);
   }
+  if (input.household_id !== null) exactIdentifierSchema.parse(input.household_id);
 }
 
 function repositoryBinding(claims: BrowserEnvelope) {
@@ -657,6 +785,7 @@ function repositoryBinding(claims: BrowserEnvelope) {
     sessionId: claims.session_id,
     adultId: claims.adult_id,
     humanAccountId: claims.human_account_id,
+    activeRole: claims.active_role,
     householdId: claims.household_id,
     runtimeTier: claims.runtime_tier,
     verificationEnvironmentId: claims.verification_environment_id,
@@ -674,17 +803,19 @@ function exactReadback(
   return (
     resolved.adultId === claims.adult_id &&
     Number.isSafeInteger(resolved.ownedHouseholdCount) &&
-    resolved.ownedHouseholdCount === 1 &&
     resolved.session.sessionId === claims.session_id &&
     resolved.session.humanAccountId === claims.human_account_id &&
-    resolved.session.activeRole === 'parent' &&
+    resolved.session.activeRole === claims.active_role &&
     resolved.session.activeHouseholdId === claims.household_id &&
     resolved.session.securityVersion === claims.security_version &&
     resolved.session.product === ONE_TIME_PRODUCT_SCOPE &&
     resolved.session.runtimeTier === claims.runtime_tier &&
     resolved.session.verificationEnvironmentId === claims.verification_environment_id &&
     resolved.session.revokedAt === null &&
-    resolved.household.householdId === claims.household_id &&
+    (claims.active_role === 'admin'
+      ? resolved.household === null
+      : resolved.ownedHouseholdCount === 1 &&
+        resolved.household?.householdId === claims.household_id) &&
     Number.isFinite(idleExpiry) &&
     Number.isFinite(absoluteExpiry) &&
     idleExpiry > now.getTime() &&

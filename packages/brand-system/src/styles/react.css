@@ -107,7 +107,7 @@ button {
   top: 0;
   z-index: 100;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  grid-template-columns: auto minmax(0, 1fr) auto auto auto;
   align-items: center;
   gap: 12px;
   min-height: 60px;
@@ -161,6 +161,39 @@ button {
   padding: 8px 12px;
   font-size: 0.88rem;
   font-weight: 700;
+}
+
+.app-role-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px;
+  border: 1px solid #34464d;
+  border-radius: 999px;
+  background: #071117;
+}
+
+.app-role-switcher button {
+  min-height: 34px;
+  border: 0;
+  border-radius: 999px;
+  padding: 6px 11px;
+  color: #c8d6d9;
+  background: transparent;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.app-role-switcher button[aria-pressed='true'] {
+  color: #050505;
+  background: #ede518;
+}
+
+.app-role-switcher button:disabled:not([aria-pressed='true']) {
+  cursor: wait;
+  opacity: 0.65;
 }
 
 .app-user {
@@ -1511,7 +1544,7 @@ textarea:focus-visible,
 
 @media (min-width: 1200px) {
   .app-header {
-    grid-template-columns: minmax(0, 1fr) auto minmax(180px, 280px) auto;
+    grid-template-columns: minmax(0, 1fr) auto auto minmax(180px, 280px) auto;
     min-height: 64px;
     padding-right: 32px;
     padding-left: 32px;
@@ -1571,6 +1604,13 @@ textarea:focus-visible,
 
   .toolbar-primary {
     justify-self: end;
+  }
+}
+
+@media (max-width: 1199px) {
+  .app-role-switcher {
+    grid-column: 1 / -1;
+    justify-self: center;
   }
 }
 

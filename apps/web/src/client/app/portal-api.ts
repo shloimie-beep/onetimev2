@@ -50,6 +50,10 @@ export type V21ApiSession = {
   user: SessionUser;
   csrf_token: string;
   expires_at: string;
+  account_context?: {
+    active_role: 'admin' | 'parent';
+    available_roles: readonly ('admin' | 'parent')[];
+  };
   parent_context: {
     adult_id: string;
     human_account_id: string;

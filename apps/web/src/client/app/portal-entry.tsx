@@ -700,6 +700,15 @@ function PortalApp() {
       onLogout={() => void logout()}
       sessionExpired={sessionExpired}
       onSignIn={signIn}
+      roleContext={
+        session?.session_model === 'v21' && session.account_context
+          ? {
+              activeRole: session.account_context.active_role,
+              availableRoles: session.account_context.available_roles,
+              csrfToken: session.csrf_token,
+            }
+          : undefined
+      }
     >
       {supportRoute ? (
         <SupportFeature

@@ -208,7 +208,10 @@ describe('OT-71 mounted parent and student portals', () => {
 
   it('keeps a resolved v2.1 Parent session authenticated while returning denial semantics', async () => {
     const v21AdultSessionRuntime = {
-      resolveCookieHeader: async () => ({ status: 'resolved', context: {} }),
+      resolveCookieHeader: async () => ({
+        status: 'resolved',
+        context: { session: { activeRole: 'parent' } },
+      }),
     } as never;
     const server = await listenForTest(
       createApp({ config, pool, distDir, v21AdultSessionRuntime }),
@@ -235,6 +238,165 @@ describe('OT-71 mounted parent and student portals', () => {
       expect(isolatedStudentQuestions.headers.getSetCookie().join(';')).not.toContain(
         '__Host-onetime-session=;',
       );
+    } finally {
+      await server.close();
+    }
+  });
+
+  it('mounts dual-role selection and rotates one v2.1 session between Admin and Parent', async () => {
+    const contextFor = (activeRole: 'admin' | 'parent') => ({
+      adultId: 'adult_dual_role',
+      normalizedEmail: 'dual-role@example.test',
+      ownerDisplayName: 'Dual Role Adult',
+      ownedHouseholdCount: 1,
+      memberships: ['admin', 'parent'] as const,
+      session: {
+        sessionId: `session_${activeRole}`,
+        product: 'one_time_mishnayos',
+        runtimeTier: 'isolated_staging',
+        verificationEnvironmentId: 'ci',
+        humanAccountId: 'account_dual_role',
+        activeRole,
+        activeHouseholdId: activeRole === 'parent' ? 'household_dual_role' : null,
+        securityVersion: 1,
+        version: 1,
+        idleExpiresAt: '2026-08-04T12:00:00.000Z',
+        absoluteExpiresAt: '2026-08-04T18:00:00.000Z',
+        revokedAt: null,
+        revocationReason: null,
+        createdAt: '2026-08-04T10:00:00.000Z',
+        updatedAt: '2026-08-04T10:00:00.000Z',
+      },
+      household:
+        activeRole === 'parent'
+          ? {
+              householdId: 'household_dual_role',
+              displayName: 'Dual Role Family',
+              classification: 'family',
+              accessState: 'free',
+              ownerRelationship: 'account_owner',
+            }
+          : null,
+    });
+    const v21AdultSessionRuntime = {
+      resolveCookieHeader: async ({ cookie_header: cookieHeader }: { cookie_header?: string }) => ({
+        status: 'resolved',
+        context: contextFor(cookieHeader?.includes('parent-v21') ? 'parent' : 'admin'),
+      }),
+      switchRoleCookieHeader: async ({
+        requested_role: requestedRole,
+      }: {
+        requested_role: 'admin' | 'parent';
+      }) => ({
+        switched: true,
+        browser_session_token:
+          requestedRole === 'parent' ? 'parent-v21-rotated' : 'admin-v21-rotated',
+        csrf_token: `c1.${'a'.repeat(43)}.${'b'.repeat(43)}`,
+        expires_at: '2026-08-04T12:00:00.000Z',
+        active_role: requestedRole,
+        memberships: ['admin', 'parent'] as const,
+      }),
+    } as never;
+    const server = await listenForTest(
+      createApp({
+        config,
+        pool,
+        distDir,
+        v21AdultSessionRuntime,
+        clock: () => new Date('2026-08-04T10:00:00.000Z'),
+      }),
+    );
+    const adminCookie = '__Host-onetime-session=admin-v21';
+    try {
+      const selector = await fetch(`${server.baseUrl}/select-role`, {
+        headers: { cookie: adminCookie },
+        redirect: 'manual',
+      });
+      expect(selector.status).toBe(200);
+      const selectorHtml = await selector.text();
+      expect(selectorHtml).toContain('Continue as Admin');
+      expect(selectorHtml).toContain('Continue as Parent');
+
+      const adminDashboard = await fetch(`${server.baseUrl}/app/dashboard`, {
+        headers: { cookie: adminCookie },
+      });
+      expect(adminDashboard.status).toBe(200);
+      expect(await adminDashboard.text()).toContain('crm-root');
+
+      const switchToParent = await fetch(`${server.baseUrl}/api/v2.1/account-context/role`, {
+        method: 'POST',
+        headers: {
+          cookie: adminCookie,
+          origin: config.publicBaseUrl,
+          'content-type': 'application/json',
+          'x-csrf-token': `c1.${'a'.repeat(43)}.${'b'.repeat(43)}`,
+        },
+        body: JSON.stringify({ requested_role: 'parent' }),
+      });
+      expect(switchToParent.status).toBe(200);
+      await expect(switchToParent.json()).resolves.toMatchObject({
+        active_role: 'parent',
+        available_roles: ['admin', 'parent'],
+        return_to: '/app/parent',
+      });
+      const parentCookie = switchToParent.headers
+        .getSetCookie()
+        .find(
+          (value) =>
+            value.startsWith('__Host-onetime-session=parent-v21-rotated') &&
+            !value.includes('Max-Age=0'),
+        )
+        ?.split(';')[0];
+      expect(parentCookie).toBe('__Host-onetime-session=parent-v21-rotated');
+
+      const parentOverview = await fetch(`${server.baseUrl}/app/parent`, {
+        headers: { cookie: parentCookie! },
+      });
+      expect(parentOverview.status).toBe(200);
+      expect(await parentOverview.text()).toContain('portal-root');
+      const parentStudentManagement = await fetch(`${server.baseUrl}/app/parent/students`, {
+        headers: { cookie: parentCookie! },
+      });
+      expect(parentStudentManagement.status).toBe(200);
+      expect(
+        (
+          await fetch(`${server.baseUrl}/app/dashboard`, {
+            headers: { cookie: parentCookie! },
+          })
+        ).status,
+      ).toBe(403);
+
+      const switchBackToAdmin = await fetch(`${server.baseUrl}/api/v2.1/account-context/role`, {
+        method: 'POST',
+        headers: {
+          cookie: parentCookie!,
+          origin: config.publicBaseUrl,
+          'content-type': 'application/json',
+          'x-csrf-token': `c1.${'a'.repeat(43)}.${'b'.repeat(43)}`,
+        },
+        body: JSON.stringify({ requested_role: 'admin' }),
+      });
+      expect(switchBackToAdmin.status).toBe(200);
+      await expect(switchBackToAdmin.json()).resolves.toMatchObject({
+        active_role: 'admin',
+        return_to: '/app/dashboard',
+      });
+      const rotatedAdminCookie = switchBackToAdmin.headers
+        .getSetCookie()
+        .find(
+          (value) =>
+            value.startsWith('__Host-onetime-session=admin-v21-rotated') &&
+            !value.includes('Max-Age=0'),
+        )
+        ?.split(';')[0];
+      expect(rotatedAdminCookie).toBe('__Host-onetime-session=admin-v21-rotated');
+      expect(
+        (
+          await fetch(`${server.baseUrl}/app/dashboard`, {
+            headers: { cookie: rotatedAdminCookie! },
+          })
+        ).status,
+      ).toBe(200);
     } finally {
       await server.close();
     }

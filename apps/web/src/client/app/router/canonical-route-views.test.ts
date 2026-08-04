@@ -34,9 +34,9 @@ describe('v2.1 canonical route views', () => {
     expect(
       CANONICAL_V21_ROUTES.filter(({ routeId }) => routeId.startsWith('RT-STU-')),
     ).toHaveLength(17);
-    expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'ready')).toHaveLength(32);
+    expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'ready')).toHaveLength(33);
     expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'isolated')).toHaveLength(
-      33,
+      32,
     );
     expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'missing')).toHaveLength(
       28,
@@ -119,7 +119,6 @@ describe('v2.1 canonical route views', () => {
       handler: null,
     });
     for (const routeId of [
-      'RT-ADM-001',
       'RT-ADM-020',
       'RT-ADM-021',
       'RT-ADM-024',
@@ -140,6 +139,11 @@ describe('v2.1 canonical route views', () => {
         handler: null,
       });
     }
+    expect(CANONICAL_V21_ROUTES.find((route) => route.routeId === 'RT-ADM-001')).toMatchObject({
+      readiness: 'ready',
+      handler: 'admin.rt-adm-001',
+      handlerDisposition: 'mounted',
+    });
     expect(CANONICAL_ROUTE_COMPATIBILITY_PATHS['RT-ADM-066']).toBeUndefined();
     expect(CANONICAL_ROUTE_COMPATIBILITY_PATHS['RT-PAR-011']).toBeUndefined();
   });

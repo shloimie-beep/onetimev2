@@ -63,7 +63,7 @@ export function renderCampaignTicker(copy: string | null, deadlineDate: string) 
     { length: 6 },
     () => `<span class="campaign-ticker-item">${escapeHtml(copy)}</span>`,
   ).join('');
-  return `<div class="campaign-ticker-shell" role="region" aria-label="Campaign countdown" data-ot-ticker-route="/">
+  return `<div class="campaign-ticker-shell" role="region" aria-label="Launch timing" data-ot-ticker-route="/">
   <a class="campaign-ticker" href="/signup" aria-label="${escapeHtml(copy)}" data-campaign-deadline="${escapeHtml(deadlineDate)}">
     <span class="campaign-ticker-track" aria-hidden="true">${items}</span>
   </a>

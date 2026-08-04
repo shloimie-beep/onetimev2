@@ -23,16 +23,11 @@ import { publicCanonicalUrl } from './public-page-metadata.ts';
 
 const outDir = path.resolve(process.cwd(), 'dist/apps/web/public');
 
-const landingHeroDesktopImage = '/assets/hero/landing-hero-desktop.webp';
-const landingHeroMobileImage = '/assets/hero/landing-hero-mobile.webp';
 const landingSocialImage = '/assets/social/mishnayos-made-memorable.png';
-const firstClassAtPlaceholder = '__ONE_TIME_FIRST_CLASS_AT__';
 const freeAccessExpiresAtPlaceholder = '__ONE_TIME_FREE_ACCESS_EXPIRES_AT__';
 
 const imageDimensions = new Map<string, readonly [number, number]>([
   ['/assets/brand/onetimelogo.webp', [400, 400]],
-  [landingHeroDesktopImage, [1920, 1080]],
-  [landingHeroMobileImage, [1080, 1920]],
   [landingSocialImage, [1200, 630]],
   ['/assets/hero/hero-classroom-background.webp', [1680, 944]],
   ['/assets/students/smiley-kid.png', [337, 600]],
@@ -43,6 +38,10 @@ const imageDimensions = new Map<string, readonly [number, number]>([
   ['/assets/outcomes/excitement-learning-torah.webp', [945, 2048]],
   ['/assets/outcomes/accomplishment-toronto-class.jpg', [1200, 745]],
   ['/assets/rabbi/rabbi-eli-holding-book.jpg', [1600, 1067]],
+  ['/assets/how-it-works/family-learning-overview.png', [1122, 1402]],
+  ['/assets/how-it-works/parent-manages-students.png', [1265, 712]],
+  ['/assets/how-it-works/student-opens-live-class.png', [1265, 712]],
+  ['/assets/how-it-works/student-opens-library.png', [1265, 712]],
   ['/assets/press/torah-anytime.png', [133, 100]],
   ['/assets/press/24six.png', [131, 100]],
   ['/assets/press/the-loop.png', [202, 100]],
@@ -128,7 +127,7 @@ function footer() {
 
 function ticker() {
   return renderCampaignTicker(
-    'FREE ACCESS — CREATE YOUR FAMILY ACCOUNT',
+    'CLASSES START AUG 16 · 7 PM · FREE ACCESS THROUGH SEP 11 · 6 PM · JERUSALEM TIME',
     freeAccessExpiresAtPlaceholder,
   ).replace('class="campaign-ticker-shell"', 'class="campaign-ticker-shell" hidden');
 }
@@ -174,8 +173,14 @@ function landingPage() {
         `<li><strong>${escapeHtml(audience.lead)}</strong><span>${escapeHtml(audience.body)}</span></li>`,
     )
     .join('');
-  const steps = landingContent.how.steps
-    .map((label, index) => `<li><span>${index + 1}</span>${escapeHtml(label)}</li>`)
+  const howFlows = landingContent.how.flows
+    .map(
+      (flow, index) => `<figure class="how-flow" data-how-step="${index + 1}">
+        <img src="${flow.image}" alt="${escapeHtml(flow.alt)}"${mediaSizeAttributes(flow.image)} loading="lazy" decoding="async" data-image-watch>
+        ${fallbackImageSpan('Flow screenshot unavailable')}
+        <figcaption><span>${index + 1}</span><strong>${escapeHtml(flow.title)}</strong><small>${escapeHtml(flow.body)}</small></figcaption>
+      </figure>`,
+    )
     .join('');
   const slides = landingContent.gallery.slides
     .map(
@@ -199,21 +204,6 @@ function landingPage() {
     .map(
       ([label, src]) =>
         `<span><img src="${src}" alt="${escapeHtml(label)}"${mediaSizeAttributes(src)} loading="lazy" decoding="async"></span>`,
-    )
-    .join('');
-  const experienceCards = landingContent.experience.cards
-    .map(
-      (card) =>
-        `<article><h3>${escapeHtml(card.title)}</h3><p>${escapeHtml(card.body)}</p></article>`,
-    )
-    .join('');
-  const participationItems = landingContent.participation.bullets
-    .map((item) => `<li>${escapeHtml(item)}</li>`)
-    .join('');
-  const assuranceCards = landingContent.assurances.items
-    .map(
-      (item) =>
-        `<article><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.body)}</p></article>`,
     )
     .join('');
   const gallerySection = `<section class="section gallery-section" id="world">
@@ -240,14 +230,10 @@ function landingPage() {
   <section class="hero" aria-labelledby="landing-hero-heading">
     <div class="hero-inner">
       <p class="hero-eyebrow">${escapeHtml(landingContent.hero.eyebrow)}</p>
-      <h1 id="landing-hero-heading" aria-label="${escapeHtml(landingContent.hero.titleLines.join(' '))}">${landingContent.hero.titleLines.map((line) => `<span>${escapeHtml(line)}</span>`).join('')}</h1>
-      <p class="hero-supporting">${escapeHtml(landingContent.hero.supporting)}</p>
-      <p class="schedule">${escapeHtml(landingContent.hero.schedule)}</p>
-      <p class="hero-note" data-first-class-at="${firstClassAtPlaceholder}">${escapeHtml(landingContent.hero.firstClass)}</p>
-      <p class="hero-note" data-free-access-cutoff="${freeAccessExpiresAtPlaceholder}">${escapeHtml(landingContent.hero.freeAccessCutoff)}</p>
+      <h1 id="landing-hero-heading">${escapeHtml(landingContent.hero.headline)}</h1>
       <a class="button button-primary hero-cta" href="${escapeHtml(landingContent.hero.cta.href)}" data-ot-analytics-event="${escapeHtml(landingContent.hero.cta.analyticsEvent)}" data-ot-analytics-destination="${escapeHtml(landingContent.hero.cta.href)}" data-ot-analytics-placement="${escapeHtml(landingContent.hero.cta.analyticsPlacement)}">${escapeHtml(landingContent.hero.cta.label)}</a>
-      <p class="hero-note">${escapeHtml(landingContent.hero.note)}</p>
     </div>
+    <figure class="hero-photo"><img src="${landingContent.hero.image}" alt="${escapeHtml(landingContent.hero.imageAlt)}"${mediaSizeAttributes(landingContent.hero.image)} decoding="async" fetchpriority="high"></figure>
   </section>
   <section class="section receive" id="receive">
     <h2 class="receive-heading">${escapeHtml(landingContent.receive.heading)}</h2>
@@ -272,45 +258,11 @@ function landingPage() {
     </div>
   </section>
   <section class="section how" id="how-it-works">
-    <h2>${escapeHtml(landingContent.how.heading)}</h2>
-    <p>${escapeHtml(landingContent.how.body)}</p>
-    <ol>${steps}</ol>
-  </section>
-  <section class="section experience" id="experience">
-    <h2>${escapeHtml(landingContent.experience.heading)}</h2>
-    <p class="section-intro">${escapeHtml(landingContent.experience.intro)}</p>
-    <div class="information-grid">${experienceCards}</div>
-  </section>
-  <section class="section participation" id="participation">
-    <h2>${escapeHtml(landingContent.participation.heading)}</h2>
-    <ul class="expectation-list">${participationItems}</ul>
-  </section>
-  <section class="section enrollment" id="enrollment">
-    <h2>${escapeHtml(landingContent.enrollment.heading)}</h2>
-    <div class="information-grid">
-      <article><h3>${escapeHtml(landingContent.enrollment.family.title)}</h3><p>${escapeHtml(landingContent.enrollment.family.body)}</p><a class="text-link" href="/signup">Pre-register your Family</a></article>
+    <div class="how-intro">
+      <div><h2>${escapeHtml(landingContent.how.heading)}</h2><p>${escapeHtml(landingContent.how.body)}</p></div>
+      <img src="${landingContent.how.overviewImage}" alt="${escapeHtml(landingContent.how.overviewAlt)}"${mediaSizeAttributes(landingContent.how.overviewImage)} loading="lazy" decoding="async" data-image-watch>
     </div>
-  </section>
-  <section class="section access" id="access" data-access-boundary="${freeAccessExpiresAtPlaceholder}">
-    <h2>${escapeHtml(landingContent.access.heading)}</h2>
-    <div class="access-state" data-before-expiry hidden>
-      <p>${escapeHtml(landingContent.access.before)}</p>
-      <a class="button button-primary" href="/signup">Pre-register my Family</a>
-    </div>
-    <div class="access-state" data-at-or-after-expiry>
-      <p>${escapeHtml(landingContent.access.after)}</p>
-      <a class="button button-primary" href="/signup">Pre-register my Family</a>
-    </div>
-  </section>
-  <section class="section assurances" id="assurances">
-    <h2>${escapeHtml(landingContent.assurances.heading)}</h2>
-    <div class="information-grid">${assuranceCards}</div>
-    <nav class="assurance-links" aria-label="Account and policy links">
-      <a href="/terms">Terms, cancellation, and refunds</a>
-      <a href="/privacy">Privacy Notice</a>
-      <a href="/student-data">Student Data Notice</a>
-      <a href="/login">Member Login</a>
-    </nav>
+    <div class="how-flow-grid">${howFlows}</div>
   </section>
   ${gallerySection}
   <section class="section rabbi" id="rabbi">
@@ -323,7 +275,7 @@ function landingPage() {
       <img src="/assets/rabbi/rabbi-eli-holding-book.jpg" alt="Rabbi Eli Scheller holding the One Time book"${mediaSizeAttributes('/assets/rabbi/rabbi-eli-holding-book.jpg')} loading="lazy" decoding="async">
     </div>
   </section>
-  <section class="final-cta"><h2>${escapeHtml(landingContent.finalCta.heading)}</h2><a class="button button-primary" href="/signup">Pre-register my Family</a></section>
+  <section class="final-cta"><h2>${escapeHtml(landingContent.finalCta.heading)}</h2><a class="button button-primary" href="/signup">Pre-register your Family</a></section>
 </main>${footer()}`,
     {
       canonicalPath: '/',

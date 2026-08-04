@@ -25,7 +25,7 @@ test('OT82 canonical public shell, ticker, and mobile invariant', async ({ page 
     await expect(page.locator('.campaign-ticker')).toHaveAttribute('href', '/signup');
     await expect(page.locator('.campaign-ticker')).toHaveAttribute(
       'aria-label',
-      /FREE ACCESS.*remaining.*Pre-register your Family/i,
+      'CLASSES START AUG 16 · 7 PM · FREE ACCESS THROUGH SEP 11 · 6 PM · JERUSALEM TIME',
     );
     await expect(
       page.getByLabel('Primary').getByRole('link', { name: 'Pre-register' }),
