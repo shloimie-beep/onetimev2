@@ -455,16 +455,29 @@ SELECT encode(digest(convert_to(jsonb_build_object(
 FROM legacy
 `;
 
+// Each tuple is indexed by local placeholder position minus one and stores the
+// corresponding one-based canonical position in PROTECTED_BINDINGS.
+export const APPLY_INSERT_PROTECTED_BINDING_POSITIONS = Object.freeze([
+  Object.freeze([5, 1, 12] as const),
+  Object.freeze([6, 5, 12] as const),
+  Object.freeze([7, 6, 12] as const),
+  Object.freeze([8, 6, 12] as const),
+  Object.freeze([9, 5, 6, 11, 10, 12] as const),
+  Object.freeze([6, 5, 12, 1] as const),
+  Object.freeze([13, 6, 14, 17, 12] as const),
+  Object.freeze([15, 9, 16, 17, 12] as const),
+] as const);
+
 export const APPLY_INSERT_SQL = Object.freeze([
   `INSERT INTO onetime.v21_adult_identities
      (adult_id, normalized_email, display_name, state, version, product_key,
       runtime_tier, verification_environment_id, created_at, updated_at)
-   SELECT $5, $1, legacy.display_name, 'active', 1,
+   SELECT $1, $2, legacy.display_name, 'active', 1,
           '${FIXTURE_RECONCILIATION_SCOPE.productKey}',
           '${FIXTURE_RECONCILIATION_SCOPE.runtimeTier}',
-          '${FIXTURE_RECONCILIATION_SCOPE.verificationEnvironmentId}', $12, $12
+          '${FIXTURE_RECONCILIATION_SCOPE.verificationEnvironmentId}', $3, $3
    FROM onetime.account_users AS legacy
-   WHERE legacy.email_normalized = $1
+   WHERE legacy.email_normalized = $2
      AND legacy.account_key = '${FIXTURE_RECONCILIATION_SCOPE.legacyAccountKey}'
      AND legacy.product_key = '${FIXTURE_RECONCILIATION_SCOPE.legacyProductKey}'
      AND legacy.role = '${FIXTURE_RECONCILIATION_SCOPE.legacyRole}'
@@ -473,14 +486,14 @@ export const APPLY_INSERT_SQL = Object.freeze([
   `INSERT INTO onetime.v21_human_accounts
      (human_account_id, adult_id, state, security_version, version, product_key,
       runtime_tier, verification_environment_id, created_at, updated_at)
-   VALUES ($6, $5, 'active', 1, 1, '${FIXTURE_RECONCILIATION_SCOPE.productKey}',
+   VALUES ($1, $2, 'active', 1, 1, '${FIXTURE_RECONCILIATION_SCOPE.productKey}',
            '${FIXTURE_RECONCILIATION_SCOPE.runtimeTier}',
-           '${FIXTURE_RECONCILIATION_SCOPE.verificationEnvironmentId}', $12, $12)
+           '${FIXTURE_RECONCILIATION_SCOPE.verificationEnvironmentId}', $3, $3)
    RETURNING human_account_id`,
   `INSERT INTO onetime.v21_human_account_role_memberships
      (membership_id, human_account_id, role, granted_at, granted_reason,
       product_key, runtime_tier, verification_environment_id)
-   VALUES ($7, $6, 'admin', $12, 'operator_fixture_exact_reconciliation',
+   VALUES ($1, $2, 'admin', $3, 'operator_fixture_exact_reconciliation',
            '${FIXTURE_RECONCILIATION_SCOPE.productKey}',
            '${FIXTURE_RECONCILIATION_SCOPE.runtimeTier}',
            '${FIXTURE_RECONCILIATION_SCOPE.verificationEnvironmentId}')
@@ -488,7 +501,7 @@ export const APPLY_INSERT_SQL = Object.freeze([
   `INSERT INTO onetime.v21_human_account_role_memberships
      (membership_id, human_account_id, role, granted_at, granted_reason,
       product_key, runtime_tier, verification_environment_id)
-   VALUES ($8, $6, 'parent', $12, 'operator_fixture_exact_reconciliation',
+   VALUES ($1, $2, 'parent', $3, 'operator_fixture_exact_reconciliation',
            '${FIXTURE_RECONCILIATION_SCOPE.productKey}',
            '${FIXTURE_RECONCILIATION_SCOPE.runtimeTier}',
            '${FIXTURE_RECONCILIATION_SCOPE.verificationEnvironmentId}')
@@ -497,21 +510,21 @@ export const APPLY_INSERT_SQL = Object.freeze([
      (household_id, owner_adult_id, owner_human_account_id, classification,
       state, seat_limit, active_seat_count, access_aggregate_ref, version,
       product_key, runtime_tier, verification_environment_id, created_at, updated_at)
-   VALUES ($9, $5, $6, 'family', 'active', $11, 0, $10, 1,
+   VALUES ($1, $2, $3, 'family', 'active', $4, 0, $5, 1,
            '${FIXTURE_RECONCILIATION_SCOPE.productKey}',
            '${FIXTURE_RECONCILIATION_SCOPE.runtimeTier}',
-           '${FIXTURE_RECONCILIATION_SCOPE.verificationEnvironmentId}', $12, $12)
+           '${FIXTURE_RECONCILIATION_SCOPE.verificationEnvironmentId}', $6, $6)
    RETURNING household_id`,
   `INSERT INTO onetime.v21_adult_credentials
      (human_account_id, adult_id, credential_kind, password_hash,
       credential_state, credential_version, product_key, runtime_tier,
       verification_environment_id, created_at, updated_at)
-   SELECT $6, $5, 'adult_email_password', ${V21_ARGON2ID_FROM_LEGACY_SQL}, 'active', 1,
+   SELECT $1, $2, 'adult_email_password', ${V21_ARGON2ID_FROM_LEGACY_SQL}, 'active', 1,
           '${FIXTURE_RECONCILIATION_SCOPE.productKey}',
           '${FIXTURE_RECONCILIATION_SCOPE.runtimeTier}',
-          '${FIXTURE_RECONCILIATION_SCOPE.verificationEnvironmentId}', $12, $12
+          '${FIXTURE_RECONCILIATION_SCOPE.verificationEnvironmentId}', $3, $3
    FROM onetime.account_users AS legacy
-   WHERE legacy.email_normalized = $1
+   WHERE legacy.email_normalized = $4
      AND legacy.account_key = '${FIXTURE_RECONCILIATION_SCOPE.legacyAccountKey}'
      AND legacy.product_key = '${FIXTURE_RECONCILIATION_SCOPE.legacyProductKey}'
      AND legacy.role = '${FIXTURE_RECONCILIATION_SCOPE.legacyRole}'
@@ -524,22 +537,22 @@ export const APPLY_INSERT_SQL = Object.freeze([
       expected_version, resulting_version, product_key, runtime_tier,
       verification_environment_id, actor_kind, actor_key, idempotency_key,
       canonical_request_hash, access_cause, created_at)
-   VALUES ($13, 'human_account', $6, NULL, 'active', 0, 1,
+   VALUES ($1, 'human_account', $2, NULL, 'active', 0, 1,
            '${FIXTURE_RECONCILIATION_SCOPE.productKey}',
            '${FIXTURE_RECONCILIATION_SCOPE.runtimeTier}',
            '${FIXTURE_RECONCILIATION_SCOPE.verificationEnvironmentId}',
-           'reconciler', '${RECONCILER_ACTOR_KEY}', $14, $17, NULL, $12)
+           'reconciler', '${RECONCILER_ACTOR_KEY}', $3, $4, NULL, $5)
    RETURNING transition_key`,
   `INSERT INTO onetime.canonical_state_transition_events
      (transition_key, aggregate_kind, aggregate_key, previous_state, next_state,
       expected_version, resulting_version, product_key, runtime_tier,
       verification_environment_id, actor_kind, actor_key, idempotency_key,
       canonical_request_hash, access_cause, created_at)
-   VALUES ($15, 'access', $9, NULL, 'free', 0, 1,
+   VALUES ($1, 'access', $2, NULL, 'free', 0, 1,
            '${FIXTURE_RECONCILIATION_SCOPE.productKey}',
            '${FIXTURE_RECONCILIATION_SCOPE.runtimeTier}',
            '${FIXTURE_RECONCILIATION_SCOPE.verificationEnvironmentId}',
-           'reconciler', '${RECONCILER_ACTOR_KEY}', $16, $17, 'free_period', $12)
+           'reconciler', '${RECONCILER_ACTOR_KEY}', $3, $4, 'free_period', $5)
    RETURNING transition_key`,
 ]);
 
@@ -701,6 +714,7 @@ export const INERT_TRANSACTION_PROPOSAL = Object.freeze({
   preflightExactReadback: AFTER_READBACK_SQL,
   legacyImmutableReadback: LEGACY_IMMUTABLE_READBACK_SQL,
   apply: APPLY_INSERT_SQL,
+  applyProtectedBindingPositions: APPLY_INSERT_PROTECTED_BINDING_POSITIONS,
   afterReadback: AFTER_READBACK_SQL,
   replay: REPLAY_SQL,
   compensationPreflight: COMPENSATION_PREFLIGHT_SQL,

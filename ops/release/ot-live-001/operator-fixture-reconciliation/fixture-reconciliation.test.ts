@@ -13,6 +13,7 @@ import {
 import {
   ADVISORY_LOCK_SQL,
   AFTER_READBACK_SQL,
+  APPLY_INSERT_PROTECTED_BINDING_POSITIONS,
   APPLY_INSERT_SQL,
   BEGIN_SQL,
   COMPENSATION_AFTER_READBACK_SQL,
@@ -346,11 +347,57 @@ describe('OT-LIVE-001.03 inert fixture canonical-state reconciliation design', (
     expect(PREFLIGHT_SQL).toContain("$10 = 'access:' || $9");
   });
 
+  it('uses exact compact local-to-canonical bindings for all eight apply statements', () => {
+    const expectedMappings = [
+      [5, 1, 12],
+      [6, 5, 12],
+      [7, 6, 12],
+      [8, 6, 12],
+      [9, 5, 6, 11, 10, 12],
+      [6, 5, 12, 1],
+      [13, 6, 14, 17, 12],
+      [15, 9, 16, 17, 12],
+    ];
+
+    expect(APPLY_INSERT_PROTECTED_BINDING_POSITIONS).toEqual(expectedMappings);
+    expect(APPLY_INSERT_PROTECTED_BINDING_POSITIONS).toHaveLength(APPLY_INSERT_SQL.length);
+    expect(Object.isFrozen(APPLY_INSERT_PROTECTED_BINDING_POSITIONS)).toBe(true);
+
+    for (const [index, sql] of APPLY_INSERT_SQL.entries()) {
+      const mapping = APPLY_INSERT_PROTECTED_BINDING_POSITIONS[index];
+      expect(mapping).toBeDefined();
+      const localPositions = [
+        ...new Set([...sql.matchAll(/\$(\d+)/g)].map((match) => Number(match[1]))),
+      ].sort((left, right) => left - right);
+      const exactContiguousPositions = Array.from(
+        { length: mapping?.length ?? 0 },
+        (_unused, position) => position + 1,
+      );
+
+      expect(localPositions).toEqual(exactContiguousPositions);
+      expect(
+        mapping?.every((position) => position >= 1 && position <= PROTECTED_BINDINGS.length),
+      ).toBe(true);
+      expect(Object.isFrozen(mapping)).toBe(true);
+    }
+
+    expect(APPLY_INSERT_PROTECTED_BINDING_POSITIONS[0]).toEqual([5, 1, 12]);
+    expect(APPLY_INSERT_SQL[0]).toContain('SELECT $1, $2');
+    expect(APPLY_INSERT_SQL[0]).toContain(
+      `'${FIXTURE_RECONCILIATION_SCOPE.verificationEnvironmentId}', $3, $3`,
+    );
+    expect(INERT_TRANSACTION_PROPOSAL.applyProtectedBindingPositions).toBe(
+      APPLY_INSERT_PROTECTED_BINDING_POSITIONS,
+    );
+  });
+
   it('creates canonical HumanAccount null-to-active and access null-to-free events', () => {
     const humanCreate = APPLY_INSERT_SQL[6];
     const accessCreate = APPLY_INSERT_SQL[7];
-    expect(humanCreate).toContain("$13, 'human_account', $6, NULL, 'active', 0, 1");
-    expect(accessCreate).toContain("$15, 'access', $9, NULL, 'free', 0, 1");
+    expect(humanCreate).toContain("$1, 'human_account', $2, NULL, 'active', 0, 1");
+    expect(accessCreate).toContain("$1, 'access', $2, NULL, 'free', 0, 1");
+    expect(APPLY_INSERT_PROTECTED_BINDING_POSITIONS[6]).toEqual([13, 6, 14, 17, 12]);
+    expect(APPLY_INSERT_PROTECTED_BINDING_POSITIONS[7]).toEqual([15, 9, 16, 17, 12]);
     expect(accessCreate).toContain("'free_period'");
     expect(humanCreate).toContain("'reconciler'");
     expect(humanCreate).toContain(RECONCILER_ACTOR_KEY);
