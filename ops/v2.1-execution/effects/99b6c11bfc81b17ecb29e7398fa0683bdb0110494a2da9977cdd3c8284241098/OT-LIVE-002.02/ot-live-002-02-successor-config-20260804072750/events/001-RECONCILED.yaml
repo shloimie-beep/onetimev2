@@ -1,0 +1,71 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: ot-live-002-02-successor-config-20260804072750
+event_sequence: 1
+previous_event_digest: null
+state: RECONCILED
+task_id: OT-LIVE-002.02
+owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+canonical_event_path: ops/v2.1-execution/effects/99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098/OT-LIVE-002.02/ot-live-002-02-successor-config-20260804072750/events/001-RECONCILED.yaml
+current_pointer_path: ops/v2.1-execution/effects/99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098/OT-LIVE-002.02/ot-live-002-02-successor-config-20260804072750/CURRENT.yaml
+candidate_digest: 99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098
+repository_source_sha: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+authority_id: ot-live-002-02-successor-config-20260804072750
+authority_grant_digest: bb736469fc83f8bee55c136d36454fc71ac37ee08f5b1c7b7872a3fdd5d155e8
+provider_locks:
+  provider:ghl-location:
+    lease_id: 5cc14e2a-a6f4-4362-9657-c3fbd71adb7a
+    fencing_token: fence-c7a90be5-b9a2-411a-bf58-a97aa5def8a0
+  provider:resend-domain:
+    lease_id: 4f70f6f5-8043-4868-b76e-9271c90bb367
+    fencing_token: fence-33ad7119-1f6a-4486-83ec-7423f4b62c1c
+  infra:dns:
+    lease_id: b9523d20-2802-45c8-946e-368121a4445e
+    fencing_token: fence-178e06e2-925e-4bbc-ba68-26e04d87df8c
+operation: terminally_reconcile_partial_success_after_GHL_configuration_budget_boundary_and_release_all_three_locks
+terminal_readback:
+  workflow_name: OT-15 Former Member Reactivation
+  workflow_id: 09051378-5917-4172-afda-f425619dd23d
+  workflow_state: Draft
+  trigger: Tag_added_includes_exact_launch_tag
+  launch_tag_provider_id: IcOGsLgSIOYGFlHF4kQ0
+  launch_tag_provider_canonical_value: ot_|_audience_|_elul_2026_|_inactive_adult_launch
+  reentry_enabled: false
+  multiple_opportunities_enabled: false
+  stop_on_response_enabled: true
+  sender_display_name: Rabbi Eli Scheller
+  sender_email: rabbielischeller@onetimeonetime.com
+  persisted_step_order:
+    - Day_0_email
+    - Wait_4_Days
+    - Day_4_email
+  Day_0_and_Day_4_truth: Aug_16_class_start_Sep_11_free_access_end_pre_registration_fallback
+  Day_9_email_present: false
+  Wait_5_Days_present: false
+  Email_Marketing_campaign_created: false
+  inactive_webhook_created: false
+  historical_campaign_and_workflow_mutations: 0
+  tag_assignments_contact_mutations_or_sends: 0
+  application_database_writes: 0
+  Resend_or_DNS_effects: 0
+  WhatsApp_billing_deployment_or_media_effects: 0
+budget_reconciliation:
+  configured_max: 20
+  exact_provider_save_count: not_claimed
+  disposition: staged_interpretation_consumed_or_exceeded_during_builder_insertion_and_reorder_reconciliation
+  worker_action: stopped_fail_closed_before_any_remaining_effect
+unexpected_effects: 0
+cleanup_state: desired_new_workflow_and_tag_preserved_Draft_with_zero_contacts_or_sends
+terminal_disposition: PARTIAL_SUCCESS_CONFIGURATION_BUDGET_EXHAUSTED
+lock_release_state: GHL_Resend_and_DNS_leases_released_zero_unresolved_effect
+successor_authority_required_for_remaining_configuration: true
+remaining_exact_scope:
+  - append_one_Wait_5_Days_after_Day_4_without_changing_existing_step_semantics
+  - append_one_Day_9_email_using_current_Aug_16_and_Sep_11_truth
+  - create_one_new_unique_Email_Marketing_campaign
+  - create_or_configure_one_inactive_Customer_Replied_webhook
+  - final_exact_Draft_asset_and_zero_contact_zero_send_readback
+event_at: '2026-08-04T08:15:47Z'
+state_based_on_head_sha: 86106a67286ab0fbac781b879053d8be258c0d20
+contains_secret: false
+immutable: true

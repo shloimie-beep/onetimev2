@@ -1,0 +1,102 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+authority_id: ot-live-002-02-ghl-config-completion-20260804081547
+authority_kind: derived_candidate_bound_exact_GHL_Draft_configuration_completion
+task_id: OT-LIVE-002.02
+owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+owner_title: Configure governed GHL campaign
+owner_worktree: C:/Users/User/Documents/Codex/2026-08-03/files-mentioned-by-the-user-ot
+owner_exclusivity: sole_OT-LIVE-002.02_provider_owner
+candidate_digest: 99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098
+candidate_binding_status: exact_current_live_candidate
+candidate_manifest_commit_sha: ea64afeb98d02ea315382f8b899a9b61e44ee6ca
+repository_source_sha: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+source_branch: codex/ot-live-progressive-portal-20260803
+canonical_path: ops/v2.1-execution/authority/99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098/OT-LIVE-002.02/ot-live-002-02-ghl-config-completion-20260804081547/GRANT.yaml
+source_grant_id: ot-v21-production-source-grant-20260729
+source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+predecessor_authority_id: ot-live-002-02-successor-config-20260804072750
+predecessor_grant_digest: bb736469fc83f8bee55c136d36454fc71ac37ee08f5b1c7b7872a3fdd5d155e8
+predecessor_terminal_event_digest: 69e82725193838b5541cf0142d2e6bc2f168cf457c02ecf2c6dbfa3436574539
+operator_authorization_source_thread_id: 019fa92b-77be-73f3-99b6-99d73a33a2a7
+operator_authorization_evidence: bounded_successor_request_after_budget_boundary_from_sole_owner_window
+approved_by: Shloimie Dratler
+approved_at: '2026-08-04T08:15:47Z'
+recorded_at: '2026-08-04T08:15:47Z'
+expires_at: '2026-08-04T10:15:47Z'
+provider_lock:
+  lock: provider:ghl-location
+  provider_identity: ghl-location:pBSnOK2nkdxp6gf9Rg3o
+  exact_location_id: pBSnOK2nkdxp6gf9Rg3o
+  holder_claim_id: a77ba13c-5646-423e-9d17-757e9bd00008
+  lease_id: 2a36b0a1-e259-414a-882b-bf849a500e27
+  fencing_token: fence-f0bacc9a-e5f2-4c41-9582-d4dd7d2ea3bd
+existing_exact_assets:
+  target_workflow:
+    name: OT-15 Former Member Reactivation
+    id: 09051378-5917-4172-afda-f425619dd23d
+    required_state: Draft
+  trigger_tag:
+    requested_name: OT | Audience | Elul 2026 | Inactive Adult Launch
+    provider_canonical_id: IcOGsLgSIOYGFlHF4kQ0
+    tag_mutation_or_assignment_allowed: false
+  new_Draft_email_marketing_campaign:
+    required_name: OT-15 Former Member Reactivation
+    required_selected_contacts: 0
+    immutable_provider_id_required_after_creation: true
+  protected_historical_campaign_id: 6a5f750b557817806a14b19e
+  protected_historical_workflow_id: a34ea513-4612-4f53-8bd8-49e89e6610f9
+allowed_operations:
+  - revalidate_the_exact_target_workflow_tag_trigger_Draft_state_and_existing_Day_0_Wait_4_Days_Day_4_order
+  - append_exactly_one_Wait_5_Days_after_Day_4_without_changing_existing_step_semantics
+  - append_exactly_one_Day_9_email_after_that_wait_using_Aug_16_class_start_Sep_11_free_access_end_and_pre_registration_fallback
+  - create_exactly_one_unique_Draft_Email_Marketing_campaign_named_OT_15_Former_Member_Reactivation_with_zero_contacts
+  - create_or_configure_exactly_one_inactive_Customer_Replied_webhook_with_zero_activation_or_outbound_action
+  - perform_final_exact_provider_readback_of_workflow_step_order_asset_IDs_Draft_state_and_zero_contacts_zero_sends
+configuration_invariants:
+  workflow_reentry_enabled: false
+  workflow_multiple_opportunities_enabled: false
+  workflow_stop_on_response_enabled: true
+  sender_display_name: Rabbi Eli Scheller
+  sender_email: rabbielischeller@onetimeonetime.com
+  reply_to: rabbielischeller@onetimeonetime.com
+  existing_Day_0_and_Day_4_copy_or_cadence_mutation_allowed: false
+  workflow_publish_or_activation_allowed: false
+  campaign_send_or_schedule_allowed: false
+effect_budget:
+  GHL_configuration_mutations_max: 12
+  workflow_step_additions_max: 2
+  new_Email_Marketing_campaigns_max: 1
+  inactive_Customer_Replied_webhooks_max: 1
+  tag_creations_mutations_or_assignments_max: 0
+  contact_selection_mutation_or_enrollment_max: 0
+  seed_pilot_or_broad_sends_max: 0
+  application_database_rows_mutated_max: 0
+  Resend_DNS_Forward_Email_or_WhatsApp_mutations_max: 0
+  billing_charges_ad_spend_nameserver_or_deployment_effects_max: 0
+nonexclusive_read_only_scope:
+  - eligible_adult_audience_and_suppression_reconciliation
+  - Resend_domain_and_sender_auth_readback
+  - DNS_authoritative_email_auth_readback
+  - source_only_application_database_proposal_on_codex_ot_live_002_governed_campaign_20260804
+send_gate:
+  email_campaign_may_send: false
+  seed_pilot_and_remaining_audience_authorities: not_issued
+application_database_authority:
+  writes_authorized: false
+  maximum_affected_rows: 0
+rollback_and_reconciliation:
+  - fetch_remote_control_and_match_this_grant_status_claim_lease_and_fence_immediately_before_each_live_effect
+  - capture_exact_workflow_step_and_asset_preimage_before_mutation
+  - read_back_each_save_from_the_exact_GHL_location
+  - stop_on_unknown_result_and_reconcile_before_retry
+  - rollback_only_the_exact_new_step_or_asset_by_immutable_ID_when_readback_mismatches
+  - preserve_desired_Draft_assets_after_matching_terminal_readback
+stop_conditions:
+  - source_grant_this_authority_candidate_owner_location_lease_or_fence_is_revoked_expired_or_mismatched
+  - target_workflow_tag_trigger_or_existing_three_step_order_differs_from_the_reconciled_preimage
+  - operation_would_change_Day_0_or_Day_4_semantics_historical_assets_contacts_tag_assignments_or_send_state
+  - operation_would_exceed_any_budget_or_activate_publish_schedule_or_send
+  - result_is_unknown_or_provider_readback_does_not_match
+contains_secret: false
+immutable: true

@@ -2389,7 +2389,7 @@ tasks:
     proof_record_location: ops/v2.1-execution/control/OT-LIVE-SUCCESSOR-DISPATCH-2026-08-04.yaml
 - task_id: OT-LIVE-002.02
   status: in_progress
-  active_phase: governed_email_configuration_and_read_only_audience_reconciliation
+  active_phase: exact_GHL_Draft_configuration_completion
   owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
   branch: codex/ot-live-002-governed-campaign-20260804
   phase_branches:
@@ -2399,22 +2399,22 @@ tasks:
     base: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
   authorized_start_sha: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
   last_known_remote_head: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
-  active_claim_id: 7657ba6c-a92e-4fac-b5ba-0bbe1a034601
-  active_writer_id: codex-ot-live-002-02-successor-config-7657ba6c
-  lease_expires_at: '2026-08-04T11:27:50Z'
-  last_heartbeat_at: '2026-08-04T07:27:50Z'
-  controller_authorization_sha: 96afb1cc959bfa6b554e496f91ad19ea7b1ff8ab
+  active_claim_id: eec62a67-56d1-4675-b8bf-544f2ada427f
+  active_writer_id: codex-ot-live-002-02-ghl-config-completion-eec62a67
+  lease_expires_at: '2026-08-04T10:15:47Z'
+  last_heartbeat_at: '2026-08-04T08:15:47Z'
+  controller_authorization_sha: 86106a67286ab0fbac781b879053d8be258c0d20
   ready_entry_payload_digest: null
   interface_checkpoint_sha: null
   implementation_head_sha: null
   status_proof:
-    state: provider_configuration_authority_active_database_and_send_effects_zero
+    state: predecessor_partial_success_reconciled_narrow_GHL_configuration_successor_active
     producer_task_id: OT-LIVE-002.02
     producer_head_sha: null
     canonical_candidate_digest: 99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098
     integration_or_evidence_head_sha: null
     external_effects_reconciled: true
-    state_based_on_control_head_sha: 96afb1cc959bfa6b554e496f91ad19ea7b1ff8ab
+    state_based_on_control_head_sha: 86106a67286ab0fbac781b879053d8be258c0d20
     proof_record_location: ops/v2.1-execution/control/OT-LIVE-002.02-PROVIDER-CLAIM.yaml
 - task_id: OT-LIVE-004.01
   status: ready

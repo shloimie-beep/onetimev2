@@ -20,9 +20,11 @@ controller_authorization_sha: 76692fbb6e65cdeb68e32862dd0c03490b5e5750
 next_action: >-
   Preserve exact live candidate 99b6c11b at source ffd1c55a. Dispatch OT-LIVE-001.03 from that base for the settled
   landing, single Admin/Parent identity, context switcher, Member Login, old-app preservation, and acceptance delta;
-  no deployment authority exists until a new candidate is frozen and tested. OT-LIVE-002.02 may use only the active
-  configuration-stage GHL, Resend, and DNS leases to create/reconcile new Draft assets and a launch tag with zero
-  contact mutation, database write, seed, pilot, or broad send. Its read-only census must precede an exact additive
+  no deployment authority exists until a new candidate is frozen and tested. OT-LIVE-002.02 consumed its first
+  configuration budget after creating exact Draft workflow 09051378 and tag IcOGsLgSIOYGFlHF4kQ0; all three prior
+  locks are terminally reconciled. It may use only the narrow active GHL successor to append Wait 5 Days and Day 9,
+  create one Draft campaign and one inactive webhook, then prove zero contacts and sends. Resend/DNS mutations remain
+  unauthorized. Its read-only census must precede an exact additive
   application-database proposal and later row-count-bound production-data authority. OT-LIVE-004.01 is safe to open for
   isolated source work, with all shared router/server/migration composition held behind OT-LIVE-001.03 release. Keep
   OT-LIVE-003.02 parked/default-off and WhatsApp/WAPI fully deferred at zero effects. Use August 16 7:00 PM class start
@@ -47,6 +49,21 @@ ot_live_operator_decision_and_successor_dispatch_20260804:
   WAPI: deferred_zero_effect_nonblocking
   class_begins: '2026-08-16T19:00:00+03:00'
   free_access_ends: '2026-09-11T18:00:00+03:00'
+ot_live_002_02_GHL_config_partial_reconciliation_and_successor:
+  recorded_at: '2026-08-04T08:15:47Z'
+  state_based_on_control_head_sha: 86106a67286ab0fbac781b879053d8be258c0d20
+  predecessor_authority_id: ot-live-002-02-successor-config-20260804072750
+  predecessor_terminal_event_digest: 69e82725193838b5541cf0142d2e6bc2f168cf457c02ecf2c6dbfa3436574539
+  predecessor_disposition: PARTIAL_SUCCESS_CONFIGURATION_BUDGET_EXHAUSTED
+  created_workflow_id: 09051378-5917-4172-afda-f425619dd23d
+  created_launch_tag_id: IcOGsLgSIOYGFlHF4kQ0
+  current_persisted_order: Day_0_email_Wait_4_Days_Day_4_email
+  contact_tag_send_database_Resend_DNS_effects: 0_0_0_0_0_0
+  successor_authority_id: ot-live-002-02-ghl-config-completion-20260804081547
+  successor_GHL_lease_id: 2a36b0a1-e259-414a-882b-bf849a500e27
+  successor_GHL_fencing_token: fence-f0bacc9a-e5f2-4c41-9582-d4dd7d2ea3bd
+  successor_scope: two_exact_workflow_steps_one_Draft_campaign_one_inactive_webhook_final_readback
+  successor_send_contact_tag_database_and_non_GHL_provider_budget: 0
 ot_live_001_02_public_support_repair_candidate_freeze:
   recorded_at: '2026-08-03T20:06:36Z'
   control_parent_sha: 729fd49b803f98ad0de17042a0a0ac62a4b7e3aa
