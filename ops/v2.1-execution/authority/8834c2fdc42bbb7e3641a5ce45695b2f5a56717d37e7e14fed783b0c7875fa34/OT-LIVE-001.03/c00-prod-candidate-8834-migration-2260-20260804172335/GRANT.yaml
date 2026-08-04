@@ -1,0 +1,105 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+authority_id: c00-prod-candidate-8834-migration-2260-20260804172335
+authority_kind: derived_candidate_bound_exact_single_production_migration
+task_id: OT-LIVE-001.03
+owner_thread_id: 019fc7e8-b506-7d30-a36a-4d7a9641f4fd
+candidate_digest: 8834c2fdc42bbb7e3641a5ce45695b2f5a56717d37e7e14fed783b0c7875fa34
+candidate_binding_status: exact_frozen_candidate_pre_deployment_migration
+candidate_manifest_commit_sha: 03e7e74156685554c8efb8b9ce20645f68899d05
+candidate_manifest_sha256: d072b6a464893e07f1249eb8130cfe9625f0e7f1b70c4e965a03f5e729eb832a
+repository_source_sha: a157c388d8dc292699f7cd1a1ef178918ee30885
+repository_tree_sha: bd2f1295043af74cfa0bad5f5b3993e3a534137e
+source_branch: codex/ot-live-002-census-identity-contract-correction-20260804
+canonical_path: ops/v2.1-execution/authority/8834c2fdc42bbb7e3641a5ce45695b2f5a56717d37e7e14fed783b0c7875fa34/OT-LIVE-001.03/c00-prod-candidate-8834-migration-2260-20260804172335/GRANT.yaml
+source_grant_id: ot-v21-production-source-grant-20260729
+source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+source_approval_evidence_path: ops/v2.1-execution/authority/none/C00/ot-v21-production-source-grant-20260729/APPROVAL.md
+source_approval_evidence_digest: 8c95a959f79aba0ac34fa0fcb6cb463cceac9aeb2bb52da1603d39db3e2c33c2
+grant_status_at_issue: active
+approved_by: Shloimie Dratler
+approved_at: '2026-08-04T17:23:35Z'
+recorded_at: '2026-08-04T17:23:35Z'
+expires_at: '2026-08-04T18:23:35Z'
+scope:
+  provider: One Time application PostgreSQL on canonical Railway production
+  project_id: ce55ef20-1418-4ad3-aafa-f877fb992dc8
+  environment_id: f911acfc-e206-44df-a569-9d69d709b94b
+  database_service_id: db590e4a-7dc5-40cb-a243-5206ce21b746
+  database_deployment_id: 62583cef-572b-40ae-b1d3-0194a2ccbf27
+  database_image: ghcr.io/railwayapp-templates/postgres-ssl:18
+  migration_id: 2260_v21_governed_campaign_audience_decisions
+  migration_path: packages/db/migrations/2260_v21_governed_campaign_audience_decisions.sql
+  migration_sha256: 93e7879ce7861cd37733335ca64e49310af1025fc099e6bce4abadb8f25c3740
+  candidate_migration_inventory_count: 91
+  candidate_migration_inventory_digest: 0561f0b2ba9f7fed82ee8fe193caf73e2f526ca15875b8ac685f1d59aea0a190
+  pre_effect_ledger_row_count: 90
+  pre_effect_ledger_digest: dbddc86e08ff25378d687febcfb36c41dbe7132f017fafe7a7e11b72a424fdc3
+  pre_effect_last_migration_id: 2259_vimeo_mishnayos_catalog_adoption
+  pre_effect_pending_count: 1
+  pre_effect_pending_id: 2260_v21_governed_campaign_audience_decisions
+fencing_token: fence-8a226f49-5e4a-420c-8a96-24bfeb9abf58
+lock: production:data
+holder_claim_id: 772af7c9-c250-4220-87fc-f22aad059b9a
+provider_lock_lease_id: ca5aba4b-2d29-427b-9777-bd21d0abc43c
+allowed_operation: >-
+  From the clean exact candidate worktree at source a157c388d8dc292699f7cd1a1ef178918ee30885 only, revalidate
+  the canonical database deployment and the committed READ ONLY 90-row ledger proof, then invoke the repository's
+  transaction-bound migration runner exactly once so that migrations 1 through 2259 are read back already_applied and
+  only 2260_v21_governed_campaign_audience_decisions is applied with its exact checksum. Require the runner's single
+  BEGIN, advisory transaction lock, exact migration DDL, exact schema_migrations ledger insert and acknowledged COMMIT;
+  then perform a fresh committed READ ONLY reconciliation proving 91 ledger rows, last ID 2260, pending zero, exact
+  checksum, expected schema objects and zero governed-campaign decision rows. If any pre-commit statement fails,
+  require acknowledged ROLLBACK and terminally record zero committed effects. If the result is unknown, read back and
+  do not retry.
+maximum_effect_count: 1
+maximum_effect_value: exactly_one_transactional_application_of_migration_2260_and_its_one_schema_migrations_ledger_row
+approved_fixture_ids: []
+effect_budget:
+  database_migrations_applied_exact: 1
+  schema_migration_ledger_rows_inserted_exact: 1
+  application_business_rows_inserted_updated_deleted_max: 0
+  migration_retries_after_unknown_result_max: 0
+  post_commit_destructive_rollback_migrations_max: 0
+  Railway_deployments_or_variable_domain_source_mutations_max: 0
+  browser_or_session_mutations_max: 0
+  GHL_contact_tag_seed_reply_pilot_or_send_mutations_max: 0
+  DNS_Resend_Forward_Email_WhatsApp_mutations_max: 0
+  charges_customer_or_Student_mutations_max: 0
+prerequisite_review:
+  control_parent_sha: 5dd3e0c68c854e89c53a1f39e3b31a4c1e66ffce
+  candidate_manifest_commit_sha: 03e7e74156685554c8efb8b9ce20645f68899d05
+  target_source_remote_head: a157c388d8dc292699f7cd1a1ef178918ee30885
+  target_worktree: clean_exact_head
+  deterministic_candidate_derivation: passed
+  full_unit_suite: 641_passed_0_failed
+  candidate_builder: 4_passed_0_failed
+  build_lint_typecheck_format_diff_secret_scan: passed
+  native_PostgreSQL_18_4_candidate_proof: 91_apply_91_replay_pending_0_issues_0_8_of_8_probes
+  native_proof_sha256: 40dbc4062e1ee122e7f235a67bde015dd616bd21a0b0effa3c7fbd7527d84cf2
+  live_pre_effect_readback: exact_90_row_ledger_one_pending_2260_READ_ONLY_no_XID_zero_mutations
+  live_web_and_worker_source: exact_prior_27576fa6_candidate_9d6_not_the_frozen_target
+  deployment_authority: not_issued_and_production_deployment_lock_unclaimed
+  contact_seed_pilot_broad_send_gate: held_false
+rollback_and_reconciliation:
+  - fetch and require the exact remote control authority status lock lease and fencing token immediately before connection
+  - require the exact clean source head tree migration path raw digest and 91-file inventory before running the migration command
+  - use only the repository migration runner whose entire inventory check DDL and ledger insert occur in one transaction under advisory lock 81227001
+  - before applying require a fresh READ ONLY ledger of exactly 90 recognized rows and exactly one pending ID 2260 with no unknown rows
+  - require one applied result for exact 2260 and exactly 90 already_applied results with no other status
+  - after commit require a fresh READ ONLY ledger of 91 recognized rows exact 2260 checksum last ID 2260 pending zero and all expected schema objects
+  - require governed_campaign_audience_decisions row count zero and make no audience decision write under this authority
+  - on any pre-commit failure require acknowledged ROLLBACK and record zero committed effects before releasing production:data
+  - after an acknowledged commit do not drop or reverse the additive inert schema under this authority; stop and request separate correction authority if reconciliation differs
+  - release production:data only after terminal evidence records the exact ledger schema-object and zero-business-row readback
+stop_conditions:
+  - source_grant_authority_status_control_head_lock_lease_or_fencing_token_is_revoked_expired_absent_or_mismatched
+  - candidate_manifest_source_tree_branch_worktree_migration_digest_or_inventory_differs_from_the_exact_binding
+  - database_project_environment_service_deployment_image_or_status_differs_from_the_exact_live_binding
+  - pre_effect_ledger_is_not_exactly_90_recognized_rows_with_only_2260_pending
+  - any schema object defined by 2260 already exists while its ledger row is absent
+  - migration_runner_would_apply_any_migration_other_than_2260_or_would_run_outside_one_transaction
+  - operation_would_write_any_audience_decision_contact_tag_session_customer_Student_or_other_business_row
+  - operation_would_deploy_change_Railway_configuration_domains_DNS_provider_assets_send_or_charge
+contains_secret: false
+immutable: true

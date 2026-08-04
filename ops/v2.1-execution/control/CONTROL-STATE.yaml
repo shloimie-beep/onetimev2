@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: operational
-active_phase: candidate_8834c2fd_frozen_pending_candidate_bound_deployment_migration_and_read_only_census
+active_phase: candidate_8834c2fd_migration_2260_authorized_active
 bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
@@ -18,7 +18,9 @@ candidate: 8834c2fdc42bbb7e3641a5ce45695b2f5a56717d37e7e14fed783b0c7875fa34
 active_writer_limit: 4
 controller_authorization_sha: 76692fbb6e65cdeb68e32862dd0c03490b5e5750
 next_action: >-
-  Preserve deployed candidate 9d6be957 at source 27576fa6 and its successful exact ten-effect operator fixture.
+  Apply and terminally reconcile exact migration 2260 under the fresh candidate-bound production:data lease, then
+  release that lock before separately authorizing the exact web and worker deployment of candidate 8834c2fd. Preserve
+  deployed candidate 9d6be957 at source 27576fa6 and its successful exact ten-effect operator fixture.
   The existing-Chrome Admin to Parent to Admin canary stopped credential-unavailable before every POST with zero
   database mutations or unresolved effects; defer the single operator sign-in request until independent work completes.
   OT-LIVE-004.01 executable media-provider runtime is accepted source-only at ad3c11e2 after 40 controller-focused tests,
@@ -50,6 +52,20 @@ ot_live_candidate_8834c2fd_freeze_20260804_170617:
   PostgreSQL_18_4: 91_apply_91_replay_pending_0_issues_0_8_of_8_probes_cluster_removed
   migration_2260_sha256: 93e7879ce7861cd37733335ca64e49310af1025fc099e6bce4abadb8f25c3740
   live_database_provider_contact_send_deploy_DNS_effects_at_freeze: 0_0_0_0_0_0
+ot_live_001_03_candidate_8834_migration_2260_authority_20260804_172335:
+  recorded_at: '2026-08-04T17:23:35Z'
+  state_based_on_control_head_sha: 5dd3e0c68c854e89c53a1f39e3b31a4c1e66ffce
+  authority_id: c00-prod-candidate-8834-migration-2260-20260804172335
+  claim_id: 772af7c9-c250-4220-87fc-f22aad059b9a
+  lease_id: ca5aba4b-2d29-427b-9777-bd21d0abc43c
+  fencing_token: fence-8a226f49-5e4a-420c-8a96-24bfeb9abf58
+  candidate_digest: 8834c2fdc42bbb7e3641a5ce45695b2f5a56717d37e7e14fed783b0c7875fa34
+  repository_source_sha: a157c388d8dc292699f7cd1a1ef178918ee30885
+  database_deployment_id: 62583cef-572b-40ae-b1d3-0194a2ccbf27
+  pre_effect_ledger: 90_rows_digest_dbddc86e_only_2260_pending_READ_ONLY_zero_mutations
+  authorized_effect: exact_one_transactional_application_of_migration_2260_and_one_ledger_row
+  application_business_rows_provider_deploy_session_contact_tag_send_charge_customer_Student_effects_max: 0
+  deployment_lock: unclaimed_until_migration_terminal_reconciliation
 ot_live_002_02_audience_census_identity_contract_dispatch_20260804_161937:
   recorded_at: '2026-08-04T16:19:37Z'
   state_based_on_control_head_sha: 9f76bb1e56f894138c739d8952d5edccd51ea7f4
