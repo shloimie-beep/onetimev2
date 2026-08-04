@@ -1,0 +1,141 @@
+schema_version: 1
+request_id: OT-LIVE-002-MIGRATION-001
+task_id: OT-LIVE-002.02
+status: immutable_semantic_request
+immutable: true
+allocation_status: requested_not_allocated
+requested_ordinal: 2260
+requested_ordinal_usable: false
+allocator: F02
+migration_writer: F02
+source_binding:
+  control_head: fb70bd65344513161c240e3ed6dfa30e0ad7fb54
+  claim_id: 38937cb0-37e4-4fbf-8bbb-e7c07d75aeda
+  claim_raw_sha256: 36f5f0729d08c319dcc00689fd9d058728cc74b3968148161757ddaac50465ff
+  branch: codex/ot-live-002-governed-campaign-20260804
+  base_head: 0cf2224f984c023162bf2286028df8e3d2723adf
+  base_tree: 3aad6be5e00d10e647daac7c5b034d6ccd6ae704
+exact_path_count: 5
+exact_paths:
+  - packages/db/src/audience-reconciliation/governed-campaign-decision-store.proposal.sql
+  - packages/db/src/audience-reconciliation/governed-campaign-decision-store.proposal.ts
+  - ops/codex-runs/OT-LIVE-002/decision-store-contract-check.mjs
+  - ops/codex-runs/OT-LIVE-002/DECISION-STORE-SOURCE-EVIDENCE.md
+  - ops/codex-runs/OT-LIVE-002/MIGRATION-REQUEST.yaml
+semantic_scope:
+  requested_future_filename: packages/db/migrations/F02_ALLOCATED_ORDINAL_governed_campaign_audience_decision_store.sql
+  create_empty_table: onetime.governed_campaign_audience_decisions
+  create_current_view: onetime.governed_campaign_audience_current
+  schema_time_backfill_rows: 0
+  existing_table_alterations: 0
+  destructive_operations: 0
+  runtime_registration_effects: 0
+environment_binding:
+  required_dimensions:
+    - runtime_tier
+    - verification_environment_id
+    - account_key
+    - product_key
+    - campaign_key
+  bind_in:
+    - primary_and_unique_keys
+    - constraints_and_indexes
+    - advisory_lock
+    - request_hash
+    - snapshot_hash
+    - idempotency_replay
+    - current_projection
+    - current_projection_hash
+exact_provider_binding:
+  provider: highlevel
+  provider_location_id: pBSnOK2nkdxp6gf9Rg3o
+  provider_campaign_id: 6a71a64c28f7a5dbb3aec1be
+  provider_workflow_id: 09051378-5917-4172-afda-f425619dd23d
+  provider_launch_tag_id: IcOGsLgSIOYGFlHF4kQ0
+  raw_provider_contact_identifier_allowed: false
+  provider_contact_identity: protected_sha256_lower_hex_reference_only
+decision_contract:
+  decisions:
+    - include
+    - exclude
+    - review
+  append_only: true
+  versioned: true
+  historical_body_update_allowed: false
+  delete_allowed: false
+  only_allowed_existing_row_change: superseded_at_null_to_timestamp
+  current_projection_filter: superseded_at_is_null
+  request_hash_covers_environment_binding_provider_binding_counts_ceiling_and_ordered_decisions: true
+source_fact_boundary:
+  exact_typed_allowlist_only: true
+  arbitrary_keys_allowed: false
+  free_form_strings_allowed: false
+  raw_pii_allowed: false
+  forbidden_fields:
+    - name
+    - email
+    - phone
+    - postal_address
+    - free_form_note
+    - message_body
+    - transcript
+    - student_record
+    - credential
+    - cookie
+    - token
+    - secret
+    - raw_provider_contact_reference
+    - private_provider_field
+transaction_contract:
+  one_database_transaction: true
+  advisory_lock_scope: runtime_tier_verification_environment_account_product_campaign
+  precompute_inserted_plus_superseded_rows: true
+  authority_supplied_maximum_affected_rows_required: true
+  zero_row_authority_cannot_write: true
+  exact_replay_must_affect_zero_rows: true
+  unknown_result_action: rollback_stop_without_retry
+  commit_requires_in_transaction_readback: true
+required_proofs:
+  postgresql_18:
+    - fresh_apply
+    - ledger_replay
+    - append_only_body_update_and_delete_rejection
+    - null_to_timestamp_supersession
+    - environment_isolation
+    - exact_binding_and_hash_readback
+    - maximum_affected_rows_rollback
+    - mismatch_and_unknown_rollback
+  pg_mem:
+    - fresh_apply
+    - ledger_replay
+    - repository_contract
+    - environment_isolation
+    - readback
+    - rollback
+requirements:
+  - OTV2-GHL-135
+  - OTV2-GHL-137
+  - OTV2-GHL-138
+  - OTV2-EMAIL-145
+  - OTV2-PROVIDER-231
+zero_effect_ledger:
+  migration_files_created_or_edited: 0
+  migrations_registered_or_allocated: 0
+  shared_paths_edited: 0
+  database_connections: 0
+  database_rows_written: 0
+  schema_time_backfill_rows: 0
+  contacts_mutated: 0
+  tags_mutated: 0
+  provider_mutations: 0
+  seed_sends: 0
+  pilot_sends: 0
+  broad_sends: 0
+  deployments: 0
+prohibitions:
+  - no_migration_file_creation_edit_registration_or_ordinal_inference
+  - no_shared_barrel_registry_manifest_application_or_runtime_registration_edit
+  - no_database_connection_or_SQL_execution
+  - no_contact_tag_provider_seed_pilot_broad_send_or_deploy_effect
+  - no_raw_PII_secret_credential_cookie_token_or_provider_contact_identifier
+allocation_gate: F02_must_accept_this_exact_request_before_2260_or_any_other_ordinal_is_usable
