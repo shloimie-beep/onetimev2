@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: operational
-active_phase: candidate_8834c2fd_deployed_audience_census_source_contract_correction_required
+active_phase: candidate_8834c2fd_deployed_GHL_count_contract_diagnostic_assigned
 bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
@@ -2979,6 +2979,15 @@ ot_live_002_02_candidate_8834_read_only_audience_census_terminal_20260804_190356
   census_database_transaction_snapshot_decision_plan: not_opened_not_produced_not_produced
   all_mutation_effects_and_unresolved_effects: 0_0
   next_safe_action: narrow_source_contract_correction_for_provider_count_and_pagination
+ot_live_002_02_GHL_count_contract_diagnostic_dispatch_20260804_190628:
+  recorded_at: '2026-08-04T19:06:28Z'
+  state_based_on_control_head_sha: c2c33189f4dc1a30bcbf1fc21e329276ea4a4115
+  claim_id: 09af49bd-92b8-4c65-b869-3523260dcbd8
+  claim_digest: 8237b0f80c986bc622528ba72aa3605b0b5ce0a27d752448ea10754c3d39ddff
+  owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+  request: exact_one_GET_contacts_limit_1_no_cursor_canonical_location_origin_version_and_existing_token
+  allowed_output: response_envelope_keys_array_length_numeric_count_booleans_byte_length_and_body_hash_only
+  database_and_all_provider_Railway_send_DNS_and_other_mutation_effects_max: 0
 authority_note: >-
   Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through
   release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an

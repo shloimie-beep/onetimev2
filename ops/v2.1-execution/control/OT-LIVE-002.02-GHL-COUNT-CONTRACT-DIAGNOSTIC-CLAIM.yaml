@@ -1,0 +1,57 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-002.02
+owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+claim_id: 09af49bd-92b8-4c65-b869-3523260dcbd8
+writer_id: codex-ot-live-002-02-ghl-count-diagnostic-09af49bd
+status: active
+operation_kind: exact_one_page_read_only_GHL_count_contract_diagnostic
+control_parent_sha: c2c33189f4dc1a30bcbf1fc21e329276ea4a4115
+predecessor_terminal_path: ops/v2.1-execution/control/OT-LIVE-002.02-CANDIDATE-8834-READ-ONLY-AUDIENCE-CENSUS-TERMINAL.yaml
+predecessor_terminal_digest: 6e2fc6af46b66c65216236fd06653f5408136d99d7c9b0617822721acfdc2c9c
+candidate_digest: 8834c2fdc42bbb7e3641a5ce45695b2f5a56717d37e7e14fed783b0c7875fa34
+source_sha: a157c388d8dc292699f7cd1a1ef178918ee30885
+canonical_request:
+  method: GET
+  origin: https://services.leadconnectorhq.com
+  path: /contacts/
+  version: '2023-02-21'
+  location_id: pBSnOK2nkdxp6gf9Rg3o
+  limit: 1
+  startAfterId: absent
+  token: existing_private_integration_token_only_no_output_or_relocation
+authorized_read_effect:
+  request_attempts_exact_max: 1
+  successful_response_bodies_max: 1
+  timeout_milliseconds_max: 10000
+  provider_lock_required: false_read_only_zero_mutation
+allowed_sanitized_output:
+  - HTTP_status
+  - sorted_top_level_response_key_names
+  - contacts_is_array_boolean
+  - contacts_array_length_integer
+  - top_level_count_type_and_integer_value_if_present
+  - first_contact_id_present_boolean_without_value
+  - first_contact_location_matches_exact_boolean_without_value
+  - response_body_byte_length
+  - response_body_SHA256
+prohibited_output:
+  - contact_ID_email_name_phone_address_tags_custom_fields_attributions_or_any_contact_value
+  - token_header_cookie_credential_or_private_field
+  - raw_response_body_or_contact_object
+  - additional_page_or_retry
+effect_budget:
+  provider_GET_requests_max: 1
+  database_connections_transactions_and_rows_mutated_max: 0
+  provider_contact_tag_campaign_workflow_webhook_send_schedule_mutations_max: 0
+  Railway_variable_deployment_domain_source_DNS_mutations_max: 0
+  all_other_external_mutation_effects_max: 0
+required_return:
+  - exact_sanitized_allowed_output
+  - request_attempted_and_response_received_booleans
+  - zero_mutation_and_zero_unresolved_effect_reconciliation
+  - source_correction_recommendation_without_editing_source
+issued_at: '2026-08-04T19:06:28Z'
+expires_at: '2026-08-04T20:06:28Z'
+contains_secret: false
+immutable: true
