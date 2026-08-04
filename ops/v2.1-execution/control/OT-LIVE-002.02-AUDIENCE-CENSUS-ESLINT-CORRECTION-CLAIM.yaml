@@ -1,0 +1,37 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-002.02
+owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+claim_id: 9ef24d96-e5e0-4dbf-ae06-6507747151b2
+writer_id: codex-ot-live-002-02-census-eslint-9ef24d96
+status: active
+branch: codex/ot-live-002-decision-store-implementation-20260804
+base_sha: ee802ea42b4d82ecfb3e8a5617aa682f93efba3b
+base_tree_sha: 2cfb006fe7518c8ac85123c183b5263e3ea17f73
+predecessor_terminal_path: ops/v2.1-execution/control/OT-LIVE-002.02-AUDIENCE-CENSUS-RUNNER-SOURCE-TERMINAL.yaml
+predecessor_terminal_digest: 0a4e6a7bc50ccc8a3722748f6c2fb52fd5abe303ad701707cbb1162acb97135a
+control_parent_sha: 96969eb099041c6837d0c9b5e7d1e9b392394fdb
+exact_paths:
+  - packages/db/src/audience-reconciliation/governed-campaign-census-reader.ts
+allowed_operation: eliminate_the_exact_no_unused_vars_lint_error_without_behavior_contract_or_scope_change_then_commit_and_normally_push
+required_verification:
+  - exact_path_eslint_passes
+  - focused_census_suite_passes_30_tests_with_native_test_environment_gated
+  - repository_typecheck_passes
+  - git_diff_check_and_exact_one_path_scope_pass
+  - repository_secret_scan_passes
+  - source_head_is_one_normal_fast_forward_from_exact_base
+publish_authority:
+  one_normal_fast_forward_push_to_exact_branch: true
+  force_push_amend_rebase_merge: false
+prohibitions:
+  - no_behavior_or_contract_change
+  - no_migration_registry_manifest_or_shared_barrel_change
+  - no_database_connection_migration_or_row_effect
+  - no_GHL_or_other_provider_read_write_contact_tag_seed_reply_pilot_or_broad_send_effect
+  - no_deployment_DNS_billing_customer_or_Student_effect
+  - no_changes_outside_exact_path
+issued_at: '2026-08-04T15:38:12Z'
+expires_at: '2026-08-05T09:38:12Z'
+contains_secret: false
+immutable: true

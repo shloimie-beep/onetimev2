@@ -21,15 +21,14 @@ next_action: >-
   Preserve deployed candidate 9d6be957 at source 27576fa6 and its successful exact ten-effect operator fixture.
   The existing-Chrome Admin to Parent to Admin canary stopped credential-unavailable before every POST with zero
   database mutations or unresolved effects; defer the single operator sign-in request until independent work completes.
-  OT-LIVE-002.02 decision-store repository is accepted at 6149907c with exact eleven-path scope, 8-of-8 controller tests,
-  typecheck, 42-of-42 static controls, and native PostgreSQL 18.4 proof. The prior one-file hold was a controller read of a
-  concurrent precommit draft; immutable source already contained 42-of-42, so correction claim 4c52906b is cancelled with
-  zero effects. Claim 72ae541e now owns a default-off source-only audience census runner; no live migration, database census,
-  decision write, contact, seed, pilot, or broad-send effect is authorized. Migration 2260 remains source-only at e5bc1981
-  and 2261 remains next available but unallocated. OT-LIVE-004.01 shared composition reached 5851104c
-  with every media flag default-off and zero external effects, but independent review holds acceptance until its browser-exposed
-  authorization/canary identifiers are removed at c07975ed; a source-only successor is now composing executable
-  default-off provider runtimes with mock/local proof and no provider calls. Keep OT-LIVE-003.02
+  OT-LIVE-004.01 executable media-provider runtime is accepted source-only at ad3c11e2 after 40 controller-focused tests,
+  build, typecheck, exact-path lint, secret scan, exact S3 version checks, and exact Vimeo mutation-binding fences; every
+  media flag remains default-off and provider/database/upload/deployment effects remain zero. OT-LIVE-002.02 census source
+  reached ee802ea4 with 30 focused tests and native PostgreSQL 18.4 proof, but controller exact-path ESLint found one unused
+  variable; claim 9ef24d96 now owns only that one-file nonbehavioral correction. After it passes, freeze the next additive
+  source candidate from deployed 27576fa6 using migration 2260, the accepted decision store, and the census runner; keep
+  media as a separate candidate unless it becomes critical. No live migration, database census, decision write, contact,
+  seed, pilot, broad send, or media provider effect is authorized. Migration 2261 remains unallocated. Keep OT-LIVE-003.02
   parked/unmerged/default-off, reject its 2260 proposal, and keep WhatsApp/WAPI fully deferred at zero effects.
 ot_live_source_successor_dispatch_20260804_125957:
   recorded_at: '2026-08-04T12:59:57Z'
@@ -44,17 +43,20 @@ ot_live_source_successor_dispatch_20260804_125957:
     active_claim_or_effect_lease: none
     next_boundary: one_operator_sign_in_then_fresh_exact_canary_authority_after_independent_source_lanes
   OT_LIVE_002_02:
-    claim_id: 72ae541e-cc5b-464a-881d-62f92b857479
-    claim_path: ops/v2.1-execution/control/OT-LIVE-002.02-AUDIENCE-CENSUS-RUNNER-SOURCE-CLAIM.yaml
-    claim_digest: 9fa41a197f05d1aa848fdc1a45031121391a7debd241384b2a7b76c239aed9d1
+    claim_id: 9ef24d96-e5e0-4dbf-ae06-6507747151b2
+    claim_path: ops/v2.1-execution/control/OT-LIVE-002.02-AUDIENCE-CENSUS-ESLINT-CORRECTION-CLAIM.yaml
+    claim_digest: 32b0b45e31d08eae8fddfdbcd1cab12c331243e925b39a42a3869f0dad3c8daf
     branch: codex/ot-live-002-decision-store-implementation-20260804
     base_sha: 6149907cb2611835514b1ffa5622c8fb7d5927e8
     decision_store_repository_head_sha: 6149907cb2611835514b1ffa5622c8fb7d5927e8
     decision_store_repository_tree_sha: 9abda7772ec7e3af78abdcc24a0657d8f49ccaf6
     decision_store_terminal_digest: e5e7a4cb70da40d9e44a4825c49ac2cdd17d543cc7d4d4ac3f97797f6797b500
     repository_acceptance_digest: 25e34e36eb8acca1b364df332c0a398c6648c1df7a6251280975388d73a61f52
-    acceptance_hold: none
-    active_source_phase: default_off_audience_census_runner
+    audience_census_runner_head_sha: ee802ea42b4d82ecfb3e8a5617aa682f93efba3b
+    audience_census_runner_tree_sha: 2cfb006fe7518c8ac85123c183b5263e3ea17f73
+    audience_census_runner_terminal_digest: 0a4e6a7bc50ccc8a3722748f6c2fb52fd5abe303ad701707cbb1162acb97135a
+    acceptance_hold: exact_path_eslint_one_unused_variable
+    active_source_phase: exact_one_file_eslint_correction
     requested_migration_id: OT-LIVE-002-MIGRATION-001
     allocated_ordinal: 2260
     allocation_status: authored_source_only_pending_integration
@@ -71,7 +73,7 @@ ot_live_source_successor_dispatch_20260804_125957:
     live_database_and_provider_effects: 0_0
     OT_LIVE_003_2260_proposal: rejected_unallocated_parked_default_off
   OT_LIVE_004_01:
-    claim_id: 3e512376-32bd-46dd-8be5-7ccea6292345
+    claim_id: null
     claim_path: ops/v2.1-execution/control/OT-LIVE-004.01-MEDIA-PROVIDER-RUNTIME-SOURCE-CLAIM.yaml
     claim_digest: 812244ee9fcec485b2bde81d45533425f870ea51c9654a07f69407b06fc41468
     branch: codex/ot-live-004-media-shared-composition-20260804
@@ -81,7 +83,10 @@ ot_live_source_successor_dispatch_20260804_125957:
     shared_composition_terminal_digest: 51431c187c4c1cf7180945f530e2cfdd3e96c92d9052e6c409778dcc4ff27ec1
     browser_binding_correction_head_sha: c07975edf5d7f8f8bb75d0a648c3ef55de910f92
     browser_binding_terminal_digest: 870fcf8e85848c781869941262b28d56892adc0ea5f2fc6114df5e83da549f09
-    mode: executable_provider_runtime_composition_source_only_default_off
+    provider_runtime_head_sha: ad3c11e2020f4d993a796a4888bff80506d34bcd
+    provider_runtime_tree_sha: c4325af7f122643d1b3f0d33543e59319279e2c4
+    provider_runtime_acceptance_digest: 598641a8803580a0bbce04c80d1abf82f40e820c2d4b5d0b992e9ccf6eaafc26
+    mode: provider_runtime_source_accepted_default_off_pending_candidate_integration
     migration_database_provider_upload_deploy_DNS_effects: 0_0_0_0_0_0
 ot_live_002_02_decision_store_repository_terminal_and_evidence_correction_20260804_144842:
   recorded_at: '2026-08-04T14:48:42Z'
@@ -110,6 +115,20 @@ ot_live_002_02_repository_acceptance_and_census_runner_dispatch_20260804_145254:
   census_runner_claim_id: 72ae541e-cc5b-464a-881d-62f92b857479
   census_runner_claim_path: ops/v2.1-execution/control/OT-LIVE-002.02-AUDIENCE-CENSUS-RUNNER-SOURCE-CLAIM.yaml
   census_runner_claim_digest: 9fa41a197f05d1aa848fdc1a45031121391a7debd241384b2a7b76c239aed9d1
+  live_database_provider_contact_tag_send_deploy_DNS_effects: 0_0_0_0_0_0_0
+ot_live_002_02_census_runner_hold_and_eslint_correction_20260804_153812:
+  recorded_at: '2026-08-04T15:38:12Z'
+  state_based_on_control_head_sha: 96969eb099041c6837d0c9b5e7d1e9b392394fdb
+  predecessor_claim_id: 72ae541e-cc5b-464a-881d-62f92b857479
+  source_head_sha: ee802ea42b4d82ecfb3e8a5617aa682f93efba3b
+  source_tree_sha: 2cfb006fe7518c8ac85123c183b5263e3ea17f73
+  source_terminal_path: ops/v2.1-execution/control/OT-LIVE-002.02-AUDIENCE-CENSUS-RUNNER-SOURCE-TERMINAL.yaml
+  source_terminal_digest: 0a4e6a7bc50ccc8a3722748f6c2fb52fd5abe303ad701707cbb1162acb97135a
+  controller_focused_tests_and_typecheck: 30_passed_1_environment_gated_typecheck_passed
+  controller_exact_path_eslint: failed_one_no_unused_vars_error
+  successor_claim_id: 9ef24d96-e5e0-4dbf-ae06-6507747151b2
+  successor_claim_path: ops/v2.1-execution/control/OT-LIVE-002.02-AUDIENCE-CENSUS-ESLINT-CORRECTION-CLAIM.yaml
+  successor_claim_digest: 32b0b45e31d08eae8fddfdbcd1cab12c331243e925b39a42a3869f0dad3c8daf
   live_database_provider_contact_tag_send_deploy_DNS_effects: 0_0_0_0_0_0_0
 ot_live_004_01_shared_composition_terminal_and_security_correction_20260804_135600:
   recorded_at: '2026-08-04T13:56:00Z'
@@ -148,6 +167,18 @@ ot_live_004_01_security_terminal_and_provider_runtime_dispatch_20260804_141429:
   provider_runtime_claim_id: 3e512376-32bd-46dd-8be5-7ccea6292345
   provider_runtime_claim_path: ops/v2.1-execution/control/OT-LIVE-004.01-MEDIA-PROVIDER-RUNTIME-SOURCE-CLAIM.yaml
   provider_runtime_claim_digest: 812244ee9fcec485b2bde81d45533425f870ea51c9654a07f69407b06fc41468
+  provider_database_upload_transcode_publication_deploy_DNS_effects: 0_0_0_0_0_0_0
+ot_live_004_01_provider_runtime_source_acceptance_20260804_153246:
+  recorded_at: '2026-08-04T15:32:46Z'
+  state_based_on_control_head_sha: 96969eb099041c6837d0c9b5e7d1e9b392394fdb
+  source_claim_id: 3e512376-32bd-46dd-8be5-7ccea6292345
+  source_claim_digest: 812244ee9fcec485b2bde81d45533425f870ea51c9654a07f69407b06fc41468
+  source_head_sha: ad3c11e2020f4d993a796a4888bff80506d34bcd
+  source_tree_sha: c4325af7f122643d1b3f0d33543e59319279e2c4
+  acceptance_path: ops/v2.1-execution/control/OT-LIVE-004.01-MEDIA-PROVIDER-RUNTIME-SOURCE-ACCEPTANCE.yaml
+  acceptance_digest: 598641a8803580a0bbce04c80d1abf82f40e820c2d4b5d0b992e9ccf6eaafc26
+  controller_focused_tests_build_typecheck_eslint_secret_scope: 40_of_40_passed_all_other_gates_passed
+  next_boundary: candidate_integration_only_no_provider_effect_authority
   provider_database_upload_transcode_publication_deploy_DNS_effects: 0_0_0_0_0_0_0
 ot_live_002_migration_2260_allocation_20260804_132116:
   recorded_at: '2026-08-04T13:21:16Z'

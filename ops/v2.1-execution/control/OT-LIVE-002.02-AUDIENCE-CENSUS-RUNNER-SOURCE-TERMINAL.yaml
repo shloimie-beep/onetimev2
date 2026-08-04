@@ -1,0 +1,37 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-002.02
+owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+source_claim_id: 72ae541e-cc5b-464a-881d-62f92b857479
+writer_id: codex-ot-live-002-02-audience-census-72ae541e
+claim_digest: 9fa41a197f05d1aa848fdc1a45031121391a7debd241384b2a7b76c239aed9d1
+claim_disposition: consumed_source_held_for_one_file_correction
+branch: codex/ot-live-002-decision-store-implementation-20260804
+base_sha: 6149907cb2611835514b1ffa5622c8fb7d5927e8
+source_head_sha: ee802ea42b4d82ecfb3e8a5617aa682f93efba3b
+source_tree_sha: 2cfb006fe7518c8ac85123c183b5263e3ea17f73
+remote_equality: passed
+exact_path_count: 8
+producer_verification:
+  focused_vitest: 30_passed_1_environment_gated
+  native_PostgreSQL_18_4: 5_passed
+  typecheck_format_diff_scope_secret_scan: passed
+  disposable_database_cluster_removed: true
+independent_controller_review:
+  focused_vitest: 30_passed_1_environment_gated
+  repository_typecheck: passed
+  exact_path_eslint: failed_one_error
+  finding:
+    path: packages/db/src/audience-reconciliation/governed-campaign-census-reader.ts
+    line: 666
+    rule: '@typescript-eslint/no-unused-vars'
+    detail: _ignored_is_assigned_but_never_used
+  behavior_or_security_finding: none
+  source_verdict: held_narrow_nonbehavioral_correction_required
+zero_effects:
+  live_or_staging_database_connections_migrations_or_rows: 0
+  GHL_provider_reads_writes_contacts_tags_seeds_replies_pilots_or_broad_sends: 0
+  providers_deployments_DNS_billing_customers_or_Students: 0
+recorded_at: '2026-08-04T15:38:12Z'
+contains_secret: false
+immutable: true

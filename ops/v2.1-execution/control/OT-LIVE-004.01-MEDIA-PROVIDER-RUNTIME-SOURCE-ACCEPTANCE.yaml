@@ -1,0 +1,44 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-004.01
+owner_thread_id: 019fcc0b-177e-7361-8823-9059dd8a8eb0
+source_claim_id: 3e512376-32bd-46dd-8be5-7ccea6292345
+writer_id: codex-ot-live-004-01-media-provider-runtime-3e512376
+claim_digest: 812244ee9fcec485b2bde81d45533425f870ea51c9654a07f69407b06fc41468
+claim_disposition: consumed_source_success
+branch: codex/ot-live-004-media-shared-composition-20260804
+base_sha: c07975edf5d7f8f8bb75d0a648c3ef55de910f92
+source_head_sha: ad3c11e2020f4d993a796a4888bff80506d34bcd
+source_tree_sha: c4325af7f122643d1b3f0d33543e59319279e2c4
+remote_equality: passed
+exact_path_count: 25
+acceptance:
+  executable_web_and_worker_provider_runtime: accepted_source_checkpoint
+  default_off_and_zero_startup_provider_or_database_calls: passed
+  exact_production_operator_canary_and_one_recording_binding: passed
+  provider_registry_and_live_identity_guards: passed
+  S3_reconcile_first_multipart_exact_version_full_SHA_KMS_and_unknown_recovery: passed
+  optional_Drive_exact_folder_read_only_transfer: passed
+  ffmpeg_ffprobe_measured_decode_and_bounded_cleanup: passed
+  OpenAI_incomplete_or_refusal_fail_closed: passed
+  Vimeo_private_dispatch_reconciliation_and_readback_only_playback: passed
+  exact_canary_and_vimeo_mutation_binding_selectors: passed
+verification:
+  controller_focused_vitest: 40_passed_0_failed_9_files
+  controller_repository_build_and_typecheck: passed
+  controller_exact_path_eslint: passed
+  controller_secret_scan: passed_3260_files
+  exact_claim_scope_diff_remote_tree_and_diff_check: passed
+  producer_exact_path_prettier: passed
+dependencies:
+  aws_s3_sts_and_presigner: 3.1102.0
+known_baseline:
+  repository_wide_out_of_claim_failures: preserved_unmodified
+zero_effects:
+  live_database_migrations_or_rows: 0
+  S3_Drive_OpenAI_Vimeo_upload_transcode_transcription_or_publication: 0
+  providers_deployments_DNS_sends_billing_customers_or_Students: 0
+  media_flag_enablements: 0
+recorded_at: '2026-08-04T15:32:46Z'
+contains_secret: false
+immutable: true
