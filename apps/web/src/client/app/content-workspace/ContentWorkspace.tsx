@@ -115,21 +115,9 @@ export function ContentWorkspace({
   onProtectedStateCleared,
 }: ContentWorkspaceProps) {
   const route = routeFromPath(path);
-  const mediaCanaryBinding = contentMediaCanaryBindingFromPath(path);
   const ingestApi = useMemo(
-    () =>
-      createContentIngestApi({
-        csrfToken,
-        onProtectedStateCleared,
-        authorizationId: mediaCanaryBinding.authorizationId,
-        canaryId: mediaCanaryBinding.canaryId,
-      }),
-    [
-      csrfToken,
-      mediaCanaryBinding.authorizationId,
-      mediaCanaryBinding.canaryId,
-      onProtectedStateCleared,
-    ],
+    () => createContentIngestApi({ csrfToken, onProtectedStateCleared }),
+    [csrfToken, onProtectedStateCleared],
   );
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
   const [appliedFilters, setAppliedFilters] = useState<FilterState>(defaultFilters);
@@ -1809,14 +1797,6 @@ export function contentWorkspaceRouteFromPath(path: string): RouteState {
 }
 
 const routeFromPath = contentWorkspaceRouteFromPath;
-
-function contentMediaCanaryBindingFromPath(path: string) {
-  const query = new URLSearchParams(path.split('?')[1] ?? '');
-  return {
-    authorizationId: query.get('media_authorization_id') ?? '',
-    canaryId: query.get('media_canary_id') ?? '',
-  };
-}
 
 async function apiGet<T>(path: string, onProtectedStateCleared: () => void): Promise<T> {
   return apiRequest<T>(path, { method: 'GET' }, onProtectedStateCleared);

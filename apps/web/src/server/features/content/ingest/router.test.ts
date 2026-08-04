@@ -3,7 +3,13 @@ import type { AddressInfo } from 'node:net';
 import express from 'express';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import type { UploadSessionRecord } from '../../../../../../../packages/contracts/src/content/ingest/index.ts';
+import {
+  CONTENT_INGEST_MAX_CONCURRENT_PARTS,
+  CONTENT_INGEST_PART_AUTHORIZATION_SECONDS,
+  CONTENT_INGEST_PART_BYTES,
+  type MultipartUploadPlan,
+  type UploadSessionRecord,
+} from '../../../../../../../packages/contracts/src/content/ingest/index.ts';
 import {
   createContentIngestRouter,
   type ContentIngestRequestIdentity,
@@ -45,7 +51,79 @@ describe('content ingest router', () => {
     expect(input.service.beginDirectUpload).not.toHaveBeenCalled();
   });
 
-  it('replays a begin request without creating a second durable session', async () => {
+  it.each(['authorization_id', 'canary_id', 'idempotency_key'])(
+    'strictly rejects browser-supplied %s before any service or storage call',
+    async (field) => {
+      const input = fakeInput(true);
+      const baseUrl = await start(input);
+      const response = await post(baseUrl, '/api/app/content/ingest/sessions', {
+        ...beginBody(),
+        [field]: `browser-supplied-${field}`,
+      });
+
+      expect(response.status).toBe(400);
+      expect(await response.json()).toEqual({
+        success: false,
+        code: 'content_ingest_invalid_request',
+      });
+      expect(input.service.beginDirectUpload).not.toHaveBeenCalled();
+      expect(input.state.getUploadSession).not.toHaveBeenCalled();
+      expect(input.managedOriginal.beginDirectUpload).not.toHaveBeenCalled();
+    },
+  );
+
+  it('fails closed when protected server binding is unavailable', async () => {
+    const input = fakeInput(true);
+    input.authorizationId = undefined;
+    const baseUrl = await start(input);
+    const response = await post(baseUrl, '/api/app/content/ingest/sessions', beginBody());
+
+    expect(response.status).toBe(409);
+    expect(await response.json()).toEqual({
+      success: false,
+      code: 'content_media_server_binding_unavailable',
+    });
+    expect(input.service.beginDirectUpload).not.toHaveBeenCalled();
+  });
+
+  it('initializes managed storage exactly once for a new durable begin', async () => {
+    const input = fakeInput(true);
+    const session = uploadSession();
+    vi.mocked(input.service.beginDirectUpload).mockResolvedValue({
+      replay: false,
+      session,
+      plan: uploadPlan(session),
+      receipt: {
+        accountKey: session.accountKey,
+        productKey: session.productKey,
+        idempotencyKey: session.idempotencyKey,
+        requestHash: session.requestHash,
+        operation: 'direct_upload:begin',
+        resultRef: session.id,
+        resultVersion: session.version,
+        committedAt: session.createdAt,
+      },
+    });
+    vi.mocked(input.managedOriginal.beginDirectUpload).mockResolvedValue({
+      providerUploadIdDigest: 'a'.repeat(64),
+    });
+    const baseUrl = await start(input);
+    const response = await post(baseUrl, '/api/app/content/ingest/sessions', beginBody());
+
+    expect(response.status).toBe(201);
+    expect(input.managedOriginal.beginDirectUpload).toHaveBeenCalledTimes(1);
+    expect(input.managedOriginal.beginDirectUpload).toHaveBeenCalledWith({
+      uploadSessionId: session.id,
+      opaqueObjectKey: session.opaqueObjectKey,
+      byteCount: session.declaredByteCount,
+      mimeType: session.mimeType,
+    });
+    expect(await response.json()).toMatchObject({
+      data: { session: { id: session.id, version: session.version } },
+    });
+  });
+
+  it('derives one stable replay identity from protected server binding', async () => {
     const input = fakeInput(true);
     const session = uploadSession();
     vi.mocked(input.service.beginDirectUpload).mockResolvedValue({
@@ -58,16 +136,30 @@ describe('content ingest router', () => {
       providerUploadIdDigest: 'a'.repeat(64),
     });
     const baseUrl = await start(input);
-    const response = await post(baseUrl, '/api/app/content/ingest/sessions', beginBody());
-    const body = await response.json();
+    const first = await post(baseUrl, '/api/app/content/ingest/sessions', beginBody());
+    const retry = await post(baseUrl, '/api/app/content/ingest/sessions', beginBody());
+    const body = await first.json();
 
-    expect(response.status).toBe(200);
+    expect(first.status).toBe(200);
+    expect(retry.status).toBe(200);
     expect(body).toMatchObject({
       success: true,
       replay: true,
       data: { session: { id: session.id }, plan: { uploadSessionId: session.id } },
     });
-    expect(input.managedOriginal.beginDirectUpload).toHaveBeenCalledTimes(1);
+    expect(JSON.stringify(body)).not.toMatch(/idempotencyKey|requestHash/iu);
+    expect(JSON.stringify(body)).not.toContain(input.authorizationId);
+    expect(JSON.stringify(body)).not.toContain(input.canaryId);
+    const commands = vi
+      .mocked(input.service.beginDirectUpload)
+      .mock.calls.map(([command]) => command);
+    expect(commands).toHaveLength(2);
+    expect(commands[0]?.idempotencyKey).toMatch(/^media_canary_[a-f0-9]{32}$/u);
+    expect(commands[1]?.idempotencyKey).toBe(commands[0]?.idempotencyKey);
+    expect(commands[1]?.requestHash).toBe(commands[0]?.requestHash);
+    expect(commands[0]?.idempotencyKey).not.toContain(input.authorizationId);
+    expect(commands[0]?.idempotencyKey).not.toContain(input.canaryId);
+    expect(input.managedOriginal.beginDirectUpload).not.toHaveBeenCalled();
   });
 });
 
@@ -128,9 +220,6 @@ function beginBody() {
     file_name: 'operator-recording.mp4',
     mime_type: 'video/mp4',
     byte_count: 1024,
-    idempotency_key: 'one-operator-recording',
-    authorization_id: 'authorization-ot-live-004',
-    canary_id: 'one-operator-recording',
   };
 }
 
@@ -165,11 +254,22 @@ function uploadSession(): UploadSessionRecord {
     receivedByteCount: 0,
     attemptCount: 0,
     retryState: 'ready',
-    idempotencyKey: 'one-operator-recording',
+    idempotencyKey: `media_canary_${'e'.repeat(32)}`,
     requestHash: 'd'.repeat(64),
     expiresAt: '2026-08-05T13:00:00.000Z',
     version: 1,
     createdAt: '2026-08-04T13:00:00.000Z',
     updatedAt: '2026-08-04T13:00:00.000Z',
+  };
+}
+
+function uploadPlan(session: UploadSessionRecord): MultipartUploadPlan {
+  return {
+    uploadSessionId: session.id,
+    partBytes: CONTENT_INGEST_PART_BYTES,
+    totalParts: session.totalParts,
+    maxConcurrentParts: CONTENT_INGEST_MAX_CONCURRENT_PARTS,
+    authorizationTtlSeconds: CONTENT_INGEST_PART_AUTHORIZATION_SECONDS,
+    expiresAt: session.expiresAt,
   };
 }

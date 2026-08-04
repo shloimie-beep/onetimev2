@@ -74,9 +74,6 @@ const beginSchema = z
     file_name: z.string().trim().min(1).max(240),
     mime_type: z.string().trim().min(1).max(120),
     byte_count: z.number().int().positive(),
-    idempotency_key: z.string().trim().min(8).max(160),
-    authorization_id: z.string().trim().min(8).max(160),
-    canary_id: z.string().trim().min(8).max(160),
   })
   .strict();
 const partSchema = z
@@ -112,13 +109,7 @@ export function createContentIngestRouter(input: ContentIngestRouterInput) {
       const identity = await authorize(input, req, res);
       if (!identity) return;
       const body = beginSchema.parse(req.body);
-      if (
-        body.authorization_id !== input.authorizationId ||
-        body.canary_id !== input.canaryId ||
-        body.idempotency_key !== input.canaryId
-      ) {
-        throw new Error('content_media_canary_binding_mismatch');
-      }
+      const binding = serverBeginBinding(input, identity.actor);
       const occurredAt = validNow(clock);
       const requestHash = digest({
         operation: 'direct_upload:begin',
@@ -126,8 +117,7 @@ export function createContentIngestRouter(input: ContentIngestRouterInput) {
         fileName: body.file_name,
         mimeType: body.mime_type,
         byteCount: body.byte_count,
-        authorizationId: body.authorization_id,
-        canaryId: body.canary_id,
+        controlBindingDigest: binding.controlBindingDigest,
       });
       const result = await input.service.beginDirectUpload({
         actor: identity.actor,
@@ -136,7 +126,7 @@ export function createContentIngestRouter(input: ContentIngestRouterInput) {
         displayFilename: body.file_name,
         mimeType: body.mime_type,
         declaredByteCount: body.byte_count,
-        idempotencyKey: body.idempotency_key,
+        idempotencyKey: binding.idempotencyKey,
         requestHash,
         occurredAt,
       });
@@ -144,19 +134,21 @@ export function createContentIngestRouter(input: ContentIngestRouterInput) {
         result.session ??
         (await input.state.getUploadSession(
           identity.actor,
-          stableUploadSessionId(identity.actor, body.idempotency_key),
+          stableUploadSessionId(identity.actor, binding.idempotencyKey),
         ));
       if (!session) throw new Error('content_ingest_replay_session_missing');
-      await input.managedOriginal.beginDirectUpload({
-        uploadSessionId: session.id,
-        opaqueObjectKey: session.opaqueObjectKey,
-        byteCount: session.declaredByteCount,
-        mimeType: session.mimeType,
-      });
+      if (!result.replay) {
+        await input.managedOriginal.beginDirectUpload({
+          uploadSessionId: session.id,
+          opaqueObjectKey: session.opaqueObjectKey,
+          byteCount: session.declaredByteCount,
+          mimeType: session.mimeType,
+        });
+      }
       res.status(result.replay ? 200 : 201).json({
         success: true,
         replay: result.replay,
-        data: { session, plan: result.plan ?? planFor(session) },
+        data: { session: browserUploadSession(session), plan: result.plan ?? planFor(session) },
       });
     }),
   );
@@ -205,7 +197,11 @@ export function createContentIngestRouter(input: ContentIngestRouterInput) {
         providerPartRefDigest: provider.providerPartRefDigest,
         occurredAt: validNow(clock),
       });
-      res.json({ success: true, replay: result.replay, data: { session: result.session } });
+      res.json({
+        success: true,
+        replay: result.replay,
+        data: { session: browserUploadSession(result.session) },
+      });
     }),
   );
 
@@ -292,6 +288,15 @@ function assertSessionVersion(session: UploadSessionRecord, expectedVersion: num
   if (session.version !== expectedVersion) throw new Error('content_ingest_stale_version');
 }
 
+function browserUploadSession(
+  session: UploadSessionRecord,
+): Omit<UploadSessionRecord, 'idempotencyKey' | 'requestHash'> {
+  const browserSession: Record<string, unknown> = { ...session };
+  delete browserSession.idempotencyKey;
+  delete browserSession.requestHash;
+  return browserSession as Omit<UploadSessionRecord, 'idempotencyKey' | 'requestHash'>;
+}
+
 function assertPartSize(session: UploadSessionRecord, partNumber: number, byteCount: number) {
   if (expectedUploadPart(session, partNumber).byteCount !== byteCount) {
     throw new Error('content_ingest_part_size_invalid');
@@ -321,6 +326,25 @@ function validNow(clock: () => Date) {
 
 function digest(value: unknown) {
   return createHash('sha256').update(JSON.stringify(value)).digest('hex');
+}
+
+function serverBeginBinding(input: ContentIngestRouterInput, actor: ContentIngestAdminActor) {
+  if (!input.authorizationId || !input.canaryId) {
+    throw new Error('content_media_server_binding_unavailable');
+  }
+  const controlBindingDigest = digest({
+    authorizationId: input.authorizationId,
+    canaryId: input.canaryId,
+  });
+  return {
+    controlBindingDigest,
+    idempotencyKey: stableIngestKey('media_canary', [
+      actor.accountKey,
+      actor.productKey,
+      actor.principalId,
+      controlBindingDigest,
+    ]),
+  };
 }
 
 function stableUploadSessionId(actor: ContentIngestAdminActor, idempotencyKey: string) {

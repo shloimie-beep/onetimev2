@@ -13,4 +13,13 @@ describe('content workspace media route', () => {
       kind: 'processing',
     });
   });
+
+  it('does not project media control query values into route or browser state', () => {
+    const route = contentWorkspaceRouteFromPath(
+      '/app/content/upload?media_authorization_id=browser-auth-sentinel&media_canary_id=browser-canary-sentinel',
+    );
+
+    expect(route).toEqual({ kind: 'ingest' });
+    expect(JSON.stringify(route)).not.toMatch(/browser-auth-sentinel|browser-canary-sentinel/u);
+  });
 });

@@ -4,11 +4,10 @@ import type {
 } from '../../../../../../../../packages/contracts/src/content/ingest/index.ts';
 
 type UploadState = { version: number; completion: Promise<void> };
+type BrowserUploadSession = Omit<UploadSessionRecord, 'idempotencyKey' | 'requestHash'>;
 
 export function createContentIngestApi(input: {
   csrfToken: string;
-  authorizationId: string;
-  canaryId: string;
   onProtectedStateCleared: () => void;
   fetchImpl?: typeof fetch | undefined;
 }) {
@@ -21,7 +20,7 @@ export function createContentIngestApi(input: {
       plan: MultipartUploadPlan;
     }> {
       const response = await privateJson<{
-        data: { session: UploadSessionRecord; plan: MultipartUploadPlan };
+        data: { session: BrowserUploadSession; plan: MultipartUploadPlan };
       }>(
         fetchImpl,
         '/api/app/content/ingest/sessions',
@@ -32,9 +31,6 @@ export function createContentIngestApi(input: {
             file_name: file.name,
             mime_type: file.type,
             byte_count: file.size,
-            idempotency_key: input.canaryId,
-            authorization_id: input.authorizationId,
-            canary_id: input.canaryId,
           }),
         },
         input.onProtectedStateCleared,
@@ -43,7 +39,10 @@ export function createContentIngestApi(input: {
         version: response.data.session.version,
         completion: Promise.resolve(),
       });
-      return response.data;
+      return {
+        session: response.data.session as UploadSessionRecord,
+        plan: response.data.plan,
+      };
     },
 
     async uploadPart(request: { session: UploadSessionRecord; partNumber: number; body: Blob }) {
@@ -76,7 +75,7 @@ export function createContentIngestApi(input: {
       if (!providerPartRef) throw new Error('Recording part readback was missing.');
 
       const complete = async () => {
-        const completed = await privateJson<{ data: { session: UploadSessionRecord } }>(
+        const completed = await privateJson<{ data: { session: BrowserUploadSession } }>(
           fetchImpl,
           `/api/app/content/ingest/sessions/${encodeURIComponent(request.session.id)}/parts/${request.partNumber}/complete`,
           {
