@@ -174,6 +174,23 @@ export type MultipartUploadPlan = {
   expiresAt: string;
 };
 
+export type ManagedMultipartUploadBinding = {
+  uploadSessionId: string;
+  opaqueObjectKey: string;
+};
+
+export type ManagedMultipartBeginReadback =
+  | {
+      disposition: 'created' | 'recovered';
+      providerUploadIdDigest: string;
+      openUploadCount: 1;
+    }
+  | {
+      disposition: 'duplicate';
+      providerUploadIdDigests: readonly string[];
+      openUploadCount: number;
+    };
+
 export type ManagedObjectReadback = {
   runtimeTier: IngestRuntimeTier;
   verificationEnvironmentId: string;

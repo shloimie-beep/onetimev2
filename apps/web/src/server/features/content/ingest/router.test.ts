@@ -105,7 +105,9 @@ describe('content ingest router', () => {
       },
     });
     vi.mocked(input.managedOriginal.beginDirectUpload).mockResolvedValue({
+      disposition: 'created',
       providerUploadIdDigest: 'a'.repeat(64),
+      openUploadCount: 1,
     });
     const baseUrl = await start(input);
     const response = await post(baseUrl, '/api/app/content/ingest/sessions', beginBody());
@@ -133,7 +135,9 @@ describe('content ingest router', () => {
     });
     vi.mocked(input.state.getUploadSession).mockResolvedValue(session);
     vi.mocked(input.managedOriginal.beginDirectUpload).mockResolvedValue({
+      disposition: 'recovered',
       providerUploadIdDigest: 'a'.repeat(64),
+      openUploadCount: 1,
     });
     const baseUrl = await start(input);
     const first = await post(baseUrl, '/api/app/content/ingest/sessions', beginBody());

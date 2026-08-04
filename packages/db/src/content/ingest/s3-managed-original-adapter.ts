@@ -4,6 +4,8 @@ import {
   CONTENT_INGEST_PART_AUTHORIZATION_SECONDS,
   CONTENT_INGEST_PART_BYTES,
   CONTENT_INGEST_REGION,
+  type ManagedMultipartBeginReadback,
+  type ManagedMultipartUploadBinding,
   type ManagedObjectReadback,
   type RecoveryJournalReceipt,
 } from '../../../../contracts/src/content/ingest/index.ts';
@@ -23,6 +25,7 @@ export type S3ManagedOriginalIdentityReadback = {
   browserCredentialsExposed: false;
   corsAllowedOrigins: readonly string[];
   corsAllowedMethods: readonly ['PUT'];
+  corsAllowedHeaders: readonly ['content-length', 'x-amz-checksum-sha256'];
   corsExposedHeaders: readonly ['ETag'];
   observedAt: string;
 };
@@ -34,40 +37,59 @@ export type S3CompletedOriginal = {
 
 export interface S3ManagedOriginalClient {
   readIdentity(): Promise<S3ManagedOriginalIdentityReadback>;
-  createMultipart(input: {
-    uploadSessionId: string;
-    opaqueObjectKey: string;
-    byteCount: number;
-    mimeType: string;
-    checksumAlgorithm: 'sha256';
-  }): Promise<{ providerUploadIdDigest: string }>;
-  authorizePart(input: {
-    uploadSessionId: string;
-    partNumber: number;
-    byteCount: number;
-    partSha256: string;
-    expiresInSeconds: number;
-  }): Promise<{ uploadUrl: string; requiredHeaders: Readonly<Record<string, string>> }>;
-  recordCompletedPart(input: {
-    uploadSessionId: string;
-    partNumber: number;
-    byteCount: number;
-    partSha256: string;
-    providerPartRef: string;
-  }): Promise<{ providerPartRefDigest: string }>;
-  completeAndReadBack(input: {
-    uploadSessionId: string;
-    fullSha256?: string;
-    orderedProviderPartRefDigests: readonly string[];
-  }): Promise<S3CompletedOriginal>;
-  abortMultipart(input: { uploadSessionId: string }): Promise<void>;
-  putStreamPart(input: {
-    transferId: string;
-    partNumber: number;
-    byteCount: number;
-    body: AsyncIterable<Uint8Array>;
-  }): Promise<{ providerPartRefDigest: string }>;
+  beginReconciledMultipart?(
+    input: ManagedMultipartUploadBinding & {
+      byteCount: number;
+      mimeType: string;
+      checksumAlgorithm: 'sha256';
+    },
+  ): Promise<ManagedMultipartBeginReadback>;
+  /** @deprecated Compatibility-only shape; executable composition never invokes it. */
+  createMultipart?(
+    input: ManagedMultipartUploadBinding & {
+      byteCount: number;
+      mimeType: string;
+      checksumAlgorithm: 'sha256';
+    },
+  ): Promise<{ providerUploadIdDigest: string }>;
+  authorizePart(
+    input: ManagedMultipartUploadBinding & {
+      partNumber: number;
+      byteCount: number;
+      partSha256: string;
+      expiresInSeconds: number;
+    },
+  ): Promise<{ uploadUrl: string; requiredHeaders: Readonly<Record<string, string>> }>;
+  recordCompletedPart(
+    input: ManagedMultipartUploadBinding & {
+      partNumber: number;
+      byteCount: number;
+      partSha256: string;
+      providerPartRef: string;
+    },
+  ): Promise<{ providerPartRefDigest: string }>;
+  completeAndReadBack(
+    input: ManagedMultipartUploadBinding & {
+      fullSha256?: string;
+      orderedProviderPartRefDigests: readonly string[];
+    },
+  ): Promise<S3CompletedOriginal>;
+  abortMultipart(input: ManagedMultipartUploadBinding): Promise<void>;
+  putStreamPart(
+    input: ManagedMultipartUploadBinding & {
+      partNumber: number;
+      byteCount: number;
+      body: AsyncIterable<Uint8Array>;
+    },
+  ): Promise<{ providerPartRefDigest: string }>;
 }
+
+type InjectedS3ManagedOriginalClient = Omit<S3ManagedOriginalClient, 'readIdentity'> & {
+  readIdentity(): Promise<
+    | S3ManagedOriginalIdentityReadback
+    | Omit<S3ManagedOriginalIdentityReadback, 'corsAllowedHeaders'>
+  >;
+};
 
 export type AwsS3ManagedOriginalAdapterConfig = {
   enabled: boolean;
@@ -76,6 +98,8 @@ export type AwsS3ManagedOriginalAdapterConfig = {
   kmsKeyVersionRef: string | undefined;
   storageClass: 'STANDARD' | 'INTELLIGENT_TIERING';
   browserOrigin: string;
+  accountKey?: string | undefined;
+  productKey?: string | undefined;
 };
 
 /**
@@ -85,7 +109,7 @@ export type AwsS3ManagedOriginalAdapterConfig = {
 export class AwsS3ManagedOriginalAdapter {
   constructor(
     private readonly config: AwsS3ManagedOriginalAdapterConfig,
-    private readonly client: S3ManagedOriginalClient | null,
+    private readonly client: InjectedS3ManagedOriginalClient | null,
   ) {}
 
   async readCanonicalIdentity() {
@@ -105,6 +129,11 @@ export class AwsS3ManagedOriginalAdapter {
       identity.corsAllowedOrigins[0] !== this.config.browserOrigin ||
       identity.corsAllowedMethods.length !== 1 ||
       identity.corsAllowedMethods[0] !== 'PUT' ||
+      !('corsAllowedHeaders' in identity) ||
+      identity.corsAllowedHeaders === undefined ||
+      identity.corsAllowedHeaders.length !== 2 ||
+      identity.corsAllowedHeaders[0] !== 'content-length' ||
+      identity.corsAllowedHeaders[1] !== 'x-amz-checksum-sha256' ||
       identity.corsExposedHeaders.length !== 1 ||
       identity.corsExposedHeaders[0] !== 'ETag' ||
       !sha256(identity.providerAccountRefHash) ||
@@ -122,14 +151,23 @@ export class AwsS3ManagedOriginalAdapter {
     mimeType: string;
   }) {
     await this.readCanonicalIdentity();
-    return this.requireClient().createMultipart({
+    const client = this.requireClient();
+    if (!client.beginReconciledMultipart) {
+      throw new Error('content_s3_reconciled_begin_unavailable');
+    }
+    const readback = await client.beginReconciledMultipart({
       ...input,
       checksumAlgorithm: 'sha256',
     });
+    if (readback.disposition === 'duplicate') {
+      throw new Error('content_s3_duplicate_multipart_reconciliation_required');
+    }
+    return readback;
   }
 
   async authorizePart(input: {
     uploadSessionId: string;
+    opaqueObjectKey: string;
     partNumber: number;
     byteCount: number;
     partSha256: string;
@@ -150,6 +188,7 @@ export class AwsS3ManagedOriginalAdapter {
 
   async recordCompletedPart(input: {
     uploadSessionId: string;
+    opaqueObjectKey: string;
     partNumber: number;
     byteCount: number;
     partSha256: string;
@@ -162,6 +201,7 @@ export class AwsS3ManagedOriginalAdapter {
 
   async completeAndReadBack(input: {
     uploadSessionId: string;
+    opaqueObjectKey?: string;
     fullSha256?: string;
     orderedProviderPartRefDigests: readonly string[];
   }): Promise<S3CompletedOriginal> {
@@ -175,12 +215,20 @@ export class AwsS3ManagedOriginalAdapter {
       throw new Error('content_s3_part_readback_invalid');
     }
     await this.readCanonicalIdentity();
-    const completed = await this.requireClient().completeAndReadBack(input);
+    const client = this.requireClient();
+    const opaqueObjectKey =
+      input.opaqueObjectKey ??
+      (client.beginReconciledMultipart
+        ? (() => {
+            throw new Error('content_s3_exact_object_binding_invalid');
+          })()
+        : stableKey('source', [input.uploadSessionId]));
+    const completed = await client.completeAndReadBack({ ...input, opaqueObjectKey });
     assertCompletedOriginal(completed, this.config, input.fullSha256);
     return completed;
   }
 
-  async abortMultipart(input: { uploadSessionId: string }) {
+  async abortMultipart(input: ManagedMultipartUploadBinding) {
     await this.readCanonicalIdentity();
     return this.requireClient().abortMultipart(input);
   }
@@ -190,6 +238,9 @@ export class AwsS3ManagedOriginalAdapter {
     opaqueObjectKey: string;
     byteCount: number;
   }) {
+    if (input.opaqueObjectKey !== this.driveObjectKey(input.transferId)) {
+      throw new Error('content_s3_drive_object_binding_mismatch');
+    }
     await this.beginDirectUpload({
       uploadSessionId: input.transferId,
       opaqueObjectKey: input.opaqueObjectKey,
@@ -205,7 +256,13 @@ export class AwsS3ManagedOriginalAdapter {
     body: AsyncIterable<Uint8Array>;
   }) {
     await this.readCanonicalIdentity();
-    return this.requireClient().putStreamPart(input);
+    return this.requireClient().putStreamPart({
+      uploadSessionId: input.transferId,
+      opaqueObjectKey: this.driveObjectKey(input.transferId),
+      partNumber: input.partNumber,
+      byteCount: input.byteCount,
+      body: input.body,
+    });
   }
 
   private requireClient() {
@@ -218,6 +275,13 @@ export class AwsS3ManagedOriginalAdapter {
       throw new Error('content_s3_configuration_incomplete');
     }
     return this.client;
+  }
+
+  private driveObjectKey(transferId: string) {
+    if (!this.config.accountKey || !this.config.productKey) {
+      throw new Error('content_s3_drive_scope_unavailable');
+    }
+    return stableKey('source', [this.config.accountKey, this.config.productKey, transferId]);
   }
 }
 
@@ -257,4 +321,8 @@ function sha256(value: string) {
 
 export function protectedProviderReferenceDigest(value: string) {
   return createHash('sha256').update(value).digest('hex');
+}
+
+function stableKey(prefix: string, parts: readonly string[]) {
+  return `${prefix}_${createHash('sha256').update(parts.join('\0')).digest('hex').slice(0, 32)}`;
 }

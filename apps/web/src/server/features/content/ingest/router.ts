@@ -163,6 +163,7 @@ export function createContentIngestRouter(input: ContentIngestRouterInput) {
       assertPartSize(session, routePart(req), body.byte_count);
       const authorization = await input.managedOriginal.authorizePart({
         uploadSessionId: session.id,
+        opaqueObjectKey: session.opaqueObjectKey,
         partNumber: routePart(req),
         byteCount: body.byte_count,
         partSha256: body.part_sha256,
@@ -182,6 +183,7 @@ export function createContentIngestRouter(input: ContentIngestRouterInput) {
       assertPartSize(session, routePart(req), body.byte_count);
       const provider = await input.managedOriginal.recordCompletedPart({
         uploadSessionId,
+        opaqueObjectKey: session.opaqueObjectKey,
         partNumber: routePart(req),
         byteCount: body.byte_count,
         partSha256: body.part_sha256,
@@ -224,6 +226,7 @@ export function createContentIngestRouter(input: ContentIngestRouterInput) {
       }
       const completed = await input.managedOriginal.completeAndReadBack({
         uploadSessionId,
+        opaqueObjectKey: session.opaqueObjectKey,
         orderedProviderPartRefDigests: orderedParts.map((part) => part.providerPartRefDigest),
       });
       const occurredAt = validNow(clock);

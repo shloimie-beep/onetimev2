@@ -26,6 +26,7 @@ import { PostgresDeliveryRepository } from '../delivery/repository.ts';
 import { SinkDeliveryRouter } from '../delivery/sink-router.ts';
 import { runDeliveryBatch } from '../delivery/worker.ts';
 import { HighLevelHttpAdapter } from '../highlevel/adapter.ts';
+import { createContentMediaWorkerRuntime } from '../runners/content-media/runtime.ts';
 import {
   createWorkerRunnerRegistrations,
   runWorkerRunners,
@@ -42,6 +43,9 @@ export async function runOutboxWorkerOnce(
   const pool = createPgPool(config.appConfig);
   const logger = createDeliveryLogger();
   const workerInstanceKey = opsWorkerInstanceKey(WORKER_TYPE, source);
+  const resolvedContentMediaRuntime =
+    contentMediaRuntime ??
+    createContentMediaWorkerRuntime({ config: config.appConfig, pool, source });
   try {
     await safeHeartbeat(
       () =>
@@ -121,7 +125,7 @@ export async function runOutboxWorkerOnce(
         workerInstanceKey,
         logger,
       },
-      registrations: createWorkerRunnerRegistrations(contentMediaRuntime),
+      registrations: createWorkerRunnerRegistrations(resolvedContentMediaRuntime),
     });
     return {
       ...delivery,
@@ -157,6 +161,9 @@ async function runContinuously(
   const logger = createDeliveryLogger();
   const control = new PollingLoopControl();
   const workerInstanceKey = opsWorkerInstanceKey(WORKER_TYPE, source);
+  const resolvedContentMediaRuntime =
+    contentMediaRuntime ??
+    createContentMediaWorkerRuntime({ config: config.appConfig, pool, source });
   const heartbeat = () =>
     safeHeartbeat(
       () =>
@@ -258,7 +265,7 @@ async function runContinuously(
               workerInstanceKey,
               logger,
             },
-            registrations: createWorkerRunnerRegistrations(contentMediaRuntime),
+            registrations: createWorkerRunnerRegistrations(resolvedContentMediaRuntime),
           });
         } catch (error) {
           void error;
