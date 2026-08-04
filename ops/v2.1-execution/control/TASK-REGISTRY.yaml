@@ -2364,7 +2364,7 @@ tasks:
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/V43/status_proof
 - task_id: OT-LIVE-001.03
   status: in_progress
-  active_phase: candidate_baseline_correction_one_file_deterministic_count_scope_amendment_authorized
+  active_phase: candidate_baseline_correction_source_terminal_accepted
   owner_thread_id: 019fc7e8-b506-7d30-a36a-4d7a9641f4fd
   branch: codex/ot-live-001-candidate-baseline-correction-20260804
   phase_branches:
@@ -2376,13 +2376,14 @@ tasks:
     product_repair: 27576fa64f0b37095e61ccca932c2e77cbf38844
     fixture_reconciliation_design: b0cfe4926d88dbebed470e075d62b462d42bf770
     candidate_baseline_correction_base: 5110bee2b06145d6cd6ad596dd4f42e748bda75e
+    candidate_baseline_correction: 032637395a9ab791b85c13fa6f1cffccfaa9e753
   authorized_start_sha: 5110bee2b06145d6cd6ad596dd4f42e748bda75e
-  last_known_remote_head: 5110bee2b06145d6cd6ad596dd4f42e748bda75e
-  active_claim_id: 29f4ac95-512e-4738-8e39-1e28dae8da83
-  active_writer_id: codex-ot-live-001-03-candidate-baseline-scope-29f4ac95
-  lease_expires_at: '2026-08-05T07:00:00Z'
-  last_heartbeat_at: '2026-08-04T16:12:02Z'
-  controller_authorization_sha: af928c57c08cb9ab8cb3889e64744dd430c34d2e
+  last_known_remote_head: 032637395a9ab791b85c13fa6f1cffccfaa9e753
+  active_claim_id: null
+  active_writer_id: null
+  lease_expires_at: null
+  last_heartbeat_at: '2026-08-04T16:19:37Z'
+  controller_authorization_sha: 9f76bb1e56f894138c739d8952d5edccd51ea7f4
   ready_entry_payload_digest: null
   interface_checkpoint_sha: null
   implementation_head_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
@@ -2397,14 +2398,15 @@ tasks:
     proof_record_location: ops/v2.1-execution/effects/9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c/OT-LIVE-001.03/c00-prod-operator-admin-parent-canary-20260804122448/events/001-RECONCILED.yaml
 - task_id: OT-LIVE-002.02
   status: in_progress
-  active_phase: audience_census_runner_accepted_default_off_pending_candidate_freeze
+  active_phase: audience_census_identity_contract_source_correction_authorized
   owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
-  branch: codex/ot-live-002-decision-store-implementation-20260804
+  branch: codex/ot-live-002-census-identity-contract-correction-20260804
   phase_branches:
     provider_configuration: codex/ot-live-002-governed-campaign-20260804
     database_proposal: codex/ot-live-002-governed-campaign-20260804
     decision_store_implementation: codex/ot-live-002-decision-store-implementation-20260804
     audience_census_runner: codex/ot-live-002-decision-store-implementation-20260804
+    audience_census_identity_contract: codex/ot-live-002-census-identity-contract-correction-20260804
   phase_heads:
     base: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
     database_proposal: 0cf2224f984c023162bf2286028df8e3d2723adf
@@ -2413,13 +2415,14 @@ tasks:
     decision_store_repository: 6149907cb2611835514b1ffa5622c8fb7d5927e8
     audience_census_runner: ee802ea42b4d82ecfb3e8a5617aa682f93efba3b
     audience_census_eslint_correction: 5110bee2b06145d6cd6ad596dd4f42e748bda75e
-  authorized_start_sha: ee802ea42b4d82ecfb3e8a5617aa682f93efba3b
-  last_known_remote_head: 5110bee2b06145d6cd6ad596dd4f42e748bda75e
-  active_claim_id: null
-  active_writer_id: null
-  lease_expires_at: null
-  last_heartbeat_at: '2026-08-04T15:43:21Z'
-  controller_authorization_sha: 8b059c69df76bf3c7f6ccc4735e2b954f8421022
+    candidate_baseline_correction_base: 032637395a9ab791b85c13fa6f1cffccfaa9e753
+  authorized_start_sha: 032637395a9ab791b85c13fa6f1cffccfaa9e753
+  last_known_remote_head: 032637395a9ab791b85c13fa6f1cffccfaa9e753
+  active_claim_id: da761d28-6c24-4fa6-b531-d927544fbb62
+  active_writer_id: codex-ot-live-002-02-census-identity-contract-da761d28
+  lease_expires_at: '2026-08-05T07:00:00Z'
+  last_heartbeat_at: '2026-08-04T16:19:37Z'
+  controller_authorization_sha: 9f76bb1e56f894138c739d8952d5edccd51ea7f4
   ready_entry_payload_digest: null
   interface_checkpoint_sha: null
   implementation_head_sha: 5110bee2b06145d6cd6ad596dd4f42e748bda75e

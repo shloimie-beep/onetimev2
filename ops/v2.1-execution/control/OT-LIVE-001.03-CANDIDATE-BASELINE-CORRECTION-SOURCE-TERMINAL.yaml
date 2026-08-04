@@ -1,0 +1,42 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-001.03
+owner_thread_id: 019fc7e8-b506-7d30-a36a-4d7a9641f4fd
+disposition: source_terminal_accepted
+predecessor_claim_id: 0f8d8ca8-3af3-400e-a846-7ec517b62bcd
+supplemental_claim_id: 29f4ac95-512e-4738-8e39-1e28dae8da83
+branch: codex/ot-live-001-candidate-baseline-correction-20260804
+base_sha: 5110bee2b06145d6cd6ad596dd4f42e748bda75e
+source_head_sha: 032637395a9ab791b85c13fa6f1cffccfaa9e753
+source_tree_sha: 4f0b2adf49ed9d34c6788b21b6f4dd49a546d404
+lineage_commit_count: 1
+remote_equality: true
+controller_independent_readback:
+  remote_head_exact: true
+  parent_exact: true
+  tree_exact: true
+  changed_path_count: 12
+  unexpected_changed_path_count: 0
+  git_diff_check_passed: true
+producer_verification:
+  inherited_failures_corrected: 15
+  focused_unit: 80_of_80_passed
+  full_unit: 641_of_641_passed_across_92_files
+  candidate_builder: 4_of_4_passed
+  build: passed
+  lint: passed
+  typecheck: passed
+  secret_scan: passed_3245_text_files
+  candidate_only_format: passed
+  cumulative_preimages: 13_of_13
+  supplemental_literal_diff: exact_1164_1030_1030_to_1175_1041_1041
+  unchanged_authorized_path: packages/brand-system/src/visual-contract.ts
+effects:
+  source_commits: 1
+  normal_pushes: 1
+  force_push_amend_rebase_merge: 0
+  migration_database_schema_rows_provider_contact_tag_seed_reply_send_deploy_DNS_billing_Customer_Student_identity_session_credential: 0
+  unresolved: 0
+accepted_at: '2026-08-04T16:19:37Z'
+contains_secret: false
+immutable: true

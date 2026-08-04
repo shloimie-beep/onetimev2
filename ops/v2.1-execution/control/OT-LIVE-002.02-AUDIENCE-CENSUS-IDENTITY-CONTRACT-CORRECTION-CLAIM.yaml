@@ -1,0 +1,67 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-002.02
+owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+claim_id: da761d28-6c24-4fa6-b531-d927544fbb62
+writer_id: codex-ot-live-002-02-census-identity-contract-da761d28
+status: active
+branch: codex/ot-live-002-census-identity-contract-correction-20260804
+base_sha: 032637395a9ab791b85c13fa6f1cffccfaa9e753
+base_tree_sha: 4f0b2adf49ed9d34c6788b21b6f4dd49a546d404
+control_parent_sha: 9f76bb1e56f894138c739d8952d5edccd51ea7f4
+accepted_predecessor_source_sha: 5110bee2b06145d6cd6ad596dd4f42e748bda75e
+problem_statement: >-
+  The campaign-local provider_contact_ref_hash is SHA-256 over governed-ghl-contact-v1, exact GHL location, and raw
+  provider contact ID separated by null bytes. The older adult_ghl_identity_link.verified_contact_ref_hash has no
+  authoritative domain, version, location binding, provenance, or non-test producer. Direct equality between the two
+  fields is therefore not proof and would mark every real provider row unproven.
+required_design: >-
+  Use the durable adult_household_contact_links account/product/location/raw-provider-contact binding first, compute the
+  campaign hash inside PostgreSQL without selecting raw identifiers, join its canonical contact_key to onetime.contacts,
+  and use unique exact normalized-email matching to the scoped active v21 adult identity as the fail-closed fallback.
+  Treat the unversioned adult-link hash only as possible conflict evidence, never positive identity proof. Reject missing,
+  duplicate, archived, cross-account, cross-product, cross-location, or conflicting mappings. Preserve zero writes and
+  sanitized output.
+exact_paths:
+  - ops/codex-runs/OT-LIVE-002/AUDIENCE-CENSUS-SOURCE-EVIDENCE.md
+  - packages/db/src/audience-reconciliation/governed-campaign-census-reader.test.ts
+  - packages/db/src/audience-reconciliation/governed-campaign-census-reader.ts
+  - packages/domain/src/audience-reconciliation/governed-campaign-census.test.ts
+  - packages/domain/src/audience-reconciliation/governed-campaign-census.ts
+  - scripts/highlevel/governed-campaign-audience-census.test.ts
+  - scripts/highlevel/governed-campaign-audience-census.ts
+  - tests/integration/governed-campaign-audience-census.test.ts
+source_preimage_sha256:
+  ops/codex-runs/OT-LIVE-002/AUDIENCE-CENSUS-SOURCE-EVIDENCE.md: f524a5141e58963895dace27782a812c14a5ba0c70d6a964d2c196912f94e863
+  packages/db/src/audience-reconciliation/governed-campaign-census-reader.test.ts: 7b4ceac3033f6a73afba6fd8ee2f03bd8c75080c00fbfea3d8ef2688e50503a3
+  packages/db/src/audience-reconciliation/governed-campaign-census-reader.ts: c1b634b263fe7e096a662e0785d0fa72efc7ccd562cd9ab3011b1722fb8c098f
+  packages/domain/src/audience-reconciliation/governed-campaign-census.test.ts: 5a5be9e726d98425eebfbc1b96aa2361348f685523e3f7f4117af2c1e5f26dac
+  packages/domain/src/audience-reconciliation/governed-campaign-census.ts: 39dba542d94993b218ff50b1ac4694a9962cdd1a7ffcd519de04d9452ca585e6
+  scripts/highlevel/governed-campaign-audience-census.test.ts: 965f97f52717ce77825dcbb9655ab31ce059e687c2942391fbde01a8b373b111
+  scripts/highlevel/governed-campaign-audience-census.ts: 100fdf44f3ef3e222b04916fc8fd35c4c3ff4b86932ce42e17ac054e154f48ff
+  tests/integration/governed-campaign-audience-census.test.ts: 604ab0a7b75d879b2bc1b9a6af181610771faaa8bfaaf35a4c075d56a5657bf2
+required_verification:
+  - JavaScript_and_PostgreSQL_campaign_hash_parity
+  - durable_mapping_precedence_and_unique_normalized_email_fallback
+  - cross_account_product_location_decoys_rejected
+  - missing_conflicting_duplicate_email_and_archived_adult_cases_fail_closed
+  - adult_link_unversioned_hash_never_used_as_positive_proof
+  - raw_provider_ID_and_normalized_email_absent_from_outputs_logs_and_evidence
+  - focused_unit_and_disposable_PostgreSQL_18_integration_pass
+  - repository_build_lint_typecheck_secret_scan_and_candidate_builder_pass
+  - exact_path_preimage_scope_format_and_git_diff_check_pass
+  - source_head_is_linear_normal_fast_forward_from_exact_base
+publish_authority:
+  create_and_normally_push_exact_branch_once: true
+  force_push_amend_rebase_merge: false
+prohibitions:
+  - no_new_migration_schema_runtime_registration_or_shared_barrel_change
+  - no_live_or_staging_database_connection_or_write
+  - no_provider_contact_tag_seed_reply_pilot_or_broad_send_effect
+  - no_deployment_DNS_billing_Customer_Student_identity_session_or_credential_effect
+  - no_PII_raw_contact_ID_or_normalized_email_in_source_tests_logs_evidence_or_commits
+  - no_changes_outside_exact_paths
+issued_at: '2026-08-04T16:19:37Z'
+expires_at: '2026-08-05T07:00:00Z'
+contains_secret: false
+immutable: true

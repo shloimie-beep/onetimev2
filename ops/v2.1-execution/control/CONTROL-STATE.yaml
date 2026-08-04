@@ -27,12 +27,39 @@ next_action: >-
   is accepted at 5110bee2 after its one-file nonbehavioral lint correction, 30 controller-focused tests, and native
   PostgreSQL 18.4 proof. The canonical pre-freeze baseline reproduced the exact same inherited 15 unit failures on both
   deployed 27576fa6 and accepted 5110bee2; consume the narrow OT-LIVE-001.03 correction claim for nine test fixtures and
-  three deterministic inventory/brand projection files. Its corrected unit suite passes 641 of 641; consume the one-file
-  scope amendment for the stale candidate-builder path-count assertion, then freeze the next additive source
-  candidate from its accepted descendant; keep media as a separate candidate unless it becomes critical. No live
+  three deterministic inventory/brand projection files. The exact linear correction is accepted at 03263739 with full
+  unit 641 of 641, candidate builder 4 of 4, and build/static gates green. Consume the eight-path OT-LIVE-002 census
+  identity-contract correction from that exact base, then freeze the next additive source candidate; keep media as a
+  separate candidate unless it becomes critical. No live
   migration, database census, decision write, contact,
   seed, pilot, broad send, or media provider effect is authorized. Migration 2261 remains unallocated. Keep OT-LIVE-003.02
   parked/unmerged/default-off, reject its 2260 proposal, and keep WhatsApp/WAPI fully deferred at zero effects.
+ot_live_002_02_audience_census_identity_contract_dispatch_20260804_161937:
+  recorded_at: '2026-08-04T16:19:37Z'
+  state_based_on_control_head_sha: 9f76bb1e56f894138c739d8952d5edccd51ea7f4
+  claim_id: da761d28-6c24-4fa6-b531-d927544fbb62
+  claim_path: ops/v2.1-execution/control/OT-LIVE-002.02-AUDIENCE-CENSUS-IDENTITY-CONTRACT-CORRECTION-CLAIM.yaml
+  claim_digest: b8ce9ca078bbd412ce812ef72c1b1be4bde64befe18fd009c3d44204e64387fc
+  branch: codex/ot-live-002-census-identity-contract-correction-20260804
+  base_sha: 032637395a9ab791b85c13fa6f1cffccfaa9e753
+  base_tree_sha: 4f0b2adf49ed9d34c6788b21b6f4dd49a546d404
+  exact_path_ceiling: 8
+  reason: campaign_hash_defined_adult_link_hash_domain_unversioned_and_unproven
+  correction_mode: durable_mapping_first_unique_normalized_email_fallback_fail_closed_zero_writes
+  migration_database_provider_contact_tag_send_deploy_DNS_effects: 0_0_0_0_0_0_0
+ot_live_001_03_candidate_baseline_source_acceptance_20260804_161937:
+  recorded_at: '2026-08-04T16:19:37Z'
+  state_based_on_control_head_sha: 9f76bb1e56f894138c739d8952d5edccd51ea7f4
+  predecessor_claim_id: 0f8d8ca8-3af3-400e-a846-7ec517b62bcd
+  supplemental_claim_id: 29f4ac95-512e-4738-8e39-1e28dae8da83
+  source_terminal_path: ops/v2.1-execution/control/OT-LIVE-001.03-CANDIDATE-BASELINE-CORRECTION-SOURCE-TERMINAL.yaml
+  source_terminal_digest: 47c46e5458feeea6e7396aeda0f140ff1955c77bfbddcbe3cd4f181b42a705ff
+  branch: codex/ot-live-001-candidate-baseline-correction-20260804
+  base_sha: 5110bee2b06145d6cd6ad596dd4f42e748bda75e
+  source_head_sha: 032637395a9ab791b85c13fa6f1cffccfaa9e753
+  source_tree_sha: 4f0b2adf49ed9d34c6788b21b6f4dd49a546d404
+  full_unit_and_candidate_builder: 641_of_641_and_4_of_4_passed
+  source_commits_pushes_external_effects: 1_1_0
 ot_live_001_03_candidate_baseline_scope_amendment_20260804_161202:
   recorded_at: '2026-08-04T16:12:02Z'
   state_based_on_control_head_sha: af928c57c08cb9ab8cb3889e64744dd430c34d2e
