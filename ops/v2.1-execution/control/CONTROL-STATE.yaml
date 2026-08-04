@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: operational
-active_phase: candidate_8834c2fd_migration_2260_direct_Node_successor_authorized_active
+active_phase: candidate_8834c2fd_product_deployment_authorized_active
 bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
@@ -18,8 +18,8 @@ candidate: 8834c2fdc42bbb7e3641a5ce45695b2f5a56717d37e7e14fed783b0c7875fa34
 active_writer_limit: 4
 controller_authorization_sha: 76692fbb6e65cdeb68e32862dd0c03490b5e5750
 next_action: >-
-  Apply and terminally reconcile exact migration 2260 under the fresh direct-Node public-connection candidate-bound production:data successor, then
-  release that lock before separately authorizing the exact web and worker deployment of candidate 8834c2fd. Preserve
+  Deploy and terminally reconcile candidate 8834c2fd from exact source a157c388 to the canonical web and worker services
+  under the fresh production:deployment fence, preserving the successful migration-2260 schema and zero decision rows. Preserve
   deployed candidate 9d6be957 at source 27576fa6 and its successful exact ten-effect operator fixture.
   The existing-Chrome Admin to Parent to Admin canary stopped credential-unavailable before every POST with zero
   database mutations or unresolved effects; defer the single operator sign-in request until independent work completes.
@@ -94,6 +94,19 @@ ot_live_001_03_candidate_8834_migration_2260_direct_Node_successor_20260804_1754
   authorized_effect: exact_one_transactional_application_of_only_migration_2260
   Railway_stored_variable_application_business_row_and_all_other_effects_max: 0
   deployment_lock: unclaimed_until_migration_terminal_reconciliation
+ot_live_001_03_candidate_8834_migration_success_and_deploy_authority_20260804_180858:
+  recorded_at: '2026-08-04T18:08:58Z'
+  state_based_on_control_head_sha: 5dabd813e12d4d731d3c28d4f47303c832762d7b
+  migration_authority_id: c00-prod-candidate-8834-migration-2260-direct-node-successor-20260804175412
+  migration_terminal_event_digest: 595ff526b9335c35db8a7a6a943e182de45aaeb4f841693a265177be33ab717f
+  migration_disposition: SUCCESS_exact_2260_91_row_ledger_zero_decision_rows
+  production_data_lock: unclaimed
+  deployment_authority_id: c00-prod-candidate-8834-product-deploy-20260804180858
+  deployment_claim_lease_fence: 10effc42-3979-4856-8162-2760f73334e2_a4f038ef-95d3-44e7-9fde-cc5f196ae77e_fence-ec6c281c-d522-4f77-89c3-3ab0663f9684
+  web_worker_targets: d175ad94-5e3c-41c2-8cbc-daa1a299077d_742f60ed-dc2f-4321-85d0-019003d4e9b9
+  exact_rollback_targets: ea1b663f-f892-4137-9ebf-8a4509bf7cd8_f68df357-7be5-4ded-936b-fbc915c42261
+  maximum_deployments_and_rollbacks: 2_2
+  database_provider_session_contact_tag_send_charge_customer_Student_DNS_effects_max: 0
 ot_live_002_02_audience_census_identity_contract_dispatch_20260804_161937:
   recorded_at: '2026-08-04T16:19:37Z'
   state_based_on_control_head_sha: 9f76bb1e56f894138c739d8952d5edccd51ea7f4

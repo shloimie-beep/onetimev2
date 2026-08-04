@@ -1581,14 +1581,14 @@ authorities:
     authority_kind: derived_candidate_bound_exact_single_production_migration_direct_node_successor
     grant_digest: 95bee86ae4542b3d8ec5e62800e04c2c96651a77122be4007112b94da0d33234
     source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
-    status: active
+    status: consumed
     expires_at: '2026-08-04T18:54:12Z'
     latest_revocation_path: null
     latest_revocation_digest: null
     provider_lock: production:data
     provider_lock_lease_id: 17cf556c-435c-4d44-9208-020bf2cf0c3e
     fencing_token: fence-03e2557a-b461-4cce-bde5-22ce34f39227
-    effect_authority_usable: true
+    effect_authority_usable: false
     candidate_binding_status: exact_frozen_candidate_pre_deployment_migration
     candidate_digest: 8834c2fdc42bbb7e3641a5ce45695b2f5a56717d37e7e14fed783b0c7875fa34
     candidate_manifest_commit_sha: 03e7e74156685554c8efb8b9ce20645f68899d05
@@ -1602,7 +1602,7 @@ authorities:
     claim_path: ops/v2.1-execution/control/OT-LIVE-001.03-CANDIDATE-8834-MIGRATION-2260-DIRECT-NODE-SUCCESSOR-CLAIM.yaml
     claim_digest: f6ea49aa3d4aa43ce5e46306dbe337df470630c23962cce883bb0ce88db82b6d
     status_entry_path: ops/v2.1-execution/authority/8834c2fdc42bbb7e3641a5ce45695b2f5a56717d37e7e14fed783b0c7875fa34/OT-LIVE-001.03/c00-prod-candidate-8834-migration-2260-direct-node-successor-20260804175412/STATUS-ENTRY.yaml
-    status_entry_digest: b7e483dd2f096ea559b982ee5ce33b2274be0fa4cd1f03ae35a8c927f8fcee07
+    status_entry_digest: 6b2a6a76060e6b2fded6d9e8edd7b25228d831e556fecfd644a3035eaa4b7bd3
     database_service_id: db590e4a-7dc5-40cb-a243-5206ce21b746
     database_deployment_id: 62583cef-572b-40ae-b1d3-0194a2ccbf27
     connection_binding: process_local_DATABASE_URL_from_existing_DATABASE_PUBLIC_URL_only
@@ -1616,8 +1616,58 @@ authorities:
     schema_migration_ledger_rows_inserted_exact: 1
     Railway_stored_variable_application_business_and_all_other_effects_max: 0
     prerequisite_review: predecessor_child_never_launched_zero_effect_fresh_90_row_READ_ONLY_baseline_direct_Node_tsx_nonconnecting_proof_passed
-    checked_at: '2026-08-04T17:54:12Z'
-    state_based_on_control_head_sha: ab50322d62cb0b69f644f25e9c087d0ac888f3fe
+    disposition: SUCCESS_EXACT_MIGRATION_2260_COMMITTED
+    terminal_event_path: ops/v2.1-execution/effects/8834c2fdc42bbb7e3641a5ce45695b2f5a56717d37e7e14fed783b0c7875fa34/OT-LIVE-001.03/c00-prod-candidate-8834-migration-2260-direct-node-successor-20260804175412/events/001-RECONCILED.yaml
+    terminal_event_digest: 595ff526b9335c35db8a7a6a943e182de45aaeb4f841693a265177be33ab717f
+    direct_Node_child_launches: 1
+    migrations_applied: 1
+    schema_migration_ledger_rows_inserted: 1
+    post_effect_ledger_count_digest: 91_531701132856ec5640e49a8a07b768f12db7c4b103cc63ab9cd27d7d0ec81233
+    application_business_rows_mutated: 0
+    unresolved_effects: 0
+    lock_released_at: '2026-08-04T18:08:58Z'
+    checked_at: '2026-08-04T18:08:58Z'
+    state_based_on_control_head_sha: 5dabd813e12d4d731d3c28d4f47303c832762d7b
+  c00-prod-candidate-8834-product-deploy-20260804180858:
+    schema_version: 1
+    execution_id: OT-V21-PRODUCTION
+    authority_id: c00-prod-candidate-8834-product-deploy-20260804180858
+    authority_kind: derived_candidate_bound_exact_Railway_local_archive_product_deployment
+    grant_digest: 6aef9f00ba9d98d2e8e1ed989a664bbe34b05245e5f72e0622abdc21b41fdc1c
+    source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+    status: active
+    expires_at: '2026-08-04T19:23:58Z'
+    latest_revocation_path: null
+    latest_revocation_digest: null
+    provider_lock: production:deployment
+    provider_lock_lease_id: a4f038ef-95d3-44e7-9fde-cc5f196ae77e
+    fencing_token: fence-ec6c281c-d522-4f77-89c3-3ab0663f9684
+    effect_authority_usable: true
+    candidate_binding_status: exact_frozen_candidate_migration_2260_terminal_success
+    candidate_digest: 8834c2fdc42bbb7e3641a5ce45695b2f5a56717d37e7e14fed783b0c7875fa34
+    candidate_manifest_commit_sha: 03e7e74156685554c8efb8b9ce20645f68899d05
+    repository_source_sha: a157c388d8dc292699f7cd1a1ef178918ee30885
+    repository_tree_sha: bd2f1295043af74cfa0bad5f5b3993e3a534137e
+    source_branch: codex/ot-live-002-census-identity-contract-correction-20260804
+    owner_task_id: OT-LIVE-001.03
+    owner_thread_id: 019fc7e8-b506-7d30-a36a-4d7a9641f4fd
+    holder_claim_id: 10effc42-3979-4856-8162-2760f73334e2
+    claim_path: ops/v2.1-execution/control/OT-LIVE-001.03-CANDIDATE-8834-PRODUCT-DEPLOYMENT-CLAIM.yaml
+    claim_digest: 4b67a2e5bc2743e368b42ab9e488fc737717036ed30ea444ba70ac4673d5faf3
+    status_entry_path: ops/v2.1-execution/authority/8834c2fdc42bbb7e3641a5ce45695b2f5a56717d37e7e14fed783b0c7875fa34/OT-LIVE-001.03/c00-prod-candidate-8834-product-deploy-20260804180858/STATUS-ENTRY.yaml
+    status_entry_digest: 7f170e6d2c3257d72106063a661fa502c1c4d6709f5765052c86c44486274709
+    project_environment: ce55ef20-1418-4ad3-aafa-f877fb992dc8_f911acfc-e206-44df-a569-9d69d709b94b
+    web_service_pre_effect_deployment: d175ad94-5e3c-41c2-8cbc-daa1a299077d_ea1b663f-f892-4137-9ebf-8a4509bf7cd8
+    worker_service_pre_effect_deployment: 742f60ed-dc2f-4321-85d0-019003d4e9b9_f68df357-7be5-4ded-936b-fbc915c42261
+    database_service_deployment: db590e4a-7dc5-40cb-a243-5206ce21b746_62583cef-572b-40ae-b1d3-0194a2ccbf27
+    migration_2260_terminal_event_digest: 595ff526b9335c35db8a7a6a943e182de45aaeb4f841693a265177be33ab717f
+    maximum_effect_count: 4
+    production_local_archive_deployments_max: 2
+    rollback_to_exact_current_deployments_max: 2
+    database_provider_session_contact_tag_send_charge_customer_Student_and_DNS_effects_max: 0
+    prerequisite_review: exact_frozen_candidate_clean_a157_source_641_unit_4_builder_33_focused_native_pg18_migration_2260_success_live_prior_services_and_domains_healthy
+    checked_at: '2026-08-04T18:08:58Z'
+    state_based_on_control_head_sha: 5dabd813e12d4d731d3c28d4f47303c832762d7b
 entry_schema: templates/AUTHORITY-STATUS-ENTRY.yaml
 revocation_schema: templates/AUTHORITY-REVOCATION-RECORD.yaml
 rule: C00 records externally granted/revoked/expired authority; it does not grant it. Every update binds the known
