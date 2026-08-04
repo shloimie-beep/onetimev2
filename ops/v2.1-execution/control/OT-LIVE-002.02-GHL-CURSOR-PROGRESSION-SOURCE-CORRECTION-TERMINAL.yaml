@@ -1,0 +1,40 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-002.02
+owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+claim_id: fd080c16-4db6-45e3-864a-212103a5212e
+claim_digest: 0e6f542a529a14a0d6492e499e74d7f2971202012b7f4039825c871b2014912d
+disposition: SOURCE_CORRECTION_COMMITTED_AND_NORMALLY_PUSHED
+branch: codex/ot-live-002-ghl-pagination-contract-correction-20260804
+base_sha: b204b026d7733c29c514d3c5febbea948c5e67e7
+source_head_sha: 0d21b1502d2156ab91b75e7c912f580548f74660
+source_tree_sha: f4739d99e0ef57110f33609725d87c0170671505
+lineage_commit_count: 1
+remote_equality: true
+changed_paths:
+  ops/codex-runs/OT-LIVE-002/AUDIENCE-CENSUS-SOURCE-EVIDENCE.md: d40f72bdd765b388c8a73d9530210a4bed39da5c332bd808df12cc343f320287
+  scripts/highlevel/governed-campaign-audience-census.test.ts: 23d2d88503712b76d5cb8ab15286cbe3b77025d291c7f4b90e01ae5ba4edf78d
+  scripts/highlevel/governed-campaign-audience-census.ts: 5268f8d01c675d89bcc7a2d48ca454d02462152870ebd7f1b85b1ff282468c8c
+accepted_contract:
+  page_counters: validated_for_known_keys_and_scalar_types_but_not_progression_authority
+  progression: validated_nonblank_nonrepeating_startAfter_plus_startAfterId_pair_only
+  termination: exact_accumulated_unique_rows_equal_stable_total_without_extra_fetch
+  provider_URL: structure_and_equality_validated_but_never_followed
+  fail_closed: premature_null_empty_page_changed_total_duplicate_row_over_limit_over_total_and_repeated_cursor
+  DND_identity_READ_ONLY_default_off_timeout_secret_and_zero_decision_store_execute_boundaries: preserved
+verification:
+  runner_suite: 13_of_13_passed
+  focused_suite: 49_pass_1_native_only_skip
+  candidate_builder: 4_of_4_passed
+  static_contract: 12_of_12_passed
+  build_lint_typecheck_format_secret_diff_scope_migration_integrity: passed
+  migration_2260_normalized_SHA256: 93e7879ce7861cd37733335ca64e49310af1025fc099e6bce4abadb8f25c3740
+effects:
+  source_commits_and_normal_pushes: 1_1
+  provider_reads_and_mutations: 0_0
+  database_connections_and_mutations: 0_0
+  deployed_candidate_Railway_contact_tag_send_DNS_and_all_other_external_effects: 0
+unresolved_effects: 0
+completed_at: '2026-08-04T19:58:00Z'
+contains_secret: false
+immutable: true

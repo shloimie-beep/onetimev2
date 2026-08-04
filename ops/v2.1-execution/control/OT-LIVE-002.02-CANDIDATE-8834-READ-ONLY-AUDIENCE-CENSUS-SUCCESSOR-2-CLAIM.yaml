@@ -1,0 +1,76 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-002.02
+owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+claim_id: 6084e66d-4b8d-4399-9e3b-21b0cc9bac05
+writer_id: codex-ot-live-002-02-read-only-census-successor-2-6084e66d
+status: active
+operation_kind: cursor_corrected_candidate_bound_read_only_production_audience_census_successor_2
+control_parent_sha: ae92e22baf5436d93b60e0b19b377debc19aa907
+source_correction_terminal_path: ops/v2.1-execution/control/OT-LIVE-002.02-GHL-CURSOR-PROGRESSION-SOURCE-CORRECTION-TERMINAL.yaml
+source_correction_terminal_digest: 5eeb779d39fa6088f459d7a9bfedf5087fe92fcd7dcbdb5c012047678159c7ea
+deployed_candidate_digest: 8834c2fdc42bbb7e3641a5ce45695b2f5a56717d37e7e14fed783b0c7875fa34
+deployed_product_source_sha: a157c388d8dc292699f7cd1a1ef178918ee30885
+census_tool_source_sha: 0d21b1502d2156ab91b75e7c912f580548f74660
+census_tool_source_tree_sha: f4739d99e0ef57110f33609725d87c0170671505
+census_tool_branch: codex/ot-live-002-ghl-pagination-contract-correction-20260804
+exact_scope:
+  runtime_tier: production
+  verification_environment_id: production_operator_canary
+  account_key: one_time
+  product_key: one_time_mishnah_class
+  campaign_key: 6a71a64c28f7a5dbb3aec1be
+  GHL_location_id: pBSnOK2nkdxp6gf9Rg3o
+  GHL_campaign_id: 6a71a64c28f7a5dbb3aec1be
+  GHL_workflow_id: 09051378-5917-4172-afda-f425619dd23d
+  GHL_launch_tag_id: IcOGsLgSIOYGFlHF4kQ0
+  database_service_and_deployment: db590e4a-7dc5-40cb-a243-5206ce21b746_62583cef-572b-40ae-b1d3-0194a2ccbf27
+  migration_ledger_rows_digest: 91_531701132856ec5640e49a8a07b768f12db7c4b103cc63ab9cd27d7d0ec81233
+  migration_2260_decision_rows: present_0
+operator_bindings:
+  GOVERNED_CAMPAIGN_AUDIENCE_CENSUS_ENABLED: process_local_true_only
+  GOVERNED_CAMPAIGN_MAXIMUM_PROVIDER_CONTACTS: 2000
+  GOVERNED_CAMPAIGN_MAXIMUM_AFFECTED_ROWS: 2000
+  GOVERNED_CAMPAIGN_IDEMPOTENCY_KEY: ot-live-002-02-census-successor-2-6084e66d-4b8d-4399-9e3b-21b0cc9bac05
+  GOVERNED_CAMPAIGN_CREATED_BY_USER_KEY: codex-ot-live-002-02
+  GOVERNED_CAMPAIGN_SOURCE_OBSERVED_AT: bind_once_to_immediate_pre_provider_UTC_and_return_exact
+  DATABASE_URL: process_local_from_existing_DATABASE_PUBLIC_URL_only
+  HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN: existing_configured_token_only
+required_operation:
+  provider_total_expected_from_two_page_diagnostic: 1499
+  provider_pages_max: 20
+  pagination_authority: validated_nonrepeating_startAfter_plus_startAfterId_pair_only
+  pagination_termination: exact_accumulated_unique_rows_equal_stable_total_without_extra_fetch
+  page_counters: validate_known_keys_and_scalar_types_only
+  provider_URL: validate_structure_and_equality_but_never_follow
+  database_transactions_max: 2
+  database_transactions: REPEATABLE_READ_READ_ONLY_with_XID_and_mutation_counter_proof
+  decision_store: composed_but_never_called
+  output: sanitized_snapshot_request_and_projection_hashes_reason_counts_and_exact_planned_rows_only
+  identity_contract: durable_mapping_first_database_hash_unique_email_fallback_legacy_hash_conflict_only_all_ambiguity_fail_closed
+required_return:
+  - exact_provider_total_pages_cursor_termination_and_snapshot_hash
+  - exact_included_excluded_and_review_counts_by_sanitized_reason
+  - exact_planned_decision_rows_current_projection_rows_and_maximumAffectedRows_for_separate_write_authority
+  - exact_scope_idempotency_sourceObservedAt_requestHash_and_createdBy_bindings
+  - READ_ONLY_XID_and_mutation_counter_proof_for_every_database_transaction
+  - process_local_flag_and_connection_secret_bindings_not_persisted_or_output
+  - zero_mutation_zero_unresolved_effect_reconciliation
+effect_budget:
+  provider_GET_page_reads_max: 20
+  database_READ_ONLY_transactions_max: 2
+  database_schema_migration_session_business_row_mutations_max: 0
+  provider_contact_tag_campaign_workflow_webhook_send_schedule_mutations_max: 0
+  Railway_variable_deployment_domain_source_DNS_mutations_max: 0
+  seed_reply_pilot_broad_send_billing_customer_Student_WhatsApp_WAPI_effects_max: 0
+prohibitions:
+  - no_decision_store_execute_or_application_database_write
+  - no_contact_tag_seed_reply_pilot_or_broad_send
+  - no_persistent_feature_flag_connection_or_secret_change
+  - no_PII_raw_contact_cursor_email_name_phone_or_private_field_output
+  - no_retry_after_unknown_provider_or_database_result
+  - no_follow_on_effect_authority_inference
+issued_at: '2026-08-04T19:59:18Z'
+expires_at: '2026-08-04T21:29:18Z'
+contains_secret: false
+immutable: true
