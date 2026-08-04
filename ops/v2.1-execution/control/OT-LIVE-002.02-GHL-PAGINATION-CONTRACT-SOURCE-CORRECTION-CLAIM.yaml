@@ -1,0 +1,63 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-002.02
+owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+claim_id: 3d69dd1d-7c7c-4470-8285-c0bd181533a2
+writer_id: codex-ot-live-002-02-ghl-pagination-source-3d69dd1d
+status: active
+operation_kind: source_only_GHL_pagination_contract_correction_with_one_meta_diagnostic_read
+control_parent_sha: 495b4a4cc6816d01acaf680b82a5730880bdf709
+predecessor_diagnostic_terminal_path: ops/v2.1-execution/control/OT-LIVE-002.02-GHL-COUNT-CONTRACT-DIAGNOSTIC-TERMINAL.yaml
+predecessor_diagnostic_terminal_digest: edcae8f47ccd2ae0a622a70c33bef06b9a84827ef80d94e98492839dced5a7e7
+branch: codex/ot-live-002-ghl-pagination-contract-correction-20260804
+base_sha: a157c388d8dc292699f7cd1a1ef178918ee30885
+base_tree_sha: bd2f1295043af74cfa0bad5f5b3993e3a534137e
+deployed_candidate_remains: 8834c2fdc42bbb7e3641a5ce45695b2f5a56717d37e7e14fed783b0c7875fa34
+deployed_source_remains: a157c388d8dc292699f7cd1a1ef178918ee30885
+exact_paths:
+  - ops/codex-runs/OT-LIVE-002/AUDIENCE-CENSUS-SOURCE-EVIDENCE.md
+  - scripts/highlevel/governed-campaign-audience-census.test.ts
+  - scripts/highlevel/governed-campaign-audience-census.ts
+source_preimage_sha256:
+  ops/codex-runs/OT-LIVE-002/AUDIENCE-CENSUS-SOURCE-EVIDENCE.md: 2b6e5454a62821f51a74b6d64582f71889747439304b1b6eccfbaf40c3aa00d8
+  scripts/highlevel/governed-campaign-audience-census.test.ts: e18b44bdd2a12a3a52bf5073a50077081a4c9c4db9103e2a1e8b14b6441d0135
+  scripts/highlevel/governed-campaign-audience-census.ts: 06cf6fcaa8e3b91ea69cf907fde988100dc88127d4ccd283ffcf111b02c4d1f3
+authorized_diagnostic_read:
+  request: exact_one_GET_contacts_limit_1_no_cursor_same_canonical_origin_version_location_and_existing_token
+  request_attempts_max: 1
+  retries_and_additional_pages: 0
+  allowed_output: sorted_meta_key_names_scalar_types_safe_integer_values_URL_origin_path_and_query_key_names_without_query_values_and_hashes
+  prohibited_output: contact_values_cursor_values_token_body_or_private_fields
+required_correction:
+  - bind_the_exact_observed_contacts_meta_traceId_envelope_without_requiring_absent_top_level_count
+  - preserve_the_documented_contacts_count_envelope_as_an_exact_separately_tested_contract_only_if_unambiguous
+  - accept_only_explicitly_observed_or_primary_documented_pagination_fields_and_semantics
+  - never_follow_arbitrary_provider_URL_origin_path_location_or_query_values
+  - enforce_page_limit_accumulated_contact_ceiling_unique_contacts_nonblank_nonrepeating_cursor_and_exact_terminal_condition
+  - fail_closed_on_missing_conflicting_changing_or_unknown_count_cursor_or_envelope_fields
+  - keep_private_token_origin_version_timeout_DND_identity_READ_ONLY_and_zero_decision_store_execute_boundaries_unchanged
+required_verification:
+  - focused_runner_tests_for_documented_and_observed_envelopes_and_all_ambiguity_ceiling_cursor_terminal_cases
+  - existing_33_test_census_suite_passes
+  - build_lint_typecheck_scoped_format_diff_and_secret_scan_pass
+  - exact_three_path_scope_and_preimages
+  - one_normal_commit_and_fast_forward_push_with_remote_equality
+publish_authority:
+  create_and_normally_push_exact_branch_once: true
+  force_push_amend_rebase_merge: false
+effect_budget:
+  diagnostic_provider_GET_reads_max: 1
+  source_commits_and_normal_pushes_max: 1_1
+  deployed_candidate_Railway_variable_deployment_domain_DNS_mutations_max: 0
+  database_schema_migration_session_business_row_mutations_max: 0
+  provider_contact_tag_campaign_workflow_webhook_send_schedule_mutations_max: 0
+  seed_reply_pilot_broad_send_billing_customer_Student_WhatsApp_WAPI_effects_max: 0
+prohibitions:
+  - no_live_census_retry_or_decision_plan_under_this_source_claim
+  - no_changes_outside_exact_paths
+  - no_raw_response_contact_or_cursor_value_in_source_tests_evidence_commit_or_output
+  - no_inference_of_follow_on_database_or_provider_effect_authority
+issued_at: '2026-08-04T19:10:32Z'
+expires_at: '2026-08-04T20:40:32Z'
+contains_secret: false
+immutable: true

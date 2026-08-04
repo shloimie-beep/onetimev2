@@ -1,0 +1,36 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-002.02
+owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+claim_id: 09af49bd-92b8-4c65-b869-3523260dcbd8
+claim_digest: 8237b0f80c986bc622528ba72aa3605b0b5ce0a27d752448ea10754c3d39ddff
+disposition: SUCCESS_EXACT_ONE_PAGE_READ_ONLY_DIAGNOSTIC
+control_head_readback: 495b4a4cc6816d01acaf680b82a5730880bdf709
+request:
+  method_path_version_location_limit: GET_/contacts/_2023-02-21_pBSnOK2nkdxp6gf9Rg3o_1
+  startAfterId: absent
+  attempted: true
+  retries: 0
+response:
+  received: true
+  HTTP_status: 200
+  top_level_keys: contacts_meta_traceId
+  contacts_is_array: true
+  contacts_length: 1
+  top_level_count_type: absent
+  top_level_count_integer: unavailable
+  first_contact_ID_present: true
+  first_contact_location_exact: true
+  body_byte_length: 1104
+  body_SHA256: bbd18de7c105b09bb92c3f3970f998e70e9db63c9fa8981fc0ee001a13e072e2
+finding: live_provider_envelope_uses_contacts_meta_traceId_and_has_no_top_level_count
+effects:
+  provider_GET_reads: 1
+  database_connections_and_mutations: 0
+  provider_contact_tag_campaign_workflow_webhook_send_schedule_mutations: 0
+  Railway_variable_deployment_domain_source_DNS_mutations: 0
+  all_other_mutation_effects: 0
+unresolved_effects: 0
+completed_at: '2026-08-04T19:10:32Z'
+contains_secret: false
+immutable: true

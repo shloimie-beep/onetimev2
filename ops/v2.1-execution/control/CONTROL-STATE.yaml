@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: operational
-active_phase: candidate_8834c2fd_deployed_GHL_count_contract_diagnostic_assigned
+active_phase: candidate_8834c2fd_deployed_GHL_pagination_contract_source_correction_assigned
 bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
@@ -2988,6 +2988,18 @@ ot_live_002_02_GHL_count_contract_diagnostic_dispatch_20260804_190628:
   request: exact_one_GET_contacts_limit_1_no_cursor_canonical_location_origin_version_and_existing_token
   allowed_output: response_envelope_keys_array_length_numeric_count_booleans_byte_length_and_body_hash_only
   database_and_all_provider_Railway_send_DNS_and_other_mutation_effects_max: 0
+ot_live_002_02_GHL_count_contract_diagnostic_terminal_and_source_correction_dispatch_20260804_191032:
+  recorded_at: '2026-08-04T19:10:32Z'
+  state_based_on_control_head_sha: 495b4a4cc6816d01acaf680b82a5730880bdf709
+  diagnostic_claim_id: 09af49bd-92b8-4c65-b869-3523260dcbd8
+  diagnostic_terminal_digest: edcae8f47ccd2ae0a622a70c33bef06b9a84827ef80d94e98492839dced5a7e7
+  diagnostic_result: HTTP_200_contacts_meta_traceId_contacts_1_top_level_count_absent_GETs_1_mutations_0_unresolved_0
+  source_claim_id: 3d69dd1d-7c7c-4470-8285-c0bd181533a2
+  source_claim_digest: 354f0f32afd0242489d94176ac46bf78ccdf9e72113cbbee8f12d99dfc89d6c9
+  branch_and_base: codex/ot-live-002-ghl-pagination-contract-correction-20260804_a157c388d8dc292699f7cd1a1ef178918ee30885
+  exact_paths: evidence_runner_test_runner_3
+  authorized_provider_read: one_limit_1_meta_envelope_diagnostic_no_retry_no_contact_or_cursor_values
+  all_database_deployment_provider_mutation_send_DNS_and_other_effects_max: 0
 authority_note: >-
   Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through
   release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an
