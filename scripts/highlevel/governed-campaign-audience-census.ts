@@ -31,12 +31,11 @@ export const HIGHLEVEL_CANONICAL_API_VERSION = '2023-02-21';
 export const HIGHLEVEL_READ_TIMEOUT_MS = 10_000;
 
 interface HighLevelObservedMetaCursor {
-  nextPage: number;
   startAfter: number;
   startAfterId: string;
 }
 
-const HIGHLEVEL_CURSOR_PREFIX = 'ghl-observed-meta-v1.';
+const HIGHLEVEL_CURSOR_PREFIX = 'ghl-observed-meta-v2.';
 const HIGHLEVEL_OBSERVED_ROOT_KEYS = ['contacts', 'meta', 'traceId'] as const;
 const HIGHLEVEL_OBSERVED_META_KEYS = [
   'currentPage',
@@ -229,7 +228,12 @@ export async function readBoundedProviderContacts(
     if (contacts.length > reportedTotal) {
       fail('AMBIGUOUS_PROVIDER_COUNT', 'provider rows exceeded the reported total');
     }
-    if (page.nextCursor !== null) {
+    if (contacts.length === reportedTotal) {
+      cursor = null;
+    } else {
+      if (page.nextCursor === null) {
+        fail('AMBIGUOUS_PROVIDER_CURSOR', 'provider stopped before the reported total');
+      }
       if (
         page.nextCursor.trim() === '' ||
         cursors.has(page.nextCursor) ||
@@ -238,16 +242,6 @@ export async function readBoundedProviderContacts(
         fail('AMBIGUOUS_PROVIDER_CURSOR', 'provider cursor is blank or repeated');
       }
       cursors.add(page.nextCursor);
-    }
-    if (contacts.length === reportedTotal) {
-      if (page.nextCursor !== null) {
-        fail('AMBIGUOUS_PROVIDER_CURSOR', 'provider returned a cursor after the exact total');
-      }
-      cursor = null;
-    } else {
-      if (page.nextCursor === null) {
-        fail('AMBIGUOUS_PROVIDER_CURSOR', 'provider stopped before the reported total');
-      }
       cursor = page.nextCursor;
     }
   } while (cursor !== null);
@@ -307,7 +301,6 @@ export function createReadOnlyHighLevelCensusTransport(input: {
           await response.json(),
           pageInput.locationId,
           pageInput.limit,
-          cursor?.nextPage ?? 1,
         );
         if (page.nextCursor !== null) {
           if (seenCursors.has(page.nextCursor)) {
@@ -332,10 +325,8 @@ export function parseHighLevelPage(
   value: unknown,
   expectedLocationId: string,
   limit: number,
-  expectedPage = 1,
 ): GovernedCampaignCensusProviderPage {
   const root = object(value, 'provider response');
-  positive(expectedPage, 'provider page number');
   if (!Number.isSafeInteger(limit) || limit <= 0 || limit > 100) {
     fail('PROVIDER_CONTACT_CEILING', 'provider page limit must be between 1 and 100');
   }
@@ -371,28 +362,18 @@ export function parseHighLevelPage(
   if (!exactKeys(Object.keys(meta).sort(), HIGHLEVEL_OBSERVED_META_KEYS)) {
     fail('PROVIDER_RESPONSE_INVALID', 'observed provider meta envelope is incomplete or unknown');
   }
-  const currentPage = safePositiveInteger(meta.currentPage, 'provider currentPage');
-  if (currentPage !== expectedPage) {
-    fail('AMBIGUOUS_PROVIDER_CURSOR', 'provider currentPage did not match the requested page');
-  }
+  safePositiveInteger(meta.currentPage, 'provider currentPage');
+  nullablePositiveInteger(meta.nextPage, 'provider nextPage');
+  nullablePositiveInteger(meta.prevPage, 'provider prevPage');
   const total = safeNonnegativeInteger(meta.total, 'provider total');
   if (total < contacts.length) {
     fail('AMBIGUOUS_PROVIDER_COUNT', 'provider total is smaller than the current page');
   }
-  const expectedPreviousPage = currentPage === 1 ? null : currentPage - 1;
-  const previousPage = nullablePositiveInteger(meta.prevPage, 'provider prevPage');
-  if (previousPage !== expectedPreviousPage) {
-    fail('AMBIGUOUS_PROVIDER_CURSOR', 'provider prevPage did not match the current page');
-  }
-  const nextPage = nullablePositiveInteger(meta.nextPage, 'provider nextPage');
-  if (nextPage !== null && nextPage !== currentPage + 1) {
-    fail('AMBIGUOUS_PROVIDER_CURSOR', 'provider nextPage is not sequential');
-  }
   const cursorPair = observedMetaCursorPair(meta);
 
-  if (nextPage === null) {
-    if (meta.nextPageUrl !== null || cursorPair !== null) {
-      fail('AMBIGUOUS_PROVIDER_CURSOR', 'terminal provider meta contains conflicting cursors');
+  if (cursorPair === null) {
+    if (meta.nextPageUrl !== null) {
+      fail('AMBIGUOUS_PROVIDER_CURSOR', 'provider URL is present without a cursor pair');
     }
     return {
       locationId: expectedLocationId,
@@ -401,8 +382,8 @@ export function parseHighLevelPage(
       reportedTotal: total,
     };
   }
-  if (cursorPair === null || cursorPair === 'partial') {
-    fail('AMBIGUOUS_PROVIDER_CURSOR', 'nonterminal provider meta lacks an exact cursor pair');
+  if (cursorPair === 'partial') {
+    fail('AMBIGUOUS_PROVIDER_CURSOR', 'provider meta lacks an exact cursor pair');
   }
   validateHighLevelNextPageUrl(
     meta.nextPageUrl,
@@ -414,7 +395,7 @@ export function parseHighLevelPage(
   return {
     locationId: expectedLocationId,
     contacts,
-    nextCursor: encodeHighLevelObservedMetaCursor({ nextPage, ...cursorPair }),
+    nextCursor: encodeHighLevelObservedMetaCursor(cursorPair),
     reportedTotal: total,
   };
 }
@@ -488,15 +469,14 @@ function decodeHighLevelObservedMetaCursor(value: string): HighLevelObservedMeta
     fail('AMBIGUOUS_PROVIDER_CURSOR', 'provider cursor encoding is invalid');
   }
   const cursor = parsed as Record<string, unknown>;
-  if (!exactKeys(Object.keys(cursor).sort(), ['nextPage', 'startAfter', 'startAfterId'])) {
+  if (!exactKeys(Object.keys(cursor).sort(), ['startAfter', 'startAfterId'])) {
     fail('AMBIGUOUS_PROVIDER_CURSOR', 'provider cursor fields are invalid');
   }
-  const nextPage = safePositiveInteger(cursor.nextPage, 'provider cursor nextPage');
   const startAfter = safePositiveInteger(cursor.startAfter, 'provider cursor startAfter');
   if (typeof cursor.startAfterId !== 'string' || cursor.startAfterId.trim() === '') {
     fail('AMBIGUOUS_PROVIDER_CURSOR', 'provider cursor startAfterId is invalid');
   }
-  return { nextPage, startAfter, startAfterId: cursor.startAfterId };
+  return { startAfter, startAfterId: cursor.startAfterId };
 }
 
 function exactKeys(actual: readonly string[], expected: readonly string[]) {

@@ -183,12 +183,12 @@ describe('governed campaign audience census runner', () => {
               })
             : observedEnvelope({
                 contacts: [rawContact('provider-observed-page-two', 'inactive')],
-                currentPage: 2,
-                nextPage: null,
-                prevPage: 1,
+                currentPage: 1,
+                nextPage: 2,
+                prevPage: null,
                 total: 2,
-                startAfter: null,
-                startAfterId: null,
+                startAfter: 1_786_000_000_002,
+                startAfterId: 'synthetic-observed-cursor-two',
               }),
         ),
         { status: 200 },
@@ -211,7 +211,8 @@ describe('governed campaign audience census runner', () => {
       cursor: first.nextCursor,
       limit: 1,
     });
-    expect(second.nextCursor).toBeNull();
+    expect(second.nextCursor).toEqual(expect.any(String));
+    expect(second.nextCursor).not.toBe(first.nextCursor);
     expect(observedUrls[1]).toMatchObject({
       origin: HIGHLEVEL_CANONICAL_ORIGIN,
       pathname: '/contacts/',
@@ -273,24 +274,25 @@ describe('governed campaign audience census runner', () => {
     expect(() =>
       parseHighLevelPage({ ...exact, meta: { ...exact.meta, startAfterId: null } }, LOCATION, 1),
     ).toThrow(/lacks an exact cursor pair/iu);
-    expect(() =>
-      parseHighLevelPage({ ...exact, meta: { ...exact.meta, currentPage: 3 } }, LOCATION, 1),
-    ).toThrow(/currentPage did not match/iu);
-    expect(() =>
+    expect(
       parseHighLevelPage(
-        observedEnvelope({
-          contacts: [rawContact('provider-terminal-conflict', 'inactive')],
-          currentPage: 1,
-          nextPage: null,
-          prevPage: null,
-          total: 1,
-          startAfter: 1_786_000_000_001,
-          startAfterId: 'synthetic-terminal-cursor',
-        }),
+        {
+          ...exact,
+          meta: { ...exact.meta, currentPage: 3, nextPage: 7, prevPage: 5 },
+        },
         LOCATION,
         1,
-      ),
-    ).toThrow(/terminal provider meta contains conflicting cursors/iu);
+      ).nextCursor,
+    ).toEqual(expect.any(String));
+    for (const malformedCounters of [{ currentPage: 0 }, { nextPage: '2' }, { prevPage: 0 }]) {
+      expect(() =>
+        parseHighLevelPage(
+          { ...exact, meta: { ...exact.meta, ...malformedCounters } },
+          LOCATION,
+          1,
+        ),
+      ).toThrow(/provider (currentPage|nextPage|prevPage) is missing or invalid/iu);
+    }
     expect(() => parseHighLevelPage(exact, LOCATION, 101)).toThrow(
       /page limit must be between 1 and 100/iu,
     );
@@ -337,7 +339,7 @@ describe('governed campaign audience census runner', () => {
     const readContactsPage = vi
       .fn()
       .mockResolvedValueOnce(page([provider(HASH_B)], 'cursor-2', 2))
-      .mockResolvedValueOnce(page([provider(HASH_A)], null, 2));
+      .mockResolvedValueOnce(page([provider(HASH_A)], 'unused-cursor-after-exact-total', 2));
     const rows = await readBoundedProviderContacts({ readContactsPage }, 2);
 
     expect(rows.map((row) => row.providerContactRefHash)).toEqual([HASH_A, HASH_B].sort());
@@ -351,15 +353,42 @@ describe('governed campaign audience census runner', () => {
       cursor: 'cursor-2',
       limit: 2,
     });
+    expect(readContactsPage).toHaveBeenCalledTimes(2);
   });
 
-  it('rejects repeated cursors, cross-location rows, changed totals, and ceilings', async () => {
+  it('rejects repeated cursors before another fetch', async () => {
+    const repeatedEnvelope = observedEnvelope({
+      contacts: [rawContact('provider-repeated-page-one', 'inactive')],
+      currentPage: 1,
+      nextPage: 2,
+      prevPage: null,
+      total: 3,
+      startAfter: 1_786_000_000_003,
+      startAfterId: 'synthetic-repeated-cursor',
+    });
+    const fetchImplementation = vi.fn(
+      async () => new Response(JSON.stringify(repeatedEnvelope), { status: 200 }),
+    );
+    const providerTransport = createReadOnlyHighLevelCensusTransport({
+      privateIntegrationsToken: 'synthetic-token-not-logged',
+      fetchImplementation,
+    });
+    const first = await providerTransport.readContactsPage({
+      locationId: LOCATION,
+      cursor: null,
+      limit: 1,
+    });
     await expect(
-      readBoundedProviderContacts(
-        transport([page([provider(HASH_A)], 'same', 2), page([provider(HASH_B)], 'same', 2)]),
-        2,
-      ),
+      providerTransport.readContactsPage({
+        locationId: LOCATION,
+        cursor: first.nextCursor,
+        limit: 1,
+      }),
     ).rejects.toMatchObject({ code: 'AMBIGUOUS_PROVIDER_CURSOR' });
+    expect(fetchImplementation).toHaveBeenCalledTimes(2);
+  });
+
+  it('rejects premature termination, empty pages, changed totals, duplicates, and ceilings', async () => {
     await expect(
       readBoundedProviderContacts(
         transport([{ ...page([provider(HASH_A)], null, 1), locationId: 'another-location' }]),
@@ -379,8 +408,20 @@ describe('governed campaign audience census runner', () => {
       ),
     ).rejects.toMatchObject({ code: 'PROVIDER_CONTACT_CEILING' });
     await expect(
-      readBoundedProviderContacts(transport([page([provider(HASH_A)], 'unexpected-cursor', 1)]), 1),
+      readBoundedProviderContacts(transport([page([provider(HASH_A)], null, 2)]), 2),
     ).rejects.toMatchObject({ code: 'AMBIGUOUS_PROVIDER_CURSOR' });
+    await expect(
+      readBoundedProviderContacts(transport([page([], 'next', 2)]), 2),
+    ).rejects.toMatchObject({ code: 'AMBIGUOUS_PROVIDER_CURSOR' });
+    await expect(
+      readBoundedProviderContacts(transport([page([provider(HASH_A)], null, 3)]), 2),
+    ).rejects.toMatchObject({ code: 'AMBIGUOUS_PROVIDER_COUNT' });
+    await expect(
+      readBoundedProviderContacts(
+        transport([page([provider(HASH_A), provider(HASH_B)], null, 1)]),
+        2,
+      ),
+    ).rejects.toMatchObject({ code: 'AMBIGUOUS_PROVIDER_COUNT' });
     await expect(
       readBoundedProviderContacts(
         transport([page([provider(HASH_A)], 'next', 2), page([provider(HASH_A)], null, 2)]),
@@ -574,9 +615,10 @@ function observedEnvelope(input: {
   startAfterId: string | null;
 }) {
   let nextPageUrl: string | null = null;
-  if (input.nextPage !== null) {
+  const cursorPairAbsent = input.startAfter === null && input.startAfterId === null;
+  if (!cursorPairAbsent) {
     if (input.startAfter === null || input.startAfterId === null) {
-      throw new Error('synthetic observed envelope requires both cursors');
+      throw new Error('synthetic observed envelope requires both cursor values');
     }
     const url = new URL('/contacts/', HIGHLEVEL_CANONICAL_ORIGIN);
     url.searchParams.set('locationId', LOCATION);

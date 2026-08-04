@@ -1,16 +1,17 @@
 # OT-LIVE-002 governed audience census runner source evidence
 
-Disposition: `SOURCE_ONLY_GHL_PAGINATION_CONTRACT_CORRECTION_PROOF_GREEN`.
+Disposition: `SOURCE_ONLY_GHL_CURSOR_PROGRESSION_CORRECTION_PROOF_GREEN`.
 
 ## Authority and immutable source binding
 
-- Claim: `3d69dd1d-7c7c-4470-8285-c0bd181533a2`
-- Claim raw SHA-256: `354f0f32afd0242489d94176ac46bf78ccdf9e72113cbbee8f12d99dfc89d6c9`
+- Claim: `fd080c16-4db6-45e3-864a-212103a5212e`
+- Claim raw SHA-256: `0e6f542a529a14a0d6492e499e74d7f2971202012b7f4039825c871b2014912d`
 - Claim branch: `codex/ot-live-002-ghl-pagination-contract-correction-20260804`
-- Exact base/source before this successor: `a157c388d8dc292699f7cd1a1ef178918ee30885`
-- Exact base tree: `bd2f1295043af74cfa0bad5f5b3993e3a534137e`
-- Control readback at issuance: `c2eb402df1e26c5dd76f3ccb08ec8661aca4e039`
-- Remote correction branch before the one authorized push: absent.
+- Exact base/source before this successor: `b204b026d7733c29c514d3c5febbea948c5e67e7`
+- Exact base tree: `84f49a3ef767cafcd56acf10b894784b6f2fdb28`
+- Control readback at issuance: `ae92e22baf5436d93b60e0b19b377debc19aa907`
+- Remote correction branch before the one authorized push: exact base/source and
+  tree above.
 
 The terminal source head/tree and the raw SHA-256 of all three paths are read
 back after the normal fast-forward push and returned to C00. They are not
@@ -34,21 +35,26 @@ its HighLevel pagination contract:
 - exact OT-15 location, campaign, workflow, and launch-tag binding;
 - positive operator-supplied `maximumProviderContacts` and
   `maximumAffectedRows`;
-- exact live `contacts`/`meta`/`traceId` response-envelope binding with
-  positive safe pagination integers and stable `meta.total` reconciliation;
+- exact live `contacts`/`meta`/`traceId` response-envelope binding with safe
+  typed pagination counters and stable `meta.total` reconciliation;
+- `currentPage`, `nextPage`, and `prevPage` are validated as known typed fields
+  but never used as progression authority because the observed provider keeps
+  their `1`/`2`/null values static while the cursor and contact data advance;
 - both documented request cursors (`startAfter` and `startAfterId`) carried in
   an internal typed cursor, accepted only when issued by a validated page, and
-  reconstructed against the fixed origin/path/location/limit;
+  reconstructed against the fixed origin/path/location/limit; each pair and
+  encoded cursor must be nonblank, well typed, and nonrepeating;
 - provider `nextPageUrl` is structural evidence only: its origin, path, exact
   query-key set, and every expected query value must match, but it is never
   followed;
 - the separately documented `contacts`/`count` response is accepted only when
   the page is self-evidently terminal because it cannot supply both request
   cursors for a continuation;
-- bounded provider pages and accumulated total count, repeated/blank/unissued
-  cursor rejection, exact terminal-cursor rejection, cross-location and
-  duplicate rejection, and provider-order-independent canonical sorting and
-  hashes;
+- bounded provider pages and stable accumulated total count; exact-total
+  termination without an extra fetch even when an unused cursor is advertised;
+  repeated/blank/unissued/prematurely absent cursor rejection; empty-page,
+  changed-total, rows-over-total, over-ceiling, cross-location, and duplicate
+  rejection; and provider-order-independent canonical sorting and hashes;
 - an explicit `REPEATABLE READ READ ONLY` database transaction across exact
   account, product, runtime, verification environment, campaign, and provider
   binding;
@@ -89,9 +95,27 @@ leave their read boundaries.
 
 ## HighLevel contract evidence
 
-- The claim-authorized diagnostic made exactly one `GET /contacts/` request
-  with version `2023-02-21`, the canonical location, `limit=1`, no cursor, one
-  response, and no retry. HTTP status was `200`.
+- The predecessor two-page diagnostic made exactly two canonical read-only GETs
+  with version `2023-02-21`, limit 100, and no retry or third page. Both returned
+  HTTP `200`, 100 contacts, exact root keys `contacts`, `meta`, `traceId`, and
+  the same exact seven meta keys validated by this parser.
+- Both observed pages reported the static scalar tuple `currentPage=1`,
+  `nextPage=2`, `prevPage=null`, and the same safe `total=1499`, while their
+  protected contact data and dual cursor pair advanced. The second locally
+  reconstructed request exactly matched the first response's cursor pair.
+- Page-one sanitized body evidence was 85,834 bytes with SHA-256
+  `aa86cca6560070a7187ae805d80bd101d7e18d692bafd9125307236296f78918`;
+  page two was 92,600 bytes with SHA-256
+  `6922849567595c0960ce6332b979f31907b7dd51d851a2317953c654515af893`.
+  The predecessor parser accepted page one but rejected page two only at its
+  now-removed `currentPage did not match the requested page` invariant.
+- On both pages, the next-URL origin, path, and exact query-key set matched the
+  canonical locally reconstructed request; the URL itself was never followed.
+  No cursor, contact, query, token, or body value was retained or returned.
+
+- The earlier pagination-contract claim-authorized diagnostic made exactly one
+  `GET /contacts/` request with version `2023-02-21`, the canonical location,
+  `limit=1`, no cursor, one response, and no retry. HTTP status was `200`.
 - Sanitized response evidence: top-level keys were exactly `contacts`, `meta`,
   and `traceId`; `contacts` was an array of length 1; the body was 1,104 bytes
   with SHA-256
@@ -135,22 +159,24 @@ leave their read boundaries.
 ## Validation
 
 - TypeScript strict no-emit: `PASS`
-- All 33 predecessor census cases remained nonfailing; corrected focused
-  domain/reader/runner/integration suite: `36 PASS`, `1 native-only SKIP`
-  (`37` total).
+- Corrected focused runner suite: `13/13 PASS`.
+- Full focused domain/reader/runner/migration/decision-store/integration suite:
+  `49 PASS`, `1 native-only SKIP` (`50` total across seven files).
 - pg-mem fresh migration plus real decision-store composition: `PASS`, zero
   decision rows
 - No PostgreSQL process or database connection was authorized or invoked by
   this correction; the predecessor PostgreSQL 18 proof remains unchanged.
-- Observed/documented envelope separation, dual-cursor reconstruction,
-  unissued/repeated/terminal cursor rejection, canonical URL validation,
-  page/accumulated ceilings, provider DND status/casing/contradiction,
+- Observed/documented envelope separation, static-counter acceptance,
+  dual-cursor-only reconstruction and progression, unissued/repeated/premature
+  cursor rejection, exact-total stop with an unused cursor, canonical URL
+  validation, stable total and page/accumulated ceilings, provider DND
+  status/casing/contradiction,
   origin/version pin, timeout sanitization, pool cleanup, replay cardinality,
   reintroduction, and hash-compatibility regressions: `PASS`
 - Deterministic candidate builder: `4/4 PASS`
 - Predecessor identity-contract static assertions remain recorded as
   `12/12 PASS`; the affected runner assertions were rerun in the focused suite.
-- Pagination-contract static assertions: `20/20 PASS`
+- Cursor-progression static assertions: `12/12 PASS`
 - Repository build, exact-path ESLint, formatting, whitespace, path scope,
   migration integrity, diff, and secret/static scans: `PASS`
 - Disposable database/cluster created: `0`
@@ -159,8 +185,9 @@ leave their read boundaries.
 
 - Live/staging/production database connections or writes: `0`
 - Decision-store executions or decision-row writes: `0`
-- GHL/provider reads during source proof: `1` exact diagnostic GET, resolved
-  HTTP `200`, no retry or additional page
+- GHL/provider reads during this source-only correction: `0`; the sanitized
+  one-page and two-page diagnostic evidence above was inherited from terminal
+  predecessor authorities and was not recreated
 - Provider write methods introduced: `0`
 - GHL contact/tag/workflow/campaign/seed/reply/pilot/broad-send effects: `0`
 - Resend/DNS/Forward Email/WhatsApp effects: `0`
