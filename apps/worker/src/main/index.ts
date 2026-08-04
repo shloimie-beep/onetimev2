@@ -26,11 +26,18 @@ import { PostgresDeliveryRepository } from '../delivery/repository.ts';
 import { SinkDeliveryRouter } from '../delivery/sink-router.ts';
 import { runDeliveryBatch } from '../delivery/worker.ts';
 import { HighLevelHttpAdapter } from '../highlevel/adapter.ts';
-import { runWorkerRunners, workerRunnerRegistrations } from '../runners/registry/index.ts';
+import {
+  createWorkerRunnerRegistrations,
+  runWorkerRunners,
+  type ContentMediaWorkerRuntime,
+} from '../runners/registry/index.ts';
 
 const WORKER_TYPE = 'delivery_outbox';
 
-export async function runOutboxWorkerOnce(source: NodeJS.ProcessEnv = process.env) {
+export async function runOutboxWorkerOnce(
+  source: NodeJS.ProcessEnv = process.env,
+  contentMediaRuntime?: ContentMediaWorkerRuntime,
+) {
   const config = loadDeliveryWorkerConfig(source);
   const pool = createPgPool(config.appConfig);
   const logger = createDeliveryLogger();
@@ -114,7 +121,7 @@ export async function runOutboxWorkerOnce(source: NodeJS.ProcessEnv = process.en
         workerInstanceKey,
         logger,
       },
-      registrations: workerRunnerRegistrations,
+      registrations: createWorkerRunnerRegistrations(contentMediaRuntime),
     });
     return {
       ...delivery,
@@ -134,11 +141,17 @@ export async function runOutboxWorkerOnce(source: NodeJS.ProcessEnv = process.en
   }
 }
 
-export async function runOutboxSinkOnce(source: NodeJS.ProcessEnv = process.env) {
-  return runOutboxWorkerOnce(source);
+export async function runOutboxSinkOnce(
+  source: NodeJS.ProcessEnv = process.env,
+  contentMediaRuntime?: ContentMediaWorkerRuntime,
+) {
+  return runOutboxWorkerOnce(source, contentMediaRuntime);
 }
 
-async function runContinuously(source: NodeJS.ProcessEnv = process.env) {
+async function runContinuously(
+  source: NodeJS.ProcessEnv = process.env,
+  contentMediaRuntime?: ContentMediaWorkerRuntime,
+) {
   const config = loadDeliveryWorkerConfig(source);
   const pool = createPgPool(config.appConfig);
   const logger = createDeliveryLogger();
@@ -245,7 +258,7 @@ async function runContinuously(source: NodeJS.ProcessEnv = process.env) {
               workerInstanceKey,
               logger,
             },
-            registrations: workerRunnerRegistrations,
+            registrations: createWorkerRunnerRegistrations(contentMediaRuntime),
           });
         } catch (error) {
           void error;

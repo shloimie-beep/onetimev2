@@ -1,6 +1,11 @@
 import type { AppConfig } from '../../../../../packages/config/src/index.ts';
 import type { DbPool } from '../../../../../packages/db/src/index.ts';
+import { runContentIngestWorker } from '../content-ingest/composition.ts';
+import type { ContentIngestWorkerDependencies } from '../content-ingest/composition.ts';
+import { runContentProcessingWorker } from '../content-processing/composition.ts';
+import type { ContentProcessingWorkerDependencies } from '../content-processing/composition.ts';
 import { runContentPublicationWorker } from '../content-publication/composition.ts';
+import type { ContentPublicationWorkerDependencies } from '../content-publication/composition.ts';
 import { runOt16CheckpointWorker } from '../ghl-workflows/campaigns/composition.ts';
 
 export const WORKER_RUNNER_REGISTRY_CONTRACT_VERSION = '1.0.0' as const;
@@ -46,16 +51,36 @@ const ot16CheckpointRegistration = defineWorkerRunner({
   run: runOt16CheckpointWorker,
 });
 
-const contentPublicationRegistration = defineWorkerRunner({
-  runnerId: 'content.p21-publication',
-  contractVersion: WORKER_RUNNER_REGISTRY_CONTRACT_VERSION,
-  run: runContentPublicationWorker,
-});
+export type ContentMediaWorkerRuntime = {
+  ingest?: ContentIngestWorkerDependencies | undefined;
+  processing?: ContentProcessingWorkerDependencies | undefined;
+  publication?: ContentPublicationWorkerDependencies | undefined;
+};
 
-export const workerRunnerRegistrations: readonly WorkerRunnerRegistration[] = Object.freeze([
-  contentPublicationRegistration,
-  ot16CheckpointRegistration,
-]);
+export function createWorkerRunnerRegistrations(
+  contentMediaRuntime?: ContentMediaWorkerRuntime,
+): readonly WorkerRunnerRegistration[] {
+  return Object.freeze([
+    defineWorkerRunner({
+      runnerId: 'content.media-ingest',
+      contractVersion: WORKER_RUNNER_REGISTRY_CONTRACT_VERSION,
+      run: (context) => runContentIngestWorker(context, contentMediaRuntime?.ingest),
+    }),
+    defineWorkerRunner({
+      runnerId: 'content.media-processing',
+      contractVersion: WORKER_RUNNER_REGISTRY_CONTRACT_VERSION,
+      run: (context) => runContentProcessingWorker(context, contentMediaRuntime?.processing),
+    }),
+    defineWorkerRunner({
+      runnerId: 'content.p21-publication',
+      contractVersion: WORKER_RUNNER_REGISTRY_CONTRACT_VERSION,
+      run: (context) => runContentPublicationWorker(context, contentMediaRuntime?.publication),
+    }),
+    ot16CheckpointRegistration,
+  ]);
+}
+
+export const workerRunnerRegistrations = createWorkerRunnerRegistrations();
 
 export async function runWorkerRunners(input: {
   context: WorkerRunnerContext;

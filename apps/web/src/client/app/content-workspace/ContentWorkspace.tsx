@@ -36,12 +36,15 @@ import {
 } from '@onetime/brand-system/react';
 import { CONTENT_SECTIONS, contentSectionFromPath } from '../admin-ia.js';
 import { PublicationWorkspace } from '../admin/content/publication/index.js';
+import { ContentIngestWorkspace } from '../admin/content/ingest/ContentIngestWorkspace.js';
+import { createContentIngestApi } from '../admin/content/ingest/api.js';
 import { WorkspaceTabs } from '../shell/WorkspaceTabs.js';
 import './content-workspace.css';
 
 type RouteKind =
   | 'overview'
   | 'publication'
+  | 'ingest'
   | 'processing'
   | 'factory'
   | 'create'
@@ -112,6 +115,22 @@ export function ContentWorkspace({
   onProtectedStateCleared,
 }: ContentWorkspaceProps) {
   const route = routeFromPath(path);
+  const mediaCanaryBinding = contentMediaCanaryBindingFromPath(path);
+  const ingestApi = useMemo(
+    () =>
+      createContentIngestApi({
+        csrfToken,
+        onProtectedStateCleared,
+        authorizationId: mediaCanaryBinding.authorizationId,
+        canaryId: mediaCanaryBinding.canaryId,
+      }),
+    [
+      csrfToken,
+      mediaCanaryBinding.authorizationId,
+      mediaCanaryBinding.canaryId,
+      onProtectedStateCleared,
+    ],
+  );
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
   const [appliedFilters, setAppliedFilters] = useState<FilterState>(defaultFilters);
   const [loading, setLoading] = useState(false);
@@ -266,6 +285,7 @@ export function ContentWorkspace({
           onProtectedStateCleared={onProtectedStateCleared}
         />
       )}
+      {!loading && !error && route.kind === 'ingest' && <ContentIngestWorkspace {...ingestApi} />}
       {!loading && !error && route.kind === 'processing' && processing && (
         <>
           <LibraryViewSelector currentId="processing" onNavigate={onNavigate} />
@@ -1767,7 +1787,7 @@ function ProviderPorts({ ports }: { ports: ContentAdminProviderPortStatus[] }) {
   );
 }
 
-function routeFromPath(path: string): RouteState {
+export function contentWorkspaceRouteFromPath(path: string): RouteState {
   const cleanPath = path.split('?')[0] ?? '/app/content';
   if (cleanPath === '/app/content') return { kind: 'overview' };
   const segments = cleanPath
@@ -1776,6 +1796,7 @@ function routeFromPath(path: string): RouteState {
     .filter(Boolean);
   const segment = segments[0] ?? '';
   if (segment === 'publication') return { kind: 'publication' };
+  if (segment === 'upload') return { kind: 'ingest' };
   if (segment === 'processing') return { kind: 'processing' };
   if (segment === 'factory') return { kind: 'factory' };
   if (segment === 'studio') return { kind: segments[1] === 'social' ? 'social' : 'create' };
@@ -1785,6 +1806,16 @@ function routeFromPath(path: string): RouteState {
   if (segment === 'prompts') return { kind: 'prompts' };
   if (segment === 'activity') return { kind: 'activity' };
   return { kind: 'detail', sourceKey: decodeURIComponent(segment) };
+}
+
+const routeFromPath = contentWorkspaceRouteFromPath;
+
+function contentMediaCanaryBindingFromPath(path: string) {
+  const query = new URLSearchParams(path.split('?')[1] ?? '');
+  return {
+    authorizationId: query.get('media_authorization_id') ?? '',
+    canaryId: query.get('media_canary_id') ?? '',
+  };
 }
 
 async function apiGet<T>(path: string, onProtectedStateCleared: () => void): Promise<T> {

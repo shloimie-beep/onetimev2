@@ -91,7 +91,7 @@ export function contentSectionFromPath(pathname: string): ContentSectionId {
   const segments = pathSegments(pathname, '/app/content');
   const first = segments[0] ?? '';
   if (first === 'publication') return 'publication';
-  if (first === 'factory') return 'factory';
+  if (first === 'factory' || first === 'upload') return 'factory';
   if (['studio', 'create', 'social'].includes(first)) return 'studio';
   if (first === 'knowledge') return 'knowledge';
   if (first === 'prompts') return 'prompts';
