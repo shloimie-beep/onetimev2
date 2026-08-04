@@ -3,10 +3,10 @@ execution_id: OT-V21-PRODUCTION
 status: claimed
 claim_id: f514d50f-081c-48e0-8906-1c6e872519b0
 holder_writer_id: codex-c00-terminal-convergence-f514d50f
-state_based_on_head_sha: ae92e22baf5436d93b60e0b19b377debc19aa907
+state_based_on_head_sha: eaca65323a9f6d8672fc9e79eab7bc979ad3b25f
 claimed_at: '2026-08-04T09:12:43Z'
-last_heartbeat_at: '2026-08-04T19:59:18Z'
-lease_expires_at: '2026-08-04T21:59:18Z'
+last_heartbeat_at: '2026-08-04T20:15:54Z'
+lease_expires_at: '2026-08-04T22:15:54Z'
 released_at: null
 rule: >-
   C00 is serialized by normal fast-forward remote control-branch updates. Every invocation acquires or renews this lease

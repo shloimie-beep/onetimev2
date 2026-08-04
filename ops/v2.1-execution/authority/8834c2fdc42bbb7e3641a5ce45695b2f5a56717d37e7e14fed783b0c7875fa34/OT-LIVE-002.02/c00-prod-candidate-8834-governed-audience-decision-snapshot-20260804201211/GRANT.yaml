@@ -1,0 +1,114 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+authority_id: c00-prod-candidate-8834-governed-audience-decision-snapshot-20260804201211
+authority_kind: derived_candidate_bound_exact_governed_campaign_audience_decision_snapshot
+task_id: OT-LIVE-002.02
+owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+candidate_digest: 8834c2fdc42bbb7e3641a5ce45695b2f5a56717d37e7e14fed783b0c7875fa34
+candidate_binding_status: exact_deployed_frozen_candidate_migration_2260_live
+candidate_manifest_commit_sha: 03e7e74156685554c8efb8b9ce20645f68899d05
+repository_source_sha: a157c388d8dc292699f7cd1a1ef178918ee30885
+repository_tree_sha: bd2f1295043af74cfa0bad5f5b3993e3a534137e
+source_branch: codex/ot-live-002-census-identity-contract-correction-20260804
+census_tool_branch: codex/ot-live-002-ghl-pagination-contract-correction-20260804
+census_tool_source_sha: 0d21b1502d2156ab91b75e7c912f580548f74660
+census_tool_source_tree_sha: f4739d99e0ef57110f33609725d87c0170671505
+census_terminal_path: ops/v2.1-execution/control/OT-LIVE-002.02-CANDIDATE-8834-READ-ONLY-AUDIENCE-CENSUS-SUCCESSOR-2-TERMINAL.yaml
+census_terminal_digest: bb41ac2096947a7248f1fa016167fc0d71f62b7fdeb273864d6e002bfe93bb7d
+canonical_path: ops/v2.1-execution/authority/8834c2fdc42bbb7e3641a5ce45695b2f5a56717d37e7e14fed783b0c7875fa34/OT-LIVE-002.02/c00-prod-candidate-8834-governed-audience-decision-snapshot-20260804201211/GRANT.yaml
+source_grant_id: ot-v21-production-source-grant-20260729
+source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+source_approval_evidence_path: ops/v2.1-execution/authority/none/C00/ot-v21-production-source-grant-20260729/APPROVAL.md
+source_approval_evidence_digest: 8c95a959f79aba0ac34fa0fcb6cb463cceac9aeb2bb52da1603d39db3e2c33c2
+grant_status_at_issue: active
+approved_by: Shloimie Dratler
+approved_at: '2026-08-04T20:12:11Z'
+recorded_at: '2026-08-04T20:12:11Z'
+expires_at: '2026-08-04T21:27:11Z'
+scope:
+  provider: One Time application PostgreSQL on canonical Railway production
+  project_id: ce55ef20-1418-4ad3-aafa-f877fb992dc8
+  environment_id: f911acfc-e206-44df-a569-9d69d709b94b
+  database_service_id: db590e4a-7dc5-40cb-a243-5206ce21b746
+  database_deployment_id: 62583cef-572b-40ae-b1d3-0194a2ccbf27
+  runtime_tier: production
+  verification_environment_id: production_operator_canary
+  account_key: one_time
+  product_key: one_time_mishnah_class
+  campaign_key: 6a71a64c28f7a5dbb3aec1be
+  provider_location_id: pBSnOK2nkdxp6gf9Rg3o
+  provider_campaign_id: 6a71a64c28f7a5dbb3aec1be
+  provider_workflow_id: 09051378-5917-4172-afda-f425619dd23d
+  provider_launch_tag_id: IcOGsLgSIOYGFlHF4kQ0
+  source_observed_at: '2026-08-04T20:10:05.219Z'
+  idempotency_key: ot-live-002-02-census-successor-2-6084e66d-4b8d-4399-9e3b-21b0cc9bac05
+  created_by_user_key: codex-ot-live-002-02
+  expected_provider_contacts: 1499
+  expected_snapshot_hash: b74772eade91ee72f0093d7462b3a8ad244eb87850389a42b7d8d791297f3070
+  expected_request_hash: d96f1b69b07488829a84ba0f786ff7f9d2498941a58452bd8ed97d5953d6bafa
+  expected_projection_hash: c50dd3dde840c0bcb9666342086b380c0fc9f60bfa2b58edc301a951b3ffbe10
+  expected_decisions_include_exclude_review: 0_15_1484
+  expected_reason_counts: email_dnd_or_unsubscribed_13_missing_email_2_ambiguous_identity_1484_all_other_0
+  expected_current_projection_and_history_rows: 0_0
+  expected_inserted_decision_rows: 1499
+fencing_token: fence-1efba581-9314-4f66-b9ce-67653eaf2b0c
+lock: production:data
+holder_claim_id: 0a01e3ae-8b56-430c-b08d-52b13ca6d097
+provider_lock_lease_id: c4b36c06-82c3-44a8-aedd-6424b47ff982
+allowed_operation: >-
+  Re-run the exact bounded read-only provider census with the accepted cursor-corrected source and the exact prior
+  sourceObservedAt/idempotency/scope bindings; require exactly 1499 unique contacts, 15 pages, the exact snapshot,
+  request, projection, decision and reason counts, zero current projection/history rows, and the exact migration-2260
+  schema before any mutation; then call the accepted decision store reconcile method exactly once under its SERIALIZABLE
+  transaction and campaign-scoped advisory lock, insert exactly 1499 immutable version-1 sanitized decision rows,
+  verify exact current projection and request/idempotency hashes before COMMIT, and perform one fresh READ ONLY postflight.
+maximum_effect_count: 1499
+maximum_effect_value: exactly_1499_sanitized_governed_campaign_decision_rows_or_zero_write_fail_closed
+effect_budget:
+  provider_GET_page_reads_max: 20
+  database_READ_ONLY_transactions_max: 2
+  database_SERIALIZABLE_write_transactions_max: 1
+  decision_store_reconcile_calls_max: 1
+  decision_rows_inserted_exact: 1499
+  current_rows_superseded_max: 0
+  mutation_statements_max: 1
+  application_business_rows_mutated_max: 1499
+  migrations_schema_legacy_session_identity_credential_customer_Student_rows_mutated_max: 0
+  provider_contact_tag_campaign_workflow_webhook_send_schedule_mutations_max: 0
+  Railway_variable_deployment_domain_source_DNS_mutations_max: 0
+  seed_reply_pilot_broad_send_billing_charge_WhatsApp_WAPI_effects_max: 0
+prerequisite_review:
+  control_parent_sha: eaca65323a9f6d8672fc9e79eab7bc979ad3b25f
+  deployed_web_id: 976d8203-d962-4c13-94d5-b3221eceb65f
+  deployed_worker_id: 99f6471b-f7d7-4fd5-a405-383ceadcbe60
+  database_migration_ledger: 91_rows_digest_531701132856ec5640e49a8a07b768f12db7c4b103cc63ab9cd27d7d0ec81233
+  migration_2260_checksum: 93e7879ce7861cd37733335ca64e49310af1025fc099e6bce4abadb8f25c3740
+  read_only_census: 1499_contacts_15_pages_hashes_exact_zero_decision_rows_zero_mutations
+  decision_store_source_review: SERIALIZABLE_advisory_lock_idempotency_ceiling_exact_readback_rollback_no_retry
+  current_database_state_asserted_before_transaction: false
+  current_database_state_rule: fresh_exact_readback_and_hash_equality_required_before_reconcile
+runner_requirements:
+  - use_existing_DATABASE_PUBLIC_URL_and_HighLevel_token_process_locally_without_output_or_persistence
+  - bind_the_exact_prior_sourceObservedAt_idempotency_scope_and_createdBy_values
+  - require_exact_provider_total_page_count_snapshot_request_projection_and_reason_counts_before_reconcile
+  - require_zero_current_projection_and_history_rows_and_planned_affected_rows_exactly_1499
+  - invoke_only_createPostgresGovernedCampaignAudienceDecisionStore_reconcile_once_with_the_exact_composed_request
+  - redact_all_provider_contact_cursor_token_connection_and_private_values
+rollback_and_reconciliation:
+  - re-read_current_remote_control_authority_status_and_production_data_lock_immediately_before_provider_and_database_effects
+  - if_any_pre_effect_provider_hash_count_schema_or_database_preimage_differs_stop_without_calling_reconcile
+  - if_any_statement_or_readback_differs_ROLLBACK_the_still_open_SERIALIZABLE_transaction_and_record_zero_committed_effects
+  - do_not_retry_after_any_unknown_provider_or_database_result
+  - after_acknowledged_COMMIT_verify_exact_1499_current_rows_zero_superseded_rows_request_hash_snapshot_hash_projection_hash_and_reason_counts_in_a_fresh_READ_ONLY_transaction
+  - if_post_commit_readback_differs_stop_and_request_fresh_compensation_authority_this_grant_authorizes_zero_compensation_effects
+  - release_production_data_only_after_terminal_event_and_exact_effect_reconciliation
+stop_conditions:
+  - authority_status_control_head_lock_lease_fence_source_or_candidate_binding_is_revoked_expired_absent_or_mismatched
+  - provider_total_page_count_cursor_uniqueness_snapshot_request_projection_or_reason_counts_differ
+  - migration_2260_or_database_service_deployment_differs
+  - current_projection_or_history_is_nonzero_or_planned_affected_rows_is_not_exactly_1499
+  - decision_store_would_supersede_rows_mutate_more_than_one_statement_or_exceed_1499_rows
+  - transaction_cannot_be_SERIALIZABLE_or_advisory_lock_cannot_be_acquired
+  - operation_would_mutate_any_provider_contact_tag_campaign_workflow_send_schedule_Railway_DNS_customer_Student_identity_credential_session_migration_or_schema_state
+contains_secret: false
+immutable: true
