@@ -23,6 +23,7 @@ export const CONTENT_INGEST_SCHEMA_CONTRACT = {
     invariants: [
       'unique account, product, and full SHA-256 across app upload and Drive',
       'confirmed rows bind exact versioned S3 readback and recovery-journal receipt',
+      'managed-object and recovery-journal evidence agree on bucket, key digest, object version, byte count, SHA-256, KMS key version, and storage class',
       'originalPreserved is always true',
       'no source is Student-visible before the later published lifecycle state',
     ],
