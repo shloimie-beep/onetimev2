@@ -1,0 +1,56 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: C00
+authority_id: c00-prod-product-deploy-20260804095030
+event_id: c00-prod-product-deploy-20260804095030-001
+event_type: RECONCILED
+terminal_disposition: SUCCESS_EXACT_PRODUCT_CANDIDATE_DEPLOYED
+candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
+repository_source_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
+control_reservation_sha: 64767a65364b27797b5842faa1bad3c7ddc2d4bf
+lease_id: 3d53194d-af28-4deb-a262-3356ba9f58e6
+fencing_token: fence-35323d96-58b3-46a2-82e7-8f698af1969c
+pre_effect:
+  web_deployment_id: 50b737ff-b6d1-4cd4-a416-5cffb548775a
+  web_image_digest: sha256:c0998bd09dba9de12feaabfe33330acf19a753ab663e0b2c5330a166c7ccbdfc
+  worker_deployment_id: 66463233-1466-4bcb-bfdd-8533ce48f9f1
+  worker_image_digest: sha256:bf0ca5b6992f48b7b232df24dcf8c1285c64ee9c4d6416c2f2c5998d940ac60c
+  source_sha: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+effects:
+  web_local_archive_deployments: 1
+  worker_local_archive_deployments: 1
+  exact_prior_deployment_restorations: 0
+  retries_after_unknown_result: 0
+  migration_variable_database_session_browser_provider_send_DNS_charge_customer_or_Student_effects: 0
+provider_readback:
+  web_deployment_id: ea1b663f-f892-4137-9ebf-8a4509bf7cd8
+  web_status: SUCCESS
+  web_image_digest: sha256:ed6dea777008b5847a442d72e866d1544da459b361c9729dc55db17f93295814
+  web_cli_message: C00_candidate_9d6be957bc44_source_27576fa64f0b_Dockerfile_web
+  worker_deployment_id: f68df357-7be5-4ded-936b-fbc915c42261
+  worker_status: SUCCESS
+  worker_image_digest: sha256:eef5aaa0d7f8d1d3c2edbcabe4ef2a178c3459e1debf20c15f122cf597c54e4d
+  worker_cli_message: C00_candidate_9d6be957bc44_source_27576fa64f0b_Dockerfile_worker
+acceptance_readback:
+  app_health: 200_PUBLIC_HEALTH_OK
+  app_ready: 200_PUBLIC_READY
+  app_version: 200_PUBLIC_RELEASE_AVAILABLE
+  join_health: 200_PUBLIC_HEALTH_OK
+  join_ready: 200_PUBLIC_READY
+  join_version: 200_PUBLIC_RELEASE_AVAILABLE
+  login: 200
+  launch_ribbon: AUG_16_7_PM_FREE_ACCESS_THROUGH_SEP_11_6_PM_JERUSALEM_TIME
+  member_login_present: true
+  retired_sections_absent: true
+  authentic_rabbi_image: 200_205532_bytes
+  downloads_overview_image: 200_2070668_bytes
+  protected_flow_images: 3_all_200
+  web_error_logs: 0
+  worker_error_logs: 0
+  worker_sink_batch: claimed_0_delivered_0_retried_0_dead_lettered_0
+rollback_required: false
+unresolved_effects: 0
+lock_release_ready: true
+recorded_at: '2026-08-04T10:01:35Z'
+contains_secret: false
+immutable: true

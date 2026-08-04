@@ -61,14 +61,19 @@ ot_live_terminal_convergence_resume_20260804:
     provider_upload_deploy_shared_migration_effects: 0_0_0_0
   OT_LIVE_003_02: parked_unmerged_default_off
   WAPI: deferred_zero_effect
-active_production_deployment_authority:
+production_deployment_authority_terminal:
   authority_id: c00-prod-product-deploy-20260804095030
   candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
   source_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
-  authority_status_index_digest: 4c5b883e437feb931db4efe06d5a1420910dbdb33673a33e3813126bd46c05ce
+  authority_status_index_digest: e20149a62e7c4fe763fe74e62ba3928b08b2f32dfcf9fb97212bd59783b53647
   lease_id: 3d53194d-af28-4deb-a262-3356ba9f58e6
   fencing_token: fence-35323d96-58b3-46a2-82e7-8f698af1969c
-  state: reserved_pre_effect
+  state: consumed_reconciled_success
+  terminal_event_digest: 85a14b226a43da1e2ab4b736c2bcb9326895cf9d6906ec4798bd3d9ac2944c05
+  web_deployment_id: ea1b663f-f892-4137-9ebf-8a4509bf7cd8
+  worker_deployment_id: f68df357-7be5-4ded-936b-fbc915c42261
+  rollback_required: false
+  lock_released_at: '2026-08-04T10:01:35Z'
   data_session_browser_provider_send_and_DNS_effects_authorized: false
 candidate_freeze_acceptance:
   canonical_candidate_digest: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d

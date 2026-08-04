@@ -137,6 +137,24 @@ c00_product_candidate_production_deployment_reservation:
   exact_current_web_worker_deployments: 50b737ff-b6d1-4cd4-a416-5cffb548775a_66463233-1466-4bcb-bfdd-8533ce48f9f1
   exact_effect_budget: two_local_archive_deployments_at_most_two_exact_prior_restorations_zero_other_effects
   product_data_session_browser_provider_send_and_DNS_authority: none
+c00_product_candidate_production_deployment_terminal:
+  recorded_at: '2026-08-04T10:01:35Z'
+  state_based_on_control_head_sha: 64767a65364b27797b5842faa1bad3c7ddc2d4bf
+  authority_id: c00-prod-product-deploy-20260804095030
+  authority_status_index_digest: e20149a62e7c4fe763fe74e62ba3928b08b2f32dfcf9fb97212bd59783b53647
+  terminal_event_digest: 85a14b226a43da1e2ab4b736c2bcb9326895cf9d6906ec4798bd3d9ac2944c05
+  terminal_disposition: SUCCESS_EXACT_PRODUCT_CANDIDATE_DEPLOYED
+  candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
+  repository_source_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
+  web_deployment_id: ea1b663f-f892-4137-9ebf-8a4509bf7cd8
+  web_image_digest: sha256:ed6dea777008b5847a442d72e866d1544da459b361c9729dc55db17f93295814
+  worker_deployment_id: f68df357-7be5-4ded-936b-fbc915c42261
+  worker_image_digest: sha256:eef5aaa0d7f8d1d3c2edbcabe4ef2a178c3459e1debf20c15f122cf597c54e4d
+  health_ready_version_domains_assets_and_logs: passed
+  rollback_required: false
+  unresolved_effects: 0
+  database_migration_variable_session_browser_provider_send_DNS_charge_customer_or_Student_effects: 0
+  deployment_lock_released_at: '2026-08-04T10:01:35Z'
 ot_live_004_01_source_dispatch:
   recorded_at: '2026-08-04T09:14:28Z'
   owner_thread_id: 019fcc0b-177e-7361-8823-9059dd8a8eb0
