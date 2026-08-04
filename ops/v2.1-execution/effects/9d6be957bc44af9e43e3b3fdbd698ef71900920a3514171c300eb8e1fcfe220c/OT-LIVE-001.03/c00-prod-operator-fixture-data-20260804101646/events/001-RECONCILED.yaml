@@ -1,0 +1,42 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-001.03
+authority_id: c00-prod-operator-fixture-data-20260804101646
+candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
+repository_source_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
+fixture_design_source_sha: 4f9276ad0507abccbcb896b3234859a412a943cd
+lease_id: e6cdace5-e629-4af6-8de0-f4515c3e26d3
+fencing_token: fence-d776eac9-d382-4e25-93e9-665bf8d8f418
+disposition: FAILED_ROLLED_BACK_ZERO_COMMITTED_ROWS
+connection_succeeded: true
+begin_serializable_succeeded: true
+transaction_scoped_advisory_lock_succeeded: true
+first_failing_statement: accepted_PREFLIGHT_SQL
+postgresql_error_code: 42P01
+sanitized_root_cause: legacy_CTE_selected_legacy_star_without_declaring_the_legacy_alias
+insert_statements_attempted: 0
+insert_rows_attempted: 0
+insert_rows_committed: 0
+commit_attempted: 0
+rollback_attempted: 1
+rollback_acknowledged: true
+post_rollback_readback:
+  legacy_active_Admin_accounts: 1
+  legacy_active_sessions: 1
+  all_matching_and_proposed_v21_counts: 0
+  exact_proposed_IDs_present: false
+  immutable_legacy_fingerprint_stable: true
+additional_source_findings:
+  canonical_sanitized_identifier_hash_scheme: proposal_expected_prefixed_hashes_but_compared_raw_identifiers
+  credential_format: legacy_argon2id_not_argon2id_v1
+  source_patch_or_data_retry_attempted: false
+effects:
+  transient_advisory_locks_acquired_and_released: 1
+  committed_database_rows: 0
+  migrations: 0
+  legacy_or_session_rows: 0
+  browser_Student_customer_provider_deployment_DNS_send_or_charge: 0
+unresolved_effects: 0
+recorded_at: '2026-08-04T10:35:50Z'
+contains_secret: false
+immutable: true

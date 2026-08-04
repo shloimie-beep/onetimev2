@@ -42,8 +42,13 @@ ot_live_terminal_convergence_resume_20260804:
     fixture_design_source_terminal_digest: 4a63e00eccb86d0cf88b74a66edb32586f3a48405414b08487e0465c01a0e820
     data_authority_id: c00-prod-operator-fixture-data-20260804101646
     data_claim_lease_fence: f9f84f08-b287-4ead-a230-24cc71c26b06_e6cdace5-e629-4af6-8de0-f4515c3e26d3_fence-d776eac9-d382-4e25-93e9-665bf8d8f418
-    data_authority_status_index_digest: 5e69f20dc29b50c5ac5f8ab3bd8290e1ea09cd3490d687515c4a8d99f4b41c34
-    next_boundary: exact_six_row_data_effect_then_separate_signed_in_Admin_Parent_Admin_canary_authority
+    data_authority_status_index_digest: dea85828c80f7ac7ec0561e3eb08bc0b91a43db22fc9f102d9bb2d2a58d47871
+    data_terminal_event_digest: f0e033908ee33e30c0079ea43e0d46b39547537fa2a094fc83433291bfb8dc38
+    data_terminal_disposition: FAILED_ROLLED_BACK_ZERO_COMMITTED_ROWS
+    data_lock_released_at: '2026-08-04T10:35:50Z'
+    fixture_design_correction_claim_id: 0670069f-a8d6-44b9-854e-d46d9f052be7
+    fixture_design_correction_claim_digest: 5e075b8b05ff96d9ad4eb631f420a0e99484e31e17de7a37300b0b3fd60edd48
+    next_boundary: three_path_fixture_design_correction_then_fresh_data_authority_then_separate_signed_in_Admin_Parent_Admin_canary_authority
     provider_database_deploy_effects: 0_0_0
   OT_LIVE_002_02:
     owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a

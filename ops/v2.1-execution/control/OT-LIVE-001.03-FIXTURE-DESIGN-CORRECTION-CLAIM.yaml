@@ -1,0 +1,37 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-001.03
+owner_thread_id: 019fc7e8-b506-7d30-a36a-4d7a9641f4fd
+claim_id: 0670069f-a8d6-44b9-854e-d46d9f052be7
+writer_id: codex-ot-live-001-03-fixture-design-correction-0670069f
+status: active
+branch: codex/ot-live-001-operator-fixture-design-20260804
+base_sha: 4f9276ad0507abccbcb896b3234859a412a943cd
+candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
+control_parent_sha: f0855f6cf342ec9b7383a527478dd07abf0fd61d
+predecessor_authority_id: c00-prod-operator-fixture-data-20260804101646
+predecessor_terminal_event_path: ops/v2.1-execution/effects/9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c/OT-LIVE-001.03/c00-prod-operator-fixture-data-20260804101646/events/001-RECONCILED.yaml
+exact_paths:
+  - ops/release/ot-live-001/operator-fixture-reconciliation/README.md
+  - ops/release/ot-live-001/operator-fixture-reconciliation/fixture-reconciliation.test.ts
+  - ops/release/ot-live-001/operator-fixture-reconciliation/transaction-proposal.ts
+allowed_operation: correct_test_commit_and_normally_push_only_the_inert_transaction_design_for_the_three_exact_fail_closed_findings
+required_corrections:
+  - declare_the_exact_legacy_alias_in_every_CTE_or_query_that_references_legacy_dot_star_or_legacy_columns
+  - make_in_database_identifier_hash_comparisons_use_the_canonical_prefixed_sanitization_scheme_without_exposing_raw_identifiers
+  - accept_only_the_proven_legacy_argon2id_shape_and_transform_only_its_nonsecret_policy_prefix_inside_PostgreSQL_to_a_v21_argon2id_v1_hash_that_verifies_the_same_password
+  - preserve_the_legacy_hash_byte_for_byte_and_compare_the_transformed_v21_hash_inside_PostgreSQL_only
+  - add_regression_tests_for_the_alias_hash_scheme_and_legacy_to_v1_prefix_normalization
+  - preserve_exact_six_create_zero_replay_six_rollback_row_budgets_and_all_original_collision_readback_and_rollback_gates
+publish_authority:
+  normal_push_to_exact_branch: true
+  force_push_amend_rebase_merge: false
+prohibitions:
+  - no_database_connection_SQL_execution_migration_shared_runtime_candidate_or_application_edit
+  - no_raw_email_password_hash_session_token_cookie_or_personal_identifier_in_source_logs_or_control
+  - no_browser_session_provider_deployment_DNS_send_charge_customer_or_Student_effect
+  - no_inference_that_corrected_source_is_data_effect_authority
+issued_at: '2026-08-04T10:35:50Z'
+expires_at: '2026-08-04T11:35:50Z'
+contains_secret: false
+immutable: true

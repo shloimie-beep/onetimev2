@@ -172,29 +172,24 @@ locks:
   effect_budget: null
   cleanup_state: candidate_9d6_source_27576fa6_web_ea1b663f_worker_f68df357_SUCCESS_health_ready_domains_assets_logs_reconciled_lock_released_2026-08-04T10:01:35Z
 - lock: production:data
-  status: claimed
-  holder_task_id: OT-LIVE-001.03
-  holder_claim_id: f9f84f08-b287-4ead-a230-24cc71c26b06
-  lease_id: e6cdace5-e629-4af6-8de0-f4515c3e26d3
-  fencing_token: fence-d776eac9-d382-4e25-93e9-665bf8d8f418
-  canonical_candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
-  provider_identity: Railway_project_ce55ef20_environment_f911acfc_database_service_db590e4a
-  authorized_operation: exact_six_row_operator_fixture_SERIALIZABLE_transaction_or_zero_write_exact_replay
-  claimed_at: '2026-08-04T10:16:46Z'
-  lease_expires_at: '2026-08-04T11:01:46Z'
-  authority_id: c00-prod-operator-fixture-data-20260804101646
-  authority_grant_digest: 25479343ed14b1219021fa2903a21b080e9f149cdb4970e5bbc722d13521b15c
-  authority_status_index_digest: 5e69f20dc29b50c5ac5f8ab3bd8290e1ea09cd3490d687515c4a8d99f4b41c34
-  authority_status_entry_digest: ed97e0feac695c1f68cebe36fbe4d41baa947dc6acb59d4c2c69fb45575b2d3a
+  status: unclaimed
+  holder_task_id: null
+  holder_claim_id: null
+  lease_id: null
+  fencing_token: null
+  canonical_candidate_digest: null
+  provider_identity: null
+  authorized_operation: null
+  claimed_at: null
+  lease_expires_at: null
+  authority_id: null
+  authority_grant_digest: null
+  authority_status_index_digest: null
+  authority_status_entry_digest: null
   latest_revocation_digest: null
-  authority_checked_at: '2026-08-04T10:16:46Z'
-  effect_budget:
-    insert_rows_exact: 6
-    insert_rows_max: 6
-    replay_rows_mutated_max: 0
-    rollback_exact_ID_delete_rows_max: 6
-    all_other_effects: 0
-  cleanup_state: reserved_no_effect
+  authority_checked_at: null
+  effect_budget: null
+  cleanup_state: authority_c00_prod_operator_fixture_data_20260804101646_FAILED_ROLLED_BACK_zero_committed_rows_lock_released_2026-08-04T10:35:50Z
 - lock: provider:s3-kms
   status: unclaimed
   holder_task_id: null

@@ -19,8 +19,9 @@ active_writer_limit: 4
 controller_authorization_sha: 76692fbb6e65cdeb68e32862dd0c03490b5e5750
 next_action: >-
   Preserve deployed candidate 9d6be957 at source 27576fa6. The inert exact legacy-to-v2.1 fixture design is source-terminal
-  at 4f9276ad, and only its exact six-row SERIALIZABLE production-data effect is reserved under production:data; the
-  superseded one-row Parent-membership effect remains forbidden. OT-LIVE-002.02 GHL Draft configuration and its inert
+  at 4f9276ad. Its first exact data attempt failed in preflight with 42P01 and rolled back with zero committed rows;
+  production:data is released and a three-path inert design correction is active. The superseded one-row Parent-membership
+  effect remains forbidden. OT-LIVE-002.02 GHL Draft configuration and its inert
   decision-store proposal are terminally reconciled; require
   separate migration allocation and exact maximumAffectedRows production-data authority before any audience census
   write. Seed/reply, pilot, and remaining-audience sends remain separate later grants. OT-LIVE-004.01 isolated source is
@@ -148,6 +149,20 @@ ot_live_001_03_fixture_design_source_terminal_and_data_reservation:
   authority_status_index_digest: 5e69f20dc29b50c5ac5f8ab3bd8290e1ea09cd3490d687515c4a8d99f4b41c34
   exact_apply_replay_rollback_budgets: 6_0_6
   all_other_effects: 0
+ot_live_001_03_first_data_attempt_terminal_and_source_correction:
+  recorded_at: '2026-08-04T10:35:50Z'
+  state_based_on_control_head_sha: f0855f6cf342ec9b7383a527478dd07abf0fd61d
+  predecessor_authority_id: c00-prod-operator-fixture-data-20260804101646
+  predecessor_terminal_event_digest: f0e033908ee33e30c0079ea43e0d46b39547537fa2a094fc83433291bfb8dc38
+  predecessor_disposition: FAILED_ROLLED_BACK_ZERO_COMMITTED_ROWS
+  committed_rows: 0
+  unresolved_effects: 0
+  production_data_lock_released_at: '2026-08-04T10:35:50Z'
+  successor_source_claim_id: 0670069f-a8d6-44b9-854e-d46d9f052be7
+  successor_source_claim_digest: 5e075b8b05ff96d9ad4eb631f420a0e99484e31e17de7a37300b0b3fd60edd48
+  successor_exact_paths: 3
+  alias_hash_scheme_and_legacy_argon2id_to_v1_corrections_required: true
+  data_effect_authority_after_reconciliation: none
 c00_product_candidate_production_deployment_reservation:
   recorded_at: '2026-08-04T09:50:30Z'
   state_based_on_control_head_sha: ce9a3dcbddc1f6c11db0bf5e8bf1fcd1cce3367c
