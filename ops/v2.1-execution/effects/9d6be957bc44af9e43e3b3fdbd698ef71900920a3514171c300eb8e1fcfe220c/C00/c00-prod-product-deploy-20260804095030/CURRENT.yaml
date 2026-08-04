@@ -1,0 +1,22 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: C00
+authority_id: c00-prod-product-deploy-20260804095030
+candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
+repository_source_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
+status: RESERVED_PRE_EFFECT
+control_parent_sha: ce9a3dcbddc1f6c11db0bf5e8bf1fcd1cce3367c
+authority_grant_digest: 5f2932483760e081f122b70f50fed86cd254861bae60eea8976e10f14190eb13
+authority_status_index_digest: 4c5b883e437feb931db4efe06d5a1420910dbdb33673a33e3813126bd46c05ce
+authority_status_entry_digest: 2e858abe6ea0ee808e0394850fa1a17de1b954cdfeab642fdf79a879f3bbd5e9
+lease_id: 3d53194d-af28-4deb-a262-3356ba9f58e6
+fencing_token: fence-35323d96-58b3-46a2-82e7-8f698af1969c
+current_web_deployment_id: 50b737ff-b6d1-4cd4-a416-5cffb548775a
+current_worker_deployment_id: 66463233-1466-4bcb-bfdd-8533ce48f9f1
+effect_budget:
+  production_local_archive_deployments_max: 2
+  rollback_to_exact_prior_deployments_max: 2
+  all_other_effects: 0
+events: []
+recorded_at: '2026-08-04T09:50:30Z'
+contains_secret: false

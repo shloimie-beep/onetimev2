@@ -124,6 +124,19 @@ ot_live_001_03_pre_effect_readback_and_fixture_design_dispatch:
   new_source_claim_digest: 43807997d3c6b2b8835005babcd2cac455ba3bff40da8d73324484725b7194fb
   new_source_claim_id: ce5be839-5ba3-4751-9f7b-b460b3bec752
   data_deployment_session_browser_provider_or_DNS_effects: 0
+c00_product_candidate_production_deployment_reservation:
+  recorded_at: '2026-08-04T09:50:30Z'
+  state_based_on_control_head_sha: ce9a3dcbddc1f6c11db0bf5e8bf1fcd1cce3367c
+  authority_id: c00-prod-product-deploy-20260804095030
+  candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
+  repository_source_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
+  authority_status_index_digest: 4c5b883e437feb931db4efe06d5a1420910dbdb33673a33e3813126bd46c05ce
+  authority_status_entry_digest: 2e858abe6ea0ee808e0394850fa1a17de1b954cdfeab642fdf79a879f3bbd5e9
+  lease_id: 3d53194d-af28-4deb-a262-3356ba9f58e6
+  fencing_token: fence-35323d96-58b3-46a2-82e7-8f698af1969c
+  exact_current_web_worker_deployments: 50b737ff-b6d1-4cd4-a416-5cffb548775a_66463233-1466-4bcb-bfdd-8533ce48f9f1
+  exact_effect_budget: two_local_archive_deployments_at_most_two_exact_prior_restorations_zero_other_effects
+  product_data_session_browser_provider_send_and_DNS_authority: none
 ot_live_004_01_source_dispatch:
   recorded_at: '2026-08-04T09:14:28Z'
   owner_thread_id: 019fcc0b-177e-7361-8823-9059dd8a8eb0
