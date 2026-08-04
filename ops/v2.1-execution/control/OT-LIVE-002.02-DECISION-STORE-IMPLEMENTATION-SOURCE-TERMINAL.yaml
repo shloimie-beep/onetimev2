@@ -1,0 +1,44 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-002.02
+owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+source_claim_id: f59e9a15-cd23-42e2-a1ad-053ff15c9cbf
+writer_id: codex-ot-live-002-02-decision-store-implementation-f59e9a15
+claim_digest: 1d4c0fe09872b3a95b91c7094e0698c9ad026a58ef0fdc714ef59a714b92f14d
+claim_disposition: consumed_source_held_evidence_count_mismatch
+branch: codex/ot-live-002-decision-store-implementation-20260804
+base_sha: e5bc19812cc990b9d84e3371202cb4f4c37ab470
+source_head_sha: 6149907cb2611835514b1ffa5622c8fb7d5927e8
+source_tree_sha: 9abda7772ec7e3af78abdcc24a0657d8f49ccaf6
+remote_equality: passed
+exact_path_count: 11
+repository_verdict:
+  implementation: accepted_subject_to_one_file_evidence_count_correction
+  SERIALIZABLE_and_exact_scope_advisory_lock: passed
+  current_base_rows_FOR_UPDATE: passed
+  maximum_historical_version_reintroduction: passed
+  deterministic_full_protected_hash_decision_key: passed
+  exact_replay_mutation_statements: 0
+  ceiling_mismatch_unknown_and_conflict_rollback: passed
+  provider_contact_tag_send_effects: 0_0_0
+verification:
+  controller_focused_unit_and_pg_mem: 8_passed_0_failed_2_files
+  controller_static_contract_actual: 42_passed_0_failed
+  repository_typecheck: passed
+  exact_eleven_path_scope_diff_and_remote_tree: passed
+  producer_native_postgresql_18_4: 91_of_91_apply_and_91_of_91_replay
+  producer_native_concurrency_lock_and_rollback_controls: passed
+  disposable_native_database_cluster_and_directory_removed: true
+hold:
+  path: ops/codex-runs/OT-LIVE-002/DECISION-STORE-IMPLEMENTATION-EVIDENCE.md
+  committed_text: Static_source_contract_41_of_41_PASS
+  exact_head_actual: Static_source_contract_42_of_42_PASS
+  functional_or_runtime_change_required: false
+  source_acceptance_released: false
+zero_effects:
+  live_staging_or_production_database_connections_migrations_or_rows: 0
+  GHL_contacts_tags_seeds_replies_pilots_or_broad_sends: 0
+  providers_deployments_DNS_billing_customers_or_Students: 0
+recorded_at: '2026-08-04T14:48:42Z'
+contains_secret: false
+immutable: true

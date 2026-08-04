@@ -21,10 +21,11 @@ next_action: >-
   Preserve deployed candidate 9d6be957 at source 27576fa6 and its successful exact ten-effect operator fixture.
   The existing-Chrome Admin to Parent to Admin canary stopped credential-unavailable before every POST with zero
   database mutations or unresolved effects; defer the single operator sign-in request until independent work completes.
-  OT-LIVE-002.02 immutable decision-store request is independently accepted at e41cea45. F02 has now terminally authored
-  migration 2260 at e5bc1981 with 91-of-91 PostgreSQL 18 apply/replay and zero live effects; the control mirror advances
-  only 2261 as next available. OT-LIVE-002.02 is source-only implementing the transaction repository on that exact base. No live migration, database
-  census, contact, seed, pilot, or broad-send effect is authorized. OT-LIVE-004.01 shared composition reached 5851104c
+  OT-LIVE-002.02 decision-store repository is functionally green and pushed at 6149907c with exact eleven-path scope,
+  8-of-8 controller tests, typecheck, 42-of-42 static controls, and native PostgreSQL 18.4 proof. Acceptance is held only
+  for a one-file evidence count correction from stale 41-of-41 to exact 42-of-42 under claim 4c52906b; no code, live
+  migration, database census, contact, seed, pilot, or broad-send effect is authorized. Migration 2260 remains source-only
+  at e5bc1981 and 2261 remains next available but unallocated. OT-LIVE-004.01 shared composition reached 5851104c
   with every media flag default-off and zero external effects, but independent review holds acceptance until its browser-exposed
   authorization/canary identifiers are removed at c07975ed; a source-only successor is now composing executable
   default-off provider runtimes with mock/local proof and no provider calls. Keep OT-LIVE-003.02
@@ -42,11 +43,15 @@ ot_live_source_successor_dispatch_20260804_125957:
     active_claim_or_effect_lease: none
     next_boundary: one_operator_sign_in_then_fresh_exact_canary_authority_after_independent_source_lanes
   OT_LIVE_002_02:
-    claim_id: f59e9a15-cd23-42e2-a1ad-053ff15c9cbf
-    claim_path: ops/v2.1-execution/control/OT-LIVE-002.02-DECISION-STORE-IMPLEMENTATION-CLAIM.yaml
-    claim_digest: 1d4c0fe09872b3a95b91c7094e0698c9ad026a58ef0fdc714ef59a714b92f14d
+    claim_id: 4c52906b-d99a-4f6d-94c3-63b2de52192e
+    claim_path: ops/v2.1-execution/control/OT-LIVE-002.02-DECISION-STORE-EVIDENCE-CORRECTION-CLAIM.yaml
+    claim_digest: 7f135ce5cf54d6d1978c6fb66a7febfbd6127eddb2b762247f66175aa52f6ce5
     branch: codex/ot-live-002-decision-store-implementation-20260804
-    base_sha: e5bc19812cc990b9d84e3371202cb4f4c37ab470
+    base_sha: 6149907cb2611835514b1ffa5622c8fb7d5927e8
+    decision_store_repository_head_sha: 6149907cb2611835514b1ffa5622c8fb7d5927e8
+    decision_store_repository_tree_sha: 9abda7772ec7e3af78abdcc24a0657d8f49ccaf6
+    decision_store_terminal_digest: e5e7a4cb70da40d9e44a4825c49ac2cdd17d543cc7d4d4ac3f97797f6797b500
+    acceptance_hold: one_file_static_contract_count_41_of_41_must_be_42_of_42
     requested_migration_id: OT-LIVE-002-MIGRATION-001
     allocated_ordinal: 2260
     allocation_status: authored_source_only_pending_integration
@@ -75,6 +80,20 @@ ot_live_source_successor_dispatch_20260804_125957:
     browser_binding_terminal_digest: 870fcf8e85848c781869941262b28d56892adc0ea5f2fc6114df5e83da549f09
     mode: executable_provider_runtime_composition_source_only_default_off
     migration_database_provider_upload_deploy_DNS_effects: 0_0_0_0_0_0
+ot_live_002_02_decision_store_repository_terminal_and_evidence_correction_20260804_144842:
+  recorded_at: '2026-08-04T14:48:42Z'
+  state_based_on_control_head_sha: 8049998af04791a73b0abf79e846cfdc6959baf5
+  predecessor_claim_id: f59e9a15-cd23-42e2-a1ad-053ff15c9cbf
+  predecessor_terminal_path: ops/v2.1-execution/control/OT-LIVE-002.02-DECISION-STORE-IMPLEMENTATION-SOURCE-TERMINAL.yaml
+  predecessor_terminal_digest: e5e7a4cb70da40d9e44a4825c49ac2cdd17d543cc7d4d4ac3f97797f6797b500
+  source_head_sha: 6149907cb2611835514b1ffa5622c8fb7d5927e8
+  source_tree_sha: 9abda7772ec7e3af78abdcc24a0657d8f49ccaf6
+  controller_verdict: held_one_file_stale_static_contract_count_only
+  controller_tests_typecheck_contract_and_scope: 8_of_8_passed_typecheck_passed_42_of_42_passed_11_paths_exact
+  successor_claim_id: 4c52906b-d99a-4f6d-94c3-63b2de52192e
+  successor_claim_path: ops/v2.1-execution/control/OT-LIVE-002.02-DECISION-STORE-EVIDENCE-CORRECTION-CLAIM.yaml
+  successor_claim_digest: 7f135ce5cf54d6d1978c6fb66a7febfbd6127eddb2b762247f66175aa52f6ce5
+  database_provider_contact_tag_send_deploy_DNS_effects: 0_0_0_0_0_0_0
 ot_live_004_01_shared_composition_terminal_and_security_correction_20260804_135600:
   recorded_at: '2026-08-04T13:56:00Z'
   state_based_on_control_head_sha: 58e0497cbf35cdb456bc7b897523705fc09ca275

@@ -1,0 +1,32 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-002.02
+owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+claim_id: 4c52906b-d99a-4f6d-94c3-63b2de52192e
+writer_id: codex-ot-live-002-02-evidence-correction-4c52906b
+status: active
+branch: codex/ot-live-002-decision-store-implementation-20260804
+base_sha: 6149907cb2611835514b1ffa5622c8fb7d5927e8
+base_tree_sha: 9abda7772ec7e3af78abdcc24a0657d8f49ccaf6
+predecessor_claim_id: f59e9a15-cd23-42e2-a1ad-053ff15c9cbf
+predecessor_terminal_path: ops/v2.1-execution/control/OT-LIVE-002.02-DECISION-STORE-IMPLEMENTATION-SOURCE-TERMINAL.yaml
+control_parent_sha: 8049998af04791a73b0abf79e846cfdc6959baf5
+exact_paths:
+  - ops/codex-runs/OT-LIVE-002/DECISION-STORE-IMPLEMENTATION-EVIDENCE.md
+allowed_operation: replace_only_the_stale_static_contract_count_41_of_41_with_exact_42_of_42_revalidate_commit_and_normally_push
+required_semantics:
+  - exact_one_line_semantic_correction_only
+  - rerun_exact_static_contract_and_require_42_passed_0_failed
+  - preserve_all_code_tests_migration_request_and_migration_2260_bytes
+  - preserve_head_6149907c_as_exact_parent_and_use_one_normal_fast_forward_push
+publish_authority:
+  one_normal_fast_forward_push_to_exact_branch: true
+  force_push_amend_rebase_merge: false
+prohibitions:
+  - no_code_test_migration_registry_manifest_configuration_or_other_evidence_edit
+  - no_database_provider_contact_tag_send_deployment_DNS_billing_customer_or_Student_effect
+  - no_live_staging_or_production_connection
+issued_at: '2026-08-04T14:48:42Z'
+expires_at: '2026-08-05T10:48:42Z'
+contains_secret: false
+immutable: true

@@ -2395,7 +2395,7 @@ tasks:
     proof_record_location: ops/v2.1-execution/effects/9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c/OT-LIVE-001.03/c00-prod-operator-admin-parent-canary-20260804122448/events/001-RECONCILED.yaml
 - task_id: OT-LIVE-002.02
   status: in_progress
-  active_phase: decision_store_transaction_repository_implementation_source_only
+  active_phase: decision_store_one_file_evidence_count_correction_source_only
   owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
   branch: codex/ot-live-002-decision-store-implementation-20260804
   phase_branches:
@@ -2407,25 +2407,26 @@ tasks:
     database_proposal: 0cf2224f984c023162bf2286028df8e3d2723adf
     immutable_migration_request: e41cea45a4e3fc99c4cf968872992f2992090d18
     migration_2260_source: e5bc19812cc990b9d84e3371202cb4f4c37ab470
-  authorized_start_sha: e5bc19812cc990b9d84e3371202cb4f4c37ab470
-  last_known_remote_head: e41cea45a4e3fc99c4cf968872992f2992090d18
-  active_claim_id: f59e9a15-cd23-42e2-a1ad-053ff15c9cbf
-  active_writer_id: codex-ot-live-002-02-decision-store-implementation-f59e9a15
-  lease_expires_at: '2026-08-05T10:08:25Z'
-  last_heartbeat_at: '2026-08-04T14:08:25Z'
-  controller_authorization_sha: 428ff71287b31f9f0aeee7415ffaa917ce57d6bd
+    decision_store_repository: 6149907cb2611835514b1ffa5622c8fb7d5927e8
+  authorized_start_sha: 6149907cb2611835514b1ffa5622c8fb7d5927e8
+  last_known_remote_head: 6149907cb2611835514b1ffa5622c8fb7d5927e8
+  active_claim_id: 4c52906b-d99a-4f6d-94c3-63b2de52192e
+  active_writer_id: codex-ot-live-002-02-evidence-correction-4c52906b
+  lease_expires_at: '2026-08-05T10:48:42Z'
+  last_heartbeat_at: '2026-08-04T14:48:42Z'
+  controller_authorization_sha: 8049998af04791a73b0abf79e846cfdc6959baf5
   ready_entry_payload_digest: null
   interface_checkpoint_sha: null
-  implementation_head_sha: e41cea45a4e3fc99c4cf968872992f2992090d18
+  implementation_head_sha: 6149907cb2611835514b1ffa5622c8fb7d5927e8
   status_proof:
-    state: migration_2260_source_terminal_accepted_transaction_repository_implementation_active_zero_live_effects
+    state: decision_store_repository_green_held_only_for_one_file_static_contract_count_correction_zero_live_effects
     producer_task_id: OT-LIVE-002.02
-    producer_head_sha: e41cea45a4e3fc99c4cf968872992f2992090d18
+    producer_head_sha: 6149907cb2611835514b1ffa5622c8fb7d5927e8
     canonical_candidate_digest: 99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098
-    integration_or_evidence_head_sha: 8ff1f60f311871e5e12ae589a9be6d78d6ee9dc8fd6fd590551f14341b7cbea9
+    integration_or_evidence_head_sha: e5e7a4cb70da40d9e44a4825c49ac2cdd17d543cc7d4d4ac3f97797f6797b500
     external_effects_reconciled: true
-    state_based_on_control_head_sha: 428ff71287b31f9f0aeee7415ffaa917ce57d6bd
-    proof_record_location: ops/v2.1-execution/control/F02-OT-LIVE-002-MIGRATION-2260-SOURCE-TERMINAL.yaml
+    state_based_on_control_head_sha: 8049998af04791a73b0abf79e846cfdc6959baf5
+    proof_record_location: ops/v2.1-execution/control/OT-LIVE-002.02-DECISION-STORE-IMPLEMENTATION-SOURCE-TERMINAL.yaml
 - task_id: OT-LIVE-004.01
   status: in_progress
   active_phase: executable_provider_runtime_composition_source_only_default_off
