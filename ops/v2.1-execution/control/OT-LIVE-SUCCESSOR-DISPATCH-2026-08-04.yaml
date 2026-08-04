@@ -1,0 +1,90 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+recorded_at: '2026-08-04T07:27:50Z'
+control_parent_sha: 96afb1cc959bfa6b554e496f91ad19ea7b1ff8ab
+live_source_sha: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+missions:
+  OT-LIVE-001.03:
+    window_status: existing_former_BNA_window_reassigned_to_One_Time_only
+    thread_id: 019fc7e8-b506-7d30-a36a-4d7a9641f4fd
+    branch: codex/ot-live-001-product-repair-20260804
+    base: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+    state: SAFE_TO_STEER_AFTER_CONTROL_PUSH
+    exact_scope:
+      - landing_hero_ribbon_sections_authentic_assets_and_responsive_acceptance
+      - sdratler_single_adult_Admin_Parent_context_switcher_select_role_and_RT_ADM_001
+      - natural_Member_Login_and_real_post_login_acceptance
+      - read_only_old_app_inventory_and_preservation
+      - freeze_test_deploy_and_real_Admin_Parent_production_canary_only_after_successor_authority
+    owns_shared_hotspots_until_release:
+      - apps/web/src/server/app.ts
+      - apps/web/src/client/app/router/**
+      - apps/web/src/client/app/shell/**
+      - web_server_and_client_composition_barrels
+    source_writer_lease: assignment_bound_no_global_lease_needed
+    external_provider_locks_and_fences: none
+    deployment_authority: not_issued_requires_new_candidate_freeze_and_acceptance_evidence
+    workspace_rule: do_not_reopen_or_edit_BNA_repository_use_only_One_Time_source_from_exact_base
+    prohibitions: no_DNS_provider_email_media_or_WAPI_effect_under_this_dispatch
+  OT-LIVE-002.02:
+    window_status: existing_sole_provider_owner
+    thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+    branch: codex/ot-live-002-governed-campaign-20260804
+    base: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+    state: SAFE_TO_STEER_AFTER_CONTROL_PUSH
+    exact_scope:
+      - active_successor_configuration_authority_in_GRANT_yaml
+      - unique_new_OT_15_Draft_assets_and_exact_launch_tag_creation
+      - read_only_eligible_adult_reason_census_with_zero_contact_mutation_or_send
+      - propose_isolated_campaign_bound_application_database_decision_store
+      - seed_pilot_and_remaining_send_require_separate_successor_stages
+    source_only_paths_before_shared_handoff:
+      - packages/contracts/src/audience-reconciliation/**
+      - packages/domain/src/audience-reconciliation/**
+      - packages/db/src/audience-reconciliation/**
+      - ops/codex-runs/OT-LIVE-002/**
+    held_paths:
+      - packages/db/migrations/**
+      - apps/web/src/server/app.ts
+      - all_shared_barrels_registries_config_schema_and_deployment_manifests
+    instruction: STEER EXISTING OT-LIVE-002
+  OT-LIVE-004.01:
+    durable_id_status: newly_created_by_C00
+    window_status: no_existing_window
+    branch: codex/ot-live-004-media-pipeline-20260804
+    base: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+    state: SAFE_TO_OPEN
+    exact_scope:
+      - direct_app_upload_ingest_processing_transcription_private_Vimeo_and_protected_playback
+      - one_operator_owned_recording_end_to_end_before_bulk
+      - checksum_durable_storage_and_original_retention_readback
+      - Drive_optional_and_nonblocking
+    isolated_writer_paths:
+      - packages/contracts/src/content/ingest/**
+      - packages/contracts/src/content/processing/**
+      - packages/contracts/src/content/publication/**
+      - packages/domain/src/content/ingest/**
+      - packages/domain/src/content/processing/**
+      - packages/domain/src/content/publication/**
+      - packages/db/src/content/ingest/**
+      - packages/db/src/content/processing/**
+      - packages/db/src/content/publication/**
+      - apps/worker/src/runners/content-ingest/**
+      - apps/worker/src/runners/content-processing/**
+      - apps/worker/src/runners/content-publication/**
+      - ops/codex-runs/OT-LIVE-004/**
+    held_until_OT_LIVE_001_release:
+      - apps/web/src/server/app.ts
+      - web_content_router_and_client_composition
+      - shared_barrels_registries_config_schema_package_manifests_and_worker_composition
+      - packages/db/migrations/**
+    provider_effects_now: 0
+    first_action: source_only_gap_analysis_and_focused_tests_no_upload_or_provider_mutation
+  OT-LIVE-003.02:
+    branch: codex/ot-live-003-reply-copilot-20260803
+    head: a2983da5c332ce752132c6d2264d0b96e70c32ef
+    state: PARKED_DO_NOT_STEER
+    requirements: unmerged_default_off_not_launch_required
+single_consolidated_human_action: >-
+  Keep the existing signed-in Admin/Parent browser session available for OT-LIVE-001 acceptance; no password, legal
+  packet, WhatsApp decision, Vimeo upgrade, or repeated launch-date decision is requested now.

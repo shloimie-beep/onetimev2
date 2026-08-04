@@ -2359,4 +2359,89 @@ tasks:
     state_based_on_control_head_sha: null
     transitioned_at: null
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/V43/status_proof
+- task_id: OT-LIVE-001.03
+  status: in_progress
+  active_phase: settled_landing_identity_and_domain_preservation_product_repair
+  owner_thread_id: 019fc7e8-b506-7d30-a36a-4d7a9641f4fd
+  branch: codex/ot-live-001-product-repair-20260804
+  phase_branches:
+    product_repair: codex/ot-live-001-product-repair-20260804
+  phase_heads:
+    base: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+  authorized_start_sha: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+  last_known_remote_head: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+  active_claim_id: b6b2a7f9-3635-4df4-b8f8-fbe4bd83b923
+  active_writer_id: codex-ot-live-001-03-product-repair-b6b2a7f9
+  lease_expires_at: '2026-08-05T07:13:45Z'
+  last_heartbeat_at: '2026-08-04T07:27:50Z'
+  controller_authorization_sha: 96afb1cc959bfa6b554e496f91ad19ea7b1ff8ab
+  ready_entry_payload_digest: null
+  interface_checkpoint_sha: null
+  implementation_head_sha: null
+  status_proof:
+    state: exact_successor_assignment_recorded_provider_and_deploy_effects_zero
+    producer_task_id: OT-LIVE-001.03
+    producer_head_sha: null
+    canonical_candidate_digest: 99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098
+    integration_or_evidence_head_sha: null
+    external_effects_reconciled: true
+    state_based_on_control_head_sha: 96afb1cc959bfa6b554e496f91ad19ea7b1ff8ab
+    proof_record_location: ops/v2.1-execution/control/OT-LIVE-SUCCESSOR-DISPATCH-2026-08-04.yaml
+- task_id: OT-LIVE-002.02
+  status: in_progress
+  active_phase: governed_email_configuration_and_read_only_audience_reconciliation
+  owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+  branch: codex/ot-live-002-governed-campaign-20260804
+  phase_branches:
+    provider_configuration: codex/ot-live-002-governed-campaign-20260804
+    database_proposal: codex/ot-live-002-governed-campaign-20260804
+  phase_heads:
+    base: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+  authorized_start_sha: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+  last_known_remote_head: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+  active_claim_id: 7657ba6c-a92e-4fac-b5ba-0bbe1a034601
+  active_writer_id: codex-ot-live-002-02-successor-config-7657ba6c
+  lease_expires_at: '2026-08-04T11:27:50Z'
+  last_heartbeat_at: '2026-08-04T07:27:50Z'
+  controller_authorization_sha: 96afb1cc959bfa6b554e496f91ad19ea7b1ff8ab
+  ready_entry_payload_digest: null
+  interface_checkpoint_sha: null
+  implementation_head_sha: null
+  status_proof:
+    state: provider_configuration_authority_active_database_and_send_effects_zero
+    producer_task_id: OT-LIVE-002.02
+    producer_head_sha: null
+    canonical_candidate_digest: 99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098
+    integration_or_evidence_head_sha: null
+    external_effects_reconciled: true
+    state_based_on_control_head_sha: 96afb1cc959bfa6b554e496f91ad19ea7b1ff8ab
+    proof_record_location: ops/v2.1-execution/control/OT-LIVE-002.02-PROVIDER-CLAIM.yaml
+- task_id: OT-LIVE-004.01
+  status: ready
+  active_phase: isolated_media_pipeline_source_work_ready_shared_composition_held
+  owner_thread_id: null
+  branch: codex/ot-live-004-media-pipeline-20260804
+  phase_branches:
+    implementation: codex/ot-live-004-media-pipeline-20260804
+  phase_heads:
+    base: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+  authorized_start_sha: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+  last_known_remote_head: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+  active_claim_id: null
+  active_writer_id: null
+  lease_expires_at: null
+  last_heartbeat_at: null
+  controller_authorization_sha: 96afb1cc959bfa6b554e496f91ad19ea7b1ff8ab
+  ready_entry_payload_digest: null
+  interface_checkpoint_sha: null
+  implementation_head_sha: null
+  status_proof:
+    state: durable_task_created_safe_to_open_provider_upload_deploy_and_shared_path_effects_zero
+    producer_task_id: OT-LIVE-004.01
+    producer_head_sha: null
+    canonical_candidate_digest: 99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098
+    integration_or_evidence_head_sha: null
+    external_effects_reconciled: true
+    state_based_on_control_head_sha: 96afb1cc959bfa6b554e496f91ad19ea7b1ff8ab
+    proof_record_location: ops/v2.1-execution/control/OT-LIVE-SUCCESSOR-DISPATCH-2026-08-04.yaml
 rule: Only C00 updates this registry. A worker reads it from origin/codex/v21-control to locate its exact resumable branch.

@@ -1,35 +1,53 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
 task_id: OT-LIVE-002.02
-claim_id: dbef8dfa-6b07-4e07-90f1-f3d04b1a8c61
+claim_id: 7657ba6c-a92e-4fac-b5ba-0bbe1a034601
 owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
 owner_title: Configure governed GHL campaign
 owner_worktree: C:/Users/User/Documents/Codex/2026-08-03/files-mentioned-by-the-user-ot
 ownership: sole_non_colliding_provider_owner
-authority_id: ot-live-002-02-provider-authority-20260803181433
-canonical_candidate_digest: 8a902dd9f56332f6551d8dec81fddd4b0672937b587e128871f0b42caeef10ee
-repository_source_sha: ca442fa43544c89e135fe751b177e1ff473b9e57
+authority_id: ot-live-002-02-successor-config-20260804072750
+authority_grant_digest: bb736469fc83f8bee55c136d36454fc71ac37ee08f5b1c7b7872a3fdd5d155e8
+canonical_candidate_digest: 99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098
+repository_source_sha: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+source_branch: codex/ot-live-progressive-portal-20260803
+active_stage: configuration_and_read_only_audience_reconciliation
 locks:
   provider:ghl-location:
     exact_identity: pBSnOK2nkdxp6gf9Rg3o
-    holder_claim_id: d0da8b7c-029d-421f-b180-ffeec7829be5
-    lease_id: 7923759d-8739-4185-9aa3-c3a45d08b145
-    fencing_token: fence-984cc94d-9efc-43e2-baa3-7295b5396823
+    holder_claim_id: 0e1b75e0-2c52-4f30-be3c-62b7f1918886
+    lease_id: 5cc14e2a-a6f4-4362-9657-c3fbd71adb7a
+    fencing_token: fence-c7a90be5-b9a2-411a-bf58-a97aa5def8a0
   provider:resend-domain:
     exact_identity: ce42fdec-d889-4c91-bcdc-c3ab44302857
-    holder_claim_id: 5a85348c-6acf-4741-977d-1b6b28f948f0
-    lease_id: bb3699e2-d87d-49a3-98ae-5680021fb994
-    fencing_token: fence-846fd724-9870-4163-9344-c0050775eabc
+    lease_id: 4f70f6f5-8043-4868-b76e-9271c90bb367
+    holder_claim_id: 2985d227-3aec-4a98-b96f-3858bbcd7eb1
+    fencing_token: fence-33ad7119-1f6a-4486-83ec-7423f4b62c1c
   infra:dns:
     exact_identity: godaddy:canonical-account:onetimeonetime.com
-    holder_claim_id: 2769f974-f736-4529-90b5-ac6945e3b236
-    lease_id: 075ce00a-fd6a-4a47-85a8-7a20bfde0a19
-    fencing_token: fence-a5e9f3dc-ca0d-4761-b382-3b67318c0ef8
-    includes_conditional_Forward_Email_route_work: true
-    Forward_Email_identity_must_be_live_confirmed_before_effect: true
-claimed_at: '2026-08-03T18:14:33Z'
-expires_at: '2026-08-04T18:14:33Z'
+    lease_id: b9523d20-2802-45c8-946e-368121a4445e
+    holder_claim_id: 4ec5b20e-e013-4429-8568-866125e6ca5c
+    fencing_token: fence-178e06e2-925e-4bbc-ba68-26e04d87df8c
+claimed_at: '2026-08-04T07:27:50Z'
+expires_at: '2026-08-04T11:27:50Z'
+current_effect_budget:
+  GHL_configuration_mutations_max: 20
+  Resend_configuration_mutations_max: 4
+  DNS_record_creations_or_updates_max: 8
+  DNS_record_deletions_max: 0
+  GHL_contact_mutations_or_tag_assignments_max: 0
+  application_database_rows_mutated_max: 0
+  seed_pilot_or_broad_sends_max: 0
+  WhatsApp_mutations_or_sends_max: 0
+application_database_write_authority: false
+future_stage_status:
+  seed: not_issued
+  pilot: not_issued
+  remaining_audience: not_issued
 broad_send_authorized: false
+historical_assets_mutable_or_reusable: false
+historical_campaign_id: 6a5f750b557817806a14b19e
+historical_workflow_id: a34ea513-4612-4f53-8bd8-49e89e6610f9
 production_deployment_lock_changed: false
 instruction: STEER EXISTING OT-LIVE-002
 contains_secret: false

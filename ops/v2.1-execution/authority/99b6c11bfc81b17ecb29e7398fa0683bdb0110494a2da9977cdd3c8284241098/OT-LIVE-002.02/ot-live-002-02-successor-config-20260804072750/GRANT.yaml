@@ -1,0 +1,178 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+authority_id: ot-live-002-02-successor-config-20260804072750
+authority_kind: derived_candidate_bound_governed_email_configuration_and_read_only_audience_reconciliation
+task_id: OT-LIVE-002.02
+owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+owner_title: Configure governed GHL campaign
+owner_worktree: C:/Users/User/Documents/Codex/2026-08-03/files-mentioned-by-the-user-ot
+owner_exclusivity: sole_OT-LIVE-002.02_provider_owner
+candidate_digest: 99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098
+candidate_binding_status: exact_current_live_candidate
+candidate_manifest_commit_sha: ea64afeb98d02ea315382f8b899a9b61e44ee6ca
+repository_source_sha: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+source_branch: codex/ot-live-progressive-portal-20260803
+canonical_path: ops/v2.1-execution/authority/99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098/OT-LIVE-002.02/ot-live-002-02-successor-config-20260804072750/GRANT.yaml
+source_grant_id: ot-v21-production-source-grant-20260729
+source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+source_approval_evidence_path: ops/v2.1-execution/authority/none/C00/ot-v21-production-source-grant-20260729/APPROVAL.md
+source_approval_evidence_digest: 8c95a959f79aba0ac34fa0fcb6cb463cceac9aeb2bb52da1603d39db3e2c33c2
+operator_authorization_source_thread_id: 019fa92b-77be-73f3-99b6-99d73a33a2a7
+operator_authorization_evidence: OPERATOR_DECISION_PACK_AND_SUCCESSOR_DISPATCH_received_2026-08-04_plus_owner_successor_request
+approved_by: Shloimie Dratler
+approved_at: '2026-08-04T07:27:50Z'
+recorded_at: '2026-08-04T07:27:50Z'
+expires_at: '2026-08-04T11:27:50Z'
+active_stage: configuration_and_read_only_audience_reconciliation
+provider_locks:
+  provider:ghl-location:
+    provider_identity: ghl-location:pBSnOK2nkdxp6gf9Rg3o
+    exact_location_id: pBSnOK2nkdxp6gf9Rg3o
+    holder_claim_id: 0e1b75e0-2c52-4f30-be3c-62b7f1918886
+    lease_id: 5cc14e2a-a6f4-4362-9657-c3fbd71adb7a
+    fencing_token: fence-c7a90be5-b9a2-411a-bf58-a97aa5def8a0
+  provider:resend-domain:
+    provider_identity: resend-domain:ce42fdec-d889-4c91-bcdc-c3ab44302857
+    exact_domain_id: ce42fdec-d889-4c91-bcdc-c3ab44302857
+    exact_domain: onetimeonetime.com
+    holder_claim_id: 2985d227-3aec-4a98-b96f-3858bbcd7eb1
+    lease_id: 4f70f6f5-8043-4868-b76e-9271c90bb367
+    fencing_token: fence-33ad7119-1f6a-4486-83ec-7423f4b62c1c
+  infra:dns:
+    provider_identity: godaddy:canonical-account:onetimeonetime.com
+    exact_zone: onetimeonetime.com
+    holder_claim_id: 4ec5b20e-e013-4429-8568-866125e6ca5c
+    lease_id: b9523d20-2802-45c8-946e-368121a4445e
+    fencing_token: fence-178e06e2-925e-4bbc-ba68-26e04d87df8c
+settled_launch_truth:
+  class_begins: '2026-08-16T19:00:00+03:00'
+  free_access_ends: '2026-09-11T18:00:00+03:00'
+  timezone: Asia/Jerusalem
+  superseded_value: '2026-09-13T19:24:00+03:00'
+scope:
+  GHL:
+    allowed_operations:
+      - read_only_location_campaign_workflow_contact_conversation_suppression_and_email_service_reconciliation
+      - create_or_locate_one_unique_new_OT_15_Former_Member_Reactivation_campaign_and_one_unique_new_workflow
+      - create_one_exact_dedicated_tag_OT_Audience_Elul_2026_Inactive_Adult_Launch
+      - bind_every_new_asset_to_its_immutable_provider_ID
+      - configure_Draft_copy_cadence_sender_reply_to_suppression_exits_and_inactive_Customer_Replied_webhook
+    historical_assets_preserved_read_only:
+      campaign_id: 6a5f750b557817806a14b19e
+      workflow_id: a34ea513-4612-4f53-8bd8-49e89e6610f9
+      required_state: Draft
+      repurpose_or_mutation_allowed: false
+    exact_sender:
+      display_name: Rabbi Eli Scheller | One Time Mishnayos
+      from_email: rabbielischeller@onetimeonetime.com
+      reply_to: rabbielischeller@onetimeonetime.com
+  Resend:
+    allowed_operations:
+      - read_only_domain_sender_and_suppression_reconciliation
+      - bounded_verification_configuration_only_when_exact_provider_readback_requires_it
+  DNS:
+    allowed_operations:
+      - read_only_full_zone_and_authoritative_reconciliation
+      - create_or_update_only_exact_email_authentication_records_returned_by_confirmed_canonical_providers
+    duplicate_SPF_repair_allowed: false
+    deletion_allowed: false
+    old_app_and_all_unrelated_records_must_be_preserved: true
+  Forward_Email:
+    mutation_allowed: false
+    reason: canonical_account_and_governed_destination_remain_unconfirmed
+    exact_alias_requested: rabbielischeller@onetimeonetime.com
+    preserved_alias: info@onetimeonetime.com
+  audience_read_only:
+    include_population: inactive_unsuppressed_adults_including_eligible_Tisha_BAv_registrants
+    exclude_population:
+      - Students_or_minors
+      - Schools
+      - staff_or_test_contacts
+      - duplicate_contacts
+      - invalid_or_missing_email
+      - active_or_access_entitled_contacts
+      - DND_or_unsubscribed_contacts
+      - complaints
+      - hard_bounces
+      - all_other_suppressions
+      - ambiguous_contacts
+    allowed_result: exact_counts_immutable_provider_ID_manifest_and_reason_census_without_contact_or_tag_assignment
+application_database_authority:
+  writes_authorized: false
+  maximum_affected_rows: 0
+  production_data_lock_issued: false
+  reason: >-
+    The live candidate has legacy migration/import-specific reason tables but no semantically exact, campaign-bound
+    source of truth for the required Elul 2026 per-contact inclusion/exclusion decision. The exact production row
+    count is also not known before the read-only census, so no row ceiling may be guessed.
+  existing_tables_not_authorized_for_repurposing:
+    - onetime.legacy_audience_import_batches
+    - onetime.legacy_audience_import_rows
+    - onetime.legacy_audience_segment_snapshots
+    - onetime.legacy_activation_campaigns
+    - onetime.legacy_activation_campaign_intents
+  required_product_successor:
+    source_branch: codex/ot-live-002-governed-campaign-20260804
+    base_sha: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+    operation: >-
+      Propose an additive, campaign-bound launch-audience decision table/projection and transaction API with one durable
+      included_or_excluded decision and reason-code set per canonical contact/provider identity. Do not select or create
+      a migration number, edit a shared registry, or deploy/apply it until C00 admits the exact proposal and the current
+      OT-LIVE-001 product owner releases any colliding shared paths.
+    registry_edits_belong_to: current_product_candidate_successor_after_explicit_shared_path_handoff
+    provider_authority_implies_database_authority: false
+    later_production_write_gate: >-
+      A separately recorded production-data authority must bind the deployed successor candidate, exact table/columns,
+      exact reconciled row count as its maximum, transaction identity, preimage digest, post-commit readback, rollback
+      operation, and regenerated projection digest.
+effect_budget:
+  GHL_configuration_mutations_max: 20
+  GHL_new_campaigns_max: 1
+  GHL_new_workflows_max: 1
+  GHL_new_tags_max: 1
+  GHL_inactive_webhooks_max: 1
+  GHL_contact_mutations_or_tag_assignments_max: 0
+  Resend_configuration_mutations_max: 4
+  DNS_record_creations_or_updates_max: 8
+  DNS_record_deletions_max: 0
+  Forward_Email_alias_or_route_mutations_max: 0
+  application_database_rows_mutated_max: 0
+  operator_seed_emails_max: 0
+  operator_seed_replies_max: 0
+  pilot_recipient_sends_max: 0
+  broad_campaign_sends_max: 0
+  WhatsApp_messages_or_provider_mutations_max: 0
+  billing_charges_ad_spend_nameserver_changes_max: 0
+  application_deployments_max: 0
+successor_stages:
+  seed:
+    status: not_issued
+    future_ceiling: one_email_to_sdratler_at_gmail_com_plus_one_controlled_reply
+    prerequisites: exact_config_readback_deployed_audience_decision_store_and_zero_exclusion_ambiguity
+  pilot:
+    status: not_issued
+    future_ceiling: 25_eligible_adults
+    prerequisites: clean_seed_delivery_reply_in_same_GHL_Conversation_and_frozen_final_copy
+  remaining_audience:
+    status: not_issued
+    future_ceiling: exact_remaining_count_only
+    prerequisites: clean_pilot_reconciliation_current_suppression_recheck_and_explicit_successor_budget
+send_gate:
+  email_campaign_may_send: false
+  reason: current_stage_is_configuration_only_and_seed_pilot_broad_budgets_are_zero
+rollback_and_reconciliation:
+  - fetch_remote_control_and_match_grant_status_claim_lease_and_fence_immediately_before_each_live_effect
+  - capture_exact_provider_asset_or_record_ID_and_preimage_before_each_mutation
+  - read_back_every_effect_from_the_canonical_provider
+  - stop_on_unknown_result_and_reconcile_before_retry
+  - rollback_only_the_exact_effect_by_immutable_ID_or_exact_preimage
+  - record_terminal_effect_evidence_before_lock_release_or_expiry
+stop_conditions:
+  - source_grant_or_this_authority_is_revoked_expired_or_mismatched
+  - live_candidate_owner_thread_provider_identity_lease_or_fence_differs
+  - operation_would_mutate_any_historical_campaign_workflow_contact_or_unrelated_DNS_record
+  - operation_would_assign_the_launch_tag_or_write_application_database_rows
+  - operation_would_send_any_email_or_WhatsApp_message
+  - result_is_unknown_or_provider_readback_does_not_match
+contains_secret: false
+immutable: true

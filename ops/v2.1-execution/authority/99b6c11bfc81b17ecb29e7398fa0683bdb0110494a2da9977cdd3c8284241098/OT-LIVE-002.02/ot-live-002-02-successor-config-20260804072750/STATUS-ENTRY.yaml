@@ -1,0 +1,45 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+authority_id: ot-live-002-02-successor-config-20260804072750
+authority_kind: derived_candidate_bound_governed_email_configuration_and_read_only_audience_reconciliation
+grant_digest: bb736469fc83f8bee55c136d36454fc71ac37ee08f5b1c7b7872a3fdd5d155e8
+source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+status: active
+expires_at: '2026-08-04T11:27:50Z'
+latest_revocation_path: null
+latest_revocation_digest: null
+provider_locks:
+  provider:ghl-location:
+    provider_lock_lease_id: 5cc14e2a-a6f4-4362-9657-c3fbd71adb7a
+    fencing_token: fence-c7a90be5-b9a2-411a-bf58-a97aa5def8a0
+  provider:resend-domain:
+    provider_lock_lease_id: 4f70f6f5-8043-4868-b76e-9271c90bb367
+    fencing_token: fence-33ad7119-1f6a-4486-83ec-7423f4b62c1c
+  infra:dns:
+    provider_lock_lease_id: b9523d20-2802-45c8-946e-368121a4445e
+    fencing_token: fence-178e06e2-925e-4bbc-ba68-26e04d87df8c
+effect_authority_usable: true
+active_stage: configuration_and_read_only_audience_reconciliation
+candidate_binding_status: exact_current_live_candidate
+candidate_digest: 99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098
+candidate_manifest_commit_sha: ea64afeb98d02ea315382f8b899a9b61e44ee6ca
+repository_source_sha: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+source_branch: codex/ot-live-progressive-portal-20260803
+owner_task_id: OT-LIVE-002.02
+owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+claim_path: ops/v2.1-execution/control/OT-LIVE-002.02-PROVIDER-CLAIM.yaml
+claim_digest: 64deceda96c9f09ff6b7c913a86d8310f365ad3f47a824bc372cc704843838bb
+application_database_write_usable: false
+application_database_rows_mutated_max: 0
+GHL_contact_mutations_or_tag_assignments_max: 0
+seed_email_usable: false
+pilot_send_usable: false
+broad_campaign_send_usable: false
+WhatsApp_effect_usable: false
+historical_assets_reusable: false
+prerequisite_review: >-
+  current_live_candidate_and_remote_heads_exact_prior_GHL_Resend_DNS_authorities_consumed_and_released_Sep_11_settled_
+  historical_assets_preserved_Draft_zero_contact_or_send_budget_database_write_gap_explicit
+checked_at: '2026-08-04T07:27:50Z'
+state_based_on_control_head_sha: 96afb1cc959bfa6b554e496f91ad19ea7b1ff8ab
+contains_secret: false

@@ -1,0 +1,66 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+recorded_by: C00
+recorded_at: '2026-08-04T07:27:50Z'
+state_based_on_remote_control_sha: 96afb1cc959bfa6b554e496f91ad19ea7b1ff8ab
+current_live_source_branch: codex/ot-live-progressive-portal-20260803
+current_live_source_sha: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+current_live_candidate_digest: 99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098
+operator: Shloimie Dratler
+decisions:
+  whatsapp:
+    disposition: deferred_nonblocking
+    mutation_send_route_or_workflow_budget: 0
+    stale_Whapi_webhook_blocks_launch_or_email: false
+  launch_time:
+    class_begins: '2026-08-16T19:00:00+03:00'
+    free_access_ends: '2026-09-11T18:00:00+03:00'
+    timezone: Asia/Jerusalem
+    supersedes: '2026-09-13T19:24:00+03:00'
+  landing:
+    hero_eyebrow: LIVE, ONLINE + ON-DEMAND
+    hero_heading: Help your son love learning Mishnayos.
+    hero_CTA_count: 1
+    animated_free_access_ribbon: required_with_reduced_motion
+    rabbi_photo_rule: authentic_original_only_never_alter_person_or_face_pixels
+    how_it_works_image: exact_operator_file_from_Downloads
+    screenshots: sanitized_Parent_and_Student_only
+    remove_sections:
+      - One protected place for live class and review
+      - What you need for class
+      - Pre-register your Family
+      - Pre-registration and future access
+      - Clear expectations before you join
+    preserve_core: what_received_outcomes_how_it_works_who_for_Rabbi_gallery_social_proof_final_CTA
+  identity:
+    adult_identity: sdratler@gmail.com
+    memberships: [admin, parent]
+    duplicate_or_password_reset_allowed: false
+    explicit_context_switcher_required: true
+    repair_and_prove: [/select-role, RT-ADM-001_/app/dashboard, Member_Login_real_post_login]
+    credential_source: existing_signed_in_browser_session_only
+  domains:
+    new_app: https://app.onetimeonetime.com
+    app_join_subdomain_allowed: false
+    old_app_must_be_inventoried_read_only: true
+    old_app_remove_or_redirect_before_new_app_acceptance: false
+  email:
+    campaign_must_send_after_all_gates: true
+    audience_tag: OT | Audience | Elul 2026 | Inactive Adult Launch
+    seed: exactly_one_to_sdratler_at_gmail_com_then_same_GHL_Conversation_reply_proof
+    rollout: seed_then_bounded_pilot_then_remaining_eligible_audience
+    historical_Tisha_campaign_or_workflow_reuse: false
+    legal_workstream: preserve_existing_Terms_Privacy_unsubscribe_and_suppression_no_new_outside_counsel_blocker
+  media:
+    provider: existing_paid_Vimeo
+    primary_path: direct_app_upload
+    Drive: optional_nonblocking
+    first_proof: one_recording_end_to_end_before_approximately_33GB
+    original_retention: preserve_until_checksum_and_durable_storage_readback
+  telegram_reply_copilot:
+    task: OT-LIVE-003.02
+    disposition: parked_unmerged_default_off_not_launch_required
+  legal:
+    current_controlled_launch_blocker: false
+    broad_production_policy: preserve_existing_Terms_Privacy_unsubscribe_suppression_and_do_not_claim_outside_review_without_evidence
+contains_secret_or_PII_beyond_operator_identity: false

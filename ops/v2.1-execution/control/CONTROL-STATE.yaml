@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: operational
-active_phase: ot_live_001_02_support_live_wapi_misroute_reconciled_blocked_external_launch_holds
+active_phase: ot_live_successor_product_repair_email_configuration_and_media_dispatch_20260804
 bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
@@ -18,19 +18,35 @@ candidate: 99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098
 active_writer_limit: 4
 controller_authorization_sha: 76692fbb6e65cdeb68e32862dd0c03490b5e5750
 next_action: >-
-  Preserve exact candidate 99b6c11b at source ffd1c55a live on Railway web deployment 50b737ff and worker deployment
-  66463233, both SUCCESS/RUNNING on Dockerfile images with health, readiness, support, 90/90 migrations, and sink
-  worker readback green. The deployment authority is consumed and the production lock is released. Do not create a
-  successor deployment authority unless a new frozen product delta exists. Preserve source-only BNA summary producer
-  b4805a55 default-off and outside the frozen/live candidate until an exact HTTPS consumer endpoint, separately
-  provisioned key ID/secret, candidate-bound admission, and operator replay/duplicate canary are available. Protected
-  Parent canary remains unstarted because no approved reusable Parent credential or live session exists. Keep broad
-  email send false while Sep 11/Sep 13, audience/consent/suppression, duplicate SPF, Forward Email reply route,
-  seed/reply proof, and current-copy gates remain unresolved. Whapi live readback proves its sole persistent messages
-  webhook is misrouted to join /api/webhooks/wapi, producing at least 5,000 404 callbacks in ten minutes. Do not add an
-  acknowledging One Time route or mutate the provider while WhatsApp messages/workflows are budgeted at zero. Require
-  an exact disable-versus-repoint decision; repointing additionally requires verified canonical receiver ownership,
-  matching secret binding, and no-send/auto-reply-off state before a candidate-bound provider lock and fence are issued.
+  Preserve exact live candidate 99b6c11b at source ffd1c55a. Dispatch OT-LIVE-001.03 from that base for the settled
+  landing, single Admin/Parent identity, context switcher, Member Login, old-app preservation, and acceptance delta;
+  no deployment authority exists until a new candidate is frozen and tested. OT-LIVE-002.02 may use only the active
+  configuration-stage GHL, Resend, and DNS leases to create/reconcile new Draft assets and a launch tag with zero
+  contact mutation, database write, seed, pilot, or broad send. Its read-only census must precede an exact additive
+  application-database proposal and later row-count-bound production-data authority. OT-LIVE-004.01 is safe to open for
+  isolated source work, with all shared router/server/migration composition held behind OT-LIVE-001.03 release. Keep
+  OT-LIVE-003.02 parked/default-off and WhatsApp/WAPI fully deferred at zero effects. Use August 16 7:00 PM class start
+  and September 11 6:00 PM free-access cutoff, Asia/Jerusalem, without asking again.
+ot_live_operator_decision_and_successor_dispatch_20260804:
+  recorded_at: '2026-08-04T07:27:50Z'
+  state_based_on_control_head_sha: 96afb1cc959bfa6b554e496f91ad19ea7b1ff8ab
+  operator_decision_path: ops/v2.1-execution/control/OT-LIVE-OPERATOR-DECISIONS-2026-08-04.yaml
+  successor_dispatch_path: ops/v2.1-execution/control/OT-LIVE-SUCCESSOR-DISPATCH-2026-08-04.yaml
+  product_owner_task: OT-LIVE-001.03
+  product_owner_thread_id: 019fc7e8-b506-7d30-a36a-4d7a9641f4fd
+  product_successor_branch: codex/ot-live-001-product-repair-20260804
+  email_owner_task: OT-LIVE-002.02
+  email_owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+  email_successor_branch: codex/ot-live-002-governed-campaign-20260804
+  email_authority_id: ot-live-002-02-successor-config-20260804072750
+  email_application_database_write_authority: false
+  media_task: OT-LIVE-004.01
+  media_branch: codex/ot-live-004-media-pipeline-20260804
+  media_window: not_open
+  telegram_reply_copilot: OT-LIVE-003.02_parked_unmerged_default_off
+  WAPI: deferred_zero_effect_nonblocking
+  class_begins: '2026-08-16T19:00:00+03:00'
+  free_access_ends: '2026-09-11T18:00:00+03:00'
 ot_live_001_02_public_support_repair_candidate_freeze:
   recorded_at: '2026-08-03T20:06:36Z'
   control_parent_sha: 729fd49b803f98ad0de17042a0a0ac62a4b7e3aa

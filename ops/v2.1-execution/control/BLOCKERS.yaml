@@ -474,42 +474,37 @@ blockers:
     provider, deployment, DNS, contact, send, billing, cleanup, or other external effect.
   next_check: Revalidate only after a later domain-transition, static-serving, host-validation, or server bootstrap change and once at candidate freeze.
 - blocker_id: OT-LIVE-001-CUTOFF-CONFLICT
-  status: open
+  status: closed
   scope: production_broad_communication
-  owner: Shloimie_then_C00
+  owner: C00
   affected_tasks:
   - OT-LIVE-DEC-003
   - OT-LIVE-MKT-001
   safe_work_completed: >-
-    Fingerprinted exact current production at f95b30d8 and confirmed the deployed landing says September 11, 2026 at
-    6:00 PM Asia/Jerusalem. Preserved the older normative September 13, 2026 at 7:24 PM conflict without silently
-    selecting either value. Current preregistration persistence and a protected portal canary can continue.
-  required_authority_or_input:
-  - Shloimie's exact approved free-access cutoff in Asia/Jerusalem
+    Shloimie's 2026-08-04 operator decision settled class start at August 16, 2026 7:00 PM and free-access cutoff at
+    September 11, 2026 6:00 PM, both Asia/Jerusalem. September 13 at 7:24 PM is superseded. The exact values are bound
+    in OT-LIVE-OPERATOR-DECISIONS-2026-08-04.yaml for landing, GHL copy, schedules, tests, and evidence convergence.
+  required_authority_or_input: []
   protection: >-
-    No broad campaign, workflow schedule, confirmation change, or final offer publication may proceed while the two
-    values conflict. Do not alter the live value merely to make the records agree.
-  next_check: Reconcile every named source after the exact human decision is recorded.
+    Preserve September 11, 2026 6:00 PM Asia/Jerusalem as the sole free-access cutoff and August 16, 2026 7:00 PM as
+    class start. Broad email remains separately gated by sender, audience, suppression, seed/reply, pilot, and copy proof.
+  next_check: Reconcile every named product/provider source on its successor branch before seed authority.
 - blocker_id: OT-LIVE-001-APP-DNS
-  status: open
+  status: closed
   scope: production_portal_activation
   owner: C00
   affected_tasks:
   - OT-LIVE-OPS-001
   - OT-LIVE-PORTAL-001
   safe_work_completed: >-
-    Read-only production checks proved join /login returns 302 to https://app.onetimeonetime.com/login while the target
-    hostname has no DNS resolution. Railway readback bound the canonical production project, environment, web service,
-    deployment, and active join custom domain. The existing signed-in GoDaddy account visibly owns onetimeonetime.com,
-    and its live DNS page matched the authoritative nameservers and exact join CNAME; no app record exists. No provider
-    mutation occurred. Landing, signup, legal, health, readiness, version, and adult-only preregistration remain healthy.
+    The exact app CNAME and Railway ownership TXT were created under fenced predecessor authorities and reconciled from
+    GoDaddy authoritative DNS through Railway certificate/TLS/health. Current source ffd1c55a is live at the app host;
+    production deployment and DNS locks were released after terminal readback. The older app remains preserved.
   required_authority_or_input: []
   protection: >-
-    Freeze the progressive candidate first, then acquire the exact production deployment and DNS locks with fencing
-    tokens immediately before the bounded two-provider effect. Create the app Railway custom domain, read its returned
-    required CNAME value, and only then add the exact GoDaddy app record. Do not guess a record target or redirect the
-    working preregistration origin.
-  next_check: Exact candidate binding, then Railway app-domain creation and returned-target readback before DNS write.
+    Use https://app.onetimeonetime.com for the new app. Do not create app.join, remove, redirect, or mutate the old app,
+    and inventory the exact old-app URL read-only before any later DNS/hosting change. Any new effect needs a fresh fence.
+  next_check: Real Admin/Parent acceptance on the new app before any old-app or later domain change.
 - blocker_id: OT-LIVE-001-COPY-TRUTH
   status: closed
   scope: production_broad_promotion
@@ -531,9 +526,9 @@ blockers:
     a later public-copy, form, analytics, runtime, or provider-binding change.
   next_check: Progressive portal candidate preparation; broad communication remains separately held by the cutoff conflict.
 - blocker_id: OT-LIVE-001-WAPI-WEBHOOK-MISROUTE
-  status: open
-  scope: production_whatsapp_provider_configuration
-  owner: Shloimie_then_C00_with_canonical_receiver_owner
+  status: closed
+  scope: deferred_nonblocking_zero_effect
+  owner: C00
   affected_tasks:
   - OT-LIVE-OPS-001
   - OT-LIVE-PRV-001
@@ -544,14 +539,10 @@ blockers:
     current One Time source has no legacy WAPI receiver and keeps its separate Meta endpoint default-off. The documented
     BNA receiver returns public GET 200 ready. No webhook, provider, variable, BNA, message, deployment, or customer
     mutation occurred.
-  required_authority_or_input:
-  - Exact operator decision to disable the stale Whapi webhook or repoint it to the canonical receiver
-  - For repointing, canonical receiver-owner proof that the matching secret is bound and every auto-reply/outbound-send mode is off
+  required_authority_or_input: []
   protection: >-
-    Do not add a 200/204 sink route that would discard inbound messages. Do not repoint while the receiver could auto-reply,
-    and do not activate or send WhatsApp. Immediately before any provider correction, bind the exact current candidate,
-    acquire the exclusive Whapi provider lock and fencing token, preserve the existing header/event settings, perform one
-    exact update only, read back the provider setting, and retain an exact rollback target.
-  next_check: Reconcile after the disable-versus-repoint decision and no-send receiver proof are both available.
+    Operator deferred WhatsApp/WAPI with zero sends, provider changes, routes, and workflow mutations. Do not add a sink,
+    repoint, disable, activate, or spend a lane. The stale provider webhook is not a product-launch or email blocker.
+  next_check: None for this controlled launch; reopen only on a new exact operator WhatsApp instruction.
 rule: One precise blocker per entry with owner, affected tasks, safe work completed, required authority/input, and
   next check.
