@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: operational
-active_phase: candidate_8834c2fd_deployed_corrected_read_only_audience_census_successor_assigned
+active_phase: candidate_8834c2fd_deployed_exact_two_page_GHL_cursor_diagnostic_assigned
 bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
@@ -3013,6 +3013,17 @@ ot_live_002_02_GHL_pagination_source_terminal_and_census_successor_dispatch_2026
   exact_scope: production_production_operator_canary_one_time_one_time_mishnah_class_campaign_6a71a64c28f7a5dbb3aec1be
   maximum_provider_contacts_affected_rows_and_pages: 2000_2000_20
   all_database_provider_Railway_send_DNS_and_other_mutation_effects_max: 0
+ot_live_002_02_census_successor_terminal_and_two_page_cursor_diagnostic_dispatch_20260804_193729:
+  recorded_at: '2026-08-04T19:37:29Z'
+  state_based_on_control_head_sha: 41c57f52de862d8aa3b5a0baa5320c681b35289f
+  census_successor_claim_id: 98cfc444-7e4c-4446-a8bb-c3dd96e59d0b
+  census_successor_terminal_digest: 9256cf43c5a3d4d59b3b89b42b2d01194221060cb39860b8cf39ca61ac7839b4
+  census_successor_disposition: AMBIGUOUS_PROVIDER_CURSOR_failed_closed_retry_0_mutations_0_unresolved_0
+  diagnostic_claim_id: 3434ec0e-76d2-4aa4-9003-0183ad5fde7b
+  diagnostic_claim_digest: 8f4fc36a9edef97a0a80135bb0b0fbe5f4b4788b77d9fbc679cebda749c99cf7
+  diagnostic_scope: exactly_two_GETs_page1_no_cursor_page2_reconstructed_dual_cursor_no_retry_no_third_page
+  allowed_output: pagination_meta_safe_scalars_types_keys_hashes_and_equality_booleans_only
+  database_and_all_provider_Railway_send_DNS_and_other_mutation_effects_max: 0
 authority_note: >-
   Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through
   release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an

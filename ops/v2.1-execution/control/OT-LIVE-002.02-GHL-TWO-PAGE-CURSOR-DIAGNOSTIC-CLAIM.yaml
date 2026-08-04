@@ -1,0 +1,49 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-002.02
+owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+claim_id: 3434ec0e-76d2-4aa4-9003-0183ad5fde7b
+writer_id: codex-ot-live-002-02-two-page-cursor-diagnostic-3434ec0e
+status: active
+operation_kind: exact_two_page_read_only_GHL_cursor_contract_diagnostic
+control_parent_sha: 41c57f52de862d8aa3b5a0baa5320c681b35289f
+predecessor_terminal_path: ops/v2.1-execution/control/OT-LIVE-002.02-CANDIDATE-8834-READ-ONLY-AUDIENCE-CENSUS-SUCCESSOR-TERMINAL.yaml
+predecessor_terminal_digest: 9256cf43c5a3d4d59b3b89b42b2d01194221060cb39860b8cf39ca61ac7839b4
+canonical_requests:
+  first: GET_/contacts/_version_2023-02-21_location_pBSnOK2nkdxp6gf9Rg3o_limit_100_no_cursor
+  second: exact_locally_reconstructed_same_origin_path_version_location_limit_with_page1_startAfter_and_startAfterId
+  token: existing_private_integration_token_only_no_output_or_relocation
+  redirects: disabled
+  timeout_milliseconds_each_max: 10000
+  request_attempts_max: 2
+  retries_and_third_page: 0
+allowed_sanitized_output_per_page:
+  - HTTP_status_body_byte_length_and_body_SHA256
+  - sorted_top_level_and_meta_key_names
+  - contacts_array_length
+  - safe_integer_or_null_values_for_currentPage_nextPage_prevPage_total
+  - startAfter_and_startAfterId_presence_type_and_nonblank_booleans_without_values
+  - nextPageUrl_presence_origin_path_and_sorted_query_key_names_without_query_values
+  - nextPageUrl_query_values_equal_exact_expected_location_limit_startAfter_and_startAfterId_booleans
+  - page2_request_cursor_pair_equal_page1_meta_pair_booleans_without_values
+  - first_and_last_contact_ID_present_and_location_exact_booleans_without_values
+  - exact_source_parser_invariant_branch_that_would_accept_or_reject_each_page_without_contact_or_cursor_values
+prohibited_output:
+  - any_contact_cursor_query_token_header_cookie_email_name_phone_address_tag_custom_field_or_private_value
+  - raw_response_body_contact_object_or_full_URL
+  - any_third_page_retry_database_connection_or_source_edit
+effect_budget:
+  provider_GET_reads_max: 2
+  database_connections_transactions_and_mutations_max: 0
+  provider_contact_tag_campaign_workflow_webhook_send_schedule_mutations_max: 0
+  Railway_variable_deployment_domain_source_DNS_mutations_max: 0
+  all_other_mutation_effects_max: 0
+required_return:
+  - exact_sanitized_page1_and_page2_contract_evidence
+  - exact_source_invariant_failure_branch_or_confirmed_two_page_acceptance
+  - minimal_source_correction_recommendation_without_editing_source
+  - zero_mutation_zero_unresolved_effect_reconciliation
+issued_at: '2026-08-04T19:37:29Z'
+expires_at: '2026-08-04T20:37:29Z'
+contains_secret: false
+immutable: true
