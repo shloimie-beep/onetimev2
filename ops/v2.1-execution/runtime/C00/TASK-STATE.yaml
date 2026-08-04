@@ -8,13 +8,13 @@ branch: codex/v21-control
 start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
-phase: ot_live_terminal_convergence_migration_regularization_email_request_and_media_composition
+phase: ot_live_terminal_convergence_migration_2260_implementation_and_media_composition
 claimed_by: codex-c00-terminal-convergence-f514d50f
 claim_time: '2026-08-04T09:12:43Z'
 claim_id: f514d50f-081c-48e0-8906-1c6e872519b0
-lease_expires_at: '2026-08-04T14:59:57Z'
+lease_expires_at: '2026-08-04T15:21:16Z'
 lease_released_at: null
-last_heartbeat_at: '2026-08-04T12:59:57Z'
+last_heartbeat_at: '2026-08-04T13:21:16Z'
 controller_authorization_sha: 65d343162df0bb404ade1e4d1460f0ad808411ef
 ready_entry_payload_digest: null
 state_based_on_head_sha: 65d343162df0bb404ade1e4d1460f0ad808411ef
@@ -163,6 +163,17 @@ source_successor_dispatch_20260804_125957:
     accepted_source: 795adc712e5ce16f2df6bf2d6a8372b41bf9de70
     scope: default_off_shared_composition_source_only
   external_provider_database_send_upload_deploy_DNS_effects: 0_0_0_0_0_0
+migration_2260_allocation_20260804_132116:
+  request_source_head: e41cea45a4e3fc99c4cf968872992f2992090d18
+  request_terminal_digest: cd4d2c8586290167bee1d6d3acaf4cda2334b42baba25a9e683d56b34a21cdb0
+  request_digest: 058b22cd1607bef98010083b5e98634bfcc07016928c7ff5ccdb6575ab601846
+  F02_ledger_head: 05f8dfc247f87318884db6cf57a42bc75b5c8719
+  F02_ledger_terminal_digest: 4de8ef83394f295d169a7d5ac8da498f237556e21055e457cb989f5e375d89bb
+  migration_control_mirror_digest: 7f187ddcf7696847e47777386564adc05cd13b6a5b315c35f44f195ec25f9202
+  claim_id: 3eeb7ef4-6abd-4e42-809c-04a6d6945196
+  claim_digest: 2139e3d98528183f5c5924a7bf0730caf5e9458baabc519ad82aa8c62a5a1469
+  ordinal_and_filename: 2260_packages_db_migrations_2260_v21_governed_campaign_audience_decisions_sql
+  authority: source_only_disposable_PostgreSQL_18_and_pgmem_zero_live_database_effects
 production_deployment_authority_terminal:
   authority_id: c00-prod-product-deploy-20260804095030
   candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c

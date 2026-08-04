@@ -1,0 +1,45 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-002.02
+owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+source_claim_id: 38937cb0-37e4-4fbf-8bbb-e7c07d75aeda
+writer_id: codex-ot-live-002-02-migration-request-38937cb0
+claim_digest: 36f5f0729d08c319dcc00689fd9d058728cc74b3968148161757ddaac50465ff
+claim_disposition: consumed_source_success
+control_pre_effect_head: fb70bd65344513161c240e3ed6dfa30e0ad7fb54
+branch: codex/ot-live-002-governed-campaign-20260804
+base_sha: 0cf2224f984c023162bf2286028df8e3d2723adf
+source_head_sha: e41cea45a4e3fc99c4cf968872992f2992090d18
+source_tree_sha: ae8ecaff8b22daf877e1e7649ce12524fc5b1785
+exact_path_count: 5
+path_inventory_digest: 373681def40b19befbaf20d4298584d572c6dac74dfd043aa43357ab0fd700ea
+source_files:
+  - path: packages/db/src/audience-reconciliation/governed-campaign-decision-store.proposal.sql
+    sha256: c9adfe71d825d9e44822e11cb157de3db054a572fd4a8bf69329039f03463138
+  - path: packages/db/src/audience-reconciliation/governed-campaign-decision-store.proposal.ts
+    sha256: 445bc86f658f2e0b7e68abf93c880bb08b9ad81d409a31a6d43920ee414201cc
+  - path: ops/codex-runs/OT-LIVE-002/decision-store-contract-check.mjs
+    sha256: adf12eb6b76c7ee689fd2417cb5cab8b3118943665141763f16f27d96039b594
+  - path: ops/codex-runs/OT-LIVE-002/DECISION-STORE-SOURCE-EVIDENCE.md
+    sha256: 8b43244c47bddb799e7591f9260454a769490c03227143e1198f79d8abdcf536
+  - path: ops/codex-runs/OT-LIVE-002/MIGRATION-REQUEST.yaml
+    sha256: 058b22cd1607bef98010083b5e98634bfcc07016928c7ff5ccdb6575ab601846
+independent_controller_readback:
+  local_tracking_remote_equality: passed
+  clean_worktree: passed
+  exact_five_path_scope: passed
+  focused_contract_assertions: 28_passed_0_failed
+  strict_typescript_eslint_yaml_node_syntax_diff: passed
+  environment_provider_privacy_append_only_and_zero_backfill_contract: passed
+request_verdict: accepted_immutable_semantic_request
+request_id: OT-LIVE-002-MIGRATION-001
+requested_ordinal: 2260
+allocation_status_at_terminal: requested_not_allocated
+zero_effects:
+  migration_or_shared_path_edits: 0
+  database_connections_or_writes: 0
+  contact_tag_provider_seed_pilot_broad_send_effects: 0
+  deployments: 0
+recorded_at: '2026-08-04T13:21:16Z'
+contains_secret: false
+immutable: true

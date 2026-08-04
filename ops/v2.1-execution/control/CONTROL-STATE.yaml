@@ -21,10 +21,10 @@ next_action: >-
   Preserve deployed candidate 9d6be957 at source 27576fa6 and its successful exact ten-effect operator fixture.
   The existing-Chrome Admin to Parent to Admin canary stopped credential-unavailable before every POST with zero
   database mutations or unresolved effects; defer the single operator sign-in request until independent work completes.
-  OT-LIVE-002.02 is source-only correcting its immutable decision-store migration request; ordinal 2260 is requested but
-  not allocated, and no migration, database census, contact, seed, pilot, or broad-send effect is authorized. F02 is
-  source-only regularizing the exact immutable 2257 through 2259 ledger and may identify 2260 as next available only
-  after semantic completeness. OT-LIVE-004.01 is source-only composing accepted media code onto exact deployed source
+  OT-LIVE-002.02 immutable decision-store request is independently accepted at e41cea45. F02 regularized exact immutable
+  migrations 2257 through 2259 at 05f8dfc2, the control mirror now names 2260 as next available, and 2260 is allocated
+  to F02 for forward-only source implementation and disposable PostgreSQL 18 proof only. No live migration, database
+  census, contact, seed, pilot, or broad-send effect is authorized. OT-LIVE-004.01 is source-only composing accepted media code onto exact deployed source
   with every media flag default-off and zero provider, database, upload, or deployment effects. Keep OT-LIVE-003.02
   parked/unmerged/default-off, reject its 2260 proposal, and keep WhatsApp/WAPI fully deferred at zero effects.
 ot_live_source_successor_dispatch_20260804_125957:
@@ -67,6 +67,35 @@ ot_live_source_successor_dispatch_20260804_125957:
     accepted_media_source_sha: 795adc712e5ce16f2df6bf2d6a8372b41bf9de70
     mode: shared_composition_source_only_default_off
     migration_database_provider_upload_deploy_DNS_effects: 0_0_0_0_0_0
+ot_live_002_migration_2260_allocation_20260804_132116:
+  recorded_at: '2026-08-04T13:21:16Z'
+  state_based_on_control_head_sha: fb70bd65344513161c240e3ed6dfa30e0ad7fb54
+  request_source_terminal:
+    source_head_sha: e41cea45a4e3fc99c4cf968872992f2992090d18
+    source_tree_sha: ae8ecaff8b22daf877e1e7649ce12524fc5b1785
+    request_id: OT-LIVE-002-MIGRATION-001
+    request_digest: 058b22cd1607bef98010083b5e98634bfcc07016928c7ff5ccdb6575ab601846
+    terminal_path: ops/v2.1-execution/control/OT-LIVE-002.02-MIGRATION-REQUEST-SOURCE-TERMINAL.yaml
+    terminal_digest: cd4d2c8586290167bee1d6d3acaf4cda2334b42baba25a9e683d56b34a21cdb0
+    independent_acceptance: passed
+  F02_ledger_terminal:
+    source_head_sha: 05f8dfc247f87318884db6cf57a42bc75b5c8719
+    source_tree_sha: 3acfd7c9fe96cf7aebc4ac066e03701bd82f2d09
+    terminal_path: ops/v2.1-execution/control/F02-MIGRATION-2257-2259-LEDGER-TERMINAL.yaml
+    terminal_digest: 4de8ef83394f295d169a7d5ac8da498f237556e21055e457cb989f5e375d89bb
+    control_mirror_digest: 7f187ddcf7696847e47777386564adc05cd13b6a5b315c35f44f195ec25f9202
+    regularized_ordinals: 2257_2258_2259
+    next_available_ordinal: 2260
+  migration_2260_claim:
+    claim_id: 3eeb7ef4-6abd-4e42-809c-04a6d6945196
+    claim_path: ops/v2.1-execution/control/F02-OT-LIVE-002-MIGRATION-2260-CLAIM.yaml
+    claim_digest: 2139e3d98528183f5c5924a7bf0730caf5e9458baabc519ad82aa8c62a5a1469
+    branch: codex/v21-f02-ot-live-ledger-regularization-20260804
+    base_sha: 05f8dfc247f87318884db6cf57a42bc75b5c8719
+    ordinal: 2260
+    filename: packages/db/migrations/2260_v21_governed_campaign_audience_decisions.sql
+    mode: source_only_disposable_PostgreSQL_18_and_pgmem
+  live_database_contact_provider_send_deploy_effects: 0_0_0_0_0
 ot_live_001_03_product_candidate_freeze:
   recorded_at: '2026-08-04T09:27:00Z'
   control_parent_sha: 65d343162df0bb404ade1e4d1460f0ad808411ef

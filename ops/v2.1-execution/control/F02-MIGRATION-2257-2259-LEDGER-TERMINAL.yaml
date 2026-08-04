@@ -1,0 +1,40 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: F02
+source_claim_id: c172ba4d-1098-4d72-910f-5048a678e4f9
+writer_id: codex-f02-ledger-regularization-c172ba4d
+claim_digest: e4c86171314af866512c001628d7aaaad8b072de23d078ed07c4b7d699e8e005
+claim_disposition: consumed_source_success
+control_pre_effect_head: fb70bd65344513161c240e3ed6dfa30e0ad7fb54
+branch: codex/v21-f02-ot-live-ledger-regularization-20260804
+base_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
+source_head_sha: 05f8dfc247f87318884db6cf57a42bc75b5c8719
+source_tree_sha: 3acfd7c9fe96cf7aebc4ac066e03701bd82f2d09
+remote_equality: passed
+exact_path_count: 6
+postimage_digests:
+  regularization_record: 15f76a7dd1a7056f1546d5b085f92d66276ca8ec1a6ce447cbe61c7e728d1e1b
+  migration_2259_request: 2adf9cd2fcfce3c998317482ea346df1b2dc23aed14e14abd192d24fbf5c33fe
+  handoff: a29a0d38333441c0832de2e15a223185cde809f0640979c9e150fae24947e3ba
+  allocation_proposal: 7b8b00b127cad2a361c083251d54e59ca185b9e99f5a99ea8aee62457e3d62ec
+  next_prompt: 5e4c3d564c95057a22c8a34766d1378f48aedf69675694ad3019acd8981a0e5f
+  task_state: 5e2cffe8367ce6a58ad3697e65f29e416ac9bc12876f8743000f32a8ef6fbcd9
+regularized_ordinals:
+  - 2257
+  - 2258
+  - 2259
+migration_2259_request_digest: 6ae5c19200f871f87ff5954e9471d16ecc5ab9c7cca8e621b17d48afdca7eedf
+next_available_ordinal: 2260
+next_available_is_allocation: false
+OT_LIVE_003_2260_state: rejected_unallocated_default_off
+independent_controller_readback:
+  YAML_semantic_contract_ordinal_uniqueness_and_exact_scope: passed
+  migrations_2257_2258_2259_byte_identity: passed
+  control_mirror_copy_authorized: true
+zero_effects:
+  migration_SQL_edits_or_applications: 0
+  database_connections_or_writes: 0
+  provider_deploy_DNS_send_billing_customer_or_Student_effects: 0
+recorded_at: '2026-08-04T13:21:16Z'
+contains_secret: false
+immutable: true
