@@ -1,0 +1,52 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-001.03
+owner_thread_id: 019fc7e8-b506-7d30-a36a-4d7a9641f4fd
+source_claim_id: 0670069f-a8d6-44b9-854e-d46d9f052be7
+claim_disposition: consumed_source_success_held_before_data_authority
+branch: codex/ot-live-001-operator-fixture-design-20260804
+base_sha: 4f9276ad0507abccbcb896b3234859a412a943cd
+source_head_sha: 301aaa496b26b5f912e816a446c344c61fda52b2
+source_tree_sha: abf61f857f1d87145b67f785f689d934cbded937
+candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
+changed_files:
+  - path: ops/release/ot-live-001/operator-fixture-reconciliation/README.md
+    sha256: 2e28de4763d40885f8a2e9ee035ce314b6ac56494bbf52f9b4b3d9a25458bd37
+  - path: ops/release/ot-live-001/operator-fixture-reconciliation/fixture-reconciliation.test.ts
+    sha256: a000420ce08a4a407b5874bda86a31594e8a5d418e048747b03a4281ffdda053
+  - path: ops/release/ot-live-001/operator-fixture-reconciliation/transaction-proposal.ts
+    sha256: b26b85f2fb4383a6bfc863e3b50905e004ae99451900480dcc96b9038add6e05
+independent_controller_readback:
+  local_tracking_remote_equality: passed
+  exact_three_path_scope: passed
+  clean_worktree: passed
+  focused_vitest: 20_passed_0_failed
+  repository_typecheck: passed
+  scoped_eslint: passed
+  scoped_prettier: passed
+  diff_check: passed
+  repository_secret_scan: passed_3225_text_files
+accepted_corrections:
+  - every_legacy_reference_has_an_exact_SQL_alias
+  - protected_identifier_hashes_use_canonical_prefixed_domains_inside_PostgreSQL
+  - proven_legacy_argon2id_is_prefix_normalized_to_v21_argon2id_v1_inside_PostgreSQL_only
+  - legacy_hash_remains_byte_for_byte_unchanged
+  - six_identity_household_credential_rows_and_zero_replay_boundary_remain_inert
+controller_hold:
+  severity: P1
+  finding: >-
+    The proposal creates a v21_human_accounts row and a family household but creates neither required canonical
+    human_account/access transition events nor their derived canonical aggregate states. The accepted login repository
+    only exposes an owned Parent household when an access aggregate state exists, so this six-row design cannot satisfy
+    the authorized Admin-to-Parent-to-Admin production canary.
+  evidence_paths:
+    - apps/web/src/server/features/auth/v21-adult-session.ts
+    - packages/db/src/accounts/v21-household-identity-repository.ts
+    - apps/web/src/server/features/signup/family/repository.ts
+    - packages/db/migrations/2234_canonical_state_machines.sql
+  data_authority_reissued: false
+source_effects: one_normal_fast_forward_push
+database_session_provider_deployment_DNS_send_charge_customer_Student_effects: 0
+recorded_at: '2026-08-04T10:51:01Z'
+contains_secret: false
+immutable: true

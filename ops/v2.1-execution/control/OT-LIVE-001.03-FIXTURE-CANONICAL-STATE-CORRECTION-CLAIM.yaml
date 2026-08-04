@@ -1,0 +1,74 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-001.03
+owner_thread_id: 019fc7e8-b506-7d30-a36a-4d7a9641f4fd
+claim_id: 28220356-2259-45c9-b10f-a09e87b4c782
+writer_id: codex-ot-live-001-03-fixture-canonical-state-28220356
+status: active
+branch: codex/ot-live-001-operator-fixture-design-20260804
+base_sha: 301aaa496b26b5f912e816a446c344c61fda52b2
+candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
+control_parent_sha: 5e8a9a71038f9d7e800a78718b80dc3ed45a6101
+predecessor_claim_id: 0670069f-a8d6-44b9-854e-d46d9f052be7
+predecessor_terminal_path: ops/v2.1-execution/control/OT-LIVE-001.03-FIXTURE-DESIGN-CORRECTION-TERMINAL.yaml
+exact_paths:
+  - ops/release/ot-live-001/operator-fixture-reconciliation/README.md
+  - ops/release/ot-live-001/operator-fixture-reconciliation/fixture-reconciliation.test.ts
+  - ops/release/ot-live-001/operator-fixture-reconciliation/fixture-reconciliation.ts
+  - ops/release/ot-live-001/operator-fixture-reconciliation/transaction-proposal.ts
+allowed_operation: correct_test_commit_and_normally_push_only_the_inert_fixture_design_for_required_canonical_human_account_and_access_state
+required_corrections:
+  - >-
+    Model the normal production invariant for both the proposed HumanAccount and family household by inserting one
+    canonical_state_transition_events row for human_account null-to-active and one for access null-to-free with
+    access_cause free_period; use actor_kind reconciler and a non-PII actor key.
+  - >-
+    Never insert update or delete canonical_aggregate_states directly. Require exact trigger-derived human_account
+    active and access free aggregate-state readback under the same product runtime verification environment exact keys
+    exact transition keys versions timestamps actors idempotency keys and canonical request hash.
+  - >-
+    Expand protected bindings to cover exact transition keys idempotency keys and canonical request hash without
+    committing or logging the protected fixture email raw identifiers password hash cookie token or credentials.
+  - >-
+    Expand empty collision preflight and exact applied/replay classification to include zero-then-one exact
+    human_account and access aggregate states plus zero-then-one exact canonical transition events. Replay must perform
+    zero statements and zero writes.
+  - >-
+    Prove the resulting household is discoverable by the accepted Parent-context join used by
+    findV21AdultLoginIdentity and listOwnedHouseholdContexts, while retaining both Admin and Parent memberships and one
+    exact active family household.
+  - >-
+    Distinguish explicit statement row counts from trigger-derived physical effects: create has eight explicit inserted
+    rows and ten total row effects; an open-transaction failure rolls back all ten with zero committed effects.
+  - >-
+    Replace the unsafe six-delete post-commit rollback claim with an exact separately-authorized compensation design:
+    append human_account active-to-archived and access free-to-inactive household_archived transitions first, require
+    exact derived aggregate updates, then exact-delete only the six proposal-created identity/account/membership/
+    household/credential rows. Preserve the four immutable transition events and two terminal aggregate-state audit
+    rows; never delete or rewrite canonical transition history.
+  - preserve_the_accepted_alias_canonical_prefixed_hash_and_legacy_to_v1_password_prefix_corrections
+  - add_regression_tests_for_canonical_state_creation_parent_context_replay_collisions_and_compensation_audit_residue
+effect_budget_model:
+  create_explicit_insert_rows: 8
+  create_trigger_derived_aggregate_rows: 2
+  create_total_row_effects: 10
+  replay_total_row_effects: 0
+  open_transaction_failure_committed_effects: 0
+  post_commit_compensation_explicit_rows: 8
+  post_commit_compensation_trigger_derived_updates: 2
+  post_commit_compensation_total_row_effects: 10
+  terminal_immutable_audit_rows_preserved: 6
+  legacy_session_Student_customer_provider_deployment_DNS_send_charge_effects: 0
+publish_authority:
+  normal_push_to_exact_branch: true
+  force_push_amend_rebase_merge: false
+prohibitions:
+  - no_database_connection_SQL_execution_migration_shared_runtime_candidate_or_application_edit
+  - no_direct_canonical_aggregate_state_write_or_canonical_transition_event_update_or_delete
+  - no_raw_email_password_hash_session_token_cookie_or_personal_identifier_in_source_logs_or_control
+  - no_browser_session_provider_deployment_DNS_send_charge_customer_or_Student_effect
+  - no_inference_that_corrected_source_is_data_effect_or_compensation_authority
+issued_at: '2026-08-04T10:51:01Z'
+expires_at: '2026-08-04T11:51:01Z'
+contains_secret: false
+immutable: true
