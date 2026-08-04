@@ -664,6 +664,7 @@ function validatedSourceFactsHash(row: HistoryRow): GovernedCensusSha256 {
   const claimed = String(facts.sourceFactsHash ?? '');
   if (!SHA256_PATTERN.test(claimed)) ambiguous('current source facts hash is invalid');
   const { sourceFactsHash: _ignored, ...withoutHash } = facts;
+  void _ignored;
   const expected = governedCampaignCanonicalSha256({
     providerContactRefHash: row.provider_contact_ref_hash,
     contactKey: row.contact_key,
