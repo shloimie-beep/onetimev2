@@ -98,14 +98,14 @@ describe('governed campaign audience census runner', () => {
     expect(closeAfterFailure).toHaveBeenCalledTimes(1);
   });
 
-  it('uses the documented top-level count and exact Email DND statuses', () => {
+  it('accepts the documented contacts/count envelope only when it is terminal', () => {
     const inactive = parseHighLevelPage(
-      { contacts: [rawContact('provider-inactive', 'inactive')], count: 2 },
+      { contacts: [rawContact('provider-inactive', 'inactive')], count: 1 },
       LOCATION,
       1,
     );
-    expect(inactive.reportedTotal).toBe(2);
-    expect(inactive.nextCursor).toBe('provider-inactive');
+    expect(inactive.reportedTotal).toBe(1);
+    expect(inactive.nextCursor).toBeNull();
     expect(inactive.contacts[0]).toMatchObject({
       consentState: 'unknown',
       providerSuppressionState: 'active',
@@ -153,6 +153,163 @@ describe('governed campaign audience census runner', () => {
         10,
       ),
     ).toThrow(/contradictory email DND/iu);
+
+    expect(() =>
+      parseHighLevelPage(
+        { contacts: [rawContact('provider-documented-nonterminal', 'inactive')], count: 2 },
+        LOCATION,
+        1,
+      ),
+    ).toThrow(/cannot safely derive both pagination cursors/iu);
+  });
+
+  it('binds the observed contacts/meta/traceId envelope and reconstructs both cursors', async () => {
+    const observedUrls: URL[] = [];
+    const fetchImplementation = vi.fn(async (request: URL | RequestInfo) => {
+      const url = new URL(String(request));
+      observedUrls.push(url);
+      const page = observedUrls.length;
+      return new Response(
+        JSON.stringify(
+          page === 1
+            ? observedEnvelope({
+                contacts: [rawContact('provider-observed-page-one', 'inactive')],
+                currentPage: 1,
+                nextPage: 2,
+                prevPage: null,
+                total: 2,
+                startAfter: 1_786_000_000_001,
+                startAfterId: 'synthetic-observed-cursor',
+              })
+            : observedEnvelope({
+                contacts: [rawContact('provider-observed-page-two', 'inactive')],
+                currentPage: 2,
+                nextPage: null,
+                prevPage: 1,
+                total: 2,
+                startAfter: null,
+                startAfterId: null,
+              }),
+        ),
+        { status: 200 },
+      );
+    });
+    const providerTransport = createReadOnlyHighLevelCensusTransport({
+      privateIntegrationsToken: 'synthetic-token-not-logged',
+      fetchImplementation,
+    });
+
+    const first = await providerTransport.readContactsPage({
+      locationId: LOCATION,
+      cursor: null,
+      limit: 1,
+    });
+    expect(first).toMatchObject({ reportedTotal: 2 });
+    expect(first.nextCursor).toEqual(expect.any(String));
+    const second = await providerTransport.readContactsPage({
+      locationId: LOCATION,
+      cursor: first.nextCursor,
+      limit: 1,
+    });
+    expect(second.nextCursor).toBeNull();
+    expect(observedUrls[1]).toMatchObject({
+      origin: HIGHLEVEL_CANONICAL_ORIGIN,
+      pathname: '/contacts/',
+    });
+    expect([...observedUrls[1]!.searchParams.keys()].sort()).toEqual([
+      'limit',
+      'locationId',
+      'startAfter',
+      'startAfterId',
+    ]);
+    expect(observedUrls[1]!.searchParams.get('locationId')).toBe(LOCATION);
+    expect(observedUrls[1]!.searchParams.get('limit')).toBe('1');
+    expect(observedUrls[1]!.searchParams.get('startAfter')).toBe('1786000000001');
+    expect(observedUrls[1]!.searchParams.get('startAfterId')).toBe('synthetic-observed-cursor');
+  });
+
+  it('rejects conflicting observed envelopes and arbitrary continuation URLs', () => {
+    const exact = observedEnvelope({
+      contacts: [rawContact('provider-observed-contract', 'inactive')],
+      currentPage: 1,
+      nextPage: 2,
+      prevPage: null,
+      total: 2,
+      startAfter: 1_786_000_000_001,
+      startAfterId: 'synthetic-observed-cursor',
+    });
+    expect(() => parseHighLevelPage({ ...exact, count: 2 }, LOCATION, 1)).toThrow(
+      /envelope is unknown or conflicting/iu,
+    );
+    expect(() =>
+      parseHighLevelPage(
+        {
+          ...exact,
+          meta: {
+            ...exact.meta,
+            nextPageUrl:
+              'https://untrusted.invalid/contacts/?locationId=wrong&limit=1&startAfter=1786000000001&startAfterId=synthetic-observed-cursor',
+          },
+        },
+        LOCATION,
+        1,
+      ),
+    ).toThrow(/changed the canonical request/iu);
+    for (const nextPageUrl of [
+      `${HIGHLEVEL_CANONICAL_ORIGIN}/other/?locationId=${LOCATION}&limit=1&startAfter=1786000000001&startAfterId=synthetic-observed-cursor`,
+      `${HIGHLEVEL_CANONICAL_ORIGIN}/contacts/?locationId=wrong&limit=1&startAfter=1786000000001&startAfterId=synthetic-observed-cursor`,
+      `${HIGHLEVEL_CANONICAL_ORIGIN}/contacts/?locationId=${LOCATION}&limit=1&startAfter=1786000000001&startAfterId=synthetic-observed-cursor&unexpected=true`,
+    ]) {
+      expect(() =>
+        parseHighLevelPage({ ...exact, meta: { ...exact.meta, nextPageUrl } }, LOCATION, 1),
+      ).toThrow(/changed the canonical request/iu);
+    }
+    expect(() =>
+      parseHighLevelPage({ ...exact, meta: { ...exact.meta, unexpected: true } }, LOCATION, 1),
+    ).toThrow(/meta envelope is incomplete or unknown/iu);
+    expect(() =>
+      parseHighLevelPage({ ...exact, meta: { ...exact.meta, total: '2' } }, LOCATION, 1),
+    ).toThrow(/provider total is missing or invalid/iu);
+    expect(() =>
+      parseHighLevelPage({ ...exact, meta: { ...exact.meta, startAfterId: null } }, LOCATION, 1),
+    ).toThrow(/lacks an exact cursor pair/iu);
+    expect(() =>
+      parseHighLevelPage({ ...exact, meta: { ...exact.meta, currentPage: 3 } }, LOCATION, 1),
+    ).toThrow(/currentPage did not match/iu);
+    expect(() =>
+      parseHighLevelPage(
+        observedEnvelope({
+          contacts: [rawContact('provider-terminal-conflict', 'inactive')],
+          currentPage: 1,
+          nextPage: null,
+          prevPage: null,
+          total: 1,
+          startAfter: 1_786_000_000_001,
+          startAfterId: 'synthetic-terminal-cursor',
+        }),
+        LOCATION,
+        1,
+      ),
+    ).toThrow(/terminal provider meta contains conflicting cursors/iu);
+    expect(() => parseHighLevelPage(exact, LOCATION, 101)).toThrow(
+      /page limit must be between 1 and 100/iu,
+    );
+  });
+
+  it('never sends a caller-supplied continuation cursor', async () => {
+    const fetchImplementation = vi.fn();
+    const providerTransport = createReadOnlyHighLevelCensusTransport({
+      privateIntegrationsToken: 'synthetic-token-not-logged',
+      fetchImplementation,
+    });
+    await expect(
+      providerTransport.readContactsPage({
+        locationId: LOCATION,
+        cursor: 'synthetic-unissued-cursor',
+        limit: 1,
+      }),
+    ).rejects.toMatchObject({ code: 'AMBIGUOUS_PROVIDER_CURSOR' });
+    expect(fetchImplementation).not.toHaveBeenCalled();
   });
 
   it('times out a provider read with a sanitized unknown result', async () => {
@@ -221,6 +378,15 @@ describe('governed campaign audience census runner', () => {
         1,
       ),
     ).rejects.toMatchObject({ code: 'PROVIDER_CONTACT_CEILING' });
+    await expect(
+      readBoundedProviderContacts(transport([page([provider(HASH_A)], 'unexpected-cursor', 1)]), 1),
+    ).rejects.toMatchObject({ code: 'AMBIGUOUS_PROVIDER_CURSOR' });
+    await expect(
+      readBoundedProviderContacts(
+        transport([page([provider(HASH_A)], 'next', 2), page([provider(HASH_A)], null, 2)]),
+        2,
+      ),
+    ).rejects.toMatchObject({ code: 'DUPLICATE_PROVIDER_REFERENCE' });
   });
 
   it('composes a sanitized request but never executes the decision store', async () => {
@@ -395,5 +561,41 @@ function rawContact(id: string, emailDndStatus: string) {
     locationId: LOCATION,
     email: `${id}@example.invalid`,
     dndSettings: { Email: { status: emailDndStatus } },
+  };
+}
+
+function observedEnvelope(input: {
+  contacts: readonly ReturnType<typeof rawContact>[];
+  currentPage: number;
+  nextPage: number | null;
+  prevPage: number | null;
+  total: number;
+  startAfter: number | null;
+  startAfterId: string | null;
+}) {
+  let nextPageUrl: string | null = null;
+  if (input.nextPage !== null) {
+    if (input.startAfter === null || input.startAfterId === null) {
+      throw new Error('synthetic observed envelope requires both cursors');
+    }
+    const url = new URL('/contacts/', HIGHLEVEL_CANONICAL_ORIGIN);
+    url.searchParams.set('locationId', LOCATION);
+    url.searchParams.set('limit', '1');
+    url.searchParams.set('startAfter', String(input.startAfter));
+    url.searchParams.set('startAfterId', input.startAfterId);
+    nextPageUrl = url.toString();
+  }
+  return {
+    contacts: input.contacts,
+    meta: {
+      currentPage: input.currentPage,
+      nextPage: input.nextPage,
+      nextPageUrl,
+      prevPage: input.prevPage,
+      startAfter: input.startAfter,
+      startAfterId: input.startAfterId,
+      total: input.total,
+    },
+    traceId: 'synthetic-observed-trace',
   };
 }

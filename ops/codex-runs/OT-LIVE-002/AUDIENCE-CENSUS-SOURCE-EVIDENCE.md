@@ -1,32 +1,26 @@
 # OT-LIVE-002 governed audience census runner source evidence
 
-Disposition: `SOURCE_ONLY_IDENTITY_CONTRACT_CORRECTION_PROOF_GREEN`.
+Disposition: `SOURCE_ONLY_GHL_PAGINATION_CONTRACT_CORRECTION_PROOF_GREEN`.
 
 ## Authority and immutable source binding
 
-- Claim: `da761d28-6c24-4fa6-b531-d927544fbb62`
-- Claim raw SHA-256: `b8ce9ca078bbd412ce812ef72c1b1be4bde64befe18fd009c3d44204e64387fc`
-- Claim branch: `codex/ot-live-002-census-identity-contract-correction-20260804`
-- Exact base/source before this successor: `032637395a9ab791b85c13fa6f1cffccfaa9e753`
-- Exact base tree: `4f0b2adf49ed9d34c6788b21b6f4dd49a546d404`
-- Accepted predecessor source: `5110bee2b06145d6cd6ad596dd4f42e748bda75e`
-- Control readback at issuance: `2083e5c8283cac67cf0ffe7194f99b4d839301fe`
+- Claim: `3d69dd1d-7c7c-4470-8285-c0bd181533a2`
+- Claim raw SHA-256: `354f0f32afd0242489d94176ac46bf78ccdf9e72113cbbee8f12d99dfc89d6c9`
+- Claim branch: `codex/ot-live-002-ghl-pagination-contract-correction-20260804`
+- Exact base/source before this successor: `a157c388d8dc292699f7cd1a1ef178918ee30885`
+- Exact base tree: `bd2f1295043af74cfa0bad5f5b3993e3a534137e`
+- Control readback at issuance: `c2eb402df1e26c5dd76f3ccb08ec8661aca4e039`
 - Remote correction branch before the one authorized push: absent.
 
-The terminal source head/tree and the raw SHA-256 of all eight paths are read
+The terminal source head/tree and the raw SHA-256 of all three paths are read
 back after the normal fast-forward push and returned to C00. They are not
 self-referentially embedded here.
 
-## Exact eight-path scope
+## Exact three-path scope
 
-1. `packages/domain/src/audience-reconciliation/governed-campaign-census.ts`
-2. `packages/domain/src/audience-reconciliation/governed-campaign-census.test.ts`
-3. `packages/db/src/audience-reconciliation/governed-campaign-census-reader.ts`
-4. `packages/db/src/audience-reconciliation/governed-campaign-census-reader.test.ts`
-5. `scripts/highlevel/governed-campaign-audience-census.ts`
-6. `scripts/highlevel/governed-campaign-audience-census.test.ts`
-7. `tests/integration/governed-campaign-audience-census.test.ts`
-8. `ops/codex-runs/OT-LIVE-002/AUDIENCE-CENSUS-SOURCE-EVIDENCE.md`
+1. `scripts/highlevel/governed-campaign-audience-census.ts`
+2. `scripts/highlevel/governed-campaign-audience-census.test.ts`
+3. `ops/codex-runs/OT-LIVE-002/AUDIENCE-CENSUS-SOURCE-EVIDENCE.md`
 
 Migration 2260 remains byte-for-byte unchanged. Its normalized Git-blob
 SHA-256 is still
@@ -35,14 +29,26 @@ SHA-256 is still
 ## Source verdict
 
 The successor preserves the default-off, read-only census boundary and corrects
-its identity contract:
+its HighLevel pagination contract:
 
 - exact OT-15 location, campaign, workflow, and launch-tag binding;
 - positive operator-supplied `maximumProviderContacts` and
   `maximumAffectedRows`;
-- bounded provider pages and total count, repeated/blank cursor rejection,
-  cross-location and duplicate rejection, and provider-order-independent
-  canonical sorting and hashes;
+- exact live `contacts`/`meta`/`traceId` response-envelope binding with
+  positive safe pagination integers and stable `meta.total` reconciliation;
+- both documented request cursors (`startAfter` and `startAfterId`) carried in
+  an internal typed cursor, accepted only when issued by a validated page, and
+  reconstructed against the fixed origin/path/location/limit;
+- provider `nextPageUrl` is structural evidence only: its origin, path, exact
+  query-key set, and every expected query value must match, but it is never
+  followed;
+- the separately documented `contacts`/`count` response is accepted only when
+  the page is self-evidently terminal because it cannot supply both request
+  cursors for a continuation;
+- bounded provider pages and accumulated total count, repeated/blank/unissued
+  cursor rejection, exact terminal-cursor rejection, cross-location and
+  duplicate rejection, and provider-order-independent canonical sorting and
+  hashes;
 - an explicit `REPEATABLE READ READ ONLY` database transaction across exact
   account, product, runtime, verification environment, campaign, and provider
   binding;
@@ -83,12 +89,34 @@ leave their read boundaries.
 
 ## HighLevel contract evidence
 
+- The claim-authorized diagnostic made exactly one `GET /contacts/` request
+  with version `2023-02-21`, the canonical location, `limit=1`, no cursor, one
+  response, and no retry. HTTP status was `200`.
+- Sanitized response evidence: top-level keys were exactly `contacts`, `meta`,
+  and `traceId`; `contacts` was an array of length 1; the body was 1,104 bytes
+  with SHA-256
+  `9e0adb338d1104539aaf4979e69b1cadba41107f28d39980000ba1d9331f665f`.
+- Sorted `meta` keys were exactly `currentPage`, `nextPage`, `nextPageUrl`,
+  `prevPage`, `startAfter`, `startAfterId`, and `total`. Safe integer evidence
+  was `currentPage=1`, `nextPage=2`, and `total=1499`; `prevPage` was null.
+  `startAfter` was a safe-integer cursor and was not retained. No cursor value
+  was retained.
+- `nextPageUrl` was a 145-byte string with SHA-256
+  `f603f45c6222148e1aef1182e70d3b063dc934bbc95abcb41abb90546817d7cb`;
+  its sanitized structure was canonical origin
+  `https://services.leadconnectorhq.com`, path `/contacts/`, and exact query
+  keys `limit`, `locationId`, `startAfter`, and `startAfterId`. The observed
+  `startAfterId` was a 20-byte string with SHA-256
+  `981ca273d237a51ecbadd421123b7d0e35d633deab693dc0737ff4c74afaf639`.
+- No contact value, opaque cursor value, token, URL query value, response body,
+  or private field was output, persisted, or committed.
 - Canonical origin is pinned to `https://services.leadconnectorhq.com`; no
   environment-supplied origin or version can receive the private integration
   token.
-- The retained read fallback is the documented, deprecated `GET /contacts/`
-  contract with version `2023-02-21`, `locationId`, `startAfterId`, maximum
-  `limit` 100, and top-level `contacts` plus `count`:
+- The documented, deprecated `GET /contacts/` request contract defines version
+  `2023-02-21`, `locationId`, both `startAfter` and `startAfterId`, and maximum
+  `limit` 100. Its documented `contacts`/`count` response remains a distinct,
+  exact, terminal-only parser contract:
   <https://marketplace.gohighlevel.com/docs/ghl/contacts/get-contacts/index.html>
 - The public Search Contacts page documents `POST /contacts/search` but does
   not expose a complete public request/response pagination schema, so no search
@@ -107,28 +135,32 @@ leave their read boundaries.
 ## Validation
 
 - TypeScript strict no-emit: `PASS`
-- Focused domain/reader/runner/integration suite without native opt-in: `33/33 PASS`
+- All 33 predecessor census cases remained nonfailing; corrected focused
+  domain/reader/runner/integration suite: `36 PASS`, `1 native-only SKIP`
+  (`37` total).
 - pg-mem fresh migration plus real decision-store composition: `PASS`, zero
   decision rows
-- Disposable PostgreSQL: exact `18.4` / `180004`
-- Native campaign-hash parity, durable mapping precedence, exact normalized-email
-  fallback, account/product/location decoys, duplicate binding/email/adult,
-  legacy-hash-only, archived adult, active self-Student scope, canonical
-  suppression/DND, and malformed-envelope fail-closed probes: `1/1 PASS`
-- Provider DND status/casing/contradiction, count/cursor/page/total ceiling,
+- No PostgreSQL process or database connection was authorized or invoked by
+  this correction; the predecessor PostgreSQL 18 proof remains unchanged.
+- Observed/documented envelope separation, dual-cursor reconstruction,
+  unissued/repeated/terminal cursor rejection, canonical URL validation,
+  page/accumulated ceilings, provider DND status/casing/contradiction,
   origin/version pin, timeout sanitization, pool cleanup, replay cardinality,
   reintroduction, and hash-compatibility regressions: `PASS`
 - Deterministic candidate builder: `4/4 PASS`
-- Identity-contract static assertions: `12/12 PASS`
+- Predecessor identity-contract static assertions remain recorded as
+  `12/12 PASS`; the affected runner assertions were rerun in the focused suite.
+- Pagination-contract static assertions: `20/20 PASS`
 - Repository build, exact-path ESLint, formatting, whitespace, path scope,
   migration integrity, diff, and secret/static scans: `PASS`
-- Disposable database/cluster: stopped and removed
+- Disposable database/cluster created: `0`
 
 ## Zero-effect ledger
 
 - Live/staging/production database connections or writes: `0`
 - Decision-store executions or decision-row writes: `0`
-- GHL/provider reads during source proof: `0`
+- GHL/provider reads during source proof: `1` exact diagnostic GET, resolved
+  HTTP `200`, no retry or additional page
 - Provider write methods introduced: `0`
 - GHL contact/tag/workflow/campaign/seed/reply/pilot/broad-send effects: `0`
 - Resend/DNS/Forward Email/WhatsApp effects: `0`

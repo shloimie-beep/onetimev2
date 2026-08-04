@@ -30,6 +30,25 @@ export const HIGHLEVEL_CANONICAL_ORIGIN = 'https://services.leadconnectorhq.com'
 export const HIGHLEVEL_CANONICAL_API_VERSION = '2023-02-21';
 export const HIGHLEVEL_READ_TIMEOUT_MS = 10_000;
 
+interface HighLevelObservedMetaCursor {
+  nextPage: number;
+  startAfter: number;
+  startAfterId: string;
+}
+
+const HIGHLEVEL_CURSOR_PREFIX = 'ghl-observed-meta-v1.';
+const HIGHLEVEL_OBSERVED_ROOT_KEYS = ['contacts', 'meta', 'traceId'] as const;
+const HIGHLEVEL_OBSERVED_META_KEYS = [
+  'currentPage',
+  'nextPage',
+  'nextPageUrl',
+  'prevPage',
+  'startAfter',
+  'startAfterId',
+  'total',
+] as const;
+const HIGHLEVEL_DOCUMENTED_ROOT_KEYS = ['contacts', 'count'] as const;
+
 export interface GovernedCampaignCensusProviderPage {
   locationId: string;
   contacts: readonly ProtectedGovernedCensusProviderContact[];
@@ -207,6 +226,9 @@ export async function readBoundedProviderContacts(
         fail('PROVIDER_CONTACT_CEILING', 'provider rows exceeded maximumProviderContacts');
       }
     }
+    if (contacts.length > reportedTotal) {
+      fail('AMBIGUOUS_PROVIDER_COUNT', 'provider rows exceeded the reported total');
+    }
     if (page.nextCursor !== null) {
       if (
         page.nextCursor.trim() === '' ||
@@ -218,6 +240,9 @@ export async function readBoundedProviderContacts(
       cursors.add(page.nextCursor);
     }
     if (contacts.length === reportedTotal) {
+      if (page.nextCursor !== null) {
+        fail('AMBIGUOUS_PROVIDER_CURSOR', 'provider returned a cursor after the exact total');
+      }
       cursor = null;
     } else {
       if (page.nextCursor === null) {
@@ -241,16 +266,30 @@ export function createReadOnlyHighLevelCensusTransport(input: {
 }): GovernedCampaignCensusProviderTransport {
   const fetchImplementation = input.fetchImplementation ?? fetch;
   const timeoutMilliseconds = input.timeoutMilliseconds ?? HIGHLEVEL_READ_TIMEOUT_MS;
+  const issuedCursors = new Map<string, HighLevelObservedMetaCursor>();
+  const seenCursors = new Set<string>();
   positive(timeoutMilliseconds, 'provider read timeout');
   return {
     async readContactsPage(pageInput) {
       if (pageInput.locationId !== GOVERNED_CAMPAIGN_PROVIDER_BINDING.providerLocationId) {
         fail('CROSS_LOCATION_PROVIDER_REQUEST', 'provider request location is not exact');
       }
+      if (!Number.isSafeInteger(pageInput.limit) || pageInput.limit <= 0 || pageInput.limit > 100) {
+        fail('PROVIDER_CONTACT_CEILING', 'provider page limit must be between 1 and 100');
+      }
       const url = new URL('/contacts/', HIGHLEVEL_CANONICAL_ORIGIN);
       url.searchParams.set('locationId', pageInput.locationId);
       url.searchParams.set('limit', String(pageInput.limit));
-      if (pageInput.cursor !== null) url.searchParams.set('startAfterId', pageInput.cursor);
+      const cursor =
+        pageInput.cursor === null ? null : (issuedCursors.get(pageInput.cursor) ?? 'unissued');
+      if (cursor === 'unissued') {
+        fail('AMBIGUOUS_PROVIDER_CURSOR', 'provider cursor was not issued by a validated page');
+      }
+      if (pageInput.cursor !== null) issuedCursors.delete(pageInput.cursor);
+      if (cursor !== null) {
+        url.searchParams.set('startAfter', String(cursor.startAfter));
+        url.searchParams.set('startAfterId', cursor.startAfterId);
+      }
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), timeoutMilliseconds);
       try {
@@ -264,7 +303,21 @@ export function createReadOnlyHighLevelCensusTransport(input: {
         });
         if (!response.ok)
           fail('PROVIDER_READ_UNKNOWN', `provider GET failed with ${response.status}`);
-        return parseHighLevelPage(await response.json(), pageInput.locationId, pageInput.limit);
+        const page = parseHighLevelPage(
+          await response.json(),
+          pageInput.locationId,
+          pageInput.limit,
+          cursor?.nextPage ?? 1,
+        );
+        if (page.nextCursor !== null) {
+          if (seenCursors.has(page.nextCursor)) {
+            fail('AMBIGUOUS_PROVIDER_CURSOR', 'provider returned a repeated cursor');
+          }
+          const decoded = decodeHighLevelObservedMetaCursor(page.nextCursor);
+          seenCursors.add(page.nextCursor);
+          issuedCursors.set(page.nextCursor, decoded);
+        }
+        return page;
       } catch (error) {
         if (error instanceof GovernedCampaignAudienceCensusError) throw error;
         fail('PROVIDER_READ_UNKNOWN', 'provider GET failed or timed out');
@@ -279,27 +332,193 @@ export function parseHighLevelPage(
   value: unknown,
   expectedLocationId: string,
   limit: number,
+  expectedPage = 1,
 ): GovernedCampaignCensusProviderPage {
   const root = object(value, 'provider response');
+  positive(expectedPage, 'provider page number');
+  if (!Number.isSafeInteger(limit) || limit <= 0 || limit > 100) {
+    fail('PROVIDER_CONTACT_CEILING', 'provider page limit must be between 1 and 100');
+  }
   if (!Array.isArray(root.contacts)) fail('PROVIDER_RESPONSE_INVALID', 'contacts array is absent');
   if (root.contacts.length > limit)
     fail('PROVIDER_CONTACT_CEILING', 'provider page exceeded its limit');
-  const total = Number(root.count);
   const contacts = root.contacts.map((raw) => protectHighLevelContact(raw, expectedLocationId));
-  const last = root.contacts.at(-1);
-  const lastId =
-    last && typeof last === 'object' && !Array.isArray(last)
-      ? (last as Record<string, unknown>).id
-      : null;
-  if (root.contacts.length === limit && (typeof lastId !== 'string' || lastId.trim() === '')) {
-    fail('AMBIGUOUS_PROVIDER_CURSOR', 'full provider page lacks a final contact cursor');
+  const rootKeys = Object.keys(root).sort();
+
+  if (exactKeys(rootKeys, HIGHLEVEL_DOCUMENTED_ROOT_KEYS)) {
+    const total = safeNonnegativeInteger(root.count, 'documented provider total');
+    if (total !== contacts.length) {
+      fail(
+        'AMBIGUOUS_PROVIDER_CURSOR',
+        'documented contacts/count envelope cannot safely derive both pagination cursors',
+      );
+    }
+    return {
+      locationId: expectedLocationId,
+      contacts,
+      nextCursor: null,
+      reportedTotal: total,
+    };
   }
+
+  if (!exactKeys(rootKeys, HIGHLEVEL_OBSERVED_ROOT_KEYS)) {
+    fail('PROVIDER_RESPONSE_INVALID', 'provider response envelope is unknown or conflicting');
+  }
+  if (typeof root.traceId !== 'string' || root.traceId.trim() === '') {
+    fail('PROVIDER_RESPONSE_INVALID', 'observed provider trace is absent or invalid');
+  }
+  const meta = object(root.meta, 'provider meta');
+  if (!exactKeys(Object.keys(meta).sort(), HIGHLEVEL_OBSERVED_META_KEYS)) {
+    fail('PROVIDER_RESPONSE_INVALID', 'observed provider meta envelope is incomplete or unknown');
+  }
+  const currentPage = safePositiveInteger(meta.currentPage, 'provider currentPage');
+  if (currentPage !== expectedPage) {
+    fail('AMBIGUOUS_PROVIDER_CURSOR', 'provider currentPage did not match the requested page');
+  }
+  const total = safeNonnegativeInteger(meta.total, 'provider total');
+  if (total < contacts.length) {
+    fail('AMBIGUOUS_PROVIDER_COUNT', 'provider total is smaller than the current page');
+  }
+  const expectedPreviousPage = currentPage === 1 ? null : currentPage - 1;
+  const previousPage = nullablePositiveInteger(meta.prevPage, 'provider prevPage');
+  if (previousPage !== expectedPreviousPage) {
+    fail('AMBIGUOUS_PROVIDER_CURSOR', 'provider prevPage did not match the current page');
+  }
+  const nextPage = nullablePositiveInteger(meta.nextPage, 'provider nextPage');
+  if (nextPage !== null && nextPage !== currentPage + 1) {
+    fail('AMBIGUOUS_PROVIDER_CURSOR', 'provider nextPage is not sequential');
+  }
+  const cursorPair = observedMetaCursorPair(meta);
+
+  if (nextPage === null) {
+    if (meta.nextPageUrl !== null || cursorPair !== null) {
+      fail('AMBIGUOUS_PROVIDER_CURSOR', 'terminal provider meta contains conflicting cursors');
+    }
+    return {
+      locationId: expectedLocationId,
+      contacts,
+      nextCursor: null,
+      reportedTotal: total,
+    };
+  }
+  if (cursorPair === null || cursorPair === 'partial') {
+    fail('AMBIGUOUS_PROVIDER_CURSOR', 'nonterminal provider meta lacks an exact cursor pair');
+  }
+  validateHighLevelNextPageUrl(
+    meta.nextPageUrl,
+    expectedLocationId,
+    limit,
+    cursorPair.startAfter,
+    cursorPair.startAfterId,
+  );
   return {
     locationId: expectedLocationId,
     contacts,
-    nextCursor: root.contacts.length === limit ? (lastId as string) : null,
+    nextCursor: encodeHighLevelObservedMetaCursor({ nextPage, ...cursorPair }),
     reportedTotal: total,
   };
+}
+
+function observedMetaCursorPair(
+  meta: Record<string, unknown>,
+): Pick<HighLevelObservedMetaCursor, 'startAfter' | 'startAfterId'> | null | 'partial' {
+  const startAfterAbsent = meta.startAfter === null;
+  const startAfterIdAbsent = meta.startAfterId === null;
+  if (startAfterAbsent && startAfterIdAbsent) return null;
+  if (startAfterAbsent || startAfterIdAbsent) return 'partial';
+  const startAfter = safePositiveInteger(meta.startAfter, 'provider startAfter');
+  if (typeof meta.startAfterId !== 'string' || meta.startAfterId.trim() === '') {
+    fail('AMBIGUOUS_PROVIDER_CURSOR', 'provider startAfterId is absent or blank');
+  }
+  return { startAfter, startAfterId: meta.startAfterId };
+}
+
+function validateHighLevelNextPageUrl(
+  value: unknown,
+  expectedLocationId: string,
+  limit: number,
+  startAfter: number,
+  startAfterId: string,
+) {
+  if (typeof value !== 'string' || value.trim() === '') {
+    fail('AMBIGUOUS_PROVIDER_CURSOR', 'provider nextPageUrl is absent or blank');
+  }
+  let url: URL;
+  try {
+    url = new URL(value);
+  } catch {
+    fail('AMBIGUOUS_PROVIDER_CURSOR', 'provider nextPageUrl is invalid');
+  }
+  const queryKeys = [...url.searchParams.keys()].sort();
+  const expectedQueryKeys = ['limit', 'locationId', 'startAfter', 'startAfterId'];
+  if (
+    url.origin !== HIGHLEVEL_CANONICAL_ORIGIN ||
+    url.pathname !== '/contacts/' ||
+    url.username !== '' ||
+    url.password !== '' ||
+    url.hash !== '' ||
+    !exactKeys(queryKeys, expectedQueryKeys) ||
+    expectedQueryKeys.some((key) => url.searchParams.getAll(key).length !== 1) ||
+    url.searchParams.get('locationId') !== expectedLocationId ||
+    url.searchParams.get('limit') !== String(limit) ||
+    url.searchParams.get('startAfter') !== String(startAfter) ||
+    url.searchParams.get('startAfterId') !== startAfterId
+  ) {
+    fail('AMBIGUOUS_PROVIDER_CURSOR', 'provider nextPageUrl changed the canonical request');
+  }
+}
+
+function encodeHighLevelObservedMetaCursor(cursor: HighLevelObservedMetaCursor) {
+  return `${HIGHLEVEL_CURSOR_PREFIX}${Buffer.from(JSON.stringify(cursor), 'utf8').toString('base64url')}`;
+}
+
+function decodeHighLevelObservedMetaCursor(value: string): HighLevelObservedMetaCursor {
+  if (!value.startsWith(HIGHLEVEL_CURSOR_PREFIX)) {
+    fail('AMBIGUOUS_PROVIDER_CURSOR', 'provider cursor encoding is invalid');
+  }
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(
+      Buffer.from(value.slice(HIGHLEVEL_CURSOR_PREFIX.length), 'base64url').toString('utf8'),
+    );
+  } catch {
+    fail('AMBIGUOUS_PROVIDER_CURSOR', 'provider cursor encoding is invalid');
+  }
+  if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    fail('AMBIGUOUS_PROVIDER_CURSOR', 'provider cursor encoding is invalid');
+  }
+  const cursor = parsed as Record<string, unknown>;
+  if (!exactKeys(Object.keys(cursor).sort(), ['nextPage', 'startAfter', 'startAfterId'])) {
+    fail('AMBIGUOUS_PROVIDER_CURSOR', 'provider cursor fields are invalid');
+  }
+  const nextPage = safePositiveInteger(cursor.nextPage, 'provider cursor nextPage');
+  const startAfter = safePositiveInteger(cursor.startAfter, 'provider cursor startAfter');
+  if (typeof cursor.startAfterId !== 'string' || cursor.startAfterId.trim() === '') {
+    fail('AMBIGUOUS_PROVIDER_CURSOR', 'provider cursor startAfterId is invalid');
+  }
+  return { nextPage, startAfter, startAfterId: cursor.startAfterId };
+}
+
+function exactKeys(actual: readonly string[], expected: readonly string[]) {
+  return actual.length === expected.length && actual.every((key, index) => key === expected[index]);
+}
+
+function safeNonnegativeInteger(value: unknown, field: string) {
+  if (typeof value !== 'number' || !Number.isSafeInteger(value) || value < 0) {
+    fail('AMBIGUOUS_PROVIDER_COUNT', `${field} is missing or invalid`);
+  }
+  return value;
+}
+
+function safePositiveInteger(value: unknown, field: string) {
+  if (typeof value !== 'number' || !Number.isSafeInteger(value) || value <= 0) {
+    fail('AMBIGUOUS_PROVIDER_CURSOR', `${field} is missing or invalid`);
+  }
+  return value;
+}
+
+function nullablePositiveInteger(value: unknown, field: string) {
+  return value === null ? null : safePositiveInteger(value, field);
 }
 
 export async function runGovernedCampaignAudienceCensusEntrypoint(
