@@ -1,0 +1,45 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-002.02
+owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+claim_id: 3d69dd1d-7c7c-4470-8285-c0bd181533a2
+claim_digest: 354f0f32afd0242489d94176ac46bf78ccdf9e72113cbbee8f12d99dfc89d6c9
+disposition: SOURCE_CORRECTION_COMMITTED_AND_NORMALLY_PUSHED
+branch: codex/ot-live-002-ghl-pagination-contract-correction-20260804
+base_sha: a157c388d8dc292699f7cd1a1ef178918ee30885
+source_head_sha: b204b026d7733c29c514d3c5febbea948c5e67e7
+source_tree_sha: 84f49a3ef767cafcd56acf10b894784b6f2fdb28
+lineage_commit_count: 1
+remote_equality: true
+changed_paths:
+  ops/codex-runs/OT-LIVE-002/AUDIENCE-CENSUS-SOURCE-EVIDENCE.md: 6c5a649f6d5d1492b0fa2b3a6a1c9b008daa9d2913c9d78aeb3733c36521db40
+  scripts/highlevel/governed-campaign-audience-census.test.ts: a2f23fa91d5c05e5c2b1ca7dde1eeea888b33e4caa30495dad9f644e00d9f0f4
+  scripts/highlevel/governed-campaign-audience-census.ts: 9fb4cc1ca125394b3411d2e5abcaba693a86896dffc096622b20ba602a184e7a
+live_structural_diagnostic:
+  HTTP_status_and_attempts_retries: 200_1_0
+  body_bytes_and_SHA256: 1104_9e0adb338d1104539aaf4979e69b1cadba41107f28d39980000ba1d9331f665f
+  meta_keys: currentPage_nextPage_nextPageUrl_prevPage_startAfter_startAfterId_total
+  safe_values: currentPage_1_nextPage_2_total_1499_prevPage_null
+  nextPageUrl: canonical_origin_path_exact_query_keys_limit_locationId_startAfter_startAfterId_never_followed
+accepted_contract:
+  observed_contacts_meta_traceId_envelope: exact_validated
+  typed_cursor: startAfter_plus_startAfterId_reconstructed_locally
+  provider_supplied_URL_followed: false
+  unissued_conflicting_unknown_cursor_meta_and_URL_shapes: rejected_before_fetch
+  documented_contacts_count_contract: terminal_only_when_exact_and_unambiguous
+  page_and_accumulated_ceiling_unique_contact_and_terminal_gates: preserved
+  fixed_origin_version_timeout_DND_identity_READ_ONLY_and_default_off_gates: preserved
+verification:
+  census_suite: 36_pass_1_native_only_skip_no_database_connection
+  candidate_builder: 4_of_4_passed
+  static_contract: 20_of_20_passed
+  build_lint_typecheck_format_secret_diff_scope_migration_integrity: passed
+effects:
+  source_commits_and_normal_pushes: 1_1
+  diagnostic_provider_GET_reads: 1
+  database_connections_census_retries_decision_store_executions: 0_0_0
+  provider_mutations_sends_deployments_runtime_changes: 0_0_0_0
+unresolved_effects: 0
+completed_at: '2026-08-04T19:29:44Z'
+contains_secret: false
+immutable: true

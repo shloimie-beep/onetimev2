@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: operational
-active_phase: candidate_8834c2fd_deployed_GHL_pagination_contract_source_correction_assigned
+active_phase: candidate_8834c2fd_deployed_corrected_read_only_audience_census_successor_assigned
 bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
@@ -3000,6 +3000,19 @@ ot_live_002_02_GHL_count_contract_diagnostic_terminal_and_source_correction_disp
   exact_paths: evidence_runner_test_runner_3
   authorized_provider_read: one_limit_1_meta_envelope_diagnostic_no_retry_no_contact_or_cursor_values
   all_database_deployment_provider_mutation_send_DNS_and_other_effects_max: 0
+ot_live_002_02_GHL_pagination_source_terminal_and_census_successor_dispatch_20260804_192944:
+  recorded_at: '2026-08-04T19:29:44Z'
+  state_based_on_control_head_sha: c2eb402df1e26c5dd76f3ccb08ec8661aca4e039
+  source_claim_id: 3d69dd1d-7c7c-4470-8285-c0bd181533a2
+  source_terminal_digest: 9547ae922fd8402e0be5aee679139bc53b8cc5647982c9c08a3c3fdcfb8b9b77
+  source_head_tree: b204b026d7733c29c514d3c5febbea948c5e67e7_84f49a3ef767cafcd56acf10b894784b6f2fdb28
+  accepted_contract: exact_live_meta_envelope_typed_dual_cursor_reconstructed_locally_never_follow_provider_URL_all_gates_green
+  diagnostic_total_and_effects: 1499_GETs_1_mutations_0_unresolved_0
+  census_successor_claim_id: 98cfc444-7e4c-4446-a8bb-c3dd96e59d0b
+  census_successor_claim_digest: 85f85d862291c566f6ae74521e2c9e65555bdf1cb011e29c545daf23db1a2da3
+  exact_scope: production_production_operator_canary_one_time_one_time_mishnah_class_campaign_6a71a64c28f7a5dbb3aec1be
+  maximum_provider_contacts_affected_rows_and_pages: 2000_2000_20
+  all_database_provider_Railway_send_DNS_and_other_mutation_effects_max: 0
 authority_note: >-
   Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through
   release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an
