@@ -25,11 +25,27 @@ next_action: >-
   build, typecheck, exact-path lint, secret scan, exact S3 version checks, and exact Vimeo mutation-binding fences; every
   media flag remains default-off and provider/database/upload/deployment effects remain zero. OT-LIVE-002.02 census source
   is accepted at 5110bee2 after its one-file nonbehavioral lint correction, 30 controller-focused tests, and native
-  PostgreSQL 18.4 proof. Freeze the next additive source candidate directly from the linear accepted source, which already
-  descends from deployed 27576fa6 and includes migration 2260, the accepted decision store, and the census runner; keep
-  media as a separate candidate unless it becomes critical. No live migration, database census, decision write, contact,
+  PostgreSQL 18.4 proof. The canonical pre-freeze baseline reproduced the exact same inherited 15 unit failures on both
+  deployed 27576fa6 and accepted 5110bee2; consume the narrow OT-LIVE-001.03 correction claim for nine test fixtures and
+  three deterministic inventory/brand projection files, then rerun the full unit baseline. Freeze the next additive source
+  candidate from its accepted descendant; keep media as a separate candidate unless it becomes critical. No live
+  migration, database census, decision write, contact,
   seed, pilot, broad send, or media provider effect is authorized. Migration 2261 remains unallocated. Keep OT-LIVE-003.02
   parked/unmerged/default-off, reject its 2260 proposal, and keep WhatsApp/WAPI fully deferred at zero effects.
+ot_live_001_03_candidate_baseline_correction_dispatch_20260804_155433:
+  recorded_at: '2026-08-04T15:54:33Z'
+  state_based_on_control_head_sha: 2012270928f33fcc414fe4e5267c2c41799d35cd
+  claim_id: 0f8d8ca8-3af3-400e-a846-7ec517b62bcd
+  claim_path: ops/v2.1-execution/control/OT-LIVE-001.03-CANDIDATE-BASELINE-CORRECTION-CLAIM.yaml
+  claim_digest: 341435a212d1e61c615709c037706ee70eab112712ec2ccfb312fe1050d04f64
+  branch: codex/ot-live-001-candidate-baseline-correction-20260804
+  base_sha: 5110bee2b06145d6cd6ad596dd4f42e748bda75e
+  base_tree_sha: 4141859ebd184d7e1571d51c0c422f0c332bda2f
+  candidate_source_unit_baseline: 626_passed_15_failed_of_641
+  deployed_source_unit_reproduction: 622_passed_15_failed_of_637
+  classification: exact_inherited_failure_identity_not_an_OT_LIVE_002_regression
+  exact_path_ceiling: 12
+  product_migration_database_provider_deploy_DNS_send_effects: 0_0_0_0_0_0_0
 ot_live_source_successor_dispatch_20260804_125957:
   recorded_at: '2026-08-04T12:59:57Z'
   state_based_on_control_head_sha: caa85bde4d1bcba6e9eb95d1916a49182507f3fd

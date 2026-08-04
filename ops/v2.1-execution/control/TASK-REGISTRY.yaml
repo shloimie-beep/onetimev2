@@ -2364,23 +2364,25 @@ tasks:
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/V43/status_proof
 - task_id: OT-LIVE-001.03
   status: in_progress
-  active_phase: candidate_deployed_fixture_committed_canary_credential_unavailable_independent_lanes_continuing
+  active_phase: candidate_baseline_correction_authorized_from_accepted_linear_source
   owner_thread_id: 019fc7e8-b506-7d30-a36a-4d7a9641f4fd
-  branch: codex/ot-live-001-product-repair-20260804
+  branch: codex/ot-live-001-candidate-baseline-correction-20260804
   phase_branches:
     product_repair: codex/ot-live-001-product-repair-20260804
     fixture_reconciliation_design: codex/ot-live-001-operator-fixture-design-20260804
+    candidate_baseline_correction: codex/ot-live-001-candidate-baseline-correction-20260804
   phase_heads:
     base: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
     product_repair: 27576fa64f0b37095e61ccca932c2e77cbf38844
     fixture_reconciliation_design: b0cfe4926d88dbebed470e075d62b462d42bf770
-  authorized_start_sha: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
-  last_known_remote_head: 27576fa64f0b37095e61ccca932c2e77cbf38844
-  active_claim_id: null
-  active_writer_id: null
-  lease_expires_at: null
-  last_heartbeat_at: '2026-08-04T12:38:27Z'
-  controller_authorization_sha: caa85bde4d1bcba6e9eb95d1916a49182507f3fd
+    candidate_baseline_correction_base: 5110bee2b06145d6cd6ad596dd4f42e748bda75e
+  authorized_start_sha: 5110bee2b06145d6cd6ad596dd4f42e748bda75e
+  last_known_remote_head: 5110bee2b06145d6cd6ad596dd4f42e748bda75e
+  active_claim_id: 0f8d8ca8-3af3-400e-a846-7ec517b62bcd
+  active_writer_id: codex-ot-live-001-03-candidate-baseline-0f8d8ca8
+  lease_expires_at: '2026-08-05T07:00:00Z'
+  last_heartbeat_at: '2026-08-04T15:54:33Z'
+  controller_authorization_sha: 2012270928f33fcc414fe4e5267c2c41799d35cd
   ready_entry_payload_digest: null
   interface_checkpoint_sha: null
   implementation_head_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844

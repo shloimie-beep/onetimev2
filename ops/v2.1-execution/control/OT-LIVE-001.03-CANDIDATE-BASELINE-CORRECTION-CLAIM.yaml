@@ -1,0 +1,73 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-001.03
+owner_thread_id: 019fc7e8-b506-7d30-a36a-4d7a9641f4fd
+claim_id: 0f8d8ca8-3af3-400e-a846-7ec517b62bcd
+writer_id: codex-ot-live-001-03-candidate-baseline-0f8d8ca8
+status: active
+branch: codex/ot-live-001-candidate-baseline-correction-20260804
+base_sha: 5110bee2b06145d6cd6ad596dd4f42e748bda75e
+base_tree_sha: 4141859ebd184d7e1571d51c0c422f0c332bda2f
+control_parent_sha: 2012270928f33fcc414fe4e5267c2c41799d35cd
+trigger:
+  candidate_source_full_unit_total: 641
+  candidate_source_full_unit_passed: 626
+  candidate_source_full_unit_failed: 15
+  failed_test_files: 9
+  deployed_source_reproduction_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
+  deployed_source_full_unit_total: 637
+  deployed_source_full_unit_passed: 622
+  deployed_source_full_unit_failed: 15
+  classification: exact_inherited_failure_identity_not_an_OT_LIVE_002_regression
+exact_paths:
+  - tests/unit/learning-product-portals.test.ts
+  - tests/unit/ot107-student-class-helper.test.ts
+  - tests/unit/ot46-billing-config-policy.test.ts
+  - tests/unit/portal-account-security.test.ts
+  - tests/unit/w12-09-gamification.test.ts
+  - tests/unit/brand-system/brand-system.test.ts
+  - tests/unit/day-one/visible-action-registry.test.ts
+  - tests/unit/delivery/config.test.ts
+  - tests/unit/support/ot89a-config.test.ts
+  - packages/brand-system/manifest/one-time-brand.v1.json
+  - packages/brand-system/src/visual-contract.ts
+  - ops/day-one/visible-action-registry.json
+source_preimage_sha256:
+  tests/unit/learning-product-portals.test.ts: f6d73d30cd957d9d018fb31a197c7bc58d1202d2c3a05b6a543019d76121c199
+  tests/unit/ot107-student-class-helper.test.ts: a8a7fe0c3973bed3a651d2b518513f228ce9b8b6704d0df65f286c3090dda9d2
+  tests/unit/ot46-billing-config-policy.test.ts: 5aba0b1c5a2831ee78ac0596038b4888a2bbe58a1009a7202cbba1f614194f8c
+  tests/unit/portal-account-security.test.ts: 1c6c2c8cc6bc1a1768213501c4f4edb22d74bb6439a8ac7b85b6318bad8916a0
+  tests/unit/w12-09-gamification.test.ts: 8ec3529cd9eabb438d1d06e742d043f8de840d28e961858886f7f7d0c0e5de19
+  tests/unit/brand-system/brand-system.test.ts: 494ac06e5a7ae0aec88ec0c19749ef17912158a145dfd049ccc8bc8e64214e2e
+  tests/unit/day-one/visible-action-registry.test.ts: 56b84406c0f7d5fcc1943b3341f1f05c5e263375155186e9017cc65aca9c61f4
+  tests/unit/delivery/config.test.ts: 9668bfcb58f93e6c635c8cdf2f79ad9ccf08fb0e36f2361241fd1d8e5d485e23
+  tests/unit/support/ot89a-config.test.ts: 6a887ad6a8bcf01f7b308b4ac5c3fb912b03107b2b8f3c454ab289643fed3e5a
+  packages/brand-system/manifest/one-time-brand.v1.json: ee83dae1f4807e19f69aa9eed18a99b17dbb257b957abe457e5cec33905dd8ef
+  packages/brand-system/src/visual-contract.ts: 46437b946dc17261607ca083a34a46b6e9461401cfa0823c9aeb1cc5d9a1cb70
+  ops/day-one/visible-action-registry.json: 0c58101b9321354a29405252f9b2fe6884701b08b3d48161cc57293fcced6d00
+allowed_operation: >-
+  Make the smallest behavior-preserving source correction that aligns the nine inherited test fixtures and the exact
+  deterministic brand/visible-action projections with already accepted source behavior. Remove no protection and add no
+  production behavior. Commit once and normally push the exact new branch from the exact base.
+required_verification:
+  - all_15_previously_failing_unit_tests_pass
+  - full_repository_unit_suite_passes_with_zero_failures
+  - candidate_builder_focused_suite_passes
+  - repository_build_lint_typecheck_and_secret_scan_pass
+  - candidate_only_format_and_git_diff_check_pass
+  - exact_path_scope_and_preimage_validation_pass
+  - source_head_is_one_normal_fast_forward_from_exact_base
+publish_authority:
+  create_and_normally_push_exact_branch_once: true
+  force_push_amend_rebase_merge: false
+prohibitions:
+  - no_runtime_behavior_contract_or_security_weakening
+  - no_migration_database_schema_or_row_effect
+  - no_provider_contact_tag_seed_reply_pilot_or_broad_send_effect
+  - no_deployment_DNS_billing_customer_Student_identity_session_or_credential_effect
+  - no_candidate_manifest_control_file_or_shared_runtime_registration_change
+  - no_changes_outside_exact_paths
+issued_at: '2026-08-04T15:54:33Z'
+expires_at: '2026-08-05T07:00:00Z'
+contains_secret: false
+immutable: true
