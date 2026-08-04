@@ -1,0 +1,49 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-001.03
+owner_thread_id: 019fc7e8-b506-7d30-a36a-4d7a9641f4fd
+source_claim_id: 28220356-2259-45c9-b10f-a09e87b4c782
+claim_disposition: consumed_source_success
+branch: codex/ot-live-001-operator-fixture-design-20260804
+base_sha: 301aaa496b26b5f912e816a446c344c61fda52b2
+source_head_sha: a6ee2f7ab41196a63d175a1dbcc2fe897a3e088b
+source_tree_sha: 8f48125d5e65b10f4176099901632050a4e2baba
+candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
+source_files:
+  - path: ops/release/ot-live-001/operator-fixture-reconciliation/README.md
+    sha256: 15d1d1f6de4e96793cbc0573d574df8d65d72a6bbf6ee65f387e064092eaa6ff
+  - path: ops/release/ot-live-001/operator-fixture-reconciliation/fixture-reconciliation.test.ts
+    sha256: 8ef89ced8e44636bb158b0c4c4303c89c9e8b360c24364ef76a6ef66a3c8fab3
+  - path: ops/release/ot-live-001/operator-fixture-reconciliation/fixture-reconciliation.ts
+    sha256: b10e6db8060408951f321c499cb86c036e4b13b7cd2011840d15958650d14579
+  - path: ops/release/ot-live-001/operator-fixture-reconciliation/transaction-proposal.ts
+    sha256: 6c1fa956a7858e27a7526a0aea9ebb86c2d5522d3df63daeb7a4f9ced6cdc240
+independent_controller_readback:
+  local_tracking_remote_equality: passed
+  exact_four_path_scope: passed
+  clean_worktree: passed
+  focused_vitest: 29_passed_0_failed
+  repository_typecheck: passed
+  scoped_eslint: passed
+  scoped_prettier: passed
+  diff_check: passed
+  repository_secret_scan: passed_3225_text_files
+  direct_canonical_aggregate_state_writes: 0
+  canonical_transition_history_updates_or_deletes: 0
+accepted_invariants:
+  create_explicit_inserts: 8
+  create_trigger_derived_aggregate_rows: 2
+  create_total_row_effects: 10
+  replay_statements_and_row_effects: 0_0
+  parent_context_discoverable_after_create: true
+  open_transaction_failure_committed_effects: 0
+  compensation_authority_inferred: false
+  compensation_design: two_append_only_transitions_then_exact_derived_readback_then_six_exact_deletes
+  terminal_immutable_audit_rows_preserved_by_compensation: 6
+  legacy_hash_mutation_or_disclosure: 0
+source_verdict: accepted_inert_canonical_state_complete_fixture_transaction_design
+source_effects: one_normal_fast_forward_push
+database_session_provider_deployment_DNS_send_charge_customer_Student_effects: 0
+recorded_at: '2026-08-04T11:16:11Z'
+contains_secret: false
+immutable: true
