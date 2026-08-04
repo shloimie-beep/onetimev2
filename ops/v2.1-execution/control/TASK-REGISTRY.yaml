@@ -2395,7 +2395,7 @@ tasks:
     proof_record_location: ops/v2.1-execution/effects/9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c/OT-LIVE-001.03/c00-prod-operator-admin-parent-canary-20260804122448/events/001-RECONCILED.yaml
 - task_id: OT-LIVE-002.02
   status: in_progress
-  active_phase: audience_census_runner_exact_one_file_eslint_correction_source_only
+  active_phase: audience_census_runner_accepted_default_off_pending_candidate_freeze
   owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
   branch: codex/ot-live-002-decision-store-implementation-20260804
   phase_branches:
@@ -2410,25 +2410,26 @@ tasks:
     migration_2260_source: e5bc19812cc990b9d84e3371202cb4f4c37ab470
     decision_store_repository: 6149907cb2611835514b1ffa5622c8fb7d5927e8
     audience_census_runner: ee802ea42b4d82ecfb3e8a5617aa682f93efba3b
+    audience_census_eslint_correction: 5110bee2b06145d6cd6ad596dd4f42e748bda75e
   authorized_start_sha: ee802ea42b4d82ecfb3e8a5617aa682f93efba3b
-  last_known_remote_head: ee802ea42b4d82ecfb3e8a5617aa682f93efba3b
-  active_claim_id: 9ef24d96-e5e0-4dbf-ae06-6507747151b2
-  active_writer_id: codex-ot-live-002-02-census-eslint-9ef24d96
-  lease_expires_at: '2026-08-05T09:38:12Z'
-  last_heartbeat_at: '2026-08-04T15:38:12Z'
-  controller_authorization_sha: 96969eb099041c6837d0c9b5e7d1e9b392394fdb
+  last_known_remote_head: 5110bee2b06145d6cd6ad596dd4f42e748bda75e
+  active_claim_id: null
+  active_writer_id: null
+  lease_expires_at: null
+  last_heartbeat_at: '2026-08-04T15:43:21Z'
+  controller_authorization_sha: 8b059c69df76bf3c7f6ccc4735e2b954f8421022
   ready_entry_payload_digest: null
   interface_checkpoint_sha: null
-  implementation_head_sha: ee802ea42b4d82ecfb3e8a5617aa682f93efba3b
+  implementation_head_sha: 5110bee2b06145d6cd6ad596dd4f42e748bda75e
   status_proof:
-    state: audience_census_runner_source_held_one_eslint_error_exact_one_file_correction_active_zero_live_effects
+    state: audience_census_runner_source_accepted_default_off_zero_live_effects_pending_candidate_freeze
     producer_task_id: OT-LIVE-002.02
-    producer_head_sha: ee802ea42b4d82ecfb3e8a5617aa682f93efba3b
+    producer_head_sha: 5110bee2b06145d6cd6ad596dd4f42e748bda75e
     canonical_candidate_digest: 99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098
-    integration_or_evidence_head_sha: 0a4e6a7bc50ccc8a3722748f6c2fb52fd5abe303ad701707cbb1162acb97135a
+    integration_or_evidence_head_sha: b0a282264225e01891b53464d0cda8f03e5a3560c9650f8c56e0cc76e2d01ca6
     external_effects_reconciled: true
-    state_based_on_control_head_sha: 96969eb099041c6837d0c9b5e7d1e9b392394fdb
-    proof_record_location: ops/v2.1-execution/control/OT-LIVE-002.02-AUDIENCE-CENSUS-RUNNER-SOURCE-TERMINAL.yaml
+    state_based_on_control_head_sha: 8b059c69df76bf3c7f6ccc4735e2b954f8421022
+    proof_record_location: ops/v2.1-execution/control/OT-LIVE-002.02-AUDIENCE-CENSUS-ESLINT-CORRECTION-TERMINAL.yaml
 - task_id: OT-LIVE-004.01
   status: in_progress
   active_phase: provider_runtime_source_accepted_default_off_pending_candidate_integration

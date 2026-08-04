@@ -1,0 +1,37 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-002.02
+owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+source_claim_id: 9ef24d96-e5e0-4dbf-ae06-6507747151b2
+writer_id: codex-ot-live-002-02-census-eslint-9ef24d96
+claim_digest: 32b0b45e31d08eae8fddfdbcd1cab12c331243e925b39a42a3869f0dad3c8daf
+claim_disposition: consumed_source_success
+branch: codex/ot-live-002-decision-store-implementation-20260804
+base_sha: ee802ea42b4d82ecfb3e8a5617aa682f93efba3b
+source_head_sha: 5110bee2b06145d6cd6ad596dd4f42e748bda75e
+source_tree_sha: 4141859ebd184d7e1571d51c0c422f0c332bda2f
+remote_equality: passed
+exact_path_count: 1
+exact_path: packages/db/src/audience-reconciliation/governed-campaign-census-reader.ts
+path_sha256: c1b634b263fe7e096a662e0785d0fa72efc7ccd562cd9ab3011b1722fb8c098f
+predecessor_terminal_path: ops/v2.1-execution/control/OT-LIVE-002.02-AUDIENCE-CENSUS-RUNNER-SOURCE-TERMINAL.yaml
+predecessor_terminal_digest: 0a4e6a7bc50ccc8a3722748f6c2fb52fd5abe303ad701707cbb1162acb97135a
+correction:
+  exact_no_unused_vars_error: resolved
+  insertions: 1
+  deletions: 0
+  behavior_or_contract_change: false
+acceptance:
+  governed_audience_census_runner: accepted_source_checkpoint_default_off
+  controller_exact_path_eslint: passed
+  controller_focused_vitest: 30_passed_1_environment_gated
+  producer_repository_typecheck_format_diff_scope_secret_scan: passed
+  producer_native_PostgreSQL_18_4: 5_passed
+  exact_one_path_scope_and_remote_tree: passed
+zero_effects:
+  live_or_staging_database_connections_migrations_or_rows: 0
+  GHL_provider_reads_writes_contacts_tags_seeds_replies_pilots_or_broad_sends: 0
+  providers_deployments_DNS_billing_customers_or_Students: 0
+recorded_at: '2026-08-04T15:43:21Z'
+contains_secret: false
+immutable: true
