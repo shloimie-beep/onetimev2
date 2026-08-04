@@ -1,0 +1,64 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-002.02
+owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+claim_id: da761d28-6c24-4fa6-b531-d927544fbb62
+disposition: source_terminal_accepted
+branch: codex/ot-live-002-census-identity-contract-correction-20260804
+base_sha: 032637395a9ab791b85c13fa6f1cffccfaa9e753
+source_head_sha: a157c388d8dc292699f7cd1a1ef178918ee30885
+source_tree_sha: bd2f1295043af74cfa0bad5f5b3993e3a534137e
+lineage_commit_count: 1
+remote_equality: true
+changed_paths:
+  ops/codex-runs/OT-LIVE-002/AUDIENCE-CENSUS-SOURCE-EVIDENCE.md: 2b6e5454a62821f51a74b6d64582f71889747439304b1b6eccfbaf40c3aa00d8
+  packages/db/src/audience-reconciliation/governed-campaign-census-reader.test.ts: 795c65f7ef284ff59b3d26667b1af115f70553c2abc8367b444a71657b6d2d0f
+  packages/db/src/audience-reconciliation/governed-campaign-census-reader.ts: 1d2f3d17618248b0a70f2db0f137784444ed6fee73fe76d56ad6ea0e77018b5a
+  packages/domain/src/audience-reconciliation/governed-campaign-census.test.ts: a74f68056534a048099485d7180cac8e031c99aeae274d2ad7d4eb761075383e
+  packages/domain/src/audience-reconciliation/governed-campaign-census.ts: 4939bcc1202621fd1cb636b9381372443fb1218981f6db07ff833163cd5d1693
+  scripts/highlevel/governed-campaign-audience-census.test.ts: e18b44bdd2a12a3a52bf5073a50077081a4c9c4db9103e2a1e8b14b6441d0135
+  scripts/highlevel/governed-campaign-audience-census.ts: 06cf6fcaa8e3b91ea69cf907fde988100dc88127d4ccd283ffcf111b02c4d1f3
+  tests/integration/governed-campaign-audience-census.test.ts: bb0efc801571d7aad6491859b20aa84c0b637d9a7ee6ff1c24d4dc027a703d19
+accepted_contract:
+  durable_mapping_first: true
+  campaign_hash_computed_inside_PostgreSQL: true
+  unique_normalized_email_fallback: true
+  unversioned_adult_link_hash_positive_identity_proof: false
+  unversioned_adult_link_hash_conflict_evidence_only: true
+  raw_provider_ID_or_email_output: false
+  reads_only: true
+verification:
+  producer_focused_tests: 33_of_33_passed
+  producer_native_PostgreSQL: 18.4_passed_and_cluster_removed
+  candidate_builder: 4_of_4_passed
+  static_contract_assertions: 12_of_12_passed
+  build_lint_typecheck_format_diff: passed
+  secret_scan: passed_3245_text_files
+  controller_remote_parent_tree_scope_diff: passed
+  controller_focused_tests: 29_of_29_passed
+  controller_candidate_builder: 4_of_4_passed
+candidate_freeze:
+  canonical_candidate_digest: 8834c2fdc42bbb7e3641a5ce45695b2f5a56717d37e7e14fed783b0c7875fa34
+  candidate_manifest_path: ops/v2.1-execution/merge/candidates/8834c2fdc42bbb7e3641a5ce45695b2f5a56717d37e7e14fed783b0c7875fa34/CANDIDATE.yaml
+  candidate_manifest_sha256: d072b6a464893e07f1249eb8130cfe9625f0e7f1b70c4e965a03f5e729eb832a
+  candidate_derivation_sha256: 80046a0122b2f85f39c4a476f8f3ca39b2e37b478bbdef6661ebce05c67efe2b
+  frozen_at: '2026-08-04T17:03:31Z'
+  native_PostgreSQL_engine: '18.4'
+  migration_count_apply_replay: 91_91
+  migration_2260_sha256: 93e7879ce7861cd37733335ca64e49310af1025fc099e6bce4abadb8f25c3740
+  migration_ledger_digest: 531701132856ec5640e49a8a07b768f12db7c4b103cc63ab9cd27d7d0ec81233
+  pending_and_issue_count: 0_0
+  safety_probes: 8_of_8_passed
+  candidate_build_request_sha256: 124803601f869d1a289130a4e33295a34a2b50740ec258a704f2ce8f49153812
+  candidate_PostgreSQL_proof_sha256: 40dbc4062e1ee122e7f235a67bde015dd616bd21a0b0effa3c7fbd7527d84cf2
+effects:
+  source_commits: 1
+  normal_pushes: 1
+  disposable_PostgreSQL_clusters: 2
+  disposable_clusters_stopped_and_removed: 2
+  live_or_staging_database_connections: 0
+  provider_contact_Student_send_migration_deployment_DNS_billing_identity_session_credential: 0
+  unresolved: 0
+accepted_at: '2026-08-04T17:04:43Z'
+contains_secret: false
+immutable: true
