@@ -1,0 +1,50 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-001.03
+authority_id: c00-prod-operator-admin-parent-canary-20260804122448
+candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
+repository_source_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
+deployed_web_id: ea1b663f-f892-4137-9ebf-8a4509bf7cd8
+fixture_data_terminal_event_digest: bf8fd0d0f1061dc92018c0476dd6594aa9cabff7f1583496038a8a4afa3c58a6
+lease_id: f60713d6-9f0e-4800-aac2-85e77fd4ee30
+fencing_token: fence-fe4d54ea-2591-4744-9929-e4210f41ceb5
+disposition: CREDENTIAL_UNAVAILABLE_ZERO_LOGIN_POSTS
+browser_sequence:
+  claimed_existing_protected_legacy_operations_tab: true
+  protected_dashboard_reloaded_before_login_navigation: false
+  direct_navigation: https://app.onetimeonetime.com/login?return_to=%2Fselect-role
+  login_identifier_password_and_submit_controls_unique: true
+  automatic_autofill_present: false
+  saved_credential_suggestion_invoked_without_value_inspection: true
+  required_fields_remained_empty: true
+  final_route: https://app.onetimeonetime.com/login?return_to=%2Fselect-role
+  final_tab_preserved_for_handoff: true
+protected_browser_values:
+  cookies_storage_tokens_passwords_or_saved_credentials_inspected: 0
+  cookies_storage_tokens_passwords_or_saved_credentials_exported: 0
+effects:
+  direct_browser_GET_navigations: 1
+  login_POSTs: 0
+  role_switch_POSTs: 0
+  database_row_mutation_events: 0
+  provider_deployment_DNS_send_charge_Student_customer_effects: 0
+sanitized_pre_navigation_database_counts:
+  fixture_identity_account_active_credential_Admin_Parent_household: one_each
+  v21_fixture_sessions_total_revoked_active_Admin_active_Parent: [0, 0, 0, 0]
+  legacy_Admin_accounts_and_active_sessions: [1, 1]
+  protected_rate_limit_rows: 0
+  canary_audit_additions: 0
+sanitized_terminal_database_counts:
+  v21_fixture_sessions_total_revoked_active_Admin_active_Parent_added: [0, 0, 0, 0, 0]
+  legacy_active_sessions: 1
+  legacy_sessions_revoked_during_window: 0
+  rate_limit_reservation_mutations: 0
+  rate_limit_release_mutations: 0
+  redacted_auth_audit_additions: 0
+  total_database_row_mutation_events: 0
+health_ready_version_HTTP_status: [200, 200, 200]
+unresolved_effects: 0
+stop_reason: required_existing_saved_or_autofilled_operator_credential_unavailable_before_every_POST
+recorded_at: '2026-08-04T12:38:27Z'
+contains_secret: false
+immutable: true

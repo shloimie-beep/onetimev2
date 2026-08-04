@@ -172,28 +172,24 @@ locks:
   effect_budget: null
   cleanup_state: candidate_9d6_source_27576fa6_web_ea1b663f_worker_f68df357_SUCCESS_health_ready_domains_assets_logs_reconciled_lock_released_2026-08-04T10:01:35Z
 - lock: production:data
-  status: claimed
-  holder_task_id: OT-LIVE-001.03
-  holder_claim_id: 20180393-cb5a-4a0e-be91-f746356aaeed
-  lease_id: f60713d6-9f0e-4800-aac2-85e77fd4ee30
-  fencing_token: fence-fe4d54ea-2591-4744-9929-e4210f41ceb5
-  canonical_candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
-  provider_identity: Railway_project_ce55ef20_environment_f911acfc_Postgres_db590e4a_deployment_62583cef_and_existing_connected_Chrome
-  authorized_operation: one_existing_Chrome_login_then_exact_Admin_Parent_Admin_v21_role_canary_max_eighteen_database_row_mutation_events
-  claimed_at: '2026-08-04T12:24:48Z'
-  lease_expires_at: '2026-08-04T13:24:48Z'
-  authority_id: c00-prod-operator-admin-parent-canary-20260804122448
-  authority_grant_digest: 1da7c5aeb6cb5c3985b0521711ab5d83761bb77b6170f6b5f8b6ef418c896d63
-  authority_status_index_digest: 0904698e0103f741a25128cfa550ebf15f6eb0ba74505be9b637d93e018b2167
-  authority_status_entry_digest: 909eed00474a6fa08e8227bf3ccbaeb7744d74edff433e82a0d37d66acf8947a
+  status: unclaimed
+  holder_task_id: null
+  holder_claim_id: null
+  lease_id: null
+  fencing_token: null
+  canonical_candidate_digest: null
+  provider_identity: null
+  authorized_operation: null
+  claimed_at: null
+  lease_expires_at: null
+  authority_id: null
+  authority_grant_digest: null
+  authority_status_index_digest: null
+  authority_status_entry_digest: null
   latest_revocation_digest: null
-  authority_checked_at: '2026-08-04T12:24:48Z'
-  effect_budget:
-    login_POST_max: 1
-    role_switch_POSTs_exact_after_successful_login: 3
-    total_database_row_mutation_events_max: 18
-    credential_identity_membership_household_transition_aggregate_and_all_external_effects_max: 0
-  cleanup_state: fixture_SUCCESS_reconciled; operator_browser_session_canary_active_no_effect_started
+  authority_checked_at: null
+  effect_budget: null
+  cleanup_state: operator_browser_canary_CREDENTIAL_UNAVAILABLE_reconciled_2026-08-04T12:38:27Z_zero_POSTs_zero_DB_mutations_zero_unresolved_effects
 - lock: provider:s3-kms
   status: unclaimed
   holder_task_id: null
