@@ -14,7 +14,7 @@ claim_time: '2026-08-04T09:12:43Z'
 claim_id: f514d50f-081c-48e0-8906-1c6e872519b0
 lease_expires_at: '2026-08-04T14:05:49Z'
 lease_released_at: null
-last_heartbeat_at: '2026-08-04T12:20:53Z'
+last_heartbeat_at: '2026-08-04T12:24:48Z'
 controller_authorization_sha: 65d343162df0bb404ade1e4d1460f0ad808411ef
 ready_entry_payload_digest: null
 state_based_on_head_sha: 65d343162df0bb404ade1e4d1460f0ad808411ef
@@ -102,7 +102,13 @@ ot_live_terminal_convergence_resume_20260804:
     data_successor_3_terminal_disposition: SUCCESS_COMMITTED_EXACT_TEN_EFFECTS
     data_successor_3_committed_effects: 8_explicit_2_trigger_derived_10_total
     data_successor_3_lock_released_at: '2026-08-04T12:20:53Z'
-    next_boundary: derive_and_issue_separate_signed_in_Admin_Parent_Admin_browser_session_canary_authority_then_execute_reconcile_and_release
+    operator_canary_authority_id: c00-prod-operator-admin-parent-canary-20260804122448
+    operator_canary_claim_lease_fence: 20180393-cb5a-4a0e-be91-f746356aaeed_f60713d6-9f0e-4800-aac2-85e77fd4ee30_fence-fe4d54ea-2591-4744-9929-e4210f41ceb5
+    operator_canary_grant_digest: 1da7c5aeb6cb5c3985b0521711ab5d83761bb77b6170f6b5f8b6ef418c896d63
+    operator_canary_status_entry_digest: 909eed00474a6fa08e8227bf3ccbaeb7744d74edff433e82a0d37d66acf8947a
+    operator_canary_authority_status_index_digest: 0904698e0103f741a25128cfa550ebf15f6eb0ba74505be9b637d93e018b2167
+    operator_canary_effect_budget: one_login_three_role_switches_max_eighteen_database_row_mutation_events_zero_other
+    next_boundary: execute_existing_Chrome_Admin_Parent_Admin_canary_then_reconcile_terminal_browser_and_database_state_and_release
     provider_database_deploy_effects: 0_0_0
   OT_LIVE_002_02:
     owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a

@@ -1,0 +1,104 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+authority_id: c00-prod-operator-admin-parent-canary-20260804122448
+authority_kind: derived_candidate_bound_exact_operator_browser_session_canary
+task_id: OT-LIVE-001.03
+owner_thread_id: 019fc7e8-b506-7d30-a36a-4d7a9641f4fd
+candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
+candidate_binding_status: exact_deployed_frozen_candidate
+candidate_manifest_commit_sha: eb085d6e0d1a32039d6514c90c49e0b1b14a83fa
+repository_source_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
+deployed_web_id: ea1b663f-f892-4137-9ebf-8a4509bf7cd8
+deployed_worker_id: f68df357-7be5-4ded-936b-fbc915c42261
+fixture_design_source_sha: b0cfe4926d88dbebed470e075d62b462d42bf770
+fixture_data_terminal_event_digest: bf8fd0d0f1061dc92018c0476dd6594aa9cabff7f1583496038a8a4afa3c58a6
+fixture_data_terminal_authority_status_index_digest: fb47a8b33c0e9d9014bf910937652318e6cb919f077bebb469531a6f5df262c9
+canonical_path: ops/v2.1-execution/authority/9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c/OT-LIVE-001.03/c00-prod-operator-admin-parent-canary-20260804122448/GRANT.yaml
+source_grant_id: ot-v21-production-source-grant-20260729
+source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+source_approval_evidence_path: ops/v2.1-execution/authority/none/C00/ot-v21-production-source-grant-20260729/APPROVAL.md
+source_approval_evidence_digest: 8c95a959f79aba0ac34fa0fcb6cb463cceac9aeb2bb52da1603d39db3e2c33c2
+grant_status_at_issue: active
+approved_by: Shloimie Dratler
+approved_at: '2026-08-04T12:24:48Z'
+recorded_at: '2026-08-04T12:24:48Z'
+expires_at: '2026-08-04T13:24:48Z'
+scope:
+  application_origin: https://app.onetimeonetime.com
+  browser: existing_connected_Chrome_session_only
+  database_provider: canonical_Railway_PostgreSQL_production
+  project_id: ce55ef20-1418-4ad3-aafa-f877fb992dc8
+  environment_id: f911acfc-e206-44df-a569-9d69d709b94b
+  database_service_id: db590e4a-7dc5-40cb-a243-5206ce21b746
+  database_deployment_id: 62583cef-572b-40ae-b1d3-0194a2ccbf27
+  protected_operator_fixture: exact_adult_and_human_account_IDs_below_with_normalized_email_and_credentials_runtime_only_never_logged_or_committed
+  adult_id: adult_8781c636-69b0-48ad-a1a9-843d7ffc8b24
+  human_account_id: account_8ab012c2-2293-40e4-9e07-97dc5da74f50
+  Admin_membership_id: 3005699d-1950-4f85-97e3-c9d1b5b13128
+  Parent_membership_id: 7d86732f-016e-4af5-b9e3-160be3b70dc3
+  household_id: household_1393fe08-69cb-430b-9e14-469fd2918dd9
+  expected_pre_fixture_counts: one_identity_one_account_one_active_credential_one_Admin_one_Parent_one_household_zero_v21_sessions
+  expected_pre_legacy_session_count: 1
+  exact_browser_sequence:
+    - navigate_existing_Chrome_tab_directly_to_login_without_first_reloading_a_protected_legacy_page
+    - use_existing_browser_saved_or_autofilled_operator_credential_without_reading_or_exposing_its_value
+    - submit_exactly_one_login_POST_with_return_to_select_role_and_do_not_retry_unknown_or_failed_results
+    - require_login_response_v21_dual_role_initial_Parent_and_role_selection_required
+    - switch_once_to_Admin_and_verify_dashboard_and_v21_session_readback
+    - switch_once_to_Parent_and_verify_parent_portal_exact_household_context_and_v21_session_readback
+    - switch_once_to_Admin_and_verify_dashboard_and_final_v21_session_readback
+    - preserve_final_active_Admin_v21_session_and_do_not_logout
+fencing_token: fence-fe4d54ea-2591-4744-9929-e4210f41ceb5
+lock: production:data
+holder_claim_id: 20180393-cb5a-4a0e-be91-f746356aaeed
+provider_lock_lease_id: f60713d6-9f0e-4800-aac2-85e77fd4ee30
+allowed_operation: >-
+  Use only the existing connected Chrome session for one protected operator login followed by exactly three v2.1
+  role-context switches Admin then Parent then Admin; allow only the exact bounded authentication/session/rate-limit/
+  redacted-audit row effects below; require read-only database counts before login, after login, after each switch, and
+  at terminal state; preserve the final active Admin v2.1 browser session.
+effect_budget:
+  login_POST_max: 1
+  role_switch_POSTs_exact_after_successful_login: 3
+  rate_limit_bucket_reservation_row_mutations_max: 4
+  rate_limit_bucket_release_row_mutations_max: 4
+  v21_adult_session_rows_inserted_max: 4
+  v21_adult_session_rows_revoked_max: 3
+  legacy_user_session_rows_revoked_max: 1
+  redacted_auth_audit_rows_inserted_max: 2
+  total_database_row_mutation_events_max: 18
+  credential_identity_account_membership_household_transition_aggregate_rows_mutated_max: 0
+  migrations_Student_customer_provider_deployment_DNS_send_charge_effects_max: 0
+expected_successful_terminal_state:
+  v21_adult_session_rows_total_for_fixture: 4
+  v21_adult_session_rows_revoked: 3
+  v21_active_Admin_sessions: 1
+  v21_active_Parent_sessions: 0
+  legacy_active_operator_sessions: 0
+  rate_limit_budget_count_delta_after_release_for_exact_four_keys: 0
+  redacted_auth_audit_events_added: 2
+  final_browser_route: /app/dashboard
+  final_active_role: admin
+  exact_Parent_household_context_was_proven_mid_canary: true
+preconditions_and_readback:
+  - re-read current remote control grant status index claim lock lease and fence immediately before any login navigation
+  - require deployed health_ready_version and exact web deployment ID before POST
+  - obtain fresh read-only fixture session rate-limit-key and audit counts before login without exposing protected values
+  - do_not_inspect_display_or_export_browser_cookies_local_storage_passwords_tokens_or_saved_credentials
+  - if_existing_saved_or_autofilled_credential_is_unavailable_make_zero_login_POSTs_and_return_credential_unavailable
+  - after_login_and_each_switch_require_exact_API_session_role_memberships_and_database_session_counts_before_continuing
+  - after_login_require_exact_legacy_rotation_or_stop_before_role_switches_and_return_for_reconciliation
+  - after_terminal_Admin_require_exact_full_database_counts_audit_types_rate_limit_release_and_zero_duplicate_active_sessions
+unknown_and_failure_rules:
+  - never_repeat_login_or_role_switch_after_timeout_unknown_or_ambiguous_response
+  - reconcile_browser_visible_state_API_session_and_database_state_before_classifying_any_unknown_result
+  - if_login_commits_but_legacy_session_does_not_rotate_stop_before_role_switches_and_request_separate_exact_reconciliation_authority
+  - if_any_role_switch_revokes_without_replacement_stop_and_return_for_separate_recovery_authority
+  - this_grant_authorizes_zero_direct_database_cleanup_repair_or_post_failure_compensation
+prohibitions:
+  - no_cookie_storage_password_token_secret_or_PII_readback_display_commit_copy_or_relocation
+  - no_new_browser_profile_manual_credential_request_or_account_recovery
+  - no_logout_credential_upgrade_identity_membership_household_access_transition_or_aggregate_mutation
+  - no_provider_deployment_DNS_email_send_charge_customer_Student_or_unrelated_application_effect
+contains_secret: false
+immutable: true
