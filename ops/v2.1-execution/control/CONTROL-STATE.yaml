@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: operational
-active_phase: candidate_8834c2fd_deployed_accepted_pending_read_only_audience_census
+active_phase: candidate_8834c2fd_deployed_read_only_audience_census_assigned
 bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
@@ -2954,6 +2954,19 @@ ot_live_001_03_candidate_8834_product_deployment_terminal_20260804_184204:
   acceptance: exact_source_landing_routes_assets_health_default_off_census_flag_and_zero_error_log_filters_passed
   effects: Railway_deployments_2_all_other_effects_0_unresolved_0
   production_deployment_lock: released
+ot_live_002_02_candidate_8834_read_only_audience_census_dispatch_20260804_184558:
+  recorded_at: '2026-08-04T18:45:58Z'
+  state_based_on_control_head_sha: 84a83a23afbf90ea2dfec786968043e8e3137cd4
+  claim_id: 9e9fa1fa-57ef-4884-9015-971e9d54a042
+  claim_digest: 45ff2699dacb764d4d83c1084af8120c9426537a8e53351db3e1fbfa626678dc
+  writer_id: codex-ot-live-002-02-read-only-census-9e9fa1fa
+  owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+  candidate_and_source: 8834c2fdc42bbb7e3641a5ce45695b2f5a56717d37e7e14fed783b0c7875fa34_a157c388d8dc292699f7cd1a1ef178918ee30885
+  canonical_GHL_location_campaign_workflow_tag: pBSnOK2nkdxp6gf9Rg3o_6a71a64c28f7a5dbb3aec1be_09051378-5917-4172-afda-f425619dd23d_IcOGsLgSIOYGFlHF4kQ0
+  operation: process_local_default_off_census_flag_provider_GETs_and_READ_ONLY_database_transaction
+  maximum_provider_contacts: 2000
+  all_database_provider_contact_tag_send_deploy_DNS_and_other_mutation_effects: 0
+  provider_locks: not_required_for_read_only_zero_effect_census
 authority_note: >-
   Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through
   release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an

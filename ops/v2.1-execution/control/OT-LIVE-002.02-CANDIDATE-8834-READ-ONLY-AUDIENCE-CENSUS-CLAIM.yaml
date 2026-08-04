@@ -1,0 +1,72 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-002.02
+owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+claim_id: 9e9fa1fa-57ef-4884-9015-971e9d54a042
+writer_id: codex-ot-live-002-02-read-only-census-9e9fa1fa
+status: active
+operation_kind: candidate_bound_read_only_production_audience_census
+control_parent_sha: 84a83a23afbf90ea2dfec786968043e8e3137cd4
+candidate_digest: 8834c2fdc42bbb7e3641a5ce45695b2f5a56717d37e7e14fed783b0c7875fa34
+source_sha: a157c388d8dc292699f7cd1a1ef178918ee30885
+source_tree_sha: bd2f1295043af74cfa0bad5f5b3993e3a534137e
+source_branch: codex/ot-live-002-census-identity-contract-correction-20260804
+canonical_bindings:
+  ghl_location_id: pBSnOK2nkdxp6gf9Rg3o
+  campaign_id: 6a71a64c28f7a5dbb3aec1be
+  workflow_id: 09051378-5917-4172-afda-f425619dd23d
+  launch_tag_id: IcOGsLgSIOYGFlHF4kQ0
+  database_service_id: db590e4a-7dc5-40cb-a243-5206ce21b746
+  database_deployment_id: 62583cef-572b-40ae-b1d3-0194a2ccbf27
+  migration_id: 2260_v21_governed_campaign_audience_decisions
+  migration_ledger_rows_and_digest: 91_531701132856ec5640e49a8a07b768f12db7c4b103cc63ab9cd27d7d0ec81233
+  deployed_web_and_worker: 976d8203-d962-4c13-94d5-b3221eceb65f_99f6471b-f7d7-4fd5-a405-383ceadcbe60
+read_authority_source:
+  grant_id: ot-v21-production-source-grant-20260729
+  grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+  scope: existing_connected_credentials_canonical_provider_read_only_inspection_and_reconciliation
+  provider_lock_required: false_read_only_zero_effect
+required_operation:
+  entrypoint: scripts/highlevel/governed-campaign-audience-census.ts
+  feature_flag: GOVERNED_CAMPAIGN_AUDIENCE_CENSUS_ENABLED
+  feature_flag_binding: process_local_true_only_never_persisted_to_Railway
+  maximum_provider_contacts: 2000
+  exact_provider_count_and_cursor_reconciliation_required: true
+  database_transaction: REPEATABLE_READ_READ_ONLY_with_XID_and_mutation_counter_proof
+  connection_binding: process_local_DATABASE_URL_from_existing_DATABASE_PUBLIC_URL_only_no_secret_output_or_persistence
+  credential_binding: existing_configured_GHL_private_integration_token_only_no_secret_output_or_relocation
+  account_product_campaign_verification_environment_binding: derive_from_canonical_registry_and_live_readback_never_guess
+  output: sanitized_aggregate_reason_counts_snapshot_hash_idempotency_hash_and_exact_planned_decision_row_count_only
+  raw_contact_ID_email_name_phone_address_note_message_transcript_and_private_field_output: prohibited
+required_identity_contract:
+  durable_adult_household_contact_link_first: true
+  provider_contact_hash_computed_inside_PostgreSQL: true
+  unique_normalized_email_fallback: true
+  unversioned_legacy_hash_positive_proof: false
+  duplicate_archived_cross_account_cross_product_cross_location_conflict_and_malformed: fail_closed_excluded
+required_return:
+  - exact_provider_count_pages_cursor_termination_and_snapshot_hash
+  - exact_included_and_excluded_counts_by_sanitized_reason
+  - exact_planned_decision_rows_and_maximumAffectedRows_for_a_separate_write_authority
+  - exact_account_product_campaign_verification_environment_and_idempotency_bindings
+  - exact_READ_ONLY_transaction_and_zero_mutation_proof
+  - confirmation_feature_flag_was_process_local_and_all_stored_Railway_variables_unchanged
+effect_budget:
+  provider_GET_contact_reads_max: 2000
+  database_READ_ONLY_transactions_max: 2
+  Railway_metadata_and_existing_secret_injection_reads: bounded_to_required_bindings
+  database_rows_schema_migrations_and_sessions_mutated_max: 0
+  provider_contacts_tags_campaigns_workflows_webhooks_sends_and_schedules_mutated_max: 0
+  Railway_variables_deployments_domains_source_and_DNS_mutated_max: 0
+  seed_reply_pilot_broad_send_billing_customer_Student_WhatsApp_and_WAPI_effects_max: 0
+prohibitions:
+  - no_decision_store_execute_or_application_database_write
+  - no_GHL_contact_tag_campaign_workflow_webhook_or_send_mutation
+  - no_persistent_feature_flag_or_secret_change
+  - no_contact_level_PII_or_raw_provider_identifier_in_logs_evidence_control_or_commit
+  - no_retry_after_unknown_provider_or_database_result
+  - no_authority_inference_for_follow_on_decision_write_tag_seed_pilot_or_broad_send
+issued_at: '2026-08-04T18:45:58Z'
+expires_at: '2026-08-04T20:45:58Z'
+contains_secret: false
+immutable: true
