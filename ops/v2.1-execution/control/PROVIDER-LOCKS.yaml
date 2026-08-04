@@ -174,26 +174,28 @@ locks:
 - lock: production:data
   status: claimed
   holder_task_id: OT-LIVE-001.03
-  holder_claim_id: 772af7c9-c250-4220-87fc-f22aad059b9a
-  lease_id: ca5aba4b-2d29-427b-9777-bd21d0abc43c
-  fencing_token: fence-8a226f49-5e4a-420c-8a96-24bfeb9abf58
+  holder_claim_id: f0e9f51c-8f07-489c-8e28-e995f8035270
+  lease_id: 40e82097-c8d6-48de-992b-97ff76971908
+  fencing_token: fence-d535994a-830c-4dca-b3f0-226fbe4f5fb4
   canonical_candidate_digest: 8834c2fdc42bbb7e3641a5ce45695b2f5a56717d37e7e14fed783b0c7875fa34
   provider_identity: Railway_project_ce55ef20_environment_f911acfc_database_db590e4a_deployment_62583cef
-  authorized_operation: exact_single_transactional_application_and_terminal_readback_of_only_migration_2260
-  claimed_at: '2026-08-04T17:23:35Z'
-  lease_expires_at: '2026-08-04T18:23:35Z'
-  authority_id: c00-prod-candidate-8834-migration-2260-20260804172335
-  authority_grant_digest: f2b17d165aad45458368d1f30211723ec817547b16ad3469d37a3781300eaf03
-  authority_status_index_digest: 66e2d108213964637f3567785eb4b410a20a49bf4438809bba10412d67221b6c
-  authority_status_entry_digest: c57362c26aa7e79309c70c58d6f89315fee705cf5cdc41cc4d6e01be840f3893
+  authorized_operation: exact_single_transactional_application_of_only_migration_2260_using_nonpersisted_public_connection_child_process_binding
+  claimed_at: '2026-08-04T17:39:40Z'
+  lease_expires_at: '2026-08-04T18:39:40Z'
+  authority_id: c00-prod-candidate-8834-migration-2260-public-successor-20260804173940
+  authority_grant_digest: 33a1f2b42571f5aba1cc7cda205b4454cdf3ced20edc999d1f318434b2d9db21
+  authority_status_index_digest: cb89cefbb75bc7925f7e86be451634d8f98b66c808bb1711f0bb0304286d825d
+  authority_status_entry_digest: 36ea3f9d0bb7f68673a73fd457d56e750bd4419900c3bc138f43dbb6cc8bb733
   latest_revocation_digest: null
-  authority_checked_at: '2026-08-04T17:23:35Z'
+  authority_checked_at: '2026-08-04T17:39:40Z'
   effect_budget:
     database_migrations_applied_exact: 1
     schema_migration_ledger_rows_inserted_exact: 1
+    process_local_environment_bindings_max: 1
+    Railway_stored_variable_mutations_max: 0
     application_business_rows_mutated_max: 0
     all_other_effects: 0
-  cleanup_state: active_exact_migration_2260_pending_terminal_reconciliation
+  cleanup_state: predecessor_failed_before_connection_zero_effect_reconciled_and_successor_public_connection_active
 - lock: provider:s3-kms
   status: unclaimed
   holder_task_id: null

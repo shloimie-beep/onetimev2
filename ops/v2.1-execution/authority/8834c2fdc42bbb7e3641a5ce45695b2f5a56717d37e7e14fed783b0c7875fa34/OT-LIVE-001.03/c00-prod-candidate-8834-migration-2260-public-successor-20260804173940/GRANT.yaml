@@ -1,0 +1,103 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+authority_id: c00-prod-candidate-8834-migration-2260-public-successor-20260804173940
+authority_kind: derived_candidate_bound_exact_single_production_migration_public_connection_successor
+task_id: OT-LIVE-001.03
+owner_thread_id: 019fc7e8-b506-7d30-a36a-4d7a9641f4fd
+candidate_digest: 8834c2fdc42bbb7e3641a5ce45695b2f5a56717d37e7e14fed783b0c7875fa34
+candidate_binding_status: exact_frozen_candidate_pre_deployment_migration
+candidate_manifest_commit_sha: 03e7e74156685554c8efb8b9ce20645f68899d05
+candidate_manifest_sha256: d072b6a464893e07f1249eb8130cfe9625f0e7f1b70c4e965a03f5e729eb832a
+repository_source_sha: a157c388d8dc292699f7cd1a1ef178918ee30885
+repository_tree_sha: bd2f1295043af74cfa0bad5f5b3993e3a534137e
+source_branch: codex/ot-live-002-census-identity-contract-correction-20260804
+canonical_path: ops/v2.1-execution/authority/8834c2fdc42bbb7e3641a5ce45695b2f5a56717d37e7e14fed783b0c7875fa34/OT-LIVE-001.03/c00-prod-candidate-8834-migration-2260-public-successor-20260804173940/GRANT.yaml
+predecessor_authority_id: c00-prod-candidate-8834-migration-2260-20260804172335
+predecessor_terminal_event_digest: e36bfdc566a6f1ba5cef4b0454430363996d2228157e25bda8f24ab13282cbdf
+predecessor_repository_runner_invocations_migrations_committed_unresolved_effects: 1_0_0
+source_grant_id: ot-v21-production-source-grant-20260729
+source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+source_approval_evidence_path: ops/v2.1-execution/authority/none/C00/ot-v21-production-source-grant-20260729/APPROVAL.md
+source_approval_evidence_digest: 8c95a959f79aba0ac34fa0fcb6cb463cceac9aeb2bb52da1603d39db3e2c33c2
+grant_status_at_issue: active
+approved_by: Shloimie Dratler
+approved_at: '2026-08-04T17:39:40Z'
+recorded_at: '2026-08-04T17:39:40Z'
+expires_at: '2026-08-04T18:39:40Z'
+scope:
+  provider: One Time application PostgreSQL on canonical Railway production through existing public TCP route
+  project_id: ce55ef20-1418-4ad3-aafa-f877fb992dc8
+  environment_id: f911acfc-e206-44df-a569-9d69d709b94b
+  database_service_id: db590e4a-7dc5-40cb-a243-5206ce21b746
+  database_deployment_id: 62583cef-572b-40ae-b1d3-0194a2ccbf27
+  database_image: ghcr.io/railwayapp-templates/postgres-ssl:18
+  connection_binding: process_local_DATABASE_URL_from_existing_DATABASE_PUBLIC_URL_only
+  connection_secret_handling: values_must_never_be_printed_logged_copied_committed_or_persisted
+  migration_id: 2260_v21_governed_campaign_audience_decisions
+  migration_path: packages/db/migrations/2260_v21_governed_campaign_audience_decisions.sql
+  migration_sha256: 93e7879ce7861cd37733335ca64e49310af1025fc099e6bce4abadb8f25c3740
+  candidate_migration_inventory_count: 91
+  candidate_migration_inventory_digest: 0561f0b2ba9f7fed82ee8fe193caf73e2f526ca15875b8ac685f1d59aea0a190
+  fresh_predecessor_terminal_ledger_row_count: 90
+  fresh_predecessor_terminal_ledger_digest: dbddc86e08ff25378d687febcfb36c41dbe7132f017fafe7a7e11b72a424fdc3
+  fresh_predecessor_terminal_pending_id: 2260_v21_governed_campaign_audience_decisions
+fencing_token: fence-d535994a-830c-4dca-b3f0-226fbe4f5fb4
+lock: production:data
+holder_claim_id: f0e9f51c-8f07-489c-8e28-e995f8035270
+provider_lock_lease_id: 40e82097-c8d6-48de-992b-97ff76971908
+allowed_operation: >-
+  From the clean exact candidate worktree, use the already-configured public PostgreSQL connection only by assigning
+  DATABASE_URL to the existing DATABASE_PUBLIC_URL in the migration runner's local child-process environment without
+  displaying or persisting either value. Revalidate the fresh 90-row READ ONLY terminal baseline, then invoke the
+  repository transaction-bound migration runner exactly once so only migration 2260 is applied with its exact checksum.
+  Require 90 already_applied results, one applied result, advisory transaction lock, acknowledged COMMIT and a fresh
+  READ ONLY postflight proving 91 ledger rows, pending zero, expected objects and zero decision rows. No Railway stored
+  variable may be created, changed, read out or deleted. No retry follows an unknown result.
+maximum_effect_count: 1
+maximum_effect_value: exactly_one_transactional_application_of_migration_2260_and_its_one_schema_migrations_ledger_row
+approved_fixture_ids: []
+effect_budget:
+  database_migrations_applied_exact: 1
+  schema_migration_ledger_rows_inserted_exact: 1
+  application_business_rows_inserted_updated_deleted_max: 0
+  process_local_environment_bindings_max: 1
+  Railway_stored_variable_mutations_max: 0
+  migration_retries_after_unknown_result_max: 0
+  post_commit_destructive_rollback_migrations_max: 0
+  Railway_deployments_domain_source_mutations_max: 0
+  browser_session_GHL_contact_tag_seed_reply_pilot_send_mutations_max: 0
+  DNS_Resend_Forward_Email_WhatsApp_charge_customer_or_Student_mutations_max: 0
+prerequisite_review:
+  control_parent_sha: ba53fbf3340b48117c2cde6d6133dffb5215442b
+  predecessor_terminal_event_digest: e36bfdc566a6f1ba5cef4b0454430363996d2228157e25bda8f24ab13282cbdf
+  predecessor_zero_effect_reconciliation: exact_fresh_READ_ONLY_90_rows_2260_absent_all_objects_absent_zero_XID_zero_mutations
+  candidate_source_tree_worktree_and_remote: exact_clean_equal
+  native_PostgreSQL_18_4_candidate_proof: 91_apply_91_replay_pending_0_issues_0_8_of_8_probes
+  public_database_connection_route: already_proven_by_committed_READ_ONLY_preflight_and_terminal_reconciliation
+  internal_database_connection_route: unavailable_from_local_runner_and_prohibited_for_this_successor
+  deployment_authority: not_issued_and_production_deployment_lock_unclaimed
+  contact_seed_pilot_broad_send_gate: held_false
+rollback_and_reconciliation:
+  - fetch and require the exact remote control successor status lock lease and fencing token immediately before any connection
+  - require the exact clean source tree migration digest inventory database deployment and fresh predecessor terminal digest
+  - create only a child-process environment copy and assign its DATABASE_URL field from the existing DATABASE_PUBLIC_URL field entirely in memory
+  - never echo inspect serialize persist or commit either connection value and never mutate Railway stored variables
+  - require a fresh READ ONLY ledger with exactly 90 recognized rows and only 2260 pending plus all 2260 object names absent
+  - invoke the repository migration runner exactly once under the child-process public connection binding
+  - require exactly 90 already_applied results one applied 2260 result and exact checksum with an acknowledged transaction COMMIT
+  - after commit require a fresh READ ONLY ledger of 91 recognized rows last ID 2260 pending zero exact checksum expected schema objects and zero decision rows
+  - on any pre-commit failure require acknowledged ROLLBACK when a transaction exists and record zero committed effects
+  - after acknowledged commit do not drop or reverse the additive inert schema; stop for separate correction authority on mismatch
+  - release production:data only after terminal exact reconciliation
+stop_conditions:
+  - source_grant_successor_status_control_head_lock_lease_or_fencing_token_is_revoked_expired_absent_or_mismatched
+  - predecessor_terminal_event_digest_or_zero_effect_fresh_ledger_reconciliation_differs
+  - candidate_manifest_source_tree_branch_worktree_migration_digest_or_inventory_differs
+  - database_project_environment_service_deployment_image_or_status_differs
+  - DATABASE_PUBLIC_URL_is_absent_or_the_child_process_would_still_resolve_the_internal_database_hostname
+  - any connection_value_would_be_displayed_logged_serialized_persisted_or_committed
+  - pre_effect_ledger_is_not_exactly_90_recognized_rows_with_only_2260_pending_or_any_2260_object_exists
+  - migration_runner_would_apply_any_migration_other_than_2260_or_run_outside_one_transaction
+  - operation_would_write_any_business_row_or_mutate_Railway_provider_browser_session_contact_tag_send_charge_customer_or_Student_state
+contains_secret: false
+immutable: true

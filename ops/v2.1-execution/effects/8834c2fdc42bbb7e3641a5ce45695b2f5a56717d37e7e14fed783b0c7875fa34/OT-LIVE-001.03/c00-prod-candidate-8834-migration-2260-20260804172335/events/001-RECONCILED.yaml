@@ -1,0 +1,60 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-001.03
+authority_id: c00-prod-candidate-8834-migration-2260-20260804172335
+candidate_digest: 8834c2fdc42bbb7e3641a5ce45695b2f5a56717d37e7e14fed783b0c7875fa34
+repository_source_sha: a157c388d8dc292699f7cd1a1ef178918ee30885
+database_service_id: db590e4a-7dc5-40cb-a243-5206ce21b746
+database_deployment_id: 62583cef-572b-40ae-b1d3-0194a2ccbf27
+lease_id: ca5aba4b-2d29-427b-9777-bd21d0abc43c
+fencing_token: fence-8a226f49-5e4a-420c-8a96-24bfeb9abf58
+disposition: FAILED_ROLLED_BACK_ZERO_COMMITTED_EFFECTS
+failure_stage: initial_pool_connection_before_PostgreSQL_connection_or_transaction
+sanitized_root_cause: getaddrinfo_ENOTFOUND_for_Railway_internal_database_hostname_from_local_runner
+repository_migration_runner_invocations: 1
+retry_count: 0
+connection_succeeded: false
+begin_attempted: 0
+advisory_lock_attempted: 0
+ledger_selects_attempted_by_runner: 0
+migration_DDL_attempted: 0
+schema_migrations_inserts_attempted: 0
+commit_attempted: 0
+rollback_attempted: 0
+rollback_not_applicable_reason: no_database_connection_or_open_transaction_existed
+runner_results:
+  already_applied: 0
+  applied: 0
+committed_READ_ONLY_preflight:
+  ledger_row_count: 90
+  ledger_digest: dbddc86e08ff25378d687febcfb36c41dbe7132f017fafe7a7e11b72a424fdc3
+  last_migration_id: 2259_vimeo_mishnayos_catalog_adoption
+  pending_count: 1
+  pending_id: 2260_v21_governed_campaign_audience_decisions
+  all_2260_schema_collision_probes_absent: true
+  transaction_read_only: true
+  transaction_XID_before_after: null_null
+  inserted_updated_deleted_before_after: 0_0_0_0_0_0
+  commit_acknowledged: true
+fresh_committed_READ_ONLY_reconciliation:
+  ledger_row_count: 90
+  ledger_digest: dbddc86e08ff25378d687febcfb36c41dbe7132f017fafe7a7e11b72a424fdc3
+  last_migration_id: 2259_vimeo_mishnayos_catalog_adoption
+  pending_count: 1
+  pending_id: 2260_v21_governed_campaign_audience_decisions
+  unrecognized_migrations: 0
+  table_view_two_indexes_three_functions_and_trigger_absent: true
+  governed_campaign_decision_rows_created: 0
+  transaction_XID_before_after: null_null
+  inserted_updated_deleted_before_after: 0_0_0_0_0_0
+  commit_acknowledged: true
+effects:
+  migrations_applied: 0
+  schema_migration_ledger_rows_inserted: 0
+  schema_objects_created: 0
+  application_business_rows_mutated: 0
+  deployments_variables_domains_source_browser_sessions_providers_contacts_tags_sends_charges_customers_Students_DNS_billing: 0
+unresolved_effects: 0
+recorded_at: '2026-08-04T17:39:40Z'
+contains_secret: false
+immutable: true

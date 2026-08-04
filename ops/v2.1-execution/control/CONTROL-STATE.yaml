@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: operational
-active_phase: candidate_8834c2fd_migration_2260_authorized_active
+active_phase: candidate_8834c2fd_migration_2260_public_connection_successor_authorized_active
 bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
@@ -18,7 +18,7 @@ candidate: 8834c2fdc42bbb7e3641a5ce45695b2f5a56717d37e7e14fed783b0c7875fa34
 active_writer_limit: 4
 controller_authorization_sha: 76692fbb6e65cdeb68e32862dd0c03490b5e5750
 next_action: >-
-  Apply and terminally reconcile exact migration 2260 under the fresh candidate-bound production:data lease, then
+  Apply and terminally reconcile exact migration 2260 under the fresh public-connection candidate-bound production:data successor, then
   release that lock before separately authorizing the exact web and worker deployment of candidate 8834c2fd. Preserve
   deployed candidate 9d6be957 at source 27576fa6 and its successful exact ten-effect operator fixture.
   The existing-Chrome Admin to Parent to Admin canary stopped credential-unavailable before every POST with zero
@@ -65,6 +65,21 @@ ot_live_001_03_candidate_8834_migration_2260_authority_20260804_172335:
   pre_effect_ledger: 90_rows_digest_dbddc86e_only_2260_pending_READ_ONLY_zero_mutations
   authorized_effect: exact_one_transactional_application_of_migration_2260_and_one_ledger_row
   application_business_rows_provider_deploy_session_contact_tag_send_charge_customer_Student_effects_max: 0
+  deployment_lock: unclaimed_until_migration_terminal_reconciliation
+ot_live_001_03_candidate_8834_migration_2260_public_successor_20260804_173940:
+  recorded_at: '2026-08-04T17:39:40Z'
+  state_based_on_control_head_sha: ba53fbf3340b48117c2cde6d6133dffb5215442b
+  predecessor_authority_id: c00-prod-candidate-8834-migration-2260-20260804172335
+  predecessor_terminal_event_digest: e36bfdc566a6f1ba5cef4b0454430363996d2228157e25bda8f24ab13282cbdf
+  predecessor_disposition: FAILED_ROLLED_BACK_ZERO_COMMITTED_EFFECTS
+  predecessor_connection_PostgreSQL_statements_committed_effects_unresolved: false_0_0_0
+  successor_authority_id: c00-prod-candidate-8834-migration-2260-public-successor-20260804173940
+  successor_claim_id: f0e9f51c-8f07-489c-8e28-e995f8035270
+  successor_lease_id: 40e82097-c8d6-48de-992b-97ff76971908
+  successor_fencing_token: fence-d535994a-830c-4dca-b3f0-226fbe4f5fb4
+  connection_binding: process_local_DATABASE_URL_from_existing_DATABASE_PUBLIC_URL_only_no_secret_display_or_persistence
+  authorized_effect: exact_one_transactional_application_of_only_migration_2260
+  Railway_stored_variable_application_business_row_and_all_other_effects_max: 0
   deployment_lock: unclaimed_until_migration_terminal_reconciliation
 ot_live_002_02_audience_census_identity_contract_dispatch_20260804_161937:
   recorded_at: '2026-08-04T16:19:37Z'
