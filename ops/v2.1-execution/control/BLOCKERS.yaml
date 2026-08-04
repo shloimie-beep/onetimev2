@@ -544,5 +544,50 @@ blockers:
     Operator deferred WhatsApp/WAPI with zero sends, provider changes, routes, and workflow mutations. Do not add a sink,
     repoint, disable, activate, or spend a lane. The stale provider webhook is not a product-launch or email blocker.
   next_check: None for this controlled launch; reopen only on a new exact operator WhatsApp instruction.
+- blocker_id: OT-CONTROLLED-LAUNCH-CONSOLIDATED-EXTERNAL-INPUTS-20260804
+  status: open
+  scope: controlled_launch_email_and_operator_acceptance
+  owner: Shloimie_Dratler_with_C00_reconciliation
+  affected_tasks:
+  - OT-LIVE-001.03
+  - OT-LIVE-002.02
+  - R45
+  safe_work_completed: >-
+    Candidate 8834 source a157 is deployed and healthy on exact web 976d8203 and worker 99f6471b; migration 2260 is
+    live; the operator fixture has exact Admin and Parent memberships with unchanged legacy identity/session state;
+    the existing-Chrome canary stopped before every POST because no private credential was available. GHL campaign
+    6a71a64c28f7a5dbb3aec1be, workflow 09051378-5917-4172-afda-f425619dd23d, launch tag
+    IcOGsLgSIOYGFlHF4kQ0, and reply scaffold 15748c03-8ded-4ec3-b263-ffcc19c67982 remain Draft with zero recipients,
+    enrollments, schedules, and sends. Exact governed census and SERIALIZABLE reconciliation stored 1,499 immutable
+    decisions: include 0, exclude 15, review 1,484; projection hash c50dd3dde840c0bcb9666342086b380c0fc9f60bfa2b58edc301a951b3ffbe10.
+    Duplicate SPF repair was rolled back after GoDaddy rejected the protected deletion, and the authenticated Forward
+    Email account had no managed onetimeonetime.com domain. All effects are reconciled and all exclusive locks released.
+  required_authority_or_input:
+  - >-
+    In the already-open Chrome login page, Shloimie privately enters the existing operator credentials and says done;
+    Codex must not receive, inspect, export, or display the password.
+  - >-
+    For any email launch, provide or identify an authoritative existing source containing immutable GHL contact IDs plus
+    adult, inactive/former-member, consent/opt-in, current-subscriber, Student/minor, School, and suppression evidence
+    sufficient to resolve selected review rows; or explicitly accept a landing-only launch with zero email recipients.
+    The 15 exact exclude decisions remain prohibited.
+  - >-
+    Repair the exact duplicate SPF owner send.onetimeonetime.com through a provider path that can delete the redundant
+    TXT value, leaving one merged value: v=spf1 include:amazonses.com include:dc-7415a7219d._spfm.send.onetimeonetime.com ~all;
+    or provide an exact canonical provider-supported alternative. Preserve all other DNS and nameservers.
+  - >-
+    Supply canonical ownership/access for onetimeonetime.com in Forward Email and the approved destination for
+    rabbielischeller@onetimeonetime.com while preserving info@, or designate an exact already-governed reply route.
+  - Choose the final free-access cutoff: September 11, 2026 at 6:00 PM Asia/Jerusalem or September 13, 2026 with exact time.
+  - >-
+    Broad production release only, not staging or controlled canary: supply the separate exact approved six-file legal
+    bundle required by OPS-084-LEGAL-BUNDLE.
+  protection: >-
+    Do not infer eligibility from ambiguous GHL rows, select or tag a contact, send a seed/pilot/broad email, activate or
+    publish the Draft assets, retry the failed DNS deletion, request or expose credentials, or weaken adult/consent,
+    suppression, sender-authentication, reply-route, legal, or date gates.
+  next_check: >-
+    Resume only the exact independently unblocked slice after Shloimie supplies one or more listed inputs; use one fresh
+    candidate/provider-bound authority per live effect and preserve zero broad-send budget until every gate passes.
 rule: One precise blocker per entry with owner, affected tasks, safe work completed, required authority/input, and
   next check.

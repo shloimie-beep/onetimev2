@@ -3078,6 +3078,16 @@ ot_live_002_02_governed_audience_snapshot_terminal_20260804_202358:
   unresolved_effects: 0
   production_data_lock: released
   send_gate: false_no_eligible_include_decisions
+ot_controlled_launch_consolidated_external_input_pack_20260804_202827:
+  recorded_at: '2026-08-04T20:28:27Z'
+  state_based_on_control_head_sha: 25e07242f7480e1b8e3bddb809a28c38a47850e6
+  blocker_id: OT-CONTROLLED-LAUNCH-CONSOLIDATED-EXTERNAL-INPUTS-20260804
+  independently_completed: candidate_8834_deploy_migration_2260_operator_dual_role_data_GHL_Draft_configuration_governed_1499_row_audience_snapshot
+  current_email_projection: include_0_exclude_15_review_1484_send_gate_false
+  exact_remaining_inputs: private_operator_sign_in_authoritative_adult_consent_mapping_or_zero_email_acceptance_duplicate_SPF_repair_canonical_reply_route_final_cutoff_date
+  broad_release_only_input: exact_external_six_file_legal_bundle
+  all_exclusive_provider_production_data_and_deployment_locks: released
+  next_action_after_input: issue_only_the_smallest_fresh_exact_authority_for_the_unblocked_slice
 authority_note: >-
   Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through
   release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an
