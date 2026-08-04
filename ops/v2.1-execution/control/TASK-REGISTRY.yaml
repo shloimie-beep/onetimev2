@@ -2364,7 +2364,7 @@ tasks:
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/V43/status_proof
 - task_id: OT-LIVE-001.03
   status: in_progress
-  active_phase: candidate_baseline_correction_authorized_from_accepted_linear_source
+  active_phase: candidate_baseline_correction_one_file_deterministic_count_scope_amendment_authorized
   owner_thread_id: 019fc7e8-b506-7d30-a36a-4d7a9641f4fd
   branch: codex/ot-live-001-candidate-baseline-correction-20260804
   phase_branches:
@@ -2378,11 +2378,11 @@ tasks:
     candidate_baseline_correction_base: 5110bee2b06145d6cd6ad596dd4f42e748bda75e
   authorized_start_sha: 5110bee2b06145d6cd6ad596dd4f42e748bda75e
   last_known_remote_head: 5110bee2b06145d6cd6ad596dd4f42e748bda75e
-  active_claim_id: 0f8d8ca8-3af3-400e-a846-7ec517b62bcd
-  active_writer_id: codex-ot-live-001-03-candidate-baseline-0f8d8ca8
+  active_claim_id: 29f4ac95-512e-4738-8e39-1e28dae8da83
+  active_writer_id: codex-ot-live-001-03-candidate-baseline-scope-29f4ac95
   lease_expires_at: '2026-08-05T07:00:00Z'
-  last_heartbeat_at: '2026-08-04T15:54:33Z'
-  controller_authorization_sha: 2012270928f33fcc414fe4e5267c2c41799d35cd
+  last_heartbeat_at: '2026-08-04T16:12:02Z'
+  controller_authorization_sha: af928c57c08cb9ab8cb3889e64744dd430c34d2e
   ready_entry_payload_digest: null
   interface_checkpoint_sha: null
   implementation_head_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844

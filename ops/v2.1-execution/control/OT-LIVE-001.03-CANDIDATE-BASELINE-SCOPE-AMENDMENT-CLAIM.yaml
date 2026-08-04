@@ -1,0 +1,49 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-001.03
+owner_thread_id: 019fc7e8-b506-7d30-a36a-4d7a9641f4fd
+claim_id: 29f4ac95-512e-4738-8e39-1e28dae8da83
+writer_id: codex-ot-live-001-03-candidate-baseline-scope-29f4ac95
+status: active
+branch: codex/ot-live-001-candidate-baseline-correction-20260804
+base_sha: 5110bee2b06145d6cd6ad596dd4f42e748bda75e
+base_tree_sha: 4141859ebd184d7e1571d51c0c422f0c332bda2f
+control_parent_sha: af928c57c08cb9ab8cb3889e64744dd430c34d2e
+predecessor_claim_id: 0f8d8ca8-3af3-400e-a846-7ec517b62bcd
+predecessor_claim_path: ops/v2.1-execution/control/OT-LIVE-001.03-CANDIDATE-BASELINE-CORRECTION-CLAIM.yaml
+predecessor_scope_remains_authorized: true
+reason: >-
+  The exact accepted base derives 1175 application paths and 1041 web and worker paths. The deterministic candidate-builder
+  test still asserts the predecessor counts 1164, 1030, and 1030, so its required focused suite cannot pass without one
+  test-only expectation update. All 15 inherited unit failures are already corrected within the predecessor scope and the
+  full unit suite passes 641 of 641.
+additional_exact_paths:
+  - scripts/operations/v21/candidate/build-candidate.test.ts
+source_preimage_sha256:
+  scripts/operations/v21/candidate/build-candidate.test.ts: dc79983a34531904981ffcce149e8e6ad2861554eb8ecfe8dc2985622dab5fcd
+allowed_operation: >-
+  Change only the three stale deterministic path-count expectations from 1164, 1030, and 1030 to the exact derived values
+  1175, 1041, and 1041. Make no other source change. Then complete the predecessor verification, create one normal commit
+  containing only the cumulative authorized paths, and normally push the existing exact branch once.
+required_verification:
+  - candidate_builder_focused_suite_passes_with_zero_failures
+  - full_repository_unit_suite_remains_641_of_641
+  - repository_build_lint_typecheck_and_secret_scan_pass
+  - candidate_only_format_and_git_diff_check_pass
+  - cumulative_exact_path_scope_and_preimage_validation_pass
+  - source_head_is_one_normal_fast_forward_from_exact_base
+publish_authority:
+  create_and_normally_push_existing_exact_branch_once: true
+  force_push_amend_rebase_merge: false
+prohibitions:
+  - no_change_beyond_the_three_exact_count_literals_in_the_additional_path
+  - no_runtime_behavior_contract_or_security_weakening
+  - no_migration_database_schema_or_row_effect
+  - no_provider_contact_tag_seed_reply_pilot_or_broad_send_effect
+  - no_deployment_DNS_billing_customer_Student_identity_session_or_credential_effect
+  - no_candidate_manifest_control_file_or_shared_runtime_registration_change
+  - no_changes_outside_the_cumulative_predecessor_and_additional_exact_paths
+issued_at: '2026-08-04T16:12:02Z'
+expires_at: '2026-08-05T07:00:00Z'
+contains_secret: false
+immutable: true

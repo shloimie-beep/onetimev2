@@ -27,11 +27,26 @@ next_action: >-
   is accepted at 5110bee2 after its one-file nonbehavioral lint correction, 30 controller-focused tests, and native
   PostgreSQL 18.4 proof. The canonical pre-freeze baseline reproduced the exact same inherited 15 unit failures on both
   deployed 27576fa6 and accepted 5110bee2; consume the narrow OT-LIVE-001.03 correction claim for nine test fixtures and
-  three deterministic inventory/brand projection files, then rerun the full unit baseline. Freeze the next additive source
+  three deterministic inventory/brand projection files. Its corrected unit suite passes 641 of 641; consume the one-file
+  scope amendment for the stale candidate-builder path-count assertion, then freeze the next additive source
   candidate from its accepted descendant; keep media as a separate candidate unless it becomes critical. No live
   migration, database census, decision write, contact,
   seed, pilot, broad send, or media provider effect is authorized. Migration 2261 remains unallocated. Keep OT-LIVE-003.02
   parked/unmerged/default-off, reject its 2260 proposal, and keep WhatsApp/WAPI fully deferred at zero effects.
+ot_live_001_03_candidate_baseline_scope_amendment_20260804_161202:
+  recorded_at: '2026-08-04T16:12:02Z'
+  state_based_on_control_head_sha: af928c57c08cb9ab8cb3889e64744dd430c34d2e
+  predecessor_claim_id: 0f8d8ca8-3af3-400e-a846-7ec517b62bcd
+  amendment_claim_id: 29f4ac95-512e-4738-8e39-1e28dae8da83
+  amendment_claim_path: ops/v2.1-execution/control/OT-LIVE-001.03-CANDIDATE-BASELINE-SCOPE-AMENDMENT-CLAIM.yaml
+  amendment_claim_digest: 317dba039ecd6585fc5b5191dadc8400166bd6170c77725c10508f2f903bfa07
+  branch: codex/ot-live-001-candidate-baseline-correction-20260804
+  base_sha: 5110bee2b06145d6cd6ad596dd4f42e748bda75e
+  additional_exact_path: scripts/operations/v21/candidate/build-candidate.test.ts
+  additional_path_preimage_sha256: dc79983a34531904981ffcce149e8e6ad2861554eb8ecfe8dc2985622dab5fcd
+  only_authorized_literal_change: 1164_1030_1030_to_1175_1041_1041
+  corrected_unit_baseline: 641_passed_0_failed_of_641
+  product_migration_database_provider_deploy_DNS_send_effects: 0_0_0_0_0_0_0
 ot_live_001_03_candidate_baseline_correction_dispatch_20260804_155433:
   recorded_at: '2026-08-04T15:54:33Z'
   state_based_on_control_head_sha: 2012270928f33fcc414fe4e5267c2c41799d35cd
