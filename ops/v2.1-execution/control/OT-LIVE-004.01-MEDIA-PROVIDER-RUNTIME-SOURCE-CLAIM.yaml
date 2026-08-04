@@ -1,0 +1,69 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-004.01
+owner_thread_id: 019fcc0b-177e-7361-8823-9059dd8a8eb0
+claim_id: 3e512376-32bd-46dd-8be5-7ccea6292345
+writer_id: codex-ot-live-004-01-media-provider-runtime-3e512376
+status: active
+branch: codex/ot-live-004-media-shared-composition-20260804
+base_sha: c07975edf5d7f8f8bb75d0a648c3ef55de910f92
+base_tree_sha: 9244284005f22b0f712f95815c7441aaef3830ef
+security_terminal_path: ops/v2.1-execution/control/OT-LIVE-004.01-MEDIA-BROWSER-BINDING-CORRECTION-TERMINAL.yaml
+security_terminal_digest: 870fcf8e85848c781869941262b28d56892adc0ea5f2fc6114df5e83da549f09
+control_parent_sha: 996ea88aab1bb4ec345a8e705155c6a2e0a39bfc
+exact_paths:
+  - package.json
+  - package-lock.json
+  - packages/contracts/src/content/ingest/index.ts
+  - packages/db/src/content/ingest/index.ts
+  - packages/db/src/content/ingest/s3-managed-original-adapter.ts
+  - packages/db/src/content/ingest/s3-managed-original-adapter.test.ts
+  - packages/db/src/content/ingest/aws-s3-managed-original-client.ts
+  - packages/db/src/content/ingest/aws-s3-managed-original-client.test.ts
+  - apps/web/src/server/index.ts
+  - apps/web/src/server/features/content/ingest/router.ts
+  - apps/web/src/server/features/content/ingest/router.test.ts
+  - apps/web/src/server/features/content/media-runtime.ts
+  - apps/web/src/server/features/content/media-runtime.test.ts
+  - apps/web/src/server/features/content/publication/vimeo-http-client.ts
+  - apps/web/src/server/features/content/publication/vimeo-http-client.test.ts
+  - apps/worker/src/main/index.ts
+  - apps/worker/src/runners/content-media/runtime.ts
+  - apps/worker/src/runners/content-media/runtime.test.ts
+  - apps/worker/src/runners/content-ingest/google-drive-http-client.ts
+  - apps/worker/src/runners/content-ingest/google-drive-http-client.test.ts
+  - apps/worker/src/runners/content-processing/ffmpeg-openai-client.ts
+  - apps/worker/src/runners/content-processing/ffmpeg-openai-client.test.ts
+  - apps/worker/src/runners/content-publication/vimeo-http-client.ts
+  - apps/worker/src/runners/content-publication/vimeo-http-client.test.ts
+  - ops/codex-runs/OT-LIVE-004/MEDIA-PROVIDER-RUNTIME-SOURCE-EVIDENCE.md
+allowed_operation: implement_executable_default_off_web_and_worker_provider_runtime_composition_with_official_clients_mocked_contract_tests_commit_and_normally_push_source_only
+required_semantics:
+  - mode_off_builds_no_provider_runtime_and_performs_zero_provider_or_database_calls
+  - provider_canary_runtime_requires_exact_production_operator_canary_authorization_and_one_recording_bindings
+  - read_canonical_provider_registry_binding_and_live_identity_before_every_possible_mutation_path
+  - never_log_return_persist_or_commit_secret_token_credential_raw_provider_ID_or_private_URL
+  - S3_managed_original_uses_eu_central_1_KMS_versioning_private_CORS_checksum_and_exact_object_scope
+  - S3_multipart_begin_is_reconcile_first_and_unknown_safe_with_exact_key_and_at_most_one_open_upload
+  - S3_part_authorize_complete_abort_and_restart_recovery_do_not_depend_on_process_memory_or_browser_credentials
+  - optional_Google_Drive_is_read_only_exact_folder_exact_one_recording_and_nonblocking_when_unconfigured
+  - ffmpeg_and_ffprobe_use_argument_arrays_no_shell_and_bounded_temp_artifacts_with_cleanup
+  - OpenAI_and_Vimeo_use_official_or_direct_HTTPS_clients_with_timeout_reconciliation_and_stable_operation_identity
+  - Vimeo_remains_private_and_web_playback_uses_readback_only
+  - worker_selectors_are_exact_canary_bound_and_cannot_claim_bulk_or_unrelated_work
+  - all_provider_clients_are_dependency_injected_and_fully_proven_with_fake_transports_or_local_process_fixtures
+  - no_source_change_enables_the_feature_or_performs_startup_provider_effects
+publish_authority:
+  one_normal_fast_forward_push_to_exact_branch: true
+  force_push_amend_rebase_merge: false
+prohibitions:
+  - no_provider_API_upload_Drive_read_OpenAI_Vimeo_transcode_or_publication_effect
+  - no_database_connection_migration_or_row_effect_and_no_new_migration
+  - no_deployment_DNS_send_billing_customer_or_Student_effect
+  - no_secret_value_readback_output_test_fixture_or_commit
+  - no_bulk_media_or_33GB_operation_and_no_feature_flag_enablement
+  - no_changes_outside_exact_paths
+issued_at: '2026-08-04T14:14:29Z'
+expires_at: '2026-08-05T10:14:29Z'
+contains_secret: false
+immutable: true

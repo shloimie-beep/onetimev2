@@ -1,0 +1,45 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-004.01
+owner_thread_id: 019fcc0b-177e-7361-8823-9059dd8a8eb0
+source_claim_id: a7a2325a-ab81-4283-a111-9845ae494c29
+writer_id: codex-ot-live-004-01-media-binding-correction-a7a2325a
+claim_digest: 80773841bbd27f16716cf6f564235175f64a766b21db5642b48e6b9ba618b21f
+claim_disposition: consumed_source_success
+branch: codex/ot-live-004-media-shared-composition-20260804
+base_sha: 5851104c4a42435abb2bc699432a04ace1a58bfe
+source_head_sha: c07975edf5d7f8f8bb75d0a648c3ef55de910f92
+source_tree_sha: 9244284005f22b0f712f95815c7441aaef3830ef
+remote_equality: passed
+exact_path_count: 7
+correction:
+  browser_begin_payload: file_name_mime_type_and_byte_count_only
+  browser_URL_query_DOM_or_state_control_bindings: 0
+  browser_response_idempotencyKey_or_requestHash: 0
+  server_binding_source: protected_server_configuration_only
+  replay_identity: stable_server_derived_protected_digest
+  fresh_managed_storage_initializations: 1
+  durable_replay_managed_storage_initializations: 0
+  strict_rejected_browser_fields:
+    - authorization_id
+    - canary_id
+    - idempotency_key
+verification:
+  correction_suite: 11_passed_0_failed_3_files
+  adjacent_controller_suite: 14_passed_0_failed_4_files
+  repository_typecheck: passed
+  scoped_eslint_prettier_diff_and_secret_scan: passed
+  exact_claim_scope_and_remote_cleanliness: passed
+independent_controller_review:
+  browser_identifier_exposure: resolved
+  duplicate_storage_initialization_on_durable_replay: resolved
+  provider_runtime_readback_and_unknown_create_reconciliation: held_for_separate_runtime_composition_successor
+  source_verdict: accepted_security_correction_default_off_checkpoint
+zero_effects:
+  database_migrations_or_rows: 0
+  S3_Drive_OpenAI_Vimeo_upload_transcode_transcription_or_publication: 0
+  providers_deployments_DNS_sends_billing_customers_or_Students: 0
+  media_flag_enablements: 0
+recorded_at: '2026-08-04T14:14:29Z'
+contains_secret: false
+immutable: true

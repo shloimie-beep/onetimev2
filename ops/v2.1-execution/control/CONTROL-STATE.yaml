@@ -26,7 +26,8 @@ next_action: >-
   only 2261 as next available. OT-LIVE-002.02 is source-only implementing the transaction repository on that exact base. No live migration, database
   census, contact, seed, pilot, or broad-send effect is authorized. OT-LIVE-004.01 shared composition reached 5851104c
   with every media flag default-off and zero external effects, but independent review holds acceptance until its browser-exposed
-  authorization/canary identifiers are removed under the narrow source-only correction claim. Keep OT-LIVE-003.02
+  authorization/canary identifiers are removed at c07975ed; a source-only successor is now composing executable
+  default-off provider runtimes with mock/local proof and no provider calls. Keep OT-LIVE-003.02
   parked/unmerged/default-off, reject its 2260 proposal, and keep WhatsApp/WAPI fully deferred at zero effects.
 ot_live_source_successor_dispatch_20260804_125957:
   recorded_at: '2026-08-04T12:59:57Z'
@@ -62,15 +63,17 @@ ot_live_source_successor_dispatch_20260804_125957:
     live_database_and_provider_effects: 0_0
     OT_LIVE_003_2260_proposal: rejected_unallocated_parked_default_off
   OT_LIVE_004_01:
-    claim_id: a7a2325a-ab81-4283-a111-9845ae494c29
-    claim_path: ops/v2.1-execution/control/OT-LIVE-004.01-MEDIA-BROWSER-BINDING-CORRECTION-CLAIM.yaml
-    claim_digest: 80773841bbd27f16716cf6f564235175f64a766b21db5642b48e6b9ba618b21f
+    claim_id: 3e512376-32bd-46dd-8be5-7ccea6292345
+    claim_path: ops/v2.1-execution/control/OT-LIVE-004.01-MEDIA-PROVIDER-RUNTIME-SOURCE-CLAIM.yaml
+    claim_digest: 812244ee9fcec485b2bde81d45533425f870ea51c9654a07f69407b06fc41468
     branch: codex/ot-live-004-media-shared-composition-20260804
-    base_sha: 5851104c4a42435abb2bc699432a04ace1a58bfe
+    base_sha: c07975edf5d7f8f8bb75d0a648c3ef55de910f92
     accepted_media_source_sha: 795adc712e5ce16f2df6bf2d6a8372b41bf9de70
     shared_composition_head_sha: 5851104c4a42435abb2bc699432a04ace1a58bfe
     shared_composition_terminal_digest: 51431c187c4c1cf7180945f530e2cfdd3e96c92d9052e6c409778dcc4ff27ec1
-    mode: browser_binding_security_correction_source_only_default_off
+    browser_binding_correction_head_sha: c07975edf5d7f8f8bb75d0a648c3ef55de910f92
+    browser_binding_terminal_digest: 870fcf8e85848c781869941262b28d56892adc0ea5f2fc6114df5e83da549f09
+    mode: executable_provider_runtime_composition_source_only_default_off
     migration_database_provider_upload_deploy_DNS_effects: 0_0_0_0_0_0
 ot_live_004_01_shared_composition_terminal_and_security_correction_20260804_135600:
   recorded_at: '2026-08-04T13:56:00Z'
@@ -99,6 +102,17 @@ ot_live_002_migration_2260_terminal_and_repository_dispatch_20260804_140825:
   repository_claim_path: ops/v2.1-execution/control/OT-LIVE-002.02-DECISION-STORE-IMPLEMENTATION-CLAIM.yaml
   repository_claim_digest: 1d4c0fe09872b3a95b91c7094e0698c9ad026a58ef0fdc714ef59a714b92f14d
   live_database_contact_provider_send_deploy_DNS_billing_effects: 0_0_0_0_0_0_0
+ot_live_004_01_security_terminal_and_provider_runtime_dispatch_20260804_141429:
+  recorded_at: '2026-08-04T14:14:29Z'
+  state_based_on_control_head_sha: 996ea88aab1bb4ec345a8e705155c6a2e0a39bfc
+  security_source_head_sha: c07975edf5d7f8f8bb75d0a648c3ef55de910f92
+  security_source_tree_sha: 9244284005f22b0f712f95815c7441aaef3830ef
+  security_terminal_path: ops/v2.1-execution/control/OT-LIVE-004.01-MEDIA-BROWSER-BINDING-CORRECTION-TERMINAL.yaml
+  security_terminal_digest: 870fcf8e85848c781869941262b28d56892adc0ea5f2fc6114df5e83da549f09
+  provider_runtime_claim_id: 3e512376-32bd-46dd-8be5-7ccea6292345
+  provider_runtime_claim_path: ops/v2.1-execution/control/OT-LIVE-004.01-MEDIA-PROVIDER-RUNTIME-SOURCE-CLAIM.yaml
+  provider_runtime_claim_digest: 812244ee9fcec485b2bde81d45533425f870ea51c9654a07f69407b06fc41468
+  provider_database_upload_transcode_publication_deploy_DNS_effects: 0_0_0_0_0_0_0
 ot_live_002_migration_2260_allocation_20260804_132116:
   recorded_at: '2026-08-04T13:21:16Z'
   state_based_on_control_head_sha: fb70bd65344513161c240e3ed6dfa30e0ad7fb54
