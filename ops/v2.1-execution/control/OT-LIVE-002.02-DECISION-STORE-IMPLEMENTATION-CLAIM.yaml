@@ -1,0 +1,61 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-002.02
+owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+claim_id: f59e9a15-cd23-42e2-a1ad-053ff15c9cbf
+writer_id: codex-ot-live-002-02-decision-store-implementation-f59e9a15
+status: active
+branch: codex/ot-live-002-decision-store-implementation-20260804
+base_sha: e5bc19812cc990b9d84e3371202cb4f4c37ab470
+base_tree_sha: afccb02b57884fd4eda02f648aed5d5a705c239b
+deployed_source_ancestor_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
+accepted_request_commits:
+  - 0cf2224f984c023162bf2286028df8e3d2723adf
+  - e41cea45a4e3fc99c4cf968872992f2992090d18
+migration_terminal_path: ops/v2.1-execution/control/F02-OT-LIVE-002-MIGRATION-2260-SOURCE-TERMINAL.yaml
+migration_terminal_digest: 8ff1f60f311871e5e12ae589a9be6d78d6ee9dc8fd6fd590551f14341b7cbea9
+migration_control_mirror_digest: 1d1bceff9151646eacc918b231b14268441b4e83ae781ed63aab16027578e63c
+migration_source_sha: e5bc19812cc990b9d84e3371202cb4f4c37ab470
+migration_ordinal: 2260
+migration_raw_sha256: 93e7879ce7861cd37733335ca64e49310af1025fc099e6bce4abadb8f25c3740
+request_raw_sha256: 058b22cd1607bef98010083b5e98634bfcc07016928c7ff5ccdb6575ab601846
+request_interface_sha256: d5f22e833341ced30f3da5688926b69cb856744c79d93c09047aa6ce3c5f9587
+control_parent_sha: 428ff71287b31f9f0aeee7415ffaa917ce57d6bd
+exact_paths:
+  - packages/db/src/audience-reconciliation/governed-campaign-decision-store.proposal.sql
+  - packages/db/src/audience-reconciliation/governed-campaign-decision-store.proposal.ts
+  - ops/codex-runs/OT-LIVE-002/decision-store-contract-check.mjs
+  - ops/codex-runs/OT-LIVE-002/DECISION-STORE-SOURCE-EVIDENCE.md
+  - ops/codex-runs/OT-LIVE-002/MIGRATION-REQUEST.yaml
+  - packages/db/src/audience-reconciliation/governed-campaign-decision-store.ts
+  - packages/db/src/audience-reconciliation/governed-campaign-decision-store.test.ts
+  - packages/db/src/index.ts
+  - tests/integration/governed-campaign-decision-store.test.ts
+  - scripts/postgres-assurance/governed-campaign-decision-store-pg18-proof.ts
+  - ops/codex-runs/OT-LIVE-002/DECISION-STORE-IMPLEMENTATION-EVIDENCE.md
+allowed_operation: create_exact_branch_at_migration_terminal_cherry_pick_exact_accepted_request_commits_implement_and_export_transactional_decision_store_test_commit_and_normally_push_source_only
+required_semantics:
+  - exact_runtime_verification_environment_account_product_campaign_and_four_HighLevel_asset_binding
+  - SERIALIZABLE_transaction_and_transaction_scoped_advisory_lock_over_exact_scope
+  - authority_supplied_positive_maximumAffectedRows_and_precomputed_inserted_plus_superseded_ceiling
+  - zero_row_authority_cannot_write_and_exact_replay_is_zero_statement_zero_write
+  - idempotency_request_snapshot_and_ordered_decision_hash_conflict_rejection
+  - one_way_exact_supersession_then_append_only_insert_with_no_delete_or_historical_body_update
+  - in_transaction_exact_count_hash_reason_and_current_projection_readback_before_commit
+  - rollback_on_ceiling_mismatch_unknown_or_readback_mismatch_without_automatic_retry
+  - reject_raw_PII_free_form_notes_messages_transcripts_Students_credentials_cookies_tokens_secrets_and_raw_provider_identifiers
+  - provider_result_is_always_zero_and_no_contact_tag_send_or_provider_operation_exists
+  - disposable_PostgreSQL_18_and_pgmem_proof_of_create_replay_conflict_ceiling_mismatch_unknown_rollback_and_environment_isolation
+  - preserve_migration_2260_bytes_and_all_candidate_builder_migration_count_proofs
+publish_authority:
+  one_normal_fast_forward_push_to_exact_branch: true
+  force_push_amend_rebase_merge: false
+prohibitions:
+  - no_live_staging_or_production_database_connection_migration_application_census_or_row_write
+  - no_GHL_contact_tag_seed_reply_pilot_broad_send_Resend_DNS_Forward_Email_or_WhatsApp_effect
+  - no_deployment_feature_enablement_billing_customer_or_Student_effect
+  - no_edit_to_migration_2260_or_any_other_migration_and_no_unlisted_shared_path
+issued_at: '2026-08-04T14:08:25Z'
+expires_at: '2026-08-05T10:08:25Z'
+contains_secret: false
+immutable: true

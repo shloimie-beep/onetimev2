@@ -127,8 +127,8 @@ tasks:
     transitioned_at: '2026-07-29T13:48:24Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/F01/status_proof
 - task_id: F02
-  status: in_progress
-  active_phase: OT_LIVE_002_migration_2260_allocated_source_implementation_only
+  status: ready_for_review
+  active_phase: OT_LIVE_002_migration_2260_source_terminal_pending_consumer_integration
   branch: codex/v21-f02-ot-live-ledger-regularization-20260804
   phase_branches:
     OT_LIVE_002_migration_2260: codex/v21-f02-ot-live-ledger-regularization-20260804
@@ -154,6 +154,7 @@ tasks:
     migration_2254_2256_P22_P12_P09_atomic_claim_only: codex/v21-lane1-migration-correction
     verification: codex/v21-f02-schema-state-migrations
   phase_heads:
+    OT_LIVE_002_migration_2260: e5bc19812cc990b9d84e3371202cb4f4c37ab470
     migration_2257_2259_ledger_regularization: 05f8dfc247f87318884db6cf57a42bc75b5c8719
     migration_2257_2259_ledger_regularization_base: 27576fa64f0b37095e61ccca932c2e77cbf38844
     contract: bec1f1834adbde6d6b2cd55acb31541fb9dc134a
@@ -192,36 +193,36 @@ tasks:
     migration_2254_2256_P22_P12_P09_atomic_claim: 216c983bbdfffc5e3e09f4fa69e5fe5f3d46415e
     migration_2254_2256_P22_P12_P09_implementation_complete: 3ee2f651528f5170dd714b921500235d4e015c5b
   authorized_start_sha: 05f8dfc247f87318884db6cf57a42bc75b5c8719
-  last_known_remote_head: 05f8dfc247f87318884db6cf57a42bc75b5c8719
-  active_claim_id: e4a1f7b4-1015-43e5-9096-069ac267ce89
-  active_writer_id: codex-f02-ot-live-002-migration-2260-e4a1f7b4
-  lease_expires_at: '2026-08-05T09:28:11Z'
+  last_known_remote_head: e5bc19812cc990b9d84e3371202cb4f4c37ab470
+  active_claim_id: null
+  active_writer_id: null
+  lease_expires_at: null
   active_writer_leases: []
-  last_heartbeat_at: '2026-08-04T13:28:11Z'
-  controller_authorization_sha: e47796344fa99f86806674da55ea1b07fd7de247
+  last_heartbeat_at: '2026-08-04T14:08:25Z'
+  controller_authorization_sha: 428ff71287b31f9f0aeee7415ffaa917ce57d6bd
   ready_entry_payload_digest: null
   interface_checkpoint_sha: e4673ff1c2e621e26ac93034be245b280c4da4fa
-  implementation_head_sha: 3ee2f651528f5170dd714b921500235d4e015c5b
+  implementation_head_sha: e5bc19812cc990b9d84e3371202cb4f4c37ab470
   status_proof:
-    state: 2257_2259_ledger_regularized_2260_source_claim_narrowly_superseded_pre_effect_to_include_candidate_builder_count_source
+    state: migration_2260_authored_source_terminal_native_and_pgmem_green_zero_live_effects
     producer_task_id: F02
-    producer_head_sha: 05f8dfc247f87318884db6cf57a42bc75b5c8719
+    producer_head_sha: e5bc19812cc990b9d84e3371202cb4f4c37ab470
     canonical_candidate_digest: null
     interface_checkpoint_digest: null
-    integration_or_evidence_head_sha: 4de8ef83394f295d169a7d5ac8da498f237556e21055e457cb989f5e375d89bb
+    integration_or_evidence_head_sha: 8ff1f60f311871e5e12ae589a9be6d78d6ee9dc8fd6fd590551f14341b7cbea9
     candidate_manifest_digest: null
     result_index_digest: null
     case_counts:
-      expected: 3
-      passed: 3
+      expected: 19
+      passed: 19
       failed: 0
       blocked: 0
       stale: 0
       waived: 0
     external_effects_reconciled: true
-    state_based_on_control_head_sha: e47796344fa99f86806674da55ea1b07fd7de247
-    transitioned_at: '2026-08-04T13:28:11Z'
-    proof_record_location: 'ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/F02/status_proof'
+    state_based_on_control_head_sha: 428ff71287b31f9f0aeee7415ffaa917ce57d6bd
+    transitioned_at: '2026-08-04T14:08:25Z'
+    proof_record_location: ops/v2.1-execution/control/F02-OT-LIVE-002-MIGRATION-2260-SOURCE-TERMINAL.yaml
 - task_id: F03
   status: ready_for_review
   active_phase: v21_parent_host_cookie_session_runtime_correction_complete
@@ -2394,35 +2395,37 @@ tasks:
     proof_record_location: ops/v2.1-execution/effects/9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c/OT-LIVE-001.03/c00-prod-operator-admin-parent-canary-20260804122448/events/001-RECONCILED.yaml
 - task_id: OT-LIVE-002.02
   status: in_progress
-  active_phase: immutable_request_accepted_F02_migration_2260_source_implementation_active
+  active_phase: decision_store_transaction_repository_implementation_source_only
   owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
-  branch: codex/ot-live-002-governed-campaign-20260804
+  branch: codex/ot-live-002-decision-store-implementation-20260804
   phase_branches:
     provider_configuration: codex/ot-live-002-governed-campaign-20260804
     database_proposal: codex/ot-live-002-governed-campaign-20260804
+    decision_store_implementation: codex/ot-live-002-decision-store-implementation-20260804
   phase_heads:
     base: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
     database_proposal: 0cf2224f984c023162bf2286028df8e3d2723adf
     immutable_migration_request: e41cea45a4e3fc99c4cf968872992f2992090d18
-  authorized_start_sha: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+    migration_2260_source: e5bc19812cc990b9d84e3371202cb4f4c37ab470
+  authorized_start_sha: e5bc19812cc990b9d84e3371202cb4f4c37ab470
   last_known_remote_head: e41cea45a4e3fc99c4cf968872992f2992090d18
-  active_claim_id: null
-  active_writer_id: null
-  lease_expires_at: null
-  last_heartbeat_at: '2026-08-04T13:19:18Z'
-  controller_authorization_sha: fb70bd65344513161c240e3ed6dfa30e0ad7fb54
+  active_claim_id: f59e9a15-cd23-42e2-a1ad-053ff15c9cbf
+  active_writer_id: codex-ot-live-002-02-decision-store-implementation-f59e9a15
+  lease_expires_at: '2026-08-05T10:08:25Z'
+  last_heartbeat_at: '2026-08-04T14:08:25Z'
+  controller_authorization_sha: 428ff71287b31f9f0aeee7415ffaa917ce57d6bd
   ready_entry_payload_digest: null
   interface_checkpoint_sha: null
   implementation_head_sha: e41cea45a4e3fc99c4cf968872992f2992090d18
   status_proof:
-    state: corrected_immutable_request_accepted_terminal_2260_allocated_to_F02_source_writer_no_database_or_provider_effect
+    state: migration_2260_source_terminal_accepted_transaction_repository_implementation_active_zero_live_effects
     producer_task_id: OT-LIVE-002.02
     producer_head_sha: e41cea45a4e3fc99c4cf968872992f2992090d18
     canonical_candidate_digest: 99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098
-    integration_or_evidence_head_sha: cd4d2c8586290167bee1d6d3acaf4cda2334b42baba25a9e683d56b34a21cdb0
+    integration_or_evidence_head_sha: 8ff1f60f311871e5e12ae589a9be6d78d6ee9dc8fd6fd590551f14341b7cbea9
     external_effects_reconciled: true
-    state_based_on_control_head_sha: fb70bd65344513161c240e3ed6dfa30e0ad7fb54
-    proof_record_location: ops/v2.1-execution/control/OT-LIVE-002.02-MIGRATION-REQUEST-SOURCE-TERMINAL.yaml
+    state_based_on_control_head_sha: 428ff71287b31f9f0aeee7415ffaa917ce57d6bd
+    proof_record_location: ops/v2.1-execution/control/F02-OT-LIVE-002-MIGRATION-2260-SOURCE-TERMINAL.yaml
 - task_id: OT-LIVE-004.01
   status: in_progress
   active_phase: media_browser_binding_security_correction_source_only

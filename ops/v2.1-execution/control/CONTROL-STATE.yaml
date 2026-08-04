@@ -21,9 +21,9 @@ next_action: >-
   Preserve deployed candidate 9d6be957 at source 27576fa6 and its successful exact ten-effect operator fixture.
   The existing-Chrome Admin to Parent to Admin canary stopped credential-unavailable before every POST with zero
   database mutations or unresolved effects; defer the single operator sign-in request until independent work completes.
-  OT-LIVE-002.02 immutable decision-store request is independently accepted at e41cea45. F02 regularized exact immutable
-  migrations 2257 through 2259 at 05f8dfc2, the control mirror now names 2260 as next available, and 2260 is allocated
-  to F02 for forward-only source implementation and disposable PostgreSQL 18 proof only. No live migration, database
+  OT-LIVE-002.02 immutable decision-store request is independently accepted at e41cea45. F02 has now terminally authored
+  migration 2260 at e5bc1981 with 91-of-91 PostgreSQL 18 apply/replay and zero live effects; the control mirror advances
+  only 2261 as next available. OT-LIVE-002.02 is source-only implementing the transaction repository on that exact base. No live migration, database
   census, contact, seed, pilot, or broad-send effect is authorized. OT-LIVE-004.01 shared composition reached 5851104c
   with every media flag default-off and zero external effects, but independent review holds acceptance until its browser-exposed
   authorization/canary identifiers are removed under the narrow source-only correction claim. Keep OT-LIVE-003.02
@@ -41,23 +41,25 @@ ot_live_source_successor_dispatch_20260804_125957:
     active_claim_or_effect_lease: none
     next_boundary: one_operator_sign_in_then_fresh_exact_canary_authority_after_independent_source_lanes
   OT_LIVE_002_02:
-    claim_id: 38937cb0-37e4-4fbf-8bbb-e7c07d75aeda
-    claim_path: ops/v2.1-execution/control/OT-LIVE-002.02-DECISION-STORE-MIGRATION-REQUEST-CORRECTION-CLAIM.yaml
-    claim_digest: 36f5f0729d08c319dcc00689fd9d058728cc74b3968148161757ddaac50465ff
-    branch: codex/ot-live-002-governed-campaign-20260804
-    base_sha: 0cf2224f984c023162bf2286028df8e3d2723adf
+    claim_id: f59e9a15-cd23-42e2-a1ad-053ff15c9cbf
+    claim_path: ops/v2.1-execution/control/OT-LIVE-002.02-DECISION-STORE-IMPLEMENTATION-CLAIM.yaml
+    claim_digest: 1d4c0fe09872b3a95b91c7094e0698c9ad026a58ef0fdc714ef59a714b92f14d
+    branch: codex/ot-live-002-decision-store-implementation-20260804
+    base_sha: e5bc19812cc990b9d84e3371202cb4f4c37ab470
     requested_migration_id: OT-LIVE-002-MIGRATION-001
-    requested_ordinal: 2260
-    allocation_status: requested_not_allocated
+    allocated_ordinal: 2260
+    allocation_status: authored_source_only_pending_integration
     migration_database_contact_provider_seed_pilot_broad_send_effects: 0_0_0_0_0_0_0
   F02:
-    claim_id: c172ba4d-1098-4d72-910f-5048a678e4f9
-    claim_path: ops/v2.1-execution/control/F02-MIGRATION-2257-2259-LEDGER-REGULARIZATION-CLAIM.yaml
-    claim_digest: e4c86171314af866512c001628d7aaaad8b072de23d078ed07c4b7d699e8e005
+    claim_id: null
+    claim_path: ops/v2.1-execution/control/F02-OT-LIVE-002-MIGRATION-2260-SUCCESSOR-CLAIM.yaml
+    claim_digest: 24d7cb9b03517b22c529542c67cd910bafed0751c16a78b926f32db935bb64f5
     branch: codex/v21-f02-ot-live-ledger-regularization-20260804
-    base_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
-    exact_existing_ordinals: 2257_2258_2259
-    existing_migration_bytes_mutations_and_database_effects: 0_0
+    source_head_sha: e5bc19812cc990b9d84e3371202cb4f4c37ab470
+    authored_ordinal: 2260
+    next_available_unallocated_ordinal: 2261
+    migration_terminal_digest: 8ff1f60f311871e5e12ae589a9be6d78d6ee9dc8fd6fd590551f14341b7cbea9
+    live_database_and_provider_effects: 0_0
     OT_LIVE_003_2260_proposal: rejected_unallocated_parked_default_off
   OT_LIVE_004_01:
     claim_id: a7a2325a-ab81-4283-a111-9845ae494c29
@@ -83,6 +85,20 @@ ot_live_004_01_shared_composition_terminal_and_security_correction_20260804_1356
   successor_claim_path: ops/v2.1-execution/control/OT-LIVE-004.01-MEDIA-BROWSER-BINDING-CORRECTION-CLAIM.yaml
   successor_claim_digest: 80773841bbd27f16716cf6f564235175f64a766b21db5642b48e6b9ba618b21f
   provider_database_upload_deploy_DNS_send_charge_effects: 0_0_0_0_0_0_0
+ot_live_002_migration_2260_terminal_and_repository_dispatch_20260804_140825:
+  recorded_at: '2026-08-04T14:08:25Z'
+  state_based_on_control_head_sha: 428ff71287b31f9f0aeee7415ffaa917ce57d6bd
+  migration_source_head_sha: e5bc19812cc990b9d84e3371202cb4f4c37ab470
+  migration_source_tree_sha: afccb02b57884fd4eda02f648aed5d5a705c239b
+  migration_terminal_path: ops/v2.1-execution/control/F02-OT-LIVE-002-MIGRATION-2260-SOURCE-TERMINAL.yaml
+  migration_terminal_digest: 8ff1f60f311871e5e12ae589a9be6d78d6ee9dc8fd6fd590551f14341b7cbea9
+  migration_control_mirror_digest: 1d1bceff9151646eacc918b231b14268441b4e83ae781ed63aab16027578e63c
+  migration_raw_sha256: 93e7879ce7861cd37733335ca64e49310af1025fc099e6bce4abadb8f25c3740
+  native_PostgreSQL_18_4: 91_of_91_apply_91_of_91_replay_19_of_19_controls_pending_0_issues_0
+  repository_claim_id: f59e9a15-cd23-42e2-a1ad-053ff15c9cbf
+  repository_claim_path: ops/v2.1-execution/control/OT-LIVE-002.02-DECISION-STORE-IMPLEMENTATION-CLAIM.yaml
+  repository_claim_digest: 1d4c0fe09872b3a95b91c7094e0698c9ad026a58ef0fdc714ef59a714b92f14d
+  live_database_contact_provider_send_deploy_DNS_billing_effects: 0_0_0_0_0_0_0
 ot_live_002_migration_2260_allocation_20260804_132116:
   recorded_at: '2026-08-04T13:21:16Z'
   state_based_on_control_head_sha: fb70bd65344513161c240e3ed6dfa30e0ad7fb54

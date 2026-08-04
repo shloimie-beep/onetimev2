@@ -1,0 +1,51 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: F02
+consumer_task_id: OT-LIVE-002.02
+source_claim_id: e4a1f7b4-1015-43e5-9096-069ac267ce89
+writer_id: codex-f02-ot-live-002-migration-2260-e4a1f7b4
+claim_digest: 24d7cb9b03517b22c529542c67cd910bafed0751c16a78b926f32db935bb64f5
+claim_disposition: consumed_source_success
+branch: codex/v21-f02-ot-live-ledger-regularization-20260804
+base_sha: 05f8dfc247f87318884db6cf57a42bc75b5c8719
+source_head_sha: e5bc19812cc990b9d84e3371202cb4f4c37ab470
+source_tree_sha: afccb02b57884fd4eda02f648aed5d5a705c239b
+remote_equality: passed
+exact_path_count: 11
+path_inventory_digest: d1043643988c21a0debaa30264f3e554ecf132473548200f8598300813372bde
+postimage_manifest_digest: 5f1576dd0b671890cbe69a7ff7af61fce565d984c43a9facc8448d607436a443
+allocation:
+  ordinal: 2260
+  file: packages/db/migrations/2260_v21_governed_campaign_audience_decisions.sql
+  raw_sha256: 93e7879ce7861cd37733335ca64e49310af1025fc099e6bce4abadb8f25c3740
+  pg_mem_sha256: cd88696dd38b66615bfe4bc8adcb81f1cadc3d310109f358d14fe5e2d674437c
+  request_id: OT-LIVE-002-MIGRATION-001
+  request_raw_sha256: 058b22cd1607bef98010083b5e98634bfcc07016928c7ff5ccdb6575ab601846
+  request_interface_sha256: d5f22e833341ced30f3da5688926b69cb856744c79d93c09047aa6ce3c5f9587
+  status: authored_source_only_pending_integration
+  next_available_ordinal: 2261
+  next_available_is_not_an_allocation: true
+verification:
+  pg_mem_migration: 4_passed_0_failed
+  candidate_builder: 4_passed_0_failed
+  postgresql_18_4_fresh_apply_and_replay: 91_of_91_and_91_of_91
+  postgresql_pending_and_issues: 0_and_0
+  migration_2260_native_controls: 19_passed_0_failed
+  native_ledger_digest: 531701132856ec5640e49a8a07b768f12db7c4b103cc63ab9cd27d7d0ec81233
+  typecheck_lint_format_secret_scan_yaml_scope_and_diff: passed
+  disposable_databases_removed: 5_of_5
+  disposable_clusters_removed: 2_of_2
+independent_controller_readback:
+  remote_head_and_tree: passed
+  exact_eleven_path_scope: passed
+  migration_raw_and_pg_mem_digests: passed
+  composite_contact_scope_foreign_key: passed
+  protected_hash_typed_source_facts_append_only_and_zero_backfill_review: passed
+  focused_migration_and_candidate_tests: 8_passed_0_failed
+zero_effects:
+  live_or_staging_database_connections_migrations_or_rows: 0
+  provider_contact_tag_seed_pilot_broad_send_effects: 0
+  deploy_DNS_billing_customer_or_Student_effects: 0
+recorded_at: '2026-08-04T14:08:25Z'
+contains_secret: false
+immutable: true
