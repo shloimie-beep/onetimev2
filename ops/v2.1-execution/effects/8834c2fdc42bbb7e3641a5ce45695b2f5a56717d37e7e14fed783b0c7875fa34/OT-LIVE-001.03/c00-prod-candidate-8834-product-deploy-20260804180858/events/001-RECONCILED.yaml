@@ -1,0 +1,65 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-001.03
+authority_id: c00-prod-candidate-8834-product-deploy-20260804180858
+event_id: c00-prod-candidate-8834-product-deploy-20260804180858-001
+event_type: RECONCILED
+terminal_disposition: SUCCESS_EXACT_PRODUCT_CANDIDATE_DEPLOYED
+candidate_digest: 8834c2fdc42bbb7e3641a5ce45695b2f5a56717d37e7e14fed783b0c7875fa34
+repository_source_sha: a157c388d8dc292699f7cd1a1ef178918ee30885
+repository_tree_sha: bd2f1295043af74cfa0bad5f5b3993e3a534137e
+lease_id: a4f038ef-95d3-44e7-9fde-cc5f196ae77e
+fencing_token: fence-ec6c281c-d522-4f77-89c3-3ab0663f9684
+archive_gate:
+  kind: Git_only_clean_source_archive
+  file_count: 3568
+  byte_count: 126071543
+  manifest_sha256: 5afd866e1905a0009f274d072d509fafb8e8ee3f84075686472099400c2ff4fc
+  excluded_untracked_uncommitted_env_credentials_Git_metadata_node_modules_junctions_caches_temp_proof: true
+pre_effect:
+  web_deployment_id: ea1b663f-f892-4137-9ebf-8a4509bf7cd8
+  worker_deployment_id: f68df357-7be5-4ded-936b-fbc915c42261
+  database_deployment_id: 62583cef-572b-40ae-b1d3-0194a2ccbf27
+  database_migration_ledger_rows: 91
+  governed_campaign_decision_rows: 0
+deployments:
+  web:
+    deployment_id: 976d8203-d962-4c13-94d5-b3221eceb65f
+    service_id: d175ad94-5e3c-41c2-8cbc-daa1a299077d
+    image_digest: sha256:bbfae87996e2da5a6b0a2888b71f14026cb06ed7ef90270e6e861fe6b3d209e8
+    status: SUCCESS_RUNNING_1_of_1
+    source_message: C00_candidate_8834c2fdc42_source_a157c388d8dc_Dockerfile_web
+  worker:
+    deployment_id: 99f6471b-f7d7-4fd5-a405-383ceadcbe60
+    service_id: 742f60ed-dc2f-4321-85d0-019003d4e9b9
+    image_digest: sha256:778686a6510360c7a6d02b4df7c065ff8f07f93221bed10ef1b97a33a9757808
+    status: SUCCESS_RUNNING_1_of_1
+    source_message: C00_candidate_8834c2fdc42_source_a157c388d8dc_Dockerfile_worker
+acceptance:
+  app_and_join_health_ready_version_and_roots: all_200
+  landing_content_ticker_reduced_motion_and_assets: exact_accepted_readback
+  app_login_and_join_redirect: passed
+  unauthenticated_select_role_and_dashboard: redirected_to_exact_login_return_to
+  authenticated_POSTs_and_browser_session_mutations: 0_0
+  census_feature_flag: absent_default_off_on_web_and_worker
+  bounded_error_and_fatal_logs: empty
+  worker_zero_work_delivery_batch: stable
+  domains: unchanged
+  database_postflight: ledger_91_digest_53170113_last_2260_pending_0_decision_rows_0
+effects:
+  Railway_uploads_and_deployments: 2
+  database_migration_business_row: 0
+  variable_source_connection_domain_DNS: 0
+  browser_session_identity_credential: 0
+  provider_contact_tag_seed_reply_send_customer_Student_billing: 0
+  rollback: 0
+rollback_targets_preserved:
+  web_deployment_id: ea1b663f-f892-4137-9ebf-8a4509bf7cd8
+  worker_deployment_id: f68df357-7be5-4ded-936b-fbc915c42261
+committed_effect_count: 2
+rollback_required: false
+unresolved_effects: 0
+lock_release_ready: true
+recorded_at: '2026-08-04T18:42:04Z'
+contains_secret: false
+immutable: true

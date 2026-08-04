@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: operational
-active_phase: candidate_8834c2fd_product_deployment_authorized_active
+active_phase: candidate_8834c2fd_deployed_accepted_pending_read_only_audience_census
 bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
@@ -18,8 +18,11 @@ candidate: 8834c2fdc42bbb7e3641a5ce45695b2f5a56717d37e7e14fed783b0c7875fa34
 active_writer_limit: 4
 controller_authorization_sha: 76692fbb6e65cdeb68e32862dd0c03490b5e5750
 next_action: >-
-  Deploy and terminally reconcile candidate 8834c2fd from exact source a157c388 to the canonical web and worker services
-  under the fresh production:deployment fence, preserving the successful migration-2260 schema and zero decision rows. Preserve
+  Run the candidate-bound read-only production audience census for the canonical OT-15 GHL assets and migration-2260
+  decision store, with provider GETs and a committed READ ONLY database transaction only. Derive exact included and excluded
+  adult-contact decisions and the precise row ceiling before any durable decision write, contact tag, seed, pilot, or broad send.
+  Candidate 8834c2fd from exact source a157c388 is deployed and terminally reconciled on the canonical web and worker services,
+  preserving the successful migration-2260 schema and zero decision rows. Preserve
   deployed candidate 9d6be957 at source 27576fa6 and its successful exact ten-effect operator fixture.
   The existing-Chrome Admin to Parent to Admin canary stopped credential-unavailable before every POST with zero
   database mutations or unresolved effects; defer the single operator sign-in request until independent work completes.
@@ -32,8 +35,7 @@ next_action: >-
   three deterministic inventory/brand projection files. The exact linear correction is accepted at 03263739 with full
   unit 641 of 641. The OT-LIVE-002 census identity contract is accepted at a157c388, and immutable candidate 8834c2fd is
   frozen after deterministic derivation plus PostgreSQL 18.4 apply/replay of all 91 migrations with 8 of 8 probes. Read
-  back live locks and issue fresh candidate-bound deployment/migration authority, then perform a read-only production
-  census before any decision write, contact tag, seed, pilot, or broad send. Keep media as a separate candidate unless it
+  back live locks, then perform the read-only production census before any decision write, contact tag, seed, pilot, or broad send. Keep media as a separate candidate unless it
   becomes critical. No live decision write, contact,
   seed, pilot, broad send, or media provider effect is authorized. Migration 2261 remains unallocated. Keep OT-LIVE-003.02
   parked/unmerged/default-off, reject its 2260 proposal, and keep WhatsApp/WAPI fully deferred at zero effects.
@@ -2940,6 +2942,18 @@ successor_dispatch:
     effect_locks: []
     external_effects: 0/0/0
   provider_effects: prohibited
+ot_live_001_03_candidate_8834_product_deployment_terminal_20260804_184204:
+  recorded_at: '2026-08-04T18:42:04Z'
+  state_based_on_control_head_sha: 81370530dd73854d443540ecb0a1f4b4c5ddbe23
+  authority_id: c00-prod-candidate-8834-product-deploy-20260804180858
+  candidate_digest: 8834c2fdc42bbb7e3641a5ce45695b2f5a56717d37e7e14fed783b0c7875fa34
+  source_sha: a157c388d8dc292699f7cd1a1ef178918ee30885
+  web_deployment_id: 976d8203-d962-4c13-94d5-b3221eceb65f
+  worker_deployment_id: 99f6471b-f7d7-4fd5-a405-383ceadcbe60
+  terminal_event_digest: 25304cbf847ac8fb1eb2abb8a0dd4c57d175990a6003165209de3c00bc9e49c9
+  acceptance: exact_source_landing_routes_assets_health_default_off_census_flag_and_zero_error_log_filters_passed
+  effects: Railway_deployments_2_all_other_effects_0_unresolved_0
+  production_deployment_lock: released
 authority_note: >-
   Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through
   release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an
