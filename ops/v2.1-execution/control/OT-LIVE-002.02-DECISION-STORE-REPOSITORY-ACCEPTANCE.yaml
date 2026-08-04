@@ -1,0 +1,36 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-002.02
+owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+source_head_sha: 6149907cb2611835514b1ffa5622c8fb7d5927e8
+source_tree_sha: 9abda7772ec7e3af78abdcc24a0657d8f49ccaf6
+branch: codex/ot-live-002-decision-store-implementation-20260804
+remote_equality: passed
+exact_path_count: 11
+predecessor_terminal_path: ops/v2.1-execution/control/OT-LIVE-002.02-DECISION-STORE-IMPLEMENTATION-SOURCE-TERMINAL.yaml
+predecessor_terminal_digest: e5e7a4cb70da40d9e44a4825c49ac2cdd17d543cc7d4d4ac3f97797f6797b500
+supersession:
+  prior_hold_basis: controller_read_of_concurrent_precommit_worktree_draft
+  immutable_source_preimage_actual: Static_source_contract_42_of_42_PASS
+  correction_required: false
+  correction_claim_id: 4c52906b-d99a-4f6d-94c3-63b2de52192e
+  correction_claim_disposition: cancelled_no_effect_false_preimage
+  source_commits_or_pushes_under_correction_claim: 0
+  unresolved_effects: 0
+acceptance:
+  repository: accepted_source_checkpoint
+  exact_static_contract: 42_passed_0_failed
+  controller_focused_unit_and_pg_mem: 8_passed_0_failed_2_files
+  repository_typecheck: passed
+  exact_eleven_path_scope_diff_and_remote_tree: passed
+  migration_2260_bytes_preserved: true
+  producer_native_postgresql_18_4: 91_of_91_apply_and_91_of_91_replay
+  producer_native_concurrency_lock_and_rollback_controls: passed
+  disposable_native_database_cluster_and_directory_removed: true
+zero_effects:
+  live_staging_or_production_database_connections_migrations_or_rows: 0
+  GHL_contacts_tags_seeds_replies_pilots_or_broad_sends: 0
+  providers_deployments_DNS_billing_customers_or_Students: 0
+recorded_at: '2026-08-04T14:52:54Z'
+contains_secret: false
+immutable: true

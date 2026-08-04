@@ -1,0 +1,54 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-002.02
+owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+claim_id: 72ae541e-cc5b-464a-881d-62f92b857479
+writer_id: codex-ot-live-002-02-audience-census-72ae541e
+status: active
+branch: codex/ot-live-002-decision-store-implementation-20260804
+base_sha: 6149907cb2611835514b1ffa5622c8fb7d5927e8
+base_tree_sha: 9abda7772ec7e3af78abdcc24a0657d8f49ccaf6
+repository_acceptance_path: ops/v2.1-execution/control/OT-LIVE-002.02-DECISION-STORE-REPOSITORY-ACCEPTANCE.yaml
+control_parent_sha: 87a1ccad7c3338f353c2c78a341ae3fde4e0cb0b
+provider_binding:
+  GHL_location_id: pBSnOK2nkdxp6gf9Rg3o
+  GHL_campaign_id: 6a71a64c28f7a5dbb3aec1be
+  GHL_workflow_id: 09051378-5917-4172-afda-f425619dd23d
+  GHL_launch_tag_id: IcOGsLgSIOYGFlHF4kQ0
+exact_paths:
+  - packages/domain/src/audience-reconciliation/governed-campaign-census.ts
+  - packages/domain/src/audience-reconciliation/governed-campaign-census.test.ts
+  - packages/db/src/audience-reconciliation/governed-campaign-census-reader.ts
+  - packages/db/src/audience-reconciliation/governed-campaign-census-reader.test.ts
+  - scripts/highlevel/governed-campaign-audience-census.ts
+  - scripts/highlevel/governed-campaign-audience-census.test.ts
+  - tests/integration/governed-campaign-audience-census.test.ts
+  - ops/codex-runs/OT-LIVE-002/AUDIENCE-CENSUS-SOURCE-EVIDENCE.md
+allowed_operation: implement_default_off_read_only_source_census_and_deterministic_sanitized_decision_request_composition_with_fake_and_disposable_database_tests_commit_and_normally_push_source_only
+required_semantics:
+  - exact_GHL_location_campaign_workflow_and_launch_tag_binding_with_contacts_readonly_provider_scope_only
+  - provider_pagination_is_bounded_complete_and_rejects_repeated_or_ambiguous_cursors_counts_or_cross_location_rows
+  - database_reads_use_an_explicit_READ_ONLY_transaction_and_exact_account_product_runtime_and_verification_environment_scope
+  - raw_provider_contact_ID_email_phone_name_notes_messages_and_private_fields_remain_memory_only_and_never_enter_logs_results_evidence_or_committed_fixtures
+  - output_contains_only_full_SHA256_provider_reference_internal_opaque_contact_key_typed_source_facts_reason_codes_counts_and_hashes
+  - deterministic_precedence_excludes_or_reviews_every_Student_minor_school_active_current_suppressed_DND_opted_out_missing_invalid_duplicate_ambiguous_or_unknown_adult_consent_identity
+  - include_requires_proven_inactive_adult_exact_identity_opted_in_deliverable_unsuppressed_and_no_Student_minor_school_or_current_access_evidence
+  - decisions_are_sorted_by_full_provider_hash_and_use_the_repository_exact_full_hash_plus_version_decision_key
+  - historical_max_versions_are_read_in_exact_scope_so_removed_then_reintroduced_contacts_advance_without_collision
+  - source_snapshot_request_and_source_facts_hashes_are_canonical_and_stable_across_replay_and provider_order
+  - explicit_positive_operator_supplied_maximumProviderContacts_and_maximumAffectedRows_are_required_and_fail_closed_before_write
+  - executable_entrypoint_is_default_off_and_tests_use_only fake provider transport synthetic nonreal contacts and disposable databases
+  - no_provider_write_method_tag_assignment_workflow_enrollment_campaign_send_or_contact_mutation_is implemented
+  - decision_store_write_capability_is composed_but_not_executed_without_separate_candidate_bound_production_data_authority
+publish_authority:
+  one_normal_fast_forward_push_to_exact_branch: true
+  force_push_amend_rebase_merge: false
+prohibitions:
+  - no_live_staging_or_production_database_or_provider_connection_census_or_decision_row_write
+  - no_GHL_contact_tag_seed_reply_pilot_broad_send_Resend_DNS_Forward_Email_or_WhatsApp_effect
+  - no_migration_registry_manifest_configuration_deployment_billing_customer_or_Student_effect
+  - no_raw_PII_private_provider_identifier_secret_or_token_output_fixture_or_commit
+issued_at: '2026-08-04T14:52:54Z'
+expires_at: '2026-08-05T10:52:54Z'
+contains_secret: false
+immutable: true
