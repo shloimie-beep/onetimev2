@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: operational
-active_phase: candidate_8834c2fd_deployed_read_only_audience_census_assigned
+active_phase: candidate_8834c2fd_deployed_audience_census_source_contract_correction_required
 bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
@@ -2967,6 +2967,18 @@ ot_live_002_02_candidate_8834_read_only_audience_census_dispatch_20260804_184558
   maximum_provider_contacts: 2000
   all_database_provider_contact_tag_send_deploy_DNS_and_other_mutation_effects: 0
   provider_locks: not_required_for_read_only_zero_effect_census
+ot_live_002_02_candidate_8834_read_only_audience_census_terminal_20260804_190356:
+  recorded_at: '2026-08-04T19:03:56Z'
+  state_based_on_control_head_sha: 76603f7ff190d7a0ed8dcc7fdc85e6af5d80ffd2
+  claim_id: 9e9fa1fa-57ef-4884-9015-971e9d54a042
+  disposition: AMBIGUOUS_PROVIDER_COUNT_FAILED_CLOSED_ZERO_MUTATION_EFFECTS
+  terminal_digest: 6e2fc6af46b66c65216236fd06653f5408136d99d7c9b0617822721acfdc2c9c
+  exact_scope: production_production_operator_canary_one_time_one_time_mishnah_class_campaign_6a71a64c28f7a5dbb3aec1be
+  database_preflight: PostgreSQL_18_4_ledger_91_migration_2260_decision_rows_0_READ_ONLY_XID_null_mutations_0
+  provider_read: response_received_count_invariant_not_proven_retry_0_contact_level_output_0
+  census_database_transaction_snapshot_decision_plan: not_opened_not_produced_not_produced
+  all_mutation_effects_and_unresolved_effects: 0_0
+  next_safe_action: narrow_source_contract_correction_for_provider_count_and_pagination
 authority_note: >-
   Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through
   release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an

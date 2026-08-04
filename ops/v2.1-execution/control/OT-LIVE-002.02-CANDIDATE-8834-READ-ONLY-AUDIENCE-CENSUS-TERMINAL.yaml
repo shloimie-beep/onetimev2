@@ -1,0 +1,52 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-002.02
+owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+claim_id: 9e9fa1fa-57ef-4884-9015-971e9d54a042
+claim_digest: 45ff2699dacb764d4d83c1084af8120c9426537a8e53351db3e1fbfa626678dc
+disposition: AMBIGUOUS_PROVIDER_COUNT_FAILED_CLOSED_ZERO_MUTATION_EFFECTS
+control_head_readback: 76603f7ff190d7a0ed8dcc7fdc85e6af5d80ffd2
+candidate_digest: 8834c2fdc42bbb7e3641a5ce45695b2f5a56717d37e7e14fed783b0c7875fa34
+source_sha: a157c388d8dc292699f7cd1a1ef178918ee30885
+source_tree_sha: bd2f1295043af74cfa0bad5f5b3993e3a534137e
+resolved_scope:
+  runtime_tier: production
+  verification_environment_id: production_operator_canary
+  account_key: one_time
+  product_key: one_time_mishnah_class
+  campaign_key: 6a71a64c28f7a5dbb3aec1be
+  ghl_location_id: pBSnOK2nkdxp6gf9Rg3o
+preflight_database:
+  PostgreSQL: '18.4'
+  migration_ledger_rows: 91
+  migration_ledger_digest: 531701132856ec5640e49a8a07b768f12db7c4b103cc63ab9cd27d7d0ec81233
+  migration_2260_present: true
+  governed_decision_rows: 0
+  transaction: REPEATABLE_READ_READ_ONLY
+  XID_before_after: null_null
+  insert_update_delete_before_after: 0_0_0__0_0_0
+  qualifying_adult_link_projection_rows: 0
+provider_read:
+  result: response_received_but_exact_total_count_invariant_not_proven
+  error_code: AMBIGUOUS_PROVIDER_COUNT
+  retry_count: 0
+  contact_level_data_emitted: 0
+  valid_pagination_cursor_proof: false
+census_result:
+  database_transaction_opened: false
+  snapshot_hash_produced: false
+  idempotency_key_consumed: false
+  reason_census_produced: false
+  planned_decision_rows_produced: false
+  maximumAffectedRows_derived: false
+effects:
+  database_schema_migration_session_business_row_mutations: 0
+  provider_contact_tag_campaign_workflow_webhook_send_schedule_mutations: 0
+  Railway_variable_deployment_domain_source_DNS_mutations: 0
+  seed_reply_pilot_broad_send_billing_customer_Student_WhatsApp_WAPI_effects: 0
+  stored_Railway_variables_changed: false
+unresolved_effects: 0
+required_successor: source_contract_correction_for_provider_count_and_pagination_then_fresh_read_only_census_claim
+completed_at: '2026-08-04T19:03:56Z'
+contains_secret: false
+immutable: true

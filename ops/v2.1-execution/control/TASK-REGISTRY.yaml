@@ -2398,7 +2398,7 @@ tasks:
     proof_record_location: ops/v2.1-execution/effects/8834c2fdc42bbb7e3641a5ce45695b2f5a56717d37e7e14fed783b0c7875fa34/OT-LIVE-001.03/c00-prod-candidate-8834-product-deploy-20260804180858/events/001-RECONCILED.yaml
 - task_id: OT-LIVE-002.02
   status: in_progress
-  active_phase: candidate_8834_read_only_production_audience_census_assigned
+  active_phase: read_only_census_failed_closed_ambiguous_provider_count_pending_source_contract_correction
   owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
   branch: codex/ot-live-002-census-identity-contract-correction-20260804
   phase_branches:
@@ -2419,23 +2419,23 @@ tasks:
     audience_census_identity_contract: a157c388d8dc292699f7cd1a1ef178918ee30885
   authorized_start_sha: 032637395a9ab791b85c13fa6f1cffccfaa9e753
   last_known_remote_head: a157c388d8dc292699f7cd1a1ef178918ee30885
-  active_claim_id: 9e9fa1fa-57ef-4884-9015-971e9d54a042
-  active_writer_id: codex-ot-live-002-02-read-only-census-9e9fa1fa
-  lease_expires_at: '2026-08-04T20:45:58Z'
-  last_heartbeat_at: '2026-08-04T18:45:58Z'
-  controller_authorization_sha: 84a83a23afbf90ea2dfec786968043e8e3137cd4
+  active_claim_id: null
+  active_writer_id: null
+  lease_expires_at: null
+  last_heartbeat_at: '2026-08-04T19:03:56Z'
+  controller_authorization_sha: 76603f7ff190d7a0ed8dcc7fdc85e6af5d80ffd2
   ready_entry_payload_digest: null
   interface_checkpoint_sha: null
   implementation_head_sha: a157c388d8dc292699f7cd1a1ef178918ee30885
   status_proof:
-    state: audience_census_identity_contract_source_accepted_candidate_frozen_zero_live_effects
+    state: read_only_census_failed_closed_ambiguous_provider_count_zero_mutation_effects_pending_source_contract_correction
     producer_task_id: OT-LIVE-002.02
     producer_head_sha: a157c388d8dc292699f7cd1a1ef178918ee30885
     canonical_candidate_digest: 8834c2fdc42bbb7e3641a5ce45695b2f5a56717d37e7e14fed783b0c7875fa34
-    integration_or_evidence_head_sha: 275754da6271d193c2f93754159b72ca851e9c4f4fca4b8a38386016233fe326
+    integration_or_evidence_head_sha: 6e2fc6af46b66c65216236fd06653f5408136d99d7c9b0617822721acfdc2c9c
     external_effects_reconciled: true
-    state_based_on_control_head_sha: 03e7e74156685554c8efb8b9ce20645f68899d05
-    proof_record_location: ops/v2.1-execution/control/OT-LIVE-002.02-AUDIENCE-CENSUS-IDENTITY-CONTRACT-CORRECTION-TERMINAL.yaml
+    state_based_on_control_head_sha: 76603f7ff190d7a0ed8dcc7fdc85e6af5d80ffd2
+    proof_record_location: ops/v2.1-execution/control/OT-LIVE-002.02-CANDIDATE-8834-READ-ONLY-AUDIENCE-CENSUS-TERMINAL.yaml
 - task_id: OT-LIVE-004.01
   status: in_progress
   active_phase: provider_runtime_source_accepted_default_off_pending_candidate_integration
