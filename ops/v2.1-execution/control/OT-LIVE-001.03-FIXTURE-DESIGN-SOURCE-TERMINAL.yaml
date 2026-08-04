@@ -1,0 +1,37 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-001.03
+owner_thread_id: 019fc7e8-b506-7d30-a36a-4d7a9641f4fd
+source_claim_id: ce5be839-5ba3-4751-9f7b-b460b3bec752
+publish_authority_id: 96a48424-7cf9-4cc9-b1b0-4082966ca1ff
+claim_disposition: consumed_source_success
+branch: codex/ot-live-001-operator-fixture-design-20260804
+base_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
+source_head_sha: 4f9276ad0507abccbcb896b3234859a412a943cd
+source_tree_sha: a031bbc65a03d2159806d1ba4f91bf1a750f9167
+candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
+source_files:
+  - path: ops/release/ot-live-001/operator-fixture-reconciliation/README.md
+    sha256: c203b0025bbddd1b30888cf65601f77cd94d27500bf595beb97a2edd4b6e5454
+  - path: ops/release/ot-live-001/operator-fixture-reconciliation/fixture-reconciliation.test.ts
+    sha256: b7471172edaf5e98f5d9f961fb86bdc43ea966ecc73870bd7f1b04b8c6feb951
+  - path: ops/release/ot-live-001/operator-fixture-reconciliation/fixture-reconciliation.ts
+    sha256: b820c685d83aa9198bd23d51809f63a907bb3edd6853dee4517ef18f7646c521
+  - path: ops/release/ot-live-001/operator-fixture-reconciliation/transaction-proposal.ts
+    sha256: cb1f445466fd1490afc7dec8f15af74512faab40def07679daee4d927f275fd5
+independent_controller_readback:
+  local_tracking_remote_equality: passed
+  exact_four_path_scope: passed
+  clean_worktree: passed
+  focused_vitest: 17_passed_0_failed
+  repository_typecheck: passed
+  scoped_eslint: passed
+  scoped_prettier: passed
+  diff_check: passed
+  repository_secret_scan: passed_3225_text_files
+  migration_and_schema_compatibility_review: passed_for_tables_and_family_seat_limit_3
+source_verdict: accepted_inert_exact_six_row_transaction_and_rollback_design_only
+data_effects: 0
+recorded_at: '2026-08-04T10:16:46Z'
+contains_secret: false
+immutable: true

@@ -18,10 +18,10 @@ candidate: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
 active_writer_limit: 4
 controller_authorization_sha: 76692fbb6e65cdeb68e32862dd0c03490b5e5750
 next_action: >-
-  Preserve frozen candidate 9d6be957 at source 27576fa6 while an inert exact legacy-to-v2.1 operator-fixture
-  reconciliation design is produced from the sanitized read-only finding that the fixture has one active legacy Admin
-  account/session and zero matching v2.1 identity rows; the superseded one-row Parent-membership effect must not be
-  issued. OT-LIVE-002.02 GHL Draft configuration and its inert decision-store proposal are terminally reconciled; require
+  Preserve deployed candidate 9d6be957 at source 27576fa6. The inert exact legacy-to-v2.1 fixture design is source-terminal
+  at 4f9276ad, and only its exact six-row SERIALIZABLE production-data effect is reserved under production:data; the
+  superseded one-row Parent-membership effect remains forbidden. OT-LIVE-002.02 GHL Draft configuration and its inert
+  decision-store proposal are terminally reconciled; require
   separate migration allocation and exact maximumAffectedRows production-data authority before any audience census
   write. Seed/reply, pilot, and remaining-audience sends remain separate later grants. OT-LIVE-004.01 isolated source is
   terminally accepted at 795adc71; shared composition, migrations, provider adapters, uploads, and its one-recording
@@ -133,6 +133,21 @@ ot_live_001_03_fixture_design_publish_authority:
   exact_local_tree_sha: a031bbc65a03d2159806d1ba4f91bf1a750f9167
   allowed_operation: one_normal_exact_commit_push_and_remote_readback_only
   database_migration_session_browser_provider_deployment_DNS_send_charge_customer_or_Student_effects: 0
+ot_live_001_03_fixture_design_source_terminal_and_data_reservation:
+  recorded_at: '2026-08-04T10:16:46Z'
+  state_based_on_control_head_sha: 4b0c20db22a806f2ee0c7eeaefa34f02ff9c3223
+  source_claim_id: ce5be839-5ba3-4751-9f7b-b460b3bec752
+  source_head_sha: 4f9276ad0507abccbcb896b3234859a412a943cd
+  source_terminal_digest: 4a63e00eccb86d0cf88b74a66edb32586f3a48405414b08487e0465c01a0e820
+  data_authority_id: c00-prod-operator-fixture-data-20260804101646
+  data_claim_id: f9f84f08-b287-4ead-a230-24cc71c26b06
+  data_lease_id: e6cdace5-e629-4af6-8de0-f4515c3e26d3
+  data_fencing_token: fence-d776eac9-d382-4e25-93e9-665bf8d8f418
+  authority_grant_digest: 25479343ed14b1219021fa2903a21b080e9f149cdb4970e5bbc722d13521b15c
+  authority_status_entry_digest: ed97e0feac695c1f68cebe36fbe4d41baa947dc6acb59d4c2c69fb45575b2d3a
+  authority_status_index_digest: 5e69f20dc29b50c5ac5f8ab3bd8290e1ea09cd3490d687515c4a8d99f4b41c34
+  exact_apply_replay_rollback_budgets: 6_0_6
+  all_other_effects: 0
 c00_product_candidate_production_deployment_reservation:
   recorded_at: '2026-08-04T09:50:30Z'
   state_based_on_control_head_sha: ce9a3dcbddc1f6c11db0bf5e8bf1fcd1cce3367c

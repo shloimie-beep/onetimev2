@@ -2361,7 +2361,7 @@ tasks:
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/V43/status_proof
 - task_id: OT-LIVE-001.03
   status: in_progress
-  active_phase: accepted_candidate_frozen_fixture_design_exact_local_checkpoint_publish_authorized
+  active_phase: candidate_deployed_fixture_design_source_terminal_exact_production_data_effect_reserved
   owner_thread_id: 019fc7e8-b506-7d30-a36a-4d7a9641f4fd
   branch: codex/ot-live-001-product-repair-20260804
   phase_branches:
@@ -2369,25 +2369,26 @@ tasks:
     fixture_reconciliation_design: codex/ot-live-001-operator-fixture-design-20260804
   phase_heads:
     base: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+    fixture_reconciliation_design: 4f9276ad0507abccbcb896b3234859a412a943cd
   authorized_start_sha: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
   last_known_remote_head: 27576fa64f0b37095e61ccca932c2e77cbf38844
-  active_claim_id: ce5be839-5ba3-4751-9f7b-b460b3bec752
-  active_writer_id: codex-ot-live-001-03-fixture-design-ce5be839
-  lease_expires_at: '2026-08-05T09:14:28Z'
-  last_heartbeat_at: '2026-08-04T10:12:15Z'
-  controller_authorization_sha: 95a348f0758a299438e06f57f8a6909653af76c0
+  active_claim_id: f9f84f08-b287-4ead-a230-24cc71c26b06
+  active_writer_id: codex-ot-live-001-03-production-data-f9f84f08
+  lease_expires_at: '2026-08-04T11:01:46Z'
+  last_heartbeat_at: '2026-08-04T10:16:46Z'
+  controller_authorization_sha: 4b0c20db22a806f2ee0c7eeaefa34f02ff9c3223
   ready_entry_payload_digest: null
   interface_checkpoint_sha: null
   implementation_head_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
   status_proof:
-    state: candidate_deployed_fixture_design_local_checkpoint_complete_exact_commit_publish_only_authorized_no_data_effect
+    state: candidate_deployed_fixture_design_source_terminal_exact_six_row_production_data_effect_reserved_no_effect_yet
     producer_task_id: OT-LIVE-001.03
     producer_head_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
     canonical_candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
-    integration_or_evidence_head_sha: 45f99010b4a5b8fa7e4c2172d8d06c736a83ef91964f46d8bce84fd9c45a79b4
+    integration_or_evidence_head_sha: 4a63e00eccb86d0cf88b74a66edb32586f3a48405414b08487e0465c01a0e820
     external_effects_reconciled: true
-    state_based_on_control_head_sha: 339ad9c2a8d48fe76eec08bf6859525ced21c6b5
-    proof_record_location: ops/v2.1-execution/control/OT-LIVE-001.03-PRE-EFFECT-READBACK.yaml
+    state_based_on_control_head_sha: 4b0c20db22a806f2ee0c7eeaefa34f02ff9c3223
+    proof_record_location: ops/v2.1-execution/control/OT-LIVE-001.03-FIXTURE-DESIGN-SOURCE-TERMINAL.yaml
 - task_id: OT-LIVE-002.02
   status: in_progress
   active_phase: decision_store_inert_source_proposal_terminal_waiting_separate_migration_and_data_successor

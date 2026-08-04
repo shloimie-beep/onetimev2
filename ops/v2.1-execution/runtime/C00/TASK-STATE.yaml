@@ -39,7 +39,11 @@ ot_live_terminal_convergence_resume_20260804:
     fixture_design_claim_id: ce5be839-5ba3-4751-9f7b-b460b3bec752
     fixture_design_publish_authority_id: 96a48424-7cf9-4cc9-b1b0-4082966ca1ff
     fixture_design_exact_local_head_sha: 4f9276ad0507abccbcb896b3234859a412a943cd
-    next_boundary: inert_exact_legacy_to_v21_fixture_reconciliation_design_then_separate_data_deployment_and_signed_in_canary_authorities
+    fixture_design_source_terminal_digest: 4a63e00eccb86d0cf88b74a66edb32586f3a48405414b08487e0465c01a0e820
+    data_authority_id: c00-prod-operator-fixture-data-20260804101646
+    data_claim_lease_fence: f9f84f08-b287-4ead-a230-24cc71c26b06_e6cdace5-e629-4af6-8de0-f4515c3e26d3_fence-d776eac9-d382-4e25-93e9-665bf8d8f418
+    data_authority_status_index_digest: 5e69f20dc29b50c5ac5f8ab3bd8290e1ea09cd3490d687515c4a8d99f4b41c34
+    next_boundary: exact_six_row_data_effect_then_separate_signed_in_Admin_Parent_Admin_canary_authority
     provider_database_deploy_effects: 0_0_0
   OT_LIVE_002_02:
     owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a

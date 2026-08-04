@@ -1,0 +1,103 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+authority_id: c00-prod-operator-fixture-data-20260804101646
+authority_kind: derived_candidate_bound_exact_operator_fixture_production_data_reconciliation
+task_id: OT-LIVE-001.03
+owner_thread_id: 019fc7e8-b506-7d30-a36a-4d7a9641f4fd
+candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
+candidate_binding_status: exact_deployed_frozen_candidate
+candidate_manifest_commit_sha: eb085d6e0d1a32039d6514c90c49e0b1b14a83fa
+repository_source_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
+source_branch: codex/ot-live-001-product-repair-20260804
+fixture_design_branch: codex/ot-live-001-operator-fixture-design-20260804
+fixture_design_source_sha: 4f9276ad0507abccbcb896b3234859a412a943cd
+fixture_design_tree_sha: a031bbc65a03d2159806d1ba4f91bf1a750f9167
+fixture_design_transaction_path: ops/release/ot-live-001/operator-fixture-reconciliation/transaction-proposal.ts
+fixture_design_terminal_path: ops/v2.1-execution/control/OT-LIVE-001.03-FIXTURE-DESIGN-SOURCE-TERMINAL.yaml
+canonical_path: ops/v2.1-execution/authority/9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c/OT-LIVE-001.03/c00-prod-operator-fixture-data-20260804101646/GRANT.yaml
+source_grant_id: ot-v21-production-source-grant-20260729
+source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+source_approval_evidence_path: ops/v2.1-execution/authority/none/C00/ot-v21-production-source-grant-20260729/APPROVAL.md
+source_approval_evidence_digest: 8c95a959f79aba0ac34fa0fcb6cb463cceac9aeb2bb52da1603d39db3e2c33c2
+grant_status_at_issue: active
+approved_by: Shloimie Dratler
+approved_at: '2026-08-04T10:16:46Z'
+recorded_at: '2026-08-04T10:16:46Z'
+expires_at: '2026-08-04T11:01:46Z'
+scope:
+  provider: One Time application PostgreSQL on canonical Railway production
+  project_id: ce55ef20-1418-4ad3-aafa-f877fb992dc8
+  environment_id: f911acfc-e206-44df-a569-9d69d709b94b
+  database_service_id: db590e4a-7dc5-40cb-a243-5206ce21b746
+  database_deployment_id: 62583cef-572b-40ae-b1d3-0194a2ccbf27
+  product_key: one_time_mishnayos
+  runtime_tier: production
+  verification_environment_id: production_operator_canary
+  protected_normalized_fixture: supplied_at_runtime_never_logged_or_committed
+  expected_legacy_active_Admin_accounts: 1
+  expected_legacy_active_sessions: 1
+  expected_legacy_account_row_sha256: 61a85b43da371c459174e10bc8b5bce61e3b61115df880a8646cb419989270a8
+  expected_legacy_user_key_sha256: ac9bf407d472d28d7bbc22baf7caed76717289f46037ac33fe31da2583f77218
+  expected_active_legacy_session_sha256: fba73376202ae0a3900108e9cc98ba3b557715e34691863f7f91f3e6868018e7
+  proposed_adult_id: adult_8781c636-69b0-48ad-a1a9-843d7ffc8b24
+  proposed_human_account_id: account_8ab012c2-2293-40e4-9e07-97dc5da74f50
+  proposed_admin_membership_id: 3005699d-1950-4f85-97e3-c9d1b5b13128
+  proposed_parent_membership_id: 7d86732f-016e-4af5-b9e3-160be3b70dc3
+  proposed_household_id: household_1393fe08-69cb-430b-9e14-469fd2918dd9
+  proposed_household_access_aggregate_ref: access:household_1393fe08-69cb-430b-9e14-469fd2918dd9
+  proposed_household_seat_limit: 3
+  transaction_occurred_at: '2026-08-04T10:16:46Z'
+fencing_token: fence-d776eac9-d382-4e25-93e9-665bf8d8f418
+lock: production:data
+holder_claim_id: f9f84f08-b287-4ead-a230-24cc71c26b06
+provider_lock_lease_id: e6cdace5-e629-4af6-8de0-f4515c3e26d3
+allowed_operation: execute one SERIALIZABLE transaction under the exact advisory lock from the accepted transaction proposal; require exact protected legacy hashes and cardinality, zero matching v2.1 rows, compatible argon2id-v1 hash copied only inside PostgreSQL, then insert exactly one AdultIdentity, one HumanAccount, one Admin membership, one Parent membership, one family household, and one adult credential; require exact six-row readback and unchanged legacy fingerprint before commit; on any post-insert mismatch roll back the open transaction, or under a separately recorded terminal failure reconciliation use only the exact six reverse-order deletes bound here
+maximum_effect_count: 12
+maximum_effect_value: exactly_six_inserts_or_zero_write_exact_replay_and_at_most_six_exact_reverse_deletes_only_for_rollback
+approved_fixture_ids:
+  - adult_8781c636-69b0-48ad-a1a9-843d7ffc8b24
+  - account_8ab012c2-2293-40e4-9e07-97dc5da74f50
+  - 3005699d-1950-4f85-97e3-c9d1b5b13128
+  - 7d86732f-016e-4af5-b9e3-160be3b70dc3
+  - household_1393fe08-69cb-430b-9e14-469fd2918dd9
+operator_identity: protected_operator_fixture
+effect_budget:
+  application_database_rows_inserted_exact: 6
+  application_database_rows_inserted_max: 6
+  idempotent_replay_rows_mutated_max: 0
+  rollback_exact_ID_rows_deleted_max: 6
+  migrations_max: 0
+  legacy_rows_mutated_max: 0
+  session_rows_mutated_max: 0
+  Student_or_customer_rows_mutated_max: 0
+  provider_deployment_DNS_send_charge_effects_max: 0
+prerequisite_review:
+  control_parent_sha: 4b0c20db22a806f2ee0c7eeaefa34f02ff9c3223
+  deployed_web_id: ea1b663f-f892-4137-9ebf-8a4509bf7cd8
+  deployed_worker_id: f68df357-7be5-4ded-936b-fbc915c42261
+  deployed_source_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
+  product_health_ready_version_domains_assets_and_logs: passed
+  pre_effect_readback_digest: 45f99010b4a5b8fa7e4c2172d8d06c736a83ef91964f46d8bce84fd9c45a79b4
+  fixture_design_source_sha: 4f9276ad0507abccbcb896b3234859a412a943cd
+  fixture_design_independent_review: 17_tests_typecheck_lint_prettier_diff_secret_and_schema_compatibility_passed
+  exact_pre_effect_v21_counts: 0_0_0_0_0_0_0
+  exact_pre_effect_legacy_Admin_account_session_counts: 1_1
+rollback_and_reconciliation:
+  - re-read current remote control authority status and production:data lock immediately before opening the transaction
+  - bind the protected normalized fixture only in process memory and redact all SQL parameters and result fields
+  - require exact preflight hashes cardinalities scope display name password format and zero v2.1 state before any INSERT
+  - run all six inserts and both exact readbacks inside one SERIALIZABLE transaction under the advisory lock
+  - if any insert row count or post-readback differs, ROLLBACK the still-open transaction and record zero committed rows
+  - if a committed-state mismatch is discovered only after commit, stop and request controller reconciliation before using the exact reverse-delete rollback budget
+  - release production:data only after exact row counts hashes and terminal disposition are recorded
+stop_conditions:
+  - source grant authority status control head lock lease or fencing token is revoked expired absent or mismatched
+  - candidate source deployment database service or fixture-design source differs from the exact bindings
+  - protected legacy account session or hash cardinality differs from the exact expected state
+  - any proposed ID normalized email ownership link or runtime environment collides
+  - password hash is not exact runtime-compatible argon2id-v1 or would leave PostgreSQL process memory
+  - transaction cannot be SERIALIZABLE or advisory lock cannot be acquired
+  - any v2.1 fixture row already exists other than an exact six-row zero-write replay
+  - operation would mutate a legacy or session row migration Student customer provider deployment DNS send or charge
+contains_secret: false
+immutable: true
