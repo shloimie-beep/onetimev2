@@ -304,6 +304,13 @@ describe('OT-LIVE-001.03 inert fixture canonical-state reconciliation design', (
     expect(PREFLIGHT_SQL).not.toContain("convert_to(user_key, 'UTF8')");
   });
 
+  it('casts every expected active legacy session hash binding use to text', () => {
+    expect(PREFLIGHT_SQL).toContain('THEN $4::text IS NULL');
+    expect(PREFLIGHT_SQL).toMatch(/active_legacy_sessions\) = \$4::text/u);
+    expect(PREFLIGHT_SQL.match(/\$4/g)).toHaveLength(2);
+    expect(PREFLIGHT_SQL).not.toMatch(/\$4(?!::text)/u);
+  });
+
   it('normalizes only the proven legacy Argon2id prefix inside PostgreSQL', () => {
     const credentialInsert = APPLY_INSERT_SQL.find((sql) =>
       sql.includes('INSERT INTO onetime.v21_adult_credentials'),

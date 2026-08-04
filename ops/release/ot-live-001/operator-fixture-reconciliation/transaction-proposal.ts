@@ -340,9 +340,9 @@ SELECT
   (SELECT encode(digest(convert_to('${LEGACY_IDENTIFIER_HASH_DOMAINS.accountRow}' || id::text, 'UTF8'), 'sha256'), 'hex') FROM legacy) = $2 AS account_row_hash_matches,
   (SELECT encode(digest(convert_to('${LEGACY_IDENTIFIER_HASH_DOMAINS.userKey}' || user_key, 'UTF8'), 'sha256'), 'hex') FROM legacy) = $3 AS user_key_hash_matches,
   CASE
-    WHEN (SELECT count(*) FROM active_legacy_sessions) = 0 THEN $4 IS NULL
+    WHEN (SELECT count(*) FROM active_legacy_sessions) = 0 THEN $4::text IS NULL
     WHEN (SELECT count(*) FROM active_legacy_sessions) = 1 THEN
-      (SELECT encode(digest(convert_to('${LEGACY_IDENTIFIER_HASH_DOMAINS.activeSession}' || id::text, 'UTF8'), 'sha256'), 'hex') FROM active_legacy_sessions) = $4
+      (SELECT encode(digest(convert_to('${LEGACY_IDENTIFIER_HASH_DOMAINS.activeSession}' || id::text, 'UTF8'), 'sha256'), 'hex') FROM active_legacy_sessions) = $4::text
     ELSE false
   END AS active_session_hash_matches,
   (SELECT btrim(display_name) <> '' FROM legacy) AS display_name_compatible,
