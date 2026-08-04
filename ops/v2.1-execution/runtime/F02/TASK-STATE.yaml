@@ -686,7 +686,7 @@ ot_live_ledger_regularization_checkpoint:
   writer_slot_leases: []
   effect_lock_leases: []
 ot_live_002_migration_2260_checkpoint:
-  disposition: source_implemented_native_and_pgmem_green_pending_exact_committed_source_candidate_proof
+  disposition: source_terminal_exact_committed_source_candidate_proof_green
   control_head_sha: 58e0497cbf35cdb456bc7b897523705fc09ca275
   control_parent_sha: e47796344fa99f86806674da55ea1b07fd7de247
   candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
@@ -719,11 +719,13 @@ ot_live_002_migration_2260_checkpoint:
     pg_mem: 4/4
     postgresql_18_4_native_controls: 19/19
     typecheck: passed
-    exact_committed_source_candidate_proof: pending_post_checkpoint_git_object
+    candidate_builder: 4/4
+    exact_committed_source_candidate_proof: passed_91_apply_91_replay_zero_pending_zero_issues
   local_disposable_proof:
     postgresql_toolchain: 18.4
-    cluster_create_remove: 1/1
-    database_create_remove: 3/3
+    cluster_create_remove: 2/2
+    database_create_remove: 5/5
+    sanitized_candidate_proof_files_create_remove: 2/2
     unresolved_effects: 0
   live_or_production_database_connections: 0
   provider_contact_send_deploy_DNS_billing_Customer_Student_effects: 0/0/0
@@ -772,8 +774,8 @@ launch_timing_2258_checkpoint:
     native_postgresql_18_4: delegated_to_candidate_bound_exact_source_proof
   effect_lock_leases: []
   external_effects: 0/0/0
-status: in_progress
-phase: ot_live_002_migration_2260_exact_committed_source_candidate_proof
+status: ready_for_review
+phase: ot_live_002_migration_2260_source_terminal
 claimed_by: codex-f02-ot-live-002-migration-2260-e4a1f7b4
 claim_time: '2026-08-04T13:28:11Z'
 claim_id: e4a1f7b4-1015-43e5-9096-069ac267ce89
@@ -790,6 +792,7 @@ completed_steps:
   - Allocated exact ordinal 2260 to accepted immutable request OT-LIVE-002-MIGRATION-001 and advanced 2261 only as next available without allocating or reserving it.
   - Authored the empty forward-only governed campaign decision table, current view, protected contact hash, exact HighLevel binding, composite contact-scope FK, typed sanitized source facts, immutable decision body, and one-way supersession boundary with zero backfill or existing-table alteration.
   - Passed focused pg-mem 4/4, disposable PostgreSQL 18.4 native 19/19, and repository TypeScript typecheck with every disposable database and exact proof cluster removed.
+  - Passed exact committed-source candidate builder 4/4 and full candidate PostgreSQL 18.4 proof with 91/91 fresh apply, 91/91 replay, zero pending/issues, and exact last ordinal 2260.
   - Verified remote control fb70bd65, exact claim c172ba4d, raw claim digest e4c86171, authorized six-path scope, exact base 27576fa6, and the prohibition on SQL, database, control, and provider effects.
   - Reconstructed exact raw/repository, pg-mem, and Git-blob identities for immutable migrations 2257 through 2259 without editing or executing any migration.
   - Bound 2257 and 2258 to stable semantic-interface digests derived only from their already-recorded ordinal, file, owner, request, and purpose identities.

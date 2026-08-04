@@ -1005,6 +1005,17 @@ function databaseErrorCode(error: unknown) {
 }
 
 function toolOutput(command: string, args: readonly string[]) {
+  if (process.platform === 'win32' && command === 'npm') {
+    assert(
+      args.length === 1 && args[0] === '--version',
+      'Windows npm proof invocation must be the exact version readback',
+    );
+    return execFileSync(process.env.ComSpec ?? 'cmd.exe', ['/d', '/s', '/c', 'npm --version'], {
+      cwd: process.cwd(),
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'pipe'],
+    }).trim();
+  }
   return execFileSync(command, [...args], {
     cwd: process.cwd(),
     encoding: 'utf8',

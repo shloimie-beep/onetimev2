@@ -23,10 +23,10 @@ source facts, preserves immutable version bodies, permits only NULL-to-timestamp
 supersession, and exposes only current rows.
 
 Focused pg-mem passed 4/4 and disposable PostgreSQL 18.4 passed the fresh 91/91
-apply, 91/91 replay, 19 native semantic controls, and exact cleanup. Typecheck
-passed. This checkpoint is created before the exact committed-source candidate
-derivation by design; the terminal evidence follow-up must bind that Git object
-before one normal push.
+apply, 91/91 replay, 19 native semantic controls, and exact cleanup. The exact
+committed-source deterministic candidate builder passed 4/4; the full candidate
+PostgreSQL 18.4 proof passed with zero pending migrations or issues. Typecheck,
+scoped lint/format, secret scan, and exact committed-source derivation passed.
 
 Ordinal 2261 is only next available and is not allocated or reserved.
 OT-LIVE-003 remains rejected, unallocated, and default-off. No application

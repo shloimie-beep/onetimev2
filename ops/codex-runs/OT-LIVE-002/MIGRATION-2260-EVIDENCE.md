@@ -1,6 +1,6 @@
 # OT-LIVE-002 migration 2260 source evidence
 
-Disposition: `SOURCE_IMPLEMENTED_NATIVE_AND_PGMEM_GREEN_PENDING_EXACT_COMMITTED_SOURCE_CANDIDATE_PROOF`.
+Disposition: `SOURCE_TERMINAL_EXACT_COMMITTED_SOURCE_CANDIDATE_PROOF_GREEN`.
 
 ## Authority and immutable request
 
@@ -81,11 +81,16 @@ mutation, tagging, or send implementation is introduced.
     contact rejection;
   - runtime/environment isolation;
   - maximum-affected-row, mismatch, and unknown-result rollback.
+- exact committed-source deterministic candidate builder: `4/4` passed;
+- exact committed-source full candidate PostgreSQL 18.4 proof: passed with
+  `91/91` fresh apply, `91/91` replay, zero pending/issues, exact last ordinal
+  2260, the complete existing candidate probes, and all 19 migration-2260
+  semantic controls;
 - repository TypeScript typecheck: passed.
 
-The final candidate-builder derivation and candidate PostgreSQL 18 proof must
-bind the exact committed source SHA. They are intentionally recorded only
-after this eleven-path source checkpoint becomes a Git object.
+The exact terminal Git source SHA is returned by the post-commit remote
+readback. The proof rejects a checkout/source mismatch before its first
+database connection and used that exact committed source throughout.
 
 ## Effects and cleanup
 
@@ -94,8 +99,9 @@ after this eleven-path source checkpoint becomes a Git object.
 - live/production/staging database rows or schema effects: `0`
 - provider/contact/tag/send/deploy/DNS/billing/Customer/Student effects: `0`
 - local WSL PostgreSQL 18.4 toolchain installation: `1`
-- exact loopback proof cluster created and removed: `1/1`
-- disposable proof databases created and removed before this checkpoint: `3/3`
+- exact loopback proof clusters created and removed: `2/2`
+- disposable proof databases created and removed: `5/5`
+- temporary sanitized candidate-proof files created and removed: `2/2`
 - unresolved disposable database or cluster effects: `0`
 
 No allocation beyond 2260 is implied. Ordinal 2261 is recorded only as next
