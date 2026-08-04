@@ -172,30 +172,24 @@ locks:
   effect_budget: null
   cleanup_state: candidate_9d6_source_27576fa6_web_ea1b663f_worker_f68df357_SUCCESS_health_ready_domains_assets_logs_reconciled_lock_released_2026-08-04T10:01:35Z
 - lock: production:data
-  status: claimed
-  holder_task_id: OT-LIVE-001.03
-  holder_claim_id: 6571b219-ca42-442a-81bb-20f6c6fcbda5
-  lease_id: 95d6cef9-267a-42f5-8920-8ed11794afb4
-  fencing_token: fence-38426c2c-c5e4-4969-92dd-e84488fe12f8
-  canonical_candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
-  provider_identity: Railway_project_ce55ef20_environment_f911acfc_Postgres_db590e4a_deployment_62583cef
-  authorized_operation: exact_compact_mapped_ten_effect_operator_fixture_transaction_and_readback_or_zero_statement_zero_write_exact_replay
-  claimed_at: '2026-08-04T12:05:49Z'
-  lease_expires_at: '2026-08-04T13:20:49Z'
-  authority_id: c00-prod-operator-fixture-data-successor-3-20260804120549
-  authority_grant_digest: b4ee39312846662a78e512f6e3c1c9254cbe45e0ecbd10b9695baa97ef680188
-  authority_status_index_digest: 1bf96fcc6c31d94b304fc7db2f4bce42377a073e505b38025ce79e91c75e83ab
-  authority_status_entry_digest: fd46f8671df1416b8daf934fbbc7e0e5fd9e96adffaf55573d280bc7134d7722
+  status: unclaimed
+  holder_task_id: null
+  holder_claim_id: null
+  lease_id: null
+  fencing_token: null
+  canonical_candidate_digest: null
+  provider_identity: null
+  authorized_operation: null
+  claimed_at: null
+  lease_expires_at: null
+  authority_id: null
+  authority_grant_digest: null
+  authority_status_index_digest: null
+  authority_status_entry_digest: null
   latest_revocation_digest: null
-  authority_checked_at: '2026-08-04T12:05:49Z'
-  effect_budget:
-    explicit_rows_inserted_exact: 8
-    trigger_derived_aggregate_rows_inserted_exact: 2
-    total_application_database_row_effects_exact: 10
-    idempotent_replay_statements_and_rows_mutated_max: 0
-    post_commit_compensation_rows_mutated_max: 0
-    all_other_effects: 0
-  cleanup_state: three_predecessors_FAILED_ROLLED_BACK_zero_committed_effects; compact_binding_successor_active_no_effect_started
+  authority_checked_at: null
+  effect_budget: null
+  cleanup_state: SUCCESS_COMMITTED_EXACT_TEN_EFFECTS_reconciled_lock_released_2026-08-04T12:20:53Z
 - lock: provider:s3-kms
   status: unclaimed
   holder_task_id: null

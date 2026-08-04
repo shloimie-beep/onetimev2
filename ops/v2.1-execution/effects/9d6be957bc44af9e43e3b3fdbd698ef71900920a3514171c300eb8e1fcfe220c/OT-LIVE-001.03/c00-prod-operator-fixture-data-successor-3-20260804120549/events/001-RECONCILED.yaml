@@ -1,0 +1,80 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-001.03
+authority_id: c00-prod-operator-fixture-data-successor-3-20260804120549
+candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
+repository_source_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
+fixture_design_source_sha: b0cfe4926d88dbebed470e075d62b462d42bf770
+lease_id: 95d6cef9-267a-42f5-8920-8ed11794afb4
+fencing_token: fence-38426c2c-c5e4-4969-92dd-e84488fe12f8
+disposition: SUCCESS_COMMITTED_EXACT_TEN_EFFECTS
+mode: create
+postgresql_major: 18
+ordering:
+  - preconnection_control_authority_lock_source_and_Railway_gates
+  - connect_and_database_identity
+  - BEGIN_SERIALIZABLE
+  - transaction_scoped_advisory_lock
+  - exact_live_preflight
+  - eight_compact_mapped_apply_statements
+  - exact_after_readback
+  - COMMIT
+  - fresh_live_post_readback
+compact_parameter_counts: [3, 3, 3, 3, 6, 4, 5, 5]
+canonical_binding_mappings:
+  - [5, 1, 12]
+  - [6, 5, 12]
+  - [7, 6, 12]
+  - [8, 6, 12]
+  - [9, 5, 6, 11, 10, 12]
+  - [6, 5, 12, 1]
+  - [13, 6, 14, 17, 12]
+  - [15, 9, 16, 17, 12]
+full_twenty_three_binding_array_passed_to_apply_statements: false
+apply_statement_row_acknowledgments: eight_of_eight_exactly_one_and_returned_immutable_identifier_matched
+effects:
+  explicit_inserted_rows: 8
+  trigger_derived_aggregate_state_rows: 2
+  total_application_database_row_effects: 10
+  migrations: 0
+  legacy_rows_mutated: 0
+  session_rows_mutated: 0
+  browser_Student_customer_provider_deployment_DNS_send_or_charge: 0
+  post_commit_compensation: 0
+commit_attempted: true
+commit_acknowledged: true
+rollback_attempted: false
+sanitized_before_counts:
+  legacy_Admin_accounts: 1
+  active_legacy_sessions: 1
+  matching_v21_fixture_transition_and_aggregate_rows: all_zero
+sanitized_live_post_counts:
+  legacy_Admin_accounts: 1
+  active_legacy_sessions: 1
+  adult_identities: 1
+  human_accounts: 1
+  active_credentials: 1
+  Admin_memberships: 1
+  Parent_memberships: 1
+  family_households: 1
+  v21_adult_sessions: 0
+  human_account_create_transitions: 1
+  access_create_transitions: 1
+  human_account_aggregate_states: 1
+  access_aggregate_states: 1
+live_post_proofs:
+  protected_bindings_valid: true
+  expected_legacy_account_user_session_hashes: true_true_true
+  exact_created_IDs: true
+  credential_legacy_password_equivalence_inside_PostgreSQL: true
+  canonical_create_transition_fields: true
+  trigger_derived_active_and_free_aggregate_fields: true
+  Parent_context_discoverability: true
+  exact_applied_zero_write_replay_classification: true
+legacy_account_and_active_session_fingerprint_sha256: d713479b2b315a3294f4dfa4c98552dd0056708a6dd37063e9b8fd6154cd9d68
+legacy_fingerprint_before_before_commit_and_live_post_equal: true
+unresolved_effects: 0
+retry_or_compensation_performed: false
+recorded_at: '2026-08-04T12:20:53Z'
+contains_secret: false
+immutable: true
