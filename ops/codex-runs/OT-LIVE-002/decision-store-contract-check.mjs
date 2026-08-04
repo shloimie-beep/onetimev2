@@ -8,10 +8,32 @@ const typeScriptPath = resolve(
   'packages/db/src/audience-reconciliation/governed-campaign-decision-store.proposal.ts',
 );
 const requestPath = resolve('ops/codex-runs/OT-LIVE-002/MIGRATION-REQUEST.yaml');
+const contractCheckerPath = resolve('ops/codex-runs/OT-LIVE-002/decision-store-contract-check.mjs');
+const sourceEvidencePath = resolve('ops/codex-runs/OT-LIVE-002/DECISION-STORE-SOURCE-EVIDENCE.md');
+const implementationPath = resolve(
+  'packages/db/src/audience-reconciliation/governed-campaign-decision-store.ts',
+);
+const implementationTestPath = resolve(
+  'packages/db/src/audience-reconciliation/governed-campaign-decision-store.test.ts',
+);
+const indexPath = resolve('packages/db/src/index.ts');
+const integrationTestPath = resolve('tests/integration/governed-campaign-decision-store.test.ts');
+const nativeProofPath = resolve(
+  'scripts/postgres-assurance/governed-campaign-decision-store-pg18-proof.ts',
+);
+const implementationEvidencePath = resolve(
+  'ops/codex-runs/OT-LIVE-002/DECISION-STORE-IMPLEMENTATION-EVIDENCE.md',
+);
 
 const sql = readFileSync(sqlPath, 'utf8');
 const typeScript = readFileSync(typeScriptPath, 'utf8');
 const request = readFileSync(requestPath, 'utf8');
+const implementation = readFileSync(implementationPath, 'utf8');
+const implementationTest = readFileSync(implementationTestPath, 'utf8');
+const index = readFileSync(indexPath, 'utf8');
+const integrationTest = readFileSync(integrationTestPath, 'utf8');
+const nativeProof = readFileSync(nativeProofPath, 'utf8');
+const implementationEvidence = readFileSync(implementationEvidencePath, 'utf8');
 const combined = `${sql}\n${typeScript}\n${request}`;
 
 const exactProviderIds = [
@@ -155,6 +177,111 @@ const required = [
     request.includes('exact_path_count: 5') &&
       request.includes('ops/codex-runs/OT-LIVE-002/MIGRATION-REQUEST.yaml'),
   ],
+  [
+    'real exported repository',
+    implementation.includes('createPostgresGovernedCampaignAudienceDecisionStore') &&
+      index.includes('createPostgresGovernedCampaignAudienceDecisionStore'),
+  ],
+  [
+    'serializable exact-scope advisory lock',
+    implementation.includes('BEGIN ISOLATION LEVEL SERIALIZABLE') &&
+      implementation.includes('pg_advisory_xact_lock') &&
+      implementation.includes('GOVERNED_CAMPAIGN_PROVIDER_BINDING') &&
+      exactProviderIds.every((value) => typeScript.includes(value)),
+  ],
+  [
+    'current base-row fencing',
+    /governed_campaign_audience_decisions[\s\S]*superseded_at IS NULL[\s\S]*FOR UPDATE/u.test(
+      implementation,
+    ) && nativeProof.includes('current_base_rows_for_update: true'),
+  ],
+  [
+    'maximum immutable-history version',
+    implementation.includes('max(decision_version)::text AS max_decision_version') &&
+      integrationTest.includes('contact disappears and is later reintroduced') &&
+      nativeProof.includes('historical_max_version_reintroduction: true'),
+  ],
+  [
+    'collision-safe protected decision key',
+    implementation.includes('governed-campaign:${providerContactRefHash}:v${decisionVersion}') &&
+      implementation.includes('exact full protected-contact-hash and version form') &&
+      implementationTest.includes('oc32RawGhlContactIdentifier') &&
+      implementationTest.includes('hash-mismatched') &&
+      implementationTest.includes('version-mismatched'),
+  ],
+  [
+    'positive precomputed effect ceiling',
+    implementation.includes('maximumAffectedRows must be a positive safe integer') &&
+      implementation.includes('const affectedRows = insertedRows + supersededRows') &&
+      implementation.includes("'AFFECTED_ROWS_CEILING'"),
+  ],
+  [
+    'exact replay has zero mutations',
+    implementation.includes('mutationStatements: 0') &&
+      integrationTest.includes('replays with zero writes'),
+  ],
+  [
+    'idempotency request snapshot ordered-decision conflicts',
+    implementation.includes('idempotency/request/snapshot/ordered-decision replay conflict') &&
+      integrationTest.includes("code: 'IDEMPOTENCY_CONFLICT'"),
+  ],
+  [
+    'one-way supersession plus append',
+    implementation.includes('SET superseded_at = CURRENT_TIMESTAMP') &&
+      implementation.includes('INSERT INTO onetime.governed_campaign_audience_decisions'),
+  ],
+  [
+    'exact in-transaction projection count hash and reason readback',
+    implementation.includes('current projection row count mismatch') &&
+      implementation.includes('current projection hash readback mismatch') &&
+      implementation.includes('current projection reason-count readback mismatch'),
+  ],
+  [
+    'rollback stop without automatic retry',
+    implementation.includes("await client.query('ROLLBACK')") &&
+      implementation.includes('automatic retry is forbidden') &&
+      implementationTest.includes('never retries automatically') &&
+      nativeProof.includes('unknown_result_rollback_without_retry: true'),
+  ],
+  [
+    'native PostgreSQL 18 concurrency gate',
+    nativeProof.includes("const EXPECTED_SERVER_VERSION = '18.4'") &&
+      nativeProof.includes('Promise.allSettled') &&
+      nativeProof.includes("contenderCode === '55P03'") &&
+      nativeProof.includes("migration_apply: '91/91'"),
+  ],
+  [
+    'runtime result stays provider contact and send zero',
+    [
+      'rawContactPiiIncluded: false',
+      'rawProviderContactIdentifiersIncluded: false',
+      'studentRecordsIncluded: false',
+      'contactEffects: 0',
+      'providerEffects: 0',
+      'sendEffects: 0',
+    ].every((token) => implementation.includes(token)),
+  ],
+  [
+    'exact eleven-path implementation evidence',
+    implementationEvidence.includes('## Exact eleven-path boundary') &&
+      [
+        sqlPath,
+        typeScriptPath,
+        contractCheckerPath,
+        sourceEvidencePath,
+        requestPath,
+        implementationPath,
+        implementationTestPath,
+        indexPath,
+        integrationTestPath,
+        nativeProofPath,
+        implementationEvidencePath,
+      ].every((candidate) =>
+        implementationEvidence.includes(
+          candidate.replace(`${resolve('.')}\\`, '').replaceAll('\\', '/'),
+        ),
+      ),
+  ],
 ];
 
 const forbidden = [
@@ -177,6 +304,14 @@ const result = {
   checks: required.length + forbidden.length,
   failures,
   proposalFiles: [sqlPath, typeScriptPath, requestPath],
+  implementationFiles: [
+    implementationPath,
+    implementationTestPath,
+    indexPath,
+    integrationTestPath,
+    nativeProofPath,
+    implementationEvidencePath,
+  ],
   requestedMigrationId: 'OT-LIVE-002-MIGRATION-001',
   requestedOrdinal: 2260,
   allocationStatus: 'requested_not_allocated',

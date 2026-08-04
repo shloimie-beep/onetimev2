@@ -84,6 +84,7 @@ export interface GovernedCampaignSanitizedSourceFacts {
 }
 
 export interface GovernedCampaignAudienceDecisionInput {
+  /** Exact `governed-campaign:<full providerContactRefHash>:v<decisionVersion>` form. */
   decisionKey: string;
   /** SHA-256 of the protected provider contact reference; never the raw value. */
   providerContactRefHash: GovernedCampaignSha256;
@@ -130,6 +131,8 @@ export interface ReconcileGovernedCampaignAudienceResult {
   insertedRows: number;
   supersededRows: number;
   affectedRows: number;
+  /** Exact mutation statements: zero for an exact replay. */
+  mutationStatements: number;
   currentRows: number;
   currentProjectionHash: GovernedCampaignSha256;
   reasonCounts: readonly GovernedCampaignAudienceReasonCount[];
@@ -147,7 +150,7 @@ export interface GovernedCampaignAudienceDecisionStoreProposal {
    *
    * 1. Reject a blank verificationEnvironmentId, a non-exact provider binding,
    *    malformed hashes, duplicate providerContactRefHashes, a count mismatch,
-   *    a negative ceiling, or any sourceFacts key/value outside the exact typed
+   *    a non-positive ceiling, or any sourceFacts key/value outside the exact typed
    *    allowlist. Reject all forbidden PII, notes, messages, transcripts,
    *    Student records, credentials, cookies, tokens, secrets, and private
    *    provider fields at the contract boundary.

@@ -466,3 +466,27 @@ export {
 } from './learning/schema-contract.ts';
 export * from './classroom/attendance/index.ts';
 export * from './content/vimeo-mishnayos-catalog/index.ts';
+export {
+  GOVERNED_CAMPAIGN_PROVIDER_BINDING,
+  GovernedCampaignDecisionStoreError,
+  createPostgresGovernedCampaignAudienceDecisionStore,
+  governedCampaignAdvisoryLockIdentity,
+  governedCampaignDecisionKey,
+  governedCampaignProjectionHash,
+  governedCampaignRequestHash,
+} from './audience-reconciliation/governed-campaign-decision-store.ts';
+export type {
+  GovernedCampaignAudienceDecision,
+  GovernedCampaignAudienceDecisionInput,
+  GovernedCampaignAudienceReason,
+  GovernedCampaignAudienceReasonCount,
+  GovernedCampaignDecisionStoreErrorCode,
+  GovernedCampaignDecisionStoreSqlClient,
+  GovernedCampaignDecisionStoreSqlPool,
+  GovernedCampaignProviderBinding,
+  GovernedCampaignRuntimeTier,
+  GovernedCampaignSanitizedSourceFacts,
+  GovernedCampaignSha256,
+  ReconcileGovernedCampaignAudienceRequest,
+  ReconcileGovernedCampaignAudienceResult,
+} from './audience-reconciliation/governed-campaign-decision-store.ts';

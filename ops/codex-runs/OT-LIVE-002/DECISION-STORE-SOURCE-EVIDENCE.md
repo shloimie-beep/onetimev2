@@ -88,3 +88,40 @@ The immutable migration-request digest is the raw SHA-256 of
 This source checkpoint is an immutable semantic request only. Ordinal 2260 and
 every other migration ordinal remain unusable until F02 accepts the exact
 request under a separate allocation authority.
+
+## Accepted migration and source-only implementation successor
+
+F02 subsequently accepted migration 2260 at source
+`e5bc19812cc990b9d84e3371202cb4f4c37ab470` / tree
+`afccb02b57884fd4eda02f648aed5d5a705c239b`. The accepted migration's
+normalized-LF SHA-256 remains
+`93e7879ce7861cd37733335ca64e49310af1025fc099e6bce4abadb8f25c3740`.
+
+The transaction-repository successor was issued at control head
+`996ea88aab1bb4ec345a8e705155c6a2e0a39bfc`; the latest pre-terminal remote
+control readback is `8049998af04791a73b0abf79e846cfdc6959baf5`. Claim
+`f59e9a15-cd23-42e2-a1ad-053ff15c9cbf`, and claim raw SHA-256
+`1d4c0fe09872b3a95b91c7094e0698c9ad026a58ef0fdc714ef59a714b92f14d`.
+It uses branch `codex/ot-live-002-decision-store-implementation-20260804`
+from that exact accepted migration source and cherry-picks the two accepted
+request commits in order. No migration file is changed.
+
+The implemented repository uses one SERIALIZABLE transaction, an exact-scope
+advisory lock, `FOR UPDATE` current-row fencing, maximum immutable historical
+versions for returning contacts, a positive precomputed insert-plus-supersede
+ceiling, zero-mutation exact replay, immutable append plus one-way
+supersession, and exact projection/count/hash/reason readback. A decision key
+is deterministically bound to the full protected provider-contact hash and its
+version; raw-looking arbitrary provider identifiers and hash/version mismatch
+are rejected before a database connection.
+
+Focused results: TypeScript strict no-emit passed; implementation tests `4/4`
+passed; pg-mem integration tests `4/4` and migration tests `4/4` passed; the
+static contract passed `42/42`; and a fresh disposable loopback WSL PostgreSQL 18.4 cluster passed
+`91/91` migration apply, `91/91` replay, same-scope concurrency serialization,
+real current-row lock contention, reintroduction, replay, ceiling, mismatch,
+and unknown-result rollback. The disposable database and cluster were removed.
+
+Live/staging/production database connections and rows, provider operations,
+contacts, tags, Students, sends, schedule, publish, activation, deployment,
+DNS, billing, and control effects remain exactly zero.
