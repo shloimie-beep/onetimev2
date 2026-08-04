@@ -39,7 +39,7 @@ ot_live_terminal_convergence_resume_20260804:
     owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
     GHL_authority_id: ot-live-002-02-ghl-config-completion-20260804081547
     terminal_event_digest: 4345c0cd8fbe1965f228859fd20e8165671d77b3bb05d53f876cc643fdcb6043
-    authority_status_index_digest: d21c445db5afcaeda7b9a76280c35692902f21d1954b2d5ebdea032b9ef1db9d
+    authority_status_index_digest: cf4695fc1d59c268ffbd9d64f28bac4bd74335828c946946da2cf63b5bdc2c62
     workflow_campaign_reply_workflow: 09051378-5917-4172-afda-f425619dd23d_6a71a64c28f7a5dbb3aec1be_15748c03-8ded-4ec3-b263-ffcc19c67982
     GHL_lock_released_at: '2026-08-04T09:14:28Z'
     next_source_claim_id: 1aa15481-0c38-4445-aaac-12931bd958a7

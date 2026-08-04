@@ -70,7 +70,7 @@ authorities:
     authority_kind: derived_candidate_preparation_effect
     grant_digest: 490faa5d1db30027b69df9dd11236728a0122ae30acee6fa6ca8ebec3004d614
     source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
-    status: consumed
+    status: active
     expires_at: '2026-08-02T13:32:09Z'
     latest_revocation_path: null
     latest_revocation_digest: null
@@ -1166,7 +1166,7 @@ authorities:
     source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
     predecessor_authority_id: ot-live-002-02-successor-config-20260804072750
     predecessor_terminal_event_digest: 69e82725193838b5541cf0142d2e6bc2f168cf457c02ecf2c6dbfa3436574539
-    status: active
+    status: consumed
     expires_at: '2026-08-04T10:15:47Z'
     latest_revocation_path: null
     latest_revocation_digest: null

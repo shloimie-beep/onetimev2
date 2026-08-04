@@ -88,7 +88,7 @@ ot_live_002_02_GHL_config_completion_terminal_reconciliation:
   recorded_at: '2026-08-04T09:14:28Z'
   state_based_on_control_head_sha: 65d343162df0bb404ade1e4d1460f0ad808411ef
   authority_id: ot-live-002-02-ghl-config-completion-20260804081547
-  authority_status_index_digest: d21c445db5afcaeda7b9a76280c35692902f21d1954b2d5ebdea032b9ef1db9d
+  authority_status_index_digest: cf4695fc1d59c268ffbd9d64f28bac4bd74335828c946946da2cf63b5bdc2c62
   terminal_event_digest: 4345c0cd8fbe1965f228859fd20e8165671d77b3bb05d53f876cc643fdcb6043
   terminal_disposition: SUCCESS_GHL_DRAFT_CONFIGURATION_COMPLETE
   workflow_id: 09051378-5917-4172-afda-f425619dd23d
