@@ -15,12 +15,16 @@ import {
   APPLY_INSERT_SQL,
   BEGIN_SQL,
   INERT_TRANSACTION_PROPOSAL,
+  LEGACY_ARGON2ID_PATTERN_SQL,
+  LEGACY_IDENTIFIER_HASH_DOMAINS,
   LEGACY_IMMUTABLE_READBACK_SQL,
   PREFLIGHT_SQL,
   PROTECTED_BINDINGS,
   ROLLBACK_AFTER_READBACK_SQL,
   ROLLBACK_DELETE_SQL,
   ROLLBACK_PREFLIGHT_SQL,
+  V21_ARGON2ID_FROM_LEGACY_SQL,
+  V21_ARGON2ID_PATTERN_SQL,
 } from './transaction-proposal.ts';
 
 const fingerprint = 'a'.repeat(64);
@@ -193,6 +197,61 @@ describe('OT-LIVE-001.03 inert fixture reconciliation design', () => {
     ).toThrow('rollback_session_effect_detected');
   });
 
+  it('declares the legacy alias used by the preflight CTE', () => {
+    expect(PREFLIGHT_SQL).toMatch(/SELECT legacy\.\*\s+FROM onetime\.account_users AS legacy/u);
+    expect(PREFLIGHT_SQL).not.toMatch(/SELECT legacy\.\*\s+FROM onetime\.account_users\s+WHERE/u);
+  });
+
+  it('uses only the canonical prefixed identifier-hash domains', () => {
+    expect(PREFLIGHT_SQL).toContain(
+      `convert_to('${LEGACY_IDENTIFIER_HASH_DOMAINS.accountRow}' || id::text`,
+    );
+    expect(PREFLIGHT_SQL).toContain(
+      `convert_to('${LEGACY_IDENTIFIER_HASH_DOMAINS.userKey}' || user_key`,
+    );
+    expect(PREFLIGHT_SQL).toContain(
+      `convert_to('${LEGACY_IDENTIFIER_HASH_DOMAINS.activeSession}' || id::text`,
+    );
+    expect(PREFLIGHT_SQL).not.toContain("convert_to(id::text, 'UTF8')");
+    expect(PREFLIGHT_SQL).not.toContain("convert_to(user_key, 'UTF8')");
+  });
+
+  it('normalizes only the proven legacy Argon2id prefix inside PostgreSQL', () => {
+    const credentialInsert = APPLY_INSERT_SQL.find((sql) =>
+      sql.includes('INSERT INTO onetime.v21_adult_credentials'),
+    );
+    expect(LEGACY_ARGON2ID_PATTERN_SQL).toBe(
+      "'^argon2id\\$v=19\\$m=19456,t=2,p=1\\$[A-Za-z0-9_-]{22}\\$[A-Za-z0-9_-]{43}$'",
+    );
+    expect(V21_ARGON2ID_FROM_LEGACY_SQL).toBe(
+      "'argon2id-v1$' || substring(legacy.password_hash FROM length('argon2id$') + 1)",
+    );
+    expect(V21_ARGON2ID_PATTERN_SQL).toBe(
+      "'^argon2id-v1\\$v=19\\$m=19456,t=2,p=1\\$[A-Za-z0-9_-]{22}\\$[A-Za-z0-9_-]{43}$'",
+    );
+    expect(PREFLIGHT_SQL).toContain(
+      `(${V21_ARGON2ID_FROM_LEGACY_SQL}) ~ ${V21_ARGON2ID_PATTERN_SQL}`,
+    );
+    expect(credentialInsert).toContain(V21_ARGON2ID_FROM_LEGACY_SQL);
+    expect(credentialInsert).toContain(`legacy.password_hash ~ ${LEGACY_ARGON2ID_PATTERN_SQL}`);
+    expect(credentialInsert).toContain(
+      `(${V21_ARGON2ID_FROM_LEGACY_SQL}) ~ ${V21_ARGON2ID_PATTERN_SQL}`,
+    );
+    expect(credentialInsert).not.toMatch(
+      /'adult_email_password',\s*legacy\.password_hash,\s*'active'/u,
+    );
+    expect(AFTER_READBACK_SQL).toContain(
+      `credential.password_hash = ${V21_ARGON2ID_FROM_LEGACY_SQL}`,
+    );
+    expect(AFTER_READBACK_SQL).toContain(
+      "substring(legacy.password_hash FROM length('argon2id$') + 1)",
+    );
+    expect(ROLLBACK_DELETE_SQL[0]).toContain(V21_ARGON2ID_FROM_LEGACY_SQL);
+    expect(ROLLBACK_DELETE_SQL[0]).toContain(
+      "substring(legacy.password_hash FROM length('argon2id$') + 1)",
+    );
+  });
+
   it('keeps SQL inert, parameterized, scoped, locked, and write-target bounded', () => {
     const allSql = [
       BEGIN_SQL,
@@ -222,7 +281,7 @@ describe('OT-LIVE-001.03 inert fixture reconciliation design', () => {
     expect(PREFLIGHT_SQL).toContain('password_hash_compatible');
     expect(PREFLIGHT_SQL).toContain('display_name_compatible');
     expect(PREFLIGHT_SQL).toContain('protected_bindings_valid');
-    expect(PREFLIGHT_SQL).toContain('argon2id-v1');
+    expect(PREFLIGHT_SQL).toContain('^argon2id\\$v=19');
     expect(ROLLBACK_PREFLIGHT_SQL).toBe(AFTER_READBACK_SQL);
     expect(ROLLBACK_AFTER_READBACK_SQL).toBe(PREFLIGHT_SQL);
     expect(APPLY_INSERT_SQL).toHaveLength(FIXTURE_RECONCILIATION_ROW_BUDGET.apply);

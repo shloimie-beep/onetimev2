@@ -16,7 +16,9 @@ This directory is a source-only proposal. It does not connect to a database, exe
 
 The future authority-bound runner must bind the normalized fixture address, the expected sanitized legacy row/user/session hashes, five exact new row identifiers, one household access reference, the approved seat limit, and one transaction timestamp. Binding values remain in protected process memory. SQL parameters and query rows must be redacted from logs.
 
-The password hash is never selected into the runner or evidence. PostgreSQL requires the runtime-compatible `argon2id-v1`, Argon2 version, parameter, salt-length, and digest-length shape, then copies `legacy.password_hash` directly into the v2.1 credential row within the same transaction. It never derives, displays, or relocates the password itself. Before/after legacy fingerprints are computed inside PostgreSQL and returned only as SHA-256 values.
+The password hash is never selected into the runner or evidence. PostgreSQL requires the proven legacy `argon2id` shape with the exact Argon2 version, parameters, salt length, and digest length. It constructs the v2.1 credential by replacing only that nonsecret policy prefix with `argon2id-v1`; the version, parameters, salt, and digest suffix remain byte-for-byte equal and therefore verify the same password. The legacy hash itself remains byte-for-byte unchanged. Before/after legacy fingerprints are computed inside PostgreSQL and returned only as SHA-256 values.
+
+The three protected legacy identifier digests are recomputed only inside PostgreSQL with their canonical sanitization domains: `legacy_account_user:`, `legacy_user_key:`, and `legacy_session:`. Raw legacy identifiers are neither returned nor compared outside the database.
 
 ## Apply protocol
 
@@ -24,10 +26,10 @@ An authorized runner must execute these steps on one connection:
 
 1. Begin a `SERIALIZABLE` transaction.
 2. Acquire the transaction-scoped advisory lock derived from the protected normalized fixture address.
-3. Run the preflight plus the exact-field readback and require valid/distinct protected bindings, the exact legacy cardinality, expected row hashes, compatible password hash, configured digest function, and either exact empty or exact replay v2.1 state. The readback supplies the model's exact-ID and in-database credential-equality gates; a runner must not infer them from cardinality alone.
+3. Run the preflight plus the exact-field readback and require valid/distinct protected bindings, the exact legacy cardinality, canonical prefixed identifier hashes, compatible legacy Argon2id shape, configured digest function, and either exact empty or exact replay v2.1 state. The readback supplies the model's exact-ID and in-database normalized-credential-equivalence gates; a runner must not infer them from cardinality alone.
 4. For the empty state only, execute the six parameterized inserts in declared order. Require `rowCount === 1` for every statement and a total of exactly six.
 5. For exact replay, execute no inserts and require a total affected-row count of zero.
-6. Run exact-ID and exact-field v2.1 readback and a second legacy immutable-fingerprint readback. Require the six desired rows under the exact product/runtime/environment, no v2.1 session, password-hash equality inside PostgreSQL, and an unchanged legacy fingerprint/session count.
+6. Run exact-ID and exact-field v2.1 readback and a second legacy immutable-fingerprint readback. Require the six desired rows under the exact product/runtime/environment, no v2.1 session, equality between the v2.1 hash suffix and the unchanged legacy version/parameter/salt/digest suffix inside PostgreSQL, and an unchanged legacy fingerprint/session count.
 7. Commit only after every assertion passes. Any error, mismatch, unexpected row count, or result-shape difference issues `ROLLBACK`.
 
 The forward hard ceiling is six rows:
@@ -44,14 +46,14 @@ The forward hard ceiling is six rows:
 
 ## Idempotent replay
 
-Replay is accepted only when the exact protected identifiers already select one row of each desired type, all bindings and roles match, the credential hash still equals the legacy hash inside PostgreSQL, and no v2.1 session exists. Replay performs zero writes. A partial state never attempts repair.
+Replay is accepted only when the exact protected identifiers already select one row of each desired type, all bindings and roles match, the v2.1 credential still equals the deterministic prefix-normalized legacy hash inside PostgreSQL, and no v2.1 session exists. Replay performs zero writes. A partial state never attempts repair.
 
 ## Full exact-ID rollback design
 
 Rollback is a separate authority-bound transaction using the same advisory lock and protected bindings:
 
 1. Require the exact applied state and unchanged legacy fingerprint.
-2. Delete the credential, Parent membership, Admin membership, household, HumanAccount, and AdultIdentity in reverse dependency order. Every predicate requires its exact protected ID, exact product/runtime/environment, exact creation timestamp, and proposal-created field values; the credential and display name are re-compared to the unchanged legacy row inside PostgreSQL.
+2. Delete the credential, Parent membership, Admin membership, household, HumanAccount, and AdultIdentity in reverse dependency order. Every predicate requires its exact protected ID, exact product/runtime/environment, exact creation timestamp, and proposal-created field values; the normalized credential (including suffix equivalence) and display name are re-compared to the unchanged legacy row inside PostgreSQL.
 3. Require exactly one affected row for each delete and exactly six total.
 4. Read back zero matching v2.1 rows and the unchanged legacy account/session fingerprint.
 5. Commit only after every assertion passes; otherwise roll back the rollback transaction.

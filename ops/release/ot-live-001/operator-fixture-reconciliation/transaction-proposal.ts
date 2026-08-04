@@ -3,6 +3,18 @@ import {
   FIXTURE_RECONCILIATION_SCOPE,
 } from './fixture-reconciliation.ts';
 
+export const LEGACY_IDENTIFIER_HASH_DOMAINS = Object.freeze({
+  accountRow: 'legacy_account_user:',
+  userKey: 'legacy_user_key:',
+  activeSession: 'legacy_session:',
+});
+
+export const LEGACY_ARGON2ID_PATTERN_SQL = `'^argon2id\\$v=19\\$m=19456,t=2,p=1\\$[A-Za-z0-9_-]{22}\\$[A-Za-z0-9_-]{43}$'`;
+
+export const V21_ARGON2ID_PATTERN_SQL = `'^argon2id-v1\\$v=19\\$m=19456,t=2,p=1\\$[A-Za-z0-9_-]{22}\\$[A-Za-z0-9_-]{43}$'`;
+
+export const V21_ARGON2ID_FROM_LEGACY_SQL = `'argon2id-v1$' || substring(legacy.password_hash FROM length('argon2id$') + 1)`;
+
 export const PROTECTED_BINDINGS = Object.freeze([
   'normalized_email',
   'expected_legacy_account_row_sha256',
@@ -29,7 +41,7 @@ SELECT pg_advisory_xact_lock(
 export const PREFLIGHT_SQL = `
 WITH legacy AS MATERIALIZED (
   SELECT legacy.*
-  FROM onetime.account_users
+  FROM onetime.account_users AS legacy
   WHERE email_normalized = $1
     AND account_key = '${FIXTURE_RECONCILIATION_SCOPE.legacyAccountKey}'
     AND product_key = '${FIXTURE_RECONCILIATION_SCOPE.legacyProductKey}'
@@ -65,16 +77,18 @@ SELECT
   (SELECT account_key = '${FIXTURE_RECONCILIATION_SCOPE.legacyAccountKey}' FROM legacy) AS account_key_matches,
   (SELECT product_key = '${FIXTURE_RECONCILIATION_SCOPE.legacyProductKey}' FROM legacy) AS product_key_matches,
   (SELECT role = '${FIXTURE_RECONCILIATION_SCOPE.legacyRole}' FROM legacy) AS role_matches,
-  (SELECT encode(digest(convert_to(id::text, 'UTF8'), 'sha256'), 'hex') FROM legacy) = $2 AS account_row_hash_matches,
-  (SELECT encode(digest(convert_to(user_key, 'UTF8'), 'sha256'), 'hex') FROM legacy) = $3 AS user_key_hash_matches,
+  (SELECT encode(digest(convert_to('${LEGACY_IDENTIFIER_HASH_DOMAINS.accountRow}' || id::text, 'UTF8'), 'sha256'), 'hex') FROM legacy) = $2 AS account_row_hash_matches,
+  (SELECT encode(digest(convert_to('${LEGACY_IDENTIFIER_HASH_DOMAINS.userKey}' || user_key, 'UTF8'), 'sha256'), 'hex') FROM legacy) = $3 AS user_key_hash_matches,
   CASE
     WHEN (SELECT count(*) FROM active_legacy_sessions) = 0 THEN $4 IS NULL
     WHEN (SELECT count(*) FROM active_legacy_sessions) = 1 THEN
-      (SELECT encode(digest(convert_to(id::text, 'UTF8'), 'sha256'), 'hex') FROM active_legacy_sessions) = $4
+      (SELECT encode(digest(convert_to('${LEGACY_IDENTIFIER_HASH_DOMAINS.activeSession}' || id::text, 'UTF8'), 'sha256'), 'hex') FROM active_legacy_sessions) = $4
     ELSE false
   END AS active_session_hash_matches,
   (SELECT btrim(display_name) <> '' FROM legacy) AS display_name_compatible,
-  (SELECT password_hash ~ '^argon2id-v1\\$v=19\\$m=19456,t=2,p=1\\$[A-Za-z0-9_-]{22}\\$[A-Za-z0-9_-]{43}$' FROM legacy) AS password_hash_compatible,
+  (SELECT password_hash ~ ${LEGACY_ARGON2ID_PATTERN_SQL}
+      AND (${V21_ARGON2ID_FROM_LEGACY_SQL}) ~ ${V21_ARGON2ID_PATTERN_SQL}
+   FROM legacy) AS password_hash_compatible,
   (SELECT encode(digest(convert_to(jsonb_build_object(
     'account', to_jsonb(legacy),
     'active_sessions', COALESCE(
@@ -166,7 +180,7 @@ export const APPLY_INSERT_SQL = Object.freeze([
      (human_account_id, adult_id, credential_kind, password_hash,
       credential_state, credential_version, product_key, runtime_tier,
       verification_environment_id, created_at, updated_at)
-   SELECT $6, $5, 'adult_email_password', legacy.password_hash, 'active', 1,
+   SELECT $6, $5, 'adult_email_password', ${V21_ARGON2ID_FROM_LEGACY_SQL}, 'active', 1,
           '${FIXTURE_RECONCILIATION_SCOPE.productKey}',
           '${FIXTURE_RECONCILIATION_SCOPE.runtimeTier}',
           '${FIXTURE_RECONCILIATION_SCOPE.verificationEnvironmentId}', $12, $12
@@ -176,7 +190,8 @@ export const APPLY_INSERT_SQL = Object.freeze([
      AND legacy.product_key = '${FIXTURE_RECONCILIATION_SCOPE.legacyProductKey}'
      AND legacy.role = '${FIXTURE_RECONCILIATION_SCOPE.legacyRole}'
      AND legacy.status = 'active'
-     AND legacy.password_hash ~ '^argon2id-v1\\$v=19\\$m=19456,t=2,p=1\\$[A-Za-z0-9_-]{22}\\$[A-Za-z0-9_-]{43}$'
+     AND legacy.password_hash ~ ${LEGACY_ARGON2ID_PATTERN_SQL}
+     AND (${V21_ARGON2ID_FROM_LEGACY_SQL}) ~ ${V21_ARGON2ID_PATTERN_SQL}
    RETURNING human_account_id`,
 ]);
 
@@ -219,7 +234,9 @@ SELECT
     WHERE credential.human_account_id = $6
       AND credential.adult_id = $5
       AND credential.credential_kind = 'adult_email_password'
-      AND credential.password_hash = legacy.password_hash
+      AND credential.password_hash = ${V21_ARGON2ID_FROM_LEGACY_SQL}
+      AND substring(credential.password_hash FROM length('argon2id-v1$') + 1) =
+          substring(legacy.password_hash FROM length('argon2id$') + 1)
       AND credential.credential_state = 'active'
       AND credential.credential_version = 1
       AND credential.product_key = '${FIXTURE_RECONCILIATION_SCOPE.productKey}'
@@ -277,7 +294,16 @@ export const ROLLBACK_DELETE_SQL = Object.freeze([
      AND credential.adult_id = $5
      AND credential.credential_kind = 'adult_email_password'
      AND credential.password_hash = (
-       SELECT legacy.password_hash
+       SELECT ${V21_ARGON2ID_FROM_LEGACY_SQL}
+       FROM onetime.account_users AS legacy
+       WHERE legacy.email_normalized = $1
+         AND legacy.account_key = '${FIXTURE_RECONCILIATION_SCOPE.legacyAccountKey}'
+         AND legacy.product_key = '${FIXTURE_RECONCILIATION_SCOPE.legacyProductKey}'
+         AND legacy.role = '${FIXTURE_RECONCILIATION_SCOPE.legacyRole}'
+         AND legacy.status = 'active'
+     )
+     AND substring(credential.password_hash FROM length('argon2id-v1$') + 1) = (
+       SELECT substring(legacy.password_hash FROM length('argon2id$') + 1)
        FROM onetime.account_users AS legacy
        WHERE legacy.email_normalized = $1
          AND legacy.account_key = '${FIXTURE_RECONCILIATION_SCOPE.legacyAccountKey}'
