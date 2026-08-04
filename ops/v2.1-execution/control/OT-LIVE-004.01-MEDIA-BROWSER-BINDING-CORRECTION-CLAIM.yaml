@@ -1,0 +1,42 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-004.01
+owner_thread_id: 019fcc0b-177e-7361-8823-9059dd8a8eb0
+claim_id: a7a2325a-ab81-4283-a111-9845ae494c29
+writer_id: codex-ot-live-004-01-media-binding-correction-a7a2325a
+status: active
+branch: codex/ot-live-004-media-shared-composition-20260804
+base_sha: 5851104c4a42435abb2bc699432a04ace1a58bfe
+base_tree_sha: 8f82277cee950872dec324680d77c9c843cde07e
+predecessor_claim_id: 4391fc4d-f645-4505-ad84-9a6950fa3cdf
+predecessor_terminal_path: ops/v2.1-execution/control/OT-LIVE-004.01-MEDIA-SHARED-COMPOSITION-TERMINAL.yaml
+control_parent_sha: 58e0497cbf35cdb456bc7b897523705fc09ca275
+exact_paths:
+  - apps/web/src/client/app/content-workspace/ContentWorkspace.tsx
+  - apps/web/src/client/app/content-workspace/ContentWorkspace.test.tsx
+  - apps/web/src/client/app/admin/content/ingest/api.ts
+  - apps/web/src/client/app/admin/content/ingest/api.test.ts
+  - apps/web/src/server/features/content/ingest/router.ts
+  - apps/web/src/server/features/content/ingest/router.test.ts
+  - ops/codex-runs/OT-LIVE-004/MEDIA-BROWSER-BINDING-CORRECTION-EVIDENCE.md
+allowed_operation: remove_browser_exposure_of_media_control_bindings_test_commit_and_normally_push_source_only
+required_invariants:
+  - no_media_authorization_or_canary_identifier_in_URL_query_history_referrer_DOM_client_state_or_browser_request_body
+  - bind_authorization_and_canary_only_from_protected_server_configuration
+  - derive_or_bind_one_recording_replay_identity_server_side_without_client_authority_echo
+  - keep_begin_request_schema_strict_and_reject_authority_canary_or_authority_derived_idempotency_fields
+  - preserve_Admin_entitlement_CSRF_same_origin_no_store_and_default_off_zero_effect_gates
+  - preserve_exact_deployed_base_ancestry_and_all_unrelated_accepted_media_bytes
+  - add_focused_negative_client_API_and_server_router_regressions
+publish_authority:
+  one_normal_fast_forward_push_to_exact_branch: true
+  force_push_amend_rebase_merge: false
+prohibitions:
+  - no_provider_runtime_composition_or_secret_value_readback
+  - no_migration_database_upload_S3_Drive_OpenAI_Vimeo_deployment_DNS_send_billing_customer_or_Student_effect
+  - no_feature_flag_enablement_and_no_one_recording_provider_canary
+  - no_changes_outside_exact_paths
+issued_at: '2026-08-04T13:56:00Z'
+expires_at: '2026-08-05T09:56:00Z'
+contains_secret: false
+immutable: true

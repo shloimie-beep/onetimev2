@@ -2425,7 +2425,7 @@ tasks:
     proof_record_location: ops/v2.1-execution/control/OT-LIVE-002.02-MIGRATION-REQUEST-SOURCE-TERMINAL.yaml
 - task_id: OT-LIVE-004.01
   status: in_progress
-  active_phase: deployed_base_media_shared_composition_source_only
+  active_phase: media_browser_binding_security_correction_source_only
   owner_thread_id: 019fcc0b-177e-7361-8823-9059dd8a8eb0
   branch: codex/ot-live-004-media-shared-composition-20260804
   phase_branches:
@@ -2435,23 +2435,24 @@ tasks:
     base: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
     implementation: 795adc712e5ce16f2df6bf2d6a8372b41bf9de70
     shared_composition_base: 27576fa64f0b37095e61ccca932c2e77cbf38844
+    shared_composition: 5851104c4a42435abb2bc699432a04ace1a58bfe
   authorized_start_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
-  last_known_remote_head: 795adc712e5ce16f2df6bf2d6a8372b41bf9de70
-  active_claim_id: 4391fc4d-f645-4505-ad84-9a6950fa3cdf
-  active_writer_id: codex-ot-live-004-01-media-composition-4391fc4d
-  lease_expires_at: '2026-08-05T08:59:57Z'
-  last_heartbeat_at: '2026-08-04T12:59:57Z'
-  controller_authorization_sha: caa85bde4d1bcba6e9eb95d1916a49182507f3fd
+  last_known_remote_head: 5851104c4a42435abb2bc699432a04ace1a58bfe
+  active_claim_id: a7a2325a-ab81-4283-a111-9845ae494c29
+  active_writer_id: codex-ot-live-004-01-media-binding-correction-a7a2325a
+  lease_expires_at: '2026-08-05T09:56:00Z'
+  last_heartbeat_at: '2026-08-04T13:56:00Z'
+  controller_authorization_sha: 58e0497cbf35cdb456bc7b897523705fc09ca275
   ready_entry_payload_digest: null
   interface_checkpoint_sha: null
-  implementation_head_sha: 795adc712e5ce16f2df6bf2d6a8372b41bf9de70
+  implementation_head_sha: 5851104c4a42435abb2bc699432a04ace1a58bfe
   status_proof:
-    state: isolated_source_accepted_shared_composition_on_exact_deployed_base_active_default_off_zero_provider_effects
+    state: shared_composition_pushed_default_off_zero_effects_held_for_browser_binding_security_correction
     producer_task_id: OT-LIVE-004.01
-    producer_head_sha: 795adc712e5ce16f2df6bf2d6a8372b41bf9de70
+    producer_head_sha: 5851104c4a42435abb2bc699432a04ace1a58bfe
     canonical_candidate_digest: 99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098
-    integration_or_evidence_head_sha: 84e1b958e4ecba674afdbd063a7b8dcc68abdaca63782d18a6c7a234c1532b3a
+    integration_or_evidence_head_sha: 51431c187c4c1cf7180945f530e2cfdd3e96c92d9052e6c409778dcc4ff27ec1
     external_effects_reconciled: true
-    state_based_on_control_head_sha: caa85bde4d1bcba6e9eb95d1916a49182507f3fd
-    proof_record_location: ops/v2.1-execution/control/OT-LIVE-004.01-MEDIA-SOURCE-TERMINAL.yaml
+    state_based_on_control_head_sha: 58e0497cbf35cdb456bc7b897523705fc09ca275
+    proof_record_location: ops/v2.1-execution/control/OT-LIVE-004.01-MEDIA-SHARED-COMPOSITION-TERMINAL.yaml
 rule: Only C00 updates this registry. A worker reads it from origin/codex/v21-control to locate its exact resumable branch.

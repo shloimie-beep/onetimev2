@@ -24,8 +24,9 @@ next_action: >-
   OT-LIVE-002.02 immutable decision-store request is independently accepted at e41cea45. F02 regularized exact immutable
   migrations 2257 through 2259 at 05f8dfc2, the control mirror now names 2260 as next available, and 2260 is allocated
   to F02 for forward-only source implementation and disposable PostgreSQL 18 proof only. No live migration, database
-  census, contact, seed, pilot, or broad-send effect is authorized. OT-LIVE-004.01 is source-only composing accepted media code onto exact deployed source
-  with every media flag default-off and zero provider, database, upload, or deployment effects. Keep OT-LIVE-003.02
+  census, contact, seed, pilot, or broad-send effect is authorized. OT-LIVE-004.01 shared composition reached 5851104c
+  with every media flag default-off and zero external effects, but independent review holds acceptance until its browser-exposed
+  authorization/canary identifiers are removed under the narrow source-only correction claim. Keep OT-LIVE-003.02
   parked/unmerged/default-off, reject its 2260 proposal, and keep WhatsApp/WAPI fully deferred at zero effects.
 ot_live_source_successor_dispatch_20260804_125957:
   recorded_at: '2026-08-04T12:59:57Z'
@@ -59,14 +60,29 @@ ot_live_source_successor_dispatch_20260804_125957:
     existing_migration_bytes_mutations_and_database_effects: 0_0
     OT_LIVE_003_2260_proposal: rejected_unallocated_parked_default_off
   OT_LIVE_004_01:
-    claim_id: 4391fc4d-f645-4505-ad84-9a6950fa3cdf
-    claim_path: ops/v2.1-execution/control/OT-LIVE-004.01-MEDIA-SHARED-COMPOSITION-CLAIM.yaml
-    claim_digest: 25bde7d8027f33dd4f3cb4848b35ec7d7d0213bceae4cdc57f7032f309f23035
+    claim_id: a7a2325a-ab81-4283-a111-9845ae494c29
+    claim_path: ops/v2.1-execution/control/OT-LIVE-004.01-MEDIA-BROWSER-BINDING-CORRECTION-CLAIM.yaml
+    claim_digest: 80773841bbd27f16716cf6f564235175f64a766b21db5642b48e6b9ba618b21f
     branch: codex/ot-live-004-media-shared-composition-20260804
-    base_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
+    base_sha: 5851104c4a42435abb2bc699432a04ace1a58bfe
     accepted_media_source_sha: 795adc712e5ce16f2df6bf2d6a8372b41bf9de70
-    mode: shared_composition_source_only_default_off
+    shared_composition_head_sha: 5851104c4a42435abb2bc699432a04ace1a58bfe
+    shared_composition_terminal_digest: 51431c187c4c1cf7180945f530e2cfdd3e96c92d9052e6c409778dcc4ff27ec1
+    mode: browser_binding_security_correction_source_only_default_off
     migration_database_provider_upload_deploy_DNS_effects: 0_0_0_0_0_0
+ot_live_004_01_shared_composition_terminal_and_security_correction_20260804_135600:
+  recorded_at: '2026-08-04T13:56:00Z'
+  state_based_on_control_head_sha: 58e0497cbf35cdb456bc7b897523705fc09ca275
+  predecessor_claim_id: 4391fc4d-f645-4505-ad84-9a6950fa3cdf
+  predecessor_terminal_path: ops/v2.1-execution/control/OT-LIVE-004.01-MEDIA-SHARED-COMPOSITION-TERMINAL.yaml
+  predecessor_terminal_digest: 51431c187c4c1cf7180945f530e2cfdd3e96c92d9052e6c409778dcc4ff27ec1
+  source_head_sha: 5851104c4a42435abb2bc699432a04ace1a58bfe
+  source_tree_sha: 8f82277cee950872dec324680d77c9c843cde07e
+  controller_verdict: held_P2_browser_control_identifier_exposure
+  successor_claim_id: a7a2325a-ab81-4283-a111-9845ae494c29
+  successor_claim_path: ops/v2.1-execution/control/OT-LIVE-004.01-MEDIA-BROWSER-BINDING-CORRECTION-CLAIM.yaml
+  successor_claim_digest: 80773841bbd27f16716cf6f564235175f64a766b21db5642b48e6b9ba618b21f
+  provider_database_upload_deploy_DNS_send_charge_effects: 0_0_0_0_0_0_0
 ot_live_002_migration_2260_allocation_20260804_132116:
   recorded_at: '2026-08-04T13:21:16Z'
   state_based_on_control_head_sha: fb70bd65344513161c240e3ed6dfa30e0ad7fb54

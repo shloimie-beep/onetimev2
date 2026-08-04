@@ -1,0 +1,54 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-004.01
+owner_thread_id: 019fcc0b-177e-7361-8823-9059dd8a8eb0
+source_claim_id: 4391fc4d-f645-4505-ad84-9a6950fa3cdf
+writer_id: codex-ot-live-004-01-media-composition-4391fc4d
+claim_digest: 25bde7d8027f33dd4f3cb4848b35ec7d7d0213bceae4cdc57f7032f309f23035
+claim_disposition: consumed_source_success_with_controller_security_hold
+control_pre_effect_head: fb70bd65344513161c240e3ed6dfa30e0ad7fb54
+branch: codex/ot-live-004-media-shared-composition-20260804
+base_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
+accepted_media_source_sha: 795adc712e5ce16f2df6bf2d6a8372b41bf9de70
+source_head_sha: 5851104c4a42435abb2bc699432a04ace1a58bfe
+source_tree_sha: 8f82277cee950872dec324680d77c9c843cde07e
+remote_equality: passed
+source_scope:
+  total_changed_paths_from_deployed_base: 45
+  accepted_isolated_media_paths: 17
+  shared_composition_paths: 28
+  unexpected_claim_paths_committed: 0
+producer_verification:
+  repository_typecheck_and_builds: passed
+  focused_tests: 33_passed_0_failed
+  auth_tests: 3_passed_0_failed
+  family_parent_tests: 3_passed_0_failed_1_skipped
+  scoped_lint_format_diff_and_secret_scan: passed
+  default_off_zero_effect_canary: passed
+independent_controller_review:
+  verdict: held_P2_security_correction_required_before_acceptance_or_integration
+  finding: >-
+    The Admin media client reads media_authorization_id and media_canary_id from URL query parameters and copies them
+    into the begin-upload request body. That exposes durable control identifiers to browser history, copied links,
+    navigation telemetry, and request logging even though the server already owns the canonical bindings.
+  affected_paths:
+    - apps/web/src/client/app/content-workspace/ContentWorkspace.tsx
+    - apps/web/src/client/app/admin/content/ingest/api.ts
+    - apps/web/src/server/features/content/ingest/router.ts
+    - apps/web/src/server/features/content/ingest/router.test.ts
+  required_correction: >-
+    Remove authorization, canary, and authority-derived idempotency values from URL parsing, DOM state, and browser
+    request bodies. Bind them only from protected server configuration, keep the begin schema strict, preserve one-recording
+    replay identity server-side, and add negative tests proving the identifiers cannot appear in browser-visible surfaces.
+  additional_held_boundary: >-
+    The checkpoint remains injection-only: production web and worker entrypoints do not yet construct real provider or
+    durable-store runtimes. Executable provider composition and one-recording canary authority remain separate successors.
+zero_effects:
+  database_connections_writes_or_migrations: 0
+  provider_S3_Drive_OpenAI_Vimeo_calls: 0
+  uploads_transcodes_transcriptions_or_publications: 0
+  deployments_DNS_sends_charges_customers_or_Students: 0
+  feature_flag_enablements: 0
+recorded_at: '2026-08-04T13:56:00Z'
+contains_secret: false
+immutable: true
