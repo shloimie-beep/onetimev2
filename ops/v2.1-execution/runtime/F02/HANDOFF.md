@@ -1,3 +1,39 @@
+# F02 OT-LIVE-002 migration 2260 source checkpoint
+
+- Successor control: `58e0497cbf35cdb456bc7b897523705fc09ca275`
+- Successor claim: `e4a1f7b4-1015-43e5-9096-069ac267ce89`
+- Claim raw SHA-256:
+  `24d7cb9b03517b22c529542c67cd910bafed0751c16a78b926f32db935bb64f5`
+- Exact base: `05f8dfc247f87318884db6cf57a42bc75b5c8719`
+- Accepted request raw/interface SHA-256:
+  `058b22cd1607bef98010083b5e98634bfcc07016928c7ff5ccdb6575ab601846` /
+  `d5f22e833341ced30f3da5688926b69cb856744c79d93c09047aa6ce3c5f9587`
+- Migration raw/pg-mem SHA-256:
+  `93e7879ce7861cd37733335ca64e49310af1025fc099e6bce4abadb8f25c3740` /
+  `cd88696dd38b66615bfe4bc8adcb81f1cadc3d310109f358d14fe5e2d674437c`
+- Scope: exact eleven successor-authorized paths
+- Live/provider effects: `0/0/0`
+
+Migration 2260 is the empty forward-only governed campaign audience-decision
+store accepted for OT-LIVE-002. It binds runtime tier, verification environment,
+account, product, campaign, and the four immutable HighLevel assets throughout
+its identities. It stores only a lowercase SHA-256 provider-contact reference,
+uses the canonical composite contact-scope FK, rejects arbitrary/PII/free-form
+source facts, preserves immutable version bodies, permits only NULL-to-timestamp
+supersession, and exposes only current rows.
+
+Focused pg-mem passed 4/4 and disposable PostgreSQL 18.4 passed the fresh 91/91
+apply, 91/91 replay, 19 native semantic controls, and exact cleanup. Typecheck
+passed. This checkpoint is created before the exact committed-source candidate
+derivation by design; the terminal evidence follow-up must bind that Git object
+before one normal push.
+
+Ordinal 2261 is only next available and is not allocated or reserved.
+OT-LIVE-003 remains rejected, unallocated, and default-off. No application
+repository/runtime/provider adapter was registered and no live database,
+provider, contact, tag, send, deployment, DNS, billing, Customer, or Student
+effect occurred.
+
 # F02 OT-LIVE migration-ledger regularization terminal
 
 - Control: `fb70bd65344513161c240e3ed6dfa30e0ad7fb54`

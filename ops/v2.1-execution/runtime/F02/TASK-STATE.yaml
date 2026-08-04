@@ -685,6 +685,50 @@ ot_live_ledger_regularization_checkpoint:
   provider_or_external_effects: 0/0/0
   writer_slot_leases: []
   effect_lock_leases: []
+ot_live_002_migration_2260_checkpoint:
+  disposition: source_implemented_native_and_pgmem_green_pending_exact_committed_source_candidate_proof
+  control_head_sha: 58e0497cbf35cdb456bc7b897523705fc09ca275
+  control_parent_sha: e47796344fa99f86806674da55ea1b07fd7de247
+  candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
+  claim_id: e4a1f7b4-1015-43e5-9096-069ac267ce89
+  claim_raw_sha256: 24d7cb9b03517b22c529542c67cd910bafed0751c16a78b926f32db935bb64f5
+  superseded_pre_effect_claim_id: 3eeb7ef4-6abd-4e42-809c-04a6d6945196
+  predecessor_source_effects: 0
+  writer_id: codex-f02-ot-live-002-migration-2260-e4a1f7b4
+  issued_at: '2026-08-04T13:28:11Z'
+  expires_at: '2026-08-05T09:28:11Z'
+  exact_base_sha: 05f8dfc247f87318884db6cf57a42bc75b5c8719
+  exact_base_tree: 3acfd7c9fe96cf7aebc4ac066e03701bd82f2d09
+  exact_path_count: 11
+  accepted_request:
+    request_id: OT-LIVE-002-MIGRATION-001
+    source_sha: e41cea45a4e3fc99c4cf968872992f2992090d18
+    raw_sha256: 058b22cd1607bef98010083b5e98634bfcc07016928c7ff5ccdb6575ab601846
+    interface_sha256: d5f22e833341ced30f3da5688926b69cb856744c79d93c09047aa6ce3c5f9587
+  migration:
+    ordinal: 2260
+    path: packages/db/migrations/2260_v21_governed_campaign_audience_decisions.sql
+    checksum_sha256: 93e7879ce7861cd37733335ca64e49310af1025fc099e6bce4abadb8f25c3740
+    pg_mem_checksum_sha256: cd88696dd38b66615bfe4bc8adcb81f1cadc3d310109f358d14fe5e2d674437c
+    schema_time_backfill_rows: 0
+    existing_table_alterations: 0
+    destructive_operations: 0
+    next_available_ordinal: 2261
+    next_available_is_not_an_allocation: true
+  focused_verification:
+    pg_mem: 4/4
+    postgresql_18_4_native_controls: 19/19
+    typecheck: passed
+    exact_committed_source_candidate_proof: pending_post_checkpoint_git_object
+  local_disposable_proof:
+    postgresql_toolchain: 18.4
+    cluster_create_remove: 1/1
+    database_create_remove: 3/3
+    unresolved_effects: 0
+  live_or_production_database_connections: 0
+  provider_contact_send_deploy_DNS_billing_Customer_Student_effects: 0/0/0
+  writer_slot_leases: []
+  effect_lock_leases: []
 launch_timing_2258_checkpoint:
   disposition: implementation_complete_pending_independent_C00_admission
   authorized_start_sha: d61f4e49349ed4b63618513ce6642337690d55d0
@@ -728,20 +772,24 @@ launch_timing_2258_checkpoint:
     native_postgresql_18_4: delegated_to_candidate_bound_exact_source_proof
   effect_lock_leases: []
   external_effects: 0/0/0
-status: ready_for_review
-phase: migration_2257_2259_semantic_ledger_regularization_complete
-claimed_by: codex-f02-ledger-regularization-c172ba4d
-claim_time: '2026-08-04T12:59:57Z'
-claim_id: c172ba4d-1098-4d72-910f-5048a678e4f9
-lease_expires_at: '2026-08-05T08:59:57Z'
-last_heartbeat_at: '2026-08-04T13:13:32Z'
-controller_authorization_sha: fb70bd65344513161c240e3ed6dfa30e0ad7fb54
-containing_control_head_sha: fb70bd65344513161c240e3ed6dfa30e0ad7fb54
-state_based_on_control_head_sha: fb70bd65344513161c240e3ed6dfa30e0ad7fb54
+status: in_progress
+phase: ot_live_002_migration_2260_exact_committed_source_candidate_proof
+claimed_by: codex-f02-ot-live-002-migration-2260-e4a1f7b4
+claim_time: '2026-08-04T13:28:11Z'
+claim_id: e4a1f7b4-1015-43e5-9096-069ac267ce89
+lease_expires_at: '2026-08-05T09:28:11Z'
+last_heartbeat_at: '2026-08-04T13:55:20Z'
+controller_authorization_sha: 58e0497cbf35cdb456bc7b897523705fc09ca275
+containing_control_head_sha: 58e0497cbf35cdb456bc7b897523705fc09ca275
+state_based_on_control_head_sha: 58e0497cbf35cdb456bc7b897523705fc09ca275
 writer_slot_leases: {}
-state_based_on_head_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
+state_based_on_head_sha: 05f8dfc247f87318884db6cf57a42bc75b5c8719
 last_implementation_commit_sha: null
 completed_steps:
+  - Verified exact successor control 58e0497c, claim e4a1f7b4, raw claim digest 24d7cb9b, eleven-path scope, exact base/tree 05f8dfc2/3acfd7c9, accepted request raw digest 058b22cd, and predecessor supersession with zero source effects.
+  - Allocated exact ordinal 2260 to accepted immutable request OT-LIVE-002-MIGRATION-001 and advanced 2261 only as next available without allocating or reserving it.
+  - Authored the empty forward-only governed campaign decision table, current view, protected contact hash, exact HighLevel binding, composite contact-scope FK, typed sanitized source facts, immutable decision body, and one-way supersession boundary with zero backfill or existing-table alteration.
+  - Passed focused pg-mem 4/4, disposable PostgreSQL 18.4 native 19/19, and repository TypeScript typecheck with every disposable database and exact proof cluster removed.
   - Verified remote control fb70bd65, exact claim c172ba4d, raw claim digest e4c86171, authorized six-path scope, exact base 27576fa6, and the prohibition on SQL, database, control, and provider effects.
   - Reconstructed exact raw/repository, pg-mem, and Git-blob identities for immutable migrations 2257 through 2259 without editing or executing any migration.
   - Bound 2257 and 2258 to stable semantic-interface digests derived only from their already-recorded ordinal, file, owner, request, and purpose identities.

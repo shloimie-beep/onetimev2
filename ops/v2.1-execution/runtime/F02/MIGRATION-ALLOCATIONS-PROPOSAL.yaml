@@ -308,12 +308,29 @@ allocations:
     source_head_sha: 635a94b09f58997b4a17366dc86dde8646aceb26
     integrated_merge_sha: 1e1a5ef1fcb5a2b125797c357d14db64b9948b0f
     deployed_source_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
-next_available_ordinal: 2260
+  - ordinal: 2260
+    file: packages/db/migrations/2260_v21_governed_campaign_audience_decisions.sql
+    owner_task_id: F02
+    consumer_task_id: OT-LIVE-002.02
+    request_id: OT-LIVE-002-MIGRATION-001
+    request_digest: 058b22cd1607bef98010083b5e98634bfcc07016928c7ff5ccdb6575ab601846
+    interface_digest: d5f22e833341ced30f3da5688926b69cb856744c79d93c09047aa6ce3c5f9587
+    digest_kind: accepted_request_raw_SHA256_and_recursively_sorted_compact_UTF8_JSON_interface_SHA256
+    state: authored_source_only_pending_integration
+    purpose: Exact runtime, verification-environment, account, product, campaign, and HighLevel-asset-bound append-only audience decisions with protected contact hashes, a typed sanitized source-fact boundary, one-way supersession, and a current projection.
+    replaces_applied_migration: false
+    destructive: false
+    schema_time_backfill_rows: 0
+    existing_table_alterations: 0
+    checksum_sha256: 93e7879ce7861cd37733335ca64e49310af1025fc099e6bce4abadb8f25c3740
+    pg_mem_checksum_sha256: cd88696dd38b66615bfe4bc8adcb81f1cadc3d310109f358d14fe5e2d674437c
+    accepted_request_source_sha: e41cea45a4e3fc99c4cf968872992f2992090d18
+    accepted_request_source_tree: ae8ecaff8b22daf877e1e7649ce12524fc5b1785
+    successor_claim_id: e4a1f7b4-1015-43e5-9096-069ac267ce89
+next_available_ordinal: 2261
 next_available_is_not_an_allocation: true
 held_unallocated_proposals:
   - request_id: OT-LIVE-003.02-migration-proposal
     proposed_ordinal: 2260
     state: rejected_unallocated_default_off
-  - request_id: OT-LIVE-002-migration-001
-    proposed_ordinal: 2260
-    state: not_allocated_pending_corrected_immutable_request_and_independent_acceptance
+    ordinal_status: historical_rejected_proposal_not_allocation

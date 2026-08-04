@@ -3,6 +3,41 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
+Audit the exact F02 OT-LIVE-002 migration 2260 source terminal.
+
+Require successor control `58e0497cbf35cdb456bc7b897523705fc09ca275`,
+claim `e4a1f7b4-1015-43e5-9096-069ac267ce89`, raw claim SHA-256
+`24d7cb9b03517b22c529542c67cd910bafed0751c16a78b926f32db935bb64f5`,
+and exact parent `05f8dfc247f87318884db6cf57a42bc75b5c8719`. Confirm the
+predecessor was superseded before every source effect.
+
+Require exactly the eleven successor-authorized paths. Recompute accepted
+request raw/interface digests `058b22cd...` / `d5f22e83...` and migration
+raw/pg-mem digests `93e7879c...` / `cd88696d...`. Verify the exact 2260
+allocation, forward-only empty schema, zero backfill/existing-table alteration,
+all five scope dimensions, four exact HighLevel assets, lowercase protected
+contact hash, composite contact-scope FK, typed sanitized source facts,
+append-only body/delete rejection, one-way supersession, and current view.
+
+Require exact committed-source candidate inventory 91 with last ordinal 2260,
+pg-mem 4/4, disposable PostgreSQL 18.4 fresh apply/replay and 19 semantic
+controls, candidate-builder tests, typecheck, lint, formatting, secret scan,
+diff/scope hygiene, remote equality, and disposable cleanup. Confirm 2261 is
+only next available, OT-LIVE-003 remains rejected/unallocated/default-off, and
+no live database, provider, contact, tag, send, deploy, DNS, billing, Customer,
+or Student effect occurred.
+
+Do not integrate, apply migration 2260 to staging or production, register a
+runtime repository, change providers, allocate 2261, or perform another effect.
+Return findings by severity and stop for C00 disposition.
+
+---
+
+MODEL: GPT-5.6-SOL
+REASONING: XHIGH
+SERVICE TIER: PRIORITY
+MODE: START_OR_RESUME
+
 Audit the exact F02 OT-LIVE migration-ledger regularization terminal.
 
 Require control `fb70bd65344513161c240e3ed6dfa30e0ad7fb54`, claim

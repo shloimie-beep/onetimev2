@@ -18,11 +18,15 @@ import {
   type CandidateBuildRequest,
   type NativePostgresqlResult,
 } from '../operations/v21/candidate/build-candidate.ts';
+import {
+  proveGovernedCampaignAudienceDecisionPg18,
+  type GovernedCampaignAudienceDecisionPg18Proof,
+} from './governed-campaign-audience-decision-pg18-proof.ts';
 
 const EXPECTED_ENGINE_VERSION = '18.4';
 const EXPECTED_SERVER_VERSION_NUM = '180004';
-const EXPECTED_MIGRATION_COUNT = 90;
-const EXPECTED_LAST_MIGRATION_ORDINAL = 2259;
+const EXPECTED_MIGRATION_COUNT = 91;
+const EXPECTED_LAST_MIGRATION_ORDINAL = 2260;
 const OUTPUT_DIR = path.resolve(
   process.env.CANDIDATE_PG18_OUTPUT_DIR ?? 'ops/evidence/ops-11/pg18/candidate',
 );
@@ -33,6 +37,7 @@ const CI_TIMESTAMP = '2026-08-02T10:00:00.000Z';
 const CI_TIMESTAMP_NEXT = '2026-08-02T10:01:00.000Z';
 const MIGRATION_2253_PREFIX = '2253_';
 const MIGRATION_2254_PREFIX = '2254_';
+const MIGRATION_2260_PREFIX = '2260_';
 
 type LedgerRow = {
   id: string;
@@ -60,6 +65,7 @@ type MigrationProof = {
   ledger_rows: LedgerRow[];
   migration_2253: LedgerRow;
   migration_2254: LedgerRow;
+  migration_2260: LedgerRow;
   last_migration_id: string;
 };
 
@@ -91,6 +97,7 @@ type DatabaseProof = {
   provider_probes: ProviderProbeResults;
   content_2253: ContentProof;
   learning_2254: LearningProof;
+  governed_campaign_2260: GovernedCampaignAudienceDecisionPg18Proof;
 };
 
 async function main() {
@@ -177,7 +184,7 @@ async function main() {
 
   // This validates the generated request against the candidate builder without
   // writing candidate metadata. It deliberately fails until the builder, the
-  // source inventory, and this proof all agree on the post-2259 count of 90.
+  // source inventory, and this proof all agree on the post-2260 count of 91.
   buildCandidate(candidateBuildRequest, { repository_root: process.cwd() });
 
   const proofReport = {
@@ -199,6 +206,7 @@ async function main() {
       classification: 'native_schema_compatibility_not_deployed_runtime_attachment',
       ...databaseProof.learning_2254,
     },
+    governed_campaign_2260: databaseProof.governed_campaign_2260,
     cleanup: {
       exact_disposable_database_absent: cleanupPassed,
     },
@@ -303,11 +311,13 @@ async function runDatabaseProof(pool: pg.Pool): Promise<DatabaseProof> {
   const providerProbes = await proveProviderRegistryGuards(pool);
   const content2253 = await proveCanonicalContentPopulation(pool);
   const learning2254 = await proveLearningMigrationCompatibility(pool);
+  const governedCampaign2260 = await proveGovernedCampaignAudienceDecisionPg18(pool);
   return {
     migration,
     provider_probes: providerProbes,
     content_2253: content2253,
     learning_2254: learning2254,
+    governed_campaign_2260: governedCampaign2260,
   };
 }
 
@@ -319,23 +329,23 @@ async function proveMigrations(pool: pg.Pool): Promise<MigrationProof> {
 
   assert(
     firstRun.length === EXPECTED_MIGRATION_COUNT,
-    'first migration run did not contain 90 rows',
+    'first migration run did not contain 91 rows',
   );
   assert(
     firstRun.every((result) => result.status === 'applied'),
-    'first migration run was not a clean 90/90 apply',
+    'first migration run was not a clean 91/91 apply',
   );
-  assert(secondRun.length === EXPECTED_MIGRATION_COUNT, 'migration replay did not contain 90 rows');
+  assert(secondRun.length === EXPECTED_MIGRATION_COUNT, 'migration replay did not contain 91 rows');
   assert(
     secondRun.every((result) => result.status === 'already_applied'),
-    'migration replay was not 90/90 already-applied',
+    'migration replay was not 91/91 already-applied',
   );
   assert(verification.ok && verification.status === 'verified', 'migration verification failed');
   assert(
     verification.migration_file_count === EXPECTED_MIGRATION_COUNT &&
       verification.ledger_row_count === EXPECTED_MIGRATION_COUNT &&
       verification.applied_count === EXPECTED_MIGRATION_COUNT,
-    'migration verification counts were not exactly 90',
+    'migration verification counts were not exactly 91',
   );
   assert(verification.pending_count === 0, 'migration verification reported pending migrations');
   assert(verification.issues.length === 0, 'migration verification reported issues');
@@ -354,7 +364,7 @@ async function proveMigrations(pool: pg.Pool): Promise<MigrationProof> {
     id: String(row.id),
     checksum: String(row.checksum),
   }));
-  assert(ledgerRows.length === EXPECTED_MIGRATION_COUNT, 'ledger did not contain exactly 90 rows');
+  assert(ledgerRows.length === EXPECTED_MIGRATION_COUNT, 'ledger did not contain exactly 91 rows');
 
   const expectedById = new Map(firstRun.map((result) => [result.id, result.checksum]));
   assert(
@@ -364,6 +374,7 @@ async function proveMigrations(pool: pg.Pool): Promise<MigrationProof> {
 
   const migration2253 = requiredMigration(ledgerRows, MIGRATION_2253_PREFIX);
   const migration2254 = requiredMigration(ledgerRows, MIGRATION_2254_PREFIX);
+  const migration2260 = requiredMigration(ledgerRows, MIGRATION_2260_PREFIX);
   return {
     apply_count: firstRun.length,
     replay_count: secondRun.length,
@@ -375,6 +386,7 @@ async function proveMigrations(pool: pg.Pool): Promise<MigrationProof> {
     ledger_rows: ledgerRows,
     migration_2253: migration2253,
     migration_2254: migration2254,
+    migration_2260: migration2260,
     last_migration_id: lastMigration.id,
   };
 }
