@@ -8,9 +8,17 @@ export const FIXTURE_RECONCILIATION_SCOPE = Object.freeze({
 });
 
 export const FIXTURE_RECONCILIATION_ROW_BUDGET = Object.freeze({
-  apply: 6,
-  replay: 0,
-  rollback: 6,
+  createExplicitInsertRows: 8,
+  createTriggerDerivedAggregateRows: 2,
+  createTotalRowEffects: 10,
+  replayTotalRowEffects: 0,
+  openTransactionFailureCommittedEffects: 0,
+  compensationTransitionExplicitRows: 2,
+  compensationExplicitRows: 8,
+  compensationTriggerDerivedUpdates: 2,
+  compensationExactDeleteRows: 6,
+  compensationTotalRowEffects: 10,
+  terminalImmutableAuditRows: 6,
   legacy: 0,
   sessions: 0,
   students: 0,
@@ -26,6 +34,10 @@ export type V21FixtureCounts = Readonly<{
   parentMemberships: number;
   familyHouseholds: number;
   adultSessions: number;
+  humanAccountTransitionEvents: number;
+  accessTransitionEvents: number;
+  humanAccountAggregateStates: number;
+  accessAggregateStates: number;
 }>;
 
 export type LegacyFixtureSnapshot = Readonly<{
@@ -49,6 +61,11 @@ export type FixtureSnapshot = Readonly<{
   v21: V21FixtureCounts;
   exactCreatedIdsMatch: boolean;
   credentialHashMatchesLegacyInsideDatabase: boolean;
+  exactCreateTransitionFieldsMatch: boolean;
+  exactActiveAggregateFieldsMatch: boolean;
+  exactCompensationTransitionFieldsMatch: boolean;
+  exactTerminalAggregateFieldsMatch: boolean;
+  parentContextDiscoverable: boolean;
 }>;
 
 export type ReconciliationMode = 'create' | 'idempotent_replay';
@@ -61,6 +78,10 @@ const ZERO_V21_COUNTS: V21FixtureCounts = Object.freeze({
   parentMemberships: 0,
   familyHouseholds: 0,
   adultSessions: 0,
+  humanAccountTransitionEvents: 0,
+  accessTransitionEvents: 0,
+  humanAccountAggregateStates: 0,
+  accessAggregateStates: 0,
 });
 
 const EXACT_APPLIED_COUNTS: V21FixtureCounts = Object.freeze({
@@ -71,6 +92,30 @@ const EXACT_APPLIED_COUNTS: V21FixtureCounts = Object.freeze({
   parentMemberships: 1,
   familyHouseholds: 1,
   adultSessions: 0,
+  humanAccountTransitionEvents: 1,
+  accessTransitionEvents: 1,
+  humanAccountAggregateStates: 1,
+  accessAggregateStates: 1,
+});
+
+const EXACT_COMPENSATED_COUNTS: V21FixtureCounts = Object.freeze({
+  adultIdentities: 0,
+  humanAccounts: 0,
+  adultCredentials: 0,
+  adminMemberships: 0,
+  parentMemberships: 0,
+  familyHouseholds: 0,
+  adultSessions: 0,
+  humanAccountTransitionEvents: 2,
+  accessTransitionEvents: 2,
+  humanAccountAggregateStates: 1,
+  accessAggregateStates: 1,
+});
+
+const EXACT_COMPENSATION_TRANSITIONED_COUNTS: V21FixtureCounts = Object.freeze({
+  ...EXACT_APPLIED_COUNTS,
+  humanAccountTransitionEvents: 2,
+  accessTransitionEvents: 2,
 });
 
 function sameCounts(actual: V21FixtureCounts, expected: V21FixtureCounts) {
@@ -105,45 +150,100 @@ function requireLegacyGate(legacy: LegacyFixtureSnapshot) {
   if (legacy.immutableFingerprint.length !== 64) fail('legacy_fingerprint_format');
 }
 
+function isExactEmpty(snapshot: FixtureSnapshot) {
+  return (
+    sameCounts(snapshot.v21, ZERO_V21_COUNTS) &&
+    !snapshot.exactCreatedIdsMatch &&
+    !snapshot.credentialHashMatchesLegacyInsideDatabase &&
+    !snapshot.exactCreateTransitionFieldsMatch &&
+    !snapshot.exactActiveAggregateFieldsMatch &&
+    !snapshot.exactCompensationTransitionFieldsMatch &&
+    !snapshot.exactTerminalAggregateFieldsMatch &&
+    !snapshot.parentContextDiscoverable
+  );
+}
+
+function isExactApplied(snapshot: FixtureSnapshot) {
+  return (
+    sameCounts(snapshot.v21, EXACT_APPLIED_COUNTS) &&
+    snapshot.exactCreatedIdsMatch &&
+    snapshot.credentialHashMatchesLegacyInsideDatabase &&
+    snapshot.exactCreateTransitionFieldsMatch &&
+    snapshot.exactActiveAggregateFieldsMatch &&
+    !snapshot.exactCompensationTransitionFieldsMatch &&
+    !snapshot.exactTerminalAggregateFieldsMatch &&
+    snapshot.parentContextDiscoverable
+  );
+}
+
+function isExactCompensated(snapshot: FixtureSnapshot) {
+  return (
+    sameCounts(snapshot.v21, EXACT_COMPENSATED_COUNTS) &&
+    !snapshot.exactCreatedIdsMatch &&
+    !snapshot.credentialHashMatchesLegacyInsideDatabase &&
+    snapshot.exactCreateTransitionFieldsMatch &&
+    !snapshot.exactActiveAggregateFieldsMatch &&
+    snapshot.exactCompensationTransitionFieldsMatch &&
+    snapshot.exactTerminalAggregateFieldsMatch &&
+    !snapshot.parentContextDiscoverable
+  );
+}
+
+function isExactCompensationTransitioned(snapshot: FixtureSnapshot) {
+  return (
+    sameCounts(snapshot.v21, EXACT_COMPENSATION_TRANSITIONED_COUNTS) &&
+    snapshot.exactCreatedIdsMatch &&
+    snapshot.credentialHashMatchesLegacyInsideDatabase &&
+    snapshot.exactCreateTransitionFieldsMatch &&
+    !snapshot.exactActiveAggregateFieldsMatch &&
+    snapshot.exactCompensationTransitionFieldsMatch &&
+    snapshot.exactTerminalAggregateFieldsMatch &&
+    snapshot.parentContextDiscoverable
+  );
+}
+
 export function classifyFixtureSnapshot(snapshot: FixtureSnapshot): ReconciliationMode {
   if (!snapshot.pgcryptoDigestAvailable) fail('pgcrypto_digest_unavailable');
   if (!snapshot.protectedBindingsValid) fail('protected_bindings');
   requireLegacyGate(snapshot.legacy);
 
-  if (sameCounts(snapshot.v21, ZERO_V21_COUNTS)) {
-    if (snapshot.exactCreatedIdsMatch) fail('unexpected_created_ids_before_apply');
-    if (snapshot.credentialHashMatchesLegacyInsideDatabase) {
-      fail('unexpected_credential_hash_match_before_apply');
-    }
-    return 'create';
-  }
-
-  if (sameCounts(snapshot.v21, EXACT_APPLIED_COUNTS)) {
-    if (!snapshot.exactCreatedIdsMatch) fail('replay_exact_id_mismatch');
-    if (!snapshot.credentialHashMatchesLegacyInsideDatabase) {
-      fail('replay_credential_hash_mismatch');
-    }
-    return 'idempotent_replay';
-  }
-
+  if (isExactEmpty(snapshot)) return 'create';
+  if (isExactApplied(snapshot)) return 'idempotent_replay';
   return fail('partial_or_ambiguous_v21_state');
 }
 
 export function assertApplyReadback(input: {
   mode: ReconciliationMode;
-  affectedRows: number;
+  explicitInsertedRows: number;
+  triggerDerivedRowEffects: number;
+  totalRowEffects: number;
   before: FixtureSnapshot;
   after: FixtureSnapshot;
 }) {
   if (classifyFixtureSnapshot(input.before) !== input.mode) fail('apply_mode_mismatch');
-  const expectedRows =
+  const expected =
     input.mode === 'create'
-      ? FIXTURE_RECONCILIATION_ROW_BUDGET.apply
-      : FIXTURE_RECONCILIATION_ROW_BUDGET.replay;
-  if (input.affectedRows > FIXTURE_RECONCILIATION_ROW_BUDGET.apply) {
+      ? {
+          explicit: FIXTURE_RECONCILIATION_ROW_BUDGET.createExplicitInsertRows,
+          derived: FIXTURE_RECONCILIATION_ROW_BUDGET.createTriggerDerivedAggregateRows,
+          total: FIXTURE_RECONCILIATION_ROW_BUDGET.createTotalRowEffects,
+        }
+      : { explicit: 0, derived: 0, total: FIXTURE_RECONCILIATION_ROW_BUDGET.replayTotalRowEffects };
+  if (
+    input.explicitInsertedRows > FIXTURE_RECONCILIATION_ROW_BUDGET.createExplicitInsertRows ||
+    input.triggerDerivedRowEffects >
+      FIXTURE_RECONCILIATION_ROW_BUDGET.createTriggerDerivedAggregateRows ||
+    input.totalRowEffects > FIXTURE_RECONCILIATION_ROW_BUDGET.createTotalRowEffects
+  ) {
     fail('apply_hard_row_ceiling');
   }
-  if (input.affectedRows !== expectedRows) fail('apply_row_budget');
+  if (
+    input.explicitInsertedRows !== expected.explicit ||
+    input.triggerDerivedRowEffects !== expected.derived ||
+    input.totalRowEffects !== expected.total
+  ) {
+    fail('apply_row_budget');
+  }
   requireLegacyGate(input.after.legacy);
   if (input.after.legacy.immutableFingerprint !== input.before.legacy.immutableFingerprint) {
     fail('legacy_mutation_detected');
@@ -151,56 +251,73 @@ export function assertApplyReadback(input: {
   if (input.after.legacy.activeSessions !== input.before.legacy.activeSessions) {
     fail('legacy_session_effect_detected');
   }
-  if (!sameCounts(input.after.v21, EXACT_APPLIED_COUNTS)) fail('after_cardinality');
-  if (!input.after.exactCreatedIdsMatch) fail('after_exact_id_mismatch');
-  if (!input.after.credentialHashMatchesLegacyInsideDatabase) {
-    fail('after_credential_hash_mismatch');
-  }
+  if (!isExactApplied(input.after)) fail('after_exact_state');
 }
 
-export function assertRollbackReadback(input: {
-  affectedRows: number;
-  beforeRollback: FixtureSnapshot;
-  afterRollback: FixtureSnapshot;
+export function assertCompensationReadback(input: {
+  transitionExplicitRows: number;
+  triggerDerivedUpdates: number;
+  exactDeleteRows: number;
+  totalRowEffects: number;
+  beforeCompensation: FixtureSnapshot;
+  afterTransitions: FixtureSnapshot;
+  afterCompensation: FixtureSnapshot;
 }) {
-  if (input.affectedRows > FIXTURE_RECONCILIATION_ROW_BUDGET.rollback) {
-    fail('rollback_hard_row_ceiling');
-  }
-  if (input.affectedRows !== FIXTURE_RECONCILIATION_ROW_BUDGET.rollback) {
-    fail('rollback_row_budget');
-  }
-  if (!input.beforeRollback.pgcryptoDigestAvailable) {
-    fail('rollback_pgcrypto_digest_unavailable');
-  }
-  requireLegacyGate(input.beforeRollback.legacy);
-  if (!sameCounts(input.beforeRollback.v21, EXACT_APPLIED_COUNTS)) {
-    fail('rollback_before_cardinality');
-  }
-  if (!input.beforeRollback.exactCreatedIdsMatch) fail('rollback_before_exact_id_mismatch');
-  if (!input.beforeRollback.credentialHashMatchesLegacyInsideDatabase) {
-    fail('rollback_before_credential_hash_mismatch');
-  }
-  if (!sameCounts(input.afterRollback.v21, ZERO_V21_COUNTS)) {
-    fail('rollback_after_cardinality');
-  }
-  if (input.afterRollback.exactCreatedIdsMatch) fail('rollback_exact_ids_still_present');
-  if (input.afterRollback.credentialHashMatchesLegacyInsideDatabase) {
-    fail('rollback_credential_still_present');
-  }
-  requireLegacyGate(input.afterRollback.legacy);
   if (
-    input.afterRollback.legacy.immutableFingerprint !==
-    input.beforeRollback.legacy.immutableFingerprint
+    input.transitionExplicitRows >
+      FIXTURE_RECONCILIATION_ROW_BUDGET.compensationTransitionExplicitRows ||
+    input.triggerDerivedUpdates >
+      FIXTURE_RECONCILIATION_ROW_BUDGET.compensationTriggerDerivedUpdates ||
+    input.exactDeleteRows > FIXTURE_RECONCILIATION_ROW_BUDGET.compensationExactDeleteRows ||
+    input.totalRowEffects > FIXTURE_RECONCILIATION_ROW_BUDGET.compensationTotalRowEffects
   ) {
-    fail('rollback_legacy_mutation_detected');
+    fail('compensation_hard_row_ceiling');
   }
-  if (input.afterRollback.legacy.activeSessions !== input.beforeRollback.legacy.activeSessions) {
-    fail('rollback_session_effect_detected');
+  if (
+    input.transitionExplicitRows !==
+      FIXTURE_RECONCILIATION_ROW_BUDGET.compensationTransitionExplicitRows ||
+    input.triggerDerivedUpdates !==
+      FIXTURE_RECONCILIATION_ROW_BUDGET.compensationTriggerDerivedUpdates ||
+    input.exactDeleteRows !== FIXTURE_RECONCILIATION_ROW_BUDGET.compensationExactDeleteRows ||
+    input.transitionExplicitRows + input.exactDeleteRows !==
+      FIXTURE_RECONCILIATION_ROW_BUDGET.compensationExplicitRows ||
+    input.totalRowEffects !== FIXTURE_RECONCILIATION_ROW_BUDGET.compensationTotalRowEffects
+  ) {
+    fail('compensation_row_budget');
+  }
+  if (!input.beforeCompensation.pgcryptoDigestAvailable) {
+    fail('compensation_pgcrypto_digest_unavailable');
+  }
+  requireLegacyGate(input.beforeCompensation.legacy);
+  if (!isExactApplied(input.beforeCompensation)) fail('compensation_before_exact_state');
+  if (!isExactCompensationTransitioned(input.afterTransitions)) {
+    fail('compensation_transition_readback');
+  }
+  if (
+    input.afterTransitions.legacy.immutableFingerprint !==
+      input.beforeCompensation.legacy.immutableFingerprint ||
+    input.afterTransitions.legacy.activeSessions !== input.beforeCompensation.legacy.activeSessions
+  ) {
+    fail('compensation_transition_legacy_or_session_effect');
+  }
+  if (!isExactCompensated(input.afterCompensation)) fail('compensation_after_exact_state');
+  requireLegacyGate(input.afterCompensation.legacy);
+  if (
+    input.afterCompensation.legacy.immutableFingerprint !==
+    input.beforeCompensation.legacy.immutableFingerprint
+  ) {
+    fail('compensation_legacy_mutation_detected');
+  }
+  if (
+    input.afterCompensation.legacy.activeSessions !== input.beforeCompensation.legacy.activeSessions
+  ) {
+    fail('compensation_session_effect_detected');
   }
 }
 
 export const FIXTURE_RECONCILIATION_EXPECTED_COUNTS = Object.freeze({
   before: ZERO_V21_COUNTS,
   after: EXACT_APPLIED_COUNTS,
-  rollback: ZERO_V21_COUNTS,
+  compensationTransitioned: EXACT_COMPENSATION_TRANSITIONED_COUNTS,
+  compensation: EXACT_COMPENSATED_COUNTS,
 });

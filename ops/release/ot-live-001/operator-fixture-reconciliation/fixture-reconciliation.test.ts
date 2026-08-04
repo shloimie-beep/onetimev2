@@ -3,8 +3,9 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
   assertApplyReadback,
-  assertRollbackReadback,
+  assertCompensationReadback,
   classifyFixtureSnapshot,
+  FIXTURE_RECONCILIATION_EXPECTED_COUNTS,
   FIXTURE_RECONCILIATION_ROW_BUDGET,
   FIXTURE_RECONCILIATION_SCOPE,
   type FixtureSnapshot,
@@ -14,15 +15,19 @@ import {
   AFTER_READBACK_SQL,
   APPLY_INSERT_SQL,
   BEGIN_SQL,
+  COMPENSATION_AFTER_READBACK_SQL,
+  COMPENSATION_DELETE_SQL,
+  COMPENSATION_DERIVED_STATE_READBACK_SQL,
+  COMPENSATION_PREFLIGHT_SQL,
+  COMPENSATION_TRANSITION_INSERT_SQL,
   INERT_TRANSACTION_PROPOSAL,
   LEGACY_ARGON2ID_PATTERN_SQL,
   LEGACY_IDENTIFIER_HASH_DOMAINS,
   LEGACY_IMMUTABLE_READBACK_SQL,
   PREFLIGHT_SQL,
   PROTECTED_BINDINGS,
-  ROLLBACK_AFTER_READBACK_SQL,
-  ROLLBACK_DELETE_SQL,
-  ROLLBACK_PREFLIGHT_SQL,
+  RECONCILER_ACTOR_KEY,
+  REPLAY_SQL,
   V21_ARGON2ID_FROM_LEGACY_SQL,
   V21_ARGON2ID_PATTERN_SQL,
 } from './transaction-proposal.ts';
@@ -30,9 +35,52 @@ import {
 const fingerprint = 'a'.repeat(64);
 
 function snapshot(
-  state: 'empty' | 'applied',
+  state: 'empty' | 'applied' | 'compensationTransitioned' | 'compensated',
   overrides: Partial<FixtureSnapshot> = {},
 ): FixtureSnapshot {
+  const stateFields = {
+    empty: {
+      v21: FIXTURE_RECONCILIATION_EXPECTED_COUNTS.before,
+      exactCreatedIdsMatch: false,
+      credentialHashMatchesLegacyInsideDatabase: false,
+      exactCreateTransitionFieldsMatch: false,
+      exactActiveAggregateFieldsMatch: false,
+      exactCompensationTransitionFieldsMatch: false,
+      exactTerminalAggregateFieldsMatch: false,
+      parentContextDiscoverable: false,
+    },
+    applied: {
+      v21: FIXTURE_RECONCILIATION_EXPECTED_COUNTS.after,
+      exactCreatedIdsMatch: true,
+      credentialHashMatchesLegacyInsideDatabase: true,
+      exactCreateTransitionFieldsMatch: true,
+      exactActiveAggregateFieldsMatch: true,
+      exactCompensationTransitionFieldsMatch: false,
+      exactTerminalAggregateFieldsMatch: false,
+      parentContextDiscoverable: true,
+    },
+    compensationTransitioned: {
+      v21: FIXTURE_RECONCILIATION_EXPECTED_COUNTS.compensationTransitioned,
+      exactCreatedIdsMatch: true,
+      credentialHashMatchesLegacyInsideDatabase: true,
+      exactCreateTransitionFieldsMatch: true,
+      exactActiveAggregateFieldsMatch: false,
+      exactCompensationTransitionFieldsMatch: true,
+      exactTerminalAggregateFieldsMatch: true,
+      parentContextDiscoverable: true,
+    },
+    compensated: {
+      v21: FIXTURE_RECONCILIATION_EXPECTED_COUNTS.compensation,
+      exactCreatedIdsMatch: false,
+      credentialHashMatchesLegacyInsideDatabase: false,
+      exactCreateTransitionFieldsMatch: true,
+      exactActiveAggregateFieldsMatch: false,
+      exactCompensationTransitionFieldsMatch: true,
+      exactTerminalAggregateFieldsMatch: true,
+      parentContextDiscoverable: false,
+    },
+  }[state];
+
   return {
     pgcryptoDigestAvailable: true,
     protectedBindingsValid: true,
@@ -49,36 +97,17 @@ function snapshot(
       passwordHashCompatible: true,
       immutableFingerprint: fingerprint,
     },
-    v21:
-      state === 'empty'
-        ? {
-            adultIdentities: 0,
-            humanAccounts: 0,
-            adultCredentials: 0,
-            adminMemberships: 0,
-            parentMemberships: 0,
-            familyHouseholds: 0,
-            adultSessions: 0,
-          }
-        : {
-            adultIdentities: 1,
-            humanAccounts: 1,
-            adultCredentials: 1,
-            adminMemberships: 1,
-            parentMemberships: 1,
-            familyHouseholds: 1,
-            adultSessions: 0,
-          },
-    exactCreatedIdsMatch: state === 'applied',
-    credentialHashMatchesLegacyInsideDatabase: state === 'applied',
+    ...stateFields,
     ...overrides,
   };
 }
 
-describe('OT-LIVE-001.03 inert fixture reconciliation design', () => {
-  it('admits only the exact empty v2.1 state for a six-row create', () => {
+describe('OT-LIVE-001.03 inert fixture canonical-state reconciliation design', () => {
+  it('admits only exact empty identity and canonical state for create', () => {
     expect(classifyFixtureSnapshot(snapshot('empty'))).toBe('create');
-    expect(FIXTURE_RECONCILIATION_ROW_BUDGET.apply).toBe(6);
+    expect(FIXTURE_RECONCILIATION_ROW_BUDGET.createExplicitInsertRows).toBe(8);
+    expect(FIXTURE_RECONCILIATION_ROW_BUDGET.createTriggerDerivedAggregateRows).toBe(2);
+    expect(FIXTURE_RECONCILIATION_ROW_BUDGET.createTotalRowEffects).toBe(10);
   });
 
   it('allows an expired legacy session without creating or refreshing one', () => {
@@ -93,9 +122,11 @@ describe('OT-LIVE-001.03 inert fixture reconciliation design', () => {
     expect(FIXTURE_RECONCILIATION_ROW_BUDGET.sessions).toBe(0);
   });
 
-  it('classifies the exact desired rows as a zero-write idempotent replay', () => {
+  it('classifies the exact ten-effect result as a zero-write replay', () => {
     expect(classifyFixtureSnapshot(snapshot('applied'))).toBe('idempotent_replay');
-    expect(FIXTURE_RECONCILIATION_ROW_BUDGET.replay).toBe(0);
+    expect(FIXTURE_RECONCILIATION_ROW_BUDGET.replayTotalRowEffects).toBe(0);
+    expect(REPLAY_SQL).toHaveLength(0);
+    expect(FIXTURE_RECONCILIATION_ROW_BUDGET.openTransactionFailureCommittedEffects).toBe(0);
   });
 
   it.each([
@@ -110,94 +141,151 @@ describe('OT-LIVE-001.03 inert fixture reconciliation design', () => {
       { legacy: { ...snapshot('empty').legacy, activeSessionHashMatches: false } },
     ],
     [
-      'blank display name',
-      { legacy: { ...snapshot('empty').legacy, displayNameCompatible: false } },
-    ],
-    [
       'incompatible password hash',
       { legacy: { ...snapshot('empty').legacy, passwordHashCompatible: false } },
     ],
     ['digest unavailable', { pgcryptoDigestAvailable: false }],
     ['invalid protected bindings', { protectedBindingsValid: false }],
-    ['partial v2.1 state', { v21: { ...snapshot('empty').v21, adultIdentities: 1 } }],
+    ['partial identity state', { v21: { ...snapshot('empty').v21, adultIdentities: 1 } }],
+    [
+      'canonical transition collision',
+      { v21: { ...snapshot('empty').v21, humanAccountTransitionEvents: 1 } },
+    ],
+    [
+      'canonical aggregate collision',
+      { v21: { ...snapshot('empty').v21, accessAggregateStates: 1 } },
+    ],
   ])('fails closed on %s', (_label, overrides) => {
     expect(() => classifyFixtureSnapshot(snapshot('empty', overrides))).toThrow(
       'FIXTURE_RECONCILIATION_REJECTED',
     );
   });
 
-  it('proves exact apply and replay row budgets with unchanged legacy state', () => {
+  it('requires eight explicit inserts plus two trigger-derived create effects', () => {
     const before = snapshot('empty');
     const after = snapshot('applied');
     expect(() =>
-      assertApplyReadback({ mode: 'create', affectedRows: 6, before, after }),
+      assertApplyReadback({
+        mode: 'create',
+        explicitInsertedRows: 8,
+        triggerDerivedRowEffects: 2,
+        totalRowEffects: 10,
+        before,
+        after,
+      }),
+    ).not.toThrow();
+  });
+
+  it('requires replay to issue no statements and cause no effects', () => {
+    const applied = snapshot('applied');
+    expect(() =>
+      assertApplyReadback({
+        mode: 'idempotent_replay',
+        explicitInsertedRows: 0,
+        triggerDerivedRowEffects: 0,
+        totalRowEffects: 0,
+        before: applied,
+        after: applied,
+      }),
     ).not.toThrow();
     expect(() =>
       assertApplyReadback({
         mode: 'idempotent_replay',
-        affectedRows: 0,
-        before: after,
+        explicitInsertedRows: 1,
+        triggerDerivedRowEffects: 0,
+        totalRowEffects: 1,
+        before: applied,
+        after: applied,
+      }),
+    ).toThrow('apply_row_budget');
+  });
+
+  it('fails closed when explicit, derived, or total create effects exceed budget', () => {
+    const before = snapshot('empty');
+    const after = snapshot('applied');
+    expect(() =>
+      assertApplyReadback({
+        mode: 'create',
+        explicitInsertedRows: 9,
+        triggerDerivedRowEffects: 2,
+        totalRowEffects: 11,
+        before,
         after,
       }),
-    ).not.toThrow();
-    expect(() => assertApplyReadback({ mode: 'create', affectedRows: 7, before, after })).toThrow(
-      'apply_hard_row_ceiling',
-    );
-    expect(() => assertApplyReadback({ mode: 'create', affectedRows: 5, before, after })).toThrow(
-      'apply_row_budget',
-    );
+    ).toThrow('apply_hard_row_ceiling');
+    expect(() =>
+      assertApplyReadback({
+        mode: 'create',
+        explicitInsertedRows: 8,
+        triggerDerivedRowEffects: 1,
+        totalRowEffects: 9,
+        before,
+        after,
+      }),
+    ).toThrow('apply_row_budget');
   });
 
-  it('proves six exact-ID reverse deletes restore zero v2.1 rows', () => {
+  it('requires Parent-context discoverability in applied and replay state', () => {
     expect(() =>
-      assertRollbackReadback({
-        affectedRows: 6,
-        beforeRollback: snapshot('applied'),
-        afterRollback: snapshot('empty'),
-      }),
-    ).not.toThrow();
-    expect(() =>
-      assertRollbackReadback({
-        affectedRows: 7,
-        beforeRollback: snapshot('applied'),
-        afterRollback: snapshot('empty'),
-      }),
-    ).toThrow('rollback_hard_row_ceiling');
-    expect(() =>
-      assertRollbackReadback({
-        affectedRows: 5,
-        beforeRollback: snapshot('applied'),
-        afterRollback: snapshot('empty'),
-      }),
-    ).toThrow('rollback_row_budget');
+      classifyFixtureSnapshot(snapshot('applied', { parentContextDiscoverable: false })),
+    ).toThrow('partial_or_ambiguous_v21_state');
+    expect(AFTER_READBACK_SQL).toContain('AS parent_context_discoverable');
+    expect(AFTER_READBACK_SQL).toContain("parent_membership.role = 'parent'");
+    expect(AFTER_READBACK_SQL).toContain("admin_membership.role = 'admin'");
+    expect(AFTER_READBACK_SQL).toContain('access.aggregate_key = household.household_id');
   });
 
-  it('rejects any legacy or session change during apply or rollback', () => {
-    const before = snapshot('empty');
-    const changedLegacy = snapshot('applied', {
-      legacy: { ...snapshot('applied').legacy, immutableFingerprint: 'b'.repeat(64) },
+  it('proves compensation leaves exactly six immutable canonical audit rows', () => {
+    expect(() =>
+      assertCompensationReadback({
+        transitionExplicitRows: 2,
+        triggerDerivedUpdates: 2,
+        exactDeleteRows: 6,
+        totalRowEffects: 10,
+        beforeCompensation: snapshot('applied'),
+        afterTransitions: snapshot('compensationTransitioned'),
+        afterCompensation: snapshot('compensated'),
+      }),
+    ).not.toThrow();
+    expect(FIXTURE_RECONCILIATION_ROW_BUDGET.terminalImmutableAuditRows).toBe(6);
+    const audit = FIXTURE_RECONCILIATION_EXPECTED_COUNTS.compensation;
+    expect(
+      audit.humanAccountTransitionEvents +
+        audit.accessTransitionEvents +
+        audit.humanAccountAggregateStates +
+        audit.accessAggregateStates,
+    ).toBe(6);
+  });
+
+  it('rejects incomplete compensation and any legacy or session change', () => {
+    expect(() =>
+      assertCompensationReadback({
+        transitionExplicitRows: 2,
+        triggerDerivedUpdates: 2,
+        exactDeleteRows: 5,
+        totalRowEffects: 9,
+        beforeCompensation: snapshot('applied'),
+        afterTransitions: snapshot('compensationTransitioned'),
+        afterCompensation: snapshot('compensated'),
+      }),
+    ).toThrow('compensation_row_budget');
+    const changed = snapshot('compensated', {
+      legacy: { ...snapshot('compensated').legacy, immutableFingerprint: 'b'.repeat(64) },
     });
     expect(() =>
-      assertApplyReadback({ mode: 'create', affectedRows: 6, before, after: changedLegacy }),
-    ).toThrow('legacy_mutation_detected');
-
-    const expiredSession = snapshot('empty', {
-      legacy: {
-        ...snapshot('empty').legacy,
-        activeSessions: 0,
-        activeSessionHashMatches: null,
-      },
-    });
-    expect(() =>
-      assertRollbackReadback({
-        affectedRows: 6,
-        beforeRollback: snapshot('applied'),
-        afterRollback: expiredSession,
+      assertCompensationReadback({
+        transitionExplicitRows: 2,
+        triggerDerivedUpdates: 2,
+        exactDeleteRows: 6,
+        totalRowEffects: 10,
+        beforeCompensation: snapshot('applied'),
+        afterTransitions: snapshot('compensationTransitioned'),
+        afterCompensation: changed,
       }),
-    ).toThrow('rollback_session_effect_detected');
+    ).toThrow('compensation_legacy_mutation_detected');
   });
 
-  it('declares the legacy alias used by the preflight CTE', () => {
+  it('declares the legacy alias used by every legacy CTE', () => {
     expect(PREFLIGHT_SQL).toMatch(/SELECT legacy\.\*\s+FROM onetime\.account_users AS legacy/u);
     expect(PREFLIGHT_SQL).not.toMatch(/SELECT legacy\.\*\s+FROM onetime\.account_users\s+WHERE/u);
   });
@@ -234,25 +322,68 @@ describe('OT-LIVE-001.03 inert fixture reconciliation design', () => {
     );
     expect(credentialInsert).toContain(V21_ARGON2ID_FROM_LEGACY_SQL);
     expect(credentialInsert).toContain(`legacy.password_hash ~ ${LEGACY_ARGON2ID_PATTERN_SQL}`);
-    expect(credentialInsert).toContain(
-      `(${V21_ARGON2ID_FROM_LEGACY_SQL}) ~ ${V21_ARGON2ID_PATTERN_SQL}`,
-    );
-    expect(credentialInsert).not.toMatch(
-      /'adult_email_password',\s*legacy\.password_hash,\s*'active'/u,
-    );
-    expect(AFTER_READBACK_SQL).toContain(
-      `credential.password_hash = ${V21_ARGON2ID_FROM_LEGACY_SQL}`,
-    );
     expect(AFTER_READBACK_SQL).toContain(
       "substring(legacy.password_hash FROM length('argon2id$') + 1)",
     );
-    expect(ROLLBACK_DELETE_SQL[0]).toContain(V21_ARGON2ID_FROM_LEGACY_SQL);
-    expect(ROLLBACK_DELETE_SQL[0]).toContain(
-      "substring(legacy.password_hash FROM length('argon2id$') + 1)",
-    );
+    expect(COMPENSATION_DELETE_SQL[0]).toContain(V21_ARGON2ID_FROM_LEGACY_SQL);
   });
 
-  it('keeps SQL inert, parameterized, scoped, locked, and write-target bounded', () => {
+  it('binds exact transition keys, idempotency keys, hashes, and timestamps', () => {
+    expect(PROTECTED_BINDINGS).toHaveLength(23);
+    expect(PROTECTED_BINDINGS).toContain('human_account_create_transition_key');
+    expect(PROTECTED_BINDINGS).toContain('access_create_idempotency_key');
+    expect(PROTECTED_BINDINGS).toContain('create_canonical_request_hash');
+    expect(PROTECTED_BINDINGS).toContain('compensation_canonical_request_hash');
+    expect(PREFLIGHT_SQL).toContain("$17 ~ '^[a-f0-9]{64}$'");
+    expect(PREFLIGHT_SQL).toContain("$23 ~ '^[a-f0-9]{64}$'");
+    expect(PREFLIGHT_SQL).toContain("$10 = 'access:' || $9");
+  });
+
+  it('creates canonical HumanAccount null-to-active and access null-to-free events', () => {
+    const humanCreate = APPLY_INSERT_SQL[6];
+    const accessCreate = APPLY_INSERT_SQL[7];
+    expect(humanCreate).toContain("$13, 'human_account', $6, NULL, 'active', 0, 1");
+    expect(accessCreate).toContain("$15, 'access', $9, NULL, 'free', 0, 1");
+    expect(accessCreate).toContain("'free_period'");
+    expect(humanCreate).toContain("'reconciler'");
+    expect(humanCreate).toContain(RECONCILER_ACTOR_KEY);
+    expect(APPLY_INSERT_SQL).toHaveLength(8);
+  });
+
+  it('requires exact trigger-derived active aggregate readback', () => {
+    expect(AFTER_READBACK_SQL).toContain("state.aggregate_kind = 'human_account'");
+    expect(AFTER_READBACK_SQL).toContain("state.current_state = 'active'");
+    expect(AFTER_READBACK_SQL).toContain("state.aggregate_kind = 'access'");
+    expect(AFTER_READBACK_SQL).toContain("state.current_state = 'free'");
+    expect(AFTER_READBACK_SQL).toContain('state.last_transition_key = $13');
+    expect(AFTER_READBACK_SQL).toContain('state.last_transition_key = $15');
+    expect(AFTER_READBACK_SQL).toContain('state.version = 1');
+  });
+
+  it('preflights both transition-event and aggregate-state collisions', () => {
+    expect(PREFLIGHT_SQL).toContain('transition_key IN ($13, $19)');
+    expect(PREFLIGHT_SQL).toContain('transition_key IN ($15, $21)');
+    expect(PREFLIGHT_SQL).toContain('last_transition_key IN ($13, $19)');
+    expect(PREFLIGHT_SQL).toContain('last_transition_key IN ($15, $21)');
+  });
+
+  it('compensates append-only before exact-deleting six proposal rows', () => {
+    expect(COMPENSATION_TRANSITION_INSERT_SQL).toHaveLength(2);
+    expect(COMPENSATION_DELETE_SQL).toHaveLength(6);
+    expect(COMPENSATION_TRANSITION_INSERT_SQL[0]).toContain(
+      "$19, 'human_account', $6, 'active', 'archived', 1, 2",
+    );
+    expect(COMPENSATION_TRANSITION_INSERT_SQL[1]).toContain(
+      "$21, 'access', $9, 'free', 'inactive', 1, 2",
+    );
+    expect(COMPENSATION_TRANSITION_INSERT_SQL[1]).toContain("'household_archived'");
+    expect(COMPENSATION_DERIVED_STATE_READBACK_SQL).toBe(COMPENSATION_AFTER_READBACK_SQL);
+    expect(COMPENSATION_AFTER_READBACK_SQL).toContain("state.current_state = 'archived'");
+    expect(COMPENSATION_AFTER_READBACK_SQL).toContain("state.current_state = 'inactive'");
+    expect(COMPENSATION_AFTER_READBACK_SQL).toContain('state.version = 2');
+  });
+
+  it('keeps SQL inert, scoped, locked, and limited to authorized write targets', () => {
     const allSql = [
       BEGIN_SQL,
       ADVISORY_LOCK_SQL,
@@ -260,9 +391,11 @@ describe('OT-LIVE-001.03 inert fixture reconciliation design', () => {
       LEGACY_IMMUTABLE_READBACK_SQL,
       ...APPLY_INSERT_SQL,
       AFTER_READBACK_SQL,
-      ROLLBACK_PREFLIGHT_SQL,
-      ...ROLLBACK_DELETE_SQL,
-      ROLLBACK_AFTER_READBACK_SQL,
+      COMPENSATION_PREFLIGHT_SQL,
+      ...COMPENSATION_TRANSITION_INSERT_SQL,
+      COMPENSATION_DERIVED_STATE_READBACK_SQL,
+      ...COMPENSATION_DELETE_SQL,
+      COMPENSATION_AFTER_READBACK_SQL,
     ].join('\n');
     const writeTargets = [
       ...allSql.matchAll(/(?:INSERT INTO|UPDATE|DELETE FROM)\s+([\w.]+)/gi),
@@ -273,25 +406,33 @@ describe('OT-LIVE-001.03 inert fixture reconciliation design', () => {
       'onetime.v21_human_account_role_memberships',
       'onetime.v21_households',
       'onetime.v21_adult_credentials',
+      'onetime.canonical_state_transition_events',
     ]);
 
     expect(BEGIN_SQL).toContain('SERIALIZABLE');
     expect(ADVISORY_LOCK_SQL).toContain('pg_advisory_xact_lock');
     expect(PREFLIGHT_SQL).toContain("to_regprocedure('digest(bytea,text)')");
-    expect(PREFLIGHT_SQL).toContain('password_hash_compatible');
-    expect(PREFLIGHT_SQL).toContain('display_name_compatible');
-    expect(PREFLIGHT_SQL).toContain('protected_bindings_valid');
-    expect(PREFLIGHT_SQL).toContain('^argon2id\\$v=19');
-    expect(ROLLBACK_PREFLIGHT_SQL).toBe(AFTER_READBACK_SQL);
-    expect(ROLLBACK_AFTER_READBACK_SQL).toBe(PREFLIGHT_SQL);
-    expect(APPLY_INSERT_SQL).toHaveLength(FIXTURE_RECONCILIATION_ROW_BUDGET.apply);
-    expect(ROLLBACK_DELETE_SQL).toHaveLength(FIXTURE_RECONCILIATION_ROW_BUDGET.rollback);
-    expect(writeTargets).toHaveLength(12);
+    expect(APPLY_INSERT_SQL).toHaveLength(
+      FIXTURE_RECONCILIATION_ROW_BUDGET.createExplicitInsertRows,
+    );
+    expect(COMPENSATION_TRANSITION_INSERT_SQL).toHaveLength(
+      FIXTURE_RECONCILIATION_ROW_BUDGET.compensationTransitionExplicitRows,
+    );
+    expect(COMPENSATION_DELETE_SQL).toHaveLength(
+      FIXTURE_RECONCILIATION_ROW_BUDGET.compensationExactDeleteRows,
+    );
+    expect(writeTargets).toHaveLength(16);
     expect(writeTargets.every((target) => target !== undefined && allowedTargets.has(target))).toBe(
       true,
     );
     expect(allSql).not.toMatch(
       /(?:INSERT INTO|UPDATE|DELETE FROM)\s+onetime\.(?:account_users|user_sessions|v21_adult_sessions)/i,
+    );
+    expect(allSql).not.toMatch(
+      /(?:INSERT INTO|UPDATE|DELETE FROM)\s+onetime\.canonical_aggregate_states/i,
+    );
+    expect(allSql).not.toMatch(
+      /(?:UPDATE|DELETE FROM)\s+onetime\.canonical_state_transition_events/i,
     );
     expect(allSql).toContain(FIXTURE_RECONCILIATION_SCOPE.productKey);
     expect(allSql).toContain(FIXTURE_RECONCILIATION_SCOPE.runtimeTier);
@@ -299,8 +440,6 @@ describe('OT-LIVE-001.03 inert fixture reconciliation design', () => {
     expect(INERT_TRANSACTION_PROPOSAL.opensNetworkConnection).toBe(false);
     expect(INERT_TRANSACTION_PROPOSAL.executesSql).toBe(false);
     expect(INERT_TRANSACTION_PROPOSAL.effectAuthority).toBe(false);
-    expect(INERT_TRANSACTION_PROPOSAL.preflightExactReadback).toBe(AFTER_READBACK_SQL);
-    expect(PROTECTED_BINDINGS).toHaveLength(12);
   });
 
   it('contains no literal email, password payload, token, cookie, or connection secret', async () => {
