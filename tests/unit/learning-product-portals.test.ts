@@ -376,10 +376,12 @@ async function seedLeaderboard() {
   await pool.query(
     `INSERT INTO onetime.class_occurrences
      (occurrence_key, account_key, product_key, class_series_key, local_class_date,
-      starts_at, reminder_due_at, joinable_until, occurrence_state)
+      starts_at, scheduled_ends_at, join_opens_at, join_closes_at,
+      reminder_due_at, joinable_until, occurrence_state)
      VALUES
        ('occurrence_learning_product',$1,$2,'class_series_one_time_daily','2026-07-20',
-        '2026-07-20T16:00:00Z','2026-07-20T15:30:00Z','2026-07-20T17:30:00Z','completed')`,
+        '2026-07-20T16:00:00Z','2026-07-20T17:00:00Z','2026-07-20T15:50:00Z',
+        '2026-07-20T17:15:00Z','2026-07-20T15:30:00Z','2026-07-20T17:30:00Z','completed')`,
     [accountKey, productKey],
   );
   await pool.query(

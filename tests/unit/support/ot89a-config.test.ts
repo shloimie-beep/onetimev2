@@ -8,6 +8,7 @@ const productionBase = {
   COMMIT_SHA: '0123456789abcdef0123456789abcdef01234567',
   AUTH_CSRF_SECRET: 'production-csrf-secret-with-enough-length',
   MFA_SECRET_ENCRYPTION_KEY: 'production-mfa-secret-with-enough-length',
+  PROTECTED_PAYLOAD_ENCRYPTION_KEY: 'production-protected-payload-key',
 };
 
 describe('OT-89A support fail-closed config', () => {

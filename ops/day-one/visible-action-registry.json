@@ -20,7 +20,7 @@
     },
     {
       "path": "apps/web/src/server/app.ts",
-      "sha256": "33cb4f23b4af7af5e011f491322b36f0c71cb9443e228cff837f50ff82d99a18"
+      "sha256": "0c7a26f60e1f835b895f26dbc75bbb741915b8d0214bd1568bb54f4167444371"
     },
     {
       "path": "apps/web/src/server/features/portals/routers.ts",
@@ -44,7 +44,7 @@
     },
     {
       "path": "apps/web/src/client/app/crm-entry.tsx",
-      "sha256": "ea389823d876ce24045f841f7e372b33249e2498f703aceb8c4d5a204fc61e49"
+      "sha256": "41106e86353cd847e90a97644b25d791e07270cfacd5beae2c1849f855478e72"
     },
     {
       "path": "apps/web/src/client/app/live-entry.tsx",
@@ -52,7 +52,7 @@
     },
     {
       "path": "apps/web/src/client/app/portal-entry.tsx",
-      "sha256": "396c0a0cc9bcf0059e816b367705b083651ff242537e7289737c521ab92e4757"
+      "sha256": "3058d47121de9be3a1a116d387f961a825b221e74705105daa6f811d754d6246"
     },
     {
       "path": "apps/web/src/client/features/portals/PortalFeatures.tsx",
@@ -60,7 +60,7 @@
     },
     {
       "path": "apps/web/src/client/app/router/registry.ts",
-      "sha256": "2911b8d418a1ff36cdb2bde8946d712b39aa5b58bd32e8d5510e83d4b57c6de3"
+      "sha256": "e9556f9f499dd4076729dfe4703b6b74b72abc22ad93da8dd0ac2db1c96de68e"
     },
     {
       "path": "apps/web/src/client/app/router/canonical-route-views.ts",
@@ -72,7 +72,7 @@
     },
     {
       "path": "apps/web/src/client/public/public-entry.ts",
-      "sha256": "bae5306ecd1e6af34fd746d5d4b9f06180c91bf558d015d464b709c04975090e"
+      "sha256": "af4e15060b991bd37b250e03b8d6a24d757337264ee717feace3db9469375c7d"
     },
     {
       "path": "apps/web/src/client/public/school/model.ts",
@@ -88,7 +88,7 @@
     },
     {
       "path": "scripts/build-public-pages.ts",
-      "sha256": "023bbab327afa2ca7847a524e494246b601c3e3314b81b5be6da72aa5b7a37dc"
+      "sha256": "20a594454cdff6724f7d38349dd718f28c161f2ebe93f3302f9586fa2a16bf84"
     },
     {
       "path": "packages/domain/src/dashboard/service.ts",
@@ -247,9 +247,9 @@
       "route_id": "RT-ADM-001",
       "path": "/app/dashboard",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "admin.rt-adm-001",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-ADM-002",

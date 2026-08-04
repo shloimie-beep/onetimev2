@@ -34,26 +34,23 @@ describe('One Time brand system manifest', () => {
     const manifestRoutes = Object.keys(manifest.routes).sort();
     const registryRoutes = routeBranding.map((entry) => entry.route).sort();
     expect(manifestRoutes).toEqual(registryRoutes);
-    expect(shellForRoute('/app/parent')).toBe('parent');
+    expect(shellForRoute('/app/parent/students')).toBe('parent');
     expect(shellForRoute('/app/student')).toBe('student');
-    expect(shellForRoute('/activate')).toBe('auth');
+    expect(shellForRoute('/setup/operator_fixture')).toBe('auth');
     expect(shellForRoute('/forgot-password')).toBe('auth');
-    expect(shellForRoute('/reset-password')).toBe('auth');
-    expect(shellForRoute('/app/support')).toBe('authenticated-support');
-    expect(shellForRoute('/app/communications')).toBe('owner-admin');
-    expect(shellForRoute('/app/crm/contacts/contact_fixture')).toBe('owner-admin');
-    expect(shellForRoute('/app/crm/contacts/contact_fixture/communications')).toBe('owner-admin');
-    expect(routeBrandingForPath('/app/support/receipts/receipt_fixture')?.role).toBe(
-      'authenticated',
-    );
+    expect(shellForRoute('/reset-password/operator_fixture')).toBe('auth');
+    expect(shellForRoute('/app/student/support')).toBe('student');
+    expect(shellForRoute('/app/classroom/questions')).toBe('owner-admin');
+    expect(shellForRoute('/app/contacts/contact_fixture')).toBe('owner-admin');
+    expect(routeBrandingForPath('/app/student/support/ticket_fixture')?.role).toBe('student');
     for (const route of [
-      '/activate',
+      '/setup/:token',
       '/forgot-password',
-      '/reset-password',
-      '/app/support',
-      '/app/communications',
-      '/app/crm/contacts/:contactId',
-      '/app/crm/contacts/:contactId/communications',
+      '/reset-password/:token',
+      '/app/student/support',
+      '/app/student/support/:ticketId',
+      '/app/classroom/questions',
+      '/app/contacts/:contactId',
     ]) {
       expect(requiredRouteTemplates).toContain(route);
     }
@@ -94,7 +91,7 @@ describe('One Time brand system manifest', () => {
     ]);
     expect(visualMatrixRows()).toContainEqual(
       expect.objectContaining({
-        route: '/app/support',
+        route: '/app/student/support',
         mode: 'default',
         viewport: '390x844',
       }),

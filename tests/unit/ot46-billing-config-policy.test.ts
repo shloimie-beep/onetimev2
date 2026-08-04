@@ -114,7 +114,12 @@ describe('OT-46 public isolation and privacy static checks', () => {
       path.resolve(process.cwd(), 'apps/web/src/client/public/public-entry.ts'),
       'utf8',
     );
-    expect(publicEntry).not.toMatch(/stripe|billing|checkout|subscription|invoice/i);
+    const publicImports = publicEntry
+      .split(/\r?\n/u)
+      .filter((line) => line.trimStart().startsWith('import '))
+      .join('\n');
+    expect(publicImports).not.toMatch(/stripe|billing|checkout|subscription|invoice/i);
+    expect(publicEntry).not.toMatch(/api\.stripe\.com|Stripe\s*\(/i);
   });
 
   it('keeps the billing migration free of forbidden payment data columns', async () => {

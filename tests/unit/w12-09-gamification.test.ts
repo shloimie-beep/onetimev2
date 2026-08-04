@@ -234,10 +234,15 @@ async function seed() {
   await pool.query(
     `INSERT INTO onetime.class_occurrences
      (occurrence_key, account_key, product_key, class_series_key, local_class_date,
-      starts_at, reminder_due_at, joinable_until, occurrence_state)
+      starts_at, scheduled_ends_at, join_opens_at, join_closes_at,
+      reminder_due_at, joinable_until, occurrence_state)
      VALUES
-       ('occurrence_1',$1,$2,'series_w12_09','2026-07-15','2026-07-15T18:00:00Z','2026-07-15T17:30:00Z','2026-07-15T19:00:00Z','completed'),
-       ('occurrence_2',$1,$2,'series_w12_09','2026-07-16','2026-07-16T18:00:00Z','2026-07-16T17:30:00Z','2026-07-16T19:00:00Z','completed')`,
+       ('occurrence_1',$1,$2,'series_w12_09','2026-07-15','2026-07-15T18:00:00Z',
+        '2026-07-15T19:00:00Z','2026-07-15T17:50:00Z','2026-07-15T19:15:00Z',
+        '2026-07-15T17:30:00Z','2026-07-15T19:00:00Z','completed'),
+       ('occurrence_2',$1,$2,'series_w12_09','2026-07-16','2026-07-16T18:00:00Z',
+        '2026-07-16T19:00:00Z','2026-07-16T17:50:00Z','2026-07-16T19:15:00Z',
+        '2026-07-16T17:30:00Z','2026-07-16T19:00:00Z','completed')`,
     [accountKey, productKey],
   );
   await pool.query(

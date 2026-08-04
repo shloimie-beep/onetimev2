@@ -9,6 +9,7 @@ const baseEnv = {
   COMMIT_SHA: 'test',
   DATABASE_URL: 'postgres://example.test/onetime',
   OUTBOX_TRANSPORT_MODE: 'sink',
+  PROTECTED_PAYLOAD_ENCRYPTION_KEY: 'delivery-config-protected-payload-key',
 };
 
 describe('delivery worker config', () => {

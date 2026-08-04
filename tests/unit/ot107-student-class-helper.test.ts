@@ -636,7 +636,7 @@ describe('OT-107 student Class Helper', () => {
     });
   });
 
-  it('renders Class Helper separately from explicit private-question confirmation', () => {
+  it('keeps the retired Class Helper surface hidden and private questions explicit', () => {
     const dashboard = studentDashboard();
     const helperMarkup = renderToStaticMarkup(
       React.createElement(StudentPortalFeature, {
@@ -668,8 +668,9 @@ describe('OT-107 student Class Helper', () => {
       }),
     );
 
-    expect(helperMarkup).toContain('Class Helper answers from Rabbi Scheller');
-    expect(helperMarkup).toContain('Ask helper');
+    expect(helperMarkup).toContain('Today');
+    expect(helperMarkup).not.toContain('Class Helper answers from Rabbi Scheller');
+    expect(helperMarkup).not.toContain('Ask helper');
     expect(helperMarkup).not.toContain('Review private question');
     expect(questionsMarkup).toContain('Review private question');
     expect(questionsMarkup).not.toContain('Ask helper');
