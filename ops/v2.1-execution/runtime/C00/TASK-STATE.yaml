@@ -37,6 +37,8 @@ ot_live_terminal_convergence_resume_20260804:
     pre_effect_truth: one_active_legacy_Admin_account_and_session_zero_matching_v21_identity_rows
     one_row_parent_membership_repair_possible: false
     fixture_design_claim_id: ce5be839-5ba3-4751-9f7b-b460b3bec752
+    fixture_design_publish_authority_id: 96a48424-7cf9-4cc9-b1b0-4082966ca1ff
+    fixture_design_exact_local_head_sha: 4f9276ad0507abccbcb896b3234859a412a943cd
     next_boundary: inert_exact_legacy_to_v21_fixture_reconciliation_design_then_separate_data_deployment_and_signed_in_canary_authorities
     provider_database_deploy_effects: 0_0_0
   OT_LIVE_002_02:

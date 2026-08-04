@@ -2361,7 +2361,7 @@ tasks:
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/V43/status_proof
 - task_id: OT-LIVE-001.03
   status: in_progress
-  active_phase: accepted_candidate_frozen_inert_legacy_to_v21_fixture_reconciliation_design_active
+  active_phase: accepted_candidate_frozen_fixture_design_exact_local_checkpoint_publish_authorized
   owner_thread_id: 019fc7e8-b506-7d30-a36a-4d7a9641f4fd
   branch: codex/ot-live-001-product-repair-20260804
   phase_branches:
@@ -2374,13 +2374,13 @@ tasks:
   active_claim_id: ce5be839-5ba3-4751-9f7b-b460b3bec752
   active_writer_id: codex-ot-live-001-03-fixture-design-ce5be839
   lease_expires_at: '2026-08-05T09:14:28Z'
-  last_heartbeat_at: '2026-08-04T09:44:18Z'
-  controller_authorization_sha: 339ad9c2a8d48fe76eec08bf6859525ced21c6b5
+  last_heartbeat_at: '2026-08-04T10:12:15Z'
+  controller_authorization_sha: 95a348f0758a299438e06f57f8a6909653af76c0
   ready_entry_payload_digest: null
   interface_checkpoint_sha: null
   implementation_head_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
   status_proof:
-    state: candidate_frozen_read_only_pre_effect_found_zero_v21_fixture_rows_one_row_repair_rejected_inert_reconciliation_design_dispatched
+    state: candidate_deployed_fixture_design_local_checkpoint_complete_exact_commit_publish_only_authorized_no_data_effect
     producer_task_id: OT-LIVE-001.03
     producer_head_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
     canonical_candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c

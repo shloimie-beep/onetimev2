@@ -1,0 +1,33 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-001.03
+owner_thread_id: 019fc7e8-b506-7d30-a36a-4d7a9641f4fd
+source_claim_id: ce5be839-5ba3-4751-9f7b-b460b3bec752
+publish_authority_id: 96a48424-7cf9-4cc9-b1b0-4082966ca1ff
+writer_id: codex-ot-live-001-03-fixture-design-ce5be839
+status: active
+branch: codex/ot-live-001-operator-fixture-design-20260804
+base_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
+exact_source_head_sha: 4f9276ad0507abccbcb896b3234859a412a943cd
+exact_source_tree_sha: a031bbc65a03d2159806d1ba4f91bf1a750f9167
+candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
+control_parent_sha: 95a348f0758a299438e06f57f8a6909653af76c0
+allowed_operation: push_the_exact_existing_local_commit_to_the_exact_branch_then_return_remote_readback
+exact_paths:
+  - ops/release/ot-live-001/operator-fixture-reconciliation/README.md
+  - ops/release/ot-live-001/operator-fixture-reconciliation/fixture-reconciliation.test.ts
+  - ops/release/ot-live-001/operator-fixture-reconciliation/fixture-reconciliation.ts
+  - ops/release/ot-live-001/operator-fixture-reconciliation/transaction-proposal.ts
+required_readback:
+  - local_HEAD_equals_exact_source_head_sha
+  - local_tree_equals_exact_source_tree_sha
+  - worktree_clean
+  - remote_branch_equals_exact_source_head_sha_after_one_normal_push
+prohibitions:
+  - no_commit_amend_rebase_merge_force_push_or_additional_source_edit
+  - no_application_database_migration_session_browser_provider_deployment_DNS_send_charge_customer_or_Student_effect
+  - no_inference_that_source_publish_is_production_data_authority
+issued_at: '2026-08-04T10:12:15Z'
+expires_at: '2026-08-05T09:14:28Z'
+contains_secret: false
+immutable: true

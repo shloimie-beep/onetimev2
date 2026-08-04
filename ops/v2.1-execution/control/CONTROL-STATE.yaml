@@ -124,6 +124,15 @@ ot_live_001_03_pre_effect_readback_and_fixture_design_dispatch:
   new_source_claim_digest: 43807997d3c6b2b8835005babcd2cac455ba3bff40da8d73324484725b7194fb
   new_source_claim_id: ce5be839-5ba3-4751-9f7b-b460b3bec752
   data_deployment_session_browser_provider_or_DNS_effects: 0
+ot_live_001_03_fixture_design_publish_authority:
+  recorded_at: '2026-08-04T10:12:15Z'
+  state_based_on_control_head_sha: 95a348f0758a299438e06f57f8a6909653af76c0
+  source_claim_id: ce5be839-5ba3-4751-9f7b-b460b3bec752
+  publish_authority_id: 96a48424-7cf9-4cc9-b1b0-4082966ca1ff
+  exact_local_head_sha: 4f9276ad0507abccbcb896b3234859a412a943cd
+  exact_local_tree_sha: a031bbc65a03d2159806d1ba4f91bf1a750f9167
+  allowed_operation: one_normal_exact_commit_push_and_remote_readback_only
+  database_migration_session_browser_provider_deployment_DNS_send_charge_customer_or_Student_effects: 0
 c00_product_candidate_production_deployment_reservation:
   recorded_at: '2026-08-04T09:50:30Z'
   state_based_on_control_head_sha: ce9a3dcbddc1f6c11db0bf5e8bf1fcd1cce3367c
