@@ -1,0 +1,58 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-001.03
+owner_thread_id: 019fc7e8-b506-7d30-a36a-4d7a9641f4fd
+mode: sanitized_read_only_pre_effect_reconciliation
+control_readback_head: eb085d6e0d1a32039d6514c90c49e0b1b14a83fa
+candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
+source_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
+railway:
+  project_id: ce55ef20-1418-4ad3-aafa-f877fb992dc8
+  environment_id: f911acfc-e206-44df-a569-9d69d709b94b
+  web_service_id: d175ad94-5e3c-41c2-8cbc-daa1a299077d
+  web_deployment_id: 50b737ff-b6d1-4cd4-a416-5cffb548775a
+  web_image_digest: sha256:c0998bd09dba9de12feaabfe33330acf19a753ab663e0b2c5330a166c7ccbdfc
+  worker_service_id: 742f60ed-dc2f-4321-85d0-019003d4e9b9
+  worker_deployment_id: 66463233-1466-4bcb-bfdd-8533ce48f9f1
+  worker_image_digest: sha256:bf0ca5b6992f48b7b232df24dcf8c1285c64ee9c4d6416c2f2c5998d940ac60c
+  database_service_id: db590e4a-7dc5-40cb-a243-5206ce21b746
+  database_deployment_id: 62583cef-572b-40ae-b1d3-0194a2ccbf27
+  current_source_sha: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+  health_ready_version: passed_200_on_canonical_app_domain
+application_scope:
+  runtime_tier: production
+  verification_environment_id: production_operator_canary
+  database_transactions: 2_committed_read_only_select_only
+operator_fixture_v21_counts:
+  matching_adult_identities: 0
+  active_human_accounts: 0
+  active_credentials: 0
+  active_admin_memberships: 0
+  active_parent_memberships: 0
+  active_owned_households: 0
+  active_admin_sessions: 0
+  active_parent_sessions: 0
+operator_fixture_legacy_counts:
+  matching_active_accounts: 1
+  active_sessions: 1
+  account_key: one_time
+  product_key: one_time_mishnah_class
+  role: admin
+  account_row_sha256: 61a85b43da371c459174e10bc8b5bce61e3b61115df880a8646cb419989270a8
+  user_key_sha256: ac9bf407d472d28d7bbc22baf7caed76717289f46037ac33fe31da2583f77218
+  active_session_sha256: fba73376202ae0a3900108e9cc98ba3b557715e34691863f7f91f3e6868018e7
+one_row_parent_membership_repair:
+  possible: false
+  reason: required_v21_identity_account_credential_admin_membership_and_household_do_not_exist
+  authority_issued: false
+browser_handoff:
+  connected_chrome_session_present: true
+  dashboard_tab_present: true
+  authenticated_UI_state_proven: false
+  cookies_storage_credentials_passwords_inspected: false
+effects:
+  provider_database_session_deployment_DNS_or_browser_mutations: 0
+next_boundary: separately_reviewed_exact_legacy_to_v21_identity_data_reconciliation_design_before_any_data_effect
+recorded_at: '2026-08-04T09:44:18Z'
+contains_secret: false
+immutable: true

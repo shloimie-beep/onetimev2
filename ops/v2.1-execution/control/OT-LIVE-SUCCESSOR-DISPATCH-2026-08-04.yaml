@@ -31,7 +31,7 @@ missions:
     thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
     branch: codex/ot-live-002-governed-campaign-20260804
     base: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
-    state: GHL_CONFIGURATION_TERMINAL_SOURCE_PROPOSAL_STAGE_SAFE_TO_STEER_AFTER_CONTROL_PUSH
+    state: GHL_CONFIGURATION_AND_INERT_DECISION_STORE_SOURCE_PROPOSAL_TERMINAL
     exact_scope:
       - active_successor_configuration_authority_in_GRANT_yaml
       - unique_new_OT_15_Draft_assets_and_exact_launch_tag_creation
@@ -58,13 +58,18 @@ missions:
     source_proposal_stage:
       claim_id: 1aa15481-0c38-4445-aaac-12931bd958a7
       writer_id: codex-ot-live-002-02-decision-store-source-1aa15481
-      expires_at: '2026-08-05T09:14:28Z'
+      disposition: consumed_source_success
+      source_head_sha: 0cf2224f984c023162bf2286028df8e3d2723adf
+      source_tree_sha: 3aad6be5e00d10e647daac7c5b034d6ccd6ae704
+      source_terminal_path: ops/v2.1-execution/control/OT-LIVE-002.02-DECISION-STORE-SOURCE-TERMINAL.yaml
+      source_terminal_digest: f3e18860c9a86a56168993eb7b0ec2ec18fafb7c5e9767770f078461cea0e24c
       exact_paths:
         - packages/db/src/audience-reconciliation/governed-campaign-decision-store.proposal.sql
         - packages/db/src/audience-reconciliation/governed-campaign-decision-store.proposal.ts
         - ops/codex-runs/OT-LIVE-002/**
       required_result: commit_push_exact_inert_proposal_and_sanitized_validation_evidence_for_independent_review
       migrations_shared_registration_application_database_writes_and_provider_or_send_effects: 0
+      successor_boundary: separate_migration_review_allocation_repository_implementation_and_exact_row_bound_census_authority
     instruction: STEER EXISTING OT-LIVE-002
   OT-LIVE-004.01:
     durable_id_status: newly_created_by_C00

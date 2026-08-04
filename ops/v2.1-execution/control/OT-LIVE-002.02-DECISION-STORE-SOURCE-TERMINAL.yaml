@@ -1,0 +1,37 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-002.02
+owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+source_claim_id: 1aa15481-0c38-4445-aaac-12931bd958a7
+writer_id: codex-ot-live-002-02-decision-store-source-1aa15481
+claim_digest: 0ac0268ae887eef8f60a29040eefec65c84de587d1578c42214cc53b49195a7c
+claim_disposition: consumed_source_success
+control_pre_effect_head: 339ad9c2a8d48fe76eec08bf6859525ced21c6b5
+authority_status_index_digest: cf4695fc1d59c268ffbd9d64f28bac4bd74335828c946946da2cf63b5bdc2c62
+branch: codex/ot-live-002-governed-campaign-20260804
+base_sha: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+source_head_sha: 0cf2224f984c023162bf2286028df8e3d2723adf
+source_tree_sha: 3aad6be5e00d10e647daac7c5b034d6ccd6ae704
+source_files:
+  - path: packages/db/src/audience-reconciliation/governed-campaign-decision-store.proposal.sql
+    sha256: 13766ec73845b3d7343cc456eece126f2ef02a02eb60b6d8e9ae8cf86f870558
+  - path: packages/db/src/audience-reconciliation/governed-campaign-decision-store.proposal.ts
+    sha256: b68e25a448bdf39fcccceed94d85749bc63f2ba343a3343adbd2e3399d111cff
+  - path: ops/codex-runs/OT-LIVE-002/decision-store-contract-check.mjs
+    sha256: 55b07ca6477f942e9d3117f3e5b512aa4571368584d3419239a234adb7992893
+  - path: ops/codex-runs/OT-LIVE-002/DECISION-STORE-SOURCE-EVIDENCE.md
+    sha256: c279b01649ba7d583947fd70ed521c18cd69fc8c1dff63935c9bcb5846c31463
+independent_controller_readback:
+  local_tracking_remote_equality: passed
+  exact_four_path_scope: passed
+  diff_check: passed
+  focused_contract_assertions: 18_passed_0_failed
+  runtime_registration_effects: 0
+  migration_allocation_or_application_effects: 0
+  application_database_effects: 0
+  provider_contact_tag_send_schedule_publish_activate_or_deploy_effects: 0
+proposal_verdict: accepted_inert_source_proposal_only
+successor_boundary: separate_migration_review_allocation_repository_implementation_and_exact_row_bound_census_authority_required
+recorded_at: '2026-08-04T09:44:18Z'
+contains_secret: false
+immutable: true

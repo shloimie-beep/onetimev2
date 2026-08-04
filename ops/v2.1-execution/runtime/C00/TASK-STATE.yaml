@@ -33,7 +33,11 @@ ot_live_terminal_convergence_resume_20260804:
     candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
     focused_tests: 55_passed_4_skipped
     release_source_fast_forward: passed
-    next_boundary: separate_exact_one_row_production_data_then_deployment_then_signed_in_canary_authorities
+    pre_effect_readback_digest: 45f99010b4a5b8fa7e4c2172d8d06c736a83ef91964f46d8bce84fd9c45a79b4
+    pre_effect_truth: one_active_legacy_Admin_account_and_session_zero_matching_v21_identity_rows
+    one_row_parent_membership_repair_possible: false
+    fixture_design_claim_id: ce5be839-5ba3-4751-9f7b-b460b3bec752
+    next_boundary: inert_exact_legacy_to_v21_fixture_reconciliation_design_then_separate_data_deployment_and_signed_in_canary_authorities
     provider_database_deploy_effects: 0_0_0
   OT_LIVE_002_02:
     owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
@@ -42,8 +46,10 @@ ot_live_terminal_convergence_resume_20260804:
     authority_status_index_digest: cf4695fc1d59c268ffbd9d64f28bac4bd74335828c946946da2cf63b5bdc2c62
     workflow_campaign_reply_workflow: 09051378-5917-4172-afda-f425619dd23d_6a71a64c28f7a5dbb3aec1be_15748c03-8ded-4ec3-b263-ffcc19c67982
     GHL_lock_released_at: '2026-08-04T09:14:28Z'
-    next_source_claim_id: 1aa15481-0c38-4445-aaac-12931bd958a7
-    next_stage: inert_decision_store_proposal_source_only
+    source_claim_id: 1aa15481-0c38-4445-aaac-12931bd958a7
+    source_head_sha: 0cf2224f984c023162bf2286028df8e3d2723adf
+    source_terminal_digest: f3e18860c9a86a56168993eb7b0ec2ec18fafb7c5e9767770f078461cea0e24c
+    next_stage: separate_migration_review_allocation_repository_implementation_and_exact_row_bound_census_authority
     database_and_send_effects: 0_0
   OT_LIVE_004_01:
     owner_thread_id: 019fcc0b-177e-7361-8823-9059dd8a8eb0
@@ -1331,16 +1337,16 @@ completed_steps:
   and prohibiting both legacy authority tables, direct history writes, candidate work, providers, and all external effects.
 remaining_steps:
 - Consume the bounded OT-LIVE-001.03 correction, complete one independent delta review, and freeze the exact new candidate.
-- Verify the new candidate proportionally, then reserve exact migration-free one-row operator data repair, deployment, and signed-in Admin-Parent-Admin canary effects separately.
-- Consume OT-LIVE-002.02's inert decision-store proposal, allocate any migration only through F02, and derive an exact maximumAffectedRows data-census authority.
+- Complete the inert exact legacy-to-v2.1 operator-fixture reconciliation design after read-only proof found zero matching v2.1 rows; only then reserve separate exact row-bound data, deployment, and signed-in Admin-Parent-Admin canary effects.
+- Treat OT-LIVE-002.02's accepted inert decision-store proposal as source-terminal; allocate any migration only through F02 and derive a separate exact maximumAffectedRows data-census authority.
 - After exact audience, auth, landing, legal, suppression, seed, reply, and registration-exit gates, issue separate one-seed, pilot-at-most-25, and remaining-audience grants.
 - Advance OT-LIVE-004.01 source-only work; keep provider/upload/deploy/shared composition held until accepted source integration and exact canary authority.
 - Keep OT-LIVE-003.02 parked/default-off and WhatsApp/WAPI at zero effects; close broad production only after the legal gate.
 next_action: >-
-  Push this exact candidate-freeze reconciliation, steer the bound OT-LIVE-002 source-proposal and OT-LIVE-004 source-only
-  tasks, then issue separate candidate-bound production-data, deployment, and signed-in Admin-Parent-Admin canary
-  authorities. Do not write production data, deploy, upload media, seed, pilot, or broad-send until each exact successor
-  gate and lock/fence is recorded.
+  Push the OT-LIVE-002 source-terminal, sanitized product pre-effect readback, and inert fixture-design dispatch. Continue
+  OT-LIVE-004 source-only work, then review the exact fixture design before issuing separate candidate-bound
+  production-data, deployment, and signed-in Admin-Parent-Admin canary authorities. Do not write production data,
+  deploy, upload media, seed, pilot, or broad-send until each exact successor gate and lock/fence is recorded.
 orchestration:
   enabled: true
   mechanism: native_subagents

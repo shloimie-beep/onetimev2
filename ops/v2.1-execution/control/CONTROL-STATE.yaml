@@ -18,12 +18,12 @@ candidate: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
 active_writer_limit: 4
 controller_authorization_sha: 76692fbb6e65cdeb68e32862dd0c03490b5e5750
 next_action: >-
-  Reserve separate exact production-data, deployment, and signed-in Admin-Parent-Admin canary authorities for newly
-  frozen candidate 9d6be957 at source 27576fa6. OT-LIVE-002.02 GHL Draft configuration is terminally reconciled with workflow 09051378,
-  campaign 6a71a64c28f7a5dbb3aec1be, inactive reply workflow 15748c03, zero contacts and zero sends; its GHL lock is
-  released. Advance only the inert two-file decision-store source proposal and evidence now, then require separate
-  migration allocation and exact maximumAffectedRows production-data authority before any census write. Seed/reply,
-  pilot, and remaining-audience sends remain separate later grants. OT-LIVE-004.01 is bound to task
+  Preserve frozen candidate 9d6be957 at source 27576fa6 while an inert exact legacy-to-v2.1 operator-fixture
+  reconciliation design is produced from the sanitized read-only finding that the fixture has one active legacy Admin
+  account/session and zero matching v2.1 identity rows; the superseded one-row Parent-membership effect must not be
+  issued. OT-LIVE-002.02 GHL Draft configuration and its inert decision-store proposal are terminally reconciled; require
+  separate migration allocation and exact maximumAffectedRows production-data authority before any audience census
+  write. Seed/reply, pilot, and remaining-audience sends remain separate later grants. OT-LIVE-004.01 is bound to task
   019fcc0b-177e-7361-8823-9059dd8a8eb0 for an independent worktree and isolated source-only implementation; shared
   composition, migrations, providers, uploads, and deployment remain held. Keep OT-LIVE-003.02 parked/default-off and
   WhatsApp/WAPI fully deferred at zero effects.
@@ -100,6 +100,30 @@ ot_live_002_02_GHL_config_completion_terminal_reconciliation:
   next_source_claim_id: 1aa15481-0c38-4445-aaac-12931bd958a7
   next_source_scope: inert_two_file_decision_store_proposal_and_sanitized_evidence_only
   migration_database_and_send_authority: none
+ot_live_002_02_decision_store_source_terminal:
+  recorded_at: '2026-08-04T09:44:18Z'
+  state_based_on_control_head_sha: 339ad9c2a8d48fe76eec08bf6859525ced21c6b5
+  claim_id: 1aa15481-0c38-4445-aaac-12931bd958a7
+  source_head_sha: 0cf2224f984c023162bf2286028df8e3d2723adf
+  source_tree_sha: 3aad6be5e00d10e647daac7c5b034d6ccd6ae704
+  source_terminal_path: ops/v2.1-execution/control/OT-LIVE-002.02-DECISION-STORE-SOURCE-TERMINAL.yaml
+  source_terminal_digest: f3e18860c9a86a56168993eb7b0ec2ec18fafb7c5e9767770f078461cea0e24c
+  verdict: accepted_inert_source_proposal_only
+  focused_contract_assertions: 18_passed_0_failed
+  migration_registration_database_provider_contact_tag_send_schedule_publish_activate_deploy_effects: 0
+  successor_boundary: separate_migration_review_allocation_repository_implementation_and_exact_row_bound_census_authority
+ot_live_001_03_pre_effect_readback_and_fixture_design_dispatch:
+  recorded_at: '2026-08-04T09:44:18Z'
+  state_based_on_control_head_sha: 339ad9c2a8d48fe76eec08bf6859525ced21c6b5
+  readback_path: ops/v2.1-execution/control/OT-LIVE-001.03-PRE-EFFECT-READBACK.yaml
+  readback_digest: 45f99010b4a5b8fa7e4c2172d8d06c736a83ef91964f46d8bce84fd9c45a79b4
+  v21_identity_account_credential_Admin_Parent_household_session_counts: 0_0_0_0_0_0_0
+  legacy_active_Admin_account_session_counts: 1_1
+  one_row_parent_membership_repair_possible: false
+  new_source_claim_path: ops/v2.1-execution/control/OT-LIVE-001.03-FIXTURE-RECONCILIATION-SOURCE-CLAIM.yaml
+  new_source_claim_digest: 43807997d3c6b2b8835005babcd2cac455ba3bff40da8d73324484725b7194fb
+  new_source_claim_id: ce5be839-5ba3-4751-9f7b-b460b3bec752
+  data_deployment_session_browser_provider_or_DNS_effects: 0
 ot_live_004_01_source_dispatch:
   recorded_at: '2026-08-04T09:14:28Z'
   owner_thread_id: 019fcc0b-177e-7361-8823-9059dd8a8eb0

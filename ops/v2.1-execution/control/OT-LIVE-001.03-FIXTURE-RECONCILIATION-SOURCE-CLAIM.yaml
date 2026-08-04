@@ -1,0 +1,35 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-001.03
+owner_thread_id: 019fc7e8-b506-7d30-a36a-4d7a9641f4fd
+claim_id: ce5be839-5ba3-4751-9f7b-b460b3bec752
+writer_id: codex-ot-live-001-03-fixture-design-ce5be839
+status: active
+branch: codex/ot-live-001-operator-fixture-design-20260804
+base_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
+candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
+control_parent_sha: 339ad9c2a8d48fe76eec08bf6859525ced21c6b5
+readback_path: ops/v2.1-execution/control/OT-LIVE-001.03-PRE-EFFECT-READBACK.yaml
+exact_paths:
+  - ops/release/ot-live-001/operator-fixture-reconciliation/**
+allowed_operation: design_and_test_an_inert_exact_legacy_to_v21_operator_fixture_reconciliation_transaction_only
+required_invariants:
+  - require_exactly_one_active_legacy_Admin_account_and_one_or_zero_active_legacy_sessions_for_the_sanitized_fixture
+  - require_zero_matching_v21_adult_identity_HumanAccount_credential_membership_household_and_session_rows_before_write
+  - preserve_legacy_account_password_hash_account_session_and_all_unrelated_rows
+  - derive_exact_v21_AdultIdentity_HumanAccount_Admin_and_Parent_memberships_family_household_and_credential_rows_under_one_transaction
+  - copy_the_existing_legacy_argon2id_password_hash_in_database_without_display_or_relocation_only_if_format_compatible
+  - bind_product_one_time_mishnayos_runtime_production_environment_production_operator_canary
+  - acquire_a_transaction_scoped_advisory_lock_and_fail_closed_on_every_cardinality_or_hash_mismatch
+  - specify_exact_row_ceiling_before_after_readback_and_full_exact_ID_rollback_for_only_transaction_created_rows
+  - include_an_idempotent_replay_proof_and_zero_session_provider_send_charge_Student_or_customer_effect_proof
+prohibitions:
+  - no_migration_or_shared_registry_barrel_application_runtime_or_candidate_product_edit
+  - no_production_database_provider_Railway_browser_session_deployment_DNS_or_send_effect
+  - no_raw_email_password_hash_session_token_cookie_or_personal_identifier_in_Git_or_control
+  - no_legacy_row_update_delete_or_session_refresh_revoke
+  - no_inference_that_the_design_is_effect_authority
+issued_at: '2026-08-04T09:44:18Z'
+expires_at: '2026-08-05T09:14:28Z'
+contains_secret: false
+immutable: true

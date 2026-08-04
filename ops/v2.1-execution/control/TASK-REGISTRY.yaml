@@ -2361,35 +2361,36 @@ tasks:
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/V43/status_proof
 - task_id: OT-LIVE-001.03
   status: in_progress
-  active_phase: accepted_candidate_frozen_waiting_separate_data_deployment_and_canary_authorities
+  active_phase: accepted_candidate_frozen_inert_legacy_to_v21_fixture_reconciliation_design_active
   owner_thread_id: 019fc7e8-b506-7d30-a36a-4d7a9641f4fd
   branch: codex/ot-live-001-product-repair-20260804
   phase_branches:
     product_repair: codex/ot-live-001-product-repair-20260804
+    fixture_reconciliation_design: codex/ot-live-001-operator-fixture-design-20260804
   phase_heads:
     base: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
   authorized_start_sha: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
   last_known_remote_head: 27576fa64f0b37095e61ccca932c2e77cbf38844
-  active_claim_id: b6b2a7f9-3635-4df4-b8f8-fbe4bd83b923
-  active_writer_id: codex-ot-live-001-03-product-repair-b6b2a7f9
-  lease_expires_at: '2026-08-05T07:13:45Z'
-  last_heartbeat_at: '2026-08-04T09:14:28Z'
-  controller_authorization_sha: 65d343162df0bb404ade1e4d1460f0ad808411ef
+  active_claim_id: ce5be839-5ba3-4751-9f7b-b460b3bec752
+  active_writer_id: codex-ot-live-001-03-fixture-design-ce5be839
+  lease_expires_at: '2026-08-05T09:14:28Z'
+  last_heartbeat_at: '2026-08-04T09:44:18Z'
+  controller_authorization_sha: 339ad9c2a8d48fe76eec08bf6859525ced21c6b5
   ready_entry_payload_digest: null
   interface_checkpoint_sha: null
   implementation_head_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
   status_proof:
-    state: bounded_correction_accepted_candidate_frozen_release_source_fast_forwarded_effect_authorities_not_yet_issued
+    state: candidate_frozen_read_only_pre_effect_found_zero_v21_fixture_rows_one_row_repair_rejected_inert_reconciliation_design_dispatched
     producer_task_id: OT-LIVE-001.03
     producer_head_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
     canonical_candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
-    integration_or_evidence_head_sha: null
+    integration_or_evidence_head_sha: 45f99010b4a5b8fa7e4c2172d8d06c736a83ef91964f46d8bce84fd9c45a79b4
     external_effects_reconciled: true
-    state_based_on_control_head_sha: 65d343162df0bb404ade1e4d1460f0ad808411ef
-    proof_record_location: ops/v2.1-execution/merge/candidates/9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c/CANDIDATE.yaml
+    state_based_on_control_head_sha: 339ad9c2a8d48fe76eec08bf6859525ced21c6b5
+    proof_record_location: ops/v2.1-execution/control/OT-LIVE-001.03-PRE-EFFECT-READBACK.yaml
 - task_id: OT-LIVE-002.02
   status: in_progress
-  active_phase: decision_store_inert_source_proposal_and_review
+  active_phase: decision_store_inert_source_proposal_terminal_waiting_separate_migration_and_data_successor
   owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
   branch: codex/ot-live-002-governed-campaign-20260804
   phase_branches:
@@ -2397,25 +2398,26 @@ tasks:
     database_proposal: codex/ot-live-002-governed-campaign-20260804
   phase_heads:
     base: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+    database_proposal: 0cf2224f984c023162bf2286028df8e3d2723adf
   authorized_start_sha: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
-  last_known_remote_head: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
-  active_claim_id: 1aa15481-0c38-4445-aaac-12931bd958a7
-  active_writer_id: codex-ot-live-002-02-decision-store-source-1aa15481
-  lease_expires_at: '2026-08-05T09:14:28Z'
-  last_heartbeat_at: '2026-08-04T09:14:28Z'
-  controller_authorization_sha: 65d343162df0bb404ade1e4d1460f0ad808411ef
+  last_known_remote_head: 0cf2224f984c023162bf2286028df8e3d2723adf
+  active_claim_id: null
+  active_writer_id: null
+  lease_expires_at: null
+  last_heartbeat_at: '2026-08-04T09:44:18Z'
+  controller_authorization_sha: 339ad9c2a8d48fe76eec08bf6859525ced21c6b5
   ready_entry_payload_digest: null
   interface_checkpoint_sha: null
-  implementation_head_sha: null
+  implementation_head_sha: 0cf2224f984c023162bf2286028df8e3d2723adf
   status_proof:
-    state: GHL_configuration_success_terminal_lock_released_inert_decision_store_source_stage_active
+    state: GHL_configuration_success_terminal_lock_released_inert_decision_store_source_proposal_accepted_terminal
     producer_task_id: OT-LIVE-002.02
-    producer_head_sha: null
+    producer_head_sha: 0cf2224f984c023162bf2286028df8e3d2723adf
     canonical_candidate_digest: 99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098
-    integration_or_evidence_head_sha: null
+    integration_or_evidence_head_sha: f3e18860c9a86a56168993eb7b0ec2ec18fafb7c5e9767770f078461cea0e24c
     external_effects_reconciled: true
-    state_based_on_control_head_sha: 65d343162df0bb404ade1e4d1460f0ad808411ef
-    proof_record_location: ops/v2.1-execution/effects/99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098/OT-LIVE-002.02/ot-live-002-02-ghl-config-completion-20260804081547/CURRENT.yaml
+    state_based_on_control_head_sha: 339ad9c2a8d48fe76eec08bf6859525ced21c6b5
+    proof_record_location: ops/v2.1-execution/control/OT-LIVE-002.02-DECISION-STORE-SOURCE-TERMINAL.yaml
 - task_id: OT-LIVE-004.01
   status: in_progress
   active_phase: isolated_media_pipeline_source_work_active_shared_composition_held
