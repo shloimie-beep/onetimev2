@@ -193,17 +193,17 @@ tasks:
     migration_2254_2256_P22_P12_P09_implementation_complete: 3ee2f651528f5170dd714b921500235d4e015c5b
   authorized_start_sha: 05f8dfc247f87318884db6cf57a42bc75b5c8719
   last_known_remote_head: 05f8dfc247f87318884db6cf57a42bc75b5c8719
-  active_claim_id: 3eeb7ef4-6abd-4e42-809c-04a6d6945196
-  active_writer_id: codex-f02-ot-live-002-migration-2260-3eeb7ef4
-  lease_expires_at: '2026-08-05T09:21:16Z'
+  active_claim_id: e4a1f7b4-1015-43e5-9096-069ac267ce89
+  active_writer_id: codex-f02-ot-live-002-migration-2260-e4a1f7b4
+  lease_expires_at: '2026-08-05T09:28:11Z'
   active_writer_leases: []
-  last_heartbeat_at: '2026-08-04T13:21:16Z'
-  controller_authorization_sha: fb70bd65344513161c240e3ed6dfa30e0ad7fb54
+  last_heartbeat_at: '2026-08-04T13:28:11Z'
+  controller_authorization_sha: e47796344fa99f86806674da55ea1b07fd7de247
   ready_entry_payload_digest: null
   interface_checkpoint_sha: e4673ff1c2e621e26ac93034be245b280c4da4fa
   implementation_head_sha: 3ee2f651528f5170dd714b921500235d4e015c5b
   status_proof:
-    state: 2257_2259_ledger_regularized_terminal_2260_exact_OT_LIVE_002_request_allocated_for_source_implementation_only
+    state: 2257_2259_ledger_regularized_2260_source_claim_narrowly_superseded_pre_effect_to_include_candidate_builder_count_source
     producer_task_id: F02
     producer_head_sha: 05f8dfc247f87318884db6cf57a42bc75b5c8719
     canonical_candidate_digest: null
@@ -219,8 +219,8 @@ tasks:
       stale: 0
       waived: 0
     external_effects_reconciled: true
-    state_based_on_control_head_sha: fb70bd65344513161c240e3ed6dfa30e0ad7fb54
-    transitioned_at: '2026-08-04T13:21:16Z'
+    state_based_on_control_head_sha: e47796344fa99f86806674da55ea1b07fd7de247
+    transitioned_at: '2026-08-04T13:28:11Z'
     proof_record_location: 'ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/F02/status_proof'
 - task_id: F03
   status: ready_for_review

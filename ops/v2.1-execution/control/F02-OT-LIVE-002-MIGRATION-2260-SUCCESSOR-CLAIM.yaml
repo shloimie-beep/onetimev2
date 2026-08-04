@@ -1,0 +1,62 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: F02
+consumer_task_id: OT-LIVE-002.02
+claim_id: e4a1f7b4-1015-43e5-9096-069ac267ce89
+writer_id: codex-f02-ot-live-002-migration-2260-e4a1f7b4
+status: active
+branch: codex/v21-f02-ot-live-ledger-regularization-20260804
+base_sha: 05f8dfc247f87318884db6cf57a42bc75b5c8719
+base_tree_sha: 3acfd7c9fe96cf7aebc4ac066e03701bd82f2d09
+candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
+control_parent_sha: e47796344fa99f86806674da55ea1b07fd7de247
+supersedes_claim_id: 3eeb7ef4-6abd-4e42-809c-04a6d6945196
+supersession_reason: candidate_builder_source_hard_rejects_migration_count_other_than_90_and_must_truthfully_advance_with_2260
+predecessor_source_effects: 0
+accepted_request:
+  request_id: OT-LIVE-002-MIGRATION-001
+  request_source_head: e41cea45a4e3fc99c4cf968872992f2992090d18
+  request_source_tree: ae8ecaff8b22daf877e1e7649ce12524fc5b1785
+  request_path: ops/codex-runs/OT-LIVE-002/MIGRATION-REQUEST.yaml
+  request_raw_sha256: 058b22cd1607bef98010083b5e98634bfcc07016928c7ff5ccdb6575ab601846
+  independent_acceptance: passed_28_contract_assertions_strict_typescript_eslint_yaml_scope_and_zero_effect_readback
+allocation:
+  ordinal: 2260
+  filename: packages/db/migrations/2260_v21_governed_campaign_audience_decisions.sql
+  semantic_owner: F02
+  consumer_task: OT-LIVE-002.02
+  state: allocated_for_source_implementation_only
+exact_paths:
+  - packages/db/migrations/2260_v21_governed_campaign_audience_decisions.sql
+  - tests/unit/db/governed-campaign-audience-decision-migration.test.ts
+  - scripts/postgres-assurance/governed-campaign-audience-decision-pg18-proof.ts
+  - scripts/postgres-assurance/candidate-pg18-proof.ts
+  - scripts/operations/v21/candidate/build-candidate.ts
+  - scripts/operations/v21/candidate/build-candidate.test.ts
+  - ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
+  - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/F02/HANDOFF.md
+  - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
+  - ops/codex-runs/OT-LIVE-002/MIGRATION-2260-EVIDENCE.md
+allowed_operation: allocate_2260_to_the_exact_accepted_request_author_the_forward_only_empty_schema_migration_truthfully_advance_the_candidate_builder_test_on_pgmem_and_disposable_PostgreSQL_18_commit_and_normally_push_source_only
+required_semantics:
+  - exact_runtime_tier_verification_environment_account_product_campaign_and_HighLevel_asset_binding
+  - protected_lowercase_SHA256_provider_contact_reference_only_with_no_raw_provider_contact_identifier
+  - append_only_versioned_decisions_and_current_projection_with_only_null_to_timestamp_supersession
+  - exact_typed_sanitized_source_fact_boundary_rejecting_PII_free_form_and_private_fields
+  - zero_schema_time_backfill_zero_existing_table_alteration_and_zero_destructive_operation
+  - PostgreSQL_18_and_pgmem_fresh_apply_replay_append_only_environment_isolation_readback_ceiling_and_rollback_proof
+  - update_candidate_migration_count_from_90_to_91_and_last_ordinal_from_2259_to_2260_only_where_exactly_required
+  - preserve_every_non_migration_candidate_derivation_and_content_boundary
+publish_authority:
+  one_normal_fast_forward_push_to_exact_branch: true
+  force_push_amend_rebase_merge: false
+prohibitions:
+  - no_application_repository_runtime_registration_or_provider_adapter_implementation
+  - no_live_or_production_database_connection_migration_application_or_row_write
+  - no_GHL_contact_tag_seed_pilot_broad_send_provider_deploy_DNS_billing_customer_or_Student_effect
+  - no_edit_rename_renumber_or_reapply_of_migrations_2257_2258_or_2259
+issued_at: '2026-08-04T13:28:11Z'
+expires_at: '2026-08-05T09:28:11Z'
+contains_secret: false
+immutable: true

@@ -1,0 +1,14 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: F02
+predecessor_claim_id: 3eeb7ef4-6abd-4e42-809c-04a6d6945196
+predecessor_claim_digest: 2139e3d98528183f5c5924a7bf0730caf5e9458baabc519ad82aa8c62a5a1469
+predecessor_disposition: superseded_pre_effect_zero_source_changes
+gap: scripts_operations_v21_candidate_build_candidate_ts_hard_rejects_count_other_than_90_but_2260_requires_truthful_91
+predecessor_source_database_provider_and_other_effects: 0_0_0
+successor_claim_id: e4a1f7b4-1015-43e5-9096-069ac267ce89
+successor_added_exact_path: scripts/operations/v21/candidate/build-candidate.ts
+all_other_scope_and_prohibitions_unchanged: true
+recorded_at: '2026-08-04T13:28:11Z'
+contains_secret: false
+immutable: true
