@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: operational
-active_phase: candidate_8834c2fd_deployed_exact_two_page_GHL_cursor_diagnostic_assigned
+active_phase: candidate_8834c2fd_deployed_GHL_cursor_progression_source_correction_assigned
 bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
@@ -3024,6 +3024,18 @@ ot_live_002_02_census_successor_terminal_and_two_page_cursor_diagnostic_dispatch
   diagnostic_scope: exactly_two_GETs_page1_no_cursor_page2_reconstructed_dual_cursor_no_retry_no_third_page
   allowed_output: pagination_meta_safe_scalars_types_keys_hashes_and_equality_booleans_only
   database_and_all_provider_Railway_send_DNS_and_other_mutation_effects_max: 0
+ot_live_002_02_two_page_cursor_terminal_and_source_correction_dispatch_20260804_194248:
+  recorded_at: '2026-08-04T19:42:48Z'
+  state_based_on_control_head_sha: 4750f3f3a2de1c2dd835cad340627f86fd3fc3c5
+  diagnostic_claim_id: 3434ec0e-76d2-4aa4-9003-0183ad5fde7b
+  diagnostic_terminal_digest: a626929b7e651246b3fb18a768426201099b3e1c939df143b1e0befa9bd21671
+  diagnostic_result: GETs_2_HTTP_200_200_distinct_100_row_pages_dual_cursor_advanced_total_1499_counters_static_1_2_null
+  exact_failure: b204_provider_currentPage_did_not_match_requested_page
+  source_claim_id: fd080c16-4db6-45e3-864a-212103a5212e
+  source_claim_digest: 0e6f542a529a14a0d6492e499e74d7f2971202012b7f4039825c871b2014912d
+  branch_and_base: codex/ot-live-002-ghl-pagination-contract-correction-20260804_b204b026d7733c29c514d3c5febbea948c5e67e7
+  correction: dual_cursor_progression_stable_total_unique_rows_exact_accumulated_total_termination
+  provider_database_deployment_send_DNS_and_all_external_effects_max: 0
 authority_note: >-
   Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through
   release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an

@@ -1,0 +1,40 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-002.02
+owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+claim_id: 3434ec0e-76d2-4aa4-9003-0183ad5fde7b
+claim_digest: 8f4fc36a9edef97a0a80135bb0b0fbe5f4b4788b77d9fbc679cebda749c99cf7
+disposition: SUCCESS_EXACT_TWO_PAGE_READ_ONLY_CURSOR_DIAGNOSTIC
+control_head_readback: 4750f3f3a2de1c2dd835cad340627f86fd3fc3c5
+requests:
+  exact_GET_count: 2
+  retries_and_third_page: 0_0
+  HTTP_statuses: 200_200
+page_1:
+  body_bytes_SHA256: 85834_aa86cca6560070a7187ae805d80bd101d7e18d692bafd9125307236296f78918
+  contacts: 100
+  current_next_previous_total: 1_2_null_1499
+  dual_cursor_and_next_URL_contract: exact
+  contact_ID_presence_and_location: true_exact
+  b204_parser_disposition: observed_meta_nonterminal_accept
+page_2:
+  body_bytes_SHA256: 92600_6922849567595c0960ce6332b979f31907b7dd51d851a2317953c654515af893
+  contacts: 100
+  body_changed_from_page_1: true
+  request_cursor_pair_exactly_page_1_meta_pair: true
+  current_next_previous_total: 1_2_null_1499
+  dual_cursor_and_next_URL_contract: exact
+  contact_ID_presence_and_location: true_exact
+  b204_parser_disposition: AMBIGUOUS_PROVIDER_CURSOR
+  exact_reject_invariant: provider_currentPage_did_not_match_requested_page
+finding: provider_page_counters_are_static_but_validated_dual_cursor_pair_advances_and_returns_distinct_rows
+required_correction: validate_counter_types_but_fence_progression_on_nonrepeating_dual_cursor_stable_total_unique_rows_and_exact_accumulated_total_termination
+effects:
+  provider_GET_reads: 2
+  database_connections_and_mutations: 0
+  source_edits: 0
+  provider_Railway_send_DNS_and_all_mutation_effects: 0
+unresolved_effects: 0
+completed_at: '2026-08-04T19:42:48Z'
+contains_secret: false
+immutable: true
