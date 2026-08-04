@@ -1,0 +1,46 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-001.03
+authority_id: c00-prod-operator-fixture-data-successor-2-20260804114208
+candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
+repository_source_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
+fixture_design_source_sha: 72f9caceb53353f968b2e17bf584c4d340e41bb8
+lease_id: a50af598-b03c-4885-ba6d-ff86974b6e0d
+fencing_token: fence-23ac700e-b593-43e1-9607-abd3704065de
+disposition: FAILED_ROLLED_BACK_ZERO_COMMITTED_EFFECTS
+connection_succeeded: true
+begin_serializable_succeeded: true
+transaction_scoped_advisory_lock_succeeded: true
+preflight_row_returned: true
+preflight_classifier: exact_create
+legacy_immutable_fingerprint_before_matched: true
+first_failing_statement: APPLY_INSERT_SQL_0_CREATE_INSERT_1
+postgresql_error_code: 42P18
+sanitized_root_cause: first_insert_used_sparse_global_placeholders_1_5_12_leaving_parameter_2_unreferenced_and_untyped
+mutation_statements_attempted: 1
+explicit_rows_acknowledged: 0
+trigger_derived_effects: 0
+total_row_effects: 0
+commit_attempted: 0
+rollback_attempted: 1
+rollback_acknowledged: true
+live_preflight_truth:
+  legacy_Admin_and_active_session_cardinality: 1_1
+  protected_account_user_session_hashes: true_true_true
+  password_compatibility: true
+  matching_v21_identity_account_credential_Admin_Parent_household_session_transition_aggregate_counts: all_zero
+post_rollback_readback:
+  asserted: false
+  reason: first_insert_failed_before_row_acknowledgment_no_later_mutation_or_commit_and_open_transaction_rollback_acknowledged
+effects:
+  transient_advisory_locks_acquired_and_released: 1
+  committed_database_rows: 0
+  migrations: 0
+  legacy_or_session_rows: 0
+  browser_Student_customer_provider_deployment_DNS_send_or_charge: 0
+  post_commit_compensation: 0
+unresolved_effects: 0
+source_patch_or_data_retry_attempted: false
+recorded_at: '2026-08-04T11:54:11Z'
+contains_secret: false
+immutable: true

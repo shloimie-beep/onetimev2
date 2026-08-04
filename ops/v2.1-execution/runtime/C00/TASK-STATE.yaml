@@ -14,7 +14,7 @@ claim_time: '2026-08-04T09:12:43Z'
 claim_id: f514d50f-081c-48e0-8906-1c6e872519b0
 lease_expires_at: '2026-08-04T12:51:01Z'
 lease_released_at: null
-last_heartbeat_at: '2026-08-04T11:42:08Z'
+last_heartbeat_at: '2026-08-04T11:54:11Z'
 controller_authorization_sha: 65d343162df0bb404ade1e4d1460f0ad808411ef
 ready_entry_payload_digest: null
 state_based_on_head_sha: 65d343162df0bb404ade1e4d1460f0ad808411ef
@@ -79,7 +79,15 @@ ot_live_terminal_convergence_resume_20260804:
     data_successor_2_grant_digest: 07c57c9d6ec1ea17006e40cbf4f085bf57a97d9a7d030ed6e9f1d281641928e5
     data_successor_2_status_entry_digest: 5cd215b6f01e752f9fc251cc877736493bc9c9986c01ea34a7e25105a869ae45
     data_successor_2_authority_status_index_digest: 187faf1fec0e4875a4b801580ac420601bc2c31075773254c7a6fbb73bb73aaa
-    next_boundary: execute_fresh_live_preflight_exact_ten_effect_parameter_cast_successor_then_reconcile_then_separate_signed_in_Admin_Parent_Admin_canary_authority
+    data_successor_2_terminal_status_entry_digest: 41837e3117391c2101f448ad88a9dc7086f1986b97f8432254a9a390ea65b5a9
+    data_successor_2_terminal_authority_status_index_digest: 40cd1c2f268f553394ceda8304a2b8b82d499725b927baea65df0a29a76a7fbb
+    data_successor_2_terminal_event_digest: acd55e27cec0db4c3fc60fd7e6f0a3658af668fcb70542f52af295ee1b23accf
+    data_successor_2_terminal_disposition: FAILED_ROLLED_BACK_ZERO_COMMITTED_EFFECTS
+    data_successor_2_postgresql_error_code: 42P18
+    data_successor_2_lock_released_at: '2026-08-04T11:54:11Z'
+    fixture_compact_apply_bindings_claim_id: 46b1d4af-3704-4830-953c-bf1e918c1de9
+    fixture_compact_apply_bindings_claim_digest: 968a23dca540b9611999bc793852ca401286326b648f6febe22251a701f29fe8
+    next_boundary: correct_and_verify_all_eight_apply_statement_compact_binding_contracts_then_issue_fresh_production_data_authority_then_reconcile_then_separate_signed_in_Admin_Parent_Admin_canary_authority
     provider_database_deploy_effects: 0_0_0
   OT_LIVE_002_02:
     owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a

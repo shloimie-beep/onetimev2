@@ -1,0 +1,36 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-001.03
+owner_thread_id: 019fc7e8-b506-7d30-a36a-4d7a9641f4fd
+claim_id: 46b1d4af-3704-4830-953c-bf1e918c1de9
+writer_id: codex-ot-live-001-03-fixture-compact-apply-bindings-46b1d4af
+status: active
+branch: codex/ot-live-001-operator-fixture-design-20260804
+base_sha: 72f9caceb53353f968b2e17bf584c4d340e41bb8
+candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
+control_parent_sha: 460ba81507dfddad7cb42e4f61f73c74d3f5fb39
+predecessor_authority_id: c00-prod-operator-fixture-data-successor-2-20260804114208
+predecessor_terminal_event_path: ops/v2.1-execution/effects/9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c/OT-LIVE-001.03/c00-prod-operator-fixture-data-successor-2-20260804114208/events/001-RECONCILED.yaml
+predecessor_terminal_event_digest: acd55e27cec0db4c3fc60fd7e6f0a3658af668fcb70542f52af295ee1b23accf
+exact_paths:
+  - ops/release/ot-live-001/operator-fixture-reconciliation/fixture-reconciliation.test.ts
+  - ops/release/ot-live-001/operator-fixture-reconciliation/transaction-proposal.ts
+allowed_operation: correct_test_commit_and_normally_push_only_the_inert_apply_statement_parameter_binding_contract
+required_corrections:
+  - replace_sparse_global_apply_statement_placeholders_with_compact_contiguous_local_placeholders_and_explicit_canonical_binding_position_metadata_for_each_of_all_eight_create_insert_statements
+  - require_each_apply_statement_placeholder_set_to_equal_exact_contiguous_range_one_through_its_binding_metadata_length_with_no_missing_unused_or_out_of_range_position
+  - require_each_binding_metadata_entry_to_reference_only_the_intended_one_through_twenty_three_protected_canonical_binding_positions_and_preserve_exact_insert_semantics
+  - add_regressions_covering_every_apply_statement_and_the_first_insert_1_5_12_to_local_1_2_3_mapping
+  - preserve_preflight_immutable_readback_after_readback_compensation_and_all_canonical_state_parent_context_effect_budget_and_replay_semantics
+publish_authority:
+  normal_push_to_exact_branch: true
+  force_push_amend_rebase_merge: false
+prohibitions:
+  - no_database_connection_SQL_execution_retry_migration_shared_runtime_candidate_or_application_edit
+  - no_raw_email_identifier_password_hash_session_cookie_token_or_secret_disclosure
+  - no_browser_session_provider_deployment_DNS_send_charge_customer_or_Student_effect
+  - no_inference_that_corrected_source_is_data_effect_or_compensation_authority
+issued_at: '2026-08-04T11:54:11Z'
+expires_at: '2026-08-04T12:39:11Z'
+contains_secret: false
+immutable: true
