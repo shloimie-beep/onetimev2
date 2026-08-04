@@ -1,0 +1,49 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: F02
+claim_id: c172ba4d-1098-4d72-910f-5048a678e4f9
+writer_id: codex-f02-ledger-regularization-c172ba4d
+status: active
+branch: codex/v21-f02-ot-live-ledger-regularization-20260804
+base_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
+candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
+control_parent_sha: caa85bde4d1bcba6e9eb95d1916a49182507f3fd
+exact_paths:
+  - ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
+  - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/F02/HANDOFF.md
+  - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
+  - ops/codex-runs/OT-LIVE-F02/MIGRATION-2257-2259-REGULARIZATION.md
+  - ops/codex-runs/VIMEO-MISHNAYOS-CATALOG-ADOPTION/MIGRATION-REQUEST.yaml
+allowed_operation: regularize_the_F02_semantic_ledger_for_exact_immutable_existing_migrations_2257_through_2259_and_publish_a_source_only_proposal
+immutable_existing_migrations:
+  - ordinal: 2257
+    file: packages/db/migrations/2257_v21_provider_registry_bindings.sql
+    checksum_sha256: 04e348e04c4c794147a678d03167df51cd21872d350c73c83b2181b68bc0619e
+    pg_mem_checksum_sha256: 3961d3d0b946ac3e4ae318fa0bd3f275aff6d423cd4d80a1bdd9ea933842b1ef
+  - ordinal: 2258
+    file: packages/db/migrations/2258_v21_configurable_launch_timing.sql
+    checksum_sha256: 8a0bf65c9ac8f383a6a0167706e360157664fa5327e7e6855641b326e724e5c7
+    pg_mem_checksum_sha256: ec63a25f07819b66dba2f70f1609283318a0295c46316861fd67cfacf9de352e
+  - ordinal: 2259
+    file: packages/db/migrations/2259_vimeo_mishnayos_catalog_adoption.sql
+    checksum_sha256: fae76e3a62930a099bbbe679e9d0ba6bb977587b5eacfeca50984f26fc851b2b
+    pg_mem_checksum_sha256: d53756277fac7c7033bc9449cdf58a83dc48d9527834d90d6eff3540bec6a3a9
+required_result:
+  - preserve_exact_migration_bytes_and_record_formal_owner_request_purpose_interface_digest_source_and_integration_evidence_for_2257_2258_and_2259
+  - regularize_2259_from_immutable_Vimeo_adoption_evidence_without_inventing_or_changing_database_semantics
+  - record_2260_as_next_numerically_available_only_after_all_three_records_are_complete
+  - keep_OT_LIVE_003_2260_proposal_rejected_unallocated_and_default_off
+  - do_not_allocate_2260_to_OT_LIVE_002_until_its_corrected_immutable_request_is_published_and_independently_accepted
+publish_authority:
+  one_normal_fast_forward_push_to_exact_branch: true
+  force_push_amend_rebase_merge: false
+prohibitions:
+  - no_migration_SQL_edit_rename_renumber_creation_application_or_database_connection
+  - no_control_branch_or_control_mirror_edit_by_F02
+  - no_provider_contact_send_deploy_DNS_billing_customer_or_Student_effect
+  - no_guessing_missing_semantic_identity_when_immutable_source_evidence_is_insufficient_stop_with_an_exact_gap_instead
+issued_at: '2026-08-04T12:59:57Z'
+expires_at: '2026-08-05T08:59:57Z'
+contains_secret: false
+immutable: true

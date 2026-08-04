@@ -1,0 +1,44 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-002.02
+owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+claim_id: 38937cb0-37e4-4fbf-8bbb-e7c07d75aeda
+writer_id: codex-ot-live-002-02-migration-request-38937cb0
+status: active
+branch: codex/ot-live-002-governed-campaign-20260804
+base_sha: 0cf2224f984c023162bf2286028df8e3d2723adf
+base_tree_sha: 3aad6be5e00d10e647daac7c5b034d6ccd6ae704
+candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
+control_parent_sha: caa85bde4d1bcba6e9eb95d1916a49182507f3fd
+predecessor_source_terminal_digest: f3e18860c9a86a56168993eb7b0ec2ec18fafb7c5e9767770f078461cea0e24c
+requested_migration_id: OT-LIVE-002-MIGRATION-001
+requested_ordinal: 2260
+allocation_status: requested_not_allocated
+exact_paths:
+  - packages/db/src/audience-reconciliation/governed-campaign-decision-store.proposal.sql
+  - packages/db/src/audience-reconciliation/governed-campaign-decision-store.proposal.ts
+  - ops/codex-runs/OT-LIVE-002/decision-store-contract-check.mjs
+  - ops/codex-runs/OT-LIVE-002/DECISION-STORE-SOURCE-EVIDENCE.md
+  - ops/codex-runs/OT-LIVE-002/MIGRATION-REQUEST.yaml
+allowed_operation: correct_the_inert_decision_store_contract_and_publish_one_immutable_semantic_migration_request_without_creating_or_editing_a_migration
+required_corrections:
+  - bind_runtime_tier_and_verification_environment_id_in_keys_constraints_indexes_advisory_lock_request_hash_and_current_projection
+  - replace_raw_provider_contact_identity_with_a_protected_provider_contact_hash_and_bind_exact_GHL_location_workflow_campaign_and_tag_identifiers
+  - preserve_append_only_versioned_decisions_with_a_current_projection_and_allow_only_null_to_timestamp_supersession
+  - reject_PII_free_form_notes_messages_transcripts_students_credentials_cookies_and_private_fields_at_the_contract_boundary
+  - require_zero_schema_time_backfill_and_zero_contact_provider_send_or_database_effects
+  - specify_PostgreSQL_18_pgmem_fresh_replay_append_only_isolation_readback_and_rollback_proofs
+  - bind_requirements_OTV2_GHL_135_OTV2_GHL_137_OTV2_GHL_138_OTV2_EMAIL_145_and_OTV2_PROVIDER_231
+  - state_that_F02_is_the_only_allocator_and_that_2260_remains_unusable_until_F02_accepts_the_exact_request
+publish_authority:
+  one_normal_fast_forward_push_to_exact_branch: true
+  force_push_amend_rebase_merge: false
+prohibitions:
+  - no_migration_file_creation_edit_registration_or_ordinal_inference
+  - no_shared_barrel_registry_manifest_application_or_runtime_registration_edit
+  - no_database_connection_SQL_execution_census_contact_tag_provider_seed_pilot_broad_send_or_deploy_effect
+  - no_raw_PII_secret_credential_cookie_token_or_provider_contact_identifier_in_source_or_evidence
+issued_at: '2026-08-04T12:59:57Z'
+expires_at: '2026-08-05T08:59:57Z'
+contains_secret: false
+immutable: true

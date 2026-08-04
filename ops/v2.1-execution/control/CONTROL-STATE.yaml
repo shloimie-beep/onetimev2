@@ -18,16 +18,55 @@ candidate: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
 active_writer_limit: 4
 controller_authorization_sha: 76692fbb6e65cdeb68e32862dd0c03490b5e5750
 next_action: >-
-  Preserve deployed candidate 9d6be957 at source 27576fa6. The inert exact legacy-to-v2.1 fixture design is source-terminal
-  at 4f9276ad. Its first exact data attempt failed in preflight with 42P01 and rolled back with zero committed rows;
-  production:data is released and a three-path inert design correction is active. The superseded one-row Parent-membership
-  effect remains forbidden. OT-LIVE-002.02 GHL Draft configuration and its inert
-  decision-store proposal are terminally reconciled; require
-  separate migration allocation and exact maximumAffectedRows production-data authority before any audience census
-  write. Seed/reply, pilot, and remaining-audience sends remain separate later grants. OT-LIVE-004.01 isolated source is
-  terminally accepted at 795adc71; shared composition, migrations, provider adapters, uploads, and its one-recording
-  canary remain separately held. Keep OT-LIVE-003.02 parked/default-off and
-  WhatsApp/WAPI fully deferred at zero effects.
+  Preserve deployed candidate 9d6be957 at source 27576fa6 and its successful exact ten-effect operator fixture.
+  The existing-Chrome Admin to Parent to Admin canary stopped credential-unavailable before every POST with zero
+  database mutations or unresolved effects; defer the single operator sign-in request until independent work completes.
+  OT-LIVE-002.02 is source-only correcting its immutable decision-store migration request; ordinal 2260 is requested but
+  not allocated, and no migration, database census, contact, seed, pilot, or broad-send effect is authorized. F02 is
+  source-only regularizing the exact immutable 2257 through 2259 ledger and may identify 2260 as next available only
+  after semantic completeness. OT-LIVE-004.01 is source-only composing accepted media code onto exact deployed source
+  with every media flag default-off and zero provider, database, upload, or deployment effects. Keep OT-LIVE-003.02
+  parked/unmerged/default-off, reject its 2260 proposal, and keep WhatsApp/WAPI fully deferred at zero effects.
+ot_live_source_successor_dispatch_20260804_125957:
+  recorded_at: '2026-08-04T12:59:57Z'
+  state_based_on_control_head_sha: caa85bde4d1bcba6e9eb95d1916a49182507f3fd
+  deployed_candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
+  deployed_source_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
+  OT_LIVE_001_03:
+    state: product_deployed_fixture_committed_canary_credential_unavailable_zero_POSTs
+    fixture_source_sha: b0cfe4926d88dbebed470e075d62b462d42bf770
+    fixture_terminal_digest: bf8fd0d0f1061dc92018c0476dd6594aa9cabff7f1583496038a8a4afa3c58a6
+    canary_terminal_digest: cba5f03bf0f2075b529ee6a132ccd5f356a98eca00c097374eb9a2032e5fd7e9
+    active_claim_or_effect_lease: none
+    next_boundary: one_operator_sign_in_then_fresh_exact_canary_authority_after_independent_source_lanes
+  OT_LIVE_002_02:
+    claim_id: 38937cb0-37e4-4fbf-8bbb-e7c07d75aeda
+    claim_path: ops/v2.1-execution/control/OT-LIVE-002.02-DECISION-STORE-MIGRATION-REQUEST-CORRECTION-CLAIM.yaml
+    claim_digest: 36f5f0729d08c319dcc00689fd9d058728cc74b3968148161757ddaac50465ff
+    branch: codex/ot-live-002-governed-campaign-20260804
+    base_sha: 0cf2224f984c023162bf2286028df8e3d2723adf
+    requested_migration_id: OT-LIVE-002-MIGRATION-001
+    requested_ordinal: 2260
+    allocation_status: requested_not_allocated
+    migration_database_contact_provider_seed_pilot_broad_send_effects: 0_0_0_0_0_0_0
+  F02:
+    claim_id: c172ba4d-1098-4d72-910f-5048a678e4f9
+    claim_path: ops/v2.1-execution/control/F02-MIGRATION-2257-2259-LEDGER-REGULARIZATION-CLAIM.yaml
+    claim_digest: e4c86171314af866512c001628d7aaaad8b072de23d078ed07c4b7d699e8e005
+    branch: codex/v21-f02-ot-live-ledger-regularization-20260804
+    base_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
+    exact_existing_ordinals: 2257_2258_2259
+    existing_migration_bytes_mutations_and_database_effects: 0_0
+    OT_LIVE_003_2260_proposal: rejected_unallocated_parked_default_off
+  OT_LIVE_004_01:
+    claim_id: 4391fc4d-f645-4505-ad84-9a6950fa3cdf
+    claim_path: ops/v2.1-execution/control/OT-LIVE-004.01-MEDIA-SHARED-COMPOSITION-CLAIM.yaml
+    claim_digest: 25bde7d8027f33dd4f3cb4848b35ec7d7d0213bceae4cdc57f7032f309f23035
+    branch: codex/ot-live-004-media-shared-composition-20260804
+    base_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
+    accepted_media_source_sha: 795adc712e5ce16f2df6bf2d6a8372b41bf9de70
+    mode: shared_composition_source_only_default_off
+    migration_database_provider_upload_deploy_DNS_effects: 0_0_0_0_0_0
 ot_live_001_03_product_candidate_freeze:
   recorded_at: '2026-08-04T09:27:00Z'
   control_parent_sha: 65d343162df0bb404ade1e4d1460f0ad808411ef

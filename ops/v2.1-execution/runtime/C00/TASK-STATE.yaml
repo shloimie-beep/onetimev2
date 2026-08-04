@@ -8,13 +8,13 @@ branch: codex/v21-control
 start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
-phase: ot_live_terminal_convergence_product_review_email_source_and_media_source
+phase: ot_live_terminal_convergence_migration_regularization_email_request_and_media_composition
 claimed_by: codex-c00-terminal-convergence-f514d50f
 claim_time: '2026-08-04T09:12:43Z'
 claim_id: f514d50f-081c-48e0-8906-1c6e872519b0
-lease_expires_at: '2026-08-04T14:38:27Z'
+lease_expires_at: '2026-08-04T14:59:57Z'
 lease_released_at: null
-last_heartbeat_at: '2026-08-04T12:38:27Z'
+last_heartbeat_at: '2026-08-04T12:59:57Z'
 controller_authorization_sha: 65d343162df0bb404ade1e4d1460f0ad808411ef
 ready_entry_payload_digest: null
 state_based_on_head_sha: 65d343162df0bb404ade1e4d1460f0ad808411ef
@@ -140,6 +140,29 @@ ot_live_terminal_convergence_resume_20260804:
     provider_upload_deploy_shared_migration_effects: 0_0_0_0
   OT_LIVE_003_02: parked_unmerged_default_off
   WAPI: deferred_zero_effect
+source_successor_dispatch_20260804_125957:
+  control_parent_sha: caa85bde4d1bcba6e9eb95d1916a49182507f3fd
+  OT_LIVE_002_02:
+    claim_id: 38937cb0-37e4-4fbf-8bbb-e7c07d75aeda
+    claim_digest: 36f5f0729d08c319dcc00689fd9d058728cc74b3968148161757ddaac50465ff
+    branch: codex/ot-live-002-governed-campaign-20260804
+    base: 0cf2224f984c023162bf2286028df8e3d2723adf
+    scope: corrected_immutable_migration_request_and_inert_contract_only
+    requested_ordinal: 2260_not_allocated
+  F02:
+    claim_id: c172ba4d-1098-4d72-910f-5048a678e4f9
+    claim_digest: e4c86171314af866512c001628d7aaaad8b072de23d078ed07c4b7d699e8e005
+    branch: codex/v21-f02-ot-live-ledger-regularization-20260804
+    base: 27576fa64f0b37095e61ccca932c2e77cbf38844
+    scope: exact_immutable_2257_2259_semantic_ledger_regularization_only
+  OT_LIVE_004_01:
+    claim_id: 4391fc4d-f645-4505-ad84-9a6950fa3cdf
+    claim_digest: 25bde7d8027f33dd4f3cb4848b35ec7d7d0213bceae4cdc57f7032f309f23035
+    branch: codex/ot-live-004-media-shared-composition-20260804
+    base: 27576fa64f0b37095e61ccca932c2e77cbf38844
+    accepted_source: 795adc712e5ce16f2df6bf2d6a8372b41bf9de70
+    scope: default_off_shared_composition_source_only
+  external_provider_database_send_upload_deploy_DNS_effects: 0_0_0_0_0_0
 production_deployment_authority_terminal:
   authority_id: c00-prod-product-deploy-20260804095030
   candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c

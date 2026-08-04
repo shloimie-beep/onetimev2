@@ -1,0 +1,69 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-004.01
+owner_thread_id: 019fcc0b-177e-7361-8823-9059dd8a8eb0
+claim_id: 4391fc4d-f645-4505-ad84-9a6950fa3cdf
+writer_id: codex-ot-live-004-01-media-composition-4391fc4d
+status: active
+branch: codex/ot-live-004-media-shared-composition-20260804
+base_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
+accepted_media_source_sha: 795adc712e5ce16f2df6bf2d6a8372b41bf9de70
+accepted_media_source_terminal_digest: 84e1b958e4ecba674afdbd063a7b8dcc68abdaca63782d18a6c7a234c1532b3a
+candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
+control_parent_sha: caa85bde4d1bcba6e9eb95d1916a49182507f3fd
+composition_strategy: create_exact_branch_at_deployed_source_then_cherry_pick_exact_accepted_media_commit_and_implement_shared_composition_without_rebasing_the_deployed_source
+exact_paths:
+  - packages/config/src/index.ts
+  - tests/unit/config/content-media-config.test.ts
+  - package.json
+  - package-lock.json
+  - apps/web/src/server/app.ts
+  - apps/web/src/server/features/content/ingest/index.ts
+  - apps/web/src/server/features/content/ingest/router.ts
+  - apps/web/src/server/features/content/ingest/router.test.ts
+  - apps/web/src/server/features/content/ingest/composition.ts
+  - apps/web/src/server/features/content/ingest/composition.test.ts
+  - apps/web/src/server/features/content/publication/composition.ts
+  - apps/web/src/server/features/content/publication/composition.test.ts
+  - apps/web/src/server/features/content/publication/vimeo-readback-adapter.ts
+  - apps/web/src/client/app/admin/content/ingest/ContentIngestWorkspace.tsx
+  - apps/web/src/client/app/admin/content/ingest/ContentIngestWorkspace.test.tsx
+  - apps/web/src/client/app/admin/content/ingest/api.ts
+  - apps/web/src/client/app/content-workspace/ContentWorkspace.tsx
+  - apps/web/src/client/app/content-workspace/ContentWorkspace.test.tsx
+  - apps/web/src/client/app/admin-ia.ts
+  - apps/web/src/client/app/router/registry.ts
+  - apps/web/src/client/app/router/canonical-route-views.test.ts
+  - packages/db/src/content/ingest/s3-managed-original-adapter.ts
+  - packages/db/src/content/ingest/index.ts
+  - apps/worker/src/runners/content-ingest/composition.ts
+  - apps/worker/src/runners/content-ingest/google-drive-adapter.ts
+  - apps/worker/src/runners/content-processing/composition.ts
+  - apps/worker/src/runners/content-processing/ffmpeg-openai-adapter.ts
+  - apps/worker/src/runners/content-publication/composition.ts
+  - apps/worker/src/runners/content-publication/vimeo-private-adapter.ts
+  - apps/worker/src/runners/registry/index.ts
+  - apps/worker/src/runners/registry/index.test.ts
+  - apps/worker/src/main/index.ts
+  - tests/integration/content/content-media-composition.test.ts
+  - ops/codex-runs/OT-LIVE-004/**
+allowed_operation: compose_the_accepted_media_source_into_the_exact_deployed_product_base_add_default_off_runtime_config_and_adapters_test_commit_and_normally_push_source_only
+required_invariants:
+  - preserve_every_deployed_landing_auth_Admin_Parent_role_switch_and_domain_route_behavior
+  - use_direct_subpath_imports_without_root_shared_barrel_edits
+  - keep_ONE_TIME_CONTENT_MEDIA_MODE_authorization_id_and_canary_id_default_off_and_fail_closed
+  - bind_only_canonical_provider_registry_keys_and_read_back_identity_or_fingerprint_never_secret_values
+  - use_existing_2245_2246_2252_2253_schema_contracts_without_migration_edits
+  - prove_config_adapter_worker_web_route_entitlement_replay_and_zero_effect_synthetic_canary behavior
+publish_authority:
+  one_normal_fast_forward_push_to_exact_branch: true
+  force_push_amend_rebase_merge: false
+prohibitions:
+  - no_migration_creation_edit_or_application
+  - no_database_provider_S3_Drive_OpenAI_Vimeo_upload_transcode_transcription_publication_playback_deploy_or_DNS_effect
+  - no_bulk_or_33GB_media_operation_and_no_feature_flag_enablement
+  - no_secret_credential_token_cookie_private_media_or_customer_Student_data_disclosure
+issued_at: '2026-08-04T12:59:57Z'
+expires_at: '2026-08-05T08:59:57Z'
+contains_secret: false
+immutable: true
