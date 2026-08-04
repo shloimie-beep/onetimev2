@@ -57,7 +57,9 @@ ot_live_terminal_convergence_resume_20260804:
     writer_id: codex-ot-live-004-01-media-source-2fd3bc9c
     branch: codex/ot-live-004-media-pipeline-20260804
     base: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
-    mode: independent_worktree_isolated_source_only
+    source_head_sha: 795adc712e5ce16f2df6bf2d6a8372b41bf9de70
+    source_terminal_digest: 84e1b958e4ecba674afdbd063a7b8dcc68abdaca63782d18a6c7a234c1532b3a
+    mode: source_terminal_accepted_shared_integration_and_provider_canary_held
     provider_upload_deploy_shared_migration_effects: 0_0_0_0
   OT_LIVE_003_02: parked_unmerged_default_off
   WAPI: deferred_zero_effect
@@ -1354,11 +1356,11 @@ remaining_steps:
 - Complete the inert exact legacy-to-v2.1 operator-fixture reconciliation design after read-only proof found zero matching v2.1 rows; only then reserve separate exact row-bound data, deployment, and signed-in Admin-Parent-Admin canary effects.
 - Treat OT-LIVE-002.02's accepted inert decision-store proposal as source-terminal; allocate any migration only through F02 and derive a separate exact maximumAffectedRows data-census authority.
 - After exact audience, auth, landing, legal, suppression, seed, reply, and registration-exit gates, issue separate one-seed, pilot-at-most-25, and remaining-audience grants.
-- Advance OT-LIVE-004.01 source-only work; keep provider/upload/deploy/shared composition held until accepted source integration and exact canary authority.
+- Review OT-LIVE-004.01 shared registrations separately; keep provider/upload/deploy effects held until accepted source integration and exact one-recording canary authority.
 - Keep OT-LIVE-003.02 parked/default-off and WhatsApp/WAPI at zero effects; close broad production only after the legal gate.
 next_action: >-
   Push the OT-LIVE-002 source-terminal, sanitized product pre-effect readback, and inert fixture-design dispatch. Continue
-  OT-LIVE-004 source-only work, then review the exact fixture design before issuing separate candidate-bound
+  the accepted OT-LIVE-004 source for later shared integration, then review the exact fixture design before issuing separate candidate-bound
   production-data, deployment, and signed-in Admin-Parent-Admin canary authorities. Do not write production data,
   deploy, upload media, seed, pilot, or broad-send until each exact successor gate and lock/fence is recorded.
 orchestration:

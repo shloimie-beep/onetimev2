@@ -23,9 +23,9 @@ next_action: >-
   account/session and zero matching v2.1 identity rows; the superseded one-row Parent-membership effect must not be
   issued. OT-LIVE-002.02 GHL Draft configuration and its inert decision-store proposal are terminally reconciled; require
   separate migration allocation and exact maximumAffectedRows production-data authority before any audience census
-  write. Seed/reply, pilot, and remaining-audience sends remain separate later grants. OT-LIVE-004.01 is bound to task
-  019fcc0b-177e-7361-8823-9059dd8a8eb0 for an independent worktree and isolated source-only implementation; shared
-  composition, migrations, providers, uploads, and deployment remain held. Keep OT-LIVE-003.02 parked/default-off and
+  write. Seed/reply, pilot, and remaining-audience sends remain separate later grants. OT-LIVE-004.01 isolated source is
+  terminally accepted at 795adc71; shared composition, migrations, provider adapters, uploads, and its one-recording
+  canary remain separately held. Keep OT-LIVE-003.02 parked/default-off and
   WhatsApp/WAPI fully deferred at zero effects.
 ot_live_001_03_product_candidate_freeze:
   recorded_at: '2026-08-04T09:27:00Z'
@@ -164,6 +164,18 @@ ot_live_004_01_source_dispatch:
   base: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
   mode: independent_worktree_isolated_source_only
   provider_upload_deployment_shared_composition_and_migration_effects: 0
+ot_live_004_01_source_terminal:
+  recorded_at: '2026-08-04T10:09:09Z'
+  state_based_on_control_head_sha: d0b8bba131b7be35b8994adae144bb0022acb012
+  claim_id: 2fd3bc9c-9cfb-48da-85f1-5b62aab07322
+  source_head_sha: 795adc712e5ce16f2df6bf2d6a8372b41bf9de70
+  source_tree_sha: 5dddb3e4c6c4ef076cbc56fbd724fb83f029e1c8
+  source_terminal_path: ops/v2.1-execution/control/OT-LIVE-004.01-MEDIA-SOURCE-TERMINAL.yaml
+  source_terminal_digest: 84e1b958e4ecba674afdbd063a7b8dcc68abdaca63782d18a6c7a234c1532b3a
+  verdict: accepted_isolated_source_checkpoint_only
+  independent_focused_tests: 95_passed_0_failed_13_files
+  shared_registration_migration_provider_upload_deploy_database_and_bulk_media_effects: 0
+  successor_boundary: separate_shared_integration_and_exact_candidate_bound_one_recording_provider_canary_authority
 ot_live_001_02_public_support_repair_candidate_freeze:
   recorded_at: '2026-08-03T20:06:36Z'
   control_parent_sha: 729fd49b803f98ad0de17042a0a0ac62a4b7e3aa
