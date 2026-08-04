@@ -1,0 +1,87 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+authority_id: c00-prod-candidate-8834-migration-2260-direct-node-successor-20260804175412
+authority_kind: derived_candidate_bound_exact_single_production_migration_direct_node_successor
+task_id: OT-LIVE-001.03
+owner_thread_id: 019fc7e8-b506-7d30-a36a-4d7a9641f4fd
+candidate_digest: 8834c2fdc42bbb7e3641a5ce45695b2f5a56717d37e7e14fed783b0c7875fa34
+candidate_binding_status: exact_frozen_candidate_pre_deployment_migration
+candidate_manifest_commit_sha: 03e7e74156685554c8efb8b9ce20645f68899d05
+repository_source_sha: a157c388d8dc292699f7cd1a1ef178918ee30885
+repository_tree_sha: bd2f1295043af74cfa0bad5f5b3993e3a534137e
+source_branch: codex/ot-live-002-census-identity-contract-correction-20260804
+canonical_path: ops/v2.1-execution/authority/8834c2fdc42bbb7e3641a5ce45695b2f5a56717d37e7e14fed783b0c7875fa34/OT-LIVE-001.03/c00-prod-candidate-8834-migration-2260-direct-node-successor-20260804175412/GRANT.yaml
+predecessor_authority_id: c00-prod-candidate-8834-migration-2260-public-successor-20260804173940
+predecessor_terminal_event_digest: 6921b23e64da1cced2103b2139d628234e7f72b763231073a801faecd6a6ed8a
+predecessor_child_launches_runner_executions_migrations_committed_unresolved: 0_0_0_0_0
+source_grant_id: ot-v21-production-source-grant-20260729
+source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+source_approval_evidence_path: ops/v2.1-execution/authority/none/C00/ot-v21-production-source-grant-20260729/APPROVAL.md
+source_approval_evidence_digest: 8c95a959f79aba0ac34fa0fcb6cb463cceac9aeb2bb52da1603d39db3e2c33c2
+grant_status_at_issue: active
+approved_by: Shloimie Dratler
+approved_at: '2026-08-04T17:54:12Z'
+recorded_at: '2026-08-04T17:54:12Z'
+expires_at: '2026-08-04T18:54:12Z'
+scope:
+  project_id: ce55ef20-1418-4ad3-aafa-f877fb992dc8
+  environment_id: f911acfc-e206-44df-a569-9d69d709b94b
+  database_service_id: db590e4a-7dc5-40cb-a243-5206ce21b746
+  database_deployment_id: 62583cef-572b-40ae-b1d3-0194a2ccbf27
+  connection_binding: process_local_DATABASE_URL_from_existing_DATABASE_PUBLIC_URL_only
+  process_launcher: direct_current_process_execPath_Node_with_repository_resolved_tsx_cli
+  verified_launcher_versions: tsx_4_23_1_Node_24_13_0
+  migration_entrypoint: scripts/migrate.ts
+  migration_id: 2260_v21_governed_campaign_audience_decisions
+  migration_sha256: 93e7879ce7861cd37733335ca64e49310af1025fc099e6bce4abadb8f25c3740
+  migration_inventory_count_digest: 91_0561f0b2ba9f7fed82ee8fe193caf73e2f526ca15875b8ac685f1d59aea0a190
+  fresh_pre_effect_ledger_count_digest_pending: 90_dbddc86e08ff25378d687febcfb36c41dbe7132f017fafe7a7e11b72a424fdc3_2260
+fencing_token: fence-03e2557a-b461-4cce-bde5-22ce34f39227
+lock: production:data
+holder_claim_id: 32e5caab-8067-4bf2-af2a-566b2399974f
+provider_lock_lease_id: 17cf556c-435c-4d44-9208-020bf2cf0c3e
+allowed_operation: >-
+  Create one nonpersisted child environment whose DATABASE_URL is assigned directly from existing DATABASE_PUBLIC_URL,
+  resolve the repository's tsx CLI without displaying its connection values, and invoke exactly one child using the
+  current process execPath with arguments [resolved tsx CLI, scripts/migrate.ts] from the exact clean candidate root.
+  This is the repository db:migrate entrypoint without npm.cmd. Require the exact preflight, one transactional 2260
+  apply, acknowledged COMMIT and exact postflight. No shell command processor, npm launcher, Railway stored-variable
+  mutation, secret output or retry after unknown result is permitted.
+maximum_effect_count: 1
+maximum_effect_value: exactly_one_transactional_application_of_migration_2260_and_one_schema_migrations_ledger_row
+approved_fixture_ids: []
+effect_budget:
+  direct_Node_child_launches_max: 1
+  process_local_environment_bindings_max: 1
+  database_migrations_applied_exact: 1
+  schema_migration_ledger_rows_inserted_exact: 1
+  application_business_rows_mutated_max: 0
+  Railway_stored_variable_mutations_max: 0
+  migration_retries_after_unknown_result_max: 0
+  all_provider_deployment_browser_session_contact_tag_send_charge_customer_Student_DNS_effects_max: 0
+prerequisite_review:
+  control_parent_sha: ab50322d62cb0b69f644f25e9c087d0ac888f3fe
+  predecessor_terminal_event_digest: 6921b23e64da1cced2103b2139d628234e7f72b763231073a801faecd6a6ed8a
+  predecessor_zero_effect_reconciliation: fresh_READ_ONLY_90_rows_2260_and_objects_absent_zero_XID_zero_mutations
+  direct_launcher_nonconnecting_proof: current_process_execPath_resolved_tsx_cli_version_success_exit_0
+  candidate_source_tree_worktree_remote_and_database_deployment: exact
+  public_database_route: exact_committed_READ_ONLY_preflight_and_reconciliation_passed
+  deployment_lock: unclaimed
+rollback_and_reconciliation:
+  - require exact remote successor authority digests claim lease fence source tree worktree database and predecessor event before connection
+  - require fresh READ ONLY 90-row ledger only 2260 pending and every 2260 object absent
+  - bind the public connection only in the one child environment without output or persistence
+  - launch only process.execPath with repository-resolved tsx CLI and scripts/migrate.ts arguments with shell disabled
+  - require 90 already_applied one applied 2260 exact checksum advisory lock transaction and acknowledged COMMIT
+  - fresh READ ONLY postflight must prove 91 recognized rows last 2260 pending zero expected schema objects zero decision rows and zero other business mutations
+  - on pre-commit failure require ROLLBACK when a transaction exists; on unknown result read back and never retry
+  - do not destructively reverse an acknowledged commit under this authority
+stop_conditions:
+  - any control_digest_lock_fence_source_tree_database_predecessor_or_preflight_binding_differs
+  - resolved_tsx_CLI_or_Node_version_differs_from_the_verified_nonconnecting_launch_proof
+  - the child would use npm_cmd_a_shell_command_processor_the_internal_database_hostname_or_more_than_one_launch
+  - any connection_value_would_be_printed_serialized_persisted_committed_or_written_to_Railway
+  - runner_would_apply_any_migration_other_than_2260_or_run_outside_one_transaction
+  - any business_provider_deployment_browser_session_contact_tag_send_charge_customer_Student_or_DNS_effect_would_occur
+contains_secret: false
+immutable: true

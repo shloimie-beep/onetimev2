@@ -2364,7 +2364,7 @@ tasks:
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/V43/status_proof
 - task_id: OT-LIVE-001.03
   status: in_progress
-  active_phase: candidate_8834_migration_2260_public_connection_successor_authorized_active
+  active_phase: candidate_8834_migration_2260_direct_Node_successor_authorized_active
   owner_thread_id: 019fc7e8-b506-7d30-a36a-4d7a9641f4fd
   branch: codex/ot-live-001-candidate-baseline-correction-20260804
   phase_branches:
@@ -2379,11 +2379,11 @@ tasks:
     candidate_baseline_correction: 032637395a9ab791b85c13fa6f1cffccfaa9e753
   authorized_start_sha: 5110bee2b06145d6cd6ad596dd4f42e748bda75e
   last_known_remote_head: 032637395a9ab791b85c13fa6f1cffccfaa9e753
-  active_claim_id: f0e9f51c-8f07-489c-8e28-e995f8035270
-  active_writer_id: codex-ot-live-001-03-candidate-8834-migration-public-f0e9f51c
-  lease_expires_at: '2026-08-04T18:39:40Z'
-  last_heartbeat_at: '2026-08-04T17:39:40Z'
-  controller_authorization_sha: ba53fbf3340b48117c2cde6d6133dffb5215442b
+  active_claim_id: 32e5caab-8067-4bf2-af2a-566b2399974f
+  active_writer_id: codex-ot-live-001-03-candidate-8834-migration-direct-node-32e5caab
+  lease_expires_at: '2026-08-04T18:54:12Z'
+  last_heartbeat_at: '2026-08-04T17:54:12Z'
+  controller_authorization_sha: ab50322d62cb0b69f644f25e9c087d0ac888f3fe
   ready_entry_payload_digest: null
   interface_checkpoint_sha: null
   implementation_head_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844

@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: operational
-active_phase: candidate_8834c2fd_migration_2260_public_connection_successor_authorized_active
+active_phase: candidate_8834c2fd_migration_2260_direct_Node_successor_authorized_active
 bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
@@ -18,7 +18,7 @@ candidate: 8834c2fdc42bbb7e3641a5ce45695b2f5a56717d37e7e14fed783b0c7875fa34
 active_writer_limit: 4
 controller_authorization_sha: 76692fbb6e65cdeb68e32862dd0c03490b5e5750
 next_action: >-
-  Apply and terminally reconcile exact migration 2260 under the fresh public-connection candidate-bound production:data successor, then
+  Apply and terminally reconcile exact migration 2260 under the fresh direct-Node public-connection candidate-bound production:data successor, then
   release that lock before separately authorizing the exact web and worker deployment of candidate 8834c2fd. Preserve
   deployed candidate 9d6be957 at source 27576fa6 and its successful exact ten-effect operator fixture.
   The existing-Chrome Admin to Parent to Admin canary stopped credential-unavailable before every POST with zero
@@ -78,6 +78,19 @@ ot_live_001_03_candidate_8834_migration_2260_public_successor_20260804_173940:
   successor_lease_id: 40e82097-c8d6-48de-992b-97ff76971908
   successor_fencing_token: fence-d535994a-830c-4dca-b3f0-226fbe4f5fb4
   connection_binding: process_local_DATABASE_URL_from_existing_DATABASE_PUBLIC_URL_only_no_secret_display_or_persistence
+  authorized_effect: exact_one_transactional_application_of_only_migration_2260
+  Railway_stored_variable_application_business_row_and_all_other_effects_max: 0
+  deployment_lock: unclaimed_until_migration_terminal_reconciliation
+ot_live_001_03_candidate_8834_migration_2260_direct_Node_successor_20260804_175412:
+  recorded_at: '2026-08-04T17:54:12Z'
+  state_based_on_control_head_sha: ab50322d62cb0b69f644f25e9c087d0ac888f3fe
+  predecessor_authority_id: c00-prod-candidate-8834-migration-2260-public-successor-20260804173940
+  predecessor_terminal_event_digest: 6921b23e64da1cced2103b2139d628234e7f72b763231073a801faecd6a6ed8a
+  predecessor_disposition: FAILED_BEFORE_MIGRATION_RUNNER_CHILD_LAUNCH_ZERO_COMMITTED_EFFECTS
+  successor_authority_id: c00-prod-candidate-8834-migration-2260-direct-node-successor-20260804175412
+  successor_claim_lease_fence: 32e5caab-8067-4bf2-af2a-566b2399974f_17cf556c-435c-4d44-9208-020bf2cf0c3e_fence-03e2557a-b461-4cce-bde5-22ce34f39227
+  process_launcher: direct_Node_execPath_repository_resolved_tsx_cli_shell_false
+  nonconnecting_launcher_proof: tsx_4_23_1_Node_24_13_0_exit_0
   authorized_effect: exact_one_transactional_application_of_only_migration_2260
   Railway_stored_variable_application_business_row_and_all_other_effects_max: 0
   deployment_lock: unclaimed_until_migration_terminal_reconciliation
