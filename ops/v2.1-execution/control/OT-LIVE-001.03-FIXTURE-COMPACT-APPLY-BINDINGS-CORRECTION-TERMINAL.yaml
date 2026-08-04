@@ -1,0 +1,50 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: OT-LIVE-001.03
+owner_thread_id: 019fc7e8-b506-7d30-a36a-4d7a9641f4fd
+source_claim_id: 46b1d4af-3704-4830-953c-bf1e918c1de9
+source_claim_digest: 968a23dca540b9611999bc793852ca401286326b648f6febe22251a701f29fe8
+claim_disposition: consumed_source_success
+branch: codex/ot-live-001-operator-fixture-design-20260804
+base_sha: 72f9caceb53353f968b2e17bf584c4d340e41bb8
+source_head_sha: b0cfe4926d88dbebed470e075d62b462d42bf770
+source_tree_sha: d8dc486679ddbaa2b5f5d6badb766630110e180f
+candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
+source_files:
+  - path: ops/release/ot-live-001/operator-fixture-reconciliation/fixture-reconciliation.test.ts
+    sha256: 63269b823e9484bf88a2d85f00accdebf7957163f6fecfd0c440cf2cd9869e33
+  - path: ops/release/ot-live-001/operator-fixture-reconciliation/transaction-proposal.ts
+    sha256: 6b999777e42eb31fcdcf03802798d72963ea27149eed438ccef051fd0b23d1c9
+independent_controller_readback:
+  local_tracking_remote_equality: passed
+  exact_parent: 72f9caceb53353f968b2e17bf584c4d340e41bb8
+  exact_two_path_scope: passed
+  clean_worktree: passed
+  focused_vitest: 31_passed_0_failed
+  repository_typecheck: passed
+  scoped_eslint: passed
+  scoped_prettier: passed
+  diff_check: passed
+  repository_secret_scan: passed_3225_text_files
+accepted_apply_binding_contract:
+  statement_count: 8
+  local_placeholder_rule: exact_contiguous_one_through_mapping_length
+  canonical_binding_position_range: one_through_twenty_three
+  every_local_position_used: true
+  immutable_nested_mappings: true
+  mappings:
+    - [5, 1, 12]
+    - [6, 5, 12]
+    - [7, 6, 12]
+    - [8, 6, 12]
+    - [9, 5, 6, 11, 10, 12]
+    - [6, 5, 12, 1]
+    - [13, 6, 14, 17, 12]
+    - [15, 9, 16, 17, 12]
+  preflight_immutable_after_readback_compensation_parent_context_effect_and_replay_semantics: preserved
+source_verdict: accepted_inert_compact_apply_binding_contract
+source_effects: one_normal_fast_forward_push
+database_session_provider_deployment_DNS_send_charge_customer_Student_effects: 0
+recorded_at: '2026-08-04T12:05:49Z'
+contains_secret: false
+immutable: true

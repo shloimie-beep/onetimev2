@@ -12,9 +12,9 @@ phase: ot_live_terminal_convergence_product_review_email_source_and_media_source
 claimed_by: codex-c00-terminal-convergence-f514d50f
 claim_time: '2026-08-04T09:12:43Z'
 claim_id: f514d50f-081c-48e0-8906-1c6e872519b0
-lease_expires_at: '2026-08-04T12:51:01Z'
+lease_expires_at: '2026-08-04T14:05:49Z'
 lease_released_at: null
-last_heartbeat_at: '2026-08-04T11:54:11Z'
+last_heartbeat_at: '2026-08-04T12:05:49Z'
 controller_authorization_sha: 65d343162df0bb404ade1e4d1460f0ad808411ef
 ready_entry_payload_digest: null
 state_based_on_head_sha: 65d343162df0bb404ade1e4d1460f0ad808411ef
@@ -87,7 +87,16 @@ ot_live_terminal_convergence_resume_20260804:
     data_successor_2_lock_released_at: '2026-08-04T11:54:11Z'
     fixture_compact_apply_bindings_claim_id: 46b1d4af-3704-4830-953c-bf1e918c1de9
     fixture_compact_apply_bindings_claim_digest: 968a23dca540b9611999bc793852ca401286326b648f6febe22251a701f29fe8
-    next_boundary: correct_and_verify_all_eight_apply_statement_compact_binding_contracts_then_issue_fresh_production_data_authority_then_reconcile_then_separate_signed_in_Admin_Parent_Admin_canary_authority
+    fixture_compact_apply_bindings_source_sha: b0cfe4926d88dbebed470e075d62b462d42bf770
+    fixture_compact_apply_bindings_source_tree: d8dc486679ddbaa2b5f5d6badb766630110e180f
+    fixture_compact_apply_bindings_terminal_digest: dbde1453a808d9622f59ec564b76e8bad7a83405bda1ac734ee6dad4c0a03d79
+    fixture_compact_apply_bindings_verification: 31_tests_typecheck_lint_prettier_diff_secret_passed
+    data_successor_3_authority_id: c00-prod-operator-fixture-data-successor-3-20260804120549
+    data_successor_3_claim_lease_fence: 6571b219-ca42-442a-81bb-20f6c6fcbda5_95d6cef9-267a-42f5-8920-8ed11794afb4_fence-38426c2c-c5e4-4969-92dd-e84488fe12f8
+    data_successor_3_grant_digest: b4ee39312846662a78e512f6e3c1c9254cbe45e0ecbd10b9695baa97ef680188
+    data_successor_3_status_entry_digest: fd46f8671df1416b8daf934fbbc7e0e5fd9e96adffaf55573d280bc7134d7722
+    data_successor_3_authority_status_index_digest: 1bf96fcc6c31d94b304fc7db2f4bce42377a073e505b38025ce79e91c75e83ab
+    next_boundary: execute_exact_compact_mapped_ten_effect_data_successor_then_reconcile_then_separate_signed_in_Admin_Parent_Admin_canary_authority
     provider_database_deploy_effects: 0_0_0
   OT_LIVE_002_02:
     owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
