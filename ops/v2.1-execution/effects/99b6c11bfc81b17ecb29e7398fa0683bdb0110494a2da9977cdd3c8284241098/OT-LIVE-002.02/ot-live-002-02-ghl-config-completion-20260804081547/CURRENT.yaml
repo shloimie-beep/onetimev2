@@ -1,0 +1,14 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: ot-live-002-02-ghl-config-completion-20260804081547
+current_event_sequence: 1
+current_event_state: RECONCILED
+current_event_path: ops/v2.1-execution/effects/99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098/OT-LIVE-002.02/ot-live-002-02-ghl-config-completion-20260804081547/events/001-RECONCILED.yaml
+current_event_digest: 4345c0cd8fbe1965f228859fd20e8165671d77b3bb05d53f876cc643fdcb6043
+candidate_digest: 99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098
+repository_source_sha: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+authority_id: ot-live-002-02-ghl-config-completion-20260804081547
+GHL_lock_lease_id: 2a36b0a1-e259-414a-882b-bf849a500e27
+GHL_fencing_token: fence-f0bacc9a-e5f2-4c41-9582-d4dd7d2ea3bd
+updated_at: '2026-08-04T09:14:28Z'
+immutable_event_chain: true

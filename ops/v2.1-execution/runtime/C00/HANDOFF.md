@@ -1,4 +1,37 @@
-# Immutable candidate frozen — current handoff
+# OT-LIVE terminal convergence — current handoff
+
+C00 resumed from exact remote control `65d343162df0bb404ade1e4d1460f0ad808411ef`. OT-LIVE-001.03's corrected source
+`27576fa64f0b37095e61ccca932c2e77cbf38844` passed independent review and is frozen as candidate
+`9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c`. The release source branch fast-forwarded from
+`ffd1c55a` to `27576fa6`; no deployment or provider effect occurred.
+
+OT-LIVE-002.02 completed and read back the exact Draft-only GHL configuration: workflow
+`09051378-5917-4172-afda-f425619dd23d` has Day 0 → Wait 4 → Day 4 → Wait 5 → Day 9; campaign
+`6a71a64c28f7a5dbb3aec1be` is Draft with zero contacts; reply scaffold
+`15748c03-8ded-4ec3-b263-ffcc19c67982` is Draft with zero actions, enrollments, and logs. Terminal event
+`4345c0cd8fbe1965f228859fd20e8165671d77b3bb05d53f876cc643fdcb6043` records zero contact, tag,
+database, seed, pilot, broad-send, Resend, DNS, Forward Email, WhatsApp, billing, deployment, publish, schedule, or
+activation effects. GHL lease `2a36b0a1-e259-414a-882b-bf849a500e27` is released. Only the inert exact two-file
+decision-store proposal plus sanitized evidence may advance now; migration, application-database writes, and sends remain
+unauthorized.
+
+OT-LIVE-001.03 removed the held operator-specific migration and its test in exact corrected head `27576fa6`, removed the
+personal fixture identifier from the candidate delta, and preserved every accepted landing and Admin/Parent application
+byte. Independent C00 verification reproduced the three-path correction, zero migration delta, clean diff, and focused
+55-pass/4-skip auth/portal/repository matrix. Candidate derivation SHA-256 is `184afe9c...`; manifest SHA-256 is
+`4e8c040f...`; migration inventory remains exact `abdbfd58...` with 90 migrations. The one operator membership repair is
+now correctly held for a separate exact row-bound production-data transaction. Deployment and signed-in canary are also
+separate authorities and have not occurred.
+
+OT-LIVE-004.01 is now bound to task `019fcc0b-177e-7361-8823-9059dd8a8eb0`, claim
+`2fd3bc9c-9cfb-48da-85f1-5b62aab07322`, and branch `codex/ot-live-004-media-pipeline-20260804`. It must create an
+independent worktree and change only its isolated content ingest/processing/publication paths. Shared composition,
+migrations, providers, uploads, and deployments remain held. OT-LIVE-003.02 stays parked/default-off; WhatsApp/WAPI stays
+at zero effects.
+
+## Superseded handoffs follow
+
+# Immutable candidate frozen — prior handoff
 
 Candidate `ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d`
 is frozen and independently accepted at integration head

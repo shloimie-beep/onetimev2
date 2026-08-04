@@ -1,0 +1,73 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: ot-live-002-02-ghl-config-completion-20260804081547
+event_sequence: 1
+previous_event_digest: null
+state: RECONCILED
+task_id: OT-LIVE-002.02
+owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+canonical_event_path: ops/v2.1-execution/effects/99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098/OT-LIVE-002.02/ot-live-002-02-ghl-config-completion-20260804081547/events/001-RECONCILED.yaml
+current_pointer_path: ops/v2.1-execution/effects/99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098/OT-LIVE-002.02/ot-live-002-02-ghl-config-completion-20260804081547/CURRENT.yaml
+candidate_digest: 99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098
+repository_source_sha: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+authority_id: ot-live-002-02-ghl-config-completion-20260804081547
+authority_grant_digest: 61998e80351141e8156a49c62a49f4c9f1497866f4b4f0b80e09595551a0d584
+provider_locks:
+  provider:ghl-location:
+    lease_id: 2a36b0a1-e259-414a-882b-bf849a500e27
+    fencing_token: fence-f0bacc9a-e5f2-4c41-9582-d4dd7d2ea3bd
+operation: terminally_reconcile_successful_GHL_Draft_configuration_completion_and_release_lock
+terminal_readback:
+  workflow_name: OT-15 Former Member Reactivation
+  workflow_id: 09051378-5917-4172-afda-f425619dd23d
+  workflow_state: Draft_Saved
+  trigger: Tag_added_includes_exact_canonical_launch_tag
+  launch_tag_provider_id: IcOGsLgSIOYGFlHF4kQ0
+  launch_tag_provider_canonical_value: ot_|_audience_|_elul_2026_|_inactive_adult_launch
+  persisted_ordered_graph:
+    - d0c1f419-3cea-469e-81b1-fe6f76536c32_OT-15_Day_0_Invitation
+    - a01b63cb-d97a-41e7-bc2c-8cd70bb43514_OT-15_Wait_4_Days
+    - fd185bfc-5f80-40b2-b149-5c296f1ed0d8_OT-15_Day_4_Family_Portal
+    - d6897913-a612-4eb9-b0b5-9ef81fd339ca_OT-15_Wait_5_Days
+    - 774b7267-a45f-4e9f-870e-8c8ba0fb006f_OT-15_Day_9_Free_Access_Deadline
+  Day_9_subject: Come_back_free_until_September_11
+  launch_truth: Aug_16_2026_1900_and_Sep_11_2026_1800_Asia_Jerusalem
+  sender: Rabbi_Eli_Scheller_rabbielischeller_at_onetimeonetime.com
+  preregistration_fallback: https_join.onetimeonetime.com_signup
+  exact_ID_cleanup:
+    - fb542cf9-07b0-4c1d-927c-9e196d1bbdac
+    - 054d28bb-9571-403c-a4c5-2f6f4ae9a39b
+    - 6b12a8b3-e819-45d8-b9c1-db4dad22dfc2
+  exact_ID_cleanup_result: only_desired_current_wait_and_Day_9_pair_remains
+  campaign_name: OT-15 Former Member Reactivation
+  campaign_id: 6a71a64c28f7a5dbb3aec1be
+  campaign_state: Draft_zero_contacts_blank_execution_date
+  historical_campaign_id: 6a5f750b557817806a14b19e
+  historical_campaign_state: Draft_preserved_read_only
+  reply_workflow_name: OT-15 Customer Replied Webhook
+  reply_workflow_id: 15748c03-8ded-4ec3-b263-ffcc19c67982
+  reply_workflow_state: Draft_Saved_zero_actions_zero_enrollments_zero_logs
+  outbound_webhook_URLs_or_transmissions: 0
+audience_read_only_census:
+  GHL_total_contacts: 1498
+  exact_Tisha_BAv_2026_registered_tag_pool: 39
+  OT_02A_Replit_Active_Migration_Candidates_list: 30
+  Tisha_Eligible_Adult_Email_Opt_In_list: 0
+  exact_former_tag_pool: 0
+  exact_launch_tag_assignments: 0
+  rule: overlapping_provider_pools_not_summed_per_contact_decisions_require_separate_row_bound_authority
+zero_effect_readback:
+  contact_mutations_or_tag_assignments: 0
+  application_database_writes: 0
+  seed_pilot_or_broad_sends: 0
+  Resend_DNS_Forward_Email_or_WhatsApp_mutations: 0
+  billing_deployment_publish_schedule_or_activation: 0
+unexpected_effects: 0
+cleanup_state: exact_created_assets_preserved_Draft_zero_contacts_sends_or_unresolved_effects
+terminal_disposition: SUCCESS_GHL_DRAFT_CONFIGURATION_COMPLETE
+lock_release_state: GHL_lease_released_zero_unresolved_effect
+successor_stage_required: decision_store_source_review_then_row_bound_data_census_then_separate_seed_reply_pilot_and_remaining_send_gates
+event_at: '2026-08-04T09:14:28Z'
+state_based_on_head_sha: 65d343162df0bb404ade1e4d1460f0ad808411ef
+contains_secret: false
+immutable: true

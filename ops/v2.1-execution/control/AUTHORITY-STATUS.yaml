@@ -70,7 +70,7 @@ authorities:
     authority_kind: derived_candidate_preparation_effect
     grant_digest: 490faa5d1db30027b69df9dd11236728a0122ae30acee6fa6ca8ebec3004d614
     source_grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
-    status: active
+    status: consumed
     expires_at: '2026-08-02T13:32:09Z'
     latest_revocation_path: null
     latest_revocation_digest: null
@@ -1173,8 +1173,8 @@ authorities:
     provider_lock: provider:ghl-location
     provider_lock_lease_id: 2a36b0a1-e259-414a-882b-bf849a500e27
     fencing_token: fence-f0bacc9a-e5f2-4c41-9582-d4dd7d2ea3bd
-    effect_authority_usable: true
-    active_stage: exact_GHL_Draft_configuration_completion
+    effect_authority_usable: false
+    active_stage: terminal_GHL_Draft_configuration_complete
     candidate_binding_status: exact_current_live_candidate
     candidate_digest: 99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098
     candidate_manifest_commit_sha: ea64afeb98d02ea315382f8b899a9b61e44ee6ca
@@ -1183,9 +1183,9 @@ authorities:
     owner_task_id: OT-LIVE-002.02
     owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
     claim_path: ops/v2.1-execution/control/OT-LIVE-002.02-PROVIDER-CLAIM.yaml
-    claim_digest: a267de2090bb5ef4b186486cc3adcb37d7ec5e247b411b6dd74b6ae6bff16108
+    claim_digest: 0ac0268ae887eef8f60a29040eefec65c84de587d1578c42214cc53b49195a7c
     status_entry_path: ops/v2.1-execution/authority/99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098/OT-LIVE-002.02/ot-live-002-02-ghl-config-completion-20260804081547/STATUS-ENTRY.yaml
-    status_entry_digest: e8891779c841eada19b1861883aad5532e264b373a10b563f18864a61614adb4
+    status_entry_digest: 0f0d48376c214b04aa3a27c2eed6536c5d6322ee0c4c46ba9fcaddb2b9165729
     exact_target_workflow_id: 09051378-5917-4172-afda-f425619dd23d
     exact_trigger_tag_id: IcOGsLgSIOYGFlHF4kQ0
     GHL_configuration_mutations_max: 12
@@ -1193,8 +1193,16 @@ authorities:
     tag_contact_seed_pilot_or_broad_send_usable: false
     Resend_DNS_Forward_Email_WhatsApp_or_deployment_mutation_usable: false
     prerequisite_review: predecessor_partial_success_reconciled_exact_Draft_workflow_and_tag_bound_zero_contacts_sends_DB_Resend_DNS_effects
-    checked_at: '2026-08-04T08:15:47Z'
-    state_based_on_control_head_sha: 86106a67286ab0fbac781b879053d8be258c0d20
+    terminal_disposition: SUCCESS_GHL_DRAFT_CONFIGURATION_COMPLETE
+    terminal_event_path: ops/v2.1-execution/effects/99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098/OT-LIVE-002.02/ot-live-002-02-ghl-config-completion-20260804081547/events/001-RECONCILED.yaml
+    terminal_event_digest: 4345c0cd8fbe1965f228859fd20e8165671d77b3bb05d53f876cc643fdcb6043
+    exact_final_workflow_graph: Day_0_Wait_4_Day_4_Wait_5_Day_9
+    campaign_id: 6a71a64c28f7a5dbb3aec1be
+    inactive_reply_workflow_id: 15748c03-8ded-4ec3-b263-ffcc19c67982
+    contact_tag_database_seed_pilot_broad_send_effects: 0_0_0_0_0_0
+    GHL_lock_released_at: '2026-08-04T09:14:28Z'
+    checked_at: '2026-08-04T09:14:28Z'
+    state_based_on_control_head_sha: 65d343162df0bb404ade1e4d1460f0ad808411ef
 entry_schema: templates/AUTHORITY-STATUS-ENTRY.yaml
 revocation_schema: templates/AUTHORITY-REVOCATION-RECORD.yaml
 rule: C00 records externally granted/revoked/expired authority; it does not grant it. Every update binds the known

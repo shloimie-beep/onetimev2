@@ -1,0 +1,34 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+candidate_core:
+  repository_source_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
+  application_content_sha256: 3af50303846fbe9c512b2e911d883f98d1108b471a51923fa042e60c66725cee
+  product_tree_digest: d1fe28ca7c171436e7734e3c38e0e37f61cb8ed5f77a76c83bdf231a9b9c964b
+  web_artifact_digest: e17a18d9d8f753a169e6a4df6b9bc377570b21a02605664589f339df2d232f7a
+  worker_artifact_digest: 0a9843c9dfefd7982b963bed9bcd43a613f0652b4c375c3f4426f72ade052533
+  configuration_bundle_digest: 0e14031c4731050c2ced90ed85964b81d1bfdab4522ce2e0560f0d11dedc6524
+  migration_inventory_digest: abdbfd5837ed54751e55458a3a79886ca9799e3d738344b40d6f95aad621a5ea
+  frontend_asset_digest: 8144baf60934a50aceb8eb218b6932b0f8dc68740361ba9b4ecfc01db92e7609
+  route_action_inventory_digest: 0c58101b9321354a29405252f9b2fe6884701b08b3d48161cc57293fcced6d00
+  workflow_registry_digest: 08fa35058d351e79aa56a8bddcb6752ba2f356c4fde35c0a26b13338c1f53573
+  highlevel_registry_digest: d6c52146588a8699ae82a7b10158c48ab8683018a5e3cf336b9f43e222a759cf
+  provider_registry_digest: 80778ec9924ddc7ecb204f6ed6ed380c922ce5f4c7135b4a733ba5fc5f138b16
+  message_catalog_digest: e4da6ceab0e7eabbb0a927bbb85195e0a955229f37eb3a8ae4c45aad58155d8a
+  acceptance_contract_digest: d1dd39b0f91e94a4d8f179454a15fbeabb3d31d88afd490db1a5040ff6777444
+  environment_profile_schema_digest: 6f6d9fa499a731d27db16005bfa63fd6fbfefc1c212def1eb986f006b60063ce
+canonicalization:
+  algorithm: sha256
+  domain_prefix: "ONE-TIME-V2.1-CANDIDATE\0"
+  serialization: candidate_core as UTF-8 JSON; recursively sorted keys; separators ',' and ':'; ensure_ascii=false; no floats
+  excludes:
+    - canonical_candidate_digest
+    - manifest path and manifest commit
+    - timestamps
+    - deployment instances and deployment time
+    - per-environment provider assets/readbacks
+    - evidence and result heads
+canonical_candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
+candidate_manifest_commit_sha: derive_from_git_and_record_in_control_current_candidate
+frozen_at: "2026-08-04T09:27:00Z"
+evidence_branch: codex/v21-evidence-9d6be957bc44
+immutable: true

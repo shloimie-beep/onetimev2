@@ -8,17 +8,53 @@ branch: codex/v21-control
 start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
-phase: candidate_bound_phase_a_batch_1_dispatched
-claimed_by: codex-c00-phase-a-batch1-f1314a2c
-claim_time: '2026-08-02T11:50:03Z'
-claim_id: f1314a2c-e61f-419f-a276-33513acce7fc
-lease_expires_at: '2026-08-02T12:50:03Z'
-lease_released_at: '2026-08-02T11:50:03Z'
-last_heartbeat_at: '2026-08-02T11:50:03Z'
-controller_authorization_sha: 01e5c84ddca04467e16fff73754be368f59bb7fb
+phase: ot_live_terminal_convergence_product_review_email_source_and_media_source
+claimed_by: codex-c00-terminal-convergence-f514d50f
+claim_time: '2026-08-04T09:12:43Z'
+claim_id: f514d50f-081c-48e0-8906-1c6e872519b0
+lease_expires_at: '2026-08-04T11:12:43Z'
+lease_released_at: null
+last_heartbeat_at: '2026-08-04T09:14:28Z'
+controller_authorization_sha: 65d343162df0bb404ade1e4d1460f0ad808411ef
 ready_entry_payload_digest: null
-state_based_on_head_sha: 01e5c84ddca04467e16fff73754be368f59bb7fb
+state_based_on_head_sha: 65d343162df0bb404ade1e4d1460f0ad808411ef
 last_implementation_commit_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
+ot_live_terminal_convergence_resume_20260804:
+  recorded_at: '2026-08-04T09:14:28Z'
+  control_parent_sha: 65d343162df0bb404ade1e4d1460f0ad808411ef
+  prior_live_product_source_sha: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+  release_source_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
+  candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
+  OT_LIVE_001_03:
+    owner_thread_id: 019fc7e8-b506-7d30-a36a-4d7a9641f4fd
+    reviewed_source_checkpoint_sha: 14be24ac2c672ef16de426adc75228b44f327827
+    corrected_source_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
+    independent_review: P1_0_P2_0_P3_0_after_exact_three_path_correction
+    candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
+    focused_tests: 55_passed_4_skipped
+    release_source_fast_forward: passed
+    next_boundary: separate_exact_one_row_production_data_then_deployment_then_signed_in_canary_authorities
+    provider_database_deploy_effects: 0_0_0
+  OT_LIVE_002_02:
+    owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+    GHL_authority_id: ot-live-002-02-ghl-config-completion-20260804081547
+    terminal_event_digest: 4345c0cd8fbe1965f228859fd20e8165671d77b3bb05d53f876cc643fdcb6043
+    authority_status_index_digest: d21c445db5afcaeda7b9a76280c35692902f21d1954b2d5ebdea032b9ef1db9d
+    workflow_campaign_reply_workflow: 09051378-5917-4172-afda-f425619dd23d_6a71a64c28f7a5dbb3aec1be_15748c03-8ded-4ec3-b263-ffcc19c67982
+    GHL_lock_released_at: '2026-08-04T09:14:28Z'
+    next_source_claim_id: 1aa15481-0c38-4445-aaac-12931bd958a7
+    next_stage: inert_decision_store_proposal_source_only
+    database_and_send_effects: 0_0
+  OT_LIVE_004_01:
+    owner_thread_id: 019fcc0b-177e-7361-8823-9059dd8a8eb0
+    claim_id: 2fd3bc9c-9cfb-48da-85f1-5b62aab07322
+    writer_id: codex-ot-live-004-01-media-source-2fd3bc9c
+    branch: codex/ot-live-004-media-pipeline-20260804
+    base: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+    mode: independent_worktree_isolated_source_only
+    provider_upload_deploy_shared_migration_effects: 0_0_0_0
+  OT_LIVE_003_02: parked_unmerged_default_off
+  WAPI: deferred_zero_effect
 candidate_freeze_acceptance:
   canonical_candidate_digest: ea45b0ab10ec540444e274cad90400ab02d1820efabd5df06bf1318f3b82876d
   terminal_head_sha: 031cfde117028c8c199c7bc47e46e18a8227139d
@@ -1294,14 +1330,17 @@ completed_steps:
   path ceiling, and READY to permit SELECT-only durable replay readback while retaining the trigger as sole history writer
   and prohibiting both legacy authority tables, direct history writes, candidate work, providers, and all external effects.
 remaining_steps:
-- >-
-  Complete candidate-bound Phase A Batch 1 for V37, V38, V39, and V41, writing only assigned result/runtime paths.
-- >-
-  As slots finish, dispatch V42, V40, and V43 Phase A; move GHL mutation behind one exact candidate-bound lock/fence transaction.
-- Run V37-V43 Phase A, R44, deferred proof, V43 Phase B, R45 certification, legal gate, cutover, and the observation window in their exact order.
+- Consume the bounded OT-LIVE-001.03 correction, complete one independent delta review, and freeze the exact new candidate.
+- Verify the new candidate proportionally, then reserve exact migration-free one-row operator data repair, deployment, and signed-in Admin-Parent-Admin canary effects separately.
+- Consume OT-LIVE-002.02's inert decision-store proposal, allocate any migration only through F02, and derive an exact maximumAffectedRows data-census authority.
+- After exact audience, auth, landing, legal, suppression, seed, reply, and registration-exit gates, issue separate one-seed, pilot-at-most-25, and remaining-audience grants.
+- Advance OT-LIVE-004.01 source-only work; keep provider/upload/deploy/shared composition held until accepted source integration and exact canary authority.
+- Keep OT-LIVE-003.02 parked/default-off and WhatsApp/WAPI at zero effects; close broad production only after the legal gate.
 next_action: >-
-  Run V37/V38/V39/V41 from exact head 031cfde1. Reuse accepted evidence and perform only assigned current checks.
-  Provider access is read-only in this dispatch; no mutation or production effect is authorized.
+  Push this exact candidate-freeze reconciliation, steer the bound OT-LIVE-002 source-proposal and OT-LIVE-004 source-only
+  tasks, then issue separate candidate-bound production-data, deployment, and signed-in Admin-Parent-Admin canary
+  authorities. Do not write production data, deploy, upload media, seed, pilot, or broad-send until each exact successor
+  gate and lock/fence is recorded.
 orchestration:
   enabled: true
   mechanism: native_subagents

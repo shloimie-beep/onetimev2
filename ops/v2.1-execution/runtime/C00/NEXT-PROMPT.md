@@ -1,3 +1,26 @@
+# CURRENT — OT-LIVE terminal convergence
+
+Resolve the pushed C00 descendant of control basis `65d343162df0bb404ade1e4d1460f0ad808411ef`. Continue without another
+operator prompt from exact corrected source `27576fa64f0b37095e61ccca932c2e77cbf38844` and frozen candidate
+`9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c`. Issue separate exact production-data,
+deployment, and signed-in Admin → Parent → Admin canary authorities; never infer one from another.
+
+OT-LIVE-002.02's GHL authority is terminal and its GHL lease released. Allow only claim
+`1aa15481-0c38-4445-aaac-12931bd958a7` to commit/push the inert two-file decision-store proposal and sanitized evidence.
+Do not allocate/apply a migration, write application data, tag contacts, seed, pilot, or broad-send under that source claim.
+After review, use F02 for any migration and issue exact maximumAffectedRows data authority before the census. Seed/reply,
+pilot ≤25, and remaining audience are three later grants with their own readback gates.
+
+Run OT-LIVE-004.01 in task `019fcc0b-177e-7361-8823-9059dd8a8eb0` from exact base `ffd1c55a` on branch
+`codex/ot-live-004-media-pipeline-20260804`. Its first write must be in an independent worktree and remain inside the
+isolated content ingest/processing/publication paths. Hold migrations, shared composition, providers, one-recording
+upload/canary, and deployment. Keep OT-LIVE-003.02 parked/default-off and WhatsApp/WAPI at zero effects.
+
+Do not return terminally until production is truthfully `done` or every remaining safe task is exhausted and exactly one
+external blocker is recorded as `release_blocked`.
+
+## Superseded instructions follow
+
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY

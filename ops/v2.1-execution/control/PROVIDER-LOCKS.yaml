@@ -1,24 +1,24 @@
 schema_version: 1
 locks:
 - lock: provider:ghl-location
-  status: claimed
-  holder_task_id: OT-LIVE-002.02
-  holder_claim_id: a77ba13c-5646-423e-9d17-757e9bd00008
-  lease_id: 2a36b0a1-e259-414a-882b-bf849a500e27
-  fencing_token: fence-f0bacc9a-e5f2-4c41-9582-d4dd7d2ea3bd
-  canonical_candidate_digest: 99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098
-  provider_identity: ghl-location:pBSnOK2nkdxp6gf9Rg3o
-  authorized_operation: exact_workflow_Day9_wait_campaign_inactive_webhook_Draft_completion_zero_contact_DB_or_send
-  claimed_at: '2026-08-04T08:15:47Z'
-  lease_expires_at: '2026-08-04T10:15:47Z'
-  authority_id: ot-live-002-02-ghl-config-completion-20260804081547
-  authority_grant_digest: 61998e80351141e8156a49c62a49f4c9f1497866f4b4f0b80e09595551a0d584
-  authority_status_index_digest: 9ae815d706e0d8e4fc7c4bd0d659cefc44467e1f165fa531680057d0cf789b49
-  authority_status_entry_digest: e8891779c841eada19b1861883aad5532e264b373a10b563f18864a61614adb4
+  status: unclaimed
+  holder_task_id: null
+  holder_claim_id: null
+  lease_id: null
+  fencing_token: null
+  canonical_candidate_digest: null
+  provider_identity: null
+  authorized_operation: null
+  claimed_at: null
+  lease_expires_at: null
+  authority_id: null
+  authority_grant_digest: null
+  authority_status_index_digest: null
+  authority_status_entry_digest: null
   latest_revocation_digest: null
-  authority_checked_at: '2026-08-04T08:15:47Z'
-  effect_budget: GHL_configuration_12_step_additions_2_new_campaign_1_inactive_webhook_1_tag_contact_DB_sends_0
-  cleanup_state: terminal_reconciliation_required_before_release
+  authority_checked_at: null
+  effect_budget: null
+  cleanup_state: ot_live_002_GHL_Draft_configuration_success_reconciled_released_2026-08-04T09:14:28Z_zero_contacts_sends_or_unresolved_effects
 - lock: provider:stripe-account
   status: unclaimed
   holder_task_id: null

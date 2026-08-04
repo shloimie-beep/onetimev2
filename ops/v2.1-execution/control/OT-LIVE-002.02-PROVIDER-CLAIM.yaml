@@ -13,7 +13,7 @@ predecessor_terminal_event_digest: 69e82725193838b5541cf0142d2e6bc2f168cf457c02e
 canonical_candidate_digest: 99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098
 repository_source_sha: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
 source_branch: codex/ot-live-progressive-portal-20260803
-active_stage: exact_GHL_Draft_configuration_completion
+active_stage: terminal_GHL_Draft_configuration_complete
 lock:
   provider:ghl-location:
     exact_identity: pBSnOK2nkdxp6gf9Rg3o
@@ -22,6 +22,9 @@ lock:
     fencing_token: fence-f0bacc9a-e5f2-4c41-9582-d4dd7d2ea3bd
 claimed_at: '2026-08-04T08:15:47Z'
 expires_at: '2026-08-04T10:15:47Z'
+released_at: '2026-08-04T09:14:28Z'
+terminal_disposition: SUCCESS_GHL_DRAFT_CONFIGURATION_COMPLETE
+terminal_event_digest: 4345c0cd8fbe1965f228859fd20e8165671d77b3bb05d53f876cc643fdcb6043
 exact_target_workflow_id: 09051378-5917-4172-afda-f425619dd23d
 exact_trigger_tag_id: IcOGsLgSIOYGFlHF4kQ0
 current_effect_budget:

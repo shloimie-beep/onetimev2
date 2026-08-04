@@ -14,21 +14,41 @@ bootstrap_phase_order:
 reviewed_head: ecaf7b153f2b5323fd11859204a6db5c2a20fc6a
 integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
-candidate: 99b6c11bfc81b17ecb29e7398fa0683bdb0110494a2da9977cdd3c8284241098
+candidate: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
 active_writer_limit: 4
 controller_authorization_sha: 76692fbb6e65cdeb68e32862dd0c03490b5e5750
 next_action: >-
-  Preserve exact live candidate 99b6c11b at source ffd1c55a. Dispatch OT-LIVE-001.03 from that base for the settled
-  landing, single Admin/Parent identity, context switcher, Member Login, old-app preservation, and acceptance delta;
-  no deployment authority exists until a new candidate is frozen and tested. OT-LIVE-002.02 consumed its first
-  configuration budget after creating exact Draft workflow 09051378 and tag IcOGsLgSIOYGFlHF4kQ0; all three prior
-  locks are terminally reconciled. It may use only the narrow active GHL successor to append Wait 5 Days and Day 9,
-  create one Draft campaign and one inactive webhook, then prove zero contacts and sends. Resend/DNS mutations remain
-  unauthorized. Its read-only census must precede an exact additive
-  application-database proposal and later row-count-bound production-data authority. OT-LIVE-004.01 is safe to open for
-  isolated source work, with all shared router/server/migration composition held behind OT-LIVE-001.03 release. Keep
-  OT-LIVE-003.02 parked/default-off and WhatsApp/WAPI fully deferred at zero effects. Use August 16 7:00 PM class start
-  and September 11 6:00 PM free-access cutoff, Asia/Jerusalem, without asking again.
+  Reserve separate exact production-data, deployment, and signed-in Admin-Parent-Admin canary authorities for newly
+  frozen candidate 9d6be957 at source 27576fa6. OT-LIVE-002.02 GHL Draft configuration is terminally reconciled with workflow 09051378,
+  campaign 6a71a64c28f7a5dbb3aec1be, inactive reply workflow 15748c03, zero contacts and zero sends; its GHL lock is
+  released. Advance only the inert two-file decision-store source proposal and evidence now, then require separate
+  migration allocation and exact maximumAffectedRows production-data authority before any census write. Seed/reply,
+  pilot, and remaining-audience sends remain separate later grants. OT-LIVE-004.01 is bound to task
+  019fcc0b-177e-7361-8823-9059dd8a8eb0 for an independent worktree and isolated source-only implementation; shared
+  composition, migrations, providers, uploads, and deployment remain held. Keep OT-LIVE-003.02 parked/default-off and
+  WhatsApp/WAPI fully deferred at zero effects.
+ot_live_001_03_product_candidate_freeze:
+  recorded_at: '2026-08-04T09:27:00Z'
+  control_parent_sha: 65d343162df0bb404ade1e4d1460f0ad808411ef
+  base_source_sha: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+  source_branch: codex/ot-live-progressive-portal-20260803
+  product_return_branch: codex/ot-live-001-product-repair-20260804
+  source_sha: 27576fa64f0b37095e61ccca932c2e77cbf38844
+  canonical_candidate_digest: 9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c
+  candidate_manifest_path: ops/v2.1-execution/merge/candidates/9d6be957bc44af9e43e3b3fdbd698ef71900920a3514171c300eb8e1fcfe220c/CANDIDATE.yaml
+  candidate_manifest_sha256: 4e8c040f58ebcdac3f35955415692bdfcf8b9574201b7bb68e199d242cb610d6
+  candidate_derivation_sha256: 184afe9ce3c9068bf5c1963396aaeeeef9e2c28e7f407138041f55343c076cfc
+  application_content_sha256: 3af50303846fbe9c512b2e911d883f98d1108b471a51923fa042e60c66725cee
+  migration_inventory_digest: abdbfd5837ed54751e55458a3a79886ca9799e3d738344b40d6f95aad621a5ea
+  migration_count: 90
+  independent_delta_review: P1_0_P2_0_P3_0_after_bounded_migration_boundary_correction
+  focused_auth_portal_repository_tests: 55_passed_4_skipped_7_files
+  landing_browser_tests: 10_passed
+  responsive_reduced_motion_browser_tests: 2_passed
+  lint_build_typecheck_candidate_format_diff_secret_scan: passed
+  native_postgresql_18_4: reused_exact_90_migration_inventory_8_probes_zero_pending_zero_issues
+  release_source_fast_forward: ffd1c55a_to_27576fa6_succeeded
+  application_database_provider_deployment_DNS_identity_session_or_send_effects: 0_0_0_0_0_0_0
 ot_live_operator_decision_and_successor_dispatch_20260804:
   recorded_at: '2026-08-04T07:27:50Z'
   state_based_on_control_head_sha: 96afb1cc959bfa6b554e496f91ad19ea7b1ff8ab
@@ -44,7 +64,7 @@ ot_live_operator_decision_and_successor_dispatch_20260804:
   email_application_database_write_authority: false
   media_task: OT-LIVE-004.01
   media_branch: codex/ot-live-004-media-pipeline-20260804
-  media_window: not_open
+  media_window: 019fcc0b-177e-7361-8823-9059dd8a8eb0
   telegram_reply_copilot: OT-LIVE-003.02_parked_unmerged_default_off
   WAPI: deferred_zero_effect_nonblocking
   class_begins: '2026-08-16T19:00:00+03:00'
@@ -64,6 +84,31 @@ ot_live_002_02_GHL_config_partial_reconciliation_and_successor:
   successor_GHL_fencing_token: fence-f0bacc9a-e5f2-4c41-9582-d4dd7d2ea3bd
   successor_scope: two_exact_workflow_steps_one_Draft_campaign_one_inactive_webhook_final_readback
   successor_send_contact_tag_database_and_non_GHL_provider_budget: 0
+ot_live_002_02_GHL_config_completion_terminal_reconciliation:
+  recorded_at: '2026-08-04T09:14:28Z'
+  state_based_on_control_head_sha: 65d343162df0bb404ade1e4d1460f0ad808411ef
+  authority_id: ot-live-002-02-ghl-config-completion-20260804081547
+  authority_status_index_digest: d21c445db5afcaeda7b9a76280c35692902f21d1954b2d5ebdea032b9ef1db9d
+  terminal_event_digest: 4345c0cd8fbe1965f228859fd20e8165671d77b3bb05d53f876cc643fdcb6043
+  terminal_disposition: SUCCESS_GHL_DRAFT_CONFIGURATION_COMPLETE
+  workflow_id: 09051378-5917-4172-afda-f425619dd23d
+  workflow_graph: Day_0_Wait_4_Day_4_Wait_5_Day_9
+  campaign_id: 6a71a64c28f7a5dbb3aec1be
+  inactive_reply_workflow_id: 15748c03-8ded-4ec3-b263-ffcc19c67982
+  contact_tag_database_seed_pilot_broad_send_effects: 0_0_0_0_0_0
+  GHL_lock_released_at: '2026-08-04T09:14:28Z'
+  next_source_claim_id: 1aa15481-0c38-4445-aaac-12931bd958a7
+  next_source_scope: inert_two_file_decision_store_proposal_and_sanitized_evidence_only
+  migration_database_and_send_authority: none
+ot_live_004_01_source_dispatch:
+  recorded_at: '2026-08-04T09:14:28Z'
+  owner_thread_id: 019fcc0b-177e-7361-8823-9059dd8a8eb0
+  claim_id: 2fd3bc9c-9cfb-48da-85f1-5b62aab07322
+  writer_id: codex-ot-live-004-01-media-source-2fd3bc9c
+  branch: codex/ot-live-004-media-pipeline-20260804
+  base: ffd1c55a50c5b16402f3dcbcbef4cb4464edcfb4
+  mode: independent_worktree_isolated_source_only
+  provider_upload_deployment_shared_composition_and_migration_effects: 0
 ot_live_001_02_public_support_repair_candidate_freeze:
   recorded_at: '2026-08-03T20:06:36Z'
   control_parent_sha: 729fd49b803f98ad0de17042a0a0ac62a4b7e3aa
