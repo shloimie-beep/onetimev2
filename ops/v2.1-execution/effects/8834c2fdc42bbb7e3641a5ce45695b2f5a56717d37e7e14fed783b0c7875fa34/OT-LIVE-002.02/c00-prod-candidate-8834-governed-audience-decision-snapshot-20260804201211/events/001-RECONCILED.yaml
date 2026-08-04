@@ -1,0 +1,58 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_event_id: c00-prod-candidate-8834-governed-audience-decision-snapshot-20260804201211-001
+authority_id: c00-prod-candidate-8834-governed-audience-decision-snapshot-20260804201211
+task_id: OT-LIVE-002.02
+owner_thread_id: 019fc8aa-42c8-7082-9a89-e7a66803f42a
+claim_id: 0a01e3ae-8b56-430c-b08d-52b13ca6d097
+lease_id: c4b36c06-82c3-44a8-aedd-6424b47ff982
+fencing_token: fence-1efba581-9314-4f66-b9ce-67653eaf2b0c
+candidate_digest: 8834c2fdc42bbb7e3641a5ce45695b2f5a56717d37e7e14fed783b0c7875fa34
+disposition: SUCCESS_EXACT_1499_SANITIZED_DECISION_ROWS_COMMITTED
+pre_effect_revalidation:
+  control_head: 28532b88c65358f5051e83772cde85c3c7a35d24
+  grant_claim_status_index_status_entry_lock_lease_fence: exact_active_unexpired
+  database_service_deployment: db590e4a-7dc5-40cb-a243-5206ce21b746_62583cef-572b-40ae-b1d3-0194a2ccbf27_SUCCESS
+  source_tree: 0d21b1502d2156ab91b75e7c912f580548f74660_f4739d99e0ef57110f33609725d87c0170671505
+census_preimage:
+  provider_contacts_and_pages: 1499_15
+  extra_fetches: 0
+  include_exclude_review: 0_15_1484
+  current_history_rows: 0_0
+  snapshot_hash: b74772eade91ee72f0093d7462b3a8ad244eb87850389a42b7d8d791297f3070
+  request_hash: d96f1b69b07488829a84ba0f786ff7f9d2498941a58452bd8ed97d5953d6bafa
+  projection_hash: c50dd3dde840c0bcb9666342086b380c0fc9f60bfa2b58edc301a951b3ffbe10
+write_effect:
+  decision_store_reconcile_calls: 1
+  isolation: SERIALIZABLE
+  campaign_advisory_lock_acquired: true
+  mutation_statements: 1
+  inserted_rows: 1499
+  superseded_rows: 0
+  updated_rows: 0
+  deleted_rows: 0
+  commit_attempted_acknowledged: true_true
+  rollback_attempted: false
+  write_proof_SHA256: 02264d05f7a709c7651eee8ee32f98912a095faf411c5bf61e1f6be5807b40b0
+postflight:
+  current_rows: 1499
+  projection_hash_exact: true
+  include: 0
+  exclude_email_dnd_or_unsubscribed: 13
+  exclude_missing_email: 2
+  review_ambiguous_identity: 1484
+  database_READ_ONLY_transactions: 2
+  READ_ONLY_XIDs_assigned: 0
+  READ_ONLY_insert_update_delete_counters: 0_0_0
+  READ_ONLY_proof_SHA256: c701dcbd680c7f6c90e448db5d1900d31075b7c251514cc11c5385d3e8ade644
+effects:
+  provider_GET_reads: 15
+  application_business_rows_inserted: 1499
+  provider_contact_tag_campaign_workflow_webhook_send_schedule_mutations: 0
+  Railway_variable_deployment_domain_source_DNS_mutations: 0
+  schema_migration_identity_credential_session_customer_Student_mutations: 0
+  retries_and_compensation: 0_0
+unresolved_effects: 0
+reconciled_at: '2026-08-04T20:23:58Z'
+contains_secret: false
+immutable: true

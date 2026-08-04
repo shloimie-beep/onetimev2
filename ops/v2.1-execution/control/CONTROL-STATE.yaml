@@ -3064,6 +3064,20 @@ ot_live_002_02_read_only_census_success_and_decision_snapshot_authority_20260804
   authority_status_entry_digest: 3597a725c237ded521c74fd3040fcd43b522b6c5f9c00534971a21fe4ebae4a4
   claim_lease_fence: 0a01e3ae-8b56-430c-b08d-52b13ca6d097_c4b36c06-82c3-44a8-aedd-6424b47ff982_fence-1efba581-9314-4f66-b9ce-67653eaf2b0c
   authorized_effect: exact_1499_immutable_sanitized_decision_rows_zero_supersession_and_all_other_mutations
+ot_live_002_02_governed_audience_snapshot_terminal_20260804_202358:
+  recorded_at: '2026-08-04T20:23:58Z'
+  state_based_on_control_head_sha: 28532b88c65358f5051e83772cde85c3c7a35d24
+  authority_id: c00-prod-candidate-8834-governed-audience-decision-snapshot-20260804201211
+  authority_status_index_digest: 9bf66b9e6c7af48e3a81854a4792bde6de75e87d78bef94d4ec9600f8ef22d47
+  status_entry_digest: cfab211ae24871e4b05dd215a0465aa76105c49876f00eebad8a7f795e09d5ae
+  terminal_event_digest: 1de767acea5a36645205a21ae2186454ef239c643b91b56b6d20999e25495342
+  disposition: SUCCESS_EXACT_1499_SANITIZED_DECISION_ROWS_COMMITTED
+  database_effect: SERIALIZABLE_reconcile_1_mutation_statement_1499_inserted_0_superseded_updated_deleted_COMMIT_acknowledged
+  postflight: current_1499_projection_exact_include_0_exclude_15_review_1484
+  all_provider_contact_tag_send_schedule_deploy_DNS_schema_migration_customer_Student_and_other_mutations: 0
+  unresolved_effects: 0
+  production_data_lock: released
+  send_gate: false_no_eligible_include_decisions
 authority_note: >-
   Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through
   release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an
