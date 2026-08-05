@@ -4,11 +4,11 @@
 
 - Authoritative brief: `C:\Users\User\Downloads\ONE-TIME-FULL-PRODUCTION-LAUNCH-CODEX-GOAL.md`
 - Integration branch: `codex/one-time-complete-production-launch-20260805`
-- Current production source: `7e3075b06e2b03b67168e59d7fcfb96d16324c7a`
+- Current production source: `b180660c3a7faa9cb3c0cdb4011283f7257969e8`
 - Rollback branch: `rollback/one-time-pre-complete-launch-20260805`
-- Current web deployment: `f89c6bad-e8f2-4b7c-ae99-bc83fd7a3d95`
-- Current worker execution: `0049c1d6-ece3-4cbb-a08d-bacd5220be85`
-- Current migration head: `2264`, 95 applied, zero pending
+- Current web deployment: `555b5099-bce4-42e2-864a-da04bf839a93`
+- Current worker deployment: `4a0fbb29-8148-4f14-b973-4e0944877925`
+- Current migration head: `2266`, 97 applied, zero pending
 
 ## Milestones
 
@@ -30,7 +30,7 @@
 
 ## Current checkpoint
 
-Milestone 1 is live and proven. The public journey creates canonical local access before provider work; the preserved canary produced exactly one adult contact, one household opportunity, and one confirmation email. Canonical password recovery is deployed, invalidates existing sessions, succeeds once, and rejects replay. The Parent created three display-once Student credentials, the fourth seat was rejected, and a Student username/password session reached the protected Student app. Web/worker version variables agree with the deployed commit, health/readiness are green, and the pre-launch rollback branch remains immutable. Milestone 2 portal completion and Milestones 3-4 class/media provider gates are next.
+Milestone 1 is live and proven. The public journey creates canonical local access before provider work; the preserved canary produced exactly one adult contact, one household opportunity, and one confirmation email. Canonical password recovery is deployed, invalidates existing sessions, succeeds once, and rejects replay. The Parent created three display-once Student credentials, the fourth seat was rejected, and a Student username/password session reached the protected Student app. The canonical v2.1 class scope is now converged on `one_time_mishnayos`: one active series, 65 locked Jerusalem occurrences, and three of three active Students automatically rostered. Web/worker version variables agree with the deployed commit, health/readiness/version are green, the post-deploy worker batch completed without retry/dead-letter activity, and the pre-launch rollback branch remains immutable. Milestone 2 portal completion, the Zoom/attendance remainder of Milestone 3, and Milestone 4 media provider gates are next.
 
 ## Validation commands
 
