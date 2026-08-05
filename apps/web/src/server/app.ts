@@ -15,6 +15,7 @@ import { createGamificationRepository } from '../../../../packages/db/src/gamifi
 import { createLiveClassRepository } from '../../../../packages/db/src/live-class/repository.ts';
 import { createZoomAdminTestResourceRepository } from '../../../../packages/db/src/live-class/zoom-admin-repository.ts';
 import { createPortalRepository } from '../../../../packages/db/src/portals/repository.ts';
+import { createPostgresStudentNotificationRepository } from '../../../../packages/db/src/notifications/student/index.ts';
 import { createPostgresSchoolSignupRepository } from '../../../../packages/db/src/signup/school/repository.ts';
 import { TelegramSqlInboxRepository } from '../../../../packages/db/src/telegram/repositories.ts';
 import type { BillingProviderAdapter } from '../../../../packages/contracts/src/billing/index.ts';
@@ -343,6 +344,10 @@ import {
   createLearningRouter,
   createPostgresLearningActorResolver,
 } from './features/learning/index.ts';
+import {
+  createStudentNotificationRouter,
+  createStudentNotificationService,
+} from './features/notifications/student/index.ts';
 import {
   createEmbeddedClassroomFeatureComposition,
   createEmbeddedClassroomRequestIdentityResolver,
@@ -805,6 +810,34 @@ export function createApp({
       enabled: learningComposition.enabled,
       blockers: learningComposition.blockers,
       resolveActor: resolveLearningActor,
+      verifyCsrf: (request, authenticated) =>
+        verifySessionCsrf({
+          pool,
+          sessionKey: authenticated.sessionKey,
+          csrfToken: request.header('x-csrf-token') ?? request.body?.csrf_token,
+        }),
+      ...(clock ? { clock } : {}),
+    }),
+  );
+
+  const studentNotificationService = createStudentNotificationService({
+    repository: createPostgresStudentNotificationRepository(pool),
+    authorizeAction: async ({ principal, notification }) =>
+      principal.studentId === notification.recipientStudentId &&
+      principal.studentId === notification.scope.studentId,
+  });
+  app.use(
+    '/api/app/student/notifications',
+    createStudentNotificationRouter({
+      service: studentNotificationService,
+      resolvePrincipal: async (request) => {
+        const authenticated = await resolveLearningActor(request);
+        if (!authenticated || authenticated.actor.role !== 'student') return null;
+        return {
+          principal: { studentId: authenticated.actor.studentId },
+          sessionKey: authenticated.sessionKey,
+        };
+      },
       verifyCsrf: (request, authenticated) =>
         verifySessionCsrf({
           pool,

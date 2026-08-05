@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import type {
   LearnerProfile,
@@ -20,8 +20,22 @@ import {
 import { ParentClientRoot, StudentClientRoot, resolveCurrentClientRoute } from './router/index.js';
 import { ParentHouseholdWorkspace, type ParentHouseholdView } from './parent/household/index.js';
 import { ParentSummaryWorkspace, type ParentSummaryView } from './parent/summary/index.js';
+import { StudentCalendar } from './student/calendar/index.js';
 import { StudentLearningOverview } from './student/learning/StudentLearningOverview.js';
 import { StudentClassroomWorkspace } from './student/classroom/StudentClassroomWorkspace.js';
+import {
+  StudentNotificationCenter,
+  loadStudentNotifications,
+  markAllStudentNotificationsRead,
+  markStudentNotificationRead,
+  openStudentNotificationAction,
+  setStudentNotificationSoundPreference,
+  type ForegroundCueCandidate,
+} from './student/notifications/index.js';
+import type {
+  StudentNotificationCenterSnapshot,
+  StudentNotificationFilter,
+} from '../../../../../packages/contracts/src/notifications/student/index.ts';
 import { SupportFeature } from './support/SupportFeature.js';
 import { AppShell, type ShellNavItem, type ShellUser } from './shell/AppShell.js';
 import {
@@ -99,6 +113,12 @@ function PortalApp() {
       ? /^\/app\/parent\/support(?:\/([^/]+))?$/u
       : /^\/app\/student\/support(?:\/([^/]+))?$/u,
   );
+  const studentCalendarRoute =
+    portalRole === 'student' && location.pathname === '/app/student/calendar';
+  const studentNotificationsRoute =
+    portalRole === 'student' && location.pathname === '/app/student/notifications';
+  const studentAccountRoute =
+    portalRole === 'student' && location.pathname === '/app/student/account';
   const v21ParentView = v21ParentRouteViewFromLocation(location.pathname);
   const [activeSection, setActiveSection] = useState<ParentPortalSection | StudentPortalSection>(
     () => portalSectionFromLocation(portalRole),
@@ -113,6 +133,13 @@ function PortalApp() {
   > | null>(null);
   const [studentDashboard, setStudentDashboard] = useState<StudentPortalDashboard | null>(null);
   const [studentLearning, setStudentLearning] = useState<StudentLearningSnapshot | null>(null);
+  const [studentNotifications, setStudentNotifications] =
+    useState<StudentNotificationCenterSnapshot | null>(null);
+  const [studentNotificationError, setStudentNotificationError] = useState('');
+  const [newNotificationCue, setNewNotificationCue] = useState<ForegroundCueCandidate | null>(null);
+  const seenNotificationIds = useRef(new Set<string>());
+  const notificationCenterInitialized = useRef(false);
+  const notificationAudioPermitted = useRef(false);
   const [liveClassQuestions, setLiveClassQuestions] = useState<LiveClassQuestion[]>([]);
   const [selectedLearnerKey, setSelectedLearnerKey] = useState<string | null>(null);
   const [parentMaterials, setParentMaterials] = useState<Record<string, ParentLearnerMaterials>>(
@@ -157,6 +184,15 @@ function PortalApp() {
     const interval = window.setInterval(() => void loadLiveQuestions(studentDashboard), 4000);
     return () => window.clearInterval(interval);
   }, [session?.expires_at, portalRole, studentDashboard?.upcoming_classes[0]?.class_key]);
+
+  useEffect(() => {
+    if (!studentNotificationsRoute || !session || portalRole !== 'student') return undefined;
+    const interval = window.setInterval(() => {
+      const filter = studentNotifications?.filter ?? 'unread';
+      if (filter !== 'read') void refreshStudentNotifications(filter, true);
+    }, 30_000);
+    return () => window.clearInterval(interval);
+  }, [portalRole, session?.expires_at, studentNotifications?.filter, studentNotificationsRoute]);
 
   async function load() {
     setViewState('loading');
@@ -213,6 +249,12 @@ function PortalApp() {
         } catch {
           setStudentLearning(null);
         }
+        if (location.pathname === '/app/student/notifications') {
+          await refreshStudentNotifications('unread', false);
+        } else {
+          setStudentNotifications(null);
+          setStudentNotificationError('');
+        }
       }
       setViewState('ready');
     } catch (error) {
@@ -240,6 +282,91 @@ function PortalApp() {
       setLiveClassQuestions(await getLiveClassQuestions(occurrenceKey));
     } catch {
       setLiveClassQuestions([]);
+    }
+  }
+
+  async function refreshStudentNotifications(
+    filter: StudentNotificationFilter,
+    detectNew: boolean,
+  ) {
+    try {
+      const next = await loadStudentNotifications(filter);
+      const newUnread =
+        detectNew && notificationCenterInitialized.current
+          ? next.notifications.find(
+              ({ notification, lifecycle }) =>
+                lifecycle === 'unread' && !seenNotificationIds.current.has(notification.id),
+            )
+          : undefined;
+      seenNotificationIds.current = new Set(
+        next.notifications.map(({ notification }) => notification.id),
+      );
+      notificationCenterInitialized.current = true;
+      setStudentNotifications(next);
+      setStudentNotificationError('');
+      if (newUnread) {
+        setNewNotificationCue({
+          notificationId: newUnread.notification.id,
+          disposition: 'created',
+          portalVisibility: document.visibilityState === 'visible' ? 'foreground' : 'background',
+          browserInteractionPermitsAudio: notificationAudioPermitted.current,
+        });
+      }
+    } catch (error) {
+      if (handleAuthError(error)) return;
+      setStudentNotificationError(errorMessage(error, 'Notifications could not load.'));
+    }
+  }
+
+  async function markNotificationRead(notificationId: string) {
+    if (!session) return;
+    try {
+      await markStudentNotificationRead(session.csrf_token, notificationId);
+      await refreshStudentNotifications(studentNotifications?.filter ?? 'unread', false);
+    } catch (error) {
+      setNotice({ kind: 'error', message: errorMessage(error, 'Notification was not updated.') });
+    }
+  }
+
+  async function markAllNotificationsRead() {
+    if (!session) return;
+    try {
+      await markAllStudentNotificationsRead(session.csrf_token);
+      await refreshStudentNotifications(studentNotifications?.filter ?? 'unread', false);
+    } catch (error) {
+      setNotice({ kind: 'error', message: errorMessage(error, 'Notifications were not updated.') });
+    }
+  }
+
+  async function changeNotificationSoundPreference(enabled: boolean) {
+    if (!session) return;
+    notificationAudioPermitted.current = enabled;
+    try {
+      await setStudentNotificationSoundPreference(session.csrf_token, enabled);
+      setStudentNotifications((current) =>
+        current ? { ...current, soundEnabled: enabled } : null,
+      );
+    } catch (error) {
+      setNotice({ kind: 'error', message: errorMessage(error, 'Sound preference was not saved.') });
+    }
+  }
+
+  async function openNotificationAction(notificationId: string) {
+    if (!session) return;
+    notificationAudioPermitted.current = true;
+    try {
+      const decision = await openStudentNotificationAction(session.csrf_token, notificationId);
+      if (decision.status === 'allowed' && decision.route) {
+        window.location.assign(decision.route);
+        return;
+      }
+      setNotice({ kind: 'info', message: decision.message ?? 'No longer available' });
+      await refreshStudentNotifications(studentNotifications?.filter ?? 'unread', false);
+    } catch (error) {
+      setNotice({
+        kind: 'error',
+        message: errorMessage(error, 'Notification action unavailable.'),
+      });
     }
   }
 
@@ -653,7 +780,13 @@ function PortalApp() {
         id: 'student-today',
         label: 'Today',
         href: '/app/student',
-        current: activeSection === 'today',
+        current: location.pathname === '/app/student',
+      },
+      {
+        id: 'student-calendar',
+        label: 'Calendar',
+        href: '/app/student/calendar',
+        current: studentCalendarRoute,
       },
       {
         id: 'student-library',
@@ -680,13 +813,33 @@ function PortalApp() {
         current: activeSection === 'updates',
       },
       {
+        id: 'student-notifications',
+        label: 'Notifications',
+        href: '/app/student/notifications',
+        current: studentNotificationsRoute,
+      },
+      {
         id: 'student-support',
         label: 'Support',
         href: '/app/student/support',
         current: location.pathname.startsWith('/app/student/support'),
       },
+      {
+        id: 'student-account',
+        label: 'Account',
+        href: '/app/student/account',
+        current: studentAccountRoute,
+      },
     ];
-  }, [activeSection, classroomRoute, portalRole, v21ParentSession]);
+  }, [
+    activeSection,
+    classroomRoute,
+    portalRole,
+    studentAccountRoute,
+    studentCalendarRoute,
+    studentNotificationsRoute,
+    v21ParentSession,
+  ]);
   const title = classroomRoute
     ? 'Classroom'
     : portalRole === 'parent'
@@ -857,6 +1010,49 @@ function PortalApp() {
             onProtectedStateCleared={() => void load()}
           />
         ) : null
+      ) : studentCalendarRoute ? (
+        studentDashboard ? (
+          <StudentCalendar
+            classes={studentDashboard.upcoming_classes}
+            onLaunch={(action) => void handleProtectedAction(action)}
+          />
+        ) : (
+          <p role="status">Loading Student calendar...</p>
+        )
+      ) : studentNotificationsRoute ? (
+        studentNotifications ? (
+          <StudentNotificationCenter
+            snapshot={studentNotifications}
+            studentTimeZone="Asia/Jerusalem"
+            newlyRenderedNotice={newNotificationCue}
+            onFilterChange={(filter) => void refreshStudentNotifications(filter, false)}
+            onMarkRead={(notificationId) => void markNotificationRead(notificationId)}
+            onMarkAllRead={() => void markAllNotificationsRead()}
+            onOpenAction={(notificationId) => void openNotificationAction(notificationId)}
+            onSoundPreferenceChange={(enabled) => void changeNotificationSoundPreference(enabled)}
+            onPlayForegroundCue={playStudentNotificationCue}
+          />
+        ) : (
+          <section aria-live="polite">
+            <h2>Notifications</h2>
+            <p>{studentNotificationError || 'Loading notifications...'}</p>
+          </section>
+        )
+      ) : studentAccountRoute ? (
+        <section className="ot-portal-feature" aria-labelledby="student-account-heading">
+          <div className="ot-panel">
+            <p className="ot-eyebrow">Student account</p>
+            <h2 id="student-account-heading">Account and security</h2>
+            {session ? (
+              <AccountSecurityPanel
+                identifier={session.user.email}
+                role={session.user.role}
+                roleLabel={session.user.role_label}
+                onChangePassword={handlePasswordChange}
+              />
+            ) : null}
+          </div>
+        </section>
       ) : (
         <StudentClientRoot
           viewState={viewState}
@@ -1567,6 +1763,22 @@ function isProtectedActionDescriptor(value: unknown): value is ProtectedActionDe
     'kind' in value &&
     'label' in value,
   );
+}
+
+function playStudentNotificationCue() {
+  const AudioContextConstructor = window.AudioContext;
+  if (!AudioContextConstructor) return;
+  const context = new AudioContextConstructor();
+  const oscillator = context.createOscillator();
+  const gain = context.createGain();
+  oscillator.frequency.value = 880;
+  gain.gain.setValueAtTime(0.04, context.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 0.12);
+  oscillator.connect(gain);
+  gain.connect(context.destination);
+  oscillator.start();
+  oscillator.stop(context.currentTime + 0.12);
+  oscillator.addEventListener('ended', () => void context.close(), { once: true });
 }
 
 function studentAccessLabel(action: StudentAccessOperationType) {

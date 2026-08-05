@@ -115,6 +115,8 @@ export const CANONICAL_ROUTE_COMPATIBILITY_PATHS: Readonly<
   'RT-ADM-067': '/app/crm/audit',
   'RT-ADM-069': '/app/operations',
   'RT-STU-020': '/app/student?section=library',
+  'RT-STU-041': '/app/student/questions',
+  'RT-STU-042': '/app/student/questions',
 });
 
 export function compatibilityPathForRoute(

@@ -34,12 +34,12 @@ describe('v2.1 canonical route views', () => {
     expect(
       CANONICAL_V21_ROUTES.filter(({ routeId }) => routeId.startsWith('RT-STU-')),
     ).toHaveLength(17);
-    expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'ready')).toHaveLength(60);
+    expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'ready')).toHaveLength(68);
     expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'isolated')).toHaveLength(
-      17,
+      10,
     );
     expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'missing')).toHaveLength(
-      16,
+      15,
     );
     for (const route of CANONICAL_V21_ROUTES) {
       if (route.readiness === 'ready') {
@@ -95,8 +95,8 @@ describe('v2.1 canonical route views', () => {
     expect(CANONICAL_ROUTE_COMPATIBILITY_PATHS['RT-STU-040']).toBeUndefined();
     expect(resolveCurrentClientRoute('/app/student/questions', 'student')).toMatchObject({
       routeId: 'RT-STU-040',
-      readiness: 'isolated',
-      handler: null,
+      readiness: 'ready',
+      handlerDisposition: 'mounted',
     });
     expect(resolveCurrentClientRoute('/app/student/support', 'student')).toMatchObject({
       routeId: 'RT-STU-060',
@@ -118,12 +118,6 @@ describe('v2.1 canonical route views', () => {
       readiness: 'isolated',
       handler: null,
     });
-    for (const routeId of ['RT-STU-041', 'RT-STU-042', 'RT-STU-040', 'RT-STU-050']) {
-      expect(CANONICAL_V21_ROUTES.find((route) => route.routeId === routeId)).toMatchObject({
-        readiness: 'isolated',
-        handler: null,
-      });
-    }
     expect(CANONICAL_V21_ROUTES.find((route) => route.routeId === 'RT-ADM-001')).toMatchObject({
       readiness: 'ready',
       handler: 'admin.rt-adm-001',
@@ -141,6 +135,11 @@ describe('v2.1 canonical route views', () => {
       readiness: 'ready',
       handlerDisposition: 'mounted',
     });
+    expect(CANONICAL_V21_ROUTES.find((route) => route.routeId === 'RT-STU-051')).toMatchObject({
+      readiness: 'ready',
+      handlerDisposition: 'mounted',
+    });
+    expect(CANONICAL_ROUTE_COMPATIBILITY_PATHS['RT-STU-041']).toBe('/app/student/questions');
     expect(CANONICAL_ROUTE_COMPATIBILITY_PATHS['RT-ADM-066']).toBeUndefined();
     expect(CANONICAL_ROUTE_COMPATIBILITY_PATHS['RT-PAR-011']).toBeUndefined();
   });
