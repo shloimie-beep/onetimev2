@@ -19,7 +19,7 @@ const scope: FamilySignupScope = {
   verification_environment_id: 'ci',
 };
 const idempotencyKey = '1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg';
-const freeAccessExpiresAt = '2026-09-13T16:24:00.000Z';
+const freeAccessExpiresAt = '2026-09-11T15:00:00.000Z';
 const command = (): FamilySignupCommand => ({
   classification: 'family',
   idempotency_key: idempotencyKey,
@@ -81,7 +81,7 @@ describe('P08 family signup service', () => {
     const result = await service.submit({
       scope,
       command: command(),
-      now: new Date('2026-09-13T16:23:59.000Z'),
+      now: new Date('2026-09-11T14:59:59.000Z'),
     });
     expect(result.next_action).toBe('signed_in');
     expect(calls.map(({ kind }) => kind)).toEqual(['request', 'identity', 'ghl', 'commit']);
@@ -146,7 +146,7 @@ describe('P08 family signup service', () => {
         checkout: null,
       },
       ghl_evidence_status: 'available',
-      committed_at: '2026-09-13T16:23:59.000Z',
+      committed_at: '2026-09-11T14:59:59.000Z',
     });
     expect(JSON.stringify(calls[3]?.value)).not.toContain('correct horse');
     expect(JSON.stringify(calls[3]?.value)).not.toContain('password_confirmation');
@@ -339,7 +339,7 @@ describe('P08 family signup service', () => {
     const result = await service.submit({
       scope,
       command: command(),
-      now: new Date('2026-09-13T16:24:00.000Z'),
+      now: new Date('2026-09-11T15:00:00.000Z'),
     });
     expect(result).toMatchObject({
       next_action: 'identity_review',
@@ -384,7 +384,7 @@ describe('P08 family signup service', () => {
     const result = await service.submit({
       scope,
       command: command(),
-      now: new Date('2026-09-13T16:23:59.000Z'),
+      now: new Date('2026-09-11T14:59:59.000Z'),
     });
     expect(result).toMatchObject({
       next_action: 'signed_in',

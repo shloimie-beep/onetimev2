@@ -425,6 +425,10 @@ function sendSafeResult(
     provider_effects_completed_inline: 0,
     ...sessionFields,
   } as const;
+  const confirmationMessage =
+    result.ghl_handoff_state === 'ready'
+      ? 'Your Family account is ready, and we sent your confirmation email.'
+      : 'Your Family account is ready. You can continue now while we finish sending your confirmation email.';
   if (result.next_action === 'signed_in') {
     if (session.established) {
       res.status(result.disposition === 'created' ? 201 : 200).json({
@@ -432,7 +436,7 @@ function sendSafeResult(
         code: 'FAMILY_SIGNUP_COMPLETE',
         next_action: 'parent_overview',
         continue_to: authReturnLocation({ role: 'parent' }),
-        message: 'Your family account and free access are ready.',
+        message: confirmationMessage,
       });
       return;
     }
@@ -440,8 +444,7 @@ function sendSafeResult(
       ...common,
       code: 'SIGNUP_COMMITTED_SESSION_UNAVAILABLE',
       next_action: 'session_integration_pending',
-      message:
-        'Your family account and free access were saved. Automatic sign-in is not available yet.',
+      message: confirmationMessage,
     });
     return;
   }

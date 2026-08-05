@@ -22,6 +22,7 @@ export function familySignupFormModel(now: Date, freeAccessExpiresAt?: string) {
     timezone_field: FAMILY_SIGNUP_TIMEZONE_FIELD,
     optional_consent_fields: FAMILY_SIGNUP_OPTIONAL_CONSENT_FIELDS,
     ...FAMILY_SIGNUP_COPY[beforeExpiry ? 'before_expiry' : 'at_or_after_expiry'],
+    cta: 'Create your Family account' as const,
     card_fields: 0 as const,
     student_fields: 0 as const,
   };

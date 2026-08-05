@@ -108,6 +108,8 @@ describe('P08 Family-signup route security', () => {
       session_established: false,
       provider_projection_state: 'readback_required',
       provider_effects_completed_inline: 0,
+      message:
+        'Your Family account is ready. You can continue now while we finish sending your confirmation email.',
     });
     expect(JSON.stringify(acceptedBody)).not.toContain('adult_private');
     expect(JSON.stringify(acceptedBody)).not.toContain('account_private');
@@ -199,6 +201,8 @@ describe('P08 Family-signup route security', () => {
   });
 
   it('claims immediate Parent access only after an injected session is middleware-readable', async () => {
+    const acceptedProviderResult = createdResult();
+    acceptedProviderResult.ghl_handoff_state = 'ready';
     const sessionEstablisher: FamilySignupSessionEstablisher = {
       establish: vi.fn(async () => ({
         established: true as const,
@@ -209,7 +213,7 @@ describe('P08 Family-signup route security', () => {
       })),
     };
     const harness = await startHarness({
-      submitter: { submit: vi.fn(async () => createdResult()) },
+      submitter: { submit: vi.fn(async () => acceptedProviderResult) },
       sessionEstablisher,
     });
     const bootstrap = await getBootstrap(harness.baseUrl);
@@ -225,6 +229,7 @@ describe('P08 Family-signup route security', () => {
       session_established: true,
       continue_to: '/app/parent',
       csrf_token: 'c'.repeat(48),
+      message: 'Your Family account is ready, and we sent your confirmation email.',
     });
     expect(response.headers.get('set-cookie')).toContain('__Host-onetime-session=');
     expect(sessionEstablisher.establish).toHaveBeenCalledWith({
@@ -388,7 +393,7 @@ function createdResult(): FamilySignupResult {
       access_state: 'free',
       seat_limit: 3,
       active_seat_count: 0,
-      free_access_expires_at: '2026-09-13T16:24:00.000Z',
+      free_access_expires_at: '2026-09-11T15:00:00.000Z',
       checkout_required: false,
       checkout_blocked_by_identity_review: false,
       rolling_trial_granted: false,

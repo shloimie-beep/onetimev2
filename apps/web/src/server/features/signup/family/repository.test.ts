@@ -32,7 +32,7 @@ const command = (): FamilySignupCommand => ({
   parent_newsletter_consent: true,
 });
 const passwordHash = `argon2id-v1$v=19$m=19456,t=2,p=1$${'a'.repeat(22)}$${'b'.repeat(43)}`;
-const freeAccessExpiresAt = '2026-09-13T16:24:00.000Z';
+const freeAccessExpiresAt = '2026-09-11T15:00:00.000Z';
 
 describe('P08 PostgreSQL Family-signup repository', () => {
   it('serializes exact request and identity keys and commits every local aggregate atomically', async () => {
@@ -52,7 +52,7 @@ describe('P08 PostgreSQL Family-signup repository', () => {
     const result = await service.submit({
       scope,
       command: command(),
-      now: new Date('2026-09-13T16:23:59.000Z'),
+      now: new Date('2026-09-11T14:59:59.000Z'),
     });
     expect(result).toMatchObject({
       disposition: 'created',
@@ -132,7 +132,7 @@ describe('P08 PostgreSQL Family-signup repository', () => {
     const result = await service.submit({
       scope,
       command: command(),
-      now: new Date('2026-09-13T16:24:00.000Z'),
+      now: new Date('2026-09-11T15:00:00.000Z'),
     });
     expect(result).toMatchObject({
       next_action: 'checkout',
@@ -187,7 +187,7 @@ describe('P08 PostgreSQL Family-signup repository', () => {
       service.submit({
         scope,
         command: command(),
-        now: new Date('2026-09-13T16:23:59.000Z'),
+        now: new Date('2026-09-11T14:59:59.000Z'),
       }),
     ).rejects.toMatchObject({ code: 'persistence_invariant' });
     expect(harness.calls.some(({ text }) => text === 'ROLLBACK')).toBe(true);
@@ -219,7 +219,7 @@ describe('P08 PostgreSQL Family-signup repository', () => {
           verification_environment_id: 'production_read_only',
         },
         command: command(),
-        now: new Date('2026-09-13T16:23:59.000Z'),
+        now: new Date('2026-09-11T14:59:59.000Z'),
       }),
     ).rejects.toBeInstanceOf(PostgresFamilySignupRepositoryError);
     expect(harness.calls.some(({ text }) => text === 'ROLLBACK')).toBe(true);

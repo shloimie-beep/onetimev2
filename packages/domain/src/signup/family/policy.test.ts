@@ -16,7 +16,7 @@ const scope: FamilySignupScope = {
   verification_environment_id: 'ci',
 };
 const idempotencyKey = '1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg';
-const freeAccessExpiresAt = '2026-09-13T16:24:00.000Z';
+const freeAccessExpiresAt = '2026-09-11T15:00:00.000Z';
 const command = (): FamilySignupCommand => ({
   classification: 'family',
   idempotency_key: idempotencyKey,
@@ -59,7 +59,7 @@ const input = (now: string, signupCommand = command()): PlanFamilySignupInput =>
 
 describe('P08 family signup policy', () => {
   it('grants cardless free access only before the configured expiry', () => {
-    const before = planFamilySignup(input('2026-09-13T16:23:59.000Z'));
+    const before = planFamilySignup(input('2026-09-11T14:59:59.000Z'));
     expect(before.result.projection).toMatchObject({
       access_state: 'free',
       checkout_required: false,
@@ -79,7 +79,7 @@ describe('P08 family signup policy', () => {
       checkout: null,
     });
 
-    for (const instant of ['2026-09-13T16:24:00.000Z', '2026-09-13T16:24:01.000Z']) {
+    for (const instant of ['2026-09-11T15:00:00.000Z', '2026-09-11T15:00:01.000Z']) {
       const after = planFamilySignup(input(instant));
       expect(after.result.projection).toMatchObject({
         access_state: 'inactive',
@@ -139,7 +139,7 @@ describe('P08 family signup policy', () => {
 
   it('returns the same generic zero-write result for every local HumanAccount state', () => {
     for (const humanAccountState of ['invited', 'active', 'disabled', 'archived'] as const) {
-      const duplicate = input('2026-09-13T00:00:00.000Z');
+      const duplicate = input('2026-09-11T00:00:00.000Z');
       duplicate.existing_local_state.identity = {
         adult_id: `adult_${humanAccountState}`,
         human_account_id: `account_${humanAccountState}`,
@@ -169,7 +169,7 @@ describe('P08 family signup policy', () => {
 
   it('rejects duplicate active, expired, archived, and inactive Family households', () => {
     for (const lifecycleState of ['active', 'expired', 'archived', 'inactive'] as const) {
-      const duplicate = input('2026-09-13T00:00:00.000Z');
+      const duplicate = input('2026-09-11T00:00:00.000Z');
       duplicate.existing_local_state.household = {
         household_id: `household_${lifecycleState}`,
         lifecycle_state: lifecycleState,
@@ -186,7 +186,7 @@ describe('P08 family signup policy', () => {
   });
 
   it('allows a GHL-only match to create fresh local identity and access', () => {
-    const linked = input('2026-09-13T00:00:00.000Z');
+    const linked = input('2026-09-11T00:00:00.000Z');
     if (linked.ghl_evidence?.status !== 'available') throw new Error('available evidence expected');
     linked.ghl_evidence.exact_email_match_ref_hashes = [h('c')];
     const plan = planFamilySignup(linked);
@@ -225,7 +225,7 @@ describe('P08 family signup policy', () => {
   });
 
   it('quarantines GHL ambiguity and blocks only post-expiry Checkout', () => {
-    const before = input('2026-09-13T16:23:59.000Z');
+    const before = input('2026-09-11T14:59:59.000Z');
     if (before.ghl_evidence?.status !== 'available') throw new Error('available evidence expected');
     before.ghl_evidence.exact_email_match_ref_hashes = [h('c'), h('d')];
     const free = planFamilySignup(before);
@@ -237,7 +237,7 @@ describe('P08 family signup policy', () => {
     });
     expect(free.outbox_intents[0]?.dispatch_state).toBe('identity_review');
 
-    const boundary = input('2026-09-13T16:24:00.000Z');
+    const boundary = input('2026-09-11T15:00:00.000Z');
     if (boundary.ghl_evidence?.status !== 'available') {
       throw new Error('available evidence expected');
     }
@@ -261,7 +261,7 @@ describe('P08 family signup policy', () => {
   });
 
   it('requires provider readback without converting absent evidence into identity ambiguity', () => {
-    const before = input('2026-09-13T16:23:59.000Z');
+    const before = input('2026-09-11T14:59:59.000Z');
     before.ghl_evidence = {
       status: 'evidence_unavailable',
       safe_reason: 'evidence_unavailable',
@@ -293,7 +293,7 @@ describe('P08 family signup policy', () => {
       ],
     });
 
-    const after = input('2026-09-13T16:24:00.000Z');
+    const after = input('2026-09-11T15:00:00.000Z');
     after.ghl_evidence = {
       status: 'evidence_unavailable',
       safe_reason: 'evidence_unavailable',
@@ -325,9 +325,9 @@ describe('P08 family signup policy', () => {
   });
 
   it('recovers only an exact scope, operation, key, and semantic digest binding', () => {
-    const first = input('2026-09-13T00:00:00.000Z');
+    const first = input('2026-09-11T00:00:00.000Z');
     const applied = planFamilySignup(first);
-    const retry = input('2026-09-13T00:00:00.000Z');
+    const retry = input('2026-09-11T00:00:00.000Z');
     retry.existing_request = {
       receipt: {
         request_binding: first.request_binding,
@@ -337,20 +337,20 @@ describe('P08 family signup policy', () => {
     };
     expect(planFamilySignup(retry).result.disposition).toBe('recovered');
 
-    const changedName = input('2026-09-13T00:00:00.000Z', {
+    const changedName = input('2026-09-11T00:00:00.000Z', {
       ...command(),
       first_name: 'Aharon',
     });
     changedName.existing_request = retry.existing_request;
     expect(() => planFamilySignup(changedName)).toThrow('idempotency_conflict');
-    const changedConsent = input('2026-09-13T00:00:00.000Z', {
+    const changedConsent = input('2026-09-11T00:00:00.000Z', {
       ...command(),
       general_marketing_consent: true,
     });
     changedConsent.existing_request = retry.existing_request;
     expect(() => planFamilySignup(changedConsent)).toThrow('idempotency_conflict');
 
-    const crossScope = input('2026-09-13T00:00:00.000Z');
+    const crossScope = input('2026-09-11T00:00:00.000Z');
     crossScope.scope = {
       product: 'one_time_mishnayos',
       runtime_tier: 'production',
@@ -367,35 +367,35 @@ describe('P08 family signup policy', () => {
 
   it('fails closed on invalid IANA zones, confirmation, consent, keys, and extra fields', () => {
     for (const timezone of ['not a timezone', '+02:00', 'GMT+03:00']) {
-      expect(() => input('2026-09-13T00:00:00.000Z', { ...command(), timezone })).toThrow(
+      expect(() => input('2026-09-11T00:00:00.000Z', { ...command(), timezone })).toThrow(
         'invalid_family_signup',
       );
     }
     expect(() =>
-      input('2026-09-13T00:00:00.000Z', {
+      input('2026-09-11T00:00:00.000Z', {
         ...command(),
         password_confirmation: 'different secure password',
       }),
     ).toThrow('invalid_password');
     const missingConsent = command() as Partial<FamilySignupCommand>;
     delete missingConsent.parent_newsletter_consent;
-    expect(() => input('2026-09-13T00:00:00.000Z', missingConsent as FamilySignupCommand)).toThrow(
+    expect(() => input('2026-09-11T00:00:00.000Z', missingConsent as FamilySignupCommand)).toThrow(
       'invalid_family_signup',
     );
 
     const shortKey = command();
     shortKey.idempotency_key = 'short';
-    expect(() => input('2026-09-13T00:00:00.000Z', shortKey)).toThrow('invalid_family_signup');
+    expect(() => input('2026-09-11T00:00:00.000Z', shortKey)).toThrow('invalid_family_signup');
     const weakKey = command();
     weakKey.idempotency_key = 'A'.repeat(43);
-    expect(() => input('2026-09-13T00:00:00.000Z', weakKey)).toThrow('invalid_family_signup');
+    expect(() => input('2026-09-11T00:00:00.000Z', weakKey)).toThrow('invalid_family_signup');
 
     const spoofed = command() as FamilySignupCommand & { canonical_request_hash: string };
     spoofed.canonical_request_hash = h('f');
-    expect(() => input('2026-09-13T00:00:00.000Z', spoofed)).toThrow('invalid_family_signup');
+    expect(() => input('2026-09-11T00:00:00.000Z', spoofed)).toThrow('invalid_family_signup');
 
     const extra = command();
     Object.assign(extra, { unexpected_branch_payload: 'not-family' });
-    expect(() => input('2026-09-13T00:00:00.000Z', extra)).toThrow('invalid_family_signup');
+    expect(() => input('2026-09-11T00:00:00.000Z', extra)).toThrow('invalid_family_signup');
   });
 });

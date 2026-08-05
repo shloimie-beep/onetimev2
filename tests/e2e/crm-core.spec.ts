@@ -7,18 +7,20 @@ test('synthetic signup appears once in authenticated CRM and opens detail on mob
   page.on('request', (request) => requested.push(request.url()));
   await page.setViewportSize({ width: 390, height: 844 });
   const email = `crm-${Date.now()}@example.test`;
-  const contactName = `CRM Browser Parent ${Date.now()}`;
+  const suffix = Date.now();
+  const contactName = `CRM Browser Parent ${suffix}`;
 
   await page.goto('/signup');
-  await page.getByLabel('Adult name').fill(contactName);
-  await page.getByLabel('Family or household name').fill('CRM Browser Family');
-  await page.getByLabel('Adult location').fill('Jerusalem');
-  await page.getByRole('textbox', { name: 'Adult email' }).fill(email);
-  await expect(page.getByLabel(/Student|WhatsApp|marketing/i)).toHaveCount(0);
-  await page.getByRole('button', { name: 'Pre-register my Family' }).click();
-  await expect(
-    page.getByRole('heading', { name: 'Adult pre-registration received.' }),
-  ).toBeVisible();
+  await page.getByLabel('First name', { exact: true }).fill('CRM Browser Parent');
+  await page.getByLabel('Last name', { exact: true }).fill(String(suffix));
+  await page.getByRole('textbox', { name: 'Adult account email' }).fill(email);
+  await page.getByLabel('Password', { exact: true }).fill('StrongPassword!234');
+  await page.getByLabel('Confirm password').fill('StrongPassword!234');
+  await expect(page.getByLabel(/Student.*email|WhatsApp|phone|card/i)).toHaveCount(0);
+  await page.getByLabel(/I agree to the Terms/).check();
+  await page.getByLabel(/I acknowledge the Privacy Notice/).check();
+  await page.getByRole('button', { name: 'Create your Family account' }).click();
+  await expect(page.getByRole('heading', { name: 'You’re all set.' })).toBeVisible();
 
   await login(page);
   await expect(page.getByRole('heading', { name: 'Contacts' })).toBeVisible();
@@ -29,7 +31,7 @@ test('synthetic signup appears once in authenticated CRM and opens detail on mob
   await page.getByRole('button', { name: new RegExp(contactName) }).click();
   await expect(page.getByRole('heading', { name: contactName })).toBeVisible();
   await expect(page.getByText(email)).toBeVisible();
-  await expect(page.getByText('Public signup captured')).toBeVisible();
+  await expect(page.getByText(/Family account|Public signup captured/)).toBeVisible();
 
   const overflow = await page.evaluate(
     () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
