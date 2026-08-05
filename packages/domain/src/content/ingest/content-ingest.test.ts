@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   CONTENT_INGEST_MAX_BYTES,
   CONTENT_INGEST_PART_BYTES,
+  CONTENT_INGEST_SOURCE_POLICY,
   type ContentIngestAdminActor,
   type ContentSourceRecord,
   type DriveFileObservation,
@@ -89,8 +90,11 @@ function readback(
     objectKeyDigest: sha('e'),
     objectVersionId: 'version-1',
     byteCount: session.declaredByteCount,
+    durabilityEvidenceVersion: 'OT-MANAGED-ORIGINAL-1',
+    checksumAlgorithm: 'sha256',
     sha256: fullSha256,
     kmsKeyVersionRef: 'kms-version-1',
+    storageClass: 'STANDARD',
     blockPublicAccess: true,
     bucketOwnerEnforced: true,
   };
@@ -99,9 +103,15 @@ function readback(
     uploadSessionId: session.id,
     runtimeTier: session.runtimeTier,
     verificationEnvironmentId: session.verificationEnvironmentId,
+    durabilityEvidenceVersion: 'OT-MANAGED-ORIGINAL-1',
+    bucketRef: managed.bucketRef,
+    objectKeyDigest: managed.objectKeyDigest,
     objectVersionId: managed.objectVersionId,
     byteCount: managed.byteCount,
+    checksumAlgorithm: 'sha256',
     sha256: managed.sha256,
+    kmsKeyVersionRef: managed.kmsKeyVersionRef,
+    storageClass: 'STANDARD',
     writtenAt: now,
     readBackAt: '2026-07-28T22:00:01.000Z',
   };
@@ -131,6 +141,14 @@ function source(): ContentSourceRecord {
 }
 
 describe('P19 direct upload contract', () => {
+  it('keeps direct app upload primary while Drive remains optional and nonblocking', () => {
+    expect(CONTENT_INGEST_SOURCE_POLICY).toEqual({
+      primary: 'app_upload',
+      optional: ['drive'],
+      optionalSourceFailureBlocksPrimary: false,
+    });
+  });
+
   it('OTV2-CONTENT-190 accepts supported originals through 5 GiB and rejects unsafe metadata', () => {
     expect(
       validateRecordingMetadata({
@@ -244,6 +262,12 @@ describe('P19 direct upload contract', () => {
         journalReceipt: { ...journal, sha256: sha('0') },
       }),
     ).toThrowError(/do not agree/);
+    expect(() =>
+      confirmDirectUpload({ ...session, state: 'uploading', version: 3 }, records, {
+        ...command,
+        journalReceipt: { ...journal, storageClass: 'GLACIER' },
+      }),
+    ).toThrowError(/do not agree/);
     const confirmed = confirmDirectUpload(
       { ...session, state: 'uploading', version: 3 },
       records,
@@ -346,9 +370,15 @@ describe('P19 Drive intake', () => {
       uploadSessionId: transferId,
       runtimeTier: managed.runtimeTier,
       verificationEnvironmentId: managed.verificationEnvironmentId,
+      durabilityEvidenceVersion: 'OT-MANAGED-ORIGINAL-1',
+      bucketRef: managed.bucketRef,
+      objectKeyDigest: managed.objectKeyDigest,
       objectVersionId: managed.objectVersionId,
       byteCount: 100,
+      checksumAlgorithm: 'sha256',
       sha256: canonical.sha256,
+      kmsKeyVersionRef: managed.kmsKeyVersionRef,
+      storageClass: 'STANDARD',
       writtenAt: now,
       readBackAt: '2026-07-28T22:02:01.000Z',
     };

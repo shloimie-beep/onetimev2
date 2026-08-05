@@ -235,6 +235,19 @@ describe('P16 class series lifecycle', () => {
       localStartTime: '19:00',
       durationMinutes: 60,
       weekdays: [0, 1, 2, 3, 4],
+      startsOn: '2026-08-16',
+    });
+    const generated = generateCoreOccurrences(
+      { ...canonical, startsOn: '2020-01-01' },
+      { fromLocalDate: '2026-08-01', occurredAt: at },
+    );
+    expect(generated).toHaveLength(65);
+    expect(generated[0]).toMatchObject({
+      localClassDate: '2026-08-16',
+      startsAt: '2026-08-16T16:00:00.000Z',
+      scheduledEndsAt: '2026-08-16T17:00:00.000Z',
+      joinOpensAt: '2026-08-16T15:50:00.000Z',
+      joinClosesAt: '2026-08-16T17:15:00.000Z',
     });
     expect(() => transitionSeries(canonical, seriesCommand(canonical, 'paused'))).toThrowError(
       /must remain active/,
@@ -246,15 +259,15 @@ describe('P16 class series lifecycle', () => {
 
   it('OTV2-CLASSROOM-184 reuses P15 DST-safe rolling 90-day canonical generation', () => {
     const events = generateRollingOccurrences(CANONICAL_CLASS_SERIES, {
-      fromLocalDate: '2026-03-01',
+      fromLocalDate: '2026-08-16',
     });
-    expect(events.length).toBeGreaterThanOrEqual(63);
+    expect(events).toHaveLength(65);
     expect(new Set(events.map((event) => event.localClassDate)).size).toBe(events.length);
-    expect(events.find((event) => event.localClassDate === '2026-03-22')?.startsAt).toBe(
-      '2026-03-22T17:00:00.000Z',
+    expect(events.find((event) => event.localClassDate === '2026-10-22')?.startsAt).toBe(
+      '2026-10-22T16:00:00.000Z',
     );
-    expect(events.find((event) => event.localClassDate === '2026-03-29')?.startsAt).toBe(
-      '2026-03-29T16:00:00.000Z',
+    expect(events.find((event) => event.localClassDate === '2026-10-25')?.startsAt).toBe(
+      '2026-10-25T17:00:00.000Z',
     );
   });
 });

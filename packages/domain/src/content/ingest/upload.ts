@@ -274,6 +274,23 @@ function assertCompleteParts(session: UploadSessionRecord, parts: readonly Uploa
 
 function assertReadback(session: UploadSessionRecord, command: ConfirmDirectUploadCommand) {
   const { readback, journalReceipt } = command;
+  const journalWrittenAt = Date.parse(journalReceipt.writtenAt);
+  const journalReadBackAt = Date.parse(journalReceipt.readBackAt);
+  const versionedDurabilityEvidence =
+    readback.durabilityEvidenceVersion !== undefined ||
+    journalReceipt.durabilityEvidenceVersion !== undefined;
+  const versionedDurabilityMismatch =
+    versionedDurabilityEvidence &&
+    (readback.durabilityEvidenceVersion !== 'OT-MANAGED-ORIGINAL-1' ||
+      journalReceipt.durabilityEvidenceVersion !== readback.durabilityEvidenceVersion ||
+      readback.checksumAlgorithm !== 'sha256' ||
+      typeof readback.storageClass !== 'string' ||
+      !readback.storageClass.trim() ||
+      journalReceipt.bucketRef !== readback.bucketRef ||
+      journalReceipt.objectKeyDigest !== readback.objectKeyDigest ||
+      journalReceipt.checksumAlgorithm !== readback.checksumAlgorithm ||
+      journalReceipt.kmsKeyVersionRef !== readback.kmsKeyVersionRef ||
+      journalReceipt.storageClass !== readback.storageClass);
   if (
     readback.region !== CONTENT_INGEST_REGION ||
     readback.runtimeTier !== session.runtimeTier ||
@@ -286,13 +303,17 @@ function assertReadback(session: UploadSessionRecord, command: ConfirmDirectUplo
     !readback.bucketRef ||
     !readback.blockPublicAccess ||
     !readback.bucketOwnerEnforced ||
+    !journalReceipt.receiptId.trim() ||
     journalReceipt.uploadSessionId !== session.id ||
     journalReceipt.runtimeTier !== session.runtimeTier ||
     journalReceipt.verificationEnvironmentId !== session.verificationEnvironmentId ||
     journalReceipt.objectVersionId !== readback.objectVersionId ||
     journalReceipt.byteCount !== readback.byteCount ||
     journalReceipt.sha256 !== readback.sha256 ||
-    Date.parse(journalReceipt.readBackAt) < Date.parse(journalReceipt.writtenAt)
+    versionedDurabilityMismatch ||
+    !Number.isFinite(journalWrittenAt) ||
+    !Number.isFinite(journalReadBackAt) ||
+    journalReadBackAt < journalWrittenAt
   ) {
     throw new ContentIngestError(
       CONTENT_INGEST_ERROR_CODES.invalidReadback,
