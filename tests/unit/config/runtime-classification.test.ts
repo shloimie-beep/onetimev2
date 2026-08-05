@@ -221,7 +221,7 @@ describe('canonical runtime classification', () => {
         NODE_ENV: 'production',
         ...productionSecrets,
         ONE_TIME_VERIFICATION_ENVIRONMENT_ID: 'production_operator_canary',
-        ONE_TIME_FREE_ACCESS_EXPIRES_AT: '2026-09-13T19:24:00+03:00',
+        ONE_TIME_FREE_ACCESS_EXPIRES_AT: '2026-09-11T18:00:00+03:00',
       }),
     ).toMatchObject({
       oneTimeRuntimeTier: 'production',
@@ -269,12 +269,12 @@ describe('canonical runtime classification', () => {
     expect(
       loadConfig({
         NODE_ENV: 'test',
-        ONE_TIME_FIRST_CLASS_AT: '2026-08-09T19:00:00+03:00',
-        ONE_TIME_FREE_ACCESS_EXPIRES_AT: '2026-09-13T19:24:00+03:00',
+        ONE_TIME_FIRST_CLASS_AT: '2026-08-16T19:00:00+03:00',
+        ONE_TIME_FREE_ACCESS_EXPIRES_AT: '2026-09-11T18:00:00+03:00',
       }),
     ).toMatchObject({
-      oneTimeFirstClassAt: '2026-08-09T19:00:00+03:00',
-      oneTimeFreeAccessExpiresAt: '2026-09-13T19:24:00+03:00',
+      oneTimeFirstClassAt: '2026-08-16T19:00:00+03:00',
+      oneTimeFreeAccessExpiresAt: '2026-09-11T18:00:00+03:00',
     });
     expect(() =>
       loadConfig({

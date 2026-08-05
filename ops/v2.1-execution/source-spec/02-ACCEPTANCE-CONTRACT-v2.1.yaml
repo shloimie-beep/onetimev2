@@ -207,7 +207,7 @@ verification_profiles:
     - forbidden_schedule
     - recurrence_conflict
     canonical_preconditions:
-    - canonical timezone and recurrence configuration are loaded
+    - canonical timezone and recurrence configuration are loaded with first occurrence `2026-08-16T19:00:00+03:00`
     canonical_steps:
     - create or inspect the canonical series
     - render Admin/Parent/Student local times
@@ -2872,7 +2872,7 @@ requirements:
     - parent_operator_canary
     - student_operator_canary_1
     preconditions:
-    - canonical timezone and recurrence configuration are loaded
+    - canonical timezone and recurrence configuration are loaded with first occurrence `2026-08-16T19:00:00+03:00`
     steps:
     - create or inspect the canonical series
     - render Admin/Parent/Student local times
@@ -2913,7 +2913,7 @@ requirements:
     - parent_operator_canary
     - student_operator_canary_1
     preconditions:
-    - canonical timezone and recurrence configuration are loaded
+    - canonical timezone and recurrence configuration are loaded with first occurrence `2026-08-16T19:00:00+03:00`
     steps:
     - create or inspect the canonical series
     - render Admin/Parent/Student local times
@@ -2954,7 +2954,7 @@ requirements:
     - parent_operator_canary
     - student_operator_canary_1
     preconditions:
-    - canonical timezone and recurrence configuration are loaded
+    - canonical timezone and recurrence configuration are loaded with first occurrence `2026-08-16T19:00:00+03:00`
     steps:
     - create or inspect the canonical series
     - render Admin/Parent/Student local times
@@ -2995,7 +2995,7 @@ requirements:
     - parent_operator_canary
     - student_operator_canary_1
     preconditions:
-    - canonical timezone and recurrence configuration are loaded
+    - canonical timezone and recurrence configuration are loaded with first occurrence `2026-08-16T19:00:00+03:00`
     steps:
     - create or inspect the canonical series
     - render Admin/Parent/Student local times
@@ -3036,7 +3036,7 @@ requirements:
     - parent_operator_canary
     - student_operator_canary_1
     preconditions:
-    - canonical timezone and recurrence configuration are loaded
+    - canonical timezone and recurrence configuration are loaded with first occurrence `2026-08-16T19:00:00+03:00`
     steps:
     - create or inspect the canonical series
     - render Admin/Parent/Student local times
@@ -3077,7 +3077,7 @@ requirements:
     - parent_operator_canary
     - student_operator_canary_1
     preconditions:
-    - canonical timezone and recurrence configuration are loaded
+    - canonical timezone and recurrence configuration are loaded with first occurrence `2026-08-16T19:00:00+03:00`
     steps:
     - create or inspect the canonical series
     - render Admin/Parent/Student local times
@@ -3118,7 +3118,7 @@ requirements:
     - parent_operator_canary
     - student_operator_canary_1
     preconditions:
-    - canonical timezone and recurrence configuration are loaded
+    - canonical timezone and recurrence configuration are loaded with first occurrence `2026-08-16T19:00:00+03:00`
     steps:
     - create or inspect the canonical series
     - render Admin/Parent/Student local times
@@ -3159,7 +3159,7 @@ requirements:
     - parent_operator_canary
     - student_operator_canary_1
     preconditions:
-    - canonical timezone and recurrence configuration are loaded
+    - canonical timezone and recurrence configuration are loaded with first occurrence `2026-08-16T19:00:00+03:00`
     steps:
     - create or inspect the canonical series
     - render Admin/Parent/Student local times
@@ -3200,7 +3200,7 @@ requirements:
     - parent_operator_canary
     - student_operator_canary_1
     preconditions:
-    - canonical timezone and recurrence configuration are loaded
+    - canonical timezone and recurrence configuration are loaded with first occurrence `2026-08-16T19:00:00+03:00`
     steps:
     - create or inspect the canonical series
     - render Admin/Parent/Student local times
@@ -3241,7 +3241,7 @@ requirements:
     - parent_operator_canary
     - student_operator_canary_1
     preconditions:
-    - canonical timezone and recurrence configuration are loaded
+    - canonical timezone and recurrence configuration are loaded with first occurrence `2026-08-16T19:00:00+03:00`
     steps:
     - create or inspect the canonical series
     - render Admin/Parent/Student local times
@@ -3282,7 +3282,7 @@ requirements:
     - parent_operator_canary
     - student_operator_canary_1
     preconditions:
-    - canonical timezone and recurrence configuration are loaded
+    - canonical timezone and recurrence configuration are loaded with first occurrence `2026-08-16T19:00:00+03:00`
     steps:
     - create or inspect the canonical series
     - render Admin/Parent/Student local times
@@ -3323,7 +3323,7 @@ requirements:
     - parent_operator_canary
     - student_operator_canary_1
     preconditions:
-    - canonical timezone and recurrence configuration are loaded
+    - canonical timezone and recurrence configuration are loaded with first occurrence `2026-08-16T19:00:00+03:00`
     steps:
     - create or inspect the canonical series
     - render Admin/Parent/Student local times
@@ -3364,7 +3364,7 @@ requirements:
     - parent_operator_canary
     - student_operator_canary_1
     preconditions:
-    - canonical timezone and recurrence configuration are loaded
+    - canonical timezone and recurrence configuration are loaded with first occurrence `2026-08-16T19:00:00+03:00`
     steps:
     - create or inspect the canonical series
     - render Admin/Parent/Student local times
@@ -8486,14 +8486,14 @@ requirements:
     - parent_operator_canary
     - student_operator_canary_1
     preconditions:
-    - canonical timezone and recurrence configuration are loaded
+    - canonical timezone and recurrence configuration are loaded with first occurrence `2026-08-16T19:00:00+03:00`
     steps:
     - create or inspect the canonical series
     - render Admin/Parent/Student local times
     - exercise recurrence exception and reschedule
     - test Israel/US DST divergence and forbidden schedule boundary
     expected_results:
-    - All active Students are automatically enrolled in the single canonical Sunday-through-Thursday 7 p.m. Jerusalem class.
+    - All active Students are automatically enrolled in the single canonical Sunday-through-Thursday 7 p.m. Jerusalem class, whose first occurrence is `2026-08-16T19:00:00+03:00`.
     forbidden_effects:
     - silent browser-timezone mutation
     - duplicate occurrence
@@ -10219,7 +10219,7 @@ requirements:
     - student_operator_canary_3
     - denial_household
     preconditions:
-    - the canonical Sunday-through-Thursday 7 p.m. Jerusalem series is the only active published series
+    - the canonical Sunday-through-Thursday 7 p.m. Jerusalem series beginning `2026-08-16T19:00:00+03:00` is the only active published series
     - an isolated future date range and disposable series title are reserved
     - baseline enrollment, Parent/Student calendar, Zoom-resource, outbox, and message-effect counts are recorded
     steps:
@@ -10278,7 +10278,7 @@ requirements:
     - admin_shloimie
     - parent_operator_canary
     preconditions:
-    - the family household is in free access before 2026-09-13 19:24 Asia/Jerusalem
+    - the family household is in free access before 2026-09-11 18:00 Asia/Jerusalem
     - the approved standard price is $67 USD monthly and no paid subscription exists
     - the Stripe test clock, exact Checkout mode, price, customer, and webhook identities are recorded
     steps:
@@ -10289,7 +10289,7 @@ requirements:
     - advance to the configured expiry and read back the first billing attempt and resulting access
     expected_results:
     - standard pre-expiry Checkout creates no immediate charge
-    - the first $67 USD charge is scheduled for exactly 2026-09-13 19:24 Asia/Jerusalem
+    - the first $67 USD charge is scheduled for exactly 2026-09-11 18:00 Asia/Jerusalem
     - access remains `free` before expiry and changes only from verified billing evidence at or after expiry
     - event replay creates no duplicate subscription, schedule, invoice, or charge
     forbidden_effects:
@@ -10364,7 +10364,7 @@ requirements:
     - parent_operator_canary
     preconditions:
     - the saved and reopened OT-16 registry matches the approved workflow and content digests
-    - an eligible free Family contact has exact $67 USD price and 2026-09-13 19:24 Asia/Jerusalem expiry fields
+    - an eligible free Family contact has exact $67 USD price and 2026-09-11 18:00 Asia/Jerusalem expiry fields
     - the email sender is accepted, WhatsApp sending is dormant, and provider event counters start at zero
     steps:
     - run the eligible seed at exactly 14 days before expiry and read back the delivered message and next wait
@@ -10396,7 +10396,7 @@ requirements:
     - parent_operator_canary
     preconditions:
     - the saved and reopened OT-16 registry matches the approved workflow and content digests
-    - an eligible free Family contact has exact $67 USD price and 2026-09-13 19:24 Asia/Jerusalem expiry fields
+    - an eligible free Family contact has exact $67 USD price and 2026-09-11 18:00 Asia/Jerusalem expiry fields
     - the email sender is accepted, WhatsApp sending is dormant, and provider event counters start at zero
     steps:
     - deliver one eligible pre-expiry seed notice
@@ -10426,7 +10426,7 @@ requirements:
     - parent_operator_canary
     preconditions:
     - the saved and reopened OT-16 registry matches the approved workflow and content digests
-    - an eligible free Family contact has exact $67 USD price and 2026-09-13 19:24 Asia/Jerusalem expiry fields
+    - an eligible free Family contact has exact $67 USD price and 2026-09-11 18:00 Asia/Jerusalem expiry fields
     - the email sender is accepted, WhatsApp sending is dormant, and provider event counters start at zero
     steps:
     - apply approved custom School terms to the operator-owned adult contact
@@ -10455,7 +10455,7 @@ requirements:
     - parent_operator_canary
     preconditions:
     - the saved and reopened OT-16 registry matches the approved workflow and content digests
-    - an eligible free Family contact has exact $67 USD price and 2026-09-13 19:24 Asia/Jerusalem expiry fields
+    - an eligible free Family contact has exact $67 USD price and 2026-09-11 18:00 Asia/Jerusalem expiry fields
     - the email sender is accepted, WhatsApp sending is dormant, and provider event counters start at zero
     steps:
     - approve an otherwise eligible checkpoint
@@ -10688,7 +10688,7 @@ requirements:
     stop_condition: stop on unauthorized, wrong-provider, over-budget, or acceptance-unknown effect
 - id: OTV2-SIGNUP-228
   area: SIGNUP
-  requirement: 'The public Family form and CTA change exactly at 2026-09-13T19:24:00+03:00: before it creates immediate cardless
+  requirement: 'The public Family form and CTA change exactly at 2026-09-11T18:00:00+03:00: before it creates immediate cardless
     free access; at or after it creates an inactive account and continues to hosted checkout, with no rolling trial.'
   spec_refs:
   - 05-ACTOR-ROLE-CAPABILITY-ROUTE-MATRIX-v2.1.md
@@ -10720,7 +10720,7 @@ requirements:
     - student_operator_canary_3
     - denial_household
     preconditions:
-    - server clock is one second before 2026-09-13T19:24:00+03:00
+    - server clock is one second before 2026-09-11T18:00:00+03:00
     - submitted email controls no active local household
     steps:
     - open /signup signed out and inventory the exact fields, CTA, helper, legal links, and absent fields
@@ -10731,8 +10731,7 @@ requirements:
     expected_results:
     - the form has no phone, country, Student, learner relationship, guardian/recording/recognition consent, reminder preference,
       or card field
-    - CTA is “Create my free family account” and helper is “No credit card. Free access ends September 13, 2026 at 7:24 p.m.
-      Jerusalem time.”
+    - CTA is “Create your Family account” and helper is “No credit card required. Free access ends September 11, 2026 at 6:00 PM Asia/Jerusalem.”
     - one free Family household is immediately usable and no setup email or charge is required
     forbidden_effects:
     - rolling trial
@@ -10756,7 +10755,7 @@ requirements:
     - student_operator_canary_3
     - denial_household
     preconditions:
-    - isolated signups exist exactly at and one second after 2026-09-13T19:24:00+03:00
+    - isolated signups exist exactly at and one second after 2026-09-11T18:00:00+03:00
     steps:
     - open /signup at each clock instant and inspect copy and CTA
     - submit the exact Family fields without a card

@@ -35,7 +35,7 @@ export function renderPublicHeader(navLinks: readonly StaticLink[]) {
   ${renderLogo()}
   <nav class="header-actions" aria-label="Primary">
     <a class="text-link" href="/login">Member Login</a>
-    <a class="button button-primary" href="/signup" data-ot-primitive="Button">Pre-register</a>
+    <a class="button button-primary" href="/signup" data-ot-primitive="Button">Create your Family account</a>
     <button class="icon-button" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="site-drawer" data-drawer-toggle data-ot-primitive="DrawerTrigger"><span></span><span></span><span></span></button>
   </nav>
 </header>

@@ -252,7 +252,7 @@ There is no library-only plan at launch.
 ### PS-005.2 Free access
 
 - Family signup requires no card.
-- Default free access ends at `2026-09-13T19:24:00+03:00`.
+- Default free access ends at `2026-09-11T18:00:00+03:00`.
 - The canonical timezone is `Asia/Jerusalem`.
 - Public copy says **Free until Rosh Hashanah**.
 - The timestamp is one configuration value used by access, UI, countdown, and communication.
@@ -753,6 +753,7 @@ The launch catalog has exactly one active, published canonical recurring class:
 - 7:00 p.m.;
 - 60-minute scheduled duration;
 - `Asia/Jerusalem`;
+- first occurrence anchored at `2026-08-16T19:00:00+03:00`;
 - Gregorian/English dates;
 - no Friday or Saturday occurrence.
 

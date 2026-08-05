@@ -86,8 +86,11 @@ const readback: ManagedObjectReadback = {
   objectKeyDigest: source.objectKeyDigest,
   objectVersionId: source.objectVersionId,
   byteCount: source.byteCount,
+  durabilityEvidenceVersion: 'OT-MANAGED-ORIGINAL-1',
+  checksumAlgorithm: 'sha256',
   sha256: source.sha256,
   kmsKeyVersionRef: source.kmsKeyVersionRef,
+  storageClass: 'STANDARD',
   blockPublicAccess: true,
   bucketOwnerEnforced: true,
 };

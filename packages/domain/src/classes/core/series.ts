@@ -15,6 +15,8 @@ import {
 } from '../../../../contracts/src/classes/core/index.ts';
 import { ClassroomCoreError } from './errors.ts';
 
+export const CANONICAL_CLASS_FIRST_LOCAL_DATE = '2026-08-16' as const;
+
 const ALLOWED_TRANSITIONS: Readonly<Record<ClassSeriesState, readonly ClassSeriesState[]>> = {
   draft: ['active', 'archived'],
   active: ['paused', 'archived'],
@@ -50,7 +52,7 @@ export function createCanonicalSeries(input: {
     localStartTime: CANONICAL_CLASS_LOCAL_START_TIME,
     durationMinutes: CANONICAL_CLASS_DURATION_MINUTES,
     weekdays: CANONICAL_CLASS_WEEKDAYS,
-    startsOn: input.occurredAt.slice(0, 10),
+    startsOn: CANONICAL_CLASS_FIRST_LOCAL_DATE,
     teacherProfileId: input.teacherProfileId,
     embeddedClassroomRequired: true,
     recordingEnabled: true,

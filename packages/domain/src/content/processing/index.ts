@@ -88,7 +88,12 @@ export function validateProcessingInput(input: {
     readback.objectVersionId !== source.objectVersionId ||
     readback.byteCount !== source.byteCount ||
     readback.sha256 !== source.sha256 ||
-    readback.kmsKeyVersionRef !== source.kmsKeyVersionRef
+    readback.kmsKeyVersionRef !== source.kmsKeyVersionRef ||
+    (readback.durabilityEvidenceVersion !== undefined &&
+      (readback.durabilityEvidenceVersion !== 'OT-MANAGED-ORIGINAL-1' ||
+        readback.checksumAlgorithm !== 'sha256' ||
+        typeof readback.storageClass !== 'string' ||
+        !readback.storageClass.trim()))
   ) {
     fail('invalidReadback', 'The source does not match its durable managed-object readback.');
   }

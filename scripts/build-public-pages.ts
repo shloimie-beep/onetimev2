@@ -176,8 +176,8 @@ function landingPage() {
   const howFlows = landingContent.how.flows
     .map(
       (flow, index) => `<figure class="how-flow" data-how-step="${index + 1}">
-        <img src="${flow.image}" alt="${escapeHtml(flow.alt)}"${mediaSizeAttributes(flow.image)} loading="lazy" decoding="async" data-image-watch>
-        ${fallbackImageSpan('Flow screenshot unavailable')}
+        <img src="${flow.image}" srcset="${escapeHtml(flow.srcset)}" sizes="${escapeHtml(flow.sizes)}" width="${flow.width}" height="${flow.height}" alt="${escapeHtml(flow.alt)}" loading="lazy" decoding="async" data-image-watch>
+        ${fallbackImageSpan('Family learning image unavailable')}
         <figcaption><span>${index + 1}</span><strong>${escapeHtml(flow.title)}</strong><small>${escapeHtml(flow.body)}</small></figcaption>
       </figure>`,
     )
@@ -260,7 +260,6 @@ function landingPage() {
   <section class="section how" id="how-it-works">
     <div class="how-intro">
       <div><h2>${escapeHtml(landingContent.how.heading)}</h2><p>${escapeHtml(landingContent.how.body)}</p></div>
-      <img src="${landingContent.how.overviewImage}" alt="${escapeHtml(landingContent.how.overviewAlt)}"${mediaSizeAttributes(landingContent.how.overviewImage)} loading="lazy" decoding="async" data-image-watch>
     </div>
     <div class="how-flow-grid">${howFlows}</div>
   </section>
@@ -275,7 +274,7 @@ function landingPage() {
       <img src="/assets/rabbi/rabbi-eli-holding-book.jpg" alt="Rabbi Eli Scheller holding the One Time book"${mediaSizeAttributes('/assets/rabbi/rabbi-eli-holding-book.jpg')} loading="lazy" decoding="async">
     </div>
   </section>
-  <section class="final-cta"><h2>${escapeHtml(landingContent.finalCta.heading)}</h2><a class="button button-primary" href="/signup">Pre-register your Family</a></section>
+  <section class="final-cta"><h2>${escapeHtml(landingContent.finalCta.heading)}</h2><a class="button button-primary" href="/signup">Create your Family account</a></section>
 </main>${footer()}`,
     {
       canonicalPath: '/',
@@ -294,42 +293,55 @@ function landingPage() {
 
 function signupPage() {
   return pageShell(
-    'Pre-register Your Family | One Time Mishnayos',
+    'Create Your Family Account | One Time Mishnayos',
     `${header()}<main class="signup-page">
   <section class="signup-intro">
-    <h1>Pre-register Your Family</h1>
-    <p>Adult pre-registration is open for One Time Mishnayos with Rabbi Eli Scheller.</p>
-    <p>This saves an adult contact for follow-up. It does not yet create portal access, a Student account, or a subscription.</p>
-    <p>No card is collected and there is no automatic charge.</p>
+    <h1>Create your Family account</h1>
+    <p>Create one adult-managed Family account, then add up to three Students without supplying Student email addresses.</p>
+    <p>Free access ends Friday, September 11, 2026 at 6:00 PM Asia/Jerusalem. No card is collected and there is no automatic charge.</p>
   </section>
   <section class="signup-shell">
-    <noscript><div class="noscript-panel" role="status"><strong>JavaScript is required for secure pre-registration submission.</strong><span>Please use a browser with JavaScript enabled or use the Support path. Do not send Student names or other Student information through this public form.</span></div></noscript>
-    <form class="signup-form" action="/api/v1/leads" method="post" data-signup-form data-signup-entry="preregistration" data-consent-policy-version="${escapeHtml(legalPolicyMetadata.consentPolicyVersion)}" novalidate>
-      <section data-preregistration-fields aria-labelledby="preregistration-fields-heading">
-        <h2 id="preregistration-fields-heading">Adult contact details</h2>
-        <p class="section-note">Enter adult information only. Do not include Student names, ages, email addresses, medical details, or private learner notes.</p>
-        <div class="field"><label for="contact_name">Adult name</label><input id="contact_name" name="contact_name" autocomplete="name" required><p tabindex="-1" class="error" data-error-for="contact_name"></p></div>
-        <div class="field"><label for="family_or_school">Family or household name</label><input id="family_or_school" name="family_or_school" required><p tabindex="-1" class="error" data-error-for="family_or_school"></p></div>
-        <input name="audience_type" type="hidden" value="family">
-        <div class="field"><label for="location">Adult location</label><input id="location" name="location" autocomplete="address-level2" placeholder="City or area" required><p tabindex="-1" class="error" data-error-for="location"></p></div>
+    <noscript><div class="noscript-panel" role="status"><strong>JavaScript is required for secure signup submission.</strong><span>Please use a browser with JavaScript enabled or use the Support path. Do not send Student names or other Student information through this public form.</span></div></noscript>
+    <form class="signup-form" action="/api/v1/signup/family" method="post" data-signup-form data-access-boundary="${freeAccessExpiresAtPlaceholder}" data-consent-policy-version="${escapeHtml(legalPolicyMetadata.consentPolicyVersion)}" novalidate>
+      <section data-family-fields aria-labelledby="family-fields-heading">
+        <h2 id="family-fields-heading">Create the adult Family account</h2>
+        <p class="section-note">One adult account can manage up to three separate learner seats. An adult who wants to learn as a Student must use a separate Student seat. Student email is not required.</p>
+        <div class="field-grid">
+          <div class="field"><label for="first_name">First name</label><input id="first_name" name="first_name" autocomplete="given-name" required><p tabindex="-1" class="error" data-error-for="first_name"></p></div>
+          <div class="field"><label for="last_name">Last name</label><input id="last_name" name="last_name" autocomplete="family-name" required><p tabindex="-1" class="error" data-error-for="last_name"></p></div>
+        </div>
+        <div class="field"><label for="email">Adult account email</label><input id="email" name="email" type="email" autocomplete="email" inputmode="email" required><p tabindex="-1" class="error" data-error-for="email"></p></div>
         <div class="field"><label for="timezone">Time zone</label><input id="timezone" name="timezone" autocomplete="off" placeholder="America/New_York" required><small>Use an IANA time zone. Your browser suggestion remains editable.</small><p tabindex="-1" class="error" data-error-for="timezone"></p></div>
-        <div class="field"><label for="email">Adult email</label><input id="email" name="email" type="email" autocomplete="email" inputmode="email" required><p tabindex="-1" class="error" data-error-for="email"></p></div>
-        <fieldset class="service-communications" aria-describedby="service_communications_note"><legend>Follow-up requested</legend><p id="service_communications_note">By submitting, you ask the One Time team to follow up at this adult email about Family access. This form does not opt you into marketing or WhatsApp messages.</p></fieldset>
-        <p class="signup-policy-note">By submitting, you acknowledge the <a href="/privacy">Privacy Notice</a>. No Student data should be entered here.</p>
+        <div class="field-grid">
+          <div class="field"><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="new-password" minlength="12" required><p tabindex="-1" class="error" data-error-for="password"></p></div>
+          <div class="field"><label for="password_confirmation">Confirm password</label><input id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" minlength="12" required><p tabindex="-1" class="error" data-error-for="password_confirmation"></p></div>
+        </div>
+        <fieldset class="required-acceptances"><legend>Required agreements</legend>
+          <label><input id="terms_accepted" name="terms_accepted" type="checkbox" required><span>I agree to the <a href="/terms">Terms</a>, including cancellation and refund rules.</span></label>
+          <label><input id="privacy_accepted" name="privacy_accepted" type="checkbox" required><span>I acknowledge the <a href="/privacy">Privacy Notice</a> and <a href="/student-data">Student Data Notice</a>.</span></label>
+        </fieldset>
+        <fieldset class="optional-reminders"><legend>Optional adult communications</legend>
+          <p>No optional choice is selected by default. WhatsApp is not an active launch channel.</p>
+          <label><input id="general_marketing_consent" name="general_marketing_consent" type="checkbox"> General marketing</label>
+          <label><input id="parent_newsletter_consent" name="parent_newsletter_consent" type="checkbox"> Parent newsletter</label>
+        </fieldset>
+        <div class="signup-access-state" data-before-expiry hidden><p data-signup-helper>No credit card required. Free access ends September 11, 2026 at 6:00 PM Asia/Jerusalem.</p></div>
+        <div class="signup-access-state" data-at-or-after-expiry><p>$67/month after account creation through secure hosted checkout. No charge is made by this form.</p></div>
       </section>
-      <button class="button button-primary" type="submit" data-enhanced-submit hidden>Pre-register my Family</button>
+      <button class="button button-primary" type="submit" data-enhanced-submit hidden>Create your Family account</button>
       <p class="form-status" role="status" data-form-status></p>
     </form>
     <div class="success-panel" data-success-panel hidden tabindex="-1">
-      <h2 data-success-heading>Adult pre-registration received</h2>
-      <p data-success-body>We saved the adult contact for follow-up. No portal account, Student account, subscription, or charge was created.</p>
+      <h2 data-success-heading>You’re all set.</h2>
+      <p data-success-body>Your Family account is ready. You can continue now while we finish sending your confirmation email.</p>
+      <a class="button button-primary" href="/parent" data-success-continue>Go to Parent dashboard</a>
     </div>
   </section>
 </main>${footer()}`,
     {
       canonicalPath: '/signup',
       description:
-        'Pre-register an adult contact for One Time Mishnayos Family access without creating a portal, Student account, subscription, or charge.',
+        'Create an adult-managed One Time Mishnayos Family account and begin free access through September 11, 2026 at 6:00 PM Asia/Jerusalem.',
     },
   );
 }

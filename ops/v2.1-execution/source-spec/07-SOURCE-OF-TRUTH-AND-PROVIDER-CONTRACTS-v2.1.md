@@ -522,7 +522,7 @@ Family signup collects no card.
 If a Parent accepts paid continuation before the configured free end:
 
 - the GHL-orchestrated, Stripe-hosted flow clearly displays the $67 monthly offer and start date;
-- the standard subscription is scheduled/trialed so the first charge occurs no earlier than `2026-09-13T19:24:00+03:00`;
+- the standard subscription is scheduled/trialed so the first charge occurs no earlier than `2026-09-11T18:00:00+03:00`;
 - successful card collection or browser return alone does not replace signed Stripe event/readback;
 - no immediate-charge exception is allowed unless the UI separately states the immediate amount/date and the Parent explicitly confirms it;
 - one household may have at most one current standard subscription.
@@ -656,7 +656,7 @@ Credentials are separate by capability, held in protected configuration, and nev
 
 ### 8.3 Schedule and preparation boundary
 
-The canonical launch series is Sunday through Thursday at 7:00 p.m. `Asia/Jerusalem` for 60 minutes. One Time, not Zoom, owns recurrence:
+The canonical launch series begins at `2026-08-16T19:00:00+03:00` and recurs Sunday through Thursday at 7:00 p.m. `Asia/Jerusalem` for 60 minutes. One Time, not Zoom, owns recurrence:
 
 - occurrences are generated in a rolling 90-day horizon from Jerusalem-local dates using the active timezone-database version;
 - automatic preparation begins exactly 24 hours before scheduled start;

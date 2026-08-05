@@ -71,7 +71,7 @@ This package supersedes the older One Time launch Board, old acceptance contract
 - Parent accounts never enter Student class, library, recordings, or private questions.
 - An adult learner consumes a separate Student seat and uses separate Student credentials.
 - Student relationship is `self` or `dependent`; no date of birth, age, age band, grade, or Hebrew-specific profile field is collected.
-- Before `2026-09-13T19:24:00+03:00`, Family signup receives immediate free access from the submitted email/password with no card; at or after that instant it creates an inactive account and continues to hosted checkout with no rolling trial.
+- Before `2026-09-11T18:00:00+03:00`, Family signup receives immediate free access from the submitted email/password with no card; at or after that instant it creates an inactive account and continues to hosted checkout with no rolling trial.
 - School public intake is a sales inquiry; approved schools use the same account experience with manually configured price and seat allowance.
 - Standard Family price is USD $67 monthly.
 - No card and no automatic charge during the free period.

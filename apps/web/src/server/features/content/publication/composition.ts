@@ -20,6 +20,7 @@ export type ContentPublicationRegistrationInput = {
   resolveIdentity: ContentPublicationIdentityResolver;
   verifyCsrf: ContentPublicationCsrfVerifier;
   providerBinding?: ProviderRegistryBinding | undefined;
+  vimeoReadbackAdapter?: VimeoContentPublicationReadbackAdapter | undefined;
   createId?: (() => string) | undefined;
 };
 
@@ -35,6 +36,7 @@ export function createContentPublicationFeatureRegistration(
         config,
         pool,
         providerBinding: input.providerBinding,
+        vimeoReadbackAdapter: input.vimeoReadbackAdapter,
         createId: input.createId,
       });
       return createContentPublicationRouter({
@@ -51,14 +53,21 @@ export function composeContentPublicationService(input: {
   config: AppConfig;
   pool: DbPool;
   providerBinding?: ProviderRegistryBinding | undefined;
+  vimeoReadbackAdapter?: VimeoContentPublicationReadbackAdapter | undefined;
   createId?: (() => string) | undefined;
 }) {
   const repository = createPostgresContentPublicationRepository(input.pool);
   const service = createContentPublicationService({
     repository,
     approvedProjectionRepository: createContentProcessingRepository(input.pool),
-    vimeoProviderBinding: input.providerBinding ?? disabledVimeoBinding(input.config),
-    vimeoReadbackAdapter: disabledVimeoReadbackAdapter(),
+    vimeoProviderBinding:
+      input.config.contentMediaEnabled && input.providerBinding
+        ? input.providerBinding
+        : disabledVimeoBinding(input.config),
+    vimeoReadbackAdapter:
+      input.config.contentMediaEnabled && input.vimeoReadbackAdapter
+        ? input.vimeoReadbackAdapter
+        : disabledVimeoReadbackAdapter(),
     createId: input.createId ?? (() => `playback_${randomUUID()}`),
   });
   return service;
