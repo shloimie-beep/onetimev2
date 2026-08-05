@@ -42,7 +42,10 @@ CREATE TABLE onetime.v21_parent_preferences (
 CREATE TABLE onetime.v21_parent_preference_commands (
   household_id text NOT NULL,
   idempotency_key text NOT NULL CHECK (length(idempotency_key) BETWEEN 8 AND 160),
-  canonical_request_hash text NOT NULL CHECK (canonical_request_hash ~ '^[0-9a-f]{64}$'),
+  canonical_request_hash text NOT NULL CHECK (
+    length(canonical_request_hash) = 64
+    AND canonical_request_hash = lower(canonical_request_hash)
+  ),
   response_json jsonb NOT NULL,
   created_at timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (household_id, idempotency_key),
@@ -50,15 +53,6 @@ CREATE TABLE onetime.v21_parent_preference_commands (
     ON DELETE RESTRICT
 );
 
-WITH latest_signup AS (
-  SELECT DISTINCT ON (household_id)
-         household_id,
-         household_timezone,
-         parent_newsletter_consent,
-         committed_at
-    FROM onetime.family_signup_requests
-   ORDER BY household_id, committed_at DESC
-)
 INSERT INTO onetime.v21_parent_preferences (
   household_id,
   owner_adult_id,
@@ -93,6 +87,14 @@ SELECT household.household_id,
        household.owner_adult_id,
        COALESCE(signup.committed_at, household.updated_at)
   FROM onetime.v21_households AS household
-  LEFT JOIN latest_signup AS signup USING (household_id)
+  LEFT JOIN (
+    SELECT DISTINCT ON (household_id)
+           household_id,
+           household_timezone,
+           parent_newsletter_consent,
+           committed_at
+      FROM onetime.family_signup_requests
+     ORDER BY household_id, committed_at DESC
+  ) AS signup USING (household_id)
  WHERE household.classification = 'family'
 ON CONFLICT (household_id) DO NOTHING;

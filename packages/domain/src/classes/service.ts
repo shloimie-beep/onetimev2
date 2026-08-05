@@ -421,16 +421,23 @@ async function ensureOccurrence(client: Queryable, config: AppConfig, window: Da
     ONE_TIME_CLASS_SERIES_KEY,
     window.localDate,
   ]);
+  const scheduledEndsAt = new Date(window.startsAt.getTime() + 60 * 60_000);
+  const joinOpensAt = new Date(window.startsAt.getTime() - 10 * 60_000);
+  const joinClosesAt = new Date(window.startsAt.getTime() + 75 * 60_000);
   await client.query(
     `INSERT INTO onetime.class_occurrences
        (occurrence_key, account_key, product_key, class_series_key, local_class_date,
-        starts_at, reminder_due_at, joinable_until, occurrence_state, reminder_state)
-     VALUES ($1, $2, $3, $4, $5::date, $6, $7, $8, 'scheduled', 'pending')
+         starts_at, reminder_due_at, joinable_until, occurrence_state, reminder_state,
+         scheduled_ends_at, join_opens_at, join_closes_at)
+     VALUES ($1, $2, $3, $4, $5::date, $6, $7, $8, 'scheduled', 'pending', $9, $10, $11)
      ON CONFLICT (account_key, product_key, class_series_key, local_class_date)
      DO UPDATE SET
        starts_at = EXCLUDED.starts_at,
        reminder_due_at = EXCLUDED.reminder_due_at,
        joinable_until = EXCLUDED.joinable_until,
+       scheduled_ends_at = EXCLUDED.scheduled_ends_at,
+       join_opens_at = EXCLUDED.join_opens_at,
+       join_closes_at = EXCLUDED.join_closes_at,
        reminder_state = CASE
          WHEN onetime.class_occurrences.reminder_state = 'not_required' THEN 'pending'
          ELSE onetime.class_occurrences.reminder_state
@@ -444,7 +451,10 @@ async function ensureOccurrence(client: Queryable, config: AppConfig, window: Da
       window.localDate,
       window.startsAt,
       window.reminderDueAt,
-      new Date(window.startsAt.getTime() + 90 * 60_000),
+      joinClosesAt,
+      scheduledEndsAt,
+      joinOpensAt,
+      joinClosesAt,
     ],
   );
   return occurrenceKey;
