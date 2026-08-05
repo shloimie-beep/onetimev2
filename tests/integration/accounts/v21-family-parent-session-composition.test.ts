@@ -17,9 +17,11 @@ import type {
 } from '../../../packages/db/src/accounts/v21-household-identity-repository.ts';
 import { createPostgresV21AdultSessionRepository } from '../../../packages/db/src/accounts/v21-household-identity-repository.ts';
 import {
+  completePasswordReset,
   createAccountUser,
   createSession,
   getSessionUserByKey,
+  requestPasswordReset,
 } from '../../../packages/domain/src/index.ts';
 
 type SignupProjection = {
@@ -53,6 +55,8 @@ beforeEach(async () => {
     COMMIT_SHA: 'test',
     OUTBOX_TRANSPORT_MODE: 'sink',
     AUTH_CSRF_SECRET: 'v21-family-parent-composition-test-secret',
+    ONE_TIME_LIFECYCLE_DELIVERY_KEY:
+      'v21-family-parent-composition-lifecycle-delivery-key-for-tests',
     ONE_TIME_FREE_ACCESS_EXPIRES_AT: '2026-09-13T16:24:00.000Z',
     PARENT_STUDENT_SERVICE_ACCOUNT_VERSION: 'test-only-parent-student-service-v1',
     PARENT_STUDENT_SERVICE_ACCOUNT_EVIDENCE_REFERENCE:
@@ -120,6 +124,77 @@ function availabilityGuardedRepository(
 }
 
 describe('I36 central Family-signup and Parent-session composition', () => {
+  it('recovers a canonical v2.1 Parent credential once and revokes prior sessions', async () => {
+    const signup = await submitFamily(
+      'recoverable-v21-parent@example.test',
+      'Recoverable',
+      'Parent',
+    );
+    const issued = await requestPasswordReset({
+      pool,
+      config,
+      payload: {
+        idempotency_key: 'v21-parent-recovery-request-0001',
+        email: 'recoverable-v21-parent@example.test',
+      },
+      now,
+      includeLocalProofToken: true,
+    });
+    if (!('token_for_local_proof' in issued) || !issued.token_for_local_proof) {
+      throw new Error('missing local v2.1 recovery proof token');
+    }
+
+    const completed = await completePasswordReset({
+      pool,
+      config,
+      payload: {
+        token: issued.token_for_local_proof,
+        password: 'replacement horse battery staple',
+        password_confirmation: 'replacement horse battery staple',
+      },
+      now: new Date(now.getTime() + 1_000),
+    });
+    expect(completed).toMatchObject({
+      user_key: signup.projection.human_account_id,
+      role: 'parent',
+      status: 'active',
+      sessions_invalidated: 1,
+    });
+    const recovered = await pool.query(
+      `SELECT account.security_version,
+              credential.credential_version,
+              credential.credential_state,
+              session.revoked_at,
+              session.revoke_reason
+         FROM onetime.v21_human_accounts AS account
+         JOIN onetime.v21_adult_credentials AS credential
+           ON credential.human_account_id = account.human_account_id
+         JOIN onetime.v21_adult_sessions AS session
+           ON session.human_account_id = account.human_account_id
+        WHERE account.human_account_id = $1`,
+      [signup.projection.human_account_id],
+    );
+    expect(recovered.rows[0]).toMatchObject({
+      security_version: 2,
+      credential_version: 2,
+      credential_state: 'active',
+      revoked_at: expect.anything(),
+      revoke_reason: 'password_reset',
+    });
+    await expect(
+      completePasswordReset({
+        pool,
+        config,
+        payload: {
+          token: issued.token_for_local_proof,
+          password: 'another replacement password value',
+          password_confirmation: 'another replacement password value',
+        },
+        now: new Date(now.getTime() + 2_000),
+      }),
+    ).rejects.toMatchObject({ code: 'TOKEN_CONSUMED' });
+  });
+
   it('binds real P08 signup to one fail-closed v2.1 Parent middleware runtime', async () => {
     const preExpiry = await submitFamily('pre-expiry-parent@example.test', 'Pre', 'Expiry');
 

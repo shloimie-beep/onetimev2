@@ -2,8 +2,8 @@ import { randomBytes } from 'node:crypto';
 import pg from 'pg';
 import { runMigrations, verifyMigrations } from '../../packages/db/src/index.ts';
 
-const EXPECTED_MIGRATION_COUNT = 94;
-const EXPECTED_HEAD = '2263_family_signup_ghl_dispatch';
+const EXPECTED_MIGRATION_COUNT = 95;
+const EXPECTED_HEAD = '2264_v21_adult_password_recovery';
 
 async function main() {
   assert(

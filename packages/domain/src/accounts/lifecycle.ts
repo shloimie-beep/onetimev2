@@ -21,6 +21,7 @@ import {
 import type { DbPool, Queryable } from '../../../db/src/index.ts';
 import { inTransaction } from '../../../db/src/index.ts';
 import { hashPassword } from '../auth/service.ts';
+import { hashAuthPassword } from '../auth/policy.ts';
 import { applyHouseholdAccessStateWithClient } from '../access/service.ts';
 import { normalizeEmail, stableKey } from '../lead/normalize.ts';
 import { consumeRateLimitBudgets } from '../security/rate-limit.ts';
@@ -70,6 +71,7 @@ type TokenRecord = {
   display_name: string | null;
   target_role: 'owner' | 'admin' | 'rabbi' | 'parent' | 'student';
   subject_user_key: string | null;
+  subject_human_account_id: string | null;
   household_key: string | null;
   relationship_key: string | null;
   learner_key: string | null;
@@ -723,7 +725,10 @@ export async function requestPasswordReset(
           emailNormalized,
         })
       : await findAccountUserByEmail(client, input.config, emailNormalized);
-    if (!user) {
+    const v21Account = input.expectedParentGuardian
+      ? undefined
+      : await findV21HumanAccountByEmail(client, input.config, emailNormalized);
+    if (!user && !v21Account) {
       await audit(client, input.config, {
         actionType: 'password_reset_requested_unknown',
         metadata: { email_digest: digest(emailNormalized) },
@@ -732,10 +737,13 @@ export async function requestPasswordReset(
     }
     return issueAccountToken(client, input.config, {
       tokenType: 'password_reset',
-      targetRole: lifecycleRoleFromUserRole(String(user.role)),
+      targetRole: v21Account
+        ? (v21Account.target_role as 'admin' | 'parent')
+        : lifecycleRoleFromUserRole(String(user!.role)),
       emailNormalized,
-      displayName: String(user.display_name),
-      subjectUserKey: String(user.user_key),
+      displayName: String(v21Account?.display_name ?? user!.display_name),
+      subjectUserKey: v21Account ? null : String(user!.user_key),
+      subjectHumanAccountId: v21Account ? String(v21Account.human_account_id) : null,
       idempotencyKey: payload.idempotency_key,
       requestHash: fingerprint(payload),
       actorUserKey: null,
@@ -757,6 +765,9 @@ export async function completePasswordReset(input: {
     expectedType: 'password_reset',
     now: input.now ?? new Date(),
     complete: async (client, token, now) => {
+      if (token.subject_human_account_id) {
+        return completeV21AdultPasswordReset(client, input.config, token, payload.password, now);
+      }
       const userKey = requiredString(token.subject_user_key);
       const user = await getAccountUser(client, input.config, userKey);
       await updatePassword(client, userKey, payload.password, now);
@@ -954,6 +965,7 @@ async function issueAccountToken(
     now: Date;
     ttlMs?: number;
     subjectUserKey?: string | null;
+    subjectHumanAccountId?: string | null;
     householdKey?: string | null;
     relationshipKey?: string | null;
     learnerKey?: string | null;
@@ -981,6 +993,7 @@ async function issueAccountToken(
     targetRole: input.targetRole,
     emailNormalized: input.emailNormalized,
     subjectUserKey: input.subjectUserKey ?? null,
+    subjectHumanAccountId: input.subjectHumanAccountId ?? null,
     householdKey: input.householdKey ?? null,
     relationshipKey: input.relationshipKey ?? null,
     learnerKey: input.learnerKey ?? null,
@@ -989,9 +1002,10 @@ async function issueAccountToken(
   await client.query(
     `INSERT INTO onetime.account_lifecycle_tokens
        (token_key, account_key, product_key, token_type, token_hash, email_normalized,
-        display_name, target_role, subject_user_key, household_key, relationship_key,
-        learner_key, expires_at, created_by_user_key, metadata, created_at)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15::jsonb,$16)`,
+        display_name, target_role, subject_user_key, subject_human_account_id,
+        household_key, relationship_key, learner_key, expires_at, created_by_user_key,
+        metadata, created_at)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16::jsonb,$17)`,
     [
       tokenKey,
       config.accountKey,
@@ -1002,6 +1016,7 @@ async function issueAccountToken(
       input.displayName,
       input.targetRole,
       input.subjectUserKey ?? null,
+      input.subjectHumanAccountId ?? null,
       input.householdKey ?? null,
       input.relationshipKey ?? null,
       input.learnerKey ?? null,
@@ -1043,6 +1058,7 @@ async function issueAccountToken(
       token_ref: tokenRef(tokenKey),
       lifecycle_delivery_ref: outbox.delivery_key,
       destination_ref: outbox.destination_ref,
+      subject_human_account_bound: Boolean(input.subjectHumanAccountId),
       raw_token_included: false,
       raw_url_included: false,
       external_send_performed: false,
@@ -1118,6 +1134,7 @@ async function revokePriorLifecycleTokens(
     targetRole: string;
     emailNormalized: string | null;
     subjectUserKey: string | null;
+    subjectHumanAccountId: string | null;
     householdKey: string | null;
     relationshipKey: string | null;
     learnerKey: string | null;
@@ -1126,7 +1143,7 @@ async function revokePriorLifecycleTokens(
 ) {
   await client.query(
     `UPDATE onetime.account_lifecycle_tokens
-        SET revoked_at = $11
+        SET revoked_at = $12
       WHERE account_key = $1
         AND product_key = $2
         AND token_type = $3
@@ -1136,9 +1153,10 @@ async function revokePriorLifecycleTokens(
         AND target_role = $5
         AND COALESCE(email_normalized, '') = COALESCE($6, '')
         AND COALESCE(subject_user_key, '') = COALESCE($7, '')
-        AND COALESCE(household_key, '') = COALESCE($8, '')
-        AND COALESCE(relationship_key, '') = COALESCE($9, '')
-        AND COALESCE(learner_key, '') = COALESCE($10, '')`,
+        AND COALESCE(subject_human_account_id, '') = COALESCE($8, '')
+        AND COALESCE(household_key, '') = COALESCE($9, '')
+        AND COALESCE(relationship_key, '') = COALESCE($10, '')
+        AND COALESCE(learner_key, '') = COALESCE($11, '')`,
     [
       config.accountKey,
       config.productKey,
@@ -1147,6 +1165,7 @@ async function revokePriorLifecycleTokens(
       input.targetRole,
       input.emailNormalized,
       input.subjectUserKey,
+      input.subjectHumanAccountId,
       input.householdKey,
       input.relationshipKey,
       input.learnerKey,
@@ -1537,6 +1556,25 @@ async function markTokenConsumed(
   );
 }
 
+async function markV21TokenConsumed(
+  client: Queryable,
+  tokenKey: string,
+  now: Date,
+  humanAccountId: string,
+) {
+  const updated = await client.query(
+    `UPDATE onetime.account_lifecycle_tokens
+        SET consumed_at = $2,
+            subject_human_account_id = COALESCE(subject_human_account_id, $3)
+      WHERE token_key = $1
+        AND subject_user_key IS NULL`,
+    [tokenKey, now, humanAccountId],
+  );
+  if (updated.rowCount !== 1) {
+    throw new AccountLifecycleError('TOKEN_INVALID', 'The account lifecycle token is invalid.');
+  }
+}
+
 async function readLifecycleIdempotency<T>(
   client: Queryable,
   config: AppConfig,
@@ -1727,6 +1765,128 @@ async function getAccountUser(client: Queryable, config: AppConfig, userKey: str
   const row = result.rows[0] as Record<string, unknown> | undefined;
   if (!row) throw new AccountLifecycleError('NOT_FOUND', 'The account user was not found.');
   return row;
+}
+
+async function findV21HumanAccountByEmail(
+  client: Queryable,
+  config: AppConfig,
+  emailNormalized: string,
+) {
+  const result = await client.query(
+    `SELECT account.human_account_id,
+            adult.display_name,
+            membership.role AS target_role
+       FROM onetime.v21_adult_identities AS adult
+       JOIN onetime.v21_human_accounts AS account
+         ON account.adult_id = adult.adult_id
+        AND account.product_key = adult.product_key
+        AND account.runtime_tier = adult.runtime_tier
+        AND account.verification_environment_id = adult.verification_environment_id
+       JOIN onetime.v21_adult_credentials AS credential
+         ON credential.human_account_id = account.human_account_id
+        AND credential.adult_id = adult.adult_id
+        AND credential.product_key = account.product_key
+        AND credential.runtime_tier = account.runtime_tier
+        AND credential.verification_environment_id = account.verification_environment_id
+       JOIN onetime.v21_human_account_role_memberships AS membership
+         ON membership.human_account_id = account.human_account_id
+        AND membership.product_key = account.product_key
+        AND membership.runtime_tier = account.runtime_tier
+        AND membership.verification_environment_id = account.verification_environment_id
+        AND membership.role IN ('admin', 'parent')
+        AND membership.revoked_at IS NULL
+      WHERE adult.normalized_email = $1
+        AND adult.product_key = 'one_time_mishnayos'
+        AND adult.runtime_tier = $2
+        AND adult.verification_environment_id = $3
+        AND adult.state = 'active'
+        AND account.state = 'active'
+        AND credential.credential_state IN ('active', 'reset_required')
+      ORDER BY CASE membership.role WHEN 'parent' THEN 0 ELSE 1 END
+      LIMIT 1`,
+    [emailNormalized, config.oneTimeRuntimeTier, config.oneTimeVerificationEnvironmentId],
+  );
+  if (result.rows.length !== 1 || !result.rows[0]?.target_role) return undefined;
+  return result.rows[0] as Record<string, unknown>;
+}
+
+async function completeV21AdultPasswordReset(
+  client: Queryable,
+  config: AppConfig,
+  token: TokenRecord,
+  password: string,
+  now: Date,
+): Promise<AccountLifecycleCompletionResult> {
+  const humanAccountId = requiredString(token.subject_human_account_id);
+  const credential = await client.query(
+    `UPDATE onetime.v21_adult_credentials
+        SET password_hash = $1,
+            credential_state = 'active',
+            credential_version = credential_version + 1,
+            updated_at = $2
+      WHERE human_account_id = $3
+        AND product_key = 'one_time_mishnayos'
+        AND runtime_tier = $4
+        AND verification_environment_id = $5
+        AND credential_state IN ('active', 'reset_required')
+      RETURNING adult_id`,
+    [
+      hashAuthPassword(password),
+      now,
+      humanAccountId,
+      config.oneTimeRuntimeTier,
+      config.oneTimeVerificationEnvironmentId,
+    ],
+  );
+  if (credential.rowCount !== 1) {
+    throw new AccountLifecycleError('NOT_FOUND', 'The account user was not found.');
+  }
+  const account = await client.query(
+    `UPDATE onetime.v21_human_accounts
+        SET security_version = security_version + 1,
+            version = version + 1,
+            updated_at = $2
+      WHERE human_account_id = $1
+        AND product_key = 'one_time_mishnayos'
+        AND runtime_tier = $3
+        AND verification_environment_id = $4
+        AND state = 'active'
+      RETURNING security_version`,
+    [humanAccountId, now, config.oneTimeRuntimeTier, config.oneTimeVerificationEnvironmentId],
+  );
+  if (account.rowCount !== 1) {
+    throw new AccountLifecycleError('NOT_FOUND', 'The account user was not found.');
+  }
+  const revoked = await client.query(
+    `UPDATE onetime.v21_adult_sessions
+        SET revoked_at = $1,
+            revoke_reason = 'password_reset',
+            version = version + 1,
+            updated_at = $1
+      WHERE human_account_id = $2
+        AND product_key = 'one_time_mishnayos'
+        AND runtime_tier = $3
+        AND verification_environment_id = $4
+        AND revoked_at IS NULL`,
+    [now, humanAccountId, config.oneTimeRuntimeTier, config.oneTimeVerificationEnvironmentId],
+  );
+  await markV21TokenConsumed(client, token.token_key, now, humanAccountId);
+  await audit(client, config, {
+    actionType: 'password_reset_completed',
+    tokenKey: token.token_key,
+    metadata: {
+      human_account_ref: digest(humanAccountId),
+      sessions_invalidated: revoked.rowCount ?? 0,
+      security_version_after: Number(account.rows[0]?.security_version),
+    },
+  });
+  return completion(
+    humanAccountId,
+    lifecycleRoleFromUserRole(token.target_role),
+    'active',
+    false,
+    revoked.rowCount ?? 0,
+  );
 }
 
 async function findAccountUserByEmail(
@@ -1929,6 +2089,7 @@ function mapToken(row: Record<string, unknown>): TokenRecord {
     display_name: nullableString(row.display_name),
     target_role: row.target_role as TokenRecord['target_role'],
     subject_user_key: nullableString(row.subject_user_key),
+    subject_human_account_id: nullableString(row.subject_human_account_id),
     household_key: nullableString(row.household_key),
     relationship_key: nullableString(row.relationship_key),
     learner_key: nullableString(row.learner_key),
