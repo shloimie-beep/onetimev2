@@ -69,14 +69,6 @@ DO UPDATE SET timezone = EXCLUDED.timezone,
               version = existing.version + 1,
               updated_at = statement_timestamp();
 
-UPDATE onetime.class_series
-   SET is_canonical = false,
-       version = version + 1,
-       updated_at = statement_timestamp()
- WHERE product_key <> 'one_time_mishnayos'
-   AND class_series_key = 'class_series_one_time_daily'
-   AND is_canonical = true;
-
 WITH canonical_dates AS (
   SELECT series.account_key,
          series.product_key,
