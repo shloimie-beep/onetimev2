@@ -9,6 +9,7 @@ import type { AppConfig } from '../../../../packages/config/src/index.ts';
 import { asBotKey } from '../../../../packages/contracts/src/telegram/types.ts';
 import { inTransaction, type DbPool, type Queryable } from '../../../../packages/db/src/index.ts';
 import { createPostgresBillingRepositories } from '../../../../packages/db/src/billing/repository.ts';
+import { createPostgresCommercialBillingRepository } from '../../../../packages/db/src/billing/commercial/repository.ts';
 import { createClassroomRepository } from '../../../../packages/db/src/classroom/repository.ts';
 import { createZoomClassOccurrenceRepository } from '../../../../packages/db/src/classroom/zoom-occurrence-repository.ts';
 import { createGamificationRepository } from '../../../../packages/db/src/gamification/repository.ts';
@@ -326,6 +327,10 @@ import {
   createParentSummaryService,
   createPostgresParentSummaryRepository,
 } from './features/portals/parent-summary/index.ts';
+import {
+  createCommercialBillingService,
+  createParentCommercialBillingRouter,
+} from './features/billing/commercial/index.ts';
 import { clearSessionCookieHeader, sessionCookieHeader } from './features/auth/http-security.ts';
 import {
   installServerFeatureRouters,
@@ -851,6 +856,34 @@ export function createApp({
   const parentStudentServiceAccountVersion = config.parentStudentServiceAccountVersion;
   const parentStudentServiceAccountEvidenceReference =
     config.parentStudentServiceAccountEvidenceReference;
+  if (config.oneTimeFreeAccessExpiresAt) {
+    app.use(
+      '/api/app/parent',
+      createParentCommercialBillingRouter({
+        service: createCommercialBillingService({
+          repository: createPostgresCommercialBillingRepository(pool),
+          freeAccessExpiresAt: config.oneTimeFreeAccessExpiresAt,
+        }),
+        sessions: v21AdultSessionRuntime,
+        scope: {
+          product: 'one_time_mishnayos',
+          runtime_tier: config.oneTimeRuntimeTier,
+          verification_environment_id: config.oneTimeVerificationEnvironmentId,
+        },
+        freeAccessExpiresAt: config.oneTimeFreeAccessExpiresAt,
+        ...(clock ? { clock } : {}),
+      }),
+    );
+  } else {
+    app.use('/api/app/parent/billing', (_req, res) => {
+      setPrivateNoStore(res);
+      res.status(503).json({
+        success: false,
+        code: 'PARENT_BILLING_UNAVAILABLE',
+        message: 'Parent billing is temporarily unavailable.',
+      });
+    });
+  }
   if (parentStudentServiceAccountVersion && parentStudentServiceAccountEvidenceReference) {
     const parentHouseholdRepository = createPostgresParentHouseholdRepository(pool, {
       acceptedServiceAccountVersion: parentStudentServiceAccountVersion,

@@ -76,7 +76,6 @@ const ISOLATED_ROUTE_IDS = new Set<CanonicalRouteId>([
   'RT-PUB-003',
   'RT-AUTH-005',
   'RT-AUTH-008',
-  'RT-PAR-030',
   'RT-PAR-071',
   'RT-PAR-072',
   'RT-STU-071',
