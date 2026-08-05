@@ -127,6 +127,36 @@ describe('read-only migration verification', () => {
     }
   });
 
+  it('accepts a complete checksum-pinned ledger applied in historical batches', async () => {
+    const pool = createMemoryPool();
+    const directory = await migrationDirectory({
+      '0001_first.sql': 'CREATE TABLE onetime.first_table (id text PRIMARY KEY);',
+      '0002_second.sql': 'CREATE TABLE onetime.second_table (id text PRIMARY KEY);',
+      '0003_third.sql': 'CREATE TABLE onetime.third_table (id text PRIMARY KEY);',
+    });
+
+    try {
+      await runMigrations(pool, directory);
+      await pool.query(
+        `UPDATE onetime.schema_migrations
+            SET applied_at = CASE id
+              WHEN '0001_first' THEN timestamptz '2026-01-01T00:00:00Z'
+              WHEN '0002_second' THEN timestamptz '2026-01-03T00:00:00Z'
+              ELSE timestamptz '2026-01-02T00:00:00Z'
+            END`,
+      );
+      expect(await verifyMigrations(pool, directory)).toMatchObject({
+        ok: true,
+        status: 'verified',
+        applied_count: 3,
+        pending_count: 0,
+        issues: [],
+      });
+    } finally {
+      await pool.end();
+    }
+  });
+
   it('verifies the fully applied repository migration inventory without writes', async () => {
     const pool = createMemoryPool();
 

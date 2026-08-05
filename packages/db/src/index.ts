@@ -304,16 +304,9 @@ export async function verifyMigrations(
     }
   }
 
-  const expectedAppliedOrder = inventory.files
-    .filter((migration) => ledgerIdSet.has(migration.id))
-    .map((migration) => migration.id);
-  if (
-    expectedAppliedOrder.length !== ledgerIds.length ||
-    expectedAppliedOrder.some((id, index) => id !== ledgerIds[index])
-  ) {
-    issues.push({ code: 'MIGRATION_LEDGER_ORDER_MISMATCH' });
-  }
-
+  // applied_at groups reflect when historical batches reached an environment,
+  // not the canonical inventory order. The durable safety invariant is that
+  // the applied ID set is an unbroken inventory prefix with pinned checksums.
   let sawPending = false;
   let appliedAfterPending = false;
   for (const migration of inventory.files) {
