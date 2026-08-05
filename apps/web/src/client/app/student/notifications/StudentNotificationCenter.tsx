@@ -5,7 +5,7 @@ import type {
   StudentNotificationView,
 } from '../../../../../../../packages/contracts/src/notifications/student/index.ts';
 import { V21StatePanel } from '../../../../../../../packages/brand-system/src/react-v21.tsx';
-import { shouldPlayForegroundNotificationSound } from '../../../../../../../packages/domain/src/notifications/student/index.ts';
+import { shouldPlayForegroundNotificationSound } from '../../../../../../../packages/domain/src/notifications/student/foreground-sound.ts';
 
 const FILTERS: { id: StudentNotificationFilter; label: string }[] = [
   { id: 'unread', label: 'Unread' },

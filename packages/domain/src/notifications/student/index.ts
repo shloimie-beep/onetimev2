@@ -5,8 +5,8 @@ export {
   isApprovedStudentNotificationRoute,
   projectStudentNotification,
   sourceFamilyForCategory,
-  shouldPlayForegroundNotificationSound,
   studentNotificationDedupeKey,
   supersedeStudentNotification,
   supersededEventTypes,
 } from './lifecycle.ts';
+export { shouldPlayForegroundNotificationSound } from './foreground-sound.ts';
