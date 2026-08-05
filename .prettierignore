@@ -16,3 +16,6 @@ artifacts/OT-99/preflight/**
 
 # OT-84 run markdown contains the verbatim packet prompt and audit text.
 ops/codex-runs/OT-84/*.md
+
+# Superseded control-tower records are preserved as historical evidence.
+ops/v2.1-execution/**

@@ -44,7 +44,12 @@ export function createParentPreferencesRouter(input: {
         return;
       }
       if (bootstrap.status === 'unavailable') {
-        sendError(res, 503, 'SESSION_UNAVAILABLE', 'Parent preferences are temporarily unavailable.');
+        sendError(
+          res,
+          503,
+          'SESSION_UNAVAILABLE',
+          'Parent preferences are temporarily unavailable.',
+        );
         return;
       }
       res.status(200).json({

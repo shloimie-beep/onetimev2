@@ -476,6 +476,7 @@ describe.runIf(nativeEnabled)('P12 native PostgreSQL through migration 2255', ()
     await pool.query('CREATE EXTENSION IF NOT EXISTS pgcrypto');
     await pool.query('CREATE SCHEMA onetime');
     await applyMigrations(pool as DbPool, false);
+    await installClassEnrollmentFixture(pool as DbPool);
   }, 30_000);
 
   afterAll(async () => {

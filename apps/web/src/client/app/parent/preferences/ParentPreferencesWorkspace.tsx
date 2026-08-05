@@ -1,9 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { V21StatePanel } from '../../../../../../../packages/brand-system/src/react-v21.tsx';
-import {
-  createParentPreferencesApi,
-  type ParentPreferencesSnapshot,
-} from './api.ts';
+import { createParentPreferencesApi, type ParentPreferencesSnapshot } from './api.ts';
 
 export function ParentPreferencesWorkspace({
   api: providedApi,

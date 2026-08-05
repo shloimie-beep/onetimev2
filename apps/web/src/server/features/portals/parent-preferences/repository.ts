@@ -57,11 +57,17 @@ type SqlResult<Row = Record<string, unknown>> = {
   rowCount: number | null;
 };
 type SqlClient = {
-  query<Row = Record<string, unknown>>(text: string, values?: readonly unknown[]): Promise<SqlResult<Row>>;
+  query<Row = Record<string, unknown>>(
+    text: string,
+    values?: readonly unknown[],
+  ): Promise<SqlResult<Row>>;
   release(): void;
 };
 export type ParentPreferencesSqlPool = {
-  query<Row = Record<string, unknown>>(text: string, values?: readonly unknown[]): Promise<SqlResult<Row>>;
+  query<Row = Record<string, unknown>>(
+    text: string,
+    values?: readonly unknown[],
+  ): Promise<SqlResult<Row>>;
   connect(): Promise<SqlClient>;
 };
 
@@ -91,7 +97,10 @@ export function createPostgresParentPreferencesRepository(
       const client = await pool.connect();
       try {
         await client.query('BEGIN');
-        const replay = await client.query<{ canonical_request_hash: string; response_json: unknown }>(
+        const replay = await client.query<{
+          canonical_request_hash: string;
+          response_json: unknown;
+        }>(
           `SELECT canonical_request_hash, response_json
              FROM onetime.v21_parent_preference_commands
             WHERE household_id = $1
