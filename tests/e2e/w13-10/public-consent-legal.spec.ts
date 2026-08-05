@@ -28,8 +28,9 @@ test('W13-10 Family signup separates required policy acceptance from optional ad
   await expect(page.getByLabel(/I acknowledge the Privacy Notice/)).not.toBeChecked();
   await expect(page.getByLabel('General marketing')).not.toBeChecked();
   await expect(page.getByLabel('Parent newsletter')).not.toBeChecked();
-  await expect(page.getByRole('link', { name: 'Privacy Notice' })).toHaveAttribute(
-    'href',
-    '/privacy',
-  );
+  await expect(
+    page.getByLabel('Create the adult Family account').getByRole('link', {
+      name: 'Privacy Notice',
+    }),
+  ).toHaveAttribute('href', '/privacy');
 });
