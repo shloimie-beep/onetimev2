@@ -192,10 +192,10 @@ export function parseOt87StripeTestBillingConfig(
   }
 
   const secretKey = text(source.ONE_TIME_STRIPE_TEST_SECRET_KEY);
-  if (secretKey && !/^sk_test_[A-Za-z0-9_]+$/.test(secretKey)) {
+  if (secretKey && !/^(?:sk|rk)_test_[A-Za-z0-9_]+$/.test(secretKey)) {
     throw new BillingConfigError(
       'INVALID_TEST_SECRET',
-      'Stripe test secret key must use the sk_test_ test-mode shape.',
+      'Stripe test server key must use the sk_test_ or rk_test_ test-mode shape.',
     );
   }
 

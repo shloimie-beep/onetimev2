@@ -130,7 +130,7 @@ async function run() {
   const webhookEndpointId = requiredEnv('ONE_TIME_STRIPE_TEST_WEBHOOK_ENDPOINT_ID');
   requiredEnv('ONE_TIME_STRIPE_TEST_WEBHOOK_SECRET');
 
-  if (secretKey && !/^sk_test_[A-Za-z0-9_]+$/.test(secretKey)) {
+  if (secretKey && !/^(?:sk|rk)_test_[A-Za-z0-9_]+$/.test(secretKey)) {
     report.failures.push('ONE_TIME_STRIPE_TEST_SECRET_KEY must be a Stripe test key.');
   }
   for (const [key, value] of Object.entries(process.env)) {

@@ -5,6 +5,7 @@ import {
   BillingConfigError,
   defaultBillingFeatureConfig,
   parseBillingFeatureConfig,
+  parseOt87StripeTestBillingConfig,
 } from '../../packages/domain/src/billing/config.ts';
 import { evaluateBillingEntitlement } from '../../packages/domain/src/billing/policy.ts';
 import { isRejectedReturnPath } from '../../packages/domain/src/billing/return-paths.ts';
@@ -51,6 +52,35 @@ describe('OT-46 billing config isolation', () => {
     expect(() => parseBillingFeatureConfig({ RANDOM_BILLING_KEY: '1' })).toThrow(
       BillingConfigError,
     );
+  });
+
+  it('accepts least-privilege restricted Stripe TEST server keys', () => {
+    expect(
+      parseOt87StripeTestBillingConfig(
+        {
+          ONE_TIME_STRIPE_TEST_SECRET_KEY: 'rk_test_restricted_test_key',
+        },
+        {
+          accountKey: 'one_time',
+          productKey: 'one_time_mishnah_class',
+          canonicalPublicOrigin: 'https://join.onetimeonetime.com',
+        },
+      ),
+    ).toMatchObject({
+      mode: 'test',
+    });
+    expect(() =>
+      parseOt87StripeTestBillingConfig(
+        {
+          ONE_TIME_STRIPE_TEST_SECRET_KEY: 'rk_live_restricted_live_key',
+        },
+        {
+          accountKey: 'one_time',
+          productKey: 'one_time_mishnah_class',
+          canonicalPublicOrigin: 'https://join.onetimeonetime.com',
+        },
+      ),
+    ).toThrow(BillingConfigError);
   });
 
   it('rejects enabled subfeatures while billing transport remains off', () => {
