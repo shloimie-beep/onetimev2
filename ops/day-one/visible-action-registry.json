@@ -20,7 +20,7 @@
     },
     {
       "path": "apps/web/src/server/app.ts",
-      "sha256": "f8e34343dddc25665e4cf4c84df454c23812d3bc83ff30ff87d8fc354d304e11"
+      "sha256": "66a08402ba068fed1984b59af7880bf95b8c7f6c27d2a1e1948f54522038c629"
     },
     {
       "path": "apps/web/src/server/features/portals/routers.ts",
