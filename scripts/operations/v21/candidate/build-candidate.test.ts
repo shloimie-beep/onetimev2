@@ -40,7 +40,7 @@ function requestFixture(): CandidateBuildRequest {
     ],
     native_postgresql: {
       engine_version: '18.4',
-      migration_count: 97,
+      migration_count: 98,
       ledger_digest: sha256('immutable migration ledger'),
       pending_count: 0,
       issue_count: 0,
@@ -68,9 +68,9 @@ describe('I36 deterministic candidate builder', () => {
     expect(sets.route_action_inventory.files).toEqual([
       { path: 'ops/day-one/visible-action-registry.json', sha256: sha256(registry) },
     ]);
-    expect(sets.application_content.expected_paths).toHaveLength(1229);
-    expect(sets.web_artifact.expected_paths).toHaveLength(1095);
-    expect(sets.worker_artifact.expected_paths).toHaveLength(1095);
+    expect(sets.application_content.expected_paths).toHaveLength(1255);
+    expect(sets.web_artifact.expected_paths).toHaveLength(1121);
+    expect(sets.worker_artifact.expected_paths).toHaveLength(1121);
     expect(sets.application_content.expected_paths).toEqual(
       [...sets.application_content.expected_paths].sort((left, right) =>
         Buffer.compare(Buffer.from(left), Buffer.from(right)),

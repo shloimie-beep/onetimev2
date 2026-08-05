@@ -97,7 +97,6 @@ const MISSING_ROUTE_IDS = new Set<CanonicalRouteId>([
   'RT-ADM-063',
   'RT-ADM-068',
   'RT-PAR-011',
-  'RT-PAR-050',
   'RT-STU-011',
   'RT-STU-021',
 ]);

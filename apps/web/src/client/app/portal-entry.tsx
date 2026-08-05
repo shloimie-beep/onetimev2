@@ -21,6 +21,7 @@ import { ParentClientRoot, StudentClientRoot, resolveCurrentClientRoute } from '
 import { ParentHouseholdWorkspace, type ParentHouseholdView } from './parent/household/index.js';
 import { ParentSummaryWorkspace, type ParentSummaryView } from './parent/summary/index.js';
 import { ParentBillingContainer } from './parent/billing/index.js';
+import { ParentPreferencesWorkspace } from './parent/preferences/index.js';
 import { StudentCalendar } from './student/calendar/index.js';
 import { StudentLearningOverview } from './student/learning/StudentLearningOverview.js';
 import { StudentClassroomWorkspace } from './student/classroom/StudentClassroomWorkspace.js';
@@ -735,6 +736,12 @@ function PortalApp() {
           current: location.pathname === '/app/parent/billing',
         },
         {
+          id: 'v21-parent-preferences',
+          label: 'Preferences',
+          href: '/app/parent/preferences',
+          current: location.pathname === '/app/parent/preferences',
+        },
+        {
           id: 'v21-parent-support',
           label: 'Support',
           href: '/app/parent/support',
@@ -917,6 +924,8 @@ function PortalApp() {
             <ParentSummaryWorkspace view={v21ParentView.view} />
           ) : v21ParentView.kind === 'billing' ? (
             <ParentBillingContainer />
+          ) : v21ParentView.kind === 'preferences' ? (
+            <ParentPreferencesWorkspace />
           ) : v21ParentView.kind === 'account' ? (
             <section className="ot-portal-feature" aria-labelledby="v21-parent-account-heading">
               <div className="ot-panel">
@@ -1837,6 +1846,7 @@ type V21ParentRouteView =
   | { kind: 'household'; view: ParentHouseholdView }
   | { kind: 'summary'; view: ParentSummaryView }
   | { kind: 'billing' }
+  | { kind: 'preferences' }
   | { kind: 'account' };
 
 function v21ParentRouteViewFromLocation(pathname: string): V21ParentRouteView {
@@ -1860,6 +1870,7 @@ function v21ParentRouteViewFromLocation(pathname: string): V21ParentRouteView {
     return { kind: 'summary', view: { kind: 'updates' } };
   }
   if (pathname === '/app/parent/billing') return { kind: 'billing' };
+  if (pathname === '/app/parent/preferences') return { kind: 'preferences' };
   if (pathname === '/app/parent/account') return { kind: 'account' };
   return { kind: 'household', view: parentHouseholdViewFromLocation(pathname) };
 }

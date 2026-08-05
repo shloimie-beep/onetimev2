@@ -3,7 +3,7 @@ import pg from 'pg';
 import { runMigrations, verifyMigrations } from '../../packages/db/src/index.ts';
 
 const EXPECTED_MIGRATION_COUNT = 97;
-const EXPECTED_HEAD = '2266_v21_canonical_class_scope_convergence';
+const EXPECTED_HEAD = '2267_v21_parent_preferences';
 
 async function main() {
   assert(

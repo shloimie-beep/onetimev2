@@ -629,7 +629,7 @@ function assertNativePostgresql(value: unknown): asserts value is NativePostgres
   if (value.engine_version !== '18.4') {
     throw new Error('native_postgresql.engine_version must be 18.4');
   }
-  if (value.migration_count !== 97 || value.pending_count !== 0 || value.issue_count !== 0) {
+  if (value.migration_count !== 98 || value.pending_count !== 0 || value.issue_count !== 0) {
     throw new Error('native_postgresql must report exactly 97 migrations, pending 0, issues 0');
   }
   if (typeof value.ledger_digest !== 'string' || !sha256Pattern.test(value.ledger_digest)) {

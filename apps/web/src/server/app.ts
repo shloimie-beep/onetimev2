@@ -328,6 +328,10 @@ import {
   createPostgresParentSummaryRepository,
 } from './features/portals/parent-summary/index.ts';
 import {
+  createParentPreferencesRouter,
+  createPostgresParentPreferencesRepository,
+} from './features/portals/parent-preferences/index.ts';
+import {
   createCommercialBillingService,
   createParentCommercialBillingRouter,
 } from './features/billing/commercial/index.ts';
@@ -856,6 +860,19 @@ export function createApp({
   const parentStudentServiceAccountVersion = config.parentStudentServiceAccountVersion;
   const parentStudentServiceAccountEvidenceReference =
     config.parentStudentServiceAccountEvidenceReference;
+  app.use(
+    '/api/app/parent',
+    createParentPreferencesRouter({
+      repository: createPostgresParentPreferencesRepository(pool, {
+        account_key: config.accountKey,
+        product: 'one_time_mishnayos',
+        runtime_tier: config.oneTimeRuntimeTier,
+        verification_environment_id: config.oneTimeVerificationEnvironmentId,
+      }),
+      sessions: v21AdultSessionRuntime,
+      ...(clock ? { clock } : {}),
+    }),
+  );
   if (config.oneTimeFreeAccessExpiresAt) {
     app.use(
       '/api/app/parent',

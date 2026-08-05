@@ -26,7 +26,7 @@ import {
 const EXPECTED_ENGINE_VERSION = '18.4';
 const EXPECTED_SERVER_VERSION_NUM = '180004';
 const EXPECTED_MIGRATION_COUNT = 97;
-const EXPECTED_LAST_MIGRATION_ORDINAL = 2266;
+const EXPECTED_LAST_MIGRATION_ORDINAL = 2267;
 const OUTPUT_DIR = path.resolve(
   process.env.CANDIDATE_PG18_OUTPUT_DIR ?? 'ops/evidence/ops-11/pg18/candidate',
 );
