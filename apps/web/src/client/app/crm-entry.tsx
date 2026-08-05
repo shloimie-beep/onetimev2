@@ -623,20 +623,6 @@ function CrmApp() {
     setListLoading(false);
   }
 
-  function openGlobalCommunications() {
-    setContactOperationsMode(false);
-    setContactOperationsHouseholdKey(null);
-    history.pushState({}, '', communicationsRouteDescriptor.path);
-    setSurface('crm');
-    setContactsRoutePath('/app/crm');
-    setCommunicationsMode({ kind: 'global' });
-    setSupportReceiptId(null);
-    setSelected(null);
-    setEditing(false);
-    setCreating(false);
-    setListLoading(false);
-  }
-
   function openContactCommunications(contactId: string) {
     setContactOperationsMode(false);
     setContactOperationsHouseholdKey(null);
@@ -828,16 +814,21 @@ function CrmApp() {
   const classroomPath = new URL(classroomRoutePath, location.origin);
   const classroomSection = classroomSectionFromPath(classroomPath.pathname);
 
-  const adminCurrentArea =
-    surface === 'dashboard'
+  const adminCurrentArea = communicationsMode
+    ? 'communications'
+    : surface === 'dashboard'
       ? 'dashboard'
-      : surface === 'crm' || surface === 'billing'
+      : surface === 'crm'
         ? 'contacts'
-        : surface === 'content'
-          ? 'content'
-          : surface === 'classes'
-            ? 'classroom'
-            : null;
+        : surface === 'billing'
+          ? 'billing-access'
+          : surface === 'operations'
+            ? 'operations'
+            : surface === 'content'
+              ? 'content'
+              : surface === 'classes'
+                ? 'classroom'
+                : null;
   const liveConsoleReady =
     isRabbi || session?.capabilities?.operator_experience?.live_console === true;
   const navItems: ShellNavItem[] = canReadOwnerShell
@@ -970,14 +961,12 @@ function CrmApp() {
       toolbar={toolbar}
       notice={notice ? <NoticeBanner notice={notice} /> : undefined}
       onNavigate={(href) => {
-        if (href === '/app/live-console') {
+        if (href === '/app/live-console' || href === '/app/live' || href.startsWith('/app/live/')) {
           window.location.assign(href);
           return;
         }
-        const ownerSurface = ownerSurfaceFromPath(href);
-        if (ownerSurface && ownerSurface !== 'crm') openOwnerSurface(ownerSurface, href);
-        if (href === '/app/crm') void backToList();
-        if (href === communicationsRouteDescriptor.path) openGlobalCommunications();
+        history.pushState({}, '', href);
+        void routeFromLocation();
       }}
       onLogout={() => void logout()}
       sessionExpired={sessionExpired}

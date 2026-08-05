@@ -3,6 +3,9 @@ export const ADMIN_PRIMARY_AREAS = [
   { id: 'contacts', label: 'Contacts', href: '/app/contacts' },
   { id: 'content', label: 'Content', href: '/app/content' },
   { id: 'classroom', label: 'Classroom', href: '/app/classroom/classes' },
+  { id: 'communications', label: 'Communications', href: '/app/communications' },
+  { id: 'billing-access', label: 'Billing & Access', href: '/app/billing-access' },
+  { id: 'operations', label: 'Operations', href: '/app/operations' },
   { id: 'live-console', label: 'Live Console', href: '/app/live' },
 ] as const;
 
@@ -16,6 +19,9 @@ export type DashboardSectionId = (typeof DASHBOARD_SECTIONS)[number]['id'];
 
 export const CONTACTS_SECTIONS = [
   { id: 'people', label: 'People / Contacts', href: '/app/contacts' },
+  { id: 'households', label: 'Households', href: '/app/households' },
+  { id: 'users', label: 'Users', href: '/app/users' },
+  { id: 'learners', label: 'Students', href: '/app/students' },
   { id: 'audit', label: 'Audit History', href: '/app/audit' },
 ] as const;
 
@@ -80,10 +86,10 @@ export function dashboardSectionFromPath(_pathname: string): DashboardSectionId 
 }
 
 export function contactsSectionFromPath(pathname: string): ContactsSectionId {
-  if (pathname === '/app/crm/households') return 'households';
-  if (pathname === '/app/crm/users') return 'users';
-  if (pathname === '/app/crm/learners') return 'learners';
-  if (pathname === '/app/crm/audit') return 'audit';
+  if (pathname === '/app/households' || pathname === '/app/crm/households') return 'households';
+  if (pathname === '/app/users' || pathname === '/app/crm/users') return 'users';
+  if (pathname === '/app/students' || pathname === '/app/crm/learners') return 'learners';
+  if (pathname === '/app/audit' || pathname === '/app/crm/audit') return 'audit';
   return 'people';
 }
 
