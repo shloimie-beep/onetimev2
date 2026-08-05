@@ -10,6 +10,7 @@ import { asBotKey } from '../../../../packages/contracts/src/telegram/types.ts';
 import { inTransaction, type DbPool, type Queryable } from '../../../../packages/db/src/index.ts';
 import { createPostgresBillingRepositories } from '../../../../packages/db/src/billing/repository.ts';
 import { createPostgresCommercialBillingRepository } from '../../../../packages/db/src/billing/commercial/repository.ts';
+import { createPostgresPrivacyRepository } from '../../../../packages/db/src/privacy/repository.ts';
 import { createClassroomRepository } from '../../../../packages/db/src/classroom/repository.ts';
 import { createZoomClassOccurrenceRepository } from '../../../../packages/db/src/classroom/zoom-occurrence-repository.ts';
 import { createGamificationRepository } from '../../../../packages/db/src/gamification/repository.ts';
@@ -255,7 +256,10 @@ import {
   planProviderCanary,
 } from '../../../../packages/domain/src/providers/control-center.ts';
 import { AesGcmPayloadCodec } from '../../../../packages/domain/src/telegram/crypto.ts';
-import { hashAuthPassword } from '../../../../packages/domain/src/auth/policy.ts';
+import {
+  hashAuthPassword,
+  verifyAuthPassword,
+} from '../../../../packages/domain/src/auth/policy.ts';
 import { createTelegramWebhookHandler } from '../../../../apps/telegram-bot/src/ingress.ts';
 import {
   parseOt87StripeTestBillingConfig,
@@ -331,6 +335,11 @@ import {
   createParentPreferencesRouter,
   createPostgresParentPreferencesRepository,
 } from './features/portals/parent-preferences/index.ts';
+import {
+  createParentPrivacyRouter,
+  createPostgresParentPrivacySubjectRepository,
+  createPrivacyService,
+} from './features/privacy/index.ts';
 import {
   createCommercialBillingService,
   createParentCommercialBillingRouter,
@@ -870,6 +879,53 @@ export function createApp({
         verification_environment_id: config.oneTimeVerificationEnvironmentId,
       }),
       sessions: v21AdultSessionRuntime,
+      ...(clock ? { clock } : {}),
+    }),
+  );
+  const privacyScope = {
+    product: 'one_time_mishnayos' as const,
+    runtime_tier: config.oneTimeRuntimeTier,
+    verification_environment_id: config.oneTimeVerificationEnvironmentId,
+  };
+  const privacyRepository = createPostgresPrivacyRepository(pool);
+  app.use(
+    '/api/app/parent',
+    createParentPrivacyRouter({
+      service: createPrivacyService(privacyRepository, privacyScope),
+      repository: privacyRepository,
+      subjects: createPostgresParentPrivacySubjectRepository(pool, privacyScope),
+      sessions: v21AdultSessionRuntime,
+      scope: privacyScope,
+      verifyPassword: async (context, password) => {
+        const result = await pool.query(
+          `SELECT password_hash
+             FROM onetime.v21_adult_credentials
+            WHERE human_account_id = $1
+              AND adult_id = $2
+              AND credential_state = 'active'
+              AND product_key = $3
+              AND runtime_tier = $4
+              AND verification_environment_id = $5
+            LIMIT 1`,
+          [
+            context.session.humanAccountId,
+            context.adultId,
+            privacyScope.product,
+            privacyScope.runtime_tier,
+            privacyScope.verification_environment_id,
+          ],
+        );
+        const passwordHash = result.rows[0]?.password_hash;
+        return typeof passwordHash === 'string' && verifyAuthPassword(password, passwordHash);
+      },
+      networkEvidenceDigest: (request) =>
+        createHmac('sha256', config.authCsrfSecret)
+          .update('parent-privacy-network-v1', 'utf8')
+          .update('\0', 'utf8')
+          .update(request.ip ?? '', 'utf8')
+          .update('\0', 'utf8')
+          .update(request.header('user-agent') ?? '', 'utf8')
+          .digest('hex'),
       ...(clock ? { clock } : {}),
     }),
   );

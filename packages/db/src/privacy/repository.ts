@@ -23,6 +23,19 @@ export interface PrivacySqlPool {
 
 export function createPostgresPrivacyRepository(pool: PrivacySqlPool) {
   return {
+    async listConsentEvents(studentId: string): Promise<readonly ConsentEvent[]> {
+      return execute(pool, async (client) => {
+        const result = await client.query(
+          `SELECT *
+             FROM onetime.privacy_consent_event
+            WHERE student_id = $1
+            ORDER BY occurred_at, consent_event_id`,
+          [studentId],
+        );
+        return result.rows.map(mapConsentEvent);
+      });
+    },
+
     async appendConsentEvent(event: ConsentEvent): Promise<boolean> {
       return execute(pool, async (client) => {
         const result = await client.query(
@@ -99,6 +112,56 @@ export function createPostgresPrivacyRepository(pool: PrivacySqlPool) {
           requestValues(request),
         );
         return (result.rowCount ?? 0) === 1;
+      });
+    },
+
+    async loadDataRightsRequest(input: {
+      request_id: string;
+      product: string;
+      runtime_tier: string;
+      verification_environment_id: string;
+    }): Promise<DataRightsRequest | null> {
+      return execute(pool, async (client) => {
+        const result = await client.query(
+          `SELECT *
+             FROM onetime.data_rights_request
+            WHERE request_id = $1
+              AND product = $2
+              AND runtime_tier = $3
+              AND verification_environment_id = $4`,
+          [input.request_id, input.product, input.runtime_tier, input.verification_environment_id],
+        );
+        return result.rows[0] ? mapDataRightsRequest(result.rows[0]) : null;
+      });
+    },
+
+    async listDataRightsRequests(input: {
+      requester_ref: string;
+      requester_household_id: string;
+      product: string;
+      runtime_tier: string;
+      verification_environment_id: string;
+    }): Promise<readonly DataRightsRequest[]> {
+      return execute(pool, async (client) => {
+        const result = await client.query(
+          `SELECT *
+             FROM onetime.data_rights_request
+            WHERE requester_ref = $1
+              AND requester_household_id = $2
+              AND product = $3
+              AND runtime_tier = $4
+              AND verification_environment_id = $5
+            ORDER BY due_at DESC, request_id DESC
+            LIMIT 100`,
+          [
+            input.requester_ref,
+            input.requester_household_id,
+            input.product,
+            input.runtime_tier,
+            input.verification_environment_id,
+          ],
+        );
+        return result.rows.map(mapDataRightsRequest);
       });
     },
 
@@ -286,6 +349,71 @@ function requestValues(request: DataRightsRequest): readonly unknown[] {
     request.version,
     request.audit_refs,
   ];
+}
+
+function mapConsentEvent(row: SqlRow): ConsentEvent {
+  return {
+    consent_event_id: String(row.consent_event_id),
+    idempotency_key: String(row.idempotency_key),
+    canonical_request_hash: String(row.canonical_request_hash),
+    actor_kind: String(row.actor_kind) as ConsentEvent['actor_kind'],
+    actor_account_or_credential_id: String(row.actor_account_or_credential_id),
+    actor_adult_id: String(row.actor_adult_id),
+    household_id: String(row.household_id),
+    student_id: String(row.student_id),
+    relationship: String(row.relationship) as ConsentEvent['relationship'],
+    parent_authority_attested: row.parent_authority_attested === true,
+    scope: String(row.scope) as ConsentEvent['scope'],
+    choice: String(row.choice) as ConsentEvent['choice'],
+    policy_versions: row.policy_versions as ConsentEvent['policy_versions'],
+    occurred_at: iso(row.occurred_at),
+    request_correlation_id: String(row.request_correlation_id),
+    network_evidence_digest: String(row.network_evidence_digest),
+    supersedes_consent_event_id:
+      row.supersedes_consent_event_id === null ? null : String(row.supersedes_consent_event_id),
+    reason_code: String(row.reason_code),
+  };
+}
+
+function mapDataRightsRequest(row: SqlRow): DataRightsRequest {
+  return {
+    request_id: String(row.request_id),
+    product: String(row.product) as DataRightsRequest['product'],
+    runtime_tier: String(row.runtime_tier) as DataRightsRequest['runtime_tier'],
+    verification_environment_id: String(
+      row.verification_environment_id,
+    ) as DataRightsRequest['verification_environment_id'],
+    kind: String(row.kind) as DataRightsRequest['kind'],
+    subject: row.subject_json as DataRightsRequest['subject'],
+    requester_kind: String(row.requester_kind) as DataRightsRequest['requester_kind'],
+    requester_ref: String(row.requester_ref),
+    requester_household_id:
+      row.requester_household_id === null ? null : String(row.requester_household_id),
+    relationship_evidence:
+      row.relationship_evidence === null
+        ? null
+        : (String(row.relationship_evidence) as DataRightsRequest['relationship_evidence']),
+    recent_password_session_id: String(row.recent_password_session_id),
+    state: String(row.state) as DataRightsRequest['state'],
+    visible_status:
+      row.visible_status === null
+        ? null
+        : (String(row.visible_status) as DataRightsRequest['visible_status']),
+    requested_categories: stringArray(row.requested_categories),
+    excluded_categories: stringArray(row.excluded_categories),
+    legal_exception_codes: stringArray(row.legal_exception_codes),
+    provider_cascades: Array.isArray(row.provider_cascades)
+      ? (row.provider_cascades as DataRightsRequest['provider_cascades'])
+      : [],
+    dependent_review_required: row.dependent_review_required === true,
+    dependent_review_completed: row.dependent_review_completed === true,
+    due_at: iso(row.due_at),
+    completed_at: row.completed_at === null ? null : iso(row.completed_at),
+    terminal_reason_code:
+      row.terminal_reason_code === null ? null : String(row.terminal_reason_code),
+    version: Number(row.version),
+    audit_refs: stringArray(row.audit_refs),
+  };
 }
 
 function mapRetentionWork(row: SqlRow): RetentionWorkItem {

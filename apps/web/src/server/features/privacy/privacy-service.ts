@@ -25,6 +25,12 @@ export interface PrivacyServiceRepository {
   listConsentEvents(studentId: string): Promise<readonly ConsentEvent[]>;
   appendConsentEvent(event: ConsentEvent): Promise<boolean>;
   createDataRightsRequest(request: DataRightsRequest): Promise<boolean>;
+  loadDataRightsRequest?(input: {
+    request_id: string;
+    product: string;
+    runtime_tier: string;
+    verification_environment_id: string;
+  }): Promise<DataRightsRequest | null>;
 }
 
 export function authorizePrivacyRoute(
@@ -80,7 +86,23 @@ export function createPrivacyService(
     async createRightsRequest(input: Omit<DataRightsRequestInput, 'scope'>) {
       const request = createDataRightsRequest({ ...input, scope: trustedScope });
       const persisted = await repository.createDataRightsRequest(request);
-      if (!persisted) throw new Error('privacy_request_write_conflict');
+      if (!persisted) {
+        const replay = await repository.loadDataRightsRequest?.({
+          request_id: request.request_id,
+          product: request.product,
+          runtime_tier: request.runtime_tier,
+          verification_environment_id: request.verification_environment_id,
+        });
+        if (
+          !replay ||
+          replay.kind !== request.kind ||
+          replay.requester_ref !== request.requester_ref ||
+          JSON.stringify(replay.subject) !== JSON.stringify(request.subject)
+        ) {
+          throw new Error('privacy_request_write_conflict');
+        }
+        return replay;
+      }
       return request;
     },
 
