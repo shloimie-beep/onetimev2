@@ -10,7 +10,7 @@ import {
 
 type Props = {
   receiptId?: string | undefined;
-  basePath?: '/app/student/support';
+  basePath?: '/app/student/support' | '/app/parent/support';
   onProtectedStateCleared: () => void;
 };
 
@@ -309,7 +309,7 @@ export function SupportTicketLinks({
   basePath,
 }: {
   tickets: SupportTicketSummary[];
-  basePath: '/app/student/support';
+  basePath: '/app/student/support' | '/app/parent/support';
 }) {
   return tickets.map((ticket) => (
     <a key={ticket.receipt_id} href={`${basePath}/${encodeURIComponent(ticket.receipt_id)}`}>

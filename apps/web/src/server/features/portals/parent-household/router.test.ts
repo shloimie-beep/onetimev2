@@ -2,10 +2,12 @@ import type { AddressInfo } from 'node:net';
 import express, { type Express } from 'express';
 import { describe, expect, it, vi } from 'vitest';
 import type { ParentHouseholdSnapshot } from '../../../../../../../packages/contracts/src/portals/parent-household/index.ts';
+import type { ParentSummarySnapshot } from '../../../../../../../packages/contracts/src/portals/parent-summary/index.ts';
 import { ParentHouseholdError } from '../../../../../../../packages/domain/src/portals/parent-household/index.ts';
 import type { V21ParentSessionContext } from '../../auth/v21-adult-session.ts';
 import { createParentHouseholdRouter } from './router.ts';
 import type { ParentHouseholdService } from './service.ts';
+import type { ParentSummaryService } from '../parent-summary/index.ts';
 
 const snapshot: ParentHouseholdSnapshot = {
   contract_version: '1.2.0',
@@ -18,6 +20,22 @@ const snapshot: ParentHouseholdSnapshot = {
   can_manage_students: true,
   revision: 1,
   students: [],
+};
+
+const summarySnapshot: ParentSummarySnapshot = {
+  contract_version: '1.0.0',
+  household_id: 'household-router',
+  display_name: 'Router household',
+  generated_at: '2026-07-31T14:00:00.000Z',
+  students: [],
+  schedule: [],
+  progress: [],
+  updates: [],
+  support: {
+    label: 'Contact support',
+    description: 'Get help with your Parent account or household.',
+    href: '/app/parent/support',
+  },
 };
 
 const sessionContext = {
@@ -68,6 +86,9 @@ function setup(input: { csrf?: boolean } = {}) {
     restoreStudent: vi.fn().mockResolvedValue(mutation),
     resetStudentCredential: vi.fn().mockResolvedValue(mutation),
   } as unknown as ParentHouseholdService;
+  const summaryService = {
+    overview: vi.fn().mockResolvedValue(summarySnapshot),
+  } as unknown as ParentSummaryService;
   const sessions = {
     bootstrapCookieHeader: vi.fn().mockResolvedValue({
       status: 'resolved',
@@ -84,12 +105,13 @@ function setup(input: { csrf?: boolean } = {}) {
     '/api/app/parent',
     createParentHouseholdRouter({
       service,
+      summaryService,
       sessions,
       fingerprintPasswordForIdempotency,
       clock: () => new Date('2026-07-31T14:00:00.000Z'),
     }),
   );
-  return { app, service, sessions, fingerprintPasswordForIdempotency };
+  return { app, service, summaryService, sessions, fingerprintPasswordForIdempotency };
 }
 
 describe('P12 authenticated Parent household router', () => {
@@ -105,6 +127,22 @@ describe('P12 authenticated Parent household router', () => {
       csrf_token: 'csrf-bootstrap-token',
     });
     expect(service.overview).toHaveBeenCalledWith({
+      role: 'parent',
+      adult_id: 'adult-router',
+      household_id: 'household-router',
+      session_id: 'session-router',
+    });
+  });
+
+  it('returns only the server-derived Parent summary without mutation credentials', async () => {
+    const { app, summaryService } = setup();
+    const response = await send(app, '/api/app/parent/summary', {
+      headers: { cookie: 'ot_v21_parent=opaque' },
+    });
+    expect(response.status).toBe(200);
+    expect(response.headers.get('cache-control')).toBe('no-store');
+    expect((await response.json()).data).toEqual({ snapshot: summarySnapshot });
+    expect(summaryService.overview).toHaveBeenCalledWith({
       role: 'parent',
       adult_id: 'adult-router',
       household_id: 'household-router',

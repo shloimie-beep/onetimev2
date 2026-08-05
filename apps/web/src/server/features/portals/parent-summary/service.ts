@@ -92,3 +92,5 @@ export function createParentSummaryService(dependencies: { repository: ParentSum
     },
   };
 }
+
+export type ParentSummaryService = ReturnType<typeof createParentSummaryService>;

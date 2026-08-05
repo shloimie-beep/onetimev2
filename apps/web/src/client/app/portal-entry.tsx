@@ -19,6 +19,7 @@ import {
 } from '../features/portals/PortalFeatures.js';
 import { ParentClientRoot, StudentClientRoot, resolveCurrentClientRoute } from './router/index.js';
 import { ParentHouseholdWorkspace, type ParentHouseholdView } from './parent/household/index.js';
+import { ParentSummaryWorkspace, type ParentSummaryView } from './parent/summary/index.js';
 import { StudentLearningOverview } from './student/learning/StudentLearningOverview.js';
 import { StudentClassroomWorkspace } from './student/classroom/StudentClassroomWorkspace.js';
 import { SupportFeature } from './support/SupportFeature.js';
@@ -93,7 +94,12 @@ type PortalDialog =
 function PortalApp() {
   const portalRole = portalRoleFromLocation(location.pathname);
   const classroomRoute = location.pathname === '/app/classroom';
-  const supportRoute = location.pathname.match(/^\/app\/student\/support(?:\/([^/]+))?$/u);
+  const supportRoute = location.pathname.match(
+    portalRole === 'parent'
+      ? /^\/app\/parent\/support(?:\/([^/]+))?$/u
+      : /^\/app\/student\/support(?:\/([^/]+))?$/u,
+  );
+  const v21ParentView = v21ParentRouteViewFromLocation(location.pathname);
   const [activeSection, setActiveSection] = useState<ParentPortalSection | StudentPortalSection>(
     () => portalSectionFromLocation(portalRole),
   );
@@ -575,10 +581,36 @@ function PortalApp() {
           current: location.pathname.startsWith('/app/parent/students'),
         },
         {
-          id: 'v21-parent-schedule',
-          label: 'Schedule',
-          href: '#parent-program-schedule',
-          current: false,
+          id: 'v21-parent-calendar',
+          label: 'Calendar',
+          href: '/app/parent/calendar',
+          current: location.pathname === '/app/parent/calendar',
+        },
+        {
+          id: 'v21-parent-progress',
+          label: 'Progress',
+          href: '/app/parent/progress',
+          current: location.pathname.startsWith('/app/parent/progress'),
+        },
+        {
+          id: 'v21-parent-updates',
+          label: 'Updates',
+          href: '/app/parent/updates',
+          current:
+            location.pathname === '/app/parent/updates' ||
+            location.pathname === '/app/parent/newsletter',
+        },
+        {
+          id: 'v21-parent-support',
+          label: 'Support',
+          href: '/app/parent/support',
+          current: location.pathname.startsWith('/app/parent/support'),
+        },
+        {
+          id: 'v21-parent-account',
+          label: 'Account',
+          href: '/app/parent/account',
+          current: location.pathname === '/app/parent/account',
         },
       ];
     }
@@ -713,7 +745,7 @@ function PortalApp() {
       {supportRoute ? (
         <SupportFeature
           receiptId={supportRoute[1] ? decodeURIComponent(supportRoute[1]) : undefined}
-          basePath="/app/student/support"
+          basePath={portalRole === 'parent' ? '/app/parent/support' : '/app/student/support'}
           onProtectedStateCleared={() => {
             setSessionExpired(true);
             setSession(null);
@@ -721,7 +753,30 @@ function PortalApp() {
         />
       ) : portalRole === 'parent' ? (
         v21ParentSession ? (
-          <ParentHouseholdWorkspace view={parentHouseholdViewFromLocation(location.pathname)} />
+          v21ParentView.kind === 'summary' ? (
+            <ParentSummaryWorkspace view={v21ParentView.view} />
+          ) : v21ParentView.kind === 'account' ? (
+            <section className="ot-portal-feature" aria-labelledby="v21-parent-account-heading">
+              <div className="ot-panel">
+                <p className="ot-eyebrow">Parent account</p>
+                <h2 id="v21-parent-account-heading">Account and security</h2>
+                {session ? (
+                  <AccountSecurityPanel
+                    identifier={session.user.email}
+                    role={session.user.role}
+                    roleLabel={session.user.role_label}
+                    onChangePassword={handlePasswordChange}
+                  />
+                ) : null}
+                <p>
+                  <a href="/forgot-password">Use secure account recovery</a> if you cannot change
+                  your password while signed in.
+                </p>
+              </div>
+            </section>
+          ) : (
+            <ParentHouseholdWorkspace view={v21ParentView.view} />
+          )
         ) : parentAccessShell?.mode === 'paused' ? (
           <ParentPausedShell
             displayName={parentAccessShell.display_name}
@@ -1555,6 +1610,35 @@ function parentHouseholdViewFromLocation(pathname: string): ParentHouseholdView 
     return { kind: 'student', student_id: decodeURIComponent(studentMatch[1]) };
   }
   return { kind: 'overview' };
+}
+
+type V21ParentRouteView =
+  | { kind: 'household'; view: ParentHouseholdView }
+  | { kind: 'summary'; view: ParentSummaryView }
+  | { kind: 'account' };
+
+function v21ParentRouteViewFromLocation(pathname: string): V21ParentRouteView {
+  if (pathname === '/app/parent/calendar') {
+    return { kind: 'summary', view: { kind: 'calendar' } };
+  }
+  if (pathname === '/app/parent/progress') {
+    return { kind: 'summary', view: { kind: 'progress' } };
+  }
+  const progressMatch = /^\/app\/parent\/progress\/([^/]+)$/u.exec(pathname);
+  if (progressMatch?.[1]) {
+    return {
+      kind: 'summary',
+      view: { kind: 'progress', student_id: decodeURIComponent(progressMatch[1]) },
+    };
+  }
+  if (pathname === '/app/parent/newsletter') {
+    return { kind: 'summary', view: { kind: 'updates', newsletterOnly: true } };
+  }
+  if (pathname === '/app/parent/updates') {
+    return { kind: 'summary', view: { kind: 'updates' } };
+  }
+  if (pathname === '/app/parent/account') return { kind: 'account' };
+  return { kind: 'household', view: parentHouseholdViewFromLocation(pathname) };
 }
 
 function isPortalSection(

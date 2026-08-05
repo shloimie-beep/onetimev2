@@ -321,6 +321,10 @@ import {
   createParentHouseholdService,
   createPostgresParentHouseholdRepository,
 } from './features/portals/parent-household/index.ts';
+import {
+  createParentSummaryService,
+  createPostgresParentSummaryRepository,
+} from './features/portals/parent-summary/index.ts';
 import { clearSessionCookieHeader, sessionCookieHeader } from './features/auth/http-security.ts';
 import {
   installServerFeatureRouters,
@@ -827,10 +831,17 @@ export function createApp({
       passwords: { hash: async (password) => hashAuthPassword(password) },
       ids: { nextStudentId: () => `student_${randomUUID()}` },
     });
+    const parentSummaryService = createParentSummaryService({
+      repository: createPostgresParentSummaryRepository(pool, {
+        accountKey: config.accountKey,
+        ...(clock ? { clock } : {}),
+      }),
+    });
     app.use(
       '/api/app/parent',
       createParentHouseholdRouter({
         service: parentHouseholdService,
+        summaryService: parentSummaryService,
         sessions: v21AdultSessionRuntime,
         fingerprintPasswordForIdempotency: async (password) =>
           createHmac('sha256', config.authCsrfSecret)

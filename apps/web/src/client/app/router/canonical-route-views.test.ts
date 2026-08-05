@@ -34,9 +34,9 @@ describe('v2.1 canonical route views', () => {
     expect(
       CANONICAL_V21_ROUTES.filter(({ routeId }) => routeId.startsWith('RT-STU-')),
     ).toHaveLength(17);
-    expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'ready')).toHaveLength(33);
+    expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'ready')).toHaveLength(40);
     expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'isolated')).toHaveLength(
-      32,
+      25,
     );
     expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'missing')).toHaveLength(
       28,
@@ -130,8 +130,6 @@ describe('v2.1 canonical route views', () => {
       'RT-STU-041',
       'RT-STU-042',
       'RT-STU-040',
-      'RT-PAR-060',
-      'RT-PAR-061',
       'RT-STU-050',
     ]) {
       expect(CANONICAL_V21_ROUTES.find((route) => route.routeId === routeId)).toMatchObject({
