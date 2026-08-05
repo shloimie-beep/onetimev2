@@ -25,8 +25,8 @@ import {
 
 const EXPECTED_ENGINE_VERSION = '18.4';
 const EXPECTED_SERVER_VERSION_NUM = '180004';
-const EXPECTED_MIGRATION_COUNT = 92;
-const EXPECTED_LAST_MIGRATION_ORDINAL = 2260;
+const EXPECTED_MIGRATION_COUNT = 93;
+const EXPECTED_LAST_MIGRATION_ORDINAL = 2262;
 const OUTPUT_DIR = path.resolve(
   process.env.CANDIDATE_PG18_OUTPUT_DIR ?? 'ops/evidence/ops-11/pg18/candidate',
 );
@@ -184,7 +184,7 @@ async function main() {
 
   // This validates the generated request against the candidate builder without
   // writing candidate metadata. It deliberately fails until the builder, the
-  // source inventory, and this proof all agree on the post-2260 count of 91.
+  // source inventory, and this proof all agree on the complete-launch count of 93.
   buildCandidate(candidateBuildRequest, { repository_root: process.cwd() });
 
   const proofReport = {
@@ -329,23 +329,23 @@ async function proveMigrations(pool: pg.Pool): Promise<MigrationProof> {
 
   assert(
     firstRun.length === EXPECTED_MIGRATION_COUNT,
-    'first migration run did not contain 92 rows',
+    'first migration run did not contain 93 rows',
   );
   assert(
     firstRun.every((result) => result.status === 'applied'),
-    'first migration run was not a clean 91/91 apply',
+    'first migration run was not a clean 93/93 apply',
   );
-  assert(secondRun.length === EXPECTED_MIGRATION_COUNT, 'migration replay did not contain 92 rows');
+  assert(secondRun.length === EXPECTED_MIGRATION_COUNT, 'migration replay did not contain 93 rows');
   assert(
     secondRun.every((result) => result.status === 'already_applied'),
-    'migration replay was not 91/91 already-applied',
+    'migration replay was not 93/93 already-applied',
   );
   assert(verification.ok && verification.status === 'verified', 'migration verification failed');
   assert(
     verification.migration_file_count === EXPECTED_MIGRATION_COUNT &&
       verification.ledger_row_count === EXPECTED_MIGRATION_COUNT &&
       verification.applied_count === EXPECTED_MIGRATION_COUNT,
-    'migration verification counts were not exactly 91',
+    'migration verification counts were not exactly 93',
   );
   assert(verification.pending_count === 0, 'migration verification reported pending migrations');
   assert(verification.issues.length === 0, 'migration verification reported issues');
@@ -364,7 +364,7 @@ async function proveMigrations(pool: pg.Pool): Promise<MigrationProof> {
     id: String(row.id),
     checksum: String(row.checksum),
   }));
-  assert(ledgerRows.length === EXPECTED_MIGRATION_COUNT, 'ledger did not contain exactly 92 rows');
+  assert(ledgerRows.length === EXPECTED_MIGRATION_COUNT, 'ledger did not contain exactly 93 rows');
 
   const expectedById = new Map(firstRun.map((result) => [result.id, result.checksum]));
   assert(

@@ -20,7 +20,7 @@ import {
 
 const EXPECTED_SERVER_VERSION = '18.4';
 const EXPECTED_SERVER_VERSION_NUM = '180004';
-const EXPECTED_MIGRATION_COUNT = 92;
+const EXPECTED_MIGRATION_COUNT = 93;
 const EXPECTED_MIGRATION_SHA256 =
   '93e7879ce7861cd37733335ca64e49310af1025fc099e6bce4abadb8f25c3740';
 const MIGRATION_ID = '2260_v21_governed_campaign_audience_decisions';
@@ -30,8 +30,8 @@ const CONTACT_B = digest('native-provider-contact-b');
 type Proof = {
   server_version: '18.4';
   migration_sha256: typeof EXPECTED_MIGRATION_SHA256;
-  migration_apply: '91/91';
-  migration_replay: '91/91';
+  migration_apply: '93/93';
+  migration_replay: '93/93';
   serializable_transaction: true;
   exact_scope_advisory_lock: true;
   current_base_rows_for_update: true;
@@ -234,8 +234,8 @@ export async function proveGovernedCampaignDecisionStorePg18(pool: pg.Pool): Pro
   return {
     server_version: '18.4',
     migration_sha256: EXPECTED_MIGRATION_SHA256,
-    migration_apply: '91/91',
-    migration_replay: '91/91',
+    migration_apply: '93/93',
+    migration_replay: '93/93',
     serializable_transaction: true,
     exact_scope_advisory_lock: true,
     current_base_rows_for_update: true,
