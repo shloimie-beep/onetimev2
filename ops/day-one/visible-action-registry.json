@@ -20,7 +20,7 @@
     },
     {
       "path": "apps/web/src/server/app.ts",
-      "sha256": "593261ad5b1251ec281e1435e9f33f575ecdeb94df1df193597a1728092b911c"
+      "sha256": "f8e34343dddc25665e4cf4c84df454c23812d3bc83ff30ff87d8fc354d304e11"
     },
     {
       "path": "apps/web/src/server/features/portals/routers.ts",
@@ -32,7 +32,7 @@
     },
     {
       "path": "apps/web/src/server/features/signup/school/router.ts",
-      "sha256": "0d8fe5a05a6ee3dbd95ea3239b1a8b3458508fded330c23a85fa5069a4170c3a"
+      "sha256": "812dd79b3a0d62b15bf37a6c5ae1bebb0f3a4f4d444060270510837bed5bb30f"
     },
     {
       "path": "apps/web/src/server/features/v21-canonical-routes/router.ts",
@@ -44,7 +44,7 @@
     },
     {
       "path": "apps/web/src/client/app/crm-entry.tsx",
-      "sha256": "adaa364b619ac432823cddc7873bf6d33af9b01e7334979099a2531af610b70d"
+      "sha256": "a536a61bc95a4639f6896acca1f6d760745ec458b00ff4f31e2fb51c54dd318f"
     },
     {
       "path": "apps/web/src/client/app/live-entry.tsx",
@@ -52,11 +52,11 @@
     },
     {
       "path": "apps/web/src/client/app/portal-entry.tsx",
-      "sha256": "981a1ba8e14eeb08f915501d71834198ecc8d750cedd2eeb332866ac282e41a1"
+      "sha256": "07845fcb50ea84b374d050e0a8c527fb40c4930d874831547e062bbb48ff21ef"
     },
     {
       "path": "apps/web/src/client/features/portals/PortalFeatures.tsx",
-      "sha256": "a2873b5e0900dfd057e143f1e3cd7992c12cca93a345551f5b8af10e1bb1a4c9"
+      "sha256": "30758e19b9fb9d2615bacb2d404b5eae2bb733d2295231aab6e72180e4dd7017"
     },
     {
       "path": "apps/web/src/client/app/router/registry.ts",
