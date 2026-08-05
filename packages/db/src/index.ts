@@ -35,6 +35,12 @@ export function createMemoryPool(): DbPool {
     implementation: () => 1,
   });
   db.public.registerFunction({
+    name: 'hashtext',
+    args: [DataType.text],
+    returns: DataType.integer,
+    implementation: (value: string) => createHash('sha256').update(value).digest().readInt32BE(0),
+  });
+  db.public.registerFunction({
     name: 'btrim',
     args: [DataType.text],
     returns: DataType.text,

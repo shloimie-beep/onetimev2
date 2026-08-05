@@ -40,7 +40,7 @@ function requestFixture(): CandidateBuildRequest {
     ],
     native_postgresql: {
       engine_version: '18.4',
-      migration_count: 98,
+      migration_count: 99,
       ledger_digest: sha256('immutable migration ledger'),
       pending_count: 0,
       issue_count: 0,
@@ -187,7 +187,7 @@ describe('I36 deterministic candidate builder', () => {
     const shortMigrationCount = requestFixture();
     shortMigrationCount.native_postgresql.migration_count = 96;
     expect(() => buildCandidate(shortMigrationCount, { repository_root: repositoryRoot })).toThrow(
-      /exactly 97 migrations/,
+      /exactly 99 migrations/,
     );
   });
 

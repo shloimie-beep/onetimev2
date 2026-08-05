@@ -16,6 +16,7 @@ import {
 } from '../../../contracts/src/billing/index.ts';
 import type { createPostgresBillingRepositories } from '../../../db/src/billing/repository.ts';
 import { buildBillingReturnPaths } from './return-paths.ts';
+import { deriveBillingGhlLifecycleEvent } from './highlevel-lifecycle.ts';
 import { evaluateBillingEntitlement } from './policy.ts';
 import type {
   BillingActorContext,
@@ -479,7 +480,10 @@ export function createBillingServices(deps: BillingServicesDeps) {
           policyVersion: deps.config.policyVersion,
           emergencyMode: deps.config.entitlementEmergencyMode,
         });
-        await deps.repositories.upsertEntitlementProjection(entitlement);
+        await deps.repositories.upsertEntitlementProjection(
+          entitlement,
+          deriveBillingGhlLifecycleEvent(entitlement),
+        );
         return {
           disposition: 'contradictory_event',
           reason: 'equal_time_subscription_contradiction',
@@ -581,7 +585,10 @@ export function createBillingServices(deps: BillingServicesDeps) {
       policyVersion: deps.config.policyVersion,
       emergencyMode: deps.config.entitlementEmergencyMode,
     });
-    await deps.repositories.upsertEntitlementProjection(entitlement);
+    await deps.repositories.upsertEntitlementProjection(
+      entitlement,
+      deriveBillingGhlLifecycleEvent(entitlement),
+    );
     return entitlement;
   }
 

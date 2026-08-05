@@ -9,8 +9,8 @@ import {
   type DbPool,
 } from '../../../packages/db/src/index.ts';
 
-const LATEST_MIGRATION_ID = '2267_v21_parent_preferences';
-const EXPECTED_MIGRATION_COUNT = 98;
+const LATEST_MIGRATION_ID = '2268_billing_ghl_lifecycle_intents';
+const EXPECTED_MIGRATION_COUNT = 99;
 const HASH_A = 'a'.repeat(64);
 const HASH_B = 'b'.repeat(64);
 const HASH_C = 'c'.repeat(64);
@@ -28,7 +28,7 @@ const SOURCE_FACTS = {
 } as const;
 
 describe('migration 2260 governed campaign audience decisions', () => {
-  it('applies and replays the 98-migration inventory with an exact 2260 ledger row', async () => {
+  it('applies and replays the 99-migration inventory with an exact 2260 ledger row', async () => {
     const pool = createMemoryPool();
     try {
       const first = await runMigrations(pool);

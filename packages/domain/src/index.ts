@@ -542,6 +542,13 @@ export {
   type Ot87CommercialPolicy,
 } from './billing/commercial-policy.ts';
 export { createBillingServices } from './billing/service.ts';
+export {
+  BILLING_GHL_WORKFLOW_KEYS,
+  deriveBillingGhlLifecycleEvent,
+  type BillingGhlLifecycleEvent,
+  type BillingGhlLifecycleEventType,
+  type BillingGhlWorkflowKey,
+} from './billing/highlevel-lifecycle.ts';
 export { createOfficialStripeTestClient } from './billing/stripe-official-client.ts';
 export {
   createStripeTestBillingProviderAdapter,

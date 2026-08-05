@@ -12,6 +12,7 @@ import type {
   CheckoutSessionResult,
   VerifiedProviderEventEnvelope,
 } from '../../../contracts/src/billing/index.ts';
+import type { BillingGhlLifecycleEvent } from '../../../domain/src/billing/highlevel-lifecycle.ts';
 
 export type RecordVerifiedEventResult =
   | { status: 'inserted'; eventKey: string }
@@ -525,36 +526,117 @@ export function createPostgresBillingRepositories(pool: DbPool) {
         ],
       );
     },
-    async upsertEntitlementProjection(input: BillingEntitlementProjection) {
-      await pool.query(
-        `INSERT INTO onetime.billing_entitlement_projections
-         (entitlement_key, account_key, product_key, principal_key, principal_type,
-          status, policy_version, source, reason, effective_at, evaluated_at, grants_access)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
-         ON CONFLICT (entitlement_key)
-         DO UPDATE SET
-           status = EXCLUDED.status,
-           policy_version = EXCLUDED.policy_version,
-           source = EXCLUDED.source,
-           reason = EXCLUDED.reason,
-           effective_at = EXCLUDED.effective_at,
-           evaluated_at = EXCLUDED.evaluated_at,
-           grants_access = EXCLUDED.grants_access`,
-        [
-          input.entitlement_key,
-          input.account_key,
-          input.product_key,
-          input.principal_key,
-          input.principal_type,
-          input.status,
-          input.policy_version,
-          input.source,
-          input.reason,
-          input.effective_at,
-          input.evaluated_at,
-          input.grants_access,
-        ],
-      );
+    async upsertEntitlementProjection(
+      input: BillingEntitlementProjection,
+      lifecycleEvent: BillingGhlLifecycleEvent | null = null,
+    ) {
+      return inTransaction(pool, async (client) => {
+        if (lifecycleEvent) {
+          assertLifecycleMatchesEntitlement(input, lifecycleEvent);
+          await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [input.entitlement_key]);
+        }
+
+        await client.query(
+          `INSERT INTO onetime.billing_entitlement_projections
+           (entitlement_key, account_key, product_key, principal_key, principal_type,
+            status, policy_version, source, reason, effective_at, evaluated_at, grants_access)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
+           ON CONFLICT (entitlement_key)
+           DO UPDATE SET
+             status = EXCLUDED.status,
+             policy_version = EXCLUDED.policy_version,
+             source = EXCLUDED.source,
+             reason = EXCLUDED.reason,
+             effective_at = EXCLUDED.effective_at,
+             evaluated_at = EXCLUDED.evaluated_at,
+             grants_access = EXCLUDED.grants_access,
+             updated_at = now()`,
+          [
+            input.entitlement_key,
+            input.account_key,
+            input.product_key,
+            input.principal_key,
+            input.principal_type,
+            input.status,
+            input.policy_version,
+            input.source,
+            input.reason,
+            input.effective_at,
+            input.evaluated_at,
+            input.grants_access,
+          ],
+        );
+
+        if (!lifecycleEvent) {
+          return { projection: 'updated' as const, lifecycle_intent: 'not_applicable' as const };
+        }
+
+        const latest = await client.query(
+          `SELECT episode_discriminator
+             FROM onetime.billing_ghl_lifecycle_intents
+            WHERE entitlement_key = $1
+            ORDER BY transition_sequence DESC
+            LIMIT 1`,
+          [input.entitlement_key],
+        );
+        if (
+          latest.rows[0] &&
+          String(latest.rows[0].episode_discriminator) === lifecycleEvent.episode_discriminator
+        ) {
+          return { projection: 'updated' as const, lifecycle_intent: 'unchanged' as const };
+        }
+
+        const inserted = await client.query(
+          `INSERT INTO onetime.billing_ghl_lifecycle_intents
+           (transition_key, entitlement_key, account_key, product_key, household_key,
+            subject_kind, workflow_key, event_type, trigger, source_event_id,
+            source_event_digest, episode_key, episode_discriminator, projection_status,
+            projection_reason, projection_grants_access, policy_version, effective_at,
+            signed_billing_projection, local_commit_readback, student_contact_allowed,
+            provider_financial_mutation, provider_access_mutation, binding_state)
+           SELECT $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18::timestamptz,
+                  $19,$20,$21,$22,$23,$24
+             FROM onetime.portal_households AS household
+             JOIN onetime.billing_verified_events AS verified
+               ON verified.event_key = $10
+            WHERE household.account_key = $3
+              AND household.product_key = $4
+              AND household.household_key = $5`,
+          [
+            lifecycleEvent.transition_key,
+            lifecycleEvent.entitlement_key,
+            lifecycleEvent.account_key,
+            lifecycleEvent.product_key,
+            lifecycleEvent.household_key,
+            lifecycleEvent.subject_kind,
+            lifecycleEvent.workflow_key,
+            lifecycleEvent.event_type,
+            lifecycleEvent.trigger,
+            lifecycleEvent.source_event_id,
+            lifecycleEvent.source_event_digest,
+            lifecycleEvent.episode_key,
+            lifecycleEvent.episode_discriminator,
+            lifecycleEvent.projection_status,
+            lifecycleEvent.projection_reason,
+            lifecycleEvent.projection_grants_access,
+            lifecycleEvent.policy_version,
+            lifecycleEvent.effective_at,
+            lifecycleEvent.signed_billing_projection,
+            lifecycleEvent.local_commit_readback,
+            lifecycleEvent.student_contact_allowed,
+            lifecycleEvent.provider_financial_mutation,
+            lifecycleEvent.provider_access_mutation,
+            lifecycleEvent.workflow_key ? 'pending_external_binding' : 'not_applicable',
+          ],
+        );
+        if (inserted.rowCount !== 1) {
+          return {
+            projection: 'updated' as const,
+            lifecycle_intent: 'provenance_missing' as const,
+          };
+        }
+        return { projection: 'updated' as const, lifecycle_intent: 'inserted' as const };
+      });
     },
     async createReconciliation(input: {
       principal: BillingPrincipalRef;
@@ -881,6 +963,30 @@ function asIso(value: unknown) {
 
 function stableKey(prefix: string, parts: string[]) {
   return `${prefix}_${createHash('sha256').update(parts.join('\0')).digest('hex').slice(0, 24)}`;
+}
+
+function assertLifecycleMatchesEntitlement(
+  entitlement: BillingEntitlementProjection,
+  lifecycle: BillingGhlLifecycleEvent,
+) {
+  const mismatch =
+    lifecycle.entitlement_key !== entitlement.entitlement_key ||
+    lifecycle.account_key !== entitlement.account_key ||
+    lifecycle.product_key !== entitlement.product_key ||
+    lifecycle.household_key !== entitlement.principal_key ||
+    lifecycle.source_event_id !== entitlement.source ||
+    lifecycle.projection_status !== entitlement.status ||
+    lifecycle.projection_reason !== entitlement.reason ||
+    lifecycle.projection_grants_access !== entitlement.grants_access ||
+    lifecycle.policy_version !== entitlement.policy_version ||
+    lifecycle.effective_at !== entitlement.effective_at ||
+    lifecycle.subject_kind !== 'adult_household' ||
+    lifecycle.signed_billing_projection !== true ||
+    lifecycle.local_commit_readback !== true ||
+    lifecycle.student_contact_allowed !== false ||
+    lifecycle.provider_financial_mutation !== false ||
+    lifecycle.provider_access_mutation !== false;
+  if (mismatch) throw new Error('billing_ghl_lifecycle_projection_mismatch');
 }
 
 function redactMetadata(metadata: Record<string, unknown>) {
