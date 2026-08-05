@@ -10,6 +10,12 @@ It supersedes the old Ready/claim/lease/control-tower process and any conflictin
 date, copy, provider, or activation restriction below. Historical ledgers remain
 read-only evidence and are not release gates.
 
+Legacy governance compatibility remains pointer-only through
+`ops/goals/CURRENT.yaml` and `ops/goals/OT-LAUNCH-01/BOARD.yaml`; those files are
+read-only coordination evidence, not product authority. HighLevel desired state
+continues to resolve through
+`integrations/highlevel/registry/workflow-registry.yaml`.
+
 Product paths and real user journeys take priority over control metadata. No
 Ready entry, claim file, lease renewal, terminal packet, steward request, or
 copied chat report is required. Focused safety verification, migration
