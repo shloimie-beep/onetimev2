@@ -89,7 +89,12 @@ describe('OPS-05 provider control center projection', () => {
     );
     expect(endpoint('bna_support_bridge').signature_scheme).toBe('ot89_hmac_canonical_request');
     expect(endpoint('zoom_classroom').handler_mounted).toBe(false);
-    expect(endpoint('vimeo_private_content').handler_mounted).toBe(false);
+    expect(endpoint('vimeo_private_content')).toMatchObject({
+      path: '/api/v1/content/vimeo/webhook',
+      signature_scheme: 'vimeo_payload_shared_secret_constant_time',
+      handler_mounted: true,
+      acknowledged_after_durable_enqueue: true,
+    });
     expect(endpoint('buffer_social').handler_mounted).toBe(false);
 
     function endpoint(provider: ReturnType<typeof buildWebhookEndpoints>[number]['provider']) {

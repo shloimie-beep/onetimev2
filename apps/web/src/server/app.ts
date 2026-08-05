@@ -224,6 +224,7 @@ import {
   listCrmTags,
   previewSingleRecipientReply,
   receiveOt86PublicationManifest,
+  receiveOt104rVimeoWebhook,
   requestPasswordReset,
   reactivateContact,
   resolveOt110aContentAdminActor,
@@ -616,6 +617,38 @@ export function createApp({
   app.use(
     '/api/v1/delivery/resend',
     createResendWebhookRouter({ config, pool, ...(clock ? { clock } : {}) }),
+  );
+
+  app.post(
+    '/api/v1/content/vimeo/webhook',
+    express.raw({ type: '*/*', limit: '256kb' }),
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      if (!config.contentVimeoWebhookSecret || !config.contentVimeoAccountId) {
+        res.status(503).json({
+          success: false,
+          code: 'VIMEO_WEBHOOK_DISABLED',
+          message: 'Vimeo webhook intake is not configured.',
+          request_id: req.traceId,
+        });
+        return;
+      }
+      const result = await receiveOt104rVimeoWebhook({
+        pool,
+        rawBody: Buffer.isBuffer(req.body) ? req.body : Buffer.from(''),
+        headers: { contentType: req.header('content-type') ?? null },
+        secret: config.contentVimeoWebhookSecret,
+        expectedAccountId: config.contentVimeoAccountId,
+        ...(clock ? { now: clock() } : {}),
+      });
+      res.status(result.status).json({
+        success: result.status === 200 || result.status === 202,
+        code: result.code,
+        message: result.message,
+        receipt_state: result.receipt_state,
+        request_id: req.traceId,
+      });
+    },
   );
 
   if (config.oneTimeTelegramWebhookEnabled) {

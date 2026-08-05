@@ -208,7 +208,6 @@ export {
   registerOt104rVimeoSource,
   retryOt104rVimeoSource,
   sanitizeOt104rProviderError,
-  signOt104rVimeoWebhook,
   type Ot104rVimeoAdapter,
   type Ot104rVimeoTextTrackDownload,
   type Ot104rVimeoTextTrackSummary,
