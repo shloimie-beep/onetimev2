@@ -60,7 +60,7 @@ function hasRawColor(text: string) {
   // Governance and release notes use references such as "PR #104". Those are
   // issue identifiers, not three-digit CSS colors, and must not mask the
   // actual client/style color scan.
-  return rawColorPattern.test(text.replaceAll(/\bPR\s+#\d+\b/g, ''));
+  return rawColorPattern.test(text.replaceAll(/\bPR\s+#\d+(?:\/#\d+)*\b/g, ''));
 }
 
 function isCanonical(relPath: string) {

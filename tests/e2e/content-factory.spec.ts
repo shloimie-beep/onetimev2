@@ -69,7 +69,7 @@ test('provider-off synthetic content stays out of the ordinary Student library',
     '/app/student',
   );
   await page.getByRole('link', { name: 'Library', exact: true }).click();
-  await expect(page).toHaveURL('/app/student?section=library');
+  await expect(page).toHaveURL('/app/student/library');
   const contentCard = page
     .getByRole('region', { name: 'Library', exact: true })
     .getByRole('article')

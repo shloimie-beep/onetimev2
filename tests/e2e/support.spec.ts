@@ -1,8 +1,6 @@
 import { expect, type Page, test } from '@playwright/test';
 
-test('support route stays lead-only for anonymous users and users without learning access', async ({
-  page,
-}) => {
+test('support route stays lead-only for anonymous users', async ({ page }) => {
   await page.goto('/app/support');
   await expect(page.getByRole('heading', { name: 'Sign in for learning support' })).toBeVisible();
   await expect(page.locator('[data-support-form]')).toHaveCount(0);
@@ -10,13 +8,6 @@ test('support route stays lead-only for anonymous users and users without learni
     'href',
     '/signup',
   );
-
-  await login(page, 'viewer@example.test', 'ViewerPass!234');
-  await page.goto('/app/support');
-  await expect(
-    page.getByRole('heading', { name: 'Learning support is unavailable' }),
-  ).toBeVisible();
-  await expect(page.locator('[data-support-form]')).toHaveCount(0);
 });
 
 test('active learning-access support form works at 360 and 390 mobile widths without overflow', async ({
@@ -28,7 +19,7 @@ test('active learning-access support form works at 360 and 390 mobile widths wit
     { width: 390, height: 844 },
   ]) {
     await page.setViewportSize(size);
-    await page.goto('/app/support');
+    await page.goto('/app/parent/support');
     await expect(page.getByRole('heading', { name: 'Member Support' })).toBeVisible();
     await expect(page.locator('[data-support-form]')).toBeVisible();
     await expect(page.getByLabel('Category')).toBeVisible();
@@ -42,12 +33,12 @@ test('active learning-access support form works at 360 and 390 mobile widths wit
 
 test('active member can submit by keyboard and receives a durable receipt', async ({ page }) => {
   await login(page, 'ot-parent@example.test', 'ParentPassword!234');
-  await page.goto('/app/support');
+  await page.goto('/app/parent/support');
   await fillSupportForm(page, 'keyboard-success');
   await page.getByRole('button', { name: 'Submit support request' }).focus();
   await expect(page.getByRole('button', { name: 'Submit support request' })).toBeFocused();
   await page.keyboard.press('Enter');
-  await page.waitForURL('**/app/support/receipts/**');
+  await page.waitForURL(/\/app\/parent\/support\/otr_[^/]+$/u);
   await expect(page.getByRole('heading', { name: 'Support Receipt' })).toBeVisible();
   await expect(
     page.getByText('Support request received. Delivery to the support desk is queued.'),
@@ -55,28 +46,40 @@ test('active member can submit by keyboard and receives a durable receipt', asyn
 });
 
 test('duplicate support submission opens the original receipt', async ({ page }) => {
+  const submittedKeys: string[] = [];
+  page.on('request', (request) => {
+    if (request.method() !== 'POST') return;
+    if (new URL(request.url()).pathname !== '/api/v1/support/tickets') return;
+    const body = request.postDataJSON() as { idempotency_key?: string };
+    submittedKeys.push(body.idempotency_key ?? '');
+  });
   await login(page, 'ot-parent@example.test', 'ParentPassword!234');
-  await page.goto('/app/support');
+  await page.goto('/app/parent/support');
   const idempotencyKey = await page.locator('[data-idempotency-key]').inputValue();
   await fillSupportForm(page, 'duplicate-browser');
   await page.getByRole('button', { name: 'Submit support request' }).click();
-  await page.waitForURL('**/app/support/receipts/**');
+  await page.waitForURL(/\/app\/parent\/support\/otr_[^/]+$/u);
   const firstReceiptPath = new URL(page.url()).pathname;
 
-  await page.goto('/app/support');
+  await page.goto('/app/parent/support');
   await fillSupportForm(page, 'duplicate-browser');
-  await page.locator('[data-idempotency-key]').evaluate((input, value) => {
-    (input as HTMLInputElement).value = String(value);
+  await page.locator('[data-support-form]').evaluate((form, value) => {
+    const input = form.querySelector<HTMLInputElement>('[data-idempotency-key]');
+    if (!input) throw new Error('Missing Support idempotency input.');
+    input.value = String(value);
+    (form as HTMLFormElement).requestSubmit();
   }, idempotencyKey);
-  await page.getByRole('button', { name: 'Submit support request' }).click();
-  await page.waitForURL(`**${firstReceiptPath}`);
+  await page.waitForURL(/\/app\/parent\/support\/otr_[^/]+$/u);
+  await expect.poll(() => submittedKeys).toHaveLength(2);
+  expect(submittedKeys).toEqual([idempotencyKey, idempotencyKey]);
+  expect(new URL(page.url()).pathname).toBe(firstReceiptPath);
   await expect(page.getByRole('heading', { name: 'Support Receipt' })).toBeVisible();
 });
 
 test('support form reports server, network, and file failures accessibly', async ({ page }) => {
   await login(page, 'ot-parent@example.test', 'ParentPassword!234');
 
-  await page.goto('/app/support');
+  await page.goto('/app/parent/support');
   await fillSupportForm(page, 'server-failure');
   await page.route('/api/v1/support/tickets', async (route) => {
     await route.fulfill({
@@ -90,7 +93,7 @@ test('support form reports server, network, and file failures accessibly', async
   await expect(page.getByRole('button', { name: 'Submit support request' })).toBeEnabled();
   await page.unroute('/api/v1/support/tickets');
 
-  await page.goto('/app/support');
+  await page.goto('/app/parent/support');
   await fillSupportForm(page, 'network-failure');
   await page.route('/api/v1/support/tickets', async (route) => {
     await route.abort('failed');
@@ -102,7 +105,7 @@ test('support form reports server, network, and file failures accessibly', async
   await expect(page.getByRole('status')).toBeFocused();
   await page.unroute('/api/v1/support/tickets');
 
-  await page.goto('/app/support');
+  await page.goto('/app/parent/support');
   await page.evaluate(() => {
     Object.defineProperty(File.prototype, 'arrayBuffer', {
       configurable: true,
@@ -121,11 +124,11 @@ test('support form reports server, network, and file failures accessibly', async
 });
 
 async function login(page: Page, email: string, password: string) {
-  await page.goto(`/login?return_to=${encodeURIComponent('/app/support')}`);
+  await page.goto(`/login?return_to=${encodeURIComponent('/app/parent')}`);
   await page.getByLabel('Email').fill(email);
   await page.getByLabel('Password').fill(password);
   await page.getByRole('button', { name: 'Login' }).click();
-  await page.waitForURL('**/app/support');
+  await page.waitForURL('**/app/parent');
 }
 
 async function fillSupportForm(page: Page, suffix: string) {

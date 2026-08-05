@@ -28,6 +28,11 @@ export interface SchoolSignupSqlPool {
   connect(): Promise<SchoolSignupSqlClient>;
 }
 
+export interface SchoolSignupCrmBinding {
+  accountKey: string;
+  productKey: string;
+}
+
 export class PostgresSchoolSignupRepositoryError extends Error {
   constructor(
     readonly code:
@@ -39,7 +44,10 @@ export class PostgresSchoolSignupRepositoryError extends Error {
   }
 }
 
-export function createPostgresSchoolSignupRepository(pool: SchoolSignupSqlPool) {
+export function createPostgresSchoolSignupRepository(
+  pool: SchoolSignupSqlPool,
+  crmBinding: SchoolSignupCrmBinding,
+) {
   return {
     async transaction<T>(
       run: (transaction: PostgresSchoolSignupTransaction) => Promise<T>,
@@ -47,7 +55,7 @@ export function createPostgresSchoolSignupRepository(pool: SchoolSignupSqlPool) 
       const client = await pool.connect();
       try {
         await client.query('BEGIN');
-        const result = await run(new PostgresSchoolSignupTransaction(client));
+        const result = await run(new PostgresSchoolSignupTransaction(client, crmBinding));
         await client.query('COMMIT');
         return result;
       } catch (error) {
@@ -73,7 +81,10 @@ export class PostgresSchoolSignupTransaction {
   private approvedSchoolAggregateLock:
     { scope: SchoolSignupScope; approvedSchoolId: string } | undefined;
 
-  constructor(private readonly db: SchoolSignupSqlClient) {}
+  constructor(
+    private readonly db: SchoolSignupSqlClient,
+    private readonly crmBinding: SchoolSignupCrmBinding,
+  ) {}
 
   async findInquiry(input: {
     scope: SchoolSignupScope;
@@ -122,6 +133,9 @@ export class PostgresSchoolSignupTransaction {
     const binding = input.request_binding;
     const lead = input.receipt.lead;
     const acknowledgment = input.receipt.acknowledgment;
+    if (this.crmBinding.productKey !== binding.scope.product) {
+      throw invariant('The School-inquiry CRM product binding does not match the request scope.');
+    }
     const inserted = await this.db.query(
       `INSERT INTO onetime.school_inquiries_v21
          (lead_id, product, runtime_tier, verification_environment_id,
@@ -173,6 +187,16 @@ export class PostgresSchoolSignupTransaction {
     if (inserted.rowCount !== 1) {
       throw invariant('The School-inquiry insert did not affect exactly one row.');
     }
+
+    await upsertSchoolInquiryCrmContact(this.db, {
+      accountKey: this.crmBinding.accountKey,
+      productKey: this.crmBinding.productKey,
+      contactKey: `contact_${lead.lead_id}`,
+      displayName: `${input.request.contact_first_name} ${input.request.contact_last_name}`.trim(),
+      schoolName: input.request.school_name,
+      normalizedEmail: binding.normalized_email,
+      phone: input.request.phone,
+    });
 
     await insertExactlyOne(
       this.db,
@@ -376,6 +400,54 @@ export class PostgresSchoolSignupTransaction {
         'The approved School write was not preceded by its exact idempotency and aggregate locks.',
       );
     }
+  }
+}
+
+async function upsertSchoolInquiryCrmContact(
+  db: SchoolSignupSqlClient,
+  input: {
+    accountKey: string;
+    productKey: string;
+    contactKey: string;
+    displayName: string;
+    schoolName: string;
+    normalizedEmail: string;
+    phone: string | null;
+  },
+): Promise<void> {
+  const result = await db.query(
+    `INSERT INTO onetime.contacts
+       (contact_key, public_contact_id, account_key, product_key, display_name,
+        family_school_classification, family_or_school, location_text, timezone,
+        email_normalized, phone_normalized, reminder_preference,
+        consent_policy_version, consent_recorded_at, suppression_state, source,
+        lead_status, last_activity_at, created_at, updated_at)
+     VALUES ($1, gen_random_uuid()::text, $2, $3, $4,
+             'school', $5, 'Not provided', 'Not provided',
+             $6, $7, 'none', NULL, NULL, 'active', 'one_time_school_inquiry',
+             'new', now(), now(), now())
+     ON CONFLICT (account_key, product_key, email_normalized)
+     DO UPDATE SET
+       display_name = EXCLUDED.display_name,
+       family_school_classification = 'school',
+       family_or_school = EXCLUDED.family_or_school,
+       last_activity_at = EXCLUDED.last_activity_at,
+       updated_at = EXCLUDED.updated_at,
+       version = onetime.contacts.version + 1,
+       identity_version = onetime.contacts.identity_version + 1
+     RETURNING contact_key`,
+    [
+      input.contactKey,
+      input.accountKey,
+      input.productKey,
+      input.displayName,
+      input.schoolName,
+      input.normalizedEmail,
+      input.phone,
+    ],
+  );
+  if (result.rowCount !== 1) {
+    throw invariant('School inquiry did not resolve exactly one CRM adult contact.');
   }
 }
 

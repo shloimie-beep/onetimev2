@@ -11,6 +11,7 @@ import {
 
 type TestRuntime = {
   baseUrl: string;
+  productionHost: string | null;
   sessionToken: string;
   close(): Promise<void>;
 };
@@ -32,6 +33,36 @@ test('ordinary Admin application removes preview and launch-status surfaces in e
 }) => {
   test.setTimeout(90_000);
   for (const runtime of [staging, production]) {
+    if (runtime.productionHost) {
+      const headers = {
+        host: runtime.productionHost,
+        cookie: `otcrm_session=${runtime.sessionToken}`,
+      };
+      const productionContext = await browser.newContext();
+      try {
+        const productionDashboard = await productionContext.request.get(
+          `${runtime.baseUrl}/app/dashboard`,
+          { headers },
+        );
+        expect(productionDashboard.status()).toBe(200);
+        const productionHtml = await productionDashboard.text();
+        expect(productionHtml).not.toMatch(/Experience Preview|Launch Status/iu);
+        for (const route of [
+          '/app/experience-preview',
+          '/app/launch-status',
+          '/api/v1/launch-status',
+        ]) {
+          const response = await productionContext.request.get(`${runtime.baseUrl}${route}`, {
+            headers,
+          });
+          expect(response.status()).toBe(404);
+        }
+      } finally {
+        await productionContext.close();
+      }
+      continue;
+    }
+
     const context = await browser.newContext({ viewport: { width: 1366, height: 900 } });
     await useAdminSession(context, runtime);
     const page = await context.newPage();
@@ -42,7 +73,15 @@ test('ordinary Admin application removes preview and launch-status surfaces in e
     const sessionBody = (await session.json()) as {
       capabilities: { operator_experience: { live_console: boolean } };
     };
-    const primaryLabels = ['Dashboard', 'Contacts', 'Content', 'Classroom'];
+    const primaryLabels = [
+      'Dashboard',
+      'Contacts',
+      'Content',
+      'Classroom',
+      'Communications',
+      'Billing & Access',
+      'Operations',
+    ];
     if (sessionBody.capabilities.operator_experience.live_console) {
       primaryLabels.push('Live Console');
     }
@@ -51,7 +90,7 @@ test('ordinary Admin application removes preview and launch-status surfaces in e
     ).resolves.toEqual(primaryLabels);
     await expect(
       page.getByLabel('One Time utilities').getByRole('link').allTextContents(),
-    ).resolves.toEqual(['Operations', 'Support']);
+    ).resolves.toEqual([]);
     await assertRemovedControls(page);
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
 
@@ -71,7 +110,7 @@ test('ordinary Admin application removes preview and launch-status surfaces in e
     ).resolves.toEqual(primaryLabels);
     await expect(
       drawer.getByLabel('One Time utilities').getByRole('link').allTextContents(),
-    ).resolves.toEqual(['Operations', 'Support']);
+    ).resolves.toEqual([]);
     await expect(drawer.getByRole('link', { name: 'Experience Preview' })).toHaveCount(0);
     await expect(drawer.getByRole('link', { name: 'Launch Status' })).toHaveCount(0);
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
@@ -128,7 +167,7 @@ async function startRuntime(config: AppConfig): Promise<TestRuntime> {
     clock: () => new Date('2026-07-22T12:00:00.000Z'),
   });
   const server = await new Promise<ReturnType<typeof app.listen>>((resolve, reject) => {
-    const instance = app.listen(0, 'localhost', (error?: Error) => {
+    const instance = app.listen(0, '127.0.0.1', (error?: Error) => {
       if (error) reject(error);
       else resolve(instance);
     });
@@ -136,7 +175,8 @@ async function startRuntime(config: AppConfig): Promise<TestRuntime> {
   const address = server.address();
   if (typeof address !== 'object' || !address) throw new Error('Missing browser test address.');
   return {
-    baseUrl: `http://localhost:${address.port}`,
+    baseUrl: `http://127.0.0.1:${address.port}`,
+    productionHost: config.nodeEnv === 'production' ? 'app.onetimeonetime.com' : null,
     sessionToken: session.session_token,
     close: () => closeRuntime(server, pool),
   };
@@ -179,9 +219,10 @@ function baseEnvironment() {
     PUBLIC_BASE_URL: 'https://ordinary-browser.example.test',
     APP_VERSION: 'ordinary-app-browser-test',
     COMMIT_SHA: 'ordinary-app-browser-test',
+    PROTECTED_PAYLOAD_ENCRYPTION_KEY: 'test-only-protected-payload-key-32-bytes',
     OUTBOX_TRANSPORT_MODE: 'sink',
     ONE_TIME_ACCOUNT_KEY: 'rabbi_sheller_provider',
-    ONE_TIME_PRODUCT_KEY: 'one_time_mishnah_class',
+    ONE_TIME_PRODUCT_KEY: 'one_time_mishnayos',
     ZOOM_CLASSROOM_ENABLED: 'true',
   } satisfies NodeJS.ProcessEnv;
 }

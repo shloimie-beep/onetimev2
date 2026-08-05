@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { CONTACT_OPERATIONS_E2E_OWNER_SESSION_TOKEN } from '../support/contact-operations-session.ts';
+import { CRM_CORE_E2E_OWNER_SESSION_TOKEN } from '../support/contact-operations-session.ts';
 
 test('synthetic Family signup commits safely on mobile', async ({ page }) => {
   const requested: string[] = [];
@@ -69,7 +69,7 @@ async function login(page: import('@playwright/test').Page) {
   await page.context().addCookies([
     {
       name: 'otcrm_session',
-      value: CONTACT_OPERATIONS_E2E_OWNER_SESSION_TOKEN,
+      value: CRM_CORE_E2E_OWNER_SESSION_TOKEN,
       domain: '127.0.0.1',
       path: '/',
       httpOnly: true,

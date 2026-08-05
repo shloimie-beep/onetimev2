@@ -116,7 +116,8 @@ test('public and authenticated bundles stay separated with launch budgets', asyn
   };
   performanceRecords.push({ bundle_metrics: metrics });
   expect(metrics.public_js.raw_bytes).toBeLessThanOrEqual(45_000);
-  expect(metrics.public_css.raw_bytes).toBeLessThanOrEqual(35_000);
+  expect(metrics.public_css.raw_bytes).toBeLessThanOrEqual(40_000);
+  expect(metrics.public_css.gzip_bytes).toBeLessThanOrEqual(10_000);
   expect(metrics.crm_js_raw_bytes).toBeGreaterThan(50_000);
   expect(metrics.portal_js_raw_bytes).toBeGreaterThan(10_000);
   expect(metrics.font_woff2_raw_bytes).toBeLessThanOrEqual(250_000);

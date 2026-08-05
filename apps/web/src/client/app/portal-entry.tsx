@@ -24,6 +24,7 @@ import { ParentBillingContainer } from './parent/billing/index.js';
 import { ParentPreferencesWorkspace } from './parent/preferences/index.js';
 import { ParentPrivacyWorkspace } from './parent/privacy/index.js';
 import { StudentCalendar } from './student/calendar/index.js';
+import { StudentLibraryWorkspace } from './student/library/index.js';
 import { StudentLearningOverview } from './student/learning/StudentLearningOverview.js';
 import { StudentClassroomWorkspace } from './student/classroom/StudentClassroomWorkspace.js';
 import {
@@ -1108,6 +1109,15 @@ function PortalApp() {
           }
           onPreviewSupport={() => window.location.assign('/app/student/support')}
           onRetry={() => void load()}
+          libraryWorkspace={
+            session ? (
+              <StudentLibraryWorkspace
+                csrfToken={session.csrf_token}
+                actorFingerprint={actorFingerprint}
+                onProtectedStateCleared={() => void load()}
+              />
+            ) : undefined
+          }
           accountSecurity={
             session ? (
               <AccountSecurityPanel
@@ -1215,6 +1225,13 @@ function ParentPausedShell({
         >
           Send reset link
         </button>
+      </div>
+      <div className="ot-panel" id="support">
+        <h3>Support</h3>
+        <p>Open private Parent support for help restoring learning access.</p>
+        <a className="ot-button ot-button--secondary" href="/app/parent/support">
+          Open Support
+        </a>
       </div>
       <div id="account-security">{accountSecurity}</div>
     </section>

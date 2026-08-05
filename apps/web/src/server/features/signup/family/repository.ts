@@ -21,6 +21,11 @@ import type { FamilySignupRepository, FamilySignupTransaction } from './service.
 
 type Row = Record<string, unknown>;
 
+export interface FamilySignupCrmBinding {
+  accountKey: string;
+  productKey: string;
+}
+
 export class PostgresFamilySignupRepositoryError extends Error {
   constructor(
     readonly code:
@@ -32,13 +37,16 @@ export class PostgresFamilySignupRepositoryError extends Error {
   }
 }
 
-export function createPostgresFamilySignupRepository(pool: DbPool): FamilySignupRepository {
+export function createPostgresFamilySignupRepository(
+  pool: DbPool,
+  crmBinding: FamilySignupCrmBinding,
+): FamilySignupRepository {
   return {
     async transaction<T>(run: (tx: FamilySignupTransaction) => Promise<T>): Promise<T> {
       const client = await pool.connect();
       try {
         await client.query('BEGIN');
-        const result = await run(new PostgresFamilySignupTransaction(client));
+        const result = await run(new PostgresFamilySignupTransaction(client, crmBinding));
         await client.query('COMMIT');
         return result;
       } catch (error) {
@@ -60,7 +68,10 @@ class PostgresFamilySignupTransaction implements FamilySignupTransaction {
       }
     | undefined;
 
-  constructor(private readonly db: Queryable) {}
+  constructor(
+    private readonly db: Queryable,
+    private readonly crmBinding: FamilySignupCrmBinding,
+  ) {}
 
   async findRequest(input: {
     scope: FamilySignupScope;
@@ -319,6 +330,9 @@ class PostgresFamilySignupTransaction implements FamilySignupTransaction {
       binding.scope.verification_environment_id,
     ] as const;
     const displayName = `${input.request.first_name} ${input.request.last_name}`.trim();
+    if (this.crmBinding.productKey !== binding.scope.product) {
+      throw invariant('The Family-signup CRM product binding does not match the request scope.');
+    }
 
     await insertExactlyOne(
       this.db,
@@ -389,6 +403,16 @@ class PostgresFamilySignupTransaction implements FamilySignupTransaction {
       ],
       'adult credential',
     );
+    await upsertFamilySignupCrmContact(this.db, {
+      accountKey: this.crmBinding.accountKey,
+      productKey: this.crmBinding.productKey,
+      contactKey: `contact_${projection.adult_id}`,
+      displayName,
+      normalizedEmail: input.request.normalized_email,
+      timezone: input.request.timezone,
+      parentNewsletterConsent: input.request.parent_newsletter_consent,
+      committedAt: input.committed_at,
+    });
 
     await insertCanonicalTransition(this.db, {
       transitionKey: `${binding.idempotency_key}:human-account-active`,
@@ -567,6 +591,72 @@ class PostgresFamilySignupTransaction implements FamilySignupTransaction {
         'Family-signup commit does not match the globally locked request key.',
       );
     }
+  }
+}
+
+async function upsertFamilySignupCrmContact(
+  db: Queryable,
+  input: {
+    accountKey: string;
+    productKey: string;
+    contactKey: string;
+    displayName: string;
+    normalizedEmail: string;
+    timezone: string;
+    parentNewsletterConsent: boolean;
+    committedAt: string;
+  },
+): Promise<void> {
+  const result = await db.query(
+    `INSERT INTO onetime.contacts
+       (contact_key, public_contact_id, account_key, product_key, display_name,
+        family_school_classification, family_or_school, location_text, timezone,
+        email_normalized, phone_normalized, reminder_preference,
+        consent_policy_version, consent_recorded_at, suppression_state, source,
+        lead_status, last_activity_at, created_at, updated_at)
+     VALUES ($1, gen_random_uuid()::text, $2, $3, $4,
+             'family', $4, 'Not provided', $5,
+             $6, NULL, $7, $8, $9,
+             'active', 'one_time_family_signup', 'new', $10, $10, $10)
+     ON CONFLICT (account_key, product_key, email_normalized)
+     DO UPDATE SET
+       display_name = EXCLUDED.display_name,
+       family_school_classification = 'family',
+       family_or_school = EXCLUDED.family_or_school,
+       timezone = EXCLUDED.timezone,
+       reminder_preference = CASE
+         WHEN onetime.contacts.consent_recorded_at IS NULL
+           THEN EXCLUDED.reminder_preference
+         ELSE onetime.contacts.reminder_preference
+       END,
+       consent_policy_version = COALESCE(
+         onetime.contacts.consent_policy_version,
+         EXCLUDED.consent_policy_version
+       ),
+       consent_recorded_at = COALESCE(
+         onetime.contacts.consent_recorded_at,
+         EXCLUDED.consent_recorded_at
+       ),
+       last_activity_at = EXCLUDED.last_activity_at,
+       updated_at = EXCLUDED.updated_at,
+       version = onetime.contacts.version + 1,
+       identity_version = onetime.contacts.identity_version + 1
+     RETURNING contact_key`,
+    [
+      input.contactKey,
+      input.accountKey,
+      input.productKey,
+      input.displayName,
+      input.timezone,
+      input.normalizedEmail,
+      input.parentNewsletterConsent ? 'email' : 'none',
+      input.parentNewsletterConsent ? 'parent-newsletter-v2.1-2026-08-05' : null,
+      input.parentNewsletterConsent ? input.committedAt : null,
+      input.committedAt,
+    ],
+  );
+  if (result.rowCount !== 1) {
+    throw invariant('Family signup did not resolve exactly one CRM adult contact.');
   }
 }
 

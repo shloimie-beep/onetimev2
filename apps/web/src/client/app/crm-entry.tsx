@@ -253,12 +253,12 @@ function CrmApp() {
   async function loadSession() {
     try {
       const json = await getSession();
-      setSession(json);
       if (json.user.role === 'admin') {
         const assigneeJson = await getAssignees();
         setAssignees(assigneeJson.assignees);
       }
       setSessionExpired(false);
+      setSession(json);
     } catch (error) {
       if (error instanceof AuthExpiredError) {
         clearProtectedState();

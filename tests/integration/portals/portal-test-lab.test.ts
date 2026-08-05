@@ -40,7 +40,10 @@ beforeEach(async () => {
     displayName: 'W12 Fictional Viewer',
     role: 'viewer',
   });
-  await seedPortalTestLab({ pool, config });
+  await seedPortalTestLab({
+    pool,
+    config: { ...config, portalTestLabEnabled: true },
+  });
 });
 
 afterEach(async () => {
@@ -88,14 +91,14 @@ describe('W12-03 Portal Test Lab', () => {
     }
   });
 
-  it('keeps the lab owner/admin-only and hides runnable secrets', async () => {
+  it('keeps the retired lab route unavailable to every session and hides runnable secrets', async () => {
     const server = await listenForTest(createApp({ config, pool, distDir }));
     try {
-      const anonymous = await fetch(`${server.baseUrl}${W12_PORTAL_TEST_LAB_ROUTE}`, {
-        redirect: 'manual',
-      });
-      expect(anonymous.status).toBe(302);
-      expect(anonymous.headers.get('location')).toContain('return_to=%2Fapp%2Fportal-test-lab');
+      const anonymous = await fetch(`${server.baseUrl}${W12_PORTAL_TEST_LAB_ROUTE}`);
+      expect(anonymous.status).toBe(404);
+      expect(await anonymous.text()).not.toMatch(
+        /w12-viewer@example\.test|w12-student|password|zoom|vimeo/i,
+      );
 
       const parent = await loginAs(
         server.baseUrl,
@@ -105,8 +108,7 @@ describe('W12-03 Portal Test Lab', () => {
       const forbidden = await fetch(`${server.baseUrl}${W12_PORTAL_TEST_LAB_ROUTE}`, {
         headers: { cookie: parent.cookies },
       });
-      expect(forbidden.status).toBe(403);
-      expect(await forbidden.text()).toContain('Portal Test Lab access unavailable');
+      expect(forbidden.status).toBe(404);
 
       const admin = await loginAs(
         server.baseUrl,
@@ -117,15 +119,8 @@ describe('W12-03 Portal Test Lab', () => {
         headers: { cookie: admin.cookies },
       });
       const html = await page.text();
-      expect(page.status, html).toBe(200);
-      expect(page.headers.get('cache-control')).toContain('no-store');
-      expect(html).toContain('W12 Portal Test Lab');
-      expect(html).toContain(W12_PORTAL_TEST_LAB.parent.email);
-      for (const learner of W12_PORTAL_TEST_LAB.learners) {
-        expect(html).toContain(learner.email);
-        expect(html).toContain(learner.learnerKey);
-        expect(html).not.toContain(learner.defaultPassword);
-      }
+      expect(page.status, html).toBe(404);
+      expect(html).not.toContain(W12_PORTAL_TEST_LAB.parent.email);
       expect(html).not.toContain(W12_PORTAL_TEST_LAB.parent.defaultPassword);
       expect(html).not.toContain(W12_PORTAL_TEST_LAB.admin.defaultPassword);
       expect(html).not.toMatch(/view as|impersonat|https?:\/\/|zoom|vimeo|drive|meet/i);
@@ -139,8 +134,17 @@ describe('W12-03 Portal Test Lab', () => {
         body: new URLSearchParams({ csrf_token: admin.json.csrf_token }),
         redirect: 'manual',
       });
-      expect(reset.status).toBe(303);
-      expect(reset.headers.get('location')).toBe(`${W12_PORTAL_TEST_LAB_ROUTE}?status=reset`);
+      expect(reset.status).toBe(404);
+
+      const reseed = await fetch(`${server.baseUrl}${W12_PORTAL_TEST_LAB_ROUTE}/reseed`, {
+        method: 'POST',
+        headers: {
+          cookie: admin.cookies,
+          'content-type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({ csrf_token: admin.json.csrf_token }),
+      });
+      expect(reseed.status).toBe(404);
     } finally {
       await server.close();
     }
@@ -196,10 +200,8 @@ describe('W12-03 Portal Test Lab', () => {
           headers: { cookie: parent.cookies, 'x-csrf-token': parent.json.csrf_token },
         },
       );
-      expect(parentLaunch.status).toBe(200);
-      expect(JSON.stringify(await parentLaunch.json())).not.toMatch(
-        /https?:\/\/|zoom|vimeo|drive|meet/i,
-      );
+      expect(parentLaunch.status).toBe(403);
+      expect(await parentLaunch.text()).not.toMatch(/https?:\/\/|zoom|vimeo|drive|meet/i);
 
       const parentHelper = await fetch(
         `${server.baseUrl}/api/v1/portals/parent/households/${
@@ -218,13 +220,9 @@ describe('W12-03 Portal Test Lab', () => {
           }),
         },
       );
-      const parentHelperJson = await parentHelper.json();
-      expect(parentHelper.status, JSON.stringify(parentHelperJson)).toBe(200);
-      expect(parentHelperJson.data).toMatchObject({
-        abstained: false,
-        provider_mode: 'provider_off',
-        grounding_mode: 'approved_entitled_sections',
-      });
+      const parentHelperText = await parentHelper.text();
+      expect(parentHelper.status, parentHelperText).toBe(404);
+      expect(parentHelperText).not.toMatch(/https?:\/\/|zoom|vimeo|drive|meet/i);
       const crossHousehold = await fetch(
         `${server.baseUrl}/api/v1/portals/parent/households/not_authorized_household/learners/${
           W12_PORTAL_TEST_LAB.learners[0].learnerKey
@@ -255,7 +253,6 @@ describe('W12-03 Portal Test Lab', () => {
         expect(dashboardJson.data.progress.attendance_count).toBe(1);
         expect(dashboardJson.data.rewards.balance).toBe(5);
         expect(dashboardJson.data.questions).toHaveLength(1);
-        expect(dashboardJson.data.helper.available).toBe(true);
         for (const sibling of W12_PORTAL_TEST_LAB.learners) {
           if (sibling.learnerKey === current.learnerKey) continue;
           expect(JSON.stringify(dashboardJson)).not.toContain(sibling.learnerKey);
@@ -274,12 +271,9 @@ describe('W12-03 Portal Test Lab', () => {
             question: 'What should I review from the Mishnah lesson?',
           }),
         });
-        const helperJson = await helper.json();
-        expect(helper.status, JSON.stringify(helperJson)).toBe(200);
-        expect(helperJson.data.abstained).toBe(false);
-        expect(helperJson.data.provider_mode).toBe('provider_off');
-        expect(helperJson.data.grounding_mode).toBe('approved_entitled_sections');
-        expect(JSON.stringify(helperJson)).not.toMatch(/https?:\/\/|zoom|vimeo|drive|meet/i);
+        const helperText = await helper.text();
+        expect(helper.status, helperText).toBe(404);
+        expect(helperText).not.toMatch(/https?:\/\/|zoom|vimeo|drive|meet/i);
       }
     } finally {
       await server.close();
@@ -338,16 +332,8 @@ describe('W12-03 Portal Test Lab', () => {
         session: entitledSession,
         idempotencyKey: 'w12-learner-one-exact-entitlement',
       });
-      expect(entitledResponse.status, JSON.stringify(entitledResponse.body)).toBe(200);
-      expect(entitledResponse.body.data).toMatchObject({
-        abstained: false,
-        safe_reason_code: 'supported_by_approved_section',
-        provider_mode: 'provider_off',
-      });
-      expect(entitledResponse.body.data.citations).toHaveLength(1);
-      expect(entitledResponse.body.data.citations[0]?.content_id).toBe(
-        W12_PORTAL_TEST_LAB.recordingKey,
-      );
+      expect(entitledResponse.status, JSON.stringify(entitledResponse.body)).toBe(404);
+      expect(entitledResponse.body).toMatchObject({ success: false, code: 'NOT_FOUND' });
 
       const siblingSession = await loginAs(
         server.baseUrl,
@@ -359,14 +345,8 @@ describe('W12-03 Portal Test Lab', () => {
         session: siblingSession,
         idempotencyKey: 'w12-learner-two-sibling-denial',
       });
-      expect(siblingResponse.status, JSON.stringify(siblingResponse.body)).toBe(200);
-      expect(siblingResponse.body.data).toMatchObject({
-        abstained: true,
-        safe_reason_code: 'not_entitled',
-        citations: [],
-        source_refs: [],
-        provider_mode: 'provider_off',
-      });
+      expect(siblingResponse.status, JSON.stringify(siblingResponse.body)).toBe(404);
+      expect(siblingResponse.body).toMatchObject({ success: false, code: 'NOT_FOUND' });
       const siblingPayload = JSON.stringify(siblingResponse.body);
       for (const forbidden of [
         W12_PORTAL_TEST_LAB.recordingKey,
@@ -585,16 +565,8 @@ async function expectUnsafeHelperResponse(input: {
     }),
   });
   const body = await response.json();
-  expect(response.status, JSON.stringify(body)).toBe(200);
-  expect(body.data).toMatchObject({
-    answer:
-      "I couldn't find that in Rabbi Scheller's approved class material. Try asking about this lesson, or send a private question.",
-    abstained: true,
-    safe_reason_code: 'unsafe_source_content',
-    citations: [],
-    source_refs: [],
-    provider_mode: 'provider_off',
-  });
+  expect(response.status, JSON.stringify(body)).toBe(404);
+  expect(body).toMatchObject({ success: false, code: 'NOT_FOUND' });
   const serialized = JSON.stringify(body);
   expect(serialized).not.toMatch(
     /forbidden-value|(?:https?:)?\/\/|zoom\.us|vimeo\.com|api[_ ]?key|passcode\s*[:=]?\s*\d|[?&]token=/i,

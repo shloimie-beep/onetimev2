@@ -29,7 +29,7 @@ export const publicRouteProbes: RouteProbe[] = [
     id: 'landing',
     path: '/',
     audience: 'public',
-    expectedHeading: 'Worldwide Mishnah Learning / Live from Eretz Yisrael',
+    expectedHeading: 'Help your son love learning Mishnayos.',
   },
   {
     id: 'signup',
@@ -78,32 +78,37 @@ export const publicRouteProbes: RouteProbe[] = [
 
 export const ownerRouteProbes: RouteProbe[] = [
   { id: 'dashboard', path: '/app/dashboard', audience: 'owner', expectedHeading: 'Dashboard' },
-  { id: 'crm', path: '/app/crm', audience: 'owner', expectedHeading: 'CRM' },
-  { id: 'crm_contact_detail', path: '/app/crm/contacts/__synthetic__', audience: 'owner' },
+  { id: 'contacts', path: '/app/contacts', audience: 'owner', expectedHeading: 'Contacts' },
+  { id: 'contact_detail', path: '/app/contacts/__synthetic__', audience: 'owner' },
   {
     id: 'communications',
     path: '/app/communications',
     audience: 'owner',
     expectedHeading: 'Communications',
   },
-  { id: 'classes', path: '/app/classes', audience: 'owner', expectedHeading: 'Classes' },
+  {
+    id: 'classes',
+    path: '/app/classroom/classes',
+    audience: 'owner',
+    expectedHeading: 'Classroom',
+  },
   {
     id: 'class_detail',
-    path: '/app/classes/e2e_class_occurrence',
+    path: '/app/classroom/occurrences/e2e_class_occurrence',
     audience: 'owner',
-    expectedHeading: 'Classes',
+    expectedHeading: 'Classroom',
   },
   {
     id: 'content',
     path: '/app/content',
     audience: 'owner',
-    expectedHeading: 'Content Workspace',
+    expectedHeading: 'Content',
   },
   {
     id: 'billing',
-    path: '/app/billing',
+    path: '/app/billing-access',
     audience: 'owner',
-    expectedHeading: 'Household Access',
+    expectedHeading: 'Billing & Access',
   },
   { id: 'support', path: '/app/support', audience: 'owner', expectedHeading: 'Support' },
 ];
@@ -325,7 +330,7 @@ export async function customerSafetyFindings(page: Page) {
       'technical_diagnostic_visible',
     ],
     [
-      /\$67|month afterward|No card today|ROSH HASHANAH SPECIAL/i,
+      /\$67\/month afterward|No card today|ROSH HASHANAH SPECIAL/i,
       'stale_pricing_or_campaign_copy_visible',
     ],
   ];
@@ -355,7 +360,7 @@ export async function createSyntheticContact(page: Page) {
 }
 
 export async function openSyntheticContactDetail(page: Page, contactName: string, email: string) {
-  await page.goto('/app/crm');
+  await page.goto('/app/contacts');
   await page.waitForFunction(() => performance.getEntriesByName('ot-crm-list-usable').length > 0);
   await page.getByLabel('Search').fill(email);
   await page.getByRole('button', { name: 'Apply' }).click();

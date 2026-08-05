@@ -66,10 +66,10 @@ test('synthetic Student browses, searches, and obtains protected playback for an
   await page.goto('/app/student/library');
 
   const library = page.getByRole('region', { name: 'Library' });
-  await expect(library.getByText('Mishnayos Bava Kamma — Perek 4')).toBeVisible();
   await library.getByLabel('Search lessons').fill('Bava Kamma');
   await library.getByRole('button', { name: 'Search' }).click();
   await expect.poll(() => lastSearch).toBe('Bava Kamma');
+  await expect(library.getByText('Mishnayos Bava Kamma — Perek 4')).toBeVisible();
   await library.getByRole('button', { name: 'Open protected lesson' }).click();
   await expect(library.getByText(/Protected playback authorized until/i)).toBeVisible();
 

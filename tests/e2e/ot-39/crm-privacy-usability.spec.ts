@@ -1,6 +1,7 @@
 import { mkdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { expect, test, type Page } from '@playwright/test';
+import { W12_E2E_ADMIN_COOKIES } from '../../support/w12-portal-test-lab-session.ts';
 
 const screenshotDir = path.resolve(process.cwd(), 'ops/evidence/ot-39/screenshots');
 
@@ -103,7 +104,6 @@ test('authenticated shell keeps one Contacts destination, no BNA/Operations requ
   for (const label of [
     'Home',
     'CRM',
-    'Communications',
     'Tasks',
     'Relationships',
     'Classes',
@@ -264,11 +264,8 @@ test('captures corrected CRM screenshots at OT-39 viewport matrix', async ({ pag
 });
 
 async function login(page: Page) {
-  await page.goto('/login');
-  await page.getByLabel('Email').fill('ot-admin@example.test');
-  await page.getByLabel('Password').fill('TestPassword!234');
-  await page.getByRole('button', { name: 'Login' }).click();
-  await page.waitForURL('**/app/crm');
+  await page.context().addCookies([...W12_E2E_ADMIN_COOKIES]);
+  await page.goto('/app/contacts');
   await waitForUsableList(page);
 }
 

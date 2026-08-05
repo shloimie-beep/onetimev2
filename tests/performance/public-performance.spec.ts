@@ -6,7 +6,7 @@ test('landing meets local performance and overflow gates', async ({ page }) => {
   await page.goto('/', { waitUntil: 'load' });
   await page
     .getByRole('heading', {
-      name: 'MISHNAYOS MADE MEMORABLE',
+      name: 'Help your son love learning Mishnayos.',
     })
     .waitFor();
   const usableMs = Date.now() - started;
@@ -56,11 +56,12 @@ test('authenticated CRM list and detail stay within request and usability budget
     if (url.pathname.startsWith('/api/v1/')) apiRequests.push(url.pathname);
   });
 
-  await page.goto('/login');
+  await page.goto('/login?return_to=%2Fapp%2Fcontacts');
   await page.getByLabel('Email').fill('ot-admin@example.test');
   await page.getByLabel('Password').fill('TestPassword!234');
   await page.getByRole('button', { name: 'Login' }).click();
   const listStarted = Date.now();
+  await page.waitForURL('**/app/contacts');
   await page.waitForFunction(() => performance.getEntriesByName('ot-crm-list-usable').length > 0);
   const listMs = Date.now() - listStarted;
   const listApiCount = apiRequests.filter(
@@ -70,6 +71,7 @@ test('authenticated CRM list and detail stay within request and usability budget
   expect(listApiCount).toBeLessThanOrEqual(5);
 
   await expect(page.getByLabel('Search')).toBeEnabled();
+  await page.getByLabel('Search').fill(email);
   await page.getByRole('button', { name: 'Apply' }).click();
   await expect(page.getByRole('button', { name: new RegExp(contactName) })).toBeVisible();
   await page.evaluate(() => performance.clearMarks('ot-crm-detail-usable'));

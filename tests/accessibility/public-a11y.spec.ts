@@ -10,11 +10,11 @@ for (const path of ['/', '/signup', '/tisha-bav', '/privacy', '/terms']) {
 }
 
 test('axe accessibility check authenticated CRM', async ({ page }) => {
-  await page.goto('/login');
+  await page.goto('/login?return_to=%2Fapp%2Fcontacts');
   await page.getByLabel('Email').fill('ot-admin@example.test');
   await page.getByLabel('Password').fill('TestPassword!234');
   await page.getByRole('button', { name: 'Login' }).click();
-  await page.waitForURL('**/app/crm');
+  await page.waitForURL('**/app/contacts');
   await page.getByRole('heading', { name: 'Contacts' }).waitFor();
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations).toEqual([]);

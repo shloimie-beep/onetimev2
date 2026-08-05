@@ -1004,7 +1004,10 @@ export function createApp({
 
   const schoolRuntimeBinding = resolveSchoolSignupScope(config);
   const approvedSchoolService = createSchoolSignupService({
-    repository: createPostgresSchoolSignupRepository(pool),
+    repository: createPostgresSchoolSignupRepository(pool, {
+      accountKey: config.accountKey,
+      productKey: config.productKey,
+    }),
     allocateLeadId: () => `school-lead-${randomUUID()}`,
   });
   app.use(

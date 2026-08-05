@@ -462,12 +462,13 @@ export function createParentPortalService(deps: PortalServiceDeps) {
       actor: PortalActorContext,
       householdKey: string,
       learnerKey: string,
-      classKey: string,
+      _classKey: string,
     ) {
-      requireParentHousehold(actor, householdKey, 'parent:class:launch');
-      const learner = await requireLearner(deps.repository, actor, householdKey, learnerKey);
-      return safeActionDescriptor(
-        await deps.classAccess.protectedLaunch({ actor, learner, class_key: classKey }),
+      requireParentHousehold(actor, householdKey, 'parent:household:read');
+      await requireLearner(deps.repository, actor, householdKey, learnerKey);
+      throw new PortalServiceError(
+        'FORBIDDEN',
+        'Class launch requires a separate student session.',
       );
     },
 

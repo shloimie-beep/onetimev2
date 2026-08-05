@@ -4,7 +4,16 @@ import path from 'node:path';
 import { expect, test, type BrowserContext, type Page } from '@playwright/test';
 import { W12_E2E_ADMIN_COOKIES } from '../support/w12-portal-test-lab-session.ts';
 
-const primaryLabels = ['Dashboard', 'Contacts', 'Content', 'Classroom', 'Live Console'];
+const primaryLabels = [
+  'Dashboard',
+  'Contacts',
+  'Content',
+  'Classroom',
+  'Communications',
+  'Billing & Access',
+  'Operations',
+  'Live Console',
+];
 const viewports = [
   { width: 360, height: 800 },
   { width: 390, height: 844 },
@@ -12,7 +21,7 @@ const viewports = [
   { width: 1440, height: 1000 },
 ] as const;
 
-test('Admin IA keeps five focused areas across the governed viewport matrix', async ({
+test('Admin IA keeps the canonical launch areas across the governed viewport matrix', async ({
   browser,
 }) => {
   test.setTimeout(90_000);
@@ -67,40 +76,27 @@ test('Admin IA keeps five focused areas across the governed viewport matrix', as
   }
 
   await page.setViewportSize({ width: 1440, height: 1000 });
-  await page.goto('/app/crm/learners');
-  await expect(page.locator('#page-title')).toHaveText('Learners');
+  await page.goto('/app/students');
+  await expect(page.locator('#page-title')).toHaveText('Students');
   await expect(
     page.getByRole('navigation', { name: 'People and family management' }).getByRole('link'),
-  ).toHaveText(['People / Contacts', 'Households', 'Users & Roles', 'Learners', 'Audit History']);
+  ).toHaveText(['People / Contacts', 'Households', 'Users', 'Students', 'Audit History']);
   await expect(page.locator('#admin-directory-learners-title')).toHaveText('Learners');
   await expect(page.getByRole('button', { name: 'Add learner' })).toBeVisible();
 
   await page.goto('/app/content/studio');
   await expect(page.getByRole('heading', { name: 'Content' })).toBeVisible();
   await expect(page.getByRole('navigation', { name: 'Content area' }).getByRole('link')).toHaveText(
-    ['Library', 'Factory', 'Studio', 'Knowledge', 'Prompts'],
+    ['Library', 'Pipeline', 'Upload'],
   );
   await expect(page.getByRole('navigation', { name: 'Studio view' })).toBeVisible();
 
-  await page.goto('/app/rewards');
+  await page.goto('/app/classroom/classes');
   await expect(page.getByRole('heading', { name: 'Classroom' })).toBeVisible();
   await expect(
     page.getByRole('navigation', { name: 'Classroom area' }).getByRole('link'),
-  ).toHaveText([
-    'Classes',
-    'Occurrences',
-    'Enrollments',
-    'Recordings',
-    'Access',
-    'Questions',
-    'Rewards',
-  ]);
-  await expect(page.getByLabel('Class occurrence')).toBeVisible();
-  await expect(
-    page.locator(
-      '.classroom-workspace > .readonly-row, .classroom-workspace > .gamification-admin, .classroom-workspace > .state-panel',
-    ),
-  ).toHaveCount(1);
+  ).toHaveText(['Classes', 'Occurrences', 'Enrollments', 'Recordings', 'Access', 'Questions']);
+  await expect(page.getByRole('heading', { name: 'Classes', exact: true })).toBeVisible();
 
   await page.goto('/app/live-console');
   await expect(page.getByRole('heading', { name: 'Live Console' })).toBeVisible();

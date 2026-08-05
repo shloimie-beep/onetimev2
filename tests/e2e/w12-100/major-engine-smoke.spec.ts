@@ -15,7 +15,7 @@ test('landing, signup, login, and 404 smoke in major browser engines', async ({
   for (const route of [
     {
       path: '/',
-      heading: 'Worldwide Mishnah Learning / Live from Eretz Yisrael',
+      heading: 'Help your son love learning Mishnayos.',
       status: 200,
     },
     { path: '/signup', heading: 'Create your Family account', status: 200 },

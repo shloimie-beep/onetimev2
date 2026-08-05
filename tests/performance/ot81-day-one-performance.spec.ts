@@ -39,7 +39,7 @@ test.describe('OT81 integrated 30-sample performance matrix', () => {
         await page.goto('/');
         await page
           .getByRole('heading', {
-            name: 'MISHNAYOS MADE MEMORABLE',
+            name: 'Help your son love learning Mishnayos.',
           })
           .waitFor();
       }),
@@ -57,10 +57,10 @@ test.describe('OT81 integrated 30-sample performance matrix', () => {
       }),
     );
 
-    await login(page, 'ot-admin@example.test', 'TestPassword!234', '/app/crm');
+    await login(page, 'ot-admin@example.test', 'TestPassword!234', '/app/contacts');
     results.push(
       await measureRoute(page, 'crm_list', async () => {
-        await page.goto('/app/crm');
+        await page.goto('/app/contacts');
         await page.waitForFunction(
           () => performance.getEntriesByName('ot-crm-list-usable').length > 0,
         );
@@ -68,7 +68,7 @@ test.describe('OT81 integrated 30-sample performance matrix', () => {
     );
     results.push(
       await measureRoute(page, 'crm_detail', async () => {
-        await page.goto(`/app/crm/contacts/${encodeURIComponent(contactId)}`);
+        await page.goto(`/app/contacts/${encodeURIComponent(contactId)}`);
         await page.waitForFunction(
           () => performance.getEntriesByName('ot-crm-detail-usable').length > 0,
         );
@@ -76,11 +76,11 @@ test.describe('OT81 integrated 30-sample performance matrix', () => {
     );
     results.push(
       await measureRoute(page, 'warm_return', async () => {
-        await page.goto('/app/crm');
+        await page.goto('/app/contacts');
         await page.waitForFunction(
           () => performance.getEntriesByName('ot-crm-list-usable').length > 0,
         );
-        await page.goto('/app/crm');
+        await page.goto('/app/contacts');
         await page.waitForFunction(
           () => performance.getEntriesByName('ot-crm-list-usable').length > 0,
         );
@@ -133,9 +133,18 @@ async function createSyntheticContact(page: Page) {
   await page.getByRole('textbox', { name: 'School contact email' }).fill(email);
   await page.getByRole('button', { name: 'Send school inquiry' }).click();
   await page.getByRole('heading', { name: /received your school inquiry/i }).waitFor();
-  await login(page, 'ot-admin@example.test', 'TestPassword!234', '/app/crm');
+  await login(page, 'ot-admin@example.test', 'TestPassword!234', '/app/contacts');
   const contactId = await page.evaluate(async (needle) => {
-    const response = await fetch('/api/v1/crm/contacts');
+    const session = await fetch('/api/v1/auth/session');
+    const sessionJson = (await session.json()) as { csrf_token: string };
+    const response = await fetch('/api/v1/crm/contacts/search', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-csrf-token': sessionJson.csrf_token,
+      },
+      body: JSON.stringify({ search: needle }),
+    });
     const json = (await response.json()) as {
       contacts?: Array<{ contact_id: string; email: string | null }>;
     };

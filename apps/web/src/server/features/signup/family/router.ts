@@ -278,7 +278,10 @@ export const familySignupFeatureRegistration = defineServerFeature({
 
 function defaultSubmitter(config: AppConfig, pool: DbPool): FamilySignupSubmitter {
   return createFamilySignupService({
-    repository: createPostgresFamilySignupRepository(pool),
+    repository: createPostgresFamilySignupRepository(pool, {
+      accountKey: config.accountKey,
+      productKey: config.productKey,
+    }),
     ...(config.oneTimeFreeAccessExpiresAt
       ? { freeAccessExpiresAt: config.oneTimeFreeAccessExpiresAt }
       : {}),

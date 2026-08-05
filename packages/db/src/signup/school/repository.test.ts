@@ -18,6 +18,10 @@ const scope: SchoolSignupScope = {
   runtime_tier: 'isolated_staging',
   verification_environment_id: 'ci',
 };
+const crmBinding = {
+  accountKey: 'one-time-account',
+  productKey: 'one_time_mishnayos',
+};
 
 afterEach(async () => {
   while (pools.length > 0) await pools.pop()?.end();
@@ -28,7 +32,7 @@ describe('P09 PostgreSQL School-signup repository', () => {
     const pool = await schoolDatabase();
     let allocation = 0;
     const service = createSchoolSignupService({
-      repository: createPostgresSchoolSignupRepository(pool),
+      repository: createPostgresSchoolSignupRepository(pool, crmBinding),
       allocateLeadId: () => `school-lead-${++allocation}`,
     });
 
@@ -59,6 +63,12 @@ describe('P09 PostgreSQL School-signup repository', () => {
         GROUP BY workflow_id, template_id, template_version, sender_key,
                  rendered_subject, content_digest, delivery_state`,
     );
+    const contact = await pool.query(
+      `SELECT display_name, family_school_classification, family_or_school,
+              email_normalized, phone_normalized, reminder_preference,
+              suppression_state, source, lead_status
+         FROM onetime.contacts`,
+    );
 
     expect(inquiry.rows[0]).toMatchObject({
       count: 1,
@@ -80,12 +90,80 @@ describe('P09 PostgreSQL School-signup repository', () => {
       content_digest: SCHOOL_INQUIRY_ACKNOWLEDGMENT_CONTENT_DIGEST,
       delivery_state: 'pending',
     });
+    expect(contact.rows).toEqual([
+      {
+        display_name: 'Ari Levi',
+        family_school_classification: 'school',
+        family_or_school: 'Yeshiva One',
+        email_normalized: 'ari@example.com',
+        phone_normalized: null,
+        reminder_preference: 'none',
+        suppression_state: 'active',
+        source: 'one_time_school_inquiry',
+        lead_status: 'new',
+      },
+    ]);
+  });
+
+  it('preserves existing CRM suppression, archive, source, phone, and consent state', async () => {
+    const pool = await schoolDatabase();
+    await pool.query(
+      `INSERT INTO onetime.contacts
+         (contact_key, public_contact_id, account_key, product_key, display_name,
+          family_school_classification, family_or_school, location_text, timezone,
+          email_normalized, phone_normalized, reminder_preference,
+          consent_policy_version, consent_recorded_at, suppression_state, source,
+          lead_status, last_activity_at, created_at, updated_at)
+       VALUES
+         ('existing-contact', 'existing-public', $1, $2, 'Existing Adult',
+          'family', 'Existing Family', 'Brooklyn', 'America/New_York',
+          'ari@example.com', '+12125550199', 'email',
+          'existing-policy', '2026-07-01T00:00:00.000Z', 'suppressed',
+          'existing-source', 'archived', now(), now(), now())`,
+      [crmBinding.accountKey, crmBinding.productKey],
+    );
+    const service = createSchoolSignupService({
+      repository: createPostgresSchoolSignupRepository(pool, crmBinding),
+      allocateLeadId: () => 'school-lead-existing-contact',
+    });
+
+    await service.submitInquiry({
+      scope,
+      command: { ...command(), phone: '+12125550000' },
+    });
+
+    await expect(
+      pool.query(
+        `SELECT contact_key, display_name, family_school_classification, family_or_school,
+                location_text, timezone, phone_normalized, reminder_preference,
+                consent_policy_version, consent_recorded_at, suppression_state, source,
+                lead_status
+           FROM onetime.contacts`,
+      ),
+    ).resolves.toMatchObject({
+      rows: [
+        {
+          contact_key: 'existing-contact',
+          display_name: 'Ari Levi',
+          family_school_classification: 'school',
+          family_or_school: 'Yeshiva One',
+          location_text: 'Brooklyn',
+          timezone: 'America/New_York',
+          phone_normalized: '+12125550199',
+          reminder_preference: 'email',
+          consent_policy_version: 'existing-policy',
+          suppression_state: 'suppressed',
+          source: 'existing-source',
+          lead_status: 'archived',
+        },
+      ],
+    });
   });
 
   it('fails closed on a changed canonical request for the same normalized email', async () => {
     const pool = await schoolDatabase();
     const service = createSchoolSignupService({
-      repository: createPostgresSchoolSignupRepository(pool),
+      repository: createPostgresSchoolSignupRepository(pool, crmBinding),
       allocateLeadId: () => 'school-lead-fixed',
     });
     await service.submitInquiry({ scope, command: command() });
@@ -103,7 +181,7 @@ describe('P09 PostgreSQL School-signup repository', () => {
   it('rolls back the inquiry if its acknowledgment cannot be committed', async () => {
     const pool = await schoolDatabase();
     const service = createSchoolSignupService({
-      repository: createPostgresSchoolSignupRepository(pool),
+      repository: createPostgresSchoolSignupRepository(pool, crmBinding),
       allocateLeadId: () => 'shared-lead-id',
     });
     await service.submitInquiry({ scope, command: command() });
@@ -121,7 +199,7 @@ describe('P09 PostgreSQL School-signup repository', () => {
   it('creates, reads back, and exactly replays only canonical approved-School authority', async () => {
     const pool = await schoolDatabase();
     const service = createSchoolSignupService({
-      repository: createPostgresSchoolSignupRepository(pool),
+      repository: createPostgresSchoolSignupRepository(pool, crmBinding),
       allocateLeadId: () => 'unused',
     });
     const command = approvedSchoolCommand();
@@ -179,7 +257,7 @@ describe('P09 PostgreSQL School-signup repository', () => {
   it('permits one optimistic update winner and rejects replay mismatch and stale version', async () => {
     const pool = await schoolDatabase();
     const service = createSchoolSignupService({
-      repository: createPostgresSchoolSignupRepository(pool),
+      repository: createPostgresSchoolSignupRepository(pool, crmBinding),
       allocateLeadId: () => 'unused',
     });
     const originalCommand = approvedSchoolCommand();
@@ -259,7 +337,7 @@ describe('P09 PostgreSQL School-signup repository', () => {
   it('rejects writes in production_read_only before inserting durable state', async () => {
     const pool = await schoolDatabase();
     const service = createSchoolSignupService({
-      repository: createPostgresSchoolSignupRepository(pool),
+      repository: createPostgresSchoolSignupRepository(pool, crmBinding),
       allocateLeadId: () => 'school-lead-read-only',
     });
     await expect(
@@ -356,11 +434,42 @@ async function schoolDatabase(): Promise<DbPool> {
     returns: DataType.integer,
     implementation: () => 1,
   });
+  db.public.registerFunction({
+    name: 'gen_random_uuid',
+    returns: DataType.uuid,
+    implementation: () => '00000000-0000-4000-8000-000000000001',
+  });
   const adapter = db.adapters.createPg();
   const pool = new adapter.Pool() as DbPool;
   pools.push(pool);
   await pool.query(`
     CREATE SCHEMA onetime;
+
+    CREATE TABLE onetime.contacts (
+      contact_key text NOT NULL UNIQUE,
+      public_contact_id text NOT NULL UNIQUE,
+      account_key text NOT NULL,
+      product_key text NOT NULL,
+      display_name text NOT NULL,
+      family_school_classification text NOT NULL,
+      family_or_school text NOT NULL,
+      location_text text NOT NULL,
+      timezone text NOT NULL,
+      email_normalized text NOT NULL,
+      phone_normalized text,
+      reminder_preference text NOT NULL,
+      consent_policy_version text,
+      consent_recorded_at timestamptz,
+      suppression_state text NOT NULL,
+      source text NOT NULL,
+      lead_status text NOT NULL,
+      last_activity_at timestamptz NOT NULL,
+      created_at timestamptz NOT NULL,
+      updated_at timestamptz NOT NULL,
+      version bigint NOT NULL DEFAULT 1,
+      identity_version bigint NOT NULL DEFAULT 1,
+      UNIQUE (account_key, product_key, email_normalized)
+    );
 
     CREATE TABLE onetime.v21_adult_identities (
       adult_id text NOT NULL,

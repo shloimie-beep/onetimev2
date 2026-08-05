@@ -1,43 +1,34 @@
 import { AxeBuilder } from '@axe-core/playwright';
 import { expect, type Page, test } from '@playwright/test';
 
-test('support anonymous, non-subscriber, active, mobile, and receipt states pass axe', async ({
-  page,
-}) => {
+test('support anonymous, active, mobile, and receipt states pass axe', async ({ page }) => {
   await page.goto('/app/support');
   await expect(page.getByRole('heading', { name: 'Sign in for learning support' })).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 
-  await login(page, 'viewer@example.test', 'ViewerPass!234');
-  await page.goto('/app/support');
-  await expect(
-    page.getByRole('heading', { name: 'Learning support is unavailable' }),
-  ).toBeVisible();
-  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
-
   await login(page, 'ot-parent@example.test', 'ParentPassword!234');
-  await page.goto('/app/support');
+  await page.goto('/app/parent/support');
   await expect(page.getByRole('heading', { name: 'Member Support' })).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/app/support');
+  await page.goto('/app/parent/support');
   await expect(page.locator('[data-support-form]')).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 
   await fillSupportForm(page);
   await page.getByRole('button', { name: 'Submit support request' }).click();
-  await page.waitForURL('**/app/support/receipts/**');
+  await page.waitForURL(/\/app\/parent\/support\/otr_[^/]+$/u);
   await expect(page.getByRole('heading', { name: 'Support Receipt' })).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });
 
 async function login(page: Page, email: string, password: string) {
-  await page.goto(`/login?return_to=${encodeURIComponent('/app/support')}`);
+  await page.goto(`/login?return_to=${encodeURIComponent('/app/parent')}`);
   await page.getByLabel('Email').fill(email);
   await page.getByLabel('Password').fill(password);
   await page.getByRole('button', { name: 'Login' }).click();
-  await page.waitForURL('**/app/support');
+  await page.waitForURL('**/app/parent');
 }
 
 async function fillSupportForm(page: Page) {

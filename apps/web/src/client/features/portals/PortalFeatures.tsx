@@ -608,15 +608,12 @@ export function StudentPortalFeature({
         {activeSection === 'library' && (
           <>
             <h2 id="student-library-heading">Library</h2>
-            {libraryWorkspace ?? (
-              <>
-                {dashboard.featured_lesson && <FeaturedLesson lesson={dashboard.featured_lesson} />}
-                <ContentList
-                  items={dashboard.library_items.filter((item) => item.status === 'published')}
-                  onOpen={readOnly ? undefined : onOpenContent}
-                />
-              </>
-            )}
+            {libraryWorkspace}
+            {dashboard.featured_lesson && <FeaturedLesson lesson={dashboard.featured_lesson} />}
+            <ContentList
+              items={dashboard.library_items.filter((item) => item.status === 'published')}
+              onOpen={readOnly ? undefined : onOpenContent}
+            />
           </>
         )}
 

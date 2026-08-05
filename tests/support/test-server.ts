@@ -17,10 +17,13 @@ import {
 } from '../../packages/domain/src/index.ts';
 import {
   W12_PORTAL_TEST_LAB,
-  isPortalTestLabEnabled,
   seedPortalTestLab,
 } from '../../apps/web/src/server/features/portal-test-lab/router.ts';
-import { CONTACT_OPERATIONS_E2E_OWNER_SESSION_TOKEN } from './contact-operations-session.ts';
+import {
+  CONTACT_OPERATIONS_E2E_OWNER_SESSION_TOKEN,
+  CONTACT_OPERATIONS_MOBILE_E2E_OWNER_SESSION_TOKEN,
+  CRM_CORE_E2E_OWNER_SESSION_TOKEN,
+} from './contact-operations-session.ts';
 import {
   W12_E2E_ADMIN_CSRF_TOKEN,
   W12_E2E_ADMIN_SESSION_TOKEN,
@@ -33,6 +36,10 @@ import {
 const config = loadConfig({
   ...process.env,
   NODE_ENV: 'test',
+  LOGIN_IDENTIFIER_RATE_LIMIT_MAX: '500',
+  LOGIN_IP_RATE_LIMIT_MAX: '500',
+  LOGIN_ACCOUNT_RATE_LIMIT_MAX: '5000',
+  LOGIN_GLOBAL_RATE_LIMIT_MAX: '5000',
   PORT: process.env.PORT ?? '3100',
   PUBLIC_BASE_URL: `http://127.0.0.1:${process.env.PORT ?? '3100'}`,
   OT89_SUPPORT_ENABLED: process.env.OT89_SUPPORT_ENABLED ?? 'true',
@@ -65,7 +72,7 @@ await createAccountUser({
   email: process.env.OT_TEST_ADMIN_EMAIL ?? 'ot-admin@example.test',
   password: process.env.OT_TEST_ADMIN_PASSWORD ?? 'TestPassword!234',
   displayName: 'Test Admin',
-  role: 'crm_agent',
+  role: 'admin',
   mfaCapable: true,
 });
 const ownerUserKey = await createAccountUser({
@@ -131,6 +138,15 @@ const contentFactoryStudentUserKey = await createAccountUser({
   role: 'student',
   mfaCapable: false,
 });
+const vimeoCatalogStudentUserKey = await createAccountUser({
+  pool,
+  config,
+  email: 'vimeo-catalog-student@example.test',
+  password: 'VimeoCatalogStudent!234',
+  displayName: 'Vimeo Catalog Student',
+  role: 'student',
+  mfaCapable: false,
+});
 const zoomStudentUserKey = await createAccountUser({
   pool,
   config,
@@ -151,10 +167,8 @@ await createAccountUser({
 });
 await seedDayOneBrowserRecords();
 await runContentFactoryBrowserAcceptance();
-if (isPortalTestLabEnabled(config)) {
-  await seedPortalTestLab({ pool, config });
-  await seedW12AdminSession();
-}
+await seedPortalTestLab({ pool, config: { ...config, portalTestLabEnabled: true } });
+await seedW12AdminSession();
 await seedContactOperationsOwnerSession();
 await seedVimeoCatalogStudentSession();
 const testClock = process.env.OT_TEST_CLOCK
@@ -200,6 +214,7 @@ async function seedDayOneBrowserRecords() {
         ('e2e_household_zoom', $1, $2, 'E2E Zoom Family'),
         ('e2e_household_paused', $1, $2, 'E2E Paused Family'),
         ('content_factory_household', $1, $2, 'Content Factory Family'),
+        ('vimeo_catalog_household', $1, $2, 'Vimeo Catalog Family'),
         ('contact_operations_household', $1, $2, 'Contact Operations Family')`,
     [config.accountKey, config.productKey],
   );
@@ -269,6 +284,8 @@ async function seedDayOneBrowserRecords() {
         ('e2e_learner_zoom', $1, $2, 'e2e_household_zoom', 'E2E Zoom Learner', '6'),
         ('content_factory_learner', $1, $2, 'content_factory_household',
          'Content Factory Student', '6'),
+        ('vimeo_catalog_learner', $1, $2, 'vimeo_catalog_household',
+         'Vimeo Catalog Student', '6'),
         ('contact_operations_learner', $1, $2, 'contact_operations_household',
          'Contact Operations Student', '6')`,
     [config.accountKey, config.productKey],
@@ -285,7 +302,9 @@ async function seedDayOneBrowserRecords() {
         ('contact_operations_access', $1, $2, 'contact_operations_household',
          'contact_operations_learner', $5, 'active'),
         ('content_factory_access', $1, $2, 'content_factory_household',
-         'content_factory_learner', $6, 'active')`,
+          'content_factory_learner', $6, 'active'),
+        ('vimeo_catalog_access', $1, $2, 'vimeo_catalog_household',
+          'vimeo_catalog_learner', $7, 'active')`,
     [
       config.accountKey,
       config.productKey,
@@ -293,6 +312,7 @@ async function seedDayOneBrowserRecords() {
       zoomStudentUserKey,
       contactOperationsStudentUserKey,
       contentFactoryStudentUserKey,
+      vimeoCatalogStudentUserKey,
     ],
   );
   await pool.query(
@@ -304,7 +324,9 @@ async function seedDayOneBrowserRecords() {
         ('contact_operations_student_link', $1, $2, 'contact_operations_household',
          'contact_operations_learner', $5),
         ('content_factory_student_link', $1, $2, 'content_factory_household',
-         'content_factory_learner', $6)`,
+          'content_factory_learner', $6),
+        ('vimeo_catalog_student_link', $1, $2, 'vimeo_catalog_household',
+          'vimeo_catalog_learner', $7)`,
     [
       config.accountKey,
       config.productKey,
@@ -312,6 +334,7 @@ async function seedDayOneBrowserRecords() {
       zoomStudentUserKey,
       contactOperationsStudentUserKey,
       contentFactoryStudentUserKey,
+      vimeoCatalogStudentUserKey,
     ],
   );
   await pool.query(
@@ -320,7 +343,8 @@ async function seedDayOneBrowserRecords() {
       VALUES
         ('e2e_entitlement_alpha', $1, $2, 'e2e_household_alpha', 'active'),
         ('e2e_entitlement_zoom', $1, $2, 'e2e_household_zoom', 'active'),
-        ('content_factory_entitlement', $1, $2, 'content_factory_household', 'active')`,
+        ('content_factory_entitlement', $1, $2, 'content_factory_household', 'active'),
+        ('vimeo_catalog_entitlement', $1, $2, 'vimeo_catalog_household', 'active')`,
     [config.accountKey, config.productKey],
   );
   for (const fixture of [
@@ -343,6 +367,11 @@ async function seedDayOneBrowserRecords() {
       householdKey: 'content_factory_household',
       idempotencyKey: 'content-factory-free-pilot-v1',
       sourceReference: 'content_factory_free_pilot',
+    },
+    {
+      householdKey: 'vimeo_catalog_household',
+      idempotencyKey: 'vimeo-catalog-free-pilot-v1',
+      sourceReference: 'vimeo_catalog_free_pilot',
     },
   ]) {
     await grantFreePilotAccess({
@@ -605,31 +634,49 @@ async function seedContactOperationsOwnerSession() {
   );
   const row = user.rows[0];
   if (!row) throw new Error('missing contact operations owner test user');
-  await pool.query(
-    `INSERT INTO onetime.user_sessions
-       (session_key, account_key, product_key, user_key, token_hash, csrf_token_hash,
-        user_agent_hash, ip_hash, expires_at, rotated_from_session_key, security_version,
-        assurance_method, assurance_at)
-     VALUES ($1,$2,$3,$4,$5,$6,NULL,NULL,$7,NULL,$8,'email_challenge',now())
-     ON CONFLICT (session_key)
-     DO UPDATE SET token_hash = EXCLUDED.token_hash,
-                   csrf_token_hash = EXCLUDED.csrf_token_hash,
-                   expires_at = EXCLUDED.expires_at,
-                   revoked_at = NULL,
-                   security_version = EXCLUDED.security_version,
-                   assurance_method = 'email_challenge',
-                   assurance_at = now()`,
-    [
-      'sess_contact_operations_owner',
-      config.accountKey,
-      config.productKey,
-      ownerUserKey,
-      sha256(CONTACT_OPERATIONS_E2E_OWNER_SESSION_TOKEN),
-      sha256('contact-operations-owner-csrf-local-only'),
-      new Date(Date.now() + 60 * 60 * 1000).toISOString(),
-      Number(row.security_version ?? 1),
-    ],
-  );
+  for (const session of [
+    {
+      sessionKey: 'sess_contact_operations_owner',
+      token: CONTACT_OPERATIONS_E2E_OWNER_SESSION_TOKEN,
+      csrfToken: 'contact-operations-owner-csrf-local-only',
+    },
+    {
+      sessionKey: 'sess_contact_operations_mobile_owner',
+      token: CONTACT_OPERATIONS_MOBILE_E2E_OWNER_SESSION_TOKEN,
+      csrfToken: 'contact-operations-mobile-owner-csrf-local-only',
+    },
+    {
+      sessionKey: 'sess_crm_core_owner',
+      token: CRM_CORE_E2E_OWNER_SESSION_TOKEN,
+      csrfToken: 'crm-core-owner-csrf-local-only',
+    },
+  ]) {
+    await pool.query(
+      `INSERT INTO onetime.user_sessions
+         (session_key, account_key, product_key, user_key, token_hash, csrf_token_hash,
+          user_agent_hash, ip_hash, expires_at, rotated_from_session_key, security_version,
+          assurance_method, assurance_at)
+       VALUES ($1,$2,$3,$4,$5,$6,NULL,NULL,$7,NULL,$8,'email_challenge',now())
+       ON CONFLICT (session_key)
+       DO UPDATE SET token_hash = EXCLUDED.token_hash,
+                     csrf_token_hash = EXCLUDED.csrf_token_hash,
+                     expires_at = EXCLUDED.expires_at,
+                     revoked_at = NULL,
+                     security_version = EXCLUDED.security_version,
+                     assurance_method = 'email_challenge',
+                     assurance_at = now()`,
+      [
+        session.sessionKey,
+        config.accountKey,
+        config.productKey,
+        ownerUserKey,
+        sha256(session.token),
+        sha256(session.csrfToken),
+        new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+        Number(row.security_version ?? 1),
+      ],
+    );
+  }
 }
 
 async function seedVimeoCatalogStudentSession() {
@@ -640,7 +687,7 @@ async function seedVimeoCatalogStudentSession() {
         AND product_key = $2
         AND user_key = $3
       LIMIT 1`,
-    [config.accountKey, config.productKey, studentUserKey],
+    [config.accountKey, config.productKey, vimeoCatalogStudentUserKey],
   );
   const row = user.rows[0];
   if (!row) throw new Error('missing Vimeo catalog browser Student');
@@ -662,7 +709,7 @@ async function seedVimeoCatalogStudentSession() {
       'sess_vimeo_catalog_student',
       config.accountKey,
       config.productKey,
-      studentUserKey,
+      vimeoCatalogStudentUserKey,
       sha256(VIMEO_CATALOG_E2E_STUDENT_SESSION_TOKEN),
       sha256(VIMEO_CATALOG_E2E_STUDENT_CSRF_TOKEN),
       new Date(Date.now() + 60 * 60 * 1000).toISOString(),

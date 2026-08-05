@@ -111,10 +111,10 @@ export function StudentLibraryWorkspace({
   }
 
   return (
-    <section aria-labelledby="student-publication-library-heading">
+    <div className="student-publication-library">
       <header>
         <p className="ot-kicker">Approved private lessons</p>
-        <h2 id="student-publication-library-heading">{view.heading}</h2>
+        <h3 id="student-publication-library-heading">Private lesson search</h3>
         <p>Only lessons assigned to this Student account are available here.</p>
       </header>
       <form
@@ -178,7 +178,7 @@ export function StudentLibraryWorkspace({
           </div>
         </Card>
       )}
-    </section>
+    </div>
   );
 }
 

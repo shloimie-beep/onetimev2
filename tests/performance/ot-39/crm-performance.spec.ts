@@ -2,6 +2,7 @@ import { gzipSync } from 'node:zlib';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { expect, test, type BrowserContext, type Page } from '@playwright/test';
+import { W12_E2E_ADMIN_COOKIES } from '../../support/w12-portal-test-lab-session.ts';
 
 type SampleSet = {
   samples: number[];
@@ -46,7 +47,7 @@ test('CRM shell emits post-paint marks and meets 30-sample performance gates', a
   const email = `ot39-perf-${fixtureId}@example.test`;
   await login(page);
   const contactId = await createContact(page, contactName, email);
-  const contactPath = `/app/crm/contacts/${encodeURIComponent(contactId)}`;
+  const contactPath = `/app/contacts/${encodeURIComponent(contactId)}`;
   await applyMobileThrottle(context, page);
   await reloadList(page);
   await page.goto(contactPath, { waitUntil: 'domcontentloaded' });
@@ -365,11 +366,9 @@ async function publicPagesExcludeAppBundle() {
 }
 
 async function login(page: Page) {
-  await page.goto('/login');
-  await page.getByLabel('Email').fill('ot-admin@example.test');
-  await page.getByLabel('Password').fill('TestPassword!234');
-  await page.getByRole('button', { name: 'Login' }).click();
-  await page.waitForURL('**/app/crm');
+  await page.context().clearCookies();
+  await page.context().addCookies([...W12_E2E_ADMIN_COOKIES]);
+  await page.goto('/app/contacts');
   await waitForUsableList(page);
 }
 
@@ -406,7 +405,9 @@ async function createContact(page: Page, name: string, email: string) {
     },
     { name, email },
   );
-  expect(result.success).toBe(true);
+  if (!result.success) {
+    throw new Error(`Synthetic CRM fixture creation failed: ${JSON.stringify(result)}`);
+  }
   return String(result.contact.contact_id);
 }
 
@@ -425,5 +426,5 @@ async function waitForUsableDetail(page: Page) {
 }
 
 function crmPerfPath() {
-  return `/app/crm?perf=${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  return `/app/contacts?perf=${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }

@@ -551,7 +551,7 @@ export async function authenticateUser({
       {
         scope: 'login_identifier',
         subject: identifierHash,
-        limit: 5,
+        limit: config.loginIdentifierRateLimitMax,
         windowMs: config.loginRateLimitWindowMs,
       },
       {

@@ -1,5 +1,8 @@
 import { expect, test } from '@playwright/test';
-import { CONTACT_OPERATIONS_E2E_OWNER_SESSION_TOKEN } from '../support/contact-operations-session.ts';
+import {
+  CONTACT_OPERATIONS_E2E_OWNER_SESSION_TOKEN,
+  CONTACT_OPERATIONS_MOBILE_E2E_OWNER_SESSION_TOKEN,
+} from '../support/contact-operations-session.ts';
 
 test('Admin runs one-button Parent household enrollment and protected Contacts operations', async ({
   page,
@@ -139,7 +142,7 @@ test('Admin reaches the existing Parent household naturally from Contacts on mob
   await page.context().addCookies([
     {
       name: 'otcrm_session',
-      value: CONTACT_OPERATIONS_E2E_OWNER_SESSION_TOKEN,
+      value: CONTACT_OPERATIONS_MOBILE_E2E_OWNER_SESSION_TOKEN,
       domain: '127.0.0.1',
       path: '/',
       httpOnly: true,
