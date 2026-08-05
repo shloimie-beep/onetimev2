@@ -127,6 +127,22 @@ describe('P08 Family-signup route security', () => {
     });
   });
 
+  it('accepts the canonical authenticated app origin when the public funnel origin is join', async () => {
+    const submit = vi.fn(async () => createdResult());
+    const harness = await startHarness({ submitter: { submit } });
+    const bootstrap = await getBootstrap(harness.baseUrl);
+    const response = await post(harness.baseUrl, command(bootstrap.idempotencyKey), bootstrap, {
+      origin: 'https://app.onetimeonetime.com',
+    });
+
+    expect(response.status).toBe(202);
+    expect(await response.json()).toMatchObject({
+      success: true,
+      code: 'SIGNUP_COMMITTED_SESSION_UNAVAILABLE',
+    });
+    expect(submit).toHaveBeenCalledTimes(1);
+  });
+
   it('rejects extra, hybrid, Student, card, phone, reminder, and caller-hash fields', async () => {
     const submit = vi.fn(async () => createdResult());
     const harness = await startHarness({ submitter: { submit } });

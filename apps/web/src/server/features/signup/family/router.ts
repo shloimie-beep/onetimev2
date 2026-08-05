@@ -27,6 +27,7 @@ import {
   SERVER_FEATURE_REGISTRY_CONTRACT_VERSION,
 } from '../../registry/index.ts';
 import { authReturnLocation, sessionCookieHeader } from '../../auth/http-security.ts';
+import { CANONICAL_APPLICATION_HOST } from '../../domain-transition/policy.ts';
 import {
   createPostgresFamilySignupRepository,
   PostgresFamilySignupRepositoryError,
@@ -540,7 +541,11 @@ function isSameOrigin(req: Request, config: AppConfig): boolean {
   const source = req.header('origin') ?? req.header('referer');
   if (!source) return false;
   try {
-    return new URL(source).origin === new URL(config.publicBaseUrl).origin;
+    const sourceOrigin = new URL(source).origin;
+    return (
+      sourceOrigin === new URL(config.publicBaseUrl).origin ||
+      sourceOrigin === `https://${CANONICAL_APPLICATION_HOST}`
+    );
   } catch {
     return false;
   }

@@ -4,23 +4,23 @@
   "source_inputs": [
     {
       "path": "ops/v2.1-execution/source-spec/02-ACCEPTANCE-CONTRACT-v2.1.yaml",
-      "sha256": "d1dd39b0f91e94a4d8f179454a15fbeabb3d31d88afd490db1a5040ff6777444"
+      "sha256": "5ba419467050fa78bc6a8b265bb6ce686fb4203e6dbf9fe94f484f29694d6a04"
     },
     {
       "path": "ops/v2.1-execution/source-spec/03-DECISION-REGISTER-v2.1.md",
-      "sha256": "dd65fa9b90ade725514b24276117880e105d4fff550227a85e34d0c3228eba0b"
+      "sha256": "fd7d88282e45c51ca7abe227be16c9cfbf989e8ece47d701822725163d5bcf73"
     },
     {
       "path": "ops/v2.1-execution/source-spec/05-ACTOR-ROLE-CAPABILITY-ROUTE-MATRIX-v2.1.md",
-      "sha256": "07999409c831e4e497bf36ba289b555cf700fe939c6f210be783f6ed3d0b258a"
+      "sha256": "f878ccf4b3143f7195ee1ad6eecfd8617beaf7b9e35ba5369846db066bd392c3"
     },
     {
       "path": "ops/v2.1-execution/source-spec/08-SCREEN-CATALOG-AND-DESIGN-SYSTEM-v2.1.md",
-      "sha256": "2925315872b8eb11fcb6d30a9044e416661c52041da2cf4d1028394da3d7d898"
+      "sha256": "49f62be1f179bcfb2c1c577cb47b9fd32f2a935b00364c73be69815cdb0d9b8f"
     },
     {
       "path": "apps/web/src/server/app.ts",
-      "sha256": "0c7a26f60e1f835b895f26dbc75bbb741915b8d0214bd1568bb54f4167444371"
+      "sha256": "a2b7fdfb3026a29adafd193d67566b64bfcdddf5ab8dff4f681c7364f304ba04"
     },
     {
       "path": "apps/web/src/server/features/portals/routers.ts",
@@ -40,7 +40,7 @@
     },
     {
       "path": "apps/web/src/client/app/admin-ia.ts",
-      "sha256": "e9e24326e1a23bfc7141215dc1c33037551b88eeff0f011eca5ecc61111c103b"
+      "sha256": "1b2b58ba15245e934d5f9e9ad910461420d69be2210242867c423aac4745bc54"
     },
     {
       "path": "apps/web/src/client/app/crm-entry.tsx",
@@ -72,7 +72,7 @@
     },
     {
       "path": "apps/web/src/client/public/public-entry.ts",
-      "sha256": "af4e15060b991bd37b250e03b8d6a24d757337264ee717feace3db9469375c7d"
+      "sha256": "386f6ceb51f8f5b657faf4d80f91950b9441f3cff89b456b9655e2a7811d41f2"
     },
     {
       "path": "apps/web/src/client/public/school/model.ts",
@@ -88,7 +88,7 @@
     },
     {
       "path": "scripts/build-public-pages.ts",
-      "sha256": "20a594454cdff6724f7d38349dd718f28c161f2ebe93f3302f9586fa2a16bf84"
+      "sha256": "a70487d40c980c12ceb051e469a46329b11e45bf0791823097ae64b4d3205327"
     },
     {
       "path": "packages/domain/src/dashboard/service.ts",
