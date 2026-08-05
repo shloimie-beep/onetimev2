@@ -30,8 +30,8 @@ describe('runtime public metadata origin', () => {
     const config = loadConfig({
       NODE_ENV: 'test',
       PUBLIC_BASE_URL: 'https://ot99-web-staging.up.railway.app',
-      ONE_TIME_FIRST_CLASS_AT: '2026-08-09T19:00:00+03:00',
-      ONE_TIME_FREE_ACCESS_EXPIRES_AT: '2026-09-13T19:24:00+03:00',
+      ONE_TIME_FIRST_CLASS_AT: '2026-08-16T19:00:00+03:00',
+      ONE_TIME_FREE_ACCESS_EXPIRES_AT: '2026-09-11T18:00:00+03:00',
     });
     pool = createMemoryPool();
     server = await listenForTest(createApp({ config, pool, distDir }));
@@ -47,12 +47,12 @@ describe('runtime public metadata origin', () => {
     expect(rootMarkup).toContain(
       '<link rel="canonical" href="https://ot99-web-staging.up.railway.app/">',
     );
-    expect(rootMarkup).toContain('data-first-class-at="2026-08-09T19:00:00+03:00"');
-    expect(rootMarkup).toContain('data-access-boundary="2026-09-13T19:24:00+03:00"');
+    expect(rootMarkup).toContain('data-first-class-at="2026-08-16T19:00:00+03:00"');
+    expect(rootMarkup).toContain('data-access-boundary="2026-09-11T18:00:00+03:00"');
     expect(signupMarkup).toContain(
       '<meta property="og:url" content="https://ot99-web-staging.up.railway.app/signup">',
     );
-    expect(signupMarkup).toContain('data-access-boundary="2026-09-13T19:24:00+03:00"');
+    expect(signupMarkup).toContain('data-access-boundary="2026-09-11T18:00:00+03:00"');
     expect(schoolMarkup).toContain(
       '<link rel="canonical" href="https://ot99-web-staging.up.railway.app/school">',
     );

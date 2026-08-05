@@ -140,7 +140,7 @@ An ambiguous GHL match quarantines only the CRM/provider link. It does not roll 
 >
 > Welcome to One Time Mishnayos with Rabbi Eli Scheller.
 >
-> Your family has free access until September 13, 2026 at 7:24 p.m. Jerusalem time. There is no card required and no automatic charge.
+> Your family has free access until September 11, 2026 at 6:00 PM Asia/Jerusalem. There is no card required and no automatic charge.
 >
 > Sign in with the email and password you chose, then add up to three Student accounts. Each Student will use a separate username and password for class and recordings.
 >
@@ -218,7 +218,7 @@ Step 1 copy:
 >
 > Your old login will not move automatically. Please create a new Parent account, then add each Student with a separate username and password.
 >
-> If you sign up before September 13, 2026 at 7:24 p.m. Jerusalem time, access is free until that time. No card is required and you will not be charged automatically.
+> If you sign up before September 11, 2026 at 6:00 PM Asia/Jerusalem, access is free until that time. No card is required and you will not be charged automatically.
 >
 > **Create my new account**
 >
@@ -373,13 +373,13 @@ Audience: former/canceled adults with current marketing permission who are not a
 |---|---:|---|
 | 1 | Approval launch | `See what is new in One Time Mishnayos` |
 | 2 | Day 4 | `A separate Student portal for live class and recordings` |
-| 3 | Day 9 | `Come back free until September 13` |
+| 3 | Day 9 | `Come back free until September 11` |
 
 Exit on signup, suppression, active membership, school classification, or completion.
 
 ### WNC-6.17 `OT-16` Free-Period Conversion
 
-Relative to `2026-09-13T19:24:00+03:00`, or the replacement canonical configuration:
+Relative to `2026-09-11T18:00:00+03:00`, or the replacement canonical configuration:
 
 - 14 days before.
 - 7 days before.
