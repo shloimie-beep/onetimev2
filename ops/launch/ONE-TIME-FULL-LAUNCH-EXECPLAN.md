@@ -4,11 +4,11 @@
 
 - Authoritative brief: `C:\Users\User\Downloads\ONE-TIME-FULL-PRODUCTION-LAUNCH-CODEX-GOAL.md`
 - Integration branch: `codex/one-time-complete-production-launch-20260805`
-- Verified production source: `a157c388d8dc292699f7cd1a1ef178918ee30885`
+- Current production source: `7e3075b06e2b03b67168e59d7fcfb96d16324c7a`
 - Rollback branch: `rollback/one-time-pre-complete-launch-20260805`
-- Verified web deployment: `976d8203-d962-4c13-94d5-b3221eceb65f`
-- Verified worker deployment: `99f6471b-f7d7-4fd5-a405-383ceadcbe60`
-- Verified migration baseline: `2260`, 91 applied, zero pending
+- Current web deployment: `f89c6bad-e8f2-4b7c-ae99-bc83fd7a3d95`
+- Current worker execution: `0049c1d6-ece3-4cbb-a08d-bacd5220be85`
+- Current migration head: `2264`, 95 applied, zero pending
 
 ## Milestones
 
@@ -30,7 +30,7 @@
 
 ## Current checkpoint
 
-Orientation complete. Live source/deployments are unchanged from the brief, the rollback and integration branches are published, and three bounded lanes are starting from this checkpoint. Milestone 1 is active.
+Milestone 1 is live and proven. The public journey creates canonical local access before provider work; the preserved canary produced exactly one adult contact, one household opportunity, and one confirmation email. Canonical password recovery is deployed, invalidates existing sessions, succeeds once, and rejects replay. The Parent created three display-once Student credentials, the fourth seat was rejected, and a Student username/password session reached the protected Student app. Web/worker version variables agree with the deployed commit, health/readiness are green, and the pre-launch rollback branch remains immutable. Milestone 2 portal completion and Milestones 3-4 class/media provider gates are next.
 
 ## Validation commands
 
