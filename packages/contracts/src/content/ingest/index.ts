@@ -7,6 +7,11 @@ export const CONTENT_INGEST_DRIVE_STABILITY_SECONDS = 120;
 export const CONTENT_INGEST_INCOMPLETE_UPLOAD_HOURS = 24;
 export const CONTENT_INGEST_MAX_ATTEMPTS = 8;
 export const CONTENT_INGEST_REGION = 'eu-central-1' as const;
+export const CONTENT_INGEST_SOURCE_POLICY = {
+  primary: 'app_upload',
+  optional: ['drive'],
+  optionalSourceFailureBlocksPrimary: false,
+} as const;
 export const CONTENT_INGEST_CONTAINERS = ['mp4', 'mov', 'mkv'] as const;
 export const CONTENT_INGEST_MIME_TYPES = [
   'video/mp4',
@@ -169,6 +174,23 @@ export type MultipartUploadPlan = {
   expiresAt: string;
 };
 
+export type ManagedMultipartUploadBinding = {
+  uploadSessionId: string;
+  opaqueObjectKey: string;
+};
+
+export type ManagedMultipartBeginReadback =
+  | {
+      disposition: 'created' | 'recovered';
+      providerUploadIdDigest: string;
+      openUploadCount: 1;
+    }
+  | {
+      disposition: 'duplicate';
+      providerUploadIdDigests: readonly string[];
+      openUploadCount: number;
+    };
+
 export type ManagedObjectReadback = {
   runtimeTier: IngestRuntimeTier;
   verificationEnvironmentId: string;
@@ -177,8 +199,11 @@ export type ManagedObjectReadback = {
   objectKeyDigest: string;
   objectVersionId: string;
   byteCount: number;
+  durabilityEvidenceVersion?: 'OT-MANAGED-ORIGINAL-1';
+  checksumAlgorithm?: 'sha256';
   sha256: string;
   kmsKeyVersionRef: string;
+  storageClass?: string;
   blockPublicAccess: true;
   bucketOwnerEnforced: true;
 };
@@ -188,9 +213,15 @@ export type RecoveryJournalReceipt = {
   uploadSessionId: string;
   runtimeTier: IngestRuntimeTier;
   verificationEnvironmentId: string;
+  durabilityEvidenceVersion?: 'OT-MANAGED-ORIGINAL-1';
+  bucketRef?: string;
+  objectKeyDigest?: string;
   objectVersionId: string;
   byteCount: number;
+  checksumAlgorithm?: 'sha256';
   sha256: string;
+  kmsKeyVersionRef?: string;
+  storageClass?: string;
   writtenAt: string;
   readBackAt: string;
 };
