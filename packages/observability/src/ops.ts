@@ -174,8 +174,14 @@ export async function collectOpsHealthSnapshot(input: {
       });
     }
   }
+  const activeWorkerTypes = new Set(
+    workers
+      .filter((worker) => worker.state !== 'stale' && worker.state !== 'stopped')
+      .map((worker) => worker.worker_type),
+  );
   for (const worker of workers) {
     if (worker.state === 'stale') {
+      if (activeWorkerTypes.has(worker.worker_type)) continue;
       blockers.push({
         code: `${worker.worker_type}_heartbeat_stale`,
         dependency: 'worker_heartbeats',
