@@ -40,7 +40,7 @@ function requestFixture(): CandidateBuildRequest {
     ],
     native_postgresql: {
       engine_version: '18.4',
-      migration_count: 94,
+      migration_count: 96,
       ledger_digest: sha256('immutable migration ledger'),
       pending_count: 0,
       issue_count: 0,
@@ -68,9 +68,9 @@ describe('I36 deterministic candidate builder', () => {
     expect(sets.route_action_inventory.files).toEqual([
       { path: 'ops/day-one/visible-action-registry.json', sha256: sha256(registry) },
     ]);
-    expect(sets.application_content.expected_paths).toHaveLength(1227);
-    expect(sets.web_artifact.expected_paths).toHaveLength(1093);
-    expect(sets.worker_artifact.expected_paths).toHaveLength(1093);
+    expect(sets.application_content.expected_paths).toHaveLength(1228);
+    expect(sets.web_artifact.expected_paths).toHaveLength(1094);
+    expect(sets.worker_artifact.expected_paths).toHaveLength(1094);
     expect(sets.application_content.expected_paths).toEqual(
       [...sets.application_content.expected_paths].sort((left, right) =>
         Buffer.compare(Buffer.from(left), Buffer.from(right)),
@@ -185,9 +185,9 @@ describe('I36 deterministic candidate builder', () => {
     );
 
     const shortMigrationCount = requestFixture();
-    shortMigrationCount.native_postgresql.migration_count = 93;
+    shortMigrationCount.native_postgresql.migration_count = 95;
     expect(() => buildCandidate(shortMigrationCount, { repository_root: repositoryRoot })).toThrow(
-      /exactly 95 migrations/,
+      /exactly 96 migrations/,
     );
   });
 

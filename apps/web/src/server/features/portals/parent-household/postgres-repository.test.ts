@@ -46,6 +46,7 @@ describe('P12 concrete PostgreSQL Parent household repository', () => {
   beforeAll(async () => {
     pool = createMemoryPool();
     await applyMigrations(pool, true);
+    await installClassEnrollmentFixture(pool);
   }, 30_000);
 
   afterAll(async () => {
@@ -89,6 +90,7 @@ describe('P12 concrete PostgreSQL Parent household repository', () => {
     expect(JSON.stringify(persisted.rows[0])).not.toContain('safe-password-123');
     await expect(count(pool, 'admin_service_account_acceptances')).resolves.toBe(1);
     await expect(count(pool, 'admin_canonical_student_enrollments')).resolves.toBe(1);
+    await expect(count(pool, 'class_series_enrollments')).resolves.toBe(1);
     await expect(count(pool, 'admin_directory_audit_events')).resolves.toBe(1);
     await expect(count(pool, 'admin_directory_receipts')).resolves.toBe(1);
     await expect(count(pool, 'admin_student_credential_resets')).resolves.toBe(1);
@@ -297,6 +299,11 @@ describe('P12 concrete PostgreSQL Parent household repository', () => {
         WHERE student_id = 'student-archive'`,
     );
     expect(enrollment.rows[0]?.state).toBe('revoked');
+    const classEnrollment = await pool.query(
+      `SELECT enrollment_state FROM onetime.class_series_enrollments
+        WHERE learner_key = 'student-archive'`,
+    );
+    expect(classEnrollment.rows[0]?.enrollment_state).toBe('revoked');
     const disabledProjection = await pool.query(
       `SELECT users.status AS user_status, links.link_state,
               access.status AS access_status, access.credential_status
@@ -324,6 +331,11 @@ describe('P12 concrete PostgreSQL Parent household repository', () => {
       mutationContext('archive-restore', '0'),
     );
     expect(restored.snapshot.students[0]?.state).toBe('active');
+    const restoredClassEnrollment = await pool.query(
+      `SELECT enrollment_state FROM onetime.class_series_enrollments
+        WHERE learner_key = 'student-archive'`,
+    );
+    expect(restoredClassEnrollment.rows[0]?.enrollment_state).toBe('active');
     const restoredProjection = await pool.query(
       `SELECT users.status AS user_status, links.link_state,
               access.status AS access_status, access.credential_status
@@ -670,6 +682,40 @@ async function applyMigrations(pool: DbPool, memory: boolean) {
     }
     await pool.query(sql);
   }
+}
+
+async function installClassEnrollmentFixture(pool: DbPool) {
+  await pool.query(`
+    CREATE TABLE onetime.class_series (
+      class_series_key text PRIMARY KEY,
+      account_key text NOT NULL,
+      product_key text NOT NULL,
+      status text NOT NULL,
+      series_state text NOT NULL,
+      is_canonical boolean NOT NULL,
+      UNIQUE (account_key, product_key, class_series_key)
+    );
+    CREATE TABLE onetime.class_series_enrollments (
+      enrollment_key text PRIMARY KEY,
+      account_key text NOT NULL,
+      product_key text NOT NULL,
+      class_series_key text NOT NULL,
+      learner_key text NOT NULL,
+      household_key text NOT NULL,
+      enrollment_state text NOT NULL,
+      source text NOT NULL,
+      effective_at timestamptz NOT NULL,
+      revoked_at timestamptz,
+      idempotency_key text NOT NULL,
+      audit_ref text NOT NULL,
+      version bigint NOT NULL,
+      UNIQUE (account_key, product_key, class_series_key, learner_key),
+      UNIQUE (account_key, product_key, idempotency_key)
+    );
+    INSERT INTO onetime.class_series
+      (class_series_key, account_key, product_key, status, series_state, is_canonical)
+    VALUES ('canonical-class', 'account-test', 'product-test', 'active', 'active', true);
+  `);
 }
 
 async function seedParent(

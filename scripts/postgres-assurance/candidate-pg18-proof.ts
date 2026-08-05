@@ -25,8 +25,8 @@ import {
 
 const EXPECTED_ENGINE_VERSION = '18.4';
 const EXPECTED_SERVER_VERSION_NUM = '180004';
-const EXPECTED_MIGRATION_COUNT = 95;
-const EXPECTED_LAST_MIGRATION_ORDINAL = 2264;
+const EXPECTED_MIGRATION_COUNT = 96;
+const EXPECTED_LAST_MIGRATION_ORDINAL = 2265;
 const OUTPUT_DIR = path.resolve(
   process.env.CANDIDATE_PG18_OUTPUT_DIR ?? 'ops/evidence/ops-11/pg18/candidate',
 );
@@ -335,7 +335,10 @@ async function proveMigrations(pool: pg.Pool): Promise<MigrationProof> {
     firstRun.every((result) => result.status === 'applied'),
     'first migration run was not a clean 94/94 apply',
   );
-  assert(secondRun.length === EXPECTED_MIGRATION_COUNT, 'migration replay did not contain 93 rows');
+  assert(
+    secondRun.length === EXPECTED_MIGRATION_COUNT,
+    `migration replay did not contain ${EXPECTED_MIGRATION_COUNT} rows`,
+  );
   assert(
     secondRun.every((result) => result.status === 'already_applied'),
     'migration replay was not 94/94 already-applied',
@@ -364,7 +367,10 @@ async function proveMigrations(pool: pg.Pool): Promise<MigrationProof> {
     id: String(row.id),
     checksum: String(row.checksum),
   }));
-  assert(ledgerRows.length === EXPECTED_MIGRATION_COUNT, 'ledger did not contain exactly 93 rows');
+  assert(
+    ledgerRows.length === EXPECTED_MIGRATION_COUNT,
+    `ledger did not contain exactly ${EXPECTED_MIGRATION_COUNT} rows`,
+  );
 
   const expectedById = new Map(firstRun.map((result) => [result.id, result.checksum]));
   assert(

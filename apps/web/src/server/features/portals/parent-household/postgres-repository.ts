@@ -176,6 +176,7 @@ export function createPostgresParentHouseholdRepository(
             enrollmentId,
             acceptanceId,
             occurredAt: input.context.occurred_at,
+            options,
           });
         } else {
           await updateStudent(client, loaded, current!, target, input, passwordHash);
@@ -186,6 +187,7 @@ export function createPostgresParentHouseholdRepository(
               enrollmentId,
               state: input.canonical_enrollment === 'enroll' ? 'active' : 'revoked',
               occurredAt: input.context.occurred_at,
+              options,
             });
           }
         }
@@ -1132,6 +1134,7 @@ async function insertEnrollment(
     enrollmentId: string;
     acceptanceId: string;
     occurredAt: string;
+    options: ParentHouseholdPostgresOptions;
   },
 ) {
   await exactlyOne(
@@ -1152,6 +1155,10 @@ async function insertEnrollment(
     ],
     'canonical Student enrollment',
   );
+  await synchronizeClassSeriesEnrollment(db, {
+    ...input,
+    state: 'active',
+  });
 }
 
 async function transitionEnrollment(
@@ -1162,6 +1169,7 @@ async function transitionEnrollment(
     enrollmentId: string;
     state: 'active' | 'revoked';
     occurredAt: string;
+    options: ParentHouseholdPostgresOptions;
   },
 ) {
   const result = await db.query(
@@ -1187,6 +1195,58 @@ async function transitionEnrollment(
     ],
   );
   if (result.rowCount !== 1) throw invariant('The canonical Student enrollment is missing.');
+  await synchronizeClassSeriesEnrollment(db, input);
+}
+
+async function synchronizeClassSeriesEnrollment(
+  db: Queryable,
+  input: {
+    loaded: { record: ParentHouseholdRecord; scope: Scope };
+    target: ParentManagedStudent;
+    enrollmentId: string;
+    state: 'active' | 'revoked';
+    occurredAt: string;
+    options: ParentHouseholdPostgresOptions;
+  },
+) {
+  const result = await db.query(
+    `INSERT INTO onetime.class_series_enrollments
+       (enrollment_key, account_key, product_key, class_series_key, learner_key,
+        household_key, enrollment_state, source, effective_at, revoked_at,
+        idempotency_key, audit_ref, version)
+     SELECT $1, series.account_key, series.product_key, series.class_series_key, $2,
+            $3, $4, 'parent_household_v21', $5::timestamptz,
+            CASE WHEN $4 = 'revoked' THEN $5::timestamptz ELSE NULL END,
+            $6, $7, 1
+       FROM onetime.class_series AS series
+      WHERE series.account_key = $8
+        AND series.product_key = $9
+        AND series.is_canonical = true
+        AND series.status = 'active'
+        AND series.series_state = 'active'
+     ON CONFLICT (account_key, product_key, class_series_key, learner_key)
+     DO UPDATE SET enrollment_state = EXCLUDED.enrollment_state,
+                   effective_at = EXCLUDED.effective_at,
+                   revoked_at = EXCLUDED.revoked_at,
+                   source = EXCLUDED.source,
+                   audit_ref = EXCLUDED.audit_ref,
+                   version = onetime.class_series_enrollments.version + 1
+     RETURNING enrollment_key`,
+    [
+      input.enrollmentId,
+      input.target.student_id,
+      input.loaded.record.household_id,
+      input.state,
+      input.occurredAt,
+      `parent-v21-class-enrollment:${input.target.student_id}`,
+      `parent-household:${input.enrollmentId}`,
+      input.options.portalAccountKey,
+      input.options.portalProductKey,
+    ],
+  );
+  if (result.rowCount !== 1) {
+    throw invariant('The canonical class series is unavailable for Student enrollment.');
+  }
 }
 
 async function insertAudit(

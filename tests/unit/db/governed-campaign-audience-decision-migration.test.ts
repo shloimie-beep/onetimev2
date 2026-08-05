@@ -9,8 +9,8 @@ import {
   type DbPool,
 } from '../../../packages/db/src/index.ts';
 
-const LATEST_MIGRATION_ID = '2264_v21_adult_password_recovery';
-const EXPECTED_MIGRATION_COUNT = 95;
+const LATEST_MIGRATION_ID = '2265_v21_parent_class_enrollment_projection';
+const EXPECTED_MIGRATION_COUNT = 96;
 const HASH_A = 'a'.repeat(64);
 const HASH_B = 'b'.repeat(64);
 const HASH_C = 'c'.repeat(64);
