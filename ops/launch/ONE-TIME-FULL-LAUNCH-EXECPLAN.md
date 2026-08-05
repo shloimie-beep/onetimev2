@@ -4,11 +4,11 @@
 
 - Authoritative brief: `C:\Users\User\Downloads\ONE-TIME-FULL-PRODUCTION-LAUNCH-CODEX-GOAL.md`
 - Integration branch: `codex/one-time-complete-production-launch-20260805`
-- Current production source: `b180660c3a7faa9cb3c0cdb4011283f7257969e8`
+- Current production source: `d53ffd2ee4d83263083aaed7c8538bf639e87673`
 - Rollback branch: `rollback/one-time-pre-complete-launch-20260805`
-- Current web deployment: `555b5099-bce4-42e2-864a-da04bf839a93`
-- Current worker deployment: `4a0fbb29-8148-4f14-b973-4e0944877925`
-- Current migration head: `2266`, 97 applied, zero pending
+- Current web deployment: `ed638ec9-2829-4194-8978-2c5b1a61c0af`
+- Current worker deployment: `1895e2fd-8f7b-4caa-b067-0c79b0927b93`
+- Current migration head: `2267_v21_parent_preferences`, readiness green
 
 ## Milestones
 
@@ -30,7 +30,7 @@
 
 ## Current checkpoint
 
-Milestone 1 is live and proven. The public journey creates canonical local access before provider work; the preserved canary produced exactly one adult contact, one household opportunity, and one confirmation email. Canonical password recovery is deployed, invalidates existing sessions, succeeds once, and rejects replay. The Parent created three display-once Student credentials, the fourth seat was rejected, and a Student username/password session reached the protected Student app. The canonical v2.1 class scope is now converged on `one_time_mishnayos`: one active series, 65 locked Jerusalem occurrences, and three of three active Students automatically rostered. Web/worker version variables agree with the deployed commit, health/readiness/version are green, the post-deploy worker batch completed without retry/dead-letter activity, and the pre-launch rollback branch remains immutable. Milestone 2 portal completion, the Zoom/attendance remainder of Milestone 3, and Milestone 4 media provider gates are next.
+Milestone 1 is live and proven. Application-side portal, billing, privacy, notification, HighLevel projection, and provider-boundary contracts are now live at exact source `d53ffd2ee4d83263083aaed7c8538bf639e87673`. The Vimeo callback is mounted with provider-correct payload-secret verification and official event normalization, but fails closed until protected account/webhook values exist. All six PR checks passed; web/worker source messages and protected runtime identity bind the release to the exact source, migration `2267_v21_parent_preferences` is green, queues have zero ready/retry/dead-letter rows, and the fresh worker heartbeat is ready. Keyholder readback found a locally valid Zoom Meeting SDK pair and a Vimeo app token limited to `public`; it did not find the Drive service account/OAuth file or Vimeo webhook secret. Milestone 2 production acceptance, the Zoom/attendance remainder of Milestone 3, and Milestone 4 provider activation remain next without waiting on the separate GHL UI lane.
 
 ## Validation commands
 
