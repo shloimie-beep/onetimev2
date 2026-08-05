@@ -6,6 +6,7 @@ import { runContentProcessingWorker } from '../content-processing/composition.ts
 import type { ContentProcessingWorkerDependencies } from '../content-processing/composition.ts';
 import { runContentPublicationWorker } from '../content-publication/composition.ts';
 import type { ContentPublicationWorkerDependencies } from '../content-publication/composition.ts';
+import { runFamilySignupGhlWorker } from '../family-signup-ghl/composition.ts';
 import { runOt16CheckpointWorker } from '../ghl-workflows/campaigns/composition.ts';
 
 export const WORKER_RUNNER_REGISTRY_CONTRACT_VERSION = '1.0.0' as const;
@@ -75,6 +76,11 @@ export function createWorkerRunnerRegistrations(
       runnerId: 'content.p21-publication',
       contractVersion: WORKER_RUNNER_REGISTRY_CONTRACT_VERSION,
       run: (context) => runContentPublicationWorker(context, contentMediaRuntime?.publication),
+    }),
+    defineWorkerRunner({
+      runnerId: 'identity.family-signup-ghl',
+      contractVersion: WORKER_RUNNER_REGISTRY_CONTRACT_VERSION,
+      run: runFamilySignupGhlWorker,
     }),
     ot16CheckpointRegistration,
   ]);

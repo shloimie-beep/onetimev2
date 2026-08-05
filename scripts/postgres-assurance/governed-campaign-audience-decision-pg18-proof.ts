@@ -6,7 +6,7 @@ import { runMigrations, type DbPool } from '../../packages/db/src/index.ts';
 
 const EXPECTED_SERVER_VERSION = '18.4';
 const EXPECTED_SERVER_VERSION_NUM = '180004';
-const EXPECTED_MIGRATION_COUNT = 93;
+const EXPECTED_MIGRATION_COUNT = 94;
 const MIGRATION_ID = '2260_v21_governed_campaign_audience_decisions';
 const ACCOUNT_KEY = 'one_time';
 const PRODUCT_KEY = 'one_time_mishnah_class';

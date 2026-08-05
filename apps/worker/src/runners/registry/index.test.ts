@@ -19,7 +19,7 @@ function context(mode: 'once' | 'continuous'): WorkerRunnerContext {
 
 describe('worker runner registry', () => {
   it('registers the bounded media pipeline and durable communications runners', () => {
-    expect(workerRunnerRegistrations).toHaveLength(4);
+    expect(workerRunnerRegistrations).toHaveLength(5);
     expect(workerRunnerRegistrations).toEqual([
       expect.objectContaining({
         runnerId: 'content.media-ingest',
@@ -31,6 +31,10 @@ describe('worker runner registry', () => {
       }),
       expect.objectContaining({
         runnerId: 'content.p21-publication',
+        contractVersion: '1.0.0',
+      }),
+      expect.objectContaining({
+        runnerId: 'identity.family-signup-ghl',
         contractVersion: '1.0.0',
       }),
       expect.objectContaining({
@@ -48,6 +52,7 @@ describe('worker runner registry', () => {
         'content.media-ingest',
         'content.media-processing',
         'content.p21-publication',
+        'identity.family-signup-ghl',
         'communications.ot16-checkpoint',
       ]);
       expect(results['content.p21-publication']).toMatchObject({
@@ -83,6 +88,11 @@ describe('worker runner registry', () => {
           commandsSelected: 0,
           providerCalls: 0,
         },
+      });
+      expect(results['identity.family-signup-ghl']).toEqual({
+        enabled: false,
+        providerCallsPerformed: false,
+        summary: { mode: 'disabled' },
       });
       expect(results['communications.ot16-checkpoint']).toMatchObject({
         enabled: false,

@@ -25,8 +25,8 @@ import {
 
 const EXPECTED_ENGINE_VERSION = '18.4';
 const EXPECTED_SERVER_VERSION_NUM = '180004';
-const EXPECTED_MIGRATION_COUNT = 93;
-const EXPECTED_LAST_MIGRATION_ORDINAL = 2262;
+const EXPECTED_MIGRATION_COUNT = 94;
+const EXPECTED_LAST_MIGRATION_ORDINAL = 2263;
 const OUTPUT_DIR = path.resolve(
   process.env.CANDIDATE_PG18_OUTPUT_DIR ?? 'ops/evidence/ops-11/pg18/candidate',
 );
@@ -333,12 +333,12 @@ async function proveMigrations(pool: pg.Pool): Promise<MigrationProof> {
   );
   assert(
     firstRun.every((result) => result.status === 'applied'),
-    'first migration run was not a clean 93/93 apply',
+    'first migration run was not a clean 94/94 apply',
   );
   assert(secondRun.length === EXPECTED_MIGRATION_COUNT, 'migration replay did not contain 93 rows');
   assert(
     secondRun.every((result) => result.status === 'already_applied'),
-    'migration replay was not 93/93 already-applied',
+    'migration replay was not 94/94 already-applied',
   );
   assert(verification.ok && verification.status === 'verified', 'migration verification failed');
   assert(

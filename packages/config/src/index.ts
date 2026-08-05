@@ -335,7 +335,7 @@ const envSchema = z.object({
   HIGHLEVEL_EVENT_SYNC_MODE: z.enum(['disabled', 'mock', 'provider']).default('disabled'),
   HIGHLEVEL_API_BASE_URL: z.url().default('https://services.leadconnectorhq.com'),
   HIGHLEVEL_API_VERSION: z.string().min(1).max(80).default('2021-07-28'),
-  HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN: optionalTrimmedString(8, 400),
+  HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN: optionalTrimmedString(8, 400),
   HIGHLEVEL_LOCATION_ID: z.string().min(1).max(160).default('pBSnOK2nkdxp6gf9Rg3o'),
   HIGHLEVEL_CANARY_RUN_ID: optionalTrimmedString(8, 160),
   HIGHLEVEL_CANARY_DELIVERY_KEYS: optionalTrimmedString(8, 4000),
@@ -510,9 +510,9 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
 
   if (
     parsed.HIGHLEVEL_EVENT_SYNC_MODE === 'provider' &&
-    !parsed.HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN
+    !parsed.HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN
   ) {
-    throw new Error('HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN is required for provider event sync.');
+    throw new Error('HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN is required for provider event sync.');
   }
 
   const highLevelCanaryDeliveryKeys = parseUniqueCsv(parsed.HIGHLEVEL_CANARY_DELIVERY_KEYS);
@@ -850,7 +850,7 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     highLevelEventSyncMode: parsed.HIGHLEVEL_EVENT_SYNC_MODE,
     highLevelApiBaseUrl: parsed.HIGHLEVEL_API_BASE_URL,
     highLevelApiVersion: parsed.HIGHLEVEL_API_VERSION,
-    highLevelPrivateIntegrationsToken: parsed.HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN,
+    highLevelPrivateIntegrationsToken: parsed.HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN,
     highLevelLocationId: parsed.HIGHLEVEL_LOCATION_ID,
     highLevelTishaBavWorkflowId: undefined as string | undefined,
     highLevelCanaryRunId: parsed.HIGHLEVEL_CANARY_RUN_ID,

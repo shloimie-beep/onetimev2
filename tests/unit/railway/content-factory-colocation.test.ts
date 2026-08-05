@@ -20,7 +20,7 @@ describe('Railway content-factory colocation', () => {
       CONTENT_FACTORY_WORKER_ENABLED: 'true',
       CONTENT_FACTORY_PROCESSING_MODE: 'synthetic',
       RESEND_API_KEY: 'must-not-pass',
-      HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN: 'must-not-pass',
+      HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN: 'must-not-pass',
       ONE_TIME_TELEGRAM_WEBHOOK_SECRET: 'must-not-pass',
       VIMEO_ACCESS_TOKEN: 'must-not-pass',
       OPENAI_API_KEY: 'must-not-pass',
@@ -34,7 +34,7 @@ describe('Railway content-factory colocation', () => {
     expect(Object.keys(child)).not.toEqual(
       expect.arrayContaining([
         'RESEND_API_KEY',
-        'HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN',
+        'HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN',
         'ONE_TIME_TELEGRAM_WEBHOOK_SECRET',
         'VIMEO_ACCESS_TOKEN',
         'OPENAI_API_KEY',

@@ -10,7 +10,7 @@ an email address as input.
 - `HIGHLEVEL_EVENT_SYNC_MODE=provider`.
 - `HIGHLEVEL_LOCATION_ID=pBSnOK2nkdxp6gf9Rg3o`.
 - `HIGHLEVEL_TISHA_BAV_WORKFLOW_ID` is the reviewed OT-E01 workflow ID.
-- `HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN` is present in protected runtime configuration.
+- `HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN` is present in protected runtime configuration.
 - The registration has `granted` event-only email permission and no suppression, unsubscribe,
   complaint, or hard-bounce state; or it is the exact pre-2220 registration whose own stored metadata
   proves the canonical Tisha B'Av service-consent policy, event-only purpose, email channel, source,

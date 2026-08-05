@@ -30,7 +30,7 @@ if (authorizationId !== 'pr130-replit-reconciliation-20260727') {
 if (locationId !== canonicalLocationId) {
   throw new Error('HIGHLEVEL_REPLIT_LOCATION_MISMATCH');
 }
-if (!process.env.HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN) {
+if (!process.env.HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN) {
   throw new Error('HIGHLEVEL_REPLIT_TOKEN_UNCONFIGURED');
 }
 
@@ -55,7 +55,7 @@ const completed = new Map(receipt.rows.map((row) => [row.protected_row_number, r
 const client = new HighLevelHttpClient({
   apiBaseUrl: process.env.HIGHLEVEL_API_BASE_URL ?? 'https://services.leadconnectorhq.com',
   apiVersion: process.env.HIGHLEVEL_API_VERSION ?? '2021-07-28',
-  privateIntegrationsToken: process.env.HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN,
+  privateIntegrationsToken: process.env.HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN,
   timeoutMs: 15_000,
 });
 
