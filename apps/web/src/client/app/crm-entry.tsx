@@ -143,7 +143,9 @@ function CrmApp() {
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [query, setQuery] = useState<QueryState>(defaultQuery);
   const [listLoading, setListLoading] = useState(true);
-  const [detailLoading, setDetailLoading] = useState(false);
+  const [detailLoading, setDetailLoading] = useState(() =>
+    /^\/app\/(?:crm\/)?contacts\/[^/]+$/u.test(window.location.pathname),
+  );
   const [listError, setListError] = useState('');
   const [detailError, setDetailError] = useState('');
   const [notice, setNotice] = useState<Notice | null>(null);
@@ -932,6 +934,8 @@ function CrmApp() {
             : undefined
         }
       />
+    ) : detailLoading ? (
+      <DetailLoadingToolbar />
     ) : creating || editing ? (
       <FormToolbar onCancel={() => (editing ? setEditing(false) : setCreating(false))} />
     ) : (
@@ -1181,8 +1185,19 @@ function CrmApp() {
         contactsSection === 'people' &&
         !communicationsMode &&
         !contactOperationsMode &&
+        detailLoading &&
+        !selected && (
+          <section className="contact-detail" data-usable="crm-detail" aria-busy="true">
+            <DetailSkeleton />
+          </section>
+        )}
+      {surface === 'crm' &&
+        contactsSection === 'people' &&
+        !communicationsMode &&
+        !contactOperationsMode &&
         !creating &&
         !selected &&
+        !detailLoading &&
         !editing && (
           <ContactList
             contacts={contacts}
@@ -2144,6 +2159,18 @@ function DetailToolbar({
           Edit contact
         </button>
       )}
+    </div>
+  );
+}
+
+function DetailLoadingToolbar() {
+  return (
+    <div
+      className="detail-toolbar detail-toolbar--loading"
+      role="status"
+      aria-label="Loading contact detail"
+    >
+      <span className="toolbar-summary">Loading contact details...</span>
     </div>
   );
 }

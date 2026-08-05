@@ -748,6 +748,12 @@
   }
 }
 
+@media (max-width: 599px) {
+  .detail-toolbar--loading {
+    min-height: 134px;
+  }
+}
+
 @media (max-width: 480px) {
   .launch-status__hero {
     align-items: stretch;
