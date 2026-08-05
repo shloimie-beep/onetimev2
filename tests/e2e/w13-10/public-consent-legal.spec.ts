@@ -16,15 +16,18 @@ test('W13-10 legal pages render versioned launch truth without billing claims', 
   }
 });
 
-test('W13-10 adult pre-registration exposes no optional reminder or Student fields', async ({
+test('W13-10 Family signup separates required policy acceptance from optional adult consent', async ({
   page,
 }) => {
   await page.goto('/signup');
-  await expect(page.getByRole('heading', { name: 'Pre-register Your Family' })).toBeVisible();
-  await expect(page.getByLabel(/reminder|WhatsApp|phone|Student|password|marketing/i)).toHaveCount(
-    0,
-  );
-  await expect(page.getByText(/Follow-up requested/)).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Create your Family account' })).toBeVisible();
+  await expect(page.getByLabel(/reminder|WhatsApp|phone|Student.*email|card/i)).toHaveCount(0);
+  await expect(page.getByLabel('Password', { exact: true })).toBeVisible();
+  await expect(page.getByLabel('Confirm password')).toBeVisible();
+  await expect(page.getByLabel(/I agree to the Terms/)).not.toBeChecked();
+  await expect(page.getByLabel(/I acknowledge the Privacy Notice/)).not.toBeChecked();
+  await expect(page.getByLabel('General marketing')).not.toBeChecked();
+  await expect(page.getByLabel('Parent newsletter')).not.toBeChecked();
   await expect(page.getByRole('link', { name: 'Privacy Notice' })).toHaveAttribute(
     'href',
     '/privacy',

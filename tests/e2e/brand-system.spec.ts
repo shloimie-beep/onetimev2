@@ -28,7 +28,7 @@ test('OT82 canonical public shell, ticker, and mobile invariant', async ({ page 
       'CLASSES START AUG 16 · 7 PM · FREE ACCESS THROUGH SEP 11 · 6 PM · JERUSALEM TIME',
     );
     await expect(
-      page.getByLabel('Primary').getByRole('link', { name: 'Pre-register' }),
+      page.getByLabel('Primary').getByRole('link', { name: 'Create your Family account' }),
     ).toBeVisible();
     await expect(page.locator('.brand-lockup img')).toBeVisible();
     await expect(page.locator('.site-header')).toBeVisible();

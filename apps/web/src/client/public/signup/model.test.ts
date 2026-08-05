@@ -12,12 +12,12 @@ describe('P08 public signup model', () => {
   });
 
   it('publishes the exact Family fields and editable searchable IANA metadata', () => {
-    const expiresAt = '2026-09-13T16:24:00.000Z';
-    expect(familySignupFormModel(new Date('2026-09-13T16:23:59.000Z'), expiresAt).cta).toBe(
-      'Create my free family account',
+    const expiresAt = '2026-09-11T15:00:00.000Z';
+    expect(familySignupFormModel(new Date('2026-09-11T14:59:59.000Z'), expiresAt).cta).toBe(
+      'Create your Family account',
     );
-    const boundary = familySignupFormModel(new Date('2026-09-13T16:24:00.000Z'), expiresAt);
-    expect(boundary.cta).toBe('Create account and continue to checkout');
+    const boundary = familySignupFormModel(new Date('2026-09-11T15:00:00.000Z'), expiresAt);
+    expect(boundary.cta).toBe('Create your Family account');
     expect(boundary.card_fields).toBe(0);
     expect(boundary.student_fields).toBe(0);
     expect(boundary.forbidden_fields).toContain('reminder_preference');
@@ -42,7 +42,7 @@ describe('P08 public signup model', () => {
   it('uses the safe checkout branch when no free expiry is configured', () => {
     expect(familySignupFormModel(new Date('2026-08-01T12:00:00.000Z'))).toMatchObject({
       classification: 'family',
-      cta: 'Create account and continue to checkout',
+      cta: 'Create your Family account',
       card_fields: 0,
       student_fields: 0,
     });
