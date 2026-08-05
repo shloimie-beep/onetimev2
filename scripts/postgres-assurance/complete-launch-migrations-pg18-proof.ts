@@ -2,8 +2,8 @@ import { randomBytes } from 'node:crypto';
 import pg from 'pg';
 import { runMigrations, verifyMigrations } from '../../packages/db/src/index.ts';
 
-const EXPECTED_MIGRATION_COUNT = 96;
-const EXPECTED_HEAD = '2265_v21_parent_class_enrollment_projection';
+const EXPECTED_MIGRATION_COUNT = 97;
+const EXPECTED_HEAD = '2266_v21_canonical_class_scope_convergence';
 
 async function main() {
   assert(

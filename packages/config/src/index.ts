@@ -190,7 +190,7 @@ const envSchema = z.object({
   OPERATIONS_PROBE_TOKEN: z.string().min(24).optional(),
   OPERATIONS_WORKER_HEARTBEAT_TTL_MS: numberFromString.default(90_000),
   ONE_TIME_ACCOUNT_KEY: z.string().min(1).default('one_time'),
-  ONE_TIME_PRODUCT_KEY: z.string().min(1).default('one_time_mishnah_class'),
+  ONE_TIME_PRODUCT_KEY: z.string().min(1).default('one_time_mishnayos'),
   ONE_TIME_OWNER_INTERNAL_LABEL: z.string().min(1).default('Rabbi'),
   ONE_TIME_ADMIN_CUSTOMER_LABEL: z.string().min(1).default('Admin'),
   LEAD_RATE_LIMIT_WINDOW_MS: numberFromString.default(60_000),
