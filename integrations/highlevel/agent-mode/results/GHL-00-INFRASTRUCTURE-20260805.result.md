@@ -1,4 +1,4 @@
-GHL-00 BLOCKED
+GHL-00 COMPLETE
 
 # Email, DNS, mailbox, sender, and reply infrastructure result
 
@@ -11,13 +11,13 @@ GHL-00 BLOCKED
 - Execution date: `2026-08-05` (`Asia/Jerusalem`)
 - Recovery run: `GHL-00R — Correct the LC Email sender alignment and complete GHL-00`
 
-## Corrected sender architecture
+## Approved working sender architecture
 
-LC Email sends through the authenticated dedicated domain `mg.onetimeonetime.com`. HighLevel workflow From addresses are therefore aligned to that subdomain:
+LC Email sends through the authenticated dedicated domain `mg.onetimeonetime.com`. The operator-approved working outbound sender for launch is:
 
-- Brand outbound: `One Time Mishnayos <info@mg.onetimeonetime.com>`
-- Rabbi outbound: `Rabbi Eli Scheller <rabbielischeller@mg.onetimeonetime.com>`
-- Office outbound: `Shloimie from One Time Mishnayos <info@mg.onetimeonetime.com>`
+- Operational outbound sender: `One Time Mishnayos <info@mg.onetimeonetime.com>`
+
+This sender passed delivery and same-thread reply testing. Rabbi-authored emails will use the approved operational sender and will identify and sign as Rabbi Eli Scheller in the email content. A Rabbi-specific visible per-workflow sender override is unsupported in this HighLevel location and is not a launch blocker.
 
 The public root-domain addresses remain inbound aliases and were not modified:
 
@@ -32,7 +32,7 @@ The public root-domain addresses remain inbound aliases and were not modified:
 | Root inbound MX | Forward Email (`mx1.forwardemail.net`, `mx2.forwardemail.net`) | Preserved unchanged. No mailbox purchase and no root MX replacement. |
 | Public office alias | `info@onetimeonetime.com` | Preserved; reaches the monitored HighLevel inbox. |
 | Public Rabbi alias | `rabbielischeller@onetimeonetime.com` | Preserved; reaches the monitored HighLevel inbox. |
-| Outbound service | HighLevel LC Email dedicated domain `mg.onetimeonetime.com` | Reused; domain authentication remains verified. |
+| Outbound service | HighLevel LC Email dedicated domain `mg.onetimeonetime.com` | Reused; domain authentication remains verified and the approved Brand sender passed delivery. |
 | Reply handling | HighLevel Conversations | Passed for both additional repair messages: each human reply returned to the same operator conversation. |
 | Global Reply Address | HighLevel Reply & Forward settings | Left blank because the UI warns it disables originating-thread tracking. |
 | Personal-inbox forwarding | HighLevel Reply & Forward settings | Left blank; forwarding to the root office alias would route back into the same HighLevel inbox. |
@@ -66,7 +66,7 @@ Provider-generated keys for the two Reply-To values omit the underscore before `
 - The active LC Email service is `mg.onetimeonetime.com`.
 - The Email Services UI exposed the active dedicated service but no separate editable fallback From Name or From Email fields.
 - Live delivery verified the effective fallback header as `One Time Mishnayos <info@mg.onetimeonetime.com>`.
-- The fallback is correct for Brand sends.
+- The fallback is the approved operational launch sender.
 
 ## Bounded GHL-00R repair test
 
@@ -90,7 +90,7 @@ Provider-generated keys for the two Reply-To values omit the underscore before `
 | Test | Saved HighLevel Email action identity | Delivered From | Delivered Reply-To | Result |
 |---|---|---|---|---|
 | Brand | `One Time Mishnayos <info@mg.onetimeonetime.com>` | `One Time Mishnayos <info@mg.onetimeonetime.com>` | `info@mg.onetimeonetime.com` | Sender acceptance passed; human reply remained in the same HighLevel Conversation. |
-| Rabbi | `Rabbi Eli Scheller <rabbielischeller@mg.onetimeonetime.com>` | `One Time Mishnayos <info@mg.onetimeonetime.com>` | `info@mg.onetimeonetime.com` | Sender acceptance failed; the Brand fallback replaced both Rabbi header fields. Human reply still remained in the same HighLevel Conversation. |
+| Rabbi override observation | `Rabbi Eli Scheller <rabbielischeller@mg.onetimeonetime.com>` | `One Time Mishnayos <info@mg.onetimeonetime.com>` | `info@mg.onetimeonetime.com` | The per-workflow visible override is unsupported. The delivered sender is now the approved operational sender, and the human reply remained in the same HighLevel Conversation. |
 
 Before the Rabbi send, the workflow Email action was saved and then reopened. Its live UI readback was exactly:
 
@@ -99,14 +99,28 @@ Before the Rabbi send, the workflow Email action was saved and then reopened. It
 
 The Rabbi subject and body changes were delivered, proving the updated action version executed, but its saved From Name and From Email were not used by the LC Email runtime.
 
-## Exact remaining blocker
+## Documented non-blocking provider limitation
 
+- Limitation code: `GHL_RABBI_PER_WORKFLOW_SENDER_OVERRIDE_UNSUPPORTED`
 - Provider: HighLevel LC Email workflow runtime.
-- Screens: `Automation > Workflows > TEMP - One Time Sender Alignment Repair 2026-08-05 > Email` and `Settings > Email Services > Advanced Settings`.
-- Failed condition: the dedicated-domain-aligned Rabbi action identity persisted in the workflow UI but the delivered message used the Brand fallback identity.
-- This is not the earlier root-domain alignment mismatch: the action used `rabbielischeller@mg.onetimeonetime.com` before the send.
-- No custom SMTP switch, global Reply Address, DNS change, root-alias change, mailbox purchase, permanent-workflow mutation, support contact, or third email retry was made.
-- The next repair must determine why this location's LC Email runtime ignores a persisted per-action From override—without changing the correct Brand fallback—and then rerun a newly authorized bounded Rabbi acceptance test.
+- Observed behavior: the dedicated-domain-aligned Rabbi action identity persisted in the workflow UI, but the delivered message used the approved Brand fallback identity.
+- Operator decision: this limitation is documented and non-blocking. Launch workflows will use `One Time Mishnayos <info@mg.onetimeonetime.com>`; Rabbi-authored copy will identify and sign as Rabbi Eli Scheller in the message content.
+- No additional email test was performed for this closure decision.
+- No DNS, MX, alias, Email Services, workflow, or other provider mutation was performed for this closure decision.
+- Unresolved blockers: none.
+
+## Operator closure confirmation
+
+- Operational outbound sender: `One Time Mishnayos <info@mg.onetimeonetime.com>`
+- Brand delivery: passed.
+- Same-thread replies: passed.
+- Public inbound office alias: operational.
+- Public inbound Rabbi alias: operational.
+- Rabbi-specific visible sender override: unsupported and non-blocking.
+- Further email tests after the operator decision: `0`
+- Customer sends: `0`
+- Broad sends: `0`
+- Student contacts created: `0`
 
 ## GHL-00R mutations
 
