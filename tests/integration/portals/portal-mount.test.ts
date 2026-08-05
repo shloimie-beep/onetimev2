@@ -154,7 +154,7 @@ describe('OT-71 mounted parent and student portals', () => {
     }
   });
 
-  it('keeps member support lead-only for anonymous visitors and preserves only the protected legacy Student classroom', async () => {
+  it('keeps member support lead-only and role-bounds the canonical Admin classroom', async () => {
     const server = await listenForTest(createApp({ config, pool, distDir }));
     try {
       const publicSupportAlias = await fetch(`${server.baseUrl}/support`, { redirect: 'manual' });
@@ -173,16 +173,17 @@ describe('OT-71 mounted parent and student portals', () => {
         redirect: 'manual',
       });
       expect(anonymousClassroom.status).toBe(302);
-      expect(anonymousClassroom.headers.get('location')).toBe('/login?return_to=%2Fapp%2Fstudent');
+      expect(anonymousClassroom.headers.get('location')).toBe(
+        '/login?return_to=%2Fapp%2Fclassroom',
+      );
 
       const student = await loginAs(server.baseUrl, 'student@example.test', 'StudentPass!234');
       const studentClassroom = await fetch(`${server.baseUrl}/app/classroom`, {
         headers: { cookie: student.cookies },
       });
-      expect(studentClassroom.status).toBe(200);
+      expect(studentClassroom.status).toBe(403);
       expect(studentClassroom.headers.get('cache-control')).toContain('no-store');
       expect(studentClassroom.headers.get('referrer-policy')).toBe('no-referrer');
-      expect(studentClassroom.headers.get('x-robots-tag')).toBe('noindex, nofollow');
 
       const parent = await loginAs(server.baseUrl, 'parent@example.test', 'ParentPass!234');
       expect(
@@ -200,7 +201,7 @@ describe('OT-71 mounted parent and student portals', () => {
             headers: { cookie: admin.cookies },
           })
         ).status,
-      ).toBe(403);
+      ).toBe(200);
     } finally {
       await server.close();
     }
@@ -229,13 +230,13 @@ describe('OT-71 mounted parent and student portals', () => {
           '__Host-onetime-session=;',
         );
       }
-      const isolatedStudentQuestions = await fetch(`${server.baseUrl}/app/student/questions`, {
+      const roleDeniedStudentQuestions = await fetch(`${server.baseUrl}/app/student/questions`, {
         headers: { cookie },
         redirect: 'manual',
       });
-      expect(isolatedStudentQuestions.status).toBe(404);
-      expect(isolatedStudentQuestions.headers.get('cache-control')).toContain('no-store');
-      expect(isolatedStudentQuestions.headers.getSetCookie().join(';')).not.toContain(
+      expect(roleDeniedStudentQuestions.status).toBe(403);
+      expect(roleDeniedStudentQuestions.headers.get('cache-control')).toContain('no-store');
+      expect(roleDeniedStudentQuestions.headers.getSetCookie().join(';')).not.toContain(
         '__Host-onetime-session=;',
       );
     } finally {

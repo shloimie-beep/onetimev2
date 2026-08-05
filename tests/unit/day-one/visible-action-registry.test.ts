@@ -197,6 +197,21 @@ const EXPECTED_ACTION_BINDINGS = [
   ['public.signup.route', '/signup', ['public'], 'GET', '/signup'],
   ['public.signup.submit.form', '/signup', ['public'], 'POST', '/api/v1/signup/family'],
   [
+    'support.parent.receipt.view.route',
+    '/app/parent/support/:ticketId',
+    ['parent'],
+    'GET',
+    '/api/v1/support/receipts/:receiptId/status',
+  ],
+  [
+    'support.parent.submit.form',
+    '/app/parent/support',
+    ['parent'],
+    'POST',
+    '/api/v1/support/tickets',
+  ],
+  ['support.parent.view.route', '/app/parent/support', ['parent'], 'GET', '/app/parent/support'],
+  [
     'support.student.receipt.view.route',
     '/app/student/support/:ticketId',
     ['student'],
@@ -251,13 +266,13 @@ describe('v2.1 visible action registry', () => {
     expect(registry.canonical_routes).toHaveLength(93);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'ready'),
-    ).toHaveLength(33);
+    ).toHaveLength(72);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'isolated'),
-    ).toHaveLength(32);
+    ).toHaveLength(7);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'missing'),
-    ).toHaveLength(28);
+    ).toHaveLength(14);
     expect(sourceText.endsWith('\n')).toBe(true);
   });
 
@@ -405,7 +420,22 @@ describe('v2.1 visible action registry', () => {
       'href={`${basePath}/${encodeURIComponent(ticket.receipt_id)}`}',
     );
     expect(supportFeature).not.toContain('/app/support/receipts/');
-    expect(supportFeature).not.toContain('/app/parent/support');
-    expect([...byId.keys()].some((actionId) => actionId.startsWith('support.parent.'))).toBe(false);
+    expect(supportFeature).toContain("basePath?: '/app/student/support' | '/app/parent/support'");
+    expect(byId.get('support.parent.submit.form')).toMatchObject({
+      route: '/app/parent/support',
+      roles: ['parent'],
+      handler: { method: 'POST', path: '/api/v1/support/tickets' },
+      external_mutation: false,
+    });
+    expect(byId.get('support.parent.receipt.view.route')).toMatchObject({
+      route: '/app/parent/support/:ticketId',
+      roles: ['parent'],
+      handler: { method: 'GET', path: '/api/v1/support/receipts/:receiptId/status' },
+    });
+    expect(byId.get('support.parent.view.route')).toMatchObject({
+      route: '/app/parent/support',
+      roles: ['parent'],
+      handler: { method: 'GET', path: '/app/parent/support' },
+    });
   });
 });

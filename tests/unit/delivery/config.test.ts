@@ -17,7 +17,7 @@ describe('delivery worker config', () => {
     const config = loadDeliveryWorkerConfig(baseEnv);
     expect(config).toMatchObject({
       accountKey: 'one_time',
-      productKey: 'one_time_mishnah_class',
+      productKey: 'one_time_mishnayos',
       transportMode: 'sink',
       provider: {
         snapshot: {

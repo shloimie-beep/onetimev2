@@ -19,12 +19,15 @@ import {
 } from '../../apps/web/src/client/app/admin-ia.ts';
 
 describe('OT-LAUNCH-01 Admin information architecture', () => {
-  it('keeps five canonical Admin areas and gates Live Console by server readiness', () => {
+  it('keeps eight canonical Admin areas and gates Live Console by server readiness', () => {
     expect(ADMIN_PRIMARY_AREAS).toEqual([
       { id: 'dashboard', label: 'Dashboard', href: '/app/dashboard' },
       { id: 'contacts', label: 'Contacts', href: '/app/contacts' },
       { id: 'content', label: 'Content', href: '/app/content' },
       { id: 'classroom', label: 'Classroom', href: '/app/classroom/classes' },
+      { id: 'communications', label: 'Communications', href: '/app/communications' },
+      { id: 'billing-access', label: 'Billing & Access', href: '/app/billing-access' },
+      { id: 'operations', label: 'Operations', href: '/app/operations' },
       { id: 'live-console', label: 'Live Console', href: '/app/live' },
     ]);
     expect(adminPrimaryNav('content', true).filter((item) => item.current)).toEqual([
@@ -35,6 +38,9 @@ describe('OT-LAUNCH-01 Admin information architecture', () => {
       'Contacts',
       'Content',
       'Classroom',
+      'Communications',
+      'Billing & Access',
+      'Operations',
     ]);
     expect(rabbiPrimaryNav('classroom', true).map((item) => item.label)).toEqual([
       'Dashboard',
@@ -49,6 +55,9 @@ describe('OT-LAUNCH-01 Admin information architecture', () => {
     expect(DASHBOARD_SECTIONS.map((item) => item.label)).toEqual(['Overview']);
     expect(CONTACTS_SECTIONS.map((item) => item.label)).toEqual([
       'People / Contacts',
+      'Households',
+      'Users',
+      'Students',
       'Audit History',
     ]);
     expect(CONTENT_SECTIONS.map((item) => item.label)).toEqual(['Library', 'Pipeline', 'Upload']);

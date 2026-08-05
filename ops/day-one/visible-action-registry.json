@@ -20,7 +20,7 @@
     },
     {
       "path": "apps/web/src/server/app.ts",
-      "sha256": "a2b7fdfb3026a29adafd193d67566b64bfcdddf5ab8dff4f681c7364f304ba04"
+      "sha256": "593261ad5b1251ec281e1435e9f33f575ecdeb94df1df193597a1728092b911c"
     },
     {
       "path": "apps/web/src/server/features/portals/routers.ts",
@@ -40,11 +40,11 @@
     },
     {
       "path": "apps/web/src/client/app/admin-ia.ts",
-      "sha256": "1b2b58ba15245e934d5f9e9ad910461420d69be2210242867c423aac4745bc54"
+      "sha256": "5d85ec66ec17d062aa63bd649a063a060f60808bcd0e29dd125119564aa3e80a"
     },
     {
       "path": "apps/web/src/client/app/crm-entry.tsx",
-      "sha256": "41106e86353cd847e90a97644b25d791e07270cfacd5beae2c1849f855478e72"
+      "sha256": "adaa364b619ac432823cddc7873bf6d33af9b01e7334979099a2531af610b70d"
     },
     {
       "path": "apps/web/src/client/app/live-entry.tsx",
@@ -52,7 +52,7 @@
     },
     {
       "path": "apps/web/src/client/app/portal-entry.tsx",
-      "sha256": "3058d47121de9be3a1a116d387f961a825b221e74705105daa6f811d754d6246"
+      "sha256": "981a1ba8e14eeb08f915501d71834198ecc8d750cedd2eeb332866ac282e41a1"
     },
     {
       "path": "apps/web/src/client/features/portals/PortalFeatures.tsx",
@@ -60,15 +60,15 @@
     },
     {
       "path": "apps/web/src/client/app/router/registry.ts",
-      "sha256": "e9556f9f499dd4076729dfe4703b6b74b72abc22ad93da8dd0ac2db1c96de68e"
+      "sha256": "3ed506b8bc8339b2f4b464d266bd87f4ae548efa04fd290e9556b3bc4fea2267"
     },
     {
       "path": "apps/web/src/client/app/router/canonical-route-views.ts",
-      "sha256": "dca82339ff2ef6391e9acdf08a98f4f8988112bdf290b024b769bf3c8ba33872"
+      "sha256": "32f188cb4ec7055c708e1e704947c4cd3c0ca6c533a449756a046c71aa3004cd"
     },
     {
       "path": "apps/web/src/client/app/support/SupportFeature.tsx",
-      "sha256": "45425c08ca22a6e26aaac0f5498636576fa9ef71372263f63302c5980862396a"
+      "sha256": "5a2e0b8715b9f73da26d84b4332142791067014ee305a514e0b5aa9b42fadac4"
     },
     {
       "path": "apps/web/src/client/public/public-entry.ts",
@@ -279,9 +279,9 @@
       "route_id": "RT-ADM-012",
       "path": "/app/households",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-012",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-013",
@@ -295,9 +295,9 @@
       "route_id": "RT-ADM-014",
       "path": "/app/users",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-014",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-015",
@@ -311,9 +311,9 @@
       "route_id": "RT-ADM-016",
       "path": "/app/students",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-016",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-017",
@@ -327,17 +327,17 @@
       "route_id": "RT-ADM-020",
       "path": "/app/content",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "admin.rt-adm-020",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-ADM-021",
       "path": "/app/content/upload",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "admin.rt-adm-021",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-ADM-022",
@@ -359,33 +359,33 @@
       "route_id": "RT-ADM-024",
       "path": "/app/library",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "admin.rt-adm-024",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-030",
       "path": "/app/classroom",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-030",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-031",
       "path": "/app/classroom/calendar",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-031",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-032",
       "path": "/app/classroom/classes",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "admin.rt-adm-032",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-033",
@@ -415,9 +415,9 @@
       "route_id": "RT-ADM-036",
       "path": "/app/classroom/enrollments",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "admin.rt-adm-036",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-037",
@@ -455,49 +455,49 @@
       "route_id": "RT-ADM-041",
       "path": "/app/classroom/progress",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-041",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-042",
       "path": "/app/classroom/leaderboard",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-042",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-043",
       "path": "/app/classroom/access",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "admin.rt-adm-043",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-050",
       "path": "/app/live",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "live.rt-adm-050",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-051",
       "path": "/app/live/:occurrenceId",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "live.rt-adm-051",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-060",
       "path": "/app/communications",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-060",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-ADM-061",
@@ -527,25 +527,25 @@
       "route_id": "RT-ADM-064",
       "path": "/app/billing-access",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-064",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-065",
       "path": "/app/integrations",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-065",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-066",
       "path": "/app/operations",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-066",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-ADM-067",
@@ -567,9 +567,9 @@
       "route_id": "RT-ADM-069",
       "path": "/app/account",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-069",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-PAR-001",
@@ -607,9 +607,9 @@
       "route_id": "RT-PAR-010",
       "path": "/app/parent/calendar",
       "roles": ["parent"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "parent.rt-par-010",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-PAR-011",
@@ -623,65 +623,65 @@
       "route_id": "RT-PAR-020",
       "path": "/app/parent/progress",
       "roles": ["parent"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "parent.rt-par-020",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-PAR-021",
       "path": "/app/parent/progress/:studentId",
       "roles": ["parent"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "parent.rt-par-021",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-PAR-030",
       "path": "/app/parent/billing",
       "roles": ["parent"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "parent.rt-par-030",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-PAR-040",
       "path": "/app/parent/updates",
       "roles": ["parent"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "parent.rt-par-040",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-PAR-041",
       "path": "/app/parent/newsletter",
       "roles": ["parent"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "parent.rt-par-041",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-PAR-050",
       "path": "/app/parent/preferences",
       "roles": ["parent"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "parent.rt-par-050",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-PAR-060",
       "path": "/app/parent/support",
       "roles": ["parent"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "parent.rt-par-060",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-PAR-061",
       "path": "/app/parent/support/:ticketId",
       "roles": ["parent"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "parent.rt-par-061",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-PAR-070",
@@ -695,17 +695,17 @@
       "route_id": "RT-PAR-071",
       "path": "/app/parent/privacy",
       "roles": ["parent"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "parent.rt-par-071",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-PAR-072",
       "path": "/app/parent/data-rights",
       "roles": ["parent"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "parent.rt-par-072",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-STU-001",
@@ -719,9 +719,9 @@
       "route_id": "RT-STU-010",
       "path": "/app/student/calendar",
       "roles": ["student"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "student.rt-stu-010",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-STU-011",
@@ -759,49 +759,49 @@
       "route_id": "RT-STU-030",
       "path": "/app/student/progress",
       "roles": ["student"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "student.rt-stu-030",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-STU-040",
       "path": "/app/student/questions",
       "roles": ["student"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "student.rt-stu-040",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-STU-041",
       "path": "/app/student/questions/new",
       "roles": ["student"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "student.rt-stu-041",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-STU-042",
       "path": "/app/student/questions/:questionId",
       "roles": ["student"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "student.rt-stu-042",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-STU-050",
       "path": "/app/student/updates",
       "roles": ["student"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "student.rt-stu-050",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-STU-051",
       "path": "/app/student/notifications",
       "roles": ["student"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "student.rt-stu-051",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-STU-060",
@@ -823,9 +823,9 @@
       "route_id": "RT-STU-070",
       "path": "/app/student/account",
       "roles": ["student"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "student.rt-stu-070",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-STU-071",
@@ -1673,6 +1673,108 @@
       "test_evidence": [
         "tests/e2e/landing-signup.spec.ts",
         "apps/web/src/server/features/signup/family/router.test.ts"
+      ]
+    },
+    {
+      "action_id": "support.parent.receipt.view.route",
+      "label": "Support Receipt",
+      "surface": "route",
+      "route": "/app/parent/support/:ticketId",
+      "roles": ["parent"],
+      "capability": "support:ticket:status",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/support/receipts/:receiptId/status"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "support_status_projection_read"
+      },
+      "states": {
+        "loading": "Loading bounded local status.",
+        "success": "Cached same-account status is visible.",
+        "error": "The local receipt could not be found.",
+        "permission": "Cross-account and cross-user receipt reads are denied.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "mock_or_disabled_only",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/router/canonical-route-views.test.ts",
+        "tests/unit/day-one/visible-action-registry.test.ts"
+      ]
+    },
+    {
+      "action_id": "support.parent.submit.form",
+      "label": "Submit support request",
+      "surface": "form",
+      "route": "/app/parent/support",
+      "roles": ["parent"],
+      "capability": "support:ticket:create",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/support/tickets"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "client-generated idempotency_key"
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "support_submission_accepted"
+      },
+      "states": {
+        "loading": "Saving request.",
+        "success": "Durable receipt and local status projection are committed.",
+        "error": "The request could not be completed or delivery is delayed.",
+        "permission": "Server-side active entitlement recheck blocks non-subscribers.",
+        "offline": "Network unavailable; retry before changing data."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "mock_or_disabled_only",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/router/canonical-route-views.test.ts",
+        "tests/unit/day-one/visible-action-registry.test.ts"
+      ]
+    },
+    {
+      "action_id": "support.parent.view.route",
+      "label": "Parent Support",
+      "surface": "route",
+      "route": "/app/parent/support",
+      "roles": ["parent"],
+      "capability": "support:ticket:create",
+      "handler": {
+        "method": "GET",
+        "path": "/app/parent/support"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "support_route_view"
+      },
+      "states": {
+        "loading": "Loading bounded local data.",
+        "success": "Action completed or the route is visible.",
+        "error": "A local error state is shown and no external mutation is attempted.",
+        "permission": "Unauthorized or non-subscriber accounts see only the public lead path.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "mock_or_disabled_only",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/router/canonical-route-views.test.ts",
+        "tests/unit/day-one/visible-action-registry.test.ts"
       ]
     },
     {

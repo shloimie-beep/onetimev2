@@ -91,7 +91,7 @@ describe('Parent and Student portal navigation and account security', () => {
     expect(liveEntry).toContain("headers: { 'x-csrf-token': csrfToken }");
   });
 
-  it('advertises mounted Student routes while isolating support callbacks', () => {
+  it('advertises mounted role-specific support routes without a learner-scoped Parent callback', () => {
     const portalEntry = readFileSync('apps/web/src/client/app/portal-entry.tsx', 'utf8');
     const portalFeatures = readFileSync(
       'apps/web/src/client/features/portals/PortalFeatures.tsx',
@@ -99,15 +99,14 @@ describe('Parent and Student portal navigation and account security', () => {
     );
 
     expect(portalEntry).toContain("window.location.assign('/app/student/support')");
-    expect(portalEntry).toContain('basePath="/app/student/support"');
-    expect(portalEntry).not.toContain('/app/parent/support');
+    expect(portalEntry).toContain(
+      "basePath={portalRole === 'parent' ? '/app/parent/support' : '/app/student/support'}",
+    );
+    expect(portalEntry).toContain("href: '/app/parent/support'");
     expect(portalEntry).not.toContain("window.location.assign('/app/support')");
     expect(portalEntry).toContain("href: '/app/student/questions'");
     expect(portalEntry).toContain("href: '/app/student/updates'");
     expect(portalEntry).not.toContain('Support remains available while learning access is paused.');
     expect(portalFeatures).not.toContain('onPreviewSupport(selectedLearner.learner_key)');
-    expect(portalFeatures).toContain(
-      'Parent support routes are isolated; this callback is ignored.',
-    );
   });
 });

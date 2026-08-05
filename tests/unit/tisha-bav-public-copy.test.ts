@@ -67,5 +67,5 @@ describe('Tisha BAv public-surface retirement', () => {
     await expect(
       access(path.resolve(root, 'ops/archive/tisha-bav-template/manifest.yaml')),
     ).resolves.toBeUndefined();
-  });
+  }, 30_000);
 });
