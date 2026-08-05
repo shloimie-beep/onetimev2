@@ -216,6 +216,25 @@ const envSchema = z.object({
     (value) => (typeof value === 'string' && value.trim() === '' ? undefined : value),
     oneTimeVerificationEnvironmentSchema.optional(),
   ),
+  ONE_TIME_CONTENT_MEDIA_MODE: z
+    .enum(['off', 'synthetic_canary', 'provider_canary'])
+    .default('off'),
+  ONE_TIME_CONTENT_MEDIA_AUTHORIZATION_ID: optionalTrimmedString(8, 160),
+  ONE_TIME_CONTENT_CANARY_ID: optionalTrimmedString(8, 160),
+  CONTENT_S3_BUCKET: optionalTrimmedString(3, 255),
+  CONTENT_S3_KMS_KEY_ARN: optionalTrimmedString(20, 500),
+  CONTENT_S3_STORAGE_CLASS: z.enum(['STANDARD', 'INTELLIGENT_TIERING']).default('STANDARD'),
+  AWS_REGION: optionalTrimmedString(3, 80),
+  GOOGLE_DRIVE_FOLDER_ID: optionalTrimmedString(1, 300),
+  GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON: optionalTrimmedString(2, 20_000),
+  CONTENT_FFMPEG_PATH: optionalTrimmedString(1, 500),
+  CONTENT_FFPROBE_PATH: optionalTrimmedString(1, 500),
+  OPENAI_API_KEY: optionalTrimmedString(8, 500),
+  OPENAI_PROJECT_ID: optionalTrimmedString(3, 200),
+  OPENAI_ORGANIZATION_ID: optionalTrimmedString(3, 200),
+  VIMEO_ACCESS_TOKEN: optionalTrimmedString(8, 500),
+  VIMEO_ACCOUNT_ID: optionalTrimmedString(1, 200),
+  VIMEO_WEBHOOK_SECRET: optionalTrimmedString(16, 500),
   ONE_TIME_FIRST_CLASS_AT: z.preprocess(
     (value) => (typeof value === 'string' && value.trim() === '' ? undefined : value),
     z.iso.datetime({ offset: true }).optional(),
@@ -406,6 +425,50 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
   }
   const oneTimeVerificationWritesAllowed =
     oneTimeVerificationEnvironmentId !== 'production_read_only';
+  const contentMediaMode = parsed.ONE_TIME_CONTENT_MEDIA_MODE;
+  const contentMediaEnabled = contentMediaMode !== 'off';
+  const contentMediaProviderCanary = contentMediaMode === 'provider_canary';
+  if (
+    contentMediaEnabled &&
+    (!parsed.ONE_TIME_CONTENT_MEDIA_AUTHORIZATION_ID || !parsed.ONE_TIME_CONTENT_CANARY_ID)
+  ) {
+    throw new Error(
+      'Content media execution requires an exact authorization ID and one-recording canary ID.',
+    );
+  }
+  if (
+    contentMediaMode === 'synthetic_canary' &&
+    !['test', 'isolated_staging'].includes(oneTimeRuntimeEnvironment)
+  ) {
+    throw new Error('Synthetic content media canary is limited to test or isolated_staging.');
+  }
+  if (
+    contentMediaProviderCanary &&
+    (oneTimeRuntimeEnvironment !== 'production' ||
+      oneTimeVerificationEnvironmentId !== 'production_operator_canary')
+  ) {
+    throw new Error(
+      'Content media provider canary requires the production_operator_canary environment.',
+    );
+  }
+  if (
+    contentMediaProviderCanary &&
+    (!parsed.CONTENT_S3_BUCKET ||
+      !/^[a-z0-9](?:[a-z0-9-]{1,61}[a-z0-9])$/u.test(parsed.CONTENT_S3_BUCKET) ||
+      !parsed.CONTENT_S3_KMS_KEY_ARN ||
+      parsed.AWS_REGION !== 'eu-central-1' ||
+      !parsed.CONTENT_FFMPEG_PATH ||
+      !parsed.CONTENT_FFPROBE_PATH ||
+      !parsed.OPENAI_API_KEY ||
+      !parsed.OPENAI_PROJECT_ID ||
+      !parsed.VIMEO_ACCESS_TOKEN ||
+      !parsed.VIMEO_ACCOUNT_ID ||
+      !parsed.VIMEO_WEBHOOK_SECRET)
+  ) {
+    throw new Error(
+      'Content media provider canary requires exact S3, processing, OpenAI, and Vimeo configuration.',
+    );
+  }
   if (
     ['production_operator_canary', 'production_broad'].includes(oneTimeVerificationEnvironmentId) &&
     !parsed.ONE_TIME_FREE_ACCESS_EXPIRES_AT
@@ -649,6 +712,28 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     oneTimeRuntimeTier,
     oneTimeVerificationEnvironmentId,
     oneTimeVerificationWritesAllowed,
+    contentMediaMode,
+    contentMediaEnabled,
+    contentMediaProviderCanary,
+    contentMediaAuthorizationId: parsed.ONE_TIME_CONTENT_MEDIA_AUTHORIZATION_ID,
+    contentMediaCanaryId: parsed.ONE_TIME_CONTENT_CANARY_ID,
+    contentS3Bucket: parsed.CONTENT_S3_BUCKET,
+    contentS3KmsKeyArn: parsed.CONTENT_S3_KMS_KEY_ARN,
+    contentS3StorageClass: parsed.CONTENT_S3_STORAGE_CLASS,
+    contentAwsRegion: parsed.AWS_REGION,
+    contentDriveFolderId: parsed.GOOGLE_DRIVE_FOLDER_ID,
+    contentDriveServiceAccountJson: parsed.GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON,
+    contentDriveConfigured: Boolean(
+      parsed.GOOGLE_DRIVE_FOLDER_ID && parsed.GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON,
+    ),
+    contentFfmpegPath: parsed.CONTENT_FFMPEG_PATH,
+    contentFfprobePath: parsed.CONTENT_FFPROBE_PATH,
+    contentOpenAiApiKey: parsed.OPENAI_API_KEY,
+    contentOpenAiProjectId: parsed.OPENAI_PROJECT_ID,
+    contentOpenAiOrganizationId: parsed.OPENAI_ORGANIZATION_ID,
+    contentVimeoAccessToken: parsed.VIMEO_ACCESS_TOKEN,
+    contentVimeoAccountId: parsed.VIMEO_ACCOUNT_ID,
+    contentVimeoWebhookSecret: parsed.VIMEO_WEBHOOK_SECRET,
     oneTimeFirstClassAt: parsed.ONE_TIME_FIRST_CLASS_AT,
     oneTimeFreeAccessExpiresAt: parsed.ONE_TIME_FREE_ACCESS_EXPIRES_AT,
     learningAliasHmacKey: parsed.LEARNING_ALIAS_HMAC_KEY,

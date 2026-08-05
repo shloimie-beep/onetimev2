@@ -127,7 +127,9 @@ import type { SchoolSignupScope } from '../../../../packages/contracts/src/signu
 import {
   CONTENT_PUBLICATION_PRODUCT_KEY,
   type ContentPublicationPrincipal,
+  type VimeoContentPublicationReadbackAdapter,
 } from '../../../../packages/contracts/src/content/publication/index.ts';
+import type { ProviderRegistryBinding } from '../../../../packages/contracts/src/providers/v21-provider-core.ts';
 import {
   CrmDuplicateError,
   CrmVersionConflictError,
@@ -325,6 +327,10 @@ import {
   type ServerFeatureRegistration,
 } from './features/registry/index.ts';
 import {
+  createContentIngestFeatureRegistration,
+  type ContentIngestRuntime,
+} from './features/content/ingest/index.ts';
+import {
   createContentPublicationFeatureRegistration,
   type ContentPublicationRequestIdentity,
 } from './features/content/publication/index.ts';
@@ -356,6 +362,15 @@ type AppDeps = {
     nativePostgresSchemaProven: boolean;
   };
   embeddedClassroomRuntime?: EmbeddedClassroomCandidateRuntime;
+  contentMediaRuntime?: {
+    ingest?: ContentIngestRuntime | undefined;
+    publication?:
+      | {
+          providerBinding: ProviderRegistryBinding;
+          readbackAdapter: VimeoContentPublicationReadbackAdapter;
+        }
+      | undefined;
+  };
   /** @deprecated Retained only so historical test harnesses compile; no demo route is registered. */
   learningDeliveryDemoReportPath?: string;
 };
@@ -368,6 +383,18 @@ type AccountLifecycleTokenType = z.infer<typeof accountLifecycleTokenTypeSchema>
 const ACTIVATION_TOKEN_TYPES = accountLifecycleTokenTypeSchema.options.filter(
   (tokenType) => tokenType !== 'password_reset',
 ) as AccountLifecycleTokenType[];
+
+function contentMediaConnectSources(config: AppConfig) {
+  if (
+    !config.contentMediaProviderCanary ||
+    config.contentAwsRegion !== 'eu-central-1' ||
+    !config.contentS3Bucket ||
+    !/^[a-z0-9](?:[a-z0-9-]{1,61}[a-z0-9])$/u.test(config.contentS3Bucket)
+  ) {
+    return [];
+  }
+  return [`https://${config.contentS3Bucket}.s3.${config.contentAwsRegion}.amazonaws.com`];
+}
 
 const lifecycleTokenStatusPayloadSchema = z.object({
   token: z.string().trim().min(32).max(240),
@@ -437,6 +464,7 @@ export function createApp({
   v21AdultSessionRuntime: injectedV21AdultSessionRuntime,
   learningRuntime,
   embeddedClassroomRuntime,
+  contentMediaRuntime,
 }: AppDeps) {
   const v21AdultSessionRuntime =
     injectedV21AdultSessionRuntime ??
@@ -480,12 +508,35 @@ export function createApp({
       const csrfToken = req.header('x-csrf-token') ?? req.body?.csrf_token;
       return verifySessionCsrf({ pool, sessionKey: identity.sessionKey, csrfToken });
     },
+    providerBinding: contentMediaRuntime?.publication?.providerBinding,
+    vimeoReadbackAdapter: contentMediaRuntime?.publication?.readbackAdapter,
+  });
+  const centrallyBoundContentIngestRegistration = createContentIngestFeatureRegistration({
+    resolveIdentity: async (req) => {
+      const identity = await contentPublicationIdentityFromRequest(req, pool, config);
+      if (!identity || identity.principal.role !== 'admin') return null;
+      return {
+        sessionKey: identity.sessionKey,
+        actor: {
+          principalId: identity.principal.actorId,
+          role: 'admin',
+          accountKey: identity.principal.accountKey,
+          productKey: identity.principal.productKey,
+        },
+      };
+    },
+    verifyCsrf: async (req, identity) => {
+      const csrfToken = req.header('x-csrf-token') ?? req.body?.csrf_token;
+      return verifySessionCsrf({ pool, sessionKey: identity.sessionKey, csrfToken });
+    },
+    runtime: contentMediaRuntime?.ingest,
   });
   const centrallyBoundFeatureRegistrations: readonly ServerFeatureRegistration[] = (
     featureRegistrations ?? [
       domainTransitionFeatureRegistration,
       familySignupFeatureRegistration,
       schoolInquiryFeatureRegistration,
+      centrallyBoundContentIngestRegistration,
       centrallyBoundContentPublicationRegistration,
     ]
   ).map((registration) =>
@@ -507,7 +558,7 @@ export function createApp({
           imgSrc: ["'self'", 'data:'],
           scriptSrc: ["'self'"],
           styleSrc: ["'self'"],
-          connectSrc: ["'self'"],
+          connectSrc: ["'self'", ...contentMediaConnectSources(config)],
           objectSrc: ["'none'"],
           baseUri: ["'self'"],
           frameAncestors: ["'none'"],
