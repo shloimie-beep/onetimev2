@@ -50,12 +50,15 @@ export async function runContentPublicationWorker(
   context: WorkerRunnerContext,
   dependencies?: ContentPublicationWorkerDependencies,
 ): Promise<WorkerRunnerResult> {
-  if (!dependencies) return disabled();
+  if (!context.config.contentMediaEnabled || !dependencies) {
+    return disabled(context, dependencies ? 'content_media_default_off' : undefined);
+  }
 
   const authority = dependencies.authority ?? nullContentPublicationAuthorityPort;
   let providerCalls = 0;
   const dispatchAdapter: ContentPublicationProviderDispatchAdapter = {
     async dispatch(dispatchContext, evidence, signal) {
+      assertCanaryBinding(context, dispatchContext.operation.aggregate_ref);
       providerCalls += 1;
       return dependencies.dispatchAdapter.dispatch(dispatchContext, evidence, signal);
     },
@@ -63,6 +66,7 @@ export async function runContentPublicationWorker(
   const reconciliationAdapter: ProviderReadbackAdapter = {
     provider: dependencies.reconciliationAdapter.provider,
     async readCanonical(operation, binding, signal) {
+      assertCanaryBinding(context, operation.aggregate_ref);
       providerCalls += 1;
       return dependencies.reconciliationAdapter.readCanonical(operation, binding, signal);
     },
@@ -72,6 +76,7 @@ export async function runContentPublicationWorker(
     registry: dependencies.registry,
     adapter: {
       async readCanonical(publicationContext, signal) {
+        assertCanaryBinding(context, publicationContext.providerOperation.contentId);
         providerCalls += 1;
         return dependencies.finalizationReadbackAdapter.readCanonical(publicationContext, signal);
       },
@@ -101,7 +106,7 @@ export async function runContentPublicationWorker(
     options: {
       owner: context.workerInstanceKey,
       scope,
-      batchSize: dependencies.options?.batchSize ?? 10,
+      batchSize: Math.min(dependencies.options?.batchSize ?? 1, 1),
       dispatchTimeoutMs: dependencies.options?.dispatchTimeoutMs ?? 10_000,
       reconciliationTimeoutMs: dependencies.options?.reconciliationTimeoutMs ?? 10_000,
       clock: dependencies.options?.clock ?? (() => new Date()),
@@ -111,8 +116,14 @@ export async function runContentPublicationWorker(
   return {
     enabled: true,
     providerCallsPerformed: providerCalls > 0,
-    summary: { ...summary, providerCalls },
+    summary: { ...summary, canaryBudget: 1, providerCalls },
   };
+}
+
+function assertCanaryBinding(context: WorkerRunnerContext, contentId: string) {
+  if (!context.config.contentMediaCanaryId || contentId !== context.config.contentMediaCanaryId) {
+    throw new Error('content_publication_canary_binding_mismatch');
+  }
 }
 
 function runtimeScope(context: WorkerRunnerContext): JobScope {
@@ -123,12 +134,14 @@ function runtimeScope(context: WorkerRunnerContext): JobScope {
   };
 }
 
-function disabled(): WorkerRunnerResult {
+function disabled(context: WorkerRunnerContext, disabledReason?: string): WorkerRunnerResult {
   return {
     enabled: false,
     providerCallsPerformed: false,
     summary: {
-      disabledReason: 'content_publication_authority_unavailable',
+      disabledReason: disabledReason ?? 'content_publication_authority_unavailable',
+      canaryBudget: 1,
+      mediaMode: context.config.contentMediaMode,
       providerCalls: 0,
       dispatch: {
         claimed: 0,

@@ -123,8 +123,11 @@ function commandFixture(): ProcessContentCommand {
       objectKeyDigest: source.objectKeyDigest,
       objectVersionId: source.objectVersionId,
       byteCount: source.byteCount,
+      durabilityEvidenceVersion: 'OT-MANAGED-ORIGINAL-1',
+      checksumAlgorithm: 'sha256',
       sha256: source.sha256,
       kmsKeyVersionRef: source.kmsKeyVersionRef,
+      storageClass: 'STANDARD',
       blockPublicAccess: true,
       bucketOwnerEnforced: true,
     },
@@ -267,6 +270,20 @@ class FakeProvider implements ContentProcessingProvider {
 }
 
 describe('P20 content-processing worker', () => {
+  it('denies a source outside the authenticated Admin scope before provider work', async () => {
+    const repository = new MemoryRepository();
+    const provider = new FakeProvider();
+    const command = commandFixture();
+
+    await expect(
+      new ContentProcessingRunner(repository, provider).run({
+        ...command,
+        actor: { ...command.actor, accountKey: 'account-other' },
+      }),
+    ).rejects.toMatchObject({ code: 'content_processing_access_denied' });
+    expect(provider.calls).toEqual({ transcode: 0, transcribe: 0, drafts: 0 });
+  });
+
   it('persists seven drafts and an idempotent receipt before returning needs_review', async () => {
     const repository = new MemoryRepository();
     const provider = new FakeProvider();
@@ -309,5 +326,43 @@ describe('P20 content-processing worker', () => {
       },
     });
     expect(JSON.stringify(result)).not.toContain('provider body must not escape');
+  });
+
+  it('reconciles an interrupted attempt after backoff without duplicating the completed receipt', async () => {
+    const repository = new MemoryRepository();
+    const provider = new FakeProvider();
+    const runner = new ContentProcessingRunner(repository, provider);
+    const command = commandFixture();
+    provider.failTranscode = true;
+
+    const failed = await runner.run(command);
+    expect(failed).toMatchObject({ disposition: 'retry_wait' });
+    expect(provider.calls).toEqual({ transcode: 1, transcribe: 0, drafts: 0 });
+
+    provider.failTranscode = false;
+    const deferred = await runner.run({
+      ...command,
+      occurredAt: '2026-07-28T22:00:30.000Z',
+    });
+    expect(deferred).toMatchObject({ disposition: 'retry_wait' });
+    expect(provider.calls).toEqual({ transcode: 1, transcribe: 0, drafts: 0 });
+
+    const resumedCommand = {
+      ...command,
+      occurredAt: '2026-07-28T22:01:01.000Z',
+    };
+    const resumed = await runner.run(resumedCommand);
+    expect(resumed).toMatchObject({
+      disposition: 'needs_review',
+      replayed: false,
+      version: { state: 'needs_review', retryState: 'ready', attemptCount: 1 },
+    });
+    expect(resumed.version).not.toHaveProperty('lastSafeErrorCode');
+    expect(resumed.version).not.toHaveProperty('retryAt');
+    expect(provider.calls).toEqual({ transcode: 2, transcribe: 1, drafts: 1 });
+
+    const replay = await runner.run(resumedCommand);
+    expect(replay).toMatchObject({ disposition: 'needs_review', replayed: true });
+    expect(provider.calls).toEqual({ transcode: 2, transcribe: 1, drafts: 1 });
   });
 });

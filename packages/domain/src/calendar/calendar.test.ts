@@ -50,9 +50,14 @@ function query(view: 'month' | 'week' | 'today' | 'agenda' = 'month') {
 describe('P15 calendar contract', () => {
   it('OTV2-CALENDAR-058 generates the canonical Sunday–Thursday 19:00 Jerusalem series', () => {
     const events = generateRollingOccurrences(CANONICAL_CLASS_SERIES, {
-      fromLocalDate: '2026-03-01',
+      fromLocalDate: '2026-08-01',
     });
-    expect(events.length).toBeGreaterThanOrEqual(63);
+    expect(events).toHaveLength(65);
+    expect(events[0]).toMatchObject({
+      localClassDate: '2026-08-16',
+      startsAt: '2026-08-16T16:00:00.000Z',
+      endsAt: '2026-08-16T17:00:00.000Z',
+    });
     expect(new Set(events.map((event) => event.id)).size).toBe(events.length);
     expect(
       events.every((event) => {
@@ -60,11 +65,11 @@ describe('P15 calendar contract', () => {
         return weekday >= 0 && weekday <= 4;
       }),
     ).toBe(true);
-    expect(events.find((event) => event.localClassDate === '2026-03-22')?.startsAt).toBe(
-      '2026-03-22T17:00:00.000Z',
+    expect(events.find((event) => event.localClassDate === '2026-10-22')?.startsAt).toBe(
+      '2026-10-22T16:00:00.000Z',
     );
-    expect(events.find((event) => event.localClassDate === '2026-03-29')?.startsAt).toBe(
-      '2026-03-29T16:00:00.000Z',
+    expect(events.find((event) => event.localClassDate === '2026-10-25')?.startsAt).toBe(
+      '2026-10-25T17:00:00.000Z',
     );
   });
 
@@ -85,6 +90,7 @@ describe('P15 calendar contract', () => {
     const custom: CalendarSeries = {
       ...CANONICAL_CLASS_SERIES,
       id: 'custom-time',
+      startsOn: '2026-03-01',
       localStartTime: '18:15',
     };
     const events = generateRollingOccurrences(custom, { fromLocalDate: '2026-03-01' });
@@ -92,7 +98,8 @@ describe('P15 calendar contract', () => {
   });
 
   it('OTV2-CALENDAR-061 supports skips/reschedules and forbids duplicate exceptions', () => {
-    const events = generateRollingOccurrences(CANONICAL_CLASS_SERIES, {
+    const historicalSeries = { ...CANONICAL_CLASS_SERIES, startsOn: '2026-03-01' };
+    const events = generateRollingOccurrences(historicalSeries, {
       fromLocalDate: '2026-03-01',
       exceptions: [
         { localClassDate: '2026-03-01', kind: 'skip' },
@@ -105,7 +112,7 @@ describe('P15 calendar contract', () => {
       startsAt: '2026-03-02T18:00:00.000Z',
     });
     expect(() =>
-      generateRollingOccurrences(CANONICAL_CLASS_SERIES, {
+      generateRollingOccurrences(historicalSeries, {
         fromLocalDate: '2026-03-01',
         exceptions: [
           { localClassDate: '2026-03-01', kind: 'skip' },
