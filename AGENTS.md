@@ -1,5 +1,36 @@
 # One Time Agent Operating Guide
 
+## Complete production launch authority — 2026-08-05
+
+The active root goal and the single integration branch
+`codex/one-time-complete-production-launch-20260805` own the complete One Time
+launch through production acceptance. The authoritative launch brief is
+`C:\Users\User\Downloads\ONE-TIME-FULL-PRODUCTION-LAUNCH-CODEX-GOAL.md`.
+It supersedes the old Ready/claim/lease/control-tower process and any conflicting
+date, copy, provider, or activation restriction below. Historical ledgers remain
+read-only evidence and are not release gates.
+
+Product paths and real user journeys take priority over control metadata. No
+Ready entry, claim file, lease renewal, terminal packet, steward request, or
+copied chat report is required. Focused safety verification, migration
+integrity, provider idempotency, adult consent and suppression, child-data
+boundaries, rollback, and final production acceptance remain mandatory.
+
+The standing operator authority in the launch brief permits bounded repository,
+Railway, HighLevel, Resend, Stripe, Zoom, Vimeo, Drive, DNS, Forward Email, and
+Telegram work, progressive deployments, and operator-owned canaries. It never
+permits exposing secrets or child data, creating Student contacts in HighLevel,
+uncontrolled sends, unintended charges, changing existing Stripe/Replit
+subscribers, or retrying an unknown external effect before reconciliation.
+
+Locked launch replacements are: first class
+`2026-08-16T19:00:00+03:00`; free access ends
+`2026-09-11T18:00:00+03:00`; public Rabbi identity
+`Rabbi Eli Scheller <rabbielischeller@onetimeonetime.com>`; operational identity
+`info@onetimeonetime.com`; no WhatsApp lead assistant, Buffer, Class Helper,
+demo/test-lab/preview product surface; and Tisha B'Av assets remain an archived,
+inactive reusable template.
+
 # One Time v2.1 current authority
 
 The sole current product repository is `shloimie-beep/onetimev2`.
@@ -29,11 +60,9 @@ under `ops/v2.1-execution/runtime/<TASK-ID>/` are durable memory. If their
 digests match, resume `next_action`; do not repeat a repository-wide audit or
 reconsider locked v2.1 decisions.
 
-Only the control tower changes global execution ledgers. A worker changes only
-its own branch state/handoff/result files and its assigned code scope. Shared
-hotspots, migrations, generated registries, provider locks, and live effects
-obey `WRITER-SCOPES.yaml`, `MERGE-PROTOCOL.md`, and
-`EXTERNAL-AUTHORITY-MATRIX.yaml`.
+The root launch goal owns shared hotspots, migrations, generated registries,
+provider contracts, integration, deployments, and final proof. Bounded lanes
+change only their assigned non-overlapping scopes.
 
 No task is complete because code exists or a branch check passed. Release
 completion requires every release-blocking acceptance case to pass against the
@@ -97,9 +126,9 @@ failed/untested/placeholder controls.
 
 - No BNA session or cookie is shared.
 - Server derives account/product scope. Browser payloads cannot choose scope.
-- Do not connect to the production Rabbi database, copy live secrets, or send
-  email, WhatsApp, Telegram, payments, webhooks, member access, portal access,
-  Zoom links, or provider mutations from this task.
+- Production and provider work must stay within the standing launch authority,
+  use exact reconciliation and idempotent effects, and keep secret values out of
+  source, logs, evidence, and chat.
 - Sender/reply-to and owner-test destinations come only from protected
   configuration.
 - Public repeat submissions must not reveal whether another person exists.
