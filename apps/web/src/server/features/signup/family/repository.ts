@@ -95,7 +95,7 @@ class PostgresFamilySignupTransaction implements FamilySignupTransaction {
          JOIN onetime.family_signup_receipts AS receipt
            ON receipt.idempotency_key = request.idempotency_key
         WHERE request.idempotency_key = $1
-        FOR SHARE OF request, receipt`,
+        FOR SHARE`,
       [input.idempotency_key],
     );
     if ((request.rowCount ?? 0) === 0) return null;

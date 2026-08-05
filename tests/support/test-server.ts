@@ -34,6 +34,7 @@ const config = loadConfig({
   ...process.env,
   NODE_ENV: 'test',
   PORT: process.env.PORT ?? '3100',
+  PUBLIC_BASE_URL: `http://127.0.0.1:${process.env.PORT ?? '3100'}`,
   OT89_SUPPORT_ENABLED: process.env.OT89_SUPPORT_ENABLED ?? 'true',
   OT89_SUPPORT_DELIVERY_MODE: process.env.OT89_SUPPORT_DELIVERY_MODE ?? 'mock',
   OT89_SUPPORT_BNA_BASE_URL:
@@ -48,6 +49,10 @@ const config = loadConfig({
 });
 const pool = createMemoryPool();
 await runMigrations(pool);
+// pg-mem skips migration 2258's PostgreSQL-catalog block, leaving its generated fixed-date check.
+await pool.query(
+  'ALTER TABLE onetime.family_signup_access_projections DROP CONSTRAINT IF EXISTS family_signup_access_projections_constraint_7',
+);
 process.env.CONTENT_FACTORY_STORAGE_DRIVER = 'volume';
 process.env.CONTENT_FACTORY_STORAGE_ROOT = await mkdtemp(
   path.join(tmpdir(), 'onetime-browser-content-factory-'),
