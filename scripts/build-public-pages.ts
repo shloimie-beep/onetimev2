@@ -176,8 +176,8 @@ function landingPage() {
   const howFlows = landingContent.how.flows
     .map(
       (flow, index) => `<figure class="how-flow" data-how-step="${index + 1}">
-        <img src="${flow.image}" alt="${escapeHtml(flow.alt)}"${mediaSizeAttributes(flow.image)} loading="lazy" decoding="async" data-image-watch>
-        ${fallbackImageSpan('Flow screenshot unavailable')}
+        <img src="${flow.image}" srcset="${escapeHtml(flow.srcset)}" sizes="${escapeHtml(flow.sizes)}" width="${flow.width}" height="${flow.height}" alt="${escapeHtml(flow.alt)}" loading="lazy" decoding="async" data-image-watch>
+        ${fallbackImageSpan('Family learning image unavailable')}
         <figcaption><span>${index + 1}</span><strong>${escapeHtml(flow.title)}</strong><small>${escapeHtml(flow.body)}</small></figcaption>
       </figure>`,
     )
@@ -260,7 +260,6 @@ function landingPage() {
   <section class="section how" id="how-it-works">
     <div class="how-intro">
       <div><h2>${escapeHtml(landingContent.how.heading)}</h2><p>${escapeHtml(landingContent.how.body)}</p></div>
-      <img src="${landingContent.how.overviewImage}" alt="${escapeHtml(landingContent.how.overviewAlt)}"${mediaSizeAttributes(landingContent.how.overviewImage)} loading="lazy" decoding="async" data-image-watch>
     </div>
     <div class="how-flow-grid">${howFlows}</div>
   </section>
