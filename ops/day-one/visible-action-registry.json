@@ -20,7 +20,7 @@
     },
     {
       "path": "apps/web/src/server/app.ts",
-      "sha256": "0672c84a61342c731eb88696eb7a0fe9d80c43226bb59ad3b7856ebaeebbae2c"
+      "sha256": "6a48468c986b85fe5db274460b49ce6f6396239b7b89cbf67fe4ec60e28550a7"
     },
     {
       "path": "apps/web/src/server/features/admin/operations/index.ts",
@@ -112,7 +112,7 @@
     },
     {
       "path": "apps/web/src/client/app/router/registry.ts",
-      "sha256": "e79b53e0b566abc38ecf849d4e3ebccc8f534490b9251e473b849bd09c04518f"
+      "sha256": "10e5132b8224996849f1cfd882013816b56b8b32f409804c775ae942b122abdb"
     },
     {
       "path": "apps/web/src/client/app/router/canonical-route-views.ts",
@@ -140,7 +140,7 @@
     },
     {
       "path": "packages/brand-system/src/route-branding.ts",
-      "sha256": "cdf8369f462d4a788c4ffc6cbe16c7fd5614e2387fada2e56377d5c10c258258"
+      "sha256": "e056a57b4be9b2bd32946ed7ff8e6d7bdc6d4cab761c2e0e0e23e11a091113cb"
     },
     {
       "path": "packages/brand-system/src/v21.ts",
@@ -156,11 +156,19 @@
     },
     {
       "path": "scripts/build-public-pages.ts",
-      "sha256": "a70487d40c980c12ceb051e469a46329b11e45bf0791823097ae64b4d3205327"
+      "sha256": "981d635aa5c4ec2fe653074cce9b12122af0226d36c9a41a390ca39035f188fa"
     },
     {
       "path": "packages/domain/src/dashboard/service.ts",
       "sha256": "49034325951c95ab0371039301dfde7f14e06d887ec01cd4799c4b36c6fe9297"
+    },
+    {
+      "path": "packages/domain/src/landing/content.ts",
+      "sha256": "77d1477c6880553c3b6653e639d6898e28734aacb8e63a9561cdfa4417f600e5"
+    },
+    {
+      "path": "packages/domain/src/legal/content.ts",
+      "sha256": "1ee5c969ca64ef268011bc1797e9a40482273a31badf0498e79a75ebce52deaf"
     }
   ],
   "production_roles": ["admin", "parent", "student"],
@@ -227,9 +235,9 @@
       "route_id": "RT-PUB-008",
       "path": "/cancellation-refund",
       "roles": ["public"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "public.cancellation-refund",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-PUB-009",
@@ -2540,6 +2548,40 @@
       "test_evidence": [
         "tests/integration/portals/portal-mount.test.ts",
         "tests/ot-52/portal-ui.test.ts"
+      ]
+    },
+    {
+      "action_id": "public.cancellation_refund.view.route",
+      "label": "Cancellation and Refund Policy",
+      "surface": "route",
+      "route": "/cancellation-refund",
+      "roles": ["public"],
+      "capability": "public:legal:read",
+      "handler": {
+        "method": "GET",
+        "path": "/cancellation-refund"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "public_cancellation_refund_policy_read"
+      },
+      "states": {
+        "loading": "Loading the current versioned cancellation and refund policy.",
+        "success": "Period-end access, manual refund review, and data-preservation terms are visible.",
+        "error": "The policy remains unavailable and no billing action is offered.",
+        "permission": "The policy is public and exposes no account-specific billing data.",
+        "offline": "The canonical policy is not replaced by protected cached account data."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/e2e/public-legal.spec.ts",
+        "tests/accessibility/w13-10/legal-pages-a11y.spec.ts"
       ]
     },
     {

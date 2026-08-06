@@ -82,6 +82,8 @@ const EXPECTED_SOURCE_INPUT_PATHS = [
   'packages/db/src/learning/repository.ts',
   'scripts/build-public-pages.ts',
   'packages/domain/src/dashboard/service.ts',
+  'packages/domain/src/landing/content.ts',
+  'packages/domain/src/legal/content.ts',
 ] as const;
 
 const EXPECTED_ACTION_BINDINGS = [
@@ -387,6 +389,13 @@ const EXPECTED_ACTION_BINDINGS = [
     '/api/v1/portals/student/dashboard',
   ],
   [
+    'public.cancellation_refund.view.route',
+    '/cancellation-refund',
+    ['public'],
+    'GET',
+    '/cancellation-refund',
+  ],
+  [
     'public.gallery.next.button',
     '/',
     ['public'],
@@ -573,13 +582,13 @@ describe('v2.1 visible action registry', () => {
     expect(registry.canonical_routes).toHaveLength(93);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'ready'),
-    ).toHaveLength(84);
+    ).toHaveLength(85);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'isolated'),
     ).toHaveLength(7);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'missing'),
-    ).toHaveLength(2);
+    ).toHaveLength(1);
     expect(sourceText.endsWith('\n')).toBe(true);
   });
 

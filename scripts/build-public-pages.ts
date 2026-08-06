@@ -8,6 +8,7 @@ import {
   renderPublicHeader,
 } from '@onetime/brand-system/static';
 import {
+  cancellationRefundPolicy,
   communicationConsentNotice,
   landingContent,
   legalPolicyMetadata,
@@ -317,7 +318,7 @@ function signupPage() {
           <div class="field"><label for="password_confirmation">Confirm password</label><input id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" minlength="12" required><p tabindex="-1" class="error" data-error-for="password_confirmation"></p></div>
         </div>
         <fieldset class="required-acceptances"><legend>Required agreements</legend>
-          <label><input id="terms_accepted" name="terms_accepted" type="checkbox" required><span>I agree to the <a href="/terms">Terms</a>, including cancellation and refund rules.</span></label>
+          <label><input id="terms_accepted" name="terms_accepted" type="checkbox" required><span>I agree to the <a href="/terms">Terms</a> and the <a href="/cancellation-refund">Cancellation and Refund Policy</a>.</span></label>
           <label><input id="privacy_accepted" name="privacy_accepted" type="checkbox" required><span>I acknowledge the <a href="/privacy">Privacy Notice</a> and <a href="/student-data">Student Data Notice</a>.</span></label>
         </fieldset>
         <fieldset class="optional-reminders"><legend>Optional adult communications</legend>
@@ -462,7 +463,7 @@ function renderLegalDocument(document: LegalDocument, headingLevel: 'h1' | 'h2' 
       <p>${escapeHtml(document.summary)}</p>
       <dl class="legal-meta">
         <div><dt>Effective date</dt><dd>${escapeHtml(document.effectiveDate)}</dd></div>
-        <div><dt>Last updated</dt><dd>${escapeHtml(legalPolicyMetadata.lastUpdated)}</dd></div>
+        <div><dt>Last updated</dt><dd>${escapeHtml(document.effectiveDate)}</dd></div>
         <div><dt>Review status</dt><dd>counsel_review_required</dd></div>
       </dl>
     </div>
@@ -574,6 +575,14 @@ await writeFile(
   legalPage('Terms of Use | One Time Mishnayos', termsOfUse, '/terms', [
     communicationConsentNotice,
   ]),
+);
+await writeFile(
+  path.join(outDir, 'cancellation-refund.html'),
+  legalPage(
+    'Cancellation and Refund Policy | One Time Mishnayos',
+    cancellationRefundPolicy,
+    '/cancellation-refund',
+  ),
 );
 await writeFile(
   path.join(outDir, 'communications-consent.html'),

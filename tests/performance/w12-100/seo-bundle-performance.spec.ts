@@ -17,7 +17,7 @@ test('public pages meet local LCP, CLS, metadata, and navigation budgets', async
   await installVitalsObserver(page);
   for (const viewport of [mobileViewport, desktopViewport]) {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
-    for (const route of ['/', '/signup', '/privacy', '/terms']) {
+    for (const route of ['/', '/signup', '/privacy', '/terms', '/cancellation-refund']) {
       const started = Date.now();
       const response = await page.goto(route, { waitUntil: 'load' });
       await page.waitForLoadState('networkidle').catch(() => undefined);

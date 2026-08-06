@@ -27,10 +27,10 @@ describe('v2.1 canonical route server registration', () => {
     );
     expect(registrations.every(({ path }) => !path.includes('*'))).toBe(true);
     expect(new Set(registrations.map(({ path }) => path)).size).toBe(75);
-    expect(CANONICAL_READY_PROTECTED_ROUTES).toHaveLength(69);
+    expect(CANONICAL_READY_PROTECTED_ROUTES).toHaveLength(70);
     expect(
       CANONICAL_PROTECTED_ROUTES.filter(({ readiness }) => readiness !== 'ready'),
-    ).toHaveLength(6);
+    ).toHaveLength(5);
   });
 
   it('binds exact shell and role semantics', () => {
@@ -137,6 +137,15 @@ describe('v2.1 canonical route server registration', () => {
       CANONICAL_READY_PROTECTED_ROUTES.find(({ routeId }) => routeId === 'RT-STU-011'),
     ).toMatchObject({
       pathname: '/app/student/classes/:occurrenceId',
+      shell: 'student',
+      roles: ['student'],
+      readiness: 'ready',
+      handlerDisposition: 'mounted',
+    });
+    expect(
+      CANONICAL_READY_PROTECTED_ROUTES.find(({ routeId }) => routeId === 'RT-STU-021'),
+    ).toMatchObject({
+      pathname: '/app/student/library/:contentId',
       shell: 'student',
       roles: ['student'],
       readiness: 'ready',

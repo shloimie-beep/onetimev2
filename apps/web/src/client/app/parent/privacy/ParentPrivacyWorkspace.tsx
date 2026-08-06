@@ -96,7 +96,7 @@ export function ParentPrivacyWorkspace({
       <p>
         Current policies: <a href="/privacy">Privacy notice</a>, <a href="/terms">Terms</a>,{' '}
         <a href="/student-data">Student data and recording</a>, and{' '}
-        <a href="/cancellation">cancellation and refunds</a>.
+        <a href="/cancellation-refund">cancellation and refunds</a>.
       </p>
       {notice ? <p role="status">{notice}</p> : null}
       {error ? <p role="alert">{error}</p> : null}

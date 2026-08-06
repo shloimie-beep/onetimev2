@@ -81,7 +81,11 @@ test('public landing implements the bounded product-repair contract', async ({ p
     'Your child learns in his own space',
   );
   await expect(page.getByText(/Pre-register|pre-registration/i)).toHaveCount(0);
-  await expect(page.getByRole('link', { name: 'Terms, cancellation, and refunds' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Terms', exact: true })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Cancellation and refunds' })).toHaveAttribute(
+    'href',
+    '/cancellation-refund',
+  );
   await expect(page.getByRole('link', { name: 'Privacy Notice' }).last()).toBeVisible();
   await expect(page.getByRole('link', { name: 'Student Data Notice' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Member Login' }).last()).toHaveAttribute(

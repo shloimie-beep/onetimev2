@@ -6,6 +6,7 @@ test('W13-10 legal pages render versioned launch truth without billing claims', 
   for (const [path, heading] of [
     ['/privacy', /Privacy Notice/i],
     ['/terms', /Terms of Use/i],
+    ['/cancellation-refund', /Cancellation and Refund Policy/i],
     ['/communications-consent', /Communication and Reminder Consent/i],
     ['/student-data', /Parent\/Guardian and Student Data Notice/i],
   ] as const) {

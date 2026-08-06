@@ -1,4 +1,5 @@
 export {
+  cancellationRefundPolicy,
   communicationConsentNotice,
   legalPolicyMetadata,
   parentGuardianStudentDataNotice,

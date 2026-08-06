@@ -5100,6 +5100,7 @@ function publicHtmlFileForPath(pathname: string) {
     '/login',
     '/privacy',
     '/terms',
+    '/cancellation-refund',
     '/communications-consent',
     '/student-data',
     '/404',

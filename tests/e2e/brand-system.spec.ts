@@ -39,7 +39,7 @@ test('OT82 canonical public shell, ticker, and mobile invariant', async ({ page 
     }
   }
 
-  for (const route of ['/signup', '/login', '/privacy', '/terms']) {
+  for (const route of ['/signup', '/login', '/privacy', '/terms', '/cancellation-refund']) {
     await page.goto(route);
     await expect(page.locator('.campaign-ticker')).toHaveCount(0);
   }

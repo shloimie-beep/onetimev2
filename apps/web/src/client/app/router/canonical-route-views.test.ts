@@ -34,11 +34,11 @@ describe('v2.1 canonical route views', () => {
     expect(
       CANONICAL_V21_ROUTES.filter(({ routeId }) => routeId.startsWith('RT-STU-')),
     ).toHaveLength(17);
-    expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'ready')).toHaveLength(84);
+    expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'ready')).toHaveLength(85);
     expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'isolated')).toHaveLength(
       7,
     );
-    expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'missing')).toHaveLength(2);
+    expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'missing')).toHaveLength(1);
     for (const route of CANONICAL_V21_ROUTES) {
       if (route.readiness === 'ready') {
         expect(route.handler, route.routeId).not.toMatch(/fallback|default|missing|unavailable/);
