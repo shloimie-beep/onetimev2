@@ -1250,9 +1250,11 @@ function CrmApp() {
               mode={contactsSection}
               csrfToken={session?.csrf_token ?? ''}
               selectedRecordId={
-                contactsSection === 'learners'
-                  ? contactsRoute.searchParams.get('learner_key')
-                  : undefined
+                contactsSection === 'users'
+                  ? contactsRoute.searchParams.get('user_key')
+                  : contactsSection === 'learners'
+                    ? contactsRoute.searchParams.get('learner_key')
+                    : undefined
               }
               onSessionExpired={clearProtectedState}
             />

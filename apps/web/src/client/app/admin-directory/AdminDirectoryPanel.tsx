@@ -58,6 +58,7 @@ export function AdminDirectoryPanel({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
+  const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
   const [selectedLearner, setSelectedLearner] = useState<AdminLearner | null>(null);
   const [form, setForm] = useState<
     | { kind: 'household'; record: AdminHousehold | null }
@@ -70,6 +71,7 @@ export function AdminDirectoryPanel({
 
   useEffect(() => {
     setForm(null);
+    setSelectedUser(null);
     setSelectedLearner(null);
     setSearch('');
     setSearchDraft('');
@@ -95,6 +97,15 @@ export function AdminDirectoryPanel({
         ]);
         setUsers(userResult.users);
         setHouseholds(householdResult.households);
+        if (selectedRecordId) {
+          const selected = userResult.users.find((user) => user.user_key === selectedRecordId);
+          setSelectedUser(selected ?? null);
+          if (!selected) {
+            setError('The user record was not found or is no longer available.');
+          }
+        } else {
+          setSelectedUser(null);
+        }
       } else if (mode === 'learners') {
         const [learnerResult, householdResult] = await Promise.all([
           listAdminLearners(nextSearch, nextStatus),
@@ -156,20 +167,42 @@ export function AdminDirectoryPanel({
     );
   }
 
+  function changeUserStatus(record: AdminUser, action: 'disable' | 'reactivate') {
+    if (
+      action === 'disable' &&
+      !window.confirm(`Disable ${record.display_name}? Their active sessions will be revoked.`)
+    ) {
+      return;
+    }
+    void runMutation(
+      () => setAdminUserStatus(csrfToken, record, action),
+      action === 'disable' ? 'User disabled.' : 'User reactivated.',
+    );
+  }
+
+  function requestUserReset(record: AdminUser) {
+    void runMutation(
+      () => requestAdminUserPasswordReset(csrfToken, record.user_key, createRequestKey()),
+      'Single-use password reset created in the protected delivery sink.',
+    );
+  }
+
   const parentUsers = useMemo(
     () => users.filter((user) => user.role === 'parent' && user.status === 'active'),
     [users],
   );
 
-  const title = selectedLearner
-    ? 'Student details'
-    : mode === 'households'
-      ? 'Households'
-      : mode === 'users'
-        ? 'Users and roles'
-        : mode === 'learners'
-          ? 'Learners'
-          : 'Audit history';
+  const title = selectedUser
+    ? 'User details'
+    : selectedLearner
+      ? 'Student details'
+      : mode === 'households'
+        ? 'Households'
+        : mode === 'users'
+          ? 'Users and roles'
+          : mode === 'learners'
+            ? 'Learners'
+            : 'Audit history';
 
   return (
     <section className="admin-directory" aria-labelledby={`admin-directory-${mode}-title`}>
@@ -178,7 +211,11 @@ export function AdminDirectoryPanel({
           <h2 id={`admin-directory-${mode}-title`}>{title}</h2>
           <p>{descriptionFor(mode)}</p>
         </div>
-        {selectedLearner ? (
+        {selectedUser ? (
+          <Button type="button" onClick={() => window.location.assign('/app/users')}>
+            Back to Users
+          </Button>
+        ) : selectedLearner ? (
           <Button type="button" onClick={() => window.location.assign('/app/students')}>
             Back to Students
           </Button>
@@ -402,32 +439,25 @@ export function AdminDirectoryPanel({
           }}
         />
       )}
-      {!loading && !error && !form && mode === 'users' && (
-        <UserList
-          users={users}
-          onEdit={(record) => setForm({ kind: 'user', record })}
-          onReset={(record) =>
-            void runMutation(
-              () => requestAdminUserPasswordReset(csrfToken, record.user_key, createRequestKey()),
-              'Single-use password reset created in the protected delivery sink.',
-            )
-          }
-          onStatus={(record, action) => {
-            if (
-              action === 'disable' &&
-              !window.confirm(
-                `Disable ${record.display_name}? Their active sessions will be revoked.`,
-              )
-            ) {
-              return;
-            }
-            void runMutation(
-              () => setAdminUserStatus(csrfToken, record, action),
-              action === 'disable' ? 'User disabled.' : 'User reactivated.',
-            );
-          }}
-        />
-      )}
+      {!loading &&
+        !error &&
+        !form &&
+        mode === 'users' &&
+        (selectedUser ? (
+          <UserDetail
+            record={selectedUser}
+            onEdit={(record) => setForm({ kind: 'user', record })}
+            onReset={requestUserReset}
+            onStatus={changeUserStatus}
+          />
+        ) : (
+          <UserList
+            users={users}
+            onEdit={(record) => setForm({ kind: 'user', record })}
+            onReset={requestUserReset}
+            onStatus={changeUserStatus}
+          />
+        ))}
       {!loading &&
         !error &&
         !form &&
@@ -552,6 +582,7 @@ function UserList({
             title={record.display_name}
             subtitle={record.email}
             status={record.status}
+            href={`/app/users/${encodeURIComponent(record.user_key)}`}
           />,
           readable(record.role),
           <Status key="account" value={record.status} />,
@@ -591,6 +622,90 @@ function UserList({
         ];
       })}
     />
+  );
+}
+
+function UserDetail({
+  record,
+  onEdit,
+  onReset,
+  onStatus,
+}: {
+  record: AdminUser;
+  onEdit: (record: AdminUser) => void;
+  onReset: (record: AdminUser) => void;
+  onStatus: (record: AdminUser, action: 'disable' | 'reactivate') => void;
+}) {
+  const pending = record.status === 'pending_setup' || record.status === 'expired_setup';
+  return (
+    <Card className="admin-directory__form-card" aria-labelledby="user-detail-heading">
+      <div className="admin-directory__heading">
+        <div>
+          <h3 id="user-detail-heading">{record.display_name}</h3>
+          <p>Private account identity, role, household association, and access status.</p>
+        </div>
+        <Status value={record.status} />
+      </div>
+      <dl className="admin-directory__detail-facts">
+        <div>
+          <dt>Email</dt>
+          <dd>{record.email}</dd>
+        </div>
+        <div>
+          <dt>Role</dt>
+          <dd>{readable(record.role)}</dd>
+        </div>
+        <div>
+          <dt>Household</dt>
+          <dd>{record.household_name ?? 'Not attached'}</dd>
+        </div>
+        <div>
+          <dt>Relationship</dt>
+          <dd>{record.relationship_label ?? 'Not recorded'}</dd>
+        </div>
+        <div>
+          <dt>Last successful login</dt>
+          <dd>
+            {record.last_successful_login_at
+              ? formatDate(record.last_successful_login_at)
+              : 'Never'}
+          </dd>
+        </div>
+        <div>
+          <dt>Account setup</dt>
+          <dd>
+            {record.setup_expires_at
+              ? `${record.status === 'expired_setup' ? 'Expired' : 'Expires'} ${formatDate(
+                  record.setup_expires_at,
+                )}`
+              : 'Complete'}
+          </dd>
+        </div>
+      </dl>
+      {!pending && (
+        <ActionGroup>
+          {!['owner', 'student'].includes(record.role) && (
+            <Button type="button" variant="text" onClick={() => onEdit(record)}>
+              Edit role
+            </Button>
+          )}
+          <Button type="button" variant="text" onClick={() => onReset(record)}>
+            Reset password
+          </Button>
+          {record.role !== 'owner' && (
+            <Button
+              type="button"
+              variant={record.status === 'active' ? 'danger' : 'secondary'}
+              onClick={() =>
+                onStatus(record, record.status === 'active' ? 'disable' : 'reactivate')
+              }
+            >
+              {record.status === 'active' ? 'Disable' : 'Reactivate'}
+            </Button>
+          )}
+        </ActionGroup>
+      )}
+    </Card>
   );
 }
 

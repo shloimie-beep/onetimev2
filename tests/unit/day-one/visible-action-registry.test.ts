@@ -112,6 +112,34 @@ const EXPECTED_ACTION_BINDINGS = [
     'GET',
     '/api/v1/admin-directory/learners',
   ],
+  [
+    'admin.directory.user.disable_reactivate.button',
+    '/app/users/:userId',
+    ['admin'],
+    'POST',
+    '/api/v1/admin-directory/users/:userKey/:action',
+  ],
+  [
+    'admin.directory.user.edit.form',
+    '/app/users/:userId',
+    ['admin'],
+    'PATCH',
+    '/api/v1/admin-directory/users/:userKey',
+  ],
+  [
+    'admin.directory.user.password_reset.button',
+    '/app/users/:userId',
+    ['admin'],
+    'POST',
+    '/api/v1/admin-directory/users/:userKey/password-reset',
+  ],
+  [
+    'admin.directory.user.view.route',
+    '/app/users/:userId',
+    ['admin'],
+    'GET',
+    '/api/v1/admin-directory/users',
+  ],
   ['admin.search.next_page.button', '/app/search', ['admin'], 'POST', '/api/v2.1/admin/search'],
   [
     'admin.search.open.button',
@@ -425,13 +453,13 @@ describe('v2.1 visible action registry', () => {
     expect(registry.canonical_routes).toHaveLength(93);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'ready'),
-    ).toHaveLength(78);
+    ).toHaveLength(79);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'isolated'),
     ).toHaveLength(7);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'missing'),
-    ).toHaveLength(8);
+    ).toHaveLength(7);
     expect(sourceText.endsWith('\n')).toBe(true);
   });
 

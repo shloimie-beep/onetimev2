@@ -27,10 +27,10 @@ describe('v2.1 canonical route server registration', () => {
     );
     expect(registrations.every(({ path }) => !path.includes('*'))).toBe(true);
     expect(new Set(registrations.map(({ path }) => path)).size).toBe(75);
-    expect(CANONICAL_READY_PROTECTED_ROUTES).toHaveLength(64);
+    expect(CANONICAL_READY_PROTECTED_ROUTES).toHaveLength(65);
     expect(
       CANONICAL_PROTECTED_ROUTES.filter(({ readiness }) => readiness !== 'ready'),
-    ).toHaveLength(11);
+    ).toHaveLength(10);
   });
 
   it('binds exact shell and role semantics', () => {
@@ -74,6 +74,15 @@ describe('v2.1 canonical route server registration', () => {
       CANONICAL_READY_PROTECTED_ROUTES.find(({ routeId }) => routeId === 'RT-ADM-063'),
     ).toMatchObject({
       pathname: '/app/tickets/:ticketId',
+      shell: 'admin',
+      roles: ['admin'],
+      readiness: 'ready',
+      handlerDisposition: 'bounded-alias',
+    });
+    expect(
+      CANONICAL_READY_PROTECTED_ROUTES.find(({ routeId }) => routeId === 'RT-ADM-015'),
+    ).toMatchObject({
+      pathname: '/app/users/:userId',
       shell: 'admin',
       roles: ['admin'],
       readiness: 'ready',

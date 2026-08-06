@@ -76,6 +76,50 @@ test('Admin IA keeps the canonical launch areas across the governed viewport mat
   }
 
   await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.route('**/api/v1/admin-directory/users*', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        success: true,
+        users: [
+          {
+            user_key: 'user-detail-browser-fixture',
+            display_name: 'Miriam Cohen',
+            email: 'miriam@example.test',
+            role: 'admin',
+            status: 'active',
+            version: 3,
+            household_key: null,
+            household_name: null,
+            relationship_label: null,
+            last_successful_login_at: '2026-08-05T08:00:00.000Z',
+            setup_expires_at: null,
+            learner_key: null,
+          },
+        ],
+      }),
+    }),
+  );
+  await page.goto('/app/users');
+  await expect(page.locator('#admin-directory-users-title')).toHaveText('Users and roles');
+  const firstUserLink = page.locator('.admin-directory__record-title a').first();
+  await expect(firstUserLink).toHaveAttribute('href', /^\/app\/users\/[^/]+$/u);
+  await firstUserLink.click();
+  await expect(page).toHaveURL(/\/app\/users\/[^/]+$/u);
+  await expect(page.locator('#admin-directory-users-title')).toHaveText('User details');
+  await expect(page.getByRole('heading', { name: 'Miriam Cohen' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Edit role' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Reset password' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Back to Users' })).toBeVisible();
+  expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
+  const userDetailAxe = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+  expect(
+    userDetailAxe.violations.filter((violation) =>
+      ['critical', 'serious'].includes(violation.impact ?? ''),
+    ),
+  ).toEqual([]);
+
   await page.route('**/api/v1/admin-directory/learners*', (route) =>
     route.fulfill({
       status: 200,

@@ -92,7 +92,7 @@
     },
     {
       "path": "apps/web/src/client/app/crm-entry.tsx",
-      "sha256": "3b8f7c853b0f8cb58299ffe0239fff89abb661ab0c940cd853d0b34aadb4667e"
+      "sha256": "9350ca8b453ae5aef53f39d138b00460f78c26265513318f33815fbec75d9798"
     },
     {
       "path": "apps/web/src/client/app/live-entry.tsx",
@@ -108,11 +108,11 @@
     },
     {
       "path": "apps/web/src/client/app/router/registry.ts",
-      "sha256": "52853927d380409193b588c65c7514025a48eccce71f47d7f2aa839e6aca587c"
+      "sha256": "7dcf5776a773ecc432030d18804a2c92cce6bc74edaa5476cdf50da07ebe3de1"
     },
     {
       "path": "apps/web/src/client/app/router/canonical-route-views.ts",
-      "sha256": "40a5ae7456bd2e566e7f1b38262efd5d07a89bc689dd36ca3d09604aa29c1822"
+      "sha256": "c18c8f004ba50df851e1a19ed0bb6c96fe25fa0adcebc4afccf9090f4f60e456"
     },
     {
       "path": "apps/web/src/client/app/shell/AppShell.tsx",
@@ -367,9 +367,9 @@
       "route_id": "RT-ADM-015",
       "path": "/app/users/:userId",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-015",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-016",
@@ -1036,6 +1036,142 @@
         "error": "The Student record was not found or could not be loaded.",
         "permission": "Only an authenticated Admin may read Student details.",
         "offline": "Private Student records are unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/admin-directory/admin-directory.test.ts",
+        "tests/e2e/admin-information-architecture.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.directory.user.disable_reactivate.button",
+      "label": "Disable or reactivate user",
+      "surface": "button",
+      "route": "/app/users/:userId",
+      "roles": ["admin"],
+      "capability": "admin:user:lifecycle",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/admin-directory/users/:userKey/:action"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "admin_user_disabled/admin_user_reactivated"
+      },
+      "states": {
+        "loading": "Applying the account lifecycle change.",
+        "success": "The account status and session revocation state are current.",
+        "error": "The account lifecycle change was rejected or could not be saved.",
+        "permission": "Only an authenticated Admin may govern user lifecycle state.",
+        "offline": "User lifecycle changes are unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/admin-directory/admin-directory.test.ts",
+        "tests/e2e/admin-information-architecture.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.directory.user.edit.form",
+      "label": "Edit user role",
+      "surface": "form",
+      "route": "/app/users/:userId",
+      "roles": ["admin"],
+      "capability": "admin:user:update",
+      "handler": {
+        "method": "PATCH",
+        "path": "/api/v1/admin-directory/users/:userKey"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "security_control",
+        "event": "security_version_incremented_sessions_revoked"
+      },
+      "states": {
+        "loading": "Saving the private user and role record.",
+        "success": "The version-protected user record is current and prior sessions are revoked.",
+        "error": "The user record was stale, rejected, or could not be saved.",
+        "permission": "Only an authenticated Admin may edit eligible user roles.",
+        "offline": "User record changes are unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/admin-directory/admin-directory.test.ts",
+        "tests/e2e/admin-information-architecture.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.directory.user.password_reset.button",
+      "label": "Reset user password",
+      "surface": "button",
+      "route": "/app/users/:userId",
+      "roles": ["admin"],
+      "capability": "admin:user:credential-reset",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/admin-directory/users/:userKey/password-reset"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "client-generated idempotency_key"
+      },
+      "audit": {
+        "mode": "auth_audit",
+        "event": "password_reset_issued"
+      },
+      "states": {
+        "loading": "Creating a single-use password reset in the protected delivery sink.",
+        "success": "The single-use reset was queued without exposing a credential.",
+        "error": "The reset request was rejected or could not be queued.",
+        "permission": "Only an authenticated Admin may request a user password reset.",
+        "offline": "Password reset is unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "sink",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/admin-directory/admin-directory.test.ts",
+        "tests/e2e/admin-information-architecture.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.directory.user.view.route",
+      "label": "User details",
+      "surface": "route",
+      "route": "/app/users/:userId",
+      "roles": ["admin"],
+      "capability": "admin:user:read",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/admin-directory/users"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "admin_user_detail_read"
+      },
+      "states": {
+        "loading": "Loading the private user record.",
+        "success": "The scoped identity, role, household, and account summary are visible.",
+        "error": "The user record was not found or could not be loaded.",
+        "permission": "Only an authenticated Admin may read user details.",
+        "offline": "Private user records are unavailable offline."
       },
       "readiness_state": "ready",
       "provider_mode": "not_provider_dependent",
