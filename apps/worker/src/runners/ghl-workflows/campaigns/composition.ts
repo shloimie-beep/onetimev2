@@ -20,6 +20,7 @@ import {
   type CampaignEmailPort,
   type CampaignSuppressionReadPort,
 } from './runner.ts';
+import { createPostgresOt16CampaignReadModel } from './postgres.ts';
 
 export type Ot16DueCheckpoint = {
   adultId: string;
@@ -75,9 +76,10 @@ export async function runOt16CheckpointWorker(
   if (!authority.ready) return disabled(authority.reason);
   if (!isSha256(authority.safeProviderReference)) return disabled('f06_binding_unavailable');
 
-  // The exact F05 campaign dispatch adapter and canonical F06 active-binding
-  // reader are not exposed by the integrated interfaces. The production path
-  // must remain disabled rather than guessing a provider operation.
+  // The canonical read model is available through createDefaultOt16ReadModel.
+  // The exact F05 campaign dispatch adapter remains intentionally absent; the
+  // production path must remain disabled rather than bypassing the durable job
+  // and acceptance-unknown boundary.
   if (!dependencies) return disabled('f05_dispatch_adapter_unavailable');
 
   const summary = emptySummary();
@@ -161,4 +163,14 @@ function emptySummary(): Ot16WorkerSummary {
 
 function isSha256(value: unknown): value is string {
   return typeof value === 'string' && /^[a-f0-9]{64}$/u.test(value);
+}
+
+export function createDefaultOt16ReadModel(context: WorkerRunnerContext) {
+  if (!context.config.oneTimeFreeAccessExpiresAt) return null;
+  return createPostgresOt16CampaignReadModel({
+    pool: context.pool,
+    runtimeTier: context.config.oneTimeRuntimeTier,
+    verificationEnvironmentId: context.config.oneTimeVerificationEnvironmentId,
+    canonicalExpiryAt: context.config.oneTimeFreeAccessExpiresAt,
+  });
 }
