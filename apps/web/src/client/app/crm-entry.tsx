@@ -84,6 +84,7 @@ import {
   resolveCrmCapabilities,
   replyAdminSupportTicket,
   saveContactRequest,
+  transitionAdminQuestion,
   updateAdminSupportTicketStatus,
   type Assignee,
   type ApiSession,
@@ -2000,6 +2001,10 @@ function ClassesPanel({
           loading={adminLearningLoading}
           error={adminLearningError}
           onRetry={onRetryLearning}
+          onTransitionQuestion={async (transition) => {
+            await transitionAdminQuestion(csrfToken, transition);
+            await onRetryLearning();
+          }}
         />
       ) : !teachingOnly && section === 'rewards' ? (
         <>
@@ -2176,6 +2181,7 @@ function AdminLearningPanel({
   loading,
   error,
   onRetry,
+  onTransitionQuestion,
   onCorrectAttendance,
 }: {
   mode: 'questions' | 'attendance';
@@ -2183,6 +2189,9 @@ function AdminLearningPanel({
   loading: boolean;
   error: string;
   onRetry: () => Promise<void>;
+  onTransitionQuestion?: React.ComponentProps<
+    typeof AdminLearningWorkspace
+  >['onTransitionQuestion'];
   onCorrectAttendance?: React.ComponentProps<typeof AdminLearningWorkspace>['onCorrectAttendance'];
 }) {
   if (loading && !snapshot) return <ReadOnlySkeleton label="Loading learning engagement" />;
@@ -2202,6 +2211,7 @@ function AdminLearningPanel({
     <AdminLearningWorkspace
       {...snapshot}
       mode={mode}
+      {...(onTransitionQuestion ? { onTransitionQuestion } : {})}
       {...(onCorrectAttendance ? { onCorrectAttendance } : {})}
     />
   );

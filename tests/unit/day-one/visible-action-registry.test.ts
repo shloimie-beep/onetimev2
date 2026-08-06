@@ -59,6 +59,8 @@ const EXPECTED_SOURCE_INPUT_PATHS = [
   'apps/web/src/server/features/classroom/embedded/composition.ts',
   'apps/web/src/server/features/classroom/embedded/router.ts',
   'apps/web/src/server/features/classroom/embedded/service.ts',
+  'apps/web/src/server/features/learning/router.ts',
+  'apps/web/src/server/features/learning/service.ts',
   'apps/web/src/server/features/portals/routers.ts',
   'apps/web/src/server/features/support/router.ts',
   'apps/web/src/server/features/support/v21-router.ts',
@@ -90,11 +92,13 @@ const EXPECTED_SOURCE_INPUT_PATHS = [
   'packages/brand-system/src/v21.ts',
   'packages/contracts/src/communications/index.ts',
   'packages/contracts/src/classroom/embedded/index.ts',
+  'packages/contracts/src/learning/index.ts',
   'packages/db/src/index.ts',
   'packages/db/src/learning/repository.ts',
   'scripts/build-public-pages.ts',
   'scripts/highlevel/workflow-registry-source.ts',
   'packages/domain/src/dashboard/service.ts',
+  'packages/domain/src/learning/engagement.ts',
   'packages/domain/src/landing/content.ts',
   'packages/domain/src/legal/content.ts',
 ] as const;
@@ -232,6 +236,20 @@ const EXPECTED_ACTION_BINDINGS = [
     ['admin'],
     'GET',
     '/api/v1/admin-directory/users',
+  ],
+  [
+    'admin.question_moderation.transition.form',
+    '/app/classroom/questions',
+    ['admin'],
+    'POST',
+    '/api/app/learning/questions/:questionId/transitions',
+  ],
+  [
+    'admin.question_moderation.view.route',
+    '/app/classroom/questions',
+    ['admin'],
+    'GET',
+    '/api/app/learning/questions',
   ],
   ['admin.search.next_page.button', '/app/search', ['admin'], 'POST', '/api/v2.1/admin/search'],
   [
@@ -645,10 +663,10 @@ describe('v2.1 visible action registry', () => {
     expect(registry.canonical_routes).toHaveLength(93);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'ready'),
-    ).toHaveLength(89);
+    ).toHaveLength(90);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'isolated'),
-    ).toHaveLength(4);
+    ).toHaveLength(3);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'missing'),
     ).toHaveLength(0);

@@ -202,6 +202,28 @@ describe('OT-71 mounted parent and student portals', () => {
           })
         ).status,
       ).toBe(200);
+
+      const questionPath = '/app/classroom/questions';
+      const adminQuestions = await fetch(`${server.baseUrl}${questionPath}`, {
+        headers: { cookie: admin.cookies },
+      });
+      expect(adminQuestions.status).toBe(200);
+      expect(adminQuestions.headers.get('cache-control')).toContain('no-store');
+      expect(await adminQuestions.text()).toContain('id="crm-root"');
+      expect(
+        (
+          await fetch(`${server.baseUrl}${questionPath}`, {
+            headers: { cookie: student.cookies },
+          })
+        ).status,
+      ).toBe(403);
+      expect(
+        (
+          await fetch(`${server.baseUrl}${questionPath}`, {
+            headers: { cookie: parent.cookies },
+          })
+        ).status,
+      ).toBe(403);
     } finally {
       await server.close();
     }

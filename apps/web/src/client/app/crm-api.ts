@@ -746,6 +746,40 @@ export async function getAdminLearningSnapshot(): Promise<AdminLearningSnapshot>
   };
 }
 
+export type AdminQuestionTransitionInput = {
+  questionId: string;
+  to: Exclude<LearningQuestion['state'], 'submitted'>;
+  answer?: string;
+  reason?: string;
+  expectedVersion: number;
+  idempotencyKey: string;
+  auditRef: string;
+};
+
+export async function transitionAdminQuestion(
+  csrfToken: string,
+  input: AdminQuestionTransitionInput,
+) {
+  return authenticatedJson<{
+    success: true;
+    data: { question: LearningQuestion; replay: boolean };
+  }>(`/api/app/learning/questions/${encodeURIComponent(input.questionId)}/transitions`, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      'x-csrf-token': csrfToken,
+    },
+    body: JSON.stringify({
+      to: input.to,
+      ...(input.answer?.trim() ? { answer: input.answer.trim() } : {}),
+      ...(input.reason?.trim() ? { reason: input.reason.trim() } : {}),
+      expected_version: input.expectedVersion,
+      idempotency_key: input.idempotencyKey,
+      audit_ref: input.auditRef,
+    }),
+  });
+}
+
 export async function getAdminAttendanceSnapshot(): Promise<AdminLearningSnapshot> {
   const attendance = await authenticatedJson<{ success: true; data: AttendanceRecord[] }>(
     '/api/app/classroom/attendance/admin',

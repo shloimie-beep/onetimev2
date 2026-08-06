@@ -34,9 +34,9 @@ describe('v2.1 canonical route views', () => {
     expect(
       CANONICAL_V21_ROUTES.filter(({ routeId }) => routeId.startsWith('RT-STU-')),
     ).toHaveLength(17);
-    expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'ready')).toHaveLength(89);
+    expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'ready')).toHaveLength(90);
     expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'isolated')).toHaveLength(
-      4,
+      3,
     );
     expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'missing')).toHaveLength(0);
     for (const route of CANONICAL_V21_ROUTES) {
@@ -131,7 +131,7 @@ describe('v2.1 canonical route views', () => {
       occurrence &&
         compatibilityPathForRoute(occurrence, '/app/classroom/occurrences/occurrence-1'),
     ).toBe('/app/classes/occurrences?occurrence_key=occurrence-1');
-    expect(CANONICAL_ROUTE_COMPATIBILITY_PATHS['RT-ADM-040']).toBeUndefined();
+    expect(CANONICAL_ROUTE_COMPATIBILITY_PATHS['RT-ADM-040']).toBe('/app/classes/questions');
     expect(CANONICAL_ROUTE_COMPATIBILITY_PATHS['RT-STU-060']).toBeUndefined();
     expect(CANONICAL_ROUTE_COMPATIBILITY_PATHS['RT-STU-061']).toBeUndefined();
     expect(CANONICAL_ROUTE_COMPATIBILITY_PATHS['RT-STU-040']).toBeUndefined();
@@ -158,8 +158,9 @@ describe('v2.1 canonical route views', () => {
     });
     expect(resolveCurrentClientRoute('/app/classroom/questions', 'admin')).toMatchObject({
       routeId: 'RT-ADM-040',
-      readiness: 'isolated',
-      handler: null,
+      readiness: 'ready',
+      handler: 'admin.rt-adm-040',
+      handlerDisposition: 'mounted',
     });
     expect(resolveCurrentClientRoute('/signup/received')).toMatchObject({
       routeId: 'RT-PUB-003',

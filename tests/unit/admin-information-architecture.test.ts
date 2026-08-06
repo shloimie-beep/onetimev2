@@ -95,6 +95,7 @@ describe('OT-LAUNCH-01 Admin information architecture', () => {
     expect(classroomSectionFromPath('/app/classes/recordings')).toBe('recordings');
     expect(classroomSectionFromPath('/app/classes/access')).toBe('access');
     expect(classroomSectionFromPath('/app/classes/questions')).toBe('questions');
+    expect(classroomSectionFromPath('/app/classroom/questions')).toBe('questions');
     expect(classroomOccurrenceFromLocation('/app/classes/occurrence-1', '')).toBe('occurrence-1');
     expect(
       classroomOccurrenceFromLocation('/app/classes/questions', '?occurrence_key=occurrence-2'),

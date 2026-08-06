@@ -121,7 +121,9 @@ export function classroomSectionFromPath(pathname: string): ClassroomSectionId {
   if (pathname === '/app/classes/attendance') return 'attendance';
   if (pathname === '/app/classes/recordings') return 'recordings';
   if (pathname === '/app/classes/access') return 'access';
-  if (pathname === '/app/classes/questions') return 'questions';
+  if (pathname === '/app/classes/questions' || pathname === '/app/classroom/questions') {
+    return 'questions';
+  }
   return 'classes';
 }
 

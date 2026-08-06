@@ -10,6 +10,7 @@ export function AdminLearningWorkspace(props: {
   questions: readonly LearningQuestion[];
   announcements: readonly LearningAnnouncement[];
   attendance: readonly AttendanceRecord[];
+  onTransitionQuestion?: (input: AdminQuestionTransitionInput) => Promise<void>;
   onCorrectAttendance?: (input: AdminAttendanceCorrectionInput) => Promise<void>;
 }) {
   if (props.mode === 'attendance') return <AttendanceWorkspace {...props} />;
@@ -25,6 +26,7 @@ export function AdminLearningWorkspace(props: {
               <th scope="col">Question</th>
               <th scope="col">Class</th>
               <th scope="col">State</th>
+              <th scope="col">Moderation</th>
             </tr>
           </thead>
           <tbody>
@@ -33,6 +35,14 @@ export function AdminLearningWorkspace(props: {
                 <td>{question.body}</td>
                 <td>{question.classId}</td>
                 <td>{question.state.replaceAll('_', ' ')}</td>
+                <td>
+                  <QuestionModerationForm
+                    question={question}
+                    {...(props.onTransitionQuestion
+                      ? { onTransition: props.onTransitionQuestion }
+                      : {})}
+                  />
+                </td>
               </tr>
             ))}
           </tbody>
@@ -50,6 +60,159 @@ export function AdminLearningWorkspace(props: {
         </ul>
       </section>
     </main>
+  );
+}
+
+export type AdminQuestionTransitionInput = {
+  questionId: string;
+  to: Exclude<LearningQuestion['state'], 'submitted'>;
+  answer?: string;
+  reason?: string;
+  expectedVersion: number;
+  idempotencyKey: string;
+  auditRef: string;
+};
+
+type ModerationTarget = AdminQuestionTransitionInput['to'];
+
+export function questionModerationOptions(
+  state: LearningQuestion['state'],
+): readonly { value: ModerationTarget; label: string }[] {
+  if (state === 'submitted') {
+    return [
+      { value: 'answered_private', label: 'Answer privately' },
+      { value: 'approved_for_class', label: 'Approve for class' },
+      { value: 'closed', label: 'Close' },
+      { value: 'declined', label: 'Decline' },
+    ];
+  }
+  if (state === 'answered_private') {
+    return [
+      { value: 'approved_for_class', label: 'Approve for class' },
+      { value: 'closed', label: 'Close' },
+      { value: 'declined', label: 'Decline' },
+    ];
+  }
+  if (state === 'approved_for_class') {
+    return [
+      { value: 'answered_private', label: 'Return to private answer' },
+      { value: 'published', label: 'Publish to class' },
+      { value: 'closed', label: 'Close' },
+      { value: 'declined', label: 'Decline' },
+    ];
+  }
+  if (state === 'published') {
+    return [
+      { value: 'approved_for_class', label: 'Unpublish to review' },
+      { value: 'closed', label: 'Close' },
+    ];
+  }
+  return [];
+}
+
+function QuestionModerationForm({
+  question,
+  onTransition,
+}: {
+  question: LearningQuestion;
+  onTransition?: (input: AdminQuestionTransitionInput) => Promise<void>;
+}) {
+  const options = questionModerationOptions(question.state);
+  const [selectedTarget, setSelectedTarget] = useState<ModerationTarget | ''>(
+    options[0]?.value ?? '',
+  );
+  const [answer, setAnswer] = useState(question.answer ?? '');
+  const [reason, setReason] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [notice, setNotice] = useState<{ kind: 'success' | 'error'; message: string } | null>(null);
+  const idempotencyKey = useRef(crypto.randomUUID());
+  const target = options.some(({ value }) => value === selectedTarget)
+    ? selectedTarget
+    : (options[0]?.value ?? '');
+
+  if (options.length === 0) return <span>No further moderation actions.</span>;
+  if (!onTransition) return <span>Moderation is unavailable on this view.</span>;
+
+  const needsAnswer = target === 'answered_private' && !question.answer;
+  const needsReason = target === 'closed' || target === 'declined';
+  return (
+    <form
+      className="contact-form"
+      onSubmit={async (event) => {
+        event.preventDefault();
+        setNotice(null);
+        if (!target) return;
+        if (needsAnswer && !answer.trim()) {
+          setNotice({ kind: 'error', message: 'A private answer is required.' });
+          return;
+        }
+        if (needsReason && reason.trim().length < 3) {
+          setNotice({ kind: 'error', message: 'A moderation reason is required.' });
+          return;
+        }
+        setSaving(true);
+        try {
+          await onTransition({
+            questionId: question.id,
+            to: target,
+            ...(answer.trim() ? { answer: answer.trim() } : {}),
+            ...(reason.trim() ? { reason: reason.trim() } : {}),
+            expectedVersion: question.version,
+            idempotencyKey: idempotencyKey.current,
+            auditRef: `admin-question:${question.id}:${idempotencyKey.current}`,
+          });
+          idempotencyKey.current = crypto.randomUUID();
+          setReason('');
+          setNotice({ kind: 'success', message: 'Question moderation saved.' });
+        } catch (error) {
+          setNotice({
+            kind: 'error',
+            message: error instanceof Error ? error.message : 'Question moderation failed.',
+          });
+        } finally {
+          setSaving(false);
+        }
+      }}
+    >
+      <label>
+        <span>Action</span>
+        <select
+          value={target}
+          onChange={(event) => setSelectedTarget(event.currentTarget.value as ModerationTarget)}
+        >
+          {options.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label>
+        <span>Private answer</span>
+        <textarea
+          rows={3}
+          maxLength={4000}
+          required={needsAnswer}
+          value={answer}
+          onChange={(event) => setAnswer(event.currentTarget.value)}
+        />
+      </label>
+      <label>
+        <span>Reason {needsReason ? '(required)' : '(optional)'}</span>
+        <textarea
+          rows={2}
+          minLength={needsReason ? 3 : undefined}
+          maxLength={1000}
+          required={needsReason}
+          value={reason}
+          onChange={(event) => setReason(event.currentTarget.value)}
+        />
+      </label>
+      <button type="submit" className="button-primary" disabled={saving}>
+        {saving ? 'Saving moderation…' : 'Save moderation'}
+      </button>
+      {notice && <p role={notice.kind === 'error' ? 'alert' : 'status'}>{notice.message}</p>}
+    </form>
   );
 }
 

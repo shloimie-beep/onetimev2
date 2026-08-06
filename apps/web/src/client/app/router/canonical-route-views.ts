@@ -109,6 +109,7 @@ export const CANONICAL_ROUTE_COMPATIBILITY_PATHS: Readonly<
   'RT-ADM-037': '/app/classes/occurrences',
   'RT-ADM-038': '/app/classes/attendance',
   'RT-ADM-039': '/app/classes/recordings',
+  'RT-ADM-040': '/app/classes/questions',
   'RT-ADM-041': '/app/rewards',
   'RT-ADM-042': '/app/rewards',
   'RT-ADM-043': '/app/classes/access',

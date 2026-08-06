@@ -78,12 +78,7 @@ const BOUNDED_ALIAS_ROUTE_IDS = new Set<CanonicalRouteId>([
   'RT-STU-042',
 ]);
 
-const ISOLATED_ROUTE_IDS = new Set<CanonicalRouteId>([
-  'RT-PUB-003',
-  'RT-STU-071',
-  'RT-STU-072',
-  'RT-ADM-040',
-]);
+const ISOLATED_ROUTE_IDS = new Set<CanonicalRouteId>(['RT-PUB-003', 'RT-STU-071', 'RT-STU-072']);
 
 const MISSING_ROUTE_IDS = new Set<CanonicalRouteId>();
 

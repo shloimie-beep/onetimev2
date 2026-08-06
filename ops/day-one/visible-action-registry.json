@@ -71,6 +71,14 @@
       "sha256": "5333db6fa74cc0ace4229678447e80f66f3bf42b77923f89799a3363d1fba087"
     },
     {
+      "path": "apps/web/src/server/features/learning/router.ts",
+      "sha256": "7884c97c0f6778809d160529da7f38847075269c648e21981a52c4a79e2a9fca"
+    },
+    {
+      "path": "apps/web/src/server/features/learning/service.ts",
+      "sha256": "acd6971afe74881bd8692c58bcbe47b5096b20438621d49668991f67c34000e9"
+    },
+    {
       "path": "apps/web/src/server/features/portals/routers.ts",
       "sha256": "d6377fb50045867eb7dd5951cbc1dce09c4943735a0f57d8be8fd3e468738f9c"
     },
@@ -92,11 +100,11 @@
     },
     {
       "path": "apps/web/src/client/app/admin-ia.ts",
-      "sha256": "896db31edb55ef06cb8ac9f93958b8fe576053a0cf950b70f565c24b5ad421d8"
+      "sha256": "bf8324b47dfebc786d90b68753bf34977669cee06f84bba7a5c65d6ee7d37941"
     },
     {
       "path": "apps/web/src/client/app/admin/learning/AdminLearningWorkspace.tsx",
-      "sha256": "918a03e3a762e691b7e96cfe94c44a6d3b74b2752e5343e67ee8d91029c7d436"
+      "sha256": "b09c1cd8c26d34305f1d61496d795b09577d374e9826a5a0b8fe717de4820358"
     },
     {
       "path": "apps/web/src/client/app/admin/search/AdminGlobalSearch.tsx",
@@ -116,11 +124,11 @@
     },
     {
       "path": "apps/web/src/client/app/crm-api.ts",
-      "sha256": "f39637d58074aa2833a40af9fa0e3c059222c45990290d0a4dc5a8d5f41212e6"
+      "sha256": "22ce483c06ddf6ba09cb067d5e33b41d01e26080333d2efa628c0d6d68a45a58"
     },
     {
       "path": "apps/web/src/client/app/crm-entry.tsx",
-      "sha256": "3a0518cb14fd105fc8c9523dfd4cd11ef379eb6d3ea8c1f2e7e2aa5d899bb3bd"
+      "sha256": "d0c480a504add828188023253fe9076f9c2c5fdb8e67f48adf1fe5cdadf18b60"
     },
     {
       "path": "apps/web/src/client/app/live-entry.tsx",
@@ -148,11 +156,11 @@
     },
     {
       "path": "apps/web/src/client/app/router/registry.ts",
-      "sha256": "9576829b2f2a2f532a5f816aedce16409539a928df848187cfa71b468c43df11"
+      "sha256": "50cbb86cad94027fa4a09c6a5fb3b14c1460aad24164962790391c8da2fd379d"
     },
     {
       "path": "apps/web/src/client/app/router/canonical-route-views.ts",
-      "sha256": "b3b2c717389b748beee3595a3590a7ce513c81fbe045925222398d1a9bbbf2b0"
+      "sha256": "625050fe9136b00b12e1df9e8283b3ab2c5a99d84e9d4fe308a7389f4fd08dca"
     },
     {
       "path": "apps/web/src/client/app/shell/AppShell.tsx",
@@ -195,6 +203,10 @@
       "sha256": "f0586287c72564ac0cc3ae3ded030ffbb2b35d4caf04dbbde8114fb5a0870fca"
     },
     {
+      "path": "packages/contracts/src/learning/index.ts",
+      "sha256": "88b5c63df95e7919a832bdc8bf395732f1770a279f66ab45046939c3987f0fd1"
+    },
+    {
       "path": "packages/db/src/index.ts",
       "sha256": "0d92642f1d9c7692323834c05b1c3e03ebbf905d89b99e71c7a16eafd0ee6e14"
     },
@@ -213,6 +225,10 @@
     {
       "path": "packages/domain/src/dashboard/service.ts",
       "sha256": "49034325951c95ab0371039301dfde7f14e06d887ec01cd4799c4b36c6fe9297"
+    },
+    {
+      "path": "packages/domain/src/learning/engagement.ts",
+      "sha256": "4aa23c448a08b990771f9272b847372a7f6e818da3d9421b89284e05162fba93"
     },
     {
       "path": "packages/domain/src/landing/content.ts",
@@ -575,9 +591,9 @@
       "route_id": "RT-ADM-040",
       "path": "/app/classroom/questions",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "admin.rt-adm-040",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-ADM-041",
@@ -1625,6 +1641,75 @@
       "test_evidence": [
         "tests/integration/admin-directory/admin-directory.test.ts",
         "tests/e2e/admin-information-architecture.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.question_moderation.transition.form",
+      "label": "Moderate class question",
+      "surface": "form",
+      "route": "/app/classroom/questions",
+      "roles": ["admin"],
+      "capability": "admin:question:transition",
+      "handler": {
+        "method": "POST",
+        "path": "/api/app/learning/questions/:questionId/transitions"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "body.idempotency_key"
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "learning_question_transitioned"
+      },
+      "states": {
+        "loading": "Applying the selected question-state transition.",
+        "success": "The question state and private answer are current.",
+        "error": "The transition was stale, invalid, or could not be saved.",
+        "permission": "Only an authenticated Admin may moderate class questions.",
+        "offline": "Question moderation is unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/admin/learning/AdminLearningWorkspace.test.tsx",
+        "apps/web/src/server/features/learning/router.test.ts",
+        "apps/web/src/server/features/learning/service.test.ts"
+      ]
+    },
+    {
+      "action_id": "admin.question_moderation.view.route",
+      "label": "Class question moderation",
+      "surface": "route",
+      "route": "/app/classroom/questions",
+      "roles": ["admin"],
+      "capability": "admin:question:read",
+      "handler": {
+        "method": "GET",
+        "path": "/api/app/learning/questions"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "learning_question_queue_read"
+      },
+      "states": {
+        "loading": "Loading the Admin-scoped class question queue.",
+        "success": "The current question states and private answers are visible.",
+        "error": "The question queue could not be loaded.",
+        "permission": "Only an authenticated Admin may view the moderation queue.",
+        "offline": "Private class questions are unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/admin/learning/AdminLearningWorkspace.test.tsx",
+        "apps/web/src/server/features/learning/service.test.ts"
       ]
     },
     {
