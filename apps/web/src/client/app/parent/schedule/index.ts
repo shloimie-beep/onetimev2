@@ -1,1 +1,1 @@
-export { ParentSchedule } from './ParentSchedule.tsx';
+export { ParentClassDetail, ParentSchedule } from './ParentSchedule.tsx';

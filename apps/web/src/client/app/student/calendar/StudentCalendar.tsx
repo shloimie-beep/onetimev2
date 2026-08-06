@@ -22,6 +22,12 @@ export function StudentCalendar({
                 <h3>{item.title}</h3>
                 <p>{item.starts_at ? formatClassTime(item.starts_at) : 'Time not available'}</p>
                 <p>{readable(item.status)}</p>
+                <a
+                  className="ot-button"
+                  href={`/app/student/classes/${encodeURIComponent(item.class_key)}`}
+                >
+                  View class details
+                </a>
                 {item.launch_action ? (
                   <button
                     type="button"

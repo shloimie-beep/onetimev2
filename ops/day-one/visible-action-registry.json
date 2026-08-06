@@ -100,15 +100,15 @@
     },
     {
       "path": "apps/web/src/client/app/portal-entry.tsx",
-      "sha256": "07845fcb50ea84b374d050e0a8c527fb40c4930d874831547e062bbb48ff21ef"
+      "sha256": "df92f7cc8f539558eec2cf6fd9ae5448db8748e3c1c3e22e470d7e48b00065d9"
     },
     {
       "path": "apps/web/src/client/features/portals/PortalFeatures.tsx",
-      "sha256": "30758e19b9fb9d2615bacb2d404b5eae2bb733d2295231aab6e72180e4dd7017"
+      "sha256": "a187adfb8e893eb959ebdf52947ed79ebd0d3808d99fb67fed40f8b09b7a6eea"
     },
     {
       "path": "apps/web/src/client/app/router/registry.ts",
-      "sha256": "c7d3e1232c5061c965559fe1b17b477d3c94c770eb6600a0fea70982c00ec457"
+      "sha256": "2a65b76952ce3a4b3ec41a2358607b28d03bea026a8155861eb970bed0fe8881"
     },
     {
       "path": "apps/web/src/client/app/router/canonical-route-views.ts",
@@ -679,9 +679,9 @@
       "route_id": "RT-PAR-011",
       "path": "/app/parent/classes/:occurrenceId",
       "roles": ["parent"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "parent.rt-par-011",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-PAR-020",
@@ -791,9 +791,9 @@
       "route_id": "RT-STU-011",
       "path": "/app/student/classes/:occurrenceId",
       "roles": ["student"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "student.rt-stu-011",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-STU-012",
@@ -2081,6 +2081,40 @@
       "test_evidence": ["tests/unit/live-class/live-class-service.test.ts"]
     },
     {
+      "action_id": "portal.parent.class_detail.view.route",
+      "label": "Parent class detail",
+      "surface": "route",
+      "route": "/app/parent/classes/:occurrenceId",
+      "roles": ["parent"],
+      "capability": "parent:class:read",
+      "handler": {
+        "method": "GET",
+        "path": "/api/app/parent/summary"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "parent_class_detail_read"
+      },
+      "states": {
+        "loading": "Loading the household-safe class schedule.",
+        "success": "The selected class schedule and status are visible.",
+        "error": "The class detail remains unavailable and no fallback data is shown.",
+        "permission": "Only the owning household Parent may read this class detail.",
+        "offline": "No protected class detail is read from cache."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/parent/schedule/ParentSchedule.test.tsx",
+        "tests/unit/portal-class-detail.test.tsx"
+      ]
+    },
+    {
       "action_id": "portal.parent.learner.select.button",
       "label": "Select learner",
       "surface": "button",
@@ -2203,6 +2237,74 @@
       "provider_mode": "not_provider_dependent",
       "external_mutation": false,
       "test_evidence": ["tests/integration/portals/portal-mount.test.ts"]
+    },
+    {
+      "action_id": "portal.student.class_detail.join.button",
+      "label": "Join class",
+      "surface": "button",
+      "route": "/app/student/classes/:occurrenceId",
+      "roles": ["student"],
+      "capability": "student:class:launch",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/portals/student/classes/:classKey/launch"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "body.idempotency_key"
+      },
+      "audit": {
+        "mode": "local_write",
+        "event": "student_class_launch_requested"
+      },
+      "states": {
+        "loading": "Preparing a scoped Student classroom grant.",
+        "success": "The protected classroom opens without exposing provider URLs.",
+        "error": "No classroom grant is consumed and a bounded retry state is shown.",
+        "permission": "Only the entitled signed-in Student may open this class.",
+        "offline": "Classroom grants are never queued offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "sink",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/classroom/zoom-learner-classroom.test.ts",
+        "tests/unit/portal-class-detail.test.tsx"
+      ]
+    },
+    {
+      "action_id": "portal.student.class_detail.view.route",
+      "label": "Student class detail",
+      "surface": "route",
+      "route": "/app/student/classes/:occurrenceId",
+      "roles": ["student"],
+      "capability": "student:class:read",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/portals/student/dashboard"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "student_class_detail_read"
+      },
+      "states": {
+        "loading": "Loading the signed-in Student class detail.",
+        "success": "The entitled class schedule and launch status are visible.",
+        "error": "The class detail remains unavailable and no sibling data is shown.",
+        "permission": "The Student session may read only its own entitled class.",
+        "offline": "No protected class detail is read from cache."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/student/calendar/StudentCalendar.test.tsx",
+        "tests/unit/portal-class-detail.test.tsx"
+      ]
     },
     {
       "action_id": "portal.student.classroom.question.form",

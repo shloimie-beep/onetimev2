@@ -124,6 +124,13 @@ test('W12-03 parent and three separate learners complete portal journeys', async
   const parentMaterials = parentPage.getByRole('region', { name: 'Classes & materials' });
   await expect(parentMaterials.getByText('W12 Fictional Recording')).toBeVisible();
   await expect(parentMaterials.getByText('W12 Fictional Review Sheet')).toBeVisible();
+  await parentPage.getByRole('link', { name: 'View class details' }).first().click();
+  await parentPage.waitForURL(/\/app\/parent\/classes\//u);
+  await expect(parentPage.getByText('Parent class detail')).toBeVisible();
+  await expect(parentPage.getByText('Classroom entry stays Student-only')).toBeVisible();
+  await expect(parentPage.getByRole('button', { name: /join|open class/i })).toHaveCount(0);
+  await parentPage.getByRole('link', { name: 'Back to calendar' }).click();
+  await expect(parentPage.getByRole('heading', { name: 'Upcoming classes' })).toBeVisible();
   await parentPage.getByRole('link', { name: 'Students' }).click();
   await parentPage.getByRole('button', { name: /W12 Learner Two/i }).click();
   await parentPage.getByRole('link', { name: 'Classes & materials' }).click();
@@ -155,6 +162,12 @@ test('W12-03 parent and three separate learners complete portal journeys', async
       await expect(studentPage.getByText(sibling.displayName)).toHaveCount(0);
       await expect(studentPage.getByText(sibling.learnerKey)).toHaveCount(0);
     }
+    await studentPage.getByRole('link', { name: 'View class details' }).first().click();
+    await studentPage.waitForURL(/\/app\/student\/classes\//u);
+    await expect(studentPage.getByText('Student class detail')).toBeVisible();
+    await expect(studentPage.getByRole('button', { name: /open class|join class/i })).toBeVisible();
+    await studentPage.getByRole('link', { name: 'Back to calendar' }).click();
+    await expect(studentPage.getByRole('heading', { name: 'Calendar' })).toBeVisible();
     await studentPage.getByRole('link', { name: 'Library' }).click();
     const studentLibrary = studentPage.getByRole('region', { name: 'Library' });
     await expect(studentLibrary.getByText('W12 Fictional Recording')).toBeVisible();

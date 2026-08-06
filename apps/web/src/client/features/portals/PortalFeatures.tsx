@@ -96,6 +96,7 @@ export type ParentPortalFeatureProps = {
   learnerMaterials?: Record<string, ParentLearnerMaterials>;
   rewardHistory?: Record<string, RewardEvent[]>;
   selectedLearnerKey?: string | null;
+  selectedClassKey?: string | null;
   activeSection?: ParentPortalSection;
   navigationMode?: 'shell' | 'embedded';
   actorFingerprint: string;
@@ -124,6 +125,7 @@ export type StudentPortalFeatureProps = {
   viewState: PortalViewState;
   dashboard: StudentPortalDashboard | null;
   readOnly?: boolean;
+  selectedClassKey?: string | null;
   /** @deprecated `helper` is accepted only for source compatibility and renders no helper surface. */
   activeSection?: StudentPortalSection | 'helper';
   navigationMode?: 'shell' | 'embedded';
@@ -151,6 +153,7 @@ export function ParentPortalFeature({
   learnerMaterials = {},
   rewardHistory = {},
   selectedLearnerKey,
+  selectedClassKey,
   activeSection: requestedSection,
   navigationMode = 'embedded',
   actorFingerprint,
@@ -188,6 +191,9 @@ export function ParentPortalFeature({
   const selectedClasses = selectedLearner
     ? (dashboard?.upcoming_classes[selectedLearner.learner_key] ?? [])
     : [];
+  const selectedClass = selectedClassKey
+    ? (selectedClasses.find(({ class_key }) => class_key === selectedClassKey) ?? null)
+    : null;
   const selectedUpdates = selectedLearner
     ? (dashboard?.updates[selectedLearner.learner_key] ?? [])
     : [];
@@ -338,27 +344,35 @@ export function ParentPortalFeature({
           </>
         )}
 
-        {activeSection === 'classes' && selectedLearner && (
-          <div className="ot-focus-columns">
-            <section aria-labelledby="parent-classes-heading">
-              <h2 id="parent-classes-heading">Upcoming classes</h2>
-              <ClassSummary
-                learner={selectedLearner}
-                classes={selectedClasses}
-                onLaunch={onLaunchClass}
-              />
-            </section>
-            <section aria-labelledby="parent-materials-heading">
-              <h2 id="parent-materials-heading">Materials</h2>
-              <MaterialsSummary
-                key={selectedLearner.learner_key}
-                library={selectedMaterials?.library ?? []}
-                reviewSheets={selectedMaterials?.review_sheets ?? []}
-                onOpen={(action) => onOpenContent?.(selectedLearner.learner_key, action)}
-              />
-            </section>
-          </div>
-        )}
+        {activeSection === 'classes' &&
+          selectedLearner &&
+          (selectedClassKey ? (
+            <PortalClassDetail
+              role="parent"
+              item={selectedClass}
+              learnerName={selectedLearner.display_name}
+            />
+          ) : (
+            <div className="ot-focus-columns">
+              <section aria-labelledby="parent-classes-heading">
+                <h2 id="parent-classes-heading">Upcoming classes</h2>
+                <ClassSummary
+                  learner={selectedLearner}
+                  classes={selectedClasses}
+                  onLaunch={onLaunchClass}
+                />
+              </section>
+              <section aria-labelledby="parent-materials-heading">
+                <h2 id="parent-materials-heading">Materials</h2>
+                <MaterialsSummary
+                  key={selectedLearner.learner_key}
+                  library={selectedMaterials?.library ?? []}
+                  reviewSheets={selectedMaterials?.review_sheets ?? []}
+                  onOpen={(action) => onOpenContent?.(selectedLearner.learner_key, action)}
+                />
+              </section>
+            </div>
+          ))}
 
         {activeSection === 'progress' && selectedLearner && (
           <>
@@ -445,6 +459,7 @@ export function StudentPortalFeature({
   viewState,
   dashboard,
   readOnly = false,
+  selectedClassKey,
   activeSection: requestedSection,
   navigationMode = 'embedded',
   actorFingerprint,
@@ -470,6 +485,9 @@ export function StudentPortalFeature({
     setSessionMarker(actorFingerprint);
   }, [actorFingerprint, resetSignal]);
   const currentClass = dashboard?.upcoming_classes[0] ?? null;
+  const selectedClass = selectedClassKey
+    ? (dashboard?.upcoming_classes.find(({ class_key }) => class_key === selectedClassKey) ?? null)
+    : null;
   const activeSection =
     requestedSection === 'helper' ? 'today' : (requestedSection ?? localSection);
 
@@ -547,7 +565,13 @@ export function StudentPortalFeature({
           </div>
         }
       >
-        {activeSection === 'today' && (
+        {activeSection === 'today' && selectedClassKey ? (
+          <PortalClassDetail
+            role="student"
+            item={selectedClass}
+            onLaunch={readOnly ? undefined : onLaunchClass}
+          />
+        ) : activeSection === 'today' ? (
           <>
             <h2 id="student-dashboard-heading">Today</h2>
             <ClassSummary
@@ -603,7 +627,7 @@ export function StudentPortalFeature({
               {...(!readOnly && onMarkLiveClassReady ? { onMarkReady: onMarkLiveClassReady } : {})}
             />
           </>
-        )}
+        ) : null}
 
         {activeSection === 'library' && (
           <>
@@ -1034,6 +1058,14 @@ function ClassSummary({
               {item.starts_at ? ` - ${formatDate(item.starts_at)}` : ''}
             </span>
           </div>
+          <a
+            className="ot-button"
+            href={`${
+              learner ? '/app/parent/classes/' : '/app/student/classes/'
+            }${encodeURIComponent(item.class_key)}`}
+          >
+            View class details
+          </a>
           {item.launch_action && onLaunch && (
             <button
               type="button"
@@ -1057,6 +1089,59 @@ function ClassSummary({
         </article>
       ))}
     </div>
+  );
+}
+
+function PortalClassDetail({
+  role,
+  item,
+  learnerName,
+  onLaunch,
+}: {
+  role: 'parent' | 'student';
+  item: UpcomingClassSummary | null;
+  learnerName?: string | undefined;
+  onLaunch?: ((action: ProtectedActionDescriptor) => void) | undefined;
+}) {
+  const calendarHref = role === 'parent' ? '/app/parent/calendar' : '/app/student/calendar';
+  if (!item) {
+    return (
+      <section aria-labelledby={`${role}-class-detail-heading`}>
+        <h2 id={`${role}-class-detail-heading`}>Class not available</h2>
+        <p>This class is not available to the signed-in {role}.</p>
+        <a className="ot-button" href={calendarHref}>
+          Back to calendar
+        </a>
+      </section>
+    );
+  }
+
+  return (
+    <section aria-labelledby={`${role}-class-detail-heading`}>
+      <p className="ot-eyebrow">{role === 'parent' ? 'Parent' : 'Student'} class detail</p>
+      <h2 id={`${role}-class-detail-heading`}>{item.title}</h2>
+      {learnerName ? <p>{learnerName}</p> : null}
+      <p>{item.starts_at ? formatDate(item.starts_at) : 'Time not available'}</p>
+      <p>Status: {label(item.status)}</p>
+      {role === 'parent' ? (
+        <p>Parents can review schedule and status here. Classroom entry stays Student-only.</p>
+      ) : item.launch_action && onLaunch ? (
+        <button
+          type="button"
+          className="ot-button ot-button-primary"
+          onClick={() => {
+            if (item.launch_action) onLaunch(item.launch_action);
+          }}
+        >
+          {item.launch_action.label}
+        </button>
+      ) : (
+        <p>Classroom entry is not available for this class yet.</p>
+      )}
+      <a className="ot-button" href={calendarHref}>
+        Back to calendar
+      </a>
+    </section>
   );
 }
 

@@ -2,11 +2,12 @@ import React, { useEffect, useMemo, useState } from 'react';
 import type { ParentSummarySnapshot } from '../../../../../../../packages/contracts/src/portals/parent-summary/index.ts';
 import { createParentHouseholdApi, type ParentHouseholdApi } from '../household/api.ts';
 import { ParentProgressSummary } from '../progress/index.ts';
-import { ParentSchedule } from '../schedule/index.ts';
+import { ParentClassDetail, ParentSchedule } from '../schedule/index.ts';
 import { ParentUpdates } from '../updates/index.ts';
 
 export type ParentSummaryView =
   | { kind: 'calendar' }
+  | { kind: 'class'; occurrence_id: string }
   | { kind: 'progress'; student_id?: string }
   | { kind: 'updates'; newsletterOnly?: boolean };
 
@@ -47,6 +48,16 @@ export function ParentSummaryWorkspace({
   }
   if (view.kind === 'calendar') {
     return <ParentSchedule entries={snapshot.schedule} students={snapshot.students} />;
+  }
+  if (view.kind === 'class') {
+    return (
+      <ParentClassDetail
+        entry={
+          snapshot.schedule.find(({ schedule_id }) => schedule_id === view.occurrence_id) ?? null
+        }
+        students={snapshot.students}
+      />
+    );
   }
   if (view.kind === 'progress') {
     const studentIds = view.student_id ? new Set([view.student_id]) : null;

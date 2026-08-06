@@ -29,6 +29,8 @@ describe('Student calendar', () => {
     );
     expect(markup).toContain('Sunday, August 16, 2026 at 7:00 PM');
     expect(markup).toContain('Open class');
+    expect(markup).toContain('href="/app/student/classes/occurrence-1"');
+    expect(markup).toContain('View class details');
     expect(markup).not.toMatch(/zoom|join_url|meeting/i);
   });
 });

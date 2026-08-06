@@ -123,6 +123,7 @@ function PortalApp() {
     portalRole === 'student' && location.pathname === '/app/student/notifications';
   const studentAccountRoute =
     portalRole === 'student' && location.pathname === '/app/student/account';
+  const selectedClassKey = portalClassKeyFromLocation(location.pathname, portalRole);
   const v21ParentView = v21ParentRouteViewFromLocation(location.pathname);
   const [activeSection, setActiveSection] = useState<ParentPortalSection | StudentPortalSection>(
     () => portalSectionFromLocation(portalRole),
@@ -235,10 +236,19 @@ function PortalApp() {
         if (shell.mode === 'active') {
           const dashboard = await getParentDashboard();
           setParentDashboard(dashboard);
+          const routeLearnerKey = selectedClassKey
+            ? dashboard.learners.find((learner) =>
+                dashboard.upcoming_classes[learner.learner_key]?.some(
+                  ({ class_key }) => class_key === selectedClassKey,
+                ),
+              )?.learner_key
+            : undefined;
           setSelectedLearnerKey((current) =>
-            current && dashboard.learners.some((learner) => learner.learner_key === current)
-              ? current
-              : (dashboard.learners[0]?.learner_key ?? null),
+            routeLearnerKey
+              ? routeLearnerKey
+              : current && dashboard.learners.some((learner) => learner.learner_key === current)
+                ? current
+                : (dashboard.learners[0]?.learner_key ?? null),
           );
         } else {
           setParentDashboard(null);
@@ -715,7 +725,9 @@ function PortalApp() {
           id: 'v21-parent-calendar',
           label: 'Calendar',
           href: '/app/parent/calendar',
-          current: location.pathname === '/app/parent/calendar',
+          current:
+            location.pathname === '/app/parent/calendar' ||
+            location.pathname.startsWith('/app/parent/classes/'),
         },
         {
           id: 'v21-parent-progress',
@@ -805,7 +817,7 @@ function PortalApp() {
         id: 'student-calendar',
         label: 'Calendar',
         href: '/app/student/calendar',
-        current: studentCalendarRoute,
+        current: studentCalendarRoute || location.pathname.startsWith('/app/student/classes/'),
       },
       {
         id: 'student-library',
@@ -994,6 +1006,7 @@ function PortalApp() {
             viewState={viewState}
             dashboard={parentDashboard}
             selectedLearnerKey={selectedLearner?.learner_key ?? null}
+            selectedClassKey={selectedClassKey}
             activeSection={activeSection as ParentPortalSection}
             navigationMode="shell"
             learnerMaterials={parentMaterials}
@@ -1082,6 +1095,7 @@ function PortalApp() {
         <StudentClientRoot
           viewState={viewState}
           dashboard={studentDashboard}
+          selectedClassKey={selectedClassKey}
           activeSection={activeSection as StudentPortalSection}
           navigationMode="shell"
           actorFingerprint={actorFingerprint}
@@ -1840,11 +1854,17 @@ function portalSectionFromLocation(
   const requested = new URLSearchParams(location.search).get('section');
   if (requested && isPortalSection(role, requested)) return requested;
   if (role === 'student') {
+    if (location.pathname.startsWith('/app/student/classes/')) return 'today';
     if (location.pathname === '/app/student/library') return 'library';
     if (location.pathname === '/app/student/progress') return 'progress';
     if (location.pathname.startsWith('/app/student/questions')) return 'questions';
     if (location.pathname === '/app/student/updates') return 'updates';
   }
+  if (
+    location.pathname === '/app/parent/calendar' ||
+    location.pathname.startsWith('/app/parent/classes/')
+  )
+    return 'classes';
   return role === 'parent' ? 'learners' : 'today';
 }
 
@@ -1874,6 +1894,13 @@ type V21ParentRouteView =
   | { kind: 'account' };
 
 function v21ParentRouteViewFromLocation(pathname: string): V21ParentRouteView {
+  const classMatch = /^\/app\/parent\/classes\/([^/]+)$/u.exec(pathname);
+  if (classMatch?.[1]) {
+    return {
+      kind: 'summary',
+      view: { kind: 'class', occurrence_id: decodeURIComponent(classMatch[1]) },
+    };
+  }
   if (pathname === '/app/parent/calendar') {
     return { kind: 'summary', view: { kind: 'calendar' } };
   }
@@ -1899,6 +1926,11 @@ function v21ParentRouteViewFromLocation(pathname: string): V21ParentRouteView {
   if (pathname === '/app/parent/data-rights') return { kind: 'privacy', view: 'data-rights' };
   if (pathname === '/app/parent/account') return { kind: 'account' };
   return { kind: 'household', view: parentHouseholdViewFromLocation(pathname) };
+}
+
+function portalClassKeyFromLocation(pathname: string, role: 'parent' | 'student'): string | null {
+  const match = new RegExp(`^/app/${role}/classes/([^/]+)$`, 'u').exec(pathname);
+  return match?.[1] ? decodeURIComponent(match[1]) : null;
 }
 
 function isPortalSection(

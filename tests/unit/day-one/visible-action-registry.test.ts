@@ -288,6 +288,13 @@ const EXPECTED_ACTION_BINDINGS = [
     '/api/v1/live-class/questions',
   ],
   [
+    'portal.parent.class_detail.view.route',
+    '/app/parent/classes/:occurrenceId',
+    ['parent'],
+    'GET',
+    '/api/app/parent/summary',
+  ],
+  [
     'portal.parent.learner.select.button',
     '/app/parent/students',
     ['parent'],
@@ -314,6 +321,20 @@ const EXPECTED_ACTION_BINDINGS = [
     ['parent'],
     'POST',
     '/api/v1/portals/parent/households/:householdKey/learners/:learnerKey/student-access/suspend',
+  ],
+  [
+    'portal.student.class_detail.join.button',
+    '/app/student/classes/:occurrenceId',
+    ['student'],
+    'POST',
+    '/api/v1/portals/student/classes/:classKey/launch',
+  ],
+  [
+    'portal.student.class_detail.view.route',
+    '/app/student/classes/:occurrenceId',
+    ['student'],
+    'GET',
+    '/api/v1/portals/student/dashboard',
   ],
   [
     'portal.student.classroom.question.form',
@@ -523,13 +544,13 @@ describe('v2.1 visible action registry', () => {
     expect(registry.canonical_routes).toHaveLength(93);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'ready'),
-    ).toHaveLength(81);
+    ).toHaveLength(83);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'isolated'),
     ).toHaveLength(7);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'missing'),
-    ).toHaveLength(5);
+    ).toHaveLength(3);
     expect(sourceText.endsWith('\n')).toBe(true);
   });
 
