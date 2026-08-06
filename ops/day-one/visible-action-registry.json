@@ -20,7 +20,7 @@
     },
     {
       "path": "apps/web/src/server/app.ts",
-      "sha256": "e1d5b3cad5e794d08c88a787d06a6a25752a96a39bd27345b25d14eec5a5020f"
+      "sha256": "0672c84a61342c731eb88696eb7a0fe9d80c43226bb59ad3b7856ebaeebbae2c"
     },
     {
       "path": "apps/web/src/server/features/admin/operations/index.ts",
@@ -108,7 +108,7 @@
     },
     {
       "path": "apps/web/src/client/app/router/registry.ts",
-      "sha256": "7dcf5776a773ecc432030d18804a2c92cce6bc74edaa5476cdf50da07ebe3de1"
+      "sha256": "af1fe63ca051f0379057da31639bf80328a446001e422ca7b08a974bd7b785c9"
     },
     {
       "path": "apps/web/src/client/app/router/canonical-route-views.ts",
@@ -415,9 +415,9 @@
       "route_id": "RT-ADM-023",
       "path": "/app/content/:contentId/review",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-023",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-ADM-024",
@@ -909,6 +909,251 @@
     }
   ],
   "actions": [
+    {
+      "action_id": "admin.content.review.artifact_approve.button",
+      "label": "Approve artifact",
+      "surface": "button",
+      "route": "/app/content/:contentId/review",
+      "roles": ["admin"],
+      "capability": "admin:content:artifact-edit",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/admin/content/sources/:sourceKey/artifacts/approve"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "artifact.approve"
+      },
+      "states": {
+        "loading": "Approving the current local artifact revision.",
+        "success": "The artifact approval and exact revision are recorded.",
+        "error": "The artifact was stale, rejected, or could not be approved.",
+        "permission": "Only an authenticated Admin with artifact-edit capability may approve.",
+        "offline": "Artifact approval is unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "provider_off",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/content-workspace/ContentWorkspace.test.tsx",
+        "tests/integration/content/ot110a-admin-content-workspace.test.ts",
+        "tests/e2e/content-factory.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.content.review.artifact_publish.button",
+      "label": "Publish artifact",
+      "surface": "button",
+      "route": "/app/content/:contentId/review",
+      "roles": ["admin"],
+      "capability": "admin:content:artifact-publish",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/admin/content/sources/:sourceKey/artifacts/publish"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "artifact.publish"
+      },
+      "states": {
+        "loading": "Publishing the approved local artifact revision.",
+        "success": "The approved artifact revision is published locally.",
+        "error": "The artifact was stale, rejected, or could not be published.",
+        "permission": "Only an authenticated Admin with artifact-publish capability may publish.",
+        "offline": "Artifact publication is unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "provider_off",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/content-workspace/ContentWorkspace.test.tsx",
+        "tests/integration/content/ot110a-admin-content-workspace.test.ts",
+        "tests/e2e/content-factory.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.content.review.social_approve.button",
+      "label": "Approve social draft",
+      "surface": "button",
+      "route": "/app/content/:contentId/review",
+      "roles": ["admin"],
+      "capability": "admin:content:social-approve",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/admin/content/sources/:sourceKey/social/approve"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "social.approve"
+      },
+      "states": {
+        "loading": "Recording approval for the local social draft.",
+        "success": "The social approval is recorded in the protected sink.",
+        "error": "The social draft was rejected or could not be approved.",
+        "permission": "Only an authenticated Admin with social-approve capability may approve.",
+        "offline": "Social approval is unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "sink",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/content-workspace/ContentWorkspace.test.tsx",
+        "tests/integration/content/ot110a-admin-content-workspace.test.ts",
+        "tests/e2e/content-factory.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.content.review.social_retract.button",
+      "label": "Retract social draft",
+      "surface": "button",
+      "route": "/app/content/:contentId/review",
+      "roles": ["admin"],
+      "capability": "admin:content:revoke",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/admin/content/sources/:sourceKey/social/retract"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "social.retract"
+      },
+      "states": {
+        "loading": "Recording the local social retraction.",
+        "success": "The social retraction is recorded without a provider claim.",
+        "error": "The social draft could not be retracted.",
+        "permission": "Only an authenticated Admin with revoke capability may retract.",
+        "offline": "Social retraction is unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "sink",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/content-workspace/ContentWorkspace.test.tsx",
+        "tests/integration/content/ot110a-admin-content-workspace.test.ts",
+        "tests/e2e/content-factory.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.content.review.social_schedule.button",
+      "label": "Schedule social draft",
+      "surface": "button",
+      "route": "/app/content/:contentId/review",
+      "roles": ["admin"],
+      "capability": "admin:content:social-schedule",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/admin/content/sources/:sourceKey/social/schedule"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "social.schedule"
+      },
+      "states": {
+        "loading": "Queuing the approved social draft in the protected sink.",
+        "success": "The social schedule request is recorded without a provider claim.",
+        "error": "The social draft could not be scheduled.",
+        "permission": "Only an authenticated Admin with social-schedule capability may schedule.",
+        "offline": "Social scheduling is unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "sink",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/content-workspace/ContentWorkspace.test.tsx",
+        "tests/integration/content/ot110a-admin-content-workspace.test.ts",
+        "tests/e2e/content-factory.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.content.review.transcript_approve.button",
+      "label": "Approve transcript",
+      "surface": "button",
+      "route": "/app/content/:contentId/review",
+      "roles": ["admin"],
+      "capability": "admin:content:transcript-review",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/admin/content/sources/:sourceKey/transcript/approve"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "transcript.approve"
+      },
+      "states": {
+        "loading": "Approving the current transcript revision.",
+        "success": "The transcript approval is recorded locally.",
+        "error": "The transcript was stale, rejected, or could not be approved.",
+        "permission": "Only an authenticated Admin with transcript-review capability may approve.",
+        "offline": "Transcript approval is unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "provider_off",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/content-workspace/ContentWorkspace.test.tsx",
+        "tests/integration/content/ot110a-admin-content-workspace.test.ts",
+        "tests/e2e/content-factory.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.content.review.view.route",
+      "label": "Content review",
+      "surface": "route",
+      "route": "/app/content/:contentId/review",
+      "roles": ["admin"],
+      "capability": "admin:content:view",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/admin/content/sources/:sourceKey"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "content.review"
+      },
+      "states": {
+        "loading": "Loading the exact content source and revision history.",
+        "success": "The source, transcript, artifacts, social drafts, and activity are visible.",
+        "error": "The content source was not found or could not be loaded.",
+        "permission": "Only an authenticated Admin with content-view capability may review.",
+        "offline": "Content review is unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "read_only_status",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/content-workspace/ContentWorkspace.test.tsx",
+        "tests/integration/content/ot110a-admin-content-workspace.test.ts",
+        "tests/e2e/content-factory.spec.ts"
+      ]
+    },
     {
       "action_id": "admin.directory.student.archive_restore.button",
       "label": "Archive or restore Student",

@@ -52,6 +52,7 @@ type RouteKind =
   | 'knowledge'
   | 'prompts'
   | 'activity'
+  | 'review'
   | 'detail';
 
 type RouteState = {
@@ -349,10 +350,20 @@ export function ContentWorkspace({
           }
         />
       )}
-      {!loading && !error && route.kind === 'detail' && detail && (
+      {!loading && !error && (route.kind === 'detail' || route.kind === 'review') && detail && (
         <SourceDetailView
           source={detail}
-          onBack={() => onNavigate('/app/content')}
+          reviewMode={route.kind === 'review'}
+          onBack={() =>
+            onNavigate(
+              route.kind === 'review'
+                ? `/app/content/${encodeURIComponent(detail.source_key)}`
+                : '/app/content',
+            )
+          }
+          onReview={() =>
+            onNavigate(`/app/content/${encodeURIComponent(detail.source_key)}/review`)
+          }
           onAction={(action, reason) => postSourceAction(detail.source_key, action, reason)}
         />
       )}
@@ -1466,11 +1477,15 @@ function ActivityView({ events }: { events: ContentAdminActivityEvent[] }) {
 
 function SourceDetailView({
   source,
+  reviewMode,
   onBack,
+  onReview,
   onAction,
 }: {
   source: ContentAdminSourceDetail;
+  reviewMode: boolean;
   onBack: () => void;
+  onReview: () => void;
   onAction: (action: string, reason: string) => Promise<void>;
 }) {
   const [reason, setReason] = useState('Reviewed in OT-110A workspace.');
@@ -1481,10 +1496,16 @@ function SourceDetailView({
           Back
         </Button>
         <div>
+          {reviewMode && <p className="content-factory-kicker">Content review</p>}
           <h2>{source.title}</h2>
           <p>{source.source_key}</p>
         </div>
         <Badge>{readable(source.lifecycle_stage)}</Badge>
+        {!reviewMode && (
+          <Button type="button" variant="primary" onClick={onReview}>
+            Open content review
+          </Button>
+        )}
       </div>
       <ProviderPorts ports={source.provider_ports} />
       <VerticalSlicePanel slice={source.vertical_slice} />
@@ -1793,6 +1814,9 @@ export function contentWorkspaceRouteFromPath(path: string): RouteState {
   if (segment === 'knowledge') return { kind: 'knowledge' };
   if (segment === 'prompts') return { kind: 'prompts' };
   if (segment === 'activity') return { kind: 'activity' };
+  if (segments[1] === 'review') {
+    return { kind: 'review', sourceKey: decodeURIComponent(segment) };
+  }
   return { kind: 'detail', sourceKey: decodeURIComponent(segment) };
 }
 

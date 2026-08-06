@@ -85,6 +85,55 @@ const EXPECTED_SOURCE_INPUT_PATHS = [
 
 const EXPECTED_ACTION_BINDINGS = [
   [
+    'admin.content.review.artifact_approve.button',
+    '/app/content/:contentId/review',
+    ['admin'],
+    'POST',
+    '/api/v1/admin/content/sources/:sourceKey/artifacts/approve',
+  ],
+  [
+    'admin.content.review.artifact_publish.button',
+    '/app/content/:contentId/review',
+    ['admin'],
+    'POST',
+    '/api/v1/admin/content/sources/:sourceKey/artifacts/publish',
+  ],
+  [
+    'admin.content.review.social_approve.button',
+    '/app/content/:contentId/review',
+    ['admin'],
+    'POST',
+    '/api/v1/admin/content/sources/:sourceKey/social/approve',
+  ],
+  [
+    'admin.content.review.social_retract.button',
+    '/app/content/:contentId/review',
+    ['admin'],
+    'POST',
+    '/api/v1/admin/content/sources/:sourceKey/social/retract',
+  ],
+  [
+    'admin.content.review.social_schedule.button',
+    '/app/content/:contentId/review',
+    ['admin'],
+    'POST',
+    '/api/v1/admin/content/sources/:sourceKey/social/schedule',
+  ],
+  [
+    'admin.content.review.transcript_approve.button',
+    '/app/content/:contentId/review',
+    ['admin'],
+    'POST',
+    '/api/v1/admin/content/sources/:sourceKey/transcript/approve',
+  ],
+  [
+    'admin.content.review.view.route',
+    '/app/content/:contentId/review',
+    ['admin'],
+    'GET',
+    '/api/v1/admin/content/sources/:sourceKey',
+  ],
+  [
     'admin.directory.student.archive_restore.button',
     '/app/students/:studentId',
     ['admin'],
@@ -453,13 +502,13 @@ describe('v2.1 visible action registry', () => {
     expect(registry.canonical_routes).toHaveLength(93);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'ready'),
-    ).toHaveLength(79);
+    ).toHaveLength(80);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'isolated'),
     ).toHaveLength(7);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'missing'),
-    ).toHaveLength(7);
+    ).toHaveLength(6);
     expect(sourceText.endsWith('\n')).toBe(true);
   });
 

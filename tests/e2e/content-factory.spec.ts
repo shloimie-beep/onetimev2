@@ -3,10 +3,51 @@ import {
   assertNoHorizontalOverflow,
   useW12AdminSession,
 } from './w12-100/launch-readiness-helpers.ts';
+import { W12_E2E_ADMIN_CSRF_TOKEN } from '../support/w12-portal-test-lab-session.ts';
 
 test.describe.configure({ mode: 'serial' });
 
 let publishedPlaybackPath = '';
+
+test('canonical Admin content review opens the exact local source and review actions', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await useW12AdminSession(page);
+  const sourceKey = 'e2e_canonical_content_review';
+  const admission = await page.request.post('/api/v1/content/outcomes', {
+    headers: { 'x-csrf-token': W12_E2E_ADMIN_CSRF_TOKEN },
+    data: {
+      idempotency_key: 'e2e-canonical-content-review-v1',
+      item_key: sourceKey,
+      title: 'Canonical content review fixture',
+      item_type: 'video',
+      revision_number: 1,
+      lifecycle_state: 'review_needed',
+      transcript_metadata: { summary: 'Synthetic local transcript review fixture.' },
+      source_metadata: { source_label: 'Synthetic local review source' },
+      review_sheet_metadata: {},
+      playback_metadata: { provider: 'sink' },
+    },
+  });
+  expect(admission.status(), await admission.text()).toBe(202);
+
+  await page.goto(`/app/content/${sourceKey}`);
+  await expect(
+    page.getByRole('heading', { name: 'Canonical content review fixture' }),
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'Open content review' }).click();
+  await expect(page).toHaveURL(`/app/content/${sourceKey}/review`);
+  await expect(page.getByText('Content review', { exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Approve Transcript' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Approve Artifact' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Approve Social' })).toBeVisible();
+  await expect(page.getByText('no provider URL exposed', { exact: true })).toBeVisible();
+  await assertNoHorizontalOverflow(page);
+  expect(await page.locator('body').innerText()).not.toMatch(
+    /https?:\/\/player\.vimeo\.com|Bearer/i,
+  );
+});
 
 test('Admin uploads, processes, reviews, and publishes one occurrence-scoped video', async ({
   page,

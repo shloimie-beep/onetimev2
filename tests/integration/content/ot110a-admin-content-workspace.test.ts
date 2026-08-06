@@ -546,7 +546,7 @@ describe('OT-110A admin Content workspace domain', () => {
 describe('OT-110A admin Content workspace API', () => {
   it('denies parent users and serves owner workspace without provider secrets', async () => {
     await admitContentOutcome({ pool, config, payload: contentOutcome });
-    await createAccountUser({
+    const ownerUserKey = await createAccountUser({
       pool,
       config,
       email: 'ot110a-api-owner@example.test',
@@ -554,6 +554,13 @@ describe('OT-110A admin Content workspace API', () => {
       displayName: 'Owner API',
       role: 'owner',
       mfaCapable: false,
+    });
+    await grantOt110aContentAdminCapability({
+      pool,
+      config,
+      userKey: ownerUserKey,
+      capability: 'social.approve',
+      grantedByUserKey: ownerUserKey,
     });
     const parentUserKey = await createAccountUser({
       pool,
@@ -595,6 +602,27 @@ describe('OT-110A admin Content workspace API', () => {
         'vimeo',
       ]);
       expect(json.sources.map((source) => source.source_key)).toContain(contentOutcome.item_key);
+
+      const canonicalReview = await fetch(
+        `${server.baseUrl}/app/content/${encodeURIComponent(contentOutcome.item_key)}/review`,
+        { headers: { cookie: owner.cookies } },
+      );
+      expect(canonicalReview.status).toBe(200);
+      expect(canonicalReview.headers.get('cache-control')).toContain('no-store');
+
+      const socialApproval = await fetch(
+        `${server.baseUrl}/api/v1/admin/content/sources/${encodeURIComponent(contentOutcome.item_key)}/social/approve`,
+        {
+          method: 'POST',
+          headers: {
+            cookie: owner.cookies,
+            'content-type': 'application/json',
+            'x-csrf-token': owner.json.csrf_token,
+          },
+          body: JSON.stringify({ reason: 'Canonical content review route test.' }),
+        },
+      );
+      expect(socialApproval.status, await socialApproval.text()).toBe(200);
     } finally {
       await server.close();
     }
@@ -736,9 +764,10 @@ async function seedW12ClassOccurrence(occurrenceKey: string) {
   await pool.query(
     `INSERT INTO onetime.class_occurrences
        (occurrence_key, account_key, product_key, class_series_key, local_class_date,
-        starts_at, reminder_due_at, joinable_until, occurrence_state, access_state,
-        recording_state)
-     VALUES ($1, $2, $3, $4, '2026-07-17', $5, $6, $7, 'completed', 'ready', 'available')`,
+         starts_at, reminder_due_at, joinable_until, scheduled_ends_at, join_opens_at,
+         join_closes_at, occurrence_state, access_state, recording_state)
+      VALUES ($1, $2, $3, $4, '2026-07-17', $5, $6, $7, $8, $9, $10,
+        'completed', 'ready', 'available')`,
     [
       occurrenceKey,
       config.accountKey,
@@ -747,6 +776,9 @@ async function seedW12ClassOccurrence(occurrenceKey: string) {
       new Date('2026-07-17T17:00:00.000Z'),
       new Date('2026-07-17T16:30:00.000Z'),
       new Date('2026-07-18T17:00:00.000Z'),
+      new Date('2026-07-17T18:00:00.000Z'),
+      new Date('2026-07-17T16:50:00.000Z'),
+      new Date('2026-07-17T18:15:00.000Z'),
     ],
   );
 }

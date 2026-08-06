@@ -4587,6 +4587,27 @@ export function createApp({
     },
   );
 
+  app.post(
+    '/api/v1/admin/content/sources/:sourceKey/social/approve',
+    async (req: RequestWithTrace, res) => {
+      await handleOt110aSourceAction(req, res, pool, config, 'social.approve');
+    },
+  );
+
+  app.post(
+    '/api/v1/admin/content/sources/:sourceKey/social/schedule',
+    async (req: RequestWithTrace, res) => {
+      await handleOt110aSourceAction(req, res, pool, config, 'social.schedule');
+    },
+  );
+
+  app.post(
+    '/api/v1/admin/content/sources/:sourceKey/social/retract',
+    async (req: RequestWithTrace, res) => {
+      await handleOt110aSourceAction(req, res, pool, config, 'social.retract');
+    },
+  );
+
   app.post('/api/v1/admin/content/sources/:sourceKey/retry', async (req: RequestWithTrace, res) => {
     await handleOt110aSourceAction(req, res, pool, config, 'content.retry');
   });
@@ -5524,7 +5545,10 @@ async function handleOt110aSourceAction(
     | 'artifact.approve'
     | 'artifact.publish'
     | 'content.retry'
-    | 'content.retract',
+    | 'content.retract'
+    | 'social.approve'
+    | 'social.schedule'
+    | 'social.retract',
 ) {
   setPrivateNoStore(res);
   const session = await requireApiSession(req, res, pool, config);

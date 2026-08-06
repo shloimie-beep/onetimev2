@@ -22,4 +22,15 @@ describe('content workspace media route', () => {
     expect(route).toEqual({ kind: 'ingest' });
     expect(JSON.stringify(route)).not.toMatch(/browser-auth-sentinel|browser-canary-sentinel/u);
   });
+
+  it('resolves the canonical content review route to the exact decoded source', () => {
+    expect(contentWorkspaceRouteFromPath('/app/content/source%2Fone/review')).toEqual({
+      kind: 'review',
+      sourceKey: 'source/one',
+    });
+    expect(contentWorkspaceRouteFromPath('/app/content/source%2Fone')).toEqual({
+      kind: 'detail',
+      sourceKey: 'source/one',
+    });
+  });
 });
