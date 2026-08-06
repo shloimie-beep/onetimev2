@@ -19,6 +19,7 @@ export {
   parentExportCategories,
   planSharedMediaPrivacyTreatment,
   redactPrivacyDiagnostic,
+  studentExportCategories,
 } from './redaction.ts';
 export {
   PRIVACY_RETENTION_SCHEDULE,

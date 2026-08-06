@@ -27,10 +27,10 @@ describe('v2.1 canonical route server registration', () => {
     );
     expect(registrations.every(({ path }) => !path.includes('*'))).toBe(true);
     expect(new Set(registrations.map(({ path }) => path)).size).toBe(75);
-    expect(CANONICAL_READY_PROTECTED_ROUTES).toHaveLength(73);
+    expect(CANONICAL_READY_PROTECTED_ROUTES).toHaveLength(75);
     expect(
       CANONICAL_PROTECTED_ROUTES.filter(({ readiness }) => readiness !== 'ready'),
-    ).toHaveLength(2);
+    ).toHaveLength(0);
   });
 
   it('binds exact shell and role semantics', () => {
@@ -155,6 +155,24 @@ describe('v2.1 canonical route server registration', () => {
       CANONICAL_READY_PROTECTED_ROUTES.find(({ routeId }) => routeId === 'RT-STU-012'),
     ).toMatchObject({
       pathname: '/app/student/class/:occurrenceId',
+      shell: 'student',
+      roles: ['student'],
+      readiness: 'ready',
+      handlerDisposition: 'mounted',
+    });
+    expect(
+      CANONICAL_READY_PROTECTED_ROUTES.find(({ routeId }) => routeId === 'RT-STU-071'),
+    ).toMatchObject({
+      pathname: '/app/student/privacy',
+      shell: 'student',
+      roles: ['student'],
+      readiness: 'ready',
+      handlerDisposition: 'mounted',
+    });
+    expect(
+      CANONICAL_READY_PROTECTED_ROUTES.find(({ routeId }) => routeId === 'RT-STU-072'),
+    ).toMatchObject({
+      pathname: '/app/student/data-rights',
       shell: 'student',
       roles: ['student'],
       readiness: 'ready',

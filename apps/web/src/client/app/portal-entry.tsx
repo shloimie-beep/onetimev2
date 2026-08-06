@@ -27,6 +27,7 @@ import { StudentCalendar } from './student/calendar/index.js';
 import { StudentLibraryWorkspace } from './student/library/index.js';
 import { StudentLearningOverview } from './student/learning/StudentLearningOverview.js';
 import { StudentClassroomWorkspace } from './student/classroom/StudentClassroomWorkspace.js';
+import { StudentPrivacyWorkspace } from './student/privacy/index.js';
 import {
   StudentNotificationCenter,
   loadStudentNotifications,
@@ -124,6 +125,14 @@ function PortalApp() {
     portalRole === 'student' && location.pathname === '/app/student/notifications';
   const studentAccountRoute =
     portalRole === 'student' && location.pathname === '/app/student/account';
+  const studentPrivacyView =
+    portalRole !== 'student'
+      ? null
+      : location.pathname === '/app/student/privacy'
+        ? ('privacy' as const)
+        : location.pathname === '/app/student/data-rights'
+          ? ('data-rights' as const)
+          : null;
   const selectedClassKey = portalClassKeyFromLocation(location.pathname, portalRole);
   const selectedStudentLibraryContentId = studentLibraryContentIdFromLocation(location.pathname);
   const v21ParentView = v21ParentRouteViewFromLocation(location.pathname);
@@ -863,7 +872,7 @@ function PortalApp() {
         id: 'student-account',
         label: 'Account',
         href: '/app/student/account',
-        current: studentAccountRoute,
+        current: studentAccountRoute || studentPrivacyView !== null,
       },
     ];
   }, [
@@ -873,6 +882,7 @@ function PortalApp() {
     studentAccountRoute,
     studentCalendarRoute,
     studentNotificationsRoute,
+    studentPrivacyView,
     v21ParentSession,
   ]);
   const title = classroomRoute
@@ -1081,6 +1091,8 @@ function PortalApp() {
             <p>{studentNotificationError || 'Loading notifications...'}</p>
           </section>
         )
+      ) : studentPrivacyView ? (
+        <StudentPrivacyWorkspace initialView={studentPrivacyView} />
       ) : studentAccountRoute ? (
         <section className="ot-portal-feature" aria-labelledby="student-account-heading">
           <div className="ot-panel">

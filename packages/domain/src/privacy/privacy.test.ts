@@ -21,6 +21,7 @@ import {
   parentExportCategories,
   planSharedMediaPrivacyTreatment,
   redeemExportDownloadGrant,
+  studentExportCategories,
   transitionDataRightsRequest,
   verifyPurgeLedgerChain,
   visiblePrivacyStatus,
@@ -338,6 +339,26 @@ describe('data-rights actor scope and request lifecycle', () => {
   it('ordinary Parent export excludes private Student bodies and shared recordings', () => {
     expect(parentExportCategories().excluded).toEqual(
       expect.arrayContaining(['private_questions', 'rabbi_answers', 'student_support_bodies']),
+    );
+  });
+
+  it('self-managed adult Student export includes only own learning records', () => {
+    const disclosure = studentExportCategories();
+    expect(disclosure.included).toEqual(
+      expect.arrayContaining([
+        'own_student_profile',
+        'own_private_questions_rabbi_answers',
+        'own_student_support',
+      ]),
+    );
+    expect(disclosure.excluded).toEqual(
+      expect.arrayContaining([
+        'sibling_data',
+        'other_participant_data',
+        'shared_raw_recordings',
+        'provider_secrets',
+        'other_participant_leaderboard_details',
+      ]),
     );
   });
 });

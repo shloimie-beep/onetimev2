@@ -24,7 +24,7 @@
     },
     {
       "path": "apps/web/src/server/app.ts",
-      "sha256": "bb8167966ac42b91bf7adad8d3c88e59057017e3e7bfa5bcb38c0f7373169d2e"
+      "sha256": "b9d4330a2825f29a8c3d6bf78b340bef29145cdd0cda12a61b0fb9756659b748"
     },
     {
       "path": "apps/web/src/server/communications/register.ts",
@@ -77,6 +77,10 @@
     {
       "path": "apps/web/src/server/features/learning/service.ts",
       "sha256": "acd6971afe74881bd8692c58bcbe47b5096b20438621d49668991f67c34000e9"
+    },
+    {
+      "path": "apps/web/src/server/features/privacy/student-router.ts",
+      "sha256": "b36cc8b446425b14bd8dac92ddfcf3048c9801d168232148ea056321372f449e"
     },
     {
       "path": "apps/web/src/server/features/portals/routers.ts",
@@ -136,7 +140,7 @@
     },
     {
       "path": "apps/web/src/client/app/portal-entry.tsx",
-      "sha256": "c7b1b4ba03eb895fa833e9e9a1956c50740c854835f244caf1fafb1c274a497e"
+      "sha256": "8626636bb2f44f752c739a89aca499ddd17c898c31fc0f10e418167270d0acbf"
     },
     {
       "path": "apps/web/src/client/app/student/classroom/StudentClassroomWorkspace.tsx",
@@ -151,12 +155,20 @@
       "sha256": "5a662ecb28e677d50fb00e164cf848ee86b187fa0db6a0a5989c560101b82627"
     },
     {
+      "path": "apps/web/src/client/app/student/privacy/StudentPrivacyWorkspace.tsx",
+      "sha256": "9bd7da81a509ac6d1d67efbd28994359d00a2ad8e15bc689e9546e4a0ad7b761"
+    },
+    {
+      "path": "apps/web/src/client/app/student/privacy/api.ts",
+      "sha256": "d2305149b23515ce113c8b3cd3b39deb183c21bbf10f1ae6e0ca407054664b3c"
+    },
+    {
       "path": "apps/web/src/client/features/portals/PortalFeatures.tsx",
       "sha256": "e7d205bbfae4756294722af94dbf102fa2a3c945e168c4c00a4ee0a1d4130393"
     },
     {
       "path": "apps/web/src/client/app/router/registry.ts",
-      "sha256": "7e35f3f9c59da320030572f06b22295c21855ab23d73b4eb34c7d0ab2fae2177"
+      "sha256": "4132baa33172c71e4be278bdcd1777205583c400ddbe8aa6d1e550283583edbc"
     },
     {
       "path": "apps/web/src/client/app/router/canonical-route-views.ts",
@@ -237,6 +249,10 @@
     {
       "path": "packages/domain/src/legal/content.ts",
       "sha256": "1ee5c969ca64ef268011bc1797e9a40482273a31badf0498e79a75ebce52deaf"
+    },
+    {
+      "path": "packages/domain/src/privacy/redaction.ts",
+      "sha256": "f069af1dfe8e3a113b7bc1c7927979ce50eec8bb87420bf33196dda898942c37"
     }
   ],
   "production_roles": ["admin", "parent", "student"],
@@ -975,17 +991,17 @@
       "route_id": "RT-STU-071",
       "path": "/app/student/privacy",
       "roles": ["student"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "student.rt-stu-071",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-STU-072",
       "path": "/app/student/data-rights",
       "roles": ["student"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "student.rt-stu-072",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     }
   ],
   "actions": [
@@ -2755,6 +2771,74 @@
       ]
     },
     {
+      "action_id": "portal.student.data_rights.request.form",
+      "label": "Create verified Student data-rights request",
+      "surface": "form",
+      "route": "/app/student/data-rights",
+      "roles": ["student"],
+      "capability": "student:privacy:rights-request",
+      "handler": {
+        "method": "POST",
+        "path": "/api/app/student/privacy/requests"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "client-generated x-idempotency-key"
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "adult_self_student_privacy_request_created"
+      },
+      "states": {
+        "loading": "Verifying the current Student password and saving the exact-subject request.",
+        "success": "The durable request is visible with its requester-safe status.",
+        "error": "The request is not saved or replayed under a conflicting payload.",
+        "permission": "Only the verified adult owner of the exact self Student profile may submit.",
+        "offline": "No request is claimed while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/server/features/privacy/student-router.test.ts",
+        "tests/integration/portals/portal-mount.test.ts"
+      ]
+    },
+    {
+      "action_id": "portal.student.data_rights.view.route",
+      "label": "Student data rights",
+      "surface": "route",
+      "route": "/app/student/data-rights",
+      "roles": ["student"],
+      "capability": "student:privacy:read",
+      "handler": {
+        "method": "GET",
+        "path": "/app/student/data-rights"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "adult_self_student_data_rights_view"
+      },
+      "states": {
+        "loading": "Loading the exact self Student request history.",
+        "success": "Only the requester-safe status and own export scope are visible.",
+        "error": "The protected view fails closed without exposing another subject.",
+        "permission": "Dependent, ambiguous, cross-household, and non-Student sessions are denied.",
+        "offline": "No protected privacy data is read from cache."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/server/features/privacy/student-router.test.ts",
+        "tests/integration/portals/portal-mount.test.ts"
+      ]
+    },
+    {
       "action_id": "portal.student.library_detail.open.button",
       "label": "Open protected lesson",
       "surface": "button",
@@ -2888,6 +2972,74 @@
       "test_evidence": [
         "apps/web/src/client/app/student/library/StudentLibraryWorkspace.test.tsx",
         "tests/e2e/vimeo-mishnayos-catalog.spec.ts"
+      ]
+    },
+    {
+      "action_id": "portal.student.privacy.consent.form",
+      "label": "Change own Student consent",
+      "surface": "form",
+      "route": "/app/student/privacy",
+      "roles": ["student"],
+      "capability": "student:privacy:consent",
+      "handler": {
+        "method": "POST",
+        "path": "/api/app/student/privacy/consents"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "client-generated x-idempotency-key"
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "adult_self_student_consent_recorded"
+      },
+      "states": {
+        "loading": "Saving append-only consent evidence for the exact self Student.",
+        "success": "The current consent is visible; recording withdrawal revokes unused launch grants.",
+        "error": "No consent success is claimed and no provider action is attempted.",
+        "permission": "Service-account consent is review-only and only the two adult self scopes may change.",
+        "offline": "No consent mutation is claimed while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/server/features/privacy/student-router.test.ts",
+        "apps/web/src/client/app/student/privacy/api.test.ts"
+      ]
+    },
+    {
+      "action_id": "portal.student.privacy.view.route",
+      "label": "Student privacy",
+      "surface": "route",
+      "route": "/app/student/privacy",
+      "roles": ["student"],
+      "capability": "student:privacy:read",
+      "handler": {
+        "method": "GET",
+        "path": "/app/student/privacy"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "adult_self_student_privacy_view"
+      },
+      "states": {
+        "loading": "Loading own consent evidence and policy versions.",
+        "success": "The exact self Student consent history is visible.",
+        "error": "The protected view fails closed without exposing another Student.",
+        "permission": "Dependent, ambiguous, cross-household, and non-Student sessions are denied.",
+        "offline": "No protected privacy data is read from cache."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/server/features/privacy/student-router.test.ts",
+        "tests/integration/portals/portal-mount.test.ts"
       ]
     },
     {

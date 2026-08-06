@@ -61,6 +61,7 @@ const EXPECTED_SOURCE_INPUT_PATHS = [
   'apps/web/src/server/features/classroom/embedded/service.ts',
   'apps/web/src/server/features/learning/router.ts',
   'apps/web/src/server/features/learning/service.ts',
+  'apps/web/src/server/features/privacy/student-router.ts',
   'apps/web/src/server/features/portals/routers.ts',
   'apps/web/src/server/features/support/router.ts',
   'apps/web/src/server/features/support/v21-router.ts',
@@ -79,6 +80,8 @@ const EXPECTED_SOURCE_INPUT_PATHS = [
   'apps/web/src/client/app/student/classroom/StudentClassroomWorkspace.tsx',
   'apps/web/src/client/app/student/classroom/api.ts',
   'apps/web/src/client/app/student/library/StudentLibraryWorkspace.tsx',
+  'apps/web/src/client/app/student/privacy/StudentPrivacyWorkspace.tsx',
+  'apps/web/src/client/app/student/privacy/api.ts',
   'apps/web/src/client/features/portals/PortalFeatures.tsx',
   'apps/web/src/client/app/router/registry.ts',
   'apps/web/src/client/app/router/canonical-route-views.ts',
@@ -101,6 +104,7 @@ const EXPECTED_SOURCE_INPUT_PATHS = [
   'packages/domain/src/learning/engagement.ts',
   'packages/domain/src/landing/content.ts',
   'packages/domain/src/legal/content.ts',
+  'packages/domain/src/privacy/redaction.ts',
 ] as const;
 
 const EXPECTED_ACTION_BINDINGS = [
@@ -428,6 +432,20 @@ const EXPECTED_ACTION_BINDINGS = [
     '/app/student/class/:occurrenceId',
   ],
   [
+    'portal.student.data_rights.request.form',
+    '/app/student/data-rights',
+    ['student'],
+    'POST',
+    '/api/app/student/privacy/requests',
+  ],
+  [
+    'portal.student.data_rights.view.route',
+    '/app/student/data-rights',
+    ['student'],
+    'GET',
+    '/app/student/data-rights',
+  ],
+  [
     'portal.student.library_detail.open.button',
     '/app/student/library/:contentId',
     ['student'],
@@ -454,6 +472,20 @@ const EXPECTED_ACTION_BINDINGS = [
     ['student'],
     'POST',
     '/api/app/student/library/search',
+  ],
+  [
+    'portal.student.privacy.consent.form',
+    '/app/student/privacy',
+    ['student'],
+    'POST',
+    '/api/app/student/privacy/consents',
+  ],
+  [
+    'portal.student.privacy.view.route',
+    '/app/student/privacy',
+    ['student'],
+    'GET',
+    '/app/student/privacy',
   ],
   [
     'portal.student.private_question.send.button',
@@ -671,10 +703,10 @@ describe('v2.1 visible action registry', () => {
     expect(registry.canonical_routes).toHaveLength(93);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'ready'),
-    ).toHaveLength(91);
+    ).toHaveLength(93);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'isolated'),
-    ).toHaveLength(2);
+    ).toHaveLength(0);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'missing'),
     ).toHaveLength(0);

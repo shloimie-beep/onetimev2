@@ -12,6 +12,7 @@ import {
   createDataRightsRequest,
   decideRecordedClassJoin,
   parentExportCategories,
+  studentExportCategories,
 } from '../../../../../../packages/domain/src/privacy/index.ts';
 
 export type PrivacyRoute =
@@ -108,6 +109,10 @@ export function createPrivacyService(
 
     parentExportDisclosure() {
       return parentExportCategories();
+    },
+
+    studentExportDisclosure() {
+      return studentExportCategories();
     },
   };
 }

@@ -275,6 +275,111 @@ describe('OT-71 mounted parent and student portals', () => {
     }
   });
 
+  it('mounts Student privacy only for the verified adult who owns the exact self profile', async () => {
+    await seedSelfManagedStudentPrivacyIdentity('dependent');
+    const server = await listenForTest(createApp({ config, pool, distDir }));
+    try {
+      const student = await loginAs(server.baseUrl, 'student@example.test', 'StudentPass!234');
+      for (const pathname of ['/app/student/privacy', '/app/student/data-rights']) {
+        const denied = await fetch(`${server.baseUrl}${pathname}`, {
+          headers: { cookie: student.cookies },
+          redirect: 'manual',
+        });
+        expect(denied.status).toBe(403);
+        expect(denied.headers.get('cache-control')).toContain('no-store');
+      }
+
+      await pool.query(
+        `DELETE FROM onetime.v21_student_profiles
+          WHERE student_id = 'learner_alpha'`,
+      );
+      await seedSelfManagedStudentPrivacyProfile('self');
+
+      for (const pathname of ['/app/student/privacy', '/app/student/data-rights']) {
+        const allowed = await fetch(`${server.baseUrl}${pathname}`, {
+          headers: { cookie: student.cookies },
+          redirect: 'manual',
+        });
+        expect(allowed.status).toBe(200);
+        expect(allowed.headers.get('cache-control')).toContain('no-store');
+        expect(await allowed.text()).toContain('portal-root');
+      }
+
+      const snapshot = await fetch(`${server.baseUrl}/api/app/student/privacy`, {
+        headers: { cookie: student.cookies },
+      });
+      expect(snapshot.status, await snapshot.clone().text()).toBe(200);
+      await expect(snapshot.json()).resolves.toMatchObject({
+        success: true,
+        data: {
+          student: {
+            student_id: 'learner_alpha',
+            relationship: 'self',
+          },
+          export_disclosure: {
+            excluded: expect.arrayContaining([
+              'sibling_data',
+              'shared_raw_recordings',
+              'provider_secrets',
+            ]),
+          },
+        },
+      });
+
+      await insertOutstandingPrivacyLaunchGrant('privacy-grant-before-withdrawal', 'b');
+      const withdrawal = await fetch(`${server.baseUrl}/api/app/student/privacy/consents`, {
+        method: 'POST',
+        headers: {
+          cookie: student.cookies,
+          'content-type': 'application/json',
+          'x-csrf-token': student.json.csrf_token,
+          'x-idempotency-key': 'student-recording-withdrawal-0001',
+        },
+        body: JSON.stringify({ scope: 'recording_participation', grant: false }),
+      });
+      expect(withdrawal.status, await withdrawal.clone().text()).toBe(200);
+      const revoked = await pool.query(
+        `SELECT revoked_at, version
+           FROM onetime.classroom_launch_grants_v21
+          WHERE grant_id = 'privacy-grant-before-withdrawal'`,
+      );
+      expect(revoked.rows[0]).toMatchObject({ version: 2 });
+      expect(revoked.rows[0]?.revoked_at).not.toBeNull();
+
+      const regrant = await fetch(`${server.baseUrl}/api/app/student/privacy/consents`, {
+        method: 'POST',
+        headers: {
+          cookie: student.cookies,
+          'content-type': 'application/json',
+          'x-csrf-token': student.json.csrf_token,
+          'x-idempotency-key': 'student-recording-regrant-0001',
+        },
+        body: JSON.stringify({ scope: 'recording_participation', grant: true }),
+      });
+      expect(regrant.status, await regrant.clone().text()).toBe(200);
+      await insertOutstandingPrivacyLaunchGrant('privacy-grant-after-withdrawal', 'c');
+      const replay = await fetch(`${server.baseUrl}/api/app/student/privacy/consents`, {
+        method: 'POST',
+        headers: {
+          cookie: student.cookies,
+          'content-type': 'application/json',
+          'x-csrf-token': student.json.csrf_token,
+          'x-idempotency-key': 'student-recording-withdrawal-0001',
+        },
+        body: JSON.stringify({ scope: 'recording_participation', grant: false }),
+      });
+      expect(replay.status, await replay.clone().text()).toBe(200);
+      const replaySafe = await pool.query(
+        `SELECT revoked_at, version
+           FROM onetime.classroom_launch_grants_v21
+          WHERE grant_id = 'privacy-grant-after-withdrawal'`,
+      );
+      expect(replaySafe.rows[0]).toMatchObject({ revoked_at: null, version: 1 });
+    } finally {
+      await server.close();
+    }
+  });
+
   it('keeps a resolved v2.1 Parent session authenticated while returning denial semantics', async () => {
     const v21AdultSessionRuntime = {
       resolveCookieHeader: async () => ({
@@ -961,6 +1066,67 @@ async function seedV21AdminIdentity() {
      VALUES ('human_portal_admin', 'admin', $1, 'I36 central registration proof',
              'one_time_mishnayos', 'isolated_staging', 'ci')`,
     [now],
+  );
+}
+
+async function seedSelfManagedStudentPrivacyIdentity(relationship: 'self' | 'dependent') {
+  const now = new Date('2026-08-05T12:00:00.000Z');
+  await pool.query(
+    `INSERT INTO onetime.v21_adult_identities
+       (adult_id, normalized_email, display_name, state, version, product_key,
+        runtime_tier, verification_environment_id, created_at, updated_at)
+     VALUES ('adult_portal_student', 'adult-student-identity@example.test', 'Student User', 'active', 1,
+             'one_time_mishnayos', 'isolated_staging', 'ci', $1, $1)`,
+    [now],
+  );
+  await pool.query(
+    `INSERT INTO onetime.v21_human_accounts
+       (human_account_id, adult_id, state, security_version, version, product_key,
+        runtime_tier, verification_environment_id, created_at, updated_at)
+     VALUES ('human_portal_student', 'adult_portal_student', 'active', 1, 1,
+             'one_time_mishnayos', 'isolated_staging', 'ci', $1, $1)`,
+    [now],
+  );
+  await pool.query(
+    `INSERT INTO onetime.v21_households
+       (household_id, owner_adult_id, owner_human_account_id, classification, state,
+        seat_limit, active_seat_count, access_aggregate_ref, version, product_key,
+        runtime_tier, verification_environment_id, created_at, updated_at)
+     VALUES ('household_alpha', 'adult_portal_student', 'human_portal_student', 'family',
+             'active', 3, 1, 'access-portal-student', 1, 'one_time_mishnayos',
+             'isolated_staging', 'ci', $1, $1)`,
+    [now],
+  );
+  await seedSelfManagedStudentPrivacyProfile(relationship);
+}
+
+async function seedSelfManagedStudentPrivacyProfile(relationship: 'self' | 'dependent') {
+  const now = new Date('2026-08-05T12:00:00.000Z');
+  await pool.query(
+    `INSERT INTO onetime.v21_student_profiles
+       (student_id, household_id, relationship, self_adult_id, display_name, actual_name,
+        username, normalized_username, credential_history_ref, relationship_history_ref,
+        state, version, product_key, runtime_tier, verification_environment_id,
+        created_at, updated_at)
+     VALUES ('learner_alpha', 'household_alpha', $1, $2, 'Alpha Learner', 'Alpha Learner',
+             'alpha_student', 'alpha_student', 'credential-history-alpha',
+             'relationship-history-alpha', 'active', 1, 'one_time_mishnayos',
+             'isolated_staging', 'ci', $3, $3)`,
+    [relationship, relationship === 'self' ? 'adult_portal_student' : null, now],
+  );
+}
+
+async function insertOutstandingPrivacyLaunchGrant(grantId: string, digestCharacter: string) {
+  await pool.query(
+    `INSERT INTO onetime.classroom_launch_grants_v21
+       (grant_id, grant_key_digest, product, runtime_tier, verification_environment_id,
+        student_id, household_id, authenticated_session_id, occurrence_id, registrant_id,
+        issued_at, expires_at, student_version, enrollment_version, access_version,
+        consent_version_digest, registrant_version, occurrence_version, version)
+     VALUES ($1, $2, 'one_time_mishnayos', 'isolated_staging', 'ci', 'learner_alpha',
+             'household_alpha', 'privacy-session', 'privacy-occurrence', 'privacy-registrant',
+             now(), now() + interval '60 seconds', 1, 1, 1, $3, 1, 1, 1)`,
+    [grantId, digestCharacter.repeat(64), 'd'.repeat(64)],
   );
 }
 

@@ -10,7 +10,10 @@ import { asBotKey } from '../../../../packages/contracts/src/telegram/types.ts';
 import { inTransaction, type DbPool, type Queryable } from '../../../../packages/db/src/index.ts';
 import { createPostgresBillingRepositories } from '../../../../packages/db/src/billing/repository.ts';
 import { createPostgresCommercialBillingRepository } from '../../../../packages/db/src/billing/commercial/repository.ts';
-import { createPostgresPrivacyRepository } from '../../../../packages/db/src/privacy/repository.ts';
+import {
+  createPostgresPrivacyRepository,
+  type PrivacySqlPool,
+} from '../../../../packages/db/src/privacy/repository.ts';
 import { createClassroomRepository } from '../../../../packages/db/src/classroom/repository.ts';
 import { createZoomClassOccurrenceRepository } from '../../../../packages/db/src/classroom/zoom-occurrence-repository.ts';
 import { createGamificationRepository } from '../../../../packages/db/src/gamification/repository.ts';
@@ -348,6 +351,8 @@ import {
   createParentPrivacyRouter,
   createPostgresParentPrivacySubjectRepository,
   createPrivacyService,
+  createStudentPrivacyRouter,
+  type SelfManagedStudentPrivacyPrincipal,
 } from './features/privacy/index.ts';
 import {
   createCommercialBillingService,
@@ -980,6 +985,92 @@ export function createApp({
   };
   const privacyRepository = createPostgresPrivacyRepository(pool);
   app.use(
+    '/api/app/student',
+    createStudentPrivacyRouter({
+      service: createPrivacyService(privacyRepository, privacyScope),
+      recordConsent: (command) =>
+        inTransaction(pool, async (client) => {
+          const transactionalRepository = createPostgresPrivacyRepository(
+            privacySqlPoolForQueryable(client),
+          );
+          const result = await createPrivacyService(
+            transactionalRepository,
+            privacyScope,
+          ).recordConsent(command);
+          if (
+            result.disposition === 'appended' &&
+            command.scope === 'recording_participation' &&
+            command.choice === 'withdrawn'
+          ) {
+            await client.query(
+              `UPDATE onetime.classroom_launch_grants_v21
+                  SET revoked_at = $1,
+                      version = version + 1
+                WHERE student_id = $2
+                  AND household_id = $3
+                  AND product = $4
+                  AND runtime_tier = $5
+                  AND verification_environment_id = $6
+                  AND expires_at > $1
+                  AND revoked_at IS NULL
+                  AND used_at IS NULL`,
+              [
+                command.occurred_at,
+                command.subject.student_id,
+                command.subject.household_id,
+                privacyScope.product,
+                privacyScope.runtime_tier,
+                privacyScope.verification_environment_id,
+              ],
+            );
+          }
+          return result;
+        }),
+      repository: privacyRepository,
+      scope: privacyScope,
+      resolvePrincipal: (request) =>
+        selfManagedStudentPrivacyPrincipalFromRequest(request, pool, config),
+      issueCsrfToken: async (request, response) => {
+        const session = await sessionFromRequest(request, pool, config);
+        if (!session || session.user.role !== 'student') {
+          throw new Error('student_privacy_session_unavailable');
+        }
+        return ensureSessionCsrfCookie(request, response, pool, config, session);
+      },
+      verifyCsrf: async (request, principal) =>
+        isSameOriginPost(request, config) &&
+        (await verifySessionCsrf({
+          pool,
+          sessionKey: principal.session_id,
+          csrfToken: request.header('x-csrf-token') ?? request.body?.csrf_token,
+        })),
+      verifyPassword: async (principal, password) => {
+        const result = await pool.query(
+          `SELECT password_hash
+             FROM onetime.account_users
+            WHERE account_key = $1
+              AND product_key = $2
+              AND user_key = $3
+              AND role = 'student'
+              AND status = 'active'
+            LIMIT 1`,
+          [config.accountKey, config.productKey, principal.credential_id],
+        );
+        const passwordHash = result.rows[0]?.password_hash;
+        return typeof passwordHash === 'string' && verifyAuthPassword(password, passwordHash);
+      },
+      networkEvidenceDigest: (request) =>
+        createHmac('sha256', config.authCsrfSecret)
+          .update('student-privacy-network-v1', 'utf8')
+          .update('\0', 'utf8')
+          .update(request.ip ?? '', 'utf8')
+          .update('\0', 'utf8')
+          .update(request.header('user-agent') ?? '', 'utf8')
+          .digest('hex'),
+      ...(clock ? { clock } : {}),
+    }),
+  );
+  app.use(
     '/api/app/parent',
     createParentPrivacyRouter({
       service: createPrivacyService(privacyRepository, privacyScope),
@@ -1485,6 +1576,21 @@ export function createApp({
             ),
           });
           return;
+        }
+        if (route.routeId === 'RT-STU-071' || route.routeId === 'RT-STU-072') {
+          const privacySession = await sessionFromRequest(req, pool, config);
+          if (privacySession && privacySession.user.role === 'student') {
+            const privacyPrincipal = await selfManagedStudentPrivacyPrincipalFromRequest(
+              req,
+              pool,
+              config,
+            );
+            if (!privacyPrincipal) {
+              setPrivateNoStore(res);
+              res.status(403).type('html').send(forbiddenAppHtml('student'));
+              return;
+            }
+          }
         }
         const legacySession = await sessionFromRequest(req, pool, config);
         const cookieHeader = req.header('cookie');
@@ -6234,6 +6340,97 @@ async function studentLearnerSubject(pool: DbPool, config: AppConfig, userKey: s
     access_state_key: String(row.access_state_key),
     access_state:
       String(row.account_access_state) === 'grace' ? ('grace' as const) : ('active' as const),
+  };
+}
+
+function privacySqlPoolForQueryable(queryable: Queryable): PrivacySqlPool {
+  return {
+    async connect() {
+      return {
+        async query<Row extends Record<string, unknown> = Record<string, unknown>>(
+          text: string,
+          values?: readonly unknown[],
+        ) {
+          const result = await queryable.query(text, values === undefined ? [] : [...values]);
+          return {
+            rows: result.rows as Row[],
+            rowCount: result.rowCount,
+          };
+        },
+        release() {},
+      };
+    },
+  };
+}
+
+async function selfManagedStudentPrivacyPrincipalFromRequest(
+  req: Request,
+  pool: DbPool,
+  config: AppConfig,
+): Promise<SelfManagedStudentPrivacyPrincipal | null> {
+  const session = await sessionFromRequest(req, pool, config);
+  if (!session || session.user.role !== 'student') return null;
+  const result = await pool.query(
+    `SELECT profiles.student_id,
+            profiles.household_id,
+            profiles.self_adult_id,
+            profiles.display_name,
+            households.owner_adult_id,
+            links.user_key
+       FROM onetime.account_learner_identity_links AS links
+       JOIN onetime.portal_student_access_state AS access_state
+         ON access_state.account_key = links.account_key
+        AND access_state.product_key = links.product_key
+        AND access_state.learner_key = links.learner_key
+        AND access_state.student_user_ref = links.user_key
+       JOIN onetime.v21_student_profiles AS profiles
+         ON profiles.student_id = links.learner_key
+        AND profiles.household_id = links.household_key
+        AND profiles.product_key = $4
+        AND profiles.runtime_tier = $5
+        AND profiles.verification_environment_id = $6
+       JOIN onetime.v21_households AS households
+         ON households.household_id = profiles.household_id
+        AND households.product_key = profiles.product_key
+        AND households.runtime_tier = profiles.runtime_tier
+        AND households.verification_environment_id = profiles.verification_environment_id
+       JOIN onetime.account_users AS users
+         ON users.user_key = links.user_key
+        AND users.account_key = links.account_key
+        AND users.product_key = links.product_key
+      WHERE links.account_key = $1
+        AND links.product_key = $2
+        AND links.user_key = $3
+        AND links.link_state = 'active'
+        AND access_state.status = 'active'
+        AND profiles.relationship = 'self'
+        AND profiles.state = 'active'
+        AND profiles.self_adult_id = households.owner_adult_id
+        AND households.classification = 'family'
+        AND households.state = 'active'
+        AND users.role = 'student'
+        AND users.status = 'active'
+      ORDER BY profiles.student_id ASC
+      LIMIT 2`,
+    [
+      config.accountKey,
+      config.productKey,
+      session.user.user_key,
+      'one_time_mishnayos',
+      config.oneTimeRuntimeTier,
+      config.oneTimeVerificationEnvironmentId,
+    ],
+  );
+  const row = result.rows[0];
+  if (!row || result.rows.length !== 1) return null;
+  return {
+    credential_id: String(row.user_key),
+    adult_id: String(row.self_adult_id),
+    student_id: String(row.student_id),
+    household_id: String(row.household_id),
+    owner_adult_id: String(row.owner_adult_id),
+    session_id: session.session_key,
+    display_name: String(row.display_name),
   };
 }
 
