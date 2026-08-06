@@ -36,7 +36,13 @@ export function createDataRightsRequest(input: DataRightsRequestInput): DataRigh
   const exclusions =
     requester === 'account_owner'
       ? [...PARENT_EXPORT_EXCLUSIONS]
-      : ['sibling_data', 'other_participant_data', 'shared_raw_recordings', 'provider_secrets'];
+      : [
+          'sibling_data',
+          'other_participant_data',
+          'shared_raw_recordings',
+          'provider_secrets',
+          'other_participant_leaderboard_details',
+        ];
   const scope = exactPrivacyScope(input.scope);
   return {
     ...scope,

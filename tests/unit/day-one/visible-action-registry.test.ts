@@ -105,6 +105,7 @@ const EXPECTED_SOURCE_INPUT_PATHS = [
   'packages/domain/src/landing/content.ts',
   'packages/domain/src/legal/content.ts',
   'packages/domain/src/privacy/redaction.ts',
+  'packages/domain/src/privacy/rights.ts',
 ] as const;
 
 const EXPECTED_ACTION_BINDINGS = [

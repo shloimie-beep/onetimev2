@@ -253,6 +253,10 @@
     {
       "path": "packages/domain/src/privacy/redaction.ts",
       "sha256": "f069af1dfe8e3a113b7bc1c7927979ce50eec8bb87420bf33196dda898942c37"
+    },
+    {
+      "path": "packages/domain/src/privacy/rights.ts",
+      "sha256": "b306467d9293c28fab475a59d804f33c3777b853f089aaf1bdcd9572e7a34929"
     }
   ],
   "production_roles": ["admin", "parent", "student"],
