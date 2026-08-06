@@ -1,9 +1,14 @@
 import { createHash } from 'node:crypto';
 import type { AppConfig } from '../../../../../packages/config/src/index.ts';
+import {
+  governedCampaignNormalizedEmailHash,
+  governedCampaignProviderContactRefHash,
+} from '../../../../../packages/domain/src/audience-reconciliation/governed-campaign-census.ts';
 import type {
   FamilySignupGhlAcceptedEffect,
   FamilySignupGhlClaim,
   FamilySignupGhlContactResult,
+  FamilySignupGhlOpportunityResult,
   FamilySignupGhlProvider,
 } from './types.ts';
 import { FamilySignupGhlProviderError } from './types.ts';
@@ -89,17 +94,28 @@ export class HighLevelFamilySignupProvider implements FamilySignupGhlProvider {
     if (before && suppressionSnapshot(before) !== suppressionSnapshot(after)) {
       return { state: 'identity_review', safeErrorCode: 'provider_suppression_drift' };
     }
+    const suppression = emailSuppression(after);
+    if (suppression === null) {
+      return { state: 'identity_review', safeErrorCode: 'provider_suppression_unavailable' };
+    }
     return {
       state: 'accepted',
       providerResourceId: contactId,
       providerResponseDigest: digestJson({ response, readback: after }),
+      identityProjection: {
+        normalizedEmailHash: governedCampaignNormalizedEmailHash(claim.normalizedEmail),
+        providerContactRefHash: governedCampaignProviderContactRefHash(this.locationId, contactId),
+        marketingSuppressed: suppression,
+        serviceSuppressed: suppression,
+        suppressionEvidenceDigest: digestText(suppressionSnapshot(after)),
+      },
     };
   }
 
   async upsertHouseholdOpportunity(
     claim: FamilySignupGhlClaim,
     operationKey: string,
-  ): Promise<FamilySignupGhlAcceptedEffect> {
+  ): Promise<FamilySignupGhlOpportunityResult> {
     if (!claim.providerContactId) {
       throw new Error('family_signup_ghl_contact_required_before_opportunity');
     }
@@ -135,9 +151,19 @@ export class HighLevelFamilySignupProvider implements FamilySignupGhlProvider {
     ) {
       throw new FamilySignupGhlProviderError('opportunity_readback_mismatch', true);
     }
+    const providerResponseDigest = digestJson({ response, readback });
     return {
       providerResourceId: opportunityId,
-      providerResponseDigest: digestJson({ response, readback }),
+      providerResponseDigest,
+      householdProjection: {
+        providerContactRefHash: governedCampaignProviderContactRefHash(
+          this.locationId,
+          claim.providerContactId,
+        ),
+        providerHouseholdRefHash: familySignupGhlHouseholdRefHash(this.locationId, opportunityId),
+        providerRevision: 1,
+        readbackDigest: providerResponseDigest,
+      },
     };
   }
 
@@ -252,8 +278,36 @@ function suppressionSnapshot(contact: JsonObject): string {
   });
 }
 
+function emailSuppression(contact: JsonObject): boolean | null {
+  if (contact.dnd === true) return true;
+  if (contact.dnd !== false && contact.dnd !== undefined && contact.dnd !== null) return null;
+  const settings = providerRecord(contact.dndSettings);
+  const email = providerRecord(settings?.Email);
+  if (email?.status === 'active' || email?.status === 'permanent') return true;
+  if (email?.status === 'inactive') return false;
+  return contact.dnd === false ? false : null;
+}
+
+function providerRecord(value: unknown): JsonObject | null {
+  return value && typeof value === 'object' && !Array.isArray(value) ? (value as JsonObject) : null;
+}
+
+export function familySignupGhlHouseholdRefHash(
+  locationId: string,
+  rawProviderHouseholdId: string,
+): string {
+  if (!locationId.trim() || !rawProviderHouseholdId.trim()) {
+    throw new Error('family_signup_ghl_household_identity_invalid');
+  }
+  return digestText(`family-signup-ghl-household-v1\0${locationId}\0${rawProviderHouseholdId}`);
+}
+
 function digestJson(value: unknown): string {
   return createHash('sha256').update(stableJson(value), 'utf8').digest('hex');
+}
+
+function digestText(value: string): string {
+  return createHash('sha256').update(value, 'utf8').digest('hex');
 }
 
 function stableJson(value: unknown): string {

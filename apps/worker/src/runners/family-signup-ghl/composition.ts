@@ -32,7 +32,11 @@ export async function runFamilySignupGhlWorker(
     };
   }
   const result = await runFamilySignupGhlBatch({
-    repository: runtime?.repository ?? createPostgresFamilySignupGhlRepository(context.pool),
+    repository:
+      runtime?.repository ??
+      createPostgresFamilySignupGhlRepository(context.pool, {
+        highLevelLocationId: context.config.highLevelLocationId,
+      }),
     provider: runtime?.provider ?? new HighLevelFamilySignupProvider(context.config),
     runtimeTier: context.config.oneTimeRuntimeTier,
     verificationEnvironmentId: context.config.oneTimeVerificationEnvironmentId,

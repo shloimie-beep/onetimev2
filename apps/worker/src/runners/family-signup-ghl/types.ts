@@ -1,3 +1,5 @@
+import type { JobScope } from '../../../../../packages/contracts/src/jobs/index.ts';
+
 export const FAMILY_SIGNUP_GHL_STEPS = [
   'contact_upsert',
   'household_opportunity_upsert',
@@ -20,13 +22,33 @@ export type FamilySignupGhlClaim = {
   freeAccessExpiresAt: string | null;
   generalMarketingConsent: boolean;
   parentNewsletterConsent: boolean;
+  product: JobScope['product'];
+  runtimeTier: JobScope['runtime_tier'];
+  verificationEnvironmentId: JobScope['verification_environment_id'];
   providerContactId: string | null;
   providerOpportunityId: string | null;
+};
+
+export type FamilySignupGhlIdentityProjection = {
+  normalizedEmailHash: string;
+  providerContactRefHash: string;
+  marketingSuppressed: boolean;
+  serviceSuppressed: boolean;
+  suppressionEvidenceDigest: string;
+};
+
+export type FamilySignupGhlHouseholdProjection = {
+  providerContactRefHash: string;
+  providerHouseholdRefHash: string;
+  providerRevision: number;
+  readbackDigest: string;
 };
 
 export type FamilySignupGhlAcceptedEffect = {
   providerResourceId: string;
   providerResponseDigest: string;
+  identityProjection?: FamilySignupGhlIdentityProjection;
+  householdProjection?: FamilySignupGhlHouseholdProjection;
 };
 
 export interface FamilySignupGhlRepository {
@@ -56,11 +78,21 @@ export interface FamilySignupGhlRepository {
 }
 
 export type FamilySignupGhlContactResult =
-  | ({ state: 'accepted' } & FamilySignupGhlAcceptedEffect)
+  | ({
+      state: 'accepted';
+      identityProjection: FamilySignupGhlIdentityProjection;
+    } & FamilySignupGhlAcceptedEffect)
   | {
       state: 'identity_review';
-      safeErrorCode: 'multiple_exact_email_matches' | 'provider_suppression_drift';
+      safeErrorCode:
+        | 'multiple_exact_email_matches'
+        | 'provider_suppression_drift'
+        | 'provider_suppression_unavailable';
     };
+
+export type FamilySignupGhlOpportunityResult = FamilySignupGhlAcceptedEffect & {
+  householdProjection: FamilySignupGhlHouseholdProjection;
+};
 
 export interface FamilySignupGhlProvider {
   upsertAdultContact(
@@ -70,7 +102,7 @@ export interface FamilySignupGhlProvider {
   upsertHouseholdOpportunity(
     claim: FamilySignupGhlClaim,
     operationKey: string,
-  ): Promise<FamilySignupGhlAcceptedEffect>;
+  ): Promise<FamilySignupGhlOpportunityResult>;
   enrollConfirmationWorkflow(
     claim: FamilySignupGhlClaim,
     operationKey: string,

@@ -25,6 +25,9 @@ const claim = (
   freeAccessExpiresAt: '2026-09-11T15:00:00.000Z',
   generalMarketingConsent: false,
   parentNewsletterConsent: false,
+  product: 'one_time_mishnayos',
+  runtimeTier: 'production',
+  verificationEnvironmentId: 'production_broad',
   providerContactId,
   providerOpportunityId,
 });
@@ -45,8 +48,23 @@ function ports(claims: FamilySignupGhlClaim[]) {
     upsertAdultContact: vi.fn(async () => ({
       state: 'accepted' as const,
       ...accepted('contact-1'),
+      identityProjection: {
+        normalizedEmailHash: 'b'.repeat(64),
+        providerContactRefHash: 'c'.repeat(64),
+        marketingSuppressed: false,
+        serviceSuppressed: false,
+        suppressionEvidenceDigest: 'd'.repeat(64),
+      },
     })),
-    upsertHouseholdOpportunity: vi.fn(async () => accepted('opportunity-1')),
+    upsertHouseholdOpportunity: vi.fn(async () => ({
+      ...accepted('opportunity-1'),
+      householdProjection: {
+        providerContactRefHash: 'c'.repeat(64),
+        providerHouseholdRefHash: 'e'.repeat(64),
+        providerRevision: 1,
+        readbackDigest: 'a'.repeat(64),
+      },
+    })),
     enrollConfirmationWorkflow: vi.fn(async () => accepted('enrollment-1')),
   };
   return { repository, provider };
