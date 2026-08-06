@@ -21,13 +21,10 @@ type LoadState =
   | { kind: 'error'; message: string };
 
 const defaultCategories = [
-  { value: 'access_login', label: 'Access/login' },
-  { value: 'class_zoom', label: 'Class/Zoom' },
+  { value: 'technical', label: 'Technical support' },
+  { value: 'access', label: 'Access/login' },
   { value: 'billing', label: 'Billing' },
-  { value: 'content', label: 'Content' },
-  { value: 'technical_bug', label: 'Technical bug' },
-  { value: 'account_family', label: 'Account/family' },
-  { value: 'other', label: 'Other' },
+  { value: 'support', label: 'Account/family' },
 ];
 
 export function SupportFeature({
@@ -79,41 +76,11 @@ export function SupportFeature({
     setStatus('Saving support request...');
     const form = event.currentTarget;
     const formData = new FormData(form);
-    let attachments: Awaited<ReturnType<typeof readAttachments>>;
-    try {
-      attachments = await readAttachments(formData.getAll('attachments'));
-    } catch {
-      setStatus('Attachment could not be read. Remove it and try again.');
-      setSaving(false);
-      window.setTimeout(() => form.querySelector<HTMLInputElement>('input[type="file"]')?.focus());
-      return;
-    }
     try {
       const response = await submitSupportTicket(eligibility.csrf_token, {
         category: stringValue(formData, 'category'),
         title: stringValue(formData, 'title'),
         message: stringValue(formData, 'message'),
-        reply_preference: stringValue(formData, 'reply_preference') || 'in_app',
-        issue_details: {
-          steps_to_reproduce: stringValue(formData, 'steps_to_reproduce')
-            .split('\n')
-            .map((line) => line.trim())
-            .filter(Boolean)
-            .slice(0, 10),
-          expected_behavior: nullableString(formData, 'expected_behavior'),
-          actual_behavior: nullableString(formData, 'actual_behavior'),
-          occurrence: stringValue(formData, 'occurrence') || 'not_applicable',
-          first_observed_at: null,
-          error_code: nullableString(formData, 'error_code'),
-          provider: stringValue(formData, 'provider') || 'none',
-        },
-        client_context: {
-          route_template: normalizedRouteTemplate(location.pathname),
-          app_release: 'web-shell',
-          locale: navigator.language || 'en-US',
-          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
-        },
-        attachments,
         idempotency_key: stringValue(formData, 'idempotency_key') || idempotencyRef.current,
       });
       setStatus(
@@ -121,10 +88,7 @@ export function SupportFeature({
           ? 'Support request was already saved. Opening receipt.'
           : 'Support request saved. Opening receipt.',
       );
-      const receiptKey = response.status_path.split('/').filter(Boolean).at(-1);
-      window.location.assign(
-        receiptKey ? `${basePath}/${encodeURIComponent(receiptKey)}` : basePath,
-      );
+      window.location.assign(`${basePath}/${encodeURIComponent(response.receipt_id)}`);
     } catch (error) {
       setStatus(supportSubmitErrorMessage(error));
       setSaving(false);
@@ -159,6 +123,15 @@ export function SupportFeature({
           </div>
         </dl>
         <p>{state.receipt.public_summary}</p>
+        <ol className="support-message-list" aria-label="Support conversation">
+          {(state.receipt.messages ?? []).map((message) => (
+            <li key={message.messageId}>
+              <strong>{message.authorRole === 'admin' ? 'One Time support' : 'You'}</strong>
+              <p>{message.body}</p>
+              <time dateTime={message.createdAt}>{formatDate(message.createdAt)}</time>
+            </li>
+          ))}
+        </ol>
         <a className="button-secondary" href={basePath}>
           Back to support
         </a>
@@ -208,7 +181,7 @@ export function SupportFeature({
           <h2 id="support-heading">Member Support</h2>
           <label>
             <span>Category</span>
-            <select name="category" required defaultValue="technical_bug">
+            <select name="category" required defaultValue={categories[0]?.value}>
               {categories.map((category) => (
                 <option key={category.value} value={category.value}>
                   {category.label}
@@ -223,65 +196,6 @@ export function SupportFeature({
           <label>
             <span>Message</span>
             <textarea name="message" minLength={20} maxLength={6000} rows={7} required />
-          </label>
-          <label>
-            <span>Steps to reproduce</span>
-            <textarea name="steps_to_reproduce" maxLength={5000} rows={4} />
-          </label>
-          <div className="form-grid">
-            <label>
-              <span>Expected behavior</span>
-              <textarea name="expected_behavior" maxLength={1500} rows={3} />
-            </label>
-            <label>
-              <span>Actual behavior</span>
-              <textarea name="actual_behavior" maxLength={1500} rows={3} />
-            </label>
-          </div>
-          <div className="form-grid">
-            <label>
-              <span>Occurrence</span>
-              <select name="occurrence" defaultValue="not_applicable">
-                <option value="not_applicable">Not applicable</option>
-                <option value="once">Once</option>
-                <option value="intermittent">Intermittent</option>
-                <option value="always">Always</option>
-              </select>
-            </label>
-            <label>
-              <span>Provider area</span>
-              <select name="provider" defaultValue="none">
-                <option value="none">None</option>
-                <option value="authentication">Authentication</option>
-                <option value="zoom">Zoom</option>
-                <option value="payments">Payments</option>
-                <option value="content_delivery">Content delivery</option>
-                <option value="other">Other</option>
-              </select>
-            </label>
-          </div>
-          <div className="form-grid">
-            <label>
-              <span>Error code</span>
-              <input name="error_code" maxLength={100} pattern="[A-Z0-9][A-Z0-9._:-]{0,99}" />
-            </label>
-            <label>
-              <span>Reply preference</span>
-              <select name="reply_preference" defaultValue="in_app">
-                <option value="in_app">In app</option>
-                <option value="email">Email</option>
-                <option value="whatsapp">WhatsApp</option>
-              </select>
-            </label>
-          </div>
-          <label>
-            <span>Attachments</span>
-            <input
-              name="attachments"
-              type="file"
-              multiple
-              accept="image/png,image/jpeg,image/webp,text/plain"
-            />
           </label>
           <button className="button-primary" type="submit" disabled={saving}>
             {saving ? 'Saving...' : 'Submit support request'}
@@ -320,42 +234,9 @@ export function SupportTicketLinks({
   ));
 }
 
-async function readAttachments(values: FormDataEntryValue[]) {
-  const files = values.filter((value): value is File => value instanceof File && value.size > 0);
-  const output: Array<{ filename: string; media_type: string; content_base64: string }> = [];
-  for (const file of files.slice(0, 3)) {
-    const buffer = await file.arrayBuffer();
-    output.push({
-      filename: file.name,
-      media_type: file.type || 'application/octet-stream',
-      content_base64: arrayBufferToBase64(buffer),
-    });
-  }
-  return output;
-}
-
-function arrayBufferToBase64(buffer: ArrayBuffer) {
-  const bytes = new Uint8Array(buffer);
-  let binary = '';
-  for (const byte of bytes) binary += String.fromCharCode(byte);
-  return btoa(binary);
-}
-
 function stringValue(formData: FormData, name: string) {
   const value = formData.get(name);
   return typeof value === 'string' ? value.trim() : '';
-}
-
-function nullableString(formData: FormData, name: string) {
-  const value = stringValue(formData, name);
-  return value ? value : null;
-}
-
-function normalizedRouteTemplate(pathname: string) {
-  return pathname
-    .replace(/[?#].*$/u, '')
-    .replace(/[A-Za-z0-9_-]{16,}/gu, '[id]')
-    .slice(0, 255);
 }
 
 function supportIdempotencyKey() {
@@ -366,6 +247,7 @@ function supportIdempotencyKey() {
 }
 
 function deliveryLabel(value: string) {
+  if (value === 'saved_locally') return 'Saved in One Time';
   if (value === 'queued') return 'Queued for support desk';
   if (value === 'delivery_delayed') return 'Delivery delayed';
   if (value === 'delivered') return 'Accepted by support desk';

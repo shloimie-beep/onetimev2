@@ -1,29 +1,21 @@
 import React from 'react';
-import type {
-  SupportAdminView,
-  SupportLifecycleState,
-} from '../../../../../../../packages/contracts/src/support/v21.ts';
 import {
-  V21AppShell,
-  V21StatePanel,
-} from '../../../../../../../packages/brand-system/src/react-v21.tsx';
-import { ADMIN_PRIMARY_NAVIGATION } from '../../../../../../../packages/brand-system/src/v21.ts';
+  SUPPORT_LIFECYCLE_STATES,
+  type SupportAdminView,
+  type SupportLifecycleState,
+} from '../../../../../../../packages/contracts/src/support/v21.ts';
+import { V21StatePanel } from '../../../../../../../packages/brand-system/src/react-v21.tsx';
 
 export function AdminSupportWorkspace(props: {
   tickets: readonly SupportAdminView[];
-  onNavigate: (href: string) => void;
+  onNavigate?: ((href: string) => void) | undefined;
   onAssign: (ticketId: string, assigneeAdminId: string, expectedVersion: number) => void;
   onStatus: (ticketId: string, status: SupportLifecycleState, expectedVersion: number) => void;
   onReply: (ticketId: string, body: string, expectedVersion: number) => void;
 }) {
-  const navigation = ADMIN_PRIMARY_NAVIGATION.map((item) => ({ ...item, current: false }));
   return (
-    <V21AppShell
-      role="admin"
-      title="Support operations"
-      navigation={navigation}
-      onNavigate={props.onNavigate}
-    >
+    <section className="support-admin-workspace" aria-labelledby="admin-support-title">
+      <h2 id="admin-support-title">Support operations</h2>
       <p>
         One Time remains the source of truth. Telegram receives only redacted operator
         notifications.
@@ -50,6 +42,17 @@ export function AdminSupportWorkspace(props: {
                   <dt>Assigned Admin</dt>
                   <dd>{ticket.assigneeAdminId ?? 'Unassigned'}</dd>
                 </dl>
+                <ol aria-label={`Messages for ${ticket.subject}`}>
+                  {ticket.messages.map((message) => (
+                    <li key={message.messageId}>
+                      <strong>
+                        {message.authorRole === 'admin' ? 'Admin' : message.authorRole}
+                      </strong>
+                      <p>{message.body}</p>
+                      <time dateTime={message.createdAt}>{message.createdAt}</time>
+                    </li>
+                  ))}
+                </ol>
                 <label>
                   Assign Admin
                   <input
@@ -73,11 +76,18 @@ export function AdminSupportWorkspace(props: {
                       )
                     }
                   >
-                    <option value="open">Open</option>
-                    <option value="in_progress">In progress</option>
-                    <option value="waiting_on_requester">Waiting on requester</option>
-                    <option value="resolved">Resolved</option>
-                    <option value="closed">Closed</option>
+                    {SUPPORT_LIFECYCLE_STATES.map((status) => (
+                      <option
+                        key={status}
+                        value={status}
+                        disabled={
+                          status !== ticket.status &&
+                          !allowedTransitions(ticket.status).includes(status)
+                        }
+                      >
+                        {readableStatus(status)}
+                      </option>
+                    ))}
                   </select>
                 </label>
                 <form
@@ -110,6 +120,19 @@ export function AdminSupportWorkspace(props: {
           ))}
         </ol>
       )}
-    </V21AppShell>
+    </section>
   );
+}
+
+function allowedTransitions(status: SupportLifecycleState): readonly SupportLifecycleState[] {
+  if (status === 'open') return ['in_progress', 'closed'];
+  if (status === 'in_progress') return ['waiting_on_requester', 'resolved', 'closed'];
+  if (status === 'waiting_on_requester') return ['in_progress', 'resolved', 'closed'];
+  if (status === 'resolved') return ['in_progress', 'closed'];
+  return [];
+}
+
+function readableStatus(status: SupportLifecycleState) {
+  const text = status.replaceAll('_', ' ');
+  return text.replace(/^\w/u, (letter) => letter.toUpperCase());
 }

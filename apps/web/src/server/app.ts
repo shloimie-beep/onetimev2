@@ -291,6 +291,10 @@ import { createResendWebhookRouter } from './features/delivery/resend-webhook-ro
 import { createBillingRouter } from './features/billing/router.ts';
 import { createHighLevelActionsRouter } from './features/highlevel/actions-router.ts';
 import { registerSupportRoutes } from './features/support/router.ts';
+import {
+  registerSupportV21Routes,
+  type SupportV21RouteContext,
+} from './features/support/v21-index.ts';
 import { leadRateLimit } from './rate-limit.ts';
 import { registerOpsRoutes } from './ops-routes.ts';
 import { createContactOperationsRouter } from './features/contact-operations/router.ts';
@@ -718,6 +722,28 @@ export function createApp({
       ensureSessionCsrfCookie: (req, res, session) =>
         ensureSessionCsrfCookie(req, res, pool, config, session),
       requireSessionCsrf: (req, res, session) => requireSessionCsrf(req, res, pool, session),
+      setPrivateNoStore,
+    },
+  });
+  registerSupportV21Routes({
+    app,
+    pool,
+    ...(clock ? { now: clock } : {}),
+    session: {
+      resolve: (req, res) =>
+        resolveSupportV21RouteContext(req, res, {
+          pool,
+          config,
+          v21AdultSessionRuntime,
+          ...(clock ? { clock } : {}),
+        }),
+      requireCsrf: (req, res, context) =>
+        requireSupportV21Csrf(req, res, context, {
+          pool,
+          config,
+          v21AdultSessionRuntime,
+          ...(clock ? { clock } : {}),
+        }),
       setPrivateNoStore,
     },
   });
@@ -5196,6 +5222,148 @@ function publicMetadataUrl(publicBaseUrl: string, canonicalPath: string) {
     throw new Error('Canonical public metadata paths must be root-relative.');
   }
   return new URL(canonicalPath, `${origin}/`).toString();
+}
+
+async function resolveSupportV21RouteContext(
+  req: RequestWithTrace,
+  res: Response,
+  input: {
+    pool: DbPool;
+    config: AppConfig;
+    v21AdultSessionRuntime: V21AdultSessionRuntime;
+    clock?: (() => Date) | undefined;
+  },
+): Promise<SupportV21RouteContext | null> {
+  const cookieHeader = req.header('cookie');
+  if (cookieHeaderHasName(cookieHeader, AUTH_SESSION_COOKIE.name)) {
+    const bootstrap = await input.v21AdultSessionRuntime.bootstrapCookieHeader({
+      cookie_header: cookieHeader,
+      ...(input.clock ? { now: input.clock() } : {}),
+    });
+    if (bootstrap.status === 'unavailable') {
+      res
+        .status(503)
+        .json(publicError('SERVER_ERROR', 'Session readback is unavailable.', req.traceId));
+      return null;
+    }
+    if (bootstrap.status === 'resolved') {
+      const context = bootstrap.context;
+      const role = context.session.activeRole;
+      return {
+        principal: {
+          product: 'one_time_mishnayos',
+          actorId: context.session.humanAccountId,
+          role,
+          householdId: role === 'parent' ? (context.household?.householdId ?? null) : null,
+          studentId: null,
+          adminCapabilities: role === 'admin' ? ['support_operator', 'rabbi_operator'] : [],
+        },
+        csrfToken: bootstrap.csrf_token,
+        sessionKind: 'v21_adult',
+      };
+    }
+  }
+
+  const session = await sessionFromRequest(req, input.pool, input.config);
+  if (!session) {
+    res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+    return null;
+  }
+  const legacyRole = session.user.role === 'owner' ? 'admin' : session.user.role;
+  const role =
+    legacyRole === 'admin' || legacyRole === 'parent' || legacyRole === 'student'
+      ? legacyRole
+      : null;
+  if (!role) {
+    res.status(403).json(publicError('FORBIDDEN', 'Support access is unavailable.', req.traceId));
+    return null;
+  }
+  const scope = await legacySupportScope(input.pool, input.config, session.user.user_key, role);
+  if (!scope) {
+    res.status(403).json(publicError('FORBIDDEN', 'Support context is unavailable.', req.traceId));
+    return null;
+  }
+  return {
+    principal: {
+      product: 'one_time_mishnayos',
+      actorId: session.user.user_key,
+      role,
+      householdId: scope.householdId,
+      studentId: scope.studentId,
+      adminCapabilities: role === 'admin' ? ['support_operator', 'rabbi_operator'] : [],
+    },
+    csrfToken: await ensureSessionCsrfCookie(req, res, input.pool, input.config, session),
+    sessionKind: 'legacy',
+  };
+}
+
+async function requireSupportV21Csrf(
+  req: RequestWithTrace,
+  res: Response,
+  context: SupportV21RouteContext,
+  input: {
+    pool: DbPool;
+    config: AppConfig;
+    v21AdultSessionRuntime: V21AdultSessionRuntime;
+    clock?: (() => Date) | undefined;
+  },
+) {
+  if (context.sessionKind === 'v21_adult') {
+    const verified = await input.v21AdultSessionRuntime.verifyCsrf({
+      cookie_header: req.header('cookie'),
+      csrf_token: req.header('x-csrf-token'),
+      ...(input.clock ? { now: input.clock() } : {}),
+    });
+    if (verified) return true;
+    res
+      .status(403)
+      .json(publicError('CSRF_REQUIRED', 'Refresh the page and try again.', req.traceId));
+    return false;
+  }
+  const session = await sessionFromRequest(req, input.pool, input.config);
+  if (!session) {
+    res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+    return false;
+  }
+  return requireSessionCsrf(req, res, input.pool, session);
+}
+
+async function legacySupportScope(
+  pool: DbPool,
+  config: AppConfig,
+  userKey: string,
+  role: 'admin' | 'parent' | 'student',
+) {
+  if (role === 'admin') return { householdId: null, studentId: null };
+  if (role === 'parent') {
+    const result = await pool.query(
+      `SELECT household_key
+         FROM onetime.portal_guardian_relationships
+        WHERE account_key = $1
+          AND product_key = $2
+          AND guardian_user_ref = $3
+        ORDER BY household_key ASC
+        LIMIT 2`,
+      [config.accountKey, config.productKey, userKey],
+    );
+    if (result.rowCount !== 1) return null;
+    return { householdId: String(result.rows[0]?.household_key), studentId: null };
+  }
+  const result = await pool.query(
+    `SELECT household_key, learner_key
+       FROM onetime.account_learner_identity_links
+      WHERE account_key = $1
+        AND product_key = $2
+        AND user_key = $3
+      ORDER BY household_key ASC, learner_key ASC
+      LIMIT 2`,
+    [config.accountKey, config.productKey, userKey],
+  );
+  if (result.rowCount !== 1) return null;
+  return {
+    householdId: String(result.rows[0]?.household_key),
+    studentId: String(result.rows[0]?.learner_key),
+  };
 }
 
 async function requireApiSession(

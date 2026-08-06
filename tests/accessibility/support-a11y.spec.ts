@@ -18,7 +18,7 @@ test('support anonymous, active, mobile, and receipt states pass axe', async ({ 
 
   await fillSupportForm(page);
   await page.getByRole('button', { name: 'Submit support request' }).click();
-  await page.waitForURL(/\/app\/parent\/support\/otr_[^/]+$/u);
+  await page.waitForURL(/\/app\/parent\/support\/ots_[^/]+$/u);
   await expect(page.getByRole('heading', { name: 'Support Receipt' })).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });
@@ -32,14 +32,7 @@ async function login(page: Page, email: string, password: string) {
 }
 
 async function fillSupportForm(page: Page) {
-  await page.getByLabel('Category').selectOption('technical_bug');
+  await page.getByLabel('Category').selectOption('technical');
   await page.getByLabel('Title').fill('Class page support a11y');
   await page.getByLabel('Message').fill('The class page is not opening after login for axe test.');
-  await page.getByLabel('Steps to reproduce').fill('Sign in\nOpen the class page');
-  await page.getByLabel('Expected behavior').fill('The class page opens.');
-  await page.getByLabel('Actual behavior').fill('The class page shows an error.');
-  await page.getByLabel('Occurrence').selectOption('always');
-  await page.getByLabel('Provider area').selectOption('authentication');
-  await page.getByLabel('Error code').fill('CLASS_PAGE_ERROR');
-  await page.getByLabel('Reply preference').selectOption('in_app');
 }

@@ -10,6 +10,10 @@ import type {
   OwnerDashboardResponse,
   SessionUser,
 } from '@onetime/contracts';
+import type {
+  SupportAdminView,
+  SupportLifecycleState,
+} from '../../../../../packages/contracts/src/support/v21.ts';
 import { Button, Card, EmptyState, Select } from '@onetime/brand-system/react';
 import {
   CLASSROOM_SECTIONS,
@@ -32,8 +36,8 @@ import { AppShell, type ShellNavItem, type ShellUser } from './shell/AppShell.js
 import { WorkspaceTabs } from './shell/WorkspaceTabs.js';
 import { GamificationAdminPanel } from './gamification-admin/GamificationAdminPanel.js';
 import { AdminLearningWorkspace } from './admin/learning/AdminLearningWorkspace.js';
+import { AdminSupportWorkspace } from './admin/support/AdminSupportWorkspace.js';
 import { ClassManagementWorkspace } from './classes/ClassManagementWorkspace.js';
-import { SupportFeature } from './support/SupportFeature.js';
 import { changeOwnPassword } from './portal-api.js';
 import { resolveCurrentClientRoute } from './router/index.js';
 import { compatibilityPathForRoute } from './router/canonical-route-views.js';
@@ -41,6 +45,7 @@ import {
   AuthExpiredError,
   appendNote,
   archiveContactRequest,
+  assignAdminSupportTicket,
   assignTag,
   confirmReply,
   createTag,
@@ -55,11 +60,14 @@ import {
   getOwnerDashboard,
   getSession,
   listContacts,
+  listAdminSupportTickets,
   logoutSession,
   previewReply,
   reactivateContactRequest,
   resolveCrmCapabilities,
+  replyAdminSupportTicket,
   saveContactRequest,
+  updateAdminSupportTicketStatus,
   type Assignee,
   type ApiSession,
   type AdminLearningSnapshot,
@@ -158,7 +166,7 @@ function CrmApp() {
   );
   const [surface, setSurface] = useState<OwnerSurface>('crm');
   const [communicationsMode, setCommunicationsMode] = useState<CommunicationsMode | null>(null);
-  const [supportReceiptId, setSupportReceiptId] = useState<string | null>(null);
+  const [, setSupportReceiptId] = useState<string | null>(null);
   const [dashboard, setDashboard] = useState<OwnerDashboardResponse | null>(null);
   const [dashboardState, setDashboardState] = useState<AsyncPanelState>({
     loading: false,
@@ -1074,8 +1082,8 @@ function CrmApp() {
         />
       )}
       {surface === 'support' && (
-        <SupportFeature
-          receiptId={supportReceiptId ?? undefined}
+        <AdminSupportContainer
+          csrfToken={session?.csrf_token ?? ''}
           onProtectedStateCleared={clearProtectedState}
         />
       )}
@@ -1229,6 +1237,110 @@ function CrmApp() {
           />
         )}
     </AppShell>
+  );
+}
+
+function AdminSupportContainer({
+  csrfToken,
+  onProtectedStateCleared,
+}: {
+  csrfToken: string;
+  onProtectedStateCleared: () => void;
+}) {
+  const [tickets, setTickets] = useState<readonly SupportAdminView[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [status, setStatus] = useState('');
+
+  useEffect(() => {
+    void load();
+  }, []);
+
+  async function load() {
+    setLoading(true);
+    try {
+      const response = await listAdminSupportTickets();
+      setTickets(response.data);
+      setStatus('');
+    } catch (error) {
+      if (error instanceof AuthExpiredError) {
+        onProtectedStateCleared();
+        return;
+      }
+      setStatus(errorMessage(error, 'Support operations could not load.'));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function mutate(run: () => Promise<unknown>, successMessage: string) {
+    setStatus('Saving support conversation...');
+    try {
+      await run();
+      await load();
+      setStatus(successMessage);
+    } catch (error) {
+      if (error instanceof AuthExpiredError) {
+        onProtectedStateCleared();
+        return;
+      }
+      setStatus(errorMessage(error, 'Support conversation could not be updated.'));
+    }
+  }
+
+  if (loading) {
+    return (
+      <section className="state-panel" role="status">
+        <h2>Loading support operations</h2>
+      </section>
+    );
+  }
+
+  return (
+    <>
+      <p className="form-status" role="status">
+        {status}
+      </p>
+      <AdminSupportWorkspace
+        tickets={tickets}
+        onAssign={(ticketId, assigneeAdminId, expectedVersion) =>
+          void mutate(
+            () =>
+              assignAdminSupportTicket({
+                csrfToken,
+                ticketId,
+                assigneeAdminId,
+                expectedVersion,
+              }),
+            'Support conversation assigned.',
+          )
+        }
+        onStatus={(ticketId, nextStatus: SupportLifecycleState, expectedVersion) =>
+          void mutate(
+            () =>
+              updateAdminSupportTicketStatus({
+                csrfToken,
+                ticketId,
+                status: nextStatus,
+                expectedVersion,
+              }),
+            'Support status updated.',
+          )
+        }
+        onReply={(ticketId, body, expectedVersion) =>
+          void mutate(
+            () =>
+              replyAdminSupportTicket({
+                csrfToken,
+                ticketId,
+                body,
+                expectedVersion,
+                idempotencyKey: createIdempotencyKey(),
+              }),
+            'In-app reply saved.',
+          )
+        }
+      />
+    </>
   );
 }
 

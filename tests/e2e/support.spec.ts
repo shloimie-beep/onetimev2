@@ -38,18 +38,17 @@ test('active member can submit by keyboard and receives a durable receipt', asyn
   await page.getByRole('button', { name: 'Submit support request' }).focus();
   await expect(page.getByRole('button', { name: 'Submit support request' })).toBeFocused();
   await page.keyboard.press('Enter');
-  await page.waitForURL(/\/app\/parent\/support\/otr_[^/]+$/u);
+  await page.waitForURL(/\/app\/parent\/support\/ots_[^/]+$/u);
   await expect(page.getByRole('heading', { name: 'Support Receipt' })).toBeVisible();
-  await expect(
-    page.getByText('Support request received. Delivery to the support desk is queued.'),
-  ).toBeVisible();
+  await expect(page.getByText('Class page support keyboard-success')).toBeVisible();
+  await expect(page.getByText('Saved in One Time')).toBeVisible();
 });
 
 test('duplicate support submission opens the original receipt', async ({ page }) => {
   const submittedKeys: string[] = [];
   page.on('request', (request) => {
     if (request.method() !== 'POST') return;
-    if (new URL(request.url()).pathname !== '/api/v1/support/tickets') return;
+    if (new URL(request.url()).pathname !== '/api/v1/support/v21/tickets') return;
     const body = request.postDataJSON() as { idempotency_key?: string };
     submittedKeys.push(body.idempotency_key ?? '');
   });
@@ -58,7 +57,7 @@ test('duplicate support submission opens the original receipt', async ({ page })
   const idempotencyKey = await page.locator('[data-idempotency-key]').inputValue();
   await fillSupportForm(page, 'duplicate-browser');
   await page.getByRole('button', { name: 'Submit support request' }).click();
-  await page.waitForURL(/\/app\/parent\/support\/otr_[^/]+$/u);
+  await page.waitForURL(/\/app\/parent\/support\/ots_[^/]+$/u);
   const firstReceiptPath = new URL(page.url()).pathname;
 
   await page.goto('/app/parent/support');
@@ -69,19 +68,62 @@ test('duplicate support submission opens the original receipt', async ({ page })
     input.value = String(value);
     (form as HTMLFormElement).requestSubmit();
   }, idempotencyKey);
-  await page.waitForURL(/\/app\/parent\/support\/otr_[^/]+$/u);
+  await page.waitForURL(/\/app\/parent\/support\/ots_[^/]+$/u);
   await expect.poll(() => submittedKeys).toHaveLength(2);
   expect(submittedKeys).toEqual([idempotencyKey, idempotencyKey]);
   expect(new URL(page.url()).pathname).toBe(firstReceiptPath);
   await expect(page.getByRole('heading', { name: 'Support Receipt' })).toBeVisible();
 });
 
-test('support form reports server, network, and file failures accessibly', async ({ page }) => {
+test('Admin can operate a durable Parent support conversation inside One Time', async ({
+  page,
+  context,
+}) => {
+  const subject = 'Admin lifecycle browser acceptance';
+  await login(page, 'ot-parent@example.test', 'ParentPassword!234');
+  await page.goto('/app/parent/support');
+  await page.getByLabel('Category').selectOption('technical');
+  await page.getByLabel('Title').fill(subject);
+  await page
+    .getByLabel('Message')
+    .fill('Please verify that the Admin can manage this durable support conversation.');
+  await page.getByRole('button', { name: 'Submit support request' }).click();
+  await page.waitForURL(/\/app\/parent\/support\/ots_[^/]+$/u);
+
+  await context.clearCookies();
+  await page.goto(`/login?return_to=${encodeURIComponent('/app/support')}`);
+  await page.getByLabel('Email').fill('ot-owner@example.test');
+  await page.getByLabel('Password').fill('OwnerPassword!234');
+  await page.getByRole('button', { name: 'Login' }).click();
+  await page.waitForURL('**/app/dashboard');
+  await page.goto('/app/support');
+
+  await expect(page.getByRole('heading', { name: 'Support operations' })).toBeVisible();
+  const ticket = page.getByRole('article', { name: subject });
+  await expect(ticket).toBeVisible();
+
+  const assignment = ticket.getByLabel(/^Assign ots_/u);
+  await assignment.fill('support_admin_browser');
+  await assignment.press('Tab');
+  await expect(page.locator('.form-status')).toHaveText('Support conversation assigned.');
+
+  await ticket.getByLabel('Status').selectOption('in_progress');
+  await expect(page.locator('.form-status')).toHaveText('Support status updated.');
+
+  await ticket
+    .getByLabel('Reply in One Time')
+    .fill('The Admin lifecycle is working and this reply is stored inside One Time.');
+  await ticket.getByRole('button', { name: 'Send in-app reply' }).click();
+  await expect(page.locator('.form-status')).toHaveText('In-app reply saved.');
+  await expect(ticket.getByText('The Admin lifecycle is working')).toBeVisible();
+});
+
+test('support form reports server and network failures accessibly', async ({ page }) => {
   await login(page, 'ot-parent@example.test', 'ParentPassword!234');
 
   await page.goto('/app/parent/support');
   await fillSupportForm(page, 'server-failure');
-  await page.route('/api/v1/support/tickets', async (route) => {
+  await page.route('/api/v1/support/v21/tickets', async (route) => {
     await route.fulfill({
       status: 503,
       contentType: 'application/json',
@@ -91,11 +133,11 @@ test('support form reports server, network, and file failures accessibly', async
   await page.getByRole('button', { name: 'Submit support request' }).click();
   await expect(page.getByRole('status')).toHaveText('Member support is unavailable.');
   await expect(page.getByRole('button', { name: 'Submit support request' })).toBeEnabled();
-  await page.unroute('/api/v1/support/tickets');
+  await page.unroute('/api/v1/support/v21/tickets');
 
   await page.goto('/app/parent/support');
   await fillSupportForm(page, 'network-failure');
-  await page.route('/api/v1/support/tickets', async (route) => {
+  await page.route('/api/v1/support/v21/tickets', async (route) => {
     await route.abort('failed');
   });
   await page.getByRole('button', { name: 'Submit support request' }).click();
@@ -103,24 +145,7 @@ test('support form reports server, network, and file failures accessibly', async
     'Network error. Support request was not saved. Please try again.',
   );
   await expect(page.getByRole('status')).toBeFocused();
-  await page.unroute('/api/v1/support/tickets');
-
-  await page.goto('/app/parent/support');
-  await page.evaluate(() => {
-    Object.defineProperty(File.prototype, 'arrayBuffer', {
-      configurable: true,
-      value: () => Promise.reject(new Error('fixture read failure')),
-    });
-  });
-  await fillSupportForm(page, 'file-failure');
-  await page
-    .getByLabel('Attachments')
-    .setInputFiles({ name: 'broken.txt', mimeType: 'text/plain', buffer: Buffer.from('broken') });
-  await page.getByRole('button', { name: 'Submit support request' }).click();
-  await expect(page.getByRole('status')).toHaveText(
-    'Attachment could not be read. Remove it and try again.',
-  );
-  await expect(page.getByLabel('Attachments')).toBeFocused();
+  await page.unroute('/api/v1/support/v21/tickets');
 });
 
 async function login(page: Page, email: string, password: string) {
@@ -132,16 +157,9 @@ async function login(page: Page, email: string, password: string) {
 }
 
 async function fillSupportForm(page: Page, suffix: string) {
-  await page.getByLabel('Category').selectOption('technical_bug');
+  await page.getByLabel('Category').selectOption('technical');
   await page.getByLabel('Title').fill(`Class page support ${suffix}`);
   await page
     .getByLabel('Message')
     .fill(`The class page is not opening after login for browser test ${suffix}.`);
-  await page.getByLabel('Steps to reproduce').fill('Sign in\nOpen the class page');
-  await page.getByLabel('Expected behavior').fill('The class page opens.');
-  await page.getByLabel('Actual behavior').fill('The class page shows an error.');
-  await page.getByLabel('Occurrence').selectOption('always');
-  await page.getByLabel('Provider area').selectOption('authentication');
-  await page.getByLabel('Error code').fill('CLASS_PAGE_ERROR');
-  await page.getByLabel('Reply preference').selectOption('in_app');
 }
