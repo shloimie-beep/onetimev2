@@ -134,6 +134,47 @@ describe('Family-signup HighLevel projection repository', () => {
     expect(harness.calls).toEqual([]);
   });
 
+  it('rejects a mismatched recovery readback before opening a transaction', async () => {
+    const harness = recordingPool();
+    const repository = createPostgresFamilySignupGhlRepository(harness.pool, {
+      highLevelLocationId: LOCATION_ID,
+    });
+
+    await expect(
+      repository.completeProjectionRecovery({
+        claim: {
+          intentId: 'family-signup-recovery-repository-test',
+          adultId: 'adult-repository-test',
+          householdId: 'household-repository-test',
+          normalizedEmail: EMAIL,
+          accessState: 'free',
+          product: 'one_time_mishnayos',
+          runtimeTier: 'production',
+          verificationEnvironmentId: 'production_broad',
+          providerContactId: CONTACT_ID,
+          providerOpportunityId: OPPORTUNITY_ID,
+        },
+        readback: {
+          identityProjection: {
+            normalizedEmailHash: governedCampaignNormalizedEmailHash(EMAIL),
+            providerContactRefHash: 'f'.repeat(64),
+            marketingSuppressed: false,
+            serviceSuppressed: false,
+            suppressionEvidenceDigest: 'a'.repeat(64),
+          },
+          householdProjection: {
+            providerContactRefHash: 'f'.repeat(64),
+            providerHouseholdRefHash: familySignupGhlHouseholdRefHash(LOCATION_ID, OPPORTUNITY_ID),
+            providerRevision: 1,
+            readbackDigest: 'b'.repeat(64),
+          },
+        },
+      }),
+    ).rejects.toThrow('family_signup_ghl_projection_recovery_invalid');
+    expect(harness.connect).not.toHaveBeenCalled();
+    expect(harness.calls).toEqual([]);
+  });
+
   it('executes both hash-only projections atomically against the complete migration inventory', async () => {
     const pool = createMemoryPool();
     try {
@@ -281,6 +322,69 @@ describe('Family-signup HighLevel projection repository', () => {
           },
         ],
       });
+
+      // Recreate the exact pre-writer state: all three provider effects are
+      // complete, raw provider IDs remain in the dispatch ledger, and the
+      // hash-only identity/mapping projections are absent.
+      await pool.query(`DELETE FROM onetime.household_provider_mapping WHERE owner_adult_id = $1`, [
+        'adult-schema-test',
+      ]);
+      await pool.query(`DELETE FROM onetime.adult_ghl_identity_link WHERE adult_id = $1`, [
+        'adult-schema-test',
+      ]);
+      await pool.query(
+        `UPDATE onetime.family_signup_ghl_dispatches
+            SET state = 'complete',
+                current_step = 'complete',
+                provider_contact_id = $2,
+                provider_opportunity_id = $3,
+                lease_token = NULL,
+                lease_expires_at = NULL
+          WHERE intent_id = $1`,
+        [intentId, CONTACT_ID, OPPORTUNITY_ID],
+      );
+      const recoveryClaim = await repository.loadProjectionRecoveryClaim({
+        intentId,
+        runtimeTier: 'isolated_staging',
+        verificationEnvironmentId: 'ci',
+      });
+      expect(recoveryClaim).toMatchObject({
+        intentId,
+        adultId: 'adult-schema-test',
+        householdId: 'household-schema-test',
+        providerContactId: CONTACT_ID,
+        providerOpportunityId: OPPORTUNITY_ID,
+      });
+      await expect(
+        repository.completeProjectionRecovery({
+          claim: recoveryClaim!,
+          readback: {
+            identityProjection: {
+              normalizedEmailHash: governedCampaignNormalizedEmailHash(EMAIL),
+              providerContactRefHash: contactRefHash,
+              marketingSuppressed: false,
+              serviceSuppressed: false,
+              suppressionEvidenceDigest: 'e'.repeat(64),
+            },
+            householdProjection: {
+              providerContactRefHash: contactRefHash,
+              providerHouseholdRefHash: familySignupGhlHouseholdRefHash(
+                LOCATION_ID,
+                OPPORTUNITY_ID,
+              ),
+              providerRevision: 1,
+              readbackDigest: 'f'.repeat(64),
+            },
+          },
+        }),
+      ).resolves.toBe(true);
+      await expect(
+        repository.loadProjectionRecoveryClaim({
+          intentId,
+          runtimeTier: 'isolated_staging',
+          verificationEnvironmentId: 'ci',
+        }),
+      ).resolves.toBeNull();
     } finally {
       await pool.end();
     }

@@ -67,6 +67,7 @@
     "highlevel:workflow-control:report": "tsx scripts/highlevel/workflow-control-report.ts --write",
     "highlevel:workflow-control:projection-check": "tsx scripts/highlevel/sync-workflow-control-projections.ts",
     "highlevel:workflow-control:sync": "tsx scripts/highlevel/sync-workflow-control-projections.ts --write",
+    "highlevel:family-projection:recover": "tsx scripts/recover-family-signup-ghl-projections.ts",
     "goal:validate": "tsx scripts/ops/validate-ot-launch-governance.ts",
     "goal:pointer:sync": "tsx scripts/ops/validate-ot-launch-governance.ts --write-pointer",
     "goal:launch-status:check": "tsx scripts/ops/generate-operator-launch-status.ts --check",

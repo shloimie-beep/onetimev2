@@ -44,6 +44,24 @@ export type FamilySignupGhlHouseholdProjection = {
   readbackDigest: string;
 };
 
+export type FamilySignupGhlProjectionRecoveryClaim = {
+  intentId: string;
+  adultId: string;
+  householdId: string;
+  normalizedEmail: string;
+  accessState: 'free' | 'inactive';
+  product: JobScope['product'];
+  runtimeTier: JobScope['runtime_tier'];
+  verificationEnvironmentId: JobScope['verification_environment_id'];
+  providerContactId: string;
+  providerOpportunityId: string;
+};
+
+export type FamilySignupGhlProjectionReadback = {
+  identityProjection: FamilySignupGhlIdentityProjection;
+  householdProjection: FamilySignupGhlHouseholdProjection;
+};
+
 export type FamilySignupGhlAcceptedEffect = {
   providerResourceId: string;
   providerResponseDigest: string;
@@ -77,6 +95,18 @@ export interface FamilySignupGhlRepository {
   }): Promise<boolean>;
 }
 
+export interface FamilySignupGhlProjectionRecoveryRepository {
+  loadProjectionRecoveryClaim(input: {
+    intentId: string;
+    runtimeTier: string;
+    verificationEnvironmentId: string;
+  }): Promise<FamilySignupGhlProjectionRecoveryClaim | null>;
+  completeProjectionRecovery(input: {
+    claim: FamilySignupGhlProjectionRecoveryClaim;
+    readback: FamilySignupGhlProjectionReadback;
+  }): Promise<boolean>;
+}
+
 export type FamilySignupGhlContactResult =
   | ({
       state: 'accepted';
@@ -107,6 +137,13 @@ export interface FamilySignupGhlProvider {
     claim: FamilySignupGhlClaim,
     operationKey: string,
   ): Promise<FamilySignupGhlAcceptedEffect>;
+}
+
+export interface FamilySignupGhlProjectionReader {
+  readProjection(
+    claim: FamilySignupGhlProjectionRecoveryClaim,
+    operationKey: string,
+  ): Promise<FamilySignupGhlProjectionReadback>;
 }
 
 export class FamilySignupGhlProviderError extends Error {

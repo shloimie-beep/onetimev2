@@ -1,6 +1,6 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { FAMILY_PLAN } from '../../../../../packages/contracts/src/billing/commercial/index.ts';
-import type { DbPool } from '../../../../../packages/db/src/index.ts';
+import type { DbPool, Queryable } from '../../../../../packages/db/src/index.ts';
 import {
   governedCampaignNormalizedEmailHash,
   governedCampaignProviderContactRefHash,
@@ -9,6 +9,11 @@ import { familySignupGhlHouseholdRefHash } from './provider.ts';
 import type {
   FamilySignupGhlAcceptedEffect,
   FamilySignupGhlClaim,
+  FamilySignupGhlHouseholdProjection,
+  FamilySignupGhlIdentityProjection,
+  FamilySignupGhlProjectionReadback,
+  FamilySignupGhlProjectionRecoveryClaim,
+  FamilySignupGhlProjectionRecoveryRepository,
   FamilySignupGhlRepository,
   FamilySignupGhlStep,
 } from './types.ts';
@@ -18,7 +23,7 @@ type Row = Record<string, unknown>;
 export function createPostgresFamilySignupGhlRepository(
   pool: DbPool,
   options: { highLevelLocationId: string },
-): FamilySignupGhlRepository {
+): FamilySignupGhlRepository & FamilySignupGhlProjectionRecoveryRepository {
   return {
     async claimNext(input) {
       await pool.query(
@@ -152,113 +157,25 @@ export function createPostgresFamilySignupGhlRepository(
           return false;
         }
         if (input.claim.step === 'contact_upsert') {
-          const projection = input.effect.identityProjection!;
-          const identity = await client.query(
-            `INSERT INTO onetime.adult_ghl_identity_link
-               (adult_id, normalized_email_hash, state, verified_contact_ref_hash,
-                candidate_contact_ref_hashes, quarantined_outbox_intent_ids,
-                suppression_json, version, product_key, runtime_tier,
-                verification_environment_id)
-             VALUES ($1,$2,'linked',$3,ARRAY[$3]::text[],'{}'::text[],$4::jsonb,1,$5,$6,$7)
-             ON CONFLICT (adult_id) DO UPDATE SET
-               state = 'linked',
-               verified_contact_ref_hash = EXCLUDED.verified_contact_ref_hash,
-               candidate_contact_ref_hashes = EXCLUDED.candidate_contact_ref_hashes,
-               quarantined_outbox_intent_ids = EXCLUDED.quarantined_outbox_intent_ids,
-               suppression_json = EXCLUDED.suppression_json,
-               version = onetime.adult_ghl_identity_link.version + 1,
-               updated_at = now()
-             WHERE onetime.adult_ghl_identity_link.product_key = EXCLUDED.product_key
-               AND onetime.adult_ghl_identity_link.runtime_tier = EXCLUDED.runtime_tier
-               AND onetime.adult_ghl_identity_link.verification_environment_id = EXCLUDED.verification_environment_id
-               AND onetime.adult_ghl_identity_link.normalized_email_hash = EXCLUDED.normalized_email_hash
-               AND onetime.adult_ghl_identity_link.state IN ('unlinked','linked')
-               AND (
-                 onetime.adult_ghl_identity_link.verified_contact_ref_hash IS NULL
-                 OR onetime.adult_ghl_identity_link.verified_contact_ref_hash = EXCLUDED.verified_contact_ref_hash
-               )
-             RETURNING adult_id`,
-            [
-              input.claim.adultId,
-              projection.normalizedEmailHash,
-              projection.providerContactRefHash,
-              JSON.stringify({
-                marketing_suppressed: projection.marketingSuppressed,
-                service_suppressed: projection.serviceSuppressed,
-                evidence_digest: projection.suppressionEvidenceDigest,
-                version: 1,
-              }),
-              input.claim.product,
-              input.claim.runtimeTier,
-              input.claim.verificationEnvironmentId,
-            ],
-          );
-          if ((identity.rowCount ?? 0) !== 1) {
+          if (
+            !(await persistIdentityProjection(
+              client,
+              input.claim,
+              input.effect.identityProjection!,
+            ))
+          ) {
             await client.query('ROLLBACK');
             return false;
           }
         }
         if (input.claim.step === 'household_opportunity_upsert') {
-          const projection = input.effect.householdProjection!;
-          const mapping = await client.query(
-            `INSERT INTO onetime.household_provider_mapping
-               (household_id, owner_adult_id, runtime_tier,
-                verification_environment_id, billing_program,
-                ghl_household_record_ref_hash, projected_owner_contact_ref_hash,
-                stripe_customer_ref_hash, service_reminders_enabled,
-                lifecycle_state, access_projection, reconciliation_state,
-                transfer_target_contact_ref_hash, provider_revision,
-                last_readback_digest, version, product_key)
-             SELECT $1,$2,$3,$4,$5,$6,$7,NULL,false,$8,$9,'in_sync',NULL,$10::bigint,$11,1,$12
-               FROM onetime.adult_ghl_identity_link AS identity
-              WHERE identity.adult_id = $2
-                AND identity.product_key = $12
-                AND identity.runtime_tier = $3
-                AND identity.verification_environment_id = $4
-                AND identity.state = 'linked'
-                AND identity.verified_contact_ref_hash = $7
-             ON CONFLICT (runtime_tier, verification_environment_id, household_id, billing_program)
-             DO UPDATE SET
-               owner_adult_id = EXCLUDED.owner_adult_id,
-               ghl_household_record_ref_hash = EXCLUDED.ghl_household_record_ref_hash,
-               projected_owner_contact_ref_hash = EXCLUDED.projected_owner_contact_ref_hash,
-               lifecycle_state = EXCLUDED.lifecycle_state,
-               access_projection = EXCLUDED.access_projection,
-               reconciliation_state = 'in_sync',
-               provider_revision = GREATEST(
-                 onetime.household_provider_mapping.provider_revision,
-                 EXCLUDED.provider_revision
-               ),
-               last_readback_digest = EXCLUDED.last_readback_digest,
-               version = onetime.household_provider_mapping.version + 1,
-               updated_at = now()
-             WHERE onetime.household_provider_mapping.product_key = EXCLUDED.product_key
-               AND onetime.household_provider_mapping.owner_adult_id = EXCLUDED.owner_adult_id
-               AND (
-                 onetime.household_provider_mapping.ghl_household_record_ref_hash IS NULL
-                 OR onetime.household_provider_mapping.ghl_household_record_ref_hash = EXCLUDED.ghl_household_record_ref_hash
-               )
-               AND (
-                 onetime.household_provider_mapping.projected_owner_contact_ref_hash IS NULL
-                 OR onetime.household_provider_mapping.projected_owner_contact_ref_hash = EXCLUDED.projected_owner_contact_ref_hash
-               )
-             RETURNING household_id`,
-            [
-              input.claim.householdId,
-              input.claim.adultId,
-              input.claim.runtimeTier,
-              input.claim.verificationEnvironmentId,
-              FAMILY_PLAN.planKey,
-              projection.providerHouseholdRefHash,
-              projection.providerContactRefHash,
-              input.claim.accessState,
-              input.claim.accessState,
-              projection.providerRevision,
-              projection.readbackDigest,
-              input.claim.product,
-            ],
-          );
-          if ((mapping.rowCount ?? 0) !== 1) {
+          if (
+            !(await persistHouseholdProjection(
+              client,
+              input.claim,
+              input.effect.householdProjection!,
+            ))
+          ) {
             await client.query('ROLLBACK');
             return false;
           }
@@ -330,7 +247,302 @@ export function createPostgresFamilySignupGhlRepository(
         new Date().toISOString(),
       );
     },
+    async loadProjectionRecoveryClaim(input) {
+      const result = await pool.query(
+        `SELECT dispatch.intent_id,
+                dispatch.provider_contact_id,
+                dispatch.provider_opportunity_id,
+                outbox.adult_id,
+                outbox.household_id,
+                outbox.product,
+                outbox.runtime_tier,
+                outbox.verification_environment_id,
+                adult.normalized_email,
+                access.access_state,
+                identity.state AS identity_state,
+                identity.normalized_email_hash AS identity_email_hash,
+                identity.verified_contact_ref_hash AS identity_contact_ref_hash,
+                mapping.ghl_household_record_ref_hash AS mapping_household_ref_hash,
+                mapping.projected_owner_contact_ref_hash AS mapping_contact_ref_hash,
+                mapping.lifecycle_state AS mapping_lifecycle_state,
+                mapping.access_projection AS mapping_access_projection,
+                mapping.reconciliation_state AS mapping_reconciliation_state
+           FROM onetime.family_signup_ghl_dispatches AS dispatch
+           JOIN onetime.family_signup_outbox AS outbox
+             ON outbox.intent_id = dispatch.intent_id
+           JOIN onetime.v21_adult_identities AS adult
+             ON adult.adult_id = outbox.adult_id
+            AND adult.product_key = outbox.product
+            AND adult.runtime_tier = outbox.runtime_tier
+            AND adult.verification_environment_id = outbox.verification_environment_id
+           JOIN onetime.family_signup_access_projections AS access
+             ON access.household_id = outbox.household_id
+            AND access.product = outbox.product
+            AND access.runtime_tier = outbox.runtime_tier
+            AND access.verification_environment_id = outbox.verification_environment_id
+           LEFT JOIN onetime.adult_ghl_identity_link AS identity
+             ON identity.adult_id = outbox.adult_id
+            AND identity.product_key = outbox.product
+            AND identity.runtime_tier = outbox.runtime_tier
+            AND identity.verification_environment_id = outbox.verification_environment_id
+           LEFT JOIN onetime.household_provider_mapping AS mapping
+             ON mapping.household_id = outbox.household_id
+            AND mapping.product_key = outbox.product
+            AND mapping.runtime_tier = outbox.runtime_tier
+            AND mapping.verification_environment_id = outbox.verification_environment_id
+            AND mapping.billing_program = $4
+          WHERE dispatch.intent_id = $1
+            AND outbox.runtime_tier = $2
+            AND outbox.verification_environment_id = $3
+            AND dispatch.state = 'complete'
+            AND dispatch.current_step = 'complete'
+            AND dispatch.provider_contact_id IS NOT NULL
+            AND dispatch.provider_opportunity_id IS NOT NULL`,
+        [input.intentId, input.runtimeTier, input.verificationEnvironmentId, FAMILY_PLAN.planKey],
+      );
+      if (result.rows.length !== 1) return null;
+      const row = result.rows[0]!;
+      const claim = mapProjectionRecoveryClaim(row);
+      return projectionRecoveryRequired(row, claim, options.highLevelLocationId) ? claim : null;
+    },
+    async completeProjectionRecovery(input) {
+      validateProjectionRecovery(input.claim, input.readback, options.highLevelLocationId);
+      const client = await pool.connect();
+      try {
+        await client.query('BEGIN');
+        const locked = await client.query(
+          `SELECT dispatch.intent_id
+             FROM onetime.family_signup_ghl_dispatches AS dispatch
+             JOIN onetime.family_signup_outbox AS outbox
+               ON outbox.intent_id = dispatch.intent_id
+             JOIN onetime.v21_adult_identities AS adult
+               ON adult.adult_id = outbox.adult_id
+              AND adult.product_key = outbox.product
+              AND adult.runtime_tier = outbox.runtime_tier
+              AND adult.verification_environment_id = outbox.verification_environment_id
+             JOIN onetime.family_signup_access_projections AS access
+               ON access.household_id = outbox.household_id
+              AND access.product = outbox.product
+              AND access.runtime_tier = outbox.runtime_tier
+              AND access.verification_environment_id = outbox.verification_environment_id
+            WHERE dispatch.intent_id = $1
+              AND dispatch.state = 'complete'
+              AND dispatch.current_step = 'complete'
+              AND dispatch.provider_contact_id = $2
+              AND dispatch.provider_opportunity_id = $3
+              AND outbox.adult_id = $4
+              AND outbox.household_id = $5
+              AND outbox.product = $6
+              AND outbox.runtime_tier = $7
+              AND outbox.verification_environment_id = $8
+              AND adult.normalized_email = $9
+              AND access.access_state = $10
+            FOR UPDATE`,
+          [
+            input.claim.intentId,
+            input.claim.providerContactId,
+            input.claim.providerOpportunityId,
+            input.claim.adultId,
+            input.claim.householdId,
+            input.claim.product,
+            input.claim.runtimeTier,
+            input.claim.verificationEnvironmentId,
+            input.claim.normalizedEmail,
+            input.claim.accessState,
+          ],
+        );
+        if ((locked.rowCount ?? 0) !== 1) {
+          await client.query('ROLLBACK');
+          return false;
+        }
+        const alreadyComplete = await client.query(
+          `SELECT 1
+             FROM onetime.adult_ghl_identity_link AS identity
+             JOIN onetime.household_provider_mapping AS mapping
+               ON mapping.owner_adult_id = identity.adult_id
+              AND mapping.product_key = identity.product_key
+              AND mapping.runtime_tier = identity.runtime_tier
+              AND mapping.verification_environment_id = identity.verification_environment_id
+            WHERE identity.adult_id = $1
+              AND identity.state = 'linked'
+              AND identity.normalized_email_hash = $2
+              AND identity.verified_contact_ref_hash = $3
+              AND mapping.household_id = $4
+              AND mapping.billing_program = $5
+              AND mapping.ghl_household_record_ref_hash = $6
+              AND mapping.projected_owner_contact_ref_hash = $3
+              AND mapping.lifecycle_state = $7
+              AND mapping.access_projection = $7
+              AND mapping.reconciliation_state = 'in_sync'
+              AND identity.product_key = $8
+              AND identity.runtime_tier = $9
+              AND identity.verification_environment_id = $10`,
+          [
+            input.claim.adultId,
+            input.readback.identityProjection.normalizedEmailHash,
+            input.readback.identityProjection.providerContactRefHash,
+            input.claim.householdId,
+            FAMILY_PLAN.planKey,
+            input.readback.householdProjection.providerHouseholdRefHash,
+            input.claim.accessState,
+            input.claim.product,
+            input.claim.runtimeTier,
+            input.claim.verificationEnvironmentId,
+          ],
+        );
+        if ((alreadyComplete.rowCount ?? 0) === 1) {
+          await client.query('COMMIT');
+          return true;
+        }
+        if (
+          !(await persistIdentityProjection(
+            client,
+            input.claim,
+            input.readback.identityProjection,
+          )) ||
+          !(await persistHouseholdProjection(
+            client,
+            input.claim,
+            input.readback.householdProjection,
+          ))
+        ) {
+          await client.query('ROLLBACK');
+          return false;
+        }
+        await client.query('COMMIT');
+        return true;
+      } catch (error) {
+        await client.query('ROLLBACK');
+        throw error;
+      } finally {
+        client.release();
+      }
+    },
   };
+}
+
+type ProjectionPersistenceClaim = Pick<
+  FamilySignupGhlProjectionRecoveryClaim,
+  | 'adultId'
+  | 'householdId'
+  | 'accessState'
+  | 'product'
+  | 'runtimeTier'
+  | 'verificationEnvironmentId'
+>;
+
+async function persistIdentityProjection(
+  client: Queryable,
+  claim: ProjectionPersistenceClaim,
+  projection: FamilySignupGhlIdentityProjection,
+): Promise<boolean> {
+  const identity = await client.query(
+    `INSERT INTO onetime.adult_ghl_identity_link
+       (adult_id, normalized_email_hash, state, verified_contact_ref_hash,
+        candidate_contact_ref_hashes, quarantined_outbox_intent_ids,
+        suppression_json, version, product_key, runtime_tier,
+        verification_environment_id)
+     VALUES ($1,$2,'linked',$3,ARRAY[$3]::text[],'{}'::text[],$4::jsonb,1,$5,$6,$7)
+     ON CONFLICT (adult_id) DO UPDATE SET
+       state = 'linked',
+       verified_contact_ref_hash = EXCLUDED.verified_contact_ref_hash,
+       candidate_contact_ref_hashes = EXCLUDED.candidate_contact_ref_hashes,
+       quarantined_outbox_intent_ids = EXCLUDED.quarantined_outbox_intent_ids,
+       suppression_json = EXCLUDED.suppression_json,
+       version = onetime.adult_ghl_identity_link.version + 1,
+       updated_at = now()
+     WHERE onetime.adult_ghl_identity_link.product_key = EXCLUDED.product_key
+       AND onetime.adult_ghl_identity_link.runtime_tier = EXCLUDED.runtime_tier
+       AND onetime.adult_ghl_identity_link.verification_environment_id = EXCLUDED.verification_environment_id
+       AND onetime.adult_ghl_identity_link.normalized_email_hash = EXCLUDED.normalized_email_hash
+       AND onetime.adult_ghl_identity_link.state IN ('unlinked','linked')
+       AND (
+         onetime.adult_ghl_identity_link.verified_contact_ref_hash IS NULL
+         OR onetime.adult_ghl_identity_link.verified_contact_ref_hash = EXCLUDED.verified_contact_ref_hash
+       )
+     RETURNING adult_id`,
+    [
+      claim.adultId,
+      projection.normalizedEmailHash,
+      projection.providerContactRefHash,
+      JSON.stringify({
+        marketing_suppressed: projection.marketingSuppressed,
+        service_suppressed: projection.serviceSuppressed,
+        evidence_digest: projection.suppressionEvidenceDigest,
+        version: 1,
+      }),
+      claim.product,
+      claim.runtimeTier,
+      claim.verificationEnvironmentId,
+    ],
+  );
+  return (identity.rowCount ?? 0) === 1;
+}
+
+async function persistHouseholdProjection(
+  client: Queryable,
+  claim: ProjectionPersistenceClaim,
+  projection: FamilySignupGhlHouseholdProjection,
+): Promise<boolean> {
+  const mapping = await client.query(
+    `INSERT INTO onetime.household_provider_mapping
+       (household_id, owner_adult_id, runtime_tier,
+        verification_environment_id, billing_program,
+        ghl_household_record_ref_hash, projected_owner_contact_ref_hash,
+        stripe_customer_ref_hash, service_reminders_enabled,
+        lifecycle_state, access_projection, reconciliation_state,
+        transfer_target_contact_ref_hash, provider_revision,
+        last_readback_digest, version, product_key)
+     SELECT $1,$2,$3,$4,$5,$6,$7,NULL,false,$8,$9,'in_sync',NULL,$10::bigint,$11,1,$12
+       FROM onetime.adult_ghl_identity_link AS identity
+      WHERE identity.adult_id = $2
+        AND identity.product_key = $12
+        AND identity.runtime_tier = $3
+        AND identity.verification_environment_id = $4
+        AND identity.state = 'linked'
+        AND identity.verified_contact_ref_hash = $7
+     ON CONFLICT (runtime_tier, verification_environment_id, household_id, billing_program)
+     DO UPDATE SET
+       owner_adult_id = EXCLUDED.owner_adult_id,
+       ghl_household_record_ref_hash = EXCLUDED.ghl_household_record_ref_hash,
+       projected_owner_contact_ref_hash = EXCLUDED.projected_owner_contact_ref_hash,
+       lifecycle_state = EXCLUDED.lifecycle_state,
+       access_projection = EXCLUDED.access_projection,
+       reconciliation_state = 'in_sync',
+       provider_revision = GREATEST(
+         onetime.household_provider_mapping.provider_revision,
+         EXCLUDED.provider_revision
+       ),
+       last_readback_digest = EXCLUDED.last_readback_digest,
+       version = onetime.household_provider_mapping.version + 1,
+       updated_at = now()
+     WHERE onetime.household_provider_mapping.product_key = EXCLUDED.product_key
+       AND onetime.household_provider_mapping.owner_adult_id = EXCLUDED.owner_adult_id
+       AND (
+         onetime.household_provider_mapping.ghl_household_record_ref_hash IS NULL
+         OR onetime.household_provider_mapping.ghl_household_record_ref_hash = EXCLUDED.ghl_household_record_ref_hash
+       )
+       AND (
+         onetime.household_provider_mapping.projected_owner_contact_ref_hash IS NULL
+         OR onetime.household_provider_mapping.projected_owner_contact_ref_hash = EXCLUDED.projected_owner_contact_ref_hash
+       )
+     RETURNING household_id`,
+    [
+      claim.householdId,
+      claim.adultId,
+      claim.runtimeTier,
+      claim.verificationEnvironmentId,
+      FAMILY_PLAN.planKey,
+      projection.providerHouseholdRefHash,
+      projection.providerContactRefHash,
+      claim.accessState,
+      claim.accessState,
+      projection.providerRevision,
+      projection.readbackDigest,
+      claim.product,
+    ],
+  );
+  return (mapping.rowCount ?? 0) === 1;
 }
 
 async function releaseClaim(
@@ -390,6 +602,50 @@ function mapClaim(row: Row): FamilySignupGhlClaim {
   };
 }
 
+function mapProjectionRecoveryClaim(row: Row): FamilySignupGhlProjectionRecoveryClaim {
+  const accessState = text(row.access_state);
+  if (accessState !== 'free' && accessState !== 'inactive') {
+    throw new Error('family_signup_ghl_recovery_access_state_invalid');
+  }
+  return {
+    intentId: required(row.intent_id, 'recovery_intent_id'),
+    adultId: required(row.adult_id, 'recovery_adult_id'),
+    householdId: required(row.household_id, 'recovery_household_id'),
+    normalizedEmail: required(row.normalized_email, 'recovery_normalized_email'),
+    accessState,
+    product: product(row.product),
+    runtimeTier: runtimeTier(row.runtime_tier),
+    verificationEnvironmentId: verificationEnvironment(row.verification_environment_id),
+    providerContactId: required(row.provider_contact_id, 'recovery_provider_contact_id'),
+    providerOpportunityId: required(
+      row.provider_opportunity_id,
+      'recovery_provider_opportunity_id',
+    ),
+  };
+}
+
+function projectionRecoveryRequired(
+  row: Row,
+  claim: FamilySignupGhlProjectionRecoveryClaim,
+  highLevelLocationId: string,
+): boolean {
+  const expectedContactRefHash = governedCampaignProviderContactRefHash(
+    highLevelLocationId,
+    claim.providerContactId,
+  );
+  return !(
+    row.identity_state === 'linked' &&
+    row.identity_email_hash === governedCampaignNormalizedEmailHash(claim.normalizedEmail) &&
+    row.identity_contact_ref_hash === expectedContactRefHash &&
+    row.mapping_household_ref_hash ===
+      familySignupGhlHouseholdRefHash(highLevelLocationId, claim.providerOpportunityId) &&
+    row.mapping_contact_ref_hash === expectedContactRefHash &&
+    row.mapping_lifecycle_state === claim.accessState &&
+    row.mapping_access_projection === claim.accessState &&
+    row.mapping_reconciliation_state === 'in_sync'
+  );
+}
+
 function validateCompletion(
   claim: FamilySignupGhlClaim,
   effect: FamilySignupGhlAcceptedEffect,
@@ -433,6 +689,32 @@ function validateCompletion(
   }
   if (effect.identityProjection || effect.householdProjection) {
     throw new Error('family_signup_ghl_workflow_projection_invalid');
+  }
+}
+
+function validateProjectionRecovery(
+  claim: FamilySignupGhlProjectionRecoveryClaim,
+  readback: FamilySignupGhlProjectionReadback,
+  highLevelLocationId: string,
+): void {
+  const identity = readback.identityProjection;
+  const household = readback.householdProjection;
+  const expectedContactRefHash = governedCampaignProviderContactRefHash(
+    highLevelLocationId,
+    claim.providerContactId,
+  );
+  if (
+    identity.normalizedEmailHash !== governedCampaignNormalizedEmailHash(claim.normalizedEmail) ||
+    identity.providerContactRefHash !== expectedContactRefHash ||
+    !isSha256(identity.suppressionEvidenceDigest) ||
+    household.providerContactRefHash !== expectedContactRefHash ||
+    household.providerHouseholdRefHash !==
+      familySignupGhlHouseholdRefHash(highLevelLocationId, claim.providerOpportunityId) ||
+    !Number.isSafeInteger(household.providerRevision) ||
+    household.providerRevision < 1 ||
+    !isSha256(household.readbackDigest)
+  ) {
+    throw new Error('family_signup_ghl_projection_recovery_invalid');
   }
 }
 
