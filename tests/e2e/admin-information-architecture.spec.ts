@@ -189,6 +189,15 @@ test('Admin IA keeps the canonical launch areas across the governed viewport mat
     'Questions',
   ]);
   await expect(page.getByRole('heading', { name: 'Classes', exact: true })).toBeVisible();
+  const firstClassCard = page.locator('.class-management__card').first();
+  const firstClassTitle = await firstClassCard.getByRole('heading').innerText();
+  await firstClassCard.getByRole('button', { name: 'Open class details' }).click();
+  await expect(page).toHaveURL(/\/app\/classroom\/classes\/[^/]+$/u);
+  await expect(page.getByRole('heading', { name: 'Class series detail' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: firstClassTitle })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Edit class' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Archive class' })).toBeVisible();
+  expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
 
   await page.goto('/app/classroom/attendance');
   await expect(page.getByRole('heading', { name: 'Attendance', exact: true })).toBeVisible();

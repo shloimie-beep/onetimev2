@@ -85,6 +85,27 @@ const EXPECTED_SOURCE_INPUT_PATHS = [
 
 const EXPECTED_ACTION_BINDINGS = [
   [
+    'admin.class_series.archive.button',
+    '/app/classroom/classes/:classId',
+    ['admin'],
+    'PATCH',
+    '/api/v1/admin/classes/series/:seriesKey',
+  ],
+  [
+    'admin.class_series.edit.form',
+    '/app/classroom/classes/:classId',
+    ['admin'],
+    'PATCH',
+    '/api/v1/admin/classes/series/:seriesKey',
+  ],
+  [
+    'admin.class_series.view.route',
+    '/app/classroom/classes/:classId',
+    ['admin'],
+    'GET',
+    '/api/v1/admin/classes/series',
+  ],
+  [
     'admin.content.review.artifact_approve.button',
     '/app/content/:contentId/review',
     ['admin'],
@@ -502,13 +523,13 @@ describe('v2.1 visible action registry', () => {
     expect(registry.canonical_routes).toHaveLength(93);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'ready'),
-    ).toHaveLength(80);
+    ).toHaveLength(81);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'isolated'),
     ).toHaveLength(7);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'missing'),
-    ).toHaveLength(6);
+    ).toHaveLength(5);
     expect(sourceText.endsWith('\n')).toBe(true);
   });
 

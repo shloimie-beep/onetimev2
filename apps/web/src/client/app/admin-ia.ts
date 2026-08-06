@@ -144,6 +144,13 @@ export function classroomOccurrenceFromLocation(pathname: string, search: string
     : first || null;
 }
 
+export function classroomSeriesFromLocation(pathname: string, search: string) {
+  const fromQuery = new URLSearchParams(search).get('class_series_key');
+  if (fromQuery) return fromQuery;
+  const match = pathname.match(/^\/app\/classroom\/classes\/([^/]+)$/u);
+  return match?.[1] ? decodeURIComponent(match[1]) : null;
+}
+
 export function classroomHref(section: ClassroomSectionId, occurrenceKey?: string | null) {
   const base =
     CLASSROOM_SECTIONS.find((item) => item.id === section)?.href ?? '/app/classroom/classes';

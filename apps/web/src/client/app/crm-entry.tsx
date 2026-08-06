@@ -29,6 +29,7 @@ import {
   classroomHref,
   classroomOccurrenceFromLocation,
   classroomSectionFromPath,
+  classroomSeriesFromLocation,
   contactsSectionFromPath,
   dashboardSectionFromPath,
   type DashboardSectionId,
@@ -1127,6 +1128,10 @@ function CrmApp() {
         <ClassesPanel
           csrfToken={session?.csrf_token ?? ''}
           section={classroomSection}
+          selectedSeriesKey={classroomSeriesFromLocation(
+            classroomPath.pathname,
+            classroomPath.search,
+          )}
           teachingOnly={isRabbi}
           classes={classes}
           selectedClass={selectedClass}
@@ -1882,6 +1887,7 @@ function OperationsPanel({
 function ClassesPanel({
   csrfToken,
   section,
+  selectedSeriesKey,
   teachingOnly,
   classes,
   selectedClass,
@@ -1905,6 +1911,7 @@ function ClassesPanel({
 }: {
   csrfToken: string;
   section: ClassroomSectionId;
+  selectedSeriesKey: string | null;
   teachingOnly: boolean;
   classes: ClassOccurrenceSummary[];
   selectedClass: ClassOccurrenceDetail | null;
@@ -1992,6 +1999,7 @@ function ClassesPanel({
         <ClassManagementWorkspace
           csrfToken={csrfToken}
           section={section}
+          selectedSeriesKey={selectedSeriesKey}
           occurrences={classes}
           selectedOccurrenceKey={selectedClass?.occurrence_key ?? null}
           occurrencesLoading={loading}

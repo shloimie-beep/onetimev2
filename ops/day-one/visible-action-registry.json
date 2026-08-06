@@ -72,7 +72,7 @@
     },
     {
       "path": "apps/web/src/client/app/admin-ia.ts",
-      "sha256": "d14036ad8aa00eb30f606b99de4fbbe263927ca8bc30337294bc0e72f981171b"
+      "sha256": "896db31edb55ef06cb8ac9f93958b8fe576053a0cf950b70f565c24b5ad421d8"
     },
     {
       "path": "apps/web/src/client/app/admin/learning/AdminLearningWorkspace.tsx",
@@ -92,7 +92,7 @@
     },
     {
       "path": "apps/web/src/client/app/crm-entry.tsx",
-      "sha256": "9350ca8b453ae5aef53f39d138b00460f78c26265513318f33815fbec75d9798"
+      "sha256": "1e02661f7afac3fcc87c2a732cd0f251c643b82fa7454d8134be81d9257ab1c2"
     },
     {
       "path": "apps/web/src/client/app/live-entry.tsx",
@@ -108,11 +108,11 @@
     },
     {
       "path": "apps/web/src/client/app/router/registry.ts",
-      "sha256": "af1fe63ca051f0379057da31639bf80328a446001e422ca7b08a974bd7b785c9"
+      "sha256": "c7d3e1232c5061c965559fe1b17b477d3c94c770eb6600a0fea70982c00ec457"
     },
     {
       "path": "apps/web/src/client/app/router/canonical-route-views.ts",
-      "sha256": "c18c8f004ba50df851e1a19ed0bb6c96fe25fa0adcebc4afccf9090f4f60e456"
+      "sha256": "b3b2c717389b748beee3595a3590a7ce513c81fbe045925222398d1a9bbbf2b0"
     },
     {
       "path": "apps/web/src/client/app/shell/AppShell.tsx",
@@ -455,9 +455,9 @@
       "route_id": "RT-ADM-033",
       "path": "/app/classroom/classes/:classId",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-033",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-034",
@@ -909,6 +909,108 @@
     }
   ],
   "actions": [
+    {
+      "action_id": "admin.class_series.archive.button",
+      "label": "Archive class series",
+      "surface": "button",
+      "route": "/app/classroom/classes/:classId",
+      "roles": ["admin"],
+      "capability": "admin:class-series:lifecycle",
+      "handler": {
+        "method": "PATCH",
+        "path": "/api/v1/admin/classes/series/:seriesKey"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "class_series_archived"
+      },
+      "states": {
+        "loading": "Archiving the selected local class series.",
+        "success": "The class series is archived and unavailable for new scheduling.",
+        "error": "The class series was stale, rejected, or could not be archived.",
+        "permission": "Only an authenticated Admin may archive class series.",
+        "offline": "Class series lifecycle changes are unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/classes/class-management.test.ts",
+        "tests/e2e/admin-information-architecture.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.class_series.edit.form",
+      "label": "Edit class series",
+      "surface": "form",
+      "route": "/app/classroom/classes/:classId",
+      "roles": ["admin"],
+      "capability": "admin:class-series:update",
+      "handler": {
+        "method": "PATCH",
+        "path": "/api/v1/admin/classes/series/:seriesKey"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "class_series_updated"
+      },
+      "states": {
+        "loading": "Saving the selected local class series.",
+        "success": "The class series schedule defaults and teacher details are current.",
+        "error": "The class series was stale, rejected, or could not be saved.",
+        "permission": "Only an authenticated Admin may edit class series.",
+        "offline": "Class series editing is unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/classes/class-management.test.ts",
+        "tests/e2e/admin-information-architecture.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.class_series.view.route",
+      "label": "Class series details",
+      "surface": "route",
+      "route": "/app/classroom/classes/:classId",
+      "roles": ["admin"],
+      "capability": "admin:class-series:read",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/admin/classes/series"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "class_series_detail_read"
+      },
+      "states": {
+        "loading": "Loading the scoped class series.",
+        "success": "The class series status, teacher, timezone, start, and reminder are visible.",
+        "error": "The class series was not found or could not be loaded.",
+        "permission": "Only an authenticated Admin may read class series details.",
+        "offline": "Class series details are unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/classes/class-management.test.ts",
+        "tests/e2e/admin-information-architecture.spec.ts"
+      ]
+    },
     {
       "action_id": "admin.content.review.artifact_approve.button",
       "label": "Approve artifact",

@@ -34,11 +34,11 @@ describe('v2.1 canonical route views', () => {
     expect(
       CANONICAL_V21_ROUTES.filter(({ routeId }) => routeId.startsWith('RT-STU-')),
     ).toHaveLength(17);
-    expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'ready')).toHaveLength(80);
+    expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'ready')).toHaveLength(81);
     expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'isolated')).toHaveLength(
       7,
     );
-    expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'missing')).toHaveLength(6);
+    expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'missing')).toHaveLength(5);
     for (const route of CANONICAL_V21_ROUTES) {
       if (route.readiness === 'ready') {
         expect(route.handler, route.routeId).not.toMatch(/fallback|default|missing|unavailable/);
@@ -83,6 +83,14 @@ describe('v2.1 canonical route views', () => {
     expect(CANONICAL_ROUTE_COMPATIBILITY_PATHS['RT-ADM-002']).toBeUndefined();
     expect(CANONICAL_ROUTE_COMPATIBILITY_PATHS['RT-ADM-043']).toBe('/app/classes/access');
     expect(CANONICAL_ROUTE_COMPATIBILITY_PATHS['RT-ADM-038']).toBe('/app/classes/attendance');
+    const classSeries = resolveCurrentClientRoute('/app/classroom/classes/class-1', 'admin');
+    expect(
+      classSeries && compatibilityPathForRoute(classSeries, '/app/classroom/classes/class-1'),
+    ).toBe('/app/classes?class_series_key=class-1');
+    expect(classSeries).toMatchObject({
+      readiness: 'ready',
+      handlerDisposition: 'bounded-alias',
+    });
     expect(resolveCurrentClientRoute('/app/content/source-1/review', 'admin')).toMatchObject({
       routeId: 'RT-ADM-023',
       readiness: 'ready',

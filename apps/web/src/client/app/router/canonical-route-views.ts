@@ -102,6 +102,7 @@ export const CANONICAL_ROUTE_COMPATIBILITY_PATHS: Readonly<
   'RT-ADM-030': '/app/classes',
   'RT-ADM-031': '/app/classes/occurrences',
   'RT-ADM-032': '/app/classes',
+  'RT-ADM-033': '/app/classes?class_series_key=:classId',
   'RT-ADM-034': '/app/classes/occurrences',
   'RT-ADM-035': '/app/classes/occurrences?occurrence_key=:occurrenceId',
   'RT-ADM-036': '/app/classes/enrollments',

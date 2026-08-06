@@ -3,6 +3,7 @@ import {
   ADMIN_PRIMARY_AREAS,
   CONTACTS_SECTIONS,
   adminPrimaryNav,
+  classroomSeriesFromLocation,
   contactsSectionFromPath,
 } from './admin-ia.ts';
 
@@ -37,5 +38,13 @@ describe('Admin information architecture', () => {
     expect(contactsSectionFromPath('/app/users')).toBe('users');
     expect(contactsSectionFromPath('/app/students')).toBe('learners');
     expect(contactsSectionFromPath('/app/audit')).toBe('audit');
+  });
+
+  it('resolves canonical and compatibility Class Series detail locations', () => {
+    expect(classroomSeriesFromLocation('/app/classes', '?class_series_key=class-one')).toBe(
+      'class-one',
+    );
+    expect(classroomSeriesFromLocation('/app/classroom/classes/class%2Fone', '')).toBe('class/one');
+    expect(classroomSeriesFromLocation('/app/classroom/classes', '')).toBeNull();
   });
 });
