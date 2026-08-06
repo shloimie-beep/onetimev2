@@ -53,6 +53,12 @@ export function createMemoryPool(): DbPool {
     implementation: (value: string) => value.length,
   });
   db.public.registerFunction({
+    name: 'strpos',
+    args: [DataType.text, DataType.text],
+    returns: DataType.integer,
+    implementation: (value: string, search: string) => value.indexOf(search) + 1,
+  });
+  db.public.registerFunction({
     name: 'cardinality',
     args: [db.public.getType(DataType.text).asArray()],
     returns: DataType.integer,

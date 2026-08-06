@@ -14,6 +14,12 @@ import type {
   SupportAdminView,
   SupportLifecycleState,
 } from '../../../../../packages/contracts/src/support/v21.ts';
+import type {
+  AdminNavigationResolution,
+  AdminSearchPage,
+  AdminSearchRequest,
+  AdminSearchResult,
+} from '../../../../../packages/contracts/src/admin/operations/index.ts';
 import { Button, Card, EmptyState, Select } from '@onetime/brand-system/react';
 import {
   CLASSROOM_SECTIONS,
@@ -37,6 +43,13 @@ import { WorkspaceTabs } from './shell/WorkspaceTabs.js';
 import { GamificationAdminPanel } from './gamification-admin/GamificationAdminPanel.js';
 import { AdminLearningWorkspace } from './admin/learning/AdminLearningWorkspace.js';
 import { AdminSupportWorkspace } from './admin/support/AdminSupportWorkspace.js';
+import {
+  AdminGlobalSearch,
+  AdminPrivateAuthorizationError,
+  postPrivateAdminNavigationResolution,
+  postPrivateAdminSearch,
+} from './admin/search/AdminGlobalSearch.js';
+import type { AdminCredentialBoundSnapshot } from './admin/adminPrivateCompletion.js';
 import { ClassManagementWorkspace } from './classes/ClassManagementWorkspace.js';
 import { changeOwnPassword } from './portal-api.js';
 import { resolveCurrentClientRoute } from './router/index.js';
@@ -126,7 +139,7 @@ type AdminSupportRoute = {
   ticketId: string | null;
 };
 type OwnerSurface =
-  'dashboard' | 'crm' | 'classes' | 'content' | 'billing' | 'support' | 'operations';
+  'dashboard' | 'crm' | 'search' | 'classes' | 'content' | 'billing' | 'support' | 'operations';
 type AsyncPanelState = {
   loading: boolean;
   error: string;
@@ -177,6 +190,9 @@ function CrmApp() {
     mode: 'workspace',
     ticketId: null,
   });
+  const [adminSearchRecentQueries, setAdminSearchRecentQueries] = useState<
+    AdminCredentialBoundSnapshot<readonly string[]> | undefined
+  >(undefined);
   const [dashboard, setDashboard] = useState<OwnerDashboardResponse | null>(null);
   const [dashboardState, setDashboardState] = useState<AsyncPanelState>({
     loading: false,
@@ -792,6 +808,31 @@ function CrmApp() {
     return true;
   }
 
+  async function runPrivateAdminSearch(request: AdminSearchRequest): Promise<AdminSearchPage> {
+    try {
+      return await postPrivateAdminSearch(fetch, request);
+    } catch (error) {
+      if (error instanceof AdminPrivateAuthorizationError) clearProtectedState();
+      throw error;
+    }
+  }
+
+  async function resolvePrivateAdminSearchResult(
+    result: AdminSearchResult,
+    credentialVersion: number,
+  ): Promise<AdminNavigationResolution> {
+    try {
+      return await postPrivateAdminNavigationResolution(fetch, {
+        kind: result.kind,
+        targetId: result.targetId,
+        selectedCredentialVersion: credentialVersion,
+      });
+    } catch (error) {
+      if (error instanceof AdminPrivateAuthorizationError) clearProtectedState();
+      throw error;
+    }
+  }
+
   function clearProtectedState() {
     setContacts([]);
     setNextCursor(null);
@@ -805,6 +846,7 @@ function CrmApp() {
     setSurface('crm');
     setCommunicationsMode(null);
     setAdminSupportRoute({ mode: 'workspace', ticketId: null });
+    setAdminSearchRecentQueries(undefined);
     setDashboard(null);
     setDashboardState({ loading: false, error: '' });
     setClasses([]);
@@ -872,7 +914,19 @@ function CrmApp() {
     : canReadCrm
       ? [{ id: 'contacts', label: 'Contacts', href: '/app/crm', current: true }]
       : [];
-  const utilityItems: ShellNavItem[] = [];
+  const utilityItems: ShellNavItem[] = canReadOwnerShell
+    ? [{ id: 'search', label: 'Search', href: '/app/search', current: surface === 'search' }]
+    : [];
+  const adminCredentialVersion = session?.credential_version ?? 0;
+  const adminSearchAuthorization = {
+    state:
+      session?.user.role === 'admin' && adminCredentialVersion >= 1
+        ? ('admin' as const)
+        : sessionExpired
+          ? ('revoked' as const)
+          : ('signed_out' as const),
+    credentialVersion: adminCredentialVersion,
+  };
   const shellUser = session ? shellUserFromSession(session.user) : null;
   const pageTitle =
     surface === 'support' && adminSupportRoute.mode !== 'workspace'
@@ -1027,6 +1081,34 @@ function CrmApp() {
           : undefined
       }
     >
+      {surface === 'search' && (
+        <AdminGlobalSearch
+          authorization={adminSearchAuthorization}
+          {...(adminSearchRecentQueries ? { recentQueries: adminSearchRecentQueries } : {})}
+          onSearch={runPrivateAdminSearch}
+          onResolveOpen={resolvePrivateAdminSearchResult}
+          onQueryCommitted={(committedQuery) => {
+            const queryValue = committedQuery.trim();
+            if (!queryValue || adminCredentialVersion < 1) return;
+            setAdminSearchRecentQueries((current) => {
+              const retained =
+                current?.credentialVersion === adminCredentialVersion ? current.value : [];
+              return {
+                credentialVersion: adminCredentialVersion,
+                value: [queryValue, ...retained.filter((value) => value !== queryValue)].slice(
+                  0,
+                  5,
+                ),
+              };
+            });
+          }}
+          onClearRecentQueries={() => setAdminSearchRecentQueries(undefined)}
+          onNavigate={(href) => {
+            history.pushState({}, '', href);
+            void routeFromLocation();
+          }}
+        />
+      )}
       {surface === 'dashboard' &&
         (isRabbi ? (
           <RabbiDashboardPanel />
@@ -3270,6 +3352,7 @@ function sourceLabel(value: string) {
 
 function ownerSurfaceFromPath(pathname: string): OwnerSurface | null {
   if (pathname === '/app/dashboard' || pathname.startsWith('/app/dashboard/')) return 'dashboard';
+  if (pathname === '/app/search') return 'search';
   if (pathname === '/app/operations') return 'operations';
   if (pathname === '/app/classes' || pathname.startsWith('/app/classes/')) return 'classes';
   if (pathname === '/app/content' || pathname.startsWith('/app/content/')) return 'content';
@@ -3290,6 +3373,7 @@ function ownerSurfacePath(surface: Exclude<OwnerSurface, 'crm'>) {
 
 function ownerSurfaceTitle(surface: OwnerSurface) {
   if (surface === 'dashboard') return 'Dashboard';
+  if (surface === 'search') return 'Global search';
   if (surface === 'operations') return 'Operations';
   if (surface === 'classes') return 'Classroom';
   if (surface === 'content') return 'Content';
@@ -3301,6 +3385,9 @@ function ownerSurfaceTitle(surface: OwnerSurface) {
 function ownerSurfaceDescription(surface: OwnerSurface) {
   if (surface === 'dashboard') {
     return 'A focused overview of the One Time workspace.';
+  }
+  if (surface === 'search') {
+    return 'Search authorized operational records without placing private terms in the URL.';
   }
   if (surface === 'operations') {
     return 'Account security, audit history, provider status, and application operations.';

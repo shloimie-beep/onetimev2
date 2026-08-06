@@ -300,6 +300,10 @@ import { registerOpsRoutes } from './ops-routes.ts';
 import { createContactOperationsRouter } from './features/contact-operations/router.ts';
 import { createAdminDirectoryRouter } from './features/admin-directory/router.ts';
 import {
+  AdminOperationsService,
+  createAdminOperationsRouter,
+} from './features/admin/operations/index.ts';
+import {
   authorizeV21ParentRoute,
   createPostgresV21AdultSessionRuntime,
   type V21AdultSessionRuntime,
@@ -795,6 +799,24 @@ export function createApp({
   );
   app.use(express.json({ limit: '32kb' }));
   app.use(express.urlencoded({ extended: false, limit: '32kb' }));
+
+  const adminOperationsService = new AdminOperationsService(pool, config, clock);
+  app.use(
+    '/api/v2.1/admin',
+    createAdminOperationsRouter({
+      config,
+      service: adminOperationsService,
+      resolveSession: (req, res) =>
+        requireAdminDashboardSession(req as RequestWithTrace, res, {
+          pool,
+          config,
+          v21AdultSessionRuntime,
+          ...(clock ? { clock } : {}),
+        }),
+      isSameOrigin: (req) => isSameOriginPost(req, config),
+      setPrivateNoStore,
+    }),
+  );
 
   const learningScope = {
     accountKey: config.accountKey,
@@ -2442,6 +2464,7 @@ export function createApp({
       }),
       csrf_token: bootstrap.csrf_token,
       expires_at: bootstrap.expires_at,
+      credential_version: bootstrap.context.session.securityVersion,
       account_context: {
         active_role: bootstrap.context.session.activeRole,
         available_roles: bootstrap.context.memberships,
@@ -2567,6 +2590,7 @@ export function createApp({
       user: currentUser,
       csrf_token: csrfToken,
       expires_at: session.expires_at,
+      credential_version: session.session_security_version ?? 1,
       capabilities: {
         operator_experience: {
           live_console: true,

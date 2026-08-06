@@ -34,13 +34,11 @@ describe('v2.1 canonical route views', () => {
     expect(
       CANONICAL_V21_ROUTES.filter(({ routeId }) => routeId.startsWith('RT-STU-')),
     ).toHaveLength(17);
-    expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'ready')).toHaveLength(76);
+    expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'ready')).toHaveLength(77);
     expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'isolated')).toHaveLength(
       7,
     );
-    expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'missing')).toHaveLength(
-      10,
-    );
+    expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'missing')).toHaveLength(9);
     for (const route of CANONICAL_V21_ROUTES) {
       if (route.readiness === 'ready') {
         expect(route.handler, route.routeId).not.toMatch(/fallback|default|missing|unavailable/);
@@ -67,7 +65,10 @@ describe('v2.1 canonical route views', () => {
     expect(() => resolveCanonicalRouteView('/app/not-a-product-route', 'admin')).toThrow(
       /No canonical route-specific view/,
     );
-    expect(() => resolveCanonicalRouteView('/app/search', 'admin')).toThrow(/missing/);
+    expect(resolveCanonicalRouteView('/app/search', 'admin')).toMatchObject({
+      routeId: 'RT-ADM-002',
+      title: 'Global search',
+    });
     expect(() => resolveCanonicalRouteView('/app/student/class/occ-1', 'student')).toThrow(
       /isolated/,
     );

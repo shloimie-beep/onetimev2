@@ -90,7 +90,7 @@ test('ordinary Admin application removes preview and launch-status surfaces in e
     ).resolves.toEqual(primaryLabels);
     await expect(
       page.getByLabel('One Time utilities').getByRole('link').allTextContents(),
-    ).resolves.toEqual([]);
+    ).resolves.toEqual(['Search']);
     await assertRemovedControls(page);
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
 
@@ -110,7 +110,7 @@ test('ordinary Admin application removes preview and launch-status surfaces in e
     ).resolves.toEqual(primaryLabels);
     await expect(
       drawer.getByLabel('One Time utilities').getByRole('link').allTextContents(),
-    ).resolves.toEqual([]);
+    ).resolves.toEqual(['Search']);
     await expect(drawer.getByRole('link', { name: 'Experience Preview' })).toHaveCount(0);
     await expect(drawer.getByRole('link', { name: 'Launch Status' })).toHaveCount(0);
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);

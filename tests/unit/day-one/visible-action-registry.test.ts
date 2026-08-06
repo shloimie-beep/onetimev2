@@ -47,6 +47,10 @@ const EXPECTED_SOURCE_INPUT_PATHS = [
   'ops/v2.1-execution/source-spec/05-ACTOR-ROLE-CAPABILITY-ROUTE-MATRIX-v2.1.md',
   'ops/v2.1-execution/source-spec/08-SCREEN-CATALOG-AND-DESIGN-SYSTEM-v2.1.md',
   'apps/web/src/server/app.ts',
+  'apps/web/src/server/features/admin/operations/index.ts',
+  'apps/web/src/server/features/admin/operations/repository.ts',
+  'apps/web/src/server/features/admin/operations/router.ts',
+  'apps/web/src/server/features/admin/operations/service.ts',
   'apps/web/src/server/features/classroom/embedded/adapters.ts',
   'apps/web/src/server/features/classroom/embedded/composition.ts',
   'apps/web/src/server/features/classroom/embedded/router.ts',
@@ -57,6 +61,7 @@ const EXPECTED_SOURCE_INPUT_PATHS = [
   'apps/web/src/server/features/v21-canonical-routes/router.ts',
   'apps/web/src/client/app/admin-ia.ts',
   'apps/web/src/client/app/admin/learning/AdminLearningWorkspace.tsx',
+  'apps/web/src/client/app/admin/search/AdminGlobalSearch.tsx',
   'apps/web/src/client/app/admin/support/AdminSupportWorkspace.tsx',
   'apps/web/src/client/app/crm-api.ts',
   'apps/web/src/client/app/crm-entry.tsx',
@@ -65,17 +70,43 @@ const EXPECTED_SOURCE_INPUT_PATHS = [
   'apps/web/src/client/features/portals/PortalFeatures.tsx',
   'apps/web/src/client/app/router/registry.ts',
   'apps/web/src/client/app/router/canonical-route-views.ts',
+  'apps/web/src/client/app/shell/AppShell.tsx',
   'apps/web/src/client/app/support/SupportFeature.tsx',
   'apps/web/src/client/public/public-entry.ts',
   'apps/web/src/client/public/school/model.ts',
+  'packages/brand-system/src/styles/react.css',
   'packages/brand-system/src/route-branding.ts',
   'packages/brand-system/src/v21.ts',
+  'packages/db/src/index.ts',
   'packages/db/src/learning/repository.ts',
   'scripts/build-public-pages.ts',
   'packages/domain/src/dashboard/service.ts',
 ] as const;
 
 const EXPECTED_ACTION_BINDINGS = [
+  ['admin.search.next_page.button', '/app/search', ['admin'], 'POST', '/api/v2.1/admin/search'],
+  [
+    'admin.search.open.button',
+    '/app/search',
+    ['admin'],
+    'CLIENT',
+    'apps/web/src/client/app/shell/AppShell.tsx',
+  ],
+  ['admin.search.query.form', '/app/search', ['admin'], 'POST', '/api/v2.1/admin/search'],
+  [
+    'admin.search.recent.clear.button',
+    '/app/search',
+    ['admin'],
+    'CLIENT',
+    'apps/web/src/client/app/admin/search/AdminGlobalSearch.tsx',
+  ],
+  [
+    'admin.search.result.open.button',
+    '/app/search',
+    ['admin'],
+    'POST',
+    '/api/v2.1/admin/operations/resolve',
+  ],
   ['auth.parent.logout.button', '/app/parent/students', ['parent'], 'POST', '/api/v1/auth/logout'],
   ['auth.student.logout.button', '/app/student', ['student'], 'POST', '/api/v1/auth/logout'],
   [
@@ -366,13 +397,13 @@ describe('v2.1 visible action registry', () => {
     expect(registry.canonical_routes).toHaveLength(93);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'ready'),
-    ).toHaveLength(76);
+    ).toHaveLength(77);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'isolated'),
     ).toHaveLength(7);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'missing'),
-    ).toHaveLength(10);
+    ).toHaveLength(9);
     expect(sourceText.endsWith('\n')).toBe(true);
   });
 

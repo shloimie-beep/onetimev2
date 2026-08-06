@@ -43,6 +43,7 @@ export type ApiSession = {
   user: SessionUser;
   csrf_token: string;
   expires_at: string;
+  credential_version?: number;
   account_context?: {
     active_role: 'admin' | 'parent';
     available_roles: readonly ('admin' | 'parent')[];

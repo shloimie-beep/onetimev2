@@ -282,7 +282,9 @@ export class PostgresAdminOperationsRepository implements AdminOperationsReadRep
 
   async search(scope: AdminOperationsScope, request: AdminSearchRequest): Promise<AdminSearchPage> {
     const offset = decodeCursor(request.cursor);
-    const escaped = request.query.replaceAll(/[\\%_]/gu, (value) => `\\${value}`);
+    const kindPlaceholders = request.kinds.map((_, index) => `$${index + 4}`).join(', ');
+    const limitParameter = request.kinds.length + 4;
+    const offsetParameter = request.kinds.length + 5;
     const result = await this.pool.query(
       `WITH authorized_results AS (
          SELECT 'adult'::text AS kind, contact_key AS target_id,
@@ -300,35 +302,40 @@ export class PostgresAdminOperationsRepository implements AdminOperationsReadRep
           WHERE account_key = $1 AND product_key = $2
             AND (
               lower(contact_key) = lower($3)
-              OR display_name ILIKE $4 ESCAPE '\\'
-              OR email_normalized ILIKE $4 ESCAPE '\\'
-              OR coalesce(phone_normalized, '') ILIKE $4 ESCAPE '\\'
+              OR strpos(lower(display_name), lower($3)) > 0
+              OR strpos(lower(email_normalized), lower($3)) > 0
+              OR strpos(lower(coalesce(phone_normalized, '')), lower($3)) > 0
             )
          UNION ALL
-         SELECT 'household', household_key, display_name, household_key, status,
-                CASE WHEN lower(household_key) = lower($3) THEN 'safe_id' ELSE 'name' END,
-                CASE WHEN lower(household_key) = lower($3) THEN 0 ELSE 1 END
+         SELECT 'household'::text AS kind, household_key AS target_id,
+                display_name AS label, household_key AS metadata, status AS status,
+                CASE WHEN lower(household_key) = lower($3) THEN 'safe_id' ELSE 'name' END AS matched_by,
+                CASE WHEN lower(household_key) = lower($3) THEN 0 ELSE 1 END AS match_rank
            FROM onetime.portal_households
           WHERE account_key = $1 AND product_key = $2
-            AND (lower(household_key) = lower($3) OR display_name ILIKE $4 ESCAPE '\\')
+            AND (lower(household_key) = lower($3) OR strpos(lower(display_name), lower($3)) > 0)
          UNION ALL
-         SELECT 'student', learner_key, display_name, household_key, learner_status,
-                CASE WHEN lower(learner_key) = lower($3) THEN 'safe_id' ELSE 'name' END,
-                CASE WHEN lower(learner_key) = lower($3) THEN 0 ELSE 1 END
+         SELECT 'student'::text AS kind, learner_key AS target_id,
+                display_name AS label, household_key AS metadata, learner_status AS status,
+                CASE WHEN lower(learner_key) = lower($3) THEN 'safe_id' ELSE 'name' END AS matched_by,
+                CASE WHEN lower(learner_key) = lower($3) THEN 0 ELSE 1 END AS match_rank
            FROM onetime.portal_learners
           WHERE account_key = $1 AND product_key = $2
-            AND (lower(learner_key) = lower($3) OR display_name ILIKE $4 ESCAPE '\\')
+            AND (lower(learner_key) = lower($3) OR strpos(lower(display_name), lower($3)) > 0)
          UNION ALL
-         SELECT 'class', class_series_key, title, timezone, status,
-                CASE WHEN lower(class_series_key) = lower($3) THEN 'safe_id' ELSE 'title' END,
-                CASE WHEN lower(class_series_key) = lower($3) THEN 0 ELSE 1 END
+         SELECT 'class'::text AS kind, class_series_key AS target_id,
+                title AS label, timezone AS metadata, status AS status,
+                CASE WHEN lower(class_series_key) = lower($3) THEN 'safe_id' ELSE 'title' END AS matched_by,
+                CASE WHEN lower(class_series_key) = lower($3) THEN 0 ELSE 1 END AS match_rank
            FROM onetime.class_series
           WHERE account_key = $1 AND product_key = $2
-            AND (lower(class_series_key) = lower($3) OR title ILIKE $4 ESCAPE '\\')
+            AND (lower(class_series_key) = lower($3) OR strpos(lower(title), lower($3)) > 0)
          UNION ALL
-         SELECT 'occurrence', occurrences.occurrence_key, series.title,
-                occurrences.local_class_date::text, occurrences.occurrence_state,
-                'safe_id', CASE WHEN lower(occurrences.occurrence_key) = lower($3) THEN 0 ELSE 1 END
+         SELECT 'occurrence'::text AS kind, occurrences.occurrence_key AS target_id,
+                series.title AS label, occurrences.occurrence_key AS metadata,
+                occurrences.occurrence_state AS status,
+                'safe_id' AS matched_by,
+                CASE WHEN lower(occurrences.occurrence_key) = lower($3) THEN 0 ELSE 1 END AS match_rank
            FROM onetime.class_occurrences AS occurrences
            JOIN onetime.class_series AS series
              ON series.account_key = occurrences.account_key
@@ -337,31 +344,35 @@ export class PostgresAdminOperationsRepository implements AdminOperationsReadRep
           WHERE occurrences.account_key = $1 AND occurrences.product_key = $2
             AND (
               lower(occurrences.occurrence_key) = lower($3)
-              OR series.title ILIKE $4 ESCAPE '\\'
+              OR strpos(lower(series.title), lower($3)) > 0
             )
          UNION ALL
-         SELECT 'content', content_item_key, title, item_type, lifecycle_state,
+         SELECT 'content'::text AS kind, content_item_key AS target_id,
+                title AS label, item_type AS metadata, lifecycle_state AS status,
                 CASE
                   WHEN lower(content_item_key) = lower($3) THEN 'safe_id'
-                  WHEN title ILIKE $4 ESCAPE '\\' THEN 'title'
+                  WHEN strpos(lower(title), lower($3)) > 0 THEN 'title'
                   ELSE 'approved_metadata'
-                END,
-                CASE WHEN lower(content_item_key) = lower($3) THEN 0 ELSE 1 END
+                END AS matched_by,
+                CASE WHEN lower(content_item_key) = lower($3) THEN 0 ELSE 1 END AS match_rank
            FROM onetime.content_items
           WHERE account_key = $1 AND product_key = $2
             AND lifecycle_state = 'published'
             AND retention_state = 'active'
             AND (
               lower(content_item_key) = lower($3)
-              OR title ILIKE $4 ESCAPE '\\'
-              OR coalesce(metadata->>'topic', '') ILIKE $4 ESCAPE '\\'
-              OR coalesce(metadata->>'mishnah_reference', '') ILIKE $4 ESCAPE '\\'
-              OR coalesce(metadata->>'class_title', '') ILIKE $4 ESCAPE '\\'
+              OR strpos(lower(title), lower($3)) > 0
+              OR strpos(lower(coalesce(metadata->>'topic', '')), lower($3)) > 0
+              OR strpos(lower(coalesce(metadata->>'mishnah_reference', '')), lower($3)) > 0
+              OR strpos(lower(coalesce(metadata->>'class_title', '')), lower($3)) > 0
             )
          UNION ALL
-         SELECT 'question', questions.question_key, learners.display_name,
-                coalesce(questions.class_key, 'No class'), questions.question_status,
-                'safe_id', CASE WHEN lower(questions.question_key) = lower($3) THEN 0 ELSE 1 END
+         SELECT 'question'::text AS kind, questions.question_key AS target_id,
+                learners.display_name AS label,
+                coalesce(questions.class_key, 'No class') AS metadata,
+                questions.question_status AS status,
+                'safe_id' AS matched_by,
+                CASE WHEN lower(questions.question_key) = lower($3) THEN 0 ELSE 1 END AS match_rank
            FROM onetime.portal_student_questions AS questions
            JOIN onetime.portal_learners AS learners
              ON learners.account_key = questions.account_key
@@ -370,38 +381,33 @@ export class PostgresAdminOperationsRepository implements AdminOperationsReadRep
           WHERE questions.account_key = $1 AND questions.product_key = $2
             AND (
               lower(questions.question_key) = lower($3)
-              OR learners.display_name ILIKE $4 ESCAPE '\\'
+              OR strpos(lower(learners.display_name), lower($3)) > 0
             )
          UNION ALL
-         SELECT 'ticket', submissions.source_ticket_id,
-                concat('Ticket ', submissions.source_ticket_id),
-                submissions.category, coalesce(status.status, submissions.delivery_state),
-                CASE WHEN lower(submissions.source_ticket_id) = lower($3)
-                  THEN 'safe_id' ELSE 'title' END,
-                CASE WHEN lower(submissions.source_ticket_id) = lower($3) THEN 0 ELSE 1 END
-           FROM onetime.support_submissions AS submissions
-           LEFT JOIN onetime.support_status_projection AS status
-             ON status.account_key = submissions.account_key
-            AND status.product_key = submissions.product_key
-            AND status.source_ticket_id = submissions.source_ticket_id
-          WHERE submissions.account_key = $1 AND submissions.product_key = $2
+         SELECT 'ticket'::text AS kind, tickets.ticket_id AS target_id,
+                tickets.subject AS label,
+                tickets.category AS metadata, tickets.status AS status,
+                CASE WHEN lower(tickets.ticket_id) = lower($3)
+                   THEN 'safe_id' ELSE 'title' END AS matched_by,
+                CASE WHEN lower(tickets.ticket_id) = lower($3) THEN 0 ELSE 1 END AS match_rank
+           FROM onetime.support_tickets_v21 AS tickets
+          WHERE tickets.product = $2
             AND (
-              lower(submissions.source_ticket_id) = lower($3)
-              OR submissions.title ILIKE $4 ESCAPE '\\'
-              OR submissions.category ILIKE $4 ESCAPE '\\'
+              lower(tickets.ticket_id) = lower($3)
+              OR strpos(lower(tickets.subject), lower($3)) > 0
+              OR strpos(lower(tickets.category), lower($3)) > 0
             )
        )
        SELECT kind, target_id, label, metadata, status, matched_by
          FROM authorized_results
-        WHERE kind = ANY($5::text[])
+        WHERE kind IN (${kindPlaceholders})
         ORDER BY match_rank, kind, label, target_id
-        LIMIT $6 OFFSET $7`,
+        LIMIT $${limitParameter} OFFSET $${offsetParameter}`,
       [
         this.config.accountKey,
         this.config.productKey,
         request.query,
-        `%${escaped}%`,
-        request.kinds,
+        ...request.kinds,
         request.pageSize + 1,
         offset,
       ],
@@ -438,7 +444,7 @@ export class PostgresAdminOperationsRepository implements AdminOperationsReadRep
       question:
         'SELECT question_status AS lifecycle FROM onetime.portal_student_questions WHERE account_key = $1 AND product_key = $2 AND question_key = $3',
       ticket:
-        'SELECT coalesce(status.status, submissions.delivery_state) AS lifecycle FROM onetime.support_submissions AS submissions LEFT JOIN onetime.support_status_projection AS status ON status.account_key = submissions.account_key AND status.product_key = submissions.product_key AND status.source_ticket_id = submissions.source_ticket_id WHERE submissions.account_key = $1 AND submissions.product_key = $2 AND submissions.source_ticket_id = $3',
+        'SELECT status AS lifecycle FROM onetime.support_tickets_v21 WHERE product = $2 AND ticket_id = $3',
     };
     const result = await this.pool.query(lookups[request.kind], [
       this.config.accountKey,

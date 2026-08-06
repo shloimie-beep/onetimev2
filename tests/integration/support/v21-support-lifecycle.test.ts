@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { createApp } from '../../../apps/web/src/server/app.ts';
+import { AdminOperationsService } from '../../../apps/web/src/server/features/admin/operations/service.ts';
 import { loadConfig, type AppConfig } from '../../../packages/config/src/index.ts';
 import type {
   SupportAdminView,
@@ -160,6 +161,126 @@ describe('v2.1 durable support lifecycle', () => {
       },
     });
 
+    const adminSession = await api(admin, '/api/v1/auth/session');
+    expect(adminSession.status).toBe(200);
+    const adminSessionJson = (await adminSession.json()) as { credential_version: number };
+    expect(adminSessionJson.credential_version).toBeGreaterThanOrEqual(1);
+
+    const missingPrivateTransport = await fetch(`${baseUrl}/api/v2.1/admin/search`, {
+      method: 'POST',
+      headers: {
+        cookie: authCookies(admin),
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        query: studentTicket.data.ticketId,
+        kinds: ['ticket'],
+        pageSize: 20,
+        cursor: null,
+      }),
+    });
+    expect(missingPrivateTransport.status).toBe(403);
+    expect(missingPrivateTransport.headers.get('cache-control')).toContain('no-store');
+
+    const parentCannotSearch = await adminPrivateCommand(
+      parent,
+      '/api/v2.1/admin/search',
+      'x-onetime-private-search',
+      {
+        query: studentTicket.data.ticketId,
+        kinds: ['ticket'],
+        pageSize: 20,
+        cursor: null,
+      },
+    );
+    expect(parentCannotSearch.status).toBe(403);
+
+    const directTicketSearch = await new AdminOperationsService(pool, config).search(
+      {
+        product: 'one_time_mishnayos',
+        runtimeTier: config.oneTimeRuntimeTier,
+        verificationEnvironmentId: config.oneTimeVerificationEnvironmentId,
+        principal: {
+          human_account_id: admin.user.user_key,
+          role: 'admin',
+          household_id: null,
+          student_id: null,
+          credential_version: adminSessionJson.credential_version,
+        },
+      },
+      {
+        query: studentTicket.data.ticketId,
+        kinds: ['ticket'],
+        pageSize: 20,
+        cursor: null,
+      },
+    );
+    expect(directTicketSearch.results).toHaveLength(1);
+
+    const ticketSearch = await adminPrivateCommand(
+      admin,
+      '/api/v2.1/admin/search',
+      'x-onetime-private-search',
+      {
+        query: studentTicket.data.ticketId,
+        kinds: ['ticket'],
+        pageSize: 20,
+        cursor: null,
+      },
+    );
+    const ticketSearchJson = await ticketSearch.json();
+    expect(ticketSearch.status, JSON.stringify(ticketSearchJson)).toBe(200);
+    expect(ticketSearch.headers.get('cache-control')).toContain('no-store');
+    expect(ticketSearchJson).toMatchObject({
+      authorization: 'runtime_admin',
+      queryInUrl: false,
+      analyticsAllowed: false,
+      results: [
+        {
+          kind: 'ticket',
+          targetId: studentTicket.data.ticketId,
+          label: 'Question about the Mishnah',
+          destination: {
+            route: '/app/tickets/:ticketId',
+            targetId: studentTicket.data.ticketId,
+          },
+        },
+      ],
+    });
+
+    const resolvedTicket = await adminPrivateCommand(
+      admin,
+      '/api/v2.1/admin/operations/resolve',
+      'x-onetime-private-resolution',
+      {
+        kind: 'ticket',
+        targetId: studentTicket.data.ticketId,
+        selectedCredentialVersion: adminSessionJson.credential_version,
+      },
+    );
+    expect(resolvedTicket.status).toBe(200);
+    expect(await resolvedTicket.json()).toEqual({
+      state: 'open',
+      href: `/app/tickets/${studentTicket.data.ticketId}`,
+      cache: 'no-store',
+    });
+
+    const staleResolution = await adminPrivateCommand(
+      admin,
+      '/api/v2.1/admin/operations/resolve',
+      'x-onetime-private-resolution',
+      {
+        kind: 'ticket',
+        targetId: studentTicket.data.ticketId,
+        selectedCredentialVersion: adminSessionJson.credential_version + 1,
+      },
+    );
+    expect(await staleResolution.json()).toEqual({
+      state: 'unavailable',
+      reason: 'missing_or_unauthorized',
+      cache: 'no-store',
+    });
+
     const parentCannotReadAdminDetail = await api(
       parent,
       `/api/v1/admin/support/v21/tickets/${studentTicket.data.ticketId}`,
@@ -306,6 +427,23 @@ async function api(
 async function adminWrite(ticketId: string, action: 'assign' | 'status' | 'reply', body: unknown) {
   return api(admin, `/api/v1/admin/support/v21/tickets/${ticketId}/${action}`, {
     method: 'POST',
+    body: JSON.stringify(body),
+  });
+}
+
+async function adminPrivateCommand(
+  session: TestSession,
+  path: string,
+  header: 'x-onetime-private-search' | 'x-onetime-private-resolution',
+  body: unknown,
+) {
+  return fetch(`${baseUrl}${path}`, {
+    method: 'POST',
+    headers: {
+      cookie: authCookies(session),
+      'content-type': 'application/json',
+      [header]: '1',
+    },
     body: JSON.stringify(body),
   });
 }

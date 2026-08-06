@@ -163,6 +163,10 @@ button {
   font-weight: 700;
 }
 
+.app-header-utilities {
+  display: none;
+}
+
 .app-role-switcher {
   display: inline-flex;
   align-items: center;
@@ -1544,7 +1548,7 @@ textarea:focus-visible,
 
 @media (min-width: 1200px) {
   .app-header {
-    grid-template-columns: minmax(0, 1fr) auto auto minmax(180px, 280px) auto;
+    grid-template-columns: minmax(0, 1fr) auto auto auto minmax(180px, 280px) auto;
     min-height: 64px;
     padding-right: 32px;
     padding-left: 32px;
@@ -1557,6 +1561,11 @@ textarea:focus-visible,
   .app-context,
   .app-user {
     display: block;
+  }
+
+  .app-header-utilities {
+    display: inline-flex;
+    align-items: center;
   }
 
   .app-body {

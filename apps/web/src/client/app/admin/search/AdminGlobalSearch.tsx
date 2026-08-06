@@ -10,12 +10,8 @@ import type {
 import {
   ADMIN_SEARCH_KINDS,
   ADMIN_SEARCH_TRANSPORT,
-  ADMIN_CANONICAL_PRIMARY_NAVIGATION,
 } from '../../../../../../../packages/contracts/src/admin/operations/index.ts';
-import {
-  V21AppShell,
-  V21StatePanel,
-} from '../../../../../../../packages/brand-system/src/react-v21.tsx';
+import { V21StatePanel } from '../../../../../../../packages/brand-system/src/react-v21.tsx';
 import {
   bindAdminCredentialSnapshot,
   captureAdminPrivateCompletion,
@@ -25,6 +21,12 @@ import {
 } from '../adminPrivateCompletion.ts';
 
 const DEFAULT_PAGE_SIZE = 20;
+
+export class AdminPrivateAuthorizationError extends Error {
+  constructor(public readonly status: 401 | 403) {
+    super('Admin authorization is no longer current.');
+  }
+}
 
 export function buildAdminSearchRequest(
   query: string,
@@ -49,6 +51,9 @@ export async function postPrivateAdminSearch(
     referrerPolicy: 'same-origin',
     body: JSON.stringify(request),
   });
+  if (response.status === 401 || response.status === 403) {
+    throw new AdminPrivateAuthorizationError(response.status);
+  }
   if (!response.ok) throw new Error('Authorized Admin search is unavailable.');
   return (await response.json()) as AdminSearchPage;
 }
@@ -68,6 +73,9 @@ export async function postPrivateAdminNavigationResolution(
     referrerPolicy: 'same-origin',
     body: JSON.stringify(request),
   });
+  if (response.status === 401 || response.status === 403) {
+    throw new AdminPrivateAuthorizationError(response.status);
+  }
   if (!response.ok) {
     return { state: 'unavailable', reason: 'missing_or_unauthorized', cache: 'no-store' };
   }
@@ -113,6 +121,7 @@ export function AdminGlobalSearch(props: {
     credentialVersion: number,
   ) => Promise<AdminNavigationResolution>;
   onClearRecentQueries: () => void;
+  onQueryCommitted?: ((query: string) => void) | undefined;
   onNavigate: (href: string) => void;
 }) {
   const initiallyAuthorized = props.authorization.state === 'admin';
@@ -176,14 +185,6 @@ export function AdminGlobalSearch(props: {
       ? props.recentQueries.value
       : [];
   const grouped = useMemo(() => groupResults(page?.results ?? []), [page]);
-  const navigation = [
-    ...ADMIN_CANONICAL_PRIMARY_NAVIGATION.map((item) => ({
-      ...item,
-      current: false,
-    })),
-    { id: 'search', label: 'Search', href: '/app/search', current: true },
-  ];
-
   const clearPrivateState = (advanceGeneration = true) => {
     if (advanceGeneration) completionGenerationRef.current += 1;
     clearAdminPrivateSearchState({
@@ -248,6 +249,7 @@ export function AdminGlobalSearch(props: {
       setLastRequestSnapshot(
         bindAdminCredentialSnapshot({ ...request, cursor: null }, completion.credentialVersion),
       );
+      if (!cursor) props.onQueryCommitted?.(request.query);
       setActiveIndex(0);
       setState('idle');
     } catch {
@@ -278,48 +280,54 @@ export function AdminGlobalSearch(props: {
       clearPrivateState();
       return;
     }
-    const resolution = await props.onResolveOpen(result, completion.credentialVersion);
-    if (
-      !isAdminPrivateCompletionCurrent(
-        completion,
-        completionGenerationRef.current,
-        authorizationRef.current,
-      )
-    ) {
-      return;
+    try {
+      const resolution = await props.onResolveOpen(result, completion.credentialVersion);
+      if (
+        !isAdminPrivateCompletionCurrent(
+          completion,
+          completionGenerationRef.current,
+          authorizationRef.current,
+        )
+      ) {
+        return;
+      }
+      if (resolution.state === 'open') props.onNavigate(resolution.href);
+      else clearPrivateState();
+    } catch {
+      if (
+        isAdminPrivateCompletionCurrent(
+          completion,
+          completionGenerationRef.current,
+          authorizationRef.current,
+        )
+      ) {
+        clearPrivateState();
+        setState('error');
+      }
     }
-    if (resolution.state === 'open') props.onNavigate(resolution.href);
-    else clearPrivateState();
   };
 
   if (props.authorization.state !== 'admin') {
     return (
-      <V21AppShell
-        role="admin"
-        title="Global search"
-        navigation={navigation}
-        onNavigate={props.onNavigate}
-      >
+      <section className="admin-global-search" aria-labelledby="admin-search-title">
+        <h2 id="admin-search-title">Search operational records</h2>
         <V21StatePanel kind="error" title="Search unavailable">
           <p>Authorization no longer permits private Admin search.</p>
         </V21StatePanel>
-      </V21AppShell>
+      </section>
     );
   }
 
   return (
-    <V21AppShell
-      role="admin"
-      title="Global search"
-      navigation={navigation}
-      onNavigate={props.onNavigate}
-    >
+    <section className="admin-global-search" aria-labelledby="admin-search-title">
+      <h2 id="admin-search-title">Search operational records</h2>
       <p>
         Search authorized real records. Private search terms stay in the request body and are not
         sent to analytics.
       </p>
       <form
         role="search"
+        data-action-id="admin.search.query.form"
         onSubmit={(event) => {
           event.preventDefault();
           void runSearch();
@@ -394,7 +402,11 @@ export function AdminGlobalSearch(props: {
               <li key={value}>{value}</li>
             ))}
           </ul>
-          <button type="button" onClick={props.onClearRecentQueries}>
+          <button
+            type="button"
+            data-action-id="admin.search.recent.clear.button"
+            onClick={props.onClearRecentQueries}
+          >
             Clear recent searches
           </button>
         </section>
@@ -416,8 +428,8 @@ export function AdminGlobalSearch(props: {
         <section aria-live="polite" aria-label="Authorized search results">
           <div id="admin-search-results" role="listbox" aria-label="Authorized search results">
             {[...grouped.entries()].map(([kind, results]) => (
-              <section key={kind} role="group" aria-labelledby={`search-${kind}-heading`}>
-                <h2 id={`search-${kind}-heading`}>{searchKindLabel(kind)}</h2>
+              <section key={kind} role="group" aria-label={searchKindLabel(kind)}>
+                <h2 aria-hidden="true">{searchKindLabel(kind)}</h2>
                 <ul role="presentation">
                   {results.map((result) => {
                     const index = page.results.indexOf(result);
@@ -428,6 +440,7 @@ export function AdminGlobalSearch(props: {
                           type="button"
                           role="option"
                           aria-selected={index === activeIndex}
+                          data-action-id="admin.search.result.open.button"
                           onFocus={() => setActiveIndex(index)}
                           onClick={() => void resolveAndOpen(result)}
                         >
@@ -443,13 +456,17 @@ export function AdminGlobalSearch(props: {
             ))}
           </div>
           {page.nextCursor && lastRequest ? (
-            <button type="button" onClick={() => void runSearch(page.nextCursor)}>
+            <button
+              type="button"
+              data-action-id="admin.search.next_page.button"
+              onClick={() => void runSearch(page.nextCursor)}
+            >
               Next page
             </button>
           ) : null}
         </section>
       ) : null}
-    </V21AppShell>
+    </section>
   );
 }
 

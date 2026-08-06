@@ -87,7 +87,6 @@ const ISOLATED_ROUTE_IDS = new Set<CanonicalRouteId>([
 
 const MISSING_ROUTE_IDS = new Set<CanonicalRouteId>([
   'RT-PUB-008',
-  'RT-ADM-002',
   'RT-ADM-015',
   'RT-ADM-017',
   'RT-ADM-023',

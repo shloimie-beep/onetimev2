@@ -20,7 +20,23 @@
     },
     {
       "path": "apps/web/src/server/app.ts",
-      "sha256": "f190b3c3357275f5382f37f24c08a7de6840c00e0568ca0fd23c56585caf4308"
+      "sha256": "e1d5b3cad5e794d08c88a787d06a6a25752a96a39bd27345b25d14eec5a5020f"
+    },
+    {
+      "path": "apps/web/src/server/features/admin/operations/index.ts",
+      "sha256": "2968ac91213b2c9991520250a4e43b44c91fe5638c59da9d9b92f608c9f0f3d2"
+    },
+    {
+      "path": "apps/web/src/server/features/admin/operations/repository.ts",
+      "sha256": "4cd86fa77db04831784e6d8164a79740501659a370c022b1329c0745b3ba67f3"
+    },
+    {
+      "path": "apps/web/src/server/features/admin/operations/router.ts",
+      "sha256": "8b49ab5a8b8a10f779936827de201a7c562db2b1c794dcf23821257fafc1a48e"
+    },
+    {
+      "path": "apps/web/src/server/features/admin/operations/service.ts",
+      "sha256": "a244a4a8c3bb7e8a296c9b676f9f5081a818dc01ca05febd4596de737300993b"
     },
     {
       "path": "apps/web/src/server/features/classroom/embedded/adapters.ts",
@@ -63,16 +79,20 @@
       "sha256": "918a03e3a762e691b7e96cfe94c44a6d3b74b2752e5343e67ee8d91029c7d436"
     },
     {
+      "path": "apps/web/src/client/app/admin/search/AdminGlobalSearch.tsx",
+      "sha256": "b587d879ace65e3c46afd300579ca8d79f6496d9d651a1b266db0b55f9f698b3"
+    },
+    {
       "path": "apps/web/src/client/app/admin/support/AdminSupportWorkspace.tsx",
       "sha256": "46e4fc562dd8575f2dda9c7852c205098e251eda755397625304d30483acb30f"
     },
     {
       "path": "apps/web/src/client/app/crm-api.ts",
-      "sha256": "f42a0cf302d8141c8ad0b0f76b76a8182d5c9e5f6b8b225485235c0aa9043ad1"
+      "sha256": "f39637d58074aa2833a40af9fa0e3c059222c45990290d0a4dc5a8d5f41212e6"
     },
     {
       "path": "apps/web/src/client/app/crm-entry.tsx",
-      "sha256": "4f0abae2a926335d0a7c499f2318760ef7b2ed07856121d87766a097c337d55f"
+      "sha256": "6d4b75467793cd53e4e4deac31511051b65ad1a7aeaa782444f031392d683533"
     },
     {
       "path": "apps/web/src/client/app/live-entry.tsx",
@@ -88,11 +108,15 @@
     },
     {
       "path": "apps/web/src/client/app/router/registry.ts",
-      "sha256": "965c3cb27cbd412e71449deab0cc3d877c24c005e4e805006c37581832377686"
+      "sha256": "f67429e0f7444422b158a0bf642be593242ac32df2f978b0d3942d56519a3a3d"
     },
     {
       "path": "apps/web/src/client/app/router/canonical-route-views.ts",
       "sha256": "12923141f4d88a5a6c980e3e5512a50748b41a247cae9f006b819f4a42fbab9a"
+    },
+    {
+      "path": "apps/web/src/client/app/shell/AppShell.tsx",
+      "sha256": "44cc0be0ca03eeef44761955e0fa4b502084ead11838d8b3479f087b4691d09f"
     },
     {
       "path": "apps/web/src/client/app/support/SupportFeature.tsx",
@@ -107,12 +131,20 @@
       "sha256": "dd2ea7b0d43643aa3ca11be8f5e14de26530aa0e375bcc3f6e47ed2a9f0d3c0a"
     },
     {
+      "path": "packages/brand-system/src/styles/react.css",
+      "sha256": "21359812ad995bd5f68a98ebaf7205f0ac107f08d887dd92927d34d3d395cca0"
+    },
+    {
       "path": "packages/brand-system/src/route-branding.ts",
       "sha256": "cdf8369f462d4a788c4ffc6cbe16c7fd5614e2387fada2e56377d5c10c258258"
     },
     {
       "path": "packages/brand-system/src/v21.ts",
       "sha256": "9f1fcd193ca604c5d30c6ee0f18c57bded225c5c09c8eb41d138a3be359ccc31"
+    },
+    {
+      "path": "packages/db/src/index.ts",
+      "sha256": "0d92642f1d9c7692323834c05b1c3e03ebbf905d89b99e71c7a16eafd0ee6e14"
     },
     {
       "path": "packages/db/src/learning/repository.ts",
@@ -287,9 +319,9 @@
       "route_id": "RT-ADM-002",
       "path": "/app/search",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-002",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-ADM-010",
@@ -877,6 +909,176 @@
     }
   ],
   "actions": [
+    {
+      "action_id": "admin.search.next_page.button",
+      "label": "Load more results",
+      "surface": "button",
+      "route": "/app/search",
+      "roles": ["admin"],
+      "capability": "admin:search:read",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v2.1/admin/search"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "admin_search_next_page"
+      },
+      "states": {
+        "loading": "Loading the next private result page.",
+        "success": "The next result page is available.",
+        "error": "The next result page could not be loaded.",
+        "permission": "Only an authenticated Admin may search operational records.",
+        "offline": "Private search is unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/admin/search/AdminGlobalSearch.test.tsx",
+        "tests/integration/support/v21-support-lifecycle.test.ts"
+      ]
+    },
+    {
+      "action_id": "admin.search.open.button",
+      "label": "Search",
+      "surface": "button",
+      "route": "/app/search",
+      "roles": ["admin"],
+      "capability": "admin:search:open",
+      "handler": {
+        "method": "CLIENT",
+        "path": "apps/web/src/client/app/shell/AppShell.tsx"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_navigation",
+        "event": "admin_search_opened"
+      },
+      "states": {
+        "loading": "Opening private Admin search.",
+        "success": "Private Admin search is open.",
+        "error": "Private Admin search could not be opened.",
+        "permission": "Only an authenticated Admin may open operational search.",
+        "offline": "The mounted search shell remains available; new results require the network."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/admin/search/AdminGlobalSearch.test.tsx",
+        "tests/e2e/support.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.search.query.form",
+      "label": "Search operational records",
+      "surface": "form",
+      "route": "/app/search",
+      "roles": ["admin"],
+      "capability": "admin:search:read",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v2.1/admin/search"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "admin_search_executed"
+      },
+      "states": {
+        "loading": "Searching private operational records.",
+        "success": "Authorized search results are available.",
+        "error": "Operational records could not be searched.",
+        "permission": "Only an authenticated Admin may search operational records.",
+        "offline": "Private search is unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/admin/search/AdminGlobalSearch.test.tsx",
+        "tests/integration/support/v21-support-lifecycle.test.ts",
+        "tests/e2e/support.spec.ts",
+        "tests/accessibility/support-a11y.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.search.recent.clear.button",
+      "label": "Clear recent searches",
+      "surface": "button",
+      "route": "/app/search",
+      "roles": ["admin"],
+      "capability": "admin:search:local",
+      "handler": {
+        "method": "CLIENT",
+        "path": "apps/web/src/client/app/admin/search/AdminGlobalSearch.tsx"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_memory",
+        "event": "admin_search_recent_cleared"
+      },
+      "states": {
+        "loading": "Clearing this session's recent searches.",
+        "success": "Recent searches are cleared from memory.",
+        "error": "Recent searches could not be cleared.",
+        "permission": "Recent searches are available only within the authenticated Admin session.",
+        "offline": "Recent searches can still be cleared offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": ["apps/web/src/client/app/admin/search/AdminGlobalSearch.test.tsx"]
+    },
+    {
+      "action_id": "admin.search.result.open.button",
+      "label": "Open result",
+      "surface": "button",
+      "route": "/app/search",
+      "roles": ["admin"],
+      "capability": "admin:search:navigate",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v2.1/admin/operations/resolve"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "admin_search_result_resolved"
+      },
+      "states": {
+        "loading": "Rechecking authorization for the selected record.",
+        "success": "The selected record remains authorized and can be opened.",
+        "error": "The selected record could not be resolved.",
+        "permission": "The selected record is no longer authorized for this Admin session.",
+        "offline": "Record authorization cannot be rechecked offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/admin/search/AdminGlobalSearch.test.tsx",
+        "tests/integration/support/v21-support-lifecycle.test.ts",
+        "tests/e2e/support.spec.ts"
+      ]
+    },
     {
       "action_id": "auth.parent.logout.button",
       "label": "Logout",

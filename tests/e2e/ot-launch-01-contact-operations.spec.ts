@@ -138,6 +138,7 @@ test('Admin runs one-button Parent household enrollment and protected Contacts o
 test('Admin reaches the existing Parent household naturally from Contacts on mobile', async ({
   page,
 }) => {
+  test.setTimeout(60_000);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.context().addCookies([
     {

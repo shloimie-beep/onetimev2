@@ -177,6 +177,25 @@ export function AppShell({
             onNavigate(homeHref);
           }}
         />
+        {utilityItems.length > 0 && (
+          <nav className="app-header-utilities" aria-label="Admin utilities">
+            {utilityItems.map((item) => (
+              <a
+                key={item.id}
+                href={item.href}
+                className="button-secondary compact-action"
+                aria-current={item.current ? 'page' : undefined}
+                data-action-id={item.id === 'search' ? 'admin.search.open.button' : undefined}
+                onClick={(event) => {
+                  event.preventDefault();
+                  onNavigate(item.href);
+                }}
+              >
+                {item.label}
+              </a>
+            ))}
+          </nav>
+        )}
         <div className="app-context" aria-label="Current account">
           <span>{shellUser.roleLabel}</span>
         </div>

@@ -51,6 +51,19 @@ test('Admin ticket queue and detail pass axe', async ({ page, context }) => {
     page.getByRole('heading', { name: 'Ticket operations', exact: true, level: 2 }),
   ).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+
+  await page
+    .getByRole('navigation', { name: 'Admin utilities' })
+    .getByRole('link', { name: 'Search' })
+    .click();
+  await page.waitForURL('**/app/search');
+  await expect(page.getByRole('heading', { name: 'Search operational records' })).toBeVisible();
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+
+  await page.getByRole('combobox', { name: /Search adults, households/u }).fill(subject);
+  await page.getByRole('button', { name: 'Search', exact: true }).click();
+  await expect(page.getByRole('option', { name: new RegExp(subject, 'u') })).toBeVisible();
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });
 
 async function login(page: Page, email: string, password: string) {

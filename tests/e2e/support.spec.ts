@@ -123,6 +123,27 @@ test('Admin can operate a durable Parent support conversation inside One Time', 
   await ticket.getByRole('button', { name: 'Send in-app reply' }).click();
   await expect(page.locator('.form-status')).toHaveText('In-app reply saved.');
   await expect(ticket.getByText('The Admin lifecycle is working')).toBeVisible();
+
+  await page
+    .getByRole('navigation', { name: 'Admin utilities' })
+    .getByRole('link', { name: 'Search' })
+    .click();
+  await page.waitForURL('**/app/search');
+  await expect(page.getByRole('heading', { name: 'Search operational records' })).toBeVisible();
+  await page.getByRole('combobox', { name: /Search adults, households/u }).fill(subject);
+  const searchResponse = page.waitForResponse(
+    (response) =>
+      new URL(response.url()).pathname === '/api/v2.1/admin/search' &&
+      response.request().method() === 'POST',
+  );
+  await page.getByRole('button', { name: 'Search', exact: true }).click();
+  const observedSearchResponse = await searchResponse;
+  expect(new URL(observedSearchResponse.url()).search).toBe('');
+  const result = page.getByRole('option', { name: new RegExp(subject, 'u') });
+  await expect(result).toBeVisible();
+  await result.click();
+  await page.waitForURL(`**/app/tickets/${ticketId}`);
+  await expect(page.getByRole('article', { name: subject })).toBeVisible();
 });
 
 test('support form reports server and network failures accessibly', async ({ page }) => {
