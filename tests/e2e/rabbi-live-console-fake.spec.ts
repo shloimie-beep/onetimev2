@@ -3,12 +3,12 @@ import { W12_E2E_ADMIN_COOKIES } from '../support/w12-portal-test-lab-session.ts
 
 test('Rabbi live console fake flow: Student Ready -> Rabbi Feature -> Done', async ({
   browser,
-}) => {
+}, testInfo) => {
   const studentContext = await browser.newContext();
   const ownerContext = await browser.newContext();
   const studentPage = await studentContext.newPage();
   const ownerPage = await ownerContext.newPage();
-  const questionText = 'Browser live question alpha marker';
+  const questionText = `Browser live question ${testInfo.workerIndex}-${testInfo.repeatEachIndex}-${testInfo.retry}`;
 
   await loginAs(
     studentPage,
@@ -41,16 +41,10 @@ test('Rabbi live console fake flow: Student Ready -> Rabbi Feature -> Done', asy
   );
   await expect(ownerPage.getByRole('heading', { name: 'Live Console' })).toBeVisible();
   await ownerPage.getByRole('link', { name: 'Questions', exact: true }).click();
-  const consoleSnapshot = await ownerPage.request.get(
-    `/api/v1/live-class/questions?occurrence_key=${encodeURIComponent(occurrenceKey)}`,
-  );
-  const consoleText = await consoleSnapshot.text();
-  expect(consoleSnapshot.status(), consoleText).toBe(200);
-  expect(consoleText).toContain(questionText);
-  await ownerPage
-    .locator('.live-question-item', { hasText: questionText })
-    .getByRole('button', { name: 'Select' })
-    .click();
+  const questionCard = ownerPage.locator('.live-question-item', { hasText: questionText });
+  await expect(questionCard).toHaveCount(1);
+  await expect(questionCard).toContainText(questionText);
+  await questionCard.getByRole('button', { name: 'Select' }).click();
 
   await expect(studentPage.getByText('Rabbi selected your question.')).toBeVisible({
     timeout: 7000,
