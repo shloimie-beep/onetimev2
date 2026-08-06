@@ -49,6 +49,7 @@ const BOUNDED_ALIAS_ROUTE_IDS = new Set<CanonicalRouteId>([
   'RT-ADM-013',
   'RT-ADM-014',
   'RT-ADM-016',
+  'RT-ADM-017',
   'RT-ADM-024',
   'RT-ADM-030',
   'RT-ADM-031',
@@ -88,7 +89,6 @@ const ISOLATED_ROUTE_IDS = new Set<CanonicalRouteId>([
 const MISSING_ROUTE_IDS = new Set<CanonicalRouteId>([
   'RT-PUB-008',
   'RT-ADM-015',
-  'RT-ADM-017',
   'RT-ADM-023',
   'RT-ADM-033',
   'RT-ADM-061',

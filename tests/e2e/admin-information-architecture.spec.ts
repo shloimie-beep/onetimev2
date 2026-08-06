@@ -76,6 +76,31 @@ test('Admin IA keeps the canonical launch areas across the governed viewport mat
   }
 
   await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.route('**/api/v1/admin-directory/learners*', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        success: true,
+        learners: [
+          {
+            learner_key: 'student-detail-browser-fixture',
+            household_key: 'household-browser-fixture',
+            household_name: 'Cohen Household',
+            display_name: 'Ari Cohen',
+            hebrew_name: 'Aharon',
+            grade_label: 'Grade 6',
+            learner_status: 'active',
+            version: 4,
+            student_access_status: 'active',
+            student_user_ref: 'student-user-browser-fixture',
+            enrollment_count: 2,
+            updated_at: '2026-08-05T08:00:00.000Z',
+          },
+        ],
+      }),
+    }),
+  );
   await page.goto('/app/students');
   await expect(page.locator('#page-title')).toHaveText('Students');
   await expect(
@@ -83,6 +108,21 @@ test('Admin IA keeps the canonical launch areas across the governed viewport mat
   ).toHaveText(['People / Contacts', 'Households', 'Users', 'Students', 'Audit History']);
   await expect(page.locator('#admin-directory-learners-title')).toHaveText('Learners');
   await expect(page.getByRole('button', { name: 'Add learner' })).toBeVisible();
+  const firstStudentLink = page.locator('.admin-directory__record-title a').first();
+  await expect(firstStudentLink).toHaveAttribute('href', /^\/app\/students\/[^/]+$/u);
+  await firstStudentLink.click();
+  await expect(page).toHaveURL(/\/app\/students\/[^/]+$/u);
+  await expect(page.locator('#admin-directory-learners-title')).toHaveText('Student details');
+  await expect(page.getByRole('heading', { name: 'Student details' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Edit Student' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Back to Students' })).toBeVisible();
+  expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
+  const studentDetailAxe = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+  expect(
+    studentDetailAxe.violations.filter((violation) =>
+      ['critical', 'serious'].includes(violation.impact ?? ''),
+    ),
+  ).toEqual([]);
 
   await page.goto('/app/content/studio');
   await expect(page.getByRole('heading', { name: 'Content' })).toBeVisible();

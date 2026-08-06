@@ -345,7 +345,7 @@ function CrmApp() {
       setSurface('crm');
       setContactOperationsMode(false);
       setContactOperationsHouseholdKey(null);
-      setContactsRoutePath(routePath);
+      setContactsRoutePath(`${routePath}${routeSearch}`);
       setCommunicationsMode(null);
       setAdminSupportRoute({ mode: 'workspace', ticketId: null });
       setSelected(null);
@@ -888,7 +888,8 @@ function CrmApp() {
     [query],
   );
   const dashboardSection = dashboardSectionFromPath(dashboardRoutePath);
-  const contactsSection = contactsSectionFromPath(contactsRoutePath);
+  const contactsRoute = new URL(contactsRoutePath, location.origin);
+  const contactsSection = contactsSectionFromPath(contactsRoute.pathname);
   const classroomPath = new URL(classroomRoutePath, location.origin);
   const classroomSection = classroomSectionFromPath(classroomPath.pathname);
 
@@ -1248,6 +1249,11 @@ function CrmApp() {
             <AdminDirectoryPanel
               mode={contactsSection}
               csrfToken={session?.csrf_token ?? ''}
+              selectedRecordId={
+                contactsSection === 'learners'
+                  ? contactsRoute.searchParams.get('learner_key')
+                  : undefined
+              }
               onSessionExpired={clearProtectedState}
             />
           </Suspense>

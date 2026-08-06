@@ -40,10 +40,12 @@ export type AdminDirectoryMode = 'households' | 'users' | 'learners' | 'audit';
 export function AdminDirectoryPanel({
   mode,
   csrfToken,
+  selectedRecordId,
   onSessionExpired,
 }: {
   mode: AdminDirectoryMode;
   csrfToken: string;
+  selectedRecordId?: string | null | undefined;
   onSessionExpired: () => void;
 }) {
   const [households, setHouseholds] = useState<AdminHousehold[]>([]);
@@ -56,6 +58,7 @@ export function AdminDirectoryPanel({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
+  const [selectedLearner, setSelectedLearner] = useState<AdminLearner | null>(null);
   const [form, setForm] = useState<
     | { kind: 'household'; record: AdminHousehold | null }
     | { kind: 'guardian'; record: AdminHousehold }
@@ -67,11 +70,12 @@ export function AdminDirectoryPanel({
 
   useEffect(() => {
     setForm(null);
+    setSelectedLearner(null);
     setSearch('');
     setSearchDraft('');
     setStatus('');
     void refresh('', '');
-  }, [mode]);
+  }, [mode, selectedRecordId]);
 
   async function refresh(nextSearch = search, nextStatus = status) {
     setLoading(true);
@@ -98,6 +102,17 @@ export function AdminDirectoryPanel({
         ]);
         setLearners(learnerResult.learners);
         setHouseholds(householdResult.households);
+        if (selectedRecordId) {
+          const selected = learnerResult.learners.find(
+            (learner) => learner.learner_key === selectedRecordId,
+          );
+          setSelectedLearner(selected ?? null);
+          if (!selected) {
+            setError('The Student record was not found or is no longer available.');
+          }
+        } else {
+          setSelectedLearner(null);
+        }
       } else {
         const result = await listAdminAuditHistory(nextSearch);
         setAuditEvents(result.events);
@@ -124,13 +139,31 @@ export function AdminDirectoryPanel({
     }
   }
 
+  function changeLearnerStatus(record: AdminLearner, action: 'archive' | 'restore') {
+    if (
+      action === 'archive' &&
+      !window.confirm(
+        `Archive ${record.display_name}? Student access and active sessions will be disabled.`,
+      )
+    ) {
+      return;
+    }
+    void runMutation(
+      () => setAdminLearnerStatus(csrfToken, record, action),
+      action === 'archive'
+        ? 'Learner archived; the household seat is now available.'
+        : 'Learner restored. Student access remains separately controlled.',
+    );
+  }
+
   const parentUsers = useMemo(
     () => users.filter((user) => user.role === 'parent' && user.status === 'active'),
     [users],
   );
 
-  const title =
-    mode === 'households'
+  const title = selectedLearner
+    ? 'Student details'
+    : mode === 'households'
       ? 'Households'
       : mode === 'users'
         ? 'Users and roles'
@@ -145,7 +178,11 @@ export function AdminDirectoryPanel({
           <h2 id={`admin-directory-${mode}-title`}>{title}</h2>
           <p>{descriptionFor(mode)}</p>
         </div>
-        {mode !== 'audit' && (
+        {selectedLearner ? (
+          <Button type="button" onClick={() => window.location.assign('/app/students')}>
+            Back to Students
+          </Button>
+        ) : mode !== 'audit' ? (
           <Button
             type="button"
             variant="primary"
@@ -165,7 +202,7 @@ export function AdminDirectoryPanel({
                 ? 'Create account setup'
                 : 'Add learner'}
           </Button>
-        )}
+        ) : null}
       </div>
 
       <form
@@ -391,29 +428,25 @@ export function AdminDirectoryPanel({
           }}
         />
       )}
-      {!loading && !error && !form && mode === 'learners' && (
-        <LearnerList
-          learners={learners}
-          onEdit={(record) => setForm({ kind: 'learner', record })}
-          onSetup={(record) => setForm({ kind: 'student-setup', record })}
-          onStatus={(record, action) => {
-            if (
-              action === 'archive' &&
-              !window.confirm(
-                `Archive ${record.display_name}? Student access and active sessions will be disabled.`,
-              )
-            ) {
-              return;
-            }
-            void runMutation(
-              () => setAdminLearnerStatus(csrfToken, record, action),
-              action === 'archive'
-                ? 'Learner archived; the household seat is now available.'
-                : 'Learner restored. Student access remains separately controlled.',
-            );
-          }}
-        />
-      )}
+      {!loading &&
+        !error &&
+        !form &&
+        mode === 'learners' &&
+        (selectedLearner ? (
+          <LearnerDetail
+            record={selectedLearner}
+            onEdit={(record) => setForm({ kind: 'learner', record })}
+            onSetup={(record) => setForm({ kind: 'student-setup', record })}
+            onStatus={changeLearnerStatus}
+          />
+        ) : (
+          <LearnerList
+            learners={learners}
+            onEdit={(record) => setForm({ kind: 'learner', record })}
+            onSetup={(record) => setForm({ kind: 'student-setup', record })}
+            onStatus={changeLearnerStatus}
+          />
+        ))}
       {!loading && !error && !form && mode === 'audit' && <AuditList events={auditEvents} />}
     </section>
   );
@@ -584,6 +617,7 @@ function LearnerList({
           title={record.display_name}
           subtitle={[record.hebrew_name, record.grade_label].filter(Boolean).join(' · ')}
           status={record.learner_status}
+          href={`/app/students/${encodeURIComponent(record.learner_key)}`}
         />,
         record.household_name,
         <Status key="access" value={record.student_access_status} />,
@@ -610,6 +644,77 @@ function LearnerList({
         </ActionGroup>,
       ])}
     />
+  );
+}
+
+function LearnerDetail({
+  record,
+  onEdit,
+  onSetup,
+  onStatus,
+}: {
+  record: AdminLearner;
+  onEdit: (record: AdminLearner) => void;
+  onSetup: (record: AdminLearner) => void;
+  onStatus: (record: AdminLearner, action: 'archive' | 'restore') => void;
+}) {
+  return (
+    <Card className="admin-directory__form-card" aria-labelledby="student-detail-heading">
+      <div className="admin-directory__heading">
+        <div>
+          <h3 id="student-detail-heading">{record.display_name}</h3>
+          <p>Local Student identity, household membership, credentials, and class enrollment.</p>
+        </div>
+        <Status value={record.learner_status} />
+      </div>
+      <dl className="admin-directory__detail-facts">
+        <div>
+          <dt>Household</dt>
+          <dd>{record.household_name}</dd>
+        </div>
+        <div>
+          <dt>Hebrew name</dt>
+          <dd>{record.hebrew_name || 'Not recorded'}</dd>
+        </div>
+        <div>
+          <dt>Grade</dt>
+          <dd>{record.grade_label || 'Not recorded'}</dd>
+        </div>
+        <div>
+          <dt>Student access</dt>
+          <dd>
+            <Status value={record.student_access_status} />
+          </dd>
+        </div>
+        <div>
+          <dt>Active classes</dt>
+          <dd>{record.enrollment_count}</dd>
+        </div>
+        <div>
+          <dt>Last updated</dt>
+          <dd>{formatDate(record.updated_at)}</dd>
+        </div>
+      </dl>
+      <ActionGroup>
+        <Button type="button" variant="text" onClick={() => onEdit(record)}>
+          Edit Student
+        </Button>
+        {record.learner_status === 'active' && record.student_access_status !== 'active' && (
+          <Button type="button" variant="text" onClick={() => onSetup(record)}>
+            Student setup
+          </Button>
+        )}
+        <Button
+          type="button"
+          variant={record.learner_status === 'active' ? 'danger' : 'secondary'}
+          onClick={() =>
+            onStatus(record, record.learner_status === 'active' ? 'archive' : 'restore')
+          }
+        >
+          {record.learner_status === 'active' ? 'Archive' : 'Restore'}
+        </Button>
+      </ActionGroup>
+    </Card>
   );
 }
 
@@ -1003,14 +1108,16 @@ function RecordTitle({
   title,
   subtitle,
   status,
+  href,
 }: {
   title: string;
   subtitle?: string;
   status: string;
+  href?: string;
 }) {
   return (
     <span className="admin-directory__record-title">
-      <strong>{title}</strong>
+      <strong>{href ? <a href={href}>{title}</a> : title}</strong>
       {subtitle && <small>{subtitle}</small>}
       <Status value={status} />
     </span>

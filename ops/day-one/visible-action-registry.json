@@ -92,7 +92,7 @@
     },
     {
       "path": "apps/web/src/client/app/crm-entry.tsx",
-      "sha256": "6d4b75467793cd53e4e4deac31511051b65ad1a7aeaa782444f031392d683533"
+      "sha256": "3b8f7c853b0f8cb58299ffe0239fff89abb661ab0c940cd853d0b34aadb4667e"
     },
     {
       "path": "apps/web/src/client/app/live-entry.tsx",
@@ -108,11 +108,11 @@
     },
     {
       "path": "apps/web/src/client/app/router/registry.ts",
-      "sha256": "f67429e0f7444422b158a0bf642be593242ac32df2f978b0d3942d56519a3a3d"
+      "sha256": "52853927d380409193b588c65c7514025a48eccce71f47d7f2aa839e6aca587c"
     },
     {
       "path": "apps/web/src/client/app/router/canonical-route-views.ts",
-      "sha256": "12923141f4d88a5a6c980e3e5512a50748b41a247cae9f006b819f4a42fbab9a"
+      "sha256": "40a5ae7456bd2e566e7f1b38262efd5d07a89bc689dd36ca3d09604aa29c1822"
     },
     {
       "path": "apps/web/src/client/app/shell/AppShell.tsx",
@@ -383,9 +383,9 @@
       "route_id": "RT-ADM-017",
       "path": "/app/students/:studentId",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-017",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-020",
@@ -909,6 +909,142 @@
     }
   ],
   "actions": [
+    {
+      "action_id": "admin.directory.student.archive_restore.button",
+      "label": "Archive or restore Student",
+      "surface": "button",
+      "route": "/app/students/:studentId",
+      "roles": ["admin"],
+      "capability": "admin:student:lifecycle",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/admin-directory/learners/:learnerKey/:action"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "admin_learner_archived/admin_learner_restored"
+      },
+      "states": {
+        "loading": "Applying the local Student lifecycle change.",
+        "success": "The Student lifecycle and access revocation state are current.",
+        "error": "The Student lifecycle change was rejected or could not be saved.",
+        "permission": "Only an authenticated Admin may govern Student lifecycle state.",
+        "offline": "Student lifecycle changes are unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/admin-directory/admin-directory.test.ts",
+        "tests/e2e/admin-information-architecture.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.directory.student.edit.form",
+      "label": "Edit Student",
+      "surface": "form",
+      "route": "/app/students/:studentId",
+      "roles": ["admin"],
+      "capability": "admin:student:update",
+      "handler": {
+        "method": "PATCH",
+        "path": "/api/v1/admin-directory/learners/:learnerKey"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "admin_learner_updated"
+      },
+      "states": {
+        "loading": "Saving the local Student record.",
+        "success": "The version-protected Student record is current.",
+        "error": "The Student record was stale, rejected, or could not be saved.",
+        "permission": "Only an authenticated Admin may edit Student records.",
+        "offline": "Student record changes are unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/admin-directory/admin-directory.test.ts",
+        "tests/e2e/admin-information-architecture.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.directory.student.setup.form",
+      "label": "Student setup",
+      "surface": "form",
+      "route": "/app/students/:studentId",
+      "roles": ["admin"],
+      "capability": "admin:student:credential-setup",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/admin-directory/learners/:learnerKey/student-setup"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "client-generated idempotency_key"
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "student_setup_issued"
+      },
+      "states": {
+        "loading": "Creating a single-use Student setup in the protected delivery sink.",
+        "success": "The single-use Student setup was queued without exposing a password.",
+        "error": "The Student setup request was rejected or could not be queued.",
+        "permission": "Only an authenticated Admin may request Student setup.",
+        "offline": "Student setup is unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "sink",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/admin-directory/admin-directory.test.ts",
+        "tests/e2e/admin-information-architecture.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.directory.student.view.route",
+      "label": "Student details",
+      "surface": "route",
+      "route": "/app/students/:studentId",
+      "roles": ["admin"],
+      "capability": "admin:student:read",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/admin-directory/learners"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "admin_learner_detail_read"
+      },
+      "states": {
+        "loading": "Loading the private Student record.",
+        "success": "The scoped Student identity, household, access, and class summary are visible.",
+        "error": "The Student record was not found or could not be loaded.",
+        "permission": "Only an authenticated Admin may read Student details.",
+        "offline": "Private Student records are unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/admin-directory/admin-directory.test.ts",
+        "tests/e2e/admin-information-architecture.spec.ts"
+      ]
+    },
     {
       "action_id": "admin.search.next_page.button",
       "label": "Load more results",

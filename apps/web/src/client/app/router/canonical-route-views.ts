@@ -96,6 +96,7 @@ export const CANONICAL_ROUTE_COMPATIBILITY_PATHS: Readonly<
   'RT-ADM-013': '/app/crm/contact-operations?household=:householdId',
   'RT-ADM-014': '/app/crm/users',
   'RT-ADM-016': '/app/crm/learners',
+  'RT-ADM-017': '/app/crm/learners?learner_key=:studentId',
   'RT-ADM-024': '/app/content',
   'RT-ADM-030': '/app/classes',
   'RT-ADM-031': '/app/classes/occurrences',

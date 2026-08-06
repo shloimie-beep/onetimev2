@@ -1058,6 +1058,30 @@
   margin: 0;
 }
 
+.admin-directory__detail-facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--ot-space-4);
+  margin: 0;
+}
+
+.admin-directory__detail-facts > div {
+  display: grid;
+  gap: var(--ot-space-1);
+  min-width: 0;
+}
+
+.admin-directory__detail-facts dt {
+  color: var(--ot-color-text-muted);
+  font-size: var(--ot-font-size-sm);
+  font-weight: 700;
+}
+
+.admin-directory__detail-facts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
 .admin-directory__table table {
   min-width: 56rem;
 }
@@ -1087,7 +1111,8 @@
   }
 
   .admin-directory__filters,
-  .admin-directory__form {
+  .admin-directory__form,
+  .admin-directory__detail-facts {
     display: grid;
     grid-template-columns: 1fr;
   }

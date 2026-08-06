@@ -84,6 +84,34 @@ const EXPECTED_SOURCE_INPUT_PATHS = [
 ] as const;
 
 const EXPECTED_ACTION_BINDINGS = [
+  [
+    'admin.directory.student.archive_restore.button',
+    '/app/students/:studentId',
+    ['admin'],
+    'POST',
+    '/api/v1/admin-directory/learners/:learnerKey/:action',
+  ],
+  [
+    'admin.directory.student.edit.form',
+    '/app/students/:studentId',
+    ['admin'],
+    'PATCH',
+    '/api/v1/admin-directory/learners/:learnerKey',
+  ],
+  [
+    'admin.directory.student.setup.form',
+    '/app/students/:studentId',
+    ['admin'],
+    'POST',
+    '/api/v1/admin-directory/learners/:learnerKey/student-setup',
+  ],
+  [
+    'admin.directory.student.view.route',
+    '/app/students/:studentId',
+    ['admin'],
+    'GET',
+    '/api/v1/admin-directory/learners',
+  ],
   ['admin.search.next_page.button', '/app/search', ['admin'], 'POST', '/api/v2.1/admin/search'],
   [
     'admin.search.open.button',
@@ -397,13 +425,13 @@ describe('v2.1 visible action registry', () => {
     expect(registry.canonical_routes).toHaveLength(93);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'ready'),
-    ).toHaveLength(77);
+    ).toHaveLength(78);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'isolated'),
     ).toHaveLength(7);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'missing'),
-    ).toHaveLength(9);
+    ).toHaveLength(8);
     expect(sourceText.endsWith('\n')).toBe(true);
   });
 
