@@ -55,13 +55,17 @@ describe('P18 embedded-classroom router', () => {
     const baseUrl = await start({ service, allocateId: () => 'live-allocation-1' });
     const exchangeSecret = '0123456789abcdefghijklmnopqrstuvwxyz-EXCHANGE';
 
-    const response = await post(baseUrl, '/bootstrap', { exchange_secret: exchangeSecret });
+    const response = await post(baseUrl, '/bootstrap', {
+      exchange_secret: exchangeSecret,
+      occurrence_id: 'occurrence-canonical',
+    });
 
     expect(response.status).toBe(200);
     expect(response.headers.get('cache-control')).toContain('no-store');
     expect(response.headers.get('referrer-policy')).toBe('no-referrer');
     expect(service.bootstrap).toHaveBeenCalledWith({
       ...STUDENT,
+      occurrence_id: 'occurrence-canonical',
       grant_id: `p18-grant-${hashEmbeddedExchangeSecret(exchangeSecret)}`,
       grant_key_digest: hashEmbeddedExchangeSecret(exchangeSecret),
       live_session_id: 'p18-live-live-allocation-1',
@@ -85,9 +89,9 @@ describe('P18 embedded-classroom router', () => {
     service.bootstrap.mockClear();
     const injected = await post(baseUrl, '/bootstrap', {
       exchange_secret: exchangeSecret,
+      occurrence_id: 'occurrence-canonical',
       student_id: 'student-attacker',
       household_id: 'household-attacker',
-      occurrence_id: 'occurrence-attacker',
     });
     expect(injected.status).toBe(400);
     expect(service.bootstrap).not.toHaveBeenCalled();
@@ -313,7 +317,7 @@ function sdkBootstrap() {
     customer_key: 'zoom_ck_1234567890abcdef12345678',
     participant_display_name: 'Student',
     recording_capture_active: true,
-    leave_path: '/app/classroom' as const,
+    leave_path: '/app/student' as const,
     issued_at: NOW.toISOString(),
     expires_at: '2026-07-28T17:00:45.000Z',
     role: 0 as const,

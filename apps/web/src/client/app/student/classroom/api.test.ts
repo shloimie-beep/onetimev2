@@ -17,14 +17,14 @@ describe('P18 Student classroom API', () => {
       exchangeSecret: () => 'exchange-secret-with-at-least-thirty-two-characters',
     });
 
-    const result = await api.bootstrap('csrf-token');
+    const result = await api.bootstrap('occurrence-canonical', 'csrf-token');
 
     expect(result.lease).toEqual({
       lease_generation: 3,
       version: 7,
       lease_expires_at: '2026-08-02T10:01:30.000Z',
     });
-    expect(result.bootstrap.leave_path).toBe('/app/classroom');
+    expect(result.bootstrap.leave_path).toBe('/app/student');
     const [url, request] = firstRequest(fetcher);
     expect(url).toBe('/api/app/classroom/bootstrap');
     expect(request).toMatchObject({
@@ -39,10 +39,27 @@ describe('P18 Student classroom API', () => {
     });
     expect(JSON.parse(String(request.body))).toEqual({
       exchange_secret: 'exchange-secret-with-at-least-thirty-two-characters',
+      occurrence_id: 'occurrence-canonical',
     });
     expect(String(request.body)).not.toMatch(
-      /student|household|occurrence|enrollment|registrant|device|environment|scope/iu,
+      /student_id|household|enrollment|registrant|device|environment|scope/iu,
     );
+  });
+
+  it.each([
+    '',
+    ' occurrence-canonical',
+    'occurrence-canonical ',
+    'occurrence/canonical',
+    'x'.repeat(257),
+  ])('rejects an invalid occurrence identifier before making a request', async (occurrenceId) => {
+    const fetcher = vi.fn<typeof fetch>();
+    const api = createStudentClassroomApi({ fetcher });
+
+    await expect(api.bootstrap(occurrenceId, 'csrf-token')).rejects.toBeInstanceOf(
+      StudentClassroomApiError,
+    );
+    expect(fetcher).not.toHaveBeenCalled();
   });
 
   it('rolls the exact heartbeat version forward and sends opaque attendance only', async () => {
@@ -126,7 +143,7 @@ describe('P18 Student classroom API', () => {
       name: 'a queried leave path',
       mutate: (data: ReturnType<typeof bootstrapData>) => ({
         ...data,
-        bootstrap: { ...data.bootstrap, leave_path: '/app/classroom?student=private' },
+        bootstrap: { ...data.bootstrap, leave_path: '/app/student?student=private' },
       }),
     },
     {
@@ -145,7 +162,9 @@ describe('P18 Student classroom API', () => {
       now: () => now,
       exchangeSecret: () => 'exchange-secret-with-at-least-thirty-two-characters',
     });
-    await expect(api.bootstrap('csrf-token')).rejects.toBeInstanceOf(StudentClassroomApiError);
+    await expect(api.bootstrap('occurrence-canonical', 'csrf-token')).rejects.toBeInstanceOf(
+      StudentClassroomApiError,
+    );
   });
 
   it('requires private no-store and no-referrer response controls', async () => {
@@ -160,7 +179,9 @@ describe('P18 Student classroom API', () => {
       now: () => now,
       exchangeSecret: () => 'exchange-secret-with-at-least-thirty-two-characters',
     });
-    await expect(api.bootstrap('csrf-token')).rejects.toBeInstanceOf(StudentClassroomApiError);
+    await expect(api.bootstrap('occurrence-canonical', 'csrf-token')).rejects.toBeInstanceOf(
+      StudentClassroomApiError,
+    );
   });
 
   it('maps only a known safe denial code and never trusts the response message', async () => {
@@ -179,7 +200,9 @@ describe('P18 Student classroom API', () => {
       now: () => now,
       exchangeSecret: () => 'exchange-secret-with-at-least-thirty-two-characters',
     });
-    const error = await api.bootstrap('csrf-token').catch((caught: unknown) => caught);
+    const error = await api
+      .bootstrap('occurrence-canonical', 'csrf-token')
+      .catch((caught: unknown) => caught);
     expect(error).toBeInstanceOf(StudentClassroomApiError);
     expect(error).toMatchObject({ denialCode: 'second_device_active' });
     expect((error as Error).message).toBe('The classroom is unavailable.');
@@ -200,7 +223,7 @@ function bootstrapData() {
       customer_key: 'zoom_ck_0123456789abcdef01234567',
       participant_display_name: 'Student',
       recording_capture_active: true,
-      leave_path: '/app/classroom',
+      leave_path: '/app/student',
       issued_at: '2026-08-02T10:00:00.000Z',
       expires_at: '2026-08-02T10:01:00.000Z',
       role: 0,

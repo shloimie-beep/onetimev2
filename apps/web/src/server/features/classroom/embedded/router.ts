@@ -12,7 +12,12 @@ import type {
 import { digestEmbeddedAttendanceEvidence, hashEmbeddedExchangeSecret } from './adapters.ts';
 import type { EmbeddedClassroomService } from './service.ts';
 
-const exchangeSecretSchema = z.object({ exchange_secret: z.string().min(32).max(512) }).strict();
+const exchangeSecretSchema = z
+  .object({
+    exchange_secret: z.string().min(32).max(512),
+    occurrence_id: z.string().trim().min(1).max(256),
+  })
+  .strict();
 const heartbeatSchema = z
   .object({
     lease_generation: z.number().int().positive(),
@@ -99,6 +104,7 @@ export function createEmbeddedClassroomRouter(input: EmbeddedClassroomRouterInpu
       }
       const result = await input.service.bootstrap({
         ...identity,
+        occurrence_id: body.occurrence_id,
         grant_id: `p18-grant-${grantKeyDigest}`,
         grant_key_digest: grantKeyDigest,
         live_session_id: `p18-live-${allocateId()}`,

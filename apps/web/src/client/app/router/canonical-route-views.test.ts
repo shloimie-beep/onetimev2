@@ -34,9 +34,9 @@ describe('v2.1 canonical route views', () => {
     expect(
       CANONICAL_V21_ROUTES.filter(({ routeId }) => routeId.startsWith('RT-STU-')),
     ).toHaveLength(17);
-    expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'ready')).toHaveLength(88);
+    expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'ready')).toHaveLength(89);
     expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'isolated')).toHaveLength(
-      5,
+      4,
     );
     expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'missing')).toHaveLength(0);
     for (const route of CANONICAL_V21_ROUTES) {
@@ -73,9 +73,11 @@ describe('v2.1 canonical route views', () => {
       routeId: 'RT-ADM-002',
       title: 'Global search',
     });
-    expect(() => resolveCanonicalRouteView('/app/student/class/occ-1', 'student')).toThrow(
-      /isolated/,
-    );
+    expect(resolveCanonicalRouteView('/app/student/class/occ-1', 'student')).toMatchObject({
+      routeId: 'RT-STU-012',
+      title: 'Embedded classroom',
+      handler: 'student.rt-stu-012',
+    });
   });
 
   it('uses only explicit intended-behavior compatibility aliases', () => {
@@ -197,6 +199,11 @@ describe('v2.1 canonical route views', () => {
         handlerDisposition: 'mounted',
       },
     );
+    expect(resolveCurrentClientRoute('/app/student/class/occurrence-1', 'student')).toMatchObject({
+      routeId: 'RT-STU-012',
+      readiness: 'ready',
+      handlerDisposition: 'mounted',
+    });
     expect(CANONICAL_ROUTE_COMPATIBILITY_PATHS['RT-STU-041']).toBe('/app/student/questions');
     expect(CANONICAL_ROUTE_COMPATIBILITY_PATHS['RT-ADM-066']).toBeUndefined();
     expect(CANONICAL_ROUTE_COMPATIBILITY_PATHS['RT-PAR-011']).toBeUndefined();

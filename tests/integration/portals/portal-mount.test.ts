@@ -207,6 +207,52 @@ describe('OT-71 mounted parent and student portals', () => {
     }
   });
 
+  it('mounts the occurrence-specific Student classroom with private provider-off controls', async () => {
+    const server = await listenForTest(createApp({ config, pool, distDir }));
+    try {
+      const pathname = '/app/student/class/occurrence-one';
+      const anonymous = await fetch(`${server.baseUrl}${pathname}`, { redirect: 'manual' });
+      expect(anonymous.status).toBe(302);
+      expect(anonymous.headers.get('location')).toBe(
+        '/login?return_to=%2Fapp%2Fstudent%2Fclass%2Foccurrence-one',
+      );
+
+      const student = await loginAs(server.baseUrl, 'student@example.test', 'StudentPass!234');
+      const classroom = await fetch(`${server.baseUrl}${pathname}`, {
+        headers: { cookie: student.cookies },
+      });
+      expect(classroom.status).toBe(200);
+      expect(classroom.headers.get('cache-control')).toContain('no-store');
+      expect(classroom.headers.get('referrer-policy')).toBe('no-referrer');
+      expect(classroom.headers.get('x-robots-tag')).toContain('noindex');
+      expect(classroom.headers.get('permissions-policy')).toBe(
+        'camera=(self), microphone=(self), fullscreen=(self)',
+      );
+      expect(classroom.headers.get('content-security-policy')).not.toContain('zoom.us');
+      expect(await classroom.text()).toContain('id="portal-root"');
+
+      const parent = await loginAs(server.baseUrl, 'parent@example.test', 'ParentPass!234');
+      expect(
+        (
+          await fetch(`${server.baseUrl}${pathname}`, {
+            headers: { cookie: parent.cookies },
+          })
+        ).status,
+      ).toBe(403);
+
+      const admin = await loginAs(server.baseUrl, 'admin@example.test', 'AdminPass!234');
+      expect(
+        (
+          await fetch(`${server.baseUrl}${pathname}`, {
+            headers: { cookie: admin.cookies },
+          })
+        ).status,
+      ).toBe(403);
+    } finally {
+      await server.close();
+    }
+  });
+
   it('keeps a resolved v2.1 Parent session authenticated while returning denial semantics', async () => {
     const v21AdultSessionRuntime = {
       resolveCookieHeader: async () => ({

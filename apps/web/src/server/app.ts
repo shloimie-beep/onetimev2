@@ -1475,6 +1475,17 @@ export function createApp({
         return;
       }
       if (route.shell === 'student') {
+        if (route.routeId === 'RT-STU-012') {
+          await serveEmbeddedClassroomAppShell(req, res, {
+            pool,
+            config,
+            distDir,
+            providerReady: Boolean(
+              embeddedClassroomRuntime?.contextResolver && embeddedClassroomRuntime.sdkBootstrap,
+            ),
+          });
+          return;
+        }
         const legacySession = await sessionFromRequest(req, pool, config);
         const cookieHeader = req.header('cookie');
         if (!legacySession && cookieHeaderHasName(cookieHeader, AUTH_SESSION_COOKIE.name)) {
@@ -1765,55 +1776,6 @@ export function createApp({
       allowedRoles: ['student'],
       fallbackPath: '/app/student',
     });
-  });
-
-  app.get('/app/classroom', async (req: RequestWithTrace, res) => {
-    const session = await sessionFromRequest(req, pool, config);
-    if (!session) {
-      res.redirect(302, '/login?return_to=%2Fapp%2Fstudent');
-      return;
-    }
-    if (session.user.role !== 'student') {
-      setPrivateNoStore(res);
-      res.status(403).type('html').send(forbiddenAppHtml('student'));
-      return;
-    }
-    await ensureSessionCsrfCookie(req, res, pool, config, session);
-    setPrivateNoStore(res);
-    res.setHeader('Referrer-Policy', 'no-referrer');
-    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
-    res.setHeader('Permissions-Policy', 'camera=(self), microphone=(self), fullscreen=(self)');
-    const providerReady = Boolean(
-      embeddedClassroomRuntime?.contextResolver && embeddedClassroomRuntime.sdkBootstrap,
-    );
-    res.setHeader(
-      'Content-Security-Policy',
-      (providerReady
-        ? [
-            "default-src 'self'",
-            "img-src 'self' data: blob: https://source.zoom.us",
-            "script-src 'self' https://source.zoom.us 'unsafe-eval' 'wasm-unsafe-eval'",
-            "style-src 'self' 'unsafe-inline' https://source.zoom.us",
-            "connect-src 'self' https://*.zoom.us wss://*.zoom.us",
-            "worker-src 'self' blob:",
-            "media-src 'self' blob: mediastream:",
-            "object-src 'none'",
-            "base-uri 'self'",
-            "frame-ancestors 'none'",
-          ]
-        : [
-            "default-src 'self'",
-            "img-src 'self' data:",
-            "script-src 'self'",
-            "style-src 'self'",
-            "connect-src 'self'",
-            "object-src 'none'",
-            "base-uri 'self'",
-            "frame-ancestors 'none'",
-          ]
-      ).join('; '),
-    );
-    await sendAppHtml(res, distDir, 'student', config);
   });
 
   const handleLeadPost = async (req: RequestWithTrace, res: express.Response) => {
@@ -5841,6 +5803,66 @@ async function serveProtectedAppShell(
   await ensureSessionCsrfCookie(req, res, input.pool, input.config, session);
   setPrivateNoStore(res);
   await sendAppHtml(res, input.distDir, input.appPage, input.config);
+}
+
+async function serveEmbeddedClassroomAppShell(
+  req: RequestWithTrace,
+  res: Response,
+  input: {
+    pool: DbPool;
+    config: AppConfig;
+    distDir: string;
+    providerReady: boolean;
+  },
+) {
+  const session = await sessionFromRequest(req, input.pool, input.config);
+  if (!session) {
+    res.redirect(
+      302,
+      `/login?return_to=${encodeURIComponent(
+        safeReturnPath(req.originalUrl, input.config) ?? '/app/student',
+      )}`,
+    );
+    return;
+  }
+  if (session.user.role !== 'student') {
+    setPrivateNoStore(res);
+    res.status(403).type('html').send(forbiddenAppHtml('student'));
+    return;
+  }
+  await ensureSessionCsrfCookie(req, res, input.pool, input.config, session);
+  setPrivateNoStore(res);
+  res.setHeader('Referrer-Policy', 'no-referrer');
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+  res.setHeader('Permissions-Policy', 'camera=(self), microphone=(self), fullscreen=(self)');
+  res.setHeader(
+    'Content-Security-Policy',
+    (input.providerReady
+      ? [
+          "default-src 'self'",
+          "img-src 'self' data: blob: https://source.zoom.us",
+          "script-src 'self' https://source.zoom.us 'unsafe-eval' 'wasm-unsafe-eval'",
+          "style-src 'self' 'unsafe-inline' https://source.zoom.us",
+          "connect-src 'self' https://*.zoom.us wss://*.zoom.us",
+          "worker-src 'self' blob:",
+          "media-src 'self' blob: mediastream:",
+          "object-src 'none'",
+          "base-uri 'self'",
+          "frame-ancestors 'none'",
+        ]
+      : [
+          "default-src 'self'",
+          "img-src 'self' data:",
+          "script-src 'self'",
+          "style-src 'self'",
+          "connect-src 'self'",
+          "object-src 'none'",
+          "base-uri 'self'",
+          "frame-ancestors 'none'",
+        ]
+    ).join('; '),
+  );
+  await sendAppHtml(res, input.distDir, 'student', input.config);
 }
 
 async function serveV21CompatibleParentAppShell(

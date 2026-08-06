@@ -20,15 +20,15 @@ describe('embedded classroom mounted runtime', () => {
     expect(app).not.toContain('createPostgresEmbeddedClassroomRepository(');
   });
 
-  it('keeps the constant Student route protected and candidate-bound provider work fail closed', async () => {
+  it('keeps the exact occurrence Student route protected and candidate-bound provider work fail closed', async () => {
     const [app, composition, adapters] = await Promise.all([
       source('apps/web/src/server/app.ts'),
       source('apps/web/src/server/features/classroom/embedded/composition.ts'),
       source('apps/web/src/server/features/classroom/embedded/adapters.ts'),
     ]);
-    expect(app).toContain("app.get('/app/classroom'");
+    expect(app).toContain("route.routeId === 'RT-STU-012'");
+    expect(app).toContain('serveEmbeddedClassroomAppShell(req, res');
     expect(app).toContain("session.user.role !== 'student'");
-    expect(app).toContain("'/login?return_to=%2Fapp%2Fstudent'");
     expect(composition).toContain("'/api/app/classroom'");
     expect(composition).toContain('createUnavailableEmbeddedJoinContextResolver()');
     expect(composition).toContain('createUnavailableMeetingSdkBootstrapPort()');
@@ -43,14 +43,15 @@ describe('embedded classroom mounted runtime', () => {
       source('apps/web/src/client/app/student/classroom/StudentClassroomWorkspace.tsx'),
     ]);
     const classroomClient = `${api}\n${workspace}`;
-    expect(portal).toContain("location.pathname === '/app/classroom'");
-    expect(portal).toContain("history.replaceState({}, '', '/app/classroom')");
+    expect(portal).toContain('studentClassroomOccurrenceFromLocation(location.pathname)');
+    expect(portal).toContain("history.replaceState({}, '', location.pathname)");
     expect(classroomClient).not.toMatch(/localStorage|sessionStorage|URLSearchParams/u);
     expect(classroomClient).not.toMatch(
       /[?&](?:student|household|occurrence|registrant|device|session|token|signature)=/iu,
     );
     expect(api).toContain("const CLASSROOM_API_BASE = '/api/app/classroom'");
     expect(api).toContain("'/bootstrap'");
+    expect(api).toContain('occurrence_id: exactOccurrenceId');
   });
 
   it('publishes the exact contracts, domain, database, and P18 server roots', async () => {

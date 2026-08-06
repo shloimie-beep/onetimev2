@@ -146,7 +146,7 @@ export interface EphemeralMeetingSdkBootstrap {
   customer_key: string;
   participant_display_name: string;
   recording_capture_active: boolean;
-  leave_path: '/app/classroom';
+  leave_path: '/app/student';
   issued_at: string;
   expires_at: string;
   role: 0;
@@ -300,6 +300,7 @@ export interface EmbeddedJoinContextResolver {
   resolveForIssue(input: {
     scope: JobScope;
     actor: EmbeddedStudentActor;
+    occurrence_id: string;
   }): Promise<EmbeddedJoinContext>;
   resolve(input: {
     scope: JobScope;

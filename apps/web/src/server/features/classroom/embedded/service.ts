@@ -26,7 +26,7 @@ import type { JobScope } from '../../../../../../../packages/contracts/src/jobs/
 
 export interface EmbeddedClassroomService {
   bootstrap(
-    input: RedeemEmbeddedBootstrapInput & { grant_id: string },
+    input: RedeemEmbeddedBootstrapInput & { grant_id: string; occurrence_id: string },
   ): Promise<RedeemEmbeddedBootstrapResult>;
   redeem(input: RedeemEmbeddedBootstrapInput): Promise<RedeemEmbeddedBootstrapResult>;
   heartbeat(input: {
@@ -81,6 +81,7 @@ export function createEmbeddedClassroomService(input: {
         const context = await input.context_resolver.resolveForIssue({
           scope: command.scope,
           actor: command.actor,
+          occurrence_id: command.occurrence_id,
         });
         const grant = createLaunchGrant({
           grant_id: command.grant_id,
@@ -475,7 +476,7 @@ function assertEphemeralBootstrap(
   ) {
     throw new EmbeddedClassroomError('bootstrap_unavailable', 'SDK bootstrap lifetime is invalid.');
   }
-  if (bootstrap.role !== 0 || bootstrap.leave_path !== '/app/classroom') {
+  if (bootstrap.role !== 0 || bootstrap.leave_path !== '/app/student') {
     throw new EmbeddedClassroomError('bootstrap_unavailable', 'SDK bootstrap scope is invalid.');
   }
   if (typeof bootstrap.recording_capture_active !== 'boolean') {

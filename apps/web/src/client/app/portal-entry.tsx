@@ -111,7 +111,8 @@ type PortalDialog =
 
 function PortalApp() {
   const portalRole = portalRoleFromLocation(location.pathname);
-  const classroomRoute = location.pathname === '/app/classroom';
+  const classroomOccurrenceId = studentClassroomOccurrenceFromLocation(location.pathname);
+  const classroomRoute = classroomOccurrenceId !== undefined;
   const supportRoute = location.pathname.match(
     portalRole === 'parent'
       ? /^\/app\/parent\/support(?:\/([^/]+))?$/u
@@ -163,7 +164,7 @@ function PortalApp() {
 
   useEffect(() => {
     if (classroomRoute && (location.search || location.hash)) {
-      history.replaceState({}, '', '/app/classroom');
+      history.replaceState({}, '', location.pathname);
     }
     void load();
   }, []);
@@ -709,7 +710,9 @@ function PortalApp() {
         {
           id: 'student-classroom',
           label: 'Classroom',
-          href: '/app/classroom',
+          href: classroomOccurrenceId
+            ? `/app/student/class/${encodeURIComponent(classroomOccurrenceId)}`
+            : '/app/student',
           current: true,
         },
       ];
@@ -1044,6 +1047,7 @@ function PortalApp() {
       ) : classroomRoute ? (
         session ? (
           <StudentClassroomWorkspace
+            occurrenceId={classroomOccurrenceId ?? null}
             csrfToken={session.csrf_token}
             actorFingerprint={actorFingerprint}
             onProtectedStateCleared={() => void load()}
@@ -1888,8 +1892,22 @@ export function studentLibraryContentIdFromLocation(pathname: string): string | 
   }
 }
 
+export function studentClassroomOccurrenceFromLocation(
+  pathname: string,
+): string | null | undefined {
+  const match = /^\/app\/student\/class\/([^/]+)$/u.exec(pathname);
+  if (!match?.[1]) return undefined;
+  try {
+    const occurrenceId = decodeURIComponent(match[1]);
+    return occurrenceId && occurrenceId.length <= 256 && !occurrenceId.includes('/')
+      ? occurrenceId
+      : null;
+  } catch {
+    return null;
+  }
+}
+
 function portalRoleFromLocation(pathname: string): 'parent' | 'student' {
-  if (pathname === '/app/classroom') return 'student';
   const route = resolveCurrentClientRoute(pathname);
   if (route?.shell === 'parent') return 'parent';
   if (route?.shell === 'student') return 'student';

@@ -20,6 +20,7 @@ import { createStudentClassroomViewModel, type StudentClassroomViewModel } from 
 type TimerHandle = ReturnType<typeof setTimeout>;
 
 export type StudentClassroomWorkspaceProps = {
+  occurrenceId: string | null;
   csrfToken: string;
   actorFingerprint: string;
   onProtectedStateCleared: () => void;
@@ -38,6 +39,7 @@ const DEFAULT_CLEAR_TIMER = (handle: TimerHandle) => globalThis.clearTimeout(han
 const DEFAULT_NAVIGATE = (path: '/app/student') => window.location.assign(path);
 
 export function StudentClassroomWorkspace({
+  occurrenceId,
   csrfToken,
   actorFingerprint,
   onProtectedStateCleared,
@@ -49,7 +51,9 @@ export function StudentClassroomWorkspace({
   navigate = DEFAULT_NAVIGATE,
 }: StudentClassroomWorkspaceProps) {
   const classroomApi = useMemo(() => api ?? createStudentClassroomApi({ now }), [api, now]);
-  const [status, setStatus] = useState<StudentClassroomViewModel['status']>('ready');
+  const [status, setStatus] = useState<StudentClassroomViewModel['status']>(
+    occurrenceId ? 'ready' : 'unavailable',
+  );
   const [denialCode, setDenialCode] = useState<EmbeddedJoinDenialCode | null>(null);
   const [recordingCaptureActive, setRecordingCaptureActive] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -68,7 +72,7 @@ export function StudentClassroomWorkspace({
   useEffect(() => {
     generationRef.current += 1;
     stopRuntime();
-    setStatus('ready');
+    setStatus(occurrenceId ? 'ready' : 'unavailable');
     setDenialCode(null);
     setRecordingCaptureActive(false);
     setBusy(false);
@@ -76,7 +80,7 @@ export function StudentClassroomWorkspace({
       generationRef.current += 1;
       stopRuntime();
     };
-  }, [actorFingerprint]);
+  }, [actorFingerprint, occurrenceId]);
 
   function stopRuntime(): void {
     requestRef.current?.abort();
@@ -130,13 +134,18 @@ export function StudentClassroomWorkspace({
   }
 
   async function join(): Promise<void> {
+    if (!occurrenceId) {
+      setStatus('unavailable');
+      setDenialCode(null);
+      return;
+    }
     const { generation, controller } = beginRuntime();
     setStatus('joining');
     setDenialCode(null);
     setRecordingCaptureActive(false);
     setBusy(true);
     try {
-      const result = await classroomApi.bootstrap(csrfToken, controller.signal);
+      const result = await classroomApi.bootstrap(occurrenceId, csrfToken, controller.signal);
       if (!isCurrent(generation)) return;
       leaseRef.current = result.lease;
       setRecordingCaptureActive(result.recording_capture_active);

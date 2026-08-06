@@ -52,13 +52,18 @@ export function createStudentClassroomApi(
   const nextIdempotencyKey = input.idempotencyKey ?? (() => secureOpaqueValue('p18-client'));
 
   return {
-    async bootstrap(csrfToken: string, signal?: AbortSignal): Promise<StudentClassroomBootstrap> {
+    async bootstrap(
+      occurrenceId: string,
+      csrfToken: string,
+      signal?: AbortSignal,
+    ): Promise<StudentClassroomBootstrap> {
+      const exactOccurrenceId = requireOccurrenceId(occurrenceId);
       let exchangeSecret = nextExchangeSecret();
       try {
         const response = await post(
           fetcher,
           '/bootstrap',
-          { exchange_secret: exchangeSecret },
+          { exchange_secret: exchangeSecret, occurrence_id: exactOccurrenceId },
           csrfToken,
           signal,
         );
@@ -113,6 +118,13 @@ export function createStudentClassroomApi(
 }
 
 export type StudentClassroomApi = ReturnType<typeof createStudentClassroomApi>;
+
+function requireOccurrenceId(value: string): string {
+  if (value.trim() === '' || value !== value.trim() || value.length > 256 || value.includes('/')) {
+    throw new StudentClassroomApiError(400, null);
+  }
+  return value;
+}
 
 async function post(
   fetcher: ClassroomFetch,
@@ -176,7 +188,7 @@ function parseBootstrap(value: unknown, now: Date): StudentClassroomBootstrap {
     !/^\d+\.\d+\.\d+$/u.test(String(bootstrap.sdk_web_version)) ||
     !/^\d{9,32}$/u.test(String(bootstrap.meeting_number)) ||
     bootstrap.role !== 0 ||
-    bootstrap.leave_path !== '/app/classroom'
+    bootstrap.leave_path !== '/app/student'
   ) {
     throw invalidResponse();
   }

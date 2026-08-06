@@ -24,7 +24,7 @@
     },
     {
       "path": "apps/web/src/server/app.ts",
-      "sha256": "1cef5abd845bc79afcfb83d81f460078beb7c665e622825b99c23dbdebec25a4"
+      "sha256": "7741b8a99b33467e179ed9802e68788363a36223fa4372da4d5eb70baaf76cb0"
     },
     {
       "path": "apps/web/src/server/communications/register.ts",
@@ -64,7 +64,11 @@
     },
     {
       "path": "apps/web/src/server/features/classroom/embedded/router.ts",
-      "sha256": "6f6e9eb042fa62af566f8770056140da7dcdbabfd306ad865bd49aeef149035e"
+      "sha256": "447927b769cb4b5e62208b34082a2a9139957d75bc41dd8b74bb951dd4243877"
+    },
+    {
+      "path": "apps/web/src/server/features/classroom/embedded/service.ts",
+      "sha256": "5333db6fa74cc0ace4229678447e80f66f3bf42b77923f89799a3363d1fba087"
     },
     {
       "path": "apps/web/src/server/features/portals/routers.ts",
@@ -124,7 +128,15 @@
     },
     {
       "path": "apps/web/src/client/app/portal-entry.tsx",
-      "sha256": "c7ed30c055d9baf0a3a7251b2cded9240fa4c7fda6be66e3ef6394f5ea6b21a5"
+      "sha256": "c7b1b4ba03eb895fa833e9e9a1956c50740c854835f244caf1fafb1c274a497e"
+    },
+    {
+      "path": "apps/web/src/client/app/student/classroom/StudentClassroomWorkspace.tsx",
+      "sha256": "70984679bde1bb7506fef1558f754ffe8b895ea533424d943f9320e2291bf1c3"
+    },
+    {
+      "path": "apps/web/src/client/app/student/classroom/api.ts",
+      "sha256": "33ee78132250b86853668d029d1148ba7333f87dc4c5dda444ab6a93d1ce8a2e"
     },
     {
       "path": "apps/web/src/client/app/student/library/StudentLibraryWorkspace.tsx",
@@ -136,7 +148,7 @@
     },
     {
       "path": "apps/web/src/client/app/router/registry.ts",
-      "sha256": "ee17aa94b42993b70436b2af048ad079442c9aa0e77715eeb4bdf98cf71f9d31"
+      "sha256": "9576829b2f2a2f532a5f816aedce16409539a928df848187cfa71b468c43df11"
     },
     {
       "path": "apps/web/src/client/app/router/canonical-route-views.ts",
@@ -177,6 +189,10 @@
     {
       "path": "packages/contracts/src/communications/index.ts",
       "sha256": "c0b1370a49385334b4439cfcb265bf887502019895c04b5de0c6365f0e39f289"
+    },
+    {
+      "path": "packages/contracts/src/classroom/embedded/index.ts",
+      "sha256": "f0586287c72564ac0cc3ae3ded030ffbb2b35d4caf04dbbde8114fb5a0870fca"
     },
     {
       "path": "packages/db/src/index.ts",
@@ -847,9 +863,9 @@
       "route_id": "RT-STU-012",
       "path": "/app/student/class/:occurrenceId",
       "roles": ["student"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "student.rt-stu-012",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-STU-020",
@@ -2520,6 +2536,75 @@
       ]
     },
     {
+      "action_id": "portal.student.classroom.join.button",
+      "label": "Join classroom",
+      "surface": "button",
+      "route": "/app/student/class/:occurrenceId",
+      "roles": ["student"],
+      "capability": "student:class:launch",
+      "handler": {
+        "method": "POST",
+        "path": "/api/app/classroom/bootstrap"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "client-generated exchange secret"
+      },
+      "audit": {
+        "mode": "local_write",
+        "event": "embedded_classroom_launch_grant_committed"
+      },
+      "states": {
+        "loading": "Re-authorizing the exact Student and occurrence before SDK bootstrap.",
+        "success": "A bounded in-memory participant bootstrap is ready.",
+        "error": "A neutral denial or provider-off state is shown without provider detail.",
+        "permission": "Only the matching signed-in Student may bootstrap the requested occurrence.",
+        "offline": "Classroom bootstrap is unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "provider_off",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/server/features/classroom/embedded/service.test.ts",
+        "apps/web/src/server/features/classroom/embedded/router.test.ts",
+        "apps/web/src/client/app/student/classroom/api.test.ts"
+      ]
+    },
+    {
+      "action_id": "portal.student.classroom.leave.button",
+      "label": "Leave classroom",
+      "surface": "button",
+      "route": "/app/student/class/:occurrenceId",
+      "roles": ["student"],
+      "capability": "student:class:launch",
+      "handler": {
+        "method": "POST",
+        "path": "/api/app/classroom/attendance/client"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "client-generated idempotency key"
+      },
+      "audit": {
+        "mode": "local_write",
+        "event": "embedded_classroom_client_left"
+      },
+      "states": {
+        "loading": "Recording the bounded local leave event.",
+        "success": "The Student returns to the Student portal.",
+        "error": "The Student still exits without displaying provider detail.",
+        "permission": "Only the current signed-in Student session may record the leave event.",
+        "offline": "The protected classroom is cleared before returning to the portal."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/server/features/classroom/embedded/router.test.ts",
+        "apps/web/src/client/app/student/classroom/StudentClassroomWorkspace.test.tsx"
+      ]
+    },
+    {
       "action_id": "portal.student.classroom.question.form",
       "label": "Send question",
       "surface": "form",
@@ -2549,6 +2634,40 @@
       "provider_mode": "sink",
       "external_mutation": false,
       "test_evidence": ["tests/integration/classroom/zoom-learner-classroom.test.ts"]
+    },
+    {
+      "action_id": "portal.student.classroom.view.route",
+      "label": "Open embedded classroom",
+      "surface": "route",
+      "route": "/app/student/class/:occurrenceId",
+      "roles": ["student"],
+      "capability": "student:class:launch",
+      "handler": {
+        "method": "GET",
+        "path": "/app/student/class/:occurrenceId"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "embedded_classroom_route_opened"
+      },
+      "states": {
+        "loading": "Loading the private Student classroom shell.",
+        "success": "The exact occurrence classroom is visible.",
+        "error": "Provider-off readiness remains neutral and fail closed.",
+        "permission": "Anonymous and non-Student actors are denied by the server shell.",
+        "offline": "No protected classroom state is read from an offline cache."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "provider_off",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/classroom/embedded-classroom-mount.test.ts",
+        "tests/integration/portals/portal-mount.test.ts"
+      ]
     },
     {
       "action_id": "portal.student.library_detail.open.button",

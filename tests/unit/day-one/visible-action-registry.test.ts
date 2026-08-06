@@ -58,6 +58,7 @@ const EXPECTED_SOURCE_INPUT_PATHS = [
   'apps/web/src/server/features/classroom/embedded/adapters.ts',
   'apps/web/src/server/features/classroom/embedded/composition.ts',
   'apps/web/src/server/features/classroom/embedded/router.ts',
+  'apps/web/src/server/features/classroom/embedded/service.ts',
   'apps/web/src/server/features/portals/routers.ts',
   'apps/web/src/server/features/support/router.ts',
   'apps/web/src/server/features/support/v21-router.ts',
@@ -73,6 +74,8 @@ const EXPECTED_SOURCE_INPUT_PATHS = [
   'apps/web/src/client/app/crm-entry.tsx',
   'apps/web/src/client/app/live-entry.tsx',
   'apps/web/src/client/app/portal-entry.tsx',
+  'apps/web/src/client/app/student/classroom/StudentClassroomWorkspace.tsx',
+  'apps/web/src/client/app/student/classroom/api.ts',
   'apps/web/src/client/app/student/library/StudentLibraryWorkspace.tsx',
   'apps/web/src/client/features/portals/PortalFeatures.tsx',
   'apps/web/src/client/app/router/registry.ts',
@@ -86,6 +89,7 @@ const EXPECTED_SOURCE_INPUT_PATHS = [
   'packages/brand-system/src/route-branding.ts',
   'packages/brand-system/src/v21.ts',
   'packages/contracts/src/communications/index.ts',
+  'packages/contracts/src/classroom/embedded/index.ts',
   'packages/db/src/index.ts',
   'packages/db/src/learning/repository.ts',
   'scripts/build-public-pages.ts',
@@ -378,11 +382,32 @@ const EXPECTED_ACTION_BINDINGS = [
     '/api/v1/portals/student/dashboard',
   ],
   [
+    'portal.student.classroom.join.button',
+    '/app/student/class/:occurrenceId',
+    ['student'],
+    'POST',
+    '/api/app/classroom/bootstrap',
+  ],
+  [
+    'portal.student.classroom.leave.button',
+    '/app/student/class/:occurrenceId',
+    ['student'],
+    'POST',
+    '/api/app/classroom/attendance/client',
+  ],
+  [
     'portal.student.classroom.question.form',
     '/app/student',
     ['student'],
     'POST',
     '/api/v1/classroom/questions',
+  ],
+  [
+    'portal.student.classroom.view.route',
+    '/app/student/class/:occurrenceId',
+    ['student'],
+    'GET',
+    '/app/student/class/:occurrenceId',
   ],
   [
     'portal.student.library_detail.open.button',
@@ -620,10 +645,10 @@ describe('v2.1 visible action registry', () => {
     expect(registry.canonical_routes).toHaveLength(93);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'ready'),
-    ).toHaveLength(88);
+    ).toHaveLength(89);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'isolated'),
-    ).toHaveLength(5);
+    ).toHaveLength(4);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'missing'),
     ).toHaveLength(0);

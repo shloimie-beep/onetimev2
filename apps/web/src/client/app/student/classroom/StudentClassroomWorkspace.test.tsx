@@ -63,7 +63,7 @@ describe('P18 Student classroom workspace', () => {
       customer_key: 'zoom_ck_0123456789abcdef01234567',
       participant_display_name: 'Student',
       recording_capture_active: true,
-      leave_path: '/app/classroom',
+      leave_path: '/app/student',
       issued_at: '2026-08-02T10:00:00.000Z',
       expires_at: '2026-08-02T10:01:00.000Z',
       role: 0,
@@ -77,7 +77,7 @@ describe('P18 Student classroom workspace', () => {
       userEmail: 'student-opaque@example.invalid',
       customerKey: 'zoom_ck_0123456789abcdef01234567',
       userName: 'Student',
-      leaveUrl: '/app/classroom',
+      leaveUrl: '/app/student',
     });
   });
 
