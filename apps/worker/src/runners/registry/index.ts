@@ -8,6 +8,7 @@ import { runContentPublicationWorker } from '../content-publication/composition.
 import type { ContentPublicationWorkerDependencies } from '../content-publication/composition.ts';
 import { runFamilySignupGhlWorker } from '../family-signup-ghl/composition.ts';
 import { runOt16CheckpointWorker } from '../ghl-workflows/campaigns/composition.ts';
+import { runOt03CheckoutAbandonmentSourceWorker } from '../ghl-workflows/core/ot03-source.ts';
 
 export const WORKER_RUNNER_REGISTRY_CONTRACT_VERSION = '1.0.0' as const;
 
@@ -81,6 +82,11 @@ export function createWorkerRunnerRegistrations(
       runnerId: 'identity.family-signup-ghl',
       contractVersion: WORKER_RUNNER_REGISTRY_CONTRACT_VERSION,
       run: runFamilySignupGhlWorker,
+    }),
+    defineWorkerRunner({
+      runnerId: 'communications.ot03-source',
+      contractVersion: WORKER_RUNNER_REGISTRY_CONTRACT_VERSION,
+      run: runOt03CheckoutAbandonmentSourceWorker,
     }),
     ot16CheckpointRegistration,
   ]);

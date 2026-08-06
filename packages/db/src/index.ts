@@ -489,3 +489,8 @@ export type {
   ReconcileGovernedCampaignAudienceRequest,
   ReconcileGovernedCampaignAudienceResult,
 } from './audience-reconciliation/governed-campaign-decision-store.ts';
+export {
+  createPostgresOt03CheckoutAbandonmentRepository,
+  type Ot03CheckoutAbandonmentRepository,
+  type Ot03CheckoutAbandonmentSqlPool,
+} from './billing/checkout-abandonment-repository.ts';

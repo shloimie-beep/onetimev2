@@ -19,7 +19,7 @@ function context(mode: 'once' | 'continuous'): WorkerRunnerContext {
 
 describe('worker runner registry', () => {
   it('registers the bounded media pipeline and durable communications runners', () => {
-    expect(workerRunnerRegistrations).toHaveLength(5);
+    expect(workerRunnerRegistrations).toHaveLength(6);
     expect(workerRunnerRegistrations).toEqual([
       expect.objectContaining({
         runnerId: 'content.media-ingest',
@@ -38,6 +38,10 @@ describe('worker runner registry', () => {
         contractVersion: '1.0.0',
       }),
       expect.objectContaining({
+        runnerId: 'communications.ot03-source',
+        contractVersion: '1.0.0',
+      }),
+      expect.objectContaining({
         runnerId: 'communications.ot16-checkpoint',
         contractVersion: '1.0.0',
       }),
@@ -53,6 +57,7 @@ describe('worker runner registry', () => {
         'content.media-processing',
         'content.p21-publication',
         'identity.family-signup-ghl',
+        'communications.ot03-source',
         'communications.ot16-checkpoint',
       ]);
       expect(results['content.p21-publication']).toMatchObject({
@@ -93,6 +98,18 @@ describe('worker runner registry', () => {
         enabled: false,
         providerCallsPerformed: false,
         summary: { mode: 'disabled' },
+      });
+      expect(results['communications.ot03-source']).toMatchObject({
+        enabled: false,
+        providerCallsPerformed: false,
+        summary: {
+          disabledReason: 'ot03_source_disabled',
+          scanned: 0,
+          checkpoints: 0,
+          inserted: 0,
+          providerCalls: 0,
+          studentContacts: 0,
+        },
       });
       expect(results['communications.ot16-checkpoint']).toMatchObject({
         enabled: false,

@@ -2,8 +2,8 @@ import { randomBytes } from 'node:crypto';
 import pg from 'pg';
 import { runMigrations, verifyMigrations } from '../../packages/db/src/index.ts';
 
-const EXPECTED_MIGRATION_COUNT = 100;
-const EXPECTED_HEAD = '2269_billing_verified_event_processing_state';
+const EXPECTED_MIGRATION_COUNT = 101;
+const EXPECTED_HEAD = '2270_ot03_checkout_abandonment_intents';
 
 async function main() {
   assert(

@@ -549,6 +549,15 @@ export {
   type BillingGhlLifecycleEventType,
   type BillingGhlWorkflowKey,
 } from './billing/highlevel-lifecycle.ts';
+export {
+  OT03_CHECKOUT_ABANDONMENT_CHECKPOINTS,
+  OT03_CHECKOUT_ABANDONMENT_EVENT_TYPE,
+  OT03_CHECKOUT_ABANDONMENT_TRIGGER,
+  deriveOt03CheckoutAbandonmentIntents,
+  type Ot03CheckoutAbandonmentCheckpoint,
+  type Ot03CheckoutAbandonmentIntent,
+  type Ot03CheckoutCandidate,
+} from './billing/checkout-abandonment.ts';
 export { createOfficialStripeTestClient } from './billing/stripe-official-client.ts';
 export {
   createStripeTestBillingProviderAdapter,
