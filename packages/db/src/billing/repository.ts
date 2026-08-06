@@ -19,6 +19,11 @@ export type RecordVerifiedEventResult =
   | { status: 'duplicate'; eventKey: string }
   | { status: 'digest_mismatch'; eventKey: string };
 
+export type ClaimVerifiedEventProcessingResult =
+  | { status: 'claimed'; eventKey: string; claimKey: string }
+  | { status: 'completed'; eventKey: string }
+  | { status: 'busy'; eventKey: string };
+
 export type StartCheckoutResult =
   | { status: 'started'; checkoutRequestKey: string }
   | { status: 'replayed'; checkout: CheckoutSessionResult }
@@ -333,6 +338,32 @@ export function createPostgresBillingRepositories(pool: DbPool) {
     async recordVerifiedEvent(
       envelope: VerifiedProviderEventEnvelope,
     ): Promise<RecordVerifiedEventResult> {
+      const inserted = await pool.query(
+        `INSERT INTO onetime.billing_verified_events
+         (event_key, provider, mode, provider_account_ref, provider_event_id,
+          event_type, provider_created_at, livemode, raw_body_digest, payload_digest,
+          object_refs, minimized_payload)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,false,$8,$9,$10::jsonb,$11::jsonb)
+         ON CONFLICT (provider, mode, provider_account_ref, provider_event_id) DO NOTHING
+         RETURNING event_key`,
+        [
+          envelope.event_key,
+          envelope.provider,
+          envelope.mode,
+          envelope.provider_account_ref,
+          envelope.provider_event_id,
+          envelope.event_type,
+          envelope.provider_created_at,
+          envelope.raw_body_digest,
+          envelope.payload_digest,
+          JSON.stringify(envelope.object_refs),
+          JSON.stringify(envelope.minimized_payload),
+        ],
+      );
+      if (inserted.rowCount === 1) {
+        return { status: 'inserted', eventKey: String(inserted.rows[0].event_key) };
+      }
+
       const existing = await pool.query(
         `SELECT event_key, payload_digest
            FROM onetime.billing_verified_events
@@ -348,49 +379,89 @@ export function createPostgresBillingRepositories(pool: DbPool) {
           envelope.provider_event_id,
         ],
       );
-      if (existing.rowCount) {
-        return existing.rows[0].payload_digest === envelope.payload_digest
-          ? { status: 'duplicate', eventKey: String(existing.rows[0].event_key) }
-          : { status: 'digest_mismatch', eventKey: String(existing.rows[0].event_key) };
-      }
-      await pool.query(
-        `INSERT INTO onetime.billing_verified_events
-         (event_key, provider, mode, provider_account_ref, provider_event_id,
-          event_type, provider_created_at, livemode, raw_body_digest, payload_digest,
-          object_refs, minimized_payload)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,false,$8,$9,$10::jsonb,$11::jsonb)`,
-        [
-          envelope.event_key,
-          envelope.provider,
-          envelope.mode,
-          envelope.provider_account_ref,
-          envelope.provider_event_id,
-          envelope.event_type,
-          envelope.provider_created_at,
-          envelope.raw_body_digest,
-          envelope.payload_digest,
-          JSON.stringify(envelope.object_refs),
-          JSON.stringify(envelope.minimized_payload),
-        ],
+      if (!existing.rowCount) throw new Error('billing_verified_event_conflict_readback_missing');
+      return existing.rows[0].payload_digest === envelope.payload_digest
+        ? { status: 'duplicate', eventKey: String(existing.rows[0].event_key) }
+        : { status: 'digest_mismatch', eventKey: String(existing.rows[0].event_key) };
+    },
+    async claimVerifiedEventProcessing(
+      eventKey: string,
+    ): Promise<ClaimVerifiedEventProcessingResult> {
+      const claimKey = stableKey('billing_processing_claim', [eventKey, randomUUID()]);
+      const claimed = await pool.query(
+        `UPDATE onetime.billing_verified_events
+            SET processing_state = 'processing',
+                processing_claim_key = $2,
+                processing_lease_until = now() + interval '5 minutes',
+                processed_at = NULL
+          WHERE event_key = $1
+            AND (
+              processing_state = 'pending'
+              OR (
+                processing_state = 'processing'
+                AND processing_lease_until <= now()
+              )
+            )
+        RETURNING event_key`,
+        [eventKey, claimKey],
       );
-      return { status: 'inserted', eventKey: envelope.event_key };
+      if (claimed.rowCount === 1) return { status: 'claimed', eventKey, claimKey };
+
+      const state = await pool.query(
+        `SELECT processing_state
+           FROM onetime.billing_verified_events
+          WHERE event_key = $1
+          LIMIT 1`,
+        [eventKey],
+      );
+      if (!state.rowCount) throw new Error('billing_verified_event_processing_state_missing');
+      return String(state.rows[0].processing_state) === 'completed'
+        ? { status: 'completed', eventKey }
+        : { status: 'busy', eventKey };
+    },
+    async completeVerifiedEventProcessing(input: {
+      event_key: string;
+      claim_key: string;
+      disposition: BillingDisposition;
+      reason: string;
+    }) {
+      await inTransaction(pool, async (client) => {
+        const completed = await client.query(
+          `UPDATE onetime.billing_verified_events
+              SET processing_state = 'completed',
+                  processing_claim_key = NULL,
+                  processing_lease_until = NULL,
+                  processed_at = now()
+            WHERE event_key = $1
+              AND processing_state = 'processing'
+              AND processing_claim_key = $2`,
+          [input.event_key, input.claim_key],
+        );
+        if (completed.rowCount !== 1) {
+          throw new Error('billing_verified_event_processing_claim_lost');
+        }
+        await insertProcessingAttempt(client, input);
+      });
+    },
+    async abandonVerifiedEventProcessing(input: { event_key: string; claim_key: string }) {
+      await pool.query(
+        `UPDATE onetime.billing_verified_events
+            SET processing_state = 'pending',
+                processing_claim_key = NULL,
+                processing_lease_until = NULL,
+                processed_at = NULL
+          WHERE event_key = $1
+            AND processing_state = 'processing'
+            AND processing_claim_key = $2`,
+        [input.event_key, input.claim_key],
+      );
     },
     async recordAttempt(input: {
       event_key: string;
       disposition: BillingDisposition;
       reason: string;
     }) {
-      await pool.query(
-        `INSERT INTO onetime.billing_event_processing_attempts
-         (attempt_key, event_key, disposition, reason)
-         VALUES ($1,$2,$3,$4)`,
-        [
-          stableKey('billing_attempt', [input.event_key, randomUUID()]),
-          input.event_key,
-          input.disposition,
-          input.reason,
-        ],
-      );
+      await insertProcessingAttempt(pool, input);
     },
     async upsertSubscriptionProjection(input: BillingSubscriptionProjection) {
       const existing = await pool.query(
@@ -963,6 +1034,27 @@ function asIso(value: unknown) {
 
 function stableKey(prefix: string, parts: string[]) {
   return `${prefix}_${createHash('sha256').update(parts.join('\0')).digest('hex').slice(0, 24)}`;
+}
+
+async function insertProcessingAttempt(
+  client: Pick<DbPool, 'query'>,
+  input: {
+    event_key: string;
+    disposition: BillingDisposition;
+    reason: string;
+  },
+) {
+  await client.query(
+    `INSERT INTO onetime.billing_event_processing_attempts
+     (attempt_key, event_key, disposition, reason)
+     VALUES ($1,$2,$3,$4)`,
+    [
+      stableKey('billing_attempt', [input.event_key, randomUUID()]),
+      input.event_key,
+      input.disposition,
+      input.reason,
+    ],
+  );
 }
 
 function assertLifecycleMatchesEntitlement(

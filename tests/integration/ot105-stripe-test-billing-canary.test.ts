@@ -227,6 +227,105 @@ describe('OT-105 Stripe TEST billing canary hardening', () => {
     });
   });
 
+  it('reclaims an exact signed event after projection succeeds but completion recording fails', async () => {
+    const repositories = createPostgresBillingRepositories(pool);
+    const services = servicesFor(repositories);
+    await pool.query(
+      `INSERT INTO onetime.portal_households
+       (household_key, account_key, product_key, display_name, status)
+       VALUES ($1,$2,$3,'OT-105 replay household','active')`,
+      [principal.principal_key, principal.account_key, principal.product_key],
+    );
+    await checkoutAndCustomer(services);
+    const customer = await providerCustomerRef();
+    const subscription = await providerSubscriptionRef();
+
+    await receiveFixtureEvent(services, {
+      id: 'evt_ot105_replay_subscription_active',
+      type: 'customer.subscription.updated',
+      created: '2026-07-16T12:01:00Z',
+      object: {
+        id: subscription,
+        customer,
+        status: 'active',
+        provider_product_ref: 'prod_fixture_ot105',
+        provider_price_ref: 'price_fixture_ot105_6700',
+        current_period_start: '2026-07-16T12:00:00Z',
+        current_period_end: '2026-08-16T12:00:00Z',
+        latest_invoice: 'in_fixture_ot105_replay_paid',
+        metadata: metadata(),
+      },
+    });
+
+    const rawBody = rawFixtureEvent({
+      id: 'evt_ot105_replay_invoice_paid',
+      type: 'invoice.paid',
+      created: '2026-07-16T12:02:00Z',
+      object: {
+        id: 'in_fixture_ot105_replay_paid',
+        customer,
+        subscription,
+        provider_product_ref: 'prod_fixture_ot105',
+        provider_price_ref: 'price_fixture_ot105_6700',
+        amount_due_cents: 6700,
+        amount_paid_cents: 6700,
+        currency: 'usd',
+        issued_at: '2026-07-16T12:02:00Z',
+        metadata: metadata(),
+      },
+    });
+    let failCompletionOnce = true;
+    const interrupted = servicesFor({
+      ...repositories,
+      async completeVerifiedEventProcessing(input) {
+        if (failCompletionOnce) {
+          failCompletionOnce = false;
+          throw new Error('simulated_completion_commit_failure');
+        }
+        return repositories.completeVerifiedEventProcessing(input);
+      },
+    });
+
+    await expect(
+      interrupted.receiveWebhook({
+        rawBody,
+        signatureHeader: fixtureWebhookSignature({ rawBody }),
+      }),
+    ).rejects.toThrow('simulated_completion_commit_failure');
+
+    const recovered = await services.receiveWebhook({
+      rawBody,
+      signatureHeader: fixtureWebhookSignature({ rawBody }),
+    });
+    expect(recovered).toMatchObject({ ok: true, value: { disposition: 'accepted' } });
+
+    const duplicate = await services.receiveWebhook({
+      rawBody,
+      signatureHeader: fixtureWebhookSignature({ rawBody }),
+    });
+    expect(duplicate).toMatchObject({ ok: true, value: { disposition: 'duplicate' } });
+
+    const evidence = await pool.query(
+      `SELECT
+         verified.processing_state,
+         count(DISTINCT invoice.provider_invoice_ref)::int AS invoice_count,
+         count(DISTINCT intent.transition_key) FILTER (WHERE intent.workflow_key = 'OT-04')::int
+           AS activation_intent_count
+       FROM onetime.billing_verified_events AS verified
+       LEFT JOIN onetime.billing_invoice_summaries AS invoice
+         ON invoice.source_event_key = verified.event_key
+       LEFT JOIN onetime.billing_ghl_lifecycle_intents AS intent
+         ON intent.source_event_id = verified.event_key
+      WHERE verified.provider_event_id = 'evt_ot105_replay_invoice_paid'
+      GROUP BY verified.processing_state`,
+    );
+    expect(evidence.rows[0]).toMatchObject({
+      processing_state: 'completed',
+      invoice_count: 1,
+      activation_intent_count: 1,
+    });
+  });
+
   it('performs provider readback when an older subscription event is ignored', async () => {
     const services = servicesFor();
     await checkoutAndCustomer(services);
@@ -267,10 +366,10 @@ describe('OT-105 Stripe TEST billing canary hardening', () => {
   });
 });
 
-function servicesFor() {
+function servicesFor(repositories = createPostgresBillingRepositories(pool)) {
   return createBillingServices({
     config: enabledConfig(),
-    repositories: createPostgresBillingRepositories(pool),
+    repositories,
     providerAdapter: adapter,
     authorization,
     clock: () => new Date('2026-07-16T12:03:00Z'),
