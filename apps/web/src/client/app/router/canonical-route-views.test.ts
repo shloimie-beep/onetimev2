@@ -34,12 +34,12 @@ describe('v2.1 canonical route views', () => {
     expect(
       CANONICAL_V21_ROUTES.filter(({ routeId }) => routeId.startsWith('RT-STU-')),
     ).toHaveLength(17);
-    expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'ready')).toHaveLength(72);
+    expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'ready')).toHaveLength(74);
     expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'isolated')).toHaveLength(
       7,
     );
     expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'missing')).toHaveLength(
-      14,
+      12,
     );
     for (const route of CANONICAL_V21_ROUTES) {
       if (route.readiness === 'ready') {
@@ -81,6 +81,7 @@ describe('v2.1 canonical route views', () => {
     );
     expect(CANONICAL_ROUTE_COMPATIBILITY_PATHS['RT-ADM-002']).toBeUndefined();
     expect(CANONICAL_ROUTE_COMPATIBILITY_PATHS['RT-ADM-043']).toBe('/app/classes/access');
+    expect(CANONICAL_ROUTE_COMPATIBILITY_PATHS['RT-ADM-038']).toBe('/app/classes/attendance');
     const occurrence = resolveCurrentClientRoute(
       '/app/classroom/occurrences/occurrence-1',
       'admin',

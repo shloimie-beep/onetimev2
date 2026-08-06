@@ -7,7 +7,7 @@ import type {
 } from './adapters.ts';
 import { digestEmbeddedAttendanceEvidence, hashEmbeddedExchangeSecret } from './adapters.ts';
 import { EMBEDDED_CLASSROOM_MOUNT_PATH } from './composition.ts';
-import { createEmbeddedClassroomRouter } from './router.ts';
+import { createEmbeddedClassroomRouter, type EmbeddedClassroomRouterInput } from './router.ts';
 import type { EmbeddedClassroomService } from './service.ts';
 
 const NOW = new Date('2026-07-28T17:00:00.000Z');
@@ -37,6 +37,19 @@ afterEach(async () => {
 });
 
 describe('P18 embedded-classroom router', () => {
+  it('returns only the authenticated Admin canonical attendance projection', async () => {
+    const service = serviceFixture();
+    const list = vi.fn(async () => []);
+    const baseUrl = await start({ service, adminAttendanceRecords: { list } });
+
+    const response = await get(baseUrl, '/attendance/admin');
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('cache-control')).toContain('no-store');
+    expect(list).toHaveBeenCalledWith({ scope: SCOPE, admin_id: 'admin-canonical' });
+    expect(await response.json()).toEqual({ success: true, data: [] });
+  });
+
   it('accepts only the exact bootstrap body, hashes the exchange secret, and returns no-store data', async () => {
     const service = serviceFixture();
     const baseUrl = await start({ service, allocateId: () => 'live-allocation-1' });
@@ -311,11 +324,13 @@ async function start(input: {
   service: ReturnType<typeof serviceFixture>;
   identities?: EmbeddedClassroomRequestIdentityResolver;
   providerAttendance?: VerifiedProviderAttendanceResolver;
+  adminAttendanceRecords?: EmbeddedClassroomRouterInput['adminAttendanceRecords'];
   allocateId?: () => string;
 }) {
   const identities = input.identities ?? {
     resolveStudent: vi.fn(async () => STUDENT),
     resolveAdmin: vi.fn(async () => ({ scope: SCOPE, admin_id: 'admin-canonical' })),
+    resolveAdminRead: vi.fn(async () => ({ scope: SCOPE, admin_id: 'admin-canonical' })),
   };
   const app = express();
   app.use(express.json());
@@ -325,6 +340,7 @@ async function start(input: {
       service: input.service as EmbeddedClassroomService,
       identities,
       providerAttendance: input.providerAttendance ?? { verify: async () => null },
+      adminAttendanceRecords: input.adminAttendanceRecords ?? { list: async () => [] },
       adminAttendanceSubjects: { resolve: async () => null },
       clock: () => NOW,
       allocateId: input.allocateId ?? (() => 'allocated-id'),
@@ -346,4 +362,8 @@ async function post(baseUrl: string, path: string, body: unknown) {
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify(body),
   });
+}
+
+async function get(baseUrl: string, path: string) {
+  return fetch(new URL(`${EMBEDDED_CLASSROOM_MOUNT_PATH}${path}`, baseUrl));
 }

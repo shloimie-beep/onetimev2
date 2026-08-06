@@ -40,13 +40,21 @@ export const CLASSROOM_SECTIONS = [
   { id: 'classes', label: 'Classes', href: '/app/classroom/classes' },
   { id: 'occurrences', label: 'Occurrences', href: '/app/classroom/occurrences' },
   { id: 'enrollments', label: 'Enrollments', href: '/app/classroom/enrollments' },
+  { id: 'attendance', label: 'Attendance', href: '/app/classroom/attendance' },
   { id: 'recordings', label: 'Recordings', href: '/app/classroom/recordings' },
   { id: 'access', label: 'Access', href: '/app/classroom/access' },
   { id: 'questions', label: 'Questions', href: '/app/classroom/questions' },
 ] as const;
 
 export type ClassroomSectionId =
-  'classes' | 'occurrences' | 'enrollments' | 'recordings' | 'access' | 'questions' | 'rewards';
+  | 'classes'
+  | 'occurrences'
+  | 'enrollments'
+  | 'attendance'
+  | 'recordings'
+  | 'access'
+  | 'questions'
+  | 'rewards';
 
 export const LIVE_CONSOLE_SECTIONS = [
   {
@@ -110,6 +118,7 @@ export function classroomSectionFromPath(pathname: string): ClassroomSectionId {
     return 'occurrences';
   }
   if (pathname === '/app/classes/enrollments') return 'enrollments';
+  if (pathname === '/app/classes/attendance') return 'attendance';
   if (pathname === '/app/classes/recordings') return 'recordings';
   if (pathname === '/app/classes/access') return 'access';
   if (pathname === '/app/classes/questions') return 'questions';
@@ -125,6 +134,7 @@ export function classroomOccurrenceFromLocation(pathname: string, search: string
     'schedule',
     'occurrences',
     'enrollments',
+    'attendance',
     'recordings',
     'access',
     'questions',

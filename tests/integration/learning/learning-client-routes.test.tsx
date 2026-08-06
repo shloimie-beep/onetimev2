@@ -9,7 +9,8 @@ describe('P22 authenticated client-route registration', () => {
       readFile('apps/web/src/client/app/portal-api.ts', 'utf8'),
     ]);
     expect(crmEntry).toContain('AdminLearningWorkspace');
-    expect(crmEntry).toContain("['questions', 'rewards']");
+    expect(crmEntry).toContain("['questions', 'rewards', 'attendance']");
+    expect(crmEntry).toContain('getAdminAttendanceSnapshot');
     expect(portalEntry).toContain('StudentLearningOverview');
     expect(portalApi).toContain("'/api/app/learning/student-snapshot'");
     expect(portalApi).not.toMatch(/parent.*\/api\/app\/learning/iu);

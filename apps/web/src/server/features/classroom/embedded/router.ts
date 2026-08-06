@@ -4,6 +4,7 @@ import { z, ZodError } from 'zod';
 import type { AttendanceEvent } from '../../../../../../../packages/contracts/src/classroom/embedded/index.ts';
 import { EmbeddedClassroomError } from '../../../../../../../packages/domain/src/classroom/embedded/index.ts';
 import type {
+  AdminAttendanceRecordReader,
   AdminAttendanceSubjectResolver,
   EmbeddedClassroomRequestIdentityResolver,
   VerifiedProviderAttendanceResolver,
@@ -49,6 +50,7 @@ export type EmbeddedClassroomRouterInput = {
   service: EmbeddedClassroomService;
   identities: EmbeddedClassroomRequestIdentityResolver;
   providerAttendance: VerifiedProviderAttendanceResolver;
+  adminAttendanceRecords: AdminAttendanceRecordReader;
   adminAttendanceSubjects: AdminAttendanceSubjectResolver;
   clock?: () => Date;
   allocateId?: () => string;
@@ -63,6 +65,23 @@ export function createEmbeddedClassroomRouter(input: EmbeddedClassroomRouterInpu
     setPrivateNoStore(response);
     next();
   });
+
+  router.get(
+    '/attendance/admin',
+    route(async (request, response) => {
+      const identity = await input.identities.resolveAdminRead?.(request);
+      if (identity === null || identity === undefined) {
+        response.status(403).json(neutralDenied('authorization_changed'));
+        return;
+      }
+      const records = await input.adminAttendanceRecords.list(identity);
+      if (records === null) {
+        response.status(503).json(genericUnavailable());
+        return;
+      }
+      response.json({ success: true, data: records });
+    }),
+  );
 
   router.post(
     '/bootstrap',

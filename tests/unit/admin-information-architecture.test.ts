@@ -65,6 +65,7 @@ describe('OT-LAUNCH-01 Admin information architecture', () => {
       'Classes',
       'Occurrences',
       'Enrollments',
+      'Attendance',
       'Recordings',
       'Access',
       'Questions',
@@ -90,6 +91,7 @@ describe('OT-LAUNCH-01 Admin information architecture', () => {
     expect(classroomSectionFromPath('/app/rewards')).toBe('rewards');
     expect(classroomSectionFromPath('/app/classes/schedule')).toBe('occurrences');
     expect(classroomSectionFromPath('/app/classes/enrollments')).toBe('enrollments');
+    expect(classroomSectionFromPath('/app/classes/attendance')).toBe('attendance');
     expect(classroomSectionFromPath('/app/classes/recordings')).toBe('recordings');
     expect(classroomSectionFromPath('/app/classes/access')).toBe('access');
     expect(classroomSectionFromPath('/app/classes/questions')).toBe('questions');

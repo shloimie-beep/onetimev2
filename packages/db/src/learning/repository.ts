@@ -81,24 +81,35 @@ export function createLearningCanonicalReadPorts(pool: DbPool): {
               AND student.verification_environment_id =
                   attendance.verification_environment_id
               AND student.state = 'active'
-             LEFT JOIN LATERAL (
-               SELECT event.attendance_event_id, event.audit_ref,
+             LEFT JOIN (
+               SELECT DISTINCT ON (
+                        event.product, event.runtime_tier,
+                        event.verification_environment_id,
+                        event.occurrence_id, event.student_id
+                      )
+                      event.product, event.runtime_tier,
+                      event.verification_environment_id,
+                      event.occurrence_id, event.student_id,
+                      event.correction_reason, event.correction_admin_id,
+                      event.attendance_event_id, event.audit_ref,
                       event.source_event_ref_digest
                  FROM onetime.classroom_attendance_events_v21 AS event
-                WHERE event.product = attendance.product
-                  AND event.runtime_tier = attendance.runtime_tier
-                  AND event.verification_environment_id =
-                      attendance.verification_environment_id
-                  AND event.occurrence_id = attendance.occurrence_id
-                  AND event.student_id = attendance.student_id
-                  AND event.source = 'admin_correction'
+                WHERE event.source = 'admin_correction'
                   AND event.event_kind = 'manual_correction'
-                  AND event.correction_reason = attendance.manual_correction_reason
-                  AND event.correction_admin_id = attendance.correction_admin_id
                   AND event.audit_ref IS NOT NULL
-                ORDER BY event.observed_at DESC, event.attendance_event_id DESC
-                LIMIT 1
-             ) AS correction ON TRUE
+                ORDER BY event.product, event.runtime_tier,
+                         event.verification_environment_id,
+                         event.occurrence_id, event.student_id,
+                         event.observed_at DESC, event.attendance_event_id DESC
+             ) AS correction
+               ON correction.product = attendance.product
+              AND correction.runtime_tier = attendance.runtime_tier
+              AND correction.verification_environment_id =
+                  attendance.verification_environment_id
+              AND correction.occurrence_id = attendance.occurrence_id
+              AND correction.student_id = attendance.student_id
+              AND correction.correction_reason = attendance.manual_correction_reason
+              AND correction.correction_admin_id = attendance.correction_admin_id
             WHERE occurrence.account_key = $1
               AND attendance.product = $2
               AND attendance.runtime_tier = $3

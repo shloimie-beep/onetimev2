@@ -11,6 +11,8 @@ describe('embedded classroom mounted runtime', () => {
     expect(app).toContain(
       'attendanceProjectionChanges: learningComposition.attendanceProjectionChanges',
     );
+    expect(app).toContain('createPostgresAdminAttendanceRecordReader');
+    expect(app).toContain('createPostgresAdminAttendanceSubjectResolver');
     expect(app).toContain('registrations: [embeddedClassroomComposition.registration]');
     expect(app).toContain(
       'app.locals.embeddedClassroomInstalledRuntimeReceipt = embeddedClassroomInstalledReceipt',

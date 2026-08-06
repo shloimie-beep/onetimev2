@@ -374,6 +374,8 @@ import {
 import {
   createEmbeddedClassroomFeatureComposition,
   createEmbeddedClassroomRequestIdentityResolver,
+  createPostgresAdminAttendanceRecordReader,
+  createPostgresAdminAttendanceSubjectResolver,
   EMBEDDED_CLASSROOM_FEATURE_ID,
   EMBEDDED_CLASSROOM_MOUNT_PATH,
   isEmbeddedClassroomInstalledRuntimeReceipt,
@@ -852,7 +854,15 @@ export function createApp({
           csrfToken: request.header('x-csrf-token') ?? request.body?.csrf_token,
         }),
     }),
-    ...(embeddedClassroomRuntime ? { candidateRuntime: embeddedClassroomRuntime } : {}),
+    candidateRuntime: {
+      ...embeddedClassroomRuntime,
+      adminAttendanceSubjects:
+        embeddedClassroomRuntime?.adminAttendanceSubjects ??
+        createPostgresAdminAttendanceSubjectResolver({ pool, accountKey: config.accountKey }),
+      adminAttendanceRecords:
+        embeddedClassroomRuntime?.adminAttendanceRecords ??
+        createPostgresAdminAttendanceRecordReader({ pool, accountKey: config.accountKey }),
+    },
   });
   installServerFeatureRouters({
     app,

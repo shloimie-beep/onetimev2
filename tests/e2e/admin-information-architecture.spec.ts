@@ -95,8 +95,21 @@ test('Admin IA keeps the canonical launch areas across the governed viewport mat
   await expect(page.getByRole('heading', { name: 'Classroom' })).toBeVisible();
   await expect(
     page.getByRole('navigation', { name: 'Classroom area' }).getByRole('link'),
-  ).toHaveText(['Classes', 'Occurrences', 'Enrollments', 'Recordings', 'Access', 'Questions']);
+  ).toHaveText([
+    'Classes',
+    'Occurrences',
+    'Enrollments',
+    'Attendance',
+    'Recordings',
+    'Access',
+    'Questions',
+  ]);
   await expect(page.getByRole('heading', { name: 'Classes', exact: true })).toBeVisible();
+
+  await page.goto('/app/classroom/attendance');
+  await expect(page.getByRole('heading', { name: 'Attendance', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Record an audited correction' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Record audited correction' })).toBeVisible();
 
   await page.goto('/app/live-console');
   await expect(page.getByRole('heading', { name: 'Live Console' })).toBeVisible();

@@ -739,6 +739,45 @@ export async function getAdminLearningSnapshot(): Promise<AdminLearningSnapshot>
   };
 }
 
+export async function getAdminAttendanceSnapshot(): Promise<AdminLearningSnapshot> {
+  const attendance = await authenticatedJson<{ success: true; data: AttendanceRecord[] }>(
+    '/api/app/classroom/attendance/admin',
+  );
+  return { questions: [], announcements: [], attendance: attendance.data };
+}
+
+export type AdminAttendanceCorrectionInput = {
+  studentId: string;
+  occurrenceId: string;
+  joinedAt: string;
+  leftAt: string;
+  reason: string;
+  idempotencyKey: string;
+};
+
+export async function correctAdminAttendance(
+  csrfToken: string,
+  input: AdminAttendanceCorrectionInput,
+) {
+  return authenticatedJson<{ success: true; data: { disposition: 'accepted' } }>(
+    '/api/app/classroom/attendance/admin-correction',
+    {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-csrf-token': csrfToken,
+      },
+      body: JSON.stringify({
+        student_id: input.studentId,
+        occurrence_id: input.occurrenceId,
+        intervals: [{ joined_at: input.joinedAt, left_at: input.leftAt }],
+        reason: input.reason,
+        idempotency_key: input.idempotencyKey,
+      }),
+    },
+  );
+}
+
 export async function getClasses() {
   return authenticatedJson<ClassListResponse>('/api/v1/classes?limit=10');
 }

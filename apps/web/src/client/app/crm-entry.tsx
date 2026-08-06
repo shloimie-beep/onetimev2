@@ -48,6 +48,7 @@ import {
   assignAdminSupportTicket,
   assignTag,
   confirmReply,
+  correctAdminAttendance,
   createTag,
   createIdempotencyKey,
   getAssignees,
@@ -56,6 +57,7 @@ import {
   getContact,
   getContentLibrary,
   getGamificationAdminDashboard,
+  getAdminAttendanceSnapshot,
   getAdminLearningSnapshot,
   getOwnerDashboard,
   getSession,
@@ -346,8 +348,13 @@ function CrmApp() {
         if (classroomSectionFromPath(routePath) === 'rewards' && !isRabbi) {
           await loadGamificationDashboard();
         }
-        if (!isRabbi && ['questions', 'rewards'].includes(classroomSectionFromPath(routePath))) {
-          await loadAdminLearning();
+        if (
+          !isRabbi &&
+          ['questions', 'rewards', 'attendance'].includes(classroomSectionFromPath(routePath))
+        ) {
+          await loadAdminLearning(
+            classroomSectionFromPath(routePath) === 'attendance' ? 'attendance' : 'questions',
+          );
         }
       } else {
         setSelectedClass(null);
@@ -490,10 +497,12 @@ function CrmApp() {
     }
   }
 
-  async function loadAdminLearning() {
+  async function loadAdminLearning(mode: 'questions' | 'attendance' = 'questions') {
     setAdminLearningState({ loading: true, error: '' });
     try {
-      setAdminLearning(await getAdminLearningSnapshot());
+      setAdminLearning(
+        await (mode === 'attendance' ? getAdminAttendanceSnapshot() : getAdminLearningSnapshot()),
+      );
       setAdminLearningState({ loading: false, error: '' });
     } catch (error) {
       if (handleAuthError(error)) return;
@@ -675,8 +684,12 @@ function CrmApp() {
       if (classroomSectionFromPath(target.pathname) === 'rewards') {
         void loadGamificationDashboard();
       }
-      if (['questions', 'rewards'].includes(classroomSectionFromPath(target.pathname))) {
-        void loadAdminLearning();
+      if (
+        ['questions', 'rewards', 'attendance'].includes(classroomSectionFromPath(target.pathname))
+      ) {
+        void loadAdminLearning(
+          classroomSectionFromPath(target.pathname) === 'attendance' ? 'attendance' : 'questions',
+        );
       }
     } else {
       setSelectedClass(null);
@@ -1029,7 +1042,9 @@ function CrmApp() {
           onRefreshOccurrences={loadClasses}
           onRetryDetail={(occurrenceKey) => void loadClassDetail(occurrenceKey)}
           onRetryRewards={() => void loadGamificationDashboard()}
-          onRetryLearning={() => void loadAdminLearning()}
+          onRetryLearning={() =>
+            loadAdminLearning(classroomSection === 'attendance' ? 'attendance' : 'questions')
+          }
         />
       )}
       {surface === 'content' &&
@@ -1776,7 +1791,7 @@ function ClassesPanel({
   onRefreshOccurrences: (preferredOccurrenceKey?: string | null) => Promise<void>;
   onRetryDetail: (occurrenceKey: string) => void;
   onRetryRewards: () => void;
-  onRetryLearning: () => void;
+  onRetryLearning: () => Promise<void>;
 }) {
   const teachingSections = [
     'classes',
@@ -1806,6 +1821,7 @@ function ClassesPanel({
       />
       {!teachingOnly && section === 'questions' ? (
         <AdminLearningPanel
+          mode="questions"
           snapshot={adminLearning}
           loading={adminLearningLoading}
           error={adminLearningError}
@@ -1814,6 +1830,7 @@ function ClassesPanel({
       ) : !teachingOnly && section === 'rewards' ? (
         <>
           <AdminLearningPanel
+            mode="questions"
             snapshot={adminLearning}
             loading={adminLearningLoading}
             error={adminLearningError}
@@ -1826,6 +1843,18 @@ function ClassesPanel({
             onRetry={onRetryRewards}
           />
         </>
+      ) : !teachingOnly && section === 'attendance' ? (
+        <AdminLearningPanel
+          mode="attendance"
+          snapshot={adminLearning}
+          loading={adminLearningLoading}
+          error={adminLearningError}
+          onRetry={onRetryLearning}
+          onCorrectAttendance={async (correction) => {
+            await correctAdminAttendance(csrfToken, correction);
+            await onRetryLearning();
+          }}
+        />
       ) : isManagementSection ? (
         <ClassManagementWorkspace
           csrfToken={csrfToken}
@@ -1967,15 +1996,19 @@ function ClassroomFocusedBody({
 }
 
 function AdminLearningPanel({
+  mode,
   snapshot,
   loading,
   error,
   onRetry,
+  onCorrectAttendance,
 }: {
+  mode: 'questions' | 'attendance';
   snapshot: AdminLearningSnapshot | null;
   loading: boolean;
   error: string;
-  onRetry: () => void;
+  onRetry: () => Promise<void>;
+  onCorrectAttendance?: React.ComponentProps<typeof AdminLearningWorkspace>['onCorrectAttendance'];
 }) {
   if (loading && !snapshot) return <ReadOnlySkeleton label="Loading learning engagement" />;
   if (error && !snapshot) {
@@ -1985,12 +2018,18 @@ function AdminLearningPanel({
         title="Learning engagement could not load"
         body={error}
         actionLabel="Retry"
-        onAction={onRetry}
+        onAction={() => void onRetry()}
       />
     );
   }
   if (!snapshot) return null;
-  return <AdminLearningWorkspace {...snapshot} />;
+  return (
+    <AdminLearningWorkspace
+      {...snapshot}
+      mode={mode}
+      {...(onCorrectAttendance ? { onCorrectAttendance } : {})}
+    />
+  );
 }
 
 function BillingPanel({

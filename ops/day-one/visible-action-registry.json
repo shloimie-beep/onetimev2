@@ -20,7 +20,19 @@
     },
     {
       "path": "apps/web/src/server/app.ts",
-      "sha256": "b88e54e04c8088956e6341f1750d67a88e9edec040166c2b0512e96efa4b94cc"
+      "sha256": "f190b3c3357275f5382f37f24c08a7de6840c00e0568ca0fd23c56585caf4308"
+    },
+    {
+      "path": "apps/web/src/server/features/classroom/embedded/adapters.ts",
+      "sha256": "b690ed896fc53b5127c3ddb827114db92d7e8ed12d6350c4786899d55891821a"
+    },
+    {
+      "path": "apps/web/src/server/features/classroom/embedded/composition.ts",
+      "sha256": "4bb69b57e93b69355c03bd5329cf9566330fa8855e498ed239076dfa7e919747"
+    },
+    {
+      "path": "apps/web/src/server/features/classroom/embedded/router.ts",
+      "sha256": "6f6e9eb042fa62af566f8770056140da7dcdbabfd306ad865bd49aeef149035e"
     },
     {
       "path": "apps/web/src/server/features/portals/routers.ts",
@@ -44,7 +56,11 @@
     },
     {
       "path": "apps/web/src/client/app/admin-ia.ts",
-      "sha256": "5d85ec66ec17d062aa63bd649a063a060f60808bcd0e29dd125119564aa3e80a"
+      "sha256": "d14036ad8aa00eb30f606b99de4fbbe263927ca8bc30337294bc0e72f981171b"
+    },
+    {
+      "path": "apps/web/src/client/app/admin/learning/AdminLearningWorkspace.tsx",
+      "sha256": "918a03e3a762e691b7e96cfe94c44a6d3b74b2752e5343e67ee8d91029c7d436"
     },
     {
       "path": "apps/web/src/client/app/admin/support/AdminSupportWorkspace.tsx",
@@ -52,11 +68,11 @@
     },
     {
       "path": "apps/web/src/client/app/crm-api.ts",
-      "sha256": "3191162e147c45c8e4899d8642d677106e9586e160fd9992dbadbfffc932d929"
+      "sha256": "3e46bfded41561fe2334dc765defee5684658eef35e09249046bddf04669cc59"
     },
     {
       "path": "apps/web/src/client/app/crm-entry.tsx",
-      "sha256": "4ca3e10fac43211a329cc5510433850e76ef77c1be6b992914561300e96d9334"
+      "sha256": "3bc19b072d0c4ba1a47c7548d4e1b9c5b215ae080d14a55a0b691ba32929e842"
     },
     {
       "path": "apps/web/src/client/app/live-entry.tsx",
@@ -72,11 +88,11 @@
     },
     {
       "path": "apps/web/src/client/app/router/registry.ts",
-      "sha256": "5fa619ee3c5299ca9fdf5981e1fb22016f5433f8976deb0c561f342c01460180"
+      "sha256": "2249e729aa7cb37844f699cefd54424c16d2cfd8298e09df6a47022bf55502e8"
     },
     {
       "path": "apps/web/src/client/app/router/canonical-route-views.ts",
-      "sha256": "32f188cb4ec7055c708e1e704947c4cd3c0ca6c533a449756a046c71aa3004cd"
+      "sha256": "5b6b0290cbb39f1adfbc58f93029b3256d0d310725514b89776bf01e61345015"
     },
     {
       "path": "apps/web/src/client/app/support/SupportFeature.tsx",
@@ -97,6 +113,10 @@
     {
       "path": "packages/brand-system/src/v21.ts",
       "sha256": "9f1fcd193ca604c5d30c6ee0f18c57bded225c5c09c8eb41d138a3be359ccc31"
+    },
+    {
+      "path": "packages/db/src/learning/repository.ts",
+      "sha256": "cbd89dd01713f91889a73dec2adc22d04a036d6e5a37c5ed593f14419a83b7b8"
     },
     {
       "path": "scripts/build-public-pages.ts",
@@ -443,9 +463,9 @@
       "route_id": "RT-ADM-038",
       "path": "/app/classroom/attendance",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-038",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-039",
@@ -918,6 +938,75 @@
       "provider_mode": "not_provider_dependent",
       "external_mutation": false,
       "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
+    },
+    {
+      "action_id": "classes.attendance.admin.correct.form",
+      "label": "Record audited attendance correction",
+      "surface": "form",
+      "route": "/app/classroom/attendance",
+      "roles": ["admin"],
+      "capability": "classroom:attendance:correct",
+      "handler": {
+        "method": "POST",
+        "path": "/api/app/classroom/attendance/admin-correction"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "client-generated idempotency_key"
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "attendance_admin_correction"
+      },
+      "states": {
+        "loading": "Recording the audited correction.",
+        "success": "The canonical attendance projection is refreshed.",
+        "error": "The correction is not recorded and may be retried with the same key.",
+        "permission": "Only an authenticated Admin with the exact local roster binding may correct attendance.",
+        "offline": "Attendance corrections are unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/server/features/classroom/embedded/router.test.ts",
+        "apps/web/src/server/features/classroom/embedded/adapters.test.ts",
+        "tests/e2e/admin-information-architecture.spec.ts"
+      ]
+    },
+    {
+      "action_id": "classes.attendance.admin.view.route",
+      "label": "Review attendance",
+      "surface": "route",
+      "route": "/app/classroom/attendance",
+      "roles": ["admin"],
+      "capability": "classroom:attendance:read",
+      "handler": {
+        "method": "GET",
+        "path": "/api/app/classroom/attendance/admin"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "attendance_admin_read"
+      },
+      "states": {
+        "loading": "Loading canonical attendance records.",
+        "success": "Attendance records are visible.",
+        "error": "Attendance records could not load.",
+        "permission": "Only an authenticated Admin may review attendance.",
+        "offline": "No protected attendance data is read from an offline cache."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/server/features/classroom/embedded/router.test.ts",
+        "tests/e2e/admin-information-architecture.spec.ts"
+      ]
     },
     {
       "action_id": "classes.open_detail.button",

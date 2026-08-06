@@ -47,12 +47,16 @@ const EXPECTED_SOURCE_INPUT_PATHS = [
   'ops/v2.1-execution/source-spec/05-ACTOR-ROLE-CAPABILITY-ROUTE-MATRIX-v2.1.md',
   'ops/v2.1-execution/source-spec/08-SCREEN-CATALOG-AND-DESIGN-SYSTEM-v2.1.md',
   'apps/web/src/server/app.ts',
+  'apps/web/src/server/features/classroom/embedded/adapters.ts',
+  'apps/web/src/server/features/classroom/embedded/composition.ts',
+  'apps/web/src/server/features/classroom/embedded/router.ts',
   'apps/web/src/server/features/portals/routers.ts',
   'apps/web/src/server/features/support/router.ts',
   'apps/web/src/server/features/support/v21-router.ts',
   'apps/web/src/server/features/signup/school/router.ts',
   'apps/web/src/server/features/v21-canonical-routes/router.ts',
   'apps/web/src/client/app/admin-ia.ts',
+  'apps/web/src/client/app/admin/learning/AdminLearningWorkspace.tsx',
   'apps/web/src/client/app/admin/support/AdminSupportWorkspace.tsx',
   'apps/web/src/client/app/crm-api.ts',
   'apps/web/src/client/app/crm-entry.tsx',
@@ -66,6 +70,7 @@ const EXPECTED_SOURCE_INPUT_PATHS = [
   'apps/web/src/client/public/school/model.ts',
   'packages/brand-system/src/route-branding.ts',
   'packages/brand-system/src/v21.ts',
+  'packages/db/src/learning/repository.ts',
   'scripts/build-public-pages.ts',
   'packages/domain/src/dashboard/service.ts',
 ] as const;
@@ -73,6 +78,20 @@ const EXPECTED_SOURCE_INPUT_PATHS = [
 const EXPECTED_ACTION_BINDINGS = [
   ['auth.parent.logout.button', '/app/parent/students', ['parent'], 'POST', '/api/v1/auth/logout'],
   ['auth.student.logout.button', '/app/student', ['student'], 'POST', '/api/v1/auth/logout'],
+  [
+    'classes.attendance.admin.correct.form',
+    '/app/classroom/attendance',
+    ['admin'],
+    'POST',
+    '/api/app/classroom/attendance/admin-correction',
+  ],
+  [
+    'classes.attendance.admin.view.route',
+    '/app/classroom/attendance',
+    ['admin'],
+    'GET',
+    '/api/app/classroom/attendance/admin',
+  ],
   [
     'classes.open_detail.button',
     '/app/classroom/occurrences/:occurrenceId',
@@ -298,13 +317,13 @@ describe('v2.1 visible action registry', () => {
     expect(registry.canonical_routes).toHaveLength(93);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'ready'),
-    ).toHaveLength(73);
+    ).toHaveLength(74);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'isolated'),
     ).toHaveLength(7);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'missing'),
-    ).toHaveLength(13);
+    ).toHaveLength(12);
     expect(sourceText.endsWith('\n')).toBe(true);
   });
 
