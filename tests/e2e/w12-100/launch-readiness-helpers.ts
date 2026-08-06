@@ -355,7 +355,9 @@ export async function createSyntheticContact(page: Page) {
   const submit = page.getByRole('button', { name: 'Create your Family account' });
   await expect(submit).toBeVisible();
   await submit.click();
-  await expect(page.getByRole('heading', { name: 'You’re all set.' })).toBeVisible();
+  await expect(page).toHaveURL(/\/signup\/received\?state=session_pending&email=pending$/u);
+  await expect(page.getByRole('heading', { name: 'Signup received' })).toBeVisible();
+  await expect(page.getByText('No card was charged by this signup form.')).toBeVisible();
   return { email, contactName };
 }
 

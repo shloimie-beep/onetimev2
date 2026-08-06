@@ -18,7 +18,9 @@ test('synthetic Family signup commits safely on mobile', async ({ page }) => {
   await page.getByLabel(/I agree to the Terms/).check();
   await page.getByLabel(/I acknowledge the Privacy Notice/).check();
   await page.getByRole('button', { name: 'Create your Family account' }).click();
-  await expect(page.getByRole('heading', { name: 'You’re all set.' })).toBeVisible();
+  await expect(page).toHaveURL(/\/signup\/received\?state=session_pending&email=pending$/u);
+  await expect(page.getByRole('heading', { name: 'Signup received' })).toBeVisible();
+  await expect(page.getByText('No card was charged by this signup form.')).toBeVisible();
 
   const overflow = await page.evaluate(
     () => document.documentElement.scrollWidth > document.documentElement.clientWidth,

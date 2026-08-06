@@ -152,6 +152,8 @@ test('Admin reaches the existing Parent household naturally from Contacts on mob
   ]);
 
   await page.goto('/app/crm');
+  await expect(page.getByRole('heading', { name: 'Contacts' })).toBeVisible();
+  await page.waitForFunction(() => performance.getEntriesByName('ot-crm-list-usable').length > 0);
   await page.getByLabel('Search').fill('Contact Operations Parent');
   await page.getByRole('button', { name: 'Apply' }).click();
   await page.getByRole('button', { name: /^Contact Operations Parent / }).click();
