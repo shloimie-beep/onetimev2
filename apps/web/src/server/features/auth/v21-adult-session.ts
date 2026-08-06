@@ -1,6 +1,9 @@
 import { createHash, createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 import { z } from 'zod';
-import type { AdultRole } from '../../../../../../packages/contracts/src/accounts/v21-household-identity.ts';
+import type {
+  AdultRole,
+  SafeHouseholdContext,
+} from '../../../../../../packages/contracts/src/accounts/v21-household-identity.ts';
 import { AUTH_SESSION_COOKIE } from '../../../../../../packages/contracts/src/identity/auth/index.ts';
 import {
   ONE_TIME_PRODUCT_SCOPE,
@@ -151,6 +154,7 @@ export type V21AdultLoginOutcome =
       memberships: readonly AdultRole[];
       active_role: AdultRole;
       role_selection_required: boolean;
+      household_selection_required: boolean;
     };
 
 export type V21SessionRevocationOutcome =
@@ -174,6 +178,31 @@ export type V21SessionBootstrapOutcome =
     }
   | { status: 'invalid' }
   | { status: 'unavailable' };
+
+export type V21HouseholdContextOutcome =
+  | {
+      status: 'resolved';
+      households: readonly SafeHouseholdContext[];
+      active_household_id: string;
+      csrf_token: string;
+      expires_at: string;
+    }
+  | { status: 'invalid'; reason: 'invalid_session' | 'invalid_role' }
+  | { status: 'unavailable' };
+
+export type V21HouseholdSwitchOutcome =
+  | {
+      switched: true;
+      browser_session_token: string;
+      csrf_token: string;
+      expires_at: string;
+      active_household: SafeHouseholdContext;
+    }
+  | {
+      switched: false;
+      reason:
+        'invalid_session' | 'invalid_csrf' | 'invalid_role' | 'invalid_household' | 'unavailable';
+    };
 
 export interface V21AdultSessionRuntime {
   establish(input: V21ParentSessionEstablishmentInput): Promise<V21ParentSessionEstablishment>;
@@ -205,12 +234,23 @@ export interface V21AdultSessionRuntime {
         expires_at: string;
         active_role: AdultRole;
         memberships: readonly AdultRole[];
+        household_selection_required: boolean;
       }
     | {
         switched: false;
         reason: 'invalid_session' | 'invalid_csrf' | 'invalid_role' | 'unavailable';
       }
   >;
+  householdContextCookieHeader(input: {
+    cookie_header?: string | null | undefined;
+    now?: Date | undefined;
+  }): Promise<V21HouseholdContextOutcome>;
+  switchHouseholdCookieHeader(input: {
+    cookie_header?: string | null | undefined;
+    csrf_token?: string | null | undefined;
+    selected_household_id: string;
+    now?: Date | undefined;
+  }): Promise<V21HouseholdSwitchOutcome>;
   bootstrapCookieHeader(input: {
     cookie_header?: string | null | undefined;
     now?: Date | undefined;
@@ -349,7 +389,12 @@ export function createV21AdultSessionRuntime(
   const exactRevoke = async (
     parsed: ParsedBrowserEnvelope,
     now: Date,
-    reason: 'adult_logout' | 'session_rotation' | 'explicit_revocation' | 'role_context_switch',
+    reason:
+      | 'adult_logout'
+      | 'session_rotation'
+      | 'explicit_revocation'
+      | 'role_context_switch'
+      | 'household_context_switch',
   ): Promise<'revoked' | 'invalid' | 'unavailable' | 'revocation_unverified'> => {
     const resolution = await resolveEnvelope(parsed, now);
     if (resolution.status !== 'resolved') return resolution.status;
@@ -422,10 +467,10 @@ export function createV21AdultSessionRuntime(
                 : [],
           ),
         ].sort() as AdultRole[];
-        const parentContextAvailable =
-          identity.parentMembershipActive &&
-          identity.activeOwnedHouseholdCount === 1 &&
-          identity.ownedHouseholds.length === 1;
+        const ownedHouseholdsComplete =
+          identity.activeOwnedHouseholdCount > 0 &&
+          identity.ownedHouseholds.length === identity.activeOwnedHouseholdCount;
+        const parentContextAvailable = identity.parentMembershipActive && ownedHouseholdsComplete;
         if (
           identity.adultState !== 'active' ||
           identity.humanAccountId === null ||
@@ -532,9 +577,12 @@ export function createV21AdultSessionRuntime(
               currentIdentity.passwordHash !== passwordHash &&
               (activeRole === 'admin' ||
                 (currentIdentity.parentMembershipActive &&
-                  currentIdentity.activeOwnedHouseholdCount === 1 &&
-                  currentIdentity.ownedHouseholds.length === 1 &&
-                  currentIdentity.ownedHouseholds[0]?.householdId === household?.householdId)) &&
+                  currentIdentity.activeOwnedHouseholdCount > 0 &&
+                  currentIdentity.ownedHouseholds.length ===
+                    currentIdentity.activeOwnedHouseholdCount &&
+                  currentIdentity.ownedHouseholds.some(
+                    (candidate) => candidate.householdId === household?.householdId,
+                  ))) &&
               currentProof.valid &&
               currentProof.replacement_hash === null,
             );
@@ -570,6 +618,8 @@ export function createV21AdultSessionRuntime(
           memberships,
           active_role: activeRole,
           role_selection_required: memberships.length > 1,
+          household_selection_required:
+            activeRole === 'parent' && identity.ownedHouseholds.length > 1,
         };
       } catch {
         let cleanup: 'revoked' | 'invalid' | 'unavailable' | 'revocation_unverified' | null = null;
@@ -624,8 +674,8 @@ export function createV21AdultSessionRuntime(
         const household =
           requestedRole === 'parent' &&
           identity.parentMembershipActive &&
-          identity.activeOwnedHouseholdCount === 1 &&
-          identity.ownedHouseholds.length === 1
+          identity.activeOwnedHouseholdCount > 0 &&
+          identity.ownedHouseholds.length === identity.activeOwnedHouseholdCount
             ? identity.ownedHouseholds[0]!
             : null;
         if (requestedRole === 'parent' && !household) {
@@ -654,6 +704,134 @@ export function createV21AdultSessionRuntime(
           expires_at: established.expires_at,
           active_role: requestedRole,
           memberships: identity.memberships,
+          household_selection_required:
+            requestedRole === 'parent' && identity.ownedHouseholds.length > 1,
+        };
+      } catch {
+        return { switched: false, reason: 'unavailable' };
+      }
+    },
+
+    householdContextCookieHeader: async ({ cookie_header: cookieHeader, now = clock() }) => {
+      const parsed = parseCookie(cookieHeader);
+      if (!parsed) return { status: 'invalid', reason: 'invalid_session' };
+      const resolution = await resolveEnvelope(parsed, now);
+      if (resolution.status !== 'resolved') {
+        return resolution.status === 'unavailable'
+          ? { status: 'unavailable' }
+          : { status: 'invalid', reason: 'invalid_session' };
+      }
+      const current = resolution.context;
+      if (current.session.activeRole !== 'parent') {
+        return { status: 'invalid', reason: 'invalid_role' };
+      }
+      try {
+        const identity = await input.repository.findLoginIdentity({
+          normalizedEmail: current.normalizedEmail,
+          runtimeTier: current.session.runtimeTier,
+          verificationEnvironmentId: current.session.verificationEnvironmentId,
+        });
+        const households = identity?.ownedHouseholds ?? [];
+        const activeHouseholdId = current.session.activeHouseholdId;
+        if (
+          !identity ||
+          identity.adultState !== 'active' ||
+          identity.humanAccountId !== current.session.humanAccountId ||
+          identity.accountState !== 'active' ||
+          identity.securityVersion !== current.session.securityVersion ||
+          !identity.parentMembershipActive ||
+          identity.activeOwnedHouseholdCount < 1 ||
+          households.length !== identity.activeOwnedHouseholdCount ||
+          !activeHouseholdId ||
+          !households.some((household) => household.householdId === activeHouseholdId)
+        ) {
+          return { status: 'invalid', reason: 'invalid_session' };
+        }
+        return {
+          status: 'resolved',
+          households,
+          active_household_id: activeHouseholdId,
+          csrf_token: signCsrf(
+            parsed.payloadSegment,
+            randomMaterial(randomSource),
+            input.hmacSecret,
+          ),
+          expires_at: currentExpiry(current),
+        };
+      } catch {
+        return { status: 'unavailable' };
+      }
+    },
+
+    switchHouseholdCookieHeader: async ({
+      cookie_header: cookieHeader,
+      csrf_token: csrfToken,
+      selected_household_id: selectedHouseholdId,
+      now = clock(),
+    }) => {
+      if (!exactIdentifierSchema.safeParse(selectedHouseholdId).success) {
+        return { switched: false, reason: 'invalid_household' };
+      }
+      const parsed = parseCookie(cookieHeader);
+      if (!parsed) return { switched: false, reason: 'invalid_session' };
+      if (!verifyCsrfProof(parsed.payloadSegment, csrfToken, input.hmacSecret)) {
+        return { switched: false, reason: 'invalid_csrf' };
+      }
+      const resolution = await resolveEnvelope(parsed, now);
+      if (resolution.status !== 'resolved') {
+        return {
+          switched: false,
+          reason: resolution.status === 'invalid' ? 'invalid_session' : 'unavailable',
+        };
+      }
+      const current = resolution.context;
+      if (current.session.activeRole !== 'parent') {
+        return { switched: false, reason: 'invalid_role' };
+      }
+      try {
+        const identity = await input.repository.findLoginIdentity({
+          normalizedEmail: current.normalizedEmail,
+          runtimeTier: current.session.runtimeTier,
+          verificationEnvironmentId: current.session.verificationEnvironmentId,
+        });
+        if (
+          !identity ||
+          identity.adultState !== 'active' ||
+          identity.humanAccountId !== current.session.humanAccountId ||
+          identity.accountState !== 'active' ||
+          identity.securityVersion !== current.session.securityVersion ||
+          !identity.parentMembershipActive ||
+          identity.activeOwnedHouseholdCount < 1 ||
+          identity.ownedHouseholds.length !== identity.activeOwnedHouseholdCount
+        ) {
+          return { switched: false, reason: 'invalid_session' };
+        }
+        const selectedHousehold = identity.ownedHouseholds.find(
+          (household) => household.householdId === selectedHouseholdId,
+        );
+        if (!selectedHousehold) return { switched: false, reason: 'invalid_household' };
+        const revoked = await exactRevoke(parsed, now, 'household_context_switch');
+        if (revoked !== 'revoked') return { switched: false, reason: 'unavailable' };
+        const established = await establish({
+          scope: {
+            product: ONE_TIME_PRODUCT_SCOPE,
+            runtime_tier: current.session.runtimeTier,
+            verification_environment_id: current.session.verificationEnvironmentId,
+          },
+          adult_id: current.adultId,
+          human_account_id: current.session.humanAccountId,
+          active_role: 'parent',
+          household_id: selectedHousehold.householdId,
+          security_version: current.session.securityVersion,
+          now,
+        });
+        if (!established.established) return { switched: false, reason: 'unavailable' };
+        return {
+          switched: true,
+          browser_session_token: established.browser_session_token,
+          csrf_token: established.csrf_token,
+          expires_at: established.expires_at,
+          active_household: selectedHousehold,
         };
       } catch {
         return { switched: false, reason: 'unavailable' };

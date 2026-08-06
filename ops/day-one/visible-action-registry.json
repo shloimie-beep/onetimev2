@@ -24,7 +24,7 @@
     },
     {
       "path": "apps/web/src/server/app.ts",
-      "sha256": "6a48468c986b85fe5db274460b49ce6f6396239b7b89cbf67fe4ec60e28550a7"
+      "sha256": "1cef5abd845bc79afcfb83d81f460078beb7c665e622825b99c23dbdebec25a4"
     },
     {
       "path": "apps/web/src/server/communications/register.ts",
@@ -49,6 +49,10 @@
     {
       "path": "apps/web/src/server/features/admin/operations/service.ts",
       "sha256": "a244a4a8c3bb7e8a296c9b676f9f5081a818dc01ca05febd4596de737300993b"
+    },
+    {
+      "path": "apps/web/src/server/features/auth/v21-adult-session.ts",
+      "sha256": "8679f7d578b087d19710f953c6e31063c7dacfbef8b2604c9e8f96095f19f544"
     },
     {
       "path": "apps/web/src/server/features/classroom/embedded/adapters.ts",
@@ -132,7 +136,7 @@
     },
     {
       "path": "apps/web/src/client/app/router/registry.ts",
-      "sha256": "95846d1db8d3f968a7668f3ea5dcd14945935908e05b6cc1ae78f4bd030eb6ac"
+      "sha256": "ee17aa94b42993b70436b2af048ad079442c9aa0e77715eeb4bdf98cf71f9d31"
     },
     {
       "path": "apps/web/src/client/app/router/canonical-route-views.ts",
@@ -148,7 +152,7 @@
     },
     {
       "path": "apps/web/src/client/public/public-entry.ts",
-      "sha256": "386f6ceb51f8f5b657faf4d80f91950b9441f3cff89b456b9655e2a7811d41f2"
+      "sha256": "beb8725cec0a14c580edf67d85f86ee0839cf8419ddc985c71f8d4429e075c33"
     },
     {
       "path": "apps/web/src/client/public/school/model.ts",
@@ -323,9 +327,9 @@
       "route_id": "RT-AUTH-005",
       "path": "/select-household",
       "roles": ["parent"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "auth.rt-auth-005",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-AUTH-006",
@@ -1775,6 +1779,74 @@
         "apps/web/src/client/app/admin/search/AdminGlobalSearch.test.tsx",
         "tests/integration/support/v21-support-lifecycle.test.ts",
         "tests/e2e/support.spec.ts"
+      ]
+    },
+    {
+      "action_id": "auth.household_selector.switch.button",
+      "label": "Continue with selected household",
+      "surface": "button",
+      "route": "/select-household",
+      "roles": ["parent"],
+      "capability": "auth:household-context:switch",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v2.1/account-context/household"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "session_rotation",
+        "event": "household_context_switched"
+      },
+      "states": {
+        "loading": "Rechecking ownership and rotating the Parent household context.",
+        "success": "The selected owned household opens with a newly rotated Parent session.",
+        "error": "The household switch was rejected or the session could not be rotated.",
+        "permission": "Only households owned by the signed-in Parent account may be selected.",
+        "offline": "Household selection is unavailable offline and the current context is unchanged."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/server/features/auth/v21-adult-session.test.ts",
+        "tests/integration/portals/portal-mount.test.ts"
+      ]
+    },
+    {
+      "action_id": "auth.household_selector.view.route",
+      "label": "Choose household",
+      "surface": "route",
+      "route": "/select-household",
+      "roles": ["parent"],
+      "capability": "auth:household-context:read",
+      "handler": {
+        "method": "GET",
+        "path": "/select-household"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "session_read",
+        "event": "household_selector_viewed"
+      },
+      "states": {
+        "loading": "Resolving owned households from the signed-in Parent session.",
+        "success": "Only the households owned by this account are visible for selection.",
+        "error": "Owned household context could not be resolved and the selector fails closed.",
+        "permission": "Non-Parent and invalid sessions cannot read household choices.",
+        "offline": "The selector is unavailable offline and no household data is cached."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/server/features/auth/v21-adult-session.test.ts",
+        "tests/integration/portals/portal-mount.test.ts"
       ]
     },
     {

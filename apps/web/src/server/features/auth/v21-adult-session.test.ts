@@ -719,6 +719,108 @@ describe('F03 v2.1 Parent host-cookie session runtime', () => {
     });
   });
 
+  it('lists only owned households and rotates a multi-household Parent session', async () => {
+    const ownedHouseholds = [
+      ...loginIdentity().ownedHouseholds,
+      {
+        householdId: 'household_two',
+        displayName: 'Parent Two family',
+        classification: 'family' as const,
+        accessState: 'active' as const,
+        ownerRelationship: 'account_owner' as const,
+      },
+    ];
+    const identity = loginIdentity({
+      activeOwnedHouseholdCount: ownedHouseholds.length,
+      ownedHouseholds,
+    });
+    const sessions = new Map<string, V21ParentSessionContext>();
+    const repository: V21AdultSessionRepository = {
+      create: async (input) => {
+        const household = ownedHouseholds.find(
+          (candidate) => candidate.householdId === input.householdId,
+        );
+        if (!household) throw new Error('Unexpected household context.');
+        const context = sessionResult(input, {
+          household,
+          accessState: household.accessState,
+        });
+        sessions.set(input.sessionId, context);
+        return context;
+      },
+      resolve: async (input) => sessions.get(input.sessionId) ?? null,
+      revoke: async (input) => sessions.delete(input.sessionId),
+      findLoginIdentity: async () => identity,
+      upgradeCredentialPasswordHash: async () => true,
+    };
+    const runtime = createV21AdultSessionRuntime({
+      repository,
+      hmacSecret,
+      randomBytes: deterministicRandom(),
+    });
+    const login = await runtime.login({
+      scope: establishmentInput().scope,
+      email: identity.normalizedEmail,
+      password: 'correct horse battery staple',
+      now,
+    });
+    expect(login).toMatchObject({
+      handled: true,
+      authenticated: true,
+      active_role: 'parent',
+      household_selection_required: true,
+      household: { householdId: 'household_one' },
+    });
+    if (!login.handled || !login.authenticated) {
+      throw new Error('Multi-household Parent login was not issued.');
+    }
+    const selector = await runtime.householdContextCookieHeader({
+      cookie_header: hostCookie(login.browser_session_token),
+      now,
+    });
+    expect(selector).toMatchObject({
+      status: 'resolved',
+      active_household_id: 'household_one',
+      households: ownedHouseholds,
+    });
+    if (selector.status !== 'resolved') throw new Error('Household selector was unavailable.');
+
+    await expect(
+      runtime.switchHouseholdCookieHeader({
+        cookie_header: hostCookie(login.browser_session_token),
+        csrf_token: selector.csrf_token,
+        selected_household_id: 'household_not_owned',
+        now: new Date(now.getTime() + 1_000),
+      }),
+    ).resolves.toEqual({ switched: false, reason: 'invalid_household' });
+    expect(sessions.size).toBe(1);
+
+    const switched = await runtime.switchHouseholdCookieHeader({
+      cookie_header: hostCookie(login.browser_session_token),
+      csrf_token: selector.csrf_token,
+      selected_household_id: 'household_two',
+      now: new Date(now.getTime() + 1_000),
+    });
+    expect(switched).toMatchObject({
+      switched: true,
+      active_household: { householdId: 'household_two' },
+    });
+    expect(sessions.size).toBe(1);
+    if (!switched.switched) throw new Error('Household switch was not issued.');
+    await expect(
+      runtime.resolveCookieHeader({
+        cookie_header: hostCookie(switched.browser_session_token),
+        now: new Date(now.getTime() + 1_000),
+      }),
+    ).resolves.toMatchObject({
+      status: 'resolved',
+      context: {
+        session: { activeRole: 'parent', activeHouseholdId: 'household_two' },
+        household: { householdId: 'household_two' },
+      },
+    });
+  });
+
   it('enforces the exact segment-safe inactive-Parent route allowlist', () => {
     const context = sessionResult(
       {

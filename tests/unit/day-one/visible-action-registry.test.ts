@@ -54,6 +54,7 @@ const EXPECTED_SOURCE_INPUT_PATHS = [
   'apps/web/src/server/features/admin/operations/repository.ts',
   'apps/web/src/server/features/admin/operations/router.ts',
   'apps/web/src/server/features/admin/operations/service.ts',
+  'apps/web/src/server/features/auth/v21-adult-session.ts',
   'apps/web/src/server/features/classroom/embedded/adapters.ts',
   'apps/web/src/server/features/classroom/embedded/composition.ts',
   'apps/web/src/server/features/classroom/embedded/router.ts',
@@ -250,6 +251,20 @@ const EXPECTED_ACTION_BINDINGS = [
     ['admin'],
     'POST',
     '/api/v2.1/admin/operations/resolve',
+  ],
+  [
+    'auth.household_selector.switch.button',
+    '/select-household',
+    ['parent'],
+    'POST',
+    '/api/v2.1/account-context/household',
+  ],
+  [
+    'auth.household_selector.view.route',
+    '/select-household',
+    ['parent'],
+    'GET',
+    '/select-household',
   ],
   ['auth.parent.logout.button', '/app/parent/students', ['parent'], 'POST', '/api/v1/auth/logout'],
   [
@@ -605,10 +620,10 @@ describe('v2.1 visible action registry', () => {
     expect(registry.canonical_routes).toHaveLength(93);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'ready'),
-    ).toHaveLength(87);
+    ).toHaveLength(88);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'isolated'),
-    ).toHaveLength(6);
+    ).toHaveLength(5);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'missing'),
     ).toHaveLength(0);

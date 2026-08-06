@@ -196,6 +196,77 @@ async function installRoleSelector(root: HTMLElement) {
   );
 }
 
+const householdSelector = document.querySelector<HTMLElement>('[data-household-selector]');
+if (householdSelector) void installHouseholdSelector(householdSelector);
+
+async function installHouseholdSelector(root: HTMLElement) {
+  const status = root.querySelector<HTMLElement>('[data-household-status]');
+  const buttons = [...root.querySelectorAll<HTMLButtonElement>('[data-select-household]')];
+  let csrfToken = '';
+  try {
+    const response = await fetch('/api/v2.1/account-context/households', {
+      credentials: 'same-origin',
+      cache: 'no-store',
+      headers: { accept: 'application/json' },
+    });
+    const payload = (await response.json()) as {
+      csrf_token?: string;
+      households?: { householdId?: string }[];
+    };
+    if (!response.ok || !payload.csrf_token) throw new Error('session_unavailable');
+    csrfToken = payload.csrf_token;
+    const available = new Set(
+      (payload.households ?? []).map((household) => household.householdId).filter(Boolean),
+    );
+    buttons.forEach((button) => {
+      button.disabled = !available.has(button.dataset.selectHousehold ?? '');
+    });
+  } catch {
+    if (status)
+      status.textContent = 'Your household access could not be verified. Please sign in again.';
+    buttons.forEach((button) => (button.disabled = true));
+    return;
+  }
+
+  buttons.forEach((button) =>
+    button.addEventListener('click', async () => {
+      const selectedHouseholdId = button.dataset.selectHousehold;
+      if (!selectedHouseholdId) return;
+      buttons.forEach((candidate) => (candidate.disabled = true));
+      if (status) status.textContent = 'Opening the selected Parent workspace…';
+      try {
+        const response = await fetch('/api/v2.1/account-context/household', {
+          method: 'POST',
+          credentials: 'same-origin',
+          cache: 'no-store',
+          headers: {
+            accept: 'application/json',
+            'content-type': 'application/json',
+            'x-csrf-token': csrfToken,
+          },
+          body: JSON.stringify({
+            selected_household_id: selectedHouseholdId,
+            csrf_token: csrfToken,
+          }),
+        });
+        const payload = (await response.json()) as { return_to?: string; message?: string };
+        if (!response.ok || !payload.return_to) {
+          throw new Error(payload.message ?? 'Household selection failed.');
+        }
+        window.location.assign(payload.return_to);
+      } catch (error) {
+        if (status) {
+          status.textContent =
+            error instanceof Error
+              ? error.message
+              : 'Household selection is unavailable right now.';
+        }
+        buttons.forEach((candidate) => (candidate.disabled = false));
+      }
+    }),
+  );
+}
+
 function renderLocalClassTime() {
   const target = document.querySelector<HTMLElement>('[data-local-class-time]');
   if (!target) return;

@@ -406,6 +406,128 @@ describe('OT-71 mounted parent and student portals', () => {
     }
   });
 
+  it('mounts owned-household selection and rotates the Parent session without cross-household disclosure', async () => {
+    const csrfToken = `c1.${'a'.repeat(43)}.${'b'.repeat(43)}`;
+    const households = [
+      {
+        householdId: 'household_one',
+        displayName: 'First Family',
+        classification: 'family',
+        accessState: 'free',
+        ownerRelationship: 'account_owner',
+      },
+      {
+        householdId: 'household_two',
+        displayName: 'Second <Family>',
+        classification: 'family',
+        accessState: 'active',
+        ownerRelationship: 'account_owner',
+      },
+    ] as const;
+    const v21AdultSessionRuntime = {
+      householdContextCookieHeader: async () => ({
+        status: 'resolved',
+        households,
+        active_household_id: 'household_one',
+        csrf_token: csrfToken,
+        expires_at: '2026-08-04T12:00:00.000Z',
+      }),
+      switchHouseholdCookieHeader: async ({
+        selected_household_id: selectedHouseholdId,
+      }: {
+        selected_household_id: string;
+      }) => {
+        const household = households.find(
+          (candidate) => candidate.householdId === selectedHouseholdId,
+        );
+        return household
+          ? {
+              switched: true,
+              browser_session_token: 'parent-household-rotated',
+              csrf_token: csrfToken,
+              expires_at: '2026-08-04T12:00:00.000Z',
+              active_household: household,
+            }
+          : { switched: false, reason: 'invalid_household' };
+      },
+    } as never;
+    const server = await listenForTest(
+      createApp({
+        config,
+        pool,
+        distDir,
+        v21AdultSessionRuntime,
+        clock: () => new Date('2026-08-04T10:00:00.000Z'),
+      }),
+    );
+    const parentCookie = '__Host-onetime-session=parent-household-one';
+    try {
+      const selector = await fetch(`${server.baseUrl}/select-household`, {
+        headers: { cookie: parentCookie },
+        redirect: 'manual',
+      });
+      expect(selector.status).toBe(200);
+      expect(selector.headers.get('cache-control')).toContain('no-store');
+      expect(selector.headers.get('x-robots-tag')).toBe('noindex, nofollow');
+      const selectorHtml = await selector.text();
+      expect(selectorHtml).toContain('First Family');
+      expect(selectorHtml).toContain('Second &lt;Family&gt;');
+      expect(selectorHtml).not.toContain('Second <Family>');
+
+      const listed = await fetch(`${server.baseUrl}/api/v2.1/account-context/households`, {
+        headers: { cookie: parentCookie },
+      });
+      expect(listed.status).toBe(200);
+      await expect(listed.json()).resolves.toMatchObject({
+        active_household_id: 'household_one',
+        households,
+        csrf_token: csrfToken,
+      });
+
+      const denied = await fetch(`${server.baseUrl}/api/v2.1/account-context/household`, {
+        method: 'POST',
+        headers: {
+          cookie: parentCookie,
+          origin: config.publicBaseUrl,
+          'content-type': 'application/json',
+          'x-csrf-token': csrfToken,
+        },
+        body: JSON.stringify({ selected_household_id: 'household_not_owned' }),
+      });
+      expect(denied.status).toBe(403);
+      await expect(denied.json()).resolves.toMatchObject({
+        success: false,
+        code: 'FORBIDDEN',
+        message: 'That household is not available for this account.',
+      });
+      expect(denied.headers.getSetCookie()).toHaveLength(0);
+
+      const switched = await fetch(`${server.baseUrl}/api/v2.1/account-context/household`, {
+        method: 'POST',
+        headers: {
+          cookie: parentCookie,
+          origin: config.publicBaseUrl,
+          'content-type': 'application/json',
+          'x-csrf-token': csrfToken,
+        },
+        body: JSON.stringify({ selected_household_id: 'household_two' }),
+      });
+      expect(switched.status).toBe(200);
+      await expect(switched.json()).resolves.toMatchObject({
+        active_role: 'parent',
+        active_household: { householdId: 'household_two' },
+        return_to: '/app/parent',
+      });
+      expect(
+        switched.headers
+          .getSetCookie()
+          .some((value) => value.startsWith('__Host-onetime-session=parent-household-rotated')),
+      ).toBe(true);
+    } finally {
+      await server.close();
+    }
+  });
+
   it('denies Student self-password mutation without changing the credential', async () => {
     const server = await listenForTest(createApp({ config, pool, distDir }));
     try {

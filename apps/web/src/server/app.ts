@@ -1726,7 +1726,35 @@ export function createApp({
     });
   };
   app.get(/^\/app\/parent(?:\/.*)?$/, serveParentAppShell);
-  app.get('/select-household', serveParentAppShell);
+  app.get('/select-household', async (req: RequestWithTrace, res) => {
+    const context = await v21AdultSessionRuntime.householdContextCookieHeader({
+      cookie_header: req.header('cookie'),
+      ...(clock ? { now: clock() } : {}),
+    });
+    setPrivateNoStore(res);
+    if (context.status === 'unavailable') {
+      res.status(503).type('text').send('Household selection is temporarily unavailable.');
+      return;
+    }
+    if (context.status === 'invalid') {
+      if (context.reason === 'invalid_role') {
+        res.redirect(302, '/select-role');
+        return;
+      }
+      clearAuthCookies(res, config);
+      res.redirect(302, '/login?return_to=%2Fselect-household');
+      return;
+    }
+    if (context.households.length < 2) {
+      res.redirect(302, '/app/parent');
+      return;
+    }
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    res
+      .status(200)
+      .type('html')
+      .send(householdSelectionPageHtml(context.households, context.active_household_id));
+  });
 
   app.get(/^\/app\/student(?:\/.*)?$/, async (req: RequestWithTrace, res) => {
     await serveProtectedAppShell(req, res, {
@@ -2148,10 +2176,13 @@ export function createApp({
           account_context: {
             active_role: v21Login.active_role,
             available_roles: v21Login.memberships,
+            active_household_id: v21Login.household?.householdId ?? null,
           },
           return_to: v21Login.role_selection_required
             ? '/select-role'
-            : returnPathForRole(payload.return_to, v21Login.active_role, config),
+            : v21Login.household_selection_required
+              ? '/select-household'
+              : returnPathForRole(payload.return_to, v21Login.active_role, config),
         });
         return;
       }
@@ -2549,7 +2580,106 @@ export function createApp({
       available_roles: outcome.memberships,
       csrf_token: outcome.csrf_token,
       expires_at: outcome.expires_at,
-      return_to: defaultRouteForRole(outcome.active_role),
+      return_to: outcome.household_selection_required
+        ? '/select-household'
+        : defaultRouteForRole(outcome.active_role),
+    });
+  });
+
+  app.get('/api/v2.1/account-context/households', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const context = await v21AdultSessionRuntime.householdContextCookieHeader({
+      cookie_header: req.header('cookie'),
+      ...(clock ? { now: clock() } : {}),
+    });
+    if (context.status === 'unavailable') {
+      res
+        .status(503)
+        .json(publicError('SERVER_ERROR', 'Household selection is unavailable.', req.traceId));
+      return;
+    }
+    if (context.status === 'invalid') {
+      if (context.reason === 'invalid_session') clearAuthCookies(res, config);
+      res
+        .status(context.reason === 'invalid_session' ? 401 : 403)
+        .json(
+          publicError(
+            context.reason === 'invalid_session' ? 'UNAUTHENTICATED' : 'FORBIDDEN',
+            'Household selection is unavailable for this account context.',
+            req.traceId,
+          ),
+        );
+      return;
+    }
+    res.status(200).json({
+      success: true,
+      households: context.households,
+      active_household_id: context.active_household_id,
+      csrf_token: context.csrf_token,
+      expires_at: context.expires_at,
+    });
+  });
+
+  app.post('/api/v2.1/account-context/household', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    if (!isSameOriginPost(req, config)) {
+      res.status(403).json(publicError('FORBIDDEN', 'Same-origin request required.', req.traceId));
+      return;
+    }
+    const selectedHouseholdId = req.body?.selected_household_id;
+    if (typeof selectedHouseholdId !== 'string') {
+      res
+        .status(400)
+        .json(publicError('VALIDATION_ERROR', 'Choose an available household.', req.traceId));
+      return;
+    }
+    const outcome = await v21AdultSessionRuntime.switchHouseholdCookieHeader({
+      cookie_header: req.header('cookie'),
+      csrf_token: req.header('x-csrf-token') ?? req.body?.csrf_token,
+      selected_household_id: selectedHouseholdId,
+      ...(clock ? { now: clock() } : {}),
+    });
+    if (!outcome.switched) {
+      const status =
+        outcome.reason === 'invalid_session' ? 401 : outcome.reason === 'unavailable' ? 503 : 403;
+      if (outcome.reason === 'invalid_session') clearAuthCookies(res, config);
+      res
+        .status(status)
+        .json(
+          publicError(
+            outcome.reason === 'invalid_session'
+              ? 'UNAUTHENTICATED'
+              : outcome.reason === 'unavailable'
+                ? 'SERVER_ERROR'
+                : 'FORBIDDEN',
+            outcome.reason === 'unavailable'
+              ? 'Household selection is temporarily unavailable.'
+              : 'That household is not available for this account.',
+            req.traceId,
+          ),
+        );
+      return;
+    }
+    clearAuthCookies(res, config);
+    res.append(
+      'Set-Cookie',
+      sessionCookieHeader({
+        token: outcome.browser_session_token,
+        max_age_seconds: Math.max(
+          0,
+          Math.floor(
+            (Date.parse(outcome.expires_at) - (clock ? clock().getTime() : Date.now())) / 1000,
+          ),
+        ),
+      }),
+    );
+    res.status(200).json({
+      success: true,
+      active_role: 'parent',
+      active_household: outcome.active_household,
+      csrf_token: outcome.csrf_token,
+      expires_at: outcome.expires_at,
+      return_to: '/app/parent',
     });
   });
 
@@ -7003,6 +7133,47 @@ function roleSelectionPageHtml(activeRole: 'admin' | 'parent') {
         <button class="button button-secondary" type="button" data-select-role="parent">Continue as Parent</button>
       </div>
       <p class="form-status" role="status" data-role-status></p>
+    </section>
+  </main>
+  <script type="module" src="/assets/public.js"></script>
+</body>
+</html>`;
+}
+
+function householdSelectionPageHtml(
+  households: readonly { householdId: string; displayName: string }[],
+  activeHouseholdId: string,
+) {
+  const householdButtons = households
+    .map((household) => {
+      const active = household.householdId === activeHouseholdId;
+      return `<button class="button ${active ? 'button-primary' : 'button-secondary'}" type="button" data-select-household="${escapeHtml(household.householdId)}"${active ? ' aria-current="true"' : ''}>
+        <span>${escapeHtml(household.displayName)}</span>${active ? '<small>Current household</small>' : ''}
+      </button>`;
+    })
+    .join('');
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Choose household | One Time Mishnayos</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#050505">
+  <link rel="stylesheet" href="/assets/public.css">
+</head>
+<body>
+  <main class="login-page role-selection-page">
+    <section class="login-panel role-selection-panel" data-household-selector data-active-household="${escapeHtml(activeHouseholdId)}">
+      <a class="brand-lockup login-brand" href="/" aria-label="One Time Mishnayos home">
+        <img src="/assets/brand/onetimelogo.webp" width="56" height="56" alt="" aria-hidden="true">
+        <span><strong>One Time Mishnayos</strong><small>Household context</small></span>
+      </a>
+      <p class="eyebrow">Parent workspace</p>
+      <h1>Which household would you like to manage?</h1>
+      <p>Only households owned by this signed-in account are available.</p>
+      <div class="role-selection-actions">${householdButtons}</div>
+      <p class="form-status" role="status" data-household-status></p>
     </section>
   </main>
   <script type="module" src="/assets/public.js"></script>

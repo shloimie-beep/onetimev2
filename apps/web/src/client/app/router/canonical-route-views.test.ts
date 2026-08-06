@@ -34,11 +34,11 @@ describe('v2.1 canonical route views', () => {
     expect(
       CANONICAL_V21_ROUTES.filter(({ routeId }) => routeId.startsWith('RT-STU-')),
     ).toHaveLength(17);
-    expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'ready')).toHaveLength(85);
+    expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'ready')).toHaveLength(88);
     expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'isolated')).toHaveLength(
-      7,
+      5,
     );
-    expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'missing')).toHaveLength(1);
+    expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'missing')).toHaveLength(0);
     for (const route of CANONICAL_V21_ROUTES) {
       if (route.readiness === 'ready') {
         expect(route.handler, route.routeId).not.toMatch(/fallback|default|missing|unavailable/);
@@ -146,6 +146,12 @@ describe('v2.1 canonical route views', () => {
     expect(resolveCurrentClientRoute('/app/student/support/ticket-1', 'student')).toMatchObject({
       routeId: 'RT-STU-061',
       readiness: 'ready',
+      handlerDisposition: 'mounted',
+    });
+    expect(resolveCurrentClientRoute('/select-household', 'parent')).toMatchObject({
+      routeId: 'RT-AUTH-005',
+      readiness: 'ready',
+      handler: 'auth.rt-auth-005',
       handlerDisposition: 'mounted',
     });
     expect(resolveCurrentClientRoute('/app/classroom/questions', 'admin')).toMatchObject({
