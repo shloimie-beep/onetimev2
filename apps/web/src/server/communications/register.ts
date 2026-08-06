@@ -8,6 +8,7 @@ import {
   CommunicationsNotFoundError,
   CommunicationsValidationError,
   buildCommunicationsListResponse,
+  canReadCommunications,
   type CommunicationsReadRepository,
   type CommunicationsMode,
   type CommunicationsQuery,
@@ -20,6 +21,7 @@ import {
   type RequestWithTrace,
 } from '../../../../../packages/observability/src/index.ts';
 import { PostgresCommunicationsReadRepository } from './repository.ts';
+import { createWorkflowReadbackReader, type WorkflowReadbackReader } from './workflow-readback.ts';
 
 export interface ReadOnlySessionScopePort {
   resolve(req: Request): Promise<ReadOnlySessionScope | null>;
@@ -33,6 +35,7 @@ export type RegisterCommunicationsRoutesDeps = {
   cursorSecret: string;
   distDir?: string | undefined;
   repository?: CommunicationsReadRepository | undefined;
+  workflowReadbackReader?: WorkflowReadbackReader | undefined;
 };
 
 export function registerCommunicationsRoutes({
@@ -43,6 +46,7 @@ export function registerCommunicationsRoutes({
   cursorSecret,
   distDir = path.resolve(process.cwd(), 'dist/apps/web/public'),
   repository = new PostgresCommunicationsReadRepository(pool),
+  workflowReadbackReader = createWorkflowReadbackReader(),
 }: RegisterCommunicationsRoutesDeps) {
   app.get('/app/communications', async (req, res) => {
     setProtectedNoStore(res);
@@ -67,6 +71,47 @@ export function registerCommunicationsRoutes({
       repository,
       cursorSecret,
     });
+  });
+
+  app.get('/app/communications/:workflowId', async (req, res) => {
+    setProtectedNoStore(res);
+    const session = await sessionPort.resolve(req);
+    const returnTo = `/app/communications/${encodeURIComponent(String(req.params.workflowId))}`;
+    if (!session) {
+      res.redirect(302, `/login?return_to=${encodeURIComponent(returnTo)}`);
+      return;
+    }
+    if (!canReadCommunications(session.role)) {
+      res.status(403).type('html').send('Forbidden');
+      return;
+    }
+    res.sendFile(path.join(distDir, 'app', 'crm.html'));
+  });
+
+  app.get('/api/v1/communications/workflows/:workflowId', async (req: RequestWithTrace, res) => {
+    setProtectedNoStore(res);
+    try {
+      const session = await sessionPort.resolve(req);
+      if (!session) throw new CommunicationsAuthorizationError(401);
+      if (!canReadCommunications(session.role)) throw new CommunicationsAuthorizationError(403);
+      const workflow = workflowReadbackReader.find(String(req.params.workflowId));
+      if (!workflow) throw new CommunicationsNotFoundError('Workflow was not found.');
+      res.status(200).json(workflow);
+    } catch (error) {
+      handleCommunicationsError(error, req, res);
+    }
+  });
+
+  app.get('/api/v1/communications/workflows', async (req: RequestWithTrace, res) => {
+    setProtectedNoStore(res);
+    try {
+      const session = await sessionPort.resolve(req);
+      if (!session) throw new CommunicationsAuthorizationError(401);
+      if (!canReadCommunications(session.role)) throw new CommunicationsAuthorizationError(403);
+      res.status(200).json(workflowReadbackReader.list());
+    } catch (error) {
+      handleCommunicationsError(error, req, res);
+    }
   });
 
   app.get('/api/v1/crm/contacts/:contactId/communications', async (req: RequestWithTrace, res) => {

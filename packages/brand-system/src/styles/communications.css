@@ -156,6 +156,127 @@
   justify-self: start;
 }
 
+.workflow-index {
+  border: 1px solid #101214;
+  border-radius: 8px;
+  background: #fff8d6;
+  padding: 1rem;
+}
+
+.workflow-index-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.workflow-index-heading h2,
+.workflow-index-heading p {
+  margin-top: 0;
+}
+
+.workflow-index-heading span {
+  border-radius: 999px;
+  background: #101214;
+  color: #ffd32a;
+  padding: 0.35rem 0.65rem;
+  font-weight: 800;
+}
+
+.workflow-index-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 0.75rem;
+  max-height: 28rem;
+  overflow: auto;
+}
+
+.workflow-index-grid article {
+  border: 1px solid #101214;
+  border-radius: 8px;
+  background: #fff;
+  padding: 0.8rem;
+}
+
+.workflow-index-grid article > :first-child {
+  font-size: 0.8rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+}
+
+.workflow-index-grid h3 {
+  font-size: 1rem;
+}
+
+.workflow-index-grid a {
+  display: inline-flex;
+  min-height: 2.5rem;
+  align-items: center;
+  color: #101214;
+  font-weight: 800;
+}
+
+.workflow-readback-header a {
+  color: #101214;
+  font-weight: 800;
+}
+
+.workflow-readback-eyebrow {
+  margin-block: 0.75rem 0.2rem;
+  font-size: 0.85rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.workflow-readback-boundary,
+.workflow-readback-card,
+.workflow-readback-facts {
+  border: 1px solid #101214;
+  border-radius: 8px;
+  background: #fff;
+  padding: 1rem;
+}
+
+.workflow-readback-boundary {
+  border-left: 6px solid #ffd32a;
+  margin: 0;
+  max-width: 76ch;
+}
+
+.workflow-readback-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 0.8rem;
+  margin: 0;
+}
+
+.workflow-readback-facts div,
+.workflow-readback-card dl div {
+  min-width: 0;
+}
+
+.workflow-readback-facts dt,
+.workflow-readback-card dt {
+  font-weight: 800;
+}
+
+.workflow-readback-facts dd,
+.workflow-readback-card dd {
+  margin: 0.2rem 0 0;
+  overflow-wrap: anywhere;
+}
+
+.workflow-readback-card h2 {
+  margin-top: 0;
+  font-size: 1.1rem;
+}
+
+.workflow-readback-card li + li {
+  margin-top: 0.45rem;
+}
+
 @media (max-width: 700px) {
   .communications-filters {
     margin-inline: -0.25rem;

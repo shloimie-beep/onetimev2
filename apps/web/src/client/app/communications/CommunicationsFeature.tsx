@@ -4,6 +4,7 @@ import type {
   CommunicationsIntentType,
   CommunicationsListResponse,
   CommunicationsLocalState,
+  WorkflowReadbackListResponse,
 } from '../../../../../../packages/contracts/src/communications/index.ts';
 import './communications.css';
 
@@ -23,6 +24,11 @@ type LoadState =
   | { kind: 'not_found'; message: string }
   | { kind: 'error'; message: string };
 
+type WorkflowIndexState =
+  | { kind: 'loading' }
+  | { kind: 'ready'; data: WorkflowReadbackListResponse }
+  | { kind: 'error'; message: string };
+
 export function CommunicationsFeature({ contactId, onProtectedStateCleared }: Props) {
   const [from, setFrom] = useState(() => dateInput(daysAgo(30)));
   const [to, setTo] = useState(() => dateInput(new Date()));
@@ -34,6 +40,7 @@ export function CommunicationsFeature({ contactId, onProtectedStateCleared }: Pr
   const [state, setState] = useState<LoadState>({ kind: 'loading' });
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [workflowIndex, setWorkflowIndex] = useState<WorkflowIndexState>({ kind: 'loading' });
   const abortRef = useRef<AbortController | null>(null);
   const retryRef = useRef<HTMLButtonElement | null>(null);
 
@@ -50,6 +57,21 @@ export function CommunicationsFeature({ contactId, onProtectedStateCleared }: Pr
     void load();
     return () => abortRef.current?.abort();
   }, [endpoint]);
+
+  useEffect(() => {
+    if (contactId) return;
+    const controller = new AbortController();
+    void requestWorkflowIndex(controller.signal)
+      .then((data) => setWorkflowIndex({ kind: 'ready', data }))
+      .catch((error: unknown) => {
+        if (controller.signal.aborted) return;
+        if (error instanceof ResponseError && (error.status === 401 || error.status === 403)) {
+          onProtectedStateCleared?.();
+        }
+        setWorkflowIndex({ kind: 'error', message: 'Workflow registry could not be loaded.' });
+      });
+    return () => controller.abort();
+  }, [contactId]);
 
   async function load(cursor?: string) {
     abortRef.current?.abort();
@@ -100,6 +122,8 @@ export function CommunicationsFeature({ contactId, onProtectedStateCleared }: Pr
           </p>
         </div>
       </header>
+
+      {!contactId && <WorkflowIndex state={workflowIndex} />}
 
       {data && (
         <section className="communications-truth" aria-label="Communications source truth">
@@ -294,6 +318,55 @@ export function CommunicationsFeature({ contactId, onProtectedStateCleared }: Pr
   );
 }
 
+function WorkflowIndex({ state }: { state: WorkflowIndexState }) {
+  if (state.kind === 'loading') {
+    return (
+      <section className="workflow-index" aria-labelledby="workflow-index-heading" aria-busy="true">
+        <h2 id="workflow-index-heading">Workflow readback</h2>
+        <p role="status">Loading registered workflows...</p>
+      </section>
+    );
+  }
+  if (state.kind === 'error') {
+    return (
+      <section className="workflow-index" aria-labelledby="workflow-index-heading">
+        <h2 id="workflow-index-heading">Workflow readback</h2>
+        <p>{state.message}</p>
+      </section>
+    );
+  }
+  return (
+    <section className="workflow-index" aria-labelledby="workflow-index-heading">
+      <div className="workflow-index-heading">
+        <div>
+          <h2 id="workflow-index-heading">Workflow readback</h2>
+          <p>Open a read-only contract and the last registered provider observation.</p>
+        </div>
+        <span>
+          {state.data.external_readback.result_artifact_present
+            ? 'Final result received'
+            : 'Final browser readback pending'}
+        </span>
+      </div>
+      <div className="workflow-index-grid">
+        {state.data.workflows.map((workflow) => (
+          <article key={workflow.workflow_key}>
+            <p>{workflow.workflow_key}</p>
+            <h3>{workflow.canonical_name}</h3>
+            <p>{workflow.purpose}</p>
+            <p>
+              Observed: <strong>{workflow.observed_status.replaceAll('_', ' ')}</strong>
+            </p>
+            <a href={`/app/communications/${encodeURIComponent(workflow.workflow_key)}`}>
+              Open workflow readback
+            </a>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 type Item = CommunicationsListResponse['items'][number];
 
 function CommunicationRow({ item }: { item: Item }) {
@@ -422,6 +495,20 @@ async function requestCommunications(
     signal,
   });
   const json = (await response.json()) as CommunicationsListResponse | { message?: string };
+  if (!response.ok || !('success' in json) || json.success !== true) {
+    throw new ResponseError(response.status, 'message' in json ? json.message : undefined);
+  }
+  return json;
+}
+
+async function requestWorkflowIndex(signal: AbortSignal) {
+  const response = await fetch('/api/v1/communications/workflows', {
+    cache: 'no-store',
+    credentials: 'same-origin',
+    headers: { accept: 'application/json' },
+    signal,
+  });
+  const json = (await response.json()) as WorkflowReadbackListResponse | { message?: string };
   if (!response.ok || !('success' in json) || json.success !== true) {
     throw new ResponseError(response.status, 'message' in json ? json.message : undefined);
   }

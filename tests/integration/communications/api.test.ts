@@ -282,6 +282,53 @@ describe('Communications API registration hook', () => {
     });
   });
 
+  it('returns a no-store, read-only workflow registry projection without speculative UI evidence', async () => {
+    const listResponse = await api('/api/v1/communications/workflows');
+    expect(listResponse.status).toBe(200);
+    expect(listResponse.headers.get('cache-control')).toBe('private, no-store');
+    const listJson = await listResponse.json();
+    expect(listJson.workflows.length).toBeGreaterThan(10);
+    expect(listJson.workflows[0]).toMatchObject({
+      workflow_key: 'OT-01',
+      observed_status: 'DRAFT_SHELL',
+    });
+    expect(listJson.external_readback).toMatchObject({ result_artifact_present: false });
+
+    const response = await api('/api/v1/communications/workflows/OT-01');
+    expect(response.status).toBe(200);
+    expect(response.headers.get('cache-control')).toBe('private, no-store');
+    const json = await response.json();
+    expect(json).toMatchObject({
+      success: true,
+      source_scope: 'repository_workflow_registry',
+      workflow: {
+        workflow_key: 'OT-01',
+        observed_status: 'DRAFT_SHELL',
+      },
+      external_readback: {
+        status: 'pending_external_readback',
+        result_artifact_present: false,
+        registry_reconciled_from_result: false,
+      },
+      boundaries: {
+        read_only: true,
+        provider_actions_available: false,
+        student_contacts_allowed: false,
+        live_charges_allowed: false,
+      },
+    });
+    expect(json.workflow).not.toHaveProperty('essentialValues');
+    expect(JSON.stringify(json)).not.toMatch(
+      /publication_authorized|enrollment_authorized|https?:\/\//u,
+    );
+  });
+
+  it('returns neutral workflow errors and enforces the same owner/admin boundary', async () => {
+    expect((await api('/api/v1/communications/workflows/not-registered')).status).toBe(404);
+    expect((await api('/api/v1/communications/workflows/OT-01', 'member')).status).toBe(403);
+    expect((await fetch(`${baseUrl}/api/v1/communications/workflows/OT-01`)).status).toBe(401);
+  });
+
   it('returns 404 for missing contacts before outbox projection', async () => {
     repository.contactIds.clear();
     const response = await api('/api/v1/crm/contacts/contact_public_test/communications');

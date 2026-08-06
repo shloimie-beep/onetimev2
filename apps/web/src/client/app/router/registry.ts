@@ -88,7 +88,7 @@ const ISOLATED_ROUTE_IDS = new Set<CanonicalRouteId>([
   'RT-ADM-040',
 ]);
 
-const MISSING_ROUTE_IDS = new Set<CanonicalRouteId>(['RT-ADM-061']);
+const MISSING_ROUTE_IDS = new Set<CanonicalRouteId>();
 
 const route = (definition: RouteSeed): ClientRouteDefinition => {
   const handlerDisposition = MISSING_ROUTE_IDS.has(definition.routeId)

@@ -19,8 +19,20 @@
       "sha256": "49f62be1f179bcfb2c1c577cb47b9fd32f2a935b00364c73be69815cdb0d9b8f"
     },
     {
+      "path": "integrations/highlevel/registry/workflow-registry.yaml",
+      "sha256": "08fa35058d351e79aa56a8bddcb6752ba2f356c4fde35c0a26b13338c1f53573"
+    },
+    {
       "path": "apps/web/src/server/app.ts",
       "sha256": "6a48468c986b85fe5db274460b49ce6f6396239b7b89cbf67fe4ec60e28550a7"
+    },
+    {
+      "path": "apps/web/src/server/communications/register.ts",
+      "sha256": "4de07ee9dc847f867a66dc3899cdc110e84c2ea901d95503eb0fecece6ab0933"
+    },
+    {
+      "path": "apps/web/src/server/communications/workflow-readback.ts",
+      "sha256": "eae684303fbcf697c10637210410ca8cd07b2dcadcf5cd1e3326471c5c113c26"
     },
     {
       "path": "apps/web/src/server/features/admin/operations/index.ts",
@@ -87,12 +99,20 @@
       "sha256": "46e4fc562dd8575f2dda9c7852c205098e251eda755397625304d30483acb30f"
     },
     {
+      "path": "apps/web/src/client/app/communications/CommunicationsFeature.tsx",
+      "sha256": "c43c00967ae6ba875d55f7843b0fce2630101ee4bf113e98741e7f98eb00e3db"
+    },
+    {
+      "path": "apps/web/src/client/app/communications/WorkflowReadbackFeature.tsx",
+      "sha256": "4aaea28080adaf5fecb7dbec3af69414cc55da9f6f6803754e536285c1f2922f"
+    },
+    {
       "path": "apps/web/src/client/app/crm-api.ts",
       "sha256": "f39637d58074aa2833a40af9fa0e3c059222c45990290d0a4dc5a8d5f41212e6"
     },
     {
       "path": "apps/web/src/client/app/crm-entry.tsx",
-      "sha256": "1e02661f7afac3fcc87c2a732cd0f251c643b82fa7454d8134be81d9257ab1c2"
+      "sha256": "3a0518cb14fd105fc8c9523dfd4cd11ef379eb6d3ea8c1f2e7e2aa5d899bb3bd"
     },
     {
       "path": "apps/web/src/client/app/live-entry.tsx",
@@ -112,7 +132,7 @@
     },
     {
       "path": "apps/web/src/client/app/router/registry.ts",
-      "sha256": "10e5132b8224996849f1cfd882013816b56b8b32f409804c775ae942b122abdb"
+      "sha256": "0727cf916b5a33d6f47729f5e3c7c63f13d2369c66bfdb3fd714c77b46496510"
     },
     {
       "path": "apps/web/src/client/app/router/canonical-route-views.ts",
@@ -135,6 +155,10 @@
       "sha256": "dd2ea7b0d43643aa3ca11be8f5e14de26530aa0e375bcc3f6e47ed2a9f0d3c0a"
     },
     {
+      "path": "packages/brand-system/src/styles/communications.css",
+      "sha256": "634268790d495313234b013cfc6f43c308980fc087c116d29a947cb00e3f5fc6"
+    },
+    {
       "path": "packages/brand-system/src/styles/react.css",
       "sha256": "21359812ad995bd5f68a98ebaf7205f0ac107f08d887dd92927d34d3d395cca0"
     },
@@ -147,6 +171,10 @@
       "sha256": "9f1fcd193ca604c5d30c6ee0f18c57bded225c5c09c8eb41d138a3be359ccc31"
     },
     {
+      "path": "packages/contracts/src/communications/index.ts",
+      "sha256": "c0b1370a49385334b4439cfcb265bf887502019895c04b5de0c6365f0e39f289"
+    },
+    {
       "path": "packages/db/src/index.ts",
       "sha256": "0d92642f1d9c7692323834c05b1c3e03ebbf905d89b99e71c7a16eafd0ee6e14"
     },
@@ -157,6 +185,10 @@
     {
       "path": "scripts/build-public-pages.ts",
       "sha256": "981d635aa5c4ec2fe653074cce9b12122af0226d36c9a41a390ca39035f188fa"
+    },
+    {
+      "path": "scripts/highlevel/workflow-registry-source.ts",
+      "sha256": "c7889f944aaa098c9279c322d555de71aa5a984089e2ef93d0bf5e0562bf15ab"
     },
     {
       "path": "packages/domain/src/dashboard/service.ts",
@@ -579,9 +611,9 @@
       "route_id": "RT-ADM-061",
       "path": "/app/communications/:workflowId",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-061",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-ADM-062",
@@ -1021,6 +1053,41 @@
       "test_evidence": [
         "tests/integration/classes/class-management.test.ts",
         "tests/e2e/admin-information-architecture.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.communications.workflow_readback.view.route",
+      "label": "Workflow readback",
+      "surface": "route",
+      "route": "/app/communications/:workflowId",
+      "roles": ["admin"],
+      "capability": "admin:communications:workflow-read",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/communications/workflows/:workflowId"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "workflow_readback_viewed"
+      },
+      "states": {
+        "loading": "Loading the canonical repository workflow contract and observed readback.",
+        "success": "The exact trigger, actions, status, evidence, and external-lane boundary are visible.",
+        "error": "The workflow is not registered or its readback could not be loaded.",
+        "permission": "Only an authenticated Admin may read workflow configuration status.",
+        "offline": "Workflow readback is unavailable offline and no provider action is attempted."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "read_only_status",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/unit/communications/workflow-readback.test.ts",
+        "tests/integration/communications/api.test.ts",
+        "tests/e2e/workflow-readback.spec.ts"
       ]
     },
     {

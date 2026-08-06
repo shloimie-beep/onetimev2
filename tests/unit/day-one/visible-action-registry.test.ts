@@ -46,7 +46,10 @@ const EXPECTED_SOURCE_INPUT_PATHS = [
   'ops/v2.1-execution/source-spec/03-DECISION-REGISTER-v2.1.md',
   'ops/v2.1-execution/source-spec/05-ACTOR-ROLE-CAPABILITY-ROUTE-MATRIX-v2.1.md',
   'ops/v2.1-execution/source-spec/08-SCREEN-CATALOG-AND-DESIGN-SYSTEM-v2.1.md',
+  'integrations/highlevel/registry/workflow-registry.yaml',
   'apps/web/src/server/app.ts',
+  'apps/web/src/server/communications/register.ts',
+  'apps/web/src/server/communications/workflow-readback.ts',
   'apps/web/src/server/features/admin/operations/index.ts',
   'apps/web/src/server/features/admin/operations/repository.ts',
   'apps/web/src/server/features/admin/operations/router.ts',
@@ -63,6 +66,8 @@ const EXPECTED_SOURCE_INPUT_PATHS = [
   'apps/web/src/client/app/admin/learning/AdminLearningWorkspace.tsx',
   'apps/web/src/client/app/admin/search/AdminGlobalSearch.tsx',
   'apps/web/src/client/app/admin/support/AdminSupportWorkspace.tsx',
+  'apps/web/src/client/app/communications/CommunicationsFeature.tsx',
+  'apps/web/src/client/app/communications/WorkflowReadbackFeature.tsx',
   'apps/web/src/client/app/crm-api.ts',
   'apps/web/src/client/app/crm-entry.tsx',
   'apps/web/src/client/app/live-entry.tsx',
@@ -75,12 +80,15 @@ const EXPECTED_SOURCE_INPUT_PATHS = [
   'apps/web/src/client/app/support/SupportFeature.tsx',
   'apps/web/src/client/public/public-entry.ts',
   'apps/web/src/client/public/school/model.ts',
+  'packages/brand-system/src/styles/communications.css',
   'packages/brand-system/src/styles/react.css',
   'packages/brand-system/src/route-branding.ts',
   'packages/brand-system/src/v21.ts',
+  'packages/contracts/src/communications/index.ts',
   'packages/db/src/index.ts',
   'packages/db/src/learning/repository.ts',
   'scripts/build-public-pages.ts',
+  'scripts/highlevel/workflow-registry-source.ts',
   'packages/domain/src/dashboard/service.ts',
   'packages/domain/src/landing/content.ts',
   'packages/domain/src/legal/content.ts',
@@ -107,6 +115,13 @@ const EXPECTED_ACTION_BINDINGS = [
     ['admin'],
     'GET',
     '/api/v1/admin/classes/series',
+  ],
+  [
+    'admin.communications.workflow_readback.view.route',
+    '/app/communications/:workflowId',
+    ['admin'],
+    'GET',
+    '/api/v1/communications/workflows/:workflowId',
   ],
   [
     'admin.content.review.artifact_approve.button',
@@ -582,13 +597,13 @@ describe('v2.1 visible action registry', () => {
     expect(registry.canonical_routes).toHaveLength(93);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'ready'),
-    ).toHaveLength(85);
+    ).toHaveLength(86);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'isolated'),
     ).toHaveLength(7);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'missing'),
-    ).toHaveLength(1);
+    ).toHaveLength(0);
     expect(sourceText.endsWith('\n')).toBe(true);
   });
 

@@ -153,6 +153,104 @@ export type CommunicationsItem = z.infer<typeof communicationsItemSchema>;
 export type CommunicationsListResponse = z.infer<typeof communicationsListResponseSchema>;
 export type CommunicationsErrorResponse = z.infer<typeof communicationsErrorResponseSchema>;
 
+export const workflowReadbackControlStateSchema = z.enum([
+  'MISSING',
+  'DRAFT_SHELL',
+  'DRAFT_WAITING_EXTERNAL',
+  'SAVED_REOPENED',
+  'ACTIVE_CONFIGURED',
+  'ACTIVE_TESTED',
+  'DRIFTED',
+  'BLOCKED',
+]);
+
+export const workflowReadbackSummarySchema = z.object({
+  workflow_key: z.string(),
+  canonical_name: z.string(),
+  purpose: z.string(),
+  asset_kind: z.enum(['workflow', 'email_marketing_campaign']),
+  provider_workflow_id: z.string().nullable(),
+  desired_status: workflowReadbackControlStateSchema,
+  observed_status: workflowReadbackControlStateSchema,
+});
+
+export const workflowReadbackListResponseSchema = z.object({
+  success: z.literal(true),
+  source_scope: z.literal('repository_workflow_registry'),
+  workflows: z.array(workflowReadbackSummarySchema),
+  external_readback: z.object({
+    expected_result_path: z.string(),
+    result_artifact_present: z.boolean(),
+  }),
+});
+
+export const workflowReadbackResponseSchema = z.object({
+  success: z.literal(true),
+  source_scope: z.literal('repository_workflow_registry'),
+  workflow: z.object({
+    workflow_key: z.string(),
+    canonical_name: z.string(),
+    asset_kind: z.enum(['workflow', 'email_marketing_campaign']),
+    asset_lifecycle: z.enum(['canonical', 'deprecated']),
+    purpose: z.string(),
+    folder: z.string(),
+    transport: z.enum(['GHL', 'Resend']),
+    sender_key: z.string(),
+    provider_workflow_id: z.string().nullable(),
+    desired_status: workflowReadbackControlStateSchema,
+    observed_status: workflowReadbackControlStateSchema,
+    exact_trigger: z.string(),
+    exact_ordered_triggers: z.array(z.string()),
+    exact_ordered_actions: z.array(z.string()),
+    observed_triggers: z.array(z.string()),
+    observed_actions: z.array(z.string()),
+    provider_contract: z
+      .object({
+        exact_trigger_filter: z.string(),
+        ordered_critical_actions: z.array(z.string()),
+        delivery_category: z.string(),
+        sender_key: z.string(),
+      })
+      .nullable(),
+    last_readback: z.object({
+      at: z.string(),
+      method: z.string(),
+      reference: z.string(),
+    }),
+    canary: z.object({
+      result: z.enum(['passed', 'not_run', 'not_applicable']),
+      reference: z.string(),
+      detail: z.string(),
+    }),
+    blocker: z.string(),
+    source_material: z.object({
+      registry_path: z.string(),
+      prompt_path: z.string(),
+      checklist_path: z.string(),
+      evidence_paths: z.array(z.string()),
+    }),
+  }),
+  external_readback: z.object({
+    status: z.enum([
+      'pending_external_readback',
+      'artifact_received_registry_readback_required',
+      'reconciled_registry_readback',
+    ]),
+    expected_result_path: z.string(),
+    result_artifact_present: z.boolean(),
+    registry_reconciled_from_result: z.boolean(),
+  }),
+  boundaries: z.object({
+    read_only: z.literal(true),
+    provider_actions_available: z.literal(false),
+    student_contacts_allowed: z.literal(false),
+    live_charges_allowed: z.literal(false),
+  }),
+});
+
+export type WorkflowReadbackResponse = z.infer<typeof workflowReadbackResponseSchema>;
+export type WorkflowReadbackListResponse = z.infer<typeof workflowReadbackListResponseSchema>;
+
 export const communicationsCapabilities: CommunicationsCapabilities = {
   read: true,
   provider_acceptance: false,

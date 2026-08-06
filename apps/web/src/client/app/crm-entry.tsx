@@ -98,6 +98,12 @@ const CommunicationsPanel = React.lazy(() =>
   })),
 );
 
+const WorkflowReadbackPanel = React.lazy(() =>
+  import('./communications/WorkflowReadbackFeature.js').then((module) => ({
+    default: module.WorkflowReadbackFeature,
+  })),
+);
+
 const ContentWorkspace = React.lazy(() =>
   import('./content-workspace/ContentWorkspace.js').then((module) => ({
     default: module.ContentWorkspace,
@@ -134,7 +140,10 @@ type Notice = {
   message: string;
 };
 
-type CommunicationsMode = { kind: 'global' } | { kind: 'contact'; contactId: string };
+type CommunicationsMode =
+  | { kind: 'global' }
+  | { kind: 'contact'; contactId: string }
+  | { kind: 'workflow'; workflowId: string };
 type AdminSupportRoute = {
   mode: 'workspace' | 'queue' | 'detail';
   ticketId: string | null;
@@ -394,6 +403,20 @@ function CrmApp() {
         setContentRoutePath(routePath);
         if (isRabbi) await loadTeachingContent();
       }
+      return;
+    }
+    const workflowReadbackMatch = routePath.match(/^\/app\/communications\/([^/]+)$/);
+    if (workflowReadbackMatch?.[1]) {
+      setContactOperationsMode(false);
+      setSurface('crm');
+      setCommunicationsMode({
+        kind: 'workflow',
+        workflowId: decodeURIComponent(workflowReadbackMatch[1]),
+      });
+      setSelected(null);
+      setEditing(false);
+      setCreating(false);
+      setListLoading(false);
       return;
     }
     if (routePath === communicationsRouteDescriptor.path) {
@@ -870,7 +893,7 @@ function CrmApp() {
   function signIn() {
     const returnTo =
       location.pathname.startsWith('/app/crm') ||
-      location.pathname === communicationsRouteDescriptor.path ||
+      location.pathname.startsWith(communicationsRouteDescriptor.path) ||
       Boolean(ownerSurfaceFromPath(location.pathname)) ||
       location.pathname.startsWith('/app/support')
         ? location.pathname
@@ -938,7 +961,9 @@ function CrmApp() {
       : surface !== 'crm'
         ? ownerSurfaceTitle(surface)
         : communicationsMode
-          ? 'Communications'
+          ? communicationsMode.kind === 'workflow'
+            ? 'Workflow readback'
+            : 'Communications'
           : contactOperationsMode
             ? 'Parent household'
             : contactsSection !== 'people'
@@ -960,7 +985,9 @@ function CrmApp() {
         : communicationsMode
           ? communicationsMode.kind === 'contact'
             ? 'Communication history and draft activity for this contact.'
-            : 'One Time communication activity and draft follow-up status.'
+            : communicationsMode.kind === 'workflow'
+              ? 'Read-only repository contract and observed HighLevel delivery status.'
+              : 'One Time communication activity and draft follow-up status.'
           : contactOperationsMode
             ? 'Invite a Parent, create local-only Students, and manage access and adult-only GHL sync.'
             : contactsSection !== 'people'
@@ -1224,12 +1251,19 @@ function CrmApp() {
             </p>
           }
         >
-          <CommunicationsPanel
-            contactId={
-              communicationsMode.kind === 'contact' ? communicationsMode.contactId : undefined
-            }
-            onProtectedStateCleared={clearProtectedState}
-          />
+          {communicationsMode.kind === 'workflow' ? (
+            <WorkflowReadbackPanel
+              workflowId={communicationsMode.workflowId}
+              onProtectedStateCleared={clearProtectedState}
+            />
+          ) : (
+            <CommunicationsPanel
+              contactId={
+                communicationsMode.kind === 'contact' ? communicationsMode.contactId : undefined
+              }
+              onProtectedStateCleared={clearProtectedState}
+            />
+          )}
         </Suspense>
       )}
       {surface === 'crm' && (
