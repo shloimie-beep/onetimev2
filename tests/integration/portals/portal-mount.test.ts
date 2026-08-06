@@ -314,7 +314,10 @@ describe('OT-71 mounted parent and student portals', () => {
         redirect: 'manual',
       });
       expect(selector.status).toBe(200);
+      expect(selector.headers.get('cache-control')).toContain('no-store');
+      expect(selector.headers.get('x-robots-tag')).toBe('noindex, nofollow');
       const selectorHtml = await selector.text();
+      expect(selectorHtml).toContain('<meta name="robots" content="noindex, nofollow">');
       expect(selectorHtml).toContain('Continue as Admin');
       expect(selectorHtml).toContain('Continue as Parent');
 

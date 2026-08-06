@@ -132,7 +132,7 @@
     },
     {
       "path": "apps/web/src/client/app/router/registry.ts",
-      "sha256": "0727cf916b5a33d6f47729f5e3c7c63f13d2369c66bfdb3fd714c77b46496510"
+      "sha256": "95846d1db8d3f968a7668f3ea5dcd14945935908e05b6cc1ae78f4bd030eb6ac"
     },
     {
       "path": "apps/web/src/client/app/router/canonical-route-views.ts",
@@ -347,9 +347,9 @@
       "route_id": "RT-AUTH-008",
       "path": "/select-role",
       "roles": ["admin", "parent"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "auth.rt-auth-008",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-ADM-001",
@@ -1807,6 +1807,68 @@
       "provider_mode": "not_provider_dependent",
       "external_mutation": false,
       "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
+    },
+    {
+      "action_id": "auth.role_selector.switch.button",
+      "label": "Continue with selected role",
+      "surface": "button",
+      "route": "/select-role",
+      "roles": ["admin", "parent"],
+      "capability": "auth:role-context:switch",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v2.1/account-context/role"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "session_rotation",
+        "event": "account_role_switched"
+      },
+      "states": {
+        "loading": "Verifying the signed-in account and rotating its active role session.",
+        "success": "The selected Admin or Parent workspace opens with a newly rotated session.",
+        "error": "The role switch was rejected or the session could not be rotated.",
+        "permission": "Only a signed-in adult account with both Admin and Parent memberships may switch here.",
+        "offline": "Role switching is unavailable offline and the current session is unchanged."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": ["tests/integration/portals/portal-mount.test.ts"]
+    },
+    {
+      "action_id": "auth.role_selector.view.route",
+      "label": "Choose account context",
+      "surface": "route",
+      "route": "/select-role",
+      "roles": ["admin", "parent"],
+      "capability": "auth:role-context:read",
+      "handler": {
+        "method": "GET",
+        "path": "/select-role"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "session_read",
+        "event": "role_selector_viewed"
+      },
+      "states": {
+        "loading": "Resolving the signed-in adult account memberships.",
+        "success": "The available Admin and Parent role choices are visible.",
+        "error": "The signed-in account could not be resolved and the selector fails closed.",
+        "permission": "Single-role accounts are redirected to their only authorized workspace.",
+        "offline": "The selector is unavailable offline and no protected role context is disclosed."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": ["tests/integration/portals/portal-mount.test.ts"]
     },
     {
       "action_id": "auth.student.logout.button",

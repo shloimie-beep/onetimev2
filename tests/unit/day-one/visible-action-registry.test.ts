@@ -252,6 +252,14 @@ const EXPECTED_ACTION_BINDINGS = [
     '/api/v2.1/admin/operations/resolve',
   ],
   ['auth.parent.logout.button', '/app/parent/students', ['parent'], 'POST', '/api/v1/auth/logout'],
+  [
+    'auth.role_selector.switch.button',
+    '/select-role',
+    ['admin', 'parent'],
+    'POST',
+    '/api/v2.1/account-context/role',
+  ],
+  ['auth.role_selector.view.route', '/select-role', ['admin', 'parent'], 'GET', '/select-role'],
   ['auth.student.logout.button', '/app/student', ['student'], 'POST', '/api/v1/auth/logout'],
   [
     'classes.attendance.admin.correct.form',
@@ -597,10 +605,10 @@ describe('v2.1 visible action registry', () => {
     expect(registry.canonical_routes).toHaveLength(93);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'ready'),
-    ).toHaveLength(86);
+    ).toHaveLength(87);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'isolated'),
-    ).toHaveLength(7);
+    ).toHaveLength(6);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'missing'),
     ).toHaveLength(0);
