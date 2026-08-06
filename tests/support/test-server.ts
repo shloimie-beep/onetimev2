@@ -84,6 +84,15 @@ const ownerUserKey = await createAccountUser({
   role: 'owner',
   mfaCapable: false,
 });
+const contactOperationsOwnerUserKey = await createAccountUser({
+  pool,
+  config,
+  email: 'contact-operations-owner@example.test',
+  password: 'ContactOperationsOwner!234',
+  displayName: 'Contact Operations Owner',
+  role: 'owner',
+  mfaCapable: false,
+});
 const parentUserKey = await createAccountUser({
   pool,
   config,
@@ -623,34 +632,37 @@ async function seedW12AdminSession() {
 }
 
 async function seedContactOperationsOwnerSession() {
-  const user = await pool.query(
-    `SELECT security_version
-       FROM onetime.account_users
-      WHERE account_key = $1
-        AND product_key = $2
-        AND user_key = $3
-      LIMIT 1`,
-    [config.accountKey, config.productKey, ownerUserKey],
-  );
-  const row = user.rows[0];
-  if (!row) throw new Error('missing contact operations owner test user');
   for (const session of [
     {
       sessionKey: 'sess_contact_operations_owner',
       token: CONTACT_OPERATIONS_E2E_OWNER_SESSION_TOKEN,
       csrfToken: 'contact-operations-owner-csrf-local-only',
+      userKey: contactOperationsOwnerUserKey,
     },
     {
       sessionKey: 'sess_contact_operations_mobile_owner',
       token: CONTACT_OPERATIONS_MOBILE_E2E_OWNER_SESSION_TOKEN,
       csrfToken: 'contact-operations-mobile-owner-csrf-local-only',
+      userKey: contactOperationsOwnerUserKey,
     },
     {
       sessionKey: 'sess_crm_core_owner',
       token: CRM_CORE_E2E_OWNER_SESSION_TOKEN,
       csrfToken: 'crm-core-owner-csrf-local-only',
+      userKey: ownerUserKey,
     },
   ]) {
+    const user = await pool.query(
+      `SELECT security_version
+         FROM onetime.account_users
+        WHERE account_key = $1
+          AND product_key = $2
+          AND user_key = $3
+        LIMIT 1`,
+      [config.accountKey, config.productKey, session.userKey],
+    );
+    const row = user.rows[0];
+    if (!row) throw new Error('missing browser test owner user');
     await pool.query(
       `INSERT INTO onetime.user_sessions
          (session_key, account_key, product_key, user_key, token_hash, csrf_token_hash,
@@ -669,7 +681,7 @@ async function seedContactOperationsOwnerSession() {
         session.sessionKey,
         config.accountKey,
         config.productKey,
-        ownerUserKey,
+        session.userKey,
         sha256(session.token),
         sha256(session.csrfToken),
         new Date(Date.now() + 60 * 60 * 1000).toISOString(),
