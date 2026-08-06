@@ -246,6 +246,55 @@ const EXPECTED_ACTION_BINDINGS = [
     'POST',
     '/api/v1/admin/support/v21/tickets/:ticketId/status',
   ],
+  [
+    'support.admin.ticket.assign.form',
+    '/app/tickets/:ticketId',
+    ['admin'],
+    'POST',
+    '/api/v1/admin/support/v21/tickets/:ticketId/assign',
+  ],
+  [
+    'support.admin.ticket.detail.view.route',
+    '/app/tickets/:ticketId',
+    ['admin'],
+    'GET',
+    '/api/v1/admin/support/v21/tickets/:ticketId',
+  ],
+  [
+    'support.admin.ticket.open.button',
+    '/app/tickets',
+    ['admin'],
+    'CLIENT',
+    'apps/web/src/client/app/admin/support/AdminSupportWorkspace.tsx',
+  ],
+  [
+    'support.admin.ticket.reply.form',
+    '/app/tickets/:ticketId',
+    ['admin'],
+    'POST',
+    '/api/v1/admin/support/v21/tickets/:ticketId/reply',
+  ],
+  [
+    'support.admin.ticket.status.form',
+    '/app/tickets/:ticketId',
+    ['admin'],
+    'POST',
+    '/api/v1/admin/support/v21/tickets/:ticketId/status',
+  ],
+  [
+    'support.admin.ticket_queue.back.button',
+    '/app/tickets/:ticketId',
+    ['admin'],
+    'CLIENT',
+    'apps/web/src/client/app/admin/support/AdminSupportWorkspace.tsx',
+  ],
+  [
+    'support.admin.ticket_queue.view.route',
+    '/app/tickets',
+    ['admin'],
+    'GET',
+    '/api/v1/admin/support/v21/tickets',
+  ],
   ['support.admin.view.route', '/app/support', ['admin'], 'GET', '/app/support'],
   [
     'support.parent.receipt.view.route',
@@ -317,13 +366,13 @@ describe('v2.1 visible action registry', () => {
     expect(registry.canonical_routes).toHaveLength(93);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'ready'),
-    ).toHaveLength(74);
+    ).toHaveLength(76);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'isolated'),
     ).toHaveLength(7);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'missing'),
-    ).toHaveLength(12);
+    ).toHaveLength(10);
     expect(sourceText.endsWith('\n')).toBe(true);
   });
 

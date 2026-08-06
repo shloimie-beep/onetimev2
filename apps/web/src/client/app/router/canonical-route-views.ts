@@ -111,6 +111,8 @@ export const CANONICAL_ROUTE_COMPATIBILITY_PATHS: Readonly<
   'RT-ADM-043': '/app/classes/access',
   'RT-ADM-050': '/app/live-console',
   'RT-ADM-051': '/app/live-console?occurrence_key=:occurrenceId',
+  'RT-ADM-062': '/app/support?view=tickets',
+  'RT-ADM-063': '/app/support?view=tickets&ticket_id=:ticketId',
   'RT-ADM-064': '/app/billing',
   'RT-ADM-065': '/app/operations',
   'RT-ADM-067': '/app/crm/audit',

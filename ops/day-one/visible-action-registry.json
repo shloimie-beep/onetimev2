@@ -44,7 +44,7 @@
     },
     {
       "path": "apps/web/src/server/features/support/v21-router.ts",
-      "sha256": "f78d6a11e2440d807176ba62cd63af5b57f91321a2d81ec2415623dcd87bf655"
+      "sha256": "3918af6ac0c183f54266691a2ae9a713adc62a2d2f0dc785b575a7f65213858e"
     },
     {
       "path": "apps/web/src/server/features/signup/school/router.ts",
@@ -64,15 +64,15 @@
     },
     {
       "path": "apps/web/src/client/app/admin/support/AdminSupportWorkspace.tsx",
-      "sha256": "d1a6680aeb1966a25e596a92eb3a19e8a5e745c4e36e15c097cc3fc38d55cff4"
+      "sha256": "46e4fc562dd8575f2dda9c7852c205098e251eda755397625304d30483acb30f"
     },
     {
       "path": "apps/web/src/client/app/crm-api.ts",
-      "sha256": "3e46bfded41561fe2334dc765defee5684658eef35e09249046bddf04669cc59"
+      "sha256": "f42a0cf302d8141c8ad0b0f76b76a8182d5c9e5f6b8b225485235c0aa9043ad1"
     },
     {
       "path": "apps/web/src/client/app/crm-entry.tsx",
-      "sha256": "3bc19b072d0c4ba1a47c7548d4e1b9c5b215ae080d14a55a0b691ba32929e842"
+      "sha256": "4f0abae2a926335d0a7c499f2318760ef7b2ed07856121d87766a097c337d55f"
     },
     {
       "path": "apps/web/src/client/app/live-entry.tsx",
@@ -88,11 +88,11 @@
     },
     {
       "path": "apps/web/src/client/app/router/registry.ts",
-      "sha256": "2249e729aa7cb37844f699cefd54424c16d2cfd8298e09df6a47022bf55502e8"
+      "sha256": "965c3cb27cbd412e71449deab0cc3d877c24c005e4e805006c37581832377686"
     },
     {
       "path": "apps/web/src/client/app/router/canonical-route-views.ts",
-      "sha256": "5b6b0290cbb39f1adfbc58f93029b3256d0d310725514b89776bf01e61345015"
+      "sha256": "12923141f4d88a5a6c980e3e5512a50748b41a247cae9f006b819f4a42fbab9a"
     },
     {
       "path": "apps/web/src/client/app/support/SupportFeature.tsx",
@@ -543,17 +543,17 @@
       "route_id": "RT-ADM-062",
       "path": "/app/tickets",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-062",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-063",
       "path": "/app/tickets/:ticketId",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-063",
+      "readiness_state": "ready",
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-064",
@@ -1908,6 +1908,249 @@
       "provider_mode": "local_only",
       "external_mutation": false,
       "test_evidence": [
+        "tests/integration/support/v21-support-lifecycle.test.ts",
+        "tests/e2e/support.spec.ts"
+      ]
+    },
+    {
+      "action_id": "support.admin.ticket.assign.form",
+      "label": "Assign support ticket",
+      "surface": "form",
+      "route": "/app/tickets/:ticketId",
+      "roles": ["admin"],
+      "capability": "support:ticket:assign",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/admin/support/v21/tickets/:ticketId/assign"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "assigned"
+      },
+      "states": {
+        "loading": "Saving the assignment.",
+        "success": "The durable ticket assignment and version are committed.",
+        "error": "The assignment failed or a newer ticket version must be loaded.",
+        "permission": "An authenticated Admin session and valid CSRF token are required.",
+        "offline": "Network unavailable; the durable ticket is unchanged."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "local_only",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/admin/support/AdminSupportWorkspace.test.tsx",
+        "tests/integration/support/v21-support-lifecycle.test.ts",
+        "tests/e2e/support.spec.ts"
+      ]
+    },
+    {
+      "action_id": "support.admin.ticket.detail.view.route",
+      "label": "Support ticket detail",
+      "surface": "route",
+      "route": "/app/tickets/:ticketId",
+      "roles": ["admin"],
+      "capability": "support:ticket:read",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/admin/support/v21/tickets/:ticketId"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "support_ticket_read"
+      },
+      "states": {
+        "loading": "Loading the durable support ticket.",
+        "success": "The exact Admin-scoped ticket is visible.",
+        "error": "The ticket is unavailable or outside the current Admin scope.",
+        "permission": "Only an authenticated Admin with queue access may read this ticket.",
+        "offline": "No protected support data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "local_only",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/admin/support/AdminSupportWorkspace.test.tsx",
+        "tests/integration/support/v21-support-lifecycle.test.ts",
+        "tests/e2e/support.spec.ts"
+      ]
+    },
+    {
+      "action_id": "support.admin.ticket.open.button",
+      "label": "Open support ticket",
+      "surface": "button",
+      "route": "/app/tickets",
+      "roles": ["admin"],
+      "capability": "support:ticket:read",
+      "handler": {
+        "method": "CLIENT",
+        "path": "apps/web/src/client/app/admin/support/AdminSupportWorkspace.tsx"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_navigation",
+        "event": "support_ticket_opened"
+      },
+      "states": {
+        "loading": "Opening the selected ticket.",
+        "success": "The canonical ticket detail route is visible.",
+        "error": "The ticket route cannot be opened.",
+        "permission": "Only an authenticated Admin may open a queue ticket.",
+        "offline": "No protected support data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/admin/support/AdminSupportWorkspace.test.tsx",
+        "tests/e2e/support.spec.ts"
+      ]
+    },
+    {
+      "action_id": "support.admin.ticket.reply.form",
+      "label": "Reply to support ticket",
+      "surface": "form",
+      "route": "/app/tickets/:ticketId",
+      "roles": ["admin"],
+      "capability": "support:ticket:reply",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/admin/support/v21/tickets/:ticketId/reply"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "client-generated idempotency_key"
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "admin_replied"
+      },
+      "states": {
+        "loading": "Saving the in-app reply.",
+        "success": "The durable reply and redacted local notification intent are committed.",
+        "error": "The reply failed, conflicted, or must be retried with a new version.",
+        "permission": "An authenticated Admin session and valid CSRF token are required.",
+        "offline": "Network unavailable; the reply is not treated as sent."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "local_only",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/admin/support/AdminSupportWorkspace.test.tsx",
+        "tests/integration/support/v21-support-lifecycle.test.ts",
+        "tests/e2e/support.spec.ts"
+      ]
+    },
+    {
+      "action_id": "support.admin.ticket.status.form",
+      "label": "Update support ticket status",
+      "surface": "form",
+      "route": "/app/tickets/:ticketId",
+      "roles": ["admin"],
+      "capability": "support:ticket:status",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/admin/support/v21/tickets/:ticketId/status"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "status_changed"
+      },
+      "states": {
+        "loading": "Saving the lifecycle status.",
+        "success": "The allowed ticket transition and version are committed.",
+        "error": "The transition is invalid, conflicted, or could not be saved.",
+        "permission": "An authenticated Admin session and valid CSRF token are required.",
+        "offline": "Network unavailable; the lifecycle status is unchanged."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "local_only",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/admin/support/AdminSupportWorkspace.test.tsx",
+        "tests/integration/support/v21-support-lifecycle.test.ts",
+        "tests/e2e/support.spec.ts"
+      ]
+    },
+    {
+      "action_id": "support.admin.ticket_queue.back.button",
+      "label": "Back to ticket queue",
+      "surface": "button",
+      "route": "/app/tickets/:ticketId",
+      "roles": ["admin"],
+      "capability": "support:queue:read",
+      "handler": {
+        "method": "CLIENT",
+        "path": "apps/web/src/client/app/admin/support/AdminSupportWorkspace.tsx"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_navigation",
+        "event": "support_ticket_queue_returned"
+      },
+      "states": {
+        "loading": "Returning to the ticket queue.",
+        "success": "The canonical ticket queue route is visible.",
+        "error": "The queue route cannot be opened.",
+        "permission": "Only an authenticated Admin may return to the ticket queue.",
+        "offline": "No protected support data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/admin/support/AdminSupportWorkspace.test.tsx",
+        "tests/e2e/support.spec.ts"
+      ]
+    },
+    {
+      "action_id": "support.admin.ticket_queue.view.route",
+      "label": "Support ticket queue",
+      "surface": "route",
+      "route": "/app/tickets",
+      "roles": ["admin"],
+      "capability": "support:queue:read",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/admin/support/v21/tickets"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "support_ticket_queue_read"
+      },
+      "states": {
+        "loading": "Loading durable support tickets.",
+        "success": "The Admin-scoped canonical ticket queue is visible.",
+        "error": "The local support queue could not be loaded.",
+        "permission": "Only an authenticated Admin may read the ticket queue.",
+        "offline": "No protected support data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "local_only",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/admin/support/AdminSupportWorkspace.test.tsx",
         "tests/integration/support/v21-support-lifecycle.test.ts",
         "tests/e2e/support.spec.ts"
       ]

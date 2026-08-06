@@ -23,6 +23,36 @@ test('support anonymous, active, mobile, and receipt states pass axe', async ({ 
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });
 
+test('Admin ticket queue and detail pass axe', async ({ page, context }) => {
+  const subject = 'Canonical ticket accessibility';
+  await login(page, 'ot-parent@example.test', 'ParentPassword!234');
+  await page.goto('/app/parent/support');
+  await page.getByLabel('Category').selectOption('technical');
+  await page.getByLabel('Title').fill(subject);
+  await page
+    .getByLabel('Message')
+    .fill('Please verify the canonical Admin ticket queue and ticket detail accessibility.');
+  await page.getByRole('button', { name: 'Submit support request' }).click();
+  await page.waitForURL(/\/app\/parent\/support\/ots_[^/]+$/u);
+
+  await context.clearCookies();
+  await page.goto(`/login?return_to=${encodeURIComponent('/app/tickets')}`);
+  await page.getByLabel('Email').fill('ot-owner@example.test');
+  await page.getByLabel('Password').fill('OwnerPassword!234');
+  await page.getByRole('button', { name: 'Login' }).click();
+  await page.waitForURL('**/app/tickets');
+  await expect(page.getByRole('heading', { name: 'Support ticket queue' })).toBeVisible();
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+
+  const ticket = page.getByRole('article', { name: subject });
+  await ticket.getByRole('link', { name: 'Open ticket' }).click();
+  await page.waitForURL(/\/app\/tickets\/ots_[^/]+$/u);
+  await expect(
+    page.getByRole('heading', { name: 'Ticket operations', exact: true, level: 2 }),
+  ).toBeVisible();
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+});
+
 async function login(page: Page, email: string, password: string) {
   await page.goto(`/login?return_to=${encodeURIComponent('/app/parent')}`);
   await page.getByLabel('Email').fill(email);

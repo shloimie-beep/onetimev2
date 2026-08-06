@@ -623,6 +623,12 @@ export async function listAdminSupportTickets() {
   );
 }
 
+export async function getAdminSupportTicket(ticketId: string) {
+  return authenticatedJson<{ success: true; data: SupportAdminView }>(
+    `/api/v1/admin/support/v21/tickets/${encodeURIComponent(ticketId)}`,
+  );
+}
+
 export async function assignAdminSupportTicket(input: {
   csrfToken: string;
   ticketId: string;

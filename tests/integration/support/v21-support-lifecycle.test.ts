@@ -147,6 +147,35 @@ describe('v2.1 durable support lifecycle', () => {
       [parentTicket.data.ticketId, studentTicket.data.ticketId].sort(),
     );
 
+    const adminDetail = await api(
+      admin,
+      `/api/v1/admin/support/v21/tickets/${studentTicket.data.ticketId}`,
+    );
+    expect(adminDetail.status).toBe(200);
+    expect(await adminDetail.json()).toMatchObject({
+      data: {
+        ticketId: studentTicket.data.ticketId,
+        kind: 'rabbi_question',
+        requesterRole: 'student',
+      },
+    });
+
+    const parentCannotReadAdminDetail = await api(
+      parent,
+      `/api/v1/admin/support/v21/tickets/${studentTicket.data.ticketId}`,
+    );
+    expect(parentCannotReadAdminDetail.status).toBe(403);
+
+    const queueRoute = await api(admin, '/app/tickets');
+    expect(queueRoute.status).toBe(200);
+    expect(queueRoute.headers.get('cache-control')).toContain('no-store');
+    expect(await queueRoute.text()).toContain('crm-root');
+
+    const detailRoute = await api(admin, `/app/tickets/${studentTicket.data.ticketId}`);
+    expect(detailRoute.status).toBe(200);
+    expect(detailRoute.headers.get('cache-control')).toContain('no-store');
+    expect(await detailRoute.text()).toContain('crm-root');
+
     const assigned = await adminWrite(parentTicket.data.ticketId, 'assign', {
       assignee_admin_id: admin.user.user_key,
       expected_version: 1,

@@ -89,16 +89,23 @@ test('Admin can operate a durable Parent support conversation inside One Time', 
     .fill('Please verify that the Admin can manage this durable support conversation.');
   await page.getByRole('button', { name: 'Submit support request' }).click();
   await page.waitForURL(/\/app\/parent\/support\/ots_[^/]+$/u);
+  const ticketId = decodeURIComponent(new URL(page.url()).pathname.split('/').at(-1) ?? '');
 
   await context.clearCookies();
-  await page.goto(`/login?return_to=${encodeURIComponent('/app/support')}`);
+  await page.goto(`/login?return_to=${encodeURIComponent('/app/tickets')}`);
   await page.getByLabel('Email').fill('ot-owner@example.test');
   await page.getByLabel('Password').fill('OwnerPassword!234');
   await page.getByRole('button', { name: 'Login' }).click();
-  await page.waitForURL('**/app/dashboard');
-  await page.goto('/app/support');
+  await page.waitForURL('**/app/tickets');
 
-  await expect(page.getByRole('heading', { name: 'Support operations' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Support ticket queue' })).toBeVisible();
+  const queuedTicket = page.getByRole('article', { name: subject });
+  await expect(queuedTicket).toBeVisible();
+  await queuedTicket.getByRole('link', { name: 'Open ticket' }).click();
+  await page.waitForURL(`**/app/tickets/${ticketId}`);
+  await expect(
+    page.getByRole('heading', { name: 'Ticket operations', exact: true, level: 2 }),
+  ).toBeVisible();
   const ticket = page.getByRole('article', { name: subject });
   await expect(ticket).toBeVisible();
 

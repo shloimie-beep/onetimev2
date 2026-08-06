@@ -162,6 +162,15 @@ export function registerSupportV21Routes(input: {
     await respond(res, () => service.listForAdmin(context.principal));
   });
 
+  input.app.get(
+    '/api/v1/admin/support/v21/tickets/:ticketId',
+    async (req: RequestWithTrace, res) => {
+      const context = await adminContext(req, res, input.session);
+      if (!context) return;
+      await respond(res, () => service.readAdmin(context.principal, String(req.params.ticketId)));
+    },
+  );
+
   input.app.post(
     '/api/v1/admin/support/v21/tickets/:ticketId/assign',
     express.json({ limit: '16kb' }),

@@ -59,6 +59,7 @@ import {
   getGamificationAdminDashboard,
   getAdminAttendanceSnapshot,
   getAdminLearningSnapshot,
+  getAdminSupportTicket,
   getOwnerDashboard,
   getSession,
   listContacts,
@@ -120,6 +121,10 @@ type Notice = {
 };
 
 type CommunicationsMode = { kind: 'global' } | { kind: 'contact'; contactId: string };
+type AdminSupportRoute = {
+  mode: 'workspace' | 'queue' | 'detail';
+  ticketId: string | null;
+};
 type OwnerSurface =
   'dashboard' | 'crm' | 'classes' | 'content' | 'billing' | 'support' | 'operations';
 type AsyncPanelState = {
@@ -168,7 +173,10 @@ function CrmApp() {
   );
   const [surface, setSurface] = useState<OwnerSurface>('crm');
   const [communicationsMode, setCommunicationsMode] = useState<CommunicationsMode | null>(null);
-  const [, setSupportReceiptId] = useState<string | null>(null);
+  const [adminSupportRoute, setAdminSupportRoute] = useState<AdminSupportRoute>({
+    mode: 'workspace',
+    ticketId: null,
+  });
   const [dashboard, setDashboard] = useState<OwnerDashboardResponse | null>(null);
   const [dashboardState, setDashboardState] = useState<AsyncPanelState>({
     loading: false,
@@ -297,8 +305,13 @@ function CrmApp() {
     if (routePath === '/app/support' || supportReceiptMatch?.[1]) {
       setContactOperationsMode(false);
       setSurface('support');
-      setSupportReceiptId(
-        supportReceiptMatch?.[1] ? decodeURIComponent(supportReceiptMatch[1]) : null,
+      const ticketId = new URLSearchParams(routeSearch).get('ticket_id');
+      setAdminSupportRoute(
+        canonicalRoute?.routeId === 'RT-ADM-063' && ticketId
+          ? { mode: 'detail', ticketId }
+          : canonicalRoute?.routeId === 'RT-ADM-062'
+            ? { mode: 'queue', ticketId: null }
+            : { mode: 'workspace', ticketId: null },
       );
       setCommunicationsMode(null);
       setSelected(null);
@@ -318,7 +331,7 @@ function CrmApp() {
       setContactOperationsHouseholdKey(null);
       setContactsRoutePath(routePath);
       setCommunicationsMode(null);
-      setSupportReceiptId(null);
+      setAdminSupportRoute({ mode: 'workspace', ticketId: null });
       setSelected(null);
       setEditing(false);
       setCreating(false);
@@ -331,7 +344,7 @@ function CrmApp() {
       setContactOperationsHouseholdKey(null);
       setSurface(ownerSurface);
       setCommunicationsMode(null);
-      setSupportReceiptId(null);
+      setAdminSupportRoute({ mode: 'workspace', ticketId: null });
       setSelected(null);
       setEditing(false);
       setCreating(false);
@@ -400,7 +413,7 @@ function CrmApp() {
         new URLSearchParams(routeSearch).get('household')?.trim() || null,
       );
       setCommunicationsMode(null);
-      setSupportReceiptId(null);
+      setAdminSupportRoute({ mode: 'workspace', ticketId: null });
       setSelected(null);
       setEditing(false);
       setCreating(false);
@@ -412,7 +425,7 @@ function CrmApp() {
     setContactOperationsHouseholdKey(null);
     setContactsRoutePath(routePath);
     setCommunicationsMode(null);
-    setSupportReceiptId(null);
+    setAdminSupportRoute({ mode: 'workspace', ticketId: null });
     const match = routePath.match(/^\/app\/crm\/contacts\/([^/]+)$/);
     const contactId = match?.[1];
     if (contactId) {
@@ -621,7 +634,7 @@ function CrmApp() {
     setCreating(true);
     setContactOperationsMode(false);
     setCommunicationsMode(null);
-    setSupportReceiptId(null);
+    setAdminSupportRoute({ mode: 'workspace', ticketId: null });
     history.pushState({}, '', '/app/crm');
   }
 
@@ -635,7 +648,7 @@ function CrmApp() {
     setContactOperationsMode(true);
     setContactOperationsHouseholdKey(householdKey ?? null);
     setCommunicationsMode(null);
-    setSupportReceiptId(null);
+    setAdminSupportRoute({ mode: 'workspace', ticketId: null });
     setSelected(null);
     setEditing(false);
     setCreating(false);
@@ -653,7 +666,7 @@ function CrmApp() {
     setSurface('crm');
     setContactsRoutePath('/app/crm');
     setCommunicationsMode({ kind: 'contact', contactId });
-    setSupportReceiptId(null);
+    setAdminSupportRoute({ mode: 'workspace', ticketId: null });
     setSelected(null);
     setEditing(false);
     setCreating(false);
@@ -669,7 +682,7 @@ function CrmApp() {
     setContactOperationsMode(false);
     setContactOperationsHouseholdKey(null);
     setCommunicationsMode(null);
-    setSupportReceiptId(null);
+    setAdminSupportRoute({ mode: 'workspace', ticketId: null });
     setSelected(null);
     setEditing(false);
     setCreating(false);
@@ -719,7 +732,7 @@ function CrmApp() {
     setContactOperationsHouseholdKey(null);
     setContactsRoutePath(href);
     setCommunicationsMode(null);
-    setSupportReceiptId(null);
+    setAdminSupportRoute({ mode: 'workspace', ticketId: null });
     setSelected(null);
     setEditing(false);
     setCreating(false);
@@ -791,7 +804,7 @@ function CrmApp() {
     setContactOperationsHouseholdKey(null);
     setSurface('crm');
     setCommunicationsMode(null);
-    setSupportReceiptId(null);
+    setAdminSupportRoute({ mode: 'workspace', ticketId: null });
     setDashboard(null);
     setDashboardState({ loading: false, error: '' });
     setClasses([]);
@@ -862,45 +875,53 @@ function CrmApp() {
   const utilityItems: ShellNavItem[] = [];
   const shellUser = session ? shellUserFromSession(session.user) : null;
   const pageTitle =
-    surface !== 'crm'
-      ? ownerSurfaceTitle(surface)
-      : communicationsMode
-        ? 'Communications'
-        : contactOperationsMode
-          ? 'Parent household'
-          : contactsSection !== 'people'
-            ? (CONTACTS_SECTIONS.find((item) => item.id === contactsSection)?.label ?? 'Contacts')
-            : creating
-              ? 'Add contact'
-              : editing
-                ? 'Edit contact'
-                : selected
-                  ? selected.display_name
-                  : 'Contacts';
+    surface === 'support' && adminSupportRoute.mode !== 'workspace'
+      ? adminSupportRoute.mode === 'detail'
+        ? 'Support ticket'
+        : 'Tickets'
+      : surface !== 'crm'
+        ? ownerSurfaceTitle(surface)
+        : communicationsMode
+          ? 'Communications'
+          : contactOperationsMode
+            ? 'Parent household'
+            : contactsSection !== 'people'
+              ? (CONTACTS_SECTIONS.find((item) => item.id === contactsSection)?.label ?? 'Contacts')
+              : creating
+                ? 'Add contact'
+                : editing
+                  ? 'Edit contact'
+                  : selected
+                    ? selected.display_name
+                    : 'Contacts';
   const pageDescription =
-    surface !== 'crm'
-      ? ownerSurfaceDescription(surface)
-      : communicationsMode
-        ? communicationsMode.kind === 'contact'
-          ? 'Communication history and draft activity for this contact.'
-          : 'One Time communication activity and draft follow-up status.'
-        : contactOperationsMode
-          ? 'Invite a Parent, create local-only Students, and manage access and adult-only GHL sync.'
-          : contactsSection !== 'people'
-            ? contactsSection === 'households'
-              ? 'Create and maintain family records, guardians, access, and account setup.'
-              : contactsSection === 'users'
-                ? 'Manage secure account setup, roles, password reset, and access state.'
-                : contactsSection === 'learners'
-                  ? 'Manage local learners, Student setup, status, and the three-active-learner limit.'
-                  : 'Review timestamped local CRM and account administration activity.'
-            : creating
-              ? 'Create a One Time contact without sending messages or granting access.'
-              : editing
-                ? 'Update CRM fields backed by the One Time contact API.'
-                : selected
-                  ? contactSummary(selected)
-                  : 'Parent and adult contact review. Students remain One Time-only.';
+    surface === 'support' && adminSupportRoute.mode !== 'workspace'
+      ? adminSupportRoute.mode === 'detail'
+        ? 'Review and update one durable One Time support conversation.'
+        : 'Review the durable One Time support queue.'
+      : surface !== 'crm'
+        ? ownerSurfaceDescription(surface)
+        : communicationsMode
+          ? communicationsMode.kind === 'contact'
+            ? 'Communication history and draft activity for this contact.'
+            : 'One Time communication activity and draft follow-up status.'
+          : contactOperationsMode
+            ? 'Invite a Parent, create local-only Students, and manage access and adult-only GHL sync.'
+            : contactsSection !== 'people'
+              ? contactsSection === 'households'
+                ? 'Create and maintain family records, guardians, access, and account setup.'
+                : contactsSection === 'users'
+                  ? 'Manage secure account setup, roles, password reset, and access state.'
+                  : contactsSection === 'learners'
+                    ? 'Manage local learners, Student setup, status, and the three-active-learner limit.'
+                    : 'Review timestamped local CRM and account administration activity.'
+              : creating
+                ? 'Create a One Time contact without sending messages or granting access.'
+                : editing
+                  ? 'Update CRM fields backed by the One Time contact API.'
+                  : selected
+                    ? contactSummary(selected)
+                    : 'Parent and adult contact review. Students remain One Time-only.';
   const toolbar =
     surface === 'dashboard' && dashboardSection === 'overview' ? (
       <ReadOnlyToolbar
@@ -1099,6 +1120,11 @@ function CrmApp() {
       {surface === 'support' && (
         <AdminSupportContainer
           csrfToken={session?.csrf_token ?? ''}
+          route={adminSupportRoute}
+          onNavigate={(href) => {
+            history.pushState({}, '', href);
+            void routeFromLocation();
+          }}
           onProtectedStateCleared={clearProtectedState}
         />
       )}
@@ -1257,33 +1283,48 @@ function CrmApp() {
 
 function AdminSupportContainer({
   csrfToken,
+  route,
+  onNavigate,
   onProtectedStateCleared,
 }: {
   csrfToken: string;
+  route: AdminSupportRoute;
+  onNavigate: (href: string) => void;
   onProtectedStateCleared: () => void;
 }) {
   const [tickets, setTickets] = useState<readonly SupportAdminView[]>([]);
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState('');
+  const loadSequence = useRef(0);
 
   useEffect(() => {
     void load();
-  }, []);
+  }, [route.mode, route.ticketId]);
 
   async function load() {
+    const requestId = ++loadSequence.current;
     setLoading(true);
+    setTickets([]);
     try {
-      const response = await listAdminSupportTickets();
-      setTickets(response.data);
+      if (route.mode === 'detail' && route.ticketId) {
+        const response = await getAdminSupportTicket(route.ticketId);
+        if (requestId !== loadSequence.current) return;
+        setTickets([response.data]);
+      } else {
+        const response = await listAdminSupportTickets();
+        if (requestId !== loadSequence.current) return;
+        setTickets(response.data);
+      }
       setStatus('');
     } catch (error) {
       if (error instanceof AuthExpiredError) {
         onProtectedStateCleared();
         return;
       }
+      if (requestId !== loadSequence.current) return;
       setStatus(errorMessage(error, 'Support operations could not load.'));
     } finally {
-      setLoading(false);
+      if (requestId === loadSequence.current) setLoading(false);
     }
   }
 
@@ -1317,6 +1358,8 @@ function AdminSupportContainer({
       </p>
       <AdminSupportWorkspace
         tickets={tickets}
+        mode={route.mode}
+        onNavigate={onNavigate}
         onAssign={(ticketId, assigneeAdminId, expectedVersion) =>
           void mutate(
             () =>
@@ -3235,6 +3278,7 @@ function ownerSurfaceFromPath(pathname: string): OwnerSurface | null {
   if (pathname === '/app/support' || pathname.startsWith('/app/support/receipts/')) {
     return 'support';
   }
+  if (pathname === '/app/tickets' || pathname.startsWith('/app/tickets/')) return 'support';
   if (pathname === '/app/crm') return 'crm';
   return null;
 }
