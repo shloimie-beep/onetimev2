@@ -513,6 +513,14 @@ const EXPECTED_ACTION_BINDINGS = [
     'POST',
     '/api/v2.1/signup/school-inquiry',
   ],
+  [
+    'public.signup.receipt.continue.button',
+    '/signup/received',
+    ['public'],
+    'CLIENT',
+    'apps/web/src/client/public/public-entry.ts',
+  ],
+  ['public.signup.receipt.view.route', '/signup/received', ['public'], 'GET', '/signup/received'],
   ['public.signup.route', '/signup', ['public'], 'GET', '/signup'],
   ['public.signup.submit.form', '/signup', ['public'], 'POST', '/api/v1/signup/family'],
   [
@@ -663,10 +671,10 @@ describe('v2.1 visible action registry', () => {
     expect(registry.canonical_routes).toHaveLength(93);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'ready'),
-    ).toHaveLength(90);
+    ).toHaveLength(91);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'isolated'),
-    ).toHaveLength(3);
+    ).toHaveLength(2);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'missing'),
     ).toHaveLength(0);

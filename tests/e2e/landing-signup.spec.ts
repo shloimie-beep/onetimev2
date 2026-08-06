@@ -217,16 +217,16 @@ test('Family submission uses the canonical bootstrap and exact cardless adult pa
   await expect(page.getByLabel('Parent newsletter')).not.toBeChecked();
   await page.getByRole('button', { name: 'Create your Family account' }).click();
 
-  await expect(page.getByRole('heading', { name: 'You’re all set.' })).toBeVisible();
+  await expect(page).toHaveURL(/\/signup\/received\?state=session_pending&email=pending$/u);
+  await expect(page.getByRole('heading', { name: 'Signup received' })).toBeVisible();
   await expect(
     page.getByText(
-      'Your Family account is ready. You can continue now while we finish sending your confirmation email.',
+      'Your Family account was saved. Sign in to continue while we finish sending your confirmation email.',
     ),
   ).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Go to Parent dashboard' })).toHaveAttribute(
-    'href',
-    '/app/parent',
-  );
+  await expect(page.getByRole('link', { name: 'Sign in' })).toHaveAttribute('href', '/login');
+  await expect(page.getByRole('link', { name: 'Go to Parent dashboard' })).toHaveCount(0);
+  await expect(page.getByText('No card was charged by this signup form.')).toBeVisible();
   expect(observedCsrf).toBe(bootstrap.csrf_token);
   expect(leadCalls).toBe(0);
   expect(observedPayload).toEqual({
@@ -247,7 +247,7 @@ test('Family submission uses the canonical bootstrap and exact cardless adult pa
   expect(serialized).not.toMatch(/student|phone|whatsapp|card|payment_method/i);
 });
 
-test('verified Family signup presents exact confirmation copy then opens the Parent workspace', async ({
+test('verified Family signup uses the durable receipt before opening the Parent workspace', async ({
   page,
 }) => {
   await useServerDate(page, '2026-08-01T12:00:00.000Z');
@@ -282,6 +282,9 @@ test('verified Family signup presents exact confirmation copy then opens the Par
   const route = '/signup?continue_to=%2Fapp%2Fparent%2Faccount';
   await page.goto(route);
   await completeFamilySignupForm(page, 'continued-family@example.test');
+  await expect(page).toHaveURL(
+    /\/signup\/received\?state=ready&email=sent&continue_to=%2Fapp%2Fparent%2Faccount$/u,
+  );
   await expect(page.getByRole('heading', { name: 'You’re all set.' })).toBeVisible();
   await expect(
     page.getByText('Your Family account is ready, and we sent your confirmation email.'),
@@ -290,6 +293,7 @@ test('verified Family signup presents exact confirmation copy then opens the Par
     'href',
     '/app/parent/account',
   );
+  await page.getByRole('link', { name: 'Go to Parent dashboard' }).click();
   await expect(page).toHaveURL(`${testBaseUrl}/app/parent/account`);
 });
 

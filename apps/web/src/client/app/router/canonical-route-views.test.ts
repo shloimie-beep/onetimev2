@@ -34,9 +34,9 @@ describe('v2.1 canonical route views', () => {
     expect(
       CANONICAL_V21_ROUTES.filter(({ routeId }) => routeId.startsWith('RT-STU-')),
     ).toHaveLength(17);
-    expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'ready')).toHaveLength(90);
+    expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'ready')).toHaveLength(91);
     expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'isolated')).toHaveLength(
-      3,
+      2,
     );
     expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'missing')).toHaveLength(0);
     for (const route of CANONICAL_V21_ROUTES) {
@@ -164,8 +164,9 @@ describe('v2.1 canonical route views', () => {
     });
     expect(resolveCurrentClientRoute('/signup/received')).toMatchObject({
       routeId: 'RT-PUB-003',
-      readiness: 'isolated',
-      handler: null,
+      readiness: 'ready',
+      handler: 'public.signup-received',
+      handlerDisposition: 'mounted',
     });
     expect(CANONICAL_V21_ROUTES.find((route) => route.routeId === 'RT-ADM-001')).toMatchObject({
       readiness: 'ready',

@@ -24,7 +24,7 @@
     },
     {
       "path": "apps/web/src/server/app.ts",
-      "sha256": "7741b8a99b33467e179ed9802e68788363a36223fa4372da4d5eb70baaf76cb0"
+      "sha256": "bb8167966ac42b91bf7adad8d3c88e59057017e3e7bfa5bcb38c0f7373169d2e"
     },
     {
       "path": "apps/web/src/server/communications/register.ts",
@@ -156,7 +156,7 @@
     },
     {
       "path": "apps/web/src/client/app/router/registry.ts",
-      "sha256": "50cbb86cad94027fa4a09c6a5fb3b14c1460aad24164962790391c8da2fd379d"
+      "sha256": "7e35f3f9c59da320030572f06b22295c21855ab23d73b4eb34c7d0ab2fae2177"
     },
     {
       "path": "apps/web/src/client/app/router/canonical-route-views.ts",
@@ -172,7 +172,7 @@
     },
     {
       "path": "apps/web/src/client/public/public-entry.ts",
-      "sha256": "beb8725cec0a14c580edf67d85f86ee0839cf8419ddc985c71f8d4429e075c33"
+      "sha256": "72fe0c96cdf2bfdb53ecaa399676df08079b37def9071ce2056c1d0d5db47672"
     },
     {
       "path": "apps/web/src/client/public/school/model.ts",
@@ -216,7 +216,7 @@
     },
     {
       "path": "scripts/build-public-pages.ts",
-      "sha256": "981d635aa5c4ec2fe653074cce9b12122af0226d36c9a41a390ca39035f188fa"
+      "sha256": "608c19b67b7b276f39abcc70c048ccc26400c86ac5911605506ae5e21d166301"
     },
     {
       "path": "scripts/highlevel/workflow-registry-source.ts",
@@ -263,9 +263,9 @@
       "route_id": "RT-PUB-003",
       "path": "/signup/received",
       "roles": ["public"],
-      "handler": null,
-      "readiness_state": "isolated",
-      "handler_disposition": "isolated"
+      "handler": "public.signup-received",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-PUB-004",
@@ -3216,6 +3216,74 @@
       "test_evidence": [
         "apps/web/src/server/features/signup/school/router.test.ts",
         "tests/integration/portals/portal-mount.test.ts"
+      ]
+    },
+    {
+      "action_id": "public.signup.receipt.continue.button",
+      "label": "Continue after Family signup",
+      "surface": "button",
+      "route": "/signup/received",
+      "roles": ["public"],
+      "capability": "public:signup:continue",
+      "handler": {
+        "method": "CLIENT",
+        "path": "apps/web/src/client/public/public-entry.ts"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "none",
+        "event": "family_signup_receipt_continue"
+      },
+      "states": {
+        "loading": "Resolving the safe, same-origin signup continuation.",
+        "success": "The applicant continues to the allowed Parent or sign-in route.",
+        "error": "An unsafe continuation is ignored and the safe default remains visible.",
+        "permission": "The destination still enforces its own authenticated session boundary.",
+        "offline": "The receipt remains visible, but protected continuation is unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/e2e/landing-signup.spec.ts",
+        "tests/integration/security/auth-browser-boundaries.test.ts"
+      ]
+    },
+    {
+      "action_id": "public.signup.receipt.view.route",
+      "label": "Family signup receipt",
+      "surface": "route",
+      "route": "/signup/received",
+      "roles": ["public"],
+      "capability": "public:signup:receipt",
+      "handler": {
+        "method": "GET",
+        "path": "/signup/received"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "none",
+        "event": "family_signup_receipt_view"
+      },
+      "states": {
+        "loading": "Loading the durable Family-signup acknowledgment.",
+        "success": "The saved-account state and truthful next step are visible.",
+        "error": "The generic safe acknowledgment remains available without disclosing account state.",
+        "permission": "The public receipt grants no account or provider capability.",
+        "offline": "No protected account state is cached by the receipt."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/e2e/landing-signup.spec.ts",
+        "tests/integration/public-metadata-runtime.test.ts"
       ]
     },
     {

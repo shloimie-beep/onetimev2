@@ -464,6 +464,9 @@ if (!reducedMotion && 'IntersectionObserver' in window) {
   });
 }
 
+const signupReceived = document.querySelector<HTMLElement>('[data-signup-received]');
+if (signupReceived) configureSignupReceivedPage(signupReceived);
+
 const form = document.querySelector<HTMLFormElement>('[data-signup-form]');
 if (form) {
   const status = form.querySelector<HTMLElement>('[data-form-status]');
@@ -613,13 +616,16 @@ if (form) {
         }
         return;
       }
-      let familyContinuation: string | null = null;
-      if (entry === 'family' && json.session_established === true) {
+      if (entry === 'family') {
         const search = new URLSearchParams(window.location.search);
         const requestedContinueTo = search.get('continue_to');
-        familyContinuation = search.has('continue_to')
-          ? safeParentContinueTo(requestedContinueTo)
-          : safeParentContinueTo(json.continue_to);
+        window.location.assign(
+          familySignupReceiptLocation(
+            json,
+            search.has('continue_to') ? requestedContinueTo : undefined,
+          ),
+        );
+        return;
       }
       form.hidden = true;
       if (success) {
@@ -629,28 +635,17 @@ if (form) {
         const parentDashboard = success.querySelector<HTMLAnchorElement>('[data-success-continue]');
         if (heading) {
           heading.textContent =
-            entry === 'family'
-              ? 'You’re all set.'
-              : (typeof json.message === 'object' && json.message.heading) ||
-                'Thank you — we received your School inquiry.';
+            (typeof json.message === 'object' && json.message.heading) ||
+            'Thank you — we received your School inquiry.';
         }
         if (body) {
           body.textContent =
-            entry === 'family'
-              ? familyConfirmationCopy(json.provider_projection_state)
-              : typeof json.message === 'string'
-                ? json.message
-                : (json.message?.body ?? schoolInquiryModel.success);
+            typeof json.message === 'string'
+              ? json.message
+              : (json.message?.body ?? schoolInquiryModel.success);
         }
-        if (entry === 'family' && parentDashboard) {
-          parentDashboard.hidden = false;
-          parentDashboard.href = familyContinuation ?? '/app/parent';
-          parentDashboard.textContent = 'Go to Parent dashboard';
-        }
+        if (parentDashboard) parentDashboard.hidden = true;
         success.focus();
-        if (familyContinuation) {
-          window.setTimeout(() => window.location.assign(familyContinuation), 1_200);
-        }
       }
     } catch (error) {
       if (status) {
@@ -670,6 +665,85 @@ function familyConfirmationCopy(providerProjectionState: string | undefined): st
   return providerProjectionState === 'ready'
     ? 'Your Family account is ready, and we sent your confirmation email.'
     : 'Your Family account is ready. You can continue now while we finish sending your confirmation email.';
+}
+
+type FamilySignupReceiptState =
+  'ready' | 'session_pending' | 'sign_in' | 'identity_review' | 'checkout_queued' | 'received';
+
+type FamilySignupReceiptResponse = {
+  code?: string;
+  session_established?: boolean;
+  continue_to?: string;
+  provider_projection_state?: string;
+};
+
+function familySignupReceiptLocation(
+  response: FamilySignupReceiptResponse,
+  requestedContinueTo?: string | null,
+): string {
+  const state = familySignupReceiptState(response);
+  const search = new URLSearchParams({
+    state,
+    email: response.provider_projection_state === 'ready' ? 'sent' : 'pending',
+  });
+  if (state === 'ready') {
+    const continueTo = safeParentContinueTo(requestedContinueTo ?? response.continue_to);
+    if (continueTo) search.set('continue_to', continueTo);
+  }
+  return `/signup/received?${search.toString()}`;
+}
+
+function familySignupReceiptState(response: FamilySignupReceiptResponse): FamilySignupReceiptState {
+  if (response.session_established === true) return 'ready';
+  if (response.code === 'SIGN_IN_OR_RESET') return 'sign_in';
+  if (response.code === 'SIGNUP_COMMITTED_IDENTITY_REVIEW') return 'identity_review';
+  if (response.code === 'SIGNUP_COMMITTED_CHECKOUT_HANDOFF_QUEUED') return 'checkout_queued';
+  if (response.code === 'SIGNUP_COMMITTED_SESSION_UNAVAILABLE') return 'session_pending';
+  return 'received';
+}
+
+function configureSignupReceivedPage(receipt: HTMLElement): void {
+  const heading = receipt.querySelector<HTMLElement>('[data-signup-received-heading]');
+  const body = receipt.querySelector<HTMLElement>('[data-signup-received-body]');
+  const primary = receipt.querySelector<HTMLAnchorElement>('[data-signup-received-primary]');
+  if (!heading || !body || !primary) return;
+
+  const search = new URLSearchParams(window.location.search);
+  const state = search.get('state');
+  primary.hidden = false;
+  if (state === 'ready') {
+    heading.textContent = 'You’re all set.';
+    body.textContent = familyConfirmationCopy(search.get('email') === 'sent' ? 'ready' : undefined);
+    primary.textContent = 'Go to Parent dashboard';
+    primary.href = safeParentContinueTo(search.get('continue_to')) ?? '/app/parent';
+  } else if (state === 'session_pending') {
+    heading.textContent = 'Signup received';
+    body.textContent =
+      'Your Family account was saved. Sign in to continue while we finish sending your confirmation email.';
+    primary.textContent = 'Sign in';
+    primary.href = '/login';
+  } else if (state === 'sign_in') {
+    heading.textContent = 'Your account already exists';
+    body.textContent = 'Sign in or reset your password to continue.';
+    primary.textContent = 'Sign in';
+    primary.href = '/login';
+  } else if (state === 'identity_review') {
+    heading.textContent = 'Signup received';
+    body.textContent =
+      'Your inactive account was saved. Checkout remains unavailable pending identity review.';
+    primary.hidden = true;
+  } else if (state === 'checkout_queued') {
+    heading.textContent = 'Signup received';
+    body.textContent =
+      'Your inactive account was saved. The standard hosted-checkout handoff is queued; no charge was made by this form.';
+    primary.hidden = true;
+  } else {
+    heading.textContent = 'Signup received';
+    body.textContent = 'Your Family signup was saved. Sign in to continue.';
+    primary.textContent = 'Sign in';
+    primary.href = '/login';
+  }
+  receipt.focus();
 }
 
 function safeParentContinueTo(value: string | null | undefined): string | null {

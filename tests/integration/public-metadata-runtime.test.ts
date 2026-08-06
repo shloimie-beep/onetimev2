@@ -1,4 +1,5 @@
 import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { request } from 'node:http';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -25,6 +26,8 @@ describe('runtime public metadata origin', () => {
     distDir = await mkdtemp(path.join(tmpdir(), 'ot-runtime-metadata-'));
     await writeHtml(distDir, 'index.html');
     await writeHtml(distDir, 'signup.html');
+    await mkdir(path.join(distDir, 'signup'), { recursive: true });
+    await writeHtml(path.join(distDir, 'signup'), 'received.html');
     await writeHtml(distDir, 'school.html');
     await writeHtml(distDir, '404.html');
     const config = loadConfig({
@@ -39,6 +42,7 @@ describe('runtime public metadata origin', () => {
 
     const root = await fetch(`${baseUrl}/`);
     const signup = await fetch(`${baseUrl}/signup`);
+    const signupReceived = await fetch(`${baseUrl}/signup/received?state=ready`);
     const school = await fetch(`${baseUrl}/school`);
 
     const rootMarkup = await root.text();
@@ -53,6 +57,13 @@ describe('runtime public metadata origin', () => {
       '<meta property="og:url" content="https://ot99-web-staging.up.railway.app/signup">',
     );
     expect(signupMarkup).toContain('data-access-boundary="2026-09-11T18:00:00+03:00"');
+    expect(signupReceived.status).toBe(200);
+    expect(signupReceived.headers.get('cache-control')).toBe('no-store, private');
+    expect(signupReceived.headers.get('pragma')).toBe('no-cache');
+    expect(signupReceived.headers.get('expires')).toBe('0');
+    expect(await signupReceived.text()).toContain(
+      '<link rel="canonical" href="https://ot99-web-staging.up.railway.app/signup/received">',
+    );
     expect(schoolMarkup).toContain(
       '<link rel="canonical" href="https://ot99-web-staging.up.railway.app/school">',
     );
@@ -75,16 +86,17 @@ describe('runtime public metadata origin', () => {
     pool = createMemoryPool();
     server = await listenForTest(createApp({ config, pool, distDir }));
     const baseUrl = serverBaseUrl(server);
+    const productionHost = 'app.onetimeonetime.com';
 
     for (const assetPath of ['/assets/app-PortalFeatures.js', '/assets/app-crm.css'] as const) {
-      const response = await fetch(`${baseUrl}${assetPath}`);
+      const response = await fetchWithHost(`${baseUrl}${assetPath}`, productionHost);
       expect(response.status).toBe(200);
       expect(response.headers.get('cache-control')).toBe('no-cache, max-age=0, must-revalidate');
       expect(response.headers.get('pragma')).toBe('no-cache');
       expect(response.headers.get('expires')).toBe('0');
     }
 
-    const versionedImage = await fetch(`${baseUrl}/assets/brand.webp`);
+    const versionedImage = await fetchWithHost(`${baseUrl}/assets/brand.webp`, productionHost);
     expect(versionedImage.status).toBe(200);
     expect(versionedImage.headers.get('cache-control')).toContain('max-age=3600');
   });
@@ -162,6 +174,30 @@ async function listenForTest(app: ReturnType<typeof createApp>) {
 async function closeServer(target: ReturnType<ReturnType<typeof createApp>['listen']>) {
   return new Promise<void>((resolve, reject) => {
     target.close((error?: Error) => (error ? reject(error) : resolve()));
+  });
+}
+
+async function fetchWithHost(url: string, host: string): Promise<Response> {
+  return new Promise<Response>((resolve, reject) => {
+    const outgoing = request(url, { headers: { host } }, (incoming) => {
+      const chunks: Buffer[] = [];
+      incoming.on('data', (chunk: Buffer) => chunks.push(chunk));
+      incoming.on('end', () => {
+        const headers = new Headers();
+        for (const [name, value] of Object.entries(incoming.headers)) {
+          if (Array.isArray(value)) value.forEach((item) => headers.append(name, item));
+          else if (value !== undefined) headers.set(name, value);
+        }
+        resolve(
+          new Response(Buffer.concat(chunks), {
+            status: incoming.statusCode ?? 500,
+            headers,
+          }),
+        );
+      });
+    });
+    outgoing.on('error', reject);
+    outgoing.end();
   });
 }
 

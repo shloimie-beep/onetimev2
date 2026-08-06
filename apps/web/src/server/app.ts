@@ -5220,7 +5220,11 @@ async function sendPublicHtml(
 ) {
   const html = await readFile(filePath, 'utf8');
   const response = res.type('html');
-  if (canonicalPath.startsWith('/app/')) {
+  if (
+    canonicalPath.startsWith('/app/') ||
+    canonicalPath === '/signup/received' ||
+    canonicalPath === '/school/received'
+  ) {
     response
       .set('Cache-Control', 'no-store, private')
       .set('Pragma', 'no-cache')

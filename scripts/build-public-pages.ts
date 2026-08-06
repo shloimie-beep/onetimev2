@@ -433,6 +433,27 @@ function simplePage(
   return html.replace('index, follow', robots);
 }
 
+function signupReceivedPage() {
+  const html = pageShell(
+    'Signup received | One Time Mishnayos',
+    `${header()}<main class="simple-page" data-signup-received tabindex="-1">
+      <p class="eyebrow">Family signup</p>
+      <h1 data-signup-received-heading>Signup received</h1>
+      <p data-signup-received-body>Your Family signup was saved. Sign in to continue.</p>
+      <p data-signup-received-charge>No card was charged by this signup form.</p>
+      <div class="form-actions">
+        <a class="button button-primary" href="/login" data-signup-received-primary>Sign in</a>
+        <a class="button button-secondary" href="/">Return home</a>
+      </div>
+    </main>${footer()}`,
+    {
+      canonicalPath: '/signup/received',
+      description: 'Safe confirmation that a One Time Family signup was received.',
+    },
+  );
+  return html.replace('index, follow', 'noindex, nofollow');
+}
+
 function renderParagraphs(paragraphs: readonly string[] | undefined) {
   return (paragraphs ?? []).map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join('');
 }
@@ -529,16 +550,7 @@ await Promise.all([
 ]);
 await writeFile(path.join(outDir, 'index.html'), landingPage());
 await writeFile(path.join(outDir, 'signup.html'), signupPage());
-await writeFile(
-  path.join(outDir, 'signup', 'received.html'),
-  simplePage(
-    'Signup received | One Time Mishnayos',
-    'Signup received',
-    'Your Family signup was saved. Check your email for the secure next step.',
-    'noindex, nofollow',
-    '/signup/received',
-  ),
-);
+await writeFile(path.join(outDir, 'signup', 'received.html'), signupReceivedPage());
 await writeFile(path.join(outDir, 'school.html'), schoolPage());
 await writeFile(
   path.join(outDir, 'school', 'received.html'),
