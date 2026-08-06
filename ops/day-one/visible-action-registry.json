@@ -100,15 +100,19 @@
     },
     {
       "path": "apps/web/src/client/app/portal-entry.tsx",
-      "sha256": "df92f7cc8f539558eec2cf6fd9ae5448db8748e3c1c3e22e470d7e48b00065d9"
+      "sha256": "c7ed30c055d9baf0a3a7251b2cded9240fa4c7fda6be66e3ef6394f5ea6b21a5"
+    },
+    {
+      "path": "apps/web/src/client/app/student/library/StudentLibraryWorkspace.tsx",
+      "sha256": "5a662ecb28e677d50fb00e164cf848ee86b187fa0db6a0a5989c560101b82627"
     },
     {
       "path": "apps/web/src/client/features/portals/PortalFeatures.tsx",
-      "sha256": "a187adfb8e893eb959ebdf52947ed79ebd0d3808d99fb67fed40f8b09b7a6eea"
+      "sha256": "e7d205bbfae4756294722af94dbf102fa2a3c945e168c4c00a4ee0a1d4130393"
     },
     {
       "path": "apps/web/src/client/app/router/registry.ts",
-      "sha256": "2a65b76952ce3a4b3ec41a2358607b28d03bea026a8155861eb970bed0fe8881"
+      "sha256": "e79b53e0b566abc38ecf849d4e3ebccc8f534490b9251e473b849bd09c04518f"
     },
     {
       "path": "apps/web/src/client/app/router/canonical-route-views.ts",
@@ -815,9 +819,9 @@
       "route_id": "RT-STU-021",
       "path": "/app/student/library/:contentId",
       "roles": ["student"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "student.rt-stu-021",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-STU-030",
@@ -2336,6 +2340,142 @@
       "provider_mode": "sink",
       "external_mutation": false,
       "test_evidence": ["tests/integration/classroom/zoom-learner-classroom.test.ts"]
+    },
+    {
+      "action_id": "portal.student.library_detail.open.button",
+      "label": "Open protected lesson",
+      "surface": "button",
+      "route": "/app/student/library/:contentId",
+      "roles": ["student"],
+      "capability": "student:library:playback",
+      "handler": {
+        "method": "POST",
+        "path": "/api/app/student/library/:contentId/bootstrap"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_write",
+        "event": "student_library_playback_granted"
+      },
+      "states": {
+        "loading": "Preparing a short-lived first-party playback grant.",
+        "success": "Protected playback is authorized without exposing provider data.",
+        "error": "No playback opens and the lesson remains fail closed.",
+        "permission": "Only the entitled signed-in Student may open the lesson.",
+        "offline": "Playback grants are never queued or read from offline storage."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/student/library/StudentLibraryWorkspace.test.tsx",
+        "tests/e2e/vimeo-mishnayos-catalog.spec.ts"
+      ]
+    },
+    {
+      "action_id": "portal.student.library_detail.renew.button",
+      "label": "Renew protected access",
+      "surface": "button",
+      "route": "/app/student/library/:contentId",
+      "roles": ["student"],
+      "capability": "student:library:playback",
+      "handler": {
+        "method": "POST",
+        "path": "/api/app/student/library/:contentId/renew"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_write",
+        "event": "student_library_playback_renewed"
+      },
+      "states": {
+        "loading": "Refreshing the short-lived first-party playback grant.",
+        "success": "Protected playback access is renewed for the entitled lesson.",
+        "error": "The current grant is not replaced and no provider data is exposed.",
+        "permission": "Only the entitled signed-in Student may renew the lesson grant.",
+        "offline": "Playback renewal is never queued offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/student/library/StudentLibraryWorkspace.test.tsx",
+        "tests/e2e/vimeo-mishnayos-catalog.spec.ts"
+      ]
+    },
+    {
+      "action_id": "portal.student.library_detail.resume.form",
+      "label": "Save progress",
+      "surface": "form",
+      "route": "/app/student/library/:contentId",
+      "roles": ["student"],
+      "capability": "student:library:progress",
+      "handler": {
+        "method": "POST",
+        "path": "/api/app/student/library/:contentId/resume"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "body.idempotency_key"
+      },
+      "audit": {
+        "mode": "local_write",
+        "event": "student_library_resume_saved"
+      },
+      "states": {
+        "loading": "Saving the Student-scoped resume position.",
+        "success": "The resume position is saved for this Student and content version.",
+        "error": "The prior resume position remains authoritative.",
+        "permission": "Only the entitled signed-in Student may save lesson progress.",
+        "offline": "Resume writes are never queued offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/server/features/content/publication/router.test.ts",
+        "apps/web/src/client/app/student/library/StudentLibraryWorkspace.test.tsx"
+      ]
+    },
+    {
+      "action_id": "portal.student.library_detail.view.route",
+      "label": "Student lesson detail",
+      "surface": "route",
+      "route": "/app/student/library/:contentId",
+      "roles": ["student"],
+      "capability": "student:library:read",
+      "handler": {
+        "method": "POST",
+        "path": "/api/app/student/library/search"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "student_library_detail_read"
+      },
+      "states": {
+        "loading": "Loading the entitlement-filtered private lesson.",
+        "success": "Only the assigned lesson metadata and protected controls are visible.",
+        "error": "The lesson remains unavailable and no sibling Student data is shown.",
+        "permission": "The Student session may read only its own assigned lessons.",
+        "offline": "No protected lesson detail is read from cache."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/client/app/student/library/StudentLibraryWorkspace.test.tsx",
+        "tests/e2e/vimeo-mishnayos-catalog.spec.ts"
+      ]
     },
     {
       "action_id": "portal.student.private_question.send.button",

@@ -124,6 +124,7 @@ function PortalApp() {
   const studentAccountRoute =
     portalRole === 'student' && location.pathname === '/app/student/account';
   const selectedClassKey = portalClassKeyFromLocation(location.pathname, portalRole);
+  const selectedStudentLibraryContentId = studentLibraryContentIdFromLocation(location.pathname);
   const v21ParentView = v21ParentRouteViewFromLocation(location.pathname);
   const [activeSection, setActiveSection] = useState<ParentPortalSection | StudentPortalSection>(
     () => portalSectionFromLocation(portalRole),
@@ -1129,9 +1130,11 @@ function PortalApp() {
                 csrfToken={session.csrf_token}
                 actorFingerprint={actorFingerprint}
                 onProtectedStateCleared={() => void load()}
+                selectedContentId={selectedStudentLibraryContentId}
               />
             ) : undefined
           }
+          libraryDetailMode={selectedStudentLibraryContentId !== undefined}
           accountSecurity={
             session ? (
               <AccountSecurityPanel
@@ -1855,7 +1858,11 @@ function portalSectionFromLocation(
   if (requested && isPortalSection(role, requested)) return requested;
   if (role === 'student') {
     if (location.pathname.startsWith('/app/student/classes/')) return 'today';
-    if (location.pathname === '/app/student/library') return 'library';
+    if (
+      location.pathname === '/app/student/library' ||
+      location.pathname.startsWith('/app/student/library/')
+    )
+      return 'library';
     if (location.pathname === '/app/student/progress') return 'progress';
     if (location.pathname.startsWith('/app/student/questions')) return 'questions';
     if (location.pathname === '/app/student/updates') return 'updates';
@@ -1866,6 +1873,19 @@ function portalSectionFromLocation(
   )
     return 'classes';
   return role === 'parent' ? 'learners' : 'today';
+}
+
+export function studentLibraryContentIdFromLocation(pathname: string): string | null | undefined {
+  if (pathname === '/app/student/library') return undefined;
+  if (!pathname.startsWith('/app/student/library/')) return undefined;
+  const match = /^\/app\/student\/library\/([^/]+)$/u.exec(pathname);
+  if (!match?.[1]) return null;
+  try {
+    const contentId = decodeURIComponent(match[1]);
+    return contentId && !contentId.includes('/') ? contentId : null;
+  } catch {
+    return null;
+  }
 }
 
 function portalRoleFromLocation(pathname: string): 'parent' | 'student' {

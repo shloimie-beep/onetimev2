@@ -67,6 +67,7 @@ const EXPECTED_SOURCE_INPUT_PATHS = [
   'apps/web/src/client/app/crm-entry.tsx',
   'apps/web/src/client/app/live-entry.tsx',
   'apps/web/src/client/app/portal-entry.tsx',
+  'apps/web/src/client/app/student/library/StudentLibraryWorkspace.tsx',
   'apps/web/src/client/features/portals/PortalFeatures.tsx',
   'apps/web/src/client/app/router/registry.ts',
   'apps/web/src/client/app/router/canonical-route-views.ts',
@@ -344,6 +345,34 @@ const EXPECTED_ACTION_BINDINGS = [
     '/api/v1/classroom/questions',
   ],
   [
+    'portal.student.library_detail.open.button',
+    '/app/student/library/:contentId',
+    ['student'],
+    'POST',
+    '/api/app/student/library/:contentId/bootstrap',
+  ],
+  [
+    'portal.student.library_detail.renew.button',
+    '/app/student/library/:contentId',
+    ['student'],
+    'POST',
+    '/api/app/student/library/:contentId/renew',
+  ],
+  [
+    'portal.student.library_detail.resume.form',
+    '/app/student/library/:contentId',
+    ['student'],
+    'POST',
+    '/api/app/student/library/:contentId/resume',
+  ],
+  [
+    'portal.student.library_detail.view.route',
+    '/app/student/library/:contentId',
+    ['student'],
+    'POST',
+    '/api/app/student/library/search',
+  ],
+  [
     'portal.student.private_question.send.button',
     '/app/student',
     ['student'],
@@ -544,13 +573,13 @@ describe('v2.1 visible action registry', () => {
     expect(registry.canonical_routes).toHaveLength(93);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'ready'),
-    ).toHaveLength(83);
+    ).toHaveLength(84);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'isolated'),
     ).toHaveLength(7);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'missing'),
-    ).toHaveLength(3);
+    ).toHaveLength(2);
     expect(sourceText.endsWith('\n')).toBe(true);
   });
 

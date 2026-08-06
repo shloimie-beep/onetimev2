@@ -142,6 +142,7 @@ export type StudentPortalFeatureProps = {
   onRetry?: () => void;
   accountSecurity?: React.ReactNode;
   libraryWorkspace?: React.ReactNode;
+  libraryDetailMode?: boolean;
   learningOverview?: React.ReactNode;
   /** @deprecated The class-helper surface is retired; this callback is ignored. */
   onQueryHelper?: (question: string, classKey?: string) => Promise<unknown>;
@@ -475,6 +476,7 @@ export function StudentPortalFeature({
   onRetry,
   accountSecurity,
   libraryWorkspace,
+  libraryDetailMode = false,
   learningOverview,
 }: StudentPortalFeatureProps) {
   const [sessionMarker, setSessionMarker] = useState(actorFingerprint);
@@ -633,11 +635,15 @@ export function StudentPortalFeature({
           <>
             <h2 id="student-library-heading">Library</h2>
             {libraryWorkspace}
-            {dashboard.featured_lesson && <FeaturedLesson lesson={dashboard.featured_lesson} />}
-            <ContentList
-              items={dashboard.library_items.filter((item) => item.status === 'published')}
-              onOpen={readOnly ? undefined : onOpenContent}
-            />
+            {!libraryDetailMode && (
+              <>
+                {dashboard.featured_lesson && <FeaturedLesson lesson={dashboard.featured_lesson} />}
+                <ContentList
+                  items={dashboard.library_items.filter((item) => item.status === 'published')}
+                  onOpen={readOnly ? undefined : onOpenContent}
+                />
+              </>
+            )}
           </>
         )}
 
