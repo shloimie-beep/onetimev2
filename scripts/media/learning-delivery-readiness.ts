@@ -1,5 +1,4 @@
-import { createHash } from 'node:crypto';
-import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
 const keyholderDir =
@@ -67,15 +66,9 @@ const requiredInputs = [
 type ProviderName = (typeof requiredInputs)[number]['provider'];
 
 function inspectPath(path: string) {
-  if (!existsSync(path)) return { present: false, bytes: 0, sha256_prefix: null };
+  if (!existsSync(path)) return { present: false };
   const stat = statSync(path);
-  if (!stat.isFile()) return { present: false, bytes: 0, sha256_prefix: null };
-  const content = readFileSync(path);
-  return {
-    present: content.length > 0,
-    bytes: content.length,
-    sha256_prefix: createHash('sha256').update(content).digest('hex').slice(0, 12),
-  };
+  return { present: stat.isFile() && stat.size > 0 };
 }
 
 function providerStatus(provider: ProviderName, entries: ReturnType<typeof entriesWithStatus>) {
@@ -92,7 +85,6 @@ function entriesWithStatus() {
   return requiredInputs.map((input) => ({
     name: input.name,
     provider: input.provider,
-    path_name: input.path,
     optional: 'optional' in input ? input.optional : false,
     ...inspectPath(input.path),
   }));
@@ -120,7 +112,6 @@ function writeTemplate(path: string) {
 
 const entries = entriesWithStatus();
 const summary = {
-  keyholder_dir_path_name: keyholderDir,
   generated_at: new Date().toISOString(),
   external_calls_performed: false,
   provider_account_mutations: false,
