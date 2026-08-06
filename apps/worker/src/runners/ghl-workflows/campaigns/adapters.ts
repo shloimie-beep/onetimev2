@@ -103,14 +103,16 @@ export async function inspectDefaultOt16Authority(
   if (!context.config.oneTimeVerificationWritesAllowed) {
     return { ready: false, reason: 'verification_writes_disabled' };
   }
-  if (
-    context.config.deliveryProviderMode !== 'provider' ||
-    !context.config.deliveryProviderTransportEnabled ||
-    context.config.highLevelEventSyncMode !== 'provider'
-  ) {
+  if (context.config.oneTimeOt16TransportMode === 'disabled') {
     return { ready: false, reason: 'provider_mode_disabled' };
   }
-  if (!context.config.highLevelPrivateIntegrationsToken) {
+  if (
+    !context.config.highLevelPrivateIntegrationsToken ||
+    !context.config.oneTimeOt16AuthorizationId ||
+    context.config.oneTimeOt16PerRunBudget < 1 ||
+    (context.config.oneTimeOt16TransportMode === 'canary' &&
+      context.config.oneTimeOt16CanaryOperationIds.length < 1)
+  ) {
     return { ready: false, reason: 'provider_configuration_missing' };
   }
   if (!context.config.oneTimeFreeAccessExpiresAt) {
@@ -272,6 +274,31 @@ export function ot16ProviderReadbackEvidenceDigest(input: {
       'utf8',
     )
     .digest('hex');
+}
+
+/**
+ * Reopens the source-controlled provider identity only inside the provider
+ * adapter boundary. Callers outside that boundary retain the one-way safe
+ * reference returned by F06 and never receive the raw workflow identifier.
+ */
+export async function resolveOt16ProviderWorkflowId(
+  expectedSafeProviderReference: string,
+): Promise<string | null> {
+  if (!isSha256(expectedSafeProviderReference)) return null;
+  try {
+    const source = await import('../../../../../../scripts/highlevel/workflow-registry-source.ts');
+    const record = source.canonicalWorkflowAssets.find((asset) => asset.key === OT16_WORKFLOW_KEY);
+    if (
+      !record?.ghlId.trim() ||
+      !['SAVED_REOPENED', 'ACTIVE_CONFIGURED', 'ACTIVE_TESTED'].includes(record.observedStatus) ||
+      createHash('sha256').update(record.ghlId).digest('hex') !== expectedSafeProviderReference
+    ) {
+      return null;
+    }
+    return record.ghlId;
+  } catch {
+    return null;
+  }
 }
 
 async function readCanonicalOt16Registry(expiryAt: string): Promise<CanonicalOt16Registry | null> {

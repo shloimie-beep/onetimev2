@@ -9,8 +9,8 @@ import {
   type DbPool,
 } from '../../../packages/db/src/index.ts';
 
-const LATEST_MIGRATION_ID = '2270_ot03_checkout_abandonment_intents';
-const EXPECTED_MIGRATION_COUNT = 101;
+const LATEST_MIGRATION_ID = '2271_ot16_f05_dispatch_context';
+const EXPECTED_MIGRATION_COUNT = 102;
 const HASH_A = 'a'.repeat(64);
 const HASH_B = 'b'.repeat(64);
 const HASH_C = 'c'.repeat(64);
@@ -28,7 +28,7 @@ const SOURCE_FACTS = {
 } as const;
 
 describe('migration 2260 governed campaign audience decisions', () => {
-  it('applies and replays the 101-migration inventory with an exact 2260 ledger row', async () => {
+  it('applies and replays the 102-migration inventory with an exact 2260 ledger row', async () => {
     const pool = createMemoryPool();
     try {
       const first = await runMigrations(pool);
@@ -171,6 +171,24 @@ describe('migration 2260 governed campaign audience decisions', () => {
     expect(migration).not.toMatch(
       /ALTER\s+TABLE\s+onetime\.(?!governed_campaign_audience_decisions)/iu,
     );
+    expect(migration).not.toMatch(/DROP\s+(?:TABLE|VIEW|COLUMN|CONSTRAINT)/iu);
+  });
+
+  it('adds only the append-only adult OT-16 F05 context with exact durable foreign keys', async () => {
+    const migration = await readFile(
+      path.resolve(process.cwd(), 'packages/db/migrations/2271_ot16_f05_dispatch_context.sql'),
+      'utf8',
+    );
+
+    expect(migration).toContain('CREATE TABLE onetime.ot16_f05_dispatch_context');
+    expect(migration).toContain('REFERENCES onetime.communication_decision(operation_id)');
+    expect(migration).toContain('REFERENCES onetime.job_outbox(job_id)');
+    expect(migration).toContain('REFERENCES onetime.v21_adult_identities');
+    expect(migration).toContain('REFERENCES onetime.v21_households');
+    expect(migration).toContain("CHECK (sender_key = 'office')");
+    expect(migration).toContain("CHECK (transport = 'GHL')");
+    expect(migration).toContain('OT-16 F05 dispatch context is append-only');
+    expect(migration).not.toMatch(/INSERT\s+INTO\s+onetime\./iu);
     expect(migration).not.toMatch(/DROP\s+(?:TABLE|VIEW|COLUMN|CONSTRAINT)/iu);
   });
 

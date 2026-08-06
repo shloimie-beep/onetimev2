@@ -342,6 +342,10 @@ const envSchema = z.object({
   HIGHLEVEL_CANARY_BUDGET: numberFromString.default(0),
   HIGHLEVEL_PROVIDER_TIMEOUT_MS: numberFromString.default(15_000),
   HIGHLEVEL_ROW_LEASE_MS: numberFromString.default(120_000),
+  ONE_TIME_OT16_TRANSPORT_MODE: z.enum(['disabled', 'canary', 'broad']).default('disabled'),
+  ONE_TIME_OT16_AUTHORIZATION_ID: optionalTrimmedString(8, 160),
+  ONE_TIME_OT16_CANARY_OPERATION_IDS: optionalTrimmedString(1, 4_000),
+  ONE_TIME_OT16_PER_RUN_BUDGET: numberFromString.default(0),
   HIGHLEVEL_ACTIONS_MODE: z.enum(['disabled', 'enabled']).default('disabled'),
   HIGHLEVEL_ACTION_KEY_ID: optionalTrimmedString(1, 120),
   HIGHLEVEL_ACTION_SECRET: optionalTrimmedString(24, 400),
@@ -528,6 +532,39 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     throw new Error(
       'HighLevel event sync requires an exact canary run ID, delivery-key allowlist, and sufficient positive budget.',
     );
+  }
+  const oneTimeOt16CanaryOperationIds = parseUniqueCsv(parsed.ONE_TIME_OT16_CANARY_OPERATION_IDS);
+  if (parsed.ONE_TIME_OT16_TRANSPORT_MODE !== 'disabled') {
+    if (
+      !parsed.ONE_TIME_OT16_AUTHORIZATION_ID ||
+      !parsed.HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN ||
+      !Number.isInteger(parsed.ONE_TIME_OT16_PER_RUN_BUDGET) ||
+      parsed.ONE_TIME_OT16_PER_RUN_BUDGET < 1 ||
+      parsed.ONE_TIME_OT16_PER_RUN_BUDGET > 100
+    ) {
+      throw new Error(
+        'OT-16 transport requires an exact authorization ID, HighLevel token, and a positive bounded per-run budget.',
+      );
+    }
+    if (
+      parsed.ONE_TIME_OT16_TRANSPORT_MODE === 'canary' &&
+      (oneTimeOt16CanaryOperationIds.length < 1 ||
+        oneTimeOt16CanaryOperationIds.length > 2 ||
+        oneTimeOt16CanaryOperationIds.length > parsed.ONE_TIME_OT16_PER_RUN_BUDGET ||
+        oneTimeOt16CanaryOperationIds.some((operationId) => !/^[a-f0-9]{64}$/u.test(operationId)))
+    ) {
+      throw new Error(
+        'OT-16 canary transport requires one or two exact SHA-256 operation IDs within its per-run budget.',
+      );
+    }
+    if (
+      parsed.ONE_TIME_OT16_TRANSPORT_MODE === 'broad' &&
+      oneTimeOt16CanaryOperationIds.length > 0
+    ) {
+      throw new Error('OT-16 broad transport cannot retain a canary operation allowlist.');
+    }
+  } else if (oneTimeOt16CanaryOperationIds.length > 0) {
+    throw new Error('OT-16 canary operation IDs require canary transport mode.');
   }
 
   if (parsed.HIGHLEVEL_ROW_LEASE_MS <= parsed.HIGHLEVEL_PROVIDER_TIMEOUT_MS * 2 + 5_000) {
@@ -858,6 +895,10 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     highLevelCanaryBudget: parsed.HIGHLEVEL_CANARY_BUDGET,
     highLevelProviderTimeoutMs: parsed.HIGHLEVEL_PROVIDER_TIMEOUT_MS,
     highLevelRowLeaseMs: parsed.HIGHLEVEL_ROW_LEASE_MS,
+    oneTimeOt16TransportMode: parsed.ONE_TIME_OT16_TRANSPORT_MODE,
+    oneTimeOt16AuthorizationId: parsed.ONE_TIME_OT16_AUTHORIZATION_ID,
+    oneTimeOt16CanaryOperationIds,
+    oneTimeOt16PerRunBudget: parsed.ONE_TIME_OT16_PER_RUN_BUDGET,
     highLevelActionsMode: parsed.HIGHLEVEL_ACTIONS_MODE,
     highLevelActionKeyId: parsed.HIGHLEVEL_ACTION_KEY_ID,
     highLevelActionSecret: parsed.HIGHLEVEL_ACTION_SECRET,

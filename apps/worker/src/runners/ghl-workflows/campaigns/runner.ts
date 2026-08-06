@@ -35,6 +35,9 @@ export interface CampaignEmailPort {
     input: {
       operation_id: string;
       adult_id: string;
+      household_id: string;
+      expiry_at: string;
+      checkpoint_days: Ot16CheckpointDays;
       sender_key: 'office';
       transport: 'GHL';
       subject: string;
@@ -187,10 +190,31 @@ export async function runOt16Checkpoint(
     return nonDeliveryResult(dispatchPlan, { reservations: 1, writes: 3 });
   }
 
+  const householdId =
+    finalCandidate.subject.kind === 'adult' ? finalCandidate.subject.household_id : null;
+  if (!householdId) {
+    const completed = await input.repository.completeDecision({
+      operation_id: input.operation_id,
+      expected_version: input.expected_version + 1,
+      status: 'skipped',
+      safe_provider_ref_hash: null,
+      safe_reason: 'send_time_household_unavailable',
+    });
+    if (!completed) return completionUnconfirmedNoProviderCall();
+    return {
+      state: 'skipped',
+      reason: 'send_time_household_unavailable',
+      email_provider_calls: 0,
+      whatsapp_provider_calls: 0,
+      reservations: 1,
+      writes: 3,
+    };
+  }
+
   let receipt: CampaignEmailDispatchReceipt;
   try {
     receipt = await input.email.dispatchThroughF05(
-      emailPayload(dispatchPlan, input.safe_provider_reference),
+      emailPayload(dispatchPlan, householdId, input.safe_provider_reference),
       input.signal,
     );
   } catch {
@@ -371,6 +395,16 @@ function completionUnconfirmed(): RunOt16CheckpointResult {
   };
 }
 
+function completionUnconfirmedNoProviderCall(): RunOt16CheckpointResult {
+  return {
+    state: 'stale_fenced',
+    email_provider_calls: 0,
+    whatsapp_provider_calls: 0,
+    reservations: 1,
+    writes: 2,
+  };
+}
+
 function hasSafeErrorCode(value: unknown): value is string {
   return typeof value === 'string' && value.trim() !== '';
 }
@@ -445,11 +479,15 @@ function resultReason(result: RunOt16CheckpointResult): string {
 
 function emailPayload(
   plan: { operation_id: string; adult_id: string; notice: Ot16Notice },
+  householdId: string,
   safeProviderReference: string,
 ): Parameters<CampaignEmailPort['dispatchThroughF05']>[0] {
   return {
     operation_id: plan.operation_id,
     adult_id: plan.adult_id,
+    household_id: householdId,
+    expiry_at: plan.notice.expiry_at,
+    checkpoint_days: plan.notice.checkpoint_days,
     sender_key: 'office',
     transport: 'GHL',
     subject: plan.notice.subject,

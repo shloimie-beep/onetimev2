@@ -12,7 +12,10 @@ import type {
   ProviderRegistryBindingEvidence,
   ProviderRegistryBindingReadRequest,
 } from '../../../../../../packages/contracts/src/providers/v21-provider-core.ts';
-import type { CampaignAudienceCandidate } from '../../../../../../packages/domain/src/communications/workflows/campaigns/index.ts';
+import {
+  ot16OperationId,
+  type CampaignAudienceCandidate,
+} from '../../../../../../packages/domain/src/communications/workflows/campaigns/index.ts';
 import type { WorkerRunnerContext } from '../../registry/index.ts';
 import {
   inspectDefaultOt16Authority,
@@ -21,7 +24,11 @@ import {
   readCanonicalLaunchCampaign,
   readOt16F06Binding,
 } from './adapters.ts';
-import { runOt16CheckpointWorker, type Ot16WorkerDependencies } from './composition.ts';
+import {
+  createDefaultOt16Dependencies,
+  runOt16CheckpointWorker,
+  type Ot16WorkerDependencies,
+} from './composition.ts';
 import type { CampaignEmailDispatchReceipt } from './runner.ts';
 
 const h = (value: string) => value.repeat(64).slice(0, 64);
@@ -229,6 +236,10 @@ describe('P30 OT-16 worker composition', () => {
       deliveryProviderTransportEnabled: true,
       highLevelEventSyncMode: 'provider',
       highLevelPrivateIntegrationsToken: 'test-highlevel-token',
+      oneTimeOt16TransportMode: 'broad',
+      oneTimeOt16AuthorizationId: 'test-ot16-authorization',
+      oneTimeOt16CanaryOperationIds: [],
+      oneTimeOt16PerRunBudget: 1,
       highLevelLocationId: 'pBSnOK2nkdxp6gf9Rg3o',
       oneTimeFreeAccessExpiresAt: undefined,
     };
@@ -258,6 +269,10 @@ describe('P30 OT-16 worker composition', () => {
       deliveryProviderTransportEnabled: true,
       highLevelEventSyncMode: 'provider',
       highLevelPrivateIntegrationsToken: 'test-highlevel-token',
+      oneTimeOt16TransportMode: 'broad',
+      oneTimeOt16AuthorizationId: 'test-ot16-authorization',
+      oneTimeOt16CanaryOperationIds: [],
+      oneTimeOt16PerRunBudget: 1,
       highLevelLocationId: 'pBSnOK2nkdxp6gf9Rg3o',
       oneTimeFreeAccessExpiresAt: expiryAt,
     };
@@ -330,6 +345,55 @@ describe('P30 OT-16 worker composition', () => {
       expect.objectContaining({ safe_provider_reference: h('c') }),
       deps.signal,
     );
+  });
+
+  it('limits the default due reader to the exact canary operation allowlist and per-run budget', async () => {
+    const workerContext = context();
+    const canaryExpiry = new Date(Date.now() + 13.5 * 24 * 60 * 60 * 1_000).toISOString();
+    const allowedOperation = ot16OperationId({
+      adult_id: 'adult-canary',
+      expiry_at: canaryExpiry,
+      checkpoint_days: 14,
+    });
+    workerContext.config = {
+      ...workerContext.config,
+      oneTimeFreeAccessExpiresAt: canaryExpiry,
+      oneTimeOt16TransportMode: 'canary',
+      oneTimeOt16AuthorizationId: 'test-ot16-authorization',
+      oneTimeOt16CanaryOperationIds: [allowedOperation],
+      oneTimeOt16PerRunBudget: 1,
+    };
+    workerContext.pool.query = vi.fn(async (sql: string) => {
+      if (sql.includes('onetime.family_signup_access_projections')) {
+        return {
+          rows: [
+            {
+              adult_id: 'adult-canary',
+              household_id: 'household-canary',
+              free_access_expires_at: canaryExpiry,
+            },
+            {
+              adult_id: 'adult-not-allowed',
+              household_id: 'household-not-allowed',
+              free_access_expires_at: canaryExpiry,
+            },
+          ],
+          rowCount: 2,
+        };
+      }
+      return { rows: [], rowCount: 0 };
+    }) as never;
+
+    await expect(
+      createDefaultOt16Dependencies(workerContext).listDueCheckpoints(workerContext),
+    ).resolves.toEqual([
+      {
+        adultId: 'adult-canary',
+        expiryAt: canaryExpiry,
+        checkpointDays: 14,
+        expectedVersion: 0,
+      },
+    ]);
   });
 
   it('accepts only the exact approved registry and rendered-body digest pair', () => {

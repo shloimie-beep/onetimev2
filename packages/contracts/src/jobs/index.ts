@@ -145,6 +145,8 @@ export interface ClaimDueJobsInput {
   limit: number;
   scope: JobScope;
   operation_types: readonly string[];
+  /** Optional exact-job fence used by synchronous F05 dispatch boundaries. */
+  job_ids?: readonly string[];
 }
 
 export interface RecordDispatchOutcomeInput {

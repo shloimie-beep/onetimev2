@@ -157,6 +157,9 @@ describe('P30 OT-16 worker boundary', () => {
     });
     expect(email.dispatchThroughF05).toHaveBeenCalledWith(
       expect.objectContaining({
+        household_id: 'household-1',
+        expiry_at: expiryAt,
+        checkpoint_days: 14,
         sender_key: 'office',
         transport: 'GHL',
         cta_label: 'Complete Checkout',
@@ -178,6 +181,35 @@ describe('P30 OT-16 worker boundary', () => {
     );
     expect(eligibility.readCurrent.mock.invocationCallOrder[1]).toBeLessThan(
       email.dispatchThroughF05.mock.invocationCallOrder[0] ?? Infinity,
+    );
+  });
+
+  it('closes a reserved decision without provider access when final household evidence disappears', async () => {
+    const { repository, suppression, eligibility, email } = ports({
+      finalCandidate: candidate({
+        subject: { kind: 'adult', adult_id: 'adult-1', household_id: null },
+      }),
+    });
+
+    await expect(
+      runOt16Checkpoint({
+        ...checkpointInput(),
+        repository,
+        suppression,
+        eligibility,
+        email,
+      }),
+    ).resolves.toEqual({
+      state: 'skipped',
+      reason: 'send_time_household_unavailable',
+      email_provider_calls: 0,
+      whatsapp_provider_calls: 0,
+      reservations: 1,
+      writes: 3,
+    });
+    expect(email.dispatchThroughF05).not.toHaveBeenCalled();
+    expect(repository.completeDecision).toHaveBeenCalledWith(
+      expect.objectContaining({ safe_reason: 'send_time_household_unavailable' }),
     );
   });
 
