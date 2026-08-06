@@ -49,9 +49,12 @@ const EXPECTED_SOURCE_INPUT_PATHS = [
   'apps/web/src/server/app.ts',
   'apps/web/src/server/features/portals/routers.ts',
   'apps/web/src/server/features/support/router.ts',
+  'apps/web/src/server/features/support/v21-router.ts',
   'apps/web/src/server/features/signup/school/router.ts',
   'apps/web/src/server/features/v21-canonical-routes/router.ts',
   'apps/web/src/client/app/admin-ia.ts',
+  'apps/web/src/client/app/admin/support/AdminSupportWorkspace.tsx',
+  'apps/web/src/client/app/crm-api.ts',
   'apps/web/src/client/app/crm-entry.tsx',
   'apps/web/src/client/app/live-entry.tsx',
   'apps/web/src/client/app/portal-entry.tsx',
@@ -197,18 +200,47 @@ const EXPECTED_ACTION_BINDINGS = [
   ['public.signup.route', '/signup', ['public'], 'GET', '/signup'],
   ['public.signup.submit.form', '/signup', ['public'], 'POST', '/api/v1/signup/family'],
   [
+    'support.admin.assign.form',
+    '/app/support',
+    ['admin'],
+    'POST',
+    '/api/v1/admin/support/v21/tickets/:ticketId/assign',
+  ],
+  [
+    'support.admin.queue.view.route',
+    '/app/support',
+    ['admin'],
+    'GET',
+    '/api/v1/admin/support/v21/tickets',
+  ],
+  [
+    'support.admin.reply.form',
+    '/app/support',
+    ['admin'],
+    'POST',
+    '/api/v1/admin/support/v21/tickets/:ticketId/reply',
+  ],
+  [
+    'support.admin.status.form',
+    '/app/support',
+    ['admin'],
+    'POST',
+    '/api/v1/admin/support/v21/tickets/:ticketId/status',
+  ],
+  ['support.admin.view.route', '/app/support', ['admin'], 'GET', '/app/support'],
+  [
     'support.parent.receipt.view.route',
     '/app/parent/support/:ticketId',
     ['parent'],
     'GET',
-    '/api/v1/support/receipts/:receiptId/status',
+    '/api/v1/support/v21/tickets/:ticketId',
   ],
   [
     'support.parent.submit.form',
     '/app/parent/support',
     ['parent'],
     'POST',
-    '/api/v1/support/tickets',
+    '/api/v1/support/v21/tickets',
   ],
   ['support.parent.view.route', '/app/parent/support', ['parent'], 'GET', '/app/parent/support'],
   [
@@ -216,14 +248,14 @@ const EXPECTED_ACTION_BINDINGS = [
     '/app/student/support/:ticketId',
     ['student'],
     'GET',
-    '/api/v1/support/receipts/:receiptId/status',
+    '/api/v1/support/v21/tickets/:ticketId',
   ],
   [
     'support.student.submit.form',
     '/app/student/support',
     ['student'],
     'POST',
-    '/api/v1/support/tickets',
+    '/api/v1/support/v21/tickets',
   ],
   [
     'support.student.view.route',
@@ -266,13 +298,13 @@ describe('v2.1 visible action registry', () => {
     expect(registry.canonical_routes).toHaveLength(93);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'ready'),
-    ).toHaveLength(72);
+    ).toHaveLength(73);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'isolated'),
     ).toHaveLength(7);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'missing'),
-    ).toHaveLength(14);
+    ).toHaveLength(13);
     expect(sourceText.endsWith('\n')).toBe(true);
   });
 
@@ -392,19 +424,19 @@ describe('v2.1 visible action registry', () => {
     expect(byId.get('support.student.submit.form')).toMatchObject({
       route: '/app/student/support',
       roles: ['student'],
-      handler: { method: 'POST', path: '/api/v1/support/tickets' },
+      handler: { method: 'POST', path: '/api/v1/support/v21/tickets' },
       test_evidence: [
-        'apps/web/src/client/app/router/canonical-route-views.test.ts',
-        'tests/unit/day-one/visible-action-registry.test.ts',
+        'tests/integration/support/v21-support-lifecycle.test.ts',
+        'tests/e2e/support.spec.ts',
       ],
     });
     expect(byId.get('support.student.receipt.view.route')).toMatchObject({
       route: '/app/student/support/:ticketId',
       roles: ['student'],
-      handler: { method: 'GET', path: '/api/v1/support/receipts/:receiptId/status' },
+      handler: { method: 'GET', path: '/api/v1/support/v21/tickets/:ticketId' },
       test_evidence: [
-        'apps/web/src/client/app/router/canonical-route-views.test.ts',
-        'tests/unit/day-one/visible-action-registry.test.ts',
+        'tests/integration/support/v21-support-lifecycle.test.ts',
+        'tests/e2e/support.spec.ts',
       ],
     });
     expect(byId.get('support.student.view.route')).toMatchObject({
@@ -412,8 +444,8 @@ describe('v2.1 visible action registry', () => {
       roles: ['student'],
       handler: { method: 'GET', path: '/app/student/support' },
       test_evidence: [
-        'apps/web/src/client/app/router/canonical-route-views.test.ts',
-        'tests/unit/day-one/visible-action-registry.test.ts',
+        'tests/integration/support/v21-support-lifecycle.test.ts',
+        'tests/e2e/support.spec.ts',
       ],
     });
     expect(supportFeature).toContain(
@@ -424,13 +456,47 @@ describe('v2.1 visible action registry', () => {
     expect(byId.get('support.parent.submit.form')).toMatchObject({
       route: '/app/parent/support',
       roles: ['parent'],
-      handler: { method: 'POST', path: '/api/v1/support/tickets' },
+      handler: { method: 'POST', path: '/api/v1/support/v21/tickets' },
       external_mutation: false,
     });
     expect(byId.get('support.parent.receipt.view.route')).toMatchObject({
       route: '/app/parent/support/:ticketId',
       roles: ['parent'],
-      handler: { method: 'GET', path: '/api/v1/support/receipts/:receiptId/status' },
+      handler: { method: 'GET', path: '/api/v1/support/v21/tickets/:ticketId' },
+    });
+    expect(byId.get('support.admin.assign.form')).toMatchObject({
+      route: '/app/support',
+      roles: ['admin'],
+      handler: {
+        method: 'POST',
+        path: '/api/v1/admin/support/v21/tickets/:ticketId/assign',
+      },
+    });
+    expect(byId.get('support.admin.queue.view.route')).toMatchObject({
+      route: '/app/support',
+      roles: ['admin'],
+      handler: { method: 'GET', path: '/api/v1/admin/support/v21/tickets' },
+    });
+    expect(byId.get('support.admin.reply.form')).toMatchObject({
+      route: '/app/support',
+      roles: ['admin'],
+      handler: {
+        method: 'POST',
+        path: '/api/v1/admin/support/v21/tickets/:ticketId/reply',
+      },
+    });
+    expect(byId.get('support.admin.status.form')).toMatchObject({
+      route: '/app/support',
+      roles: ['admin'],
+      handler: {
+        method: 'POST',
+        path: '/api/v1/admin/support/v21/tickets/:ticketId/status',
+      },
+    });
+    expect(byId.get('support.admin.view.route')).toMatchObject({
+      route: '/app/support',
+      roles: ['admin'],
+      handler: { method: 'GET', path: '/app/support' },
     });
     expect(byId.get('support.parent.view.route')).toMatchObject({
       route: '/app/parent/support',

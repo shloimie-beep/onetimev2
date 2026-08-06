@@ -20,7 +20,7 @@
     },
     {
       "path": "apps/web/src/server/app.ts",
-      "sha256": "66a08402ba068fed1984b59af7880bf95b8c7f6c27d2a1e1948f54522038c629"
+      "sha256": "b88e54e04c8088956e6341f1750d67a88e9edec040166c2b0512e96efa4b94cc"
     },
     {
       "path": "apps/web/src/server/features/portals/routers.ts",
@@ -29,6 +29,10 @@
     {
       "path": "apps/web/src/server/features/support/router.ts",
       "sha256": "f3bbbbcf107615fc55130300442a32e0fa62f77662c630892fc1b0d89993311d"
+    },
+    {
+      "path": "apps/web/src/server/features/support/v21-router.ts",
+      "sha256": "f78d6a11e2440d807176ba62cd63af5b57f91321a2d81ec2415623dcd87bf655"
     },
     {
       "path": "apps/web/src/server/features/signup/school/router.ts",
@@ -43,8 +47,16 @@
       "sha256": "5d85ec66ec17d062aa63bd649a063a060f60808bcd0e29dd125119564aa3e80a"
     },
     {
+      "path": "apps/web/src/client/app/admin/support/AdminSupportWorkspace.tsx",
+      "sha256": "d1a6680aeb1966a25e596a92eb3a19e8a5e745c4e36e15c097cc3fc38d55cff4"
+    },
+    {
+      "path": "apps/web/src/client/app/crm-api.ts",
+      "sha256": "3191162e147c45c8e4899d8642d677106e9586e160fd9992dbadbfffc932d929"
+    },
+    {
       "path": "apps/web/src/client/app/crm-entry.tsx",
-      "sha256": "85c6ea876b3bf4bf3921f217f6ccc8bd0968939d1a9db500827266452afaa7cb"
+      "sha256": "4ca3e10fac43211a329cc5510433850e76ef77c1be6b992914561300e96d9334"
     },
     {
       "path": "apps/web/src/client/app/live-entry.tsx",
@@ -60,7 +72,7 @@
     },
     {
       "path": "apps/web/src/client/app/router/registry.ts",
-      "sha256": "3ed506b8bc8339b2f4b464d266bd87f4ae548efa04fd290e9556b3bc4fea2267"
+      "sha256": "5fa619ee3c5299ca9fdf5981e1fb22016f5433f8976deb0c561f342c01460180"
     },
     {
       "path": "apps/web/src/client/app/router/canonical-route-views.ts",
@@ -68,7 +80,7 @@
     },
     {
       "path": "apps/web/src/client/app/support/SupportFeature.tsx",
-      "sha256": "5a2e0b8715b9f73da26d84b4332142791067014ee305a514e0b5aa9b42fadac4"
+      "sha256": "5734c7fcfa7a195126c2212bbe87f889c29e26ee0fe2fd97d69130c9007a761a"
     },
     {
       "path": "apps/web/src/client/public/public-entry.ts",
@@ -559,9 +571,9 @@
       "route_id": "RT-ADM-068",
       "path": "/app/support",
       "roles": ["admin"],
-      "handler": null,
-      "readiness_state": "missing",
-      "handler_disposition": "missing"
+      "handler": "admin.rt-adm-068",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-ADM-069",
@@ -1676,6 +1688,176 @@
       ]
     },
     {
+      "action_id": "support.admin.assign.form",
+      "label": "Assign support conversation",
+      "surface": "form",
+      "route": "/app/support",
+      "roles": ["admin"],
+      "capability": "support:ticket:assign",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/admin/support/v21/tickets/:ticketId/assign"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "assigned"
+      },
+      "states": {
+        "loading": "Saving the assignment.",
+        "success": "The durable conversation assignment and version are committed.",
+        "error": "The assignment failed or a newer version must be loaded.",
+        "permission": "An authenticated Admin session and valid CSRF token are required.",
+        "offline": "Network unavailable; retry after reloading the durable conversation."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "local_only",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/support/v21-support-lifecycle.test.ts",
+        "tests/e2e/support.spec.ts"
+      ]
+    },
+    {
+      "action_id": "support.admin.queue.view.route",
+      "label": "Support operations queue",
+      "surface": "route",
+      "route": "/app/support",
+      "roles": ["admin"],
+      "capability": "support:queue:read",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/admin/support/v21/tickets"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "support_queue_read"
+      },
+      "states": {
+        "loading": "Loading durable support conversations.",
+        "success": "The Admin-scoped support queue is visible.",
+        "error": "The local support queue could not be loaded.",
+        "permission": "Only an authenticated Admin may read the operations queue.",
+        "offline": "No protected support data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "local_only",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/support/v21-support-lifecycle.test.ts",
+        "tests/e2e/support.spec.ts"
+      ]
+    },
+    {
+      "action_id": "support.admin.reply.form",
+      "label": "Send in-app support reply",
+      "surface": "form",
+      "route": "/app/support",
+      "roles": ["admin"],
+      "capability": "support:ticket:reply",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/admin/support/v21/tickets/:ticketId/reply"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "client-generated idempotency_key"
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "admin_replied"
+      },
+      "states": {
+        "loading": "Saving the in-app reply.",
+        "success": "The durable in-app reply and redacted notification intent are committed.",
+        "error": "The reply failed, conflicted, or must be retried with a new version.",
+        "permission": "An authenticated Admin session and valid CSRF token are required.",
+        "offline": "Network unavailable; the reply is not treated as sent."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "local_only",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/support/v21-support-lifecycle.test.ts",
+        "tests/e2e/support.spec.ts"
+      ]
+    },
+    {
+      "action_id": "support.admin.status.form",
+      "label": "Update support lifecycle status",
+      "surface": "form",
+      "route": "/app/support",
+      "roles": ["admin"],
+      "capability": "support:ticket:status",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/admin/support/v21/tickets/:ticketId/status"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "status_changed"
+      },
+      "states": {
+        "loading": "Saving the lifecycle status.",
+        "success": "The allowed lifecycle transition and version are committed.",
+        "error": "The transition is invalid, conflicted, or could not be saved.",
+        "permission": "An authenticated Admin session and valid CSRF token are required.",
+        "offline": "Network unavailable; the lifecycle status is unchanged."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "local_only",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/support/v21-support-lifecycle.test.ts",
+        "tests/e2e/support.spec.ts"
+      ]
+    },
+    {
+      "action_id": "support.admin.view.route",
+      "label": "Admin Support",
+      "surface": "route",
+      "route": "/app/support",
+      "roles": ["admin"],
+      "capability": "support:operations:view",
+      "handler": {
+        "method": "GET",
+        "path": "/app/support"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "support_operations_route_view"
+      },
+      "states": {
+        "loading": "Loading support operations.",
+        "success": "The durable Admin support workspace is mounted.",
+        "error": "A local error is shown without external mutation.",
+        "permission": "Only an authenticated Admin may open this route.",
+        "offline": "No protected support data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "local_only",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/support/v21-support-lifecycle.test.ts",
+        "tests/e2e/support.spec.ts"
+      ]
+    },
+    {
       "action_id": "support.parent.receipt.view.route",
       "label": "Support Receipt",
       "surface": "route",
@@ -1684,7 +1866,7 @@
       "capability": "support:ticket:status",
       "handler": {
         "method": "GET",
-        "path": "/api/v1/support/receipts/:receiptId/status"
+        "path": "/api/v1/support/v21/tickets/:ticketId"
       },
       "idempotency": {
         "required": false,
@@ -1692,21 +1874,21 @@
       },
       "audit": {
         "mode": "local_read",
-        "event": "support_status_projection_read"
+        "event": "support_conversation_read"
       },
       "states": {
         "loading": "Loading bounded local status.",
-        "success": "Cached same-account status is visible.",
-        "error": "The local receipt could not be found.",
-        "permission": "Cross-account and cross-user receipt reads are denied.",
+        "success": "The durable same-requester conversation and messages are visible.",
+        "error": "The local support conversation could not be found.",
+        "permission": "Cross-requester and cross-role conversation reads are denied.",
         "offline": "No protected cached data is used while offline."
       },
       "readiness_state": "ready",
-      "provider_mode": "mock_or_disabled_only",
+      "provider_mode": "local_only",
       "external_mutation": false,
       "test_evidence": [
-        "apps/web/src/client/app/router/canonical-route-views.test.ts",
-        "tests/unit/day-one/visible-action-registry.test.ts"
+        "tests/integration/support/v21-support-lifecycle.test.ts",
+        "tests/e2e/support.spec.ts"
       ]
     },
     {
@@ -1718,7 +1900,7 @@
       "capability": "support:ticket:create",
       "handler": {
         "method": "POST",
-        "path": "/api/v1/support/tickets"
+        "path": "/api/v1/support/v21/tickets"
       },
       "idempotency": {
         "required": true,
@@ -1726,21 +1908,21 @@
       },
       "audit": {
         "mode": "domain_audit",
-        "event": "support_submission_accepted"
+        "event": "created"
       },
       "states": {
         "loading": "Saving request.",
-        "success": "Durable receipt and local status projection are committed.",
-        "error": "The request could not be completed or delivery is delayed.",
-        "permission": "Server-side active entitlement recheck blocks non-subscribers.",
+        "success": "The durable conversation, first message, audit event, and redacted notification intent are committed.",
+        "error": "The request failed or conflicts with a prior idempotency key payload.",
+        "permission": "Only the authenticated requester may create this support conversation.",
         "offline": "Network unavailable; retry before changing data."
       },
       "readiness_state": "ready",
-      "provider_mode": "mock_or_disabled_only",
+      "provider_mode": "local_only",
       "external_mutation": false,
       "test_evidence": [
-        "apps/web/src/client/app/router/canonical-route-views.test.ts",
-        "tests/unit/day-one/visible-action-registry.test.ts"
+        "tests/integration/support/v21-support-lifecycle.test.ts",
+        "tests/e2e/support.spec.ts"
       ]
     },
     {
@@ -1764,17 +1946,17 @@
       },
       "states": {
         "loading": "Loading bounded local data.",
-        "success": "Action completed or the route is visible.",
+        "success": "The durable requester support workspace is visible.",
         "error": "A local error state is shown and no external mutation is attempted.",
-        "permission": "Unauthorized or non-subscriber accounts see only the public lead path.",
+        "permission": "Unauthorized and cross-role sessions are denied.",
         "offline": "No protected cached data is used while offline."
       },
       "readiness_state": "ready",
-      "provider_mode": "mock_or_disabled_only",
+      "provider_mode": "local_only",
       "external_mutation": false,
       "test_evidence": [
-        "apps/web/src/client/app/router/canonical-route-views.test.ts",
-        "tests/unit/day-one/visible-action-registry.test.ts"
+        "tests/integration/support/v21-support-lifecycle.test.ts",
+        "tests/e2e/support.spec.ts"
       ]
     },
     {
@@ -1786,7 +1968,7 @@
       "capability": "support:ticket:status",
       "handler": {
         "method": "GET",
-        "path": "/api/v1/support/receipts/:receiptId/status"
+        "path": "/api/v1/support/v21/tickets/:ticketId"
       },
       "idempotency": {
         "required": false,
@@ -1794,21 +1976,21 @@
       },
       "audit": {
         "mode": "local_read",
-        "event": "support_status_projection_read"
+        "event": "support_conversation_read"
       },
       "states": {
         "loading": "Loading bounded local status.",
-        "success": "Cached same-account status is visible.",
-        "error": "The local receipt could not be found.",
-        "permission": "Cross-account and cross-user receipt reads are denied.",
+        "success": "The durable same-requester conversation and messages are visible.",
+        "error": "The local support conversation could not be found.",
+        "permission": "Cross-requester and cross-role conversation reads are denied.",
         "offline": "No protected cached data is used while offline."
       },
       "readiness_state": "ready",
-      "provider_mode": "mock_or_disabled_only",
+      "provider_mode": "local_only",
       "external_mutation": false,
       "test_evidence": [
-        "apps/web/src/client/app/router/canonical-route-views.test.ts",
-        "tests/unit/day-one/visible-action-registry.test.ts"
+        "tests/integration/support/v21-support-lifecycle.test.ts",
+        "tests/e2e/support.spec.ts"
       ]
     },
     {
@@ -1820,7 +2002,7 @@
       "capability": "support:ticket:create",
       "handler": {
         "method": "POST",
-        "path": "/api/v1/support/tickets"
+        "path": "/api/v1/support/v21/tickets"
       },
       "idempotency": {
         "required": true,
@@ -1828,21 +2010,21 @@
       },
       "audit": {
         "mode": "domain_audit",
-        "event": "support_submission_accepted"
+        "event": "created"
       },
       "states": {
         "loading": "Saving request.",
-        "success": "Durable receipt and local status projection are committed.",
-        "error": "The request could not be completed or delivery is delayed.",
-        "permission": "Server-side active entitlement recheck blocks non-subscribers.",
+        "success": "The durable conversation, first message, audit event, and redacted notification intent are committed.",
+        "error": "The request failed or conflicts with a prior idempotency key payload.",
+        "permission": "Only the authenticated requester may create this support conversation.",
         "offline": "Network unavailable; retry before changing data."
       },
       "readiness_state": "ready",
-      "provider_mode": "mock_or_disabled_only",
+      "provider_mode": "local_only",
       "external_mutation": false,
       "test_evidence": [
-        "apps/web/src/client/app/router/canonical-route-views.test.ts",
-        "tests/unit/day-one/visible-action-registry.test.ts"
+        "tests/integration/support/v21-support-lifecycle.test.ts",
+        "tests/e2e/support.spec.ts"
       ]
     },
     {
@@ -1866,17 +2048,17 @@
       },
       "states": {
         "loading": "Loading bounded local data.",
-        "success": "Action completed or the route is visible.",
+        "success": "The durable requester support workspace is visible.",
         "error": "A local error state is shown and no external mutation is attempted.",
-        "permission": "Unauthorized or non-subscriber accounts see only the public lead path.",
+        "permission": "Unauthorized and cross-role sessions are denied.",
         "offline": "No protected cached data is used while offline."
       },
       "readiness_state": "ready",
-      "provider_mode": "mock_or_disabled_only",
+      "provider_mode": "local_only",
       "external_mutation": false,
       "test_evidence": [
-        "apps/web/src/client/app/router/canonical-route-views.test.ts",
-        "tests/unit/day-one/visible-action-registry.test.ts"
+        "tests/integration/support/v21-support-lifecycle.test.ts",
+        "tests/e2e/support.spec.ts"
       ]
     }
   ]
