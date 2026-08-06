@@ -4,11 +4,11 @@
 
 - Authoritative brief: `C:\Users\User\Downloads\ONE-TIME-FULL-PRODUCTION-LAUNCH-CODEX-GOAL.md`
 - Integration branch: `codex/one-time-complete-production-launch-20260805`
-- Current production source: `e457f93ec51830791eb9853db01b34a8c6167d01`
+- Current production source: `70d1315aa5b237428dec036e99b21ae941a7f3d8`
 - Rollback branch: `rollback/one-time-pre-complete-launch-20260805`
-- Current web deployment: `2f9b2032-f656-446b-9684-d769084facff`
-- Current worker deployment: `08ee19b4-aab9-4836-bc59-393ccf153681`
-- Current migration head: `2269_billing_verified_event_processing_state`, readiness green
+- Current web deployment: `2076e8c6-921d-4da2-bc92-9b7f3615fe89`
+- Current worker deployment: `7fce4ea4-c2ac-4d60-a595-f666fecf121c`
+- Current migration head: `2270_ot03_checkout_abandonment_intents`, readiness green
 
 ## Milestones
 
@@ -32,7 +32,7 @@
 
 ## Current checkpoint
 
-Milestone 1 is live and proven. Application-side portal, billing, privacy, notification, HighLevel projection, and provider-boundary contracts are live at exact source `e457f93ec51830791eb9853db01b34a8c6167d01`. This release adds durable adult-only billing-to-GHL lifecycle intents and lease-safe recovery of interrupted signed Stripe TEST webhook projections; it preserves no Student HighLevel contacts and keeps payment transport and live-charge authorization disabled. All six PR checks passed. Successful web deployment `2f9b2032-f656-446b-9684-d769084facff` and worker deployment `08ee19b4-aab9-4836-bc59-393ccf153681` bind protected runtime identity and the fresh worker heartbeat to the exact source. Migration `2269_billing_verified_event_processing_state` is green, queues have zero ready/retry/dead-letter/expired-lease rows, and diagnostics report no blockers. Public `app` and `join` health/readiness return HTTP 200; unauthenticated protected diagnostics return HTTP 403.
+Milestone 1 is live and proven. Application-side portal, billing, privacy, notification, HighLevel projection, and provider-boundary contracts are live at exact source `70d1315aa5b237428dec036e99b21ae941a7f3d8`. This release adds durable adult-only billing-to-GHL lifecycle intents, lease-safe recovery of interrupted signed Stripe TEST webhook projections, and deterministic OT-03 two-hour/twenty-four-hour local abandonment checkpoints; it preserves no Student HighLevel contacts and keeps payment transport and live-charge authorization disabled. All six PR checks passed. Successful web deployment `2076e8c6-921d-4da2-bc92-9b7f3615fe89` and worker deployment `7fce4ea4-c2ac-4d60-a595-f666fecf121c` bind protected runtime identity and a fresh ready worker heartbeat to the exact source. Migration `2270_ot03_checkout_abandonment_intents` is green with checksum `1b9bea598bd22c9799b09356c8a884473e33e8026b0840614f2bea6f9d2c2ca5`, queues have zero ready/retry/dead-letter/expired-lease rows, and diagnostics report no blockers. Production has zero checkout sessions and therefore zero OT-03 intents, with zero no-Student/no-provider-mutation invariant violations. Public `app` and `join` health/readiness return HTTP 200; unauthenticated protected diagnostics return HTTP 403; the disabled Vimeo webhook returns HTTP 503.
 
 The Vimeo callback is mounted with provider-correct payload-secret verification and official event normalization, but remains fail-closed with `VIMEO_WEBHOOK_DISABLED`. Read-only BNA-Keyholder reconciliation found Zoom Server-to-Server artifacts and a distinct Meeting SDK candidate; the current Vimeo token is accepted with full account scopes, and the account has zero configured webhooks. A wider filename-only scan found four generic/BNA Google OAuth client-definition JSON files in Downloads, but none satisfies One Time's `GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON` contract or provides its required folder binding. No Drive service-account artifact, authorized Drive refresh credential, or Vimeo webhook shared secret was found, and no credential was copied or activated. The separate browser-control lane exclusively owns live GHL/DNS/sender/email-provider UI and must return `integrations/highlevel/agent-mode/results/GHL-UI-COMPLETE-LAUNCH-20260805.result.json`; until then this lane makes no speculative provider-ID or acceptance update. Milestone 2 production acceptance, the Zoom/attendance remainder of Milestone 3, and Milestone 4 provider activation remain next without waiting on that external lane.
 
