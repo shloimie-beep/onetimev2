@@ -13,7 +13,9 @@ test('admin workflow readback is repository-backed and exposes no provider contr
 
   await page.goto('/app/communications/OT-01');
 
-  await expect(page.getByRole('heading', { name: 'OT-01 New Lead Intake' })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'OT-01 Family Account Confirmation' }),
+  ).toBeVisible();
   await expect(page.getByText('Final browser readback pending')).toBeVisible();
   await expect(page.getByText(/Provider actions are not available here/)).toBeVisible();
   await expect(page.getByText(/Student contacts and live charges are prohibited/)).toBeVisible();
