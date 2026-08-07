@@ -5,8 +5,8 @@ Status: **ready for child-PR review; not activated**
 - Repository: `shloimie-beep/onetimev2`
 - Target branch: `codex/one-time-complete-production-launch-20260805`
 - Child branch: `codex/ot-wave1-media-production-broad-20260807`
-- Base commit: `43968d4b6163f97799e14289c2424c1001ab5c37`
-- Child PR: pending branch publication
+- Base commit: `3fa18eca39c3d448a4295be9b4d8c401bb808959`
+- Child PR: `https://github.com/shloimie-beep/onetimev2/pull/138` (draft)
 - Live provider calls: **0**
 - Railway or production setting changes: **0**
 
@@ -40,7 +40,7 @@ Status: **ready for child-PR review; not activated**
 - Production build: passed. Vite retained the existing unresolved-at-build-time font URL warning.
 - ESLint: passed.
 - Brand-system check: passed.
-- Secret scan: passed across 3,380 repository text files.
+- Secret scan: passed across 3,383 repository text files.
 - Scoped Prettier check for every changed supported file: passed.
 - Full-repository Prettier check: baseline failure across many unrelated existing files; no out-of-scope formatting rewrite was performed.
 - `git diff --check`: passed (Windows line-ending notices only).
