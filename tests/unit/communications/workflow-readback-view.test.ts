@@ -11,7 +11,7 @@ describe('WorkflowReadbackView', () => {
 
     const html = renderToStaticMarkup(React.createElement(WorkflowReadbackView, { data }));
 
-    expect(html).toContain('OT-01 New Lead Intake');
+    expect(html).toContain('OT-01 Family Account Confirmation');
     expect(html).toContain('Final browser readback pending');
     expect(html).toContain('Provider actions are not available here');
     expect(html).toContain('Student contacts and live charges are prohibited');

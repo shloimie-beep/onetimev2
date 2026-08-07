@@ -8,7 +8,7 @@
     },
     {
       "path": "ops/v2.1-execution/source-spec/03-DECISION-REGISTER-v2.1.md",
-      "sha256": "fd7d88282e45c51ca7abe227be16c9cfbf989e8ece47d701822725163d5bcf73"
+      "sha256": "c3f2febe8f7c54b9c179b4b3e5aba04e6d246933a8e10b9356cef670d30cc029"
     },
     {
       "path": "ops/v2.1-execution/source-spec/05-ACTOR-ROLE-CAPABILITY-ROUTE-MATRIX-v2.1.md",
@@ -20,7 +20,7 @@
     },
     {
       "path": "integrations/highlevel/registry/workflow-registry.yaml",
-      "sha256": "08fa35058d351e79aa56a8bddcb6752ba2f356c4fde35c0a26b13338c1f53573"
+      "sha256": "4f85cc05db8c83424b98e8bba3c9cabe07378e95f0224d34a7a7b88f4e584577"
     },
     {
       "path": "apps/web/src/server/app.ts",

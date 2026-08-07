@@ -6,7 +6,7 @@ import {
 } from '../../../../../packages/domain/src/audience-reconciliation/governed-campaign-census.ts';
 import {
   FAMILY_SIGNUP_GHL_PIPELINE_ID,
-  FAMILY_SIGNUP_GHL_SIGNED_UP_STAGE_ID,
+  FAMILY_SIGNUP_GHL_ACTIVE_MEMBER_STAGE_ID,
   familySignupGhlHouseholdRefHash,
 } from './provider.ts';
 import type {
@@ -76,7 +76,7 @@ export class HighLevelFamilySignupProjectionReader implements FamilySignupGhlPro
       requiredText(opportunity.pipelineId, 'opportunity_pipeline_id') !==
         FAMILY_SIGNUP_GHL_PIPELINE_ID ||
       requiredText(opportunity.pipelineStageId, 'opportunity_stage_id') !==
-        FAMILY_SIGNUP_GHL_SIGNED_UP_STAGE_ID
+        FAMILY_SIGNUP_GHL_ACTIVE_MEMBER_STAGE_ID
     ) {
       throw new FamilySignupGhlProviderError('projection_opportunity_readback_mismatch', false);
     }

@@ -15,7 +15,7 @@ describe('workflow readback projection', () => {
       source_scope: 'repository_workflow_registry',
       workflow: {
         workflow_key: 'OT-01',
-        canonical_name: 'OT-01 New Lead Intake',
+        canonical_name: 'OT-01 Family Account Confirmation',
         provider_workflow_id: '95a6f461-1a04-4260-b379-246fdcc45af7',
         desired_status: 'DRAFT_WAITING_EXTERNAL',
         observed_status: 'DRAFT_SHELL',

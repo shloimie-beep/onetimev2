@@ -1,15 +1,15 @@
-# OT-01 New Lead Intake Prompt
+# OT-01 Family Account Confirmation Prompt
 
 Build in HighLevel Draft state only. Do not publish, send messages, enroll production contacts, mutate Stripe, or create Student contacts from this prompt.
 
 Canonical registry: one-time-highlevel@1.1.0
-Exact workflow: OT-01 New Lead Intake
+Exact workflow: OT-01 Family Account Confirmation
 Folder: 00 - Intake & Data
 Exact trigger: successful durable Family-account creation committed with immediate free access
 message_class: access_help
 sender_key: office
 transport: GHL
-Purpose: Send the adult Family-account receipt after durable account and immediate-free-access readback.
+Purpose: Confirm a Family account after a real application event. This is not generic new-lead intake; the legacy provider key remains only for compatibility.
 
 Registry dependencies:
 

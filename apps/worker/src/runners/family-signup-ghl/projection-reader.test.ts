@@ -6,7 +6,7 @@ import {
 } from '../../../../../packages/domain/src/audience-reconciliation/governed-campaign-census.ts';
 import {
   FAMILY_SIGNUP_GHL_PIPELINE_ID,
-  FAMILY_SIGNUP_GHL_SIGNED_UP_STAGE_ID,
+  FAMILY_SIGNUP_GHL_ACTIVE_MEMBER_STAGE_ID,
   familySignupGhlHouseholdRefHash,
 } from './provider.ts';
 import { HighLevelFamilySignupProjectionReader } from './projection-reader.ts';
@@ -47,7 +47,7 @@ describe('Family-signup HighLevel projection recovery reader', () => {
             id: claim.providerOpportunityId,
             contactId: claim.providerContactId,
             pipelineId: FAMILY_SIGNUP_GHL_PIPELINE_ID,
-            pipelineStageId: FAMILY_SIGNUP_GHL_SIGNED_UP_STAGE_ID,
+            pipelineStageId: FAMILY_SIGNUP_GHL_ACTIVE_MEMBER_STAGE_ID,
           },
         }),
       );
