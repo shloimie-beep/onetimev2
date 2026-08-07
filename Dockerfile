@@ -14,7 +14,10 @@ RUN npm run build
 
 FROM node:24-alpine AS runtime
 WORKDIR /app
-ENV NODE_ENV=production
+RUN apk add --no-cache ffmpeg
+ENV NODE_ENV=production \
+    CONTENT_FFMPEG_PATH=/usr/bin/ffmpeg \
+    CONTENT_FFPROBE_PATH=/usr/bin/ffprobe
 COPY --from=base /app/package.json /app/package-lock.json ./
 COPY --from=base /app/node_modules ./node_modules
 COPY --from=base /app/dist ./dist

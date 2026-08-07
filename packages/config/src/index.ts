@@ -24,6 +24,14 @@ const numberFromString = z
     return parsed;
   });
 
+const boundedIntegerFromString = (minimum: number, maximum: number, defaultValue: number) =>
+  z
+    .union([z.number(), z.string()])
+    .optional()
+    .default(defaultValue)
+    .transform((value) => Number(value))
+    .pipe(z.number().int().min(minimum).max(maximum));
+
 const optionalTrimmedString = (minimum: number, maximum: number) =>
   z.preprocess(
     (value) => (typeof value === 'string' && value.trim() === '' ? undefined : value),
@@ -217,10 +225,12 @@ const envSchema = z.object({
     oneTimeVerificationEnvironmentSchema.optional(),
   ),
   ONE_TIME_CONTENT_MEDIA_MODE: z
-    .enum(['off', 'synthetic_canary', 'provider_canary'])
+    .enum(['off', 'synthetic_canary', 'provider_canary', 'production_broad'])
     .default('off'),
   ONE_TIME_CONTENT_MEDIA_AUTHORIZATION_ID: optionalTrimmedString(8, 160),
   ONE_TIME_CONTENT_CANARY_ID: optionalTrimmedString(8, 160),
+  ONE_TIME_CONTENT_MEDIA_BATCH_SIZE: boundedIntegerFromString(1, 10, 2),
+  ONE_TIME_CONTENT_MEDIA_CONCURRENCY: boundedIntegerFromString(1, 4, 1),
   CONTENT_S3_BUCKET: optionalTrimmedString(3, 255),
   CONTENT_S3_KMS_KEY_ARN: optionalTrimmedString(20, 500),
   CONTENT_S3_STORAGE_CLASS: z.enum(['STANDARD', 'INTELLIGENT_TIERING']).default('STANDARD'),
@@ -432,13 +442,17 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
   const contentMediaMode = parsed.ONE_TIME_CONTENT_MEDIA_MODE;
   const contentMediaEnabled = contentMediaMode !== 'off';
   const contentMediaProviderCanary = contentMediaMode === 'provider_canary';
+  const contentMediaProductionBroad = contentMediaMode === 'production_broad';
   if (
-    contentMediaEnabled &&
+    ['synthetic_canary', 'provider_canary'].includes(contentMediaMode) &&
     (!parsed.ONE_TIME_CONTENT_MEDIA_AUTHORIZATION_ID || !parsed.ONE_TIME_CONTENT_CANARY_ID)
   ) {
     throw new Error(
       'Content media execution requires an exact authorization ID and one-recording canary ID.',
     );
+  }
+  if (contentMediaProductionBroad && !parsed.ONE_TIME_CONTENT_MEDIA_AUTHORIZATION_ID) {
+    throw new Error('Content media production broad execution requires an exact authorization ID.');
   }
   if (
     contentMediaMode === 'synthetic_canary' &&
@@ -456,19 +470,26 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     );
   }
   if (
-    contentMediaProviderCanary &&
-    (!parsed.CONTENT_S3_BUCKET ||
-      !/^[a-z0-9](?:[a-z0-9-]{1,61}[a-z0-9])$/u.test(parsed.CONTENT_S3_BUCKET) ||
-      !parsed.CONTENT_S3_KMS_KEY_ARN ||
-      parsed.AWS_REGION !== 'eu-central-1' ||
-      !parsed.CONTENT_FFMPEG_PATH ||
-      !parsed.CONTENT_FFPROBE_PATH ||
-      !parsed.OPENAI_API_KEY ||
-      !parsed.OPENAI_PROJECT_ID ||
-      !parsed.VIMEO_ACCESS_TOKEN ||
-      !parsed.VIMEO_ACCOUNT_ID ||
-      !parsed.VIMEO_WEBHOOK_SECRET)
+    contentMediaProductionBroad &&
+    (oneTimeRuntimeEnvironment !== 'production' ||
+      oneTimeVerificationEnvironmentId !== 'production_broad')
   ) {
+    throw new Error('Content media production broad requires the production_broad environment.');
+  }
+  const contentMediaProvidersReady = Boolean(
+    parsed.CONTENT_S3_BUCKET &&
+    /^[a-z0-9](?:[a-z0-9-]{1,61}[a-z0-9])$/u.test(parsed.CONTENT_S3_BUCKET) &&
+    parsed.CONTENT_S3_KMS_KEY_ARN &&
+    parsed.AWS_REGION === 'eu-central-1' &&
+    parsed.CONTENT_FFMPEG_PATH &&
+    parsed.CONTENT_FFPROBE_PATH &&
+    parsed.OPENAI_API_KEY &&
+    parsed.OPENAI_PROJECT_ID &&
+    parsed.VIMEO_ACCESS_TOKEN &&
+    parsed.VIMEO_ACCOUNT_ID &&
+    parsed.VIMEO_WEBHOOK_SECRET,
+  );
+  if (contentMediaProviderCanary && !contentMediaProvidersReady) {
     throw new Error(
       'Content media provider canary requires exact S3, processing, OpenAI, and Vimeo configuration.',
     );
@@ -752,8 +773,12 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     contentMediaMode,
     contentMediaEnabled,
     contentMediaProviderCanary,
+    contentMediaProductionBroad,
+    contentMediaProvidersReady,
     contentMediaAuthorizationId: parsed.ONE_TIME_CONTENT_MEDIA_AUTHORIZATION_ID,
     contentMediaCanaryId: parsed.ONE_TIME_CONTENT_CANARY_ID,
+    contentMediaBatchSize: parsed.ONE_TIME_CONTENT_MEDIA_BATCH_SIZE,
+    contentMediaConcurrency: parsed.ONE_TIME_CONTENT_MEDIA_CONCURRENCY,
     contentS3Bucket: parsed.CONTENT_S3_BUCKET,
     contentS3KmsKeyArn: parsed.CONTENT_S3_KMS_KEY_ARN,
     contentS3StorageClass: parsed.CONTENT_S3_STORAGE_CLASS,

@@ -50,6 +50,7 @@ describe('content ingest browser API', () => {
       file_name: 'operator-recording.mp4',
       mime_type: 'video/mp4',
       byte_count: 3,
+      client_request_key: expect.stringMatching(/^[a-f0-9]{64}$/u),
     });
     expect(String(requests[0]?.init?.body)).not.toMatch(/authorization|canary|idempotency/iu);
     expect(started.session).not.toHaveProperty('idempotencyKey');

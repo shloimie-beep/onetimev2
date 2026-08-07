@@ -165,6 +165,95 @@ describe('content ingest router', () => {
     expect(commands[0]?.idempotencyKey).not.toContain(input.canaryId);
     expect(input.managedOriginal.beginDirectUpload).not.toHaveBeenCalled();
   });
+
+  it('derives distinct scoped broad upload identities from bounded browser request keys', async () => {
+    const input = fakeInput(true);
+    input.mediaMode = 'production_broad';
+    input.canaryId = undefined;
+    input.runtimeTier = 'production';
+    input.verificationEnvironmentId = 'production_broad';
+    const session = {
+      ...uploadSession(),
+      runtimeTier: 'production' as const,
+      verificationEnvironmentId: 'production_broad',
+    };
+    vi.mocked(input.service.beginDirectUpload).mockResolvedValue({
+      replay: true,
+      session: undefined,
+      plan: undefined,
+    });
+    vi.mocked(input.state.getUploadSession).mockResolvedValue(session);
+    const baseUrl = await start(input);
+
+    const missing = await post(baseUrl, '/api/app/content/ingest/sessions', beginBody());
+    expect(missing.status).toBe(409);
+    expect(await missing.json()).toMatchObject({
+      code: 'content_media_client_request_binding_unavailable',
+    });
+    const first = await post(baseUrl, '/api/app/content/ingest/sessions', {
+      ...beginBody(),
+      client_request_key: '1'.repeat(64),
+    });
+    const second = await post(baseUrl, '/api/app/content/ingest/sessions', {
+      ...beginBody(),
+      client_request_key: '2'.repeat(64),
+    });
+
+    expect(first.status).toBe(200);
+    expect(second.status).toBe(200);
+    const commands = vi
+      .mocked(input.service.beginDirectUpload)
+      .mock.calls.map(([command]) => command);
+    expect(commands).toHaveLength(2);
+    expect(commands[0]?.idempotencyKey).toMatch(/^media_broad_[a-f0-9]{32}$/u);
+    expect(commands[1]?.idempotencyKey).not.toBe(commands[0]?.idempotencyKey);
+    expect(JSON.stringify(await first.json())).not.toContain(input.authorizationId);
+  });
+
+  it('matches a confirmed source only to an occurrence in the authenticated account and product', async () => {
+    const input = fakeInput(true);
+    const occurrence = {
+      accountKey: 'account-one',
+      productKey: 'one_time_mishnayos',
+      id: 'occurrence-one',
+      seriesId: 'canonical-class',
+      localClassDate: '2026-08-07',
+      startsAt: '2026-08-07T16:00:00.000Z',
+      scheduledEndsAt: '2026-08-07T17:00:00.000Z',
+      joinOpensAt: '2026-08-07T15:50:00.000Z',
+      joinClosesAt: '2026-08-07T17:15:00.000Z',
+      state: 'completed' as const,
+      scheduleVersion: 1,
+      version: 1,
+      createdAt: '2026-08-07T15:00:00.000Z',
+      updatedAt: '2026-08-07T17:00:00.000Z',
+    };
+    vi.mocked(input.state.getOccurrence).mockResolvedValue(occurrence);
+    vi.mocked(input.service.matchSourceToOccurrence).mockResolvedValue({
+      replay: false,
+      source: { id: 'source-one', version: 2 },
+    } as never);
+    const baseUrl = await start(input);
+    const response = await post(baseUrl, '/api/app/content/ingest/sources/source-one/match', {
+      occurrence_id: occurrence.id,
+      expected_version: 1,
+      idempotency_key: 'match-source-one-occurrence-one',
+    });
+
+    expect(response.status).toBe(200);
+    expect(input.state.getOccurrence).toHaveBeenCalledWith(identity().actor, occurrence.id);
+    expect(input.service.matchSourceToOccurrence).toHaveBeenCalledWith(
+      expect.objectContaining({
+        actor: identity().actor,
+        sourceId: 'source-one',
+        occurrenceId: occurrence.id,
+        expectedVersion: 1,
+        requestHash: expect.stringMatching(/^[a-f0-9]{64}$/u),
+      }),
+      occurrence,
+    );
+    expect(JSON.stringify(await response.json())).not.toMatch(/token|provider|https?:\/\//iu);
+  });
 });
 
 function fakeInput(enabled: boolean): ContentIngestRouterInput {
@@ -175,16 +264,20 @@ function fakeInput(enabled: boolean): ContentIngestRouterInput {
     enabled,
     authorizationId: 'authorization-ot-live-004',
     canaryId: 'one-operator-recording',
+    mediaMode: 'provider_canary',
     runtimeTier: 'isolated_staging',
     verificationEnvironmentId: 'isolated_staging_ot_live_004',
     service: {
       beginDirectUpload: vi.fn(unexpected),
       recordUploadPart: vi.fn(unexpected),
       confirmDirectUpload: vi.fn(unexpected),
+      matchSourceToOccurrence: vi.fn(unexpected),
     } as never,
     state: {
       getUploadSession: vi.fn(unexpected),
       listUploadParts: vi.fn(unexpected),
+      getOccurrence: vi.fn(unexpected),
+      listOccurrences: vi.fn(unexpected),
     },
     managedOriginal: {
       beginDirectUpload: vi.fn(unexpected),

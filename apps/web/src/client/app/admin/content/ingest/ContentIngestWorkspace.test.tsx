@@ -42,7 +42,13 @@ describe('P19 Admin recording intake workspace', () => {
           throw new Error('not called during render');
         }}
         uploadPart={async () => undefined}
-        confirmUpload={async () => undefined}
+        confirmUpload={async () => {
+          throw new Error('not called during render');
+        }}
+        listOccurrences={async () => []}
+        matchSource={async () => {
+          throw new Error('not called during render');
+        }}
       />,
     );
     expect(html).toContain('Recording intake');

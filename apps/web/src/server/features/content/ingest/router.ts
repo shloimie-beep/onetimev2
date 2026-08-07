@@ -8,6 +8,7 @@ import {
   CONTENT_INGEST_PART_AUTHORIZATION_SECONDS,
   CONTENT_INGEST_PART_BYTES,
   type ContentIngestAdminActor,
+  type ContentIngestOccurrenceOption,
   type MultipartUploadPlan,
   type UploadPartRecord,
   type UploadSessionRecord,
@@ -36,7 +37,7 @@ export type ContentIngestCsrfVerifier = (
 
 export type ContentIngestServicePort = Pick<
   ReturnType<typeof createContentIngestService>,
-  'beginDirectUpload' | 'recordUploadPart' | 'confirmDirectUpload'
+  'beginDirectUpload' | 'recordUploadPart' | 'confirmDirectUpload' | 'matchSourceToOccurrence'
 >;
 
 export type ContentIngestStateReader = {
@@ -48,6 +49,16 @@ export type ContentIngestStateReader = {
     actor: ContentIngestAdminActor,
     uploadSessionId: string,
   ): Promise<readonly UploadPartRecord[]>;
+  getOccurrence(
+    actor: ContentIngestAdminActor,
+    occurrenceId: string,
+  ): Promise<
+    | import('../../../../../../../packages/contracts/src/classes/core/index.ts').ClassOccurrenceRecord
+    | null
+  >;
+  listOccurrences(
+    actor: ContentIngestAdminActor,
+  ): Promise<readonly ContentIngestOccurrenceOption[]>;
 };
 
 export type ManagedOriginalWebPort = Pick<
@@ -59,6 +70,7 @@ export type ContentIngestRouterInput = {
   enabled: boolean;
   authorizationId: string | undefined;
   canaryId: string | undefined;
+  mediaMode: 'provider_canary' | 'production_broad';
   runtimeTier: 'isolated_staging' | 'production';
   verificationEnvironmentId: string;
   service: ContentIngestServicePort;
@@ -74,6 +86,10 @@ const beginSchema = z
     file_name: z.string().trim().min(1).max(240),
     mime_type: z.string().trim().min(1).max(120),
     byte_count: z.number().int().positive(),
+    client_request_key: z
+      .string()
+      .regex(/^[a-f0-9]{64}$/u)
+      .optional(),
   })
   .strict();
 const partSchema = z
@@ -88,6 +104,13 @@ const completedPartSchema = partSchema
   .strict();
 const confirmSchema = z
   .object({
+    expected_version: z.number().int().positive(),
+    idempotency_key: z.string().trim().min(8).max(160),
+  })
+  .strict();
+const matchSchema = z
+  .object({
+    occurrence_id: z.string().trim().min(1).max(200),
     expected_version: z.number().int().positive(),
     idempotency_key: z.string().trim().min(8).max(160),
   })
@@ -109,7 +132,7 @@ export function createContentIngestRouter(input: ContentIngestRouterInput) {
       const identity = await authorize(input, req, res);
       if (!identity) return;
       const body = beginSchema.parse(req.body);
-      const binding = serverBeginBinding(input, identity.actor);
+      const binding = serverBeginBinding(input, identity.actor, body.client_request_key);
       const occurredAt = validNow(clock);
       const requestHash = digest({
         operation: 'direct_upload:begin',
@@ -251,6 +274,50 @@ export function createContentIngestRouter(input: ContentIngestRouterInput) {
     }),
   );
 
+  router.get('/occurrences', (req, res) =>
+    handle(res, async () => {
+      const identity = await authorize(input, req, res);
+      if (!identity) return;
+      const occurrences = await input.state.listOccurrences(identity.actor);
+      res.json({ success: true, data: { occurrences } });
+    }),
+  );
+
+  router.post('/sources/:sourceId/match', (req, res) =>
+    handle(res, async () => {
+      const identity = await authorize(input, req, res);
+      if (!identity) return;
+      const body = matchSchema.parse(req.body);
+      const sourceId = routeId(req, 'sourceId');
+      const occurrence = await input.state.getOccurrence(identity.actor, body.occurrence_id);
+      if (!occurrence) {
+        res.status(404).json({ success: false, code: 'content_ingest_occurrence_not_found' });
+        return;
+      }
+      const occurredAt = validNow(clock);
+      const requestHash = digest({
+        operation: 'content_source:match_occurrence',
+        actor: identity.actor,
+        sourceId,
+        occurrenceId: occurrence.id,
+        expectedVersion: body.expected_version,
+      });
+      const result = await input.service.matchSourceToOccurrence(
+        {
+          actor: identity.actor,
+          sourceId,
+          occurrenceId: occurrence.id,
+          expectedVersion: body.expected_version,
+          idempotencyKey: body.idempotency_key,
+          requestHash,
+          occurredAt,
+        },
+        occurrence,
+      );
+      res.json({ success: true, replay: result.replay, data: { source: result.source } });
+    }),
+  );
+
   return router;
 }
 
@@ -331,22 +398,38 @@ function digest(value: unknown) {
   return createHash('sha256').update(JSON.stringify(value)).digest('hex');
 }
 
-function serverBeginBinding(input: ContentIngestRouterInput, actor: ContentIngestAdminActor) {
-  if (!input.authorizationId || !input.canaryId) {
+function serverBeginBinding(
+  input: ContentIngestRouterInput,
+  actor: ContentIngestAdminActor,
+  clientRequestKey: string | undefined,
+) {
+  if (!input.authorizationId) {
+    throw new Error('content_media_server_binding_unavailable');
+  }
+  if (input.mediaMode === 'production_broad' && !clientRequestKey) {
+    throw new Error('content_media_client_request_binding_unavailable');
+  }
+  if (input.mediaMode === 'provider_canary' && !input.canaryId) {
     throw new Error('content_media_server_binding_unavailable');
   }
   const controlBindingDigest = digest({
     authorizationId: input.authorizationId,
-    canaryId: input.canaryId,
+    ...(input.mediaMode === 'provider_canary'
+      ? { canaryId: input.canaryId }
+      : { verificationEnvironmentId: input.verificationEnvironmentId }),
   });
   return {
     controlBindingDigest,
-    idempotencyKey: stableIngestKey('media_canary', [
-      actor.accountKey,
-      actor.productKey,
-      actor.principalId,
-      controlBindingDigest,
-    ]),
+    idempotencyKey: stableIngestKey(
+      input.mediaMode === 'provider_canary' ? 'media_canary' : 'media_broad',
+      [
+        actor.accountKey,
+        actor.productKey,
+        actor.principalId,
+        controlBindingDigest,
+        ...(clientRequestKey ? [clientRequestKey] : []),
+      ],
+    ),
   };
 }
 

@@ -103,6 +103,13 @@ export type ContentSourceRecord = ContentIngestScope & {
   updatedAt: string;
 };
 
+export type ContentIngestOccurrenceOption = {
+  id: string;
+  localClassDate: string;
+  startsAt: string;
+  state: 'scheduled' | 'preparing' | 'ready' | 'live' | 'completed';
+};
+
 export type ContentSourceLinkRecord = ContentIngestScope & {
   id: string;
   sourceId: string;
