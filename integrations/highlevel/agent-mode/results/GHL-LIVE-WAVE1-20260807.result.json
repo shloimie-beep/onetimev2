@@ -1,0 +1,560 @@
+{
+  "schema_version": "one-time.ghl-live-wave1-result.v1",
+  "recorded_at": "2026-08-07T15:31:53.961Z",
+  "timezone": "Asia/Jerusalem",
+  "repository": {
+    "name": "shloimie-beep/onetimev2",
+    "base_branch": "codex/one-time-complete-production-launch-20260805",
+    "base_head": "43968d4b6163f97799e14289c2424c1001ab5c37",
+    "source_of_truth_pr": 134,
+    "source_of_truth_commit": "2576b7e0d5e675e08d7c6134d272596f78e59210"
+  },
+  "location": {
+    "id": "pBSnOK2nkdxp6gf9Rg3o"
+  },
+  "pipeline": {
+    "id": "RTTGVfbMv5aM92BQqklL",
+    "name": "One Time Enrollment and Conversion",
+    "updated": true,
+    "created": false,
+    "removed_empty_obsolete_stages": [
+      {
+        "id": "be1af44d-6d33-488e-a034-e958455a9e0f",
+        "name": "Contacted",
+        "pre_opportunity_count": 0
+      },
+      {
+        "id": "7582d13a-3d0e-463d-923f-b7d4bf660a52",
+        "name": "Engaged",
+        "pre_opportunity_count": 0
+      },
+      {
+        "id": "0ae744df-b0bb-468e-913a-79188b03e76f",
+        "name": "Signup Started",
+        "pre_opportunity_count": 0
+      }
+    ],
+    "stages": [
+      {
+        "id": "d4a0adcc-627d-4557-b963-da0950050748",
+        "name": "Warm Leads",
+        "position": 0,
+        "final_count": 1257
+      },
+      {
+        "id": "3081e713-e3ec-4d9f-81a2-868a1d5ff056",
+        "name": "Free Event / Tisha B’Av Signups",
+        "position": 1,
+        "final_count": 38
+      },
+      {
+        "id": "05900897-e5b0-472a-b89d-70978f29f825",
+        "name": "Old App — Active",
+        "position": 2,
+        "final_count": 27
+      },
+      {
+        "id": "a262b166-c2f3-4b2a-9306-a7b79d8555e1",
+        "name": "Old App — Inactive",
+        "position": 3,
+        "final_count": 53
+      },
+      {
+        "id": "d5324bf9-2bf4-4094-8609-9e9179830193",
+        "name": "New Funnel / Pre-Registered",
+        "position": 4,
+        "final_count": 0
+      },
+      {
+        "id": "b87ce5c3-d877-4009-99bd-6012da7e455d",
+        "name": "Active Member",
+        "position": 5,
+        "final_count": 2,
+        "application_linked_id_preserved": true
+      },
+      {
+        "id": "bb4af305-fedd-42e4-8307-98767b0945b5",
+        "name": "Canceled / Lost",
+        "position": 6,
+        "final_count": 0
+      }
+    ],
+    "final_total_opportunities": 1377,
+    "final_duplicate_contact_ids": 0
+  },
+  "contact_fields": {
+    "created": [
+      {
+        "id": "WkIXytqA7cdvgHNhEQ7B",
+        "name": "Original Lead Source",
+        "field_key": "contact.original_lead_source",
+        "data_type": "TEXT"
+      },
+      {
+        "id": "RMnTW37n294kvBteLGQb",
+        "name": "Original Funnel",
+        "field_key": "contact.original_funnel",
+        "data_type": "TEXT"
+      },
+      {
+        "id": "FYji3CEghNQCcMxUAHgZ",
+        "name": "Campaign Key",
+        "field_key": "contact.campaign_key",
+        "data_type": "TEXT"
+      },
+      {
+        "id": "eAjQwRQ1qnBgWgZICbMx",
+        "name": "Lead Captured At",
+        "field_key": "contact.lead_captured_at",
+        "data_type": "DATE"
+      }
+    ],
+    "duplicates_created": 0
+  },
+  "opportunity_import": {
+    "pre_total": 2,
+    "retained_active_member": 2,
+    "approved_rows": 1360,
+    "cohorts": {
+      "warm_leads": 1277,
+      "old_app_active": 29,
+      "old_app_inactive": 54
+    },
+    "held_for_manual_review": 2,
+    "accepted_rows": 1360,
+    "rejected_rows": 0,
+    "duplicate_rows": 0,
+    "post_import_total": 1362,
+    "post_import_stage_counts": {
+      "warm_leads": 1277,
+      "old_app_active": 29,
+      "old_app_inactive": 54,
+      "active_member": 2
+    },
+    "recovery_noop_calls": 8,
+    "unknown_row_effects": 0,
+    "no_student_opportunities": true
+  },
+  "tisha_bav_single_followup": {
+    "campaign_key": "tisha_bav_2026_single_followup_v1",
+    "requested_sender": "Rabbi Eli Scheller <rabbielischeller@onetimeonetime.com>",
+    "requested_reply_to": "rabbielischeller@onetimeonetime.com",
+    "subject": "Were you able to join the Tisha B'Av class?",
+    "approved_text_template": "Hi {{contact.first_name}},\n\nWere you able to join the Tisha B'Av class? I'd be interested to hear what you thought. Just reply to this email.\n\nWe've been working behind the scenes to improve the technology and make One Time much easier to use. The new setup will include separate Parent and Student portals, live classes, recordings, and review tools.\n\nClasses begin August 16. You can pre-register now, and we'll email you as soon as your portal is ready. Access is free through September 11, and no card is required.\n\nPre-register:\nhttps://join.onetimeonetime.com/signup\n\nRabbi Eli Scheller\nOne Time Mishnayos",
+    "signup_link": "https://join.onetimeonetime.com/signup",
+    "audience": {
+      "real_registration_count": 39,
+      "eligible_send_count": 38,
+      "first_five_redacted": [
+        "t***@yahoo.com",
+        "c***@gmail.com",
+        "r***@gmail.com",
+        "j***@msn.com",
+        "g***@gmail.com"
+      ],
+      "exclusions": {
+        "test_canary_seed_fictional": 1,
+        "duplicate_normalized_email": 0,
+        "blank_invalid_email": 0,
+        "dnd_unsubscribe": 0,
+        "hard_bounce_known_before_send": 0,
+        "complaint": 0,
+        "suppression": 0,
+        "event_cancellation": 0,
+        "already_received": 0
+      }
+    },
+    "preview": {
+      "recipient_redacted": "s***@gmail.com",
+      "accepted": true,
+      "delivery_status": "clicked",
+      "conversation_id": "TaVkQVCj9K2MRdsDFHvb",
+      "message_id": "kDeGasRbdO9ukEUIpyB5",
+      "email_message_id": "kDeGasRbdO9ukEUIpyB5",
+      "thread_id": "VpiNMYu9syFaCmuQn1S6",
+      "rfc822_message_id": "<20260807132034.916567c7c2ef7b4f@mg.onetimeonetime.com>",
+      "subject": "Were you able to join the Tisha B'Av class?",
+      "actual_from": "One Time Mishnayos <info@mg.onetimeonetime.com>",
+      "actual_reply_to": "info@mg.onetimeonetime.com",
+      "text": "Hi solomon,\n\nWere you able to join the Tisha B'Av class? I'd be interested to hear what you thought. Just reply to this email.\n\nWe've been working behind the scenes to improve the technology and make One Time much easier to use. The new setup will include separate Parent and Student portals, live classes, recordings, and review tools.\n\nClasses begin August 16. You can pre-register now, and we'll email you as soon as your portal is ready. Access is free through September 11, and no card is required.\n\nPre-register:\nhttps://join.onetimeonetime.com/signup\n\nRabbi Eli Scheller\nOne Time Mishnayos",
+      "html": "<div style=\"font-family: Roboto, Arial; font-size: 14px;\"><!-- campaign_key:tisha_bav_2026_single_followup_v1 --><div><p>Hi solomon,</p><p>Were you able to join the Tisha B'Av class? I'd be interested to hear what you thought. Just reply to this email.</p><p>We've been working behind the scenes to improve the technology and make One Time much easier to use. The new setup will include separate Parent and Student portals, live classes, recordings, and review tools.</p><p>Classes begin August 16. You can pre-register now, and we'll email you as soon as your portal is ready. Access is free through September 11, and no card is required.</p><p>Pre-register:<br><a href=\"https://join.onetimeonetime.com/signup\">https://join.onetimeonetime.com/signup</a></p><p>Rabbi Eli Scheller<br>One Time Mishnayos</p></div></div>",
+      "provider_normalization_accepted_by_controlling_prompt": true
+    },
+    "reply_round_trip": {
+      "status": "passed",
+      "ghl_conversation_id": "TaVkQVCj9K2MRdsDFHvb",
+      "ghl_message_id": null,
+      "observed_at": "2026-08-07T14:41:40.115Z",
+      "direction": "inbound",
+      "message_type": "TYPE_EMAIL",
+      "gmail_reply_message_id": "19fdcac28f23b5ff",
+      "operator_inbox_visible": true
+    },
+    "send": {
+      "attempted": 38,
+      "accepted": 38,
+      "delivered_or_opened": 36,
+      "failed": 1,
+      "unknown": 1,
+      "failed_email_message_id": "FsJbI0VfB5jVDL8GFy3h",
+      "failed_reason_class": "5.1.1_no_such_user",
+      "unknown_email_message_id": "ai1fhrzRZD9VjpRicmZC",
+      "unknown_provider_status": "sent",
+      "sent_marker": "OT | One-Off | Tisha B'Av Follow-Up 2026 | Sent",
+      "contacts_with_marker": 38,
+      "contacts_protected_from_duplicate_sending": 38,
+      "marker_applied_before_acceptance": 0,
+      "bcc_bulk_mail": false,
+      "message_ids": [
+        {
+          "conversation_id": "hjX7JJSyD5JvnK9f2cWt",
+          "message_id": "eI06OE0mrwzo5aNe4fW8",
+          "email_message_id": "eI06OE0mrwzo5aNe4fW8",
+          "provider_status": "opened"
+        },
+        {
+          "conversation_id": "ab9SzygC0kwL3gcMOJEo",
+          "message_id": "FsJbI0VfB5jVDL8GFy3h",
+          "email_message_id": "FsJbI0VfB5jVDL8GFy3h",
+          "provider_status": "failed"
+        },
+        {
+          "conversation_id": "s3NCR4cPB8qg7QDjGCWc",
+          "message_id": "uX0Q9yK5QaYswhyEUtC7",
+          "email_message_id": "uX0Q9yK5QaYswhyEUtC7",
+          "provider_status": "opened"
+        },
+        {
+          "conversation_id": "jTLBptJhoglT8OuBudqA",
+          "message_id": "FprZ4vLXU26HvBgNIHkS",
+          "email_message_id": "FprZ4vLXU26HvBgNIHkS",
+          "provider_status": "delivered"
+        },
+        {
+          "conversation_id": "thsIjv39XZx14oY1NSYq",
+          "message_id": "Ak47BRxyqxzs2YVPpUXy",
+          "email_message_id": "Ak47BRxyqxzs2YVPpUXy",
+          "provider_status": "delivered"
+        },
+        {
+          "conversation_id": "tcttsaw20He0gQczO2RH",
+          "message_id": "f2WMCuOM2bZNbUu5w2vF",
+          "email_message_id": "f2WMCuOM2bZNbUu5w2vF",
+          "provider_status": "delivered"
+        },
+        {
+          "conversation_id": "CfzGyJbWQXuydVi9kdnw",
+          "message_id": "0zf3aRfRJODXix9BqYow",
+          "email_message_id": "0zf3aRfRJODXix9BqYow",
+          "provider_status": "delivered"
+        },
+        {
+          "conversation_id": "Af7EDqL9FHEJLgfFmkPM",
+          "message_id": "fNA3B8rr7j7fCT7XheSr",
+          "email_message_id": "fNA3B8rr7j7fCT7XheSr",
+          "provider_status": "delivered"
+        },
+        {
+          "conversation_id": "eU0iLF1hudwYOmexR7I6",
+          "message_id": "wlpX71NqAoTDFDloG3nQ",
+          "email_message_id": "wlpX71NqAoTDFDloG3nQ",
+          "provider_status": "opened"
+        },
+        {
+          "conversation_id": "xh7AzxFSJIn3OYw4lrTz",
+          "message_id": "l2z2Z4u72VIfzDLvZ9zG",
+          "email_message_id": "l2z2Z4u72VIfzDLvZ9zG",
+          "provider_status": "delivered"
+        },
+        {
+          "conversation_id": "G9xWDIymguYOpzpUq037",
+          "message_id": "hx9BjvtixgYuY3fJeYoc",
+          "email_message_id": "hx9BjvtixgYuY3fJeYoc",
+          "provider_status": "delivered"
+        },
+        {
+          "conversation_id": "tRZmzbc6iyAYKTcfl4fq",
+          "message_id": "33MfbgHGV3WO2GhTDtA8",
+          "email_message_id": "33MfbgHGV3WO2GhTDtA8",
+          "provider_status": "delivered"
+        },
+        {
+          "conversation_id": "76B8cfGDg0SQEzSDAXl8",
+          "message_id": "IzMZO5jh9ZIbRxJWe1Wo",
+          "email_message_id": "IzMZO5jh9ZIbRxJWe1Wo",
+          "provider_status": "opened"
+        },
+        {
+          "conversation_id": "lIroUsoSbeu8krZKiyay",
+          "message_id": "bLdG3lY9GkgVkZ0gskov",
+          "email_message_id": "bLdG3lY9GkgVkZ0gskov",
+          "provider_status": "opened"
+        },
+        {
+          "conversation_id": "ibHI6CTquO3QLVTWBbhl",
+          "message_id": "p2gnkk0sXd71V5RestTu",
+          "email_message_id": "p2gnkk0sXd71V5RestTu",
+          "provider_status": "delivered"
+        },
+        {
+          "conversation_id": "EuJ7oYqS2BqK6QtwxYvO",
+          "message_id": "ycvB5MJhEMOcgh03gKs2",
+          "email_message_id": "ycvB5MJhEMOcgh03gKs2",
+          "provider_status": "delivered"
+        },
+        {
+          "conversation_id": "DcW06fuoUwh1o6QXP44U",
+          "message_id": "ai1fhrzRZD9VjpRicmZC",
+          "email_message_id": "ai1fhrzRZD9VjpRicmZC",
+          "provider_status": "sent"
+        },
+        {
+          "conversation_id": "hk8CuhLEndvKZQqkTFlB",
+          "message_id": "ubINqh9YbA7Bf5tr8ZZ1",
+          "email_message_id": "ubINqh9YbA7Bf5tr8ZZ1",
+          "provider_status": "opened"
+        },
+        {
+          "conversation_id": "W6bEtMJuP0xcoMoOSROY",
+          "message_id": "7Eh54AwLqjX2jTFQOgr3",
+          "email_message_id": "7Eh54AwLqjX2jTFQOgr3",
+          "provider_status": "delivered"
+        },
+        {
+          "conversation_id": "dF5J6O1FVTsuCJ712eSn",
+          "message_id": "8pUmYaeJGzCtaimyGyuo",
+          "email_message_id": "8pUmYaeJGzCtaimyGyuo",
+          "provider_status": "delivered"
+        },
+        {
+          "conversation_id": "qsZCkyRKahISIZNpZIek",
+          "message_id": "7y0kI1f2VsVhiMLtal0t",
+          "email_message_id": "7y0kI1f2VsVhiMLtal0t",
+          "provider_status": "delivered"
+        },
+        {
+          "conversation_id": "MOluGxmUjpZcoLmVCaxu",
+          "message_id": "DS9YyZ9ISYbOmomkna9C",
+          "email_message_id": "DS9YyZ9ISYbOmomkna9C",
+          "provider_status": "delivered"
+        },
+        {
+          "conversation_id": "eqd8JrWaTTqrEfBa2YTu",
+          "message_id": "XW9mwTUjAZ6qf2fJryZA",
+          "email_message_id": "XW9mwTUjAZ6qf2fJryZA",
+          "provider_status": "delivered"
+        },
+        {
+          "conversation_id": "2LGAcFWk2iksnRzSKPm8",
+          "message_id": "TZymUt7RgSqBoCFHkQH8",
+          "email_message_id": "TZymUt7RgSqBoCFHkQH8",
+          "provider_status": "delivered"
+        },
+        {
+          "conversation_id": "qiY1csg0IxlNA99VZa8E",
+          "message_id": "5axmxUCtvIYtdpu7pIRc",
+          "email_message_id": "5axmxUCtvIYtdpu7pIRc",
+          "provider_status": "delivered"
+        },
+        {
+          "conversation_id": "lnZylAbCRbJfulrhvtij",
+          "message_id": "41cAjL7RVO4PZgMuMgAo",
+          "email_message_id": "41cAjL7RVO4PZgMuMgAo",
+          "provider_status": "delivered"
+        },
+        {
+          "conversation_id": "ojG5SBcxbTez5AYPIdJI",
+          "message_id": "eXlhwnaMnNcGhNyrn388",
+          "email_message_id": "eXlhwnaMnNcGhNyrn388",
+          "provider_status": "delivered"
+        },
+        {
+          "conversation_id": "IwtWOZlukaf4y0GcNqEG",
+          "message_id": "ZQ0hAWD38wYLeQ3BCwZm",
+          "email_message_id": "ZQ0hAWD38wYLeQ3BCwZm",
+          "provider_status": "delivered"
+        },
+        {
+          "conversation_id": "Zu2E7hg7qPmVZNcB03d9",
+          "message_id": "dWwrRlEBeTa6IbN0GbOF",
+          "email_message_id": "dWwrRlEBeTa6IbN0GbOF",
+          "provider_status": "delivered"
+        },
+        {
+          "conversation_id": "Qx1pzI2PLsLYDYcWfF3o",
+          "message_id": "rHYPzTH10uo35dE6icbx",
+          "email_message_id": "rHYPzTH10uo35dE6icbx",
+          "provider_status": "opened"
+        },
+        {
+          "conversation_id": "UogEBG6KueGBHjRVsBDH",
+          "message_id": "irRaDkO4PXLyzStGounG",
+          "email_message_id": "irRaDkO4PXLyzStGounG",
+          "provider_status": "delivered"
+        },
+        {
+          "conversation_id": "iyNekonPiMkzeobhotpu",
+          "message_id": "qP140BTzwUUTJY9WeVkR",
+          "email_message_id": "qP140BTzwUUTJY9WeVkR",
+          "provider_status": "delivered"
+        },
+        {
+          "conversation_id": "NuSqDKB0sGaWGC1TMqcN",
+          "message_id": "lBAOYaXmFFnS1wI0k5yL",
+          "email_message_id": "lBAOYaXmFFnS1wI0k5yL",
+          "provider_status": "delivered"
+        },
+        {
+          "conversation_id": "xC8dHNm91bZAYXgwHHaa",
+          "message_id": "2dMr6cMedjfEuITvVuOe",
+          "email_message_id": "2dMr6cMedjfEuITvVuOe",
+          "provider_status": "delivered"
+        },
+        {
+          "conversation_id": "3Foq0ZsvgoKvqh0TEizn",
+          "message_id": "W93bkY02A2y0lziB50sn",
+          "email_message_id": "W93bkY02A2y0lziB50sn",
+          "provider_status": "delivered"
+        },
+        {
+          "conversation_id": "juBLtJKbYGIYvk8mdgw3",
+          "message_id": "Qb4DY8hYkftwPDi7NEgR",
+          "email_message_id": "Qb4DY8hYkftwPDi7NEgR",
+          "provider_status": "delivered"
+        },
+        {
+          "conversation_id": "AHweox0V51z7vV8Ibh4u",
+          "message_id": "HKnC2FXV8ZMJFWl8kfWr",
+          "email_message_id": "HKnC2FXV8ZMJFWl8kfWr",
+          "provider_status": "delivered"
+        },
+        {
+          "conversation_id": "rbccT0ZKQcdieC9DXhBa",
+          "message_id": "2T6yhKDoEA6iUZ4a3Y27",
+          "email_message_id": "2T6yhKDoEA6iUZ4a3Y27",
+          "provider_status": "delivered"
+        }
+      ]
+    },
+    "event_opportunities": {
+      "attempted": 38,
+      "accepted": 38,
+      "created": 15,
+      "updated": 23,
+      "failed": 0,
+      "contacts_in_event_stage": 38,
+      "duplicate_contact_ids": 0
+    },
+    "follow_up_action_created": false,
+    "finished": true,
+    "unknowns_quarantined_no_retry": true
+  },
+  "yaakov": {
+    "stripe": {
+      "subscription_id": "sub_1StZGdBeCNwsfayoxcSsprPT",
+      "customer_id": "cus_TrHqhjZCIYqIar",
+      "customer_url": "https://dashboard.stripe.com/customers/cus_TrHqhjZCIYqIar",
+      "subscription_url": "https://dashboard.stripe.com/subscriptions/sub_1StZGdBeCNwsfayoxcSsprPT",
+      "pre_status": "active",
+      "cancel_at_period_end": true,
+      "scheduled_end_dashboard_display": "2026-08-08 19:46",
+      "expected_paid_period_end": "2026-08-08",
+      "refund": false,
+      "immediate_access_revocation": false,
+      "post_readback": "Active — Cancels 8 Aug 2026"
+    },
+    "ghl": {
+      "contact_id": "3mEC0kf7ii8tbjOhtTAU",
+      "opportunity_id": "XfXvV0vnSlPXl7643gCH",
+      "pipeline_stage_id": "a262b166-c2f3-4b2a-9306-a7b79d8555e1",
+      "migration_tag_removed": true,
+      "dnd_applied": false,
+      "request_conversation_id": "uxEL4K9VYBTLn0BXnwST",
+      "request_message_id": "beK8S4890OlKyDVaxSnH",
+      "confirmation": {
+        "conversation_id": "uxEL4K9VYBTLn0BXnwST",
+        "thread_id": "nYA5lKOXm7gxBzbsRplV",
+        "message_id": "nWcF4DvZ2VFUQf29XPso",
+        "email_message_id": "nWcF4DvZ2VFUQf29XPso",
+        "delivery_status": "delivered",
+        "subject": "Re: Account",
+        "body": "Hi Yaakov,\n\nYour One Time subscription has been canceled, and you will not be charged again.\n\nYour access will remain active through August 8, 2026.\n\nRabbi Eli Scheller\nOne Time Mishnayos"
+      }
+    }
+  },
+  "yael": {
+    "canceled": false,
+    "subscription_changed": false,
+    "access_changed": false,
+    "dnd_changed": false,
+    "marketing_status_changed": false,
+    "contact_id": "UG75fst93mFt3ExyVGwx",
+    "conversation_id": "EgH3X7E7krIMtMyP13Gp",
+    "request_message_id": "VUsQ3yuRBi6EQuHqLbwf",
+    "request_received_at": "2026-08-02T13:06:26.020Z",
+    "request_classification": "support_call_request_not_cancellation",
+    "support_opportunity": {
+      "id": "LK5SUGOXXHppOg3B10Wl",
+      "pipeline_id": "u2TzNK7t25ZdqqIrgjkE",
+      "stage_id": "de6f7e08-ec97-4f27-a5ad-adf922db34ae",
+      "stage_name": "New",
+      "status": "open"
+    }
+  },
+  "ot_02a": {
+    "id": "368d47ca-c6d2-4545-acb0-664f98bac8f2",
+    "name": "OT-02A Existing Subscriber Migration 2026 v1",
+    "source_pr": 134,
+    "source_commit": "2576b7e0d5e675e08d7c6134d272596f78e59210",
+    "source_disposition": "superseded_by_one_direct_work_owned_api_email",
+    "live_status": "draft",
+    "live_version": 2,
+    "workflow_mutations": 0,
+    "contacts_enrolled": 0,
+    "seed_sent": 0,
+    "broad_send_attempted": 0,
+    "broad_send_approval_recorded": false,
+    "current_launch_actions": "Keep inactive and unenrolled; preserve historical three-email copy as evidence only.",
+    "sender_contract": "Rabbi Eli Scheller <rabbielischeller@onetimeonetime.com>; reply-to rabbielischeller@onetimeonetime.com",
+    "historical_cadence": [
+      "Approval launch",
+      "3 days later if not signed up",
+      "7 days later if not signed up"
+    ],
+    "exit_conditions": ["signup", "suppression", "invalid email", "explicit decline"],
+    "tone_digest": "Plain, specific, short paragraphs; lead with the actual reason; state dates/actions/access facts directly; one real CTA; no inflated, corporate, AI, or unverifiable claims."
+  },
+  "external_effects": {
+    "pipeline_updates": 1,
+    "pipelines_created": 0,
+    "custom_fields_created": 4,
+    "import_opportunities_created": 1360,
+    "event_opportunities_created": 15,
+    "event_opportunities_updated": 23,
+    "support_opportunities_created": 1,
+    "contact_tags_removed": 1,
+    "contact_sent_markers_added": 38,
+    "tisha_preview_emails": 1,
+    "tisha_production_emails_accepted": 38,
+    "yaakov_confirmation_emails_accepted": 1,
+    "gmail_reply_route_tests": 1,
+    "stripe_subscriptions_scheduled_to_cancel": 1,
+    "refunds": 0,
+    "forms_created": 0,
+    "workflows_created": 0,
+    "workflows_modified": 0,
+    "ongoing_enrollments": 0,
+    "student_contacts_created": 0,
+    "follow_up_actions_created": 0
+  },
+  "final_assertions": {
+    "no_tisha_workflow_opened_created_repaired_reused_published_or_inspected": true,
+    "no_form_created": true,
+    "no_general_mailing_list_addition": true,
+    "no_ongoing_sequence_enrollment": true,
+    "no_bcc_bulk_mail": true,
+    "no_unrelated_pipeline_changed": true,
+    "no_student_contact_created": true,
+    "no_follow_up_action_created": true
+  }
+}
