@@ -2,86 +2,107 @@
 
 Snapshot date: 2026-08-07 (Asia/Jerusalem)
 
-Detailed evidence and recommendations: `ops/launch/2026-08-07-one-time-launch-readiness-and-bureaucracy-audit.md`.
-
 ## Executive status
 
-The application is usable in production for core administration, Family signup, authentication, and top-level Parent/Student access. It is not yet the complete production launch. The safest realistic assessment is **79% overall complete (75–83% confidence range)**.
+Wave 1 code is integrated, fully gated, and deployed to production at exact source
+\`f804980081cb2197689f3b4f3f77e58308b915af\`. Core administration, real no-card
+Family-account signup, authentication, and Parent/Student application surfaces are live.
 
-The shortest path is not more planning. It is: release the exact PR #131 candidate, finish the Work-owned HighLevel configuration, prove one real Zoom occurrence, publish one real recording through the guarded media path, and keep billing disabled until its TEST lifecycle and provider readback pass.
+The complete production launch is **not complete**. Zoom and the first new recording are
+still blocked at exact provider/account/configuration boundaries, and live billing remains
+intentionally disabled. Deployed code, configured providers, canary proof, and broad
+activation remain separate states.
 
 ## Current identities and checks
 
-| Item                     | Current truth                                                                                                                                                                              |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Repository / branch      | `shloimie-beep/onetimev2` / `codex/one-time-complete-production-launch-20260805`                                                                                                           |
-| Pull request             | PR #131, open and draft; mergeable `MERGEABLE`, merge state `CLEAN`                                                                                                                        |
-| Candidate head           | `43968d4b6163f97799e14289c2424c1001ab5c37`                                                                                                                                                 |
-| Production web source    | Operator-reported `3b7e5a98f3a52c59bcbe2261644409e00d609bb8`; the public version endpoint is intentionally presence-only and does not expose the SHA                                       |
-| Production worker source | Not independently readable from the public surface in this audit; exact web/worker SHA equality is a release acceptance item                                                               |
-| Candidate gap            | 13 commits and 85 changed files after the reported production source; no migration file changed in that gap                                                                                |
-| Migration inventory      | 102 SQL migrations through `2271_ot16_f05_dispatch_context.sql`; last production ledger proof was 102/102 with checksum `3fdfc7f5a162ce04687fd4c6fb6cc790f333a8e9a5a2e876adf2dd8095a3fbe4` |
-| PR checks                | Five visible PR checks pass. The Node gate includes build, unit/integration coverage, Playwright, accessibility, and performance.                                                          |
-| Reliability workflow     | Exact-head run `31122258189` remains queued after the prior Actions incident. It is not a branch-protection requirement and must not block deployment merely because it is queued.         |
-| Public health            | `/health`, `/ready`, and `/version` return HTTP 200; login and recovery render; protected app routes redirect unauthenticated users to login                                               |
-| Production data          | Operator reports 2 active Admin accounts, 1 Parent, 4 Students, and an active session                                                                                                      |
+| Item                           | Current truth                                                                                                                                                                                                                                                    |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Repository / branch            | \`shloimie-beep/onetimev2\` / \`codex/one-time-complete-production-launch-20260805\`                                                                                                                                                                             |
+| Pull request                   | PR #131, open and draft; mergeable \`MERGEABLE\`, merge state \`CLEAN\`                                                                                                                                                                                          |
+| Exact integrated/deployed head | \`f804980081cb2197689f3b4f3f77e58308b915af\`                                                                                                                                                                                                                     |
+| Production web                 | Deployment \`14babe48-a531-4a5e-b22b-e34f0cb91d00\`; image \`sha256:e1b71cb8fb2a26132e638c55c299a89d22771ff40eff39c86e6c2629b914e10a\`                                                                                                                           |
+| Production worker              | Deployment \`1f511ff5-6655-41a1-a486-99f72db3fb85\`; image \`sha256:c46af1ce63591d8df826797f6c5460b46e4141ff6a18253bac604452461d8462\`                                                                                                                           |
+| Exact-head checks              | All six GitHub checks passed: Node 24, migration verification, OPS-06, PostgreSQL 16 assurance, PostgreSQL 18 assurance/restore, and learner-seat concurrency                                                                                                    |
+| Local browser gates            | 70 end-to-end, 26 accessibility, and 10 performance/bundle tests passed                                                                                                                                                                                          |
+| Migration ledger               | 102/102 verified through \`2271_ot16_f05_dispatch_context\`; zero pending and zero integrity issues; Wave 1 added no migration                                                                                                                                   |
+| Runtime health                 | Both \`app.onetimeonetime.com\` and \`join.onetimeonetime.com\` return HTTP 200 for health, readiness, and version                                                                                                                                               |
+| Protected diagnostics          | Both domains return HTTP 200 with the probe token, exact source/deployment identity, no blockers, and \`no-store\`; unauthenticated access returns HTTP 403                                                                                                      |
+| Worker and queues              | Exact-head worker heartbeat is ready and fresh; delivery, support, and account-lifecycle queues have zero ready, leased, expired-lease, retry, and dead-letter rows                                                                                              |
+| Rollback                       | Preserved branch \`rollback/one-time-pre-complete-launch-20260805\` at \`a157c388d8dc292699f7cd1a1ef178918ee30885\`; immediate prior successful web/worker deployments are \`35de7372-d367-4cec-84f8-f6758058e759\` and \`6e2e806f-319f-403f-83a0-7b5b202236a2\` |
 
-## Percentage summary
+## Wave 1 integration
 
-| Measure                                           | Score | Confidence range |
-| ------------------------------------------------- | ----: | ---------------: |
-| Core application implementation                   |   92% |           89–95% |
-| Production deployment completion                  |   82% |           78–86% |
-| Controlled free/pre-registration launch readiness |   88% |           84–92% |
-| August 16 first-class readiness                   |   70% |           62–78% |
-| Full paid/commercial launch readiness             |   60% |           52–68% |
-| Overall project completion                        |   79% |           75–83% |
+All six authoritative child lanes are merged with their exact child commits:
 
-These are judgment ranges based on deployed behavior, branch-only work, production proof, provider dependencies, and safety gates—not a count of stale acceptance rows.
+| Lane                           | Pull request | Exact child commit                           | Result                                                                                  |
+| ------------------------------ | -----------: | -------------------------------------------- | --------------------------------------------------------------------------------------- |
+| Source of truth and email tone |         #134 | \`2576b7e0d5e675e08d7c6134d272596f78e59210\` | Integrated; public real-account versus pre-registration phase decision remains explicit |
+| Landing corrections            |         #137 | \`69ec9859a940d985752c38396fb9ef77ad71d65a\` | Integrated and deployed                                                                 |
+| Media production-broad code    |         #138 | \`f9acaa6b687905d14af738431fe9f31ed6efe534\` | Integrated, hardened, and deployed default-off                                          |
+| Zoom canary evidence           |         #135 | \`c8c4cdae4b7549e801249ed0d24157c10cef4518\` | Integrated exact fail-closed blocker proof                                              |
+| Vimeo canary evidence          |         #136 | \`74eb75086b766470e78a8a337abdda404cfaa925\` | Integrated exact fail-closed blocker proof                                              |
+| GHL live reconciliation        |         #139 | \`d82e0bf664a1ea1330d82e54d8dc54a9a72c3d16\` | Integrated reconciled live result                                                       |
+
+The controller also corrected four checksum-bound visible-action source digests and one
+stale OT-01 browser assertion found by the final integrated gate.
 
 ## Area status
 
-| Area                                      | State                   | What is true now                                                                                                                                           | Next proof                                                                                                                       |
-| ----------------------------------------- | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| Landing and Family signup                 | LIVE                    | Landing and no-card Family signup render in production                                                                                                     | One post-release signup smoke and durable receipt                                                                                |
-| Login and recovery                        | LIVE                    | Login and forgot-password surfaces render; protected routes redirect correctly                                                                             | One real recovery smoke without exposing tokens                                                                                  |
-| Admin                                     | LIVE / CANDIDATE AHEAD  | Dashboard and management areas are usable; latest detail screens are branch-only                                                                           | Deploy head and smoke dashboard, user, Student, class, attendance, content, and ticket paths                                     |
-| Parent and Student                        | LIVE / CANDIDATE AHEAD  | Top-level portals exist; class/lesson detail, household/role selection, occurrence classroom, moderation, and Student privacy improvements are branch-only | One real Parent plus separate Student device smoke after deployment                                                              |
-| Class and attendance                      | APP READY, PROVIDER OFF | Schedule, occurrences, roster, enrollment, attendance, and access contracts exist                                                                          | One exact occurrence with provider readback and replay proof                                                                     |
-| Zoom                                      | NOT LIVE                | Broad real-provider code is composed, including S2S provisioning and Meeting SDK launch; credentials/origin and a current real-device canary are missing   | One Admin/host plus three Student-device joins, attendance, reconnect, no raw URL, no duplicate provider effects                 |
-| Direct upload / processing / Vimeo        | GUARDED CANARY READY    | A historical 1.82 GB real-file canary proved upload, transcription, private Vimeo publication, protected playback, sibling denial, and unpublish           | Repeat once on the deployed candidate with the locked model/config; then implement/enable repeatable broad-production media mode |
-| Drive ingest                              | NOT BOUND               | Adapter and exact-folder path are built; no authorized One Time folder/service-account binding was found                                                   | Share one dedicated folder with the service account and ingest one file with dedupe/readback                                     |
-| GHL                                       | WORK-OWNED EXTERNAL     | Adult-only projection and readback contracts exist; live pipeline/workflows/sends remain a Work task                                                       | Save/reopen IDs, sender/suppression proof, and direct-send receipts; no Student contacts                                         |
-| Stripe and billing                        | TEST-READY, LIVE OFF    | Billing/access/grace/cancel/refund contracts and TEST ingestion exist; live charge authorization is off                                                    | Exact-customer TEST lifecycle, webhook replay, access transitions, then explicit later live enablement                           |
-| Privacy / child isolation / accessibility | STRONG, CANDIDATE AHEAD | Student isolation, peer exclusion, data rights, CSRF, suppression, and automated accessibility coverage exist                                              | Post-release real-role negative checks and accessibility smoke                                                                   |
-| Backup / rollback / observability         | KEEP AS RELEASE GATE    | Migration assurance, PostgreSQL 16/18 restore checks, health/readiness, worker heartbeat, and rollback evidence exist                                      | Bind final release SHA to web and worker and keep the previous known-good deployment immutable                                   |
+| Area                               | State                                | Current truth                                                                                                                                                                                                | Exact next proof                                                                                                                                                   |
+| ---------------------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Landing and Family signup          | LIVE, PHASE DECISION OPEN            | Landing and \`/signup\` are HTTP 200. The primary CTA is \`Create your Family account\`; isolated pre-registration copy is also present. No DNS or funnel switch was made.                                   | Decide whether the public phase is real Family-account creation or pre-registration before any copy/funnel cutover.                                                |
+| Admin, Parent, and Student         | LIVE                                 | Final integrated application code is deployed; role boundaries remain gated by the exact-head suites.                                                                                                        | One operator-owned real-role smoke when suitable accounts are available.                                                                                           |
+| GHL                                | LIVE RESULT RECONCILED, APP SYNC OFF | Pipeline/fields/imports and the direct Tisha B'Av send are reconciled. The app's event sync remains disabled. No Student contacts were created.                                                              | Preserve the result; enable no new app-driven workflow without an approved exact provider binding.                                                                 |
+| Zoom                               | CODE DEPLOYED, PROVIDER OFF          | Provider mode is \`sink\`; real-provider and canary flags are false. The separate S2S and Meeting SDK bindings, production origin, host user, and provider-console policy proof are missing.                 | Bind and verify the two app types and production origin, deploy the exact configuration, then run one disposable operator canary.                                  |
+| Direct upload / processing / Vimeo | CODE DEPLOYED, PROVIDER OFF          | Bounded broad processing, explicit occurrence selection, and FFmpeg/ffprobe 8.1.2 are deployed. Media provider variables and Vimeo/OpenAI/S3 registry rows remain absent.                                    | Bind exact AWS/S3/KMS, OpenAI project, and canonical least-privilege Vimeo account/token; obtain one eligible new operator recording; then run one bounded canary. |
+| Drive ingest                       | CODE DEPLOYED, NOT BOUND             | The broad intake is bounded to one provider page per cycle, but no authorized One Time folder/account binding exists.                                                                                        | Bind one dedicated folder and identity, then ingest one eligible file with dedupe/readback.                                                                        |
+| Stripe and billing                 | LIVE OFF                             | \`STRIPE_LIVE_APPROVED=false\` and \`STRIPE_LIVE_BILLING_ENABLED=false\`. Yaakov's existing subscription was reconciled as cancel-at-period-end with no refund and continued access through the paid period. | Complete the exact-customer TEST lifecycle and webhook/access replay proof before any live enablement.                                                             |
+| Backup / rollback / observability  | RELEASE GATE PASSED                  | Exact deployments, migration ledger, worker heartbeat, queues, public health, protected diagnostics, and rollback targets are recorded.                                                                      | Keep the prior deployments immutable until the remaining provider canaries pass.                                                                                   |
 
-## Five actual blockers
+## Provider result readback
 
-1. **Release candidate not deployed.** PR #131 is still a draft and production is 13 commits behind its head.
-2. **HighLevel live configuration/readback incomplete.** Work owns this. It blocks reliable Warm Lead intake messaging and commercial lifecycle communication, not basic app inspection.
-3. **Zoom not production-proven.** Credentials, origin, meeting provisioning, host ZAK, real Student joins, attendance, and replay must pass once on the current candidate.
-4. **Media is canary-only, not repeatable broad production.** The fastest first recording can use the existing one-recording provider canary, but weekly operation needs a repeatable broad-production mode plus an authorized Drive binding.
-5. **Paid billing remains intentionally disabled.** Live Stripe customer/price/webhook/charge behavior and GHL billing workflows require a complete TEST lifecycle before any live enablement.
+### GHL
 
-## Release gate policy
+- Tisha B'Av direct-send ledger: 38 attempted and accepted; 36 delivered/opened,
+  1 hard bounce, and 1 sent-only unknown quarantined without retry.
+- All 38 contacts have the sent marker and duplicate-send protection.
+- Yaakov: cancel at period end, no refund, access retained through the paid period,
+  and the confirmation was delivered in GHL.
+- Yael: support-call request only; no cancellation, subscription, access, DND, or
+  marketing-status change; one support opportunity is open.
+- OT-02A remains Draft, inactive, unenrolled, with zero broad send.
 
-Keep recipient/suppression checks, idempotency, child-data isolation, exact Stripe customer matching, provider-effect readback, rollback, secret protection, real role testing, and one final integrated acceptance.
+### Zoom
 
-Stop using old Ready queues, claims, leases, steward requests, terminal packets, copied-chat handoffs, duplicate audits, repeated unchanged repository-wide reviews, and permanent workflows for one-time emails. Use focused tests per change, one full candidate gate near release, and one bounded real provider smoke per provider family.
+No live canary was attempted. There were zero meetings, registrants, joins, cleanup
+mutations, GHL writes, or Student-contact delta. The next attempt must wait for the
+exact account/app/origin bindings above.
 
-## Locked HighLevel decisions recorded on 2026-08-07
+### Vimeo/media
 
-- Pipeline stages: `Warm Leads` → `Free Event / Tisha B’Av Signups` → `Old App — Active` → `Old App — Inactive` → `New Funnel / Pre-Registered` → `Active Member` → `Canceled / Lost`.
-- `Old App` stages are temporary. Stage ID `b87ce5c3-d877-4009-99bd-6012da7e455d` maps to `Active Member`.
-- Acquisition starts at `Warm Leads`; event and public pre-registration cohorts use their explicit stages, while source identity remains in source/funnel/campaign fields.
-- Tisha B’Av gets one direct API email only. There is no `OT-02C` and no Tisha workflow repair/reuse.
-- Active old-app members get one direct one-time migration email. Do not activate `OT-02A` for it.
-- Work owns live HighLevel UI/provider execution.
+No upload, S3/OpenAI/Vimeo effect, publication, entitlement, webhook, or customer-visible
+item was created. The deployed FFmpeg and Admin occurrence-selection gaps are closed in
+code; the remaining provider/account/source blockers above are still exact.
 
-## Timing estimate
+## Release blockers
 
-- Controlled free/pre-registration release: **same day to 1 business day** after candidate deployment and the Work-owned GHL intake/readback.
-- Zoom ready for the August 16 class: **1–2 business days** if the existing S2S and Meeting SDK apps activate cleanly; **3–5 days** only if Zoom account scopes/origin/app activation need support.
-- First private recording by direct upload: **0.5–1 business day** after credentials are bound; repeatable media plus Drive: **1–2 additional business days**.
-- Full paid/commercial launch: **4–8 business days** after the above, assuming timely GHL and Stripe access and no provider-account escalation.
+1. **Public phase decision is unresolved.** The live journey creates a real Family account,
+   while isolated landing copy also mentions pre-registration. Do not make a DNS/funnel or
+   broad-copy change until one behavior is authoritative.
+2. **Zoom is not production-canary proven.** Required canonical account/app/origin/host
+   bindings and one disposable real occurrence remain missing.
+3. **The first new recording is not production-canary proven.** AWS/S3/KMS, exact OpenAI
+   project, canonical least-privilege Vimeo binding, and an eligible recording are missing.
+4. **Live billing remains intentionally disabled.** The complete TEST lifecycle must pass
+   before any live charge authorization.
+
+No release blocker is being represented as code complete merely because its implementation
+is deployed.
+
+## Exact next action
+
+Resolve the public phase decision first. In parallel, authorized provider owners should
+close the Zoom and media binding checklists without changing broad enablement. After each
+exact configuration is deployed and read back, execute only one bounded operator-owned
+canary, reconcile every effect, and stop on any unknown outcome. Keep Stripe live billing
+disabled until its TEST lifecycle is complete.
