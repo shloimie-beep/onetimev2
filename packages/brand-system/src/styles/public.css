@@ -370,6 +370,23 @@ img {
   text-wrap: balance;
 }
 
+.hero-subheadline {
+  margin: 20px 0 0;
+  color: var(--color-yellow);
+  font-size: clamp(1.2rem, 2vw, 1.55rem);
+  font-weight: 900;
+  line-height: 1.25;
+}
+
+.hero-access-detail {
+  max-width: 36ch;
+  margin: 10px 0 0;
+  color: var(--color-ink);
+  font-size: 1rem;
+  font-weight: 650;
+  line-height: 1.5;
+}
+
 .receive-detail {
   grid-column: 1 / -1;
   max-width: 720px;
@@ -802,7 +819,7 @@ img {
   display: block;
   border-bottom: 1px solid rgba(255, 210, 31, 0.18);
   object-fit: cover;
-  object-position: top left;
+  object-position: center;
 }
 
 .how-flow figcaption {
@@ -848,6 +865,8 @@ img {
 }
 
 .who {
+  position: relative;
+  isolation: isolate;
   width: 100%;
   min-height: 520px;
   display: grid;
@@ -855,12 +874,23 @@ img {
   scroll-margin-top: 112px;
   padding-right: max(16px, calc((100vw - 1180px) / 2));
   padding-left: max(16px, calc((100vw - 1180px) / 2));
+  overflow: clip;
+  background: #050505;
+}
+
+.who::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  content: '';
   background:
     linear-gradient(90deg, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.58)),
     url('/assets/backgrounds/who-its-for-norfolk-virginia.webp') center 44% / cover no-repeat;
+  transform: scale(1.03);
 }
 
 .who > div {
+  position: relative;
   max-width: 720px;
 }
 
@@ -1022,6 +1052,29 @@ img {
   max-width: 180px;
   max-height: 62px;
   object-fit: contain;
+}
+
+.press-section h2 {
+  text-align: center;
+}
+
+.press-strip[data-press-carousel] {
+  width: min(420px, 100%);
+  margin-right: auto;
+  margin-left: auto;
+  cursor: pointer;
+}
+
+.press-strip[data-press-carousel] div {
+  display: block;
+}
+
+.press-strip[data-press-carousel] span {
+  display: none;
+}
+
+.press-strip[data-press-carousel] span[data-active] {
+  display: grid;
 }
 
 .sr-only {

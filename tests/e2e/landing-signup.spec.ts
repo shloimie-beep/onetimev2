@@ -34,6 +34,10 @@ test('public landing implements the bounded product-repair contract', async ({ p
     ),
   ).toHaveCount(0);
   await expect(page.locator('.hero-eyebrow')).toHaveText('LIVE, ONLINE + ON-DEMAND');
+  await expect(page.locator('.hero-subheadline')).toHaveText('Classes start August 16.');
+  await expect(page.locator('.hero-access-detail')).toHaveText(
+    'Free access through September 11. No card is required.',
+  );
   await expect(page.locator('.hero-supporting, .hero .schedule, .hero-note')).toHaveCount(0);
   const heroCta = page.locator('.hero .hero-cta');
   await expect(heroCta).toHaveText('Create your Family account');
@@ -44,10 +48,10 @@ test('public landing implements the bounded product-repair contract', async ({ p
   await expect(page.locator('.hero h1')).toHaveCSS('font-weight', '900');
   await expect(page.locator('.hero-photo img')).toHaveAttribute(
     'src',
-    '/assets/rabbi/rabbi-eli-holding-book.jpg',
+    '/assets/hero/hero-classroom-background.webp',
   );
-  await expect(page.locator('.hero-photo img')).toHaveAttribute('width', '1600');
-  await expect(page.locator('.hero-photo img')).toHaveAttribute('height', '1067');
+  await expect(page.locator('.hero-photo img')).toHaveAttribute('width', '1680');
+  await expect(page.locator('.hero-photo img')).toHaveAttribute('height', '944');
   await expect(page.locator('.hero [src*="composite"], .hero [style*="composite"]')).toHaveCount(0);
 
   await expect(
@@ -59,28 +63,39 @@ test('public landing implements the bounded product-repair contract', async ({ p
   await expect(page.getByRole('heading', { name: 'How It Works' })).toBeVisible();
   await expect(page.locator('#how-it-works .how-intro > img')).toHaveCount(0);
   const familyFlowImages = page.locator('#how-it-works .how-flow-grid img');
-  await expect(familyFlowImages).toHaveCount(2);
+  await expect(familyFlowImages).toHaveCount(3);
   for (const image of [
+    'family-learning-overview-1254.webp',
     'parent-creates-student-login-1254.webp',
-    'student-uses-mishnah-lesson-1254.webp',
+    'student-learning-mishnayos-1254.webp',
   ]) {
     const flowImage = page.locator(`#how-it-works img[src$="${image}"]`);
     await expect(flowImage).toBeVisible();
-    await expect(flowImage).toHaveAttribute('width', '1254');
-    await expect(flowImage).toHaveAttribute('height', '1254');
+    await expect(flowImage).toHaveAttribute(
+      'width',
+      image.startsWith('family-learning') ? '1122' : '1254',
+    );
+    await expect(flowImage).toHaveAttribute(
+      'height',
+      image.startsWith('family-learning') ? '1402' : '1254',
+    );
     await expect(flowImage).toHaveAttribute('loading', 'lazy');
     await expect(flowImage).toHaveAttribute(
       'srcset',
-      /480\.webp 480w.*800\.webp 800w.*1254\.webp 1254w/u,
+      /480\.webp 480w.*800\.webp 800w.*1254\.webp (?:1122|1254)w/u,
     );
   }
   await expect(page.locator('.how-flow').nth(0).locator('strong')).toHaveText(
-    'Create your Family account',
+    'Pre-register your child',
   );
   await expect(page.locator('.how-flow').nth(1).locator('strong')).toHaveText(
-    'Your child learns in his own space',
+    'Create your Family account',
   );
-  await expect(page.getByText(/Pre-register|pre-registration/i)).toHaveCount(0);
+  await expect(page.locator('.how-flow').nth(2).locator('strong')).toHaveText(
+    'Your child learns at his own pace',
+  );
+  await expect(page.getByText('Pre-register your child')).toBeVisible();
+  await expect(page.locator('.hero-cta')).not.toHaveText('Pre-register');
   await expect(page.getByRole('link', { name: 'Terms', exact: true })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Cancellation and refunds' })).toHaveAttribute(
     'href',
@@ -580,18 +595,16 @@ async function assertGalleryControls(page: Page) {
   const secondGallerySlide = page.locator('[data-gallery-slide]').nth(1);
   const secondGalleryCaption = (await secondGallerySlide.locator('figcaption').innerText()).trim();
   await expect(secondGalleryDot).toHaveAttribute('aria-pressed', 'false');
-  await secondGalleryDot.click();
+  await page.locator('[data-gallery-slide]').first().focus();
+  await page.keyboard.press('ArrowRight');
   await expect(secondGalleryDot).toHaveAttribute('aria-pressed', 'true');
   await expect(secondGallerySlide).toHaveAttribute('data-active', 'true');
   await expect(secondGallerySlide).toHaveAttribute('aria-hidden', 'false');
   await expect(page.locator('[data-gallery-status]')).toHaveText(`Showing ${secondGalleryCaption}`);
 
-  const galleryToggle = page.locator('[data-gallery-toggle]');
-  await expect(galleryToggle).toHaveText('Pause slideshow');
-  await expect(galleryToggle).toHaveAttribute('aria-pressed', 'false');
-  await galleryToggle.click();
-  await expect(galleryToggle).toHaveText('Play slideshow');
-  await expect(galleryToggle).toHaveAttribute('aria-pressed', 'true');
+  const hiddenControlsBox = await page.locator('.gallery-controls').boundingBox();
+  expect(hiddenControlsBox?.width).toBeLessThanOrEqual(1);
+  expect(hiddenControlsBox?.height).toBeLessThanOrEqual(1);
 }
 
 async function completeFamilySignupForm(page: Page, email: string) {

@@ -391,6 +391,7 @@ if (carousel) {
     showFromControl(index + (delta < 0 ? 1 : -1));
   });
   viewport?.addEventListener('pointercancel', () => (pointerStartX = null));
+  viewport?.addEventListener('click', () => showFromControl(index + 1));
   carousel.addEventListener('mouseenter', () => {
     pointerInside = true;
     syncAutoplay();
@@ -428,6 +429,43 @@ if (carousel) {
   window.addEventListener('resize', positionTrack);
   show(0, false);
   syncAutoplay();
+}
+
+const pressCarousel = document.querySelector<HTMLElement>('[data-press-carousel]');
+if (pressCarousel) {
+  const slides = [...pressCarousel.querySelectorAll<HTMLElement>('span')];
+  const status = document.querySelector<HTMLElement>('[data-press-status]');
+  let index = 0;
+  let timer: number | undefined;
+  let paused = reducedMotion;
+  const show = (next: number, announce = true) => {
+    index = (next + slides.length) % slides.length;
+    slides.forEach((slide, slideIndex) => {
+      slide.toggleAttribute('data-active', slideIndex === index);
+      slide.setAttribute('aria-hidden', String(slideIndex !== index));
+    });
+    const label = slides[index]?.querySelector('img')?.alt;
+    if (announce && label && status) status.textContent = `Showing ${label}`;
+  };
+  const sync = () => {
+    window.clearInterval(timer);
+    if (!paused && !document.hidden && slides.length > 1) timer = window.setInterval(() => show(index + 1, false), 3500);
+  };
+  pressCarousel.addEventListener('click', () => { show(index + 1); sync(); });
+  pressCarousel.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+      event.preventDefault();
+      show(index + (event.key === 'ArrowRight' ? 1 : -1));
+      sync();
+    }
+  });
+  pressCarousel.addEventListener('mouseenter', () => { paused = true; sync(); });
+  pressCarousel.addEventListener('mouseleave', () => { paused = reducedMotion; sync(); });
+  pressCarousel.addEventListener('focusin', () => { paused = true; sync(); });
+  pressCarousel.addEventListener('focusout', () => { paused = reducedMotion; sync(); });
+  document.addEventListener('visibilitychange', sync);
+  show(0, false);
+  sync();
 }
 
 document.querySelectorAll<HTMLImageElement>('[data-image-watch]').forEach((image) => {

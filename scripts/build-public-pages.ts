@@ -29,8 +29,14 @@ const freeAccessExpiresAtPlaceholder = '__ONE_TIME_FREE_ACCESS_EXPIRES_AT__';
 
 const imageDimensions = new Map<string, readonly [number, number]>([
   ['/assets/brand/onetimelogo.webp', [400, 400]],
-  [landingSocialImage, [1200, 630]],
+  [landingSocialImage, [2060, 763]],
   ['/assets/hero/hero-classroom-background.webp', [1680, 944]],
+  ['/assets/how-it-works/family-learning-overview-480.webp', [480, 600]],
+  ['/assets/how-it-works/family-learning-overview-800.webp', [800, 1000]],
+  ['/assets/how-it-works/family-learning-overview-1254.webp', [1122, 1402]],
+  ['/assets/how-it-works/student-learning-mishnayos-480.webp', [480, 480]],
+  ['/assets/how-it-works/student-learning-mishnayos-800.webp', [800, 800]],
+  ['/assets/how-it-works/student-learning-mishnayos-1254.webp', [1254, 1254]],
   ['/assets/students/smiley-kid.png', [337, 600]],
   ['/assets/outcomes/clarity-class.webp', [945, 2048]],
   ['/assets/outcomes/retention-review-class-480.webp', [480, 1040]],
@@ -214,14 +220,18 @@ function landingPage() {
         <div class="gallery-track" data-gallery-track>${slides}</div>
       </div>
       <p class="sr-only" aria-live="polite" data-gallery-status>Showing ${escapeHtml(landingContent.gallery.slides[0][0])}</p>
-      <div class="gallery-controls">
+      <div class="gallery-controls sr-only">
         <button type="button" data-gallery-prev aria-label="Previous teaching photo">&lt;</button>
         <div>${dots}</div>
         <button type="button" data-gallery-next aria-label="Next teaching photo">&gt;</button>
         <button type="button" class="gallery-playback" data-gallery-toggle aria-pressed="false">Pause slideshow</button>
       </div>
     </div>
-    <div class="press-strip" aria-label="Torah media and publication logos"><div>${press}</div></div>
+  </section>`;
+  const pressSection = `<section class="section press-section">
+    <h2 id="press-heading">Seen Across the Jewish World</h2>
+    <div class="press-strip" data-press-carousel role="region" aria-roledescription="carousel" aria-label="Torah media and publication logos" tabindex="0"><div data-press-track>${press}</div></div>
+    <p class="sr-only" aria-live="polite" data-press-status>Showing TorahAnytime</p>
   </section>`;
 
   return pageShell(
@@ -232,9 +242,16 @@ function landingPage() {
     <div class="hero-inner">
       <p class="hero-eyebrow">${escapeHtml(landingContent.hero.eyebrow)}</p>
       <h1 id="landing-hero-heading">${escapeHtml(landingContent.hero.headline)}</h1>
+      <p class="hero-subheadline">${escapeHtml(landingContent.hero.subheadline)}</p>
+      <p class="hero-access-detail">${escapeHtml(landingContent.hero.accessDetail)}</p>
       <a class="button button-primary hero-cta" href="${escapeHtml(landingContent.hero.cta.href)}" data-ot-analytics-event="${escapeHtml(landingContent.hero.cta.analyticsEvent)}" data-ot-analytics-destination="${escapeHtml(landingContent.hero.cta.href)}" data-ot-analytics-placement="${escapeHtml(landingContent.hero.cta.analyticsPlacement)}">${escapeHtml(landingContent.hero.cta.label)}</a>
     </div>
     <figure class="hero-photo"><img src="${landingContent.hero.image}" alt="${escapeHtml(landingContent.hero.imageAlt)}"${mediaSizeAttributes(landingContent.hero.image)} decoding="async" fetchpriority="high"></figure>
+  </section>
+  <section class="section" id="gain">
+    <h2>${escapeHtml(landingContent.gain.heading)}</h2>
+    <p class="section-intro">${escapeHtml(landingContent.gain.intro)}</p>
+    <div class="benefit-grid">${gainCards}</div>
   </section>
   <section class="section receive" id="receive">
     <h2 class="receive-heading">${escapeHtml(landingContent.receive.heading)}</h2>
@@ -246,11 +263,6 @@ function landingPage() {
       <h3>${escapeHtml(landingContent.receive.title)}</h3>
       <ul>${receiveBullets}</ul>
     </div>
-  </section>
-  <section class="section" id="gain">
-    <h2>${escapeHtml(landingContent.gain.heading)}</h2>
-    <p class="section-intro">${escapeHtml(landingContent.gain.intro)}</p>
-    <div class="benefit-grid">${gainCards}</div>
   </section>
   <section class="section who" id="who">
     <div>
@@ -264,7 +276,7 @@ function landingPage() {
     </div>
     <div class="how-flow-grid">${howFlows}</div>
   </section>
-  ${gallerySection}
+  ${pressSection}
   <section class="section rabbi" id="rabbi">
     <div class="rabbi-bio">
       <div>
@@ -275,6 +287,7 @@ function landingPage() {
       <img src="/assets/rabbi/rabbi-eli-holding-book.jpg" alt="Rabbi Eli Scheller holding the One Time book"${mediaSizeAttributes('/assets/rabbi/rabbi-eli-holding-book.jpg')} loading="lazy" decoding="async">
     </div>
   </section>
+  ${gallerySection}
   <section class="final-cta"><h2>${escapeHtml(landingContent.finalCta.heading)}</h2><a class="button button-primary" href="/signup">Create your Family account</a></section>
 </main>${footer()}`,
     {
@@ -284,8 +297,8 @@ function landingPage() {
       ogImage: publicCanonicalUrl(landingSocialImage),
       ogImageSecureUrl: publicCanonicalUrl(landingSocialImage),
       ogImageType: 'image/png',
-      ogImageWidth: 1200,
-      ogImageHeight: 630,
+      ogImageWidth: 2060,
+      ogImageHeight: 763,
       ogImageAlt: 'Mishnayos Made Memorable with Rabbi Eli Scheller',
       twitterImage: publicCanonicalUrl(landingSocialImage),
     },
