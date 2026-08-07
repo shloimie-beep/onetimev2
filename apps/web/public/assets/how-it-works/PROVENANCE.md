@@ -12,3 +12,21 @@ square, responsive derivatives generated with Sharp 0.35.3 at widths 480,
 
 The source PNGs are retained byte-for-byte. Derivatives preserve the full
 square composition; no crop or upscaling is applied.
+
+## Wave 1 landing additions — 2026-08-07
+
+The following files are supplied for the landing correction lane. The first
+source was present in the operator's Downloads folder; the second was available
+only from the prompt's packaged reference fallback; the third is the approved
+output from the parallel image lane. No Drive provenance is asserted for these
+assets.
+
+| Public source file                      | Provenance                          | Original filename                                    |  Dimensions | SHA-256                                                            |
+| --------------------------------------- | ----------------------------------- | ---------------------------------------------------- | ----------: | ------------------------------------------------------------------ |
+| `family-learning-overview.png`          | Packaged prompt reference fallback  | `family-learning-overview.png`                       | 1122 x 1402 | `52185ec4c7b7987cef5a003b3694d33af3916e8f178ccf3270c6c5a33477a171` |
+| `student-learning-mishnayos-source.png` | Approved parallel image lane output | `how-it-works-step-3-student-learning-mishnayos.png` | 1254 x 1254 | `f420735890925430e1c9064cb5b35119cd75a32e864c89b326eafca9e7c99c29` |
+
+The corresponding 480px, 800px, and 1254px WebP derivatives use Sharp 0.35.3
+at `quality: 82` and `effort: 6`, without upscaling. The landing social image
+is sourced from the Downloads original `Mishnayos Made Memorable.png` (2060 x
+763, SHA-256 `96db3cc041602d47ef63c568bc1242108c66a216aba13b479ff094e94edcd4bc`).

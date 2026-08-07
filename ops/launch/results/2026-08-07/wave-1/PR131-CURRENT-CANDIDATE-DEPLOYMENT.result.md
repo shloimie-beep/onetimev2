@@ -18,10 +18,10 @@ The PR head was fetched again immediately before deployment and matched the clea
 
 The exact clean worktree was uploaded to the existing Railway production project and environment. Only `APP_VERSION` and `COMMIT_SHA` were advanced to the candidate with deploy triggering suppressed until each corresponding source upload. No provider-owned GHL, Zoom, Vimeo, media, sender, billing, or transport variable was listed or changed.
 
-| Service | Service ID | Deployment ID | Status | Image digest |
-| --- | --- | --- | --- | --- |
-| Web | `d175ad94-5e3c-41c2-8cbc-daa1a299077d` | `35de7372-d367-4cec-84f8-f6758058e759` | `SUCCESS` | `sha256:cd7c8b1d13793bf5728e32356a48f797b810b359a03874e66931c32a5c3a1acf` |
-| Worker | `742f60ed-dc2f-4321-85d0-019003d4e9b9` | `6e2e806f-319f-403f-83a0-7b5b202236a2` | `SUCCESS` | `sha256:5af6cc6829a8fbfe3ec19c3924f7808e07fd499ec057d4a7f84579bda9daaf03` |
+| Service | Service ID                             | Deployment ID                          | Status    | Image digest                                                              |
+| ------- | -------------------------------------- | -------------------------------------- | --------- | ------------------------------------------------------------------------- |
+| Web     | `d175ad94-5e3c-41c2-8cbc-daa1a299077d` | `35de7372-d367-4cec-84f8-f6758058e759` | `SUCCESS` | `sha256:cd7c8b1d13793bf5728e32356a48f797b810b359a03874e66931c32a5c3a1acf` |
+| Worker  | `742f60ed-dc2f-4321-85d0-019003d4e9b9` | `6e2e806f-319f-403f-83a0-7b5b202236a2` | `SUCCESS` | `sha256:5af6cc6829a8fbfe3ec19c3924f7808e07fd499ec057d4a7f84579bda9daaf03` |
 
 ## Production readback
 

@@ -305,6 +305,7 @@ if (carousel) {
   const toggle = carousel.querySelector<HTMLButtonElement>('[data-gallery-toggle]');
   let index = 0;
   let pointerStartX: number | null = null;
+  let suppressClickUntil = 0;
   let autoplayTimer: number | undefined;
   let userPaused = reducedMotion;
   let pointerInside = false;
@@ -388,9 +389,14 @@ if (carousel) {
     const delta = event.clientX - pointerStartX;
     pointerStartX = null;
     if (Math.abs(delta) < 36) return;
+    suppressClickUntil = window.performance.now() + 500;
     showFromControl(index + (delta < 0 ? 1 : -1));
   });
   viewport?.addEventListener('pointercancel', () => (pointerStartX = null));
+  viewport?.addEventListener('click', () => {
+    if (window.performance.now() < suppressClickUntil) return;
+    showFromControl(index + 1);
+  });
   carousel.addEventListener('mouseenter', () => {
     pointerInside = true;
     syncAutoplay();
@@ -428,6 +434,82 @@ if (carousel) {
   window.addEventListener('resize', positionTrack);
   show(0, false);
   syncAutoplay();
+}
+
+const pressCarousel = document.querySelector<HTMLElement>('[data-press-carousel]');
+if (pressCarousel) {
+  const slides = [...pressCarousel.querySelectorAll<HTMLElement>('span')];
+  const status = document.querySelector<HTMLElement>('[data-press-status]');
+  let index = 0;
+  let timer: number | undefined;
+  let paused = reducedMotion;
+  let pointerStartX: number | null = null;
+  let suppressClickUntil = 0;
+  const show = (next: number, announce = true) => {
+    index = (next + slides.length) % slides.length;
+    slides.forEach((slide, slideIndex) => {
+      slide.toggleAttribute('data-active', slideIndex === index);
+      slide.setAttribute('aria-hidden', String(slideIndex !== index));
+    });
+    const label = slides[index]?.querySelector('img')?.alt;
+    if (announce && label && status) status.textContent = `Showing ${label}`;
+  };
+  const sync = () => {
+    window.clearInterval(timer);
+    if (!paused && !document.hidden && slides.length > 1)
+      timer = window.setInterval(() => show(index + 1, false), 3500);
+  };
+  const showFromControl = (next: number) => {
+    show(next);
+    sync();
+  };
+  pressCarousel.addEventListener('pointerdown', (event) => {
+    pointerStartX = event.clientX;
+  });
+  pressCarousel.addEventListener('pointerup', (event) => {
+    if (pointerStartX === null) return;
+    const delta = event.clientX - pointerStartX;
+    pointerStartX = null;
+    if (Math.abs(delta) < 36) return;
+    suppressClickUntil = window.performance.now() + 500;
+    showFromControl(index + (delta < 0 ? 1 : -1));
+  });
+  pressCarousel.addEventListener('pointercancel', () => (pointerStartX = null));
+  pressCarousel.addEventListener('click', () => {
+    if (window.performance.now() < suppressClickUntil) return;
+    showFromControl(index + 1);
+  });
+  pressCarousel.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+      event.preventDefault();
+      showFromControl(index + (event.key === 'ArrowRight' ? 1 : -1));
+    } else if (event.key === 'Home') {
+      event.preventDefault();
+      showFromControl(0);
+    } else if (event.key === 'End') {
+      event.preventDefault();
+      showFromControl(slides.length - 1);
+    }
+  });
+  pressCarousel.addEventListener('mouseenter', () => {
+    paused = true;
+    sync();
+  });
+  pressCarousel.addEventListener('mouseleave', () => {
+    paused = reducedMotion;
+    sync();
+  });
+  pressCarousel.addEventListener('focusin', () => {
+    paused = true;
+    sync();
+  });
+  pressCarousel.addEventListener('focusout', () => {
+    paused = reducedMotion;
+    sync();
+  });
+  document.addEventListener('visibilitychange', sync);
+  show(0, false);
+  sync();
 }
 
 document.querySelectorAll<HTMLImageElement>('[data-image-watch]').forEach((image) => {

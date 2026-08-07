@@ -17,19 +17,23 @@ export const landingContent = {
   hero: {
     eyebrow: 'LIVE, ONLINE + ON-DEMAND',
     headline: 'Help your son love learning Mishnayos.',
+    subheadline: 'Classes start August 16.',
+    accessDetail: 'Free access through September 11. No card is required.',
+    // Keep any future pre-registration wording isolated until the public signup phase is decided.
+    requestedPreRegistrationLabel: 'Pre-register',
     cta: {
       label: 'Create your Family account',
       href: '/signup',
       analyticsEvent: 'landing.signup.cta.clicked',
       analyticsPlacement: 'hero',
     },
-    image: '/assets/rabbi/rabbi-eli-holding-book.jpg',
-    imageAlt: 'Rabbi Eli Scheller holding the One Time Mishnayos book',
+    image: '/assets/hero/hero-classroom-background.webp',
+    imageAlt: 'Students learning in a Mishnayos class',
   },
   receive: {
     heading: 'Everything He Needs to Learn, Review, and Remember',
     detailLine:
-      'Live Sunday–Thursday at 7:00 p.m. Israel time, completing one perek each class day.',
+      'Classes begin August 16. Live Sunday–Thursday at 7:00 p.m. Israel time, completing one perek each class day.',
     eyebrow: 'A COMPLETE DIGITAL TORAH-LEARNING EXPERIENCE',
     iconLabel: 'Live class',
     title: 'Live Mishnayos—plus the tools to make it stick.',
@@ -106,26 +110,37 @@ export const landingContent = {
     body: 'A parent manages the Family account. Each Student learns in a separate protected space.',
     flows: [
       {
+        title: 'Pre-register your child',
+        body: 'A parent begins with the child’s learning details and then continues through the adult-managed Family account.',
+        image: '/assets/how-it-works/family-learning-overview-1254.webp',
+        srcset:
+          '/assets/how-it-works/family-learning-overview-480.webp 480w, /assets/how-it-works/family-learning-overview-800.webp 800w, /assets/how-it-works/family-learning-overview-1254.webp 1122w',
+        sizes: '(max-width: 720px) calc(100vw - 44px), 560px',
+        width: 1122,
+        height: 1402,
+        alt: 'A father completing the first step of a family learning signup on a tablet',
+      },
+      {
         title: 'Create your Family account',
-        body: 'A parent creates the Family account and adds up to three separate Student logins.',
+        body: 'A parent manages the Family account and creates a separate Student login for each child.',
         image: '/assets/how-it-works/parent-creates-student-login-1254.webp',
         srcset:
           '/assets/how-it-works/parent-creates-student-login-480.webp 480w, /assets/how-it-works/parent-creates-student-login-800.webp 800w, /assets/how-it-works/parent-creates-student-login-1254.webp 1254w',
         sizes: '(max-width: 720px) calc(100vw - 44px), 560px',
         width: 1254,
         height: 1254,
-        alt: 'A parent and child creating the child’s separate One Time Student login',
+        alt: 'A parent creating a separate One Time Student login',
       },
       {
-        title: 'Your child learns in his own space',
+        title: 'Your child learns at his own pace',
         body: 'Each Student signs in separately to join live class, watch replays, review, and ask questions.',
-        image: '/assets/how-it-works/student-uses-mishnah-lesson-1254.webp',
+        image: '/assets/how-it-works/student-learning-mishnayos-1254.webp',
         srcset:
-          '/assets/how-it-works/student-uses-mishnah-lesson-480.webp 480w, /assets/how-it-works/student-uses-mishnah-lesson-800.webp 800w, /assets/how-it-works/student-uses-mishnah-lesson-1254.webp 1254w',
+          '/assets/how-it-works/student-learning-mishnayos-480.webp 480w, /assets/how-it-works/student-learning-mishnayos-800.webp 800w, /assets/how-it-works/student-learning-mishnayos-1254.webp 1254w',
         sizes: '(max-width: 720px) calc(100vw - 44px), 560px',
         width: 1254,
         height: 1254,
-        alt: 'A Student using a tablet to learn a colorful Mishnah lesson',
+        alt: 'A child learning Mishnayos independently on a tablet in a comfortable living room',
       },
     ],
   },
@@ -156,7 +171,7 @@ export const landingContent = {
     body: 'Rabbi Eli Scheller has taught Torah to students and audiences across the Jewish world. His clarity, warmth, and energy help boys understand what they are learning and look forward to coming back.',
   },
   gallery: {
-    heading: 'Seen Across the Jewish World',
+    heading: 'Rabbi Eli Teaching Around the World',
     slides: [
       ['Atlanta, Georgia', '/assets/rabbi/teaching-locations/rabbi-scheller-atlanta-georgia.webp'],
       [
