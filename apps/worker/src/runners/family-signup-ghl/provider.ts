@@ -15,7 +15,8 @@ import { FamilySignupGhlProviderError } from './types.ts';
 
 export const FAMILY_SIGNUP_GHL_WORKFLOW_ID = '95a6f461-1a04-4260-b379-246fdcc45af7';
 export const FAMILY_SIGNUP_GHL_PIPELINE_ID = 'RTTGVfbMv5aM92BQqklL';
-export const FAMILY_SIGNUP_GHL_SIGNED_UP_STAGE_ID = 'b87ce5c3-d877-4009-99bd-6012da7e455d';
+// The provider ID is retained while the source-of-truth pipeline names this final state Active Member.
+export const FAMILY_SIGNUP_GHL_ACTIVE_MEMBER_STAGE_ID = 'b87ce5c3-d877-4009-99bd-6012da7e455d';
 
 const CONTACT_FIELDS = {
   parentId: 'xHPAvxHOpvZ6GbrRZBvn',
@@ -124,7 +125,7 @@ export class HighLevelFamilySignupProvider implements FamilySignupGhlProvider {
       body: JSON.stringify({
         locationId: this.locationId,
         pipelineId: FAMILY_SIGNUP_GHL_PIPELINE_ID,
-        pipelineStageId: FAMILY_SIGNUP_GHL_SIGNED_UP_STAGE_ID,
+        pipelineStageId: FAMILY_SIGNUP_GHL_ACTIVE_MEMBER_STAGE_ID,
         contactId: claim.providerContactId,
         name: `One Time Family ${claim.householdId}`,
         status: 'open',
@@ -147,7 +148,7 @@ export class HighLevelFamilySignupProvider implements FamilySignupGhlProvider {
       requiredText(readback.pipelineId, 'opportunity_pipeline_id') !==
         FAMILY_SIGNUP_GHL_PIPELINE_ID ||
       requiredText(readback.pipelineStageId, 'opportunity_stage_id') !==
-        FAMILY_SIGNUP_GHL_SIGNED_UP_STAGE_ID
+        FAMILY_SIGNUP_GHL_ACTIVE_MEMBER_STAGE_ID
     ) {
       throw new FamilySignupGhlProviderError('opportunity_readback_mismatch', true);
     }

@@ -6,7 +6,7 @@ import {
 } from '../../../../../packages/domain/src/audience-reconciliation/governed-campaign-census.ts';
 import {
   FAMILY_SIGNUP_GHL_PIPELINE_ID,
-  FAMILY_SIGNUP_GHL_SIGNED_UP_STAGE_ID,
+  FAMILY_SIGNUP_GHL_ACTIVE_MEMBER_STAGE_ID,
   HighLevelFamilySignupProvider,
   familySignupGhlHouseholdRefHash,
 } from './provider.ts';
@@ -126,7 +126,7 @@ describe('Family-signup HighLevel provider', () => {
             id: providerOpportunityId,
             contactId: providerContactId,
             pipelineId: FAMILY_SIGNUP_GHL_PIPELINE_ID,
-            pipelineStageId: FAMILY_SIGNUP_GHL_SIGNED_UP_STAGE_ID,
+            pipelineStageId: FAMILY_SIGNUP_GHL_ACTIVE_MEMBER_STAGE_ID,
           },
         }),
       );
