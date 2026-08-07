@@ -1,4 +1,6 @@
 import type {
+  ContentIngestOccurrenceOption,
+  ContentSourceRecord,
   MultipartUploadPlan,
   UploadSessionRecord,
 } from '../../../../../../../../packages/contracts/src/content/ingest/index.ts';
@@ -31,6 +33,9 @@ export function createContentIngestApi(input: {
             file_name: file.name,
             mime_type: file.type,
             byte_count: file.size,
+            client_request_key: await browserDigest(
+              `content-begin\0${file.name}\0${file.type}\0${file.size}\0${file.lastModified}`,
+            ),
           }),
         },
         input.onProtectedStateCleared,
@@ -96,10 +101,10 @@ export function createContentIngestApi(input: {
       await state.completion;
     },
 
-    async confirmUpload(session: UploadSessionRecord) {
+    async confirmUpload(session: UploadSessionRecord): Promise<ContentSourceRecord> {
       const state = requireUploadState(uploads, session.id);
       await state.completion;
-      await privateJson(
+      const confirmed = await privateJson<{ data: { source: ContentSourceRecord } }>(
         fetchImpl,
         `/api/app/content/ingest/sessions/${encodeURIComponent(session.id)}/confirm`,
         {
@@ -113,6 +118,43 @@ export function createContentIngestApi(input: {
         input.onProtectedStateCleared,
       );
       uploads.delete(session.id);
+      return confirmed.data.source;
+    },
+
+    async listOccurrences(): Promise<readonly ContentIngestOccurrenceOption[]> {
+      const response = await privateJson<{
+        data: { occurrences: readonly ContentIngestOccurrenceOption[] };
+      }>(
+        fetchImpl,
+        '/api/app/content/ingest/occurrences',
+        { method: 'GET', headers: jsonHeaders(input.csrfToken) },
+        input.onProtectedStateCleared,
+      );
+      return response.data.occurrences;
+    },
+
+    async matchSource(request: {
+      sourceId: string;
+      sourceVersion: number;
+      occurrenceId: string;
+    }): Promise<ContentSourceRecord> {
+      const response = await privateJson<{ data: { source: ContentSourceRecord } }>(
+        fetchImpl,
+        `/api/app/content/ingest/sources/${encodeURIComponent(request.sourceId)}/match`,
+        {
+          method: 'POST',
+          headers: jsonHeaders(input.csrfToken),
+          body: JSON.stringify({
+            occurrence_id: request.occurrenceId,
+            expected_version: request.sourceVersion,
+            idempotency_key: await browserDigest(
+              `content-match\0${request.sourceId}\0${request.occurrenceId}\0${request.sourceVersion}`,
+            ),
+          }),
+        },
+        input.onProtectedStateCleared,
+      );
+      return response.data.source;
     },
   };
 }

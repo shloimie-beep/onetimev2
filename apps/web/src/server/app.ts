@@ -429,7 +429,8 @@ const ACTIVATION_TOKEN_TYPES = accountLifecycleTokenTypeSchema.options.filter(
 
 function contentMediaConnectSources(config: AppConfig) {
   if (
-    !config.contentMediaProviderCanary ||
+    (!config.contentMediaProviderCanary && !config.contentMediaProductionBroad) ||
+    !config.contentMediaProvidersReady ||
     config.contentAwsRegion !== 'eu-central-1' ||
     !config.contentS3Bucket ||
     !/^[a-z0-9](?:[a-z0-9-]{1,61}[a-z0-9])$/u.test(config.contentS3Bucket)

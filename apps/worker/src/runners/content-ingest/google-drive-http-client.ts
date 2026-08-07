@@ -18,6 +18,7 @@ export class GoogleDriveHttpClient implements GoogleDriveContentClient {
       folderId: string;
       serviceAccountEmail: string;
       timeoutMs: number;
+      pageSize?: number | undefined;
     },
     private readonly accessToken: GoogleDriveAccessTokenProvider,
     private readonly registry: GoogleDriveRegistryGuard,
@@ -66,7 +67,7 @@ export class GoogleDriveHttpClient implements GoogleDriveContentClient {
       q: `'${escapeDriveQuery(this.config.folderId)}' in parents and trashed = false`,
       fields:
         'nextPageToken,files(id,name,mimeType,size,version,md5Checksum,modifiedTime,parents,trashed)',
-      pageSize: '2',
+      pageSize: String(boundedPageSize(this.config.pageSize)),
       orderBy: 'modifiedTime desc,name',
       supportsAllDrives: 'true',
       includeItemsFromAllDrives: 'true',
@@ -158,6 +159,14 @@ export class GoogleDriveHttpClient implements GoogleDriveContentClient {
     if (!response.ok) throw new Error('content_drive_read_failed');
     return (await response.json()) as T;
   }
+}
+
+function boundedPageSize(value: number | undefined) {
+  if (value === undefined) return 2;
+  if (!Number.isSafeInteger(value) || value < 1 || value > 10) {
+    throw new Error('content_drive_page_size_invalid');
+  }
+  return value;
 }
 
 export function createGoogleServiceAccountTokenProvider(input: {

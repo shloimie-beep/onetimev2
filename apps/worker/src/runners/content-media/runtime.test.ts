@@ -11,6 +11,7 @@ import { runContentPublicationWorker } from '../content-publication/composition.
 import {
   createCanaryBoundPublicationRepositories,
   AwsProcessingMediaStore,
+  createBroadBoundPublicationRepositories,
   createContentMediaWorkerRuntime,
 } from './runtime.ts';
 
@@ -35,6 +36,94 @@ describe('createContentMediaWorkerRuntime', () => {
       }),
     ).toBeUndefined();
     expect(pool.query).not.toHaveBeenCalled();
+  });
+
+  it('fails closed without touching providers when production-broad provider bindings are incomplete', () => {
+    const pool = { query: vi.fn(() => Promise.reject(new Error('database call forbidden'))) };
+    const dependencies = new Proxy(
+      {},
+      {
+        get() {
+          throw new Error('provider dependency touched while broad runtime is incomplete');
+        },
+      },
+    );
+    const config = loadConfig({
+      NODE_ENV: 'production',
+      ONE_TIME_RUNTIME_ENVIRONMENT: 'production',
+      ONE_TIME_VERIFICATION_ENVIRONMENT_ID: 'production_broad',
+      ONE_TIME_CONTENT_MEDIA_MODE: 'production_broad',
+      ONE_TIME_CONTENT_MEDIA_AUTHORIZATION_ID: 'broad-authority-test',
+      ONE_TIME_FIRST_CLASS_AT: '2026-08-16T19:00:00+03:00',
+      ONE_TIME_FREE_ACCESS_EXPIRES_AT: '2026-09-11T18:00:00+03:00',
+      AUTH_CSRF_SECRET: 'content-media-production-csrf-secret',
+      PROTECTED_PAYLOAD_ENCRYPTION_KEY: 'content-media-production-payload-key',
+    });
+
+    expect(
+      createContentMediaWorkerRuntime({
+        config,
+        pool: pool as never,
+        source: {},
+        dependencies: dependencies as never,
+      }),
+    ).toBeUndefined();
+    expect(pool.query).not.toHaveBeenCalled();
+    expect(JSON.stringify(config)).not.toMatch(/vimeo_access_token|openai_api_key/iu);
+  });
+
+  it('claims multiple broad publication jobs only inside the account, approval, and batch fences', async () => {
+    const query = vi.fn(async (sql: string, values?: unknown[]) => {
+      expect(sql).toContain('publication.account_key = $4');
+      expect(sql).toContain("publication.state = 'pending'");
+      expect(sql).toContain("publication.intent_json->'approvalEvidence' IS NOT NULL");
+      expect(sql).toContain("processing.processing_state = 'approved'");
+      expect(sql).toContain('job.unknown_effect = false');
+      expect(sql).toContain('FOR UPDATE OF job SKIP LOCKED');
+      expect(values?.[3]).toBe('account-broad');
+      expect(values?.[6]).toBe(2);
+      return {
+        rows: [providerJobRow('job-one'), providerJobRow('job-two')],
+        rowCount: 2,
+      };
+    });
+    const repositories = createBroadBoundPublicationRepositories({
+      pool: { query } as never,
+      accountKey: 'account-broad',
+      maxBatchSize: 2,
+      jobRepository: {
+        heartbeat: vi.fn(),
+        markInFlight: vi.fn(),
+        recordDispatchOutcome: vi.fn(),
+        claimDueJobs: vi.fn(),
+      } as never,
+      publicationRepository: {
+        inTransaction: vi.fn(),
+        reopenDispatchContext: vi.fn(),
+        listAcceptanceUnknownOperations: vi.fn(),
+        listAcceptedPendingWork: vi.fn(),
+      } as never,
+    });
+    const claim = {
+      owner: 'worker-broad',
+      now: new Date('2026-08-07T12:00:00.000Z'),
+      limit: 9,
+      scope: {
+        product: 'one_time_mishnayos' as const,
+        runtime_tier: 'production' as const,
+        verification_environment_id: 'production_broad' as const,
+      },
+      operation_types: ['publish_private'],
+    };
+
+    await expect(repositories.jobRepository.claimDueJobs(claim)).resolves.toHaveLength(2);
+    await expect(
+      repositories.jobRepository.claimDueJobs({
+        ...claim,
+        scope: { ...claim.scope, verification_environment_id: 'production_operator_canary' },
+      }),
+    ).rejects.toThrow('content_publication_broad_scope_mismatch');
+    expect(query).toHaveBeenCalledOnce();
   });
 
   it('leaves non-canary and same-canary non-publication decoys untouched with zero provider calls', async () => {
@@ -417,4 +506,39 @@ function commandName(command: unknown) {
 
 function sha(value: string | Uint8Array) {
   return createHash('sha256').update(value).digest('hex');
+}
+
+function providerJobRow(jobId: string) {
+  return {
+    job_id: jobId,
+    operation_type: 'publish_private',
+    aggregate_ref: `content-${jobId}`,
+    source_version: 1,
+    provider: 'vimeo',
+    product: 'one_time_mishnayos',
+    runtime_tier: 'production',
+    verification_environment_id: 'production_broad',
+    idempotency_key: `idempotency-${jobId}`,
+    canonical_request_hash: 'a'.repeat(64),
+    payload_ref: `version-${jobId}`,
+    payload_digest: 'b'.repeat(64),
+    compensation_for_job_id: null,
+    state: 'leased',
+    version: 2,
+    recovery_generation: 0,
+    dispatch_attempts: 0,
+    lifetime_dispatch_attempts: 0,
+    reconciliation_attempts: 0,
+    lease_owner: 'worker-broad',
+    lease_generation: 1,
+    lease_expires_at: '2026-08-07T12:01:00.000Z',
+    last_heartbeat_at: '2026-08-07T12:00:00.000Z',
+    next_attempt_at: null,
+    unknown_effect: false,
+    provider_acceptance_digest: null,
+    reconciliation_digest: null,
+    safe_error_code: null,
+    created_at: '2026-08-07T11:00:00.000Z',
+    updated_at: '2026-08-07T12:00:00.000Z',
+  };
 }

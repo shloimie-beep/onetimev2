@@ -21,7 +21,7 @@ export type ContentMediaWebRuntime = {
       scope: {
         product: 'one_time_mishnayos';
         runtime_tier: 'production';
-        verification_environment_id: 'production_operator_canary';
+        verification_environment_id: 'production_operator_canary' | 'production_broad';
       };
       provider_account_ref_hash: string;
       allowed_operation_types: readonly ['publish_private', 'revoke_private'];
@@ -45,15 +45,40 @@ export function createContentMediaWebRuntime(input: {
       }
     | undefined;
 }): ContentMediaWebRuntime | undefined {
-  if (!input.config.contentMediaProviderCanary) return undefined;
-  assertProviderCanary(input.config);
+  if (!input.config.contentMediaProviderCanary && !input.config.contentMediaProductionBroad) {
+    return undefined;
+  }
+  assertProviderRuntime(input.config);
+  if (!input.config.contentMediaProvidersReady) return undefined;
+  try {
+    return createContentMediaWebRuntimeUnchecked(input);
+  } catch (error) {
+    if (input.config.contentMediaProductionBroad) return undefined;
+    throw error;
+  }
+}
+
+function createContentMediaWebRuntimeUnchecked(input: {
+  config: AppConfig;
+  pool: DbPool;
+  source: NodeJS.ProcessEnv;
+  dependencies?:
+    | {
+        registry: ProviderRegistryBindingReadPort;
+        s3Client: Pick<S3Client, 'send'>;
+        stsClient: Pick<STSClient, 'send'>;
+        fetchImpl?: typeof fetch | undefined;
+      }
+    | undefined;
+}): ContentMediaWebRuntime | undefined {
   const registry = input.dependencies?.registry ?? createPostgresProviderCoreRepository(input.pool);
   const s3Proof = providerProof(input.source, 'CONTENT_S3');
   const vimeoProof = providerProof(input.source, 'CONTENT_VIMEO');
   const scope = {
     product: 'one_time_mishnayos' as const,
     runtime_tier: 'production' as const,
-    verification_environment_id: 'production_operator_canary' as const,
+    verification_environment_id: input.config.oneTimeVerificationEnvironmentId as
+      'production_operator_canary' | 'production_broad',
   };
   const s3Registry = {
     read: async () => {
@@ -80,7 +105,7 @@ export function createContentMediaWebRuntime(input: {
       storageClass: input.config.contentS3StorageClass,
       browserOrigin: new URL(input.config.publicBaseUrl).origin,
       runtimeTier: 'production',
-      verificationEnvironmentId: 'production_operator_canary',
+      verificationEnvironmentId: scope.verification_environment_id,
       timeoutMs: 15_000,
     },
     input.dependencies?.s3Client ?? new S3Client({ region: 'eu-central-1' }),
@@ -139,15 +164,18 @@ export function createContentMediaWebRuntime(input: {
   };
 }
 
-function assertProviderCanary(config: AppConfig) {
+function assertProviderRuntime(config: AppConfig) {
   if (
-    config.contentMediaMode !== 'provider_canary' ||
     config.oneTimeRuntimeTier !== 'production' ||
-    config.oneTimeVerificationEnvironmentId !== 'production_operator_canary' ||
     !config.contentMediaAuthorizationId ||
-    !config.contentMediaCanaryId
+    (config.contentMediaMode === 'provider_canary' &&
+      (config.oneTimeVerificationEnvironmentId !== 'production_operator_canary' ||
+        !config.contentMediaCanaryId)) ||
+    (config.contentMediaMode === 'production_broad' &&
+      config.oneTimeVerificationEnvironmentId !== 'production_broad') ||
+    !['provider_canary', 'production_broad'].includes(config.contentMediaMode)
   ) {
-    throw new Error('content_media_provider_canary_binding_mismatch');
+    throw new Error('content_media_provider_runtime_binding_mismatch');
   }
 }
 

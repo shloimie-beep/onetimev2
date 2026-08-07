@@ -49,6 +49,22 @@ export function observeDriveFile(
     previous?.byteCount === input.byteCount &&
     previous.changeMarker === input.changeMarker &&
     previous.mimeType === metadata.mimeType;
+  if (
+    unchanged &&
+    previous &&
+    ['processed', 'quarantined', 'dead_lettered'].includes(previous.state)
+  ) {
+    return {
+      observation: {
+        ...previous,
+        lastObservedAt: input.observedAt,
+        version: previous.version + 1,
+      },
+      stable: false,
+      changed: false,
+      terminal: true as const,
+    };
+  }
   const firstObservedAt = unchanged ? previous.firstObservedAt : input.observedAt;
   const stable =
     unchanged &&
@@ -71,7 +87,12 @@ export function observeDriveFile(
     retryState: 'ready',
     version: (previous?.version ?? 0) + 1,
   };
-  return { observation, stable, changed: Boolean(previous && !unchanged) };
+  return {
+    observation,
+    stable,
+    changed: Boolean(previous && !unchanged),
+    terminal: false as const,
+  };
 }
 
 export function planDriveRanges(byteCount: number) {

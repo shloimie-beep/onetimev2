@@ -62,12 +62,20 @@ export async function scanRegisteredDriveFolder(input: {
   observedAt: string;
   repository: ContentIngestRepository;
   provider: DriveIngestProvider;
+  maxFiles?: number | undefined;
+  maxPages?: number | undefined;
 }) {
   const visited = new Set<string>();
   const observations = [];
   let pageToken: string | undefined;
   let pageCount = 0;
+  let candidateCount = 0;
+  let truncated = false;
   do {
+    if (pageCount >= (input.maxPages ?? Number.MAX_SAFE_INTEGER)) {
+      truncated = true;
+      break;
+    }
     if (pageToken) {
       if (visited.has(pageToken)) {
         throw new ContentIngestError(
@@ -110,13 +118,22 @@ export async function scanRegisteredDriveFolder(input: {
         return result;
       });
       observations.push(observation);
+      if (!observation.terminal) candidateCount += 1;
+      if (candidateCount >= (input.maxFiles ?? Number.MAX_SAFE_INTEGER)) {
+        truncated = Boolean(page.nextPageToken) || file !== page.files.at(-1);
+        pageToken = undefined;
+        break;
+      }
     }
+    if (candidateCount >= (input.maxFiles ?? Number.MAX_SAFE_INTEGER)) break;
     pageToken = page.nextPageToken;
   } while (pageToken);
   return {
     pageCount,
     fileCount: observations.length,
+    candidateCount,
     stableCount: observations.filter((item) => item.stable).length,
+    truncated,
     observations,
   };
 }

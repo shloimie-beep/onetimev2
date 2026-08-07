@@ -37,6 +37,7 @@ import type {
 } from '../../../../../packages/contracts/src/providers/v21-provider-core.ts';
 import { processingSha256 } from '../../../../../packages/domain/src/content/processing/index.ts';
 import {
+  AwsS3ManagedOriginalAdapter,
   AwsS3ManagedOriginalClient,
   S3_CONTENT_ORIGINAL_REGISTRY_KEY,
 } from '../../../../../packages/db/src/content/ingest/index.ts';
@@ -78,8 +79,25 @@ export function createContentMediaWorkerRuntime(input: {
   source: NodeJS.ProcessEnv;
   dependencies?: ContentMediaRuntimeDependencies | undefined;
 }): ContentMediaWorkerRuntime | undefined {
-  if (!input.config.contentMediaProviderCanary) return undefined;
-  assertProviderCanary(input.config);
+  if (!input.config.contentMediaProviderCanary && !input.config.contentMediaProductionBroad) {
+    return undefined;
+  }
+  assertProviderRuntime(input.config);
+  if (!input.config.contentMediaProvidersReady) return undefined;
+  try {
+    return createContentMediaWorkerRuntimeUnchecked(input);
+  } catch (error) {
+    if (input.config.contentMediaProductionBroad) return undefined;
+    throw error;
+  }
+}
+
+function createContentMediaWorkerRuntimeUnchecked(input: {
+  config: AppConfig;
+  pool: DbPool;
+  source: NodeJS.ProcessEnv;
+  dependencies?: ContentMediaRuntimeDependencies | undefined;
+}): ContentMediaWorkerRuntime | undefined {
   const registry = input.dependencies?.registry ?? createPostgresProviderCoreRepository(input.pool);
   const s3 = input.dependencies?.s3 ?? new S3Client({ region: 'eu-central-1' });
   const sts = input.dependencies?.sts ?? new STSClient({ region: 'eu-central-1' });
@@ -87,7 +105,8 @@ export function createContentMediaWorkerRuntime(input: {
   const scope = {
     product: 'one_time_mishnayos' as const,
     runtime_tier: 'production' as const,
-    verification_environment_id: 'production_operator_canary' as const,
+    verification_environment_id: input.config.oneTimeVerificationEnvironmentId as
+      'production_operator_canary' | 'production_broad',
   };
   const s3Proof = providerProof(input.source, 'CONTENT_S3');
   const s3Registry = registryGuard(registry, {
@@ -106,12 +125,25 @@ export function createContentMediaWorkerRuntime(input: {
       storageClass: input.config.contentS3StorageClass,
       browserOrigin: new URL(input.config.publicBaseUrl).origin,
       runtimeTier: 'production',
-      verificationEnvironmentId: 'production_operator_canary',
+      verificationEnvironmentId: scope.verification_environment_id,
       timeoutMs: 15_000,
     },
     s3,
     sts,
     s3Registry,
+  );
+  const managedOriginal = new AwsS3ManagedOriginalAdapter(
+    {
+      enabled: true,
+      region: 'eu-central-1',
+      bucketRef: input.config.contentS3Bucket,
+      kmsKeyVersionRef: input.config.contentS3KmsKeyArn,
+      storageClass: input.config.contentS3StorageClass,
+      browserOrigin: new URL(input.config.publicBaseUrl).origin,
+      accountKey: input.config.accountKey,
+      productKey: input.config.productKey,
+    },
+    s3Identity,
   );
   const mediaStore = new AwsProcessingMediaStore({
     config: input.config,
@@ -138,6 +170,10 @@ export function createContentMediaWorkerRuntime(input: {
         folderId: input.config.contentDriveFolderId,
         serviceAccountEmail: token.serviceAccountEmail,
         timeoutMs: 15_000,
+        pageSize:
+          input.config.contentMediaMode === 'provider_canary'
+            ? 1
+            : input.config.contentMediaBatchSize,
       },
       token.accessToken,
       registryGuard(registry, {
@@ -157,6 +193,21 @@ export function createContentMediaWorkerRuntime(input: {
         input.config.contentDriveFolderId,
         driveClient,
       ),
+      staging: {
+        beginDriveTransfer: (request) => managedOriginal.beginDriveTransfer(request),
+        putPart: (request) => managedOriginal.putPart(request),
+        completeAndReadBack: (request) =>
+          managedOriginal.completeAndReadBack({
+            uploadSessionId: request.transferId,
+            opaqueObjectKey: stableKey('source', [
+              input.config.accountKey,
+              input.config.productKey,
+              request.transferId,
+            ]),
+            fullSha256: request.fullSha256,
+            orderedProviderPartRefDigests: request.orderedProviderPartRefDigests,
+          }),
+      },
     };
   }
 
@@ -197,13 +248,23 @@ export function createContentMediaWorkerRuntime(input: {
       digest(required(input.config.contentOpenAiProjectId, 'content_openai_project_missing')),
       processingClient,
     ),
-    nextCommand: () =>
-      selectExactCanaryProcessingCommand({
-        config: input.config,
-        source: input.source,
-        pool: input.pool,
-        client: processingClient,
-      }),
+    nextCommands: async (limit) =>
+      input.config.contentMediaMode === 'provider_canary'
+        ? [
+            await selectExactCanaryProcessingCommand({
+              config: input.config,
+              source: input.source,
+              pool: input.pool,
+              client: processingClient,
+            }),
+          ].filter((command): command is ProcessContentCommand => command !== null)
+        : selectBroadProcessingCommands({
+            config: input.config,
+            source: input.source,
+            pool: input.pool,
+            client: processingClient,
+            limit,
+          }),
   };
 
   const vimeoProof = providerProof(input.source, 'CONTENT_VIMEO');
@@ -238,16 +299,26 @@ export function createContentMediaWorkerRuntime(input: {
     vimeoClient,
   );
   const publicationRepository = createPostgresContentPublicationRepository(input.pool);
-  const canaryRepositories = createCanaryBoundPublicationRepositories({
-    pool: input.pool,
-    canaryId: required(input.config.contentMediaCanaryId, 'content_media_canary_missing'),
-    jobRepository: createPostgresJobFoundationRepository(input.pool),
-    publicationRepository,
-  });
+  const baseJobRepository = createPostgresJobFoundationRepository(input.pool);
+  const boundedRepositories =
+    input.config.contentMediaMode === 'provider_canary'
+      ? createCanaryBoundPublicationRepositories({
+          pool: input.pool,
+          canaryId: required(input.config.contentMediaCanaryId, 'content_media_canary_missing'),
+          jobRepository: baseJobRepository,
+          publicationRepository,
+        })
+      : createBroadBoundPublicationRepositories({
+          pool: input.pool,
+          accountKey: input.config.accountKey,
+          maxBatchSize: input.config.contentMediaBatchSize,
+          jobRepository: baseJobRepository,
+          publicationRepository,
+        });
   const providerRepository = createPostgresProviderCoreRepository(input.pool);
   runtime.publication = {
-    jobRepository: canaryRepositories.jobRepository,
-    publicationRepository: canaryRepositories.publicationRepository,
+    jobRepository: boundedRepositories.jobRepository,
+    publicationRepository: boundedRepositories.publicationRepository,
     approvedProjectionRepository: createContentProcessingRepository(input.pool),
     providerRepository,
     registry,
@@ -266,7 +337,15 @@ export function createContentMediaWorkerRuntime(input: {
     reconciliationAdapter: vimeoAdapter.reconciliationAdapter(),
     finalizationReadbackAdapter: vimeoAdapter,
     createId: () => `media_${randomUUID()}`,
-    options: { scope, batchSize: 1, dispatchTimeoutMs: 30_000, reconciliationTimeoutMs: 30_000 },
+    options: {
+      scope,
+      batchSize:
+        input.config.contentMediaMode === 'provider_canary'
+          ? 1
+          : input.config.contentMediaBatchSize,
+      dispatchTimeoutMs: 30_000,
+      reconciliationTimeoutMs: 30_000,
+    },
   };
   return runtime;
 }
@@ -444,6 +523,232 @@ export function createCanaryBoundPublicationRepositories(input: {
           scope.verification_environment_id,
           input.canaryId,
           Math.min(limit, 1),
+        ],
+      );
+      return result.rows.map((row) => ({
+        scope: { ...scope },
+        accountKey: String(row.account_key),
+        contentId: String(row.content_id),
+        providerOperationId: String(row.provider_operation_id),
+        operation: String(row.operation) as 'publish_private' | 'revoke_private',
+        providerOperationVersion: Number(row.provider_operation_version),
+        outboxIntentId: String(row.intent_id),
+        contentRecordVersion: Number(row.content_record_version),
+      }));
+    },
+  };
+  return { jobRepository, publicationRepository };
+}
+
+export function createBroadBoundPublicationRepositories(input: {
+  pool: DbPool;
+  accountKey: string;
+  maxBatchSize: number;
+  jobRepository: JobFoundationRepository;
+  publicationRepository: ContentPublicationRepository & ContentPublicationWorkerRepository;
+}) {
+  if (!input.accountKey.trim()) throw new Error('content_media_broad_account_missing');
+  if (
+    !Number.isSafeInteger(input.maxBatchSize) ||
+    input.maxBatchSize < 1 ||
+    input.maxBatchSize > 10
+  ) {
+    throw new Error('content_media_broad_batch_invalid');
+  }
+  const bounded = (limit: number) => Math.min(limit, input.maxBatchSize);
+  const jobRepository: JobFoundationRepository = {
+    async claimDueJobs(claim) {
+      if (
+        claim.scope.product !== 'one_time_mishnayos' ||
+        claim.scope.runtime_tier !== 'production' ||
+        claim.scope.verification_environment_id !== 'production_broad'
+      ) {
+        throw new Error('content_publication_broad_scope_mismatch');
+      }
+      const result = await input.pool.query(
+        `WITH candidate AS (
+           SELECT job.job_id
+             FROM onetime.job_outbox AS job
+             JOIN onetime.content_publication_outbox AS publication
+               ON publication.provider_operation_id = job.job_id
+             JOIN onetime.provider_operation_binding AS binding
+               ON binding.job_id = job.job_id
+             JOIN onetime.content_publications AS content
+               ON content.account_key = publication.account_key
+              AND content.product_key = publication.product_key
+              AND content.content_id = publication.content_id
+              AND content.content_version_id = publication.content_version_id
+              AND content.publication_generation = publication.publication_generation
+              AND content.pending_provider_operation_id = publication.provider_operation_id
+             JOIN onetime.content_processing_versions AS processing
+               ON processing.account_key = publication.account_key
+              AND processing.product_key = publication.product_key
+              AND processing.content_version_key = publication.content_version_id
+            WHERE job.product = $1
+              AND job.runtime_tier = $2
+              AND job.verification_environment_id = $3
+              AND publication.account_key = $4
+              AND job.provider = 'vimeo'
+              AND job.operation_type = ANY($5::text[])
+              AND job.state IN ('not_started', 'retry_wait')
+              AND job.unknown_effect = false
+              AND job.dispatch_attempts < 8
+              AND (job.next_attempt_at IS NULL OR job.next_attempt_at <= $6::timestamptz)
+              AND publication.product_key = job.product
+              AND publication.provider = job.provider
+              AND publication.operation = job.operation_type
+              AND publication.content_id = job.aggregate_ref
+              AND publication.content_version_id = job.payload_ref
+              AND publication.publication_generation = job.source_version
+              AND publication.request_hash = job.canonical_request_hash
+              AND publication.state = 'pending'
+              AND publication.intent_json->'approvalEvidence' IS NOT NULL
+              AND binding.registry_binding_key = 'vimeo_publication_primary'
+              AND binding.effect_kind = 'mutation'
+              AND (
+                (job.operation_type = 'publish_private'
+                  AND content.state = 'publishing'
+                  AND content.record_json->'approval' IS NOT NULL
+                  AND processing.processing_state = 'approved')
+                OR
+                (job.operation_type = 'revoke_private'
+                  AND content.state IN ('approved', 'archived'))
+              )
+            ORDER BY COALESCE(job.next_attempt_at, job.created_at), job.created_at, job.job_id
+            LIMIT $7
+            FOR UPDATE OF job SKIP LOCKED
+         )
+         UPDATE onetime.job_outbox AS job
+            SET state = 'leased',
+                version = job.version + 1,
+                lease_owner = $8,
+                lease_generation = job.lease_generation + 1,
+                lease_expires_at = $6::timestamptz + make_interval(secs => $9),
+                last_heartbeat_at = $6::timestamptz,
+                next_attempt_at = NULL,
+                updated_at = $6::timestamptz
+           FROM candidate
+          WHERE job.job_id = candidate.job_id
+          RETURNING job.*`,
+        [
+          claim.scope.product,
+          claim.scope.runtime_tier,
+          claim.scope.verification_environment_id,
+          input.accountKey,
+          claim.operation_types,
+          claim.now.toISOString(),
+          bounded(claim.limit),
+          claim.owner,
+          JOB_LEASE_DURATION_MS / 1_000,
+        ],
+      );
+      const claimed = result.rows.map(mapProviderJobRow);
+      if (claimed.length > bounded(claim.limit)) {
+        throw new Error('content_publication_broad_claim_limit_exceeded');
+      }
+      return claimed;
+    },
+    heartbeat: (lease, now) => input.jobRepository.heartbeat(lease, now),
+    markInFlight: (lease, expectedVersion, now) =>
+      input.jobRepository.markInFlight(lease, expectedVersion, now),
+    recordDispatchOutcome: (record) => input.jobRepository.recordDispatchOutcome(record),
+  };
+  const publicationRepository: ContentPublicationRepository & ContentPublicationWorkerRepository = {
+    inTransaction: (work) => input.publicationRepository.inTransaction(work),
+    async reopenDispatchContext(job) {
+      if (job.scope.verification_environment_id !== 'production_broad') return null;
+      const context = await input.publicationRepository.reopenDispatchContext(job);
+      if (context && context.intent.accountKey !== input.accountKey) {
+        throw new Error('content_publication_broad_dispatch_account_mismatch');
+      }
+      return context;
+    },
+    async listAcceptanceUnknownOperations(scope, limit) {
+      const result = await input.pool.query(
+        `SELECT job.*, binding.registry_binding_key,
+                binding.provider_account_ref_hash,
+                binding.effect_kind, binding.household_id
+           FROM onetime.job_outbox AS job
+           JOIN onetime.content_publication_outbox AS publication
+             ON publication.provider_operation_id = job.job_id
+           JOIN onetime.provider_operation_binding AS binding
+             ON binding.job_id = job.job_id
+          WHERE job.product = $1
+            AND job.runtime_tier = $2
+            AND job.verification_environment_id = $3
+            AND publication.account_key = $4
+            AND job.provider = 'vimeo'
+            AND job.operation_type IN ('publish_private', 'revoke_private')
+            AND job.state = 'acceptance_unknown'
+            AND job.unknown_effect = TRUE
+            AND publication.product_key = job.product
+            AND publication.provider = job.provider
+            AND publication.operation = job.operation_type
+            AND publication.content_id = job.aggregate_ref
+            AND publication.content_version_id = job.payload_ref
+            AND publication.publication_generation = job.source_version
+            AND publication.request_hash = job.canonical_request_hash
+            AND publication.state = 'pending'
+            AND publication.intent_json->'approvalEvidence' IS NOT NULL
+            AND binding.registry_binding_key = 'vimeo_publication_primary'
+            AND binding.effect_kind = 'mutation'
+          ORDER BY job.updated_at, job.job_id
+          LIMIT $5`,
+        [
+          scope.product,
+          scope.runtime_tier,
+          scope.verification_environment_id,
+          input.accountKey,
+          bounded(limit),
+        ],
+      );
+      return result.rows.map(mapProviderOperationRow);
+    },
+    async listAcceptedPendingWork(scope, limit) {
+      const result = await input.pool.query(
+        `SELECT publication.account_key, publication.content_id,
+                publication.provider_operation_id, publication.operation,
+                job.version AS provider_operation_version,
+                publication.intent_id, content.version AS content_record_version
+           FROM onetime.content_publication_outbox AS publication
+           JOIN onetime.job_outbox AS job
+             ON job.job_id = publication.provider_operation_id
+           JOIN onetime.provider_operation_binding AS binding
+             ON binding.job_id = job.job_id
+           JOIN onetime.content_publications AS content
+             ON content.account_key = publication.account_key
+            AND content.product_key = publication.product_key
+            AND content.content_id = publication.content_id
+            AND content.content_version_id = publication.content_version_id
+            AND content.publication_generation = publication.publication_generation
+            AND content.pending_provider_operation_id = publication.provider_operation_id
+          WHERE job.product = $1
+            AND job.runtime_tier = $2
+            AND job.verification_environment_id = $3
+            AND publication.account_key = $4
+            AND job.provider = 'vimeo'
+            AND job.operation_type IN ('publish_private', 'revoke_private')
+            AND job.state = 'accepted'
+            AND job.unknown_effect = FALSE
+            AND publication.product_key = job.product
+            AND publication.provider = job.provider
+            AND publication.operation = job.operation_type
+            AND publication.content_id = job.aggregate_ref
+            AND publication.content_version_id = job.payload_ref
+            AND publication.publication_generation = job.source_version
+            AND publication.request_hash = job.canonical_request_hash
+            AND publication.state = 'pending'
+            AND publication.intent_json->'approvalEvidence' IS NOT NULL
+            AND binding.registry_binding_key = 'vimeo_publication_primary'
+            AND binding.effect_kind = 'mutation'
+          ORDER BY job.updated_at, job.job_id
+          LIMIT $5`,
+        [
+          scope.product,
+          scope.runtime_tier,
+          scope.verification_environment_id,
+          input.accountKey,
+          bounded(limit),
         ],
       );
       return result.rows.map((row) => ({
@@ -679,29 +984,50 @@ export class AwsProcessingMediaStore
 
   private async exactOriginalKey(source: ContentProcessingSource) {
     const result = await this.input.pool.query(
-      `SELECT upload_row.record_json AS upload_json
+      `SELECT link_row.source_kind, link_row.provenance_ref_digest,
+              link_row.provider_change_marker,
+              upload_row.record_json AS upload_json
          FROM onetime.content_source_links_v21 AS link_row
-         JOIN onetime.content_ingest_upload_sessions AS upload_row
+         LEFT JOIN onetime.content_ingest_upload_sessions AS upload_row
            ON upload_row.account_key = link_row.account_key
           AND upload_row.product_key = link_row.product_key
           AND upload_row.record_json->>'providerUploadIdDigest' = link_row.provenance_ref_digest
         WHERE link_row.account_key = $1
           AND link_row.product_key = $2
           AND link_row.source_key = $3
-          AND link_row.source_kind = 'app_upload'
-        LIMIT 2`,
+        ORDER BY CASE WHEN link_row.source_kind = 'app_upload' THEN 0 ELSE 1 END,
+                 link_row.source_link_key
+        LIMIT 9`,
       [source.accountKey, source.productKey, source.id],
     );
-    const session = parseJson<{ opaqueObjectKey?: string }>(result.rows[0]?.upload_json);
-    if (
-      result.rows.length !== 1 ||
-      !session?.opaqueObjectKey ||
-      !/^source_[a-f0-9]{32}$/u.test(session.opaqueObjectKey) ||
-      digest(session.opaqueObjectKey) !== source.objectKeyDigest
-    ) {
+    if (result.rows.length === 9) {
+      throw new Error('content_processing_original_key_binding_unbounded');
+    }
+    const candidates = new Set<string>();
+    for (const row of result.rows) {
+      const session = parseJson<{ opaqueObjectKey?: string }>(row.upload_json);
+      const key =
+        row.source_kind === 'app_upload' ||
+        (row.source_kind === undefined && session?.opaqueObjectKey)
+          ? session?.opaqueObjectKey
+          : row.source_kind === 'drive' && row.provider_change_marker
+            ? stableKey('source', [
+                source.accountKey,
+                source.productKey,
+                stableKey('drive_transfer', [
+                  String(row.provenance_ref_digest),
+                  String(row.provider_change_marker),
+                ]),
+              ])
+            : undefined;
+      if (key && /^source_[a-f0-9]{32}$/u.test(key) && digest(key) === source.objectKeyDigest) {
+        candidates.add(key);
+      }
+    }
+    if (candidates.size !== 1) {
       throw new Error('content_processing_original_key_binding_unavailable');
     }
-    return session.opaqueObjectKey;
+    return [...candidates][0]!;
   }
 
   private async assertS3(operationType: string, effectKind: 'mutation' | 'readback') {
@@ -711,7 +1037,8 @@ export class AwsProcessingMediaStore
       scope: {
         product: 'one_time_mishnayos',
         runtime_tier: 'production',
-        verification_environment_id: 'production_operator_canary',
+        verification_environment_id: this.input.config.oneTimeVerificationEnvironmentId as
+          'production_operator_canary' | 'production_broad',
       },
       operation_type: operationType,
       effect_kind: effectKind,
@@ -728,6 +1055,78 @@ export class AwsProcessingMediaStore
   private get kms() {
     return required(this.input.config.contentS3KmsKeyArn, 'content_s3_kms_binding_missing');
   }
+}
+
+export async function selectBroadProcessingCommands(input: {
+  config: AppConfig;
+  source: NodeJS.ProcessEnv;
+  pool: DbPool;
+  client: ExecutableFfmpegOpenAiClient;
+  limit: number;
+}): Promise<ProcessContentCommand[]> {
+  if (!Number.isSafeInteger(input.limit) || input.limit < 1 || input.limit > 10) {
+    throw new Error('content_processing_broad_limit_invalid');
+  }
+  const result = await input.pool.query(
+    `SELECT source.record_json
+       FROM onetime.content_sources_v21 AS source
+       LEFT JOIN LATERAL (
+         SELECT version.processing_state, version.retry_state, version.record_json
+           FROM onetime.content_processing_versions AS version
+          WHERE version.account_key = source.account_key
+            AND version.product_key = source.product_key
+            AND version.source_key = source.source_key
+          ORDER BY version.updated_at DESC, version.content_version_key
+          LIMIT 1
+       ) AS processing ON TRUE
+       LEFT JOIN onetime.content_processing_commands AS receipt
+         ON receipt.account_key = source.account_key
+        AND receipt.product_key = source.product_key
+        AND receipt.idempotency_key = source.source_key
+        AND receipt.operation = 'process_source'
+      WHERE source.account_key = $1
+        AND source.product_key = $2
+        AND source.lifecycle_state IN ('received', 'processing')
+        AND source.record_json->>'runtimeTier' = 'production'
+        AND source.record_json->>'verificationEnvironmentId' = 'production_broad'
+        AND COALESCE(source.record_json->>'occurrenceId', '') <> ''
+        AND receipt.idempotency_key IS NULL
+        AND (
+          processing.processing_state IS NULL
+          OR processing.processing_state IN ('validating', 'transcoding', 'transcribing', 'drafting')
+          OR (
+            processing.processing_state = 'failed'
+            AND processing.retry_state = 'retry_wait'
+            AND (processing.record_json->>'retryAt')::timestamptz <= now()
+          )
+        )
+      ORDER BY source.updated_at, source.source_key
+      LIMIT $3`,
+    [input.config.accountKey, input.config.productKey, input.limit],
+  );
+  if (result.rows.length > input.limit) throw new Error('content_processing_broad_limit_exceeded');
+  const commands: ProcessContentCommand[] = [];
+  for (const row of result.rows) {
+    const source = parseJson<ContentProcessingSource>(row.record_json);
+    if (
+      !source ||
+      source.accountKey !== input.config.accountKey ||
+      source.productKey !== input.config.productKey ||
+      source.runtimeTier !== 'production' ||
+      source.verificationEnvironmentId !== 'production_broad' ||
+      !source.occurrenceId
+    ) {
+      throw new Error('content_processing_broad_binding_mismatch');
+    }
+    commands.push(
+      await buildProcessingCommand({
+        ...input,
+        sourceRecord: source,
+        idempotencyKey: source.id,
+      }),
+    );
+  }
+  return commands;
 }
 
 async function selectExactCanaryProcessingCommand(input: {
@@ -759,39 +1158,60 @@ async function selectExactCanaryProcessingCommand(input: {
   ) {
     throw new Error('content_processing_canary_binding_mismatch');
   }
+  return buildProcessingCommand({
+    ...input,
+    sourceRecord: source,
+    idempotencyKey: canaryId,
+  });
+}
+
+async function buildProcessingCommand(input: {
+  config: AppConfig;
+  source: NodeJS.ProcessEnv;
+  client: ExecutableFfmpegOpenAiClient;
+  sourceRecord: ContentProcessingSource;
+  idempotencyKey: string;
+}): Promise<ProcessContentCommand> {
+  const contentSource = input.sourceRecord;
+  const occurrenceId = required(
+    contentSource.occurrenceId,
+    'content_processing_occurrence_binding_missing',
+  );
   const principalId = required(
-    source.recordingAdminId ?? source.matchedByAdminId,
+    contentSource.recordingAdminId ?? contentSource.matchedByAdminId,
     'content_processing_admin_binding_missing',
   );
-  const probe = await input.client.probeSource(source);
+  const probe = await input.client.probeSource(contentSource);
   const occurredAt = new Date().toISOString();
-  const requestHash = digest(`${source.sha256}\0${source.objectVersionId}\0${probe.durationMs}`);
+  const requestHash = digest(
+    `${contentSource.sha256}\0${contentSource.objectVersionId}\0${probe.durationMs}`,
+  );
   const contentVersionId = processingSha256(
-    `${source.id}:${source.sha256}:${source.objectVersionId}:${requestHash}`,
+    `${contentSource.id}:${contentSource.sha256}:${contentSource.objectVersionId}:${requestHash}`,
   );
   const transcodeOperationId = processingSha256(
-    `${contentVersionId}:${source.sha256}:${source.objectVersionId}:transcode`,
+    `${contentVersionId}:${contentSource.sha256}:${contentSource.objectVersionId}:transcode`,
   );
   return {
     actor: {
-      accountKey: source.accountKey,
-      productKey: source.productKey,
+      accountKey: contentSource.accountKey,
+      productKey: contentSource.productKey,
       principalId,
       role: 'admin',
     },
-    source,
+    source: contentSource,
     readback: {
-      runtimeTier: source.runtimeTier,
-      verificationEnvironmentId: source.verificationEnvironmentId,
+      runtimeTier: contentSource.runtimeTier,
+      verificationEnvironmentId: contentSource.verificationEnvironmentId,
       region: 'eu-central-1',
-      bucketRef: source.bucketRef,
-      objectKeyDigest: source.objectKeyDigest,
-      objectVersionId: source.objectVersionId,
-      byteCount: source.byteCount,
+      bucketRef: contentSource.bucketRef,
+      objectKeyDigest: contentSource.objectKeyDigest,
+      objectVersionId: contentSource.objectVersionId,
+      byteCount: contentSource.byteCount,
       durabilityEvidenceVersion: 'OT-MANAGED-ORIGINAL-1',
       checksumAlgorithm: 'sha256',
-      sha256: source.sha256,
-      kmsKeyVersionRef: source.kmsKeyVersionRef,
+      sha256: contentSource.sha256,
+      kmsKeyVersionRef: contentSource.kmsKeyVersionRef,
       storageClass: input.config.contentS3StorageClass,
       blockPublicAccess: true,
       bucketOwnerEnforced: true,
@@ -806,13 +1226,13 @@ async function selectExactCanaryProcessingCommand(input: {
       blockPublicAccess: true,
       bucketOwnerEnforced: true,
       browserCredentialsExposed: false,
-      bucketRef: source.bucketRef,
-      kmsKeyVersionRef: source.kmsKeyVersionRef,
+      bucketRef: contentSource.bucketRef,
+      kmsKeyVersionRef: contentSource.kmsKeyVersionRef,
     },
     captureEvidence: {
       evidenceVersion: 'OT-OBS-CAPTURE-1',
-      sourceId: source.id,
-      occurrenceId: canaryId,
+      sourceId: contentSource.id,
+      occurrenceId,
       captureMethod: 'obs',
       zoomCloudRecordingDisabled: exactTrue(
         input.source.CONTENT_MEDIA_ZOOM_CLOUD_RECORDING_DISABLED,
@@ -830,17 +1250,20 @@ async function selectExactCanaryProcessingCommand(input: {
         input.source.CONTENT_MEDIA_PARTICIPANT_SNAPSHOT_DIGEST,
       ),
       recordingNotice: exactNotice(input.source.CONTENT_MEDIA_RECORDING_NOTICE),
-      capturedAt: iso(source.obsRecordingStartedAt, 'content_processing_capture_timestamp_missing'),
-      uploadConfirmedAt: source.stableAt,
-      durableChecksumReadbackReceiptId: source.checksumReadbackReceiptId,
-      linkedIngestSourceId: source.id,
+      capturedAt: iso(
+        contentSource.obsRecordingStartedAt,
+        'content_processing_capture_timestamp_missing',
+      ),
+      uploadConfirmedAt: contentSource.stableAt,
+      durableChecksumReadbackReceiptId: contentSource.checksumReadbackReceiptId,
+      linkedIngestSourceId: contentSource.id,
     },
     probe,
     trimStartMs: 0,
     trimEndMs: probe.durationMs,
-    inputLocator: `managed_original_${source.id}`,
+    inputLocator: `managed_original_${contentSource.id}`,
     outputLocator: `derivative_${transcodeOperationId}`,
-    idempotencyKey: canaryId,
+    idempotencyKey: input.idempotencyKey,
     requestHash,
     occurredAt,
   };
@@ -886,15 +1309,18 @@ function providerProof(
   };
 }
 
-function assertProviderCanary(config: AppConfig) {
+function assertProviderRuntime(config: AppConfig) {
   if (
-    config.contentMediaMode !== 'provider_canary' ||
     config.oneTimeRuntimeTier !== 'production' ||
-    config.oneTimeVerificationEnvironmentId !== 'production_operator_canary' ||
     !config.contentMediaAuthorizationId ||
-    !config.contentMediaCanaryId
+    (config.contentMediaMode === 'provider_canary' &&
+      (config.oneTimeVerificationEnvironmentId !== 'production_operator_canary' ||
+        !config.contentMediaCanaryId)) ||
+    (config.contentMediaMode === 'production_broad' &&
+      config.oneTimeVerificationEnvironmentId !== 'production_broad') ||
+    !['provider_canary', 'production_broad'].includes(config.contentMediaMode)
   ) {
-    throw new Error('content_media_provider_canary_binding_mismatch');
+    throw new Error('content_media_provider_runtime_binding_mismatch');
   }
 }
 
@@ -1023,4 +1449,8 @@ async function fileSha256(filePath: string) {
 
 function digest(value: string) {
   return createHash('sha256').update(value).digest('hex');
+}
+
+function stableKey(prefix: string, parts: readonly string[]) {
+  return `${prefix}_${createHash('sha256').update(parts.join('\0')).digest('hex').slice(0, 32)}`;
 }
