@@ -4,7 +4,7 @@
 - Date: 2026-08-09
 - Branch: `codex/ot-p1-resend-recovery-20260809`
 - Integration base: `codex/one-time-complete-production-launch-20260805` (PR #131)
-- Status: implementation and focused local proof complete; production canary pending
+- Status: implementation and focused local proof complete; production held on the exact integration blocker below
 
 ## Delta baseline
 
@@ -67,3 +67,18 @@ The current queue was read from inside the running Railway web service because i
 - Git whitespace validation passed.
 
 Production proof will be appended after the deployment and disposable canary.
+
+## Exact external blocker
+
+PR #140 owns the coordinated 60-minute reset TTL and must merge before this branch is rebased and deployed. Its exact-head Node integration job currently fails because a Family-signup test receives a server error instead of the expected session cookie. OT-CTRL has declined to merge that failing head, and the PR #140 lane has stopped because the remaining failure is outside its authorized one-line assertion correction.
+
+Consequently, OT-P1 has not:
+
+- force-pushed its locally rebased/reviewed follow-up commits;
+- applied migration `2273` in production;
+- deployed the web or worker service;
+- registered or changed a Resend webhook;
+- issued the real reset request;
+- changed the operator password or sessions.
+
+Local held commit `14ac150` contains the review correction that stores Resend 2xx as `provider_accepted`, the migration renumber to `2273`, and this result's production queue readback. Resume only after PR #140 is green and merged: rebase on the then-current integration head, update the final migration inventory assertion, rerun the focused gates, and use force-with-lease before deployment.
