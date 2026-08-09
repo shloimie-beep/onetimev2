@@ -4,7 +4,7 @@
 - Date: 2026-08-09
 - Branch: `codex/ot-p1-resend-recovery-20260809`
 - Integration base: `codex/one-time-complete-production-launch-20260805` (PR #131)
-- Status: implementation and focused local proof complete; production held on the controller integration sequence below
+- Status: final integration rebase and focused local proof complete; exact-head hosted CI pending and production held by the controller
 
 ## Delta baseline
 
@@ -60,25 +60,25 @@ The current queue was read from inside the running Railway web service because i
 
 ## Focused local proof
 
-- `12/12` focused integration tests passed across reset request/readback, token lifecycle and session revocation, activation/Student suppression, outbox lease/retry/unknown result, and webhook signature/duplicate/final states.
+- `16/16` focused integration tests passed across reset request/readback, token lifecycle and session revocation, activation/Student suppression, outbox lease/retry/unknown result, webhook signature/duplicate/final states, and the production role-access command.
+- `5/5` migration inventory tests passed against the final rebased tree.
 - TypeScript typecheck passed.
-- Secret scan passed across 3,391 repository text files.
+- Repository-wide secret scan passed.
 - Changed TypeScript files pass the repository formatter.
 - Git whitespace validation passed.
 
 Production proof will be appended after the deployment and disposable canary.
 
-## Integration sequencing hold
+## Final integration checkpoint
 
-OT-CTRL has fixed the merge order as PR #146, PR #147 and its role-switch deployment, then PR #140, followed by this PR #144. PR #140 owns the coordinated 60-minute reset TTL and must merge before the final rebase and deployment of this branch. This is an active controller sequence, not a Resend configuration blocker.
+PR #140 and PR #147 are merged. This branch is rebased onto exact PR #131 integration commit `1011cb45ca0397af4d0567b6210ce9f5bb5de5ed`. The resulting tree contains 106 migrations; numeric latest remains `2275_family_signup_inactive_support_projection`, while this lane contributes `2273_resend_recovery_delivery_state`.
 
 Consequently, OT-P1 has not:
 
-- force-pushed its locally rebased/reviewed follow-up commits;
 - applied migration `2273` in production;
 - deployed the web or worker service;
 - registered or changed a Resend webhook;
 - issued the real reset request;
 - changed the operator password or sessions.
 
-The held branch contains the review correction that stores Resend 2xx as `provider_accepted`, migration `2273`, production queue readback, stable semantic duplicate-webhook classification, and the locally accurate 103-migration inventory assertion. The duplicate-webhook exact test, five inventory tests, 12 focused Resend integration tests, typecheck, formatting, diff check, and secret scan are green. After PR #140 merges, rebase on the then-current integration head, derive the final inventory count and latest migration from that head, rerun the focused gates, and use force-with-lease before deployment.
+The final rebased branch contains the review correction that stores Resend 2xx as `provider_accepted`, migration `2273`, production queue readback, stable semantic duplicate-webhook classification, and the derived 106-migration inventory assertion with numeric latest `2275`. Focused tests, typecheck, formatting, diff validation, and secret scanning are green. The remaining code gate is the full hosted exact-head workflow set; production deployment, webhook registration, and the single real operator reset remain controller-authorized follow-up work after merge.
