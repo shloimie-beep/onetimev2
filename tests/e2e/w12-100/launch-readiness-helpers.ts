@@ -350,8 +350,8 @@ export async function createSyntheticContact(page: Page) {
   await page.getByRole('textbox', { name: 'Adult account email' }).fill(email);
   await page.getByLabel('Password', { exact: true }).fill('StrongPassword!234');
   await page.getByLabel('Confirm password').fill('StrongPassword!234');
-  await page.getByLabel(/I agree to the Terms/).check();
-  await page.getByLabel(/I acknowledge the Privacy Notice/).check();
+  await expect(page.locator('[data-signup-form] input[type="checkbox"]')).toHaveCount(1);
+  await page.getByLabel(/I agree to the Terms of Use/).check();
   const submit = page.getByRole('button', { name: 'Create your Family account' });
   await expect(submit).toBeVisible();
   await submit.click();
