@@ -1,3 +1,6 @@
+import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
 import pg from 'pg';
 import { describe, expect, it } from 'vitest';
 import { createApp } from '../../../apps/web/src/server/app.ts';
@@ -16,6 +19,7 @@ describe.runIf(nativeProofEnabled)('OT-P0 native PostgreSQL owner Admin session'
     const pool = new pg.Pool({ connectionString: nativeDatabaseUrl!, max: 2 });
     let ownsNativeSchema = false;
     let server: ReturnType<ReturnType<typeof createApp>['listen']> | undefined;
+    let distDir: string | undefined;
     try {
       const database = await pool.query(
         `SELECT current_database() AS database_name,
@@ -77,9 +81,13 @@ describe.runIf(nativeProofEnabled)('OT-P0 native PostgreSQL owner Admin session'
         OUTBOX_TRANSPORT_MODE: 'sink',
         AUTH_CSRF_SECRET: 'ot-p0-native-admin-session-hmac-secret',
       });
+      distDir = await mkdtemp(path.join(tmpdir(), 'ot-p0-native-admin-shell-'));
+      await mkdir(path.join(distDir, 'app'), { recursive: true });
+      await writeFile(path.join(distDir, 'app', 'crm.html'), '<!doctype html><body>CRM</body>');
       const app = createApp({
         config,
         pool,
+        distDir,
         clock: () => new Date(now),
         v21AdultSessionRuntime: runtime,
       });
@@ -121,6 +129,16 @@ describe.runIf(nativeProofEnabled)('OT-P0 native PostgreSQL owner Admin session'
       });
       expect(adminAssignees.status).toBe(200);
       await expect(adminAssignees.json()).resolves.toMatchObject({ success: true });
+      const adminCrmShell = await fetch(`${baseUrl}/app/crm`, {
+        redirect: 'manual',
+        headers: { cookie: cookieHeader },
+      });
+      expect(adminCrmShell.status).toBe(200);
+      const adminDashboardDeepLink = await fetch(`${baseUrl}/app/dashboard/overview`, {
+        redirect: 'manual',
+        headers: { cookie: cookieHeader },
+      });
+      expect(adminDashboardDeepLink.status).toBe(200);
 
       const csrfProtectedPost = await fetch(`${baseUrl}/api/v1/admin/classes/series`, {
         method: 'POST',
@@ -163,6 +181,11 @@ describe.runIf(nativeProofEnabled)('OT-P0 native PostgreSQL owner Admin session'
       });
       expect(parentAssignees.status).toBe(403);
       await expect(parentAssignees.json()).resolves.toMatchObject({ code: 'FORBIDDEN' });
+      const parentCrmShell = await fetch(`${baseUrl}/app/crm`, {
+        redirect: 'manual',
+        headers: { cookie: parentCookie },
+      });
+      expect(parentCrmShell.status).toBe(403);
       const parentPortal = await fetch(`${baseUrl}/api/v1/portals/parent/dashboard`, {
         headers: { cookie: parentCookie },
       });
@@ -235,6 +258,7 @@ describe.runIf(nativeProofEnabled)('OT-P0 native PostgreSQL owner Admin session'
     } finally {
       const activeServer = server;
       if (activeServer) await new Promise<void>((resolve) => activeServer.close(() => resolve()));
+      if (distDir) await rm(distDir, { recursive: true, force: true });
       if (ownsNativeSchema) await pool.query('DROP SCHEMA IF EXISTS onetime CASCADE');
       await pool.end();
     }

@@ -517,14 +517,35 @@ export function createApp({
       hmacSecret: config.authCsrfSecret,
       ...(clock ? { clock } : {}),
     });
+  const apiSessionResolutionInput: ApiSessionResolutionInput = {
+    pool,
+    config,
+    v21AdultSessionRuntime,
+    ...(clock ? { clock } : {}),
+  };
+  const readApiSession = (req: Request) =>
+    readApiSessionFromRequest(req, apiSessionResolutionInput);
   const resolveApiSession = async (req: Request) => {
-    const resolution = await readApiSessionFromRequest(req, {
-      pool,
-      config,
-      v21AdultSessionRuntime,
-      ...(clock ? { clock } : {}),
-    });
+    const resolution = await readApiSession(req);
     return resolution.status === 'resolved' ? resolution.session : null;
+  };
+  const resolveOwnerAdminShellSession = async (
+    req: RequestWithTrace,
+    res: Response,
+    fallbackPath: string,
+  ): Promise<ResolvedApiSession | null> => {
+    const resolution = await readApiSession(req);
+    if (resolution.status === 'unavailable') {
+      setPrivateNoStore(res);
+      res.status(503).type('text').send('Access verification is temporarily unavailable.');
+      return null;
+    }
+    if (resolution.status !== 'resolved') {
+      const returnTo = safeReturnPath(req.path, config) ?? fallbackPath;
+      res.redirect(302, `/login?return_to=${encodeURIComponent(returnTo)}`);
+      return null;
+    }
+    return resolution.session;
   };
   const requireApiSession = (
     req: RequestWithTrace,
@@ -1747,20 +1768,16 @@ export function createApp({
   });
 
   app.get(/^\/app\/crm(?:\/.*)?$/, async (req: RequestWithTrace, res) => {
-    const session = await sessionFromRequest(req, pool, config);
-    if (!session) {
-      res.redirect(
-        302,
-        `/login?return_to=${encodeURIComponent(safeReturnPath(req.path, config) ?? '/app/crm')}`,
-      );
-      return;
-    }
+    const session = await resolveOwnerAdminShellSession(req, res, '/app/crm');
+    if (!session) return;
     if (!canReadContacts(session.user.role)) {
       setPrivateNoStore(res);
       res.status(403).type('html').send(forbiddenOwnerAdminHtml(req.path));
       return;
     }
-    await ensureSessionCsrfCookie(req, res, pool, config, session);
+    if (session.session_model === 'legacy') {
+      await ensureSessionCsrfCookie(req, res, pool, config, session);
+    }
     setPrivateNoStore(res);
     await sendAppHtml(res, distDir, 'crm', config);
   });
@@ -1794,16 +1811,8 @@ export function createApp({
   app.get(
     /^\/app\/(?:dashboard|classes|content|billing|communications|rewards|support|operations)(?:\/.*)?$/,
     async (req: RequestWithTrace, res) => {
-      const session = await sessionFromRequest(req, pool, config);
-      if (!session) {
-        res.redirect(
-          302,
-          `/login?return_to=${encodeURIComponent(
-            safeReturnPath(req.path, config) ?? '/app/dashboard',
-          )}`,
-        );
-        return;
-      }
+      const session = await resolveOwnerAdminShellSession(req, res, '/app/dashboard');
+      if (!session) return;
       if (
         !canUseOwnerDashboard(session.user.role) &&
         !canUseRabbiTeachingSurface(session.user.role, req.path)
@@ -1812,7 +1821,9 @@ export function createApp({
         res.status(403).type('html').send(forbiddenOwnerAdminHtml(req.path));
         return;
       }
-      await ensureSessionCsrfCookie(req, res, pool, config, session);
+      if (session.session_model === 'legacy') {
+        await ensureSessionCsrfCookie(req, res, pool, config, session);
+      }
       setPrivateNoStore(res);
       await sendAppHtml(res, distDir, 'crm', config);
     },
