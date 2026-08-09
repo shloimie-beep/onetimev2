@@ -300,18 +300,20 @@ function CrmApp() {
   async function loadSession() {
     try {
       const json = await getSession();
-      if (json.user.role === 'admin') {
-        const assigneeJson = await getAssignees();
-        setAssignees(assigneeJson.assignees);
-      }
       setSessionExpired(false);
       setSession(json);
+      if (json.user.role === 'admin') {
+        try {
+          const assigneeJson = await getAssignees();
+          setAssignees(assigneeJson.assignees);
+        } catch {
+          setAssignees([]);
+        }
+      }
     } catch (error) {
       if (error instanceof AuthExpiredError) {
         clearProtectedState();
-        return;
       }
-      clearProtectedState();
     }
   }
 
@@ -837,7 +839,8 @@ function CrmApp() {
     try {
       return await postPrivateAdminSearch(fetch, request);
     } catch (error) {
-      if (error instanceof AdminPrivateAuthorizationError) clearProtectedState();
+      if (error instanceof AdminPrivateAuthorizationError && error.status === 401)
+        clearProtectedState();
       throw error;
     }
   }
@@ -853,7 +856,8 @@ function CrmApp() {
         selectedCredentialVersion: credentialVersion,
       });
     } catch (error) {
-      if (error instanceof AdminPrivateAuthorizationError) clearProtectedState();
+      if (error instanceof AdminPrivateAuthorizationError && error.status === 401)
+        clearProtectedState();
       throw error;
     }
   }

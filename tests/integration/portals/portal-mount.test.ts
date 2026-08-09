@@ -453,10 +453,26 @@ describe('OT-71 mounted parent and student portals', () => {
           : null,
     });
     const v21AdultSessionRuntime = {
-      resolveCookieHeader: async ({ cookie_header: cookieHeader }: { cookie_header?: string }) => ({
-        status: 'resolved',
-        context: contextFor(cookieHeader?.includes('parent-v21') ? 'parent' : 'admin'),
-      }),
+      resolveCookieHeader: async ({ cookie_header: cookieHeader }: { cookie_header?: string }) =>
+        cookieHeader?.includes('invalid-v21')
+          ? { status: 'invalid' }
+          : cookieHeader?.includes('unavailable-v21')
+            ? { status: 'unavailable' }
+            : {
+                status: 'resolved',
+                context: contextFor(cookieHeader?.includes('parent-v21') ? 'parent' : 'admin'),
+              },
+      bootstrapCookieHeader: async ({ cookie_header: cookieHeader }: { cookie_header?: string }) =>
+        cookieHeader?.includes('invalid-v21')
+          ? { status: 'invalid' }
+          : cookieHeader?.includes('unavailable-v21')
+            ? { status: 'unavailable' }
+            : {
+                status: 'resolved',
+                context: contextFor(cookieHeader?.includes('parent-v21') ? 'parent' : 'admin'),
+                csrf_token: `c1.${'a'.repeat(43)}.${'b'.repeat(43)}`,
+              },
+      verifyCsrf: async () => true,
       switchRoleCookieHeader: async ({
         requested_role: requestedRole,
       }: {
@@ -500,6 +516,118 @@ describe('OT-71 mounted parent and student portals', () => {
       expect(adminDashboard.status).toBe(200);
       expect(await adminDashboard.text()).toContain('crm-root');
 
+      const support = await fetch(`${server.baseUrl}/app/support`, {
+        headers: { cookie: adminCookie },
+      });
+      expect(support.status).toBe(200);
+      expect(await support.text()).toContain('crm-root');
+      const adminDirectory = await fetch(`${server.baseUrl}/api/v1/admin-directory/users`, {
+        headers: { cookie: adminCookie },
+      });
+      expect(adminDirectory.status).not.toBe(401);
+      const dualCookieParentDirectory = await fetch(
+        `${server.baseUrl}/api/v1/admin-directory/users`,
+        {
+          headers: {
+            cookie: 'otcrm_session=stale-legacy-admin; __Host-onetime-session=parent-v21',
+          },
+        },
+      );
+      expect(dualCookieParentDirectory.status).toBe(403);
+      const contactOperations = await fetch(
+        `${server.baseUrl}/api/v1/contact-operations/parent-shell`,
+        { headers: { cookie: adminCookie } },
+      );
+      expect(contactOperations.status).not.toBe(401);
+      const learning = await fetch(`${server.baseUrl}/api/app/learning/questions`, {
+        headers: { cookie: adminCookie },
+      });
+      expect(learning.status).not.toBe(401);
+      const approvedSchools = await fetch(`${server.baseUrl}/api/v2.1/admin/approved-schools`, {
+        headers: { cookie: adminCookie },
+      });
+      expect(approvedSchools.status).not.toBe(401);
+      const ops = await fetch(`${server.baseUrl}/api/v1/ops/diagnostics`, {
+        headers: { cookie: adminCookie },
+      });
+      expect(ops.status).not.toBe(403);
+
+      const publication = await fetch(
+        `${server.baseUrl}/api/app/content/publication/approved-projections`,
+        {
+          method: 'POST',
+          headers: {
+            cookie: adminCookie,
+            'content-type': 'application/json',
+            'x-csrf-token': `c1.${'a'.repeat(43)}.${'b'.repeat(43)}`,
+          },
+          body: '{}',
+        },
+      );
+      expect(publication.status).toBe(400);
+
+      const ingest = await fetch(`${server.baseUrl}/api/app/content/ingest/occurrences`, {
+        headers: {
+          cookie: adminCookie,
+          'x-csrf-token': `c1.${'a'.repeat(43)}.${'b'.repeat(43)}`,
+        },
+      });
+      expect(ingest.status).toBe(503);
+      await expect(ingest.json()).resolves.toMatchObject({ code: 'content_media_default_off' });
+
+      const protectedPlayer = await fetch(
+        `${server.baseUrl}/app/learning/items/unknown-v21-content`,
+        { headers: { cookie: adminCookie }, redirect: 'manual' },
+      );
+      expect(protectedPlayer.status).toBe(404);
+      expect(protectedPlayer.headers.get('location')).toBeNull();
+
+      const missingPublication = await fetch(
+        `${server.baseUrl}/api/app/content/publication/approved-projections`,
+        { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' },
+      );
+      expect(missingPublication.status).toBe(401);
+      const invalidPlayer = await fetch(
+        `${server.baseUrl}/app/learning/items/unknown-v21-content`,
+        { headers: { cookie: '__Host-onetime-session=invalid-v21' }, redirect: 'manual' },
+      );
+      expect(invalidPlayer.status).toBe(302);
+      expect(invalidPlayer.headers.get('location')).toBe(
+        '/login?return_to=%2Fapp%2Flearning%2Fitems%2Funknown-v21-content',
+      );
+
+      const unavailablePublication = await fetch(
+        `${server.baseUrl}/api/app/content/publication/approved-projections`,
+        {
+          method: 'POST',
+          headers: {
+            cookie: '__Host-onetime-session=unavailable-v21',
+            'content-type': 'application/json',
+            'x-csrf-token': `c1.${'a'.repeat(43)}.${'b'.repeat(43)}`,
+          },
+          body: '{}',
+        },
+      );
+      expect(unavailablePublication.status).toBe(503);
+      await expect(unavailablePublication.json()).resolves.toMatchObject({
+        code: 'PUBLICATION_UNAVAILABLE',
+      });
+      const unavailableIngest = await fetch(
+        `${server.baseUrl}/api/app/content/ingest/occurrences`,
+        {
+          headers: { cookie: '__Host-onetime-session=unavailable-v21' },
+        },
+      );
+      expect(unavailableIngest.status).toBe(503);
+      await expect(unavailableIngest.json()).resolves.toMatchObject({
+        code: 'content_ingest_unavailable',
+      });
+      const unavailablePlayer = await fetch(
+        `${server.baseUrl}/app/learning/items/unknown-v21-content`,
+        { headers: { cookie: '__Host-onetime-session=unavailable-v21' }, redirect: 'manual' },
+      );
+      expect(unavailablePlayer.status).toBe(503);
+
       const switchToParent = await fetch(`${server.baseUrl}/api/v2.1/account-context/role`, {
         method: 'POST',
         headers: {
@@ -531,6 +659,36 @@ describe('OT-71 mounted parent and student portals', () => {
       });
       expect(parentOverview.status).toBe(200);
       expect(await parentOverview.text()).toContain('portal-root');
+      const parentSupport = await fetch(`${server.baseUrl}/app/support`, {
+        headers: { cookie: parentCookie! },
+        redirect: 'manual',
+      });
+      expect(parentSupport.status).toBe(302);
+      expect(parentSupport.headers.get('location')).toBe('/app/parent/support');
+      const parentReceiptSupport = await fetch(
+        `${server.baseUrl}/app/support/receipts/receipt-v21`,
+        {
+          headers: { cookie: parentCookie! },
+          redirect: 'manual',
+        },
+      );
+      expect(parentReceiptSupport.status).toBe(302);
+      expect(parentReceiptSupport.headers.get('location')).toBe(
+        '/app/parent/support/receipts/receipt-v21',
+      );
+      const parentPublication = await fetch(
+        `${server.baseUrl}/api/app/content/publication/approved-projections`,
+        {
+          method: 'POST',
+          headers: {
+            cookie: parentCookie!,
+            'content-type': 'application/json',
+            'x-csrf-token': `c1.${'a'.repeat(43)}.${'b'.repeat(43)}`,
+          },
+          body: '{}',
+        },
+      );
+      expect(parentPublication.status).toBe(403);
       const parentStudentManagement = await fetch(`${server.baseUrl}/app/parent/students`, {
         headers: { cookie: parentCookie! },
       });
@@ -1117,6 +1275,7 @@ async function seedSelfManagedStudentPrivacyProfile(relationship: 'self' | 'depe
 }
 
 async function insertOutstandingPrivacyLaunchGrant(grantId: string, digestCharacter: string) {
+  const issuedAt = new Date().toISOString();
   await pool.query(
     `INSERT INTO onetime.classroom_launch_grants_v21
        (grant_id, grant_key_digest, product, runtime_tier, verification_environment_id,
@@ -1125,8 +1284,8 @@ async function insertOutstandingPrivacyLaunchGrant(grantId: string, digestCharac
         consent_version_digest, registrant_version, occurrence_version, version)
      VALUES ($1, $2, 'one_time_mishnayos', 'isolated_staging', 'ci', 'learner_alpha',
              'household_alpha', 'privacy-session', 'privacy-occurrence', 'privacy-registrant',
-             now(), now() + interval '60 seconds', 1, 1, 1, $3, 1, 1, 1)`,
-    [grantId, digestCharacter.repeat(64), 'd'.repeat(64)],
+             $4::timestamptz, $4::timestamptz + interval '60 seconds', 1, 1, 1, $3, 1, 1, 1)`,
+    [grantId, digestCharacter.repeat(64), 'd'.repeat(64), issuedAt],
   );
 }
 

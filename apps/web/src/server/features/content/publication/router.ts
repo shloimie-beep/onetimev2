@@ -30,9 +30,13 @@ export type ContentPublicationRequestIdentity = {
   sessionKey: string;
 };
 
+export type ContentPublicationIdentityUnavailable = {
+  unavailable: true;
+};
+
 export type ContentPublicationIdentityResolver = (
   req: Request,
-) => Promise<ContentPublicationRequestIdentity | null>;
+) => Promise<ContentPublicationRequestIdentity | ContentPublicationIdentityUnavailable | null>;
 
 export type ContentPublicationCsrfVerifier = (
   req: Request,
@@ -270,17 +274,32 @@ async function requireIdentity(
   res: express.Response,
   role: 'admin' | 'student',
 ) {
-  const identity = await input.resolveIdentity(req);
-  if (!identity) {
+  const resolution = await input.resolveIdentity(req);
+  if (isUnavailableIdentityResolution(resolution)) {
+    res.status(503).json({
+      success: false,
+      code: 'PUBLICATION_UNAVAILABLE',
+      message: 'Publication is unavailable.',
+    });
+    return null;
+  }
+  if (!resolution) {
     res.status(401).json({ success: false, code: 'UNAUTHENTICATED', message: 'Please log in.' });
     return null;
   }
+  const identity = resolution;
   if (identity.principal.role !== role) {
     if (role === 'student') return neutralUnavailable(res);
     res.status(403).json({ success: false, code: 'FORBIDDEN', message: 'Access unavailable.' });
     return null;
   }
   return identity;
+}
+
+function isUnavailableIdentityResolution(
+  value: ContentPublicationRequestIdentity | ContentPublicationIdentityUnavailable | null,
+): value is ContentPublicationIdentityUnavailable {
+  return Boolean(value && 'unavailable' in value && value.unavailable === true);
 }
 
 async function requireCsrf(

@@ -592,6 +592,26 @@ export function createApp({
       })),
     );
   };
+  const resolveContentPublicationIdentity = (req: Request) =>
+    contentPublicationIdentityFromRequest(req, apiSessionResolutionInput);
+  const verifyResolvedApiSessionCsrf = async (req: Request, identity: { sessionKey: string }) => {
+    const resolution = await readApiSession(req);
+    if (
+      resolution.status !== 'resolved' ||
+      resolution.session.session_key !== identity.sessionKey
+    ) {
+      return false;
+    }
+    return (
+      (await verifyResolvedSessionCsrf(req, {
+        pool,
+        session: resolution.session,
+        v21AdultSessionRuntime,
+        ...(clock ? { clock } : {}),
+      })) === true
+    );
+  };
+  const verifyContentPublicationCsrf = verifyResolvedApiSessionCsrf;
   const handleOt110aSourceAction = (
     req: RequestWithTrace,
     res: Response,
@@ -648,18 +668,17 @@ export function createApp({
     },
   };
   const centrallyBoundContentPublicationRegistration = createContentPublicationFeatureRegistration({
-    resolveIdentity: (req) => contentPublicationIdentityFromRequest(req, pool, config),
-    verifyCsrf: async (req, identity) => {
-      const csrfToken = req.header('x-csrf-token') ?? req.body?.csrf_token;
-      return verifySessionCsrf({ pool, sessionKey: identity.sessionKey, csrfToken });
-    },
+    resolveIdentity: resolveContentPublicationIdentity,
+    verifyCsrf: verifyContentPublicationCsrf,
     providerBinding: contentMediaRuntime?.publication?.providerBinding,
     vimeoReadbackAdapter: contentMediaRuntime?.publication?.readbackAdapter,
   });
   const centrallyBoundContentIngestRegistration = createContentIngestFeatureRegistration({
     resolveIdentity: async (req) => {
-      const identity = await contentPublicationIdentityFromRequest(req, pool, config);
-      if (!identity || identity.principal.role !== 'admin') return null;
+      const identity = await resolveContentPublicationIdentity(req);
+      if (!identity) return null;
+      if ('unavailable' in identity) return identity;
+      if (identity.principal.role !== 'admin') return null;
       return {
         sessionKey: identity.sessionKey,
         actor: {
@@ -670,10 +689,7 @@ export function createApp({
         },
       };
     },
-    verifyCsrf: async (req, identity) => {
-      const csrfToken = req.header('x-csrf-token') ?? req.body?.csrf_token;
-      return verifySessionCsrf({ pool, sessionKey: identity.sessionKey, csrfToken });
-    },
+    verifyCsrf: verifyContentPublicationCsrf,
     runtime: contentMediaRuntime?.ingest,
   });
   const centrallyBoundFeatureRegistrations: readonly ServerFeatureRegistration[] = (
@@ -831,6 +847,34 @@ export function createApp({
     pool,
     distDir,
     session: {
+      resolveV21Route: async (req, res) => {
+        const cookieHeader = req.header('cookie');
+        if (!cookieHeaderHasName(cookieHeader, AUTH_SESSION_COOKIE.name)) return 'handled';
+        const bootstrap = await v21AdultSessionRuntime.bootstrapCookieHeader({
+          cookie_header: cookieHeader,
+          ...(clock ? { now: clock() } : {}),
+        });
+        if (bootstrap.status === 'unavailable') {
+          res.status(503).type('text').send('Support is temporarily unavailable.');
+          return 'handled';
+        }
+        if (bootstrap.status !== 'resolved') {
+          res.status(401).type('text').send('Please log in again.');
+          return 'handled';
+        }
+        if (bootstrap.context.session.activeRole === 'parent') {
+          const receipt =
+            typeof req.params.receiptId === 'string' ? req.params.receiptId : undefined;
+          res.redirect(
+            302,
+            receipt
+              ? `/app/parent/support/receipts/${encodeURIComponent(receipt)}`
+              : '/app/parent/support',
+          );
+          return 'handled';
+        }
+        return 'next';
+      },
       sessionFromRequest: (req) => sessionFromRequest(req, pool, config),
       ensureSessionCsrfCookie: (req, res, session) =>
         ensureSessionCsrfCookie(req, res, pool, config, session),
@@ -936,12 +980,13 @@ export function createApp({
     pool,
     scope: learningScope,
     resolveSession: async (request) => {
-      const session = await sessionFromRequest(request, pool, config);
-      return session
+      const resolution = await readApiSession(request);
+      if (resolution.status === 'unavailable') return { unavailable: true };
+      return resolution.status === 'resolved'
         ? {
-            sessionKey: session.session_key,
-            principalId: session.user.user_key,
-            role: session.user.role,
+            sessionKey: resolution.session.session_key,
+            principalId: resolution.session.user.user_key,
+            role: resolution.session.user.role,
           }
         : null;
     },
@@ -1022,12 +1067,7 @@ export function createApp({
       enabled: learningComposition.enabled,
       blockers: learningComposition.blockers,
       resolveActor: resolveLearningActor,
-      verifyCsrf: (request, authenticated) =>
-        verifySessionCsrf({
-          pool,
-          sessionKey: authenticated.sessionKey,
-          csrfToken: request.header('x-csrf-token') ?? request.body?.csrf_token,
-        }),
+      verifyCsrf: verifyResolvedApiSessionCsrf,
       ...(clock ? { clock } : {}),
     }),
   );
@@ -1044,7 +1084,13 @@ export function createApp({
       service: studentNotificationService,
       resolvePrincipal: async (request) => {
         const authenticated = await resolveLearningActor(request);
-        if (!authenticated || authenticated.actor.role !== 'student') return null;
+        if (
+          !authenticated ||
+          'unavailable' in authenticated ||
+          authenticated.actor.role !== 'student'
+        ) {
+          return null;
+        }
         return {
           principal: { studentId: authenticated.actor.studentId },
           sessionKey: authenticated.sessionKey,
@@ -1294,29 +1340,39 @@ export function createApp({
     '/api/v2.1/admin/approved-schools',
     createApprovedSchoolAdminRouter({
       runtimeBinding: schoolRuntimeBinding,
-      resolveSession: (req) =>
-        approvedSchoolAdminSessionFromRequest(req, pool, config, schoolRuntimeBinding),
+      resolveSession: async (req) => {
+        const resolution = await readApiSession(req);
+        if (resolution.status === 'unavailable') return { unavailable: true };
+        if (resolution.status !== 'resolved') return null;
+        if (resolution.session.session_model === 'v21') {
+          return {
+            human_account_id: resolution.session.user.user_key,
+            role:
+              resolution.session.user.role === 'admin'
+                ? ('admin' as const)
+                : resolution.session.user.role === 'student'
+                  ? ('student' as const)
+                  : ('parent' as const),
+          };
+        }
+        return approvedSchoolAdminSessionFromRequest(req, pool, config, schoolRuntimeBinding);
+      },
       verifyCsrf: async (req, approvedSession) => {
         if (!isSameOriginPost(req, config)) return false;
-        const session = await sessionFromRequest(req, pool, config);
-        if (!session || session.user.role !== 'admin') return false;
-        const readback = await approvedSchoolAdminSessionFromRequest(
-          req,
-          pool,
-          config,
-          schoolRuntimeBinding,
-        );
+        const resolution = await readApiSession(req);
+        if (resolution.status !== 'resolved' || resolution.session.user.role !== 'admin')
+          return false;
+        const readback =
+          resolution.session.session_model === 'v21'
+            ? { human_account_id: resolution.session.user.user_key, role: 'admin' as const }
+            : await approvedSchoolAdminSessionFromRequest(req, pool, config, schoolRuntimeBinding);
         if (
           readback?.role !== 'admin' ||
           readback.human_account_id !== approvedSession.human_account_id
         ) {
           return false;
         }
-        return verifySessionCsrf({
-          pool,
-          sessionKey: session.session_key,
-          csrfToken: req.header('x-csrf-token') ?? req.body?.csrf_token,
-        });
+        return verifyResolvedApiSessionCsrf(req, { sessionKey: resolution.session.session_key });
       },
       now: () => (clock ? clock() : new Date()).toISOString(),
       configurator: approvedSchoolService,
@@ -1327,7 +1383,7 @@ export function createApp({
     app,
     config,
     pool,
-    sessionFromRequest: (req) => sessionFromRequest(req, pool, config),
+    sessionFromRequest: (req) => readApiSession(req),
     setPrivateNoStore,
     ...(clock ? { clock } : {}),
   });
@@ -3152,14 +3208,14 @@ export function createApp({
     createContactOperationsRouter({
       pool,
       config,
-      resolveSession: (req) => sessionFromRequest(req, pool, config),
+      resolveSession: async (req) => {
+        const resolution = await readApiSession(req);
+        if (resolution.status === 'unavailable') return { unavailable: true };
+        return resolution.status === 'resolved' ? resolution.session : null;
+      },
       verifyCsrf: async (req, session) => {
         if (!isSameOriginPost(req, config)) return false;
-        return verifySessionCsrf({
-          pool,
-          sessionKey: session.session_key,
-          csrfToken: req.header('x-csrf-token') ?? req.body?.csrf_token,
-        });
+        return verifyResolvedApiSessionCsrf(req, { sessionKey: session.session_key });
       },
       verifyRecentAssurance: async (session) => {
         if (session.user.role === 'owner' || session.user.role === 'admin') {
@@ -3176,14 +3232,14 @@ export function createApp({
     createAdminDirectoryRouter({
       pool,
       config,
-      resolveSession: (req) => sessionFromRequest(req, pool, config),
+      resolveSession: async (req) => {
+        const resolution = await readApiSession(req);
+        if (resolution.status === 'unavailable') return { unavailable: true };
+        return resolution.status === 'resolved' ? resolution.session : null;
+      },
       verifyCsrf: async (req, session) => {
         if (!isSameOriginPost(req, config)) return false;
-        return verifySessionCsrf({
-          pool,
-          sessionKey: session.session_key,
-          csrfToken: req.header('x-csrf-token') ?? req.body?.csrf_token,
-        });
+        return verifyResolvedApiSessionCsrf(req, { sessionKey: session.session_key });
       },
       verifyRecentAssurance: (session) =>
         verifyRecentEmailAssurance({ pool, sessionKey: session.session_key }),
@@ -4545,11 +4601,16 @@ export function createApp({
 
   app.get('/app/learning/items/:sourceKey', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
-    const session = await sessionFromRequest(req, pool, config);
-    if (!session) {
+    const resolution = await readApiSession(req);
+    if (resolution.status === 'unavailable') {
+      res.status(503).type('text').send('Content access is temporarily unavailable.');
+      return;
+    }
+    if (resolution.status !== 'resolved') {
       res.redirect(302, `/login?return_to=${encodeURIComponent(req.originalUrl)}`);
       return;
     }
+    const session = resolution.session;
     if (!['owner', 'admin', 'parent', 'student'].includes(session.user.role)) {
       res.status(403).type('html').send('Protected learning access required.');
       return;
@@ -5596,6 +5657,8 @@ async function resolveSupportV21RouteContext(
         sessionKind: 'v21_adult',
       };
     }
+    res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+    return null;
   }
 
   const session = await sessionFromRequest(req, input.pool, input.config);
@@ -5723,37 +5786,40 @@ async function readApiSessionFromRequest(
   req: Request,
   input: ApiSessionResolutionInput,
 ): Promise<ApiSessionResolution> {
-  const legacy = await sessionFromRequest(req, input.pool, input.config);
-  if (legacy) return { status: 'resolved', session: { ...legacy, session_model: 'legacy' } };
-
   const cookieHeader = req.header('cookie');
-  if (!cookieHeaderHasName(cookieHeader, AUTH_SESSION_COOKIE.name)) return { status: 'missing' };
-  const resolution = await input.v21AdultSessionRuntime.resolveCookieHeader({
-    cookie_header: cookieHeader,
-    ...(input.clock ? { now: input.clock() } : {}),
-  });
-  if (resolution.status === 'unavailable') return { status: 'unavailable' };
-  if (resolution.status !== 'resolved') return { status: 'missing' };
+  if (cookieHeaderHasName(cookieHeader, AUTH_SESSION_COOKIE.name)) {
+    const resolution = await input.v21AdultSessionRuntime.resolveCookieHeader({
+      cookie_header: cookieHeader,
+      ...(input.clock ? { now: input.clock() } : {}),
+    });
+    if (resolution.status === 'unavailable') return { status: 'unavailable' };
+    if (resolution.status !== 'resolved') return { status: 'missing' };
 
-  const context = resolution.context;
-  return {
-    status: 'resolved',
-    session: {
-      session_key: context.session.sessionId,
-      session_security_version: context.session.securityVersion,
-      user: v21ClientUser({
-        human_account_id: context.session.humanAccountId,
-        adult_id: context.adultId,
-        email: context.normalizedEmail,
-        display_name: context.ownerDisplayName,
-        active_role: context.session.activeRole,
-      }),
-      expires_at: context.session.absoluteExpiresAt,
-      assurance_method: 'password',
-      assurance_at: null,
-      session_model: 'v21',
-    },
-  };
+    const context = resolution.context;
+    return {
+      status: 'resolved',
+      session: {
+        session_key: context.session.sessionId,
+        session_security_version: context.session.securityVersion,
+        user: v21ClientUser({
+          human_account_id: context.session.humanAccountId,
+          adult_id: context.adultId,
+          email: context.normalizedEmail,
+          display_name: context.ownerDisplayName,
+          active_role: context.session.activeRole,
+        }),
+        expires_at: context.session.absoluteExpiresAt,
+        assurance_method: 'password',
+        assurance_at: null,
+        session_model: 'v21',
+      },
+    };
+  }
+
+  const legacy = await sessionFromRequest(req, input.pool, input.config);
+  return legacy
+    ? { status: 'resolved', session: { ...legacy, session_model: 'legacy' } }
+    : { status: 'missing' };
 }
 
 async function requireResolvedApiSession(
@@ -6608,16 +6674,17 @@ async function selfManagedStudentPrivacyPrincipalFromRequest(
 
 async function contentPublicationIdentityFromRequest(
   req: Request,
-  pool: DbPool,
-  config: AppConfig,
-): Promise<ContentPublicationRequestIdentity | null> {
-  if (config.productKey !== CONTENT_PUBLICATION_PRODUCT_KEY) return null;
-  const session = await sessionFromRequest(req, pool, config);
-  if (!session) return null;
+  input: ApiSessionResolutionInput,
+): Promise<ContentPublicationRequestIdentity | { unavailable: true } | null> {
+  if (input.config.productKey !== CONTENT_PUBLICATION_PRODUCT_KEY) return null;
+  const resolution = await readApiSessionFromRequest(req, input);
+  if (resolution.status === 'unavailable') return { unavailable: true };
+  if (resolution.status !== 'resolved') return null;
+  const session = resolution.session;
 
   let student: Awaited<ReturnType<typeof studentLearnerSubject>> | null = null;
   if (session.user.role === 'student') {
-    student = await studentLearnerSubject(pool, config, session.user.user_key);
+    student = await studentLearnerSubject(input.pool, input.config, session.user.user_key);
     if (
       !student ||
       !Number.isSafeInteger(session.session_security_version) ||
@@ -6638,7 +6705,7 @@ async function contentPublicationIdentityFromRequest(
     principal: {
       actorId: session.user.user_key,
       role,
-      accountKey: config.accountKey,
+      accountKey: input.config.accountKey,
       productKey: CONTENT_PUBLICATION_PRODUCT_KEY,
       householdId: student?.household_key ?? '',
       studentId: student?.learner_key ?? null,

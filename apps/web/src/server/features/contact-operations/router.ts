@@ -27,6 +27,7 @@ import {
 } from '../../../../../../packages/domain/src/index.ts';
 
 type ContactOperationsRequest = Request & { traceId?: string };
+type ContactOperationsSessionUnavailable = { unavailable: true };
 
 const routeKeySchema = z.string().trim().min(3).max(180);
 const accessOperationSchema = z.enum([
@@ -39,7 +40,9 @@ const accessOperationSchema = z.enum([
 export function createContactOperationsRouter(input: {
   pool: DbPool;
   config: AppConfig;
-  resolveSession(req: Request): Promise<AuthenticatedSession | null>;
+  resolveSession(
+    req: Request,
+  ): Promise<AuthenticatedSession | ContactOperationsSessionUnavailable | null>;
   verifyCsrf(req: Request, session: AuthenticatedSession): Promise<boolean>;
   verifyRecentAssurance(session: AuthenticatedSession): Promise<boolean>;
   now?: () => Date;
@@ -243,10 +246,16 @@ async function requireContext(
   input: {
     pool: DbPool;
     config: AppConfig;
-    resolveSession(req: Request): Promise<AuthenticatedSession | null>;
+    resolveSession(
+      req: Request,
+    ): Promise<AuthenticatedSession | ContactOperationsSessionUnavailable | null>;
   },
 ) {
   const session = await input.resolveSession(req);
+  if (session && 'unavailable' in session) {
+    res.status(503).json({ success: false, code: 'CONTACT_OPERATIONS_UNAVAILABLE' });
+    return null;
+  }
   if (!session) {
     res.status(401).json({
       success: false,
@@ -276,7 +285,9 @@ async function requireProtectedContext(
   input: {
     pool: DbPool;
     config: AppConfig;
-    resolveSession(req: Request): Promise<AuthenticatedSession | null>;
+    resolveSession(
+      req: Request,
+    ): Promise<AuthenticatedSession | ContactOperationsSessionUnavailable | null>;
     verifyCsrf(req: Request, session: AuthenticatedSession): Promise<boolean>;
     verifyRecentAssurance(session: AuthenticatedSession): Promise<boolean>;
   },
