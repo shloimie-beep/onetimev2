@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "task_id": "GHL-LAUNCH-SPRINT-20260809",
   "lane": "OT-P3",
-  "generated_at": "2026-08-09T11:36:00+03:00",
+  "generated_at": "2026-08-09T11:42:00+03:00",
   "repository": "shloimie-beep/onetimev2",
   "source": {
     "pull_request": 131,
@@ -24,11 +24,12 @@
       "Edited OT-01 workflow 95a6f461-1a04-4260-b379-246fdcc45af7 in place.",
       "Saved and reopened the Family account confirmation email content.",
       "Ran exactly one workflow test using an existing operator-owned seed contact.",
-      "Sent OT-P4 a bounded one-canary gate handoff; no general enrollment was authorized."
+      "Sent OT-P4 a bounded one-canary gate handoff; no general enrollment was authorized.",
+      "Disabled OT-01 Allow re-entry and Allow multiple opportunities, saved, reopened, and verified both remained off."
     ],
     "unresolved_delta_only": [
       "Approved Rabbi visible From and Reply-To identity.",
-      "OT-01 visible name, folder readback, and re-entry disablement.",
+      "OT-01 visible name and folder readback.",
       "Inbox receipt and Rabbi-identity reply round trip.",
       "Current Old App Active count, one seed campaign proof, and send-once campaign.",
       "OT-02B nurture configuration.",
@@ -83,7 +84,7 @@
       },
       "save_readback": "Saved",
       "reopen_readback": "passed",
-      "allow_reentry_readback": true,
+      "allow_reentry_readback": false,
       "folder_readback": "not_proven",
       "seed_test": {
         "attempted_contacts": 1,
@@ -104,10 +105,11 @@
       "remaining_blockers": [
         "Rename the visible workflow to the requested OT-01 name.",
         "Verify/move to folder 00 - Intake & Data.",
-        "Disable re-entry and reopen to prove the setting.",
         "Replace the visible sender with the approved Rabbi identity.",
         "Confirm operator-owned inbox receipt and reply round trip."
-      ]
+      ],
+      "allow_multiple_opportunities_readback": false,
+      "duplicate_controls_save_reopen": "passed"
     },
     "ot_02b": {
       "workflow_id": "a703",
