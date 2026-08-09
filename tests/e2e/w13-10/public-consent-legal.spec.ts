@@ -17,9 +17,7 @@ test('W13-10 legal pages render versioned launch truth without billing claims', 
   }
 });
 
-test('W13-10 Family signup uses one required integrated Terms acceptance', async ({
-  page,
-}) => {
+test('W13-10 Family signup uses one required integrated Terms acceptance', async ({ page }) => {
   await page.goto('/signup');
   await expect(page.getByRole('heading', { name: 'Create your Family account' })).toBeVisible();
   await expect(page.getByLabel(/reminder|WhatsApp|phone|Student.*email|card/i)).toHaveCount(0);
