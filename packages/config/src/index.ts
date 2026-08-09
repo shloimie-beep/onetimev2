@@ -294,6 +294,10 @@ const envSchema = z.object({
   ENABLE_REAL_WHATSAPP_TRANSPORT: booleanFromString,
   ENABLE_REAL_TELEGRAM_TRANSPORT: booleanFromString,
   ENABLE_PAYMENT_TRANSPORT: booleanFromString,
+  ONE_TIME_GHL_PAYMENT_LINK: z.preprocess(
+    (value) => (typeof value === 'string' && value.trim() === '' ? undefined : value),
+    z.url().optional(),
+  ),
   ONE_TIME_TELEGRAM_WEBHOOK_ENABLED: booleanFromString,
   ONE_TIME_TELEGRAM_WEBHOOK_SECRET: z.string().min(16).optional(),
   ONE_TIME_TELEGRAM_WEBHOOK_SECRET_CONFIGURED: booleanFromString,
@@ -767,6 +771,7 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     accountKey: parsed.ONE_TIME_ACCOUNT_KEY,
     productKey: parsed.ONE_TIME_PRODUCT_KEY,
     paymentHistorySystemOfRecord: 'highlevel' as const,
+    oneTimeGhlPaymentLink: parsed.ONE_TIME_GHL_PAYMENT_LINK,
     legacyBillingRuntimeEnabled: false,
     ownerInternalLabel: parsed.ONE_TIME_OWNER_INTERNAL_LABEL,
     adminCustomerLabel: parsed.ONE_TIME_ADMIN_CUSTOMER_LABEL,

@@ -105,6 +105,21 @@ One Time Mishnayos
 
 This copy is exact except for provider normalization of curly apostrophes. It is one event follow-up, not consent for a general nurture program. Its direct, personal style is the positive example for WNC-2.1.
 
+### WNC-4.2 Current Family-account launch offer
+
+The preceding Tisha B’Av email is preserved historical delivered-email evidence. Do not rewrite, resend, or use it as current launch copy.
+
+Current public and program copy is:
+
+> Try One Time free through September 11. No card required.
+>
+> Create your Family account to receive immediate free access. A Family account can manage up to three separate Student accounts. Paid continuation, if wanted after the free period, requires an explicit later action; the signup form never charges automatically.
+>
+> Rabbi Eli Scheller
+> rabbielischeller@onetimeonetime.com
+
+Security, office, billing, and support messages use `info@onetimeonetime.com`. Program/teaching messages use `rabbielischeller@onetimeonetime.com`.
+
 ## WNC-5. Workflow execution contract
 
 Every workflow record includes:

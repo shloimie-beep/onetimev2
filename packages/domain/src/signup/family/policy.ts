@@ -104,6 +104,7 @@ export interface PlanFamilySignupInput {
   normalized_email: string;
   now: Date;
   free_access_expires_at?: string;
+  ghl_payment_link_configured?: boolean;
   proposed_adult_id: string;
   proposed_human_account_id: string;
   proposed_household_id: string;
@@ -278,6 +279,9 @@ export function planFamilySignup(input: PlanFamilySignupInput): FamilySignupPlan
   const expiry = freeAccessExpiresAt ? Date.parse(freeAccessExpiresAt) : Number.NaN;
   const beforeExpiry = Number.isFinite(expiry) && input.now.getTime() < expiry;
   const identityReviewBlocksCheckout = !beforeExpiry && link.state === 'identity_review';
+  const ghlPaymentLinkConfigured = input.ghl_payment_link_configured === true;
+  const checkoutRequired =
+    !beforeExpiry && !identityReviewBlocksCheckout && ghlPaymentLinkConfigured;
   const consentChoices: FamilySignupAdultConsentChoices = {
     general_marketing: input.command.general_marketing_consent,
     parent_newsletter: input.command.parent_newsletter_consent,
@@ -291,12 +295,14 @@ export function planFamilySignup(input: PlanFamilySignupInput): FamilySignupPlan
       ? 'immediate_free'
       : identityReviewBlocksCheckout
         ? 'inactive_identity_review'
-        : 'inactive_checkout',
+        : checkoutRequired
+          ? 'inactive_checkout'
+          : 'inactive_support',
     access_state: beforeExpiry ? 'free' : 'inactive',
     seat_limit: 3,
     active_seat_count: 0,
     free_access_expires_at: beforeExpiry ? freeAccessExpiresAt! : null,
-    checkout_required: !beforeExpiry && !identityReviewBlocksCheckout,
+    checkout_required: checkoutRequired,
     checkout_blocked_by_identity_review: identityReviewBlocksCheckout,
     rolling_trial_granted: false,
     card_collected: false,
@@ -361,7 +367,7 @@ export function planFamilySignup(input: PlanFamilySignupInput): FamilySignupPlan
     projection,
     now: input.now,
     ...(freeAccessExpiresAt === undefined ? {} : { freeAccessExpiresAt }),
-    checkoutRequired: !beforeExpiry && !identityReviewBlocksCheckout,
+    checkoutRequired,
   });
   return {
     result: {
@@ -371,7 +377,9 @@ export function planFamilySignup(input: PlanFamilySignupInput): FamilySignupPlan
         ? 'signed_in'
         : identityReviewBlocksCheckout
           ? 'identity_review'
-          : 'checkout',
+          : checkoutRequired
+            ? 'checkout'
+            : 'support',
       setup_email_required: false,
       provider_effects_completed_inline: 0,
       outbox_intent_ids: [outbox.intent_id],
@@ -385,12 +393,16 @@ export function planFamilySignup(input: PlanFamilySignupInput): FamilySignupPlan
         ? 'not_applicable'
         : identityReviewBlocksCheckout
           ? 'blocked_identity_review'
-          : 'queued',
+          : checkoutRequired
+            ? 'queued'
+            : 'not_configured',
       safe_message: beforeExpiry
         ? 'Your family account is ready.'
         : identityReviewBlocksCheckout
           ? 'Your inactive account is ready. Checkout will be available after account review.'
-          : 'Your account is ready. Continue to checkout.',
+          : checkoutRequired
+            ? 'Your account is ready. Continue to checkout.'
+            : 'Your account is ready. The free period has ended; contact info@onetimeonetime.com for paid continuation options.',
     },
     outbox_intents: [outbox],
     commercial_billing: commercialBilling,

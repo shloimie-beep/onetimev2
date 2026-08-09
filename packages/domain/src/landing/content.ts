@@ -18,9 +18,7 @@ export const landingContent = {
     eyebrow: 'LIVE, ONLINE + ON-DEMAND',
     headline: 'Help your son love learning Mishnayos.',
     subheadline: 'Classes start August 16.',
-    accessDetail: 'Free access through September 11. No card is required.',
-    // Keep any future pre-registration wording isolated until the public signup phase is decided.
-    requestedPreRegistrationLabel: 'Pre-register',
+    accessDetail: 'Try One Time free through September 11. No card required.',
     cta: {
       label: 'Create your Family account',
       href: '/signup',
@@ -110,8 +108,8 @@ export const landingContent = {
     body: 'A parent manages the Family account. Each Student learns in a separate protected space.',
     flows: [
       {
-        title: 'Pre-register your child',
-        body: 'A parent begins with the child’s learning details and then continues through the adult-managed Family account.',
+        title: 'Create your Family account',
+        body: 'A parent creates the Family account that manages the household’s learning access.',
         image: '/assets/how-it-works/family-learning-overview-1254.webp',
         srcset:
           '/assets/how-it-works/family-learning-overview-480.webp 480w, /assets/how-it-works/family-learning-overview-800.webp 800w, /assets/how-it-works/family-learning-overview-1254.webp 1122w',
@@ -121,8 +119,8 @@ export const landingContent = {
         alt: 'A father completing the first step of a family learning signup on a tablet',
       },
       {
-        title: 'Create your Family account',
-        body: 'A parent manages the Family account and creates a separate Student login for each child.',
+        title: 'Add your Student accounts',
+        body: 'Add up to three separate Student accounts, each with its own login.',
         image: '/assets/how-it-works/parent-creates-student-login-1254.webp',
         srcset:
           '/assets/how-it-works/parent-creates-student-login-480.webp 480w, /assets/how-it-works/parent-creates-student-login-800.webp 800w, /assets/how-it-works/parent-creates-student-login-1254.webp 1254w',
@@ -132,7 +130,7 @@ export const landingContent = {
         alt: 'A parent creating a separate One Time Student login',
       },
       {
-        title: 'Your child learns at his own pace',
+        title: 'Your child learns in his own space',
         body: 'Each Student signs in separately to join live class, watch replays, review, and ask questions.',
         image: '/assets/how-it-works/student-learning-mishnayos-1254.webp',
         srcset:
@@ -214,7 +212,7 @@ export const landingContent = {
       ['Terms', '/terms'],
       ['Cancellation and refunds', '/cancellation-refund'],
       ['Student Data Notice', '/student-data'],
-      ['Member Login', '/login'],
+      ['Member Login', 'https://app.onetimeonetime.com/login'],
       ['Support', '/support'],
     ],
   },
@@ -225,5 +223,5 @@ export const sharedNav = [
   ["Who It's For", '#who'],
   ['How It Works', '#how-it-works'],
   ['Rabbi Scheller', '#rabbi'],
-  ['Member Login', '/login'],
+  ['Member Login', 'https://app.onetimeonetime.com/login'],
 ] as const;

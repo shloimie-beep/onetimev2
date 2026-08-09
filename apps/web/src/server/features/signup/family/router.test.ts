@@ -243,7 +243,7 @@ describe('P08 Family-signup route security', () => {
       code: 'FAMILY_SIGNUP_COMPLETE',
       next_action: 'parent_overview',
       session_established: true,
-      continue_to: '/app/parent',
+      continue_to: 'https://app.onetimeonetime.com/app/parent',
       csrf_token: 'c'.repeat(48),
       message: 'Your Family account is ready, and we sent your confirmation email.',
     });

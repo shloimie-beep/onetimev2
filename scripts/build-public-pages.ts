@@ -26,6 +26,7 @@ const outDir = path.resolve(process.cwd(), 'dist/apps/web/public');
 
 const landingSocialImage = '/assets/social/mishnayos-made-memorable.png';
 const freeAccessExpiresAtPlaceholder = '__ONE_TIME_FREE_ACCESS_EXPIRES_AT__';
+const canonicalApplicationOrigin = 'https://app.onetimeonetime.com';
 
 const imageDimensions = new Map<string, readonly [number, number]>([
   ['/assets/brand/onetimelogo.webp', [400, 400]],
@@ -288,7 +289,7 @@ function landingPage() {
     </div>
   </section>
   ${gallerySection}
-  <section class="final-cta"><h2>${escapeHtml(landingContent.finalCta.heading)}</h2><a class="button button-primary" href="/signup">Create your Family account</a></section>
+  <section class="final-cta"><h2>${escapeHtml(landingContent.finalCta.heading)}</h2><a class="button button-primary" href="${escapeHtml(landingContent.hero.cta.href)}">Create your Family account</a></section>
 </main>${footer()}`,
     {
       canonicalPath: '/',
@@ -455,7 +456,7 @@ function signupReceivedPage() {
       <p data-signup-received-body>Your Family signup was saved. Sign in to continue.</p>
       <p data-signup-received-charge>No card was charged by this signup form.</p>
       <div class="form-actions">
-        <a class="button button-primary" href="/login" data-signup-received-primary>Sign in</a>
+        <a class="button button-primary" href="${canonicalApplicationOrigin}/login" data-signup-received-primary>Sign in</a>
         <a class="button button-secondary" href="/">Return home</a>
       </div>
     </main>${footer()}`,

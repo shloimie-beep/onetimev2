@@ -315,6 +315,43 @@ describe('P08 family signup service', () => {
     }
   });
 
+  it('provides a support path after expiry when no approved GHL payment link is configured', async () => {
+    const commits: unknown[] = [];
+    const service = createFamilySignupService({
+      repository: repositoryFor({
+        commit: async (value) => {
+          commits.push(value);
+        },
+      }),
+      freeAccessExpiresAt,
+      hashPassword: async () => 'argon2id-safe-hash',
+      fingerprintPasswordForIdempotency: async () => h('a'),
+      allocateIds: () => ({
+        adult_id: 'adult_1',
+        human_account_id: 'account_1',
+        household_id: 'household_1',
+      }),
+    });
+    const result = await service.submit({
+      scope,
+      command: command(),
+      now: new Date('2026-09-11T15:00:00.000Z'),
+    });
+
+    expect(result).toMatchObject({
+      next_action: 'support',
+      projection: {
+        access_branch: 'inactive_support',
+        access_state: 'inactive',
+        checkout_required: false,
+        checkout_blocked_by_identity_review: false,
+      },
+      checkout_handoff_state: 'not_configured',
+      safe_message: expect.stringContaining('info@onetimeonetime.com'),
+    });
+    expect(commits[0]).toMatchObject({ commercial_billing: { checkout: null } });
+  });
+
   it('commits an inactive account but blocks post-expiry Checkout during identity review', async () => {
     const commits: unknown[] = [];
     const service = createFamilySignupService({

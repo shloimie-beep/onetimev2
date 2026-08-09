@@ -82,36 +82,22 @@ describe('P08 family signup policy', () => {
     for (const instant of ['2026-09-11T15:00:00.000Z', '2026-09-11T15:00:01.000Z']) {
       const after = planFamilySignup(input(instant));
       expect(after.result.projection).toMatchObject({
+        access_branch: 'inactive_support',
         access_state: 'inactive',
-        checkout_required: true,
+        checkout_required: false,
         checkout_blocked_by_identity_review: false,
         free_access_expires_at: null,
       });
-      expect(after.result.next_action).toBe('checkout');
-      expect(after.result.checkout_handoff_state).toBe('queued');
-      expect(after.commercial_billing?.checkout).toMatchObject({
-        resulting_version: 2,
-        response: {
-          projection: {
-            accessState: 'inactive',
-            subscriptionState: 'checkout_requested',
-          },
-          intent: {
-            operation_type: 'billing.commercial.checkout.request',
-            provider: 'highlevel',
-            financialProvider: 'stripe',
-            providerMutationByOneTime: false,
-            chargeMode: 'at_hosted_checkout',
-            immediateChargeAmountCents: 0,
-          },
-        },
-      });
+      expect(after.result.next_action).toBe('support');
+      expect(after.result.checkout_handoff_state).toBe('not_configured');
+      expect(after.commercial_billing?.checkout).toBeNull();
     }
   });
 
-  it('uses inactive checkout with no free-access timestamp when expiry is absent', () => {
+  it('uses inactive checkout with no free-access timestamp when an approved link is configured', () => {
     const withoutExpiry = input('2026-08-01T12:00:00.000Z');
     delete withoutExpiry.free_access_expires_at;
+    withoutExpiry.ghl_payment_link_configured = true;
     expect(planFamilySignup(withoutExpiry)).toMatchObject({
       result: {
         next_action: 'checkout',
@@ -294,6 +280,7 @@ describe('P08 family signup policy', () => {
     });
 
     const after = input('2026-09-11T15:00:00.000Z');
+    after.ghl_payment_link_configured = true;
     after.ghl_evidence = {
       status: 'evidence_unavailable',
       safe_reason: 'evidence_unavailable',

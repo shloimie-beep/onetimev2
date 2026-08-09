@@ -84,7 +84,7 @@ type TokenRecord = {
 };
 
 const TOKEN_TTL_MS = 24 * 60 * 60 * 1000;
-const RESET_TOKEN_TTL_MS = 30 * 60 * 1000;
+const RESET_TOKEN_TTL_MS = 60 * 60 * 1000;
 const MAX_FREE_PILOT_MS = 366 * 24 * 60 * 60 * 1000;
 
 function assertFreePilotWindow(expiresAtValue: string, now: Date) {

@@ -61,6 +61,7 @@ export interface FamilySignupRepository {
 export interface FamilySignupServiceDependencies {
   repository: FamilySignupRepository;
   freeAccessExpiresAt?: string;
+  ghlPaymentLinkConfigured?: boolean;
   hashPassword(password: string): Promise<string>;
   /**
    * Returns a keyed, server-only deterministic SHA-256 fingerprint. It is used
@@ -113,6 +114,7 @@ export function createFamilySignupService(dependencies: FamilySignupServiceDepen
             ...(dependencies.freeAccessExpiresAt
               ? { free_access_expires_at: dependencies.freeAccessExpiresAt }
               : {}),
+            ...(dependencies.ghlPaymentLinkConfigured ? { ghl_payment_link_configured: true } : {}),
             proposed_adult_id: '',
             proposed_human_account_id: '',
             proposed_household_id: '',
@@ -137,6 +139,7 @@ export function createFamilySignupService(dependencies: FamilySignupServiceDepen
             ...(dependencies.freeAccessExpiresAt
               ? { free_access_expires_at: dependencies.freeAccessExpiresAt }
               : {}),
+            ...(dependencies.ghlPaymentLinkConfigured ? { ghl_payment_link_configured: true } : {}),
             proposed_adult_id: '',
             proposed_human_account_id: '',
             proposed_household_id: '',
@@ -162,6 +165,7 @@ export function createFamilySignupService(dependencies: FamilySignupServiceDepen
           ...(dependencies.freeAccessExpiresAt
             ? { free_access_expires_at: dependencies.freeAccessExpiresAt }
             : {}),
+          ...(dependencies.ghlPaymentLinkConfigured ? { ghl_payment_link_configured: true } : {}),
           proposed_adult_id: ids.adult_id,
           proposed_human_account_id: ids.human_account_id,
           proposed_household_id: ids.household_id,

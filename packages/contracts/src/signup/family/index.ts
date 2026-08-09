@@ -14,12 +14,13 @@ export type FamilySignupClassification = (typeof FAMILY_SIGNUP_CLASSIFICATIONS)[
 
 export const FAMILY_SIGNUP_COPY = {
   before_expiry: {
-    cta: 'Create my free family account',
-    helper: 'No credit card is required during the configured free-access period.',
+    cta: 'Create your Family account',
+    helper: 'Try One Time free through September 11. No card required.',
   },
   at_or_after_expiry: {
-    cta: 'Create account and continue to checkout',
-    helper: 'Create your family account, then continue to secure checkout.',
+    cta: 'Create your Family account',
+    helper:
+      'The free period has ended. Contact info@onetimeonetime.com for paid continuation options.',
   },
 } as const;
 
@@ -95,7 +96,7 @@ export interface FamilySignupCommand {
 }
 
 export type FamilySignupAccessBranch =
-  'immediate_free' | 'inactive_checkout' | 'inactive_identity_review';
+  'immediate_free' | 'inactive_checkout' | 'inactive_identity_review' | 'inactive_support';
 export type FamilySignupDisposition =
   'created' | 'recovered' | 'existing_account' | 'idempotency_conflict';
 
@@ -168,12 +169,13 @@ export interface FamilySignupOutboxIntent {
 export interface FamilySignupResult {
   disposition: Exclude<FamilySignupDisposition, 'idempotency_conflict'>;
   projection: FamilySignupLocalProjection | null;
-  next_action: 'signed_in' | 'checkout' | 'identity_review' | 'sign_in_or_reset';
+  next_action: 'signed_in' | 'checkout' | 'identity_review' | 'support' | 'sign_in_or_reset';
   setup_email_required: false;
   provider_effects_completed_inline: 0;
   outbox_intent_ids: readonly string[];
   ghl_handoff_state: 'ready' | 'readback_required' | 'identity_review' | 'not_applicable';
-  checkout_handoff_state: 'queued' | 'blocked_identity_review' | 'not_applicable';
+  checkout_handoff_state:
+    'queued' | 'blocked_identity_review' | 'not_configured' | 'not_applicable';
   safe_message: string;
 }
 

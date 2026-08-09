@@ -17,12 +17,14 @@ describe('P08 family signup contract', () => {
   it('pins the Family-only classification and date-free optional-expiry copy', () => {
     expect(FAMILY_SIGNUP_CLASSIFICATIONS).toEqual(['family']);
     expect(FAMILY_SIGNUP_COPY.before_expiry).toEqual({
-      cta: 'Create my free family account',
-      helper: 'No credit card is required during the configured free-access period.',
+      cta: 'Create your Family account',
+      helper: 'Try One Time free through September 11. No card required.',
     });
-    expect(FAMILY_SIGNUP_COPY.at_or_after_expiry.cta).toBe(
-      'Create account and continue to checkout',
-    );
+    expect(FAMILY_SIGNUP_COPY.at_or_after_expiry).toEqual({
+      cta: 'Create your Family account',
+      helper:
+        'The free period has ended. Contact info@onetimeonetime.com for paid continuation options.',
+    });
   });
 
   it('keeps the Family form cardless and local-first', () => {
