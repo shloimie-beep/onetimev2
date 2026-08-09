@@ -36,6 +36,7 @@ beforeEach(async () => {
   });
   pool = createMemoryPool();
   await runMigrations(pool);
+  await alignMemoryOccurrenceStateConstraint();
   await seedFamily();
 });
 
@@ -374,6 +375,18 @@ describe('database-backed class, enrollment, and recording management', () => {
     ).resolves.toMatchObject({ href: null, launch_token_ref: 'class_access_denied' });
   });
 });
+
+async function alignMemoryOccurrenceStateConstraint() {
+  await pool.query(
+    `ALTER TABLE onetime.class_occurrences
+       DROP CONSTRAINT IF EXISTS class_occurrences_constraint_1`,
+  );
+  await pool.query(
+    `ALTER TABLE onetime.class_occurrences
+       ADD CONSTRAINT class_occurrences_memory_occurrence_state_check
+       CHECK (occurrence_state IN ('scheduled', 'preparing', 'ready', 'live', 'completed', 'canceled'))`,
+  );
+}
 
 async function seedFamily() {
   await pool.query(
