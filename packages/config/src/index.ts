@@ -352,6 +352,12 @@ const envSchema = z.object({
   HIGHLEVEL_CANARY_BUDGET: numberFromString.default(0),
   HIGHLEVEL_PROVIDER_TIMEOUT_MS: numberFromString.default(15_000),
   HIGHLEVEL_ROW_LEASE_MS: numberFromString.default(120_000),
+  FAMILY_SIGNUP_GHL_MODE: z.enum(['disabled', 'provider_canary']).default('disabled'),
+  FAMILY_SIGNUP_GHL_OT01_PROOF_ID: optionalTrimmedString(8, 160),
+  FAMILY_SIGNUP_GHL_CANARY_RUN_ID: optionalTrimmedString(8, 160),
+  FAMILY_SIGNUP_GHL_CANARY_INTENT_IDS: optionalTrimmedString(8, 4_000),
+  FAMILY_SIGNUP_GHL_CANARY_BUDGET: numberFromString.default(0),
+  FAMILY_SIGNUP_GHL_BATCH_SIZE: numberFromString.default(1),
   ONE_TIME_OT16_TRANSPORT_MODE: z.enum(['disabled', 'canary', 'broad']).default('disabled'),
   ONE_TIME_OT16_AUTHORIZATION_ID: optionalTrimmedString(8, 160),
   ONE_TIME_OT16_CANARY_OPERATION_IDS: optionalTrimmedString(1, 4_000),
@@ -553,6 +559,29 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     throw new Error(
       'HighLevel event sync requires an exact canary run ID, delivery-key allowlist, and sufficient positive budget.',
     );
+  }
+  const familySignupGhlCanaryIntentIds = parseUniqueCsv(parsed.FAMILY_SIGNUP_GHL_CANARY_INTENT_IDS);
+  if (parsed.FAMILY_SIGNUP_GHL_MODE === 'provider_canary') {
+    if (
+      oneTimeRuntimeEnvironment !== 'production' ||
+      oneTimeVerificationEnvironmentId !== 'production_operator_canary'
+    ) {
+      throw new Error(
+        'Family-signup HighLevel provider canary requires production_operator_canary.',
+      );
+    }
+    if (
+      !parsed.HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN ||
+      !parsed.FAMILY_SIGNUP_GHL_OT01_PROOF_ID ||
+      !parsed.FAMILY_SIGNUP_GHL_CANARY_RUN_ID ||
+      familySignupGhlCanaryIntentIds.length !== 1 ||
+      parsed.FAMILY_SIGNUP_GHL_CANARY_BUDGET !== 1 ||
+      parsed.FAMILY_SIGNUP_GHL_BATCH_SIZE !== 1
+    ) {
+      throw new Error(
+        'Family-signup HighLevel provider canary requires OT-01 proof, one exact intent, and a one-effect batch budget.',
+      );
+    }
   }
   const oneTimeOt16CanaryOperationIds = parseUniqueCsv(parsed.ONE_TIME_OT16_CANARY_OPERATION_IDS);
   if (parsed.ONE_TIME_OT16_TRANSPORT_MODE !== 'disabled') {
@@ -920,6 +949,12 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     highLevelCanaryBudget: parsed.HIGHLEVEL_CANARY_BUDGET,
     highLevelProviderTimeoutMs: parsed.HIGHLEVEL_PROVIDER_TIMEOUT_MS,
     highLevelRowLeaseMs: parsed.HIGHLEVEL_ROW_LEASE_MS,
+    familySignupGhlMode: parsed.FAMILY_SIGNUP_GHL_MODE,
+    familySignupGhlOt01ProofId: parsed.FAMILY_SIGNUP_GHL_OT01_PROOF_ID,
+    familySignupGhlCanaryRunId: parsed.FAMILY_SIGNUP_GHL_CANARY_RUN_ID,
+    familySignupGhlCanaryIntentIds,
+    familySignupGhlCanaryBudget: parsed.FAMILY_SIGNUP_GHL_CANARY_BUDGET,
+    familySignupGhlBatchSize: parsed.FAMILY_SIGNUP_GHL_BATCH_SIZE,
     oneTimeOt16TransportMode: parsed.ONE_TIME_OT16_TRANSPORT_MODE,
     oneTimeOt16AuthorizationId: parsed.ONE_TIME_OT16_AUTHORIZATION_ID,
     oneTimeOt16CanaryOperationIds,

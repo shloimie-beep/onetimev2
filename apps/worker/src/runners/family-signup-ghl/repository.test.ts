@@ -22,6 +22,31 @@ const OPPORTUNITY_ID = 'provider-opportunity-repository-test';
 const EMAIL = 'adult@example.test';
 
 describe('Family-signup HighLevel projection repository', () => {
+  it('claims and recovers only the one explicitly allowlisted canary intent', async () => {
+    const harness = recordingPool();
+    const repository = createPostgresFamilySignupGhlRepository(harness.pool, {
+      highLevelLocationId: LOCATION_ID,
+    });
+
+    await expect(
+      repository.claimNext({
+        runtimeTier: 'production',
+        verificationEnvironmentId: 'production_operator_canary',
+        leaseMs: 120_000,
+        allowedIntentIds: ['allowed-family-intent-0001'],
+      }),
+    ).resolves.toBeNull();
+
+    const guarded = harness.calls.filter(({ text }) =>
+      text.includes('family_signup_ghl_dispatches'),
+    );
+    expect(guarded).toHaveLength(3);
+    expect(guarded.every(({ text }) => text.includes('ANY('))).toBe(true);
+    expect(
+      guarded.every(({ values }) => JSON.stringify(values).includes('allowed-family-intent-0001')),
+    ).toBe(true);
+  });
+
   it('atomically persists a verified adult link after the accepted contact readback', async () => {
     const harness = recordingPool();
     const repository = createPostgresFamilySignupGhlRepository(harness.pool, {
@@ -322,6 +347,33 @@ describe('Family-signup HighLevel projection repository', () => {
           },
         ],
       });
+      await expect(
+        pool.query(
+          `SELECT links.contact_key, links.household_key, links.highlevel_location_id,
+                  links.highlevel_contact_id, links.sync_state,
+                  contacts.family_school_classification
+             FROM onetime.adult_household_contact_links AS links
+             JOIN onetime.contacts AS contacts
+               ON contacts.account_key = links.account_key
+              AND contacts.product_key = links.product_key
+              AND contacts.contact_key = links.contact_key
+            WHERE links.account_key = $1
+              AND links.product_key = $2
+              AND links.household_key = $3`,
+          ['one_time', 'one_time_mishnayos', 'household-schema-test'],
+        ),
+      ).resolves.toMatchObject({
+        rows: [
+          {
+            contact_key: 'contact_adult-schema-test',
+            household_key: 'household-schema-test',
+            highlevel_location_id: LOCATION_ID,
+            highlevel_contact_id: CONTACT_ID,
+            sync_state: 'synced',
+            family_school_classification: 'family',
+          },
+        ],
+      });
 
       // Recreate the exact pre-writer state: all three provider effects are
       // complete, raw provider IDs remain in the dispatch ledger, and the
@@ -433,7 +485,7 @@ function recordingPool(): {
     connect,
     pool: {
       connect,
-      query: vi.fn(async () => ({ rows: [], rowCount: 0 })),
+      query,
       end: vi.fn(async () => undefined),
     } as never,
   };

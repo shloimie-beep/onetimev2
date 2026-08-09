@@ -36,43 +36,91 @@ export const accountAccessSourceKindSchema = z.enum([
 ]);
 export type AccountAccessSourceKind = z.infer<typeof accountAccessSourceKindSchema>;
 
+const applyCurrentAccessStateShape = {
+  household_key: accessKeySchema,
+  state: accountAccessStateSchema,
+  effective_at: z.iso.datetime(),
+  expires_at: z.iso.datetime().nullable(),
+  opaque_source_reference: opaqueSourceReferenceSchema,
+  source_revision: z.number().int().positive(),
+  source_updated_at: z.iso.datetime(),
+  policy_version: z.string().trim().min(3).max(120),
+  revocation_reason: z.string().trim().min(3).max(120).nullable(),
+};
+
+function refineCurrentAccessState(
+  value: z.infer<z.ZodObject<typeof applyCurrentAccessStateShape>>,
+  context: z.RefinementCtx,
+) {
+  if (['suspended', 'revoked', 'manual_review'].includes(value.state) && !value.revocation_reason) {
+    context.addIssue({
+      code: 'custom',
+      path: ['revocation_reason'],
+      message: 'A non-access state requires a revocation reason.',
+    });
+  }
+  if (
+    ['active', 'grace', 'scheduled_end'].includes(value.state) &&
+    value.expires_at &&
+    new Date(value.expires_at).getTime() <= new Date(value.effective_at).getTime()
+  ) {
+    context.addIssue({
+      code: 'custom',
+      path: ['expires_at'],
+      message: 'Access expiry must be later than its effective time.',
+    });
+  }
+}
+
 export const applyCurrentAccessStateSchema = z
+  .object(applyCurrentAccessStateShape)
+  .strict()
+  .superRefine(refineCurrentAccessState);
+export type ApplyCurrentAccessState = z.infer<typeof applyCurrentAccessStateSchema>;
+
+const lowerSha256Schema = z.string().regex(/^[a-f0-9]{64}$/u);
+
+export const highLevelVerifiedAccessStateSchema = z
   .object({
-    household_key: accessKeySchema,
-    state: accountAccessStateSchema,
-    effective_at: z.iso.datetime(),
-    expires_at: z.iso.datetime().nullable(),
-    opaque_source_reference: opaqueSourceReferenceSchema,
-    source_revision: z.number().int().positive(),
-    source_updated_at: z.iso.datetime(),
-    policy_version: z.string().trim().min(3).max(120),
-    revocation_reason: z.string().trim().min(3).max(120).nullable(),
+    ...applyCurrentAccessStateShape,
+    event_id: opaqueSourceReferenceSchema,
+    billing_episode: opaqueSourceReferenceSchema,
+    verified_state: z.enum(['active', 'grace', 'inactive', 'canceled']),
+    provider_customer_ref_hash: lowerSha256Schema.nullable(),
+    provider_subscription_ref_hash: lowerSha256Schema.nullable(),
   })
   .strict()
   .superRefine((value, context) => {
-    if (
-      ['suspended', 'revoked', 'manual_review'].includes(value.state) &&
-      !value.revocation_reason
-    ) {
+    refineCurrentAccessState(value, context);
+    if (!value.provider_customer_ref_hash && !value.provider_subscription_ref_hash) {
       context.addIssue({
         code: 'custom',
-        path: ['revocation_reason'],
-        message: 'A non-access state requires a revocation reason.',
+        path: ['provider_customer_ref_hash'],
+        message: 'A verified provider reference hash is required.',
       });
     }
-    if (
-      ['active', 'grace', 'scheduled_end'].includes(value.state) &&
-      value.expires_at &&
-      new Date(value.expires_at).getTime() <= new Date(value.effective_at).getTime()
-    ) {
+    const expected = {
+      active: ['active'],
+      grace: ['grace'],
+      inactive: ['revoked'],
+      canceled: ['scheduled_end', 'revoked'],
+    }[value.verified_state];
+    if (!expected.includes(value.state)) {
+      context.addIssue({
+        code: 'custom',
+        path: ['state'],
+        message: 'Verified billing state does not match the requested access state.',
+      });
+    }
+    if (value.state === 'scheduled_end' && !value.expires_at) {
       context.addIssue({
         code: 'custom',
         path: ['expires_at'],
-        message: 'Access expiry must be later than its effective time.',
+        message: 'Scheduled-end access requires the verified period end.',
       });
     }
   });
-export type ApplyCurrentAccessState = z.infer<typeof applyCurrentAccessStateSchema>;
+export type HighLevelVerifiedAccessState = z.infer<typeof highLevelVerifiedAccessStateSchema>;
 
 export const freePilotAccessGrantSchema = z
   .object({

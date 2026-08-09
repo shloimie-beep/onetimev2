@@ -13,11 +13,18 @@ export async function runFamilySignupGhlWorker(
   context: WorkerRunnerContext,
   runtime?: FamilySignupGhlRuntime,
 ): Promise<WorkerRunnerResult> {
-  const mode = context.source.FAMILY_SIGNUP_GHL_MODE ?? 'disabled';
+  const mode = context.config.familySignupGhlMode;
   if (mode === 'disabled') {
     return { enabled: false, providerCallsPerformed: false, summary: { mode } };
   }
-  if (mode !== 'provider') {
+  if (
+    mode !== 'provider_canary' ||
+    !context.config.familySignupGhlOt01ProofId ||
+    !context.config.familySignupGhlCanaryRunId ||
+    context.config.familySignupGhlCanaryIntentIds.length !== 1 ||
+    context.config.familySignupGhlCanaryBudget !== 1 ||
+    context.config.familySignupGhlBatchSize !== 1
+  ) {
     return {
       enabled: false,
       providerCallsPerformed: false,
@@ -35,13 +42,16 @@ export async function runFamilySignupGhlWorker(
     repository:
       runtime?.repository ??
       createPostgresFamilySignupGhlRepository(context.pool, {
+        accountKey: context.config.accountKey,
+        productKey: context.config.productKey,
         highLevelLocationId: context.config.highLevelLocationId,
       }),
     provider: runtime?.provider ?? new HighLevelFamilySignupProvider(context.config),
     runtimeTier: context.config.oneTimeRuntimeTier,
     verificationEnvironmentId: context.config.oneTimeVerificationEnvironmentId,
     leaseMs: context.config.highLevelRowLeaseMs,
-    limit: Math.max(1, Math.min(Number(context.source.FAMILY_SIGNUP_GHL_BATCH_SIZE ?? 12), 50)),
+    limit: 1,
+    allowedIntentIds: context.config.familySignupGhlCanaryIntentIds,
   });
   return {
     enabled: true,

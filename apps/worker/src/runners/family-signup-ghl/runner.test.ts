@@ -82,6 +82,7 @@ describe('Family-signup HighLevel worker', () => {
       provider,
       runtimeTier: 'production',
       verificationEnvironmentId: 'production_broad',
+      allowedIntentIds: ['family-signup-intent-1'],
       leaseMs: 120_000,
       limit: 12,
     });
@@ -109,6 +110,7 @@ describe('Family-signup HighLevel worker', () => {
       provider,
       runtimeTier: 'production',
       verificationEnvironmentId: 'production_broad',
+      allowedIntentIds: ['family-signup-intent-1'],
       leaseMs: 120_000,
       limit: 2,
     });
@@ -130,11 +132,31 @@ describe('Family-signup HighLevel worker', () => {
       provider,
       runtimeTier: 'production',
       verificationEnvironmentId: 'production_broad',
+      allowedIntentIds: ['family-signup-intent-1'],
       leaseMs: 120_000,
       limit: 2,
     });
     expect(result.acceptanceUnknown).toBe(1);
     expect(repository.markAcceptanceUnknown).toHaveBeenCalledTimes(1);
     expect(repository.markRetry).not.toHaveBeenCalled();
+  });
+
+  it('releases an explicitly rejected provider request for bounded retry', async () => {
+    const { repository, provider } = ports([claim('contact_upsert')]);
+    vi.mocked(provider.upsertAdultContact).mockRejectedValueOnce(
+      new FamilySignupGhlProviderError('provider_http_400', false),
+    );
+    const result = await runFamilySignupGhlBatch({
+      repository,
+      provider,
+      runtimeTier: 'production',
+      verificationEnvironmentId: 'production_broad',
+      allowedIntentIds: ['family-signup-intent-1'],
+      leaseMs: 120_000,
+      limit: 1,
+    });
+    expect(result.retries).toBe(1);
+    expect(repository.markRetry).toHaveBeenCalledTimes(1);
+    expect(repository.markAcceptanceUnknown).not.toHaveBeenCalled();
   });
 });
