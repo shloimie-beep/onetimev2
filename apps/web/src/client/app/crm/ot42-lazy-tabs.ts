@@ -26,7 +26,7 @@ export class LazyContactTabLoader {
         },
       });
       const json = (await response.json().catch(() => ({}))) as T;
-      if (response.status === 401 || response.status === 403) {
+      if (response.status === 401) {
         this.cache.purgeProtected();
         throw new Error('Protected CRM session ended.');
       }

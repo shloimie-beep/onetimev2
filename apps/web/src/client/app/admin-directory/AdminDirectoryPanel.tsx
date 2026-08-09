@@ -1284,10 +1284,7 @@ function auditDetails(metadata: Record<string, unknown>) {
 }
 
 function handleSession(error: unknown, onSessionExpired: () => void) {
-  if (
-    error instanceof AdminDirectoryRequestError &&
-    (error.code === 'UNAUTHENTICATED' || error.code === 'CSRF_REQUIRED')
-  ) {
+  if (error instanceof AdminDirectoryRequestError && error.code === 'UNAUTHENTICATED') {
     onSessionExpired();
     return true;
   }

@@ -108,7 +108,11 @@ export function registerSupportRoutes(input: {
     res.redirect(302, '/app/support');
   });
 
-  input.app.get('/app/support', async (req: RequestWithTrace, res) => {
+  input.app.get('/app/support', async (req: RequestWithTrace, res, next) => {
+    if (req.header('cookie')?.includes('__Host-onetime-session=')) {
+      next();
+      return;
+    }
     input.session.setPrivateNoStore(res);
     res.setHeader('X-Robots-Tag', 'noindex, nofollow');
     const session = await input.session.sessionFromRequest(req);
@@ -120,7 +124,11 @@ export function registerSupportRoutes(input: {
     await sendSupportShell(input, res);
   });
 
-  input.app.get('/app/support/receipts/:receiptId', async (req: RequestWithTrace, res) => {
+  input.app.get('/app/support/receipts/:receiptId', async (req: RequestWithTrace, res, next) => {
+    if (req.header('cookie')?.includes('__Host-onetime-session=')) {
+      next();
+      return;
+    }
     input.session.setPrivateNoStore(res);
     res.setHeader('X-Robots-Tag', 'noindex, nofollow');
     const session = await input.session.sessionFromRequest(req);

@@ -1175,7 +1175,7 @@ async function authenticatedJson<T>(path: string, init: RequestInit = {}): Promi
     headers: privateHeaders(init.headers),
   });
   const json = await response.json().catch(() => ({}));
-  if (response.status === 401 || response.status === 403) throw new AuthExpiredError();
+  if (response.status === 401) throw new AuthExpiredError();
   if (!response.ok || json.success === false) {
     throw new ApiRequestError(json);
   }

@@ -594,10 +594,7 @@ export function createApp({
   };
   const resolveContentPublicationIdentity = (req: Request) =>
     contentPublicationIdentityFromRequest(req, apiSessionResolutionInput);
-  const verifyContentPublicationCsrf = async (
-    req: Request,
-    identity: Pick<ContentPublicationRequestIdentity, 'sessionKey'>,
-  ) => {
+  const verifyResolvedApiSessionCsrf = async (req: Request, identity: { sessionKey: string }) => {
     const resolution = await readApiSession(req);
     if (
       resolution.status !== 'resolved' ||
@@ -614,6 +611,7 @@ export function createApp({
       })) === true
     );
   };
+  const verifyContentPublicationCsrf = verifyResolvedApiSessionCsrf;
   const handleOt110aSourceAction = (
     req: RequestWithTrace,
     res: Response,
@@ -954,12 +952,12 @@ export function createApp({
     pool,
     scope: learningScope,
     resolveSession: async (request) => {
-      const session = await sessionFromRequest(request, pool, config);
-      return session
+      const resolution = await readApiSession(request);
+      return resolution.status === 'resolved'
         ? {
-            sessionKey: session.session_key,
-            principalId: session.user.user_key,
-            role: session.user.role,
+            sessionKey: resolution.session.session_key,
+            principalId: resolution.session.user.user_key,
+            role: resolution.session.user.role,
           }
         : null;
     },
@@ -1040,12 +1038,7 @@ export function createApp({
       enabled: learningComposition.enabled,
       blockers: learningComposition.blockers,
       resolveActor: resolveLearningActor,
-      verifyCsrf: (request, authenticated) =>
-        verifySessionCsrf({
-          pool,
-          sessionKey: authenticated.sessionKey,
-          csrfToken: request.header('x-csrf-token') ?? request.body?.csrf_token,
-        }),
+      verifyCsrf: verifyResolvedApiSessionCsrf,
       ...(clock ? { clock } : {}),
     }),
   );
@@ -1312,29 +1305,38 @@ export function createApp({
     '/api/v2.1/admin/approved-schools',
     createApprovedSchoolAdminRouter({
       runtimeBinding: schoolRuntimeBinding,
-      resolveSession: (req) =>
-        approvedSchoolAdminSessionFromRequest(req, pool, config, schoolRuntimeBinding),
+      resolveSession: async (req) => {
+        const resolution = await readApiSession(req);
+        if (resolution.status !== 'resolved') return null;
+        if (resolution.session.session_model === 'v21') {
+          return {
+            human_account_id: resolution.session.user.user_key,
+            role:
+              resolution.session.user.role === 'admin'
+                ? ('admin' as const)
+                : resolution.session.user.role === 'student'
+                  ? ('student' as const)
+                  : ('parent' as const),
+          };
+        }
+        return approvedSchoolAdminSessionFromRequest(req, pool, config, schoolRuntimeBinding);
+      },
       verifyCsrf: async (req, approvedSession) => {
         if (!isSameOriginPost(req, config)) return false;
-        const session = await sessionFromRequest(req, pool, config);
-        if (!session || session.user.role !== 'admin') return false;
-        const readback = await approvedSchoolAdminSessionFromRequest(
-          req,
-          pool,
-          config,
-          schoolRuntimeBinding,
-        );
+        const resolution = await readApiSession(req);
+        if (resolution.status !== 'resolved' || resolution.session.user.role !== 'admin')
+          return false;
+        const readback =
+          resolution.session.session_model === 'v21'
+            ? { human_account_id: resolution.session.user.user_key, role: 'admin' as const }
+            : await approvedSchoolAdminSessionFromRequest(req, pool, config, schoolRuntimeBinding);
         if (
           readback?.role !== 'admin' ||
           readback.human_account_id !== approvedSession.human_account_id
         ) {
           return false;
         }
-        return verifySessionCsrf({
-          pool,
-          sessionKey: session.session_key,
-          csrfToken: req.header('x-csrf-token') ?? req.body?.csrf_token,
-        });
+        return verifyResolvedApiSessionCsrf(req, { sessionKey: resolution.session.session_key });
       },
       now: () => (clock ? clock() : new Date()).toISOString(),
       configurator: approvedSchoolService,
@@ -1345,7 +1347,7 @@ export function createApp({
     app,
     config,
     pool,
-    sessionFromRequest: (req) => sessionFromRequest(req, pool, config),
+    sessionFromRequest: (req) => readApiSession(req),
     setPrivateNoStore,
     ...(clock ? { clock } : {}),
   });
@@ -3170,14 +3172,13 @@ export function createApp({
     createContactOperationsRouter({
       pool,
       config,
-      resolveSession: (req) => sessionFromRequest(req, pool, config),
+      resolveSession: async (req) => {
+        const resolution = await readApiSession(req);
+        return resolution.status === 'resolved' ? resolution.session : null;
+      },
       verifyCsrf: async (req, session) => {
         if (!isSameOriginPost(req, config)) return false;
-        return verifySessionCsrf({
-          pool,
-          sessionKey: session.session_key,
-          csrfToken: req.header('x-csrf-token') ?? req.body?.csrf_token,
-        });
+        return verifyResolvedApiSessionCsrf(req, { sessionKey: session.session_key });
       },
       verifyRecentAssurance: async (session) => {
         if (session.user.role === 'owner' || session.user.role === 'admin') {
@@ -3194,14 +3195,13 @@ export function createApp({
     createAdminDirectoryRouter({
       pool,
       config,
-      resolveSession: (req) => sessionFromRequest(req, pool, config),
+      resolveSession: async (req) => {
+        const resolution = await readApiSession(req);
+        return resolution.status === 'resolved' ? resolution.session : null;
+      },
       verifyCsrf: async (req, session) => {
         if (!isSameOriginPost(req, config)) return false;
-        return verifySessionCsrf({
-          pool,
-          sessionKey: session.session_key,
-          csrfToken: req.header('x-csrf-token') ?? req.body?.csrf_token,
-        });
+        return verifyResolvedApiSessionCsrf(req, { sessionKey: session.session_key });
       },
       verifyRecentAssurance: (session) =>
         verifyRecentEmailAssurance({ pool, sessionKey: session.session_key }),

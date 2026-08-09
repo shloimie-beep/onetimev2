@@ -24,7 +24,7 @@
     },
     {
       "path": "apps/web/src/server/app.ts",
-      "sha256": "db486939f59e526326c8ffcfa6cbb0103f8aad6a290438c42348efb3947df788"
+      "sha256": "068c2fedc7030b871b5583b28291b9a43da0ae5ddbe4e0f42c098ed306880fcf"
     },
     {
       "path": "apps/web/src/server/communications/register.ts",
@@ -88,7 +88,7 @@
     },
     {
       "path": "apps/web/src/server/features/support/router.ts",
-      "sha256": "f3bbbbcf107615fc55130300442a32e0fa62f77662c630892fc1b0d89993311d"
+      "sha256": "21dc9937e5308d51799ca4490e96d61b3a1028d6df2f043cb9dffea0fe928545"
     },
     {
       "path": "apps/web/src/server/features/support/v21-router.ts",
@@ -120,7 +120,7 @@
     },
     {
       "path": "apps/web/src/client/app/communications/CommunicationsFeature.tsx",
-      "sha256": "c43c00967ae6ba875d55f7843b0fce2630101ee4bf113e98741e7f98eb00e3db"
+      "sha256": "92930e1f7b0f159a9126d3de5b1ee53b9b20a884cb3c8bb5ffb55ab97909485f"
     },
     {
       "path": "apps/web/src/client/app/communications/WorkflowReadbackFeature.tsx",
@@ -128,11 +128,11 @@
     },
     {
       "path": "apps/web/src/client/app/crm-api.ts",
-      "sha256": "22ce483c06ddf6ba09cb067d5e33b41d01e26080333d2efa628c0d6d68a45a58"
+      "sha256": "85f238c61c912b2edd4134de5eb739c75519c68330c1652f173dd41cd39d7a39"
     },
     {
       "path": "apps/web/src/client/app/crm-entry.tsx",
-      "sha256": "d0c480a504add828188023253fe9076f9c2c5fdb8e67f48adf1fe5cdadf18b60"
+      "sha256": "7f93f7ef36d62facf060f32b243e9a096da21e0561405d982b5f6f4c6074a240"
     },
     {
       "path": "apps/web/src/client/app/live-entry.tsx",

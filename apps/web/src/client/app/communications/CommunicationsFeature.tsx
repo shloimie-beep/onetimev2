@@ -65,7 +65,7 @@ export function CommunicationsFeature({ contactId, onProtectedStateCleared }: Pr
       .then((data) => setWorkflowIndex({ kind: 'ready', data }))
       .catch((error: unknown) => {
         if (controller.signal.aborted) return;
-        if (error instanceof ResponseError && (error.status === 401 || error.status === 403)) {
+        if (error instanceof ResponseError && error.status === 401) {
           onProtectedStateCleared?.();
         }
         setWorkflowIndex({ kind: 'error', message: 'Workflow registry could not be loaded.' });
@@ -99,7 +99,7 @@ export function CommunicationsFeature({ contactId, onProtectedStateCleared }: Pr
     } catch (error) {
       if (controller.signal.aborted) return;
       const mapped = mapError(error);
-      if (mapped.kind === 'unauthenticated' || mapped.kind === 'forbidden') {
+      if (mapped.kind === 'unauthenticated') {
         abortRef.current?.abort();
         setNextCursor(null);
         onProtectedStateCleared?.();
