@@ -1,6 +1,6 @@
-export const LEGAL_POLICY_VERSION = 'w13-10-public-legal-v1-2026-07-17';
-export const COMMUNICATION_CONSENT_POLICY_VERSION = 'w13-10-communication-consent-v1-2026-07-17';
-export const LEGAL_EFFECTIVE_DATE = '2026-07-17';
+export const LEGAL_POLICY_VERSION = 'one-time-public-legal-v2-2026-08-09';
+export const COMMUNICATION_CONSENT_POLICY_VERSION = 'one-time-unified-terms-consent-v2-2026-08-09';
+export const LEGAL_EFFECTIVE_DATE = '2026-08-09';
 export const LEGAL_REVIEW_STATUS = 'counsel_review_required';
 export const LEGAL_CONTACT_PUBLIC_LABEL = 'One Time Mishnayos support';
 
@@ -74,61 +74,49 @@ export const termsNotice: LegalNotice = {
   contactLabel: LEGAL_CONTACT_PUBLIC_LABEL,
   sections: [
     {
-      heading: 'Current Service State',
+      heading: 'One Integrated Agreement',
       body: [
-        'The site can collect interest requests and the application includes owner/admin, parent, and student account capabilities.',
-        'Submitting the public form does not by itself create paid access, charge a card, import a real audience list, or enable broad provider messaging.',
+        'Family signup presents exactly one required Terms checkbox. The Terms incorporate privacy, Parent/Student data, communications, cancellation, and refund provisions in one document.',
+        'The single acceptance projects the covered adult email scopes for required service messages, One Time program updates, general marketing, and the Parent newsletter.',
       ],
     },
     {
-      heading: 'Accounts And Class Access',
+      heading: 'Suppression And Withdrawal',
       body: [
-        'Class access, portal accounts, and learner permissions depend on separate operational approval and account setup.',
-        'Parents, students, schools, owners, administrators, and support roles must use only the access scope assigned to them.',
+        'Unsubscribe, DND, complaint, hard-bounce, suppression, and equivalent do-not-contact states remain controlling for optional messages.',
+        'WhatsApp and Student-specific recording or recognition consent are not silently granted by the Family signup acceptance.',
       ],
     },
     {
-      heading: 'Billing',
+      heading: 'Accounts, Billing, And Acceptable Use',
       body: [
-        'Production paid checkout, a final family subscription price, cancellation terms, and learner-seat limits are not accepted in the current repository evidence.',
-        'Billing language must be updated only after the product decision gate accepts exact values.',
-      ],
-    },
-    {
-      heading: 'Acceptable Use',
-      body: [
-        'Users must not attempt to bypass access controls, misuse class content, submit private student information into public forms, or interfere with application operations.',
+        'The adult account owner must use accurate information, protect credentials, and keep Parent and Student access within the authorized household.',
+        'The public form collects no card and makes no automatic charge. Cancellation stops future renewal while preserving verified paid-period access; refunds remain manual exceptions.',
       ],
     },
   ],
 };
 
 export const communicationConsentNotice: LegalNotice = {
-  title: 'Communication And Reminder Consent | One Time Mishnayos',
-  heading: 'Communication And Reminder Consent',
+  title: 'Communications Included In The Terms | One Time Mishnayos',
+  heading: 'Communications Included In The Terms',
   version: COMMUNICATION_CONSENT_POLICY_VERSION,
   effectiveDate: LEGAL_EFFECTIVE_DATE,
   reviewStatus: LEGAL_REVIEW_STATUS,
   contactLabel: LEGAL_CONTACT_PUBLIC_LABEL,
   sections: [
     {
-      heading: 'Required Service Communication',
+      heading: 'Unified Adult Email Acceptance',
       body: [
-        'One Time Mishnayos may use the email address submitted on the public form to respond to the request, send service follow-up, and protect the signup flow.',
-        'This required service communication is separate from optional class reminders or marketing-style reminders.',
+        'The Family signup Terms acceptance covers required account and service email plus One Time program updates, general marketing, and the Parent newsletter.',
+        'There are no separate visible general-marketing or Parent-newsletter checkboxes on the Family signup form.',
       ],
     },
     {
-      heading: 'Optional Reminder Choices',
+      heading: 'Opt-Out And Suppression',
       body: [
-        'Email reminders and WhatsApp reminders are separate optional choices. They must not be prechecked or inferred from a default channel.',
-        'Optional reminder consent records must include policy version, purpose, source, channel, timestamp, and suppression or withdrawal state.',
-      ],
-    },
-    {
-      heading: 'Opt-Out',
-      body: [
-        'STOP, unsubscribe, opt-out, complaint, hard-bounce, and suppression states must block optional outbound reminders before any provider call.',
+        'Unsubscribe, DND, complaint, hard-bounce, suppression, and equivalent do-not-contact states must block optional outreach before any provider call.',
+        'WhatsApp is not authorized by the Family signup Terms acceptance.',
       ],
     },
   ],
