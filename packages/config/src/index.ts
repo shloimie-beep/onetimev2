@@ -539,8 +539,18 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     throw new Error('Delivery provider mode is limited to test or isolated_staging.');
   }
 
-  if (parsed.ZOOM_CLASSROOM_CANARY_ENABLED && !runtime.allowsProviderActions) {
-    throw new Error('Zoom canary execution is limited to test or isolated_staging.');
+  const zoomProductionOperatorCanary =
+    oneTimeRuntimeEnvironment === 'production' &&
+    oneTimeVerificationEnvironmentId === 'production_operator_canary' &&
+    Boolean(parsed.ZOOM_CLASSROOM_CANARY_LEARNER_KEY);
+  if (
+    parsed.ZOOM_CLASSROOM_CANARY_ENABLED &&
+    !runtime.allowsProviderActions &&
+    !zoomProductionOperatorCanary
+  ) {
+    throw new Error(
+      'Zoom canary execution requires test, isolated_staging, or an exact production operator learner.',
+    );
   }
 
   if (
