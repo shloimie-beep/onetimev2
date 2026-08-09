@@ -142,32 +142,50 @@ async function installRoleSelector(root: HTMLElement) {
   const status = root.querySelector<HTMLElement>('[data-role-status]');
   const buttons = [...root.querySelectorAll<HTMLButtonElement>('[data-select-role]')];
   let csrfToken = '';
-  try {
-    const response = await fetch('/api/v2.1/auth/session', {
-      credentials: 'same-origin',
-      headers: { accept: 'application/json' },
-    });
-    const payload = (await response.json()) as {
-      csrf_token?: string;
-      account_context?: { available_roles?: string[] };
-    };
-    if (!response.ok || !payload.csrf_token) throw new Error('session_unavailable');
-    csrfToken = payload.csrf_token;
-    const available = new Set(payload.account_context?.available_roles ?? []);
+  let availableRoles = new Set<string>();
+  const enableAvailableRoles = () => {
     buttons.forEach((button) => {
-      button.disabled = !available.has(button.dataset.selectRole ?? '');
+      button.disabled = !availableRoles.has(button.dataset.selectRole ?? '');
     });
-  } catch {
-    if (status)
-      status.textContent = 'Your signed-in account could not be verified. Please sign in again.';
+  };
+  const refreshSession = async () => {
     buttons.forEach((button) => (button.disabled = true));
-    return;
-  }
+    try {
+      const response = await fetch('/api/v2.1/auth/session', {
+        credentials: 'same-origin',
+        cache: 'no-store',
+        headers: { accept: 'application/json' },
+      });
+      const payload = (await response.json()) as {
+        csrf_token?: string;
+        account_context?: { available_roles?: string[] };
+      };
+      if (response.status === 401 || response.status === 404) {
+        csrfToken = '';
+        availableRoles = new Set();
+        if (status) status.textContent = 'Your session ended. Sign in again to continue.';
+        return false;
+      }
+      if (!response.ok || !payload.csrf_token) throw new Error('session_unavailable');
+      csrfToken = payload.csrf_token;
+      availableRoles = new Set(payload.account_context?.available_roles ?? []);
+      enableAvailableRoles();
+      return true;
+    } catch {
+      csrfToken = '';
+      if (status) {
+        status.textContent = 'We could not verify your session yet. Select a role to retry.';
+      }
+      buttons.forEach((button) => (button.disabled = false));
+      return false;
+    }
+  };
 
   buttons.forEach((button) =>
     button.addEventListener('click', async () => {
       const requestedRole = button.dataset.selectRole;
       if (requestedRole !== 'admin' && requestedRole !== 'parent') return;
+      if (!csrfToken && !(await refreshSession())) return;
       buttons.forEach((candidate) => (candidate.disabled = true));
       if (status)
         status.textContent = `Opening the ${requestedRole === 'admin' ? 'Admin' : 'Parent'} workspace…`;
@@ -182,8 +200,13 @@ async function installRoleSelector(root: HTMLElement) {
           },
           body: JSON.stringify({ requested_role: requestedRole, csrf_token: csrfToken }),
         });
-        const payload = (await response.json()) as { return_to?: string; message?: string };
+        const payload = (await response.json()) as {
+          return_to?: string;
+          message?: string;
+          code?: string;
+        };
         if (!response.ok || !payload.return_to) {
+          csrfToken = '';
           throw new Error(payload.message ?? 'Role switch failed.');
         }
         window.location.assign(payload.return_to);
@@ -192,10 +215,11 @@ async function installRoleSelector(root: HTMLElement) {
           status.textContent =
             error instanceof Error ? error.message : 'Role switching is unavailable right now.';
         }
-        buttons.forEach((candidate) => (candidate.disabled = false));
+        enableAvailableRoles();
       }
     }),
   );
+  await refreshSession();
 }
 
 const householdSelector = document.querySelector<HTMLElement>('[data-household-selector]');

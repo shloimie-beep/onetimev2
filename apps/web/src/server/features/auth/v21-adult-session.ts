@@ -71,10 +71,7 @@ const browserEnvelopeSchema = z
         message: 'Access and refresh material must be independent.',
       });
     }
-    if (
-      (value.active_role === 'admin' && value.household_id !== null) ||
-      (value.active_role === 'parent' && value.household_id === null)
-    ) {
+    if (value.active_role === 'admin' && value.household_id !== null) {
       context.addIssue({
         code: z.ZodIssueCode.custom,
         message: 'The active adult role and household context do not match.',
@@ -183,7 +180,7 @@ export type V21HouseholdContextOutcome =
   | {
       status: 'resolved';
       households: readonly SafeHouseholdContext[];
-      active_household_id: string;
+      active_household_id: string | null;
       csrf_token: string;
       expires_at: string;
     }
@@ -419,6 +416,14 @@ export function createV21AdultSessionRuntime(
     }
   };
 
+  const revokeEstablishedSession = async (browserSessionToken: string, now: Date) => {
+    const parsed = parseCookie(
+      `${AUTH_SESSION_COOKIE.name}=${encodeURIComponent(browserSessionToken)}`,
+    );
+    if (!parsed) return;
+    await exactRevoke(parsed, now, 'explicit_revocation');
+  };
+
   return {
     establish,
 
@@ -520,8 +525,11 @@ export function createV21AdultSessionRuntime(
           }
           sessionMutated = true;
         }
-        const activeRole: AdultRole = parentContextAvailable ? 'parent' : 'admin';
-        const household = activeRole === 'parent' ? identity.ownedHouseholds[0]! : null;
+        const activeRole: AdultRole = memberships.includes('admin') ? 'admin' : 'parent';
+        const household =
+          activeRole === 'parent' && identity.ownedHouseholds.length === 1
+            ? identity.ownedHouseholds[0]!
+            : null;
         const established = await establish({
           scope,
           adult_id: identity.adultId,
@@ -617,9 +625,9 @@ export function createV21AdultSessionRuntime(
           household,
           memberships,
           active_role: activeRole,
-          role_selection_required: memberships.length > 1,
+          role_selection_required: false,
           household_selection_required:
-            activeRole === 'parent' && identity.ownedHouseholds.length > 1,
+            activeRole === 'parent' && household === null && identity.ownedHouseholds.length > 1,
         };
       } catch {
         let cleanup: 'revoked' | 'invalid' | 'unavailable' | 'revocation_unverified' | null = null;
@@ -671,18 +679,19 @@ export function createV21AdultSessionRuntime(
         if (!identity || !identity.memberships.includes(requestedRole)) {
           return { switched: false, reason: 'invalid_role' };
         }
-        const household =
-          requestedRole === 'parent' &&
+        const parentContextAvailable =
           identity.parentMembershipActive &&
           identity.activeOwnedHouseholdCount > 0 &&
-          identity.ownedHouseholds.length === identity.activeOwnedHouseholdCount
+          identity.ownedHouseholds.length === identity.activeOwnedHouseholdCount;
+        const household =
+          requestedRole === 'parent' &&
+          parentContextAvailable &&
+          identity.ownedHouseholds.length === 1
             ? identity.ownedHouseholds[0]!
             : null;
-        if (requestedRole === 'parent' && !household) {
+        if (requestedRole === 'parent' && !parentContextAvailable) {
           return { switched: false, reason: 'invalid_role' };
         }
-        const revoked = await exactRevoke(parsed, now, 'role_context_switch');
-        if (revoked !== 'revoked') return { switched: false, reason: 'unavailable' };
         const established = await establish({
           scope: {
             product: ONE_TIME_PRODUCT_SCOPE,
@@ -697,6 +706,11 @@ export function createV21AdultSessionRuntime(
           now,
         });
         if (!established.established) return { switched: false, reason: 'unavailable' };
+        const revoked = await exactRevoke(parsed, now, 'role_context_switch');
+        if (revoked !== 'revoked') {
+          await revokeEstablishedSession(established.browser_session_token, now);
+          return { switched: false, reason: 'unavailable' };
+        }
         return {
           switched: true,
           browser_session_token: established.browser_session_token,
@@ -704,8 +718,7 @@ export function createV21AdultSessionRuntime(
           expires_at: established.expires_at,
           active_role: requestedRole,
           memberships: identity.memberships,
-          household_selection_required:
-            requestedRole === 'parent' && identity.ownedHouseholds.length > 1,
+          household_selection_required: requestedRole === 'parent' && household === null,
         };
       } catch {
         return { switched: false, reason: 'unavailable' };
@@ -742,8 +755,9 @@ export function createV21AdultSessionRuntime(
           !identity.parentMembershipActive ||
           identity.activeOwnedHouseholdCount < 1 ||
           households.length !== identity.activeOwnedHouseholdCount ||
-          !activeHouseholdId ||
-          !households.some((household) => household.householdId === activeHouseholdId)
+          (activeHouseholdId === null
+            ? households.length < 2
+            : !households.some((household) => household.householdId === activeHouseholdId))
         ) {
           return { status: 'invalid', reason: 'invalid_session' };
         }
@@ -810,8 +824,6 @@ export function createV21AdultSessionRuntime(
           (household) => household.householdId === selectedHouseholdId,
         );
         if (!selectedHousehold) return { switched: false, reason: 'invalid_household' };
-        const revoked = await exactRevoke(parsed, now, 'household_context_switch');
-        if (revoked !== 'revoked') return { switched: false, reason: 'unavailable' };
         const established = await establish({
           scope: {
             product: ONE_TIME_PRODUCT_SCOPE,
@@ -826,6 +838,11 @@ export function createV21AdultSessionRuntime(
           now,
         });
         if (!established.established) return { switched: false, reason: 'unavailable' };
+        const revoked = await exactRevoke(parsed, now, 'household_context_switch');
+        if (revoked !== 'revoked') {
+          await revokeEstablishedSession(established.browser_session_token, now);
+          return { switched: false, reason: 'unavailable' };
+        }
         return {
           switched: true,
           browser_session_token: established.browser_session_token,
@@ -945,7 +962,6 @@ function assertEstablishmentInput(input: V21ParentSessionEstablishmentInput): vo
       input.scope.runtime_tier ||
     !['admin', 'parent'].includes(input.active_role) ||
     (input.active_role === 'admin' && input.household_id !== null) ||
-    (input.active_role === 'parent' && input.household_id === null) ||
     !Number.isSafeInteger(input.security_version) ||
     input.security_version < 1 ||
     !validInstant(input.now)
@@ -992,8 +1008,10 @@ function exactReadback(
     resolved.session.revokedAt === null &&
     (claims.active_role === 'admin'
       ? resolved.household === null
-      : resolved.ownedHouseholdCount === 1 &&
-        resolved.household?.householdId === claims.household_id) &&
+      : claims.household_id === null
+        ? resolved.ownedHouseholdCount > 1 && resolved.household === null
+        : resolved.ownedHouseholdCount >= 1 &&
+          resolved.household?.householdId === claims.household_id) &&
     Number.isFinite(idleExpiry) &&
     Number.isFinite(absoluteExpiry) &&
     idleExpiry > now.getTime() &&

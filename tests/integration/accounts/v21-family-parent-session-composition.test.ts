@@ -128,6 +128,42 @@ function availabilityGuardedRepository(
 }
 
 describe('I36 central Family-signup and Parent-session composition', () => {
+  it('replaces malformed host and legacy cookies after valid credentials', async () => {
+    await submitFamily('stale-cookie-parent@example.test', 'Stale', 'Cookie');
+    const loginPage = await fetch(`${baseUrl}/login`);
+    const loginCookie = loginPage.headers
+      .getSetCookie()
+      .find((value) => value.startsWith('otcrm_csrf='))
+      ?.split(';')[0];
+    const loginCsrf = /name="csrf_token" value="([^"]+)"/u.exec(await loginPage.text())?.[1];
+    if (!loginCookie || !loginCsrf) throw new Error('missing login CSRF binding');
+
+    const recovered = await fetch(`${baseUrl}/api/v1/auth/login`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        cookie: `__Host-onetime-session=malformed; otcrm_session=malformed; ${loginCookie}`,
+      },
+      body: JSON.stringify({
+        identifier: 'stale-cookie-parent@example.test',
+        password: 'correct horse battery staple',
+        csrf_token: loginCsrf,
+      }),
+    });
+    expect(recovered.status).toBe(200);
+    await expect(recovered.json()).resolves.toMatchObject({
+      success: true,
+      session_model: 'v21',
+      return_to: '/app/parent',
+    });
+    expect(recovered.headers.getSetCookie()).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining('__Host-onetime-session='),
+        expect.stringContaining('otcrm_session='),
+      ]),
+    );
+  });
+
   it('recovers a canonical v2.1 Parent credential once and revokes prior sessions', async () => {
     const signup = await submitFamily(
       'recoverable-v21-parent@example.test',
@@ -880,6 +916,31 @@ describe.runIf(nativeProofEnabled)(
         });
         expect(invalidRecovery.status).toBe(401);
         expect(invalidRecovery.headers.getSetCookie()).toEqual(
+          expect.arrayContaining([
+            expect.stringContaining('__Host-onetime-session='),
+            expect.stringContaining('otcrm_session='),
+          ]),
+        );
+        const recoveredLogin = await fetch(`${nativeBaseUrl}/api/v1/auth/login`, {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json',
+            cookie: `__Host-onetime-session=malformed; otcrm_session=${encodeURIComponent(
+              legacySession.session_token,
+            )}; ${loginCookie}`,
+          },
+          body: JSON.stringify({
+            identifier: 'native-parent@example.test',
+            password: 'correct horse battery staple',
+            csrf_token: loginCsrf,
+          }),
+        });
+        expect(recoveredLogin.status).toBe(200);
+        await expect(recoveredLogin.json()).resolves.toMatchObject({
+          success: true,
+          session_model: 'v21',
+        });
+        expect(recoveredLogin.headers.getSetCookie()).toEqual(
           expect.arrayContaining([
             expect.stringContaining('__Host-onetime-session='),
             expect.stringContaining('otcrm_session='),
