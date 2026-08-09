@@ -378,13 +378,11 @@ function route(
     try {
       const authenticated = await input.resolveActor(request);
       if (authenticated && 'unavailable' in authenticated) {
-        response
-          .status(503)
-          .json({
-            success: false,
-            code: 'LEARNING_UNAVAILABLE',
-            message: 'Learning is temporarily unavailable.',
-          });
+        response.status(503).json({
+          success: false,
+          code: 'LEARNING_UNAVAILABLE',
+          message: 'Learning is temporarily unavailable.',
+        });
         return;
       }
       if (!authenticated) {
