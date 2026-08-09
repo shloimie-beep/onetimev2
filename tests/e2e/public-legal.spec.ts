@@ -35,7 +35,11 @@ test('privacy notice renders launch-ready policy metadata and data categories', 
     page.getByRole('heading', { name: 'Parent/Guardian and Student Data Notice' }),
   ).toBeVisible();
   await expect(page.getByText('does not ask for student names')).toBeVisible();
-  await expect(page.getByText('The acceptance is not split into separate visible general-marketing or Parent-newsletter checkboxes')).toBeVisible();
+  await expect(
+    page.getByText(
+      'The acceptance is not split into separate visible general-marketing or Parent-newsletter checkboxes',
+    ),
+  ).toBeVisible();
 
   const body = await page.textContent('body');
   expect(body).not.toMatch(/\bCOPPA\b|\bFERPA\b|\bGDPR\b|\bHIPAA\b/);
@@ -50,10 +54,10 @@ test('terms use current account and billing truth without placeholder claims', a
   await expect(page.getByRole('heading', { name: 'Terms of Use' })).toBeVisible();
   await expect(page.locator('[data-policy-version="terms-of-use-v2-2026-08-09"]')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'One Integrated Agreement' })).toBeVisible();
+  await expect(page.getByText(/single integrated agreement for Family signup/i)).toBeVisible();
   await expect(
-    page.getByText(/single integrated agreement for Family signup/i),
+    page.getByRole('heading', { name: 'Payment, Cancellation, And Refunds' }),
   ).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Payment, Cancellation, And Refunds' })).toBeVisible();
   await expect(page.getByText('fixture and Stripe test-mode evidence')).toBeVisible();
   await expect(page.getByText(/does not collect payment-card details/i)).toBeVisible();
 
