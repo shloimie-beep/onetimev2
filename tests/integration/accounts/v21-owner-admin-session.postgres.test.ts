@@ -1,6 +1,8 @@
 import pg from 'pg';
 import { describe, expect, it } from 'vitest';
+import { createApp } from '../../../apps/web/src/server/app.ts';
 import { createPostgresV21AdultSessionRuntime } from '../../../apps/web/src/server/features/auth/v21-adult-session.ts';
+import { loadConfig } from '../../../packages/config/src/index.ts';
 import { runMigrations } from '../../../packages/db/src/index.ts';
 import { createPostgresV21AdultSessionRepository } from '../../../packages/db/src/accounts/v21-household-identity-repository.ts';
 import { hashAuthPassword } from '../../../packages/domain/src/auth/policy.ts';
@@ -13,6 +15,7 @@ describe.runIf(nativeProofEnabled)('OT-P0 native PostgreSQL owner Admin session'
   it('defaults a dual-role owner to Admin and parameterizes readback and cleanup', async () => {
     const pool = new pg.Pool({ connectionString: nativeDatabaseUrl!, max: 2 });
     let ownsNativeSchema = false;
+    let server: ReturnType<ReturnType<typeof createApp>['listen']> | undefined;
     try {
       const database = await pool.query(
         `SELECT current_database() AS database_name,
@@ -66,8 +69,129 @@ describe.runIf(nativeProofEnabled)('OT-P0 native PostgreSQL owner Admin session'
       const cookieHeader = `__Host-onetime-session=${encodeURIComponent(
         login.browser_session_token,
       )}`;
+      const config = loadConfig({
+        NODE_ENV: 'test',
+        PUBLIC_BASE_URL: 'https://join.onetimeonetime.com',
+        APP_VERSION: 'test',
+        COMMIT_SHA: 'test',
+        OUTBOX_TRANSPORT_MODE: 'sink',
+        AUTH_CSRF_SECRET: 'ot-p0-native-admin-session-hmac-secret',
+      });
+      const app = createApp({
+        config,
+        pool,
+        clock: () => new Date(now),
+        v21AdultSessionRuntime: runtime,
+      });
+      const listeningServer = await new Promise<NonNullable<typeof server>>((resolve, reject) => {
+        const listening = app.listen(0, '127.0.0.1', (error?: Error) => {
+          if (error) reject(error);
+          else resolve(listening);
+        });
+      });
+      server = listeningServer;
+      const address = listeningServer.address();
+      if (typeof address !== 'object' || !address)
+        throw new Error('Missing native test server address.');
+      const baseUrl = `http://127.0.0.1:${address.port}`;
+      const hostCookie = (response: Response) => {
+        const cookie = response.headers
+          .getSetCookie()
+          .findLast((value) => value.startsWith('__Host-onetime-session='))
+          ?.split(';')[0];
+        if (!cookie) throw new Error('Missing v2.1 host-session cookie.');
+        return cookie;
+      };
+
+      const adminBootstrapResponse = await fetch(`${baseUrl}/api/v2.1/auth/session`, {
+        headers: { cookie: cookieHeader },
+      });
+      const adminBootstrap = (await adminBootstrapResponse.json()) as {
+        session_model: string;
+        csrf_token: string;
+        account_context: { active_role: string };
+      };
+      expect(adminBootstrapResponse.status).toBe(200);
+      expect(adminBootstrap).toMatchObject({
+        session_model: 'v21',
+        account_context: { active_role: 'admin' },
+      });
+      const adminAssignees = await fetch(`${baseUrl}/api/v1/crm/assignees`, {
+        headers: { cookie: cookieHeader },
+      });
+      expect(adminAssignees.status).toBe(200);
+      await expect(adminAssignees.json()).resolves.toMatchObject({ success: true });
+
+      const csrfProtectedPost = await fetch(`${baseUrl}/api/v1/admin/classes/series`, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          cookie: cookieHeader,
+          'x-csrf-token': adminBootstrap.csrf_token,
+        },
+        body: JSON.stringify({}),
+      });
+      expect(csrfProtectedPost.status).toBe(400);
+
+      const parentSwitch = await fetch(`${baseUrl}/api/v2.1/account-context/role`, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          cookie: cookieHeader,
+          origin: config.publicBaseUrl,
+          'x-csrf-token': adminBootstrap.csrf_token,
+        },
+        body: JSON.stringify({ requested_role: 'parent' }),
+      });
+      const parentSwitchBody = (await parentSwitch.json()) as {
+        csrf_token: string;
+        active_role: string;
+      };
+      const parentCookie = hostCookie(parentSwitch);
+      expect(parentSwitch.status).toBe(200);
+      expect(parentSwitchBody.active_role).toBe('parent');
+
+      const parentBootstrapResponse = await fetch(`${baseUrl}/api/v2.1/auth/session`, {
+        headers: { cookie: parentCookie },
+      });
+      await expect(parentBootstrapResponse.json()).resolves.toMatchObject({
+        session_model: 'v21',
+        account_context: { active_role: 'parent' },
+      });
+      const parentAssignees = await fetch(`${baseUrl}/api/v1/crm/assignees`, {
+        headers: { cookie: parentCookie },
+      });
+      expect(parentAssignees.status).toBe(403);
+      await expect(parentAssignees.json()).resolves.toMatchObject({ code: 'FORBIDDEN' });
+      const parentPortal = await fetch(`${baseUrl}/api/v1/portals/parent/dashboard`, {
+        headers: { cookie: parentCookie },
+      });
+      expect(parentPortal.status).toBe(403);
+
+      const adminSwitch = await fetch(`${baseUrl}/api/v2.1/account-context/role`, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          cookie: parentCookie,
+          origin: config.publicBaseUrl,
+          'x-csrf-token': parentSwitchBody.csrf_token,
+        },
+        body: JSON.stringify({ requested_role: 'admin' }),
+      });
+      const adminSwitchBody = (await adminSwitch.json()) as {
+        csrf_token: string;
+        active_role: string;
+      };
+      const adminCookie = hostCookie(adminSwitch);
+      expect(adminSwitch.status).toBe(200);
+      expect(adminSwitchBody.active_role).toBe('admin');
+      const restoredAdminAssignees = await fetch(`${baseUrl}/api/v1/crm/assignees`, {
+        headers: { cookie: adminCookie },
+      });
+      expect(restoredAdminAssignees.status).toBe(200);
+
       await expect(
-        runtime.resolveCookieHeader({ cookie_header: cookieHeader, now }),
+        runtime.resolveCookieHeader({ cookie_header: adminCookie, now }),
       ).resolves.toMatchObject({
         status: 'resolved',
         context: {
@@ -97,18 +221,20 @@ describe.runIf(nativeProofEnabled)('OT-P0 native PostgreSQL owner Admin session'
 
       await expect(
         runtime.logoutCookieHeader({
-          cookie_header: cookieHeader,
-          csrf_token: login.csrf_token,
+          cookie_header: adminCookie,
+          csrf_token: adminSwitchBody.csrf_token,
           now: new Date(now.getTime() + 1_000),
         }),
       ).resolves.toEqual({ revoked: true });
       await expect(
         runtime.resolveCookieHeader({
-          cookie_header: cookieHeader,
+          cookie_header: adminCookie,
           now: new Date(now.getTime() + 1_000),
         }),
       ).resolves.toEqual({ status: 'invalid' });
     } finally {
+      const activeServer = server;
+      if (activeServer) await new Promise<void>((resolve) => activeServer.close(() => resolve()));
       if (ownsNativeSchema) await pool.query('DROP SCHEMA IF EXISTS onetime CASCADE');
       await pool.end();
     }

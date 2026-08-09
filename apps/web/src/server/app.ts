@@ -517,6 +517,86 @@ export function createApp({
       hmacSecret: config.authCsrfSecret,
       ...(clock ? { clock } : {}),
     });
+  const resolveApiSession = async (req: Request) => {
+    const resolution = await readApiSessionFromRequest(req, {
+      pool,
+      config,
+      v21AdultSessionRuntime,
+      ...(clock ? { clock } : {}),
+    });
+    return resolution.status === 'resolved' ? resolution.session : null;
+  };
+  const requireApiSession = (
+    req: RequestWithTrace,
+    res: Response,
+    currentPool: DbPool,
+    currentConfig: AppConfig,
+  ) =>
+    requireResolvedApiSession(req, res, {
+      pool: currentPool,
+      config: currentConfig,
+      v21AdultSessionRuntime,
+      ...(clock ? { clock } : {}),
+    });
+  const requireSessionCsrf = (
+    req: RequestWithTrace,
+    res: Response,
+    currentPool: DbPool,
+    session: ResolvedApiSession,
+  ) =>
+    requireResolvedSessionCsrf(req, res, {
+      pool: currentPool,
+      session,
+      v21AdultSessionRuntime,
+      ...(clock ? { clock } : {}),
+    });
+  const resolvePortalActor = (req: Request) =>
+    portalActorFromRequest(req, {
+      pool,
+      config,
+      v21AdultSessionRuntime,
+      ...(clock ? { clock } : {}),
+    });
+  const verifyPortalCsrf = async (req: Request, actor: PortalActorContext) => {
+    if (!isSameOriginPost(req, config)) return false;
+    const session = await resolveApiSession(req);
+    return Boolean(
+      session &&
+      session.session_key === actor.session_key &&
+      (await verifyResolvedSessionCsrf(req, {
+        pool,
+        session,
+        v21AdultSessionRuntime,
+        ...(clock ? { clock } : {}),
+      })),
+    );
+  };
+  const handleOt110aSourceAction = (
+    req: RequestWithTrace,
+    res: Response,
+    currentPool: DbPool,
+    currentConfig: AppConfig,
+    actionType:
+      | 'transcript.approve'
+      | 'artifact.approve'
+      | 'artifact.publish'
+      | 'content.retry'
+      | 'content.retract'
+      | 'social.approve'
+      | 'social.schedule'
+      | 'social.retract',
+  ) =>
+    handleResolvedOt110aSourceAction(
+      req,
+      res,
+      {
+        pool: currentPool,
+        config: currentConfig,
+        v21AdultSessionRuntime,
+        ...(clock ? { clock } : {}),
+      },
+      actionType,
+    );
   const centrallyBoundFamilySignupRegistration: ServerFeatureRegistration = {
     ...familySignupFeatureRegistration,
     createRouter: ({ config: featureConfig, pool: featurePool, clock: featureClock }) =>
@@ -733,7 +813,8 @@ export function createApp({
       sessionFromRequest: (req) => sessionFromRequest(req, pool, config),
       ensureSessionCsrfCookie: (req, res, session) =>
         ensureSessionCsrfCookie(req, res, pool, config, session),
-      requireSessionCsrf: (req, res, session) => requireSessionCsrf(req, res, pool, session),
+      requireSessionCsrf: (req, res, session) =>
+        requireSessionCsrf(req, res, pool, { ...session, session_model: 'legacy' }),
       setPrivateNoStore,
     },
   });
@@ -874,13 +955,8 @@ export function createApp({
       },
       publicOrigin: config.publicBaseUrl,
       lineageSecret: config.authCsrfSecret,
-      resolvePortalActor: (request) => portalActorFromRequest(request, pool, config),
-      verifyCsrf: (request, actor) =>
-        verifySessionCsrf({
-          pool,
-          sessionKey: actor.session_key,
-          csrfToken: request.header('x-csrf-token') ?? request.body?.csrf_token,
-        }),
+      resolvePortalActor,
+      verifyCsrf: (request, actor) => verifyPortalCsrf(request, actor),
     }),
     candidateRuntime: {
       ...embeddedClassroomRuntime,
@@ -2973,14 +3049,6 @@ export function createApp({
     helper: createScopedKnowledgeHelperAdapter({ pool, config, ...(clock ? { clock } : {}) }),
     billing: createParentAccessSummaryAdapter(pool, config),
   };
-  const resolvePortalActor = (req: Request) => portalActorFromRequest(req, pool, config);
-  const verifyPortalCsrf = (req: Request, actor: PortalActorContext) =>
-    isSameOriginPost(req, config) &&
-    verifySessionCsrf({
-      pool,
-      sessionKey: actor.session_key,
-      csrfToken: req.header('x-csrf-token') ?? req.body?.csrf_token,
-    });
   const verifyPortalRecentAssurance = async (_req: Request, actor: PortalActorContext) => {
     const result = await pool.query(
       `SELECT assurance_at
@@ -5592,7 +5660,12 @@ async function requireSupportV21Csrf(
     res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
     return false;
   }
-  return requireSessionCsrf(req, res, input.pool, session);
+  return requireResolvedSessionCsrf(req, res, {
+    pool: input.pool,
+    session: { ...session, session_model: 'legacy' },
+    v21AdultSessionRuntime: input.v21AdultSessionRuntime,
+    ...(input.clock ? { clock: input.clock } : {}),
+  });
 }
 
 async function legacySupportScope(
@@ -5633,20 +5706,76 @@ async function legacySupportScope(
   };
 }
 
-async function requireApiSession(
+type ResolvedApiSession = AuthenticatedSession & {
+  session_model: 'legacy' | 'v21';
+};
+
+type ApiSessionResolutionInput = {
+  pool: DbPool;
+  config: AppConfig;
+  v21AdultSessionRuntime: V21AdultSessionRuntime;
+  clock?: (() => Date) | undefined;
+};
+
+type ApiSessionResolution =
+  { status: 'resolved'; session: ResolvedApiSession } | { status: 'missing' | 'unavailable' };
+
+async function readApiSessionFromRequest(
+  req: Request,
+  input: ApiSessionResolutionInput,
+): Promise<ApiSessionResolution> {
+  const legacy = await sessionFromRequest(req, input.pool, input.config);
+  if (legacy) return { status: 'resolved', session: { ...legacy, session_model: 'legacy' } };
+
+  const cookieHeader = req.header('cookie');
+  if (!cookieHeaderHasName(cookieHeader, AUTH_SESSION_COOKIE.name)) return { status: 'missing' };
+  const resolution = await input.v21AdultSessionRuntime.resolveCookieHeader({
+    cookie_header: cookieHeader,
+    ...(input.clock ? { now: input.clock() } : {}),
+  });
+  if (resolution.status === 'unavailable') return { status: 'unavailable' };
+  if (resolution.status !== 'resolved') return { status: 'missing' };
+
+  const context = resolution.context;
+  return {
+    status: 'resolved',
+    session: {
+      session_key: context.session.sessionId,
+      session_security_version: context.session.securityVersion,
+      user: v21ClientUser({
+        human_account_id: context.session.humanAccountId,
+        adult_id: context.adultId,
+        email: context.normalizedEmail,
+        display_name: context.ownerDisplayName,
+        active_role: context.session.activeRole,
+      }),
+      expires_at: context.session.absoluteExpiresAt,
+      assurance_method: 'password',
+      assurance_at: null,
+      session_model: 'v21',
+    },
+  };
+}
+
+async function requireResolvedApiSession(
   req: RequestWithTrace,
   res: Response,
-  pool: DbPool,
-  config: AppConfig,
-) {
-  const session = await sessionFromRequest(req, pool, config);
-  if (!session) {
+  input: ApiSessionResolutionInput,
+): Promise<ResolvedApiSession | null> {
+  const resolution = await readApiSessionFromRequest(req, input);
+  if (resolution.status === 'unavailable') {
+    res
+      .status(503)
+      .json(publicError('SERVER_ERROR', 'Session readback is unavailable.', req.traceId));
+    return null;
+  }
+  if (resolution.status !== 'resolved') {
     setPrivateNoStore(res);
     res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
     return null;
   }
   exposeServerTiming(req);
-  return session;
+  return resolution.session;
 }
 
 async function requireAdminDashboardSession(
@@ -5698,14 +5827,41 @@ async function requireAdminDashboardSession(
   };
 }
 
-async function requireSessionCsrf(
-  req: RequestWithTrace,
-  res: Response,
-  pool: DbPool,
-  session: AuthenticatedSession,
+async function verifyResolvedSessionCsrf(
+  req: Request,
+  input: {
+    pool: DbPool;
+    session: ResolvedApiSession;
+    v21AdultSessionRuntime: V21AdultSessionRuntime;
+    clock?: (() => Date) | undefined;
+  },
 ) {
   const csrfToken = req.header('x-csrf-token') ?? req.body?.csrf_token;
-  const valid = await verifySessionCsrf({ pool, sessionKey: session.session_key, csrfToken });
+  if (input.session.session_model === 'v21') {
+    return input.v21AdultSessionRuntime.verifyCsrf({
+      cookie_header: req.header('cookie'),
+      csrf_token: csrfToken,
+      ...(input.clock ? { now: input.clock() } : {}),
+    });
+  }
+  return verifySessionCsrf({
+    pool: input.pool,
+    sessionKey: input.session.session_key,
+    csrfToken,
+  });
+}
+
+async function requireResolvedSessionCsrf(
+  req: RequestWithTrace,
+  res: Response,
+  input: {
+    pool: DbPool;
+    session: ResolvedApiSession;
+    v21AdultSessionRuntime: V21AdultSessionRuntime;
+    clock?: (() => Date) | undefined;
+  },
+) {
+  const valid = await verifyResolvedSessionCsrf(req, input);
   if (!valid) {
     res
       .status(403)
@@ -5747,11 +5903,10 @@ async function ot110aActorFromSession(
   });
 }
 
-async function handleOt110aSourceAction(
+async function handleResolvedOt110aSourceAction(
   req: RequestWithTrace,
   res: Response,
-  pool: DbPool,
-  config: AppConfig,
+  input: ApiSessionResolutionInput,
   actionType:
     | 'transcript.approve'
     | 'artifact.approve'
@@ -5763,16 +5918,24 @@ async function handleOt110aSourceAction(
     | 'social.retract',
 ) {
   setPrivateNoStore(res);
-  const session = await requireApiSession(req, res, pool, config);
+  const session = await requireResolvedApiSession(req, res, input);
   if (!session) return;
-  if (!(await requireSessionCsrf(req, res, pool, session))) return;
+  if (
+    !(await requireResolvedSessionCsrf(req, res, {
+      pool: input.pool,
+      session,
+      v21AdultSessionRuntime: input.v21AdultSessionRuntime,
+      ...(input.clock ? { clock: input.clock } : {}),
+    }))
+  )
+    return;
   try {
-    const actor = await ot110aActorFromSession(pool, config, session);
+    const actor = await ot110aActorFromSession(input.pool, input.config, session);
     const payload = contentAdminActionPayloadSchema.parse(req.body);
     const action = await withTiming(req, 'db', () =>
       performOt110aContentAction({
-        pool,
-        config,
+        pool: input.pool,
+        config: input.config,
         actor,
         sourceKey: String(req.params.sourceKey),
         actionType,
@@ -6065,20 +6228,21 @@ async function sendAppHtml(
   }
 }
 
-async function portalActorFromRequest(req: Request, pool: DbPool, config: AppConfig) {
-  const session = await sessionFromRequest(req, pool, config);
-  if (!session) return null;
+async function portalActorFromRequest(req: Request, input: ApiSessionResolutionInput) {
+  const resolution = await readApiSessionFromRequest(req, input);
+  if (resolution.status !== 'resolved') return null;
+  const session = resolution.session;
   const [authorizedHouseholds, studentLearner] = await Promise.all([
     session.user.role === 'parent'
-      ? parentHouseholdSubjects(pool, config, session.user.user_key)
+      ? parentHouseholdSubjects(input.pool, input.config, session.user.user_key)
       : Promise.resolve([]),
     session.user.role === 'student'
-      ? studentLearnerSubject(pool, config, session.user.user_key)
+      ? studentLearnerSubject(input.pool, input.config, session.user.user_key)
       : Promise.resolve(null),
   ]);
   return {
-    account_key: config.accountKey,
-    product_key: config.productKey,
+    account_key: input.config.accountKey,
+    product_key: input.config.productKey,
     actor_user_ref: session.user.user_key,
     actor_role: session.user.role,
     session_key: session.session_key,
