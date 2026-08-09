@@ -96,15 +96,9 @@ export interface FamilySignupCommand {
 }
 
 export type FamilySignupAccessBranch =
-  | 'immediate_free'
-  | 'inactive_checkout'
-  | 'inactive_identity_review'
-  | 'inactive_support';
+  'immediate_free' | 'inactive_checkout' | 'inactive_identity_review' | 'inactive_support';
 export type FamilySignupDisposition =
-  | 'created'
-  | 'recovered'
-  | 'existing_account'
-  | 'idempotency_conflict';
+  'created' | 'recovered' | 'existing_account' | 'idempotency_conflict';
 
 export interface FamilySignupScope {
   product: 'one_time_mishnayos';
@@ -181,10 +175,7 @@ export interface FamilySignupResult {
   outbox_intent_ids: readonly string[];
   ghl_handoff_state: 'ready' | 'readback_required' | 'identity_review' | 'not_applicable';
   checkout_handoff_state:
-    | 'queued'
-    | 'blocked_identity_review'
-    | 'not_configured'
-    | 'not_applicable';
+    'queued' | 'blocked_identity_review' | 'not_configured' | 'not_applicable';
   safe_message: string;
 }
 

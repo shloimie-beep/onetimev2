@@ -399,7 +399,7 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
   const parsed = envSchema.parse(source);
   const parentStudentServiceAccountPolicyConfigured = Boolean(
     parsed.PARENT_STUDENT_SERVICE_ACCOUNT_VERSION &&
-      parsed.PARENT_STUDENT_SERVICE_ACCOUNT_EVIDENCE_REFERENCE,
+    parsed.PARENT_STUDENT_SERVICE_ACCOUNT_EVIDENCE_REFERENCE,
   );
   if (
     Boolean(parsed.PARENT_STUDENT_SERVICE_ACCOUNT_VERSION) !==
@@ -488,16 +488,16 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
   }
   const contentMediaProvidersReady = Boolean(
     parsed.CONTENT_S3_BUCKET &&
-      /^[a-z0-9](?:[a-z0-9-]{1,61}[a-z0-9])$/u.test(parsed.CONTENT_S3_BUCKET) &&
-      parsed.CONTENT_S3_KMS_KEY_ARN &&
-      parsed.AWS_REGION === 'eu-central-1' &&
-      parsed.CONTENT_FFMPEG_PATH &&
-      parsed.CONTENT_FFPROBE_PATH &&
-      parsed.OPENAI_API_KEY &&
-      parsed.OPENAI_PROJECT_ID &&
-      parsed.VIMEO_ACCESS_TOKEN &&
-      parsed.VIMEO_ACCOUNT_ID &&
-      parsed.VIMEO_WEBHOOK_SECRET,
+    /^[a-z0-9](?:[a-z0-9-]{1,61}[a-z0-9])$/u.test(parsed.CONTENT_S3_BUCKET) &&
+    parsed.CONTENT_S3_KMS_KEY_ARN &&
+    parsed.AWS_REGION === 'eu-central-1' &&
+    parsed.CONTENT_FFMPEG_PATH &&
+    parsed.CONTENT_FFPROBE_PATH &&
+    parsed.OPENAI_API_KEY &&
+    parsed.OPENAI_PROJECT_ID &&
+    parsed.VIMEO_ACCESS_TOKEN &&
+    parsed.VIMEO_ACCOUNT_ID &&
+    parsed.VIMEO_WEBHOOK_SECRET,
   );
   if (contentMediaProviderCanary && !contentMediaProvidersReady) {
     throw new Error(
@@ -917,7 +917,7 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     ),
     zoomMeetingSdkLegacyAliasUsed: Boolean(
       (!parsed.ZOOM_MEETING_SDK_CLIENT_ID && parsed.ZOOM_MEETING_SDK_KEY) ||
-        (!parsed.ZOOM_MEETING_SDK_CLIENT_SECRET && parsed.ZOOM_MEETING_SDK_SECRET),
+      (!parsed.ZOOM_MEETING_SDK_CLIENT_SECRET && parsed.ZOOM_MEETING_SDK_SECRET),
     ),
     zoomMeetingSdkCanonicalClientIdConfigured: Boolean(parsed.ZOOM_MEETING_SDK_CLIENT_ID?.trim()),
     zoomMeetingSdkCanonicalClientSecretConfigured: Boolean(
