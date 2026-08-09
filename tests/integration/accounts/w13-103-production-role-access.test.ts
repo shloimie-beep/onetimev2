@@ -189,7 +189,7 @@ describe('W13-103 production role access command', () => {
         household_delta: 0,
         learner_delta: 0,
         lifecycle_token_delta: 1,
-        lifecycle_outbox_delta: 1,
+        lifecycle_outbox_delta: 0,
         private_handoff_links: 1,
       }),
     );
@@ -230,7 +230,7 @@ describe('W13-103 production role access command', () => {
         household_delta: 0,
         learner_delta: 0,
         lifecycle_token_delta: 3,
-        lifecycle_outbox_delta: 3,
+        lifecycle_outbox_delta: 2,
         private_handoff_links: 3,
         external_sends: 0,
       }),

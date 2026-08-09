@@ -1,9 +1,14 @@
 import { Buffer } from 'node:buffer';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createApp } from '../../../apps/web/src/server/app.ts';
 import { signResendSvixFixture } from '../../../apps/worker/src/delivery/provider-webhooks.ts';
 import { loadConfig, type AppConfig } from '../../../packages/config/src/index.ts';
 import { createMemoryPool, runMigrations, type DbPool } from '../../../packages/db/src/index.ts';
+import {
+  createAccountUser,
+  requestPasswordReset,
+  runLifecycleDeliveryOutboxBatch,
+} from '../../../packages/domain/src/index.ts';
 
 let pool: DbPool;
 let config: AppConfig;
@@ -19,6 +24,7 @@ beforeEach(async () => {
 });
 
 afterEach(async () => {
+  vi.unstubAllGlobals();
   await server?.close();
   await pool.end();
 });
@@ -57,6 +63,20 @@ describe('W13-102 Resend webhook route', () => {
       success: true,
       disposition: 'replayed',
     });
+
+    const duplicate = await postResend(rawBody, 'svix_msg_w13_102_route_duplicate');
+    expect(duplicate.status).toBe(200);
+    expect(await duplicate.json()).toMatchObject({
+      success: true,
+      disposition: 'duplicated',
+    });
+    expect(
+      await pool.query(
+        `SELECT 1
+           FROM onetime.provider_event_ledger
+          WHERE provider = 'resend'`,
+      ),
+    ).toMatchObject({ rowCount: 1 });
   });
 
   it('rejects changed bytes for the same Svix id and rejects parsed or unsigned envelopes', async () => {
@@ -85,6 +105,80 @@ describe('W13-102 Resend webhook route', () => {
     });
     expect(unsigned.status).toBe(400);
     expect(await unsigned.json()).toMatchObject({ success: false, code: 'svix_headers_required' });
+  });
+
+  it('reconciles delivered, bounced, and complained states idempotently by nested data.email_id', async () => {
+    config = configuredRecoveryApp();
+    await createAccountUser({
+      pool,
+      config,
+      email: 'recipient@example.test',
+      password: 'InitialPass!234',
+      displayName: 'Reset Recipient',
+      role: 'parent',
+    });
+    await requestPasswordReset({
+      pool,
+      config,
+      payload: { idempotency_key: 'resend-webhook-reset-001', email: 'recipient@example.test' },
+      now: new Date('2026-07-18T21:00:00.000Z'),
+    });
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(
+        async () =>
+          new Response(JSON.stringify({ id: 'resend_msg_recovery' }), {
+            status: 200,
+            headers: { 'content-type': 'application/json' },
+          }),
+      ),
+    );
+    const accepted = await runLifecycleDeliveryOutboxBatch({
+      pool,
+      config,
+      now: new Date('2026-07-18T21:01:00.000Z'),
+      workerId: 'resend-webhook-recovery-worker',
+    });
+    expect(accepted).toMatchObject({ claimed: 1, provider_accepted: 1 });
+    vi.unstubAllGlobals();
+
+    server = await listenForTest(createApp({ config, pool, clock: () => now }));
+    const deliveredBody = resendBody({ emailId: 'resend_msg_recovery' });
+    expect((await postResend(deliveredBody, 'svix_recovery_delivered')).status).toBe(202);
+    expect((await postResend(deliveredBody, 'svix_recovery_delivered')).status).toBe(200);
+    expect(await lifecycleState()).toBe('delivered');
+
+    const bouncedBody = resendBody({
+      type: 'email.bounced',
+      emailId: 'resend_msg_recovery',
+      createdAt: '2026-07-18T21:06:00.000Z',
+    });
+    expect((await postResend(bouncedBody, 'svix_recovery_bounced')).status).toBe(202);
+    expect(await lifecycleState()).toBe('bounced');
+
+    const complainedBody = resendBody({
+      type: 'email.complained',
+      emailId: 'resend_msg_recovery',
+      createdAt: '2026-07-18T21:07:00.000Z',
+    });
+    expect((await postResend(complainedBody, 'svix_recovery_complained')).status).toBe(202);
+    expect(await lifecycleSnapshot()).toEqual({
+      final_delivery_state: 'complained',
+      final_state_at: '2026-07-18T21:07:00.000Z',
+      last_provider_event_at: '2026-07-18T21:07:00.000Z',
+    });
+
+    const lateBounce = resendBody({
+      type: 'email.bounced',
+      emailId: 'resend_msg_recovery',
+      createdAt: '2026-07-18T21:08:00.000Z',
+    });
+    expect((await postResend(lateBounce, 'svix_recovery_late_bounce')).status).toBe(202);
+    expect(await lifecycleSnapshot()).toEqual({
+      final_delivery_state: 'complained',
+      final_state_at: '2026-07-18T21:07:00.000Z',
+      last_provider_event_at: '2026-07-18T21:08:00.000Z',
+    });
   });
 
   it('mounts safely but refuses provider intake while the runtime gate is disabled', async () => {
@@ -122,6 +216,25 @@ function configuredApp() {
   });
 }
 
+function configuredRecoveryApp() {
+  return loadConfig({
+    NODE_ENV: 'test',
+    PUBLIC_BASE_URL: 'https://join.onetimeonetime.com',
+    APP_VERSION: 'resend-recovery-test',
+    COMMIT_SHA: 'ot-p1',
+    OUTBOX_TRANSPORT_MODE: 'sink',
+    ONE_TIME_LIFECYCLE_EMAIL_MODE: 'canary',
+    ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED: 'true',
+    ONE_TIME_RESEND_TRANSPORT_ENABLED: 'true',
+    ONE_TIME_DELIVERY_TEST_CANARY_EMAIL: 'recipient@example.test',
+    ONE_TIME_EMAIL_FROM: 'One Time <info@onetimeonetime.com>',
+    ONE_TIME_EMAIL_REPLY_TO: 'info@onetimeonetime.com',
+    RESEND_API_KEY: 'test_resend_key',
+    ONE_TIME_RESEND_WEBHOOK_ENABLED: 'true',
+    RESEND_WEBHOOK_SECRET: secret,
+  });
+}
+
 async function postResend(
   rawBody: Buffer,
   svixId: string,
@@ -145,18 +258,38 @@ async function postResend(
   });
 }
 
-function resendBody(
-  overrides: Partial<Record<'id' | 'type' | 'message_id' | 'created_at', string>> = {},
-) {
+function resendBody(overrides: Partial<Record<'type' | 'emailId' | 'createdAt', string>> = {}) {
   return Buffer.from(
     JSON.stringify({
-      id: 'resend_evt_w13_102',
-      type: 'email.delivered',
-      message_id: 'resend_msg_w13_102',
-      created_at: now.toISOString(),
-      ...overrides,
+      type: overrides.type ?? 'email.delivered',
+      created_at: overrides.createdAt ?? now.toISOString(),
+      data: {
+        email_id: overrides.emailId ?? 'resend_msg_w13_102',
+        from: 'One Time <info@onetimeonetime.com>',
+        to: ['recipient@example.test'],
+        subject: 'Reset your One Time password',
+      },
     }),
   );
+}
+
+async function lifecycleState() {
+  return (await lifecycleSnapshot()).final_delivery_state;
+}
+
+async function lifecycleSnapshot() {
+  const result = await pool.query(
+    `SELECT final_delivery_state, final_state_at, last_provider_event_at
+       FROM onetime.account_lifecycle_delivery_outbox
+      WHERE purpose = 'password_reset'
+      ORDER BY created_at DESC
+      LIMIT 1`,
+  );
+  return {
+    final_delivery_state: String(result.rows[0]?.final_delivery_state),
+    final_state_at: new Date(String(result.rows[0]?.final_state_at)).toISOString(),
+    last_provider_event_at: new Date(String(result.rows[0]?.last_provider_event_at)).toISOString(),
+  };
 }
 
 async function listenForTest(app: ReturnType<typeof createApp>) {

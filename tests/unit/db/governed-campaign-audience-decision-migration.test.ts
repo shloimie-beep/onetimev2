@@ -10,7 +10,7 @@ import {
 } from '../../../packages/db/src/index.ts';
 
 const LATEST_MIGRATION_ID = '2275_family_signup_inactive_support_projection';
-const EXPECTED_MIGRATION_COUNT = 105;
+const EXPECTED_MIGRATION_COUNT = 106;
 const HASH_A = 'a'.repeat(64);
 const HASH_B = 'b'.repeat(64);
 const HASH_C = 'c'.repeat(64);
@@ -28,7 +28,7 @@ const SOURCE_FACTS = {
 } as const;
 
 describe('migration 2260 governed campaign audience decisions', () => {
-  it('applies and replays the 105-migration inventory with an exact 2260 ledger row', async () => {
+  it('applies and replays the 106-migration inventory with an exact 2260 ledger row', async () => {
     const pool = createMemoryPool();
     try {
       const first = await runMigrations(pool);

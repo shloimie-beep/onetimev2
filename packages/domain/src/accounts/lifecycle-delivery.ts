@@ -14,8 +14,14 @@ type LifecycleDeliveryState =
   | 'queued'
   | 'leased'
   | 'retry'
+  | 'unknown'
   | 'sink_delivered'
+  | 'provider_accepted'
   | 'provider_delivered'
+  | 'delivered'
+  | 'bounced'
+  | 'complained'
+  | 'failed'
   | 'provider_off'
   | 'dead_letter'
   | 'superseded'
@@ -35,6 +41,7 @@ type ClaimedLifecycleDelivery = {
   max_attempts: number;
   lease_expires_at: Date;
   encrypted_payload_expires_at: Date;
+  previous_state: 'queued' | 'retry' | 'unknown' | 'leased';
 };
 
 export type LifecycleDeliveryCreateResult = {
@@ -48,9 +55,11 @@ export type LifecycleDeliveryCreateResult = {
 export type LifecycleDeliveryBatchSummary = {
   claimed: number;
   sink_delivered: number;
+  provider_accepted: number;
   provider_delivered: number;
   expired: number;
   retried: number;
+  unknown: number;
   dead_lettered: number;
   lease_lost: number;
   external_send_performed: boolean;
@@ -66,6 +75,7 @@ export async function createLifecycleDeliveryOutbox(
     intentKey: string;
     tokenType: AccountLifecycleTokenType;
     recipientEmail: string;
+    displayName: string;
     targetRole: string;
     idempotencyKey: string;
     expiresAt: Date;
@@ -93,6 +103,7 @@ export async function createLifecycleDeliveryOutbox(
     activation_url: lifecycleUrl(config, input.tokenType, input.token),
     fragment_parameter: 'token',
     target_role: input.targetRole,
+    first_name: firstName(input.displayName),
     issued_at: input.now.toISOString(),
     expires_at: input.expiresAt.toISOString(),
   });
@@ -159,9 +170,11 @@ export async function runLifecycleDeliveryOutboxBatch(input: {
   const summary: LifecycleDeliveryBatchSummary = {
     claimed: claims.length,
     sink_delivered: 0,
+    provider_accepted: 0,
     provider_delivered: 0,
     expired,
     retried: 0,
+    unknown: 0,
     dead_lettered: 0,
     lease_lost: 0,
     external_send_performed: false,
@@ -172,25 +185,29 @@ export async function runLifecycleDeliveryOutboxBatch(input: {
       const payload = decryptDeliveryPayload(input.config, claim);
       const providerMessageRefHash = await deliverLifecyclePayload(input.config, claim, payload);
       const completed = await completeLifecycleDelivery(input.pool, input.config, claim, {
-        state: providerMessageRefHash ? 'provider_delivered' : 'sink_delivered',
+        state: providerMessageRefHash ? 'provider_accepted' : 'sink_delivered',
         now,
         providerMessageRefHash:
           providerMessageRefHash ?? destinationReference(`sink:${claim.delivery_key}`),
       });
       if (!completed) summary.lease_lost += 1;
       else if (providerMessageRefHash) {
-        summary.provider_delivered += 1;
+        summary.provider_accepted += 1;
         summary.external_send_performed = true;
       } else summary.sink_delivered += 1;
     } catch (error) {
+      const unknownEffect =
+        error instanceof LifecycleDeliveryAttemptError && error.unknownProviderEffect;
       const terminal = claim.attempts >= claim.max_attempts;
+      const failureState = terminal ? 'dead_letter' : unknownEffect ? 'unknown' : 'retry';
       const completed = await failLifecycleDelivery(input.pool, input.config, claim, {
-        state: terminal ? 'dead_letter' : 'retry',
+        state: failureState,
         now,
         errorCode: safeErrorCode(error),
       });
       if (!completed) summary.lease_lost += 1;
       else if (terminal) summary.dead_lettered += 1;
+      else if (failureState === 'unknown') summary.unknown += 1;
       else summary.retried += 1;
     }
   }
@@ -275,30 +292,63 @@ async function deliverLifecyclePayload(
   }
   const activationUrl = requiredPayloadString(payload, 'activation_url');
   const purpose = requiredPayloadString(payload, 'purpose') as AccountLifecycleTokenType;
-  const response = await fetch('https://api.resend.com/emails', {
+  const recipientFirstName = requiredPayloadString(payload, 'first_name');
+  const request = {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${config.resendApiKey}`,
       'Content-Type': 'application/json',
-      'Idempotency-Key': `${claim.delivery_key}:${claim.attempts}`,
+      'Idempotency-Key': `lifecycle/${claim.delivery_key}`,
     },
     body: JSON.stringify({
       from: config.emailFrom,
       to: [claim.destination_email],
       ...(config.emailReplyTo ? { reply_to: [config.emailReplyTo] } : {}),
       subject: lifecycleEmailSubject(purpose),
-      text: lifecycleEmailText(purpose, activationUrl),
-      html: lifecycleEmailHtml(purpose, activationUrl),
+      text: lifecycleEmailText(purpose, activationUrl, recipientFirstName),
+      html: lifecycleEmailHtml(purpose, activationUrl, recipientFirstName),
       tags: [
         { name: 'message_key', value: `account_${purpose}` },
         { name: 'purpose', value: purpose },
       ],
     }),
-  });
-  if (!response.ok) throw new Error(`lifecycle_resend_http_${response.status}`);
+  } satisfies RequestInit;
+  let response: Response;
+  try {
+    response = await fetch('https://api.resend.com/emails', request);
+  } catch {
+    throw new LifecycleDeliveryAttemptError(
+      claim.previous_state === 'unknown'
+        ? 'lifecycle_resend_reconciliation_unknown_network'
+        : 'lifecycle_resend_unknown_network',
+      true,
+    );
+  }
+  if (!response.ok) {
+    const unknownProviderEffect =
+      response.status === 408 ||
+      response.status === 409 ||
+      response.status === 429 ||
+      response.status >= 500;
+    throw new LifecycleDeliveryAttemptError(
+      `lifecycle_resend_http_${response.status}`,
+      unknownProviderEffect,
+    );
+  }
   const body = (await response.json().catch(() => ({}))) as { id?: unknown };
-  const messageId = typeof body.id === 'string' && body.id ? body.id : `status_${response.status}`;
-  return destinationReference(`resend:${messageId}`);
+  if (typeof body.id !== 'string' || !body.id) {
+    throw new LifecycleDeliveryAttemptError('lifecycle_resend_unknown_missing_message_id', true);
+  }
+  return providerMessageReference(body.id);
+}
+
+class LifecycleDeliveryAttemptError extends Error {
+  constructor(
+    message: string,
+    readonly unknownProviderEffect: boolean,
+  ) {
+    super(message);
+  }
 }
 
 function assertTransactionalLifecycleEmailReady(config: AppConfig) {
@@ -318,6 +368,9 @@ function assertTransactionalLifecycleEmailReady(config: AppConfig) {
   if (normalizedAddress(config.emailFrom) !== TRANSACTIONAL_LIFECYCLE_SENDER) {
     throw new Error('lifecycle_transactional_sender_mismatch');
   }
+  if (normalizedAddress(config.emailReplyTo) !== TRANSACTIONAL_LIFECYCLE_SENDER) {
+    throw new Error('lifecycle_transactional_reply_to_mismatch');
+  }
   if (config.deliveryProviderPerRunBudget <= 0 || config.deliveryProviderPerProviderBudget <= 0) {
     throw new Error('lifecycle_transactional_budget_missing');
   }
@@ -336,34 +389,75 @@ function normalizedAddress(value?: string) {
 
 function lifecycleEmailSubject(purpose: AccountLifecycleTokenType) {
   if (purpose === 'password_reset') return 'Reset your One Time password';
-  return 'Activate your One Time account';
+  return 'Set up your One Time account';
 }
 
-function lifecycleEmailText(purpose: AccountLifecycleTokenType, activationUrl: string) {
-  const action = purpose === 'password_reset' ? 'reset your password' : 'activate your account';
+function lifecycleEmailText(
+  purpose: AccountLifecycleTokenType,
+  activationUrl: string,
+  recipientFirstName: string,
+) {
+  if (purpose !== 'password_reset') {
+    return [
+      `Hi ${recipientFirstName},`,
+      '',
+      'Use the secure link below to set your One Time password.',
+      '',
+      'Set up my account',
+      activationUrl,
+      '',
+      'This link can be used once and expires in seven days. If it expires, request a new link from the sign-in page.',
+      '',
+      'If you did not request this account, you can ignore this email.',
+      '',
+      'One Time Mishnayos',
+    ].join('\n');
+  }
   return [
     'Hello,',
     '',
-    `Use the secure link below to ${action}.`,
+    'Use the secure link below to reset your password.',
+    '',
+    'Reset your One Time password',
     '',
     activationUrl,
     '',
+    'This link can be used once and expires in 60 minutes.',
+    '',
     'If you did not request this, you can ignore this email.',
     '',
-    '- One Time Mishnayos',
+    'One Time Mishnayos',
   ].join('\n');
 }
 
-function lifecycleEmailHtml(purpose: AccountLifecycleTokenType, activationUrl: string) {
-  const action = purpose === 'password_reset' ? 'reset your password' : 'activate your account';
+function lifecycleEmailHtml(
+  purpose: AccountLifecycleTokenType,
+  activationUrl: string,
+  recipientFirstName: string,
+) {
   const safeUrl = escapeHtml(activationUrl);
+  if (purpose !== 'password_reset') {
+    return [
+      `<p>Hi ${escapeHtml(recipientFirstName)},</p>`,
+      '<p>Use the secure link below to set your One Time password.</p>',
+      `<p><a href="${safeUrl}">Set up my account</a></p>`,
+      '<p>This link can be used once and expires in seven days. If it expires, request a new link from the sign-in page.</p>',
+      '<p>If you did not request this account, you can ignore this email.</p>',
+      '<p>One Time Mishnayos</p>',
+    ].join('');
+  }
   return [
     '<p>Hello,</p>',
-    `<p>Use the secure link below to ${escapeHtml(action)}.</p>`,
-    `<p><a href="${safeUrl}">${escapeHtml(lifecycleEmailSubject(purpose))}</a></p>`,
+    '<p>Use the secure link below to reset your password.</p>',
+    `<p><a href="${safeUrl}">Reset your One Time password</a></p>`,
+    '<p>This link can be used once and expires in 60 minutes.</p>',
     '<p>If you did not request this, you can ignore this email.</p>',
-    '<p>- One Time Mishnayos</p>',
+    '<p>One Time Mishnayos</p>',
   ].join('');
+}
+
+function firstName(displayName: string) {
+  return displayName.trim().split(/\s+/u)[0] || 'there';
 }
 
 function requiredPayloadString(payload: Record<string, unknown>, key: string) {
@@ -390,6 +484,10 @@ function destinationReference(emailNormalized: string) {
   return createHash('sha256').update(emailNormalized.trim().toLowerCase()).digest('hex');
 }
 
+function providerMessageReference(messageId: string) {
+  return createHash('sha256').update(messageId).digest('hex').slice(0, 48);
+}
+
 async function supersedePriorDeliveries(
   client: Queryable,
   config: AppConfig,
@@ -413,7 +511,7 @@ async function supersedePriorDeliveries(
         AND purpose = $3
         AND destination_ref = $4
         AND delivery_key <> $6
-        AND state IN ('queued', 'leased', 'retry', 'provider_off')`,
+        AND state IN ('queued', 'leased', 'retry', 'unknown', 'provider_off')`,
     [
       config.accountKey,
       config.productKey,
@@ -436,7 +534,7 @@ async function expireLifecycleDeliveries(pool: DbPool, config: AppConfig, now: D
             updated_at = $3
       WHERE account_key = $1
         AND product_key = $2
-        AND state IN ('queued', 'leased', 'retry', 'provider_off')
+        AND state IN ('queued', 'leased', 'retry', 'unknown', 'provider_off')
         AND encrypted_payload_expires_at <= $3
       RETURNING delivery_key`,
     [config.accountKey, config.productKey, now],
@@ -453,7 +551,8 @@ async function claimLifecycleDeliveries(
     const leaseExpiresAt = new Date(input.now.getTime() + input.leaseMs);
     const lockClause = isMemoryPool(pool) ? '' : 'FOR UPDATE SKIP LOCKED';
     const selected = await client.query(
-      `SELECT outbox.id, tokens.email_normalized AS destination_email
+      `SELECT outbox.id, outbox.state AS previous_state,
+              tokens.email_normalized AS destination_email
          FROM onetime.account_lifecycle_delivery_outbox AS outbox
          JOIN onetime.account_lifecycle_tokens AS tokens
            ON tokens.account_key = outbox.account_key
@@ -464,7 +563,7 @@ async function claimLifecycleDeliveries(
           AND outbox.transport_mode = 'sink'
           AND outbox.encrypted_payload_expires_at > $3::timestamptz
           AND (
-            (outbox.state IN ('queued', 'retry') AND outbox.next_attempt_at <= $3::timestamptz)
+            (outbox.state IN ('queued', 'retry', 'unknown') AND outbox.next_attempt_at <= $3::timestamptz)
             OR (outbox.state = 'leased' AND outbox.lease_expires_at <= $3::timestamptz)
           )
         ORDER BY outbox.next_attempt_at ASC, outbox.created_at ASC, outbox.id ASC
@@ -484,12 +583,22 @@ async function claimLifecycleDeliveries(
           WHERE id = $1
             AND account_key = $2
             AND product_key = $3
+            AND (
+              (state IN ('queued', 'retry', 'unknown') AND next_attempt_at <= $4::timestamptz)
+              OR (state = 'leased' AND lease_expires_at <= $4::timestamptz)
+            )
           RETURNING id, delivery_key, token_key, purpose, nonce, ciphertext, auth_tag,
                     attempts, max_attempts, lease_expires_at, encrypted_payload_expires_at`,
         [row.id, config.accountKey, config.productKey, input.now, input.workerId, leaseExpiresAt],
       );
       if (updated.rows[0]) {
-        claims.push(mapClaim({ ...updated.rows[0], destination_email: row.destination_email }));
+        claims.push(
+          mapClaim({
+            ...updated.rows[0],
+            destination_email: row.destination_email,
+            previous_state: row.previous_state,
+          }),
+        );
       }
     }
     return claims;
@@ -505,7 +614,7 @@ async function completeLifecycleDelivery(
   config: AppConfig,
   claim: ClaimedLifecycleDelivery,
   input: {
-    state: 'sink_delivered' | 'provider_delivered';
+    state: 'sink_delivered' | 'provider_accepted';
     now: Date;
     providerMessageRefHash: string;
   },
@@ -515,9 +624,16 @@ async function completeLifecycleDelivery(
         SET state = $4,
             nonce = NULL,
             ciphertext = NULL,
-            auth_tag = NULL,
-            provider_message_ref_hash = $5,
-            delivered_at = $6,
+             auth_tag = NULL,
+             provider_message_ref_hash = $5,
+             provider_accepted_at = CASE
+               WHEN $4 = 'provider_accepted' THEN $6::timestamptz
+               ELSE provider_accepted_at
+             END,
+             delivered_at = CASE
+               WHEN $4 = 'sink_delivered' THEN $6::timestamptz
+               ELSE delivered_at
+             END,
             cleared_at = $6,
             updated_at = $6
       WHERE id = $1
@@ -543,10 +659,10 @@ async function failLifecycleDelivery(
   pool: DbPool,
   config: AppConfig,
   claim: ClaimedLifecycleDelivery,
-  input: { state: 'retry' | 'dead_letter'; now: Date; errorCode: string },
+  input: { state: 'retry' | 'unknown' | 'dead_letter'; now: Date; errorCode: string },
 ) {
   const nextAttemptAt =
-    input.state === 'retry'
+    input.state === 'retry' || input.state === 'unknown'
       ? new Date(input.now.getTime() + Math.min(60_000 * Math.max(1, claim.attempts), 300_000))
       : input.now;
   const result = await pool.query(
@@ -594,6 +710,7 @@ function mapClaim(row: Record<string, unknown>): ClaimedLifecycleDelivery {
     max_attempts: Number(row.max_attempts ?? 5),
     lease_expires_at: dateValue(row.lease_expires_at),
     encrypted_payload_expires_at: dateValue(row.encrypted_payload_expires_at),
+    previous_state: stringValue(row.previous_state) as ClaimedLifecycleDelivery['previous_state'],
   };
 }
 
