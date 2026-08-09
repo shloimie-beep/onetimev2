@@ -12,6 +12,14 @@ Status: IN PROGRESS — durable runner implemented and the authorized Drive cana
 - Operator changes since that proof: AWS/S3/KMS was removed from the launch design; the authorized path is local Windows processing with Drive archive and private Vimeo. No Railway deployment or media-mode change occurred.
 - This result inspects and implements only the unresolved local runner, existing Drive intake, one canary source copy, local archive, occurrence-selection, and authenticated import delta.
 
+## Source identity
+
+- Local implementation branch: `codex/ot-p5-vimeo-media-completion-20260809`
+- Durable implementation commit: `62d2100b1d1a19bc6c099f5cfcc4d4770f0791a1`
+- Intended PR base: `codex/one-time-complete-production-launch-20260805` (PR #131)
+- The branch merge-base is the OT-CTRL-supplied integration checkpoint `aade78dd5d58808b80c11251274d8c27b78c9103`.
+- At publish readback the integration branch had advanced independently to `1011cb45ca0397af4d0567b6210ce9f5bb5de5ed`; the child PR targets that branch and does not rewrite its unrelated history.
+
 ## Existing ingest folder proof
 
 The canary uses the already-existing connector intake. No new intake folder was created.
