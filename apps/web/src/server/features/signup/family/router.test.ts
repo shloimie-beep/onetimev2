@@ -188,17 +188,19 @@ describe('P08 Family-signup route security', () => {
   });
 
   it('does not expose the existing-account disposition on the generic recovery path', async () => {
-    const submit = vi.fn(async (): Promise<FamilySignupResult> => ({
-      disposition: 'existing_account',
-      projection: null,
-      next_action: 'sign_in_or_reset',
-      setup_email_required: false,
-      provider_effects_completed_inline: 0,
-      outbox_intent_ids: [],
-      ghl_handoff_state: 'not_applicable',
-      checkout_handoff_state: 'not_applicable',
-      safe_message: 'Sign in or reset your password to continue.',
-    }));
+    const submit = vi.fn(
+      async (): Promise<FamilySignupResult> => ({
+        disposition: 'existing_account',
+        projection: null,
+        next_action: 'sign_in_or_reset',
+        setup_email_required: false,
+        provider_effects_completed_inline: 0,
+        outbox_intent_ids: [],
+        ghl_handoff_state: 'not_applicable',
+        checkout_handoff_state: 'not_applicable',
+        safe_message: 'Sign in or reset your password to continue.',
+      }),
+    );
     const harness = await startHarness({ submitter: { submit } });
     const bootstrap = await getBootstrap(harness.baseUrl);
     const response = await post(harness.baseUrl, command(bootstrap.idempotencyKey), bootstrap, {
@@ -243,7 +245,7 @@ describe('P08 Family-signup route security', () => {
       code: 'FAMILY_SIGNUP_COMPLETE',
       next_action: 'parent_overview',
       session_established: true,
-      continue_to: '/app/parent',
+      continue_to: 'https://app.onetimeonetime.com/app/parent',
       csrf_token: 'c'.repeat(48),
       message: 'Your Family account is ready, and we sent your confirmation email.',
     });

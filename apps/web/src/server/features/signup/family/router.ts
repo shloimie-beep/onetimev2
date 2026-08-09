@@ -27,7 +27,10 @@ import {
   SERVER_FEATURE_REGISTRY_CONTRACT_VERSION,
 } from '../../registry/index.ts';
 import { authReturnLocation, sessionCookieHeader } from '../../auth/http-security.ts';
-import { CANONICAL_APPLICATION_HOST } from '../../domain-transition/policy.ts';
+import {
+  CANONICAL_APPLICATION_HOST,
+  CANONICAL_APPLICATION_ORIGIN,
+} from '../../domain-transition/policy.ts';
 import {
   createPostgresFamilySignupRepository,
   PostgresFamilySignupRepositoryError,
@@ -285,6 +288,7 @@ function defaultSubmitter(config: AppConfig, pool: DbPool): FamilySignupSubmitte
     ...(config.oneTimeFreeAccessExpiresAt
       ? { freeAccessExpiresAt: config.oneTimeFreeAccessExpiresAt }
       : {}),
+    ...(config.oneTimeGhlPaymentLink ? { ghlPaymentLinkConfigured: true } : {}),
     hashPassword: async (password) => hashAuthPassword(password),
     fingerprintPasswordForIdempotency: async (password) =>
       createHmac('sha256', config.authCsrfSecret)
@@ -439,7 +443,10 @@ function sendSafeResult(
         ...common,
         code: 'FAMILY_SIGNUP_COMPLETE',
         next_action: 'parent_overview',
-        continue_to: authReturnLocation({ role: 'parent' }),
+        continue_to: new URL(
+          authReturnLocation({ role: 'parent' }),
+          CANONICAL_APPLICATION_ORIGIN,
+        ).toString(),
         message: confirmationMessage,
       });
       return;
@@ -459,6 +466,18 @@ function sendSafeResult(
       next_action: 'identity_review',
       message:
         'Your inactive account was saved. Checkout remains unavailable pending identity review.',
+    });
+    return;
+  }
+  if (result.next_action === 'support') {
+    res.status(202).json({
+      ...common,
+      code: 'SIGNUP_COMMITTED_SUPPORT_REQUIRED',
+      next_action: 'support',
+      checkout_provider: 'highlevel',
+      direct_stripe_mutation_by_one_time: false,
+      message:
+        'Your account is ready. The free period has ended; contact info@onetimeonetime.com for paid continuation options.',
     });
     return;
   }

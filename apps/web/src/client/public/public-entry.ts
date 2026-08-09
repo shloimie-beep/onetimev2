@@ -1,6 +1,8 @@
 import './styles.css';
 import { schoolInquiryFormModel } from './school/model.js';
 
+const canonicalApplicationOrigin = 'https://app.onetimeonetime.com';
+
 const schoolInquiryModel = schoolInquiryFormModel();
 
 const analyticsTargets = document.querySelectorAll<HTMLElement>('[data-ot-analytics-event]');
@@ -750,7 +752,13 @@ function familyConfirmationCopy(providerProjectionState: string | undefined): st
 }
 
 type FamilySignupReceiptState =
-  'ready' | 'session_pending' | 'sign_in' | 'identity_review' | 'checkout_queued' | 'received';
+  | 'ready'
+  | 'session_pending'
+  | 'sign_in'
+  | 'identity_review'
+  | 'checkout_queued'
+  | 'support'
+  | 'received';
 
 type FamilySignupReceiptResponse = {
   code?: string;
@@ -780,6 +788,7 @@ function familySignupReceiptState(response: FamilySignupReceiptResponse): Family
   if (response.code === 'SIGN_IN_OR_RESET') return 'sign_in';
   if (response.code === 'SIGNUP_COMMITTED_IDENTITY_REVIEW') return 'identity_review';
   if (response.code === 'SIGNUP_COMMITTED_CHECKOUT_HANDOFF_QUEUED') return 'checkout_queued';
+  if (response.code === 'SIGNUP_COMMITTED_SUPPORT_REQUIRED') return 'support';
   if (response.code === 'SIGNUP_COMMITTED_SESSION_UNAVAILABLE') return 'session_pending';
   return 'received';
 }
@@ -797,18 +806,18 @@ function configureSignupReceivedPage(receipt: HTMLElement): void {
     heading.textContent = 'You’re all set.';
     body.textContent = familyConfirmationCopy(search.get('email') === 'sent' ? 'ready' : undefined);
     primary.textContent = 'Go to Parent dashboard';
-    primary.href = safeParentContinueTo(search.get('continue_to')) ?? '/app/parent';
+    primary.href = applicationUrl(safeParentContinueTo(search.get('continue_to')) ?? '/app/parent');
   } else if (state === 'session_pending') {
     heading.textContent = 'Signup received';
     body.textContent =
       'Your Family account was saved. Sign in to continue while we finish sending your confirmation email.';
     primary.textContent = 'Sign in';
-    primary.href = '/login';
+    primary.href = applicationUrl('/login');
   } else if (state === 'sign_in') {
     heading.textContent = 'Your account already exists';
     body.textContent = 'Sign in or reset your password to continue.';
     primary.textContent = 'Sign in';
-    primary.href = '/login';
+    primary.href = applicationUrl('/login');
   } else if (state === 'identity_review') {
     heading.textContent = 'Signup received';
     body.textContent =
@@ -819,17 +828,27 @@ function configureSignupReceivedPage(receipt: HTMLElement): void {
     body.textContent =
       'Your inactive account was saved. The standard hosted-checkout handoff is queued; no charge was made by this form.';
     primary.hidden = true;
+  } else if (state === 'support') {
+    heading.textContent = 'Your account is ready';
+    body.textContent =
+      'The free period has ended. Contact us for paid continuation options; no charge was made by this form.';
+    primary.textContent = 'Contact support';
+    primary.href = 'mailto:info@onetimeonetime.com';
   } else {
     heading.textContent = 'Signup received';
     body.textContent = 'Your Family signup was saved. Sign in to continue.';
     primary.textContent = 'Sign in';
-    primary.href = '/login';
+    primary.href = applicationUrl('/login');
   }
   receipt.focus();
 }
 
+function applicationUrl(path: string): string {
+  return new URL(path, canonicalApplicationOrigin).toString();
+}
+
 function safeParentContinueTo(value: string | null | undefined): string | null {
-  if (!value || !value.startsWith('/') || value.startsWith('//')) return null;
+  if (!value || value.startsWith('//')) return null;
   let decoded = value;
   for (let pass = 0; pass < 3; pass += 1) {
     if (unsafeContinuationText(decoded)) return null;
@@ -848,9 +867,9 @@ function safeParentContinueTo(value: string | null | undefined): string | null {
     return null;
   }
   try {
-    const target = new URL(decoded, window.location.origin);
+    const target = new URL(decoded, canonicalApplicationOrigin);
     if (
-      target.origin !== window.location.origin ||
+      target.origin !== canonicalApplicationOrigin ||
       target.username ||
       target.password ||
       (target.pathname !== '/app/parent' && !target.pathname.startsWith('/app/parent/'))

@@ -36,7 +36,7 @@ test('public landing implements the bounded product-repair contract', async ({ p
   await expect(page.locator('.hero-eyebrow')).toHaveText('LIVE, ONLINE + ON-DEMAND');
   await expect(page.locator('.hero-subheadline')).toHaveText('Classes start August 16.');
   await expect(page.locator('.hero-access-detail')).toHaveText(
-    'Free access through September 11. No card is required.',
+    'Try One Time free through September 11. No card required.',
   );
   await expect(page.locator('.hero-supporting, .hero .schedule, .hero-note')).toHaveCount(0);
   const heroCta = page.locator('.hero .hero-cta');
@@ -90,16 +90,15 @@ test('public landing implements the bounded product-repair contract', async ({ p
     );
   }
   await expect(page.locator('.how-flow').nth(0).locator('strong')).toHaveText(
-    'Pre-register your child',
-  );
-  await expect(page.locator('.how-flow').nth(1).locator('strong')).toHaveText(
     'Create your Family account',
   );
-  await expect(page.locator('.how-flow').nth(2).locator('strong')).toHaveText(
-    'Your child learns at his own pace',
+  await expect(page.locator('.how-flow').nth(1).locator('strong')).toHaveText(
+    'Add your Student accounts',
   );
-  await expect(page.getByText('Pre-register your child')).toBeVisible();
-  await expect(page.locator('.hero-cta')).not.toHaveText('Pre-register');
+  await expect(page.locator('.how-flow').nth(2).locator('strong')).toHaveText(
+    'Your child learns in his own space',
+  );
+  await expect(page.getByText(/pre-register|portal is ready|we.?ll email you/i)).toHaveCount(0);
   await expect(page.getByRole('link', { name: 'Terms', exact: true })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Cancellation and refunds' })).toHaveAttribute(
     'href',
@@ -109,7 +108,7 @@ test('public landing implements the bounded product-repair contract', async ({ p
   await expect(page.getByRole('link', { name: 'Student Data Notice' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Member Login' }).last()).toHaveAttribute(
     'href',
-    '/login',
+    'https://app.onetimeonetime.com/login',
   );
   await expect(page.getByRole('link', { name: 'Support' }).last()).toHaveAttribute(
     'href',
@@ -243,7 +242,10 @@ test('Family submission uses the canonical bootstrap and exact cardless adult pa
       'Your Family account was saved. Sign in to continue while we finish sending your confirmation email.',
     ),
   ).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Sign in' })).toHaveAttribute('href', '/login');
+  await expect(page.getByRole('link', { name: 'Sign in' })).toHaveAttribute(
+    'href',
+    'https://app.onetimeonetime.com/login',
+  );
   await expect(page.getByRole('link', { name: 'Go to Parent dashboard' })).toHaveCount(0);
   await expect(page.getByText('No card was charged by this signup form.')).toBeVisible();
   expect(observedCsrf).toBe(bootstrap.csrf_token);
@@ -310,10 +312,8 @@ test('verified Family signup uses the durable receipt before opening the Parent 
   ).toBeVisible();
   await expect(page.getByRole('link', { name: 'Go to Parent dashboard' })).toHaveAttribute(
     'href',
-    '/app/parent/account',
+    'https://app.onetimeonetime.com/app/parent/account',
   );
-  await page.getByRole('link', { name: 'Go to Parent dashboard' }).click();
-  await expect(page).toHaveURL(`${testBaseUrl}/app/parent/account`);
 });
 
 test('the real Parent bundle keeps a v2.1 session isolated from every legacy Parent API', async ({

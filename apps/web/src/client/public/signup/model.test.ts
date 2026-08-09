@@ -18,6 +18,10 @@ describe('P08 public signup model', () => {
     );
     const boundary = familySignupFormModel(new Date('2026-09-11T15:00:00.000Z'), expiresAt);
     expect(boundary.cta).toBe('Create your Family account');
+    expect(familySignupFormModel(new Date('2026-09-11T14:59:59.000Z'), expiresAt).helper).toBe(
+      'Try One Time free through September 11. No card required.',
+    );
+    expect(boundary.helper).toContain('info@onetimeonetime.com');
     expect(boundary.card_fields).toBe(0);
     expect(boundary.student_fields).toBe(0);
     expect(boundary.forbidden_fields).toContain('reminder_preference');
