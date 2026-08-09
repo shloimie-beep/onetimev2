@@ -84,6 +84,7 @@ describe.runIf(nativeProofEnabled)('OT-P0 native PostgreSQL owner Admin session'
       distDir = await mkdtemp(path.join(tmpdir(), 'ot-p0-native-admin-shell-'));
       await mkdir(path.join(distDir, 'app'), { recursive: true });
       await writeFile(path.join(distDir, 'app', 'crm.html'), '<!doctype html><body>CRM</body>');
+      await writeFile(path.join(distDir, 'app', 'live.html'), '<!doctype html><body>LIVE</body>');
       const app = createApp({
         config,
         pool,
@@ -139,6 +140,16 @@ describe.runIf(nativeProofEnabled)('OT-P0 native PostgreSQL owner Admin session'
         headers: { cookie: cookieHeader },
       });
       expect(adminDashboardDeepLink.status).toBe(200);
+      const adminLiveConsole = await fetch(`${baseUrl}/app/live-console`, {
+        redirect: 'manual',
+        headers: { cookie: cookieHeader },
+      });
+      expect(adminLiveConsole.status).toBe(200);
+      const adminZoomHost = await fetch(`${baseUrl}/app/live-console/zoom-host`, {
+        redirect: 'manual',
+        headers: { cookie: cookieHeader },
+      });
+      expect(adminZoomHost.status).toBe(200);
 
       const csrfProtectedPost = await fetch(`${baseUrl}/api/v1/admin/classes/series`, {
         method: 'POST',
@@ -186,6 +197,11 @@ describe.runIf(nativeProofEnabled)('OT-P0 native PostgreSQL owner Admin session'
         headers: { cookie: parentCookie },
       });
       expect(parentCrmShell.status).toBe(403);
+      const parentZoomHost = await fetch(`${baseUrl}/app/live-console/zoom-host`, {
+        redirect: 'manual',
+        headers: { cookie: parentCookie },
+      });
+      expect(parentZoomHost.status).toBe(403);
       const parentPortal = await fetch(`${baseUrl}/api/v1/portals/parent/dashboard`, {
         headers: { cookie: parentCookie },
       });
