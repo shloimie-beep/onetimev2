@@ -55,7 +55,7 @@ The current queue was read from inside the running Railway web service because i
 - Ambiguous provider results enter `unknown` and retry with the same idempotency key so the provider result is reconciled before another effect can occur.
 - Provider acceptance is separated from final delivery state.
 - Resend webhook parsing uses the official nested `data.email_id` shape.
-- Signed webhook events reconcile delivered, bounced, complained, and failed states idempotently; duplicates are harmless and adverse final states cannot be overwritten by a late delivered event.
+- Signed webhook events reconcile delivered, bounced, complained, and failed states idempotently; duplicates are harmless and adverse final states cannot be overwritten by a later lower-precedence event. `final_state_at` changes only when the selected final state changes, while `last_provider_event_at` records the latest provider event.
 - Provider identifiers remain hashed in lifecycle delivery storage.
 
 ## Focused local proof

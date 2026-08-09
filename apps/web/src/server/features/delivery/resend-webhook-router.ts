@@ -172,7 +172,15 @@ async function reconcileLifecycleDelivery(client: Queryable, record: ProviderEve
               ELSE delivered_at
             END,
             final_state_at = CASE
-              WHEN $4 IN ('delivered', 'bounced', 'complained', 'failed')
+              WHEN (
+                ($4 = 'complained' AND COALESCE(final_delivery_state, '') <> 'complained')
+                OR (
+                  $4 IN ('bounced', 'failed')
+                  AND COALESCE(final_delivery_state, '') <> 'complained'
+                  AND COALESCE(final_delivery_state, '') <> $4
+                )
+                OR ($4 = 'delivered' AND final_delivery_state IS NULL)
+              )
                 AND (final_state_at IS NULL OR final_state_at <= $5::timestamptz)
                 THEN $5::timestamptz
               ELSE final_state_at

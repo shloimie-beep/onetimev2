@@ -162,15 +162,23 @@ describe('W13-102 Resend webhook route', () => {
       createdAt: '2026-07-18T21:07:00.000Z',
     });
     expect((await postResend(complainedBody, 'svix_recovery_complained')).status).toBe(202);
-    expect(await lifecycleState()).toBe('complained');
+    expect(await lifecycleSnapshot()).toEqual({
+      final_delivery_state: 'complained',
+      final_state_at: '2026-07-18T21:07:00.000Z',
+      last_provider_event_at: '2026-07-18T21:07:00.000Z',
+    });
 
     const lateBounce = resendBody({
       type: 'email.bounced',
       emailId: 'resend_msg_recovery',
-      createdAt: '2026-07-18T21:06:30.000Z',
+      createdAt: '2026-07-18T21:08:00.000Z',
     });
     expect((await postResend(lateBounce, 'svix_recovery_late_bounce')).status).toBe(202);
-    expect(await lifecycleState()).toBe('complained');
+    expect(await lifecycleSnapshot()).toEqual({
+      final_delivery_state: 'complained',
+      final_state_at: '2026-07-18T21:07:00.000Z',
+      last_provider_event_at: '2026-07-18T21:08:00.000Z',
+    });
   });
 
   it('mounts safely but refuses provider intake while the runtime gate is disabled', async () => {
@@ -266,14 +274,22 @@ function resendBody(overrides: Partial<Record<'type' | 'emailId' | 'createdAt', 
 }
 
 async function lifecycleState() {
+  return (await lifecycleSnapshot()).final_delivery_state;
+}
+
+async function lifecycleSnapshot() {
   const result = await pool.query(
-    `SELECT final_delivery_state
+    `SELECT final_delivery_state, final_state_at, last_provider_event_at
        FROM onetime.account_lifecycle_delivery_outbox
       WHERE purpose = 'password_reset'
       ORDER BY created_at DESC
       LIMIT 1`,
   );
-  return String(result.rows[0]?.final_delivery_state);
+  return {
+    final_delivery_state: String(result.rows[0]?.final_delivery_state),
+    final_state_at: new Date(String(result.rows[0]?.final_state_at)).toISOString(),
+    last_provider_event_at: new Date(String(result.rows[0]?.last_provider_event_at)).toISOString(),
+  };
 }
 
 async function listenForTest(app: ReturnType<typeof createApp>) {
