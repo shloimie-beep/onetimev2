@@ -4,7 +4,7 @@
 - Date: 2026-08-09
 - Branch: `codex/ot-p1-resend-recovery-20260809`
 - Integration base: `codex/one-time-complete-production-launch-20260805` (PR #131)
-- Status: implementation and focused local proof complete; production held on the exact integration blocker below
+- Status: implementation and focused local proof complete; production held on the controller integration sequence below
 
 ## Delta baseline
 
@@ -68,9 +68,9 @@ The current queue was read from inside the running Railway web service because i
 
 Production proof will be appended after the deployment and disposable canary.
 
-## Exact external blocker
+## Integration sequencing hold
 
-PR #140 owns the coordinated 60-minute reset TTL and must merge before this branch is rebased and deployed. Its exact-head Node integration job currently fails because a Family-signup test receives a server error instead of the expected session cookie. OT-CTRL has declined to merge that failing head, and the PR #140 lane has stopped because the remaining failure is outside its authorized one-line assertion correction.
+OT-CTRL has fixed the merge order as PR #146, PR #147 and its role-switch deployment, then PR #140, followed by this PR #144. PR #140 owns the coordinated 60-minute reset TTL and must merge before the final rebase and deployment of this branch. This is an active controller sequence, not a Resend configuration blocker.
 
 Consequently, OT-P1 has not:
 
@@ -81,4 +81,4 @@ Consequently, OT-P1 has not:
 - issued the real reset request;
 - changed the operator password or sessions.
 
-Local held commit `14ac150` contains the review correction that stores Resend 2xx as `provider_accepted`, the migration renumber to `2273`, and this result's production queue readback. Resume only after PR #140 is green and merged: rebase on the then-current integration head, update the final migration inventory assertion, rerun the focused gates, and use force-with-lease before deployment.
+The held branch contains the review correction that stores Resend 2xx as `provider_accepted`, migration `2273`, production queue readback, stable semantic duplicate-webhook classification, and the locally accurate 103-migration inventory assertion. The duplicate-webhook exact test, five inventory tests, 12 focused Resend integration tests, typecheck, formatting, diff check, and secret scan are green. After PR #140 merges, rebase on the then-current integration head, derive the final inventory count and latest migration from that head, rerun the focused gates, and use force-with-lease before deployment.

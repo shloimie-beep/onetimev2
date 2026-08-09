@@ -103,12 +103,8 @@ export function normalizeResendWebhookEvent(input: {
   const data = objectValue(payload.data);
   const eventType = stringValue(payload.type) ?? 'unknown';
   const messageRef = stringValue(data?.email_id) ?? stringValue(payload.message_id);
-  const providerEventRef =
-    input.headers.id ??
-    stringValue(payload.id) ??
-    ([messageRef, eventType, stringValue(payload.created_at)].filter(Boolean).join(':') ||
-      eventType);
-  return buildProviderEventRecord({
+  const providerEventRef = resendProviderEventRef(payload, eventType, messageRef, input.headers.id);
+  const record = buildProviderEventRecord({
     accountKey: input.accountKey,
     productKey: input.productKey,
     provider: 'resend',
@@ -129,6 +125,10 @@ export function normalizeResendWebhookEvent(input: {
       has_svix_message_ref: Boolean(input.headers.id),
     },
   });
+  return {
+    ...record,
+    payload_digest: sha256Hex(input.rawBody),
+  };
 }
 
 export function verifyAndNormalizeResendWebhookEvent(input: {
@@ -164,11 +164,12 @@ export function verifyAndNormalizeResendWebhookEvent(input: {
     input.ledger?.record({
       provider: 'resend',
       svixId: input.headers.id ?? '',
-      providerEventRef:
-        input.headers.id ??
-        stringValue(payload.id) ??
-        stringValue(data?.email_id) ??
+      providerEventRef: resendProviderEventRef(
+        payload,
         record.event_type,
+        stringValue(data?.email_id) ?? stringValue(payload.message_id),
+        input.headers.id,
+      ),
       rawBodyDigest: sha256Hex(rawBody),
       orderingKey: stringValue(data?.email_id) ?? stringValue(payload.message_id),
       providerCreatedAt: stringValue(payload.created_at) ?? null,
@@ -179,6 +180,20 @@ export function verifyAndNormalizeResendWebhookEvent(input: {
     record,
     raw_body_digest: sha256Hex(rawBody),
   };
+}
+
+function resendProviderEventRef(
+  payload: Record<string, unknown>,
+  eventType: string,
+  messageRef: string | undefined,
+  svixId: string | undefined,
+) {
+  return (
+    stringValue(payload.id) ??
+    ([messageRef, eventType, stringValue(payload.created_at)].filter(Boolean).join(':') ||
+      svixId ||
+      eventType)
+  );
 }
 
 export function normalizeWapiWebhookEvent(input: {

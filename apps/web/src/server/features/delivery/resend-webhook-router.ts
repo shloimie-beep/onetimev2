@@ -95,6 +95,22 @@ async function recordResendProviderEventWithClient(
     }
   }
 
+  const existingProviderEvent = await client.query(
+    `SELECT payload_digest
+       FROM onetime.provider_event_ledger
+      WHERE provider = $1
+        AND environment = $2
+        AND provider_event_ref_hash = $3
+        AND event_type = $4
+      LIMIT 1`,
+    [record.provider, record.environment, record.provider_event_ref_hash, record.event_type],
+  );
+  if (existingProviderEvent.rowCount) {
+    return String(existingProviderEvent.rows[0]?.payload_digest) === record.payload_digest
+      ? 'duplicated'
+      : 'digest_mismatch';
+  }
+
   const outOfOrder = await isOutOfOrderProviderEvent(client, record);
   const inserted = await client.query(
     `INSERT INTO onetime.provider_event_ledger

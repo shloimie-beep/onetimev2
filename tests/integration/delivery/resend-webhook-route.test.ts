@@ -63,6 +63,20 @@ describe('W13-102 Resend webhook route', () => {
       success: true,
       disposition: 'replayed',
     });
+
+    const duplicate = await postResend(rawBody, 'svix_msg_w13_102_route_duplicate');
+    expect(duplicate.status).toBe(200);
+    expect(await duplicate.json()).toMatchObject({
+      success: true,
+      disposition: 'duplicated',
+    });
+    expect(
+      await pool.query(
+        `SELECT 1
+           FROM onetime.provider_event_ledger
+          WHERE provider = 'resend'`,
+      ),
+    ).toMatchObject({ rowCount: 1 });
   });
 
   it('rejects changed bytes for the same Svix id and rejects parsed or unsigned envelopes', async () => {
