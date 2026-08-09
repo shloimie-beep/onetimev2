@@ -40,7 +40,7 @@ describe('v2.1 protected-session regressions', () => {
   it('keeps v2.1 resolver unavailable outcomes explicit at bounded server gates', () => {
     const app = read('apps/web/src/server/app.ts');
     expect(app).toContain("if (resolution.status === 'unavailable') return { unavailable: true };");
-    expect(app).toContain("cookieHeaderHasName(req.header('cookie'), AUTH_SESSION_COOKIE.name)");
+    expect(app).toContain('cookieHeaderHasName(cookieHeader, AUTH_SESSION_COOKIE.name)');
     expect(read('apps/web/src/server/ops-routes.ts')).toContain('OPS_DIAGNOSTICS_UNAVAILABLE');
     expect(read('apps/web/src/server/features/contact-operations/router.ts')).toContain(
       'CONTACT_OPERATIONS_UNAVAILABLE',
