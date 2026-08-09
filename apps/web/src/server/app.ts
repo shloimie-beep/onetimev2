@@ -1939,6 +1939,7 @@ export function createApp({
       }
       const cookieHeader = req.header('cookie');
       const hostCookiePresent = cookieHeaderHasName(cookieHeader, AUTH_SESSION_COOKIE.name);
+      let rotatableV21CookieHeader: string | undefined;
       if (hostCookiePresent) {
         const existingV21Session = await v21AdultSessionRuntime.resolveCookieHeader({
           cookie_header: cookieHeader,
@@ -1952,14 +1953,8 @@ export function createApp({
         }
         if (existingV21Session.status === 'invalid') {
           clearAuthCookies(res, config);
-          res.status(401).json({
-            success: false,
-            code: 'INVALID_CREDENTIALS',
-            message:
-              'Email/username or password is not correct. If access was revoked, ask your Parent or an Administrator to restore it.',
-            request_id: req.traceId,
-          });
-          return;
+        } else {
+          rotatableV21CookieHeader = cookieHeader;
         }
       }
       const identifier = payload.identifier ?? payload.email ?? '';
@@ -2066,7 +2061,7 @@ export function createApp({
               scope: v21Scope,
               email: identifier,
               password: payload.password,
-              ...(hostCookiePresent ? { cookie_header: cookieHeader } : {}),
+              ...(rotatableV21CookieHeader ? { cookie_header: rotatableV21CookieHeader } : {}),
               now: attemptNow,
             }),
           );
@@ -2282,9 +2277,9 @@ export function createApp({
         return;
       }
 
-      if (hostCookiePresent) {
+      if (rotatableV21CookieHeader) {
         const rotation = await v21AdultSessionRuntime.rotateCookieHeader({
-          cookie_header: cookieHeader,
+          cookie_header: rotatableV21CookieHeader,
           ...(clock ? { now: clock() } : {}),
         });
         if (!rotation.revoked) {
@@ -2617,14 +2612,23 @@ export function createApp({
     if (!outcome.switched) {
       const status =
         outcome.reason === 'invalid_session' ? 401 : outcome.reason === 'unavailable' ? 503 : 403;
+      if (outcome.reason === 'invalid_session') clearAuthCookies(res, config);
       res
         .status(status)
         .json(
           publicError(
-            outcome.reason === 'invalid_session' ? 'UNAUTHENTICATED' : 'FORBIDDEN',
+            outcome.reason === 'invalid_session'
+              ? 'UNAUTHENTICATED'
+              : outcome.reason === 'invalid_csrf'
+                ? 'CSRF_REQUIRED'
+                : outcome.reason === 'unavailable'
+                  ? 'SERVER_ERROR'
+                  : 'FORBIDDEN',
             outcome.reason === 'unavailable'
               ? 'Role switching is temporarily unavailable.'
-              : 'That role is not available for this account.',
+              : outcome.reason === 'invalid_csrf'
+                ? 'Refresh the page and try again.'
+                : 'That role is not available for this account.',
             req.traceId,
           ),
         );
@@ -2718,12 +2722,16 @@ export function createApp({
           publicError(
             outcome.reason === 'invalid_session'
               ? 'UNAUTHENTICATED'
-              : outcome.reason === 'unavailable'
-                ? 'SERVER_ERROR'
-                : 'FORBIDDEN',
+              : outcome.reason === 'invalid_csrf'
+                ? 'CSRF_REQUIRED'
+                : outcome.reason === 'unavailable'
+                  ? 'SERVER_ERROR'
+                  : 'FORBIDDEN',
             outcome.reason === 'unavailable'
               ? 'Household selection is temporarily unavailable.'
-              : 'That household is not available for this account.',
+              : outcome.reason === 'invalid_csrf'
+                ? 'Refresh the page and try again.'
+                : 'That household is not available for this account.',
             req.traceId,
           ),
         );
@@ -7043,7 +7051,7 @@ async function revokePresentedLegacySession(
   reason: 'login_rotation' | 'logout',
 ) {
   const presented = readCookie(req, SESSION_COOKIE);
-  if (presented.status === 'invalid') return false;
+  if (presented.status === 'invalid') return true;
   if (presented.status === 'absent') return true;
   const sessionToken = presented.value;
   await revokeSession({
@@ -7366,7 +7374,7 @@ function roleSelectionPageHtml(activeRole: 'admin' | 'parent') {
 
 function householdSelectionPageHtml(
   households: readonly { householdId: string; displayName: string }[],
-  activeHouseholdId: string,
+  activeHouseholdId: string | null,
 ) {
   const householdButtons = households
     .map((household) => {
@@ -7388,7 +7396,7 @@ function householdSelectionPageHtml(
 </head>
 <body>
   <main class="login-page role-selection-page">
-    <section class="login-panel role-selection-panel" data-household-selector data-active-household="${escapeHtml(activeHouseholdId)}">
+    <section class="login-panel role-selection-panel" data-household-selector data-active-household="${escapeHtml(activeHouseholdId ?? '')}">
       <a class="brand-lockup login-brand" href="/" aria-label="One Time Mishnayos home">
         <img src="/assets/brand/onetimelogo.webp" width="56" height="56" alt="" aria-hidden="true">
         <span><strong>One Time Mishnayos</strong><small>Household context</small></span>

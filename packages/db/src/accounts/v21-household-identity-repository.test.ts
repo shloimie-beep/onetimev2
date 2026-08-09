@@ -103,6 +103,62 @@ describe('F04 PostgreSQL v2.1 adult-session repository', () => {
     expect(capture.queries[0]!.text).toContain("'admin', NULL");
   });
 
+  it('creates, resolves, and revokes an unbound Parent selector only for multiple owned households', async () => {
+    const selectionRow = sessionRow({
+      active_household_id: null,
+      owned_household_count: 2,
+      memberships: ['parent'],
+    });
+    const createCapture = capturingDb(() => [selectionRow]);
+    const created = await createPostgresV21AdultSessionRepository(createCapture.db).create({
+      ...binding,
+      activeRole: 'parent',
+      householdId: null,
+      accessTokenDigest: accessDigest,
+      refreshTokenDigest: refreshDigest,
+      issuedAt,
+    });
+    expect(created).toMatchObject({
+      ownedHouseholdCount: 2,
+      session: { activeRole: 'parent', activeHouseholdId: null },
+      household: null,
+    });
+    expect(createCapture.queries[0]!.text).toContain('eligible.owned_household_count > 1');
+    expect(createCapture.queries[0]!.values?.[3]).toBeNull();
+
+    const resolveCapture = capturingDb(() => [selectionRow]);
+    await expect(
+      createPostgresV21AdultSessionRepository(resolveCapture.db).resolve({
+        ...binding,
+        activeRole: 'parent',
+        householdId: null,
+        tokenKind: 'access',
+        tokenDigest: accessDigest,
+        now: new Date('2026-07-30T18:31:00.000Z'),
+      }),
+    ).resolves.toMatchObject({
+      ownedHouseholdCount: 2,
+      session: { activeRole: 'parent', activeHouseholdId: null },
+    });
+    expect(resolveCapture.queries[0]!.text).toContain('session.active_household_id IS NULL');
+    expect(resolveCapture.queries[0]!.text).toContain('selectable_household.state');
+
+    const revokeCapture = capturingDb(() => [{ session_id: binding.sessionId }]);
+    await expect(
+      createPostgresV21AdultSessionRepository(revokeCapture.db).revoke({
+        ...binding,
+        activeRole: 'parent',
+        householdId: null,
+        tokenKind: 'refresh',
+        tokenDigest: refreshDigest,
+        now: new Date('2026-07-30T18:31:00.000Z'),
+        reason: 'role_context_switch',
+      }),
+    ).resolves.toBe(true);
+    expect(revokeCapture.queries[0]!.text).toContain('session.active_household_id IS NULL');
+    expect(revokeCapture.queries[0]!.text).toContain('selectable_household.state');
+  });
+
   it('resolves access and refresh digests only through the exact live binding', async () => {
     const capture = capturingDb(() => [sessionRow({ access_state: 'inactive' })]);
 

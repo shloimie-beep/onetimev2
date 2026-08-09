@@ -659,7 +659,7 @@ describe('F03 v2.1 Parent host-cookie session runtime', () => {
     });
   });
 
-  it('rotates one dual-role session between Parent and Admin without duplicating identity or sessions', async () => {
+  it('defaults a dual-role login to Admin and rotates between Admin and Parent', async () => {
     const sessions = new Map<string, V21ParentSessionContext>();
     const dualIdentity = loginIdentity({ memberships: ['admin', 'parent'] });
     const repository: V21AdultSessionRepository = {
@@ -687,35 +687,115 @@ describe('F03 v2.1 Parent host-cookie session runtime', () => {
     expect(login).toMatchObject({
       handled: true,
       authenticated: true,
-      active_role: 'parent',
-      role_selection_required: true,
+      active_role: 'admin',
+      role_selection_required: false,
+      household: null,
       memberships: ['admin', 'parent'],
     });
     if (!login.handled || !login.authenticated) throw new Error('Dual-role login was not issued.');
-    const switched = await runtime.switchRoleCookieHeader({
+    const switchedToParent = await runtime.switchRoleCookieHeader({
       cookie_header: hostCookie(login.browser_session_token),
       csrf_token: login.csrf_token,
-      requested_role: 'admin',
+      requested_role: 'parent',
       now: new Date(now.getTime() + 1_000),
     });
-    expect(switched).toMatchObject({
+    expect(switchedToParent).toMatchObject({
       switched: true,
-      active_role: 'admin',
+      active_role: 'parent',
       memberships: ['admin', 'parent'],
     });
     expect(sessions.size).toBe(1);
-    if (!switched.switched) throw new Error('Admin role switch was not issued.');
-    const readback = await runtime.resolveCookieHeader({
-      cookie_header: hostCookie(switched.browser_session_token),
+    if (!switchedToParent.switched) throw new Error('Parent role switch was not issued.');
+    const parentReadback = await runtime.resolveCookieHeader({
+      cookie_header: hostCookie(switchedToParent.browser_session_token),
       now: new Date(now.getTime() + 1_000),
     });
-    expect(readback).toMatchObject({
+    expect(parentReadback).toMatchObject({
+      status: 'resolved',
+      context: {
+        memberships: ['admin', 'parent'],
+        session: { activeRole: 'parent', activeHouseholdId: 'household_one' },
+        household: { householdId: 'household_one' },
+      },
+    });
+    const parentBootstrap = await runtime.bootstrapCookieHeader({
+      cookie_header: hostCookie(switchedToParent.browser_session_token),
+      now: new Date(now.getTime() + 1_000),
+    });
+    if (parentBootstrap.status !== 'resolved') throw new Error('Parent bootstrap failed.');
+    const switchedToAdmin = await runtime.switchRoleCookieHeader({
+      cookie_header: hostCookie(switchedToParent.browser_session_token),
+      csrf_token: parentBootstrap.csrf_token,
+      requested_role: 'admin',
+      now: new Date(now.getTime() + 2_000),
+    });
+    expect(switchedToAdmin).toMatchObject({
+      switched: true,
+      active_role: 'admin',
+    });
+    expect(sessions.size).toBe(1);
+    if (!switchedToAdmin.switched) throw new Error('Admin role switch was not issued.');
+    const adminReadback = await runtime.resolveCookieHeader({
+      cookie_header: hostCookie(switchedToAdmin.browser_session_token),
+      now: new Date(now.getTime() + 2_000),
+    });
+    expect(adminReadback).toMatchObject({
       status: 'resolved',
       context: {
         memberships: ['admin', 'parent'],
         session: { activeRole: 'admin', activeHouseholdId: null },
         household: null,
       },
+    });
+  });
+
+  it('preserves the current session when replacement establishment fails', async () => {
+    const sessions = new Map<string, V21ParentSessionContext>();
+    const dualIdentity = loginIdentity({ memberships: ['admin', 'parent'] });
+    let createCount = 0;
+    const repository: V21AdultSessionRepository = {
+      create: async (input) => {
+        createCount += 1;
+        if (createCount > 1) throw new Error('transient replacement failure');
+        const context = sessionResult(input, { memberships: ['admin', 'parent'] });
+        sessions.set(input.sessionId, context);
+        return context;
+      },
+      resolve: async (input) => sessions.get(input.sessionId) ?? null,
+      revoke: async (input) => sessions.delete(input.sessionId),
+      findLoginIdentity: async () => dualIdentity,
+      upgradeCredentialPasswordHash: async () => true,
+    };
+    const runtime = createV21AdultSessionRuntime({
+      repository,
+      hmacSecret,
+      randomBytes: deterministicRandom(),
+    });
+    const login = await runtime.login({
+      scope: establishmentInput().scope,
+      email: dualIdentity.normalizedEmail,
+      password: 'correct horse battery staple',
+      now,
+    });
+    if (!login.handled || !login.authenticated) throw new Error('Dual-role login was not issued.');
+
+    await expect(
+      runtime.switchRoleCookieHeader({
+        cookie_header: hostCookie(login.browser_session_token),
+        csrf_token: login.csrf_token,
+        requested_role: 'parent',
+        now: new Date(now.getTime() + 1_000),
+      }),
+    ).resolves.toEqual({ switched: false, reason: 'unavailable' });
+    expect(sessions.size).toBe(1);
+    await expect(
+      runtime.resolveCookieHeader({
+        cookie_header: hostCookie(login.browser_session_token),
+        now: new Date(now.getTime() + 1_000),
+      }),
+    ).resolves.toMatchObject({
+      status: 'resolved',
+      context: { session: { activeRole: 'admin', activeHouseholdId: null } },
     });
   });
 
@@ -737,6 +817,14 @@ describe('F03 v2.1 Parent host-cookie session runtime', () => {
     const sessions = new Map<string, V21ParentSessionContext>();
     const repository: V21AdultSessionRepository = {
       create: async (input) => {
+        if (input.householdId === null) {
+          const context = sessionResult(input, {
+            memberships: ['parent'],
+            ownedHouseholdCount: ownedHouseholds.length,
+          });
+          sessions.set(input.sessionId, context);
+          return context;
+        }
         const household = ownedHouseholds.find(
           (candidate) => candidate.householdId === input.householdId,
         );
@@ -744,6 +832,7 @@ describe('F03 v2.1 Parent host-cookie session runtime', () => {
         const context = sessionResult(input, {
           household,
           accessState: household.accessState,
+          ownedHouseholdCount: ownedHouseholds.length,
         });
         sessions.set(input.sessionId, context);
         return context;
@@ -769,7 +858,7 @@ describe('F03 v2.1 Parent host-cookie session runtime', () => {
       authenticated: true,
       active_role: 'parent',
       household_selection_required: true,
-      household: { householdId: 'household_one' },
+      household: null,
     });
     if (!login.handled || !login.authenticated) {
       throw new Error('Multi-household Parent login was not issued.');
@@ -780,7 +869,7 @@ describe('F03 v2.1 Parent host-cookie session runtime', () => {
     });
     expect(selector).toMatchObject({
       status: 'resolved',
-      active_household_id: 'household_one',
+      active_household_id: null,
       households: ownedHouseholds,
     });
     if (selector.status !== 'resolved') throw new Error('Household selector was unavailable.');
@@ -1005,18 +1094,16 @@ function sessionResult(
     session?: Partial<V21ParentSessionContext['session']>;
     household?: Partial<NonNullable<V21ParentSessionContext['household']>>;
     memberships?: readonly ('admin' | 'parent')[];
+    ownedHouseholdCount?: number;
   } = {},
 ): V21ParentSessionContext {
   const issuedAt = input.issuedAt.toISOString();
   const activeRole = input.activeRole ?? 'parent';
-  if (activeRole === 'parent' && input.householdId === null) {
-    throw new Error('Parent session requires a household.');
-  }
   return {
     adultId: input.adultId,
     normalizedEmail: 'owner@example.test',
     ownerDisplayName: 'Owner One',
-    ownedHouseholdCount: 1,
+    ownedHouseholdCount: overrides.ownedHouseholdCount ?? 1,
     memberships: overrides.memberships ?? (activeRole === 'admin' ? ['admin'] : ['parent']),
     session: {
       sessionId: input.sessionId,
@@ -1039,7 +1126,7 @@ function sessionResult(
       ...overrides.session,
     },
     household:
-      activeRole === 'admin'
+      activeRole === 'admin' || input.householdId === null
         ? null
         : {
             householdId: input.householdId!,
