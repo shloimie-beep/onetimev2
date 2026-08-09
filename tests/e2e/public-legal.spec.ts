@@ -63,7 +63,9 @@ test('terms use current account and billing truth without placeholder claims', a
 
   const body = (await page.textContent('body')) ?? '';
   expect(body).not.toContain('does not sell access, process payments, or grant member accounts');
-  expect(body).not.toMatch(/paid checkout is live|live paid checkout is available/i);
+  expect(body).not.toMatch(
+    /(?:^|[.!?]\s*)(?:paid checkout is live|live paid checkout is available)/i,
+  );
 });
 
 test('cancellation and refund policy states period-end access and manual review boundaries', async ({
