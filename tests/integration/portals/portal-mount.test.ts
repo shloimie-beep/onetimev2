@@ -462,6 +462,16 @@ describe('OT-71 mounted parent and student portals', () => {
                 status: 'resolved',
                 context: contextFor(cookieHeader?.includes('parent-v21') ? 'parent' : 'admin'),
               },
+      bootstrapCookieHeader: async ({ cookie_header: cookieHeader }: { cookie_header?: string }) =>
+        cookieHeader?.includes('invalid-v21')
+          ? { status: 'invalid' }
+          : cookieHeader?.includes('unavailable-v21')
+            ? { status: 'unavailable' }
+            : {
+                status: 'resolved',
+                context: contextFor(cookieHeader?.includes('parent-v21') ? 'parent' : 'admin'),
+                csrf_token: `c1.${'a'.repeat(43)}.${'b'.repeat(43)}`,
+              },
       verifyCsrf: async () => true,
       switchRoleCookieHeader: async ({
         requested_role: requestedRole,
@@ -649,6 +659,23 @@ describe('OT-71 mounted parent and student portals', () => {
       });
       expect(parentOverview.status).toBe(200);
       expect(await parentOverview.text()).toContain('portal-root');
+      const parentSupport = await fetch(`${server.baseUrl}/app/support`, {
+        headers: { cookie: parentCookie! },
+        redirect: 'manual',
+      });
+      expect(parentSupport.status).toBe(302);
+      expect(parentSupport.headers.get('location')).toBe('/app/parent/support');
+      const parentReceiptSupport = await fetch(
+        `${server.baseUrl}/app/support/receipts/receipt-v21`,
+        {
+          headers: { cookie: parentCookie! },
+          redirect: 'manual',
+        },
+      );
+      expect(parentReceiptSupport.status).toBe(302);
+      expect(parentReceiptSupport.headers.get('location')).toBe(
+        '/app/parent/support/receipts/receipt-v21',
+      );
       const parentPublication = await fetch(
         `${server.baseUrl}/api/app/content/publication/approved-projections`,
         {

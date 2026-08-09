@@ -22,7 +22,7 @@ import {
 } from '../../../../../../packages/observability/src/index.ts';
 
 type SupportSessionPorts = {
-  hasV21SessionCookie: (req: Request) => boolean;
+  resolveV21Route: (req: RequestWithTrace, res: Response) => Promise<'next' | 'handled'>;
   sessionFromRequest: (req: Request) => Promise<AuthenticatedSession | null>;
   ensureSessionCsrfCookie: (
     req: Request,
@@ -110,10 +110,11 @@ export function registerSupportRoutes(input: {
   });
 
   input.app.get('/app/support', async (req: RequestWithTrace, res, next) => {
-    if (input.session.hasV21SessionCookie(req)) {
+    if ((await input.session.resolveV21Route(req, res)) === 'next') {
       next();
       return;
     }
+    if (res.headersSent) return;
     input.session.setPrivateNoStore(res);
     res.setHeader('X-Robots-Tag', 'noindex, nofollow');
     const session = await input.session.sessionFromRequest(req);
@@ -126,10 +127,11 @@ export function registerSupportRoutes(input: {
   });
 
   input.app.get('/app/support/receipts/:receiptId', async (req: RequestWithTrace, res, next) => {
-    if (input.session.hasV21SessionCookie(req)) {
+    if ((await input.session.resolveV21Route(req, res)) === 'next') {
       next();
       return;
     }
+    if (res.headersSent) return;
     input.session.setPrivateNoStore(res);
     res.setHeader('X-Robots-Tag', 'noindex, nofollow');
     const session = await input.session.sessionFromRequest(req);

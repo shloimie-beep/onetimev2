@@ -847,8 +847,33 @@ export function createApp({
     pool,
     distDir,
     session: {
-      hasV21SessionCookie: (req) =>
-        cookieHeaderHasName(req.header('cookie'), AUTH_SESSION_COOKIE.name),
+      resolveV21Route: async (req, res) => {
+        const cookieHeader = req.header('cookie');
+        if (!cookieHeaderHasName(cookieHeader, AUTH_SESSION_COOKIE.name)) return 'handled';
+        const bootstrap = await v21AdultSessionRuntime.bootstrapCookieHeader({
+          cookie_header: cookieHeader,
+          ...(clock ? { now: clock() } : {}),
+        });
+        if (bootstrap.status === 'unavailable') {
+          res.status(503).type('text').send('Support is temporarily unavailable.');
+          return 'handled';
+        }
+        if (bootstrap.status !== 'resolved') {
+          res.status(401).type('text').send('Please log in again.');
+          return 'handled';
+        }
+        if (bootstrap.context.session.activeRole === 'parent') {
+          const receipt = req.params.receiptId;
+          res.redirect(
+            302,
+            receipt
+              ? `/app/parent/support/receipts/${encodeURIComponent(receipt)}`
+              : '/app/parent/support',
+          );
+          return 'handled';
+        }
+        return 'next';
+      },
       sessionFromRequest: (req) => sessionFromRequest(req, pool, config),
       ensureSessionCsrfCookie: (req, res, session) =>
         ensureSessionCsrfCookie(req, res, pool, config, session),
