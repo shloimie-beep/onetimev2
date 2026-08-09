@@ -78,6 +78,7 @@
     "highlevel:agent-mode:queue": "tsx scripts/highlevel/generate-agent-mode-queue.ts",
     "content-factory:import": "tsx scripts/media/content-factory-import.ts",
     "content-factory:seed-demo": "tsx scripts/media/content-factory-demo-seed.ts",
+    "content-media:provider-registry": "tsx scripts/media/provider-registry-bindings.ts",
     "vimeo:mishnayos:catalog": "tsx scripts/media/vimeo-mishnayos-catalog.ts"
   },
   "dependencies": {
