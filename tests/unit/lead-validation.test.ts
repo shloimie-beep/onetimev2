@@ -123,9 +123,7 @@ describe('lead validation and content contracts', () => {
   });
 
   it('ships launch legal content with the current data categories and no live billing claim', () => {
-    expect(legalPolicyMetadata.policySetVersion).toBe(
-      'one-time-public-legal-v2-2026-08-09',
-    );
+    expect(legalPolicyMetadata.policySetVersion).toBe('one-time-public-legal-v2-2026-08-09');
     expect(legalPolicyMetadata.consentPolicyVersion).toBe(
       'one-time-unified-terms-consent-v2-2026-08-09',
     );
