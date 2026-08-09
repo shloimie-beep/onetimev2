@@ -464,9 +464,9 @@ The form collects exactly:
 - normalized email;
 - password and confirmation;
 - IANA household timezone, prefilled from the browser only as an editable suggestion;
-- required current Terms/privacy acceptance;
-- separate optional general-marketing consent;
-- separate optional Parent-newsletter consent.
+- exactly one required, unchecked `I agree to the Terms of Use` checkbox.
+
+The linked Terms page is the single integrated document for Terms, privacy, Parent/Student data, cancellation/refund, required service communications, One Time program updates, general marketing, and the Parent newsletter. The form has no separate visible privacy, general-marketing, or Parent-newsletter checkbox. Acceptance projects the covered adult email scopes while later unsubscribe, DND, complaint, hard-bounce, suppression, or withdrawal remains controlling.
 
 It does not collect phone, country, Student information, learner relationship, guardian/recording/recognition consent, reminder preference, or a card.
 
