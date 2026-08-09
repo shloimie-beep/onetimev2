@@ -515,6 +515,15 @@ describe('OT-71 mounted parent and student portals', () => {
         headers: { cookie: adminCookie },
       });
       expect(adminDirectory.status).not.toBe(401);
+      const dualCookieParentDirectory = await fetch(
+        `${server.baseUrl}/api/v1/admin-directory/users`,
+        {
+          headers: {
+            cookie: 'otcrm_session=stale-legacy-admin; __Host-onetime-session=parent-v21',
+          },
+        },
+      );
+      expect(dualCookieParentDirectory.status).toBe(403);
       const contactOperations = await fetch(
         `${server.baseUrl}/api/v1/contact-operations/parent-shell`,
         { headers: { cookie: adminCookie } },

@@ -5631,6 +5631,8 @@ async function resolveSupportV21RouteContext(
         sessionKind: 'v21_adult',
       };
     }
+    res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+    return null;
   }
 
   const session = await sessionFromRequest(req, input.pool, input.config);
@@ -5758,37 +5760,40 @@ async function readApiSessionFromRequest(
   req: Request,
   input: ApiSessionResolutionInput,
 ): Promise<ApiSessionResolution> {
-  const legacy = await sessionFromRequest(req, input.pool, input.config);
-  if (legacy) return { status: 'resolved', session: { ...legacy, session_model: 'legacy' } };
-
   const cookieHeader = req.header('cookie');
-  if (!cookieHeaderHasName(cookieHeader, AUTH_SESSION_COOKIE.name)) return { status: 'missing' };
-  const resolution = await input.v21AdultSessionRuntime.resolveCookieHeader({
-    cookie_header: cookieHeader,
-    ...(input.clock ? { now: input.clock() } : {}),
-  });
-  if (resolution.status === 'unavailable') return { status: 'unavailable' };
-  if (resolution.status !== 'resolved') return { status: 'missing' };
+  if (cookieHeaderHasName(cookieHeader, AUTH_SESSION_COOKIE.name)) {
+    const resolution = await input.v21AdultSessionRuntime.resolveCookieHeader({
+      cookie_header: cookieHeader,
+      ...(input.clock ? { now: input.clock() } : {}),
+    });
+    if (resolution.status === 'unavailable') return { status: 'unavailable' };
+    if (resolution.status !== 'resolved') return { status: 'missing' };
 
-  const context = resolution.context;
-  return {
-    status: 'resolved',
-    session: {
-      session_key: context.session.sessionId,
-      session_security_version: context.session.securityVersion,
-      user: v21ClientUser({
-        human_account_id: context.session.humanAccountId,
-        adult_id: context.adultId,
-        email: context.normalizedEmail,
-        display_name: context.ownerDisplayName,
-        active_role: context.session.activeRole,
-      }),
-      expires_at: context.session.absoluteExpiresAt,
-      assurance_method: 'password',
-      assurance_at: null,
-      session_model: 'v21',
-    },
-  };
+    const context = resolution.context;
+    return {
+      status: 'resolved',
+      session: {
+        session_key: context.session.sessionId,
+        session_security_version: context.session.securityVersion,
+        user: v21ClientUser({
+          human_account_id: context.session.humanAccountId,
+          adult_id: context.adultId,
+          email: context.normalizedEmail,
+          display_name: context.ownerDisplayName,
+          active_role: context.session.activeRole,
+        }),
+        expires_at: context.session.absoluteExpiresAt,
+        assurance_method: 'password',
+        assurance_at: null,
+        session_model: 'v21',
+      },
+    };
+  }
+
+  const legacy = await sessionFromRequest(req, input.pool, input.config);
+  return legacy
+    ? { status: 'resolved', session: { ...legacy, session_model: 'legacy' } }
+    : { status: 'missing' };
 }
 
 async function requireResolvedApiSession(
