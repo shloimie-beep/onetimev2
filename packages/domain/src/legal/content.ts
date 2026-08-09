@@ -21,9 +21,9 @@ export type PrivacyDataCategory = {
 };
 
 export const legalPolicyMetadata = {
-  policySetVersion: 'one-time-public-legal-v1-2026-07-17',
-  effectiveDate: '2026-07-17',
-  lastUpdated: '2026-07-17',
+  policySetVersion: 'one-time-public-legal-v2-2026-08-09',
+  effectiveDate: '2026-08-09',
+  lastUpdated: '2026-08-09',
   contact: {
     organization: 'One Time Mishnayos',
     role: 'Admin',
@@ -31,7 +31,7 @@ export const legalPolicyMetadata = {
     instruction:
       'Use the public signup path or the contact method supplied by the One Time team for privacy, consent, account, billing, or support questions.',
   },
-  consentPolicyVersion: 'one-time-class-reminders-v1-2026-07-14',
+  consentPolicyVersion: 'one-time-unified-terms-consent-v2-2026-08-09',
   billingCapability:
     'Billing code is limited to fixture and Stripe test-mode evidence; the public signup flow does not collect payment card details.',
 } as const;
@@ -209,42 +209,37 @@ export const privacyDataCategories = [
 
 export const communicationConsentNotice: LegalDocument = {
   id: 'communication-and-reminder-consent',
-  title: 'Communication and Reminder Consent',
+  title: 'Communications Included In The Terms',
   version: legalPolicyMetadata.consentPolicyVersion,
   effectiveDate: legalPolicyMetadata.effectiveDate,
   summary:
-    'This notice explains required service communications and optional class reminders for the public signup flow.',
+    'This section records the adult email communications covered by the single required Terms acceptance.',
   sections: [
     {
-      heading: 'Required Service Communications',
+      heading: 'One Required Acceptance',
       paragraphs: [
-        'When you submit the public signup form, you ask One Time Mishnayos to respond to that request. The system may send service communications needed to confirm receipt, review the signup, manage account or security flows, deliver class access when separately approved, provide support, or prevent abuse.',
-        'Required service communications are different from optional daily class reminders. They may still be necessary even if you do not choose optional reminders.',
+        'The Family signup form presents one required checkbox for the Terms of Use. That Terms document incorporates the Privacy Notice, Parent/Guardian and Student Data Notice, Cancellation and Refund Policy, and this communications section.',
+        'The acceptance is not split into separate visible general-marketing or Parent-newsletter checkboxes.',
       ],
     },
     {
-      heading: 'Optional Email And WhatsApp Reminders',
+      heading: 'Adult Email Communications',
       paragraphs: [
-        'Optional daily class reminders are channel-specific. Email reminder permission and WhatsApp reminder permission are separate choices.',
-        'No optional reminder consent is inferred from a preselected channel. The public form must show an affirmative choice for each optional reminder channel.',
-      ],
-      bullets: [
-        'Email reminders require an email address and an affirmative email reminder choice.',
-        'WhatsApp reminders require a WhatsApp-capable phone number and an affirmative WhatsApp reminder choice.',
-        'Choosing no optional reminders does not block required service communications about the signup or account.',
+        'By accepting the Terms, the adult account owner agrees that One Time Mishnayos may use the submitted email address for required account, security, class, access, billing, and support messages, as well as One Time program updates, general marketing, and the Parent newsletter.',
+        'WhatsApp is not an active launch channel and is not authorized by the Family signup Terms acceptance.',
       ],
     },
     {
       heading: 'Stopping Optional Messages',
       paragraphs: [
-        'For WhatsApp, reply STOP or use any equivalent suppression instruction supported by the channel. For email, use the unsubscribe or suppression instructions in the message when available, or contact the One Time team.',
-        'Suppression, STOP, unsubscribe, or do-not-contact signals should take priority over campaign or reminder eligibility.',
+        'The adult may unsubscribe from optional marketing or newsletter messages at any time. DND, unsubscribe, complaint, hard-bounce, suppression, and equivalent do-not-contact signals remain controlling and must be checked before optional outreach.',
+        'Stopping optional messages does not prevent account, security, billing, support, or other service communications that are necessary to operate the requested service.',
       ],
     },
     {
-      heading: 'Consent Record',
+      heading: 'Acceptance Record',
       paragraphs: [
-        `The current reminder consent policy version is ${legalPolicyMetadata.consentPolicyVersion}. The system can record the policy version and the time optional reminder consent was captured.`,
+        `The current unified Terms and communications policy version is ${legalPolicyMetadata.consentPolicyVersion}. The system records the accepted policy version, source, and time, then projects the covered adult communication scopes without overriding a later suppression or withdrawal.`,
       ],
     },
   ],
@@ -302,7 +297,7 @@ export const privacyNotice: LegalDocument = {
         'To respond to public signup and school inquiry submissions.',
         'To review eligibility, configure access, and support parent, student, and admin account flows when separately enabled.',
         'To provide classes, classroom access, content, progress, support, and service communications.',
-        'To send optional class reminders only when the relevant channel consent is captured.',
+        'To send adult email communications authorized by the integrated Terms, while honoring unsubscribe and suppression controls.',
         'To protect accounts, prevent abuse, operate the service, maintain audit records, and verify readiness.',
       ],
     },
@@ -316,7 +311,7 @@ export const privacyNotice: LegalDocument = {
     {
       heading: 'Suppression And Contact Choices',
       paragraphs: [
-        'Optional reminder choices are channel-specific. STOP, unsubscribe, suppression, and do-not-contact signals should be respected before optional outreach.',
+        'Adult email permission is projected from the integrated Terms acceptance. STOP, unsubscribe, complaint, hard-bounce, suppression, and do-not-contact signals remain controlling before optional outreach.',
         legalPolicyMetadata.contact.instruction,
       ],
     },
@@ -332,56 +327,66 @@ export const privacyNotice: LegalDocument = {
 export const termsOfUse: LegalDocument = {
   id: 'terms-of-use',
   title: 'Terms of Use',
-  version: 'terms-of-use-v1-2026-07-17',
+  version: 'terms-of-use-v2-2026-08-09',
   effectiveDate: legalPolicyMetadata.effectiveDate,
   summary:
-    'These terms describe the public signup flow and high-level use of One Time Mishnayos without claiming unapproved live capabilities.',
+    'This is the single integrated agreement for Family signup, including privacy, Student-data, communication, cancellation, refund, and service terms.',
   sections: [
+    {
+      heading: 'One Integrated Agreement',
+      paragraphs: [
+        'The Family signup form uses one required Terms acceptance. These Terms incorporate the Privacy Notice, Parent/Guardian and Student Data Notice, Communications Included In The Terms, and Cancellation and Refund Policy displayed below on this page.',
+        'Submitting the form confirms that the adult account owner has reviewed and accepts this integrated agreement.',
+      ],
+    },
     {
       heading: 'Using One Time Mishnayos',
       paragraphs: [
-        'One Time Mishnayos provides Mishnayos class information, account and portal surfaces, classroom and content features, communications, support, and operational tooling as they are enabled for the service.',
-        'Public signup is an interest and intake flow. Submitting the form does not by itself create class access, a parent account, a student account, a Zoom link, a paid subscription, or a guarantee that every feature is available.',
+        'One Time Mishnayos provides Mishnayos classes, Parent and Student portals, live-class access, recordings, review tools, communications, billing and account services, and support as those capabilities are enabled.',
+        'The adult account owner is responsible for accurate information, protecting credentials, and using each Parent or Student account only for the authorized person and household.',
       ],
     },
     {
-      heading: 'Accounts And Access',
+      heading: 'Parent, Guardian, And Student Authority',
       paragraphs: [
-        'The system may support owner/admin, parent, and student accounts. Access may be created, activated, disabled, suspended, or reset through separate account lifecycle flows.',
-        'You are responsible for using accurate contact information, protecting account credentials, and using parent or student access only for the person or household authorized for that access.',
-      ],
-    },
-    {
-      heading: 'Parent, Guardian, And Student Use',
-      paragraphs: [
-        'Parents and guardians should not submit student-sensitive information through the public signup form. Student-facing features should be used in a student-safe way and only for the authorized learner.',
+        'For a dependent Student, the adult account owner confirms that they are authorized to create and manage the Student account and to provide the permissions required for the service.',
+        'Student-specific recording, recognition, or other child-safety choices that require a later versioned action remain separate at the point where that feature is used; the public signup form does not silently manufacture those Student-specific records.',
       ],
     },
     {
       heading: 'Communications',
       paragraphs: [
-        'One Time Mishnayos may send required service communications connected to signup, account security, class access, support, and operations. Optional class reminders are governed by the Communication and Reminder Consent notice.',
+        'By accepting these Terms, the adult account owner agrees to receive required account, security, class, access, billing, and support email, as well as One Time program updates, general marketing, and the Parent newsletter at the submitted address.',
+        'Optional marketing and newsletter messages remain subject to unsubscribe, DND, complaint, hard-bounce, suppression, and other do-not-contact controls. WhatsApp is not authorized by this acceptance.',
       ],
     },
     {
-      heading: 'Payment And Cancellation',
+      heading: 'Privacy And Data',
       paragraphs: [
-        legalPolicyMetadata.billingCapability,
-        'Because live paid checkout is not proven as a current public signup capability, these terms do not invent cancellation, refund, renewal, or subscription promises. If paid checkout or manual paid enrollment is enabled later, the applicable offer, payment, cancellation, and refund terms must be approved and presented with that billing flow.',
+        'The incorporated Privacy Notice and Parent/Guardian and Student Data Notice explain the information the service processes and the boundaries between adult and Student data.',
+        'The public signup form is adult-facing and should not be used to submit Student-sensitive information.',
       ],
     },
     {
-      heading: 'Content And Providers',
+      heading: 'Payment, Cancellation, And Refunds',
       paragraphs: [
-        'Class, content, Zoom, Vimeo, WhatsApp, Telegram, Buffer, email, support, and billing integrations may depend on provider availability, protected configuration, and approval. Provider-off or test-mode evidence should not be treated as a promise of live provider delivery.',
+        'The public Family signup form does not collect payment-card details or make an automatic charge. Paid billing, when applicable, uses the approved hosted provider flow.',
+        'Cancellation stops future renewal and preserves access through the verified paid period. Refunds are manual exceptions, and cancellation does not itself delete learning records.',
+      ],
+    },
+    {
+      heading: 'Content, Classes, And Providers',
+      paragraphs: [
+        'Class, content, Zoom, Vimeo, email, support, and billing capabilities depend on protected configuration, provider availability, access state, and the applicable safety controls.',
+        'Private class, recording, account, and provider links may not be shared or used outside the authorized account.',
       ],
     },
     {
       heading: 'Acceptable Use',
       bullets: [
-        'Do not attempt to access another household, learner, provider, account, or admin surface.',
-        'Do not upload, submit, or request publication of private links, credentials, raw private message bodies, or student-sensitive information through public forms.',
-        'Do not interfere with service security, rate limits, audit logs, or provider integrations.',
+        'Do not attempt to access another household, Student, provider, account, or Admin surface.',
+        'Do not upload or submit credentials, payment-card details, private provider links, or Student-sensitive information through public forms.',
+        'Do not interfere with service security, rate limits, audit records, or provider integrations.',
       ],
     },
     {
