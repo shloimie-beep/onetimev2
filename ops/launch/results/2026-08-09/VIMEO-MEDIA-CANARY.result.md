@@ -140,6 +140,48 @@ source, chat, logs, screenshots, or result files:
 After those actions, register and independently read back the three active production provider
 bindings before setting any media mode.
 
+## Provider-only continuation checkpoint — 2026-08-09
+
+This checkpoint is delta-only. PR #142 and this result remain the durable preflight proof; the
+successor branch `codex/ot-p5-vimeo-media-completion-20260809` started from the controller-supplied
+integration head `aade78dd5d58808b80c11251274d8c27b78c9103`. No code audit or broad test suite was
+repeated.
+
+The OpenAI delta is now provider-ready. In the intended signed-in organization, the dedicated
+project `One Time Media Production` and its isolated media service credential were created. The
+secret was captured once and written directly to protected Railway configuration on
+`one-time-delivery-cron`; only the project identifier and secret were changed, and Railway deploys
+were explicitly suppressed. Exact read-only model readback returned HTTP 200 with matching IDs for
+both repository-locked models. No transcription, Responses request, usage-bearing processing,
+draft, or customer effect occurred.
+
+The Vimeo account and existing `OneTImev2` app were confirmed. Per the operator's explicit
+direction, the already protected existing token is the credential to use; token inventory and
+generation are no longer an unresolved action. Two transient restricted tokens created while
+reconciling the generator's delayed readback were both deleted immediately. Exact cleanup left the
+same three pre-existing token rows and zero new tokens. No Vimeo video, upload, webhook, privacy
+change, or publication effect occurred.
+
+AWS remains the only provider sign-in/provisioning delta: no AWS account was entered and no S3,
+KMS, IAM, bucket, object, or credential effect occurred. No provider-registry row has been written
+yet because the three-way proof tuple is intentionally held until the AWS identity and storage
+readback exist.
+
+Protected production deployment identity at this checkpoint:
+
+- `one-time-web`: deployment `f2d0401e-4936-448b-bd4d-5e7753136a35`, image
+  `sha256:fc906ed6c7b71afd2c64ad5eb85f4793aad9be6473266c4bb239a5c22741dc7d`, successful;
+- `one-time-delivery-cron`: deployment `1f511ff5-6655-41a1-a486-99f72db3fb85`, source
+  `f804980081cb2197689f3b4f3f77e58308b915af`, image
+  `sha256:c46af1ce63591d8df826797f6c5460b46e4141ff6a18253bac604452461d8462`, successful.
+
+Neither deployment was triggered or replaced by this provider change. Media mode remains `off`;
+no canary ID, upload, processing, publication, entitlement, playback, or customer-visible effect
+exists. The unresolved delta is limited to AWS account selection plus S3/KMS/IAM provisioning,
+binding the approved existing Vimeo credential and all three governed proof tuples, applying the
+three registry rows, obtaining the fresh operator recording, and executing the one bounded canary
+with cleanup.
+
 ## Safe continuation
 
 The next run must allocate one exact canary occurrence/ID and one bounded processing/publication
