@@ -22,6 +22,7 @@ import {
 } from '../../../../../../packages/observability/src/index.ts';
 
 type SupportSessionPorts = {
+  hasV21SessionCookie: (req: Request) => boolean;
   sessionFromRequest: (req: Request) => Promise<AuthenticatedSession | null>;
   ensureSessionCsrfCookie: (
     req: Request,
@@ -109,7 +110,7 @@ export function registerSupportRoutes(input: {
   });
 
   input.app.get('/app/support', async (req: RequestWithTrace, res, next) => {
-    if (req.header('cookie')?.includes('__Host-onetime-session=')) {
+    if (input.session.hasV21SessionCookie(req)) {
       next();
       return;
     }
@@ -125,7 +126,7 @@ export function registerSupportRoutes(input: {
   });
 
   input.app.get('/app/support/receipts/:receiptId', async (req: RequestWithTrace, res, next) => {
-    if (req.header('cookie')?.includes('__Host-onetime-session=')) {
+    if (input.session.hasV21SessionCookie(req)) {
       next();
       return;
     }

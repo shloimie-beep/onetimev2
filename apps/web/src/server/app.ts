@@ -847,6 +847,8 @@ export function createApp({
     pool,
     distDir,
     session: {
+      hasV21SessionCookie: (req) =>
+        cookieHeaderHasName(req.header('cookie'), AUTH_SESSION_COOKIE.name),
       sessionFromRequest: (req) => sessionFromRequest(req, pool, config),
       ensureSessionCsrfCookie: (req, res, session) =>
         ensureSessionCsrfCookie(req, res, pool, config, session),
@@ -953,6 +955,7 @@ export function createApp({
     scope: learningScope,
     resolveSession: async (request) => {
       const resolution = await readApiSession(request);
+      if (resolution.status === 'unavailable') return { unavailable: true };
       return resolution.status === 'resolved'
         ? {
             sessionKey: resolution.session.session_key,
@@ -1055,7 +1058,13 @@ export function createApp({
       service: studentNotificationService,
       resolvePrincipal: async (request) => {
         const authenticated = await resolveLearningActor(request);
-        if (!authenticated || authenticated.actor.role !== 'student') return null;
+        if (
+          !authenticated ||
+          'unavailable' in authenticated ||
+          authenticated.actor.role !== 'student'
+        ) {
+          return null;
+        }
         return {
           principal: { studentId: authenticated.actor.studentId },
           sessionKey: authenticated.sessionKey,
@@ -1307,6 +1316,7 @@ export function createApp({
       runtimeBinding: schoolRuntimeBinding,
       resolveSession: async (req) => {
         const resolution = await readApiSession(req);
+        if (resolution.status === 'unavailable') return { unavailable: true };
         if (resolution.status !== 'resolved') return null;
         if (resolution.session.session_model === 'v21') {
           return {
@@ -3174,6 +3184,7 @@ export function createApp({
       config,
       resolveSession: async (req) => {
         const resolution = await readApiSession(req);
+        if (resolution.status === 'unavailable') return { unavailable: true };
         return resolution.status === 'resolved' ? resolution.session : null;
       },
       verifyCsrf: async (req, session) => {
@@ -3197,6 +3208,7 @@ export function createApp({
       config,
       resolveSession: async (req) => {
         const resolution = await readApiSession(req);
+        if (resolution.status === 'unavailable') return { unavailable: true };
         return resolution.status === 'resolved' ? resolution.session : null;
       },
       verifyCsrf: async (req, session) => {

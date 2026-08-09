@@ -24,11 +24,14 @@ import {
 } from '../../../../../../packages/domain/src/index.ts';
 
 type DirectoryRequest = Request & { traceId?: string };
+type AdminDirectorySessionUnavailable = { unavailable: true };
 
 export function createAdminDirectoryRouter(input: {
   pool: DbPool;
   config: AppConfig;
-  resolveSession(req: Request): Promise<AuthenticatedSession | null>;
+  resolveSession(
+    req: Request,
+  ): Promise<AuthenticatedSession | AdminDirectorySessionUnavailable | null>;
   verifyCsrf(req: Request, session: AuthenticatedSession): Promise<boolean>;
   verifyRecentAssurance(session: AuthenticatedSession): Promise<boolean>;
 }) {
@@ -412,10 +415,21 @@ async function requireAdmin(
   req: DirectoryRequest,
   res: Response,
   input: {
-    resolveSession(req: Request): Promise<AuthenticatedSession | null>;
+    resolveSession(
+      req: Request,
+    ): Promise<AuthenticatedSession | AdminDirectorySessionUnavailable | null>;
   },
 ) {
   const session = await input.resolveSession(req);
+  if (session && 'unavailable' in session) {
+    res.status(503).json({
+      success: false,
+      code: 'ADMIN_DIRECTORY_UNAVAILABLE',
+      message: 'Admin directory is temporarily unavailable.',
+      request_id: req.traceId,
+    });
+    return null;
+  }
   if (!session) {
     res.status(401).json({
       success: false,
@@ -444,7 +458,9 @@ async function requireMutation(
   req: DirectoryRequest,
   res: Response,
   input: {
-    resolveSession(req: Request): Promise<AuthenticatedSession | null>;
+    resolveSession(
+      req: Request,
+    ): Promise<AuthenticatedSession | AdminDirectorySessionUnavailable | null>;
     verifyCsrf(req: Request, session: AuthenticatedSession): Promise<boolean>;
     verifyRecentAssurance(session: AuthenticatedSession): Promise<boolean>;
   },

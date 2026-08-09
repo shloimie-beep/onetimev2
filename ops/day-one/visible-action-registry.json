@@ -24,7 +24,7 @@
     },
     {
       "path": "apps/web/src/server/app.ts",
-      "sha256": "068c2fedc7030b871b5583b28291b9a43da0ae5ddbe4e0f42c098ed306880fcf"
+      "sha256": "67c829a959d65cfb2ef21a74af78f0d91a9bf6df223bb9d237acc8781ffab5aa"
     },
     {
       "path": "apps/web/src/server/communications/register.ts",
@@ -88,7 +88,7 @@
     },
     {
       "path": "apps/web/src/server/features/support/router.ts",
-      "sha256": "21dc9937e5308d51799ca4490e96d61b3a1028d6df2f043cb9dffea0fe928545"
+      "sha256": "ca821b4c5fbf6b30023811a9d51153bea47ba7532da405fd560e20b85888aae5"
     },
     {
       "path": "apps/web/src/server/features/support/v21-router.ts",

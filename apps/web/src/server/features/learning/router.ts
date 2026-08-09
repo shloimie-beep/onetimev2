@@ -8,6 +8,7 @@ import type { LearningCompositionBlocker } from './composition.ts';
 import type { createLearningEngagementService } from './service.ts';
 
 type LearningService = ReturnType<typeof createLearningEngagementService>;
+type LearningIdentityUnavailable = { unavailable: true };
 
 const idempotencyKey = z.string().trim().min(8).max(512);
 const auditRef = z.string().trim().min(1).max(512);
@@ -79,7 +80,9 @@ export type LearningRouterInput = {
   service: LearningService;
   enabled: boolean;
   blockers?: readonly LearningCompositionBlocker[];
-  resolveActor: (request: Request) => Promise<AuthenticatedLearningActor | null>;
+  resolveActor: (
+    request: Request,
+  ) => Promise<AuthenticatedLearningActor | LearningIdentityUnavailable | null>;
   verifyCsrf: (request: Request, authenticated: AuthenticatedLearningActor) => Promise<boolean>;
   clock?: () => Date;
   allocateId?: () => string;
@@ -374,6 +377,16 @@ function route(
   return async (request: Request, response: Response) => {
     try {
       const authenticated = await input.resolveActor(request);
+      if (authenticated && 'unavailable' in authenticated) {
+        response
+          .status(503)
+          .json({
+            success: false,
+            code: 'LEARNING_UNAVAILABLE',
+            message: 'Learning is temporarily unavailable.',
+          });
+        return;
+      }
       if (!authenticated) {
         response.status(403).json(neutralDenied());
         return;
