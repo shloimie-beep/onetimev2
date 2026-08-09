@@ -35,6 +35,16 @@ Unresolved production delta at checkpoint:
 
 No secret, token, reset URL, cookie, provider message identifier, or password is recorded here.
 
+## Production queue readback
+
+The current queue was read from inside the running Railway web service because its database uses an internal-only hostname.
+
+- Historical row counts: 5 `provider_delivered`, 7 `sink_delivered`, and 1 `superseded`.
+- No row is currently queued, leased, retrying, unknown, provider-off, or dead-lettered.
+- Each of the five historical provider rows has exactly one recorded attempt and no last error code.
+- The latest historical provider row was created on 2026-08-08 and is a password reset.
+- In the pre-recovery schema, `provider_delivered` records Resend API acceptance rather than recipient delivery. These rows therefore cannot be promoted to final delivered without webhook evidence.
+
 ## Implemented recovery
 
 - Password-reset lifetime is owned by coordinated draft PR #140; its identical 30-to-60-minute hunk is intentionally not duplicated here.

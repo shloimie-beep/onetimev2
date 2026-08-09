@@ -315,7 +315,7 @@ describe('OT-71 account lifecycle', () => {
 
     const deliveredOutbox = await lifecycleDeliveryRows();
     expect(deliveredOutbox[0]).toMatchObject({
-      state: 'provider_delivered',
+      state: 'provider_accepted',
       nonce: null,
       ciphertext: null,
       auth_tag: null,
@@ -404,7 +404,7 @@ describe('OT-71 account lifecycle', () => {
       'https://join.onetimeonetime.com/reset-password#token=',
     );
     expect((await lifecycleDeliveryRows())[0]).toMatchObject({
-      state: 'provider_delivered',
+      state: 'provider_accepted',
       nonce: null,
       ciphertext: null,
       auth_tag: null,
@@ -600,7 +600,7 @@ describe('OT-71 account lifecycle', () => {
 
     const deliveredOutbox = await lifecycleDeliveryRows();
     expect(deliveredOutbox[0]).toMatchObject({
-      state: 'provider_delivered',
+      state: 'provider_accepted',
       nonce: null,
       ciphertext: null,
       auth_tag: null,
@@ -704,7 +704,7 @@ describe('OT-71 account lifecycle', () => {
 
     const [delivery] = await authEmailChallengeDeliveryRows();
     expect(delivery).toMatchObject({
-      state: 'provider_delivered',
+      state: 'provider_accepted',
       nonce: null,
       ciphertext: null,
       auth_tag: null,

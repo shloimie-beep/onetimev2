@@ -185,7 +185,7 @@ export async function runLifecycleDeliveryOutboxBatch(input: {
       const payload = decryptDeliveryPayload(input.config, claim);
       const providerMessageRefHash = await deliverLifecyclePayload(input.config, claim, payload);
       const completed = await completeLifecycleDelivery(input.pool, input.config, claim, {
-        state: providerMessageRefHash ? 'provider_delivered' : 'sink_delivered',
+        state: providerMessageRefHash ? 'provider_accepted' : 'sink_delivered',
         now,
         providerMessageRefHash:
           providerMessageRefHash ?? destinationReference(`sink:${claim.delivery_key}`),
@@ -614,7 +614,7 @@ async function completeLifecycleDelivery(
   config: AppConfig,
   claim: ClaimedLifecycleDelivery,
   input: {
-    state: 'sink_delivered' | 'provider_delivered';
+    state: 'sink_delivered' | 'provider_accepted';
     now: Date;
     providerMessageRefHash: string;
   },
@@ -627,7 +627,7 @@ async function completeLifecycleDelivery(
              auth_tag = NULL,
              provider_message_ref_hash = $5,
              provider_accepted_at = CASE
-               WHEN $4 = 'provider_delivered' THEN $6::timestamptz
+               WHEN $4 = 'provider_accepted' THEN $6::timestamptz
                ELSE provider_accepted_at
              END,
              delivered_at = CASE

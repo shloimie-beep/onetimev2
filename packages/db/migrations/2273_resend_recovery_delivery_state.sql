@@ -26,6 +26,27 @@ ALTER TABLE onetime.account_lifecycle_delivery_outbox
   ));
 
 ALTER TABLE onetime.account_lifecycle_delivery_outbox
+  DROP CONSTRAINT IF EXISTS account_lifecycle_delivery_outbox_constraint_8;
+
+ALTER TABLE onetime.account_lifecycle_delivery_outbox
+  DROP CONSTRAINT IF EXISTS account_lifecycle_delivery_outbox_check;
+
+ALTER TABLE onetime.account_lifecycle_delivery_outbox
+  ADD CONSTRAINT account_lifecycle_delivery_outbox_payload_check
+  CHECK (
+    state IN (
+      'sink_delivered',
+      'provider_accepted',
+      'provider_delivered',
+      'dead_letter',
+      'superseded',
+      'expired',
+      'cleared'
+    )
+    OR (nonce IS NOT NULL AND ciphertext IS NOT NULL AND auth_tag IS NOT NULL)
+  );
+
+ALTER TABLE onetime.account_lifecycle_delivery_outbox
   ADD COLUMN provider_accepted_at timestamptz,
   ADD COLUMN final_delivery_state text
     CHECK (

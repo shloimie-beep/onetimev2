@@ -287,7 +287,7 @@ describe('OT-P1 Resend recovery', () => {
     expect(keys[0]).toBe(keys[1]);
     expect(keys[0]).toMatch(/^lifecycle\//);
     expect(await latestOutbox()).toMatchObject({
-      state: 'provider_delivered',
+      state: 'provider_accepted',
       nonce: null,
       ciphertext: null,
       auth_tag: null,
