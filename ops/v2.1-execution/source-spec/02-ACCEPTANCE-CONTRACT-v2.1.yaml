@@ -3,7 +3,7 @@ contract_id: ONE-TIME-PRODUCTION-ACCEPTANCE-V2.1
 specification_id: ONE-TIME-PRODUCTION-V2.1
 version: '2.1'
 status: normative_acceptance_contract
-effective_date: '2026-07-28'
+effective_date: '2026-08-09'
 baseline:
   repository: shloimie-beep/onetimev2
   pull_request: 130
@@ -11785,4 +11785,56 @@ requirements:
     - paid checkout before resolution
     evidence_profile: api_job_saga
     cleanup: reconcile every effect and clear only disposable operator-owned work
+    stop_condition: stop on unauthorized, wrong-provider, over-budget, or acceptance-unknown effect
+- id: OTV2-SIGNUP-244
+  area: SIGNUP
+  requirement: The public Family form exposes exactly one required unchecked Terms acceptance control; that acceptance
+    projects the adult communication-consent scopes named by the integrated Terms while suppression and withdrawal remain
+    authoritative and Student-specific consent is not granted.
+  spec_refs:
+  - 03-DECISION-REGISTER-v2.1.md
+  - 08-SCREEN-CATALOG-AND-DESIGN-SYSTEM-v2.1.md
+  - 09-WORKFLOW-NOTIFICATION-COPY-CATALOG-v2.1.md
+  - 10-PRIVACY-CONSENT-RETENTION-DATA-RIGHTS-v2.1.md
+  normative_status: required
+  verification_status: implemented_unverified
+  priority: launch_blocker
+  release_gate: true
+  owner_domain: public_signup
+  depends_on:
+  - OTV2-FOUNDATION-001
+  - OTV2-AUTH-007
+  - OTV2-SIGNUP-176
+  - OTV2-SIGNUP-177
+  acceptance_cases:
+  - case_id: OTV2-SIGNUP-244-UNIFIED-TERMS-CONSENT
+    kind: public_journey
+    environment: *id028
+    actors:
+    - parent
+    fixtures:
+    - parent_operator_canary
+    preconditions:
+    - the integrated Terms artifact and exact visible signup contract are candidate-bound
+    steps:
+    - open the Family form signed out at 360x800, 390x844, tablet, and desktop viewports
+    - inventory every visible checkbox and open the linked integrated Terms document
+    - submit once without acceptance and once after accepting the single Terms control
+    - inspect the request, durable consent projection, and suppression precedence
+    expected_results:
+    - exactly one visible checkbox exists, is unchecked and required, and reads “I agree to the Terms of Use.”
+    - no separate Privacy, general-marketing, or Parent-newsletter checkbox is visible
+    - the linked Terms incorporate the Privacy Notice, Student Data Notice, Cancellation and Refund Policy, service
+      communications, One Time updates, and Parent newsletter
+    - a missing or false projected scope is rejected; a valid acceptance records the adult scopes from one timestamp/source
+    - unsubscribe, DND, complaint, hard-bounce, and suppression state remain controlling
+    - WhatsApp and Student recording, recognition, public-display, and public-replay consent remain absent
+    forbidden_effects:
+    - prechecked consent
+    - more than one visible signup checkbox
+    - hidden bypass of Terms acceptance
+    - communication after a controlling suppression or withdrawal
+    - implied WhatsApp or Student-specific consent
+    evidence_profile: visual_accessibility
+    cleanup: remove only disposable operator-canary signup records and preserve redacted evidence
     stop_condition: stop on unauthorized, wrong-provider, over-budget, or acceptance-unknown effect
