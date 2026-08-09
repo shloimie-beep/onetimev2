@@ -494,10 +494,10 @@ async function createV21AdminSession(
         WHERE account.human_account_id = $2
           AND adult.adult_id = $3
           AND account.state = 'active'
-          AND account.security_version = $7
+          AND account.security_version = $6
           AND account.product_key = '${ONE_TIME_PRODUCT_SCOPE}'
-          AND account.runtime_tier = $5
-          AND account.verification_environment_id = $6
+          AND account.runtime_tier = $4
+          AND account.verification_environment_id = $5
      ),
      inserted AS (
        INSERT INTO onetime.v21_adult_sessions
@@ -506,7 +506,7 @@ async function createV21AdminSession(
           idle_expires_at, absolute_expires_at, product_key, runtime_tier,
           verification_environment_id, created_at, updated_at)
        SELECT $1, eligible.human_account_id, 'admin', NULL,
-              $8, $9, $7, 1, $10, $11, '${ONE_TIME_PRODUCT_SCOPE}', $5, $6, $12, $12
+              $7, $8, $6, 1, $9, $10, '${ONE_TIME_PRODUCT_SCOPE}', $4, $5, $11, $11
          FROM eligible
        ON CONFLICT (session_id) DO NOTHING
        RETURNING *
@@ -523,7 +523,6 @@ async function createV21AdminSession(
       input.sessionId,
       input.humanAccountId,
       input.adultId,
-      null,
       input.runtimeTier,
       input.verificationEnvironmentId,
       input.securityVersion,
@@ -606,23 +605,22 @@ async function resolveV21AdminSession(
         AND session.active_role = 'admin'
         AND session.active_household_id IS NULL
         AND session.product_key = '${ONE_TIME_PRODUCT_SCOPE}'
-        AND session.runtime_tier = $5
-        AND session.verification_environment_id = $6
-        AND session.security_version = $7
-        AND CASE $8::text
-              WHEN 'access' THEN session.access_token_digest = $9
-              WHEN 'refresh' THEN session.refresh_token_digest = $9
+        AND session.runtime_tier = $4
+        AND session.verification_environment_id = $5
+        AND session.security_version = $6
+        AND CASE $7::text
+              WHEN 'access' THEN session.access_token_digest = $8
+              WHEN 'refresh' THEN session.refresh_token_digest = $8
               ELSE false
             END
         AND session.revoked_at IS NULL
-        AND session.idle_expires_at > $10
-        AND session.absolute_expires_at > $10
+        AND session.idle_expires_at > $9
+        AND session.absolute_expires_at > $9
       LIMIT 1`,
     [
       input.sessionId,
       input.humanAccountId,
       input.adultId,
-      null,
       input.runtimeTier,
       input.verificationEnvironmentId,
       input.securityVersion,
@@ -903,24 +901,24 @@ async function revokeV21AdminSession(
           AND session.active_role = 'admin'
           AND session.active_household_id IS NULL
           AND session.product_key = '${ONE_TIME_PRODUCT_SCOPE}'
-          AND session.runtime_tier = $5
-          AND session.verification_environment_id = $6
-          AND session.security_version = $7
-          AND CASE $8::text
-                WHEN 'access' THEN session.access_token_digest = $9
-                WHEN 'refresh' THEN session.refresh_token_digest = $9
+          AND session.runtime_tier = $4
+          AND session.verification_environment_id = $5
+          AND session.security_version = $6
+          AND CASE $7::text
+                WHEN 'access' THEN session.access_token_digest = $8
+                WHEN 'refresh' THEN session.refresh_token_digest = $8
                 ELSE false
               END
           AND session.revoked_at IS NULL
-          AND session.idle_expires_at > $10
-          AND session.absolute_expires_at > $10
+          AND session.idle_expires_at > $9
+          AND session.absolute_expires_at > $9
         FOR UPDATE OF session
      )
      UPDATE onetime.v21_adult_sessions AS session
-        SET revoked_at = $10,
-            revoke_reason = $11,
+        SET revoked_at = $9,
+            revoke_reason = $10,
             version = session.version + 1,
-            updated_at = $10
+            updated_at = $9
        FROM eligible_session
       WHERE session.session_id = eligible_session.session_id
       RETURNING session.session_id`,
@@ -928,7 +926,6 @@ async function revokeV21AdminSession(
       input.sessionId,
       input.humanAccountId,
       input.adultId,
-      null,
       input.runtimeTier,
       input.verificationEnvironmentId,
       input.securityVersion,
