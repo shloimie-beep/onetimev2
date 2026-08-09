@@ -111,6 +111,7 @@ import {
   contentFactoryActionSchema,
   contentFactoryEditPayloadSchema,
   contentFactoryIntakeResponseSchema,
+  contentFactoryLocalImportPayloadSchema,
   contentFactoryMutationResponseSchema,
   contentFactoryWorkspaceResponseSchema,
   accomplishmentEventSchema,
@@ -196,6 +197,7 @@ import {
   getContentItemDetail,
   getContentFactoryPlayback,
   getContentFactoryWorkspace,
+  ingestContentFactoryItem,
   getContactDetail,
   getOt110aContentCreateWorkspace,
   getOt110aContentProcessingQueue,
@@ -4386,6 +4388,42 @@ export function createApp({
       }
       await contentFactoryJobNotifier?.(intake.intake_key);
       res.status(201).json(contentFactoryIntakeResponseSchema.parse({ success: true, intake }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/admin/content/factory/local-import', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    if (!isContentFactoryAdmin(session)) {
+      res
+        .status(403)
+        .json(publicError('FORBIDDEN', 'Owner or Admin access required.', req.traceId));
+      return;
+    }
+    try {
+      const payload = contentFactoryLocalImportPayloadSchema.parse(req.body);
+      const idempotencyKey = safeDecodedHeader(req.header('x-idempotency-key'));
+      if (idempotencyKey !== `local-media-${payload.item.sourceSha256}`) {
+        throw new ContentFactoryError('VALIDATION_ERROR', 'Exact source idempotency key required.');
+      }
+      await withTiming(req, 'db', () =>
+        ingestContentFactoryItem({ pool, config, item: payload.item }),
+      );
+      const item = await withTiming(req, 'db', () =>
+        editContentFactoryItem({
+          pool,
+          config,
+          sourceKey: payload.item.sourceKey,
+          actorUserKey: session.user.user_key,
+          actorRole: session.user.role,
+          payload: { occurrence_key: payload.occurrence_key },
+        }),
+      );
+      res.status(201).json(contentFactoryMutationResponseSchema.parse({ success: true, item }));
     } catch (error) {
       handleApiError(error, req, res);
     }

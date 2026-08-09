@@ -4,6 +4,7 @@ import { createReadStream, existsSync } from 'node:fs';
 import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { Readable } from 'node:stream';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import {
   LEARNING_DELIVERY_TRANSCRIPTION_VOCABULARY_PROMPT,
   buildLearningDeliveryFfmpegRenderPlan,
@@ -39,7 +40,7 @@ type CanaryArgs = {
   allowVimeoUpload: boolean;
 };
 
-type VimeoResult =
+export type VimeoResult =
   | {
       status: 'ready';
       privacy: 'private' | 'unlisted' | 'password' | 'review_required';
@@ -313,36 +314,44 @@ async function main() {
     )}\n`,
     'utf8',
   );
+  const sourceStat = await stat(canarySourcePath);
+  const preparedImport = {
+    sourceKey,
+    sourceKind: 'local_drop' as const,
+    sourceRefDigest: learningDeliverySha256Hex(
+      `local_drop\0${sourceSha256}\0${stagedInput.sourceRefDigest}`,
+    ),
+    sourceSha256,
+    displayName: stagedInput.displayName,
+    mimeType: stagedInput.mimeType,
+    byteLength: sourceStat.size,
+    originalDurationMs: probe.duration_ms,
+    preparedDurationMs: preparedProbe.duration_ms,
+    trimStartMs: trim.start_ms,
+    trimEndMs: trim.end_ms,
+    removedStartMs: trim.removed_start_ms ?? trim.start_ms,
+    removedEndMs: trim.removed_end_ms ?? Math.max(0, probe.duration_ms - trim.end_ms),
+    trimConfidence: trim.confidence ?? 0,
+    transcriptSegments: artifact.segments,
+    normalizedTranscript,
+    transcriptSha256: learningDeliverySha256Hex(normalizedTranscript),
+    webvtt: artifact.webvtt,
+    webvttSha256: artifact.webvtt_sha256,
+    transcriptionModel: artifact.provider_model_version,
+    transcriptionLanguage: artifact.language,
+    draft: metadataDraft,
+  };
+  await writeFile(
+    path.join(args.outDir, 'content-factory-prepared.private.json'),
+    `${JSON.stringify(preparedImport, null, 2)}\n`,
+    { encoding: 'utf8', mode: 0o600 },
+  );
   if (vimeo.status === 'ready') {
-    const sourceStat = await stat(canarySourcePath);
     await writeFile(
       path.join(args.outDir, 'content-factory-import.private.json'),
       `${JSON.stringify(
         {
-          sourceKey,
-          sourceKind: 'local_drop',
-          sourceRefDigest: learningDeliverySha256Hex(
-            `local_drop\0${sourceSha256}\0${stagedInput.sourceRefDigest}`,
-          ),
-          sourceSha256,
-          displayName: stagedInput.displayName,
-          mimeType: stagedInput.mimeType,
-          byteLength: sourceStat.size,
-          originalDurationMs: probe.duration_ms,
-          preparedDurationMs: preparedProbe.duration_ms,
-          trimStartMs: trim.start_ms,
-          trimEndMs: trim.end_ms,
-          removedStartMs: trim.removed_start_ms ?? trim.start_ms,
-          removedEndMs: trim.removed_end_ms ?? Math.max(0, probe.duration_ms - trim.end_ms),
-          trimConfidence: trim.confidence ?? 0,
-          transcriptSegments: artifact.segments,
-          normalizedTranscript,
-          transcriptSha256: learningDeliverySha256Hex(normalizedTranscript),
-          webvtt: artifact.webvtt,
-          webvttSha256: artifact.webvtt_sha256,
-          transcriptionModel: artifact.provider_model_version,
-          transcriptionLanguage: artifact.language,
-          draft: metadataDraft,
+          ...preparedImport,
           providerVideoId: vimeo.providerVideoId,
           providerEmbedUrl: vimeo.providerEmbedUrl,
           providerTextTrackId: vimeo.providerTextTrackId,
@@ -524,7 +533,7 @@ async function transcribeAudio(audioPath: string) {
   });
 }
 
-async function uploadPreparedVideoToVimeo(input: {
+export async function uploadPreparedVideoToVimeo(input: {
   videoPath: string;
   webvtt: string;
   language: string;
@@ -545,7 +554,13 @@ async function uploadPreparedVideoToVimeo(input: {
       body: JSON.stringify({
         upload: { approach: 'tus', size: videoStat.size },
         name: input.title,
-        privacy: { view: 'nobody' },
+        privacy: {
+          view: 'nobody',
+          embed: 'whitelist',
+          download: false,
+          add: false,
+          comments: 'nobody',
+        },
       }),
     });
     const upload = asRecord(created.upload);
@@ -553,6 +568,16 @@ async function uploadPreparedVideoToVimeo(input: {
     const providerVideoId = extractVimeoVideoId(created.uri) ?? extractVimeoVideoId(created.link);
     if (!uploadLink || !providerVideoId) {
       return blockedVimeo('vimeo_upload_ticket_missing');
+    }
+    for (const domain of configuredVimeoEmbedDomains()) {
+      const allowlisted = await vimeoApi(
+        token,
+        `/videos/${providerVideoId}/privacy/domains/${encodeURIComponent(domain)}`,
+        { method: 'PUT' },
+      );
+      if (!allowlisted.ok && allowlisted.status !== 204) {
+        return blockedVimeo(`vimeo_embed_domain_${allowlisted.status}`);
+      }
     }
     const tus = await fetch(uploadLink, {
       method: 'PATCH',
@@ -793,6 +818,22 @@ function normalizeVimeoLanguage(language: string) {
   return /^[a-z]{2,3}$/.test(normalized) ? normalized : 'en';
 }
 
+function configuredVimeoEmbedDomains() {
+  const configured = (process.env.ONETIME_MEDIA_VIMEO_ALLOWED_EMBED_DOMAINS ?? '')
+    .split(',')
+    .map((value) => value.trim().toLowerCase())
+    .filter((value) => /^[a-z0-9.-]+$/.test(value));
+  try {
+    const appHost = new URL(
+      process.env.ONETIME_MEDIA_APP_BASE_URL ?? 'https://onetime.sh',
+    ).hostname.toLowerCase();
+    configured.push(appHost);
+  } catch {
+    throw new Error('vimeo_embed_app_base_url_invalid');
+  }
+  return [...new Set(configured)];
+}
+
 function privacyFromVimeo(video: Record<string, unknown>) {
   const view = String(asRecord(video.privacy).view ?? '');
   if (view === 'nobody' || view === 'disable') return 'private' as const;
@@ -938,7 +979,9 @@ function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-void main().catch((error) => {
-  process.stderr.write(`${sanitizeProviderError(error)}\n`);
-  process.exit(1);
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  void main().catch((error) => {
+    process.stderr.write(`${sanitizeProviderError(error)}\n`);
+    process.exit(1);
+  });
+}

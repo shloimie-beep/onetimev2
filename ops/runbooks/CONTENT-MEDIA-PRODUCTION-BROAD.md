@@ -2,6 +2,57 @@
 
 This runbook governs repeatable production media intake, processing, and private publication. It does not authorize activation. Keep `ONE_TIME_CONTENT_MEDIA_MODE=off` until a separate production change is approved and every preflight item below is satisfied.
 
+## Launch profile: local Windows processing (2026-08-09)
+
+The approved launch path no longer provisions AWS, S3, or KMS. The production Railway media mode remains `off`. The launch workflow is:
+
+```text
+existing Drive connector intake folder
+  -> Google Drive for desktop sync
+  -> Windows local runner
+  -> local FFmpeg/ffprobe
+  -> 16 kHz mono compressed audio only to OpenAI
+  -> verified private Drive archive copy
+  -> restricted private Vimeo upload and captions
+  -> authenticated Owner/Admin local-import endpoint
+  -> human review, approval, and publication
+```
+
+The canonical cloud intake is the already-existing `One Time Content Library Upload Drop - Connector (Empty) / Class Videos (Empty)` folder. Do not create or silently select another folder with a similar name. `ONETIME_MEDIA_INCOMING_DIR` must be the local Google Drive for desktop path that syncs that exact folder; validate it with one known file before installing the scheduled task.
+
+Use the following commands:
+
+```text
+npm run media:local-runner
+npm run media:local-runner:start
+npm run media:local-runner:stop
+npm run media:local-runner:status
+npm run media:local-runner:install
+npm run media:local-runner:uninstall
+npm run media:local-runner:retry -- --job=<job-id>
+```
+
+The local runner keeps its durable SQLite ledger under `ONETIME_MEDIA_STATE_DIR`, requires unchanged size and mtime for 60 seconds plus a write-lock and ffprobe check, deduplicates on source SHA-256, and never alters the incoming original. Interrupted Vimeo work becomes `unknown_provider_effect` and requires reconciliation before any retry. Drive archive writes use a `.partial` suffix and become visible under the final name only after byte-length, SHA-256, and ffprobe checks pass.
+
+Required local configuration:
+
+```text
+ONETIME_MEDIA_INCOMING_DIR=<local path synced from the exact existing connector intake>
+ONETIME_MEDIA_PROCESSING_DIR=C:\OneTimeMedia\Processing
+ONETIME_MEDIA_COMPLETE_DIR=C:\OneTimeMedia\Complete
+ONETIME_MEDIA_FAILED_DIR=C:\OneTimeMedia\Failed
+ONETIME_MEDIA_STATE_DIR=C:\OneTimeMedia\State
+ONETIME_MEDIA_DRIVE_ARCHIVE_DIR=<private local Drive archive path>
+ONETIME_MEDIA_TRANSCRIPTION_MODE=openai
+ONETIME_MEDIA_LOCAL_RETENTION_DAYS=7
+ONETIME_MEDIA_VIMEO_PROJECT_REF=<restricted project reference when used>
+ONETIME_MEDIA_APP_BASE_URL=https://onetime.sh
+```
+
+The runner may import only through `/api/v1/admin/content/factory/local-import`, with an active Owner/Admin session, CSRF proof, the exact source-derived idempotency key, and an explicit class occurrence. No permanent `DATABASE_URL` belongs on the laptop. If zero or multiple occurrences are eligible, the job must remain `needs_occurrence_selection`; it must never guess.
+
+The AWS/S3/KMS sections below are retained as historical production-broad design context only. They are not launch prerequisites and do not authorize AWS provisioning.
+
 ## Immutable boundaries
 
 - `provider_canary` remains limited to `ONE_TIME_VERIFICATION_ENVIRONMENT_ID=production_operator_canary` and one exact `ONE_TIME_CONTENT_CANARY_ID`.

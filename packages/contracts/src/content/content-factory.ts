@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { learningDeliveryTranscriptSegmentSchema } from './learning-delivery.ts';
 
 const idSchema = z
   .string()
@@ -190,6 +191,49 @@ export const contentFactoryEditPayloadSchema = z
   })
   .strict();
 export type ContentFactoryEditPayload = z.infer<typeof contentFactoryEditPayloadSchema>;
+
+export const contentFactoryLocalImportPayloadSchema = z
+  .object({
+    occurrence_key: idSchema,
+    item: z
+      .object({
+        sourceKey: idSchema,
+        sourceKind: z.literal('local_drop'),
+        sourceRefDigest: sha256Schema,
+        sourceSha256: sha256Schema,
+        displayName: z.string().trim().min(1).max(240),
+        mimeType: z.string().trim().min(1).max(120),
+        byteLength: z.number().int().positive(),
+        originalDurationMs: z.number().int().positive(),
+        preparedDurationMs: z.number().int().positive(),
+        trimStartMs: z.number().int().min(0),
+        trimEndMs: z.number().int().positive(),
+        removedStartMs: z.number().int().min(0),
+        removedEndMs: z.number().int().min(0),
+        trimConfidence: z.number().min(0).max(1),
+        transcriptSegments: z.array(learningDeliveryTranscriptSegmentSchema).min(1).max(20_000),
+        normalizedTranscript: normalizedTranscriptSchema,
+        transcriptSha256: sha256Schema,
+        webvtt: z.string().trim().min(6).max(2_000_000),
+        webvttSha256: sha256Schema,
+        transcriptionModel: z.string().trim().min(1).max(120),
+        transcriptionLanguage: z.string().trim().min(1).max(24),
+        draft: contentFactoryDraftSchema,
+        providerVideoId: z.string().trim().min(1).max(180),
+        providerEmbedUrl: z
+          .string()
+          .url()
+          .refine((value) => value.startsWith('https://player.vimeo.com/')),
+        providerTextTrackId: z.string().trim().min(1).max(180),
+        vimeoPrivacy: z.enum(['private', 'unlisted', 'password']),
+        captionsActive: z.literal(true),
+      })
+      .strict(),
+  })
+  .strict();
+export type ContentFactoryLocalImportPayload = z.infer<
+  typeof contentFactoryLocalImportPayloadSchema
+>;
 
 export const contentFactoryActionSchema = z.enum(['approve', 'publish', 'unpublish', 'retry']);
 export type ContentFactoryAction = z.infer<typeof contentFactoryActionSchema>;
