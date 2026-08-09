@@ -16,6 +16,7 @@
 - The legacy bridge contains one active Admin row for the same operator. No duplicate identity, account, membership, household, or legacy bridge row was found.
 - The deployed authentication source before this repair matched the integration branch for the inspected authentication files.
 - The production password login succeeded, the v2.1 session bootstrap succeeded, and `/select-role` rendered. The first role-switch request returned 503, revoked the working session with `role_context_switch`, and the retry returned 401. No Admin or Parent application route was subsequently reached.
+- The operator reproduced the unchanged production failure at 2026-08-09 08:41:10Z/08:41:12Z: the role-switch endpoint again returned 503 followed by 401 before PR #147 was integrated or deployed.
 - The latest password-reset request was accepted but remained sink-queued; real delivery is owned by the OT-P1 provider lane.
 
 ### Operator-changed or separately owned facts
