@@ -29,7 +29,7 @@ The unresolved application delta was implemented:
 
 ## OT-01 dependency evidence
 
-OT-P3 reported a saved Draft workflow and successful reopen readback for the exact workflow ID. The approved subject, preheader, body/signature, and production login link persisted. Exactly one operator-owned seed was enrolled from the workflow test page at `2026-08-09 11:32 IDT`; its history finished with one Email action executed and the workflow ending one second later. After that seed proof, both `Allow re-entry` and `Allow multiple opportunities` were disabled, saved, and verified off on reopen. No broad or live enrollment was enabled. Provider execution identifiers and recipient details are intentionally omitted from this sanitized result.
+OT-P3 reported a saved Draft workflow and successful reopen readback for the exact workflow ID. The approved subject, preheader, body/signature, and production login link persisted. Exactly one operator-owned seed was enrolled from the workflow test page at `2026-08-09 11:32 IDT`; its history finished with one Email action executed and the workflow ending one second later. After that seed proof, both `Allow re-entry` and `Allow multiple opportunities` were disabled, saved, and verified off on reopen. Final readback verified the Draft workflow in `00 - Intake & Data` with the exact visible name `OT-01 Family Account Confirmation` and the persisted sender `Rabbi Eli Scheller <rabbielischeller@onetimeonetime.com>`. No repeat seed or broad/live enrollment was enabled. Provider execution identifiers and recipient details are intentionally omitted from this sanitized result.
 
 This evidence permits one bounded operator-owned Family signup canary only. It does not approve general enrollment.
 
@@ -48,10 +48,7 @@ The focused coverage includes existing-adult matching, exact workflow routing, a
 
 P4 made no live GHL UI change, no Railway variable change, no deployment, and no provider call. The runner remains disabled and no Family live-write intent was selected. The controller has authorized the bounded canary stage only after this child PR is reviewed and merged and the exact resulting integration head is deployed by OT-CTRL. Direct deployment of the child branch is prohibited.
 
-Known non-gating GHL deltas remain open and are not approval for general enrollment:
-
-- visible workflow name remains `OT-01 New Lead Intake` rather than the requested launch name;
-- the sending header forces `One Time Mishnayos` rather than the requested Rabbi sender identity.
+No known OT-01 workflow naming, sender-identity, re-entry, or multiple-opportunity setting delta remains in this lane. That final readback does not approve general enrollment.
 
 ## Rollback and resumption
 
