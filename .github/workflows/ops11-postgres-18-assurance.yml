@@ -60,6 +60,23 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Run native dual-role owner Admin-session proof
+        env:
+          OT_P0_NATIVE_POSTGRES_DISPOSABLE: 'true'
+          PGHOST: 127.0.0.1
+          PGPORT: 5432
+          PGDATABASE: postgres
+          PGUSER: postgres
+          PGPASSWORD: postgres
+        run: |
+          createdb ot_p0_owner_session
+          trap 'dropdb --if-exists ot_p0_owner_session' EXIT
+          printf -v OT_P0_NATIVE_DATABASE_URL '%s://%s:%s@%s:%s/%s' \
+            postgresql "$PGUSER" "$PGPASSWORD" "$PGHOST" "$PGPORT" ot_p0_owner_session
+          export OT_P0_NATIVE_DATABASE_URL
+          npx vitest run --config vitest.integration.config.ts \
+            tests/integration/accounts/v21-owner-admin-session.postgres.test.ts
+
       - name: Run candidate-bound PostgreSQL 18.4 proof
         if: github.event_name == 'workflow_dispatch'
         env:
