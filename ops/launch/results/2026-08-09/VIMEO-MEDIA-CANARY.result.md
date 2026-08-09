@@ -162,6 +162,12 @@ reconciling the generator's delayed readback were both deleted immediately. Exac
 same three pre-existing token rows and zero new tokens. No Vimeo video, upload, webhook, privacy
 change, or publication effect occurred.
 
+The approved pre-existing Vimeo credential was then read back once through `/me` and returned the
+expected authenticated owner identity. Its bearer and exact account binding were written directly
+to protected Railway configuration on both `one-time-web` and `one-time-delivery-cron`, again with
+deploys suppressed. No credential value or raw account identifier was written to source, evidence,
+logs, or chat.
+
 AWS remains the only provider sign-in/provisioning delta: no AWS account was entered and no S3,
 KMS, IAM, bucket, object, or credential effect occurred. No provider-registry row has been written
 yet because the three-way proof tuple is intentionally held until the AWS identity and storage
@@ -178,9 +184,8 @@ Protected production deployment identity at this checkpoint:
 Neither deployment was triggered or replaced by this provider change. Media mode remains `off`;
 no canary ID, upload, processing, publication, entitlement, playback, or customer-visible effect
 exists. The unresolved delta is limited to AWS account selection plus S3/KMS/IAM provisioning,
-binding the approved existing Vimeo credential and all three governed proof tuples, applying the
-three registry rows, obtaining the fresh operator recording, and executing the one bounded canary
-with cleanup.
+binding all three governed proof tuples, applying the three registry rows, obtaining the fresh
+operator recording, and executing the one bounded canary with cleanup.
 
 ## Safe continuation
 
