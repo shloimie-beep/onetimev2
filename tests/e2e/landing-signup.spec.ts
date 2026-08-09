@@ -230,10 +230,8 @@ test('Family submission uses the canonical bootstrap and exact cardless adult pa
   await page.getByLabel('Adult account email').fill('family@example.test');
   await page.getByLabel('Password', { exact: true }).fill('StrongPassword!234');
   await page.getByLabel('Confirm password').fill('StrongPassword!234');
-  await page.getByLabel(/I agree to the Terms/).check();
-  await page.getByLabel(/I acknowledge the Privacy Notice/).check();
-  await expect(page.getByLabel('General marketing')).not.toBeChecked();
-  await expect(page.getByLabel('Parent newsletter')).not.toBeChecked();
+  await expect(page.locator('[data-signup-form] input[type="checkbox"]')).toHaveCount(1);
+  await page.getByLabel(/I agree to the Terms of Use/).check();
   await page.getByRole('button', { name: 'Create your Family account' }).click();
 
   await expect(page).toHaveURL(/\/signup\/received\?state=session_pending&email=pending$/u);
@@ -259,8 +257,8 @@ test('Family submission uses the canonical bootstrap and exact cardless adult pa
     timezone: expect.any(String),
     terms_accepted: true,
     privacy_accepted: true,
-    general_marketing_consent: false,
-    parent_newsletter_consent: false,
+    general_marketing_consent: true,
+    parent_newsletter_consent: true,
   });
   const serialized = JSON.stringify(observedPayload);
   expect(serialized).not.toMatch(/student|phone|whatsapp|card|payment_method/i);
@@ -643,7 +641,6 @@ async function completeFamilySignupForm(page: Page, email: string) {
   await page.getByLabel('Adult account email').fill(email);
   await page.getByLabel('Password', { exact: true }).fill('StrongPassword!234');
   await page.getByLabel('Confirm password').fill('StrongPassword!234');
-  await page.getByLabel(/I agree to the Terms/).check();
-  await page.getByLabel(/I acknowledge the Privacy Notice/).check();
+  await page.getByLabel(/I agree to the Terms of Use/).check();
   await page.getByRole('button', { name: 'Create your Family account' }).click();
 }
