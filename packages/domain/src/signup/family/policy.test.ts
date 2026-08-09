@@ -343,13 +343,6 @@ describe('P08 family signup policy', () => {
     });
     changedName.existing_request = retry.existing_request;
     expect(() => planFamilySignup(changedName)).toThrow('idempotency_conflict');
-    const changedConsent = input('2026-09-11T00:00:00.000Z', {
-      ...command(),
-      general_marketing_consent: true,
-    });
-    changedConsent.existing_request = retry.existing_request;
-    expect(() => planFamilySignup(changedConsent)).toThrow('idempotency_conflict');
-
     const crossScope = input('2026-09-11T00:00:00.000Z');
     crossScope.scope = {
       product: 'one_time_mishnayos',
@@ -377,6 +370,18 @@ describe('P08 family signup policy', () => {
         password_confirmation: 'different secure password',
       }),
     ).toThrow('invalid_password');
+    expect(() =>
+      input('2026-09-11T00:00:00.000Z', {
+        ...command(),
+        general_marketing_consent: false,
+      }),
+    ).toThrow('invalid_family_signup');
+    expect(() =>
+      input('2026-09-11T00:00:00.000Z', {
+        ...command(),
+        parent_newsletter_consent: false,
+      }),
+    ).toThrow('invalid_family_signup');
     const missingConsent = command() as Partial<FamilySignupCommand>;
     delete missingConsent.parent_newsletter_consent;
     expect(() => input('2026-09-11T00:00:00.000Z', missingConsent as FamilySignupCommand)).toThrow(
