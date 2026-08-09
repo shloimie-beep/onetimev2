@@ -1,7 +1,7 @@
 # Zoom embedded canary — operator handoff
 
-Date: 2026-08-09  
-Branch: `codex/ot-p2-zoom-canary-20260809`  
+Date: 2026-08-09
+Branch: `codex/ot-p2-zoom-canary-20260809`
 Status: in progress; no Zoom meeting has been created yet
 
 ## Preserved facts
@@ -37,6 +37,16 @@ Status: in progress; no Zoom meeting has been created yet
 - GHL Student contacts created or modified: **0**.
 - Customer notifications sent: **0**.
 - Secrets recorded in this handoff: **0**.
+
+## Merge/deploy readiness
+
+- PR #143 was finally rebased without conflicts from integration head `9acd6903af359352a5057129493316d0ebf99e43` onto owner-login-green integration head `9c54591ce11b133eb773ccbd9c5e7003c515f782`.
+- The final integration delta did not modify any of PR #143's three files, so no conflict-resolution judgment or scope expansion was required.
+- The only newly derived fixture was `tests/integration/accounts/v21-owner-admin-session.postgres.test.ts`, matching the integrated live-console/Zoom-host shell resolver change. It collected as one test and safely skipped locally because no isolated PostgreSQL harness was enabled; exact-head hosted PostgreSQL and CI validation is required.
+- Focused local validation after the final rebase passed: **13 unit files / 195 tests**, **4 Zoom integration files / 25 tests**, TypeScript type checking, and Git diff whitespace validation.
+- The rebased branch has not been deployed. Production remains on the controller-owned release with `ZOOM_CLASSROOM_CANARY_ENABLED=false`.
+- Admin/account, access projection, enrollment, Student credential, Zoom provider, and customer-notification mutations performed by this rebase: **0**.
+- The owner-login journey is green. PR #143 remains draft until the controller authorizes merge/deploy and a separate bounded canary path.
 
 ## Remaining delta
 
