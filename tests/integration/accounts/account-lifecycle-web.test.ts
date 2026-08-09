@@ -268,6 +268,8 @@ describe('OPS-03B email step-up account lifecycle web flow', () => {
     expect(existing.response.status).toBe(200);
     expect(missing.response.status).toBe(200);
     expect(existing.json.message).toBe(missing.json.message);
+    expect(JSON.stringify(existing.json)).not.toMatch(/token|reset-password#|cookie|password/i);
+    expect(JSON.stringify(missing.json)).not.toMatch(/token|reset-password#|cookie|password/i);
 
     const resetToken = await latestPasswordResetToken();
     const resetPage = await getCsrf('/reset-password');

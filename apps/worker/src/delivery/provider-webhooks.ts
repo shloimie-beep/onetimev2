@@ -94,19 +94,25 @@ export function normalizeResendWebhookEvent(input: {
   rawBody: Buffer;
   headers: ResendSvixHeaders;
   webhookSecret: string;
+  environment?: 'test' | 'staging' | 'production' | undefined;
   now?: Date | undefined;
   toleranceSeconds?: number | undefined;
 }) {
   verifyResendSvixSignature(input);
   const payload = JSON.parse(input.rawBody.toString('utf8')) as Record<string, unknown>;
+  const data = objectValue(payload.data);
   const eventType = stringValue(payload.type) ?? 'unknown';
-  const providerEventRef = stringValue(payload.id) ?? stringValue(payload.message_id) ?? eventType;
-  const messageRef = stringValue(payload.message_id);
+  const messageRef = stringValue(data?.email_id) ?? stringValue(payload.message_id);
+  const providerEventRef =
+    input.headers.id ??
+    stringValue(payload.id) ??
+    ([messageRef, eventType, stringValue(payload.created_at)].filter(Boolean).join(':') ||
+      eventType);
   return buildProviderEventRecord({
     accountKey: input.accountKey,
     productKey: input.productKey,
     provider: 'resend',
-    environment: 'staging',
+    environment: input.environment ?? 'staging',
     providerEventRef,
     eventType,
     canonicalState: normalizeResendEventState(eventType),
@@ -114,7 +120,7 @@ export function normalizeResendWebhookEvent(input: {
     objectRefs: {
       ...(input.headers.id ? { svix_message_ref_hash: redactedRefHash(input.headers.id) } : {}),
       ...(messageRef ? { message_ref_hash: redactedRefHash(messageRef) } : {}),
-      message_ref_hash_present: Boolean(payload.message_id),
+      message_ref_hash_present: Boolean(messageRef),
       svix_message_ref_hash_present: Boolean(input.headers.id),
     },
     minimizedPayload: {
@@ -132,6 +138,7 @@ export function verifyAndNormalizeResendWebhookEvent(input: {
   contentType?: string | undefined;
   headers: ResendSvixHeaders;
   webhookSecret: string;
+  environment?: 'test' | 'staging' | 'production' | undefined;
   ledger?: ProviderWebhookLedger | undefined;
   now?: Date | undefined;
   maxBytes?: number | undefined;
@@ -148,17 +155,22 @@ export function verifyAndNormalizeResendWebhookEvent(input: {
     rawBody,
     headers: input.headers,
     webhookSecret: input.webhookSecret,
+    environment: input.environment,
     now: input.now,
   });
   const payload = JSON.parse(rawBody.toString('utf8')) as Record<string, unknown>;
+  const data = objectValue(payload.data);
   const disposition =
     input.ledger?.record({
       provider: 'resend',
       svixId: input.headers.id ?? '',
       providerEventRef:
-        stringValue(payload.id) ?? stringValue(payload.message_id) ?? record.event_type,
+        input.headers.id ??
+        stringValue(payload.id) ??
+        stringValue(data?.email_id) ??
+        record.event_type,
       rawBodyDigest: sha256Hex(rawBody),
-      orderingKey: stringValue(payload.message_id),
+      orderingKey: stringValue(data?.email_id) ?? stringValue(payload.message_id),
       providerCreatedAt: stringValue(payload.created_at) ?? null,
     }) ?? 'accepted';
 
@@ -285,6 +297,12 @@ export function signResendSvixFixture(input: {
 
 function stringValue(value: unknown): string | undefined {
   return typeof value === 'string' && value.trim() ? value.trim() : undefined;
+}
+
+function objectValue(value: unknown): Record<string, unknown> | undefined {
+  return value && typeof value === 'object' && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : undefined;
 }
 
 function svixSecretBytes(secret: string) {

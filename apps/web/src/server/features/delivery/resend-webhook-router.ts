@@ -1,6 +1,10 @@
 import express, { type Request, type Response } from 'express';
 import type { AppConfig } from '../../../../../../packages/config/src/index.ts';
-import type { DbPool } from '../../../../../../packages/db/src/index.ts';
+import {
+  inTransaction,
+  type DbPool,
+  type Queryable,
+} from '../../../../../../packages/db/src/index.ts';
 import type { ProviderEventRecord } from '../../../../../../packages/contracts/src/providers/events.ts';
 import {
   ProviderWebhookConformanceError,
@@ -43,6 +47,7 @@ export function createResendWebhookRouter(deps: ResendWebhookRouterDeps) {
           signature: req.header('svix-signature') ?? undefined,
         },
         webhookSecret: deps.config.resendWebhookSecret,
+        environment: providerEnvironment(deps.config),
         now: deps.clock?.(),
       });
       const disposition = await recordResendProviderEvent(deps.pool, normalized.record);
@@ -59,9 +64,22 @@ async function recordResendProviderEvent(
   pool: DbPool,
   record: ProviderEventRecord,
 ): Promise<WebhookDisposition> {
+  return inTransaction(pool, async (client) => {
+    const disposition = await recordResendProviderEventWithClient(client, record);
+    if (disposition !== 'digest_mismatch') {
+      await reconcileLifecycleDelivery(client, record);
+    }
+    return disposition;
+  });
+}
+
+async function recordResendProviderEventWithClient(
+  client: Queryable,
+  record: ProviderEventRecord,
+): Promise<WebhookDisposition> {
   const svixRefHash = stringObjectRef(record, 'svix_message_ref_hash');
   if (svixRefHash) {
-    const existingSvix = await pool.query(
+    const existingSvix = await client.query(
       `SELECT payload_digest
          FROM onetime.provider_event_ledger
         WHERE provider = $1
@@ -77,8 +95,8 @@ async function recordResendProviderEvent(
     }
   }
 
-  const outOfOrder = await isOutOfOrderProviderEvent(pool, record);
-  const inserted = await pool.query(
+  const outOfOrder = await isOutOfOrderProviderEvent(client, record);
+  const inserted = await client.query(
     `INSERT INTO onetime.provider_event_ledger
      (event_key, account_key, product_key, provider, environment, provider_event_ref_hash,
       event_type, canonical_state, provider_created_at, payload_digest, object_refs, minimized_payload)
@@ -102,7 +120,7 @@ async function recordResendProviderEvent(
   );
   if (inserted.rowCount) return outOfOrder ? 'out_of_order' : 'accepted';
 
-  const existingEvent = await pool.query(
+  const existingEvent = await client.query(
     `SELECT payload_digest
        FROM onetime.provider_event_ledger
       WHERE provider = $1
@@ -117,10 +135,73 @@ async function recordResendProviderEvent(
     : 'digest_mismatch';
 }
 
-async function isOutOfOrderProviderEvent(pool: DbPool, record: ProviderEventRecord) {
+async function reconcileLifecycleDelivery(client: Queryable, record: ProviderEventRecord) {
+  const messageRefHash = stringObjectRef(record, 'message_ref_hash');
+  if (!messageRefHash) return;
+  const state = lifecycleDeliveryState(record.canonical_state);
+  if (!state) return;
+  await client.query(
+    `UPDATE onetime.account_lifecycle_delivery_outbox
+        SET final_delivery_state = CASE
+              WHEN $4 = 'complained' THEN 'complained'
+              WHEN final_delivery_state = 'complained' THEN final_delivery_state
+              WHEN $4 IN ('bounced', 'failed') THEN $4
+              WHEN final_delivery_state IN ('bounced', 'failed') THEN final_delivery_state
+              WHEN $4 = 'delivered' THEN 'delivered'
+              WHEN final_delivery_state = 'delivered' THEN final_delivery_state
+              ELSE $4
+            END,
+            delivered_at = CASE
+              WHEN $4 = 'delivered' THEN COALESCE(delivered_at, $5::timestamptz)
+              ELSE delivered_at
+            END,
+            final_state_at = CASE
+              WHEN $4 IN ('delivered', 'bounced', 'complained', 'failed')
+                AND (final_state_at IS NULL OR final_state_at <= $5::timestamptz)
+                THEN $5::timestamptz
+              ELSE final_state_at
+            END,
+            last_provider_event_at = CASE
+              WHEN last_provider_event_at IS NULL OR last_provider_event_at <= $5::timestamptz
+                THEN $5::timestamptz
+              ELSE last_provider_event_at
+            END,
+            updated_at = CASE
+              WHEN updated_at <= $5::timestamptz THEN $5::timestamptz
+              ELSE updated_at
+            END
+      WHERE account_key = $1
+        AND product_key = $2
+        AND provider_message_ref_hash = $3
+        AND state IN (
+          'unknown', 'provider_accepted', 'provider_delivered'
+        )`,
+    [
+      record.account_key,
+      record.product_key,
+      messageRefHash,
+      state,
+      record.provider_created_at ?? new Date().toISOString(),
+    ],
+  );
+}
+
+function lifecycleDeliveryState(state: ProviderEventRecord['canonical_state']) {
+  if (
+    state === 'delivered' ||
+    state === 'bounced' ||
+    state === 'complained' ||
+    state === 'failed'
+  ) {
+    return state;
+  }
+  return undefined;
+}
+
+async function isOutOfOrderProviderEvent(client: Queryable, record: ProviderEventRecord) {
   const messageRefHash = stringObjectRef(record, 'message_ref_hash');
   if (!messageRefHash || !record.provider_created_at) return false;
-  const result = await pool.query(
+  const result = await client.query(
     `SELECT 1
        FROM onetime.provider_event_ledger
       WHERE provider = $1
@@ -131,6 +212,12 @@ async function isOutOfOrderProviderEvent(pool: DbPool, record: ProviderEventReco
     [record.provider, record.environment, messageRefHash, record.provider_created_at],
   );
   return Boolean(result.rowCount);
+}
+
+function providerEnvironment(config: AppConfig): 'test' | 'staging' | 'production' {
+  if (config.oneTimeRuntimeEnvironment === 'production') return 'production';
+  if (config.oneTimeRuntimeEnvironment === 'test') return 'test';
+  return 'staging';
 }
 
 function respond(res: Response, disposition: WebhookDisposition, requestId: string | undefined) {

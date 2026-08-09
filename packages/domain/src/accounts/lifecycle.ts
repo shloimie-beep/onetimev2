@@ -84,6 +84,7 @@ type TokenRecord = {
 };
 
 const TOKEN_TTL_MS = 24 * 60 * 60 * 1000;
+const ACTIVATION_TOKEN_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 const RESET_TOKEN_TTL_MS = 60 * 60 * 1000;
 const MAX_FREE_PILOT_MS = 366 * 24 * 60 * 60 * 1000;
 
@@ -152,6 +153,7 @@ export async function createOwnerAdminInvitation(
         requestHash: fingerprint(payload),
         actorUserKey: input.actor.userKey,
         now,
+        ttlMs: ACTIVATION_TOKEN_TTL_MS,
         includeLocalProofToken: input.includeLocalProofToken,
       }),
   });
@@ -251,6 +253,7 @@ export async function issueParentActivationWithClient(input: {
     requestHash: fingerprint(input.payload),
     actorUserKey: input.actor.userKey,
     now: input.now,
+    ttlMs: ACTIVATION_TOKEN_TTL_MS,
     includeLocalProofToken: input.includeLocalProofToken,
     metadata: input.payload.free_pilot
       ? {
@@ -1026,10 +1029,12 @@ async function issueAccountToken(
       input.now,
     ],
   );
+  const deliverByEmail = input.targetRole !== 'student';
   const delivery = await createDeliveryIntent(client, config, {
     tokenKey,
     tokenType: input.tokenType,
-    recipientEmail: input.emailNormalized,
+    recipientEmail: deliverByEmail ? input.emailNormalized : null,
+    deliveryState: deliverByEmail ? 'sink_queued' : 'suppressed',
     targetRole: input.targetRole,
     idempotencyKey: input.idempotencyKey,
     requestHash: input.requestHash,
@@ -1037,17 +1042,20 @@ async function issueAccountToken(
     householdKey: input.householdKey ?? null,
     learnerKey: input.learnerKey ?? null,
   });
-  const outbox = await createLifecycleDeliveryOutbox(client, config, {
-    token,
-    tokenKey,
-    intentKey: delivery.intent_key,
-    tokenType: input.tokenType,
-    recipientEmail: input.emailNormalized,
-    targetRole: input.targetRole,
-    idempotencyKey: input.idempotencyKey,
-    expiresAt,
-    now: input.now,
-  });
+  const outbox = deliverByEmail
+    ? await createLifecycleDeliveryOutbox(client, config, {
+        token,
+        tokenKey,
+        intentKey: delivery.intent_key,
+        tokenType: input.tokenType,
+        recipientEmail: input.emailNormalized,
+        displayName: input.displayName,
+        targetRole: input.targetRole,
+        idempotencyKey: input.idempotencyKey,
+        expiresAt,
+        now: input.now,
+      })
+    : null;
   await audit(client, config, {
     actionType: `${input.tokenType}_issued`,
     actorUserKey: input.actorUserKey,
@@ -1056,8 +1064,9 @@ async function issueAccountToken(
     metadata: {
       target_role: input.targetRole,
       token_ref: tokenRef(tokenKey),
-      lifecycle_delivery_ref: outbox.delivery_key,
-      destination_ref: outbox.destination_ref,
+      lifecycle_delivery_ref: outbox?.delivery_key ?? null,
+      destination_ref: outbox?.destination_ref ?? null,
+      student_email_suppressed: !deliverByEmail,
       subject_human_account_bound: Boolean(input.subjectHumanAccountId),
       raw_token_included: false,
       raw_url_included: false,
@@ -1181,6 +1190,7 @@ async function createDeliveryIntent(
     tokenKey: string;
     tokenType: AccountLifecycleTokenType;
     recipientEmail: string | null;
+    deliveryState: 'sink_queued' | 'suppressed';
     targetRole: string;
     idempotencyKey: string;
     requestHash: string;
@@ -1198,7 +1208,7 @@ async function createDeliveryIntent(
     `INSERT INTO onetime.account_lifecycle_delivery_intents
        (intent_key, account_key, product_key, token_key, intent_type, channel,
         recipient_email, delivery_state, idempotency_key, request_hash, payload, created_at)
-     VALUES ($1,$2,$3,$4,$5,'email',$6,'sink_queued',$7,$8,$9::jsonb,$10)`,
+      VALUES ($1,$2,$3,$4,$5,'email',$6,$7,$8,$9,$10::jsonb,$11)`,
     [
       intentKey,
       config.accountKey,
@@ -1206,6 +1216,7 @@ async function createDeliveryIntent(
       input.tokenKey,
       input.tokenType,
       input.recipientEmail,
+      input.deliveryState,
       input.idempotencyKey,
       input.requestHash,
       JSON.stringify({
@@ -1223,7 +1234,7 @@ async function createDeliveryIntent(
   );
   return {
     intent_key: intentKey,
-    delivery_state: 'sink_queued',
+    delivery_state: input.deliveryState,
     external_send_performed: false,
     raw_token_included: false,
   };

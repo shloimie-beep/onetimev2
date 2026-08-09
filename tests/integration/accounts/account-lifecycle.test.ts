@@ -89,7 +89,9 @@ describe('OT-71 account lifecycle', () => {
       },
     });
     expect(await serializedLifecycleRows()).not.toContain(token);
-    expect(new Date(issued.expires_at).getTime() - issuedAt.getTime()).toBe(24 * 60 * 60 * 1000);
+    expect(new Date(issued.expires_at).getTime() - issuedAt.getTime()).toBe(
+      7 * 24 * 60 * 60 * 1000,
+    );
 
     const queuedOutbox = await lifecycleDeliveryRows();
     expect(queuedOutbox).toHaveLength(1);
@@ -295,7 +297,7 @@ describe('OT-71 account lifecycle', () => {
 
     expect(summary).toMatchObject({
       claimed: 1,
-      provider_delivered: 1,
+      provider_accepted: 1,
       sink_delivered: 0,
       external_send_performed: true,
       raw_token_logged: false,
@@ -307,7 +309,7 @@ describe('OT-71 account lifecycle', () => {
       from: 'One Time <delivery@example.test>',
       to: ['canary@example.test'],
       reply_to: ['reply@example.test'],
-      subject: 'Activate your One Time account',
+      subject: 'Set up your One Time account',
     });
     expect(String(requests[0]?.body.text)).toContain('/activate#token=');
 
@@ -318,6 +320,207 @@ describe('OT-71 account lifecycle', () => {
       ciphertext: null,
       auth_tag: null,
     });
+  });
+
+  it('reconciles an unknown Resend result with the same provider idempotency key before retry', async () => {
+    const recoveryConfig = loadConfig({
+      NODE_ENV: 'test',
+      PUBLIC_BASE_URL: 'https://join.onetimeonetime.com',
+      APP_VERSION: 'test',
+      COMMIT_SHA: 'test',
+      OUTBOX_TRANSPORT_MODE: 'sink',
+      ONE_TIME_LIFECYCLE_EMAIL_MODE: 'canary',
+      ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED: 'true',
+      ONE_TIME_RESEND_TRANSPORT_ENABLED: 'true',
+      ONE_TIME_DELIVERY_TEST_CANARY_EMAIL: 'owner@example.test',
+      ONE_TIME_EMAIL_FROM: 'One Time <info@onetimeonetime.com>',
+      ONE_TIME_EMAIL_REPLY_TO: 'info@onetimeonetime.com',
+      RESEND_API_KEY: 'test_resend_key',
+    });
+    const requests: Array<{ body: Record<string, unknown>; idempotencyKey: string | null }> = [];
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (_url: string | URL | Request, init?: RequestInit) => {
+        const headers = new Headers(init?.headers);
+        requests.push({
+          body: JSON.parse(String(init?.body ?? '{}')) as Record<string, unknown>,
+          idempotencyKey: headers.get('idempotency-key'),
+        });
+        return requests.length === 1
+          ? new Response('{}', { status: 200, headers: { 'content-type': 'application/json' } })
+          : new Response(JSON.stringify({ id: 'email_provider_message_reconciled' }), {
+              status: 200,
+              headers: { 'content-type': 'application/json' },
+            });
+      }),
+    );
+
+    const issuedAt = new Date('2026-07-15T10:00:00.000Z');
+    const first = await requestPasswordReset({
+      pool,
+      config: recoveryConfig,
+      payload: { idempotency_key: 'password-reset-reconcile-001', email: 'owner@example.test' },
+      now: issuedAt,
+    });
+    const replay = await requestPasswordReset({
+      pool,
+      config: recoveryConfig,
+      payload: { idempotency_key: 'password-reset-reconcile-001', email: 'owner@example.test' },
+      now: new Date(issuedAt.getTime() + 1_000),
+    });
+    expect(replay).toEqual(first);
+    expect(
+      (await lifecycleDeliveryRows()).filter((row) => row.purpose === 'password_reset'),
+    ).toHaveLength(1);
+
+    const unknown = await runLifecycleDeliveryOutboxBatch({
+      pool,
+      config: recoveryConfig,
+      now: new Date('2026-07-15T10:01:00.000Z'),
+      workerId: 'resend-recovery-first-worker',
+    });
+    expect(unknown).toMatchObject({ claimed: 1, unknown: 1, provider_accepted: 0 });
+    expect((await lifecycleDeliveryRows())[0]).toMatchObject({ state: 'unknown' });
+
+    const reconciled = await runLifecycleDeliveryOutboxBatch({
+      pool,
+      config: recoveryConfig,
+      now: new Date('2026-07-15T10:03:00.000Z'),
+      workerId: 'resend-recovery-reconcile-worker',
+    });
+    expect(reconciled).toMatchObject({ claimed: 1, unknown: 0, provider_accepted: 1 });
+    expect(requests).toHaveLength(2);
+    expect(requests[0]?.idempotencyKey).toBe(requests[1]?.idempotencyKey);
+    expect(requests[0]?.idempotencyKey).toMatch(/^lifecycle\//);
+    expect(requests[0]?.body).toMatchObject({
+      from: 'One Time <info@onetimeonetime.com>',
+      reply_to: ['info@onetimeonetime.com'],
+      subject: 'Reset your One Time password',
+    });
+    expect(String(requests[0]?.body.text)).toContain(
+      'This link can be used once and expires in 60 minutes.',
+    );
+    expect(String(requests[0]?.body.text)).toContain(
+      'https://join.onetimeonetime.com/reset-password#token=',
+    );
+    expect((await lifecycleDeliveryRows())[0]).toMatchObject({
+      state: 'provider_delivered',
+      nonce: null,
+      ciphertext: null,
+      auth_tag: null,
+    });
+  });
+
+  it('leases one durable intent to only one worker and performs one provider acceptance', async () => {
+    const leaseConfig = loadConfig({
+      NODE_ENV: 'test',
+      PUBLIC_BASE_URL: 'https://join.onetimeonetime.com',
+      APP_VERSION: 'test',
+      COMMIT_SHA: 'test',
+      OUTBOX_TRANSPORT_MODE: 'sink',
+      ONE_TIME_LIFECYCLE_EMAIL_MODE: 'canary',
+      ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED: 'true',
+      ONE_TIME_RESEND_TRANSPORT_ENABLED: 'true',
+      ONE_TIME_DELIVERY_TEST_CANARY_EMAIL: 'lease@example.test',
+      ONE_TIME_EMAIL_FROM: 'One Time <info@onetimeonetime.com>',
+      ONE_TIME_EMAIL_REPLY_TO: 'info@onetimeonetime.com',
+      RESEND_API_KEY: 'test_resend_key',
+    });
+    let sends = 0;
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => {
+        sends += 1;
+        return new Response(JSON.stringify({ id: 'email_provider_message_lease' }), {
+          status: 200,
+          headers: { 'content-type': 'application/json' },
+        });
+      }),
+    );
+    await createOwnerAdminInvitation({
+      pool,
+      config: leaseConfig,
+      actor: ownerActor(),
+      payload: {
+        idempotency_key: 'invite-admin-lease-001',
+        email: 'lease@example.test',
+        display_name: 'Lease Admin',
+        role: 'admin',
+      },
+      now: new Date('2026-07-15T10:00:00.000Z'),
+    });
+    const summaries = await Promise.all([
+      runLifecycleDeliveryOutboxBatch({
+        pool,
+        config: leaseConfig,
+        now: new Date('2026-07-15T10:01:00.000Z'),
+        workerId: 'lease-worker-a',
+      }),
+      runLifecycleDeliveryOutboxBatch({
+        pool,
+        config: leaseConfig,
+        now: new Date('2026-07-15T10:01:00.000Z'),
+        workerId: 'lease-worker-b',
+      }),
+    ]);
+    expect(summaries.reduce((total, summary) => total + summary.claimed, 0)).toBe(1);
+    expect(sends).toBe(1);
+  });
+
+  it('retries a known local transport failure after the configured dependency is repaired', async () => {
+    const base = {
+      NODE_ENV: 'test' as const,
+      PUBLIC_BASE_URL: 'https://join.onetimeonetime.com',
+      APP_VERSION: 'test',
+      COMMIT_SHA: 'test',
+      OUTBOX_TRANSPORT_MODE: 'sink' as const,
+      ONE_TIME_LIFECYCLE_EMAIL_MODE: 'canary' as const,
+      ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED: 'true',
+      ONE_TIME_RESEND_TRANSPORT_ENABLED: 'true',
+      ONE_TIME_DELIVERY_TEST_CANARY_EMAIL: 'retry@example.test',
+      ONE_TIME_EMAIL_FROM: 'One Time <info@onetimeonetime.com>',
+      ONE_TIME_EMAIL_REPLY_TO: 'info@onetimeonetime.com',
+    };
+    const missingKeyConfig = loadConfig(base);
+    await createOwnerAdminInvitation({
+      pool,
+      config: missingKeyConfig,
+      actor: ownerActor(),
+      payload: {
+        idempotency_key: 'invite-admin-retry-001',
+        email: 'retry@example.test',
+        display_name: 'Retry Admin',
+        role: 'admin',
+      },
+      now: new Date('2026-07-15T10:00:00.000Z'),
+    });
+    const failed = await runLifecycleDeliveryOutboxBatch({
+      pool,
+      config: missingKeyConfig,
+      now: new Date('2026-07-15T10:01:00.000Z'),
+      workerId: 'retry-worker-first',
+    });
+    expect(failed).toMatchObject({ claimed: 1, retried: 1, unknown: 0 });
+    expect((await lifecycleDeliveryRows())[0]).toMatchObject({ state: 'retry' });
+
+    const repairedConfig = loadConfig({ ...base, RESEND_API_KEY: 'test_resend_key' });
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(
+        async () =>
+          new Response(JSON.stringify({ id: 'email_provider_message_retry' }), {
+            status: 200,
+            headers: { 'content-type': 'application/json' },
+          }),
+      ),
+    );
+    const repaired = await runLifecycleDeliveryOutboxBatch({
+      pool,
+      config: repairedConfig,
+      now: new Date('2026-07-15T10:03:00.000Z'),
+      workerId: 'retry-worker-repaired',
+    });
+    expect(repaired).toMatchObject({ claimed: 1, provider_accepted: 1 });
   });
 
   it('delivers transactional lifecycle email in production mode without the canary destination gate', async () => {
@@ -336,7 +539,7 @@ describe('OT-71 account lifecycle', () => {
       ONE_TIME_RESEND_TRANSPORT_ENABLED: 'true',
       ONE_TIME_RESEND_WEBHOOK_ENABLED: 'true',
       ONE_TIME_EMAIL_FROM: 'One Time <info@onetimeonetime.com>',
-      ONE_TIME_EMAIL_REPLY_TO: 'reply@example.test',
+      ONE_TIME_EMAIL_REPLY_TO: 'info@onetimeonetime.com',
       DELIVERY_PROVIDER_AUTHORIZATION_ID: 'auth_transactional_email_001',
       DELIVERY_PROVIDER_PER_RUN_BUDGET: '1',
       DELIVERY_PROVIDER_PER_PROVIDER_BUDGET: '1',
@@ -381,7 +584,7 @@ describe('OT-71 account lifecycle', () => {
 
     expect(summary).toMatchObject({
       claimed: 1,
-      provider_delivered: 1,
+      provider_accepted: 1,
       sink_delivered: 0,
       external_send_performed: true,
       raw_token_logged: false,
@@ -390,8 +593,8 @@ describe('OT-71 account lifecycle', () => {
     expect(requests[0]?.body).toMatchObject({
       from: 'One Time <info@onetimeonetime.com>',
       to: ['admin@example.test'],
-      reply_to: ['reply@example.test'],
-      subject: 'Activate your One Time account',
+      reply_to: ['info@onetimeonetime.com'],
+      subject: 'Set up your One Time account',
     });
     expect(String(requests[0]?.body.text)).toContain('/activate#token=');
 
@@ -655,6 +858,7 @@ describe('OT-71 account lifecycle', () => {
         learner_key: learnerKey,
       },
     });
+    expect(studentIssue.delivery.delivery_state).toBe('suppressed');
     const student = await acceptStudentSetup({
       pool,
       config,
@@ -723,6 +927,7 @@ describe('OT-71 account lifecycle', () => {
         learner_key: learnerKey,
       },
     });
+    expect(resetIssue.delivery.delivery_state).toBe('suppressed');
     const reset = await completeStudentReset({
       pool,
       config,
@@ -743,6 +948,12 @@ describe('OT-71 account lifecycle', () => {
       password: 'StudentPass!999',
     });
     expect(newPassword).toMatchObject({ ok: true });
+    const studentEmailOutbox = await pool.query(
+      `SELECT 1
+         FROM onetime.account_lifecycle_delivery_outbox
+        WHERE purpose IN ('student_setup', 'student_reset')`,
+    );
+    expect(studentEmailOutbox.rowCount).toBe(0);
     expect(await serializedLifecycleRows()).not.toMatch(/StudentPass|ParentPass|token_for_local/i);
   });
 
@@ -797,6 +1008,52 @@ describe('OT-71 account lifecycle', () => {
         payload: { token: resetIssue.token_for_local_proof, password: 'ParentPass!000' },
       }),
     ).rejects.toMatchObject({ code: 'TOKEN_CONSUMED' });
+  });
+
+  it('invalidates an older unused reset and expires the replacement after 60 minutes', async () => {
+    await createParentWithPassword('reset-supersede@example.test', 'ParentPass!234');
+    const first = await requestPasswordReset({
+      pool,
+      config,
+      includeLocalProofToken: true,
+      payload: {
+        idempotency_key: 'password-reset-supersede-001',
+        email: 'reset-supersede@example.test',
+      },
+      now: new Date('2026-07-15T10:00:00.000Z'),
+    });
+    const second = await requestPasswordReset({
+      pool,
+      config,
+      includeLocalProofToken: true,
+      payload: {
+        idempotency_key: 'password-reset-supersede-002',
+        email: 'reset-supersede@example.test',
+      },
+      now: new Date('2026-07-15T10:05:00.000Z'),
+    });
+    if (!('token_for_local_proof' in first) || !first.token_for_local_proof) {
+      throw new Error('Expected first password reset proof token.');
+    }
+    if (!('token_for_local_proof' in second) || !second.token_for_local_proof) {
+      throw new Error('Expected second password reset proof token.');
+    }
+    await expect(
+      completePasswordReset({
+        pool,
+        config,
+        payload: { token: first.token_for_local_proof, password: 'ParentPass!555' },
+        now: new Date('2026-07-15T10:10:00.000Z'),
+      }),
+    ).rejects.toMatchObject({ code: 'TOKEN_INVALID' });
+    await expect(
+      completePasswordReset({
+        pool,
+        config,
+        payload: { token: second.token_for_local_proof, password: 'ParentPass!666' },
+        now: new Date('2026-07-15T11:05:00.001Z'),
+      }),
+    ).rejects.toMatchObject({ code: 'TOKEN_EXPIRED' });
   });
 });
 
