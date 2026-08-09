@@ -1275,6 +1275,7 @@ async function seedSelfManagedStudentPrivacyProfile(relationship: 'self' | 'depe
 }
 
 async function insertOutstandingPrivacyLaunchGrant(grantId: string, digestCharacter: string) {
+  const issuedAt = new Date().toISOString();
   await pool.query(
     `INSERT INTO onetime.classroom_launch_grants_v21
        (grant_id, grant_key_digest, product, runtime_tier, verification_environment_id,
@@ -1283,8 +1284,8 @@ async function insertOutstandingPrivacyLaunchGrant(grantId: string, digestCharac
         consent_version_digest, registrant_version, occurrence_version, version)
      VALUES ($1, $2, 'one_time_mishnayos', 'isolated_staging', 'ci', 'learner_alpha',
              'household_alpha', 'privacy-session', 'privacy-occurrence', 'privacy-registrant',
-             now(), now() + interval '60 seconds', 1, 1, 1, $3, 1, 1, 1)`,
-    [grantId, digestCharacter.repeat(64), 'd'.repeat(64)],
+             $4::timestamptz, $4::timestamptz + interval '60 seconds', 1, 1, 1, $3, 1, 1, 1)`,
+    [grantId, digestCharacter.repeat(64), 'd'.repeat(64), issuedAt],
   );
 }
 
