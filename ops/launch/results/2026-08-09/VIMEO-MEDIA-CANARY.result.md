@@ -13,6 +13,27 @@ No upload session, S3 object, processing request, transcript, generated draft, a
 publication, Vimeo asset, entitlement, playback authorization, customer-visible item, webhook,
 or unpublish effect was created.
 
+## Delta-only basis
+
+The canonical prior proof is PR #136 and
+`ops/launch/results/2026-08-07/wave-1/VIMEO-FIRST-RECORDING-CANARY.result.md`.
+
+Preserved facts from that proof are: the earlier canary stopped before the mutation boundary and
+reconciled to zero effects; the protected OpenAI and Vimeo credentials were accepted read-only;
+and no governed AWS/S3/KMS tuple, exact OpenAI project binding, least-privilege Vimeo binding, or
+eligible new operator recording was available. Unknown provider acceptance remains
+reconciliation-only, and polling remains the safe first Vimeo readback path.
+
+Operator-changed facts since PR #136: **none that satisfy an S3, OpenAI, Vimeo, or recording
+gate**. The merged FFmpeg/ffprobe and explicit occurrence-selection changes resolve the previously
+identified code delta, but do not establish provider ownership, protected bindings, or recording
+provenance.
+
+The unresolved delta is therefore limited to the four protected operator actions listed below:
+bind the exact AWS storage tuple, prove the exact OpenAI project, issue and bind the
+least-privilege Vimeo credential, and supply one eligible new operator recording. Only after those
+readbacks may the single direct-upload canary begin.
+
 ## Candidate and production readback
 
 - Repository branch under test: `codex/ot-p5-vimeo-media-20260809`
