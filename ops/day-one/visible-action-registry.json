@@ -4,11 +4,11 @@
   "source_inputs": [
     {
       "path": "ops/v2.1-execution/source-spec/02-ACCEPTANCE-CONTRACT-v2.1.yaml",
-      "sha256": "5ba419467050fa78bc6a8b265bb6ce686fb4203e6dbf9fe94f484f29694d6a04"
+      "sha256": "8c3759066b58d2ae92000a287c4122e9c50c0df4b7b216e22496a9a307ab1a7f"
     },
     {
       "path": "ops/v2.1-execution/source-spec/03-DECISION-REGISTER-v2.1.md",
-      "sha256": "c3f2febe8f7c54b9c179b4b3e5aba04e6d246933a8e10b9356cef670d30cc029"
+      "sha256": "3800b0531a8b0469ef98d0981a6774c6b009c532bdc2c4bdd754e99c96d3f0a9"
     },
     {
       "path": "ops/v2.1-execution/source-spec/05-ACTOR-ROLE-CAPABILITY-ROUTE-MATRIX-v2.1.md",
@@ -16,7 +16,7 @@
     },
     {
       "path": "ops/v2.1-execution/source-spec/08-SCREEN-CATALOG-AND-DESIGN-SYSTEM-v2.1.md",
-      "sha256": "49f62be1f179bcfb2c1c577cb47b9fd32f2a935b00364c73be69815cdb0d9b8f"
+      "sha256": "8eccaacb2e775d4c39e9e4d56b77fe6cdb9e332658fbd7bc3c1d25d5d455d5f7"
     },
     {
       "path": "integrations/highlevel/registry/workflow-registry.yaml",
@@ -184,7 +184,7 @@
     },
     {
       "path": "apps/web/src/client/public/public-entry.ts",
-      "sha256": "5a20f0f4f84f2f257878ccdfccc47b311fe8ae52107947f099b62748758dcc73"
+      "sha256": "4082e253a7e80e6d0c05117d27953ed9def73da00d88e8d95fffe36c9338d502"
     },
     {
       "path": "apps/web/src/client/public/school/model.ts",
@@ -228,7 +228,7 @@
     },
     {
       "path": "scripts/build-public-pages.ts",
-      "sha256": "6d9097827cca9aeeb83a995c903d334514283d84b610349d58f8f704d2946679"
+      "sha256": "a2d1509c6c88ac3681712d0fd2d2ae5b42fd41c4d649c9988493747d76a96eff"
     },
     {
       "path": "scripts/highlevel/workflow-registry-source.ts",
@@ -248,7 +248,7 @@
     },
     {
       "path": "packages/domain/src/legal/content.ts",
-      "sha256": "1ee5c969ca64ef268011bc1797e9a40482273a31badf0498e79a75ebce52deaf"
+      "sha256": "4cd63a2d1d84968d1a305e93e4c56279ad331f69884aa34046911de22d0e05ed"
     },
     {
       "path": "packages/domain/src/privacy/redaction.ts",

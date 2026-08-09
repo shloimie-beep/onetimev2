@@ -330,14 +330,9 @@ function signupPage() {
           <div class="field"><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="new-password" minlength="12" required><p tabindex="-1" class="error" data-error-for="password"></p></div>
           <div class="field"><label for="password_confirmation">Confirm password</label><input id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" minlength="12" required><p tabindex="-1" class="error" data-error-for="password_confirmation"></p></div>
         </div>
-        <fieldset class="required-acceptances"><legend>Required agreements</legend>
-          <label><input id="terms_accepted" name="terms_accepted" type="checkbox" required><span>I agree to the <a href="/terms">Terms</a> and the <a href="/cancellation-refund">Cancellation and Refund Policy</a>.</span></label>
-          <label><input id="privacy_accepted" name="privacy_accepted" type="checkbox" required><span>I acknowledge the <a href="/privacy">Privacy Notice</a> and <a href="/student-data">Student Data Notice</a>.</span></label>
-        </fieldset>
-        <fieldset class="optional-reminders"><legend>Optional adult communications</legend>
-          <p>No optional choice is selected by default. WhatsApp is not an active launch channel.</p>
-          <label><input id="general_marketing_consent" name="general_marketing_consent" type="checkbox"> General marketing</label>
-          <label><input id="parent_newsletter_consent" name="parent_newsletter_consent" type="checkbox"> Parent newsletter</label>
+        <fieldset class="required-acceptances"><legend>Agreement</legend>
+          <label><input id="terms_accepted" name="terms_accepted" type="checkbox" required><span>I agree to the <a href="/terms">Terms of Use</a>.</span></label>
+          <p class="section-note">The Terms include the Privacy Notice, Student Data Notice, Cancellation and Refund Policy, service communications, One Time updates, and the Parent newsletter. Unsubscribe, DND, complaint, and suppression requests remain controlling.</p>
         </fieldset>
         <div class="signup-access-state" data-before-expiry hidden><p data-signup-helper>No credit card required. Free access ends September 11, 2026 at 6:00 PM Asia/Jerusalem.</p></div>
         <div class="signup-access-state" data-at-or-after-expiry><p>$67/month after account creation through secure hosted checkout. No charge is made by this form.</p></div>
@@ -597,9 +592,18 @@ await writeFile(
 );
 await writeFile(
   path.join(outDir, 'terms.html'),
-  legalPage('Terms of Use | One Time Mishnayos', termsOfUse, '/terms', [
-    communicationConsentNotice,
-  ]),
+  legalPage(
+    'Terms of Use | One Time Mishnayos',
+    termsOfUse,
+    '/terms',
+    [
+      privacyNotice,
+      parentGuardianStudentDataNotice,
+      communicationConsentNotice,
+      cancellationRefundPolicy,
+    ],
+    true,
+  ),
 );
 await writeFile(
   path.join(outDir, 'cancellation-refund.html'),

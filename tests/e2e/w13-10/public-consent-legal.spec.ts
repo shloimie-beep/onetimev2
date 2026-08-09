@@ -7,7 +7,7 @@ test('W13-10 legal pages render versioned launch truth without billing claims', 
     ['/privacy', /Privacy Notice/i],
     ['/terms', /Terms of Use/i],
     ['/cancellation-refund', /Cancellation and Refund Policy/i],
-    ['/communications-consent', /Communication and Reminder Consent/i],
+    ['/communications-consent', /Communications Included In The Terms/i],
     ['/student-data', /Parent\/Guardian and Student Data Notice/i],
   ] as const) {
     await page.goto(path);
@@ -17,21 +17,20 @@ test('W13-10 legal pages render versioned launch truth without billing claims', 
   }
 });
 
-test('W13-10 Family signup separates required policy acceptance from optional adult consent', async ({
-  page,
-}) => {
+test('W13-10 Family signup uses one required integrated Terms acceptance', async ({ page }) => {
   await page.goto('/signup');
   await expect(page.getByRole('heading', { name: 'Create your Family account' })).toBeVisible();
   await expect(page.getByLabel(/reminder|WhatsApp|phone|Student.*email|card/i)).toHaveCount(0);
   await expect(page.getByLabel('Password', { exact: true })).toBeVisible();
   await expect(page.getByLabel('Confirm password')).toBeVisible();
-  await expect(page.getByLabel(/I agree to the Terms/)).not.toBeChecked();
-  await expect(page.getByLabel(/I acknowledge the Privacy Notice/)).not.toBeChecked();
-  await expect(page.getByLabel('General marketing')).not.toBeChecked();
-  await expect(page.getByLabel('Parent newsletter')).not.toBeChecked();
+  await expect(page.locator('[data-signup-form] input[type="checkbox"]')).toHaveCount(1);
+  await expect(page.getByLabel(/I agree to the Terms of Use/)).not.toBeChecked();
+  await expect(page.getByLabel(/I acknowledge the Privacy Notice/)).toHaveCount(0);
+  await expect(page.getByLabel('General marketing')).toHaveCount(0);
+  await expect(page.getByLabel('Parent newsletter')).toHaveCount(0);
   await expect(
     page.getByLabel('Create the adult Family account').getByRole('link', {
-      name: 'Privacy Notice',
+      name: 'Terms of Use',
     }),
-  ).toHaveAttribute('href', '/privacy');
+  ).toHaveAttribute('href', '/terms');
 });

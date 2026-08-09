@@ -9,6 +9,12 @@ Candidate head inspected: `43968d4b6163f97799e14289c2424c1001ab5c37`
 
 This is a point-in-time engineering and launch audit. It does not authorize live GHL, Stripe, or Zoom changes. Work remains the owner of live HighLevel UI/provider execution, Stripe browser actions, and Zoom browser actions.
 
+## Post-audit locked update — 2026-08-09
+
+Family signup is to use one required Terms checkbox and one integrated Terms document. The implementation and final acceptance must prove exactly one visible checkbox; no separate privacy, general-marketing, or Parent-newsletter control; correct versioned internal adult-email scope projections; and continued precedence for unsubscribe, DND, complaint, hard-bounce, suppression, and withdrawal. WhatsApp and Student-specific recording/recognition permissions remain separate.
+
+The integrated Terms and incorporated legal sections still require the named qualified legal-review approval and digest-bound release evidence already required by the privacy package. This update does not itself approve legal text or authorize deployment.
+
 ## Executive Assessment
 
 One Time is a strong late-stage application, not a finished provider-integrated launch. The core product is about **92% implemented**, the currently deployed experience is about **82% complete**, and the whole project is about **79% complete**. The distinction is deployment and production proof, not a hidden backlog of ordinary application screens.

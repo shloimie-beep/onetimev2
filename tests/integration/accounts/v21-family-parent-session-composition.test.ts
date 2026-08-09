@@ -657,8 +657,8 @@ describe.runIf(nativeProofEnabled)(
               timezone: 'Asia/Jerusalem',
               terms_accepted: true,
               privacy_accepted: true,
-              general_marketing_consent: false,
-              parent_newsletter_consent: false,
+              general_marketing_consent: true,
+              parent_newsletter_consent: true,
             }),
           });
           const body = (await response.json()) as Record<string, unknown>;
@@ -994,7 +994,7 @@ async function submitFamily(
       timezone: 'Asia/Jerusalem',
       terms_accepted: true,
       privacy_accepted: true,
-      general_marketing_consent: false,
+      general_marketing_consent: true,
       parent_newsletter_consent: true,
     }),
   });

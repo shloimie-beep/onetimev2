@@ -31,7 +31,7 @@ const command = (): FamilySignupCommand => ({
   timezone: 'Asia/Jerusalem',
   terms_accepted: true,
   privacy_accepted: true,
-  general_marketing_consent: false,
+  general_marketing_consent: true,
   parent_newsletter_consent: true,
 });
 const ghlEvidence = () => ({
@@ -100,7 +100,7 @@ describe('P08 family signup service', () => {
       password_hash: 'argon2id-safe-hash',
       request: {
         timezone: 'Asia/Jerusalem',
-        general_marketing_consent: false,
+        general_marketing_consent: true,
         parent_newsletter_consent: true,
       },
       request_binding: {
@@ -292,7 +292,7 @@ describe('P08 family signup service', () => {
         },
       },
       { scope, command: { ...original, general_marketing_consent: true } },
-      { scope, command: { ...original, parent_newsletter_consent: false } },
+      { scope, command: { ...original, parent_newsletter_consent: true } },
       {
         scope: {
           product: 'one_time_mishnayos',

@@ -153,7 +153,7 @@ When there is one exact match:
 - its stable provider ID is retained;
 - source and current signup facts are appended or updated according to the registry;
 - existing suppression, DND, unsubscribe, complaint, and hard-bounce state is preserved;
-- current product signup does not infer general marketing consent;
+- current Family signup projects general-marketing and Parent-newsletter permission only from the explicit integrated Terms acceptance; existing suppression, DND, unsubscribe, complaint, hard-bounce, and later withdrawal remain controlling;
 - no Student or child placeholder contact is created;
 - retries use one stable idempotency identity and cannot create a duplicate.
 

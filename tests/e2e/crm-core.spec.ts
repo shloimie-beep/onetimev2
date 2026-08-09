@@ -15,8 +15,8 @@ test('synthetic Family signup commits safely on mobile', async ({ page }) => {
   await page.getByLabel('Password', { exact: true }).fill('StrongPassword!234');
   await page.getByLabel('Confirm password').fill('StrongPassword!234');
   await expect(page.getByLabel(/Student.*email|WhatsApp|phone|card/i)).toHaveCount(0);
-  await page.getByLabel(/I agree to the Terms/).check();
-  await page.getByLabel(/I acknowledge the Privacy Notice/).check();
+  await expect(page.locator('[data-signup-form] input[type="checkbox"]')).toHaveCount(1);
+  await page.getByLabel(/I agree to the Terms of Use/).check();
   await page.getByRole('button', { name: 'Create your Family account' }).click();
   await expect(page).toHaveURL(/\/signup\/received\?state=session_pending&email=pending$/u);
   await expect(page.getByRole('heading', { name: 'Signup received' })).toBeVisible();

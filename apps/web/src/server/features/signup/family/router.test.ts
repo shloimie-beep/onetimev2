@@ -154,6 +154,8 @@ describe('P08 Family-signup route security', () => {
       { ...base, student: { name: 'Child' } },
       { ...base, phone: '+15555550100' },
       { ...base, reminder_preference: 'whatsapp' },
+      { ...base, general_marketing_consent: false },
+      { ...base, parent_newsletter_consent: false },
       { ...base, canonical_request_hash: 'a'.repeat(64) },
       { ...base, normalized_email_hash: 'b'.repeat(64) },
     ];
@@ -392,7 +394,7 @@ function command(idempotencyKey: string): FamilySignupCommand {
     timezone: 'Asia/Jerusalem',
     terms_accepted: true,
     privacy_accepted: true,
-    general_marketing_consent: false,
+    general_marketing_consent: true,
     parent_newsletter_consent: true,
   };
 }

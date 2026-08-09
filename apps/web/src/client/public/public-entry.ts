@@ -637,6 +637,7 @@ if (form) {
         if (!bootstrap.writes_allowed) {
           throw new Error('Signup writes are disabled in this verification environment.');
         }
+        const unifiedTermsAccepted = data.get('terms_accepted') === 'on';
         response = await fetch('/api/v1/signup/family', {
           method: 'POST',
           credentials: 'same-origin',
@@ -654,10 +655,10 @@ if (form) {
             password: String(data.get('password') ?? ''),
             password_confirmation: String(data.get('password_confirmation') ?? ''),
             timezone: String(data.get('timezone') ?? ''),
-            terms_accepted: data.get('terms_accepted') === 'on',
-            privacy_accepted: data.get('privacy_accepted') === 'on',
-            general_marketing_consent: data.get('general_marketing_consent') === 'on',
-            parent_newsletter_consent: data.get('parent_newsletter_consent') === 'on',
+            terms_accepted: unifiedTermsAccepted,
+            privacy_accepted: unifiedTermsAccepted,
+            general_marketing_consent: unifiedTermsAccepted,
+            parent_newsletter_consent: unifiedTermsAccepted,
           }),
         });
       } else {

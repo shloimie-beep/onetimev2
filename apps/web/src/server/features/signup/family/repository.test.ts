@@ -32,7 +32,7 @@ const command = (): FamilySignupCommand => ({
   timezone: 'Asia/Jerusalem',
   terms_accepted: true,
   privacy_accepted: true,
-  general_marketing_consent: false,
+  general_marketing_consent: true,
   parent_newsletter_consent: true,
 });
 const passwordHash = `argon2id-v1$v=19$m=19456,t=2,p=1$${'a'.repeat(22)}$${'b'.repeat(43)}`;

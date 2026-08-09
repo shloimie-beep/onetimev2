@@ -48,22 +48,18 @@ export const FAMILY_SIGNUP_TIMEZONE_FIELD = {
   raw_offset_only: false,
 } as const;
 
-export const FAMILY_SIGNUP_OPTIONAL_CONSENT_FIELDS = [
+export const FAMILY_SIGNUP_VISIBLE_CONSENT_FIELDS = [
   {
-    name: 'general_marketing_consent',
-    scope: 'general_marketing',
-    label: 'General marketing',
-    required: false,
+    name: 'terms_accepted',
+    scope: 'unified_terms',
+    label: 'I agree to the Terms of Use',
+    required: true,
     default_checked: false,
-  },
-  {
-    name: 'parent_newsletter_consent',
-    scope: 'parent_newsletter',
-    label: 'Parent newsletter',
-    required: false,
-    default_checked: false,
+    covered_adult_communication_scopes: ['general_marketing', 'parent_newsletter'],
   },
 ] as const;
+
+export const FAMILY_SIGNUP_OPTIONAL_CONSENT_FIELDS = [] as const;
 
 export const FAMILY_SIGNUP_FORBIDDEN_FIELDS = [
   'phone',
@@ -201,8 +197,9 @@ export const FAMILY_SIGNUP_SECURITY_INVARIANTS = {
   password_confirmation_must_match_exactly: true,
   timezone_must_be_iana: true,
   browser_timezone_is_editable_suggestion_only: true,
-  optional_adult_consents_are_separate: true,
-  optional_adult_consents_are_never_inferred: true,
+  visible_signup_consent_controls: 1,
+  unified_terms_acceptance_projects_adult_communication_scopes: true,
+  suppression_and_withdrawal_remain_authoritative: true,
   identity_review_blocks_post_expiry_checkout: true,
   unavailable_provider_evidence_is_not_identity_ambiguity: true,
   ghl_handoff_is_adult_only_and_non_effecting: true,

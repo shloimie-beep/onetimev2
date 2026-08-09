@@ -11,6 +11,7 @@ import {
   FAMILY_SIGNUP_OPERATION,
   FAMILY_SIGNUP_SECURITY_INVARIANTS,
   FAMILY_SIGNUP_TIMEZONE_FIELD,
+  FAMILY_SIGNUP_VISIBLE_CONSENT_FIELDS,
 } from './index.ts';
 
 describe('P08 family signup contract', () => {
@@ -51,22 +52,17 @@ describe('P08 family signup contract', () => {
       browser_prefill: 'suggestion_only',
       raw_offset_only: false,
     });
-    expect(FAMILY_SIGNUP_OPTIONAL_CONSENT_FIELDS).toEqual([
+    expect(FAMILY_SIGNUP_VISIBLE_CONSENT_FIELDS).toEqual([
       {
-        name: 'general_marketing_consent',
-        scope: 'general_marketing',
-        label: 'General marketing',
-        required: false,
+        name: 'terms_accepted',
+        scope: 'unified_terms',
+        label: 'I agree to the Terms of Use',
+        required: true,
         default_checked: false,
-      },
-      {
-        name: 'parent_newsletter_consent',
-        scope: 'parent_newsletter',
-        label: 'Parent newsletter',
-        required: false,
-        default_checked: false,
+        covered_adult_communication_scopes: ['general_marketing', 'parent_newsletter'],
       },
     ]);
+    expect(FAMILY_SIGNUP_OPTIONAL_CONSENT_FIELDS).toEqual([]);
     expect(FAMILY_SIGNUP_FORBIDDEN_FIELDS).toContain('card');
     expect(FAMILY_SIGNUP_FORBIDDEN_FIELDS).toContain('students');
     expect(FAMILY_SIGNUP_SECURITY_INVARIANTS).toMatchObject({
@@ -83,8 +79,9 @@ describe('P08 family signup contract', () => {
       password_confirmation_must_match_exactly: true,
       timezone_must_be_iana: true,
       browser_timezone_is_editable_suggestion_only: true,
-      optional_adult_consents_are_separate: true,
-      optional_adult_consents_are_never_inferred: true,
+      visible_signup_consent_controls: 1,
+      unified_terms_acceptance_projects_adult_communication_scopes: true,
+      suppression_and_withdrawal_remain_authoritative: true,
       identity_review_blocks_post_expiry_checkout: true,
       unavailable_provider_evidence_is_not_identity_ambiguity: true,
       ghl_handoff_is_adult_only_and_non_effecting: true,
