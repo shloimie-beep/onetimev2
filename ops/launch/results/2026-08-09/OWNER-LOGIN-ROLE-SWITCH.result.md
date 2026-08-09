@@ -5,7 +5,8 @@
 - Branch: `codex/ot-p0-owner-login-20260809`
 - Integration base: `codex/one-time-complete-production-launch-20260805`
 - State: IMPLEMENTED LOCALLY; CONTROLLER DEPLOYMENT AND REAL OPERATOR ACCEPTANCE PENDING
-- Child pull request: pending publication
+- Implementation commit: `c2bcec3dc2e6e59b00f5d91fa3c1bdb3446dbc0d`
+- Child pull request: #147 (draft, mergeable)
 
 ## Delta boundary
 
