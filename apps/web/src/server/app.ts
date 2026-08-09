@@ -592,6 +592,28 @@ export function createApp({
       })),
     );
   };
+  const resolveContentPublicationIdentity = (req: Request) =>
+    contentPublicationIdentityFromRequest(req, apiSessionResolutionInput);
+  const verifyContentPublicationCsrf = async (
+    req: Request,
+    identity: Pick<ContentPublicationRequestIdentity, 'sessionKey'>,
+  ) => {
+    const resolution = await readApiSession(req);
+    if (
+      resolution.status !== 'resolved' ||
+      resolution.session.session_key !== identity.sessionKey
+    ) {
+      return false;
+    }
+    return (
+      (await verifyResolvedSessionCsrf(req, {
+        pool,
+        session: resolution.session,
+        v21AdultSessionRuntime,
+        ...(clock ? { clock } : {}),
+      })) === true
+    );
+  };
   const handleOt110aSourceAction = (
     req: RequestWithTrace,
     res: Response,
@@ -648,18 +670,17 @@ export function createApp({
     },
   };
   const centrallyBoundContentPublicationRegistration = createContentPublicationFeatureRegistration({
-    resolveIdentity: (req) => contentPublicationIdentityFromRequest(req, pool, config),
-    verifyCsrf: async (req, identity) => {
-      const csrfToken = req.header('x-csrf-token') ?? req.body?.csrf_token;
-      return verifySessionCsrf({ pool, sessionKey: identity.sessionKey, csrfToken });
-    },
+    resolveIdentity: resolveContentPublicationIdentity,
+    verifyCsrf: verifyContentPublicationCsrf,
     providerBinding: contentMediaRuntime?.publication?.providerBinding,
     vimeoReadbackAdapter: contentMediaRuntime?.publication?.readbackAdapter,
   });
   const centrallyBoundContentIngestRegistration = createContentIngestFeatureRegistration({
     resolveIdentity: async (req) => {
-      const identity = await contentPublicationIdentityFromRequest(req, pool, config);
-      if (!identity || identity.principal.role !== 'admin') return null;
+      const identity = await resolveContentPublicationIdentity(req);
+      if (!identity) return null;
+      if ('unavailable' in identity) return identity;
+      if (identity.principal.role !== 'admin') return null;
       return {
         sessionKey: identity.sessionKey,
         actor: {
@@ -670,10 +691,7 @@ export function createApp({
         },
       };
     },
-    verifyCsrf: async (req, identity) => {
-      const csrfToken = req.header('x-csrf-token') ?? req.body?.csrf_token;
-      return verifySessionCsrf({ pool, sessionKey: identity.sessionKey, csrfToken });
-    },
+    verifyCsrf: verifyContentPublicationCsrf,
     runtime: contentMediaRuntime?.ingest,
   });
   const centrallyBoundFeatureRegistrations: readonly ServerFeatureRegistration[] = (
@@ -4545,11 +4563,16 @@ export function createApp({
 
   app.get('/app/learning/items/:sourceKey', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
-    const session = await sessionFromRequest(req, pool, config);
-    if (!session) {
+    const resolution = await readApiSession(req);
+    if (resolution.status === 'unavailable') {
+      res.status(503).type('text').send('Content access is temporarily unavailable.');
+      return;
+    }
+    if (resolution.status !== 'resolved') {
       res.redirect(302, `/login?return_to=${encodeURIComponent(req.originalUrl)}`);
       return;
     }
+    const session = resolution.session;
     if (!['owner', 'admin', 'parent', 'student'].includes(session.user.role)) {
       res.status(403).type('html').send('Protected learning access required.');
       return;
@@ -6608,16 +6631,17 @@ async function selfManagedStudentPrivacyPrincipalFromRequest(
 
 async function contentPublicationIdentityFromRequest(
   req: Request,
-  pool: DbPool,
-  config: AppConfig,
-): Promise<ContentPublicationRequestIdentity | null> {
-  if (config.productKey !== CONTENT_PUBLICATION_PRODUCT_KEY) return null;
-  const session = await sessionFromRequest(req, pool, config);
-  if (!session) return null;
+  input: ApiSessionResolutionInput,
+): Promise<ContentPublicationRequestIdentity | { unavailable: true } | null> {
+  if (input.config.productKey !== CONTENT_PUBLICATION_PRODUCT_KEY) return null;
+  const resolution = await readApiSessionFromRequest(req, input);
+  if (resolution.status === 'unavailable') return { unavailable: true };
+  if (resolution.status !== 'resolved') return null;
+  const session = resolution.session;
 
   let student: Awaited<ReturnType<typeof studentLearnerSubject>> | null = null;
   if (session.user.role === 'student') {
-    student = await studentLearnerSubject(pool, config, session.user.user_key);
+    student = await studentLearnerSubject(input.pool, input.config, session.user.user_key);
     if (
       !student ||
       !Number.isSafeInteger(session.session_security_version) ||
@@ -6638,7 +6662,7 @@ async function contentPublicationIdentityFromRequest(
     principal: {
       actorId: session.user.user_key,
       role,
-      accountKey: config.accountKey,
+      accountKey: input.config.accountKey,
       productKey: CONTENT_PUBLICATION_PRODUCT_KEY,
       householdId: student?.household_key ?? '',
       studentId: student?.learner_key ?? null,

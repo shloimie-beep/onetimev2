@@ -26,9 +26,13 @@ export type ContentIngestRequestIdentity = {
   sessionKey: string;
 };
 
+export type ContentIngestIdentityUnavailable = {
+  unavailable: true;
+};
+
 export type ContentIngestIdentityResolver = (
   req: Request,
-) => Promise<ContentIngestRequestIdentity | null>;
+) => Promise<ContentIngestRequestIdentity | ContentIngestIdentityUnavailable | null>;
 
 export type ContentIngestCsrfVerifier = (
   req: Request,
@@ -326,11 +330,16 @@ async function authorize(
   req: Request,
   res: Response,
 ): Promise<ContentIngestRequestIdentity | null> {
-  const identity = await input.resolveIdentity(req);
-  if (!identity || identity.actor.role !== 'admin') {
+  const resolution = await input.resolveIdentity(req);
+  if (isUnavailableIdentityResolution(resolution)) {
+    res.status(503).json({ success: false, code: 'content_ingest_unavailable' });
+    return null;
+  }
+  if (!resolution || resolution.actor.role !== 'admin') {
     res.status(401).json({ success: false, code: 'content_ingest_access_denied' });
     return null;
   }
+  const identity = resolution;
   if (!(await input.verifyCsrf(req, identity))) {
     res.status(403).json({ success: false, code: 'content_ingest_csrf_denied' });
     return null;
@@ -340,6 +349,12 @@ async function authorize(
     return null;
   }
   return identity;
+}
+
+function isUnavailableIdentityResolution(
+  value: ContentIngestRequestIdentity | ContentIngestIdentityUnavailable | null,
+): value is ContentIngestIdentityUnavailable {
+  return Boolean(value && 'unavailable' in value && value.unavailable === true);
 }
 
 async function requireSession(
