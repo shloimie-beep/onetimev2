@@ -200,7 +200,9 @@ test('rows open by keyboard and Back restores focus from cached list without ref
   expect(page.url()).not.toContain(email);
 });
 
-test('403 clears retained protected CRM details before recovery UI renders', async ({ page }) => {
+test('403 clears retained protected CRM details without expiring the valid session', async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await login(page);
   const email = `ot39-expired-${Date.now()}@example.test`;
@@ -218,12 +220,14 @@ test('403 clears retained protected CRM details before recovery UI renders', asy
     });
   });
   await page.goto(contactPath);
-  await expect(page.getByRole('heading', { name: 'Session expired' })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Contact not found or unavailable' }),
+  ).toBeVisible();
   await expect(page.getByText('OT39 Expired Parent')).toHaveCount(0);
   await expect(page.getByText(email)).toHaveCount(0);
-  await expect(
-    page.getByLabel('Session expired').getByRole('button', { name: 'Sign in' }),
-  ).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Session expired' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Sign in' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Back to CRM' })).toBeVisible();
 });
 
 test('captures corrected CRM screenshots at OT-39 viewport matrix', async ({ page }) => {
