@@ -370,7 +370,7 @@ export const termsOfUse: LegalDocument = {
     {
       heading: 'Payment, Cancellation, And Refunds',
       paragraphs: [
-        'The public Family signup form does not collect payment-card details or make an automatic charge. Paid billing, when applicable, uses the approved hosted provider flow.',
+        'The public Family signup form does not collect payment-card details or make an automatic charge. Billing code remains limited to fixture and Stripe test-mode evidence until the approved hosted provider flow is launched.',
         'Cancellation stops future renewal and preserves access through the verified paid period. Refunds are manual exceptions, and cancellation does not itself delete learning records.',
       ],
     },
