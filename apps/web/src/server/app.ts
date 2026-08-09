@@ -863,7 +863,8 @@ export function createApp({
           return 'handled';
         }
         if (bootstrap.context.session.activeRole === 'parent') {
-          const receipt = req.params.receiptId;
+          const receipt =
+            typeof req.params.receiptId === 'string' ? req.params.receiptId : undefined;
           res.redirect(
             302,
             receipt
