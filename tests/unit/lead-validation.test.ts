@@ -123,8 +123,8 @@ describe('lead validation and content contracts', () => {
   });
 
   it('ships launch legal content with the current data categories and no live billing claim', () => {
-    expect(legalPolicyMetadata.policySetVersion).toBe('one-time-public-legal-v1-2026-07-17');
-    expect(legalPolicyMetadata.consentPolicyVersion).toBe('one-time-class-reminders-v1-2026-07-14');
+    expect(legalPolicyMetadata.policySetVersion).toBe('one-time-public-legal-v2-2026-08-09');
+    expect(legalPolicyMetadata.consentPolicyVersion).toBe('one-time-unified-terms-consent-v2-2026-08-09');
     expect(privacyNotice.title).toBe('Privacy Notice');
     expect(termsOfUse.title).toBe('Terms of Use');
     expect(privacyDataCategories.map((category) => category.label)).toEqual([
