@@ -22,39 +22,42 @@ type Row = Record<string, unknown>;
 
 export function createPostgresFamilySignupGhlRepository(
   pool: DbPool,
-  options: { highLevelLocationId: string },
+  options: {
+    accountKey?: string;
+    productKey?: string;
+    highLevelLocationId: string;
+  },
 ): FamilySignupGhlRepository & FamilySignupGhlProjectionRecoveryRepository {
+  const accountKey = options.accountKey ?? 'one_time';
+  const productKey = options.productKey ?? 'one_time_mishnayos';
   return {
     async claimNext(input) {
+      if (input.allowedIntentIds.length !== 1) return null;
       await pool.query(
         `INSERT INTO onetime.family_signup_ghl_dispatches (intent_id)
          SELECT outbox.intent_id
            FROM onetime.family_signup_outbox AS outbox
           WHERE outbox.product = 'one_time_mishnayos'
-            AND outbox.runtime_tier = $1
-            AND outbox.verification_environment_id = $2
-            AND outbox.dispatch_state = 'ready'
-         ON CONFLICT (intent_id) DO NOTHING`,
-        [input.runtimeTier, input.verificationEnvironmentId],
+             AND outbox.runtime_tier = $1
+             AND outbox.verification_environment_id = $2
+             AND outbox.dispatch_state = 'ready'
+             AND outbox.intent_id = ANY($3::text[])
+          ON CONFLICT (intent_id) DO NOTHING`,
+        [input.runtimeTier, input.verificationEnvironmentId, input.allowedIntentIds],
       );
       await pool.query(
         `UPDATE onetime.family_signup_ghl_dispatches
-            SET state = CASE
-                  WHEN current_step = 'workflow_enrollment' THEN 'acceptance_unknown'
-                  ELSE 'retry'
-                END,
-                safe_error_code = CASE
-                  WHEN current_step = 'workflow_enrollment'
-                    THEN 'workflow_acceptance_unknown_after_lease_expiry'
-                  ELSE 'idempotent_step_lease_expired'
-                END,
+            SET state = 'acceptance_unknown',
+                safe_error_code = 'provider_acceptance_unknown_after_lease_expiry',
                 lease_token = NULL,
                 lease_expires_at = NULL,
                 next_attempt_at = now(),
                 version = version + 1,
                 updated_at = now()
           WHERE state = 'processing'
-            AND lease_expires_at <= now()`,
+            AND lease_expires_at <= now()
+            AND intent_id = ANY($1::text[])`,
+        [input.allowedIntentIds],
       );
 
       const leaseToken = randomUUID();
@@ -65,17 +68,18 @@ export function createPostgresFamilySignupGhlRepository(
              JOIN onetime.family_signup_outbox AS outbox
                ON outbox.intent_id = dispatch.intent_id
             WHERE outbox.runtime_tier = $1
-              AND outbox.verification_environment_id = $2
-              AND dispatch.state IN ('pending', 'retry')
+               AND outbox.verification_environment_id = $2
+               AND dispatch.intent_id = ANY($3::text[])
+               AND dispatch.state IN ('pending', 'retry')
               AND dispatch.next_attempt_at <= now()
             ORDER BY dispatch.next_attempt_at, dispatch.created_at, dispatch.intent_id
             FOR UPDATE OF dispatch SKIP LOCKED
             LIMIT 1
          )
          UPDATE onetime.family_signup_ghl_dispatches AS dispatch
-            SET state = 'processing',
-                lease_token = $3,
-                lease_expires_at = now() + ($4::bigint * interval '1 millisecond'),
+             SET state = 'processing',
+                 lease_token = $4,
+                 lease_expires_at = now() + ($5::bigint * interval '1 millisecond'),
                 attempt_count = dispatch.attempt_count + 1,
                 safe_error_code = NULL,
                 version = dispatch.version + 1,
@@ -83,7 +87,13 @@ export function createPostgresFamilySignupGhlRepository(
            FROM candidate
           WHERE dispatch.intent_id = candidate.intent_id
       RETURNING dispatch.intent_id`,
-        [input.runtimeTier, input.verificationEnvironmentId, leaseToken, input.leaseMs],
+        [
+          input.runtimeTier,
+          input.verificationEnvironmentId,
+          input.allowedIntentIds,
+          leaseToken,
+          input.leaseMs,
+        ],
       );
       const intentId = text(claimed.rows[0]?.intent_id);
       if (!intentId) return null;
@@ -179,6 +189,16 @@ export function createPostgresFamilySignupGhlRepository(
             await client.query('ROLLBACK');
             return false;
           }
+          if (
+            !(await persistAccessIdentityBridge(client, input.claim, {
+              accountKey,
+              productKey,
+              highLevelLocationId: options.highLevelLocationId,
+            }))
+          ) {
+            await client.query('ROLLBACK');
+            return false;
+          }
         }
         const completed = next === 'complete';
         const updated = await client.query(
@@ -216,6 +236,25 @@ export function createPostgresFamilySignupGhlRepository(
           await client.query('ROLLBACK');
           return false;
         }
+        await client.query(
+          `INSERT INTO onetime.audit_events
+             (event_key, account_key, product_key, contact_key, event_type, metadata)
+           VALUES ($1,$2,$3,$4,'family_signup_ghl_effect_completed',$5::jsonb)
+           ON CONFLICT (event_key) DO NOTHING`,
+          [
+            digest(`family_signup_ghl_effect\0${input.claim.intentId}\0${input.claim.step}`),
+            accountKey,
+            productKey,
+            `contact_${input.claim.adultId}`,
+            JSON.stringify({
+              intent_id: input.claim.intentId,
+              step: input.claim.step,
+              provider_resource_ref_hash: digest(input.effect.providerResourceId),
+              provider_response_digest: input.effect.providerResponseDigest,
+              completed,
+            }),
+          ],
+        );
         await client.query('COMMIT');
         return true;
       } catch (error) {
@@ -227,7 +266,10 @@ export function createPostgresFamilySignupGhlRepository(
     },
 
     async markRetry(input) {
-      return releaseClaim(pool, input.claim, 'retry', input.safeErrorCode, input.retryAt);
+      return releaseClaim(pool, input.claim, 'retry', input.safeErrorCode, input.retryAt, {
+        accountKey,
+        productKey,
+      });
     },
     async markIdentityReview(input) {
       return releaseClaim(
@@ -236,6 +278,7 @@ export function createPostgresFamilySignupGhlRepository(
         'identity_review',
         input.safeErrorCode,
         new Date().toISOString(),
+        { accountKey, productKey },
       );
     },
     async markAcceptanceUnknown(input) {
@@ -245,6 +288,7 @@ export function createPostgresFamilySignupGhlRepository(
         'acceptance_unknown',
         input.safeErrorCode,
         new Date().toISOString(),
+        { accountKey, productKey },
       );
     },
     async loadProjectionRecoveryClaim(input) {
@@ -266,7 +310,12 @@ export function createPostgresFamilySignupGhlRepository(
                 mapping.projected_owner_contact_ref_hash AS mapping_contact_ref_hash,
                 mapping.lifecycle_state AS mapping_lifecycle_state,
                 mapping.access_projection AS mapping_access_projection,
-                mapping.reconciliation_state AS mapping_reconciliation_state
+                mapping.reconciliation_state AS mapping_reconciliation_state,
+                portal.status AS portal_household_status,
+                link.household_key AS access_link_household_key,
+                link.highlevel_location_id AS access_link_location_id,
+                link.highlevel_contact_id AS access_link_contact_id,
+                link.sync_state AS access_link_sync_state
            FROM onetime.family_signup_ghl_dispatches AS dispatch
            JOIN onetime.family_signup_outbox AS outbox
              ON outbox.intent_id = dispatch.intent_id
@@ -290,7 +339,16 @@ export function createPostgresFamilySignupGhlRepository(
             AND mapping.product_key = outbox.product
             AND mapping.runtime_tier = outbox.runtime_tier
             AND mapping.verification_environment_id = outbox.verification_environment_id
-            AND mapping.billing_program = $4
+             AND mapping.billing_program = $4
+           LEFT JOIN onetime.portal_households AS portal
+             ON portal.household_key = outbox.household_id
+            AND portal.account_key = $5
+            AND portal.product_key = $6
+           LEFT JOIN onetime.adult_household_contact_links AS link
+             ON link.account_key = portal.account_key
+            AND link.product_key = portal.product_key
+            AND link.household_key = portal.household_key
+            AND link.contact_key = 'contact_' || outbox.adult_id
           WHERE dispatch.intent_id = $1
             AND outbox.runtime_tier = $2
             AND outbox.verification_environment_id = $3
@@ -298,7 +356,14 @@ export function createPostgresFamilySignupGhlRepository(
             AND dispatch.current_step = 'complete'
             AND dispatch.provider_contact_id IS NOT NULL
             AND dispatch.provider_opportunity_id IS NOT NULL`,
-        [input.intentId, input.runtimeTier, input.verificationEnvironmentId, FAMILY_PLAN.planKey],
+        [
+          input.intentId,
+          input.runtimeTier,
+          input.verificationEnvironmentId,
+          FAMILY_PLAN.planKey,
+          accountKey,
+          productKey,
+        ],
       );
       if (result.rows.length !== 1) return null;
       const row = result.rows[0]!;
@@ -390,21 +455,24 @@ export function createPostgresFamilySignupGhlRepository(
             input.claim.verificationEnvironmentId,
           ],
         );
-        if ((alreadyComplete.rowCount ?? 0) === 1) {
-          await client.query('COMMIT');
-          return true;
-        }
+        const projectionsComplete = (alreadyComplete.rowCount ?? 0) === 1;
         if (
-          !(await persistIdentityProjection(
-            client,
-            input.claim,
-            input.readback.identityProjection,
-          )) ||
-          !(await persistHouseholdProjection(
-            client,
-            input.claim,
-            input.readback.householdProjection,
-          ))
+          (!projectionsComplete &&
+            (!(await persistIdentityProjection(
+              client,
+              input.claim,
+              input.readback.identityProjection,
+            )) ||
+              !(await persistHouseholdProjection(
+                client,
+                input.claim,
+                input.readback.householdProjection,
+              )))) ||
+          !(await persistAccessIdentityBridge(client, input.claim, {
+            accountKey,
+            productKey,
+            highLevelLocationId: options.highLevelLocationId,
+          }))
         ) {
           await client.query('ROLLBACK');
           return false;
@@ -545,29 +613,171 @@ async function persistHouseholdProjection(
   return (mapping.rowCount ?? 0) === 1;
 }
 
+type AccessIdentityBridgeClaim = Pick<
+  FamilySignupGhlProjectionRecoveryClaim,
+  'adultId' | 'householdId' | 'intentId'
+> & { providerContactId: string | null };
+
+async function persistAccessIdentityBridge(
+  client: Queryable,
+  claim: AccessIdentityBridgeClaim,
+  scope: { accountKey: string; productKey: string; highLevelLocationId: string },
+): Promise<boolean> {
+  if (!claim.providerContactId) return false;
+  const contactKey = `contact_${claim.adultId}`;
+  await client.query(
+    `INSERT INTO onetime.portal_households
+       (household_key, account_key, product_key, display_name, status)
+     SELECT $1,$2,$3,contacts.display_name || ' Family','active'
+       FROM onetime.contacts AS contacts
+      WHERE contacts.account_key = $2
+        AND contacts.product_key = $3
+        AND contacts.contact_key = $4
+        AND contacts.archived_at IS NULL
+     ON CONFLICT (household_key) DO NOTHING`,
+    [claim.householdId, scope.accountKey, scope.productKey, contactKey],
+  );
+  const household = await client.query(
+    `SELECT 1
+       FROM onetime.portal_households
+      WHERE household_key = $1
+        AND account_key = $2
+        AND product_key = $3
+        AND status = 'active'
+      FOR UPDATE`,
+    [claim.householdId, scope.accountKey, scope.productKey],
+  );
+  if ((household.rowCount ?? 0) !== 1) return false;
+
+  await client.query(
+    `INSERT INTO onetime.adult_household_contact_links
+       (link_key, account_key, product_key, contact_key, household_key,
+        highlevel_location_id, highlevel_contact_id, sync_state,
+        projection_revision, last_delivery_key, last_reconciled_at)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,'synced',1,$8,now())
+     ON CONFLICT DO NOTHING`,
+    [
+      digest(
+        `family_signup_access_link\0${scope.accountKey}\0${scope.productKey}\0${contactKey}\0${claim.householdId}`,
+      ),
+      scope.accountKey,
+      scope.productKey,
+      contactKey,
+      claim.householdId,
+      scope.highLevelLocationId,
+      claim.providerContactId,
+      claim.intentId,
+    ],
+  );
+  const link = await client.query(
+    `UPDATE onetime.adult_household_contact_links
+        SET highlevel_contact_id = $1,
+            sync_state = 'synced',
+            projection_revision = projection_revision + 1,
+            last_delivery_key = $2,
+            last_reconciled_at = now(),
+            updated_at = now()
+      WHERE account_key = $3
+        AND product_key = $4
+        AND contact_key = $5
+        AND household_key = $6
+        AND highlevel_location_id = $7
+        AND (highlevel_contact_id IS NULL OR highlevel_contact_id = $1)
+      RETURNING link_key`,
+    [
+      claim.providerContactId,
+      claim.intentId,
+      scope.accountKey,
+      scope.productKey,
+      contactKey,
+      claim.householdId,
+      scope.highLevelLocationId,
+    ],
+  );
+  if ((link.rowCount ?? 0) !== 1) return false;
+  await client.query(
+    `INSERT INTO onetime.audit_events
+       (event_key, account_key, product_key, contact_key, event_type, metadata)
+     VALUES ($1,$2,$3,$4,'family_signup_ghl_access_identity_linked',$5::jsonb)
+     ON CONFLICT (event_key) DO NOTHING`,
+    [
+      digest(`family_signup_ghl_access_identity\0${claim.intentId}`),
+      scope.accountKey,
+      scope.productKey,
+      contactKey,
+      JSON.stringify({
+        intent_id: claim.intentId,
+        household_key: claim.householdId,
+        highlevel_location_id: scope.highLevelLocationId,
+        provider_contact_ref_hash: digest(claim.providerContactId),
+        identity_role: 'adult_parent',
+        student_contact_created: false,
+      }),
+    ],
+  );
+  return true;
+}
+
 async function releaseClaim(
   pool: DbPool,
   claim: FamilySignupGhlClaim,
   state: 'retry' | 'identity_review' | 'acceptance_unknown',
   safeErrorCode: string,
   nextAttemptAt: string,
+  scope: { accountKey: string; productKey: string },
 ): Promise<boolean> {
-  const result = await pool.query(
-    `UPDATE onetime.family_signup_ghl_dispatches
-        SET state = $1,
-            safe_error_code = $2,
-            next_attempt_at = $3,
-            lease_token = NULL,
-            lease_expires_at = NULL,
-            version = version + 1,
-            updated_at = now()
-      WHERE intent_id = $4
-        AND state = 'processing'
-        AND current_step = $5
-        AND lease_token = $6`,
-    [state, safeErrorCode, nextAttemptAt, claim.intentId, claim.step, claim.leaseToken],
-  );
-  return (result.rowCount ?? 0) === 1;
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const result = await client.query(
+      `UPDATE onetime.family_signup_ghl_dispatches
+          SET state = $1,
+              safe_error_code = $2,
+              next_attempt_at = $3,
+              lease_token = NULL,
+              lease_expires_at = NULL,
+              version = version + 1,
+              updated_at = now()
+        WHERE intent_id = $4
+          AND state = 'processing'
+          AND current_step = $5
+          AND lease_token = $6`,
+      [state, safeErrorCode, nextAttemptAt, claim.intentId, claim.step, claim.leaseToken],
+    );
+    if ((result.rowCount ?? 0) !== 1) {
+      await client.query('ROLLBACK');
+      return false;
+    }
+    await client.query(
+      `INSERT INTO onetime.audit_events
+         (event_key, account_key, product_key, contact_key, event_type, metadata)
+       VALUES ($1,$2,$3,$4,'family_signup_ghl_effect_deferred',$5::jsonb)
+       ON CONFLICT (event_key) DO NOTHING`,
+      [
+        digest(
+          `family_signup_ghl_deferred\0${claim.intentId}\0${claim.step}\0${claim.attemptCount}\0${state}`,
+        ),
+        scope.accountKey,
+        scope.productKey,
+        `contact_${claim.adultId}`,
+        JSON.stringify({
+          intent_id: claim.intentId,
+          step: claim.step,
+          disposition: state,
+          safe_error_code: safeErrorCode,
+          attempt_count: claim.attemptCount,
+          provider_acceptance_proven: false,
+        }),
+      ],
+    );
+    await client.query('COMMIT');
+    return true;
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
 }
 
 function mapClaim(row: Row): FamilySignupGhlClaim {
@@ -642,7 +852,12 @@ function projectionRecoveryRequired(
     row.mapping_contact_ref_hash === expectedContactRefHash &&
     row.mapping_lifecycle_state === claim.accessState &&
     row.mapping_access_projection === claim.accessState &&
-    row.mapping_reconciliation_state === 'in_sync'
+    row.mapping_reconciliation_state === 'in_sync' &&
+    row.portal_household_status === 'active' &&
+    row.access_link_household_key === claim.householdId &&
+    row.access_link_location_id === highLevelLocationId &&
+    row.access_link_contact_id === claim.providerContactId &&
+    row.access_link_sync_state === 'synced'
   );
 }
 

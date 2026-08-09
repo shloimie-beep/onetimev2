@@ -22,6 +22,7 @@ export async function runFamilySignupGhlBatch(input: {
   verificationEnvironmentId: string;
   leaseMs: number;
   limit: number;
+  allowedIntentIds: readonly string[];
   now?: () => Date;
 }): Promise<FamilySignupGhlBatchResult> {
   const result: FamilySignupGhlBatchResult = {
@@ -39,6 +40,7 @@ export async function runFamilySignupGhlBatch(input: {
       runtimeTier: input.runtimeTier,
       verificationEnvironmentId: input.verificationEnvironmentId,
       leaseMs: input.leaseMs,
+      allowedIntentIds: input.allowedIntentIds,
     });
     if (!claim) break;
     result.claimed += 1;
@@ -70,7 +72,7 @@ export async function runFamilySignupGhlBatch(input: {
         error instanceof FamilySignupGhlProviderError
           ? error
           : new FamilySignupGhlProviderError('provider_step_failed', false);
-      if (claim.step === 'workflow_enrollment' && providerError.acceptanceUnknown) {
+      if (providerError.acceptanceUnknown) {
         await input.repository.markAcceptanceUnknown({
           claim,
           safeErrorCode: providerError.safeErrorCode,

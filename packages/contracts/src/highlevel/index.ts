@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { applyCurrentAccessStateSchema } from '../access/index.ts';
+import { highLevelVerifiedAccessStateSchema } from '../access/index.ts';
 
 export const HIGHLEVEL_CONTRACT_VERSION = '1.0.0' as const;
 
@@ -165,16 +165,26 @@ const highLevelInboundBotActionSchema = highLevelInboundActionBaseSchema.extend(
   data: highLevelBotActionDataSchema.default({}),
 });
 
-const highLevelInboundAccessActionSchema = highLevelInboundActionBaseSchema.extend({
-  action_name: z.literal('access.apply_current_state'),
-  actor: z
-    .object({
-      kind: z.literal('highlevel_system'),
-      integration_key: z.literal('OT-ACCESS'),
-    })
-    .strict(),
-  data: applyCurrentAccessStateSchema,
-});
+const highLevelInboundAccessActionSchema = highLevelInboundActionBaseSchema
+  .extend({
+    action_name: z.literal('access.apply_current_state'),
+    actor: z
+      .object({
+        kind: z.literal('highlevel_system'),
+        integration_key: z.literal('OT-ACCESS'),
+      })
+      .strict(),
+    data: highLevelVerifiedAccessStateSchema,
+  })
+  .superRefine((action, context) => {
+    if (action.request_id !== action.data.event_id) {
+      context.addIssue({
+        code: 'custom',
+        path: ['request_id'],
+        message: 'The signed request and verified billing event identifiers must match.',
+      });
+    }
+  });
 
 export const highLevelInboundActionSchema = z.union([
   highLevelInboundBotActionSchema,

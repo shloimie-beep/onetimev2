@@ -74,6 +74,7 @@ export interface FamilySignupGhlRepository {
     runtimeTier: string;
     verificationEnvironmentId: string;
     leaseMs: number;
+    allowedIntentIds: readonly string[];
   }): Promise<FamilySignupGhlClaim | null>;
   completeEffect(input: {
     claim: FamilySignupGhlClaim;
