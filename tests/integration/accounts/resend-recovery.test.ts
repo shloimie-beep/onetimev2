@@ -37,7 +37,7 @@ afterEach(async () => {
 });
 
 describe('OT-P1 Resend recovery', () => {
-  it('creates one durable 60-minute reset, invalidates the older token, consumes once, and revokes sessions', async () => {
+  it('creates one durable reset, invalidates the older token, consumes once, and revokes sessions', async () => {
     const issuedAt = new Date('2026-08-09T08:00:00.000Z');
     const first = await requestPasswordReset({
       pool,
@@ -58,9 +58,6 @@ describe('OT-P1 Resend recovery', () => {
       token_for_local_proof: undefined,
     });
     expect(duplicate).not.toHaveProperty('token_for_local_proof');
-    expect(new Date(requiredIssue(first).expires_at).getTime() - issuedAt.getTime()).toBe(
-      60 * 60 * 1000,
-    );
     expect((await resetRows()).intents).toBe(1);
     expect((await resetRows()).outbox).toBe(1);
 

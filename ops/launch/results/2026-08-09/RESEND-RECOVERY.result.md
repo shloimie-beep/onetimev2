@@ -37,7 +37,7 @@ No secret, token, reset URL, cookie, provider message identifier, or password is
 
 ## Implemented recovery
 
-- Password-reset lifetime is exactly 60 minutes.
+- Password-reset lifetime is owned by coordinated draft PR #140; its identical 30-to-60-minute hunk is intentionally not duplicated here.
 - Activation lifetime is exactly seven days.
 - Exact transactional reset and activation copy is enforced with sender and reply-to `info@onetimeonetime.com`.
 - Student lifecycle issuance is suppressed without creating an email outbox row.

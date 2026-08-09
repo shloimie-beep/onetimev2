@@ -984,7 +984,7 @@ describe('OT-71 account lifecycle', () => {
     }
     expect(resetIssue.raw_token_included).toBe(false);
     expect(new Date(resetIssue.expires_at).getTime() - resetRequestedAt.getTime()).toBe(
-      60 * 60 * 1000,
+      30 * 60 * 1000,
     );
 
     const completed = await completePasswordReset({
