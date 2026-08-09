@@ -13,6 +13,17 @@ still blocked at exact provider/account/configuration boundaries, and live billi
 intentionally disabled. Deployed code, configured providers, canary proof, and broad
 activation remain separate states.
 
+## Final signup-consent decision — 2026-08-09
+
+The product-owner direction is now locked for the release package:
+
+- Family signup has exactly one required, unchecked `I agree to the Terms of Use` checkbox.
+- The linked Terms page is the single integrated public document for Terms, privacy, Parent/Student data, cancellation/refund, required service communications, One Time program updates, general marketing, and the Parent newsletter.
+- Separate visible privacy, general-marketing, and Parent-newsletter checkboxes are removed.
+- Acceptance still produces versioned internal scope evidence; unsubscribe, DND, complaint, hard-bounce, suppression, and withdrawal remain authoritative.
+- WhatsApp and Student-specific recording/recognition consent remain outside this Family signup checkbox.
+- Integration, exact-candidate browser proof at the required viewports, named qualified legal review, deployment, and production readback remain release tasks; this status entry does not claim they are complete.
+
 ## Current identities and checks
 
 | Item                           | Current truth                                                                                                                                                                                                                                                    |
