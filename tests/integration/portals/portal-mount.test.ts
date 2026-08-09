@@ -506,6 +506,33 @@ describe('OT-71 mounted parent and student portals', () => {
       expect(adminDashboard.status).toBe(200);
       expect(await adminDashboard.text()).toContain('crm-root');
 
+      const support = await fetch(`${server.baseUrl}/app/support`, {
+        headers: { cookie: adminCookie },
+      });
+      expect(support.status).toBe(200);
+      expect(await support.text()).toContain('crm-root');
+      const adminDirectory = await fetch(`${server.baseUrl}/api/v1/admin-directory/users`, {
+        headers: { cookie: adminCookie },
+      });
+      expect(adminDirectory.status).not.toBe(401);
+      const contactOperations = await fetch(
+        `${server.baseUrl}/api/v1/contact-operations/parent-shell`,
+        { headers: { cookie: adminCookie } },
+      );
+      expect(contactOperations.status).not.toBe(401);
+      const learning = await fetch(`${server.baseUrl}/api/app/learning/questions`, {
+        headers: { cookie: adminCookie },
+      });
+      expect(learning.status).not.toBe(401);
+      const approvedSchools = await fetch(`${server.baseUrl}/api/v2.1/admin/approved-schools`, {
+        headers: { cookie: adminCookie },
+      });
+      expect(approvedSchools.status).not.toBe(401);
+      const ops = await fetch(`${server.baseUrl}/api/v1/ops/diagnostics`, {
+        headers: { cookie: adminCookie },
+      });
+      expect(ops.status).not.toBe(403);
+
       const publication = await fetch(
         `${server.baseUrl}/api/app/content/publication/approved-projections`,
         {
