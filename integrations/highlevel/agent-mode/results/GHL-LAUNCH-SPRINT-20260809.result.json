@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "task_id": "GHL-LAUNCH-SPRINT-20260809",
   "lane": "OT-P3",
-  "generated_at": "2026-08-09T11:42:00+03:00",
+  "generated_at": "2026-08-09T11:52:00+03:00",
   "repository": "shloimie-beep/onetimev2",
   "source": {
     "pull_request": 131,
@@ -25,11 +25,13 @@
       "Saved and reopened the Family account confirmation email content.",
       "Ran exactly one workflow test using an existing operator-owned seed contact.",
       "Sent OT-P4 a bounded one-canary gate handoff; no general enrollment was authorized.",
-      "Disabled OT-01 Allow re-entry and Allow multiple opportunities, saved, reopened, and verified both remained off."
+      "Disabled OT-01 Allow re-entry and Allow multiple opportunities, saved, reopened, and verified both remained off.",
+      "Renamed OT-01 to OT-01 Family Account Confirmation; verified folder 00 - Intake & Data.",
+      "Returned OT-01 from Published to Draft and verified Draft on the workflow list.",
+      "Changed the OT-01 action From name/address to the approved Rabbi identity; saved, reopened, and verified both fields persisted."
     ],
     "unresolved_delta_only": [
-      "Approved Rabbi visible From and Reply-To identity.",
-      "OT-01 visible name and folder readback.",
+      "Rabbi sender inbox/header/Reply-To delivery acceptance without a repeat send.",
       "Inbox receipt and Rabbi-identity reply round trip.",
       "Current Old App Active count, one seed campaign proof, and send-once campaign.",
       "OT-02B nurture configuration.",
@@ -53,26 +55,31 @@
       "mx": "verified",
       "dmarc": "verified"
     },
-    "mailbox_or_forwarder": "not_proven",
-    "monitored_replies": "not_proven_for_requested_identity",
-    "provider_acceptance": "not_run_for_requested_identity",
-    "seed_inbox": "not_run_for_requested_identity",
-    "reply_round_trip": "not_run_for_requested_identity",
+    "mailbox_or_forwarder": "historical operator message addressed to alias on 2026-08-05; forwarding destination not proven",
+    "monitored_replies": "not_proven_without_repeat_send",
+    "provider_acceptance": "configuration_save_reopen_passed; delivery_header_acceptance_not_retested",
+    "seed_inbox": "not_repeated_per_controller",
+    "reply_round_trip": "not_repeated_per_controller",
     "status": "blocked",
-    "minimum_blocker": "Configure the approved Rabbi visible From and Reply-To in HighLevel and prove one operator-owned inbox/reply round trip."
+    "minimum_blocker": "Permit one new operator-owned Rabbi-identity inbox/header/reply canary, or supply existing received-message headers plus the matching GHL conversation.",
+    "observed_action_override": {
+      "from_name": "Rabbi Eli Scheller",
+      "from_address": "rabbielischeller@onetimeonetime.com",
+      "save_reopen": "passed"
+    }
   },
   "workflows": {
     "ot_01": {
       "workflow_id": "95a6f461-1a04-4260-b379-246fdcc45af7",
       "requested_name": "OT-01 Family Account Confirmation",
-      "observed_name": "OT-01 New Lead Intake",
+      "observed_name": "OT-01 Family Account Confirmation",
       "status": "Draft",
       "trigger_readback": "no trigger; direct/API enrollment shape preserved",
       "current_action_count": 1,
       "action_type": "Email",
       "action_sender_readback": {
-        "from_name": "One Time Mishnayos",
-        "from_email": "info@onetimeonetime.com"
+        "from_name": "Rabbi Eli Scheller",
+        "from_email": "rabbielischeller@onetimeonetime.com"
       },
       "subject": "Your One Time Family account is ready",
       "preheader": "Sign in and add your Student accounts.",
@@ -83,9 +90,9 @@
         "implementation": "quick-compose hyperlink"
       },
       "save_readback": "Saved",
-      "reopen_readback": "passed",
+      "reopen_readback": "passed_after_name_folder_status_sender_changes",
       "allow_reentry_readback": false,
-      "folder_readback": "not_proven",
+      "folder_readback": "00 - Intake & Data",
       "seed_test": {
         "attempted_contacts": 1,
         "completed_enrollments": 1,
@@ -103,10 +110,8 @@
       "bounded_canary_gate": "one operator-owned Family signup canary permitted for OT-P4, followed by immediate runner disablement",
       "acceptance_status": "partial",
       "remaining_blockers": [
-        "Rename the visible workflow to the requested OT-01 name.",
-        "Verify/move to folder 00 - Intake & Data.",
-        "Replace the visible sender with the approved Rabbi identity.",
-        "Confirm operator-owned inbox receipt and reply round trip."
+        "Confirm operator-owned inbox headers show the approved visible From and Reply-To.",
+        "Complete one matching reply round trip into the correct GHL conversation."
       ],
       "allow_multiple_opportunities_readback": false,
       "duplicate_controls_save_reopen": "passed"
