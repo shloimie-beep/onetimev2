@@ -40,7 +40,6 @@ Status: in progress; no Zoom meeting has been created yet
 
 ## Remaining delta
 
-- Deploy the corrected exact learner mapping and verify production health.
 - Obtain a non-mutating authenticated Admin session or one-time operator login handoff.
 - Run exactly one disposable embedded host/Student canary, including same-device reconnect and second-device denial.
 - Reconcile attendance exactly once, delete the disposable Zoom meeting, restore any temporary Student credential exactly, and revoke canary sessions.
