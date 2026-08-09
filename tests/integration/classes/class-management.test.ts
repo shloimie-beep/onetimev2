@@ -16,6 +16,7 @@ import {
   listClassRecordingAccess,
   setClassRecordingLearnerAccess,
   unenrollLearnerFromClass,
+  updateManagedClassOccurrence,
   updateManagedClassSeries,
 } from '../../../packages/domain/src/index.ts';
 
@@ -319,6 +320,58 @@ describe('database-backed class, enrollment, and recording management', () => {
       href: null,
       launch_token_ref: 'class_access_denied',
     });
+  });
+
+  it('denies enrollment and class access after the canonical canceled state is persisted', async () => {
+    const { occurrenceKey } = await seedClassAndOccurrence();
+    const occurrence = await getManagedClassOccurrence({ pool, config, occurrenceKey });
+    if (!occurrence) throw new Error('Missing managed occurrence fixture.');
+    await enrollLearnerInClass({
+      pool,
+      config,
+      actor,
+      occurrenceKey,
+      payload: {
+        learner_key: 'learner_class_one',
+        idempotency_key: 'enroll-before-cancel-001',
+      },
+    });
+    await updateManagedClassOccurrence({
+      pool,
+      config,
+      actor,
+      occurrenceKey,
+      payload: {
+        starts_at: occurrence.starts_at,
+        ends_at: occurrence.ends_at,
+        status: 'cancelled',
+        version: occurrence.version,
+      },
+    });
+    await expect(
+      enrollLearnerInClass({
+        pool,
+        config,
+        actor,
+        occurrenceKey,
+        payload: {
+          learner_key: 'learner_class_two',
+          idempotency_key: 'enroll-after-cancel-001',
+        },
+      }),
+    ).rejects.toMatchObject({ code: 'INVALID_STATE' });
+    const classAccess = createClassPortalAccessAdapter({
+      pool,
+      config,
+      now: () => new Date('2026-08-04T16:30:00.000Z'),
+    });
+    await expect(
+      classAccess.protectedLaunch({
+        actor: studentActor('learner_class_one'),
+        learner: learnerProjection('learner_class_one', 'Enrolled Learner'),
+        class_key: occurrenceKey,
+      }),
+    ).resolves.toMatchObject({ href: null, launch_token_ref: 'class_access_denied' });
   });
 });
 

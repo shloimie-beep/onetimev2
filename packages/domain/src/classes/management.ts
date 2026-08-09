@@ -418,7 +418,7 @@ export async function enrollLearnerInClass(input: {
     if (!occurrence.rows[0]) {
       throw new ClassManagementError('NOT_FOUND', 'Class occurrence was not found.');
     }
-    if (occurrence.rows[0].occurrence_state === 'cancelled') {
+    if (occurrence.rows[0].occurrence_state === 'canceled') {
       throw new ClassManagementError(
         'INVALID_STATE',
         'A cancelled class cannot accept enrollment.',

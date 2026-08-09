@@ -359,7 +359,7 @@ export function createClassPortalAccessAdapter(input: {
           class_key,
         ],
       );
-      if (!enrollment.rows[0] || enrollment.rows[0].occurrence_state === 'cancelled') {
+      if (!enrollment.rows[0] || enrollment.rows[0].occurrence_state === 'canceled') {
         return classAccessDeniedAction(class_key);
       }
       return providerUnavailableAction(class_key);
