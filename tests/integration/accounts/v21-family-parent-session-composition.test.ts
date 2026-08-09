@@ -29,6 +29,10 @@ type SignupProjection = {
   human_account_id: string;
   household_id: string;
   access_state: 'free' | 'inactive';
+  access_branch:
+    'immediate_free' | 'inactive_checkout' | 'inactive_identity_review' | 'inactive_support';
+  checkout_required: boolean;
+  checkout_blocked_by_identity_review: boolean;
 };
 
 type SignupResult = {
@@ -209,6 +213,11 @@ describe('I36 central Family-signup and Parent-session composition', () => {
       provider_effects_completed_inline: 0,
     });
     expect(preExpiry.projection.access_state).toBe('free');
+    expect(preExpiry.projection).toMatchObject({
+      access_branch: 'immediate_free',
+      checkout_required: false,
+      checkout_blocked_by_identity_review: false,
+    });
     await expectParentShell(preExpiry.hostCookie, '/app/parent', 200);
     await expectParentShell(preExpiry.hostCookie, '/select-household', 200);
     const household = await fetch(`${baseUrl}/api/app/parent/household`, {
@@ -238,16 +247,23 @@ describe('I36 central Family-signup and Parent-session composition', () => {
     expect(cutoff.response.status).toBe(202);
     expect(cutoff.body).toMatchObject({
       success: true,
-      code: 'SIGNUP_COMMITTED_CHECKOUT_HANDOFF_QUEUED',
+      code: 'SIGNUP_COMMITTED_SUPPORT_REQUIRED',
       local_access_state: 'inactive',
+      checkout_required: false,
+      checkout_handoff_state: 'not_configured',
       session_established: true,
-      next_action: 'checkout_handoff_queued',
+      next_action: 'support',
       checkout_provider: 'highlevel',
-      financial_provider: 'stripe',
       direct_stripe_mutation_by_one_time: false,
       provider_effects_completed_inline: 0,
     });
-    expect(cutoff.projection.access_state).toBe('inactive');
+    expect(cutoff.body).not.toHaveProperty('financial_provider');
+    expect(cutoff.projection).toMatchObject({
+      access_state: 'inactive',
+      access_branch: 'inactive_support',
+      checkout_required: false,
+      checkout_blocked_by_identity_review: false,
+    });
     await expectParentShell(cutoff.hostCookie, '/app/parent/account', 200);
     await expectParentShell(cutoff.hostCookie, '/select-household', 200);
     await expectParentShell(cutoff.hostCookie, '/app/parent/students', 403);
@@ -1015,7 +1031,10 @@ async function signupProjection(normalizedEmail: string): Promise<SignupProjecti
     `SELECT adult.adult_id,
             account.human_account_id,
             household.household_id,
-            access.current_state AS access_state
+            access.current_state AS access_state,
+            signup_access.access_branch,
+            signup_access.checkout_required,
+            signup_access.checkout_blocked_by_identity_review
        FROM onetime.v21_adult_identities AS adult
        JOIN onetime.v21_human_accounts AS account
          ON account.adult_id = adult.adult_id
@@ -1025,7 +1044,12 @@ async function signupProjection(normalizedEmail: string): Promise<SignupProjecti
        JOIN onetime.canonical_aggregate_states AS access
          ON access.aggregate_kind = 'access'
         AND access.aggregate_key = household.household_id
-      WHERE adult.normalized_email = $1`,
+       JOIN onetime.family_signup_access_projections AS signup_access
+         ON signup_access.household_id = household.household_id
+        AND signup_access.product = household.product_key
+        AND signup_access.runtime_tier = household.runtime_tier
+        AND signup_access.verification_environment_id = household.verification_environment_id
+       WHERE adult.normalized_email = $1`,
     [normalizedEmail],
   );
   const row = result.rows[0] as Record<string, unknown> | undefined;
@@ -1035,6 +1059,9 @@ async function signupProjection(normalizedEmail: string): Promise<SignupProjecti
     human_account_id: String(row.human_account_id),
     household_id: String(row.household_id),
     access_state: String(row.access_state) as SignupProjection['access_state'],
+    access_branch: String(row.access_branch) as SignupProjection['access_branch'],
+    checkout_required: Boolean(row.checkout_required),
+    checkout_blocked_by_identity_review: Boolean(row.checkout_blocked_by_identity_review),
   };
 }
 
