@@ -205,7 +205,7 @@ describe('I36 central Family-signup and Parent-session composition', () => {
       local_access_state: 'free',
       session_established: true,
       next_action: 'parent_overview',
-      continue_to: '/app/parent',
+      continue_to: 'https://app.onetimeonetime.com/app/parent',
       provider_effects_completed_inline: 0,
     });
     expect(preExpiry.projection.access_state).toBe('free');
