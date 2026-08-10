@@ -14,14 +14,13 @@ Snapshot: 2026-08-10 (Asia/Jerusalem)
 
 - The secure adult-session repair is deployed. It is not operator accepted until one normal sign-in, role switch, protected-page refresh, logout, and second login passes.
 - The launch product is one recurring 7:00 PM class, shown through Next Class. Rabbi Eli has full Admin access.
-- The immediate teaching loop includes private Rabbi-moderated prompts, one worksheet round trip, three simple badges, embedded recurring Zoom, and protected Vimeo playback.
+- The immediate teaching loop includes private Rabbi-moderated prompts, one worksheet round trip, three simple badges, and protected Vimeo playback. Initial launch succeeds without Zoom.
 
 ## Active blockers
 
 1. Parent-created Student returned two atomic production 500s; diagnose the correlated trace before any retry.
 2. One-agreement change remains stale/draft and needs current-base legal/copy reconciliation.
-3. Zoom UI is deployed but unaccepted. The historical disposable canary was fully cleaned; launch now requires secure governed binding and role-scoped embedded joins to the one pre-created recurring meeting, not meeting-per-occurrence or per-Student registrants.
-4. Recording publication/protected library and minimal adult GHL signup/reminder acceptance remain unproven. Family GHL synchronization is disabled.
+3. Recording publication/protected library and minimal adult GHL signup/email-flow acceptance remain unproven. Family GHL synchronization is disabled.
 
 ## Next operator action
 
@@ -31,5 +30,7 @@ NO OPERATOR ACTION — resolve the Parent-to-Student failure trace and agreement
 
 - No Student GHL contacts; no broad campaigns, billing, nurture, newsletters, former-member reactivation, recording notices, or other GHL workflows.
 - Zoom canary false; media defaults off; live billing false.
+- Embedded Zoom is `LATER — FREE MONTH`: basic access to one pre-created recurring meeting is the first target; Stage Host and OBS controls are optional later enhancements.
+- BNA task management and Telegram monitoring are outside the initial-launch critical path.
 - No points economy, rewards, public/class leaderboard, parent goals, editable badge rules, extra launch levels, Student-to-Student chat, or launch month grid.
 - A deployed surface or provider configuration is never `OPERATOR ACCEPTED` without the real journey on this exact source.

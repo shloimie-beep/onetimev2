@@ -2,26 +2,26 @@
 
 Current source/deployments/migration truth is exactly the STATUS snapshot: `dcdc0756ac248466c1671f681f8605d1757f9b0c`, web `41dd0e58-e111-4499-8ddd-01b81cad532b`, worker `df76d339-7b88-42c0-a72b-76f9c2219da2`, and 106/106 migrations applied.
 
-| Capability | State | Immediate contract |
-| --- | --- | --- |
-| One recurring 7:00 PM class / Next Class | DECIDED | One canonical class; no launch month grid. |
-| Adult secure session | DEPLOYED | One normal operator smoke is still required. |
-| Parent creates Student / automatic enrollment | BLOCKED | Diagnose the two atomic 500 traces; do not retry blindly. |
-| Rabbi Eli full Admin | DECIDED | Accept through the Rabbi/Admin teaching journey. |
-| One agreement | BLOCKED | Reconcile current-base draft and legal/copy acceptance. |
-| Recurring Zoom / embedded classroom / Stage Host | DEPLOYED | One pre-created recurring meeting; secure governed binding, role-scoped embedded joins, featured-Student flow, attendance, reconnect and denial acceptance remain. |
-| Rabbi Prompt Board | DECIDED | Private Student responses and Rabbi replies; Rabbi selectively publishes an approved Student name; no peer chat. |
-| Worksheet round trip | DECIDED | Rabbi sends; Student submits; Rabbi returns or accepts. |
-| Three launch badges | DECIDED | Consistency from verified attendance, Curious Learner from Rabbi-approved/featured response, Review Ready from accepted worksheet; one threshold each. |
-| Protected Vimeo library / recording | BLOCKED | Publish, play, and unpublish one approved recording; transcript intelligence is later. |
-| Adult GHL minimum | BLOCKED | One adult contact/household opportunity, approved acquisition/member mapping, OT-01, one reminder, adult support/suppression and Rabbi routing; no Student contacts. |
-| Landing visual/copy corrections | OPERATOR ACCEPTED | Operator owns final acceptance corrections; no agent redesign. |
-| Points, rewards, leaderboards, parent goals, extra badge levels | OFF | Preserve historical evidence only. |
-| Billing, broad GHL, transcripts/knowledge, multiple classes/calendar | LATER | Must not block this launch. |
+| Capability                                                                                                     | State                               | Immediate contract                                                                                                                                                                                                                 |
+| -------------------------------------------------------------------------------------------------------------- | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| One recurring 7:00 PM class / Next Class                                                                       | DECIDED                             | One canonical class; no launch month grid.                                                                                                                                                                                         |
+| Adult secure session                                                                                           | DEPLOYED                            | One normal operator smoke is still required.                                                                                                                                                                                       |
+| Parent creates Student / automatic enrollment                                                                  | BLOCKED                             | Diagnose the two atomic 500 traces; do not retry blindly.                                                                                                                                                                          |
+| Rabbi Eli full Admin                                                                                           | DECIDED                             | Accept through the Rabbi/Admin teaching journey.                                                                                                                                                                                   |
+| One agreement                                                                                                  | BLOCKED                             | Reconcile current-base draft and legal/copy acceptance.                                                                                                                                                                            |
+| Recurring Zoom / embedded classroom / Stage Host                                                               | LATER — FREE MONTH                  | Initial launch succeeds without Zoom. The free-month target is basic role-scoped embedded access to one pre-created recurring meeting; Stage Host and OBS controls are optional later enhancements.                                |
+| Rabbi Prompt Board                                                                                             | DECIDED                             | Private Student responses and Rabbi replies; Rabbi selectively publishes an approved Student name; no peer chat.                                                                                                                   |
+| Worksheet round trip                                                                                           | DECIDED                             | Rabbi sends; Student submits; Rabbi returns or accepts.                                                                                                                                                                            |
+| Three launch badges                                                                                            | DECIDED                             | Consistency from Rabbi/Admin-confirmed attendance or an existing governed attendance record, Curious Learner from Rabbi-approved/featured response, Review Ready from accepted worksheet; one threshold each.                      |
+| Protected Vimeo library / recording                                                                            | BLOCKED                             | Publish, play, and unpublish one approved recording; transcript intelligence is later.                                                                                                                                             |
+| Adult GHL minimum                                                                                              | BLOCKED                             | One adult contact path, one approved Family pipeline, one household opportunity only when the merged bridge requires it, and one basic launch email workflow with Rabbi sender/reply routing and suppression; no Student contacts. |
+| Landing visual/copy corrections                                                                                | OPERATOR-OWNED / PENDING FINAL PASS | Operator owns final acceptance corrections; no agent redesign.                                                                                                                                                                     |
+| Points, rewards, leaderboards, parent goals, extra badge levels                                                | OFF                                 | Preserve historical evidence only.                                                                                                                                                                                                 |
+| Billing, broad GHL, transcripts/knowledge, multiple classes/calendar, BNA task management, Telegram monitoring | LATER                               | Must not block this launch.                                                                                                                                                                                                        |
 
 ## Order
 
 1. Foundation: resolve session smoke, Parent-to-Student, and one agreement.
-2. Learning and classroom: private prompt board, worksheet, badges; then one recurring-meeting embedded join/Stage Host/attendance proof.
-3. Media and minimal GHL: one recording loop and one adult-only bounded signup/reminder readback.
+2. Learning: private prompt board, worksheet, and badges using Rabbi/Admin-confirmed or existing governed attendance.
+3. Media and minimal GHL: one recording loop and one adult-only bounded signup/pipeline/email-flow readback.
 4. Integrate once, deploy one exact candidate, and ask for one full operator journey. Only that journey can move a capability to `OPERATOR ACCEPTED`.

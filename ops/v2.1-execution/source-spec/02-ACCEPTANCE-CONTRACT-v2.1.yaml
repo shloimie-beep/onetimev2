@@ -3608,12 +3608,12 @@ requirements:
     stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
 - id: OTV2-CLASSROOM-069
   area: CLASSROOM
-  requirement: Historical per-occurrence Zoom meeting requirement, superseded for immediate launch by secure governed binding to one pre-created recurring meeting.
+  requirement: Historical meeting-per-occurrence model, superseded. It is not an initial-launch blocker or release gate; free-month work may provide basic embedded access to one pre-created recurring meeting.
   spec_refs: *id012
-  normative_status: required
+  normative_status: deferred
   verification_status: unimplemented
-  priority: launch_blocker
-  release_gate: true
+  priority: later
+  release_gate: false
   owner_domain: classroom
   depends_on:
   - OTV2-CALENDAR-058
@@ -3637,12 +3637,10 @@ requirements:
     - operator-owned occurrence and up to three real Student fixtures exist
     - Zoom live/sandbox authority is explicit
     steps:
-    - prepare the roster and confirm it
-    - read back meeting and per-Student registration
-    - join through embedded portals on separate tablets
-    - exercise sibling, second-device, timeout, and reconnect branches
+    - retain the historical model as superseded evidence
+    - if OT-CTRL starts free-month work, test only basic role-scoped embedded access to the one pre-created recurring meeting
     expected_results:
-    - One app-owned Zoom meeting is created per occurrence.
+    - No meeting-per-occurrence creation is required or permitted for initial launch, and no Zoom proof gates initial launch.
     forbidden_effects:
     - raw Zoom URL exposure
     - shared bearer credential
@@ -3654,7 +3652,7 @@ requirements:
     stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
 - id: OTV2-CLASSROOM-070
   area: CLASSROOM
-  requirement: Historical per-Student Zoom registrant requirement, superseded for immediate launch by governed role-scoped joins to one pre-created recurring meeting.
+  requirement: Historical per-Student Zoom registrant model, superseded. It is not an initial-launch blocker or release gate; free-month work may provide basic embedded access to one pre-created recurring meeting without registrants.
   spec_refs: *id012
   normative_status: deferred
   verification_status: unimplemented
@@ -3683,10 +3681,8 @@ requirements:
     - operator-owned occurrence and up to three real Student fixtures exist
     - Zoom live/sandbox authority is explicit
     steps:
-    - prepare the roster and confirm it
-    - read back meeting and per-Student registration
-    - join through embedded portals on separate tablets
-    - exercise sibling, second-device, timeout, and reconnect branches
+    - retain the historical model as superseded evidence
+    - if OT-CTRL starts free-month work, test only basic role-scoped embedded access to the one pre-created recurring meeting
     expected_results:
     - This historical case is retained as superseded evidence and does not gate the immediate launch.
     forbidden_effects:

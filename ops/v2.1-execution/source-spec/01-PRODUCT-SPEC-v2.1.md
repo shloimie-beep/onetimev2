@@ -968,6 +968,8 @@ The product does not label a Student “present” from an arbitrary percentage 
 
 For the fixed attendance-count and streak badge/leaderboard rules, a scheduled completed occurrence counts as attended when it contains at least one validated attendance minute or an Admin correction marks attendance. A canceled occurrence does not break a streak. A completed scheduled occurrence with zero validated minutes breaks the current streak. Manual correction recalculates affected projections and is audited.
 
+For initial launch recognition, `Consistency` may use Rabbi/Admin-confirmed attendance or an existing governed attendance record. It must not require embedded Zoom, provider attendance, Stage Host, or OBS control proof.
+
 ### PS-016.2 Progress
 
 Student progress includes:
