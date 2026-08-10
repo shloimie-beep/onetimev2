@@ -36,6 +36,12 @@ export type FamilySignupAccessSourceCorrectionExecution =
     production_execution_gate?: 'approved_family_signup_access_source_correction';
   };
 
+export type FamilySignupAccessSourceCorrectionExecutionDependencies = {
+  /** Test-only trusted server clock. Production leaves this undefined and reads
+   * CURRENT_TIMESTAMP from the serializable transaction. */
+  clock?: () => Date;
+};
+
 const EXECUTION_GATE = 'approved_family_signup_access_source_correction' as const;
 export const FAMILY_SIGNUP_ACCESS_CORRECTION_SOURCE_EFFECTIVE_AT = '2026-08-04T12:05:49.000Z';
 export const FAMILY_SIGNUP_ACCESS_CORRECTION_EXPIRES_AT = '2026-09-11T18:00:00+03:00';
@@ -68,6 +74,7 @@ export async function inspectFamilySignupAccessSourceCorrection(
 export async function executeFamilySignupAccessSourceCorrection(
   pool: DbPool,
   input: FamilySignupAccessSourceCorrectionExecution,
+  dependencies: FamilySignupAccessSourceCorrectionExecutionDependencies = {},
 ) {
   if (input.controller_execution_gate !== EXECUTION_GATE) {
     throw new Error('Family-signup access correction requires controller authorization.');
@@ -79,13 +86,15 @@ export async function executeFamilySignupAccessSourceCorrection(
   }
   const invalid = validateRequest(input);
   if (invalid) throw new Error(`Family-signup access correction refused: ${invalid}.`);
-  if (Date.parse(input.observed_at) >= Date.parse(input.expires_at)) {
-    throw new Error('Family-signup access correction refused: free_period_cutoff_reached.');
-  }
-
   const client = await pool.connect();
   try {
     await client.query('BEGIN ISOLATION LEVEL SERIALIZABLE');
+    const trustedNow = dependencies.clock
+      ? dependencies.clock()
+      : await currentTransactionTimestamp(client);
+    if (trustedNow.getTime() >= Date.parse(input.expires_at)) {
+      throw new Error('Family-signup access correction refused: free_period_cutoff_reached.');
+    }
     await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [
       `family-signup-access-source-correction:${input.household_id}`,
     ]);
@@ -163,6 +172,21 @@ export async function executeFamilySignupAccessSourceCorrection(
   } finally {
     client.release();
   }
+}
+
+async function currentTransactionTimestamp(db: Queryable) {
+  const result = await db.query('SELECT CURRENT_TIMESTAMP AS current_timestamp');
+  if (result.rowCount !== 1)
+    throw new Error('Family-signup access correction clock is unavailable.');
+  const current = (result.rows[0] as { current_timestamp?: unknown }).current_timestamp;
+  if (!(current instanceof Date) && typeof current !== 'string') {
+    throw new Error('Family-signup access correction clock is invalid.');
+  }
+  const parsed = new Date(current);
+  if (!Number.isFinite(parsed.getTime())) {
+    throw new Error('Family-signup access correction clock is invalid.');
+  }
+  return parsed;
 }
 
 async function loadCandidate(

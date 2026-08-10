@@ -1198,6 +1198,8 @@ async function resolveActiveFamilySignupAccessCorrection(
         AND transition.resulting_version = 1
         AND transition.access_cause = 'free_period'
         AND transition.created_at = correction.source_effective_at
+        AND correction.source_effective_at = timestamptz '2026-08-04T12:05:49.000Z'
+        AND correction.expires_at = timestamptz '2026-09-11T18:00:00+03:00'
       WHERE correction.household_id = $1
         AND correction.product = $2
         AND correction.runtime_tier = $3

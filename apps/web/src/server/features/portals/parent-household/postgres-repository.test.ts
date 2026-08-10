@@ -698,6 +698,52 @@ describe('P12 concrete PostgreSQL Parent household repository', () => {
       expires_at: new Date(expiresAt),
     });
 
+    const mismatched = await seedParent(
+      pool,
+      'correction-receipt-mismatched-window',
+      0,
+      'free',
+      false,
+      'post_cutover_family_signup',
+      FAMILY_SIGNUP_ACCESS_CORRECTION_SOURCE_EFFECTIVE_AT,
+    );
+    await expect(
+      pool.query(
+        `INSERT INTO onetime.family_signup_access_source_correction_receipts
+           (correction_receipt_key, household_id, product, runtime_tier,
+            verification_environment_id, source_transition_key, source_effective_at,
+            expires_at, correction_state, controller_authorization_reference, request_digest)
+         VALUES ('test-mismatched-correction',$1,'one_time_mishnayos','isolated_staging','ci',$2,$3,
+                 '2026-09-12T18:00:00+03:00','active','test-controller-authorization',$4)`,
+        [
+          mismatched.householdId,
+          `transition-${mismatched.householdId}`,
+          sourceEffectiveAt,
+          'c'.repeat(64),
+        ],
+      ),
+    ).rejects.toThrow();
+    await expect(
+      concreteService(pool, 'student-mismatched-correction').createStudent(
+        mismatched.principal,
+        {
+          expected_revision: 1,
+          actual_name: 'Mismatched Correction Student',
+          username: 'mismatched.correction.student',
+          relationship: 'dependent',
+          new_password: 'safe-password-123',
+          password_confirmation: 'safe-password-123',
+        },
+        mutationContext('correction-receipt-mismatched-window', 'a'),
+      ),
+    ).rejects.toThrow(/household access source is unavailable/i);
+    await expect(
+      countWhere(pool, 'v21_student_profiles', 'household_id', mismatched.householdId),
+    ).resolves.toBe(0);
+    await expect(
+      countWhere(pool, 'account_access_projections', 'household_key', mismatched.householdId),
+    ).resolves.toBe(0);
+
     const expired = await seedParent(
       pool,
       'correction-receipt-expired',
@@ -799,7 +845,16 @@ describe.runIf(nativeEnabled)('P12 native PostgreSQL through migration 2255', ()
   }, 30_000);
 
   it('allows one concurrent final-seat winner and leaves complete canonical evidence', async () => {
-    const fixture = await seedParent(pool as DbPool, 'native', 2);
+    const fixture = await seedParent(
+      pool as DbPool,
+      'native',
+      2,
+      'active',
+      true,
+      'legacy',
+      undefined,
+      true,
+    );
     const first = concreteService(pool as DbPool, 'student-native-a');
     const second = concreteService(pool as DbPool, 'student-native-b');
     const command = {
@@ -833,7 +888,16 @@ describe.runIf(nativeEnabled)('P12 native PostgreSQL through migration 2255', ()
   });
 
   it('serializes same-key create and reset races before lazy credential hashing', async () => {
-    const fixture = await seedParent(pool as DbPool, 'native-replay-race', 0);
+    const fixture = await seedParent(
+      pool as DbPool,
+      'native-replay-race',
+      0,
+      'active',
+      true,
+      'legacy',
+      undefined,
+      true,
+    );
     let createHashCount = 0;
     const createService = concreteService(
       pool as DbPool,
@@ -914,7 +978,16 @@ describe.runIf(nativeEnabled)('P12 native PostgreSQL through migration 2255', ()
   });
 
   it('rolls every staged row back on an injected mid-transaction failure', async () => {
-    const fixture = await seedParent(pool as DbPool, 'native-rollback', 0);
+    const fixture = await seedParent(
+      pool as DbPool,
+      'native-rollback',
+      0,
+      'active',
+      true,
+      'legacy',
+      undefined,
+      true,
+    );
     const faultPool = failOn(
       pool as DbPool,
       'INSERT INTO onetime.admin_canonical_student_enrollments',
@@ -954,34 +1027,42 @@ describe.runIf(nativeEnabled)('P12 native PostgreSQL through migration 2255', ()
     ).resolves.toBe(0);
   });
 
-  it('creates a Student from proven pre-cutover legacy free authority with operation-time access projection', async () => {
-    const fixture = await seedParent(pool as DbPool, 'native-legacy-free', 0, 'free', false);
+  it('fails closed on native PostgreSQL when a current free period has no authorized source', async () => {
+    const fixture = await seedParent(
+      pool as DbPool,
+      'native-missing-free-source',
+      0,
+      'free',
+      false,
+      'post_cutover_family_signup',
+      undefined,
+      true,
+    );
     await expect(
-      concreteService(pool as DbPool, 'student-native-legacy-free').createStudent(
+      concreteService(pool as DbPool, 'student-native-missing-free-source').createStudent(
         fixture.principal,
         {
           expected_revision: 1,
-          actual_name: 'Native Legacy Free Student',
-          username: 'native.legacy.free',
+          actual_name: 'Native Missing Source Student',
+          username: 'native.missing.source',
           relationship: 'dependent',
           new_password: 'safe-password-123',
           password_confirmation: 'safe-password-123',
         },
-        mutationContext('native-legacy-free', '5'),
+        mutationContext('native-missing-free-source', '5'),
       ),
-    ).resolves.toMatchObject({ snapshot: { active_student_count: 1 } });
-    const projection = await pool.query(
-      `SELECT state, source_kind, effective_at, expires_at
-         FROM onetime.account_access_projections
-        WHERE household_key = $1`,
-      [fixture.householdId],
-    );
-    expect(projection.rows[0]).toMatchObject({
-      state: 'active',
-      source_kind: 'legacy_preview',
-      effective_at: now,
-      expires_at: null,
-    });
+    ).rejects.toThrow(/household access source is unavailable/i);
+    await expect(
+      countWhere(pool as DbPool, 'v21_student_profiles', 'household_id', fixture.householdId),
+    ).resolves.toBe(0);
+    await expect(
+      countWhere(
+        pool as DbPool,
+        'account_access_projections',
+        'household_key',
+        fixture.householdId,
+      ),
+    ).resolves.toBe(0);
   });
 
   it('records one controller-gated correction on native PostgreSQL without fabricating signup evidence', async () => {
@@ -993,6 +1074,7 @@ describe.runIf(nativeEnabled)('P12 native PostgreSQL through migration 2255', ()
       false,
       'post_cutover_family_signup',
       FAMILY_SIGNUP_ACCESS_CORRECTION_SOURCE_EFFECTIVE_AT,
+      true,
     );
     const sourceEffectiveAt = FAMILY_SIGNUP_ACCESS_CORRECTION_SOURCE_EFFECTIVE_AT;
     const request = {
@@ -1051,6 +1133,42 @@ describe.runIf(nativeEnabled)('P12 native PostgreSQL through migration 2255', ()
       effective_at: new Date(sourceEffectiveAt),
       expires_at: new Date(FAMILY_SIGNUP_ACCESS_CORRECTION_EXPIRES_AT),
     });
+
+    const afterCutoff = await seedParent(
+      pool as DbPool,
+      'native-correction-after-cutoff',
+      0,
+      'free',
+      false,
+      'post_cutover_family_signup',
+      FAMILY_SIGNUP_ACCESS_CORRECTION_SOURCE_EFFECTIVE_AT,
+      true,
+    );
+    await expect(
+      executeFamilySignupAccessSourceCorrection(
+        pool as unknown as DbPool,
+        {
+          ...request,
+          correction_receipt_key: 'native-family-signup-source-correction-after-cutoff',
+          household_id: afterCutoff.householdId,
+        },
+        { clock: () => new Date(FAMILY_SIGNUP_ACCESS_CORRECTION_EXPIRES_AT) },
+      ),
+    ).rejects.toThrow(/free_period_cutoff_reached/i);
+    await expect(
+      countWhere(
+        pool as DbPool,
+        'family_signup_access_source_correction_receipts',
+        'household_id',
+        afterCutoff.householdId,
+      ),
+    ).resolves.toBe(0);
+    await expect(
+      countWhere(pool as DbPool, 'family_signup_requests', 'household_id', afterCutoff.householdId),
+    ).resolves.toBe(0);
+    await expect(
+      countWhere(pool as DbPool, 'family_signup_outbox', 'household_id', afterCutoff.householdId),
+    ).resolves.toBe(0);
   });
 });
 
@@ -1170,6 +1288,7 @@ async function seedParent(
   includeSignupAccessProjection = true,
   freeProvenance: 'legacy' | 'post_cutover_family_signup' = 'legacy',
   freePeriodEffectiveAt?: string,
+  native = false,
 ) {
   const adultId = `adult-${suffix}`;
   const accountId = `account-${suffix}`;
@@ -1205,16 +1324,6 @@ async function seedParent(
              'one_time_mishnayos','isolated_staging','ci',$6,$6)`,
     [householdId, adultId, accountId, activeStudents, `access:${householdId}`, now.toISOString()],
   );
-  await pool.query(
-    `INSERT INTO onetime.canonical_aggregate_states
-       (aggregate_kind, aggregate_key, current_state, version, product_key,
-        runtime_tier, verification_environment_id, last_transition_key,
-        created_by_actor_kind, created_by_actor_key, last_mutated_by_actor_kind,
-        last_mutated_by_actor_key, created_at, updated_at)
-     VALUES ('access',$1,$2,1,'one_time_mishnayos','isolated_staging','ci',$3,
-             'system','P12-test','system','P12-test',$4,$4)`,
-    [householdId, accessState, `transition-${householdId}`, now.toISOString()],
-  );
   const canonicalEventAt =
     accessState === 'free' &&
     !includeSignupAccessProjection &&
@@ -1227,6 +1336,20 @@ async function seedParent(
     freeProvenance === 'post_cutover_family_signup'
       ? 'free_period'
       : null;
+  const initialCanonicalState = native && accessState !== 'free' ? 'free' : accessState;
+  const initialCanonicalCause = native ? 'free_period' : canonicalAccessCause;
+  if (!native) {
+    await pool.query(
+      `INSERT INTO onetime.canonical_aggregate_states
+         (aggregate_kind, aggregate_key, current_state, version, product_key,
+          runtime_tier, verification_environment_id, last_transition_key,
+          created_by_actor_kind, created_by_actor_key, last_mutated_by_actor_kind,
+          last_mutated_by_actor_key, created_at, updated_at)
+       VALUES ('access',$1,$2,1,'one_time_mishnayos','isolated_staging','ci',$3,
+               'system','P12-test','system','P12-test',$4,$4)`,
+      [householdId, accessState, `transition-${householdId}`, now.toISOString()],
+    );
+  }
   await pool.query(
     `INSERT INTO onetime.canonical_state_transition_events
        (transition_key, aggregate_kind, aggregate_key, previous_state, next_state,
@@ -1238,13 +1361,31 @@ async function seedParent(
     [
       `transition-${householdId}`,
       householdId,
-      accessState,
+      initialCanonicalState,
       `idempotency-${householdId}`,
       'e'.repeat(64),
-      canonicalAccessCause,
+      initialCanonicalCause,
       canonicalEventAt,
     ],
   );
+  if (native && accessState === 'active') {
+    await pool.query(
+      `INSERT INTO onetime.canonical_state_transition_events
+         (transition_key, aggregate_kind, aggregate_key, previous_state, next_state,
+          expected_version, resulting_version, product_key, runtime_tier,
+          verification_environment_id, actor_kind, actor_key, idempotency_key,
+          canonical_request_hash, access_cause, created_at)
+       VALUES ($1,'access',$2,'free','active',1,2,'one_time_mishnayos','isolated_staging','ci',
+               'system','P12-test',$3,$4,'verified_paid_or_contract',$5)`,
+      [
+        `transition-${householdId}-active`,
+        householdId,
+        `idempotency-${householdId}-active`,
+        'd'.repeat(64),
+        new Date(Date.parse(canonicalEventAt) + 1_000).toISOString(),
+      ],
+    );
+  }
   if (accessState === 'free' && includeSignupAccessProjection) {
     await pool.query(
       `INSERT INTO onetime.family_signup_access_projections

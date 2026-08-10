@@ -38,7 +38,10 @@ CREATE TABLE onetime.family_signup_access_source_correction_receipts (
   FOREIGN KEY (source_transition_key)
     REFERENCES onetime.canonical_state_transition_events(transition_key)
     ON DELETE RESTRICT,
-  CHECK (expires_at > source_effective_at),
+  CHECK (
+    source_effective_at = timestamptz '2026-08-04T12:05:49.000Z'
+    AND expires_at = timestamptz '2026-09-11T18:00:00+03:00'
+  ),
   CHECK (
     (runtime_tier = 'isolated_staging'
       AND verification_environment_id IN ('ci', 'provider_sandbox', 'persistent_staging'))
