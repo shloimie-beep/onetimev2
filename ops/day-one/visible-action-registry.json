@@ -4,19 +4,19 @@
   "source_inputs": [
     {
       "path": "ops/v2.1-execution/source-spec/02-ACCEPTANCE-CONTRACT-v2.1.yaml",
-      "sha256": "be40a6374f02ed1fd97267f343ab591579d0f4349da9f0515b0bfad14f7a4d51"
+      "sha256": "310ed26b3fd7a8aaf52224f75337a69d692605aed13a50179954132fdfad262b"
     },
     {
       "path": "ops/v2.1-execution/source-spec/03-DECISION-REGISTER-v2.1.md",
-      "sha256": "6ada06e19541a6591373136ec6b3b301ca440cdfc27a343affdd28c982c77033"
+      "sha256": "2529ed0998405c57ff2143b70a4770b17573fba0f485fe91af83afc68567925e"
     },
     {
       "path": "ops/v2.1-execution/source-spec/05-ACTOR-ROLE-CAPABILITY-ROUTE-MATRIX-v2.1.md",
-      "sha256": "f878ccf4b3143f7195ee1ad6eecfd8617beaf7b9e35ba5369846db066bd392c3"
+      "sha256": "80c0cd2dd3d7b700971fed82ac31f84e19d2366dd3c4bb53ef5671b70db5fdd9"
     },
     {
       "path": "ops/v2.1-execution/source-spec/08-SCREEN-CATALOG-AND-DESIGN-SYSTEM-v2.1.md",
-      "sha256": "49f62be1f179bcfb2c1c577cb47b9fd32f2a935b00364c73be69815cdb0d9b8f"
+      "sha256": "b728e50d34f83adc64ebe4a159fa44e6cb40a218dc504ef25e0a998ac1272e95"
     },
     {
       "path": "integrations/highlevel/registry/workflow-registry.yaml",

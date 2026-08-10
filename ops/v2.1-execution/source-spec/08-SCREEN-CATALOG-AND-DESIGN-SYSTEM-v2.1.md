@@ -464,9 +464,7 @@ The form collects exactly:
 - normalized email;
 - password and confirmation;
 - IANA household timezone, prefilled from the browser only as an editable suggestion;
-- required current Terms/privacy acceptance;
-- separate optional general-marketing consent;
-- separate optional Parent-newsletter consent.
+- exactly one required initially unchecked agreement control covering current Terms, Privacy, Student Data/Child Safety, Cancellation/Refund, and adult marketing email; no separate marketing or newsletter checkbox.
 
 It does not collect phone, country, Student information, learner relationship, guardian/recording/recognition consent, reminder preference, or a card.
 

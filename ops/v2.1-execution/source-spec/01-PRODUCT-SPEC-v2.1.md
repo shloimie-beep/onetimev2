@@ -332,7 +332,7 @@ Screen composition and responsive behavior are normative in `08-SCREEN-CATALOG-A
 
 ### PS-006.2 Family signup
 
-Family signup collects adult/account-owner first name, last name, email, password, editable IANA timezone, required account Terms/Privacy acceptance, and separate optional adult communication choices defined by `10-PRIVACY-CONSENT-RETENTION-DATA-RIGHTS-v2.1.md`. It collects no Student information and no guardian/dependent-Student affirmation; that affirmation occurs only when the Parent later creates a `dependent` Student.
+Family signup is the sole One Time account-creation form and authority for password, identity, household, access, agreement recording, and sessions. It collects adult/account-owner first name, last name, email, password, editable IANA timezone, and exactly one required initially unchecked agreement control. That single acceptance covers Terms, Privacy, Student Data/Child Safety, Cancellation/Refund, and adult marketing email; backend facts record version, timestamp, Terms/Privacy acceptance, and existing adult marketing/newsletter email consent fields. No separate marketing checkbox is shown. GHL is adult-only downstream event projection, never receives a password, and cannot create a Student contact. Suppression/unsubscribe/DND/complaint/bounce precedence remains enforceable; service/account/class messages remain distinct; this authorizes neither SMS, automated calls, nor WhatsApp. It collects no Student information and no guardian/dependent-Student affirmation; that affirmation occurs only when the Parent later creates a `dependent` Student.
 
 It:
 
