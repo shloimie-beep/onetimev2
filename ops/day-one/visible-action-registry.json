@@ -4,11 +4,11 @@
   "source_inputs": [
     {
       "path": "ops/v2.1-execution/source-spec/02-ACCEPTANCE-CONTRACT-v2.1.yaml",
-      "sha256": "5ba419467050fa78bc6a8b265bb6ce686fb4203e6dbf9fe94f484f29694d6a04"
+      "sha256": "be40a6374f02ed1fd97267f343ab591579d0f4349da9f0515b0bfad14f7a4d51"
     },
     {
       "path": "ops/v2.1-execution/source-spec/03-DECISION-REGISTER-v2.1.md",
-      "sha256": "95c981f41e6563782935ec7a9164d7e8af8f637da28da7a7320678f44d52a75e"
+      "sha256": "6ada06e19541a6591373136ec6b3b301ca440cdfc27a343affdd28c982c77033"
     },
     {
       "path": "ops/v2.1-execution/source-spec/05-ACTOR-ROLE-CAPABILITY-ROUTE-MATRIX-v2.1.md",

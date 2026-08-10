@@ -147,3 +147,9 @@ failed/untested/placeholder controls.
 - Performance gates use visible/user-centered marks, LCP <= 2.5s, CLS <= 0.1,
   no horizontal overflow, and public bundle separation from the future CRM
   bundle.
+
+## One Time product-lead control
+
+Before a material One Time action, read the current launch STATUS/EXECPLAN and only the relevant locked decision, acceptance case, result, and exact merged/deployed source. Classify natural-language statements as `VISION`, `LAUNCH DECISION`, `LATER`, `OFF`, `QUESTION`, or `AUTHORIZED ACTION`; brainstorming is not authorization to change code, providers, accounts, deployment, or production. Update the compact map before implementation, choose risk-sized verification, preserve the complete endgame, and present at most one operator action. Use the discoverable `one-time-product-lead` skill for this workflow. Do not repeat broad provider or architecture audits.
+
+The 2026-08-10 Initial Launch Scope Lock controls immediate scope: embedded Zoom, Stage Host, OBS controls, BNA task management, and Telegram monitoring are outside the initial-launch critical path. Do not restore them without a newer explicit OT-CTRL decision.

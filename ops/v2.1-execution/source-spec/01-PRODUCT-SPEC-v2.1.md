@@ -759,6 +759,8 @@ The launch catalog has exactly one active, published canonical recurring class:
 
 The recurrence stays at 7:00 p.m. Jerusalem through DST. Occurrences exist on a rolling 90-day horizon. Preparation runs automatically 24 hours before start and may be triggered manually earlier; the Parent reminder is scheduled 30 minutes before start; Student join opens 10 minutes before start. Unless an Admin closes or extends it, the occurrence auto-closes 15 minutes after scheduled end. Viewer-local display and timezone rules are defined in `08-SCREEN-CATALOG-AND-DESIGN-SYSTEM-v2.1.md`.
 
+For the immediate launch UI, Parent and Student use Next Class with join timing and recent recording access. Month-grid completion is later and must not block the one-class journey.
+
 ### PS-014.2 Calendar views
 
 Admin:
@@ -966,6 +968,8 @@ The product does not label a Student “present” from an arbitrary percentage 
 
 For the fixed attendance-count and streak badge/leaderboard rules, a scheduled completed occurrence counts as attended when it contains at least one validated attendance minute or an Admin correction marks attendance. A canceled occurrence does not break a streak. A completed scheduled occurrence with zero validated minutes breaks the current streak. Manual correction recalculates affected projections and is audited.
 
+For initial launch recognition, `Consistency` may use Rabbi/Admin-confirmed attendance or an existing governed attendance record. It must not require embedded Zoom, provider attendance, Stage Host, or OBS control proof.
+
 ### PS-016.2 Progress
 
 Student progress includes:
@@ -997,9 +1001,9 @@ Parent-created goals and arbitrary Admin goal builders are absent.
 
 Launch badges are:
 
-- Consistency I/II/III — 5/20/60 consecutive scheduled attendances;
-- Curious Learner I/II/III — 1/5/15 questions answered or approved for class;
-- Review Ready I/II/III — 1/4/12 completed review events.
+- Consistency — one verified-attendance threshold;
+- Curious Learner — one Rabbi-featured or Rabbi-approved question/response threshold;
+- Review Ready — one Rabbi-accepted worksheet threshold.
 
 Badges:
 
@@ -1010,9 +1014,11 @@ Badges:
 - have fixed rules at launch;
 - have no currency, catalog, or redemption behavior.
 
-### PS-016.5 Leaderboard
+### PS-016.5 Leaderboard (later)
 
 The authenticated class-only leaderboard has separate rolling-30-day categories:
+
+This historical design is deferred from the immediate launch. No public or class leaderboard, points economy, reward catalog, parent goal, editable badge rule, or additional badge level may block the three-badge launch contract.
 
 - attendance count;
 - current attendance streak;

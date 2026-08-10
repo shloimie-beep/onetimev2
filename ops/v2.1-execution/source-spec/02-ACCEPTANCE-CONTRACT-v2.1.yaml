@@ -236,8 +236,7 @@ verification_profiles:
     - sibling_denial
     - second_device
     canonical_preconditions:
-    - operator-owned occurrence and up to three real Student fixtures exist
-    - Zoom live/sandbox authority is explicit
+    - canonical 7:00 PM class and an authorized Adult/Student portal exist
     canonical_steps:
     - prepare the roster and confirm it
     - read back meeting and per-Student registration
@@ -3608,12 +3607,12 @@ requirements:
     stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
 - id: OTV2-CLASSROOM-069
   area: CLASSROOM
-  requirement: One app-owned Zoom meeting is created per occurrence.
+  requirement: Historical meeting-per-occurrence model, superseded. It is not an initial-launch blocker or release gate; free-month work may provide basic embedded access to one pre-created recurring meeting.
   spec_refs: *id012
-  normative_status: required
+  normative_status: deferred
   verification_status: unimplemented
-  priority: launch_blocker
-  release_gate: true
+  priority: later
+  release_gate: false
   owner_domain: classroom
   depends_on:
   - OTV2-CALENDAR-058
@@ -3637,12 +3636,10 @@ requirements:
     - operator-owned occurrence and up to three real Student fixtures exist
     - Zoom live/sandbox authority is explicit
     steps:
-    - prepare the roster and confirm it
-    - read back meeting and per-Student registration
-    - join through embedded portals on separate tablets
-    - exercise sibling, second-device, timeout, and reconnect branches
+    - retain the historical model as superseded evidence
+    - if OT-CTRL starts free-month work, test only basic role-scoped embedded access to the one pre-created recurring meeting
     expected_results:
-    - One app-owned Zoom meeting is created per occurrence.
+    - No meeting-per-occurrence creation is required or permitted for initial launch, and no Zoom proof gates initial launch.
     forbidden_effects:
     - raw Zoom URL exposure
     - shared bearer credential
@@ -3654,12 +3651,12 @@ requirements:
     stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
 - id: OTV2-CLASSROOM-070
   area: CLASSROOM
-  requirement: One separate Zoom registrant is created per Student.
+  requirement: Historical per-Student Zoom registrant model, superseded. It is not an initial-launch blocker or release gate; free-month work may provide basic embedded access to one pre-created recurring meeting without registrants.
   spec_refs: *id012
-  normative_status: required
+  normative_status: deferred
   verification_status: unimplemented
-  priority: launch_blocker
-  release_gate: true
+  priority: later
+  release_gate: false
   owner_domain: classroom
   depends_on:
   - OTV2-CALENDAR-058
@@ -3683,12 +3680,10 @@ requirements:
     - operator-owned occurrence and up to three real Student fixtures exist
     - Zoom live/sandbox authority is explicit
     steps:
-    - prepare the roster and confirm it
-    - read back meeting and per-Student registration
-    - join through embedded portals on separate tablets
-    - exercise sibling, second-device, timeout, and reconnect branches
+    - retain the historical model as superseded evidence
+    - if OT-CTRL starts free-month work, test only basic role-scoped embedded access to the one pre-created recurring meeting
     expected_results:
-    - One separate Zoom registrant is created per Student.
+    - This historical case is retained as superseded evidence and does not gate the immediate launch.
     forbidden_effects:
     - raw Zoom URL exposure
     - shared bearer credential
@@ -3700,12 +3695,12 @@ requirements:
     stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
 - id: OTV2-CLASSROOM-071
   area: CLASSROOM
-  requirement: Student portals receive secure Join Class state.
+  requirement: Free-month Zoom evidence: secure embedded Join Class state for one pre-created recurring meeting; not an initial-launch blocker or release gate.
   spec_refs: *id012
-  normative_status: required
+  normative_status: deferred
   verification_status: unimplemented
-  priority: launch_blocker
-  release_gate: true
+  priority: later
+  release_gate: false
   owner_domain: classroom
   depends_on:
   - OTV2-CALENDAR-058
@@ -3746,8 +3741,7 @@ requirements:
     stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
 - id: OTV2-CLASSROOM-072
   area: CLASSROOM
-  requirement: Parent class reminders label affected Students and use safe app links without authenticating a Student or exposing
-    a raw Zoom URL.
+  requirement: Initial-launch class reminder is sent only to the Adult, identifies affected Students safely, and links only to a protected One Time login or portal destination.
   spec_refs: *id012
   normative_status: required
   verification_status: unimplemented
@@ -3763,43 +3757,31 @@ requirements:
     kind: negative
     environment: *id013
     actors:
-    - admin
-    - student
+    - parent
     fixtures:
-    - admin_shloimie
     - parent_operator_canary
-    - student_operator_canary_1
-    - student_operator_canary_2
-    - student_operator_canary_3
-    - denial_household
     preconditions:
-    - operator-owned occurrence and up to three real Student fixtures exist
-    - Zoom live/sandbox authority is explicit
+    - adult Family account and one affected Student exist
     steps:
-    - prepare the roster and confirm it
-    - read back meeting and per-Student registration
-    - join through embedded portals on separate tablets
-    - exercise sibling, second-device, timeout, and reconnect branches
+    - trigger the single adult launch reminder for the canonical class
+    - inspect recipient, affected-Student label, and destination
     expected_results:
-    - Parent class reminders label affected Students and use safe app links without authenticating a Student or exposing a
-      raw Zoom URL.
+    - only the Adult receives the reminder and its destination requires One Time authentication
     forbidden_effects:
-    - raw Zoom URL exposure
-    - shared bearer credential
-    - duplicate meeting
-    - cross-Student join
-    - blind retry after unknown acceptance
-    evidence_profile: zoom_classroom
-    cleanup: reconcile and remove disposable provider resources without blocking normal classroom paths
-    stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
+    - Student recipient
+    - Zoom/provider link or bearer
+    - duplicate send
+    evidence_profile: ghl_workflow
+    cleanup: reconcile the operator-canary adult send
+    stop_condition: stop on an unauthorized, wrong-recipient, or acceptance-unknown effect
 - id: OTV2-CLASSROOM-073
   area: CLASSROOM
-  requirement: An authorized Student can join while the live occurrence remains open; no product-level late rejection occurs.
+  requirement: Free-month Zoom evidence: authorized embedded join while a recurring-meeting occurrence is open; not an initial-launch blocker or release gate.
   spec_refs: *id012
-  normative_status: required
+  normative_status: deferred
   verification_status: unimplemented
-  priority: launch_blocker
-  release_gate: true
+  priority: later
+  release_gate: false
   owner_domain: classroom
   depends_on:
   - OTV2-CALENDAR-058
@@ -3840,12 +3822,12 @@ requirements:
     stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
 - id: OTV2-CLASSROOM-074
   area: CLASSROOM
-  requirement: Students join muted.
+  requirement: Free-month Zoom evidence: Students join the recurring meeting muted; not an initial-launch blocker or release gate.
   spec_refs: *id012
-  normative_status: required
+  normative_status: deferred
   verification_status: unimplemented
-  priority: launch_blocker
-  release_gate: true
+  priority: later
+  release_gate: false
   owner_domain: classroom
   depends_on:
   - OTV2-CALENDAR-058
@@ -3886,13 +3868,12 @@ requirements:
     stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
 - id: OTV2-CLASSROOM-075
   area: CLASSROOM
-  requirement: Participant video is available, camera guidance is shown, and recorded Student audio/video requires versioned
-    account-owner consent.
+  requirement: Free-month Zoom/recorded-participation evidence: video, camera guidance, and consent-gated capture; not an initial-launch blocker or release gate.
   spec_refs: *id012
-  normative_status: required
+  normative_status: deferred
   verification_status: unimplemented
-  priority: launch_blocker
-  release_gate: true
+  priority: later
+  release_gate: false
   owner_domain: classroom
   depends_on:
   - OTV2-CALENDAR-058
@@ -3934,12 +3915,12 @@ requirements:
     stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
 - id: OTV2-CLASSROOM-076
   area: CLASSROOM
-  requirement: Three separate tablet joins pass.
+  requirement: Free-month Zoom evidence: three separate embedded recurring-meeting joins pass; not an initial-launch blocker or release gate.
   spec_refs: *id012
-  normative_status: required
+  normative_status: deferred
   verification_status: unimplemented
-  priority: launch_blocker
-  release_gate: true
+  priority: later
+  release_gate: false
   owner_domain: classroom
   depends_on:
   - OTV2-CALENDAR-058
@@ -3980,7 +3961,7 @@ requirements:
     stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
 - id: OTV2-CLASSROOM-077
   area: CLASSROOM
-  requirement: Sibling/cross-household join is denied.
+  requirement: Initial-launch child-safety boundary: sibling and cross-household access to another Student's portal, private learning, worksheet, or protected library is denied. Free-month Zoom join denial remains later evidence.
   spec_refs: *id012
   normative_status: required
   verification_status: unimplemented
@@ -4006,27 +3987,20 @@ requirements:
     - student_operator_canary_3
     - denial_household
     preconditions:
-    - operator-owned occurrence and up to three real Student fixtures exist
-    - Zoom live/sandbox authority is explicit
+    - two Families with separate Students exist
     steps:
-    - prepare the roster and confirm it
-    - read back meeting and per-Student registration
-    - join through embedded portals on separate tablets
-    - exercise sibling, second-device, timeout, and reconnect branches
+    - authenticate one Student and request another Student's portal, private learning, worksheet, and library resources
     expected_results:
-    - Sibling/cross-household join is denied.
+    - cross-household child data and access are denied without disclosure
     forbidden_effects:
-    - raw Zoom URL exposure
-    - shared bearer credential
-    - duplicate meeting
-    - cross-Student join
-    - blind retry after unknown acceptance
-    evidence_profile: zoom_classroom
-    cleanup: reconcile and remove disposable provider resources without blocking normal classroom paths
-    stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
+    - cross-household child data
+    - privilege escalation
+    evidence_profile: authorization_boundary
+    cleanup: none
+    stop_condition: stop on any child-data disclosure
 - id: OTV2-CLASSROOM-078
   area: CLASSROOM
-  requirement: Attendance minutes and percentage are recorded.
+  requirement: Initial-launch attendance recognition is driven by Rabbi/Admin-confirmed attendance or an existing governed local attendance record; provider-derived Zoom attendance is free-month evidence.
   spec_refs: *id012
   normative_status: required
   verification_status: unimplemented
@@ -4052,32 +4026,26 @@ requirements:
     - student_operator_canary_3
     - denial_household
     preconditions:
-    - operator-owned occurrence and up to three real Student fixtures exist
-    - Zoom live/sandbox authority is explicit
+    - an eligible Student and canonical class record exist
     steps:
-    - prepare the roster and confirm it
-    - read back meeting and per-Student registration
-    - join through embedded portals on separate tablets
-    - exercise sibling, second-device, timeout, and reconnect branches
+    - record Rabbi/Admin-confirmed attendance or select an existing governed local attendance record
+    - read back the Student recognition and replay the same confirmation
     expected_results:
-    - Attendance minutes and percentage are recorded.
+    - Rabbi/Admin confirmation or an existing governed local record persists once and awards Consistency once; no Zoom/provider attendance is required.
     forbidden_effects:
-    - raw Zoom URL exposure
-    - shared bearer credential
-    - duplicate meeting
-    - cross-Student join
-    - blind retry after unknown acceptance
-    evidence_profile: zoom_classroom
-    cleanup: reconcile and remove disposable provider resources without blocking normal classroom paths
-    stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
+    - provider attendance dependency
+    - duplicate Consistency award
+    evidence_profile: learning_domain
+    cleanup: reverse only an operator-canary award with an audited reason
+    stop_condition: stop on an unauthorized or duplicate recognition effect
 - id: OTV2-CLASSROOM-079
   area: CLASSROOM
-  requirement: Old disposable Zoom canary cleanup does not block normal classroom use.
+  requirement: Historical provider-cleanup evidence is retained for free-month Zoom work and does not block initial launch.
   spec_refs: *id012
-  normative_status: required
+  normative_status: deferred
   verification_status: unimplemented
-  priority: launch_blocker
-  release_gate: true
+  priority: later
+  release_gate: false
   owner_domain: classroom
   depends_on:
   - OTV2-CALENDAR-058
@@ -4788,10 +4756,10 @@ requirements:
   requirement: Authenticated class leaderboards separately show rolling attendance count, current attendance streak, and approved/published
     question count.
   spec_refs: *id017
-  normative_status: required
+  normative_status: deferred
   verification_status: unimplemented
-  priority: launch_blocker
-  release_gate: true
+  priority: later
+  release_gate: false
   owner_domain: learning
   depends_on:
   - OTV2-STUDENT-041
@@ -8592,15 +8560,14 @@ requirements:
     stop_condition: stop on unauthorized, wrong-provider, over-budget, or acceptance-unknown effect
 - id: OTV2-CLASSROOM-187
   area: CLASSROOM
-  requirement: Only one concurrent embedded classroom session is allowed per Student; same-session reconnect works and second-device
-    join is denied.
+  requirement: Free-month Zoom evidence: single embedded session, reconnect, and second-device denial; not an initial-launch blocker or release gate.
   spec_refs:
   - 03-DECISION-REGISTER-v2.1.md
   - 07-SOURCE-OF-TRUTH-AND-PROVIDER-CONTRACTS-v2.1.md
-  normative_status: required
+  normative_status: deferred
   verification_status: unimplemented
-  priority: launch_blocker
-  release_gate: true
+  priority: later
+  release_gate: false
   owner_domain: classroom
   depends_on:
   - OTV2-CALENDAR-058
@@ -8642,14 +8609,13 @@ requirements:
     stop_condition: stop on unauthorized, wrong-provider, over-budget, or acceptance-unknown effect
 - id: OTV2-CLASSROOM-188
   area: CLASSROOM
-  requirement: Canonical Zoom settings disable waiting room, participant rename, participant chat, participant screen sharing,
-    and participant file transfer.
+  requirement: Free-month Zoom configuration evidence for the recurring meeting; not an initial-launch blocker or release gate.
   spec_refs:
   - 07-SOURCE-OF-TRUTH-AND-PROVIDER-CONTRACTS-v2.1.md
-  normative_status: required
+  normative_status: deferred
   verification_status: unimplemented
-  priority: launch_blocker
-  release_gate: true
+  priority: later
+  release_gate: false
   owner_domain: classroom
   depends_on:
   - OTV2-CALENDAR-058
@@ -10931,8 +10897,7 @@ requirements:
     stop_condition: stop on unauthorized, wrong-provider, over-budget, or acceptance-unknown effect
 - id: OTV2-CLASSROOM-232
   area: CLASSROOM
-  requirement: The canonical 60-minute occurrence uses the 90-day horizon, 24-hour preparation, 30-minute reminder, 10-minute
-    join opening, end-plus-15-minute close, 60-second join bootstrap, and 30-second heartbeat/90-second single-device lease.
+  requirement: Initial-launch Next Class scheduling uses the canonical 60-minute occurrence, 90-day horizon, 24-hour preparation, 30-minute adult reminder, and end-plus-15-minute close. Zoom bootstrap and device-lease proof are free-month evidence.
   spec_refs:
   - 01-PRODUCT-SPEC-v2.1.md
   - 06-DOMAIN-MODEL-AND-STATE-MACHINES-v2.1.md
@@ -10947,8 +10912,6 @@ requirements:
   - OTV2-AUTH-008
   - OTV2-PARENT-032
   - OTV2-CLASSROOM-184
-  - OTV2-CLASSROOM-187
-  - OTV2-CLASSROOM-188
   acceptance_cases:
   - case_id: OTV2-CLASSROOM-232-TIMING
     kind: time_boundary
@@ -10967,25 +10930,24 @@ requirements:
     - operator-owned occurrence and up to three real Student fixtures exist
     - Zoom live/sandbox authority is explicit
     steps:
-    - generate the rolling horizon and prove it contains the canonical Sunday–Thursday 7 p.m. Jerusalem occurrences through
-      90 days
-    - observe automatic preparation at 24 hours, reminder at 30 minutes, Join opening at 10 minutes, 60-minute scheduled end,
-      and closure at end plus 15 minutes
-    - exercise a manual earlier preparation and repeat every scheduler delivery
+    - open Next Class in the protected portal
+    - verify class time, status, and protected portal navigation
     expected_results:
-    - all boundaries use the authoritative occurrence/Jerusalem clock and occur at most once
-    - manual earlier preparation is allowed but does not duplicate resources or notifications
-    - a Student may join any time the occurrence remains open; there is no product-level late rejection
+    - Next Class presents the sole 7:00 PM class without exposing a provider join link
     forbidden_effects:
     - rolling local-time drift
-    - duplicate occurrence/resource/reminder
-    - join before window
-    - join after close
-    evidence_profile: zoom_classroom
-    cleanup: reconcile and remove disposable provider resources without blocking normal classroom paths
-    stop_condition: stop on unauthorized, wrong-provider, over-budget, or acceptance-unknown effect
+    - provider link, bootstrap, registrant, or attendance proof
+    evidence_profile: portal_navigation
+    cleanup: none
+    stop_condition: stop on an unauthorized or provider-link exposure
   - case_id: OTV2-CLASSROOM-232-BOOTSTRAP-LEASE
-    kind: concurrency
+    kind: deferred_free_month_evidence
+    normative_status: deferred
+    priority: later
+    launch_blocker: false
+    release_gate: false
+    free_month_only: true
+    required_for_parent_case: false
     environment: *id013
     actors:
     - admin
@@ -11019,9 +10981,7 @@ requirements:
     stop_condition: stop on unauthorized, wrong-provider, over-budget, or acceptance-unknown effect
 - id: OTV2-CONTENT-233
   area: CONTENT
-  requirement: OBS is the sole launch capture with Zoom cloud recording off; controlled-device upload, private eu-central-1
-    S3/SSE-KMS processing, OT-VIDEO-1 transcode, pinned OpenAI transcription/Structured Outputs, and checksum-readback deletion
-    follow the exact contract.
+  requirement: Initial launch may use one suitable existing One Time/Rabbi-owned recording already present in Drive or the recordings collection. It is processed as needed, human-reviewed, privately published to Vimeo, available only in the protected Student library, playable by an authorized Student, denied to an unauthorized account, and safely unpublished. A new OBS canary and additional historical adoption do not block launch.
   spec_refs:
   - 01-PRODUCT-SPEC-v2.1.md
   - 07-SOURCE-OF-TRUTH-AND-PROVIDER-CONTRACTS-v2.1.md
@@ -11039,7 +10999,7 @@ requirements:
   - OTV2-CONTENT-192
   - OTV2-CONTENT-193
   acceptance_cases:
-  - case_id: OTV2-CONTENT-233-OBS-CAPTURE
+  - case_id: OTV2-CONTENT-233-EXISTING-RECORDING
     kind: operator_journey
     environment: *id014
     actors:
@@ -11048,21 +11008,17 @@ requirements:
     - admin_shloimie
     - student_operator_canary_1
     preconditions:
-    - Zoom cloud recording is disabled
-    - the operator uses the controlled encrypted OBS device
+    - one suitable existing One Time/Rabbi-owned recording is selected from Drive or the recordings collection
     steps:
-    - capture an occurrence with the approved recording notice and participant snapshot
-    - upload the source to Drive or direct intake within 24 hours
-    - verify destination checksum/readback and linked ingest record
-    - delete the local OBS source only after every deletion prerequisite passes
+    - process the selected recording as needed and obtain human approval
+    - privately publish it to Vimeo and expose it in the protected Student library
+    - play it as an authorized Student, deny an unauthorized account, then unpublish safely
     expected_results:
-    - OBS is the sole launch capture and no Zoom cloud recording exists
-    - upload meets the 24-hour target and local deletion cannot occur before checksum/readback and ingest linkage
+    - one approved existing recording completes the protected publish, play, denial, and unpublish loop
     forbidden_effects:
-    - Zoom cloud recording
-    - uncontrolled capture device
-    - premature local deletion
-    - unlinked source
+    - public playback
+    - unauthorized library access
+    - publication before human approval
     evidence_profile: content_pipeline
     cleanup: reconcile provider assets and retain/delete source and derivatives according to retention policy
     stop_condition: stop on unauthorized, wrong-provider, over-budget, or acceptance-unknown effect
@@ -11736,6 +11692,58 @@ requirements:
     evidence_profile: billing_live
     cleanup: cancel/refund only the approved operator canary and reconcile final access
     stop_condition: stop on unauthorized, wrong-provider, over-budget, or acceptance-unknown effect
+- id: OTV2-LEARNING-244
+  area: LEARNING
+  requirement: Rabbi Prompt Board permits Rabbi prompts to enrolled Students, private Student responses and Rabbi replies, selective approved named publication, and private Student topic proposals; no Student-to-Student reply or chat exists.
+  spec_refs:
+  - 01-PRODUCT-SPEC-v2.1.md
+  - 03-DECISION-REGISTER-v2.1.md
+  normative_status: required
+  verification_status: unimplemented
+  priority: launch_blocker
+  release_gate: true
+  owner_domain: learning
+  depends_on:
+  - OTV2-STUDENT-041
+  acceptance_cases:
+  - case_id: OTV2-LEARNING-244-AC01
+    kind: positive
+    environment: production_operator_canary
+    actors: [admin, student]
+    fixtures: [admin_rabbi_eli, student_operator_canary_1, student_operator_canary_2]
+    preconditions: [two enrolled Students exist]
+    steps: [Rabbi posts a prompt, each Student responds, Rabbi replies privately, Rabbi publishes one approved response]
+    expected_results: [responses remain private before publication, only the approved response shows its approved Student name, topic proposal remains governed]
+    forbidden_effects: [Student-to-Student chat, cross-Student private data, public publication]
+    evidence_profile: learning_domain
+    cleanup: remove only the operator-canary prompt/publication
+    stop_condition: stop on unauthorized or acceptance-unknown effect
+- id: OTV2-LEARNING-245
+  area: LEARNING
+  requirement: One private worksheet round trip permits Rabbi send, Student submit, and Rabbi return or accept; accepted work emits only Review Ready once.
+  spec_refs:
+  - 01-PRODUCT-SPEC-v2.1.md
+  - 03-DECISION-REGISTER-v2.1.md
+  normative_status: required
+  verification_status: unimplemented
+  priority: launch_blocker
+  release_gate: true
+  owner_domain: learning
+  depends_on:
+  - OTV2-STUDENT-041
+  acceptance_cases:
+  - case_id: OTV2-LEARNING-245-AC01
+    kind: positive
+    environment: production_operator_canary
+    actors: [admin, student]
+    fixtures: [admin_rabbi_eli, student_operator_canary_1]
+    preconditions: [enrolled Student exists]
+    steps: [Rabbi sends one worksheet, Student submits, Rabbi returns feedback then accepts]
+    expected_results: [work and feedback remain private, state persists, Review Ready is emitted once on acceptance]
+    forbidden_effects: [peer access, points or reward effect, duplicate badge]
+    evidence_profile: learning_domain
+    cleanup: archive only the operator-canary worksheet
+    stop_condition: stop on unauthorized or acceptance-unknown effect
 - id: OTV2-PROVIDER-243
   area: PROVIDER
   requirement: An ambiguous GHL contact match quarantines only CRM linkage, workflow, and paid billing while local login,
