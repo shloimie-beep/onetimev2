@@ -383,7 +383,6 @@ function statusFor(code: string) {
     return 404;
   }
   if (code === PARENT_HOUSEHOLD_ERROR_CODES.accessInactive) return 403;
-  if (code === PARENT_HOUSEHOLD_ERROR_CODES.canonicalClassUnavailable) return 503;
   if (
     code === PARENT_HOUSEHOLD_ERROR_CODES.conflict ||
     code === PARENT_HOUSEHOLD_ERROR_CODES.idempotencyConflict ||

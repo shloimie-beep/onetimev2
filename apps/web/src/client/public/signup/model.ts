@@ -4,6 +4,7 @@ import {
   FAMILY_SIGNUP_FORBIDDEN_FIELDS,
   FAMILY_SIGNUP_OPTIONAL_CONSENT_FIELDS,
   FAMILY_SIGNUP_TIMEZONE_FIELD,
+  FAMILY_SIGNUP_VISIBLE_CONSENT_FIELDS,
   type FamilySignupClassification,
 } from '../../../../../../packages/contracts/src/signup/family/index.ts';
 
@@ -20,6 +21,7 @@ export function familySignupFormModel(now: Date, freeAccessExpiresAt?: string) {
     fields: FAMILY_SIGNUP_FIELDS,
     forbidden_fields: FAMILY_SIGNUP_FORBIDDEN_FIELDS,
     timezone_field: FAMILY_SIGNUP_TIMEZONE_FIELD,
+    visible_consent_fields: FAMILY_SIGNUP_VISIBLE_CONSENT_FIELDS,
     optional_consent_fields: FAMILY_SIGNUP_OPTIONAL_CONSENT_FIELDS,
     ...FAMILY_SIGNUP_COPY[beforeExpiry ? 'before_expiry' : 'at_or_after_expiry'],
     cta: 'Create your Family account' as const,

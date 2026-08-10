@@ -34,13 +34,17 @@ describe('P08 public signup model', () => {
       browser_prefill: 'suggestion_only',
       raw_offset_only: false,
     });
-    expect(boundary.optional_consent_fields.map(({ name }) => name)).toEqual([
-      'general_marketing_consent',
-      'parent_newsletter_consent',
+    expect(boundary.visible_consent_fields).toEqual([
+      {
+        name: 'terms_accepted',
+        scope: 'unified_terms',
+        label: 'I agree to the Terms of Use',
+        required: true,
+        default_checked: false,
+        covered_adult_communication_scopes: ['general_marketing', 'parent_newsletter'],
+      },
     ]);
-    expect(boundary.optional_consent_fields.every(({ default_checked }) => !default_checked)).toBe(
-      true,
-    );
+    expect(boundary.optional_consent_fields).toEqual([]);
   });
 
   it('uses the safe checkout branch when no free expiry is configured', () => {

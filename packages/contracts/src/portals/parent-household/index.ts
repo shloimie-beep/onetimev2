@@ -186,5 +186,4 @@ export const PARENT_HOUSEHOLD_ERROR_CODES = {
   invalidInput: 'parent_student_input_invalid',
   archived: 'parent_student_archived',
   lifecycleUnchanged: 'parent_student_lifecycle_unchanged',
-  canonicalClassUnavailable: 'parent_student_canonical_class_unavailable',
 } as const;
