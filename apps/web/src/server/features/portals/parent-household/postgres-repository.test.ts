@@ -264,6 +264,33 @@ describe('P12 concrete PostgreSQL Parent household repository', () => {
     expect(transactionLog).not.toContain('COMMIT');
   });
 
+  it('reports a stable canonical-class stage and rolls back when no canonical class is ready', async () => {
+    const fixture = await seedParent(pool, 'missing-class', 0);
+    await pool.query('DELETE FROM onetime.class_series');
+    try {
+      await expect(
+        concreteService(pool, 'student-missing-class').createStudent(
+          fixture.principal,
+          {
+            expected_revision: 1,
+            actual_name: 'Missing Class Student',
+            username: 'missing.class.student',
+            relationship: 'dependent',
+            new_password: 'safe-password-123',
+            password_confirmation: 'safe-password-123',
+          },
+          mutationContext('missing-class', 'a'),
+        ),
+      ).rejects.toMatchObject({ code: 'parent_student_canonical_class_unavailable' });
+    } finally {
+      await pool.query(
+        `INSERT INTO onetime.class_series
+           (class_series_key, account_key, product_key, status, series_state, is_canonical)
+         VALUES ('canonical-class', 'account-test', 'product-test', 'active', 'active', true)`,
+      );
+    }
+  });
+
   it('archives atomically with enrollment and session/grant revocation readback', async () => {
     const fixture = await seedParent(pool, 'archive', 0);
     const service = concreteService(pool, 'student-archive');

@@ -193,6 +193,13 @@ describe('Communications API registration hook', () => {
     expect(repository.calls).toHaveLength(0);
   });
 
+  it('returns 503 when the authoritative session resolver is unavailable', async () => {
+    const unavailable = await api('/api/v1/communications', 'unavailable');
+    expect(unavailable.status).toBe(503);
+    expect(await unavailable.json()).toMatchObject({ code: 'SESSION_UNAVAILABLE' });
+    expect(repository.calls).toHaveLength(0);
+  });
+
   it('uses the session scope and ignores forged browser scope fields', async () => {
     await api(
       '/api/v1/communications?from=2026-07-01T00:00:00.000Z&to=2026-07-15T00:00:00.000Z&account_key=other&product_key=other',
@@ -345,8 +352,9 @@ function api(path: string, role = 'owner') {
 class HeaderSessionPort implements ReadOnlySessionScopePort {
   async resolve(req: express.Request) {
     const role = req.header('x-test-role');
-    if (!role) return null;
-    return { ...ownerSession, role };
+    if (!role) return { status: 'missing' } as const;
+    if (role === 'unavailable') return { status: 'unavailable' } as const;
+    return { status: 'resolved', session: { ...ownerSession, role } } as const;
   }
 }
 

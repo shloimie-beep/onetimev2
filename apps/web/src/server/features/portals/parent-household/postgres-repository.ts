@@ -1245,7 +1245,10 @@ async function synchronizeClassSeriesEnrollment(
     ],
   );
   if (result.rowCount !== 1) {
-    throw invariant('The canonical class series is unavailable for Student enrollment.');
+    throw new ParentHouseholdError(
+      PARENT_HOUSEHOLD_ERROR_CODES.canonicalClassUnavailable,
+      'Student setup is temporarily unavailable because the canonical class is not ready.',
+    );
   }
 }
 
