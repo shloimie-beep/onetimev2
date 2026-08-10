@@ -17,18 +17,17 @@ test('W13-10 legal pages render versioned launch truth without billing claims', 
   }
 });
 
-test('W13-10 Family signup separates required policy acceptance from optional adult consent', async ({
-  page,
-}) => {
+test('W13-10 Family signup presents one required agreement control', async ({ page }) => {
   await page.goto('/signup');
   await expect(page.getByRole('heading', { name: 'Create your Family account' })).toBeVisible();
   await expect(page.getByLabel(/reminder|WhatsApp|phone|Student.*email|card/i)).toHaveCount(0);
   await expect(page.getByLabel('Password', { exact: true })).toBeVisible();
   await expect(page.getByLabel('Confirm password')).toBeVisible();
   await expect(page.getByLabel(/I agree to the Terms/)).not.toBeChecked();
-  await expect(page.getByLabel(/I acknowledge the Privacy Notice/)).not.toBeChecked();
-  await expect(page.getByLabel('General marketing')).not.toBeChecked();
-  await expect(page.getByLabel('Parent newsletter')).not.toBeChecked();
+  await expect(page.locator('input[type="checkbox"]')).toHaveCount(1);
+  await expect(page.locator('input[name="privacy_accepted"]')).toHaveCount(0);
+  await expect(page.locator('input[name="general_marketing_consent"]')).toHaveCount(0);
+  await expect(page.locator('input[name="parent_newsletter_consent"]')).toHaveCount(0);
   await expect(
     page.getByLabel('Create the adult Family account').getByRole('link', {
       name: 'Privacy Notice',

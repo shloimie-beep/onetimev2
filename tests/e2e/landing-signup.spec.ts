@@ -230,9 +230,9 @@ test('Family submission uses the canonical bootstrap and exact cardless adult pa
   await page.getByLabel('Password', { exact: true }).fill('StrongPassword!234');
   await page.getByLabel('Confirm password').fill('StrongPassword!234');
   await page.getByLabel(/I agree to the Terms/).check();
-  await page.getByLabel(/I acknowledge the Privacy Notice/).check();
-  await expect(page.getByLabel('General marketing')).not.toBeChecked();
-  await expect(page.getByLabel('Parent newsletter')).not.toBeChecked();
+  await expect(page.locator('input[name="privacy_accepted"]')).toHaveCount(0);
+  await expect(page.locator('input[name="general_marketing_consent"]')).toHaveCount(0);
+  await expect(page.locator('input[name="parent_newsletter_consent"]')).toHaveCount(0);
   await page.getByRole('button', { name: 'Create your Family account' }).click();
 
   await expect(page).toHaveURL(/\/signup\/received\?state=session_pending&email=pending$/u);
@@ -644,6 +644,5 @@ async function completeFamilySignupForm(page: Page, email: string) {
   await page.getByLabel('Password', { exact: true }).fill('StrongPassword!234');
   await page.getByLabel('Confirm password').fill('StrongPassword!234');
   await page.getByLabel(/I agree to the Terms/).check();
-  await page.getByLabel(/I acknowledge the Privacy Notice/).check();
   await page.getByRole('button', { name: 'Create your Family account' }).click();
 }
