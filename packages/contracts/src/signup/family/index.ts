@@ -9,6 +9,8 @@ export const FAMILY_SIGNUP_CONTRACT_VERSION = '2.1.0' as const;
 export const FAMILY_SIGNUP_OPERATION = 'public_family_signup' as const;
 export const FAMILY_SIGNUP_IDEMPOTENCY_KEY_MIN_LENGTH = 43 as const;
 export const FAMILY_SIGNUP_IDEMPOTENCY_KEY_MAX_LENGTH = 128 as const;
+export const FAMILY_SIGNUP_UNIFIED_AGREEMENT_POLICY_VERSION =
+  'one_time_family_signup_unified_v1' as const;
 export const FAMILY_SIGNUP_CLASSIFICATIONS = ['family'] as const;
 export type FamilySignupClassification = (typeof FAMILY_SIGNUP_CLASSIFICATIONS)[number];
 
@@ -49,22 +51,17 @@ export const FAMILY_SIGNUP_TIMEZONE_FIELD = {
   raw_offset_only: false,
 } as const;
 
-export const FAMILY_SIGNUP_OPTIONAL_CONSENT_FIELDS = [
+export const FAMILY_SIGNUP_VISIBLE_CONSENT_FIELDS = [
   {
-    name: 'general_marketing_consent',
-    scope: 'general_marketing',
-    label: 'General marketing',
-    required: false,
-    default_checked: false,
-  },
-  {
-    name: 'parent_newsletter_consent',
-    scope: 'parent_newsletter',
-    label: 'Parent newsletter',
-    required: false,
+    name: 'terms_accepted',
+    scope: 'unified_terms',
+    label: 'I agree to the Terms of Use',
+    required: true,
     default_checked: false,
   },
 ] as const;
+
+export const FAMILY_SIGNUP_OPTIONAL_CONSENT_FIELDS = [] as const;
 
 export const FAMILY_SIGNUP_FORBIDDEN_FIELDS = [
   'phone',
@@ -134,6 +131,18 @@ export interface FamilySignupAdultConsentChoices {
   parent_newsletter: boolean;
 }
 
+export interface FamilySignupUnifiedAgreement {
+  policy_version: typeof FAMILY_SIGNUP_UNIFIED_AGREEMENT_POLICY_VERSION;
+  captured_at: string;
+  terms_accepted: true;
+  privacy_accepted: true;
+  student_data_child_safety_accepted: true;
+  cancellation_refund_accepted: true;
+  email_marketing_consent: 'opted_in';
+  newsletter_consent: 'opted_in';
+  sms_call_whatsapp_consent: false;
+}
+
 export interface FamilySignupGhlHandoff {
   contract_version: '1.0.0';
   target: 'p27_ghl_identity_sync';
@@ -145,6 +154,18 @@ export interface FamilySignupGhlHandoff {
   provider_failure_rolls_back_local_result: false;
   subject: Extract<GhlIdentitySubject, { kind: 'adult' }>;
   household: GhlHouseholdProjection;
+  adult_signup_event?: {
+    household_reconciliation_key: string;
+    audience_type: 'adult';
+    email_consent: 'opted_in';
+    policy_version: typeof FAMILY_SIGNUP_UNIFIED_AGREEMENT_POLICY_VERSION;
+    captured_at: string;
+    lifecycle_stage: 'Active Member';
+    tags: readonly ['ot | lead', 'ot | email opt-in'];
+    ot01_authority: 'direct_enrollment_after_local_commit';
+    student_contacts: 0;
+    password_or_security_data: false;
+  };
   provider_readback_required: boolean;
   provider_effect_authorized: false;
   message_delivery_authorized: false;
@@ -160,6 +181,8 @@ export interface FamilySignupOutboxIntent {
   household_id: string;
   normalized_email_hash: string;
   adult_consent_choices: FamilySignupAdultConsentChoices;
+  /** Present only for new unified-control signups; legacy durable receipts are preserved as-is. */
+  unified_agreement?: FamilySignupUnifiedAgreement;
   dispatch_state: 'ready' | 'identity_review';
   preserve_adult_suppression: true;
   local_commit_required: true;
@@ -203,8 +226,10 @@ export const FAMILY_SIGNUP_SECURITY_INVARIANTS = {
   password_confirmation_must_match_exactly: true,
   timezone_must_be_iana: true,
   browser_timezone_is_editable_suggestion_only: true,
-  optional_adult_consents_are_separate: true,
-  optional_adult_consents_are_never_inferred: true,
+  visible_signup_consent_controls: 1,
+  unified_agreement_policy_version: FAMILY_SIGNUP_UNIFIED_AGREEMENT_POLICY_VERSION,
+  unified_agreement_captures_adult_marketing_email: true,
+  sms_call_whatsapp_consent_from_signup: false,
   identity_review_blocks_post_expiry_checkout: true,
   unavailable_provider_evidence_is_not_identity_ambiguity: true,
   ghl_handoff_is_adult_only_and_non_effecting: true,

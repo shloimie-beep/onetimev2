@@ -24,8 +24,11 @@ import { PostgresCommunicationsReadRepository } from './repository.ts';
 import { createWorkflowReadbackReader, type WorkflowReadbackReader } from './workflow-readback.ts';
 
 export interface ReadOnlySessionScopePort {
-  resolve(req: Request): Promise<ReadOnlySessionScope | null>;
+  resolve(req: Request): Promise<ReadOnlySessionScopeResolution>;
 }
+
+export type ReadOnlySessionScopeResolution =
+  { status: 'resolved'; session: ReadOnlySessionScope } | { status: 'missing' | 'unavailable' };
 
 export type RegisterCommunicationsRoutesDeps = {
   app: express.Express;
@@ -50,11 +53,16 @@ export function registerCommunicationsRoutes({
 }: RegisterCommunicationsRoutesDeps) {
   app.get('/app/communications', async (req, res) => {
     setProtectedNoStore(res);
-    const session = await sessionPort.resolve(req);
-    if (!session) {
+    const resolution = await sessionPort.resolve(req);
+    if (resolution.status === 'unavailable') {
+      res.status(503).type('html').send('Communications access is temporarily unavailable.');
+      return;
+    }
+    if (resolution.status !== 'resolved') {
       res.redirect(302, `/login?return_to=${encodeURIComponent('/app/communications')}`);
       return;
     }
+    const { session } = resolution;
     if (session.role !== 'owner' && session.role !== 'admin') {
       res.status(403).type('html').send('Forbidden');
       return;
@@ -75,12 +83,17 @@ export function registerCommunicationsRoutes({
 
   app.get('/app/communications/:workflowId', async (req, res) => {
     setProtectedNoStore(res);
-    const session = await sessionPort.resolve(req);
+    const resolution = await sessionPort.resolve(req);
     const returnTo = `/app/communications/${encodeURIComponent(String(req.params.workflowId))}`;
-    if (!session) {
+    if (resolution.status === 'unavailable') {
+      res.status(503).type('html').send('Communications access is temporarily unavailable.');
+      return;
+    }
+    if (resolution.status !== 'resolved') {
       res.redirect(302, `/login?return_to=${encodeURIComponent(returnTo)}`);
       return;
     }
+    const { session } = resolution;
     if (!canReadCommunications(session.role)) {
       res.status(403).type('html').send('Forbidden');
       return;
@@ -91,7 +104,7 @@ export function registerCommunicationsRoutes({
   app.get('/api/v1/communications/workflows/:workflowId', async (req: RequestWithTrace, res) => {
     setProtectedNoStore(res);
     try {
-      const session = await sessionPort.resolve(req);
+      const session = await resolvedSession(sessionPort, req);
       if (!session) throw new CommunicationsAuthorizationError(401);
       if (!canReadCommunications(session.role)) throw new CommunicationsAuthorizationError(403);
       const workflow = workflowReadbackReader.find(String(req.params.workflowId));
@@ -105,7 +118,7 @@ export function registerCommunicationsRoutes({
   app.get('/api/v1/communications/workflows', async (req: RequestWithTrace, res) => {
     setProtectedNoStore(res);
     try {
-      const session = await sessionPort.resolve(req);
+      const session = await resolvedSession(sessionPort, req);
       if (!session) throw new CommunicationsAuthorizationError(401);
       if (!canReadCommunications(session.role)) throw new CommunicationsAuthorizationError(403);
       res.status(200).json(workflowReadbackReader.list());
@@ -139,7 +152,7 @@ async function handleList(input: {
   const { req, res } = input;
   setProtectedNoStore(res);
   try {
-    const session = await input.sessionPort.resolve(req);
+    const session = await resolvedSession(input.sessionPort, req);
     const query: CommunicationsQuery = {
       from: stringQuery(req.query.from),
       to: stringQuery(req.query.to),
@@ -167,6 +180,18 @@ async function handleList(input: {
 }
 
 function handleCommunicationsError(error: unknown, req: RequestWithTrace, res: Response) {
+  if (error instanceof CommunicationsSessionUnavailableError) {
+    res
+      .status(503)
+      .json(
+        publicError(
+          'SESSION_UNAVAILABLE',
+          'Communications access is temporarily unavailable.',
+          req.traceId,
+        ),
+      );
+    return;
+  }
   if (error instanceof CommunicationsAuthorizationError) {
     const code = error.status === 401 ? 'UNAUTHENTICATED' : 'FORBIDDEN';
     const message =
@@ -192,6 +217,17 @@ function handleCommunicationsError(error: unknown, req: RequestWithTrace, res: R
   res
     .status(500)
     .json(publicError('SERVER_ERROR', 'Communications could not be loaded.', req.traceId));
+}
+
+class CommunicationsSessionUnavailableError extends Error {}
+
+async function resolvedSession(
+  sessionPort: ReadOnlySessionScopePort,
+  req: Request,
+): Promise<ReadOnlySessionScope | null> {
+  const resolution = await sessionPort.resolve(req);
+  if (resolution.status === 'unavailable') throw new CommunicationsSessionUnavailableError();
+  return resolution.status === 'resolved' ? resolution.session : null;
 }
 
 function setProtectedNoStore(res: Response) {

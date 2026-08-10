@@ -5344,7 +5344,19 @@ export function createApp({
   );
 
   const communicationsSessionPort: ReadOnlySessionScopePort = {
-    resolve: (req) => readOnlyCommunicationsSession(req, pool, config),
+    resolve: async (req) => {
+      const resolution = await readApiSession(req);
+      if (resolution.status !== 'resolved') return resolution;
+      return {
+        status: 'resolved',
+        session: {
+          accountKey: config.accountKey,
+          productKey: config.productKey,
+          userKey: resolution.session.user.user_key,
+          role: resolution.session.user.role,
+        },
+      };
+    },
   };
   registerCommunicationsRoutes({
     app,
@@ -6783,38 +6795,6 @@ function createPortalProgressAdapter(pool: DbPool): PortalServiceDeps['progress'
   };
 }
 
-async function readOnlyCommunicationsSession(req: Request, pool: DbPool, config: AppConfig) {
-  const sessionToken = getCookie(req, SESSION_COOKIE);
-  if (!sessionToken) return null;
-  const result = await pool.query(
-    `SELECT users.user_key, users.role
-       FROM onetime.user_sessions AS sessions
-       JOIN onetime.account_users AS users ON users.user_key = sessions.user_key
-      WHERE sessions.account_key = $1
-        AND sessions.product_key = $2
-        AND sessions.token_hash = $3
-        AND sessions.revoked_at IS NULL
-        AND sessions.expires_at > now()
-        AND sessions.security_version = users.security_version
-        AND (sessions.user_agent_hash IS NULL OR sessions.user_agent_hash = $4)
-        AND users.status = 'active'`,
-    [
-      config.accountKey,
-      config.productKey,
-      hashCookieValue(sessionToken),
-      req.header('user-agent') ? hashCookieValue(String(req.header('user-agent'))) : null,
-    ],
-  );
-  const row = result.rows[0];
-  if (!row) return null;
-  return {
-    accountKey: config.accountKey,
-    productKey: config.productKey,
-    userKey: String(row.user_key),
-    role: String(row.role),
-  };
-}
-
 function handleApiError(error: unknown, req: RequestWithTrace, res: Response) {
   setPrivateNoStore(res);
   if (error instanceof ZodError) {
@@ -7234,10 +7214,6 @@ function ot86PublishSecrets(config: AppConfig) {
         ]
       : [];
   return [...current, ...previous];
-}
-
-function hashCookieValue(value: string) {
-  return createHash('sha256').update(value).digest('hex');
 }
 
 function getCookie(req: Request, name: string) {

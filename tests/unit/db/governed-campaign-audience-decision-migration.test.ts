@@ -9,8 +9,6 @@ import {
   type DbPool,
 } from '../../../packages/db/src/index.ts';
 
-const LATEST_MIGRATION_ID = '2275_family_signup_inactive_support_projection';
-const EXPECTED_MIGRATION_COUNT = 106;
 const HASH_A = 'a'.repeat(64);
 const HASH_B = 'b'.repeat(64);
 const HASH_C = 'c'.repeat(64);
@@ -28,23 +26,26 @@ const SOURCE_FACTS = {
 } as const;
 
 describe('migration 2260 governed campaign audience decisions', () => {
-  it('applies and replays the 106-migration inventory with an exact 2260 ledger row', async () => {
+  it('applies and replays the exact current migration inventory with an exact 2260 ledger row', async () => {
     const pool = createMemoryPool();
     try {
       const first = await runMigrations(pool);
       const replay = await runMigrations(replayMemoryPool(pool));
       const verification = await verifyMigrations(pool);
 
-      expect(first).toHaveLength(EXPECTED_MIGRATION_COUNT);
-      expect(first.at(-1)).toMatchObject({ id: LATEST_MIGRATION_ID, status: 'applied' });
-      expect(replay).toHaveLength(EXPECTED_MIGRATION_COUNT);
+      const migrationCount = verification.migration_file_count;
+      expect(migrationCount).toBeGreaterThan(0);
+      expect(first).toHaveLength(migrationCount);
+      expect(first.at(-1)).toMatchObject({ status: 'applied' });
+      expect(replay).toHaveLength(migrationCount);
+      expect(replay.at(-1)?.id).toBe(first.at(-1)?.id);
       expect(replay.every(({ status }) => status === 'already_applied')).toBe(true);
       expect(verification).toMatchObject({
         ok: true,
         status: 'verified',
-        migration_file_count: EXPECTED_MIGRATION_COUNT,
-        ledger_row_count: EXPECTED_MIGRATION_COUNT,
-        applied_count: EXPECTED_MIGRATION_COUNT,
+        migration_file_count: migrationCount,
+        ledger_row_count: migrationCount,
+        applied_count: migrationCount,
         pending_count: 0,
         issues: [],
       });

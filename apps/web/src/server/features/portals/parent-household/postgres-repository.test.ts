@@ -1,4 +1,4 @@
-import { readFile } from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import pg from 'pg';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -39,6 +39,10 @@ const migrationFiles = [
   '2251_v21_embedded_classroom.sql',
   '2255_v21_student_actual_name.sql',
 ] as const;
+
+const nativeMigrationFiles = (await readdir(path.resolve(process.cwd(), 'packages/db/migrations')))
+  .filter((name) => name.endsWith('.sql'))
+  .sort();
 
 describe('P12 concrete PostgreSQL Parent household repository', () => {
   let pool: DbPool;
@@ -384,7 +388,7 @@ describe('P12 concrete PostgreSQL Parent household repository', () => {
       COMMIT_SHA: 'test',
       OUTBOX_TRANSPORT_MODE: 'sink',
       ONE_TIME_ACCOUNT_KEY: 'account-test',
-      ONE_TIME_PRODUCT_KEY: 'product-test',
+      ONE_TIME_PRODUCT_KEY: 'one_time_mishnayos',
     });
     const login = await authenticateUser({
       pool,
@@ -476,7 +480,7 @@ describe.runIf(nativeEnabled)('P12 native PostgreSQL through migration 2255', ()
     await pool.query('CREATE EXTENSION IF NOT EXISTS pgcrypto');
     await pool.query('CREATE SCHEMA onetime');
     await applyMigrations(pool as DbPool, false);
-    await installClassEnrollmentFixture(pool as DbPool);
+    await installClassEnrollmentFixture(pool as DbPool, true);
   }, 30_000);
 
   afterAll(async () => {
@@ -646,7 +650,7 @@ function concreteRepository(pool: DbPool) {
     acceptedServiceAccountVersion: 'student-service-account-v1',
     immutableEvidenceReference: 'policy://student-service-account/v1',
     portalAccountKey: 'account-test',
-    portalProductKey: 'product-test',
+    portalProductKey: 'one_time_mishnayos',
     clock: () => now,
   });
 }
@@ -673,7 +677,7 @@ function mutationContext(suffix: string, hashSeed: string): ParentHouseholdMutat
 
 async function applyMigrations(pool: DbPool, memory: boolean) {
   await pool.query('CREATE SCHEMA IF NOT EXISTS onetime');
-  for (const name of migrationFiles) {
+  for (const name of memory ? migrationFiles : nativeMigrationFiles) {
     let sql = await readFile(path.resolve(process.cwd(), 'packages/db/migrations', name), 'utf8');
     if (memory) {
       sql = sql.replace(
@@ -685,7 +689,19 @@ async function applyMigrations(pool: DbPool, memory: boolean) {
   }
 }
 
-async function installClassEnrollmentFixture(pool: DbPool) {
+async function installClassEnrollmentFixture(pool: DbPool, native = false) {
+  if (native) {
+    await pool.query(
+      `INSERT INTO onetime.class_series
+         (class_series_key, account_key, product_key, title, timezone, local_start_time,
+          reminder_local_time, status, recurrence_weekdays, recurrence_starts_on,
+          duration_minutes, series_state, is_canonical)
+       VALUES ('canonical-class', 'account-test', 'one_time_mishnayos', 'Canonical class',
+               'Asia/Jerusalem', time '19:00', time '18:30', 'active',
+               ARRAY[1,2,3,4,7]::smallint[], DATE '2026-08-16', 60, 'active', true)`,
+    );
+    return;
+  }
   await pool.query(`
     CREATE TABLE onetime.class_series (
       class_series_key text PRIMARY KEY,
@@ -715,7 +731,7 @@ async function installClassEnrollmentFixture(pool: DbPool) {
     );
     INSERT INTO onetime.class_series
       (class_series_key, account_key, product_key, status, series_state, is_canonical)
-    VALUES ('canonical-class', 'account-test', 'product-test', 'active', 'active', true);
+    VALUES ('canonical-class', 'account-test', 'one_time_mishnayos', 'active', 'active', true);
   `);
 }
 

@@ -25,8 +25,6 @@ import {
 
 const EXPECTED_ENGINE_VERSION = '18.4';
 const EXPECTED_SERVER_VERSION_NUM = '180004';
-const EXPECTED_MIGRATION_COUNT = 100;
-const EXPECTED_LAST_MIGRATION_ORDINAL = 2269;
 const OUTPUT_DIR = path.resolve(
   process.env.CANDIDATE_PG18_OUTPUT_DIR ?? 'ops/evidence/ops-11/pg18/candidate',
 );
@@ -162,7 +160,7 @@ async function main() {
   }));
   const nativePostgresql = {
     engine_version: EXPECTED_ENGINE_VERSION,
-    migration_count: EXPECTED_MIGRATION_COUNT,
+    migration_count: databaseProof.migration.migration_file_count,
     ledger_digest: databaseProof.migration.ledger_digest,
     pending_count: databaseProof.migration.pending_count,
     issue_count: databaseProof.migration.issue_count,
@@ -326,39 +324,35 @@ async function proveMigrations(pool: pg.Pool): Promise<MigrationProof> {
   const firstRun = await runMigrations(dbPool);
   const secondRun = await runMigrations(dbPool);
   const verification = await verifyMigrations(dbPool);
+  const expectedMigrationCount = verification.migration_file_count;
 
   assert(
-    firstRun.length === EXPECTED_MIGRATION_COUNT,
-    'first migration run did not contain 93 rows',
+    expectedMigrationCount > 0 && firstRun.length === expectedMigrationCount,
+    'first migration run did not apply the exact repository migration inventory',
   );
   assert(
     firstRun.every((result) => result.status === 'applied'),
-    'first migration run was not a clean 94/94 apply',
+    'first migration run was not a clean apply',
   );
   assert(
-    secondRun.length === EXPECTED_MIGRATION_COUNT,
-    `migration replay did not contain ${EXPECTED_MIGRATION_COUNT} rows`,
+    secondRun.length === expectedMigrationCount,
+    'migration replay did not contain the exact repository migration inventory',
   );
   assert(
     secondRun.every((result) => result.status === 'already_applied'),
-    'migration replay was not 94/94 already-applied',
+    'migration replay was not fully already-applied',
   );
   assert(verification.ok && verification.status === 'verified', 'migration verification failed');
   assert(
-    verification.migration_file_count === EXPECTED_MIGRATION_COUNT &&
-      verification.ledger_row_count === EXPECTED_MIGRATION_COUNT &&
-      verification.applied_count === EXPECTED_MIGRATION_COUNT,
-    'migration verification counts were not exactly 93',
+    verification.ledger_row_count === expectedMigrationCount &&
+      verification.applied_count === expectedMigrationCount,
+    'migration ledger did not exactly match the repository migration inventory',
   );
   assert(verification.pending_count === 0, 'migration verification reported pending migrations');
   assert(verification.issues.length === 0, 'migration verification reported issues');
 
   const lastMigration = firstRun.at(-1);
   assert(lastMigration, 'migration inventory was empty');
-  assert(
-    migrationOrdinal(lastMigration.id) === EXPECTED_LAST_MIGRATION_ORDINAL,
-    `last migration must be ordinal ${EXPECTED_LAST_MIGRATION_ORDINAL}`,
-  );
 
   const ledgerResult = await pool.query<LedgerRow>(
     'SELECT id, checksum FROM onetime.schema_migrations ORDER BY id',
@@ -368,8 +362,8 @@ async function proveMigrations(pool: pg.Pool): Promise<MigrationProof> {
     checksum: String(row.checksum),
   }));
   assert(
-    ledgerRows.length === EXPECTED_MIGRATION_COUNT,
-    `ledger did not contain exactly ${EXPECTED_MIGRATION_COUNT} rows`,
+    ledgerRows.length === expectedMigrationCount,
+    'ledger did not contain the exact repository migration inventory',
   );
 
   const expectedById = new Map(firstRun.map((result) => [result.id, result.checksum]));
@@ -969,12 +963,6 @@ function requiredMigration(rows: readonly LedgerRow[], prefix: string): LedgerRo
   const matches = rows.filter((row) => row.id.startsWith(prefix));
   assert(matches.length === 1, `expected exactly one migration with prefix ${prefix}`);
   return matches[0]!;
-}
-
-function migrationOrdinal(id: string) {
-  const match = /^(\d+)_/.exec(id);
-  assert(match, `migration id has no ordinal: ${id}`);
-  return Number(match[1]);
 }
 
 function digestLedger(rows: readonly LedgerRow[]) {

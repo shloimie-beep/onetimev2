@@ -32,7 +32,7 @@ const command = (): FamilySignupCommand => ({
   timezone: 'Asia/Jerusalem',
   terms_accepted: true,
   privacy_accepted: true,
-  general_marketing_consent: false,
+  general_marketing_consent: true,
   parent_newsletter_consent: true,
 });
 const passwordHash = `argon2id-v1$v=19$m=19456,t=2,p=1$${'a'.repeat(22)}$${'b'.repeat(43)}`;
@@ -88,7 +88,7 @@ describe('P08 PostgreSQL Family-signup repository', () => {
     }
     expect(
       harness.calls.filter(({ text }) => text.includes('INTO onetime.family_signup_consents')),
-    ).toHaveLength(2);
+    ).toHaveLength(6);
     expect(
       harness.calls.filter(({ text }) =>
         text.includes('INTO onetime.canonical_state_transition_events'),
@@ -131,6 +131,14 @@ describe('P08 PostgreSQL Family-signup repository', () => {
     expect(
       outbox?.values.some((value) => String(value).includes('"provider_effect_authorized":false')),
     ).toBe(true);
+    expect(
+      outbox?.values.some((value) =>
+        String(value).includes('"policy_version":"one_time_family_signup_unified_v1"'),
+      ),
+    ).toBe(true);
+    expect(outbox?.values.some((value) => String(value).includes('"student_contacts":0'))).toBe(
+      true,
+    );
     expect(harness.calls.some(({ text }) => text.includes('INTO onetime.job_outbox'))).toBe(false);
   });
 
@@ -139,6 +147,7 @@ describe('P08 PostgreSQL Family-signup repository', () => {
     const service = createFamilySignupService({
       repository: createPostgresFamilySignupRepository(harness.pool, crmBinding),
       freeAccessExpiresAt,
+      ghlPaymentLinkConfigured: true,
       hashPassword: async () => passwordHash,
       fingerprintPasswordForIdempotency: async () => 'c'.repeat(64),
       allocateIds: () => ({

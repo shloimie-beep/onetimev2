@@ -28,7 +28,7 @@ const command = (): FamilySignupCommand => ({
   timezone: 'Asia/Jerusalem',
   terms_accepted: true,
   privacy_accepted: true,
-  general_marketing_consent: false,
+  general_marketing_consent: true,
   parent_newsletter_consent: true,
 });
 const input = (now: string, signupCommand = command()): PlanFamilySignupInput => {
@@ -184,8 +184,19 @@ describe('P08 family signup policy', () => {
     expect(plan.ghl_identity_state).toBe('linked');
     expect(plan.outbox_intents[0]?.request_binding).toEqual(linked.request_binding);
     expect(plan.outbox_intents[0]?.adult_consent_choices).toEqual({
-      general_marketing: false,
+      general_marketing: true,
       parent_newsletter: true,
+    });
+    expect(plan.outbox_intents[0]?.unified_agreement).toMatchObject({
+      policy_version: 'one_time_family_signup_unified_v1',
+      terms_accepted: true,
+      privacy_accepted: true,
+      student_data_child_safety_accepted: true,
+      cancellation_refund_accepted: true,
+      email_marketing_consent: 'opted_in',
+      newsletter_consent: 'opted_in',
+      sms_call_whatsapp_consent: false,
+      captured_at: expect.stringMatching(/Z$/u),
     });
     expect(plan.outbox_intents[0]?.ghl_handoff).toMatchObject({
       target: 'p27_ghl_identity_sync',
@@ -203,6 +214,17 @@ describe('P08 family signup policy', () => {
         access_projection: 'free',
       },
       provider_effect_authorized: false,
+      adult_signup_event: {
+        household_reconciliation_key: 'household_1',
+        audience_type: 'adult',
+        email_consent: 'opted_in',
+        policy_version: 'one_time_family_signup_unified_v1',
+        lifecycle_stage: 'Active Member',
+        tags: ['ot | lead', 'ot | email opt-in'],
+        ot01_authority: 'direct_enrollment_after_local_commit',
+        student_contacts: 0,
+        password_or_security_data: false,
+      },
       message_delivery_authorized: false,
       billing_effect_authorized: false,
       student_contact_prohibited: true,
@@ -240,7 +262,7 @@ describe('P08 family signup policy', () => {
     expect(blocked.outbox_intents[0]).toMatchObject({
       dispatch_state: 'identity_review',
       adult_consent_choices: {
-        general_marketing: false,
+        general_marketing: true,
         parent_newsletter: true,
       },
     });
@@ -330,12 +352,12 @@ describe('P08 family signup policy', () => {
     });
     changedName.existing_request = retry.existing_request;
     expect(() => planFamilySignup(changedName)).toThrow('idempotency_conflict');
-    const changedConsent = input('2026-09-11T00:00:00.000Z', {
-      ...command(),
-      general_marketing_consent: true,
-    });
-    changedConsent.existing_request = retry.existing_request;
-    expect(() => planFamilySignup(changedConsent)).toThrow('idempotency_conflict');
+    expect(() =>
+      input('2026-09-11T00:00:00.000Z', {
+        ...command(),
+        general_marketing_consent: false,
+      }),
+    ).toThrow('invalid_family_signup');
 
     const crossScope = input('2026-09-11T00:00:00.000Z');
     crossScope.scope = {
