@@ -5,32 +5,36 @@ Snapshot: 2026-08-10 (Asia/Jerusalem)
 ## Current source
 
 - Repository/branch: `shloimie-beep/onetimev2` / `codex/one-time-complete-production-launch-20260805`
-- Deployed source: `dcdc0756ac248466c1671f681f8605d1757f9b0c` (PR #155 merged)
-- Web/worker: `41dd0e58-e111-4499-8ddd-01b81cad532b` / `df76d339-7b88-42c0-a72b-76f9c2219da2`
-- Readback: health, readiness, and version HTTP 200; 106 migration files/ledger rows applied, zero pending; worker healthy and observed queues empty.
-- Preserved rollback source: `9c54591ce11b133eb773ccbd9c5e7003c515f782`.
+- Deployed source: `e3a7a6b80b29dfa027565602f94d9ce591065069` (merged PR #158; unified-agreement documentation is merged in PR #159).
+- Web/worker: `c62679e8-a95d-4585-802a-119cc8f7b6c3` / `8a09c0f6-319f-45d1-a4b3-997dffab758e`, both SUCCESS/RUNNING.
+- Readback: app and join health, readiness, and version HTTP 200; protected web diagnostics match `e3a7a6b8`; worker heartbeat was fresh (7.1 seconds).
+- Migration verifier: 107 files, 107 ledger rows, 107 applied, zero pending or issues.
+- Queues: delivery, support, and account-lifecycle each have zero ready, leased, expired, retry, and dead-letter items.
+- Preserved rollback source: `9c54591ce11b133eb773ccbd9c5e7003c515f782`. The prior dcdc web/worker deployments were superseded and removed; do not auto-rollback.
 
-## Working now
+## Deployed, awaiting operator smoke
 
-- The secure adult-session repair is deployed. It is not operator accepted until one normal sign-in, role switch, protected-page refresh, logout, and second login passes.
+- The host-first session repair now covers Communications and the shared protected-session path. A normal human browser pass is still required; this is not yet operator accepted.
+- Parent-to-Student creation and its atomic enrollment path are deployed. Verify through one real Parent-to-Student journey; do not infer acceptance from deployment.
+- The single required Family agreement is deployed: initially unchecked, versioned, and records the unified legal/consent facts without creating SMS, call, WhatsApp, Student-contact, or credential effects.
 - The launch product is one recurring 7:00 PM class, shown through Next Class. Rabbi Eli has full Admin access.
-- The immediate teaching loop includes private Rabbi-moderated prompts, one worksheet round trip, three simple badges, and protected Vimeo playback. Initial launch succeeds without Zoom.
 
-## Active blockers
+## Current state
 
-1. Parent-created Student returned two atomic production 500s; diagnose the correlated trace before any retry.
-2. One-agreement change remains stale/draft and needs current-base legal/copy reconciliation.
-3. Recording publication/protected library and minimal adult GHL signup/email-flow acceptance remain unproven. Family GHL synchronization is disabled.
+`READY_FOR_OPERATOR_SMOKE`
 
-## Next operator action
+One human operator must perform the normal browser journey on this exact source: sign in, use Communications and other protected pages, switch role where available, create one Parent-owned Student through the intended flow, refresh/deep-link, log out, and sign in again. Record outcomes before calling any capability `OPERATOR ACCEPTED`.
 
-NO OPERATOR ACTION — resolve the Parent-to-Student failure trace and agreement reconciliation before requesting an adult/Student journey.
+## Still unproven / not part of this smoke
+
+- Recording publication/protected library and the minimal adult-only GHL signup/email flow remain unproven. Family GHL synchronization remains disabled.
+- The immediate teaching loop is scoped as private Rabbi-moderated prompts, one worksheet round trip, three simple badges, and protected Vimeo playback. Initial launch succeeds without Zoom.
 
 ## Protected / off
 
-- No Student GHL contacts; no broad campaigns, billing, nurture, newsletters, former-member reactivation, recording notices, or other GHL workflows.
-- Zoom canary false; media defaults off; live billing false.
-- Embedded Zoom is `LATER — FREE MONTH`: basic access to one pre-created recurring meeting is the first target; Stage Host and OBS controls are optional later enhancements.
+- `FAMILY_SIGNUP_GHL_MODE=disabled`; no Student GHL contacts; no broad campaigns, billing, nurture, newsletters, former-member reactivation, recording notices, or other GHL workflows.
+- Zoom canary false; media is unset and therefore follows the source default OFF; live billing false. Resend is bound.
+- Embedded Zoom is `LATER — FREE MONTH`: basic role-scoped access to one pre-created recurring meeting is the first target; Stage Host and OBS controls are optional later enhancements.
 - BNA task management and Telegram monitoring are outside the initial-launch critical path.
 - No points economy, rewards, public/class leaderboard, parent goals, editable badge rules, extra launch levels, Student-to-Student chat, or launch month grid.
-- A deployed surface or provider configuration is never `OPERATOR ACCEPTED` without the real journey on this exact source.
+- A deployed surface or provider configuration is never `OPERATOR ACCEPTED` without its real journey on this exact source.
