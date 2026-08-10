@@ -683,8 +683,8 @@ if (form) {
             timezone: String(data.get('timezone') ?? ''),
             terms_accepted: unifiedTermsAccepted,
             privacy_accepted: unifiedTermsAccepted,
-            general_marketing_consent: unifiedTermsAccepted,
-            parent_newsletter_consent: unifiedTermsAccepted,
+            general_marketing_consent: false,
+            parent_newsletter_consent: false,
           }),
         });
       } else {

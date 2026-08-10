@@ -41,7 +41,6 @@ describe('P08 public signup model', () => {
         label: 'I agree to the Terms of Use',
         required: true,
         default_checked: false,
-        covered_adult_communication_scopes: ['general_marketing', 'parent_newsletter'],
       },
     ]);
     expect(boundary.optional_consent_fields).toEqual([]);

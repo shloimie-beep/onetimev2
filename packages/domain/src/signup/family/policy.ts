@@ -164,8 +164,8 @@ export function assertFamilySignupEnvelope(
     new Set(command.idempotency_key).size < 16 ||
     command.terms_accepted !== true ||
     command.privacy_accepted !== true ||
-    command.general_marketing_consent !== true ||
-    command.parent_newsletter_consent !== true ||
+    typeof command.general_marketing_consent !== 'boolean' ||
+    typeof command.parent_newsletter_consent !== 'boolean' ||
     !command.first_name.trim() ||
     !command.last_name.trim() ||
     !command.timezone.trim()

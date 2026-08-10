@@ -59,8 +59,8 @@ const familySignupPayloadSchema = z
     timezone: z.string().min(1).max(100),
     terms_accepted: z.literal(true),
     privacy_accepted: z.literal(true),
-    general_marketing_consent: z.literal(true),
-    parent_newsletter_consent: z.literal(true),
+    general_marketing_consent: z.boolean(),
+    parent_newsletter_consent: z.boolean(),
   })
   .strict();
 

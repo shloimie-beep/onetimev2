@@ -28,7 +28,7 @@ const command = (): FamilySignupCommand => ({
   timezone: 'Asia/Jerusalem',
   terms_accepted: true,
   privacy_accepted: true,
-  general_marketing_consent: true,
+  general_marketing_consent: false,
   parent_newsletter_consent: true,
 });
 const input = (now: string, signupCommand = command()): PlanFamilySignupInput => {
@@ -184,7 +184,7 @@ describe('P08 family signup policy', () => {
     expect(plan.ghl_identity_state).toBe('linked');
     expect(plan.outbox_intents[0]?.request_binding).toEqual(linked.request_binding);
     expect(plan.outbox_intents[0]?.adult_consent_choices).toEqual({
-      general_marketing: true,
+      general_marketing: false,
       parent_newsletter: true,
     });
     expect(plan.outbox_intents[0]?.ghl_handoff).toMatchObject({
@@ -240,7 +240,7 @@ describe('P08 family signup policy', () => {
     expect(blocked.outbox_intents[0]).toMatchObject({
       dispatch_state: 'identity_review',
       adult_consent_choices: {
-        general_marketing: true,
+        general_marketing: false,
         parent_newsletter: true,
       },
     });
@@ -330,12 +330,12 @@ describe('P08 family signup policy', () => {
     });
     changedName.existing_request = retry.existing_request;
     expect(() => planFamilySignup(changedName)).toThrow('idempotency_conflict');
-    expect(() =>
-      input('2026-09-11T00:00:00.000Z', {
-        ...command(),
-        general_marketing_consent: false,
-      }),
-    ).toThrow('invalid_family_signup');
+    const changedConsent = input('2026-09-11T00:00:00.000Z', {
+      ...command(),
+      general_marketing_consent: true,
+    });
+    changedConsent.existing_request = retry.existing_request;
+    expect(() => planFamilySignup(changedConsent)).toThrow('idempotency_conflict');
 
     const crossScope = input('2026-09-11T00:00:00.000Z');
     crossScope.scope = {

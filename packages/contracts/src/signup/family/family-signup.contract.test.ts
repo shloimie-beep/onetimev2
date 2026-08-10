@@ -61,7 +61,6 @@ describe('P08 family signup contract', () => {
         label: 'I agree to the Terms of Use',
         required: true,
         default_checked: false,
-        covered_adult_communication_scopes: ['general_marketing', 'parent_newsletter'],
       },
     ]);
     expect(FAMILY_SIGNUP_OPTIONAL_CONSENT_FIELDS).toEqual([]);
@@ -82,8 +81,8 @@ describe('P08 family signup contract', () => {
       timezone_must_be_iana: true,
       browser_timezone_is_editable_suggestion_only: true,
       visible_signup_consent_controls: 1,
-      unified_terms_acceptance_projects_adult_communication_scopes: true,
-      suppression_and_withdrawal_remain_authoritative: true,
+      legal_agreement_covers_terms_and_privacy: true,
+      adult_communication_consent_is_recorded_separately: true,
       identity_review_blocks_post_expiry_checkout: true,
       unavailable_provider_evidence_is_not_identity_ambiguity: true,
       ghl_handoff_is_adult_only_and_non_effecting: true,
