@@ -10942,6 +10942,12 @@ requirements:
     stop_condition: stop on an unauthorized or provider-link exposure
   - case_id: OTV2-CLASSROOM-232-BOOTSTRAP-LEASE
     kind: deferred_free_month_evidence
+    normative_status: deferred
+    priority: later
+    launch_blocker: false
+    release_gate: false
+    free_month_only: true
+    required_for_parent_case: false
     environment: *id013
     actors:
     - admin
@@ -10975,9 +10981,7 @@ requirements:
     stop_condition: stop on unauthorized, wrong-provider, over-budget, or acceptance-unknown effect
 - id: OTV2-CONTENT-233
   area: CONTENT
-  requirement: OBS is the sole launch capture with Zoom cloud recording off; controlled-device upload, private eu-central-1
-    S3/SSE-KMS processing, OT-VIDEO-1 transcode, pinned OpenAI transcription/Structured Outputs, and checksum-readback deletion
-    follow the exact contract.
+  requirement: Initial launch may use one suitable existing One Time/Rabbi-owned recording already present in Drive or the recordings collection. It is processed as needed, human-reviewed, privately published to Vimeo, available only in the protected Student library, playable by an authorized Student, denied to an unauthorized account, and safely unpublished. A new OBS canary and additional historical adoption do not block launch.
   spec_refs:
   - 01-PRODUCT-SPEC-v2.1.md
   - 07-SOURCE-OF-TRUTH-AND-PROVIDER-CONTRACTS-v2.1.md
@@ -10995,7 +10999,7 @@ requirements:
   - OTV2-CONTENT-192
   - OTV2-CONTENT-193
   acceptance_cases:
-  - case_id: OTV2-CONTENT-233-OBS-CAPTURE
+  - case_id: OTV2-CONTENT-233-EXISTING-RECORDING
     kind: operator_journey
     environment: *id014
     actors:
@@ -11004,21 +11008,17 @@ requirements:
     - admin_shloimie
     - student_operator_canary_1
     preconditions:
-    - Zoom cloud recording is disabled
-    - the operator uses the controlled encrypted OBS device
+    - one suitable existing One Time/Rabbi-owned recording is selected from Drive or the recordings collection
     steps:
-    - capture an occurrence with the approved recording notice and participant snapshot
-    - upload the source to Drive or direct intake within 24 hours
-    - verify destination checksum/readback and linked ingest record
-    - delete the local OBS source only after every deletion prerequisite passes
+    - process the selected recording as needed and obtain human approval
+    - privately publish it to Vimeo and expose it in the protected Student library
+    - play it as an authorized Student, deny an unauthorized account, then unpublish safely
     expected_results:
-    - OBS is the sole launch capture and no Zoom cloud recording exists
-    - upload meets the 24-hour target and local deletion cannot occur before checksum/readback and ingest linkage
+    - one approved existing recording completes the protected publish, play, denial, and unpublish loop
     forbidden_effects:
-    - Zoom cloud recording
-    - uncontrolled capture device
-    - premature local deletion
-    - unlinked source
+    - public playback
+    - unauthorized library access
+    - publication before human approval
     evidence_profile: content_pipeline
     cleanup: reconcile provider assets and retain/delete source and derivatives according to retention policy
     stop_condition: stop on unauthorized, wrong-provider, over-budget, or acceptance-unknown effect
