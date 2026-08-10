@@ -3696,12 +3696,12 @@ requirements:
     stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
 - id: OTV2-CLASSROOM-071
   area: CLASSROOM
-  requirement: Student portals receive secure Join Class state.
+  requirement: Free-month Zoom evidence: secure embedded Join Class state for one pre-created recurring meeting; not an initial-launch blocker or release gate.
   spec_refs: *id012
-  normative_status: required
+  normative_status: deferred
   verification_status: unimplemented
-  priority: launch_blocker
-  release_gate: true
+  priority: later
+  release_gate: false
   owner_domain: classroom
   depends_on:
   - OTV2-CALENDAR-058
@@ -3790,12 +3790,12 @@ requirements:
     stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
 - id: OTV2-CLASSROOM-073
   area: CLASSROOM
-  requirement: An authorized Student can join while the live occurrence remains open; no product-level late rejection occurs.
+  requirement: Free-month Zoom evidence: authorized embedded join while a recurring-meeting occurrence is open; not an initial-launch blocker or release gate.
   spec_refs: *id012
-  normative_status: required
+  normative_status: deferred
   verification_status: unimplemented
-  priority: launch_blocker
-  release_gate: true
+  priority: later
+  release_gate: false
   owner_domain: classroom
   depends_on:
   - OTV2-CALENDAR-058
@@ -3836,12 +3836,12 @@ requirements:
     stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
 - id: OTV2-CLASSROOM-074
   area: CLASSROOM
-  requirement: Students join muted.
+  requirement: Free-month Zoom evidence: Students join the recurring meeting muted; not an initial-launch blocker or release gate.
   spec_refs: *id012
-  normative_status: required
+  normative_status: deferred
   verification_status: unimplemented
-  priority: launch_blocker
-  release_gate: true
+  priority: later
+  release_gate: false
   owner_domain: classroom
   depends_on:
   - OTV2-CALENDAR-058
@@ -3882,13 +3882,12 @@ requirements:
     stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
 - id: OTV2-CLASSROOM-075
   area: CLASSROOM
-  requirement: Participant video is available, camera guidance is shown, and recorded Student audio/video requires versioned
-    account-owner consent.
+  requirement: Free-month Zoom/recorded-participation evidence: video, camera guidance, and consent-gated capture; not an initial-launch blocker or release gate.
   spec_refs: *id012
-  normative_status: required
+  normative_status: deferred
   verification_status: unimplemented
-  priority: launch_blocker
-  release_gate: true
+  priority: later
+  release_gate: false
   owner_domain: classroom
   depends_on:
   - OTV2-CALENDAR-058
@@ -3930,12 +3929,12 @@ requirements:
     stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
 - id: OTV2-CLASSROOM-076
   area: CLASSROOM
-  requirement: Three separate tablet joins pass.
+  requirement: Free-month Zoom evidence: three separate embedded recurring-meeting joins pass; not an initial-launch blocker or release gate.
   spec_refs: *id012
-  normative_status: required
+  normative_status: deferred
   verification_status: unimplemented
-  priority: launch_blocker
-  release_gate: true
+  priority: later
+  release_gate: false
   owner_domain: classroom
   depends_on:
   - OTV2-CALENDAR-058
@@ -3976,7 +3975,7 @@ requirements:
     stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
 - id: OTV2-CLASSROOM-077
   area: CLASSROOM
-  requirement: Sibling/cross-household join is denied.
+  requirement: Initial-launch child-safety boundary: sibling and cross-household access to another Student's portal, private learning, worksheet, or protected library is denied. Free-month Zoom join denial remains later evidence.
   spec_refs: *id012
   normative_status: required
   verification_status: unimplemented
@@ -4022,7 +4021,7 @@ requirements:
     stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
 - id: OTV2-CLASSROOM-078
   area: CLASSROOM
-  requirement: Attendance minutes and percentage are recorded.
+  requirement: Initial-launch attendance recognition is driven by Rabbi/Admin-confirmed attendance or an existing governed local attendance record; provider-derived Zoom attendance is free-month evidence.
   spec_refs: *id012
   normative_status: required
   verification_status: unimplemented
@@ -4056,7 +4055,7 @@ requirements:
     - join through embedded portals on separate tablets
     - exercise sibling, second-device, timeout, and reconnect branches
     expected_results:
-    - Attendance minutes and percentage are recorded.
+    - Rabbi/Admin confirmation or an existing governed local record persists once and awards Consistency once; no Zoom/provider attendance is required.
     forbidden_effects:
     - raw Zoom URL exposure
     - shared bearer credential
@@ -4068,12 +4067,12 @@ requirements:
     stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
 - id: OTV2-CLASSROOM-079
   area: CLASSROOM
-  requirement: Old disposable Zoom canary cleanup does not block normal classroom use.
+  requirement: Historical provider-cleanup evidence is retained for free-month Zoom work and does not block initial launch.
   spec_refs: *id012
-  normative_status: required
+  normative_status: deferred
   verification_status: unimplemented
-  priority: launch_blocker
-  release_gate: true
+  priority: later
+  release_gate: false
   owner_domain: classroom
   depends_on:
   - OTV2-CALENDAR-058
@@ -8588,15 +8587,14 @@ requirements:
     stop_condition: stop on unauthorized, wrong-provider, over-budget, or acceptance-unknown effect
 - id: OTV2-CLASSROOM-187
   area: CLASSROOM
-  requirement: Only one concurrent embedded classroom session is allowed per Student; same-session reconnect works and second-device
-    join is denied.
+  requirement: Free-month Zoom evidence: single embedded session, reconnect, and second-device denial; not an initial-launch blocker or release gate.
   spec_refs:
   - 03-DECISION-REGISTER-v2.1.md
   - 07-SOURCE-OF-TRUTH-AND-PROVIDER-CONTRACTS-v2.1.md
-  normative_status: required
+  normative_status: deferred
   verification_status: unimplemented
-  priority: launch_blocker
-  release_gate: true
+  priority: later
+  release_gate: false
   owner_domain: classroom
   depends_on:
   - OTV2-CALENDAR-058
@@ -8638,14 +8636,13 @@ requirements:
     stop_condition: stop on unauthorized, wrong-provider, over-budget, or acceptance-unknown effect
 - id: OTV2-CLASSROOM-188
   area: CLASSROOM
-  requirement: Canonical Zoom settings disable waiting room, participant rename, participant chat, participant screen sharing,
-    and participant file transfer.
+  requirement: Free-month Zoom configuration evidence for the recurring meeting; not an initial-launch blocker or release gate.
   spec_refs:
   - 07-SOURCE-OF-TRUTH-AND-PROVIDER-CONTRACTS-v2.1.md
-  normative_status: required
+  normative_status: deferred
   verification_status: unimplemented
-  priority: launch_blocker
-  release_gate: true
+  priority: later
+  release_gate: false
   owner_domain: classroom
   depends_on:
   - OTV2-CALENDAR-058
@@ -10927,8 +10924,7 @@ requirements:
     stop_condition: stop on unauthorized, wrong-provider, over-budget, or acceptance-unknown effect
 - id: OTV2-CLASSROOM-232
   area: CLASSROOM
-  requirement: The canonical 60-minute occurrence uses the 90-day horizon, 24-hour preparation, 30-minute reminder, 10-minute
-    join opening, end-plus-15-minute close, 60-second join bootstrap, and 30-second heartbeat/90-second single-device lease.
+  requirement: Initial-launch Next Class scheduling uses the canonical 60-minute occurrence, 90-day horizon, 24-hour preparation, 30-minute adult reminder, and end-plus-15-minute close. Zoom bootstrap and device-lease proof are free-month evidence.
   spec_refs:
   - 01-PRODUCT-SPEC-v2.1.md
   - 06-DOMAIN-MODEL-AND-STATE-MACHINES-v2.1.md
@@ -10943,8 +10939,6 @@ requirements:
   - OTV2-AUTH-008
   - OTV2-PARENT-032
   - OTV2-CLASSROOM-184
-  - OTV2-CLASSROOM-187
-  - OTV2-CLASSROOM-188
   acceptance_cases:
   - case_id: OTV2-CLASSROOM-232-TIMING
     kind: time_boundary
