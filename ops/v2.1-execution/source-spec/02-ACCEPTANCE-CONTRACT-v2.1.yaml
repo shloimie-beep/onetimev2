@@ -3608,7 +3608,7 @@ requirements:
     stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
 - id: OTV2-CLASSROOM-069
   area: CLASSROOM
-  requirement: One app-owned Zoom meeting is created per occurrence.
+  requirement: Historical per-occurrence Zoom meeting requirement, superseded for immediate launch by secure governed binding to one pre-created recurring meeting.
   spec_refs: *id012
   normative_status: required
   verification_status: unimplemented
@@ -3654,12 +3654,12 @@ requirements:
     stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
 - id: OTV2-CLASSROOM-070
   area: CLASSROOM
-  requirement: One separate Zoom registrant is created per Student.
+  requirement: Historical per-Student Zoom registrant requirement, superseded for immediate launch by governed role-scoped joins to one pre-created recurring meeting.
   spec_refs: *id012
-  normative_status: required
+  normative_status: deferred
   verification_status: unimplemented
-  priority: launch_blocker
-  release_gate: true
+  priority: later
+  release_gate: false
   owner_domain: classroom
   depends_on:
   - OTV2-CALENDAR-058
@@ -3688,7 +3688,7 @@ requirements:
     - join through embedded portals on separate tablets
     - exercise sibling, second-device, timeout, and reconnect branches
     expected_results:
-    - One separate Zoom registrant is created per Student.
+    - This historical case is retained as superseded evidence and does not gate the immediate launch.
     forbidden_effects:
     - raw Zoom URL exposure
     - shared bearer credential
@@ -4788,10 +4788,10 @@ requirements:
   requirement: Authenticated class leaderboards separately show rolling attendance count, current attendance streak, and approved/published
     question count.
   spec_refs: *id017
-  normative_status: required
+  normative_status: deferred
   verification_status: unimplemented
-  priority: launch_blocker
-  release_gate: true
+  priority: later
+  release_gate: false
   owner_domain: learning
   depends_on:
   - OTV2-STUDENT-041
@@ -11736,6 +11736,58 @@ requirements:
     evidence_profile: billing_live
     cleanup: cancel/refund only the approved operator canary and reconcile final access
     stop_condition: stop on unauthorized, wrong-provider, over-budget, or acceptance-unknown effect
+- id: OTV2-LEARNING-244
+  area: LEARNING
+  requirement: Rabbi Prompt Board permits Rabbi prompts to enrolled Students, private Student responses and Rabbi replies, selective approved named publication, and private Student topic proposals; no Student-to-Student reply or chat exists.
+  spec_refs:
+  - 01-PRODUCT-SPEC-v2.1.md
+  - 03-DECISION-REGISTER-v2.1.md
+  normative_status: required
+  verification_status: unimplemented
+  priority: launch_blocker
+  release_gate: true
+  owner_domain: learning
+  depends_on:
+  - OTV2-STUDENT-041
+  acceptance_cases:
+  - case_id: OTV2-LEARNING-244-AC01
+    kind: positive
+    environment: production_operator_canary
+    actors: [admin, student]
+    fixtures: [admin_rabbi_eli, student_operator_canary_1, student_operator_canary_2]
+    preconditions: [two enrolled Students exist]
+    steps: [Rabbi posts a prompt, each Student responds, Rabbi replies privately, Rabbi publishes one approved response]
+    expected_results: [responses remain private before publication, only the approved response shows its approved Student name, topic proposal remains governed]
+    forbidden_effects: [Student-to-Student chat, cross-Student private data, public publication]
+    evidence_profile: learning_domain
+    cleanup: remove only the operator-canary prompt/publication
+    stop_condition: stop on unauthorized or acceptance-unknown effect
+- id: OTV2-LEARNING-245
+  area: LEARNING
+  requirement: One private worksheet round trip permits Rabbi send, Student submit, and Rabbi return or accept; accepted work emits only Review Ready once.
+  spec_refs:
+  - 01-PRODUCT-SPEC-v2.1.md
+  - 03-DECISION-REGISTER-v2.1.md
+  normative_status: required
+  verification_status: unimplemented
+  priority: launch_blocker
+  release_gate: true
+  owner_domain: learning
+  depends_on:
+  - OTV2-STUDENT-041
+  acceptance_cases:
+  - case_id: OTV2-LEARNING-245-AC01
+    kind: positive
+    environment: production_operator_canary
+    actors: [admin, student]
+    fixtures: [admin_rabbi_eli, student_operator_canary_1]
+    preconditions: [enrolled Student exists]
+    steps: [Rabbi sends one worksheet, Student submits, Rabbi returns feedback then accepts]
+    expected_results: [work and feedback remain private, state persists, Review Ready is emitted once on acceptance]
+    forbidden_effects: [peer access, points or reward effect, duplicate badge]
+    evidence_profile: learning_domain
+    cleanup: archive only the operator-canary worksheet
+    stop_condition: stop on unauthorized or acceptance-unknown effect
 - id: OTV2-PROVIDER-243
   area: PROVIDER
   requirement: An ambiguous GHL contact match quarantines only CRM linkage, workflow, and paid billing while local login,
