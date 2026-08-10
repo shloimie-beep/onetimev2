@@ -236,8 +236,7 @@ verification_profiles:
     - sibling_denial
     - second_device
     canonical_preconditions:
-    - operator-owned occurrence and up to three real Student fixtures exist
-    - Zoom live/sandbox authority is explicit
+    - canonical 7:00 PM class and an authorized Adult/Student portal exist
     canonical_steps:
     - prepare the roster and confirm it
     - read back meeting and per-Student registration
@@ -3742,8 +3741,7 @@ requirements:
     stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
 - id: OTV2-CLASSROOM-072
   area: CLASSROOM
-  requirement: Parent class reminders label affected Students and use safe app links without authenticating a Student or exposing
-    a raw Zoom URL.
+  requirement: Initial-launch class reminder is sent only to the Adult, identifies affected Students safely, and links only to a protected One Time login or portal destination.
   spec_refs: *id012
   normative_status: required
   verification_status: unimplemented
@@ -3759,35 +3757,23 @@ requirements:
     kind: negative
     environment: *id013
     actors:
-    - admin
-    - student
+    - parent
     fixtures:
-    - admin_shloimie
     - parent_operator_canary
-    - student_operator_canary_1
-    - student_operator_canary_2
-    - student_operator_canary_3
-    - denial_household
     preconditions:
-    - operator-owned occurrence and up to three real Student fixtures exist
-    - Zoom live/sandbox authority is explicit
+    - adult Family account and one affected Student exist
     steps:
-    - prepare the roster and confirm it
-    - read back meeting and per-Student registration
-    - join through embedded portals on separate tablets
-    - exercise sibling, second-device, timeout, and reconnect branches
+    - trigger the single adult launch reminder for the canonical class
+    - inspect recipient, affected-Student label, and destination
     expected_results:
-    - Parent class reminders label affected Students and use safe app links without authenticating a Student or exposing a
-      raw Zoom URL.
+    - only the Adult receives the reminder and its destination requires One Time authentication
     forbidden_effects:
-    - raw Zoom URL exposure
-    - shared bearer credential
-    - duplicate meeting
-    - cross-Student join
-    - blind retry after unknown acceptance
-    evidence_profile: zoom_classroom
-    cleanup: reconcile and remove disposable provider resources without blocking normal classroom paths
-    stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
+    - Student recipient
+    - Zoom/provider link or bearer
+    - duplicate send
+    evidence_profile: ghl_workflow
+    cleanup: reconcile the operator-canary adult send
+    stop_condition: stop on an unauthorized, wrong-recipient, or acceptance-unknown effect
 - id: OTV2-CLASSROOM-073
   area: CLASSROOM
   requirement: Free-month Zoom evidence: authorized embedded join while a recurring-meeting occurrence is open; not an initial-launch blocker or release gate.
@@ -4001,24 +3987,17 @@ requirements:
     - student_operator_canary_3
     - denial_household
     preconditions:
-    - operator-owned occurrence and up to three real Student fixtures exist
-    - Zoom live/sandbox authority is explicit
+    - two Families with separate Students exist
     steps:
-    - prepare the roster and confirm it
-    - read back meeting and per-Student registration
-    - join through embedded portals on separate tablets
-    - exercise sibling, second-device, timeout, and reconnect branches
+    - authenticate one Student and request another Student's portal, private learning, worksheet, and library resources
     expected_results:
-    - Sibling/cross-household join is denied.
+    - cross-household child data and access are denied without disclosure
     forbidden_effects:
-    - raw Zoom URL exposure
-    - shared bearer credential
-    - duplicate meeting
-    - cross-Student join
-    - blind retry after unknown acceptance
-    evidence_profile: zoom_classroom
-    cleanup: reconcile and remove disposable provider resources without blocking normal classroom paths
-    stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
+    - cross-household child data
+    - privilege escalation
+    evidence_profile: authorization_boundary
+    cleanup: none
+    stop_condition: stop on any child-data disclosure
 - id: OTV2-CLASSROOM-078
   area: CLASSROOM
   requirement: Initial-launch attendance recognition is driven by Rabbi/Admin-confirmed attendance or an existing governed local attendance record; provider-derived Zoom attendance is free-month evidence.
@@ -4047,24 +4026,18 @@ requirements:
     - student_operator_canary_3
     - denial_household
     preconditions:
-    - operator-owned occurrence and up to three real Student fixtures exist
-    - Zoom live/sandbox authority is explicit
+    - an eligible Student and canonical class record exist
     steps:
-    - prepare the roster and confirm it
-    - read back meeting and per-Student registration
-    - join through embedded portals on separate tablets
-    - exercise sibling, second-device, timeout, and reconnect branches
+    - record Rabbi/Admin-confirmed attendance or select an existing governed local attendance record
+    - read back the Student recognition and replay the same confirmation
     expected_results:
     - Rabbi/Admin confirmation or an existing governed local record persists once and awards Consistency once; no Zoom/provider attendance is required.
     forbidden_effects:
-    - raw Zoom URL exposure
-    - shared bearer credential
-    - duplicate meeting
-    - cross-Student join
-    - blind retry after unknown acceptance
-    evidence_profile: zoom_classroom
-    cleanup: reconcile and remove disposable provider resources without blocking normal classroom paths
-    stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
+    - provider attendance dependency
+    - duplicate Consistency award
+    evidence_profile: learning_domain
+    cleanup: reverse only an operator-canary award with an audited reason
+    stop_condition: stop on an unauthorized or duplicate recognition effect
 - id: OTV2-CLASSROOM-079
   area: CLASSROOM
   requirement: Historical provider-cleanup evidence is retained for free-month Zoom work and does not block initial launch.
@@ -10957,25 +10930,18 @@ requirements:
     - operator-owned occurrence and up to three real Student fixtures exist
     - Zoom live/sandbox authority is explicit
     steps:
-    - generate the rolling horizon and prove it contains the canonical Sunday–Thursday 7 p.m. Jerusalem occurrences through
-      90 days
-    - observe automatic preparation at 24 hours, reminder at 30 minutes, Join opening at 10 minutes, 60-minute scheduled end,
-      and closure at end plus 15 minutes
-    - exercise a manual earlier preparation and repeat every scheduler delivery
+    - open Next Class in the protected portal
+    - verify class time, status, and protected portal navigation
     expected_results:
-    - all boundaries use the authoritative occurrence/Jerusalem clock and occur at most once
-    - manual earlier preparation is allowed but does not duplicate resources or notifications
-    - a Student may join any time the occurrence remains open; there is no product-level late rejection
+    - Next Class presents the sole 7:00 PM class without exposing a provider join link
     forbidden_effects:
     - rolling local-time drift
-    - duplicate occurrence/resource/reminder
-    - join before window
-    - join after close
-    evidence_profile: zoom_classroom
-    cleanup: reconcile and remove disposable provider resources without blocking normal classroom paths
-    stop_condition: stop on unauthorized, wrong-provider, over-budget, or acceptance-unknown effect
+    - provider link, bootstrap, registrant, or attendance proof
+    evidence_profile: portal_navigation
+    cleanup: none
+    stop_condition: stop on an unauthorized or provider-link exposure
   - case_id: OTV2-CLASSROOM-232-BOOTSTRAP-LEASE
-    kind: concurrency
+    kind: deferred_free_month_evidence
     environment: *id013
     actors:
     - admin
