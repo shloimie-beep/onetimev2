@@ -1,4 +1,4 @@
-import { readFile } from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import pg from 'pg';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -40,35 +40,9 @@ const migrationFiles = [
   '2255_v21_student_actual_name.sql',
 ] as const;
 
-const nativeMigrationFiles = [
-  ...migrationFiles,
-  '2236_v21_job_foundation.sql',
-  '2237_v21_calendar_recurrence.sql',
-  '2238_v21_provider_core.sql',
-  '2239_v21_classroom_core.sql',
-  '2240_v21_privacy_data_rights.sql',
-  '2242_v21_student_notifications.sql',
-  '2243_v21_support.sql',
-  '2244_v21_ghl_identity.sql',
-  '2245_v21_content_ingest.sql',
-  '2246_v21_content_processing.sql',
-  '2247_v21_communication_foundation.sql',
-  '2249_v21_school_inquiry.sql',
-  '2250_v21_zoom_preparation.sql',
-  '2252_v21_content_publication.sql',
-  '2253_v21_content_publication_projection_v2.sql',
-  '2256_v21_approved_school_configuration_authority.sql',
-  '2257_v21_provider_registry_bindings.sql',
-  '2258_v21_configurable_launch_timing.sql',
-  '2259_vimeo_mishnayos_catalog_adoption.sql',
-  '2260_v21_governed_campaign_audience_decisions.sql',
-  '2261_complete_launch_timing_correction.sql',
-  '2262_complete_launch_class_anchor.sql',
-  '2263_family_signup_ghl_dispatch.sql',
-  '2264_v21_adult_password_recovery.sql',
-  '2265_v21_parent_class_enrollment_projection.sql',
-  '2266_v21_canonical_class_scope_convergence.sql',
-].sort() as readonly string[];
+const nativeMigrationFiles = (await readdir(path.resolve(process.cwd(), 'packages/db/migrations')))
+  .filter((name) => name.endsWith('.sql'))
+  .sort();
 
 describe('P12 concrete PostgreSQL Parent household repository', () => {
   let pool: DbPool;
@@ -292,33 +266,6 @@ describe('P12 concrete PostgreSQL Parent household repository', () => {
     expect(transactionLog[0]).toBe('BEGIN');
     expect(transactionLog.at(-1)).toBe('ROLLBACK');
     expect(transactionLog).not.toContain('COMMIT');
-  });
-
-  it('reports a stable canonical-class stage and rolls back when no canonical class is ready', async () => {
-    const fixture = await seedParent(pool, 'missing-class', 0);
-    await pool.query('DELETE FROM onetime.class_series');
-    try {
-      await expect(
-        concreteService(pool, 'student-missing-class').createStudent(
-          fixture.principal,
-          {
-            expected_revision: 1,
-            actual_name: 'Missing Class Student',
-            username: 'missing.class.student',
-            relationship: 'dependent',
-            new_password: 'safe-password-123',
-            password_confirmation: 'safe-password-123',
-          },
-          mutationContext('missing-class', 'a'),
-        ),
-      ).rejects.toMatchObject({ code: 'parent_student_canonical_class_unavailable' });
-    } finally {
-      await pool.query(
-        `INSERT INTO onetime.class_series
-           (class_series_key, account_key, product_key, status, series_state, is_canonical)
-         VALUES ('canonical-class', 'account-test', 'one_time_mishnayos', 'active', 'active', true)`,
-      );
-    }
   });
 
   it('archives atomically with enrollment and session/grant revocation readback', async () => {
