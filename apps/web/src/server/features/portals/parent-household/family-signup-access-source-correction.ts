@@ -89,15 +89,13 @@ export async function executeFamilySignupAccessSourceCorrection(
   const client = await pool.connect();
   try {
     await client.query('BEGIN ISOLATION LEVEL SERIALIZABLE');
-    const trustedNow = dependencies.clock
-      ? dependencies.clock()
-      : await currentTransactionTimestamp(client);
-    if (trustedNow.getTime() >= Date.parse(input.expires_at)) {
-      throw new Error('Family-signup access correction refused: free_period_cutoff_reached.');
-    }
     await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [
       `family-signup-access-source-correction:${input.household_id}`,
     ]);
+    const trustedNow = dependencies.clock ? dependencies.clock() : await currentWallClock(client);
+    if (trustedNow.getTime() >= Date.parse(input.expires_at)) {
+      throw new Error('Family-signup access correction refused: free_period_cutoff_reached.');
+    }
     const existing = await client.query(
       `SELECT correction_receipt_key
          FROM onetime.family_signup_access_source_correction_receipts
@@ -148,7 +146,8 @@ export async function executeFamilySignupAccessSourceCorrection(
          (correction_receipt_key, household_id, product, runtime_tier,
           verification_environment_id, source_transition_key, source_effective_at,
           expires_at, correction_state, controller_authorization_reference, request_digest)
-       VALUES ($1,$2,$3,$4,$5,$6,$7::timestamptz,$8::timestamptz,'active',$9,$10)`,
+       SELECT $1,$2,$3,$4,$5,$6,$7::timestamptz,$8::timestamptz,'active',$9,$10
+        WHERE clock_timestamp() < $8::timestamptz`,
       [
         input.correction_receipt_key,
         input.household_id,
@@ -162,8 +161,9 @@ export async function executeFamilySignupAccessSourceCorrection(
         requestDigest,
       ],
     );
-    if (inserted.rowCount !== 1)
-      throw new Error('Family-signup access correction was not recorded.');
+    if (inserted.rowCount !== 1) {
+      throw new Error('Family-signup access correction refused: free_period_cutoff_reached.');
+    }
     await client.query('COMMIT');
     return { disposition: 'committed' as const };
   } catch (error) {
@@ -174,8 +174,8 @@ export async function executeFamilySignupAccessSourceCorrection(
   }
 }
 
-async function currentTransactionTimestamp(db: Queryable) {
-  const result = await db.query('SELECT CURRENT_TIMESTAMP AS current_timestamp');
+async function currentWallClock(db: Queryable) {
+  const result = await db.query('SELECT clock_timestamp() AS current_timestamp');
   if (result.rowCount !== 1)
     throw new Error('Family-signup access correction clock is unavailable.');
   const current = (result.rows[0] as { current_timestamp?: unknown }).current_timestamp;

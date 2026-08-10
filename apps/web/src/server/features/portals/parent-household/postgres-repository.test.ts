@@ -1169,6 +1169,67 @@ describe.runIf(nativeEnabled)('P12 native PostgreSQL through migration 2255', ()
     await expect(
       countWhere(pool as DbPool, 'family_signup_outbox', 'household_id', afterCutoff.householdId),
     ).resolves.toBe(0);
+
+    const lockBoundary = await seedParent(
+      pool as DbPool,
+      'native-correction-lock-boundary',
+      0,
+      'free',
+      false,
+      'post_cutover_family_signup',
+      FAMILY_SIGNUP_ACCESS_CORRECTION_SOURCE_EFFECTIVE_AT,
+      true,
+    );
+    const lockClient = await pool.connect();
+    let trustedNow = new Date('2026-09-11T17:59:59+03:00');
+    let trustedClockRead = false;
+    try {
+      await lockClient.query('BEGIN');
+      await lockClient.query('SELECT pg_advisory_xact_lock(hashtext($1))', [
+        `family-signup-access-source-correction:${lockBoundary.householdId}`,
+      ]);
+      const waiting = executeFamilySignupAccessSourceCorrection(
+        pool as unknown as DbPool,
+        {
+          ...request,
+          correction_receipt_key: 'native-family-signup-source-correction-lock-boundary',
+          household_id: lockBoundary.householdId,
+        },
+        {
+          clock: () => {
+            trustedClockRead = true;
+            return trustedNow;
+          },
+        },
+      );
+      await new Promise<void>((resolve) => setTimeout(resolve, 25));
+      expect(trustedClockRead).toBe(false);
+      trustedNow = new Date(FAMILY_SIGNUP_ACCESS_CORRECTION_EXPIRES_AT);
+      await lockClient.query('COMMIT');
+      await expect(waiting).rejects.toThrow(/free_period_cutoff_reached/i);
+    } finally {
+      await lockClient.query('ROLLBACK');
+      lockClient.release();
+    }
+    await expect(
+      countWhere(
+        pool as DbPool,
+        'family_signup_access_source_correction_receipts',
+        'household_id',
+        lockBoundary.householdId,
+      ),
+    ).resolves.toBe(0);
+    await expect(
+      countWhere(
+        pool as DbPool,
+        'family_signup_requests',
+        'household_id',
+        lockBoundary.householdId,
+      ),
+    ).resolves.toBe(0);
+    await expect(
+      countWhere(pool as DbPool, 'family_signup_outbox', 'household_id', lockBoundary.householdId),
+    ).resolves.toBe(0);
   });
 });
 
