@@ -3695,7 +3695,7 @@ requirements:
     stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
 - id: OTV2-CLASSROOM-071
   area: CLASSROOM
-  requirement: Free-month Zoom evidence: secure embedded Join Class state for one pre-created recurring meeting; not an initial-launch blocker or release gate.
+  requirement: 'Free-month Zoom evidence: secure embedded Join Class state for one pre-created recurring meeting; not an initial-launch blocker or release gate.'
   spec_refs: *id012
   normative_status: deferred
   verification_status: unimplemented
@@ -3776,7 +3776,7 @@ requirements:
     stop_condition: stop on an unauthorized, wrong-recipient, or acceptance-unknown effect
 - id: OTV2-CLASSROOM-073
   area: CLASSROOM
-  requirement: Free-month Zoom evidence: authorized embedded join while a recurring-meeting occurrence is open; not an initial-launch blocker or release gate.
+  requirement: 'Free-month Zoom evidence: authorized embedded join while a recurring-meeting occurrence is open; not an initial-launch blocker or release gate.'
   spec_refs: *id012
   normative_status: deferred
   verification_status: unimplemented
@@ -3822,7 +3822,7 @@ requirements:
     stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
 - id: OTV2-CLASSROOM-074
   area: CLASSROOM
-  requirement: Free-month Zoom evidence: Students join the recurring meeting muted; not an initial-launch blocker or release gate.
+  requirement: 'Free-month Zoom evidence: Students join the recurring meeting muted; not an initial-launch blocker or release gate.'
   spec_refs: *id012
   normative_status: deferred
   verification_status: unimplemented
@@ -3868,7 +3868,7 @@ requirements:
     stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
 - id: OTV2-CLASSROOM-075
   area: CLASSROOM
-  requirement: Free-month Zoom/recorded-participation evidence: video, camera guidance, and consent-gated capture; not an initial-launch blocker or release gate.
+  requirement: 'Free-month Zoom/recorded-participation evidence: video, camera guidance, and consent-gated capture; not an initial-launch blocker or release gate.'
   spec_refs: *id012
   normative_status: deferred
   verification_status: unimplemented
@@ -3915,7 +3915,7 @@ requirements:
     stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
 - id: OTV2-CLASSROOM-076
   area: CLASSROOM
-  requirement: Free-month Zoom evidence: three separate embedded recurring-meeting joins pass; not an initial-launch blocker or release gate.
+  requirement: 'Free-month Zoom evidence: three separate embedded recurring-meeting joins pass; not an initial-launch blocker or release gate.'
   spec_refs: *id012
   normative_status: deferred
   verification_status: unimplemented
@@ -3961,7 +3961,7 @@ requirements:
     stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
 - id: OTV2-CLASSROOM-077
   area: CLASSROOM
-  requirement: Initial-launch child-safety boundary: sibling and cross-household access to another Student's portal, private learning, worksheet, or protected library is denied. Free-month Zoom join denial remains later evidence.
+  requirement: 'Initial-launch child-safety boundary: sibling and cross-household access to another Student''s portal, private learning, worksheet, or protected library is denied. Free-month Zoom join denial remains later evidence.'
   spec_refs: *id012
   normative_status: required
   verification_status: unimplemented
@@ -5913,7 +5913,8 @@ requirements:
     stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
 - id: OTV2-GHL-123
   area: GHL
-  requirement: OT-01 is configured and tested.
+  requirement: OT-01 is the sole launch Family confirmation workflow, directly enrolling only the adult after a successful
+    committed One Time Family signup event.
   spec_refs: *id021
   normative_status: required
   verification_status: unimplemented
@@ -5935,19 +5936,23 @@ requirements:
     preconditions:
     - exact registry, sender, audience, consent, and content digests are approved
     steps:
+    - commit a local One Time Family signup with the unified adult agreement, then read back its single adult-only downstream event
     - save and reopen the workflow
     - read back trigger/actions/waits/exits
     - execute one operator seed
     - change suppression after approval and verify send-time blocking
     - verify effect counters
     expected_results:
-    - OT-01 is configured and tested.
+    - OT-01 is configured and tested as the sole launch Family confirmation workflow and enrolls the adult only after the
+      successful local signup event; OT-F01P remains legacy standalone-form compliance history to unpublish/archive later,
+      not delete or use for launch signup
     forbidden_effects:
     - Student contact
     - wrong sender
     - broad unapproved enrollment
     - disabled WhatsApp send
     - audience/content drift
+    - Student contact, password/security data, separate marketing/newsletter form control, or OT-F01P launch enrollment
     evidence_profile: ghl_workflow
     cleanup: remove unintended seed enrollment and preserve approved delivery evidence
     stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
@@ -8094,18 +8099,23 @@ requirements:
     - real actor, target resource, and denial-scope fixture exist
     steps:
     - open the public landing page signed out and inspect the two intake choices
-    - choose Family and verify navigation to the Family account form with email/password and no School fields
+    - choose Family and verify navigation to the One Time-owned Family account form with email/password, exactly one required
+      initially unchecked unified agreement control, and no School fields
     - return signed out, choose School, and verify navigation to the School inquiry form with no password, card, household,
       or Student fields
     - submit an omitted, unsupported, and hybrid classification directly to the public API
     expected_results:
     - public intake offers exactly Family signup and School inquiry as mutually exclusive branches
-    - Family is the only branch that can create a Parent account/household; School creates an inquiry only
+    - Family is the only branch that can create a Parent account/household; One Time, not GHL, owns password, identity,
+      household, free access, agreement persistence, and session creation; School creates an inquiry only
+    - the Family form exposes no separate marketing or newsletter checkbox; its one visible agreement control covers Terms,
+      Privacy, Student Data/Child Safety, Cancellation/Refund, and adult marketing email
     - missing, unsupported, or hybrid classification is rejected without a local or provider write
     forbidden_effects:
     - implicit classification
     - hybrid household/inquiry
     - School password or access creation
+    - GHL-owned signup, password/security data sent to GHL, Student GHL contact, or SMS/automated-call/WhatsApp consent
     - partial provider effect
     evidence_profile: role_browser_persistence
     cleanup: archive only records created for the operator canary when the manifest requires cleanup
@@ -8138,19 +8148,32 @@ requirements:
     - student_operator_canary_1
     preconditions:
     - typed route/job contract and stable idempotency key are defined
+    - '`One Time Household ID` is the primary downstream reconciliation and idempotency key'
     steps:
-    - submit the authorized operation
+    - submit the One Time-owned Family form with adult identity, email, password, timezone, and its one required initially
+      unchecked agreement control
     - double-submit and send a stale version
     - inject timeout/acceptance-unknown
     - reconcile or safely reprocess through governed controls
     expected_results:
     - Before the fixed free-expiry instant, Family signup creates immediate free Parent access from a submitted email and
       password with no card; fresh public signup does not require a setup email.
+    - the one visible agreement control records `email consent=opted_in`, policy version
+      `one_time_family_signup_unified_v1`, a UTC captured timestamp, audience type `adult`, and the exact Terms, Privacy,
+      Student Data/Child Safety, and Cancellation/Refund acceptances
+    - only after the local Family transaction commits, one adult-only GHL event uses `One Time Household ID` as its primary
+      reconciliation/idempotency key, creates or safely matches one adult contact, places the household opportunity directly
+      in `Active Member`, applies only `ot | lead` and `ot | email opt-in`, and directly enrolls that adult in OT-01
+    - '`New Funnel / Pre-Registered` is reserved for incomplete/pre-account leads; no password or security data leaves One Time'
+    - marketing unsubscribe, DND, complaint, bounce, and suppression precedence remain enforceable; service/account/class
+      messages remain distinct from marketing withdrawal
     forbidden_effects:
     - duplicate external effect
     - unfenced worker completion
     - blind retry with new key
     - PII or bearer in URL
+    - separate marketing/newsletter control, default-false marketing consent, Student GHL contact, SMS/automated-call/WhatsApp
+      consent, OT-F01P launch enrollment, or a GHL event before the local transaction commits
     evidence_profile: api_job_saga
     cleanup: reconcile every effect and clear only disposable operator-owned work
     stop_condition: stop on unauthorized, wrong-provider, over-budget, or acceptance-unknown effect
@@ -8560,7 +8583,7 @@ requirements:
     stop_condition: stop on unauthorized, wrong-provider, over-budget, or acceptance-unknown effect
 - id: OTV2-CLASSROOM-187
   area: CLASSROOM
-  requirement: Free-month Zoom evidence: single embedded session, reconnect, and second-device denial; not an initial-launch blocker or release gate.
+  requirement: 'Free-month Zoom evidence: single embedded session, reconnect, and second-device denial; not an initial-launch blocker or release gate.'
   spec_refs:
   - 03-DECISION-REGISTER-v2.1.md
   - 07-SOURCE-OF-TRUTH-AND-PROVIDER-CONTRACTS-v2.1.md
@@ -10690,7 +10713,7 @@ requirements:
     - submitted email controls no active local household
     steps:
     - open /signup signed out and inventory the exact fields, CTA, helper, legal links, and absent fields
-    - submit adult first/last name, email, password, timezone, required Terms/privacy acceptance, and no optional marketing
+    - submit adult first/last name, email, password, timezone, and exactly one required initially unchecked agreement control covering Terms, Privacy, Student Data/Child Safety, Cancellation/Refund, and adult marketing email
       permissions
     - sign in with the submitted email/password and read back household/access state
     - attempt Student creation without entering any card
@@ -10699,11 +10722,18 @@ requirements:
       or card field
     - CTA is “Create your Family account” and helper is “No credit card required. Free access ends September 11, 2026 at 6:00 PM Asia/Jerusalem.”
     - one free Family household is immediately usable and no setup email or charge is required
+    - the sole agreement control is initially unchecked, records the exact versioned adult agreement and UTC capture facts,
+      and is the only source of adult marketing-email opt-in; no separate marketing/newsletter checkbox appears
+    - after the local transaction commits, only the adult is synchronized to GHL under `One Time Household ID`, placed directly
+      in `Active Member`, minimally tagged `ot | lead` and `ot | email opt-in`, and enrolled in OT-01; no Student, password,
+      security data, SMS, automated-call, or WhatsApp consent is transmitted
     forbidden_effects:
     - rolling trial
     - card collection
     - setup-token dependency
     - duplicate adult or household
+    - GHL-owned account creation, pre-commit GHL event, `New Funnel / Pre-Registered` completed-Family opportunity,
+      standalone OT-F01P signup processing, or suppression-precedence bypass
     evidence_profile: role_browser_persistence
     cleanup: archive only records created for the operator canary when the manifest requires cleanup
     stop_condition: stop on unauthorized, wrong-provider, over-budget, or acceptance-unknown effect
