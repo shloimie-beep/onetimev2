@@ -136,6 +136,7 @@ export function createPostgresParentHouseholdRepository(
         }
 
         validateMutation(input, loaded.record, loaded.scope);
+        await resolvePortalHouseholdAccessSource(client, loaded, input.context.occurred_at);
         const target = requiredTarget(input.next, input.audit.student_id);
         const current = loaded.record.students.find(
           (student) => student.student_id === input.audit.student_id,
@@ -1022,34 +1023,11 @@ async function ensurePortalHouseholdAccessProjection(
     throw invariant('The portal household access projection is ambiguous.');
   }
 
-  let effectiveAt = input.context.occurred_at;
-  let expiresAt: string | null = null;
-  if (loaded.record.access_state === 'free' || loaded.record.access_state === 'grace') {
-    const signup = await db.query(
-      `SELECT free_access_expires_at, signup_committed_at
-         FROM onetime.family_signup_access_projections
-        WHERE household_id = $1
-          AND product = $2
-          AND runtime_tier = $3
-          AND verification_environment_id = $4
-        LIMIT 2
-        FOR UPDATE`,
-      [
-        loaded.record.household_id,
-        loaded.scope.product,
-        loaded.scope.runtimeTier,
-        loaded.scope.verificationEnvironmentId,
-      ],
-    );
-    if (signup.rowCount !== 1) {
-      throw invariant('The time-bounded household access source is unavailable.');
-    }
-    expiresAt = timestamp((signup.rows[0] as Row).free_access_expires_at, 'free-access expiration');
-    effectiveAt = timestamp((signup.rows[0] as Row).signup_committed_at, 'signup commit time');
-    if (Date.parse(expiresAt) <= Date.parse(input.context.occurred_at)) {
-      throw invariant('The time-bounded household access source has expired.');
-    }
-  }
+  const { effectiveAt, expiresAt } = await resolvePortalHouseholdAccessSource(
+    db,
+    loaded,
+    input.context.occurred_at,
+  );
 
   await exactlyOne(
     db,
@@ -1081,6 +1059,84 @@ async function ensurePortalHouseholdAccessProjection(
     ],
     'portal household access projection',
   );
+}
+
+async function resolvePortalHouseholdAccessSource(
+  db: Queryable,
+  loaded: { record: ParentHouseholdRecord; scope: Scope },
+  occurredAt: string,
+) {
+  let effectiveAt = occurredAt;
+  let expiresAt: string | null = null;
+  if (loaded.record.access_state === 'free' || loaded.record.access_state === 'grace') {
+    const signup = await db.query(
+      `SELECT free_access_expires_at, signup_committed_at
+         FROM onetime.family_signup_access_projections
+        WHERE household_id = $1
+          AND product = $2
+          AND runtime_tier = $3
+          AND verification_environment_id = $4
+        LIMIT 2
+        FOR UPDATE`,
+      [
+        loaded.record.household_id,
+        loaded.scope.product,
+        loaded.scope.runtimeTier,
+        loaded.scope.verificationEnvironmentId,
+      ],
+    );
+    if (signup.rowCount === 1) {
+      expiresAt = timestamp(
+        (signup.rows[0] as Row).free_access_expires_at,
+        'free-access expiration',
+      );
+      effectiveAt = timestamp((signup.rows[0] as Row).signup_committed_at, 'signup commit time');
+      if (Date.parse(expiresAt) <= Date.parse(occurredAt)) {
+        throw invariant('The time-bounded household access source has expired.');
+      }
+    } else if ((signup.rowCount ?? 0) > 1 || loaded.record.access_state === 'grace') {
+      throw invariant('The time-bounded household access source is unavailable.');
+    } else if (!(await hasPreFamilySignupLegacyFreeAccess(db, loaded))) {
+      throw invariant('The household access source is unavailable.');
+    }
+  }
+  return { effectiveAt, expiresAt };
+}
+
+/**
+ * A legacy free household may be projected only when the immutable canonical
+ * transition proves it existed before the Family-signup access model. A
+ * missing Family-signup row by itself is corruption, not entitlement.
+ */
+async function hasPreFamilySignupLegacyFreeAccess(
+  db: Queryable,
+  loaded: { record: ParentHouseholdRecord; scope: Scope },
+) {
+  const result = await db.query(
+    `SELECT transition.transition_key
+       FROM onetime.canonical_state_transition_events AS transition
+       JOIN onetime.schema_migrations AS family_signup_cutover
+         ON family_signup_cutover.id = '2248_v21_family_signup'
+      WHERE transition.aggregate_kind = 'access'
+        AND transition.aggregate_key = $1
+        AND transition.product_key = $2
+        AND transition.runtime_tier = $3
+        AND transition.verification_environment_id = $4
+        AND transition.previous_state IS NULL
+        AND transition.next_state = 'free'
+        AND transition.expected_version = 0
+        AND transition.resulting_version = 1
+        AND transition.access_cause IS NULL
+        AND transition.created_at < family_signup_cutover.applied_at
+      LIMIT 2`,
+    [
+      loaded.record.household_id,
+      loaded.scope.product,
+      loaded.scope.runtimeTier,
+      loaded.scope.verificationEnvironmentId,
+    ],
+  );
+  return result.rowCount === 1;
 }
 
 function portalCredentialOperation(operation: ParentHouseholdMutationOperation) {

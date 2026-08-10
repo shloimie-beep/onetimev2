@@ -21,6 +21,7 @@ import { createPostgresParentHouseholdRepository } from './postgres-repository.t
 import { createParentHouseholdService } from './service.ts';
 
 const now = new Date('2026-07-31T14:00:00.000Z');
+const familySignupCutoverAt = new Date('2026-08-01T00:00:00.000Z');
 const passwordHash = `argon2id-v1$v=19$m=19456,t=2,p=1$${'a'.repeat(22)}$${'b'.repeat(43)}`;
 const migrationFiles = [
   '0001_onetime_lead_slice.sql',
@@ -50,6 +51,7 @@ describe('P12 concrete PostgreSQL Parent household repository', () => {
   beforeAll(async () => {
     pool = createMemoryPool();
     await applyMigrations(pool, true);
+    await installFamilySignupCutover(pool);
     await installClassEnrollmentFixture(pool);
   }, 30_000);
 
@@ -467,6 +469,95 @@ describe('P12 concrete PostgreSQL Parent household repository', () => {
       expires_at: new Date('2026-09-13T16:24:00.000Z'),
     });
   });
+
+  it('projects a pre-Family-signup legacy free household only from durable canonical provenance', async () => {
+    const fixture = await seedParent(pool, 'legacy-free-access-projection', 0, 'free', false);
+    await concreteService(pool, 'student-legacy-free-access').createStudent(
+      fixture.principal,
+      {
+        expected_revision: 1,
+        actual_name: 'Legacy Free Access Student',
+        username: 'legacy.free.access.student',
+        relationship: 'dependent',
+        new_password: 'safe-password-123',
+        password_confirmation: 'safe-password-123',
+      },
+      mutationContext('legacy-free-access-projection', '4'),
+    );
+    const projection = await pool.query(
+      `SELECT state, source_kind, effective_at, expires_at
+         FROM onetime.account_access_projections
+        WHERE household_key = $1`,
+      [fixture.householdId],
+    );
+    expect(projection.rows[0]).toMatchObject({
+      state: 'active',
+      source_kind: 'legacy_preview',
+      effective_at: now,
+      expires_at: null,
+    });
+  });
+
+  it('fails closed with zero effects for a post-cutover free record missing its Family-signup source', async () => {
+    const fixture = await seedParent(
+      pool,
+      'missing-family-signup-source',
+      0,
+      'free',
+      false,
+      'post_cutover_family_signup',
+    );
+    await expect(
+      concreteService(pool, 'student-missing-family-signup-source').createStudent(
+        fixture.principal,
+        {
+          expected_revision: 1,
+          actual_name: 'Rejected Student',
+          username: 'rejected.student',
+          relationship: 'dependent',
+          new_password: 'safe-password-123',
+          password_confirmation: 'safe-password-123',
+        },
+        mutationContext('missing-family-signup-source', '5'),
+      ),
+    ).rejects.toThrow(/household access source is unavailable/i);
+    await expect(
+      countWhere(pool, 'v21_student_profiles', 'household_id', fixture.householdId),
+    ).resolves.toBe(0);
+    await expect(
+      countWhere(pool, 'account_access_projections', 'household_key', fixture.householdId),
+    ).resolves.toBe(0);
+    await expect(
+      countWhere(pool, 'admin_canonical_student_enrollments', 'household_id', fixture.householdId),
+    ).resolves.toBe(0);
+  });
+
+  it('fails closed with zero effects for grace without a Family-signup source', async () => {
+    const fixture = await seedParent(pool, 'grace-without-signup-source', 0, 'grace', false);
+    await expect(
+      concreteService(pool, 'student-grace-without-signup-source').createStudent(
+        fixture.principal,
+        {
+          expected_revision: 1,
+          actual_name: 'Rejected Grace Student',
+          username: 'rejected.grace.student',
+          relationship: 'dependent',
+          new_password: 'safe-password-123',
+          password_confirmation: 'safe-password-123',
+        },
+        mutationContext('grace-without-signup-source', '6'),
+      ),
+    ).rejects.toThrow(/time-bounded household access source is unavailable/i);
+    await expect(
+      countWhere(pool, 'v21_student_profiles', 'household_id', fixture.householdId),
+    ).resolves.toBe(0);
+    await expect(
+      countWhere(pool, 'account_access_projections', 'household_key', fixture.householdId),
+    ).resolves.toBe(0);
+    await expect(
+      countWhere(pool, 'admin_canonical_student_enrollments', 'household_id', fixture.householdId),
+    ).resolves.toBe(0);
+  });
 });
 
 const nativeUrl = process.env.P12_NATIVE_DATABASE_URL;
@@ -480,6 +571,7 @@ describe.runIf(nativeEnabled)('P12 native PostgreSQL through migration 2255', ()
     await pool.query('CREATE EXTENSION IF NOT EXISTS pgcrypto');
     await pool.query('CREATE SCHEMA onetime');
     await applyMigrations(pool as DbPool, false);
+    await installFamilySignupCutover(pool as DbPool);
     await installClassEnrollmentFixture(pool as DbPool, true);
   }, 30_000);
 
@@ -643,6 +735,36 @@ describe.runIf(nativeEnabled)('P12 native PostgreSQL through migration 2255', ()
       ),
     ).resolves.toBe(0);
   });
+
+  it('creates a Student from proven pre-cutover legacy free authority with operation-time access projection', async () => {
+    const fixture = await seedParent(pool as DbPool, 'native-legacy-free', 0, 'free', false);
+    await expect(
+      concreteService(pool as DbPool, 'student-native-legacy-free').createStudent(
+        fixture.principal,
+        {
+          expected_revision: 1,
+          actual_name: 'Native Legacy Free Student',
+          username: 'native.legacy.free',
+          relationship: 'dependent',
+          new_password: 'safe-password-123',
+          password_confirmation: 'safe-password-123',
+        },
+        mutationContext('native-legacy-free', '5'),
+      ),
+    ).resolves.toMatchObject({ snapshot: { active_student_count: 1 } });
+    const projection = await pool.query(
+      `SELECT state, source_kind, effective_at, expires_at
+         FROM onetime.account_access_projections
+        WHERE household_key = $1`,
+      [fixture.householdId],
+    );
+    expect(projection.rows[0]).toMatchObject({
+      state: 'active',
+      source_kind: 'legacy_preview',
+      effective_at: now,
+      expires_at: null,
+    });
+  });
 });
 
 function concreteRepository(pool: DbPool) {
@@ -687,6 +809,24 @@ async function applyMigrations(pool: DbPool, memory: boolean) {
     }
     await pool.query(sql);
   }
+}
+
+async function installFamilySignupCutover(pool: DbPool) {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS onetime.schema_migrations (
+      id text PRIMARY KEY,
+      checksum text NOT NULL,
+      applied_at timestamptz NOT NULL DEFAULT now()
+    );
+  `);
+  await pool.query(
+    `INSERT INTO onetime.schema_migrations (id, checksum, applied_at)
+     VALUES ('2248_v21_family_signup', $1, $2)
+     ON CONFLICT (id) DO UPDATE
+       SET checksum = EXCLUDED.checksum,
+           applied_at = EXCLUDED.applied_at`,
+    ['f'.repeat(64), familySignupCutoverAt.toISOString()],
+  );
 }
 
 async function installClassEnrollmentFixture(pool: DbPool, native = false) {
@@ -739,7 +879,9 @@ async function seedParent(
   pool: DbPool,
   suffix: string,
   activeStudents: number,
-  accessState: 'active' | 'free' = 'active',
+  accessState: 'active' | 'free' | 'grace' = 'active',
+  includeSignupAccessProjection = true,
+  freeProvenance: 'legacy' | 'post_cutover_family_signup' = 'legacy',
 ) {
   const adultId = `adult-${suffix}`;
   const accountId = `account-${suffix}`;
@@ -785,7 +927,37 @@ async function seedParent(
              'system','P12-test','system','P12-test',$4,$4)`,
     [householdId, accessState, `transition-${householdId}`, now.toISOString()],
   );
-  if (accessState === 'free') {
+  const canonicalEventAt =
+    accessState === 'free' &&
+    !includeSignupAccessProjection &&
+    freeProvenance === 'post_cutover_family_signup'
+      ? new Date(familySignupCutoverAt.getTime() + 60_000).toISOString()
+      : now.toISOString();
+  const canonicalAccessCause =
+    accessState === 'free' &&
+    !includeSignupAccessProjection &&
+    freeProvenance === 'post_cutover_family_signup'
+      ? 'free_period'
+      : null;
+  await pool.query(
+    `INSERT INTO onetime.canonical_state_transition_events
+       (transition_key, aggregate_kind, aggregate_key, previous_state, next_state,
+        expected_version, resulting_version, product_key, runtime_tier,
+        verification_environment_id, actor_kind, actor_key, idempotency_key,
+        canonical_request_hash, access_cause, created_at)
+     VALUES ($1,'access',$2,NULL,$3,0,1,'one_time_mishnayos','isolated_staging','ci',
+             'system','P12-test',$4,$5,$6,$7)`,
+    [
+      `transition-${householdId}`,
+      householdId,
+      accessState,
+      `idempotency-${householdId}`,
+      'e'.repeat(64),
+      canonicalAccessCause,
+      canonicalEventAt,
+    ],
+  );
+  if (accessState === 'free' && includeSignupAccessProjection) {
     await pool.query(
       `INSERT INTO onetime.family_signup_access_projections
          (household_id, product, runtime_tier, verification_environment_id,

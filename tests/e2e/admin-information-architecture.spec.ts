@@ -101,8 +101,37 @@ test('Admin IA keeps the canonical launch areas across the governed viewport mat
       }),
     }),
   );
+  await page.route('**/api/v1/admin-directory/households*', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ success: true, households: [] }),
+    }),
+  );
+  const creationEffectRequests: string[] = [];
+  page.on('request', (request) => {
+    if (
+      request.method() !== 'GET' &&
+      /\/(?:invitations|enrollments|parent-reset|student-setup|password-reset)(?:\?|$)/u.test(
+        new URL(request.url()).pathname,
+      )
+    ) {
+      creationEffectRequests.push(`${request.method()} ${new URL(request.url()).pathname}`);
+    }
+  });
   await page.goto('/app/users');
   await expect(page.locator('#admin-directory-users-title')).toHaveText('Users and roles');
+  await page.getByRole('button', { name: 'Create account setup' }).click();
+  await expect(page).toHaveURL(/\/app\/crm\/contact-operations$/u);
+  expect(creationEffectRequests).toEqual([]);
+
+  await page.goto('/app/households');
+  await expect(page.locator('#admin-directory-households-title')).toHaveText('Households');
+  await page.getByRole('button', { name: 'Add household' }).click();
+  await expect(page).toHaveURL(/\/app\/crm\/contact-operations$/u);
+  expect(creationEffectRequests).toEqual([]);
+
+  await page.goto('/app/users');
   const firstUserLink = page.locator('.admin-directory__record-title a').first();
   await expect(firstUserLink).toHaveAttribute('href', /^\/app\/users\/[^/]+$/u);
   await firstUserLink.click();
@@ -152,6 +181,11 @@ test('Admin IA keeps the canonical launch areas across the governed viewport mat
   ).toHaveText(['People / Contacts', 'Households', 'Users', 'Students', 'Audit History']);
   await expect(page.locator('#admin-directory-learners-title')).toHaveText('Learners');
   await expect(page.getByRole('button', { name: 'Add learner' })).toBeVisible();
+  await page.getByRole('button', { name: 'Add learner' }).click();
+  await expect(page).toHaveURL(/\/app\/crm\/contact-operations$/u);
+  expect(creationEffectRequests).toEqual([]);
+
+  await page.goto('/app/students');
   const firstStudentLink = page.locator('.admin-directory__record-title a').first();
   await expect(firstStudentLink).toHaveAttribute('href', /^\/app\/students\/[^/]+$/u);
   await firstStudentLink.click();

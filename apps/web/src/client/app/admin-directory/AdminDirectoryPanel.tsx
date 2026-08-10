@@ -223,15 +223,7 @@ export function AdminDirectoryPanel({
           <Button
             type="button"
             variant="primary"
-            onClick={() =>
-              setForm({
-                kind: mode === 'households' ? 'household' : mode === 'users' ? 'user' : 'learner',
-                record: null,
-              } as
-                | { kind: 'household'; record: null }
-                | { kind: 'user'; record: null }
-                | { kind: 'learner'; record: null })
-            }
+            onClick={() => window.location.assign('/app/crm/contact-operations')}
           >
             {mode === 'households'
               ? 'Add household'
