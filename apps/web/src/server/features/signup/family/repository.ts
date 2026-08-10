@@ -8,6 +8,7 @@ import type {
   FamilySignupRequestBinding,
   FamilySignupResult,
   FamilySignupScope,
+  FamilySignupUnifiedAgreement,
 } from '../../../../../../../packages/contracts/src/signup/family/index.ts';
 import type { DbPool, Queryable } from '../../../../../../../packages/db/src/index.ts';
 import type {
@@ -410,7 +411,7 @@ class PostgresFamilySignupTransaction implements FamilySignupTransaction {
       displayName,
       normalizedEmail: input.request.normalized_email,
       timezone: input.request.timezone,
-      parentNewsletterConsent: input.request.parent_newsletter_consent,
+      parentNewsletterConsent: true,
       committedAt: input.committed_at,
     });
 
@@ -482,7 +483,15 @@ class PostgresFamilySignupTransaction implements FamilySignupTransaction {
       'Family-signup access projection',
     );
 
+    const unifiedAgreement = input.outbox_intents[0]?.unified_agreement;
+    if (!unifiedAgreement) {
+      throw invariant('Family-signup unified agreement is missing from the approved outbox.');
+    }
     const consentChoices = [
+      ['terms', unifiedAgreement.terms_accepted],
+      ['privacy', unifiedAgreement.privacy_accepted],
+      ['student_data_child_safety', unifiedAgreement.student_data_child_safety_accepted],
+      ['cancellation_refund', unifiedAgreement.cancellation_refund_accepted],
       ['general_marketing', input.request.general_marketing_consent],
       ['parent_newsletter', input.request.parent_newsletter_consent],
     ] as const;
@@ -492,8 +501,8 @@ class PostgresFamilySignupTransaction implements FamilySignupTransaction {
         `INSERT INTO onetime.family_signup_consents
            (idempotency_key, product, runtime_tier, verification_environment_id,
             operation, canonical_request_digest, adult_id, consent_scope,
-            choice, recorded_at)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
+            choice, policy_version, recorded_at)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
         [
           binding.idempotency_key,
           ...scopeValues,
@@ -502,7 +511,8 @@ class PostgresFamilySignupTransaction implements FamilySignupTransaction {
           projection.adult_id,
           consentScope,
           choice,
-          input.committed_at,
+          unifiedAgreement.policy_version,
+          unifiedAgreement.captured_at,
         ],
         `${consentScope} consent`,
       );
@@ -650,7 +660,7 @@ async function upsertFamilySignupCrmContact(
       input.timezone,
       input.normalizedEmail,
       input.parentNewsletterConsent ? 'email' : 'none',
-      input.parentNewsletterConsent ? 'parent-newsletter-v2.1-2026-08-05' : null,
+      input.parentNewsletterConsent ? 'one_time_family_signup_unified_v1' : null,
       input.parentNewsletterConsent ? input.committedAt : null,
       input.committedAt,
     ],
@@ -705,6 +715,7 @@ function assertCommitInput(input: {
     throw invariant('The Family-signup commit is not the exact domain-approved plan.');
   }
   const intent = input.outbox_intents[0];
+  const unifiedAgreement = intent?.unified_agreement;
   if (
     !intent ||
     !sameBinding(intent.request_binding, binding) ||
@@ -712,6 +723,16 @@ function assertCommitInput(input: {
     intent.household_id !== projection.household_id ||
     intent.adult_consent_choices.general_marketing !== input.request.general_marketing_consent ||
     intent.adult_consent_choices.parent_newsletter !== input.request.parent_newsletter_consent ||
+    !unifiedAgreement ||
+    unifiedAgreement.policy_version !== 'one_time_family_signup_unified_v1' ||
+    !Number.isFinite(Date.parse(unifiedAgreement.captured_at)) ||
+    unifiedAgreement.terms_accepted !== true ||
+    unifiedAgreement.privacy_accepted !== true ||
+    unifiedAgreement.student_data_child_safety_accepted !== true ||
+    unifiedAgreement.cancellation_refund_accepted !== true ||
+    unifiedAgreement.email_marketing_consent !== 'opted_in' ||
+    unifiedAgreement.newsletter_consent !== 'opted_in' ||
+    unifiedAgreement.sms_call_whatsapp_consent !== false ||
     !LOWER_SHA256.test(intent.normalized_email_hash) ||
     intent.preserve_adult_suppression !== true ||
     intent.local_commit_required !== true ||
@@ -780,6 +801,23 @@ function validGhlHandoff(
   }
   const subjectKeys = isRecord(handoff?.subject) ? Object.keys(handoff.subject).sort() : [];
   const household = handoff?.household;
+  const unifiedAgreement = intent.unified_agreement;
+  const adultSignupEvent = handoff.adult_signup_event;
+  const validAdultSignupEvent =
+    unifiedAgreement === undefined
+      ? adultSignupEvent === undefined
+      : isRecord(adultSignupEvent) &&
+        adultSignupEvent.household_reconciliation_key === intent.household_id &&
+        adultSignupEvent.audience_type === 'adult' &&
+        adultSignupEvent.email_consent === 'opted_in' &&
+        adultSignupEvent.policy_version === 'one_time_family_signup_unified_v1' &&
+        Number.isFinite(Date.parse(adultSignupEvent.captured_at)) &&
+        adultSignupEvent.lifecycle_stage === 'Active Member' &&
+        JSON.stringify(adultSignupEvent.tags) ===
+          JSON.stringify(['ot | lead', 'ot | email opt-in']) &&
+        adultSignupEvent.ot01_authority === 'direct_enrollment_after_local_commit' &&
+        adultSignupEvent.student_contacts === 0 &&
+        adultSignupEvent.password_or_security_data === false;
   return (
     handoff?.contract_version === '1.0.0' &&
     handoff.target === 'p27_ghl_identity_sync' &&
@@ -802,6 +840,7 @@ function validGhlHandoff(
     household.service_reminders_enabled === false &&
     household.source_evidence_digest === intent.request_binding.canonical_request_digest &&
     LOWER_SHA256.test(household.policy_consent_evidence_digest) &&
+    validAdultSignupEvent &&
     typeof handoff.provider_readback_required === 'boolean' &&
     handoff.provider_effect_authorized === false &&
     handoff.message_delivery_authorized === false &&
@@ -1123,6 +1162,22 @@ function storedOutboxIntent(
   }
   const durable = storedJsonObject(row.intent_json, 'intent_json');
   const handoff = durable.ghl_handoff as FamilySignupGhlHandoff;
+  const unifiedAgreement = durable.unified_agreement as FamilySignupUnifiedAgreement | undefined;
+  if (
+    unifiedAgreement !== undefined &&
+    (!isRecord(unifiedAgreement) ||
+      unifiedAgreement.policy_version !== 'one_time_family_signup_unified_v1' ||
+      !Number.isFinite(Date.parse(unifiedAgreement.captured_at)) ||
+      unifiedAgreement.terms_accepted !== true ||
+      unifiedAgreement.privacy_accepted !== true ||
+      unifiedAgreement.student_data_child_safety_accepted !== true ||
+      unifiedAgreement.cancellation_refund_accepted !== true ||
+      unifiedAgreement.email_marketing_consent !== 'opted_in' ||
+      unifiedAgreement.newsletter_consent !== 'opted_in' ||
+      unifiedAgreement.sms_call_whatsapp_consent !== false)
+  ) {
+    throw invariant('The persisted Family-signup unified agreement is malformed.');
+  }
   const intent: FamilySignupOutboxIntent = {
     intent_id: requiredText(row.intent_id, 'intent_id'),
     kind: 'ghl_adult_and_household_sync',
@@ -1134,6 +1189,7 @@ function storedOutboxIntent(
       general_marketing: row.general_marketing_consent,
       parent_newsletter: row.parent_newsletter_consent,
     },
+    ...(unifiedAgreement === undefined ? {} : { unified_agreement: unifiedAgreement }),
     dispatch_state: row.dispatch_state as 'ready' | 'identity_review',
     preserve_adult_suppression: true,
     local_commit_required: true,

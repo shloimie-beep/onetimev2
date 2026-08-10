@@ -261,8 +261,8 @@ test('Family submission uses the canonical bootstrap and exact cardless adult pa
     timezone: expect.any(String),
     terms_accepted: true,
     privacy_accepted: true,
-    general_marketing_consent: false,
-    parent_newsletter_consent: false,
+    general_marketing_consent: true,
+    parent_newsletter_consent: true,
   });
   const serialized = JSON.stringify(observedPayload);
   expect(serialized).not.toMatch(/student|phone|whatsapp|card|payment_method/i);

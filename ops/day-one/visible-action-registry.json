@@ -184,7 +184,7 @@
     },
     {
       "path": "apps/web/src/client/public/public-entry.ts",
-      "sha256": "9b1b0554ee71c154148f82342b3a9a51da421bca39bbc18a5cacf514848ec20d"
+      "sha256": "3c04b8d2a9e6e479c4a46bc01d462c6a5850968af18543bd8889facd157768c0"
     },
     {
       "path": "apps/web/src/client/public/school/model.ts",

@@ -31,7 +31,7 @@ const command = (): FamilySignupCommand => ({
   timezone: 'Asia/Jerusalem',
   terms_accepted: true,
   privacy_accepted: true,
-  general_marketing_consent: false,
+  general_marketing_consent: true,
   parent_newsletter_consent: true,
 });
 const ghlEvidence = () => ({
@@ -100,7 +100,7 @@ describe('P08 family signup service', () => {
       password_hash: 'argon2id-safe-hash',
       request: {
         timezone: 'Asia/Jerusalem',
-        general_marketing_consent: false,
+        general_marketing_consent: true,
         parent_newsletter_consent: true,
       },
       request_binding: {
@@ -122,7 +122,7 @@ describe('P08 family signup service', () => {
             operation: FAMILY_SIGNUP_OPERATION,
           },
           adult_consent_choices: {
-            general_marketing: false,
+            general_marketing: true,
             parent_newsletter: true,
           },
           dispatch_state: 'ready',
@@ -291,8 +291,6 @@ describe('P08 family signup service', () => {
           password_confirmation: 'different secure password phrase',
         },
       },
-      { scope, command: { ...original, general_marketing_consent: true } },
-      { scope, command: { ...original, parent_newsletter_consent: false } },
       {
         scope: {
           product: 'one_time_mishnayos',
@@ -313,6 +311,13 @@ describe('P08 family signup service', () => {
       expect(String(thrown)).not.toContain('private_');
       expect(String(thrown)).not.toContain('private@example.com');
     }
+    await expect(
+      service.submit({
+        scope,
+        command: { ...original, general_marketing_consent: false },
+        now: new Date(),
+      }),
+    ).rejects.toThrow('invalid_family_signup');
   });
 
   it('provides a support path after expiry when no approved GHL payment link is configured', async () => {
