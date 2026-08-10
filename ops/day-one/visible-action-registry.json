@@ -24,11 +24,11 @@
     },
     {
       "path": "apps/web/src/server/app.ts",
-      "sha256": "bce65c7cd3757749ecb3e6d8ec4b90fa15585545c3e6b5ad4d6a1a59b052d030"
+      "sha256": "c1214d52623fc231b94ea8c097722a8dbd6a2ccf157bad4f0ef3f5fa0fad6a70"
     },
     {
       "path": "apps/web/src/server/communications/register.ts",
-      "sha256": "4de07ee9dc847f867a66dc3899cdc110e84c2ea901d95503eb0fecece6ab0933"
+      "sha256": "15345231ce543a3d138c113b5d6af822c2054d4f0ffb743764abf9fa4602fb63"
     },
     {
       "path": "apps/web/src/server/communications/workflow-readback.ts",
@@ -184,7 +184,7 @@
     },
     {
       "path": "apps/web/src/client/public/public-entry.ts",
-      "sha256": "048a47f89918875870e8e83a75962d394a4e0ee47fbe571c68cad2836202d5c2"
+      "sha256": "3c04b8d2a9e6e479c4a46bc01d462c6a5850968af18543bd8889facd157768c0"
     },
     {
       "path": "apps/web/src/client/public/school/model.ts",
@@ -228,7 +228,7 @@
     },
     {
       "path": "scripts/build-public-pages.ts",
-      "sha256": "3c5348ae9a402755f84897c981a6180dc994ef82f841aa76d8c84e05990024a2"
+      "sha256": "edc485c7e06ffd99a19baa3183075fe5bb21327d3b4b39c1ce311b66bb34622b"
     },
     {
       "path": "scripts/highlevel/workflow-registry-source.ts",
