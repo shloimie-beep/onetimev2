@@ -1071,7 +1071,7 @@ async function submitFamily(
       timezone: 'Asia/Jerusalem',
       terms_accepted: true,
       privacy_accepted: true,
-      general_marketing_consent: false,
+      general_marketing_consent: true,
       parent_newsletter_consent: true,
     }),
   });

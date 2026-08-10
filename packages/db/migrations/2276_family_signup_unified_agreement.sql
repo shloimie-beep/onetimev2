@@ -2,6 +2,9 @@ ALTER TABLE onetime.family_signup_consents
   DROP CONSTRAINT IF EXISTS family_signup_consents_consent_scope_check;
 
 ALTER TABLE onetime.family_signup_consents
+  DROP CONSTRAINT IF EXISTS family_signup_consents_constraint_1;
+
+ALTER TABLE onetime.family_signup_consents
   ADD CONSTRAINT family_signup_consents_consent_scope_check CHECK (consent_scope IN (
     'terms',
     'privacy',
