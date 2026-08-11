@@ -16,6 +16,19 @@ test('P12 mounted Parent Create and Reset Student credential guards never dispat
   });
 
   await signUpIsolatedParent(page);
+  const householdReadback = await page.evaluate(async () => {
+    const response = await fetch('/api/app/parent/household', { credentials: 'same-origin' });
+    const body = (await response.json().catch(() => null)) as {
+      code?: unknown;
+      message?: unknown;
+    } | null;
+    return {
+      status: response.status,
+      code: typeof body?.code === 'string' ? body.code : null,
+      message: typeof body?.message === 'string' ? body.message : null,
+    };
+  });
+  expect(householdReadback.status, JSON.stringify(householdReadback)).toBe(200);
   await page.goto('/app/parent/students/new');
   await expect(page.getByRole('heading', { name: 'Add Student' })).toBeVisible();
 
