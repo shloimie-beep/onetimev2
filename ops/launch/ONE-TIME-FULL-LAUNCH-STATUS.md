@@ -20,6 +20,7 @@ Snapshot: 2026-08-11 (Asia/Jerusalem)
 - Logout and second-login behavior remain unproven on this exact source. The passed agent smoke is not broader human operator acceptance.
 - Core adult session and Communications have an AGENT-SMOKE PASS on this source: an existing Parent session switched through the supported Admin path; Communications shell, auth session, CRM assignees, workflows, and history each returned HTTP 200. Dashboard, CRM, Content (including the Admin content workspace), and Support also stayed authenticated with their checked endpoints at HTTP 200. The supported Admin-to-Parent path returned authenticated `/app/parent`. No 401, 403, or 5xx response, login/signup redirect, or global client-state clear was observed.
 - The smoke submitted no form and created no business, provider, GHL, Zoom, billing, or media effect. Screenshot capture timed out, so no screenshot artifact exists.
+- A bounded Parent navigation smoke also passed: Calendar, Progress, Updates, Preferences, Support, and Account remained authenticated. Billing was intentionally unavailable/off, not an authentication failure. No action was submitted.
 - The single required Family agreement is deployed: initially unchecked, versioned, and records unified legal/consent facts without SMS, call, WhatsApp, Student-contact, or credential effects.
 - The launch product remains one recurring 7:00 PM class, shown through Next Class. Rabbi Eli has full Admin access.
 
