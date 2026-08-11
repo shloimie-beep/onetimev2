@@ -70,7 +70,9 @@ test('P12 mounted Parent Create and Reset Student credential guards never dispat
   await createForm.getByRole('button', { name: 'Create Student' }).click();
   expect((await createResponse).status()).toBe(201);
   expect(requests).toHaveLength(1);
-  await expect(page.getByRole('status')).toContainText('Student created and enrolled');
+  await expect(
+    page.getByRole('status').filter({ hasText: 'Student created and enrolled' }),
+  ).toBeVisible();
 
   await page.getByRole('link', { name: 'Mounted Test Student' }).click();
   await page.locator('details summary').click();
