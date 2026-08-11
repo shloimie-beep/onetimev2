@@ -40,6 +40,9 @@ export default defineConfig({
       OT_TEST_CLOCK: '2026-07-16T16:05:00.000Z',
       ONE_TIME_FIRST_CLASS_AT: '2026-08-16T19:00:00+03:00',
       ONE_TIME_FREE_ACCESS_EXPIRES_AT: '2026-09-11T18:00:00+03:00',
+      PARENT_STUDENT_SERVICE_ACCOUNT_VERSION: 'test-only-parent-student-service-v1',
+      PARENT_STUDENT_SERVICE_ACCOUNT_EVIDENCE_REFERENCE:
+        'test-only-evidence/parent-student-service-v1',
       ...tls,
     },
   },
