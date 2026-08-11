@@ -1,34 +1,40 @@
 # One Time Launch Status
 
-Snapshot: 2026-08-10 (Asia/Jerusalem)
+Snapshot: 2026-08-11 (Asia/Jerusalem)
 
 ## Current source
 
 - Repository/branch: `shloimie-beep/onetimev2` / `codex/one-time-complete-production-launch-20260805`
-- Deployed source: `e3a7a6b80b29dfa027565602f94d9ce591065069` (merged PR #158; unified-agreement documentation is merged in PR #159).
-- Web/worker: `c62679e8-a95d-4585-802a-119cc8f7b6c3` / `8a09c0f6-319f-45d1-a4b3-997dffab758e`, both SUCCESS/RUNNING.
-- Readback: app and join health, readiness, and version HTTP 200; protected web diagnostics match `e3a7a6b8`; worker heartbeat was fresh (7.1 seconds).
-- Migration verifier: 107 files, 107 ledger rows, 107 applied, zero pending or issues.
+- Deployed source: `06c67372e0735c9f997550db1bd72670fea33b6a` (merged PR #162; its exact validated head was `26ee1c19d1cc8671799f8816f5ef844185689f4d`).
+- Web/worker: `a7639ee4-821e-4b63-91b8-52dcc4f6cefd` / `6792a401-9896-411c-9af8-3277abf94124`, both SUCCESS/RUNNING.
+- Readback: app and join health, readiness, and version HTTP 200; protected deployment diagnostics match `06c67372`; worker heartbeat is healthy.
+- Migration verifier: 108 files, 108 ledger rows, 108 applied through migration 2277, with zero pending or issues.
 - Queues: delivery, support, and account-lifecycle each have zero ready, leased, expired, retry, and dead-letter items.
-- Preserved rollback source: `9c54591ce11b133eb773ccbd9c5e7003c515f782`. The prior dcdc web/worker deployments were superseded and removed; do not auto-rollback.
+- Preserved rollback source: `afcad0aead6f86b54051e38c8679a1253e5352e9` with its prior successful web/worker deployments. Do not auto-rollback.
 
-## Deployed, awaiting operator smoke
+## Production proof and current acceptance
 
-- The host-first session repair now covers Communications and the shared protected-session path. A normal human browser pass is still required; this is not yet operator accepted.
-- Parent-to-Student creation and its atomic enrollment path are deployed. Verify through one real Parent-to-Student journey; do not infer acceptance from deployment.
-- The single required Family agreement is deployed: initially unchecked, versioned, and records the unified legal/consent facts without creating SMS, call, WhatsApp, Student-contact, or credential effects.
-- The launch product is one recurring 7:00 PM class, shown through Next Class. Rabbi Eli has full Admin access.
+- Parent-to-Student creation is production-functionally proven: one active Student persists with one active canonical enrollment in the sole recurring 7:00 PM class. The bounded correction and proof created no GHL, provider, billing, Zoom, or media effect.
+- The live Parent Student desktop interface is agent-accepted on this source: an active Parent session reached the Student route; the 1-of-3 seat state, recurring 7:00 PM outcome, correct Sunday–Thursday text, responsive desktop hierarchy, and collapsed access/password controls rendered correctly. Disposable short and mismatched credential submissions produced accessible field errors and sent zero requests; fields were cleared with no mutation.
+- Mobile viewport acceptance was not independently obtained and remains unproven. Separate Student login is also unproven because no Student credential was safely available for an agent-owned sign-in.
+- The host-first session repair covers Communications and shared protected-session paths, but a complete all-page session journey on this exact source remains unaccepted. Do not infer Communications acceptance from the Parent-page proof.
+- The single required Family agreement is deployed: initially unchecked, versioned, and records unified legal/consent facts without SMS, call, WhatsApp, Student-contact, or credential effects.
+- The launch product remains one recurring 7:00 PM class, shown through Next Class. Rabbi Eli has full Admin access.
 
 ## Current state
 
-`READY_FOR_OPERATOR_SMOKE`
+`READY_FOR_REMAINING_ACCEPTANCE`
 
-One human operator must perform the normal browser journey on this exact source: sign in, use Communications and other protected pages, switch role where available, create one Parent-owned Student through the intended flow, refresh/deep-link, log out, and sign in again. Record outcomes before calling any capability `OPERATOR ACCEPTED`.
+The deployed Parent Student flow is functionally proven and its desktop UX is agent-accepted. Remaining acceptance is limited to the unproven journeys listed below; deployment alone never substitutes for them.
 
-## Still unproven / not part of this smoke
+## Still unproven / next acceptance
 
-- Recording publication/protected library and the minimal adult-only GHL signup/email flow remain unproven. Family GHL synchronization remains disabled.
-- The immediate teaching loop is scoped as private Rabbi-moderated prompts, one worksheet round trip, three simple badges, and protected Vimeo playback. Initial launch succeeds without Zoom.
+- One complete same-source adult session journey: sign in, Communications and other protected pages, role movement where available, refresh/deep-link, logout, and second login.
+- Separate Student sign-in, only when a legitimate Student credential is available without exposing or resetting it in chat.
+- Mobile visual acceptance of the Parent Student page.
+- Recording publication/protected library and the minimal adult-only GHL signup/email flow. Family GHL synchronization remains disabled.
+
+The immediate teaching loop is still scoped as private Rabbi-moderated prompts, one worksheet round trip, three simple badges, and protected Vimeo playback. Initial launch succeeds without Zoom.
 
 ## Protected / off
 
