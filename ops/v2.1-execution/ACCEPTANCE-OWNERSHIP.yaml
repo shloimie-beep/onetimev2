@@ -1,8 +1,8 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
 coverage:
-  requirements: 243
-  acceptance_cases: 265
+  requirements: 248
+  acceptance_cases: 270
   primary_owner_exactly_once: true
   verification_owner_exactly_once: true
 requirements:
@@ -1243,3 +1243,29 @@ requirements:
   verification_owner: V41
   case_ids:
   - OTV2-PROVIDER-243-GHL-IDENTITY-QUARANTINE
+
+- requirement_id: OTV2-LEARNING-244
+  implementation_owner: P22
+  verification_owner: V40
+  case_ids:
+  - OTV2-LEARNING-244-AC01
+- requirement_id: OTV2-LEARNING-245
+  implementation_owner: P22
+  verification_owner: V40
+  case_ids:
+  - OTV2-LEARNING-245-AC01
+- requirement_id: OTV2-CLASSROOM-246
+  implementation_owner: P18
+  verification_owner: V39
+  case_ids:
+  - OTV2-CLASSROOM-246-PROTECTED-ENTRY
+- requirement_id: OTV2-CONTENT-247
+  implementation_owner: P20
+  verification_owner: V39
+  case_ids:
+  - OTV2-CONTENT-247-PROTECTED-VIDEO
+- requirement_id: OTV2-AUTH-248
+  implementation_owner: P26
+  verification_owner: V41
+  case_ids:
+  - OTV2-AUTH-248-STUDENT-PIN

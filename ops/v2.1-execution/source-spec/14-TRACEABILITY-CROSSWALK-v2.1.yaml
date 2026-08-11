@@ -162,6 +162,11 @@ package_documents:
 - document: 03-DECISION-REGISTER-v2.1.md
   role: locked and inferred product decisions
   acceptance_requirements:
+  - OTV2-AUTH-248
+  - OTV2-CLASSROOM-246
+  - OTV2-CONTENT-247
+  - OTV2-LEARNING-244
+  - OTV2-LEARNING-245
   - OTV2-ACCOUNT-183
   - OTV2-AUTH-180
   - OTV2-BILLING-224
