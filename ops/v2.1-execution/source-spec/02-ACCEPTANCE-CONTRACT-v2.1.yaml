@@ -11875,3 +11875,29 @@ requirements:
     evidence_profile: content_pipeline
     cleanup: reconcile provider asset and retain or delete source under the retention policy
     stop_condition: stop on unauthorized, wrong-provider, over-budget, or acceptance-unknown effect
+
+- id: OTV2-AUTH-248
+  area: AUTH
+  requirement: Student credentials are exactly six numeric digits; adult password rules remain unchanged.
+  spec_refs:
+  - 03-DECISION-REGISTER-v2.1.md
+  normative_status: required
+  verification_status: unimplemented
+  priority: launch_blocker
+  release_gate: true
+  owner_domain: authentication
+  depends_on:
+  - OTV2-STUDENT-041
+  acceptance_cases:
+  - case_id: OTV2-AUTH-248-STUDENT-PIN
+    kind: positive_and_negative
+    environment: production_operator_canary
+    actors: [parent, student]
+    fixtures: [parent_operator_canary, student_operator_canary_1]
+    preconditions: [a legitimate Student credential may be used without exposing or resetting it in chat]
+    steps: [create or reset an operator-owned Student credential, sign in with exactly six numeric digits, attempt short nonnumeric and overlong values]
+    expected_results: [exactly six numeric digits are accepted for the Student, invalid values are rejected, adult password policy is unchanged]
+    forbidden_effects: [credential disclosure, cross-role login, adult policy change]
+    evidence_profile: authentication
+    cleanup: retain the authorized operator credential under the normal credential policy
+    stop_condition: stop on unauthorized access or unexpected credential mutation
