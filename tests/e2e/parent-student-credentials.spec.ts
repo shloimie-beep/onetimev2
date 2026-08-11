@@ -61,8 +61,8 @@ test('P12 mounted Parent Create and Reset Student credential guards never dispat
     requests,
   });
 
-  await createForm.getByLabel('New password').fill('ValidPass1!x');
-  await createForm.getByLabel('Confirm new password').fill('ValidPass1!x');
+  await createForm.getByLabel('New password', { exact: true }).fill('ValidPass1!x');
+  await createForm.getByLabel('Confirm new password', { exact: true }).fill('ValidPass1!x');
   const createResponse = page.waitForResponse(
     (response) =>
       response.request().method() === 'POST' && response.url().endsWith('/api/app/parent/students'),
@@ -106,8 +106,8 @@ test('P12 mounted Parent Create and Reset Student credential guards never dispat
 
   const maximumLengthPassword = `ValidPass1!${'x'.repeat(117)}`;
   expect(maximumLengthPassword).toHaveLength(128);
-  await resetForm.getByLabel('New password').fill(maximumLengthPassword);
-  await resetForm.getByLabel('Confirm new password').fill(maximumLengthPassword);
+  await resetForm.getByLabel('New password', { exact: true }).fill(maximumLengthPassword);
+  await resetForm.getByLabel('Confirm new password', { exact: true }).fill(maximumLengthPassword);
   const resetResponse = page.waitForResponse(
     (response) =>
       response.request().method() === 'POST' && response.url().includes('/credential-reset'),
@@ -179,8 +179,8 @@ async function expectInvalidCredentialAttempt({
   requests: string[];
 }) {
   const requestsBefore = requests.length;
-  const passwordField = form.getByLabel('New password');
-  const confirmationField = form.getByLabel('Confirm new password');
+  const passwordField = form.getByLabel('New password', { exact: true });
+  const confirmationField = form.getByLabel('Confirm new password', { exact: true });
   await passwordField.fill(password);
   await confirmationField.fill(confirmation);
   await form.getByRole('button').click();
