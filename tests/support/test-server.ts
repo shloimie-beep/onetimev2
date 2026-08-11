@@ -414,9 +414,9 @@ async function seedDayOneBrowserRecords() {
   await pool.query(
     `INSERT INTO onetime.class_series
        (class_series_key, account_key, product_key, title, timezone, local_start_time,
-        reminder_local_time)
+        reminder_local_time, status, series_state, is_canonical)
      VALUES ('e2e_class_series', $1, $2, 'E2E Daily Mishnah', 'Asia/Jerusalem', '19:00',
-        '18:30')`,
+        '18:30', 'active', 'active', true)`,
     [config.accountKey, config.productKey],
   );
   await pool.query(
