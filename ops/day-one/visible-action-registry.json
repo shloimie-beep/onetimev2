@@ -4,7 +4,7 @@
   "source_inputs": [
     {
       "path": "ops/v2.1-execution/source-spec/02-ACCEPTANCE-CONTRACT-v2.1.yaml",
-      "sha256": "1a1255fac6e015ff1cbb92f83c8b63139ba3ce9ad7162fa3b62e658e65959998"
+      "sha256": "1981606ed0b89cfbc2fb6abe39a2311ee541e2f13b7036a6634e725c8b42c5df"
     },
     {
       "path": "ops/v2.1-execution/source-spec/03-DECISION-REGISTER-v2.1.md",
