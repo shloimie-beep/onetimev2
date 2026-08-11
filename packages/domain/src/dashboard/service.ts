@@ -1025,11 +1025,13 @@ function isoOrNull(value: unknown) {
   return null;
 }
 
-function formatIsoLabel(value: string) {
-  return new Intl.DateTimeFormat('en', {
+export function formatIsoLabel(value: string) {
+  const formatted = new Intl.DateTimeFormat('en', {
     month: 'short',
     day: 'numeric',
     hour: 'numeric',
     minute: '2-digit',
+    timeZone: 'Asia/Jerusalem',
   }).format(new Date(value));
+  return `${formatted} Israel time`;
 }
