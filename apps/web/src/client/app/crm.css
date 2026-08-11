@@ -1,5 +1,89 @@
 @import '../../../../../packages/brand-system/src/styles/react.css';
 
+.parent-student-workspace,
+.parent-student-form,
+.parent-student-management {
+  display: grid;
+  gap: var(--ot-space-3);
+  max-width: 46rem;
+}
+
+.parent-student-workspace__seat-summary,
+.parent-student-form__enrollment,
+.parent-student-form__guidance,
+.parent-student-management__security > p {
+  margin: 0;
+  color: var(--ot-color-text-muted);
+}
+
+.parent-student-form {
+  border: 1px solid var(--ot-color-border);
+  border-radius: var(--ot-radius-panel);
+  background: var(--ot-color-surface-raised);
+  padding: var(--ot-space-4);
+}
+
+.parent-student-form__fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ot-space-3);
+}
+
+.parent-student-form__fields > label,
+.parent-student-management > .parent-student-form > label,
+.parent-student-management__security .parent-student-form > label {
+  display: grid;
+  gap: var(--ot-space-1);
+  min-width: 0;
+  color: var(--ot-color-text-muted);
+}
+
+.parent-student-form__fields > label:first-child,
+.parent-student-form__guidance,
+.parent-student-form__field-error,
+.parent-student-management__security {
+  grid-column: 1 / -1;
+}
+
+.parent-student-form input,
+.parent-student-form select {
+  width: 100%;
+  min-height: var(--ot-size-touch-target);
+}
+
+.parent-student-form__field-error {
+  margin: 0;
+  border-left: 3px solid var(--ot-color-danger);
+  padding-left: var(--ot-space-2);
+  color: var(--ot-color-danger);
+}
+
+.parent-student-management__security {
+  display: grid;
+  gap: var(--ot-space-3);
+  border: 1px solid var(--ot-color-border);
+  border-radius: var(--ot-radius-control);
+  padding: var(--ot-space-3);
+}
+
+.parent-student-management__security summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+
+@media (max-width: 680px) {
+  .parent-student-form__fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .parent-student-form__fields > label,
+  .parent-student-form__fields > label:first-child,
+  .parent-student-form__guidance,
+  .parent-student-form__field-error {
+    grid-column: auto;
+  }
+}
+
 .live-console {
   display: grid;
   gap: var(--ot-space-4);

@@ -5,7 +5,7 @@ import {
   STUDENT_ACTUAL_NAME_INSTRUCTIONS,
   type ParentHouseholdSnapshot,
 } from '../../../../../../../packages/contracts/src/portals/parent-household/index.ts';
-import { ParentHouseholdWorkspace } from './ParentHouseholdWorkspace.tsx';
+import { ParentHouseholdWorkspace, studentCredentialState } from './ParentHouseholdWorkspace.tsx';
 import { createParentHouseholdApi } from './api.ts';
 
 const snapshot: ParentHouseholdSnapshot = {
@@ -34,12 +34,27 @@ const snapshot: ParentHouseholdSnapshot = {
 };
 
 describe('P12 persisted Parent household client workspace', () => {
+  it('blocks an unmatched credential pair before a Student request can be submitted', () => {
+    expect(studentCredentialState('safe-password-123', 'safe-password-1234')).toEqual({
+      hasPasswordMismatch: true,
+      ready: false,
+    });
+    expect(studentCredentialState('short', 'short')).toEqual({
+      hasPasswordMismatch: false,
+      ready: false,
+    });
+    expect(studentCredentialState('safe-password-123', 'safe-password-123')).toEqual({
+      hasPasswordMismatch: false,
+      ready: true,
+    });
+  });
+
   it('shows owned-seat state and exact actual-name guidance without a stored password', () => {
     const html = renderToStaticMarkup(
       <ParentHouseholdWorkspace snapshot={snapshot} relationship="dependent" />,
     );
     expect(html).toContain('1 of 3 active Student seats used');
-    expect(html).toContain('Live classes run Sundayâ€“Thursday');
+    expect(html).toContain('Live classes run Sunday–Thursday');
     expect(html).toContain('href="/forgot-password"');
     expect(html).toContain(STUDENT_ACTUAL_NAME_INSTRUCTIONS.dependent);
     expect(html).toContain('/app/parent/students/student-1');
@@ -63,6 +78,8 @@ describe('P12 persisted Parent household client workspace', () => {
     expect(html).toContain('Someone I manage');
     expect(html).toContain('Myself');
     expect(html).toContain(STUDENT_ACTUAL_NAME_INSTRUCTIONS.dependent);
+    expect(html).toContain('Creating a Student adds them to the recurring 7:00 PM class.');
+    expect(html).toContain('disabled=""');
     expect(html).not.toMatch(/name="(?:hebrew_name|grade_label|date_of_birth|age|email)"/u);
   });
 
@@ -77,6 +94,7 @@ describe('P12 persisted Parent household client workspace', () => {
     expect(html).toContain('Save Student');
     expect(html).toContain('Archive Student');
     expect(html).toContain('Reset Student password');
+    expect(html).toContain('Student access and password controls');
     expect(html).toContain('existing password is never displayed');
     expect(html).not.toContain('value="safe-password');
   });
