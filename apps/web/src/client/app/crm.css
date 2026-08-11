@@ -30,8 +30,11 @@
 }
 
 .parent-student-form__fields > label,
+.parent-student-form__fields > .parent-student-form__credential-field,
 .parent-student-management > .parent-student-form > label,
-.parent-student-management__security .parent-student-form > label {
+.parent-student-management > .parent-student-form > .parent-student-form__credential-field,
+.parent-student-management__security .parent-student-form > label,
+.parent-student-management__security .parent-student-form > .parent-student-form__credential-field {
   display: grid;
   gap: var(--ot-space-1);
   min-width: 0;
@@ -77,6 +80,7 @@
   }
 
   .parent-student-form__fields > label,
+  .parent-student-form__fields > .parent-student-form__credential-field,
   .parent-student-form__fields > label:first-child,
   .parent-student-form__guidance,
   .parent-student-form__field-error {

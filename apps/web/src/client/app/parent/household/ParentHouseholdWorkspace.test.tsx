@@ -5,7 +5,13 @@ import {
   STUDENT_ACTUAL_NAME_INSTRUCTIONS,
   type ParentHouseholdSnapshot,
 } from '../../../../../../../packages/contracts/src/portals/parent-household/index.ts';
-import { ParentHouseholdWorkspace, studentCredentialState } from './ParentHouseholdWorkspace.tsx';
+import {
+  credentialLengthErrorCopy,
+  credentialMismatchErrorCopy,
+  ParentHouseholdWorkspace,
+  studentCredentialState,
+  submitStudentCredentials,
+} from './ParentHouseholdWorkspace.tsx';
 import { createParentHouseholdApi } from './api.ts';
 
 const snapshot: ParentHouseholdSnapshot = {
@@ -34,19 +40,81 @@ const snapshot: ParentHouseholdSnapshot = {
 };
 
 describe('P12 persisted Parent household client workspace', () => {
-  it('blocks an unmatched credential pair before a Student request can be submitted', () => {
-    expect(studentCredentialState('safe-password-123', 'safe-password-1234')).toEqual({
+  it('guards mounted Create and Reset interactions before either API handler can run', () => {
+    for (const [password, confirmation, expectedFocus] of [
+      ['safe-password-123', 'different-password', 'confirmation'],
+      ['short-pass1', 'short-pass1', 'password'],
+      ['x'.repeat(129), 'x'.repeat(129), 'password'],
+    ] as const) {
+      const focusPassword = vi.fn();
+      const focusConfirmation = vi.fn();
+      const dispatch = vi.fn();
+      if (
+        submitStudentCredentials({
+          password,
+          passwordConfirmation: confirmation,
+          focusPassword,
+          focusConfirmation,
+        })
+      ) {
+        dispatch();
+      }
+      expect(dispatch).not.toHaveBeenCalled();
+      expect(
+        expectedFocus === 'password' ? focusPassword : focusConfirmation,
+      ).toHaveBeenCalledOnce();
+      expect(
+        expectedFocus === 'password' ? focusConfirmation : focusPassword,
+      ).not.toHaveBeenCalled();
+    }
+
+    for (const password of ['x'.repeat(12), 'x'.repeat(128)]) {
+      const focusPassword = vi.fn();
+      const focusConfirmation = vi.fn();
+      const createDispatch = vi.fn();
+      const resetDispatch = vi.fn();
+      if (
+        submitStudentCredentials({
+          password,
+          passwordConfirmation: password,
+          focusPassword,
+          focusConfirmation,
+        })
+      ) {
+        createDispatch();
+      }
+      if (
+        submitStudentCredentials({
+          password,
+          passwordConfirmation: password,
+          focusPassword,
+          focusConfirmation,
+        })
+      ) {
+        resetDispatch();
+      }
+      expect(createDispatch).toHaveBeenCalledOnce();
+      expect(resetDispatch).toHaveBeenCalledOnce();
+      expect(focusPassword).not.toHaveBeenCalled();
+      expect(focusConfirmation).not.toHaveBeenCalled();
+    }
+
+    expect(studentCredentialState('short-pass1', 'short-pass1')).toMatchObject({
+      passwordLengthInvalid: true,
+      confirmationLengthInvalid: true,
+      hasPasswordMismatch: false,
+      ready: false,
+    });
+    expect(studentCredentialState('safe-password-123', 'different-password')).toMatchObject({
+      passwordLengthInvalid: false,
+      confirmationLengthInvalid: false,
       hasPasswordMismatch: true,
       ready: false,
     });
-    expect(studentCredentialState('short', 'short')).toEqual({
-      hasPasswordMismatch: false,
-      ready: false,
-    });
-    expect(studentCredentialState('safe-password-123', 'safe-password-123')).toEqual({
-      hasPasswordMismatch: false,
-      ready: true,
-    });
+    expect(credentialLengthErrorCopy('create')).toContain('creating this Student');
+    expect(credentialLengthErrorCopy('reset')).toContain('resetting this Student password');
+    expect(credentialMismatchErrorCopy('create')).toContain('creating this Student');
+    expect(credentialMismatchErrorCopy('reset')).toContain('resetting this Student password');
   });
 
   it('shows owned-seat state and exact actual-name guidance without a stored password', () => {
@@ -79,7 +147,8 @@ describe('P12 persisted Parent household client workspace', () => {
     expect(html).toContain('Myself');
     expect(html).toContain(STUDENT_ACTUAL_NAME_INSTRUCTIONS.dependent);
     expect(html).toContain('Creating a Student adds them to the recurring 7:00 PM class.');
-    expect(html).toContain('disabled=""');
+    expect(html).toContain('noValidate=""');
+    expect(html).toContain('<button type="submit">Create Student</button>');
     expect(html).not.toMatch(/name="(?:hebrew_name|grade_label|date_of_birth|age|email)"/u);
   });
 

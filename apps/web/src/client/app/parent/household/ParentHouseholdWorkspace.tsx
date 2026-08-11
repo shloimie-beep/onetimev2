@@ -1,4 +1,4 @@
-import React, { useEffect, useId, useMemo, useState } from 'react';
+import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
 import {
   STUDENT_ACTUAL_NAME_INSTRUCTIONS,
   type ParentHouseholdSnapshot,
@@ -268,7 +268,10 @@ function CreateStudentForm({
 }) {
   const passwordId = useId();
   const confirmationId = useId();
-  const mismatchId = useId();
+  const passwordErrorId = useId();
+  const confirmationErrorId = useId();
+  const passwordInputRef = useRef<HTMLInputElement>(null);
+  const confirmationInputRef = useRef<HTMLInputElement>(null);
   const [password, setPassword] = useState('');
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
   const credentials = studentCredentialState(password, passwordConfirmation);
@@ -277,9 +280,20 @@ function CreateStudentForm({
     <form
       className="parent-student-form"
       aria-labelledby="create-student-heading"
+      noValidate
       onSubmit={(event) => {
         event.preventDefault();
-        if (!credentials.ready) return;
+        if (
+          !submitStudentCredentials({
+            password,
+            passwordConfirmation,
+            focusPassword: () => passwordInputRef.current?.focus(),
+            focusConfirmation: () => confirmationInputRef.current?.focus(),
+          })
+        ) {
+          return;
+        }
+        if (!event.currentTarget.reportValidity()) return;
         const data = new FormData(event.currentTarget);
         onSubmit({ ...profileForm(data), ...credentialForm(data) });
       }}
@@ -308,10 +322,14 @@ function CreateStudentForm({
           disabled={disabled}
           passwordId={passwordId}
           confirmationId={confirmationId}
-          mismatchId={mismatchId}
+          passwordErrorId={passwordErrorId}
+          confirmationErrorId={confirmationErrorId}
           password={password}
           passwordConfirmation={passwordConfirmation}
-          hasPasswordMismatch={credentials.hasPasswordMismatch}
+          mode="create"
+          credentialState={credentials}
+          passwordInputRef={passwordInputRef}
+          confirmationInputRef={confirmationInputRef}
           onPasswordChange={setPassword}
           onPasswordConfirmationChange={setPasswordConfirmation}
         />
@@ -319,7 +337,7 @@ function CreateStudentForm({
       <p className="parent-student-form__enrollment" role="status">
         Creating a Student adds them to the recurring 7:00 PM class.
       </p>
-      <button type="submit" disabled={disabled || !credentials.ready}>
+      <button type="submit" disabled={disabled}>
         Create Student
       </button>
     </form>
@@ -384,7 +402,10 @@ function StudentPasswordResetForm({
 }) {
   const passwordId = useId();
   const confirmationId = useId();
-  const mismatchId = useId();
+  const passwordErrorId = useId();
+  const confirmationErrorId = useId();
+  const passwordInputRef = useRef<HTMLInputElement>(null);
+  const confirmationInputRef = useRef<HTMLInputElement>(null);
   const [password, setPassword] = useState('');
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
   const credentials = studentCredentialState(password, passwordConfirmation);
@@ -393,9 +414,19 @@ function StudentPasswordResetForm({
     <form
       className="parent-student-form"
       aria-labelledby="reset-password-heading"
+      noValidate
       onSubmit={(event) => {
         event.preventDefault();
-        if (!credentials.ready) return;
+        if (
+          !submitStudentCredentials({
+            password,
+            passwordConfirmation,
+            focusPassword: () => passwordInputRef.current?.focus(),
+            focusConfirmation: () => confirmationInputRef.current?.focus(),
+          })
+        ) {
+          return;
+        }
         onReset(password, passwordConfirmation);
       }}
     >
@@ -404,14 +435,18 @@ function StudentPasswordResetForm({
         disabled={disabled}
         passwordId={passwordId}
         confirmationId={confirmationId}
-        mismatchId={mismatchId}
+        passwordErrorId={passwordErrorId}
+        confirmationErrorId={confirmationErrorId}
         password={password}
         passwordConfirmation={passwordConfirmation}
-        hasPasswordMismatch={credentials.hasPasswordMismatch}
+        mode="reset"
+        credentialState={credentials}
+        passwordInputRef={passwordInputRef}
+        confirmationInputRef={confirmationInputRef}
         onPasswordChange={setPassword}
         onPasswordConfirmationChange={setPasswordConfirmation}
       />
-      <button type="submit" disabled={disabled || !credentials.ready}>
+      <button type="submit" disabled={disabled}>
         Reset password
       </button>
     </form>
@@ -469,36 +504,46 @@ function CredentialFields({
   disabled,
   passwordId,
   confirmationId,
-  mismatchId,
+  passwordErrorId,
+  confirmationErrorId,
   password,
   passwordConfirmation,
-  hasPasswordMismatch = false,
+  mode,
+  credentialState,
+  passwordInputRef,
+  confirmationInputRef,
   onPasswordChange,
   onPasswordConfirmationChange,
 }: {
   disabled: boolean;
   passwordId?: string;
   confirmationId?: string;
-  mismatchId?: string;
+  passwordErrorId?: string;
+  confirmationErrorId?: string;
   password?: string;
   passwordConfirmation?: string;
-  hasPasswordMismatch?: boolean;
+  mode: CredentialMode;
+  credentialState: StudentCredentialState;
+  passwordInputRef?: React.RefObject<HTMLInputElement | null>;
+  confirmationInputRef?: React.RefObject<HTMLInputElement | null>;
   onPasswordChange?: (value: string) => void;
   onPasswordConfirmationChange?: (value: string) => void;
 }) {
   return (
     <>
-      <label>
-        New password
+      <div className="parent-student-form__credential-field">
+        <label htmlFor={passwordId}>New password</label>
         <input
           id={passwordId}
           name="new_password"
           type="password"
           required
           minLength={12}
-          maxLength={128}
           disabled={disabled}
           autoComplete="new-password"
+          ref={passwordInputRef}
+          aria-invalid={credentialState.passwordLengthInvalid || undefined}
+          aria-describedby={credentialState.passwordLengthInvalid ? passwordErrorId : undefined}
           {...(onPasswordChange
             ? {
                 value: password,
@@ -507,20 +552,33 @@ function CredentialFields({
               }
             : {})}
         />
-      </label>
-      <label>
-        Confirm new password
+        {credentialState.passwordLengthInvalid ? (
+          <p id={passwordErrorId} className="parent-student-form__field-error" role="alert">
+            {credentialLengthErrorCopy(mode)}
+          </p>
+        ) : null}
+      </div>
+      <div className="parent-student-form__credential-field">
+        <label htmlFor={confirmationId}>Confirm new password</label>
         <input
           id={confirmationId}
           name="password_confirmation"
           type="password"
           required
           minLength={12}
-          maxLength={128}
           disabled={disabled}
           autoComplete="new-password"
-          aria-invalid={hasPasswordMismatch || undefined}
-          aria-describedby={hasPasswordMismatch ? mismatchId : undefined}
+          ref={confirmationInputRef}
+          aria-invalid={
+            credentialState.confirmationLengthInvalid ||
+            credentialState.hasPasswordMismatch ||
+            undefined
+          }
+          aria-describedby={
+            credentialState.confirmationLengthInvalid || credentialState.hasPasswordMismatch
+              ? confirmationErrorId
+              : undefined
+          }
           {...(onPasswordConfirmationChange
             ? {
                 value: passwordConfirmation,
@@ -529,12 +587,14 @@ function CredentialFields({
               }
             : {})}
         />
-      </label>
-      {hasPasswordMismatch ? (
-        <p id={mismatchId} className="parent-student-form__field-error" role="alert">
-          Passwords must match before creating this Student.
-        </p>
-      ) : null}
+        {credentialState.confirmationLengthInvalid || credentialState.hasPasswordMismatch ? (
+          <p id={confirmationErrorId} className="parent-student-form__field-error" role="alert">
+            {credentialState.confirmationLengthInvalid
+              ? credentialLengthErrorCopy(mode)
+              : credentialMismatchErrorCopy(mode)}
+          </p>
+        ) : null}
+      </div>
     </>
   );
 }
@@ -558,16 +618,63 @@ function CredentialHandoff({ handoff }: { handoff: StudentCredentialHandoff }) {
 type ProfileForm = { actualName: string; displayName: string; username: string };
 type CredentialForm = { password: string; passwordConfirmation: string };
 
-export function studentCredentialState(password: string, passwordConfirmation: string) {
+type CredentialMode = 'create' | 'reset';
+
+export type StudentCredentialState = {
+  confirmationLengthInvalid: boolean;
+  hasPasswordMismatch: boolean;
+  passwordLengthInvalid: boolean;
+  ready: boolean;
+};
+
+export function studentCredentialState(
+  password: string,
+  passwordConfirmation: string,
+): StudentCredentialState {
   const confirmationStarted = passwordConfirmation.length > 0;
   const passwordsMatch = password === passwordConfirmation;
   const passwordLengthValid = password.length >= 12 && password.length <= 128;
   const confirmationLengthValid =
     passwordConfirmation.length >= 12 && passwordConfirmation.length <= 128;
   return {
+    confirmationLengthInvalid: confirmationStarted && !confirmationLengthValid,
     hasPasswordMismatch: confirmationStarted && !passwordsMatch,
+    passwordLengthInvalid: password.length > 0 && !passwordLengthValid,
     ready: passwordLengthValid && confirmationLengthValid && passwordsMatch,
   };
+}
+
+export function credentialLengthErrorCopy(mode: CredentialMode) {
+  return mode === 'create'
+    ? 'Enter a password between 12 and 128 characters before creating this Student.'
+    : 'Enter a password between 12 and 128 characters before resetting this Student password.';
+}
+
+export function credentialMismatchErrorCopy(mode: CredentialMode) {
+  return mode === 'create'
+    ? 'Passwords must match before creating this Student.'
+    : 'Passwords must match before resetting this Student password.';
+}
+
+export function submitStudentCredentials({
+  password,
+  passwordConfirmation,
+  focusPassword,
+  focusConfirmation,
+}: {
+  password: string;
+  passwordConfirmation: string;
+  focusPassword: () => void;
+  focusConfirmation: () => void;
+}) {
+  const credentials = studentCredentialState(password, passwordConfirmation);
+  if (credentials.ready) return true;
+  if (password.length === 0 || credentials.passwordLengthInvalid) {
+    focusPassword();
+  } else {
+    focusConfirmation();
+  }
+  return false;
 }
 
 function profileForm(data: FormData): ProfileForm {
