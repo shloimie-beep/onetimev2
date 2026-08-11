@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
-import { mkdtemp } from 'node:fs/promises';
+import { mkdtemp, readFile } from 'node:fs/promises';
+import https from 'node:https';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { Readable } from 'node:stream';
@@ -199,7 +200,7 @@ const app = createApp({
     }
   },
 });
-const server = app.listen(config.port);
+const server = await createTestServer(app, config.port);
 
 let shutdownStarted = false;
 async function shutdownTestServer() {
@@ -732,4 +733,22 @@ async function seedVimeoCatalogStudentSession() {
 
 function sha256(value: string) {
   return createHash('sha256').update(value).digest('hex');
+}
+
+async function createTestServer(app: ReturnType<typeof createApp>, port: number) {
+  const pfxPath = process.env.OT_TEST_TLS_PFX_PATH;
+  const keyPath = process.env.OT_TEST_TLS_KEY_PATH;
+  const certificatePath = process.env.OT_TEST_TLS_CERT_PATH;
+  if (!pfxPath && !(keyPath && certificatePath)) return app.listen(port);
+
+  const options = pfxPath
+    ? {
+        pfx: await readFile(pfxPath),
+        passphrase: process.env.OT_TEST_TLS_PASSPHRASE ?? '',
+      }
+    : {
+        key: await readFile(keyPath!),
+        cert: await readFile(certificatePath!),
+      };
+  return https.createServer(options, app).listen(port);
 }
