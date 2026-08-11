@@ -105,36 +105,48 @@ test('P12 mounted Parent Create and Reset Student credential guards never dispat
 });
 
 async function signUpIsolatedParent(page: import('@playwright/test').Page) {
-  const bootstrapResponse = await page.request.get('/api/v1/signup/family/bootstrap');
-  expect(bootstrapResponse.status()).toBe(200);
-  const bootstrap = (await bootstrapResponse.json()) as {
-    csrf_token: string;
-    idempotency_key: string;
-    writes_allowed: boolean;
-  };
-  expect(bootstrap.writes_allowed).toBe(true);
-
-  const response = await page.request.post('/api/v1/signup/family', {
-    headers: {
-      origin: 'https://127.0.0.1:3112',
-      'x-csrf-token': bootstrap.csrf_token,
-    },
-    data: {
-      classification: 'family',
-      idempotency_key: bootstrap.idempotency_key,
-      first_name: 'Mounted',
-      last_name: 'Parent',
-      email: 'mounted-parent@example.test',
-      password: 'correct horse battery staple',
-      password_confirmation: 'correct horse battery staple',
-      timezone: 'Asia/Jerusalem',
-      terms_accepted: true,
-      privacy_accepted: true,
-      general_marketing_consent: true,
-      parent_newsletter_consent: true,
-    },
+  await page.goto('/signup');
+  const response = await page.evaluate(async () => {
+    const bootstrapResponse = await fetch('/api/v1/signup/family/bootstrap', {
+      credentials: 'same-origin',
+    });
+    const bootstrap = (await bootstrapResponse.json()) as {
+      csrf_token: string;
+      idempotency_key: string;
+      writes_allowed: boolean;
+    };
+    const signupResponse = await fetch('/api/v1/signup/family', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: {
+        'content-type': 'application/json',
+        'x-csrf-token': bootstrap.csrf_token,
+      },
+      body: JSON.stringify({
+        classification: 'family',
+        idempotency_key: bootstrap.idempotency_key,
+        first_name: 'Mounted',
+        last_name: 'Parent',
+        email: 'mounted-parent@example.test',
+        password: 'correct horse battery staple',
+        password_confirmation: 'correct horse battery staple',
+        timezone: 'Asia/Jerusalem',
+        terms_accepted: true,
+        privacy_accepted: true,
+        general_marketing_consent: true,
+        parent_newsletter_consent: true,
+      }),
+    });
+    return {
+      bootstrapStatus: bootstrapResponse.status,
+      writesAllowed: bootstrap.writes_allowed,
+      status: signupResponse.status,
+      text: await signupResponse.text(),
+    };
   });
-  expect(response.status(), await response.text()).toBe(201);
+  expect(response.bootstrapStatus).toBe(200);
+  expect(response.writesAllowed).toBe(true);
+  expect(response.status, response.text).toBe(201);
 }
 
 async function expectInvalidCredentialAttempt({
