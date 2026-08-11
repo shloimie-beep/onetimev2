@@ -1,11 +1,14 @@
 import { createHash } from 'node:crypto';
-import { mkdtemp } from 'node:fs/promises';
+import { mkdtemp, readFile } from 'node:fs/promises';
+import https from 'node:https';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { Readable } from 'node:stream';
 import { loadConfig } from '../../packages/config/src/index.ts';
 import { createMemoryPool, runMigrations } from '../../packages/db/src/index.ts';
 import { createApp } from '../../apps/web/src/server/app.ts';
+import { createV21AdultSessionRuntime } from '../../apps/web/src/server/features/auth/v21-adult-session.ts';
+import { createDbBackedTestAdultSessionRepository } from './pgmem-v21-parent-session-repository.ts';
 import {
   createAccountUser,
   createContentFactoryIntake,
@@ -41,7 +44,7 @@ const config = loadConfig({
   LOGIN_ACCOUNT_RATE_LIMIT_MAX: '5000',
   LOGIN_GLOBAL_RATE_LIMIT_MAX: '5000',
   PORT: process.env.PORT ?? '3100',
-  PUBLIC_BASE_URL: `http://127.0.0.1:${process.env.PORT ?? '3100'}`,
+  PUBLIC_BASE_URL: process.env.PUBLIC_BASE_URL ?? `http://127.0.0.1:${process.env.PORT ?? '3100'}`,
   OT89_SUPPORT_ENABLED: process.env.OT89_SUPPORT_ENABLED ?? 'true',
   OT89_SUPPORT_DELIVERY_MODE: process.env.OT89_SUPPORT_DELIVERY_MODE ?? 'mock',
   OT89_SUPPORT_BNA_BASE_URL:
@@ -183,10 +186,19 @@ await seedVimeoCatalogStudentSession();
 const testClock = process.env.OT_TEST_CLOCK
   ? () => new Date(String(process.env.OT_TEST_CLOCK))
   : undefined;
+const v21AdultSessionRuntime =
+  process.env.P12_PARENT_CREDENTIALS_HTTPS === 'true'
+    ? createV21AdultSessionRuntime({
+        repository: createDbBackedTestAdultSessionRepository(pool),
+        hmacSecret: config.authCsrfSecret,
+        ...(testClock ? { clock: testClock } : {}),
+      })
+    : undefined;
 const app = createApp({
   config,
   pool,
   ...(testClock ? { clock: testClock } : {}),
+  ...(v21AdultSessionRuntime ? { v21AdultSessionRuntime } : {}),
   contentFactoryJobNotifier: async () => {
     for (let attempt = 0; attempt < 6; attempt += 1) {
       await runContentFactoryWorkerOnce({
@@ -199,7 +211,7 @@ const app = createApp({
     }
   },
 });
-const server = app.listen(config.port);
+const server = await createTestServer(app, config.port);
 
 let shutdownStarted = false;
 async function shutdownTestServer() {
@@ -402,9 +414,9 @@ async function seedDayOneBrowserRecords() {
   await pool.query(
     `INSERT INTO onetime.class_series
        (class_series_key, account_key, product_key, title, timezone, local_start_time,
-        reminder_local_time)
+        reminder_local_time, status, series_state, is_canonical)
      VALUES ('e2e_class_series', $1, $2, 'E2E Daily Mishnah', 'Asia/Jerusalem', '19:00',
-        '18:30')`,
+        '18:30', 'active', 'active', true)`,
     [config.accountKey, config.productKey],
   );
   await pool.query(
@@ -732,4 +744,22 @@ async function seedVimeoCatalogStudentSession() {
 
 function sha256(value: string) {
   return createHash('sha256').update(value).digest('hex');
+}
+
+async function createTestServer(app: ReturnType<typeof createApp>, port: number) {
+  const pfxPath = process.env.OT_TEST_TLS_PFX_PATH;
+  const keyPath = process.env.OT_TEST_TLS_KEY_PATH;
+  const certificatePath = process.env.OT_TEST_TLS_CERT_PATH;
+  if (!pfxPath && !(keyPath && certificatePath)) return app.listen(port);
+
+  const options = pfxPath
+    ? {
+        pfx: await readFile(pfxPath),
+        passphrase: process.env.OT_TEST_TLS_PASSPHRASE ?? '',
+      }
+    : {
+        key: await readFile(keyPath!),
+        cert: await readFile(certificatePath!),
+      };
+  return https.createServer(options, app).listen(port);
 }

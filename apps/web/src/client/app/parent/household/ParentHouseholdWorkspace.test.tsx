@@ -5,7 +5,13 @@ import {
   STUDENT_ACTUAL_NAME_INSTRUCTIONS,
   type ParentHouseholdSnapshot,
 } from '../../../../../../../packages/contracts/src/portals/parent-household/index.ts';
-import { ParentHouseholdWorkspace } from './ParentHouseholdWorkspace.tsx';
+import {
+  credentialLengthErrorCopy,
+  credentialMismatchErrorCopy,
+  ParentHouseholdWorkspace,
+  studentCredentialState,
+  submitStudentCredentials,
+} from './ParentHouseholdWorkspace.tsx';
 import { createParentHouseholdApi } from './api.ts';
 
 const snapshot: ParentHouseholdSnapshot = {
@@ -34,12 +40,89 @@ const snapshot: ParentHouseholdSnapshot = {
 };
 
 describe('P12 persisted Parent household client workspace', () => {
+  it('guards mounted Create and Reset interactions before either API handler can run', () => {
+    for (const [password, confirmation, expectedFocus] of [
+      ['safe-password-123', 'different-password', 'confirmation'],
+      ['short-pass1', 'short-pass1', 'password'],
+      ['x'.repeat(129), 'x'.repeat(129), 'password'],
+    ] as const) {
+      const focusPassword = vi.fn();
+      const focusConfirmation = vi.fn();
+      const dispatch = vi.fn();
+      if (
+        submitStudentCredentials({
+          password,
+          passwordConfirmation: confirmation,
+          focusPassword,
+          focusConfirmation,
+        })
+      ) {
+        dispatch();
+      }
+      expect(dispatch).not.toHaveBeenCalled();
+      expect(
+        expectedFocus === 'password' ? focusPassword : focusConfirmation,
+      ).toHaveBeenCalledOnce();
+      expect(
+        expectedFocus === 'password' ? focusConfirmation : focusPassword,
+      ).not.toHaveBeenCalled();
+    }
+
+    for (const password of ['x'.repeat(12), 'x'.repeat(128)]) {
+      const focusPassword = vi.fn();
+      const focusConfirmation = vi.fn();
+      const createDispatch = vi.fn();
+      const resetDispatch = vi.fn();
+      if (
+        submitStudentCredentials({
+          password,
+          passwordConfirmation: password,
+          focusPassword,
+          focusConfirmation,
+        })
+      ) {
+        createDispatch();
+      }
+      if (
+        submitStudentCredentials({
+          password,
+          passwordConfirmation: password,
+          focusPassword,
+          focusConfirmation,
+        })
+      ) {
+        resetDispatch();
+      }
+      expect(createDispatch).toHaveBeenCalledOnce();
+      expect(resetDispatch).toHaveBeenCalledOnce();
+      expect(focusPassword).not.toHaveBeenCalled();
+      expect(focusConfirmation).not.toHaveBeenCalled();
+    }
+
+    expect(studentCredentialState('short-pass1', 'short-pass1')).toMatchObject({
+      passwordLengthInvalid: true,
+      confirmationLengthInvalid: true,
+      hasPasswordMismatch: false,
+      ready: false,
+    });
+    expect(studentCredentialState('safe-password-123', 'different-password')).toMatchObject({
+      passwordLengthInvalid: false,
+      confirmationLengthInvalid: false,
+      hasPasswordMismatch: true,
+      ready: false,
+    });
+    expect(credentialLengthErrorCopy('create')).toContain('creating this Student');
+    expect(credentialLengthErrorCopy('reset')).toContain('resetting this Student password');
+    expect(credentialMismatchErrorCopy('create')).toContain('creating this Student');
+    expect(credentialMismatchErrorCopy('reset')).toContain('resetting this Student password');
+  });
+
   it('shows owned-seat state and exact actual-name guidance without a stored password', () => {
     const html = renderToStaticMarkup(
       <ParentHouseholdWorkspace snapshot={snapshot} relationship="dependent" />,
     );
     expect(html).toContain('1 of 3 active Student seats used');
-    expect(html).toContain('Live classes run Sundayâ€“Thursday');
+    expect(html).toContain('Live classes run Sunday–Thursday');
     expect(html).toContain('href="/forgot-password"');
     expect(html).toContain(STUDENT_ACTUAL_NAME_INSTRUCTIONS.dependent);
     expect(html).toContain('/app/parent/students/student-1');
@@ -63,6 +146,9 @@ describe('P12 persisted Parent household client workspace', () => {
     expect(html).toContain('Someone I manage');
     expect(html).toContain('Myself');
     expect(html).toContain(STUDENT_ACTUAL_NAME_INSTRUCTIONS.dependent);
+    expect(html).toContain('Creating a Student adds them to the recurring 7:00 PM class.');
+    expect(html).toContain('noValidate=""');
+    expect(html).toContain('<button type="submit">Create Student</button>');
     expect(html).not.toMatch(/name="(?:hebrew_name|grade_label|date_of_birth|age|email)"/u);
   });
 
@@ -77,6 +163,7 @@ describe('P12 persisted Parent household client workspace', () => {
     expect(html).toContain('Save Student');
     expect(html).toContain('Archive Student');
     expect(html).toContain('Reset Student password');
+    expect(html).toContain('Student access and password controls');
     expect(html).toContain('existing password is never displayed');
     expect(html).not.toContain('value="safe-password');
   });

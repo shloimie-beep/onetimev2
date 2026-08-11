@@ -153,9 +153,14 @@ describe('Communications V1A contract', () => {
     expect(() => decodeCommunicationsCursor('wrong-secret', token, fixedNow)).toThrow(
       CommunicationsCursorError,
     );
-    expect(() =>
-      decodeCommunicationsCursor('test-secret', `${token.slice(0, -2)}aa`, fixedNow),
-    ).toThrow(CommunicationsCursorError);
+    const tokenParts = token.split('.');
+    const tokenTag = tokenParts[3];
+    if (!tokenTag) throw new Error('Expected an encoded cursor authentication tag.');
+    const tamperedTag = `${tokenTag.startsWith('A') ? 'B' : 'A'}${tokenTag.slice(1)}`;
+    const tamperedToken = [...tokenParts.slice(0, 3), tamperedTag].join('.');
+    expect(() => decodeCommunicationsCursor('test-secret', tamperedToken, fixedNow)).toThrow(
+      CommunicationsCursorError,
+    );
     expect(() =>
       decodeCommunicationsCursor('test-secret', token, new Date('2026-07-14T12:31:00.000Z')),
     ).toThrow(CommunicationsCursorError);

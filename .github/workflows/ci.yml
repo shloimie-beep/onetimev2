@@ -63,6 +63,9 @@ jobs:
       - name: Playwright e2e
         run: npm run e2e
 
+      - name: Playwright Parent credential validation over loopback TLS
+        run: npx playwright test -c tests/e2e/parent-student-credentials.playwright.config.ts
+
       - name: Playwright accessibility
         run: npm run accessibility
 

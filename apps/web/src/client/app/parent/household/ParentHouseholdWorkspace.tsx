@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
 import {
   STUDENT_ACTUAL_NAME_INSTRUCTIONS,
   type ParentHouseholdSnapshot,
@@ -98,9 +98,9 @@ export function ParentHouseholdWorkspace({
   const effectiveView = snapshot.can_manage_students ? view : ({ kind: 'overview' } as const);
 
   return (
-    <section aria-labelledby="parent-household-heading">
+    <section className="parent-student-workspace" aria-labelledby="parent-household-heading">
       <h1 id="parent-household-heading">{snapshot.display_name}</h1>
-      <p>
+      <p className="parent-student-workspace__seat-summary">
         {snapshot.active_student_count} of {snapshot.student_allowance} active Student seats used
       </p>
       {snapshot.can_manage_students ? (
@@ -120,7 +120,7 @@ export function ParentHouseholdWorkspace({
       <section id="parent-program-schedule" aria-labelledby="parent-program-schedule-heading">
         <h2 id="parent-program-schedule-heading">Program schedule</h2>
         <p>
-          Live classes run Sundayâ€“Thursday, with the protected lesson library available anytime.
+          Live classes run Sunday–Thursday, with the protected lesson library available anytime.
         </p>
         <p>Students sign in with the separate username and password managed below.</p>
       </section>
@@ -154,7 +154,7 @@ export function ParentHouseholdWorkspace({
                   },
                   csrf,
                 ),
-              'Student created. Save the credentials shown below.',
+              'Student created and enrolled in the recurring 7:00 PM class. Save the credentials shown below.',
             )
           }
         />
@@ -266,33 +266,77 @@ function CreateStudentForm({
   setRelationship: (relationship: ParentStudentRelationship) => void;
   onSubmit: (form: ProfileForm & CredentialForm) => void;
 }) {
+  const passwordId = useId();
+  const confirmationId = useId();
+  const passwordErrorId = useId();
+  const confirmationErrorId = useId();
+  const passwordInputRef = useRef<HTMLInputElement>(null);
+  const confirmationInputRef = useRef<HTMLInputElement>(null);
+  const [password, setPassword] = useState('');
+  const [passwordConfirmation, setPasswordConfirmation] = useState('');
+  const credentials = studentCredentialState(password, passwordConfirmation);
+
   return (
     <form
+      className="parent-student-form"
       aria-labelledby="create-student-heading"
+      noValidate
       onSubmit={(event) => {
         event.preventDefault();
+        if (
+          !submitStudentCredentials({
+            password,
+            passwordConfirmation,
+            focusPassword: () => passwordInputRef.current?.focus(),
+            focusConfirmation: () => confirmationInputRef.current?.focus(),
+          })
+        ) {
+          return;
+        }
+        if (!event.currentTarget.reportValidity()) return;
         const data = new FormData(event.currentTarget);
         onSubmit({ ...profileForm(data), ...credentialForm(data) });
       }}
     >
       <h2 id="create-student-heading">Add Student</h2>
-      <label>
-        Who is this learner?
-        <select
-          name="relationship"
-          value={relationship}
+      <div className="parent-student-form__fields">
+        <label>
+          Who is this learner?
+          <select
+            name="relationship"
+            value={relationship}
+            disabled={disabled}
+            onChange={(event) =>
+              setRelationship(event.currentTarget.value as ParentStudentRelationship)
+            }
+          >
+            <option value="dependent">Someone I manage</option>
+            <option value="self">Myself</option>
+          </select>
+        </label>
+        <p className="parent-student-form__guidance">
+          {STUDENT_ACTUAL_NAME_INSTRUCTIONS[relationship]}
+        </p>
+        <ProfileFields disabled={disabled} />
+        <CredentialFields
           disabled={disabled}
-          onChange={(event) =>
-            setRelationship(event.currentTarget.value as ParentStudentRelationship)
-          }
-        >
-          <option value="dependent">Someone I manage</option>
-          <option value="self">Myself</option>
-        </select>
-      </label>
-      <p>{STUDENT_ACTUAL_NAME_INSTRUCTIONS[relationship]}</p>
-      <ProfileFields disabled={disabled} />
-      <CredentialFields disabled={disabled} />
+          passwordId={passwordId}
+          confirmationId={confirmationId}
+          passwordErrorId={passwordErrorId}
+          confirmationErrorId={confirmationErrorId}
+          password={password}
+          passwordConfirmation={passwordConfirmation}
+          mode="create"
+          credentialState={credentials}
+          passwordInputRef={passwordInputRef}
+          confirmationInputRef={confirmationInputRef}
+          onPasswordChange={setPassword}
+          onPasswordConfirmationChange={setPasswordConfirmation}
+        />
+      </div>
+      <p className="parent-student-form__enrollment" role="status">
+        Creating a Student adds them to the recurring 7:00 PM class.
+      </p>
       <button type="submit" disabled={disabled}>
         Create Student
       </button>
@@ -316,10 +360,15 @@ function StudentManagementForms({
   onReset: (password: string, passwordConfirmation: string) => void;
 }) {
   return (
-    <section aria-labelledby="manage-student-heading" data-household-revision={revision}>
+    <section
+      className="parent-student-management"
+      aria-labelledby="manage-student-heading"
+      data-household-revision={revision}
+    >
       <h2 id="manage-student-heading">Manage {student.display_name ?? student.actual_name}</h2>
       <p>{STUDENT_ACTUAL_NAME_INSTRUCTIONS[student.relationship]}</p>
       <form
+        className="parent-student-form"
         onSubmit={(event) => {
           event.preventDefault();
           onUpdate(profileForm(new FormData(event.currentTarget)));
@@ -330,27 +379,77 @@ function StudentManagementForms({
           Save Student
         </button>
       </form>
-      <button type="button" disabled={disabled} onClick={onLifecycle}>
-        {student.state === 'active' ? 'Archive Student' : 'Restore Student'}
-      </button>
-      {student.state === 'active' ? (
-        <form
-          aria-labelledby="reset-password-heading"
-          onSubmit={(event) => {
-            event.preventDefault();
-            const form = credentialForm(new FormData(event.currentTarget));
-            onReset(form.password, form.passwordConfirmation);
-          }}
-        >
-          <h3 id="reset-password-heading">Reset Student password</h3>
-          <p>The existing password is never displayed.</p>
-          <CredentialFields disabled={disabled} />
-          <button type="submit" disabled={disabled}>
-            Reset password
-          </button>
-        </form>
-      ) : null}
+      <details className="parent-student-management__security">
+        <summary>Student access and password controls</summary>
+        <p>These actions affect this Student only. The existing password is never displayed.</p>
+        <button type="button" disabled={disabled} onClick={onLifecycle}>
+          {student.state === 'active' ? 'Archive Student' : 'Restore Student'}
+        </button>
+        {student.state === 'active' ? (
+          <StudentPasswordResetForm disabled={disabled} onReset={onReset} />
+        ) : null}
+      </details>
     </section>
+  );
+}
+
+function StudentPasswordResetForm({
+  disabled,
+  onReset,
+}: {
+  disabled: boolean;
+  onReset: (password: string, passwordConfirmation: string) => void;
+}) {
+  const passwordId = useId();
+  const confirmationId = useId();
+  const passwordErrorId = useId();
+  const confirmationErrorId = useId();
+  const passwordInputRef = useRef<HTMLInputElement>(null);
+  const confirmationInputRef = useRef<HTMLInputElement>(null);
+  const [password, setPassword] = useState('');
+  const [passwordConfirmation, setPasswordConfirmation] = useState('');
+  const credentials = studentCredentialState(password, passwordConfirmation);
+
+  return (
+    <form
+      className="parent-student-form"
+      aria-labelledby="reset-password-heading"
+      noValidate
+      onSubmit={(event) => {
+        event.preventDefault();
+        if (
+          !submitStudentCredentials({
+            password,
+            passwordConfirmation,
+            focusPassword: () => passwordInputRef.current?.focus(),
+            focusConfirmation: () => confirmationInputRef.current?.focus(),
+          })
+        ) {
+          return;
+        }
+        onReset(password, passwordConfirmation);
+      }}
+    >
+      <h3 id="reset-password-heading">Reset Student password</h3>
+      <CredentialFields
+        disabled={disabled}
+        passwordId={passwordId}
+        confirmationId={confirmationId}
+        passwordErrorId={passwordErrorId}
+        confirmationErrorId={confirmationErrorId}
+        password={password}
+        passwordConfirmation={passwordConfirmation}
+        mode="reset"
+        credentialState={credentials}
+        passwordInputRef={passwordInputRef}
+        confirmationInputRef={confirmationInputRef}
+        onPasswordChange={setPassword}
+        onPasswordConfirmationChange={setPasswordConfirmation}
+      />
+      <button type="submit" disabled={disabled}>
+        Reset password
+      </button>
+    </form>
   );
 }
 
@@ -401,33 +500,101 @@ function ProfileFields({
   );
 }
 
-function CredentialFields({ disabled }: { disabled: boolean }) {
+function CredentialFields({
+  disabled,
+  passwordId,
+  confirmationId,
+  passwordErrorId,
+  confirmationErrorId,
+  password,
+  passwordConfirmation,
+  mode,
+  credentialState,
+  passwordInputRef,
+  confirmationInputRef,
+  onPasswordChange,
+  onPasswordConfirmationChange,
+}: {
+  disabled: boolean;
+  passwordId?: string;
+  confirmationId?: string;
+  passwordErrorId?: string;
+  confirmationErrorId?: string;
+  password?: string;
+  passwordConfirmation?: string;
+  mode: CredentialMode;
+  credentialState: StudentCredentialState;
+  passwordInputRef?: React.RefObject<HTMLInputElement | null>;
+  confirmationInputRef?: React.RefObject<HTMLInputElement | null>;
+  onPasswordChange?: (value: string) => void;
+  onPasswordConfirmationChange?: (value: string) => void;
+}) {
   return (
     <>
-      <label>
-        New password
+      <div className="parent-student-form__credential-field">
+        <label htmlFor={passwordId}>New password</label>
         <input
+          id={passwordId}
           name="new_password"
           type="password"
           required
           minLength={12}
-          maxLength={128}
           disabled={disabled}
           autoComplete="new-password"
+          ref={passwordInputRef}
+          aria-invalid={credentialState.passwordLengthInvalid || undefined}
+          aria-describedby={credentialState.passwordLengthInvalid ? passwordErrorId : undefined}
+          {...(onPasswordChange
+            ? {
+                value: password,
+                onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
+                  onPasswordChange(event.currentTarget.value),
+              }
+            : {})}
         />
-      </label>
-      <label>
-        Confirm new password
+        {credentialState.passwordLengthInvalid ? (
+          <p id={passwordErrorId} className="parent-student-form__field-error" role="alert">
+            {credentialLengthErrorCopy(mode)}
+          </p>
+        ) : null}
+      </div>
+      <div className="parent-student-form__credential-field">
+        <label htmlFor={confirmationId}>Confirm new password</label>
         <input
+          id={confirmationId}
           name="password_confirmation"
           type="password"
           required
           minLength={12}
-          maxLength={128}
           disabled={disabled}
           autoComplete="new-password"
+          ref={confirmationInputRef}
+          aria-invalid={
+            credentialState.confirmationLengthInvalid ||
+            credentialState.hasPasswordMismatch ||
+            undefined
+          }
+          aria-describedby={
+            credentialState.confirmationLengthInvalid || credentialState.hasPasswordMismatch
+              ? confirmationErrorId
+              : undefined
+          }
+          {...(onPasswordConfirmationChange
+            ? {
+                value: passwordConfirmation,
+                onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
+                  onPasswordConfirmationChange(event.currentTarget.value),
+              }
+            : {})}
         />
-      </label>
+        {credentialState.confirmationLengthInvalid || credentialState.hasPasswordMismatch ? (
+          <p id={confirmationErrorId} className="parent-student-form__field-error" role="alert">
+            {credentialState.confirmationLengthInvalid
+              ? credentialLengthErrorCopy(mode)
+              : credentialMismatchErrorCopy(mode)}
+          </p>
+        ) : null}
+      </div>
     </>
   );
 }
@@ -450,6 +617,65 @@ function CredentialHandoff({ handoff }: { handoff: StudentCredentialHandoff }) {
 
 type ProfileForm = { actualName: string; displayName: string; username: string };
 type CredentialForm = { password: string; passwordConfirmation: string };
+
+type CredentialMode = 'create' | 'reset';
+
+export type StudentCredentialState = {
+  confirmationLengthInvalid: boolean;
+  hasPasswordMismatch: boolean;
+  passwordLengthInvalid: boolean;
+  ready: boolean;
+};
+
+export function studentCredentialState(
+  password: string,
+  passwordConfirmation: string,
+): StudentCredentialState {
+  const confirmationStarted = passwordConfirmation.length > 0;
+  const passwordsMatch = password === passwordConfirmation;
+  const passwordLengthValid = password.length >= 12 && password.length <= 128;
+  const confirmationLengthValid =
+    passwordConfirmation.length >= 12 && passwordConfirmation.length <= 128;
+  return {
+    confirmationLengthInvalid: confirmationStarted && !confirmationLengthValid,
+    hasPasswordMismatch: confirmationStarted && !passwordsMatch,
+    passwordLengthInvalid: password.length > 0 && !passwordLengthValid,
+    ready: passwordLengthValid && confirmationLengthValid && passwordsMatch,
+  };
+}
+
+export function credentialLengthErrorCopy(mode: CredentialMode) {
+  return mode === 'create'
+    ? 'Enter a password between 12 and 128 characters before creating this Student.'
+    : 'Enter a password between 12 and 128 characters before resetting this Student password.';
+}
+
+export function credentialMismatchErrorCopy(mode: CredentialMode) {
+  return mode === 'create'
+    ? 'Passwords must match before creating this Student.'
+    : 'Passwords must match before resetting this Student password.';
+}
+
+export function submitStudentCredentials({
+  password,
+  passwordConfirmation,
+  focusPassword,
+  focusConfirmation,
+}: {
+  password: string;
+  passwordConfirmation: string;
+  focusPassword: () => void;
+  focusConfirmation: () => void;
+}) {
+  const credentials = studentCredentialState(password, passwordConfirmation);
+  if (credentials.ready) return true;
+  if (password.length === 0 || credentials.passwordLengthInvalid) {
+    focusPassword();
+  } else {
+    focusConfirmation();
+  }
+  return false;
+}
 
 function profileForm(data: FormData): ProfileForm {
   return {
