@@ -106,6 +106,7 @@ test('P12 mounted Parent Create and Reset Student credential guards never dispat
 
 async function signUpIsolatedParent(page: import('@playwright/test').Page) {
   await page.goto('/signup');
+  expect(new URL(page.url()).origin).toBe('https://127.0.0.1:3112');
   const response = await page.evaluate(async () => {
     const bootstrapResponse = await fetch('/api/v1/signup/family/bootstrap', {
       credentials: 'same-origin',

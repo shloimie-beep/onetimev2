@@ -42,7 +42,7 @@ const config = loadConfig({
   LOGIN_ACCOUNT_RATE_LIMIT_MAX: '5000',
   LOGIN_GLOBAL_RATE_LIMIT_MAX: '5000',
   PORT: process.env.PORT ?? '3100',
-  PUBLIC_BASE_URL: `http://127.0.0.1:${process.env.PORT ?? '3100'}`,
+  PUBLIC_BASE_URL: process.env.PUBLIC_BASE_URL ?? `http://127.0.0.1:${process.env.PORT ?? '3100'}`,
   OT89_SUPPORT_ENABLED: process.env.OT89_SUPPORT_ENABLED ?? 'true',
   OT89_SUPPORT_DELIVERY_MODE: process.env.OT89_SUPPORT_DELIVERY_MODE ?? 'mock',
   OT89_SUPPORT_BNA_BASE_URL:
