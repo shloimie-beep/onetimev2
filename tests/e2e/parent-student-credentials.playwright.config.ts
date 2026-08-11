@@ -7,6 +7,7 @@ import { defineConfig, devices } from '@playwright/test';
 const port = '3112';
 const tlsDirectory = mkdtempSync(path.join(tmpdir(), 'onetime-parent-credentials-tls-'));
 const tls = generateLoopbackCertificate(tlsDirectory);
+process.env.P12_PARENT_CREDENTIALS_HTTPS = 'true';
 
 export default defineConfig({
   testDir: '../..',

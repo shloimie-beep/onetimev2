@@ -1,5 +1,10 @@
 import { expect, test } from '@playwright/test';
 
+test.skip(
+  process.env.P12_PARENT_CREDENTIALS_HTTPS !== 'true',
+  'This mounted v2.1 host-cookie test runs only through its loopback HTTPS config.',
+);
+
 test('P12 mounted Parent Create and Reset Student credential guards never dispatch invalid requests', async ({
   page,
 }) => {
