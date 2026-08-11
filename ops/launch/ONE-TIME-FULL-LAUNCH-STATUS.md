@@ -17,7 +17,9 @@ Snapshot: 2026-08-11 (Asia/Jerusalem)
 - Parent-to-Student creation is production-functionally proven: one active Student persists with one active canonical enrollment in the sole recurring 7:00 PM class. The bounded correction and proof created no GHL, provider, billing, Zoom, or media effect.
 - The live Parent Student desktop interface is agent-accepted on this source: an active Parent session reached the Student route; the 1-of-3 seat state, recurring 7:00 PM outcome, correct Sunday–Thursday text, responsive desktop hierarchy, and collapsed access/password controls rendered correctly. Disposable short and mismatched credential submissions produced accessible field errors and sent zero requests; fields were cleared with no mutation.
 - Mobile viewport acceptance was not independently obtained and remains unproven. Separate Student login is also unproven because no Student credential was safely available for an agent-owned sign-in.
-- The host-first session repair covers Communications and shared protected-session paths, but a complete all-page session journey on this exact source remains unaccepted. Do not infer Communications acceptance from the Parent-page proof.
+- Logout and second-login behavior remain unproven on this exact source. The passed agent smoke is not broader human operator acceptance.
+- Core adult session and Communications have an AGENT-SMOKE PASS on this source: an existing Parent session switched through the supported Admin path; Communications shell, auth session, CRM assignees, workflows, and history each returned HTTP 200. Dashboard, CRM, Content (including the Admin content workspace), and Support also stayed authenticated with their checked endpoints at HTTP 200. The supported Admin-to-Parent path returned authenticated `/app/parent`. No 401, 403, or 5xx response, login/signup redirect, or global client-state clear was observed.
+- The smoke submitted no form and created no business, provider, GHL, Zoom, billing, or media effect. Screenshot capture timed out, so no screenshot artifact exists.
 - The single required Family agreement is deployed: initially unchecked, versioned, and records unified legal/consent facts without SMS, call, WhatsApp, Student-contact, or credential effects.
 - The launch product remains one recurring 7:00 PM class, shown through Next Class. Rabbi Eli has full Admin access.
 
@@ -25,11 +27,11 @@ Snapshot: 2026-08-11 (Asia/Jerusalem)
 
 `READY_FOR_REMAINING_ACCEPTANCE`
 
-The deployed Parent Student flow is functionally proven and its desktop UX is agent-accepted. Remaining acceptance is limited to the unproven journeys listed below; deployment alone never substitutes for them.
+The deployed Parent Student flow is functionally proven and its desktop UX is agent-accepted. Core adult session and Communications have a bounded agent-smoke pass. Remaining acceptance is limited to the unproven journeys listed below; deployment alone never substitutes for them.
 
 ## Still unproven / next acceptance
 
-- One complete same-source adult session journey: sign in, Communications and other protected pages, role movement where available, refresh/deep-link, logout, and second login.
+- Logout and second login on this exact source, followed by broader human operator acceptance of the adult session journey.
 - Separate Student sign-in, only when a legitimate Student credential is available without exposing or resetting it in chat.
 - Mobile visual acceptance of the Parent Student page.
 - Recording publication/protected library and the minimal adult-only GHL signup/email flow. Family GHL synchronization remains disabled.
