@@ -24,3 +24,7 @@
 ## Boundaries
 
 The two required journeys remain unproven until they have their own protected acceptance evidence. The Admin Content defect requires a separately scoped application repair; it authorizes neither CRM nor provider action. PR #166 must not be described as production until it is deployed and read back.
+
+## Release-projection coverage and blocker
+
+The acceptance ownership, allowed-environment, and traceability projections assign P22/V40 to the prompt and worksheet cases, P18/V39 to protected Zoom entry, P20/V39 to protected video, and P26/V41 to the Student PIN case. The exact-six-digit Student PIN is a locked requirement with unimplemented acceptance status: the current application validators reported by review still require longer alphanumeric credentials, so an application repair is a blocker and is not performed by this docs-only PR.
