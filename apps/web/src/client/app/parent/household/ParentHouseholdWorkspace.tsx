@@ -104,12 +104,18 @@ export function ParentHouseholdWorkspace({
         {snapshot.active_student_count} of {snapshot.student_allowance} active Student seats used
       </p>
       {snapshot.can_manage_students ? (
-        <a
-          aria-disabled={snapshot.available_student_seats === 0}
-          href={snapshot.available_student_seats === 0 ? undefined : '/app/parent/students/new'}
-        >
-          Add Student
-        </a>
+        snapshot.available_student_seats === 0 ? (
+          <>
+            <button type="button" disabled aria-describedby="student-seat-capacity">
+              Add Student
+            </button>
+            <p id="student-seat-capacity" role="status">
+              All {snapshot.student_allowance} Student seats are in use.
+            </p>
+          </>
+        ) : (
+          <a href="/app/parent/students/new">Add Student</a>
+        )
       ) : (
         <p role="status">Student management is unavailable while household access is inactive.</p>
       )}
