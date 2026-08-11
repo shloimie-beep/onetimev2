@@ -37,7 +37,7 @@ The deployed Parent Student flow is functionally proven and its desktop UX is ag
 - Logout and second login on this exact source, followed by broader human operator acceptance of the adult session journey.
 - Basic protected Zoom classroom entry and one real protected library video, each with its required protected/negative access evidence.
 - Mobile visual acceptance of the Parent Student page.
-- Recording publication/protected library and the minimal adult-only GHL signup/email flow. Family GHL synchronization remains disabled.
+- The minimal adult-only GHL signup/email flow. Family GHL synchronization remains disabled.
 
 The immediate teaching loop is private Rabbi-moderated prompts, one worksheet round trip, three simple badges, basic protected Zoom classroom entry, and one real protected library video. Stage Host and OBS remain later.
 
