@@ -20,11 +20,20 @@ export function ParentSchedule({
   students: readonly ParentSummaryStudent[];
   now?: Date;
 }) {
-  const nextEntry = entries.find(
-    (entry, index) =>
-      new Date(entry.starts_at).getTime() >= now.getTime() &&
-      entries.findIndex(({ schedule_id }) => schedule_id === entry.schedule_id) === index,
-  );
+  const nextEntry = [...entries]
+    .filter(
+      (entry) =>
+        entry.status === 'upcoming' && new Date(entry.starts_at).getTime() >= now.getTime(),
+    )
+    .sort(
+      (left, right) =>
+        new Date(left.starts_at).getTime() - new Date(right.starts_at).getTime() ||
+        left.schedule_id.localeCompare(right.schedule_id),
+    )
+    .find(
+      (entry, index, upcomingEntries) =>
+        upcomingEntries.findIndex(({ schedule_id }) => schedule_id === entry.schedule_id) === index,
+    );
   const enrolledStudentCount = nextEntry
     ? new Set(
         entries

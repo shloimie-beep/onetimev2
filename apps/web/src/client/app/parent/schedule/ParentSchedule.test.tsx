@@ -91,6 +91,67 @@ describe('P13 Parent schedule', () => {
     expect(html).not.toContain('Later class');
   });
 
+  it('selects the chronologically earliest distinct upcoming class from reverse-ordered entries', () => {
+    const html = renderToStaticMarkup(
+      <ParentSchedule
+        now={new Date('2026-08-11T00:00:00.000Z')}
+        students={[{ student_id: 'student-1', display_name: 'Student One', state: 'active' }]}
+        entries={[
+          {
+            schedule_id: 'later-occurrence',
+            student_id: 'student-1',
+            title: 'Later class',
+            starts_at: '2026-08-17T16:00:00.000Z',
+            ends_at: '2026-08-17T17:00:00.000Z',
+            status: 'upcoming',
+          },
+          {
+            schedule_id: 'earlier-occurrence',
+            student_id: 'student-1',
+            title: 'Earlier class',
+            starts_at: '2026-08-16T16:00:00.000Z',
+            ends_at: '2026-08-16T17:00:00.000Z',
+            status: 'upcoming',
+          },
+        ]}
+      />,
+    );
+
+    expect(html).toContain('Earlier class');
+    expect(html).toContain('href="/app/parent/classes/earlier-occurrence"');
+    expect(html).not.toContain('Later class');
+  });
+
+  it('does not present a future cancelled class as the next class', () => {
+    const html = renderToStaticMarkup(
+      <ParentSchedule
+        now={new Date('2026-08-11T00:00:00.000Z')}
+        students={[{ student_id: 'student-1', display_name: 'Student One', state: 'active' }]}
+        entries={[
+          {
+            schedule_id: 'cancelled-occurrence',
+            student_id: 'student-1',
+            title: 'Cancelled class',
+            starts_at: '2026-08-16T16:00:00.000Z',
+            ends_at: '2026-08-16T17:00:00.000Z',
+            status: 'cancelled',
+          },
+          {
+            schedule_id: 'upcoming-occurrence',
+            student_id: 'student-1',
+            title: 'Upcoming class',
+            starts_at: '2026-08-17T16:00:00.000Z',
+            ends_at: '2026-08-17T17:00:00.000Z',
+            status: 'upcoming',
+          },
+        ]}
+      />,
+    );
+
+    expect(html).toContain('Upcoming class');
+    expect(html).not.toContain('Cancelled class');
+  });
+
   it('encodes the schedule id in canonical class detail links', () => {
     const html = renderToStaticMarkup(
       <ParentSchedule
