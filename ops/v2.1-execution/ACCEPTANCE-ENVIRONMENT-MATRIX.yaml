@@ -1,6 +1,6 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
-rule: All 265 results bind the same immutable candidate, but each case runs only in one of its own allowed environments
+rule: All 270 results bind the same immutable candidate, but each case runs only in one of its own allowed environments
   below. No common environment across all cases is required or implied.
 cases:
 - case_id: OTV2-FOUNDATION-001-AC01
@@ -1130,3 +1130,29 @@ cases:
   requirement_id: OTV2-PROVIDER-243
   allowed_environments: *id017
   evidence_profile: api_job_saga
+
+- case_id: OTV2-LEARNING-244-AC01
+  requirement_id: OTV2-LEARNING-244
+  allowed_environments:
+  - production_operator_canary
+  evidence_profile: learning_domain
+- case_id: OTV2-LEARNING-245-AC01
+  requirement_id: OTV2-LEARNING-245
+  allowed_environments:
+  - production_operator_canary
+  evidence_profile: learning_domain
+- case_id: OTV2-CLASSROOM-246-PROTECTED-ENTRY
+  requirement_id: OTV2-CLASSROOM-246
+  allowed_environments:
+  - production_operator_canary
+  evidence_profile: zoom_classroom
+- case_id: OTV2-CONTENT-247-PROTECTED-VIDEO
+  requirement_id: OTV2-CONTENT-247
+  allowed_environments:
+  - production_operator_canary
+  evidence_profile: content_pipeline
+- case_id: OTV2-AUTH-248-STUDENT-PIN
+  requirement_id: OTV2-AUTH-248
+  allowed_environments:
+  - production_operator_canary
+  evidence_profile: authentication
