@@ -49,6 +49,6 @@ The immediate teaching loop is private Rabbi-moderated prompts, one worksheet ro
 - BNA task management and Telegram monitoring are outside the initial-launch critical path.
 - Admin Content currently has a false `content.view` denial and unrelated CRM controls; this is a documented application defect, not an authorization to change CRM or providers in this reconciliation.
 - Buffer/Social is OFF.
-- Student credentials use an exactly six-digit numeric PIN; adult password rules are unchanged.
+- Student credentials are locked to an exactly six-digit numeric PIN; adult password rules are unchanged. The current application validator mismatch is an unimplemented, separately scoped application blocker.
 - No points economy, rewards, public/class leaderboard, parent goals, editable badge rules, extra launch levels, Student-to-Student chat, or launch month grid.
 - A deployed surface or provider configuration is never `OPERATOR ACCEPTED` without its real journey on this exact source.
