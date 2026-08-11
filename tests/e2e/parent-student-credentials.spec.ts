@@ -158,11 +158,12 @@ async function expectInvalidCredentialAttempt({
   await passwordField.fill(password);
   await confirmationField.fill(confirmation);
   await form.getByRole('button').click();
-  const alert = form.getByRole('alert');
-  await expect(alert).toContainText(expectedError);
   const invalidField = expectedFocus === 'password' ? passwordField : confirmationField;
   await expect(invalidField).toHaveAttribute('aria-invalid', 'true');
   await expect(invalidField).toHaveAttribute('aria-describedby', /.+/u);
+  const errorId = await invalidField.getAttribute('aria-describedby');
+  if (!errorId) throw new Error('Expected the invalid field to reference its accessible error.');
+  await expect(form.locator(`[id="${errorId}"]`)).toHaveText(expectedError);
   await expect(invalidField).toBeFocused();
   await expect.poll(() => requests.length).toBe(requestsBefore);
 }
