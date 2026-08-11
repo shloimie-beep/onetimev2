@@ -7,6 +7,8 @@ import { Readable } from 'node:stream';
 import { loadConfig } from '../../packages/config/src/index.ts';
 import { createMemoryPool, runMigrations } from '../../packages/db/src/index.ts';
 import { createApp } from '../../apps/web/src/server/app.ts';
+import { createV21AdultSessionRuntime } from '../../apps/web/src/server/features/auth/v21-adult-session.ts';
+import { createDbBackedTestAdultSessionRepository } from './pgmem-v21-parent-session-repository.ts';
 import {
   createAccountUser,
   createContentFactoryIntake,
@@ -184,10 +186,19 @@ await seedVimeoCatalogStudentSession();
 const testClock = process.env.OT_TEST_CLOCK
   ? () => new Date(String(process.env.OT_TEST_CLOCK))
   : undefined;
+const v21AdultSessionRuntime =
+  process.env.P12_PARENT_CREDENTIALS_HTTPS === 'true'
+    ? createV21AdultSessionRuntime({
+        repository: createDbBackedTestAdultSessionRepository(pool),
+        hmacSecret: config.authCsrfSecret,
+        ...(testClock ? { clock: testClock } : {}),
+      })
+    : undefined;
 const app = createApp({
   config,
   pool,
   ...(testClock ? { clock: testClock } : {}),
+  ...(v21AdultSessionRuntime ? { v21AdultSessionRuntime } : {}),
   contentFactoryJobNotifier: async () => {
     for (let attempt = 0; attempt < 6; attempt += 1) {
       await runContentFactoryWorkerOnce({
