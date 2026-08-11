@@ -22,6 +22,7 @@ export default defineConfig({
     command: 'node --import tsx tests/support/test-server.ts',
     cwd: '../..',
     url: `https://127.0.0.1:${port}/health`,
+    ignoreHTTPSErrors: true,
     reuseExistingServer: false,
     gracefulShutdown: { signal: 'SIGTERM', timeout: 5_000 },
     timeout: 30_000,
