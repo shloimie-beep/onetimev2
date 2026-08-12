@@ -99,8 +99,7 @@ test('P12 mounted Parent Create and Reset Student credential guards never dispat
     form: resetForm,
     password: '12345',
     confirmation: '12345',
-    expectedError:
-      'Enter exactly six numeric digits before resetting this Student PIN.',
+    expectedError: 'Enter exactly six numeric digits before resetting this Student PIN.',
     expectedFocus: 'password',
     requests,
   });
@@ -108,8 +107,7 @@ test('P12 mounted Parent Create and Reset Student credential guards never dispat
     form: resetForm,
     password: '1234567',
     confirmation: '1234567',
-    expectedError:
-      'Enter exactly six numeric digits before resetting this Student PIN.',
+    expectedError: 'Enter exactly six numeric digits before resetting this Student PIN.',
     expectedFocus: 'password',
     requests,
   });
@@ -117,8 +115,7 @@ test('P12 mounted Parent Create and Reset Student credential guards never dispat
     form: resetForm,
     password: '12a456',
     confirmation: '12a456',
-    expectedError:
-      'Enter exactly six numeric digits before resetting this Student PIN.',
+    expectedError: 'Enter exactly six numeric digits before resetting this Student PIN.',
     expectedFocus: 'password',
     requests,
   });
