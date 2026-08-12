@@ -166,7 +166,14 @@ function LiveConsole() {
             <h2>{data?.stage.class_label ?? 'One Time live class'}</h2>
           </div>
           <div className="live-console__status">
-            <StatusPill label="Zoom" value={data?.zoom.adapter ?? 'not configured'} />
+            <StatusPill
+              label="Zoom"
+              value={
+                productionBasicReady
+                  ? 'protected recurring ready'
+                  : (data?.zoom.adapter ?? 'not configured')
+              }
+            />
             <StatusPill label="OBS" value={data?.obs.connected ? 'connected' : 'optional off'} />
             <StatusPill label="Telegram" value="optional off" />
           </div>
@@ -538,18 +545,32 @@ function ZoomHealth({
   productionBasicReady: boolean;
   onStartProductionBasic: () => void;
 }) {
+  const legacyHostControlsReady = occurrenceKey && data?.zoom.host_control_configured;
   return (
     <div className="live-health">
-      <p>Surface: {data?.zoom.host_surface_label ?? 'One Time Zoom Stage Host'}</p>
-      <p>Mode: {data?.zoom.adapter ?? 'not configured'}</p>
-      <p>Class occurrence: {occurrenceKey ?? 'none selected'}</p>
-      <p>Video start model: participant consent</p>
+      {productionBasicReady ? (
+        <>
+          <p>Surface: Protected recurring Zoom</p>
+          <p>Mode: ready</p>
+          <p>Schedule: Sunday–Thursday at 7:00 PM</p>
+          <p>Advanced Stage Host: deferred/off</p>
+        </>
+      ) : (
+        <>
+          <p>Surface: {data?.zoom.host_surface_label ?? 'One Time Zoom Stage Host'}</p>
+          <p>Mode: {data?.zoom.adapter ?? 'not configured'}</p>
+          <p>Class occurrence: {occurrenceKey ?? 'none selected'}</p>
+          <p>Video start model: participant consent</p>
+        </>
+      )}
       <p role="status">
-        {occurrenceKey
-          ? data?.zoom.host_control_configured
-            ? 'Secure host controls are ready for this class occurrence.'
-            : 'Zoom is not ready for this class occurrence. An Administrator can provision it from Classroom.'
-          : 'Choose a class occurrence before opening the Zoom classroom.'}
+        {productionBasicReady
+          ? 'Protected recurring Zoom is ready. Start class only when the Rabbi is ready to begin.'
+          : occurrenceKey
+            ? data?.zoom.host_control_configured
+              ? 'Secure host controls are ready for this class occurrence.'
+              : 'Zoom is not ready for this class occurrence. An Administrator can provision it from Classroom.'
+            : 'Choose a class occurrence before opening the Zoom classroom.'}
       </p>
       <div className="live-action-grid" aria-label="Zoom classroom actions">
         <button type="button" className="ot-button secondary" onClick={onRefresh}>
@@ -572,7 +593,12 @@ function ZoomHealth({
       {productionBasicReady ? (
         <div id="zmmtg-root" aria-label="Protected Meeting SDK classroom" />
       ) : null}
-      {data?.zoom.host_control_configured ? (
+      {productionBasicReady ? (
+        <p>
+          Students join from their own protected Student portal. The Admin session starts the
+          meeting only when explicitly selected.
+        </p>
+      ) : legacyHostControlsReady ? (
         <p>
           Enrolled Students join from their own protected Student portal. The Admin session never
           mints or impersonates a learner session.
