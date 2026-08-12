@@ -12,7 +12,6 @@ import {
   listAdminHouseholds,
   listAdminLearners,
   listAdminUsers,
-  requestAdminStudentSetup,
   requestAdminUserPasswordReset,
   setAdminHouseholdStatus,
   setAdminLearnerStatus,
@@ -349,24 +348,6 @@ export function createAdminDirectoryRouter(input: {
           actor: context.actor,
           learnerKey: String(req.params.learnerKey),
           status: 'active',
-          payload: req.body,
-        }),
-      });
-    }),
-  );
-
-  router.post(
-    '/learners/:learnerKey/student-setup',
-    route(async (req, res) => {
-      const context = await requireMutation(req, res, input);
-      if (!context) return;
-      res.json({
-        success: true,
-        setup: await requestAdminStudentSetup({
-          pool: input.pool,
-          config: input.config,
-          actor: context.actor,
-          learnerKey: String(req.params.learnerKey),
           payload: req.body,
         }),
       });

@@ -5,7 +5,6 @@ import type { DbPool, Queryable } from '../../../db/src/index.ts';
 import { inTransaction } from '../../../db/src/index.ts';
 import {
   createOwnerAdminInvitation,
-  createStudentSetup,
   issueParentActivationWithClient,
   requestPasswordReset,
 } from '../accounts/lifecycle.ts';
@@ -112,13 +111,6 @@ export const updateLearnerPayloadSchema = z
     hebrew_name: optionalLabelSchema,
     grade_label: optionalLabelSchema,
     version: versionSchema,
-  })
-  .strict();
-
-export const studentSetupPayloadSchema = z
-  .object({
-    email: z.string().trim().email().max(254),
-    idempotency_key: idempotencyKeySchema,
   })
   .strict();
 
@@ -1289,50 +1281,6 @@ export function setAdminLearnerStatus(input: {
       student_user_ref: current.student_user_ref,
     });
   });
-}
-
-export async function requestAdminStudentSetup(input: {
-  pool: DbPool;
-  config: AppConfig;
-  actor: AdminDirectoryActor;
-  learnerKey: string;
-  payload: unknown;
-}) {
-  requireOwnerAdmin(input.actor);
-  const learnerKey = opaqueKeySchema.parse(input.learnerKey);
-  const payload = studentSetupPayloadSchema.parse(input.payload);
-  const learner = await input.pool.query(
-    `SELECT learner_key, household_key, display_name, learner_status
-       FROM onetime.portal_learners
-      WHERE account_key = $1 AND product_key = $2 AND learner_key = $3
-      LIMIT 1`,
-    [input.config.accountKey, input.config.productKey, learnerKey],
-  );
-  if (!learner.rowCount) throw new AdminDirectoryError('NOT_FOUND', 'The learner was not found.');
-  if (String(learner.rows[0]?.learner_status) !== 'active') {
-    throw new AdminDirectoryError(
-      'IDENTITY_CONFLICT',
-      'Restore the learner before starting Student account setup.',
-    );
-  }
-  const result = await createStudentSetup({
-    pool: input.pool,
-    config: input.config,
-    actor: { userKey: input.actor.userKey, role: input.actor.role },
-    payload: {
-      idempotency_key: payload.idempotency_key,
-      email: payload.email,
-      display_name: String(learner.rows[0]?.display_name),
-      household_key: String(learner.rows[0]?.household_key),
-      learner_key: learnerKey,
-    },
-  });
-  return {
-    learner_key: learnerKey,
-    status: 'setup_requested' as const,
-    expires_at: result.expires_at,
-    external_send_performed: false as const,
-  };
 }
 
 async function lockHousehold(

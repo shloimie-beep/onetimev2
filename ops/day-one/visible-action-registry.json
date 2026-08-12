@@ -1476,40 +1476,6 @@
       ]
     },
     {
-      "action_id": "admin.directory.student.setup.form",
-      "label": "Student setup",
-      "surface": "form",
-      "route": "/app/students/:studentId",
-      "roles": ["admin"],
-      "capability": "admin:student:credential-setup",
-      "handler": {
-        "method": "POST",
-        "path": "/api/v1/admin-directory/learners/:learnerKey/student-setup"
-      },
-      "idempotency": {
-        "required": true,
-        "key_source": "client-generated idempotency_key"
-      },
-      "audit": {
-        "mode": "domain_audit",
-        "event": "student_setup_issued"
-      },
-      "states": {
-        "loading": "Creating a single-use Student setup in the protected delivery sink.",
-        "success": "The single-use Student setup was queued without exposing a password.",
-        "error": "The Student setup request was rejected or could not be queued.",
-        "permission": "Only an authenticated Admin may request Student setup.",
-        "offline": "Student setup is unavailable offline."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "sink",
-      "external_mutation": false,
-      "test_evidence": [
-        "tests/integration/admin-directory/admin-directory.test.ts",
-        "tests/e2e/admin-information-architecture.spec.ts"
-      ]
-    },
-    {
       "action_id": "admin.directory.student.view.route",
       "label": "Student details",
       "surface": "route",

@@ -214,13 +214,6 @@ const EXPECTED_ACTION_BINDINGS = [
     '/api/v1/admin-directory/learners/:learnerKey',
   ],
   [
-    'admin.directory.student.setup.form',
-    '/app/students/:studentId',
-    ['admin'],
-    'POST',
-    '/api/v1/admin-directory/learners/:learnerKey/student-setup',
-  ],
-  [
     'admin.directory.student.view.route',
     '/app/students/:studentId',
     ['admin'],
@@ -749,6 +742,7 @@ describe('v2.1 visible action registry', () => {
     const sourcePaths = new Set(registry.source_inputs.map(({ path }) => path));
     expect(actionIds).toEqual([...actionIds].sort());
     expect(new Set(actionIds).size).toBe(actionIds.length);
+    expect(actionIds).not.toContain('admin.directory.student.setup.form');
     expect(
       registry.actions.map((action) => [
         action.action_id,
