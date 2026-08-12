@@ -94,6 +94,16 @@ const beginSchema = z
       .string()
       .regex(/^[a-f0-9]{64}$/u)
       .optional(),
+    existing_reviewed_recording: z
+      .object({
+        origin: z.enum(['drive', 'recordings_collection']),
+        rights_to_process_and_privately_publish: z.literal(true),
+        human_review_completed: z.literal(true),
+        child_data_disposition: z.enum(['none_present', 'redactions_complete']),
+        no_unreviewed_child_data: z.literal(true),
+      })
+      .strict()
+      .optional(),
   })
   .strict();
 const partSchema = z
@@ -145,6 +155,7 @@ export function createContentIngestRouter(input: ContentIngestRouterInput) {
         mimeType: body.mime_type,
         byteCount: body.byte_count,
         controlBindingDigest: binding.controlBindingDigest,
+        existingRecordingIntent: body.existing_reviewed_recording,
       });
       const result = await input.service.beginDirectUpload({
         actor: identity.actor,
@@ -153,6 +164,17 @@ export function createContentIngestRouter(input: ContentIngestRouterInput) {
         displayFilename: body.file_name,
         mimeType: body.mime_type,
         declaredByteCount: body.byte_count,
+        ...(body.existing_reviewed_recording
+          ? {
+              existingRecordingIntent: {
+                origin: body.existing_reviewed_recording.origin,
+                rightsToProcessAndPrivatelyPublish: true as const,
+                humanReviewCompleted: true as const,
+                childDataDisposition: body.existing_reviewed_recording.child_data_disposition,
+                noUnreviewedChildData: true as const,
+              },
+            }
+          : {}),
         idempotencyKey: binding.idempotencyKey,
         requestHash,
         occurredAt,

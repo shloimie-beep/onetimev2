@@ -1,6 +1,7 @@
 import type {
   ContentIngestOccurrenceOption,
   ContentSourceRecord,
+  ExistingReviewedRecordingIntent,
   MultipartUploadPlan,
   UploadSessionRecord,
 } from '../../../../../../../../packages/contracts/src/content/ingest/index.ts';
@@ -17,7 +18,10 @@ export function createContentIngestApi(input: {
   const uploads = new Map<string, UploadState>();
 
   return {
-    async beginUpload(file: File): Promise<{
+    async beginUpload(
+      file: File,
+      existingRecordingIntent?: ExistingReviewedRecordingIntent,
+    ): Promise<{
       session: UploadSessionRecord;
       plan: MultipartUploadPlan;
     }> {
@@ -34,8 +38,19 @@ export function createContentIngestApi(input: {
             mime_type: file.type,
             byte_count: file.size,
             client_request_key: await browserDigest(
-              `content-begin\0${file.name}\0${file.type}\0${file.size}\0${file.lastModified}`,
+              `content-begin\0${file.name}\0${file.type}\0${file.size}\0${file.lastModified}\0${JSON.stringify(existingRecordingIntent ?? null)}`,
             ),
+            ...(existingRecordingIntent
+              ? {
+                  existing_reviewed_recording: {
+                    origin: existingRecordingIntent.origin,
+                    rights_to_process_and_privately_publish: true,
+                    human_review_completed: true,
+                    child_data_disposition: existingRecordingIntent.childDataDisposition,
+                    no_unreviewed_child_data: true,
+                  },
+                }
+              : {}),
           }),
         },
         input.onProtectedStateCleared,

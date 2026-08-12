@@ -2,6 +2,7 @@ import type {
   ContentIngestAdminActor,
   ContentIngestScope,
   ContentSourceRecord,
+  ExistingReviewedRecordingAttestation,
   IngestRuntimeTier,
   ManagedObjectReadback,
 } from '../ingest/index.ts';
@@ -185,6 +186,25 @@ export type ControlledCaptureEvidence = {
   localDeletionRecordedAt?: string;
 };
 
+/**
+ * Narrow initial-launch evidence for one pre-existing recording. This union is
+ * intentionally distinct from OBS evidence: it makes no claim about an
+ * occurrence capture, participant-consent snapshot, recording notice, or
+ * operator-device timestamp.
+ */
+export type ExistingReviewedRecordingEvidence = {
+  evidenceVersion: 'OT-EXISTING-REVIEWED-RECORDING-1';
+  sourceId: string;
+  captureMethod: 'existing_reviewed_recording';
+  attestation: ExistingReviewedRecordingAttestation;
+  reviewedSourceDigest: string;
+  uploadConfirmedAt: string;
+  durableChecksumReadbackReceiptId: string;
+  linkedIngestSourceId: string;
+};
+
+export type ContentSourceEvidence = ControlledCaptureEvidence | ExistingReviewedRecordingEvidence;
+
 export type ProcessingStoragePolicyReadback = {
   policyVersion: 'OT-PROCESSING-STORAGE-1';
   provider: 'aws-s3';
@@ -348,6 +368,7 @@ export type ProcessingArtifact = ContentProcessingScope & {
 export type ContentPublicationApprovalEvidence = {
   evidenceVersion: 'OT-PUBLICATION-APPROVAL-1';
   participantSnapshotDigest: string;
+  reviewKind?: 'participant_snapshot';
   participantReview: ContentParticipantReviewEvidence;
   approvedByAdminId: string;
   approvedAt: string;
@@ -356,6 +377,28 @@ export type ContentPublicationApprovalEvidence = {
   contentVersionDigestVersion: typeof CONTENT_VERSION_DIGEST_VERSION;
   contentVersionDigest: string;
 };
+
+/**
+ * Approval evidence for the narrow launch exception. It is deliberately not
+ * shaped as a participant/OBS review: the source was not captured through
+ * One Time's controlled recording process, and therefore cannot assert an
+ * occurrence, notice, device control, or participant-consent snapshot.
+ */
+export type ExistingReviewedRecordingPublicationApprovalEvidence = {
+  evidenceVersion: 'OT-EXISTING-REVIEWED-RECORDING-APPROVAL-1';
+  reviewedSourceDigest: string;
+  reviewKind: 'existing_reviewed_recording';
+  existingRecordingEvidence: ExistingReviewedRecordingEvidence;
+  approvedByAdminId: string;
+  approvedAt: string;
+  approvedArtifactSetDigest: string;
+  sourceEvidenceDigest: string;
+  contentVersionDigestVersion: typeof CONTENT_VERSION_DIGEST_VERSION;
+  contentVersionDigest: string;
+};
+
+export type PublicationApprovalEvidence =
+  ContentPublicationApprovalEvidence | ExistingReviewedRecordingPublicationApprovalEvidence;
 
 export type ContentParticipantDetectionEvidence = {
   detectorVersion: string;
@@ -417,7 +460,7 @@ export type ContentProcessingVersion = ContentProcessingScope & {
   trim: TrimSelection;
   transcodePlan: TranscodePlan;
   artifacts: readonly ProcessingArtifact[];
-  publicationApproval?: ContentPublicationApprovalEvidence;
+  publicationApproval?: PublicationApprovalEvidence;
   lastSafeErrorCode?: string;
   retryAt?: string;
   version: number;
@@ -449,11 +492,12 @@ export type ApprovedForPublicationArtifact = {
   schemaVersion: string | null;
 };
 
-export type ApprovedForPublicationProjection = ContentProcessingScope & {
+export type ObsApprovedForPublicationProjection = ContentProcessingScope & {
   contentVersionId: string;
   sourceId: string;
   sourceSha256: string;
   sourceObjectVersionId: string;
+  reviewKind?: 'participant_snapshot';
   participantSnapshotDigest: string;
   approvedByAdminId: string;
   approvedAt: string;
@@ -462,6 +506,27 @@ export type ApprovedForPublicationProjection = ContentProcessingScope & {
   sourceEvidenceDigest: string;
   projectionDigest: string;
 };
+
+export type ExistingReviewedRecordingApprovedForPublicationProjection = ContentProcessingScope & {
+  contentVersionId: string;
+  sourceId: string;
+  sourceSha256: string;
+  sourceObjectVersionId: string;
+  reviewKind: 'existing_reviewed_recording';
+  reviewedSourceDigest: string;
+  reviewedByAdminId: string;
+  reviewedAt: string;
+  approvalEvidenceDigest: string;
+  approvedByAdminId: string;
+  approvedAt: string;
+  artifacts: readonly ApprovedForPublicationArtifact[];
+  approvedArtifactSetDigest: string;
+  sourceEvidenceDigest: string;
+  projectionDigest: string;
+};
+
+export type ApprovedForPublicationProjection =
+  ObsApprovedForPublicationProjection | ExistingReviewedRecordingApprovedForPublicationProjection;
 
 export type ContentPublicationSeed = {
   contentId: string;
@@ -480,8 +545,26 @@ export type ContentPublicationSeed = {
   durationMs: number;
 };
 
-export type SourceCompleteApprovedForPublicationProjection = ApprovedForPublicationProjection &
-  ContentPublicationSeed;
+export type ExistingReviewedRecordingPublicationSeed = Omit<
+  ContentPublicationSeed,
+  | 'participantSetVersion'
+  | 'participantReviewState'
+  | 'unresolvedParticipantCount'
+  | 'requiredRedactionCount'
+  | 'completedRedactionCount'
+  | 'redactionReviewDigest'
+> & {
+  reviewKind: 'existing_reviewed_recording';
+  reviewedSourceDigest: string;
+  reviewedByAdminId: string;
+  reviewedAt: string;
+  approvalEvidenceDigest: string;
+};
+
+export type SourceCompleteApprovedForPublicationProjection =
+  | (ObsApprovedForPublicationProjection & ContentPublicationSeed)
+  | (ExistingReviewedRecordingApprovedForPublicationProjection &
+      ExistingReviewedRecordingPublicationSeed);
 
 export type ContentProcessingCommandReceipt = ContentProcessingScope & {
   idempotencyKey: string;
@@ -501,7 +584,7 @@ export interface ContentProcessingUnitOfWork {
   saveArtifact(artifact: ProcessingArtifact): Promise<void>;
   saveCaptureEvidence(
     scope: ContentProcessingScope,
-    evidence: ControlledCaptureEvidence,
+    evidence: ContentSourceEvidence,
   ): Promise<void>;
   getReceipt(
     scope: ContentProcessingScope,

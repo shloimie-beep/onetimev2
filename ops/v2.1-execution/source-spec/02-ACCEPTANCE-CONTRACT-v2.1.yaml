@@ -11039,8 +11039,9 @@ requirements:
     - student_operator_canary_1
     preconditions:
     - one suitable existing One Time/Rabbi-owned recording is selected from Drive or the recordings collection
+    - Admin explicitly attests rights to process and privately publish it, and records completed human child-data review with no unreviewed child data
     steps:
-    - process the selected recording as needed and obtain human approval
+    - ingest it through the typed existing-recording provenance lane without OBS capture/notice/participant-snapshot claims, then process it as needed and obtain human approval
     - privately publish it to Vimeo and expose it in the protected Student library
     - play it as an authorized Student, deny an unauthorized account, then unpublish safely
     expected_results:
@@ -11049,6 +11050,7 @@ requirements:
     - public playback
     - unauthorized library access
     - publication before human approval
+    - invented OBS capture, occurrence, device, notice, or participant-consent evidence
     evidence_profile: content_pipeline
     cleanup: reconcile provider assets and retain/delete source and derivatives according to retention policy
     stop_condition: stop on unauthorized, wrong-provider, over-budget, or acceptance-unknown effect

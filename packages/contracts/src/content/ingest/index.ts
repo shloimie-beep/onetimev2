@@ -22,7 +22,34 @@ export const CONTENT_INGEST_MIME_TYPES = [
 export type ContentIngestContainer = (typeof CONTENT_INGEST_CONTAINERS)[number];
 export type ContentIngestMimeType = (typeof CONTENT_INGEST_MIME_TYPES)[number];
 export type ContentSourceKind = 'app_upload' | 'drive';
-export type ContentCaptureMethod = 'obs';
+export type ContentCaptureMethod = 'obs' | 'existing_reviewed_recording';
+export type ExistingReviewedRecordingOrigin = 'drive' | 'recordings_collection';
+
+/**
+ * This is deliberately not an OBS substitute. It records the narrow launch
+ * exception for a pre-existing One Time/Rabbi-owned recording after the Admin
+ * has personally reviewed it for child-data safety before it can reach any
+ * processing provider or the protected library.
+ */
+export type ExistingReviewedRecordingAttestation = {
+  evidenceVersion: 'OT-EXISTING-REVIEWED-RECORDING-1';
+  origin: ExistingReviewedRecordingOrigin;
+  rightsAttestedByAdminId: string;
+  rightsAttestedAt: string;
+  rightsToProcessAndPrivatelyPublish: true;
+  humanReviewedByAdminId: string;
+  humanReviewedAt: string;
+  childDataDisposition: 'none_present' | 'redactions_complete';
+  noUnreviewedChildData: true;
+};
+
+export type ExistingReviewedRecordingIntent = {
+  origin: ExistingReviewedRecordingOrigin;
+  rightsToProcessAndPrivatelyPublish: true;
+  humanReviewCompleted: true;
+  childDataDisposition: 'none_present' | 'redactions_complete';
+  noUnreviewedChildData: true;
+};
 export type ContentLifecycleState =
   | 'received'
   | 'validating'
@@ -66,10 +93,9 @@ export type ContentIngestAdminActor = ContentIngestScope & {
   role: 'admin';
 };
 
-export type ContentSourceRecord = ContentIngestScope & {
+type ContentSourceRecordBase = ContentIngestScope & {
   id: string;
   sourceKind: ContentSourceKind;
-  captureMethod: ContentCaptureMethod;
   runtimeTier: IngestRuntimeTier;
   verificationEnvironmentId: string;
   bucketRef: string;
@@ -87,10 +113,6 @@ export type ContentSourceRecord = ContentIngestScope & {
   occurrenceId?: string;
   matchConfidence: OccurrenceMatchConfidence;
   matchedByAdminId?: string;
-  obsProfileVersion?: string;
-  obsRecordingStartedAt?: string;
-  obsRecordingStoppedAt?: string;
-  recordingAdminId?: string;
   retentionDueAt: string;
   lifecycleState: ContentLifecycleState;
   failedFrom?: 'validating' | 'processing' | 'publishing';
@@ -102,6 +124,27 @@ export type ContentSourceRecord = ContentIngestScope & {
   createdAt: string;
   updatedAt: string;
 };
+
+export type ObsContentSourceRecord = ContentSourceRecordBase & {
+  captureMethod: 'obs';
+  obsProfileVersion?: string;
+  obsRecordingStartedAt?: string;
+  obsRecordingStoppedAt?: string;
+  recordingAdminId?: string;
+  existingRecordingAttestation?: never;
+};
+
+export type ExistingReviewedRecordingSourceRecord = ContentSourceRecordBase & {
+  captureMethod: 'existing_reviewed_recording';
+  /** No OBS timestamp, consent roster, or capture claim is carried for this lane. */
+  existingRecordingAttestation: ExistingReviewedRecordingAttestation;
+  obsProfileVersion?: never;
+  obsRecordingStartedAt?: never;
+  obsRecordingStoppedAt?: never;
+  recordingAdminId?: never;
+};
+
+export type ContentSourceRecord = ObsContentSourceRecord | ExistingReviewedRecordingSourceRecord;
 
 export type ContentIngestOccurrenceOption = {
   id: string;
@@ -139,6 +182,7 @@ export type UploadSessionRecord = ContentIngestScope & {
   retryState: ContentRetryState;
   idempotencyKey: string;
   requestHash: string;
+  existingRecordingIntent?: ExistingReviewedRecordingIntent;
   expiresAt: string;
   version: number;
   createdAt: string;
@@ -240,6 +284,7 @@ export type BeginDirectUploadCommand = {
   displayFilename: string;
   mimeType: string;
   declaredByteCount: number;
+  existingRecordingIntent?: ExistingReviewedRecordingIntent;
   idempotencyKey: string;
   requestHash: string;
   occurredAt: string;

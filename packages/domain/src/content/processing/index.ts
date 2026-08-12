@@ -23,8 +23,10 @@ import {
   type ContentParticipantReviewSourceEvidence,
   type ContentRedactionAction,
   type ContentProcessingSource,
+  type ContentSourceEvidence,
   type ContentProcessingVersion,
   type ControlledCaptureEvidence,
+  type ExistingReviewedRecordingEvidence,
   type DerivativeReadback,
   type LearningDraft,
   type LearningDraftResult,
@@ -66,7 +68,7 @@ export function validateProcessingInput(input: {
 }) {
   const { source, readback, probe, storage } = input;
   if (
-    source.captureMethod !== 'obs' ||
+    !isSupportedProcessingSource(source) ||
     source.originalPreserved !== true ||
     source.byteCount < 1 ||
     source.byteCount > CONTENT_PROCESSING_MAX_BYTES ||
@@ -74,7 +76,7 @@ export function validateProcessingInput(input: {
   ) {
     fail(
       'invalidSource',
-      'Processing requires a preserved checksum-bound OBS source through 5 GiB.',
+      'Processing requires a preserved checksum-bound OBS source or an explicitly reviewed existing recording through 5 GiB.',
     );
   }
   if (
@@ -178,6 +180,71 @@ export function validateControlledCapture(
     );
   }
   return evidence;
+}
+
+export function validateExistingReviewedRecording(
+  evidence: ExistingReviewedRecordingEvidence,
+  source: ContentProcessingSource,
+) {
+  const attestation = evidence.attestation;
+  const uploadedAt = Date.parse(evidence.uploadConfirmedAt);
+  const rightsAt = Date.parse(attestation.rightsAttestedAt);
+  const reviewedAt = Date.parse(attestation.humanReviewedAt);
+  if (
+    source.captureMethod !== 'existing_reviewed_recording' ||
+    source.existingRecordingAttestation === undefined ||
+    evidence.captureMethod !== 'existing_reviewed_recording' ||
+    evidence.evidenceVersion !== 'OT-EXISTING-REVIEWED-RECORDING-1' ||
+    evidence.sourceId !== source.id ||
+    evidence.linkedIngestSourceId !== source.id ||
+    evidence.durableChecksumReadbackReceiptId !== source.checksumReadbackReceiptId ||
+    JSON.stringify(attestation) !== JSON.stringify(source.existingRecordingAttestation) ||
+    attestation.rightsToProcessAndPrivatelyPublish !== true ||
+    attestation.noUnreviewedChildData !== true ||
+    !['drive', 'recordings_collection'].includes(attestation.origin) ||
+    !['none_present', 'redactions_complete'].includes(attestation.childDataDisposition) ||
+    !exactIdentifier(attestation.rightsAttestedByAdminId) ||
+    !exactIdentifier(attestation.humanReviewedByAdminId) ||
+    !SHA256_PATTERN.test(evidence.reviewedSourceDigest) ||
+    !Number.isFinite(rightsAt) ||
+    !Number.isFinite(reviewedAt) ||
+    !Number.isFinite(uploadedAt) ||
+    rightsAt > reviewedAt ||
+    reviewedAt > uploadedAt
+  ) {
+    fail(
+      'captureEvidenceInvalid',
+      'Existing recording requires explicit Admin rights attestation and completed child-data review before processing.',
+    );
+  }
+  return evidence;
+}
+
+export function validateSourceEvidence(
+  evidence: ContentSourceEvidence,
+  source: ContentProcessingSource,
+) {
+  if (source.captureMethod === 'obs') {
+    if (evidence.evidenceVersion !== 'OT-OBS-CAPTURE-1') {
+      fail('captureEvidenceInvalid', 'OBS sources require OBS capture evidence.');
+    }
+    return validateControlledCapture(evidence, source);
+  }
+  if (evidence.evidenceVersion !== 'OT-EXISTING-REVIEWED-RECORDING-1') {
+    fail(
+      'captureEvidenceInvalid',
+      'Existing recordings require their own reviewed-recording evidence.',
+    );
+  }
+  return validateExistingReviewedRecording(evidence, source);
+}
+
+function isSupportedProcessingSource(source: ContentProcessingSource) {
+  return (
+    source.captureMethod === 'obs' ||
+    (source.captureMethod === 'existing_reviewed_recording' &&
+      source.existingRecordingAttestation !== undefined)
+  );
 }
 
 export function localCaptureDeletionDecision(
@@ -666,7 +733,7 @@ export function approveProcessingVersion(input: {
   version: ContentProcessingVersion;
   expectedVersion: number;
   privacyReviewConfirmed: boolean;
-  captureEvidence: ControlledCaptureEvidence;
+  captureEvidence: ContentSourceEvidence;
   recordingParticipantSnapshots: readonly RecordingParticipantSnapshot[];
   occurredAt: string;
 }): ContentProcessingVersion {
@@ -680,13 +747,28 @@ export function approveProcessingVersion(input: {
   ) {
     fail('invalidState', 'Exact-version Admin privacy review is required for approval.');
   }
-  const participantReview = participantReviewEvidenceFromArtifacts({
-    version: input.version,
-    captureEvidence: input.captureEvidence,
-    recordingParticipantSnapshots: input.recordingParticipantSnapshots,
-    approvedByAdminId: input.actor.principalId,
-    approvedAt: input.occurredAt,
-  });
+  if (input.captureEvidence.evidenceVersion === 'OT-EXISTING-REVIEWED-RECORDING-1') {
+    validateExistingReviewedRecording(input.captureEvidence, {
+      id: input.version.sourceId,
+      accountKey: input.version.accountKey,
+      productKey: input.version.productKey,
+      sha256: input.version.sourceSha256,
+      objectVersionId: input.version.sourceObjectVersionId,
+      captureMethod: 'existing_reviewed_recording',
+      checksumReadbackReceiptId: input.captureEvidence.durableChecksumReadbackReceiptId,
+      existingRecordingAttestation: input.captureEvidence.attestation,
+    } as ContentProcessingSource);
+  }
+  const participantReview =
+    input.captureEvidence.evidenceVersion === 'OT-OBS-CAPTURE-1'
+      ? participantReviewEvidenceFromArtifacts({
+          version: input.version,
+          captureEvidence: input.captureEvidence,
+          recordingParticipantSnapshots: input.recordingParticipantSnapshots,
+          approvedByAdminId: input.actor.principalId,
+          approvedAt: input.occurredAt,
+        })
+      : undefined;
   const artifacts = input.version.artifacts.map((artifact) => ({
     ...artifact,
     id: processingSha256(
@@ -713,7 +795,7 @@ export function approveProcessingVersion(input: {
     sourceObjectVersionId: input.version.sourceObjectVersionId,
     contentId: input.version.contentId,
     captureEvidence: input.captureEvidence,
-    participantReview,
+    ...(participantReview ? { participantReview } : {}),
   });
   const contentVersionDigest = publicationContentVersionDigest({
     version: approvedVersion,
@@ -725,9 +807,19 @@ export function approveProcessingVersion(input: {
     state: 'approved',
     artifacts,
     publicationApproval: {
-      evidenceVersion: 'OT-PUBLICATION-APPROVAL-1',
-      participantSnapshotDigest: input.captureEvidence.consentedParticipantSnapshotDigest,
-      participantReview,
+      ...(input.captureEvidence.evidenceVersion === 'OT-OBS-CAPTURE-1'
+        ? {
+            evidenceVersion: 'OT-PUBLICATION-APPROVAL-1' as const,
+            participantSnapshotDigest: input.captureEvidence.consentedParticipantSnapshotDigest,
+            reviewKind: 'participant_snapshot' as const,
+            participantReview: participantReview!,
+          }
+        : {
+            evidenceVersion: 'OT-EXISTING-REVIEWED-RECORDING-APPROVAL-1' as const,
+            reviewedSourceDigest: input.captureEvidence.reviewedSourceDigest,
+            reviewKind: 'existing_reviewed_recording' as const,
+            existingRecordingEvidence: input.captureEvidence,
+          }),
       approvedByAdminId: input.actor.principalId,
       approvedAt: input.occurredAt,
       approvedArtifactSetDigest,
@@ -744,16 +836,16 @@ export function buildApprovedForPublicationProjection(input: {
   params: ApprovedForPublicationProjectionParams;
   version: ContentProcessingVersion;
   source: ContentProcessingSource;
-  captureEvidence: ControlledCaptureEvidence;
+  captureEvidence: ContentSourceEvidence;
   recordingParticipantSnapshots: readonly RecordingParticipantSnapshot[];
 }): SourceCompleteApprovedForPublicationProjection {
   const { params, version, source, captureEvidence, recordingParticipantSnapshots } = input;
   const approval = version.publicationApproval;
-  const participantReview = approval?.participantReview;
+  const participantReview =
+    approval?.reviewKind === 'participant_snapshot' ? approval.participantReview : undefined;
   if (
     version.state !== 'approved' ||
     !approval ||
-    !participantReview ||
     version.accountKey !== params.accountKey ||
     version.productKey !== params.productKey ||
     version.id !== params.contentVersionId ||
@@ -766,7 +858,6 @@ export function buildApprovedForPublicationProjection(input: {
     source.objectVersionId !== version.sourceObjectVersionId ||
     captureEvidence.sourceId !== source.id ||
     captureEvidence.linkedIngestSourceId !== source.id ||
-    captureEvidence.consentedParticipantSnapshotDigest !== approval.participantSnapshotDigest ||
     typeof approval.approvedByAdminId !== 'string' ||
     !approval.approvedByAdminId.trim() ||
     !Number.isFinite(Date.parse(approval.approvedAt)) ||
@@ -778,15 +869,32 @@ export function buildApprovedForPublicationProjection(input: {
       'Approved publication evidence does not match the composite source scope.',
     );
   }
-  validateControlledCapture(captureEvidence, source);
-  assertParticipantReviewEvidence({
-    review: participantReview,
-    version,
-    captureEvidence,
-    recordingParticipantSnapshots,
-    approvedByAdminId: approval.approvedByAdminId,
-    approvedAt: approval.approvedAt,
-  });
+  validateSourceEvidence(captureEvidence, source);
+  if (captureEvidence.evidenceVersion === 'OT-OBS-CAPTURE-1') {
+    if (
+      approval.reviewKind !== 'participant_snapshot' ||
+      !participantReview ||
+      captureEvidence.consentedParticipantSnapshotDigest !== approval.participantSnapshotDigest
+    ) {
+      fail('invalidState', 'OBS approval is missing participant review evidence.');
+    }
+    assertParticipantReviewEvidence({
+      review: participantReview,
+      version,
+      captureEvidence,
+      recordingParticipantSnapshots,
+      approvedByAdminId: approval.approvedByAdminId,
+      approvedAt: approval.approvedAt,
+    });
+  } else if (
+    approval.reviewKind !== 'existing_reviewed_recording' ||
+    approval.evidenceVersion !== 'OT-EXISTING-REVIEWED-RECORDING-APPROVAL-1' ||
+    approval.reviewedSourceDigest !== captureEvidence.reviewedSourceDigest ||
+    JSON.stringify(approval.existingRecordingEvidence) !== JSON.stringify(captureEvidence) ||
+    recordingParticipantSnapshots.length !== 0
+  ) {
+    fail('invalidState', 'Existing-recording approval evidence is incomplete or mismatched.');
+  }
   const { artifacts, seed } = approvedPublicationArtifacts(
     version,
     approval.approvedByAdminId,
@@ -800,7 +908,7 @@ export function buildApprovedForPublicationProjection(input: {
     sourceObjectVersionId: source.objectVersionId,
     contentId: version.contentId,
     captureEvidence,
-    participantReview,
+    ...(participantReview ? { participantReview } : {}),
   });
   const contentVersionDigest = publicationContentVersionDigest({
     version,
@@ -814,6 +922,38 @@ export function buildApprovedForPublicationProjection(input: {
   ) {
     fail('invalidState', 'Persisted publication approval evidence is stale or mismatched.');
   }
+  if (approval.reviewKind === 'existing_reviewed_recording') {
+    if (captureEvidence.evidenceVersion !== 'OT-EXISTING-REVIEWED-RECORDING-1') {
+      fail('invalidState', 'Existing-recording approval requires existing-recording evidence.');
+    }
+    const core = {
+      accountKey: params.accountKey,
+      productKey: params.productKey,
+      contentId: version.contentId,
+      contentVersionId: params.contentVersionId,
+      contentVersionDigest,
+      sourceId: source.id,
+      sourceSha256: source.sha256,
+      sourceObjectVersionId: source.objectVersionId,
+      reviewKind: 'existing_reviewed_recording' as const,
+      reviewedSourceDigest: approval.reviewedSourceDigest,
+      reviewedByAdminId: captureEvidence.attestation.humanReviewedByAdminId,
+      reviewedAt: captureEvidence.attestation.humanReviewedAt,
+      approvalEvidenceDigest: existingSafetyReviewDigest(captureEvidence),
+      title: seed.title,
+      englishTranscriptText: seed.englishTranscriptText,
+      classTopic: seed.classTopic,
+      mishnahReferences: [...seed.mishnahReferences],
+      occurredAt: source.receivedAt,
+      durationMs: seed.durationMs,
+      approvedByAdminId: approval.approvedByAdminId,
+      approvedAt: approval.approvedAt,
+      artifacts,
+      approvedArtifactSetDigest,
+      sourceEvidenceDigest,
+    };
+    return { ...core, projectionDigest: processingSha256(JSON.stringify(core)) };
+  }
   const core = {
     accountKey: params.accountKey,
     productKey: params.productKey,
@@ -823,18 +963,18 @@ export function buildApprovedForPublicationProjection(input: {
     sourceId: source.id,
     sourceSha256: source.sha256,
     sourceObjectVersionId: source.objectVersionId,
-    participantSetVersion: participantReview.participantSetVersion,
+    participantSetVersion: participantReview!.participantSetVersion,
     participantSnapshotDigest: approval.participantSnapshotDigest,
     participantReviewState: 'complete' as const,
-    unresolvedParticipantCount: participantReview.unresolvedParticipantCount,
-    requiredRedactionCount: participantReview.requiredRedactionCount,
-    completedRedactionCount: participantReview.completedRedactionCount,
-    redactionReviewDigest: participantReview.redactionReviewDigest,
+    unresolvedParticipantCount: participantReview!.unresolvedParticipantCount,
+    requiredRedactionCount: participantReview!.requiredRedactionCount,
+    completedRedactionCount: participantReview!.completedRedactionCount,
+    redactionReviewDigest: participantReview!.redactionReviewDigest,
     title: seed.title,
     englishTranscriptText: seed.englishTranscriptText,
     classTopic: seed.classTopic,
     mishnahReferences: [...seed.mishnahReferences],
-    occurredAt: captureEvidence.capturedAt,
+    occurredAt: (captureEvidence as ControlledCaptureEvidence).capturedAt,
     durationMs: seed.durationMs,
     approvedByAdminId: approval.approvedByAdminId,
     approvedAt: approval.approvedAt,
@@ -1207,9 +1347,57 @@ function publicationSourceEvidenceDigest(input: {
   sourceSha256: string;
   sourceObjectVersionId: string;
   contentId: string;
-  captureEvidence: ControlledCaptureEvidence;
-  participantReview: ContentParticipantReviewEvidence;
+  captureEvidence: ContentSourceEvidence;
+  participantReview?: ContentParticipantReviewEvidence;
 }) {
+  const capture =
+    input.captureEvidence.evidenceVersion === 'OT-OBS-CAPTURE-1'
+      ? {
+          evidenceVersion: input.captureEvidence.evidenceVersion,
+          sourceId: input.captureEvidence.sourceId,
+          occurrenceId: input.captureEvidence.occurrenceId,
+          captureMethod: input.captureEvidence.captureMethod,
+          zoomCloudRecordingDisabled: input.captureEvidence.zoomCloudRecordingDisabled,
+          controlledEncryptedDevice: input.captureEvidence.controlledEncryptedDevice,
+          accountOwnerConsentVersion: input.captureEvidence.accountOwnerConsentVersion,
+          consentedParticipantSnapshotDigest:
+            input.captureEvidence.consentedParticipantSnapshotDigest,
+          recordingNotice: input.captureEvidence.recordingNotice,
+          capturedAt: input.captureEvidence.capturedAt,
+          uploadConfirmedAt: input.captureEvidence.uploadConfirmedAt,
+          durableChecksumReadbackReceiptId: input.captureEvidence.durableChecksumReadbackReceiptId,
+          linkedIngestSourceId: input.captureEvidence.linkedIngestSourceId,
+        }
+      : {
+          evidenceVersion: input.captureEvidence.evidenceVersion,
+          sourceId: input.captureEvidence.sourceId,
+          captureMethod: input.captureEvidence.captureMethod,
+          attestation: input.captureEvidence.attestation,
+          reviewedSourceDigest: input.captureEvidence.reviewedSourceDigest,
+          uploadConfirmedAt: input.captureEvidence.uploadConfirmedAt,
+          durableChecksumReadbackReceiptId: input.captureEvidence.durableChecksumReadbackReceiptId,
+          linkedIngestSourceId: input.captureEvidence.linkedIngestSourceId,
+        };
+  const participantReview = input.participantReview && {
+    evidenceVersion: input.participantReview.evidenceVersion,
+    accountKey: input.participantReview.accountKey,
+    productKey: input.participantReview.productKey,
+    contentVersionId: input.participantReview.contentVersionId,
+    sourceId: input.participantReview.sourceId,
+    occurrenceId: input.participantReview.occurrenceId,
+    participantSetVersion: input.participantReview.participantSetVersion,
+    participantSnapshotDigest: input.participantReview.participantSnapshotDigest,
+    participantReviewState: input.participantReview.participantReviewState,
+    unresolvedParticipantCount: input.participantReview.unresolvedParticipantCount,
+    requiredRedactionCount: input.participantReview.requiredRedactionCount,
+    completedRedactionCount: input.participantReview.completedRedactionCount,
+    redactionReviewDigest: input.participantReview.redactionReviewDigest,
+    reviewedByAdminId: input.participantReview.reviewedByAdminId,
+    reviewedAt: input.participantReview.reviewedAt,
+    sourceEvidence: canonicalParticipantReviewSourceEvidence(
+      input.participantReview.sourceEvidence,
+    ),
+  };
   return processingSha256(
     JSON.stringify({
       accountKey: input.params.accountKey,
@@ -1219,42 +1407,19 @@ function publicationSourceEvidenceDigest(input: {
       sourceId: input.sourceId,
       sourceSha256: input.sourceSha256,
       sourceObjectVersionId: input.sourceObjectVersionId,
-      captureEvidence: {
-        evidenceVersion: input.captureEvidence.evidenceVersion,
-        sourceId: input.captureEvidence.sourceId,
-        occurrenceId: input.captureEvidence.occurrenceId,
-        captureMethod: input.captureEvidence.captureMethod,
-        zoomCloudRecordingDisabled: input.captureEvidence.zoomCloudRecordingDisabled,
-        controlledEncryptedDevice: input.captureEvidence.controlledEncryptedDevice,
-        accountOwnerConsentVersion: input.captureEvidence.accountOwnerConsentVersion,
-        consentedParticipantSnapshotDigest:
-          input.captureEvidence.consentedParticipantSnapshotDigest,
-        recordingNotice: input.captureEvidence.recordingNotice,
-        capturedAt: input.captureEvidence.capturedAt,
-        uploadConfirmedAt: input.captureEvidence.uploadConfirmedAt,
-        durableChecksumReadbackReceiptId: input.captureEvidence.durableChecksumReadbackReceiptId,
-        linkedIngestSourceId: input.captureEvidence.linkedIngestSourceId,
-      },
-      participantReview: {
-        evidenceVersion: input.participantReview.evidenceVersion,
-        accountKey: input.participantReview.accountKey,
-        productKey: input.participantReview.productKey,
-        contentVersionId: input.participantReview.contentVersionId,
-        sourceId: input.participantReview.sourceId,
-        occurrenceId: input.participantReview.occurrenceId,
-        participantSetVersion: input.participantReview.participantSetVersion,
-        participantSnapshotDigest: input.participantReview.participantSnapshotDigest,
-        participantReviewState: input.participantReview.participantReviewState,
-        unresolvedParticipantCount: input.participantReview.unresolvedParticipantCount,
-        requiredRedactionCount: input.participantReview.requiredRedactionCount,
-        completedRedactionCount: input.participantReview.completedRedactionCount,
-        redactionReviewDigest: input.participantReview.redactionReviewDigest,
-        reviewedByAdminId: input.participantReview.reviewedByAdminId,
-        reviewedAt: input.participantReview.reviewedAt,
-        sourceEvidence: canonicalParticipantReviewSourceEvidence(
-          input.participantReview.sourceEvidence,
-        ),
-      },
+      captureEvidence: capture,
+      participantReview,
+    }),
+  );
+}
+
+function existingSafetyReviewDigest(evidence: ExistingReviewedRecordingEvidence) {
+  return processingSha256(
+    JSON.stringify({
+      evidenceVersion: evidence.evidenceVersion,
+      sourceId: evidence.sourceId,
+      reviewedSourceDigest: evidence.reviewedSourceDigest,
+      attestation: evidence.attestation,
     }),
   );
 }

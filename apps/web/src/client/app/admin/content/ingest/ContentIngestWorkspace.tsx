@@ -7,6 +7,7 @@ import {
   CONTENT_INGEST_PART_BYTES,
   type ContentIngestOccurrenceOption,
   type ContentSourceRecord,
+  type ExistingReviewedRecordingIntent,
   type MultipartUploadPlan,
   type UploadSessionRecord,
 } from '../../../../../../../../packages/contracts/src/content/ingest/index.ts';
@@ -23,7 +24,10 @@ type UploadRow = {
 };
 
 export function ContentIngestWorkspace(props: {
-  beginUpload: (file: File) => Promise<{
+  beginUpload: (
+    file: File,
+    existingRecordingIntent?: ExistingReviewedRecordingIntent,
+  ) => Promise<{
     session: UploadSessionRecord;
     plan: MultipartUploadPlan;
   }>;
@@ -44,6 +48,9 @@ export function ContentIngestWorkspace(props: {
   const [dragActive, setDragActive] = useState(false);
   const [occurrences, setOccurrences] = useState<readonly ContentIngestOccurrenceOption[]>([]);
   const [occurrenceError, setOccurrenceError] = useState('');
+  const [existingReviewed, setExistingReviewed] = useState(false);
+  const [childDataDisposition, setChildDataDisposition] =
+    useState<ExistingReviewedRecordingIntent['childDataDisposition']>('none_present');
 
   useEffect(() => {
     let active = true;
@@ -71,7 +78,18 @@ export function ContentIngestWorkspace(props: {
       setUploads((current) => [...current, row]);
       try {
         assertClientFile(file);
-        const started = await props.beginUpload(file);
+        const started = await props.beginUpload(
+          file,
+          existingReviewed
+            ? {
+                origin: 'recordings_collection',
+                rightsToProcessAndPrivatelyPublish: true,
+                humanReviewCompleted: true,
+                childDataDisposition,
+                noUnreviewedChildData: true,
+              }
+            : undefined,
+        );
         update(file.name, { state: 'uploading', totalParts: started.plan.totalParts });
         await uploadFileInBoundedParts(file, started.session, props.uploadPart, (completed) =>
           update(file.name, { completedParts: completed }),
@@ -135,10 +153,38 @@ export function ContentIngestWorkspace(props: {
         <p>Content</p>
         <h1 id="content-ingest-heading">Recording intake</h1>
         <p>
-          Upload the original OBS recording. MP4, MOV, and MKV files up to 5 GiB are transferred in
+          Upload an original recording. MP4, MOV, and MKV files up to 5 GiB are transferred in
           resumable 64 MiB parts.
         </p>
       </header>
+      <label>
+        <input
+          type="checkbox"
+          checked={existingReviewed}
+          onChange={(event) => setExistingReviewed(event.target.checked)}
+        />
+        <span>
+          This is an existing One Time/Rabbi-owned recording. I have the rights to process and
+          privately publish it, have completed a human review, and confirm no unreviewed child data
+          remains.
+        </span>
+      </label>
+      {existingReviewed ? (
+        <label>
+          <span>Child-data review result</span>
+          <Select
+            value={childDataDisposition}
+            onChange={(event) =>
+              setChildDataDisposition(
+                event.target.value as ExistingReviewedRecordingIntent['childDataDisposition'],
+              )
+            }
+          >
+            <option value="none_present">No child data present</option>
+            <option value="redactions_complete">Required redactions are complete</option>
+          </Select>
+        </label>
+      ) : null}
       <div
         onDragEnter={(event) => {
           event.preventDefault();
