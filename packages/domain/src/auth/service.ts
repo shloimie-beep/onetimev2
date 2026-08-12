@@ -22,11 +22,7 @@ import { inTransaction } from '../../../db/src/index.ts';
 import { householdHasLearningAccess } from '../access/service.ts';
 import { normalizeEmail, stableKey } from '../lead/normalize.ts';
 import { consumeRateLimitBudgets } from '../security/rate-limit.ts';
-import {
-  evaluatePassword,
-  normalizeLegacyAuthRole,
-  verifyAuthPassword,
-} from './policy.ts';
+import { evaluatePassword, normalizeLegacyAuthRole, verifyAuthPassword } from './policy.ts';
 
 const ARGON2_MEMORY_KIB = 19_456;
 const ARGON2_PASSES = 2;
