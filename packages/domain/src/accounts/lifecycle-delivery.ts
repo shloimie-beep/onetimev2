@@ -236,6 +236,18 @@ export function decryptLifecycleDeliveryPayloadForTests(
   return decryptDeliveryPayload(config, row);
 }
 
+export function renderLifecycleEmailForTests(
+  purpose: AccountLifecycleTokenType,
+  activationUrl: string,
+  recipientFirstName: string,
+) {
+  return {
+    subject: lifecycleEmailSubject(purpose),
+    text: lifecycleEmailText(purpose, activationUrl, recipientFirstName),
+    html: lifecycleEmailHtml(purpose, activationUrl, recipientFirstName),
+  };
+}
+
 function encryptDeliveryPayload(config: AppConfig, payload: Record<string, unknown>) {
   const nonce = randomBytes(12);
   const cipher = createCipheriv('aes-256-gcm', lifecycleDeliveryKey(config), nonce);
@@ -400,6 +412,8 @@ function normalizedAddress(value?: string) {
 
 function lifecycleEmailSubject(purpose: AccountLifecycleTokenType) {
   if (purpose === 'password_reset') return 'Reset your One Time password';
+  if (purpose === 'student_reset') return 'Reset a One Time Student PIN';
+  if (purpose === 'student_setup') return 'Set up a One Time Student PIN';
   return 'Set up your One Time account';
 }
 
@@ -408,6 +422,25 @@ function lifecycleEmailText(
   activationUrl: string,
   recipientFirstName: string,
 ) {
+  if (purpose === 'student_setup' || purpose === 'student_reset') {
+    const reset = purpose === 'student_reset';
+    return [
+      'Hello,',
+      '',
+      `Use the secure link below to ${reset ? 'reset' : 'set'} the Student's six-digit One Time PIN.`,
+      '',
+      reset ? 'Reset Student PIN' : 'Set Student PIN',
+      activationUrl,
+      '',
+      reset
+        ? 'This link can be used once and expires in 60 minutes.'
+        : 'This link can be used once and expires in seven days.',
+      '',
+      'If you did not request this, you can ignore this email.',
+      '',
+      'One Time Mishnayos',
+    ].join('\n');
+  }
   if (purpose !== 'password_reset') {
     return [
       `Hi ${recipientFirstName},`,
@@ -447,6 +480,19 @@ function lifecycleEmailHtml(
   recipientFirstName: string,
 ) {
   const safeUrl = escapeHtml(activationUrl);
+  if (purpose === 'student_setup' || purpose === 'student_reset') {
+    const reset = purpose === 'student_reset';
+    return [
+      '<p>Hello,</p>',
+      `<p>Use the secure link below to ${reset ? 'reset' : 'set'} the Student's six-digit One Time PIN.</p>`,
+      `<p><a href="${safeUrl}">${reset ? 'Reset Student PIN' : 'Set Student PIN'}</a></p>`,
+      reset
+        ? '<p>This link can be used once and expires in 60 minutes.</p>'
+        : '<p>This link can be used once and expires in seven days.</p>',
+      '<p>If you did not request this, you can ignore this email.</p>',
+      '<p>One Time Mishnayos</p>',
+    ].join('');
+  }
   if (purpose !== 'password_reset') {
     return [
       `<p>Hi ${escapeHtml(recipientFirstName)},</p>`,

@@ -938,7 +938,38 @@ describe('OT-71 account lifecycle', () => {
       },
     });
     expect(resetIssue.delivery.delivery_state).toBe('suppressed');
-    const resetToken = requiredProof(resetIssue);
+    const lostResetToken = requiredProof(resetIssue);
+    const replacementResetIssue = await createStudentReset({
+      pool,
+      config,
+      actor: parentActor,
+      includeLocalProofToken: true,
+      payload: {
+        idempotency_key: 'student-reset-002',
+        learner_key: learnerKey,
+      },
+    });
+    const resetToken = requiredProof(replacementResetIssue);
+    expect(resetToken).not.toBe(lostResetToken);
+    const resetTokens = await pool.query(
+      `SELECT token_key, revoked_at
+         FROM onetime.account_lifecycle_tokens
+        WHERE account_key = $1
+          AND product_key = $2
+          AND token_type = 'student_reset'
+          AND learner_key = $3
+        ORDER BY created_at ASC`,
+      [config.accountKey, config.productKey, learnerKey],
+    );
+    expect(resetTokens.rows).toHaveLength(2);
+    expect(resetTokens.rows.filter((row) => row.revoked_at === null)).toHaveLength(1);
+    await expect(
+      completeStudentReset({
+        pool,
+        config,
+        payload: { token: lostResetToken, password: '123456' },
+      }),
+    ).rejects.toThrow();
     for (const password of ['12345', '1234567', '12a456', '１２３４５６']) {
       await expect(
         completeStudentReset({
@@ -972,6 +1003,34 @@ describe('OT-71 account lifecycle', () => {
       password: '123456',
     });
     expect(newPassword).toMatchObject({ ok: true });
+    await pool.query(
+      `INSERT INTO onetime.portal_student_access_state
+       (access_state_key, account_key, product_key, household_key, learner_key, status,
+        student_user_ref, credential_status)
+       VALUES ('access_alpha_duplicate',$1,$2,$3,$4,'reset_requested',$5,'reset_required')`,
+      [config.accountKey, config.productKey, householdKey, learnerKey, student.user_key],
+    );
+    await expect(
+      createStudentReset({
+        pool,
+        config,
+        actor: parentActor,
+        payload: {
+          idempotency_key: 'student-reset-duplicate-projection',
+          learner_key: learnerKey,
+        },
+      }),
+    ).rejects.toMatchObject({ code: 'NOT_FOUND' });
+    const tokenCountAfterDuplicate = await pool.query(
+      `SELECT count(*)::int AS count
+         FROM onetime.account_lifecycle_tokens
+        WHERE account_key = $1
+          AND product_key = $2
+          AND token_type = 'student_reset'
+          AND learner_key = $3`,
+      [config.accountKey, config.productKey, learnerKey],
+    );
+    expect(tokenCountAfterDuplicate.rows[0]?.count).toBe(2);
     const studentEmailOutbox = await pool.query(
       `SELECT 1
          FROM onetime.account_lifecycle_delivery_outbox

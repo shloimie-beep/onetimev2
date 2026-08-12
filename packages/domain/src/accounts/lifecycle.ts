@@ -625,7 +625,7 @@ export async function createStudentReset(
       const studentUserKey = String(state.student_user_ref);
       const householdKey = String(state.household_key);
       if (
-        String(state.status ?? '') !== 'active' ||
+        !['active', 'reset_requested'].includes(String(state.status ?? '')) ||
         String(state.learner_status ?? '') !== 'active' ||
         String(state.access_household_key ?? '') !== String(state.learner_household_key ?? '') ||
         (input.expectedStudentUserKey && input.expectedStudentUserKey !== studentUserKey) ||
@@ -715,9 +715,9 @@ export async function createStudentReset(
                 updated_at = $4
           WHERE account_key = $1
             AND product_key = $2
-            AND learner_key = $3
-            AND status = 'active'`,
-        [input.config.accountKey, input.config.productKey, payload.learner_key, now],
+            AND access_state_key = $3
+            AND status IN ('active', 'reset_requested')`,
+        [input.config.accountKey, input.config.productKey, String(state.access_state_key), now],
       );
       if (resetState.rowCount !== 1) {
         throw new AccountLifecycleError(
@@ -830,14 +830,19 @@ export async function completeStudentReset(input: {
                 updated_at = $4
           WHERE account_key = $1
             AND product_key = $2
-            AND learner_key = $3`,
+            AND access_state_key = $3
+            AND status = 'reset_requested'
+            AND student_user_ref = $7
+            AND household_key = $8`,
         [
           input.config.accountKey,
           input.config.productKey,
-          learnerKey,
+          String(state.access_state_key),
           now,
           studentPasswordHashRef(payload.password, token.token_key),
           sessionsInvalidated,
+          userKey,
+          householdKey,
         ],
       );
       await audit(client, input.config, {
@@ -1993,11 +1998,11 @@ async function getStudentStateForUpdate(client: Queryable, config: AppConfig, le
       WHERE access_state.account_key = $1
         AND access_state.product_key = $2
         AND access_state.learner_key = $3
-      LIMIT 1
+      LIMIT 2
       FOR UPDATE`,
     [config.accountKey, config.productKey, learnerKey],
   );
-  return result.rows[0] as Record<string, unknown> | undefined;
+  return result.rows.length === 1 ? (result.rows[0] as Record<string, unknown>) : undefined;
 }
 
 async function getAccountUser(client: Queryable, config: AppConfig, userKey: string) {

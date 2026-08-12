@@ -25,6 +25,7 @@ import {
   updateAdminLearner,
 } from '../../../packages/domain/src/index.ts';
 import { verifyPassword } from '../../../packages/domain/src/auth/service.ts';
+import { renderLifecycleEmailForTests } from '../../../packages/domain/src/accounts/lifecycle-delivery.ts';
 
 let pool: DbPool;
 let config: AppConfig;
@@ -592,6 +593,25 @@ describe('Admin directory database flows', () => {
     });
     const resetToken = String(deliveryPayload.token ?? '');
     expect(resetToken).not.toBe('');
+    const activationUrl = String(deliveryPayload.activation_url ?? '');
+    const renderedEmail = renderLifecycleEmailForTests(
+      'student_reset',
+      activationUrl,
+      String(deliveryPayload.first_name ?? ''),
+    );
+    expect(renderedEmail).toEqual(
+      expect.objectContaining({
+        subject: 'Reset a One Time Student PIN',
+        text: expect.stringContaining('Reset Student PIN'),
+        html: expect.stringContaining('Reset Student PIN'),
+      }),
+    );
+    expect(renderedEmail.text).toContain('six-digit One Time PIN');
+    expect(renderedEmail.text).toContain('expires in 60 minutes');
+    expect(renderedEmail.html).toContain('expires in 60 minutes');
+    expect(`${renderedEmail.subject}\n${renderedEmail.text}\n${renderedEmail.html}`).not.toMatch(
+      /set up (?:your )?One Time account|set your One Time password|expires in seven days|hi .*student/iu,
+    );
 
     const tokenRow = await pool.query(
       `SELECT token_key

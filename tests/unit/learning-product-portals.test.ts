@@ -331,11 +331,11 @@ async function seedHousehold() {
   await pool.query(
     `INSERT INTO onetime.adult_household_contact_links
      (link_key, account_key, product_key, contact_key, household_key,
-      highlevel_location_id, sync_state)
+      guardian_user_ref, highlevel_location_id, sync_state)
      VALUES
-     ('adult_link_learning_product',$1,$2,'contact_learning_parent',$3,
+     ('adult_link_learning_product',$1,$2,'contact_learning_parent',$3,$4,
       'location_learning_product','sync_pending')`,
-    [accountKey, productKey, householdKey],
+    [accountKey, productKey, householdKey, parentUserKey],
   );
 }
 
