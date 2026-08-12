@@ -66,7 +66,15 @@ export function createStudentPrivacyRouter(input: {
   resolvePrincipal(request: Request): Promise<SelfManagedStudentPrivacyPrincipal | null>;
   issueCsrfToken(request: Request, response: Response): Promise<string>;
   verifyCsrf(request: Request, principal: SelfManagedStudentPrivacyPrincipal): Promise<boolean>;
-  verifyPassword(principal: SelfManagedStudentPrivacyPrincipal, password: string): Promise<boolean>;
+  verifyPasswordAttempt(
+    request: Request,
+    principal: SelfManagedStudentPrivacyPrincipal,
+    password: string,
+  ): Promise<
+    | { status: 'verified' }
+    | { status: 'invalid' }
+    | { status: 'rate_limited'; retryAfterSeconds: number }
+  >;
   networkEvidenceDigest(request: Request): string;
   clock?: () => Date;
   nextId?: () => string;
@@ -131,7 +139,22 @@ export function createStudentPrivacyRouter(input: {
     asyncRoute(async (req, res) => {
       const principal = await requiredMutationPrincipal(input, req);
       const command = rightsSchema.parse(req.body);
-      if (!(await input.verifyPassword(principal, command.current_password))) {
+      const verification = await input.verifyPasswordAttempt(
+        req,
+        principal,
+        command.current_password,
+      );
+      if (verification.status === 'rate_limited') {
+        res.setHeader('Retry-After', String(verification.retryAfterSeconds));
+        res.status(429).json({
+          success: false,
+          code: 'RATE_LIMITED',
+          message: 'Too many recent credential checks. Try again later.',
+          retry_after_seconds: verification.retryAfterSeconds,
+        });
+        return;
+      }
+      if (verification.status !== 'verified') {
         sendError(
           res,
           403,

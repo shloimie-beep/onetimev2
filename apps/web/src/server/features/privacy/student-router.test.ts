@@ -20,6 +20,7 @@ function setup(
   input: {
     principal?: SelfManagedStudentPrivacyPrincipal | null;
     passwordValid?: boolean;
+    rateLimited?: boolean;
     csrf?: boolean;
   } = {},
 ) {
@@ -35,7 +36,15 @@ function setup(
     listDataRightsRequests: vi.fn().mockResolvedValue([]),
   };
   const recordConsent = vi.fn().mockResolvedValue({ disposition: 'appended' });
-  const verifyPassword = vi.fn().mockResolvedValue(input.passwordValid !== false);
+  const verifyPasswordAttempt = vi
+    .fn()
+    .mockResolvedValue(
+      input.rateLimited
+        ? { status: 'rate_limited', retryAfterSeconds: 900 }
+        : input.passwordValid === false
+          ? { status: 'invalid' }
+          : { status: 'verified' },
+    );
   let id = 0;
   const app = express();
   app.use(express.json());
@@ -57,13 +66,13 @@ function setup(
         ),
       issueCsrfToken: vi.fn().mockResolvedValue('csrf-student-privacy'),
       verifyCsrf: vi.fn().mockResolvedValue(input.csrf !== false),
-      verifyPassword,
+      verifyPasswordAttempt,
       networkEvidenceDigest: () => 'e'.repeat(64),
       clock: () => new Date('2026-08-05T14:00:00.000Z'),
       nextId: () => `id-${++id}`,
     }),
   );
-  return { app, service, repository, recordConsent, verifyPassword };
+  return { app, service, repository, recordConsent, verifyPasswordAttempt };
 }
 
 describe('self-managed adult Student privacy router', () => {
@@ -146,6 +155,17 @@ describe('self-managed adult Student privacy router', () => {
     expect(passwordResponse.status).toBe(403);
     expect((await passwordResponse.json()).code).toBe('RECENT_PASSWORD_REQUIRED');
 
+    const rateLimited = setup({ rateLimited: true });
+    const rateLimitedResponse = await send(rateLimited.app, '/api/app/student/privacy/requests', {
+      method: 'POST',
+      headers: validHeaders('student-rights-rate-limited-0001'),
+      body: { kind: 'export', current_password: '000123' },
+    });
+    expect(rateLimitedResponse.status).toBe(429);
+    expect(rateLimitedResponse.headers.get('retry-after')).toBe('900');
+    expect((await rateLimitedResponse.json()).code).toBe('RATE_LIMITED');
+    expect(rateLimited.service.createRightsRequest).not.toHaveBeenCalled();
+
     const allowed = setup();
     const response = await send(allowed.app, '/api/app/student/privacy/requests', {
       method: 'POST',
@@ -153,7 +173,11 @@ describe('self-managed adult Student privacy router', () => {
       body: { kind: 'erasure', current_password: '000123' },
     });
     expect(response.status).toBe(202);
-    expect(allowed.verifyPassword).toHaveBeenCalledWith(principal, '000123');
+    expect(allowed.verifyPasswordAttempt).toHaveBeenCalledWith(
+      expect.anything(),
+      principal,
+      '000123',
+    );
     expect(allowed.service.createRightsRequest).toHaveBeenCalledWith(
       expect.objectContaining({
         kind: 'erasure',
@@ -182,7 +206,11 @@ describe('self-managed adult Student privacy router', () => {
         body: { kind: 'export', current_password: currentPassword },
       });
       expect(response.status).toBe(202);
-      expect(allowed.verifyPassword).toHaveBeenCalledWith(principal, currentPassword);
+      expect(allowed.verifyPasswordAttempt).toHaveBeenCalledWith(
+        expect.anything(),
+        principal,
+        currentPassword,
+      );
     }
 
     for (const [currentPassword, key] of [
@@ -198,7 +226,7 @@ describe('self-managed adult Student privacy router', () => {
         body: { kind: 'export', current_password: currentPassword },
       });
       expect(response.status).toBe(400);
-      expect(denied.verifyPassword).not.toHaveBeenCalled();
+      expect(denied.verifyPasswordAttempt).not.toHaveBeenCalled();
       expect(denied.service.createRightsRequest).not.toHaveBeenCalled();
     }
   });

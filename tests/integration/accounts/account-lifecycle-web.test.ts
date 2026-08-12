@@ -8,6 +8,7 @@ import {
   createOwnerAdminInvitation,
   createParentActivation,
   createSession,
+  createStudentSetup,
   decryptLifecycleDeliveryPayloadForTests,
   getSessionByToken,
   grantFreePilotAccess,
@@ -106,6 +107,13 @@ describe('OPS-03B email step-up account lifecycle web flow', () => {
     });
     expect(JSON.stringify(status.json)).not.toContain(token);
 
+    const studentPinRejectedForAdult = await postJson(
+      '/api/v1/account-lifecycle/activate',
+      { token, password: '000123', csrf_token: activationPage.token },
+      activationPage.cookies,
+    );
+    expect(studentPinRejectedForAdult.response.status).toBe(400);
+
     const activated = await postJson(
       '/api/v1/account-lifecycle/activate',
       {
@@ -134,6 +142,88 @@ describe('OPS-03B email step-up account lifecycle web flow', () => {
     });
     expect(replay.response.status).toBe(410);
     expect(replay.json).toMatchObject({ code: 'TOKEN_CONSUMED' });
+  });
+
+  it('activates a Student with an exact six-digit PIN at the mounted HTTP boundary', async () => {
+    await pool.query(
+      `INSERT INTO onetime.portal_households
+         (household_key, account_key, product_key, display_name)
+       VALUES ('web_student_household',$1,$2,'Web Student Household')`,
+      [appConfig.accountKey, appConfig.productKey],
+    );
+    await pool.query(
+      `INSERT INTO onetime.portal_learners
+         (learner_key, account_key, product_key, household_key, display_name)
+       VALUES ('web_student_learner',$1,$2,'web_student_household','Web Student')`,
+      [appConfig.accountKey, appConfig.productKey],
+    );
+    await pool.query(
+      `INSERT INTO onetime.portal_student_access_state
+         (access_state_key, account_key, product_key, household_key, learner_key, status)
+       VALUES ('web_student_access',$1,$2,'web_student_household',
+               'web_student_learner','not_configured')`,
+      [appConfig.accountKey, appConfig.productKey],
+    );
+    const now = new Date();
+    await grantFreePilotAccess({
+      pool,
+      accountKey: appConfig.accountKey,
+      productKey: appConfig.productKey,
+      actorKind: 'admin',
+      now,
+      command: {
+        household_key: 'web_student_household',
+        idempotency_key: 'web-student-activation-free-pilot',
+        effective_at: now.toISOString(),
+        expires_at: new Date(now.getTime() + 24 * 60 * 60 * 1_000).toISOString(),
+        policy_version: 'account-lifecycle-web-student-free-pilot-v1',
+        opaque_source_reference: 'account_lifecycle_web_student_activation',
+      },
+    });
+
+    const issued = await createStudentSetup({
+      pool,
+      config: appConfig,
+      actor: { userKey: ownerUserKey, role: 'owner' },
+      includeLocalProofToken: true,
+      payload: {
+        idempotency_key: 'web-student-activation-001',
+        email: 'web.student@example.test',
+        display_name: 'Web Student',
+        household_key: 'web_student_household',
+        learner_key: 'web_student_learner',
+      },
+    });
+    const token = requiredToken(issued);
+    const activationPage = await getCsrf('/activate');
+    const status = await postJson('/api/v1/account-lifecycle/token-status', {
+      token,
+      flow: 'activation',
+    });
+    expect(status.response.status).toBe(200);
+    expect(status.json).toMatchObject({ token_type: 'student_setup' });
+
+    for (const password of ['12345', '1234567', '12a456', '１２３４５６']) {
+      const invalid = await postJson(
+        '/api/v1/account-lifecycle/activate',
+        { token, password, csrf_token: activationPage.token },
+        activationPage.cookies,
+      );
+      expect(invalid.response.status).toBe(400);
+    }
+
+    const activated = await postJson(
+      '/api/v1/account-lifecycle/activate',
+      { token, password: '000123', csrf_token: activationPage.token },
+      activationPage.cookies,
+    );
+    expect(activated.response.status).toBe(200);
+    expect(activated.json).toMatchObject({
+      success: true,
+      return_to: '/app/student',
+    });
+    const login = await loginViaApi('web.student@example.test', '000123');
+    expect(login.response.status).toBe(200);
   });
 
   it('completes Parent activation into a safe paused session when access is absent', async () => {

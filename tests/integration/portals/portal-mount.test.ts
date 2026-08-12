@@ -8,6 +8,7 @@ import { resolveCurrentClientRoute } from '../../../apps/web/src/client/app/rout
 import { loadConfig, type AppConfig } from '../../../packages/config/src/index.ts';
 import { createMemoryPool, runMigrations, type DbPool } from '../../../packages/db/src/index.ts';
 import { createAccountUser } from '../../../packages/domain/src/index.ts';
+import { hashAuthPassword } from '../../../packages/domain/src/auth/policy.ts';
 
 let pool: DbPool;
 let config: AppConfig;
@@ -382,6 +383,85 @@ describe('OT-71 mounted parent and student portals', () => {
           },
         },
       });
+
+      const submitRightsRequest = (idempotencyKey: string, currentPassword: string) =>
+        fetch(`${server.baseUrl}/api/app/student/privacy/requests`, {
+          method: 'POST',
+          headers: {
+            cookie: student.cookies,
+            'content-type': 'application/json',
+            'x-csrf-token': student.json.csrf_token,
+            'x-idempotency-key': idempotencyKey,
+          },
+          body: JSON.stringify({ kind: 'export', current_password: currentPassword }),
+        });
+
+      const legacyRights = await submitRightsRequest(
+        'student-privacy-legacy-rights-0001',
+        'StudentPass!234',
+      );
+      expect(legacyRights.status, await legacyRights.clone().text()).toBe(202);
+
+      await pool.query(
+        `UPDATE onetime.account_users
+            SET password_hash = $1, updated_at = now()
+          WHERE account_key = $2
+            AND product_key = $3
+            AND user_key = $4`,
+        [hashAuthPassword('000123'), config.accountKey, config.productKey, studentUserKey],
+      );
+      const pinRights = await submitRightsRequest('student-privacy-pin-rights-0001', '000123');
+      expect(pinRights.status, await pinRights.clone().text()).toBe(202);
+
+      for (let attempt = 1; attempt <= 3; attempt += 1) {
+        const denied = await submitRightsRequest(
+          `student-privacy-wrong-rights-000${attempt}`,
+          '654321',
+        );
+        expect(denied.status, await denied.clone().text()).toBe(403);
+      }
+      const rateLimited = await submitRightsRequest('student-privacy-wrong-rights-0004', '654321');
+      expect(rateLimited.status, await rateLimited.clone().text()).toBe(429);
+      expect(Number(rateLimited.headers.get('retry-after'))).toBeGreaterThan(0);
+      await expect(rateLimited.json()).resolves.toMatchObject({
+        success: false,
+        code: 'RATE_LIMITED',
+      });
+
+      const rightsRows = await pool.query(
+        `SELECT request_id
+           FROM onetime.data_rights_request
+          WHERE requester_ref = $1
+            AND requester_household_id = 'household_alpha'`,
+        [studentUserKey],
+      );
+      expect(rightsRows.rowCount).toBe(2);
+
+      const credentialAudit = await pool.query(
+        `SELECT event_type, success, reason, ip_hash, user_agent_hash, metadata
+           FROM onetime.auth_audit_events
+          WHERE user_key = $1
+            AND event_type LIKE 'student_privacy_credential_%'
+          ORDER BY event_type ASC`,
+        [studentUserKey],
+      );
+      expect(credentialAudit.rows).toHaveLength(6);
+      expect(credentialAudit.rows.map((row) => row.event_type)).toEqual(
+        expect.arrayContaining([
+          'student_privacy_credential_verified',
+          'student_privacy_credential_failed',
+          'student_privacy_credential_rate_limited',
+        ]),
+      );
+      expect(
+        credentialAudit.rows.every(
+          (row) =>
+            typeof row.ip_hash === 'string' &&
+            typeof row.user_agent_hash === 'string' &&
+            JSON.stringify(row).includes('000123') === false &&
+            JSON.stringify(row).includes('StudentPass!234') === false,
+        ),
+      ).toBe(true);
 
       await insertOutstandingPrivacyLaunchGrant('privacy-grant-before-withdrawal', 'b');
       const withdrawal = await fetch(`${server.baseUrl}/api/app/student/privacy/consents`, {

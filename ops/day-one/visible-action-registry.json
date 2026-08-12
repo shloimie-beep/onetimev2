@@ -24,7 +24,7 @@
     },
     {
       "path": "apps/web/src/server/app.ts",
-      "sha256": "5f5d31edb3ba0d72750265626151bddddec279ebd5bcb6bc960b1fa39cd7abf5"
+      "sha256": "803aa13ec1b1027c6dbc70047893d3a4487fe53f7aa7191f88df8b401ed66b4d"
     },
     {
       "path": "apps/web/src/server/communications/register.ts",
@@ -88,7 +88,7 @@
     },
     {
       "path": "apps/web/src/server/features/privacy/student-router.ts",
-      "sha256": "616b298f4b000d5513ad2a2563ca07d890fbb36a4306114de4a672b0d8961d5e"
+      "sha256": "539e2a3d55214b370cccbc4bc83d83224dafb77961dee5106eb18487934dfc66"
     },
     {
       "path": "apps/web/src/server/features/portals/routers.ts",

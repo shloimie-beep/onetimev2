@@ -166,6 +166,7 @@ import {
   changeOwnPassword,
   completePasswordReset,
   completeStudentReset,
+  consumeRateLimitBudgets,
   confirmSingleRecipientReply,
   createAccountLifecycleCredentialAdapter,
   createContact,
@@ -270,6 +271,7 @@ import {
   hashAuthPassword,
   verifyAuthPassword,
 } from '../../../../packages/domain/src/auth/policy.ts';
+import { verifyPassword as verifyStoredPassword } from '../../../../packages/domain/src/auth/service.ts';
 import { createTelegramWebhookHandler } from '../../../../apps/telegram-bot/src/ingress.ts';
 import {
   parseOt87StripeTestBillingConfig,
@@ -1207,7 +1209,49 @@ export function createApp({
           sessionKey: principal.session_id,
           csrfToken: request.header('x-csrf-token') ?? request.body?.csrf_token,
         })),
-      verifyPassword: async (principal, password) => {
+      verifyPasswordAttempt: async (request, principal, password) => {
+        const rateLimit = await consumeRateLimitBudgets({
+          pool,
+          config,
+          budgets: [
+            {
+              scope: 'student_privacy_credential',
+              subject: principal.credential_id,
+              limit: config.loginIdentifierRateLimitMax,
+              windowMs: config.loginRateLimitWindowMs,
+            },
+            {
+              scope: 'student_privacy_session',
+              subject: principal.session_id,
+              limit: config.loginIdentifierRateLimitMax,
+              windowMs: config.loginRateLimitWindowMs,
+            },
+            {
+              scope: 'student_privacy_ip',
+              subject: request.ip ?? 'unknown',
+              limit: config.loginIpRateLimitMax,
+              windowMs: config.loginRateLimitWindowMs,
+            },
+          ],
+          now: clock?.() ?? new Date(),
+        });
+        if (!rateLimit.allowed) {
+          await insertV21AuthAudit(pool, config, {
+            eventType: 'student_privacy_credential_rate_limited',
+            userKey: principal.credential_id,
+            success: false,
+            reason: 'RATE_LIMITED',
+            ip: request.ip,
+            userAgent: request.header('user-agent') ?? undefined,
+            metadata: { budget_scope: rateLimit.scope ?? null },
+          });
+          return {
+            status: 'rate_limited' as const,
+            retryAfterSeconds:
+              rateLimit.retryAfterSeconds ??
+              Math.max(1, Math.ceil(config.loginRateLimitWindowMs / 1_000)),
+          };
+        }
         const result = await pool.query(
           `SELECT password_hash
              FROM onetime.account_users
@@ -1220,7 +1264,19 @@ export function createApp({
           [config.accountKey, config.productKey, principal.credential_id],
         );
         const passwordHash = result.rows[0]?.password_hash;
-        return typeof passwordHash === 'string' && verifyAuthPassword(password, passwordHash);
+        const verified =
+          typeof passwordHash === 'string' && verifyStoredPassword(password, passwordHash);
+        await insertV21AuthAudit(pool, config, {
+          eventType: verified
+            ? 'student_privacy_credential_verified'
+            : 'student_privacy_credential_failed',
+          userKey: principal.credential_id,
+          success: verified,
+          ...(verified ? {} : { reason: 'INVALID_CREDENTIAL' }),
+          ip: request.ip,
+          userAgent: request.header('user-agent') ?? undefined,
+        });
+        return { status: verified ? ('verified' as const) : ('invalid' as const) };
       },
       networkEvidenceDigest: (request) =>
         createHmac('sha256', config.authCsrfSecret)
@@ -7156,7 +7212,14 @@ async function insertV21AuthAudit(
   pool: DbPool,
   config: AppConfig,
   event: {
-    eventType: 'login_rate_limited' | 'login_failed' | 'login_succeeded' | 'logout_succeeded';
+    eventType:
+      | 'login_rate_limited'
+      | 'login_failed'
+      | 'login_succeeded'
+      | 'logout_succeeded'
+      | 'student_privacy_credential_verified'
+      | 'student_privacy_credential_failed'
+      | 'student_privacy_credential_rate_limited';
     userKey?: string | undefined;
     success: boolean;
     reason?: string | undefined;
