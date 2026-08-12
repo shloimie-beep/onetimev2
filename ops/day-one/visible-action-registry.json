@@ -24,7 +24,7 @@
     },
     {
       "path": "apps/web/src/server/app.ts",
-      "sha256": "c1214d52623fc231b94ea8c097722a8dbd6a2ccf157bad4f0ef3f5fa0fad6a70"
+      "sha256": "a9e0150c50e46fb91aa0af51a6009f1455ff9b9045721315cb025a4f194b5124"
     },
     {
       "path": "apps/web/src/server/communications/register.ts",
@@ -69,6 +69,14 @@
     {
       "path": "apps/web/src/server/features/classroom/embedded/service.ts",
       "sha256": "5333db6fa74cc0ace4229678447e80f66f3bf42b77923f89799a3363d1fba087"
+    },
+    {
+      "path": "apps/web/src/server/features/classroom/production-basic/router.ts",
+      "sha256": "35a6023749cb14f2701a7ae9d46730d9c853a8940cac2ba5b3a5c4425251f221"
+    },
+    {
+      "path": "apps/web/src/server/features/classroom/production-basic/service.ts",
+      "sha256": "db51ee734317fa0fb74652326ba6d35aa0357b9337d062e6b9a7228a2dd0f4a0"
     },
     {
       "path": "apps/web/src/server/features/learning/router.ts",
@@ -136,7 +144,11 @@
     },
     {
       "path": "apps/web/src/client/app/live-entry.tsx",
-      "sha256": "fbc2cc4ec34fb7113ad5712c05feba7aa19b3f65baa9a67208f90e44fd7169a0"
+      "sha256": "57e9de37bff8890528cac6f65e51e75509e0b70457b5abfb4ac8166c8c17c084"
+    },
+    {
+      "path": "apps/web/src/client/app/zoom-meeting-sdk-client.ts",
+      "sha256": "f8f782c5a57205569366f137b99e180ccbdf779d177fcf34c85cc4308572e1ea"
     },
     {
       "path": "apps/web/src/client/app/portal-entry.tsx",
@@ -144,7 +156,7 @@
     },
     {
       "path": "apps/web/src/client/app/student/classroom/StudentClassroomWorkspace.tsx",
-      "sha256": "70984679bde1bb7506fef1558f754ffe8b895ea533424d943f9320e2291bf1c3"
+      "sha256": "a5c9e859d6a536535a6080d357b37b0b7615af658de3b54fe97d7d20b1549303"
     },
     {
       "path": "apps/web/src/client/app/student/classroom/api.ts",
@@ -163,12 +175,16 @@
       "sha256": "d2305149b23515ce113c8b3cd3b39deb183c21bbf10f1ae6e0ca407054664b3c"
     },
     {
+      "path": "apps/web/src/client/classroom/production-basic-launch-client.ts",
+      "sha256": "94cf516faf46d6de2dcd9da9a150f26ce19d3bc18e647b20270bef5f707257f4"
+    },
+    {
       "path": "apps/web/src/client/features/portals/PortalFeatures.tsx",
       "sha256": "e7d205bbfae4756294722af94dbf102fa2a3c945e168c4c00a4ee0a1d4130393"
     },
     {
       "path": "apps/web/src/client/app/router/registry.ts",
-      "sha256": "4132baa33172c71e4be278bdcd1777205583c400ddbe8aa6d1e550283583edbc"
+      "sha256": "36430c5b10322b342219cc69ee6e043c881a395cfd514b249619a0f59dd5b106"
     },
     {
       "path": "apps/web/src/client/app/router/canonical-route-views.ts",
@@ -259,7 +275,7 @@
       "sha256": "b306467d9293c28fab475a59d804f33c3777b853f089aaf1bdcd9572e7a34929"
     }
   ],
-  "production_roles": ["admin", "parent", "student"],
+  "production_roles": ["admin", "parent", "rabbi", "student"],
   "public_actor": "public",
   "readiness_states": ["ready", "isolated", "missing"],
   "canonical_routes": [
@@ -642,7 +658,7 @@
     {
       "route_id": "RT-ADM-050",
       "path": "/app/live",
-      "roles": ["admin"],
+      "roles": ["admin", "rabbi"],
       "handler": "live.rt-adm-050",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -650,7 +666,7 @@
     {
       "route_id": "RT-ADM-051",
       "path": "/app/live/:occurrenceId",
-      "roles": ["admin"],
+      "roles": ["admin", "rabbi"],
       "handler": "live.rt-adm-051",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -1661,6 +1677,63 @@
       "test_evidence": [
         "tests/integration/admin-directory/admin-directory.test.ts",
         "tests/e2e/admin-information-architecture.spec.ts"
+      ]
+    },
+    {
+      "action_id": "admin.production_basic.start.button",
+      "label": "Start class",
+      "surface": "button",
+      "route": "/app/live-console",
+      "roles": ["admin", "rabbi"],
+      "canonical_binding": {
+        "route": "/app/live",
+        "roles": ["admin", "rabbi"]
+      },
+      "capability": "admin:class:start",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/classroom/production-basic/launch"
+      },
+      "visibility": {
+        "mode": "server_derived",
+        "handler": {
+          "method": "GET",
+          "path": "/api/v1/classroom/production-basic/status"
+        },
+        "required_response": {
+          "success": true,
+          "data": {
+            "mode": "production_basic",
+            "available": true
+          }
+        }
+      },
+      "request_body": {
+        "mode": "none",
+        "client_controlled_fields": []
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "none",
+        "event": "production_basic_host_launch_ephemeral_not_persisted"
+      },
+      "states": {
+        "loading": "Re-authorizing the Admin or Rabbi before issuing short-lived host SDK material.",
+        "success": "The explicit click starts the verified recurring Zoom classroom without exposing a reusable provider URL.",
+        "error": "The production-basic classroom remains unavailable without a legacy fallback or an unrequested SDK effect.",
+        "permission": "Only a server-authorized Admin or Rabbi may see and use Start class.",
+        "offline": "Host launch material is never cached or queued offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "verified_binding_explicit_sdk_click",
+      "external_mutation": true,
+      "test_evidence": [
+        "apps/web/src/server/features/classroom/production-basic/production-basic.test.ts",
+        "apps/web/src/client/classroom/production-basic-launch-client.test.ts",
+        "tests/integration/portals/portal-mount.test.ts"
       ]
     },
     {
@@ -2707,6 +2780,60 @@
       "test_evidence": [
         "apps/web/src/server/features/classroom/embedded/router.test.ts",
         "apps/web/src/client/app/student/classroom/StudentClassroomWorkspace.test.tsx"
+      ]
+    },
+    {
+      "action_id": "portal.student.classroom.production_basic_join.button",
+      "label": "Join class",
+      "surface": "button",
+      "route": "/app/student/class/:occurrenceId",
+      "roles": ["student"],
+      "capability": "student:class:launch",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/classroom/production-basic/launch"
+      },
+      "visibility": {
+        "mode": "server_derived",
+        "handler": {
+          "method": "GET",
+          "path": "/api/v1/classroom/production-basic/status"
+        },
+        "required_response": {
+          "success": true,
+          "data": {
+            "mode": "production_basic",
+            "available": true
+          }
+        }
+      },
+      "request_body": {
+        "mode": "none",
+        "client_controlled_fields": []
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "none",
+        "event": "production_basic_student_launch_ephemeral_not_persisted"
+      },
+      "states": {
+        "loading": "Re-authorizing the exact signed-in Student and active canonical-class enrollment.",
+        "success": "The explicit click joins the verified recurring Zoom classroom with short-lived SDK material and no reusable provider URL.",
+        "error": "Production-basic remains unavailable and does not fall through to the legacy occurrence bootstrap.",
+        "permission": "Only the entitled signed-in Student enrolled in the active canonical class may see Join class.",
+        "offline": "Participant launch material is never cached or queued offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "verified_binding_explicit_sdk_click",
+      "external_mutation": true,
+      "test_evidence": [
+        "apps/web/src/server/features/classroom/production-basic/production-basic.test.ts",
+        "apps/web/src/client/classroom/production-basic-launch-client.test.ts",
+        "apps/web/src/client/app/student/classroom/StudentClassroomWorkspace.test.tsx",
+        "tests/integration/portals/portal-mount.test.ts"
       ]
     },
     {

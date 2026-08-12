@@ -7,8 +7,13 @@ import {
 } from '../../../../../../../packages/contracts/src/classroom/embedded/index.ts';
 import {
   joinZoomMeetingParticipant,
+  joinZoomMeetingProductionBasic,
   type ZoomParticipantJoinInput,
 } from '../../zoom-meeting-sdk-client.ts';
+import {
+  readProductionBasicReadiness,
+  requestProductionBasicLaunch,
+} from '../../../classroom/production-basic-launch-client.ts';
 import {
   StudentClassroomApiError,
   createStudentClassroomApi,
@@ -57,6 +62,9 @@ export function StudentClassroomWorkspace({
   const [denialCode, setDenialCode] = useState<EmbeddedJoinDenialCode | null>(null);
   const [recordingCaptureActive, setRecordingCaptureActive] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [productionBasicReady, setProductionBasicReady] = useState(false);
+  const productionBasicActive = useRef(false);
+  const lastJoinMode = useRef<'legacy' | 'production_basic'>('legacy');
   const generationRef = useRef(0);
   const requestRef = useRef<AbortController | null>(null);
   const timerRef = useRef<TimerHandle | null>(null);
@@ -76,6 +84,11 @@ export function StudentClassroomWorkspace({
     setDenialCode(null);
     setRecordingCaptureActive(false);
     setBusy(false);
+    productionBasicActive.current = false;
+    lastJoinMode.current = 'legacy';
+    void readProductionBasicReadiness(csrfToken)
+      .then(setProductionBasicReady)
+      .catch(() => setProductionBasicReady(false));
     return () => {
       generationRef.current += 1;
       stopRuntime();
@@ -134,6 +147,7 @@ export function StudentClassroomWorkspace({
   }
 
   async function join(): Promise<void> {
+    lastJoinMode.current = 'legacy';
     if (!occurrenceId) {
       setStatus('unavailable');
       setDenialCode(null);
@@ -167,7 +181,9 @@ export function StudentClassroomWorkspace({
     setBusy(true);
     const controller = new AbortController();
     try {
-      await classroomApi.recordAttendance(csrfToken, 'left', controller.signal);
+      if (!productionBasicActive.current) {
+        await classroomApi.recordAttendance(csrfToken, 'left', controller.signal);
+      }
     } catch (error) {
       if (error instanceof StudentClassroomApiError && error.status === 401) {
         onProtectedStateCleared();
@@ -176,6 +192,38 @@ export function StudentClassroomWorkspace({
       controller.abort();
       navigate('/app/student');
     }
+  }
+
+  async function joinProductionBasic(): Promise<void> {
+    lastJoinMode.current = 'production_basic';
+    const { generation } = beginRuntime();
+    setStatus('joining');
+    setBusy(true);
+    try {
+      const artifact = await requestProductionBasicLaunch(csrfToken);
+      await joinZoomMeetingProductionBasic({
+        sdkWebVersion: artifact.sdk_web_version,
+        meetingNumber: artifact.meeting_number,
+        signature: artifact.signature,
+        meetingPassword: artifact.meeting_password,
+        userName: artifact.user_name,
+        leaveUrl: artifact.leave_path,
+      });
+      if (!isCurrent(generation)) return;
+      productionBasicActive.current = true;
+      setStatus('connected');
+      setBusy(false);
+    } catch (error) {
+      handleFailure(error, generation);
+    }
+  }
+
+  function retry(): void {
+    if (lastJoinMode.current === 'production_basic') {
+      void joinProductionBasic();
+      return;
+    }
+    void join();
   }
 
   function handleFailure(error: unknown, generation: number): void {
@@ -205,7 +253,9 @@ export function StudentClassroomWorkspace({
       view={view}
       busy={busy}
       onJoin={() => void join()}
-      onRetry={() => void join()}
+      productionBasicReady={productionBasicReady}
+      onJoinProductionBasic={() => void joinProductionBasic()}
+      onRetry={retry}
       onLeave={() => void leave()}
     />
   );
@@ -215,12 +265,16 @@ export function StudentClassroomSurface({
   view,
   busy,
   onJoin,
+  productionBasicReady,
+  onJoinProductionBasic,
   onRetry,
   onLeave,
 }: {
   view: StudentClassroomViewModel;
   busy: boolean;
   onJoin: () => void;
+  productionBasicReady: boolean;
+  onJoinProductionBasic: () => void;
   onRetry: () => void;
   onLeave: () => void;
 }) {
@@ -258,14 +312,20 @@ export function StudentClassroomSurface({
 
       <div className="ot-action-row">
         {view.status === 'ready' ? (
-          <Button
-            type="button"
-            variant="primary"
-            disabled={busy || !view.join_enabled}
-            onClick={onJoin}
-          >
-            Join classroom
-          </Button>
+          productionBasicReady ? (
+            <Button type="button" variant="primary" disabled={busy} onClick={onJoinProductionBasic}>
+              Join class
+            </Button>
+          ) : (
+            <Button
+              type="button"
+              variant="primary"
+              disabled={busy || !view.join_enabled}
+              onClick={onJoin}
+            >
+              Join classroom
+            </Button>
+          )
         ) : null}
         {view.status === 'joining' ? (
           <Button type="button" variant="primary" disabled>

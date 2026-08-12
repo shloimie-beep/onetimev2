@@ -1,4 +1,5 @@
 import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -224,6 +225,62 @@ describe('OT-71 mounted parent and student portals', () => {
           })
         ).status,
       ).toBe(403);
+    } finally {
+      await server.close();
+    }
+  });
+
+  it('gates Zoom CSP on exact Admin readiness for every live shell without a provider call', async () => {
+    const unavailable = await listenForTest(createApp({ config, pool, distDir }));
+    try {
+      const admin = await loginAs(unavailable.baseUrl, 'admin@example.test', 'AdminPass!234');
+      for (const route of ['/app/live', '/app/live/occurrence-one', '/app/live-console']) {
+        const response = await fetch(`${unavailable.baseUrl}${route}`, {
+          headers: { cookie: admin.cookies },
+        });
+        expect(response.status).toBe(200);
+        expect(response.headers.get('content-security-policy')).not.toContain('source.zoom.us');
+      }
+    } finally {
+      await unavailable.close();
+    }
+
+    const readyConfig = productionBasicConfig();
+    const ready = await listenForTest(
+      createApp({ config: readyConfig, pool, distDir, clock: productionBasicNow }),
+    );
+    try {
+      const admin = await loginAs(ready.baseUrl, 'admin@example.test', 'AdminPass!234');
+      for (const route of ['/app/live', '/app/live/occurrence-one', '/app/live-console']) {
+        const response = await fetch(`${ready.baseUrl}${route}`, {
+          headers: { cookie: admin.cookies },
+        });
+        expect(response.status).toBe(200);
+        const csp = response.headers.get('content-security-policy');
+        expect(csp).toContain("script-src 'self' https://source.zoom.us");
+        expect(csp).toContain("connect-src 'self' https://*.zoom.us wss://*.zoom.us");
+      }
+    } finally {
+      await ready.close();
+    }
+  });
+
+  it('requires the exact active Student enrollment, not another household or sibling enrollment', async () => {
+    await seedCanonicalClass();
+    const server = await listenForTest(
+      createApp({ config: productionBasicConfig(), pool, distDir, clock: productionBasicNow }),
+    );
+    try {
+      const student = await loginAs(server.baseUrl, 'student@example.test', 'StudentPass!234');
+
+      await seedClassEnrollment('learner_beta', 'household_beta', 'cross-household');
+      await expectProductionBasicStatus(server.baseUrl, student.cookies, false);
+
+      await seedClassEnrollment('learner_sibling', 'household_alpha', 'same-household-sibling');
+      await expectProductionBasicStatus(server.baseUrl, student.cookies, false);
+
+      await seedClassEnrollment('learner_alpha', 'household_alpha', 'signed-in-student');
+      await expectProductionBasicStatus(server.baseUrl, student.cookies, true);
     } finally {
       await server.close();
     }
@@ -1406,12 +1463,106 @@ async function seedPortalRecords() {
   );
 }
 
+const productionBasicNow = () => new Date('2026-08-12T10:30:00.000Z');
+
+function productionBasicConfig() {
+  const meetingId = 'production-basic-recurring-meeting';
+  return loadConfig(
+    {
+      NODE_ENV: 'test',
+      PUBLIC_BASE_URL: 'https://app.onetimeonetime.com',
+      APP_VERSION: 'test',
+      COMMIT_SHA: 'test',
+      OUTBOX_TRANSPORT_MODE: 'sink',
+      ONE_TIME_FREE_ACCESS_EXPIRES_AT: '2026-09-11T18:00:00+03:00',
+      ZOOM_MEETING_SDK_CLIENT_ID: 'sdk-client',
+      ZOOM_MEETING_SDK_CLIENT_SECRET: 'sdk-secret',
+      ZOOM_MEETING_SDK_ALLOWED_ORIGIN: 'https://app.onetimeonetime.com',
+      ZOOM_MEETING_SDK_WEB_VERSION: '6.2.0',
+      ZOOM_S2S_ACCOUNT_ID: 'zoom-account',
+      ZOOM_S2S_CLIENT_ID: 's2s-client',
+      ZOOM_S2S_CLIENT_SECRET: 's2s-secret',
+      ZOOM_HOST_USER_ID: 'host-user',
+      ZOOM_REAL_CONTROL_MEETING_ID: meetingId,
+      ZOOM_REAL_CONTROL_MEETING_PASSCODE: 'meeting-passcode',
+      ZOOM_PRODUCTION_BASIC_BINDING_ACCOUNT_MATCHES: 'true',
+      ZOOM_PRODUCTION_BASIC_BINDING_HOST_MATCHES: 'true',
+      ZOOM_PRODUCTION_BASIC_BINDING_REGISTRATION_REQUIRED: 'false',
+      ZOOM_PRODUCTION_BASIC_BINDING_MEETING_IS_RECURRING: 'true',
+      ZOOM_PRODUCTION_BASIC_BINDING_TIMEZONE: 'Asia/Jerusalem',
+      ZOOM_PRODUCTION_BASIC_BINDING_WEEKLY_DAYS: '1,2,3,4,5',
+      ZOOM_PRODUCTION_BASIC_BINDING_FIRST_OCCURRENCE_AT: '2026-08-16T19:00:00+03:00',
+      ZOOM_PRODUCTION_BASIC_BINDING_JOIN_BEFORE_HOST: 'false',
+      ZOOM_PRODUCTION_BASIC_BINDING_PARTICIPANT_VIDEO: 'false',
+      ZOOM_PRODUCTION_BASIC_BINDING_AUTO_RECORDING: 'none',
+      ZOOM_PRODUCTION_BASIC_BINDING_MEETING_REF_DIGEST: createHash('sha256')
+        .update(`production-basic-meeting-v1\0${meetingId}`)
+        .digest('hex'),
+      ZOOM_PRODUCTION_BASIC_BINDING_CHECKED_AT: '2026-08-12T10:00:00.000Z',
+      ZOOM_PRODUCTION_BASIC_BINDING_EXPIRES_AT: '2026-09-11T17:00:00+03:00',
+    },
+    { now: productionBasicNow() },
+  );
+}
+
+async function seedCanonicalClass() {
+  await pool.query(
+    `INSERT INTO onetime.class_series
+       (class_series_key, account_key, product_key, title, timezone, local_start_time,
+        reminder_local_time, status, series_state, is_canonical, recurrence_weekdays,
+        recurrence_starts_on, duration_minutes, embedded_classroom_required, recording_enabled)
+     VALUES ('production-basic-canonical', $1, $2, 'Canonical Sunday-Thursday Class',
+             'Asia/Jerusalem', '19:00', '18:30', 'active', 'active', true,
+             ARRAY[1,2,3,4,5]::smallint[], DATE '2026-08-16', 60, true, false)`,
+    [config.accountKey, config.productKey],
+  );
+}
+
+async function seedClassEnrollment(learnerKey: string, householdKey: string, suffix: string) {
+  await pool.query(
+    `INSERT INTO onetime.class_series_enrollments
+       (enrollment_key, account_key, product_key, class_series_key, learner_key,
+        household_key, enrollment_state, source, effective_at, idempotency_key, audit_ref)
+     VALUES ($1, $2, $3, 'production-basic-canonical', $4, $5, 'active', 'test',
+             '2026-08-12T09:00:00.000Z', $6, $7)`,
+    [
+      `production-basic-enrollment-${suffix}`,
+      config.accountKey,
+      config.productKey,
+      learnerKey,
+      householdKey,
+      `production-basic-enrollment-${suffix}`,
+      `test:${suffix}`,
+    ],
+  );
+}
+
+async function expectProductionBasicStatus(baseUrl: string, cookies: string, available: boolean) {
+  const response = await fetch(`${baseUrl}/api/v1/classroom/production-basic/status`, {
+    headers: { cookie: cookies },
+  });
+  expect(response.status).toBe(200);
+  await expect(response.json()).resolves.toEqual({
+    success: true,
+    data: { mode: 'production_basic', available },
+  });
+
+  const shell = await fetch(`${baseUrl}/app/student/class/occurrence-one`, {
+    headers: { cookie: cookies },
+  });
+  expect(shell.status).toBe(200);
+  const csp = shell.headers.get('content-security-policy');
+  if (available) expect(csp).toContain("script-src 'self' https://source.zoom.us");
+  else expect(csp).not.toContain('source.zoom.us');
+}
+
 async function writePortalShells(targetDir: string) {
   await mkdir(path.join(targetDir, 'app'), { recursive: true });
   await mkdir(path.join(targetDir, 'assets'), { recursive: true });
   await writeFile(path.join(targetDir, 'app', 'parent.html'), '<div id="portal-root"></div>');
   await writeFile(path.join(targetDir, 'app', 'student.html'), '<div id="portal-root"></div>');
   await writeFile(path.join(targetDir, 'app', 'crm.html'), '<div id="crm-root"></div>');
+  await writeFile(path.join(targetDir, 'app', 'live.html'), '<div id="live-root"></div>');
   await writeFile(path.join(targetDir, '404.html'), '<h1>Not found</h1>');
   await writeFile(path.join(targetDir, 'assets', 'app-crm.css'), '');
 }

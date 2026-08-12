@@ -1,6 +1,6 @@
 export const CLIENT_ROUTER_CONTRACT_VERSION = '2.1.0' as const;
 
-export type CurrentClientRole = 'admin' | 'parent' | 'student';
+export type CurrentClientRole = 'admin' | 'rabbi' | 'parent' | 'student';
 export type CanonicalRouteAudience = CurrentClientRole | 'public' | 'authenticated';
 export type ClientShellId = 'public' | 'auth' | 'admin' | 'parent' | 'student' | 'live';
 export type ClientRouteMatch = 'exact' | 'template';
@@ -138,7 +138,7 @@ const app = (
     pathname,
     title,
     shell,
-    roles: [shell === 'live' ? 'admin' : shell],
+    roles: shell === 'live' ? ['admin', 'rabbi'] : [shell],
     handler: `${shell}.${routeId.toLowerCase()}`,
   });
 

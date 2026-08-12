@@ -43,6 +43,21 @@ const optionalNonblankString = z.preprocess(
   z.string().trim().min(1).optional(),
 );
 
+const optionalReceiptBoolean = z.preprocess(
+  (value) => (typeof value === 'string' && value.trim() === '' ? undefined : value),
+  z
+    .union([z.boolean(), z.literal('true'), z.literal('false')])
+    .optional()
+    .transform((value) => (value === undefined ? undefined : value === true || value === 'true')),
+);
+
+const optionalIsoDateTime = z.preprocess(
+  (value) => (typeof value === 'string' && value.trim() === '' ? undefined : value),
+  z.iso.datetime({ offset: true }).optional(),
+);
+
+export const ZOOM_PRODUCTION_BASIC_BINDING_RECEIPT_MAX_AGE_MS = 31 * 24 * 60 * 60_000;
+
 function parseUniqueCsv(value: string | undefined) {
   if (!value) return [];
   return [
@@ -346,6 +361,24 @@ const envSchema = z.object({
   ZOOM_HOST_USER_ID: z.string().optional(),
   ZOOM_REAL_CONTROL_MEETING_ID: z.string().optional(),
   ZOOM_REAL_CONTROL_MEETING_PASSCODE: z.string().optional(),
+  // Digest-only receipt from a separately authorized, read-only provider inspection.
+  // It never contains the recurring meeting reference or a join URL.
+  ZOOM_PRODUCTION_BASIC_BINDING_ACCOUNT_MATCHES: optionalReceiptBoolean,
+  ZOOM_PRODUCTION_BASIC_BINDING_HOST_MATCHES: optionalReceiptBoolean,
+  ZOOM_PRODUCTION_BASIC_BINDING_REGISTRATION_REQUIRED: optionalReceiptBoolean,
+  ZOOM_PRODUCTION_BASIC_BINDING_MEETING_IS_RECURRING: optionalReceiptBoolean,
+  ZOOM_PRODUCTION_BASIC_BINDING_TIMEZONE: optionalTrimmedString(1, 80),
+  ZOOM_PRODUCTION_BASIC_BINDING_WEEKLY_DAYS: optionalTrimmedString(1, 40),
+  ZOOM_PRODUCTION_BASIC_BINDING_FIRST_OCCURRENCE_AT: optionalIsoDateTime,
+  ZOOM_PRODUCTION_BASIC_BINDING_JOIN_BEFORE_HOST: optionalReceiptBoolean,
+  ZOOM_PRODUCTION_BASIC_BINDING_PARTICIPANT_VIDEO: optionalReceiptBoolean,
+  ZOOM_PRODUCTION_BASIC_BINDING_AUTO_RECORDING: optionalTrimmedString(1, 40),
+  ZOOM_PRODUCTION_BASIC_BINDING_MEETING_REF_DIGEST: optionalTrimmedString(64, 64).refine(
+    (value) => value === undefined || /^[a-f0-9]{64}$/u.test(value),
+    'Expected a 64-character lowercase hexadecimal meeting reference digest',
+  ),
+  ZOOM_PRODUCTION_BASIC_BINDING_CHECKED_AT: optionalIsoDateTime,
+  ZOOM_PRODUCTION_BASIC_BINDING_EXPIRES_AT: optionalIsoDateTime,
   HIGHLEVEL_EVENT_SYNC_MODE: z.enum(['disabled', 'mock', 'provider']).default('disabled'),
   HIGHLEVEL_API_BASE_URL: z.url().default('https://services.leadconnectorhq.com'),
   HIGHLEVEL_API_VERSION: z.string().min(1).max(80).default('2021-07-28'),
@@ -395,8 +428,9 @@ const envSchema = z.object({
 
 export type AppConfig = ReturnType<typeof loadConfig>;
 
-export function loadConfig(source: NodeJS.ProcessEnv) {
+export function loadConfig(source: NodeJS.ProcessEnv, options: { now?: Date } = {}) {
   const parsed = envSchema.parse(source);
+  const configNow = options.now ?? new Date();
   const parentStudentServiceAccountPolicyConfigured = Boolean(
     parsed.PARENT_STUDENT_SERVICE_ACCOUNT_VERSION &&
     parsed.PARENT_STUDENT_SERVICE_ACCOUNT_EVIDENCE_REFERENCE,
@@ -418,6 +452,80 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
   const canonicalZoomS2sAccountId = parsed.ZOOM_S2S_ACCOUNT_ID?.trim() || undefined;
   const legacyZoomS2sAccountId = parsed.ZOOM_ACCOUNT_ID?.trim() || undefined;
   const zoomS2sAccountId = canonicalZoomS2sAccountId ?? legacyZoomS2sAccountId;
+  const zoomProductionBasicBindingReceiptValues = [
+    parsed.ZOOM_PRODUCTION_BASIC_BINDING_ACCOUNT_MATCHES,
+    parsed.ZOOM_PRODUCTION_BASIC_BINDING_HOST_MATCHES,
+    parsed.ZOOM_PRODUCTION_BASIC_BINDING_REGISTRATION_REQUIRED,
+    parsed.ZOOM_PRODUCTION_BASIC_BINDING_MEETING_IS_RECURRING,
+    parsed.ZOOM_PRODUCTION_BASIC_BINDING_TIMEZONE,
+    parsed.ZOOM_PRODUCTION_BASIC_BINDING_WEEKLY_DAYS,
+    parsed.ZOOM_PRODUCTION_BASIC_BINDING_FIRST_OCCURRENCE_AT,
+    parsed.ZOOM_PRODUCTION_BASIC_BINDING_JOIN_BEFORE_HOST,
+    parsed.ZOOM_PRODUCTION_BASIC_BINDING_PARTICIPANT_VIDEO,
+    parsed.ZOOM_PRODUCTION_BASIC_BINDING_AUTO_RECORDING,
+    parsed.ZOOM_PRODUCTION_BASIC_BINDING_MEETING_REF_DIGEST,
+    parsed.ZOOM_PRODUCTION_BASIC_BINDING_CHECKED_AT,
+    parsed.ZOOM_PRODUCTION_BASIC_BINDING_EXPIRES_AT,
+  ];
+  const zoomProductionBasicBindingReceiptConfigured = zoomProductionBasicBindingReceiptValues.some(
+    (value) => value !== undefined,
+  );
+  if (
+    zoomProductionBasicBindingReceiptConfigured &&
+    zoomProductionBasicBindingReceiptValues.some((value) => value === undefined)
+  ) {
+    throw new Error(
+      'ZOOM_PRODUCTION_BASIC_BINDING receipt requires account, host, registration, recurrence schedule, meeting policy, digest, checked_at, and expires_at together.',
+    );
+  }
+  const zoomProductionBasicCheckedAt = Date.parse(
+    parsed.ZOOM_PRODUCTION_BASIC_BINDING_CHECKED_AT ?? '',
+  );
+  const zoomProductionBasicExpiresAt = Date.parse(
+    parsed.ZOOM_PRODUCTION_BASIC_BINDING_EXPIRES_AT ?? '',
+  );
+  if (
+    zoomProductionBasicBindingReceiptConfigured &&
+    (parsed.ZOOM_PRODUCTION_BASIC_BINDING_ACCOUNT_MATCHES !== true ||
+      parsed.ZOOM_PRODUCTION_BASIC_BINDING_HOST_MATCHES !== true ||
+      parsed.ZOOM_PRODUCTION_BASIC_BINDING_REGISTRATION_REQUIRED !== false ||
+      parsed.ZOOM_PRODUCTION_BASIC_BINDING_MEETING_IS_RECURRING !== true ||
+      parsed.ZOOM_PRODUCTION_BASIC_BINDING_TIMEZONE !== 'Asia/Jerusalem' ||
+      parsed.ZOOM_PRODUCTION_BASIC_BINDING_WEEKLY_DAYS !== '1,2,3,4,5' ||
+      parsed.ZOOM_PRODUCTION_BASIC_BINDING_FIRST_OCCURRENCE_AT !== '2026-08-16T19:00:00+03:00' ||
+      parsed.ZOOM_PRODUCTION_BASIC_BINDING_JOIN_BEFORE_HOST !== false ||
+      parsed.ZOOM_PRODUCTION_BASIC_BINDING_PARTICIPANT_VIDEO !== false ||
+      parsed.ZOOM_PRODUCTION_BASIC_BINDING_AUTO_RECORDING !== 'none' ||
+      zoomProductionBasicCheckedAt > configNow.getTime() ||
+      zoomProductionBasicCheckedAt <
+        configNow.getTime() - ZOOM_PRODUCTION_BASIC_BINDING_RECEIPT_MAX_AGE_MS ||
+      zoomProductionBasicExpiresAt <= configNow.getTime() ||
+      zoomProductionBasicExpiresAt - zoomProductionBasicCheckedAt >
+        ZOOM_PRODUCTION_BASIC_BINDING_RECEIPT_MAX_AGE_MS ||
+      (parsed.ONE_TIME_FREE_ACCESS_EXPIRES_AT !== undefined &&
+        zoomProductionBasicExpiresAt > Date.parse(parsed.ONE_TIME_FREE_ACCESS_EXPIRES_AT)))
+  ) {
+    throw new Error(
+      'ZOOM_PRODUCTION_BASIC_BINDING receipt must verify the exact recurring meeting, registration off, 7 PM Jerusalem schedule, and safe meeting policy, with a current validity window no longer than 31 days or the configured free-access period.',
+    );
+  }
+  const zoomProductionBasicVerifiedBinding = zoomProductionBasicBindingReceiptConfigured
+    ? {
+        account_matches: true as const,
+        host_matches: true as const,
+        registration_required: false as const,
+        meeting_is_recurring: true as const,
+        timezone: 'Asia/Jerusalem' as const,
+        weekly_days: [1, 2, 3, 4, 5] as const,
+        first_occurrence_at: '2026-08-16T19:00:00+03:00' as const,
+        join_before_host: false as const,
+        participant_video: false as const,
+        auto_recording: 'none' as const,
+        meeting_ref_digest: parsed.ZOOM_PRODUCTION_BASIC_BINDING_MEETING_REF_DIGEST!,
+        checked_at: parsed.ZOOM_PRODUCTION_BASIC_BINDING_CHECKED_AT!,
+        expires_at: parsed.ZOOM_PRODUCTION_BASIC_BINDING_EXPIRES_AT!,
+      }
+    : undefined;
   const guardedStripeTestTransport =
     parsed.ENABLE_PAYMENT_TRANSPORT && parsed.LIVE_STRIPE_CHARGES_AUTHORIZED === 'NO';
   const realTransportsEnabled =
@@ -947,6 +1055,7 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     zoomHostUserId: parsed.ZOOM_HOST_USER_ID,
     zoomRealControlMeetingId: parsed.ZOOM_REAL_CONTROL_MEETING_ID,
     zoomRealControlMeetingPasscode: parsed.ZOOM_REAL_CONTROL_MEETING_PASSCODE,
+    zoomProductionBasicVerifiedBinding,
     zoomS2sAccountIdConfigured: Boolean(canonicalZoomS2sAccountId),
     zoomS2sClientIdConfigured: Boolean(parsed.ZOOM_S2S_CLIENT_ID),
     zoomS2sClientSecretConfigured: Boolean(parsed.ZOOM_S2S_CLIENT_SECRET),
