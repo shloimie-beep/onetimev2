@@ -581,6 +581,7 @@ export async function issueLocalStudentSetupWithClient(input: {
     }),
     actorUserKey: input.actor.userKey,
     now: input.now,
+    deliveryToAdult: true,
     metadata: {
       student_username: username,
       delivery_to_adult: true,
@@ -596,6 +597,12 @@ export async function createStudentReset(
     actor: LifecycleActor;
     payload: unknown;
     now?: Date;
+    expectedStudentUserKey?: string;
+    expectedHouseholdKey?: string;
+    adultDeliveryBinding?: {
+      householdKey: string;
+      emailNormalized: string;
+    };
   } & LocalProofOption,
 ): Promise<TokenIssueWithProof> {
   const payload = studentResetPayloadSchema.parse(input.payload);
@@ -615,14 +622,66 @@ export async function createStudentReset(
         throw new AccountLifecycleError('NOT_FOUND', 'Student access is not active yet.');
       }
       const studentUserKey = String(state.student_user_ref);
+      const householdKey = String(state.household_key);
+      if (
+        String(state.status ?? '') !== 'active' ||
+        (input.expectedStudentUserKey && input.expectedStudentUserKey !== studentUserKey) ||
+        (input.expectedHouseholdKey && input.expectedHouseholdKey !== householdKey)
+      ) {
+        throw new AccountLifecycleError(
+          'IDENTITY_CONFLICT',
+          'The Student reset target no longer matches the active account.',
+        );
+      }
       const user = await getAccountUser(client, input.config, studentUserKey);
+      await assertActiveStudentIdentityBinding(client, input.config, {
+        studentUserKey,
+        learnerKey: payload.learner_key,
+        householdKey,
+        errorCode: 'IDENTITY_CONFLICT',
+      });
+      let adultDeliveryVerified = false;
+      if (input.adultDeliveryBinding) {
+        const adultEmailNormalized = normalizeEmail(input.adultDeliveryBinding.emailNormalized);
+        if (input.adultDeliveryBinding.householdKey !== householdKey) {
+          throw new AccountLifecycleError(
+            'IDENTITY_CONFLICT',
+            'The adult delivery binding no longer matches the Student household.',
+          );
+        }
+        const adultRecipient = await client.query(
+          `SELECT links.link_key
+             FROM onetime.adult_household_contact_links AS links
+             JOIN onetime.contacts AS contacts
+               ON contacts.account_key = links.account_key
+              AND contacts.product_key = links.product_key
+              AND contacts.contact_key = links.contact_key
+            WHERE links.account_key = $1
+              AND links.product_key = $2
+              AND links.household_key = $3
+              AND contacts.email_normalized = $4
+            LIMIT 2`,
+          [input.config.accountKey, input.config.productKey, householdKey, adultEmailNormalized],
+        );
+        if (adultRecipient.rows.length !== 1) {
+          throw new AccountLifecycleError(
+            'IDENTITY_CONFLICT',
+            'The adult delivery binding is no longer available.',
+          );
+        }
+        adultDeliveryVerified = true;
+      }
       return issueAccountToken(client, input.config, {
         tokenType: 'student_reset',
         targetRole: 'student',
-        emailNormalized: normalizeEmail(payload.email ?? String(user.email_normalized)),
+        emailNormalized: normalizeEmail(
+          input.adultDeliveryBinding?.emailNormalized ??
+            payload.email ??
+            String(user.email_normalized),
+        ),
         displayName: String(user.display_name),
         subjectUserKey: studentUserKey,
-        householdKey: String(state.household_key),
+        householdKey,
         learnerKey: payload.learner_key,
         idempotencyKey: payload.idempotency_key,
         requestHash: fingerprint(payload),
@@ -630,6 +689,8 @@ export async function createStudentReset(
         now,
         ttlMs: RESET_TOKEN_TTL_MS,
         includeLocalProofToken: input.includeLocalProofToken,
+        deliveryToAdult: adultDeliveryVerified,
+        metadata: { delivery_to_adult: adultDeliveryVerified },
       });
     },
   });
@@ -647,8 +708,28 @@ export async function completeStudentReset(input: {
     expectedType: 'student_reset',
     now: input.now ?? new Date(),
     complete: async (client, token, now) => {
+      if (token.target_role !== 'student') {
+        throw new AccountLifecycleError('TOKEN_INVALID', 'The account lifecycle token is invalid.');
+      }
       const userKey = requiredString(token.subject_user_key);
-      await updatePassword(client, userKey, payload.password, now);
+      const learnerKey = requiredString(token.learner_key);
+      const householdKey = requiredString(token.household_key);
+      const state = await getStudentStateForUpdate(client, input.config, learnerKey);
+      if (
+        !state ||
+        String(state.status ?? '') !== 'active' ||
+        String(state.student_user_ref ?? '') !== userKey ||
+        String(state.household_key ?? '') !== householdKey
+      ) {
+        throw new AccountLifecycleError('TOKEN_INVALID', 'The account lifecycle token is invalid.');
+      }
+      await assertActiveStudentIdentityBinding(client, input.config, {
+        studentUserKey: userKey,
+        learnerKey,
+        householdKey,
+        errorCode: 'TOKEN_INVALID',
+      });
+      await updateStudentPassword(client, input.config, userKey, payload.password, now);
       const sessionsInvalidated = await invalidateUserSessions(client, input.config, {
         userKey,
         actorUserKey: null,
@@ -681,7 +762,7 @@ export async function completeStudentReset(input: {
         [
           input.config.accountKey,
           input.config.productKey,
-          token.learner_key,
+          learnerKey,
           now,
           studentPasswordHashRef(payload.password, token.token_key),
           sessionsInvalidated,
@@ -1008,6 +1089,7 @@ async function issueAccountToken(
     learnerKey?: string | null;
     includeLocalProofToken?: boolean | undefined;
     metadata?: Record<string, unknown> | undefined;
+    deliveryToAdult?: boolean | undefined;
   },
 ): Promise<TokenIssueWithProof> {
   const tokenKey = stableKey('account_lifecycle_token', [
@@ -1063,7 +1145,14 @@ async function issueAccountToken(
       input.now,
     ],
   );
-  const deliverByEmail = input.targetRole !== 'student';
+  const deliveryToAdult =
+    input.deliveryToAdult === true &&
+    input.targetRole === 'student' &&
+    (input.tokenType === 'student_setup' || input.tokenType === 'student_reset');
+  if (input.deliveryToAdult === true && !deliveryToAdult) {
+    throw new AccountLifecycleError('FORBIDDEN', 'The adult delivery binding is invalid.');
+  }
+  const deliverByEmail = input.targetRole !== 'student' || deliveryToAdult;
   const delivery = await createDeliveryIntent(client, config, {
     tokenKey,
     tokenType: input.tokenType,
@@ -1101,6 +1190,7 @@ async function issueAccountToken(
       lifecycle_delivery_ref: outbox?.delivery_key ?? null,
       destination_ref: outbox?.destination_ref ?? null,
       student_email_suppressed: !deliverByEmail,
+      delivery_to_adult: deliveryToAdult,
       subject_human_account_bound: Boolean(input.subjectHumanAccountId),
       raw_token_included: false,
       raw_url_included: false,
@@ -1586,6 +1676,31 @@ async function updatePassword(client: Queryable, userKey: string, password: stri
   );
 }
 
+async function updateStudentPassword(
+  client: Queryable,
+  config: AppConfig,
+  userKey: string,
+  password: string,
+  now: Date,
+) {
+  const updated = await client.query(
+    `UPDATE onetime.account_users
+        SET password_hash = $4,
+            password_updated_at = $5,
+            updated_at = $5
+      WHERE account_key = $1
+        AND product_key = $2
+        AND user_key = $3
+        AND role = 'student'
+        AND status = 'active'
+      RETURNING user_key`,
+    [config.accountKey, config.productKey, userKey, hashPassword(password), now],
+  );
+  if (updated.rowCount !== 1) {
+    throw new AccountLifecycleError('TOKEN_INVALID', 'The account lifecycle token is invalid.');
+  }
+}
+
 async function markTokenConsumed(
   client: Queryable,
   tokenKey: string,
@@ -1810,6 +1925,52 @@ async function getAccountUser(client: Queryable, config: AppConfig, userKey: str
   const row = result.rows[0] as Record<string, unknown> | undefined;
   if (!row) throw new AccountLifecycleError('NOT_FOUND', 'The account user was not found.');
   return row;
+}
+
+async function assertActiveStudentIdentityBinding(
+  client: Queryable,
+  config: AppConfig,
+  input: {
+    studentUserKey: string;
+    learnerKey: string;
+    householdKey: string;
+    errorCode: AccountLifecycleErrorCode;
+  },
+) {
+  const result = await client.query(
+    `SELECT users.role, users.status, links.link_state
+       FROM onetime.account_users AS users
+       JOIN onetime.account_learner_identity_links AS links
+         ON links.account_key = users.account_key
+        AND links.product_key = users.product_key
+        AND links.user_key = users.user_key
+      WHERE users.account_key = $1
+        AND users.product_key = $2
+        AND users.user_key = $3
+        AND links.household_key = $4
+        AND links.learner_key = $5
+      LIMIT 2
+      FOR UPDATE`,
+    [
+      config.accountKey,
+      config.productKey,
+      input.studentUserKey,
+      input.householdKey,
+      input.learnerKey,
+    ],
+  );
+  const row = result.rows[0] as Record<string, unknown> | undefined;
+  if (
+    result.rows.length !== 1 ||
+    String(row?.role ?? '') !== 'student' ||
+    String(row?.status ?? '') !== 'active' ||
+    String(row?.link_state ?? '') !== 'active'
+  ) {
+    throw new AccountLifecycleError(
+      input.errorCode,
+      'The Student identity binding is unavailable.',
+    );
+  }
 }
 
 async function findV21HumanAccountByEmail(

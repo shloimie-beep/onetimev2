@@ -938,12 +938,19 @@ export async function requestAdminUserPasswordReset(input: {
   const payload = passwordResetPayloadSchema.parse(input.payload);
   const result = await input.pool.query(
     `SELECT users.email_normalized, users.role,
-            links.learner_key, links.household_key, links.link_state
+            links.learner_key, links.household_key, links.link_state,
+            access.student_user_ref AS access_student_user_ref,
+            access.status AS access_status
        FROM onetime.account_users AS users
        LEFT JOIN onetime.account_learner_identity_links AS links
          ON links.account_key = users.account_key
-        AND links.product_key = users.product_key
-        AND links.user_key = users.user_key
+         AND links.product_key = users.product_key
+         AND links.user_key = users.user_key
+       LEFT JOIN onetime.portal_student_access_state AS access
+         ON access.account_key = links.account_key
+        AND access.product_key = links.product_key
+        AND access.household_key = links.household_key
+        AND access.learner_key = links.learner_key
       WHERE users.account_key = $1
         AND users.product_key = $2
         AND users.user_key = $3
@@ -957,7 +964,9 @@ export async function requestAdminUserPasswordReset(input: {
       result.rows.length !== 1 ||
       !nullableString(user.learner_key) ||
       !nullableString(user.household_key) ||
-      String(user.link_state) !== 'active'
+      String(user.link_state) !== 'active' ||
+      String(user.access_status) !== 'active' ||
+      String(user.access_student_user_ref) !== userKey
     ) {
       throw new AdminDirectoryError(
         'IDENTITY_CONFLICT',
@@ -971,6 +980,7 @@ export async function requestAdminUserPasswordReset(input: {
         actor: { userKey: input.actor.userKey, role: input.actor.role as 'owner' | 'admin' },
         householdKey: String(user.household_key),
         learnerKey: String(user.learner_key),
+        expectedStudentUserKey: userKey,
         idempotencyKey: payload.idempotency_key,
       });
       return {

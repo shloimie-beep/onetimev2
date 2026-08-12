@@ -195,8 +195,8 @@ async function expectInvalidCredentialAttempt({
   const requestsBefore = requests.length;
   const passwordField = form.getByLabel('New six-digit Student PIN', { exact: true });
   const confirmationField = form.getByLabel('Confirm Student PIN', { exact: true });
-  await passwordField.fill(password);
-  await confirmationField.fill(confirmation);
+  await fillCredentialBoundaryValue(passwordField, password);
+  await fillCredentialBoundaryValue(confirmationField, confirmation);
   await form.getByRole('button').click();
   const invalidField = expectedFocus === 'password' ? passwordField : confirmationField;
   await expect(invalidField).toHaveAttribute('aria-invalid', 'true');
@@ -206,4 +206,17 @@ async function expectInvalidCredentialAttempt({
   await expect(form.locator(`[id="${errorId}"]`)).toHaveText(expectedError);
   await expect(invalidField).toBeFocused();
   await expect.poll(() => requests.length).toBe(requestsBefore);
+}
+
+async function fillCredentialBoundaryValue(
+  field: import('@playwright/test').Locator,
+  value: string,
+) {
+  if (value.length <= 6) {
+    await field.fill(value);
+    return;
+  }
+  await field.evaluate((input) => input.removeAttribute('maxlength'));
+  await field.fill(value);
+  await field.evaluate((input) => input.setAttribute('maxlength', '6'));
 }

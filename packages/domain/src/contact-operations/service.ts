@@ -709,12 +709,24 @@ export async function requestStudentResetForHousehold(input: {
   householdKey: string;
   learnerKey: string;
   idempotencyKey: string;
+  expectedStudentUserKey?: string;
   now?: Date;
 }) {
   assertHouseholdAuthority(input.actor, input.householdKey);
   const target = await input.pool.query(
-    `SELECT learners.learner_key, contacts.email_normalized
+    `SELECT learners.learner_key, contacts.email_normalized,
+            access.student_user_ref, access.status AS access_status,
+            users.role AS student_role, users.status AS student_status
        FROM onetime.portal_learners AS learners
+       JOIN onetime.portal_student_access_state AS access
+         ON access.account_key = learners.account_key
+        AND access.product_key = learners.product_key
+        AND access.household_key = learners.household_key
+        AND access.learner_key = learners.learner_key
+       JOIN onetime.account_users AS users
+         ON users.account_key = access.account_key
+        AND users.product_key = access.product_key
+        AND users.user_key = access.student_user_ref
        JOIN onetime.adult_household_contact_links AS links
          ON links.account_key = learners.account_key
         AND links.product_key = learners.product_key
@@ -734,6 +746,18 @@ export async function requestStudentResetForHousehold(input: {
   if (target.rows.length !== 1) {
     throw new ContactOperationsError('NOT_FOUND', 'The Student recovery target is unavailable.');
   }
+  const targetRow = target.rows[0] as Record<string, unknown>;
+  const studentUserKey = String(targetRow.student_user_ref ?? '');
+  if (
+    !studentUserKey ||
+    String(targetRow.access_status ?? '') !== 'active' ||
+    String(targetRow.student_role ?? '') !== 'student' ||
+    String(targetRow.student_status ?? '') !== 'active' ||
+    (input.expectedStudentUserKey && input.expectedStudentUserKey !== studentUserKey)
+  ) {
+    throw new ContactOperationsError('NOT_FOUND', 'The Student recovery target is unavailable.');
+  }
+  const adultEmailNormalized = String(targetRow.email_normalized);
   const issued = await createStudentReset({
     pool: input.pool,
     config: input.config,
@@ -741,7 +765,13 @@ export async function requestStudentResetForHousehold(input: {
     payload: {
       idempotency_key: input.idempotencyKey,
       learner_key: input.learnerKey,
-      email: String(target.rows[0]?.email_normalized),
+      email: adultEmailNormalized,
+    },
+    expectedStudentUserKey: studentUserKey,
+    expectedHouseholdKey: input.householdKey,
+    adultDeliveryBinding: {
+      householdKey: input.householdKey,
+      emailNormalized: adultEmailNormalized,
     },
     ...(input.now ? { now: input.now } : {}),
   });
