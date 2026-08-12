@@ -283,7 +283,6 @@ async function transcribeBoundedAudio(input: {
   secrets: LocalMediaSecretStore;
   processRunner: NodeBoundedProcessRunner;
 }) {
-  if (!input.settings.openAiProjectId) throw new Error('local_media_openai_project_id_required');
   const apiKey = await input.secrets.read('openai_api_key');
   const trim = selectTrim({
     sourceDurationMs: input.durationMs,
@@ -358,7 +357,9 @@ async function transcribeBoundedAudio(input: {
           signal: controller.signal,
           headers: {
             authorization: `Bearer ${apiKey}`,
-            'openai-project': input.settings.openAiProjectId,
+            ...(input.settings.openAiProjectId
+              ? { 'openai-project': input.settings.openAiProjectId }
+              : {}),
             ...(input.settings.openAiOrganizationId
               ? { 'openai-organization': input.settings.openAiOrganizationId }
               : {}),

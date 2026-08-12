@@ -28,12 +28,12 @@ export class LocalMediaSecretStore {
       if (process.platform !== 'win32') throw new Error('local_media_dpapi_requires_windows');
       const value = await runPowerShell(
         [
-          '$encrypted = Get-Content -LiteralPath $args[0] -Raw',
+          '$encrypted = (Get-Content -LiteralPath $env:ONE_TIME_LOCAL_MEDIA_DPAPI_INPUT -Raw).Trim()',
           '$secure = ConvertTo-SecureString $encrypted',
           '$pointer = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($secure)',
           'try { [Console]::Out.Write([Runtime.InteropServices.Marshal]::PtrToStringBSTR($pointer)) } finally { [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($pointer) }',
         ].join('; '),
-        [protectedPath],
+        { ONE_TIME_LOCAL_MEDIA_DPAPI_INPUT: protectedPath },
       );
       if (value.trim()) return value.trim();
     }
@@ -54,13 +54,16 @@ export class LocalMediaSecretStore {
     await mkdir(path.dirname(destination), { recursive: true });
     await runPowerShell(
       [
-        '$plain = (Get-Content -LiteralPath $args[0] -Raw).Trim()',
+        '$plain = (Get-Content -LiteralPath $env:ONE_TIME_LOCAL_MEDIA_DPAPI_SOURCE -Raw).Trim()',
         "if ([string]::IsNullOrWhiteSpace($plain)) { throw 'secret_source_empty' }",
         '$secure = ConvertTo-SecureString $plain -AsPlainText -Force',
         '$encrypted = ConvertFrom-SecureString $secure',
-        'Set-Content -LiteralPath $args[1] -Value $encrypted -Encoding UTF8',
+        'Set-Content -LiteralPath $env:ONE_TIME_LOCAL_MEDIA_DPAPI_DESTINATION -Value $encrypted -Encoding ASCII',
       ].join('; '),
-      [path.resolve(sourcePath), destination],
+      {
+        ONE_TIME_LOCAL_MEDIA_DPAPI_SOURCE: path.resolve(sourcePath),
+        ONE_TIME_LOCAL_MEDIA_DPAPI_DESTINATION: destination,
+      },
     );
     return destination;
   }
@@ -79,13 +82,13 @@ async function exists(filePath: string) {
   }
 }
 
-function runPowerShell(command: string, args: string[]) {
+function runPowerShell(command: string, environment: Record<string, string>) {
   return new Promise<string>((resolve, reject) => {
-    const child = spawn(
-      'powershell.exe',
-      ['-NoProfile', '-NonInteractive', '-Command', command, ...args],
-      { windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] },
-    );
+    const child = spawn('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', command], {
+      windowsHide: true,
+      stdio: ['ignore', 'pipe', 'pipe'],
+      env: { ...process.env, ...environment },
+    });
     const stdout: Buffer[] = [];
     child.stdout.on('data', (chunk: Buffer) => stdout.push(chunk));
     child.stderr.resume();

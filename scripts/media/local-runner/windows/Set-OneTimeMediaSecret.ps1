@@ -18,5 +18,5 @@ $secret = Read-Host "Enter $Name (input is hidden)" -AsSecureString
 $encrypted = ConvertFrom-SecureString $secret
 if ([string]::IsNullOrWhiteSpace($encrypted)) { throw 'The protected secret was empty.' }
 $destination = Join-Path $secretDir "$Name.dpapi"
-Set-Content -LiteralPath $destination -Value $encrypted -Encoding UTF8
+Set-Content -LiteralPath $destination -Value $encrypted -Encoding ASCII
 Write-Host "Stored $Name using current-user Windows DPAPI protection."

@@ -19,7 +19,8 @@ provider secret directly into current-user DPAPI-protected storage. Never put a 
 `vimeo_access_token`, and `one_time_import_hmac_key`.
 
 The non-secret settings that must be configured for the full path are `oneTimeBaseUrl`,
-`openAiProjectId` (unless transcription mode is `off`), and `vimeoAccountId`. An optional
+`vimeoAccountId`. `openAiProjectId` is optional for a project-scoped API key and can be set for
+legacy user keys that require explicit project selection. An optional
 `vimeoProjectUri` and Drive sync-folder `driveArchiveDir` may also be set.
 
 If zero or several occurrences match the approved time window, run Status and then use:
