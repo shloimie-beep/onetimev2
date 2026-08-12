@@ -282,7 +282,7 @@ async function main() {
   const args = parseArgs(process.argv.slice(2));
   if (!args.input) throw new Error('content_media_canary_bootstrap_input_required');
   const input = JSON.parse(await readFile(path.resolve(args.input), 'utf8')) as ContentMediaCanaryBootstrapInput;
-  const output = \`\${JSON.stringify(inspectContentMediaCanaryBootstrap(input), null, 2)}\n\`;
+  const output = `${JSON.stringify(inspectContentMediaCanaryBootstrap(input), null, 2)}\n`;
   if (args.out) {
     await mkdir(path.dirname(path.resolve(args.out)), { recursive: true });
     await writeFile(path.resolve(args.out), output, { encoding: 'utf8', flag: 'wx' });
