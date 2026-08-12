@@ -275,25 +275,14 @@
       "sha256": "b306467d9293c28fab475a59d804f33c3777b853f089aaf1bdcd9572e7a34929"
     }
   ],
-  "production_roles": [
-    "admin",
-    "parent",
-    "rabbi",
-    "student"
-  ],
+  "production_roles": ["admin", "parent", "rabbi", "student"],
   "public_actor": "public",
-  "readiness_states": [
-    "ready",
-    "isolated",
-    "missing"
-  ],
+  "readiness_states": ["ready", "isolated", "missing"],
   "canonical_routes": [
     {
       "route_id": "RT-PUB-001",
       "path": "/",
-      "roles": [
-        "public"
-      ],
+      "roles": ["public"],
       "handler": "public.landing",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -301,9 +290,7 @@
     {
       "route_id": "RT-PUB-002",
       "path": "/signup",
-      "roles": [
-        "public"
-      ],
+      "roles": ["public"],
       "handler": "public.family-signup",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -311,9 +298,7 @@
     {
       "route_id": "RT-PUB-003",
       "path": "/signup/received",
-      "roles": [
-        "public"
-      ],
+      "roles": ["public"],
       "handler": "public.signup-received",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -321,9 +306,7 @@
     {
       "route_id": "RT-PUB-004",
       "path": "/school",
-      "roles": [
-        "public"
-      ],
+      "roles": ["public"],
       "handler": "public.school-inquiry",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -331,9 +314,7 @@
     {
       "route_id": "RT-PUB-005",
       "path": "/school/received",
-      "roles": [
-        "public"
-      ],
+      "roles": ["public"],
       "handler": "public.school-received",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -341,9 +322,7 @@
     {
       "route_id": "RT-PUB-006",
       "path": "/privacy",
-      "roles": [
-        "public"
-      ],
+      "roles": ["public"],
       "handler": "public.privacy",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -351,9 +330,7 @@
     {
       "route_id": "RT-PUB-007",
       "path": "/terms",
-      "roles": [
-        "public"
-      ],
+      "roles": ["public"],
       "handler": "public.terms",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -361,9 +338,7 @@
     {
       "route_id": "RT-PUB-008",
       "path": "/cancellation-refund",
-      "roles": [
-        "public"
-      ],
+      "roles": ["public"],
       "handler": "public.cancellation-refund",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -371,9 +346,7 @@
     {
       "route_id": "RT-PUB-009",
       "path": "/support",
-      "roles": [
-        "public"
-      ],
+      "roles": ["public"],
       "handler": "public.support",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -381,9 +354,7 @@
     {
       "route_id": "RT-PUB-010",
       "path": "/login",
-      "roles": [
-        "public"
-      ],
+      "roles": ["public"],
       "handler": "auth.login",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -391,9 +362,7 @@
     {
       "route_id": "RT-AUTH-001",
       "path": "/login",
-      "roles": [
-        "public"
-      ],
+      "roles": ["public"],
       "handler": "auth.rt-auth-001",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -401,9 +370,7 @@
     {
       "route_id": "RT-AUTH-002",
       "path": "/forgot-password",
-      "roles": [
-        "public"
-      ],
+      "roles": ["public"],
       "handler": "auth.rt-auth-002",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -411,9 +378,7 @@
     {
       "route_id": "RT-AUTH-003",
       "path": "/setup/:token",
-      "roles": [
-        "public"
-      ],
+      "roles": ["public"],
       "handler": "auth.rt-auth-003",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -421,9 +386,7 @@
     {
       "route_id": "RT-AUTH-004",
       "path": "/reset-password/:token",
-      "roles": [
-        "public"
-      ],
+      "roles": ["public"],
       "handler": "auth.rt-auth-004",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -431,9 +394,7 @@
     {
       "route_id": "RT-AUTH-005",
       "path": "/select-household",
-      "roles": [
-        "parent"
-      ],
+      "roles": ["parent"],
       "handler": "auth.rt-auth-005",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -441,9 +402,7 @@
     {
       "route_id": "RT-AUTH-006",
       "path": "/access-denied",
-      "roles": [
-        "authenticated"
-      ],
+      "roles": ["authenticated"],
       "handler": "auth.rt-auth-006",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -451,10 +410,7 @@
     {
       "route_id": "RT-AUTH-007",
       "path": "/session-ended",
-      "roles": [
-        "public",
-        "authenticated"
-      ],
+      "roles": ["public", "authenticated"],
       "handler": "auth.rt-auth-007",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -462,10 +418,7 @@
     {
       "route_id": "RT-AUTH-008",
       "path": "/select-role",
-      "roles": [
-        "admin",
-        "parent"
-      ],
+      "roles": ["admin", "parent"],
       "handler": "auth.rt-auth-008",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -473,9 +426,7 @@
     {
       "route_id": "RT-ADM-001",
       "path": "/app/dashboard",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "handler": "admin.rt-adm-001",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -483,9 +434,7 @@
     {
       "route_id": "RT-ADM-002",
       "path": "/app/search",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "handler": "admin.rt-adm-002",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -493,9 +442,7 @@
     {
       "route_id": "RT-ADM-010",
       "path": "/app/contacts",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "handler": "admin.rt-adm-010",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -503,9 +450,7 @@
     {
       "route_id": "RT-ADM-011",
       "path": "/app/contacts/:contactId",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "handler": "admin.rt-adm-011",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -513,9 +458,7 @@
     {
       "route_id": "RT-ADM-012",
       "path": "/app/households",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "handler": "admin.rt-adm-012",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -523,9 +466,7 @@
     {
       "route_id": "RT-ADM-013",
       "path": "/app/households/:householdId",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "handler": "admin.rt-adm-013",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -533,9 +474,7 @@
     {
       "route_id": "RT-ADM-014",
       "path": "/app/users",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "handler": "admin.rt-adm-014",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -543,9 +482,7 @@
     {
       "route_id": "RT-ADM-015",
       "path": "/app/users/:userId",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "handler": "admin.rt-adm-015",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -553,9 +490,7 @@
     {
       "route_id": "RT-ADM-016",
       "path": "/app/students",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "handler": "admin.rt-adm-016",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -563,9 +498,7 @@
     {
       "route_id": "RT-ADM-017",
       "path": "/app/students/:studentId",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "handler": "admin.rt-adm-017",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -573,9 +506,7 @@
     {
       "route_id": "RT-ADM-020",
       "path": "/app/content",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "handler": "admin.rt-adm-020",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -583,9 +514,7 @@
     {
       "route_id": "RT-ADM-021",
       "path": "/app/content/upload",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "handler": "admin.rt-adm-021",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -593,9 +522,7 @@
     {
       "route_id": "RT-ADM-022",
       "path": "/app/content/:contentId",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "handler": "admin.rt-adm-022",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -603,9 +530,7 @@
     {
       "route_id": "RT-ADM-023",
       "path": "/app/content/:contentId/review",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "handler": "admin.rt-adm-023",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -613,9 +538,7 @@
     {
       "route_id": "RT-ADM-024",
       "path": "/app/library",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "handler": "admin.rt-adm-024",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -623,9 +546,7 @@
     {
       "route_id": "RT-ADM-030",
       "path": "/app/classroom",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "handler": "admin.rt-adm-030",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -633,9 +554,7 @@
     {
       "route_id": "RT-ADM-031",
       "path": "/app/classroom/calendar",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "handler": "admin.rt-adm-031",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -643,9 +562,7 @@
     {
       "route_id": "RT-ADM-032",
       "path": "/app/classroom/classes",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "handler": "admin.rt-adm-032",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -653,9 +570,7 @@
     {
       "route_id": "RT-ADM-033",
       "path": "/app/classroom/classes/:classId",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "handler": "admin.rt-adm-033",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -663,9 +578,7 @@
     {
       "route_id": "RT-ADM-034",
       "path": "/app/classroom/occurrences",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "handler": "admin.rt-adm-034",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -673,9 +586,7 @@
     {
       "route_id": "RT-ADM-035",
       "path": "/app/classroom/occurrences/:occurrenceId",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "handler": "admin.rt-adm-035",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -683,9 +594,7 @@
     {
       "route_id": "RT-ADM-036",
       "path": "/app/classroom/enrollments",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "handler": "admin.rt-adm-036",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -693,9 +602,7 @@
     {
       "route_id": "RT-ADM-037",
       "path": "/app/classroom/zoom",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "handler": "admin.rt-adm-037",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -703,9 +610,7 @@
     {
       "route_id": "RT-ADM-038",
       "path": "/app/classroom/attendance",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "handler": "admin.rt-adm-038",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -713,9 +618,7 @@
     {
       "route_id": "RT-ADM-039",
       "path": "/app/classroom/recordings",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "handler": "admin.rt-adm-039",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -723,9 +626,7 @@
     {
       "route_id": "RT-ADM-040",
       "path": "/app/classroom/questions",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "handler": "admin.rt-adm-040",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -733,9 +634,7 @@
     {
       "route_id": "RT-ADM-041",
       "path": "/app/classroom/progress",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "handler": "admin.rt-adm-041",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -743,9 +642,7 @@
     {
       "route_id": "RT-ADM-042",
       "path": "/app/classroom/leaderboard",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "handler": "admin.rt-adm-042",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -753,9 +650,7 @@
     {
       "route_id": "RT-ADM-043",
       "path": "/app/classroom/access",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "handler": "admin.rt-adm-043",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -763,10 +658,7 @@
     {
       "route_id": "RT-ADM-050",
       "path": "/app/live",
-      "roles": [
-        "admin",
-        "rabbi"
-      ],
+      "roles": ["admin", "rabbi"],
       "handler": "live.rt-adm-050",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -774,10 +666,7 @@
     {
       "route_id": "RT-ADM-051",
       "path": "/app/live/:occurrenceId",
-      "roles": [
-        "admin",
-        "rabbi"
-      ],
+      "roles": ["admin", "rabbi"],
       "handler": "live.rt-adm-051",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -785,9 +674,7 @@
     {
       "route_id": "RT-ADM-060",
       "path": "/app/communications",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "handler": "admin.rt-adm-060",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -795,9 +682,7 @@
     {
       "route_id": "RT-ADM-061",
       "path": "/app/communications/:workflowId",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "handler": "admin.rt-adm-061",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -805,9 +690,7 @@
     {
       "route_id": "RT-ADM-062",
       "path": "/app/tickets",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "handler": "admin.rt-adm-062",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -815,9 +698,7 @@
     {
       "route_id": "RT-ADM-063",
       "path": "/app/tickets/:ticketId",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "handler": "admin.rt-adm-063",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -825,9 +706,7 @@
     {
       "route_id": "RT-ADM-064",
       "path": "/app/billing-access",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "handler": "admin.rt-adm-064",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -835,9 +714,7 @@
     {
       "route_id": "RT-ADM-065",
       "path": "/app/integrations",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "handler": "admin.rt-adm-065",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -845,9 +722,7 @@
     {
       "route_id": "RT-ADM-066",
       "path": "/app/operations",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "handler": "admin.rt-adm-066",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -855,9 +730,7 @@
     {
       "route_id": "RT-ADM-067",
       "path": "/app/audit",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "handler": "admin.rt-adm-067",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -865,9 +738,7 @@
     {
       "route_id": "RT-ADM-068",
       "path": "/app/support",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "handler": "admin.rt-adm-068",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -875,9 +746,7 @@
     {
       "route_id": "RT-ADM-069",
       "path": "/app/account",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "handler": "admin.rt-adm-069",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -885,9 +754,7 @@
     {
       "route_id": "RT-PAR-001",
       "path": "/app/parent",
-      "roles": [
-        "parent"
-      ],
+      "roles": ["parent"],
       "handler": "parent.rt-par-001",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -895,9 +762,7 @@
     {
       "route_id": "RT-PAR-002",
       "path": "/app/parent/students",
-      "roles": [
-        "parent"
-      ],
+      "roles": ["parent"],
       "handler": "parent.rt-par-002",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -905,9 +770,7 @@
     {
       "route_id": "RT-PAR-003",
       "path": "/app/parent/students/new",
-      "roles": [
-        "parent"
-      ],
+      "roles": ["parent"],
       "handler": "parent.rt-par-003",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -915,9 +778,7 @@
     {
       "route_id": "RT-PAR-004",
       "path": "/app/parent/students/:studentId",
-      "roles": [
-        "parent"
-      ],
+      "roles": ["parent"],
       "handler": "parent.rt-par-004",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -925,9 +786,7 @@
     {
       "route_id": "RT-PAR-010",
       "path": "/app/parent/calendar",
-      "roles": [
-        "parent"
-      ],
+      "roles": ["parent"],
       "handler": "parent.rt-par-010",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -935,9 +794,7 @@
     {
       "route_id": "RT-PAR-011",
       "path": "/app/parent/classes/:occurrenceId",
-      "roles": [
-        "parent"
-      ],
+      "roles": ["parent"],
       "handler": "parent.rt-par-011",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -945,9 +802,7 @@
     {
       "route_id": "RT-PAR-020",
       "path": "/app/parent/progress",
-      "roles": [
-        "parent"
-      ],
+      "roles": ["parent"],
       "handler": "parent.rt-par-020",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -955,9 +810,7 @@
     {
       "route_id": "RT-PAR-021",
       "path": "/app/parent/progress/:studentId",
-      "roles": [
-        "parent"
-      ],
+      "roles": ["parent"],
       "handler": "parent.rt-par-021",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -965,9 +818,7 @@
     {
       "route_id": "RT-PAR-030",
       "path": "/app/parent/billing",
-      "roles": [
-        "parent"
-      ],
+      "roles": ["parent"],
       "handler": "parent.rt-par-030",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -975,9 +826,7 @@
     {
       "route_id": "RT-PAR-040",
       "path": "/app/parent/updates",
-      "roles": [
-        "parent"
-      ],
+      "roles": ["parent"],
       "handler": "parent.rt-par-040",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -985,9 +834,7 @@
     {
       "route_id": "RT-PAR-041",
       "path": "/app/parent/newsletter",
-      "roles": [
-        "parent"
-      ],
+      "roles": ["parent"],
       "handler": "parent.rt-par-041",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -995,9 +842,7 @@
     {
       "route_id": "RT-PAR-050",
       "path": "/app/parent/preferences",
-      "roles": [
-        "parent"
-      ],
+      "roles": ["parent"],
       "handler": "parent.rt-par-050",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -1005,9 +850,7 @@
     {
       "route_id": "RT-PAR-060",
       "path": "/app/parent/support",
-      "roles": [
-        "parent"
-      ],
+      "roles": ["parent"],
       "handler": "parent.rt-par-060",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -1015,9 +858,7 @@
     {
       "route_id": "RT-PAR-061",
       "path": "/app/parent/support/:ticketId",
-      "roles": [
-        "parent"
-      ],
+      "roles": ["parent"],
       "handler": "parent.rt-par-061",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -1025,9 +866,7 @@
     {
       "route_id": "RT-PAR-070",
       "path": "/app/parent/account",
-      "roles": [
-        "parent"
-      ],
+      "roles": ["parent"],
       "handler": "parent.rt-par-070",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -1035,9 +874,7 @@
     {
       "route_id": "RT-PAR-071",
       "path": "/app/parent/privacy",
-      "roles": [
-        "parent"
-      ],
+      "roles": ["parent"],
       "handler": "parent.rt-par-071",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -1045,9 +882,7 @@
     {
       "route_id": "RT-PAR-072",
       "path": "/app/parent/data-rights",
-      "roles": [
-        "parent"
-      ],
+      "roles": ["parent"],
       "handler": "parent.rt-par-072",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -1055,9 +890,7 @@
     {
       "route_id": "RT-STU-001",
       "path": "/app/student",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "handler": "student.rt-stu-001",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -1065,9 +898,7 @@
     {
       "route_id": "RT-STU-010",
       "path": "/app/student/calendar",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "handler": "student.rt-stu-010",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -1075,9 +906,7 @@
     {
       "route_id": "RT-STU-011",
       "path": "/app/student/classes/:occurrenceId",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "handler": "student.rt-stu-011",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -1085,9 +914,7 @@
     {
       "route_id": "RT-STU-012",
       "path": "/app/student/class/:occurrenceId",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "handler": "student.rt-stu-012",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -1095,9 +922,7 @@
     {
       "route_id": "RT-STU-020",
       "path": "/app/student/library",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "handler": "student.rt-stu-020",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -1105,9 +930,7 @@
     {
       "route_id": "RT-STU-021",
       "path": "/app/student/library/:contentId",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "handler": "student.rt-stu-021",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -1115,9 +938,7 @@
     {
       "route_id": "RT-STU-030",
       "path": "/app/student/progress",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "handler": "student.rt-stu-030",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -1125,9 +946,7 @@
     {
       "route_id": "RT-STU-040",
       "path": "/app/student/questions",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "handler": "student.rt-stu-040",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -1135,9 +954,7 @@
     {
       "route_id": "RT-STU-041",
       "path": "/app/student/questions/new",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "handler": "student.rt-stu-041",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -1145,9 +962,7 @@
     {
       "route_id": "RT-STU-042",
       "path": "/app/student/questions/:questionId",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "handler": "student.rt-stu-042",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -1155,9 +970,7 @@
     {
       "route_id": "RT-STU-050",
       "path": "/app/student/updates",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "handler": "student.rt-stu-050",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -1165,9 +978,7 @@
     {
       "route_id": "RT-STU-051",
       "path": "/app/student/notifications",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "handler": "student.rt-stu-051",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -1175,9 +986,7 @@
     {
       "route_id": "RT-STU-060",
       "path": "/app/student/support",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "handler": "student.rt-stu-060",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -1185,9 +994,7 @@
     {
       "route_id": "RT-STU-061",
       "path": "/app/student/support/:ticketId",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "handler": "student.rt-stu-061",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -1195,9 +1002,7 @@
     {
       "route_id": "RT-STU-070",
       "path": "/app/student/account",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "handler": "student.rt-stu-070",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -1205,9 +1010,7 @@
     {
       "route_id": "RT-STU-071",
       "path": "/app/student/privacy",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "handler": "student.rt-stu-071",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -1215,9 +1018,7 @@
     {
       "route_id": "RT-STU-072",
       "path": "/app/student/data-rights",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "handler": "student.rt-stu-072",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
@@ -1229,9 +1030,7 @@
       "label": "Archive class series",
       "surface": "button",
       "route": "/app/classroom/classes/:classId",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "admin:class-series:lifecycle",
       "handler": {
         "method": "PATCH",
@@ -1265,9 +1064,7 @@
       "label": "Edit class series",
       "surface": "form",
       "route": "/app/classroom/classes/:classId",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "admin:class-series:update",
       "handler": {
         "method": "PATCH",
@@ -1301,9 +1098,7 @@
       "label": "Class series details",
       "surface": "route",
       "route": "/app/classroom/classes/:classId",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "admin:class-series:read",
       "handler": {
         "method": "GET",
@@ -1337,9 +1132,7 @@
       "label": "Workflow readback",
       "surface": "route",
       "route": "/app/communications/:workflowId",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "admin:communications:workflow-read",
       "handler": {
         "method": "GET",
@@ -1374,9 +1167,7 @@
       "label": "Approve artifact",
       "surface": "button",
       "route": "/app/content/:contentId/review",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "admin:content:artifact-edit",
       "handler": {
         "method": "POST",
@@ -1411,9 +1202,7 @@
       "label": "Publish artifact",
       "surface": "button",
       "route": "/app/content/:contentId/review",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "admin:content:artifact-publish",
       "handler": {
         "method": "POST",
@@ -1448,9 +1237,7 @@
       "label": "Approve social draft",
       "surface": "button",
       "route": "/app/content/:contentId/review",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "admin:content:social-approve",
       "handler": {
         "method": "POST",
@@ -1485,9 +1272,7 @@
       "label": "Retract social draft",
       "surface": "button",
       "route": "/app/content/:contentId/review",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "admin:content:revoke",
       "handler": {
         "method": "POST",
@@ -1522,9 +1307,7 @@
       "label": "Schedule social draft",
       "surface": "button",
       "route": "/app/content/:contentId/review",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "admin:content:social-schedule",
       "handler": {
         "method": "POST",
@@ -1559,9 +1342,7 @@
       "label": "Approve transcript",
       "surface": "button",
       "route": "/app/content/:contentId/review",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "admin:content:transcript-review",
       "handler": {
         "method": "POST",
@@ -1596,9 +1377,7 @@
       "label": "Content review",
       "surface": "route",
       "route": "/app/content/:contentId/review",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "admin:content:view",
       "handler": {
         "method": "GET",
@@ -1633,9 +1412,7 @@
       "label": "Archive or restore Student",
       "surface": "button",
       "route": "/app/students/:studentId",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "admin:student:lifecycle",
       "handler": {
         "method": "POST",
@@ -1669,9 +1446,7 @@
       "label": "Edit Student",
       "surface": "form",
       "route": "/app/students/:studentId",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "admin:student:update",
       "handler": {
         "method": "PATCH",
@@ -1705,9 +1480,7 @@
       "label": "Student setup",
       "surface": "form",
       "route": "/app/students/:studentId",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "admin:student:credential-setup",
       "handler": {
         "method": "POST",
@@ -1741,9 +1514,7 @@
       "label": "Student details",
       "surface": "route",
       "route": "/app/students/:studentId",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "admin:student:read",
       "handler": {
         "method": "GET",
@@ -1777,9 +1548,7 @@
       "label": "Disable or reactivate user",
       "surface": "button",
       "route": "/app/users/:userId",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "admin:user:lifecycle",
       "handler": {
         "method": "POST",
@@ -1813,9 +1582,7 @@
       "label": "Edit user role",
       "surface": "form",
       "route": "/app/users/:userId",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "admin:user:update",
       "handler": {
         "method": "PATCH",
@@ -1849,9 +1616,7 @@
       "label": "Reset user password",
       "surface": "button",
       "route": "/app/users/:userId",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "admin:user:credential-reset",
       "handler": {
         "method": "POST",
@@ -1885,9 +1650,7 @@
       "label": "User details",
       "surface": "route",
       "route": "/app/users/:userId",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "admin:user:read",
       "handler": {
         "method": "GET",
@@ -1921,16 +1684,10 @@
       "label": "Start class",
       "surface": "button",
       "route": "/app/live-console",
-      "roles": [
-        "admin",
-        "rabbi"
-      ],
+      "roles": ["admin", "rabbi"],
       "canonical_binding": {
         "route": "/app/live",
-        "roles": [
-          "admin",
-          "rabbi"
-        ]
+        "roles": ["admin", "rabbi"]
       },
       "capability": "admin:class:start",
       "handler": {
@@ -1984,9 +1741,7 @@
       "label": "Moderate class question",
       "surface": "form",
       "route": "/app/classroom/questions",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "admin:question:transition",
       "handler": {
         "method": "POST",
@@ -2021,9 +1776,7 @@
       "label": "Class question moderation",
       "surface": "route",
       "route": "/app/classroom/questions",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "admin:question:read",
       "handler": {
         "method": "GET",
@@ -2057,9 +1810,7 @@
       "label": "Load more results",
       "surface": "button",
       "route": "/app/search",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "admin:search:read",
       "handler": {
         "method": "POST",
@@ -2093,9 +1844,7 @@
       "label": "Search",
       "surface": "button",
       "route": "/app/search",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "admin:search:open",
       "handler": {
         "method": "CLIENT",
@@ -2129,9 +1878,7 @@
       "label": "Search operational records",
       "surface": "form",
       "route": "/app/search",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "admin:search:read",
       "handler": {
         "method": "POST",
@@ -2167,9 +1914,7 @@
       "label": "Clear recent searches",
       "surface": "button",
       "route": "/app/search",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "admin:search:local",
       "handler": {
         "method": "CLIENT",
@@ -2193,18 +1938,14 @@
       "readiness_state": "ready",
       "provider_mode": "not_provider_dependent",
       "external_mutation": false,
-      "test_evidence": [
-        "apps/web/src/client/app/admin/search/AdminGlobalSearch.test.tsx"
-      ]
+      "test_evidence": ["apps/web/src/client/app/admin/search/AdminGlobalSearch.test.tsx"]
     },
     {
       "action_id": "admin.search.result.open.button",
       "label": "Open result",
       "surface": "button",
       "route": "/app/search",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "admin:search:navigate",
       "handler": {
         "method": "POST",
@@ -2239,9 +1980,7 @@
       "label": "Continue with selected household",
       "surface": "button",
       "route": "/select-household",
-      "roles": [
-        "parent"
-      ],
+      "roles": ["parent"],
       "capability": "auth:household-context:switch",
       "handler": {
         "method": "POST",
@@ -2275,9 +2014,7 @@
       "label": "Choose household",
       "surface": "route",
       "route": "/select-household",
-      "roles": [
-        "parent"
-      ],
+      "roles": ["parent"],
       "capability": "auth:household-context:read",
       "handler": {
         "method": "GET",
@@ -2311,9 +2048,7 @@
       "label": "Logout",
       "surface": "button",
       "route": "/app/parent/students",
-      "roles": [
-        "parent"
-      ],
+      "roles": ["parent"],
       "capability": "auth:session:revoke",
       "handler": {
         "method": "POST",
@@ -2337,19 +2072,14 @@
       "readiness_state": "ready",
       "provider_mode": "not_provider_dependent",
       "external_mutation": false,
-      "test_evidence": [
-        "tests/integration/dashboard/owner-dashboard.test.ts"
-      ]
+      "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
     },
     {
       "action_id": "auth.role_selector.switch.button",
       "label": "Continue with selected role",
       "surface": "button",
       "route": "/select-role",
-      "roles": [
-        "admin",
-        "parent"
-      ],
+      "roles": ["admin", "parent"],
       "capability": "auth:role-context:switch",
       "handler": {
         "method": "POST",
@@ -2373,19 +2103,14 @@
       "readiness_state": "ready",
       "provider_mode": "not_provider_dependent",
       "external_mutation": false,
-      "test_evidence": [
-        "tests/integration/portals/portal-mount.test.ts"
-      ]
+      "test_evidence": ["tests/integration/portals/portal-mount.test.ts"]
     },
     {
       "action_id": "auth.role_selector.view.route",
       "label": "Choose account context",
       "surface": "route",
       "route": "/select-role",
-      "roles": [
-        "admin",
-        "parent"
-      ],
+      "roles": ["admin", "parent"],
       "capability": "auth:role-context:read",
       "handler": {
         "method": "GET",
@@ -2409,18 +2134,14 @@
       "readiness_state": "ready",
       "provider_mode": "not_provider_dependent",
       "external_mutation": false,
-      "test_evidence": [
-        "tests/integration/portals/portal-mount.test.ts"
-      ]
+      "test_evidence": ["tests/integration/portals/portal-mount.test.ts"]
     },
     {
       "action_id": "auth.student.logout.button",
       "label": "Logout",
       "surface": "button",
       "route": "/app/student",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "capability": "auth:session:revoke",
       "handler": {
         "method": "POST",
@@ -2444,18 +2165,14 @@
       "readiness_state": "ready",
       "provider_mode": "not_provider_dependent",
       "external_mutation": false,
-      "test_evidence": [
-        "tests/integration/dashboard/owner-dashboard.test.ts"
-      ]
+      "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
     },
     {
       "action_id": "classes.attendance.admin.correct.form",
       "label": "Record audited attendance correction",
       "surface": "form",
       "route": "/app/classroom/attendance",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "classroom:attendance:correct",
       "handler": {
         "method": "POST",
@@ -2490,9 +2207,7 @@
       "label": "Review attendance",
       "surface": "route",
       "route": "/app/classroom/attendance",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "classroom:attendance:read",
       "handler": {
         "method": "GET",
@@ -2526,9 +2241,7 @@
       "label": "Open class details",
       "surface": "button",
       "route": "/app/classroom/occurrences/:occurrenceId",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "classes:read",
       "handler": {
         "method": "GET",
@@ -2552,18 +2265,14 @@
       "readiness_state": "ready",
       "provider_mode": "not_provider_dependent",
       "external_mutation": false,
-      "test_evidence": [
-        "tests/integration/classes/class-fulfillment.test.ts"
-      ]
+      "test_evidence": ["tests/integration/classes/class-fulfillment.test.ts"]
     },
     {
       "action_id": "crm.contacts.create.form",
       "label": "Create CRM contact",
       "surface": "form",
       "route": "/app/contacts",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "crm:contacts:create",
       "handler": {
         "method": "POST",
@@ -2587,18 +2296,14 @@
       "readiness_state": "ready",
       "provider_mode": "not_provider_dependent",
       "external_mutation": false,
-      "test_evidence": [
-        "tests/integration/dashboard/owner-dashboard.test.ts"
-      ]
+      "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
     },
     {
       "action_id": "crm.contacts.open.button",
       "label": "Open CRM contact",
       "surface": "button",
       "route": "/app/contacts/:contactId",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "crm:contacts:read",
       "handler": {
         "method": "GET",
@@ -2622,18 +2327,14 @@
       "readiness_state": "ready",
       "provider_mode": "not_provider_dependent",
       "external_mutation": false,
-      "test_evidence": [
-        "tests/integration/dashboard/owner-dashboard.test.ts"
-      ]
+      "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
     },
     {
       "action_id": "crm.contacts.search.form",
       "label": "Search CRM contacts",
       "surface": "form",
       "route": "/app/contacts",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "crm:contacts:search",
       "handler": {
         "method": "POST",
@@ -2657,18 +2358,14 @@
       "readiness_state": "ready",
       "provider_mode": "not_provider_dependent",
       "external_mutation": false,
-      "test_evidence": [
-        "tests/integration/dashboard/owner-dashboard.test.ts"
-      ]
+      "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
     },
     {
       "action_id": "crm.contacts.update.form",
       "label": "Update CRM contact",
       "surface": "form",
       "route": "/app/contacts/:contactId",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "crm:contacts:update",
       "handler": {
         "method": "PATCH",
@@ -2692,18 +2389,14 @@
       "readiness_state": "ready",
       "provider_mode": "not_provider_dependent",
       "external_mutation": false,
-      "test_evidence": [
-        "tests/integration/dashboard/owner-dashboard.test.ts"
-      ]
+      "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
     },
     {
       "action_id": "crm.contacts.view.route",
       "label": "CRM",
       "surface": "route",
       "route": "/app/contacts",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "crm:contacts:read",
       "handler": {
         "method": "GET",
@@ -2727,18 +2420,14 @@
       "readiness_state": "ready",
       "provider_mode": "not_provider_dependent",
       "external_mutation": false,
-      "test_evidence": [
-        "tests/integration/dashboard/owner-dashboard.test.ts"
-      ]
+      "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
     },
     {
       "action_id": "live_class.question.ready.button",
       "label": "Student Ready",
       "surface": "button",
       "route": "/app/student",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "capability": "student:class:question",
       "handler": {
         "method": "POST",
@@ -2772,9 +2461,7 @@
       "label": "Submit private question",
       "surface": "form",
       "route": "/app/student",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "capability": "student:class:question",
       "handler": {
         "method": "POST",
@@ -2798,18 +2485,14 @@
       "readiness_state": "ready",
       "provider_mode": "not_provider_dependent",
       "external_mutation": false,
-      "test_evidence": [
-        "tests/unit/live-class/live-class-service.test.ts"
-      ]
+      "test_evidence": ["tests/unit/live-class/live-class-service.test.ts"]
     },
     {
       "action_id": "portal.parent.class_detail.view.route",
       "label": "Parent class detail",
       "surface": "route",
       "route": "/app/parent/classes/:occurrenceId",
-      "roles": [
-        "parent"
-      ],
+      "roles": ["parent"],
       "capability": "parent:class:read",
       "handler": {
         "method": "GET",
@@ -2843,9 +2526,7 @@
       "label": "Select learner",
       "surface": "button",
       "route": "/app/parent/students",
-      "roles": [
-        "parent"
-      ],
+      "roles": ["parent"],
       "capability": "parent:household:read",
       "handler": {
         "method": "CLIENT",
@@ -2869,18 +2550,14 @@
       "readiness_state": "ready",
       "provider_mode": "not_provider_dependent",
       "external_mutation": false,
-      "test_evidence": [
-        "tests/ot-52/portal-ui.test.ts"
-      ]
+      "test_evidence": ["tests/ot-52/portal-ui.test.ts"]
     },
     {
       "action_id": "portal.parent.student_access.reset.button",
       "label": "Reset student access",
       "surface": "button",
       "route": "/app/parent/students",
-      "roles": [
-        "parent"
-      ],
+      "roles": ["parent"],
       "capability": "parent:student-access:manage",
       "handler": {
         "method": "POST",
@@ -2904,18 +2581,14 @@
       "readiness_state": "ready",
       "provider_mode": "not_provider_dependent",
       "external_mutation": false,
-      "test_evidence": [
-        "tests/integration/portals/portal-mount.test.ts"
-      ]
+      "test_evidence": ["tests/integration/portals/portal-mount.test.ts"]
     },
     {
       "action_id": "portal.parent.student_access.setup.form",
       "label": "Setup student access",
       "surface": "form",
       "route": "/app/parent/students",
-      "roles": [
-        "parent"
-      ],
+      "roles": ["parent"],
       "capability": "parent:student-access:manage",
       "handler": {
         "method": "POST",
@@ -2939,18 +2612,14 @@
       "readiness_state": "ready",
       "provider_mode": "not_provider_dependent",
       "external_mutation": false,
-      "test_evidence": [
-        "tests/integration/portals/portal-mount.test.ts"
-      ]
+      "test_evidence": ["tests/integration/portals/portal-mount.test.ts"]
     },
     {
       "action_id": "portal.parent.student_access.suspend.button",
       "label": "Suspend student access",
       "surface": "button",
       "route": "/app/parent/students",
-      "roles": [
-        "parent"
-      ],
+      "roles": ["parent"],
       "capability": "parent:student-access:manage",
       "handler": {
         "method": "POST",
@@ -2974,18 +2643,14 @@
       "readiness_state": "ready",
       "provider_mode": "not_provider_dependent",
       "external_mutation": false,
-      "test_evidence": [
-        "tests/integration/portals/portal-mount.test.ts"
-      ]
+      "test_evidence": ["tests/integration/portals/portal-mount.test.ts"]
     },
     {
       "action_id": "portal.student.class_detail.join.button",
       "label": "Join class",
       "surface": "button",
       "route": "/app/student/classes/:occurrenceId",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "capability": "student:class:launch",
       "handler": {
         "method": "POST",
@@ -3019,9 +2684,7 @@
       "label": "Student class detail",
       "surface": "route",
       "route": "/app/student/classes/:occurrenceId",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "capability": "student:class:read",
       "handler": {
         "method": "GET",
@@ -3055,9 +2718,7 @@
       "label": "Join classroom",
       "surface": "button",
       "route": "/app/student/class/:occurrenceId",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "capability": "student:class:launch",
       "handler": {
         "method": "POST",
@@ -3092,9 +2753,7 @@
       "label": "Leave classroom",
       "surface": "button",
       "route": "/app/student/class/:occurrenceId",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "capability": "student:class:launch",
       "handler": {
         "method": "POST",
@@ -3128,9 +2787,7 @@
       "label": "Join class",
       "surface": "button",
       "route": "/app/student/class/:occurrenceId",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "capability": "student:class:launch",
       "handler": {
         "method": "POST",
@@ -3184,9 +2841,7 @@
       "label": "Send question",
       "surface": "form",
       "route": "/app/student",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "capability": "student:class:question",
       "handler": {
         "method": "POST",
@@ -3210,18 +2865,14 @@
       "readiness_state": "ready",
       "provider_mode": "sink",
       "external_mutation": false,
-      "test_evidence": [
-        "tests/integration/classroom/zoom-learner-classroom.test.ts"
-      ]
+      "test_evidence": ["tests/integration/classroom/zoom-learner-classroom.test.ts"]
     },
     {
       "action_id": "portal.student.classroom.view.route",
       "label": "Open embedded classroom",
       "surface": "route",
       "route": "/app/student/class/:occurrenceId",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "capability": "student:class:launch",
       "handler": {
         "method": "GET",
@@ -3255,9 +2906,7 @@
       "label": "Create verified Student data-rights request",
       "surface": "form",
       "route": "/app/student/data-rights",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "capability": "student:privacy:rights-request",
       "handler": {
         "method": "POST",
@@ -3291,9 +2940,7 @@
       "label": "Student data rights",
       "surface": "route",
       "route": "/app/student/data-rights",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "capability": "student:privacy:read",
       "handler": {
         "method": "GET",
@@ -3327,9 +2974,7 @@
       "label": "Open protected lesson",
       "surface": "button",
       "route": "/app/student/library/:contentId",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "capability": "student:library:playback",
       "handler": {
         "method": "POST",
@@ -3363,9 +3008,7 @@
       "label": "Renew protected access",
       "surface": "button",
       "route": "/app/student/library/:contentId",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "capability": "student:library:playback",
       "handler": {
         "method": "POST",
@@ -3399,9 +3042,7 @@
       "label": "Save progress",
       "surface": "form",
       "route": "/app/student/library/:contentId",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "capability": "student:library:progress",
       "handler": {
         "method": "POST",
@@ -3435,9 +3076,7 @@
       "label": "Student lesson detail",
       "surface": "route",
       "route": "/app/student/library/:contentId",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "capability": "student:library:read",
       "handler": {
         "method": "POST",
@@ -3471,9 +3110,7 @@
       "label": "Change own Student consent",
       "surface": "form",
       "route": "/app/student/privacy",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "capability": "student:privacy:consent",
       "handler": {
         "method": "POST",
@@ -3507,9 +3144,7 @@
       "label": "Student privacy",
       "surface": "route",
       "route": "/app/student/privacy",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "capability": "student:privacy:read",
       "handler": {
         "method": "GET",
@@ -3543,9 +3178,7 @@
       "label": "Send private question",
       "surface": "button",
       "route": "/app/student",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "capability": "student:question:create",
       "handler": {
         "method": "POST",
@@ -3569,19 +3202,14 @@
       "readiness_state": "ready",
       "provider_mode": "not_provider_dependent",
       "external_mutation": false,
-      "test_evidence": [
-        "tests/ot-52/portal-router.test.ts",
-        "tests/ot-52/portal-services.test.ts"
-      ]
+      "test_evidence": ["tests/ot-52/portal-router.test.ts", "tests/ot-52/portal-services.test.ts"]
     },
     {
       "action_id": "portal.student.view.route",
       "label": "Student Portal",
       "surface": "route",
       "route": "/app/student",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "capability": "student:dashboard:read",
       "handler": {
         "method": "GET",
@@ -3615,9 +3243,7 @@
       "label": "Cancellation and Refund Policy",
       "surface": "route",
       "route": "/cancellation-refund",
-      "roles": [
-        "public"
-      ],
+      "roles": ["public"],
       "capability": "public:legal:read",
       "handler": {
         "method": "GET",
@@ -3651,9 +3277,7 @@
       "label": "Next teaching photo",
       "surface": "button",
       "route": "/",
-      "roles": [
-        "public"
-      ],
+      "roles": ["public"],
       "capability": "public:gallery:navigate",
       "handler": {
         "method": "CLIENT",
@@ -3677,18 +3301,14 @@
       "readiness_state": "ready",
       "provider_mode": "not_provider_dependent",
       "external_mutation": false,
-      "test_evidence": [
-        "tests/e2e/landing-signup.spec.ts"
-      ]
+      "test_evidence": ["tests/e2e/landing-signup.spec.ts"]
     },
     {
       "action_id": "public.gallery.previous.button",
       "label": "Previous teaching photo",
       "surface": "button",
       "route": "/",
-      "roles": [
-        "public"
-      ],
+      "roles": ["public"],
       "capability": "public:gallery:navigate",
       "handler": {
         "method": "CLIENT",
@@ -3712,18 +3332,14 @@
       "readiness_state": "ready",
       "provider_mode": "not_provider_dependent",
       "external_mutation": false,
-      "test_evidence": [
-        "tests/e2e/landing-signup.spec.ts"
-      ]
+      "test_evidence": ["tests/e2e/landing-signup.spec.ts"]
     },
     {
       "action_id": "public.gallery.select.button",
       "label": "Select teaching photo",
       "surface": "button",
       "route": "/",
-      "roles": [
-        "public"
-      ],
+      "roles": ["public"],
       "capability": "public:gallery:navigate",
       "handler": {
         "method": "CLIENT",
@@ -3757,9 +3373,7 @@
       "label": "Pause or play slideshow",
       "surface": "button",
       "route": "/",
-      "roles": [
-        "public"
-      ],
+      "roles": ["public"],
       "capability": "public:gallery:playback",
       "handler": {
         "method": "CLIENT",
@@ -3793,9 +3407,7 @@
       "label": "Home",
       "surface": "route",
       "route": "/",
-      "roles": [
-        "public"
-      ],
+      "roles": ["public"],
       "capability": "public:landing:read",
       "handler": {
         "method": "GET",
@@ -3829,9 +3441,7 @@
       "label": "Member Login",
       "surface": "route",
       "route": "/login",
-      "roles": [
-        "public"
-      ],
+      "roles": ["public"],
       "capability": "auth:login:start",
       "handler": {
         "method": "GET",
@@ -3855,19 +3465,14 @@
       "readiness_state": "ready",
       "provider_mode": "not_provider_dependent",
       "external_mutation": false,
-      "test_evidence": [
-        "tests/integration/auth-crm.test.ts",
-        "tests/e2e/crm-core.spec.ts"
-      ]
+      "test_evidence": ["tests/integration/auth-crm.test.ts", "tests/e2e/crm-core.spec.ts"]
     },
     {
       "action_id": "public.school-inquiry.submit.form",
       "label": "Submit School inquiry",
       "surface": "form",
       "route": "/school",
-      "roles": [
-        "public"
-      ],
+      "roles": ["public"],
       "capability": "signup:school-inquiry:create",
       "handler": {
         "method": "POST",
@@ -3901,9 +3506,7 @@
       "label": "Continue after Family signup",
       "surface": "button",
       "route": "/signup/received",
-      "roles": [
-        "public"
-      ],
+      "roles": ["public"],
       "capability": "public:signup:continue",
       "handler": {
         "method": "CLIENT",
@@ -3937,9 +3540,7 @@
       "label": "Family signup receipt",
       "surface": "route",
       "route": "/signup/received",
-      "roles": [
-        "public"
-      ],
+      "roles": ["public"],
       "capability": "public:signup:receipt",
       "handler": {
         "method": "GET",
@@ -3973,9 +3574,7 @@
       "label": "Sign Up Now",
       "surface": "route",
       "route": "/signup",
-      "roles": [
-        "public"
-      ],
+      "roles": ["public"],
       "capability": "public:signup:read",
       "handler": {
         "method": "GET",
@@ -4009,9 +3608,7 @@
       "label": "Submit signup",
       "surface": "form",
       "route": "/signup",
-      "roles": [
-        "public"
-      ],
+      "roles": ["public"],
       "capability": "accounts:family:create",
       "handler": {
         "method": "POST",
@@ -4045,9 +3642,7 @@
       "label": "Assign support conversation",
       "surface": "form",
       "route": "/app/support",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "support:ticket:assign",
       "handler": {
         "method": "POST",
@@ -4081,9 +3676,7 @@
       "label": "Support operations queue",
       "surface": "route",
       "route": "/app/support",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "support:queue:read",
       "handler": {
         "method": "GET",
@@ -4117,9 +3710,7 @@
       "label": "Send in-app support reply",
       "surface": "form",
       "route": "/app/support",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "support:ticket:reply",
       "handler": {
         "method": "POST",
@@ -4153,9 +3744,7 @@
       "label": "Update support lifecycle status",
       "surface": "form",
       "route": "/app/support",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "support:ticket:status",
       "handler": {
         "method": "POST",
@@ -4189,9 +3778,7 @@
       "label": "Assign support ticket",
       "surface": "form",
       "route": "/app/tickets/:ticketId",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "support:ticket:assign",
       "handler": {
         "method": "POST",
@@ -4226,9 +3813,7 @@
       "label": "Support ticket detail",
       "surface": "route",
       "route": "/app/tickets/:ticketId",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "support:ticket:read",
       "handler": {
         "method": "GET",
@@ -4263,9 +3848,7 @@
       "label": "Open support ticket",
       "surface": "button",
       "route": "/app/tickets",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "support:ticket:read",
       "handler": {
         "method": "CLIENT",
@@ -4299,9 +3882,7 @@
       "label": "Reply to support ticket",
       "surface": "form",
       "route": "/app/tickets/:ticketId",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "support:ticket:reply",
       "handler": {
         "method": "POST",
@@ -4336,9 +3917,7 @@
       "label": "Update support ticket status",
       "surface": "form",
       "route": "/app/tickets/:ticketId",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "support:ticket:status",
       "handler": {
         "method": "POST",
@@ -4373,9 +3952,7 @@
       "label": "Back to ticket queue",
       "surface": "button",
       "route": "/app/tickets/:ticketId",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "support:queue:read",
       "handler": {
         "method": "CLIENT",
@@ -4409,9 +3986,7 @@
       "label": "Support ticket queue",
       "surface": "route",
       "route": "/app/tickets",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "support:queue:read",
       "handler": {
         "method": "GET",
@@ -4446,9 +4021,7 @@
       "label": "Admin Support",
       "surface": "route",
       "route": "/app/support",
-      "roles": [
-        "admin"
-      ],
+      "roles": ["admin"],
       "capability": "support:operations:view",
       "handler": {
         "method": "GET",
@@ -4482,9 +4055,7 @@
       "label": "Support Receipt",
       "surface": "route",
       "route": "/app/parent/support/:ticketId",
-      "roles": [
-        "parent"
-      ],
+      "roles": ["parent"],
       "capability": "support:ticket:status",
       "handler": {
         "method": "GET",
@@ -4518,9 +4089,7 @@
       "label": "Submit support request",
       "surface": "form",
       "route": "/app/parent/support",
-      "roles": [
-        "parent"
-      ],
+      "roles": ["parent"],
       "capability": "support:ticket:create",
       "handler": {
         "method": "POST",
@@ -4554,9 +4123,7 @@
       "label": "Parent Support",
       "surface": "route",
       "route": "/app/parent/support",
-      "roles": [
-        "parent"
-      ],
+      "roles": ["parent"],
       "capability": "support:ticket:create",
       "handler": {
         "method": "GET",
@@ -4590,9 +4157,7 @@
       "label": "Support Receipt",
       "surface": "route",
       "route": "/app/student/support/:ticketId",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "capability": "support:ticket:status",
       "handler": {
         "method": "GET",
@@ -4626,9 +4191,7 @@
       "label": "Submit support request",
       "surface": "form",
       "route": "/app/student/support",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "capability": "support:ticket:create",
       "handler": {
         "method": "POST",
@@ -4662,9 +4225,7 @@
       "label": "Subscriber Support",
       "surface": "route",
       "route": "/app/student/support",
-      "roles": [
-        "student"
-      ],
+      "roles": ["student"],
       "capability": "support:ticket:create",
       "handler": {
         "method": "GET",
