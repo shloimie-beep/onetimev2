@@ -1617,8 +1617,7 @@ function StudentAccessFormDialog({
   const [password, setPassword] = useState('');
   const usernameRequired = action === 'setup';
   const usernameReady = !usernameRequired || username.trim().length >= 3;
-  const passwordReady =
-    /^[0-9]{6}$/u.test(password);
+  const passwordReady = /^[0-9]{6}$/u.test(password);
   const canSave = !saving && usernameReady && passwordReady;
   return (
     <DialogFrame
