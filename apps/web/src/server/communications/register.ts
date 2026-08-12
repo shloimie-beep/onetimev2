@@ -63,7 +63,7 @@ export function registerCommunicationsRoutes({
       return;
     }
     const { session } = resolution;
-    if (session.role !== 'owner' && session.role !== 'admin') {
+    if (!canReadCommunications(session.role)) {
       res.status(403).type('html').send('Forbidden');
       return;
     }

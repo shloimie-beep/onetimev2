@@ -4,10 +4,10 @@ import {
   contactCommunicationsTabDescriptor,
 } from '../../../apps/web/src/client/app/communications/route-descriptor.ts';
 
-test('Communications descriptors are lazy and owner/admin scoped', async () => {
+test('Communications descriptors are lazy and Rabbi/Admin scoped', async () => {
   expect(communicationsRouteDescriptor.path).toBe('/app/communications');
-  expect(communicationsRouteDescriptor.allowedRoles).toEqual(['owner', 'admin']);
-  expect(contactCommunicationsTabDescriptor.allowedRoles).toEqual(['owner', 'admin']);
+  expect(communicationsRouteDescriptor.allowedRoles).toEqual(['owner', 'admin', 'rabbi']);
+  expect(contactCommunicationsTabDescriptor.allowedRoles).toEqual(['owner', 'admin', 'rabbi']);
   expect(typeof communicationsRouteDescriptor.load).toBe('function');
   expect(typeof contactCommunicationsTabDescriptor.load).toBe('function');
   expect(communicationsRouteDescriptor.load).toBe(contactCommunicationsTabDescriptor.load);

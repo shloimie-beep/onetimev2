@@ -1014,80 +1014,68 @@ function CrmApp() {
                   : selected
                     ? contactSummary(selected)
                     : 'Parent and adult contact review. Students remain One Time-only.';
-  const toolbar =
-    surface === 'dashboard' && dashboardSection === 'overview' ? (
-      <ReadOnlyToolbar
-        label="Refresh dashboard"
-        actionId="dashboard.refresh.button"
-        loading={dashboardState.loading}
-        onRefresh={() => void loadDashboard()}
-      />
-    ) : surface === 'classes' ? (
-      <ReadOnlyToolbar
-        label="Refresh classroom"
-        actionId="classes.refresh.button"
-        loading={classesState.loading}
-        onRefresh={() => void loadClasses()}
-      />
-    ) : surface === 'billing' ? (
-      <ReadOnlyToolbar
-        label="Refresh household access"
-        actionId="household.access.refresh.button"
-        loading={dashboardState.loading}
-        onRefresh={() => void loadDashboard()}
-      />
-    ) : surface === 'support' ||
-      surface === 'operations' ||
-      (surface === 'crm' &&
-        !communicationsMode &&
-        contactsSection !== 'people') ? null : communicationsMode?.kind === 'contact' ? (
-      <ContactCommunicationsToolbar
-        onBack={() => {
-          history.pushState(
-            {},
-            '',
-            `/app/crm/contacts/${encodeURIComponent(communicationsMode.contactId)}`,
-          );
-          setCommunicationsMode(null);
-          void loadContact(communicationsMode.contactId);
-        }}
-      />
-    ) : contactOperationsMode ? (
-      <FormToolbar onCancel={() => void backToList()} />
-    ) : selected ? (
-      <DetailToolbar
-        contact={selected}
-        canEdit={canEdit && selected.lead_status !== 'archived'}
-        canReadCommunications={canReadCommunications}
-        onBack={backToList}
-        onEdit={() => setEditing(true)}
-        onCommunications={() => openContactCommunications(selected.contact_id)}
-        onManageHousehold={
-          selected.managed_household
-            ? () => startContactOperations(selected.managed_household?.household_key)
-            : undefined
-        }
-      />
-    ) : detailLoading ? (
-      <DetailLoadingToolbar />
-    ) : creating || editing ? (
-      <FormToolbar onCancel={() => (editing ? setEditing(false) : setCreating(false))} />
-    ) : surface === 'crm' ? (
-      <ListToolbar
-        query={query}
-        activeChips={activeChips}
-        canEdit={canCreate}
-        canOperateHouseholds={canReadOwnerShell}
-        onChange={setQuery}
-        onApply={(nextQuery) => void loadList(undefined, nextQuery)}
-        onClear={() => {
-          setQuery(defaultQuery);
-          void loadList(undefined, defaultQuery);
-        }}
-        onCreate={startCreate}
-        onHouseholdOperations={startContactOperations}
-      />
-    ) : null;
+  const toolbar = communicationsMode ? null : surface === 'dashboard' &&
+    dashboardSection === 'overview' ? (
+    <ReadOnlyToolbar
+      label="Refresh dashboard"
+      actionId="dashboard.refresh.button"
+      loading={dashboardState.loading}
+      onRefresh={() => void loadDashboard()}
+    />
+  ) : surface === 'classes' ? (
+    <ReadOnlyToolbar
+      label="Refresh classroom"
+      actionId="classes.refresh.button"
+      loading={classesState.loading}
+      onRefresh={() => void loadClasses()}
+    />
+  ) : surface === 'billing' ? (
+    <ReadOnlyToolbar
+      label="Refresh household access"
+      actionId="household.access.refresh.button"
+      loading={dashboardState.loading}
+      onRefresh={() => void loadDashboard()}
+    />
+  ) : surface === 'support' ||
+    surface === 'operations' ||
+    (surface === 'crm' &&
+      !communicationsMode &&
+      contactsSection !== 'people') ? null : contactOperationsMode ? (
+    <FormToolbar onCancel={() => void backToList()} />
+  ) : selected ? (
+    <DetailToolbar
+      contact={selected}
+      canEdit={canEdit && selected.lead_status !== 'archived'}
+      canReadCommunications={canReadCommunications}
+      onBack={backToList}
+      onEdit={() => setEditing(true)}
+      onCommunications={() => openContactCommunications(selected.contact_id)}
+      onManageHousehold={
+        selected.managed_household
+          ? () => startContactOperations(selected.managed_household?.household_key)
+          : undefined
+      }
+    />
+  ) : detailLoading ? (
+    <DetailLoadingToolbar />
+  ) : creating || editing ? (
+    <FormToolbar onCancel={() => (editing ? setEditing(false) : setCreating(false))} />
+  ) : surface === 'crm' ? (
+    <ListToolbar
+      query={query}
+      activeChips={activeChips}
+      canEdit={canCreate}
+      canOperateHouseholds={canReadOwnerShell}
+      onChange={setQuery}
+      onApply={(nextQuery) => void loadList(undefined, nextQuery)}
+      onClear={() => {
+        setQuery(defaultQuery);
+        void loadList(undefined, defaultQuery);
+      }}
+      onCreate={startCreate}
+      onHouseholdOperations={startContactOperations}
+    />
+  ) : null;
 
   return (
     <AppShell
@@ -1285,7 +1273,7 @@ function CrmApp() {
           )}
         </Suspense>
       )}
-      {surface === 'crm' && (
+      {surface === 'crm' && !communicationsMode && (
         <WorkspaceTabs
           tabs={CONTACTS_SECTIONS}
           currentId={contactsSection}
@@ -2525,16 +2513,6 @@ function DetailLoadingToolbar() {
       aria-label="Loading contact detail"
     >
       <span className="toolbar-summary">Loading contact details...</span>
-    </div>
-  );
-}
-
-function ContactCommunicationsToolbar({ onBack }: { onBack: () => void }) {
-  return (
-    <div className="detail-toolbar">
-      <button type="button" className="button-secondary" onClick={onBack}>
-        Back to contact
-      </button>
     </div>
   );
 }

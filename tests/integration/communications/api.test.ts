@@ -193,6 +193,12 @@ describe('Communications API registration hook', () => {
     expect(repository.calls).toHaveLength(0);
   });
 
+  it('allows the Rabbi communications role without widening access to other staff roles', async () => {
+    const rabbi = await api('/api/v1/communications', 'rabbi');
+    expect(rabbi.status).toBe(200);
+    expect(repository.calls).toHaveLength(1);
+  });
+
   it('returns 503 when the authoritative session resolver is unavailable', async () => {
     const unavailable = await api('/api/v1/communications', 'unavailable');
     expect(unavailable.status).toBe(503);

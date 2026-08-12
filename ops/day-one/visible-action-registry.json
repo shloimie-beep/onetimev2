@@ -28,7 +28,7 @@
     },
     {
       "path": "apps/web/src/server/communications/register.ts",
-      "sha256": "15345231ce543a3d138c113b5d6af822c2054d4f0ffb743764abf9fa4602fb63"
+      "sha256": "978c8655c3cf2036cd09401f65cc7b6b40d875f2efa9824444525667987c97f3"
     },
     {
       "path": "apps/web/src/server/communications/workflow-readback.ts",
@@ -128,7 +128,7 @@
     },
     {
       "path": "apps/web/src/client/app/communications/CommunicationsFeature.tsx",
-      "sha256": "92930e1f7b0f159a9126d3de5b1ee53b9b20a884cb3c8bb5ffb55ab97909485f"
+      "sha256": "6fe9ec68a8936de310dbcc9f9403c999df37e1549985945588df048e7b651803"
     },
     {
       "path": "apps/web/src/client/app/communications/WorkflowReadbackFeature.tsx",
@@ -140,7 +140,7 @@
     },
     {
       "path": "apps/web/src/client/app/crm-entry.tsx",
-      "sha256": "f2e577589928384c91c3d99fda079f45dd1b8ca50b618997453529a641d697dc"
+      "sha256": "f1ac9372d855dae0354fee287c41bb0be7e296d080696b267caede2ef7127186"
     },
     {
       "path": "apps/web/src/client/app/live-entry.tsx",
