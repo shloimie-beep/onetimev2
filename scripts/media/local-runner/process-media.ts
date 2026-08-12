@@ -343,8 +343,7 @@ async function transcribeBoundedAudio(input: {
       form.set('file', new Blob([audio], { type: 'audio/mp4' }), 'segment.m4a');
       form.set('model', OT_TRANSCRIBE_1_OPERATION.model);
       form.set('language', 'en');
-      form.set('response_format', 'verbose_json');
-      form.set('timestamp_granularities[]', 'segment');
+      form.set('response_format', 'json');
       form.set('prompt', LEARNING_DELIVERY_TRANSCRIPTION_VOCABULARY_PROMPT);
       const controller = new AbortController();
       const timer = setTimeout(
