@@ -267,8 +267,12 @@ describe('One Time v2.1 authentication contract', () => {
     expect(
       evaluatePassword({ role: 'admin', password: 'abcdefghijkl', names: ['Someone Else'] }),
     ).toEqual({ accepted: true });
-    expect(evaluatePassword({ role: 'student', password: 'מיכאל123' })).toEqual({
+    expect(evaluatePassword({ role: 'student', password: '000123' })).toEqual({
       accepted: true,
+    });
+    expect(evaluatePassword({ role: 'student', password: 'מיכאל123' })).toEqual({
+      accepted: false,
+      reason: 'invalid_format',
     });
     expect(
       evaluatePassword({
