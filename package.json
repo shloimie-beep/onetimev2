@@ -62,6 +62,13 @@
     "director:truth": "node scripts/check-director-truth.mjs",
     "director:truth:live": "node scripts/check-director-truth.mjs --live",
     "learning-delivery:real-canary": "tsx scripts/media/learning-delivery-real-media-canary.ts",
+    "media:local-runner": "tsx scripts/media/local-runner.ts run-once",
+    "media:local-runner:start": "tsx scripts/media/local-runner.ts start",
+    "media:local-runner:stop": "tsx scripts/media/local-runner.ts stop",
+    "media:local-runner:status": "tsx scripts/media/local-runner.ts status",
+    "media:local-runner:install": "tsx scripts/media/local-runner.ts install",
+    "media:local-runner:uninstall": "tsx scripts/media/local-runner.ts uninstall",
+    "media:local-runner:retry": "tsx scripts/media/local-runner.ts retry",
     "highlevel:registry:check": "tsx scripts/highlevel/validate-registry.ts",
     "highlevel:workflow-control:check": "tsx scripts/highlevel/workflow-control-report.ts",
     "highlevel:workflow-control:report": "tsx scripts/highlevel/workflow-control-report.ts --write",
@@ -78,6 +85,7 @@
     "highlevel:agent-mode:queue": "tsx scripts/highlevel/generate-agent-mode-queue.ts",
     "content-factory:import": "tsx scripts/media/content-factory-import.ts",
     "content-factory:seed-demo": "tsx scripts/media/content-factory-demo-seed.ts",
+    "content-media:provider-registry": "tsx scripts/media/provider-registry-bindings.ts",
     "vimeo:mishnayos:catalog": "tsx scripts/media/vimeo-mishnayos-catalog.ts"
   },
   "dependencies": {
