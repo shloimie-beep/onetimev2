@@ -118,9 +118,9 @@ export function StudentPrivacyWorkspace({
           />
         </label>
         <p>
-          Use your six-digit PIN after a Parent reset. Existing longer Student passwords continue to
-          work until reset. This credential is verified for the request and is never stored in
-          privacy evidence.
+          Use your six-digit PIN after a Parent or Administrator reset. Existing longer Student
+          passwords continue to work until reset. This credential is verified for the request and is
+          never stored in privacy evidence.
         </p>
       </fieldset>
       <PrivacyDataRightsPanel

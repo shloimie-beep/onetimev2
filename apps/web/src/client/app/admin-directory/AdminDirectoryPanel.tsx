@@ -181,9 +181,12 @@ export function AdminDirectoryPanel({
   }
 
   function requestUserReset(record: AdminUser) {
+    const student = record.role === 'student';
     void runMutation(
       () => requestAdminUserPasswordReset(csrfToken, record.user_key, createRequestKey()),
-      'Single-use password reset created in the protected delivery sink.',
+      student
+        ? 'A secure six-digit Student PIN reset was requested for delivery to the adult Parent.'
+        : 'Single-use password reset created in the protected delivery sink.',
     );
   }
 
@@ -596,7 +599,7 @@ function UserList({
                 </Button>
               )}
               <Button type="button" variant="text" onClick={() => onReset(record)}>
-                Reset password
+                {record.role === 'student' ? 'Reset Student PIN' : 'Reset password'}
               </Button>
               {!['owner'].includes(record.role) && (
                 <Button
@@ -682,7 +685,7 @@ function UserDetail({
             </Button>
           )}
           <Button type="button" variant="text" onClick={() => onReset(record)}>
-            Reset password
+            {record.role === 'student' ? 'Reset Student PIN' : 'Reset password'}
           </Button>
           {record.role !== 'owner' && (
             <Button

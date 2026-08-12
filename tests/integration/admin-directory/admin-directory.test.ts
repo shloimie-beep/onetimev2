@@ -13,6 +13,7 @@ import {
   listAdminLearners,
   listAdminUsers,
   reactivateContact,
+  requestAdminUserPasswordReset,
   setAdminHouseholdStatus,
   setAdminLearnerStatus,
   setAdminUserStatus,
@@ -404,6 +405,131 @@ describe('Admin directory database flows', () => {
     );
     expect(Number(deliveries.rows[0]?.count)).toBe(3);
     expect(deliveries.rows[0]?.sink_only).toBe(true);
+  });
+
+  it('dispatches linked Student recovery to the adult-delivered PIN reset flow', async () => {
+    const household = await createHousehold('Student Reset Family', 'student-reset-household-0001');
+    const learner = await createAdminLearner({
+      pool,
+      config,
+      actor: actor(),
+      payload: {
+        household_key: household.household_key,
+        display_name: 'Student Reset Learner',
+        hebrew_name: null,
+        grade_label: 'Grade 4',
+        idempotency_key: 'student-reset-learner-0001',
+      },
+    });
+    const parentUserKey = await createAccountUser({
+      pool,
+      config,
+      email: 'student-reset.parent@example.test',
+      password: 'StudentResetParent!234',
+      displayName: 'Student Reset Parent',
+      role: 'parent',
+    });
+    const studentUserKey = await createAccountUser({
+      pool,
+      config,
+      email: 'student:student.reset',
+      password: '000123',
+      displayName: 'Student Reset Learner',
+      role: 'student',
+    });
+    const contactKey = 'contact_student_reset_parent';
+    await pool.query(
+      `INSERT INTO onetime.contacts
+         (contact_key, account_key, product_key, display_name,
+          family_school_classification, family_or_school, location_text, timezone,
+          email_normalized, reminder_preference, suppression_state, source,
+          created_at, updated_at)
+       VALUES ($1, $2, $3, 'Student Reset Parent',
+               'family', 'Student Reset Family', 'Jerusalem', 'Asia/Jerusalem',
+               'student-reset.parent@example.test', 'email', 'active', 'admin_manual',
+               now(), now())`,
+      [contactKey, config.accountKey, config.productKey],
+    );
+    await pool.query(
+      `INSERT INTO onetime.adult_household_contact_links
+         (link_key, account_key, product_key, contact_key, household_key,
+          guardian_user_ref, highlevel_location_id, sync_state)
+       VALUES ('link_student_reset_parent', $1, $2, $3, $4, $5,
+               'location_student_reset', 'sync_pending')`,
+      [config.accountKey, config.productKey, contactKey, household.household_key, parentUserKey],
+    );
+    await pool.query(
+      `INSERT INTO onetime.account_learner_identity_links
+         (link_key, account_key, product_key, household_key, learner_key, user_key, link_state)
+       VALUES ('identity_student_reset', $1, $2, $3, $4, $5, 'active')`,
+      [
+        config.accountKey,
+        config.productKey,
+        household.household_key,
+        learner.learner_key,
+        studentUserKey,
+      ],
+    );
+    await pool.query(
+      `UPDATE onetime.portal_student_access_state
+          SET student_user_ref = $4,
+              status = 'active',
+              credential_status = 'parent_managed'
+        WHERE account_key = $1 AND product_key = $2 AND learner_key = $3`,
+      [config.accountKey, config.productKey, learner.learner_key, studentUserKey],
+    );
+
+    const reset = await requestAdminUserPasswordReset({
+      pool,
+      config,
+      actor: actor(),
+      userKey: studentUserKey,
+      payload: { idempotency_key: 'admin-student-pin-reset-0001' },
+    });
+    expect(reset).toMatchObject({
+      user_key: studentUserKey,
+      reset_kind: 'student_pin',
+      request_accepted: true,
+      external_send_performed: false,
+    });
+    const resetRows = await pool.query(
+      `SELECT token_type, target_role, subject_user_key, learner_key, email_normalized
+         FROM onetime.account_lifecycle_tokens
+        WHERE subject_user_key = $1 AND token_type = 'student_reset'`,
+      [studentUserKey],
+    );
+    expect(resetRows.rows).toEqual([
+      expect.objectContaining({
+        token_type: 'student_reset',
+        target_role: 'student',
+        subject_user_key: studentUserKey,
+        learner_key: learner.learner_key,
+        email_normalized: 'student-reset.parent@example.test',
+      }),
+    ]);
+    const adultResetRows = await pool.query(
+      `SELECT 1
+         FROM onetime.account_lifecycle_tokens
+        WHERE subject_user_key = $1 AND token_type = 'password_reset'`,
+      [studentUserKey],
+    );
+    expect(adultResetRows.rowCount).toBe(0);
+
+    await pool.query(
+      `UPDATE onetime.account_learner_identity_links
+          SET link_state = 'disabled', disabled_at = now()
+        WHERE user_key = $1`,
+      [studentUserKey],
+    );
+    await expect(
+      requestAdminUserPasswordReset({
+        pool,
+        config,
+        actor: actor(),
+        userKey: studentUserKey,
+        payload: { idempotency_key: 'admin-student-pin-reset-0002' },
+      }),
+    ).rejects.toMatchObject({ code: 'IDENTITY_CONFLICT' });
   });
 
   it('restores an archived contact to its prior status without creating a duplicate', async () => {

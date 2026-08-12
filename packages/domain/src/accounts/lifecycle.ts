@@ -744,6 +744,15 @@ export async function requestPasswordReset(
     const v21Account = input.expectedParentGuardian
       ? undefined
       : await findV21HumanAccountByEmail(client, input.config, emailNormalized);
+    const legacyRole = user ? lifecycleRoleFromUserRole(String(user.role)) : null;
+    if (legacyRole === 'student' && !v21Account) {
+      await audit(client, input.config, {
+        actionType: 'password_reset_requested_student_suppressed',
+        subjectUserKey: String(user!.user_key),
+        metadata: { target_role: 'student', token_issued: false, delivery_queued: false },
+      });
+      return { request_accepted: true as const };
+    }
     if (!user && !v21Account) {
       await audit(client, input.config, {
         actionType: 'password_reset_requested_unknown',
@@ -781,11 +790,23 @@ export async function completePasswordReset(input: {
     expectedType: 'password_reset',
     now: input.now ?? new Date(),
     complete: async (client, token, now) => {
+      if (token.target_role === 'student') {
+        throw new AccountLifecycleError(
+          'TOKEN_INVALID',
+          'Student credentials are managed by a Parent or Administrator.',
+        );
+      }
       if (token.subject_human_account_id) {
         return completeV21AdultPasswordReset(client, input.config, token, payload.password, now);
       }
       const userKey = requiredString(token.subject_user_key);
       const user = await getAccountUser(client, input.config, userKey);
+      if (lifecycleRoleFromUserRole(String(user.role)) === 'student') {
+        throw new AccountLifecycleError(
+          'TOKEN_INVALID',
+          'Student credentials are managed by a Parent or Administrator.',
+        );
+      }
       await updatePassword(client, userKey, payload.password, now);
       const sessionsInvalidated = await invalidateUserSessions(client, input.config, {
         userKey,

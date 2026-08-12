@@ -9,6 +9,10 @@ import {
   issueParentActivationWithClient,
   requestPasswordReset,
 } from '../accounts/lifecycle.ts';
+import {
+  ContactOperationsError,
+  requestStudentResetForHousehold,
+} from '../contact-operations/service.ts';
 import { normalizeEmail } from '../lead/normalize.ts';
 
 const MAX_ACTIVE_LEARNERS = 3;
@@ -933,13 +937,56 @@ export async function requestAdminUserPasswordReset(input: {
   const userKey = opaqueKeySchema.parse(input.userKey);
   const payload = passwordResetPayloadSchema.parse(input.payload);
   const result = await input.pool.query(
-    `SELECT email_normalized
-       FROM onetime.account_users
-      WHERE account_key = $1 AND product_key = $2 AND user_key = $3
-      LIMIT 1`,
+    `SELECT users.email_normalized, users.role,
+            links.learner_key, links.household_key, links.link_state
+       FROM onetime.account_users AS users
+       LEFT JOIN onetime.account_learner_identity_links AS links
+         ON links.account_key = users.account_key
+        AND links.product_key = users.product_key
+        AND links.user_key = users.user_key
+      WHERE users.account_key = $1
+        AND users.product_key = $2
+        AND users.user_key = $3
+      LIMIT 2`,
     [input.config.accountKey, input.config.productKey, userKey],
   );
   if (!result.rowCount) throw new AdminDirectoryError('NOT_FOUND', 'The user was not found.');
+  const user = result.rows[0] as Record<string, unknown>;
+  if (String(user.role) === 'student') {
+    if (
+      result.rows.length !== 1 ||
+      !nullableString(user.learner_key) ||
+      !nullableString(user.household_key) ||
+      String(user.link_state) !== 'active'
+    ) {
+      throw new AdminDirectoryError(
+        'IDENTITY_CONFLICT',
+        'The Student PIN reset target is unavailable.',
+      );
+    }
+    try {
+      const reset = await requestStudentResetForHousehold({
+        pool: input.pool,
+        config: input.config,
+        actor: { userKey: input.actor.userKey, role: input.actor.role as 'owner' | 'admin' },
+        householdKey: String(user.household_key),
+        learnerKey: String(user.learner_key),
+        idempotencyKey: payload.idempotency_key,
+      });
+      return {
+        user_key: userKey,
+        reset_kind: 'student_pin' as const,
+        request_accepted: true as const,
+        external_send_performed: reset.delivery.external_send_performed,
+      };
+    } catch (error) {
+      if (!(error instanceof ContactOperationsError)) throw error;
+      throw new AdminDirectoryError(
+        'IDENTITY_CONFLICT',
+        'The Student PIN reset target is unavailable.',
+      );
+    }
+  }
   const reset = await requestPasswordReset({
     pool: input.pool,
     config: input.config,
@@ -950,6 +997,7 @@ export async function requestAdminUserPasswordReset(input: {
   });
   return {
     user_key: userKey,
+    reset_kind: 'adult_password' as const,
     request_accepted: true as const,
     external_send_performed:
       'delivery' in reset ? reset.delivery.external_send_performed : (false as const),

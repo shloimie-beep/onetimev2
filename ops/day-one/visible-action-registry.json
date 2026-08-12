@@ -168,7 +168,7 @@
     },
     {
       "path": "apps/web/src/client/app/student/privacy/StudentPrivacyWorkspace.tsx",
-      "sha256": "7ff08d078a86a23498d7a22a0fa494b0c7273cd7d9930e2439009a73cb1fa2cd"
+      "sha256": "0d4f9e105f66c5bc82416ebc547f7f0e8445aa5454f7b0c3497429210c79451e"
     },
     {
       "path": "apps/web/src/client/app/student/privacy/api.ts",
@@ -1613,7 +1613,7 @@
     },
     {
       "action_id": "admin.directory.user.password_reset.button",
-      "label": "Reset user password",
+      "label": "Reset user password or Student PIN",
       "surface": "button",
       "route": "/app/users/:userId",
       "roles": ["admin"],
@@ -1628,14 +1628,14 @@
       },
       "audit": {
         "mode": "auth_audit",
-        "event": "password_reset_issued"
+        "event": "role-dispatched password_reset_issued or student_reset_issued"
       },
       "states": {
-        "loading": "Creating a single-use password reset in the protected delivery sink.",
-        "success": "The single-use reset was queued without exposing a credential.",
-        "error": "The reset request was rejected or could not be queued.",
-        "permission": "Only an authenticated Admin may request a user password reset.",
-        "offline": "Password reset is unavailable offline."
+        "loading": "Creating a role-appropriate single-use password or Student PIN reset.",
+        "success": "Adult password resets use the protected adult delivery; Student PIN resets go to the linked adult Parent without exposing a credential.",
+        "error": "The reset request was rejected, the Student-to-household identity was unavailable, or the reset could not be queued.",
+        "permission": "Only an authenticated Admin may request an adult password or Student PIN reset.",
+        "offline": "Password and Student PIN reset are unavailable offline."
       },
       "readiness_state": "ready",
       "provider_mode": "sink",
