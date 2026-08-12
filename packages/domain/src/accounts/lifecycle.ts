@@ -16,17 +16,28 @@ import {
   passwordResetRequestPayloadSchema,
   studentResetPayloadSchema,
   studentSetupPayloadSchema,
+  studentTokenCompletionPayloadSchema,
   tokenCompletionPayloadSchema,
 } from '../../../contracts/src/accounts/index.ts';
 import type { DbPool, Queryable } from '../../../db/src/index.ts';
 import { inTransaction } from '../../../db/src/index.ts';
 import { hashPassword } from '../auth/service.ts';
 import { hashAuthPassword } from '../auth/policy.ts';
+import { isStudentPin } from '../../../contracts/src/identity/auth/index.ts';
 import { applyHouseholdAccessStateWithClient } from '../access/service.ts';
 import { normalizeEmail, stableKey } from '../lead/normalize.ts';
 import { consumeRateLimitBudgets } from '../security/rate-limit.ts';
 import { enqueueHighLevelEventForAdultEmail } from '../highlevel/producer.ts';
 import { createLifecycleDeliveryOutbox } from './lifecycle-delivery.ts';
+
+function assertStudentPin(password: string) {
+  if (!isStudentPin(password)) {
+    throw new AccountLifecycleError(
+      'FORBIDDEN',
+      'Student credentials must contain exactly six numeric digits.',
+    );
+  }
+}
 
 export class AccountLifecycleError extends Error {
   readonly code: AccountLifecycleErrorCode;
@@ -444,7 +455,8 @@ export async function acceptStudentSetup(input: {
   payload: unknown;
   now?: Date;
 }): Promise<AccountLifecycleCompletionResult> {
-  const payload = tokenCompletionPayloadSchema.parse(input.payload);
+  const payload = studentTokenCompletionPayloadSchema.parse(input.payload);
+  assertStudentPin(payload.password);
   return consumeLifecycleToken(input.pool, input.config, payload, {
     expectedType: 'student_setup',
     now: input.now ?? new Date(),
@@ -629,7 +641,8 @@ export async function completeStudentReset(input: {
   payload: unknown;
   now?: Date;
 }): Promise<AccountLifecycleCompletionResult> {
-  const payload = tokenCompletionPayloadSchema.parse(input.payload);
+  const payload = studentTokenCompletionPayloadSchema.parse(input.payload);
+  assertStudentPin(payload.password);
   return consumeLifecycleToken(input.pool, input.config, payload, {
     expectedType: 'student_reset',
     now: input.now ?? new Date(),
