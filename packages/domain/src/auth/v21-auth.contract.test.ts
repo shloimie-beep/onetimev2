@@ -8,6 +8,7 @@ import {
   AUTH_TOKEN_POLICIES,
   CROSS_DOMAIN_SECURITY_BOUNDARIES,
   GENERIC_AUTH_RESPONSES,
+  isStudentPin,
   PASSWORD_POLICIES,
   SESSION_POLICIES,
   type SessionRecord,
@@ -46,10 +47,39 @@ describe('One Time v2.1 authentication contract', () => {
     expect(normalizeLegacyAuthRole('parent')).toBe('parent');
   });
 
-  it('OTV2-AUTH-008-AC01 defines Student username/password without email', () => {
-    expect(PASSWORD_POLICIES.student.minimum_code_points).toBe(8);
+  it('OTV2-AUTH-248-STUDENT-PIN defines an exactly six-digit Student PIN without email', () => {
+    expect(PASSWORD_POLICIES.student.minimum_code_points).toBe(6);
+    expect(PASSWORD_POLICIES.student.maximum_code_points).toBe(6);
+    expect(PASSWORD_POLICIES.student.composition_rule).toBe('exact_six_ascii_digits');
+    expect(isStudentPin('000123')).toBe(true);
+    expect(isStudentPin('12345')).toBe(false);
+    expect(isStudentPin('1234567')).toBe(false);
+    expect(isStudentPin('12a456')).toBe(false);
     expect(AUTH_SECURITY_INVARIANTS.student_email_required).toBe(false);
     expect(AUTH_SECURITY_INVARIANTS.student_highlevel_contact_allowed).toBe(false);
+  });
+
+  it('enforces the Student PIN format in the shared password policy', () => {
+    expect(
+      evaluatePassword({
+        role: 'student',
+        password: '000123',
+        common_passwords: new Set(['000123']),
+        is_compromised: () => true,
+        username: '000123',
+      }),
+    ).toEqual({ accepted: true });
+    expect(
+      evaluatePassword({
+        role: 'parent',
+        password: 'ParentPass!234',
+        common_passwords: new Set(['ParentPass!234']),
+      }),
+    ).toEqual({ accepted: false, reason: 'common' });
+    expect(evaluatePassword({ role: 'student', password: '12a456' })).toEqual({
+      accepted: false,
+      reason: 'invalid_format',
+    });
   });
 
   it('OTV2-AUTH-009-AC01 has no routine email challenge', () => {
