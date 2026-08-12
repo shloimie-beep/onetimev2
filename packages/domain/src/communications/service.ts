@@ -134,7 +134,7 @@ const DEFAULT_RANGE_MS = 30 * 24 * 60 * 60 * 1000;
 const CURSOR_TTL_MS = 30 * 60 * 1000;
 
 export function canReadCommunications(role: unknown) {
-  return role === 'owner' || role === 'admin';
+  return role === 'owner' || role === 'admin' || role === 'rabbi';
 }
 
 export async function buildCommunicationsListResponse({
