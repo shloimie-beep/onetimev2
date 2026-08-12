@@ -41,7 +41,7 @@ test('canonical Admin content review opens the exact local source and review act
   await expect(page.getByText('Content review', { exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Approve Transcript' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Approve Artifact' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Approve Social' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Approve Social' })).toHaveCount(0);
   await expect(page.getByText('no provider URL exposed', { exact: true })).toBeVisible();
   await assertNoHorizontalOverflow(page);
   expect(await page.locator('body').innerText()).not.toMatch(

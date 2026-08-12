@@ -132,7 +132,7 @@
     },
     {
       "path": "apps/web/src/client/app/crm-entry.tsx",
-      "sha256": "7f93f7ef36d62facf060f32b243e9a096da21e0561405d982b5f6f4c6074a240"
+      "sha256": "f2e577589928384c91c3d99fda079f45dd1b8ca50b618997453529a641d697dc"
     },
     {
       "path": "apps/web/src/client/app/live-entry.tsx",
@@ -176,7 +176,7 @@
     },
     {
       "path": "apps/web/src/client/app/shell/AppShell.tsx",
-      "sha256": "44cc0be0ca03eeef44761955e0fa4b502084ead11838d8b3479f087b4691d09f"
+      "sha256": "36bc31b10eea2f0556ad0d585030418d50bb3b6cb867368aa7bbe299854daeb9"
     },
     {
       "path": "apps/web/src/client/app/support/SupportFeature.tsx",

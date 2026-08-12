@@ -23,6 +23,11 @@ describe('content workspace media route', () => {
     expect(JSON.stringify(route)).not.toMatch(/browser-auth-sentinel|browser-canary-sentinel/u);
   });
 
+  it('keeps retired Buffer and Social routes out of the mounted Content workspace', () => {
+    expect(contentWorkspaceRouteFromPath('/app/content/social')).toEqual({ kind: 'overview' });
+    expect(contentWorkspaceRouteFromPath('/app/content/studio/social')).toEqual({ kind: 'create' });
+  });
+
   it('resolves the canonical content review route to the exact decoded source', () => {
     expect(contentWorkspaceRouteFromPath('/app/content/source%2Fone/review')).toEqual({
       kind: 'review',
