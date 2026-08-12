@@ -7,15 +7,29 @@
  * Vimeo-ready derivative and a redacted draft handoff manifest.
  */
 import { spawn } from 'node:child_process';
-import { createHash } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { DatabaseSync } from 'node:sqlite';
 import { createReadStream } from 'node:fs';
-import { access, mkdir, open, readFile, rename, stat, unlink, writeFile } from 'node:fs/promises';
+import {
+  access,
+  link,
+  lstat,
+  mkdir,
+  mkdtemp,
+  open,
+  readFile,
+  realpath,
+  readdir,
+  rm,
+  stat,
+  unlink,
+  writeFile,
+} from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 const SUPPORTED_EXTENSIONS = new Set(['.mkv', '.mp4', '.mov']);
-const TERMINAL_STATES = new Set(['complete', 'failed', 'unknown_provider_effect']);
+const TERMINAL_STATES = new Set(['processed', 'complete', 'failed', 'unknown_provider_effect']);
 
 export type LocalMediaSettings = {
   rootPath: string;
@@ -28,7 +42,7 @@ export type LocalMediaSettings = {
   logsDir: string;
   stableFileSeconds: number;
   rawSourceRetentionDays: number;
-  transcriptionMode: 'off' | 'openai';
+  transcriptionMode: 'off';
 };
 
 export type LocalMediaJobState =
@@ -71,8 +85,18 @@ type JobRow = {
 };
 
 export function parseRunnerOptions(argv: string[], environment = process.env): RunnerOptions {
-  const value = (name: string) =>
-    argv.find((arg) => arg.startsWith(`--${name}=`))?.slice(name.length + 3);
+  const value = (name: string) => {
+    const equalsPrefix = `--${name}=`;
+    const equalsValue = argv.find((arg) => arg.startsWith(equalsPrefix));
+    if (equalsValue !== undefined) return equalsValue.slice(equalsPrefix.length);
+    const separatedIndex = argv.indexOf(`--${name}`);
+    if (separatedIndex < 0) return undefined;
+    const separatedValue = argv[separatedIndex + 1];
+    if (!separatedValue || separatedValue.startsWith('--')) {
+      throw new Error(`local_media_option_${name}_value_required`);
+    }
+    return separatedValue;
+  };
   return {
     rootPath:
       value('root') ??
@@ -109,7 +133,7 @@ export function buildVimeoReadyFfmpegArgs(input: { sourcePath: string; outputPat
   return [
     '-hide_banner',
     '-nostdin',
-    '-y',
+    '-n',
     '-i',
     input.sourcePath,
     '-map',
@@ -140,6 +164,11 @@ export function buildVimeoReadyFfmpegArgs(input: { sourcePath: string; outputPat
   ];
 }
 
+export function buildDerivativeFileName(sourceSha256: string) {
+  if (!/^[a-f0-9]{64}$/i.test(sourceSha256)) throw new Error('local_media_source_sha256_invalid');
+  return `${sourceSha256.toLowerCase()}-review-ready.mp4`;
+}
+
 export function sanitizeJob(row: JobRow) {
   return {
     source_sha256: row.source_sha256,
@@ -154,28 +183,136 @@ export function sanitizeJob(row: JobRow) {
   };
 }
 
-export async function acquireRunnerLock(stateDir: string) {
+type RunnerLockOptions = {
+  pid?: number;
+  isProcessAlive?: (pid: number) => boolean | Promise<boolean>;
+};
+
+function defaultIsProcessAlive(pid: number) {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (error) {
+    return (error as NodeJS.ErrnoException).code !== 'ESRCH';
+  }
+}
+
+export async function acquireRunnerLock(
+  stateDir: string,
+  options: RunnerLockOptions = {},
+  allowStaleRecovery = true,
+) {
   const lockPath = path.join(stateDir, 'local-media-runner.lock');
   await mkdir(stateDir, { recursive: true });
+  const lockPayload = `${JSON.stringify({
+    pid: options.pid ?? process.pid,
+    nonce: randomUUID(),
+    started_at: new Date().toISOString(),
+  })}\n`;
   try {
     const lock = await open(lockPath, 'wx', 0o600);
-    await lock.writeFile(
-      `${JSON.stringify({ pid: process.pid, started_at: new Date().toISOString() })}\n`,
-    );
+    await lock.writeFile(lockPayload);
     await lock.close();
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== 'EEXIST') throw error;
-    throw new Error('local_media_runner_already_running');
+    if (!allowStaleRecovery) throw new Error('local_media_runner_already_running');
+    const lockStat = await lstat(lockPath);
+    if (lockStat.isSymbolicLink()) throw new Error('local_media_runner_lock_reparse_not_allowed');
+    const existingPayload = await readFile(lockPath, 'utf8');
+    let recordedPid: number;
+    try {
+      const parsed = JSON.parse(existingPayload) as { pid?: unknown };
+      if (!Number.isSafeInteger(parsed.pid) || Number(parsed.pid) < 1) throw new Error('invalid');
+      recordedPid = Number(parsed.pid);
+    } catch {
+      throw new Error('local_media_runner_lock_unverifiable');
+    }
+    const isAlive = await (options.isProcessAlive ?? defaultIsProcessAlive)(recordedPid);
+    if (isAlive) throw new Error('local_media_runner_already_running');
+    const confirmationPayload = await readFile(lockPath, 'utf8');
+    if (confirmationPayload !== existingPayload) {
+      throw new Error('local_media_runner_lock_changed_during_recovery');
+    }
+    const confirmationStat = await lstat(lockPath);
+    if (
+      confirmationStat.ino !== lockStat.ino ||
+      confirmationStat.size !== lockStat.size ||
+      confirmationStat.mtimeMs !== lockStat.mtimeMs
+    ) {
+      throw new Error('local_media_runner_lock_changed_during_recovery');
+    }
+    await unlink(lockPath);
+    return acquireRunnerLock(stateDir, options, false);
   }
   return async () => {
-    await unlink(lockPath).catch((error: NodeJS.ErrnoException) => {
-      if (error.code !== 'ENOENT') throw error;
-    });
+    try {
+      const currentPayload = await readFile(lockPath, 'utf8');
+      if (currentPayload !== lockPayload) return;
+      await unlink(lockPath);
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+    }
   };
 }
 
-async function loadSettings(rootPath: string): Promise<LocalMediaSettings> {
-  const settingsPath = path.join(rootPath, 'Config', 'settings.local.json');
+function isPathWithin(rootPath: string, candidatePath: string) {
+  const relative = path.relative(path.resolve(rootPath), path.resolve(candidatePath));
+  return relative === '' || (!relative.startsWith('..') && !path.isAbsolute(relative));
+}
+
+export function assertResolvedPathWithinRoot(input: {
+  rootPath: string;
+  configuredPath: string;
+  resolvedPath: string;
+  label: string;
+}) {
+  if (
+    !isPathWithin(input.rootPath, input.configuredPath) ||
+    !isPathWithin(input.rootPath, input.resolvedPath)
+  ) {
+    throw new Error(`local_media_${input.label}_outside_root`);
+  }
+}
+
+async function resolveSafeDirectory(rootPath: string, configuredPath: string, label: string) {
+  const candidatePath = path.isAbsolute(configuredPath)
+    ? path.resolve(configuredPath)
+    : path.resolve(rootPath, configuredPath);
+  assertResolvedPathWithinRoot({
+    rootPath,
+    configuredPath: candidatePath,
+    resolvedPath: candidatePath,
+    label,
+  });
+  const relativeSegments = path.relative(rootPath, candidatePath).split(path.sep).filter(Boolean);
+  let inspectedPath = rootPath;
+  for (const segment of relativeSegments) {
+    inspectedPath = path.join(inspectedPath, segment);
+    if ((await lstat(inspectedPath)).isSymbolicLink()) {
+      throw new Error(`local_media_${label}_reparse_not_allowed`);
+    }
+  }
+  const resolvedPath = await realpath(candidatePath);
+  assertResolvedPathWithinRoot({
+    rootPath,
+    configuredPath: candidatePath,
+    resolvedPath,
+    label,
+  });
+  return resolvedPath;
+}
+
+export async function loadSettings(rootPath: string): Promise<LocalMediaSettings> {
+  const requestedRootPath = path.resolve(rootPath);
+  if ((await lstat(requestedRootPath)).isSymbolicLink()) {
+    throw new Error('local_media_root_reparse_not_allowed');
+  }
+  const resolvedRootPath = await realpath(requestedRootPath);
+  const configDirectory = await resolveSafeDirectory(resolvedRootPath, 'Config', 'configDir');
+  const settingsPath = path.join(configDirectory, 'settings.local.json');
+  if ((await lstat(settingsPath)).isSymbolicLink()) {
+    throw new Error('local_media_settings_reparse_not_allowed');
+  }
   const parsed = JSON.parse(
     (await readFile(settingsPath, 'utf8')).replace(/^\uFEFF/, ''),
   ) as Partial<LocalMediaSettings>;
@@ -191,20 +328,48 @@ async function loadSettings(rootPath: string): Promise<LocalMediaSettings> {
   for (const key of required)
     if (!parsed[key] || typeof parsed[key] !== 'string')
       throw new Error(`local_media_settings_${key}_required`);
-  if (parsed.rootPath && path.resolve(parsed.rootPath) !== path.resolve(rootPath))
+  if (
+    parsed.rootPath &&
+    path.resolve(parsed.rootPath).toLocaleLowerCase() !== requestedRootPath.toLocaleLowerCase()
+  )
     throw new Error('local_media_settings_root_mismatch');
+  if (parsed.transcriptionMode !== 'off') throw new Error('local_media_transcription_must_be_off');
+  const stableFileSeconds = Number(parsed.stableFileSeconds);
+  const rawSourceRetentionDays = Number(parsed.rawSourceRetentionDays);
+  if (!Number.isInteger(stableFileSeconds) || stableFileSeconds < 1 || stableFileSeconds > 3_600) {
+    throw new Error('local_media_stable_file_seconds_invalid');
+  }
+  if (!Number.isInteger(rawSourceRetentionDays) || rawSourceRetentionDays < 7) {
+    throw new Error('local_media_raw_source_retention_invalid');
+  }
+  const resolvedDirectories = await Promise.all(
+    required.map(async (key) => [
+      key,
+      await resolveSafeDirectory(resolvedRootPath, parsed[key]!, key),
+    ]),
+  );
+  const directoryMap = Object.fromEntries(resolvedDirectories) as Record<
+    (typeof required)[number],
+    string
+  >;
+  if (
+    new Set(Object.values(directoryMap).map((value) => value.toLocaleLowerCase())).size !==
+    required.length
+  ) {
+    throw new Error('local_media_configured_directories_must_be_distinct');
+  }
   return {
-    rootPath,
-    incomingDir: parsed.incomingDir!,
-    processingDir: parsed.processingDir!,
-    readyForVimeoDir: parsed.readyForVimeoDir!,
-    completeDir: parsed.completeDir!,
-    failedDir: parsed.failedDir!,
-    stateDir: parsed.stateDir!,
-    logsDir: parsed.logsDir!,
-    stableFileSeconds: parsed.stableFileSeconds ?? 60,
-    rawSourceRetentionDays: parsed.rawSourceRetentionDays ?? 7,
-    transcriptionMode: parsed.transcriptionMode === 'off' ? 'off' : 'openai',
+    rootPath: resolvedRootPath,
+    incomingDir: directoryMap.incomingDir,
+    processingDir: directoryMap.processingDir,
+    readyForVimeoDir: directoryMap.readyForVimeoDir,
+    completeDir: directoryMap.completeDir,
+    failedDir: directoryMap.failedDir,
+    stateDir: directoryMap.stateDir,
+    logsDir: directoryMap.logsDir,
+    stableFileSeconds,
+    rawSourceRetentionDays,
+    transcriptionMode: 'off',
   };
 }
 
@@ -266,9 +431,85 @@ async function sha256File(filePath: string) {
   return hash.digest('hex');
 }
 
+type StableFileFingerprint = {
+  sourceSha256: string;
+  size: number;
+  mtimeMs: number;
+  ctimeMs: number;
+  ino: number;
+};
+
+export async function hashFileWithStableSnapshot(
+  filePath: string,
+  afterHash?: () => void | Promise<void>,
+): Promise<StableFileFingerprint | null> {
+  const before = await stat(filePath);
+  if (!before.isFile() || before.size < 1) return null;
+  const sourceSha256 = await sha256File(filePath);
+  await afterHash?.();
+  const after = await stat(filePath);
+  if (
+    !after.isFile() ||
+    before.size !== after.size ||
+    before.mtimeMs !== after.mtimeMs ||
+    before.ctimeMs !== after.ctimeMs ||
+    before.ino !== after.ino
+  ) {
+    return null;
+  }
+  return {
+    sourceSha256,
+    size: after.size,
+    mtimeMs: after.mtimeMs,
+    ctimeMs: after.ctimeMs,
+    ino: after.ino,
+  };
+}
+
+async function writeExclusiveOrVerify(filePath: string, content: string) {
+  try {
+    await writeFile(filePath, content, { encoding: 'utf8', mode: 0o600, flag: 'wx' });
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== 'EEXIST') throw error;
+    if ((await lstat(filePath)).isSymbolicLink()) {
+      throw new Error('local_media_review_manifest_reparse_not_allowed');
+    }
+    if ((await readFile(filePath, 'utf8')) !== content) {
+      throw new Error('local_media_review_manifest_collision');
+    }
+  }
+}
+
+export async function finalizeDerivativeExclusive(input: {
+  temporaryPath: string;
+  readyPath: string;
+  outputSha256: string;
+}) {
+  try {
+    await link(input.temporaryPath, input.readyPath);
+    await unlink(input.temporaryPath);
+    return 'created' as const;
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== 'EEXIST') throw error;
+    if ((await lstat(input.readyPath)).isSymbolicLink()) {
+      throw new Error('local_media_ready_output_reparse_not_allowed');
+    }
+    const existingFingerprint = await hashFileWithStableSnapshot(input.readyPath);
+    if (!existingFingerprint || existingFingerprint.sourceSha256 !== input.outputSha256) {
+      throw new Error('local_media_ready_output_collision');
+    }
+    return 'already_present' as const;
+  }
+}
+
 async function processOneLocal(settings: LocalMediaSettings, database: DatabaseSync, row: JobRow) {
-  const outputName = `${row.source_sha256.slice(0, 16)}-vimeo-ready.mp4`;
-  const processingPath = path.join(settings.processingDir, outputName);
+  await resolveSafeDirectory(settings.rootPath, settings.processingDir, 'processingDir');
+  await resolveSafeDirectory(settings.rootPath, settings.readyForVimeoDir, 'readyForVimeoDir');
+  const outputName = buildDerivativeFileName(row.source_sha256);
+  const temporaryDirectory = await mkdtemp(
+    path.join(settings.processingDir, `${row.source_sha256}-${process.pid}-`),
+  );
+  const processingPath = path.join(temporaryDirectory, 'derivative.partial.mp4');
   const readyPath = path.join(settings.readyForVimeoDir, outputName);
   saveJob(database, {
     ...row,
@@ -281,16 +522,31 @@ async function processOneLocal(settings: LocalMediaSettings, database: DatabaseS
       'ffmpeg',
       buildVimeoReadyFfmpegArgs({ sourcePath: row.source_path, outputPath: processingPath }),
     );
+    const sourceAfterRender = await hashFileWithStableSnapshot(row.source_path);
+    if (
+      !sourceAfterRender ||
+      sourceAfterRender.sourceSha256 !== row.source_sha256 ||
+      sourceAfterRender.size !== row.source_size ||
+      sourceAfterRender.mtimeMs !== row.source_mtime_ms
+    ) {
+      throw new Error('local_media_source_changed_during_render');
+    }
     await checkFfprobe(processingPath);
-    const outputSha256 = await sha256File(processingPath);
-    await rename(processingPath, readyPath);
+    const outputFingerprint = await hashFileWithStableSnapshot(processingPath);
+    if (!outputFingerprint) throw new Error('local_media_derivative_changed_during_hash');
+    const outputSha256 = outputFingerprint.sourceSha256;
+    await finalizeDerivativeExclusive({
+      temporaryPath: processingPath,
+      readyPath,
+      outputSha256,
+    });
     await writeReviewManifest(settings, row, readyPath, outputSha256);
     saveJob(database, {
       ...row,
       state: 'processed',
       output_path: readyPath,
       output_sha256: outputSha256,
-      detail_code: 'review_required_before_any_provider_effect',
+      detail_code: 'local_derivative_review_required',
       updated_at: new Date().toISOString(),
     });
   } catch (error) {
@@ -300,6 +556,8 @@ async function processOneLocal(settings: LocalMediaSettings, database: DatabaseS
       detail_code: safeErrorCode(error),
       updated_at: new Date().toISOString(),
     });
+  } finally {
+    await rm(temporaryDirectory, { recursive: true, force: true });
   }
 }
 
@@ -314,59 +572,59 @@ async function writeReviewManifest(
     source_sha256: row.source_sha256,
     derivative_sha256: outputSha256,
     state: 'processed',
-    vimeo_ready: true,
-    transcription:
-      settings.transcriptionMode === 'off'
-        ? 'disabled_by_settings'
-        : 'not_executed_requires_explicit_acceptance',
-    library_import: 'not_executed_requires_explicit_acceptance',
-    provider_effects_executed: false,
+    local_derivative_ready_for_review: true,
+    external_calls_available: false,
+    external_calls_executed: false,
     raw_paths_present: false,
-    required_review: [
-      'operator confirms the derivative',
-      'operator selects the exact class occurrence',
-      'operator explicitly accepts one private Vimeo upload',
-    ],
+    required_review: ['operator confirms the derivative', 'operator keeps the source recording'],
     retention: {
       raw_source_days_minimum: Math.max(settings.rawSourceRetentionDays, 7),
       deletion_authorized: false,
     },
   };
-  await writeFile(`${readyPath}.review.json`, `${JSON.stringify(manifest, null, 2)}\n`, {
-    encoding: 'utf8',
-    mode: 0o600,
-  });
+  await writeExclusiveOrVerify(
+    `${readyPath}.review.json`,
+    `${JSON.stringify(manifest, null, 2)}\n`,
+  );
 }
 
 async function scanOnce(settings: LocalMediaSettings, processLocal: boolean) {
+  await resolveSafeDirectory(settings.rootPath, settings.incomingDir, 'incomingDir');
   const database = openState(settings);
   try {
-    const entries = await (
-      await import('node:fs/promises')
-    ).readdir(settings.incomingDir, { withFileTypes: true });
+    const entries = await readdir(settings.incomingDir, { withFileTypes: true });
     for (const entry of entries) {
+      if (entry.isSymbolicLink()) throw new Error('local_media_source_reparse_not_allowed');
       if (!entry.isFile() || !SUPPORTED_EXTENSIONS.has(path.extname(entry.name).toLowerCase()))
         continue;
       const sourcePath = path.join(settings.incomingDir, entry.name);
-      const sourceStat = await stat(sourcePath);
-      const sourceSha256 = await sha256File(sourcePath);
+      const resolvedSourcePath = await realpath(sourcePath);
+      assertResolvedPathWithinRoot({
+        rootPath: settings.incomingDir,
+        configuredPath: sourcePath,
+        resolvedPath: resolvedSourcePath,
+        label: 'source',
+      });
+      const fingerprint = await hashFileWithStableSnapshot(resolvedSourcePath);
+      if (!fingerprint) continue;
+      const sourceSha256 = fingerprint.sourceSha256;
       const previous = getJob(database, sourceSha256);
       if (previous && TERMINAL_STATES.has(previous.state)) continue;
       const stable = isStableFile({
-        modifiedAtMs: sourceStat.mtimeMs,
+        modifiedAtMs: fingerprint.mtimeMs,
         nowMs: Date.now(),
         stableFileSeconds: settings.stableFileSeconds,
         previousSize: previous?.source_size ?? null,
-        currentSize: sourceStat.size,
+        currentSize: fingerprint.size,
         previousModifiedAtMs: previous?.source_mtime_ms ?? null,
       });
       const row: JobRow = {
         source_sha256: sourceSha256,
-        source_path: sourcePath,
+        source_path: resolvedSourcePath,
         display_name: entry.name,
         state: stable ? 'ready_for_processing' : 'waiting_for_stability',
-        source_size: sourceStat.size,
-        source_mtime_ms: sourceStat.mtimeMs,
+        source_size: fingerprint.size,
+        source_mtime_ms: fingerprint.mtimeMs,
         output_path: previous?.output_path ?? null,
         output_sha256: previous?.output_sha256 ?? null,
         detail_code: stable ? 'local_review_queue' : 'awaiting_60_second_stability_window',
@@ -375,12 +633,27 @@ async function scanOnce(settings: LocalMediaSettings, processLocal: boolean) {
       saveJob(database, row);
       if (stable) {
         try {
-          await checkFfprobe(sourcePath);
+          await checkFfprobe(resolvedSourcePath);
         } catch (error) {
           saveJob(database, {
             ...row,
             state: 'failed',
             detail_code: safeErrorCode(error),
+            updated_at: new Date().toISOString(),
+          });
+          continue;
+        }
+        const verifiedFingerprint = await hashFileWithStableSnapshot(resolvedSourcePath);
+        if (
+          !verifiedFingerprint ||
+          verifiedFingerprint.sourceSha256 !== row.source_sha256 ||
+          verifiedFingerprint.size !== row.source_size ||
+          verifiedFingerprint.mtimeMs !== row.source_mtime_ms
+        ) {
+          saveJob(database, {
+            ...row,
+            state: 'waiting_for_stability',
+            detail_code: 'source_changed_after_probe_reobserve_required',
             updated_at: new Date().toISOString(),
           });
           continue;
@@ -449,7 +722,14 @@ async function registerCurrentUserTask(settings: LocalMediaSettings) {
     `npm run media:local-runner:start >> "${logPath}" 2>&1`,
     '',
   ].join('\r\n');
-  await writeFile(wrapperPath, wrapper, { encoding: 'ascii', mode: 0o600 });
+  try {
+    await writeFile(wrapperPath, wrapper, { encoding: 'ascii', mode: 0o600, flag: 'wx' });
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== 'EEXIST') throw error;
+    if ((await readFile(wrapperPath, 'ascii')) !== wrapper) {
+      throw new Error('local_media_scheduler_wrapper_exists');
+    }
+  }
   await runCommand('schtasks.exe', [
     '/Create',
     '/TN',
@@ -460,12 +740,7 @@ async function registerCurrentUserTask(settings: LocalMediaSettings) {
     'ONLOGON',
     '/RL',
     'LIMITED',
-    '/F',
   ]);
-}
-
-async function unregisterCurrentUserTask() {
-  await runCommand('schtasks.exe', ['/Delete', '/TN', 'One Time Local Media Runner', '/F']);
 }
 
 function runCommand(command: string, args: string[]) {
@@ -502,7 +777,12 @@ async function main() {
   if (command === 'status') return showStatus(settings);
   if (command === 'retry') {
     if (!options.retrySourceSha256) throw new Error('retry_source_sha256_required');
-    return retry(settings, options.retrySourceSha256);
+    const releaseRetryLock = await acquireRunnerLock(settings.stateDir);
+    try {
+      return await retry(settings, options.retrySourceSha256);
+    } finally {
+      await releaseRetryLock();
+    }
   }
   if (command === 'install-windows') {
     await validateInstallation(settings);
@@ -513,9 +793,8 @@ async function main() {
     return;
   }
   if (command === 'uninstall-windows') {
-    if (options.applyTaskScheduler) await unregisterCurrentUserTask();
     process.stdout.write(
-      `${JSON.stringify({ uninstall: options.applyTaskScheduler ? 'current_user_task_removed_media_preserved' : 'no_action_without_explicit_apply', provider_effects_executed: false })}\n`,
+      `${JSON.stringify({ uninstall: 'use_verified_package_uninstaller', provider_effects_executed: false })}\n`,
     );
     return;
   }
@@ -526,11 +805,13 @@ async function main() {
       await scanOnce(settings, options.processLocal);
       await new Promise((resolve) => setTimeout(resolve, settings.stableFileSeconds * 1_000));
       await scanOnce(settings, options.processLocal);
+      await showStatus(settings);
       return;
     }
     do {
       await scanOnce(settings, options.processLocal);
-      if (!options.once) await new Promise((resolve) => setTimeout(resolve, 15_000));
+      if (options.once) await showStatus(settings);
+      else await new Promise((resolve) => setTimeout(resolve, 15_000));
     } while (!options.once);
   } finally {
     await releaseLock();
