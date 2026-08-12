@@ -35,6 +35,7 @@ function setup(
     listDataRightsRequests: vi.fn().mockResolvedValue([]),
   };
   const recordConsent = vi.fn().mockResolvedValue({ disposition: 'appended' });
+  const verifyPassword = vi.fn().mockResolvedValue(input.passwordValid !== false);
   let id = 0;
   const app = express();
   app.use(express.json());
@@ -56,13 +57,13 @@ function setup(
         ),
       issueCsrfToken: vi.fn().mockResolvedValue('csrf-student-privacy'),
       verifyCsrf: vi.fn().mockResolvedValue(input.csrf !== false),
-      verifyPassword: vi.fn().mockResolvedValue(input.passwordValid !== false),
+      verifyPassword,
       networkEvidenceDigest: () => 'e'.repeat(64),
       clock: () => new Date('2026-08-05T14:00:00.000Z'),
       nextId: () => `id-${++id}`,
     }),
   );
-  return { app, service, repository, recordConsent };
+  return { app, service, repository, recordConsent, verifyPassword };
 }
 
 describe('self-managed adult Student privacy router', () => {
@@ -127,12 +128,12 @@ describe('self-managed adult Student privacy router', () => {
     );
   });
 
-  it('requires CSRF and the current Student password for exact-subject data-rights requests', async () => {
+  it('requires CSRF and the current Student credential for exact-subject data-rights requests', async () => {
     const csrfDenied = setup({ csrf: false });
     const csrfResponse = await send(csrfDenied.app, '/api/app/student/privacy/requests', {
       method: 'POST',
       headers: validHeaders('student-rights-0001'),
-      body: { kind: 'export', current_password: 'current-password-123' },
+      body: { kind: 'export', current_password: '000123' },
     });
     expect(csrfResponse.status).toBe(403);
 
@@ -140,7 +141,7 @@ describe('self-managed adult Student privacy router', () => {
     const passwordResponse = await send(passwordDenied.app, '/api/app/student/privacy/requests', {
       method: 'POST',
       headers: validHeaders('student-rights-0002'),
-      body: { kind: 'export', current_password: 'current-password-123' },
+      body: { kind: 'export', current_password: '000123' },
     });
     expect(passwordResponse.status).toBe(403);
     expect((await passwordResponse.json()).code).toBe('RECENT_PASSWORD_REQUIRED');
@@ -149,9 +150,10 @@ describe('self-managed adult Student privacy router', () => {
     const response = await send(allowed.app, '/api/app/student/privacy/requests', {
       method: 'POST',
       headers: validHeaders('student-rights-0003'),
-      body: { kind: 'erasure', current_password: 'current-password-123' },
+      body: { kind: 'erasure', current_password: '000123' },
     });
     expect(response.status).toBe(202);
+    expect(allowed.verifyPassword).toHaveBeenCalledWith(principal, '000123');
     expect(allowed.service.createRightsRequest).toHaveBeenCalledWith(
       expect.objectContaining({
         kind: 'erasure',
@@ -166,6 +168,39 @@ describe('self-managed adult Student privacy router', () => {
         requested_categories: ['own_student_profile', 'own_private_questions_rabbi_answers'],
       }),
     );
+  });
+
+  it('accepts an exact PIN or legacy credential shape and rejects every gap between them', async () => {
+    for (const [currentPassword, key] of [
+      ['000123', 'student-rights-pin-0001'],
+      ['legacy88', 'student-rights-legacy-0001'],
+    ] as const) {
+      const allowed = setup();
+      const response = await send(allowed.app, '/api/app/student/privacy/requests', {
+        method: 'POST',
+        headers: validHeaders(key),
+        body: { kind: 'export', current_password: currentPassword },
+      });
+      expect(response.status).toBe(202);
+      expect(allowed.verifyPassword).toHaveBeenCalledWith(principal, currentPassword);
+    }
+
+    for (const [currentPassword, key] of [
+      ['12345', 'student-rights-short-0001'],
+      ['1234567', 'student-rights-seven-0001'],
+      ['12a456', 'student-rights-format-0001'],
+      ['１２３４５６', 'student-rights-unicode-0001'],
+    ] as const) {
+      const denied = setup();
+      const response = await send(denied.app, '/api/app/student/privacy/requests', {
+        method: 'POST',
+        headers: validHeaders(key),
+        body: { kind: 'export', current_password: currentPassword },
+      });
+      expect(response.status).toBe(400);
+      expect(denied.verifyPassword).not.toHaveBeenCalled();
+      expect(denied.service.createRightsRequest).not.toHaveBeenCalled();
+    }
   });
 });
 
