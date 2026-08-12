@@ -125,6 +125,58 @@ describe.runIf(nativeProofEnabled)('OT-P0 native PostgreSQL owner Admin session'
         session_model: 'v21',
         account_context: { active_role: 'admin' },
       });
+      const defaultOffOccurrences = await fetch(`${baseUrl}/api/app/content/ingest/occurrences`, {
+        headers: {
+          cookie: cookieHeader,
+          'x-csrf-token': adminBootstrap.csrf_token,
+        },
+      });
+      expect(defaultOffOccurrences.status).toBe(503);
+      await expect(defaultOffOccurrences.json()).resolves.toMatchObject({
+        success: false,
+        code: 'content_media_default_off',
+      });
+      const defaultOffUploadSession = await fetch(`${baseUrl}/api/app/content/ingest/sessions`, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          cookie: cookieHeader,
+          'x-csrf-token': adminBootstrap.csrf_token,
+        },
+        body: JSON.stringify({
+          file_name: 'reviewed-canary.mp4',
+          mime_type: 'video/mp4',
+          byte_count: 1,
+        }),
+      });
+      expect(defaultOffUploadSession.status).toBe(503);
+      await expect(defaultOffUploadSession.json()).resolves.toMatchObject({
+        success: false,
+        code: 'content_media_default_off',
+      });
+      const missingContentIngestCsrf = await fetch(
+        `${baseUrl}/api/app/content/ingest/occurrences`,
+        { headers: { cookie: cookieHeader } },
+      );
+      expect(missingContentIngestCsrf.status).toBe(403);
+      await expect(missingContentIngestCsrf.json()).resolves.toMatchObject({
+        success: false,
+        code: 'content_ingest_csrf_denied',
+      });
+      const alteredContentIngestCsrf = await fetch(
+        `${baseUrl}/api/app/content/ingest/occurrences`,
+        {
+          headers: {
+            cookie: cookieHeader,
+            'x-csrf-token': `${adminBootstrap.csrf_token}altered`,
+          },
+        },
+      );
+      expect(alteredContentIngestCsrf.status).toBe(403);
+      await expect(alteredContentIngestCsrf.json()).resolves.toMatchObject({
+        success: false,
+        code: 'content_ingest_csrf_denied',
+      });
       const adminAssignees = await fetch(`${baseUrl}/api/v1/crm/assignees`, {
         headers: { cookie: cookieHeader },
       });
