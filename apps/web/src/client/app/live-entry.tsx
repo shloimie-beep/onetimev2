@@ -15,6 +15,11 @@ import {
 import { AppShell, type ShellNavItem, type ShellUser } from './shell/AppShell.js';
 import { WorkspaceTabs } from './shell/WorkspaceTabs.js';
 import './crm.css';
+import { startZoomMeetingProductionBasic } from './zoom-meeting-sdk-client.ts';
+import {
+  readProductionBasicReadiness,
+  requestProductionBasicLaunch,
+} from '../classroom/production-basic-launch-client.ts';
 
 type ConsoleData = LiveClassConsoleSnapshot['data'];
 
@@ -43,6 +48,7 @@ function LiveConsole() {
   const [data, setData] = useState<ConsoleData | null>(null);
   const [notice, setNotice] = useState<Notice | null>(null);
   const [loading, setLoading] = useState(true);
+  const [productionBasicReady, setProductionBasicReady] = useState(false);
   const occurrenceKey = useMemo(() => {
     const routeMatch = /^\/app\/live\/([^/]+)$/u.exec(location.pathname);
     return routeMatch?.[1]
@@ -79,6 +85,33 @@ function LiveConsole() {
     const interval = window.setInterval(() => void load(), 2500);
     return () => window.clearInterval(interval);
   }, [occurrenceKey]);
+
+  useEffect(() => {
+    if (!session) return;
+    void readProductionBasicReadiness(session.csrf_token)
+      .then(setProductionBasicReady)
+      .catch(() => setProductionBasicReady(false));
+  }, [session?.csrf_token]);
+
+  async function startProductionBasic() {
+    if (!session) return;
+    try {
+      const artifact = await requestProductionBasicLaunch(session.csrf_token);
+      if (artifact.role !== 1 || !artifact.zak) throw new Error('Classroom is unavailable.');
+      await startZoomMeetingProductionBasic({
+        sdkWebVersion: artifact.sdk_web_version,
+        meetingNumber: artifact.meeting_number,
+        signature: artifact.signature,
+        meetingPassword: artifact.meeting_password,
+        userName: artifact.user_name,
+        leaveUrl: artifact.leave_path,
+        zak: artifact.zak,
+      });
+      setNotice({ kind: 'success', message: 'Protected class started.' });
+    } catch {
+      setNotice({ kind: 'error', message: 'Classroom is unavailable.' });
+    }
+  }
 
   async function postControl(path: string, body: Record<string, unknown>, label: string) {
     if (!session) return;
@@ -265,6 +298,8 @@ function LiveConsole() {
             <ZoomHealth
               data={data}
               occurrenceKey={occurrenceKey}
+              productionBasicReady={productionBasicReady}
+              onStartProductionBasic={() => void startProductionBasic()}
               onRefresh={() => void load()}
               onOpenClassroom={() =>
                 occurrenceKey &&
@@ -492,12 +527,16 @@ function ZoomHealth({
   onRefresh,
   onOpenClassroom,
   onChooseOccurrence,
+  productionBasicReady,
+  onStartProductionBasic,
 }: {
   data: ConsoleData | null;
   occurrenceKey: string | null;
   onRefresh: () => void;
   onOpenClassroom: () => void;
   onChooseOccurrence: () => void;
+  productionBasicReady: boolean;
+  onStartProductionBasic: () => void;
 }) {
   return (
     <div className="live-health">
@@ -516,7 +555,11 @@ function ZoomHealth({
         <button type="button" className="ot-button secondary" onClick={onRefresh}>
           Refresh Status
         </button>
-        {occurrenceKey && data?.zoom.host_control_configured ? (
+        {productionBasicReady ? (
+          <button type="button" className="ot-button" onClick={onStartProductionBasic}>
+            Start class
+          </button>
+        ) : occurrenceKey && data?.zoom.host_control_configured ? (
           <button type="button" className="ot-button" onClick={onOpenClassroom}>
             Open Secure One Time Classroom
           </button>
@@ -526,6 +569,9 @@ function ZoomHealth({
           </button>
         )}
       </div>
+      {productionBasicReady ? (
+        <div id="zmmtg-root" aria-label="Protected Meeting SDK classroom" />
+      ) : null}
       {data?.zoom.host_control_configured ? (
         <p>
           Enrolled Students join from their own protected Student portal. The Admin session never

@@ -10,11 +10,20 @@ type RegistryAction = {
   surface: string;
   route: string;
   roles: string[];
+  canonical_binding?: { route: string; roles: string[] };
   capability: string;
   handler: { method: string; path: string };
+  visibility?: {
+    mode: string;
+    handler: { method: string; path: string };
+    required_response: { success: boolean; data: { mode: string; available: boolean } };
+  };
+  request_body?: { mode: string; client_controlled_fields: string[] };
+  idempotency: { required: boolean; key_source: string | null };
   audit: { mode: string; event: string };
   states: Record<string, string>;
   readiness_state: string;
+  provider_mode: string;
   external_mutation: boolean;
   test_evidence: string[];
 };
@@ -59,6 +68,8 @@ const EXPECTED_SOURCE_INPUT_PATHS = [
   'apps/web/src/server/features/classroom/embedded/composition.ts',
   'apps/web/src/server/features/classroom/embedded/router.ts',
   'apps/web/src/server/features/classroom/embedded/service.ts',
+  'apps/web/src/server/features/classroom/production-basic/router.ts',
+  'apps/web/src/server/features/classroom/production-basic/service.ts',
   'apps/web/src/server/features/learning/router.ts',
   'apps/web/src/server/features/learning/service.ts',
   'apps/web/src/server/features/privacy/student-router.ts',
@@ -76,12 +87,14 @@ const EXPECTED_SOURCE_INPUT_PATHS = [
   'apps/web/src/client/app/crm-api.ts',
   'apps/web/src/client/app/crm-entry.tsx',
   'apps/web/src/client/app/live-entry.tsx',
+  'apps/web/src/client/app/zoom-meeting-sdk-client.ts',
   'apps/web/src/client/app/portal-entry.tsx',
   'apps/web/src/client/app/student/classroom/StudentClassroomWorkspace.tsx',
   'apps/web/src/client/app/student/classroom/api.ts',
   'apps/web/src/client/app/student/library/StudentLibraryWorkspace.tsx',
   'apps/web/src/client/app/student/privacy/StudentPrivacyWorkspace.tsx',
   'apps/web/src/client/app/student/privacy/api.ts',
+  'apps/web/src/client/classroom/production-basic-launch-client.ts',
   'apps/web/src/client/features/portals/PortalFeatures.tsx',
   'apps/web/src/client/app/router/registry.ts',
   'apps/web/src/client/app/router/canonical-route-views.ts',
@@ -241,6 +254,13 @@ const EXPECTED_ACTION_BINDINGS = [
     ['admin'],
     'GET',
     '/api/v1/admin-directory/users',
+  ],
+  [
+    'admin.production_basic.start.button',
+    '/app/live-console',
+    ['admin', 'rabbi'],
+    'POST',
+    '/api/v1/classroom/production-basic/launch',
   ],
   [
     'admin.question_moderation.transition.form',
@@ -417,6 +437,13 @@ const EXPECTED_ACTION_BINDINGS = [
     ['student'],
     'POST',
     '/api/app/classroom/attendance/client',
+  ],
+  [
+    'portal.student.classroom.production_basic_join.button',
+    '/app/student/class/:occurrenceId',
+    ['student'],
+    'POST',
+    '/api/v1/classroom/production-basic/launch',
   ],
   [
     'portal.student.classroom.question.form',
@@ -679,7 +706,7 @@ describe('v2.1 visible action registry', () => {
   it('is an exact deterministic projection of locked routes and raw source bytes', () => {
     expect(registry.schema_version).toBe('onetime.v2_1.visible_actions.v2');
     expect(registry.generated_by).toBe('I36');
-    expect(registry.production_roles).toEqual(['admin', 'parent', 'student']);
+    expect(registry.production_roles).toEqual(['admin', 'parent', 'rabbi', 'student']);
     expect(registry.public_actor).toBe('public');
     expect(registry.readiness_states).toEqual(['ready', 'isolated', 'missing']);
     expect(registry.source_inputs.map(({ path }) => path)).toEqual(EXPECTED_SOURCE_INPUT_PATHS);
@@ -732,10 +759,18 @@ describe('v2.1 visible action registry', () => {
       ]),
     ).toEqual(EXPECTED_ACTION_BINDINGS);
     for (const action of registry.actions) {
-      const route = readyRoutes.find(({ path }) => path === action.route);
+      const canonicalRoute = action.canonical_binding?.route ?? action.route;
+      const canonicalRoles = action.canonical_binding?.roles ?? action.roles;
+      const route = readyRoutes.find(({ path }) => path === canonicalRoute);
       expect(route, action.action_id).toBeDefined();
       expect(
-        action.roles.every((role) => route?.roles.includes(role)),
+        canonicalRoles.every((role) => route?.roles.includes(role)),
+        action.action_id,
+      ).toBe(true);
+      expect(
+        action.roles.every(
+          (role) => role === registry.public_actor || registry.production_roles.includes(role),
+        ),
         action.action_id,
       ).toBe(true);
       expect(action.surface).toMatch(/^(route|button|form)$/u);
@@ -746,7 +781,6 @@ describe('v2.1 visible action registry', () => {
       }
       expect(action.audit.event).toBeTruthy();
       expect(action.readiness_state).toBe('ready');
-      expect(action.external_mutation).toBe(false);
       expect(action.test_evidence.length).toBeGreaterThan(0);
       expect(Object.keys(action.states).sort()).toEqual([
         'error',
@@ -756,6 +790,53 @@ describe('v2.1 visible action registry', () => {
         'success',
       ]);
     }
+    expect(
+      registry.actions
+        .filter(({ external_mutation }) => external_mutation)
+        .map(({ action_id }) => action_id),
+    ).toEqual([
+      'admin.production_basic.start.button',
+      'portal.student.classroom.production_basic_join.button',
+    ]);
+  });
+
+  it('models conditional bodyless production-basic launches separately from legacy bootstrap', () => {
+    const byId = new Map(registry.actions.map((action) => [action.action_id, action]));
+    const conditionalLaunch = {
+      handler: { method: 'POST', path: '/api/v1/classroom/production-basic/launch' },
+      visibility: {
+        mode: 'server_derived',
+        handler: { method: 'GET', path: '/api/v1/classroom/production-basic/status' },
+        required_response: {
+          success: true,
+          data: { mode: 'production_basic', available: true },
+        },
+      },
+      request_body: { mode: 'none', client_controlled_fields: [] },
+      idempotency: { required: false, key_source: null },
+      provider_mode: 'verified_binding_explicit_sdk_click',
+      external_mutation: true,
+    };
+
+    expect(byId.get('admin.production_basic.start.button')).toMatchObject({
+      ...conditionalLaunch,
+      route: '/app/live-console',
+      roles: ['admin', 'rabbi'],
+      canonical_binding: { route: '/app/live', roles: ['admin'] },
+    });
+    expect(byId.get('portal.student.classroom.production_basic_join.button')).toMatchObject({
+      ...conditionalLaunch,
+      route: '/app/student/class/:occurrenceId',
+      roles: ['student'],
+    });
+
+    const legacyJoin = byId.get('portal.student.classroom.join.button');
+    expect(legacyJoin).toMatchObject({
+      handler: { method: 'POST', path: '/api/app/classroom/bootstrap' },
+      provider_mode: 'provider_off',
+    });
+    expect(legacyJoin?.visibility).toBeUndefined();
+    expect(legacyJoin?.request_body).toBeUndefined();
   });
 
   it('keeps non-ready routes handler-free and excludes retired surfaces and roles', () => {

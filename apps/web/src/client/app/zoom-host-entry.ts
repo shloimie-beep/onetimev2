@@ -41,6 +41,7 @@ declare global {
 }
 
 const statusElement = document.querySelector<HTMLElement>('[data-zoom-host-status]');
+const startButton = document.querySelector<HTMLButtonElement>('[data-zoom-host-start]');
 const participantIds = new Map<string, number>();
 const participantKeys = new Map<string, string>();
 const customerKeysByUserId = new Map<number, string>();
@@ -272,6 +273,7 @@ async function pollCommands(zoom: ZoomApi) {
 }
 
 async function start() {
+  if (startButton) startButton.disabled = true;
   try {
     const bootstrap = await jsonRequest<{
       success: true;
@@ -338,6 +340,7 @@ async function start() {
         ? 'provider-off'
         : 'failed',
     );
+    if (startButton) startButton.disabled = false;
   }
 }
 
@@ -345,4 +348,4 @@ window.addEventListener('beforeunload', () => {
   if (pollTimer) window.clearTimeout(pollTimer);
 });
 
-void start();
+startButton?.addEventListener('click', () => void start());

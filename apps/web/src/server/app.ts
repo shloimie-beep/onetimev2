@@ -6,6 +6,11 @@ import express, { type Request, type Response } from 'express';
 import helmet from 'helmet';
 import { z, ZodError } from 'zod';
 import type { AppConfig } from '../../../../packages/config/src/index.ts';
+import { createProductionBasicRouter } from './features/classroom/production-basic/router.ts';
+import {
+  createProductionBasicLaunchService,
+  createCanonicalProductionBasicMeetingBinding,
+} from './features/classroom/production-basic/service.ts';
 import { asBotKey } from '../../../../packages/contracts/src/telegram/types.ts';
 import { inTransaction, type DbPool, type Queryable } from '../../../../packages/db/src/index.ts';
 import { createPostgresBillingRepositories } from '../../../../packages/db/src/billing/repository.ts';
@@ -578,6 +583,17 @@ export function createApp({
       v21AdultSessionRuntime,
       ...(clock ? { clock } : {}),
     });
+  const productionBasicAdminReadyForRequest = async (req: Request) => {
+    const actor = await resolvePortalActor(req);
+    if (!actor || (actor.actor_role !== 'admin' && actor.actor_role !== 'rabbi')) return false;
+    return productionBasicClassroomService.ready({
+      kind: actor.actor_role,
+      scope: { account_key: actor.account_key, product_key: actor.product_key },
+      actor_user_ref: actor.actor_user_ref,
+      display_name: actor.actor_role === 'rabbi' ? 'Rabbi' : 'Admin',
+      authorized_to_start: true,
+    });
+  };
   const verifyPortalCsrf = async (req: Request, actor: PortalActorContext) => {
     if (!isSameOriginPost(req, config)) return false;
     const session = await resolveApiSession(req);
@@ -1721,12 +1737,32 @@ export function createApp({
       }
       if (route.shell === 'student') {
         if (route.routeId === 'RT-STU-012') {
+          const actor = await resolvePortalActor(req);
+          const productionBasicProviderReady =
+            actor?.actor_role === 'student' && actor.student_learner
+              ? await productionBasicClassroomService.ready({
+                  kind: 'student',
+                  scope: { account_key: actor.account_key, product_key: actor.product_key },
+                  learner_key: actor.student_learner.learner_key,
+                  display_name: 'Student',
+                  entitled: await studentHasProductionBasicClassAccess({
+                    pool,
+                    accountKey: actor.account_key,
+                    productKey: actor.product_key,
+                    learnerKey: actor.student_learner.learner_key,
+                    householdKey: actor.student_learner.household_key,
+                    ...(clock ? { now: clock() } : {}),
+                  }),
+                })
+              : false;
           await serveEmbeddedClassroomAppShell(req, res, {
             pool,
             config,
             distDir,
             providerReady: Boolean(
-              embeddedClassroomRuntime?.contextResolver && embeddedClassroomRuntime.sdkBootstrap,
+              (embeddedClassroomRuntime?.contextResolver &&
+                embeddedClassroomRuntime.sdkBootstrap) ||
+              productionBasicProviderReady,
             ),
           });
           return;
@@ -1791,6 +1827,9 @@ export function createApp({
           if (resolution.status === 'resolved' && resolution.context) {
             if (resolution.context.session.activeRole === 'admin') {
               setPrivateNoStore(res);
+              if (route.shell === 'live' && (await productionBasicAdminReadyForRequest(req))) {
+                setProductionBasicZoomShellHeaders(res);
+              }
               await sendAppHtml(res, distDir, route.shell === 'live' ? 'live' : 'crm', config);
               return;
             }
@@ -1811,6 +1850,9 @@ export function createApp({
       }
       await ensureSessionCsrfCookie(req, res, pool, config, session);
       setPrivateNoStore(res);
+      if (route.shell === 'live' && (await productionBasicAdminReadyForRequest(req))) {
+        setProductionBasicZoomShellHeaders(res);
+      }
       await sendAppHtml(res, distDir, route.shell === 'live' ? 'live' : 'crm', config);
     },
     unavailableHandlerFor: (route: CanonicalProtectedRoute) => (_req, res, next) => {
@@ -1940,6 +1982,9 @@ export function createApp({
       await ensureSessionCsrfCookie(req, res, pool, config, session);
     }
     setPrivateNoStore(res);
+    if (await productionBasicAdminReadyForRequest(req)) {
+      setProductionBasicZoomShellHeaders(res);
+    }
     await sendAppHtml(res, distDir, 'live', config);
   });
 
@@ -3068,6 +3113,17 @@ export function createApp({
     ...classroomZoomPorts,
     ...(clock ? { clock } : {}),
   });
+  // This is intentionally not connected to the canary/occurrence/registrant
+  // runtime. The later provider authorization binds one opaque recurring
+  // meeting here; until then every request fails closed without a provider call.
+  const productionBasicClassroomService = createProductionBasicLaunchService({
+    binding: createCanonicalProductionBasicMeetingBinding({
+      config,
+      verified_binding: config.zoomProductionBasicVerifiedBinding,
+      ...(clock ? { clock } : {}),
+    }),
+    ...(clock ? { clock } : {}),
+  });
   const liveClassService = createLiveClassService({
     config,
     repository: liveClassRepository,
@@ -3265,8 +3321,26 @@ export function createApp({
       return;
     }
     const actor = await resolvePortalActor(req);
+    const productionBasicStudentReady =
+      actor?.actor_role === 'student' && actor.student_learner
+        ? await productionBasicClassroomService.ready({
+            kind: 'student',
+            scope: { account_key: actor.account_key, product_key: actor.product_key },
+            learner_key: actor.student_learner.learner_key,
+            display_name: 'Student',
+            entitled: await studentHasProductionBasicClassAccess({
+              pool,
+              accountKey: actor.account_key,
+              productKey: actor.product_key,
+              learnerKey: actor.student_learner.learner_key,
+              householdKey: actor.student_learner.household_key,
+              ...(clock ? { now: clock() } : {}),
+            }),
+          })
+        : false;
     const zoomSdkAllowedForStudent =
-      resolvedZoomClassOccurrenceProvider !== undefined && actor?.actor_role === 'student';
+      (resolvedZoomClassOccurrenceProvider !== undefined && actor?.actor_role === 'student') ||
+      productionBasicStudentReady;
     await ensureSessionCsrfCookie(req, res, pool, config, session);
     setPrivateNoStore(res);
     res.setHeader('Referrer-Policy', 'no-referrer');
@@ -3301,6 +3375,53 @@ export function createApp({
     );
     res.status(200).type('html').send(classroomLaunchHtml());
   });
+
+  app.use(
+    '/api/v1/classroom/production-basic',
+    createProductionBasicRouter({
+      service: productionBasicClassroomService,
+      identities: {
+        resolve: async (req) => {
+          const actor = await resolvePortalActor(req);
+          if (!actor) return null;
+          const csrf_verified = req.method === 'GET' ? true : await verifyPortalCsrf(req, actor);
+          if (actor.actor_role === 'student' && actor.student_learner) {
+            const entitled = await studentHasProductionBasicClassAccess({
+              pool,
+              accountKey: actor.account_key,
+              productKey: actor.product_key,
+              learnerKey: actor.student_learner.learner_key,
+              householdKey: actor.student_learner.household_key,
+              ...(clock ? { now: clock() } : {}),
+            });
+            return {
+              csrf_verified,
+              actor: {
+                kind: 'student' as const,
+                scope: { account_key: actor.account_key, product_key: actor.product_key },
+                learner_key: actor.student_learner.learner_key,
+                display_name: 'Student',
+                entitled,
+              },
+            };
+          }
+          if (actor.actor_role === 'admin' || actor.actor_role === 'rabbi') {
+            return {
+              csrf_verified,
+              actor: {
+                kind: actor.actor_role,
+                scope: { account_key: actor.account_key, product_key: actor.product_key },
+                actor_user_ref: actor.actor_user_ref,
+                display_name: 'Admin',
+                authorized_to_start: true,
+              },
+            };
+          }
+          return null;
+        },
+      },
+    }),
+  );
 
   app.post('/api/v1/classroom/launch/bootstrap', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
@@ -6593,6 +6714,52 @@ async function studentLearnerSubject(pool: DbPool, config: AppConfig, userKey: s
   };
 }
 
+async function studentHasProductionBasicClassAccess(input: {
+  pool: DbPool;
+  accountKey: string;
+  productKey: string;
+  learnerKey: string;
+  householdKey: string;
+  now?: Date;
+}) {
+  const now = input.now ?? new Date();
+  const householdEntitled = await householdHasLearningAccess({
+    db: input.pool,
+    accountKey: input.accountKey,
+    productKey: input.productKey,
+    householdKey: input.householdKey,
+    now,
+  });
+  if (!householdEntitled) return false;
+  const result = await input.pool.query(
+    `SELECT 1
+       FROM onetime.class_series_enrollments AS enrollment
+       JOIN onetime.class_series AS series
+         ON series.account_key = enrollment.account_key
+        AND series.product_key = enrollment.product_key
+        AND series.class_series_key = enrollment.class_series_key
+       JOIN onetime.portal_learners AS learner
+         ON learner.account_key = enrollment.account_key
+        AND learner.product_key = enrollment.product_key
+        AND learner.learner_key = enrollment.learner_key
+        AND learner.household_key = enrollment.household_key
+      WHERE enrollment.account_key = $1
+        AND enrollment.product_key = $2
+        AND enrollment.learner_key = $3
+        AND enrollment.household_key = $4
+        AND enrollment.enrollment_state = 'active'
+        AND enrollment.effective_at <= $5
+        AND (enrollment.revoked_at IS NULL OR enrollment.revoked_at > $5)
+        AND series.is_canonical = true
+        AND series.status = 'active'
+        AND series.series_state = 'active'
+        AND learner.learner_status = 'active'
+      LIMIT 1`,
+    [input.accountKey, input.productKey, input.learnerKey, input.householdKey, now],
+  );
+  return result.rowCount === 1;
+}
+
 function privacySqlPoolForQueryable(queryable: Queryable): PrivacySqlPool {
   return {
     async connect() {
@@ -7342,6 +7509,27 @@ function setPrivateNoStore(res: Response) {
   res.removeHeader('Last-Modified');
 }
 
+function setProductionBasicZoomShellHeaders(res: Response) {
+  res.setHeader('Referrer-Policy', 'no-referrer');
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+  res.setHeader('Permissions-Policy', 'camera=(self), microphone=(self), fullscreen=(self)');
+  res.setHeader(
+    'Content-Security-Policy',
+    [
+      "default-src 'self'",
+      "img-src 'self' data: blob: https://source.zoom.us",
+      "script-src 'self' https://source.zoom.us 'unsafe-eval' 'wasm-unsafe-eval'",
+      "style-src 'self' 'unsafe-inline' https://source.zoom.us",
+      "connect-src 'self' https://*.zoom.us wss://*.zoom.us",
+      "worker-src 'self' blob:",
+      "media-src 'self' blob: mediastream:",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "frame-ancestors 'none'",
+    ].join('; '),
+  );
+}
+
 function rejectRetiredPortalSurface(req: Request, res: Response, next: express.NextFunction) {
   if (req.path.endsWith('/helper/query')) {
     setPrivateNoStore(res);
@@ -7904,7 +8092,8 @@ function zoomHostHtml() {
     <section class="state-panel" aria-labelledby="zoom-host-title">
       <h1 id="zoom-host-title">One Time Zoom Stage Host</h1>
       <p>Participant video remains participant-controlled. The host can ask to unmute, mute, and manage spotlight only after the roster is mapped.</p>
-      <p data-zoom-host-status role="status">Checking protected Meeting SDK configuration.</p>
+      <p data-zoom-host-status role="status">Ready to start the protected Meeting SDK session.</p>
+      <button type="button" class="ot-button" data-zoom-host-start>Start class</button>
       <div id="zmmtg-root" data-zoom-host-root aria-live="polite"></div>
       <a class="button" href="/app/live-console">Return to Rabbi Live Console</a>
     </section>

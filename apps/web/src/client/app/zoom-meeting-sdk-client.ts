@@ -16,9 +16,10 @@ export type ZoomParticipantJoinInput = {
   meetingNumber: string;
   signature: string;
   meetingPassword: string;
-  registrantToken: string;
-  userEmail: string;
-  customerKey: string;
+  registrantToken?: string;
+  userEmail?: string;
+  customerKey?: string;
+  zak?: string;
   userName: string;
   leaveUrl: string;
 };
@@ -38,10 +39,11 @@ export async function joinZoomMeetingParticipant(input: ZoomParticipantJoinInput
           signature: input.signature,
           meetingNumber: input.meetingNumber,
           passWord: input.meetingPassword,
-          tk: input.registrantToken,
-          userEmail: input.userEmail,
+          ...(input.registrantToken ? { tk: input.registrantToken } : {}),
+          ...(input.userEmail ? { userEmail: input.userEmail } : {}),
           userName: input.userName,
-          customerKey: input.customerKey,
+          ...(input.customerKey ? { customerKey: input.customerKey } : {}),
+          ...(input.zak ? { zak: input.zak } : {}),
           success: () => resolve(),
           error: (error: unknown) =>
             reject(
@@ -55,6 +57,20 @@ export async function joinZoomMeetingParticipant(input: ZoomParticipantJoinInput
         ),
     });
   });
+}
+
+export function joinZoomMeetingProductionBasic(
+  input: Omit<ZoomParticipantJoinInput, 'registrantToken' | 'userEmail' | 'customerKey'>,
+) {
+  return joinZoomMeetingParticipant(input);
+}
+
+export function startZoomMeetingProductionBasic(
+  input: Omit<ZoomParticipantJoinInput, 'registrantToken' | 'userEmail' | 'customerKey'> & {
+    zak: string;
+  },
+) {
+  return joinZoomMeetingParticipant(input);
 }
 
 async function loadMeetingSdk(version: string) {

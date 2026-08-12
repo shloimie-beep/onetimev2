@@ -44,6 +44,16 @@ describe('P18 Student classroom workspace', () => {
     expect(unavailable).not.toMatch(/provider|credential|https?:\/\//iu);
   });
 
+  it('shows the production-basic Join only when server readiness is true', () => {
+    const unavailable = render('ready');
+    expect(unavailable).toContain('>Join classroom</button>');
+    expect(unavailable).not.toContain('>Join class</button>');
+
+    const available = render('ready', { productionBasicReady: true });
+    expect(available).toContain('>Join class</button>');
+    expect(available).not.toContain('>Join classroom</button>');
+  });
+
   it('caps heartbeat scheduling at 30 seconds and sends an overdue heartbeat immediately', () => {
     const current = new Date('2026-08-02T10:00:00.000Z');
     expect(classroomHeartbeatDelay('2026-08-02T10:00:30.000Z', current)).toBe(30_000);
@@ -90,6 +100,8 @@ describe('P18 Student classroom workspace', () => {
     expect(source).not.toMatch(/\b(?:localStorage|sessionStorage|URLSearchParams)\b/u);
     expect(source).not.toMatch(/location\.(?:search|hash)/u);
     expect(source).not.toMatch(/console\.(?:log|info|warn|error)/u);
+    expect(workspaceSource).toContain("lastJoinMode.current === 'production_basic'");
+    expect(workspaceSource).toContain('void joinProductionBasic();');
   });
 });
 
@@ -98,6 +110,7 @@ function render(
   options: {
     denialCode?: 'second_device_active';
     recording?: boolean;
+    productionBasicReady?: boolean;
   } = {},
 ) {
   const view = createStudentClassroomViewModel({
@@ -111,6 +124,8 @@ function render(
       view={view}
       busy={false}
       onJoin={vi.fn()}
+      productionBasicReady={options.productionBasicReady ?? false}
+      onJoinProductionBasic={vi.fn()}
       onRetry={vi.fn()}
       onLeave={vi.fn()}
     />,
