@@ -32,6 +32,7 @@ import type { BillingProviderAdapter } from '../../../../packages/contracts/src/
 import {
   accountLifecycleTokenTypeSchema,
   passwordResetRequestPayloadSchema,
+  studentTokenCompletionPayloadSchema,
   tokenCompletionPayloadSchema,
 } from '../../../../packages/contracts/src/accounts/index.ts';
 import {
@@ -449,7 +450,9 @@ const lifecycleTokenStatusPayloadSchema = z.object({
   token: z.string().trim().min(32).max(240),
   flow: z.enum(['activation', 'password_reset']),
 });
-const lifecycleActivationPayloadSchema = tokenCompletionPayloadSchema.extend({
+const lifecycleActivationEnvelopeSchema = z.object({
+  token: z.string().trim().min(32).max(240),
+  password: z.string().min(1).max(256),
   csrf_token: z.string().trim().min(16).max(160),
 });
 const forgotPasswordApiPayloadSchema = z.object({
@@ -1602,12 +1605,12 @@ export function createApp({
   app.post('/api/v1/account-lifecycle/activate', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
     try {
-      const payload = lifecycleActivationPayloadSchema.parse(req.body);
-      requireLoginCsrf(req, res, config, payload.csrf_token);
+      const envelope = lifecycleActivationEnvelopeSchema.parse(req.body);
+      requireLoginCsrf(req, res, config, envelope.csrf_token);
       const inspected = await inspectAccountLifecycleToken({
         pool,
         config,
-        token: payload.token,
+        token: envelope.token,
         expectedTypes: ACTIVATION_TOKEN_TYPES,
       });
       if (!inspected.ok) {
@@ -1619,6 +1622,10 @@ export function createApp({
         });
         return;
       }
+      const payload =
+        inspected.token_type === 'student_setup' || inspected.token_type === 'student_reset'
+          ? studentTokenCompletionPayloadSchema.parse(envelope)
+          : tokenCompletionPayloadSchema.parse(envelope);
       const completion =
         inspected.token_type === 'owner_admin_invitation'
           ? await acceptOwnerAdminInvitation({ pool, config, payload })
@@ -7870,17 +7877,17 @@ function activationPageHtml(csrfToken: string) {
         <img src="/assets/brand/onetimelogo.webp" width="56" height="56" alt="" aria-hidden="true">
         <span><strong>One Time Mishnayos</strong><small>Account activation</small></span>
       </a>
-      <h1>Set your password</h1>
+      <h1 data-activation-heading>Set your password</h1>
       <p class="flow-copy" data-activation-status role="status">Checking your secure link.</p>
       <form class="login-form" data-activation-form novalidate hidden>
         <input type="hidden" name="csrf_token" value="${escapeHtml(csrfToken)}">
         <div class="field">
-          <label for="activation_password">Password</label>
+          <label for="activation_password" data-activation-password-label>Password</label>
           <input id="activation_password" name="password" type="password" autocomplete="new-password" required minlength="8">
           <p tabindex="-1" class="error" data-error-for="password"></p>
         </div>
         <div class="field">
-          <label for="activation_password_confirm">Confirm password</label>
+          <label for="activation_password_confirm" data-activation-confirm-label>Confirm password</label>
           <input id="activation_password_confirm" name="password_confirm" type="password" autocomplete="new-password" required minlength="8">
           <p tabindex="-1" class="error" data-error-for="password_confirm"></p>
         </div>
