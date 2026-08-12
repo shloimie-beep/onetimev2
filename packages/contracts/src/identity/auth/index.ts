@@ -1,5 +1,16 @@
 export const AUTH_CONTRACT_VERSION = '1.0.0' as const;
 
+export const STUDENT_PIN_LENGTH = 6 as const;
+export const STUDENT_PIN_PATTERN = /^[0-9]{6}$/u;
+
+/**
+ * A PIN is deliberately treated as text: `000123` is a valid, distinct
+ * Student credential and must never be coerced to a number.
+ */
+export function isStudentPin(value: string): boolean {
+  return STUDENT_PIN_PATTERN.test(value);
+}
+
 export const AUTH_ROLES = ['admin', 'parent', 'student'] as const;
 export type AuthRole = (typeof AUTH_ROLES)[number];
 
@@ -14,10 +25,10 @@ export type AuthCredentialKind = 'adult_email_password' | 'student_username_pass
 export type PasswordPolicy = {
   minimum_code_points: number;
   maximum_code_points: number;
-  composition_rule: 'none';
-  reject_common: true;
-  reject_compromised: true;
-  reject_identity_equivalent: true;
+  composition_rule: 'none' | 'exact_six_ascii_digits';
+  reject_common: boolean;
+  reject_compromised: boolean;
+  reject_identity_equivalent: boolean;
   storage: 'versioned_argon2id';
 };
 
@@ -32,12 +43,12 @@ export const PASSWORD_POLICIES = {
     storage: 'versioned_argon2id',
   },
   student: {
-    minimum_code_points: 8,
-    maximum_code_points: 64,
-    composition_rule: 'none',
-    reject_common: true,
-    reject_compromised: true,
-    reject_identity_equivalent: true,
+    minimum_code_points: STUDENT_PIN_LENGTH,
+    maximum_code_points: STUDENT_PIN_LENGTH,
+    composition_rule: 'exact_six_ascii_digits',
+    reject_common: false,
+    reject_compromised: false,
+    reject_identity_equivalent: false,
     storage: 'versioned_argon2id',
   },
 } as const satisfies Record<'adult' | 'student', PasswordPolicy>;
