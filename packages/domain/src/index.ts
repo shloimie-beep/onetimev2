@@ -1,6 +1,16 @@
 export { campaignTicker } from './landing/campaign.ts';
 export { campaign, landingContent, sharedNav } from './landing/content.ts';
 export {
+  adoptExistingPrivateVimeo,
+  createExistingVimeoProtectionReader,
+  ExistingVimeoAdoptionError,
+  getExistingPrivateVimeoPlayback,
+  ONE_TIME_VIMEO_ALLOWED_EMBED_DOMAINS,
+  unpublishExistingPrivateVimeo,
+  type ExistingVimeoProtectionReadback,
+  type ExistingVimeoProtectionReader,
+} from './content/existing-vimeo-adoption.ts';
+export {
   cancellationRefundPolicy,
   communicationConsentNotice,
   legalPolicyMetadata,

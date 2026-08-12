@@ -471,6 +471,11 @@ async function portalItemsForLearner(input: {
             lessons.lesson_key,
             factory.source_key,
             CASE
+              WHEN items.metadata->>'source_type' = 'existing_private_vimeo'
+                THEN items.content_item_key
+              ELSE NULL
+            END,
+            CASE
               WHEN items.item_type IN ('sheet', 'review') THEN items.content_item_key
               ELSE NULL
             END
@@ -588,6 +593,11 @@ async function portalItemsForLearner(input: {
     const factoryClassTitle = nullableString(row.factory_class_title);
     const factoryClassDate = row.factory_class_date ? asDate(row.factory_class_date) : null;
     const itemKey = String(row.content_item_key);
+    const itemMetadata = asRecord(row.metadata);
+    const isProtectedExistingVimeo =
+      itemMetadata.source_type === 'existing_private_vimeo' &&
+      itemMetadata.raw_provider_url_present === false &&
+      typeof itemMetadata.protection_digest === 'string';
     const isDemo = isContentFactoryDemoSource(itemKey);
     const isSynthetic = isDemo || row.factory_processing_mode === 'synthetic';
     const exposedFactoryDraft =
@@ -625,6 +635,15 @@ async function portalItemsForLearner(input: {
             playback_route: `/app/learning/items/${encodeURIComponent(itemKey)}`,
             raw_provider_url_present: false as const,
             is_demo: isSynthetic,
+          }
+        : undefined,
+      protected_vimeo: isProtectedExistingVimeo
+        ? {
+            playback_route: `/app/learning/items/${encodeURIComponent(itemKey)}`,
+            duration_ms: Math.max(1, Number(itemMetadata.duration_ms ?? 1)),
+            captions_active: itemMetadata.captions_active === true,
+            privacy_contract: 'embed_only_domain_whitelist' as const,
+            raw_provider_url_present: false as const,
           }
         : undefined,
       lesson: lessonKey

@@ -919,6 +919,14 @@ async function contentOpenForLearner(
       launch_token_ref: null,
     };
   }
+  if (item.protected_vimeo) {
+    return {
+      ...item.open_action,
+      label: 'Open protected class video',
+      href: item.protected_vimeo.playback_route,
+      launch_token_ref: null,
+    };
+  }
   return protectedContentUnavailableAction(learner, item);
 }
 
