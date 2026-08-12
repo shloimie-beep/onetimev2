@@ -859,10 +859,20 @@ describe('OT-71 account lifecycle', () => {
       },
     });
     expect(studentIssue.delivery.delivery_state).toBe('suppressed');
+    const studentToken = requiredProof(studentIssue);
+    for (const password of ['12345', '1234567', '12a456', '１２３４５６']) {
+      await expect(
+        acceptStudentSetup({
+          pool,
+          config,
+          payload: { token: studentToken, password },
+        }),
+      ).rejects.toThrow();
+    }
     const student = await acceptStudentSetup({
       pool,
       config,
-      payload: { token: requiredProof(studentIssue), password: 'StudentPass!234' },
+      payload: { token: studentToken, password: '000123' },
     });
     expect(student).toMatchObject({ role: 'student', status: 'active', mfa_required: false });
 
@@ -870,7 +880,7 @@ describe('OT-71 account lifecycle', () => {
       pool,
       config,
       email: 'student@example.test',
-      password: 'StudentPass!234',
+      password: '000123',
     });
     if (!login.ok) throw new Error(`Expected student login, got ${login.code}`);
     const session = await createSession({ pool, config, user: login.user });
@@ -901,7 +911,7 @@ describe('OT-71 account lifecycle', () => {
       pool,
       config,
       email: 'student@example.test',
-      password: 'StudentPass!234',
+      password: '000123',
     });
     if (!postRestoreLogin.ok)
       throw new Error(`Expected student login, got ${postRestoreLogin.code}`);
@@ -928,24 +938,38 @@ describe('OT-71 account lifecycle', () => {
       },
     });
     expect(resetIssue.delivery.delivery_state).toBe('suppressed');
+    const resetToken = requiredProof(resetIssue);
+    for (const password of ['12345', '1234567', '12a456', '１２３４５６']) {
+      await expect(
+        completeStudentReset({
+          pool,
+          config,
+          payload: { token: resetToken, password },
+        }),
+      ).rejects.toThrow();
+    }
+    const resetSession = await createSession({ pool, config, user: postRestoreLogin.user });
     const reset = await completeStudentReset({
       pool,
       config,
-      payload: { token: requiredProof(resetIssue), password: 'StudentPass!999' },
+      payload: { token: resetToken, password: '123456' },
     });
-    expect(reset.sessions_invalidated).toBe(0);
+    expect(reset.sessions_invalidated).toBe(1);
+    expect(
+      await getSessionByToken({ pool, config, sessionToken: resetSession.session_token }),
+    ).toBeNull();
     const oldPassword = await authenticateUser({
       pool,
       config,
       email: 'student@example.test',
-      password: 'StudentPass!234',
+      password: '000123',
     });
     expect(oldPassword).toMatchObject({ ok: false, code: 'INVALID_CREDENTIALS' });
     const newPassword = await authenticateUser({
       pool,
       config,
       email: 'student@example.test',
-      password: 'StudentPass!999',
+      password: '123456',
     });
     expect(newPassword).toMatchObject({ ok: true });
     const studentEmailOutbox = await pool.query(
@@ -954,7 +978,7 @@ describe('OT-71 account lifecycle', () => {
         WHERE purpose IN ('student_setup', 'student_reset')`,
     );
     expect(studentEmailOutbox.rowCount).toBe(0);
-    expect(await serializedLifecycleRows()).not.toMatch(/StudentPass|ParentPass|token_for_local/i);
+    expect(await serializedLifecycleRows()).not.toMatch(/000123|123456|ParentPass|token_for_local/i);
   });
 
   it('completes password reset with single-use tokens and session-family invalidation', async () => {
