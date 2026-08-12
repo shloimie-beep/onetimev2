@@ -25,7 +25,6 @@ import { consumeRateLimitBudgets } from '../security/rate-limit.ts';
 import {
   evaluatePassword,
   normalizeLegacyAuthRole,
-  unicodeCodePointLength,
   verifyAuthPassword,
 } from './policy.ts';
 
@@ -200,12 +199,6 @@ export async function changeOwnPassword({
   ip?: string | undefined;
   userAgent?: string | undefined;
 }): Promise<PasswordChangeResult> {
-  const passwordLength = unicodeCodePointLength(newPassword);
-  const minimumPasswordLength = session.user.role === 'student' ? 8 : 12;
-  const maximumPasswordLength = session.user.role === 'student' ? 64 : 128;
-  if (passwordLength < minimumPasswordLength || passwordLength > maximumPasswordLength) {
-    return { ok: false, code: 'PASSWORD_POLICY_FAILED' };
-  }
   const rateLimit = await consumeRateLimitBudgets({
     pool,
     config,
