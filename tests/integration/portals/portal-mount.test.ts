@@ -1042,7 +1042,7 @@ describe('OT-71 mounted parent and student portals', () => {
           body: JSON.stringify({
             idempotency_key: 'portal-student-setup-001',
             username: 'setup_learner',
-            password: 'Mishnah12345',
+            password: '000123',
             display_name: 'Setup Learner',
           }),
         },
@@ -1050,7 +1050,7 @@ describe('OT-71 mounted parent and student portals', () => {
       const setupText = await setup.text();
       expect(setup.status, setupText).toBe(200);
       expect(setupText).not.toContain('token_for_local_proof');
-      expect(setupText).not.toContain('Mishnah12345');
+      expect(setupText).not.toContain('000123');
       expect(JSON.parse(setupText)).toMatchObject({
         success: true,
         data: {
@@ -1076,7 +1076,7 @@ describe('OT-71 mounted parent and student portals', () => {
         credential_status: 'parent_managed',
       });
       expect(String(repairedAccessRows.rows[0].password_hash_ref)).toMatch(/^scrypt:v1:/);
-      expect(String(repairedAccessRows.rows[0].password_hash_ref)).not.toContain('Mishnah12345');
+      expect(String(repairedAccessRows.rows[0].password_hash_ref)).not.toContain('000123');
 
       const tokenRows = await pool.query(
         `SELECT token_hash, metadata
@@ -1087,7 +1087,7 @@ describe('OT-71 mounted parent and student portals', () => {
       expect(tokenRows.rows).toHaveLength(0);
       expect(JSON.stringify(tokenRows.rows)).not.toContain('token_for_local_proof');
 
-      const setupStudent = await loginAs(server.baseUrl, 'setup_learner', 'Mishnah12345');
+      const setupStudent = await loginAs(server.baseUrl, 'setup_learner', '000123');
       expect(setupStudent.json.user.role).toBe('student');
       const setupStudentDashboard = await fetch(
         `${server.baseUrl}/api/v1/portals/student/dashboard`,
@@ -1133,7 +1133,7 @@ describe('OT-71 mounted parent and student portals', () => {
       );
       expect(existingStudentSession.status).toBe(401);
 
-      const oldStudentPassword = await postLogin(server.baseUrl, 'setup_learner', 'Mishnah12345');
+      const oldStudentPassword = await postLogin(server.baseUrl, 'setup_learner', '000123');
       expect(oldStudentPassword.status).toBe(401);
       expect(oldStudentPassword.json).toMatchObject({
         success: false,
