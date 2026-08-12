@@ -196,6 +196,7 @@ import {
   getContentItemDetail,
   getContentFactoryPlayback,
   getContentFactoryWorkspace,
+  ingestContentFactoryItem,
   getContactDetail,
   getOt110aContentCreateWorkspace,
   getOt110aContentProcessingQueue,
@@ -245,6 +246,8 @@ import {
   updateContact,
   editContentFactoryItem,
   inspectLearningDeliveryInputAdapters,
+  verifyLocalMediaSignature,
+  type ContentFactoryIngest,
   CrmReplyError,
   verifyLoginCsrf,
   verifyRecentEmailAssurance,
@@ -949,6 +952,7 @@ export function createApp({
     express.raw({ type: 'application/json', limit: '32kb' }),
     createHighLevelActionsRouter({ config, pool }),
   );
+  app.use('/api/v1/admin/content/local-runner/import', express.json({ limit: '512kb' }));
   app.use(express.json({ limit: '32kb' }));
   app.use(express.urlencoded({ extended: false, limit: '32kb' }));
 
@@ -4446,6 +4450,102 @@ export function createApp({
     }
   });
 
+  app.get('/api/v1/admin/content/local-runner/occurrences', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    try {
+      if (!(await requireLocalMediaSignedRequest(req, res, pool, config, ''))) return;
+      const query = z
+        .object({
+          recorded_at: z.iso.datetime({ offset: true }),
+          before_minutes: z.coerce.number().int().min(0).max(720).default(240),
+          after_minutes: z.coerce.number().int().min(0).max(720).default(120),
+        })
+        .parse(req.query);
+      const result = await withTiming(req, 'db', () =>
+        pool.query(
+          `SELECT occurrence.occurrence_key, occurrence.local_class_date,
+                    occurrence.starts_at, series.title AS class_title
+               FROM onetime.class_occurrences occurrence
+               JOIN onetime.class_series series
+                 ON series.account_key = occurrence.account_key
+                AND series.product_key = occurrence.product_key
+                AND series.class_series_key = occurrence.class_series_key
+              WHERE occurrence.account_key = $1 AND occurrence.product_key = $2
+                AND occurrence.occurrence_state <> 'canceled'
+                AND occurrence.starts_at >= $3::timestamptz - ($4::text || ' minutes')::interval
+                AND occurrence.starts_at <= $3::timestamptz + ($5::text || ' minutes')::interval
+              ORDER BY occurrence.starts_at ASC, occurrence.occurrence_key ASC
+              LIMIT 20`,
+          [
+            config.accountKey,
+            config.productKey,
+            query.recorded_at,
+            query.before_minutes,
+            query.after_minutes,
+          ],
+        ),
+      );
+      res.json({
+        success: true,
+        occurrences: result.rows.map((row) => ({
+          occurrence_key: String(row.occurrence_key),
+          class_title: String(row.class_title),
+          class_date: new Date(String(row.local_class_date)).toISOString().slice(0, 10),
+          starts_at: new Date(String(row.starts_at)).toISOString(),
+        })),
+      });
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/admin/content/local-runner/import', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const body = JSON.stringify(req.body ?? null);
+    try {
+      if (!(await requireLocalMediaSignedRequest(req, res, pool, config, body))) return;
+      const payload = z
+        .object({
+          occurrence_key: z
+            .string()
+            .trim()
+            .min(3)
+            .max(180)
+            .regex(/^[A-Za-z0-9][A-Za-z0-9._:-]+$/u),
+          item: z.record(z.string(), z.unknown()),
+        })
+        .strict()
+        .parse(req.body);
+      const item = {
+        ...(payload.item as ContentFactoryIngest),
+        occurrenceKey: payload.occurrence_key,
+      };
+      const expectedSourceKey = `local_media_${createHash('sha256')
+        .update(`${item.sourceSha256}\0${payload.occurrence_key}`)
+        .digest('hex')
+        .slice(0, 32)}`;
+      if (item.sourceKey !== expectedSourceKey) {
+        throw new ContentFactoryError(
+          'VALIDATION_ERROR',
+          'The local media duplicate boundary is invalid.',
+        );
+      }
+      const persisted = await withTiming(req, 'db', () =>
+        ingestContentFactoryItem({ pool, config, item }),
+      );
+      res.status(201).json({
+        success: true,
+        source_key: persisted.source_key,
+        state: persisted.state,
+        occurrence_key: persisted.occurrence?.occurrence_key ?? null,
+        captions_active: persisted.vimeo.captions_active,
+        raw_provider_url_present: false,
+      });
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
   app.get('/api/v1/admin/content/factory', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
     const session = await requireApiSession(req, res, pool, config);
@@ -7179,6 +7279,75 @@ function v21LoginBudgetKey(config: AppConfig, budget: V21LoginBudget): string {
   return createHash('sha256')
     .update([config.accountKey, config.productKey, budget.scope, budget.subject].join('\0'))
     .digest('hex');
+}
+
+async function requireLocalMediaSignedRequest(
+  req: RequestWithTrace,
+  res: Response,
+  pool: DbPool,
+  config: AppConfig,
+  body: string,
+) {
+  if (!config.localMediaImportEnabled || !config.localMediaImportHmacKey) {
+    res.status(404).json({ success: false, code: 'NOT_FOUND', message: 'Not found.' });
+    return false;
+  }
+  const request = {
+    method: req.method,
+    requestTarget: req.originalUrl,
+    timestamp: req.header('x-one-time-media-timestamp') ?? '',
+    nonce: req.header('x-one-time-media-nonce') ?? '',
+    body,
+  };
+  const signature = req.header('x-one-time-media-signature') ?? '';
+  if (
+    !verifyLocalMediaSignature({
+      key: config.localMediaImportHmacKey,
+      request,
+      signature,
+    })
+  ) {
+    res.status(401).json({
+      success: false,
+      code: 'UNAUTHORIZED',
+      message: 'A valid local media signature is required.',
+    });
+    return false;
+  }
+  const requestDigest = createHash('sha256')
+    .update([request.method, request.requestTarget, request.timestamp, signature].join('\0'))
+    .digest('hex');
+  const replay = await pool.query(
+    `SELECT 1 FROM onetime.local_media_signed_request_nonces
+      WHERE account_key = $1 AND product_key = $2 AND nonce = $3 LIMIT 1`,
+    [config.accountKey, config.productKey, request.nonce],
+  );
+  if (replay.rows[0]) {
+    res.status(401).json({
+      success: false,
+      code: 'UNAUTHORIZED',
+      message: 'A valid local media signature is required.',
+    });
+    return false;
+  }
+  try {
+    await pool.query(
+      `INSERT INTO onetime.local_media_signed_request_nonces
+         (account_key, product_key, nonce, request_digest)
+       VALUES ($1,$2,$3,$4)`,
+      [config.accountKey, config.productKey, request.nonce, requestDigest],
+    );
+  } catch (error) {
+    const code = error && typeof error === 'object' && 'code' in error ? String(error.code) : '';
+    if (code !== '23505') throw error;
+    res.status(401).json({
+      success: false,
+      code: 'UNAUTHORIZED',
+      message: 'A valid local media signature is required.',
+    });
+    return false;
+  }
+  return true;
 }
 
 function isContentFactoryAdmin(session: AuthenticatedSession) {

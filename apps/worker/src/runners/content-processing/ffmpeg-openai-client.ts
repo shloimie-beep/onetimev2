@@ -277,6 +277,10 @@ export class ExecutableFfmpegOpenAiClient implements FfmpegOpenAiClient {
     const video = raw.streams?.find((stream) => stream.codec_type === 'video');
     const audio = raw.streams?.find((stream) => stream.codec_type === 'audio');
     const audioBitrateBps = Number(audio?.bit_rate);
+    // FFmpeg's AAC encoder targets 128 kbps, while ffprobe reports the measured stream
+    // average. Short clips in particular do not read back as the literal target value.
+    const audioBitrateMatchesTarget =
+      Number.isFinite(audioBitrateBps) && Math.abs(audioBitrateBps - 128_000) <= 16_000;
     const fastStart = await mp4MoovPrecedesMdat(filePath);
     const sourceMetadataRemoved = hasOnlyTechnicalMetadata(raw);
     const decodable = await this.decodeToNull(filePath);
@@ -289,7 +293,7 @@ export class ExecutableFfmpegOpenAiClient implements FfmpegOpenAiClient {
       audio.profile !== 'LC' ||
       Number(audio.sample_rate) !== 48_000 ||
       audio.channels !== 2 ||
-      audioBitrateBps !== 128_000 ||
+      !audioBitrateMatchesTarget ||
       !fastStart ||
       !sourceMetadataRemoved
     ) {

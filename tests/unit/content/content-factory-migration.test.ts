@@ -12,11 +12,13 @@ describe('content factory migration allocation', () => {
     const durableMigrationName = '2221_video_to_classroom_e2e.sql';
     const providerConstraintMigrationName = '2222_content_factory_provider_constraint.sql';
     const publishConstraintMigrationName = '2224_content_factory_publish_ready_constraint.sql';
+    const localMediaMigrationName = '2278_local_windows_media_import.sql';
     expect(names).toContain(migrationName);
     expect(names).toContain(previewMigrationName);
     expect(names).toContain(durableMigrationName);
     expect(names).toContain(providerConstraintMigrationName);
     expect(names).toContain(publishConstraintMigrationName);
+    expect(names).toContain(localMediaMigrationName);
     expect(names).not.toContain('2210_learning_delivery_content_factory.sql');
     expect(names).not.toContain('2214_experience_preview_sessions.sql');
 
@@ -73,5 +75,14 @@ describe('content factory migration allocation', () => {
     expect(
       createHash('sha256').update(publishConstraintSql.replace(/\r\n/g, '\n')).digest('hex'),
     ).toBe('59ac22d69f56382669d70d1e78c7556e162efcc3183a5552b111f3d7b9953a65');
+
+    const localMediaSql = await readFile(path.join(directory, localMediaMigrationName), 'utf8');
+    expect(localMediaSql).toContain(
+      'DROP CONSTRAINT IF EXISTS learning_delivery_cf_provider_check',
+    );
+    expect(localMediaSql).toContain("transcription_provider IN ('openai', 'synthetic', 'off')");
+    expect(localMediaSql).toContain('content_factory_items_source_occurrence_unique_idx');
+    expect(localMediaSql).toContain('content_factory_items_legacy_source_unique_idx');
+    expect(localMediaSql).toContain('onetime.local_media_signed_request_nonces');
   });
 });

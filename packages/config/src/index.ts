@@ -245,6 +245,8 @@ const envSchema = z.object({
   VIMEO_ACCESS_TOKEN: optionalTrimmedString(8, 500),
   VIMEO_ACCOUNT_ID: optionalTrimmedString(1, 200),
   VIMEO_WEBHOOK_SECRET: optionalTrimmedString(16, 500),
+  ONE_TIME_LOCAL_MEDIA_IMPORT_ENABLED: booleanFromString,
+  ONE_TIME_LOCAL_MEDIA_IMPORT_HMAC_KEY: optionalTrimmedString(32, 500),
   ONE_TIME_FIRST_CLASS_AT: z.preprocess(
     (value) => (typeof value === 'string' && value.trim() === '' ? undefined : value),
     z.iso.datetime({ offset: true }).optional(),
@@ -502,6 +504,11 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
   if (contentMediaProviderCanary && !contentMediaProvidersReady) {
     throw new Error(
       'Content media provider canary requires exact S3, processing, OpenAI, and Vimeo configuration.',
+    );
+  }
+  if (parsed.ONE_TIME_LOCAL_MEDIA_IMPORT_ENABLED && !parsed.ONE_TIME_LOCAL_MEDIA_IMPORT_HMAC_KEY) {
+    throw new Error(
+      'ONE_TIME_LOCAL_MEDIA_IMPORT_ENABLED requires ONE_TIME_LOCAL_MEDIA_IMPORT_HMAC_KEY.',
     );
   }
   if (
@@ -840,6 +847,8 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     contentVimeoAccessToken: parsed.VIMEO_ACCESS_TOKEN,
     contentVimeoAccountId: parsed.VIMEO_ACCOUNT_ID,
     contentVimeoWebhookSecret: parsed.VIMEO_WEBHOOK_SECRET,
+    localMediaImportEnabled: parsed.ONE_TIME_LOCAL_MEDIA_IMPORT_ENABLED,
+    localMediaImportHmacKey: parsed.ONE_TIME_LOCAL_MEDIA_IMPORT_HMAC_KEY,
     oneTimeFirstClassAt: parsed.ONE_TIME_FIRST_CLASS_AT,
     oneTimeFreeAccessExpiresAt: parsed.ONE_TIME_FREE_ACCESS_EXPIRES_AT,
     learningAliasHmacKey: parsed.LEARNING_ALIAS_HMAC_KEY,

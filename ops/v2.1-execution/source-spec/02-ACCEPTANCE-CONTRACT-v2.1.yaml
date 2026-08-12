@@ -10,6 +10,20 @@ baseline:
   reviewed_head: 73dda293079f602c83929d1bbccb8dd5b9d1a455
   reviewed_migration_count: 64
   result_records_are_separate: true
+launch_replacements:
+  local_windows_media_2026_08_09:
+    authority: DEC-159
+    status: current_initial_launch_contract
+    source: stable_released_ffprobe_valid_obs_file_on_classroom_windows_laptop
+    processing: local_ot_video_1_only
+    openai_boundary: bounded_extracted_audio_only_when_transcription_enabled
+    publication: direct_private_vimeo_upload_then_occurrence_bound_one_time_draft_import
+    drive: optional_asynchronous_nonblocking_archive
+    aws_s3_kms: deferred_preserved_disabled
+    railway_media_mode: 'off'
+    duplicate_boundary: source_sha256_plus_selected_occurrence
+    raw_source_minimum_retention_days_after_successful_publication: 7
+    supersedes_media_preconditions_that_require_s3_or_server_side_drive: true
 normative_documents:
 - 01-PRODUCT-SPEC-v2.1.md
 - 03-DECISION-REGISTER-v2.1.md
@@ -4079,7 +4093,7 @@ requirements:
     stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
 - id: OTV2-CONTENT-080
   area: CONTENT
-  requirement: OBS is the normal recording source.
+  requirement: OBS records to the classroom Windows laptop; the local runner starts only after 60-second stability, released write handle, and successful ffprobe readback.
   spec_refs: &id015
   - 01-PRODUCT-SPEC-v2.1.md
   - 06-DOMAIN-MODEL-AND-STATE-MACHINES-v2.1.md
@@ -4125,12 +4139,12 @@ requirements:
     stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
 - id: OTV2-CONTENT-081
   area: CONTENT
-  requirement: Google Drive private intake detects stable uploads idempotently.
+  requirement: Optional Google Drive Desktop backup copies the final processed MP4 asynchronously and never blocks Vimeo publication or One Time import.
   spec_refs: *id015
-  normative_status: required
+  normative_status: deferred
   verification_status: unimplemented
-  priority: launch_blocker
-  release_gate: true
+  priority: later
+  release_gate: false
   owner_domain: content
   depends_on:
   - OTV2-CLASSROOM-066
@@ -4211,7 +4225,7 @@ requirements:
     stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
 - id: OTV2-CONTENT-083
   area: CONTENT
-  requirement: Original recording is preserved.
+  requirement: The raw local OBS recording is preserved for at least seven days after successful publication and is never deleted before private Vimeo readiness plus Admin-visible Draft import.
   spec_refs: *id015
   normative_status: required
   verification_status: unimplemented
@@ -4254,7 +4268,7 @@ requirements:
     stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
 - id: OTV2-CONTENT-084
   area: CONTENT
-  requirement: Admin can trim beginning and end.
+  requirement: Local processing may trim only safely detected beginning/end silence and never cuts the middle.
   spec_refs: *id015
   normative_status: required
   verification_status: unimplemented
@@ -4297,7 +4311,7 @@ requirements:
     stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
 - id: OTV2-CONTENT-085
   area: CONTENT
-  requirement: Transcript and captions are generated.
+  requirement: When enabled, only bounded mono 16 kHz extracted audio reaches OpenAI and transcript/captions remain Draft; transcription mode off still permits Vimeo upload and Draft import.
   spec_refs: *id015
   normative_status: required
   verification_status: unimplemented
@@ -4383,7 +4397,7 @@ requirements:
     stop_condition: stop immediately on an unauthorized, over-budget, wrong-provider, or acceptance-unknown external effect
 - id: OTV2-CONTENT-087
   area: CONTENT
-  requirement: Private Vimeo upload works.
+  requirement: The final OT-VIDEO-1 MP4 uploads directly from the laptop to private Vimeo with uncertainty reconciliation before retry.
   spec_refs: *id015
   normative_status: required
   verification_status: unimplemented

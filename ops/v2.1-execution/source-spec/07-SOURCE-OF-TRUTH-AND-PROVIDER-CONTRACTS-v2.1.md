@@ -749,11 +749,56 @@ Meeting and registrant retention due times derive from `10-PRIVACY-CONSENT-RETEN
 - A missing provider resource is successful only when the registered account/readback proves it is the intended target; wrong-account `not found` is never accepted.
 - Deletion timeout becomes `acceptance_unknown`. The operation retains only protected provider digests and the minimal deletion tombstone after completion.
 
-## 9. Amazon S3 direct upload and Google Drive contract
+## 9. Local Windows media and optional Google Drive archive contract
+
+DEC-159 is the current initial-launch media contract and replaces the older managed-S3 assumption.
+The classroom Windows laptop is the launch processing authority:
+
+```text
+OBS local recording
+-> 60-second stable-file, released-handle, and ffprobe gate
+-> local OT-VIDEO-1 FFmpeg processing
+-> bounded extracted audio only to OpenAI when transcription is enabled
+-> direct resumable upload of the final MP4 to private Vimeo
+-> narrow signed occurrence-bound One Time Draft import
+-> optional asynchronous Google Drive Desktop archive
+```
+
+The runner accepts `.mkv`, `.mp4`, and `.mov`; prefers MKV for OBS; computes streamed SHA-256;
+and uses `(source SHA-256, selected occurrence)` as the duplicate boundary. It never cuts the
+middle, never upscales, and never sends full video to OpenAI. Transcription mode `off` still allows
+private Vimeo upload and Draft import. Generated transcript, captions, title, summary, vocabulary,
+and review material remain Draft until Admin review.
+
+Provider secrets are held only through Windows Credential Manager, DPAPI-protected storage, or the
+existing protected keyholder mechanism. They never enter Git, settings JSON, SQLite, ordinary logs,
+screenshots, or chat. The laptop uses a narrow signed occurrence lookup/import credential and never
+receives an unrestricted production database credential.
+
+Vimeo creation/upload uncertainty enters `unknown_provider_effect`. The runner reconciles the exact
+stable operation marker and TUS offset before retrying and never uploads blindly after a timeout. A
+job completes only after Vimeo is ready/private and One Time idempotently reads back one Draft item.
+Production Railway media mode remains OFF for this local-runner launch.
+
+When configured, Google Drive for Desktop receives a checksum-verified copy of only the final
+processed MP4. Backup runs independently; failure records `drive_archive_pending` and retries later
+without blocking Vimeo or One Time import. Drive status alone never authorizes deletion.
+
+Raw OBS sources remain local for at least seven days after successful publication and are not
+deleted until Vimeo is ready/private, the One Time Draft import succeeded and is Admin-visible, and
+the configured retention period elapsed. Uninstall preserves recordings unless the operator
+explicitly removes them.
+
+## 9A. Deferred Amazon S3 and server-side Drive contract (preserved historical design)
+
+The remainder of this former launch contract is preserved as deferred design evidence only. It is
+not current launch architecture, a processing dependency, a publication gate, or provisioning
+authority. AWS/S3/KMS and server-side Drive ingestion remain disabled and must not be provisioned
+for the local-runner launch.
 
 ### 9.1 Common content-source contract
 
-Direct upload and Drive monitoring produce the same ContentSource model and checksum identity. Both finish in One Time's managed Amazon S3 source staging before processing and support:
+In the deferred design, direct upload and Drive monitoring produce the same ContentSource model and checksum identity. Both would finish in One Time's managed Amazon S3 source staging before processing and support:
 
 - files up to 5 GiB;
 - bounded memory;
@@ -769,7 +814,7 @@ The complete file is never buffered in web or worker memory. The canonical manag
 
 ### 9.2 S3 storage profile
 
-Launch managed source storage is Amazon S3 in `eu-central-1`.
+The deferred managed-source design uses Amazon S3 in `eu-central-1`; it is not the current launch path.
 
 | Control | Required production value |
 |---|---|
@@ -813,7 +858,7 @@ A client receives “upload confirmed” only after the immutable S3 object-vers
 
 ### 9.4 Drive folder
 
-Drive uses a dedicated One Time-owned private folder tree:
+The deferred server-side Drive-ingest design uses a dedicated One Time-owned private folder tree:
 
 ```text
 One Time/Recordings/Incoming

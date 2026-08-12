@@ -79,7 +79,7 @@ export const contentFactorySafeItemSchema = z.object({
   transcript_review_state: z.enum(['draft', 'approved', 'rejected']),
   transcript_segment_count: z.number().int().min(0),
   transcription: z.object({
-    provider: z.enum(['openai', 'synthetic']),
+    provider: z.enum(['openai', 'synthetic', 'off']),
     model: z.string().trim().min(1).max(120),
     language: z.string().trim().min(1).max(24),
     transcript_sha256: sha256Schema,
