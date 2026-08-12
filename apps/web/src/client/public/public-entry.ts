@@ -1233,13 +1233,15 @@ async function checkLifecycleToken(
     const confirmation = form.querySelector<HTMLInputElement>('input[name="password_confirm"]');
     if (studentPin) {
       const root = form.closest<HTMLElement>('[data-activation-root]');
-      root?.querySelector<HTMLElement>('[data-activation-heading]')?.replaceChildren('Set your PIN');
-      root?.querySelector<HTMLElement>('[data-activation-password-label]')?.replaceChildren(
-        'Six-digit Student PIN',
-      );
-      root?.querySelector<HTMLElement>('[data-activation-confirm-label]')?.replaceChildren(
-        'Confirm Student PIN',
-      );
+      root
+        ?.querySelector<HTMLElement>('[data-activation-heading]')
+        ?.replaceChildren('Set your PIN');
+      root
+        ?.querySelector<HTMLElement>('[data-activation-password-label]')
+        ?.replaceChildren('Six-digit Student PIN');
+      root
+        ?.querySelector<HTMLElement>('[data-activation-confirm-label]')
+        ?.replaceChildren('Confirm Student PIN');
       for (const input of [password, confirmation]) {
         input?.setAttribute('minlength', '6');
         input?.setAttribute('maxlength', '6');
