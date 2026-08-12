@@ -39,7 +39,17 @@ The deployed Parent Student flow is functionally proven and its desktop UX is ag
 - Mobile visual acceptance of the Parent Student page.
 - The minimal adult-only GHL signup/email flow. Family GHL synchronization remains disabled.
 
-The immediate teaching loop is private Rabbi-moderated prompts, one worksheet round trip, three simple badges, basic protected Zoom classroom entry, and one real protected library video. Stage Host and OBS remain later.
+## Local media replacement decision
+
+- `AUTHORIZED ACTION / LAUNCH DECISION`: the 2026-08-09 laptop bootstrap replaces the older
+  AWS/S3 staging assumption for the initial recording launch.
+- Launch media path: OBS on this Windows laptop -> local FFmpeg `OT-VIDEO-1` -> bounded extracted
+  audio only to OpenAI when enabled -> direct private Vimeo upload -> narrow occurrence-bound One
+  Time Draft import. Google Drive is optional asynchronous archive only.
+- AWS/S3/KMS media staging is deferred and remains disabled. Production Railway media mode remains
+  OFF. This branch is implementation work only and is not deployed or operator-accepted evidence.
+
+The immediate teaching loop is private Rabbi-moderated prompts, one worksheet round trip, three simple badges, basic protected Zoom classroom entry, and one real protected library video. Stage Host and OBS controls remain later; local OBS recording is only the approved media intake path.
 
 ## Protected / off
 

@@ -70,6 +70,7 @@ export type ContentFactoryIngest = {
   displayName: string;
   mimeType: string;
   byteLength: number;
+  occurrenceKey?: string | null;
   originalDurationMs: number;
   preparedDurationMs: number;
   trimStartMs: number;
@@ -84,10 +85,11 @@ export type ContentFactoryIngest = {
   webvttSha256: string;
   transcriptionModel: string;
   transcriptionLanguage: string;
+  transcriptionMode?: 'openai' | 'off';
   draft: ContentFactoryDraft;
   providerVideoId: string;
   providerEmbedUrl: string;
-  providerTextTrackId: string;
+  providerTextTrackId: string | null;
   vimeoPrivacy: 'private' | 'unlisted' | 'password';
   captionsActive: boolean;
 };
@@ -145,20 +147,25 @@ export async function ingestContentFactoryItem(input: {
   item: ContentFactoryIngest;
 }) {
   const item = validateIngest(input.item);
+  if (item.occurrenceKey) {
+    await requireOccurrence(input.pool, input.config, item.occurrenceKey);
+  }
   await input.pool.query(
     `INSERT INTO onetime.learning_delivery_content_factory_items
        (source_key, account_key, product_key, source_kind, source_ref_digest, source_sha256,
-        display_name, mime_type, byte_length, factory_state, original_duration_ms,
-        prepared_duration_ms, trim_start_ms, trim_end_ms, removed_start_ms, removed_end_ms,
-        trim_confidence, safe_duration, middle_cut_performed, transcript_segments_json,
-        normalized_transcript, transcript_sha256, webvtt, webvtt_sha256, transcription_model,
-        transcription_language, transcript_review_state, draft_json, provider_video_id,
-        provider_embed_url, provider_text_track_id, vimeo_privacy, captions_active, updated_at)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'needs_review',$10,$11,$12,$13,$14,$15,$16,true,false,
-        $17::jsonb,$18,$19,$20,$21,$22,$23,'draft',$24::jsonb,$25,$26,$27,$28,$29,now())
-     ON CONFLICT (account_key, product_key, source_sha256)
+         display_name, mime_type, byte_length, occurrence_key, factory_state, original_duration_ms,
+         prepared_duration_ms, trim_start_ms, trim_end_ms, removed_start_ms, removed_end_ms,
+         trim_confidence, safe_duration, middle_cut_performed, transcript_segments_json,
+         normalized_transcript, transcript_sha256, webvtt, webvtt_sha256, transcription_provider,
+         transcription_model,
+         transcription_language, transcript_review_state, draft_json, provider_video_id,
+         provider_embed_url, provider_text_track_id, vimeo_privacy, captions_active, updated_at)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,'needs_review',$11,$12,$13,$14,$15,$16,$17,true,false,
+         $18::jsonb,$19,$20,$21,$22,$23,$24,$25,'draft',$26::jsonb,$27,$28,$29,$30,$31,now())
+     ON CONFLICT (source_key)
      DO UPDATE SET
        display_name = EXCLUDED.display_name,
+        occurrence_key = EXCLUDED.occurrence_key,
        factory_state = 'needs_review',
        prepared_duration_ms = EXCLUDED.prepared_duration_ms,
        trim_start_ms = EXCLUDED.trim_start_ms,
@@ -171,6 +178,7 @@ export async function ingestContentFactoryItem(input: {
        transcript_sha256 = EXCLUDED.transcript_sha256,
        webvtt = EXCLUDED.webvtt,
        webvtt_sha256 = EXCLUDED.webvtt_sha256,
+        transcription_provider = EXCLUDED.transcription_provider,
        transcription_model = EXCLUDED.transcription_model,
        transcription_language = EXCLUDED.transcription_language,
        transcript_review_state = 'draft',
@@ -196,6 +204,7 @@ export async function ingestContentFactoryItem(input: {
       item.displayName,
       item.mimeType,
       item.byteLength,
+      item.occurrenceKey,
       item.originalDurationMs,
       item.preparedDurationMs,
       item.trimStartMs,
@@ -208,6 +217,7 @@ export async function ingestContentFactoryItem(input: {
       item.transcriptSha256,
       item.webvtt,
       item.webvttSha256,
+      item.transcriptionMode,
       item.transcriptionModel,
       item.transcriptionLanguage,
       JSON.stringify(item.draft),
@@ -270,7 +280,7 @@ export async function getContentFactoryWorkspace(input: { pool: DbPool; config: 
           AND series.product_key = occurrence.product_key
           AND series.class_series_key = occurrence.class_series_key
         WHERE occurrence.account_key = $1 AND occurrence.product_key = $2
-          AND occurrence.occurrence_state <> 'cancelled'
+          AND occurrence.occurrence_state <> 'canceled'
         ORDER BY occurrence.starts_at DESC LIMIT 100`,
       [input.config.accountKey, input.config.productKey],
     ),
@@ -354,7 +364,7 @@ export async function createContentFactoryIntake(input: {
           AND series.product_key = occurrence.product_key
           AND series.class_series_key = occurrence.class_series_key
         WHERE occurrence.account_key = $1 AND occurrence.product_key = $2
-          AND occurrence.occurrence_key = $3 AND occurrence.occurrence_state <> 'cancelled'
+          AND occurrence.occurrence_key = $3 AND occurrence.occurrence_state <> 'canceled'
         LIMIT 1`,
       [input.config.accountKey, input.config.productKey, input.occurrenceKey],
     );
@@ -884,8 +894,24 @@ function validateIngest(item: ContentFactoryIngest) {
   if (!item.providerEmbedUrl.startsWith('https://player.vimeo.com/')) {
     throw new ContentFactoryError('VALIDATION_ERROR', 'Protected Vimeo embed URL required.');
   }
-  if (!item.captionsActive || !item.providerVideoId || !item.providerTextTrackId) {
+  const transcriptionMode = item.transcriptionMode ?? 'openai';
+  if (!item.providerVideoId) {
+    throw new ContentFactoryError('VALIDATION_ERROR', 'Private Vimeo asset required.');
+  }
+  if (
+    transcriptionMode === 'openai' &&
+    (!item.captionsActive || !item.providerTextTrackId || item.transcriptSegments.length < 1)
+  ) {
     throw new ContentFactoryError('VALIDATION_ERROR', 'Active Vimeo captions required.');
+  }
+  if (
+    transcriptionMode === 'off' &&
+    (item.captionsActive || item.providerTextTrackId || item.transcriptSegments.length > 0)
+  ) {
+    throw new ContentFactoryError(
+      'VALIDATION_ERROR',
+      'Transcription-off imports cannot claim transcript or caption effects.',
+    );
   }
   if (
     item.originalDurationMs <= 0 ||
@@ -916,6 +942,8 @@ function validateIngest(item: ContentFactoryIngest) {
   }
   return {
     ...item,
+    occurrenceKey: item.occurrenceKey ?? null,
+    transcriptionMode,
     transcriptSegments: item.transcriptSegments.map((segment) =>
       learningDeliveryTranscriptSegmentSchema.parse(segment),
     ),
@@ -949,7 +977,12 @@ function safeItemFromRow(row: Record<string, unknown>): ContentFactorySafeItem {
     transcript_review_state: row.transcript_review_state,
     transcript_segment_count: arrayValue(row.transcript_segments_json).length,
     transcription: {
-      provider: row.processing_mode === 'synthetic' ? 'synthetic' : 'openai',
+      provider:
+        row.processing_mode === 'synthetic'
+          ? 'synthetic'
+          : row.transcription_provider === 'off'
+            ? 'off'
+            : 'openai',
       model: String(row.transcription_model),
       language: String(row.transcription_language),
       transcript_sha256: String(row.transcript_sha256),
@@ -1076,7 +1109,7 @@ async function requireOccurrence(client: Queryable, config: AppConfig, occurrenc
         AND series.product_key = occurrence.product_key
         AND series.class_series_key = occurrence.class_series_key
       WHERE occurrence.account_key = $1 AND occurrence.product_key = $2
-        AND occurrence.occurrence_key = $3 AND occurrence.occurrence_state <> 'cancelled'
+        AND occurrence.occurrence_key = $3 AND occurrence.occurrence_state <> 'canceled'
       LIMIT 1`,
     [config.accountKey, config.productKey, occurrenceKey],
   );

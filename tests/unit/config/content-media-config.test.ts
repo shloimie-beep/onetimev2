@@ -33,6 +33,26 @@ describe('content media configuration', () => {
       contentMediaEnabled: false,
       contentMediaProviderCanary: false,
       contentDriveConfigured: false,
+      localMediaImportEnabled: false,
+    });
+  });
+
+  it('keeps the narrow local import endpoint default-off and requires its HMAC key', () => {
+    expect(() =>
+      loadConfig({
+        NODE_ENV: 'test',
+        ONE_TIME_LOCAL_MEDIA_IMPORT_ENABLED: 'true',
+      }),
+    ).toThrow(/HMAC_KEY/i);
+    expect(
+      loadConfig({
+        NODE_ENV: 'test',
+        ONE_TIME_LOCAL_MEDIA_IMPORT_ENABLED: 'true',
+        ONE_TIME_LOCAL_MEDIA_IMPORT_HMAC_KEY: 'h'.repeat(48),
+      }),
+    ).toMatchObject({
+      localMediaImportEnabled: true,
+      localMediaImportHmacKey: 'h'.repeat(48),
     });
   });
 

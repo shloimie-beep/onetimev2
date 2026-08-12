@@ -266,6 +266,7 @@ export * from './content/learning-delivery-inputs.ts';
 export * from './content/content-factory.ts';
 export * from './content/content-factory-storage.ts';
 export * from './content/content-factory-worker.ts';
+export * from './content/local-media-auth.ts';
 export {
   OT86B_ALLOWED_TRANSITIONS,
   Ot86bSocialPublishingError,
