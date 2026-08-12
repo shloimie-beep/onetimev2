@@ -1,5 +1,6 @@
 import {
   PARENT_HOUSEHOLD_ERROR_CODES,
+  isStudentPin,
   type CreateParentStudentCommand,
   type ParentHouseholdMutation,
   type ParentHouseholdMutationContext,
@@ -206,10 +207,10 @@ export function createParentHouseholdService(dependencies: {
 }
 
 function assertMatchingPasswords(password: string, confirmation: string) {
-  if (password !== confirmation) {
+  if (password !== confirmation || !isStudentPin(password)) {
     throw new ParentHouseholdError(
       PARENT_HOUSEHOLD_ERROR_CODES.invalidInput,
-      'Passwords must match and contain 12 to 128 characters.',
+      'Student PINs must match and contain exactly six numeric digits.',
     );
   }
 }
