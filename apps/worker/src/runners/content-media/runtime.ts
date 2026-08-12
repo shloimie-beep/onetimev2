@@ -19,6 +19,7 @@ import { STSClient } from '@aws-sdk/client-sts';
 import type { AppConfig } from '../../../../../packages/config/src/index.ts';
 import type {
   ContentProcessingSource,
+  ContentSourceEvidence,
   DerivativeReadback,
 } from '../../../../../packages/contracts/src/content/processing/index.ts';
 import type {
@@ -1089,7 +1090,10 @@ export async function selectBroadProcessingCommands(input: {
         AND source.lifecycle_state IN ('received', 'processing')
         AND source.record_json->>'runtimeTier' = 'production'
         AND source.record_json->>'verificationEnvironmentId' = 'production_broad'
-        AND COALESCE(source.record_json->>'occurrenceId', '') <> ''
+         AND (
+           COALESCE(source.record_json->>'occurrenceId', '') <> ''
+           OR source.record_json->>'captureMethod' = 'existing_reviewed_recording'
+         )
         AND receipt.idempotency_key IS NULL
         AND (
           processing.processing_state IS NULL
@@ -1114,7 +1118,7 @@ export async function selectBroadProcessingCommands(input: {
       source.productKey !== input.config.productKey ||
       source.runtimeTier !== 'production' ||
       source.verificationEnvironmentId !== 'production_broad' ||
-      !source.occurrenceId
+      (source.captureMethod !== 'existing_reviewed_recording' && !source.occurrenceId)
     ) {
       throw new Error('content_processing_broad_binding_mismatch');
     }
@@ -1141,7 +1145,13 @@ async function selectExactCanaryProcessingCommand(input: {
        FROM onetime.content_sources_v21
       WHERE account_key = $1
         AND product_key = $2
-        AND record_json->>'occurrenceId' = $3
+       AND (
+         record_json->>'occurrenceId' = $3
+         OR (
+           record_json->>'captureMethod' = 'existing_reviewed_recording'
+           AND source_key = $3
+         )
+       )
         AND lifecycle_state IN ('received', 'processing')
       ORDER BY updated_at
       LIMIT 2`,
@@ -1152,7 +1162,6 @@ async function selectExactCanaryProcessingCommand(input: {
   const source = parseJson<ContentProcessingSource>(result.rows[0]?.record_json);
   if (
     !source ||
-    source.occurrenceId !== canaryId ||
     source.runtimeTier !== 'production' ||
     source.verificationEnvironmentId !== 'production_operator_canary'
   ) {
@@ -1173,12 +1182,10 @@ async function buildProcessingCommand(input: {
   idempotencyKey: string;
 }): Promise<ProcessContentCommand> {
   const contentSource = input.sourceRecord;
-  const occurrenceId = required(
-    contentSource.occurrenceId,
-    'content_processing_occurrence_binding_missing',
-  );
   const principalId = required(
-    contentSource.recordingAdminId ?? contentSource.matchedByAdminId,
+    contentSource.captureMethod === 'obs'
+      ? (contentSource.recordingAdminId ?? contentSource.matchedByAdminId)
+      : contentSource.existingRecordingAttestation.rightsAttestedByAdminId,
     'content_processing_admin_binding_missing',
   );
   const probe = await input.client.probeSource(contentSource);
@@ -1229,35 +1236,10 @@ async function buildProcessingCommand(input: {
       bucketRef: contentSource.bucketRef,
       kmsKeyVersionRef: contentSource.kmsKeyVersionRef,
     },
-    captureEvidence: {
-      evidenceVersion: 'OT-OBS-CAPTURE-1',
-      sourceId: contentSource.id,
-      occurrenceId,
-      captureMethod: 'obs',
-      zoomCloudRecordingDisabled: exactTrue(
-        input.source.CONTENT_MEDIA_ZOOM_CLOUD_RECORDING_DISABLED,
-        'content_processing_zoom_cloud_binding_missing',
-      ),
-      controlledEncryptedDevice: exactTrue(
-        input.source.CONTENT_MEDIA_CONTROLLED_ENCRYPTED_DEVICE,
-        'content_processing_device_binding_missing',
-      ),
-      accountOwnerConsentVersion: required(
-        input.source.CONTENT_MEDIA_ACCOUNT_OWNER_CONSENT_VERSION,
-        'content_processing_consent_binding_missing',
-      ),
-      consentedParticipantSnapshotDigest: sha256(
-        input.source.CONTENT_MEDIA_PARTICIPANT_SNAPSHOT_DIGEST,
-      ),
-      recordingNotice: exactNotice(input.source.CONTENT_MEDIA_RECORDING_NOTICE),
-      capturedAt: iso(
-        contentSource.obsRecordingStartedAt,
-        'content_processing_capture_timestamp_missing',
-      ),
-      uploadConfirmedAt: contentSource.stableAt,
-      durableChecksumReadbackReceiptId: contentSource.checksumReadbackReceiptId,
-      linkedIngestSourceId: contentSource.id,
-    },
+    captureEvidence: contentSourceEvidence({
+      contentSource,
+      source: input.source,
+    }),
     probe,
     trimStartMs: 0,
     trimEndMs: probe.durationMs,
@@ -1266,6 +1248,63 @@ async function buildProcessingCommand(input: {
     idempotencyKey: input.idempotencyKey,
     requestHash,
     occurredAt,
+  };
+}
+
+function contentSourceEvidence(input: {
+  contentSource: ContentProcessingSource;
+  source: NodeJS.ProcessEnv;
+}): ContentSourceEvidence {
+  const source = input.contentSource;
+  if (source.captureMethod === 'existing_reviewed_recording') {
+    const attestation = source.existingRecordingAttestation;
+    return {
+      evidenceVersion: 'OT-EXISTING-REVIEWED-RECORDING-1',
+      sourceId: source.id,
+      captureMethod: 'existing_reviewed_recording',
+      attestation,
+      reviewedSourceDigest: processingSha256(
+        JSON.stringify({
+          sourceId: source.id,
+          sourceSha256: source.sha256,
+          sourceObjectVersionId: source.objectVersionId,
+          attestation,
+        }),
+      ),
+      uploadConfirmedAt: source.stableAt,
+      durableChecksumReadbackReceiptId: source.checksumReadbackReceiptId,
+      linkedIngestSourceId: source.id,
+    };
+  }
+  const occurrenceId = required(
+    source.occurrenceId,
+    'content_processing_occurrence_binding_missing',
+  );
+  return {
+    evidenceVersion: 'OT-OBS-CAPTURE-1',
+    sourceId: source.id,
+    occurrenceId,
+    captureMethod: 'obs',
+    zoomCloudRecordingDisabled: exactTrue(
+      input.source.CONTENT_MEDIA_ZOOM_CLOUD_RECORDING_DISABLED,
+      'content_processing_zoom_cloud_binding_missing',
+    ),
+    controlledEncryptedDevice: exactTrue(
+      input.source.CONTENT_MEDIA_CONTROLLED_ENCRYPTED_DEVICE,
+      'content_processing_device_binding_missing',
+    ),
+    accountOwnerConsentVersion: required(
+      input.source.CONTENT_MEDIA_ACCOUNT_OWNER_CONSENT_VERSION,
+      'content_processing_consent_binding_missing',
+    ),
+    consentedParticipantSnapshotDigest: sha256(
+      input.source.CONTENT_MEDIA_PARTICIPANT_SNAPSHOT_DIGEST,
+    ),
+    recordingNotice: exactNotice(input.source.CONTENT_MEDIA_RECORDING_NOTICE),
+    capturedAt: iso(source.obsRecordingStartedAt, 'content_processing_capture_timestamp_missing'),
+    uploadConfirmedAt: source.stableAt,
+    durableChecksumReadbackReceiptId: source.checksumReadbackReceiptId,
+    linkedIngestSourceId: source.id,
   };
 }
 

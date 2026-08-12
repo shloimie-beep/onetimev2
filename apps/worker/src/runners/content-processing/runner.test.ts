@@ -4,6 +4,7 @@ import {
   type ContentProcessingCommandReceipt,
   type ContentProcessingRepository,
   type ContentProcessingSource,
+  type ContentSourceEvidence,
   type ContentProcessingUnitOfWork,
   type ContentProcessingVersion,
   type ControlledCaptureEvidence,
@@ -148,7 +149,7 @@ class MemoryRepository implements ContentProcessingRepository {
   versions = new Map<string, ContentProcessingVersion>();
   receipts = new Map<string, ContentProcessingCommandReceipt>();
   artifacts = new Map<string, ProcessingArtifact>();
-  evidence = new Map<string, ControlledCaptureEvidence>();
+  evidence = new Map<string, ContentSourceEvidence>();
 
   async inTransaction<T>(run: (unit: ContentProcessingUnitOfWork) => Promise<T>) {
     return run({

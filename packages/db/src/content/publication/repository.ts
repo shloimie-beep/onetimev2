@@ -1456,14 +1456,25 @@ function canonicalBootstrapEvents(
         expectedVersion,
         actorKind: 'reconciler',
         actorKey: 'content-publication-bootstrap',
-        authoritativePublicationRequestHash: canonicalHash({
-          contentId: record.contentId,
-          contentVersionId: record.contentVersionId,
-          contentVersionDigest: record.contentVersionDigest,
-          participantSetVersion: record.participantSetVersion,
-          participantSnapshotSetDigest: record.participantSnapshotSetDigest,
-          redactionReviewDigest: record.redactionReviewDigest,
-        }),
+        authoritativePublicationRequestHash: canonicalHash(
+          record.reviewKind === 'existing_reviewed_recording'
+            ? {
+                contentId: record.contentId,
+                contentVersionId: record.contentVersionId,
+                contentVersionDigest: record.contentVersionDigest,
+                reviewKind: record.reviewKind,
+                reviewedSourceDigest: record.sourceReview.reviewedSourceDigest,
+                approvalEvidenceDigest: record.sourceReview.approvalEvidenceDigest,
+              }
+            : {
+                contentId: record.contentId,
+                contentVersionId: record.contentVersionId,
+                contentVersionDigest: record.contentVersionDigest,
+                participantSetVersion: record.participantSetVersion,
+                participantSnapshotSetDigest: record.participantSnapshotSetDigest,
+                redactionReviewDigest: record.redactionReviewDigest,
+              },
+        ),
       }),
       occurredAt: record.updatedAt,
       scope,

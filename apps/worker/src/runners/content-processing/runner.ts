@@ -10,7 +10,7 @@ import {
   type ContentProcessingRepository,
   type ContentProcessingSource,
   type ContentProcessingVersion,
-  type ControlledCaptureEvidence,
+  type ContentSourceEvidence,
   type DerivativeReadback,
   type LearningDraft,
   type MediaProbeReadback,
@@ -26,7 +26,7 @@ import {
   registeredLearningSchemaDigest,
   scheduleProcessingFailure,
   selectTrim,
-  validateControlledCapture,
+  validateSourceEvidence,
   validateLearningDraft,
   validateProcessingInput,
   validateTranscriptDraft,
@@ -38,7 +38,7 @@ export type ProcessContentCommand = {
   source: ContentProcessingSource;
   readback: ContentProcessingReadback;
   storage: ProcessingStoragePolicyReadback;
-  captureEvidence: ControlledCaptureEvidence;
+  captureEvidence: ContentSourceEvidence;
   probe: MediaProbeReadback;
   trimStartMs: number;
   trimEndMs: number;
@@ -153,7 +153,7 @@ export class ContentProcessingRunner {
       probe: command.probe,
       storage: command.storage,
     });
-    validateControlledCapture(command.captureEvidence, command.source);
+    validateSourceEvidence(command.captureEvidence, command.source);
     let version: ContentProcessingVersion;
     if (prior.resumable) {
       assertResumableVersion(prior.resumable, command, contentVersionId);
@@ -186,7 +186,7 @@ export class ContentProcessingRunner {
       });
       version = {
         id: contentVersionId,
-        contentId: command.source.occurrenceId!,
+        contentId: contentIdForSource(command.source),
         accountKey: scope.accountKey,
         productKey: scope.productKey,
         sourceId: command.source.id,
@@ -370,7 +370,7 @@ function assertResumableVersion(
     version.id !== contentVersionId ||
     version.accountKey !== command.actor.accountKey ||
     version.productKey !== command.actor.productKey ||
-    version.contentId !== command.source.occurrenceId ||
+    version.contentId !== contentIdForSource(command.source) ||
     version.sourceId !== command.source.id ||
     version.sourceSha256 !== command.source.sha256 ||
     version.sourceObjectVersionId !== command.source.objectVersionId ||
@@ -389,6 +389,10 @@ function assertResumableVersion(
       'Interrupted processing state does not match the exact source-bound retry request.',
     );
   }
+}
+
+function contentIdForSource(source: ContentProcessingSource) {
+  return source.captureMethod === 'obs' ? source.occurrenceId! : `existing-recording:${source.id}`;
 }
 
 function assertCompletedProcessingReplay(

@@ -723,9 +723,11 @@ Zoom webhook events are signature-verified and mapped through exact meeting/regi
 | Consent/access revoked | launch denied before SDK bootstrap |
 | Meeting ended | occurrence launch closes and attendance reconciles |
 
-### 8.9 OBS sole-capture contract
+### 8.9 OBS capture contract and the one existing-recording launch exception
 
 OBS is the sole launch recording mechanism. Zoom cloud recording, local Zoom recording, browser-side recording, and an alternate provider capture are forbidden.
+
+For the one immediate-launch library item only, One Time may accept an already existing One Time/Rabbi-owned source from the protected Drive tree or recordings collection. This is a typed `existing_reviewed_recording` provenance lane, not a capture fallback: before any OpenAI, Vimeo, or library effect, the Admin attests rights to process and privately publish, completes human review, and records either `none_present` or `redactions_complete` child-data disposition. It never invents an OBS profile/device/start-stop time, occurrence binding, recording notice, or participant-consent snapshot. It remains subject to the same managed-S3 checksum, Admin approval, private Vimeo, protected playback, cross-household denial, and safe-unpublish controls as an OBS source.
 
 For each recorded occurrence:
 

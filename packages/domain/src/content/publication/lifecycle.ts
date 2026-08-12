@@ -71,6 +71,34 @@ const APPROVAL_PROJECTION_KEYS = [
   'projectionDigest',
 ] as const;
 
+const EXISTING_RECORDING_APPROVAL_PROJECTION_KEYS = [
+  'accountKey',
+  'productKey',
+  'contentId',
+  'contentVersionId',
+  'contentVersionDigest',
+  'sourceId',
+  'sourceSha256',
+  'sourceObjectVersionId',
+  'reviewKind',
+  'reviewedSourceDigest',
+  'reviewedByAdminId',
+  'reviewedAt',
+  'approvalEvidenceDigest',
+  'title',
+  'englishTranscriptText',
+  'classTopic',
+  'mishnahReferences',
+  'occurredAt',
+  'durationMs',
+  'approvedByAdminId',
+  'approvedAt',
+  'artifacts',
+  'approvedArtifactSetDigest',
+  'sourceEvidenceDigest',
+  'projectionDigest',
+] as const;
+
 const APPROVAL_ARTIFACT_KEYS = [
   'artifactId',
   'kind',
@@ -85,11 +113,49 @@ const APPROVAL_ARTIFACT_KEYS = [
 export function createReviewReadyContentFromProjection(input: {
   principal: ContentPublicationPrincipal;
   evidence: ContentApprovalEvidence;
-  canonicalOccurrence: CanonicalGovernedOccurrence;
+  canonicalOccurrence?: CanonicalGovernedOccurrence;
 }): ContentPublicationRecord {
   const { principal, evidence, canonicalOccurrence } = input;
   assertAdmin(principal);
   assertProjectionEvidence(evidence);
+  if (evidence.reviewKind === 'existing_reviewed_recording') {
+    const record: ContentPublicationRecord = {
+      accountKey: evidence.accountKey,
+      productKey: CONTENT_PUBLICATION_PRODUCT_KEY,
+      contentId: evidence.contentId,
+      contentVersionId: evidence.contentVersionId,
+      contentVersionDigest: evidence.contentVersionDigest,
+      reviewKind: 'existing_reviewed_recording',
+      sourceReview: {
+        reviewedSourceDigest: evidence.reviewedSourceDigest,
+        reviewedByAdminId: evidence.reviewedByAdminId,
+        reviewedAt: evidence.reviewedAt,
+        approvalEvidenceDigest: evidence.approvalEvidenceDigest,
+      },
+      version: 1,
+      state: 'needs_review',
+      title: evidence.title,
+      englishTranscriptText: evidence.englishTranscriptText,
+      classTopic: evidence.classTopic,
+      mishnahReferences: [...evidence.mishnahReferences],
+      occurredAt: evidence.occurredAt,
+      updatedAt: evidence.approvedAt,
+      durationMs: evidence.durationMs,
+      approval: null,
+      publicationGeneration: 0,
+      playbackGrantGeneration: 1,
+      pendingProviderOperationId: null,
+      pendingProviderRequestHash: null,
+      opaqueProviderAssetRef: null,
+      providerReadbackDigest: null,
+      publishedAt: null,
+      archivedAt: null,
+      occurrenceRelations: [],
+    };
+    assertProjectionRecordBinding(record, evidence, 'invalidState');
+    return record;
+  }
+  if (!canonicalOccurrence) throw failure('invalidState', 'A governed occurrence is required.');
   const occurrenceRelation: Omit<
     GovernedContentOccurrenceRelation,
     'governedByAdminId' | 'attachedAt'
@@ -153,21 +219,24 @@ export function createReviewReadyContentFromProjection(input: {
 export function assertRegisteredProjectionReplay(
   record: ContentPublicationRecord,
   evidence: ContentApprovalEvidence,
-  canonicalOccurrence: CanonicalGovernedOccurrence,
+  canonicalOccurrence?: CanonicalGovernedOccurrence,
 ) {
   assertProjectionEvidence(evidence);
   assertProjectionRecordBinding(record, evidence, 'conflict');
   if (
     (record.approval !== null &&
       record.approval.evidence.projectionDigest !== evidence.projectionDigest) ||
-    !record.occurrenceRelations.some(
-      (relation) =>
-        relation.accountKey === canonicalOccurrence.accountKey &&
-        relation.productKey === canonicalOccurrence.productKey &&
-        relation.occurrenceId === canonicalOccurrence.occurrenceId &&
-        relation.occurrenceVersion === canonicalOccurrence.occurrenceVersion &&
-        relation.canonicalSeriesId === canonicalOccurrence.canonicalSeriesId,
-    )
+    (evidence.reviewKind === 'existing_reviewed_recording'
+      ? record.occurrenceRelations.length !== 0
+      : !canonicalOccurrence ||
+        !record.occurrenceRelations.some(
+          (relation) =>
+            relation.accountKey === canonicalOccurrence.accountKey &&
+            relation.productKey === canonicalOccurrence.productKey &&
+            relation.occurrenceId === canonicalOccurrence.occurrenceId &&
+            relation.occurrenceVersion === canonicalOccurrence.occurrenceVersion &&
+            relation.canonicalSeriesId === canonicalOccurrence.canonicalSeriesId,
+        ))
   ) {
     throw failure(
       'conflict',
@@ -600,6 +669,12 @@ export function attachOccurrence(input: {
 }) {
   assertAdmin(input.principal, input.record);
   assertBinding(input.binding, input.record);
+  if (input.record.reviewKind === 'existing_reviewed_recording') {
+    throw failure(
+      'invalidState',
+      'Existing reviewed recordings cannot be attached to a historical occurrence.',
+    );
+  }
   assertOccurrenceRelation(input.principal, input.relation, input.canonicalOccurrence);
   if (input.record.state === 'archived' || input.record.state === 'failed') {
     throw failure('invalidState', 'Unavailable content cannot be attached.');
@@ -840,11 +915,7 @@ function assertStudentAccess(
     assignment.studentId !== principal.studentId ||
     assignment.householdId !== principal.householdId ||
     JSON.stringify(assignment.approvalEvidence) !== JSON.stringify(record.approval.evidence) ||
-    !record.occurrenceRelations.some(
-      (relation) =>
-        relation.occurrenceId === assignment.occurrenceId &&
-        relation.productKey === CONTENT_PUBLICATION_PRODUCT_KEY,
-    ) ||
+    !allowsCurrentEligibility(record, assignment.occurrenceId) ||
     !facts ||
     facts.accountKey !== record.accountKey ||
     facts.productKey !== record.productKey ||
@@ -919,6 +990,64 @@ function assertProjectionEvidence(evidence: ContentApprovalEvidence) {
     : [];
   const projectionCore = approvalProjectionCore(evidence);
   const expectedProjectionDigest = sha256(JSON.stringify(projectionCore));
+  if (evidence.reviewKind === 'existing_reviewed_recording') {
+    if (
+      !hasExactKeys(evidence, EXISTING_RECORDING_APPROVAL_PROJECTION_KEYS) ||
+      evidence.productKey !== CONTENT_PUBLICATION_PRODUCT_KEY ||
+      !exactNonemptyString(evidence.accountKey) ||
+      !exactNonemptyString(evidence.reviewedByAdminId) ||
+      !exactNonemptyString(evidence.title) ||
+      !exactNonblankText(evidence.englishTranscriptText) ||
+      !exactNonemptyString(evidence.classTopic) ||
+      !Array.isArray(evidence.mishnahReferences) ||
+      mishnahReferences.some((reference) => !exactNonemptyString(reference)) ||
+      new Set(mishnahReferences).size !== mishnahReferences.length ||
+      !Number.isSafeInteger(evidence.durationMs) ||
+      evidence.durationMs < 1 ||
+      validInstant(evidence.occurredAt) !== evidence.occurredAt ||
+      validInstant(evidence.reviewedAt) !== evidence.reviewedAt ||
+      validInstant(evidence.approvedAt) !== evidence.approvedAt ||
+      Date.parse(evidence.approvedAt) < Date.parse(evidence.reviewedAt) ||
+      !Array.isArray(evidence.artifacts) ||
+      artifactKinds.length !== REQUIRED_APPROVED_ARTIFACT_KINDS.length ||
+      artifactKinds.some((kind, index) => kind !== REQUIRED_APPROVED_ARTIFACT_KINDS[index]) ||
+      evidence.artifacts.some(
+        (artifact) =>
+          !hasExactKeys(artifact, APPROVAL_ARTIFACT_KEYS) ||
+          !/^[A-Za-z0-9][A-Za-z0-9._:-]{2,179}$/.test(artifact.artifactId) ||
+          !Number.isSafeInteger(artifact.revision) ||
+          artifact.revision < 1 ||
+          !/^[a-f0-9]{64}$/.test(artifact.payloadDigest) ||
+          !nullablePinnedString(artifact.model) ||
+          !nullablePinnedString(artifact.operationVersion) ||
+          !nullablePinnedString(artifact.promptVersion) ||
+          !nullablePinnedString(artifact.schemaVersion),
+      ) ||
+      evidence.projectionDigest !== expectedProjectionDigest
+    ) {
+      throw failure(
+        'invalidState',
+        'The existing-recording approval projection is incomplete or digest-mismatched.',
+      );
+    }
+    for (const [value, field] of [
+      [evidence.contentVersionDigest, 'contentVersionDigest'],
+      [evidence.sourceSha256, 'sourceSha256'],
+      [evidence.reviewedSourceDigest, 'reviewedSourceDigest'],
+      [evidence.approvalEvidenceDigest, 'approvalEvidenceDigest'],
+      [evidence.approvedArtifactSetDigest, 'approvedArtifactSetDigest'],
+      [evidence.sourceEvidenceDigest, 'sourceEvidenceDigest'],
+      [evidence.projectionDigest, 'projectionDigest'],
+    ] as const) {
+      assertDigest(value, field);
+    }
+    assertSafeId(evidence.contentId, 'contentId');
+    assertSafeId(evidence.contentVersionId, 'contentVersionId');
+    assertSafeId(evidence.sourceId, 'sourceId');
+    assertSafeId(evidence.sourceObjectVersionId, 'sourceObjectVersionId');
+    assertSafeId(evidence.approvedByAdminId, 'approvedByAdminId');
+    return;
+  }
   if (
     !hasExactKeys(evidence, APPROVAL_PROJECTION_KEYS) ||
     evidence.productKey !== CONTENT_PUBLICATION_PRODUCT_KEY ||
@@ -986,6 +1115,39 @@ function assertProjectionRecordBinding(
   evidence: ContentApprovalEvidence,
   mismatchCode: 'invalidState' | 'conflict',
 ) {
+  if (evidence.reviewKind === 'existing_reviewed_recording') {
+    if (
+      record.reviewKind !== 'existing_reviewed_recording' ||
+      evidence.accountKey !== record.accountKey ||
+      evidence.productKey !== record.productKey ||
+      evidence.contentId !== record.contentId ||
+      evidence.contentVersionId !== record.contentVersionId ||
+      evidence.contentVersionDigest !== record.contentVersionDigest ||
+      evidence.reviewedSourceDigest !== record.sourceReview.reviewedSourceDigest ||
+      evidence.reviewedByAdminId !== record.sourceReview.reviewedByAdminId ||
+      evidence.reviewedAt !== record.sourceReview.reviewedAt ||
+      evidence.approvalEvidenceDigest !== record.sourceReview.approvalEvidenceDigest ||
+      evidence.title !== record.title ||
+      evidence.englishTranscriptText !== record.englishTranscriptText ||
+      evidence.classTopic !== record.classTopic ||
+      JSON.stringify(evidence.mishnahReferences) !== JSON.stringify(record.mishnahReferences) ||
+      evidence.occurredAt !== record.occurredAt ||
+      evidence.durationMs !== record.durationMs ||
+      record.occurrenceRelations.length !== 0
+    ) {
+      throw failure(
+        mismatchCode,
+        'The existing-recording approval does not match the publication source review.',
+      );
+    }
+    return;
+  }
+  if (record.reviewKind === 'existing_reviewed_recording') {
+    throw failure(
+      mismatchCode,
+      'An OBS approval cannot bind to an existing-recording publication.',
+    );
+  }
   if (
     evidence.accountKey !== record.accountKey ||
     evidence.productKey !== record.productKey ||
@@ -1017,6 +1179,34 @@ function assertProjectionRecordBinding(
 }
 
 function approvalProjectionCore(evidence: ContentApprovalEvidence) {
+  if (evidence.reviewKind === 'existing_reviewed_recording') {
+    return {
+      accountKey: evidence.accountKey,
+      productKey: evidence.productKey,
+      contentId: evidence.contentId,
+      contentVersionId: evidence.contentVersionId,
+      contentVersionDigest: evidence.contentVersionDigest,
+      sourceId: evidence.sourceId,
+      sourceSha256: evidence.sourceSha256,
+      sourceObjectVersionId: evidence.sourceObjectVersionId,
+      reviewKind: evidence.reviewKind,
+      reviewedSourceDigest: evidence.reviewedSourceDigest,
+      reviewedByAdminId: evidence.reviewedByAdminId,
+      reviewedAt: evidence.reviewedAt,
+      approvalEvidenceDigest: evidence.approvalEvidenceDigest,
+      title: evidence.title,
+      englishTranscriptText: evidence.englishTranscriptText,
+      classTopic: evidence.classTopic,
+      mishnahReferences: evidence.mishnahReferences,
+      occurredAt: evidence.occurredAt,
+      durationMs: evidence.durationMs,
+      approvedByAdminId: evidence.approvedByAdminId,
+      approvedAt: evidence.approvedAt,
+      artifacts: evidence.artifacts,
+      approvedArtifactSetDigest: evidence.approvedArtifactSetDigest,
+      sourceEvidenceDigest: evidence.sourceEvidenceDigest,
+    };
+  }
   return {
     accountKey: evidence.accountKey,
     productKey: evidence.productKey,
@@ -1480,7 +1670,7 @@ function materializePublication(
       current.contentRevoked ||
       !current.adultRecipientActive ||
       current.approvalProjectionDigest !== record.approval?.evidence.projectionDigest ||
-      !record.occurrenceRelations.some((relation) => relation.occurrenceId === member.occurrenceId)
+      !allowsCurrentEligibility(record, member.occurrenceId)
     ) {
       throw failure(
         'accessDenied',
@@ -1594,6 +1784,13 @@ function materializePublication(
     notices,
     approvalEvidence: record.approval!.evidence,
   };
+}
+
+function allowsCurrentEligibility(record: ContentPublicationRecord, occurrenceId: string) {
+  return (
+    record.reviewKind === 'existing_reviewed_recording' ||
+    record.occurrenceRelations.some((relation) => relation.occurrenceId === occurrenceId)
+  );
 }
 
 function assertBinding(

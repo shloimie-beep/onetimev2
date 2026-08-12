@@ -90,17 +90,10 @@ export interface CanonicalGovernedOccurrence extends ContentPublicationScope {
   active: true;
 }
 
-export interface ContentPublicationRecord extends ContentPublicationScope {
+interface ContentPublicationRecordBase extends ContentPublicationScope {
   contentId: string;
   contentVersionId: string;
   contentVersionDigest: string;
-  participantSetVersion: string;
-  participantSnapshotSetDigest: string;
-  participantReviewState: 'pending' | 'complete';
-  unresolvedParticipantCount: number;
-  requiredRedactionCount: number;
-  completedRedactionCount: number;
-  redactionReviewDigest: string;
   version: number;
   state: ContentPublicationState;
   title: string;
@@ -125,8 +118,38 @@ export interface ContentPublicationRecord extends ContentPublicationScope {
   providerReadbackDigest: string | null;
   publishedAt: string | null;
   archivedAt: string | null;
+}
+
+export interface ObsContentPublicationRecord extends ContentPublicationRecordBase {
+  reviewKind?: 'participant_snapshot';
+  participantSetVersion: string;
+  participantSnapshotSetDigest: string;
+  participantReviewState: 'pending' | 'complete';
+  unresolvedParticipantCount: number;
+  requiredRedactionCount: number;
+  completedRedactionCount: number;
+  redactionReviewDigest: string;
   occurrenceRelations: readonly GovernedContentOccurrenceRelation[];
 }
+
+/**
+ * A source-review publication is deliberately separate from the controlled
+ * OBS/occurrence model. The empty relation list is meaningful: it must not be
+ * populated with an invented historical occurrence merely to reuse playback.
+ */
+export interface ExistingReviewedRecordingContentPublicationRecord extends ContentPublicationRecordBase {
+  reviewKind: 'existing_reviewed_recording';
+  sourceReview: {
+    reviewedSourceDigest: string;
+    reviewedByAdminId: string;
+    reviewedAt: string;
+    approvalEvidenceDigest: string;
+  };
+  occurrenceRelations: readonly GovernedContentOccurrenceRelation[];
+}
+
+export type ContentPublicationRecord =
+  ObsContentPublicationRecord | ExistingReviewedRecordingContentPublicationRecord;
 
 export interface ContentPublicationPrincipal {
   actorId: string;

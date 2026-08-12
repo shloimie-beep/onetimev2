@@ -3,10 +3,11 @@ import { execFileSync } from 'node:child_process';
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import pg from 'pg';
+import type { ContentPublicationRecord } from '../../packages/contracts/src/content/publication/index.ts';
 import type {
-  ContentApprovalEvidence,
-  ContentPublicationRecord,
-} from '../../packages/contracts/src/content/publication/index.ts';
+  ContentPublicationSeed,
+  ObsApprovedForPublicationProjection,
+} from '../../packages/contracts/src/content/processing/index.ts';
 import { runMigrations, verifyMigrations, type DbPool } from '../../packages/db/src/index.ts';
 import {
   createPostgresContentPublicationRepository,
@@ -876,7 +877,7 @@ async function expectDatabaseRejection(
   );
 }
 
-function contentApprovalEvidence(): ContentApprovalEvidence {
+function contentApprovalEvidence(): ObsApprovedForPublicationProjection & ContentPublicationSeed {
   return {
     accountKey: 'candidate-account',
     productKey: PRODUCT_KEY,
@@ -908,7 +909,9 @@ function contentApprovalEvidence(): ContentApprovalEvidence {
   };
 }
 
-function contentPublicationRecord(evidence: ContentApprovalEvidence): ContentPublicationRecord {
+function contentPublicationRecord(
+  evidence: ObsApprovedForPublicationProjection & ContentPublicationSeed,
+): ContentPublicationRecord {
   return {
     accountKey: evidence.accountKey,
     productKey: evidence.productKey,
