@@ -88,7 +88,7 @@
     },
     {
       "path": "apps/web/src/server/features/privacy/student-router.ts",
-      "sha256": "b36cc8b446425b14bd8dac92ddfcf3048c9801d168232148ea056321372f449e"
+      "sha256": "616b298f4b000d5513ad2a2563ca07d890fbb36a4306114de4a672b0d8961d5e"
     },
     {
       "path": "apps/web/src/server/features/portals/routers.ts",
