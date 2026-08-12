@@ -110,12 +110,12 @@ describe('P12 Parent household server service', () => {
         display_name: null,
         username: 'student.name',
         relationship: 'self',
-        new_password: 'secure-password',
-        password_confirmation: 'secure-password',
+        new_password: '000123',
+        password_confirmation: '000123',
       },
       context,
     );
-    expect(hash).toHaveBeenCalledWith('secure-password');
+    expect(hash).toHaveBeenCalledWith('000123');
     expect(commitMutation).toHaveBeenCalledWith(
       expect.objectContaining({
         principal,
@@ -126,8 +126,8 @@ describe('P12 Parent household server service', () => {
         canonical_enrollment: 'enroll',
       }),
     );
-    expect(result.credential_handoff?.new_password).toBe('secure-password');
-    expect(JSON.stringify(commitMutation.mock.calls[0]![0])).not.toContain('secure-password');
+    expect(result.credential_handoff?.new_password).toBe('000123');
+    expect(JSON.stringify(commitMutation.mock.calls[0]![0])).not.toContain('000123');
   });
 
   it('rejects mismatched create and reset confirmation before receipt lookup or credential work', async () => {
@@ -148,8 +148,8 @@ describe('P12 Parent household server service', () => {
           actual_name: 'Student One',
           username: 'student.one',
           relationship: 'dependent',
-          new_password: 'secure-password',
-          password_confirmation: 'different-password',
+          new_password: '000123',
+          password_confirmation: '123456',
         },
         context,
       ),
@@ -175,8 +175,8 @@ describe('P12 Parent household server service', () => {
         {
           expected_revision: 4,
           student_id: 'student-1',
-          new_password: 'secure-password',
-          password_confirmation: 'different-password',
+          new_password: '000123',
+          password_confirmation: '123456',
         },
         { ...context, idempotency_key: 'parent-reset-0001' },
       ),
@@ -204,8 +204,8 @@ describe('P12 Parent household server service', () => {
         actual_name: 'Student One',
         username: 'student.one',
         relationship: 'dependent',
-        new_password: 'secure-password',
-        password_confirmation: 'secure-password',
+        new_password: '000123',
+        password_confirmation: '000123',
       },
       context,
     );
@@ -242,8 +242,8 @@ describe('P12 Parent household server service', () => {
           actual_name: 'Student One',
           username: 'student.one',
           relationship: 'dependent',
-          new_password: 'secure-password',
-          password_confirmation: 'secure-password',
+          new_password: '000123',
+          password_confirmation: '000123',
         },
         context,
       ),
@@ -262,8 +262,8 @@ describe('P12 Parent household server service', () => {
           actual_name: 'Student Name',
           username: 'student.name',
           relationship: 'dependent',
-          new_password: 'secure-password',
-          password_confirmation: 'secure-password',
+          new_password: '000123',
+          password_confirmation: '000123',
         },
         context,
       ),
