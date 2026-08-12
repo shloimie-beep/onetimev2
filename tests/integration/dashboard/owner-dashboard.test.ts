@@ -98,7 +98,7 @@ describe('OT-71 owner/admin dashboard shell', () => {
         href: '/app/crm',
       });
       expect(sections.get('next_class')).toMatchObject({
-        state: 'not_connected',
+        state: 'action_needed',
         href: '/app/classes',
       });
       expect(sections.get('communications_delivery')?.value).toBeGreaterThan(0);

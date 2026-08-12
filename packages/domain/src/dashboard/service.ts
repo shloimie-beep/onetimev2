@@ -507,7 +507,7 @@ async function nextClassSection(
   }
   const startsAt = isoOrNull(row.starts_at);
   const accessState = String(row.access_state ?? 'provider_unavailable');
-  const accessProduct = accessState === 'ready' ? 'ready' : 'not_connected';
+  const accessProduct = accessState === 'ready' ? 'ready' : 'action_needed';
   return section({
     id: 'next_class',
     label: 'Upcoming class',
@@ -517,7 +517,7 @@ async function nextClassSection(
     detail:
       accessState === 'ready'
         ? `${String(row.title ?? 'Class')} is scheduled and protected access is ready.`
-        : `${String(row.title ?? 'Class')} is scheduled; protected access is not connected yet.`,
+        : `${String(row.title ?? 'Class')} is scheduled. Review protected access in Classroom or Live Console before the session starts.`,
     nextAction:
       accessState === 'ready'
         ? 'Open the class detail before the session starts.'

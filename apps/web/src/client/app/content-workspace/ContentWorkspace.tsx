@@ -385,11 +385,15 @@ function OverviewView({
   onApplyFilters: () => void;
   onOpen: (sourceKey: string) => void;
 }) {
+  const launchProviderPorts = data.provider_ports.filter((port) => port.port !== 'buffer');
+  const launchCounts = Object.entries(data.counts).filter(
+    ([key]) => key !== 'social_pending' && key !== 'buffer_pending',
+  );
   return (
     <>
-      <ProviderPorts ports={data.provider_ports} />
+      <ProviderPorts ports={launchProviderPorts} />
       <section className="content-counts" aria-label="Content counts">
-        {Object.entries(data.counts).map(([key, value]) => (
+        {launchCounts.map(([key, value]) => (
           <Card key={key} className="content-stat-card">
             <span>{readable(key)}</span>
             <strong>{value}</strong>
