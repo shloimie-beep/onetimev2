@@ -1,5 +1,5 @@
 @echo off
-set /p CONFIRM=Type REMOVE-LOCAL-RUNNER to remove only the installed runner: 
+set /p "CONFIRM=Type REMOVE-LOCAL-RUNNER to remove only the installed runner: "
 if not "%CONFIRM%"=="REMOVE-LOCAL-RUNNER" (
   echo Confirmation did not match. Nothing was removed.
   pause
