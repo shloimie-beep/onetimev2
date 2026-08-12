@@ -87,7 +87,9 @@ describe('Parent and Student portal navigation and account security', () => {
     expect(portalEntry).toContain('autoComplete="current-password"');
     expect(portalEntry).toContain('autoComplete="new-password"');
     expect(portalEntry).toContain("if (role === 'student')");
-    expect(portalEntry).toContain('Student PINs and legacy credentials are managed by a Parent or Administrator.');
+    expect(portalEntry).toContain(
+      'Student PINs and legacy credentials are managed by a Parent or Administrator.',
+    );
     expect(portalEntry).toContain('<span>Six-digit Student PIN</span>');
     expect(portalEntry).toContain('inputMode="numeric"');
     expect(portalEntry).toContain('pattern="[0-9]{6}"');
