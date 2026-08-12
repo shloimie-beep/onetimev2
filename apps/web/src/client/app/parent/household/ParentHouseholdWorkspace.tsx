@@ -455,7 +455,7 @@ function StudentPasswordResetForm({
         onPasswordConfirmationChange={setPasswordConfirmation}
       />
       <button type="submit" disabled={disabled}>
-        Reset password
+        Reset PIN
       </button>
     </form>
   );
