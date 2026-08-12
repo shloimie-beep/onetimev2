@@ -24,7 +24,7 @@
     },
     {
       "path": "apps/web/src/server/app.ts",
-      "sha256": "803aa13ec1b1027c6dbc70047893d3a4487fe53f7aa7191f88df8b401ed66b4d"
+      "sha256": "f7b2f10ccc706b6fc22dfc765ae25601f23ff4c01b014f6239e60cf00787f3fe"
     },
     {
       "path": "apps/web/src/server/communications/register.ts",
@@ -200,7 +200,7 @@
     },
     {
       "path": "apps/web/src/client/public/public-entry.ts",
-      "sha256": "ea28f8b356ca262daa81936457838d5ce0553908be0ef0aa9876f8c931277cfa"
+      "sha256": "ec0aef3bced6f71e54281c14ea938bc5ef17ec1b1fab066229cac20161192567"
     },
     {
       "path": "apps/web/src/client/public/school/model.ts",

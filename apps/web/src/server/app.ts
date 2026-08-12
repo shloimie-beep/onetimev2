@@ -7938,7 +7938,7 @@ function activationPageHtml(csrfToken: string) {
     <section class="login-panel account-flow-panel" data-activation-root>
       <a class="brand-lockup login-brand" href="/" aria-label="One Time Mishnayos home">
         <img src="/assets/brand/onetimelogo.webp" width="56" height="56" alt="" aria-hidden="true">
-        <span><strong>One Time Mishnayos</strong><small>Account activation</small></span>
+        <span><strong>One Time Mishnayos</strong><small data-activation-context>Account activation</small></span>
       </a>
       <h1 data-activation-heading>Set your password</h1>
       <p class="flow-copy" data-activation-status role="status">Checking your secure link.</p>
@@ -7954,7 +7954,7 @@ function activationPageHtml(csrfToken: string) {
           <input id="activation_password_confirm" name="password_confirm" type="password" autocomplete="new-password" required minlength="8">
           <p tabindex="-1" class="error" data-error-for="password_confirm"></p>
         </div>
-        <button class="button button-primary" type="submit">Activate account</button>
+        <button class="button button-primary" type="submit" data-activation-submit>Activate account</button>
         <p class="form-status" role="status" data-form-status></p>
       </form>
       <p class="form-status error" data-activation-error></p>

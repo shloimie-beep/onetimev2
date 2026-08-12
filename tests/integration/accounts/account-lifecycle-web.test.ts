@@ -77,6 +77,13 @@ describe('OPS-03B email step-up account lifecycle web flow', () => {
     expect(clientSource).not.toMatch(/auth\/mfa|account-lifecycle\/mfa|totp_code/);
     expect(clientSource).toContain("fetch('/health'");
     expect(clientSource).not.toContain('fetch(window.location.pathname');
+    expect(clientSource).toContain("response.json.token_type === 'student_reset'");
+    expect(clientSource).toContain("studentReset ? 'Reset PIN' : 'Set PIN'");
+    expect(clientSource).toContain("studentReset ? 'Student PIN reset' : 'Student account setup'");
+    const activation = await fetch(`${baseUrl}/activate`);
+    const activationHtml = await activation.text();
+    expect(activationHtml).toContain('data-activation-context');
+    expect(activationHtml).toContain('data-activation-submit');
   });
 
   it('activates an owner/admin invite directly after password setup', async () => {
