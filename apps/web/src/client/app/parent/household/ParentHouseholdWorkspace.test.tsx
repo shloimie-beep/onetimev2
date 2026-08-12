@@ -115,7 +115,7 @@ describe('P12 persisted Parent household client workspace', () => {
     expect(credentialLengthErrorCopy('create')).toContain('creating this Student');
     expect(credentialLengthErrorCopy('reset')).toContain('resetting this Student PIN');
     expect(credentialMismatchErrorCopy('create')).toContain('creating this Student');
-    expect(credentialMismatchErrorCopy('reset')).toContain('resetting this Student password');
+    expect(credentialMismatchErrorCopy('reset')).toContain('resetting this Student PIN');
   });
 
   it('shows owned-seat state and exact actual-name guidance without a stored password', () => {
@@ -156,7 +156,7 @@ describe('P12 persisted Parent household client workspace', () => {
     expect(html).not.toMatch(/name="(?:hebrew_name|grade_label|date_of_birth|age|email)"/u);
   });
 
-  it('renders edit, archive and reset flows without disclosing the existing PIN', () => {
+  it('renders edit, archive and reset flows without disclosing the existing credential', () => {
     const html = renderToStaticMarkup(
       <ParentHouseholdWorkspace
         snapshot={snapshot}
