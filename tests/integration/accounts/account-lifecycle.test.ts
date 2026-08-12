@@ -978,7 +978,9 @@ describe('OT-71 account lifecycle', () => {
         WHERE purpose IN ('student_setup', 'student_reset')`,
     );
     expect(studentEmailOutbox.rowCount).toBe(0);
-    expect(await serializedLifecycleRows()).not.toMatch(/000123|123456|ParentPass|token_for_local/i);
+    expect(await serializedLifecycleRows()).not.toMatch(
+      /000123|123456|ParentPass|token_for_local/i,
+    );
   });
 
   it('completes password reset with single-use tokens and session-family invalidation', async () => {
