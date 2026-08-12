@@ -4,11 +4,11 @@
   "source_inputs": [
     {
       "path": "ops/v2.1-execution/source-spec/02-ACCEPTANCE-CONTRACT-v2.1.yaml",
-      "sha256": "1981606ed0b89cfbc2fb6abe39a2311ee541e2f13b7036a6634e725c8b42c5df"
+      "sha256": "71711c490e72ee1af634f44d8a235df364a21b308c442866d4f68dd8628199e6"
     },
     {
       "path": "ops/v2.1-execution/source-spec/03-DECISION-REGISTER-v2.1.md",
-      "sha256": "bafa57d1a9c19a7187317e5edf946024fbf1a7d3749ce37b80f4464b259918c0"
+      "sha256": "440ce7397680fc5e92097314aef421770a845b839feaf6541cfd1c13dd00ac9a"
     },
     {
       "path": "ops/v2.1-execution/source-spec/05-ACTOR-ROLE-CAPABILITY-ROUTE-MATRIX-v2.1.md",
@@ -24,7 +24,7 @@
     },
     {
       "path": "apps/web/src/server/app.ts",
-      "sha256": "c1214d52623fc231b94ea8c097722a8dbd6a2ccf157bad4f0ef3f5fa0fad6a70"
+      "sha256": "f9fa89bfddff8a788d289550947ab04c69d9c32330dd75a69019cf47882f0ad6"
     },
     {
       "path": "apps/web/src/server/communications/register.ts",
