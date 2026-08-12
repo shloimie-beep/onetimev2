@@ -39,7 +39,7 @@ describe('local media Windows package safety', () => {
     expect(uninstaller).toContain("Join-Path $UserProfilePath 'OneTimeMedia'");
     expect(uninstaller).toContain('REMOVE-LOCAL-RUNNER');
     expect(uninstaller).not.toMatch(/Remove-Item[^\r\n]+-Recurse/i);
-    expect(command).toContain('set /p CONFIRM=');
+    expect(command).toContain('set /p "CONFIRM=');
   });
 
   it('does not force-replace a scheduled task and performs two observations', async () => {

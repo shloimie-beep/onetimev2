@@ -1,6 +1,6 @@
 # Local Windows Media Runner — Build Result
 
-Candidate: `codex/ot-p5-local-windows-media-runner-20260812` from exact integration `149e681955be7d6ddca65e3e74a1f5ce7208b966`.
+Candidate: `codex/ot-p5-local-windows-media-runner-20260812` rebased from exact integration `ce0d8ff9ce35d029f9287d09006dab99d7b04aa9`.
 
 ## What this candidate provides
 
