@@ -42,9 +42,10 @@ const snapshot: ParentHouseholdSnapshot = {
 describe('P12 persisted Parent household client workspace', () => {
   it('guards mounted Create and Reset interactions before either API handler can run', () => {
     for (const [password, confirmation, expectedFocus] of [
-      ['safe-password-123', 'different-password', 'confirmation'],
-      ['short-pass1', 'short-pass1', 'password'],
-      ['x'.repeat(129), 'x'.repeat(129), 'password'],
+      ['000123', '123456', 'confirmation'],
+      ['12345', '12345', 'password'],
+      ['1234567', '1234567', 'password'],
+      ['12a456', '12a456', 'password'],
     ] as const) {
       const focusPassword = vi.fn();
       const focusConfirmation = vi.fn();
@@ -68,7 +69,7 @@ describe('P12 persisted Parent household client workspace', () => {
       ).not.toHaveBeenCalled();
     }
 
-    for (const password of ['x'.repeat(12), 'x'.repeat(128)]) {
+    for (const password of ['000123', '123456']) {
       const focusPassword = vi.fn();
       const focusConfirmation = vi.fn();
       const createDispatch = vi.fn();
@@ -99,20 +100,20 @@ describe('P12 persisted Parent household client workspace', () => {
       expect(focusConfirmation).not.toHaveBeenCalled();
     }
 
-    expect(studentCredentialState('short-pass1', 'short-pass1')).toMatchObject({
+    expect(studentCredentialState('12345', '12345')).toMatchObject({
       passwordLengthInvalid: true,
       confirmationLengthInvalid: true,
       hasPasswordMismatch: false,
       ready: false,
     });
-    expect(studentCredentialState('safe-password-123', 'different-password')).toMatchObject({
+    expect(studentCredentialState('000123', '123456')).toMatchObject({
       passwordLengthInvalid: false,
       confirmationLengthInvalid: false,
       hasPasswordMismatch: true,
       ready: false,
     });
     expect(credentialLengthErrorCopy('create')).toContain('creating this Student');
-    expect(credentialLengthErrorCopy('reset')).toContain('resetting this Student password');
+    expect(credentialLengthErrorCopy('reset')).toContain('resetting this Student PIN');
     expect(credentialMismatchErrorCopy('create')).toContain('creating this Student');
     expect(credentialMismatchErrorCopy('reset')).toContain('resetting this Student password');
   });
@@ -142,7 +143,10 @@ describe('P12 persisted Parent household client workspace', () => {
     expect(html).toContain('name="relationship"');
     expect(html).toContain('name="username"');
     expect(html).toContain('name="new_password"');
-    expect(html).toContain('minLength="12"');
+    expect(html).toContain('minLength="6"');
+    expect(html).toContain('maxLength="6"');
+    expect(html).toContain('inputMode="numeric"');
+    expect(html).toContain('pattern="[0-9]{6}"');
     expect(html).toContain('Someone I manage');
     expect(html).toContain('Myself');
     expect(html).toContain(STUDENT_ACTUAL_NAME_INSTRUCTIONS.dependent);
@@ -152,7 +156,7 @@ describe('P12 persisted Parent household client workspace', () => {
     expect(html).not.toMatch(/name="(?:hebrew_name|grade_label|date_of_birth|age|email)"/u);
   });
 
-  it('renders edit, archive and reset flows without disclosing the existing password', () => {
+  it('renders edit, archive and reset flows without disclosing the existing PIN', () => {
     const html = renderToStaticMarkup(
       <ParentHouseholdWorkspace
         snapshot={snapshot}
@@ -162,13 +166,13 @@ describe('P12 persisted Parent household client workspace', () => {
     );
     expect(html).toContain('Save Student');
     expect(html).toContain('Archive Student');
-    expect(html).toContain('Reset Student password');
-    expect(html).toContain('Student access and password controls');
-    expect(html).toContain('existing password is never displayed');
-    expect(html).not.toContain('value="safe-password');
+    expect(html).toContain('Reset Student PIN');
+    expect(html).toContain('Student access and PIN controls');
+    expect(html).toContain('existing credential is never displayed');
+    expect(html).not.toContain('value="000123');
   });
 
-  it('shows a new password only in the immediate copy/print handoff', () => {
+  it('shows a new PIN only in the immediate copy/print handoff', () => {
     const html = renderToStaticMarkup(
       <ParentHouseholdWorkspace
         snapshot={snapshot}
@@ -236,8 +240,8 @@ describe('P12 persisted Parent household client workspace', () => {
         display_name: null,
         username: 'student.two',
         relationship: 'dependent',
-        new_password: 'safe-password-123',
-        password_confirmation: 'safe-password-123',
+        new_password: '000123',
+        password_confirmation: '000123',
       },
       'csrf-token',
       'parent-browser-replay-0001',
