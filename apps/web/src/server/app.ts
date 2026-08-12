@@ -7837,6 +7837,7 @@ function loginPageHtml(csrfToken: string, returnTo: string) {
         <div class="field">
           <label for="password">Password</label>
           <input id="password" name="password" type="password" autocomplete="current-password" required>
+          <p class="field-help">Students created or reset by a Parent use a six-digit PIN. Existing Student passwords keep working until their next Parent reset.</p>
           <p tabindex="-1" class="error" data-error-for="password"></p>
         </div>
         <button class="button button-primary" type="submit">Login</button>
