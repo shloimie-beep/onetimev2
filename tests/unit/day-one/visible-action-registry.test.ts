@@ -822,7 +822,7 @@ describe('v2.1 visible action registry', () => {
       ...conditionalLaunch,
       route: '/app/live-console',
       roles: ['admin', 'rabbi'],
-      canonical_binding: { route: '/app/live', roles: ['admin'] },
+      canonical_binding: { route: '/app/live', roles: ['admin', 'rabbi'] },
     });
     expect(byId.get('portal.student.classroom.production_basic_join.button')).toMatchObject({
       ...conditionalLaunch,

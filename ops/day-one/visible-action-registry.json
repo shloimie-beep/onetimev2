@@ -184,7 +184,7 @@
     },
     {
       "path": "apps/web/src/client/app/router/registry.ts",
-      "sha256": "4132baa33172c71e4be278bdcd1777205583c400ddbe8aa6d1e550283583edbc"
+      "sha256": "36430c5b10322b342219cc69ee6e043c881a395cfd514b249619a0f59dd5b106"
     },
     {
       "path": "apps/web/src/client/app/router/canonical-route-views.ts",
@@ -658,7 +658,7 @@
     {
       "route_id": "RT-ADM-050",
       "path": "/app/live",
-      "roles": ["admin"],
+      "roles": ["admin", "rabbi"],
       "handler": "live.rt-adm-050",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -666,7 +666,7 @@
     {
       "route_id": "RT-ADM-051",
       "path": "/app/live/:occurrenceId",
-      "roles": ["admin"],
+      "roles": ["admin", "rabbi"],
       "handler": "live.rt-adm-051",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
@@ -1687,7 +1687,7 @@
       "roles": ["admin", "rabbi"],
       "canonical_binding": {
         "route": "/app/live",
-        "roles": ["admin"]
+        "roles": ["admin", "rabbi"]
       },
       "capability": "admin:class:start",
       "handler": {
