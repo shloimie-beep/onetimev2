@@ -1030,6 +1030,13 @@ describe('OT-71 mounted parent and student portals', () => {
       );
       expect(crossHousehold.status).toBe(404);
 
+      const legacyStudent = await loginAs(
+        server.baseUrl,
+        'student@example.test',
+        'StudentPass!234',
+      );
+      expect(legacyStudent.json.user.role).toBe('student');
+
       const setup = await fetch(
         `${server.baseUrl}/api/v1/portals/parent/households/household_alpha/learners/learner_setup/student-access/setup`,
         {
@@ -1086,6 +1093,13 @@ describe('OT-71 mounted parent and student portals', () => {
       );
       expect(tokenRows.rows).toHaveLength(0);
       expect(JSON.stringify(tokenRows.rows)).not.toContain('token_for_local_proof');
+
+      const shortStudentPin = await postLogin(server.baseUrl, 'setup_learner', '12345');
+      expect(shortStudentPin.status).toBe(400);
+      expect(shortStudentPin.json).toMatchObject({
+        success: false,
+        code: 'VALIDATION_ERROR',
+      });
 
       const setupStudent = await loginAs(server.baseUrl, 'setup_learner', '000123');
       expect(setupStudent.json.user.role).toBe('student');
