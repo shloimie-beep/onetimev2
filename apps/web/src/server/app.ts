@@ -618,13 +618,13 @@ export function createApp({
     ) {
       return false;
     }
-    return (
-      (await verifyResolvedSessionCsrf(req, {
+    return Boolean(
+      await verifyResolvedSessionCsrf(req, {
         pool,
         session: resolution.session,
         v21AdultSessionRuntime,
         ...(clock ? { clock } : {}),
-      })) === true
+      }),
     );
   };
   const verifyContentPublicationCsrf = verifyResolvedApiSessionCsrf;
