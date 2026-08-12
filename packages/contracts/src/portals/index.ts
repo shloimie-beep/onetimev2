@@ -1,3 +1,5 @@
+import { STUDENT_PIN_PATTERN } from '../identity/auth/index.ts';
+
 import { z } from 'zod';
 
 export * from './parent-household/index.ts';
@@ -141,12 +143,7 @@ export const studentUsernameSchema = z
   .regex(/^[A-Za-z0-9][A-Za-z0-9._-]*[A-Za-z0-9]$/);
 export type StudentUsername = z.infer<typeof studentUsernameSchema>;
 
-export const studentPasswordSchema = z
-  .string()
-  .min(10)
-  .max(128)
-  .regex(/[A-Za-z]/)
-  .regex(/[0-9]/);
+export const studentPasswordSchema = z.string().regex(STUDENT_PIN_PATTERN);
 export type StudentPassword = z.infer<typeof studentPasswordSchema>;
 
 export const studentAccessStateSchema = z.object({
