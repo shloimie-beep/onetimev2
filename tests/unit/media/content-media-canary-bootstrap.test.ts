@@ -113,7 +113,7 @@ describe('content media canary bootstrap inspector', () => {
     input.handoff = {
       phase: 'confirmed',
       temporary_reference_digest: sha('e'),
-      confirmed_source_key: \`source_\${'f'.repeat(32)}\`,
+      confirmed_source_key: `source_${'f'.repeat(32)}`,
       durable_source_receipt: {
         source_sha256: sha('f'),
         object_version_id_present: true,
@@ -137,7 +137,7 @@ describe('content media canary bootstrap inspector', () => {
     input.services.worker.content_media_enabled = true;
     input.services.worker.shared_configuration_digest = sha('9');
     input.registry_receipts = {};
-    input.handoff.confirmed_source_key = \`source_\${'f'.repeat(32)}\`;
+    input.handoff.confirmed_source_key = `source_${'f'.repeat(32)}`;
 
     const report = inspectContentMediaCanaryBootstrap(input);
 
