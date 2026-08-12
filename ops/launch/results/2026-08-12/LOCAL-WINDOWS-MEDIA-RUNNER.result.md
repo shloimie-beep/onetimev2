@@ -17,8 +17,8 @@ This candidate does not call Vimeo, OpenAI, Drive, One Time, or any other provid
 ## Operator workflow after merge
 
 1. Install FFmpeg and ffprobe for the current user (the bootstrap check currently reports both missing).
-2. Extract `ONE-TIME-LOCAL-MEDIA-LAPTOP-BOOTSTRAP-2026-08-12-R2.zip` and double-click `INSTALL-LOCAL-ONLY-MEDIA-RUNNER.cmd`.
-3. Put one operator-owned video in `Incoming`, wait at least 60 seconds after the copy finishes, then double-click `Config\PROCESS-INCOMING-VIDEO.cmd`.
+2. Extract `ONE-TIME-LOCAL-MEDIA-LAPTOP-BOOTSTRAP-2026-08-12-R3.zip`, then use `VERIFY-PACKAGE-INTEGRITY.cmd` and double-click `INSTALL-LOCAL-ONLY-MEDIA-RUNNER.cmd`.
+3. Put one operator-owned video in `Incoming`, then double-click `Config\PROCESS-INCOMING-VIDEO.cmd`; it performs the required two stable observations itself.
 4. Review the derivative and its `.review.json` file in `ReadyForVimeo`; no publication occurs from this command.
 
 ## Verification

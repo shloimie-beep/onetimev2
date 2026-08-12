@@ -1,9 +1,23 @@
-import { describe, expect, it } from 'vitest';
+import { mkdtemp, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { afterEach, describe, expect, it } from 'vitest';
 import {
+  acquireRunnerLock,
   buildVimeoReadyFfmpegArgs,
   isStableFile,
   parseRunnerOptions,
 } from '../../../scripts/media/local-media-runner.ts';
+
+const temporaryDirectories: string[] = [];
+
+afterEach(async () => {
+  await Promise.all(
+    temporaryDirectories
+      .splice(0)
+      .map((directory) => rm(directory, { recursive: true, force: true })),
+  );
+});
 
 describe('local media runner safety boundaries', () => {
   it('requires a complete unchanged stability interval before processing', () => {
@@ -61,6 +75,22 @@ describe('local media runner safety boundaries', () => {
     expect(parseRunnerOptions(['--apply-task-scheduler'], {})).toMatchObject({
       applyTaskScheduler: true,
     });
+    expect(parseRunnerOptions(['--wait-for-stability'], {})).toMatchObject({
+      waitForStability: true,
+    });
+  });
+
+  it('prevents a second runner from processing the same local queue', async () => {
+    const stateDirectory = await mkdtemp(path.join(tmpdir(), 'local-media-lock-'));
+    temporaryDirectories.push(stateDirectory);
+    const release = await acquireRunnerLock(stateDirectory);
+    await expect(acquireRunnerLock(stateDirectory)).rejects.toThrow(
+      'local_media_runner_already_running',
+    );
+    await release();
+    await (
+      await acquireRunnerLock(stateDirectory)
+    )();
   });
 
   it('renders an OT-VIDEO-1 compatible local derivative without a trim filter', () => {

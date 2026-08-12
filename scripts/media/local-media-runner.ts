@@ -10,7 +10,7 @@ import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { DatabaseSync } from 'node:sqlite';
 import { createReadStream } from 'node:fs';
-import { access, mkdir, readFile, rename, stat, writeFile } from 'node:fs/promises';
+import { access, mkdir, open, readFile, rename, stat, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
@@ -54,6 +54,7 @@ type RunnerOptions = {
   processLocal: boolean;
   retrySourceSha256: string | null;
   applyTaskScheduler: boolean;
+  waitForStability: boolean;
 };
 
 type JobRow = {
@@ -81,6 +82,7 @@ export function parseRunnerOptions(argv: string[], environment = process.env): R
     processLocal: argv.includes('--process-local'),
     retrySourceSha256: value('retry-source-sha256') ?? null,
     applyTaskScheduler: argv.includes('--apply-task-scheduler'),
+    waitForStability: argv.includes('--wait-for-stability'),
   };
 }
 
@@ -149,6 +151,26 @@ export function sanitizeJob(row: JobRow) {
     updated_at: row.updated_at,
     raw_paths_present: false,
     provider_effects_executed: false,
+  };
+}
+
+export async function acquireRunnerLock(stateDir: string) {
+  const lockPath = path.join(stateDir, 'local-media-runner.lock');
+  await mkdir(stateDir, { recursive: true });
+  try {
+    const lock = await open(lockPath, 'wx', 0o600);
+    await lock.writeFile(
+      `${JSON.stringify({ pid: process.pid, started_at: new Date().toISOString() })}\n`,
+    );
+    await lock.close();
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== 'EEXIST') throw error;
+    throw new Error('local_media_runner_already_running');
+  }
+  return async () => {
+    await unlink(lockPath).catch((error: NodeJS.ErrnoException) => {
+      if (error.code !== 'ENOENT') throw error;
+    });
   };
 }
 
@@ -498,10 +520,21 @@ async function main() {
     return;
   }
   if (command !== 'start') throw new Error('local_media_runner_unknown_command');
-  do {
-    await scanOnce(settings, options.processLocal);
-    if (!options.once) await new Promise((resolve) => setTimeout(resolve, 15_000));
-  } while (!options.once);
+  const releaseLock = await acquireRunnerLock(settings.stateDir);
+  try {
+    if (options.once && options.waitForStability) {
+      await scanOnce(settings, options.processLocal);
+      await new Promise((resolve) => setTimeout(resolve, settings.stableFileSeconds * 1_000));
+      await scanOnce(settings, options.processLocal);
+      return;
+    }
+    do {
+      await scanOnce(settings, options.processLocal);
+      if (!options.once) await new Promise((resolve) => setTimeout(resolve, 15_000));
+    } while (!options.once);
+  } finally {
+    await releaseLock();
+  }
 }
 
 const isDirectExecution =
