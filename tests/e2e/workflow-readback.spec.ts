@@ -8,8 +8,13 @@ test('admin workflow readback is repository-backed and exposes no provider contr
   await page.context().addCookies([...W12_E2E_ADMIN_COOKIES]);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/app/communications');
-  await expect(page.getByRole('heading', { name: 'Workflow readback', exact: true })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Open workflow readback' }).first()).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Communications', exact: true })).toBeVisible();
+  await expect(page.getByText(/Adult conversation context for Rabbi and Admin/)).toBeVisible();
+  await expect(page.getByText('GHL mailbox connection pending')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Workflow readback', exact: true })).toHaveCount(
+    0,
+  );
+  await expect(page.getByRole('link', { name: 'Open workflow readback' })).toHaveCount(0);
 
   await page.goto('/app/communications/OT-01');
 
