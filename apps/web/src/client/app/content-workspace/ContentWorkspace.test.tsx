@@ -1,6 +1,8 @@
+import React from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 
-import { contentWorkspaceRouteFromPath } from './ContentWorkspace.tsx';
+import { contentWorkspaceRouteFromPath, SourceList } from './ContentWorkspace.tsx';
 
 describe('content workspace media route', () => {
   it('composes the canonical upload route without changing deployed content routes', () => {
@@ -37,5 +39,21 @@ describe('content workspace media route', () => {
       kind: 'detail',
       sourceKey: 'source/one',
     });
+  });
+
+  it('gives an honest next action when no uploaded video candidate exists', () => {
+    const markup = renderToStaticMarkup(
+      React.createElement(SourceList, {
+        sources: [],
+        hasActiveFilters: false,
+        onOpen: () => undefined,
+        onStartVideoIntake: () => undefined,
+      }),
+    );
+
+    expect(markup).toContain('No video candidate yet');
+    expect(markup).toContain('Open Recording intake');
+    expect(markup).toContain('already-reviewed class recording');
+    expect(markup).not.toContain('private storage');
   });
 });
