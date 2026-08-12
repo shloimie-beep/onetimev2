@@ -14,7 +14,6 @@ import type {
   ContentAdminPromptTemplate,
   ContentAdminPromptVersion,
   ContentAdminProviderPortStatus,
-  ContentAdminSocialWorkspaceResponse,
   ContentAdminSourceDetail,
   ContentAdminSourceDetailResponse,
   ContentAdminSourceSummary,
@@ -48,7 +47,6 @@ type RouteKind =
   | 'processing'
   | 'factory'
   | 'create'
-  | 'social'
   | 'knowledge'
   | 'prompts'
   | 'activity'
@@ -74,10 +72,7 @@ type FilterState = {
   sort: string;
 };
 
-const studioViews = [
-  { id: 'create', label: 'Create', href: '/app/content/studio' },
-  { id: 'social', label: 'Social', href: '/app/content/studio/social' },
-] as const;
+const studioViews = [{ id: 'create', label: 'Create', href: '/app/content/studio' }] as const;
 
 const artifactKinds: ContentAdminArtifactKind[] = [
   'lesson_summary',
@@ -129,7 +124,6 @@ export function ContentWorkspace({
   const [processing, setProcessing] = useState<ContentAdminProcessingResponse | null>(null);
   const [factory, setFactory] = useState<ContentFactoryWorkspaceResponse | null>(null);
   const [createData, setCreateData] = useState<ContentAdminCreateWorkspaceResponse | null>(null);
-  const [social, setSocial] = useState<ContentAdminSocialWorkspaceResponse | null>(null);
   const [knowledge, setKnowledge] = useState<ContentAdminKnowledgeResponse | null>(null);
   const [prompts, setPrompts] = useState<ContentAdminPromptListResponse | null>(null);
   const [activity, setActivity] = useState<ContentAdminActivityResponse | null>(null);
@@ -174,13 +168,6 @@ export function ContentWorkspace({
         setCreateData(
           await apiGet<ContentAdminCreateWorkspaceResponse>(
             '/api/v1/admin/content/create',
-            onProtectedStateCleared,
-          ),
-        );
-      } else if (route.kind === 'social') {
-        setSocial(
-          await apiGet<ContentAdminSocialWorkspaceResponse>(
-            '/api/v1/admin/content/social',
             onProtectedStateCleared,
           ),
         );
@@ -312,17 +299,6 @@ export function ContentWorkspace({
               await loadRoute();
             }}
           />
-        </>
-      )}
-      {!loading && !error && route.kind === 'social' && social && (
-        <>
-          <WorkspaceTabs
-            tabs={studioViews}
-            currentId="social"
-            label="Studio view"
-            onNavigate={onNavigate}
-          />
-          <SocialView data={social} />
         </>
       )}
       {!loading && !error && route.kind === 'knowledge' && knowledge && (
@@ -1176,30 +1152,6 @@ function CreateView({
   );
 }
 
-function SocialView({ data }: { data: ContentAdminSocialWorkspaceResponse }) {
-  return (
-    <>
-      <ProviderPorts ports={data.provider_ports} />
-      {data.drafts.length === 0 ? (
-        <EmptyState title="No social drafts" body="No exact-revision social draft is pending." />
-      ) : (
-        <section className="content-stack">
-          {data.drafts.map((draft) => (
-            <Card key={draft.draft_id} className="content-row-card">
-              <div>
-                <h2>{draft.platform.toUpperCase()}</h2>
-                <p>{draft.source_key}</p>
-              </div>
-              <Badge>{draft.workflow_state}</Badge>
-              <span>{draft.buffer_command_state ?? 'buffer provider off'}</span>
-            </Card>
-          ))}
-        </section>
-      )}
-    </>
-  );
-}
-
 function KnowledgeView({ data }: { data: ContentAdminKnowledgeResponse }) {
   return (
     <>
@@ -1564,41 +1516,6 @@ function SourceDetailView({
             </Button>
           </div>
         </Card>
-        <Card className="content-panel">
-          <h3>Social And Buffer</h3>
-          {source.social_drafts.length === 0 ? (
-            <p>No social draft is pending.</p>
-          ) : (
-            source.social_drafts.map((draft) => (
-              <p key={draft.draft_id}>
-                {draft.platform}: {draft.workflow_state}
-              </p>
-            ))
-          )}
-          <div className="content-action-row">
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => void onAction('social/approve', reason)}
-            >
-              Approve Social
-            </Button>
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => void onAction('social/schedule', reason)}
-            >
-              Schedule
-            </Button>
-            <Button
-              type="button"
-              variant="danger"
-              onClick={() => void onAction('social/retract', reason)}
-            >
-              Retract
-            </Button>
-          </div>
-        </Card>
       </section>
       <label className="source-action-reason">
         <span>Reason</span>
@@ -1684,27 +1601,6 @@ function VerticalSlicePanel({ slice }: { slice: ContentAdminSourceDetail['vertic
         </dl>
         <p>{slice.provider_setup.owner_action}</p>
       </Card>
-      <Card className="content-panel content-slice-card">
-        <h3>Social Handoff</h3>
-        <dl>
-          <div>
-            <dt>State</dt>
-            <dd>{readable(slice.social_handoff.state)}</dd>
-          </div>
-          <div>
-            <dt>Drafts</dt>
-            <dd>{slice.social_handoff.draft_count}</dd>
-          </div>
-          <div>
-            <dt>Live Publish</dt>
-            <dd>{slice.social_handoff.buffer_live_publish_allowed ? 'Allowed' : 'Disabled'}</dd>
-          </div>
-          <div>
-            <dt>Revision Lock</dt>
-            <dd>{slice.social_handoff.exact_revision_required ? 'Exact' : 'Open'}</dd>
-          </div>
-        </dl>
-      </Card>
     </section>
   );
 }
@@ -1728,7 +1624,6 @@ function SourceList({
               <th scope="col">Source</th>
               <th scope="col">Stage</th>
               <th scope="col">Artifacts</th>
-              <th scope="col">Social</th>
               <th scope="col">Updated</th>
             </tr>
           </thead>
@@ -1755,7 +1650,6 @@ function SourceList({
                   {source.artifact_counts.published} published /{' '}
                   {source.artifact_counts.review_needed} review
                 </td>
-                <td>{source.social_state}</td>
                 <td>{formatDate(source.updated_at)}</td>
               </tr>
             ))}
@@ -1808,9 +1702,9 @@ export function contentWorkspaceRouteFromPath(path: string): RouteState {
   if (segment === 'upload') return { kind: 'ingest' };
   if (segment === 'processing') return { kind: 'processing' };
   if (segment === 'factory') return { kind: 'factory' };
-  if (segment === 'studio') return { kind: segments[1] === 'social' ? 'social' : 'create' };
+  if (segment === 'studio') return { kind: 'create' };
   if (segment === 'create') return { kind: 'create' };
-  if (segment === 'social') return { kind: 'social' };
+  if (segment === 'social') return { kind: 'overview' };
   if (segment === 'knowledge') return { kind: 'knowledge' };
   if (segment === 'prompts') return { kind: 'prompts' };
   if (segment === 'activity') return { kind: 'activity' };

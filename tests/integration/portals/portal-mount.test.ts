@@ -552,6 +552,14 @@ describe('OT-71 mounted parent and student portals', () => {
       });
       expect(ops.status).not.toBe(403);
 
+      const adminContentWorkspace = await fetch(
+        `${server.baseUrl}/api/v1/admin/content/workspace`,
+        {
+          headers: { cookie: adminCookie },
+        },
+      );
+      expect(adminContentWorkspace.status).toBe(200);
+
       const publication = await fetch(
         `${server.baseUrl}/api/app/content/publication/approved-projections`,
         {
@@ -595,6 +603,13 @@ describe('OT-71 mounted parent and student portals', () => {
       expect(invalidPlayer.headers.get('location')).toBe(
         '/login?return_to=%2Fapp%2Flearning%2Fitems%2Funknown-v21-content',
       );
+      expect(
+        (
+          await fetch(`${server.baseUrl}/api/v1/admin/content/workspace`, {
+            headers: { cookie: '__Host-onetime-session=invalid-v21' },
+          })
+        ).status,
+      ).toBe(401);
 
       const unavailablePublication = await fetch(
         `${server.baseUrl}/api/app/content/publication/approved-projections`,
@@ -627,6 +642,13 @@ describe('OT-71 mounted parent and student portals', () => {
         { headers: { cookie: '__Host-onetime-session=unavailable-v21' }, redirect: 'manual' },
       );
       expect(unavailablePlayer.status).toBe(503);
+      expect(
+        (
+          await fetch(`${server.baseUrl}/api/v1/admin/content/workspace`, {
+            headers: { cookie: '__Host-onetime-session=unavailable-v21' },
+          })
+        ).status,
+      ).toBe(503);
 
       const switchToParent = await fetch(`${server.baseUrl}/api/v2.1/account-context/role`, {
         method: 'POST',
@@ -689,6 +711,13 @@ describe('OT-71 mounted parent and student portals', () => {
         },
       );
       expect(parentPublication.status).toBe(403);
+      expect(
+        (
+          await fetch(`${server.baseUrl}/api/v1/admin/content/workspace`, {
+            headers: { cookie: parentCookie! },
+          })
+        ).status,
+      ).toBe(403);
       const parentStudentManagement = await fetch(`${server.baseUrl}/app/parent/students`, {
         headers: { cookie: parentCookie! },
       });

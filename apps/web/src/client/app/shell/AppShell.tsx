@@ -55,6 +55,7 @@ export function AppShell({
 }: AppShellProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [switchingRole, setSwitchingRole] = useState<'admin' | 'parent' | null>(null);
+  const [roleSwitchMessage, setRoleSwitchMessage] = useState('');
   const menuButtonRef = useRef<HTMLButtonElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const drawerRef = useRef<HTMLElement | null>(null);
@@ -118,6 +119,7 @@ export function AppShell({
 
   async function switchRole(requestedRole: 'admin' | 'parent') {
     if (!roleContext || requestedRole === roleContext.activeRole || switchingRole) return;
+    setRoleSwitchMessage('');
     setSwitchingRole(requestedRole);
     try {
       const response = await fetch('/api/v2.1/account-context/role', {
@@ -135,8 +137,9 @@ export function AppShell({
         throw new Error(payload.message ?? 'Role switching is unavailable.');
       }
       window.location.assign(payload.return_to);
-    } catch {
+    } catch (error) {
       setSwitchingRole(null);
+      setRoleSwitchMessage(roleSwitchFailureMessage(error));
     }
   }
 
@@ -201,7 +204,7 @@ export function AppShell({
         </div>
         {roleContext && roleContext.availableRoles.length > 1 && (
           <div className="app-role-switcher" role="group" aria-label="Switch account role">
-            {(['admin', 'parent'] as const).map((role) => (
+            {roleContext.availableRoles.map((role) => (
               <button
                 key={role}
                 type="button"
@@ -212,6 +215,7 @@ export function AppShell({
                 {switchingRole === role ? 'Switching…' : role === 'admin' ? 'Admin' : 'Parent'}
               </button>
             ))}
+            {roleSwitchMessage && <p role="alert">{roleSwitchMessage}</p>}
           </div>
         )}
         <div className="app-user" aria-label="Signed-in user">
@@ -321,6 +325,12 @@ export function AppShell({
       )}
     </div>
   );
+}
+
+export function roleSwitchFailureMessage(error: unknown) {
+  return error instanceof Error
+    ? error.message
+    : 'Role switching is unavailable. Please try again.';
 }
 
 function ShellNavigation({

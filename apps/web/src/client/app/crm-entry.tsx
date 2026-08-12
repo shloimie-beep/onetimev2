@@ -265,6 +265,10 @@ function CrmApp() {
   const canReadOwnerShell = canReadCommunications;
   const isRabbi = false;
   const canReadCrm = session?.user.role === 'admin';
+  const isActiveAdminContext =
+    session?.session_model === 'v21'
+      ? session.account_context?.active_role === 'admin'
+      : session?.user.role === 'admin';
 
   useEffect(() => {
     void loadSession();
@@ -1068,7 +1072,7 @@ function CrmApp() {
       <DetailLoadingToolbar />
     ) : creating || editing ? (
       <FormToolbar onCancel={() => (editing ? setEditing(false) : setCreating(false))} />
-    ) : (
+    ) : surface === 'crm' ? (
       <ListToolbar
         query={query}
         activeChips={activeChips}
@@ -1083,7 +1087,7 @@ function CrmApp() {
         onCreate={startCreate}
         onHouseholdOperations={startContactOperations}
       />
-    );
+    ) : null;
 
   return (
     <AppShell
@@ -1189,7 +1193,17 @@ function CrmApp() {
         />
       )}
       {surface === 'content' &&
-        (isRabbi ? (
+        (!isActiveAdminContext ? (
+          <section className="state-panel" aria-labelledby="content-admin-context-title">
+            <h2 id="content-admin-context-title">Content is available in Admin</h2>
+            <p>Your current Parent workspace cannot open administrative content tools.</p>
+            {session?.account_context?.available_roles.includes('admin') ? (
+              <p>Use the Admin role switcher above to continue.</p>
+            ) : (
+              <p>Return to your Parent workspace to continue.</p>
+            )}
+          </section>
+        ) : isRabbi ? (
           <RabbiTeachingContentPanel
             items={teachingContent}
             loading={teachingContentState.loading}
