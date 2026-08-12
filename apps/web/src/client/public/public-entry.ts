@@ -1219,10 +1219,35 @@ async function checkLifecycleToken(
     );
     return;
   }
-  if (status) status.textContent = 'Secure link verified.';
+  const studentPin =
+    flow === 'activation' &&
+    (response.json.token_type === 'student_setup' || response.json.token_type === 'student_reset');
+  if (status) {
+    status.textContent = studentPin
+      ? 'Secure link verified. Set your six-digit Student PIN.'
+      : 'Secure link verified.';
+  }
   if (form) {
     form.hidden = false;
-    form.querySelector<HTMLInputElement>('input[type="password"]')?.focus();
+    const password = form.querySelector<HTMLInputElement>('input[name="password"]');
+    const confirmation = form.querySelector<HTMLInputElement>('input[name="password_confirm"]');
+    if (studentPin) {
+      const root = form.closest<HTMLElement>('[data-activation-root]');
+      root?.querySelector<HTMLElement>('[data-activation-heading]')?.replaceChildren('Set your PIN');
+      root?.querySelector<HTMLElement>('[data-activation-password-label]')?.replaceChildren(
+        'Six-digit Student PIN',
+      );
+      root?.querySelector<HTMLElement>('[data-activation-confirm-label]')?.replaceChildren(
+        'Confirm Student PIN',
+      );
+      for (const input of [password, confirmation]) {
+        input?.setAttribute('minlength', '6');
+        input?.setAttribute('maxlength', '6');
+        input?.setAttribute('inputmode', 'numeric');
+        input?.setAttribute('pattern', '[0-9]{6}');
+      }
+    }
+    password?.focus();
   }
 }
 
