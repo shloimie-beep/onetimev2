@@ -1,0 +1,4 @@
+source_key,source_drive_id,source_file,size_bytes,sha256,duplicate_finding
+BB-P7,16Vf7un9FilBhHxogh0qes3lq3VQXgrMa,Class - Bava Basra - Perek 7 - 720p.mp4,542619910,a09fd90a99718e7686ee28f348c7c157fe8f884b00fb78fe4c9e2c99405af7b8,distinct within pilot set
+BM-P1,1jhjPtwA2x1_voHgElb8C7agpNKmy7mrt,Class - Bava Metzia - Perek 1 - 720p.mp4,466341503,7c82a5cef1ed55d4063390c90b95036d5769d20b860ef3a6902e211bb1ab5f46,distinct within pilot set
+RAW-0719,1GAIAY3-j-8yaI5mIswzLKfZyZewEYr5_,2026-07-19 18-49-22.mp4,1948962685,bfceb0b8a682a9f7cda34aa6a2ff39f7f295bccaa51182a50bef36d325786d34,exact duplicate of pre-existing local Downloads copy
