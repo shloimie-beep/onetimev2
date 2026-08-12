@@ -77,6 +77,8 @@ export async function createLifecycleDeliveryOutbox(
     recipientEmail: string;
     displayName: string;
     targetRole: string;
+    subjectUserKey?: string | null;
+    learnerKey?: string | null;
     idempotencyKey: string;
     expiresAt: Date;
     now: Date;
@@ -89,12 +91,21 @@ export async function createLifecycleDeliveryOutbox(
     input.tokenType,
     input.idempotencyKey,
   ]);
-  await supersedePriorDeliveries(client, config, {
-    purpose: input.tokenType,
-    destinationRef,
-    deliveryKey,
-    now: input.now,
-  });
+  if (input.tokenType === 'student_reset' && input.subjectUserKey && input.learnerKey) {
+    await supersedeStudentResetDeliveries(client, config, {
+      deliveryKey,
+      subjectUserKey: input.subjectUserKey,
+      learnerKey: input.learnerKey,
+      now: input.now,
+    });
+  } else {
+    await supersedePriorDeliveries(client, config, {
+      purpose: input.tokenType,
+      destinationRef,
+      deliveryKey,
+      now: input.now,
+    });
+  }
   const encrypted = encryptDeliveryPayload(config, {
     schema_version: 1,
     purpose: input.tokenType,
@@ -519,6 +530,44 @@ async function supersedePriorDeliveries(
       input.destinationRef,
       input.now,
       input.deliveryKey,
+    ],
+  );
+}
+
+async function supersedeStudentResetDeliveries(
+  client: Queryable,
+  config: AppConfig,
+  input: { deliveryKey: string; subjectUserKey: string; learnerKey: string; now: Date },
+) {
+  await client.query(
+    `UPDATE onetime.account_lifecycle_delivery_outbox
+        SET state = 'superseded',
+            nonce = NULL,
+            ciphertext = NULL,
+            auth_tag = NULL,
+            cleared_at = $5,
+            updated_at = $5
+      WHERE account_key = $1
+        AND product_key = $2
+        AND purpose = 'student_reset'
+        AND delivery_key <> $4
+        AND token_key IN (
+          SELECT token_key
+            FROM onetime.account_lifecycle_tokens
+           WHERE account_key = $1
+             AND product_key = $2
+             AND token_type = 'student_reset'
+             AND subject_user_key = $3
+             AND learner_key = $6
+        )
+        AND state IN ('queued', 'leased', 'retry', 'unknown', 'provider_off')`,
+    [
+      config.accountKey,
+      config.productKey,
+      input.subjectUserKey,
+      input.deliveryKey,
+      input.now,
+      input.learnerKey,
     ],
   );
 }

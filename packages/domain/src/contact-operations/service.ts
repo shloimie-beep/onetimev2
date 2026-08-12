@@ -758,6 +758,37 @@ export async function requestStudentResetForHousehold(input: {
     throw new ContactOperationsError('NOT_FOUND', 'The Student recovery target is unavailable.');
   }
   const adultEmailNormalized = String(targetRow.email_normalized);
+  const guardian = await input.pool.query(
+    `SELECT guardians.guardian_user_ref
+       FROM onetime.portal_guardian_relationships AS guardians
+       JOIN onetime.account_users AS adult_users
+         ON adult_users.account_key = guardians.account_key
+        AND adult_users.product_key = guardians.product_key
+        AND adult_users.user_key = guardians.guardian_user_ref
+       JOIN onetime.adult_household_contact_links AS links
+         ON links.account_key = guardians.account_key
+        AND links.product_key = guardians.product_key
+        AND links.household_key = guardians.household_key
+        AND links.guardian_user_ref = guardians.guardian_user_ref
+       JOIN onetime.contacts AS contacts
+         ON contacts.account_key = links.account_key
+        AND contacts.product_key = links.product_key
+        AND contacts.contact_key = links.contact_key
+      WHERE guardians.account_key = $1
+        AND guardians.product_key = $2
+        AND guardians.household_key = $3
+        AND guardians.status = 'active'
+        AND guardians.authority <> 'support_only'
+        AND adult_users.role = 'parent'
+        AND adult_users.status = 'active'
+        AND adult_users.email_normalized = contacts.email_normalized
+        AND contacts.email_normalized = $4
+      LIMIT 2`,
+    [input.config.accountKey, input.config.productKey, input.householdKey, adultEmailNormalized],
+  );
+  if (guardian.rows.length !== 1) {
+    throw new ContactOperationsError('NOT_FOUND', 'The adult recovery destination is unavailable.');
+  }
   const issued = await createStudentReset({
     pool: input.pool,
     config: input.config,
@@ -772,6 +803,7 @@ export async function requestStudentResetForHousehold(input: {
     adultDeliveryBinding: {
       householdKey: input.householdKey,
       emailNormalized: adultEmailNormalized,
+      guardianUserKey: String(guardian.rows[0]?.guardian_user_ref),
     },
     ...(input.now ? { now: input.now } : {}),
   });

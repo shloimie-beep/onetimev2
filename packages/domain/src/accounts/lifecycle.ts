@@ -602,6 +602,7 @@ export async function createStudentReset(
     adultDeliveryBinding?: {
       householdKey: string;
       emailNormalized: string;
+      guardianUserKey?: string;
     };
   } & LocalProofOption,
 ): Promise<TokenIssueWithProof> {
@@ -625,6 +626,8 @@ export async function createStudentReset(
       const householdKey = String(state.household_key);
       if (
         String(state.status ?? '') !== 'active' ||
+        String(state.learner_status ?? '') !== 'active' ||
+        String(state.access_household_key ?? '') !== String(state.learner_household_key ?? '') ||
         (input.expectedStudentUserKey && input.expectedStudentUserKey !== studentUserKey) ||
         (input.expectedHouseholdKey && input.expectedHouseholdKey !== householdKey)
       ) {
@@ -641,6 +644,7 @@ export async function createStudentReset(
         errorCode: 'IDENTITY_CONFLICT',
       });
       let adultDeliveryVerified = false;
+      let adultDeliveryGuardianUserKey: string | null = null;
       if (input.adultDeliveryBinding) {
         const adultEmailNormalized = normalizeEmail(input.adultDeliveryBinding.emailNormalized);
         if (input.adultDeliveryBinding.householdKey !== householdKey) {
@@ -649,19 +653,48 @@ export async function createStudentReset(
             'The adult delivery binding no longer matches the Student household.',
           );
         }
+        const guardianUserKey = String(input.adultDeliveryBinding.guardianUserKey ?? '');
+        if (!guardianUserKey) {
+          throw new AccountLifecycleError(
+            'IDENTITY_CONFLICT',
+            'The adult delivery binding is no longer available.',
+          );
+        }
         const adultRecipient = await client.query(
-          `SELECT links.link_key
-             FROM onetime.adult_household_contact_links AS links
+          `SELECT guardians.guardian_user_ref
+             FROM onetime.portal_guardian_relationships AS guardians
+             JOIN onetime.account_users AS adult_users
+               ON adult_users.account_key = guardians.account_key
+              AND adult_users.product_key = guardians.product_key
+              AND adult_users.user_key = guardians.guardian_user_ref
+             JOIN onetime.adult_household_contact_links AS links
+              ON links.account_key = guardians.account_key
+              AND links.product_key = guardians.product_key
+              AND links.household_key = guardians.household_key
+              AND links.guardian_user_ref = guardians.guardian_user_ref
              JOIN onetime.contacts AS contacts
                ON contacts.account_key = links.account_key
               AND contacts.product_key = links.product_key
               AND contacts.contact_key = links.contact_key
-            WHERE links.account_key = $1
-              AND links.product_key = $2
-              AND links.household_key = $3
-              AND contacts.email_normalized = $4
-            LIMIT 2`,
-          [input.config.accountKey, input.config.productKey, householdKey, adultEmailNormalized],
+            WHERE guardians.account_key = $1
+              AND guardians.product_key = $2
+              AND guardians.household_key = $3
+              AND guardians.guardian_user_ref = $4
+              AND guardians.status = 'active'
+              AND guardians.authority <> 'support_only'
+              AND adult_users.role = 'parent'
+              AND adult_users.status = 'active'
+              AND adult_users.email_normalized = contacts.email_normalized
+              AND contacts.email_normalized = $5
+            LIMIT 2
+            FOR UPDATE`,
+          [
+            input.config.accountKey,
+            input.config.productKey,
+            householdKey,
+            guardianUserKey,
+            adultEmailNormalized,
+          ],
         );
         if (adultRecipient.rows.length !== 1) {
           throw new AccountLifecycleError(
@@ -670,6 +703,27 @@ export async function createStudentReset(
           );
         }
         adultDeliveryVerified = true;
+        adultDeliveryGuardianUserKey = guardianUserKey;
+      }
+      const resetState = await client.query(
+        `UPDATE onetime.portal_student_access_state
+            SET status = 'reset_requested',
+                credential_status = 'reset_required',
+                last_operation_type = 'reset',
+                last_operation_at = $4,
+                version = version + 1,
+                updated_at = $4
+          WHERE account_key = $1
+            AND product_key = $2
+            AND learner_key = $3
+            AND status = 'active'`,
+        [input.config.accountKey, input.config.productKey, payload.learner_key, now],
+      );
+      if (resetState.rowCount !== 1) {
+        throw new AccountLifecycleError(
+          'IDENTITY_CONFLICT',
+          'The Student reset target no longer matches the active account.',
+        );
       }
       return issueAccountToken(client, input.config, {
         tokenType: 'student_reset',
@@ -690,7 +744,10 @@ export async function createStudentReset(
         ttlMs: RESET_TOKEN_TTL_MS,
         includeLocalProofToken: input.includeLocalProofToken,
         deliveryToAdult: adultDeliveryVerified,
-        metadata: { delivery_to_adult: adultDeliveryVerified },
+        metadata: {
+          delivery_to_adult: adultDeliveryVerified,
+          adult_delivery_guardian_user_key: adultDeliveryGuardianUserKey,
+        },
       });
     },
   });
@@ -714,10 +771,25 @@ export async function completeStudentReset(input: {
       const userKey = requiredString(token.subject_user_key);
       const learnerKey = requiredString(token.learner_key);
       const householdKey = requiredString(token.household_key);
+      const tokenMetadata = token.metadata as Record<string, unknown> | null;
+      const delegatedGuardianUserKey =
+        typeof tokenMetadata?.adult_delivery_guardian_user_key === 'string'
+          ? tokenMetadata.adult_delivery_guardian_user_key
+          : null;
+      if (delegatedGuardianUserKey) {
+        await assertStudentResetAdultDeliveryAuthority(client, input.config, {
+          householdKey,
+          guardianUserKey: delegatedGuardianUserKey,
+          emailNormalized: requiredString(token.email_normalized),
+          errorCode: 'TOKEN_INVALID',
+        });
+      }
       const state = await getStudentStateForUpdate(client, input.config, learnerKey);
       if (
         !state ||
-        String(state.status ?? '') !== 'active' ||
+        String(state.status ?? '') !== 'reset_requested' ||
+        String(state.learner_status ?? '') !== 'active' ||
+        String(state.access_household_key ?? '') !== String(state.learner_household_key ?? '') ||
         String(state.student_user_ref ?? '') !== userKey ||
         String(state.household_key ?? '') !== householdKey
       ) {
@@ -1174,6 +1246,8 @@ async function issueAccountToken(
         recipientEmail: input.emailNormalized,
         displayName: input.displayName,
         targetRole: input.targetRole,
+        subjectUserKey: input.subjectUserKey ?? null,
+        learnerKey: input.learnerKey ?? null,
         idempotencyKey: input.idempotencyKey,
         expiresAt,
         now: input.now,
@@ -1284,12 +1358,23 @@ async function revokePriorLifecycleTokens(
         AND consumed_at IS NULL
         AND revoked_at IS NULL
         AND target_role = $5
-        AND COALESCE(email_normalized, '') = COALESCE($6, '')
-        AND COALESCE(subject_user_key, '') = COALESCE($7, '')
-        AND COALESCE(subject_human_account_id, '') = COALESCE($8, '')
-        AND COALESCE(household_key, '') = COALESCE($9, '')
-        AND COALESCE(relationship_key, '') = COALESCE($10, '')
-        AND COALESCE(learner_key, '') = COALESCE($11, '')`,
+        AND (
+          (
+            $3 = 'student_reset'
+            AND COALESCE(subject_user_key, '') = COALESCE($7, '')
+            AND COALESCE(household_key, '') = COALESCE($9, '')
+            AND COALESCE(learner_key, '') = COALESCE($11, '')
+          )
+          OR (
+            $3 <> 'student_reset'
+            AND COALESCE(email_normalized, '') = COALESCE($6, '')
+            AND COALESCE(subject_user_key, '') = COALESCE($7, '')
+            AND COALESCE(subject_human_account_id, '') = COALESCE($8, '')
+            AND COALESCE(household_key, '') = COALESCE($9, '')
+            AND COALESCE(relationship_key, '') = COALESCE($10, '')
+            AND COALESCE(learner_key, '') = COALESCE($11, '')
+          )
+        )`,
     [
       config.accountKey,
       config.productKey,
@@ -1896,7 +1981,10 @@ async function ensureLearner(
 
 async function getStudentStateForUpdate(client: Queryable, config: AppConfig, learnerKey: string) {
   const result = await client.query(
-    `SELECT access_state.*, learners.household_key
+    `SELECT access_state.*,
+            access_state.household_key AS access_household_key,
+            learners.household_key AS learner_household_key,
+            learners.learner_status
        FROM onetime.portal_student_access_state AS access_state
        JOIN onetime.portal_learners AS learners
          ON learners.account_key = access_state.account_key
@@ -1925,6 +2013,60 @@ async function getAccountUser(client: Queryable, config: AppConfig, userKey: str
   const row = result.rows[0] as Record<string, unknown> | undefined;
   if (!row) throw new AccountLifecycleError('NOT_FOUND', 'The account user was not found.');
   return row;
+}
+
+async function assertStudentResetAdultDeliveryAuthority(
+  client: Queryable,
+  config: AppConfig,
+  input: {
+    householdKey: string;
+    guardianUserKey: string;
+    emailNormalized: string;
+    errorCode: AccountLifecycleErrorCode;
+  },
+) {
+  const result = await client.query(
+    `SELECT guardians.guardian_user_ref
+       FROM onetime.portal_guardian_relationships AS guardians
+       JOIN onetime.account_users AS adult_users
+         ON adult_users.account_key = guardians.account_key
+        AND adult_users.product_key = guardians.product_key
+        AND adult_users.user_key = guardians.guardian_user_ref
+       JOIN onetime.adult_household_contact_links AS links
+         ON links.account_key = guardians.account_key
+        AND links.product_key = guardians.product_key
+        AND links.household_key = guardians.household_key
+        AND links.guardian_user_ref = guardians.guardian_user_ref
+       JOIN onetime.contacts AS contacts
+         ON contacts.account_key = links.account_key
+        AND contacts.product_key = links.product_key
+        AND contacts.contact_key = links.contact_key
+      WHERE guardians.account_key = $1
+        AND guardians.product_key = $2
+        AND guardians.household_key = $3
+        AND guardians.guardian_user_ref = $4
+        AND guardians.status = 'active'
+        AND guardians.authority <> 'support_only'
+        AND adult_users.role = 'parent'
+        AND adult_users.status = 'active'
+        AND adult_users.email_normalized = contacts.email_normalized
+        AND contacts.email_normalized = $5
+      LIMIT 2
+      FOR UPDATE`,
+    [
+      config.accountKey,
+      config.productKey,
+      input.householdKey,
+      input.guardianUserKey,
+      input.emailNormalized,
+    ],
+  );
+  if (result.rows.length !== 1) {
+    throw new AccountLifecycleError(
+      input.errorCode,
+      'The Student reset delivery authority is no longer available.',
+    );
+  }
 }
 
 async function assertActiveStudentIdentityBinding(

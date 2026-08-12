@@ -464,6 +464,14 @@ describe('Admin directory database flows', () => {
       [config.accountKey, config.productKey, contactKey, household.household_key, parentUserKey],
     );
     await pool.query(
+      `INSERT INTO onetime.portal_guardian_relationships
+         (relationship_key, account_key, product_key, household_key, guardian_user_ref,
+          relationship_label, authority, status)
+       VALUES ('guardian_student_reset_parent', $1, $2, $3, $4,
+               'Parent', 'primary_guardian', 'active')`,
+      [config.accountKey, config.productKey, household.household_key, parentUserKey],
+    );
+    await pool.query(
       `INSERT INTO onetime.account_learner_identity_links
          (link_key, account_key, product_key, household_key, learner_key, user_key, link_state)
        VALUES ('identity_student_reset', $1, $2, $3, $4, $5, 'active')`,

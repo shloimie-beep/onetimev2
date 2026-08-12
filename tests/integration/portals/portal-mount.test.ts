@@ -7,7 +7,11 @@ import { createApp } from '../../../apps/web/src/server/app.ts';
 import { resolveCurrentClientRoute } from '../../../apps/web/src/client/app/router/registry.ts';
 import { loadConfig, type AppConfig } from '../../../packages/config/src/index.ts';
 import { createMemoryPool, runMigrations, type DbPool } from '../../../packages/db/src/index.ts';
-import { createAccountUser } from '../../../packages/domain/src/index.ts';
+import {
+  completeStudentReset,
+  createAccountUser,
+  decryptLifecycleDeliveryPayloadForTests,
+} from '../../../packages/domain/src/index.ts';
 import { hashAuthPassword } from '../../../packages/domain/src/auth/policy.ts';
 
 let pool: DbPool;
@@ -1254,6 +1258,47 @@ describe('OT-71 mounted parent and student portals', () => {
       expect(String(resetTokens.rows[0]?.token_hash)).toMatch(/^[a-f0-9]{64}$/);
       expect(resetTokens.rows[0]?.consumed_at).toBeNull();
       expect(JSON.stringify(resetTokens.rows)).not.toContain('Mishnah54321');
+
+      const resetDelivery = await pool.query(
+        `SELECT outbox.nonce, outbox.ciphertext, outbox.auth_tag
+           FROM onetime.account_lifecycle_delivery_outbox AS outbox
+           JOIN onetime.account_lifecycle_tokens AS tokens
+             ON tokens.account_key = outbox.account_key
+            AND tokens.product_key = outbox.product_key
+            AND tokens.token_key = outbox.token_key
+          WHERE tokens.account_key = $1
+            AND tokens.product_key = $2
+            AND tokens.token_type = 'student_reset'
+            AND tokens.learner_key = 'learner_setup'`,
+        [config.accountKey, config.productKey],
+      );
+      expect(resetDelivery.rows).toHaveLength(1);
+      const deliveredReset = decryptLifecycleDeliveryPayloadForTests(config, {
+        nonce: String(resetDelivery.rows[0]?.nonce),
+        ciphertext: String(resetDelivery.rows[0]?.ciphertext),
+        auth_tag: String(resetDelivery.rows[0]?.auth_tag),
+      });
+      expect(deliveredReset).toMatchObject({ purpose: 'student_reset', target_role: 'student' });
+      const resetToken = String(deliveredReset.token ?? '');
+      expect(resetToken).not.toBe('');
+      await completeStudentReset({
+        pool,
+        config,
+        payload: { token: resetToken, password: '654321' },
+      });
+      const completedState = await pool.query(
+        `SELECT status FROM onetime.portal_student_access_state
+          WHERE account_key = $1 AND product_key = $2 AND learner_key = 'learner_setup'`,
+        [config.accountKey, config.productKey],
+      );
+      expect(completedState.rows[0]?.status).toBe('active');
+      const priorSessionAfterCompletion = await fetch(
+        `${server.baseUrl}/api/v1/portals/student/dashboard`,
+        { headers: { cookie: setupStudent.cookies } },
+      );
+      expect(priorSessionAfterCompletion.status).toBe(401);
+      const newPinStudent = await loginAs(server.baseUrl, 'setup_learner', '654321');
+      expect(newPinStudent.json.user.role).toBe('student');
 
       const admin = await loginAs(server.baseUrl, 'admin@example.test', 'AdminPass!234');
       const denied = await fetch(`${server.baseUrl}/api/v1/portals/parent/dashboard`, {

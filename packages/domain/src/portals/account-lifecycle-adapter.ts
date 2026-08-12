@@ -75,6 +75,12 @@ export function createAccountLifecycleCredentialAdapter(input: {
             learner_key: learner.learner_key,
             email: String(adult.rows[0]?.email_normalized),
           },
+          expectedHouseholdKey: learner.household_key,
+          adultDeliveryBinding: {
+            householdKey: learner.household_key,
+            emailNormalized: String(adult.rows[0]?.email_normalized),
+            guardianUserKey: actor.actor_user_ref,
+          },
         });
         return {
           operation_ref: issued.token_ref,
