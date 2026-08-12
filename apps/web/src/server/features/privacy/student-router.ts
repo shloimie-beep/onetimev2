@@ -1,6 +1,7 @@
 import { createHash, randomUUID } from 'node:crypto';
 import express, { type NextFunction, type Request, type Response } from 'express';
 import { z, ZodError } from 'zod';
+import { isStudentPin } from '../../../../../../packages/contracts/src/identity/auth/index.ts';
 import type {
   ConsentEvent,
   ConsentMutationInput,
@@ -44,7 +45,11 @@ const consentSchema = z
 const rightsSchema = z
   .object({
     kind: z.enum(['export', 'correction', 'closure', 'erasure']),
-    current_password: z.string().min(12).max(128),
+    current_password: z
+      .string()
+      .min(1)
+      .max(256)
+      .refine((value) => isStudentPin(value) || value.length >= 8),
   })
   .strict();
 const IDEMPOTENCY_KEY = /^[A-Za-z0-9][A-Za-z0-9._:-]{7,159}$/u;
@@ -131,7 +136,7 @@ export function createStudentPrivacyRouter(input: {
           res,
           403,
           'RECENT_PASSWORD_REQUIRED',
-          'The current Student password was not verified.',
+          'The current Student credential was not verified.',
         );
         return;
       }
