@@ -12,6 +12,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { createReadStream } from 'node:fs';
 import { access, mkdir, readFile, rename, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 const SUPPORTED_EXTENSIONS = new Set(['.mkv', '.mp4', '.mov']);
 const TERMINAL_STATES = new Set(['complete', 'failed', 'unknown_provider_effect']);
@@ -94,9 +95,10 @@ export function isStableFile(input: {
   return (
     input.currentSize > 0 &&
     input.nowMs - input.modifiedAtMs >= input.stableFileSeconds * 1_000 &&
-    (input.previousSize === null ||
-      (input.previousSize === input.currentSize &&
-        input.previousModifiedAtMs === input.modifiedAtMs))
+    input.previousSize !== null &&
+    input.previousModifiedAtMs !== null &&
+    input.previousSize === input.currentSize &&
+    input.previousModifiedAtMs === input.modifiedAtMs
   );
 }
 
@@ -502,7 +504,11 @@ async function main() {
   } while (!options.once);
 }
 
-if (import.meta.main)
+const isDirectExecution =
+  process.argv[1] !== undefined &&
+  pathToFileURL(path.resolve(process.argv[1])).href === import.meta.url;
+
+if (isDirectExecution)
   void main().catch((error) => {
     process.stderr.write(`${safeErrorCode(error)}\n`);
     process.exit(1);

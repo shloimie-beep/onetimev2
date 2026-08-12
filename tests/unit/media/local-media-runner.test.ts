@@ -12,6 +12,16 @@ describe('local media runner safety boundaries', () => {
         modifiedAtMs: 1_000,
         nowMs: 61_000,
         stableFileSeconds: 60,
+        previousSize: null,
+        currentSize: 10,
+        previousModifiedAtMs: null,
+      }),
+    ).toBe(false);
+    expect(
+      isStableFile({
+        modifiedAtMs: 1_000,
+        nowMs: 61_000,
+        stableFileSeconds: 60,
         previousSize: 10,
         currentSize: 10,
         previousModifiedAtMs: 1_000,

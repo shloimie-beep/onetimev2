@@ -5,7 +5,7 @@ Candidate: `codex/ot-p5-local-windows-media-runner-20260812` from exact integrat
 ## What this candidate provides
 
 - A local, SQLite-backed Windows media queue rooted at the operator's existing `OneTimeMedia` folder.
-- A 60-second unchanged-file stability gate and ffprobe validation for `.mkv`, `.mp4`, and `.mov` inputs.
+- A two-observation, 60-second unchanged-file stability gate and ffprobe validation for `.mkv`, `.mp4`, and `.mov` inputs; first sighting always waits.
 - An explicit local-only FFmpeg path that produces an H.264/AAC, max-1080p/30fps, fast-start MP4 in `ReadyForVimeo`.
 - A redacted review manifest which records hashes and the remaining review/occurrence/publication steps.
 - Status and retry commands that expose no local paths or provider values.
@@ -17,8 +17,9 @@ This candidate does not call Vimeo, OpenAI, Drive, One Time, or any other provid
 ## Operator workflow after merge
 
 1. Install FFmpeg and ffprobe for the current user (the bootstrap check currently reports both missing).
-2. Put one operator-owned video in `Incoming` and run `npm run media:local-runner:start -- --once --process-local` from the repository.
-3. Review the derivative and its `.review.json` file in `ReadyForVimeo`; no publication occurs from this command.
+2. Extract `ONE-TIME-LOCAL-MEDIA-LAPTOP-BOOTSTRAP-2026-08-12-R2.zip` and double-click `INSTALL-LOCAL-ONLY-MEDIA-RUNNER.cmd`.
+3. Put one operator-owned video in `Incoming`, wait at least 60 seconds after the copy finishes, then double-click `Config\PROCESS-INCOMING-VIDEO.cmd`.
+4. Review the derivative and its `.review.json` file in `ReadyForVimeo`; no publication occurs from this command.
 
 ## Verification
 
