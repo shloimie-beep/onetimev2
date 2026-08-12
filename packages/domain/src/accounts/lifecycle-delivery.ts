@@ -434,7 +434,7 @@ function lifecycleEmailText(
       '',
       reset
         ? 'This link can be used once and expires in 60 minutes.'
-        : 'This link can be used once and expires in seven days.',
+        : 'This link can be used once and expires in 24 hours.',
       '',
       'If you did not request this, you can ignore this email.',
       '',
@@ -488,7 +488,7 @@ function lifecycleEmailHtml(
       `<p><a href="${safeUrl}">${reset ? 'Reset Student PIN' : 'Set Student PIN'}</a></p>`,
       reset
         ? '<p>This link can be used once and expires in 60 minutes.</p>'
-        : '<p>This link can be used once and expires in seven days.</p>',
+        : '<p>This link can be used once and expires in 24 hours.</p>',
       '<p>If you did not request this, you can ignore this email.</p>',
       '<p>One Time Mishnayos</p>',
     ].join('');

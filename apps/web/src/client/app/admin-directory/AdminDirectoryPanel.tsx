@@ -21,7 +21,6 @@ import {
   listAdminHouseholds,
   listAdminLearners,
   listAdminUsers,
-  requestAdminStudentSetup,
   requestAdminUserPasswordReset,
   setAdminHouseholdStatus,
   setAdminLearnerStatus,
@@ -65,7 +64,6 @@ export function AdminDirectoryPanel({
     | { kind: 'guardian'; record: AdminHousehold }
     | { kind: 'user'; record: AdminUser | null }
     | { kind: 'learner'; record: AdminLearner | null }
-    | { kind: 'student-setup'; record: AdminLearner }
     | null
   >(null);
 
@@ -395,23 +393,6 @@ export function AdminDirectoryPanel({
           }
         />
       )}
-      {form?.kind === 'student-setup' && (
-        <StudentSetupForm
-          learner={form.record}
-          onCancel={() => setForm(null)}
-          onSave={(email) =>
-            runMutation(
-              () =>
-                requestAdminStudentSetup(csrfToken, form.record.learner_key, {
-                  email,
-                  idempotency_key: createRequestKey(),
-                }),
-              'Single-use Student setup created in the protected delivery sink.',
-            )
-          }
-        />
-      )}
-
       {loading && <LoadingState label={`Loading ${title.toLowerCase()}`} />}
       {!loading && !error && !form && mode === 'households' && (
         <HouseholdList
@@ -461,14 +442,12 @@ export function AdminDirectoryPanel({
           <LearnerDetail
             record={selectedLearner}
             onEdit={(record) => setForm({ kind: 'learner', record })}
-            onSetup={(record) => setForm({ kind: 'student-setup', record })}
             onStatus={changeLearnerStatus}
           />
         ) : (
           <LearnerList
             learners={learners}
             onEdit={(record) => setForm({ kind: 'learner', record })}
-            onSetup={(record) => setForm({ kind: 'student-setup', record })}
             onStatus={changeLearnerStatus}
           />
         ))}
@@ -707,12 +686,10 @@ function UserDetail({
 function LearnerList({
   learners,
   onEdit,
-  onSetup,
   onStatus,
 }: {
   learners: AdminLearner[];
   onEdit: (record: AdminLearner) => void;
-  onSetup: (record: AdminLearner) => void;
   onStatus: (record: AdminLearner, action: 'archive' | 'restore') => void;
 }) {
   if (!learners.length) {
@@ -737,11 +714,6 @@ function LearnerList({
           <Button type="button" variant="text" onClick={() => onEdit(record)}>
             Edit
           </Button>
-          {record.learner_status === 'active' && record.student_access_status !== 'active' && (
-            <Button type="button" variant="text" onClick={() => onSetup(record)}>
-              Student setup
-            </Button>
-          )}
           <Button
             type="button"
             variant={record.learner_status === 'active' ? 'danger' : 'secondary'}
@@ -760,12 +732,10 @@ function LearnerList({
 function LearnerDetail({
   record,
   onEdit,
-  onSetup,
   onStatus,
 }: {
   record: AdminLearner;
   onEdit: (record: AdminLearner) => void;
-  onSetup: (record: AdminLearner) => void;
   onStatus: (record: AdminLearner, action: 'archive' | 'restore') => void;
 }) {
   return (
@@ -809,11 +779,6 @@ function LearnerDetail({
         <Button type="button" variant="text" onClick={() => onEdit(record)}>
           Edit Student
         </Button>
-        {record.learner_status === 'active' && record.student_access_status !== 'active' && (
-          <Button type="button" variant="text" onClick={() => onSetup(record)}>
-            Student setup
-          </Button>
-        )}
         <Button
           type="button"
           variant={record.learner_status === 'active' ? 'danger' : 'secondary'}
@@ -1104,39 +1069,6 @@ function LearnerForm({
         <span>Grade</span>
         <Input value={gradeLabel} onChange={(event) => setGradeLabel(event.target.value)} />
       </label>
-    </DirectoryForm>
-  );
-}
-
-function StudentSetupForm({
-  learner,
-  onCancel,
-  onSave,
-}: {
-  learner: AdminLearner;
-  onCancel: () => void;
-  onSave: (email: string) => Promise<void>;
-}) {
-  const [email, setEmail] = useState('');
-  return (
-    <DirectoryForm
-      title={`Student setup for ${learner.display_name}`}
-      onCancel={onCancel}
-      onSubmit={() => onSave(email)}
-    >
-      <label>
-        <span>Setup delivery email</span>
-        <Input
-          required
-          type="email"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-        />
-      </label>
-      <p className="admin-directory__form-note">
-        The single-use setup token is delivered through the protected sink. No existing password is
-        exposed.
-      </p>
     </DirectoryForm>
   );
 }

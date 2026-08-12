@@ -750,7 +750,7 @@ export async function requestStudentResetForHousehold(input: {
   const studentUserKey = String(targetRow.student_user_ref ?? '');
   if (
     !studentUserKey ||
-    String(targetRow.access_status ?? '') !== 'active' ||
+    !['active', 'reset_requested'].includes(String(targetRow.access_status ?? '')) ||
     String(targetRow.student_role ?? '') !== 'student' ||
     String(targetRow.student_status ?? '') !== 'active' ||
     (input.expectedStudentUserKey && input.expectedStudentUserKey !== studentUserKey)

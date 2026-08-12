@@ -965,7 +965,7 @@ export async function requestAdminUserPasswordReset(input: {
       !nullableString(user.learner_key) ||
       !nullableString(user.household_key) ||
       String(user.link_state) !== 'active' ||
-      String(user.access_status) !== 'active' ||
+      !['active', 'reset_requested'].includes(String(user.access_status)) ||
       String(user.access_student_user_ref) !== userKey
     ) {
       throw new AdminDirectoryError(

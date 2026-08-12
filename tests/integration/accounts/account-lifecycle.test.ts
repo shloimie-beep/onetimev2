@@ -23,6 +23,7 @@ import {
   runLifecycleDeliveryOutboxBatch,
   suspendStudentIdentity,
 } from '../../../packages/domain/src/index.ts';
+import { renderLifecycleEmailForTests } from '../../../packages/domain/src/accounts/lifecycle-delivery.ts';
 
 let pool: DbPool;
 let config: AppConfig;
@@ -845,6 +846,7 @@ describe('OT-71 account lifecycle', () => {
     expect(relationship.rows[0].guardian_user_ref).toBe(parent.user_key);
 
     const parentActor = { userKey: parent.user_key, role: 'parent' };
+    const studentSetupAt = new Date('2026-07-15T10:00:00.000Z');
     const studentIssue = await createStudentSetup({
       pool,
       config,
@@ -857,8 +859,33 @@ describe('OT-71 account lifecycle', () => {
         household_key: householdKey,
         learner_key: learnerKey,
       },
+      now: studentSetupAt,
     });
     expect(studentIssue.delivery.delivery_state).toBe('suppressed');
+    expect(new Date(studentIssue.expires_at).getTime() - studentSetupAt.getTime()).toBe(
+      24 * 60 * 60 * 1000,
+    );
+    const studentSetupEmail = renderLifecycleEmailForTests(
+      'student_setup',
+      'https://join.onetimeonetime.com/activate#token=opaque',
+      'Parent',
+    );
+    expect(studentSetupEmail).toEqual(
+      expect.objectContaining({
+        subject: 'Set up a One Time Student PIN',
+        text: expect.stringContaining('Set Student PIN'),
+        html: expect.stringContaining('Set Student PIN'),
+      }),
+    );
+    expect(studentSetupEmail.text).toContain('six-digit One Time PIN');
+    expect(studentSetupEmail.html).toContain('six-digit One Time PIN');
+    expect(studentSetupEmail.text).toContain('expires in 24 hours');
+    expect(studentSetupEmail.html).toContain('expires in 24 hours');
+    expect(
+      `${studentSetupEmail.subject}\n${studentSetupEmail.text}\n${studentSetupEmail.html}`,
+    ).not.toMatch(
+      /expires in seven days|set up (?:your )?One Time account|set your One Time password/iu,
+    );
     const studentToken = requiredProof(studentIssue);
     for (const password of ['12345', '1234567', '12a456', '１２３４５６']) {
       await expect(

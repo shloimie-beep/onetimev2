@@ -32,6 +32,7 @@ import type {
 import type { GamificationSummary } from '../../../contracts/src/gamification/index.ts';
 import {
   hasPortalCapability,
+  isStudentPin,
   normalizeStudentUsername,
 } from '../../../contracts/src/portals/index.ts';
 
@@ -864,6 +865,12 @@ function validateStudentAccessCredentialPayload(
   }
   if (!payload.password) {
     throw new PortalServiceError('PASSWORD_POLICY_FAILED', 'Student password is required.');
+  }
+  if (!isStudentPin(payload.password)) {
+    throw new PortalServiceError(
+      'PASSWORD_POLICY_FAILED',
+      'Student credentials must contain exactly six numeric digits.',
+    );
   }
   if (
     payload.username &&

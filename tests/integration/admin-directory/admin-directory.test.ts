@@ -591,8 +591,7 @@ describe('Admin directory database flows', () => {
       purpose: 'student_reset',
       target_role: 'student',
     });
-    const resetToken = String(deliveryPayload.token ?? '');
-    expect(resetToken).not.toBe('');
+    expect(String(deliveryPayload.token ?? '')).not.toBe('');
     const activationUrl = String(deliveryPayload.activation_url ?? '');
     const renderedEmail = renderLifecycleEmailForTests(
       'student_reset',
@@ -613,13 +612,71 @@ describe('Admin directory database flows', () => {
       /set up (?:your )?One Time account|set your One Time password|expires in seven days|hi .*student/iu,
     );
 
-    const tokenRow = await pool.query(
+    const firstTokenRow = await pool.query(
       `SELECT token_key
          FROM onetime.account_lifecycle_tokens
         WHERE subject_user_key = $1 AND token_type = 'student_reset'`,
       [studentUserKey],
     );
-    const tokenKey = String(tokenRow.rows[0]?.token_key);
+    const firstTokenKey = String(firstTokenRow.rows[0]?.token_key);
+    await pool.query(
+      `UPDATE onetime.account_users
+          SET email_normalized = 'student-reset.replacement@example.test'
+        WHERE account_key = $1 AND product_key = $2 AND user_key = $3`,
+      [config.accountKey, config.productKey, parentUserKey],
+    );
+    await pool.query(
+      `UPDATE onetime.contacts
+          SET email_normalized = 'student-reset.replacement@example.test'
+        WHERE account_key = $1 AND product_key = $2 AND contact_key = $3`,
+      [config.accountKey, config.productKey, contactKey],
+    );
+    const replacement = await requestAdminUserPasswordReset({
+      pool,
+      config,
+      actor: actor(),
+      userKey: studentUserKey,
+      payload: { idempotency_key: 'admin-student-pin-reset-0002' },
+    });
+    expect(replacement).toMatchObject({ reset_kind: 'student_pin', request_accepted: true });
+    const replacementRows = await pool.query(
+      `SELECT tokens.token_key, tokens.email_normalized, tokens.revoked_at,
+              outbox.nonce, outbox.ciphertext, outbox.auth_tag, outbox.state
+         FROM onetime.account_lifecycle_tokens AS tokens
+         JOIN onetime.account_lifecycle_delivery_outbox AS outbox
+           ON outbox.account_key = tokens.account_key
+          AND outbox.product_key = tokens.product_key
+          AND outbox.token_key = tokens.token_key
+        WHERE tokens.account_key = $1
+          AND tokens.product_key = $2
+          AND tokens.subject_user_key = $3
+          AND tokens.token_type = 'student_reset'
+        ORDER BY tokens.created_at ASC`,
+      [config.accountKey, config.productKey, studentUserKey],
+    );
+    expect(replacementRows.rows).toHaveLength(2);
+    expect(replacementRows.rows[0]).toMatchObject({
+      token_key: firstTokenKey,
+      email_normalized: 'student-reset.parent@example.test',
+      state: 'superseded',
+      nonce: null,
+      ciphertext: null,
+      auth_tag: null,
+    });
+    expect(replacementRows.rows[0]?.revoked_at).not.toBeNull();
+    expect(replacementRows.rows[1]).toMatchObject({
+      email_normalized: 'student-reset.replacement@example.test',
+      state: 'queued',
+    });
+    expect(replacementRows.rows[1]?.revoked_at).toBeNull();
+    const tokenKey = String(replacementRows.rows[1]?.token_key);
+    const replacementDeliveryPayload = decryptLifecycleDeliveryPayloadForTests(config, {
+      nonce: String(replacementRows.rows[1]?.nonce),
+      ciphertext: String(replacementRows.rows[1]?.ciphertext),
+      auth_tag: String(replacementRows.rows[1]?.auth_tag),
+    });
+    const resetToken = String(replacementDeliveryPayload.token ?? '');
+    expect(resetToken).not.toBe('');
     await pool.query(
       `UPDATE onetime.account_lifecycle_tokens
           SET subject_user_key = $2
@@ -692,7 +749,7 @@ describe('Admin directory database flows', () => {
         config,
         actor: actor(),
         userKey: studentUserKey,
-        payload: { idempotency_key: 'admin-student-pin-reset-0002' },
+        payload: { idempotency_key: 'admin-student-pin-reset-0003' },
       }),
     ).rejects.toMatchObject({ code: 'IDENTITY_CONFLICT' });
   });
