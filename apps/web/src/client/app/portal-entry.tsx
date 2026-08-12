@@ -1324,8 +1324,8 @@ function AccountSecurityPanel({
           </div>
         </dl>
         <p className="ot-muted">
-          Student passwords are managed by a Parent or Administrator. Ask them to send a secure
-          reset.
+          Student PINs and legacy credentials are managed by a Parent or Administrator. Ask them to
+          reset your Student PIN.
         </p>
       </section>
     );
@@ -1618,7 +1618,7 @@ function StudentAccessFormDialog({
   const usernameRequired = action === 'setup';
   const usernameReady = !usernameRequired || username.trim().length >= 3;
   const passwordReady =
-    password.length >= 10 && /[A-Za-z]/.test(password) && /[0-9]/.test(password);
+    /^[0-9]{6}$/u.test(password);
   const canSave = !saving && usernameReady && passwordReady;
   return (
     <DialogFrame
@@ -1649,20 +1649,22 @@ function StudentAccessFormDialog({
           />
         </label>
         <label className="ot-field">
-          <span>Student password</span>
+          <span>Six-digit Student PIN</span>
           <input
             type="password"
             value={password}
             required
-            minLength={10}
-            maxLength={128}
+            minLength={6}
+            maxLength={6}
+            inputMode="numeric"
+            pattern="[0-9]{6}"
             autoComplete="new-password"
             onChange={(event) => setPassword(event.currentTarget.value)}
           />
         </label>
         <p className="ot-muted">
-          These parent-managed credentials are stored for student access. No student email is used
-          in this setup.
+          This six-digit PIN is parent-managed for Student access. No Student email is used in this
+          setup.
         </p>
         <DialogActions
           saving={saving}
