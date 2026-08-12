@@ -97,6 +97,9 @@ describe('P10 Admin directory workspace', () => {
     expect(html).toContain('Create Admin');
     expect(html).toContain('Create Parent');
     expect(html).toContain('Review ownership transfer');
+    expect(html).toContain('Parent');
+    expect(html).toContain('מנהל One');
+    expect(html).toContain('admin-directory__record-link');
     expect(html).toContain('Review password reset');
     expect(html).not.toContain('Confirm consequence and continue');
     expect(html).toContain('student.one');

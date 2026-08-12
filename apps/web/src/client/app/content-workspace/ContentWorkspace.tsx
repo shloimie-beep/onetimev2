@@ -252,6 +252,7 @@ export function ContentWorkspace({
             onFiltersChange={setFilters}
             onApplyFilters={() => setAppliedFilters(filters)}
             onOpen={(sourceKey) => onNavigate(`/app/content/${encodeURIComponent(sourceKey)}`)}
+            onStartVideoIntake={() => onNavigate('/app/content/upload')}
           />
         </>
       )}
@@ -378,12 +379,14 @@ function OverviewView({
   onFiltersChange,
   onApplyFilters,
   onOpen,
+  onStartVideoIntake,
 }: {
   data: ContentAdminOverviewResponse;
   filters: FilterState;
   onFiltersChange: (filters: FilterState) => void;
   onApplyFilters: () => void;
   onOpen: (sourceKey: string) => void;
+  onStartVideoIntake: () => void;
 }) {
   const launchProviderPorts = data.provider_ports.filter((port) => port.port !== 'buffer');
   const launchCounts = Object.entries(data.counts).filter(
@@ -459,7 +462,12 @@ function OverviewView({
           </Button>
         </FilterStrip>
       </form>
-      <SourceList sources={data.sources} onOpen={onOpen} />
+      <SourceList
+        sources={data.sources}
+        hasActiveFilters={Object.values(filters).some((value) => value.length > 0)}
+        onOpen={onOpen}
+        onStartVideoIntake={onStartVideoIntake}
+      />
     </>
   );
 }
@@ -1609,15 +1617,34 @@ function VerticalSlicePanel({ slice }: { slice: ContentAdminSourceDetail['vertic
   );
 }
 
-function SourceList({
+export function SourceList({
   sources,
+  hasActiveFilters,
   onOpen,
+  onStartVideoIntake,
 }: {
   sources: ContentAdminSourceSummary[];
+  hasActiveFilters: boolean;
   onOpen: (sourceKey: string) => void;
+  onStartVideoIntake: () => void;
 }) {
   if (sources.length === 0) {
-    return <EmptyState title="No content sources" body="No source matched the current filters." />;
+    return hasActiveFilters ? (
+      <EmptyState
+        title="No content source matches these filters"
+        body="Change or clear the filters to see other uploaded video candidates."
+      />
+    ) : (
+      <EmptyState
+        title="No video candidate yet"
+        body="Open Recording intake to add an already-reviewed class recording, then review its stage here before publishing it to Students."
+        action={
+          <Button type="button" variant="primary" onClick={onStartVideoIntake}>
+            Open Recording intake
+          </Button>
+        }
+      />
+    );
   }
   return (
     <section className="source-list">
