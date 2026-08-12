@@ -67,7 +67,7 @@ test('OT83R parent portal enforces the learner cap across add, archive, and rest
   await page.getByRole('button', { name: 'Setup' }).click();
   dialog = page.getByRole('dialog', { name: 'Setup student access' });
   await dialog.getByLabel('Student username').fill(`beta.student.${Date.now()}`);
-  await dialog.getByLabel('Student password').fill('BetaStudent123');
+  await dialog.getByLabel('Six-digit Student PIN').fill('654321');
   await dialog.getByRole('button', { name: 'Setup' }).click();
   await expect(page.getByText('Status: Active')).toBeVisible();
   await expect(page.getByText('Credentials: Parent managed')).toBeVisible();

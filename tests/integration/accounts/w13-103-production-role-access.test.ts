@@ -199,7 +199,7 @@ describe('W13-103 production role access command', () => {
       now: new Date('2026-07-19T05:08:00.000Z'),
       payload: {
         token: tokenFromLink(linkFor(studentHandoff, 'student')),
-        password: 'StudentW13!2345',
+        password: '000123',
       },
     });
 

@@ -24,7 +24,7 @@
     },
     {
       "path": "apps/web/src/server/app.ts",
-      "sha256": "7c14ddf3c6fa7af0f9efec4bade21a819e5087a1a0080998551bf523067be2de"
+      "sha256": "f7b2f10ccc706b6fc22dfc765ae25601f23ff4c01b014f6239e60cf00787f3fe"
     },
     {
       "path": "apps/web/src/server/communications/register.ts",
@@ -88,7 +88,7 @@
     },
     {
       "path": "apps/web/src/server/features/privacy/student-router.ts",
-      "sha256": "b36cc8b446425b14bd8dac92ddfcf3048c9801d168232148ea056321372f449e"
+      "sha256": "539e2a3d55214b370cccbc4bc83d83224dafb77961dee5106eb18487934dfc66"
     },
     {
       "path": "apps/web/src/server/features/portals/routers.ts",
@@ -152,7 +152,7 @@
     },
     {
       "path": "apps/web/src/client/app/portal-entry.tsx",
-      "sha256": "8626636bb2f44f752c739a89aca499ddd17c898c31fc0f10e418167270d0acbf"
+      "sha256": "fc3eea933da3160b825156a25e093b18875efc0c13fbd547d6a3a8a54a7680f7"
     },
     {
       "path": "apps/web/src/client/app/student/classroom/StudentClassroomWorkspace.tsx",
@@ -168,7 +168,7 @@
     },
     {
       "path": "apps/web/src/client/app/student/privacy/StudentPrivacyWorkspace.tsx",
-      "sha256": "9bd7da81a509ac6d1d67efbd28994359d00a2ad8e15bc689e9546e4a0ad7b761"
+      "sha256": "0d4f9e105f66c5bc82416ebc547f7f0e8445aa5454f7b0c3497429210c79451e"
     },
     {
       "path": "apps/web/src/client/app/student/privacy/api.ts",
@@ -200,7 +200,7 @@
     },
     {
       "path": "apps/web/src/client/public/public-entry.ts",
-      "sha256": "3c04b8d2a9e6e479c4a46bc01d462c6a5850968af18543bd8889facd157768c0"
+      "sha256": "ec0aef3bced6f71e54281c14ea938bc5ef17ec1b1fab066229cac20161192567"
     },
     {
       "path": "apps/web/src/client/public/school/model.ts",
@@ -1476,40 +1476,6 @@
       ]
     },
     {
-      "action_id": "admin.directory.student.setup.form",
-      "label": "Student setup",
-      "surface": "form",
-      "route": "/app/students/:studentId",
-      "roles": ["admin"],
-      "capability": "admin:student:credential-setup",
-      "handler": {
-        "method": "POST",
-        "path": "/api/v1/admin-directory/learners/:learnerKey/student-setup"
-      },
-      "idempotency": {
-        "required": true,
-        "key_source": "client-generated idempotency_key"
-      },
-      "audit": {
-        "mode": "domain_audit",
-        "event": "student_setup_issued"
-      },
-      "states": {
-        "loading": "Creating a single-use Student setup in the protected delivery sink.",
-        "success": "The single-use Student setup was queued without exposing a password.",
-        "error": "The Student setup request was rejected or could not be queued.",
-        "permission": "Only an authenticated Admin may request Student setup.",
-        "offline": "Student setup is unavailable offline."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "sink",
-      "external_mutation": false,
-      "test_evidence": [
-        "tests/integration/admin-directory/admin-directory.test.ts",
-        "tests/e2e/admin-information-architecture.spec.ts"
-      ]
-    },
-    {
       "action_id": "admin.directory.student.view.route",
       "label": "Student details",
       "surface": "route",
@@ -1613,7 +1579,7 @@
     },
     {
       "action_id": "admin.directory.user.password_reset.button",
-      "label": "Reset user password",
+      "label": "Reset user password or Student PIN",
       "surface": "button",
       "route": "/app/users/:userId",
       "roles": ["admin"],
@@ -1628,14 +1594,14 @@
       },
       "audit": {
         "mode": "auth_audit",
-        "event": "password_reset_issued"
+        "event": "role-dispatched password_reset_issued or student_reset_issued"
       },
       "states": {
-        "loading": "Creating a single-use password reset in the protected delivery sink.",
-        "success": "The single-use reset was queued without exposing a credential.",
-        "error": "The reset request was rejected or could not be queued.",
-        "permission": "Only an authenticated Admin may request a user password reset.",
-        "offline": "Password reset is unavailable offline."
+        "loading": "Creating a role-appropriate single-use password or Student PIN reset.",
+        "success": "Adult password resets use the protected adult delivery; Student PIN resets go to the linked adult Parent without exposing a credential.",
+        "error": "The reset request was rejected, the Student-to-household identity was unavailable, or the reset could not be queued.",
+        "permission": "Only an authenticated Admin may request an adult password or Student PIN reset.",
+        "offline": "Password and Student PIN reset are unavailable offline."
       },
       "readiness_state": "ready",
       "provider_mode": "sink",

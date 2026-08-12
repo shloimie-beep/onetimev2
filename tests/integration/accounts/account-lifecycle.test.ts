@@ -23,6 +23,7 @@ import {
   runLifecycleDeliveryOutboxBatch,
   suspendStudentIdentity,
 } from '../../../packages/domain/src/index.ts';
+import { renderLifecycleEmailForTests } from '../../../packages/domain/src/accounts/lifecycle-delivery.ts';
 
 let pool: DbPool;
 let config: AppConfig;
@@ -845,6 +846,7 @@ describe('OT-71 account lifecycle', () => {
     expect(relationship.rows[0].guardian_user_ref).toBe(parent.user_key);
 
     const parentActor = { userKey: parent.user_key, role: 'parent' };
+    const studentSetupAt = new Date('2026-07-15T10:00:00.000Z');
     const studentIssue = await createStudentSetup({
       pool,
       config,
@@ -857,12 +859,47 @@ describe('OT-71 account lifecycle', () => {
         household_key: householdKey,
         learner_key: learnerKey,
       },
+      now: studentSetupAt,
     });
     expect(studentIssue.delivery.delivery_state).toBe('suppressed');
+    expect(new Date(studentIssue.expires_at).getTime() - studentSetupAt.getTime()).toBe(
+      24 * 60 * 60 * 1000,
+    );
+    const studentSetupEmail = renderLifecycleEmailForTests(
+      'student_setup',
+      'https://join.onetimeonetime.com/activate#token=opaque',
+      'Parent',
+    );
+    expect(studentSetupEmail).toEqual(
+      expect.objectContaining({
+        subject: 'Set up a One Time Student PIN',
+        text: expect.stringContaining('Set Student PIN'),
+        html: expect.stringContaining('Set Student PIN'),
+      }),
+    );
+    expect(studentSetupEmail.text).toContain('six-digit One Time PIN');
+    expect(studentSetupEmail.html).toContain('six-digit One Time PIN');
+    expect(studentSetupEmail.text).toContain('expires in 24 hours');
+    expect(studentSetupEmail.html).toContain('expires in 24 hours');
+    expect(
+      `${studentSetupEmail.subject}\n${studentSetupEmail.text}\n${studentSetupEmail.html}`,
+    ).not.toMatch(
+      /expires in seven days|set up (?:your )?One Time account|set your One Time password/iu,
+    );
+    const studentToken = requiredProof(studentIssue);
+    for (const password of ['12345', '1234567', '12a456', '１２３４５６']) {
+      await expect(
+        acceptStudentSetup({
+          pool,
+          config,
+          payload: { token: studentToken, password },
+        }),
+      ).rejects.toThrow();
+    }
     const student = await acceptStudentSetup({
       pool,
       config,
-      payload: { token: requiredProof(studentIssue), password: 'StudentPass!234' },
+      payload: { token: studentToken, password: '000123' },
     });
     expect(student).toMatchObject({ role: 'student', status: 'active', mfa_required: false });
 
@@ -870,7 +907,7 @@ describe('OT-71 account lifecycle', () => {
       pool,
       config,
       email: 'student@example.test',
-      password: 'StudentPass!234',
+      password: '000123',
     });
     if (!login.ok) throw new Error(`Expected student login, got ${login.code}`);
     const session = await createSession({ pool, config, user: login.user });
@@ -901,7 +938,7 @@ describe('OT-71 account lifecycle', () => {
       pool,
       config,
       email: 'student@example.test',
-      password: 'StudentPass!234',
+      password: '000123',
     });
     if (!postRestoreLogin.ok)
       throw new Error(`Expected student login, got ${postRestoreLogin.code}`);
@@ -928,33 +965,108 @@ describe('OT-71 account lifecycle', () => {
       },
     });
     expect(resetIssue.delivery.delivery_state).toBe('suppressed');
+    const lostResetToken = requiredProof(resetIssue);
+    const replacementResetIssue = await createStudentReset({
+      pool,
+      config,
+      actor: parentActor,
+      includeLocalProofToken: true,
+      payload: {
+        idempotency_key: 'student-reset-002',
+        learner_key: learnerKey,
+      },
+    });
+    const resetToken = requiredProof(replacementResetIssue);
+    expect(resetToken).not.toBe(lostResetToken);
+    const resetTokens = await pool.query(
+      `SELECT token_key, revoked_at
+         FROM onetime.account_lifecycle_tokens
+        WHERE account_key = $1
+          AND product_key = $2
+          AND token_type = 'student_reset'
+          AND learner_key = $3
+        ORDER BY created_at ASC`,
+      [config.accountKey, config.productKey, learnerKey],
+    );
+    expect(resetTokens.rows).toHaveLength(2);
+    expect(resetTokens.rows.filter((row) => row.revoked_at === null)).toHaveLength(1);
+    await expect(
+      completeStudentReset({
+        pool,
+        config,
+        payload: { token: lostResetToken, password: '123456' },
+      }),
+    ).rejects.toThrow();
+    for (const password of ['12345', '1234567', '12a456', '１２３４５６']) {
+      await expect(
+        completeStudentReset({
+          pool,
+          config,
+          payload: { token: resetToken, password },
+        }),
+      ).rejects.toThrow();
+    }
+    const resetSession = await createSession({ pool, config, user: postRestoreLogin.user });
     const reset = await completeStudentReset({
       pool,
       config,
-      payload: { token: requiredProof(resetIssue), password: 'StudentPass!999' },
+      payload: { token: resetToken, password: '123456' },
     });
-    expect(reset.sessions_invalidated).toBe(0);
+    expect(reset.sessions_invalidated).toBe(1);
+    expect(
+      await getSessionByToken({ pool, config, sessionToken: resetSession.session_token }),
+    ).toBeNull();
     const oldPassword = await authenticateUser({
       pool,
       config,
       email: 'student@example.test',
-      password: 'StudentPass!234',
+      password: '000123',
     });
     expect(oldPassword).toMatchObject({ ok: false, code: 'INVALID_CREDENTIALS' });
     const newPassword = await authenticateUser({
       pool,
       config,
       email: 'student@example.test',
-      password: 'StudentPass!999',
+      password: '123456',
     });
     expect(newPassword).toMatchObject({ ok: true });
+    await pool.query(
+      `INSERT INTO onetime.portal_student_access_state
+       (access_state_key, account_key, product_key, household_key, learner_key, status,
+        student_user_ref, credential_status)
+       VALUES ('access_alpha_duplicate',$1,$2,$3,$4,'reset_requested',$5,'reset_required')`,
+      [config.accountKey, config.productKey, householdKey, learnerKey, student.user_key],
+    );
+    await expect(
+      createStudentReset({
+        pool,
+        config,
+        actor: parentActor,
+        payload: {
+          idempotency_key: 'student-reset-duplicate-projection',
+          learner_key: learnerKey,
+        },
+      }),
+    ).rejects.toMatchObject({ code: 'NOT_FOUND' });
+    const tokenCountAfterDuplicate = await pool.query(
+      `SELECT count(*)::int AS count
+         FROM onetime.account_lifecycle_tokens
+        WHERE account_key = $1
+          AND product_key = $2
+          AND token_type = 'student_reset'
+          AND learner_key = $3`,
+      [config.accountKey, config.productKey, learnerKey],
+    );
+    expect(tokenCountAfterDuplicate.rows[0]?.count).toBe(2);
     const studentEmailOutbox = await pool.query(
       `SELECT 1
          FROM onetime.account_lifecycle_delivery_outbox
         WHERE purpose IN ('student_setup', 'student_reset')`,
     );
     expect(studentEmailOutbox.rowCount).toBe(0);
-    expect(await serializedLifecycleRows()).not.toMatch(/StudentPass|ParentPass|token_for_local/i);
+    expect(await serializedLifecycleRows()).not.toMatch(
+      /000123|123456|ParentPass|token_for_local/i,
+    );
   });
 
   it('completes password reset with single-use tokens and session-family invalidation', async () => {

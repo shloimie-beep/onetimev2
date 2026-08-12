@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { V21StatePanel } from '../../../../../../../packages/brand-system/src/react-v21.tsx';
+import { isStudentPin } from '../../../../../../../packages/contracts/src/identity/auth/index.ts';
 import {
   PrivacyDataRightsPanel,
   type PrivacyRequestView,
@@ -66,8 +67,10 @@ export function StudentPrivacyWorkspace({
   }
 
   function createRequest(kind: PrivacyRequestView['kind']) {
-    if (currentPassword.length < 12) {
-      setError('Enter your current Student password to verify this data-rights request.');
+    if (!isStudentCurrentCredential(currentPassword)) {
+      setError(
+        'Enter your current six-digit Student PIN, or your existing Student password if it has not been reset yet.',
+      );
       return;
     }
     void run(
@@ -106,7 +109,7 @@ export function StudentPrivacyWorkspace({
       <fieldset disabled={busy}>
         <legend>Verify Student data-rights requests</legend>
         <label>
-          Current Student password
+          Current Student PIN or password
           <input
             type="password"
             autoComplete="current-password"
@@ -114,7 +117,11 @@ export function StudentPrivacyWorkspace({
             onChange={(event) => setCurrentPassword(event.currentTarget.value)}
           />
         </label>
-        <p>The password is verified for this request and is never stored in privacy evidence.</p>
+        <p>
+          Use your six-digit PIN after a Parent or Administrator reset. Existing longer Student
+          passwords continue to work until reset. This credential is verified for the request and is
+          never stored in privacy evidence.
+        </p>
       </fieldset>
       <PrivacyDataRightsPanel
         actorKind="adult_self_student"
@@ -141,4 +148,9 @@ export function StudentPrivacyWorkspace({
 
 function messageFrom(reason: unknown, fallback: string) {
   return reason instanceof Error && reason.message ? reason.message : fallback;
+}
+
+/** Accept a current six-digit PIN while preserving legacy Student password access. */
+export function isStudentCurrentCredential(value: string): boolean {
+  return isStudentPin(value) || (value.length >= 8 && value.length <= 256);
 }

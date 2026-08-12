@@ -22,12 +22,7 @@ import { inTransaction } from '../../../db/src/index.ts';
 import { householdHasLearningAccess } from '../access/service.ts';
 import { normalizeEmail, stableKey } from '../lead/normalize.ts';
 import { consumeRateLimitBudgets } from '../security/rate-limit.ts';
-import {
-  evaluatePassword,
-  normalizeLegacyAuthRole,
-  unicodeCodePointLength,
-  verifyAuthPassword,
-} from './policy.ts';
+import { evaluatePassword, normalizeLegacyAuthRole, verifyAuthPassword } from './policy.ts';
 
 const ARGON2_MEMORY_KIB = 19_456;
 const ARGON2_PASSES = 2;
@@ -200,12 +195,6 @@ export async function changeOwnPassword({
   ip?: string | undefined;
   userAgent?: string | undefined;
 }): Promise<PasswordChangeResult> {
-  const passwordLength = unicodeCodePointLength(newPassword);
-  const minimumPasswordLength = session.user.role === 'student' ? 8 : 12;
-  const maximumPasswordLength = session.user.role === 'student' ? 64 : 128;
-  if (passwordLength < minimumPasswordLength || passwordLength > maximumPasswordLength) {
-    return { ok: false, code: 'PASSWORD_POLICY_FAILED' };
-  }
   const rateLimit = await consumeRateLimitBudgets({
     pool,
     config,

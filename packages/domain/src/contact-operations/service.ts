@@ -709,12 +709,24 @@ export async function requestStudentResetForHousehold(input: {
   householdKey: string;
   learnerKey: string;
   idempotencyKey: string;
+  expectedStudentUserKey?: string;
   now?: Date;
 }) {
   assertHouseholdAuthority(input.actor, input.householdKey);
   const target = await input.pool.query(
-    `SELECT learners.learner_key, contacts.email_normalized
+    `SELECT learners.learner_key, contacts.email_normalized,
+            access.student_user_ref, access.status AS access_status,
+            users.role AS student_role, users.status AS student_status
        FROM onetime.portal_learners AS learners
+       JOIN onetime.portal_student_access_state AS access
+         ON access.account_key = learners.account_key
+        AND access.product_key = learners.product_key
+        AND access.household_key = learners.household_key
+        AND access.learner_key = learners.learner_key
+       JOIN onetime.account_users AS users
+         ON users.account_key = access.account_key
+        AND users.product_key = access.product_key
+        AND users.user_key = access.student_user_ref
        JOIN onetime.adult_household_contact_links AS links
          ON links.account_key = learners.account_key
         AND links.product_key = learners.product_key
@@ -734,6 +746,49 @@ export async function requestStudentResetForHousehold(input: {
   if (target.rows.length !== 1) {
     throw new ContactOperationsError('NOT_FOUND', 'The Student recovery target is unavailable.');
   }
+  const targetRow = target.rows[0] as Record<string, unknown>;
+  const studentUserKey = String(targetRow.student_user_ref ?? '');
+  if (
+    !studentUserKey ||
+    !['active', 'reset_requested'].includes(String(targetRow.access_status ?? '')) ||
+    String(targetRow.student_role ?? '') !== 'student' ||
+    String(targetRow.student_status ?? '') !== 'active' ||
+    (input.expectedStudentUserKey && input.expectedStudentUserKey !== studentUserKey)
+  ) {
+    throw new ContactOperationsError('NOT_FOUND', 'The Student recovery target is unavailable.');
+  }
+  const adultEmailNormalized = String(targetRow.email_normalized);
+  const guardian = await input.pool.query(
+    `SELECT guardians.guardian_user_ref
+       FROM onetime.portal_guardian_relationships AS guardians
+       JOIN onetime.account_users AS adult_users
+         ON adult_users.account_key = guardians.account_key
+        AND adult_users.product_key = guardians.product_key
+        AND adult_users.user_key = guardians.guardian_user_ref
+       JOIN onetime.adult_household_contact_links AS links
+         ON links.account_key = guardians.account_key
+        AND links.product_key = guardians.product_key
+        AND links.household_key = guardians.household_key
+        AND links.guardian_user_ref = guardians.guardian_user_ref
+       JOIN onetime.contacts AS contacts
+         ON contacts.account_key = links.account_key
+        AND contacts.product_key = links.product_key
+        AND contacts.contact_key = links.contact_key
+      WHERE guardians.account_key = $1
+        AND guardians.product_key = $2
+        AND guardians.household_key = $3
+        AND guardians.status = 'active'
+        AND guardians.authority <> 'support_only'
+        AND adult_users.role = 'parent'
+        AND adult_users.status = 'active'
+        AND adult_users.email_normalized = contacts.email_normalized
+        AND contacts.email_normalized = $4
+      LIMIT 2`,
+    [input.config.accountKey, input.config.productKey, input.householdKey, adultEmailNormalized],
+  );
+  if (guardian.rows.length !== 1) {
+    throw new ContactOperationsError('NOT_FOUND', 'The adult recovery destination is unavailable.');
+  }
   const issued = await createStudentReset({
     pool: input.pool,
     config: input.config,
@@ -741,7 +796,14 @@ export async function requestStudentResetForHousehold(input: {
     payload: {
       idempotency_key: input.idempotencyKey,
       learner_key: input.learnerKey,
-      email: String(target.rows[0]?.email_normalized),
+      email: adultEmailNormalized,
+    },
+    expectedStudentUserKey: studentUserKey,
+    expectedHouseholdKey: input.householdKey,
+    adultDeliveryBinding: {
+      householdKey: input.householdKey,
+      emailNormalized: adultEmailNormalized,
+      guardianUserKey: String(guardian.rows[0]?.guardian_user_ref),
     },
     ...(input.now ? { now: input.now } : {}),
   });

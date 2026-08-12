@@ -38,31 +38,39 @@ test('P12 mounted Parent Create and Reset Student credential guards never dispat
 
   await expectInvalidCredentialAttempt({
     form: createForm,
-    password: 'ValidPass1!x',
-    confirmation: 'DifferentPass!x',
-    expectedError: 'Passwords must match before creating this Student.',
+    password: '000123',
+    confirmation: '123456',
+    expectedError: 'Student PINs must match before creating this Student.',
     expectedFocus: 'confirmation',
     requests,
   });
   await expectInvalidCredentialAttempt({
     form: createForm,
-    password: 'short-pass1',
-    confirmation: 'short-pass1',
-    expectedError: 'Enter a password between 12 and 128 characters before creating this Student.',
+    password: '12345',
+    confirmation: '12345',
+    expectedError: 'Enter exactly six numeric digits before creating this Student.',
     expectedFocus: 'password',
     requests,
   });
   await expectInvalidCredentialAttempt({
     form: createForm,
-    password: 'x'.repeat(129),
-    confirmation: 'x'.repeat(129),
-    expectedError: 'Enter a password between 12 and 128 characters before creating this Student.',
+    password: '1234567',
+    confirmation: '1234567',
+    expectedError: 'Enter exactly six numeric digits before creating this Student.',
+    expectedFocus: 'password',
+    requests,
+  });
+  await expectInvalidCredentialAttempt({
+    form: createForm,
+    password: '12a456',
+    confirmation: '12a456',
+    expectedError: 'Enter exactly six numeric digits before creating this Student.',
     expectedFocus: 'password',
     requests,
   });
 
-  await createForm.getByLabel('New password', { exact: true }).fill('ValidPass1!x');
-  await createForm.getByLabel('Confirm new password', { exact: true }).fill('ValidPass1!x');
+  await createForm.getByLabel('New six-digit Student PIN', { exact: true }).fill('000123');
+  await createForm.getByLabel('Confirm Student PIN', { exact: true }).fill('000123');
   const createResponse = page.waitForResponse(
     (response) =>
       response.request().method() === 'POST' && response.url().endsWith('/api/app/parent/students'),
@@ -76,45 +84,49 @@ test('P12 mounted Parent Create and Reset Student credential guards never dispat
 
   await page.getByRole('link', { name: 'Mounted Test Student' }).click();
   await page.locator('details summary').click();
-  const resetForm = page.locator('form[aria-labelledby="reset-password-heading"]');
+  const resetForm = page.locator('form[aria-labelledby="reset-pin-heading"]');
   await expect(resetForm).toBeVisible();
 
   await expectInvalidCredentialAttempt({
     form: resetForm,
-    password: 'ValidPass1!x',
-    confirmation: 'DifferentPass!x',
-    expectedError: 'Passwords must match before resetting this Student password.',
+    password: '000123',
+    confirmation: '123456',
+    expectedError: 'Student PINs must match before resetting this Student PIN.',
     expectedFocus: 'confirmation',
     requests,
   });
   await expectInvalidCredentialAttempt({
     form: resetForm,
-    password: 'short-pass1',
-    confirmation: 'short-pass1',
-    expectedError:
-      'Enter a password between 12 and 128 characters before resetting this Student password.',
+    password: '12345',
+    confirmation: '12345',
+    expectedError: 'Enter exactly six numeric digits before resetting this Student PIN.',
     expectedFocus: 'password',
     requests,
   });
   await expectInvalidCredentialAttempt({
     form: resetForm,
-    password: 'x'.repeat(129),
-    confirmation: 'x'.repeat(129),
-    expectedError:
-      'Enter a password between 12 and 128 characters before resetting this Student password.',
+    password: '1234567',
+    confirmation: '1234567',
+    expectedError: 'Enter exactly six numeric digits before resetting this Student PIN.',
+    expectedFocus: 'password',
+    requests,
+  });
+  await expectInvalidCredentialAttempt({
+    form: resetForm,
+    password: '12a456',
+    confirmation: '12a456',
+    expectedError: 'Enter exactly six numeric digits before resetting this Student PIN.',
     expectedFocus: 'password',
     requests,
   });
 
-  const maximumLengthPassword = `ValidPass1!${'x'.repeat(117)}`;
-  expect(maximumLengthPassword).toHaveLength(128);
-  await resetForm.getByLabel('New password', { exact: true }).fill(maximumLengthPassword);
-  await resetForm.getByLabel('Confirm new password', { exact: true }).fill(maximumLengthPassword);
+  await resetForm.getByLabel('New six-digit Student PIN', { exact: true }).fill('123456');
+  await resetForm.getByLabel('Confirm Student PIN', { exact: true }).fill('123456');
   const resetResponse = page.waitForResponse(
     (response) =>
       response.request().method() === 'POST' && response.url().includes('/credential-reset'),
   );
-  await resetForm.getByRole('button', { name: 'Reset password' }).click();
+  await resetForm.getByRole('button', { name: 'Reset PIN' }).click();
   expect((await resetResponse).status()).toBe(200);
   expect(requests).toHaveLength(2);
 });
@@ -181,10 +193,10 @@ async function expectInvalidCredentialAttempt({
   requests: string[];
 }) {
   const requestsBefore = requests.length;
-  const passwordField = form.getByLabel('New password', { exact: true });
-  const confirmationField = form.getByLabel('Confirm new password', { exact: true });
-  await passwordField.fill(password);
-  await confirmationField.fill(confirmation);
+  const passwordField = form.getByLabel('New six-digit Student PIN', { exact: true });
+  const confirmationField = form.getByLabel('Confirm Student PIN', { exact: true });
+  await fillCredentialBoundaryValue(passwordField, password);
+  await fillCredentialBoundaryValue(confirmationField, confirmation);
   await form.getByRole('button').click();
   const invalidField = expectedFocus === 'password' ? passwordField : confirmationField;
   await expect(invalidField).toHaveAttribute('aria-invalid', 'true');
@@ -194,4 +206,17 @@ async function expectInvalidCredentialAttempt({
   await expect(form.locator(`[id="${errorId}"]`)).toHaveText(expectedError);
   await expect(invalidField).toBeFocused();
   await expect.poll(() => requests.length).toBe(requestsBefore);
+}
+
+async function fillCredentialBoundaryValue(
+  field: import('@playwright/test').Locator,
+  value: string,
+) {
+  if (value.length <= 6) {
+    await field.fill(value);
+    return;
+  }
+  await field.evaluate((input) => input.removeAttribute('maxlength'));
+  await field.fill(value);
+  await field.evaluate((input) => input.setAttribute('maxlength', '6'));
 }

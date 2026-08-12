@@ -149,6 +149,35 @@ test('Admin IA keeps the canonical launch areas across the governed viewport mat
     ),
   ).toEqual([]);
 
+  await page.route('**/api/v1/admin-directory/users*', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        success: true,
+        users: [
+          {
+            user_key: 'student-user-browser-fixture',
+            display_name: 'Ari Cohen',
+            email: 'student:ari.cohen',
+            role: 'student',
+            status: 'active',
+            version: 2,
+            household_key: 'household-browser-fixture',
+            household_name: 'Cohen Household',
+            relationship_label: null,
+            last_successful_login_at: '2026-08-05T08:00:00.000Z',
+            setup_expires_at: null,
+            learner_key: 'student-detail-browser-fixture',
+          },
+        ],
+      }),
+    }),
+  );
+  await page.goto('/app/users/student-user-browser-fixture');
+  await expect(page.getByRole('button', { name: 'Reset Student PIN' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Reset password' })).toHaveCount(0);
+
   await page.route('**/api/v1/admin-directory/learners*', (route) =>
     route.fulfill({
       status: 200,

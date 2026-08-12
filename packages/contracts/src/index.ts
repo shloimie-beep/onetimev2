@@ -196,7 +196,7 @@ export const loginPayloadSchema = z
   .object({
     identifier: loginIdentifierSchema.optional(),
     email: loginIdentifierSchema.optional(),
-    password: z.string().min(8).max(256),
+    password: z.string().min(6).max(256),
     csrf_token: z.string().trim().min(16).max(160).optional(),
     return_to: z.string().trim().max(240).optional(),
   })

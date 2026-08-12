@@ -80,13 +80,13 @@ describe('P12 concrete PostgreSQL Parent household repository', () => {
       display_name: null,
       username: 'actual.student',
       relationship: 'dependent' as const,
-      new_password: 'safe-password-123',
-      password_confirmation: 'safe-password-123',
+      new_password: '000123',
+      password_confirmation: '000123',
     };
 
     const result = await service.createStudent(fixture.principal, command, context);
     expect(result.snapshot).toMatchObject({ revision: 2, active_student_count: 1 });
-    expect(result.credential_handoff?.new_password).toBe('safe-password-123');
+    expect(result.credential_handoff?.new_password).toBe('000123');
     expect(hashCount).toBe(1);
 
     const persisted = await pool.query(
@@ -100,7 +100,7 @@ describe('P12 concrete PostgreSQL Parent household repository', () => {
       normalized_username: 'actual.student',
       credential_hash: passwordHash,
     });
-    expect(JSON.stringify(persisted.rows[0])).not.toContain('safe-password-123');
+    expect(JSON.stringify(persisted.rows[0])).not.toContain('000123');
     await expect(count(pool, 'admin_service_account_acceptances')).resolves.toBe(1);
     await expect(count(pool, 'admin_canonical_student_enrollments')).resolves.toBe(1);
     await expect(count(pool, 'class_series_enrollments')).resolves.toBe(1);
@@ -159,13 +159,13 @@ describe('P12 concrete PostgreSQL Parent household repository', () => {
       {
         expected_revision: 2,
         student_id: 'student-create',
-        new_password: 'different-safe-password',
-        password_confirmation: 'different-safe-password',
+        new_password: '123456',
+        password_confirmation: '123456',
       },
       mutationContext('create-reset', 'c'),
     );
     expect(reset.snapshot.revision).toBe(3);
-    expect(reset.credential_handoff?.new_password).toBe('different-safe-password');
+    expect(reset.credential_handoff?.new_password).toBe('123456');
     expect(hashCount).toBe(2);
 
     const replayAfterLaterMutation = await service.createStudent(
@@ -239,8 +239,8 @@ describe('P12 concrete PostgreSQL Parent household repository', () => {
           actual_name: 'Fourth Student',
           username: 'fourth.student',
           relationship: 'dependent',
-          new_password: 'safe-password-123',
-          password_confirmation: 'safe-password-123',
+          new_password: '000123',
+          password_confirmation: '000123',
         },
         mutationContext('fourth', 'c'),
       ),
@@ -266,8 +266,8 @@ describe('P12 concrete PostgreSQL Parent household repository', () => {
           actual_name: 'Rollback Student',
           username: 'rollback.student',
           relationship: 'dependent',
-          new_password: 'safe-password-123',
-          password_confirmation: 'safe-password-123',
+          new_password: '000123',
+          password_confirmation: '000123',
         },
         mutationContext('rollback', 'd'),
       ),
@@ -287,8 +287,8 @@ describe('P12 concrete PostgreSQL Parent household repository', () => {
         actual_name: 'Archive Student',
         username: 'archive.student',
         relationship: 'dependent',
-        new_password: 'safe-password-123',
-        password_confirmation: 'safe-password-123',
+        new_password: '000123',
+        password_confirmation: '000123',
       },
       mutationContext('archive-create', 'e'),
     );
@@ -376,8 +376,8 @@ describe('P12 concrete PostgreSQL Parent household repository', () => {
     const service = concreteService(pool, 'student-login-projection', async (password) =>
       hashAuthPassword(password),
     );
-    const initialPassword = 'Student passphrase 123!';
-    const replacementPassword = 'Different student passphrase 456!';
+    const initialPassword = '000123';
+    const replacementPassword = '123456';
     const created = await service.createStudent(
       fixture.principal,
       {
@@ -458,8 +458,8 @@ describe('P12 concrete PostgreSQL Parent household repository', () => {
         actual_name: 'Free Access Student',
         username: 'free.access.student',
         relationship: 'dependent',
-        new_password: 'safe-password-123',
-        password_confirmation: 'safe-password-123',
+        new_password: '000123',
+        password_confirmation: '000123',
       },
       mutationContext('free-access-projection', '5'),
     );
@@ -486,8 +486,8 @@ describe('P12 concrete PostgreSQL Parent household repository', () => {
         actual_name: 'Legacy Free Access Student',
         username: 'legacy.free.access.student',
         relationship: 'dependent',
-        new_password: 'safe-password-123',
-        password_confirmation: 'safe-password-123',
+        new_password: '000123',
+        password_confirmation: '000123',
       },
       mutationContext('legacy-free-access-projection', '4'),
     );
@@ -523,8 +523,8 @@ describe('P12 concrete PostgreSQL Parent household repository', () => {
           actual_name: 'Rejected Student',
           username: 'rejected.student',
           relationship: 'dependent',
-          new_password: 'safe-password-123',
-          password_confirmation: 'safe-password-123',
+          new_password: '000123',
+          password_confirmation: '000123',
         },
         mutationContext('missing-family-signup-source', '5'),
       ),
@@ -580,8 +580,8 @@ describe('P12 concrete PostgreSQL Parent household repository', () => {
           actual_name: 'Rejected State Changed Student',
           username: 'rejected.state.changed',
           relationship: 'dependent',
-          new_password: 'safe-password-123',
-          password_confirmation: 'safe-password-123',
+          new_password: '000123',
+          password_confirmation: '000123',
         },
         mutationContext('legacy-free-state-changed', '7'),
       ),
@@ -679,8 +679,8 @@ describe('P12 concrete PostgreSQL Parent household repository', () => {
           actual_name: 'Corrected Access Student',
           username: 'corrected.access.student',
           relationship: 'dependent',
-          new_password: 'safe-password-123',
-          password_confirmation: 'safe-password-123',
+          new_password: '000123',
+          password_confirmation: '000123',
         },
         mutationContext('correction-receipt', '8'),
       ),
@@ -731,8 +731,8 @@ describe('P12 concrete PostgreSQL Parent household repository', () => {
           actual_name: 'Mismatched Correction Student',
           username: 'mismatched.correction.student',
           relationship: 'dependent',
-          new_password: 'safe-password-123',
-          password_confirmation: 'safe-password-123',
+          new_password: '000123',
+          password_confirmation: '000123',
         },
         mutationContext('correction-receipt-mismatched-window', 'a'),
       ),
@@ -776,8 +776,8 @@ describe('P12 concrete PostgreSQL Parent household repository', () => {
           actual_name: 'Expired Correction Student',
           username: 'expired.correction.student',
           relationship: 'dependent',
-          new_password: 'safe-password-123',
-          password_confirmation: 'safe-password-123',
+          new_password: '000123',
+          password_confirmation: '000123',
         },
         {
           ...mutationContext('correction-receipt-expired', '9'),
@@ -806,8 +806,8 @@ describe('P12 concrete PostgreSQL Parent household repository', () => {
           actual_name: 'Rejected Grace Student',
           username: 'rejected.grace.student',
           relationship: 'dependent',
-          new_password: 'safe-password-123',
-          password_confirmation: 'safe-password-123',
+          new_password: '000123',
+          password_confirmation: '000123',
         },
         mutationContext('grace-without-signup-source', '6'),
       ),
@@ -862,8 +862,8 @@ describe.runIf(nativeEnabled)('P12 native PostgreSQL through migration 2255', ()
       actual_name: 'Native Student',
       display_name: null,
       relationship: 'dependent' as const,
-      new_password: 'safe-password-123',
-      password_confirmation: 'safe-password-123',
+      new_password: '000123',
+      password_confirmation: '000123',
     };
     const results = await Promise.allSettled([
       first.createStudent(
@@ -914,8 +914,8 @@ describe.runIf(nativeEnabled)('P12 native PostgreSQL through migration 2255', ()
       display_name: null,
       username: 'native.replay.student',
       relationship: 'dependent' as const,
-      new_password: 'safe-password-123',
-      password_confirmation: 'safe-password-123',
+      new_password: '000123',
+      password_confirmation: '000123',
     };
     const createContext = mutationContext('native-replay-create', '4');
     const createResults = await Promise.all([
@@ -947,8 +947,8 @@ describe.runIf(nativeEnabled)('P12 native PostgreSQL through migration 2255', ()
     const resetCommand = {
       expected_revision: 2,
       student_id: 'student-native-replay-race',
-      new_password: 'different-safe-password',
-      password_confirmation: 'different-safe-password',
+      new_password: '123456',
+      password_confirmation: '123456',
     };
     const resetContext = mutationContext('native-replay-reset', '5');
     const resetResults = await Promise.all([
@@ -1000,8 +1000,8 @@ describe.runIf(nativeEnabled)('P12 native PostgreSQL through migration 2255', ()
           actual_name: 'Native Rollback',
           username: 'native.rollback',
           relationship: 'dependent',
-          new_password: 'safe-password-123',
-          password_confirmation: 'safe-password-123',
+          new_password: '000123',
+          password_confirmation: '000123',
         },
         mutationContext('native-rollback', '3'),
       ),
@@ -1046,8 +1046,8 @@ describe.runIf(nativeEnabled)('P12 native PostgreSQL through migration 2255', ()
           actual_name: 'Native Missing Source Student',
           username: 'native.missing.source',
           relationship: 'dependent',
-          new_password: 'safe-password-123',
-          password_confirmation: 'safe-password-123',
+          new_password: '000123',
+          password_confirmation: '000123',
         },
         mutationContext('native-missing-free-source', '5'),
       ),
@@ -1116,8 +1116,8 @@ describe.runIf(nativeEnabled)('P12 native PostgreSQL through migration 2255', ()
           actual_name: 'Native Corrected Student',
           username: 'native.corrected.student',
           relationship: 'dependent',
-          new_password: 'safe-password-123',
-          password_confirmation: 'safe-password-123',
+          new_password: '000123',
+          password_confirmation: '000123',
         },
         mutationContext('native-correction', '6'),
       ),

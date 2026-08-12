@@ -31,8 +31,8 @@ const profileSchema = z
   .strict();
 const credentialSchema = z
   .object({
-    new_password: z.string().min(12).max(128),
-    password_confirmation: z.string().min(12).max(128),
+    new_password: z.string().regex(/^[0-9]{6}$/u),
+    password_confirmation: z.string().regex(/^[0-9]{6}$/u),
   })
   .strict();
 const createSchema = profileSchema

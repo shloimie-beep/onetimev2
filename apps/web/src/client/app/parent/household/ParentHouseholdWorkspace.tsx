@@ -1,6 +1,8 @@
 import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
 import {
   STUDENT_ACTUAL_NAME_INSTRUCTIONS,
+  STUDENT_PIN_LENGTH,
+  isStudentPin,
   type ParentHouseholdSnapshot,
   type ParentStudentRelationship,
   type StudentCredentialHandoff,
@@ -128,7 +130,7 @@ export function ParentHouseholdWorkspace({
         <p>
           Live classes run Sunday–Thursday, with the protected lesson library available anytime.
         </p>
-        <p>Students sign in with the separate username and password managed below.</p>
+        <p>Students sign in with the separate username and six-digit PIN managed below.</p>
       </section>
 
       <section aria-labelledby="parent-account-access-heading">
@@ -160,7 +162,7 @@ export function ParentHouseholdWorkspace({
                   },
                   csrf,
                 ),
-              'Student created and enrolled in the recurring 7:00 PM class. Save the credentials shown below.',
+              'Student created and enrolled in the recurring 7:00 PM class. Save the PIN shown below.',
             )
           }
         />
@@ -221,7 +223,7 @@ export function ParentHouseholdWorkspace({
                     },
                     csrf,
                   ),
-                'Password reset. Save the credentials shown below.',
+                'Student PIN reset. Save the credentials shown below.',
               )
             }
           />
@@ -386,8 +388,8 @@ function StudentManagementForms({
         </button>
       </form>
       <details className="parent-student-management__security">
-        <summary>Student access and password controls</summary>
-        <p>These actions affect this Student only. The existing password is never displayed.</p>
+        <summary>Student access and PIN controls</summary>
+        <p>These actions affect this Student only. The existing credential is never displayed.</p>
         <button type="button" disabled={disabled} onClick={onLifecycle}>
           {student.state === 'active' ? 'Archive Student' : 'Restore Student'}
         </button>
@@ -419,7 +421,7 @@ function StudentPasswordResetForm({
   return (
     <form
       className="parent-student-form"
-      aria-labelledby="reset-password-heading"
+      aria-labelledby="reset-pin-heading"
       noValidate
       onSubmit={(event) => {
         event.preventDefault();
@@ -436,7 +438,7 @@ function StudentPasswordResetForm({
         onReset(password, passwordConfirmation);
       }}
     >
-      <h3 id="reset-password-heading">Reset Student password</h3>
+      <h3 id="reset-pin-heading">Reset Student PIN</h3>
       <CredentialFields
         disabled={disabled}
         passwordId={passwordId}
@@ -453,7 +455,7 @@ function StudentPasswordResetForm({
         onPasswordConfirmationChange={setPasswordConfirmation}
       />
       <button type="submit" disabled={disabled}>
-        Reset password
+        Reset PIN
       </button>
     </form>
   );
@@ -538,13 +540,16 @@ function CredentialFields({
   return (
     <>
       <div className="parent-student-form__credential-field">
-        <label htmlFor={passwordId}>New password</label>
+        <label htmlFor={passwordId}>New six-digit Student PIN</label>
         <input
           id={passwordId}
           name="new_password"
           type="password"
           required
-          minLength={12}
+          minLength={STUDENT_PIN_LENGTH}
+          maxLength={STUDENT_PIN_LENGTH}
+          inputMode="numeric"
+          pattern="[0-9]{6}"
           disabled={disabled}
           autoComplete="new-password"
           ref={passwordInputRef}
@@ -565,13 +570,16 @@ function CredentialFields({
         ) : null}
       </div>
       <div className="parent-student-form__credential-field">
-        <label htmlFor={confirmationId}>Confirm new password</label>
+        <label htmlFor={confirmationId}>Confirm Student PIN</label>
         <input
           id={confirmationId}
           name="password_confirmation"
           type="password"
           required
-          minLength={12}
+          minLength={STUDENT_PIN_LENGTH}
+          maxLength={STUDENT_PIN_LENGTH}
+          inputMode="numeric"
+          pattern="[0-9]{6}"
           disabled={disabled}
           autoComplete="new-password"
           ref={confirmationInputRef}
@@ -609,14 +617,14 @@ function CredentialHandoff({ handoff }: { handoff: StudentCredentialHandoff }) {
   return (
     <section aria-labelledby="credential-handoff-heading">
       <h2 id="credential-handoff-heading">Save credentials for {handoff.student_label}</h2>
-      <p>This password is shown only now. Copy or print it before leaving this page.</p>
+      <p>This PIN is shown only now. Copy or print it before leaving this page.</p>
       <dl>
         <dt>Username</dt>
         <dd>{handoff.username}</dd>
-        <dt>New password</dt>
+        <dt>New PIN</dt>
         <dd>{handoff.new_password}</dd>
       </dl>
-      <p>Credentials are not emailed. You can reset them later.</p>
+      <p>Credentials are not emailed. You can reset the PIN later.</p>
     </section>
   );
 }
@@ -639,9 +647,8 @@ export function studentCredentialState(
 ): StudentCredentialState {
   const confirmationStarted = passwordConfirmation.length > 0;
   const passwordsMatch = password === passwordConfirmation;
-  const passwordLengthValid = password.length >= 12 && password.length <= 128;
-  const confirmationLengthValid =
-    passwordConfirmation.length >= 12 && passwordConfirmation.length <= 128;
+  const passwordLengthValid = isStudentPin(password);
+  const confirmationLengthValid = isStudentPin(passwordConfirmation);
   return {
     confirmationLengthInvalid: confirmationStarted && !confirmationLengthValid,
     hasPasswordMismatch: confirmationStarted && !passwordsMatch,
@@ -652,14 +659,14 @@ export function studentCredentialState(
 
 export function credentialLengthErrorCopy(mode: CredentialMode) {
   return mode === 'create'
-    ? 'Enter a password between 12 and 128 characters before creating this Student.'
-    : 'Enter a password between 12 and 128 characters before resetting this Student password.';
+    ? 'Enter exactly six numeric digits before creating this Student.'
+    : 'Enter exactly six numeric digits before resetting this Student PIN.';
 }
 
 export function credentialMismatchErrorCopy(mode: CredentialMode) {
   return mode === 'create'
-    ? 'Passwords must match before creating this Student.'
-    : 'Passwords must match before resetting this Student password.';
+    ? 'Student PINs must match before creating this Student.'
+    : 'Student PINs must match before resetting this Student PIN.';
 }
 
 export function submitStudentCredentials({

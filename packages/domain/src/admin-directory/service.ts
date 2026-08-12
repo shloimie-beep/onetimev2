@@ -5,10 +5,13 @@ import type { DbPool, Queryable } from '../../../db/src/index.ts';
 import { inTransaction } from '../../../db/src/index.ts';
 import {
   createOwnerAdminInvitation,
-  createStudentSetup,
   issueParentActivationWithClient,
   requestPasswordReset,
 } from '../accounts/lifecycle.ts';
+import {
+  ContactOperationsError,
+  requestStudentResetForHousehold,
+} from '../contact-operations/service.ts';
 import { normalizeEmail } from '../lead/normalize.ts';
 
 const MAX_ACTIVE_LEARNERS = 3;
@@ -108,13 +111,6 @@ export const updateLearnerPayloadSchema = z
     hebrew_name: optionalLabelSchema,
     grade_label: optionalLabelSchema,
     version: versionSchema,
-  })
-  .strict();
-
-export const studentSetupPayloadSchema = z
-  .object({
-    email: z.string().trim().email().max(254),
-    idempotency_key: idempotencyKeySchema,
   })
   .strict();
 
@@ -933,13 +929,66 @@ export async function requestAdminUserPasswordReset(input: {
   const userKey = opaqueKeySchema.parse(input.userKey);
   const payload = passwordResetPayloadSchema.parse(input.payload);
   const result = await input.pool.query(
-    `SELECT email_normalized
-       FROM onetime.account_users
-      WHERE account_key = $1 AND product_key = $2 AND user_key = $3
-      LIMIT 1`,
+    `SELECT users.email_normalized, users.role,
+            links.learner_key, links.household_key, links.link_state,
+            access.student_user_ref AS access_student_user_ref,
+            access.status AS access_status
+       FROM onetime.account_users AS users
+       LEFT JOIN onetime.account_learner_identity_links AS links
+         ON links.account_key = users.account_key
+         AND links.product_key = users.product_key
+         AND links.user_key = users.user_key
+       LEFT JOIN onetime.portal_student_access_state AS access
+         ON access.account_key = links.account_key
+        AND access.product_key = links.product_key
+        AND access.household_key = links.household_key
+        AND access.learner_key = links.learner_key
+      WHERE users.account_key = $1
+        AND users.product_key = $2
+        AND users.user_key = $3
+      LIMIT 2`,
     [input.config.accountKey, input.config.productKey, userKey],
   );
   if (!result.rowCount) throw new AdminDirectoryError('NOT_FOUND', 'The user was not found.');
+  const user = result.rows[0] as Record<string, unknown>;
+  if (String(user.role) === 'student') {
+    if (
+      result.rows.length !== 1 ||
+      !nullableString(user.learner_key) ||
+      !nullableString(user.household_key) ||
+      String(user.link_state) !== 'active' ||
+      !['active', 'reset_requested'].includes(String(user.access_status)) ||
+      String(user.access_student_user_ref) !== userKey
+    ) {
+      throw new AdminDirectoryError(
+        'IDENTITY_CONFLICT',
+        'The Student PIN reset target is unavailable.',
+      );
+    }
+    try {
+      const reset = await requestStudentResetForHousehold({
+        pool: input.pool,
+        config: input.config,
+        actor: { userKey: input.actor.userKey, role: input.actor.role as 'owner' | 'admin' },
+        householdKey: String(user.household_key),
+        learnerKey: String(user.learner_key),
+        expectedStudentUserKey: userKey,
+        idempotencyKey: payload.idempotency_key,
+      });
+      return {
+        user_key: userKey,
+        reset_kind: 'student_pin' as const,
+        request_accepted: true as const,
+        external_send_performed: reset.delivery.external_send_performed,
+      };
+    } catch (error) {
+      if (!(error instanceof ContactOperationsError)) throw error;
+      throw new AdminDirectoryError(
+        'IDENTITY_CONFLICT',
+        'The Student PIN reset target is unavailable.',
+      );
+    }
+  }
   const reset = await requestPasswordReset({
     pool: input.pool,
     config: input.config,
@@ -950,6 +999,7 @@ export async function requestAdminUserPasswordReset(input: {
   });
   return {
     user_key: userKey,
+    reset_kind: 'adult_password' as const,
     request_accepted: true as const,
     external_send_performed:
       'delivery' in reset ? reset.delivery.external_send_performed : (false as const),
@@ -1231,50 +1281,6 @@ export function setAdminLearnerStatus(input: {
       student_user_ref: current.student_user_ref,
     });
   });
-}
-
-export async function requestAdminStudentSetup(input: {
-  pool: DbPool;
-  config: AppConfig;
-  actor: AdminDirectoryActor;
-  learnerKey: string;
-  payload: unknown;
-}) {
-  requireOwnerAdmin(input.actor);
-  const learnerKey = opaqueKeySchema.parse(input.learnerKey);
-  const payload = studentSetupPayloadSchema.parse(input.payload);
-  const learner = await input.pool.query(
-    `SELECT learner_key, household_key, display_name, learner_status
-       FROM onetime.portal_learners
-      WHERE account_key = $1 AND product_key = $2 AND learner_key = $3
-      LIMIT 1`,
-    [input.config.accountKey, input.config.productKey, learnerKey],
-  );
-  if (!learner.rowCount) throw new AdminDirectoryError('NOT_FOUND', 'The learner was not found.');
-  if (String(learner.rows[0]?.learner_status) !== 'active') {
-    throw new AdminDirectoryError(
-      'IDENTITY_CONFLICT',
-      'Restore the learner before starting Student account setup.',
-    );
-  }
-  const result = await createStudentSetup({
-    pool: input.pool,
-    config: input.config,
-    actor: { userKey: input.actor.userKey, role: input.actor.role },
-    payload: {
-      idempotency_key: payload.idempotency_key,
-      email: payload.email,
-      display_name: String(learner.rows[0]?.display_name),
-      household_key: String(learner.rows[0]?.household_key),
-      learner_key: learnerKey,
-    },
-  });
-  return {
-    learner_key: learnerKey,
-    status: 'setup_requested' as const,
-    expires_at: result.expires_at,
-    external_send_performed: false as const,
-  };
 }
 
 async function lockHousehold(

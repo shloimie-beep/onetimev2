@@ -1,6 +1,7 @@
 import { createHash, randomUUID } from 'node:crypto';
 import express, { type NextFunction, type Request, type Response } from 'express';
 import { z, ZodError } from 'zod';
+import { isStudentPin } from '../../../../../../packages/contracts/src/identity/auth/index.ts';
 import type {
   ConsentEvent,
   ConsentMutationInput,
@@ -44,7 +45,11 @@ const consentSchema = z
 const rightsSchema = z
   .object({
     kind: z.enum(['export', 'correction', 'closure', 'erasure']),
-    current_password: z.string().min(12).max(128),
+    current_password: z
+      .string()
+      .min(1)
+      .max(256)
+      .refine((value) => isStudentPin(value) || value.length >= 8),
   })
   .strict();
 const IDEMPOTENCY_KEY = /^[A-Za-z0-9][A-Za-z0-9._:-]{7,159}$/u;
@@ -61,7 +66,15 @@ export function createStudentPrivacyRouter(input: {
   resolvePrincipal(request: Request): Promise<SelfManagedStudentPrivacyPrincipal | null>;
   issueCsrfToken(request: Request, response: Response): Promise<string>;
   verifyCsrf(request: Request, principal: SelfManagedStudentPrivacyPrincipal): Promise<boolean>;
-  verifyPassword(principal: SelfManagedStudentPrivacyPrincipal, password: string): Promise<boolean>;
+  verifyPasswordAttempt(
+    request: Request,
+    principal: SelfManagedStudentPrivacyPrincipal,
+    password: string,
+  ): Promise<
+    | { status: 'verified' }
+    | { status: 'invalid' }
+    | { status: 'rate_limited'; retryAfterSeconds: number }
+  >;
   networkEvidenceDigest(request: Request): string;
   clock?: () => Date;
   nextId?: () => string;
@@ -126,12 +139,27 @@ export function createStudentPrivacyRouter(input: {
     asyncRoute(async (req, res) => {
       const principal = await requiredMutationPrincipal(input, req);
       const command = rightsSchema.parse(req.body);
-      if (!(await input.verifyPassword(principal, command.current_password))) {
+      const verification = await input.verifyPasswordAttempt(
+        req,
+        principal,
+        command.current_password,
+      );
+      if (verification.status === 'rate_limited') {
+        res.setHeader('Retry-After', String(verification.retryAfterSeconds));
+        res.status(429).json({
+          success: false,
+          code: 'RATE_LIMITED',
+          message: 'Too many recent credential checks. Try again later.',
+          retry_after_seconds: verification.retryAfterSeconds,
+        });
+        return;
+      }
+      if (verification.status !== 'verified') {
         sendError(
           res,
           403,
           'RECENT_PASSWORD_REQUIRED',
-          'The current Student password was not verified.',
+          'The current Student credential was not verified.',
         );
         return;
       }

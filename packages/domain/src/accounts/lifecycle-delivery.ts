@@ -77,6 +77,8 @@ export async function createLifecycleDeliveryOutbox(
     recipientEmail: string;
     displayName: string;
     targetRole: string;
+    subjectUserKey?: string | null;
+    learnerKey?: string | null;
     idempotencyKey: string;
     expiresAt: Date;
     now: Date;
@@ -89,12 +91,21 @@ export async function createLifecycleDeliveryOutbox(
     input.tokenType,
     input.idempotencyKey,
   ]);
-  await supersedePriorDeliveries(client, config, {
-    purpose: input.tokenType,
-    destinationRef,
-    deliveryKey,
-    now: input.now,
-  });
+  if (input.tokenType === 'student_reset' && input.subjectUserKey && input.learnerKey) {
+    await supersedeStudentResetDeliveries(client, config, {
+      deliveryKey,
+      subjectUserKey: input.subjectUserKey,
+      learnerKey: input.learnerKey,
+      now: input.now,
+    });
+  } else {
+    await supersedePriorDeliveries(client, config, {
+      purpose: input.tokenType,
+      destinationRef,
+      deliveryKey,
+      now: input.now,
+    });
+  }
   const encrypted = encryptDeliveryPayload(config, {
     schema_version: 1,
     purpose: input.tokenType,
@@ -223,6 +234,18 @@ export function decryptLifecycleDeliveryPayloadForTests(
   },
 ): Record<string, unknown> {
   return decryptDeliveryPayload(config, row);
+}
+
+export function renderLifecycleEmailForTests(
+  purpose: AccountLifecycleTokenType,
+  activationUrl: string,
+  recipientFirstName: string,
+) {
+  return {
+    subject: lifecycleEmailSubject(purpose),
+    text: lifecycleEmailText(purpose, activationUrl, recipientFirstName),
+    html: lifecycleEmailHtml(purpose, activationUrl, recipientFirstName),
+  };
 }
 
 function encryptDeliveryPayload(config: AppConfig, payload: Record<string, unknown>) {
@@ -389,6 +412,8 @@ function normalizedAddress(value?: string) {
 
 function lifecycleEmailSubject(purpose: AccountLifecycleTokenType) {
   if (purpose === 'password_reset') return 'Reset your One Time password';
+  if (purpose === 'student_reset') return 'Reset a One Time Student PIN';
+  if (purpose === 'student_setup') return 'Set up a One Time Student PIN';
   return 'Set up your One Time account';
 }
 
@@ -397,6 +422,25 @@ function lifecycleEmailText(
   activationUrl: string,
   recipientFirstName: string,
 ) {
+  if (purpose === 'student_setup' || purpose === 'student_reset') {
+    const reset = purpose === 'student_reset';
+    return [
+      'Hello,',
+      '',
+      `Use the secure link below to ${reset ? 'reset' : 'set'} the Student's six-digit One Time PIN.`,
+      '',
+      reset ? 'Reset Student PIN' : 'Set Student PIN',
+      activationUrl,
+      '',
+      reset
+        ? 'This link can be used once and expires in 60 minutes.'
+        : 'This link can be used once and expires in 24 hours.',
+      '',
+      'If you did not request this, you can ignore this email.',
+      '',
+      'One Time Mishnayos',
+    ].join('\n');
+  }
   if (purpose !== 'password_reset') {
     return [
       `Hi ${recipientFirstName},`,
@@ -436,6 +480,19 @@ function lifecycleEmailHtml(
   recipientFirstName: string,
 ) {
   const safeUrl = escapeHtml(activationUrl);
+  if (purpose === 'student_setup' || purpose === 'student_reset') {
+    const reset = purpose === 'student_reset';
+    return [
+      '<p>Hello,</p>',
+      `<p>Use the secure link below to ${reset ? 'reset' : 'set'} the Student's six-digit One Time PIN.</p>`,
+      `<p><a href="${safeUrl}">${reset ? 'Reset Student PIN' : 'Set Student PIN'}</a></p>`,
+      reset
+        ? '<p>This link can be used once and expires in 60 minutes.</p>'
+        : '<p>This link can be used once and expires in 24 hours.</p>',
+      '<p>If you did not request this, you can ignore this email.</p>',
+      '<p>One Time Mishnayos</p>',
+    ].join('');
+  }
   if (purpose !== 'password_reset') {
     return [
       `<p>Hi ${escapeHtml(recipientFirstName)},</p>`,
@@ -519,6 +576,44 @@ async function supersedePriorDeliveries(
       input.destinationRef,
       input.now,
       input.deliveryKey,
+    ],
+  );
+}
+
+async function supersedeStudentResetDeliveries(
+  client: Queryable,
+  config: AppConfig,
+  input: { deliveryKey: string; subjectUserKey: string; learnerKey: string; now: Date },
+) {
+  await client.query(
+    `UPDATE onetime.account_lifecycle_delivery_outbox
+        SET state = 'superseded',
+            nonce = NULL,
+            ciphertext = NULL,
+            auth_tag = NULL,
+            cleared_at = $5,
+            updated_at = $5
+      WHERE account_key = $1
+        AND product_key = $2
+        AND purpose = 'student_reset'
+        AND delivery_key <> $4
+        AND token_key IN (
+          SELECT token_key
+            FROM onetime.account_lifecycle_tokens
+           WHERE account_key = $1
+             AND product_key = $2
+             AND token_type = 'student_reset'
+             AND subject_user_key = $3
+             AND learner_key = $6
+        )
+        AND state IN ('queued', 'leased', 'retry', 'unknown', 'provider_off')`,
+    [
+      config.accountKey,
+      config.productKey,
+      input.subjectUserKey,
+      input.deliveryKey,
+      input.now,
+      input.learnerKey,
     ],
   );
 }

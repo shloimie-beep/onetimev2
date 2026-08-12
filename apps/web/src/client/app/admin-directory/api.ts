@@ -261,19 +261,6 @@ export function setAdminLearnerStatus(
   );
 }
 
-export function requestAdminStudentSetup(
-  csrfToken: string,
-  learnerKey: string,
-  payload: { email: string; idempotency_key: string },
-) {
-  return write<{ success: true; setup: { status: 'setup_requested' } }>(
-    `/api/v1/admin-directory/learners/${encodeURIComponent(learnerKey)}/student-setup`,
-    csrfToken,
-    'POST',
-    payload,
-  );
-}
-
 function queryString(search: string, status: string) {
   const params = new URLSearchParams();
   if (search.trim()) params.set('search', search.trim());

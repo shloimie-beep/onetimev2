@@ -85,11 +85,22 @@ export const passwordResetRequestPayloadSchema = z.object({
 });
 export type PasswordResetRequestPayload = z.infer<typeof passwordResetRequestPayloadSchema>;
 
+const lifecycleTokenSchema = z.string().trim().min(32).max(240);
+const studentPinSchema = z.string().regex(/^[0-9]{6}$/u);
+
+/** Adult token completion keeps the existing 8–256 credential bounds. */
 export const tokenCompletionPayloadSchema = z.object({
-  token: z.string().trim().min(32).max(240),
+  token: lifecycleTokenSchema,
   password: passwordSchema,
 });
 export type TokenCompletionPayload = z.infer<typeof tokenCompletionPayloadSchema>;
+
+/** Student setup and reset are the only token completions that accept a PIN. */
+export const studentTokenCompletionPayloadSchema = z.object({
+  token: lifecycleTokenSchema,
+  password: studentPinSchema,
+});
+export type StudentTokenCompletionPayload = z.infer<typeof studentTokenCompletionPayloadSchema>;
 
 export const accountLifecycleDeliverySummarySchema = z.object({
   intent_key: lifecycleOpaqueIdSchema,

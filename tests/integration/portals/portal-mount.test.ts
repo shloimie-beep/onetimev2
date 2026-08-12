@@ -7,7 +7,12 @@ import { createApp } from '../../../apps/web/src/server/app.ts';
 import { resolveCurrentClientRoute } from '../../../apps/web/src/client/app/router/registry.ts';
 import { loadConfig, type AppConfig } from '../../../packages/config/src/index.ts';
 import { createMemoryPool, runMigrations, type DbPool } from '../../../packages/db/src/index.ts';
-import { createAccountUser } from '../../../packages/domain/src/index.ts';
+import {
+  completeStudentReset,
+  createAccountUser,
+  decryptLifecycleDeliveryPayloadForTests,
+} from '../../../packages/domain/src/index.ts';
+import { hashAuthPassword } from '../../../packages/domain/src/auth/policy.ts';
 
 let pool: DbPool;
 let config: AppConfig;
@@ -382,6 +387,85 @@ describe('OT-71 mounted parent and student portals', () => {
           },
         },
       });
+
+      const submitRightsRequest = (idempotencyKey: string, currentPassword: string) =>
+        fetch(`${server.baseUrl}/api/app/student/privacy/requests`, {
+          method: 'POST',
+          headers: {
+            cookie: student.cookies,
+            'content-type': 'application/json',
+            'x-csrf-token': student.json.csrf_token,
+            'x-idempotency-key': idempotencyKey,
+          },
+          body: JSON.stringify({ kind: 'export', current_password: currentPassword }),
+        });
+
+      const legacyRights = await submitRightsRequest(
+        'student-privacy-legacy-rights-0001',
+        'StudentPass!234',
+      );
+      expect(legacyRights.status, await legacyRights.clone().text()).toBe(202);
+
+      await pool.query(
+        `UPDATE onetime.account_users
+            SET password_hash = $1, updated_at = now()
+          WHERE account_key = $2
+            AND product_key = $3
+            AND user_key = $4`,
+        [hashAuthPassword('000123'), config.accountKey, config.productKey, studentUserKey],
+      );
+      const pinRights = await submitRightsRequest('student-privacy-pin-rights-0001', '000123');
+      expect(pinRights.status, await pinRights.clone().text()).toBe(202);
+
+      for (let attempt = 1; attempt <= 3; attempt += 1) {
+        const denied = await submitRightsRequest(
+          `student-privacy-wrong-rights-000${attempt}`,
+          '654321',
+        );
+        expect(denied.status, await denied.clone().text()).toBe(403);
+      }
+      const rateLimited = await submitRightsRequest('student-privacy-wrong-rights-0004', '654321');
+      expect(rateLimited.status, await rateLimited.clone().text()).toBe(429);
+      expect(Number(rateLimited.headers.get('retry-after'))).toBeGreaterThan(0);
+      await expect(rateLimited.json()).resolves.toMatchObject({
+        success: false,
+        code: 'RATE_LIMITED',
+      });
+
+      const rightsRows = await pool.query(
+        `SELECT request_id
+           FROM onetime.data_rights_request
+          WHERE requester_ref = $1
+            AND requester_household_id = 'household_alpha'`,
+        [studentUserKey],
+      );
+      expect(rightsRows.rowCount).toBe(2);
+
+      const credentialAudit = await pool.query(
+        `SELECT event_type, success, reason, ip_hash, user_agent_hash, metadata
+           FROM onetime.auth_audit_events
+          WHERE user_key = $1
+            AND event_type LIKE 'student_privacy_credential_%'
+          ORDER BY event_type ASC`,
+        [studentUserKey],
+      );
+      expect(credentialAudit.rows).toHaveLength(6);
+      expect(credentialAudit.rows.map((row) => row.event_type)).toEqual(
+        expect.arrayContaining([
+          'student_privacy_credential_verified',
+          'student_privacy_credential_failed',
+          'student_privacy_credential_rate_limited',
+        ]),
+      );
+      expect(
+        credentialAudit.rows.every(
+          (row) =>
+            typeof row.ip_hash === 'string' &&
+            typeof row.user_agent_hash === 'string' &&
+            JSON.stringify(row).includes('000123') === false &&
+            JSON.stringify(row).includes('StudentPass!234') === false,
+        ),
+      ).toBe(true);
 
       await insertOutstandingPrivacyLaunchGrant('privacy-grant-before-withdrawal', 'b');
       const withdrawal = await fetch(`${server.baseUrl}/api/app/student/privacy/consents`, {
@@ -1030,6 +1114,13 @@ describe('OT-71 mounted parent and student portals', () => {
       );
       expect(crossHousehold.status).toBe(404);
 
+      const legacyStudent = await loginAs(
+        server.baseUrl,
+        'student@example.test',
+        'StudentPass!234',
+      );
+      expect(legacyStudent.json.user.role).toBe('student');
+
       const setup = await fetch(
         `${server.baseUrl}/api/v1/portals/parent/households/household_alpha/learners/learner_setup/student-access/setup`,
         {
@@ -1042,7 +1133,7 @@ describe('OT-71 mounted parent and student portals', () => {
           body: JSON.stringify({
             idempotency_key: 'portal-student-setup-001',
             username: 'setup_learner',
-            password: 'Mishnah12345',
+            password: '000123',
             display_name: 'Setup Learner',
           }),
         },
@@ -1050,7 +1141,7 @@ describe('OT-71 mounted parent and student portals', () => {
       const setupText = await setup.text();
       expect(setup.status, setupText).toBe(200);
       expect(setupText).not.toContain('token_for_local_proof');
-      expect(setupText).not.toContain('Mishnah12345');
+      expect(setupText).not.toContain('000123');
       expect(JSON.parse(setupText)).toMatchObject({
         success: true,
         data: {
@@ -1076,7 +1167,7 @@ describe('OT-71 mounted parent and student portals', () => {
         credential_status: 'parent_managed',
       });
       expect(String(repairedAccessRows.rows[0].password_hash_ref)).toMatch(/^scrypt:v1:/);
-      expect(String(repairedAccessRows.rows[0].password_hash_ref)).not.toContain('Mishnah12345');
+      expect(String(repairedAccessRows.rows[0].password_hash_ref)).not.toContain('000123');
 
       const tokenRows = await pool.query(
         `SELECT token_hash, metadata
@@ -1087,7 +1178,14 @@ describe('OT-71 mounted parent and student portals', () => {
       expect(tokenRows.rows).toHaveLength(0);
       expect(JSON.stringify(tokenRows.rows)).not.toContain('token_for_local_proof');
 
-      const setupStudent = await loginAs(server.baseUrl, 'setup_learner', 'Mishnah12345');
+      const shortStudentPin = await postLogin(server.baseUrl, 'setup_learner', '12345');
+      expect(shortStudentPin.status).toBe(400);
+      expect(shortStudentPin.json).toMatchObject({
+        success: false,
+        code: 'VALIDATION_ERROR',
+      });
+
+      const setupStudent = await loginAs(server.baseUrl, 'setup_learner', '000123');
       expect(setupStudent.json.user.role).toBe('student');
       const setupStudentDashboard = await fetch(
         `${server.baseUrl}/api/v1/portals/student/dashboard`,
@@ -1133,7 +1231,7 @@ describe('OT-71 mounted parent and student portals', () => {
       );
       expect(existingStudentSession.status).toBe(401);
 
-      const oldStudentPassword = await postLogin(server.baseUrl, 'setup_learner', 'Mishnah12345');
+      const oldStudentPassword = await postLogin(server.baseUrl, 'setup_learner', '000123');
       expect(oldStudentPassword.status).toBe(401);
       expect(oldStudentPassword.json).toMatchObject({
         success: false,
@@ -1160,6 +1258,47 @@ describe('OT-71 mounted parent and student portals', () => {
       expect(String(resetTokens.rows[0]?.token_hash)).toMatch(/^[a-f0-9]{64}$/);
       expect(resetTokens.rows[0]?.consumed_at).toBeNull();
       expect(JSON.stringify(resetTokens.rows)).not.toContain('Mishnah54321');
+
+      const resetDelivery = await pool.query(
+        `SELECT outbox.nonce, outbox.ciphertext, outbox.auth_tag
+           FROM onetime.account_lifecycle_delivery_outbox AS outbox
+           JOIN onetime.account_lifecycle_tokens AS tokens
+             ON tokens.account_key = outbox.account_key
+            AND tokens.product_key = outbox.product_key
+            AND tokens.token_key = outbox.token_key
+          WHERE tokens.account_key = $1
+            AND tokens.product_key = $2
+            AND tokens.token_type = 'student_reset'
+            AND tokens.learner_key = 'learner_setup'`,
+        [config.accountKey, config.productKey],
+      );
+      expect(resetDelivery.rows).toHaveLength(1);
+      const deliveredReset = decryptLifecycleDeliveryPayloadForTests(config, {
+        nonce: String(resetDelivery.rows[0]?.nonce),
+        ciphertext: String(resetDelivery.rows[0]?.ciphertext),
+        auth_tag: String(resetDelivery.rows[0]?.auth_tag),
+      });
+      expect(deliveredReset).toMatchObject({ purpose: 'student_reset', target_role: 'student' });
+      const resetToken = String(deliveredReset.token ?? '');
+      expect(resetToken).not.toBe('');
+      await completeStudentReset({
+        pool,
+        config,
+        payload: { token: resetToken, password: '654321' },
+      });
+      const completedState = await pool.query(
+        `SELECT status FROM onetime.portal_student_access_state
+          WHERE account_key = $1 AND product_key = $2 AND learner_key = 'learner_setup'`,
+        [config.accountKey, config.productKey],
+      );
+      expect(completedState.rows[0]?.status).toBe('active');
+      const priorSessionAfterCompletion = await fetch(
+        `${server.baseUrl}/api/v1/portals/student/dashboard`,
+        { headers: { cookie: setupStudent.cookies } },
+      );
+      expect(priorSessionAfterCompletion.status).toBe(401);
+      const newPinStudent = await loginAs(server.baseUrl, 'setup_learner', '654321');
+      expect(newPinStudent.json.user.role).toBe('student');
 
       const admin = await loginAs(server.baseUrl, 'admin@example.test', 'AdminPass!234');
       const denied = await fetch(`${server.baseUrl}/api/v1/portals/parent/dashboard`, {

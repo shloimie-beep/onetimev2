@@ -1108,7 +1108,20 @@ if (activationRoot) {
     const data = new FormData(form);
     if (!passwordsMatch(form, data)) return;
     setFormStatus(form, '');
-    setSubmitBusy(form, true, 'Activating...');
+    const activationMode = form.dataset.activationMode;
+    const busyLabel =
+      activationMode === 'student-reset'
+        ? 'Resetting PIN...'
+        : activationMode === 'student-setup'
+          ? 'Saving PIN...'
+          : 'Activating...';
+    const readyLabel =
+      activationMode === 'student-reset'
+        ? 'Reset PIN'
+        : activationMode === 'student-setup'
+          ? 'Set PIN'
+          : 'Activate account';
+    setSubmitBusy(form, true, busyLabel);
     try {
       const response = await postJson('/api/v1/account-lifecycle/activate', {
         token,
@@ -1121,7 +1134,7 @@ if (activationRoot) {
       }
       window.location.assign(String(response.json.return_to ?? '/app/parent'));
     } finally {
-      setSubmitBusy(form, false, 'Activate account');
+      setSubmitBusy(form, false, readyLabel);
     }
   });
 }
@@ -1219,10 +1232,48 @@ async function checkLifecycleToken(
     );
     return;
   }
-  if (status) status.textContent = 'Secure link verified.';
+  const studentPin =
+    flow === 'activation' &&
+    (response.json.token_type === 'student_setup' || response.json.token_type === 'student_reset');
+  const studentReset = flow === 'activation' && response.json.token_type === 'student_reset';
+  if (status) {
+    status.textContent = studentPin
+      ? studentReset
+        ? 'Secure link verified. Reset your six-digit Student PIN.'
+        : 'Secure link verified. Set your six-digit Student PIN.'
+      : 'Secure link verified.';
+  }
   if (form) {
     form.hidden = false;
-    form.querySelector<HTMLInputElement>('input[type="password"]')?.focus();
+    const password = form.querySelector<HTMLInputElement>('input[name="password"]');
+    const confirmation = form.querySelector<HTMLInputElement>('input[name="password_confirm"]');
+    if (studentPin) {
+      const root = form.closest<HTMLElement>('[data-activation-root]');
+      form.dataset.activationMode = studentReset ? 'student-reset' : 'student-setup';
+      document.title = `${studentReset ? 'Reset' : 'Set'} Student PIN | One Time Mishnayos`;
+      root
+        ?.querySelector<HTMLElement>('[data-activation-context]')
+        ?.replaceChildren(studentReset ? 'Student PIN reset' : 'Student account setup');
+      root
+        ?.querySelector<HTMLElement>('[data-activation-heading]')
+        ?.replaceChildren(studentReset ? 'Reset your PIN' : 'Set your PIN');
+      root
+        ?.querySelector<HTMLElement>('[data-activation-password-label]')
+        ?.replaceChildren('Six-digit Student PIN');
+      root
+        ?.querySelector<HTMLElement>('[data-activation-confirm-label]')
+        ?.replaceChildren('Confirm Student PIN');
+      root
+        ?.querySelector<HTMLButtonElement>('[data-activation-submit]')
+        ?.replaceChildren(studentReset ? 'Reset PIN' : 'Set PIN');
+      for (const input of [password, confirmation]) {
+        input?.setAttribute('minlength', '6');
+        input?.setAttribute('maxlength', '6');
+        input?.setAttribute('inputmode', 'numeric');
+        input?.setAttribute('pattern', '[0-9]{6}');
+      }
+    }
+    password?.focus();
   }
 }
 
@@ -1283,7 +1334,11 @@ function passwordsMatch(form: HTMLFormElement, data: FormData) {
   const confirm = String(data.get('password_confirm') ?? '');
   if (password !== confirm) {
     const field = form.querySelector<HTMLElement>('[data-error-for="password_confirm"]');
-    if (field) field.textContent = 'Passwords do not match.';
+    if (field) {
+      field.textContent = form.dataset.activationMode
+        ? 'Student PINs do not match.'
+        : 'Passwords do not match.';
+    }
     return false;
   }
   return true;

@@ -32,6 +32,7 @@ import type { BillingProviderAdapter } from '../../../../packages/contracts/src/
 import {
   accountLifecycleTokenTypeSchema,
   passwordResetRequestPayloadSchema,
+  studentTokenCompletionPayloadSchema,
   tokenCompletionPayloadSchema,
 } from '../../../../packages/contracts/src/accounts/index.ts';
 import {
@@ -165,6 +166,7 @@ import {
   changeOwnPassword,
   completePasswordReset,
   completeStudentReset,
+  consumeRateLimitBudgets,
   confirmSingleRecipientReply,
   createAccountLifecycleCredentialAdapter,
   createContact,
@@ -269,6 +271,7 @@ import {
   hashAuthPassword,
   verifyAuthPassword,
 } from '../../../../packages/domain/src/auth/policy.ts';
+import { verifyPassword as verifyStoredPassword } from '../../../../packages/domain/src/auth/service.ts';
 import { createTelegramWebhookHandler } from '../../../../apps/telegram-bot/src/ingress.ts';
 import {
   parseOt87StripeTestBillingConfig,
@@ -449,7 +452,9 @@ const lifecycleTokenStatusPayloadSchema = z.object({
   token: z.string().trim().min(32).max(240),
   flow: z.enum(['activation', 'password_reset']),
 });
-const lifecycleActivationPayloadSchema = tokenCompletionPayloadSchema.extend({
+const lifecycleActivationEnvelopeSchema = z.object({
+  token: z.string().trim().min(32).max(240),
+  password: z.string().min(1).max(256),
   csrf_token: z.string().trim().min(16).max(160),
 });
 const forgotPasswordApiPayloadSchema = z.object({
@@ -1204,7 +1209,49 @@ export function createApp({
           sessionKey: principal.session_id,
           csrfToken: request.header('x-csrf-token') ?? request.body?.csrf_token,
         })),
-      verifyPassword: async (principal, password) => {
+      verifyPasswordAttempt: async (request, principal, password) => {
+        const rateLimit = await consumeRateLimitBudgets({
+          pool,
+          config,
+          budgets: [
+            {
+              scope: 'student_privacy_credential',
+              subject: principal.credential_id,
+              limit: config.loginIdentifierRateLimitMax,
+              windowMs: config.loginRateLimitWindowMs,
+            },
+            {
+              scope: 'student_privacy_session',
+              subject: principal.session_id,
+              limit: config.loginIdentifierRateLimitMax,
+              windowMs: config.loginRateLimitWindowMs,
+            },
+            {
+              scope: 'student_privacy_ip',
+              subject: request.ip ?? 'unknown',
+              limit: config.loginIpRateLimitMax,
+              windowMs: config.loginRateLimitWindowMs,
+            },
+          ],
+          now: clock?.() ?? new Date(),
+        });
+        if (!rateLimit.allowed) {
+          await insertV21AuthAudit(pool, config, {
+            eventType: 'student_privacy_credential_rate_limited',
+            userKey: principal.credential_id,
+            success: false,
+            reason: 'RATE_LIMITED',
+            ip: request.ip,
+            userAgent: request.header('user-agent') ?? undefined,
+            metadata: { budget_scope: rateLimit.scope ?? null },
+          });
+          return {
+            status: 'rate_limited' as const,
+            retryAfterSeconds:
+              rateLimit.retryAfterSeconds ??
+              Math.max(1, Math.ceil(config.loginRateLimitWindowMs / 1_000)),
+          };
+        }
         const result = await pool.query(
           `SELECT password_hash
              FROM onetime.account_users
@@ -1217,7 +1264,19 @@ export function createApp({
           [config.accountKey, config.productKey, principal.credential_id],
         );
         const passwordHash = result.rows[0]?.password_hash;
-        return typeof passwordHash === 'string' && verifyAuthPassword(password, passwordHash);
+        const verified =
+          typeof passwordHash === 'string' && verifyStoredPassword(password, passwordHash);
+        await insertV21AuthAudit(pool, config, {
+          eventType: verified
+            ? 'student_privacy_credential_verified'
+            : 'student_privacy_credential_failed',
+          userKey: principal.credential_id,
+          success: verified,
+          ...(verified ? {} : { reason: 'INVALID_CREDENTIAL' }),
+          ip: request.ip,
+          userAgent: request.header('user-agent') ?? undefined,
+        });
+        return { status: verified ? ('verified' as const) : ('invalid' as const) };
       },
       networkEvidenceDigest: (request) =>
         createHmac('sha256', config.authCsrfSecret)
@@ -1602,12 +1661,12 @@ export function createApp({
   app.post('/api/v1/account-lifecycle/activate', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
     try {
-      const payload = lifecycleActivationPayloadSchema.parse(req.body);
-      requireLoginCsrf(req, res, config, payload.csrf_token);
+      const envelope = lifecycleActivationEnvelopeSchema.parse(req.body);
+      requireLoginCsrf(req, res, config, envelope.csrf_token);
       const inspected = await inspectAccountLifecycleToken({
         pool,
         config,
-        token: payload.token,
+        token: envelope.token,
         expectedTypes: ACTIVATION_TOKEN_TYPES,
       });
       if (!inspected.ok) {
@@ -1619,6 +1678,10 @@ export function createApp({
         });
         return;
       }
+      const payload =
+        inspected.token_type === 'student_setup' || inspected.token_type === 'student_reset'
+          ? studentTokenCompletionPayloadSchema.parse(envelope)
+          : tokenCompletionPayloadSchema.parse(envelope);
       const completion =
         inspected.token_type === 'owner_admin_invitation'
           ? await acceptOwnerAdminInvitation({ pool, config, payload })
@@ -7149,7 +7212,14 @@ async function insertV21AuthAudit(
   pool: DbPool,
   config: AppConfig,
   event: {
-    eventType: 'login_rate_limited' | 'login_failed' | 'login_succeeded' | 'logout_succeeded';
+    eventType:
+      | 'login_rate_limited'
+      | 'login_failed'
+      | 'login_succeeded'
+      | 'logout_succeeded'
+      | 'student_privacy_credential_verified'
+      | 'student_privacy_credential_failed'
+      | 'student_privacy_credential_rate_limited';
     userKey?: string | undefined;
     success: boolean;
     reason?: string | undefined;
@@ -7837,6 +7907,7 @@ function loginPageHtml(csrfToken: string, returnTo: string) {
         <div class="field">
           <label for="password">Password</label>
           <input id="password" name="password" type="password" autocomplete="current-password" required>
+          <p class="field-help">Students created or reset by a Parent use a six-digit PIN. Existing Student passwords keep working until their next Parent reset.</p>
           <p tabindex="-1" class="error" data-error-for="password"></p>
         </div>
         <button class="button button-primary" type="submit">Login</button>
@@ -7867,23 +7938,23 @@ function activationPageHtml(csrfToken: string) {
     <section class="login-panel account-flow-panel" data-activation-root>
       <a class="brand-lockup login-brand" href="/" aria-label="One Time Mishnayos home">
         <img src="/assets/brand/onetimelogo.webp" width="56" height="56" alt="" aria-hidden="true">
-        <span><strong>One Time Mishnayos</strong><small>Account activation</small></span>
+        <span><strong>One Time Mishnayos</strong><small data-activation-context>Account activation</small></span>
       </a>
-      <h1>Set your password</h1>
+      <h1 data-activation-heading>Set your password</h1>
       <p class="flow-copy" data-activation-status role="status">Checking your secure link.</p>
       <form class="login-form" data-activation-form novalidate hidden>
         <input type="hidden" name="csrf_token" value="${escapeHtml(csrfToken)}">
         <div class="field">
-          <label for="activation_password">Password</label>
+          <label for="activation_password" data-activation-password-label>Password</label>
           <input id="activation_password" name="password" type="password" autocomplete="new-password" required minlength="8">
           <p tabindex="-1" class="error" data-error-for="password"></p>
         </div>
         <div class="field">
-          <label for="activation_password_confirm">Confirm password</label>
+          <label for="activation_password_confirm" data-activation-confirm-label>Confirm password</label>
           <input id="activation_password_confirm" name="password_confirm" type="password" autocomplete="new-password" required minlength="8">
           <p tabindex="-1" class="error" data-error-for="password_confirm"></p>
         </div>
-        <button class="button button-primary" type="submit">Activate account</button>
+        <button class="button button-primary" type="submit" data-activation-submit>Activate account</button>
         <p class="form-status" role="status" data-form-status></p>
       </form>
       <p class="form-status error" data-activation-error></p>
