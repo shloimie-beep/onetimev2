@@ -82,6 +82,15 @@ export function matchSourceToOccurrence(
   command: MatchContentSourceCommand,
   priorReceipt?: ContentIngestCommandReceipt | null,
 ) {
+  // A pre-existing reviewed recording is approved as a standalone lesson.
+  // It must never be presented as a recording of a historical class, including
+  // through a replay of an old occurrence-match request.
+  if (source.captureMethod === 'existing_reviewed_recording') {
+    throw new ContentIngestError(
+      CONTENT_INGEST_ERROR_CODES.invalidState,
+      'An existing reviewed recording cannot be attached to a class occurrence.',
+    );
+  }
   if (priorReceipt) {
     if (
       priorReceipt.idempotencyKey !== command.idempotencyKey ||

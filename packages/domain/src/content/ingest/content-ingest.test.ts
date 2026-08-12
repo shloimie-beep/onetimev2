@@ -8,6 +8,7 @@ import {
   type DriveFileObservation,
   type ManagedObjectReadback,
   type RecoveryJournalReceipt,
+  type ExistingReviewedRecordingIntent,
   type UploadPartRecord,
 } from '../../../../contracts/src/content/ingest/index.ts';
 import type { ClassOccurrenceRecord } from '../../../../contracts/src/classes/core/index.ts';
@@ -37,7 +38,10 @@ const actor: ContentIngestAdminActor = {
 };
 const sha = (digit: string) => digit.repeat(64);
 
-function begin(byteCount = CONTENT_INGEST_PART_BYTES + 17) {
+function begin(
+  byteCount = CONTENT_INGEST_PART_BYTES + 17,
+  existingRecordingIntent?: ExistingReviewedRecordingIntent,
+) {
   return beginDirectUpload({
     actor,
     runtimeTier: 'isolated_staging',
@@ -45,6 +49,7 @@ function begin(byteCount = CONTENT_INGEST_PART_BYTES + 17) {
     displayFilename: '2026-07-28_1900_occurrence-1_Class.mp4',
     mimeType: 'video/mp4',
     declaredByteCount: byteCount,
+    ...(existingRecordingIntent ? { existingRecordingIntent } : {}),
     idempotencyKey: 'upload-1',
     requestHash: sha('a'),
     occurredAt: now,
@@ -118,8 +123,8 @@ function readback(
   return { managed, journal };
 }
 
-function source(): ContentSourceRecord {
-  const started = begin();
+function source(existingRecordingIntent?: ExistingReviewedRecordingIntent): ContentSourceRecord {
+  const started = begin(CONTENT_INGEST_PART_BYTES + 17, existingRecordingIntent);
   const session = started.session!;
   const { managed, journal } = readback(session);
   return confirmDirectUpload(
@@ -435,6 +440,28 @@ describe('P19 source matching and lifecycle', () => {
       matchConfidence: 'exact',
       matchedByAdminId: actor.principalId,
     });
+  });
+
+  it('OTV2-CONTENT-082 never attaches an existing reviewed recording to a historical occurrence', () => {
+    const current = source({
+      origin: 'recordings_collection',
+      rightsToProcessAndPrivatelyPublish: true,
+      humanReviewCompleted: true,
+      childDataDisposition: 'none_present',
+      noUnreviewedChildData: true,
+    });
+    expect(current.captureMethod).toBe('existing_reviewed_recording');
+    expect(() =>
+      matchSourceToOccurrence(current, occurrence, {
+        actor,
+        sourceId: current.id,
+        occurrenceId: occurrence.id,
+        expectedVersion: current.version,
+        idempotencyKey: 'match-existing-reviewed-1',
+        requestHash: sha('d'),
+        occurredAt: now,
+      }),
+    ).toThrowError(/cannot be attached to a class occurrence/);
   });
 
   it('OTV2-CONTENT-080 follows exact ingest lifecycle and recorded failed_from retry', () => {

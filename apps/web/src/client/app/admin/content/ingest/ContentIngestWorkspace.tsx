@@ -19,6 +19,7 @@ type UploadRow = {
   totalParts: number;
   sourceId?: string;
   sourceVersion?: number;
+  captureMethod?: ContentSourceRecord['captureMethod'];
   occurrenceId?: string | undefined;
   safeError?: string | undefined;
 };
@@ -100,6 +101,7 @@ export function ContentIngestWorkspace(props: {
           state: 'confirmed',
           sourceId: source.id,
           sourceVersion: source.version,
+          captureMethod: source.captureMethod,
           occurrenceId: undefined,
         });
       } catch (error) {
@@ -211,7 +213,9 @@ export function ContentIngestWorkspace(props: {
                 : label(upload.state)}
             </p>
             {upload.safeError ? <p>{upload.safeError}</p> : null}
-            {upload.sourceId && upload.state !== 'matched' ? (
+            {upload.sourceId &&
+            allowsOccurrenceMatching(upload.captureMethod) &&
+            upload.state !== 'matched' ? (
               <div>
                 <label>
                   <span>Class date</span>
@@ -241,6 +245,12 @@ export function ContentIngestWorkspace(props: {
                   {upload.state === 'matching' ? 'Matching…' : 'Match recording'}
                 </Button>
               </div>
+            ) : null}
+            {upload.sourceId && upload.captureMethod === 'existing_reviewed_recording' ? (
+              <p>
+                This reviewed existing recording remains a standalone lesson and is not attached to
+                a historical class date.
+              </p>
             ) : null}
           </article>
         ))}
@@ -309,4 +319,8 @@ function occurrenceLabel(occurrence: ContentIngestOccurrenceOption) {
     hour: '2-digit',
     minute: '2-digit',
   })}`;
+}
+
+export function allowsOccurrenceMatching(captureMethod?: ContentSourceRecord['captureMethod']) {
+  return captureMethod !== 'existing_reviewed_recording';
 }
