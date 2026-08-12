@@ -228,7 +228,7 @@ describe('Parent and Student current-access authentication', () => {
     });
   });
 
-  it('changes Parent and Student passwords while preserving only the initiating session', async () => {
+  it('keeps Parent password policy unchanged and migrates an existing Student password to a PIN', async () => {
     const parentLogin = await authenticateUser({
       pool,
       config,
@@ -285,18 +285,18 @@ describe('Parent and Student current-access authentication', () => {
       config,
       session: studentSession,
       currentPassword: studentPassword,
-      newPassword: 'StudentChanged!567',
+      newPassword: '000456',
     });
     expect(studentChanged).toMatchObject({ ok: true, sessions_invalidated: 1 });
     await expectLogin(studentUsername, studentPassword, {
       ok: false,
       code: 'INVALID_CREDENTIALS',
     });
-    await expectLogin(studentUsername, 'StudentChanged!567', {
+    await expectLogin(studentUsername, '000456', {
       ok: true,
       user: { role: 'student' },
     });
-    await expectLogin('student@example.test', 'StudentChanged!567', {
+    await expectLogin('student@example.test', '000456', {
       ok: true,
       user: { role: 'student' },
     });
