@@ -1,6 +1,7 @@
 import {
   PARENT_HOUSEHOLD_CONTRACT_VERSION,
   PARENT_HOUSEHOLD_ERROR_CODES,
+  isStudentPin,
   STANDARD_FAMILY_STUDENT_ALLOWANCE,
   type ParentHouseholdAuditEvent,
   type ParentHouseholdMutation,
@@ -264,8 +265,8 @@ function validateProfile(input: {
 }
 
 function validatePassword(password: string, confirmation: string) {
-  if (password !== confirmation || password.length < 12 || password.length > 128) {
-    invalid('Passwords must match and contain 12 to 128 characters.');
+  if (password !== confirmation || !isStudentPin(password)) {
+    invalid('Student PINs must match and contain exactly six numeric digits.');
   }
 }
 
