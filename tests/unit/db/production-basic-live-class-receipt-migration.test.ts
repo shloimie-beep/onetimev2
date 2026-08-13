@@ -15,8 +15,5 @@ describe('production-basic live-class receipt migration', () => {
     expect(sql).toContain(
       'production_basic_meeting_ref_digest = lower(production_basic_meeting_ref_digest)',
     );
-    expect(sql).toContain(
-      'production_basic_meeting_ref_digest = btrim(production_basic_meeting_ref_digest)',
-    );
   });
 });

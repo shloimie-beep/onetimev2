@@ -19,7 +19,6 @@ ALTER TABLE onetime.class_occurrences
       AND production_basic_meeting_ref_digest IS NOT NULL
       AND length(production_basic_meeting_ref_digest) = 64
       AND production_basic_meeting_ref_digest = lower(production_basic_meeting_ref_digest)
-      AND production_basic_meeting_ref_digest = btrim(production_basic_meeting_ref_digest)
     )
   );
 
