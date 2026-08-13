@@ -852,7 +852,8 @@ export function createZoomMeetingSdkSignature(input: {
       iat: issuedAtSeconds,
       exp: issuedAtSeconds + ttlSeconds,
       tokenExp: issuedAtSeconds + ttlSeconds,
-      video_webrtc_mode: 1,
+      // Use Zoom's non-WebRTC video path for the protected browser launch.
+      video_webrtc_mode: 0,
     },
     input.credentials.sdkSecret,
   );
