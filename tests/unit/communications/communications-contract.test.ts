@@ -38,8 +38,8 @@ describe('Communications V1A contract', () => {
         deliveredAt: '2026-07-14T12:01:00.000Z',
       }),
     ).toEqual({
-      localState: 'draft_saved',
-      stateLabel: 'Processed in test mode, not delivery',
+      localState: 'sink_delivered',
+      stateLabel: 'Processed by non-provider sink',
       stateAt: '2026-07-14T12:01:00.000Z',
     });
     expect(
@@ -61,6 +61,16 @@ describe('Communications V1A contract', () => {
       localState: 'suppressed',
       stateLabel: 'Suppressed',
       stateAt: null,
+    });
+    expect(
+      normalizeCommunicationsStatus({
+        status: 'superseded',
+        deliveredAt: '2026-07-14T12:02:00.000Z',
+      }),
+    ).toEqual({
+      localState: 'superseded',
+      stateLabel: 'Superseded by a newer link',
+      stateAt: '2026-07-14T12:02:00.000Z',
     });
   });
 
@@ -87,6 +97,16 @@ describe('Communications V1A contract', () => {
       intentType: 'whatsapp_inbound_message',
       label: 'Stored WhatsApp inbound message',
       channel: 'whatsapp',
+    });
+    expect(normalizeCommunicationsEvent('account_password_reset.v1', 'email')).toMatchObject({
+      intentType: 'password_reset',
+      label: 'Password reset email',
+      channel: 'email',
+    });
+    expect(normalizeCommunicationsEvent('account_activation.v1', 'email')).toMatchObject({
+      intentType: 'account_activation',
+      label: 'Account setup email',
+      channel: 'email',
     });
   });
 
@@ -129,6 +149,20 @@ describe('Communications V1A contract', () => {
       /Direction/,
     );
     expect(() => parseCommunicationsFilters({ source: 'mailbox' }, fixedNow)).toThrow(/Source/);
+    expect(
+      parseCommunicationsFilters(
+        {
+          intent_type: 'password_reset',
+          status: 'superseded',
+          source: 'account_lifecycle_outbox',
+        },
+        fixedNow,
+      ),
+    ).toMatchObject({
+      intent_type: 'password_reset',
+      status: 'superseded',
+      source: 'account_lifecycle_outbox',
+    });
   });
 
   it('seals cursors and rejects tampering, expiration, and binding mismatch', () => {

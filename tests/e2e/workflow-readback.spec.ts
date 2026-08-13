@@ -9,8 +9,10 @@ test('admin workflow readback is repository-backed and exposes no provider contr
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/app/communications');
   await expect(page.getByRole('heading', { name: 'Communications', exact: true })).toBeVisible();
-  await expect(page.getByText(/Adult conversation context for Rabbi and Admin/)).toBeVisible();
-  await expect(page.getByText('GHL mailbox connection pending')).toBeVisible();
+  await expect(page.getByText(/Active One Time accounts and their redacted/)).toBeVisible();
+  await expect(page.getByText('Active One Time accounts only')).toBeVisible();
+  await expect(page.getByText('Setup, reset, and PIN delivery', { exact: true })).toBeVisible();
+  await expect(page.getByText(/GHL|warm lead|routing guide/i)).toHaveCount(0);
   await expect(page.getByRole('heading', { name: 'Workflow readback', exact: true })).toHaveCount(
     0,
   );

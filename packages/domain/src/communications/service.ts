@@ -148,7 +148,16 @@ export async function buildCommunicationsListResponse({
   if (!session) throw new CommunicationsAuthorizationError(401);
   if (!canReadCommunications(session.role)) throw new CommunicationsAuthorizationError(403);
 
-  const filters = parseCommunicationsFilters(query, now);
+  const requestedFilters = parseCommunicationsFilters(query, now);
+  const filters: CommunicationsFilters =
+    mode.kind === 'global'
+      ? {
+          ...requestedFilters,
+          channel: 'email',
+          direction: 'outbound',
+          source: 'account_lifecycle_outbox',
+        }
+      : requestedFilters;
   if (mode.kind === 'contact') {
     const contactExists = await repository.contactExists({
       scope: session,
@@ -221,11 +230,14 @@ export async function buildCommunicationsListResponse({
       provenance,
       participant_kind: participantKind(row),
       participant_label: row.participantLabel ?? participantLabel(row),
-      recipient_masked: maskCommunicationsRecipient({
-        channel: event.channel,
-        email: row.emailNormalized,
-        phone: row.phoneNormalized,
-      }),
+      recipient_masked:
+        source === 'account_lifecycle_outbox'
+          ? 'Account email (hidden)'
+          : maskCommunicationsRecipient({
+              channel: event.channel,
+              email: row.emailNormalized,
+              phone: row.phoneNormalized,
+            }),
       queued_at: toIso(occurredAt),
       occurred_at: toIso(occurredAt),
       state_at: status.stateAt,
@@ -395,6 +407,10 @@ function isIntentType(value: string): value is CommunicationsIntentType {
     value === 'family_signup_whatsapp_confirmation' ||
     value === 'internal_lead_alert' ||
     value === 'single_recipient_reply' ||
+    value === 'password_reset' ||
+    value === 'account_activation' ||
+    value === 'student_pin_setup' ||
+    value === 'student_pin_reset' ||
     value === 'whatsapp_inbound_message' ||
     value === 'whatsapp_provider_event' ||
     value === 'historical_import_event' ||
@@ -416,8 +432,14 @@ function isLocalState(value: string): value is CommunicationsLocalState {
     value === 'complained' ||
     value === 'suppressed' ||
     value === 'draft_saved' ||
+    value === 'sink_delivered' ||
     value === 'duplicate' ||
     value === 'unknown' ||
+    value === 'retrying' ||
+    value === 'expired' ||
+    value === 'superseded' ||
+    value === 'provider_off' ||
+    value === 'cleared' ||
     value === 'history_unavailable'
   );
 }
@@ -437,6 +459,7 @@ function isSource(value: string): value is CommunicationsSource {
     value === 'crm_reply_draft' ||
     value === 'stored_whatsapp_webhook' ||
     value === 'stored_provider_delivery_event' ||
+    value === 'account_lifecycle_outbox' ||
     value === 'historical_import' ||
     value === 'provider_history_unavailable'
   );
@@ -481,13 +504,17 @@ function defaultThreadLabel(row: CommunicationIntentRow) {
   return 'Unlinked communication history';
 }
 
-function participantKind(row: CommunicationIntentRow): 'contact' | 'household' | 'unknown' {
+function participantKind(
+  row: CommunicationIntentRow,
+): 'account' | 'contact' | 'household' | 'unknown' {
+  if (row.participantKind === 'account') return 'account';
   if (row.participantKind === 'contact' || row.contactKey) return 'contact';
   if (row.participantKind === 'household' || row.householdKey) return 'household';
   return 'unknown';
 }
 
 function participantLabel(row: CommunicationIntentRow) {
+  if (row.source === 'account_lifecycle_outbox') return 'Active One Time account';
   if (row.contactKey) return 'Linked contact';
   if (row.householdKey) return 'Linked household';
   return 'Unlinked participant';
@@ -499,6 +526,7 @@ function sourceLabel(source: CommunicationsSource) {
   if (source === 'crm_reply_draft') return 'Provider-off reply draft';
   if (source === 'stored_whatsapp_webhook') return 'Stored WhatsApp webhook';
   if (source === 'stored_provider_delivery_event') return 'Stored provider status';
+  if (source === 'account_lifecycle_outbox') return 'Account security delivery';
   if (source === 'historical_import') return 'Historical import';
   return 'Provider history unavailable';
 }
@@ -512,6 +540,14 @@ function previewFor(row: CommunicationIntentRow, stateLabel: string) {
   }
   if (row.eventType === 'whatsapp_provider_delivery_event.v1') {
     return `Provider status recorded: ${stateLabel}.`;
+  }
+  if (
+    row.eventType === 'account_password_reset.v1' ||
+    row.eventType === 'account_activation.v1' ||
+    row.eventType === 'student_pin_setup.v1' ||
+    row.eventType === 'student_pin_reset.v1'
+  ) {
+    return `Account security delivery status: ${stateLabel}. Message body and secure link are hidden.`;
   }
   if (row.source === 'provider_history_unavailable') {
     return 'Provider history is not available from the configured source.';

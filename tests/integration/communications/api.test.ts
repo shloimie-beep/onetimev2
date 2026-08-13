@@ -83,7 +83,7 @@ describe('Communications API registration hook', () => {
       },
     ];
     const response = await api(
-      '/api/v1/communications?from=2026-07-01T00:00:00.000Z&to=2026-07-15T00:00:00.000Z',
+      '/api/v1/crm/contacts/contact_public_test/communications?from=2026-07-01T00:00:00.000Z&to=2026-07-15T00:00:00.000Z',
     );
     expect(response.status).toBe(200);
     expect(response.headers.get('cache-control')).toBe('private, no-store');
@@ -106,8 +106,8 @@ describe('Communications API registration hook', () => {
       transport_available: false,
     });
     expect(json.items[1]).toMatchObject({
-      local_state: 'draft_saved',
-      state_label: 'Processed in test mode, not delivery',
+      local_state: 'sink_delivered',
+      state_label: 'Processed by non-provider sink',
       recipient_masked: 'WhatsApp recipient ending 7890',
     });
     const serialized = JSON.stringify(json);
@@ -160,7 +160,7 @@ describe('Communications API registration hook', () => {
       },
     ];
     const response = await api(
-      '/api/v1/communications?from=2026-07-01T00:00:00.000Z&to=2026-07-15T00:00:00.000Z&direction=inbound&source=stored_whatsapp_webhook',
+      '/api/v1/crm/contacts/contact_public_test/communications?from=2026-07-01T00:00:00.000Z&to=2026-07-15T00:00:00.000Z&direction=inbound&source=stored_whatsapp_webhook',
     );
     expect(response.status).toBe(200);
     const json = await response.json();
@@ -179,6 +179,80 @@ describe('Communications API registration hook', () => {
       preview_redacted: 'Inbound WhatsApp message was stored. Body is encrypted and hidden.',
     });
     expect(JSON.stringify(json)).not.toContain('message body');
+  });
+
+  it('returns redacted account-security delivery history to Admin without secure-link leakage', async () => {
+    repository.rows = [
+      {
+        id: 'lifecycle:redacted-delivery-key',
+        accountKey: ownerSession.accountKey,
+        productKey: ownerSession.productKey,
+        contactKey: null,
+        eventType: 'account_password_reset.v1',
+        channel: 'email',
+        direction: 'outbound',
+        status: 'delivered',
+        createdAt: '2026-07-14T11:00:00.000Z',
+        occurredAt: '2026-07-14T11:00:00.000Z',
+        deliveredAt: '2026-07-14T11:00:02.000Z',
+        emailNormalized: null,
+        phoneNormalized: null,
+        source: 'account_lifecycle_outbox',
+        provenance: 'local_database',
+        previewRedacted: 'Password reset delivery status. Message body and secure link are hidden.',
+        providerReferenceDigest: null,
+        idempotencyKey: null,
+        participantKind: 'account',
+        participantLabel: 'Protected Admin · Admin account',
+      },
+    ];
+    const response = await api(
+      '/api/v1/communications?from=2026-07-01T00:00:00.000Z&to=2026-07-15T00:00:00.000Z&intent_type=password_reset&status=delivered&source=account_lifecycle_outbox',
+      'admin',
+    );
+    expect(response.status).toBe(200);
+    expect(repository.calls[0]).toMatchObject({
+      rawEventType: 'account_password_reset.v1',
+      filters: {
+        intent_type: 'password_reset',
+        status: 'delivered',
+        source: 'account_lifecycle_outbox',
+        channel: 'email',
+        direction: 'outbound',
+      },
+    });
+    const json = await response.json();
+    expect(json.items).toHaveLength(1);
+    expect(json.items[0]).toMatchObject({
+      intent_type: 'password_reset',
+      event_label: 'Password reset email',
+      local_state: 'delivered',
+      state_label: 'Delivered',
+      source: 'account_lifecycle_outbox',
+      source_label: 'Account security delivery',
+      participant_kind: 'account',
+      participant_label: 'Protected Admin · Admin account',
+      recipient_masked: 'Account email (hidden)',
+      provider_reference_digest: null,
+      idempotency_key: null,
+    });
+    expect(JSON.stringify(json)).not.toMatch(/#token=|reset-password|provider-message|secret/u);
+  });
+
+  it('keeps the global Admin surface bound to One Time account delivery history', async () => {
+    const response = await api(
+      '/api/v1/communications?source=stored_whatsapp_webhook&direction=inbound',
+      'admin',
+    );
+    expect(response.status).toBe(200);
+    expect(repository.calls[0]).toMatchObject({
+      mode: { kind: 'global' },
+      filters: {
+        channel: 'email',
+        direction: 'outbound',
+        source: 'account_lifecycle_outbox',
+      },
+    });
   });
 
   it('denies unauthenticated and unauthorized roles before repository access', async () => {
