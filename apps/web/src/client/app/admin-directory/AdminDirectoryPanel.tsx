@@ -476,7 +476,7 @@ function AuditList({ events }: { events: AdminAuditEvent[] }) {
   );
 }
 
-function HouseholdList({
+export function HouseholdList({
   households,
   onEdit,
   onGuardian,
@@ -497,9 +497,15 @@ function HouseholdList({
   }
   return (
     <DirectoryTable
-      headings={['Household', 'Learners', 'Guardians', 'Access', 'Setup', 'Actions']}
+      headings={['Household', 'Parent name', 'Learners', 'Guardians', 'Access', 'Setup', 'Actions']}
       rows={households.map((record) => [
-        <RecordTitle key="title" title={record.display_name} status={record.status} />,
+        <RecordTitle
+          key="title"
+          title={record.display_name}
+          status={record.status}
+          onOpen={() => onEdit(record)}
+        />,
+        record.parent_name ?? '—',
         `${record.active_learner_count} active / ${record.learner_count} total`,
         String(record.guardian_count),
         <Status key="access" value={record.access_state} />,
@@ -793,7 +799,7 @@ function LearnerDetail({
   );
 }
 
-function HouseholdForm({
+export function HouseholdForm({
   record,
   onCancel,
   onSave,
@@ -809,6 +815,30 @@ function HouseholdForm({
       onCancel={onCancel}
       onSubmit={() => onSave({ displayName })}
     >
+      {record && (
+        <dl className="admin-directory__detail-facts" aria-label="Household details">
+          <div>
+            <dt>Parent</dt>
+            <dd>{record.parent_name ?? 'No active Parent attached'}</dd>
+          </div>
+          <div>
+            <dt>Learners</dt>
+            <dd>{`${record.active_learner_count} active / ${record.learner_count} total`}</dd>
+          </div>
+          <div>
+            <dt>Guardians</dt>
+            <dd>{record.guardian_count}</dd>
+          </div>
+          <div>
+            <dt>Access</dt>
+            <dd>{readable(record.access_state)}</dd>
+          </div>
+          <div>
+            <dt>Setup</dt>
+            <dd>{readable(record.setup_state)}</dd>
+          </div>
+        </dl>
+      )}
       <label>
         <span>Household name</span>
         <Input
@@ -1146,20 +1176,32 @@ function DirectoryTable({ headings, rows }: { headings: string[]; rows: React.Re
   );
 }
 
-function RecordTitle({
+export function RecordTitle({
   title,
   subtitle,
   status,
   href,
+  onOpen,
 }: {
   title: string;
   subtitle?: string;
   status: string;
   href?: string;
+  onOpen?: () => void;
 }) {
   return (
     <span className="admin-directory__record-title">
-      <strong>{href ? <a href={href}>{title}</a> : title}</strong>
+      <strong>
+        {href ? (
+          <a href={href}>{title}</a>
+        ) : onOpen ? (
+          <button type="button" className="admin-directory__record-link" onClick={onOpen}>
+            {title}
+          </button>
+        ) : (
+          title
+        )}
+      </strong>
       {subtitle && <small>{subtitle}</small>}
       <Status value={status} />
     </span>

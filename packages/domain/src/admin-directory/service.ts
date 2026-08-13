@@ -126,6 +126,7 @@ export type AdminDirectoryActor = {
 export type AdminHousehold = {
   household_key: string;
   display_name: string;
+  parent_name: string | null;
   status: 'active' | 'archived';
   version: number;
   active_learner_count: number;
@@ -318,39 +319,45 @@ export async function listAdminHouseholds(input: {
       ORDER BY households.updated_at DESC, households.household_key`,
     params,
   );
-  const [learnerCounts, guardianCounts, accessRows, setupTokens, activeGuardians] =
-    await Promise.all([
-      input.pool.query(
-        `SELECT household_key, count(*)::int AS learner_count,
+  const [
+    learnerCounts,
+    guardianCounts,
+    accessRows,
+    setupTokens,
+    activeGuardians,
+    activeParentGuardians,
+  ] = await Promise.all([
+    input.pool.query(
+      `SELECT household_key, count(*)::int AS learner_count,
                 count(*) FILTER (WHERE learner_status = 'active')::int AS active_learner_count
            FROM onetime.portal_learners
           WHERE account_key = $1 AND product_key = $2
           GROUP BY household_key`,
-        [input.config.accountKey, input.config.productKey],
-      ),
-      input.pool.query(
-        `SELECT household_key, count(*)::int AS guardian_count
+      [input.config.accountKey, input.config.productKey],
+    ),
+    input.pool.query(
+      `SELECT household_key, count(*)::int AS guardian_count
            FROM onetime.portal_guardian_relationships
           WHERE account_key = $1 AND product_key = $2 AND status = 'active'
           GROUP BY household_key`,
-        [input.config.accountKey, input.config.productKey],
-      ),
-      input.pool.query(
-        `SELECT household_key, state, updated_at
+      [input.config.accountKey, input.config.productKey],
+    ),
+    input.pool.query(
+      `SELECT household_key, state, updated_at
            FROM onetime.account_access_projections
           WHERE account_key = $1 AND product_key = $2
           ORDER BY updated_at DESC`,
-        [input.config.accountKey, input.config.productKey],
-      ),
-      input.pool.query(
-        `SELECT household_key, expires_at, consumed_at, revoked_at
+      [input.config.accountKey, input.config.productKey],
+    ),
+    input.pool.query(
+      `SELECT household_key, expires_at, consumed_at, revoked_at
            FROM onetime.account_lifecycle_tokens
           WHERE account_key = $1 AND product_key = $2 AND target_role = 'parent'
             AND household_key IS NOT NULL`,
-        [input.config.accountKey, input.config.productKey],
-      ),
-      input.pool.query(
-        `SELECT guardians.household_key
+      [input.config.accountKey, input.config.productKey],
+    ),
+    input.pool.query(
+      `SELECT guardians.household_key
            FROM onetime.portal_guardian_relationships AS guardians
            JOIN onetime.account_users AS users
              ON users.account_key = guardians.account_key
@@ -359,9 +366,32 @@ export async function listAdminHouseholds(input: {
           WHERE guardians.account_key = $1 AND guardians.product_key = $2
             AND guardians.status = 'active' AND users.status = 'active'
           GROUP BY guardians.household_key`,
-        [input.config.accountKey, input.config.productKey],
-      ),
-    ]);
+      [input.config.accountKey, input.config.productKey],
+    ),
+    input.pool.query(
+      `SELECT DISTINCT ON (guardians.household_key)
+                guardians.household_key,
+                users.display_name AS parent_name
+           FROM onetime.portal_guardian_relationships AS guardians
+           JOIN onetime.account_users AS users
+             ON users.account_key = guardians.account_key
+            AND users.product_key = guardians.product_key
+            AND users.user_key = guardians.guardian_user_ref
+          WHERE guardians.account_key = $1 AND guardians.product_key = $2
+            AND guardians.status = 'active'
+            AND users.status = 'active'
+            AND users.role = 'parent'
+          ORDER BY guardians.household_key,
+                   CASE guardians.authority
+                     WHEN 'primary_guardian' THEN 0
+                     WHEN 'guardian' THEN 1
+                     ELSE 2
+                   END,
+                   users.display_name,
+                   users.user_key`,
+      [input.config.accountKey, input.config.productKey],
+    ),
+  ]);
   const learnerByHousehold = new Map(
     learnerCounts.rows.map((row) => [String(row.household_key), row]),
   );
@@ -375,6 +405,9 @@ export async function listAdminHouseholds(input: {
   }
   const activeGuardianHouseholds = new Set(
     activeGuardians.rows.map((row) => String(row.household_key)),
+  );
+  const activeParentByHousehold = new Map(
+    activeParentGuardians.rows.map((row) => [String(row.household_key), row]),
   );
   const setupByHousehold = new Map<string, 'pending_setup' | 'expired_setup'>();
   for (const row of setupTokens.rows) {
@@ -391,8 +424,10 @@ export async function listAdminHouseholds(input: {
     const key = String(row.household_key);
     const learner = learnerByHousehold.get(key);
     const guardian = guardiansByHousehold.get(key);
+    const parent = activeParentByHousehold.get(key);
     return mapHousehold({
       ...row,
+      parent_name: parent?.parent_name ?? null,
       learner_count: learner?.learner_count ?? 0,
       active_learner_count: learner?.active_learner_count ?? 0,
       guardian_count: guardian?.guardian_count ?? 0,
@@ -1531,6 +1566,7 @@ function mapHousehold(row: Record<string, unknown>): AdminHousehold {
   return {
     household_key: String(row.household_key),
     display_name: String(row.display_name),
+    parent_name: nullableString(row.parent_name),
     status: row.status as AdminHousehold['status'],
     version: Number(row.version),
     active_learner_count: Number(row.active_learner_count ?? 0),
