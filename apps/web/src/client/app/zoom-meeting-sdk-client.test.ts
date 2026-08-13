@@ -41,32 +41,45 @@ describe('production-basic native Meeting SDK adapter', () => {
     expect(resolved).toBe(false);
     sdk.emit(2);
     await expect(joined).resolves.toBeUndefined();
-    expect(sdk.hasActiveListener()).toBe(true);
+    expect(sdk.removeListener).not.toHaveBeenCalled();
 
     sdk.emit(4);
     sdk.emit(3);
+    sdk.emit(4);
     expect(statuses).toEqual([1, 2, 4, 3]);
-    expect(sdk.hasActiveListener()).toBe(false);
+    expect(sdk.removeListener).toHaveBeenCalledTimes(1);
   });
 
   it('rejects and deactivates the listener on a pre-connect status 3', async () => {
     const sdk = fakeZoomSdk();
-    const joined = joinZoomMeetingParticipantWithApi(sdk.api, input());
+    const statuses: number[] = [];
+    const joined = joinZoomMeetingParticipantWithApi(
+      sdk.api,
+      input({ onMeetingStatus: (status) => statuses.push(status) }),
+    );
     sdk.emit(3);
     await expect(joined).rejects.toThrow(
       'Meeting SDK disconnected before the meeting was connected.',
     );
-    expect(sdk.hasActiveListener()).toBe(false);
+    sdk.emit(2);
+    expect(statuses).toEqual([3]);
+    expect(sdk.removeListener).toHaveBeenCalledTimes(1);
   });
 
   it('rejects and deactivates the listener after the bounded connection timeout', async () => {
     vi.useFakeTimers();
     const sdk = fakeZoomSdk();
-    const joined = joinZoomMeetingParticipantWithApi(sdk.api, input());
+    const statuses: number[] = [];
+    const joined = joinZoomMeetingParticipantWithApi(
+      sdk.api,
+      input({ onMeetingStatus: (status) => statuses.push(status) }),
+    );
     const rejected = expect(joined).rejects.toThrow('Meeting SDK connection timed out.');
     await vi.advanceTimersByTimeAsync(45_000);
     await rejected;
-    expect(sdk.hasActiveListener()).toBe(false);
+    sdk.emit(2);
+    expect(statuses).toEqual([]);
+    expect(sdk.removeListener).toHaveBeenCalledTimes(1);
   });
 
   it('isolates a throwing lifecycle consumer from connection settlement', async () => {
@@ -81,8 +94,9 @@ describe('production-basic native Meeting SDK adapter', () => {
     sdk.emit(2);
     await expect(joined).resolves.toBeUndefined();
     sdk.emit(3);
+    sdk.emit(4);
     expect(consumer).toHaveBeenCalledTimes(2);
-    expect(sdk.hasActiveListener()).toBe(false);
+    expect(sdk.removeListener).toHaveBeenCalledTimes(1);
   });
 
   it('removes the status listener at status 2 when no lifecycle consumer exists', async () => {
@@ -90,7 +104,7 @@ describe('production-basic native Meeting SDK adapter', () => {
     const joined = joinZoomMeetingParticipantWithApi(sdk.api, input());
     sdk.emit(2);
     await expect(joined).resolves.toBeUndefined();
-    expect(sdk.hasActiveListener()).toBe(false);
+    expect(sdk.removeListener).toHaveBeenCalledTimes(1);
   });
 
   it.each([
@@ -102,7 +116,7 @@ describe('production-basic native Meeting SDK adapter', () => {
     await expect(joinZoomMeetingParticipantWithApi(sdk.api, input())).rejects.toThrow(
       expectedMessage,
     );
-    expect(sdk.hasActiveListener()).toBe(false);
+    expect(sdk.removeListener).toHaveBeenCalledTimes(1);
   });
 
   it("does not pass Zoom's deprecated sdkKey join parameter", async () => {
@@ -126,6 +140,7 @@ function input(overrides: Partial<ZoomParticipantJoinInput> = {}): ZoomParticipa
 
 function fakeZoomSdk(failure?: 'listener' | 'init' | 'join') {
   let listener: ((event: unknown) => void) | undefined;
+  const removeListener = vi.fn();
   const api = {
     setZoomJSLib: vi.fn(),
     preLoadWasm: vi.fn(),
@@ -134,9 +149,7 @@ function fakeZoomSdk(failure?: 'listener' | 'init' | 'join') {
       if (failure === 'listener') throw new Error('listener setup failed');
       listener = nextListener as (event: unknown) => void;
     }),
-    removeInMeetingServiceListener: vi.fn((_name: unknown, priorListener: unknown) => {
-      if (listener === priorListener) listener = undefined;
-    }),
+    removeInMeetingServiceListener: removeListener,
     init: vi.fn((options: unknown) => {
       if (failure === 'init') throw new Error('initialization failed');
       (options as { success: () => void }).success();
@@ -151,8 +164,6 @@ function fakeZoomSdk(failure?: 'listener' | 'init' | 'join') {
     emit(status: number) {
       listener?.({ status });
     },
-    hasActiveListener() {
-      return listener !== undefined;
-    },
+    removeListener,
   };
 }
