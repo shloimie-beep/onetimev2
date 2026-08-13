@@ -799,7 +799,7 @@ function LearnerDetail({
   );
 }
 
-function HouseholdForm({
+export function HouseholdForm({
   record,
   onCancel,
   onSave,
@@ -815,6 +815,30 @@ function HouseholdForm({
       onCancel={onCancel}
       onSubmit={() => onSave({ displayName })}
     >
+      {record && (
+        <dl className="admin-directory__detail-facts" aria-label="Household details">
+          <div>
+            <dt>Parent</dt>
+            <dd>{record.parent_name ?? 'No active Parent attached'}</dd>
+          </div>
+          <div>
+            <dt>Learners</dt>
+            <dd>{`${record.active_learner_count} active / ${record.learner_count} total`}</dd>
+          </div>
+          <div>
+            <dt>Guardians</dt>
+            <dd>{record.guardian_count}</dd>
+          </div>
+          <div>
+            <dt>Access</dt>
+            <dd>{readable(record.access_state)}</dd>
+          </div>
+          <div>
+            <dt>Setup</dt>
+            <dd>{readable(record.setup_state)}</dd>
+          </div>
+        </dl>
+      )}
       <label>
         <span>Household name</span>
         <Input

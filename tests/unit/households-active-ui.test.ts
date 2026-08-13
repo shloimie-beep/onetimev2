@@ -3,6 +3,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
 
 import {
+  HouseholdForm,
   HouseholdList,
   RecordTitle,
 } from '../../apps/web/src/client/app/admin-directory/AdminDirectoryPanel.tsx';
@@ -52,6 +53,17 @@ describe('active Households directory list', () => {
     expect(openButton.type).toBe('button');
     openButton.props.onClick();
     expect(onEdit).toHaveBeenCalledWith(household);
+
+    const detail = renderToStaticMarkup(
+      React.createElement(HouseholdForm, {
+        record: household,
+        onCancel: vi.fn(),
+        onSave: vi.fn(),
+      }),
+    );
+    expect(detail).toContain('Household details');
+    expect(detail).toContain('<dt>Parent</dt>');
+    expect(detail).toContain('<dd>Parent One</dd>');
   });
 
   it('uses an honest dash when no active Parent is attached', () => {
@@ -63,5 +75,14 @@ describe('active Households directory list', () => {
     });
 
     expect(renderToStaticMarkup(list)).toContain('<td>—</td>');
+
+    const detail = renderToStaticMarkup(
+      React.createElement(HouseholdForm, {
+        record: { ...household, parent_name: null, guardian_count: 0 },
+        onCancel: vi.fn(),
+        onSave: vi.fn(),
+      }),
+    );
+    expect(detail).toContain('No active Parent attached');
   });
 });
