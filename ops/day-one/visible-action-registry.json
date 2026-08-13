@@ -144,7 +144,7 @@
     },
     {
       "path": "apps/web/src/client/app/live-entry.tsx",
-      "sha256": "82d45278b09fb141120c33dd1ee8e19ba90b87f799c8867da3fc8d51ef22ac1c"
+      "sha256": "d4d5939cc4e31ae3ce12fd0fcefb948ee307ea32da04ffc905b55634093bea65"
     },
     {
       "path": "apps/web/src/client/app/zoom-meeting-sdk-client.ts",
