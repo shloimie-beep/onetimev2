@@ -290,7 +290,19 @@ describe('OT-71 mounted parent and student portals', () => {
       await seedClassEnrollment('learner_alpha', 'household_alpha', 'signed-in-student');
       await expectProductionBasicStatus(server.baseUrl, student.cookies, false);
 
-      await seedCurrentProductionBasicHostLiveReceipt();
+      const admin = await loginAs(server.baseUrl, 'admin@example.test', 'AdminPass!234');
+      const hostLive = await fetch(
+        `${server.baseUrl}/api/v1/classroom/production-basic/host-live`,
+        {
+          method: 'POST',
+          headers: { cookie: admin.cookies, 'x-csrf-token': admin.json.csrf_token },
+        },
+      );
+      expect(hostLive.status).toBe(200);
+      await expect(hostLive.json()).resolves.toEqual({
+        success: true,
+        data: { state: 'live' },
+      });
       await expectProductionBasicStatus(server.baseUrl, student.cookies, true);
     } finally {
       await server.close();
@@ -1702,23 +1714,6 @@ async function seedCurrentProductionBasicOccurrence() {
              'household_alpha', 'learner_alpha', 'active', 'isolated_acceptance')`,
     [config.accountKey, config.productKey],
   );
-}
-
-async function seedCurrentProductionBasicHostLiveReceipt() {
-  const meetingRefDigest = createHash('sha256')
-    .update('production-basic-meeting-v1\0production-basic-recurring-meeting')
-    .digest('hex');
-  const update = await pool.query(
-    `UPDATE onetime.class_occurrences
-        SET production_basic_live_confirmed_at = '2026-08-12T10:30:00.000Z',
-            production_basic_live_expires_at = '2026-08-12T12:30:00.000Z',
-            production_basic_meeting_ref_digest = $1
-      WHERE account_key = $2
-        AND product_key = $3
-        AND occurrence_key = 'production-basic-current'`,
-    [meetingRefDigest, config.accountKey, config.productKey],
-  );
-  expect(update.rowCount).toBe(1);
 }
 
 async function expectProductionBasicStatus(baseUrl: string, cookies: string, available: boolean) {

@@ -1,4 +1,9 @@
 import type { DbPool } from '../../../../../../../packages/db/src/index.ts';
+import {
+  localDateKey,
+  localPartsFor,
+  ONE_TIME_CLASS_TIME_ZONE,
+} from '../../../../../../../packages/domain/src/classes/schedule.ts';
 import type { LearnerClassAccessAdapter } from '../../../../../../../packages/domain/src/portals/services.ts';
 import {
   PRODUCTION_BASIC_LIVE_MARKER_TTL_MS,
@@ -9,54 +14,62 @@ export function createProductionBasicHostLiveMarker(pool: DbPool): ProductionBas
   return {
     async confirm({ scope, meeting_ref_digest, confirmed_at }) {
       const expiresAt = new Date(confirmed_at.getTime() + PRODUCTION_BASIC_LIVE_MARKER_TTL_MS);
+      const localClassDate = jerusalemLocalDate(confirmed_at);
       const result = await pool.query(
-        `WITH candidate AS (
-           SELECT occurrence.occurrence_key
-             FROM onetime.class_occurrences AS occurrence
-             JOIN onetime.class_series AS series
-               ON series.account_key = occurrence.account_key
-              AND series.product_key = occurrence.product_key
-              AND series.class_series_key = occurrence.class_series_key
-            WHERE occurrence.account_key = $1
-              AND occurrence.product_key = $2
-              AND series.is_canonical = true
-              AND series.status = 'active'
-              AND series.series_state = 'active'
-              AND occurrence.local_class_date = ($3::timestamptz AT TIME ZONE 'Asia/Jerusalem')::date
-              AND occurrence.occurrence_state IN ('scheduled', 'preparing', 'ready', 'live')
-            ORDER BY occurrence.starts_at, occurrence.occurrence_key
-            LIMIT 1
-         )
-         UPDATE onetime.class_occurrences AS occurrence
+        `UPDATE onetime.class_occurrences
             SET production_basic_live_confirmed_at = CASE
-                  WHEN occurrence.production_basic_meeting_ref_digest = $4
-                   AND occurrence.production_basic_live_expires_at > $3
-                    THEN occurrence.production_basic_live_confirmed_at
+                  WHEN production_basic_meeting_ref_digest = $5
+                   AND production_basic_live_expires_at > $3
+                    THEN production_basic_live_confirmed_at
                   ELSE $3
                 END,
                 production_basic_live_expires_at = CASE
-                  WHEN occurrence.production_basic_meeting_ref_digest = $4
-                   AND occurrence.production_basic_live_expires_at > $3
-                    THEN occurrence.production_basic_live_expires_at
-                  ELSE $5
+                  WHEN production_basic_meeting_ref_digest = $5
+                   AND production_basic_live_expires_at > $3
+                    THEN production_basic_live_expires_at
+                  ELSE $6
                 END,
-                production_basic_meeting_ref_digest = $4,
+                production_basic_meeting_ref_digest = $5,
                 version = CASE
-                  WHEN occurrence.production_basic_meeting_ref_digest = $4
-                   AND occurrence.production_basic_live_expires_at > $3
-                    THEN occurrence.version
-                  ELSE occurrence.version + 1
+                  WHEN production_basic_meeting_ref_digest = $5
+                   AND production_basic_live_expires_at > $3
+                    THEN version
+                  ELSE version + 1
                 END,
                 updated_at = CASE
-                  WHEN occurrence.production_basic_meeting_ref_digest = $4
-                   AND occurrence.production_basic_live_expires_at > $3
-                    THEN occurrence.updated_at
+                  WHEN production_basic_meeting_ref_digest = $5
+                   AND production_basic_live_expires_at > $3
+                    THEN updated_at
                   ELSE $3
                 END
-           FROM candidate
-          WHERE occurrence.occurrence_key = candidate.occurrence_key
-        RETURNING occurrence.occurrence_key`,
-        [scope.account_key, scope.product_key, confirmed_at, meeting_ref_digest, expiresAt],
+          WHERE account_key = $1
+            AND product_key = $2
+            AND occurrence_key = (
+           SELECT candidate.occurrence_key
+             FROM onetime.class_occurrences AS candidate
+             JOIN onetime.class_series AS series
+               ON series.account_key = candidate.account_key
+              AND series.product_key = candidate.product_key
+              AND series.class_series_key = candidate.class_series_key
+            WHERE candidate.account_key = $1
+              AND candidate.product_key = $2
+              AND series.is_canonical = true
+              AND series.status = 'active'
+              AND series.series_state = 'active'
+              AND candidate.local_class_date = $4::date
+              AND candidate.occurrence_state IN ('scheduled', 'preparing', 'ready', 'live')
+            ORDER BY candidate.starts_at, candidate.occurrence_key
+            LIMIT 1
+         )
+        RETURNING occurrence_key`,
+        [
+          scope.account_key,
+          scope.product_key,
+          confirmed_at,
+          localClassDate,
+          meeting_ref_digest,
+          expiresAt,
+        ],
       );
       return (result.rowCount ?? 0) === 1;
     },
@@ -91,6 +104,7 @@ export function createProductionBasicHostLiveMarker(pool: DbPool): ProductionBas
       return (result.rowCount ?? 0) === 1;
     },
     async clear({ scope, meeting_ref_digest, cleared_at }) {
+      const localClassDate = jerusalemLocalDate(cleared_at);
       await pool.query(
         `UPDATE onetime.class_occurrences AS occurrence
             SET production_basic_live_confirmed_at = NULL,
@@ -107,13 +121,17 @@ export function createProductionBasicHostLiveMarker(pool: DbPool): ProductionBas
             AND series.is_canonical = true
             AND series.status = 'active'
             AND series.series_state = 'active'
-            AND occurrence.local_class_date = ($4::timestamptz AT TIME ZONE 'Asia/Jerusalem')::date
+            AND occurrence.local_class_date = $5::date
             AND occurrence.production_basic_meeting_ref_digest = $3
             AND occurrence.production_basic_live_confirmed_at <= $4`,
-        [scope.account_key, scope.product_key, meeting_ref_digest, cleared_at],
+        [scope.account_key, scope.product_key, meeting_ref_digest, cleared_at, localClassDate],
       );
     },
   };
+}
+
+export function jerusalemLocalDate(value: Date): string {
+  return localDateKey(localPartsFor(value, ONE_TIME_CLASS_TIME_ZONE));
 }
 
 export function createProductionBasicLiveClassAccessAdapter(input: {

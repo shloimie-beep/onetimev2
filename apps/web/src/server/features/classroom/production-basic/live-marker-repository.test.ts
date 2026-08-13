@@ -8,6 +8,7 @@ import type {
 import {
   createProductionBasicHostLiveMarker,
   createProductionBasicLiveClassAccessAdapter,
+  jerusalemLocalDate,
 } from './live-marker-repository.ts';
 
 const NOW = new Date('2026-08-13T10:00:00.000Z');
@@ -54,17 +55,49 @@ describe('production-basic live-class receipt', () => {
     ).resolves.toBe(true);
 
     const [sql, parameters] = query.mock.calls[0] as [string, unknown[]];
+    expect(sql).toMatch(/^UPDATE onetime\.class_occurrences/u);
+    expect(sql).not.toContain('WITH candidate');
+    expect(sql).toContain('occurrence_key = (');
+    expect(sql).toContain('ORDER BY candidate.starts_at, candidate.occurrence_key');
     expect(sql).toContain('series.is_canonical = true');
-    expect(sql).toContain(
-      "occurrence.local_class_date = ($3::timestamptz AT TIME ZONE 'Asia/Jerusalem')::date",
-    );
-    expect(sql).toContain('occurrence.production_basic_live_expires_at > $3');
+    expect(sql).toContain('candidate.local_class_date = $4::date');
+    expect(sql).toContain('production_basic_live_expires_at > $3');
+    expect(sql).not.toContain('AT TIME ZONE');
     expect(parameters).toEqual([
       STUDENT.account_key,
       STUDENT.product_key,
       NOW,
+      '2026-08-13',
       MEETING_DIGEST,
       new Date('2026-08-13T12:00:00.000Z'),
+    ]);
+  });
+
+  it('derives the authoritative class date at the Jerusalem calendar boundary', () => {
+    expect(jerusalemLocalDate(new Date('2026-08-12T20:59:59.999Z'))).toBe('2026-08-12');
+    expect(jerusalemLocalDate(new Date('2026-08-12T21:00:00.000Z'))).toBe('2026-08-13');
+  });
+
+  it('clears only the exact current Jerusalem occurrence and meeting digest', async () => {
+    const query = vi.fn().mockResolvedValue({ rowCount: 1, rows: [] });
+    const marker = createProductionBasicHostLiveMarker({ query } as unknown as DbPool);
+
+    await marker.clear({
+      scope: { account_key: STUDENT.account_key, product_key: STUDENT.product_key },
+      meeting_ref_digest: MEETING_DIGEST,
+      cleared_at: NOW,
+    });
+
+    const [sql, parameters] = query.mock.calls[0] as [string, unknown[]];
+    expect(sql).toContain('occurrence.local_class_date = $5::date');
+    expect(sql).toContain('occurrence.production_basic_meeting_ref_digest = $3');
+    expect(sql).not.toContain('AT TIME ZONE');
+    expect(parameters).toEqual([
+      STUDENT.account_key,
+      STUDENT.product_key,
+      MEETING_DIGEST,
+      NOW,
+      '2026-08-13',
     ]);
   });
 
