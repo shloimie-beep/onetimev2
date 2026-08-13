@@ -22,6 +22,19 @@ export const existingVimeoAdoptionCommandSchema = z
     title: z.string().trim().min(1).max(180),
     source_sha256: sha256Schema,
     reviewed_source_digest: sha256Schema,
+    rights_attestation: z
+      .object({
+        rights_to_process: z.literal(true),
+        rights_to_private_publish: z.literal(true),
+      })
+      .strict(),
+    human_review_attestation: z
+      .object({
+        review_completed: z.literal(true),
+        child_private_data_review_completed: z.literal(true),
+        approved_for_student_library: z.literal(true),
+      })
+      .strict(),
     idempotency_key: safeIdSchema,
   })
   .strict();

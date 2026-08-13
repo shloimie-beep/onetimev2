@@ -154,7 +154,7 @@ export function createContentPortalAccessAdapter(input: {
         householdKey: learner.household_key,
       });
       if (!householdAccess) return [];
-      return portalItemsForLearner({
+      const items = await portalItemsForLearner({
         pool: input.pool,
         config: input.config,
         accountKey: actor.account_key,
@@ -164,6 +164,9 @@ export function createContentPortalAccessAdapter(input: {
         householdKey: learner.household_key,
         itemTypes: ['video', 'source'],
       });
+      return actor.actor_role === 'parent'
+        ? items.filter((item) => item.protected_vimeo === undefined)
+        : items;
     },
     reviewSheetsForLearner: async ({ actor, learner }) => {
       const householdAccess = await householdHasLearningAccess({

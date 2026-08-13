@@ -4905,7 +4905,7 @@ export function createApp({
     setPrivateNoStore(res);
     const session = await requireApiSession(req, res, pool, config);
     if (!session) return;
-    if (!['owner', 'admin', 'rabbi', 'parent', 'student'].includes(session.user.role)) {
+    if (!['owner', 'admin', 'rabbi', 'student'].includes(session.user.role)) {
       res.status(404).type('text').send('Content is unavailable.');
       return;
     }

@@ -23,6 +23,15 @@ const command = {
   title: 'Mishnayos Sunday class',
   source_sha256: 'a'.repeat(64),
   reviewed_source_digest: 'b'.repeat(64),
+  rights_attestation: {
+    rights_to_process: true,
+    rights_to_private_publish: true,
+  },
+  human_review_attestation: {
+    review_completed: true,
+    child_private_data_review_completed: true,
+    approved_for_student_library: true,
+  },
   idempotency_key: 'existing-vimeo-sunday-001',
 };
 
@@ -148,6 +157,18 @@ describe('existing protected Vimeo adoption', () => {
     });
     expect(JSON.stringify(library)).not.toMatch(/1234567890|https?:\/\/|player\.vimeo/i);
 
+    const parent = parentActor();
+    expect(await adapter.publishedLibraryForLearner({ actor: parent, learner })).toEqual([]);
+    await expect(
+      getExistingPrivateVimeoPlayback({
+        pool,
+        config,
+        itemKey: adopted.item_key,
+        actor: parent,
+        now,
+      }),
+    ).rejects.toMatchObject({ code: 'CONTENT_UNAVAILABLE', httpStatus: 404 });
+
     const playback = await getExistingPrivateVimeoPlayback({
       pool,
       config,
@@ -215,6 +236,7 @@ describe('existing protected Vimeo adoption', () => {
     ['Free account', { accountTier: 'free' }],
     ['unlisted view', { privacyView: 'unlisted' }],
     ['private-only view', { privacyView: 'nobody' }],
+    ['original privacy override', { privacyOriginalView: 'unlisted' }],
     ['public embedding', { privacyEmbed: 'public' }],
     ['wrong domains', { allowedEmbedDomains: ['app.onetimeonetime.com'] }],
     ['downloads enabled', { downloadsAllowed: true }],
@@ -273,6 +295,27 @@ describe('existing protected Vimeo adoption', () => {
     expect(inspect).not.toHaveBeenCalled();
   });
 
+  it('requires typed rights and completed human child-data review before provider readback', async () => {
+    const inspect = vi.fn(async () => protectedReadback());
+    const withoutRights = { ...command, rights_attestation: undefined };
+    const withoutReview = { ...command, human_review_attestation: undefined };
+    for (const unsafeCommand of [withoutRights, withoutReview]) {
+      await expect(
+        adoptExistingPrivateVimeo({
+          pool,
+          config,
+          actorUserKey: 'admin_operator',
+          actorRole: 'admin',
+          command: unsafeCommand,
+          reader: { inspect },
+          now,
+        }),
+      ).rejects.toThrow();
+    }
+    expect(inspect).not.toHaveBeenCalled();
+    expect(await countRows('onetime.content_items')).toBe(0);
+  });
+
   it('mounts a Rabbi/Admin route with session CSRF and a first-party player page', async () => {
     await createAccountUser({
       pool,
@@ -283,6 +326,28 @@ describe('existing protected Vimeo adoption', () => {
       role: 'admin',
       mfaCapable: true,
     });
+    const parentUserKey = await createAccountUser({
+      pool,
+      config,
+      email: 'parent@example.test',
+      password: 'ParentPass!234',
+      displayName: 'Video Parent',
+      role: 'parent',
+    });
+    await grantHouseholdCurrentAccess('household_alpha');
+    await pool.query(
+      `INSERT INTO onetime.portal_guardian_relationships
+         (relationship_key, account_key, product_key, household_key, guardian_user_ref,
+          relationship_label, authority)
+       VALUES ('relationship_alpha',$1,$2,'household_alpha',$3,'Parent','primary_guardian')`,
+      [config.accountKey, config.productKey, parentUserKey],
+    );
+    await pool.query(
+      `INSERT INTO onetime.portal_learners
+         (learner_key, account_key, product_key, household_key, display_name)
+       VALUES ('learner_alpha',$1,$2,'household_alpha','Alpha Learner')`,
+      [config.accountKey, config.productKey],
+    );
     const inspect = vi.fn(async () => protectedReadback());
     const server = await listenForTest(
       createApp({
@@ -338,6 +403,29 @@ describe('existing protected Vimeo adoption', () => {
         { redirect: 'manual' },
       );
       expect(anonymousPlayback.status).toBe(401);
+
+      const parent = await loginAs(server.baseUrl, 'parent@example.test', 'ParentPass!234');
+      const parentPage = await fetch(`${server.baseUrl}${adopted.adopted.playback_route}`, {
+        headers: { cookie: parent.cookies },
+        redirect: 'manual',
+      });
+      expect(parentPage.status).toBe(404);
+      const parentPlayback = await fetch(
+        `${server.baseUrl}/api/v1/content/vimeo/${adopted.adopted.item_key}/playback`,
+        { headers: { cookie: parent.cookies }, redirect: 'manual' },
+      );
+      expect(parentPlayback.status).toBe(404);
+      const parentPortalOpen = await fetch(
+        `${server.baseUrl}/api/v1/portals/parent/households/household_alpha/learners/learner_alpha/content/${adopted.adopted.item_key}/open`,
+        { headers: { cookie: parent.cookies } },
+      );
+      expect(parentPortalOpen.status).toBe(404);
+      const parentMaterials = await fetch(
+        `${server.baseUrl}/api/v1/portals/parent/households/household_alpha/learners/learner_alpha/materials`,
+        { headers: { cookie: parent.cookies } },
+      );
+      expect(parentMaterials.status).toBe(200);
+      expect(await parentMaterials.text()).not.toContain(adopted.adopted.item_key);
     } finally {
       await server.close();
     }
@@ -396,6 +484,7 @@ describe('Vimeo protection reader', () => {
       ownerAccountVerified: true,
       accountTier: 'starter',
       privacyView: 'disable',
+      privacyOriginalView: null,
       privacyEmbed: 'whitelist',
       playable: true,
       transcodeComplete: true,
@@ -507,6 +596,56 @@ describe('Vimeo protection reader', () => {
     ).rejects.toMatchObject({ code: 'VIMEO_PROTECTION_CONTRACT_MISMATCH' });
   });
 
+  it('reads and rejects a reported original privacy override', async () => {
+    const reader = createExistingVimeoProtectionReader({
+      env: { VIMEO_ACCESS_TOKEN: 'test-only-vimeo-token', VIMEO_ACCOUNT_ID: '777' },
+      fetchImpl: protectedVimeoFetch({
+        videoOverrides: {
+          privacy: {
+            view: 'disable',
+            original_view: 'unlisted',
+            embed: 'whitelist',
+            download: false,
+            comments: 'nobody',
+            add: false,
+          },
+        },
+      }) as typeof fetch,
+      apiBaseUrl: 'https://vimeo.example.test',
+    });
+    await expect(reader.inspect('1234567890')).resolves.toMatchObject({
+      privacyOriginalView: 'unlisted',
+    });
+    await expect(
+      adoptExistingPrivateVimeo({
+        pool,
+        config,
+        actorUserKey: 'admin_operator',
+        actorRole: 'admin',
+        command,
+        reader,
+        now,
+      }),
+    ).rejects.toMatchObject({ code: 'VIMEO_PROTECTION_CONTRACT_MISMATCH' });
+  });
+
+  it.each([
+    ['missing domain pagination', { domainPaging: undefined }],
+    ['malformed domain pagination', { domainPaging: {} }],
+    ['missing text-track pagination', { textTrackPaging: undefined }],
+    ['malformed text-track pagination', { textTrackPaging: { next: 42 } }],
+  ])('fails closed on %s', async (_label, options) => {
+    const reader = createExistingVimeoProtectionReader({
+      env: { VIMEO_ACCESS_TOKEN: 'test-only-vimeo-token', VIMEO_ACCOUNT_ID: '777' },
+      fetchImpl: protectedVimeoFetch(options) as typeof fetch,
+      apiBaseUrl: 'https://vimeo.example.test',
+    });
+    await expect(reader.inspect('1234567890')).rejects.toMatchObject({
+      code: expect.stringMatching(/^VIMEO_(?:DOMAIN|TEXT_TRACK)_READBACK_INCOMPLETE$/u),
+      httpStatus: 503,
+    });
+  });
+
   it('refuses when the configured video owner readback is Free', async () => {
     const fetchImpl = vi.fn(async (request: string | URL | Request) => {
       if (String(request).includes('/users/777?fields=')) {
@@ -590,6 +729,7 @@ function protectedReadback(
     coldStorage: false,
     copyrightRestricted: false,
     privacyView: 'disable',
+    privacyOriginalView: null,
     privacyEmbed: 'whitelist',
     downloadsAllowed: false,
     commentsAllowed: false,
@@ -614,6 +754,26 @@ function studentActor() {
       household_key: 'household_alpha',
       access_state_key: 'access_alpha',
     },
+  };
+}
+
+function parentActor() {
+  return {
+    account_key: config.accountKey,
+    product_key: config.productKey,
+    actor_user_ref: 'parent_user_alpha',
+    actor_role: 'parent' as const,
+    session_key: 'parent_session_alpha',
+    capabilities: ['parent:household:read' as const, 'parent:content:open' as const],
+    authorized_households: [
+      {
+        household_key: 'household_alpha',
+        relationship_key: 'relationship_alpha',
+        relationship_label: 'Parent',
+        authority: 'primary_guardian' as const,
+      },
+    ],
+    student_learner: null,
   };
 }
 
@@ -655,19 +815,34 @@ function protectedVimeoFetch(
   input: {
     tracks?: Array<Record<string, unknown>>;
     videoOverrides?: Record<string, unknown>;
+    domainPaging?: unknown;
+    textTrackPaging?: unknown;
   } = {},
 ) {
   const tracks = input.tracks ?? [{ active: false }];
+  const hasDomainPaging = Object.prototype.hasOwnProperty.call(input, 'domainPaging');
+  const hasTextTrackPaging = Object.prototype.hasOwnProperty.call(input, 'textTrackPaging');
   return vi.fn(async (request: string | URL | Request) => {
     const url = String(request);
     if (url.includes('/privacy/domains')) {
       return jsonResponse({
         data: [{ domain: 'join.onetimeonetime.com' }, { domain: 'app.onetimeonetime.com' }],
-        paging: { next: null },
+        ...(hasDomainPaging
+          ? input.domainPaging === undefined
+            ? {}
+            : { paging: input.domainPaging }
+          : { paging: { next: null } }),
       });
     }
     if (url.includes('/texttracks')) {
-      return jsonResponse({ data: tracks, paging: { next: null } });
+      return jsonResponse({
+        data: tracks,
+        ...(hasTextTrackPaging
+          ? input.textTrackPaging === undefined
+            ? {}
+            : { paging: input.textTrackPaging }
+          : { paging: { next: null } }),
+      });
     }
     if (url.includes('/users/777?fields=')) {
       return jsonResponse({

@@ -57,6 +57,7 @@ export type ExistingVimeoProtectionReadback = {
   coldStorage: boolean | null;
   copyrightRestricted: boolean | null;
   privacyView: string;
+  privacyOriginalView: string | null;
   privacyEmbed: string;
   downloadsAllowed: boolean;
   commentsAllowed: boolean;
@@ -155,6 +156,7 @@ export function createExistingVimeoProtectionReader(
         'is_copyright_restricted',
         'transcode.status',
         'privacy.view',
+        'privacy.original_view',
         'privacy.embed',
         'privacy.download',
         'privacy.comments',
@@ -237,8 +239,19 @@ export function createExistingVimeoProtectionReader(
         providerVideoId,
         expectedTotal: expectedTextTrackTotal,
       });
-      const paging = asRecord(domains.paging);
-      if (paging.next) {
+      if (!Array.isArray(domains.data)) {
+        throw new ExistingVimeoAdoptionError(
+          'VIMEO_DOMAIN_READBACK_INVALID',
+          'Vimeo embed-domain readback was invalid.',
+          503,
+        );
+      }
+      const domainNext = requiredVimeoNextPage(
+        domains.paging,
+        'VIMEO_DOMAIN_READBACK_INCOMPLETE',
+        'Vimeo embed-domain pagination could not be verified.',
+      );
+      if (domainNext) {
         throw new ExistingVimeoAdoptionError(
           'VIMEO_DOMAIN_READBACK_INCOMPLETE',
           'Vimeo returned more embed domains than the bounded readback can verify.',
@@ -254,6 +267,10 @@ export function createExistingVimeoProtectionReader(
         );
       }
       const privacyView = stringValue(privacy.view) ?? '';
+      const privacyOriginalView = optionalVimeoString(
+        privacy.original_view,
+        'privacy.original_view',
+      );
       return {
         providerVideoId,
         ownerAccountVerified: true,
@@ -274,6 +291,7 @@ export function createExistingVimeoProtectionReader(
           'is_copyright_restricted',
         ),
         privacyView,
+        privacyOriginalView,
         privacyEmbed: stringValue(privacy.embed) ?? '',
         downloadsAllowed: privacy.download !== false,
         commentsAllowed: privacy.comments !== 'nobody',
@@ -303,6 +321,14 @@ export async function adoptExistingPrivateVimeo(input: {
   assertProtectedReadback(command, readback);
   const now = input.now ?? new Date();
   const domainDigest = sha256(canonicalJson([...readback.allowedEmbedDomains].sort()));
+  const governanceDigest = sha256(
+    canonicalJson({
+      reviewed_source_digest: command.reviewed_source_digest,
+      rights_attestation: command.rights_attestation,
+      human_review_attestation: command.human_review_attestation,
+      server_bound_actor_user_key: input.actorUserKey,
+    }),
+  );
   const protectionDigest = sha256(
     canonicalJson({
       owner_account_id_digest: readback.ownerAccountIdDigest,
@@ -314,6 +340,7 @@ export async function adoptExistingPrivateVimeo(input: {
       cold_storage: readback.coldStorage,
       copyright_restricted: readback.copyrightRestricted,
       privacy_view: readback.privacyView,
+      privacy_original_view: readback.privacyOriginalView ?? 'not_reported',
       privacy_embed: readback.privacyEmbed,
       downloads_allowed: readback.downloadsAllowed,
       comments_allowed: readback.commentsAllowed,
@@ -426,6 +453,7 @@ export async function adoptExistingPrivateVimeo(input: {
           owner_account_id_digest: readback.ownerAccountIdDigest,
           allowed_domain_digest: domainDigest,
           reviewed_source_digest: command.reviewed_source_digest,
+          governance_digest: governanceDigest,
           duration_ms: readback.durationMs,
           captions_active: readback.captionsActive,
           raw_provider_url_present: false,
@@ -455,6 +483,7 @@ export async function adoptExistingPrivateVimeo(input: {
           reviewed_source_digest: command.reviewed_source_digest,
           protection_digest: protectionDigest,
           owner_account_id_digest: readback.ownerAccountIdDigest,
+          governance_digest: governanceDigest,
         }),
         JSON.stringify({
           kind: 'server_authorized_vimeo_playback',
@@ -489,6 +518,9 @@ export async function adoptExistingPrivateVimeo(input: {
         privacy_contract: 'embed_only_domain_whitelist',
         protection_digest: protectionDigest,
         allowed_domain_digest: domainDigest,
+        governance_digest: governanceDigest,
+        rights_to_process_and_private_publish_attested: true,
+        human_child_data_review_completed: true,
         provider_mutation_performed: false,
         raw_provider_url_present: false,
       },
@@ -575,6 +607,9 @@ export async function getExistingPrivateVimeoPlayback(input: {
   ) {
     throw unavailablePlayback();
   }
+  if (!['owner', 'admin', 'rabbi', 'student'].includes(input.actor.actor_role)) {
+    throw unavailablePlayback();
+  }
   const result = await input.pool.query(
     `SELECT item.title, item.metadata, source.provider_video_id, source.duration_ms,
             source.processing_state, source.privacy_state, source.sanitized_metadata_json
@@ -642,6 +677,7 @@ function assertProtectedReadback(
     (readback.coldStorage === false || readback.coldStorage === null) &&
     (readback.copyrightRestricted === false || readback.copyrightRestricted === null) &&
     readback.privacyView === 'disable' &&
+    readback.privacyOriginalView === null &&
     readback.privacyEmbed === 'whitelist' &&
     readback.downloadsAllowed === false &&
     readback.commentsAllowed === false &&
@@ -724,11 +760,7 @@ async function currentPlaybackEntitlement(
   const householdKeys =
     actor.actor_role === 'student' && actor.student_learner
       ? [actor.student_learner.household_key]
-      : actor.actor_role === 'parent'
-        ? actor.authorized_households
-            .filter((subject) => subject.authority !== 'support_only')
-            .map((subject) => subject.household_key)
-        : [];
+      : [];
   const learnerKey =
     actor.actor_role === 'student' ? (actor.student_learner?.learner_key ?? null) : null;
   if (householdKeys.length < 1) return false;
@@ -854,7 +886,11 @@ async function inspectVimeoTextTracks(input: {
       observedTotal += 1;
       captionsActive ||= active;
     }
-    const next = stringValue(asRecord(page.paging).next);
+    const next = requiredVimeoNextPage(
+      page.paging,
+      'VIMEO_TEXT_TRACK_READBACK_INCOMPLETE',
+      'Vimeo text-track pagination could not be verified.',
+    );
     nextPath = next ? boundedVimeoPagePath(next, input.apiBaseUrl, collectionPath) : null;
   }
 
@@ -866,6 +902,17 @@ async function inspectVimeoTextTracks(input: {
     );
   }
   return { captionsActive };
+}
+
+function requiredVimeoNextPage(value: unknown, code: string, message: string) {
+  const paging = asRecord(value);
+  if (!Object.prototype.hasOwnProperty.call(paging, 'next')) {
+    throw new ExistingVimeoAdoptionError(code, message, 503);
+  }
+  if (paging.next === null) return null;
+  const next = stringValue(paging.next);
+  if (!next) throw new ExistingVimeoAdoptionError(code, message, 503);
+  return next;
 }
 
 function boundedVimeoPagePath(value: string, apiBaseUrl: string, collectionPath: string) {
@@ -886,6 +933,17 @@ function boundedVimeoPagePath(value: string, apiBaseUrl: string, collectionPath:
 function optionalVimeoBoolean(value: unknown, field: string): boolean | null {
   if (value === undefined || value === null) return null;
   if (typeof value === 'boolean') return value;
+  throw new ExistingVimeoAdoptionError(
+    'VIMEO_READBACK_INVALID',
+    `Vimeo returned an invalid ${field} value.`,
+    503,
+  );
+}
+
+function optionalVimeoString(value: unknown, field: string): string | null {
+  if (value === undefined || value === null) return null;
+  const parsed = stringValue(value);
+  if (parsed) return parsed.toLowerCase();
   throw new ExistingVimeoAdoptionError(
     'VIMEO_READBACK_INVALID',
     `Vimeo returned an invalid ${field} value.`,
