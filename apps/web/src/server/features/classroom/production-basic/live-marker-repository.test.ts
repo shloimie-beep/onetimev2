@@ -89,8 +89,13 @@ describe('production-basic live-class receipt', () => {
     });
 
     const [sql, parameters] = query.mock.calls[0] as [string, unknown[]];
-    expect(sql).toContain('occurrence.local_class_date = $5::date');
-    expect(sql).toContain('occurrence.production_basic_meeting_ref_digest = $3');
+    expect(sql).toMatch(/^UPDATE onetime\.class_occurrences/u);
+    expect(sql).not.toContain('UPDATE onetime.class_occurrences AS');
+    expect(sql).not.toContain('FROM onetime.class_series AS series\n          WHERE');
+    expect(sql).toContain('local_class_date = $5::date');
+    expect(sql).toContain('production_basic_meeting_ref_digest = $3');
+    expect(sql).toContain('occurrence_key = (');
+    expect(sql).toContain('ORDER BY candidate.starts_at, candidate.occurrence_key');
     expect(sql).not.toContain('AT TIME ZONE');
     expect(parameters).toEqual([
       STUDENT.account_key,

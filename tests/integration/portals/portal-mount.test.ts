@@ -304,6 +304,37 @@ describe('OT-71 mounted parent and student portals', () => {
         data: { state: 'live' },
       });
       await expectProductionBasicStatus(server.baseUrl, student.cookies, true);
+
+      const liveVersion = await productionBasicOccurrenceVersion();
+      const hostEnded = await fetch(
+        `${server.baseUrl}/api/v1/classroom/production-basic/host-ended`,
+        {
+          method: 'POST',
+          headers: { cookie: admin.cookies, 'x-csrf-token': admin.json.csrf_token },
+        },
+      );
+      expect(hostEnded.status).toBe(200);
+      await expect(hostEnded.json()).resolves.toEqual({
+        success: true,
+        data: { state: 'scheduled' },
+      });
+      await expectProductionBasicStatus(server.baseUrl, student.cookies, false);
+
+      const clearedVersion = await productionBasicOccurrenceVersion();
+      expect(clearedVersion).toBe(liveVersion + 1);
+      const hostEndedRetry = await fetch(
+        `${server.baseUrl}/api/v1/classroom/production-basic/host-ended`,
+        {
+          method: 'POST',
+          headers: { cookie: admin.cookies, 'x-csrf-token': admin.json.csrf_token },
+        },
+      );
+      expect(hostEndedRetry.status).toBe(200);
+      await expect(hostEndedRetry.json()).resolves.toEqual({
+        success: true,
+        data: { state: 'scheduled' },
+      });
+      expect(await productionBasicOccurrenceVersion()).toBe(clearedVersion);
     } finally {
       await server.close();
     }
@@ -1714,6 +1745,20 @@ async function seedCurrentProductionBasicOccurrence() {
              'household_alpha', 'learner_alpha', 'active', 'isolated_acceptance')`,
     [config.accountKey, config.productKey],
   );
+}
+
+async function productionBasicOccurrenceVersion() {
+  const result = await pool.query<{ version: number }>(
+    `SELECT version
+       FROM onetime.class_occurrences
+      WHERE account_key = $1
+        AND product_key = $2
+        AND occurrence_key = 'production-basic-current'`,
+    [config.accountKey, config.productKey],
+  );
+  const version = result.rows[0]?.version;
+  if (typeof version !== 'number') throw new Error('production-basic occurrence version missing');
+  return version;
 }
 
 async function expectProductionBasicStatus(baseUrl: string, cookies: string, available: boolean) {
