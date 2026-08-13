@@ -1,6 +1,7 @@
 export type AdminHousehold = {
   household_key: string;
   display_name: string;
+  parent_name: string | null;
   status: 'active' | 'archived';
   version: number;
   active_learner_count: number;
