@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
@@ -64,6 +65,28 @@ describe('active Households directory list', () => {
     expect(detail).toContain('Household details');
     expect(detail).toContain('<dt>Parent</dt>');
     expect(detail).toContain('<dd>Parent One</dd>');
+  });
+
+  it('keeps the truthful Household table available in a narrow-screen horizontal scroll container', () => {
+    const list = HouseholdList({
+      households: [household],
+      onEdit: vi.fn(),
+      onGuardian: vi.fn(),
+      onStatus: vi.fn(),
+    });
+
+    const markup = renderToStaticMarkup(list);
+    expect(markup).toContain('class="contact-table-wrap admin-directory__table"');
+    expect(markup).toContain('Parent name');
+    expect(markup).toContain('Parent One');
+
+    const stylesheet = readFileSync(
+      new URL('../../apps/web/src/client/app/crm.css', import.meta.url),
+      'utf8',
+    );
+    expect(stylesheet).toMatch(
+      /\.admin-directory__table\s*\{\s*display:\s*block;\s*overflow-x:\s*auto;\s*\}/u,
+    );
   });
 
   it('uses an honest dash when no active Parent is attached', () => {

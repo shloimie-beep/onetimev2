@@ -1277,6 +1277,11 @@
   overflow-wrap: anywhere;
 }
 
+.admin-directory__table {
+  display: block;
+  overflow-x: auto;
+}
+
 .admin-directory__table table {
   min-width: 56rem;
 }
