@@ -2,7 +2,7 @@ import type { AddressInfo } from 'node:net';
 import { createHash } from 'node:crypto';
 import express from 'express';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { createProductionBasicRouter } from './router.ts';
+import { createProductionBasicRouter, type ProductionBasicLaunchFailureEvent } from './router.ts';
 import {
   createCanonicalProductionBasicMeetingBinding,
   createProductionBasicLaunchService,
@@ -11,6 +11,7 @@ import {
   type ProductionBasicLaunchArtifact,
 } from './service.ts';
 import type { AppConfig } from '../../../../../../../packages/config/src/index.ts';
+import { ZoomApiError } from '../../../../../../../packages/domain/src/providers/zoom-rest.ts';
 
 const servers: Array<ReturnType<express.Express['listen']>> = [];
 const STUDENT: ProductionBasicActor = {
@@ -78,6 +79,34 @@ describe('production-basic Meeting SDK launch', () => {
     expect(issue).toHaveBeenCalledTimes(1);
   });
 
+  it('returns governed JSON and observes only a clamped provider failure code', async () => {
+    const protectedProviderDetail = 'provider-detail-with-host-and-meeting-material';
+    const onLaunchFailure = vi.fn<(event: ProductionBasicLaunchFailureEvent) => void>();
+    const baseUrl = await start({
+      actor: STUDENT,
+      onLaunchFailure,
+      issue: async () => {
+        throw new ZoomApiError(403, `ZOOM_${protectedProviderDetail}`, protectedProviderDetail);
+      },
+    });
+
+    const response = await post(baseUrl, '/launch');
+    expect(response.status).toBe(503);
+    expect(response.headers.get('content-type')).toContain('application/json');
+    const text = await response.text();
+    expect(JSON.parse(text)).toEqual({
+      success: false,
+      code: 'CLASSROOM_UNAVAILABLE',
+      message: 'Classroom access is unavailable.',
+    });
+    expect(text).not.toContain(protectedProviderDetail);
+    expect(onLaunchFailure).toHaveBeenCalledWith({
+      category: 'zoom_provider',
+      safe_error_code: 'ZOOM_HOST_ZAK_REQUEST_FAILED',
+    });
+    expect(JSON.stringify(onLaunchFailure.mock.calls)).not.toContain(protectedProviderDetail);
+  });
+
   it.each<ProductionBasicActor>([
     { ...STUDENT, entitled: false },
     {
@@ -138,6 +167,9 @@ describe('production-basic Meeting SDK launch', () => {
   });
 
   it('uses the injected clock to expire a verified binding receipt', async () => {
+    const providerFetch = vi
+      .spyOn(globalThis, 'fetch')
+      .mockRejectedValue(new Error('status must not call Zoom'));
     let now = new Date('2026-08-12T10:00:00.000Z');
     const meetingId = 'recurring-meeting';
     const binding = createCanonicalProductionBasicMeetingBinding({
@@ -177,6 +209,7 @@ describe('production-basic Meeting SDK launch', () => {
     await expect(binding.ready()).resolves.toBe(true);
     now = new Date('2026-08-12T10:30:00.000Z');
     await expect(binding.ready()).resolves.toBe(false);
+    expect(providerFetch).not.toHaveBeenCalled();
   });
 
   it('rejects non-recurring, future, stale, and overly long verification receipts', async () => {
@@ -263,6 +296,7 @@ async function start(input: {
     actor: ProductionBasicActor;
     role: 0 | 1;
   }) => Promise<ProductionBasicLaunchArtifact>;
+  onLaunchFailure?: ((event: ProductionBasicLaunchFailureEvent) => void) | undefined;
 }) {
   const service = createProductionBasicLaunchService({
     binding: input.issue
@@ -277,6 +311,7 @@ async function start(input: {
   app.use(
     createProductionBasicRouter({
       service,
+      onLaunchFailure: input.onLaunchFailure,
       identities: {
         resolve: async () =>
           input.actor === null

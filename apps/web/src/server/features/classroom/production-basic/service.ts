@@ -6,7 +6,7 @@ import {
 import {
   createHostZoomSdkSignature,
   createLearnerZoomSdkSignature,
-  createZoomRestClient,
+  createZoomHostZakClient,
 } from '../../../../../../../packages/domain/src/providers/zoom-rest.ts';
 
 /**
@@ -118,12 +118,13 @@ export function createCanonicalProductionBasicMeetingBinding(input: {
   ) {
     return createUnavailableProductionBasicMeetingBinding();
   }
-  const rest = createZoomRestClient({
+  const hostZak = createZoomHostZakClient({
     credentials: {
       accountId: config.zoomAccountId,
       clientId: config.zoomServerToServerClientId,
       clientSecret: config.zoomServerToServerClientSecret,
     },
+    hostUserId: config.zoomHostUserId,
     environment: config.oneTimeRuntimeEnvironment === 'production' ? 'production' : 'staging',
     enabled: true,
   });
@@ -165,9 +166,7 @@ export function createCanonicalProductionBasicMeetingBinding(input: {
         raw_join_url_present: false as const,
         video_start_model: 'PARTICIPANT_CONSENT' as const,
       };
-      return role === 1
-        ? { ...shared, zak: await rest.getHostZakToken(config.zoomHostUserId!) }
-        : shared;
+      return role === 1 ? { ...shared, zak: await hostZak.getHostZakToken() } : shared;
     },
   };
 }

@@ -24,7 +24,7 @@
     },
     {
       "path": "apps/web/src/server/app.ts",
-      "sha256": "f7b2f10ccc706b6fc22dfc765ae25601f23ff4c01b014f6239e60cf00787f3fe"
+      "sha256": "5b6c1a51121335322079f4728328c120c10b288494a93930bd8e380edfdcd0b9"
     },
     {
       "path": "apps/web/src/server/communications/register.ts",
@@ -72,11 +72,11 @@
     },
     {
       "path": "apps/web/src/server/features/classroom/production-basic/router.ts",
-      "sha256": "35a6023749cb14f2701a7ae9d46730d9c853a8940cac2ba5b3a5c4425251f221"
+      "sha256": "12ff7d4450c2e2c357efc7fc5be1df41c623dce3ca4ecad82eb182046709eb9d"
     },
     {
       "path": "apps/web/src/server/features/classroom/production-basic/service.ts",
-      "sha256": "db51ee734317fa0fb74652326ba6d35aa0357b9337d062e6b9a7228a2dd0f4a0"
+      "sha256": "51b98f9163a289894ec966cda0453231009c6b2ad35b6b5e3dc9145013fad045"
     },
     {
       "path": "apps/web/src/server/features/learning/router.ts",

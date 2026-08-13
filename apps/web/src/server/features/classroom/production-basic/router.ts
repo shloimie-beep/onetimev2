@@ -1,4 +1,5 @@
 import express, { type Request } from 'express';
+import { ZoomApiError } from '../../../../../../../packages/domain/src/providers/zoom-rest.ts';
 import type { ProductionBasicActor } from './service.ts';
 import type { ProductionBasicLaunchResult } from './service.ts';
 
@@ -8,12 +9,18 @@ export interface ProductionBasicRequestIdentityResolver {
   ): Promise<{ actor: ProductionBasicActor; csrf_verified: boolean } | null>;
 }
 
+export type ProductionBasicLaunchFailureEvent = Readonly<{
+  category: 'zoom_provider' | 'unexpected';
+  safe_error_code: string;
+}>;
+
 export function createProductionBasicRouter(input: {
   identities: ProductionBasicRequestIdentityResolver;
   service: {
     ready(actor: ProductionBasicActor): Promise<boolean>;
     request(actor: ProductionBasicActor): Promise<ProductionBasicLaunchResult>;
   };
+  onLaunchFailure?: ((event: ProductionBasicLaunchFailureEvent) => void) | undefined;
 }) {
   const router = express.Router();
   router.use((_request, response, next) => {
@@ -35,7 +42,14 @@ export function createProductionBasicRouter(input: {
       response.status(403).json(unavailable());
       return;
     }
-    const result = await input.service.request(identity.actor);
+    let result: ProductionBasicLaunchResult;
+    try {
+      result = await input.service.request(identity.actor);
+    } catch (error) {
+      reportLaunchFailure(input.onLaunchFailure, classifyLaunchFailure(error));
+      response.status(503).json(unavailable());
+      return;
+    }
     if (result.disposition !== 'ready') {
       response.status(result.disposition === 'unavailable' ? 503 : 403).json(unavailable());
       return;
@@ -69,4 +83,39 @@ function unavailable() {
     code: 'CLASSROOM_UNAVAILABLE',
     message: 'Classroom access is unavailable.',
   } as const;
+}
+
+const SAFE_ZOOM_LAUNCH_ERROR_CODES = new Set<string>([
+  'ZOOM_PROVIDER_DISABLED',
+  'ZOOM_PRODUCTION_BLOCKED',
+  'ZOOM_HOST_ZAK_OAUTH_FAILED',
+  'ZOOM_HOST_ZAK_NOT_AUTHORIZED',
+  'ZOOM_HOST_ZAK_HOST_NOT_FOUND',
+  'ZOOM_HOST_ZAK_RATE_LIMITED',
+  'ZOOM_HOST_ZAK_PROVIDER_UNAVAILABLE',
+  'ZOOM_HOST_ZAK_REQUEST_FAILED',
+  'ZOOM_HOST_ZAK_READBACK_INVALID',
+]);
+
+function classifyLaunchFailure(error: unknown): ProductionBasicLaunchFailureEvent {
+  if (error instanceof ZoomApiError) {
+    return {
+      category: 'zoom_provider',
+      safe_error_code: SAFE_ZOOM_LAUNCH_ERROR_CODES.has(error.code)
+        ? error.code
+        : 'ZOOM_HOST_ZAK_REQUEST_FAILED',
+    };
+  }
+  return { category: 'unexpected', safe_error_code: 'CLASSROOM_LAUNCH_FAILED' };
+}
+
+function reportLaunchFailure(
+  observer: ((event: ProductionBasicLaunchFailureEvent) => void) | undefined,
+  event: ProductionBasicLaunchFailureEvent,
+) {
+  try {
+    observer?.(event);
+  } catch {
+    // Observability must never replace the governed launch response.
+  }
 }
