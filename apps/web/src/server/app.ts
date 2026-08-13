@@ -3443,6 +3443,15 @@ export function createApp({
     '/api/v1/classroom/production-basic',
     createProductionBasicRouter({
       service: productionBasicClassroomService,
+      onLaunchFailure: (failure) => {
+        logger.error(
+          {
+            failure_category: failure.category,
+            safe_error_code: failure.safe_error_code,
+          },
+          'production_basic_launch_failed',
+        );
+      },
       identities: {
         resolve: async (req) => {
           const actor = await resolvePortalActor(req);
