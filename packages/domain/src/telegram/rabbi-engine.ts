@@ -441,12 +441,7 @@ function classifyRabbiCommand(update: NormalizedBotUpdate): RabbiCommand {
       const subject = parseSubjectRef(fields[0] ?? '');
       const category = fields[1] ?? '';
       const priority = fields[2] ?? 'normal';
-      if (
-        !subject ||
-        !isIssueCategory(category) ||
-        !isPriority(priority) ||
-        fields.length > 3
-      ) {
+      if (!subject || !isIssueCategory(category) || !isPriority(priority) || fields.length > 3) {
         return { type: 'unsupported', reason: 'missing_argument' };
       }
       return {
@@ -471,7 +466,11 @@ function classifyRabbiCommand(update: NormalizedBotUpdate): RabbiCommand {
         : { type: 'unsupported', reason: 'missing_argument' };
     case '/support-diagnostic': {
       const fields = pipeFields(rest);
-      if (!safeReference(fields[0] ?? '') || !isDiagnostic(fields[1] ?? '') || fields.length > 2) {
+      if (
+        !safeReference(fields[0] ?? '') ||
+        !isDiagnostic(fields[1] ?? '') ||
+        fields.length > 2
+      ) {
         return { type: 'unsupported', reason: 'missing_argument' };
       }
       return {

@@ -160,7 +160,10 @@ describe('OT-LAUNCH-01 Rabbi Telegram communications', () => {
       update({
         updateId: '1003-student-cancel',
         kind: 'callback_query',
-        callbackData: confirmCallback(cancelledPreview).replace('rabbi:confirm:', 'rabbi:cancel:'),
+        callbackData: confirmCallback(cancelledPreview).replace(
+          'rabbi:confirm:',
+          'rabbi:cancel:',
+        ),
       }),
       new Date(now.getTime() + 4_500),
     );
@@ -407,7 +410,8 @@ describe('OT-LAUNCH-01 Rabbi Telegram communications', () => {
     const agentUpdate = await engine.handle(
       update({
         updateId: '1008-agent-update',
-        text: `/agent-task-update ${agentKey} | completed | pr#192 | Redacted diagnostic accepted.`,
+        text:
+          `/agent-task-update ${agentKey} | completed | pr#192 | Redacted diagnostic accepted.`,
       }),
       new Date(now.getTime() + 11_500),
     );
@@ -482,7 +486,9 @@ describe('OT-LAUNCH-01 Rabbi Telegram communications', () => {
       }),
       new Date(now.getTime() + 12_300),
     );
-    expect(sensitiveOperation[0]?.text).toContain('outside this communication-only Rabbi bot');
+    expect(sensitiveOperation[0]?.text).toContain(
+      'outside this communication-only Rabbi bot',
+    );
 
     const otherAccountParent = await engine.handle(
       update({

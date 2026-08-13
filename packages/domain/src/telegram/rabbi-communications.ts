@@ -498,7 +498,10 @@ export class RabbiCommunicationService {
       case 'internal_task.create': {
         if ('supportIncident' in request) {
           if (!validSafeSubject(request.supportIncident.subject)) {
-            return { ok: false, result: denied('The redacted support subject reference is invalid.') };
+            return {
+              ok: false,
+              result: denied('The redacted support subject reference is invalid.'),
+            };
           }
           return {
             ok: true,
@@ -512,7 +515,10 @@ export class RabbiCommunicationService {
             !validSafeSubject(request.agentTask.subject) ||
             !validDiagnostic(request.agentTask.diagnosticCapability)
           ) {
-            return { ok: false, result: denied('The typed local-agent task is outside the allowlist.') };
+            return {
+              ok: false,
+              result: denied('The typed local-agent task is outside the allowlist.'),
+            };
           }
           return {
             ok: true,
@@ -540,7 +546,10 @@ export class RabbiCommunicationService {
             (['add_note', 'resolve', 'block'].includes(update.action) &&
               !validRedactedText(update.note ?? '', 1, 500))
           ) {
-            return { ok: false, result: denied('The support action is missing a safe allowlisted value.') };
+            return {
+              ok: false,
+              result: denied('The support action is missing a safe allowlisted value.'),
+            };
           }
           const result = await this.pool.query(
             `SELECT task_key, version
@@ -553,7 +562,9 @@ export class RabbiCommunicationService {
             [actor.accountKey, actor.productKey, request.taskKey],
           );
           const row = result.rows[0];
-          if (!row) return { ok: false, result: denied('No scoped support incident was found.') };
+          if (!row) {
+            return { ok: false, result: denied('No scoped support incident was found.') };
+          }
           return {
             ok: true,
             targetKey: request.taskKey,
@@ -568,7 +579,10 @@ export class RabbiCommunicationService {
             (update.resultSummary !== undefined &&
               !validRedactedText(update.resultSummary, 1, 1_000))
           ) {
-            return { ok: false, result: denied('The agent-task result contains a disallowed value.') };
+            return {
+              ok: false,
+              result: denied('The agent-task result contains a disallowed value.'),
+            };
           }
           const result = await this.pool.query(
             `SELECT task_key, version
@@ -581,7 +595,9 @@ export class RabbiCommunicationService {
             [actor.accountKey, actor.productKey, request.taskKey],
           );
           const row = result.rows[0];
-          if (!row) return { ok: false, result: denied('No scoped local agent task was found.') };
+          if (!row) {
+            return { ok: false, result: denied('No scoped local agent task was found.') };
+          }
           return {
             ok: true,
             targetKey: request.taskKey,
@@ -960,7 +976,10 @@ export class RabbiCommunicationService {
     payload: Extract<RabbiInternalTaskCreateRequest, { agentTask: unknown }>,
     now: Date,
   ): Promise<RabbiCommunicationResult> {
-    const taskKey = `rabbi_agent_${payload.agentTask.issueCategory.replace('_', '-')}_${row.idempotency_key.slice(0, 20)}`;
+    const taskKey = `rabbi_agent_${payload.agentTask.issueCategory.replace(
+      '_',
+      '-',
+    )}_${row.idempotency_key.slice(0, 20)}`;
     const envelope: RabbiTaskEnvelope = {
       schemaVersion: 1,
       entity: 'agent_task',
@@ -1176,7 +1195,6 @@ export class RabbiCommunicationService {
       resultRef: payload.taskKey,
     };
   }
-
 }
 
 async function getConfirmation(target: Pick<DbPool, 'query'>, confirmationKey: string) {
@@ -1310,7 +1328,9 @@ function validRedactedText(value: string, min: number, max: number) {
 }
 
 function validBranchPrRef(value: string) {
-  return /^(?:none|pr#[1-9]\d{0,7}|branch:[a-z0-9][a-z0-9._\/-]{0,119})$/i.test(value);
+  return /^(?:none|pr#[1-9]\d{0,7}|branch:[a-z0-9][a-z0-9._\/-]{0,119})$/i.test(
+    value,
+  );
 }
 
 function invalidText(label: string) {

@@ -157,7 +157,9 @@ export class RabbiLocalAgentTaskDispatcher {
       );
       const completed: RabbiTaskEnvelope = {
         ...envelope,
-        resultSummary: sanitizePublicResult(result ?? 'No redacted diagnostic result was returned.'),
+        resultSummary: sanitizePublicResult(
+          result ?? 'No redacted diagnostic result was returned.',
+        ),
       };
       const updated = await this.pool.query(
         `UPDATE onetime.rabbi_internal_tasks
@@ -169,7 +171,12 @@ export class RabbiLocalAgentTaskDispatcher {
           WHERE task_key = $1
             AND version = $2
             AND status = 'in_progress'`,
-        [String(row.task_key), Number(row.version), serializeRabbiTaskEnvelope(completed), now.toISOString()],
+        [
+          String(row.task_key),
+          Number(row.version),
+          serializeRabbiTaskEnvelope(completed),
+          now.toISOString(),
+        ],
       );
       return updated.rowCount
         ? { status: 'completed' as const, taskKey: String(row.task_key) }
@@ -198,7 +205,12 @@ export class RabbiLocalAgentTaskDispatcher {
         WHERE task_key = $1
           AND version = $2
           AND status = 'in_progress'`,
-      [taskKey, version, blocked ? serializeRabbiTaskEnvelope(blocked) : null, now.toISOString()],
+      [
+        taskKey,
+        version,
+        blocked ? serializeRabbiTaskEnvelope(blocked) : null,
+        now.toISOString(),
+      ],
     );
   }
 }
@@ -234,7 +246,12 @@ export function parseRabbiTaskEnvelope(value: string): RabbiTaskEnvelope | null 
 function operationAction(
   request: Exclude<
     Extract<RabbiReadRequest, { capability: `operation.${string}` }>,
-    { capability: 'operation.readiness' | 'operation.support.list' | 'operation.login_issues.list' }
+    {
+      capability:
+        | 'operation.readiness'
+        | 'operation.support.list'
+        | 'operation.login_issues.list';
+    }
   >,
 ): BotActionRequest {
   switch (request.capability) {
@@ -317,7 +334,9 @@ async function listLocalSupportIncidents(
       (item): item is { row: Record<string, unknown>; envelope: RabbiTaskEnvelope } =>
         Boolean(item.envelope) && (!category || item.envelope.issueCategory === category),
     );
-  if (!rows.length) return category ? 'Local login incidents: none.' : 'Local support incidents: none.';
+  if (!rows.length) {
+    return category ? 'Local login incidents: none.' : 'Local support incidents: none.';
+  }
   return [
     category ? 'Local login incidents:' : 'Local support incidents:',
     ...rows.map(
@@ -395,7 +414,10 @@ async function operationalReadiness(pool: DbPool, config: AppConfig) {
       ? 'local_polling'
       : 'inactive';
   const payloadFingerprint = config.oneTimeRabbiTelegramPayloadKey
-    ? createHash('sha256').update(config.oneTimeRabbiTelegramPayloadKey).digest('hex').slice(0, 12)
+    ? createHash('sha256')
+        .update(config.oneTimeRabbiTelegramPayloadKey)
+        .digest('hex')
+        .slice(0, 12)
     : 'missing';
   return [
     'Rabbi Telegram readiness (presence/status only):',
