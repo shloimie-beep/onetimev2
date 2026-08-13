@@ -38,8 +38,8 @@ describe('Communications V1A contract', () => {
         deliveredAt: '2026-07-14T12:01:00.000Z',
       }),
     ).toEqual({
-      localState: 'draft_saved',
-      stateLabel: 'Processed in test mode, not delivery',
+      localState: 'sink_delivered',
+      stateLabel: 'Processed by non-provider sink',
       stateAt: '2026-07-14T12:01:00.000Z',
     });
     expect(

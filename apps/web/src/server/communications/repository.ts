@@ -210,7 +210,7 @@ export class PostgresCommunicationsReadRepository implements CommunicationsReadR
                      WHEN lifecycle.state IN ('queued', 'leased') THEN 'queued'
                      WHEN lifecycle.state = 'retry' THEN 'retrying'
                      WHEN lifecycle.state IN ('provider_accepted', 'provider_delivered') THEN 'provider_accepted'
-                     WHEN lifecycle.state = 'sink_delivered' THEN 'draft_saved'
+                     WHEN lifecycle.state = 'sink_delivered' THEN 'sink_delivered'
                      WHEN lifecycle.state = 'dead_letter' THEN 'failed'
                      WHEN lifecycle.state IN (
                        'unknown', 'provider_off', 'superseded', 'expired', 'cleared',
@@ -248,9 +248,50 @@ export class PostgresCommunicationsReadRepository implements CommunicationsReadR
                  NULL::text AS idempotency_key,
                  false AS draft_only,
                  false AS transport_available,
-                 'unknown' AS participant_kind,
-                 'Protected account recipient' AS participant_label
+                 'account' AS participant_kind,
+                 COALESCE(active_user.display_name, active_adult.display_name) || ' · ' ||
+                   CASE lifecycle_token.target_role
+                     WHEN 'owner' THEN 'Owner account'
+                     WHEN 'admin' THEN 'Admin account'
+                     WHEN 'rabbi' THEN 'Rabbi account'
+                     WHEN 'parent' THEN 'Parent account'
+                     WHEN 'student' THEN 'Student account'
+                     ELSE 'One Time account'
+                   END AS participant_label
             FROM onetime.account_lifecycle_delivery_outbox AS lifecycle
+            JOIN onetime.account_lifecycle_tokens AS lifecycle_token
+              ON lifecycle_token.token_key = lifecycle.token_key
+             AND lifecycle_token.account_key = lifecycle.account_key
+             AND lifecycle_token.product_key = lifecycle.product_key
+            LEFT JOIN onetime.account_users AS active_user
+              ON active_user.user_key = lifecycle_token.subject_user_key
+             AND active_user.account_key = lifecycle_token.account_key
+             AND active_user.product_key = lifecycle_token.product_key
+             AND active_user.role = lifecycle_token.target_role
+             AND active_user.status = 'active'
+            LEFT JOIN onetime.v21_human_accounts AS active_human
+              ON active_human.human_account_id = lifecycle_token.subject_human_account_id
+             AND active_human.product_key = lifecycle_token.product_key
+             AND active_human.state = 'active'
+            LEFT JOIN onetime.v21_adult_identities AS active_adult
+              ON active_adult.adult_id = active_human.adult_id
+             AND active_adult.product_key = active_human.product_key
+             AND active_adult.runtime_tier = active_human.runtime_tier
+             AND active_adult.verification_environment_id = active_human.verification_environment_id
+             AND active_adult.state = 'active'
+            LEFT JOIN onetime.v21_human_account_role_memberships AS active_role
+              ON active_role.human_account_id = active_human.human_account_id
+             AND active_role.product_key = active_human.product_key
+             AND active_role.runtime_tier = active_human.runtime_tier
+             AND active_role.verification_environment_id = active_human.verification_environment_id
+             AND active_role.role = lifecycle_token.target_role
+             AND active_role.revoked_at IS NULL
+           WHERE active_user.user_key IS NOT NULL
+              OR (
+                active_human.human_account_id IS NOT NULL
+                AND active_adult.adult_id IS NOT NULL
+                AND active_role.membership_id IS NOT NULL
+              )
           UNION ALL
           SELECT 'whatsapp-inbox:' || inbox.event_key AS id,
                  inbox.account_key,

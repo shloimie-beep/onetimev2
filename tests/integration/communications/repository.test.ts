@@ -83,7 +83,8 @@ describe('PostgresCommunicationsReadRepository', () => {
       eventType: 'account_password_reset.v1',
       status: 'delivered',
       source: 'account_lifecycle_outbox',
-      participantLabel: 'Protected account recipient',
+      participantKind: 'account',
+      participantLabel: 'Protected Admin · Admin account',
       providerReferenceDigest: null,
       idempotencyKey: null,
     });
@@ -107,12 +108,15 @@ describe('PostgresCommunicationsReadRepository', () => {
       eventType: 'account_activation.v1',
       status: 'superseded',
       source: 'account_lifecycle_outbox',
+      participantKind: 'account',
+      participantLabel: 'Protected Parent · Parent account',
     });
     const serialized = JSON.stringify([...passwordReset.rows, ...accountSetup.rows]);
     expect(serialized).not.toContain('lifecycle_token_hash_private');
     expect(serialized).not.toContain('lifecycle_provider_ref_private');
     expect(serialized).not.toContain('lifecycle_destination_private');
     expect(serialized).not.toContain('ciphertext_private');
+    expect(serialized).not.toContain('Disabled Account');
   });
 
   it('filters by source and refuses cross-contact projection through scoped contact mode', async () => {
@@ -145,6 +149,18 @@ describe('PostgresCommunicationsReadRepository', () => {
 
 async function seedCommunicationHistory(db: DbPool) {
   await db.query(
+    `INSERT INTO onetime.account_users
+      (user_key, account_key, product_key, email_normalized, display_name, role, password_hash, status)
+     VALUES
+      ('active_admin_user','one_time','one_time_mishnah_class','active.admin@example.test',
+       'Protected Admin','admin','hash-not-a-secret','active'),
+      ('active_parent_user','one_time','one_time_mishnah_class','active.parent@example.test',
+       'Protected Parent','parent','hash-not-a-secret','active'),
+      ('disabled_parent_user','one_time','one_time_mishnah_class','disabled.parent@example.test',
+       'Disabled Account','parent','hash-not-a-secret','disabled')`,
+  );
+
+  await db.query(
     `INSERT INTO onetime.contacts
       (contact_key, account_key, product_key, display_name, family_school_classification,
        family_or_school, location_text, timezone, email_normalized, phone_normalized,
@@ -166,14 +182,20 @@ async function seedCommunicationHistory(db: DbPool) {
   await db.query(
     `INSERT INTO onetime.account_lifecycle_tokens
       (token_key, account_key, product_key, token_type, token_hash, email_normalized,
-       display_name, target_role, expires_at, created_at)
+       display_name, target_role, subject_user_key, expires_at, created_at)
      VALUES
       ('lifecycle_token_reset','one_time','one_time_mishnah_class','password_reset',
        'lifecycle_token_hash_private','protected@example.test','Protected Adult','admin',
+       'active_admin_user',
        '2026-07-14T12:00:00.000Z','2026-07-14T11:00:00.000Z'),
       ('lifecycle_token_setup','one_time','one_time_mishnah_class','parent_activation',
        'lifecycle_setup_token_hash_private','protected@example.test','Protected Adult','parent',
-       '2026-07-21T10:59:00.000Z','2026-07-14T10:59:00.000Z')`,
+       'active_parent_user',
+       '2026-07-21T10:59:00.000Z','2026-07-14T10:59:00.000Z'),
+      ('lifecycle_token_disabled','one_time','one_time_mishnah_class','password_reset',
+       'lifecycle_disabled_token_hash_private','disabled.parent@example.test','Disabled Account',
+       'parent','disabled_parent_user',
+       '2026-07-14T13:00:00.000Z','2026-07-14T11:30:00.000Z')`,
   );
 
   await db.query(
@@ -196,7 +218,14 @@ async function seedCommunicationHistory(db: DbPool) {
        '2026-07-21T10:59:00.000Z','superseded',0,5,'2026-07-14T10:59:00.000Z',
        'lifecycle_setup_idempotency_private',NULL,NULL,NULL,NULL,NULL,
        '2026-07-14T10:59:30.000Z','2026-07-14T10:59:00.000Z',
-       '2026-07-14T10:59:30.000Z','{"raw_token_included":false}'::jsonb)`,
+       '2026-07-14T10:59:30.000Z','{"raw_token_included":false}'::jsonb),
+      ('lifecycle_delivery_disabled','one_time','one_time_mishnah_class','lifecycle_token_disabled',
+       'password_reset','email','provider','disabled_destination_private','key_test',
+       '2026-07-14T13:00:00.000Z','provider_accepted',1,5,'2026-07-14T11:30:00.000Z',
+       'disabled_idempotency_private','disabled_provider_ref_private',
+       '2026-07-14T11:30:01.000Z','delivered','2026-07-14T11:30:02.000Z',
+       '2026-07-14T11:30:02.000Z','2026-07-14T11:30:01.000Z',
+       '2026-07-14T11:30:00.000Z','2026-07-14T11:30:02.000Z','{"raw_token_included":false}'::jsonb)`,
   );
 
   await db.query(

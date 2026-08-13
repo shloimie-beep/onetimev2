@@ -996,7 +996,7 @@ function CrmApp() {
             ? 'Communication history and draft activity for this contact.'
             : communicationsMode.kind === 'workflow'
               ? 'Read-only repository contract and observed HighLevel delivery status.'
-              : 'One Time communication activity and draft follow-up status.'
+              : 'Active One Time accounts with redacted setup, reset, and PIN delivery status.'
           : contactOperationsMode
             ? 'Invite a Parent, create local-only Students, and manage access and adult-only GHL sync.'
             : contactsSection !== 'people'

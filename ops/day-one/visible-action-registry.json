@@ -128,7 +128,7 @@
     },
     {
       "path": "apps/web/src/client/app/communications/CommunicationsFeature.tsx",
-      "sha256": "6fe9ec68a8936de310dbcc9f9403c999df37e1549985945588df048e7b651803"
+      "sha256": "6452c4765a6aa685101923b1c69386318a9c0fc24a46718fc3eac4fadcb61044"
     },
     {
       "path": "apps/web/src/client/app/communications/WorkflowReadbackFeature.tsx",
@@ -140,7 +140,7 @@
     },
     {
       "path": "apps/web/src/client/app/crm-entry.tsx",
-      "sha256": "f1ac9372d855dae0354fee287c41bb0be7e296d080696b267caede2ef7127186"
+      "sha256": "e4e57e58aaee2e6f94e3a2ba2ae631a8d668c39f447de90c6cc558650497ae66"
     },
     {
       "path": "apps/web/src/client/app/live-entry.tsx",
@@ -224,7 +224,7 @@
     },
     {
       "path": "packages/contracts/src/communications/index.ts",
-      "sha256": "c0b1370a49385334b4439cfcb265bf887502019895c04b5de0c6365f0e39f289"
+      "sha256": "176123e967c245764bd47115b4e8af656e72b6c0ea0538bd92417e242c329fa8"
     },
     {
       "path": "packages/contracts/src/classroom/embedded/index.ts",

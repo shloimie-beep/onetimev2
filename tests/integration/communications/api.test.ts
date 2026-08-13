@@ -83,7 +83,7 @@ describe('Communications API registration hook', () => {
       },
     ];
     const response = await api(
-      '/api/v1/communications?from=2026-07-01T00:00:00.000Z&to=2026-07-15T00:00:00.000Z',
+      '/api/v1/crm/contacts/contact_public_test/communications?from=2026-07-01T00:00:00.000Z&to=2026-07-15T00:00:00.000Z',
     );
     expect(response.status).toBe(200);
     expect(response.headers.get('cache-control')).toBe('private, no-store');
@@ -106,8 +106,8 @@ describe('Communications API registration hook', () => {
       transport_available: false,
     });
     expect(json.items[1]).toMatchObject({
-      local_state: 'draft_saved',
-      state_label: 'Processed in test mode, not delivery',
+      local_state: 'sink_delivered',
+      state_label: 'Processed by non-provider sink',
       recipient_masked: 'WhatsApp recipient ending 7890',
     });
     const serialized = JSON.stringify(json);
@@ -160,7 +160,7 @@ describe('Communications API registration hook', () => {
       },
     ];
     const response = await api(
-      '/api/v1/communications?from=2026-07-01T00:00:00.000Z&to=2026-07-15T00:00:00.000Z&direction=inbound&source=stored_whatsapp_webhook',
+      '/api/v1/crm/contacts/contact_public_test/communications?from=2026-07-01T00:00:00.000Z&to=2026-07-15T00:00:00.000Z&direction=inbound&source=stored_whatsapp_webhook',
     );
     expect(response.status).toBe(200);
     const json = await response.json();
@@ -202,8 +202,8 @@ describe('Communications API registration hook', () => {
         previewRedacted: 'Password reset delivery status. Message body and secure link are hidden.',
         providerReferenceDigest: null,
         idempotencyKey: null,
-        participantKind: 'unknown',
-        participantLabel: 'Protected account recipient',
+        participantKind: 'account',
+        participantLabel: 'Protected Admin · Admin account',
       },
     ];
     const response = await api(
@@ -217,6 +217,8 @@ describe('Communications API registration hook', () => {
         intent_type: 'password_reset',
         status: 'delivered',
         source: 'account_lifecycle_outbox',
+        channel: 'email',
+        direction: 'outbound',
       },
     });
     const json = await response.json();
@@ -228,12 +230,29 @@ describe('Communications API registration hook', () => {
       state_label: 'Delivered',
       source: 'account_lifecycle_outbox',
       source_label: 'Account security delivery',
-      participant_label: 'Protected account recipient',
-      recipient_masked: 'Recipient unavailable',
+      participant_kind: 'account',
+      participant_label: 'Protected Admin · Admin account',
+      recipient_masked: 'Account email (hidden)',
       provider_reference_digest: null,
       idempotency_key: null,
     });
     expect(JSON.stringify(json)).not.toMatch(/#token=|reset-password|provider-message|secret/u);
+  });
+
+  it('keeps the global Admin surface bound to One Time account delivery history', async () => {
+    const response = await api(
+      '/api/v1/communications?source=stored_whatsapp_webhook&direction=inbound',
+      'admin',
+    );
+    expect(response.status).toBe(200);
+    expect(repository.calls[0]).toMatchObject({
+      mode: { kind: 'global' },
+      filters: {
+        channel: 'email',
+        direction: 'outbound',
+        source: 'account_lifecycle_outbox',
+      },
+    });
   });
 
   it('denies unauthenticated and unauthorized roles before repository access', async () => {

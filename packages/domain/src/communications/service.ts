@@ -148,7 +148,16 @@ export async function buildCommunicationsListResponse({
   if (!session) throw new CommunicationsAuthorizationError(401);
   if (!canReadCommunications(session.role)) throw new CommunicationsAuthorizationError(403);
 
-  const filters = parseCommunicationsFilters(query, now);
+  const requestedFilters = parseCommunicationsFilters(query, now);
+  const filters: CommunicationsFilters =
+    mode.kind === 'global'
+      ? {
+          ...requestedFilters,
+          channel: 'email',
+          direction: 'outbound',
+          source: 'account_lifecycle_outbox',
+        }
+      : requestedFilters;
   if (mode.kind === 'contact') {
     const contactExists = await repository.contactExists({
       scope: session,
@@ -221,11 +230,14 @@ export async function buildCommunicationsListResponse({
       provenance,
       participant_kind: participantKind(row),
       participant_label: row.participantLabel ?? participantLabel(row),
-      recipient_masked: maskCommunicationsRecipient({
-        channel: event.channel,
-        email: row.emailNormalized,
-        phone: row.phoneNormalized,
-      }),
+      recipient_masked:
+        source === 'account_lifecycle_outbox'
+          ? 'Account email (hidden)'
+          : maskCommunicationsRecipient({
+              channel: event.channel,
+              email: row.emailNormalized,
+              phone: row.phoneNormalized,
+            }),
       queued_at: toIso(occurredAt),
       occurred_at: toIso(occurredAt),
       state_at: status.stateAt,
@@ -420,6 +432,7 @@ function isLocalState(value: string): value is CommunicationsLocalState {
     value === 'complained' ||
     value === 'suppressed' ||
     value === 'draft_saved' ||
+    value === 'sink_delivered' ||
     value === 'duplicate' ||
     value === 'unknown' ||
     value === 'retrying' ||
@@ -491,13 +504,17 @@ function defaultThreadLabel(row: CommunicationIntentRow) {
   return 'Unlinked communication history';
 }
 
-function participantKind(row: CommunicationIntentRow): 'contact' | 'household' | 'unknown' {
+function participantKind(
+  row: CommunicationIntentRow,
+): 'account' | 'contact' | 'household' | 'unknown' {
+  if (row.participantKind === 'account') return 'account';
   if (row.participantKind === 'contact' || row.contactKey) return 'contact';
   if (row.participantKind === 'household' || row.householdKey) return 'household';
   return 'unknown';
 }
 
 function participantLabel(row: CommunicationIntentRow) {
+  if (row.source === 'account_lifecycle_outbox') return 'Active One Time account';
   if (row.contactKey) return 'Linked contact';
   if (row.householdKey) return 'Linked household';
   return 'Unlinked participant';

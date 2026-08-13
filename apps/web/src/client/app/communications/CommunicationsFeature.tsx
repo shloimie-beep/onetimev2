@@ -24,13 +24,14 @@ type LoadState =
   | { kind: 'error'; message: string };
 
 export function CommunicationsFeature({ contactId, onProtectedStateCleared }: Props) {
+  const lifecycleOnly = !contactId;
   const [from, setFrom] = useState(() => dateInput(daysAgo(30)));
   const [to, setTo] = useState(() => dateInput(new Date()));
   const [channel, setChannel] = useState('');
   const [direction, setDirection] = useState('');
   const [intentType, setIntentType] = useState('');
   const [status, setStatus] = useState('');
-  const [source, setSource] = useState('');
+  const [source, setSource] = useState(() => (lifecycleOnly ? 'account_lifecycle_outbox' : ''));
   const [state, setState] = useState<LoadState>({ kind: 'loading' });
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -95,25 +96,20 @@ export function CommunicationsFeature({ contactId, onProtectedStateCleared }: Pr
         <div>
           <h1 id="communications-heading">Communications</h1>
           <p>
-            Adult conversation context for Rabbi and Admin. GHL Conversations is the live mailbox
-            for <strong>info@onetimeonetime.com</strong>. One Time separately shows redacted reset
-            and setup delivery status here; it never creates Student contacts.
+            {lifecycleOnly
+              ? 'Active One Time accounts and their redacted login, setup, password-reset, and PIN delivery history. Message content and secure credentials are never shown.'
+              : 'Read-only local communication history for this existing One Time record.'}
           </p>
         </div>
       </header>
 
       {data && (
         <section className="communications-truth" aria-label="Communications source truth">
-          <span>Adult-only conversations</span>
-          <span>Redacted account-security delivery</span>
           <span>
-            {data.mailbox_complete ? 'Mailbox history available' : 'GHL mailbox connection pending'}
+            {lifecycleOnly ? 'Active One Time accounts only' : 'Existing One Time record'}
           </span>
-          <span>
-            {data.capabilities.transport_send
-              ? 'Governed send available'
-              : 'Reply in GHL Conversations'}
-          </span>
+          <span>{lifecycleOnly ? 'Setup, reset, and PIN delivery' : 'Local history'}</span>
+          <span>Redacted and read-only</span>
         </section>
       )}
 
@@ -133,42 +129,54 @@ export function CommunicationsFeature({ contactId, onProtectedStateCleared }: Pr
           <span>To</span>
           <input type="date" value={to} onChange={(event) => setTo(event.target.value)} />
         </label>
-        <label>
-          <span>Channel</span>
-          <select value={channel} onChange={(event) => setChannel(event.target.value)}>
-            <option value="">All</option>
-            <option value="email">Email</option>
-            <option value="whatsapp">WhatsApp</option>
-            <option value="internal_email">Internal email</option>
-          </select>
-        </label>
-        <label>
-          <span>Direction</span>
-          <select value={direction} onChange={(event) => setDirection(event.target.value)}>
-            <option value="">All</option>
-            <option value="inbound">Inbound</option>
-            <option value="outbound">Outbound</option>
-            <option value="internal">Internal</option>
-          </select>
-        </label>
+        {!lifecycleOnly && (
+          <>
+            <label>
+              <span>Channel</span>
+              <select value={channel} onChange={(event) => setChannel(event.target.value)}>
+                <option value="">All</option>
+                <option value="email">Email</option>
+                <option value="whatsapp">WhatsApp</option>
+                <option value="internal_email">Internal email</option>
+              </select>
+            </label>
+            <label>
+              <span>Direction</span>
+              <select value={direction} onChange={(event) => setDirection(event.target.value)}>
+                <option value="">All</option>
+                <option value="inbound">Inbound</option>
+                <option value="outbound">Outbound</option>
+                <option value="internal">Internal</option>
+              </select>
+            </label>
+          </>
+        )}
         <label>
           <span>Intent type</span>
           <select value={intentType} onChange={(event) => setIntentType(event.target.value)}>
             <option value="">All</option>
-            <option value="family_signup_email_ack">Family signup email acknowledgement</option>
-            <option value="family_signup_whatsapp_confirmation">
-              Family signup WhatsApp confirmation
-            </option>
-            <option value="internal_lead_alert">Internal owner alert</option>
-            <option value="single_recipient_reply">Single-recipient reply</option>
+            {!lifecycleOnly && (
+              <>
+                <option value="family_signup_email_ack">Family signup email acknowledgement</option>
+                <option value="family_signup_whatsapp_confirmation">
+                  Family signup WhatsApp confirmation
+                </option>
+                <option value="internal_lead_alert">Internal owner alert</option>
+                <option value="single_recipient_reply">Single-recipient reply</option>
+              </>
+            )}
             <option value="password_reset">Password reset</option>
             <option value="account_activation">Account setup</option>
             <option value="student_pin_setup">Student PIN setup</option>
             <option value="student_pin_reset">Student PIN reset</option>
-            <option value="whatsapp_inbound_message">WhatsApp inbound message</option>
-            <option value="whatsapp_provider_event">WhatsApp provider event</option>
-            <option value="historical_import_event">Historical import event</option>
-            <option value="history_unavailable">History unavailable</option>
+            {!lifecycleOnly && (
+              <>
+                <option value="whatsapp_inbound_message">WhatsApp inbound message</option>
+                <option value="whatsapp_provider_event">WhatsApp provider event</option>
+                <option value="historical_import_event">Historical import event</option>
+                <option value="history_unavailable">History unavailable</option>
+              </>
+            )}
           </select>
         </label>
         <label>
@@ -177,40 +185,42 @@ export function CommunicationsFeature({ contactId, onProtectedStateCleared }: Pr
             <option value="">All</option>
             <option value="queued">Queued</option>
             <option value="provider_accepted">Provider accepted</option>
-            <option value="provider_sent">Provider sent</option>
+            {!lifecycleOnly && <option value="provider_sent">Provider sent</option>}
             <option value="delivered">Delivered</option>
-            <option value="read">Read</option>
-            <option value="received">Received</option>
-            <option value="processed">Processed</option>
+            {!lifecycleOnly && <option value="read">Read</option>}
+            {!lifecycleOnly && <option value="received">Received</option>}
+            {!lifecycleOnly && <option value="processed">Processed</option>}
+            <option value="sink_delivered">Processed by non-provider sink</option>
             <option value="failed">Failed</option>
             <option value="bounced">Bounced</option>
             <option value="complained">Complained</option>
-            <option value="suppressed">Suppressed</option>
-            <option value="draft_saved">Draft saved/provider off</option>
-            <option value="duplicate">Duplicate ignored</option>
+            {!lifecycleOnly && <option value="suppressed">Suppressed</option>}
+            {!lifecycleOnly && <option value="draft_saved">Draft saved/provider off</option>}
+            {!lifecycleOnly && <option value="duplicate">Duplicate ignored</option>}
             <option value="unknown">Unknown</option>
             <option value="retrying">Retry scheduled</option>
             <option value="expired">Expired</option>
             <option value="superseded">Superseded</option>
             <option value="provider_off">Provider off</option>
             <option value="cleared">Sensitive payload cleared</option>
-            <option value="history_unavailable">History unavailable</option>
+            {!lifecycleOnly && <option value="history_unavailable">History unavailable</option>}
           </select>
         </label>
-        <label>
-          <span>Source</span>
-          <select value={source} onChange={(event) => setSource(event.target.value)}>
-            <option value="">All</option>
-            <option value="canonical_history_event">Canonical history</option>
-            <option value="local_outbox_intent">Local outbound intent</option>
-            <option value="crm_reply_draft">Provider-off draft</option>
-            <option value="stored_whatsapp_webhook">Stored WhatsApp webhook</option>
-            <option value="stored_provider_delivery_event">Stored provider status</option>
-            <option value="account_lifecycle_outbox">Account security delivery</option>
-            <option value="historical_import">Historical import</option>
-            <option value="provider_history_unavailable">History unavailable</option>
-          </select>
-        </label>
+        {!lifecycleOnly && (
+          <label>
+            <span>Source</span>
+            <select value={source} onChange={(event) => setSource(event.target.value)}>
+              <option value="">All</option>
+              <option value="canonical_history_event">Canonical history</option>
+              <option value="local_outbox_intent">Local outbound intent</option>
+              <option value="crm_reply_draft">Provider-off draft</option>
+              <option value="stored_whatsapp_webhook">Stored WhatsApp webhook</option>
+              <option value="stored_provider_delivery_event">Stored provider status</option>
+              <option value="historical_import">Historical import</option>
+              <option value="provider_history_unavailable">History unavailable</option>
+            </select>
+          </label>
+        )}
         <div className="communications-filter-actions">
           <button type="submit">Apply</button>
           <button
@@ -222,7 +232,7 @@ export function CommunicationsFeature({ contactId, onProtectedStateCleared }: Pr
               setDirection('');
               setIntentType('');
               setStatus('');
-              setSource('');
+              setSource(lifecycleOnly ? 'account_lifecycle_outbox' : '');
               void load();
             }}
           >
@@ -233,26 +243,22 @@ export function CommunicationsFeature({ contactId, onProtectedStateCleared }: Pr
 
       {state.kind === 'loading' && (
         <p className="communications-loading" role="status">
-          Loading communication history...
+          {lifecycleOnly
+            ? 'Loading account delivery history...'
+            : 'Loading communication history...'}
         </p>
       )}
       {state.kind === 'empty' && (
-        <StatePanel
-          title={
-            data?.mailbox_complete
-              ? 'No matching adult conversations'
-              : 'Rabbi inbox is not connected yet'
-          }
-        >
-          {data?.mailbox_complete
-            ? 'No adult conversation records matched this filter.'
-            : 'No email is being hidden. Connect and route info@onetimeonetime.com in GHL, then use GHL Conversations for inbound mail and replies. One Time will keep its local delivery record separate.'}
+        <StatePanel title={lifecycleOnly ? 'No matching account delivery history' : 'No history'}>
+          {lifecycleOnly
+            ? 'No setup, reset, or PIN delivery records for active One Time accounts matched these filters.'
+            : 'No local communication records matched these filters.'}
         </StatePanel>
       )}
       {state.kind === 'unavailable' && (
-        <StatePanel title="Historical provider history unavailable">
-          This does not mean the adult inbox is empty. GHL Conversations remains the source of truth
-          until its governed mailbox history is available here.
+        <StatePanel title="Account delivery history unavailable">
+          One Time could not read the local account delivery history. No external mailbox state is
+          inferred.
         </StatePanel>
       )}
       {state.kind === 'validation_error' && (
@@ -270,20 +276,24 @@ export function CommunicationsFeature({ contactId, onProtectedStateCleared }: Pr
           <table className="communications-table">
             <thead>
               <tr>
-                <th scope="col">Recipient</th>
-                <th scope="col">Thread</th>
+                <th scope="col">{lifecycleOnly ? 'Account and destination' : 'Recipient'}</th>
+                <th scope="col">{lifecycleOnly ? 'Delivery' : 'Thread'}</th>
                 <th scope="col">Channel</th>
                 <th scope="col">Direction</th>
                 <th scope="col">Truth status</th>
                 <th scope="col">Source</th>
                 <th scope="col">Time</th>
                 <th scope="col">State time</th>
-                <th scope="col">Contact</th>
+                {!lifecycleOnly && <th scope="col">Contact</th>}
               </tr>
             </thead>
             <tbody>
               {data.items.map((item, index) => (
-                <CommunicationRow item={item} key={`${item.queued_at}-${index}`} />
+                <CommunicationRow
+                  item={item}
+                  lifecycleOnly={lifecycleOnly}
+                  key={`${item.queued_at}-${index}`}
+                />
               ))}
             </tbody>
           </table>
@@ -315,10 +325,13 @@ export function CommunicationsFeature({ contactId, onProtectedStateCleared }: Pr
 
 type Item = CommunicationsListResponse['items'][number];
 
-function CommunicationRow({ item }: { item: Item }) {
+function CommunicationRow({ item, lifecycleOnly }: { item: Item; lifecycleOnly: boolean }) {
   return (
     <tr>
-      <td>{item.recipient_masked}</td>
+      <td>
+        {lifecycleOnly && <strong>{item.participant_label}</strong>}
+        <span>{item.recipient_masked}</span>
+      </td>
       <td>
         <strong>{item.thread_label}</strong>
         <span>{item.preview_redacted}</span>
@@ -329,7 +342,9 @@ function CommunicationRow({ item }: { item: Item }) {
       <td>{item.source_label}</td>
       <td>{formatDate(item.occurred_at)}</td>
       <td>{item.state_at ? formatDate(item.state_at) : 'Unavailable'}</td>
-      <td>{item.contact_path ? <a href={item.contact_path}>View contact</a> : 'Unavailable'}</td>
+      {!lifecycleOnly && (
+        <td>{item.contact_path ? <a href={item.contact_path}>View contact</a> : 'Unavailable'}</td>
+      )}
     </tr>
   );
 }
@@ -343,6 +358,10 @@ function CommunicationSummary({ item }: { item: Item }) {
         <div>
           <dt>Participant</dt>
           <dd>{item.participant_label}</dd>
+        </div>
+        <div>
+          <dt>Destination</dt>
+          <dd>{item.recipient_masked}</dd>
         </div>
         <div>
           <dt>Channel</dt>
@@ -531,6 +550,7 @@ function emptyUnavailableResponse(): CommunicationsListResponse {
         'complained',
         'suppressed',
         'draft_saved',
+        'sink_delivered',
         'duplicate',
         'unknown',
         'retrying',

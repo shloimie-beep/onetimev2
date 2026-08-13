@@ -121,6 +121,13 @@ export function normalizeCommunicationsStatus(input: {
   if (input.status === 'processed') {
     return { localState: 'processed', stateLabel: 'Processed locally', stateAt: null };
   }
+  if (input.status === 'sink_delivered') {
+    return {
+      localState: 'sink_delivered',
+      stateLabel: 'Processed by non-provider sink',
+      stateAt: input.deliveredAt ? toIso(input.deliveredAt) : null,
+    };
+  }
   if (input.status === 'failed') {
     return {
       localState: 'failed',
