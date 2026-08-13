@@ -87,10 +87,7 @@ describe('production-basic native Meeting SDK adapter', () => {
     const consumer = vi.fn(() => {
       throw new Error('consumer failure');
     });
-    const joined = joinZoomMeetingParticipantWithApi(
-      sdk.api,
-      input({ onMeetingStatus: consumer }),
-    );
+    const joined = joinZoomMeetingParticipantWithApi(sdk.api, input({ onMeetingStatus: consumer }));
     sdk.emit(2);
     await expect(joined).resolves.toBeUndefined();
     sdk.emit(3);
