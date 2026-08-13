@@ -17,7 +17,9 @@ ALTER TABLE onetime.class_occurrences
       AND production_basic_live_expires_at
         <= production_basic_live_confirmed_at + interval '2 hours'
       AND production_basic_meeting_ref_digest IS NOT NULL
-      AND production_basic_meeting_ref_digest ~ '^[a-f0-9]{64}$'
+      AND length(production_basic_meeting_ref_digest) = 64
+      AND production_basic_meeting_ref_digest = lower(production_basic_meeting_ref_digest)
+      AND production_basic_meeting_ref_digest = btrim(production_basic_meeting_ref_digest)
     )
   );
 
