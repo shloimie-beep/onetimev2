@@ -36,6 +36,7 @@
 - Communications contract and active-account view: 11/11 passed.
 - Communications protected HTTP and database projection: 17/17 passed.
 - Exact visible-action registry projection: 5/5 passed after the final rebased source bytes were fixed.
+- Communications workflow/readback browser acceptance: 1/1 passed with the active-account copy and no GHL routing text.
 - TypeScript typecheck passed.
 - Changed-file ESLint passed.
 - Changed-file Prettier check passed.
