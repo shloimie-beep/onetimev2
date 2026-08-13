@@ -9,7 +9,9 @@
 
 - PR #131 is the sole product integration and deployment path.
 - PR #189 already owns the current Zoom Student-live-state delta. Do not open a competing Zoom implementation branch.
-- PR #171 is the current local media-runner/Vimeo successor candidate, but it predates the latest PR #131 head and requires current-head reconciliation before integration.
+- PR #170 is merged and is the current safe local-only media-preparation runner.
+- Issue #172 owns the single protected Library canary and current media handoff.
+- PR #171 overlaps PR #170, is conflicting, and must not be merged wholesale. Port only still-required provider/import deltas onto the current PR #131 head in a fresh bounded lane if issue #172 proves they remain necessary.
 - PR #145 contains the bounded GHL OT-01 and Rabbi sender/reply proof. It does not complete the state-driven Family sequence.
 - The Rabbi Telegram communications worker from merged PR #119 exists in the current codebase, but production provider activation and the support-agent bridge are not yet accepted.
 - PR #183 owns current operator overrides, marketing strategy, media organization, attribution, pipeline/email design, and this coordination map.
@@ -30,13 +32,15 @@
 
 **Write scope:** existing PR #189 files only; no GHL, Vimeo/content, Telegram, marketing, or consent work.
 
-## Lane 2 — Vimeo/content and local runner
+## Lane 2 — Vimeo/content and protected Library canary
 
-**Existing work:** PR #171 plus current PR #131 content implementation.
+**Existing work:** merged PR #170 plus issue #172 and the current PR #131 content implementation.
 
-**Purpose:** reconcile the local Windows runner to current PR #131, complete local intake → FFmpeg → optional transcription → private Vimeo → Admin review → protected Student playback → safe unpublish.
+**Purpose:** use the already reviewed media and current private Vimeo object, reconcile only the still-required import/provider delta onto the latest PR #131 head, then complete exact occurrence-bound Draft import → human review/approval → authorized Student playback → unauthorized-account denial → safe unpublish/revocation.
 
-**Write scope:** local media runner, content local-control routes, content runbooks/tests, and required current-head handoff. No Zoom, GHL, Telegram, marketing, or broad UI work.
+**Write scope:** current-head content import/control paths, local media runbooks/tests, issue #172 evidence, and exact acceptance handoff. No competing network runner, duplicate Vimeo upload, Zoom, GHL, Telegram, marketing, or broad UI work.
+
+**Stop rule:** do not restart or merge PR #171 wholesale. Do not create a duplicate Vimeo object or repeat a provider effect whose status is already known.
 
 ## Lane 3 — GHL pipeline, attribution, and Family emails
 
@@ -69,7 +73,7 @@
 3. Start the marketing-media lane because it is mechanically isolated.
 4. Start the GHL lane read-only, then Draft-only after exact audit.
 5. Start the Telegram lane from current PR #131 after it records current foundation and non-overlapping paths.
-6. Resume/reconcile PR #171 as the sole Vimeo/content runner lane.
+6. Start one issue-#172 content/Library-canary lane from the latest PR #131 head; use PR #170 as the merged runner foundation and PR #171 only as selective historical implementation evidence.
 
 ## Integration order
 
@@ -77,7 +81,7 @@
 2. Source-of-truth reconciliation from PR #183 into PR #131.
 3. Parent/Student activation and GHL bridge proof.
 4. Telegram owner-only canary.
-5. One real protected library-video acceptance through the local media runner.
+5. One real protected library-video acceptance through issue #172.
 6. Final lifecycle email seed and launch acceptance.
 
 Marketing-media Drive output does not block product integration and remains a separate child PR.
