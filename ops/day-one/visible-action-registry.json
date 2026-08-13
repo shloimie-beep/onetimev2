@@ -148,7 +148,7 @@
     },
     {
       "path": "apps/web/src/client/app/zoom-meeting-sdk-client.ts",
-      "sha256": "f8f782c5a57205569366f137b99e180ccbdf779d177fcf34c85cc4308572e1ea"
+      "sha256": "4c1d8218679c8504ba6776b8a563e562412fea0aa652235534641622be80bb3d"
     },
     {
       "path": "apps/web/src/client/app/portal-entry.tsx",
