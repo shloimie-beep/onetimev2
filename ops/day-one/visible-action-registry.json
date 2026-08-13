@@ -24,7 +24,7 @@
     },
     {
       "path": "apps/web/src/server/app.ts",
-      "sha256": "1a8f91a5df31804ec99042a7de5d1fdced5c6d2024a08a44d8ed78b9459f1b34"
+      "sha256": "d7e94f5e8bd15341016cda72f51907bbba578ffa35aa4efa96e2d46166c9b02f"
     },
     {
       "path": "apps/web/src/server/communications/register.ts",
@@ -72,11 +72,11 @@
     },
     {
       "path": "apps/web/src/server/features/classroom/production-basic/router.ts",
-      "sha256": "12ff7d4450c2e2c357efc7fc5be1df41c623dce3ca4ecad82eb182046709eb9d"
+      "sha256": "f68a719a3554e96c4698a35a56f6cc854015fa628ce4a9906c3747e7c157ae99"
     },
     {
       "path": "apps/web/src/server/features/classroom/production-basic/service.ts",
-      "sha256": "51b98f9163a289894ec966cda0453231009c6b2ad35b6b5e3dc9145013fad045"
+      "sha256": "9f5e85c2fcdd3d112dc97fbe3b34f4cfdce38a62f4e35dcad27a3af4c221c33d"
     },
     {
       "path": "apps/web/src/server/features/learning/router.ts",
@@ -144,7 +144,7 @@
     },
     {
       "path": "apps/web/src/client/app/live-entry.tsx",
-      "sha256": "fdabe57864c9c163657c84a8778a5dc17a14281f593918004e5cd8c63b88c7a4"
+      "sha256": "82d45278b09fb141120c33dd1ee8e19ba90b87f799c8867da3fc8d51ef22ac1c"
     },
     {
       "path": "apps/web/src/client/app/zoom-meeting-sdk-client.ts",
@@ -152,7 +152,7 @@
     },
     {
       "path": "apps/web/src/client/app/portal-entry.tsx",
-      "sha256": "fc3eea933da3160b825156a25e093b18875efc0c13fbd547d6a3a8a54a7680f7"
+      "sha256": "51abb405df29443dfd38dce2f188f8340058612424d172380d12dfc35d875650"
     },
     {
       "path": "apps/web/src/client/app/student/classroom/StudentClassroomWorkspace.tsx",
@@ -176,11 +176,11 @@
     },
     {
       "path": "apps/web/src/client/classroom/production-basic-launch-client.ts",
-      "sha256": "94cf516faf46d6de2dcd9da9a150f26ce19d3bc18e647b20270bef5f707257f4"
+      "sha256": "1e3c414ba1c551dfd6b32afda06823ab4ec2d24cc78c97f1eb88512ebc2afca6"
     },
     {
       "path": "apps/web/src/client/features/portals/PortalFeatures.tsx",
-      "sha256": "e7d205bbfae4756294722af94dbf102fa2a3c945e168c4c00a4ee0a1d4130393"
+      "sha256": "9827d1e042efa7dd90713b9619f36f033a6912e77f8ecdac1de071b40bc99f18"
     },
     {
       "path": "apps/web/src/client/app/router/registry.ts",

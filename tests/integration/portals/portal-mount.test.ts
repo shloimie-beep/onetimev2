@@ -274,6 +274,7 @@ describe('OT-71 mounted parent and student portals', () => {
 
   it('requires the exact active Student enrollment, not another household or sibling enrollment', async () => {
     await seedCanonicalClass();
+    await seedCurrentProductionBasicOccurrence();
     const server = await listenForTest(
       createApp({ config: productionBasicConfig(), pool, distDir, clock: productionBasicNow }),
     );
@@ -287,7 +288,53 @@ describe('OT-71 mounted parent and student portals', () => {
       await expectProductionBasicStatus(server.baseUrl, student.cookies, false);
 
       await seedClassEnrollment('learner_alpha', 'household_alpha', 'signed-in-student');
+      await expectProductionBasicStatus(server.baseUrl, student.cookies, false);
+
+      const admin = await loginAs(server.baseUrl, 'admin@example.test', 'AdminPass!234');
+      const hostLive = await fetch(
+        `${server.baseUrl}/api/v1/classroom/production-basic/host-live`,
+        {
+          method: 'POST',
+          headers: { cookie: admin.cookies, 'x-csrf-token': admin.json.csrf_token },
+        },
+      );
+      expect(hostLive.status).toBe(200);
+      await expect(hostLive.json()).resolves.toEqual({
+        success: true,
+        data: { state: 'live' },
+      });
       await expectProductionBasicStatus(server.baseUrl, student.cookies, true);
+
+      const liveVersion = await productionBasicOccurrenceVersion();
+      const hostEnded = await fetch(
+        `${server.baseUrl}/api/v1/classroom/production-basic/host-ended`,
+        {
+          method: 'POST',
+          headers: { cookie: admin.cookies, 'x-csrf-token': admin.json.csrf_token },
+        },
+      );
+      expect(hostEnded.status).toBe(200);
+      await expect(hostEnded.json()).resolves.toEqual({
+        success: true,
+        data: { state: 'scheduled' },
+      });
+      await expectProductionBasicStatus(server.baseUrl, student.cookies, false);
+
+      const clearedVersion = await productionBasicOccurrenceVersion();
+      expect(clearedVersion).toBe(liveVersion + 1);
+      const hostEndedRetry = await fetch(
+        `${server.baseUrl}/api/v1/classroom/production-basic/host-ended`,
+        {
+          method: 'POST',
+          headers: { cookie: admin.cookies, 'x-csrf-token': admin.json.csrf_token },
+        },
+      );
+      expect(hostEndedRetry.status).toBe(200);
+      await expect(hostEndedRetry.json()).resolves.toEqual({
+        success: true,
+        data: { state: 'scheduled' },
+      });
+      expect(await productionBasicOccurrenceVersion()).toBe(clearedVersion);
     } finally {
       await server.close();
     }
@@ -1676,6 +1723,42 @@ async function seedClassEnrollment(learnerKey: string, householdKey: string, suf
       `test:${suffix}`,
     ],
   );
+}
+
+async function seedCurrentProductionBasicOccurrence() {
+  await pool.query(
+    `INSERT INTO onetime.class_occurrences
+       (occurrence_key, account_key, product_key, class_series_key, local_class_date,
+        starts_at, reminder_due_at, joinable_until, occurrence_state, join_opens_at,
+        join_closes_at, scheduled_ends_at)
+     VALUES ('production-basic-current', $1, $2, 'production-basic-canonical',
+             DATE '2026-08-12', '2026-08-12T16:00:00.000Z', '2026-08-12T15:30:00.000Z',
+             '2026-08-12T17:15:00.000Z', 'scheduled', '2026-08-12T15:50:00.000Z',
+             '2026-08-12T17:15:00.000Z', '2026-08-12T17:00:00.000Z')`,
+    [config.accountKey, config.productKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.classroom_occurrence_learner_entitlements
+       (occurrence_entitlement_key, account_key, product_key, occurrence_key, household_key,
+        learner_key, entitlement_state, source)
+     VALUES ('production-basic-current-learner-alpha', $1, $2, 'production-basic-current',
+             'household_alpha', 'learner_alpha', 'active', 'isolated_acceptance')`,
+    [config.accountKey, config.productKey],
+  );
+}
+
+async function productionBasicOccurrenceVersion() {
+  const result = await pool.query<{ version: number }>(
+    `SELECT version
+       FROM onetime.class_occurrences
+      WHERE account_key = $1
+        AND product_key = $2
+        AND occurrence_key = 'production-basic-current'`,
+    [config.accountKey, config.productKey],
+  );
+  const version = result.rows[0]?.version;
+  if (typeof version !== 'number') throw new Error('production-basic occurrence version missing');
+  return version;
 }
 
 async function expectProductionBasicStatus(baseUrl: string, cookies: string, available: boolean) {

@@ -11,6 +11,10 @@ import {
   createProductionBasicLaunchService,
   createCanonicalProductionBasicMeetingBinding,
 } from './features/classroom/production-basic/service.ts';
+import {
+  createProductionBasicHostLiveMarker,
+  createProductionBasicLiveClassAccessAdapter,
+} from './features/classroom/production-basic/live-marker-repository.ts';
 import { asBotKey } from '../../../../packages/contracts/src/telegram/types.ts';
 import { inTransaction, type DbPool, type Queryable } from '../../../../packages/db/src/index.ts';
 import { createPostgresBillingRepositories } from '../../../../packages/db/src/billing/repository.ts';
@@ -3187,12 +3191,14 @@ export function createApp({
   // This is intentionally not connected to the canary/occurrence/registrant
   // runtime. The later provider authorization binds one opaque recurring
   // meeting here; until then every request fails closed without a provider call.
+  const productionBasicMeetingBinding = createCanonicalProductionBasicMeetingBinding({
+    config,
+    verified_binding: config.zoomProductionBasicVerifiedBinding,
+    ...(clock ? { clock } : {}),
+  });
   const productionBasicClassroomService = createProductionBasicLaunchService({
-    binding: createCanonicalProductionBasicMeetingBinding({
-      config,
-      verified_binding: config.zoomProductionBasicVerifiedBinding,
-      ...(clock ? { clock } : {}),
-    }),
+    binding: productionBasicMeetingBinding,
+    hostLiveMarker: createProductionBasicHostLiveMarker(pool),
     ...(clock ? { clock } : {}),
   });
   const liveClassService = createLiveClassService({
@@ -3209,21 +3215,28 @@ export function createApp({
     repository: gamificationRepository,
     ...(clock ? { clock } : {}),
   });
+  const baseClassAccess = config.zoomClassroomEnabled
+    ? createClassroomPortalAccessAdapter({
+        classroom: classroomService,
+        currentAccess: ({ actor, learner }) =>
+          householdHasLearningAccess({
+            db: pool,
+            accountKey: actor.account_key,
+            productKey: actor.product_key,
+            householdKey: learner.household_key,
+            ...(clock ? { now: clock() } : {}),
+          }),
+      })
+    : createClassPortalAccessAdapter({ pool, config });
   const portalServiceDeps: PortalServiceDeps = {
     repository: portalRepository,
-    classAccess: config.zoomClassroomEnabled
-      ? createClassroomPortalAccessAdapter({
-          classroom: classroomService,
-          currentAccess: ({ actor, learner }) =>
-            householdHasLearningAccess({
-              db: pool,
-              accountKey: actor.account_key,
-              productKey: actor.product_key,
-              householdKey: learner.household_key,
-              ...(clock ? { now: clock() } : {}),
-            }),
-        })
-      : createClassPortalAccessAdapter({ pool, config }),
+    classAccess: createProductionBasicLiveClassAccessAdapter({
+      base: baseClassAccess,
+      pool,
+      meeting_ref_digest: productionBasicMeetingBinding.referenceDigest(),
+      binding_ready: () => productionBasicMeetingBinding.ready(),
+      ...(clock ? { clock } : {}),
+    }),
     contentAccess: createContentPortalAccessAdapter({ pool, config }),
     credentialLifecycle: createAccountLifecycleCredentialAdapter({ pool, config }),
     progress: createPortalProgressAdapter(pool),

@@ -1,6 +1,7 @@
 import express, { type Request } from 'express';
 import { ZoomApiError } from '../../../../../../../packages/domain/src/providers/zoom-rest.ts';
 import type { ProductionBasicActor } from './service.ts';
+import type { ProductionBasicHostLiveResult } from './service.ts';
 import type { ProductionBasicLaunchResult } from './service.ts';
 
 export interface ProductionBasicRequestIdentityResolver {
@@ -19,6 +20,8 @@ export function createProductionBasicRouter(input: {
   service: {
     ready(actor: ProductionBasicActor): Promise<boolean>;
     request(actor: ProductionBasicActor): Promise<ProductionBasicLaunchResult>;
+    confirmHostLive(actor: ProductionBasicActor): Promise<ProductionBasicHostLiveResult>;
+    clearHostLive(actor: ProductionBasicActor): Promise<ProductionBasicHostLiveResult>;
   };
   onLaunchFailure?: ((event: ProductionBasicLaunchFailureEvent) => void) | undefined;
 }) {
@@ -55,6 +58,54 @@ export function createProductionBasicRouter(input: {
       return;
     }
     response.json({ success: true, data: { launch_artifact: result.artifact } });
+  });
+  router.post('/host-live', async (request, response) => {
+    if (requestHasBody(request)) {
+      response.status(400).json(unavailable());
+      return;
+    }
+    const identity = await input.identities.resolve(request);
+    if (!identity || !identity.csrf_verified) {
+      response.status(403).json(unavailable());
+      return;
+    }
+    let result: ProductionBasicHostLiveResult;
+    try {
+      result = await input.service.confirmHostLive(identity.actor);
+    } catch (error) {
+      reportLaunchFailure(input.onLaunchFailure, classifyLaunchFailure(error));
+      response.status(503).json(unavailable());
+      return;
+    }
+    if (result.disposition !== 'ready') {
+      response.status(result.disposition === 'denied' ? 403 : 503).json(unavailable());
+      return;
+    }
+    response.json({ success: true, data: { state: 'live' } });
+  });
+  router.post('/host-ended', async (request, response) => {
+    if (requestHasBody(request)) {
+      response.status(400).json(unavailable());
+      return;
+    }
+    const identity = await input.identities.resolve(request);
+    if (!identity || !identity.csrf_verified) {
+      response.status(403).json(unavailable());
+      return;
+    }
+    let result: ProductionBasicHostLiveResult;
+    try {
+      result = await input.service.clearHostLive(identity.actor);
+    } catch (error) {
+      reportLaunchFailure(input.onLaunchFailure, classifyLaunchFailure(error));
+      response.status(503).json(unavailable());
+      return;
+    }
+    if (result.disposition !== 'ready') {
+      response.status(result.disposition === 'denied' ? 403 : 503).json(unavailable());
+      return;
+    }
+    response.json({ success: true, data: { state: 'scheduled' } });
   });
   router.get('/status', async (request, response) => {
     const identity = await input.identities.resolve(request);

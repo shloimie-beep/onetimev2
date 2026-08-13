@@ -8,6 +8,7 @@ import {
   createProductionBasicLaunchService,
   createUnavailableProductionBasicMeetingBinding,
   type ProductionBasicActor,
+  type ProductionBasicHostLiveMarker,
   type ProductionBasicLaunchArtifact,
 } from './service.ts';
 import type { AppConfig } from '../../../../../../../packages/config/src/index.ts';
@@ -77,6 +78,93 @@ describe('production-basic Meeting SDK launch', () => {
     });
     expect(injected.status).toBe(400);
     expect(issue).toHaveBeenCalledTimes(1);
+  });
+
+  it('confirms a bounded live marker only for an authorized host and is retry-safe', async () => {
+    const admin: ProductionBasicActor = {
+      kind: 'admin',
+      scope: STUDENT.scope,
+      actor_user_ref: 'admin-derived',
+      display_name: 'Admin',
+      authorized_to_start: true,
+    };
+    const confirm = vi.fn<ProductionBasicHostLiveMarker['confirm']>().mockResolvedValue(true);
+    const baseUrl = await start({ actor: admin, issue: async () => artifact(1), confirm });
+
+    await expect(post(baseUrl, '/host-live').then((response) => response.status)).resolves.toBe(
+      200,
+    );
+    await expect(post(baseUrl, '/host-live').then((response) => response.status)).resolves.toBe(
+      200,
+    );
+    expect(confirm).toHaveBeenCalledTimes(2);
+    expect(confirm).toHaveBeenNthCalledWith(1, {
+      scope: STUDENT.scope,
+      meeting_ref_digest: expect.stringMatching(/^[a-f0-9]{64}$/u),
+      confirmed_at: new Date('2026-08-12T10:00:00.000Z'),
+    });
+
+    const studentConfirm = vi
+      .fn<ProductionBasicHostLiveMarker['confirm']>()
+      .mockResolvedValue(true);
+    const studentBaseUrl = await start({
+      actor: STUDENT,
+      issue: async () => artifact(0),
+      confirm: studentConfirm,
+    });
+    expect((await post(studentBaseUrl, '/host-live')).status).toBe(403);
+    expect(studentConfirm).not.toHaveBeenCalled();
+  });
+
+  it('clears the live marker idempotently when the authorized host disconnects', async () => {
+    const admin: ProductionBasicActor = {
+      kind: 'admin',
+      scope: STUDENT.scope,
+      actor_user_ref: 'admin-derived',
+      display_name: 'Admin',
+      authorized_to_start: true,
+    };
+    const clear = vi.fn<ProductionBasicHostLiveMarker['clear']>().mockResolvedValue(undefined);
+    const baseUrl = await start({ actor: admin, issue: async () => artifact(1), clear });
+
+    expect((await post(baseUrl, '/host-ended')).status).toBe(200);
+    expect((await post(baseUrl, '/host-ended')).status).toBe(200);
+    expect(clear).toHaveBeenCalledTimes(2);
+    expect(clear).toHaveBeenNthCalledWith(1, {
+      scope: STUDENT.scope,
+      meeting_ref_digest: expect.stringMatching(/^[a-f0-9]{64}$/u),
+      cleared_at: new Date('2026-08-12T10:00:00.000Z'),
+    });
+
+    const studentClear = vi
+      .fn<ProductionBasicHostLiveMarker['clear']>()
+      .mockResolvedValue(undefined);
+    const studentBaseUrl = await start({
+      actor: STUDENT,
+      issue: async () => artifact(0),
+      clear: studentClear,
+    });
+    expect((await post(studentBaseUrl, '/host-ended')).status).toBe(403);
+    expect(studentClear).not.toHaveBeenCalled();
+  });
+
+  it('keeps Student readiness and launch unavailable until the host live receipt is current', async () => {
+    const current = vi
+      .fn<ProductionBasicHostLiveMarker['currentForStudent']>()
+      .mockResolvedValue(false);
+    const baseUrl = await start({ actor: STUDENT, issue: async () => artifact(0), current });
+
+    await expect(fetch(`${baseUrl}/status`).then((response) => response.json())).resolves.toEqual({
+      success: true,
+      data: { mode: 'production_basic', available: false },
+    });
+    expect((await post(baseUrl, '/launch')).status).toBe(503);
+    expect(current).toHaveBeenCalledWith({
+      scope: STUDENT.scope,
+      learner_key: STUDENT.learner_key,
+      meeting_ref_digest: expect.stringMatching(/^[a-f0-9]{64}$/u),
+      observed_at: new Date('2026-08-12T10:00:00.000Z'),
+    });
   });
 
   it('returns governed JSON and observes only a clamped provider failure code', async () => {
@@ -296,15 +384,31 @@ async function start(input: {
     actor: ProductionBasicActor;
     role: 0 | 1;
   }) => Promise<ProductionBasicLaunchArtifact>;
+  confirm?: ProductionBasicHostLiveMarker['confirm'];
+  current?: ProductionBasicHostLiveMarker['currentForStudent'];
+  clear?: ProductionBasicHostLiveMarker['clear'];
   onLaunchFailure?: ((event: ProductionBasicLaunchFailureEvent) => void) | undefined;
 }) {
   const service = createProductionBasicLaunchService({
     binding: input.issue
       ? {
           ready: async () => true,
+          referenceDigest: () =>
+            createHash('sha256')
+              .update('production-basic-meeting-v1\0recurring-meeting')
+              .digest('hex'),
           issue: async (launch) => input.issue!({ actor: launch.actor, role: launch.role }),
         }
       : createUnavailableProductionBasicMeetingBinding(),
+    ...(input.issue || input.confirm || input.current || input.clear
+      ? {
+          hostLiveMarker: {
+            confirm: input.confirm ?? (async () => true),
+            currentForStudent: input.current ?? (async () => true),
+            clear: input.clear ?? (async () => undefined),
+          },
+        }
+      : {}),
     clock: () => new Date('2026-08-12T10:00:00.000Z'),
   });
   const app = express();
