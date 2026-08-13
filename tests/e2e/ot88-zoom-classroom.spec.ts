@@ -160,14 +160,28 @@ test.describe('OT-88 mocked Zoom classroom launch', () => {
           contentType: 'application/javascript',
           body: `
             window.__zoomJoinCalls = [];
+            window.__zoomMeetingStatusListener = undefined;
             window.ZoomMtg = {
               setZoomJSLib() {},
               preLoadWasm() {},
               prepareWebSDK() {},
+              inMeetingServiceListener(name, listener) {
+                if (name === 'onMeetingStatus') {
+                  window.__zoomMeetingStatusListener = listener;
+                }
+              },
+              removeInMeetingServiceListener(name, listener) {
+                if (
+                  name === 'onMeetingStatus' &&
+                  window.__zoomMeetingStatusListener === listener
+                ) {
+                  window.__zoomMeetingStatusListener = undefined;
+                }
+              },
               init(options) { options.success(); },
               join(options) {
                 window.__zoomJoinCalls.push({
-                  sdkKey: options.sdkKey,
+                  sdkKeyPresent: Object.prototype.hasOwnProperty.call(options, 'sdkKey'),
                   meetingNumber: options.meetingNumber,
                   passWord: options.passWord,
                   customerKey: options.customerKey,
@@ -177,6 +191,7 @@ test.describe('OT-88 mocked Zoom classroom launch', () => {
                   options.error({ errorCode: 1, reason: 'deterministic test rejection' });
                 } else {
                   options.success();
+                  window.__zoomMeetingStatusListener?.({ status: 2 });
                 }
               }
             };
@@ -218,14 +233,14 @@ test.describe('OT-88 mocked Zoom classroom launch', () => {
     expect(bootstrapPosts).toBe(1);
     expect(await zoomJoinCalls(page)).toEqual([
       {
-        sdkKey: 'sdk-client-e2e',
+        sdkKeyPresent: false,
         meetingNumber: '987654321',
         passWord: 'protected-test-passcode',
         customerKey: 'zoom_ck_1234567890abcdef12345678',
         userName: 'E2E Zoom Learner',
       },
       {
-        sdkKey: 'sdk-client-e2e',
+        sdkKeyPresent: false,
         meetingNumber: '987654321',
         passWord: 'protected-test-passcode',
         customerKey: 'zoom_ck_1234567890abcdef12345678',
@@ -310,7 +325,7 @@ async function zoomJoinCalls(page: Page) {
       (
         window as unknown as {
           __zoomJoinCalls?: Array<{
-            sdkKey: string;
+            sdkKeyPresent: boolean;
             meetingNumber: string;
             passWord: string;
             customerKey: string;
