@@ -1,6 +1,6 @@
 import { sdkErrorSummary } from './zoom-sdk-safety.ts';
 
-type ZoomApi = Record<
+export type ZoomMeetingSdkApi = Record<
   'setZoomJSLib' | 'preLoadWasm' | 'prepareWebSDK' | 'inMeetingServiceListener' | 'init' | 'join',
   (...args: unknown[]) => unknown
 > & {
@@ -30,38 +30,53 @@ export type ZoomParticipantJoinInput = {
 
 export type ZoomMeetingStatus = 1 | 2 | 3 | 4;
 
-const meetingSdkByVersion = new Map<string, Promise<ZoomApi>>();
+const meetingSdkByVersion = new Map<string, Promise<ZoomMeetingSdkApi>>();
 
 export async function joinZoomMeetingParticipant(input: ZoomParticipantJoinInput) {
   const zoom = await loadMeetingSdk(input.sdkWebVersion);
-  await new Promise<void>((resolve, reject) => {
+  await joinZoomMeetingParticipantWithApi(zoom, input);
+}
+
+export function joinZoomMeetingParticipantWithApi(
+  zoom: ZoomMeetingSdkApi,
+  input: ZoomParticipantJoinInput,
+) {
+  return new Promise<void>((resolve, reject) => {
     let connected = false;
     let settled = false;
     let active = true;
-    let connectionTimeout: number | undefined;
 
-    const cleanup = () => {
+    function cleanupListener() {
+      if (!active) return;
       active = false;
-      if (connectionTimeout !== undefined) {
-        window.clearTimeout(connectionTimeout);
+      if (input.onMeetingStatus && typeof window !== 'undefined') {
+        window.removeEventListener('pagehide', handlePageHide);
       }
       try {
         zoom.removeInMeetingServiceListener?.('onMeetingStatus', handleMeetingStatus);
       } catch {
-        // Older Meeting SDK builds do not expose reliable listener removal.
+        // The local active guard remains authoritative when removal is unavailable.
       }
+    }
+    function handlePageHide() {
+      cleanupListener();
+    }
+    const clearConnectionTimeout = () => {
+      globalThis.clearTimeout(connectionTimeout);
     };
     const settleConnected = () => {
       if (settled) return;
       connected = true;
       settled = true;
-      cleanup();
+      clearConnectionTimeout();
+      if (!input.onMeetingStatus) cleanupListener();
       resolve();
     };
     const settleError = (error: Error) => {
       if (settled) return;
       settled = true;
-      cleanup();
+      clearConnectionTimeout();
+      cleanupListener();
       reject(error);
     };
     const notifyMeetingStatus = (status: ZoomMeetingStatus) => {
@@ -76,50 +91,70 @@ export async function joinZoomMeetingParticipant(input: ZoomParticipantJoinInput
       const status = meetingStatusFromEvent(event);
       if (status === null) return;
       if (status === 2) {
+        notifyMeetingStatus(status);
         settleConnected();
       } else if (status === 3 && !connected) {
+        notifyMeetingStatus(status);
         settleError(new Error('Meeting SDK disconnected before the meeting was connected.'));
+      } else if (status === 3) {
+        notifyMeetingStatus(status);
+        cleanupListener();
+      } else {
+        notifyMeetingStatus(status);
       }
-      notifyMeetingStatus(status);
     };
 
-    connectionTimeout = window.setTimeout(() => {
+    const connectionTimeout = globalThis.setTimeout(() => {
       settleError(new Error('Meeting SDK connection timed out.'));
     }, 45_000);
-    zoom.inMeetingServiceListener('onMeetingStatus', handleMeetingStatus);
-    zoom.init({
-      leaveUrl: input.leaveUrl,
-      patchJsMedia: true,
-      leaveOnPageUnload: true,
-      disablePreview: input.disablePreview ?? false,
-      success: () => {
-        if (settled) return;
-        zoom.join({
-          signature: input.signature,
-          meetingNumber: input.meetingNumber,
-          passWord: input.meetingPassword,
-          ...(input.registrantToken ? { tk: input.registrantToken } : {}),
-          ...(input.userEmail ? { userEmail: input.userEmail } : {}),
-          userName: input.userName,
-          ...(input.customerKey ? { customerKey: input.customerKey } : {}),
-          ...(input.zak ? { zak: input.zak } : {}),
-          success: () => undefined,
-          error: (error: unknown) => {
+    if (input.onMeetingStatus && typeof window !== 'undefined') {
+      window.addEventListener('pagehide', handlePageHide, { once: true });
+    }
+    try {
+      zoom.inMeetingServiceListener('onMeetingStatus', handleMeetingStatus);
+      zoom.init({
+        leaveUrl: input.leaveUrl,
+        patchJsMedia: true,
+        leaveOnPageUnload: true,
+        disablePreview: input.disablePreview ?? false,
+        success: () => {
+          if (settled) return;
+          try {
+            zoom.join({
+              signature: input.signature,
+              meetingNumber: input.meetingNumber,
+              passWord: input.meetingPassword,
+              ...(input.registrantToken ? { tk: input.registrantToken } : {}),
+              ...(input.userEmail ? { userEmail: input.userEmail } : {}),
+              userName: input.userName,
+              ...(input.customerKey ? { customerKey: input.customerKey } : {}),
+              ...(input.zak ? { zak: input.zak } : {}),
+              success: () => undefined,
+              error: (error: unknown) => {
+                settleError(
+                  new Error(
+                    `Meeting SDK participant join was rejected (${sdkErrorSummary(error)}).`,
+                  ),
+                );
+              },
+            });
+          } catch (error) {
             settleError(
-              new Error(`Meeting SDK participant join was rejected (${sdkErrorSummary(error)}).`),
+              new Error(`Meeting SDK participant join failed (${sdkErrorSummary(error)}).`),
             );
-          },
-        });
-      },
-      error: (error: unknown) => {
-        settleError(
-          new Error(`Meeting SDK participant initialization failed (${sdkErrorSummary(error)}).`),
-        );
-      },
-    });
+          }
+        },
+        error: (error: unknown) => {
+          settleError(
+            new Error(`Meeting SDK participant initialization failed (${sdkErrorSummary(error)}).`),
+          );
+        },
+      });
+    } catch (error) {
+      settleError(new Error(`Meeting SDK setup failed (${sdkErrorSummary(error)}).`));
+    }
   });
 }
-
 export function joinZoomMeetingProductionBasic(
   input: Omit<
     ZoomParticipantJoinInput,
@@ -168,7 +203,7 @@ async function initializeMeetingSdk(version: string) {
   ]) {
     await loadScript(src);
   }
-  const zoom = window.ZoomMtg as ZoomApi | undefined;
+  const zoom = window.ZoomMtg as ZoomMeetingSdkApi | undefined;
   if (!zoom) throw new Error('Meeting SDK did not initialize.');
   zoom.setZoomJSLib(`${base}/lib`, '/av');
   zoom.preLoadWasm();
