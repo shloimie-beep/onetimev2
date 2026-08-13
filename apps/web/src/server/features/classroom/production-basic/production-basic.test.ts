@@ -136,7 +136,9 @@ describe('production-basic Meeting SDK launch', () => {
       cleared_at: new Date('2026-08-12T10:00:00.000Z'),
     });
 
-    const studentClear = vi.fn<ProductionBasicHostLiveMarker['clear']>().mockResolvedValue(undefined);
+    const studentClear = vi
+      .fn<ProductionBasicHostLiveMarker['clear']>()
+      .mockResolvedValue(undefined);
     const studentBaseUrl = await start({
       actor: STUDENT,
       issue: async () => artifact(0),

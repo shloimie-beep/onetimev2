@@ -44,6 +44,11 @@ function LiveApp() {
   return <LiveConsole />;
 }
 
+function requireHostZak(zak: string | undefined): string {
+  if (!zak) throw new Error('Classroom is unavailable.');
+  return zak;
+}
+
 function LiveConsole() {
   const [session, setSession] = useState<ApiSession | null>(null);
   const [data, setData] = useState<ConsoleData | null>(null);
@@ -745,11 +750,6 @@ async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
 
 function messageFor(error: unknown, fallback: string) {
   return error instanceof Error && error.message ? error.message : fallback;
-}
-
-function requireHostZak(zak: string | null): string {
-  if (!zak) throw new Error('Classroom is unavailable.');
-  return zak;
 }
 
 const root = document.getElementById('live-root');
