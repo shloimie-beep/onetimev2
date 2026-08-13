@@ -12,7 +12,10 @@ import { AesGcmPayloadCodec } from './crypto.ts';
 import { TelegramIdentityResolver } from './identity.ts';
 import { RabbiCommunicationService } from './rabbi-communications.ts';
 import { RabbiTelegramCommunicationEngine, RabbiTelegramIdentityAdapter } from './rabbi-engine.ts';
-import { createRabbiTelegramOperationsReader } from './rabbi-operations.ts';
+import {
+  createRabbiTelegramOperationsReader,
+  RabbiLocalAgentTaskDispatcher,
+} from './rabbi-operations.ts';
 import {
   DisabledRabbiConversationProvider,
   SyntheticRabbiConversationProvider,
@@ -75,6 +78,7 @@ export function createOneTimeRabbiTelegramRuntime(input: {
     audit,
     createRabbiTelegramOperationsReader({ pool: input.pool, config: input.config }),
   );
+  const agentTaskDispatcher = new RabbiLocalAgentTaskDispatcher(input.pool, input.config);
   const transport =
     input.transport ??
     new TelegramSqlResponseOutboxTransportAdapter(input.pool, { botKey, environment });
@@ -155,6 +159,7 @@ export function createOneTimeRabbiTelegramRuntime(input: {
     provider: serviceProvider,
     commandWorker,
     replyWorker,
+    agentTaskDispatcher,
     readiness: rabbiTelegramReadiness(input.config),
     acquireLease,
     start,
@@ -164,6 +169,9 @@ export function createOneTimeRabbiTelegramRuntime(input: {
       const command = await commandWorker.runOnce(now);
       const reply = await replyWorker.runOnce(now);
       return { command, reply };
+    },
+    async runAgentTaskOnce(now = new Date()) {
+      return agentTaskDispatcher.runOnce(now);
     },
   };
 }

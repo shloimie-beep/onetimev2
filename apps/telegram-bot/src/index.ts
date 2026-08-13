@@ -18,7 +18,11 @@ export {
   createOneTimeRabbiTelegramRuntime,
   rabbiTelegramReadiness,
 } from '../../../packages/domain/src/telegram/rabbi-runtime.ts';
-export { createRabbiTelegramOperationsReader } from '../../../packages/domain/src/telegram/rabbi-operations.ts';
+export {
+  createRabbiTelegramOperationsReader,
+  RabbiLocalAgentTaskDispatcher,
+  rabbiReadOnlyDiagnosticAllowlist,
+} from '../../../packages/domain/src/telegram/rabbi-operations.ts';
 export {
   OneTimeTelegramTransportAdapter,
   TelegramBotApiSendMessageClient,

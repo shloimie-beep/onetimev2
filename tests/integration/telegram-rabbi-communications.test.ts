@@ -28,7 +28,10 @@ import {
 } from '../../packages/domain/src/index.ts';
 import { DeterministicTestPayloadCodec } from '../../packages/domain/src/telegram/crypto.ts';
 import { TelegramIdentityResolver } from '../../packages/domain/src/telegram/identity.ts';
-import { createRabbiTelegramOperationsReader } from '../../packages/domain/src/telegram/rabbi-operations.ts';
+import {
+  createRabbiTelegramOperationsReader,
+  RabbiLocalAgentTaskDispatcher,
+} from '../../packages/domain/src/telegram/rabbi-operations.ts';
 
 const botKey = asBotKey('one_time_rabbi_torah_console');
 const environment = 'local' as const;
@@ -124,6 +127,56 @@ describe('OT-LAUNCH-01 Rabbi Telegram communications', () => {
     });
     expect(provider.calls).toHaveLength(1);
 
+    const help = await engine.handle(
+      update({ updateId: '1003-help', text: '/help' }),
+      new Date(now.getTime() + 4_100),
+    );
+    expect(help[0]?.text).toContain('/class-status');
+    expect(help[0]?.text).toContain('/support <ref>');
+    expect(help[0]?.text).toContain('/agent-task <ref>');
+
+    const studentQuestions = await engine.handle(
+      update({ updateId: '1003-student-list', text: '/student-questions' }),
+      new Date(now.getTime() + 4_200),
+    );
+    expect(studentQuestions[0]?.text).toContain('student_question_fixture');
+    const studentQuestion = await engine.handle(
+      update({
+        updateId: '1003-student-read',
+        text: '/student-question student_question_fixture',
+      }),
+      new Date(now.getTime() + 4_300),
+    );
+    expect(studentQuestion[0]?.text).toContain('exact synthetic lesson answer');
+
+    const cancelledPreview = await engine.handle(
+      update({
+        updateId: '1003-student-cancel-preview',
+        text: '/student-answer student_question_fixture | Cancelled synthetic answer.',
+      }),
+      new Date(now.getTime() + 4_400),
+    );
+    const cancelled = await engine.handle(
+      update({
+        updateId: '1003-student-cancel',
+        kind: 'callback_query',
+        callbackData: confirmCallback(cancelledPreview).replace('rabbi:confirm:', 'rabbi:cancel:'),
+      }),
+      new Date(now.getTime() + 4_500),
+    );
+    expect(cancelled[0]?.text).toContain('cancelled');
+    expect(
+      Number(
+        (
+          await pool.query(
+            `SELECT rabbi_answer_revision
+               FROM onetime.portal_student_questions
+              WHERE question_key = 'student_question_fixture'`,
+          )
+        ).rows[0]?.rabbi_answer_revision,
+      ),
+    ).toBe(0);
+
     const studentPreview = await engine.handle(
       update({
         updateId: '1004',
@@ -214,59 +267,149 @@ describe('OT-LAUNCH-01 Rabbi Telegram communications', () => {
     );
     expect(staleResult[0]?.text).toContain('changed; preview again');
 
-    const classReadiness = await engine.handle(
-      update({ updateId: '1008-class', text: '/class-readiness occurrence_fixture' }),
+    const classStatus = await engine.handle(
+      update({ updateId: '1008-class', text: '/class-status' }),
       new Date(now.getTime() + 9_800),
     );
-    expect(classReadiness[0]?.text).toContain('No scoped class');
+    expect(classStatus[0]?.text).toContain('No scoped class');
     const contentStatus = await engine.handle(
-      update({ updateId: '1008-content', text: '/content-processing-status' }),
+      update({ updateId: '1008-content', text: '/content-status' }),
       new Date(now.getTime() + 9_900),
     );
-    expect(contentStatus[0]?.text).toContain('no scoped Vimeo sources');
-    const incidents = await engine.handle(
-      update({ updateId: '1008-incidents', text: '/incidents' }),
+    expect(contentStatus[0]?.text).toContain('no scoped items');
+    const vimeoStatus = await engine.handle(
+      update({ updateId: '1008-vimeo', text: '/vimeo-status' }),
       new Date(now.getTime() + 10_000),
     );
-    expect(incidents[0]?.text).toContain('no scoped matches');
-
-    const agentPreview = await engine.handle(
-      update({
-        updateId: '1008-agent-preview',
-        text: '/agent-task-create login_access | high',
-      }),
+    expect(vimeoStatus[0]?.text).toContain('no scoped Vimeo sources');
+    const supportEmpty = await engine.handle(
+      update({ updateId: '1008-support-empty', text: '/support' }),
       new Date(now.getTime() + 10_100),
     );
-    expect(agentPreview[0]?.text).toContain('No credentials, provider references, or Student data');
-    const agentConfirmed = await engine.handle(
+    expect(supportEmpty[0]?.text).toContain('Local support incidents: none');
+
+    const supportPreview = await engine.handle(
       update({
-        updateId: '1008-agent-confirm',
-        kind: 'callback_query',
-        callbackData: confirmCallback(agentPreview),
+        updateId: '1008-support-preview',
+        text: '/support-create student:student_fixture | login_access | high',
       }),
       new Date(now.getTime() + 10_200),
     );
-    expect(agentConfirmed[0]?.text).toContain('No provider action, notification');
+    expect(supportPreview[0]?.text).toContain('No outbound message or provider action');
+    const supportConfirmed = await engine.handle(
+      update({
+        updateId: '1008-support-confirm',
+        kind: 'callback_query',
+        callbackData: confirmCallback(supportPreview),
+      }),
+      new Date(now.getTime() + 10_300),
+    );
+    expect(supportConfirmed[0]?.text).toContain('Redacted support incident created');
+    const supportRow = await pool.query(
+      `SELECT task_key, detail
+         FROM onetime.rabbi_internal_tasks
+        WHERE task_key LIKE 'rabbi_support_%'
+        LIMIT 1`,
+    );
+    const supportKey = String(supportRow.rows[0]?.task_key);
+    expect(supportKey).toContain('rabbi_support_');
+    expect(String(supportRow.rows[0]?.detail)).not.toMatch(
+      /https?:\/\/|password|passcode|provider[ _-]?id|meeting[ _-]?(?:id|url)|@/,
+    );
+
+    const supportRead = await engine.handle(
+      update({ updateId: '1008-support-read', text: `/support ${supportKey}` }),
+      new Date(now.getTime() + 10_400),
+    );
+    expect(supportRead[0]?.text).toContain('Subject: student:student_fixture');
+
+    const supportAssignPreview = await engine.handle(
+      update({ updateId: '1008-support-assign', text: `/support-assign ${supportKey}` }),
+      new Date(now.getTime() + 10_500),
+    );
+    const supportAssigned = await engine.handle(
+      update({
+        updateId: '1008-support-assign-confirm',
+        kind: 'callback_query',
+        callbackData: confirmCallback(supportAssignPreview),
+      }),
+      new Date(now.getTime() + 10_600),
+    );
+    expect(supportAssigned[0]?.text).toContain('assign completed');
+
+    const supportNotePreview = await engine.handle(
+      update({
+        updateId: '1008-support-note',
+        text: `/support-note ${supportKey} | Authenticated Admin review requested.`,
+      }),
+      new Date(now.getTime() + 10_700),
+    );
+    await engine.handle(
+      update({
+        updateId: '1008-support-note-confirm',
+        kind: 'callback_query',
+        callbackData: confirmCallback(supportNotePreview),
+      }),
+      new Date(now.getTime() + 10_800),
+    );
+
+    const diagnosticPreview = await engine.handle(
+      update({
+        updateId: '1008-support-diagnostic',
+        text: `/support-diagnostic ${supportKey} | login_access_summary`,
+      }),
+      new Date(now.getTime() + 10_900),
+    );
+    const diagnosticQueued = await engine.handle(
+      update({
+        updateId: '1008-support-diagnostic-confirm',
+        kind: 'callback_query',
+        callbackData: confirmCallback(diagnosticPreview),
+      }),
+      new Date(now.getTime() + 11_000),
+    );
+    expect(diagnosticQueued[0]?.text).toContain('request_diagnostic completed');
+
     const agentTask = await pool.query(
       `SELECT task_key, detail
          FROM onetime.rabbi_internal_tasks
         WHERE task_key LIKE 'rabbi_agent_%'
         LIMIT 1`,
     );
-    expect(String(agentTask.rows[0]?.task_key)).toContain('rabbi_agent_');
-    expect(String(agentTask.rows[0]?.detail)).not.toMatch(/credential|provider reference|student/i);
     const agentKey = String(agentTask.rows[0]?.task_key);
+    expect(agentKey).toContain('rabbi_agent_');
+    expect(String(agentTask.rows[0]?.detail)).toContain('login_access_summary');
+    expect(String(agentTask.rows[0]?.detail)).not.toMatch(
+      /https?:\/\/|password|passcode|provider[ _-]?id|meeting[ _-]?(?:id|url)|@/,
+    );
+
     const agentList = await engine.handle(
       update({ updateId: '1008-agent-list', text: '/agent-tasks' }),
-      new Date(now.getTime() + 10_300),
+      new Date(now.getTime() + 11_100),
     );
     expect(agentList[0]?.text).toContain('login_access');
+    const agentRead = await engine.handle(
+      update({ updateId: '1008-agent-read', text: `/agent-task ${agentKey}` }),
+      new Date(now.getTime() + 11_200),
+    );
+    expect(agentRead[0]?.text).toContain('Diagnostic: login_access_summary');
+    expect(agentRead[0]?.text).toContain('Idempotency:');
+
+    const dispatcher = new RabbiLocalAgentTaskDispatcher(pool, config);
+    const dispatched = await dispatcher.runOnce(new Date(now.getTime() + 11_300));
+    expect(dispatched).toMatchObject({ status: 'completed', taskKey: agentKey });
+    const agentResult = await engine.handle(
+      update({ updateId: '1008-agent-result', text: `/agent-task ${agentKey}` }),
+      new Date(now.getTime() + 11_400),
+    );
+    expect(agentResult[0]?.text).toContain('Public-safe result:');
+
     const agentUpdate = await engine.handle(
       update({
         updateId: '1008-agent-update',
-        text: `/agent-task-update ${agentKey} | in_progress`,
+        text: `/agent-task-update ${agentKey} | completed | pr#192 | Redacted diagnostic accepted.`,
       }),
-      new Date(now.getTime() + 10_400),
+      new Date(now.getTime() + 11_500),
     );
     const agentUpdated = await engine.handle(
       update({
@@ -274,15 +417,70 @@ describe('OT-LAUNCH-01 Rabbi Telegram communications', () => {
         kind: 'callback_query',
         callbackData: confirmCallback(agentUpdate),
       }),
-      new Date(now.getTime() + 10_500),
+      new Date(now.getTime() + 11_600),
     );
-    expect(agentUpdated[0]?.text).toContain('No provider action or notification');
+    expect(agentUpdated[0]?.text).toContain('No provider action');
+
+    const loginIssues = await engine.handle(
+      update({ updateId: '1008-login-issues', text: '/login-issues' }),
+      new Date(now.getTime() + 11_700),
+    );
+    expect(loginIssues[0]?.text).toContain('Local login incidents');
+
+    const readiness = await engine.handle(
+      update({ updateId: '1008-readiness', text: '/telegram-readiness' }),
+      new Date(now.getTime() + 11_800),
+    );
+    expect(readiness[0]?.text).toContain('Token configured:');
+    expect(readiness[0]?.text).toContain('Webhook secret present:');
+    expect(readiness[0]?.text).toContain('Payload-key fingerprint:');
+    expect(readiness[0]?.text).toContain('dead-letter rows:');
+
+    const resolvePreview = await engine.handle(
+      update({
+        updateId: '1008-support-resolve',
+        text: `/support-resolve ${supportKey} | Authenticated app recovery path verified.`,
+      }),
+      new Date(now.getTime() + 11_900),
+    );
+    const resolved = await engine.handle(
+      update({
+        updateId: '1008-support-resolve-confirm',
+        kind: 'callback_query',
+        callbackData: confirmCallback(resolvePreview),
+      }),
+      new Date(now.getTime() + 12_000),
+    );
+    expect(resolved[0]?.text).toContain('resolve completed');
+
+    const createAgentPreview = await engine.handle(
+      update({
+        updateId: '1008-agent-create-preview',
+        text:
+          '/agent-task-create account:account_fixture | class_readiness | class_readiness_summary | R0 | normal',
+      }),
+      new Date(now.getTime() + 12_100),
+    );
+    expect(createAgentPreview[0]?.text).toContain('No executable text or provider action');
+    const createAgentCancelled = await engine.handle(
+      update({
+        updateId: '1008-agent-create-cancel',
+        kind: 'callback_query',
+        callbackData: confirmCallback(createAgentPreview).replace(
+          'rabbi:confirm:',
+          'rabbi:cancel:',
+        ),
+      }),
+      new Date(now.getTime() + 12_200),
+    );
+    expect(createAgentCancelled[0]?.text).toContain('cancelled');
+
     const sensitiveOperation = await engine.handle(
       update({
         updateId: '1008-sensitive-operation',
-        text: '/agent-task-create login_access | high | https://zoom.us/j/123456789',
+        text: `/support-note ${supportKey} | password token https://example.invalid`,
       }),
-      new Date(now.getTime() + 10_600),
+      new Date(now.getTime() + 12_300),
     );
     expect(sensitiveOperation[0]?.text).toContain('outside this communication-only Rabbi bot');
 

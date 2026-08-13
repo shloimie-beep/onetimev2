@@ -22,7 +22,7 @@ import { RabbiCommunicationService } from './rabbi-communications.ts';
 import type { RabbiTelegramOperationsReader } from './rabbi-operations.ts';
 
 const HELP_TEXT = [
-  'One Time Rabbi communications:',
+  'One Time Rabbi communications and operations:',
   '/parent-conversations',
   '/parent-conversation <ref>',
   '/parent-reply <ref> | <reply>',
@@ -30,23 +30,31 @@ const HELP_TEXT = [
   '/student-question <ref>',
   '/student-answer <ref> | <answer>',
   '/student-close <ref>',
-  '/internal-tasks',
-  '/internal-task-create <title> | <detail> | <low|normal|high>',
-  '/internal-task-update <ref> | <queued|in_progress|blocked|completed|cancelled> | <optional title>',
-  '/class-readiness <occurrence-ref>',
-  '/content-processing-status',
-  '/incidents',
-  '/incident <safe-incident-ref>',
+  '/class-status',
+  '/content-status',
+  '/vimeo-status',
+  '/support',
+  '/support <ref>',
+  '/login-issues',
   '/agent-tasks',
-  '/agent-task-create <login_access|support_incident|class_readiness|content_processing> | <low|normal|high>',
-  '/agent-task-update <ref> | <queued|in_progress|blocked|completed|cancelled>',
+  '/agent-task <ref>',
+  '/telegram-readiness',
+  '/support-create <parent|student|account>:<redacted-ref> | <category> | <priority>',
+  '/support-assign <incident-ref>',
+  '/support-diagnostic <incident-ref> | <allowlisted-diagnostic>',
+  '/support-note <incident-ref> | <redacted-note>',
+  '/support-resolve <incident-ref> | <public-safe-summary>',
+  '/support-block <incident-ref> | <public-safe-summary>',
+  '/agent-task-create <subject> | <category> | <diagnostic> | <R0|R1> | <priority>',
+  '/agent-task-update <ref> | <status> | <none|pr#123|branch:name> | <public-safe-result>',
   'Every write produces a typed preview and requires an explicit Confirm button.',
-].join('\n');
+  'No command can invoke shell, SQL, providers, credentials, merge, or deploy.',
+].join('\n');;
 
 const forbiddenPattern =
   /\b(access|zoom|social|voice|studio|shell|codex|deploy|publish|campaign|bulk|mass|billing|refund|password|login|token|secret|production|bna|impersonate|child contact|student contact)\b/i;
 const sensitiveOperationPattern =
-  /(?:https?:\/\/|www\.|\b(?:password|passcode|token|secret|api[ _-]?key|credential|authorization|bearer|meeting[ _-]?(?:id|link|url)|provider[ _-]?id|student|learner|child|email|phone)\b|\b\d{7,}\b)/i;
+  /(?:https?:\/\/|www\.|\b(?:password|passcode|token|secret|api[ _-]?key|credential|authorization|bearer|meeting[ _-]?(?:id|link|url)|provider[ _-]?id|email|phone)\b|\b\d{7,}\b)/i;
 const safeReferencePattern = /^[a-z][a-z0-9_-]{0,119}$/i;
 
 type RabbiCommand =
@@ -290,7 +298,7 @@ function classifyRabbiCommand(update: NormalizedBotUpdate): RabbiCommand {
   const text = update.text?.trim() ?? '';
   if (!text || text === '/help' || text === '/start') return { type: 'help' };
   const isOperation =
-    /^\/(?:class-readiness|content-processing-status|incidents|incident|agent-tasks|agent-task-create|agent-task-update)\b/i.test(
+    /^\/(?:class-status|content-status|vimeo-status|support|login-issues|agent-tasks|agent-task|telegram-readiness|support-create|support-assign|support-diagnostic|support-note|support-resolve|support-block|agent-task-create|agent-task-update)\b/i.test(
       text,
     );
   if (
@@ -391,39 +399,53 @@ function classifyRabbiCommand(update: NormalizedBotUpdate): RabbiCommand {
         },
       };
     }
-    case '/class-readiness':
-      return safeReference(rest)
-        ? {
-            type: 'read',
-            request: { capability: 'operation.class.readiness', occurrenceKey: rest },
-          }
-        : { type: 'unsupported', reason: 'missing_argument' };
-    case '/content-processing-status':
+    case '/class-status':
       return rest
         ? { type: 'unsupported', reason: 'missing_argument' }
-        : { type: 'read', request: { capability: 'operation.content.processing.read' } };
-    case '/incidents':
+        : { type: 'read', request: { capability: 'operation.class.status' } };
+    case '/content-status':
       return rest
         ? { type: 'unsupported', reason: 'missing_argument' }
-        : { type: 'read', request: { capability: 'operation.incident.list' } };
-    case '/incident':
-      return safeReference(rest)
-        ? { type: 'read', request: { capability: 'operation.incident.read', incidentKey: rest } }
-        : { type: 'unsupported', reason: 'missing_argument' };
+        : { type: 'read', request: { capability: 'operation.content.status' } };
+    case '/vimeo-status':
+      return rest
+        ? { type: 'unsupported', reason: 'missing_argument' }
+        : { type: 'read', request: { capability: 'operation.vimeo.status' } };
+    case '/support':
+      return rest
+        ? safeReference(rest)
+          ? {
+              type: 'read',
+              request: { capability: 'operation.support.read', incidentKey: rest },
+            }
+          : { type: 'unsupported', reason: 'missing_argument' }
+        : { type: 'read', request: { capability: 'operation.support.list' } };
+    case '/login-issues':
+      return rest
+        ? { type: 'unsupported', reason: 'missing_argument' }
+        : { type: 'read', request: { capability: 'operation.login_issues.list' } };
     case '/agent-tasks':
       return rest
         ? { type: 'unsupported', reason: 'missing_argument' }
         : { type: 'read', request: { capability: 'agent_task.list' } };
-    case '/agent-task-create': {
+    case '/agent-task':
+      return safeReference(rest)
+        ? { type: 'read', request: { capability: 'agent_task.read', taskKey: rest } }
+        : { type: 'unsupported', reason: 'missing_argument' };
+    case '/telegram-readiness':
+      return rest
+        ? { type: 'unsupported', reason: 'missing_argument' }
+        : { type: 'read', request: { capability: 'operation.readiness' } };
+    case '/support-create': {
       const fields = pipeFields(rest);
-      const kind = fields[0];
-      const priority = fields[1] ?? 'normal';
+      const subject = parseSubjectRef(fields[0] ?? '');
+      const category = fields[1] ?? '';
+      const priority = fields[2] ?? 'normal';
       if (
-        !['login_access', 'support_incident', 'class_readiness', 'content_processing'].includes(
-          kind ?? '',
-        ) ||
-        !['low', 'normal', 'high'].includes(priority) ||
-        fields.length > 2
+        !subject ||
+        !isIssueCategory(category) ||
+        !isPriority(priority) ||
+        fields.length > 3
       ) {
         return { type: 'unsupported', reason: 'missing_argument' };
       }
@@ -431,9 +453,99 @@ function classifyRabbiCommand(update: NormalizedBotUpdate): RabbiCommand {
         type: 'preview',
         request: {
           capability: 'internal_task.create',
-          agentKind: kind as
-            'login_access' | 'support_incident' | 'class_readiness' | 'content_processing',
-          priority: priority as 'low' | 'normal' | 'high',
+          supportIncident: { subject, issueCategory: category },
+          priority,
+        },
+      };
+    }
+    case '/support-assign':
+      return safeReference(rest)
+        ? {
+            type: 'preview',
+            request: {
+              capability: 'internal_task.update',
+              taskKey: rest,
+              supportIncident: { action: 'assign' },
+            },
+          }
+        : { type: 'unsupported', reason: 'missing_argument' };
+    case '/support-diagnostic': {
+      const fields = pipeFields(rest);
+      if (!safeReference(fields[0] ?? '') || !isDiagnostic(fields[1] ?? '') || fields.length > 2) {
+        return { type: 'unsupported', reason: 'missing_argument' };
+      }
+      return {
+        type: 'preview',
+        request: {
+          capability: 'internal_task.update',
+          taskKey: fields[0] ?? '',
+          supportIncident: {
+            action: 'request_diagnostic',
+            diagnosticCapability: fields[1] as
+              | 'login_access_summary'
+              | 'class_readiness_summary'
+              | 'content_processing_summary'
+              | 'vimeo_processing_summary'
+              | 'support_incident_summary',
+          },
+        },
+      };
+    }
+    case '/support-note':
+    case '/support-resolve':
+    case '/support-block': {
+      const fields = pipeFields(rest);
+      if (!safeReference(fields[0] ?? '') || !fields[1] || fields.length > 2) {
+        return { type: 'unsupported', reason: 'missing_argument' };
+      }
+      const action =
+        name.toLowerCase() === '/support-note'
+          ? 'add_note'
+          : name.toLowerCase() === '/support-resolve'
+            ? 'resolve'
+            : 'block';
+      return {
+        type: 'preview',
+        request: {
+          capability: 'internal_task.update',
+          taskKey: fields[0] ?? '',
+          supportIncident: { action, note: fields[1] },
+        },
+      };
+    }
+    case '/agent-task-create': {
+      const fields = pipeFields(rest);
+      const subject = parseSubjectRef(fields[0] ?? '');
+      const category = fields[1] ?? '';
+      const diagnostic = fields[2] ?? '';
+      const riskClass = fields[3] ?? '';
+      const priority = fields[4] ?? 'normal';
+      if (
+        !subject ||
+        !isIssueCategory(category) ||
+        !isDiagnostic(diagnostic) ||
+        !['R0', 'R1'].includes(riskClass) ||
+        !isPriority(priority) ||
+        fields.length > 5
+      ) {
+        return { type: 'unsupported', reason: 'missing_argument' };
+      }
+      return {
+        type: 'preview',
+        request: {
+          capability: 'internal_task.create',
+          agentTask: {
+            subject,
+            issueCategory: category,
+            diagnosticCapability: diagnostic as
+              | 'login_access_summary'
+              | 'class_readiness_summary'
+              | 'content_processing_summary'
+              | 'vimeo_processing_summary'
+              | 'support_incident_summary',
+            riskClass: riskClass as 'R0' | 'R1',
+          },
+          priority,
         },
       };
     }
@@ -442,7 +554,8 @@ function classifyRabbiCommand(update: NormalizedBotUpdate): RabbiCommand {
       const statuses = ['queued', 'in_progress', 'blocked', 'completed', 'cancelled'] as const;
       if (
         !safeReference(fields[0] ?? '') ||
-        !statuses.includes(fields[1] as (typeof statuses)[number])
+        !statuses.includes(fields[1] as (typeof statuses)[number]) ||
+        fields.length > 4
       ) {
         return { type: 'unsupported', reason: 'missing_argument' };
       }
@@ -451,8 +564,11 @@ function classifyRabbiCommand(update: NormalizedBotUpdate): RabbiCommand {
         request: {
           capability: 'internal_task.update',
           taskKey: fields[0] ?? '',
-          status: fields[1] as (typeof statuses)[number],
-          agentTask: true,
+          agentTask: {
+            status: fields[1] as (typeof statuses)[number],
+            ...(fields[2] ? { branchPrRef: fields[2] } : {}),
+            ...(fields[3] ? { resultSummary: fields[3] } : {}),
+          },
         },
       };
     }
@@ -508,6 +624,37 @@ function pipeFields(value: string) {
     .split('|')
     .map((field) => field.trim())
     .filter((field, index, all) => field.length > 0 || index < all.length - 1);
+}
+
+function parseSubjectRef(value: string) {
+  const match = /^(parent|student|account):([a-z][a-z0-9_-]{0,119})$/i.exec(value);
+  if (!match || !safeReference(match[2] ?? '')) return null;
+  return {
+    kind: (match[1] ?? '').toLowerCase() as 'parent' | 'student' | 'account',
+    ref: match[2] ?? '',
+  };
+}
+
+function isIssueCategory(
+  value: string,
+): value is 'login_access' | 'support_incident' | 'class_readiness' | 'content_processing' {
+  return ['login_access', 'support_incident', 'class_readiness', 'content_processing'].includes(
+    value,
+  );
+}
+
+function isDiagnostic(value: string) {
+  return [
+    'login_access_summary',
+    'class_readiness_summary',
+    'content_processing_summary',
+    'vimeo_processing_summary',
+    'support_incident_summary',
+  ].includes(value);
+}
+
+function isPriority(value: string): value is 'low' | 'normal' | 'high' {
+  return ['low', 'normal', 'high'].includes(value);
 }
 
 function safeReference(value: string) {

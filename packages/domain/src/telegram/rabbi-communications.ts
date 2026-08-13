@@ -13,6 +13,11 @@ import type {
 } from '../../../contracts/src/telegram/rabbi-communications.ts';
 import type { SensitivePayloadCodec } from '../../../contracts/src/telegram/types.ts';
 import { inTransaction, type DbPool, type Queryable } from '../../../db/src/index.ts';
+import {
+  parseRabbiTaskEnvelope,
+  serializeRabbiTaskEnvelope,
+  type RabbiTaskEnvelope,
+} from './rabbi-operations.ts';
 
 type DeliveryMode = 'disabled' | 'synthetic' | 'provider';
 
@@ -64,6 +69,8 @@ export class RabbiCommunicationService {
         return this.listInternalTasks(actor);
       case 'agent_task.list':
         return this.listAgentTasks(actor);
+      case 'agent_task.read':
+        return this.readAgentTask(actor, request.taskKey);
     }
   }
 
@@ -353,7 +360,7 @@ export class RabbiCommunicationService {
 
   private async listAgentTasks(actor: RabbiCommunicationActor) {
     const result = await this.pool.query(
-      `SELECT task_key, status, priority, version
+      `SELECT task_key, status, priority, detail, created_at, updated_at
          FROM onetime.rabbi_internal_tasks
         WHERE account_key = $1
           AND product_key = $2
@@ -362,14 +369,48 @@ export class RabbiCommunicationService {
         LIMIT 10`,
       [actor.accountKey, actor.productKey],
     );
-    if (!result.rowCount) return 'Local agent tasks: none.';
+    const rows = result.rows
+      .map((row) => ({ row, envelope: parseRabbiTaskEnvelope(String(row.detail)) }))
+      .filter((item) => item.envelope?.entity === 'agent_task');
+    if (!rows.length) return 'Local agent tasks: none.';
     return [
       'Local agent tasks:',
-      ...result.rows.map(
-        (row) =>
-          `${String(row.task_key)} · ${agentTaskKind(String(row.task_key))} · ${String(row.status)} · ${String(row.priority)} · v${Number(row.version)}`,
+      ...rows.map(
+        ({ row, envelope }) =>
+          `${String(row.task_key)} · ${envelope?.issueCategory ?? 'unknown'} · ${String(row.status)} · ${String(row.priority)} · ${envelope?.diagnosticCapability ?? 'none'}`,
       ),
-      'Task payloads contain no credentials, provider references, or private Student data.',
+      'Use /agent-task <ref> for the complete redacted task contract.',
+    ].join('\n');
+  }
+
+  private async readAgentTask(actor: RabbiCommunicationActor, taskKey: string) {
+    const result = await this.pool.query(
+      `SELECT task_key, status, priority, detail, created_by_user_key, updated_by_user_key,
+              idempotency_key, created_at, updated_at
+         FROM onetime.rabbi_internal_tasks
+        WHERE account_key = $1
+          AND product_key = $2
+          AND task_key = $3
+          AND task_key LIKE 'rabbi_agent_%'
+        LIMIT 1`,
+      [actor.accountKey, actor.productKey, taskKey],
+    );
+    const row = result.rows[0];
+    const envelope = row ? parseRabbiTaskEnvelope(String(row.detail)) : null;
+    if (!row || !envelope || envelope.entity !== 'agent_task') {
+      return 'No scoped local agent task was found.';
+    }
+    return [
+      `Agent task: ${String(row.task_key)}`,
+      `Subject: ${envelope.subject.kind}:${envelope.subject.ref}`,
+      `Category: ${envelope.issueCategory}`,
+      `Diagnostic: ${envelope.diagnosticCapability ?? 'none'} · Risk: ${envelope.riskClass}`,
+      `Status: ${String(row.status)} · Priority: ${String(row.priority)}`,
+      `Creator/time: ${String(row.created_by_user_key)} · ${new Date(String(row.created_at)).toISOString()}`,
+      `Idempotency: ${String(row.idempotency_key)}`,
+      `Branch/PR: ${envelope.branchPrRef ?? 'none'}`,
+      `Public-safe result: ${envelope.resultSummary || 'pending'}`,
+      `Updated: ${String(row.updated_by_user_key)} · ${new Date(String(row.updated_at)).toISOString()}`,
     ].join('\n');
   }
 
@@ -455,36 +496,88 @@ export class RabbiCommunicationService {
         };
       }
       case 'internal_task.create': {
-        if ('agentKind' in request) {
+        if ('supportIncident' in request) {
+          if (!validSafeSubject(request.supportIncident.subject)) {
+            return { ok: false, result: denied('The redacted support subject reference is invalid.') };
+          }
+          return {
+            ok: true,
+            targetKey: 'new_support_incident',
+            targetRevision: 0,
+            summary: `Preview support incident: ${request.supportIncident.issueCategory} · ${formatSubject(request.supportIncident.subject)} · ${request.priority}. No outbound message or provider action.`,
+          };
+        }
+        if ('agentTask' in request) {
+          if (
+            !validSafeSubject(request.agentTask.subject) ||
+            !validDiagnostic(request.agentTask.diagnosticCapability)
+          ) {
+            return { ok: false, result: denied('The typed local-agent task is outside the allowlist.') };
+          }
           return {
             ok: true,
             targetKey: 'new_agent_task',
             targetRevision: 0,
-            summary: `Preview local agent task: ${request.agentKind} · ${request.priority}. No credentials, provider references, or Student data are recorded.`,
+            summary: `Preview local-agent task: ${request.agentTask.issueCategory} · ${formatSubject(request.agentTask.subject)} · ${request.agentTask.diagnosticCapability} · ${request.agentTask.riskClass}. No executable text or provider action.`,
           };
         }
-        const title = request.title ?? '';
-        const detail = request.detail ?? '';
-        if (!validText(title, 2, 240) || !validText(detail, 0, 2_000)) {
+        if (!validText(request.title, 2, 240) || !validText(request.detail, 0, 2_000)) {
           return invalidText('internal task');
         }
         return {
           ok: true,
           targetKey: 'new_internal_task',
           targetRevision: 0,
-          summary: `Preview internal task create: ${title.trim()} · ${request.priority}.`,
+          summary: `Preview internal task create: ${request.title.trim()} · ${request.priority}.`,
         };
       }
       case 'internal_task.update': {
-        if (request.agentTask) {
+        if ('supportIncident' in request) {
+          const update = request.supportIncident;
+          if (
+            (update.action === 'request_diagnostic' &&
+              (!update.diagnosticCapability || !validDiagnostic(update.diagnosticCapability))) ||
+            (['add_note', 'resolve', 'block'].includes(update.action) &&
+              !validRedactedText(update.note ?? '', 1, 500))
+          ) {
+            return { ok: false, result: denied('The support action is missing a safe allowlisted value.') };
+          }
           const result = await this.pool.query(
             `SELECT task_key, version
-             FROM onetime.rabbi_internal_tasks
-            WHERE account_key = $1
-              AND product_key = $2
-              AND task_key = $3
-              AND task_key LIKE 'rabbi_agent_%'
-            LIMIT 1`,
+               FROM onetime.rabbi_internal_tasks
+              WHERE account_key = $1
+                AND product_key = $2
+                AND task_key = $3
+                AND task_key LIKE 'rabbi_support_%'
+              LIMIT 1`,
+            [actor.accountKey, actor.productKey, request.taskKey],
+          );
+          const row = result.rows[0];
+          if (!row) return { ok: false, result: denied('No scoped support incident was found.') };
+          return {
+            ok: true,
+            targetKey: request.taskKey,
+            targetRevision: Number(row.version),
+            summary: `Preview support incident action: ${request.taskKey} · ${update.action}. No outbound message or provider action.`,
+          };
+        }
+        if ('agentTask' in request) {
+          const update = request.agentTask;
+          if (
+            (update.branchPrRef !== undefined && !validBranchPrRef(update.branchPrRef)) ||
+            (update.resultSummary !== undefined &&
+              !validRedactedText(update.resultSummary, 1, 1_000))
+          ) {
+            return { ok: false, result: denied('The agent-task result contains a disallowed value.') };
+          }
+          const result = await this.pool.query(
+            `SELECT task_key, version
+               FROM onetime.rabbi_internal_tasks
+              WHERE account_key = $1
+                AND product_key = $2
+                AND task_key = $3
+                AND task_key LIKE 'rabbi_agent_%'
+              LIMIT 1`,
             [actor.accountKey, actor.productKey, request.taskKey],
           );
           const row = result.rows[0];
@@ -493,7 +586,7 @@ export class RabbiCommunicationService {
             ok: true,
             targetKey: request.taskKey,
             targetRevision: Number(row.version),
-            summary: `Preview local agent task update: ${agentTaskKind(String(row.task_key))} → ${request.status}.`,
+            summary: `Preview local-agent task update: ${request.taskKey} → ${update.status}.`,
           };
         }
         if (request.title !== undefined && !validText(request.title, 2, 240)) {
@@ -561,13 +654,17 @@ export class RabbiCommunicationService {
       case 'student.question.close':
         return this.confirmStudentClose(client, actor, row, payload, now);
       case 'internal_task.create':
-        return 'agentKind' in payload
-          ? this.confirmAgentTaskCreate(client, actor, row, payload)
-          : this.confirmInternalTaskCreate(client, actor, row, payload);
+        return 'supportIncident' in payload
+          ? this.confirmSupportIncidentCreate(client, actor, row, payload, now)
+          : 'agentTask' in payload
+            ? this.confirmAgentTaskCreate(client, actor, row, payload, now)
+            : this.confirmInternalTaskCreate(client, actor, row, payload);
       case 'internal_task.update':
-        return payload.agentTask
-          ? this.confirmAgentTaskUpdate(client, actor, row, payload, now)
-          : this.confirmInternalTaskUpdate(client, actor, row, payload, now);
+        return 'supportIncident' in payload
+          ? this.confirmSupportIncidentUpdate(client, actor, row, payload, now)
+          : 'agentTask' in payload
+            ? this.confirmAgentTaskUpdate(client, actor, row, payload, now)
+            : this.confirmInternalTaskUpdate(client, actor, row, payload, now);
     }
   }
 
@@ -808,36 +905,213 @@ export class RabbiCommunicationService {
     };
   }
 
-  private async confirmAgentTaskCreate(
+  private async confirmSupportIncidentCreate(
     client: Queryable,
     actor: RabbiCommunicationActor,
     row: ConfirmationRow,
-    payload: RabbiInternalTaskCreateRequest,
+    payload: Extract<RabbiInternalTaskCreateRequest, { supportIncident: unknown }>,
+    now: Date,
   ): Promise<RabbiCommunicationResult> {
-    const taskKey = `rabbi_agent_${(payload.agentKind ?? 'unknown').replace('_', '-')}_${row.idempotency_key.slice(0, 24)}`;
+    const taskKey = `rabbi_support_${row.idempotency_key.slice(0, 24)}`;
+    const envelope: RabbiTaskEnvelope = {
+      schemaVersion: 1,
+      entity: 'support_incident',
+      subject: payload.supportIncident.subject,
+      issueCategory: payload.supportIncident.issueCategory,
+      diagnosticCapability: null,
+      riskClass: 'R1',
+      idempotencyKey: row.idempotency_key,
+      assignedTo: null,
+      branchPrRef: null,
+      resultSummary: '',
+      notes: [],
+    };
     await client.query(
       `INSERT INTO onetime.rabbi_internal_tasks
        (task_key, account_key, product_key, title, detail, priority, created_by_user_key,
-        updated_by_user_key, idempotency_key, request_digest)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$7,$8,$9)
+        updated_by_user_key, idempotency_key, request_digest, created_at, updated_at)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$7,$8,$9,$10,$10)
        ON CONFLICT (account_key, product_key, idempotency_key) DO NOTHING`,
       [
         taskKey,
         actor.accountKey,
         actor.productKey,
-        `Local agent task: ${payload.agentKind ?? 'unknown'}`,
-        'Typed local diagnosis requested. Open the authenticated One Time Admin surface for private details.',
+        `Support incident: ${payload.supportIncident.issueCategory}`,
+        serializeRabbiTaskEnvelope(envelope),
         payload.priority,
         actor.userKey,
         row.idempotency_key,
         row.action_digest,
+        now.toISOString(),
       ],
     );
     return {
       status: 'completed',
       publicMessage:
-        'Typed local agent task created. No provider action, notification, credential, or private Student data was recorded.',
+        'Redacted support incident created. No Parent/Student message, provider action, or private data was sent.',
       resultRef: taskKey,
+    };
+  }
+
+  private async confirmAgentTaskCreate(
+    client: Queryable,
+    actor: RabbiCommunicationActor,
+    row: ConfirmationRow,
+    payload: Extract<RabbiInternalTaskCreateRequest, { agentTask: unknown }>,
+    now: Date,
+  ): Promise<RabbiCommunicationResult> {
+    const taskKey = `rabbi_agent_${payload.agentTask.issueCategory.replace('_', '-')}_${row.idempotency_key.slice(0, 20)}`;
+    const envelope: RabbiTaskEnvelope = {
+      schemaVersion: 1,
+      entity: 'agent_task',
+      subject: payload.agentTask.subject,
+      issueCategory: payload.agentTask.issueCategory,
+      diagnosticCapability: payload.agentTask.diagnosticCapability,
+      riskClass: payload.agentTask.riskClass,
+      idempotencyKey: row.idempotency_key,
+      assignedTo: 'local_agent',
+      branchPrRef: null,
+      resultSummary: '',
+      notes: [],
+    };
+    await client.query(
+      `INSERT INTO onetime.rabbi_internal_tasks
+       (task_key, account_key, product_key, title, detail, priority, created_by_user_key,
+        updated_by_user_key, idempotency_key, request_digest, created_at, updated_at)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$7,$8,$9,$10,$10)
+       ON CONFLICT (account_key, product_key, idempotency_key) DO NOTHING`,
+      [
+        taskKey,
+        actor.accountKey,
+        actor.productKey,
+        `Local agent task: ${payload.agentTask.issueCategory}`,
+        serializeRabbiTaskEnvelope(envelope),
+        payload.priority,
+        actor.userKey,
+        row.idempotency_key,
+        row.action_digest,
+        now.toISOString(),
+      ],
+    );
+    return {
+      status: 'completed',
+      publicMessage:
+        'Allowlisted read-only local-agent task queued. No shell, SQL, provider, deploy, credential, or private Student data was accepted.',
+      resultRef: taskKey,
+    };
+  }
+
+  private async confirmSupportIncidentUpdate(
+    client: Queryable,
+    actor: RabbiCommunicationActor,
+    row: ConfirmationRow,
+    payload: Extract<RabbiInternalTaskUpdateRequest, { supportIncident: unknown }>,
+    now: Date,
+  ): Promise<RabbiCommunicationResult> {
+    const current = await client.query(
+      `SELECT detail, status, priority, version
+         FROM onetime.rabbi_internal_tasks
+        WHERE account_key = $1
+          AND product_key = $2
+          AND task_key = $3
+          AND version = $4
+          AND task_key LIKE 'rabbi_support_%'
+        LIMIT 1`,
+      [actor.accountKey, actor.productKey, payload.taskKey, row.target_revision],
+    );
+    const task = current.rows[0];
+    const envelope = task ? parseRabbiTaskEnvelope(String(task.detail)) : null;
+    if (!task || !envelope || envelope.entity !== 'support_incident') {
+      return stale('Support incident changed; preview again.');
+    }
+
+    const action = payload.supportIncident;
+    let status = String(task.status);
+    let next: RabbiTaskEnvelope = { ...envelope, notes: [...envelope.notes] };
+    if (action.action === 'assign') {
+      next.assignedTo = 'local_agent';
+      status = 'in_progress';
+    } else if (action.action === 'request_diagnostic' && action.diagnosticCapability) {
+      next = {
+        ...next,
+        assignedTo: 'local_agent',
+        diagnosticCapability: action.diagnosticCapability,
+        resultSummary: `Diagnostic queued: ${action.diagnosticCapability}`,
+      };
+      status = 'in_progress';
+      const diagnosticKey = `rabbi_agent_diag_${row.idempotency_key.slice(0, 20)}`;
+      const diagnosticEnvelope: RabbiTaskEnvelope = {
+        schemaVersion: 1,
+        entity: 'agent_task',
+        subject: envelope.subject,
+        issueCategory: envelope.issueCategory,
+        diagnosticCapability: action.diagnosticCapability,
+        riskClass: 'R0',
+        idempotencyKey: row.idempotency_key,
+        assignedTo: 'local_agent',
+        branchPrRef: null,
+        resultSummary: '',
+        notes: [],
+      };
+      await client.query(
+        `INSERT INTO onetime.rabbi_internal_tasks
+         (task_key, account_key, product_key, title, detail, priority, created_by_user_key,
+          updated_by_user_key, idempotency_key, request_digest, created_at, updated_at)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$7,$8,$9,$10,$10)
+         ON CONFLICT (account_key, product_key, idempotency_key) DO NOTHING`,
+        [
+          diagnosticKey,
+          actor.accountKey,
+          actor.productKey,
+          `Local diagnostic: ${envelope.issueCategory}`,
+          serializeRabbiTaskEnvelope(diagnosticEnvelope),
+          String(task.priority),
+          actor.userKey,
+          row.idempotency_key,
+          row.action_digest,
+          now.toISOString(),
+        ],
+      );
+    } else if (action.action === 'add_note' && action.note) {
+      next.notes = [...next.notes.slice(-9), action.note.trim()];
+    } else if (action.action === 'resolve' && action.note) {
+      next.resultSummary = action.note.trim();
+      status = 'completed';
+    } else if (action.action === 'block' && action.note) {
+      next.resultSummary = action.note.trim();
+      status = 'blocked';
+    } else {
+      return denied('The support action is incomplete.');
+    }
+
+    const updated = await client.query(
+      `UPDATE onetime.rabbi_internal_tasks
+          SET detail = $5,
+              status = $6,
+              updated_by_user_key = $7,
+              completed_at = CASE WHEN $6 = 'completed' THEN $8 ELSE NULL END,
+              updated_at = $8,
+              version = version + 1
+        WHERE account_key = $1
+          AND product_key = $2
+          AND task_key = $3
+          AND version = $4`,
+      [
+        actor.accountKey,
+        actor.productKey,
+        payload.taskKey,
+        row.target_revision,
+        serializeRabbiTaskEnvelope(next),
+        status,
+        actor.userKey,
+        now.toISOString(),
+      ],
+    );
+    if (!updated.rowCount) return stale('Support incident changed; preview again.');
+    return {
+      status: 'completed',
+      publicMessage: `Support incident ${action.action} completed within the redacted local workflow.`,
+      resultRef: payload.taskKey,
     };
   }
 
@@ -845,16 +1119,39 @@ export class RabbiCommunicationService {
     client: Queryable,
     actor: RabbiCommunicationActor,
     row: ConfirmationRow,
-    payload: RabbiInternalTaskUpdateRequest,
+    payload: Extract<RabbiInternalTaskUpdateRequest, { agentTask: unknown }>,
     now: Date,
   ): Promise<RabbiCommunicationResult> {
-    const result = await client.query(
+    const current = await client.query(
+      `SELECT detail
+         FROM onetime.rabbi_internal_tasks
+        WHERE account_key = $1
+          AND product_key = $2
+          AND task_key = $3
+          AND version = $4
+          AND task_key LIKE 'rabbi_agent_%'
+        LIMIT 1`,
+      [actor.accountKey, actor.productKey, payload.taskKey, row.target_revision],
+    );
+    const envelope = current.rows[0]
+      ? parseRabbiTaskEnvelope(String(current.rows[0].detail))
+      : null;
+    if (!envelope || envelope.entity !== 'agent_task') {
+      return stale('Local agent task changed; preview again.');
+    }
+    const next: RabbiTaskEnvelope = {
+      ...envelope,
+      branchPrRef: payload.agentTask.branchPrRef ?? envelope.branchPrRef,
+      resultSummary: payload.agentTask.resultSummary ?? envelope.resultSummary,
+    };
+    const updated = await client.query(
       `UPDATE onetime.rabbi_internal_tasks
-          SET status = $5,
-              updated_by_user_key = $6,
-              version = version + 1,
-              completed_at = CASE WHEN $5 = 'completed' THEN $7 ELSE NULL END,
-              updated_at = $7
+          SET detail = $5,
+              status = $6,
+              updated_by_user_key = $7,
+              completed_at = CASE WHEN $6 = 'completed' THEN $8 ELSE NULL END,
+              updated_at = $8,
+              version = version + 1
         WHERE account_key = $1
           AND product_key = $2
           AND task_key = $3
@@ -865,19 +1162,21 @@ export class RabbiCommunicationService {
         actor.productKey,
         payload.taskKey,
         row.target_revision,
-        payload.status,
+        serializeRabbiTaskEnvelope(next),
+        payload.agentTask.status,
         actor.userKey,
         now.toISOString(),
       ],
     );
-    if (!result.rowCount) return stale('Local agent task changed; preview again.');
+    if (!updated.rowCount) return stale('Local agent task changed; preview again.');
     return {
       status: 'completed',
       publicMessage:
-        'Typed local agent task updated. No provider action or notification was triggered.',
+        'Typed local-agent task updated. No provider action, notification, merge, or deployment was triggered.',
       resultRef: payload.taskKey,
     };
   }
+
 }
 
 async function getConfirmation(target: Pick<DbPool, 'query'>, confirmationKey: string) {
@@ -931,13 +1230,36 @@ function normalizePreviewRequest(request: RabbiPreviewRequest): RabbiPreviewRequ
     case 'student.question.close':
       return { ...request };
     case 'internal_task.create':
-      return 'agentKind' in request
-        ? { ...request }
-        : { ...request, title: request.title?.trim() ?? '', detail: request.detail?.trim() ?? '' };
+      return 'title' in request
+        ? { ...request, title: request.title.trim(), detail: request.detail.trim() }
+        : { ...request };
     case 'internal_task.update':
-      return request.agentTask
-        ? { ...request }
-        : { ...request, ...(request.title === undefined ? {} : { title: request.title.trim() }) };
+      if ('supportIncident' in request) {
+        return {
+          ...request,
+          supportIncident: {
+            ...request.supportIncident,
+            ...(request.supportIncident.note === undefined
+              ? {}
+              : { note: request.supportIncident.note.trim() }),
+          },
+        };
+      }
+      if ('agentTask' in request) {
+        return {
+          ...request,
+          agentTask: {
+            ...request.agentTask,
+            ...(request.agentTask.resultSummary === undefined
+              ? {}
+              : { resultSummary: request.agentTask.resultSummary.trim() }),
+          },
+        };
+      }
+      return {
+        ...request,
+        ...(request.title === undefined ? {} : { title: request.title.trim() }),
+      };
   }
 }
 
@@ -956,9 +1278,39 @@ function validText(value: string, min: number, max: number) {
   return trimmed.length >= min && trimmed.length <= max && !trimmed.includes('\u0000');
 }
 
-function agentTaskKind(taskKey: string) {
-  const [, marker, kind = 'unknown'] = taskKey.split('_', 3);
-  return marker === 'agent' ? kind.replace('-', '_') : 'unknown';
+function validSafeSubject(subject: { kind: string; ref: string }) {
+  return (
+    ['parent', 'student', 'account'].includes(subject.kind) &&
+    /^[a-z][a-z0-9_-]{0,119}$/i.test(subject.ref) &&
+    !/^\d+$/u.test(subject.ref)
+  );
+}
+
+function formatSubject(subject: { kind: string; ref: string }) {
+  return `${subject.kind}:${subject.ref}`;
+}
+
+function validDiagnostic(value: string) {
+  return [
+    'login_access_summary',
+    'class_readiness_summary',
+    'content_processing_summary',
+    'vimeo_processing_summary',
+    'support_incident_summary',
+  ].includes(value);
+}
+
+function validRedactedText(value: string, min: number, max: number) {
+  return (
+    validText(value, min, max) &&
+    !/(?:https?:\/\/|www\.|\b(?:password|passcode|token|secret|api[ _-]?key|credential|authorization|bearer|meeting[ _-]?(?:id|link|url)|provider[ _-]?id|email|phone)\b|\b\d{7,}\b)/i.test(
+      value,
+    )
+  );
+}
+
+function validBranchPrRef(value: string) {
+  return /^(?:none|pr#[1-9]\d{0,7}|branch:[a-z0-9][a-z0-9._\/-]{0,119})$/i.test(value);
 }
 
 function invalidText(label: string) {
