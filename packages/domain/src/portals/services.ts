@@ -506,7 +506,7 @@ export function createParentPortalService(deps: PortalServiceDeps) {
       ]);
       return {
         learner,
-        library: safeLibraryItems(library),
+        library: safeLibraryItems(library).filter((item) => item.protected_vimeo === undefined),
         review_sheets: safeLibraryItems(reviewSheets),
         progress,
         rewards,
@@ -916,6 +916,17 @@ async function contentOpenForLearner(
       ...item.open_action,
       label: 'Open approved class video',
       href: item.content_factory.playback_route,
+      launch_token_ref: null,
+    };
+  }
+  if (item.protected_vimeo) {
+    if (actor.actor_role !== 'student') {
+      throw new PortalServiceError('NOT_FOUND', 'The requested portal record was not found.');
+    }
+    return {
+      ...item.open_action,
+      label: 'Open protected class video',
+      href: item.protected_vimeo.playback_route,
       launch_token_ref: null,
     };
   }

@@ -5,6 +5,7 @@ import { z } from 'zod';
 export * from './parent-household/index.ts';
 import { gamificationSummarySchema } from '../gamification/index.ts';
 import { contentFactoryPortalProjectionSchema } from '../content/content-factory.ts';
+import { protectedVimeoPortalProjectionSchema } from '../content/existing-vimeo-adoption.ts';
 import { sameOriginPathSchema } from '../content/pipeline.ts';
 
 export const portalActorRoleSchema = z.enum([
@@ -252,6 +253,7 @@ export const libraryItemSchema = z.object({
   open_action: protectedActionDescriptorSchema.nullable(),
   lesson: lessonPublicationSummarySchema.nullable().optional(),
   content_factory: contentFactoryPortalProjectionSchema.optional(),
+  protected_vimeo: protectedVimeoPortalProjectionSchema.optional(),
   featured: z.boolean().optional(),
   published_at: z.string().nullable().optional(),
 });

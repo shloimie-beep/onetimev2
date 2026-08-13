@@ -186,6 +186,7 @@ import {
   createZoomHostLaunchPort,
   createContentPortalAccessAdapter,
   createContentFactoryIntake,
+  createExistingVimeoProtectionReader,
   contentFactoryStorageFromEnv,
   createGamificationService,
   createLoginCsrf,
@@ -202,6 +203,7 @@ import {
   getManagedClassOccurrence,
   getContentItemDetail,
   getContentFactoryPlayback,
+  getExistingPrivateVimeoPlayback,
   getContentFactoryWorkspace,
   getContactDetail,
   getOt110aContentCreateWorkspace,
@@ -235,6 +237,7 @@ import {
   previewSingleRecipientReply,
   receiveOt86PublicationManifest,
   receiveOt104rVimeoWebhook,
+  adoptExistingPrivateVimeo,
   requestPasswordReset,
   reactivateContact,
   resolveOt110aContentAdminActor,
@@ -250,6 +253,7 @@ import {
   updateManagedClassOccurrence,
   updateManagedClassSeries,
   updateContact,
+  unpublishExistingPrivateVimeo,
   editContentFactoryItem,
   inspectLearningDeliveryInputAdapters,
   CrmReplyError,
@@ -261,6 +265,8 @@ import {
   type PortalServiceDeps,
   type ZoomAdminProviderPort,
   type ZoomClassOccurrenceProvider,
+  ExistingVimeoAdoptionError,
+  type ExistingVimeoProtectionReader,
 } from '../../../../packages/domain/src/index.ts';
 import {
   buildProviderControlCenter,
@@ -405,6 +411,7 @@ type AppDeps = {
   distDir?: string;
   clock?: () => Date;
   contentFactoryJobNotifier?: (intakeKey: string) => Promise<void> | void;
+  existingVimeoProtectionReader?: ExistingVimeoProtectionReader;
   zoomAdminProvider?: ZoomAdminProviderPort;
   zoomClassOccurrenceProvider?: ZoomClassOccurrenceProvider;
   featureRegistrations?: readonly ServerFeatureRegistration[];
@@ -512,6 +519,7 @@ export function createApp({
   distDir = path.resolve(process.cwd(), 'dist/apps/web/public'),
   clock,
   contentFactoryJobNotifier,
+  existingVimeoProtectionReader,
   zoomAdminProvider,
   zoomClassOccurrenceProvider,
   featureRegistrations,
@@ -4792,6 +4800,54 @@ export function createApp({
     },
   );
 
+  app.post('/api/v1/admin/content/existing-vimeo/adopt', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    try {
+      const adopted = await withTiming(req, 'db', () =>
+        adoptExistingPrivateVimeo({
+          pool,
+          config,
+          actorUserKey: session.user.user_key,
+          actorRole: session.user.role,
+          command: req.body,
+          reader: existingVimeoProtectionReader ?? createExistingVimeoProtectionReader(),
+          ...(clock ? { now: clock() } : {}),
+        }),
+      );
+      res.status(adopted.replay ? 200 : 201).json({ success: true, adopted });
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post(
+    '/api/v1/admin/content/existing-vimeo/:itemKey/unpublish',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      if (!(await requireSessionCsrf(req, res, pool, session))) return;
+      try {
+        const unpublished = await withTiming(req, 'db', () =>
+          unpublishExistingPrivateVimeo({
+            pool,
+            config,
+            actorUserKey: session.user.user_key,
+            actorRole: session.user.role,
+            itemKey: String(req.params.itemKey),
+            ...(clock ? { now: clock() } : {}),
+          }),
+        );
+        res.json({ success: true, unpublished });
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+    },
+  );
+
   app.get('/app/learning/items/:sourceKey', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
     const resolution = await readApiSession(req);
@@ -4804,26 +4860,73 @@ export function createApp({
       return;
     }
     const session = resolution.session;
-    if (!['owner', 'admin', 'parent', 'student'].includes(session.user.role)) {
+    if (!['owner', 'admin', 'rabbi', 'parent', 'student'].includes(session.user.role)) {
       res.status(403).type('html').send('Protected learning access required.');
       return;
     }
     try {
       const actor = await resolvePortalActor(req);
       if (!actor) throw new ContentFactoryError('NOT_FOUND', 'Content was not found.');
-      const playback = await getContentFactoryPlayback({
+      try {
+        const playback = await getContentFactoryPlayback({
+          pool,
+          config,
+          sourceKey: String(req.params.sourceKey),
+          actor,
+        });
+        if (playback.isDemo || playback.processingMode === 'synthetic') {
+          throw new ContentFactoryError('NOT_FOUND', 'Content was not found.');
+        }
+        res.status(200).type('html').send(contentFactoryPlayerHtml(playback));
+        return;
+      } catch (error) {
+        if (!(error instanceof ContentFactoryError) || error.code !== 'NOT_FOUND') throw error;
+      }
+      const playback = await getExistingPrivateVimeoPlayback({
         pool,
         config,
-        sourceKey: String(req.params.sourceKey),
+        itemKey: String(req.params.sourceKey),
         actor,
+        ...(clock ? { now: clock() } : {}),
       });
-      if (playback.isDemo || playback.processingMode === 'synthetic') {
-        throw new ContentFactoryError('NOT_FOUND', 'Content was not found.');
-      }
-      res.status(200).type('html').send(contentFactoryPlayerHtml(playback));
+      setProtectedVimeoPlayerHeaders(res);
+      res.status(200).type('html').send(existingPrivateVimeoPlayerHtml(playback));
     } catch (error) {
-      const status = error instanceof ContentFactoryError && error.code === 'NOT_FOUND' ? 404 : 409;
+      const status =
+        (error instanceof ContentFactoryError && error.code === 'NOT_FOUND') ||
+        (error instanceof ExistingVimeoAdoptionError && error.httpStatus === 404)
+          ? 404
+          : 409;
       res.status(status).type('html').send('Approved lesson playback is unavailable.');
+    }
+  });
+
+  app.get('/api/v1/content/vimeo/:sourceKey/playback', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!['owner', 'admin', 'rabbi', 'student'].includes(session.user.role)) {
+      res.status(404).type('text').send('Content is unavailable.');
+      return;
+    }
+    try {
+      const actor = await resolvePortalActor(req);
+      if (!actor)
+        throw new ExistingVimeoAdoptionError('CONTENT_UNAVAILABLE', 'Content is unavailable.', 404);
+      const playback = await getExistingPrivateVimeoPlayback({
+        pool,
+        config,
+        itemKey: String(req.params.sourceKey),
+        actor,
+        ...(clock ? { now: clock() } : {}),
+      });
+      res.setHeader('Referrer-Policy', 'origin');
+      res.redirect(
+        302,
+        `https://player.vimeo.com/video/${encodeURIComponent(playback.providerVideoId)}?dnt=1&title=0&byline=0&portrait=0`,
+      );
+    } catch {
+      res.status(404).type('text').send('Content is unavailable.');
     }
   });
 
@@ -7121,6 +7224,15 @@ function handleApiError(error: unknown, req: RequestWithTrace, res: Response) {
     });
     return;
   }
+  if (error instanceof ExistingVimeoAdoptionError) {
+    res.status(error.httpStatus).json({
+      success: false,
+      code: error.code,
+      message: error.message,
+      request_id: req.traceId,
+    });
+    return;
+  }
   if (error instanceof Ot110aContentWorkspaceError) {
     res.status(statusForOt110aError(error.code)).json({
       success: false,
@@ -7586,6 +7698,25 @@ function setPrivateNoStore(res: Response) {
   res.setHeader('Expires', '0');
   res.removeHeader('ETag');
   res.removeHeader('Last-Modified');
+}
+
+function setProtectedVimeoPlayerHeaders(res: Response) {
+  res.setHeader('Referrer-Policy', 'origin');
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+  res.setHeader('Permissions-Policy', 'fullscreen=(self "https://player.vimeo.com")');
+  res.setHeader(
+    'Content-Security-Policy',
+    [
+      "default-src 'self'",
+      "img-src 'self' data:",
+      "script-src 'self'",
+      "style-src 'self'",
+      "frame-src 'self' https://player.vimeo.com",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "frame-ancestors 'none'",
+    ].join('; '),
+  );
 }
 
 function setProductionBasicZoomShellHeaders(res: Response) {
@@ -8149,6 +8280,44 @@ function contentFactoryPlayerHtml(playback: Awaited<ReturnType<typeof getContent
           ? 'Approved synthetic demo data only. No external provider media was used.'
           : 'Approved class material only. No raw Vimeo link is displayed.'
       }</p>
+    </section>
+  </main>
+</body>
+</html>`;
+}
+
+function existingPrivateVimeoPlayerHtml(
+  playback: Awaited<ReturnType<typeof getExistingPrivateVimeoPlayback>>,
+) {
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="origin">
+  <meta name="theme-color" content="#050505">
+  <title>${escapeHtml(playback.title)} | One Time Mishnayos</title>
+  <link rel="stylesheet" href="/assets/app-crm.css">
+</head>
+<body>
+  <main class="app-workspace learning-player-page" data-protected-player="true">
+    <section class="state-panel learning-player-shell" aria-labelledby="learning-player-title">
+      <p class="eyebrow">Protected One Time lesson</p>
+      <h1 id="learning-player-title">${escapeHtml(playback.title)}</h1>
+      <div class="protected-player-frame">
+        <iframe
+          src="${escapeHtml(playback.playbackRoute)}"
+          title="${escapeHtml(playback.title)}"
+          allow="autoplay; fullscreen; picture-in-picture"
+          allowfullscreen
+          loading="eager"
+        ></iframe>
+      </div>
+      <dl class="content-factory-safe-metadata">
+        <div><dt>Captions</dt><dd>${playback.captionsActive ? 'Available' : 'Not yet available'}</dd></div>
+      </dl>
+      <p class="ot-guardrail-note">Protected embed-only playback. No raw Vimeo link is displayed.</p>
     </section>
   </main>
 </body>
