@@ -197,7 +197,10 @@ function PortalApp() {
     if (!session || portalRole !== 'student' || !studentDashboard?.upcoming_classes[0]) {
       return undefined;
     }
-    const interval = window.setInterval(() => void loadLiveQuestions(studentDashboard), 4000);
+    const interval = window.setInterval(() => {
+      void loadLiveQuestions(studentDashboard);
+      void refreshStudentClassState();
+    }, 4000);
     return () => window.clearInterval(interval);
   }, [session?.expires_at, portalRole, studentDashboard?.upcoming_classes[0]?.class_key]);
 
@@ -307,6 +310,14 @@ function PortalApp() {
       setLiveClassQuestions(await getLiveClassQuestions(occurrenceKey));
     } catch {
       setLiveClassQuestions([]);
+    }
+  }
+
+  async function refreshStudentClassState() {
+    try {
+      setStudentDashboard(await getStudentDashboard());
+    } catch (error) {
+      handleAuthError(error);
     }
   }
 

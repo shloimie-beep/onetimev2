@@ -531,7 +531,7 @@ export function StudentPortalFeature({
         summaryCards={[
           {
             section: 'today',
-            label: 'Next class',
+            label: currentClass?.status === 'live' ? 'Class is live' : 'Next class',
             value: currentClass?.title ?? 'No class',
             detail: currentClass?.starts_at
               ? formatDate(currentClass.starts_at)
@@ -576,6 +576,20 @@ export function StudentPortalFeature({
         ) : activeSection === 'today' ? (
           <>
             <h2 id="student-dashboard-heading">Today</h2>
+            {currentClass?.status === 'live' && (
+              <section className="ot-item" role="status" aria-labelledby="student-live-heading">
+                <div>
+                  <strong id="student-live-heading">Class is live</strong>
+                  <span>The Rabbi has started class. You can join now.</span>
+                </div>
+                <a
+                  className="ot-button ot-button-primary"
+                  href={`/app/student/class/${encodeURIComponent(currentClass.class_key)}`}
+                >
+                  Join class
+                </a>
+              </section>
+            )}
             <ClassSummary
               classes={dashboard.upcoming_classes}
               onLaunch={readOnly ? undefined : onLaunchClass}

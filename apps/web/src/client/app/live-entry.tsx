@@ -19,6 +19,7 @@ import { startZoomMeetingProductionBasic } from './zoom-meeting-sdk-client.ts';
 import {
   readProductionBasicReadiness,
   requestProductionBasicLaunch,
+  startAndConfirmProductionBasicHostLive,
 } from '../classroom/production-basic-launch-client.ts';
 
 type ConsoleData = LiveClassConsoleSnapshot['data'];
@@ -98,14 +99,19 @@ function LiveConsole() {
     try {
       const artifact = await requestProductionBasicLaunch(session.csrf_token);
       if (artifact.role !== 1 || !artifact.zak) throw new Error('Classroom is unavailable.');
-      await startZoomMeetingProductionBasic({
-        sdkWebVersion: artifact.sdk_web_version,
-        meetingNumber: artifact.meeting_number,
-        signature: artifact.signature,
-        meetingPassword: artifact.meeting_password,
-        userName: artifact.user_name,
-        leaveUrl: artifact.leave_path,
-        zak: artifact.zak,
+      await startAndConfirmProductionBasicHostLive({
+        csrfToken: session.csrf_token,
+        startMeeting: (onMeetingStatus) =>
+          startZoomMeetingProductionBasic({
+            sdkWebVersion: artifact.sdk_web_version,
+            meetingNumber: artifact.meeting_number,
+            signature: artifact.signature,
+            meetingPassword: artifact.meeting_password,
+            userName: artifact.user_name,
+            leaveUrl: artifact.leave_path,
+            zak: requireHostZak(artifact.zak),
+            onMeetingStatus,
+          }),
       });
       setNotice({ kind: 'success', message: 'Protected class started.' });
     } catch {
@@ -739,6 +745,11 @@ async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
 
 function messageFor(error: unknown, fallback: string) {
   return error instanceof Error && error.message ? error.message : fallback;
+}
+
+function requireHostZak(zak: string | null): string {
+  if (!zak) throw new Error('Classroom is unavailable.');
+  return zak;
 }
 
 const root = document.getElementById('live-root');
