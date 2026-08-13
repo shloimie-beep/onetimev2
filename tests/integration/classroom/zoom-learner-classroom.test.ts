@@ -311,8 +311,11 @@ describe('OT-88 Zoom learner classroom sink mode', () => {
       });
       expect(launchPage.status).toBe(200);
       expect(launchPage.headers.get('cache-control')).toContain('no-store');
-      expect(launchPage.headers.get('content-security-policy')).toContain('https://source.zoom.us');
-      expect(launchPage.headers.get('content-security-policy')).toContain('wss://*.zoom.us');
+      const launchCsp = launchPage.headers.get('content-security-policy');
+      expect(launchCsp).toContain('https://source.zoom.us');
+      expect(launchCsp?.split('; ').find((directive) => directive.startsWith('connect-src '))).toBe(
+        "connect-src 'self' https://zoom.us https://*.zoom.us wss://*.zoom.us",
+      );
 
       const sibling = await loginAs(server.baseUrl, 'sibling@example.test', 'StudentPass!234');
       const siblingDashboard = await fetch(`${server.baseUrl}/api/v1/portals/student/dashboard`, {

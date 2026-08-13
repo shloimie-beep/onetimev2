@@ -263,7 +263,9 @@ describe('OT-71 mounted parent and student portals', () => {
         expect(response.status).toBe(200);
         const csp = response.headers.get('content-security-policy');
         expect(csp).toContain("script-src 'self' https://source.zoom.us");
-        expect(csp).toContain("connect-src 'self' https://*.zoom.us wss://*.zoom.us");
+        expect(csp?.split('; ').find((directive) => directive.startsWith('connect-src '))).toBe(
+          "connect-src 'self' https://zoom.us https://*.zoom.us wss://*.zoom.us",
+        );
       }
     } finally {
       await ready.close();
