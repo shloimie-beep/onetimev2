@@ -84,10 +84,8 @@ export function createRabbiTelegramOperationsReader(input: {
       }
       const action = operationAction(request);
       return (
-        adapter.readAction?.(
-          applicationActor(actor, adapter.supportedCapabilities()),
-          action,
-        ) ?? 'This operation is unavailable.'
+        adapter.readAction?.(applicationActor(actor, adapter.supportedCapabilities()), action) ??
+        'This operation is unavailable.'
       );
     },
   };
@@ -108,8 +106,7 @@ export class RabbiLocalAgentTaskDispatcher {
    * There is no shell, SQL text, provider command, deployment, or free-form tool route.
    */
   async runOnce(now = new Date()) {
-    const claimed = await this.pool.query(
-      `UPDATE onetime.rabbi_internal_tasks
+    const claimSql = `UPDATE onetime.rabbi_internal_tasks
           SET status = 'in_progress',
               version = version + 1,
               updated_at = $1
@@ -120,11 +117,20 @@ export class RabbiLocalAgentTaskDispatcher {
              AND status = 'queued'
            ORDER BY created_at ASC
            LIMIT 1
-           FOR UPDATE SKIP LOCKED
+            FOR UPDATE SKIP LOCKED
         )
-      RETURNING task_key, account_key, product_key, created_by_user_key, detail, version`,
-      [now.toISOString()],
-    );
+      RETURNING task_key, account_key, product_key, created_by_user_key, detail, version`;
+    let claimed;
+    try {
+      claimed = await this.pool.query(claimSql, [now.toISOString()]);
+    } catch (error) {
+      if (!(error instanceof Error) || !error.message.toLowerCase().includes('skip locked')) {
+        throw error;
+      }
+      claimed = await this.pool.query(claimSql.replace(' FOR UPDATE SKIP LOCKED', ''), [
+        now.toISOString(),
+      ]);
+    }
     const row = claimed.rows[0];
     if (!row) return { status: 'none' as const };
 
@@ -205,12 +211,7 @@ export class RabbiLocalAgentTaskDispatcher {
         WHERE task_key = $1
           AND version = $2
           AND status = 'in_progress'`,
-      [
-        taskKey,
-        version,
-        blocked ? serializeRabbiTaskEnvelope(blocked) : null,
-        now.toISOString(),
-      ],
+      [taskKey, version, blocked ? serializeRabbiTaskEnvelope(blocked) : null, now.toISOString()],
     );
   }
 }
@@ -247,10 +248,7 @@ function operationAction(
   request: Exclude<
     Extract<RabbiReadRequest, { capability: `operation.${string}` }>,
     {
-      capability:
-        | 'operation.readiness'
-        | 'operation.support.list'
-        | 'operation.login_issues.list';
+      capability: 'operation.readiness' | 'operation.support.list' | 'operation.login_issues.list';
     }
   >,
 ): BotActionRequest {
@@ -332,7 +330,7 @@ async function listLocalSupportIncidents(
     .map((row) => ({ row, envelope: parseRabbiTaskEnvelope(String(row.detail)) }))
     .filter(
       (item): item is { row: Record<string, unknown>; envelope: RabbiTaskEnvelope } =>
-        Boolean(item.envelope) && (!category || item.envelope.issueCategory === category),
+        item.envelope !== null && (!category || item.envelope.issueCategory === category),
     );
   if (!rows.length) {
     return category ? 'Local login incidents: none.' : 'Local support incidents: none.';
@@ -414,10 +412,7 @@ async function operationalReadiness(pool: DbPool, config: AppConfig) {
       ? 'local_polling'
       : 'inactive';
   const payloadFingerprint = config.oneTimeRabbiTelegramPayloadKey
-    ? createHash('sha256')
-        .update(config.oneTimeRabbiTelegramPayloadKey)
-        .digest('hex')
-        .slice(0, 12)
+    ? createHash('sha256').update(config.oneTimeRabbiTelegramPayloadKey).digest('hex').slice(0, 12)
     : 'missing';
   return [
     'Rabbi Telegram readiness (presence/status only):',

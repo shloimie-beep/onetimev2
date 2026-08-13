@@ -49,7 +49,7 @@ const HELP_TEXT = [
   '/agent-task-update <ref> | <status> | <none|pr#123|branch:name> | <public-safe-result>',
   'Every write produces a typed preview and requires an explicit Confirm button.',
   'No command can invoke shell, SQL, providers, credentials, merge, or deploy.',
-].join('\n');;
+].join('\n');
 
 const forbiddenPattern =
   /\b(access|zoom|social|voice|studio|shell|codex|deploy|publish|campaign|bulk|mass|billing|refund|password|login|token|secret|production|bna|impersonate|child contact|student contact)\b/i;
@@ -466,11 +466,7 @@ function classifyRabbiCommand(update: NormalizedBotUpdate): RabbiCommand {
         : { type: 'unsupported', reason: 'missing_argument' };
     case '/support-diagnostic': {
       const fields = pipeFields(rest);
-      if (
-        !safeReference(fields[0] ?? '') ||
-        !isDiagnostic(fields[1] ?? '') ||
-        fields.length > 2
-      ) {
+      if (!safeReference(fields[0] ?? '') || !isDiagnostic(fields[1] ?? '') || fields.length > 2) {
         return { type: 'unsupported', reason: 'missing_argument' };
       }
       return {

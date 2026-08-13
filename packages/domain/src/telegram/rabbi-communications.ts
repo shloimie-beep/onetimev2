@@ -855,7 +855,7 @@ export class RabbiCommunicationService {
     client: Queryable,
     actor: RabbiCommunicationActor,
     row: ConfirmationRow,
-    payload: RabbiInternalTaskCreateRequest,
+    payload: Extract<RabbiInternalTaskCreateRequest, { title: string }>,
   ): Promise<RabbiCommunicationResult> {
     const taskKey = `rabbi_task_${row.idempotency_key.slice(0, 24)}`;
     await client.query(
@@ -868,8 +868,8 @@ export class RabbiCommunicationService {
         taskKey,
         actor.accountKey,
         actor.productKey,
-        payload.title?.trim() ?? '',
-        payload.detail?.trim() ?? '',
+        payload.title.trim(),
+        payload.detail.trim(),
         payload.priority,
         actor.userKey,
         row.idempotency_key,
@@ -887,7 +887,7 @@ export class RabbiCommunicationService {
     client: Queryable,
     actor: RabbiCommunicationActor,
     row: ConfirmationRow,
-    payload: RabbiInternalTaskUpdateRequest,
+    payload: Extract<RabbiInternalTaskUpdateRequest, { status: string }>,
     now: Date,
   ): Promise<RabbiCommunicationResult> {
     const result = await client.query(
@@ -1328,9 +1328,7 @@ function validRedactedText(value: string, min: number, max: number) {
 }
 
 function validBranchPrRef(value: string) {
-  return /^(?:none|pr#[1-9]\d{0,7}|branch:[a-z0-9][a-z0-9._\/-]{0,119})$/i.test(
-    value,
-  );
+  return /^(?:none|pr#[1-9]\d{0,7}|branch:[a-z0-9][a-z0-9._/-]{0,119})$/i.test(value);
 }
 
 function invalidText(label: string) {
