@@ -28,6 +28,26 @@ export const communicationsEventMap: Record<
     label: 'Single-recipient reply draft',
     channel: 'email',
   },
+  'account_password_reset.v1': {
+    intentType: 'password_reset',
+    label: 'Password reset email',
+    channel: 'email',
+  },
+  'account_activation.v1': {
+    intentType: 'account_activation',
+    label: 'Account setup email',
+    channel: 'email',
+  },
+  'student_pin_setup.v1': {
+    intentType: 'student_pin_setup',
+    label: 'Student PIN setup email',
+    channel: 'email',
+  },
+  'student_pin_reset.v1': {
+    intentType: 'student_pin_reset',
+    label: 'Student PIN reset email',
+    channel: 'email',
+  },
   'whatsapp_inbound_message.v1': {
     intentType: 'whatsapp_inbound_message',
     label: 'Stored WhatsApp inbound message',
@@ -72,7 +92,11 @@ export function normalizeCommunicationsStatus(input: {
     return { localState: 'queued', stateLabel: 'Queued', stateAt: null };
   }
   if (input.status === 'provider_accepted') {
-    return { localState: 'provider_accepted', stateLabel: 'Provider accepted', stateAt: null };
+    return {
+      localState: 'provider_accepted',
+      stateLabel: 'Provider accepted',
+      stateAt: input.deliveredAt ? toIso(input.deliveredAt) : null,
+    };
   }
   if (input.status === 'sent') {
     return { localState: 'provider_sent', stateLabel: 'Provider sent', stateAt: null };
@@ -98,19 +122,66 @@ export function normalizeCommunicationsStatus(input: {
     return { localState: 'processed', stateLabel: 'Processed locally', stateAt: null };
   }
   if (input.status === 'failed') {
-    return { localState: 'failed', stateLabel: 'Failed', stateAt: null };
+    return {
+      localState: 'failed',
+      stateLabel: 'Failed',
+      stateAt: input.deliveredAt ? toIso(input.deliveredAt) : null,
+    };
   }
   if (input.status === 'bounced') {
-    return { localState: 'bounced', stateLabel: 'Bounced', stateAt: null };
+    return {
+      localState: 'bounced',
+      stateLabel: 'Bounced',
+      stateAt: input.deliveredAt ? toIso(input.deliveredAt) : null,
+    };
   }
   if (input.status === 'complained') {
-    return { localState: 'complained', stateLabel: 'Complained', stateAt: null };
+    return {
+      localState: 'complained',
+      stateLabel: 'Complained',
+      stateAt: input.deliveredAt ? toIso(input.deliveredAt) : null,
+    };
   }
   if (input.status === 'suppressed') {
     return { localState: 'suppressed', stateLabel: 'Suppressed', stateAt: null };
   }
   if (input.status === 'duplicate') {
     return { localState: 'duplicate', stateLabel: 'Duplicate ignored', stateAt: null };
+  }
+  if (input.status === 'retrying') {
+    return {
+      localState: 'retrying',
+      stateLabel: 'Retry scheduled',
+      stateAt: input.deliveredAt ? toIso(input.deliveredAt) : null,
+    };
+  }
+  if (input.status === 'expired') {
+    return {
+      localState: 'expired',
+      stateLabel: 'Expired before delivery',
+      stateAt: input.deliveredAt ? toIso(input.deliveredAt) : null,
+    };
+  }
+  if (input.status === 'superseded') {
+    return {
+      localState: 'superseded',
+      stateLabel: 'Superseded by a newer link',
+      stateAt: input.deliveredAt ? toIso(input.deliveredAt) : null,
+    };
+  }
+  if (input.status === 'provider_off') {
+    return {
+      localState: 'provider_off',
+      stateLabel: 'Provider delivery off',
+      stateAt: input.deliveredAt ? toIso(input.deliveredAt) : null,
+    };
+  }
+  if (input.status === 'cleared') {
+    return {
+      localState: 'cleared',
+      stateLabel: 'Sensitive payload cleared',
+      stateAt: input.deliveredAt ? toIso(input.deliveredAt) : null,
+    };
   }
   if (input.status === 'history_unavailable') {
     return {

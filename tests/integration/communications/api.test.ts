@@ -181,6 +181,61 @@ describe('Communications API registration hook', () => {
     expect(JSON.stringify(json)).not.toContain('message body');
   });
 
+  it('returns redacted account-security delivery history to Admin without secure-link leakage', async () => {
+    repository.rows = [
+      {
+        id: 'lifecycle:redacted-delivery-key',
+        accountKey: ownerSession.accountKey,
+        productKey: ownerSession.productKey,
+        contactKey: null,
+        eventType: 'account_password_reset.v1',
+        channel: 'email',
+        direction: 'outbound',
+        status: 'delivered',
+        createdAt: '2026-07-14T11:00:00.000Z',
+        occurredAt: '2026-07-14T11:00:00.000Z',
+        deliveredAt: '2026-07-14T11:00:02.000Z',
+        emailNormalized: null,
+        phoneNormalized: null,
+        source: 'account_lifecycle_outbox',
+        provenance: 'local_database',
+        previewRedacted: 'Password reset delivery status. Message body and secure link are hidden.',
+        providerReferenceDigest: null,
+        idempotencyKey: null,
+        participantKind: 'unknown',
+        participantLabel: 'Protected account recipient',
+      },
+    ];
+    const response = await api(
+      '/api/v1/communications?from=2026-07-01T00:00:00.000Z&to=2026-07-15T00:00:00.000Z&intent_type=password_reset&status=delivered&source=account_lifecycle_outbox',
+      'admin',
+    );
+    expect(response.status).toBe(200);
+    expect(repository.calls[0]).toMatchObject({
+      rawEventType: 'account_password_reset.v1',
+      filters: {
+        intent_type: 'password_reset',
+        status: 'delivered',
+        source: 'account_lifecycle_outbox',
+      },
+    });
+    const json = await response.json();
+    expect(json.items).toHaveLength(1);
+    expect(json.items[0]).toMatchObject({
+      intent_type: 'password_reset',
+      event_label: 'Password reset email',
+      local_state: 'delivered',
+      state_label: 'Delivered',
+      source: 'account_lifecycle_outbox',
+      source_label: 'Account security delivery',
+      participant_label: 'Protected account recipient',
+      recipient_masked: 'Recipient unavailable',
+      provider_reference_digest: null,
+      idempotency_key: null,
+    });
+    expect(JSON.stringify(json)).not.toMatch(/#token=|reset-password|provider-message|secret/u);
+  });
+
   it('denies unauthenticated and unauthorized roles before repository access', async () => {
     const unauthenticated = await fetch(`${baseUrl}/api/v1/communications`);
     expect(unauthenticated.status).toBe(401);

@@ -395,6 +395,10 @@ function isIntentType(value: string): value is CommunicationsIntentType {
     value === 'family_signup_whatsapp_confirmation' ||
     value === 'internal_lead_alert' ||
     value === 'single_recipient_reply' ||
+    value === 'password_reset' ||
+    value === 'account_activation' ||
+    value === 'student_pin_setup' ||
+    value === 'student_pin_reset' ||
     value === 'whatsapp_inbound_message' ||
     value === 'whatsapp_provider_event' ||
     value === 'historical_import_event' ||
@@ -418,6 +422,11 @@ function isLocalState(value: string): value is CommunicationsLocalState {
     value === 'draft_saved' ||
     value === 'duplicate' ||
     value === 'unknown' ||
+    value === 'retrying' ||
+    value === 'expired' ||
+    value === 'superseded' ||
+    value === 'provider_off' ||
+    value === 'cleared' ||
     value === 'history_unavailable'
   );
 }
@@ -437,6 +446,7 @@ function isSource(value: string): value is CommunicationsSource {
     value === 'crm_reply_draft' ||
     value === 'stored_whatsapp_webhook' ||
     value === 'stored_provider_delivery_event' ||
+    value === 'account_lifecycle_outbox' ||
     value === 'historical_import' ||
     value === 'provider_history_unavailable'
   );
@@ -499,6 +509,7 @@ function sourceLabel(source: CommunicationsSource) {
   if (source === 'crm_reply_draft') return 'Provider-off reply draft';
   if (source === 'stored_whatsapp_webhook') return 'Stored WhatsApp webhook';
   if (source === 'stored_provider_delivery_event') return 'Stored provider status';
+  if (source === 'account_lifecycle_outbox') return 'Account security delivery';
   if (source === 'historical_import') return 'Historical import';
   return 'Provider history unavailable';
 }
@@ -512,6 +523,14 @@ function previewFor(row: CommunicationIntentRow, stateLabel: string) {
   }
   if (row.eventType === 'whatsapp_provider_delivery_event.v1') {
     return `Provider status recorded: ${stateLabel}.`;
+  }
+  if (
+    row.eventType === 'account_password_reset.v1' ||
+    row.eventType === 'account_activation.v1' ||
+    row.eventType === 'student_pin_setup.v1' ||
+    row.eventType === 'student_pin_reset.v1'
+  ) {
+    return `Account security delivery status: ${stateLabel}. Message body and secure link are hidden.`;
   }
   if (row.source === 'provider_history_unavailable') {
     return 'Provider history is not available from the configured source.';

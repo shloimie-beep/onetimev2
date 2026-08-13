@@ -42,6 +42,8 @@ describe('PostgresCommunicationsReadRepository', () => {
     expect(result.sourceAvailable).toBe(true);
     expect(result.rows.map((row) => row.source)).toEqual([
       'historical_import',
+      'account_lifecycle_outbox',
+      'account_lifecycle_outbox',
       'stored_provider_delivery_event',
       'stored_whatsapp_webhook',
       'local_outbox_intent',
@@ -49,11 +51,68 @@ describe('PostgresCommunicationsReadRepository', () => {
     expect(result.rows.map((row) => row.status)).toEqual([
       'history_unavailable',
       'delivered',
+      'superseded',
+      'delivered',
       'received',
       'pending',
     ]);
     expect(JSON.stringify(result.rows)).not.toContain('private body');
     expect(JSON.stringify(result.rows)).not.toContain('encrypted_private_body');
+    expect(JSON.stringify(result.rows)).not.toContain('lifecycle_token_hash_private');
+    expect(JSON.stringify(result.rows)).not.toContain('lifecycle_provider_ref_private');
+    expect(JSON.stringify(result.rows)).not.toContain('lifecycle_destination_private');
+  });
+
+  it('projects reset and setup delivery truth without recipient, link, token, or provider leakage', async () => {
+    const passwordReset = await repository.list({
+      scope,
+      mode: { kind: 'global' },
+      filters: {
+        from: '2026-07-14T00:00:00.000Z',
+        to: '2026-07-15T00:00:00.000Z',
+        source: 'account_lifecycle_outbox',
+        intent_type: 'password_reset',
+        status: 'delivered',
+        limit: 25,
+      },
+      cursor: null,
+      rawEventType: 'account_password_reset.v1',
+    });
+    expect(passwordReset.rows).toHaveLength(1);
+    expect(passwordReset.rows[0]).toMatchObject({
+      eventType: 'account_password_reset.v1',
+      status: 'delivered',
+      source: 'account_lifecycle_outbox',
+      participantLabel: 'Protected account recipient',
+      providerReferenceDigest: null,
+      idempotencyKey: null,
+    });
+
+    const accountSetup = await repository.list({
+      scope,
+      mode: { kind: 'global' },
+      filters: {
+        from: '2026-07-14T00:00:00.000Z',
+        to: '2026-07-15T00:00:00.000Z',
+        source: 'account_lifecycle_outbox',
+        intent_type: 'account_activation',
+        status: 'superseded',
+        limit: 25,
+      },
+      cursor: null,
+      rawEventType: 'account_activation.v1',
+    });
+    expect(accountSetup.rows).toHaveLength(1);
+    expect(accountSetup.rows[0]).toMatchObject({
+      eventType: 'account_activation.v1',
+      status: 'superseded',
+      source: 'account_lifecycle_outbox',
+    });
+    const serialized = JSON.stringify([...passwordReset.rows, ...accountSetup.rows]);
+    expect(serialized).not.toContain('lifecycle_token_hash_private');
+    expect(serialized).not.toContain('lifecycle_provider_ref_private');
+    expect(serialized).not.toContain('lifecycle_destination_private');
+    expect(serialized).not.toContain('ciphertext_private');
   });
 
   it('filters by source and refuses cross-contact projection through scoped contact mode', async () => {
@@ -102,6 +161,42 @@ async function seedCommunicationHistory(db: DbPool) {
       ('delivery_local_1','one_time','one_time_mishnah_class','contact_public_test',
        'family_signup_email_ack.v1','email','{"redacted":true}'::jsonb,'pending',
        '2026-07-14T09:00:00.000Z')`,
+  );
+
+  await db.query(
+    `INSERT INTO onetime.account_lifecycle_tokens
+      (token_key, account_key, product_key, token_type, token_hash, email_normalized,
+       display_name, target_role, expires_at, created_at)
+     VALUES
+      ('lifecycle_token_reset','one_time','one_time_mishnah_class','password_reset',
+       'lifecycle_token_hash_private','protected@example.test','Protected Adult','admin',
+       '2026-07-14T12:00:00.000Z','2026-07-14T11:00:00.000Z'),
+      ('lifecycle_token_setup','one_time','one_time_mishnah_class','parent_activation',
+       'lifecycle_setup_token_hash_private','protected@example.test','Protected Adult','parent',
+       '2026-07-21T10:59:00.000Z','2026-07-14T10:59:00.000Z')`,
+  );
+
+  await db.query(
+    `INSERT INTO onetime.account_lifecycle_delivery_outbox
+      (delivery_key, account_key, product_key, token_key, purpose, channel, transport_mode,
+       destination_ref, key_id, encrypted_payload_expires_at, state, attempts, max_attempts,
+       next_attempt_at, idempotency_key, provider_message_ref_hash, provider_accepted_at,
+       final_delivery_state, final_state_at, delivered_at, cleared_at, created_at, updated_at,
+       metadata)
+     VALUES
+      ('lifecycle_delivery_reset','one_time','one_time_mishnah_class','lifecycle_token_reset',
+       'password_reset','email','provider','lifecycle_destination_private','key_test',
+       '2026-07-14T12:00:00.000Z','provider_accepted',1,5,'2026-07-14T11:00:00.000Z',
+       'lifecycle_idempotency_private','lifecycle_provider_ref_private',
+       '2026-07-14T11:00:01.000Z','delivered','2026-07-14T11:00:02.000Z',
+       '2026-07-14T11:00:02.000Z','2026-07-14T11:00:01.000Z',
+       '2026-07-14T11:00:00.000Z','2026-07-14T11:00:02.000Z','{"raw_token_included":false}'::jsonb),
+      ('lifecycle_delivery_setup','one_time','one_time_mishnah_class','lifecycle_token_setup',
+       'parent_activation','email','provider','lifecycle_destination_private','key_test',
+       '2026-07-21T10:59:00.000Z','superseded',0,5,'2026-07-14T10:59:00.000Z',
+       'lifecycle_setup_idempotency_private',NULL,NULL,NULL,NULL,NULL,
+       '2026-07-14T10:59:30.000Z','2026-07-14T10:59:00.000Z',
+       '2026-07-14T10:59:30.000Z','{"raw_token_included":false}'::jsonb)`,
   );
 
   await db.query(

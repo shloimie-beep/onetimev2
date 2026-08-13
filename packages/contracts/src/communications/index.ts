@@ -7,6 +7,10 @@ export const communicationsIntentTypes = [
   'family_signup_whatsapp_confirmation',
   'internal_lead_alert',
   'single_recipient_reply',
+  'password_reset',
+  'account_activation',
+  'student_pin_setup',
+  'student_pin_reset',
   'whatsapp_inbound_message',
   'whatsapp_provider_event',
   'historical_import_event',
@@ -27,6 +31,11 @@ export const communicationsLocalStates = [
   'draft_saved',
   'duplicate',
   'unknown',
+  'retrying',
+  'expired',
+  'superseded',
+  'provider_off',
+  'cleared',
   'history_unavailable',
 ] as const;
 export const communicationsSources = [
@@ -35,6 +44,7 @@ export const communicationsSources = [
   'crm_reply_draft',
   'stored_whatsapp_webhook',
   'stored_provider_delivery_event',
+  'account_lifecycle_outbox',
   'historical_import',
   'provider_history_unavailable',
 ] as const;

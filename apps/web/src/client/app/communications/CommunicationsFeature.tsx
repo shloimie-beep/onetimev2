@@ -96,7 +96,8 @@ export function CommunicationsFeature({ contactId, onProtectedStateCleared }: Pr
           <h1 id="communications-heading">Communications</h1>
           <p>
             Adult conversation context for Rabbi and Admin. GHL Conversations is the live mailbox
-            for <strong>info@onetimeonetime.com</strong>; One Time never creates Student contacts.
+            for <strong>info@onetimeonetime.com</strong>. One Time separately shows redacted reset
+            and setup delivery status here; it never creates Student contacts.
           </p>
         </div>
       </header>
@@ -104,6 +105,7 @@ export function CommunicationsFeature({ contactId, onProtectedStateCleared }: Pr
       {data && (
         <section className="communications-truth" aria-label="Communications source truth">
           <span>Adult-only conversations</span>
+          <span>Redacted account-security delivery</span>
           <span>
             {data.mailbox_complete ? 'Mailbox history available' : 'GHL mailbox connection pending'}
           </span>
@@ -159,6 +161,10 @@ export function CommunicationsFeature({ contactId, onProtectedStateCleared }: Pr
             </option>
             <option value="internal_lead_alert">Internal owner alert</option>
             <option value="single_recipient_reply">Single-recipient reply</option>
+            <option value="password_reset">Password reset</option>
+            <option value="account_activation">Account setup</option>
+            <option value="student_pin_setup">Student PIN setup</option>
+            <option value="student_pin_reset">Student PIN reset</option>
             <option value="whatsapp_inbound_message">WhatsApp inbound message</option>
             <option value="whatsapp_provider_event">WhatsApp provider event</option>
             <option value="historical_import_event">Historical import event</option>
@@ -183,6 +189,11 @@ export function CommunicationsFeature({ contactId, onProtectedStateCleared }: Pr
             <option value="draft_saved">Draft saved/provider off</option>
             <option value="duplicate">Duplicate ignored</option>
             <option value="unknown">Unknown</option>
+            <option value="retrying">Retry scheduled</option>
+            <option value="expired">Expired</option>
+            <option value="superseded">Superseded</option>
+            <option value="provider_off">Provider off</option>
+            <option value="cleared">Sensitive payload cleared</option>
             <option value="history_unavailable">History unavailable</option>
           </select>
         </label>
@@ -195,6 +206,7 @@ export function CommunicationsFeature({ contactId, onProtectedStateCleared }: Pr
             <option value="crm_reply_draft">Provider-off draft</option>
             <option value="stored_whatsapp_webhook">Stored WhatsApp webhook</option>
             <option value="stored_provider_delivery_event">Stored provider status</option>
+            <option value="account_lifecycle_outbox">Account security delivery</option>
             <option value="historical_import">Historical import</option>
             <option value="provider_history_unavailable">History unavailable</option>
           </select>
@@ -497,6 +509,10 @@ function emptyUnavailableResponse(): CommunicationsListResponse {
         'family_signup_whatsapp_confirmation',
         'internal_lead_alert',
         'single_recipient_reply',
+        'password_reset',
+        'account_activation',
+        'student_pin_setup',
+        'student_pin_reset',
         'whatsapp_inbound_message',
         'whatsapp_provider_event',
         'historical_import_event',
@@ -517,6 +533,11 @@ function emptyUnavailableResponse(): CommunicationsListResponse {
         'draft_saved',
         'duplicate',
         'unknown',
+        'retrying',
+        'expired',
+        'superseded',
+        'provider_off',
+        'cleared',
         'history_unavailable',
       ] satisfies CommunicationsLocalState[],
       sources: [
@@ -525,6 +546,7 @@ function emptyUnavailableResponse(): CommunicationsListResponse {
         'crm_reply_draft',
         'stored_whatsapp_webhook',
         'stored_provider_delivery_event',
+        'account_lifecycle_outbox',
         'historical_import',
         'provider_history_unavailable',
       ],

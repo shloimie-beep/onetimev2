@@ -167,6 +167,91 @@ export class PostgresCommunicationsReadRepository implements CommunicationsReadR
              AND contact.account_key = outbox.account_key
              AND contact.product_key = outbox.product_key
           UNION ALL
+          SELECT 'lifecycle:' || lifecycle.delivery_key AS id,
+                 lifecycle.account_key,
+                 lifecycle.product_key,
+                 NULL::text AS contact_key,
+                 NULL::text AS household_key,
+                 'lifecycle:' || lifecycle.delivery_key AS thread_id,
+                 CASE
+                   WHEN lifecycle.purpose = 'password_reset' THEN 'Password reset delivery'
+                   WHEN lifecycle.purpose IN ('owner_admin_invitation', 'parent_activation') THEN 'Account setup delivery'
+                   WHEN lifecycle.purpose = 'student_setup' THEN 'Student PIN setup delivery'
+                   WHEN lifecycle.purpose = 'student_reset' THEN 'Student PIN reset delivery'
+                   ELSE 'Account security delivery'
+                 END AS thread_label,
+                 CASE
+                   WHEN lifecycle.purpose = 'password_reset' THEN 'account_password_reset.v1'
+                   WHEN lifecycle.purpose IN ('owner_admin_invitation', 'parent_activation') THEN 'account_activation.v1'
+                   WHEN lifecycle.purpose = 'student_setup' THEN 'student_pin_setup.v1'
+                   WHEN lifecycle.purpose = 'student_reset' THEN 'student_pin_reset.v1'
+                   ELSE 'account_activation.v1'
+                 END AS event_type,
+                 'email' AS channel,
+                 'outbound' AS direction,
+                 COALESCE(
+                   lifecycle.final_delivery_state,
+                   CASE
+                     WHEN lifecycle.state IN ('queued', 'leased') THEN 'queued'
+                     WHEN lifecycle.state = 'retry' THEN 'retrying'
+                     WHEN lifecycle.state IN ('provider_accepted', 'provider_delivered') THEN 'provider_accepted'
+                     WHEN lifecycle.state = 'sink_delivered' THEN 'sink_delivered'
+                     WHEN lifecycle.state = 'dead_letter' THEN 'failed'
+                     WHEN lifecycle.state IN (
+                       'unknown', 'provider_off', 'superseded', 'expired', 'cleared',
+                       'delivered', 'bounced', 'complained', 'failed'
+                     ) THEN lifecycle.state
+                     ELSE 'unknown'
+                   END
+                 ) AS status,
+                 COALESCE(
+                   lifecycle.final_delivery_state,
+                   CASE
+                     WHEN lifecycle.state IN ('queued', 'leased') THEN 'queued'
+                     WHEN lifecycle.state = 'retry' THEN 'retrying'
+                     WHEN lifecycle.state IN ('provider_accepted', 'provider_delivered') THEN 'provider_accepted'
+                     WHEN lifecycle.state = 'sink_delivered' THEN 'draft_saved'
+                     WHEN lifecycle.state = 'dead_letter' THEN 'failed'
+                     WHEN lifecycle.state IN (
+                       'unknown', 'provider_off', 'superseded', 'expired', 'cleared',
+                       'delivered', 'bounced', 'complained', 'failed'
+                     ) THEN lifecycle.state
+                     ELSE 'unknown'
+                   END
+                 ) AS local_state,
+                 lifecycle.created_at AS occurred_at,
+                 lifecycle.created_at,
+                 COALESCE(
+                   lifecycle.final_state_at,
+                   lifecycle.provider_accepted_at,
+                   lifecycle.dead_lettered_at,
+                   lifecycle.cleared_at,
+                   lifecycle.updated_at
+                 ) AS delivered_at,
+                 NULL::text AS email_normalized,
+                 NULL::text AS phone_normalized,
+                 'account_lifecycle_outbox' AS source,
+                 'local_database' AS provenance,
+                 CASE
+                   WHEN lifecycle.purpose = 'password_reset'
+                     THEN 'Password reset delivery status. Message body and secure link are hidden.'
+                   WHEN lifecycle.purpose IN ('owner_admin_invitation', 'parent_activation')
+                     THEN 'Account setup delivery status. Message body and secure link are hidden.'
+                   WHEN lifecycle.purpose = 'student_setup'
+                     THEN 'Student PIN setup delivery status. Message body and secure link are hidden.'
+                   WHEN lifecycle.purpose = 'student_reset'
+                     THEN 'Student PIN reset delivery status. Message body and secure link are hidden.'
+                   ELSE 'Account security delivery status. Message body and secure link are hidden.'
+                 END AS preview_redacted,
+                 NULL::text AS provider_reference_digest,
+                 NULL::text AS import_batch_key,
+                 NULL::text AS idempotency_key,
+                 false AS draft_only,
+                 false AS transport_available,
+                 'unknown' AS participant_kind,
+                 'Protected account recipient' AS participant_label
+            FROM onetime.account_lifecycle_delivery_outbox AS lifecycle
+          UNION ALL
           SELECT 'whatsapp-inbox:' || inbox.event_key AS id,
                  inbox.account_key,
                  inbox.product_key,
