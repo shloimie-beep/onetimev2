@@ -12,6 +12,7 @@ import { AesGcmPayloadCodec } from './crypto.ts';
 import { TelegramIdentityResolver } from './identity.ts';
 import { RabbiCommunicationService } from './rabbi-communications.ts';
 import { RabbiTelegramCommunicationEngine, RabbiTelegramIdentityAdapter } from './rabbi-engine.ts';
+import { createRabbiTelegramOperationsReader } from './rabbi-operations.ts';
 import {
   DisabledRabbiConversationProvider,
   SyntheticRabbiConversationProvider,
@@ -72,6 +73,7 @@ export function createOneTimeRabbiTelegramRuntime(input: {
     ),
     service,
     audit,
+    createRabbiTelegramOperationsReader({ pool: input.pool, config: input.config }),
   );
   const transport =
     input.transport ??

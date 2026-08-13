@@ -19,6 +19,7 @@ import type { DbPool } from '../../../db/src/index.ts';
 import { correlationKey } from './crypto.ts';
 import { TelegramIdentityResolver } from './identity.ts';
 import { RabbiCommunicationService } from './rabbi-communications.ts';
+import type { RabbiTelegramOperationsReader } from './rabbi-operations.ts';
 
 const HELP_TEXT = [
   'One Time Rabbi communications:',
@@ -32,11 +33,21 @@ const HELP_TEXT = [
   '/internal-tasks',
   '/internal-task-create <title> | <detail> | <low|normal|high>',
   '/internal-task-update <ref> | <queued|in_progress|blocked|completed|cancelled> | <optional title>',
+  '/class-readiness <occurrence-ref>',
+  '/content-processing-status',
+  '/incidents',
+  '/incident <safe-incident-ref>',
+  '/agent-tasks',
+  '/agent-task-create <login_access|support_incident|class_readiness|content_processing> | <low|normal|high>',
+  '/agent-task-update <ref> | <queued|in_progress|blocked|completed|cancelled>',
   'Every write produces a typed preview and requires an explicit Confirm button.',
 ].join('\n');
 
 const forbiddenPattern =
   /\b(access|zoom|social|voice|studio|shell|codex|deploy|publish|campaign|bulk|mass|billing|refund|password|login|token|secret|production|bna|impersonate|child contact|student contact)\b/i;
+const sensitiveOperationPattern =
+  /(?:https?:\/\/|www\.|\b(?:password|passcode|token|secret|api[ _-]?key|credential|authorization|bearer|meeting[ _-]?(?:id|link|url)|provider[ _-]?id|student|learner|child|email|phone)\b|\b\d{7,}\b)/i;
+const safeReferencePattern = /^[a-z][a-z0-9_-]{0,119}$/i;
 
 type RabbiCommand =
   | { type: 'help' }
@@ -51,6 +62,7 @@ export class RabbiTelegramCommunicationEngine {
     private readonly resolver: TelegramIdentityResolver,
     private readonly service: RabbiCommunicationService,
     private readonly audit: BotAuditSink,
+    private readonly operations?: RabbiTelegramOperationsReader,
   ) {}
 
   async handle(update: NormalizedBotUpdate, now = new Date()): Promise<BotReply[]> {
@@ -124,13 +136,23 @@ export class RabbiTelegramCommunicationEngine {
       return [{ chatRef: update.chatRef, correlationKey: correlation, text: HELP_TEXT }];
     }
     if (command.type === 'read') {
-      const text = await this.service.read(actor, command.request);
+      const text = isOperationRead(command.request)
+        ? this.operations
+          ? await this.operations.read(actor, command.request)
+          : 'Read-only operations status is unavailable in this runtime.'
+        : await this.service.read(actor, command.request);
       await this.audit.record({
         ...auditBase,
-        capability: command.request.capability,
+        capability: command.request.capability as BotCapability,
         outcome: 'completed',
       });
-      return [{ chatRef: update.chatRef, correlationKey: correlation, text }];
+      return [
+        {
+          chatRef: update.chatRef as never,
+          correlationKey: correlation,
+          text: text ?? 'This scoped read is unavailable.',
+        },
+      ];
     }
     if (command.type === 'preview') {
       const preview = await this.service.preview(context, command.request, now);
@@ -267,7 +289,16 @@ function classifyRabbiCommand(update: NormalizedBotUpdate): RabbiCommand {
   }
   const text = update.text?.trim() ?? '';
   if (!text || text === '/help' || text === '/start') return { type: 'help' };
-  if (forbiddenPattern.test(text)) return { type: 'unsupported', reason: 'forbidden' };
+  const isOperation =
+    /^\/(?:class-readiness|content-processing-status|incidents|incident|agent-tasks|agent-task-create|agent-task-update)\b/i.test(
+      text,
+    );
+  if (
+    (isOperation && sensitiveOperationPattern.test(text)) ||
+    (!isOperation && forbiddenPattern.test(text))
+  ) {
+    return { type: 'unsupported', reason: 'forbidden' };
+  }
 
   const [name = '', ...tail] = text.split(/\s+/);
   const rest = text.slice(name.length).trim();
@@ -360,6 +391,71 @@ function classifyRabbiCommand(update: NormalizedBotUpdate): RabbiCommand {
         },
       };
     }
+    case '/class-readiness':
+      return safeReference(rest)
+        ? {
+            type: 'read',
+            request: { capability: 'operation.class.readiness', occurrenceKey: rest },
+          }
+        : { type: 'unsupported', reason: 'missing_argument' };
+    case '/content-processing-status':
+      return rest
+        ? { type: 'unsupported', reason: 'missing_argument' }
+        : { type: 'read', request: { capability: 'operation.content.processing.read' } };
+    case '/incidents':
+      return rest
+        ? { type: 'unsupported', reason: 'missing_argument' }
+        : { type: 'read', request: { capability: 'operation.incident.list' } };
+    case '/incident':
+      return safeReference(rest)
+        ? { type: 'read', request: { capability: 'operation.incident.read', incidentKey: rest } }
+        : { type: 'unsupported', reason: 'missing_argument' };
+    case '/agent-tasks':
+      return rest
+        ? { type: 'unsupported', reason: 'missing_argument' }
+        : { type: 'read', request: { capability: 'agent_task.list' } };
+    case '/agent-task-create': {
+      const fields = pipeFields(rest);
+      const kind = fields[0];
+      const priority = fields[1] ?? 'normal';
+      if (
+        !['login_access', 'support_incident', 'class_readiness', 'content_processing'].includes(
+          kind ?? '',
+        ) ||
+        !['low', 'normal', 'high'].includes(priority) ||
+        fields.length > 2
+      ) {
+        return { type: 'unsupported', reason: 'missing_argument' };
+      }
+      return {
+        type: 'preview',
+        request: {
+          capability: 'internal_task.create',
+          agentKind: kind as
+            'login_access' | 'support_incident' | 'class_readiness' | 'content_processing',
+          priority: priority as 'low' | 'normal' | 'high',
+        },
+      };
+    }
+    case '/agent-task-update': {
+      const fields = pipeFields(rest);
+      const statuses = ['queued', 'in_progress', 'blocked', 'completed', 'cancelled'] as const;
+      if (
+        !safeReference(fields[0] ?? '') ||
+        !statuses.includes(fields[1] as (typeof statuses)[number])
+      ) {
+        return { type: 'unsupported', reason: 'missing_argument' };
+      }
+      return {
+        type: 'preview',
+        request: {
+          capability: 'internal_task.update',
+          taskKey: fields[0] ?? '',
+          status: fields[1] as (typeof statuses)[number],
+          agentTask: true,
+        },
+      };
+    }
     case '/confirm':
       return rest
         ? { type: 'confirm', confirmationKey: rest }
@@ -412,6 +508,16 @@ function pipeFields(value: string) {
     .split('|')
     .map((field) => field.trim())
     .filter((field, index, all) => field.length > 0 || index < all.length - 1);
+}
+
+function safeReference(value: string) {
+  return safeReferencePattern.test(value) && !/^\d+$/u.test(value);
+}
+
+function isOperationRead(
+  request: RabbiReadRequest,
+): request is Extract<RabbiReadRequest, { capability: `operation.${string}` }> {
+  return request.capability.startsWith('operation.');
 }
 
 function toRabbiActor(actor: CanonicalOneTimeActor): RabbiCommunicationActor {

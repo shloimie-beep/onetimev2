@@ -4,6 +4,8 @@ import type {
   RabbiCommunicationResult,
   RabbiConfirmationContext,
   RabbiConfirmationPayload,
+  RabbiInternalTaskCreateRequest,
+  RabbiInternalTaskUpdateRequest,
   RabbiPreview,
   RabbiPreviewCapability,
   RabbiPreviewRequest,
@@ -60,6 +62,8 @@ export class RabbiCommunicationService {
         return this.readStudentQuestion(actor, request.questionKey);
       case 'internal_task.list':
         return this.listInternalTasks(actor);
+      case 'agent_task.list':
+        return this.listAgentTasks(actor);
     }
   }
 
@@ -347,6 +351,28 @@ export class RabbiCommunicationService {
     ].join('\n');
   }
 
+  private async listAgentTasks(actor: RabbiCommunicationActor) {
+    const result = await this.pool.query(
+      `SELECT task_key, status, priority, version
+         FROM onetime.rabbi_internal_tasks
+        WHERE account_key = $1
+          AND product_key = $2
+          AND task_key LIKE 'rabbi_agent_%'
+        ORDER BY updated_at DESC, task_key
+        LIMIT 10`,
+      [actor.accountKey, actor.productKey],
+    );
+    if (!result.rowCount) return 'Local agent tasks: none.';
+    return [
+      'Local agent tasks:',
+      ...result.rows.map(
+        (row) =>
+          `${String(row.task_key)} · ${agentTaskKind(String(row.task_key))} · ${String(row.status)} · ${String(row.priority)} · v${Number(row.version)}`,
+      ),
+      'Task payloads contain no credentials, provider references, or private Student data.',
+    ].join('\n');
+  }
+
   private async validatePreviewTarget(
     actor: RabbiCommunicationActor,
     request: RabbiPreviewRequest,
@@ -428,17 +454,48 @@ export class RabbiCommunicationService {
           summary: `Preview close for Student question ${request.questionKey}.`,
         };
       }
-      case 'internal_task.create':
-        if (!validText(request.title, 2, 240) || !validText(request.detail, 0, 2_000)) {
+      case 'internal_task.create': {
+        if ('agentKind' in request) {
+          return {
+            ok: true,
+            targetKey: 'new_agent_task',
+            targetRevision: 0,
+            summary: `Preview local agent task: ${request.agentKind} · ${request.priority}. No credentials, provider references, or Student data are recorded.`,
+          };
+        }
+        const title = request.title ?? '';
+        const detail = request.detail ?? '';
+        if (!validText(title, 2, 240) || !validText(detail, 0, 2_000)) {
           return invalidText('internal task');
         }
         return {
           ok: true,
           targetKey: 'new_internal_task',
           targetRevision: 0,
-          summary: `Preview internal task create: ${request.title.trim()} · ${request.priority}.`,
+          summary: `Preview internal task create: ${title.trim()} · ${request.priority}.`,
         };
+      }
       case 'internal_task.update': {
+        if (request.agentTask) {
+          const result = await this.pool.query(
+            `SELECT task_key, version
+             FROM onetime.rabbi_internal_tasks
+            WHERE account_key = $1
+              AND product_key = $2
+              AND task_key = $3
+              AND task_key LIKE 'rabbi_agent_%'
+            LIMIT 1`,
+            [actor.accountKey, actor.productKey, request.taskKey],
+          );
+          const row = result.rows[0];
+          if (!row) return { ok: false, result: denied('No scoped local agent task was found.') };
+          return {
+            ok: true,
+            targetKey: request.taskKey,
+            targetRevision: Number(row.version),
+            summary: `Preview local agent task update: ${agentTaskKind(String(row.task_key))} → ${request.status}.`,
+          };
+        }
         if (request.title !== undefined && !validText(request.title, 2, 240)) {
           return invalidText('internal task');
         }
@@ -504,9 +561,13 @@ export class RabbiCommunicationService {
       case 'student.question.close':
         return this.confirmStudentClose(client, actor, row, payload, now);
       case 'internal_task.create':
-        return this.confirmInternalTaskCreate(client, actor, row, payload);
+        return 'agentKind' in payload
+          ? this.confirmAgentTaskCreate(client, actor, row, payload)
+          : this.confirmInternalTaskCreate(client, actor, row, payload);
       case 'internal_task.update':
-        return this.confirmInternalTaskUpdate(client, actor, row, payload, now);
+        return payload.agentTask
+          ? this.confirmAgentTaskUpdate(client, actor, row, payload, now)
+          : this.confirmInternalTaskUpdate(client, actor, row, payload, now);
     }
   }
 
@@ -681,7 +742,7 @@ export class RabbiCommunicationService {
     client: Queryable,
     actor: RabbiCommunicationActor,
     row: ConfirmationRow,
-    payload: Extract<RabbiConfirmationPayload, { capability: 'internal_task.create' }>,
+    payload: RabbiInternalTaskCreateRequest,
   ): Promise<RabbiCommunicationResult> {
     const taskKey = `rabbi_task_${row.idempotency_key.slice(0, 24)}`;
     await client.query(
@@ -694,8 +755,8 @@ export class RabbiCommunicationService {
         taskKey,
         actor.accountKey,
         actor.productKey,
-        payload.title.trim(),
-        payload.detail.trim(),
+        payload.title?.trim() ?? '',
+        payload.detail?.trim() ?? '',
         payload.priority,
         actor.userKey,
         row.idempotency_key,
@@ -713,7 +774,7 @@ export class RabbiCommunicationService {
     client: Queryable,
     actor: RabbiCommunicationActor,
     row: ConfirmationRow,
-    payload: Extract<RabbiConfirmationPayload, { capability: 'internal_task.update' }>,
+    payload: RabbiInternalTaskUpdateRequest,
     now: Date,
   ): Promise<RabbiCommunicationResult> {
     const result = await client.query(
@@ -743,6 +804,77 @@ export class RabbiCommunicationService {
     return {
       status: 'completed',
       publicMessage: 'Internal Rabbi/operator task updated.',
+      resultRef: payload.taskKey,
+    };
+  }
+
+  private async confirmAgentTaskCreate(
+    client: Queryable,
+    actor: RabbiCommunicationActor,
+    row: ConfirmationRow,
+    payload: RabbiInternalTaskCreateRequest,
+  ): Promise<RabbiCommunicationResult> {
+    const taskKey = `rabbi_agent_${(payload.agentKind ?? 'unknown').replace('_', '-')}_${row.idempotency_key.slice(0, 24)}`;
+    await client.query(
+      `INSERT INTO onetime.rabbi_internal_tasks
+       (task_key, account_key, product_key, title, detail, priority, created_by_user_key,
+        updated_by_user_key, idempotency_key, request_digest)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$7,$8,$9)
+       ON CONFLICT (account_key, product_key, idempotency_key) DO NOTHING`,
+      [
+        taskKey,
+        actor.accountKey,
+        actor.productKey,
+        `Local agent task: ${payload.agentKind ?? 'unknown'}`,
+        'Typed local diagnosis requested. Open the authenticated One Time Admin surface for private details.',
+        payload.priority,
+        actor.userKey,
+        row.idempotency_key,
+        row.action_digest,
+      ],
+    );
+    return {
+      status: 'completed',
+      publicMessage:
+        'Typed local agent task created. No provider action, notification, credential, or private Student data was recorded.',
+      resultRef: taskKey,
+    };
+  }
+
+  private async confirmAgentTaskUpdate(
+    client: Queryable,
+    actor: RabbiCommunicationActor,
+    row: ConfirmationRow,
+    payload: RabbiInternalTaskUpdateRequest,
+    now: Date,
+  ): Promise<RabbiCommunicationResult> {
+    const result = await client.query(
+      `UPDATE onetime.rabbi_internal_tasks
+          SET status = $5,
+              updated_by_user_key = $6,
+              version = version + 1,
+              completed_at = CASE WHEN $5 = 'completed' THEN $7 ELSE NULL END,
+              updated_at = $7
+        WHERE account_key = $1
+          AND product_key = $2
+          AND task_key = $3
+          AND version = $4
+          AND task_key LIKE 'rabbi_agent_%'`,
+      [
+        actor.accountKey,
+        actor.productKey,
+        payload.taskKey,
+        row.target_revision,
+        payload.status,
+        actor.userKey,
+        now.toISOString(),
+      ],
+    );
+    if (!result.rowCount) return stale('Local agent task changed; preview again.');
+    return {
+      status: 'completed',
+      publicMessage:
+        'Typed local agent task updated. No provider action or notification was triggered.',
       resultRef: payload.taskKey,
     };
   }
@@ -799,12 +931,13 @@ function normalizePreviewRequest(request: RabbiPreviewRequest): RabbiPreviewRequ
     case 'student.question.close':
       return { ...request };
     case 'internal_task.create':
-      return { ...request, title: request.title.trim(), detail: request.detail.trim() };
+      return 'agentKind' in request
+        ? { ...request }
+        : { ...request, title: request.title?.trim() ?? '', detail: request.detail?.trim() ?? '' };
     case 'internal_task.update':
-      return {
-        ...request,
-        ...(request.title === undefined ? {} : { title: request.title.trim() }),
-      };
+      return request.agentTask
+        ? { ...request }
+        : { ...request, ...(request.title === undefined ? {} : { title: request.title.trim() }) };
   }
 }
 
@@ -821,6 +954,11 @@ function previewFromRow(row: ConfirmationRow, summary: string): RabbiPreview {
 function validText(value: string, min: number, max: number) {
   const trimmed = value.trim();
   return trimmed.length >= min && trimmed.length <= max && !trimmed.includes('\u0000');
+}
+
+function agentTaskKind(taskKey: string) {
+  const [, marker, kind = 'unknown'] = taskKey.split('_', 3);
+  return marker === 'agent' ? kind.replace('-', '_') : 'unknown';
 }
 
 function invalidText(label: string) {

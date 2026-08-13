@@ -28,6 +28,7 @@ import {
 } from '../../packages/domain/src/index.ts';
 import { DeterministicTestPayloadCodec } from '../../packages/domain/src/telegram/crypto.ts';
 import { TelegramIdentityResolver } from '../../packages/domain/src/telegram/identity.ts';
+import { createRabbiTelegramOperationsReader } from '../../packages/domain/src/telegram/rabbi-operations.ts';
 
 const botKey = asBotKey('one_time_rabbi_torah_console');
 const environment = 'local' as const;
@@ -61,6 +62,7 @@ describe('OT-LAUNCH-01 Rabbi Telegram communications', () => {
       ),
       service,
       audit,
+      createRabbiTelegramOperationsReader({ pool, config }),
     );
     const replyWorker = new RabbiParentReplyWorker(pool, codec, provider, audit, {
       botKey,
@@ -212,9 +214,81 @@ describe('OT-LAUNCH-01 Rabbi Telegram communications', () => {
     );
     expect(staleResult[0]?.text).toContain('changed; preview again');
 
+    const classReadiness = await engine.handle(
+      update({ updateId: '1008-class', text: '/class-readiness occurrence_fixture' }),
+      new Date(now.getTime() + 9_800),
+    );
+    expect(classReadiness[0]?.text).toContain('No scoped class');
+    const contentStatus = await engine.handle(
+      update({ updateId: '1008-content', text: '/content-processing-status' }),
+      new Date(now.getTime() + 9_900),
+    );
+    expect(contentStatus[0]?.text).toContain('no scoped Vimeo sources');
+    const incidents = await engine.handle(
+      update({ updateId: '1008-incidents', text: '/incidents' }),
+      new Date(now.getTime() + 10_000),
+    );
+    expect(incidents[0]?.text).toContain('no scoped matches');
+
+    const agentPreview = await engine.handle(
+      update({
+        updateId: '1008-agent-preview',
+        text: '/agent-task-create login_access | high',
+      }),
+      new Date(now.getTime() + 10_100),
+    );
+    expect(agentPreview[0]?.text).toContain('No credentials, provider references, or Student data');
+    const agentConfirmed = await engine.handle(
+      update({
+        updateId: '1008-agent-confirm',
+        kind: 'callback_query',
+        callbackData: confirmCallback(agentPreview),
+      }),
+      new Date(now.getTime() + 10_200),
+    );
+    expect(agentConfirmed[0]?.text).toContain('No provider action, notification');
+    const agentTask = await pool.query(
+      `SELECT task_key, detail
+         FROM onetime.rabbi_internal_tasks
+        WHERE task_key LIKE 'rabbi_agent_%'
+        LIMIT 1`,
+    );
+    expect(String(agentTask.rows[0]?.task_key)).toContain('rabbi_agent_');
+    expect(String(agentTask.rows[0]?.detail)).not.toMatch(/credential|provider reference|student/i);
+    const agentKey = String(agentTask.rows[0]?.task_key);
+    const agentList = await engine.handle(
+      update({ updateId: '1008-agent-list', text: '/agent-tasks' }),
+      new Date(now.getTime() + 10_300),
+    );
+    expect(agentList[0]?.text).toContain('login_access');
+    const agentUpdate = await engine.handle(
+      update({
+        updateId: '1008-agent-update',
+        text: `/agent-task-update ${agentKey} | in_progress`,
+      }),
+      new Date(now.getTime() + 10_400),
+    );
+    const agentUpdated = await engine.handle(
+      update({
+        updateId: '1008-agent-update-confirm',
+        kind: 'callback_query',
+        callbackData: confirmCallback(agentUpdate),
+      }),
+      new Date(now.getTime() + 10_500),
+    );
+    expect(agentUpdated[0]?.text).toContain('No provider action or notification');
+    const sensitiveOperation = await engine.handle(
+      update({
+        updateId: '1008-sensitive-operation',
+        text: '/agent-task-create login_access | high | https://zoom.us/j/123456789',
+      }),
+      new Date(now.getTime() + 10_600),
+    );
+    expect(sensitiveOperation[0]?.text).toContain('outside this communication-only Rabbi bot');
+
     const otherAccountParent = await engine.handle(
       update({
-        updateId: '1009',
+        updateId: '1012',
         text: '/parent-reply other_account_conversation | Must be denied.',
       }),
       new Date(now.getTime() + 10_000),
@@ -222,7 +296,7 @@ describe('OT-LAUNCH-01 Rabbi Telegram communications', () => {
     expect(otherAccountParent[0]?.text).toContain('No assigned scoped parent conversation');
     const otherAccountStudent = await engine.handle(
       update({
-        updateId: '1010',
+        updateId: '1013',
         text: '/student-answer other_account_question | Must be denied.',
       }),
       new Date(now.getTime() + 11_000),
@@ -231,7 +305,7 @@ describe('OT-LAUNCH-01 Rabbi Telegram communications', () => {
 
     const unconfirmed = await engine.handle(
       update({
-        updateId: '1011',
+        updateId: '1014',
         text: '/parent-reply parent_conversation_fixture | Unconfirmed answer must not send.',
       }),
       new Date(now.getTime() + 12_000),
