@@ -53,7 +53,9 @@ afterEach(async () => {
 
 describe('existing protected Vimeo adoption', () => {
   it('materializes the existing Student Library idempotently without a raw provider target', async () => {
-    const reader = { inspect: vi.fn(async () => protectedReadback()) };
+    const reader = {
+      inspect: vi.fn(async () => protectedReadback({ textTrackMetadataCountState: 'mismatch' })),
+    };
     const adopted = await adoptExistingPrivateVimeo({
       pool,
       config,
@@ -100,6 +102,7 @@ describe('existing protected Vimeo adoption', () => {
       raw_provider_target_present: false,
       audience: 'all_active_learners',
       entitlement_state: 'active',
+      metadata: { text_track_metadata_count_state: 'mismatch' },
     });
     expect(JSON.stringify(visibleRows.rows)).not.toMatch(/1234567890|https?:\/\/|vimeo\.com/i);
 
@@ -113,6 +116,7 @@ describe('existing protected Vimeo adoption', () => {
       account_key: 'rabbi_sheller_provider',
       product_key: 'one_time_mishnah_class',
       provider_video_id: command.provider_video_id,
+      sanitized_metadata_json: { text_track_metadata_count_state: 'mismatch' },
     });
     expect(JSON.stringify(providerSource.rows[0].sanitized_metadata_json)).not.toMatch(
       /1234567890|https?:\/\//i,
@@ -443,7 +447,7 @@ describe('Vimeo protection reader', () => {
         });
       }
       if (url.includes('/texttracks')) {
-        return jsonResponse({ data: [{ active: false }], paging: { next: null } });
+        return jsonResponse({ total: 1, data: [{ active: false }], paging: { next: null } });
       }
       if (url.includes('/users/777?fields=')) {
         return jsonResponse({
@@ -467,7 +471,7 @@ describe('Vimeo protection reader', () => {
           add: false,
         },
         user: { uri: '/users/777', resource_key: 'rabbi-paid-owner' },
-        metadata: { connections: { texttracks: { total: 1 } } },
+        metadata: { connections: { texttracks: { total: 0 } } },
       });
     });
     const reader = createExistingVimeoProtectionReader({
@@ -496,6 +500,7 @@ describe('Vimeo protection reader', () => {
       collectionAddsAllowed: false,
       allowedEmbedDomains: ['app.onetimeonetime.com', 'join.onetimeonetime.com'],
       captionsActive: false,
+      textTrackMetadataCountState: 'mismatch',
     });
     expect(fetchImpl).toHaveBeenCalledTimes(4);
     expect(fetchImpl.mock.calls.every((call) => call[1]?.method === 'GET')).toBe(true);
@@ -529,10 +534,11 @@ describe('Vimeo protection reader', () => {
     const fetchImpl = vi.fn(async (request: string | URL | Request) => {
       const url = String(request);
       if (url.includes('/texttracks') && url.includes('page=2')) {
-        return jsonResponse({ data: [{ active: false }], paging: { next: null } });
+        return jsonResponse({ total: 2, data: [{ active: false }], paging: { next: null } });
       }
       if (url.includes('/texttracks')) {
         return jsonResponse({
+          total: 2,
           data: [{ active: false }],
           paging: {
             next: 'https://vimeo.example.test/videos/1234567890/texttracks?page=2&per_page=100&fields=active',
@@ -553,6 +559,118 @@ describe('Vimeo protection reader', () => {
     expect(
       fetchImpl.mock.calls.filter(([request]) => String(request).includes('/texttracks')),
     ).toHaveLength(2);
+  });
+
+  it.each([['the collection total omits an observed disabled track', { textTrackTotal: 0 }]])(
+    'fails closed when %s',
+    async (_label, options) => {
+      const reader = createExistingVimeoProtectionReader({
+        env: {
+          VIMEO_ACCESS_TOKEN: 'test-only-vimeo-token',
+          VIMEO_ACCOUNT_ID: '777',
+        },
+        fetchImpl: protectedVimeoFetch(options) as typeof fetch,
+        apiBaseUrl: 'https://vimeo.example.test',
+      });
+      await expect(reader.inspect('1234567890')).rejects.toMatchObject({
+        code: 'VIMEO_TEXT_TRACK_READBACK_INCOMPLETE',
+        httpStatus: 503,
+      });
+    },
+  );
+
+  it.each([
+    ['disagrees with the authoritative collection', 0, 'mismatch'],
+    ['is missing', undefined, 'unavailable'],
+    ['is malformed', '1', 'unavailable'],
+  ])(
+    'keeps the full collection authoritative when video metadata %s',
+    async (_label, metadataTextTrackTotal, expectedState) => {
+      const reader = createExistingVimeoProtectionReader({
+        env: {
+          VIMEO_ACCESS_TOKEN: 'test-only-vimeo-token',
+          VIMEO_ACCOUNT_ID: '777',
+        },
+        fetchImpl: protectedVimeoFetch({ metadataTextTrackTotal }) as typeof fetch,
+        apiBaseUrl: 'https://vimeo.example.test',
+      });
+      await expect(reader.inspect('1234567890')).resolves.toMatchObject({
+        captionsActive: false,
+        textTrackMetadataCountState: expectedState,
+      });
+    },
+  );
+
+  it.each([
+    ['the collection total is missing', undefined],
+    ['the collection total is malformed', '1'],
+  ])('fails closed when %s', async (_label, textTrackTotal) => {
+    const reader = createExistingVimeoProtectionReader({
+      env: {
+        VIMEO_ACCESS_TOKEN: 'test-only-vimeo-token',
+        VIMEO_ACCOUNT_ID: '777',
+      },
+      fetchImpl: protectedVimeoFetch({ textTrackTotal }) as typeof fetch,
+      apiBaseUrl: 'https://vimeo.example.test',
+    });
+    await expect(reader.inspect('1234567890')).rejects.toMatchObject({
+      code: 'VIMEO_TEXT_TRACK_READBACK_INVALID',
+      httpStatus: 503,
+    });
+  });
+
+  it('fails closed when the authoritative collection total changes between pages', async () => {
+    const baseFetch = protectedVimeoFetch({ tracks: [{ active: false }, { active: false }] });
+    const fetchImpl = vi.fn(async (request: string | URL | Request) => {
+      const url = String(request);
+      if (url.includes('/texttracks') && url.includes('page=2')) {
+        return jsonResponse({ total: 1, data: [{ active: false }], paging: { next: null } });
+      }
+      if (url.includes('/texttracks')) {
+        return jsonResponse({
+          total: 2,
+          data: [{ active: false }],
+          paging: {
+            next: 'https://vimeo.example.test/videos/1234567890/texttracks?page=2&per_page=100&fields=active',
+          },
+        });
+      }
+      return baseFetch(request);
+    });
+    const reader = createExistingVimeoProtectionReader({
+      env: {
+        VIMEO_ACCESS_TOKEN: 'test-only-vimeo-token',
+        VIMEO_ACCOUNT_ID: '777',
+      },
+      fetchImpl: fetchImpl as typeof fetch,
+      apiBaseUrl: 'https://vimeo.example.test',
+    });
+    await expect(reader.inspect('1234567890')).rejects.toMatchObject({
+      code: 'VIMEO_TEXT_TRACK_READBACK_INCOMPLETE',
+      httpStatus: 503,
+    });
+  });
+
+  it.each([
+    [
+      'cycles',
+      'https://vimeo.example.test/videos/1234567890/texttracks?per_page=100&fields=active',
+    ],
+    ['leaves the Vimeo API origin', 'https://example.invalid/videos/1234567890/texttracks?page=2'],
+    ['leaves the exact text-track path', 'https://vimeo.example.test/videos/other/texttracks'],
+  ])('fails closed when text-track pagination %s', async (_label, next) => {
+    const reader = createExistingVimeoProtectionReader({
+      env: {
+        VIMEO_ACCESS_TOKEN: 'test-only-vimeo-token',
+        VIMEO_ACCOUNT_ID: '777',
+      },
+      fetchImpl: protectedVimeoFetch({ textTrackPaging: { next } }) as typeof fetch,
+      apiBaseUrl: 'https://vimeo.example.test',
+    });
+    await expect(reader.inspect('1234567890')).rejects.toMatchObject({
+      code: 'VIMEO_TEXT_TRACK_READBACK_INCOMPLETE',
+      httpStatus: 503,
+    });
   });
 
   it.each([
@@ -736,6 +854,7 @@ function protectedReadback(
     collectionAddsAllowed: false,
     allowedEmbedDomains: ['app.onetimeonetime.com', 'join.onetimeonetime.com'],
     captionsActive: false,
+    textTrackMetadataCountState: 'matches_collection',
     ...overrides,
   };
 }
@@ -817,11 +936,18 @@ function protectedVimeoFetch(
     videoOverrides?: Record<string, unknown>;
     domainPaging?: unknown;
     textTrackPaging?: unknown;
+    textTrackTotal?: unknown;
+    metadataTextTrackTotal?: unknown;
   } = {},
 ) {
   const tracks = input.tracks ?? [{ active: false }];
   const hasDomainPaging = Object.prototype.hasOwnProperty.call(input, 'domainPaging');
   const hasTextTrackPaging = Object.prototype.hasOwnProperty.call(input, 'textTrackPaging');
+  const hasTextTrackTotal = Object.prototype.hasOwnProperty.call(input, 'textTrackTotal');
+  const hasMetadataTextTrackTotal = Object.prototype.hasOwnProperty.call(
+    input,
+    'metadataTextTrackTotal',
+  );
   return vi.fn(async (request: string | URL | Request) => {
     const url = String(request);
     if (url.includes('/privacy/domains')) {
@@ -836,6 +962,11 @@ function protectedVimeoFetch(
     }
     if (url.includes('/texttracks')) {
       return jsonResponse({
+        ...(hasTextTrackTotal
+          ? input.textTrackTotal === undefined
+            ? {}
+            : { total: input.textTrackTotal }
+          : { total: tracks.length }),
         data: tracks,
         ...(hasTextTrackPaging
           ? input.textTrackPaging === undefined
@@ -866,7 +997,13 @@ function protectedVimeoFetch(
         add: false,
       },
       user: { uri: '/users/777', resource_key: 'rabbi-paid-owner' },
-      metadata: { connections: { texttracks: { total: tracks.length } } },
+      metadata: {
+        connections: {
+          texttracks: {
+            total: hasMetadataTextTrackTotal ? input.metadataTextTrackTotal : tracks.length,
+          },
+        },
+      },
       ...input.videoOverrides,
     });
   });
