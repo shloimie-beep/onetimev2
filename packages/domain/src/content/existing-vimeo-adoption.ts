@@ -51,10 +51,11 @@ export type ExistingVimeoProtectionReadback = {
   title: string;
   durationMs: number;
   available: boolean;
+  transcodeComplete: boolean;
   playable: boolean;
-  coldPrivacyRestricted: boolean;
-  coldStorage: boolean;
-  copyrightRestricted: boolean;
+  coldPrivacyRestricted: boolean | null;
+  coldStorage: boolean | null;
+  copyrightRestricted: boolean | null;
   privacyView: string;
   privacyEmbed: string;
   downloadsAllowed: boolean;
@@ -222,6 +223,20 @@ export function createExistingVimeoProtectionReader(
       const metadata = asRecord(video.metadata);
       const connections = asRecord(metadata.connections);
       const textTracks = asRecord(connections.texttracks);
+      const expectedTextTrackTotal = nonnegativeSafeInteger(textTracks.total);
+      if (expectedTextTrackTotal === null) {
+        throw new ExistingVimeoAdoptionError(
+          'VIMEO_TEXT_TRACK_READBACK_INVALID',
+          'Vimeo text-track readback was invalid.',
+          503,
+        );
+      }
+      const textTrackState = await inspectVimeoTextTracks({
+        request,
+        apiBaseUrl,
+        providerVideoId,
+        expectedTotal: expectedTextTrackTotal,
+      });
       const paging = asRecord(domains.paging);
       if (paging.next) {
         throw new ExistingVimeoAdoptionError(
@@ -246,13 +261,18 @@ export function createExistingVimeoProtectionReader(
         accountTier,
         title: stringValue(video.name) ?? 'One Time Mishnayos recording',
         durationMs,
-        available: ['available', 'complete', 'completed'].includes(
-          (stringValue(transcode.status) ?? stringValue(video.status) ?? '').toLowerCase(),
-        ),
+        available: (stringValue(video.status) ?? '').toLowerCase() === 'available',
+        transcodeComplete: (stringValue(transcode.status) ?? '').toLowerCase() === 'complete',
         playable: video.is_playable === true,
-        coldPrivacyRestricted: video.is_cold_privacy_restricted !== false,
-        coldStorage: video.is_cold_storage !== false,
-        copyrightRestricted: video.is_copyright_restricted !== false,
+        coldPrivacyRestricted: optionalVimeoBoolean(
+          video.is_cold_privacy_restricted,
+          'is_cold_privacy_restricted',
+        ),
+        coldStorage: optionalVimeoBoolean(video.is_cold_storage, 'is_cold_storage'),
+        copyrightRestricted: optionalVimeoBoolean(
+          video.is_copyright_restricted,
+          'is_copyright_restricted',
+        ),
         privacyView,
         privacyEmbed: stringValue(privacy.embed) ?? '',
         downloadsAllowed: privacy.download !== false,
@@ -262,7 +282,7 @@ export function createExistingVimeoProtectionReader(
           .map((entry) => normalizeDomain(stringValue(asRecord(entry).domain) ?? ''))
           .filter(Boolean)
           .sort(),
-        captionsActive: Number(textTracks.total ?? 0) > 0,
+        captionsActive: textTrackState.captionsActive,
       };
     },
   };
@@ -288,6 +308,7 @@ export async function adoptExistingPrivateVimeo(input: {
       owner_account_id_digest: readback.ownerAccountIdDigest,
       account_tier: readback.accountTier,
       available: readback.available,
+      transcode_complete: readback.transcodeComplete,
       playable: readback.playable,
       cold_privacy_restricted: readback.coldPrivacyRestricted,
       cold_storage: readback.coldStorage,
@@ -298,6 +319,7 @@ export async function adoptExistingPrivateVimeo(input: {
       comments_allowed: readback.commentsAllowed,
       collection_adds_allowed: readback.collectionAddsAllowed,
       allowed_domain_digest: domainDigest,
+      captions_active: readback.captionsActive,
     }),
   );
   const contentId = `existing_vimeo_${command.source_sha256.slice(0, 40)}`;
@@ -614,15 +636,17 @@ function assertProtectedReadback(
     /^[a-f0-9]{64}$/u.test(readback.ownerAccountIdDigest) &&
     PAID_VIMEO_ACCOUNT_TIERS.has(readback.accountTier) &&
     readback.available &&
+    readback.transcodeComplete &&
     readback.playable &&
-    readback.coldPrivacyRestricted === false &&
-    readback.coldStorage === false &&
-    readback.copyrightRestricted === false &&
+    (readback.coldPrivacyRestricted === false || readback.coldPrivacyRestricted === null) &&
+    (readback.coldStorage === false || readback.coldStorage === null) &&
+    (readback.copyrightRestricted === false || readback.copyrightRestricted === null) &&
     readback.privacyView === 'disable' &&
     readback.privacyEmbed === 'whitelist' &&
     readback.downloadsAllowed === false &&
     readback.commentsAllowed === false &&
     readback.collectionAddsAllowed === false &&
+    readback.captionsActive === false &&
     JSON.stringify(actualDomains) === JSON.stringify(expectedDomains);
   if (!protectedContract) {
     throw new ExistingVimeoAdoptionError(
@@ -787,6 +811,91 @@ function assertContentOperator(role: string) {
 
 function unavailablePlayback() {
   return new ExistingVimeoAdoptionError('CONTENT_UNAVAILABLE', 'Content is unavailable.', 404);
+}
+
+async function inspectVimeoTextTracks(input: {
+  request: (path: string) => Promise<Record<string, unknown>>;
+  apiBaseUrl: string;
+  providerVideoId: string;
+  expectedTotal: number;
+}) {
+  const collectionPath = `/videos/${encodeURIComponent(input.providerVideoId)}/texttracks`;
+  let nextPath: string | null = `${collectionPath}?per_page=100&fields=active`;
+  const visited = new Set<string>();
+  let observedTotal = 0;
+  let captionsActive = false;
+
+  while (nextPath) {
+    if (visited.has(nextPath) || visited.size >= 100) {
+      throw new ExistingVimeoAdoptionError(
+        'VIMEO_TEXT_TRACK_READBACK_INCOMPLETE',
+        'Vimeo text-track pagination could not be verified.',
+        503,
+      );
+    }
+    visited.add(nextPath);
+    const page = await input.request(nextPath);
+    if (!Array.isArray(page.data)) {
+      throw new ExistingVimeoAdoptionError(
+        'VIMEO_TEXT_TRACK_READBACK_INVALID',
+        'Vimeo text-track readback was invalid.',
+        503,
+      );
+    }
+    for (const entry of page.data) {
+      const active = asRecord(entry).active;
+      if (typeof active !== 'boolean') {
+        throw new ExistingVimeoAdoptionError(
+          'VIMEO_TEXT_TRACK_READBACK_INVALID',
+          'Vimeo text-track activation state was invalid.',
+          503,
+        );
+      }
+      observedTotal += 1;
+      captionsActive ||= active;
+    }
+    const next = stringValue(asRecord(page.paging).next);
+    nextPath = next ? boundedVimeoPagePath(next, input.apiBaseUrl, collectionPath) : null;
+  }
+
+  if (observedTotal !== input.expectedTotal) {
+    throw new ExistingVimeoAdoptionError(
+      'VIMEO_TEXT_TRACK_READBACK_INCOMPLETE',
+      'Vimeo text-track count did not match the video readback.',
+      503,
+    );
+  }
+  return { captionsActive };
+}
+
+function boundedVimeoPagePath(value: string, apiBaseUrl: string, collectionPath: string) {
+  try {
+    const base = new URL(apiBaseUrl);
+    const page = new URL(value, `${base.origin}/`);
+    if (page.origin !== base.origin || page.pathname !== collectionPath) throw new Error('scope');
+    return `${page.pathname}${page.search}`;
+  } catch {
+    throw new ExistingVimeoAdoptionError(
+      'VIMEO_TEXT_TRACK_READBACK_INCOMPLETE',
+      'Vimeo text-track pagination left the verified collection.',
+      503,
+    );
+  }
+}
+
+function optionalVimeoBoolean(value: unknown, field: string): boolean | null {
+  if (value === undefined || value === null) return null;
+  if (typeof value === 'boolean') return value;
+  throw new ExistingVimeoAdoptionError(
+    'VIMEO_READBACK_INVALID',
+    `Vimeo returned an invalid ${field} value.`,
+    503,
+  );
+}
+
+function nonnegativeSafeInteger(value: unknown) {
+  const parsed = typeof value === 'number' ? value : Number.NaN;
+  return Number.isSafeInteger(parsed) && parsed >= 0 ? parsed : null;
 }
 
 function normalizeDomain(value: string) {

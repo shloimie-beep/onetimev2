@@ -221,10 +221,12 @@ describe('existing protected Vimeo adoption', () => {
     ['comments enabled', { commentsAllowed: true }],
     ['collection adds enabled', { collectionAddsAllowed: true }],
     ['processing incomplete', { available: false }],
+    ['transcode incomplete', { transcodeComplete: false }],
     ['unplayable video', { playable: false }],
     ['cold privacy restriction', { coldPrivacyRestricted: true }],
     ['cold storage', { coldStorage: true }],
     ['copyright restriction', { copyrightRestricted: true }],
+    ['active unreviewed captions', { captionsActive: true }],
   ])(
     'refuses %s before creating any library or provider-source record',
     async (_label, overrides) => {
@@ -352,6 +354,9 @@ describe('Vimeo protection reader', () => {
           paging: { next: null },
         });
       }
+      if (url.includes('/texttracks')) {
+        return jsonResponse({ data: [{ active: false }], paging: { next: null } });
+      }
       if (url.includes('/users/777?fields=')) {
         return jsonResponse({
           uri: '/users/777',
@@ -365,9 +370,6 @@ describe('Vimeo protection reader', () => {
         duration: 91,
         status: 'available',
         is_playable: true,
-        is_cold_privacy_restricted: false,
-        is_cold_storage: false,
-        is_copyright_restricted: false,
         transcode: { status: 'complete' },
         privacy: {
           view: 'disable',
@@ -396,17 +398,113 @@ describe('Vimeo protection reader', () => {
       privacyView: 'disable',
       privacyEmbed: 'whitelist',
       playable: true,
-      coldPrivacyRestricted: false,
-      coldStorage: false,
-      copyrightRestricted: false,
+      transcodeComplete: true,
+      coldPrivacyRestricted: null,
+      coldStorage: null,
+      copyrightRestricted: null,
       downloadsAllowed: false,
       commentsAllowed: false,
       collectionAddsAllowed: false,
       allowedEmbedDomains: ['app.onetimeonetime.com', 'join.onetimeonetime.com'],
-      captionsActive: true,
+      captionsActive: false,
     });
-    expect(fetchImpl).toHaveBeenCalledTimes(3);
+    expect(fetchImpl).toHaveBeenCalledTimes(4);
     expect(fetchImpl.mock.calls.every((call) => call[1]?.method === 'GET')).toBe(true);
+  });
+
+  it('rejects an active Vimeo AI subtitle even when every other protection is valid', async () => {
+    const reader = createExistingVimeoProtectionReader({
+      env: {
+        VIMEO_ACCESS_TOKEN: 'test-only-vimeo-token',
+        VIMEO_ACCOUNT_ID: '777',
+      },
+      fetchImpl: protectedVimeoFetch({ tracks: [{ active: true }] }) as typeof fetch,
+      apiBaseUrl: 'https://vimeo.example.test',
+    });
+    await expect(
+      adoptExistingPrivateVimeo({
+        pool,
+        config,
+        actorUserKey: 'admin_operator',
+        actorRole: 'admin',
+        command,
+        reader,
+        now,
+      }),
+    ).rejects.toMatchObject({ code: 'VIMEO_PROTECTION_CONTRACT_MISMATCH' });
+    expect(await countRows('onetime.content_items')).toBe(0);
+  });
+
+  it('fully paginates disabled text tracks without treating their count as active captions', async () => {
+    const baseFetch = protectedVimeoFetch({ tracks: [{ active: false }, { active: false }] });
+    const fetchImpl = vi.fn(async (request: string | URL | Request) => {
+      const url = String(request);
+      if (url.includes('/texttracks') && url.includes('page=2')) {
+        return jsonResponse({ data: [{ active: false }], paging: { next: null } });
+      }
+      if (url.includes('/texttracks')) {
+        return jsonResponse({
+          data: [{ active: false }],
+          paging: {
+            next: 'https://vimeo.example.test/videos/1234567890/texttracks?page=2&per_page=100&fields=active',
+          },
+        });
+      }
+      return baseFetch(request);
+    });
+    const reader = createExistingVimeoProtectionReader({
+      env: {
+        VIMEO_ACCESS_TOKEN: 'test-only-vimeo-token',
+        VIMEO_ACCOUNT_ID: '777',
+      },
+      fetchImpl: fetchImpl as typeof fetch,
+      apiBaseUrl: 'https://vimeo.example.test',
+    });
+    await expect(reader.inspect('1234567890')).resolves.toMatchObject({ captionsActive: false });
+    expect(
+      fetchImpl.mock.calls.filter(([request]) => String(request).includes('/texttracks')),
+    ).toHaveLength(2);
+  });
+
+  it.each([
+    ['missing activation state', [{}], {}],
+    ['malformed activation state', [{ active: 'false' }], {}],
+    ['malformed optional restriction', [{ active: false }], { is_cold_storage: 'false' }],
+  ])('fails closed on %s', async (_label, tracks, videoOverrides) => {
+    const reader = createExistingVimeoProtectionReader({
+      env: {
+        VIMEO_ACCESS_TOKEN: 'test-only-vimeo-token',
+        VIMEO_ACCOUNT_ID: '777',
+      },
+      fetchImpl: protectedVimeoFetch({ tracks, videoOverrides }) as typeof fetch,
+      apiBaseUrl: 'https://vimeo.example.test',
+    });
+    await expect(reader.inspect('1234567890')).rejects.toMatchObject({
+      code: expect.stringMatching(/^VIMEO_(?:TEXT_TRACK_)?READBACK_INVALID$/u),
+      httpStatus: 503,
+    });
+  });
+
+  it('does not let a completed transcode mask a non-available video', async () => {
+    const reader = createExistingVimeoProtectionReader({
+      env: {
+        VIMEO_ACCESS_TOKEN: 'test-only-vimeo-token',
+        VIMEO_ACCOUNT_ID: '777',
+      },
+      fetchImpl: protectedVimeoFetch({ videoOverrides: { status: 'uploading' } }) as typeof fetch,
+      apiBaseUrl: 'https://vimeo.example.test',
+    });
+    await expect(
+      adoptExistingPrivateVimeo({
+        pool,
+        config,
+        actorUserKey: 'admin_operator',
+        actorRole: 'admin',
+        command,
+        reader,
+        now,
+      }),
+    ).rejects.toMatchObject({ code: 'VIMEO_PROTECTION_CONTRACT_MISMATCH' });
   });
 
   it('refuses when the configured video owner readback is Free', async () => {
@@ -486,6 +584,7 @@ function protectedReadback(
     title: command.title,
     durationMs: 91_000,
     available: true,
+    transcodeComplete: true,
     playable: true,
     coldPrivacyRestricted: false,
     coldStorage: false,
@@ -496,7 +595,7 @@ function protectedReadback(
     commentsAllowed: false,
     collectionAddsAllowed: false,
     allowedEmbedDomains: ['app.onetimeonetime.com', 'join.onetimeonetime.com'],
-    captionsActive: true,
+    captionsActive: false,
     ...overrides,
   };
 }
@@ -549,6 +648,52 @@ function jsonResponse(value: unknown) {
   return new Response(JSON.stringify(value), {
     status: 200,
     headers: { 'content-type': 'application/json' },
+  });
+}
+
+function protectedVimeoFetch(
+  input: {
+    tracks?: Array<Record<string, unknown>>;
+    videoOverrides?: Record<string, unknown>;
+  } = {},
+) {
+  const tracks = input.tracks ?? [{ active: false }];
+  return vi.fn(async (request: string | URL | Request) => {
+    const url = String(request);
+    if (url.includes('/privacy/domains')) {
+      return jsonResponse({
+        data: [{ domain: 'join.onetimeonetime.com' }, { domain: 'app.onetimeonetime.com' }],
+        paging: { next: null },
+      });
+    }
+    if (url.includes('/texttracks')) {
+      return jsonResponse({ data: tracks, paging: { next: null } });
+    }
+    if (url.includes('/users/777?fields=')) {
+      return jsonResponse({
+        uri: '/users/777',
+        resource_key: 'rabbi-paid-owner',
+        membership: { type: 'starter' },
+      });
+    }
+    return jsonResponse({
+      uri: '/videos/1234567890',
+      name: 'Protected class',
+      duration: 91,
+      status: 'available',
+      is_playable: true,
+      transcode: { status: 'complete' },
+      privacy: {
+        view: 'disable',
+        embed: 'whitelist',
+        download: false,
+        comments: 'nobody',
+        add: false,
+      },
+      user: { uri: '/users/777', resource_key: 'rabbi-paid-owner' },
+      metadata: { connections: { texttracks: { total: tracks.length } } },
+      ...input.videoOverrides,
+    });
   });
 }
 
