@@ -83,6 +83,27 @@ describe('OT-52P portal UI modules', () => {
     expect(markup).not.toMatch(/https?:\/\/|zoom|meet|provider/i);
   });
 
+  it('promotes a host-confirmed live class at the top with the protected Student route', () => {
+    const dashboard = studentDashboard();
+    dashboard.upcoming_classes = dashboard.upcoming_classes.map((item) => ({
+      ...item,
+      status: 'live' as const,
+      launch_action: null,
+    }));
+    const markup = renderToStaticMarkup(
+      React.createElement(StudentPortalFeature, {
+        viewState: 'ready',
+        dashboard,
+        actorFingerprint: 'student-live-session',
+      }),
+    );
+
+    expect(markup).toContain('Class is live');
+    expect(markup).toContain('The Rabbi has started class. You can join now.');
+    expect(markup).toContain('/app/student/class/class_week_001');
+    expect(markup).not.toMatch(/https?:\/\/|zoom\.us|meeting_number|passcode/i);
+  });
+
   it('renders one focused workspace while keeping every category discoverable', () => {
     const parentMarkup = renderToStaticMarkup(
       React.createElement(ParentPortalFeature, {

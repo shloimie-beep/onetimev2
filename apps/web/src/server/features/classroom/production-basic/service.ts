@@ -9,6 +9,8 @@ import {
   createZoomHostZakClient,
 } from '../../../../../../../packages/domain/src/providers/zoom-rest.ts';
 
+export const PRODUCTION_BASIC_LIVE_MARKER_TTL_MS = 2 * 60 * 60_000;
+
 /**
  * The production-basic path accepts only an already-authorized recurring meeting
  * plus a current digest-only verification receipt. Missing either keeps the
@@ -54,6 +56,7 @@ export type ProductionBasicLaunchArtifact = {
 
 export interface ProductionBasicMeetingBinding {
   ready(): Promise<boolean>;
+  referenceDigest(): string | null;
   issue(input: {
     scope: ProductionBasicScope;
     actor: ProductionBasicActor;
@@ -62,33 +65,108 @@ export interface ProductionBasicMeetingBinding {
   }): Promise<ProductionBasicLaunchArtifact | null>;
 }
 
+export interface ProductionBasicHostLiveMarker {
+  confirm(input: {
+    scope: ProductionBasicScope;
+    meeting_ref_digest: string;
+    confirmed_at: Date;
+  }): Promise<boolean>;
+  currentForStudent(input: {
+    scope: ProductionBasicScope;
+    learner_key: string;
+    meeting_ref_digest: string;
+    observed_at: Date;
+  }): Promise<boolean>;
+  clear(input: {
+    scope: ProductionBasicScope;
+    meeting_ref_digest: string;
+    cleared_at: Date;
+  }): Promise<void>;
+}
+
 export type ProductionBasicLaunchResult =
   | { disposition: 'ready'; artifact: ProductionBasicLaunchArtifact }
   | { disposition: 'denied' | 'unavailable' };
 
+export type ProductionBasicHostLiveResult = {
+  disposition: 'ready' | 'denied' | 'unavailable';
+};
+
 export function createProductionBasicLaunchService(input: {
   binding: ProductionBasicMeetingBinding;
+  hostLiveMarker?: ProductionBasicHostLiveMarker | undefined;
   clock?: () => Date;
 }) {
   const clock = input.clock ?? (() => new Date());
   return {
     async ready(actor: ProductionBasicActor) {
-      return actorMayLaunch(actor) && (await input.binding.ready());
+      if (!actorMayLaunch(actor) || !(await input.binding.ready())) return false;
+      if (actor.kind !== 'student') return true;
+      return studentLiveMarkerCurrent(input, actor, clock());
     },
     async request(actor: ProductionBasicActor): Promise<ProductionBasicLaunchResult> {
       if (!actorMayLaunch(actor)) return { disposition: 'denied' };
       if (!(await input.binding.ready())) return { disposition: 'unavailable' };
+      if (actor.kind === 'student' && !(await studentLiveMarkerCurrent(input, actor, clock()))) {
+        return { disposition: 'unavailable' };
+      }
       const role = actor.kind === 'student' ? (0 as const) : (1 as const);
       const artifact = await input.binding.issue({ scope: actor.scope, actor, role, now: clock() });
       if (!artifact || !validArtifact(artifact, role, clock()))
         return { disposition: 'unavailable' };
       return { disposition: 'ready', artifact };
     },
+    async confirmHostLive(actor: ProductionBasicActor): Promise<ProductionBasicHostLiveResult> {
+      if ((actor.kind !== 'admin' && actor.kind !== 'rabbi') || !actor.authorized_to_start) {
+        return { disposition: 'denied' };
+      }
+      if (!(await input.binding.ready())) return { disposition: 'unavailable' };
+      const meetingRefDigest = input.binding.referenceDigest();
+      if (!meetingRefDigest || !input.hostLiveMarker) return { disposition: 'unavailable' };
+      const confirmed = await input.hostLiveMarker.confirm({
+        scope: actor.scope,
+        meeting_ref_digest: meetingRefDigest,
+        confirmed_at: clock(),
+      });
+      return { disposition: confirmed ? 'ready' : 'unavailable' };
+    },
+    async clearHostLive(actor: ProductionBasicActor): Promise<ProductionBasicHostLiveResult> {
+      if ((actor.kind !== 'admin' && actor.kind !== 'rabbi') || !actor.authorized_to_start) {
+        return { disposition: 'denied' };
+      }
+      if (!(await input.binding.ready())) return { disposition: 'unavailable' };
+      const meetingRefDigest = input.binding.referenceDigest();
+      if (!meetingRefDigest || !input.hostLiveMarker) return { disposition: 'unavailable' };
+      await input.hostLiveMarker.clear({
+        scope: actor.scope,
+        meeting_ref_digest: meetingRefDigest,
+        cleared_at: clock(),
+      });
+      return { disposition: 'ready' };
+    },
   };
 }
 
+async function studentLiveMarkerCurrent(
+  input: {
+    binding: ProductionBasicMeetingBinding;
+    hostLiveMarker?: ProductionBasicHostLiveMarker | undefined;
+  },
+  actor: Extract<ProductionBasicActor, { kind: 'student' }>,
+  observedAt: Date,
+) {
+  const meetingRefDigest = input.binding.referenceDigest();
+  if (!meetingRefDigest || !input.hostLiveMarker) return false;
+  return input.hostLiveMarker.currentForStudent({
+    scope: actor.scope,
+    learner_key: actor.learner_key,
+    meeting_ref_digest: meetingRefDigest,
+    observed_at: observedAt,
+  });
+}
+
 export function createUnavailableProductionBasicMeetingBinding(): ProductionBasicMeetingBinding {
-  return { ready: async () => false, issue: async () => null };
+  return { ready: async () => false, referenceDigest: () => null, issue: async () => null };
 }
 
 /**
@@ -130,6 +208,7 @@ export function createCanonicalProductionBasicMeetingBinding(input: {
   });
   return {
     ready: async () => verifiedBindingMatches(config, verifiedBinding, clock()),
+    referenceDigest: () => productionBasicMeetingRefDigest(config.zoomRealControlMeetingId!),
     async issue({ actor, role, now }) {
       if (!verifiedBindingMatches(config, verifiedBinding, clock())) return null;
       const expiresAt = new Date(now.getTime() + 30 * 60_000);
@@ -238,10 +317,12 @@ function verifiedBindingMatches(
   ) {
     return false;
   }
-  const meetingRefDigest = createHash('sha256')
-    .update(`production-basic-meeting-v1\0${config.zoomRealControlMeetingId}`)
-    .digest('hex');
+  const meetingRefDigest = productionBasicMeetingRefDigest(config.zoomRealControlMeetingId!);
   return receipt.meeting_ref_digest === meetingRefDigest;
+}
+
+export function productionBasicMeetingRefDigest(meetingId: string) {
+  return createHash('sha256').update(`production-basic-meeting-v1\0${meetingId}`).digest('hex');
 }
 
 function validArtifact(artifact: ProductionBasicLaunchArtifact, expectedRole: 0 | 1, now: Date) {
