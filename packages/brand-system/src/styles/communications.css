@@ -32,6 +32,45 @@
   font-weight: 700;
 }
 
+.communications-routing {
+  border: 1px solid #101214;
+  border-left: 6px solid #ffd32a;
+  border-radius: 8px;
+  background: #fff;
+  padding: 1rem;
+}
+
+.communications-routing h2,
+.communications-routing > p {
+  margin-top: 0;
+}
+
+.communications-routing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 0.85rem;
+  margin-bottom: 0;
+}
+
+.communications-routing-grid div {
+  border-top: 3px solid #ffd32a;
+  background: #fff8d6;
+  padding: 0.8rem;
+}
+
+.communications-routing-grid dt {
+  font-weight: 800;
+}
+
+.communications-routing-grid dd {
+  margin: 0.35rem 0 0;
+}
+
+.communications-routing-grid a {
+  color: #101214;
+  font-weight: 800;
+}
+
 .communications-filters {
   display: flex;
   gap: 0.75rem;
