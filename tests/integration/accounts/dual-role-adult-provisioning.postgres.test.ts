@@ -233,10 +233,13 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
         },
         now: new Date(PROVISION_AT.getTime() + 60_000),
       });
+      const accessExpiresAt = Date.parse(CONTROLLER_DUAL_ROLE_ACCESS_EXPIRES_AT);
+      const loginAt = new Date(accessExpiresAt - 10 * 60_000);
+      const switchAt = new Date(accessExpiresAt - 9 * 60_000);
       const runtime = createPostgresV21AdultSessionRuntime({
         db: pool,
         hmacSecret: config.authCsrfSecret,
-        clock: () => new Date(PROVISION_AT.getTime() + 120_000),
+        clock: () => loginAt,
       });
       const login = await runtime.login({
         scope: {
@@ -246,7 +249,7 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
         },
         email: EMAIL,
         password: 'native controller password phrase',
-        now: new Date(PROVISION_AT.getTime() + 120_000),
+        now: loginAt,
       });
       expect(login).toMatchObject({
         handled: true,
@@ -260,13 +263,13 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
         cookie_header: `__Host-onetime-session=${login.browser_session_token}`,
         csrf_token: login.csrf_token,
         requested_role: 'parent',
-        now: new Date(PROVISION_AT.getTime() + 180_000),
+        now: switchAt,
       });
       expect(switched).toMatchObject({ switched: true, active_role: 'parent' });
       if (!switched.switched) throw new Error('Native Parent role switch unavailable.');
       const resolved = await runtime.resolveCookieHeader({
         cookie_header: `__Host-onetime-session=${switched.browser_session_token}`,
-        now: new Date(PROVISION_AT.getTime() + 180_000),
+        now: switchAt,
       });
       if (resolved.status !== 'resolved' || !resolved.context.household) {
         throw new Error('Native Parent session unavailable.');
@@ -277,7 +280,7 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
         household_id: resolved.context.household.householdId,
         session_id: resolved.context.session.sessionId,
       };
-      const beforeExpiry = new Date(Date.parse(CONTROLLER_DUAL_ROLE_ACCESS_EXPIRES_AT) - 1);
+      const beforeExpiry = new Date(accessExpiresAt - 1);
 
       await pool.query(`UPDATE onetime.account_access_projections SET source_request_hash=$1`, [
         'f'.repeat(64),
