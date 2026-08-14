@@ -28,7 +28,7 @@
       "name": "Zoom Live Console",
       "short_name": "Zoom Live",
       "description": "Open the protected Zoom controls for the current class.",
-      "url": "/app/live?section=zoom&source=homescreen"
+      "url": "/app/live-console?section=zoom&source=homescreen"
     },
     {
       "name": "Admin Dashboard",

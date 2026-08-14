@@ -78,7 +78,7 @@ describe('One Time Admin phone installation', () => {
       prefer_related_applications: false,
     });
     expect(manifest.shortcuts.map(({ url }) => url)).toEqual([
-      '/app/live?section=zoom&source=homescreen',
+      '/app/live-console?section=zoom&source=homescreen',
       '/app/dashboard?source=homescreen',
       '/app/content?source=homescreen',
     ]);
