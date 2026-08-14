@@ -56,13 +56,11 @@ describe('Admin information architecture', () => {
     expect(classroomSectionFromPath('/app/classes/enrollments')).toBe('enrollments');
     expect(classroomSectionFromPath('/app/classroom/attendance')).toBe('attendance');
     expect(classroomSectionFromPath('/app/classroom/zoom')).toBe('live-console');
-    expect(
-      classroomOccurrenceFromLocation('/app/classroom/occurrences/occurrence%2Fone', ''),
-    ).toBe('occurrence/one');
+    const canonicalOccurrencePath = '/app/classroom/occurrences/occurrence%2Fone';
+    expect(classroomOccurrenceFromLocation(canonicalOccurrencePath, '')).toBe('occurrence/one');
     expect(classroomOccurrenceFromLocation('/app/classroom/enrollments', '')).toBeNull();
-    expect(classroomHref('live-console', 'occurrence/one')).toBe(
-      '/app/live?section=zoom&occurrence_key=occurrence%2Fone',
-    );
+    const liveConsoleUrl = classroomHref('live-console', 'occurrence/one');
+    expect(liveConsoleUrl).toBe('/app/live?section=zoom&occurrence_key=occurrence%2Fone');
   });
 
   it('resolves canonical and compatibility Class Series detail locations', () => {
