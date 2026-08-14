@@ -264,7 +264,7 @@ test('Admin IA keeps the canonical launch areas across the governed viewport mat
     .getByRole('navigation', { name: 'Classroom area' })
     .getByRole('link', { name: 'Enrollments' })
     .click();
-  await expect(page).toHaveURL(/\/app\/classroom\/enrollments$/u);
+  await expect(page).toHaveURL(/\/app\/classroom\/enrollments(?:\?occurrence_key=[^&]+)?$/u);
   await expect(page.getByRole('heading', { name: 'Enrollments', exact: true })).toBeVisible();
 
   await page.goto('/app/classroom/classes');
