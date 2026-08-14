@@ -1088,7 +1088,7 @@ function CrmApp() {
       notice={notice ? <NoticeBanner notice={notice} /> : undefined}
       onNavigate={(href) => {
         if (
-          href === '/app/live-console' ||
+          href.startsWith('/app/live-console') ||
           href === '/app/live' ||
           href.startsWith('/app/live?') ||
           href.startsWith('/app/live/')
