@@ -1,10 +1,8 @@
 import { createHash } from 'node:crypto';
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
-import { execFile } from 'node:child_process';
 import path from 'node:path';
-import { promisify } from 'node:util';
+import { scanRemoteMigrationHistory } from './ops06-migration-history.ts';
 
-const execFileAsync = promisify(execFile);
 const outputDir = path.resolve(process.env.OPS06_OUTPUT_DIR ?? 'ops/codex-runs/OPS-06/evidence');
 const outputJson = path.join(outputDir, 'migration-safety.json');
 const outputMd = path.join(outputDir, 'migration-safety.md');
@@ -23,6 +21,9 @@ type Report = {
   status: 'passed' | 'failed';
   local_count: number;
   remote_sources_scanned: string[];
+  remote_commits_scanned: number;
+  unique_migration_blobs_read: number;
+  git_processes_used: number;
   duplicates: Array<{ id: string; sources: string[] }>;
   checksum_collisions: Array<{ id: string; checksums: string[]; paths: string[] }>;
   ordering_failures: string[];
@@ -35,7 +36,8 @@ type Report = {
 };
 
 const localRecords = await localMigrationRecords();
-const remoteRecords = await remoteMigrationRecords();
+const remoteHistory = await scanRemoteMigrationHistory();
+const remoteRecords: MigrationRecord[] = remoteHistory.records;
 const allRecords = [...localRecords, ...remoteRecords];
 const duplicates = duplicateIds(allRecords);
 const checksumCollisions = checksumConflicts(allRecords);
@@ -44,7 +46,10 @@ const report: Report = {
   generated_at: new Date().toISOString(),
   status: duplicates.length === 0 && orderingFailures.length === 0 ? 'passed' : 'failed',
   local_count: localRecords.length,
-  remote_sources_scanned: [...new Set(remoteRecords.map((record) => record.source))],
+  remote_sources_scanned: remoteHistory.sources,
+  remote_commits_scanned: remoteHistory.unique_commit_count,
+  unique_migration_blobs_read: remoteHistory.unique_blob_count,
+  git_processes_used: remoteHistory.git_process_count,
   duplicates,
   checksum_collisions: checksumCollisions,
   ordering_failures: orderingFailures,
@@ -77,44 +82,6 @@ async function localMigrationRecords(): Promise<MigrationRecord[]> {
     });
   }
   return records;
-}
-
-async function remoteMigrationRecords(): Promise<MigrationRecord[]> {
-  const branches = await remoteBranches();
-  const records: MigrationRecord[] = [];
-  for (const branch of branches) {
-    const files = await gitLines([
-      'ls-tree',
-      '-r',
-      '--name-only',
-      branch,
-      'packages/db/migrations',
-    ]);
-    for (const filePath of files.filter((file) => file.endsWith('.sql'))) {
-      const sql = await gitText(['show', `${branch}:${filePath}`]).catch(() => '');
-      if (!sql) continue;
-      const fileName = path.basename(filePath);
-      records.push({
-        source: branch,
-        id: fileName.replace(/\.sql$/, ''),
-        file_name: fileName,
-        path: filePath,
-        checksum: sha256(sql),
-      });
-    }
-  }
-  return records;
-}
-
-async function remoteBranches() {
-  const lines = await gitLines([
-    'for-each-ref',
-    '--format=%(refname:short)',
-    'refs/remotes/origin/codex',
-    'refs/remotes/origin/ops',
-    'refs/remotes/origin/integration',
-  ]).catch(() => []);
-  return lines.filter((line) => !line.endsWith('/HEAD')).slice(0, 120);
 }
 
 function duplicateIds(records: MigrationRecord[]) {
@@ -165,21 +132,6 @@ function groupBy<T>(values: T[], keyFor: (value: T) => string) {
   return map;
 }
 
-async function gitLines(args: string[]) {
-  return (await gitText(args))
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter(Boolean);
-}
-
-async function gitText(args: string[]) {
-  const { stdout } = await execFileAsync('git', args, {
-    cwd: process.cwd(),
-    maxBuffer: 64 * 1024 * 1024,
-  });
-  return stdout;
-}
-
 function sha256(value: string) {
   return createHash('sha256').update(value).digest('hex');
 }
@@ -193,6 +145,9 @@ Status: ${report.status}
 
 - Local migrations: ${report.local_count}
 - Remote sources scanned: ${report.remote_sources_scanned.length}
+- Unique remote commits scanned: ${report.remote_commits_scanned}
+- Unique migration blobs read: ${report.unique_migration_blobs_read}
+- Bounded Git processes used: ${report.git_processes_used}
 - Duplicate IDs: ${report.duplicates.length}
 - Cross-branch checksum collisions reported: ${report.checksum_collisions.length}
 - Ordering failures: ${report.ordering_failures.length}
