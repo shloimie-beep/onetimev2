@@ -74,6 +74,7 @@ export const rabbiAgentTaskStatuses = [
   'blocked',
   'completed',
   'cancelled',
+  'dead_letter',
 ] as const;
 export type RabbiAgentTaskStatus = (typeof rabbiAgentTaskStatuses)[number];
 

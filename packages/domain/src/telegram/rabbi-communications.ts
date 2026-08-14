@@ -14,6 +14,7 @@ import type {
 import type { SensitivePayloadCodec } from '../../../contracts/src/telegram/types.ts';
 import { inTransaction, type DbPool, type Queryable } from '../../../db/src/index.ts';
 import {
+  isScopedRabbiSubject,
   parseRabbiTaskEnvelope,
   serializeRabbiTaskEnvelope,
   type RabbiTaskEnvelope,
@@ -503,6 +504,14 @@ export class RabbiCommunicationService {
               result: denied('The redacted support subject reference is invalid.'),
             };
           }
+          if (!(await isScopedRabbiSubject(this.pool, actor, request.supportIncident.subject))) {
+            return {
+              ok: false,
+              result: denied(
+                'No active scoped Parent, Student, or account matches that reference.',
+              ),
+            };
+          }
           return {
             ok: true,
             targetKey: 'new_support_incident',
@@ -518,6 +527,14 @@ export class RabbiCommunicationService {
             return {
               ok: false,
               result: denied('The typed local-agent task is outside the allowlist.'),
+            };
+          }
+          if (!(await isScopedRabbiSubject(this.pool, actor, request.agentTask.subject))) {
+            return {
+              ok: false,
+              result: denied(
+                'No active scoped Parent, Student, or account matches that reference.',
+              ),
             };
           }
           return {
@@ -575,6 +592,8 @@ export class RabbiCommunicationService {
         if ('agentTask' in request) {
           const update = request.agentTask;
           if (
+            update.status === 'in_progress' ||
+            update.status === 'dead_letter' ||
             (update.branchPrRef !== undefined && !validBranchPrRef(update.branchPrRef)) ||
             (update.resultSummary !== undefined &&
               !validRedactedText(update.resultSummary, 1, 1_000))
@@ -614,6 +633,8 @@ export class RabbiCommunicationService {
             WHERE account_key = $1
               AND product_key = $2
               AND task_key = $3
+              AND task_key NOT LIKE 'rabbi_agent_%'
+              AND task_key NOT LIKE 'rabbi_support_%'
             LIMIT 1`,
           [actor.accountKey, actor.productKey, request.taskKey],
         );
@@ -901,6 +922,8 @@ export class RabbiCommunicationService {
         WHERE account_key = $1
           AND product_key = $2
           AND task_key = $3
+          AND task_key NOT LIKE 'rabbi_agent_%'
+          AND task_key NOT LIKE 'rabbi_support_%'
           AND version = $4`,
       [
         actor.accountKey,
@@ -938,6 +961,7 @@ export class RabbiCommunicationService {
       riskClass: 'R1',
       idempotencyKey: row.idempotency_key,
       assignedTo: null,
+      sourceTaskRef: null,
       branchPrRef: null,
       resultSummary: '',
       notes: [],
@@ -945,8 +969,9 @@ export class RabbiCommunicationService {
     await client.query(
       `INSERT INTO onetime.rabbi_internal_tasks
        (task_key, account_key, product_key, title, detail, priority, created_by_user_key,
-        updated_by_user_key, idempotency_key, request_digest, created_at, updated_at)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$7,$8,$9,$10,$10)
+        updated_by_user_key, idempotency_key, request_digest, created_at, updated_at,
+        next_attempt_at)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$7,$8,$9,$10,$10,$10)
        ON CONFLICT (account_key, product_key, idempotency_key) DO NOTHING`,
       [
         taskKey,
@@ -989,6 +1014,7 @@ export class RabbiCommunicationService {
       riskClass: payload.agentTask.riskClass,
       idempotencyKey: row.idempotency_key,
       assignedTo: 'local_agent',
+      sourceTaskRef: null,
       branchPrRef: null,
       resultSummary: '',
       notes: [],
@@ -996,8 +1022,9 @@ export class RabbiCommunicationService {
     await client.query(
       `INSERT INTO onetime.rabbi_internal_tasks
        (task_key, account_key, product_key, title, detail, priority, created_by_user_key,
-        updated_by_user_key, idempotency_key, request_digest, created_at, updated_at)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$7,$8,$9,$10,$10)
+        updated_by_user_key, idempotency_key, request_digest, created_at, updated_at,
+        next_attempt_at)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$7,$8,$9,$10,$10,$10)
        ON CONFLICT (account_key, product_key, idempotency_key) DO NOTHING`,
       [
         taskKey,
@@ -1068,6 +1095,7 @@ export class RabbiCommunicationService {
         riskClass: 'R0',
         idempotencyKey: row.idempotency_key,
         assignedTo: 'local_agent',
+        sourceTaskRef: payload.taskKey,
         branchPrRef: null,
         resultSummary: '',
         notes: [],
@@ -1075,8 +1103,9 @@ export class RabbiCommunicationService {
       await client.query(
         `INSERT INTO onetime.rabbi_internal_tasks
          (task_key, account_key, product_key, title, detail, priority, created_by_user_key,
-          updated_by_user_key, idempotency_key, request_digest, created_at, updated_at)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$7,$8,$9,$10,$10)
+          updated_by_user_key, idempotency_key, request_digest, created_at, updated_at,
+          next_attempt_at)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$7,$8,$9,$10,$10,$10)
          ON CONFLICT (account_key, product_key, idempotency_key) DO NOTHING`,
         [
           diagnosticKey,
@@ -1168,6 +1197,12 @@ export class RabbiCommunicationService {
           SET detail = $5,
               status = $6,
               updated_by_user_key = $7,
+              attempts = CASE WHEN $6 = 'queued' THEN 0 ELSE attempts END,
+              next_attempt_at = CASE WHEN $6 = 'queued' THEN $8 ELSE next_attempt_at END,
+              lease_owner = NULL,
+              lease_expires_at = NULL,
+              last_error_code = CASE WHEN $6 = 'queued' THEN NULL ELSE last_error_code END,
+              dead_lettered_at = NULL,
               completed_at = CASE WHEN $6 = 'completed' THEN $8 ELSE NULL END,
               updated_at = $8,
               version = version + 1

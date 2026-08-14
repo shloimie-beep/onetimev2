@@ -20,6 +20,7 @@
     "start": "node --import tsx apps/web/src/server/index.ts",
     "start:worker": "node --import tsx apps/worker/src/main/index.ts",
     "start:rabbi-telegram": "node --import tsx apps/telegram-bot/src/main.ts",
+    "start:rabbi-telegram:local-agent": "node --import tsx apps/telegram-bot/src/main.ts --local-agent",
     "typecheck": "tsc --noEmit -p tsconfig.typecheck.json",
     "lint": "eslint .",
     "format": "prettier --check .",

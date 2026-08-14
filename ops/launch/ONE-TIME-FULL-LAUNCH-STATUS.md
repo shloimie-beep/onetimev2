@@ -46,7 +46,7 @@ The immediate teaching loop is private Rabbi-moderated prompts, one worksheet ro
 - `FAMILY_SIGNUP_GHL_MODE=disabled`; no Student GHL contacts; no broad campaigns, billing, nurture, newsletters, former-member reactivation, recording notices, or other GHL workflows.
 - Zoom canary false; media is unset and therefore follows the source default OFF; live billing false. Resend is bound.
 - Basic protected Zoom entry to the one recurring class is an immediate-launch requirement and is currently unavailable. Stage Host and OBS controls remain later.
-- BNA task management and Telegram monitoring are outside the initial-launch critical path.
+- BNA task management remains outside the initial-launch critical path. The private Rabbi Telegram console is an initial operational priority under `OT-CTRL-20260813-RABBI-OPS-CONTACTS-COMMS`; its bounded communications and source-only local-agent transport are BUILT in draft PR #192, but they are not merged, deployed, provider-activated, or operator-accepted.
 - Admin Content currently has a false `content.view` denial and unrelated CRM controls; this is a documented application defect, not an authorization to change CRM or providers in this reconciliation.
 - Buffer/Social is OFF.
 - Student credentials are locked to an exactly six-digit numeric PIN; adult password rules are unchanged. The current application validator mismatch is an unimplemented, separately scoped application blocker.

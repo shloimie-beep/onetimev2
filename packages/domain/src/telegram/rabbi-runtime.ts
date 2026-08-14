@@ -36,11 +36,15 @@ export function rabbiTelegramReadiness(config: AppConfig) {
     !config.oneTimeRabbiTelegramPayloadKey && 'distinct_payload_key_unconfigured',
   ].filter((value): value is string => Boolean(value));
   return {
-    status: blockers.length === 0 ? ('ready' as const) : ('provider_off' as const),
+    status: blockers.length === 0 ? ('source_ready' as const) : ('source_blocked' as const),
     ready: blockers.length === 0,
+    sourceReady: blockers.length === 0,
     botKey: config.oneTimeRabbiTelegramBotKey,
     environment: config.oneTimeTelegramEnvironment,
     providerMode: config.oneTimeRabbiGhlReplyMode,
+    commandConsumerMounted: false,
+    localAgentConsumerMounted: false,
+    providerDeliveryMounted: false,
     customerDeliveryAuthorized: false,
     customerDeliveryStatus: 'provider_off' as const,
     blockers,
@@ -78,7 +82,9 @@ export function createOneTimeRabbiTelegramRuntime(input: {
     audit,
     createRabbiTelegramOperationsReader({ pool: input.pool, config: input.config }),
   );
-  const agentTaskDispatcher = new RabbiLocalAgentTaskDispatcher(input.pool, input.config);
+  const agentTaskDispatcher = new RabbiLocalAgentTaskDispatcher(input.pool, input.config, {
+    ownerId: `${ownerId}-local-agent`,
+  });
   const transport =
     input.transport ??
     new TelegramSqlResponseOutboxTransportAdapter(input.pool, { botKey, environment });
@@ -147,6 +153,7 @@ export function createOneTimeRabbiTelegramRuntime(input: {
     heartbeat = null;
     await commandWorker.stop();
     await replyWorker.stop();
+    await agentTaskDispatcher.stop();
     if (leaseGeneration !== null) await leases.release(ownerId, leaseGeneration);
     leaseGeneration = null;
   };
@@ -163,6 +170,9 @@ export function createOneTimeRabbiTelegramRuntime(input: {
     readiness: rabbiTelegramReadiness(input.config),
     acquireLease,
     start,
+    async startLocalAgent(intervalMs = 250) {
+      await agentTaskDispatcher.start(intervalMs);
+    },
     stop,
     async runOnce(now = new Date()) {
       if (leaseGeneration === null) await acquireLease(now);
@@ -171,7 +181,7 @@ export function createOneTimeRabbiTelegramRuntime(input: {
       return { command, reply };
     },
     async runAgentTaskOnce(now = new Date()) {
-      return agentTaskDispatcher.runOnce(now);
+      return agentTaskDispatcher.runOneShot(now);
     },
   };
 }
