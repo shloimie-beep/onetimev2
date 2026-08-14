@@ -34,7 +34,7 @@ describe('production-basic native Meeting SDK adapter', () => {
     [false, true],
     [true, false],
   ])(
-    'sets disableCORP to %s when cross-origin isolation is %s',
+    'maps cross-origin isolation %s to disableCORP %s',
     async (crossOriginIsolated, disableCORP) => {
       vi.stubGlobal('window', {
         crossOriginIsolated,
