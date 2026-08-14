@@ -1,0 +1,46 @@
+{
+  "id": "/app/classroom/classes",
+  "name": "One Time Admin",
+  "short_name": "OT Admin",
+  "description": "Protected One Time classroom and administration workspace.",
+  "start_url": "/app/classroom/classes?source=homescreen",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#050505",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "/assets/pwa/one-time-admin-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/pwa/one-time-admin-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Zoom Live Console",
+      "short_name": "Zoom Live",
+      "description": "Open the protected Zoom controls for the current class.",
+      "url": "/app/live-console?section=zoom&source=homescreen"
+    },
+    {
+      "name": "Admin Dashboard",
+      "short_name": "Dashboard",
+      "description": "Open the protected One Time Admin dashboard.",
+      "url": "/app/dashboard?source=homescreen"
+    },
+    {
+      "name": "Content Library",
+      "short_name": "Content",
+      "description": "Open the protected One Time content workspace.",
+      "url": "/app/content?source=homescreen"
+    }
+  ]
+}
