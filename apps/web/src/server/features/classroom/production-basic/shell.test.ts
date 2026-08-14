@@ -9,4 +9,11 @@ describe('production-basic Student classroom shell', () => {
     expect(source).toContain('||\n      productionBasicStudentReady');
     expect(source).toContain("\"script-src 'self' https://source.zoom.us");
   });
+
+  it('allows the documented fallback script assets in all four Zoom-ready shells', async () => {
+    const source = (await readFile('apps/web/src/server/app.ts', 'utf8')).replaceAll('\r\n', '\n');
+    const zoomScriptSource =
+      "\"script-src 'self' https://source.zoom.us dmogdx0jrul3u.cloudfront.net blob: 'unsafe-eval' 'wasm-unsafe-eval'\"";
+    expect(source.split(zoomScriptSource)).toHaveLength(5);
+  });
 });

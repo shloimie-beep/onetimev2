@@ -1,10 +1,18 @@
 import { readFile } from 'node:fs/promises';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   joinZoomMeetingParticipantWithApi,
   type ZoomMeetingSdkApi,
   type ZoomParticipantJoinInput,
 } from './zoom-meeting-sdk-client.ts';
+
+beforeEach(() => {
+  vi.stubGlobal('window', {
+    crossOriginIsolated: false,
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+  });
+});
 
 afterEach(() => {
   vi.useRealTimers();
@@ -21,6 +29,32 @@ describe('production-basic native Meeting SDK adapter', () => {
     expect(source).toContain('...(input.userEmail ? { userEmail: input.userEmail } : {})');
     expect(source).toContain('...(input.customerKey ? { customerKey: input.customerKey } : {})');
   });
+
+  it.each([
+    [false, true],
+    [true, false],
+  ])(
+    'maps cross-origin isolation %s to disableCORP %s',
+    async (crossOriginIsolated, disableCORP) => {
+      vi.stubGlobal('window', {
+        crossOriginIsolated,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      });
+      const sdk = fakeZoomSdk();
+      const joined = joinZoomMeetingParticipantWithApi(sdk.api, input());
+
+      expect(sdk.api.init).toHaveBeenCalledWith(
+        expect.objectContaining({
+          patchJsMedia: true,
+          leaveOnPageUnload: true,
+          disableCORP,
+        }),
+      );
+      sdk.emit(2);
+      await expect(joined).resolves.toBeUndefined();
+    },
+  );
 
   it('resolves only after status 2 and delivers the sanitized lifecycle through status 3', async () => {
     const sdk = fakeZoomSdk();

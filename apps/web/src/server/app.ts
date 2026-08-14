@@ -2020,7 +2020,7 @@ export function createApp({
       [
         "default-src 'self'",
         "img-src 'self' data: blob: https://source.zoom.us",
-        "script-src 'self' https://source.zoom.us 'unsafe-eval' 'wasm-unsafe-eval'",
+        "script-src 'self' https://source.zoom.us dmogdx0jrul3u.cloudfront.net blob: 'unsafe-eval' 'wasm-unsafe-eval'",
         "style-src 'self' 'unsafe-inline' https://source.zoom.us",
         "connect-src 'self' https://zoom.us https://*.zoom.us wss://*.zoom.us",
         "worker-src 'self' blob:",
@@ -3436,7 +3436,7 @@ export function createApp({
         ? [
             "default-src 'self'",
             "img-src 'self' data: blob: https://source.zoom.us",
-            "script-src 'self' https://source.zoom.us 'unsafe-eval' 'wasm-unsafe-eval'",
+            "script-src 'self' https://source.zoom.us dmogdx0jrul3u.cloudfront.net blob: 'unsafe-eval' 'wasm-unsafe-eval'",
             "style-src 'self' 'unsafe-inline' https://source.zoom.us",
             "connect-src 'self' https://zoom.us https://*.zoom.us wss://*.zoom.us",
             "worker-src 'self' blob:",
@@ -6509,7 +6509,7 @@ async function serveEmbeddedClassroomAppShell(
       ? [
           "default-src 'self'",
           "img-src 'self' data: blob: https://source.zoom.us",
-          "script-src 'self' https://source.zoom.us 'unsafe-eval' 'wasm-unsafe-eval'",
+          "script-src 'self' https://source.zoom.us dmogdx0jrul3u.cloudfront.net blob: 'unsafe-eval' 'wasm-unsafe-eval'",
           "style-src 'self' 'unsafe-inline' https://source.zoom.us",
           "connect-src 'self' https://zoom.us https://*.zoom.us wss://*.zoom.us",
           "worker-src 'self' blob:",
@@ -7741,7 +7741,7 @@ function setProductionBasicZoomShellHeaders(res: Response) {
     [
       "default-src 'self'",
       "img-src 'self' data: blob: https://source.zoom.us",
-      "script-src 'self' https://source.zoom.us 'unsafe-eval' 'wasm-unsafe-eval'",
+      "script-src 'self' https://source.zoom.us dmogdx0jrul3u.cloudfront.net blob: 'unsafe-eval' 'wasm-unsafe-eval'",
       "style-src 'self' 'unsafe-inline' https://source.zoom.us",
       "connect-src 'self' https://zoom.us https://*.zoom.us wss://*.zoom.us",
       "worker-src 'self' blob:",
