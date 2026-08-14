@@ -136,9 +136,10 @@ export function classroomOccurrenceFromLocation(pathname: string, search: string
   if (fromQuery) return fromQuery;
   if (pathname.startsWith('/app/classroom')) {
     const segments = pathSegments(pathname, '/app/classroom');
-    return segments[0] === 'occurrences' && segments[1]
-      ? decodeURIComponent(segments[1])
-      : null;
+    if (segments[0] === 'occurrences' && segments[1]) {
+      return decodeURIComponent(segments[1]);
+    }
+    return null;
   }
   const segments = pathSegments(pathname, '/app/classes');
   const first = segments[0] ?? '';
