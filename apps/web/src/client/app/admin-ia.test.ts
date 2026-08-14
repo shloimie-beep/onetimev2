@@ -48,7 +48,7 @@ describe('Admin information architecture', () => {
     expect(CLASSROOM_SECTIONS.at(-1)).toEqual({
       id: 'live-console',
       label: 'Zoom Live Console',
-      href: '/app/live?section=zoom',
+      href: '/app/live-console?section=zoom',
     });
     expect(classroomSectionFromPath('/app/classroom/occurrences')).toBe('occurrences');
     expect(classroomSectionFromPath('/app/classes/occurrences')).toBe('occurrences');
@@ -60,7 +60,7 @@ describe('Admin information architecture', () => {
     expect(classroomOccurrenceFromLocation(canonicalOccurrencePath, '')).toBe('occurrence/one');
     expect(classroomOccurrenceFromLocation('/app/classroom/enrollments', '')).toBeNull();
     const liveConsoleUrl = classroomHref('live-console', 'occurrence/one');
-    expect(liveConsoleUrl).toBe('/app/live?section=zoom&occurrence_key=occurrence%2Fone');
+    expect(liveConsoleUrl).toBe('/app/live-console?section=zoom&occurrence_key=occurrence%2Fone');
   });
 
   it('resolves canonical and compatibility Class Series detail locations', () => {
