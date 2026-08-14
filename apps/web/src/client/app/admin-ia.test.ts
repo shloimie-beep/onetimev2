@@ -1,8 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import {
   ADMIN_PRIMARY_AREAS,
+  CLASSROOM_SECTIONS,
   CONTACTS_SECTIONS,
   adminPrimaryNav,
+  classroomHref,
+  classroomOccurrenceFromLocation,
+  classroomSectionFromPath,
   classroomSeriesFromLocation,
   contactsSectionFromPath,
 } from './admin-ia.ts';
@@ -38,6 +42,27 @@ describe('Admin information architecture', () => {
     expect(contactsSectionFromPath('/app/users')).toBe('users');
     expect(contactsSectionFromPath('/app/students')).toBe('learners');
     expect(contactsSectionFromPath('/app/audit')).toBe('audit');
+  });
+
+  it('keeps canonical and compatibility Classroom routes on the requested section', () => {
+    expect(CLASSROOM_SECTIONS.at(-1)).toEqual({
+      id: 'live-console',
+      label: 'Zoom Live Console',
+      href: '/app/live?section=zoom',
+    });
+    expect(classroomSectionFromPath('/app/classroom/occurrences')).toBe('occurrences');
+    expect(classroomSectionFromPath('/app/classes/occurrences')).toBe('occurrences');
+    expect(classroomSectionFromPath('/app/classroom/enrollments')).toBe('enrollments');
+    expect(classroomSectionFromPath('/app/classes/enrollments')).toBe('enrollments');
+    expect(classroomSectionFromPath('/app/classroom/attendance')).toBe('attendance');
+    expect(classroomSectionFromPath('/app/classroom/zoom')).toBe('live-console');
+    expect(
+      classroomOccurrenceFromLocation('/app/classroom/occurrences/occurrence%2Fone', ''),
+    ).toBe('occurrence/one');
+    expect(classroomOccurrenceFromLocation('/app/classroom/enrollments', '')).toBeNull();
+    expect(
+      classroomHref('live-console', 'occurrence/one'),
+    ).toBe('/app/live?section=zoom&occurrence_key=occurrence%2Fone');
   });
 
   it('resolves canonical and compatibility Class Series detail locations', () => {

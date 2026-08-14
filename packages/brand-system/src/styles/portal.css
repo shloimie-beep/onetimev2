@@ -105,6 +105,55 @@
   color: var(--ot-portal-ink);
   font-size: 1.1rem;
 }
+.ot-student-live-banner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 18px;
+  border: 3px solid var(--ot-portal-ink);
+  border-radius: 10px;
+  background: var(--ot-portal-yellow);
+  color: var(--ot-portal-bg);
+  padding: clamp(18px, 3vw, 28px);
+  box-shadow: 0 10px 28px rgba(255, 210, 31, 0.2);
+}
+.ot-student-live-banner h3,
+.ot-student-live-banner p {
+  margin: 0;
+  color: var(--ot-portal-bg);
+}
+.ot-student-live-banner h3 {
+  font-size: clamp(1.7rem, 4vw, 2.6rem);
+  line-height: 1.05;
+}
+.ot-student-live-banner > div {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+.ot-student-live-banner__eyebrow {
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.ot-student-live-banner .ot-student-live-banner__join {
+  display: inline-flex;
+  min-width: 150px;
+  min-height: 52px;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--ot-portal-bg);
+  background: var(--ot-portal-bg);
+  color: var(--ot-portal-ink);
+  font-size: 1.05rem;
+  text-align: center;
+  text-decoration: none;
+}
+.ot-student-live-banner .ot-student-live-banner__join:hover {
+  background: #191919;
+}
+
 .ot-portal-subnav {
   min-width: 0;
   overflow-x: auto;
@@ -761,8 +810,12 @@
     min-height: calc(100vh - 142px);
   }
   .ot-portal-summary-grid,
-  .ot-focus-columns {
+  .ot-focus-columns,
+  .ot-student-live-banner {
     grid-template-columns: 1fr;
+  }
+  .ot-student-live-banner .ot-student-live-banner__join {
+    width: 100%;
   }
   .ot-portal-summary-grid {
     min-height: 0;

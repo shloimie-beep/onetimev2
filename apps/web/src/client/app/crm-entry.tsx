@@ -1087,7 +1087,12 @@ function CrmApp() {
       toolbar={toolbar}
       notice={notice ? <NoticeBanner notice={notice} /> : undefined}
       onNavigate={(href) => {
-        if (href === '/app/live-console' || href === '/app/live' || href.startsWith('/app/live/')) {
+        if (
+          href === '/app/live-console' ||
+          href === '/app/live' ||
+          href.startsWith('/app/live?') ||
+          href.startsWith('/app/live/')
+        ) {
           window.location.assign(href);
           return;
         }
@@ -1152,6 +1157,7 @@ function CrmApp() {
         <ClassesPanel
           csrfToken={session?.csrf_token ?? ''}
           section={classroomSection}
+          liveConsoleReady={liveConsoleReady}
           selectedSeriesKey={classroomSeriesFromLocation(
             classroomPath.pathname,
             classroomPath.search,
@@ -1928,6 +1934,7 @@ function OperationsPanel({
 function ClassesPanel({
   csrfToken,
   section,
+  liveConsoleReady,
   selectedSeriesKey,
   teachingOnly,
   classes,
@@ -1952,6 +1959,7 @@ function ClassesPanel({
 }: {
   csrfToken: string;
   section: ClassroomSectionId;
+  liveConsoleReady: boolean;
   selectedSeriesKey: string | null;
   teachingOnly: boolean;
   classes: ClassOccurrenceSummary[];
@@ -1979,6 +1987,7 @@ function ClassesPanel({
     'occurrences',
     'questions',
     'rewards',
+    'live-console',
   ] as ClassroomSectionId[];
   const focusedSection = teachingOnly && !teachingSections.includes(section) ? 'classes' : section;
   const isManagementSection =
@@ -1989,9 +1998,10 @@ function ClassesPanel({
   return (
     <section className="classroom-workspace" aria-busy={loading || detailLoading}>
       <WorkspaceTabs
-        tabs={(teachingOnly
-          ? CLASSROOM_SECTIONS.filter((item) => teachingSections.includes(item.id))
-          : CLASSROOM_SECTIONS
+        tabs={CLASSROOM_SECTIONS.filter(
+          (item) =>
+            (item.id !== 'live-console' || liveConsoleReady) &&
+            (!teachingOnly || teachingSections.includes(item.id)),
         ).map((item) => ({
           ...item,
           href: classroomHref(item.id, selectedClass?.occurrence_key),
