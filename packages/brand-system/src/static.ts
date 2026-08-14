@@ -123,8 +123,9 @@ export function renderPageShell({
   const iconMetadata = `${icon ? `\n  <link rel="icon" type="image/png" href="${escapeHtml(icon)}">` : ''}${
     appleTouchIcon ? `\n  <link rel="apple-touch-icon" href="${escapeHtml(appleTouchIcon)}">` : ''
   }`;
-  const protectedAppInstallMetadata = app
-    ? `
+  const protectedAppInstallMetadata =
+    app && (appEntry === 'crm' || appEntry === 'live')
+      ? `
   <link rel="manifest" href="/admin.webmanifest">
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/pwa/one-time-admin-192.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/pwa/one-time-admin-180.png">
@@ -133,7 +134,7 @@ export function renderPageShell({
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="One Time Admin">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">`
-    : '';
+      : '';
   return `<!doctype html>
 <html lang="en">
 <head>

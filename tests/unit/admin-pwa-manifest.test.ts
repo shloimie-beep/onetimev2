@@ -33,7 +33,7 @@ function pngDimensions(bytes: Buffer) {
   };
 }
 
-function pageShell(app: boolean) {
+function pageShell(app: boolean, appEntry: 'crm' | 'live' | 'portal' = 'crm') {
   return renderPageShell({
     title: 'One Time',
     description: 'One Time',
@@ -42,17 +42,23 @@ function pageShell(app: boolean) {
     ogTitle: 'One Time',
     ogDescription: 'One Time',
     app,
+    appEntry,
   });
 }
 
 describe('One Time Admin phone installation', () => {
   it('links install metadata only from protected application shells', () => {
     const protectedApp = pageShell(true);
+    const protectedLiveApp = pageShell(true, 'live');
+    const parentOrStudentPortal = pageShell(true, 'portal');
     const publicPage = pageShell(false);
 
     expect(protectedApp).toContain('<link rel="manifest" href="/admin.webmanifest">');
+    expect(protectedLiveApp).toContain('<link rel="manifest" href="/admin.webmanifest">');
     expect(protectedApp).toContain('content="One Time Admin"');
     expect(protectedApp).toContain('rel="apple-touch-icon" sizes="180x180"');
+    expect(parentOrStudentPortal).not.toContain('/admin.webmanifest');
+    expect(parentOrStudentPortal).not.toContain('apple-mobile-web-app-capable');
     expect(publicPage).not.toContain('/admin.webmanifest');
     expect(publicPage).not.toContain('apple-mobile-web-app-capable');
   });
