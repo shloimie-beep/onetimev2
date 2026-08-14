@@ -83,7 +83,8 @@
     "highlevel:agent-mode:queue": "tsx scripts/highlevel/generate-agent-mode-queue.ts",
     "content-factory:import": "tsx scripts/media/content-factory-import.ts",
     "content-factory:seed-demo": "tsx scripts/media/content-factory-demo-seed.ts",
-    "vimeo:mishnayos:catalog": "tsx scripts/media/vimeo-mishnayos-catalog.ts"
+    "vimeo:mishnayos:catalog": "tsx scripts/media/vimeo-mishnayos-catalog.ts",
+    "identity:dual-role:provision": "tsx scripts/operations/provision-dual-role-adult.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "3.1102.0",
