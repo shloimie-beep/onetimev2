@@ -534,10 +534,7 @@ export function StudentPortalFeature({
         onSelectSection={(section) => selectSection(section as StudentPortalSection)}
         priorityContent={
           liveClass ? (
-            <StudentLiveBanner
-              item={liveClass}
-              onLaunch={readOnly ? undefined : onLaunchClass}
-            />
+            <StudentLiveBanner item={liveClass} onLaunch={readOnly ? undefined : onLaunchClass} />
           ) : null
         }
         summaryCards={[
@@ -591,7 +588,7 @@ export function StudentPortalFeature({
             <ClassSummary
               classes={dashboard.upcoming_classes}
               onLaunch={readOnly ? undefined : onLaunchClass}
-              hiddenLaunchClassKey={liveClass?.class_key}
+              hiddenLaunchClassKey={liveClass?.class_key ?? null}
             />
             {currentClass && (
               <form
