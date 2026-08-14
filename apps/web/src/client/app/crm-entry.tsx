@@ -1175,7 +1175,13 @@ function CrmApp() {
           error={classesState.error}
           detailLoading={classDetailState.loading}
           detailError={classDetailState.error}
-          onNavigate={(href) => openOwnerSurface('classes', href)}
+          onNavigate={(href) => {
+            if (href.startsWith('/app/live-console')) {
+              window.location.assign(href);
+              return;
+            }
+            openOwnerSurface('classes', href);
+          }}
           onSelectOccurrence={selectClassOccurrence}
           onRetry={() => void loadClasses()}
           onRefreshOccurrences={loadClasses}
