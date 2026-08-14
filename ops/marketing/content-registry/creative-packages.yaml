@@ -1,3 +1,47 @@
 schema_version: 1
-updated_at: '2026-08-13T00:00:00Z'
-packages: []
+updated_at: '2026-08-14T09:53:46Z'
+packages:
+  - package_id: OTM-CP-001
+    canonical_hook: Classes Start Sunday
+    authority: 2026-08-13-full-worker-sequence
+    campaign_id: OTM-LAUNCH-FREE-ACCESS-202608
+    schedule_week: launch_first_week
+    source_asset_ids:
+      - OTM-A000001
+      - OTM-A000002
+    ordered_asset_ids:
+      - OTM-A000003
+    draft_creative_ids:
+      - OTM-CR-202608-001-V01
+    formats_delivered:
+      - feed_1080x1350
+    exact_cta: GET FREE ACCESS
+    destination: https://join.onetimeonetime.com
+    rabbi_edit_state: not_required_for_static_draft
+    workflow_state: final_review
+    blockers:
+      - operator_visual_approval_pending
+      - story_and_square_exports_wait_for_base_approval
+    legacy_package_imported: false
+  - package_id: OTM-CP-002
+    canonical_hook: Get Free Access
+    authority: 2026-08-13-full-worker-sequence
+    campaign_id: OTM-LAUNCH-FREE-ACCESS-202608
+    schedule_week: launch_first_week
+    source_asset_ids:
+      - OTM-A000001
+      - OTM-A000002
+    ordered_asset_ids:
+      - OTM-A000004
+    draft_creative_ids:
+      - OTM-CR-202608-002-V01
+    formats_delivered:
+      - feed_1080x1350
+    exact_cta: GET FREE ACCESS
+    destination: https://join.onetimeonetime.com
+    rabbi_edit_state: not_required_for_static_draft
+    workflow_state: final_review
+    blockers:
+      - operator_visual_approval_pending
+      - story_and_square_exports_wait_for_base_approval
+    legacy_package_imported: false

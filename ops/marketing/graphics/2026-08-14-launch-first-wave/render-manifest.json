@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "source_hashes": {
+    "photo": "1e504b0e9be675e668560d225d2886aee9927ec6667aa2033fbe853fe3d80447",
+    "logo": "6b534dde8625b991cc9ef5e244190de950599718f35113825ab8c4c241edf441",
+    "headline_font": "8cc3643535edf039aa5d95440a8542735e9197e4f4b8d9303e980fefbf5ab616",
+    "utility_font": "0f7b311b2f3279e4eef9b2f968bcdbab6e28f4daeb1f049f4f278a902bcd82f7"
+  },
+  "renders": [
+    {
+      "filename": "OTM-CP-001-feed-1080x1350.png",
+      "width": 1080,
+      "height": 1350,
+      "bytes": 603033,
+      "sha256": "e92bbd80eaaf588dfeddd87502b20eb5de66bb00a6b0fd64adc64ceab7840790"
+    },
+    {
+      "filename": "OTM-CP-002-feed-1080x1350.png",
+      "width": 1080,
+      "height": 1350,
+      "bytes": 831508,
+      "sha256": "f6269e184396d12ea8198d8ffcf97d88a22ba574a2d22a77f1ea46329585798c"
+    }
+  ],
+  "visual_proof": {
+    "filename": "first-wave-contact-sheet.png",
+    "width": 1880,
+    "height": 1260,
+    "bytes": 900214,
+    "sha256": "b1518512d534719a831d815ab7110a6530417f4adb2e45590a8369ff53e628e0"
+  }
+}

@@ -1,0 +1,3 @@
+creative_id,package_id,hook,format,filename,workflow_state,contains_student,contains_rabbi,source_asset_id,cta,destination,operator_approval
+OTM-CR-202608-001-V01,OTM-CP-001,Classes Start Sunday,feed_4x5,OTM-CP-001-feed-1080x1350.png,final_review,false,true,OTM-A000001,GET FREE ACCESS,join.onetimeonetime.com,pending
+OTM-CR-202608-002-V01,OTM-CP-002,Get Free Access,feed_4x5,OTM-CP-002-feed-1080x1350.png,final_review,false,true,OTM-A000001,GET FREE ACCESS,join.onetimeonetime.com,pending
