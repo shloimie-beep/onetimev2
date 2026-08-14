@@ -283,10 +283,10 @@ test('Admin IA keeps the canonical launch areas across the governed viewport mat
     .getByRole('link', { name: 'Zoom Live Console' });
   await expect(classroomLiveConsole).toHaveAttribute(
     'href',
-    /^\/app\/live\?section=zoom(?:&occurrence_key=[^&]+)?$/u,
+    /^\/app\/live-console\?section=zoom(?:&occurrence_key=[^&]+)?$/u,
   );
   await classroomLiveConsole.click();
-  await expect(page).toHaveURL(/\/app\/live\?section=zoom(?:&occurrence_key=[^&]+)?$/u);
+  await expect(page).toHaveURL(/\/app\/live-console\?section=zoom(?:&occurrence_key=[^&]+)?$/u);
   await expect(page.getByRole('heading', { name: 'Zoom', exact: true })).toBeVisible();
 
   await page.goto('/app/classroom/attendance');
