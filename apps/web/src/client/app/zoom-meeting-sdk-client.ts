@@ -116,6 +116,7 @@ export function joinZoomMeetingParticipantWithApi(
         leaveUrl: input.leaveUrl,
         patchJsMedia: true,
         leaveOnPageUnload: true,
+        disableCORP: !window.crossOriginIsolated,
         disablePreview: input.disablePreview ?? false,
         success: () => {
           if (settled) return;
