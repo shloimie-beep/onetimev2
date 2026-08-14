@@ -39,7 +39,7 @@ for (const viewport of studentHomeViewports) {
     const nextClass = page
       .locator('.ot-portal-summary-card')
       .filter({ has: page.getByRole('heading', { name: 'Next class', exact: true }) });
-    await expect(nextClass).toContainText('E2E Daily Mishnah');
+    await expect(nextClass).toContainText('Daily One Time Mishnayos');
     await expect(nextClass).toContainText('7:00 PM');
     expect(
       await page.evaluate(
