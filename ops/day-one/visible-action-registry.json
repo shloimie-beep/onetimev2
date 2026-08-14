@@ -8,7 +8,7 @@
     },
     {
       "path": "ops/v2.1-execution/source-spec/03-DECISION-REGISTER-v2.1.md",
-      "sha256": "830b76ad3a1dab17d33fab64a5aa53479adc1665ae00e189d06cddd91b072d1d"
+      "sha256": "c67fcb8ee133aed837e4e7f01c4cbf5c405854d3953d2e424551b45a1d10872f"
     },
     {
       "path": "ops/v2.1-execution/source-spec/05-ACTOR-ROLE-CAPABILITY-ROUTE-MATRIX-v2.1.md",
