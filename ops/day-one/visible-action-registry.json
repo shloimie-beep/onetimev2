@@ -140,7 +140,7 @@
     },
     {
       "path": "apps/web/src/client/app/crm-entry.tsx",
-      "sha256": "beb54a2e6b4a26df7d3a1310f12fe9b2258f74bc8a945d9a90aee33b873984e5"
+      "sha256": "71ebc2e626fe0f56ad659007bc1f0b03b4c3808501ebe78260df8625374742af"
     },
     {
       "path": "apps/web/src/client/app/live-entry.tsx",
