@@ -287,7 +287,7 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
           studentInput('native.mismatch.student'),
           mutation('native-mismatch-student-0001', beforeExpiry, 'c'),
         ),
-      ).rejects.toThrow(/household access source is unavailable/i);
+      ).rejects.toThrow(/^This Parent household is unavailable\.$/u);
       await expect(count(pool, 'v21_student_profiles')).resolves.toBe(0);
       await pool.query(
         `UPDATE onetime.account_access_projections AS projection
@@ -327,7 +327,7 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
           { ...studentInput('native.expired.student'), expected_revision: 2 },
           mutation('native-expired-student-0001', atExpiry, 'e'),
         ),
-      ).rejects.toThrow(/household access source is unavailable/i);
+      ).rejects.toThrow(/^This Parent household is unavailable\.$/u);
       await expect(count(pool, 'v21_student_profiles')).resolves.toBe(1);
       await expect(
         pool.query(
