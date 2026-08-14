@@ -292,8 +292,8 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
           mutation('native-mismatch-student-0001', beforeExpiry, 'c'),
         ),
       ).rejects.toMatchObject({
-        code: PARENT_HOUSEHOLD_ERROR_CODES.householdMissing,
-        message: 'This Parent household is unavailable.',
+        code: PARENT_HOUSEHOLD_ERROR_CODES.persistenceInvariant,
+        message: 'The household access source is unavailable.',
       });
       await expect(count(pool, 'v21_student_profiles')).resolves.toBe(0);
       await pool.query(
@@ -335,8 +335,8 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
           mutation('native-expired-student-0001', atExpiry, 'e'),
         ),
       ).rejects.toMatchObject({
-        code: PARENT_HOUSEHOLD_ERROR_CODES.householdMissing,
-        message: 'This Parent household is unavailable.',
+        code: PARENT_HOUSEHOLD_ERROR_CODES.persistenceInvariant,
+        message: 'The household access source is unavailable.',
       });
       await expect(count(pool, 'v21_student_profiles')).resolves.toBe(1);
       await expect(
