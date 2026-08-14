@@ -2,6 +2,7 @@ import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
 import { readFile, writeFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
 import { z } from 'zod';
+import { CANONICAL_APPLICATION_ORIGIN } from '../../apps/web/src/server/features/domain-transition/policy.ts';
 import { loadConfig, type AppConfig } from '../../packages/config/src/index.ts';
 import {
   createPgPool,
@@ -36,6 +37,10 @@ const CLOCK_SKEW_MS = 5 * 60 * 1000;
 const SETUP_TOKEN_TTL_MINUTES = 60;
 const AUTHORIZATION_ENV = 'ONE_TIME_DUAL_ROLE_PROVISION_AUTHORIZATION';
 const SCHEMA = CONTROLLER_DUAL_ROLE_PROVISIONING_SCHEMA;
+
+export function isCanonicalControllerResetOrigin(value: string) {
+  return value === CANONICAL_APPLICATION_ORIGIN || value === `${CANONICAL_APPLICATION_ORIGIN}/`;
+}
 
 const scopeSchema = z
   .object({
@@ -395,7 +400,7 @@ function envelopeBlockers(
     if (config.nodeEnv !== 'production' || config.oneTimeRuntimeTier !== 'production') {
       blockers.push('production_runtime_required');
     }
-    if (config.publicBaseUrl.replace(/\/+$/u, '') !== 'https://join.onetimeonetime.com') {
+    if (!isCanonicalControllerResetOrigin(config.publicBaseUrl)) {
       blockers.push('canonical_reset_origin_mismatch');
     }
     if (!config.oneTimeVerificationWritesAllowed) blockers.push('production_writes_not_allowed');
