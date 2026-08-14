@@ -28,6 +28,14 @@ import { applyHouseholdAccessStateWithClient } from '../access/service.ts';
 import { normalizeEmail, stableKey } from '../lead/normalize.ts';
 import { consumeRateLimitBudgets } from '../security/rate-limit.ts';
 import { enqueueHighLevelEventForAdultEmail } from '../highlevel/producer.ts';
+import {
+  controllerDualRoleProvisionAuditKey,
+  controllerDualRoleProvisionAuditMetadata,
+  controllerDualRoleProvisioningIdentityKeys,
+  controllerDualRoleSetupIdempotencyKey,
+  isControllerDualRoleProvisioningSyntheticTestFixture,
+  isControllerDualRoleProvisioningTarget,
+} from './controller-dual-role-provisioning-policy.ts';
 import { createLifecycleDeliveryOutbox } from './lifecycle-delivery.ts';
 
 function assertStudentPin(password: string) {
@@ -860,39 +868,67 @@ export async function completeStudentReset(input: {
   });
 }
 
+type PasswordResetRequestInput = {
+  pool: DbPool;
+  config: AppConfig;
+  payload: unknown;
+  now?: Date;
+  expectedParentGuardian?: {
+    householdKey: string;
+    guardianUserKey: string;
+    emailNormalized: string;
+  };
+} & LocalProofOption;
+
 export async function requestPasswordReset(
-  input: {
-    pool: DbPool;
-    config: AppConfig;
-    payload: unknown;
-    now?: Date;
-    expectedParentGuardian?: {
-      householdKey: string;
-      guardianUserKey: string;
-      emailNormalized: string;
-    };
-  } & LocalProofOption,
+  input: PasswordResetRequestInput,
+): Promise<TokenIssueWithProof | { request_accepted: true }> {
+  return requestPasswordResetInternal(input, false);
+}
+
+/**
+ * Issues the one reserved setup message for the exact controller-provisioned
+ * dual-role identity. Ordinary recovery callers cannot consume this seam.
+ */
+export async function requestControllerDualRoleInitialPasswordSetup(
+  input: PasswordResetRequestInput,
+): Promise<TokenIssueWithProof | { request_accepted: true }> {
+  return requestPasswordResetInternal(input, true);
+}
+
+async function requestPasswordResetInternal(
+  input: PasswordResetRequestInput,
+  controllerInitialSetup: boolean,
 ): Promise<TokenIssueWithProof | { request_accepted: true }> {
   const payload = passwordResetRequestPayloadSchema.parse(input.payload);
   const now = input.now ?? new Date();
   const emailNormalized = normalizeEmail(payload.email);
-  const rateLimit = await consumeRateLimitBudgets({
-    pool: input.pool,
-    config: input.config,
-    now,
-    budgets: [
-      {
-        scope: 'account_password_reset_email',
-        subject: stableKey('email', [emailNormalized]),
-        limit: 5,
-        windowMs: 60 * 60 * 1000,
-      },
-    ],
-  });
-  if (!rateLimit.allowed) {
-    throw new AccountLifecycleError('RATE_LIMITED', 'Password reset requests are rate limited.');
+  if (!controllerInitialSetup) {
+    const rateLimit = await consumeRateLimitBudgets({
+      pool: input.pool,
+      config: input.config,
+      now,
+      budgets: [
+        {
+          scope: 'account_password_reset_email',
+          subject: stableKey('email', [emailNormalized]),
+          limit: 5,
+          windowMs: 60 * 60 * 1000,
+        },
+      ],
+    });
+    if (!rateLimit.allowed) {
+      throw new AccountLifecycleError('RATE_LIMITED', 'Password reset requests are rate limited.');
+    }
   }
   return inTransaction(input.pool, async (client) => {
+    await client.query('SELECT pg_advisory_xact_lock($1)', [
+      lifecycleSubjectAdvisoryLockKey(
+        input.config.accountKey,
+        input.config.productKey,
+        emailNormalized,
+      ),
+    ]);
     const user = input.expectedParentGuardian
       ? await findExpectedActiveParentGuardian(client, input.config, {
           ...input.expectedParentGuardian,
@@ -902,6 +938,38 @@ export async function requestPasswordReset(
     const v21Account = input.expectedParentGuardian
       ? undefined
       : await findV21HumanAccountByEmail(client, input.config, emailNormalized);
+    const controllerReservation = v21Account
+      ? await hasControllerDualRoleInitialSetupReservation(
+          client,
+          input.config,
+          emailNormalized,
+          v21Account,
+          now,
+        )
+      : false;
+    if (controllerInitialSetup) {
+      const expectedIdempotencyKey = controllerDualRoleSetupIdempotencyKey({
+        accountKey: input.config.accountKey,
+        productKey: input.config.productKey,
+        runtimeTier: input.config.oneTimeRuntimeTier,
+        verificationEnvironmentId: input.config.oneTimeVerificationEnvironmentId,
+        normalizedEmail: emailNormalized,
+      });
+      if (!controllerReservation || payload.idempotency_key !== expectedIdempotencyKey) {
+        throw new AccountLifecycleError(
+          'IDENTITY_CONFLICT',
+          'The reserved initial account setup is unavailable.',
+        );
+      }
+    } else {
+      if (controllerReservation) {
+        await audit(client, input.config, {
+          actionType: 'password_reset_requested_controller_setup_pending',
+          metadata: { token_issued: false, delivery_queued: false },
+        });
+        return { request_accepted: true as const };
+      }
+    }
     const legacyRole = user ? lifecycleRoleFromUserRole(String(user.role)) : null;
     if (legacyRole === 'student' && !v21Account) {
       await audit(client, input.config, {
@@ -2126,8 +2194,9 @@ async function findV21HumanAccountByEmail(
   emailNormalized: string,
 ) {
   const result = await client.query(
-    `SELECT account.human_account_id,
+    `SELECT adult.adult_id, account.human_account_id,
             adult.display_name,
+            credential.credential_state,
             membership.role AS target_role
        FROM onetime.v21_adult_identities AS adult
        JOIN onetime.v21_human_accounts AS account
@@ -2161,6 +2230,118 @@ async function findV21HumanAccountByEmail(
   );
   if (result.rows.length !== 1 || !result.rows[0]?.target_role) return undefined;
   return result.rows[0] as Record<string, unknown>;
+}
+
+async function hasControllerDualRoleInitialSetupReservation(
+  client: Queryable,
+  config: AppConfig,
+  emailNormalized: string,
+  account: Record<string, unknown>,
+  now: Date,
+) {
+  const target = {
+    normalizedEmail: emailNormalized,
+    displayName: String(account.display_name ?? ''),
+  };
+  const isolatedSyntheticFixture =
+    config.nodeEnv === 'test' &&
+    config.oneTimeRuntimeTier === 'isolated_staging' &&
+    config.oneTimeVerificationEnvironmentId === 'ci' &&
+    isControllerDualRoleProvisioningSyntheticTestFixture(target);
+  if (
+    account.credential_state !== 'reset_required' ||
+    (!isControllerDualRoleProvisioningTarget(target) && !isolatedSyntheticFixture)
+  ) {
+    return false;
+  }
+  const auditKey = controllerDualRoleProvisionAuditKey({
+    accountKey: config.accountKey,
+    productKey: config.productKey,
+    runtimeTier: config.oneTimeRuntimeTier,
+    verificationEnvironmentId: config.oneTimeVerificationEnvironmentId,
+    normalizedEmail: emailNormalized,
+  });
+  const identityKeys = controllerDualRoleProvisioningIdentityKeys({
+    accountKey: config.accountKey,
+    productKey: config.productKey,
+    runtimeTier: config.oneTimeRuntimeTier,
+    verificationEnvironmentId: config.oneTimeVerificationEnvironmentId,
+    normalizedEmail: emailNormalized,
+  });
+  if (
+    account.adult_id !== identityKeys.adultId ||
+    account.human_account_id !== identityKeys.humanAccountId
+  ) {
+    return false;
+  }
+  const result = await client.query(
+    `SELECT credential.credential_state
+       FROM onetime.v21_adult_credentials AS credential
+       JOIN onetime.v21_households AS household
+         ON household.household_id = $8
+        AND household.owner_adult_id = credential.adult_id
+        AND household.owner_human_account_id = credential.human_account_id
+        AND household.product_key = credential.product_key
+        AND household.runtime_tier = credential.runtime_tier
+        AND household.verification_environment_id = credential.verification_environment_id
+        AND household.classification = 'family' AND household.state = 'active'
+       JOIN onetime.account_lifecycle_audit_events AS audit
+         ON audit.audit_key = $6
+        AND audit.account_key = $1
+        AND audit.product_key = $2
+        AND audit.action_type = 'controller_dual_role_adult_provisioned'
+        AND audit.success = true
+        AND audit.created_at <= $7::timestamptz
+        AND audit.metadata = $9::jsonb
+      WHERE credential.human_account_id = $3
+        AND credential.product_key = $2
+        AND credential.runtime_tier = $4
+        AND credential.verification_environment_id = $5
+        AND credential.credential_state = 'reset_required'
+      LIMIT 2
+      FOR UPDATE OF credential`,
+    [
+      config.accountKey,
+      config.productKey,
+      String(account.human_account_id),
+      config.oneTimeRuntimeTier,
+      config.oneTimeVerificationEnvironmentId,
+      auditKey,
+      now,
+      identityKeys.householdId,
+      JSON.stringify(controllerDualRoleProvisionAuditMetadata(identityKeys)),
+    ],
+  );
+  if (result.rows.length !== 1) return false;
+  const setupIdempotencyKey = controllerDualRoleSetupIdempotencyKey({
+    accountKey: config.accountKey,
+    productKey: config.productKey,
+    runtimeTier: config.oneTimeRuntimeTier,
+    verificationEnvironmentId: config.oneTimeVerificationEnvironmentId,
+    normalizedEmail: emailNormalized,
+  });
+  const tokenKey = stableKey('account_lifecycle_token', [
+    config.accountKey,
+    config.productKey,
+    'password_reset',
+    setupIdempotencyKey,
+  ]);
+  const token = await client.query(
+    `SELECT consumed_at, revoked_at, expires_at
+       FROM onetime.account_lifecycle_tokens
+      WHERE account_key = $1 AND product_key = $2 AND token_key = $3
+      LIMIT 2
+      FOR UPDATE`,
+    [config.accountKey, config.productKey, tokenKey],
+  );
+  if (!token.rows.length) return true;
+  const row = token.rows[0] as Record<string, unknown>;
+  return (
+    token.rows.length === 1 &&
+    row.consumed_at === null &&
+    row.revoked_at === null &&
+    asDate(row.expires_at).getTime() > now.getTime()
+  );
 }
 
 async function completeV21AdultPasswordReset(
@@ -2531,6 +2712,14 @@ function lifecycleAdvisoryLockKey(accountKey: string, productKey: string, idempo
     16,
   );
   return value > 0x7fffffff ? value - 0x100000000 : value;
+}
+
+function lifecycleSubjectAdvisoryLockKey(
+  accountKey: string,
+  productKey: string,
+  emailNormalized: string,
+) {
+  return lifecycleAdvisoryLockKey(accountKey, productKey, `password-reset:${emailNormalized}`);
 }
 
 function asDate(value: unknown) {

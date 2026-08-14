@@ -51,6 +51,24 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Run native controller dual-role provisioning proof
+        env:
+          DUAL_ROLE_PROVISION_NATIVE_POSTGRES_DISPOSABLE: 'true'
+          PGHOST: 127.0.0.1
+          PGPORT: 5432
+          PGDATABASE: postgres
+          PGUSER: postgres
+          PGPASSWORD: postgres
+        run: |
+          createdb onetime_dual_role_provision_ci_16
+          trap 'dropdb --if-exists onetime_dual_role_provision_ci_16' EXIT
+          printf -v DUAL_ROLE_PROVISION_NATIVE_DATABASE_URL '%s://%s:%s@%s:%s/%s' \
+            postgresql "$PGUSER" "$PGPASSWORD" "$PGHOST" "$PGPORT" \
+            onetime_dual_role_provision_ci_16
+          export DUAL_ROLE_PROVISION_NATIVE_DATABASE_URL
+          npx vitest run --config vitest.integration.config.ts \
+            tests/integration/accounts/dual-role-adult-provisioning.postgres.test.ts
+
       - name: Run OT-37 PostgreSQL assurance
         env:
           PGHOST: 127.0.0.1
@@ -78,6 +96,7 @@ jobs:
         run: >-
           npx prettier --check
           .github/workflows/ot37-postgres-assurance.yml
+          tests/integration/accounts/dual-role-adult-provisioning.postgres.test.ts
           ops/evidence/ot-37/LOCAL-ENVIRONMENT-BLOCKER.md
           ops/evidence/ot-37/README.md
           scripts/postgres-assurance/README.md

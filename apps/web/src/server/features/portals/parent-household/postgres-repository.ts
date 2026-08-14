@@ -9,6 +9,19 @@ import {
   type ParentManagedStudent,
 } from '../../../../../../../packages/contracts/src/portals/parent-household/index.ts';
 import type { DbPool, Queryable } from '../../../../../../../packages/db/src/index.ts';
+import { accountAccessRequestHash } from '../../../../../../../packages/domain/src/access/service.ts';
+import {
+  CONTROLLER_DUAL_ROLE_ACCESS_EXPIRES_AT,
+  CONTROLLER_DUAL_ROLE_PROVISIONING_ACTOR,
+  CONTROLLER_DUAL_ROLE_PROVISIONING_POLICY,
+  controllerDualRoleAccessIdempotencyKey,
+  controllerDualRoleAccessSourceReference,
+  controllerDualRoleProvisionAuditKey,
+  controllerDualRoleProvisionAuditMetadata,
+  controllerDualRoleProvisioningIdentityKeys,
+  isControllerDualRoleProvisioningSyntheticTestFixture,
+  isControllerDualRoleProvisioningTarget,
+} from '../../../../../../../packages/domain/src/accounts/controller-dual-role-provisioning-policy.ts';
 import { ParentHouseholdError } from '../../../../../../../packages/domain/src/portals/parent-household/index.ts';
 
 type Row = Record<string, unknown>;
@@ -137,7 +150,12 @@ export function createPostgresParentHouseholdRepository(
         }
 
         validateMutation(input, loaded.record, loaded.scope);
-        await resolvePortalHouseholdAccessSource(client, loaded, input.context.occurred_at);
+        await resolvePortalHouseholdAccessSource(
+          client,
+          loaded,
+          input.context.occurred_at,
+          options,
+        );
         const target = requiredTarget(input.next, input.audit.student_id);
         const current = loaded.record.students.find(
           (student) => student.student_id === input.audit.student_id,
@@ -1028,6 +1046,7 @@ async function ensurePortalHouseholdAccessProjection(
     db,
     loaded,
     input.context.occurred_at,
+    options,
   );
 
   await exactlyOne(
@@ -1067,11 +1086,19 @@ async function resolvePortalHouseholdAccessSource(
   db: Queryable,
   loaded: { record: ParentHouseholdRecord; scope: Scope },
   occurredAt: string,
+  options: Pick<ParentHouseholdPostgresOptions, 'portalAccountKey' | 'portalProductKey'>,
 ) {
   let effectiveAt = occurredAt;
   let expiresAt: string | null = null;
   let sourceKind: PortalAccessSourceKind = 'admin_override';
   if (loaded.record.access_state === 'free' || loaded.record.access_state === 'grace') {
+    const provisionedOverride = await resolveActiveControllerDualRoleAccessOverride(
+      db,
+      loaded,
+      occurredAt,
+      options,
+    );
+    if (provisionedOverride) return provisionedOverride;
     const signup = await db.query(
       `SELECT free_access_expires_at, signup_committed_at
          FROM onetime.family_signup_access_projections
@@ -1111,6 +1138,258 @@ async function resolvePortalHouseholdAccessSource(
     }
   }
   return { effectiveAt, expiresAt, sourceKind };
+}
+
+/**
+ * Accepts the controller's bounded dual-role grant only when every durable
+ * projection and its applied event still agree. This is not a general Admin
+ * override escape hatch: arbitrary, partial, stale, expired, paid, signup, or
+ * consent-shaped records remain ineligible.
+ */
+async function resolveActiveControllerDualRoleAccessOverride(
+  db: Queryable,
+  loaded: { record: ParentHouseholdRecord; scope: Scope },
+  occurredAt: string,
+  options: Pick<ParentHouseholdPostgresOptions, 'portalAccountKey' | 'portalProductKey'>,
+) {
+  if (loaded.record.access_state !== 'free') return null;
+  const expectedSourceReference = controllerDualRoleAccessSourceReference(
+    loaded.record.household_id,
+  );
+  const expectedSourceDigest = createHash('sha256')
+    .update(expectedSourceReference, 'utf8')
+    .digest('hex');
+  const result = await db.query(
+    `SELECT adult.adult_id, adult.normalized_email, adult.display_name,
+            account.human_account_id,
+            projection.effective_at, projection.expires_at,
+            projection.source_request_hash
+       FROM onetime.v21_households AS household
+       JOIN onetime.v21_adult_identities AS adult
+         ON adult.adult_id = household.owner_adult_id
+        AND adult.product_key = household.product_key
+        AND adult.runtime_tier = household.runtime_tier
+        AND adult.verification_environment_id = household.verification_environment_id
+        AND adult.state = 'active'
+       JOIN onetime.v21_human_accounts AS account
+         ON account.human_account_id = household.owner_human_account_id
+        AND account.adult_id = household.owner_adult_id
+        AND account.product_key = household.product_key
+        AND account.runtime_tier = household.runtime_tier
+        AND account.verification_environment_id = household.verification_environment_id
+        AND account.state = 'active'
+       JOIN onetime.v21_human_account_role_memberships AS admin_membership
+         ON admin_membership.human_account_id = account.human_account_id
+        AND admin_membership.product_key = account.product_key
+        AND admin_membership.runtime_tier = account.runtime_tier
+        AND admin_membership.verification_environment_id = account.verification_environment_id
+        AND admin_membership.role = 'admin'
+        AND admin_membership.revoked_at IS NULL
+        AND admin_membership.granted_at <= $8::timestamptz
+       JOIN onetime.v21_human_account_role_memberships AS parent_membership
+         ON parent_membership.human_account_id = account.human_account_id
+        AND parent_membership.product_key = account.product_key
+        AND parent_membership.runtime_tier = account.runtime_tier
+        AND parent_membership.verification_environment_id = account.verification_environment_id
+        AND parent_membership.role = 'parent'
+        AND parent_membership.revoked_at IS NULL
+        AND parent_membership.granted_at <= $8::timestamptz
+       JOIN onetime.canonical_aggregate_states AS canonical_access
+         ON canonical_access.aggregate_kind = 'access'
+        AND canonical_access.aggregate_key = household.household_id
+        AND canonical_access.product_key = household.product_key
+        AND canonical_access.runtime_tier = household.runtime_tier
+        AND canonical_access.verification_environment_id = household.verification_environment_id
+        AND canonical_access.current_state = 'free'
+        AND canonical_access.version = 1
+        AND canonical_access.archived_at IS NULL
+       JOIN onetime.canonical_state_transition_events AS canonical_transition
+         ON canonical_transition.transition_key = canonical_access.last_transition_key
+        AND canonical_transition.aggregate_kind = 'access'
+        AND canonical_transition.aggregate_key = household.household_id
+        AND canonical_transition.product_key = household.product_key
+        AND canonical_transition.runtime_tier = household.runtime_tier
+        AND canonical_transition.verification_environment_id = household.verification_environment_id
+        AND canonical_transition.previous_state IS NULL
+        AND canonical_transition.next_state = 'free'
+        AND canonical_transition.expected_version = 0
+        AND canonical_transition.resulting_version = 1
+        AND canonical_transition.access_cause = 'free_period'
+        AND canonical_transition.actor_kind = 'system'
+        AND canonical_transition.actor_key = $5
+        AND canonical_transition.created_at <= $8::timestamptz
+       JOIN onetime.portal_households AS portal
+         ON portal.household_key = household.household_id
+        AND portal.account_key = $6
+        AND portal.product_key = $7
+        AND portal.status = 'active'
+       JOIN onetime.account_access_projections AS projection
+         ON projection.account_key = portal.account_key
+        AND projection.product_key = portal.product_key
+        AND projection.household_key = portal.household_key
+        AND projection.state = 'active'
+        AND projection.source_kind = 'admin_override'
+        AND projection.effective_at <= $8::timestamptz
+        AND projection.effective_at = canonical_transition.created_at
+        AND projection.source_updated_at <= $8::timestamptz
+        AND projection.expires_at = $9::timestamptz
+        AND projection.expires_at > $8::timestamptz
+        AND projection.opaque_source_reference = $10
+        AND projection.source_revision = 1
+        AND projection.policy_version = $11
+        AND projection.revocation_reason IS NULL
+       JOIN onetime.account_access_source_states AS source
+         ON source.account_key = projection.account_key
+        AND source.product_key = projection.product_key
+        AND source.household_key = projection.household_key
+        AND source.source_slot = 'complimentary'
+        AND source.source_kind = projection.source_kind
+        AND source.state = projection.state
+        AND source.effective_at = projection.effective_at
+        AND source.expires_at = projection.expires_at
+        AND source.opaque_source_reference = projection.opaque_source_reference
+        AND source.source_revision = projection.source_revision
+        AND source.source_updated_at = projection.source_updated_at
+        AND source.source_request_hash = projection.source_request_hash
+        AND source.policy_version = projection.policy_version
+        AND source.revocation_reason IS NULL
+        AND source.last_event_key = projection.last_event_key
+       JOIN onetime.account_access_events AS event
+         ON event.event_key = projection.last_event_key
+        AND event.account_key = projection.account_key
+        AND event.product_key = projection.product_key
+        AND event.household_key = projection.household_key
+        AND event.idempotency_key = $12
+        AND event.request_hash = projection.source_request_hash
+        AND event.source_kind = projection.source_kind
+        AND event.source_reference_digest = $13
+        AND event.source_revision = projection.source_revision
+        AND event.source_updated_at = projection.source_updated_at
+        AND event.previous_state IS NULL
+        AND event.next_state = 'active'
+        AND event.decision = 'applied'
+        AND event.actor_kind = 'provisioner'
+        AND event.created_at <= $8::timestamptz
+      WHERE household.household_id = $1
+        AND household.product_key = $2
+        AND household.runtime_tier = $3
+        AND household.verification_environment_id = $4
+        AND household.classification = 'family'
+        AND household.state = 'active'
+        AND NOT EXISTS (
+          SELECT 1 FROM onetime.family_signup_requests AS signup_request
+           WHERE signup_request.household_id = $1
+             AND signup_request.product = $2
+             AND signup_request.runtime_tier = $3
+             AND signup_request.verification_environment_id = $4
+        )
+        AND NOT EXISTS (
+          SELECT 1 FROM onetime.family_signup_access_projections AS signup_access
+           WHERE signup_access.household_id = $1
+             AND signup_access.product = $2
+             AND signup_access.runtime_tier = $3
+             AND signup_access.verification_environment_id = $4
+        )
+        AND NOT EXISTS (
+          SELECT 1 FROM onetime.family_signup_receipts AS signup_receipt
+           WHERE signup_receipt.household_id = $1
+             AND signup_receipt.product = $2
+             AND signup_receipt.runtime_tier = $3
+             AND signup_receipt.verification_environment_id = $4
+        )
+        AND NOT EXISTS (
+          SELECT 1 FROM onetime.family_signup_outbox AS signup_outbox
+           WHERE signup_outbox.household_id = $1
+             AND signup_outbox.product = $2
+             AND signup_outbox.runtime_tier = $3
+             AND signup_outbox.verification_environment_id = $4
+        )
+      LIMIT 2
+      FOR UPDATE`,
+    [
+      loaded.record.household_id,
+      loaded.scope.product,
+      loaded.scope.runtimeTier,
+      loaded.scope.verificationEnvironmentId,
+      CONTROLLER_DUAL_ROLE_PROVISIONING_ACTOR,
+      options.portalAccountKey,
+      options.portalProductKey,
+      occurredAt,
+      CONTROLLER_DUAL_ROLE_ACCESS_EXPIRES_AT,
+      expectedSourceReference,
+      CONTROLLER_DUAL_ROLE_PROVISIONING_POLICY,
+      controllerDualRoleAccessIdempotencyKey(loaded.record.household_id),
+      expectedSourceDigest,
+    ],
+  );
+  if (result.rowCount !== 1) return null;
+  const row = result.rows[0] as Row;
+  const target = {
+    normalizedEmail: String(row.normalized_email ?? ''),
+    displayName: String(row.display_name ?? ''),
+  };
+  const isolatedSyntheticFixture =
+    loaded.scope.runtimeTier === 'isolated_staging' &&
+    loaded.scope.verificationEnvironmentId === 'ci' &&
+    isControllerDualRoleProvisioningSyntheticTestFixture(target);
+  if (!isControllerDualRoleProvisioningTarget(target) && !isolatedSyntheticFixture) return null;
+  const policyScope = {
+    accountKey: options.portalAccountKey,
+    productKey: options.portalProductKey,
+    runtimeTier: loaded.scope.runtimeTier,
+    verificationEnvironmentId: loaded.scope.verificationEnvironmentId,
+    normalizedEmail: target.normalizedEmail,
+  };
+  const identityKeys = controllerDualRoleProvisioningIdentityKeys(policyScope);
+  if (
+    row.adult_id !== identityKeys.adultId ||
+    row.human_account_id !== identityKeys.humanAccountId ||
+    loaded.record.household_id !== identityKeys.householdId
+  ) {
+    return null;
+  }
+  const effectiveAt = timestamp(row.effective_at, 'provisioned access effective time');
+  const expectedRequestHash = accountAccessRequestHash({
+    accountKey: options.portalAccountKey,
+    productKey: options.portalProductKey,
+    sourceKind: 'admin_override',
+    command: {
+      household_key: loaded.record.household_id,
+      state: 'active',
+      effective_at: effectiveAt,
+      expires_at: new Date(CONTROLLER_DUAL_ROLE_ACCESS_EXPIRES_AT).toISOString(),
+      opaque_source_reference: expectedSourceReference,
+      source_revision: 1,
+      source_updated_at: effectiveAt,
+      policy_version: CONTROLLER_DUAL_ROLE_PROVISIONING_POLICY,
+      revocation_reason: null,
+    },
+  });
+  if (row.source_request_hash !== expectedRequestHash) return null;
+  const audit = await db.query(
+    `SELECT created_at
+       FROM onetime.account_lifecycle_audit_events
+      WHERE audit_key=$1 AND account_key=$2 AND product_key=$3
+        AND actor_user_key IS NULL AND subject_user_key IS NULL AND token_key IS NULL
+        AND action_type='controller_dual_role_adult_provisioned'
+        AND success=true AND reason IS NULL AND metadata=$4::jsonb
+        AND created_at=$5::timestamptz AND created_at<=$6::timestamptz
+      LIMIT 2`,
+    [
+      controllerDualRoleProvisionAuditKey(policyScope),
+      options.portalAccountKey,
+      options.portalProductKey,
+      JSON.stringify(controllerDualRoleProvisionAuditMetadata(identityKeys)),
+      effectiveAt,
+      occurredAt,
+    ],
+  );
+  if (audit.rows.length !== 1) return null;
+  return {
+    effectiveAt,
+    expiresAt: timestamp(row.expires_at, 'provisioned access expiration'),
+    sourceKind: 'admin_override' as const,
+  };
 }
 
 /**

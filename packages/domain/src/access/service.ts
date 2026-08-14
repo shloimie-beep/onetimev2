@@ -193,7 +193,7 @@ export async function applyHouseholdAccessStateWithClient(
     );
   }
 
-  const requestHash = accessRequestHash({
+  const requestHash = accountAccessRequestHash({
     accountKey: input.accountKey,
     productKey: input.productKey,
     sourceKind: input.sourceKind,
@@ -1088,7 +1088,7 @@ async function recordRejectedAccessAttempt(
     );
     if (current.rowCount !== 1) return;
 
-    const requestHash = accessRequestHash({
+    const requestHash = accountAccessRequestHash({
       accountKey: input.accountKey,
       productKey: input.productKey,
       sourceKind: input.sourceKind,
@@ -1361,7 +1361,7 @@ function projectionFromRow(row: ProjectionRow, now: Date) {
   });
 }
 
-function accessRequestHash(input: {
+export function accountAccessRequestHash(input: {
   accountKey: string;
   productKey: string;
   sourceKind: AccountAccessSourceKind;

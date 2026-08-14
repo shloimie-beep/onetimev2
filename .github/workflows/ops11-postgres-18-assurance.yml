@@ -77,6 +77,24 @@ jobs:
           npx vitest run --config vitest.integration.config.ts \
             tests/integration/accounts/v21-owner-admin-session.postgres.test.ts
 
+      - name: Run native controller dual-role provisioning proof
+        env:
+          DUAL_ROLE_PROVISION_NATIVE_POSTGRES_DISPOSABLE: 'true'
+          PGHOST: 127.0.0.1
+          PGPORT: 5432
+          PGDATABASE: postgres
+          PGUSER: postgres
+          PGPASSWORD: postgres
+        run: |
+          createdb onetime_dual_role_provision_ci_18
+          trap 'dropdb --if-exists onetime_dual_role_provision_ci_18' EXIT
+          printf -v DUAL_ROLE_PROVISION_NATIVE_DATABASE_URL '%s://%s:%s@%s:%s/%s' \
+            postgresql "$PGUSER" "$PGPASSWORD" "$PGHOST" "$PGPORT" \
+            onetime_dual_role_provision_ci_18
+          export DUAL_ROLE_PROVISION_NATIVE_DATABASE_URL
+          npx vitest run --config vitest.integration.config.ts \
+            tests/integration/accounts/dual-role-adult-provisioning.postgres.test.ts
+
       - name: Run candidate-bound PostgreSQL 18.4 proof
         if: github.event_name == 'workflow_dispatch'
         env:
@@ -132,6 +150,7 @@ jobs:
         run: >-
           npx prettier --check
           .github/workflows/ops11-postgres-18-assurance.yml
+          tests/integration/accounts/dual-role-adult-provisioning.postgres.test.ts
           scripts/postgres-assurance/candidate-pg18-proof.ts
           scripts/postgres-assurance/ops11-pg18-restore-clone.ts
           ops/evidence/ops-11/pg18/latest-postgres-assurance-report.json
