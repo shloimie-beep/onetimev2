@@ -30,7 +30,10 @@ import {
 } from '../../../packages/domain/src/accounts/lifecycle.ts';
 import { hashAuthPassword } from '../../../packages/domain/src/auth/policy.ts';
 import { createDbBackedTestAdultSessionRepository } from '../../support/pgmem-v21-parent-session-repository.ts';
-import { runDualRoleAdultProvision } from '../../../scripts/operations/provision-dual-role-adult.ts';
+import {
+  isCanonicalControllerResetOrigin,
+  runDualRoleAdultProvision,
+} from '../../../scripts/operations/provision-dual-role-adult.ts';
 
 const SOURCE_SHA = 'a'.repeat(40);
 const AUTHORIZATION = 'test-only dual role controller authorization phrase';
@@ -52,6 +55,58 @@ afterEach(async () => {
 });
 
 describe('controller dual-role adult provisioning', () => {
+  it('accepts only the canonical authenticated app origin for the one-time setup link', async () => {
+    expect(isCanonicalControllerResetOrigin('https://app.onetimeonetime.com')).toBe(true);
+    expect(isCanonicalControllerResetOrigin('https://app.onetimeonetime.com/')).toBe(true);
+
+    const rejectedOrigins = [
+      'https://join.onetimeonetime.com',
+      'https://other.example.com',
+      'https://reset.app.onetimeonetime.com',
+      'http://app.onetimeonetime.com',
+      'https://app.onetimeonetime.com/reset-password',
+      'https://app.onetimeonetime.com?source=controller',
+      'https://app.onetimeonetime.com#setup',
+      'https://operator@app.onetimeonetime.com',
+      'https://app.onetimeonetime.com//',
+    ];
+    const before = await protectedCounts(pool);
+    const manifest = privateManifest('dual-role-origin-guard@example.test');
+
+    for (const publicBaseUrl of rejectedOrigins) {
+      expect(isCanonicalControllerResetOrigin(publicBaseUrl)).toBe(false);
+      const report = await runDualRoleAdultProvision({
+        manifest,
+        apply: true,
+        authorizationPhrase: AUTHORIZATION,
+        pool,
+        config: { ...config, publicBaseUrl },
+        now: PROVISION_AT,
+      });
+      expect(report).toMatchObject({
+        status: 'blocked',
+        blockers: expect.arrayContaining(['canonical_reset_origin_mismatch']),
+      });
+      expect(await protectedCounts(pool)).toEqual(before);
+    }
+
+    for (const publicBaseUrl of [
+      'https://app.onetimeonetime.com',
+      'https://app.onetimeonetime.com/',
+    ]) {
+      const report = await runDualRoleAdultProvision({
+        manifest,
+        apply: true,
+        authorizationPhrase: AUTHORIZATION,
+        pool,
+        config: { ...config, publicBaseUrl },
+        now: PROVISION_AT,
+      });
+      expect(report.blockers).not.toContain('canonical_reset_origin_mismatch');
+      expect(await protectedCounts(pool)).toEqual(before);
+    }
+  });
+
   it('is strict, dry-run first, PII-safe, and performs zero dry-run writes', async () => {
     const manifest = privateManifest('dual-role-dry-run@example.test');
     const before = await protectedCounts(pool);
