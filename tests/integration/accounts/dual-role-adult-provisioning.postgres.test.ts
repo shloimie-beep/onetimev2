@@ -5,6 +5,7 @@ import { createPostgresV21AdultSessionRuntime } from '../../../apps/web/src/serv
 import { createPostgresParentHouseholdRepository } from '../../../apps/web/src/server/features/portals/parent-household/postgres-repository.ts';
 import { createParentHouseholdService } from '../../../apps/web/src/server/features/portals/parent-household/service.ts';
 import { loadConfig } from '../../../packages/config/src/index.ts';
+import { PARENT_HOUSEHOLD_ERROR_CODES } from '../../../packages/contracts/src/portals/parent-household/index.ts';
 import { runMigrations, type DbPool } from '../../../packages/db/src/index.ts';
 import {
   CONTROLLER_DUAL_ROLE_ACCESS_EXPIRES_AT,
@@ -287,7 +288,10 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
           studentInput('native.mismatch.student'),
           mutation('native-mismatch-student-0001', beforeExpiry, 'c'),
         ),
-      ).rejects.toThrow(/^This Parent household is unavailable\.$/u);
+      ).rejects.toMatchObject({
+        code: PARENT_HOUSEHOLD_ERROR_CODES.householdMissing,
+        message: 'This Parent household is unavailable.',
+      });
       await expect(count(pool, 'v21_student_profiles')).resolves.toBe(0);
       await pool.query(
         `UPDATE onetime.account_access_projections AS projection
@@ -327,7 +331,10 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
           { ...studentInput('native.expired.student'), expected_revision: 2 },
           mutation('native-expired-student-0001', atExpiry, 'e'),
         ),
-      ).rejects.toThrow(/^This Parent household is unavailable\.$/u);
+      ).rejects.toMatchObject({
+        code: PARENT_HOUSEHOLD_ERROR_CODES.householdMissing,
+        message: 'This Parent household is unavailable.',
+      });
       await expect(count(pool, 'v21_student_profiles')).resolves.toBe(1);
       await expect(
         pool.query(
