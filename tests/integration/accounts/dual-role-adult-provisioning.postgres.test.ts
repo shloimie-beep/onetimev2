@@ -15,7 +15,11 @@ import {
   requestControllerDualRoleInitialPasswordSetup,
 } from '../../../packages/domain/src/accounts/lifecycle.ts';
 import { hashAuthPassword } from '../../../packages/domain/src/auth/policy.ts';
-import { runDualRoleAdultProvision } from '../../../scripts/operations/provision-dual-role-adult.ts';
+import {
+  isIsolatedPostgresServerAddress,
+  isNativeDisposablePostgresTarget,
+  runDualRoleAdultProvision,
+} from '../../../scripts/operations/provision-dual-role-adult.ts';
 
 const databaseUrl = process.env.DUAL_ROLE_PROVISION_NATIVE_DATABASE_URL;
 const enabled =
@@ -24,6 +28,115 @@ const SOURCE_SHA = 'b'.repeat(40);
 const AUTHORIZATION = 'native disposable dual role controller authorization';
 const PROVISION_AT = new Date('2026-08-20T12:00:00.000Z');
 const EMAIL = 'native-dual-role-controller@example.test';
+
+describe('isolated PostgreSQL server address guard', () => {
+  it.each([
+    'local_socket',
+    '127.0.0.1',
+    '127.25.0.9/32',
+    '::1',
+    '::1/128',
+    '10.0.0.8',
+    '10.255.255.255/32',
+    '172.16.0.1',
+    '172.18.0.2/32',
+    '172.31.255.254/24',
+    '192.168.1.10/32',
+  ])('accepts isolated address %s', (address) => {
+    expect(isIsolatedPostgresServerAddress(address)).toBe(true);
+  });
+
+  it.each([
+    '',
+    '8.8.8.8',
+    '100.64.0.1/32',
+    '169.254.1.2/32',
+    '172.15.255.255/32',
+    '172.32.0.1/32',
+    '192.0.2.4/32',
+    '192.168.1.1/33',
+    '256.0.0.1',
+    '::ffff:127.0.0.1',
+    'not-an-address',
+  ])('rejects non-isolated or malformed address %s', (address) => {
+    expect(isIsolatedPostgresServerAddress(address)).toBe(false);
+  });
+});
+
+describe('native disposable PostgreSQL target guard', () => {
+  const databaseName = 'onetime_dual_role_provision_ci_18';
+  const safeEnvironment = {
+    DUAL_ROLE_PROVISION_NATIVE_POSTGRES_DISPOSABLE: 'true',
+    DUAL_ROLE_PROVISION_NATIVE_DATABASE_URL:
+      'postgresql://127.0.0.1:5432/onetime_dual_role_provision_ci_18',
+    PGHOST: '127.0.0.1',
+  };
+
+  it('accepts a private service-container address only behind a loopback disposable connection', () => {
+    expect(
+      isNativeDisposablePostgresTarget({
+        databaseName,
+        serverAddress: '172.18.0.2/32',
+        environment: safeEnvironment,
+      }),
+    ).toBe(true);
+  });
+
+  it.each([
+    {
+      name: 'remote connection URL',
+      databaseName,
+      environment: {
+        ...safeEnvironment,
+        DUAL_ROLE_PROVISION_NATIVE_DATABASE_URL:
+          'postgresql://10.0.0.8:5432/onetime_dual_role_provision_ci_18',
+      },
+    },
+    {
+      name: 'remote PGHOST',
+      databaseName,
+      environment: { ...safeEnvironment, PGHOST: '10.0.0.8' },
+    },
+    {
+      name: 'URL database mismatch',
+      databaseName,
+      environment: {
+        ...safeEnvironment,
+        DUAL_ROLE_PROVISION_NATIVE_DATABASE_URL:
+          'postgresql://127.0.0.1:5432/onetime_dual_role_provision_ci_16',
+      },
+    },
+    {
+      name: 'unapproved database suffix',
+      databaseName: 'onetime_dual_role_provision_ci_other',
+      environment: {
+        ...safeEnvironment,
+        DUAL_ROLE_PROVISION_NATIVE_DATABASE_URL:
+          'postgresql://127.0.0.1:5432/onetime_dual_role_provision_ci_other',
+      },
+    },
+    {
+      name: 'public server address',
+      databaseName,
+      serverAddress: '8.8.8.8/32',
+      environment: safeEnvironment,
+    },
+    {
+      name: 'malformed server address',
+      databaseName,
+      serverAddress: 'not-an-address',
+      environment: safeEnvironment,
+    },
+  ])('rejects $name', ({ databaseName: candidateDatabase, serverAddress, environment }) => {
+    expect(
+      isNativeDisposablePostgresTarget({
+        databaseName: candidateDatabase,
+        serverAddress: serverAddress ?? '172.18.0.2/32',
+        environment,
+      }),
+    ).toBe(false);
+  });
+});
 
 describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL', () => {
   it('is concurrent-idempotent and authorizes the real Parent mutation only for its exact unexpired chain', async () => {
@@ -41,9 +154,12 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
       expect(Number.parseInt(String(database.rows[0]?.server_version), 10)).toBeGreaterThanOrEqual(
         16,
       );
-      expect(['127.0.0.1', '::1', 'local_socket']).toContain(
-        String(database.rows[0]?.server_address),
-      );
+      expect(
+        isNativeDisposablePostgresTarget({
+          databaseName: String(database.rows[0]?.database_name),
+          serverAddress: String(database.rows[0]?.server_address),
+        }),
+      ).toBe(true);
       const blank = await pool.query(
         `SELECT count(*)::integer AS table_count
            FROM information_schema.tables

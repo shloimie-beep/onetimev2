@@ -429,16 +429,77 @@ async function verifyIsolatedSyntheticTestTarget(
     const databaseName = String(row.database_name ?? '');
     const serverAddress = String(row.server_address ?? '');
     const serverVersion = String(row.server_version ?? '');
-    const loopback = new Set(['127.0.0.1', '::1', 'local_socket']).has(serverAddress);
-    const nativeDisposable = /^onetime_dual_role_provision_ci_[a-z0-9_]+$/u.test(databaseName);
+    const nativeDisposable = isNativeDisposablePostgresTarget({
+      databaseName,
+      serverAddress,
+    });
     const memoryDouble =
       databaseName === 'pgmem_dual_role_provisioning_ci' &&
       serverAddress === '127.0.0.1' &&
       serverVersion === 'pg-mem-isolated-test-double';
-    return loopback && (nativeDisposable || memoryDouble);
+    return nativeDisposable || memoryDouble;
   } catch {
     return false;
   }
+}
+
+export function isIsolatedPostgresServerAddress(value: string) {
+  const address = value.trim();
+  if (address === 'local_socket') return true;
+  if (/^::1(?:\/(?:[0-9]|[1-9][0-9]|1[01][0-9]|12[0-8]))?$/u.test(address)) return true;
+
+  const match = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})(?:\/(\d{1,2}))?$/u.exec(address);
+  if (!match) return false;
+  const octets = match.slice(1, 5).map(Number);
+  if (octets.some((octet) => !Number.isInteger(octet) || octet < 0 || octet > 255)) {
+    return false;
+  }
+  const prefix = match[5] === undefined ? undefined : Number(match[5]);
+  if (prefix !== undefined && (prefix < 0 || prefix > 32)) return false;
+
+  const first = octets[0];
+  const second = octets[1];
+  if (first === undefined || second === undefined) return false;
+  return (
+    first === 127 ||
+    first === 10 ||
+    (first === 172 && second >= 16 && second <= 31) ||
+    (first === 192 && second === 168)
+  );
+}
+
+export function isNativeDisposablePostgresTarget(input: {
+  databaseName: string;
+  serverAddress: string;
+  environment?: Record<string, string | undefined>;
+}) {
+  const environment = input.environment ?? process.env;
+  if (environment.DUAL_ROLE_PROVISION_NATIVE_POSTGRES_DISPOSABLE !== 'true') return false;
+  if (!/^onetime_dual_role_provision_ci_(?:16|18)$/u.test(input.databaseName)) return false;
+  if (!isIsolatedPostgresServerAddress(input.serverAddress)) return false;
+  if (!isLoopbackConnectionHost(environment.PGHOST ?? '')) return false;
+
+  try {
+    const connection = new URL(environment.DUAL_ROLE_PROVISION_NATIVE_DATABASE_URL ?? '');
+    if (connection.protocol !== 'postgresql:') return false;
+    if (!isLoopbackConnectionHost(connection.hostname)) return false;
+    const databaseName = decodeURIComponent(connection.pathname.replace(/^\//u, ''));
+    return databaseName === input.databaseName && !databaseName.includes('/');
+  } catch {
+    return false;
+  }
+}
+
+function isLoopbackConnectionHost(value: string) {
+  const host = value
+    .trim()
+    .toLowerCase()
+    .replace(/^\[|\]$/gu, '');
+  if (host === 'localhost' || host === '::1') return true;
+  const match = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/u.exec(host);
+  if (!match) return false;
+  const octets = match.slice(1, 5).map(Number);
+  return octets.every((octet) => octet >= 0 && octet <= 255) && octets[0] === 127;
 }
 
 async function productionWorkerBlockers(pool: DbPool, config: AppConfig, now: Date) {
