@@ -234,7 +234,20 @@ export function parseRabbiTaskEnvelope(value: string): RabbiTaskEnvelope | null 
       ) ||
       !['R0', 'R1'].includes(parsed.riskClass ?? '') ||
       typeof parsed.idempotencyKey !== 'string' ||
-      !Array.isArray(parsed.notes)
+      parsed.idempotencyKey.length < 1 ||
+      parsed.idempotencyKey.length > 128 ||
+      (parsed.diagnosticCapability !== null &&
+        !rabbiReadOnlyDiagnosticAllowlist.includes(
+          parsed.diagnosticCapability as RabbiDiagnosticCapability,
+        )) ||
+      (parsed.assignedTo !== null && parsed.assignedTo !== 'local_agent') ||
+      (parsed.branchPrRef !== null &&
+        (typeof parsed.branchPrRef !== 'string' || !safeBranchPrRef(parsed.branchPrRef))) ||
+      typeof parsed.resultSummary !== 'string' ||
+      parsed.resultSummary.length > 1_000 ||
+      !Array.isArray(parsed.notes) ||
+      parsed.notes.length > 10 ||
+      parsed.notes.some((note) => typeof note !== 'string' || note.length > 500)
     ) {
       return null;
     }
@@ -254,7 +267,7 @@ function operationAction(
 ): BotActionRequest {
   switch (request.capability) {
     case 'operation.class.status':
-      return deterministicRead('class.status.read', {});
+      return deterministicRead('class.schedule.read', {});
     case 'operation.content.status':
       return deterministicRead('content.pipeline.read', {});
     case 'operation.vimeo.status':
@@ -269,7 +282,7 @@ function diagnosticAction(envelope: RabbiTaskEnvelope): BotActionRequest {
     case 'login_access_summary':
       return deterministicRead('support.ticket.decision_needed', { filter: 'login_access' });
     case 'class_readiness_summary':
-      return deterministicRead('class.status.read', {});
+      return deterministicRead('class.schedule.read', {});
     case 'content_processing_summary':
       return deterministicRead('content.pipeline.read', {});
     case 'vimeo_processing_summary':
@@ -283,6 +296,7 @@ function diagnosticAction(envelope: RabbiTaskEnvelope): BotActionRequest {
 
 function deterministicRead(
   capability:
+    | 'class.schedule.read'
     | 'class.status.read'
     | 'content.pipeline.read'
     | 'support.ticket.decision_needed'
@@ -418,6 +432,7 @@ async function operationalReadiness(pool: DbPool, config: AppConfig) {
     'Rabbi Telegram readiness (presence/status only):',
     `Identity configured: ${config.oneTimeRabbiTelegramOwnerMappingConfigured ? 'yes' : 'no'}`,
     `Token configured: ${config.oneTimeRabbiTelegramTokenConfigured ? 'yes' : 'no'}`,
+    `Token fingerprint configured: ${config.oneTimeRabbiTelegramTokenFingerprintHash ? 'yes' : 'no'}`,
     `Owner/admin private-chat allowlist: ${config.oneTimeRabbiTelegramOwnerMappingConfigured ? 'configured' : 'missing'}`,
     `Webhook secret present: ${config.oneTimeTelegramWebhookSecretConfigured ? 'yes' : 'no'}`,
     `Payload-key fingerprint: ${payloadFingerprint}`,
@@ -439,4 +454,8 @@ function sanitizePublicResult(value: string) {
 
 function safeRef(value: string) {
   return /^[a-z][a-z0-9_-]{0,119}$/i.test(value) && !/^\d+$/u.test(value);
+}
+
+function safeBranchPrRef(value: string) {
+  return /^(?:none|pr#[1-9]\d{0,7}|branch:[a-z0-9][a-z0-9._/-]{0,119})$/i.test(value);
 }

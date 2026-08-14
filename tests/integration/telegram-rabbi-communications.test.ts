@@ -30,7 +30,9 @@ import { DeterministicTestPayloadCodec } from '../../packages/domain/src/telegra
 import { TelegramIdentityResolver } from '../../packages/domain/src/telegram/identity.ts';
 import {
   createRabbiTelegramOperationsReader,
+  parseRabbiTaskEnvelope,
   RabbiLocalAgentTaskDispatcher,
+  serializeRabbiTaskEnvelope,
 } from '../../packages/domain/src/telegram/rabbi-operations.ts';
 
 const botKey = asBotKey('one_time_rabbi_torah_console');
@@ -271,7 +273,7 @@ describe('OT-LAUNCH-01 Rabbi Telegram communications', () => {
       update({ updateId: '1008-class', text: '/class-status' }),
       new Date(now.getTime() + 9_800),
     );
-    expect(classStatus[0]?.text).toContain('No scoped class');
+    expect(classStatus[0]?.text).toContain('Classes: no scoped class occurrences found');
     const contentStatus = await engine.handle(
       update({ updateId: '1008-content', text: '/content-status' }),
       new Date(now.getTime() + 9_900),
@@ -432,6 +434,7 @@ describe('OT-LAUNCH-01 Rabbi Telegram communications', () => {
       new Date(now.getTime() + 11_800),
     );
     expect(readiness[0]?.text).toContain('Token configured:');
+    expect(readiness[0]?.text).toContain('Token fingerprint configured:');
     expect(readiness[0]?.text).toContain('Webhook secret present:');
     expect(readiness[0]?.text).toContain('Payload-key fingerprint:');
     expect(readiness[0]?.text).toContain('dead-letter rows:');
@@ -542,6 +545,39 @@ describe('OT-LAUNCH-01 Rabbi Telegram communications', () => {
         expect.objectContaining({ capability: 'internal_task.create', outcome: 'confirmed' }),
       ]),
     );
+  });
+
+  it('rejects durable local-agent envelopes outside the fixed diagnostic contract', () => {
+    const envelope = {
+      schemaVersion: 1 as const,
+      entity: 'agent_task' as const,
+      subject: { kind: 'account' as const, ref: 'account_fixture' },
+      issueCategory: 'login_access' as const,
+      diagnosticCapability: 'login_access_summary' as const,
+      riskClass: 'R0' as const,
+      idempotencyKey: 'telegram-agent-task-fixture',
+      assignedTo: 'local_agent' as const,
+      branchPrRef: 'pr#192',
+      resultSummary: 'Redacted login-access status only.',
+      notes: ['Operator-safe note.'],
+    };
+    expect(parseRabbiTaskEnvelope(serializeRabbiTaskEnvelope(envelope))).toEqual(envelope);
+    expect(
+      parseRabbiTaskEnvelope(
+        JSON.stringify({ ...envelope, diagnosticCapability: 'arbitrary_shell' }),
+      ),
+    ).toBeNull();
+    expect(
+      parseRabbiTaskEnvelope(JSON.stringify({ ...envelope, assignedTo: 'provider_admin' })),
+    ).toBeNull();
+    expect(
+      parseRabbiTaskEnvelope(
+        JSON.stringify({ ...envelope, branchPrRef: 'https://example.invalid/private' }),
+      ),
+    ).toBeNull();
+    expect(
+      parseRabbiTaskEnvelope(JSON.stringify({ ...envelope, notes: ['safe', { sql: 'select' }] })),
+    ).toBeNull();
   });
 
   it('holds Parent delivery provider-off and fences one leased owner with restart', async () => {
