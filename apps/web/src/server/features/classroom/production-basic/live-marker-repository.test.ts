@@ -45,7 +45,6 @@ describe('production-basic live-class receipt', () => {
       .fn()
       .mockResolvedValue({ rowCount: 1, rows: [{ occurrence_key: OCCURRENCE_KEY }] });
     const marker = createProductionBasicHostLiveMarker({ query } as unknown as DbPool);
-
     await expect(
       marker.confirm({
         scope: { account_key: STUDENT.account_key, product_key: STUDENT.product_key },
@@ -53,7 +52,6 @@ describe('production-basic live-class receipt', () => {
         confirmed_at: NOW,
       }),
     ).resolves.toBe(true);
-
     const [sql, parameters] = query.mock.calls[0] as [string, unknown[]];
     expect(sql).toMatch(/^UPDATE onetime\.class_occurrences/u);
     expect(sql).not.toContain('WITH candidate');
@@ -87,7 +85,6 @@ describe('production-basic live-class receipt', () => {
       meeting_ref_digest: MEETING_DIGEST,
       cleared_at: NOW,
     });
-
     const [sql, parameters] = query.mock.calls[0] as [string, unknown[]];
     expect(sql).toMatch(/^UPDATE onetime\.class_occurrences/u);
     expect(sql).not.toContain('UPDATE onetime.class_occurrences AS');
@@ -109,7 +106,6 @@ describe('production-basic live-class receipt', () => {
   it('reads live state only through the exact Student enrollment and meeting digest', async () => {
     const query = vi.fn().mockResolvedValue({ rowCount: 1, rows: [{ '?column?': 1 }] });
     const marker = createProductionBasicHostLiveMarker({ query } as unknown as DbPool);
-
     await expect(
       marker.currentForStudent({
         scope: { account_key: STUDENT.account_key, product_key: STUDENT.product_key },
@@ -118,9 +114,9 @@ describe('production-basic live-class receipt', () => {
         observed_at: NOW,
       }),
     ).resolves.toBe(true);
-
     const [sql, parameters] = query.mock.calls[0] as [string, unknown[]];
     expect(sql).toContain("entitlement.entitlement_state = 'active'");
+    expect(sql).toContain("learner.learner_status = 'active'");
     expect(sql).toContain('series.is_canonical = true');
     expect(sql).toContain('occurrence.production_basic_meeting_ref_digest = $4');
     expect(sql).toContain('occurrence.production_basic_live_expires_at > $5');
@@ -157,7 +153,6 @@ describe('production-basic live-class receipt', () => {
       meeting_ref_digest: MEETING_DIGEST,
       clock: () => NOW,
     });
-
     await expect(adapter.upcomingForLearner({ actor: STUDENT, learner: LEARNER })).resolves.toEqual(
       [expect.objectContaining({ class_key: OCCURRENCE_KEY, status: 'live', launch_action: null })],
     );
@@ -173,6 +168,99 @@ describe('production-basic live-class receipt', () => {
       MEETING_DIGEST,
       NOW,
     ]);
+  });
+
+  it('keeps an entitled current live occurrence visible after its join window closes', async () => {
+    const lateNow = new Date('2026-08-16T17:51:00.000Z');
+    const query = vi.fn().mockResolvedValue({
+      rowCount: 1,
+      rows: [
+        {
+          occurrence_key: OCCURRENCE_KEY,
+          title: 'Daily One Time Mishnayos',
+          starts_at: new Date('2026-08-16T16:00:00.000Z'),
+        },
+      ],
+    });
+    const pool = { query } as unknown as DbPool;
+    const householdAccess = vi.fn().mockResolvedValue(true);
+    const base = {
+      upcomingForLearner: vi.fn().mockResolvedValue([]),
+      protectedLaunch: vi.fn(),
+    };
+    const adapter = createProductionBasicLiveClassAccessAdapter({
+      base,
+      pool,
+      meeting_ref_digest: MEETING_DIGEST,
+      household_has_learning_access: householdAccess,
+      clock: () => lateNow,
+    });
+
+    await expect(adapter.upcomingForLearner({ actor: STUDENT, learner: LEARNER })).resolves.toEqual(
+      [
+        {
+          class_key: OCCURRENCE_KEY,
+          title: 'Daily One Time Mishnayos',
+          starts_at: '2026-08-16T16:00:00.000Z',
+          status: 'live',
+          launch_action: null,
+        },
+      ],
+    );
+    expect(householdAccess).toHaveBeenCalledWith({
+      pool,
+      accountKey: STUDENT.account_key,
+      productKey: STUDENT.product_key,
+      householdKey: LEARNER.household_key,
+      now: lateNow,
+    });
+    const [sql, parameters] = query.mock.calls[0] as [string, unknown[]];
+    expect(sql).toContain('series.title');
+    expect(sql).toContain('occurrence.starts_at');
+    expect(sql).not.toContain('joinable_until');
+    expect(sql).toContain("entitlement.entitlement_state = 'active'");
+    expect(sql).toContain("learner.learner_status = 'active'");
+    expect(sql).toContain('series.is_canonical = true');
+    expect(sql).toContain('occurrence.production_basic_meeting_ref_digest = $5');
+    expect(sql).toContain('occurrence.production_basic_live_expires_at > $6');
+    expect(parameters).toEqual([
+      STUDENT.account_key,
+      STUDENT.product_key,
+      LEARNER.household_key,
+      LEARNER.learner_key,
+      MEETING_DIGEST,
+      lateNow,
+    ]);
+  });
+
+  it('does not recover a late live occurrence when household learning access is denied', async () => {
+    const lateNow = new Date('2026-08-16T17:51:00.000Z');
+    const query = vi.fn();
+    const pool = { query } as unknown as DbPool;
+    const householdAccess = vi.fn().mockResolvedValue(false);
+    const base = {
+      upcomingForLearner: vi.fn().mockResolvedValue([]),
+      protectedLaunch: vi.fn(),
+    };
+    const adapter = createProductionBasicLiveClassAccessAdapter({
+      base,
+      pool,
+      meeting_ref_digest: MEETING_DIGEST,
+      household_has_learning_access: householdAccess,
+      clock: () => lateNow,
+    });
+
+    await expect(adapter.upcomingForLearner({ actor: STUDENT, learner: LEARNER })).resolves.toEqual(
+      [],
+    );
+    expect(householdAccess).toHaveBeenCalledWith({
+      pool,
+      accountKey: STUDENT.account_key,
+      productKey: STUDENT.product_key,
+      householdKey: LEARNER.household_key,
+      now: lateNow,
+    });
+    expect(query).not.toHaveBeenCalled();
   });
 
   it('preserves the normal schedule for Parent, missing, expired, or mismatched receipts', async () => {
@@ -196,7 +284,6 @@ describe('production-basic live-class receipt', () => {
       meeting_ref_digest: MEETING_DIGEST,
       clock: () => NOW,
     });
-
     await expect(adapter.upcomingForLearner({ actor: STUDENT, learner: LEARNER })).resolves.toEqual(
       scheduled,
     );
