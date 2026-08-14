@@ -1,4 +1,5 @@
 import type { DbPool } from '../../../../../../../packages/db/src/index.ts';
+import { householdHasLearningAccess } from '../../../../../../../packages/domain/src/billing/portal-access.ts';
 import {
   localDateKey,
   localPartsFor,
@@ -85,6 +86,12 @@ export function createProductionBasicHostLiveMarker(pool: DbPool): ProductionBas
              ON entitlement.account_key = occurrence.account_key
             AND entitlement.product_key = occurrence.product_key
             AND entitlement.occurrence_key = occurrence.occurrence_key
+           JOIN onetime.portal_learners AS learner
+             ON learner.account_key = entitlement.account_key
+            AND learner.product_key = entitlement.product_key
+            AND learner.household_key = entitlement.household_key
+            AND learner.learner_key = entitlement.learner_key
+            AND learner.learner_status = 'active'
           WHERE occurrence.account_key = $1
             AND occurrence.product_key = $2
             AND entitlement.learner_key = $3
@@ -148,6 +155,7 @@ export function createProductionBasicLiveClassAccessAdapter(input: {
   pool: DbPool;
   meeting_ref_digest: string | null;
   binding_ready?: (() => Promise<boolean>) | undefined;
+  household_has_learning_access?: typeof householdHasLearningAccess | undefined;
   clock?: (() => Date) | undefined;
 }): LearnerClassAccessAdapter {
   const clock = input.clock ?? (() => new Date());
@@ -159,14 +167,30 @@ export function createProductionBasicLiveClassAccessAdapter(input: {
         !args.actor.student_learner ||
         args.actor.student_learner.learner_key !== args.learner.learner_key ||
         !input.meeting_ref_digest ||
-        scheduled.length === 0 ||
         (input.binding_ready && !(await input.binding_ready()))
       ) {
         return scheduled;
       }
+
       const now = clock();
+      const householdAccess = input.household_has_learning_access ?? householdHasLearningAccess;
+      if (
+        scheduled.length === 0 &&
+        !(await householdAccess({
+          pool: input.pool,
+          accountKey: args.actor.account_key,
+          productKey: args.actor.product_key,
+          householdKey: args.learner.household_key,
+          now,
+        }))
+      ) {
+        return scheduled;
+      }
+
       const result = await input.pool.query(
-        `SELECT occurrence.occurrence_key
+        `SELECT occurrence.occurrence_key,
+                series.title,
+                occurrence.starts_at
            FROM onetime.class_occurrences AS occurrence
            JOIN onetime.class_series AS series
              ON series.account_key = occurrence.account_key
@@ -176,6 +200,12 @@ export function createProductionBasicLiveClassAccessAdapter(input: {
              ON entitlement.account_key = occurrence.account_key
             AND entitlement.product_key = occurrence.product_key
             AND entitlement.occurrence_key = occurrence.occurrence_key
+           JOIN onetime.portal_learners AS learner
+             ON learner.account_key = entitlement.account_key
+            AND learner.product_key = entitlement.product_key
+            AND learner.household_key = entitlement.household_key
+            AND learner.learner_key = entitlement.learner_key
+            AND learner.learner_status = 'active'
           WHERE occurrence.account_key = $1
             AND occurrence.product_key = $2
             AND entitlement.household_key = $3
@@ -201,13 +231,39 @@ export function createProductionBasicLiveClassAccessAdapter(input: {
           now,
         ],
       );
-      const liveOccurrenceKey = result.rows[0]?.occurrence_key;
+
+      const liveOccurrence = result.rows[0];
+      const liveOccurrenceKey = liveOccurrence?.occurrence_key;
       if (typeof liveOccurrenceKey !== 'string') return scheduled;
-      return scheduled.map((occurrence) =>
-        occurrence.class_key === liveOccurrenceKey
-          ? { ...occurrence, status: 'live' as const, launch_action: null }
-          : occurrence,
-      );
+      if (scheduled.some((occurrence) => occurrence.class_key === liveOccurrenceKey)) {
+        return scheduled.map((occurrence) =>
+          occurrence.class_key === liveOccurrenceKey
+            ? { ...occurrence, status: 'live' as const, launch_action: null }
+            : occurrence,
+        );
+      }
+
+      const liveTitle = liveOccurrence?.title;
+      const rawStartsAt = liveOccurrence?.starts_at;
+      const liveStartsAt =
+        rawStartsAt instanceof Date
+          ? rawStartsAt
+          : typeof rawStartsAt === 'string' || typeof rawStartsAt === 'number'
+            ? new Date(rawStartsAt)
+            : null;
+      if (typeof liveTitle !== 'string' || !liveStartsAt || Number.isNaN(liveStartsAt.getTime())) {
+        return scheduled;
+      }
+      return [
+        {
+          class_key: liveOccurrenceKey,
+          title: liveTitle,
+          starts_at: liveStartsAt.toISOString(),
+          status: 'live' as const,
+          launch_action: null,
+        },
+        ...scheduled,
+      ];
     },
     protectedLaunch: (args) => input.base.protectedLaunch(args),
   };
