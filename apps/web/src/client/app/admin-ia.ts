@@ -44,7 +44,7 @@ export const CLASSROOM_SECTIONS = [
   { id: 'recordings', label: 'Recordings', href: '/app/classroom/recordings' },
   { id: 'access', label: 'Access', href: '/app/classroom/access' },
   { id: 'questions', label: 'Questions', href: '/app/classroom/questions' },
-  { id: 'live-console', label: 'Zoom Live Console', href: '/app/live?section=zoom' },
+  { id: 'live-console', label: 'Zoom Live Console', href: '/app/live-console?section=zoom' },
 ] as const;
 
 export type ClassroomSectionId =
