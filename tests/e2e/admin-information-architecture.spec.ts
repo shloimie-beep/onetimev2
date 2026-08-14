@@ -250,8 +250,24 @@ test('Admin IA keeps the canonical launch areas across the governed viewport mat
     'Recordings',
     'Access',
     'Questions',
+    'Zoom Live Console',
   ]);
   await expect(page.getByRole('heading', { name: 'Classes', exact: true })).toBeVisible();
+  await page
+    .getByRole('navigation', { name: 'Classroom area' })
+    .getByRole('link', { name: 'Occurrences' })
+    .click();
+  await expect(page).toHaveURL(/\/app\/classroom\/occurrences(?:\?occurrence_key=[^&]+)?$/u);
+  await expect(page.getByRole('heading', { name: 'Occurrences', exact: true })).toBeVisible();
+
+  await page
+    .getByRole('navigation', { name: 'Classroom area' })
+    .getByRole('link', { name: 'Enrollments' })
+    .click();
+  await expect(page).toHaveURL(/\/app\/classroom\/enrollments(?:\?occurrence_key=[^&]+)?$/u);
+  await expect(page.getByRole('heading', { name: 'Enrollments', exact: true })).toBeVisible();
+
+  await page.goto('/app/classroom/classes');
   const firstClassCard = page.locator('.class-management__card').first();
   const firstClassTitle = await firstClassCard.getByRole('heading').innerText();
   await firstClassCard.getByRole('button', { name: 'Open class details' }).click();
@@ -261,6 +277,17 @@ test('Admin IA keeps the canonical launch areas across the governed viewport mat
   await expect(page.getByRole('button', { name: 'Edit class' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Archive class' })).toBeVisible();
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
+
+  const classroomLiveConsole = page
+    .getByRole('navigation', { name: 'Classroom area' })
+    .getByRole('link', { name: 'Zoom Live Console' });
+  await expect(classroomLiveConsole).toHaveAttribute(
+    'href',
+    /^\/app\/live-console\?section=zoom(?:&occurrence_key=[^&]+)?$/u,
+  );
+  await classroomLiveConsole.click();
+  await expect(page).toHaveURL(/\/app\/live-console\?section=zoom(?:&occurrence_key=[^&]+)?$/u);
+  await expect(page.getByRole('heading', { name: 'Zoom', exact: true })).toBeVisible();
 
   await page.goto('/app/classroom/attendance');
   await expect(page.getByRole('heading', { name: 'Attendance', exact: true })).toBeVisible();

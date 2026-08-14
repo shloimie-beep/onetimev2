@@ -75,6 +75,7 @@ describe('OT-52P portal UI modules', () => {
     expect(markup).toContain('Questions');
     expect(markup).toContain('Updates');
     expect(markup).toContain('Open library');
+    expect(markup).not.toContain('data-student-live-banner');
     expect(markup).not.toMatch(
       /Sibling|Household|Billing|Student access|Archive|Restore|Parent Portal/i,
     );
@@ -98,10 +99,37 @@ describe('OT-52P portal UI modules', () => {
       }),
     );
 
-    expect(markup).toContain('Class is live');
-    expect(markup).toContain('The Rabbi has started class. You can join now.');
+    const bannerIndex = markup.indexOf('class="ot-student-live-banner"');
+    const overviewIndex = markup.indexOf('aria-label="My learning overview"');
+    expect(bannerIndex).toBeGreaterThanOrEqual(0);
+    expect(overviewIndex).toBeGreaterThan(bannerIndex);
+    expect(markup).toContain('<h3 id="student-live-heading">Class is live</h3>');
+    expect(markup).toContain('Weekly Mishnah is ready. Join the protected classroom now.');
+    expect(markup.match(/>Join class</giu) ?? []).toHaveLength(1);
+    expect(markup).toContain('<h3>Next class</h3>');
     expect(markup).toContain('/app/student/class/class_week_001');
     expect(markup).not.toMatch(/https?:\/\/|zoom\.us|meeting_number|passcode/i);
+  });
+
+  it('clears the live banner when the host-confirmed class is no longer live', () => {
+    const dashboard = studentDashboard();
+    dashboard.upcoming_classes = dashboard.upcoming_classes.map((item) => ({
+      ...item,
+      status: 'upcoming' as const,
+      launch_action: null,
+    }));
+    const markup = renderToStaticMarkup(
+      React.createElement(StudentPortalFeature, {
+        viewState: 'ready',
+        dashboard,
+        actorFingerprint: 'student-ended-session',
+      }),
+    );
+
+    expect(markup).not.toContain('data-student-live-banner');
+    expect(markup).not.toContain('Class is live');
+    expect(markup).toContain('<h3>Next class</h3>');
+    expect(markup).toContain('Weekly Mishnah');
   });
 
   it('renders one focused workspace while keeping every category discoverable', () => {

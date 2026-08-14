@@ -492,6 +492,10 @@ export function StudentPortalFeature({
     : null;
   const activeSection =
     requestedSection === 'helper' ? 'today' : (requestedSection ?? localSection);
+  const liveClass =
+    activeSection === 'today' && !selectedClassKey
+      ? (dashboard?.upcoming_classes.find(({ status }) => status === 'live') ?? null)
+      : null;
 
   function selectSection(section: StudentPortalSection) {
     setLocalSection(section);
@@ -528,10 +532,15 @@ export function StudentPortalFeature({
         sections={STUDENT_PORTAL_SECTIONS}
         activeSection={activeSection}
         onSelectSection={(section) => selectSection(section as StudentPortalSection)}
+        priorityContent={
+          liveClass ? (
+            <StudentLiveBanner item={liveClass} onLaunch={readOnly ? undefined : onLaunchClass} />
+          ) : null
+        }
         summaryCards={[
           {
             section: 'today',
-            label: currentClass?.status === 'live' ? 'Class is live' : 'Next class',
+            label: 'Next class',
             value: currentClass?.title ?? 'No class',
             detail: currentClass?.starts_at
               ? formatDate(currentClass.starts_at)
@@ -576,23 +585,10 @@ export function StudentPortalFeature({
         ) : activeSection === 'today' ? (
           <>
             <h2 id="student-dashboard-heading">Today</h2>
-            {currentClass?.status === 'live' && (
-              <section className="ot-item" role="status" aria-labelledby="student-live-heading">
-                <div>
-                  <strong id="student-live-heading">Class is live</strong>
-                  <span>The Rabbi has started class. You can join now.</span>
-                </div>
-                <a
-                  className="ot-button ot-button-primary"
-                  href={`/app/student/class/${encodeURIComponent(currentClass.class_key)}`}
-                >
-                  Join class
-                </a>
-              </section>
-            )}
             <ClassSummary
               classes={dashboard.upcoming_classes}
               onLaunch={readOnly ? undefined : onLaunchClass}
+              hiddenLaunchClassKey={liveClass?.class_key ?? null}
             />
             {currentClass && (
               <form
@@ -736,6 +732,7 @@ function PortalWorkspace({
   onSelectSection,
   summaryCards,
   topControls,
+  priorityContent,
   children,
 }: {
   role: 'parent' | 'student';
@@ -745,6 +742,7 @@ function PortalWorkspace({
   onSelectSection: (section: string) => void;
   summaryCards: PortalSummaryCard[];
   topControls?: React.ReactNode;
+  priorityContent?: React.ReactNode;
   children: React.ReactNode;
 }) {
   const active = sections.find((section) => section.id === activeSection) ?? sections[0];
@@ -780,6 +778,7 @@ function PortalWorkspace({
             />
           </nav>
         )}
+        {priorityContent}
         <section className="ot-portal-summary-grid" aria-label={`${roleLabel} overview`}>
           {summaryCards.map((card) => (
             <article
@@ -866,6 +865,43 @@ function LearnerSwitcher({
         </button>
       )}
     </div>
+  );
+}
+
+function StudentLiveBanner({
+  item,
+  onLaunch,
+}: {
+  item: UpcomingClassSummary;
+  onLaunch?: ((action: ProtectedActionDescriptor) => void) | undefined;
+}) {
+  const launchAction = item.launch_action;
+  const classRoute = `/app/student/class/${encodeURIComponent(item.class_key)}`;
+  return (
+    <section
+      className="ot-student-live-banner"
+      data-student-live-banner="true"
+      aria-labelledby="student-live-heading"
+    >
+      <div>
+        <p className="ot-student-live-banner__eyebrow">Live now</p>
+        <h3 id="student-live-heading">Class is live</h3>
+        <p role="status">{item.title} is ready. Join the protected classroom now.</p>
+      </div>
+      {launchAction && onLaunch ? (
+        <button
+          type="button"
+          className="ot-button ot-student-live-banner__join"
+          onClick={() => onLaunch(launchAction)}
+        >
+          Join class
+        </button>
+      ) : (
+        <a className="ot-button ot-student-live-banner__join" href={classRoute}>
+          Join class
+        </a>
+      )}
+    </section>
   );
 }
 
@@ -1056,6 +1092,7 @@ function ClassSummary({
   learner,
   classes,
   onLaunch,
+  hiddenLaunchClassKey,
 }: {
   learner?: LearnerProfile;
   classes: UpcomingClassSummary[];
@@ -1063,6 +1100,7 @@ function ClassSummary({
     | ((learnerKey: string, action: ProtectedActionDescriptor) => void)
     | ((action: ProtectedActionDescriptor) => void)
     | undefined;
+  hiddenLaunchClassKey?: string | null;
 }) {
   if (classes.length === 0) {
     return <p className="ot-muted">No entitled class is available right now.</p>;
@@ -1086,7 +1124,7 @@ function ClassSummary({
           >
             View class details
           </a>
-          {item.launch_action && onLaunch && (
+          {item.class_key !== hiddenLaunchClassKey && item.launch_action && onLaunch && (
             <button
               type="button"
               className="ot-button ot-button-primary"

@@ -44,6 +44,7 @@ export const CLASSROOM_SECTIONS = [
   { id: 'recordings', label: 'Recordings', href: '/app/classroom/recordings' },
   { id: 'access', label: 'Access', href: '/app/classroom/access' },
   { id: 'questions', label: 'Questions', href: '/app/classroom/questions' },
+  { id: 'live-console', label: 'Zoom Live Console', href: '/app/live-console?section=zoom' },
 ] as const;
 
 export type ClassroomSectionId =
@@ -54,7 +55,8 @@ export type ClassroomSectionId =
   | 'recordings'
   | 'access'
   | 'questions'
-  | 'rewards';
+  | 'rewards'
+  | 'live-console';
 
 export const LIVE_CONSOLE_SECTIONS = [
   {
@@ -113,23 +115,32 @@ export function contentSectionFromPath(pathname: string): ContentSectionId {
 }
 
 export function classroomSectionFromPath(pathname: string): ClassroomSectionId {
-  if (pathname === '/app/rewards' || pathname === '/app/classes/rewards') return 'rewards';
-  if (pathname === '/app/classes/schedule' || pathname === '/app/classes/occurrences') {
+  if (pathname === '/app/rewards') return 'rewards';
+  const prefix = pathname.startsWith('/app/classroom') ? '/app/classroom' : '/app/classes';
+  const first = pathSegments(pathname, prefix)[0] ?? '';
+  if (first === 'schedule' || first === 'calendar' || first === 'occurrences') {
     return 'occurrences';
   }
-  if (pathname === '/app/classes/enrollments') return 'enrollments';
-  if (pathname === '/app/classes/attendance') return 'attendance';
-  if (pathname === '/app/classes/recordings') return 'recordings';
-  if (pathname === '/app/classes/access') return 'access';
-  if (pathname === '/app/classes/questions' || pathname === '/app/classroom/questions') {
-    return 'questions';
-  }
+  if (first === 'enrollments') return 'enrollments';
+  if (first === 'attendance') return 'attendance';
+  if (first === 'recordings') return 'recordings';
+  if (first === 'access') return 'access';
+  if (first === 'questions') return 'questions';
+  if (first === 'rewards') return 'rewards';
+  if (first === 'zoom') return 'live-console';
   return 'classes';
 }
 
 export function classroomOccurrenceFromLocation(pathname: string, search: string) {
   const fromQuery = new URLSearchParams(search).get('occurrence_key');
   if (fromQuery) return fromQuery;
+  if (pathname.startsWith('/app/classroom')) {
+    const segments = pathSegments(pathname, '/app/classroom');
+    if (segments[0] === 'occurrences' && segments[1]) {
+      return decodeURIComponent(segments[1]);
+    }
+    return null;
+  }
   const segments = pathSegments(pathname, '/app/classes');
   const first = segments[0] ?? '';
   return [
@@ -157,7 +168,8 @@ export function classroomHref(section: ClassroomSectionId, occurrenceKey?: strin
   const base =
     CLASSROOM_SECTIONS.find((item) => item.id === section)?.href ?? '/app/classroom/classes';
   if (!occurrenceKey) return base;
-  return `${base}?occurrence_key=${encodeURIComponent(occurrenceKey)}`;
+  const separator = base.includes('?') ? '&' : '?';
+  return `${base}${separator}occurrence_key=${encodeURIComponent(occurrenceKey)}`;
 }
 
 export function liveConsoleSectionFromSearch(search: string): LiveConsoleSectionId {
