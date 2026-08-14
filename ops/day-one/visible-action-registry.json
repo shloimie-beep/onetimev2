@@ -112,7 +112,7 @@
     },
     {
       "path": "apps/web/src/client/app/admin-ia.ts",
-      "sha256": "bf8324b47dfebc786d90b68753bf34977669cee06f84bba7a5c65d6ee7d37941"
+      "sha256": "cbab878896e91ed4e14f5213b584636c5f61cf0c425513ce7aeb5de217469f42"
     },
     {
       "path": "apps/web/src/client/app/admin/learning/AdminLearningWorkspace.tsx",
@@ -140,7 +140,7 @@
     },
     {
       "path": "apps/web/src/client/app/crm-entry.tsx",
-      "sha256": "e4e57e58aaee2e6f94e3a2ba2ae631a8d668c39f447de90c6cc558650497ae66"
+      "sha256": "2aadae5a1e2596f5cd3987190a872150a49e328af88b57569b7fff29390b2234"
     },
     {
       "path": "apps/web/src/client/app/live-entry.tsx",
@@ -180,7 +180,7 @@
     },
     {
       "path": "apps/web/src/client/features/portals/PortalFeatures.tsx",
-      "sha256": "9827d1e042efa7dd90713b9619f36f033a6912e77f8ecdac1de071b40bc99f18"
+      "sha256": "0c96e56f9a30cd505befeb34397f106a9c783a366a1112e35aa36e421ea431ae"
     },
     {
       "path": "apps/web/src/client/app/router/registry.ts",
