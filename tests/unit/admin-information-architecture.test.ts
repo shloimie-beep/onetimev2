@@ -69,6 +69,7 @@ describe('OT-LAUNCH-01 Admin information architecture', () => {
       'Recordings',
       'Access',
       'Questions',
+      'Zoom Live Console',
     ]);
     expect(LIVE_CONSOLE_SECTIONS.map((item) => item.label)).toEqual([
       'Current Class',
