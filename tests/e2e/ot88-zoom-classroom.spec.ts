@@ -23,15 +23,10 @@ for (const viewport of studentHomeViewports) {
     expect(
       await page.evaluate(() => {
         const liveBanner = document.querySelector('[data-student-live-banner="true"]');
-        const scheduledOverview = document.querySelector(
-          '[aria-label="My learning overview"]',
-        );
-        return Boolean(
-          liveBanner &&
-            scheduledOverview &&
-            (liveBanner.compareDocumentPosition(scheduledOverview) &
-              Node.DOCUMENT_POSITION_FOLLOWING),
-        );
+        const scheduledOverview = document.querySelector('[aria-label="My learning overview"]');
+        if (!liveBanner || !scheduledOverview) return false;
+        const position = liveBanner.compareDocumentPosition(scheduledOverview);
+        return Boolean(position & Node.DOCUMENT_POSITION_FOLLOWING);
       }),
     ).toBe(true);
 
