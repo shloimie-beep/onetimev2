@@ -13,6 +13,7 @@ type ManifestIcon = {
 type AdminManifest = {
   id: string;
   name: string;
+  short_name: string;
   start_url: string;
   scope: string;
   display: string;
@@ -64,6 +65,7 @@ describe('One Time Admin phone installation', () => {
     expect(manifest).toMatchObject({
       id: '/app/classroom/classes',
       name: 'One Time Admin',
+      short_name: 'OT Admin',
       start_url: '/app/classroom/classes?source=homescreen',
       scope: '/',
       display: 'standalone',

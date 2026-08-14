@@ -1,7 +1,7 @@
 {
   "id": "/app/classroom/classes",
   "name": "One Time Admin",
-  "short_name": "One Time",
+  "short_name": "OT Admin",
   "description": "Protected One Time classroom and administration workspace.",
   "start_url": "/app/classroom/classes?source=homescreen",
   "scope": "/",
