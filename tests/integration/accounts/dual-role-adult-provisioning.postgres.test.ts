@@ -467,8 +467,12 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
       for (const rollbackBehavior of ['stall', 'fail'] as const) {
         destroyedReleases.length = 0;
         let setupCalls = 0;
+        const rollbackManifest = privateManifest(
+          `native-dual-role-${rollbackBehavior}@example.test`,
+          `native-dual-role-controller-proof-${rollbackBehavior}`,
+        );
         const report = await runDualRoleAdultProvision({
-          manifest,
+          manifest: rollbackManifest,
           apply: true,
           authorizationPhrase: AUTHORIZATION,
           pool,
@@ -610,10 +614,10 @@ function nativeConfig() {
   });
 }
 
-function privateManifest() {
+function privateManifest(email = EMAIL, operationId = 'native-dual-role-controller-proof') {
   return {
     schema_version: 'onetime.controller.dual_role_adult_provision.v1',
-    operation_id: 'native-dual-role-controller-proof',
+    operation_id: operationId,
     authorized_at: PROVISION_AT.toISOString(),
     expires_at: new Date(PROVISION_AT.getTime() + 60 * 60 * 1000).toISOString(),
     expected_runtime_source_sha: SOURCE_SHA,
@@ -630,7 +634,7 @@ function privateManifest() {
       verification_environment_id: 'ci',
     },
     adult: {
-      email: EMAIL,
+      email,
       display_name: 'Synthetic Dual Role Adult',
       household_display_name: 'Synthetic Native Dual Role Family',
       roles: ['admin', 'parent'],

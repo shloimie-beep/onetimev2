@@ -2062,7 +2062,7 @@ async function applyIdentity(
       const rollbackClient = client;
       const rollback = await settleControllerOperationWithin(() => {
         if (testOnlyRollbackBehavior === 'stall') {
-          return rollbackClient.query('SELECT pg_sleep(60)');
+          return rollbackClient.query('SELECT pg_sleep(2)');
         }
         if (testOnlyRollbackBehavior === 'fail') {
           return rollbackClient.query('SELECT controller_test_only_rollback_failure()');
