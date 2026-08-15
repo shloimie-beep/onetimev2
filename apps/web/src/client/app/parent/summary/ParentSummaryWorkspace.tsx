@@ -20,14 +20,18 @@ export function ParentSummaryWorkspace({
 }) {
   const api = useMemo(() => suppliedApi ?? createParentHouseholdApi(), [suppliedApi]);
   const [snapshot, setSnapshot] = useState<ParentSummarySnapshot | null>(null);
+  const [csrfToken, setCsrfToken] = useState<string | null>(null);
   const [error, setError] = useState('');
 
   useEffect(() => {
     let active = true;
     api
       .loadSummary()
-      .then(({ snapshot: next }) => {
-        if (active) setSnapshot(next);
+      .then(({ snapshot: next, csrf_token: nextCsrfToken }) => {
+        if (active) {
+          setSnapshot(next);
+          setCsrfToken(nextCsrfToken);
+        }
       })
       .catch((cause: unknown) => {
         if (active)
@@ -84,6 +88,9 @@ export function ParentSummaryWorkspace({
           : snapshot.updates
       }
       support={snapshot.support}
+      featuredWelcomeVideo={snapshot.featured_welcome_video}
+      csrfToken={csrfToken}
+      api={api}
     />
   );
 }

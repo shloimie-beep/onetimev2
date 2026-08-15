@@ -3,17 +3,32 @@ import type {
   ParentSupportEntry,
   ParentUpdate,
 } from '../../../../../../../packages/contracts/src/portals/parent-summary/index.ts';
+import type { ParentWelcomeVideoSlot } from '../../../../../../../packages/contracts/src/portals/parent-welcome/index.ts';
+import type { ParentHouseholdApi } from '../household/api.ts';
+import { ParentWelcomeVideo } from '../welcome/index.ts';
 
 export function ParentUpdates({
   updates,
   support,
+  featuredWelcomeVideo = null,
+  csrfToken = null,
+  api,
 }: {
   updates: readonly ParentUpdate[];
   support: ParentSupportEntry;
+  featuredWelcomeVideo?: ParentWelcomeVideoSlot | null;
+  csrfToken?: string | null;
+  api?: ParentHouseholdApi;
 }) {
   return (
     <section aria-labelledby="parent-updates-heading">
       <h2 id="parent-updates-heading">Updates</h2>
+      <ParentWelcomeVideo
+        slot={featuredWelcomeVideo}
+        csrfToken={csrfToken}
+        placement="updates"
+        {...(api ? { api } : {})}
+      />
       {updates.length === 0 ? (
         <p role="status">No current notices, newsletters, or reminders.</p>
       ) : (

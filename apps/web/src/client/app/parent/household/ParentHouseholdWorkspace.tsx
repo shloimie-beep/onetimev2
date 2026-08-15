@@ -7,6 +7,8 @@ import {
   type ParentStudentRelationship,
   type StudentCredentialHandoff,
 } from '../../../../../../../packages/contracts/src/portals/parent-household/index.ts';
+import type { ParentWelcomeVideoSlot } from '../../../../../../../packages/contracts/src/portals/parent-welcome/index.ts';
+import { ParentWelcomeVideo } from '../welcome/index.ts';
 import {
   createParentHouseholdApi,
   type ParentHouseholdApi,
@@ -21,6 +23,7 @@ export function ParentHouseholdWorkspace({
   csrfToken: initialCsrfToken = null,
   relationship: initialRelationship = 'dependent',
   credentialHandoff: initialCredentialHandoff = null,
+  featuredWelcomeVideo: initialFeaturedWelcomeVideo,
   view = { kind: 'overview' },
   api: suppliedApi,
 }: {
@@ -28,6 +31,7 @@ export function ParentHouseholdWorkspace({
   csrfToken?: string | null;
   relationship?: ParentStudentRelationship;
   credentialHandoff?: StudentCredentialHandoff | null;
+  featuredWelcomeVideo?: ParentWelcomeVideoSlot | null;
   view?: ParentHouseholdView;
   api?: ParentHouseholdApi;
 }) {
@@ -36,6 +40,9 @@ export function ParentHouseholdWorkspace({
   const [csrfToken, setCsrfToken] = useState(initialCsrfToken);
   const [relationship, setRelationship] = useState<ParentStudentRelationship>(initialRelationship);
   const [credentialHandoff, setCredentialHandoff] = useState(initialCredentialHandoff);
+  const [featuredWelcomeVideo, setFeaturedWelcomeVideo] = useState<ParentWelcomeVideoSlot | null>(
+    initialFeaturedWelcomeVideo ?? null,
+  );
   const [pending, setPending] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -57,6 +64,24 @@ export function ParentHouseholdWorkspace({
       active = false;
     };
   }, [api, initialSnapshot]);
+
+  useEffect(() => {
+    if (view.kind !== 'overview' || initialFeaturedWelcomeVideo !== undefined) return;
+    let active = true;
+    api
+      .loadSummary()
+      .then(({ snapshot: summary, csrf_token: nextCsrfToken }) => {
+        if (!active) return;
+        setFeaturedWelcomeVideo(summary.featured_welcome_video);
+        setCsrfToken(nextCsrfToken);
+      })
+      .catch(() => {
+        // The featured slot fails closed without blocking household management.
+      });
+    return () => {
+      active = false;
+    };
+  }, [api, initialFeaturedWelcomeVideo, view.kind]);
 
   async function mutate(
     action: (csrf: string) => Promise<{
@@ -102,6 +127,15 @@ export function ParentHouseholdWorkspace({
   return (
     <section className="parent-student-workspace" aria-labelledby="parent-household-heading">
       <h1 id="parent-household-heading">{snapshot.display_name}</h1>
+      {effectiveView.kind === 'overview' ? (
+        <ParentWelcomeVideo
+          slot={featuredWelcomeVideo}
+          csrfToken={csrfToken}
+          placement="home"
+          addStudentAvailable={snapshot.can_manage_students && snapshot.available_student_seats > 0}
+          api={api}
+        />
+      ) : null}
       <p className="parent-student-workspace__seat-summary">
         {snapshot.active_student_count} of {snapshot.student_allowance} active Student seats used
       </p>

@@ -23,7 +23,7 @@ const snapshot: ParentHouseholdSnapshot = {
 };
 
 const summarySnapshot: ParentSummarySnapshot = {
-  contract_version: '1.0.0',
+  contract_version: '1.1.0',
   household_id: 'household-router',
   display_name: 'Router household',
   generated_at: '2026-07-31T14:00:00.000Z',
@@ -31,6 +31,13 @@ const summarySnapshot: ParentSummarySnapshot = {
   schedule: [],
   progress: [],
   updates: [],
+  featured_welcome_video: {
+    contract_version: '1.0.0',
+    status: 'unavailable',
+    reason: 'no_approved_version',
+    title: 'Welcome to One Time',
+    message: 'An approved Parent welcome video is not available yet.',
+  },
   support: {
     label: 'Contact support',
     description: 'Get help with your Parent account or household.',
@@ -141,7 +148,10 @@ describe('P12 authenticated Parent household router', () => {
     });
     expect(response.status).toBe(200);
     expect(response.headers.get('cache-control')).toBe('no-store');
-    expect((await response.json()).data).toEqual({ snapshot: summarySnapshot });
+    expect((await response.json()).data).toEqual({
+      snapshot: summarySnapshot,
+      csrf_token: 'csrf-bootstrap-token',
+    });
     expect(summaryService.overview).toHaveBeenCalledWith({
       role: 'parent',
       adult_id: 'adult-router',

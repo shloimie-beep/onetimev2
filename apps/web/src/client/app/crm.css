@@ -48,6 +48,118 @@
   color: var(--ot-color-text-muted);
 }
 
+.parent-welcome {
+  display: grid;
+  gap: var(--ot-space-4);
+  width: min(100%, 52rem);
+  min-width: 0;
+  border: 2px solid var(--ot-color-action-auth);
+  border-radius: var(--ot-radius-panel);
+  background: var(--ot-color-surface-raised);
+  padding: var(--ot-space-5);
+  box-shadow: var(--ot-shadow-panel);
+}
+
+.parent-welcome__heading,
+.parent-welcome__heading h2,
+.parent-welcome__heading p,
+.parent-welcome__placeholder p,
+.parent-welcome__playback-note {
+  margin: 0;
+}
+
+.parent-welcome__heading {
+  display: grid;
+  gap: var(--ot-space-1);
+}
+
+.parent-welcome__heading h2 {
+  color: var(--ot-color-text);
+  font-size: clamp(1.55rem, 4vw, 2.25rem);
+}
+
+.parent-welcome__eyebrow {
+  color: var(--ot-color-action-auth);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.parent-welcome__media,
+.parent-welcome__placeholder {
+  min-width: 0;
+  border: 1px solid var(--ot-color-border-strong);
+  border-radius: var(--ot-radius-control);
+  background: var(--ot-color-surface);
+  overflow: hidden;
+}
+
+.parent-welcome__media video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+  background: var(--ot-color-background);
+  object-fit: contain;
+}
+
+.parent-welcome__playback-note,
+.parent-welcome__placeholder {
+  color: var(--ot-color-text-muted);
+}
+
+.parent-welcome__playback-note {
+  padding: var(--ot-space-3);
+}
+
+.parent-welcome__placeholder {
+  display: grid;
+  align-content: center;
+  gap: var(--ot-space-2);
+  min-height: clamp(11rem, 35vw, 18rem);
+  padding: var(--ot-space-5);
+}
+
+.parent-welcome__actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--ot-space-2);
+}
+
+.parent-welcome__actions a,
+.parent-welcome__actions span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: var(--ot-size-touch-target);
+  border: 1px solid var(--ot-color-border-strong);
+  border-radius: var(--ot-radius-control);
+  color: var(--ot-color-text);
+  padding: var(--ot-space-2) var(--ot-space-3);
+  font-weight: 800;
+  text-align: center;
+  text-decoration: none;
+}
+
+.parent-welcome__actions .parent-welcome__primary-action {
+  border-color: var(--ot-color-action-auth);
+  background: var(--ot-color-action-auth);
+  color: var(--ot-color-background);
+}
+
+.parent-welcome__actions span[aria-disabled='true'] {
+  border-color: var(--ot-color-border);
+  background: var(--ot-color-surface-muted);
+  color: var(--ot-color-text-disabled);
+}
+
+.parent-welcome__actions a:focus-visible,
+.parent-welcome__media video:focus-visible {
+  outline: var(--ot-focus-width) solid var(--ot-focus-color);
+  outline-offset: var(--ot-focus-offset);
+}
+
 .parent-student-form {
   border: 1px solid var(--ot-color-border);
   border-radius: var(--ot-radius-panel);
@@ -176,6 +288,14 @@
   .parent-student-workspace > ul > li {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .parent-welcome {
+    padding: var(--ot-space-4);
+  }
+
+  .parent-welcome__actions {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .student-notification-center__preferences label {

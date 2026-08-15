@@ -362,6 +362,11 @@ import {
   createPostgresParentSummaryRepository,
 } from './features/portals/parent-summary/index.ts';
 import {
+  createParentWelcomeRouter,
+  createParentWelcomeService,
+  createPostgresParentWelcomeRepository,
+} from './features/portals/parent-welcome/index.ts';
+import {
   createParentPreferencesRouter,
   createPostgresParentPreferencesRepository,
 } from './features/portals/parent-preferences/index.ts';
@@ -1383,12 +1388,32 @@ export function createApp({
       passwords: { hash: async (password) => hashAuthPassword(password) },
       ids: { nextStudentId: () => `student_${randomUUID()}` },
     });
+    const parentWelcomeService = createParentWelcomeService({
+      repository: createPostgresParentWelcomeRepository(pool, {
+        accountKey: config.accountKey,
+        runtimeTier: config.oneTimeRuntimeTier,
+        verificationEnvironmentId: config.oneTimeVerificationEnvironmentId,
+      }),
+      // No asset is approved or bound. Keep playback unavailable until a protected
+      // media runtime and exact approved version are supplied together.
+      playbackRuntimeAvailable: false,
+      ...(clock ? { clock } : {}),
+    });
     const parentSummaryService = createParentSummaryService({
       repository: createPostgresParentSummaryRepository(pool, {
         accountKey: config.accountKey,
         ...(clock ? { clock } : {}),
       }),
+      welcome: parentWelcomeService,
     });
+    app.use(
+      '/api/app/parent/welcome-video',
+      createParentWelcomeRouter({
+        service: parentWelcomeService,
+        sessions: v21AdultSessionRuntime,
+        ...(clock ? { clock } : {}),
+      }),
+    );
     app.use(
       '/api/app/parent',
       createParentHouseholdRouter({
