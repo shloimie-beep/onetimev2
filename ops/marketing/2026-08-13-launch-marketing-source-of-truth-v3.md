@@ -94,17 +94,17 @@ These are planning examples only, not accounting records.
 
 Current public benchmark set:
 
-| Program | Published offer | Published price | Comparison note |
-|---|---|---:|---|
-| One Time Mishnayos | Live Sunday–Thursday + on-demand, Family up to 3 Students | $67/month/Family | About $3.09 per household class-day; about $1.03 per child/class-day at 3 Students |
-| Kitah Mishnah | Weekly live Zoom + asynchronous Mishnah lesson and evaluation | $99/month/child + $50 registration | Higher monthly price for weekly live contact |
-| Kitah Chumash & Mishnah | Weekly live Zoom + asynchronous lessons in two subjects | $149/month/child + $50 registration | Higher-priced broader curriculum |
-| Kitah High | Weekly 40-minute live session + weekly materials | $99/month | Weekly, not daily |
-| MyShliach Yeshivas Erev | Four live nights/week, 45 minutes, chavrusa and prizes | $125 non-member published fee; free for $36 annual members | Published page does not present this as a monthly fee |
-| A Mishna a Night | Live Sunday–Thursday, 20 minutes, prizes and guests | No learner fee displayed | Strong free/sponsored attention competitor |
-| Shloff Gezunt | Sunday–Thursday audio/hotline Mishnah + story, prizes/newsletter | £6.50/month | Low-cost audio membership, not interactive video hybrid |
-| Torah Live Family | Large on-demand library, games and profiles | $14.99/month or $99/year | On-demand library, not daily live class |
-| Time4Mishna | Daily shiurim and structured review/resources | Free resources/shiur access promoted | Adult-oriented structured free alternative |
+| Program                 | Published offer                                                  |                                            Published price | Comparison note                                                                    |
+| ----------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------: | ---------------------------------------------------------------------------------- |
+| One Time Mishnayos      | Live Sunday–Thursday + on-demand, Family up to 3 Students        |                                           $67/month/Family | About $3.09 per household class-day; about $1.03 per child/class-day at 3 Students |
+| Kitah Mishnah           | Weekly live Zoom + asynchronous Mishnah lesson and evaluation    |                         $99/month/child + $50 registration | Higher monthly price for weekly live contact                                       |
+| Kitah Chumash & Mishnah | Weekly live Zoom + asynchronous lessons in two subjects          |                        $149/month/child + $50 registration | Higher-priced broader curriculum                                                   |
+| Kitah High              | Weekly 40-minute live session + weekly materials                 |                                                  $99/month | Weekly, not daily                                                                  |
+| MyShliach Yeshivas Erev | Four live nights/week, 45 minutes, chavrusa and prizes           | $125 non-member published fee; free for $36 annual members | Published page does not present this as a monthly fee                              |
+| A Mishna a Night        | Live Sunday–Thursday, 20 minutes, prizes and guests              |                                   No learner fee displayed | Strong free/sponsored attention competitor                                         |
+| Shloff Gezunt           | Sunday–Thursday audio/hotline Mishnah + story, prizes/newsletter |                                                £6.50/month | Low-cost audio membership, not interactive video hybrid                            |
+| Torah Live Family       | Large on-demand library, games and profiles                      |                                   $14.99/month or $99/year | On-demand library, not daily live class                                            |
+| Time4Mishna             | Daily shiurim and structured review/resources                    |                       Free resources/shiur access promoted | Adult-oriented structured free alternative                                         |
 
 ### Pricing implication
 

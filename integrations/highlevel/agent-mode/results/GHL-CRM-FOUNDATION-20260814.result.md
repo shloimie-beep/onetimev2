@@ -40,30 +40,30 @@ No opportunity was moved from this pipeline.
 
 Pipeline ID: `p1du4HGmVf3DL1LaAMBR`
 
-| Position | Stage | Stage ID |
-|---:|---|---|
-| 0 | Warm Lead | `21fcbe15-13f0-4459-9c19-956fa6e18fe0` |
-| 1 | Old App — Active | `3501f1f5-d205-4ab6-a42e-bb19232c0575` |
-| 2 | Old App — Inactive | `03fbd804-1f3d-4a4e-b868-702ebb81075d` |
-| 3 | Prior Event / Prior Interest | `be648b16-a479-4fca-afe0-7633fe8bd1eb` |
-| 4 | Invitation Sent / Registration Opened | `d3f2f5f1-69f0-425e-a29a-137e780cb21f` |
-| 5 | Registered — Handoff Complete | `f79b0826-15fa-4024-aa26-221ea26df41e` |
-| 6 | Not Interested / Suppressed | `ea271e39-432d-4b58-9bff-b7c113a0a52f` |
+| Position | Stage                                 | Stage ID                               |
+| -------: | ------------------------------------- | -------------------------------------- |
+|        0 | Warm Lead                             | `21fcbe15-13f0-4459-9c19-956fa6e18fe0` |
+|        1 | Old App — Active                      | `3501f1f5-d205-4ab6-a42e-bb19232c0575` |
+|        2 | Old App — Inactive                    | `03fbd804-1f3d-4a4e-b868-702ebb81075d` |
+|        3 | Prior Event / Prior Interest          | `be648b16-a479-4fca-afe0-7633fe8bd1eb` |
+|        4 | Invitation Sent / Registration Opened | `d3f2f5f1-69f0-425e-a29a-137e780cb21f` |
+|        5 | Registered — Handoff Complete         | `f79b0826-15fa-4024-aa26-221ea26df41e` |
+|        6 | Not Interested / Suppressed           | `ea271e39-432d-4b58-9bff-b7c113a0a52f` |
 
 ## New Pipeline B — Family Lifecycle
 
 Pipeline ID: `J07hIGecCCTi8xGD1p1I`
 
-| Position | Stage | Stage ID |
-|---:|---|---|
-| 0 | Family Account Created — Parent Not Activated | `729fba78-795a-49b7-b6df-63f63ceb7fbd` |
-| 1 | Parent Companion Activated — Student Setup Pending | `5c5efed3-78a4-4ebb-a6a4-7458d1f1c194` |
-| 2 | Student Created — Not Yet Learning | `062991e7-70f5-4e51-b07c-87b92c51e9e0` |
-| 3 | Activated Free Family | `5f752777-ceba-40c0-8518-8a59929a5549` |
-| 4 | Engaged Free Family | `85579c03-30eb-4ac8-bcc3-23e72c922708` |
-| 5 | Paid Active | `77462f7f-7c43-4a8c-a254-35c844805a84` |
-| 6 | Grace / Payment Issue | `342236a7-d863-4414-80ed-19f061331011` |
-| 7 | Canceled / Former | `0dfde414-7de0-4fcd-a4c6-7040d4fa5141` |
+| Position | Stage                                              | Stage ID                               |
+| -------: | -------------------------------------------------- | -------------------------------------- |
+|        0 | Family Account Created — Parent Not Activated      | `729fba78-795a-49b7-b6df-63f63ceb7fbd` |
+|        1 | Parent Companion Activated — Student Setup Pending | `5c5efed3-78a4-4ebb-a6a4-7458d1f1c194` |
+|        2 | Student Created — Not Yet Learning                 | `062991e7-70f5-4e51-b07c-87b92c51e9e0` |
+|        3 | Activated Free Family                              | `5f752777-ceba-40c0-8518-8a59929a5549` |
+|        4 | Engaged Free Family                                | `85579c03-30eb-4ac8-bcc3-23e72c922708` |
+|        5 | Paid Active                                        | `77462f7f-7c43-4a8c-a254-35c844805a84` |
+|        6 | Grace / Payment Issue                              | `342236a7-d863-4414-80ed-19f061331011` |
+|        7 | Canceled / Former                                  | `0dfde414-7de0-4fcd-a4c6-7040d4fa5141` |
 
 ## New tags
 

@@ -9,14 +9,14 @@ This file preserves the complete prompt sequence for the currently active parall
 
 ## Current ownership
 
-| Lane | Current owner/source | Rule |
-|---|---|---|
-| Integration and deployment | PR #131 controller | Sole integration, provider, deployment, rollback, and acceptance authority |
-| Zoom | PR #189 | Do not open a competing Zoom implementation worker |
-| Content/Library canary | Issue #172 plus merged PR #170 | Do not repeat the existing Vimeo/transcription effect; do not merge PR #171 wholesale |
-| GHL and email | PR #145 evidence plus a bounded GHL worker | Audit first; Draft-only configuration before operator approval |
-| Rabbi Telegram | Merged PR #119 plus current Telegram gateway | Bounded operations/support agent bridge; never an unrestricted shell |
-| Marketing media | PR #183 | Drive derivatives and registry only; no product/provider/publishing work |
+| Lane                       | Current owner/source                         | Rule                                                                                  |
+| -------------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Integration and deployment | PR #131 controller                           | Sole integration, provider, deployment, rollback, and acceptance authority            |
+| Zoom                       | PR #189                                      | Do not open a competing Zoom implementation worker                                    |
+| Content/Library canary     | Issue #172 plus merged PR #170               | Do not repeat the existing Vimeo/transcription effect; do not merge PR #171 wholesale |
+| GHL and email              | PR #145 evidence plus a bounded GHL worker   | Audit first; Draft-only configuration before operator approval                        |
+| Rabbi Telegram             | Merged PR #119 plus current Telegram gateway | Bounded operations/support agent bridge; never an unrestricted shell                  |
+| Marketing media            | PR #183                                      | Drive derivatives and registry only; no product/provider/publishing work              |
 
 ## Prompt A — Existing PR #131 controller
 
