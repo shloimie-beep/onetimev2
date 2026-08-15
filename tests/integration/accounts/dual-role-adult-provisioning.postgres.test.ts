@@ -194,8 +194,58 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
         expect(failure).toMatchObject({
           status: 'blocked',
           blockers: [`apply_identity_${stage}_failed`],
+          apply_execution: {
+            bounded_watchdog: true,
+            disposition: 'failed',
+            transaction_outcome: stage === 'transaction_begin' ? 'not_started' : 'rolled_back',
+            reconciliation_outcome: 'completed',
+            final_stage: stage,
+          },
           identity: { disposition: 'absent', adult_rows: 0 },
           setup_delivery: { token_rows: 0, intent_rows: 0, outbox_rows: 0 },
+        });
+        expect(failure.apply_execution.journal.at(-1)).toEqual({
+          sequence: failure.apply_execution.journal.length,
+          stage,
+          state: 'failed',
+        });
+        expect(setupCalls).toBe(0);
+        await expect(cardinalities(pool)).resolves.toEqual(beforeFailures);
+      }
+      for (const stage of CONTROLLER_DUAL_ROLE_APPLY_STAGES) {
+        let setupCalls = 0;
+        const stalled = await runDualRoleAdultProvision({
+          manifest,
+          apply: true,
+          authorizationPhrase: AUTHORIZATION,
+          pool,
+          config,
+          now: PROVISION_AT,
+          testOnlyAllowIsolatedApply: true,
+          testOnlyStallApplyStage: stage,
+          testOnlyApplyStageTimeoutMs: 250,
+          issuePasswordReset: async () => {
+            setupCalls += 1;
+            throw new Error('Setup must not run after an identity timeout.');
+          },
+        });
+        expect(stalled).toMatchObject({
+          status: 'blocked',
+          blockers: [`apply_identity_${stage}_timed_out`],
+          apply_execution: {
+            bounded_watchdog: true,
+            disposition: 'timed_out',
+            transaction_outcome: stage === 'transaction_begin' ? 'not_started' : 'rolled_back',
+            reconciliation_outcome: 'completed',
+            final_stage: stage,
+          },
+          identity: { disposition: 'absent', adult_rows: 0 },
+          setup_delivery: { token_rows: 0, intent_rows: 0, outbox_rows: 0 },
+        });
+        expect(stalled.apply_execution.journal.at(-1)).toEqual({
+          sequence: stalled.apply_execution.journal.length,
+          stage,
+          state: 'timed_out',
         });
         expect(setupCalls).toBe(0);
         await expect(cardinalities(pool)).resolves.toEqual(beforeFailures);

@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { spawnSync } from 'node:child_process';
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -205,6 +206,18 @@ describe('controller dual-role adult provisioning', () => {
       });
       expect(['blocked', 'identity_applied_setup_pending']).toContain(report.status);
       expect(report.blockers).toContain(`apply_identity_${stage}_failed`);
+      expect(report.apply_execution).toMatchObject({
+        bounded_watchdog: true,
+        disposition: 'failed',
+        transaction_outcome: stage === 'transaction_begin' ? 'not_started' : 'rolled_back',
+        reconciliation_outcome: 'completed',
+        final_stage: stage,
+      });
+      expect(report.apply_execution.journal.at(-1)).toEqual({
+        sequence: report.apply_execution.journal.length,
+        stage,
+        state: 'failed',
+      });
       expect(setupCalls).toBe(0);
       const serialized = JSON.stringify(report);
       expect(serialized).not.toContain(email);
@@ -217,6 +230,104 @@ describe('controller dual-role adult provisioning', () => {
     await expect(count(pool, 'account_lifecycle_tokens')).resolves.toBe(0);
     await expect(count(pool, 'account_lifecycle_delivery_intents')).resolves.toBe(0);
     await expect(count(pool, 'account_lifecycle_delivery_outbox')).resolves.toBe(0);
+  });
+
+  it('bounds every stalled identity stage, rolls back, and emits only a sanitized journal', async () => {
+    for (const stage of CONTROLLER_DUAL_ROLE_APPLY_STAGES) {
+      const email = `dual-role-stall-${stage.replaceAll('_', '-')}@example.test`;
+      let setupCalls = 0;
+
+      const report = await runDualRoleAdultProvision({
+        manifest: privateManifest(email),
+        apply: true,
+        authorizationPhrase: AUTHORIZATION,
+        pool,
+        config,
+        now: PROVISION_AT,
+        testOnlyAllowIsolatedApply: true,
+        testOnlyStallApplyStage: stage,
+        testOnlyApplyStageTimeoutMs: 500,
+        issuePasswordReset: async () => {
+          setupCalls += 1;
+          throw new Error('Setup must not run after an identity timeout.');
+        },
+      });
+
+      expect(report).toMatchObject({
+        blockers: expect.arrayContaining([`apply_identity_${stage}_timed_out`]),
+        apply_execution: {
+          bounded_watchdog: true,
+          disposition: 'timed_out',
+          transaction_outcome: stage === 'transaction_begin' ? 'not_started' : 'rolled_back',
+          reconciliation_outcome: 'completed',
+          final_stage: stage,
+        },
+        setup_delivery: { token_rows: 0, intent_rows: 0, outbox_rows: 0 },
+      });
+      expect(['blocked', 'identity_applied_setup_pending']).toContain(report.status);
+      expect(report.apply_execution.journal.at(-1)).toEqual({
+        sequence: report.apply_execution.journal.length,
+        stage,
+        state: 'timed_out',
+      });
+      expect(setupCalls).toBe(0);
+
+      const serialized = JSON.stringify(report);
+      expect(serialized).not.toContain(email);
+      expect(serialized).not.toContain('Synthetic Dual Role Adult');
+      expect(serialized).not.toContain('INSERT INTO');
+      expect(serialized).not.toContain('database-id');
+      expect(serialized).not.toContain('@');
+    }
+    await expect(count(pool, 'account_lifecycle_tokens')).resolves.toBe(0);
+    await expect(count(pool, 'account_lifecycle_delivery_intents')).resolves.toBe(0);
+    await expect(count(pool, 'account_lifecycle_delivery_outbox')).resolves.toBe(0);
+  });
+
+  it('exits 2 rather than 13 under the non-TTY spawnSync and piped-stdio controller shape', () => {
+    const npmCli = process.env.npm_execpath;
+    expect(npmCli).toBeTruthy();
+    const child = spawnSync(
+      process.execPath,
+      [
+        npmCli!,
+        'exec',
+        '--',
+        'tsx',
+        join(process.cwd(), 'tests', 'fixtures', 'dual-role-apply-watchdog-non-tty.ts'),
+      ],
+      {
+        cwd: process.cwd(),
+        encoding: 'utf8',
+        input: '',
+        stdio: ['pipe', 'pipe', 'pipe'],
+        timeout: 5_000,
+      },
+    );
+
+    expect(child.error).toBeUndefined();
+    expect(child.signal).toBeNull();
+    expect(child.status).toBe(2);
+    expect(child.status).not.toBe(13);
+    expect(child.stderr).toBe('');
+    expect(JSON.parse(child.stdout)).toEqual({
+      schema: 'onetime.controller.dual_role_adult_provision.v1',
+      status: 'blocked',
+      blockers: ['apply_identity_transaction_begin_timed_out'],
+      apply_execution: {
+        bounded_watchdog: true,
+        disposition: 'timed_out',
+        transaction_outcome: 'not_started',
+        final_stage: 'transaction_begin',
+        journal: [
+          { sequence: 1, stage: 'transaction_begin', state: 'started' },
+          { sequence: 2, stage: 'transaction_begin', state: 'timed_out' },
+        ],
+      },
+    });
+    expect(child.stdout).not.toContain('@');
+    expect(child.stdout).not.toContain('INSERT INTO');
+    expect(child.stdout).not.toContain('database-id');
   });
 
   it('writes the same sanitized controller failure to --out when the CLI throws', async () => {
