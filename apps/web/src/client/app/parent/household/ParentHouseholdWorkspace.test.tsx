@@ -40,6 +40,55 @@ const snapshot: ParentHouseholdSnapshot = {
 };
 
 describe('P12 persisted Parent household client workspace', () => {
+  it.each([
+    {
+      household: 'zero-Student',
+      activeStudentCount: 0,
+      availableStudentSeats: 3,
+      students: [],
+      expectedLabel: 'Add your first Student',
+      available: true,
+    },
+    {
+      household: 'partial',
+      activeStudentCount: 1,
+      availableStudentSeats: 2,
+      students: snapshot.students,
+      expectedLabel: 'Add another Student',
+      available: true,
+    },
+    {
+      household: 'full',
+      activeStudentCount: 3,
+      availableStudentSeats: 0,
+      students: snapshot.students,
+      expectedLabel: 'All Student seats are in use',
+      available: false,
+    },
+  ])(
+    'renders current $household CTA truth on Parent Home',
+    ({ activeStudentCount, availableStudentSeats, students, expectedLabel, available }) => {
+      const html = renderToStaticMarkup(
+        <ParentHouseholdWorkspace
+          snapshot={{
+            ...snapshot,
+            active_student_count: activeStudentCount,
+            available_student_seats: availableStudentSeats,
+            students,
+          }}
+        />,
+      );
+      expect(html).toContain(expectedLabel);
+      if (available) {
+        expect(html).toContain('href="/app/parent/students/new"');
+        expect(html).not.toContain('aria-disabled="true"');
+      } else {
+        expect(html).not.toContain('href="/app/parent/students/new"');
+        expect(html).toContain('aria-disabled="true"');
+      }
+    },
+  );
+
   it('guards mounted Create and Reset interactions before either API handler can run', () => {
     for (const [password, confirmation, expectedFocus] of [
       ['000123', '123456', 'confirmation'],
@@ -206,6 +255,7 @@ describe('P12 persisted Parent household client workspace', () => {
       />,
     );
     expect(inactive).toContain('Our household');
+    expect(inactive).toContain('Adding a Student is unavailable');
     expect(inactive).not.toContain('/app/parent/students/new');
     expect(inactive).toContain('management is unavailable');
     expect(inactive).not.toContain('name="actual_name"');

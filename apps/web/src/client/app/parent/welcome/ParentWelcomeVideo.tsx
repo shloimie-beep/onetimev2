@@ -14,18 +14,24 @@ export type WelcomeMilestoneState = {
   sent: ReadonlySet<ParentWelcomeBrowserEventType>;
 };
 
+export type ParentWelcomeStudentActionState = {
+  active_student_count: number;
+  available_student_seats: number;
+  can_manage_students: boolean;
+};
+
 export function ParentWelcomeVideo({
   slot,
   csrfToken,
   placement,
-  addStudentAvailable = true,
+  studentAction,
   initialDescriptor,
   api: suppliedApi,
 }: {
   slot: ParentWelcomeVideoSlot | null;
   csrfToken: string | null;
   placement: 'home' | 'updates';
-  addStudentAvailable?: boolean;
+  studentAction?: ParentWelcomeStudentActionState | null;
   initialDescriptor?: ParentWelcomePlaybackDescriptor;
   api?: ParentHouseholdApi;
 }) {
@@ -80,6 +86,7 @@ export function ParentWelcomeVideo({
 
   const title = slot?.title ?? 'Welcome to One Time';
   const ready = slot?.status === 'ready' ? slot : null;
+  const addStudentAction = parentWelcomeAddStudentAction(studentAction ?? null);
 
   function trackPlayback(video: HTMLVideoElement) {
     if (!ready) return;
@@ -170,7 +177,7 @@ export function ParentWelcomeVideo({
       )}
 
       <nav className="parent-welcome__actions" aria-label="Parent welcome actions">
-        {addStudentAvailable ? (
+        {addStudentAction.available ? (
           <a
             className="parent-welcome__primary-action"
             href="/app/parent/students/new"
@@ -184,11 +191,11 @@ export function ParentWelcomeVideo({
               );
             }}
           >
-            Add your first Student
+            {addStudentAction.label}
           </a>
         ) : (
           <span className="parent-welcome__primary-action" aria-disabled="true">
-            Add your first Student
+            {addStudentAction.label}
           </span>
         )}
         <a href="/app/parent/calendar#next-class">See the next class</a>
@@ -269,6 +276,31 @@ export function parentWelcomeAutoplayPermitted(input: {
   save_data: boolean;
 }) {
   return !input.reduced_motion && !input.save_data;
+}
+
+export function parentWelcomeAddStudentAction(state: ParentWelcomeStudentActionState | null): {
+  available: boolean;
+  label: string;
+} {
+  if (!state) {
+    return { available: false, label: 'Adding a Student is unavailable' };
+  }
+  if (
+    !Number.isSafeInteger(state.active_student_count) ||
+    state.active_student_count < 0 ||
+    !Number.isSafeInteger(state.available_student_seats) ||
+    state.available_student_seats < 0 ||
+    !state.can_manage_students
+  ) {
+    return { available: false, label: 'Adding a Student is unavailable' };
+  }
+  if (state.active_student_count >= 3 || state.available_student_seats === 0) {
+    return { available: false, label: 'All Student seats are in use' };
+  }
+  return {
+    available: true,
+    label: state.active_student_count === 0 ? 'Add your first Student' : 'Add another Student',
+  };
 }
 
 function validProtectedDescriptor(

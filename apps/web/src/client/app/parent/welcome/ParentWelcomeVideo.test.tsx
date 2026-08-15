@@ -49,6 +49,11 @@ describe('Parent welcome featured media', () => {
         slot={slot}
         csrfToken="csrf-parent"
         placement="updates"
+        studentAction={{
+          active_student_count: 0,
+          available_student_seats: 3,
+          can_manage_students: true,
+        }}
         initialDescriptor={descriptor}
       />,
     );
@@ -76,6 +81,11 @@ describe('Parent welcome featured media', () => {
         }}
         csrfToken={null}
         placement="home"
+        studentAction={{
+          active_student_count: 0,
+          available_student_seats: 3,
+          can_manage_students: true,
+        }}
       />,
     );
     expect(html).toContain('approved Parent welcome video is not available');

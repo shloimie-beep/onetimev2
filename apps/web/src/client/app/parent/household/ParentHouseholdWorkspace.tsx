@@ -132,7 +132,11 @@ export function ParentHouseholdWorkspace({
           slot={featuredWelcomeVideo}
           csrfToken={csrfToken}
           placement="home"
-          addStudentAvailable={snapshot.can_manage_students && snapshot.available_student_seats > 0}
+          studentAction={{
+            active_student_count: snapshot.active_student_count,
+            available_student_seats: snapshot.available_student_seats,
+            can_manage_students: snapshot.can_manage_students,
+          }}
           api={api}
         />
       ) : null}
