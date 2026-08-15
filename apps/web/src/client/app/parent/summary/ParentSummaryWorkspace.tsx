@@ -4,6 +4,7 @@ import { createParentHouseholdApi, type ParentHouseholdApi } from '../household/
 import { ParentProgressSummary } from '../progress/index.ts';
 import { ParentClassDetail, ParentSchedule } from '../schedule/index.ts';
 import { ParentUpdates } from '../updates/index.ts';
+import type { ParentWelcomeStudentActionState } from '../welcome/index.ts';
 
 export type ParentSummaryView =
   | { kind: 'calendar' }
@@ -20,14 +21,19 @@ export function ParentSummaryWorkspace({
 }) {
   const api = useMemo(() => suppliedApi ?? createParentHouseholdApi(), [suppliedApi]);
   const [snapshot, setSnapshot] = useState<ParentSummarySnapshot | null>(null);
+  const [csrfToken, setCsrfToken] = useState<string | null>(null);
+  const [studentAction, setStudentAction] = useState<ParentWelcomeStudentActionState | null>(null);
   const [error, setError] = useState('');
 
   useEffect(() => {
     let active = true;
     api
       .loadSummary()
-      .then(({ snapshot: next }) => {
-        if (active) setSnapshot(next);
+      .then(({ snapshot: next, csrf_token: nextCsrfToken }) => {
+        if (active) {
+          setSnapshot(next);
+          setCsrfToken(nextCsrfToken);
+        }
       })
       .catch((cause: unknown) => {
         if (active)
@@ -37,6 +43,28 @@ export function ParentSummaryWorkspace({
       active = false;
     };
   }, [api]);
+
+  useEffect(() => {
+    if (view.kind !== 'updates') return;
+    let active = true;
+    setStudentAction(null);
+    api
+      .load()
+      .then(({ snapshot: household }) => {
+        if (!active) return;
+        setStudentAction({
+          active_student_count: household.active_student_count,
+          available_student_seats: household.available_student_seats,
+          can_manage_students: household.can_manage_students,
+        });
+      })
+      .catch(() => {
+        // Keep the Add Student action unavailable when current seat truth cannot be loaded.
+      });
+    return () => {
+      active = false;
+    };
+  }, [api, view.kind]);
 
   if (!snapshot) {
     return (
@@ -84,6 +112,10 @@ export function ParentSummaryWorkspace({
           : snapshot.updates
       }
       support={snapshot.support}
+      featuredWelcomeVideo={snapshot.featured_welcome_video}
+      csrfToken={csrfToken}
+      studentAction={studentAction}
+      api={api}
     />
   );
 }

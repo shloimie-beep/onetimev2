@@ -7,6 +7,11 @@ import {
   type ParentSummaryRepository,
   type ParentSummarySnapshot,
 } from '../../../../../../../packages/contracts/src/portals/parent-summary/index.ts';
+import {
+  PARENT_WELCOME_VIDEO_CONTRACT_VERSION,
+  type ParentWelcomeVideoSlot,
+} from '../../../../../../../packages/contracts/src/portals/parent-welcome/index.ts';
+import type { ParentWelcomeService } from '../parent-welcome/service.ts';
 
 export class ParentSummaryError extends Error {
   constructor(
@@ -58,7 +63,10 @@ function assertOwnedRecord(principal: ParentSummaryPrincipal, record: ParentSumm
   }
 }
 
-function toSnapshot(record: ParentSummaryRecord): ParentSummarySnapshot {
+function toSnapshot(
+  record: ParentSummaryRecord,
+  featuredWelcomeVideo: ParentWelcomeVideoSlot,
+): ParentSummarySnapshot {
   return {
     contract_version: PARENT_SUMMARY_CONTRACT_VERSION,
     household_id: record.household_id,
@@ -68,6 +76,7 @@ function toSnapshot(record: ParentSummaryRecord): ParentSummarySnapshot {
     schedule: record.schedule,
     progress: record.progress,
     updates: record.updates,
+    featured_welcome_video: featuredWelcomeVideo,
     support: {
       label: 'Contact support',
       description: 'Get help with your Parent account or household.',
@@ -76,7 +85,10 @@ function toSnapshot(record: ParentSummaryRecord): ParentSummarySnapshot {
   };
 }
 
-export function createParentSummaryService(dependencies: { repository: ParentSummaryRepository }) {
+export function createParentSummaryService(dependencies: {
+  repository: ParentSummaryRepository;
+  welcome?: Pick<ParentWelcomeService, 'featuredSlot'>;
+}) {
   return {
     async overview(principal: ParentSummaryPrincipal): Promise<ParentSummarySnapshot> {
       assertParentPrincipal(principal);
@@ -88,8 +100,22 @@ export function createParentSummaryService(dependencies: { repository: ParentSum
         );
       }
       assertOwnedRecord(principal, record);
-      return toSnapshot(record);
+      const featuredWelcomeVideo = dependencies.welcome
+        ? await dependencies.welcome.featuredSlot(principal)
+        : unavailableWelcomeVideo();
+      return toSnapshot(record, featuredWelcomeVideo);
     },
+  };
+}
+
+function unavailableWelcomeVideo(): ParentWelcomeVideoSlot {
+  return {
+    contract_version: PARENT_WELCOME_VIDEO_CONTRACT_VERSION,
+    status: 'unavailable',
+    reason: 'no_approved_version',
+    title: 'Welcome to One Time',
+    message:
+      'An approved Parent welcome video is not available yet. You can still add a Student, see the next class, or get help.',
   };
 }
 
