@@ -1,5 +1,11 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
+  "authority": {
+    "marketing_pr": 183,
+    "marketing_base_sha": "595e38b2c53c7f9dd1b0018ae1954e42061f07f4",
+    "product_pr": 131,
+    "product_read_only_sha": "0ed5c3955892450d8985765d622d5fb7809b5c95"
+  },
   "source_hashes": {
     "photo": "1e504b0e9be675e668560d225d2886aee9927ec6667aa2033fbe853fe3d80447",
     "logo": "6b534dde8625b991cc9ef5e244190de950599718f35113825ab8c4c241edf441",
@@ -8,25 +14,173 @@
   },
   "renders": [
     {
+      "asset_id": "OTM-A000003",
+      "concept_id": "OTM-CP-001",
+      "format": "feed_1080x1350",
+      "relative_path": "renders/OTM-CP-001-feed-1080x1350.png",
       "filename": "OTM-CP-001-feed-1080x1350.png",
       "width": 1080,
       "height": 1350,
-      "bytes": 603033,
-      "sha256": "e92bbd80eaaf588dfeddd87502b20eb5de66bb00a6b0fd64adc64ceab7840790"
+      "bytes": 603034,
+      "sha256": "d408e2bdbfb8610f60dc21c6257a5bc00a53bfed8bb20a8f192816ca8025fd6e"
     },
     {
+      "asset_id": "OTM-A000005",
+      "concept_id": "OTM-CP-001",
+      "format": "story_reel_1080x1920",
+      "relative_path": "renders/OTM-CP-001-story-reel-1080x1920.png",
+      "filename": "OTM-CP-001-story-reel-1080x1920.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 765410,
+      "sha256": "8122f23181850f39dcb2114ccd2a9b6c37dfbd40e9d6d15b94d14c7f1b542d99"
+    },
+    {
+      "asset_id": "OTM-A000007",
+      "concept_id": "OTM-CP-001",
+      "format": "social_preview_1200x630",
+      "relative_path": "renders/OTM-CP-001-social-preview-1200x630.png",
+      "filename": "OTM-CP-001-social-preview-1200x630.png",
+      "width": 1200,
+      "height": 630,
+      "bytes": 370860,
+      "sha256": "e5d86e9a2fa907d58d705d139efaf065b32bacc9d82fd0ea697649b1aed793ed"
+    },
+    {
+      "asset_id": "OTM-A000004",
+      "concept_id": "OTM-CP-002",
+      "format": "feed_1080x1350",
+      "relative_path": "renders/OTM-CP-002-feed-1080x1350.png",
       "filename": "OTM-CP-002-feed-1080x1350.png",
       "width": 1080,
       "height": 1350,
-      "bytes": 831508,
-      "sha256": "f6269e184396d12ea8198d8ffcf97d88a22ba574a2d22a77f1ea46329585798c"
+      "bytes": 633184,
+      "sha256": "be0569bdcda1ac5ae5e603927ac54084838a2f10e5d76590f9654c91c2c1adfc"
+    },
+    {
+      "asset_id": "OTM-A000006",
+      "concept_id": "OTM-CP-002",
+      "format": "story_reel_1080x1920",
+      "relative_path": "renders/OTM-CP-002-story-reel-1080x1920.png",
+      "filename": "OTM-CP-002-story-reel-1080x1920.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 798972,
+      "sha256": "5b5cb4fb2a192db53fd3ff2247f158a4c8a38d4df91145a72af4a0cd4085a3f4"
+    },
+    {
+      "asset_id": "OTM-A000008",
+      "concept_id": "OTM-CP-002",
+      "format": "social_preview_1200x630",
+      "relative_path": "renders/OTM-CP-002-social-preview-1200x630.png",
+      "filename": "OTM-CP-002-social-preview-1200x630.png",
+      "width": 1200,
+      "height": 630,
+      "bytes": 348523,
+      "sha256": "bcccaff3d1dc3bacc38fb45a3dbc2d83f989e85f4651a3807282c1d74d266c11"
+    },
+    {
+      "asset_id": "OTM-A000009",
+      "concept_id": null,
+      "format": "landing_desktop_1600x900",
+      "relative_path": "renders/landing-hero-desktop-1600x900.png",
+      "filename": "landing-hero-desktop-1600x900.png",
+      "width": 1600,
+      "height": 900,
+      "bytes": 565925,
+      "sha256": "dd899a4f9f5308f6efe18c8a45045a147d98c76cd8d1929f9023878cb123e7ea"
+    },
+    {
+      "asset_id": "OTM-A000010",
+      "concept_id": null,
+      "format": "landing_mobile_1080x1600",
+      "relative_path": "renders/landing-hero-mobile-1080x1600.png",
+      "filename": "landing-hero-mobile-1080x1600.png",
+      "width": 1080,
+      "height": 1600,
+      "bytes": 921432,
+      "sha256": "a10e151cd30a2582c3c34fa512dd6928005a76aa0f0ff3a2b99e97789a22d238"
     }
   ],
   "visual_proof": {
-    "filename": "first-wave-contact-sheet.png",
-    "width": 1880,
-    "height": 1260,
-    "bytes": 900214,
-    "sha256": "b1518512d534719a831d815ab7110a6530417f4adb2e45590a8369ff53e628e0"
+    "contact_sheet": {
+      "relative_path": "visual-proof/first-wave-contact-sheet.png",
+      "filename": "first-wave-contact-sheet.png",
+      "width": 2460,
+      "height": 2580,
+      "bytes": 1457248,
+      "sha256": "2cd4040389d94e8817f8c9fef7205dbaae2fd80a093f2b63dbe6af4fc78527d7"
+    },
+    "phone": {
+      "relative_path": "visual-proof/first-wave-phone-proof.png",
+      "filename": "first-wave-phone-proof.png",
+      "width": 1600,
+      "height": 1350,
+      "bytes": 629941,
+      "sha256": "9f4f67c1ad9ef1e604bb44cee81a9a829c60f9272c547f24e384b2184292ec09"
+    }
+  },
+  "contrast": {
+    "standard": "WCAG 2.2 AA normal text",
+    "minimum_required": 4.5,
+    "minimum_measured": 4.85,
+    "pairs": [
+      {
+        "pair": "white_on_near_black",
+        "foreground": "#FFFFFF",
+        "background": "#050505",
+        "ratio": 20.38
+      },
+      {
+        "pair": "yellow_on_near_black",
+        "foreground": "#FFD21F",
+        "background": "#050505",
+        "ratio": 14.06
+      },
+      {
+        "pair": "cyan_on_near_black",
+        "foreground": "#059ED1",
+        "background": "#050505",
+        "ratio": 6.62
+      },
+      {
+        "pair": "cool_grey_on_near_black",
+        "foreground": "#DCE4E8",
+        "background": "#050505",
+        "ratio": 15.83
+      },
+      {
+        "pair": "near_black_on_yellow_button",
+        "foreground": "#050505",
+        "background": "#FFD21F",
+        "ratio": 14.06
+      },
+      {
+        "pair": "cyan_on_worst_case_photo_overlay",
+        "foreground": "#059ED1",
+        "background": "#272727",
+        "ratio": 4.85
+      },
+      {
+        "pair": "white_on_worst_case_photo_overlay",
+        "foreground": "#FFFFFF",
+        "background": "#272727",
+        "ratio": 14.94
+      },
+      {
+        "pair": "cool_grey_on_worst_case_photo_overlay",
+        "foreground": "#DCE4E8",
+        "background": "#272727",
+        "ratio": 11.6
+      }
+    ]
+  },
+  "external_effects": {
+    "drive_writes": 0,
+    "canva_writes": 0,
+    "provider_writes": 0,
+    "publication_events": 0,
+    "scheduled_events": 0,
+    "spend_usd": 0
   }
 }

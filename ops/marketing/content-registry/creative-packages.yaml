@@ -1,5 +1,5 @@
-schema_version: 1
-updated_at: '2026-08-14T09:53:46Z'
+schema_version: 2
+updated_at: '2026-08-15T19:37:03Z'
 packages:
   - package_id: OTM-CP-001
     canonical_hook: Classes Start Sunday
@@ -11,17 +11,23 @@ packages:
       - OTM-A000002
     ordered_asset_ids:
       - OTM-A000003
+      - OTM-A000005
+      - OTM-A000007
     draft_creative_ids:
       - OTM-CR-202608-001-V01
+      - OTM-CR-202608-001-V02
+      - OTM-CR-202608-001-V03
     formats_delivered:
       - feed_1080x1350
+      - story_reel_1080x1920
+      - social_preview_1200x630
     exact_cta: GET FREE ACCESS
     destination: https://join.onetimeonetime.com
     rabbi_edit_state: not_required_for_static_draft
     workflow_state: final_review
     blockers:
       - operator_visual_approval_pending
-      - story_and_square_exports_wait_for_base_approval
+      - publication_authorization_absent
     legacy_package_imported: false
   - package_id: OTM-CP-002
     canonical_hook: Get Free Access
@@ -33,15 +39,37 @@ packages:
       - OTM-A000002
     ordered_asset_ids:
       - OTM-A000004
+      - OTM-A000006
+      - OTM-A000008
     draft_creative_ids:
       - OTM-CR-202608-002-V01
+      - OTM-CR-202608-002-V02
+      - OTM-CR-202608-002-V03
     formats_delivered:
       - feed_1080x1350
+      - story_reel_1080x1920
+      - social_preview_1200x630
     exact_cta: GET FREE ACCESS
     destination: https://join.onetimeonetime.com
     rabbi_edit_state: not_required_for_static_draft
     workflow_state: final_review
     blockers:
       - operator_visual_approval_pending
-      - story_and_square_exports_wait_for_base_approval
+      - publication_authorization_absent
     legacy_package_imported: false
+landing_handoff:
+  authority: 2026-08-13-launch-month-media-library-codex-v2
+  authority_sha: 595e38b2c53c7f9dd1b0018ae1954e42061f07f4
+  source_asset_ids:
+    - OTM-A000001
+  derivative_asset_ids:
+    - OTM-A000009
+    - OTM-A000010
+  formats_delivered:
+    - landing_desktop_1600x900
+    - landing_mobile_1080x1600
+  baked_copy: false
+  workflow_state: final_review
+  blockers:
+    - operator_visual_approval_pending
+    - separate_product_integration_required
