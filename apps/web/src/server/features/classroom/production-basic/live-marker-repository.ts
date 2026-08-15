@@ -112,7 +112,7 @@ export function createProductionBasicHostLiveMarker(pool: DbPool): ProductionBas
     },
     async clear({ scope, meeting_ref_digest, cleared_at }) {
       const localClassDate = jerusalemLocalDate(cleared_at);
-      await pool.query(
+      const cleared = await pool.query(
         `UPDATE onetime.class_occurrences
             SET production_basic_live_confirmed_at = NULL,
                 production_basic_live_expires_at = NULL,
@@ -141,6 +141,33 @@ export function createProductionBasicHostLiveMarker(pool: DbPool): ProductionBas
                LIMIT 1
             )`,
         [scope.account_key, scope.product_key, meeting_ref_digest, cleared_at, localClassDate],
+      );
+      if ((cleared.rowCount ?? 0) === 1) return true;
+      const reconciled = await pool.query(
+        `SELECT occurrence.production_basic_live_confirmed_at,
+                occurrence.production_basic_live_expires_at,
+                occurrence.production_basic_meeting_ref_digest
+           FROM onetime.class_occurrences AS occurrence
+           JOIN onetime.class_series AS series
+             ON series.account_key = occurrence.account_key
+            AND series.product_key = occurrence.product_key
+            AND series.class_series_key = occurrence.class_series_key
+          WHERE occurrence.account_key = $1
+            AND occurrence.product_key = $2
+            AND occurrence.local_class_date = $3::date
+            AND series.is_canonical = true
+            AND series.status = 'active'
+            AND series.series_state = 'active'
+          ORDER BY occurrence.starts_at, occurrence.occurrence_key
+          LIMIT 2`,
+        [scope.account_key, scope.product_key, localClassDate],
+      );
+      if (reconciled.rows.length !== 1) return false;
+      const row = reconciled.rows[0];
+      return (
+        row?.production_basic_live_confirmed_at == null &&
+        row?.production_basic_live_expires_at == null &&
+        row?.production_basic_meeting_ref_digest == null
       );
     },
   };

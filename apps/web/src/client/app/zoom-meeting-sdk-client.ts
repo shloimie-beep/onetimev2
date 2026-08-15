@@ -5,6 +5,7 @@ export type ZoomMeetingSdkApi = Record<
   (...args: unknown[]) => unknown
 > & {
   removeInMeetingServiceListener?: (...args: unknown[]) => unknown;
+  endMeeting?: (...args: unknown[]) => unknown;
 };
 
 declare global {
@@ -165,7 +166,7 @@ export function joinZoomMeetingProductionBasic(
   return joinZoomMeetingParticipant({ ...input, disablePreview: true });
 }
 
-export function startZoomMeetingProductionBasic(
+export async function startZoomMeetingProductionBasic(
   input: Omit<
     ZoomParticipantJoinInput,
     'registrantToken' | 'userEmail' | 'customerKey' | 'disablePreview'
@@ -173,7 +174,36 @@ export function startZoomMeetingProductionBasic(
     zak: string;
   },
 ) {
-  return joinZoomMeetingParticipant({ ...input, disablePreview: true });
+  const zoom = await loadMeetingSdk(input.sdkWebVersion);
+  await joinZoomMeetingParticipantWithApi(zoom, { ...input, disablePreview: true });
+  return { endMeeting: () => endZoomMeetingWithApi(zoom) };
+}
+
+export function endZoomMeetingWithApi(zoom: ZoomMeetingSdkApi) {
+  return new Promise<void>((resolve, reject) => {
+    if (!zoom.endMeeting) {
+      reject(new Error('Meeting SDK End Class control is unavailable.'));
+      return;
+    }
+    let settled = false;
+    const timeout = globalThis.setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      reject(new Error('Meeting SDK End Class control timed out.'));
+    }, 15_000);
+    const settle = (error?: unknown) => {
+      if (settled) return;
+      settled = true;
+      globalThis.clearTimeout(timeout);
+      if (error === undefined) resolve();
+      else reject(new Error(`Meeting SDK End Class failed (${sdkErrorSummary(error)}).`));
+    };
+    try {
+      zoom.endMeeting({ success: () => settle(), error: (error: unknown) => settle(error) });
+    } catch (error) {
+      settle(error);
+    }
+  });
 }
 
 async function loadMeetingSdk(version: string) {

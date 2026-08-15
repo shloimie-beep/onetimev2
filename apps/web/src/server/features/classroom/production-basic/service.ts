@@ -26,6 +26,8 @@ export type ProductionBasicActor =
       kind: 'student';
       scope: ProductionBasicScope;
       learner_key: string;
+      authenticated_session_key: string;
+      connection_lineage_id: string;
       display_name: string;
       entitled: boolean;
     }
@@ -50,6 +52,8 @@ export type ProductionBasicLaunchArtifact = {
   expires_at: string;
   /** Present only for a host Start; it is never persisted or put in a URL. */
   zak?: string;
+  /** Present only for a Student launch and bound server-side to one occurrence/session. */
+  attendance_session_key?: string;
   raw_join_url_present: false;
   video_start_model: 'PARTICIPANT_CONSENT';
 };
@@ -81,7 +85,22 @@ export interface ProductionBasicHostLiveMarker {
     scope: ProductionBasicScope;
     meeting_ref_digest: string;
     cleared_at: Date;
-  }): Promise<void>;
+  }): Promise<boolean>;
+}
+
+export interface ProductionBasicStudentAttendance {
+  issue(input: {
+    actor: Extract<ProductionBasicActor, { kind: 'student' }>;
+    meeting_ref_digest: string;
+    issued_at: Date;
+  }): Promise<string | null>;
+  record(input: {
+    actor: Extract<ProductionBasicActor, { kind: 'student' }>;
+    meeting_ref_digest: string;
+    attendance_session_key: string;
+    event_kind: 'joined' | 'left';
+    observed_at: Date;
+  }): Promise<boolean>;
 }
 
 export type ProductionBasicLaunchResult =
@@ -95,6 +114,7 @@ export type ProductionBasicHostLiveResult = {
 export function createProductionBasicLaunchService(input: {
   binding: ProductionBasicMeetingBinding;
   hostLiveMarker?: ProductionBasicHostLiveMarker | undefined;
+  studentAttendance?: ProductionBasicStudentAttendance | undefined;
   clock?: () => Date;
 }) {
   const clock = input.clock ?? (() => new Date());
@@ -114,7 +134,21 @@ export function createProductionBasicLaunchService(input: {
       const artifact = await input.binding.issue({ scope: actor.scope, actor, role, now: clock() });
       if (!artifact || !validArtifact(artifact, role, clock()))
         return { disposition: 'unavailable' };
-      return { disposition: 'ready', artifact };
+      if (actor.kind !== 'student') return { disposition: 'ready', artifact };
+      const meetingRefDigest = input.binding.referenceDigest();
+      if (!meetingRefDigest || !input.studentAttendance) {
+        return { disposition: 'unavailable' };
+      }
+      const attendanceSessionKey = await input.studentAttendance.issue({
+        actor,
+        meeting_ref_digest: meetingRefDigest,
+        issued_at: clock(),
+      });
+      if (!attendanceSessionKey) return { disposition: 'unavailable' };
+      return {
+        disposition: 'ready',
+        artifact: { ...artifact, attendance_session_key: attendanceSessionKey },
+      };
     },
     async confirmHostLive(actor: ProductionBasicActor): Promise<ProductionBasicHostLiveResult> {
       if ((actor.kind !== 'admin' && actor.kind !== 'rabbi') || !actor.authorized_to_start) {
@@ -137,12 +171,32 @@ export function createProductionBasicLaunchService(input: {
       if (!(await input.binding.ready())) return { disposition: 'unavailable' };
       const meetingRefDigest = input.binding.referenceDigest();
       if (!meetingRefDigest || !input.hostLiveMarker) return { disposition: 'unavailable' };
-      await input.hostLiveMarker.clear({
+      const cleared = await input.hostLiveMarker.clear({
         scope: actor.scope,
         meeting_ref_digest: meetingRefDigest,
         cleared_at: clock(),
       });
-      return { disposition: 'ready' };
+      return { disposition: cleared ? 'ready' : 'unavailable' };
+    },
+    async recordStudentAttendance(
+      actor: ProductionBasicActor,
+      attendanceSessionKey: string,
+      eventKind: 'joined' | 'left',
+    ): Promise<ProductionBasicHostLiveResult> {
+      if (actor.kind !== 'student' || !actor.entitled) return { disposition: 'denied' };
+      if (!(await input.binding.ready())) return { disposition: 'unavailable' };
+      const meetingRefDigest = input.binding.referenceDigest();
+      if (!meetingRefDigest || !input.studentAttendance) {
+        return { disposition: 'unavailable' };
+      }
+      const recorded = await input.studentAttendance.record({
+        actor,
+        meeting_ref_digest: meetingRefDigest,
+        attendance_session_key: attendanceSessionKey,
+        event_kind: eventKind,
+        observed_at: clock(),
+      });
+      return { disposition: recorded ? 'ready' : 'unavailable' };
     },
   };
 }
