@@ -24,7 +24,7 @@
     },
     {
       "path": "apps/web/src/server/app.ts",
-      "sha256": "f00be02d171470893c9a2b68e0d40909ab929dcb2b1cfc535618d55f08b6db3f"
+      "sha256": "ed313234a369ce793ad2da01f31079e8cc65bcddc4e3f71ef989a4c2a883f2e0"
     },
     {
       "path": "apps/web/src/server/communications/register.ts",

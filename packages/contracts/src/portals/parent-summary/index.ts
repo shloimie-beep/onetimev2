@@ -1,4 +1,6 @@
-export const PARENT_SUMMARY_CONTRACT_VERSION = '1.0.0' as const;
+import type { ParentWelcomeVideoSlot } from '../parent-welcome/index.ts';
+
+export const PARENT_SUMMARY_CONTRACT_VERSION = '1.1.0' as const;
 
 export type ParentSummaryPrincipal = {
   role: 'parent';
@@ -68,6 +70,7 @@ export type ParentSummaryRecord = {
 
 export type ParentSummarySnapshot = Omit<ParentSummaryRecord, 'owner_adult_id'> & {
   contract_version: typeof PARENT_SUMMARY_CONTRACT_VERSION;
+  featured_welcome_video: ParentWelcomeVideoSlot;
   support: ParentSupportEntry;
 };
 
