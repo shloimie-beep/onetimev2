@@ -289,6 +289,42 @@ describe('controller dual-role adult provisioning', () => {
     expect(setupCalls).toBe(0);
   });
 
+  it('surfaces apply-prerequisite defects during the ordinary read-only dry run', async () => {
+    const guardedPool = prerequisiteOverridePool(pool, (kind, rows) =>
+      kind === 'trigger' ? [{ count: 0 }] : rows,
+    );
+    const report = await runDualRoleAdultProvision({
+      manifest: privateManifest('dual-role-dry-run-prerequisite@example.test'),
+      pool: guardedPool,
+      config,
+      now: PROVISION_AT,
+      testOnlyAllowIsolatedApply: true,
+    });
+    expect(report).toMatchObject({
+      apply: false,
+      status: 'blocked',
+      blockers: ['apply_prerequisite_trigger_contract_mismatch'],
+      identity: { disposition: 'absent', adult_rows: 0 },
+      setup_delivery: { token_rows: 0, intent_rows: 0, outbox_rows: 0 },
+    });
+
+    const authlessApplyProbe = await runDualRoleAdultProvision({
+      manifest: privateManifest('dual-role-authless-prerequisite@example.test'),
+      apply: true,
+      pool: guardedPool,
+      config,
+      now: PROVISION_AT,
+      testOnlyAllowIsolatedApply: true,
+    });
+    expect(authlessApplyProbe).toMatchObject({
+      apply: true,
+      status: 'blocked',
+      blockers: ['apply_prerequisite_trigger_contract_mismatch', 'ephemeral_authorization_missing'],
+      identity: { disposition: 'absent', adult_rows: 0 },
+      setup_delivery: { token_rows: 0, intent_rows: 0, outbox_rows: 0 },
+    });
+  });
+
   it('blocks an orphan deterministic key before applying any identity write', async () => {
     const email = 'dual-role-orphan-key@example.test';
     const manifest = privateManifest(email);

@@ -295,7 +295,11 @@ export async function runDualRoleAdultProvision(
     blockers.push(...initial.blockers);
     const initialSetup = await inspectSetup(pool, config, manifest, keys, now);
     if (initialSetup.blockers.length) blockers.push(...initialSetup.blockers);
-    if (apply && !blockers.length) {
+    const prerequisiteInspectionAllowed =
+      blockers.length === 0 ||
+      (apply &&
+        blockers.every((blocker): boolean => blocker === 'ephemeral_authorization_missing'));
+    if (prerequisiteInspectionAllowed) {
       blockers.push(...(await applyPrerequisiteBlockers(pool, manifest, keys, initial)));
     }
     if (blockers.length) {
