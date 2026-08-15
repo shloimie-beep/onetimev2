@@ -1,15 +1,11 @@
 import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
-import { readFile, writeFile } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
+import type { PoolClient } from 'pg';
 import { z } from 'zod';
 import { CANONICAL_APPLICATION_ORIGIN } from '../../apps/web/src/server/features/domain-transition/policy.ts';
 import { loadConfig, type AppConfig } from '../../packages/config/src/index.ts';
-import {
-  createPgPool,
-  inTransaction,
-  type DbPool,
-  type Queryable,
-} from '../../packages/db/src/index.ts';
+import { createPgPool, type DbPool, type Queryable } from '../../packages/db/src/index.ts';
 import {
   CONTROLLER_DUAL_ROLE_ACCESS_EXPIRES_AT,
   CONTROLLER_DUAL_ROLE_PROVISIONING_ACTOR,
@@ -31,12 +27,25 @@ import {
 } from '../../packages/domain/src/access/service.ts';
 import { hashAuthPassword } from '../../packages/domain/src/auth/policy.ts';
 import { normalizeEmail, stableKey } from '../../packages/domain/src/lead/normalize.ts';
+import {
+  ControllerReferencedTimeoutError,
+  runControllerOperationWithinReferencedTimeout,
+  settleControllerOperationWithin,
+} from './controller-referenced-watchdog.ts';
+import {
+  writePrivateControllerResult,
+  type PrivateControllerResultWriteOutcome,
+} from './controller-private-result.ts';
 
 const AUTHORIZATION_MAX_AGE_MS = 4 * 60 * 60 * 1000;
 const CLOCK_SKEW_MS = 5 * 60 * 1000;
 const SETUP_TOKEN_TTL_MINUTES = 60;
 const AUTHORIZATION_ENV = 'ONE_TIME_DUAL_ROLE_PROVISION_AUTHORIZATION';
 const SCHEMA = CONTROLLER_DUAL_ROLE_PROVISIONING_SCHEMA;
+const APPLY_STAGE_TIMEOUT_MS = 30_000;
+const APPLY_ROLLBACK_TIMEOUT_MS = 10_000;
+const APPLY_RECONCILIATION_TIMEOUT_MS = 30_000;
+const POOL_CLOSE_TIMEOUT_MS = 10_000;
 
 export const CONTROLLER_DUAL_ROLE_APPLY_STAGES = [
   'transaction_begin',
@@ -59,6 +68,28 @@ export const CONTROLLER_DUAL_ROLE_APPLY_STAGES = [
 
 export type ControllerDualRoleApplyStage = (typeof CONTROLLER_DUAL_ROLE_APPLY_STAGES)[number];
 
+type ApplyJournalState = 'started' | 'completed' | 'failed' | 'timed_out';
+type ApplyTransactionOutcome =
+  'not_started' | 'committed' | 'rolled_back' | 'rollback_unknown' | 'commit_unknown';
+
+type ApplyExecution = {
+  bounded_watchdog: true;
+  stage_timeout_ms: number;
+  rollback_timeout_ms: number;
+  reconciliation_timeout_ms: number;
+  pool_close_timeout_ms: number;
+  disposition: 'not_started' | 'completed' | 'failed' | 'timed_out';
+  transaction_outcome: ApplyTransactionOutcome;
+  reconciliation_outcome: 'not_requested' | 'completed' | 'failed' | 'timed_out';
+  pool_shutdown_outcome: 'caller_owned' | 'pending' | 'completed' | 'failed' | 'timed_out';
+  final_stage: ControllerDualRoleApplyStage | null;
+  journal: Array<{
+    sequence: number;
+    stage: ControllerDualRoleApplyStage;
+    state: ApplyJournalState;
+  }>;
+};
+
 const APPLY_TABLE_CONTRACT = [
   { name: 'v21_adult_identities', update: false },
   { name: 'v21_human_accounts', update: false },
@@ -78,12 +109,30 @@ const APPLY_TABLE_CONTRACT = [
 ] as const;
 
 class ControllerDualRoleApplyStageError extends Error {
-  readonly blocker: `apply_identity_${ControllerDualRoleApplyStage}_failed`;
+  readonly blocker:
+    | `apply_identity_${ControllerDualRoleApplyStage}_failed`
+    | `apply_identity_${ControllerDualRoleApplyStage}_timed_out`;
+  readonly execution: ApplyExecution;
 
-  constructor(stage: ControllerDualRoleApplyStage) {
+  constructor(
+    stage: ControllerDualRoleApplyStage,
+    state: 'failed' | 'timed_out',
+    execution: ApplyExecution,
+  ) {
     super('The controller identity transaction failed at a classified stage.');
     this.name = 'ControllerDualRoleApplyStageError';
-    this.blocker = `apply_identity_${stage}_failed`;
+    this.blocker = `apply_identity_${stage}_${state}`;
+    this.execution = execution;
+  }
+}
+
+class ControllerApplyStageRunError extends Error {
+  readonly state: 'failed' | 'timed_out';
+
+  constructor(state: 'failed' | 'timed_out') {
+    super('A classified controller apply stage did not complete.');
+    this.name = 'ControllerApplyStageRunError';
+    this.state = state;
   }
 }
 
@@ -200,6 +249,7 @@ export type DualRoleAdultProvisionReport = {
     | 'replayed'
     | 'identity_applied_setup_pending';
   blockers: string[];
+  apply_execution: ApplyExecution;
   identity: {
     disposition: IdentityDisposition;
     adult_rows: number;
@@ -229,6 +279,10 @@ export type DualRoleAdultProvisionReport = {
     ephemeral_authorization_required_for_apply: true;
     read_only_apply_prerequisite_check: true;
     sanitized_stage_failure_reporting: true;
+    bounded_apply_stage_watchdog: true;
+    bounded_apply_reconciliation: true;
+    sanitized_apply_stage_journal: true;
+    bounded_pool_shutdown: true;
     advisory_transaction_lock: true;
     one_adult_credential: true;
     no_legacy_adult: true;
@@ -257,6 +311,12 @@ export type DualRoleAdultProvisionOptions = {
   issuePasswordReset?: typeof requestControllerDualRoleInitialPasswordSetup;
   /** Tests only. The CLI has no failure-injection flag. */
   testOnlyFailApplyStage?: ControllerDualRoleApplyStage;
+  /** Tests only. The CLI has no stall-injection flag. */
+  testOnlyStallApplyStage?: ControllerDualRoleApplyStage;
+  /** Tests only. Production always uses the fixed bounded stage timeout. */
+  testOnlyApplyStageTimeoutMs?: number;
+  /** Tests only. Exercises forced client destruction after rollback cannot be proven. */
+  testOnlyRollbackBehavior?: 'stall' | 'fail';
 };
 
 type TargetKeys = ReturnType<typeof targetKeys>;
@@ -280,6 +340,30 @@ export async function runDualRoleAdultProvision(
   const keys = targetKeys(manifest);
   const pool = options.pool ?? createPgPool(config);
   const shouldClose = !options.pool;
+  let completedReport: DualRoleAdultProvisionReport | undefined;
+  const finish = (
+    reportNow: Date,
+    reportApply: boolean,
+    status: DualRoleAdultProvisionReport['status'],
+    blockers: string[],
+    identity: IdentityInspection,
+    setupInspection: SetupInspection,
+    applyExecution?: ApplyExecution,
+  ) => {
+    completedReport = report(
+      reportNow,
+      reportApply,
+      status,
+      blockers,
+      identity,
+      setupInspection,
+      applyExecution,
+    );
+    completedReport.apply_execution.pool_shutdown_outcome = shouldClose
+      ? 'pending'
+      : 'caller_owned';
+    return completedReport;
+  };
   try {
     const isolatedSyntheticTestTarget = await verifyIsolatedSyntheticTestTarget(
       pool,
@@ -303,10 +387,10 @@ export async function runDualRoleAdultProvision(
       blockers.push(...(await applyPrerequisiteBlockers(pool, manifest, keys, initial)));
     }
     if (blockers.length) {
-      return report(now, apply, 'blocked', blockers, initial, initialSetup);
+      return finish(now, apply, 'blocked', blockers, initial, initialSetup);
     }
     if (!apply) {
-      return report(
+      return finish(
         now,
         false,
         initial.disposition === 'absent' ? 'dry_run_planned' : 'dry_run_replay',
@@ -319,39 +403,100 @@ export async function runDualRoleAdultProvision(
     }
 
     let created: boolean;
+    let applyExecution: ApplyExecution;
     try {
-      created = await applyIdentity(
+      const applied = await applyIdentity(
         pool,
         config,
         manifest,
         keys,
         now,
         isolatedSyntheticTestTarget ? options.testOnlyFailApplyStage : undefined,
+        isolatedSyntheticTestTarget ? options.testOnlyStallApplyStage : undefined,
+        isolatedSyntheticTestTarget ? options.testOnlyApplyStageTimeoutMs : undefined,
+        isolatedSyntheticTestTarget ? options.testOnlyRollbackBehavior : undefined,
       );
+      created = applied.created;
+      applyExecution = applied.execution;
     } catch (error) {
       const failureBlocker =
         error instanceof ControllerDualRoleApplyStageError
           ? error.blocker
           : 'apply_identity_unclassified_failure';
-      return reconcileFailedIdentityApply(
-        pool,
-        config,
-        manifest,
-        keys,
+      if (error instanceof ControllerDualRoleApplyStageError) {
+        try {
+          const reconciled = await runControllerOperationWithinReferencedTimeout(
+            () =>
+              reconcileFailedIdentityApply(
+                pool,
+                config,
+                manifest,
+                keys,
+                now,
+                failureBlocker,
+                initial,
+                initialSetup,
+              ),
+            APPLY_RECONCILIATION_TIMEOUT_MS,
+          );
+          reconciled.apply_execution = {
+            ...error.execution,
+            reconciliation_outcome: 'completed',
+          };
+          reconciled.apply_execution.pool_shutdown_outcome = shouldClose
+            ? 'pending'
+            : 'caller_owned';
+          completedReport = reconciled;
+          return reconciled;
+        } catch (reconciliationError) {
+          const reconciliationOutcome =
+            reconciliationError instanceof ControllerReferencedTimeoutError
+              ? 'timed_out'
+              : 'failed';
+          return finish(
+            now,
+            true,
+            'blocked',
+            [failureBlocker, `apply_identity_reconciliation_${reconciliationOutcome}`],
+            initial,
+            initialSetup,
+            { ...error.execution, reconciliation_outcome: reconciliationOutcome },
+          );
+        }
+      }
+      return finish(
         now,
-        failureBlocker,
+        true,
+        'blocked',
+        [failureBlocker, 'apply_identity_reconciliation_failed'],
         initial,
         initialSetup,
       );
     }
     const identity = await inspectIdentity(pool, config, manifest, keys, now);
     if (identity.disposition !== 'exact_replay' || identity.blockers.length) {
-      return report(now, true, 'blocked', identity.blockers, identity, initialSetup);
+      return finish(
+        now,
+        true,
+        'blocked',
+        identity.blockers,
+        identity,
+        initialSetup,
+        applyExecution,
+      );
     }
 
     let setup = await inspectSetup(pool, config, manifest, keys, now);
     if (setup.disposition === 'blocked') {
-      return report(now, true, 'identity_applied_setup_pending', setup.blockers, identity, setup);
+      return finish(
+        now,
+        true,
+        'identity_applied_setup_pending',
+        setup.blockers,
+        identity,
+        setup,
+        applyExecution,
+      );
     }
     if (setup.token_rows === 0 && identity.credentialState === 'reset_required') {
       try {
@@ -367,17 +512,26 @@ export async function runDualRoleAdultProvision(
         });
       } catch {
         setup = { ...setup, disposition: 'blocked', blockers: ['setup_delivery_not_reconciled'] };
-        return report(now, true, 'identity_applied_setup_pending', setup.blockers, identity, setup);
+        return finish(
+          now,
+          true,
+          'identity_applied_setup_pending',
+          setup.blockers,
+          identity,
+          setup,
+          applyExecution,
+        );
       }
       setup = await inspectSetup(pool, config, manifest, keys, now);
       if (setup.disposition === 'blocked' || setup.token_rows !== 1) {
-        return report(
+        return finish(
           now,
           true,
           'identity_applied_setup_pending',
           setup.blockers.length ? setup.blockers : ['setup_delivery_not_reconciled'],
           identity,
           setup,
+          applyExecution,
         );
       }
     } else if (setup.token_rows === 1 && setup.disposition === 'queued') {
@@ -385,9 +539,23 @@ export async function runDualRoleAdultProvision(
     } else if (setup.token_rows === 0 && identity.credentialState === 'active') {
       setup = { ...setup, disposition: 'not_required' };
     }
-    return report(now, true, created ? 'applied' : 'replayed', [], identity, setup);
+    return finish(now, true, created ? 'applied' : 'replayed', [], identity, setup, applyExecution);
   } finally {
-    if (shouldClose) await pool.end();
+    if (shouldClose) {
+      const closeState = await settleControllerOperationWithin(
+        () => pool.end(),
+        POOL_CLOSE_TIMEOUT_MS,
+      );
+      if (completedReport) {
+        completedReport.apply_execution.pool_shutdown_outcome = closeState;
+        if (closeState !== 'completed') {
+          completedReport.status = 'blocked';
+          completedReport.blockers = [
+            ...new Set([...completedReport.blockers, `controller_pool_shutdown_${closeState}`]),
+          ].sort();
+        }
+      }
+    }
   }
 }
 
@@ -420,7 +588,10 @@ function envelopeBlockers(
       options.config !== undefined ||
       options.issuePasswordReset !== undefined ||
       options.testOnlyAllowIsolatedApply !== undefined ||
-      options.testOnlyFailApplyStage !== undefined)
+      options.testOnlyFailApplyStage !== undefined ||
+      options.testOnlyStallApplyStage !== undefined ||
+      options.testOnlyApplyStageTimeoutMs !== undefined ||
+      options.testOnlyRollbackBehavior !== undefined)
   ) {
     blockers.push('production_injection_seam_forbidden');
   }
@@ -1605,32 +1776,110 @@ async function applyIdentity(
   keys: TargetKeys,
   now: Date,
   testOnlyFailStage?: ControllerDualRoleApplyStage,
-) {
+  testOnlyStallStage?: ControllerDualRoleApplyStage,
+  testOnlyStageTimeoutMs?: number,
+  testOnlyRollbackBehavior?: 'stall' | 'fail',
+): Promise<{ created: boolean; execution: ApplyExecution }> {
+  const stageTimeoutMs =
+    testOnlyStageTimeoutMs !== undefined &&
+    Number.isInteger(testOnlyStageTimeoutMs) &&
+    testOnlyStageTimeoutMs > 0 &&
+    testOnlyStageTimeoutMs <= APPLY_STAGE_TIMEOUT_MS
+      ? testOnlyStageTimeoutMs
+      : APPLY_STAGE_TIMEOUT_MS;
+  const rollbackTimeoutMs = Math.min(APPLY_ROLLBACK_TIMEOUT_MS, stageTimeoutMs);
+  const journal: ApplyExecution['journal'] = [];
   let stage: ControllerDualRoleApplyStage = 'transaction_begin';
-  const atStage = async <T>(nextStage: ControllerDualRoleApplyStage, run: () => Promise<T>) => {
+  let transactionOutcome: ApplyTransactionOutcome = 'not_started';
+  let disposition: ApplyExecution['disposition'] = 'not_started';
+  let client: PoolClient | undefined;
+  let transactionStarted = false;
+  let beginDispatched = false;
+  let commitDispatched = false;
+  let forceDestroyClient = false;
+  const snapshot = (): ApplyExecution => ({
+    bounded_watchdog: true,
+    stage_timeout_ms: stageTimeoutMs,
+    rollback_timeout_ms: rollbackTimeoutMs,
+    reconciliation_timeout_ms: APPLY_RECONCILIATION_TIMEOUT_MS,
+    pool_close_timeout_ms: POOL_CLOSE_TIMEOUT_MS,
+    disposition,
+    transaction_outcome: transactionOutcome,
+    reconciliation_outcome: 'not_requested',
+    pool_shutdown_outcome: 'caller_owned',
+    final_stage: journal.length ? stage : null,
+    journal: journal.map((entry) => ({ ...entry })),
+  });
+  const appendJournal = (entryStage: ControllerDualRoleApplyStage, state: ApplyJournalState) => {
+    journal.push({ sequence: journal.length + 1, stage: entryStage, state });
+  };
+  const atStage = async <T>(
+    nextStage: ControllerDualRoleApplyStage,
+    run: (signal: AbortSignal) => Promise<T> | T,
+  ) => {
     stage = nextStage;
-    if (testOnlyFailStage === nextStage) {
-      throw new Error('TEST_ONLY_RAW_FAILURE INSERT INTO hidden@example.test database-id');
+    appendJournal(nextStage, 'started');
+    const controller = new AbortController();
+    try {
+      const value = await runControllerOperationWithinReferencedTimeout(
+        async () => {
+          if (testOnlyFailStage === nextStage) {
+            throw new Error('TEST_ONLY_RAW_FAILURE INSERT INTO hidden@example.test database-id');
+          }
+          const value = await run(controller.signal);
+          if (testOnlyStallStage === nextStage) await new Promise<never>(() => undefined);
+          return value;
+        },
+        stageTimeoutMs,
+        () => controller.abort(),
+      );
+      appendJournal(nextStage, 'completed');
+      return value;
+    } catch (error) {
+      const state = error instanceof ControllerReferencedTimeoutError ? 'timed_out' : 'failed';
+      appendJournal(nextStage, state);
+      throw new ControllerApplyStageRunError(state);
     }
-    return run();
   };
 
   try {
-    await atStage('transaction_begin', async () => undefined);
-    return await inTransaction(pool, async (db) => {
+    await atStage('transaction_begin', async (signal) => {
+      const connected = await pool.connect();
+      if (signal.aborted) {
+        connected.release(true);
+        throw new ControllerReferencedTimeoutError();
+      }
+      client = connected;
+      beginDispatched = true;
+      await connected.query('BEGIN');
+      if (signal.aborted) throw new ControllerReferencedTimeoutError();
+      transactionStarted = true;
+    });
+    const db = client;
+    if (!db) throw new ControllerApplyStageRunError('failed');
+    return await (async () => {
       await atStage('advisory_lock', async () => {
         await db.query('SELECT pg_advisory_xact_lock(hashtext($1))', [
           `dual-role-adult-provision:${manifest.adult.email}`,
         ]);
       });
-      const locked = await atStage('locked_preflight', () =>
-        inspectIdentity(db, config, manifest, keys, now),
-      );
+      const locked = await atStage('locked_preflight', async () => {
+        const inspection = await inspectIdentity(db, config, manifest, keys, now);
+        if (inspection.disposition !== 'absent' && inspection.disposition !== 'exact_replay') {
+          throw new Error('Target identity preflight changed.');
+        }
+        return inspection;
+      });
       if (locked.disposition === 'exact_replay') {
-        await atStage('transaction_commit', async () => undefined);
-        return false;
+        await atStage('transaction_commit', async () => {
+          commitDispatched = true;
+          await db.query('COMMIT');
+          transactionStarted = false;
+          transactionOutcome = 'committed';
+        });
+        disposition = 'completed';
+        return { created: false, execution: snapshot() };
       }
-      if (locked.disposition !== 'absent') throw new Error('Target identity preflight changed.');
       const scope = [
         manifest.scope.product_key,
         manifest.scope.runtime_tier,
@@ -1784,17 +2033,62 @@ async function applyIdentity(
           'controller provisioning audit',
         ),
       );
-      const readback = await atStage('transactional_readback', () =>
-        inspectIdentity(db, config, manifest, keys, now),
-      );
-      if (readback.disposition !== 'exact_replay') {
-        throw new Error('Provisioned identity failed transactional readback.');
+      await atStage('transactional_readback', async () => {
+        const readback = await inspectIdentity(db, config, manifest, keys, now);
+        if (readback.disposition !== 'exact_replay') {
+          throw new Error('Provisioned identity failed transactional readback.');
+        }
+      });
+      await atStage('transaction_commit', async () => {
+        commitDispatched = true;
+        await db.query('COMMIT');
+        transactionStarted = false;
+        transactionOutcome = 'committed';
+      });
+      disposition = 'completed';
+      return { created: true, execution: snapshot() };
+    })();
+  } catch (error) {
+    const failureStage = stage as ControllerDualRoleApplyStage;
+    const state =
+      error instanceof ControllerApplyStageRunError && error.state === 'timed_out'
+        ? 'timed_out'
+        : 'failed';
+    disposition = state;
+    if (failureStage === 'transaction_commit' && commitDispatched) {
+      transactionOutcome = 'commit_unknown';
+      forceDestroyClient = true;
+    } else if (client && transactionStarted) {
+      const rollbackClient = client;
+      const rollback = await settleControllerOperationWithin(() => {
+        if (testOnlyRollbackBehavior === 'stall') {
+          return rollbackClient.query('SELECT pg_sleep(2)');
+        }
+        if (testOnlyRollbackBehavior === 'fail') {
+          return rollbackClient.query('SELECT controller_test_only_rollback_failure()');
+        }
+        return rollbackClient.query('ROLLBACK');
+      }, rollbackTimeoutMs);
+      if (rollback === 'completed') {
+        transactionStarted = false;
+        transactionOutcome = 'rolled_back';
+      } else {
+        transactionOutcome = 'rollback_unknown';
+        forceDestroyClient = true;
       }
-      await atStage('transaction_commit', async () => undefined);
-      return true;
-    });
-  } catch {
-    throw new ControllerDualRoleApplyStageError(stage);
+    } else if (client) {
+      if (beginDispatched) transactionOutcome = 'rollback_unknown';
+      forceDestroyClient = true;
+    }
+    throw new ControllerDualRoleApplyStageError(failureStage, state, snapshot());
+  } finally {
+    if (client) {
+      try {
+        client.release(forceDestroyClient);
+      } catch {
+        // The sanitized transaction outcome above is authoritative for operator reconciliation.
+      }
+    }
   }
 }
 
@@ -2068,6 +2362,19 @@ function report(
   blockers: string[],
   identity: IdentityInspection,
   setupInspection: SetupInspection,
+  applyExecution: ApplyExecution = {
+    bounded_watchdog: true,
+    stage_timeout_ms: APPLY_STAGE_TIMEOUT_MS,
+    rollback_timeout_ms: APPLY_ROLLBACK_TIMEOUT_MS,
+    reconciliation_timeout_ms: APPLY_RECONCILIATION_TIMEOUT_MS,
+    pool_close_timeout_ms: POOL_CLOSE_TIMEOUT_MS,
+    disposition: 'not_started',
+    transaction_outcome: 'not_started',
+    reconciliation_outcome: 'not_requested',
+    pool_shutdown_outcome: 'caller_owned',
+    final_stage: null,
+    journal: [],
+  },
 ): DualRoleAdultProvisionReport {
   const safeIdentity: DualRoleAdultProvisionReport['identity'] = {
     disposition: identity.disposition,
@@ -2097,6 +2404,7 @@ function report(
     apply,
     status,
     blockers: [...new Set(blockers)].sort(),
+    apply_execution: applyExecution,
     identity: safeIdentity,
     setup_delivery: safeSetup,
     safety: {
@@ -2106,6 +2414,10 @@ function report(
       ephemeral_authorization_required_for_apply: true,
       read_only_apply_prerequisite_check: true,
       sanitized_stage_failure_reporting: true,
+      bounded_apply_stage_watchdog: true,
+      bounded_apply_reconciliation: true,
+      sanitized_apply_stage_journal: true,
+      bounded_pool_shutdown: true,
       advisory_transaction_lock: true,
       one_adult_credential: true,
       no_legacy_adult: true,
@@ -2187,41 +2499,93 @@ function requestedOutputPath(argv: string[]) {
 export async function runDualRoleAdultProvisionCli(
   argv: string[],
   emit: (output: string) => void = (output) => process.stdout.write(output),
+  dependencies: {
+    /** Tests only. The executable CLI does not expose a dependency-injection flag. */
+    runProvision?: typeof runDualRoleAdultProvision;
+    /** Tests only. The executable CLI always uses the private bounded result writer. */
+    writeResult?: (
+      outputPath: string,
+      output: string,
+    ) => Promise<PrivateControllerResultWriteOutcome>;
+  } = {},
 ) {
   let outputPath = requestedOutputPath(argv);
+  let result:
+    DualRoleAdultProvisionReport | { schema: typeof SCHEMA; status: 'blocked'; blockers: string[] };
   try {
     const args = parseArgs(argv);
     outputPath = typeof args.out === 'string' ? args.out : outputPath;
-    const result = await runDualRoleAdultProvision({
+    const runProvision = dependencies.runProvision ?? runDualRoleAdultProvision;
+    result = await runProvision({
       ...(typeof args.manifest === 'string' ? { manifestPath: args.manifest } : {}),
       apply: args.apply === true,
       ...(process.env[AUTHORIZATION_ENV]
         ? { authorizationPhrase: process.env[AUTHORIZATION_ENV] }
         : {}),
     });
-    const output = `${JSON.stringify(result, null, 2)}\n`;
-    if (outputPath) await writeFile(outputPath, output, 'utf8');
-    emit(output);
-    if (result.status === 'blocked' || result.status === 'identity_applied_setup_pending') {
-      return 2;
-    }
-    return 0;
   } catch {
-    const output = `${JSON.stringify({
+    result = {
       schema: SCHEMA,
       status: 'blocked',
       blockers: ['controller_preflight_failed'],
-    })}\n`;
-    if (outputPath) {
-      try {
-        await writeFile(outputPath, output, 'utf8');
-      } catch {
-        // The result remains available on stdout without exposing the path or write failure.
-      }
-    }
-    emit(output);
-    return 2;
+    };
   }
+  return deliverControllerCliResult(
+    result,
+    outputPath,
+    emit,
+    dependencies.writeResult ?? writePrivateControllerResult,
+  );
+}
+
+async function deliverControllerCliResult(
+  initialResult:
+    DualRoleAdultProvisionReport | { schema: typeof SCHEMA; status: 'blocked'; blockers: string[] },
+  outputPath: string | undefined,
+  emit: (output: string) => void,
+  writeResult: (outputPath: string, output: string) => Promise<PrivateControllerResultWriteOutcome>,
+) {
+  let result = initialResult;
+  let output = `${JSON.stringify(result, null, 2)}\n`;
+  if (outputPath) {
+    const firstWrite = await safePrivateControllerResultWrite(writeResult, outputPath, output);
+    if (firstWrite !== 'written') {
+      result = controllerResultWithWriteBlocker(result, firstWrite);
+      output = `${JSON.stringify(result, null, 2)}\n`;
+      const fallbackWrite = await safePrivateControllerResultWrite(writeResult, outputPath, output);
+      if (fallbackWrite !== 'written') {
+        result = controllerResultWithWriteBlocker(result, fallbackWrite);
+        output = `${JSON.stringify(result, null, 2)}\n`;
+      }
+      emit(output);
+      return 2;
+    }
+  }
+  emit(output);
+  return result.status === 'blocked' || result.status === 'identity_applied_setup_pending' ? 2 : 0;
+}
+
+async function safePrivateControllerResultWrite(
+  writeResult: (outputPath: string, output: string) => Promise<PrivateControllerResultWriteOutcome>,
+  outputPath: string,
+  output: string,
+): Promise<PrivateControllerResultWriteOutcome> {
+  try {
+    return await writeResult(outputPath, output);
+  } catch {
+    return 'failed';
+  }
+}
+
+function controllerResultWithWriteBlocker<
+  T extends
+    DualRoleAdultProvisionReport | { schema: typeof SCHEMA; status: 'blocked'; blockers: string[] },
+>(result: T, outcome: Exclude<PrivateControllerResultWriteOutcome, 'written'>): T {
+  return {
+    ...result,
+    status: 'blocked',
+    blockers: [...new Set([...result.blockers, `controller_result_write_${outcome}`])].sort(),
+  };
 }
 
 if (isCliEntrypoint()) {

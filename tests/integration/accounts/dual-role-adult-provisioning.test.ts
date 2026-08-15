@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
-import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { spawnSync } from 'node:child_process';
+import { mkdtemp, readFile, readdir, rm, stat } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -33,6 +34,7 @@ import {
 } from '../../../packages/domain/src/accounts/lifecycle.ts';
 import { hashAuthPassword } from '../../../packages/domain/src/auth/policy.ts';
 import { createDbBackedTestAdultSessionRepository } from '../../support/pgmem-v21-parent-session-repository.ts';
+import { writePrivateControllerResult } from '../../../scripts/operations/controller-private-result.ts';
 import {
   CONTROLLER_DUAL_ROLE_APPLY_STAGES,
   isCanonicalControllerResetOrigin,
@@ -205,6 +207,18 @@ describe('controller dual-role adult provisioning', () => {
       });
       expect(['blocked', 'identity_applied_setup_pending']).toContain(report.status);
       expect(report.blockers).toContain(`apply_identity_${stage}_failed`);
+      expect(report.apply_execution).toMatchObject({
+        bounded_watchdog: true,
+        disposition: 'failed',
+        transaction_outcome: stage === 'transaction_begin' ? 'not_started' : 'rolled_back',
+        reconciliation_outcome: 'completed',
+        final_stage: stage,
+      });
+      expect(report.apply_execution.journal.at(-1)).toEqual({
+        sequence: report.apply_execution.journal.length,
+        stage,
+        state: 'failed',
+      });
       expect(setupCalls).toBe(0);
       const serialized = JSON.stringify(report);
       expect(serialized).not.toContain(email);
@@ -219,6 +233,134 @@ describe('controller dual-role adult provisioning', () => {
     await expect(count(pool, 'account_lifecycle_delivery_outbox')).resolves.toBe(0);
   });
 
+  it('bounds every stalled identity stage, rolls back, and emits only a sanitized journal', async () => {
+    const memory = createMemoryPool();
+    await runMigrations(memory);
+    const stalledPool = canonicalTriggerCompatiblePool(memory);
+    const stalledConfig = testConfig();
+    await seedCanonicalClassSeries(stalledPool);
+    try {
+      for (const stage of CONTROLLER_DUAL_ROLE_APPLY_STAGES) {
+        const email = `dual-role-stall-${stage.replaceAll('_', '-')}@example.test`;
+        let setupCalls = 0;
+
+        const report = await runDualRoleAdultProvision({
+          manifest: privateManifest(email),
+          apply: true,
+          authorizationPhrase: AUTHORIZATION,
+          pool: stalledPool,
+          config: stalledConfig,
+          now: PROVISION_AT,
+          testOnlyAllowIsolatedApply: true,
+          testOnlyStallApplyStage: stage,
+          testOnlyApplyStageTimeoutMs: 500,
+          issuePasswordReset: async () => {
+            setupCalls += 1;
+            throw new Error('Setup must not run after an identity timeout.');
+          },
+        });
+
+        expect(report).toMatchObject({
+          blockers: expect.arrayContaining([`apply_identity_${stage}_timed_out`]),
+          apply_execution: {
+            bounded_watchdog: true,
+            disposition: 'timed_out',
+            transaction_outcome: stage === 'transaction_commit' ? 'commit_unknown' : 'rolled_back',
+            reconciliation_outcome: 'completed',
+            final_stage: stage,
+          },
+          setup_delivery: { token_rows: 0, intent_rows: 0, outbox_rows: 0 },
+        });
+        expect(['blocked', 'identity_applied_setup_pending']).toContain(report.status);
+        expect(report.apply_execution.journal.at(-1)).toEqual({
+          sequence: report.apply_execution.journal.length,
+          stage,
+          state: 'timed_out',
+        });
+        expect(setupCalls).toBe(0);
+
+        const serialized = JSON.stringify(report);
+        expect(serialized).not.toContain(email);
+        expect(serialized).not.toContain('Synthetic Dual Role Adult');
+        expect(serialized).not.toContain('INSERT INTO');
+        expect(serialized).not.toContain('database-id');
+        expect(serialized).not.toContain('@');
+      }
+      await expect(count(stalledPool, 'account_lifecycle_tokens')).resolves.toBe(0);
+      await expect(count(stalledPool, 'account_lifecycle_delivery_intents')).resolves.toBe(0);
+      await expect(count(stalledPool, 'account_lifecycle_delivery_outbox')).resolves.toBe(0);
+    } finally {
+      await stalledPool.end();
+    }
+  }, 30_000);
+
+  it('runs the real CLI to exits 0 and 2, never 13, under Node-to-npm spawnSync pipes', () => {
+    const npmCli = process.env.npm_execpath;
+    expect(npmCli).toBeTruthy();
+    const runFixture = (mode: 'success' | 'output-timeout') =>
+      spawnSync(
+        process.execPath,
+        [
+          npmCli!,
+          'exec',
+          '--',
+          'tsx',
+          join(process.cwd(), 'tests', 'fixtures', 'dual-role-apply-watchdog-non-tty.ts'),
+          mode,
+        ],
+        {
+          cwd: process.cwd(),
+          encoding: 'utf8',
+          input: '',
+          stdio: ['pipe', 'pipe', 'pipe'],
+          timeout: 15_000,
+        },
+      );
+
+    const success = runFixture('success');
+    expect(success.error).toBeUndefined();
+    expect(success.signal).toBeNull();
+    expect(success.status).toBe(0);
+    expect(success.status).not.toBe(13);
+    expect(success.stderr).toBe('');
+    expect(JSON.parse(success.stdout)).toMatchObject({
+      apply: false,
+      status: 'dry_run_planned',
+      blockers: [],
+      identity: { disposition: 'absent', adult_rows: 0 },
+      setup_delivery: { token_rows: 0, intent_rows: 0, outbox_rows: 0 },
+    });
+
+    const timedOut = runFixture('output-timeout');
+    expect(timedOut.error).toBeUndefined();
+    expect(timedOut.signal).toBeNull();
+    expect(timedOut.status).toBe(2);
+    expect(timedOut.status).not.toBe(13);
+    expect(timedOut.stderr).toBe('');
+    expect(JSON.parse(timedOut.stdout)).toMatchObject({
+      apply: true,
+      status: 'blocked',
+      blockers: expect.arrayContaining([
+        'apply_identity_transaction_begin_timed_out',
+        'controller_result_write_timed_out',
+      ]),
+      apply_execution: {
+        disposition: 'timed_out',
+        transaction_outcome: 'rolled_back',
+        reconciliation_outcome: 'completed',
+        final_stage: 'transaction_begin',
+      },
+      identity: { disposition: 'absent', adult_rows: 0 },
+      setup_delivery: { token_rows: 0, intent_rows: 0, outbox_rows: 0 },
+    });
+    expect(timedOut.stdout).not.toContain('controller_preflight_failed');
+    for (const output of [success.stdout, timedOut.stdout]) {
+      expect(output).not.toContain('@');
+      expect(output).not.toContain('INSERT INTO');
+      expect(output).not.toContain('database-id');
+    }
+  });
+
   it('writes the same sanitized controller failure to --out when the CLI throws', async () => {
     const directory = await mkdtemp(join(tmpdir(), 'dual-role-controller-output-'));
     const outputPath = join(directory, 'result.json');
@@ -228,16 +370,85 @@ describe('controller dual-role adult provisioning', () => {
         ['--manifest', join(directory, 'missing-private-manifest.json'), '--out', outputPath],
         (output) => emitted.push(output),
       );
-      const output = await readFile(outputPath, 'utf8');
       expect(exitCode).toBe(2);
-      expect(emitted).toEqual([output]);
+      const output = emitted[0]!;
+      if (process.platform === 'win32') {
+        await expect(readFile(outputPath, 'utf8')).rejects.toThrow();
+      } else {
+        await expect(readFile(outputPath, 'utf8')).resolves.toBe(output);
+        expect((await stat(outputPath)).mode & 0o777).toBe(0o600);
+      }
       expect(JSON.parse(output)).toEqual({
         schema: 'onetime.controller.dual_role_adult_provision.v1',
         status: 'blocked',
-        blockers: ['controller_preflight_failed'],
+        blockers: [
+          'controller_preflight_failed',
+          ...(process.platform === 'win32'
+            ? ['controller_result_write_permission_unavailable']
+            : []),
+        ],
       });
       expect(output).not.toContain(directory);
       expect(output).not.toContain('missing-private-manifest');
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
+  });
+
+  it('preserves a computed sanitized report when primary and fallback output writes fail', async () => {
+    const before = await protectedCounts(pool);
+    const computed = await runDualRoleAdultProvision({
+      manifest: privateManifest('dual-role-output-failure@example.test'),
+      pool,
+      config,
+      now: PROVISION_AT,
+      testOnlyAllowIsolatedApply: true,
+    });
+    const emitted: string[] = [];
+    let writeCalls = 0;
+    const exitCode = await runDualRoleAdultProvisionCli(
+      ['--out', 'private-controller-result.json'],
+      (output) => emitted.push(output),
+      {
+        runProvision: async () => computed,
+        writeResult: async () => {
+          writeCalls += 1;
+          return writeCalls === 1 ? 'timed_out' : 'failed';
+        },
+      },
+    );
+
+    expect(exitCode).toBe(2);
+    expect(writeCalls).toBe(2);
+    expect(emitted).toHaveLength(1);
+    expect(JSON.parse(emitted[0]!)).toMatchObject({
+      apply: false,
+      status: 'blocked',
+      blockers: ['controller_result_write_failed', 'controller_result_write_timed_out'],
+      apply_execution: computed.apply_execution,
+      identity: computed.identity,
+      setup_delivery: computed.setup_delivery,
+      safety: computed.safety,
+    });
+    expect(emitted[0]).not.toContain('controller_preflight_failed');
+    expect(emitted[0]).not.toContain('@');
+    expect(await protectedCounts(pool)).toEqual(before);
+  });
+
+  it('bounds a stalled private output after secure creation and removes every partial file', async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'dual-role-controller-private-output-'));
+    const outputPath = join(directory, 'result.json');
+    try {
+      const outcome = await writePrivateControllerResult(outputPath, '{"status":"blocked"}\n', {
+        testOnlyTimeoutMs: 25,
+        testOnlyStallAfterPrivateOpen: true,
+      });
+      if (process.platform === 'win32') {
+        expect(outcome).toBe('permission_unavailable');
+      } else {
+        expect(outcome).toBe('timed_out');
+      }
+      await expect(readdir(directory)).resolves.toEqual([]);
     } finally {
       await rm(directory, { recursive: true, force: true });
     }

@@ -194,8 +194,60 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
         expect(failure).toMatchObject({
           status: 'blocked',
           blockers: [`apply_identity_${stage}_failed`],
+          apply_execution: {
+            bounded_watchdog: true,
+            disposition: 'failed',
+            transaction_outcome: stage === 'transaction_begin' ? 'not_started' : 'rolled_back',
+            reconciliation_outcome: 'completed',
+            final_stage: stage,
+          },
           identity: { disposition: 'absent', adult_rows: 0 },
           setup_delivery: { token_rows: 0, intent_rows: 0, outbox_rows: 0 },
+        });
+        expect(failure.apply_execution.journal.at(-1)).toEqual({
+          sequence: failure.apply_execution.journal.length,
+          stage,
+          state: 'failed',
+        });
+        expect(setupCalls).toBe(0);
+        await expect(cardinalities(pool)).resolves.toEqual(beforeFailures);
+      }
+      for (const stage of CONTROLLER_DUAL_ROLE_APPLY_STAGES.filter(
+        (candidate) => candidate !== 'transaction_commit',
+      )) {
+        let setupCalls = 0;
+        const stalled = await runDualRoleAdultProvision({
+          manifest,
+          apply: true,
+          authorizationPhrase: AUTHORIZATION,
+          pool,
+          config,
+          now: PROVISION_AT,
+          testOnlyAllowIsolatedApply: true,
+          testOnlyStallApplyStage: stage,
+          testOnlyApplyStageTimeoutMs: 250,
+          issuePasswordReset: async () => {
+            setupCalls += 1;
+            throw new Error('Setup must not run after an identity timeout.');
+          },
+        });
+        expect(stalled).toMatchObject({
+          status: 'blocked',
+          blockers: [`apply_identity_${stage}_timed_out`],
+          apply_execution: {
+            bounded_watchdog: true,
+            disposition: 'timed_out',
+            transaction_outcome: 'rolled_back',
+            reconciliation_outcome: 'completed',
+            final_stage: stage,
+          },
+          identity: { disposition: 'absent', adult_rows: 0 },
+          setup_delivery: { token_rows: 0, intent_rows: 0, outbox_rows: 0 },
+        });
+        expect(stalled.apply_execution.journal.at(-1)).toEqual({
+          sequence: stalled.apply_execution.journal.length,
+          stage,
+          state: 'timed_out',
         });
         expect(setupCalls).toBe(0);
         await expect(cardinalities(pool)).resolves.toEqual(beforeFailures);
@@ -382,7 +434,165 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
       await pool.end();
     }
   }, 120_000);
+
+  it('destroys the real client on rollback and commit uncertainty without creating setup effects', async () => {
+    const nativePool = new pg.Pool({ connectionString: databaseUrl!, max: 4 });
+    const destroyedReleases: boolean[] = [];
+    const pool = observeClientDestruction(nativePool, destroyedReleases);
+    let ownsSchema = false;
+    try {
+      const database = await pool.query(
+        `SELECT current_database() AS database_name,
+                COALESCE(inet_server_addr()::text, 'local_socket') AS server_address`,
+      );
+      expect(
+        isNativeDisposablePostgresTarget({
+          databaseName: String(database.rows[0]?.database_name),
+          serverAddress: String(database.rows[0]?.server_address),
+        }),
+      ).toBe(true);
+      const blank = await pool.query(
+        `SELECT count(*)::integer AS table_count
+           FROM information_schema.tables
+          WHERE table_schema NOT IN ('pg_catalog','information_schema')`,
+      );
+      expect(blank.rows[0]).toEqual({ table_count: 0 });
+      ownsSchema = true;
+      await runMigrations(pool);
+      await seedCanonicalClass(pool);
+
+      const config = nativeConfig();
+      const manifest = privateManifest();
+      const before = await cardinalities(pool);
+      for (const rollbackBehavior of ['stall', 'fail'] as const) {
+        destroyedReleases.length = 0;
+        let setupCalls = 0;
+        const rollbackManifest = privateManifest(
+          `native-dual-role-${rollbackBehavior}@example.test`,
+          `native-dual-role-controller-proof-${rollbackBehavior}`,
+        );
+        const report = await runDualRoleAdultProvision({
+          manifest: rollbackManifest,
+          apply: true,
+          authorizationPhrase: AUTHORIZATION,
+          pool,
+          config,
+          now: PROVISION_AT,
+          testOnlyAllowIsolatedApply: true,
+          testOnlyStallApplyStage: 'adult_identity_insert',
+          testOnlyApplyStageTimeoutMs: 500,
+          testOnlyRollbackBehavior: rollbackBehavior,
+          issuePasswordReset: async () => {
+            setupCalls += 1;
+            throw new Error('Setup must not run while rollback is unknown.');
+          },
+        });
+        expect(report).toMatchObject({
+          status: 'blocked',
+          blockers: ['apply_identity_adult_identity_insert_timed_out'],
+          apply_execution: {
+            disposition: 'timed_out',
+            transaction_outcome: 'rollback_unknown',
+            reconciliation_outcome: 'completed',
+            final_stage: 'adult_identity_insert',
+          },
+          identity: { disposition: 'absent', adult_rows: 0 },
+          setup_delivery: { token_rows: 0, intent_rows: 0, outbox_rows: 0 },
+        });
+        expect(destroyedReleases).toContain(true);
+        expect(setupCalls).toBe(0);
+        await expect(cardinalities(pool)).resolves.toEqual(before);
+      }
+
+      destroyedReleases.length = 0;
+      let setupCalls = 0;
+      const commitUnknown = await runDualRoleAdultProvision({
+        manifest,
+        apply: true,
+        authorizationPhrase: AUTHORIZATION,
+        pool,
+        config,
+        now: PROVISION_AT,
+        testOnlyAllowIsolatedApply: true,
+        testOnlyStallApplyStage: 'transaction_commit',
+        testOnlyApplyStageTimeoutMs: 500,
+        issuePasswordReset: async () => {
+          setupCalls += 1;
+          throw new Error('Setup must not run while commit is being reconciled.');
+        },
+      });
+      expect(commitUnknown).toMatchObject({
+        status: 'identity_applied_setup_pending',
+        blockers: ['apply_identity_transaction_commit_timed_out'],
+        apply_execution: {
+          disposition: 'timed_out',
+          transaction_outcome: 'commit_unknown',
+          reconciliation_outcome: 'completed',
+          final_stage: 'transaction_commit',
+        },
+        identity: { disposition: 'exact_replay', adult_rows: 1 },
+        setup_delivery: { token_rows: 0, intent_rows: 0, outbox_rows: 0 },
+      });
+      expect(destroyedReleases).toContain(true);
+      expect(setupCalls).toBe(0);
+      await expect(cardinalities(pool)).resolves.toEqual({
+        adults: 1,
+        accounts: 1,
+        credentials: 1,
+        memberships: 2,
+        households: 1,
+        canonicalTransitions: 2,
+        canonicalStates: 2,
+        portalHouseholds: 1,
+        accessSources: 1,
+        accessProjections: 1,
+        accessEvents: 1,
+        audits: 1,
+        setupTokens: 0,
+        setupIntents: 0,
+        setupOutbox: 0,
+      });
+      await expect(forbiddenCardinalities(pool)).resolves.toEqual({
+        legacyUsers: 0,
+        contacts: 0,
+        students: 0,
+        guardianConsents: 0,
+        privacyConsents: 0,
+        providerReassociations: 0,
+        adultGhlLinks: 0,
+        ghlSyncOperations: 0,
+        ghlHouseholdProjections: 0,
+        householdProviderMappings: 0,
+        billingIntents: 0,
+      });
+    } finally {
+      if (ownsSchema) await pool.query('DROP SCHEMA IF EXISTS onetime CASCADE');
+      await pool.end();
+    }
+  }, 120_000);
 });
+
+function observeClientDestruction(nativePool: pg.Pool, destroyedReleases: boolean[]): DbPool {
+  return {
+    query: nativePool.query.bind(nativePool) as DbPool['query'],
+    connect: (async () => {
+      const client = await nativePool.connect();
+      return new Proxy(client, {
+        get(target, property, receiver) {
+          if (property === 'release') {
+            return (destroy?: boolean | Error) => {
+              destroyedReleases.push(destroy === true);
+              target.release(destroy);
+            };
+          }
+          const value = Reflect.get(target, property, receiver);
+          return typeof value === 'function' ? value.bind(target) : value;
+        },
+      });
+    }) as DbPool['connect'],
+    end: nativePool.end.bind(nativePool) as DbPool['end'],
+  };
+}
 
 function nativeConfig() {
   return loadConfig({
@@ -404,10 +614,10 @@ function nativeConfig() {
   });
 }
 
-function privateManifest() {
+function privateManifest(email = EMAIL, operationId = 'native-dual-role-controller-proof') {
   return {
     schema_version: 'onetime.controller.dual_role_adult_provision.v1',
-    operation_id: 'native-dual-role-controller-proof',
+    operation_id: operationId,
     authorized_at: PROVISION_AT.toISOString(),
     expires_at: new Date(PROVISION_AT.getTime() + 60 * 60 * 1000).toISOString(),
     expected_runtime_source_sha: SOURCE_SHA,
@@ -424,7 +634,7 @@ function privateManifest() {
       verification_environment_id: 'ci',
     },
     adult: {
-      email: EMAIL,
+      email,
       display_name: 'Synthetic Dual Role Adult',
       household_display_name: 'Synthetic Native Dual Role Family',
       roles: ['admin', 'parent'],
