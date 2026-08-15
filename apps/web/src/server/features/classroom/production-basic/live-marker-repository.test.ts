@@ -80,11 +80,13 @@ describe('production-basic live-class receipt', () => {
     const query = vi.fn().mockResolvedValue({ rowCount: 1, rows: [] });
     const marker = createProductionBasicHostLiveMarker({ query } as unknown as DbPool);
 
-    await marker.clear({
-      scope: { account_key: STUDENT.account_key, product_key: STUDENT.product_key },
-      meeting_ref_digest: MEETING_DIGEST,
-      cleared_at: NOW,
-    });
+    await expect(
+      marker.clear({
+        scope: { account_key: STUDENT.account_key, product_key: STUDENT.product_key },
+        meeting_ref_digest: MEETING_DIGEST,
+        cleared_at: NOW,
+      }),
+    ).resolves.toBe(true);
     const [sql, parameters] = query.mock.calls[0] as [string, unknown[]];
     expect(sql).toMatch(/^UPDATE onetime\.class_occurrences/u);
     expect(sql).not.toContain('UPDATE onetime.class_occurrences AS');
@@ -101,6 +103,31 @@ describe('production-basic live-class receipt', () => {
       NOW,
       '2026-08-13',
     ]);
+  });
+
+  it('fails closed when neither an exact clear nor an already-cleared canonical receipt is proven', async () => {
+    const query = vi
+      .fn()
+      .mockResolvedValueOnce({ rowCount: 0, rows: [] })
+      .mockResolvedValueOnce({
+        rowCount: 1,
+        rows: [
+          {
+            production_basic_live_confirmed_at: NOW,
+            production_basic_live_expires_at: new Date(NOW.getTime() + 60_000),
+            production_basic_meeting_ref_digest: 'd'.repeat(64),
+          },
+        ],
+      });
+    const marker = createProductionBasicHostLiveMarker({ query } as unknown as DbPool);
+    await expect(
+      marker.clear({
+        scope: { account_key: STUDENT.account_key, product_key: STUDENT.product_key },
+        meeting_ref_digest: MEETING_DIGEST,
+        cleared_at: NOW,
+      }),
+    ).resolves.toBe(false);
+    expect(query).toHaveBeenCalledTimes(2);
   });
 
   it('reads live state only through the exact Student enrollment and meeting digest', async () => {

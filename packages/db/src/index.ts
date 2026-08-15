@@ -71,6 +71,15 @@ export function createMemoryPool(): DbPool {
     implementation: (value: string) => createHash('md5').update(value).digest('hex'),
   });
   db.public.registerFunction({
+    name: 'convert_to',
+    args: [DataType.text, DataType.text],
+    returns: DataType.bytea,
+    implementation: (value: string, encoding: string) => {
+      if (encoding.toUpperCase() !== 'UTF8') throw new Error('memory_db_encoding_unsupported');
+      return Buffer.from(value, 'utf8');
+    },
+  });
+  db.public.registerFunction({
     name: 'jsonb_typeof',
     args: [DataType.jsonb],
     returns: DataType.text,

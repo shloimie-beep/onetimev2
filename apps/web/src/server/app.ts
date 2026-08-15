@@ -15,6 +15,7 @@ import {
   createProductionBasicHostLiveMarker,
   createProductionBasicLiveClassAccessAdapter,
 } from './features/classroom/production-basic/live-marker-repository.ts';
+import { createPostgresProductionBasicStudentAttendance } from './features/classroom/production-basic/attendance.ts';
 import { asBotKey } from '../../../../packages/contracts/src/telegram/types.ts';
 import { inTransaction, type DbPool, type Queryable } from '../../../../packages/db/src/index.ts';
 import { createPostgresBillingRepositories } from '../../../../packages/db/src/billing/repository.ts';
@@ -1819,6 +1820,12 @@ export function createApp({
                   kind: 'student',
                   scope: { account_key: actor.account_key, product_key: actor.product_key },
                   learner_key: actor.student_learner.learner_key,
+                  authenticated_session_key: actor.session_key,
+                  connection_lineage_id: productionBasicActorLineage(
+                    req,
+                    config,
+                    actor.session_key,
+                  ),
                   display_name: 'Student',
                   entitled: await studentHasProductionBasicClassAccess({
                     pool,
@@ -3199,6 +3206,15 @@ export function createApp({
   const productionBasicClassroomService = createProductionBasicLaunchService({
     binding: productionBasicMeetingBinding,
     hostLiveMarker: createProductionBasicHostLiveMarker(pool),
+    studentAttendance: createPostgresProductionBasicStudentAttendance({
+      pool,
+      attendance_projection_changes: learningComposition.attendanceProjectionChanges,
+      scope: {
+        product: 'one_time_mishnayos',
+        runtime_tier: config.oneTimeRuntimeTier,
+        verification_environment_id: config.oneTimeVerificationEnvironmentId,
+      },
+    }),
     ...(clock ? { clock } : {}),
   });
   const liveClassService = createLiveClassService({
@@ -3411,6 +3427,8 @@ export function createApp({
             kind: 'student',
             scope: { account_key: actor.account_key, product_key: actor.product_key },
             learner_key: actor.student_learner.learner_key,
+            authenticated_session_key: actor.session_key,
+            connection_lineage_id: productionBasicActorLineage(req, config, actor.session_key),
             display_name: 'Student',
             entitled: await studentHasProductionBasicClassAccess({
               pool,
@@ -3493,6 +3511,8 @@ export function createApp({
                 kind: 'student' as const,
                 scope: { account_key: actor.account_key, product_key: actor.product_key },
                 learner_key: actor.student_learner.learner_key,
+                authenticated_session_key: actor.session_key,
+                connection_lineage_id: productionBasicActorLineage(req, config, actor.session_key),
                 display_name: 'Student',
                 entitled,
               },
@@ -6636,6 +6656,15 @@ async function portalActorFromRequest(req: Request, input: ApiSessionResolutionI
     authorized_households: authorizedHouseholds,
     student_learner: studentLearner,
   } satisfies PortalActorContext;
+}
+
+function productionBasicActorLineage(req: Request, config: AppConfig, sessionKey: string) {
+  return createHmac('sha256', config.authCsrfSecret)
+    .update('production-basic-attendance-actor-v1\0')
+    .update(sessionKey)
+    .update('\0')
+    .update(req.header('user-agent') ?? 'unknown-user-agent')
+    .digest('hex');
 }
 
 function createBillingRuntime(config: AppConfig, pool: DbPool) {
