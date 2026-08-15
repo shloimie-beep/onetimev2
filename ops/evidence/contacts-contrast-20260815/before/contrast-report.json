@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-15T18:35:40.340Z",
+  "generated_at": "2026-08-15T18:59:31.692Z",
   "source_sha": "local-exact-0ed5-derived-candidate",
   "evidence_phase": "before",
   "exact_base_style_emulation": true,
@@ -131,7 +131,7 @@
         },
         {
           "selector": "span",
-          "text": "Aug 15, 2026, 9:35 PM",
+          "text": "Aug 15, 2026, 9:59 PM",
           "foreground": "rgb(200, 214, 217)",
           "background": "rgb(13, 26, 32)",
           "ratio": 11.87,
@@ -185,7 +185,7 @@
         },
         {
           "selector": "span",
-          "text": "Aug 15, 2026, 9:35 PM",
+          "text": "Aug 15, 2026, 9:59 PM",
           "foreground": "rgb(200, 214, 217)",
           "background": "rgb(13, 26, 32)",
           "ratio": 11.87,
@@ -239,7 +239,7 @@
         },
         {
           "selector": "span",
-          "text": "Aug 15, 2026, 9:35 PM",
+          "text": "Aug 15, 2026, 9:59 PM",
           "foreground": "rgb(200, 214, 217)",
           "background": "rgb(13, 26, 32)",
           "ratio": 11.87,
@@ -293,7 +293,7 @@
         },
         {
           "selector": "span",
-          "text": "Aug 15, 2026, 9:35 PM",
+          "text": "Aug 15, 2026, 9:59 PM",
           "foreground": "rgb(200, 214, 217)",
           "background": "rgb(13, 26, 32)",
           "ratio": 11.87,
@@ -414,7 +414,7 @@
         },
         {
           "selector": "p",
-          "text": "Family contact, New, last activity Aug 15, 2026, 9:35 PM.",
+          "text": "Family contact, New, last activity Aug 15, 2026, 9:59 PM.",
           "foreground": "rgb(200, 214, 217)",
           "background": "rgb(5, 5, 5)",
           "ratio": 13.66,
@@ -594,7 +594,7 @@
         },
         {
           "selector": "dd",
-          "text": "Aug 15, 2026, 9:35 PM",
+          "text": "Aug 15, 2026, 9:59 PM",
           "foreground": "rgb(255, 255, 255)",
           "background": "rgb(13, 26, 32)",
           "ratio": 17.71,
@@ -1119,7 +1119,7 @@
         },
         {
           "selector": "span",
-          "text": "Aug 15, 2026, 9:35 PM",
+          "text": "Aug 15, 2026, 9:59 PM",
           "foreground": "rgb(200, 214, 217)",
           "background": "rgb(13, 26, 32)",
           "ratio": 11.87,
@@ -1173,7 +1173,7 @@
         },
         {
           "selector": "span",
-          "text": "Aug 15, 2026, 9:35 PM",
+          "text": "Aug 15, 2026, 9:59 PM",
           "foreground": "rgb(200, 214, 217)",
           "background": "rgb(13, 26, 32)",
           "ratio": 11.87,
@@ -1227,7 +1227,7 @@
         },
         {
           "selector": "span",
-          "text": "Aug 15, 2026, 9:35 PM",
+          "text": "Aug 15, 2026, 9:59 PM",
           "foreground": "rgb(200, 214, 217)",
           "background": "rgb(13, 26, 32)",
           "ratio": 11.87,
@@ -1281,7 +1281,7 @@
         },
         {
           "selector": "span",
-          "text": "Aug 15, 2026, 9:35 PM",
+          "text": "Aug 15, 2026, 9:59 PM",
           "foreground": "rgb(200, 214, 217)",
           "background": "rgb(13, 26, 32)",
           "ratio": 11.87,
@@ -1402,7 +1402,7 @@
         },
         {
           "selector": "p",
-          "text": "Family contact, New, last activity Aug 15, 2026, 9:35 PM.",
+          "text": "Family contact, New, last activity Aug 15, 2026, 9:59 PM.",
           "foreground": "rgb(200, 214, 217)",
           "background": "rgb(5, 5, 5)",
           "ratio": 13.66,
@@ -1618,7 +1618,7 @@
         },
         {
           "selector": "dd",
-          "text": "Aug 15, 2026, 9:35 PM",
+          "text": "Aug 15, 2026, 9:59 PM",
           "foreground": "rgb(255, 255, 255)",
           "background": "rgb(13, 26, 32)",
           "ratio": 17.71,
@@ -2224,7 +2224,7 @@
         },
         {
           "selector": "td",
-          "text": "Aug 15, 2026, 9:35 PM",
+          "text": "Aug 15, 2026, 9:59 PM",
           "foreground": "rgb(255, 255, 255)",
           "background": "rgb(13, 26, 32)",
           "ratio": 17.71,
@@ -2278,7 +2278,7 @@
         },
         {
           "selector": "td",
-          "text": "Aug 15, 2026, 9:35 PM",
+          "text": "Aug 15, 2026, 9:59 PM",
           "foreground": "rgb(255, 255, 255)",
           "background": "rgb(13, 26, 32)",
           "ratio": 17.71,
@@ -2332,7 +2332,7 @@
         },
         {
           "selector": "td",
-          "text": "Aug 15, 2026, 9:35 PM",
+          "text": "Aug 15, 2026, 9:59 PM",
           "foreground": "rgb(255, 255, 255)",
           "background": "rgb(13, 26, 32)",
           "ratio": 17.71,
@@ -2386,7 +2386,7 @@
         },
         {
           "selector": "td",
-          "text": "Aug 15, 2026, 9:35 PM",
+          "text": "Aug 15, 2026, 9:59 PM",
           "foreground": "rgb(255, 255, 255)",
           "background": "rgb(13, 26, 32)",
           "ratio": 17.71,
@@ -2471,7 +2471,7 @@
         },
         {
           "selector": "p",
-          "text": "Family contact, New, last activity Aug 15, 2026, 9:35 PM.",
+          "text": "Family contact, New, last activity Aug 15, 2026, 9:59 PM.",
           "foreground": "rgb(200, 214, 217)",
           "background": "rgb(5, 5, 5)",
           "ratio": 13.66,
@@ -2687,7 +2687,7 @@
         },
         {
           "selector": "dd",
-          "text": "Aug 15, 2026, 9:35 PM",
+          "text": "Aug 15, 2026, 9:59 PM",
           "foreground": "rgb(255, 255, 255)",
           "background": "rgb(13, 26, 32)",
           "ratio": 17.71,

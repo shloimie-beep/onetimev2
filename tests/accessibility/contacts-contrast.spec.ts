@@ -300,9 +300,9 @@ async function applyExactBaseContrastIfRequested(page: Page) {
     });
     if (!stylesheet) throw new Error('Authenticated stylesheet was not available.');
     stylesheet.insertRule(
-      `.toolbar-filters input::placeholder,
-       .contact-form input::placeholder,
-       .contact-form textarea::placeholder { color: revert; opacity: revert; }`,
+      `.toolbar-filters[aria-label='CRM filters'] input::placeholder,
+       .contact-form-shell .contact-form input::placeholder,
+       .contact-form-shell .contact-form textarea::placeholder { color: revert; opacity: revert; }`,
       stylesheet.cssRules.length,
     );
   });

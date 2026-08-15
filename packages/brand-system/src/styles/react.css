@@ -148,12 +148,14 @@ button {
 .app-context,
 .app-user span,
 .page-header p,
+.contact-table small,
+.contact-card-meta,
 .app-footer {
   color: var(--ot-color-text-muted);
 }
 
-.contact-table small,
-.contact-card-meta {
+.crm-list .contact-table small,
+.crm-list .contact-card-meta {
   color: var(--ot-color-text-secondary);
 }
 
@@ -537,7 +539,7 @@ textarea:focus-visible,
   min-width: 0;
   overflow-x: auto;
   padding-bottom: 4px;
-  scrollbar-color: var(--ot-color-border-strong) transparent;
+  scrollbar-color: #66777d transparent;
 }
 
 .toolbar-filters label,
@@ -546,7 +548,7 @@ textarea:focus-visible,
   flex: 0 0 180px;
   gap: 6px;
   min-width: 180px;
-  color: var(--ot-color-text-secondary);
+  color: #c8d6d9;
   font-size: 0.88rem;
   font-weight: 800;
 }
@@ -556,7 +558,7 @@ textarea:focus-visible,
 }
 
 .toolbar-filters label.is-selected {
-  color: var(--ot-color-action-auth);
+  color: #ede518;
 }
 
 .toolbar-filters input,
@@ -565,29 +567,57 @@ textarea:focus-visible,
 .contact-form select,
 .contact-form textarea {
   width: 100%;
-  border: 1px solid var(--ot-color-border-strong);
+  border: 1px solid #66777d;
   border-radius: 8px;
-  background: var(--ot-color-surface);
-  color: var(--ot-color-text-primary);
+  background: #0d1a20;
+  color: #ffffff;
   padding: 10px 12px;
 }
 
 .toolbar-filters input:disabled {
-  border-color: var(--ot-color-border);
+  border-color: #34464d;
   background: #11191d;
+  color: #a5aea9;
+}
+
+.toolbar-filters[aria-label='CRM filters'] {
+  scrollbar-color: var(--ot-color-border-strong) transparent;
+}
+
+.toolbar-filters[aria-label='CRM filters'] label,
+.contact-form-shell .contact-form label {
+  color: var(--ot-color-text-secondary);
+}
+
+.toolbar-filters[aria-label='CRM filters'] label.is-selected {
+  color: var(--ot-color-action-auth);
+}
+
+.toolbar-filters[aria-label='CRM filters'] input,
+.toolbar-filters[aria-label='CRM filters'] select,
+.contact-form-shell .contact-form input,
+.contact-form-shell .contact-form select,
+.contact-form-shell .contact-form textarea {
+  border-color: var(--ot-color-border-strong);
+  background: var(--ot-color-surface);
+  color: var(--ot-color-text-primary);
+}
+
+.toolbar-filters[aria-label='CRM filters'] input:disabled {
+  border-color: var(--ot-color-border);
   color: var(--ot-color-text-disabled);
 }
 
-.toolbar-filters input::placeholder,
-.contact-form input::placeholder,
-.contact-form textarea::placeholder {
+.toolbar-filters[aria-label='CRM filters'] input::placeholder,
+.contact-form-shell .contact-form input::placeholder,
+.contact-form-shell .contact-form textarea::placeholder {
   color: var(--ot-color-text-secondary);
   opacity: 1;
 }
 
 .filter-help {
   display: block;
-  color: var(--ot-color-text-secondary);
+  color: #c8d6d9;
   font-size: 0.76rem;
   font-weight: 700;
   line-height: 1.35;
@@ -595,6 +625,11 @@ textarea:focus-visible,
 
 .toolbar-filters label.is-selected input,
 .toolbar-filters label.is-selected select {
+  border-color: #ede518;
+}
+
+.toolbar-filters[aria-label='CRM filters'] label.is-selected input,
+.toolbar-filters[aria-label='CRM filters'] label.is-selected select {
   border-color: var(--ot-color-action-auth);
 }
 
@@ -866,32 +901,36 @@ textarea:focus-visible,
 }
 
 .contact-table th {
-  color: var(--ot-color-text-secondary);
+  color: #c8d6d9;
   padding: 0 12px 4px;
   font-size: 0.8rem;
   text-align: left;
 }
 
+.crm-list .contact-table th {
+  color: var(--ot-color-text-secondary);
+}
+
 .contact-table tr[role='button'] {
   cursor: pointer;
-  background: var(--ot-color-surface);
+  background: #0d1a20;
 }
 
 .contact-table td {
-  border-block: 1px solid var(--ot-color-border);
+  border-block: 1px solid #34464d;
   padding: 14px 12px;
-  color: var(--ot-color-text-primary);
+  color: #ffffff;
   vertical-align: middle;
 }
 
 .contact-table td:first-child {
-  border-inline-start: 1px solid var(--ot-color-border);
+  border-inline-start: 1px solid #34464d;
   border-start-start-radius: 12px;
   border-end-start-radius: 12px;
 }
 
 .contact-table td:last-child {
-  border-inline-end: 1px solid var(--ot-color-border);
+  border-inline-end: 1px solid #34464d;
   border-start-end-radius: 12px;
   border-end-end-radius: 12px;
 }
@@ -900,8 +939,8 @@ textarea:focus-visible,
 .contact-table tr[role='button']:focus-visible td,
 .contact-card:hover,
 .contact-card:focus-visible {
-  border-color: var(--ot-color-accent-auth);
-  box-shadow: var(--ot-shadow-focus);
+  border-color: #86e8ff;
+  box-shadow: 0 0 0 3px rgba(134, 232, 255, 0.22);
 }
 
 .contact-table strong,
@@ -912,6 +951,12 @@ textarea:focus-visible,
 .contact-table strong,
 .contact-card strong,
 .detail-grid dd {
+  color: #ffffff;
+}
+
+.crm-list .contact-table strong,
+.crm-list .contact-card strong,
+.contact-detail .detail-grid dd {
   color: var(--ot-color-text-primary);
 }
 
@@ -924,10 +969,10 @@ textarea:focus-visible,
   display: grid;
   gap: 12px;
   width: 100%;
-  border: 1px solid var(--ot-color-border);
+  border: 1px solid #34464d;
   border-radius: 12px;
-  background: var(--ot-color-surface);
-  color: var(--ot-color-text-primary);
+  background: #0d1a20;
+  color: #ffffff;
   padding: 14px;
   text-align: left;
 }
@@ -939,18 +984,53 @@ textarea:focus-visible,
 }
 
 .contact-card-heading > span {
-  color: var(--ot-color-text-secondary);
+  color: #c8d6d9;
   font-size: 0.88rem;
+}
+
+.crm-list .contact-card-heading > span {
+  color: var(--ot-color-text-secondary);
+}
+
+.crm-list .contact-table tr[role='button'],
+.crm-list .contact-card {
+  background: var(--ot-color-surface);
+}
+
+.crm-list .contact-table td {
+  border-block-color: var(--ot-color-border);
+  color: var(--ot-color-text-primary);
+}
+
+.crm-list .contact-table td:first-child {
+  border-inline-start-color: var(--ot-color-border);
+}
+
+.crm-list .contact-table td:last-child {
+  border-inline-end-color: var(--ot-color-border);
+}
+
+.crm-list .contact-table tr[role='button']:hover td,
+.crm-list .contact-table tr[role='button']:focus-visible td,
+.crm-list .contact-card:hover,
+.crm-list .contact-card:focus-visible {
+  border-color: var(--ot-color-accent-auth);
+  box-shadow: var(--ot-shadow-focus);
+}
+
+.crm-list .contact-card {
+  border-color: var(--ot-color-border);
+  color: var(--ot-color-text-primary);
 }
 
 .semantic-chip {
   display: inline-flex;
   align-items: center;
   min-height: 30px;
-  border: 1px solid var(--ot-color-border-strong);
+  border: 1px solid #66777d;
   border-radius: 999px;
   padding: 5px 9px;
-  color: var(--ot-color-text-primary);
+  color: #ffffff;
   font-size: 0.8rem;
   font-weight: 800;
   line-height: 1.2;
@@ -958,17 +1038,17 @@ textarea:focus-visible,
 }
 
 .semantic-chip.classification {
-  border-color: var(--ot-color-accent-auth);
+  border-color: #86e8ff;
   background: rgba(134, 232, 255, 0.1);
 }
 
 .semantic-chip.status {
-  border-color: var(--ot-color-action-auth);
+  border-color: #ede518;
   background: rgba(237, 229, 24, 0.12);
 }
 
 .semantic-chip.source {
-  background: var(--ot-color-surface-muted);
+  background: #122229;
 }
 
 .ot-section-tabs {
@@ -1270,16 +1350,28 @@ textarea:focus-visible,
 .note-panel,
 .state-panel {
   min-width: 0;
-  border: 1px solid var(--ot-color-border);
+  border: 1px solid #34464d;
   border-radius: 12px;
-  background: var(--ot-color-surface);
+  background: #0d1a20;
   padding: 14px;
 }
 
+.crm-list .state-panel,
+.contact-detail .detail-grid div,
+.contact-detail .note-panel,
+.contact-detail .state-panel {
+  border-color: var(--ot-color-border);
+  background: var(--ot-color-surface);
+}
+
 .detail-grid dt {
-  color: var(--ot-color-text-secondary);
+  color: #c8d6d9;
   font-size: 0.84rem;
   font-weight: 800;
+}
+
+.contact-detail .detail-grid dt {
+  color: var(--ot-color-text-secondary);
 }
 
 .detail-grid dd {
@@ -1295,14 +1387,27 @@ textarea:focus-visible,
 .note-panel h2,
 .contact-form-shell h2,
 .state-panel h2 {
-  color: var(--ot-color-text-primary);
+  color: #ffffff;
   font-size: 1.15rem;
+}
+
+.crm-list .state-panel h2,
+.contact-detail .note-panel h2,
+.contact-detail .state-panel h2,
+.contact-form-shell h2 {
+  color: var(--ot-color-text-primary);
 }
 
 .note-panel p,
 .state-panel p {
-  color: var(--ot-color-text-secondary);
+  color: #c8d6d9;
   line-height: 1.5;
+}
+
+.crm-list .state-panel p,
+.contact-detail .note-panel p,
+.contact-detail .state-panel p {
+  color: var(--ot-color-text-secondary);
 }
 
 .fact-list,
@@ -1324,10 +1429,18 @@ textarea:focus-visible,
 .support-ticket-list a,
 .reply-preview {
   min-width: 0;
-  border: 1px solid var(--ot-color-border);
+  border: 1px solid #34464d;
   border-radius: 8px;
-  background: var(--ot-color-surface-raised);
+  background: #071117;
   padding: 10px;
+}
+
+.contact-detail .fact-list span,
+.contact-detail .compact-list li,
+.contact-detail .timeline-list li,
+.contact-detail .reply-preview {
+  border-color: var(--ot-color-border);
+  background: var(--ot-color-surface-raised);
 }
 
 .compact-list,
@@ -1342,14 +1455,24 @@ textarea:focus-visible,
 .support-ticket-list a {
   display: grid;
   gap: 4px;
-  color: var(--ot-color-text-primary);
+  color: #f8fafb;
   text-decoration: none;
+}
+
+.contact-detail .compact-list li,
+.contact-detail .timeline-list li {
+  color: var(--ot-color-text-primary);
 }
 
 .compact-list span,
 .timeline-list span,
 .support-ticket-list span,
 .support-ticket-list small {
+  color: #c8d6d9;
+}
+
+.contact-detail .compact-list span,
+.contact-detail .timeline-list span {
   color: var(--ot-color-text-secondary);
 }
 
@@ -1394,10 +1517,20 @@ textarea:focus-visible,
 }
 
 .state-panel.error {
-  border-color: var(--ot-color-danger);
+  border-color: #ff7474;
 }
 
 .state-panel.empty {
+  border-color: #66777d;
+}
+
+.crm-list .state-panel.error,
+.contact-detail .state-panel.error {
+  border-color: var(--ot-color-danger);
+}
+
+.crm-list .state-panel.empty,
+.contact-detail .state-panel.empty {
   border-color: var(--ot-color-border-strong);
 }
 
@@ -1414,10 +1547,15 @@ textarea:focus-visible,
   display: grid;
   grid-template-columns: 1fr;
   gap: 12px;
-  border: 1px solid var(--ot-color-border);
+  border: 1px solid #34464d;
   border-radius: 12px;
-  background: var(--ot-color-surface);
+  background: #0d1a20;
   padding: 14px;
+}
+
+.contact-form-shell .contact-form {
+  border-color: var(--ot-color-border);
+  background: var(--ot-color-surface);
 }
 
 .contact-form label {

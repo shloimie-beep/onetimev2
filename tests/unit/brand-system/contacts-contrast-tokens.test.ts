@@ -39,23 +39,39 @@ describe('Contacts contrast tokens', () => {
     );
 
     expect(source).toMatch(
-      /\.contact-table th\s*\{[^}]*color:\s*var\(--ot-color-text-secondary\)/u,
+      /\.crm-list \.contact-table th\s*\{[^}]*color:\s*var\(--ot-color-text-secondary\)/u,
     );
     expect(source).toMatch(
-      /\.contact-card-heading > span\s*\{[^}]*color:\s*var\(--ot-color-text-secondary\)/u,
-    );
-    expect(source).toMatch(/\.contact-card\s*\{[^}]*color:\s*var\(--ot-color-text-primary\)/u);
-    expect(source).toMatch(/\.detail-grid dt\s*\{[^}]*color:\s*var\(--ot-color-text-secondary\)/u);
-    expect(source).toMatch(
-      /\.contact-table strong,[^}]*\.detail-grid dd\s*\{[^}]*color:\s*var\(--ot-color-text-primary\)/u,
+      /\.crm-list \.contact-card-heading > span\s*\{[^}]*color:\s*var\(--ot-color-text-secondary\)/u,
     );
     expect(source).toMatch(
-      /\.toolbar-filters input::placeholder,[^}]*color:\s*var\(--ot-color-text-secondary\)[^}]*opacity:\s*1/u,
+      /\.crm-list \.contact-card\s*\{[^}]*color:\s*var\(--ot-color-text-primary\)/u,
     );
     expect(source).toMatch(
-      /\.toolbar-filters label,[^}]*\.contact-form label\s*\{[^}]*color:\s*var\(--ot-color-text-secondary\)/u,
+      /\.contact-detail \.detail-grid dt\s*\{[^}]*color:\s*var\(--ot-color-text-secondary\)/u,
     );
-    expect(source).toMatch(/\.filter-help\s*\{[^}]*color:\s*var\(--ot-color-text-secondary\)/u);
+    expect(source).toMatch(
+      /\.crm-list \.contact-table strong,[^}]*\.contact-detail \.detail-grid dd\s*\{[^}]*color:\s*var\(--ot-color-text-primary\)/u,
+    );
+    expect(source).toMatch(
+      /\.toolbar-filters\[aria-label='CRM filters'\] input::placeholder,[^}]*color:\s*var\(--ot-color-text-secondary\)[^}]*opacity:\s*1/u,
+    );
+    expect(source).toMatch(
+      /\.toolbar-filters\[aria-label='CRM filters'\] label,[^}]*\.contact-form-shell \.contact-form label\s*\{[^}]*color:\s*var\(--ot-color-text-secondary\)/u,
+    );
+  });
+
+  it('keeps shared Support and generic state primitives on their existing palette', async () => {
+    const source = await readFile(
+      path.resolve(process.cwd(), 'packages/brand-system/src/styles/react.css'),
+      'utf8',
+    );
+
+    expect(source).toMatch(/\.note-panel p,\s*\.state-panel p\s*\{[^}]*color:\s*#c8d6d9/u);
+    expect(source).toMatch(
+      /\.compact-list span,[^}]*\.support-ticket-list small\s*\{[^}]*color:\s*#c8d6d9/u,
+    );
+    expect(source).toMatch(/\.support-ticket-list a\s*\{[^}]*color:\s*#f8fafb/u);
   });
 });
 

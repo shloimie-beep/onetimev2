@@ -212,7 +212,7 @@
     },
     {
       "path": "packages/brand-system/src/styles/react.css",
-      "sha256": "21359812ad995bd5f68a98ebaf7205f0ac107f08d887dd92927d34d3d395cca0"
+      "sha256": "2d5a3141eaac4f2b8f191dcaf625bbc12ca81071f1b127db16174fc430e05930"
     },
     {
       "path": "packages/brand-system/src/route-branding.ts",
