@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
+  endZoomMeetingWithApi,
   joinZoomMeetingParticipantWithApi,
   type ZoomMeetingSdkApi,
   type ZoomParticipantJoinInput,
@@ -155,6 +156,19 @@ describe('production-basic native Meeting SDK adapter', () => {
     expect(source).not.toContain('sdkKey: sdkKeyFromSignature');
     expect(source).not.toContain('function sdkKeyFromSignature');
   });
+
+  it('uses the host-only SDK End Class control and waits for provider success', async () => {
+    const sdk = fakeZoomSdk();
+    await expect(endZoomMeetingWithApi(sdk.api)).resolves.toBeUndefined();
+    expect(sdk.api.endMeeting).toHaveBeenCalledWith(
+      expect.objectContaining({ success: expect.any(Function), error: expect.any(Function) }),
+    );
+  });
+
+  it('fails closed when the provider rejects End Class', async () => {
+    const sdk = fakeZoomSdk('end');
+    await expect(endZoomMeetingWithApi(sdk.api)).rejects.toThrow('Meeting SDK End Class failed');
+  });
 });
 
 function input(overrides: Partial<ZoomParticipantJoinInput> = {}): ZoomParticipantJoinInput {
@@ -169,7 +183,7 @@ function input(overrides: Partial<ZoomParticipantJoinInput> = {}): ZoomParticipa
   };
 }
 
-function fakeZoomSdk(failure?: 'listener' | 'init' | 'join') {
+function fakeZoomSdk(failure?: 'listener' | 'init' | 'join' | 'end') {
   let listener: ((event: unknown) => void) | undefined;
   const removeListener = vi.fn();
   const api = {
@@ -188,6 +202,11 @@ function fakeZoomSdk(failure?: 'listener' | 'init' | 'join') {
     join: vi.fn((options: unknown) => {
       if (failure === 'join') throw new Error('join failed');
       (options as { success: () => void }).success();
+    }),
+    endMeeting: vi.fn((options: unknown) => {
+      const callbacks = options as { success: () => void; error: (error: unknown) => void };
+      if (failure === 'end') callbacks.error({ type: 'provider-rejected' });
+      else callbacks.success();
     }),
   } as unknown as ZoomMeetingSdkApi;
   return {

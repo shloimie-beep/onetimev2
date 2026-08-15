@@ -9,6 +9,10 @@ describe('Sunday launch UI truth', () => {
     expect(source).toContain('Surface: Protected recurring Zoom');
     expect(source).toContain('Advanced Stage Host: deferred/off');
     expect(source).toContain('Protected recurring Zoom is ready.');
+    expect(source).toContain("'End class'");
+    expect(source).toContain('onEndProductionBasic');
+    expect(source).toContain('Participant roster controls remain deferred');
+    expect(source).toContain('Zoom identity correlation is');
   });
 
   it('keeps Buffer and Social launch-off values out of the Content overview', async () => {

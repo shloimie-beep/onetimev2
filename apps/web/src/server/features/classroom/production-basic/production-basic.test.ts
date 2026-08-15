@@ -10,6 +10,7 @@ import {
   type ProductionBasicActor,
   type ProductionBasicHostLiveMarker,
   type ProductionBasicLaunchArtifact,
+  type ProductionBasicStudentAttendance,
 } from './service.ts';
 import type { AppConfig } from '../../../../../../../packages/config/src/index.ts';
 import { ZoomApiError } from '../../../../../../../packages/domain/src/providers/zoom-rest.ts';
@@ -19,6 +20,8 @@ const STUDENT: ProductionBasicActor = {
   kind: 'student',
   scope: { account_key: 'account-derived', product_key: 'product-derived' },
   learner_key: 'learner-derived',
+  authenticated_session_key: 'session-derived',
+  connection_lineage_id: 'a'.repeat(64),
   display_name: 'Student',
   entitled: true,
 };
@@ -68,6 +71,7 @@ describe('production-basic Meeting SDK launch', () => {
     expect(text).not.toMatch(/"(?:join_url|joinUrl)"\s*:/u);
     expect(JSON.parse(text).data.launch_artifact).toMatchObject({
       role: 0,
+      attendance_session_key: 'production-basic-attendance-derived',
       raw_join_url_present: false,
       video_start_model: 'PARTICIPANT_CONSENT',
     });
@@ -124,7 +128,7 @@ describe('production-basic Meeting SDK launch', () => {
       display_name: 'Admin',
       authorized_to_start: true,
     };
-    const clear = vi.fn<ProductionBasicHostLiveMarker['clear']>().mockResolvedValue(undefined);
+    const clear = vi.fn<ProductionBasicHostLiveMarker['clear']>().mockResolvedValue(true);
     const baseUrl = await start({ actor: admin, issue: async () => artifact(1), clear });
 
     expect((await post(baseUrl, '/host-ended')).status).toBe(200);
@@ -136,9 +140,7 @@ describe('production-basic Meeting SDK launch', () => {
       cleared_at: new Date('2026-08-12T10:00:00.000Z'),
     });
 
-    const studentClear = vi
-      .fn<ProductionBasicHostLiveMarker['clear']>()
-      .mockResolvedValue(undefined);
+    const studentClear = vi.fn<ProductionBasicHostLiveMarker['clear']>().mockResolvedValue(true);
     const studentBaseUrl = await start({
       actor: STUDENT,
       issue: async () => artifact(0),
@@ -146,6 +148,48 @@ describe('production-basic Meeting SDK launch', () => {
     });
     expect((await post(studentBaseUrl, '/host-ended')).status).toBe(403);
     expect(studentClear).not.toHaveBeenCalled();
+  });
+
+  it('does not claim End Class success when the canonical receipt cannot be cleared', async () => {
+    const admin: ProductionBasicActor = {
+      kind: 'admin',
+      scope: STUDENT.scope,
+      actor_user_ref: 'admin-derived',
+      display_name: 'Admin',
+      authorized_to_start: true,
+    };
+    const baseUrl = await start({
+      actor: admin,
+      issue: async () => artifact(1),
+      clear: async () => false,
+    });
+    expect((await post(baseUrl, '/host-ended')).status).toBe(503);
+  });
+
+  it('records a retry-safe Student attendance event only through the server-bound session', async () => {
+    const record = vi.fn<ProductionBasicStudentAttendance['record']>().mockResolvedValue(true);
+    const baseUrl = await start({ actor: STUDENT, issue: async () => artifact(0), record });
+
+    const accepted = await post(baseUrl, '/attendance', {
+      attendance_session_key: 'production-basic-attendance-derived',
+      event_kind: 'joined',
+    });
+    expect(accepted.status).toBe(202);
+    expect(record).toHaveBeenCalledWith({
+      actor: STUDENT,
+      meeting_ref_digest: expect.stringMatching(/^[a-f0-9]{64}$/u),
+      attendance_session_key: 'production-basic-attendance-derived',
+      event_kind: 'joined',
+      observed_at: new Date('2026-08-12T10:00:00.000Z'),
+    });
+
+    const injected = await post(baseUrl, '/attendance', {
+      attendance_session_key: 'short',
+      event_kind: 'joined',
+      learner_key: 'other-learner',
+    });
+    expect(injected.status).toBe(400);
+    expect(record).toHaveBeenCalledOnce();
   });
 
   it('keeps Student readiness and launch unavailable until the host live receipt is current', async () => {
@@ -387,6 +431,7 @@ async function start(input: {
   confirm?: ProductionBasicHostLiveMarker['confirm'];
   current?: ProductionBasicHostLiveMarker['currentForStudent'];
   clear?: ProductionBasicHostLiveMarker['clear'];
+  record?: ProductionBasicStudentAttendance['record'];
   onLaunchFailure?: ((event: ProductionBasicLaunchFailureEvent) => void) | undefined;
 }) {
   const service = createProductionBasicLaunchService({
@@ -405,13 +450,22 @@ async function start(input: {
           hostLiveMarker: {
             confirm: input.confirm ?? (async () => true),
             currentForStudent: input.current ?? (async () => true),
-            clear: input.clear ?? (async () => undefined),
+            clear: input.clear ?? (async () => true),
+          },
+        }
+      : {}),
+    ...(input.issue
+      ? {
+          studentAttendance: {
+            issue: async () => 'production-basic-attendance-derived',
+            record: input.record ?? (async () => true),
           },
         }
       : {}),
     clock: () => new Date('2026-08-12T10:00:00.000Z'),
   });
   const app = express();
+  app.use(express.json());
   app.use(
     createProductionBasicRouter({
       service,

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import type {
   LiveClassConsoleSnapshot,
@@ -20,6 +20,7 @@ import {
   readProductionBasicReadiness,
   requestProductionBasicLaunch,
   startAndConfirmProductionBasicHostLive,
+  type ProductionBasicHostLiveController,
 } from '../classroom/production-basic-launch-client.ts';
 
 type ConsoleData = LiveClassConsoleSnapshot['data'];
@@ -55,6 +56,9 @@ function LiveConsole() {
   const [notice, setNotice] = useState<Notice | null>(null);
   const [loading, setLoading] = useState(true);
   const [productionBasicReady, setProductionBasicReady] = useState(false);
+  const [productionBasicHostActive, setProductionBasicHostActive] = useState(false);
+  const [productionBasicHostBusy, setProductionBasicHostBusy] = useState(false);
+  const productionBasicHostController = useRef<ProductionBasicHostLiveController | null>(null);
   const occurrenceKey = useMemo(() => {
     const routeMatch = /^\/app\/live\/([^/]+)$/u.exec(location.pathname);
     return routeMatch?.[1]
@@ -99,12 +103,21 @@ function LiveConsole() {
       .catch(() => setProductionBasicReady(false));
   }, [session?.csrf_token]);
 
+  useEffect(
+    () => () => {
+      productionBasicHostController.current?.dispose();
+      productionBasicHostController.current = null;
+    },
+    [],
+  );
+
   async function startProductionBasic() {
-    if (!session) return;
+    if (!session || productionBasicHostController.current) return;
+    setProductionBasicHostBusy(true);
     try {
       const artifact = await requestProductionBasicLaunch(session.csrf_token);
       if (artifact.role !== 1 || !artifact.zak) throw new Error('Classroom is unavailable.');
-      await startAndConfirmProductionBasicHostLive({
+      const controller = await startAndConfirmProductionBasicHostLive({
         csrfToken: session.csrf_token,
         startMeeting: (onMeetingStatus) =>
           startZoomMeetingProductionBasic({
@@ -118,9 +131,32 @@ function LiveConsole() {
             onMeetingStatus,
           }),
       });
+      productionBasicHostController.current = controller;
+      setProductionBasicHostActive(true);
       setNotice({ kind: 'success', message: 'Protected class started.' });
     } catch {
       setNotice({ kind: 'error', message: 'Classroom is unavailable.' });
+    } finally {
+      setProductionBasicHostBusy(false);
+    }
+  }
+
+  async function endProductionBasic() {
+    const controller = productionBasicHostController.current;
+    if (!controller) return;
+    setProductionBasicHostBusy(true);
+    try {
+      await controller.endClass();
+      productionBasicHostController.current = null;
+      setProductionBasicHostActive(false);
+      setNotice({ kind: 'success', message: 'Class ended and Student access is closed.' });
+    } catch {
+      setNotice({
+        kind: 'error',
+        message: 'Class could not be ended safely. Try End class again.',
+      });
+    } finally {
+      setProductionBasicHostBusy(false);
     }
   }
 
@@ -317,7 +353,10 @@ function LiveConsole() {
               data={data}
               occurrenceKey={occurrenceKey}
               productionBasicReady={productionBasicReady}
+              productionBasicHostActive={productionBasicHostActive}
+              productionBasicHostBusy={productionBasicHostBusy}
               onStartProductionBasic={() => void startProductionBasic()}
+              onEndProductionBasic={() => void endProductionBasic()}
               onRefresh={() => void load()}
               onOpenClassroom={() =>
                 occurrenceKey &&
@@ -327,7 +366,12 @@ function LiveConsole() {
               }
               onChooseOccurrence={() => window.location.assign('/app/classes/occurrences')}
             />
-            {selected ? (
+            {productionBasicReady ? (
+              <p className="live-empty">
+                Participant roster controls remain deferred until Zoom identity correlation is
+                independently approved.
+              </p>
+            ) : selected ? (
               <ZoomControls
                 question={selected}
                 participant={participantFor(data?.participants ?? [], selected)}
@@ -546,7 +590,10 @@ function ZoomHealth({
   onOpenClassroom,
   onChooseOccurrence,
   productionBasicReady,
+  productionBasicHostActive,
+  productionBasicHostBusy,
   onStartProductionBasic,
+  onEndProductionBasic,
 }: {
   data: ConsoleData | null;
   occurrenceKey: string | null;
@@ -554,7 +601,10 @@ function ZoomHealth({
   onOpenClassroom: () => void;
   onChooseOccurrence: () => void;
   productionBasicReady: boolean;
+  productionBasicHostActive: boolean;
+  productionBasicHostBusy: boolean;
   onStartProductionBasic: () => void;
+  onEndProductionBasic: () => void;
 }) {
   const legacyHostControlsReady = occurrenceKey && data?.zoom.host_control_configured;
   return (
@@ -588,9 +638,25 @@ function ZoomHealth({
           Refresh Status
         </button>
         {productionBasicReady ? (
-          <button type="button" className="ot-button" onClick={onStartProductionBasic}>
-            Start class
-          </button>
+          productionBasicHostActive ? (
+            <button
+              type="button"
+              className="ot-button danger"
+              onClick={onEndProductionBasic}
+              disabled={productionBasicHostBusy}
+            >
+              {productionBasicHostBusy ? 'Ending class...' : 'End class'}
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="ot-button"
+              onClick={onStartProductionBasic}
+              disabled={productionBasicHostBusy}
+            >
+              {productionBasicHostBusy ? 'Starting class...' : 'Start class'}
+            </button>
+          )
         ) : occurrenceKey && data?.zoom.host_control_configured ? (
           <button type="button" className="ot-button" onClick={onOpenClassroom}>
             Open Secure One Time Classroom

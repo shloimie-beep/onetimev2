@@ -1,4 +1,5 @@
 import express, { type Request } from 'express';
+import { z } from 'zod';
 import { ZoomApiError } from '../../../../../../../packages/domain/src/providers/zoom-rest.ts';
 import type { ProductionBasicActor } from './service.ts';
 import type { ProductionBasicHostLiveResult } from './service.ts';
@@ -15,6 +16,13 @@ export type ProductionBasicLaunchFailureEvent = Readonly<{
   safe_error_code: string;
 }>;
 
+const attendanceEventSchema = z
+  .object({
+    attendance_session_key: z.string().trim().min(16).max(180),
+    event_kind: z.enum(['joined', 'left']),
+  })
+  .strict();
+
 export function createProductionBasicRouter(input: {
   identities: ProductionBasicRequestIdentityResolver;
   service: {
@@ -22,6 +30,11 @@ export function createProductionBasicRouter(input: {
     request(actor: ProductionBasicActor): Promise<ProductionBasicLaunchResult>;
     confirmHostLive(actor: ProductionBasicActor): Promise<ProductionBasicHostLiveResult>;
     clearHostLive(actor: ProductionBasicActor): Promise<ProductionBasicHostLiveResult>;
+    recordStudentAttendance(
+      actor: ProductionBasicActor,
+      attendanceSessionKey: string,
+      eventKind: 'joined' | 'left',
+    ): Promise<ProductionBasicHostLiveResult>;
   };
   onLaunchFailure?: ((event: ProductionBasicLaunchFailureEvent) => void) | undefined;
 }) {
@@ -106,6 +119,38 @@ export function createProductionBasicRouter(input: {
       return;
     }
     response.json({ success: true, data: { state: 'scheduled' } });
+  });
+  router.post('/attendance', async (request, response) => {
+    const parsed = attendanceEventSchema.safeParse(request.body);
+    if (!parsed.success) {
+      response.status(400).json(unavailable());
+      return;
+    }
+    const identity = await input.identities.resolve(request);
+    if (!identity || !identity.csrf_verified) {
+      response.status(403).json(unavailable());
+      return;
+    }
+    let result: ProductionBasicHostLiveResult;
+    try {
+      result = await input.service.recordStudentAttendance(
+        identity.actor,
+        parsed.data.attendance_session_key,
+        parsed.data.event_kind,
+      );
+    } catch {
+      reportLaunchFailure(input.onLaunchFailure, {
+        category: 'unexpected',
+        safe_error_code: 'CLASSROOM_ATTENDANCE_FAILED',
+      });
+      response.status(503).json(unavailable());
+      return;
+    }
+    if (result.disposition !== 'ready') {
+      response.status(result.disposition === 'denied' ? 403 : 503).json(unavailable());
+      return;
+    }
+    response.status(202).json({ success: true, data: { disposition: 'accepted' } });
   });
   router.get('/status', async (request, response) => {
     const identity = await input.identities.resolve(request);
