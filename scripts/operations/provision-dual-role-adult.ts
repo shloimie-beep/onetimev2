@@ -1,5 +1,5 @@
 import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
-import { readFile, writeFile } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
 import type { PoolClient } from 'pg';
 import { z } from 'zod';
@@ -32,6 +32,10 @@ import {
   runControllerOperationWithinReferencedTimeout,
   settleControllerOperationWithin,
 } from './controller-referenced-watchdog.ts';
+import {
+  writePrivateControllerResult,
+  type PrivateControllerResultWriteOutcome,
+} from './controller-private-result.ts';
 
 const AUTHORIZATION_MAX_AGE_MS = 4 * 60 * 60 * 1000;
 const CLOCK_SKEW_MS = 5 * 60 * 1000;
@@ -311,6 +315,8 @@ export type DualRoleAdultProvisionOptions = {
   testOnlyStallApplyStage?: ControllerDualRoleApplyStage;
   /** Tests only. Production always uses the fixed bounded stage timeout. */
   testOnlyApplyStageTimeoutMs?: number;
+  /** Tests only. Exercises forced client destruction after rollback cannot be proven. */
+  testOnlyRollbackBehavior?: 'stall' | 'fail';
 };
 
 type TargetKeys = ReturnType<typeof targetKeys>;
@@ -408,6 +414,7 @@ export async function runDualRoleAdultProvision(
         isolatedSyntheticTestTarget ? options.testOnlyFailApplyStage : undefined,
         isolatedSyntheticTestTarget ? options.testOnlyStallApplyStage : undefined,
         isolatedSyntheticTestTarget ? options.testOnlyApplyStageTimeoutMs : undefined,
+        isolatedSyntheticTestTarget ? options.testOnlyRollbackBehavior : undefined,
       );
       created = applied.created;
       applyExecution = applied.execution;
@@ -583,7 +590,8 @@ function envelopeBlockers(
       options.testOnlyAllowIsolatedApply !== undefined ||
       options.testOnlyFailApplyStage !== undefined ||
       options.testOnlyStallApplyStage !== undefined ||
-      options.testOnlyApplyStageTimeoutMs !== undefined)
+      options.testOnlyApplyStageTimeoutMs !== undefined ||
+      options.testOnlyRollbackBehavior !== undefined)
   ) {
     blockers.push('production_injection_seam_forbidden');
   }
@@ -1770,6 +1778,7 @@ async function applyIdentity(
   testOnlyFailStage?: ControllerDualRoleApplyStage,
   testOnlyStallStage?: ControllerDualRoleApplyStage,
   testOnlyStageTimeoutMs?: number,
+  testOnlyRollbackBehavior?: 'stall' | 'fail',
 ): Promise<{ created: boolean; execution: ApplyExecution }> {
   const stageTimeoutMs =
     testOnlyStageTimeoutMs !== undefined &&
@@ -1814,11 +1823,12 @@ async function applyIdentity(
     try {
       const value = await runControllerOperationWithinReferencedTimeout(
         async () => {
-          if (testOnlyStallStage === nextStage) await new Promise<never>(() => undefined);
           if (testOnlyFailStage === nextStage) {
             throw new Error('TEST_ONLY_RAW_FAILURE INSERT INTO hidden@example.test database-id');
           }
-          return run(controller.signal);
+          const value = await run(controller.signal);
+          if (testOnlyStallStage === nextStage) await new Promise<never>(() => undefined);
+          return value;
         },
         stageTimeoutMs,
         () => controller.abort(),
@@ -2050,10 +2060,15 @@ async function applyIdentity(
       forceDestroyClient = true;
     } else if (client && transactionStarted) {
       const rollbackClient = client;
-      const rollback = await settleControllerOperationWithin(
-        () => rollbackClient.query('ROLLBACK'),
-        rollbackTimeoutMs,
-      );
+      const rollback = await settleControllerOperationWithin(() => {
+        if (testOnlyRollbackBehavior === 'stall') {
+          return rollbackClient.query('SELECT pg_sleep(60)');
+        }
+        if (testOnlyRollbackBehavior === 'fail') {
+          return rollbackClient.query('SELECT controller_test_only_rollback_failure()');
+        }
+        return rollbackClient.query('ROLLBACK');
+      }, rollbackTimeoutMs);
       if (rollback === 'completed') {
         transactionStarted = false;
         transactionOutcome = 'rolled_back';
@@ -2484,41 +2499,93 @@ function requestedOutputPath(argv: string[]) {
 export async function runDualRoleAdultProvisionCli(
   argv: string[],
   emit: (output: string) => void = (output) => process.stdout.write(output),
+  dependencies: {
+    /** Tests only. The executable CLI does not expose a dependency-injection flag. */
+    runProvision?: typeof runDualRoleAdultProvision;
+    /** Tests only. The executable CLI always uses the private bounded result writer. */
+    writeResult?: (
+      outputPath: string,
+      output: string,
+    ) => Promise<PrivateControllerResultWriteOutcome>;
+  } = {},
 ) {
   let outputPath = requestedOutputPath(argv);
+  let result:
+    DualRoleAdultProvisionReport | { schema: typeof SCHEMA; status: 'blocked'; blockers: string[] };
   try {
     const args = parseArgs(argv);
     outputPath = typeof args.out === 'string' ? args.out : outputPath;
-    const result = await runDualRoleAdultProvision({
+    const runProvision = dependencies.runProvision ?? runDualRoleAdultProvision;
+    result = await runProvision({
       ...(typeof args.manifest === 'string' ? { manifestPath: args.manifest } : {}),
       apply: args.apply === true,
       ...(process.env[AUTHORIZATION_ENV]
         ? { authorizationPhrase: process.env[AUTHORIZATION_ENV] }
         : {}),
     });
-    const output = `${JSON.stringify(result, null, 2)}\n`;
-    if (outputPath) await writeFile(outputPath, output, 'utf8');
-    emit(output);
-    if (result.status === 'blocked' || result.status === 'identity_applied_setup_pending') {
-      return 2;
-    }
-    return 0;
   } catch {
-    const output = `${JSON.stringify({
+    result = {
       schema: SCHEMA,
       status: 'blocked',
       blockers: ['controller_preflight_failed'],
-    })}\n`;
-    if (outputPath) {
-      try {
-        await writeFile(outputPath, output, 'utf8');
-      } catch {
-        // The result remains available on stdout without exposing the path or write failure.
-      }
-    }
-    emit(output);
-    return 2;
+    };
   }
+  return deliverControllerCliResult(
+    result,
+    outputPath,
+    emit,
+    dependencies.writeResult ?? writePrivateControllerResult,
+  );
+}
+
+async function deliverControllerCliResult(
+  initialResult:
+    DualRoleAdultProvisionReport | { schema: typeof SCHEMA; status: 'blocked'; blockers: string[] },
+  outputPath: string | undefined,
+  emit: (output: string) => void,
+  writeResult: (outputPath: string, output: string) => Promise<PrivateControllerResultWriteOutcome>,
+) {
+  let result = initialResult;
+  let output = `${JSON.stringify(result, null, 2)}\n`;
+  if (outputPath) {
+    const firstWrite = await safePrivateControllerResultWrite(writeResult, outputPath, output);
+    if (firstWrite !== 'written') {
+      result = controllerResultWithWriteBlocker(result, firstWrite);
+      output = `${JSON.stringify(result, null, 2)}\n`;
+      const fallbackWrite = await safePrivateControllerResultWrite(writeResult, outputPath, output);
+      if (fallbackWrite !== 'written') {
+        result = controllerResultWithWriteBlocker(result, fallbackWrite);
+        output = `${JSON.stringify(result, null, 2)}\n`;
+      }
+      emit(output);
+      return 2;
+    }
+  }
+  emit(output);
+  return result.status === 'blocked' || result.status === 'identity_applied_setup_pending' ? 2 : 0;
+}
+
+async function safePrivateControllerResultWrite(
+  writeResult: (outputPath: string, output: string) => Promise<PrivateControllerResultWriteOutcome>,
+  outputPath: string,
+  output: string,
+): Promise<PrivateControllerResultWriteOutcome> {
+  try {
+    return await writeResult(outputPath, output);
+  } catch {
+    return 'failed';
+  }
+}
+
+function controllerResultWithWriteBlocker<
+  T extends
+    DualRoleAdultProvisionReport | { schema: typeof SCHEMA; status: 'blocked'; blockers: string[] },
+>(result: T, outcome: Exclude<PrivateControllerResultWriteOutcome, 'written'>): T {
+  return {
+    ...result,
+    status: 'blocked',
+    blockers: [...new Set([...result.blockers, `controller_result_write_${outcome}`])].sort(),
+  };
 }
 
 if (isCliEntrypoint()) {

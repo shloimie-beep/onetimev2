@@ -212,7 +212,9 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
         expect(setupCalls).toBe(0);
         await expect(cardinalities(pool)).resolves.toEqual(beforeFailures);
       }
-      for (const stage of CONTROLLER_DUAL_ROLE_APPLY_STAGES) {
+      for (const stage of CONTROLLER_DUAL_ROLE_APPLY_STAGES.filter(
+        (candidate) => candidate !== 'transaction_commit',
+      )) {
         let setupCalls = 0;
         const stalled = await runDualRoleAdultProvision({
           manifest,
@@ -235,7 +237,7 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
           apply_execution: {
             bounded_watchdog: true,
             disposition: 'timed_out',
-            transaction_outcome: stage === 'transaction_begin' ? 'not_started' : 'rolled_back',
+            transaction_outcome: 'rolled_back',
             reconciliation_outcome: 'completed',
             final_stage: stage,
           },
@@ -432,7 +434,161 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
       await pool.end();
     }
   }, 120_000);
+
+  it('destroys the real client on rollback and commit uncertainty without creating setup effects', async () => {
+    const nativePool = new pg.Pool({ connectionString: databaseUrl!, max: 4 });
+    const destroyedReleases: boolean[] = [];
+    const pool = observeClientDestruction(nativePool, destroyedReleases);
+    let ownsSchema = false;
+    try {
+      const database = await pool.query(
+        `SELECT current_database() AS database_name,
+                COALESCE(inet_server_addr()::text, 'local_socket') AS server_address`,
+      );
+      expect(
+        isNativeDisposablePostgresTarget({
+          databaseName: String(database.rows[0]?.database_name),
+          serverAddress: String(database.rows[0]?.server_address),
+        }),
+      ).toBe(true);
+      const blank = await pool.query(
+        `SELECT count(*)::integer AS table_count
+           FROM information_schema.tables
+          WHERE table_schema NOT IN ('pg_catalog','information_schema')`,
+      );
+      expect(blank.rows[0]).toEqual({ table_count: 0 });
+      ownsSchema = true;
+      await runMigrations(pool);
+      await seedCanonicalClass(pool);
+
+      const config = nativeConfig();
+      const manifest = privateManifest();
+      const before = await cardinalities(pool);
+      for (const rollbackBehavior of ['stall', 'fail'] as const) {
+        destroyedReleases.length = 0;
+        let setupCalls = 0;
+        const report = await runDualRoleAdultProvision({
+          manifest,
+          apply: true,
+          authorizationPhrase: AUTHORIZATION,
+          pool,
+          config,
+          now: PROVISION_AT,
+          testOnlyAllowIsolatedApply: true,
+          testOnlyStallApplyStage: 'adult_identity_insert',
+          testOnlyApplyStageTimeoutMs: 500,
+          testOnlyRollbackBehavior: rollbackBehavior,
+          issuePasswordReset: async () => {
+            setupCalls += 1;
+            throw new Error('Setup must not run while rollback is unknown.');
+          },
+        });
+        expect(report).toMatchObject({
+          status: 'blocked',
+          blockers: ['apply_identity_adult_identity_insert_timed_out'],
+          apply_execution: {
+            disposition: 'timed_out',
+            transaction_outcome: 'rollback_unknown',
+            reconciliation_outcome: 'completed',
+            final_stage: 'adult_identity_insert',
+          },
+          identity: { disposition: 'absent', adult_rows: 0 },
+          setup_delivery: { token_rows: 0, intent_rows: 0, outbox_rows: 0 },
+        });
+        expect(destroyedReleases).toContain(true);
+        expect(setupCalls).toBe(0);
+        await expect(cardinalities(pool)).resolves.toEqual(before);
+      }
+
+      destroyedReleases.length = 0;
+      let setupCalls = 0;
+      const commitUnknown = await runDualRoleAdultProvision({
+        manifest,
+        apply: true,
+        authorizationPhrase: AUTHORIZATION,
+        pool,
+        config,
+        now: PROVISION_AT,
+        testOnlyAllowIsolatedApply: true,
+        testOnlyStallApplyStage: 'transaction_commit',
+        testOnlyApplyStageTimeoutMs: 500,
+        issuePasswordReset: async () => {
+          setupCalls += 1;
+          throw new Error('Setup must not run while commit is being reconciled.');
+        },
+      });
+      expect(commitUnknown).toMatchObject({
+        status: 'identity_applied_setup_pending',
+        blockers: ['apply_identity_transaction_commit_timed_out'],
+        apply_execution: {
+          disposition: 'timed_out',
+          transaction_outcome: 'commit_unknown',
+          reconciliation_outcome: 'completed',
+          final_stage: 'transaction_commit',
+        },
+        identity: { disposition: 'exact_replay', adult_rows: 1 },
+        setup_delivery: { token_rows: 0, intent_rows: 0, outbox_rows: 0 },
+      });
+      expect(destroyedReleases).toContain(true);
+      expect(setupCalls).toBe(0);
+      await expect(cardinalities(pool)).resolves.toEqual({
+        adults: 1,
+        accounts: 1,
+        credentials: 1,
+        memberships: 2,
+        households: 1,
+        canonicalTransitions: 2,
+        canonicalStates: 2,
+        portalHouseholds: 1,
+        accessSources: 1,
+        accessProjections: 1,
+        accessEvents: 1,
+        audits: 1,
+        setupTokens: 0,
+        setupIntents: 0,
+        setupOutbox: 0,
+      });
+      await expect(forbiddenCardinalities(pool)).resolves.toEqual({
+        legacyUsers: 0,
+        contacts: 0,
+        students: 0,
+        guardianConsents: 0,
+        privacyConsents: 0,
+        providerReassociations: 0,
+        adultGhlLinks: 0,
+        ghlSyncOperations: 0,
+        ghlHouseholdProjections: 0,
+        householdProviderMappings: 0,
+        billingIntents: 0,
+      });
+    } finally {
+      if (ownsSchema) await pool.query('DROP SCHEMA IF EXISTS onetime CASCADE');
+      await pool.end();
+    }
+  }, 120_000);
 });
+
+function observeClientDestruction(nativePool: pg.Pool, destroyedReleases: boolean[]): DbPool {
+  return {
+    query: nativePool.query.bind(nativePool) as DbPool['query'],
+    connect: (async () => {
+      const client = await nativePool.connect();
+      return new Proxy(client, {
+        get(target, property, receiver) {
+          if (property === 'release') {
+            return (destroy?: boolean | Error) => {
+              destroyedReleases.push(destroy === true);
+              target.release(destroy);
+            };
+          }
+          const value = Reflect.get(target, property, receiver);
+          return typeof value === 'function' ? value.bind(target) : value;
+        },
+      });
+    }) as DbPool['connect'],
+    end: nativePool.end.bind(nativePool) as DbPool['end'],
+  };
+}
 
 function nativeConfig() {
   return loadConfig({
