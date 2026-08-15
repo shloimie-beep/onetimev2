@@ -119,6 +119,57 @@ describe('PostgresCommunicationsReadRepository', () => {
     expect(serialized).not.toContain('Disabled Account');
   });
 
+  it('projects a suppressed security delivery as redacted Admin-visible terminal truth', async () => {
+    await pool.query(
+      `UPDATE onetime.account_lifecycle_delivery_outbox
+          SET final_delivery_state = 'suppressed',
+              final_state_at = '2026-07-14T11:00:03.000Z',
+              last_provider_event_at = '2026-07-14T11:00:03.000Z',
+              updated_at = '2026-07-14T11:00:03.000Z'
+        WHERE delivery_key = 'lifecycle_delivery_reset'`,
+    );
+
+    const suppressed = await repository.list({
+      scope,
+      mode: { kind: 'global' },
+      filters: {
+        from: '2026-07-14T00:00:00.000Z',
+        to: '2026-07-15T00:00:00.000Z',
+        source: 'account_lifecycle_outbox',
+        intent_type: 'password_reset',
+        status: 'suppressed',
+        limit: 25,
+      },
+      cursor: null,
+      rawEventType: 'account_password_reset.v1',
+    });
+
+    expect(suppressed.rows).toHaveLength(1);
+    expect(suppressed.rows[0]).toMatchObject({
+      eventType: 'account_password_reset.v1',
+      status: 'suppressed',
+      source: 'account_lifecycle_outbox',
+      participantKind: 'account',
+      participantLabel: 'Protected Admin · Admin account',
+      providerReferenceDigest: null,
+      idempotencyKey: null,
+    });
+    const serialized = JSON.stringify(suppressed.rows);
+    expect(serialized).not.toContain('protected@example.test');
+    expect(serialized).not.toContain('lifecycle_token_hash_private');
+    expect(serialized).not.toContain('lifecycle_provider_ref_private');
+    expect(serialized).not.toContain('lifecycle_destination_private');
+    expect(serialized).not.toContain('lifecycle_idempotency_private');
+
+    await expect(
+      pool.query(
+        `UPDATE onetime.account_lifecycle_delivery_outbox
+            SET final_delivery_state = 'untrusted_non_provider_state'
+          WHERE delivery_key = 'lifecycle_delivery_reset'`,
+      ),
+    ).rejects.toThrow();
+  });
+
   it('filters by source and refuses cross-contact projection through scoped contact mode', async () => {
     const webhookOnly = await repository.list({
       scope,

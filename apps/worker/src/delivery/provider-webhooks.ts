@@ -1,4 +1,5 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
+import { providerEventRecordSchema } from '../../../../packages/contracts/src/providers/events.ts';
 import {
   buildProviderEventRecord,
   normalizeResendEventState,
@@ -103,6 +104,17 @@ export function normalizeResendWebhookEvent(input: {
   const data = objectValue(payload.data);
   const eventType = stringValue(payload.type) ?? 'unknown';
   const messageRef = stringValue(data?.email_id) ?? stringValue(payload.message_id);
+  const canonicalState = normalizeResendEventState(eventType);
+  const providerCreatedAt = stringValue(payload.created_at);
+  if (isTerminalResendEmailState(canonicalState) && !providerCreatedAt) {
+    throw new ProviderWebhookConformanceError('provider_created_at_required', 400);
+  }
+  if (
+    isTerminalResendEmailState(canonicalState) &&
+    !providerEventRecordSchema.shape.provider_created_at.safeParse(providerCreatedAt).success
+  ) {
+    throw new ProviderWebhookConformanceError('provider_created_at_invalid', 400);
+  }
   const providerEventRef = resendProviderEventRef(payload, eventType, messageRef, input.headers.id);
   const record = buildProviderEventRecord({
     accountKey: input.accountKey,
@@ -111,8 +123,8 @@ export function normalizeResendWebhookEvent(input: {
     environment: input.environment ?? 'staging',
     providerEventRef,
     eventType,
-    canonicalState: normalizeResendEventState(eventType),
-    providerCreatedAt: stringValue(payload.created_at) ?? null,
+    canonicalState,
+    providerCreatedAt: providerCreatedAt ?? null,
     objectRefs: {
       ...(input.headers.id ? { svix_message_ref_hash: redactedRefHash(input.headers.id) } : {}),
       ...(messageRef ? { message_ref_hash: redactedRefHash(messageRef) } : {}),
@@ -121,7 +133,7 @@ export function normalizeResendWebhookEvent(input: {
     },
     minimizedPayload: {
       type: eventType,
-      has_message_ref: Boolean(payload.message_id),
+      has_message_ref: Boolean(messageRef),
       has_svix_message_ref: Boolean(input.headers.id),
     },
   });
@@ -129,6 +141,16 @@ export function normalizeResendWebhookEvent(input: {
     ...record,
     payload_digest: sha256Hex(input.rawBody),
   };
+}
+
+function isTerminalResendEmailState(state: ReturnType<typeof normalizeResendEventState>) {
+  return (
+    state === 'delivered' ||
+    state === 'bounced' ||
+    state === 'complained' ||
+    state === 'failed' ||
+    state === 'suppressed'
+  );
 }
 
 export function verifyAndNormalizeResendWebhookEvent(input: {

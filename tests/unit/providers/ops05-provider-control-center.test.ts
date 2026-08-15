@@ -6,6 +6,7 @@ import {
   providerControlCenterResponseSchema,
 } from '../../../packages/contracts/src/providers/control-center.ts';
 import {
+  buildEmailReadinessChecks,
   buildProviderControlCenter,
   buildWebhookEndpoints,
   planProviderCanary,
@@ -22,6 +23,76 @@ import { MetaWhatsAppCloudAdapter } from '../../../packages/domain/src/whatsapp/
 const now = new Date('2026-07-17T05:00:00.000Z');
 
 describe('OPS-05 provider control center projection', () => {
+  it('fails closed unless every email evidence field has a truthful typed value', () => {
+    const readyEnv: NodeJS.ProcessEnv = {
+      NODE_ENV: 'test',
+      ONE_TIME_EMAIL_FROM: 'One Time Account Security <info@onetimeonetime.com>',
+      ONE_TIME_EMAIL_REPLY_TO: 'info@onetimeonetime.com',
+      ONE_TIME_LIFECYCLE_DELIVERY_KEY: 'ops05-lifecycle-delivery-key-value',
+      ONE_TIME_DELIVERY_TEST_CANARY_EMAIL: 'suppressed@resend.dev',
+      ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED: 'true',
+      ONE_TIME_RESEND_TRANSPORT_ENABLED: 'true',
+      ONE_TIME_RESEND_WEBHOOK_ENABLED: 'true',
+      RESEND_DOMAIN_VERIFIED: 'true',
+      RESEND_DOMAIN_SPF_READY: 'true',
+      RESEND_DOMAIN_DKIM_READY: 'true',
+      RESEND_DOMAIN_DMARC_POLICY: 'p=none',
+      RESEND_BOUNCE_WEBHOOK_ENABLED: 'true',
+      RESEND_SUPPRESSION_READBACK_READY: 'true',
+      RESEND_WEBHOOK_SECRET: 'ops05-resend-webhook-secret',
+    };
+
+    expect(buildEmailReadinessChecks(loadConfig(readyEnv), readyEnv)).toEqual(
+      expect.arrayContaining([expect.objectContaining({ status: 'ready' })]),
+    );
+    expect(
+      buildEmailReadinessChecks(loadConfig(readyEnv), readyEnv).every(
+        (check) => check.status === 'ready',
+      ),
+    ).toBe(true);
+
+    const booleanEvidence = [
+      ['RESEND_DOMAIN_VERIFIED', 'verified_sender_or_domain'],
+      ['RESEND_DOMAIN_SPF_READY', 'spf_readiness'],
+      ['RESEND_DOMAIN_DKIM_READY', 'dkim_readiness'],
+      ['RESEND_BOUNCE_WEBHOOK_ENABLED', 'return_path_bounce_handling'],
+      ['RESEND_SUPPRESSION_READBACK_READY', 'suppression_bounce_complaint_state'],
+    ] as const;
+    for (const [variableName, checkName] of booleanEvidence) {
+      for (const falseLikeValue of ['false', '1', 'yes', 'TRUE', 'evidence-present', ' ']) {
+        const env = { ...readyEnv, [variableName]: falseLikeValue };
+        expect(emailReadinessStatus(env, checkName)).toBe('evidence_missing');
+      }
+    }
+
+    for (const policy of ['p=none', 'p=quarantine', 'p=reject']) {
+      expect(
+        emailReadinessStatus({ ...readyEnv, RESEND_DOMAIN_DMARC_POLICY: policy }, 'dmarc_policy'),
+      ).toBe('ready');
+    }
+    for (const invalidPolicy of ['none', 'p=monitor', 'p=none; rua=mailto:test@example.test', '']) {
+      expect(
+        emailReadinessStatus(
+          { ...readyEnv, RESEND_DOMAIN_DMARC_POLICY: invalidPolicy },
+          'dmarc_policy',
+        ),
+      ).toBe('evidence_missing');
+    }
+
+    expect(
+      emailReadinessStatus(
+        { ...readyEnv, ONE_TIME_RESEND_WEBHOOK_ENABLED: 'false' },
+        'guarded_provider_flags',
+      ),
+    ).toBe('evidence_missing');
+    expect(
+      emailReadinessStatus(
+        { ...readyEnv, ONE_TIME_EMAIL_REPLY_TO: ' ' },
+        'reply_to_support_mailbox',
+      ),
+    ).toBe('evidence_missing');
+  });
+
   it('builds a provider-neutral owner matrix without secret values or site-root webhooks', () => {
     const env: NodeJS.ProcessEnv = {
       NODE_ENV: 'test',
@@ -289,3 +360,11 @@ describe('OPS-05 provider control center projection', () => {
     });
   });
 });
+
+function emailReadinessStatus(env: NodeJS.ProcessEnv, checkName: string) {
+  const check = buildEmailReadinessChecks(loadConfig(env), env).find(
+    (candidate) => candidate.check === checkName,
+  );
+  if (!check) throw new Error(`Missing email readiness check: ${checkName}`);
+  return check.status;
+}

@@ -252,6 +252,9 @@ describe('OT-72 Resend/WAPI provider truth', () => {
     expect(event.provider_event_ref_hash).not.toContain('resend_event_1');
     expect(event.minimized_payload).toMatchObject({ type: 'email.delivered' });
     expect(normalizeResendEventState('email.bounced')).toBe('bounced');
+    expect(normalizeResendEventState(' email.suppressed ')).toBe('suppressed');
+    expect(normalizeResendEventState('email.suppressed.extra')).toBe('unavailable');
+    expect(normalizeResendEventState('email.not_delivered')).toBe('unavailable');
   });
 });
 
