@@ -12,6 +12,8 @@
   --ot-color-surface-raised: #071117;
   --ot-color-surface-muted: #122229;
   --ot-color-text: #ffffff;
+  --ot-color-text-primary: var(--ot-color-text);
+  --ot-color-text-secondary: #dbe5e7;
   --ot-color-text-warm: #f8faf7;
   --ot-color-text-muted: #c8d6d9;
   --ot-color-text-disabled: #a5aea9;

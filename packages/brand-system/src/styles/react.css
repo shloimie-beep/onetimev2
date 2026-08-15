@@ -151,7 +151,12 @@ button {
 .contact-table small,
 .contact-card-meta,
 .app-footer {
-  color: #c8d6d9;
+  color: var(--ot-color-text-muted);
+}
+
+.crm-list .contact-table small,
+.crm-list .contact-card-meta {
+  color: var(--ot-color-text-secondary);
 }
 
 .app-context {
@@ -575,6 +580,41 @@ textarea:focus-visible,
   color: #a5aea9;
 }
 
+.toolbar-filters[aria-label='CRM filters'] {
+  scrollbar-color: var(--ot-color-border-strong) transparent;
+}
+
+.toolbar-filters[aria-label='CRM filters'] label,
+.contact-form-shell .contact-form label {
+  color: var(--ot-color-text-secondary);
+}
+
+.toolbar-filters[aria-label='CRM filters'] label.is-selected {
+  color: var(--ot-color-action-auth);
+}
+
+.toolbar-filters[aria-label='CRM filters'] input,
+.toolbar-filters[aria-label='CRM filters'] select,
+.contact-form-shell .contact-form input,
+.contact-form-shell .contact-form select,
+.contact-form-shell .contact-form textarea {
+  border-color: var(--ot-color-border-strong);
+  background: var(--ot-color-surface);
+  color: var(--ot-color-text-primary);
+}
+
+.toolbar-filters[aria-label='CRM filters'] input:disabled {
+  border-color: var(--ot-color-border);
+  color: var(--ot-color-text-disabled);
+}
+
+.toolbar-filters[aria-label='CRM filters'] input::placeholder,
+.contact-form-shell .contact-form input::placeholder,
+.contact-form-shell .contact-form textarea::placeholder {
+  color: var(--ot-color-text-secondary);
+  opacity: 1;
+}
+
 .filter-help {
   display: block;
   color: #c8d6d9;
@@ -586,6 +626,11 @@ textarea:focus-visible,
 .toolbar-filters label.is-selected input,
 .toolbar-filters label.is-selected select {
   border-color: #ede518;
+}
+
+.toolbar-filters[aria-label='CRM filters'] label.is-selected input,
+.toolbar-filters[aria-label='CRM filters'] label.is-selected select {
+  border-color: var(--ot-color-action-auth);
 }
 
 .toolbar-filters button {
@@ -862,6 +907,10 @@ textarea:focus-visible,
   text-align: left;
 }
 
+.crm-list .contact-table th {
+  color: var(--ot-color-text-secondary);
+}
+
 .contact-table tr[role='button'] {
   cursor: pointer;
   background: #0d1a20;
@@ -905,6 +954,12 @@ textarea:focus-visible,
   color: #ffffff;
 }
 
+.crm-list .contact-table strong,
+.crm-list .contact-card strong,
+.contact-detail .detail-grid dd {
+  color: var(--ot-color-text-primary);
+}
+
 .contact-card-list {
   display: grid;
   gap: 10px;
@@ -931,6 +986,41 @@ textarea:focus-visible,
 .contact-card-heading > span {
   color: #c8d6d9;
   font-size: 0.88rem;
+}
+
+.crm-list .contact-card-heading > span {
+  color: var(--ot-color-text-secondary);
+}
+
+.crm-list .contact-table tr[role='button'],
+.crm-list .contact-card {
+  background: var(--ot-color-surface);
+}
+
+.crm-list .contact-table td {
+  border-block-color: var(--ot-color-border);
+  color: var(--ot-color-text-primary);
+}
+
+.crm-list .contact-table td:first-child {
+  border-inline-start-color: var(--ot-color-border);
+}
+
+.crm-list .contact-table td:last-child {
+  border-inline-end-color: var(--ot-color-border);
+}
+
+.crm-list .contact-table tr[role='button']:hover td,
+.crm-list .contact-table tr[role='button']:focus-visible td,
+.crm-list .contact-card:hover,
+.crm-list .contact-card:focus-visible {
+  border-color: var(--ot-color-accent-auth);
+  box-shadow: var(--ot-shadow-focus);
+}
+
+.crm-list .contact-card {
+  border-color: var(--ot-color-border);
+  color: var(--ot-color-text-primary);
 }
 
 .semantic-chip {
@@ -1266,10 +1356,22 @@ textarea:focus-visible,
   padding: 14px;
 }
 
+.crm-list .state-panel,
+.contact-detail .detail-grid div,
+.contact-detail .note-panel,
+.contact-detail .state-panel {
+  border-color: var(--ot-color-border);
+  background: var(--ot-color-surface);
+}
+
 .detail-grid dt {
   color: #c8d6d9;
   font-size: 0.84rem;
   font-weight: 800;
+}
+
+.contact-detail .detail-grid dt {
+  color: var(--ot-color-text-secondary);
 }
 
 .detail-grid dd {
@@ -1289,10 +1391,23 @@ textarea:focus-visible,
   font-size: 1.15rem;
 }
 
+.crm-list .state-panel h2,
+.contact-detail .note-panel h2,
+.contact-detail .state-panel h2,
+.contact-form-shell h2 {
+  color: var(--ot-color-text-primary);
+}
+
 .note-panel p,
 .state-panel p {
   color: #c8d6d9;
   line-height: 1.5;
+}
+
+.crm-list .state-panel p,
+.contact-detail .note-panel p,
+.contact-detail .state-panel p {
+  color: var(--ot-color-text-secondary);
 }
 
 .fact-list,
@@ -1320,6 +1435,14 @@ textarea:focus-visible,
   padding: 10px;
 }
 
+.contact-detail .fact-list span,
+.contact-detail .compact-list li,
+.contact-detail .timeline-list li,
+.contact-detail .reply-preview {
+  border-color: var(--ot-color-border);
+  background: var(--ot-color-surface-raised);
+}
+
 .compact-list,
 .timeline-list {
   margin: 0;
@@ -1336,11 +1459,21 @@ textarea:focus-visible,
   text-decoration: none;
 }
 
+.contact-detail .compact-list li,
+.contact-detail .timeline-list li {
+  color: var(--ot-color-text-primary);
+}
+
 .compact-list span,
 .timeline-list span,
 .support-ticket-list span,
 .support-ticket-list small {
   color: #c8d6d9;
+}
+
+.contact-detail .compact-list span,
+.contact-detail .timeline-list span {
+  color: var(--ot-color-text-secondary);
 }
 
 .detail-columns,
@@ -1391,6 +1524,16 @@ textarea:focus-visible,
   border-color: #66777d;
 }
 
+.crm-list .state-panel.error,
+.contact-detail .state-panel.error {
+  border-color: var(--ot-color-danger);
+}
+
+.crm-list .state-panel.empty,
+.contact-detail .state-panel.empty {
+  border-color: var(--ot-color-border-strong);
+}
+
 .session-expired-state {
   max-width: 620px;
 }
@@ -1408,6 +1551,11 @@ textarea:focus-visible,
   border-radius: 12px;
   background: #0d1a20;
   padding: 14px;
+}
+
+.contact-form-shell .contact-form {
+  border-color: var(--ot-color-border);
+  background: var(--ot-color-surface);
 }
 
 .contact-form label {
