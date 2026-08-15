@@ -234,56 +234,65 @@ describe('controller dual-role adult provisioning', () => {
   });
 
   it('bounds every stalled identity stage, rolls back, and emits only a sanitized journal', async () => {
-    for (const stage of CONTROLLER_DUAL_ROLE_APPLY_STAGES) {
-      const email = `dual-role-stall-${stage.replaceAll('_', '-')}@example.test`;
-      let setupCalls = 0;
+    const memory = createMemoryPool();
+    await runMigrations(memory);
+    const stalledPool = canonicalTriggerCompatiblePool(memory);
+    const stalledConfig = testConfig();
+    await seedCanonicalClassSeries(stalledPool);
+    try {
+      for (const stage of CONTROLLER_DUAL_ROLE_APPLY_STAGES) {
+        const email = `dual-role-stall-${stage.replaceAll('_', '-')}@example.test`;
+        let setupCalls = 0;
 
-      const report = await runDualRoleAdultProvision({
-        manifest: privateManifest(email),
-        apply: true,
-        authorizationPhrase: AUTHORIZATION,
-        pool,
-        config,
-        now: PROVISION_AT,
-        testOnlyAllowIsolatedApply: true,
-        testOnlyStallApplyStage: stage,
-        testOnlyApplyStageTimeoutMs: 500,
-        issuePasswordReset: async () => {
-          setupCalls += 1;
-          throw new Error('Setup must not run after an identity timeout.');
-        },
-      });
+        const report = await runDualRoleAdultProvision({
+          manifest: privateManifest(email),
+          apply: true,
+          authorizationPhrase: AUTHORIZATION,
+          pool: stalledPool,
+          config: stalledConfig,
+          now: PROVISION_AT,
+          testOnlyAllowIsolatedApply: true,
+          testOnlyStallApplyStage: stage,
+          testOnlyApplyStageTimeoutMs: 500,
+          issuePasswordReset: async () => {
+            setupCalls += 1;
+            throw new Error('Setup must not run after an identity timeout.');
+          },
+        });
 
-      expect(report).toMatchObject({
-        blockers: expect.arrayContaining([`apply_identity_${stage}_timed_out`]),
-        apply_execution: {
-          bounded_watchdog: true,
-          disposition: 'timed_out',
-          transaction_outcome: stage === 'transaction_commit' ? 'commit_unknown' : 'rolled_back',
-          reconciliation_outcome: 'completed',
-          final_stage: stage,
-        },
-        setup_delivery: { token_rows: 0, intent_rows: 0, outbox_rows: 0 },
-      });
-      expect(['blocked', 'identity_applied_setup_pending']).toContain(report.status);
-      expect(report.apply_execution.journal.at(-1)).toEqual({
-        sequence: report.apply_execution.journal.length,
-        stage,
-        state: 'timed_out',
-      });
-      expect(setupCalls).toBe(0);
+        expect(report).toMatchObject({
+          blockers: expect.arrayContaining([`apply_identity_${stage}_timed_out`]),
+          apply_execution: {
+            bounded_watchdog: true,
+            disposition: 'timed_out',
+            transaction_outcome: stage === 'transaction_commit' ? 'commit_unknown' : 'rolled_back',
+            reconciliation_outcome: 'completed',
+            final_stage: stage,
+          },
+          setup_delivery: { token_rows: 0, intent_rows: 0, outbox_rows: 0 },
+        });
+        expect(['blocked', 'identity_applied_setup_pending']).toContain(report.status);
+        expect(report.apply_execution.journal.at(-1)).toEqual({
+          sequence: report.apply_execution.journal.length,
+          stage,
+          state: 'timed_out',
+        });
+        expect(setupCalls).toBe(0);
 
-      const serialized = JSON.stringify(report);
-      expect(serialized).not.toContain(email);
-      expect(serialized).not.toContain('Synthetic Dual Role Adult');
-      expect(serialized).not.toContain('INSERT INTO');
-      expect(serialized).not.toContain('database-id');
-      expect(serialized).not.toContain('@');
+        const serialized = JSON.stringify(report);
+        expect(serialized).not.toContain(email);
+        expect(serialized).not.toContain('Synthetic Dual Role Adult');
+        expect(serialized).not.toContain('INSERT INTO');
+        expect(serialized).not.toContain('database-id');
+        expect(serialized).not.toContain('@');
+      }
+      await expect(count(stalledPool, 'account_lifecycle_tokens')).resolves.toBe(0);
+      await expect(count(stalledPool, 'account_lifecycle_delivery_intents')).resolves.toBe(0);
+      await expect(count(stalledPool, 'account_lifecycle_delivery_outbox')).resolves.toBe(0);
+    } finally {
+      await stalledPool.end();
     }
-    await expect(count(pool, 'account_lifecycle_tokens')).resolves.toBe(0);
-    await expect(count(pool, 'account_lifecycle_delivery_intents')).resolves.toBe(0);
-    await expect(count(pool, 'account_lifecycle_delivery_outbox')).resolves.toBe(0);
-  });
+  }, 30_000);
 
   it('runs the real CLI to exits 0 and 2, never 13, under Node-to-npm spawnSync pipes', () => {
     const npmCli = process.env.npm_execpath;
