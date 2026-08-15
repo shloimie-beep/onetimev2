@@ -193,7 +193,7 @@ export function StudentClassroomWorkspace({
     const controller = new AbortController();
     try {
       if (productionBasicActive.current && productionBasicAttendance.current) {
-        await productionBasicAttendance.current.disconnected();
+        await productionBasicAttendance.current.disconnected({ keepalive: true });
         productionBasicAttendance.current = null;
         productionBasicActive.current = false;
       } else {

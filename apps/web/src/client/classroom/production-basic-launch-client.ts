@@ -117,17 +117,37 @@ export function createProductionBasicStudentAttendanceController(input: {
   const record = input.record ?? recordProductionBasicAttendance;
   let joinPromise: Promise<void> | null = null;
   let leavePromise: Promise<void> | null = null;
+  let keepaliveLeavePromise: Promise<void> | null = null;
+  let leaveRecorded = false;
   let disconnectRequested = false;
   let disconnectKeepalive = false;
 
-  const recordLeave = () => {
-    if (!joinPromise) return Promise.resolve();
-    leavePromise ??= joinPromise.then(() =>
-      record(input.csrfToken, input.attendanceSessionKey, 'left', {
-        keepalive: disconnectKeepalive,
-      }),
-    );
-    return leavePromise;
+  const recordLeave = (): Promise<void> => {
+    if (!joinPromise || leaveRecorded) return Promise.resolve();
+    const keepalive = disconnectKeepalive;
+    const existing = keepalive ? keepaliveLeavePromise : (leavePromise ?? keepaliveLeavePromise);
+    if (existing) return existing;
+
+    const attempt = joinPromise
+      .then(() =>
+        record(input.csrfToken, input.attendanceSessionKey, 'left', {
+          keepalive,
+        }),
+      )
+      .then(() => {
+        leaveRecorded = true;
+      });
+    const guarded = attempt.catch((error: unknown) => {
+      if (keepalive) {
+        if (keepaliveLeavePromise === guarded) keepaliveLeavePromise = null;
+      } else if (leavePromise === guarded) {
+        leavePromise = null;
+      }
+      throw error;
+    });
+    if (keepalive) keepaliveLeavePromise = guarded;
+    else leavePromise = guarded;
+    return guarded;
   };
   const handlePageHide = () => {
     disconnectRequested = true;

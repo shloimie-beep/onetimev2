@@ -156,7 +156,7 @@
     },
     {
       "path": "apps/web/src/client/app/student/classroom/StudentClassroomWorkspace.tsx",
-      "sha256": "22fb8a6594a0b715755520322318c686f52e5faf7e29e75c5b530a1ea5b312ee"
+      "sha256": "628e2a2f546ab62b792af929934d53bee043cab0e03cd3d26a536c4164e98329"
     },
     {
       "path": "apps/web/src/client/app/student/classroom/api.ts",
@@ -176,7 +176,7 @@
     },
     {
       "path": "apps/web/src/client/classroom/production-basic-launch-client.ts",
-      "sha256": "fef51650d0a389942091252f11c97c670c0ac113ff014e2139e72b5be16e8a45"
+      "sha256": "ec23ecb1a3920a6b250a9df7c26e723b24c89b265d4a212ffca0b263dfea188f"
     },
     {
       "path": "apps/web/src/client/features/portals/PortalFeatures.tsx",

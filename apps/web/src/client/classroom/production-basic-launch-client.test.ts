@@ -295,4 +295,95 @@ describe('production-basic launch client', () => {
       { keepalive: true },
     );
   });
+
+  it('retries a rejected Student leave with keepalive during disposal', async () => {
+    const record = vi
+      .fn()
+      .mockResolvedValueOnce(undefined)
+      .mockRejectedValueOnce(new Error('temporary attendance failure'))
+      .mockResolvedValueOnce(undefined);
+    const controller = createProductionBasicStudentAttendanceController({
+      csrfToken: 'csrf-derived',
+      attendanceSessionKey: 'production-basic-attendance-derived',
+      record,
+    });
+    await controller.connected();
+
+    await expect(controller.disconnected()).rejects.toThrow('temporary attendance failure');
+    controller.dispose();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(record).toHaveBeenCalledTimes(3);
+    expect(record).toHaveBeenNthCalledWith(
+      2,
+      'csrf-derived',
+      'production-basic-attendance-derived',
+      'left',
+      { keepalive: false },
+    );
+    expect(record).toHaveBeenNthCalledWith(
+      3,
+      'csrf-derived',
+      'production-basic-attendance-derived',
+      'left',
+      { keepalive: true },
+    );
+  });
+
+  it('upgrades a pending ordinary Student leave with one idempotent keepalive request', async () => {
+    let pageHide: (() => void) | undefined;
+    let resolveOrdinaryLeave: (() => void) | undefined;
+    vi.stubGlobal('window', {
+      addEventListener: vi.fn((_name: string, listener: () => void) => {
+        pageHide = listener;
+      }),
+      removeEventListener: vi.fn(),
+    });
+    const record = vi.fn(
+      async (
+        _csrfToken: string,
+        _attendanceSessionKey: string,
+        eventKind: 'joined' | 'left',
+        options: { keepalive?: boolean } = {},
+      ) => {
+        if (eventKind === 'left' && options.keepalive !== true) {
+          await new Promise<void>((resolve) => {
+            resolveOrdinaryLeave = resolve;
+          });
+        }
+      },
+    );
+    const controller = createProductionBasicStudentAttendanceController({
+      csrfToken: 'csrf-derived',
+      attendanceSessionKey: 'production-basic-attendance-derived',
+      record,
+    });
+    await controller.connected();
+
+    const ordinaryLeave = controller.disconnected();
+    await Promise.resolve();
+    pageHide?.();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(record).toHaveBeenCalledTimes(3);
+    expect(record).toHaveBeenNthCalledWith(
+      2,
+      'csrf-derived',
+      'production-basic-attendance-derived',
+      'left',
+      { keepalive: false },
+    );
+    expect(record).toHaveBeenNthCalledWith(
+      3,
+      'csrf-derived',
+      'production-basic-attendance-derived',
+      'left',
+      { keepalive: true },
+    );
+
+    resolveOrdinaryLeave?.();
+    await ordinaryLeave;
+  });
 });
