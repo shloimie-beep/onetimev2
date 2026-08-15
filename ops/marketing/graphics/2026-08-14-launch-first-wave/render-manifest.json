@@ -26,13 +26,266 @@
       "safe_zone": {
         "applicable": true,
         "ratio": 0.07,
+        "geometry_source": "pillow_operation_bboxes",
+        "coordinate_convention": "left/top inclusive; right_exclusive/bottom_exclusive",
         "inset_x_px": 76,
         "inset_y_px": 95,
+        "foreground_item_count": 13,
+        "foreground_items": [
+          {
+            "element_id": "accent_rule",
+            "kind": "rule",
+            "measurement": "pillow_rectangle_inclusive_to_exclusive",
+            "bounds": {
+              "left": 84,
+              "top": 265,
+              "right_exclusive": 91,
+              "bottom_exclusive": 719
+            },
+            "edge_buffers_px": {
+              "left": 8,
+              "top": 170,
+              "right": 913,
+              "bottom": 536
+            },
+            "minimum_buffer_px": 8,
+            "pass": true
+          },
+          {
+            "element_id": "logo",
+            "kind": "logo",
+            "measurement": "resized_logo_alpha_bbox",
+            "bounds": {
+              "left": 88,
+              "top": 109,
+              "right_exclusive": 180,
+              "bottom_exclusive": 174
+            },
+            "edge_buffers_px": {
+              "left": 12,
+              "top": 14,
+              "right": 824,
+              "bottom": 1081
+            },
+            "minimum_buffer_px": 12,
+            "pass": true
+          },
+          {
+            "element_id": "eyebrow",
+            "kind": "glyphs",
+            "measurement": "union_of_pillow_character_textbbox",
+            "bounds": {
+              "left": 82,
+              "top": 207,
+              "right_exclusive": 288,
+              "bottom_exclusive": 223
+            },
+            "edge_buffers_px": {
+              "left": 6,
+              "top": 112,
+              "right": 716,
+              "bottom": 1032
+            },
+            "minimum_buffer_px": 6,
+            "pass": true
+          },
+          {
+            "element_id": "rabbi_name",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 82,
+              "top": 237,
+              "right_exclusive": 418,
+              "bottom_exclusive": 256
+            },
+            "edge_buffers_px": {
+              "left": 6,
+              "top": 142,
+              "right": 586,
+              "bottom": 999
+            },
+            "minimum_buffer_px": 6,
+            "pass": true
+          },
+          {
+            "element_id": "headline_classes",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 96,
+              "top": 335,
+              "right_exclusive": 417,
+              "bottom_exclusive": 393
+            },
+            "edge_buffers_px": {
+              "left": 20,
+              "top": 240,
+              "right": 587,
+              "bottom": 862
+            },
+            "minimum_buffer_px": 20,
+            "pass": true
+          },
+          {
+            "element_id": "headline_start",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 96,
+              "top": 421,
+              "right_exclusive": 346,
+              "bottom_exclusive": 479
+            },
+            "edge_buffers_px": {
+              "left": 20,
+              "top": 326,
+              "right": 658,
+              "bottom": 776
+            },
+            "minimum_buffer_px": 20,
+            "pass": true
+          },
+          {
+            "element_id": "headline_sunday",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 96,
+              "top": 513,
+              "right_exclusive": 433,
+              "bottom_exclusive": 576
+            },
+            "edge_buffers_px": {
+              "left": 20,
+              "top": 418,
+              "right": 571,
+              "bottom": 679
+            },
+            "minimum_buffer_px": 20,
+            "pass": true
+          },
+          {
+            "element_id": "schedule",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 95,
+              "top": 632,
+              "right_exclusive": 416,
+              "bottom_exclusive": 653
+            },
+            "edge_buffers_px": {
+              "left": 19,
+              "top": 537,
+              "right": 588,
+              "bottom": 602
+            },
+            "minimum_buffer_px": 19,
+            "pass": true
+          },
+          {
+            "element_id": "live_label",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 96,
+              "top": 675,
+              "right_exclusive": 255,
+              "bottom_exclusive": 694
+            },
+            "edge_buffers_px": {
+              "left": 20,
+              "top": 580,
+              "right": 749,
+              "bottom": 561
+            },
+            "minimum_buffer_px": 20,
+            "pass": true
+          },
+          {
+            "element_id": "cta",
+            "kind": "cta",
+            "measurement": "union_of_pillow_button_and_textbbox",
+            "bounds": {
+              "left": 96,
+              "top": 787,
+              "right_exclusive": 413,
+              "bottom_exclusive": 864
+            },
+            "edge_buffers_px": {
+              "left": 20,
+              "top": 692,
+              "right": 591,
+              "bottom": 391
+            },
+            "minimum_buffer_px": 20,
+            "pass": true
+          },
+          {
+            "element_id": "no_card",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 96,
+              "top": 901,
+              "right_exclusive": 304,
+              "bottom_exclusive": 925
+            },
+            "edge_buffers_px": {
+              "left": 20,
+              "top": 806,
+              "right": 700,
+              "bottom": 330
+            },
+            "minimum_buffer_px": 20,
+            "pass": true
+          },
+          {
+            "element_id": "free_until",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 96,
+              "top": 934,
+              "right_exclusive": 346,
+              "bottom_exclusive": 957
+            },
+            "edge_buffers_px": {
+              "left": 20,
+              "top": 839,
+              "right": 658,
+              "bottom": 298
+            },
+            "minimum_buffer_px": 20,
+            "pass": true
+          },
+          {
+            "element_id": "url",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 93,
+              "top": 1223,
+              "right_exclusive": 413,
+              "bottom_exclusive": 1247
+            },
+            "edge_buffers_px": {
+              "left": 17,
+              "top": 1128,
+              "right": 591,
+              "bottom": 8
+            },
+            "minimum_buffer_px": 8,
+            "pass": true
+          }
+        ],
+        "minimum_buffer_px": 6,
         "foreground_bounds": {
           "left": 82,
-          "top": 96,
-          "right": 500,
-          "bottom": 1248
+          "top": 109,
+          "right_exclusive": 433,
+          "bottom_exclusive": 1247
         },
         "pass": true
       }
@@ -50,13 +303,266 @@
       "safe_zone": {
         "applicable": true,
         "ratio": 0.07,
+        "geometry_source": "pillow_operation_bboxes",
+        "coordinate_convention": "left/top inclusive; right_exclusive/bottom_exclusive",
         "inset_x_px": 76,
         "inset_y_px": 135,
+        "foreground_item_count": 13,
+        "foreground_items": [
+          {
+            "element_id": "accent_rule",
+            "kind": "rule",
+            "measurement": "pillow_rectangle_inclusive_to_exclusive",
+            "bounds": {
+              "left": 84,
+              "top": 395,
+              "right_exclusive": 93,
+              "bottom_exclusive": 1061
+            },
+            "edge_buffers_px": {
+              "left": 8,
+              "top": 260,
+              "right": 911,
+              "bottom": 724
+            },
+            "minimum_buffer_px": 8,
+            "pass": true
+          },
+          {
+            "element_id": "logo",
+            "kind": "logo",
+            "measurement": "resized_logo_alpha_bbox",
+            "bounds": {
+              "left": 91,
+              "top": 165,
+              "right_exclusive": 227,
+              "bottom_exclusive": 260
+            },
+            "edge_buffers_px": {
+              "left": 15,
+              "top": 30,
+              "right": 777,
+              "bottom": 1525
+            },
+            "minimum_buffer_px": 15,
+            "pass": true
+          },
+          {
+            "element_id": "eyebrow",
+            "kind": "glyphs",
+            "measurement": "union_of_pillow_character_textbbox",
+            "bounds": {
+              "left": 96,
+              "top": 338,
+              "right_exclusive": 322,
+              "bottom_exclusive": 356
+            },
+            "edge_buffers_px": {
+              "left": 20,
+              "top": 203,
+              "right": 682,
+              "bottom": 1429
+            },
+            "minimum_buffer_px": 20,
+            "pass": true
+          },
+          {
+            "element_id": "rabbi_name",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 96,
+              "top": 375,
+              "right_exclusive": 434,
+              "bottom_exclusive": 394
+            },
+            "edge_buffers_px": {
+              "left": 20,
+              "top": 240,
+              "right": 570,
+              "bottom": 1391
+            },
+            "minimum_buffer_px": 20,
+            "pass": true
+          },
+          {
+            "element_id": "headline_classes",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 100,
+              "top": 488,
+              "right_exclusive": 468,
+              "bottom_exclusive": 554
+            },
+            "edge_buffers_px": {
+              "left": 24,
+              "top": 353,
+              "right": 536,
+              "bottom": 1231
+            },
+            "minimum_buffer_px": 24,
+            "pass": true
+          },
+          {
+            "element_id": "headline_start",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 100,
+              "top": 591,
+              "right_exclusive": 387,
+              "bottom_exclusive": 657
+            },
+            "edge_buffers_px": {
+              "left": 24,
+              "top": 456,
+              "right": 617,
+              "bottom": 1128
+            },
+            "minimum_buffer_px": 24,
+            "pass": true
+          },
+          {
+            "element_id": "headline_sunday",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 100,
+              "top": 698,
+              "right_exclusive": 494,
+              "bottom_exclusive": 773
+            },
+            "edge_buffers_px": {
+              "left": 24,
+              "top": 563,
+              "right": 510,
+              "bottom": 1012
+            },
+            "minimum_buffer_px": 24,
+            "pass": true
+          },
+          {
+            "element_id": "date",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 99,
+              "top": 828,
+              "right_exclusive": 202,
+              "bottom_exclusive": 849
+            },
+            "edge_buffers_px": {
+              "left": 23,
+              "top": 693,
+              "right": 802,
+              "bottom": 936
+            },
+            "minimum_buffer_px": 23,
+            "pass": true
+          },
+          {
+            "element_id": "time",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 100,
+              "top": 869,
+              "right_exclusive": 286,
+              "bottom_exclusive": 890
+            },
+            "edge_buffers_px": {
+              "left": 24,
+              "top": 734,
+              "right": 718,
+              "bottom": 895
+            },
+            "minimum_buffer_px": 24,
+            "pass": true
+          },
+          {
+            "element_id": "cta",
+            "kind": "cta",
+            "measurement": "union_of_pillow_button_and_textbbox",
+            "bounds": {
+              "left": 100,
+              "top": 1044,
+              "right_exclusive": 431,
+              "bottom_exclusive": 1126
+            },
+            "edge_buffers_px": {
+              "left": 24,
+              "top": 909,
+              "right": 573,
+              "bottom": 659
+            },
+            "minimum_buffer_px": 24,
+            "pass": true
+          },
+          {
+            "element_id": "no_card",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 100,
+              "top": 1170,
+              "right_exclusive": 320,
+              "bottom_exclusive": 1195
+            },
+            "edge_buffers_px": {
+              "left": 24,
+              "top": 1035,
+              "right": 684,
+              "bottom": 590
+            },
+            "minimum_buffer_px": 24,
+            "pass": true
+          },
+          {
+            "element_id": "free_until",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 100,
+              "top": 1208,
+              "right_exclusive": 366,
+              "bottom_exclusive": 1233
+            },
+            "edge_buffers_px": {
+              "left": 24,
+              "top": 1073,
+              "right": 638,
+              "bottom": 552
+            },
+            "minimum_buffer_px": 24,
+            "pass": true
+          },
+          {
+            "element_id": "url",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 97,
+              "top": 1720,
+              "right_exclusive": 434,
+              "bottom_exclusive": 1746
+            },
+            "edge_buffers_px": {
+              "left": 21,
+              "top": 1585,
+              "right": 570,
+              "bottom": 39
+            },
+            "minimum_buffer_px": 21,
+            "pass": true
+          }
+        ],
+        "minimum_buffer_px": 8,
         "foreground_bounds": {
           "left": 84,
-          "top": 144,
-          "right": 600,
-          "bottom": 1746
+          "top": 165,
+          "right_exclusive": 494,
+          "bottom_exclusive": 1746
         },
         "pass": true
       }
@@ -74,13 +580,171 @@
       "safe_zone": {
         "applicable": true,
         "ratio": 0.07,
+        "geometry_source": "pillow_operation_bboxes",
+        "coordinate_convention": "left/top inclusive; right_exclusive/bottom_exclusive",
         "inset_x_px": 84,
         "inset_y_px": 45,
+        "foreground_item_count": 8,
+        "foreground_items": [
+          {
+            "element_id": "logo",
+            "kind": "logo",
+            "measurement": "resized_logo_alpha_bbox",
+            "bounds": {
+              "left": 96,
+              "top": 65,
+              "right_exclusive": 190,
+              "bottom_exclusive": 132
+            },
+            "edge_buffers_px": {
+              "left": 12,
+              "top": 20,
+              "right": 926,
+              "bottom": 453
+            },
+            "minimum_buffer_px": 12,
+            "pass": true
+          },
+          {
+            "element_id": "eyebrow",
+            "kind": "glyphs",
+            "measurement": "union_of_pillow_character_textbbox",
+            "bounds": {
+              "left": 92,
+              "top": 175,
+              "right_exclusive": 270,
+              "bottom_exclusive": 189
+            },
+            "edge_buffers_px": {
+              "left": 8,
+              "top": 130,
+              "right": 846,
+              "bottom": 396
+            },
+            "minimum_buffer_px": 8,
+            "pass": true
+          },
+          {
+            "element_id": "headline",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 92,
+              "top": 226,
+              "right_exclusive": 535,
+              "bottom_exclusive": 270
+            },
+            "edge_buffers_px": {
+              "left": 8,
+              "top": 181,
+              "right": 581,
+              "bottom": 315
+            },
+            "minimum_buffer_px": 8,
+            "pass": true
+          },
+          {
+            "element_id": "emphasis",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 92,
+              "top": 290,
+              "right_exclusive": 349,
+              "bottom_exclusive": 339
+            },
+            "edge_buffers_px": {
+              "left": 8,
+              "top": 245,
+              "right": 767,
+              "bottom": 246
+            },
+            "minimum_buffer_px": 8,
+            "pass": true
+          },
+          {
+            "element_id": "schedule",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 91,
+              "top": 364,
+              "right_exclusive": 349,
+              "bottom_exclusive": 381
+            },
+            "edge_buffers_px": {
+              "left": 7,
+              "top": 319,
+              "right": 767,
+              "bottom": 204
+            },
+            "minimum_buffer_px": 7,
+            "pass": true
+          },
+          {
+            "element_id": "cta",
+            "kind": "cta",
+            "measurement": "union_of_pillow_button_and_textbbox",
+            "bounds": {
+              "left": 92,
+              "top": 416,
+              "right_exclusive": 343,
+              "bottom_exclusive": 478
+            },
+            "edge_buffers_px": {
+              "left": 8,
+              "top": 371,
+              "right": 773,
+              "bottom": 107
+            },
+            "minimum_buffer_px": 8,
+            "pass": true
+          },
+          {
+            "element_id": "offer_detail",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 92,
+              "top": 507,
+              "right_exclusive": 470,
+              "bottom_exclusive": 526
+            },
+            "edge_buffers_px": {
+              "left": 8,
+              "top": 462,
+              "right": 646,
+              "bottom": 59
+            },
+            "minimum_buffer_px": 8,
+            "pass": true
+          },
+          {
+            "element_id": "url",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 90,
+              "top": 552,
+              "right_exclusive": 345,
+              "bottom_exclusive": 571
+            },
+            "edge_buffers_px": {
+              "left": 6,
+              "top": 507,
+              "right": 771,
+              "bottom": 14
+            },
+            "minimum_buffer_px": 6,
+            "pass": true
+          }
+        ],
+        "minimum_buffer_px": 6,
         "foreground_bounds": {
-          "left": 92,
-          "top": 52,
-          "right": 570,
-          "bottom": 573
+          "left": 90,
+          "top": 65,
+          "right_exclusive": 535,
+          "bottom_exclusive": 571
         },
         "pass": true
       }
@@ -93,18 +757,214 @@
       "filename": "OTM-CP-002-feed-1080x1350.png",
       "width": 1080,
       "height": 1350,
-      "bytes": 632154,
-      "sha256": "757da3865ad36f01511dc162607f91c38e87d9af64a2a18c5769f7cdee2f79ec",
+      "bytes": 632421,
+      "sha256": "0e773b35254c931ff467c8542c976916724c14f5aab54fea804f8c30569b6b24",
       "safe_zone": {
         "applicable": true,
         "ratio": 0.07,
+        "geometry_source": "pillow_operation_bboxes",
+        "coordinate_convention": "left/top inclusive; right_exclusive/bottom_exclusive",
         "inset_x_px": 76,
         "inset_y_px": 95,
+        "foreground_item_count": 10,
+        "foreground_items": [
+          {
+            "element_id": "logo",
+            "kind": "logo",
+            "measurement": "resized_logo_alpha_bbox",
+            "bounds": {
+              "left": 90,
+              "top": 115,
+              "right_exclusive": 220,
+              "bottom_exclusive": 206
+            },
+            "edge_buffers_px": {
+              "left": 14,
+              "top": 20,
+              "right": 784,
+              "bottom": 1049
+            },
+            "minimum_buffer_px": 14,
+            "pass": true
+          },
+          {
+            "element_id": "eyebrow",
+            "kind": "glyphs",
+            "measurement": "union_of_pillow_character_textbbox",
+            "bounds": {
+              "left": 84,
+              "top": 736,
+              "right_exclusive": 404,
+              "bottom_exclusive": 755
+            },
+            "edge_buffers_px": {
+              "left": 8,
+              "top": 641,
+              "right": 600,
+              "bottom": 500
+            },
+            "minimum_buffer_px": 8,
+            "pass": true
+          },
+          {
+            "element_id": "headline_get_free",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 84,
+              "top": 801,
+              "right_exclusive": 535,
+              "bottom_exclusive": 874
+            },
+            "edge_buffers_px": {
+              "left": 8,
+              "top": 706,
+              "right": 469,
+              "bottom": 381
+            },
+            "minimum_buffer_px": 8,
+            "pass": true
+          },
+          {
+            "element_id": "headline_access",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 84,
+              "top": 906,
+              "right_exclusive": 495,
+              "bottom_exclusive": 989
+            },
+            "edge_buffers_px": {
+              "left": 8,
+              "top": 811,
+              "right": 509,
+              "bottom": 266
+            },
+            "minimum_buffer_px": 8,
+            "pass": true
+          },
+          {
+            "element_id": "support_live",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 84,
+              "top": 1019,
+              "right_exclusive": 441,
+              "bottom_exclusive": 1044
+            },
+            "edge_buffers_px": {
+              "left": 8,
+              "top": 924,
+              "right": 563,
+              "bottom": 211
+            },
+            "minimum_buffer_px": 8,
+            "pass": true
+          },
+          {
+            "element_id": "support_perek",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 84,
+              "top": 1064,
+              "right_exclusive": 490,
+              "bottom_exclusive": 1094
+            },
+            "edge_buffers_px": {
+              "left": 8,
+              "top": 969,
+              "right": 514,
+              "bottom": 161
+            },
+            "minimum_buffer_px": 8,
+            "pass": true
+          },
+          {
+            "element_id": "divider",
+            "kind": "rule",
+            "measurement": "pillow_rectangle_inclusive_to_exclusive",
+            "bounds": {
+              "left": 84,
+              "top": 1121,
+              "right_exclusive": 997,
+              "bottom_exclusive": 1125
+            },
+            "edge_buffers_px": {
+              "left": 8,
+              "top": 1026,
+              "right": 7,
+              "bottom": 130
+            },
+            "minimum_buffer_px": 7,
+            "pass": true
+          },
+          {
+            "element_id": "schedule",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 84,
+              "top": 1157,
+              "right_exclusive": 557,
+              "bottom_exclusive": 1176
+            },
+            "edge_buffers_px": {
+              "left": 8,
+              "top": 1062,
+              "right": 447,
+              "bottom": 79
+            },
+            "minimum_buffer_px": 8,
+            "pass": true
+          },
+          {
+            "element_id": "offer_detail",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 84,
+              "top": 1191,
+              "right_exclusive": 577,
+              "bottom_exclusive": 1215
+            },
+            "edge_buffers_px": {
+              "left": 8,
+              "top": 1096,
+              "right": 427,
+              "bottom": 40
+            },
+            "minimum_buffer_px": 8,
+            "pass": true
+          },
+          {
+            "element_id": "url",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 81,
+              "top": 1223,
+              "right_exclusive": 401,
+              "bottom_exclusive": 1247
+            },
+            "edge_buffers_px": {
+              "left": 5,
+              "top": 1128,
+              "right": 603,
+              "bottom": 8
+            },
+            "minimum_buffer_px": 5,
+            "pass": true
+          }
+        ],
+        "minimum_buffer_px": 5,
         "foreground_bounds": {
-          "left": 84,
-          "top": 96,
-          "right": 996,
-          "bottom": 1254
+          "left": 81,
+          "top": 115,
+          "right_exclusive": 997,
+          "bottom_exclusive": 1247
         },
         "pass": true
       }
@@ -122,13 +982,209 @@
       "safe_zone": {
         "applicable": true,
         "ratio": 0.07,
+        "geometry_source": "pillow_operation_bboxes",
+        "coordinate_convention": "left/top inclusive; right_exclusive/bottom_exclusive",
         "inset_x_px": 76,
         "inset_y_px": 135,
+        "foreground_item_count": 10,
+        "foreground_items": [
+          {
+            "element_id": "logo",
+            "kind": "logo",
+            "measurement": "resized_logo_alpha_bbox",
+            "bounds": {
+              "left": 91,
+              "top": 165,
+              "right_exclusive": 227,
+              "bottom_exclusive": 260
+            },
+            "edge_buffers_px": {
+              "left": 15,
+              "top": 30,
+              "right": 777,
+              "bottom": 1525
+            },
+            "minimum_buffer_px": 15,
+            "pass": true
+          },
+          {
+            "element_id": "eyebrow",
+            "kind": "glyphs",
+            "measurement": "union_of_pillow_character_textbbox",
+            "bounds": {
+              "left": 84,
+              "top": 1067,
+              "right_exclusive": 418,
+              "bottom_exclusive": 1086
+            },
+            "edge_buffers_px": {
+              "left": 8,
+              "top": 932,
+              "right": 586,
+              "bottom": 699
+            },
+            "minimum_buffer_px": 8,
+            "pass": true
+          },
+          {
+            "element_id": "headline_get_free",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 84,
+              "top": 1140,
+              "right_exclusive": 585,
+              "bottom_exclusive": 1222
+            },
+            "edge_buffers_px": {
+              "left": 8,
+              "top": 1005,
+              "right": 419,
+              "bottom": 563
+            },
+            "minimum_buffer_px": 8,
+            "pass": true
+          },
+          {
+            "element_id": "headline_access",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 84,
+              "top": 1260,
+              "right_exclusive": 541,
+              "bottom_exclusive": 1353
+            },
+            "edge_buffers_px": {
+              "left": 8,
+              "top": 1125,
+              "right": 463,
+              "bottom": 432
+            },
+            "minimum_buffer_px": 8,
+            "pass": true
+          },
+          {
+            "element_id": "support_live",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 84,
+              "top": 1386,
+              "right_exclusive": 451,
+              "bottom_exclusive": 1412
+            },
+            "edge_buffers_px": {
+              "left": 8,
+              "top": 1251,
+              "right": 553,
+              "bottom": 373
+            },
+            "minimum_buffer_px": 8,
+            "pass": true
+          },
+          {
+            "element_id": "support_perek",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 84,
+              "top": 1435,
+              "right_exclusive": 499,
+              "bottom_exclusive": 1465
+            },
+            "edge_buffers_px": {
+              "left": 8,
+              "top": 1300,
+              "right": 505,
+              "bottom": 320
+            },
+            "minimum_buffer_px": 8,
+            "pass": true
+          },
+          {
+            "element_id": "divider",
+            "kind": "rule",
+            "measurement": "pillow_rectangle_inclusive_to_exclusive",
+            "bounds": {
+              "left": 84,
+              "top": 1497,
+              "right_exclusive": 997,
+              "bottom_exclusive": 1502
+            },
+            "edge_buffers_px": {
+              "left": 8,
+              "top": 1362,
+              "right": 7,
+              "bottom": 283
+            },
+            "minimum_buffer_px": 7,
+            "pass": true
+          },
+          {
+            "element_id": "schedule",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 84,
+              "top": 1539,
+              "right_exclusive": 574,
+              "bottom_exclusive": 1559
+            },
+            "edge_buffers_px": {
+              "left": 8,
+              "top": 1404,
+              "right": 430,
+              "bottom": 226
+            },
+            "minimum_buffer_px": 8,
+            "pass": true
+          },
+          {
+            "element_id": "offer_detail",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 84,
+              "top": 1587,
+              "right_exclusive": 605,
+              "bottom_exclusive": 1613
+            },
+            "edge_buffers_px": {
+              "left": 8,
+              "top": 1452,
+              "right": 399,
+              "bottom": 172
+            },
+            "minimum_buffer_px": 8,
+            "pass": true
+          },
+          {
+            "element_id": "url",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 81,
+              "top": 1722,
+              "right_exclusive": 418,
+              "bottom_exclusive": 1748
+            },
+            "edge_buffers_px": {
+              "left": 5,
+              "top": 1587,
+              "right": 586,
+              "bottom": 37
+            },
+            "minimum_buffer_px": 5,
+            "pass": true
+          }
+        ],
+        "minimum_buffer_px": 5,
         "foreground_bounds": {
-          "left": 84,
-          "top": 144,
-          "right": 996,
-          "bottom": 1747
+          "left": 81,
+          "top": 165,
+          "right_exclusive": 997,
+          "bottom_exclusive": 1748
         },
         "pass": true
       }
@@ -146,13 +1202,190 @@
       "safe_zone": {
         "applicable": true,
         "ratio": 0.07,
+        "geometry_source": "pillow_operation_bboxes",
+        "coordinate_convention": "left/top inclusive; right_exclusive/bottom_exclusive",
         "inset_x_px": 84,
         "inset_y_px": 45,
+        "foreground_item_count": 9,
+        "foreground_items": [
+          {
+            "element_id": "logo",
+            "kind": "logo",
+            "measurement": "resized_logo_alpha_bbox",
+            "bounds": {
+              "left": 96,
+              "top": 65,
+              "right_exclusive": 190,
+              "bottom_exclusive": 132
+            },
+            "edge_buffers_px": {
+              "left": 12,
+              "top": 20,
+              "right": 926,
+              "bottom": 453
+            },
+            "minimum_buffer_px": 12,
+            "pass": true
+          },
+          {
+            "element_id": "eyebrow",
+            "kind": "glyphs",
+            "measurement": "union_of_pillow_character_textbbox",
+            "bounds": {
+              "left": 92,
+              "top": 171,
+              "right_exclusive": 325,
+              "bottom_exclusive": 185
+            },
+            "edge_buffers_px": {
+              "left": 8,
+              "top": 126,
+              "right": 791,
+              "bottom": 400
+            },
+            "minimum_buffer_px": 8,
+            "pass": true
+          },
+          {
+            "element_id": "headline_get_free",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 92,
+              "top": 225,
+              "right_exclusive": 378,
+              "bottom_exclusive": 272
+            },
+            "edge_buffers_px": {
+              "left": 8,
+              "top": 180,
+              "right": 738,
+              "bottom": 313
+            },
+            "minimum_buffer_px": 8,
+            "pass": true
+          },
+          {
+            "element_id": "headline_access",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 92,
+              "top": 292,
+              "right_exclusive": 349,
+              "bottom_exclusive": 345
+            },
+            "edge_buffers_px": {
+              "left": 8,
+              "top": 247,
+              "right": 767,
+              "bottom": 240
+            },
+            "minimum_buffer_px": 8,
+            "pass": true
+          },
+          {
+            "element_id": "support_live",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 92,
+              "top": 363,
+              "right_exclusive": 363,
+              "bottom_exclusive": 382
+            },
+            "edge_buffers_px": {
+              "left": 8,
+              "top": 318,
+              "right": 753,
+              "bottom": 203
+            },
+            "minimum_buffer_px": 8,
+            "pass": true
+          },
+          {
+            "element_id": "support_perek",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 92,
+              "top": 397,
+              "right_exclusive": 399,
+              "bottom_exclusive": 420
+            },
+            "edge_buffers_px": {
+              "left": 8,
+              "top": 352,
+              "right": 717,
+              "bottom": 165
+            },
+            "minimum_buffer_px": 8,
+            "pass": true
+          },
+          {
+            "element_id": "schedule",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 92,
+              "top": 455,
+              "right_exclusive": 474,
+              "bottom_exclusive": 471
+            },
+            "edge_buffers_px": {
+              "left": 8,
+              "top": 410,
+              "right": 642,
+              "bottom": 114
+            },
+            "minimum_buffer_px": 8,
+            "pass": true
+          },
+          {
+            "element_id": "offer_detail",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 92,
+              "top": 496,
+              "right_exclusive": 470,
+              "bottom_exclusive": 515
+            },
+            "edge_buffers_px": {
+              "left": 8,
+              "top": 451,
+              "right": 646,
+              "bottom": 70
+            },
+            "minimum_buffer_px": 8,
+            "pass": true
+          },
+          {
+            "element_id": "url",
+            "kind": "glyphs",
+            "measurement": "pillow_textbbox",
+            "bounds": {
+              "left": 90,
+              "top": 552,
+              "right_exclusive": 345,
+              "bottom_exclusive": 571
+            },
+            "edge_buffers_px": {
+              "left": 6,
+              "top": 507,
+              "right": 771,
+              "bottom": 14
+            },
+            "minimum_buffer_px": 6,
+            "pass": true
+          }
+        ],
+        "minimum_buffer_px": 6,
         "foreground_bounds": {
-          "left": 92,
-          "top": 52,
-          "right": 600,
-          "bottom": 573
+          "left": 90,
+          "top": 65,
+          "right_exclusive": 474,
+          "bottom_exclusive": 571
         },
         "pass": true
       }
@@ -170,6 +1403,7 @@
       "safe_zone": {
         "applicable": false,
         "ratio": 0.07,
+        "geometry_source": "none_text_free",
         "reason": "text-free background; no logo, copy, CTA, rule, or URL"
       }
     },
@@ -186,6 +1420,7 @@
       "safe_zone": {
         "applicable": false,
         "ratio": 0.07,
+        "geometry_source": "none_text_free",
         "reason": "text-free background; no logo, copy, CTA, rule, or URL"
       }
     }
@@ -196,8 +1431,8 @@
       "filename": "first-wave-contact-sheet.png",
       "width": 2460,
       "height": 2580,
-      "bytes": 1449133,
-      "sha256": "d30728cdb94c18d16383511c93a1bd6a4cd15b2d58b9e423c334077e88506c58"
+      "bytes": 1448000,
+      "sha256": "a03c468a5c3389cf8f85a28b9a04137930f17a34908aafcf6f8311ab29fd7ecd"
     },
     "phone": {
       "relative_path": "visual-proof/first-wave-phone-proof.png",

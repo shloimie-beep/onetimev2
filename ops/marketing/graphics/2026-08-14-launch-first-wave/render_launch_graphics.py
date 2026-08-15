@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageEnhance, ImageFont, ImageOps
@@ -24,19 +25,6 @@ CYAN = "#059ED1"
 COOL_GREY = "#DCE4E8"
 SAFE_ZONE_RATIO = 0.07
 SAFE_ZONE_PERCENT = 7
-
-# Conservative outer bounds covering every placed logo, copy line, CTA, rule,
-# and URL. Background photography and text-free landing treatments are excluded.
-FOREGROUND_BOUNDS = {
-    "OTM-A000003": (82, 96, 500, 1248),
-    "OTM-A000004": (84, 96, 996, 1254),
-    "OTM-A000005": (84, 144, 600, 1746),
-    "OTM-A000006": (84, 144, 996, 1747),
-    "OTM-A000007": (92, 52, 570, 573),
-    "OTM-A000008": (92, 52, 600, 573),
-    "OTM-A000009": None,
-    "OTM-A000010": None,
-}
 
 SOURCE_FILES = {
     "photo": (
@@ -151,14 +139,133 @@ def font(path: Path, size: int, *, weight: int | None = None) -> ImageFont.FreeT
     return loaded
 
 
-def place_logo(canvas: Image.Image, logo: Image.Image, x: int, y: int, size: int) -> None:
+class ForegroundGeometry:
+    """Capture bounds from the exact Pillow operations that draw foreground pixels."""
+
+    def __init__(self) -> None:
+        self.items: list[dict[str, object]] = []
+
+    @staticmethod
+    def union(
+        bounds: list[tuple[int | float, int | float, int | float, int | float]],
+    ) -> tuple[int, int, int, int]:
+        if not bounds:
+            raise ValueError("foreground geometry requires at least one bound")
+        return (
+            math.floor(min(bound[0] for bound in bounds)),
+            math.floor(min(bound[1] for bound in bounds)),
+            math.ceil(max(bound[2] for bound in bounds)),
+            math.ceil(max(bound[3] for bound in bounds)),
+        )
+
+    def add(
+        self,
+        element_id: str,
+        kind: str,
+        bounds: tuple[int | float, int | float, int | float, int | float],
+        measurement: str,
+    ) -> None:
+        if any(item["element_id"] == element_id for item in self.items):
+            raise ValueError(f"duplicate foreground element_id: {element_id}")
+        left, top, right, bottom = self.union([bounds])
+        if right <= left or bottom <= top:
+            raise ValueError(f"empty foreground geometry for {element_id}")
+        self.items.append(
+            {
+                "element_id": element_id,
+                "kind": kind,
+                "measurement": measurement,
+                "bounds": {
+                    "left": left,
+                    "top": top,
+                    "right_exclusive": right,
+                    "bottom_exclusive": bottom,
+                },
+            }
+        )
+
+    def combined_bounds(self) -> tuple[int, int, int, int]:
+        return self.union(
+            [
+                (
+                    int(item["bounds"]["left"]),
+                    int(item["bounds"]["top"]),
+                    int(item["bounds"]["right_exclusive"]),
+                    int(item["bounds"]["bottom_exclusive"]),
+                )
+                for item in self.items
+            ]
+        )
+
+
+def place_logo(
+    canvas: Image.Image,
+    logo: Image.Image,
+    x: int,
+    y: int,
+    size: int,
+    audit: ForegroundGeometry,
+    element_id: str,
+) -> None:
     mark = logo.copy().convert("RGBA")
     mark.thumbnail((size, size), Image.Resampling.LANCZOS)
     canvas.alpha_composite(mark, (x, y))
+    alpha_bounds = mark.getchannel("A").getbbox()
+    if alpha_bounds is None:
+        raise ValueError("logo has no visible alpha pixels")
+    audit.add(
+        element_id,
+        "logo",
+        (
+            x + alpha_bounds[0],
+            y + alpha_bounds[1],
+            x + alpha_bounds[2],
+            y + alpha_bounds[3],
+        ),
+        "resized_logo_alpha_bbox",
+    )
+
+
+def draw_foreground_text(
+    draw: ImageDraw.ImageDraw,
+    audit: ForegroundGeometry,
+    element_id: str,
+    xy: tuple[int, int],
+    value: str,
+    *,
+    font_value: ImageFont.FreeTypeFont,
+    fill: str,
+) -> None:
+    draw.text(xy, value, font=font_value, fill=fill)
+    audit.add(
+        element_id,
+        "glyphs",
+        draw.textbbox(xy, value, font=font_value),
+        "pillow_textbbox",
+    )
+
+
+def draw_foreground_rectangle(
+    draw: ImageDraw.ImageDraw,
+    audit: ForegroundGeometry,
+    element_id: str,
+    box: tuple[int, int, int, int],
+    *,
+    fill: str,
+) -> None:
+    draw.rectangle(box, fill=fill)
+    audit.add(
+        element_id,
+        "rule",
+        (box[0], box[1], box[2] + 1, box[3] + 1),
+        "pillow_rectangle_inclusive_to_exclusive",
+    )
 
 
 def draw_spaced_text(
     draw: ImageDraw.ImageDraw,
+    audit: ForegroundGeometry,
+    element_id: str,
     xy: tuple[int, int],
     value: str,
     *,
@@ -167,14 +274,24 @@ def draw_spaced_text(
     spacing: int,
 ) -> None:
     x, y = xy
+    bounds: list[tuple[int, int, int, int]] = []
     for character in value:
         draw.text((x, y), character, font=font_value, fill=fill)
         box = draw.textbbox((x, y), character, font=font_value)
+        bounds.append(box)
         x = box[2] + spacing
+    audit.add(
+        element_id,
+        "glyphs",
+        ForegroundGeometry.union(bounds),
+        "union_of_pillow_character_textbbox",
+    )
 
 
 def draw_button(
     draw: ImageDraw.ImageDraw,
+    audit: ForegroundGeometry,
+    element_id: str,
     box: tuple[int, int, int, int],
     value: str,
     font_value: ImageFont.FreeTypeFont,
@@ -183,14 +300,21 @@ def draw_button(
     bounds = draw.textbbox((0, 0), value, font=font_value)
     text_width = bounds[2] - bounds[0]
     text_height = bounds[3] - bounds[1]
-    draw.text(
-        (
-            box[0] + (box[2] - box[0] - text_width) / 2,
-            box[1] + (box[3] - box[1] - text_height) / 2 - 3,
+    text_xy = (
+        box[0] + (box[2] - box[0] - text_width) / 2,
+        box[1] + (box[3] - box[1] - text_height) / 2 - 3,
+    )
+    draw.text(text_xy, value, font=font_value, fill=NEAR_BLACK)
+    audit.add(
+        element_id,
+        "cta",
+        ForegroundGeometry.union(
+            [
+                (box[0], box[1], box[2] + 1, box[3] + 1),
+                draw.textbbox(text_xy, value, font=font_value),
+            ]
         ),
-        value,
-        font=font_value,
-        fill=NEAR_BLACK,
+        "union_of_pillow_button_and_textbbox",
     )
 
 
@@ -199,8 +323,9 @@ def render_cp001_feed(
     logo: Image.Image,
     headline_font: Path,
     utility_font: Path,
-) -> Image.Image:
+) -> tuple[Image.Image, ForegroundGeometry]:
     width, height = 1080, 1350
+    audit = ForegroundGeometry()
     canvas = Image.new("RGBA", (width, height), NEAR_BLACK)
     panel_x = 390
     panel = prepare_photo(photo, (width - panel_x, height), center_x=0.52, center_y=0.50)
@@ -210,8 +335,10 @@ def render_cp001_feed(
     draw = ImageDraw.Draw(canvas)
     draw.rectangle((0, 0, 438, height), fill=NEAR_BLACK)
     canvas.alpha_composite(horizontal_gradient((245, height), 248, 0), (438, 0))
-    draw.rectangle((84, 265, 90, 718), fill=YELLOW)
-    place_logo(canvas, logo, 84, 96, 100)
+    draw_foreground_rectangle(
+        draw, audit, "accent_rule", (84, 265, 90, 718), fill=YELLOW
+    )
+    place_logo(canvas, logo, 84, 96, 100, audit, "logo")
 
     eyebrow = font(utility_font, 21, weight=700)
     detail = font(utility_font, 27, weight=700)
@@ -223,23 +350,85 @@ def render_cp001_feed(
 
     draw_spaced_text(
         draw,
+        audit,
+        "eyebrow",
         (82, 201),
         "LIVE MISHNAYOS",
         font_value=eyebrow,
         fill=CYAN,
         spacing=1,
     )
-    draw.text((82, 231), "WITH RABBI ELI SCHELLER", font=utility_small, fill=WHITE)
-    draw.text((96, 307), "CLASSES", font=headline, fill=WHITE)
-    draw.text((96, 393), "START", font=headline, fill=WHITE)
-    draw.text((96, 480), "SUNDAY", font=headline_emphasis, fill=YELLOW)
-    draw.text((96, 625), "AUG 16  \u00b7  7 PM ISRAEL", font=detail, fill=WHITE)
-    draw.text((96, 669), "LIVE ONLINE", font=utility, fill="#C7D2D9")
-    draw_button(draw, (96, 787, 412, 863), "GET FREE ACCESS", button)
-    draw.text((96, 896), "No card required", font=utility_small, fill=WHITE)
-    draw.text((96, 928), "Free through Sept 11", font=utility_small, fill=WHITE)
-    draw.text((96, 1218), "join.onetimeonetime.com", font=utility_small, fill=COOL_GREY)
-    return canvas
+    draw_foreground_text(
+        draw,
+        audit,
+        "rabbi_name",
+        (82, 231),
+        "WITH RABBI ELI SCHELLER",
+        font_value=utility_small,
+        fill=WHITE,
+    )
+    draw_foreground_text(
+        draw, audit, "headline_classes", (96, 307), "CLASSES", font_value=headline, fill=WHITE
+    )
+    draw_foreground_text(
+        draw, audit, "headline_start", (96, 393), "START", font_value=headline, fill=WHITE
+    )
+    draw_foreground_text(
+        draw,
+        audit,
+        "headline_sunday",
+        (96, 480),
+        "SUNDAY",
+        font_value=headline_emphasis,
+        fill=YELLOW,
+    )
+    draw_foreground_text(
+        draw,
+        audit,
+        "schedule",
+        (96, 625),
+        "AUG 16  \u00b7  7 PM ISRAEL",
+        font_value=detail,
+        fill=WHITE,
+    )
+    draw_foreground_text(
+        draw,
+        audit,
+        "live_label",
+        (96, 669),
+        "LIVE ONLINE",
+        font_value=utility,
+        fill="#C7D2D9",
+    )
+    draw_button(draw, audit, "cta", (96, 787, 412, 863), "GET FREE ACCESS", button)
+    draw_foreground_text(
+        draw,
+        audit,
+        "no_card",
+        (96, 896),
+        "No card required",
+        font_value=utility_small,
+        fill=WHITE,
+    )
+    draw_foreground_text(
+        draw,
+        audit,
+        "free_until",
+        (96, 928),
+        "Free through Sept 11",
+        font_value=utility_small,
+        fill=WHITE,
+    )
+    draw_foreground_text(
+        draw,
+        audit,
+        "url",
+        (96, 1218),
+        "join.onetimeonetime.com",
+        font_value=utility_small,
+        fill=COOL_GREY,
+    )
+    return canvas, audit
 
 
 def render_cp002_feed(
@@ -247,8 +436,9 @@ def render_cp002_feed(
     logo: Image.Image,
     headline_font: Path,
     utility_font: Path,
-) -> Image.Image:
+) -> tuple[Image.Image, ForegroundGeometry]:
     width, height = 1080, 1350
+    audit = ForegroundGeometry()
     canvas = prepare_photo(photo, (width, height), center_x=0.49, center_y=0.34).convert(
         "RGBA"
     )
@@ -256,7 +446,7 @@ def render_cp002_feed(
     # pixel therefore preserves >= 4.5:1 contrast for the cyan eyebrow.
     canvas.alpha_composite(vertical_gradient((width, 670), 226, 252), (0, 680))
     canvas.alpha_composite(horizontal_gradient((650, height), 86, 0), (0, 0))
-    place_logo(canvas, logo, 84, 96, 142)
+    place_logo(canvas, logo, 84, 96, 142, audit, "logo")
     draw = ImageDraw.Draw(canvas)
 
     eyebrow = font(utility_font, 24, weight=700)
@@ -268,31 +458,75 @@ def render_cp002_feed(
 
     draw_spaced_text(
         draw,
+        audit,
+        "eyebrow",
         (84, 730),
         "ONE TIME MISHNAYOS",
         font_value=eyebrow,
         fill=CYAN,
         spacing=2,
     )
-    draw.text((84, 765), "GET FREE", font=headline, fill=WHITE)
-    draw.text((84, 864), "ACCESS", font=headline_emphasis, fill=YELLOW)
-    draw.text((84, 1013), "Live from Eretz Yisrael.", font=support, fill=WHITE)
-    draw.text((84, 1057), "One perek each class day.", font=support, fill=WHITE)
-    draw.rectangle((84, 1121, 996, 1124), fill="#536671")
-    draw.text(
-        (84, 1150),
-        "SUNDAY\u2013THURSDAY  \u00b7  7 PM ISRAEL",
-        font=utility,
+    draw_foreground_text(
+        draw, audit, "headline_get_free", (84, 765), "GET FREE", font_value=headline, fill=WHITE
+    )
+    draw_foreground_text(
+        draw,
+        audit,
+        "headline_access",
+        (84, 864),
+        "ACCESS",
+        font_value=headline_emphasis,
+        fill=YELLOW,
+    )
+    draw_foreground_text(
+        draw,
+        audit,
+        "support_live",
+        (84, 1013),
+        "Live from Eretz Yisrael.",
+        font_value=support,
         fill=WHITE,
     )
-    draw.text(
-        (84, 1199),
+    draw_foreground_text(
+        draw,
+        audit,
+        "support_perek",
+        (84, 1057),
+        "One perek each class day.",
+        font_value=support,
+        fill=WHITE,
+    )
+    draw_foreground_rectangle(
+        draw, audit, "divider", (84, 1121, 996, 1124), fill="#536671"
+    )
+    draw_foreground_text(
+        draw,
+        audit,
+        "schedule",
+        (84, 1150),
+        "SUNDAY\u2013THURSDAY  \u00b7  7 PM ISRAEL",
+        font_value=utility,
+        fill=WHITE,
+    )
+    draw_foreground_text(
+        draw,
+        audit,
+        "offer_detail",
+        (84, 1186),
         "No card required  \u00b7  Free through Sept 11",
-        font=utility_small,
+        font_value=utility_small,
         fill=COOL_GREY,
     )
-    draw.text((84, 1230), "join.onetimeonetime.com", font=utility_small, fill=WHITE)
-    return canvas
+    draw_foreground_text(
+        draw,
+        audit,
+        "url",
+        (84, 1218),
+        "join.onetimeonetime.com",
+        font_value=utility_small,
+        fill=WHITE,
+    )
+    return canvas, audit
 
 
 def render_cp001_story(
@@ -300,8 +534,9 @@ def render_cp001_story(
     logo: Image.Image,
     headline_font: Path,
     utility_font: Path,
-) -> Image.Image:
+) -> tuple[Image.Image, ForegroundGeometry]:
     width, height = 1080, 1920
+    audit = ForegroundGeometry()
     canvas = Image.new("RGBA", (width, height), NEAR_BLACK)
     panel_x = 360
     panel = prepare_photo(photo, (width - panel_x, height), center_x=0.50, center_y=0.44)
@@ -310,8 +545,10 @@ def render_cp001_story(
     draw = ImageDraw.Draw(canvas)
     draw.rectangle((0, 0, 430, height), fill=NEAR_BLACK)
     canvas.alpha_composite(horizontal_gradient((260, height), 248, 0), (430, 0))
-    draw.rectangle((84, 395, 92, 1060), fill=YELLOW)
-    place_logo(canvas, logo, 84, 144, 150)
+    draw_foreground_rectangle(
+        draw, audit, "accent_rule", (84, 395, 92, 1060), fill=YELLOW
+    )
+    place_logo(canvas, logo, 84, 144, 150, audit, "logo")
 
     eyebrow = font(utility_font, 23, weight=700)
     name = font(utility_font, 24, weight=650)
@@ -323,23 +560,73 @@ def render_cp001_story(
 
     draw_spaced_text(
         draw,
+        audit,
+        "eyebrow",
         (96, 332),
         "LIVE MISHNAYOS",
         font_value=eyebrow,
         fill=CYAN,
         spacing=1,
     )
-    draw.text((96, 369), "WITH RABBI ELI SCHELLER", font=name, fill=WHITE)
-    draw.text((100, 455), "CLASSES", font=headline, fill=WHITE)
-    draw.text((100, 558), "START", font=headline, fill=WHITE)
-    draw.text((100, 662), "SUNDAY", font=emphasis, fill=YELLOW)
-    draw.text((100, 820), "AUG 16", font=detail, fill=WHITE)
-    draw.text((100, 861), "7 PM ISRAEL", font=detail, fill=WHITE)
-    draw_button(draw, (100, 1044, 430, 1125), "GET FREE ACCESS", button)
-    draw.text((100, 1165), "No card required", font=small, fill=WHITE)
-    draw.text((100, 1202), "Free through Sept 11", font=small, fill=WHITE)
-    draw.text((100, 1715), "join.onetimeonetime.com", font=small, fill=COOL_GREY)
-    return canvas
+    draw_foreground_text(
+        draw,
+        audit,
+        "rabbi_name",
+        (96, 369),
+        "WITH RABBI ELI SCHELLER",
+        font_value=name,
+        fill=WHITE,
+    )
+    draw_foreground_text(
+        draw, audit, "headline_classes", (100, 455), "CLASSES", font_value=headline, fill=WHITE
+    )
+    draw_foreground_text(
+        draw, audit, "headline_start", (100, 558), "START", font_value=headline, fill=WHITE
+    )
+    draw_foreground_text(
+        draw,
+        audit,
+        "headline_sunday",
+        (100, 662),
+        "SUNDAY",
+        font_value=emphasis,
+        fill=YELLOW,
+    )
+    draw_foreground_text(
+        draw, audit, "date", (100, 820), "AUG 16", font_value=detail, fill=WHITE
+    )
+    draw_foreground_text(
+        draw, audit, "time", (100, 861), "7 PM ISRAEL", font_value=detail, fill=WHITE
+    )
+    draw_button(draw, audit, "cta", (100, 1044, 430, 1125), "GET FREE ACCESS", button)
+    draw_foreground_text(
+        draw,
+        audit,
+        "no_card",
+        (100, 1165),
+        "No card required",
+        font_value=small,
+        fill=WHITE,
+    )
+    draw_foreground_text(
+        draw,
+        audit,
+        "free_until",
+        (100, 1202),
+        "Free through Sept 11",
+        font_value=small,
+        fill=WHITE,
+    )
+    draw_foreground_text(
+        draw,
+        audit,
+        "url",
+        (100, 1715),
+        "join.onetimeonetime.com",
+        font_value=small,
+        fill=COOL_GREY,
+    )
+    return canvas, audit
 
 
 def render_cp002_story(
@@ -347,14 +634,15 @@ def render_cp002_story(
     logo: Image.Image,
     headline_font: Path,
     utility_font: Path,
-) -> Image.Image:
+) -> tuple[Image.Image, ForegroundGeometry]:
     width, height = 1080, 1920
+    audit = ForegroundGeometry()
     canvas = prepare_photo(photo, (width, height), center_x=0.49, center_y=0.34).convert(
         "RGBA"
     )
     canvas.alpha_composite(vertical_gradient((width, 1010), 226, 253), (0, 910))
     canvas.alpha_composite(horizontal_gradient((650, height), 82, 0), (0, 0))
-    place_logo(canvas, logo, 84, 144, 150)
+    place_logo(canvas, logo, 84, 144, 150, audit, "logo")
     draw = ImageDraw.Draw(canvas)
 
     eyebrow = font(utility_font, 25, weight=700)
@@ -366,31 +654,75 @@ def render_cp002_story(
 
     draw_spaced_text(
         draw,
+        audit,
+        "eyebrow",
         (84, 1060),
         "ONE TIME MISHNAYOS",
         font_value=eyebrow,
         fill=CYAN,
         spacing=2,
     )
-    draw.text((84, 1100), "GET FREE", font=headline, fill=WHITE)
-    draw.text((84, 1215), "ACCESS", font=emphasis, fill=YELLOW)
-    draw.text((84, 1380), "Live from Eretz Yisrael.", font=support, fill=WHITE)
-    draw.text((84, 1427), "One perek each class day.", font=support, fill=WHITE)
-    draw.rectangle((84, 1497, 996, 1501), fill="#536671")
-    draw.text(
-        (84, 1532),
-        "SUNDAY\u2013THURSDAY  \u00b7  7 PM ISRAEL",
-        font=detail,
+    draw_foreground_text(
+        draw, audit, "headline_get_free", (84, 1100), "GET FREE", font_value=headline, fill=WHITE
+    )
+    draw_foreground_text(
+        draw,
+        audit,
+        "headline_access",
+        (84, 1215),
+        "ACCESS",
+        font_value=emphasis,
+        fill=YELLOW,
+    )
+    draw_foreground_text(
+        draw,
+        audit,
+        "support_live",
+        (84, 1380),
+        "Live from Eretz Yisrael.",
+        font_value=support,
         fill=WHITE,
     )
-    draw.text(
+    draw_foreground_text(
+        draw,
+        audit,
+        "support_perek",
+        (84, 1427),
+        "One perek each class day.",
+        font_value=support,
+        fill=WHITE,
+    )
+    draw_foreground_rectangle(
+        draw, audit, "divider", (84, 1497, 996, 1501), fill="#536671"
+    )
+    draw_foreground_text(
+        draw,
+        audit,
+        "schedule",
+        (84, 1532),
+        "SUNDAY\u2013THURSDAY  \u00b7  7 PM ISRAEL",
+        font_value=detail,
+        fill=WHITE,
+    )
+    draw_foreground_text(
+        draw,
+        audit,
+        "offer_detail",
         (84, 1582),
         "No card required  \u00b7  Free through Sept 11",
-        font=small,
+        font_value=small,
         fill=COOL_GREY,
     )
-    draw.text((84, 1717), "join.onetimeonetime.com", font=small, fill=WHITE)
-    return canvas
+    draw_foreground_text(
+        draw,
+        audit,
+        "url",
+        (84, 1717),
+        "join.onetimeonetime.com",
+        font_value=small,
+        fill=WHITE,
+    )
+    return canvas, audit
 
 
 def render_cp001_social_preview(
@@ -398,8 +730,9 @@ def render_cp001_social_preview(
     logo: Image.Image,
     headline_font: Path,
     utility_font: Path,
-) -> Image.Image:
+) -> tuple[Image.Image, ForegroundGeometry]:
     width, height = 1200, 630
+    audit = ForegroundGeometry()
     canvas = Image.new("RGBA", (width, height), NEAR_BLACK)
     panel_x = 520
     panel = prepare_photo(photo, (width - panel_x, height), center_x=0.52, center_y=0.35)
@@ -408,7 +741,7 @@ def render_cp001_social_preview(
     draw = ImageDraw.Draw(canvas)
     draw.rectangle((0, 0, 560, height), fill=NEAR_BLACK)
     canvas.alpha_composite(horizontal_gradient((180, height), 246, 0), (560, 0))
-    place_logo(canvas, logo, 92, 52, 102)
+    place_logo(canvas, logo, 92, 52, 102, audit, "logo")
 
     eyebrow = font(utility_font, 18, weight=700)
     headline = font(headline_font, 62)
@@ -419,19 +752,61 @@ def render_cp001_social_preview(
 
     draw_spaced_text(
         draw,
+        audit,
+        "eyebrow",
         (92, 170),
         "LIVE MISHNAYOS",
         font_value=eyebrow,
         fill=CYAN,
         spacing=1,
     )
-    draw.text((92, 204), "CLASSES START", font=headline, fill=WHITE)
-    draw.text((92, 266), "SUNDAY", font=emphasis, fill=YELLOW)
-    draw.text((92, 358), "AUG 16  \u00b7  7 PM ISRAEL", font=detail, fill=WHITE)
-    draw_button(draw, (92, 416, 342, 477), "GET FREE ACCESS", button)
-    draw.text((92, 503), "No card required \u00b7 Free through Sept 11", font=small, fill=COOL_GREY)
-    draw.text((92, 548), "join.onetimeonetime.com", font=small, fill=WHITE)
-    return canvas
+    draw_foreground_text(
+        draw,
+        audit,
+        "headline",
+        (92, 204),
+        "CLASSES START",
+        font_value=headline,
+        fill=WHITE,
+    )
+    draw_foreground_text(
+        draw,
+        audit,
+        "emphasis",
+        (92, 266),
+        "SUNDAY",
+        font_value=emphasis,
+        fill=YELLOW,
+    )
+    draw_foreground_text(
+        draw,
+        audit,
+        "schedule",
+        (92, 358),
+        "AUG 16  \u00b7  7 PM ISRAEL",
+        font_value=detail,
+        fill=WHITE,
+    )
+    draw_button(draw, audit, "cta", (92, 416, 342, 477), "GET FREE ACCESS", button)
+    draw_foreground_text(
+        draw,
+        audit,
+        "offer_detail",
+        (92, 503),
+        "No card required \u00b7 Free through Sept 11",
+        font_value=small,
+        fill=COOL_GREY,
+    )
+    draw_foreground_text(
+        draw,
+        audit,
+        "url",
+        (92, 548),
+        "join.onetimeonetime.com",
+        font_value=small,
+        fill=WHITE,
+    )
+    return canvas, audit
 
 
 def render_cp002_social_preview(
@@ -439,8 +814,9 @@ def render_cp002_social_preview(
     logo: Image.Image,
     headline_font: Path,
     utility_font: Path,
-) -> Image.Image:
+) -> tuple[Image.Image, ForegroundGeometry]:
     width, height = 1200, 630
+    audit = ForegroundGeometry()
     canvas = Image.new("RGBA", (width, height), NEAR_BLACK)
     panel_x = 570
     panel = prepare_photo(photo, (width - panel_x, height), center_x=0.49, center_y=0.32)
@@ -449,7 +825,7 @@ def render_cp002_social_preview(
     draw = ImageDraw.Draw(canvas)
     draw.rectangle((0, 0, 610, height), fill=NEAR_BLACK)
     canvas.alpha_composite(horizontal_gradient((190, height), 246, 0), (610, 0))
-    place_logo(canvas, logo, 92, 52, 102)
+    place_logo(canvas, logo, 92, 52, 102, audit, "logo")
 
     eyebrow = font(utility_font, 18, weight=700)
     headline = font(headline_font, 66)
@@ -460,28 +836,77 @@ def render_cp002_social_preview(
 
     draw_spaced_text(
         draw,
+        audit,
+        "eyebrow",
         (92, 166),
         "ONE TIME MISHNAYOS",
         font_value=eyebrow,
         fill=CYAN,
         spacing=1,
     )
-    draw.text((92, 202), "GET FREE", font=headline, fill=WHITE)
-    draw.text((92, 267), "ACCESS", font=emphasis, fill=YELLOW)
-    draw.text((92, 358), "Live from Eretz Yisrael.", font=support, fill=WHITE)
-    draw.text((92, 392), "One perek each class day.", font=support, fill=WHITE)
-    draw.text(
-        (92, 450),
-        "SUNDAY\u2013THURSDAY  \u00b7  7 PM ISRAEL",
-        font=detail,
+    draw_foreground_text(
+        draw, audit, "headline_get_free", (92, 202), "GET FREE", font_value=headline, fill=WHITE
+    )
+    draw_foreground_text(
+        draw,
+        audit,
+        "headline_access",
+        (92, 267),
+        "ACCESS",
+        font_value=emphasis,
+        fill=YELLOW,
+    )
+    draw_foreground_text(
+        draw,
+        audit,
+        "support_live",
+        (92, 358),
+        "Live from Eretz Yisrael.",
+        font_value=support,
         fill=WHITE,
     )
-    draw.text((92, 492), "No card required \u00b7 Free through Sept 11", font=small, fill=COOL_GREY)
-    draw.text((92, 548), "join.onetimeonetime.com", font=small, fill=WHITE)
-    return canvas
+    draw_foreground_text(
+        draw,
+        audit,
+        "support_perek",
+        (92, 392),
+        "One perek each class day.",
+        font_value=support,
+        fill=WHITE,
+    )
+    draw_foreground_text(
+        draw,
+        audit,
+        "schedule",
+        (92, 450),
+        "SUNDAY\u2013THURSDAY  \u00b7  7 PM ISRAEL",
+        font_value=detail,
+        fill=WHITE,
+    )
+    draw_foreground_text(
+        draw,
+        audit,
+        "offer_detail",
+        (92, 492),
+        "No card required \u00b7 Free through Sept 11",
+        font_value=small,
+        fill=COOL_GREY,
+    )
+    draw_foreground_text(
+        draw,
+        audit,
+        "url",
+        (92, 548),
+        "join.onetimeonetime.com",
+        font_value=small,
+        fill=WHITE,
+    )
+    return canvas, audit
 
 
-def render_landing_desktop(photo: Image.Image) -> Image.Image:
+def render_landing_desktop(
+    photo: Image.Image,
+) -> tuple[Image.Image, ForegroundGeometry | None]:
     """Text-free 1600x900 production handoff with a left HTML-copy safe zone."""
     width, height = 1600, 900
     canvas = Image.new("RGBA", (width, height), NEAR_BLACK)
@@ -492,10 +917,12 @@ def render_landing_desktop(photo: Image.Image) -> Image.Image:
     draw = ImageDraw.Draw(canvas)
     draw.rectangle((0, 0, 650, height), fill=NEAR_BLACK)
     canvas.alpha_composite(horizontal_gradient((300, height), 250, 0), (650, 0))
-    return canvas
+    return canvas, None
 
 
-def render_landing_mobile(photo: Image.Image) -> Image.Image:
+def render_landing_mobile(
+    photo: Image.Image,
+) -> tuple[Image.Image, ForegroundGeometry | None]:
     """Text-free 1080x1600 production handoff with a lower HTML-copy safe zone."""
     width, height = 1080, 1600
     canvas = prepare_photo(photo, (width, height), center_x=0.49, center_y=0.28).convert(
@@ -503,13 +930,14 @@ def render_landing_mobile(photo: Image.Image) -> Image.Image:
     )
     canvas.alpha_composite(vertical_gradient((width, 910), 20, 252), (0, 690))
     canvas.alpha_composite(vertical_gradient((width, 300), 155, 0), (0, 0))
-    return canvas
+    return canvas, None
 
 
 def save_png(
     image: Image.Image,
     path: Path,
     *,
+    geometry: ForegroundGeometry | None,
     asset_id: str,
     concept_id: str | None,
     format_id: str,
@@ -518,29 +946,60 @@ def save_png(
     image.convert("RGB").save(path, format="PNG", optimize=True)
     safe_x = (image.width * SAFE_ZONE_PERCENT + 99) // 100
     safe_y = (image.height * SAFE_ZONE_PERCENT + 99) // 100
-    bounds = FOREGROUND_BOUNDS[asset_id]
     safe_zone: dict[str, object]
-    if bounds is None:
+    if geometry is None:
+        if concept_id is not None:
+            raise ValueError(f"{asset_id}: copy-bearing render requires geometry")
         safe_zone = {
             "applicable": False,
             "ratio": SAFE_ZONE_RATIO,
+            "geometry_source": "none_text_free",
             "reason": "text-free background; no logo, copy, CTA, rule, or URL",
         }
     else:
-        left, top, right, bottom = bounds
+        if concept_id is None:
+            raise ValueError(f"{asset_id}: text-free render must not declare foreground geometry")
+        left, top, right, bottom = geometry.combined_bounds()
+        item_records: list[dict[str, object]] = []
+        for item in geometry.items:
+            item_bounds = item["bounds"]
+            edge_buffers = {
+                "left": item_bounds["left"] - safe_x,
+                "top": item_bounds["top"] - safe_y,
+                "right": image.width - safe_x - item_bounds["right_exclusive"],
+                "bottom": image.height - safe_y - item_bounds["bottom_exclusive"],
+            }
+            item_records.append(
+                {
+                    **item,
+                    "edge_buffers_px": edge_buffers,
+                    "minimum_buffer_px": min(edge_buffers.values()),
+                    "pass": all(buffer >= 0 for buffer in edge_buffers.values()),
+                }
+            )
         safe_zone = {
             "applicable": True,
             "ratio": SAFE_ZONE_RATIO,
+            "geometry_source": "pillow_operation_bboxes",
+            "coordinate_convention": (
+                "left/top inclusive; right_exclusive/bottom_exclusive"
+            ),
             "inset_x_px": safe_x,
             "inset_y_px": safe_y,
+            "foreground_item_count": len(item_records),
+            "foreground_items": item_records,
+            "minimum_buffer_px": min(
+                item["minimum_buffer_px"] for item in item_records
+            ),
             "foreground_bounds": {
                 "left": left,
                 "top": top,
-                "right": right,
-                "bottom": bottom,
+                "right_exclusive": right,
+                "bottom_exclusive": bottom,
             },
             "pass": (
-                left >= safe_x
+                all(item["pass"] is True for item in item_records)
+                and left >= safe_x
                 and top >= safe_y
                 and right <= image.width - safe_x
                 and bottom <= image.height - safe_y
@@ -579,6 +1038,12 @@ def build_contact_sheet(
     draw.text(
         (90, 98),
         "Deterministic drafts - operator approval pending - not scheduled or published",
+        font=detail_font,
+        fill="#495761",
+    )
+    draw.text(
+        (90, 126),
+        "Cyan = 7% outer-edge guide; green = Pillow-measured foreground union",
         font=detail_font,
         fill="#495761",
     )
@@ -621,6 +1086,19 @@ def build_contact_sheet(
                     py + preview.height - inset_y,
                 ),
                 outline="#00A7C7",
+                width=2,
+            )
+            bounds = record["safe_zone"]["foreground_bounds"]
+            scale_x = preview.width / record["width"]
+            scale_y = preview.height / record["height"]
+            draw.rectangle(
+                (
+                    px + round(bounds["left"] * scale_x),
+                    py + round(bounds["top"] * scale_y),
+                    px + round(bounds["right_exclusive"] * scale_x),
+                    py + round(bounds["bottom_exclusive"] * scale_y),
+                ),
+                outline="#24A56A",
                 width=2,
             )
     target.parent.mkdir(parents=True, exist_ok=True)
@@ -846,12 +1324,14 @@ def main() -> None:
 
     records: list[dict[str, object]] = []
     output_paths: dict[str, Path] = {}
-    for asset_id, concept_id, format_id, filename, image in render_jobs:
+    for asset_id, concept_id, format_id, filename, rendered in render_jobs:
+        image, geometry = rendered
         path = args.output_dir / filename
         records.append(
             save_png(
                 image,
                 path,
+                geometry=geometry,
                 asset_id=asset_id,
                 concept_id=concept_id,
                 format_id=format_id,

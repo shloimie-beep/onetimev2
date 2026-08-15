@@ -27,6 +27,91 @@ EXPECTED_RENDERS = {
     "OTM-A000010": (None, "landing_mobile_1080x1600", 1080, 1600),
 }
 
+EXPECTED_FOREGROUND_ELEMENTS = {
+    "OTM-A000003": {
+        "accent_rule": "rule",
+        "logo": "logo",
+        "eyebrow": "glyphs",
+        "rabbi_name": "glyphs",
+        "headline_classes": "glyphs",
+        "headline_start": "glyphs",
+        "headline_sunday": "glyphs",
+        "schedule": "glyphs",
+        "live_label": "glyphs",
+        "cta": "cta",
+        "no_card": "glyphs",
+        "free_until": "glyphs",
+        "url": "glyphs",
+    },
+    "OTM-A000004": {
+        "logo": "logo",
+        "eyebrow": "glyphs",
+        "headline_get_free": "glyphs",
+        "headline_access": "glyphs",
+        "support_live": "glyphs",
+        "support_perek": "glyphs",
+        "divider": "rule",
+        "schedule": "glyphs",
+        "offer_detail": "glyphs",
+        "url": "glyphs",
+    },
+    "OTM-A000005": {
+        "accent_rule": "rule",
+        "logo": "logo",
+        "eyebrow": "glyphs",
+        "rabbi_name": "glyphs",
+        "headline_classes": "glyphs",
+        "headline_start": "glyphs",
+        "headline_sunday": "glyphs",
+        "date": "glyphs",
+        "time": "glyphs",
+        "cta": "cta",
+        "no_card": "glyphs",
+        "free_until": "glyphs",
+        "url": "glyphs",
+    },
+    "OTM-A000006": {
+        "logo": "logo",
+        "eyebrow": "glyphs",
+        "headline_get_free": "glyphs",
+        "headline_access": "glyphs",
+        "support_live": "glyphs",
+        "support_perek": "glyphs",
+        "divider": "rule",
+        "schedule": "glyphs",
+        "offer_detail": "glyphs",
+        "url": "glyphs",
+    },
+    "OTM-A000007": {
+        "logo": "logo",
+        "eyebrow": "glyphs",
+        "headline": "glyphs",
+        "emphasis": "glyphs",
+        "schedule": "glyphs",
+        "cta": "cta",
+        "offer_detail": "glyphs",
+        "url": "glyphs",
+    },
+    "OTM-A000008": {
+        "logo": "logo",
+        "eyebrow": "glyphs",
+        "headline_get_free": "glyphs",
+        "headline_access": "glyphs",
+        "support_live": "glyphs",
+        "support_perek": "glyphs",
+        "schedule": "glyphs",
+        "offer_detail": "glyphs",
+        "url": "glyphs",
+    },
+}
+
+EXPECTED_MEASUREMENTS = {
+    "logo": {"resized_logo_alpha_bbox"},
+    "rule": {"pillow_rectangle_inclusive_to_exclusive"},
+    "cta": {"union_of_pillow_button_and_textbbox"},
+    "glyphs": {"pillow_textbbox", "union_of_pillow_character_textbbox"},
+}
+
 EXPECTED_CREATIVE_ROWS = {
     "OTM-CR-202608-001-V01": ("OTM-A000003", "feed_4x5"),
     "OTM-CR-202608-001-V02": ("OTM-A000005", "story_reel_9x16"),
@@ -107,6 +192,10 @@ def main() -> None:
                 f"{asset_id}: text-free landing render must mark safe zone not applicable",
             )
             require(
+                safe_zone["geometry_source"] == "none_text_free",
+                f"{asset_id}: text-free geometry source mismatch",
+            )
+            require(
                 "foreground_bounds" not in safe_zone,
                 f"{asset_id}: unexpected foreground bounds",
             )
@@ -114,18 +203,133 @@ def main() -> None:
             expected_x = (width * 7 + 99) // 100
             expected_y = (height * 7 + 99) // 100
             require(safe_zone["applicable"] is True, f"{asset_id}: safe zone must apply")
-            require(safe_zone["inset_x_px"] == expected_x, f"{asset_id}: horizontal inset mismatch")
-            require(safe_zone["inset_y_px"] == expected_y, f"{asset_id}: vertical inset mismatch")
-            bounds = safe_zone["foreground_bounds"]
-            require(bounds["left"] >= expected_x, f"{asset_id}: foreground exceeds left safe zone")
-            require(bounds["top"] >= expected_y, f"{asset_id}: foreground exceeds top safe zone")
             require(
-                bounds["right"] <= width - expected_x,
-                f"{asset_id}: foreground exceeds right safe zone",
+                safe_zone["geometry_source"] == "pillow_operation_bboxes",
+                f"{asset_id}: geometry must come from Pillow operations",
             )
             require(
-                bounds["bottom"] <= height - expected_y,
-                f"{asset_id}: foreground exceeds bottom safe zone",
+                safe_zone["coordinate_convention"]
+                == "left/top inclusive; right_exclusive/bottom_exclusive",
+                f"{asset_id}: coordinate convention mismatch",
+            )
+            require(safe_zone["inset_x_px"] == expected_x, f"{asset_id}: horizontal inset mismatch")
+            require(safe_zone["inset_y_px"] == expected_y, f"{asset_id}: vertical inset mismatch")
+            items = safe_zone["foreground_items"]
+            require(
+                safe_zone["foreground_item_count"] == len(items),
+                f"{asset_id}: foreground item count mismatch",
+            )
+            item_by_id = {item["element_id"]: item for item in items}
+            require(len(item_by_id) == len(items), f"{asset_id}: duplicate geometry element")
+            expected_elements = EXPECTED_FOREGROUND_ELEMENTS[asset_id]
+            require(
+                set(item_by_id) == set(expected_elements),
+                f"{asset_id}: foreground element coverage mismatch",
+            )
+
+            item_bounds: list[tuple[int, int, int, int]] = []
+            item_minimum_buffers: list[int] = []
+            for element_id, item in item_by_id.items():
+                kind = item["kind"]
+                require(
+                    kind == expected_elements[element_id],
+                    f"{asset_id}/{element_id}: geometry kind mismatch",
+                )
+                require(
+                    item["measurement"] in EXPECTED_MEASUREMENTS[kind],
+                    f"{asset_id}/{element_id}: geometry measurement mismatch",
+                )
+                bounds = item["bounds"]
+                require(
+                    set(bounds)
+                    == {"left", "top", "right_exclusive", "bottom_exclusive"},
+                    f"{asset_id}/{element_id}: geometry bound keys mismatch",
+                )
+                require(
+                    all(type(value) is int for value in bounds.values()),
+                    f"{asset_id}/{element_id}: geometry bounds must be integers",
+                )
+                require(
+                    bounds["left"] < bounds["right_exclusive"]
+                    and bounds["top"] < bounds["bottom_exclusive"],
+                    f"{asset_id}/{element_id}: empty geometry bounds",
+                )
+                require(
+                    bounds["left"] >= expected_x,
+                    f"{asset_id}/{element_id}: exceeds left safe zone",
+                )
+                require(
+                    bounds["top"] >= expected_y,
+                    f"{asset_id}/{element_id}: exceeds top safe zone",
+                )
+                require(
+                    bounds["right_exclusive"] <= width - expected_x,
+                    f"{asset_id}/{element_id}: exceeds right safe zone",
+                )
+                require(
+                    bounds["bottom_exclusive"] <= height - expected_y,
+                    f"{asset_id}/{element_id}: exceeds bottom safe zone",
+                )
+                expected_buffers = {
+                    "left": bounds["left"] - expected_x,
+                    "top": bounds["top"] - expected_y,
+                    "right": width - expected_x - bounds["right_exclusive"],
+                    "bottom": height - expected_y - bounds["bottom_exclusive"],
+                }
+                require(
+                    item["edge_buffers_px"] == expected_buffers,
+                    f"{asset_id}/{element_id}: edge-buffer proof mismatch",
+                )
+                require(
+                    item["minimum_buffer_px"] == min(expected_buffers.values()),
+                    f"{asset_id}/{element_id}: minimum-buffer proof mismatch",
+                )
+                require(item["pass"] is True, f"{asset_id}/{element_id}: item proof failed")
+                item_minimum_buffers.append(item["minimum_buffer_px"])
+                item_bounds.append(
+                    (
+                        bounds["left"],
+                        bounds["top"],
+                        bounds["right_exclusive"],
+                        bounds["bottom_exclusive"],
+                    )
+                )
+
+            if asset_id == "OTM-A000004":
+                require(
+                    item_by_id["url"]["edge_buffers_px"]["bottom"] >= 8,
+                    "OTM-A000004/url: requires at least 8px beyond the 7% bottom inset",
+                )
+
+            actual_union = {
+                "left": min(bounds[0] for bounds in item_bounds),
+                "top": min(bounds[1] for bounds in item_bounds),
+                "right_exclusive": max(bounds[2] for bounds in item_bounds),
+                "bottom_exclusive": max(bounds[3] for bounds in item_bounds),
+            }
+            require(
+                safe_zone["foreground_bounds"] == actual_union,
+                f"{asset_id}: declared foreground union does not match item geometry",
+            )
+            require(
+                safe_zone["minimum_buffer_px"] == min(item_minimum_buffers),
+                f"{asset_id}: safe-zone minimum buffer mismatch",
+            )
+            require(
+                actual_union["left"] >= expected_x,
+                f"{asset_id}: foreground union exceeds left safe zone",
+            )
+            require(
+                actual_union["top"] >= expected_y,
+                f"{asset_id}: foreground union exceeds top safe zone",
+            )
+            require(
+                actual_union["right_exclusive"] <= width - expected_x,
+                f"{asset_id}: foreground union exceeds right safe zone",
+            )
+            require(
+                actual_union["bottom_exclusive"] <= height - expected_y,
+                f"{asset_id}: foreground union exceeds bottom safe zone",
             )
             require(safe_zone["pass"] is True, f"{asset_id}: safe-zone proof failed")
 
@@ -227,6 +431,17 @@ def main() -> None:
         "minimum_contrast_ratio": contrast["minimum_measured"],
         "safe_zone_ratio": 0.07,
         "safe_zone_renders_passed": 6,
+        "pillow_geometry_items_asserted": sum(
+            record["safe_zone"].get("foreground_item_count", 0)
+            for record in render_by_id.values()
+        ),
+        "cp002_feed_url_bottom_buffer_px": next(
+            item
+            for item in render_by_id["OTM-A000004"]["safe_zone"][
+                "foreground_items"
+            ]
+            if item["element_id"] == "url"
+        )["edge_buffers_px"]["bottom"],
         "phone_content_viewport": "390x844",
         "deterministic_rerender": "byte_exact",
         "student_bearing_derivatives": 0,
@@ -237,6 +452,8 @@ def main() -> None:
             "render dimensions and checksums",
             "contact sheet and phone proof",
             "7% foreground safe zones",
+            "Pillow-derived logo/glyph/CTA/rule geometry and exact unions",
+            "CP002 feed URL bottom buffer beyond 7% inset",
             "exact 390x844 phone content viewport",
             "content asset JSON Schema",
             "creative manifest exact CTA and destination",
