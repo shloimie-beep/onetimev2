@@ -1,4 +1,7 @@
 import { createHash } from 'node:crypto';
+import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { createV21AdultSessionRuntime } from '../../../apps/web/src/server/features/auth/v21-adult-session.ts';
 import { createPostgresParentHouseholdRepository } from '../../../apps/web/src/server/features/portals/parent-household/postgres-repository.ts';
@@ -31,8 +34,10 @@ import {
 import { hashAuthPassword } from '../../../packages/domain/src/auth/policy.ts';
 import { createDbBackedTestAdultSessionRepository } from '../../support/pgmem-v21-parent-session-repository.ts';
 import {
+  CONTROLLER_DUAL_ROLE_APPLY_STAGES,
   isCanonicalControllerResetOrigin,
   runDualRoleAdultProvision,
+  runDualRoleAdultProvisionCli,
 } from '../../../scripts/operations/provision-dual-role-adult.ts';
 
 const SOURCE_SHA = 'a'.repeat(40);
@@ -168,6 +173,155 @@ describe('controller dual-role adult provisioning', () => {
       ]),
     });
     expect(await protectedCounts(pool)).toEqual(before);
+  });
+
+  it('classifies every identity stage without raw detail and never requests setup', async () => {
+    for (const stage of CONTROLLER_DUAL_ROLE_APPLY_STAGES) {
+      const email = `dual-role-stage-${stage.replaceAll('_', '-')}@example.test`;
+      const manifest = privateManifest(email);
+      let setupCalls = 0;
+      const report = await runDualRoleAdultProvision({
+        manifest,
+        apply: true,
+        authorizationPhrase: AUTHORIZATION,
+        pool,
+        config,
+        now: PROVISION_AT,
+        testOnlyAllowIsolatedApply: true,
+        testOnlyFailApplyStage: stage,
+        issuePasswordReset: async () => {
+          setupCalls += 1;
+          throw new Error('Setup must not run after identity failure.');
+        },
+      });
+
+      expect(report).toMatchObject({
+        setup_delivery: {
+          disposition: 'planned',
+          token_rows: 0,
+          intent_rows: 0,
+          outbox_rows: 0,
+        },
+      });
+      expect(['blocked', 'identity_applied_setup_pending']).toContain(report.status);
+      expect(report.blockers).toContain(`apply_identity_${stage}_failed`);
+      expect(setupCalls).toBe(0);
+      const serialized = JSON.stringify(report);
+      expect(serialized).not.toContain(email);
+      expect(serialized).not.toContain('Synthetic Dual Role Adult');
+      expect(serialized).not.toContain('TEST_ONLY_RAW_FAILURE');
+      expect(serialized).not.toContain('INSERT INTO');
+      expect(serialized).not.toContain('database-id');
+      expect(serialized).not.toContain('@');
+    }
+    await expect(count(pool, 'account_lifecycle_tokens')).resolves.toBe(0);
+    await expect(count(pool, 'account_lifecycle_delivery_intents')).resolves.toBe(0);
+    await expect(count(pool, 'account_lifecycle_delivery_outbox')).resolves.toBe(0);
+  });
+
+  it('writes the same sanitized controller failure to --out when the CLI throws', async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'dual-role-controller-output-'));
+    const outputPath = join(directory, 'result.json');
+    const emitted: string[] = [];
+    try {
+      const exitCode = await runDualRoleAdultProvisionCli(
+        ['--manifest', join(directory, 'missing-private-manifest.json'), '--out', outputPath],
+        (output) => emitted.push(output),
+      );
+      const output = await readFile(outputPath, 'utf8');
+      expect(exitCode).toBe(2);
+      expect(emitted).toEqual([output]);
+      expect(JSON.parse(output)).toEqual({
+        schema: 'onetime.controller.dual_role_adult_provision.v1',
+        status: 'blocked',
+        blockers: ['controller_preflight_failed'],
+      });
+      expect(output).not.toContain(directory);
+      expect(output).not.toContain('missing-private-manifest');
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
+  });
+
+  it.each([
+    {
+      name: 'missing table or ownership/RLS contract',
+      blocker: 'apply_prerequisite_table_contract_mismatch',
+      override: (kind: 'catalog' | 'trigger', rows: Record<string, unknown>[]) =>
+        kind === 'catalog' ? rows.slice(1) : rows,
+    },
+    {
+      name: 'missing write privilege',
+      blocker: 'apply_prerequisite_privilege_contract_mismatch',
+      override: (kind: 'catalog' | 'trigger', rows: Record<string, unknown>[]) =>
+        kind === 'catalog'
+          ? rows.map((row, index) => (index === 0 ? { ...row, can_insert: false } : row))
+          : rows,
+    },
+    {
+      name: 'missing canonical transition trigger',
+      blocker: 'apply_prerequisite_trigger_contract_mismatch',
+      override: (kind: 'catalog' | 'trigger', rows: Record<string, unknown>[]) =>
+        kind === 'trigger' ? [{ count: 0 }] : rows,
+    },
+  ])('blocks apply on $name without entering the transaction', async ({ blocker, override }) => {
+    let setupCalls = 0;
+    const guardedPool = prerequisiteOverridePool(pool, override);
+    const report = await runDualRoleAdultProvision({
+      manifest: privateManifest(`dual-role-prerequisite-${blocker}@example.test`),
+      apply: true,
+      authorizationPhrase: AUTHORIZATION,
+      pool: guardedPool,
+      config,
+      now: PROVISION_AT,
+      testOnlyAllowIsolatedApply: true,
+      issuePasswordReset: async () => {
+        setupCalls += 1;
+        throw new Error('Setup must not run after prerequisite failure.');
+      },
+    });
+    expect(report).toMatchObject({
+      status: 'blocked',
+      blockers: expect.arrayContaining([blocker]),
+      identity: { disposition: 'absent', adult_rows: 0 },
+      setup_delivery: { token_rows: 0, intent_rows: 0, outbox_rows: 0 },
+    });
+    expect(setupCalls).toBe(0);
+  });
+
+  it('blocks an orphan deterministic key before applying any identity write', async () => {
+    const email = 'dual-role-orphan-key@example.test';
+    const manifest = privateManifest(email);
+    const keys = controllerDualRoleProvisioningIdentityKeys({
+      accountKey: config.accountKey,
+      productKey: config.productKey,
+      runtimeTier: config.oneTimeRuntimeTier,
+      verificationEnvironmentId: config.oneTimeVerificationEnvironmentId,
+      normalizedEmail: email,
+    });
+    await pool.query(
+      `INSERT INTO onetime.portal_households
+         (household_key, account_key, product_key, display_name, status, version,
+          created_at, updated_at)
+       VALUES ($1,$2,$3,'Orphan deterministic key','active',1,$4,$4)`,
+      [keys.householdId, config.accountKey, config.productKey, PROVISION_AT],
+    );
+    const report = await runDualRoleAdultProvision({
+      manifest,
+      apply: true,
+      authorizationPhrase: AUTHORIZATION,
+      pool,
+      config,
+      now: PROVISION_AT,
+      testOnlyAllowIsolatedApply: true,
+    });
+    expect(report).toMatchObject({
+      status: 'blocked',
+      blockers: expect.arrayContaining(['apply_prerequisite_target_key_collision']),
+      identity: { disposition: 'absent', adult_rows: 0 },
+      setup_delivery: { token_rows: 0, intent_rows: 0, outbox_rows: 0 },
+    });
+    await expect(count(pool, 'v21_adult_identities')).resolves.toBe(0);
   });
 
   it('blocks stale target-scoped prohibited evidence even when the adult is absent', async () => {
@@ -1403,6 +1557,37 @@ function resolvedAdminTestSession(
   };
 }
 
+function prerequisiteOverridePool(
+  db: DbPool,
+  override: (
+    kind: 'catalog' | 'trigger',
+    rows: Record<string, unknown>[],
+  ) => Record<string, unknown>[],
+): DbPool {
+  const query = (async (statement: string | { text: string }, values?: unknown[]) => {
+    const result = await (
+      db.query as unknown as (
+        statement: string | { text: string },
+        values?: unknown[],
+      ) => Promise<{ rowCount: number | null; rows: Record<string, unknown>[] }>
+    )(statement, values);
+    const text = typeof statement === 'string' ? statement : statement.text;
+    const kind = text.includes('controller_dual_role_apply_catalog_prerequisite')
+      ? 'catalog'
+      : text.includes('controller_dual_role_apply_trigger_prerequisite')
+        ? 'trigger'
+        : null;
+    if (!kind) return result;
+    const rows = override(kind, result.rows);
+    return { ...result, rowCount: rows.length, rows };
+  }) as DbPool['query'];
+  return {
+    query,
+    connect: db.connect.bind(db) as DbPool['connect'],
+    end: db.end.bind(db) as DbPool['end'],
+  } as DbPool;
+}
+
 function canonicalTriggerCompatiblePool(memory: DbPool): DbPool {
   const advisoryLocks = new Map<string, { waiters: Array<() => void> }>();
   const acquireAdvisoryLock = async (key: string) => {
@@ -1436,6 +1621,23 @@ function canonicalTriggerCompatiblePool(memory: DbPool): DbPool {
       const text = originalText.replace(/\s+FOR UPDATE(?:\s+OF\s+[A-Za-z0-9_,.\s]+)?/gu, '');
       const rewritten = typeof statement === 'string' ? text : { ...statement, text };
       const normalized = text.trim().toUpperCase();
+      if (text.includes('controller_dual_role_apply_catalog_prerequisite')) {
+        const tableNames = Array.isArray(values?.[0]) ? values[0] : [];
+        return {
+          rowCount: tableNames.length,
+          rows: tableNames.map((tableName) => ({
+            table_name: tableName,
+            owned_by_runtime: true,
+            rls_disabled: true,
+            can_select: true,
+            can_insert: true,
+            can_update: true,
+          })),
+        };
+      }
+      if (text.includes('controller_dual_role_apply_trigger_prerequisite')) {
+        return { rowCount: 1, rows: [{ count: 1 }] };
+      }
       if (text.includes('current_database() AS database_name')) {
         return {
           rowCount: 1,
