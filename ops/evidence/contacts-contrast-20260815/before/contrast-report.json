@@ -1,0 +1,3069 @@
+{
+  "generated_at": "2026-08-15T18:35:40.340Z",
+  "source_sha": "local-exact-0ed5-derived-candidate",
+  "evidence_phase": "before",
+  "exact_base_style_emulation": true,
+  "route": "/app/contacts",
+  "role": "admin",
+  "themes": [
+    "dark"
+  ],
+  "theme_note": "The authenticated One Time shell currently exposes one dark theme.",
+  "minimum_required_ratio": 4.5,
+  "adult_account_scope_only": true,
+  "student_ghl_contacts_created": 0,
+  "results": [
+    {
+      "viewport": "390x844",
+      "surface": "list",
+      "theme": "dark",
+      "axe_violations": 0,
+      "horizontal_overflow": false,
+      "minimum_contrast_ratio": 3.84,
+      "samples": [
+        {
+          "selector": "p.breadcrumb",
+          "text": "One Time",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 13.66,
+          "font_size": "12.48px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "h1#page-title",
+          "text": "Contacts",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 20.38,
+          "font_size": "24px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "p",
+          "text": "Parent and adult contact review. Students remain One Time-only.",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 13.66,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span",
+          "text": "Search",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(7, 17, 23)",
+          "ratio": 12.78,
+          "font_size": "14.08px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span",
+          "text": "Type",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(7, 17, 23)",
+          "ratio": 12.78,
+          "font_size": "14.08px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span",
+          "text": "Status",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(7, 17, 23)",
+          "ratio": 12.78,
+          "font_size": "14.08px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span",
+          "text": "Sort",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(7, 17, 23)",
+          "ratio": 12.78,
+          "font_size": "14.08px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "button.button-secondary",
+          "text": "Apply",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "button.button-secondary",
+          "text": "Parent household",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "button.button-primary",
+          "text": "Add contact",
+          "foreground": "rgb(5, 5, 5)",
+          "background": "rgb(237, 229, 24)",
+          "ratio": 15.36,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span",
+          "text": "People and family management",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 13.66,
+          "font_size": "14.08px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "strong",
+          "text": "W12 Fictional Parent",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "span",
+          "text": "Aug 15, 2026, 9:35 PM",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "14.08px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span.semantic-chip.classification",
+          "text": "Family",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(25, 47, 54)",
+          "ratio": 14.04,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span.semantic-chip.status",
+          "text": "New",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(40, 50, 31)",
+          "ratio": 13.36,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span.semantic-chip.source",
+          "text": "Portal test lab",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span",
+          "text": "w12-parent@example.test",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "strong",
+          "text": "Test Paused Parent",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "span",
+          "text": "Aug 15, 2026, 9:35 PM",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "14.08px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span.semantic-chip.classification",
+          "text": "Family",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(25, 47, 54)",
+          "ratio": 14.04,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span.semantic-chip.status",
+          "text": "New",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(40, 50, 31)",
+          "ratio": 13.36,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span.semantic-chip.source",
+          "text": "E2e fixture",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span",
+          "text": "ot-paused-parent@example.test",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "strong",
+          "text": "Test Parent",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "span",
+          "text": "Aug 15, 2026, 9:35 PM",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "14.08px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span.semantic-chip.classification",
+          "text": "Family",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(25, 47, 54)",
+          "ratio": 14.04,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span.semantic-chip.status",
+          "text": "New",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(40, 50, 31)",
+          "ratio": 13.36,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span.semantic-chip.source",
+          "text": "E2e fixture",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span",
+          "text": "ot-parent@example.test",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "strong",
+          "text": "Contact Operations Parent",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "span",
+          "text": "Aug 15, 2026, 9:35 PM",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "14.08px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span.semantic-chip.classification",
+          "text": "Family",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(25, 47, 54)",
+          "ratio": 14.04,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span.semantic-chip.status",
+          "text": "New",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(40, 50, 31)",
+          "ratio": 13.36,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span.semantic-chip.source",
+          "text": "Contact operations e2e fixture",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span",
+          "text": "contact-operations-parent@example.test",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span",
+          "text": "One Time Mishnayos",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 13.66,
+          "font_size": "14.08px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "a",
+          "text": "Privacy",
+          "foreground": "rgb(223, 248, 255)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 18.45,
+          "font_size": "14.08px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "a",
+          "text": "Terms",
+          "foreground": "rgb(223, 248, 255)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 18.45,
+          "font_size": "14.08px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "input::placeholder",
+          "text": "Search contacts",
+          "foreground": "rgb(117, 117, 117)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 3.84,
+          "font_size": "14.08px",
+          "font_weight": "800"
+        }
+      ],
+      "failures": [
+        {
+          "selector": "input::placeholder",
+          "text": "Search contacts",
+          "foreground": "rgb(117, 117, 117)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 3.84,
+          "font_size": "14.08px",
+          "font_weight": "800"
+        }
+      ],
+      "screenshot": "ops/evidence/contacts-contrast-20260815/before/screenshots/contacts-list-390x844.png"
+    },
+    {
+      "viewport": "390x844",
+      "surface": "detail",
+      "theme": "dark",
+      "axe_violations": 0,
+      "horizontal_overflow": false,
+      "minimum_contrast_ratio": 11.87,
+      "samples": [
+        {
+          "selector": "p.breadcrumb",
+          "text": "One Time",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 13.66,
+          "font_size": "12.48px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "h1#page-title",
+          "text": "Test Parent",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 20.38,
+          "font_size": "24px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "p",
+          "text": "Family contact, New, last activity Aug 15, 2026, 9:35 PM.",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 13.66,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "button.button-secondary",
+          "text": "Back to CRM",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span.semantic-chip.classification",
+          "text": "Family",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(20, 39, 46)",
+          "ratio": 15.53,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span.semantic-chip.status",
+          "text": "New",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(35, 42, 23)",
+          "ratio": 14.79,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span.semantic-chip.source",
+          "text": "E2e fixture",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "button.button-secondary",
+          "text": "Communications",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "button.button-secondary",
+          "text": "Manage household",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "button.button-primary",
+          "text": "Edit contact",
+          "foreground": "rgb(5, 5, 5)",
+          "background": "rgb(237, 229, 24)",
+          "ratio": 15.36,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span",
+          "text": "People and family management",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 13.66,
+          "font_size": "14.08px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dt",
+          "text": "Family / School",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "13.44px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dd",
+          "text": "Family",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dt",
+          "text": "Lead status",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "13.44px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dd",
+          "text": "New",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dt",
+          "text": "Source",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "13.44px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dd",
+          "text": "E2e fixture",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dt",
+          "text": "Email",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "13.44px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dd",
+          "text": "ot-parent@example.test",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dt",
+          "text": "Phone",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "13.44px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dd",
+          "text": "Not provided",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dt",
+          "text": "Last activity",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "13.44px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dd",
+          "text": "Aug 15, 2026, 9:35 PM",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dt",
+          "text": "Consent",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "13.44px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dd",
+          "text": "Not recorded",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dt",
+          "text": "Suppression",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "13.44px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dd",
+          "text": "Active",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dt",
+          "text": "Signup provenance",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "13.44px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dd",
+          "text": "Manual CRM contact",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "h2",
+          "text": "Tags and system facts",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "18.4px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "span",
+          "text": "No custom tags",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span",
+          "text": "Lead: New",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(7, 17, 23)",
+          "ratio": 19.06,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span",
+          "text": "Source: E2e fixture",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(7, 17, 23)",
+          "ratio": 19.06,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span",
+          "text": "Parent relationship: Active",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(7, 17, 23)",
+          "ratio": 19.06,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span",
+          "text": "Activated: True",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(7, 17, 23)",
+          "ratio": 19.06,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span",
+          "text": "Subscriber: Active",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(7, 17, 23)",
+          "ratio": 19.06,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span",
+          "text": "Add tag",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "button.button-secondary",
+          "text": "Add tag",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "h2",
+          "text": "Household / relationships",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "18.4px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "p",
+          "text": "No relationships recorded.",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "h2",
+          "text": "Enrollment / access",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "18.4px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "strong",
+          "text": "Account access",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(7, 17, 23)",
+          "ratio": 19.06,
+          "font_size": "16px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "span",
+          "text": "Parent Active",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(7, 17, 23)",
+          "ratio": 12.78,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "strong",
+          "text": "Support tickets",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(7, 17, 23)",
+          "ratio": 19.06,
+          "font_size": "16px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "span",
+          "text": "None",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(7, 17, 23)",
+          "ratio": 12.78,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "h2",
+          "text": "Support tickets",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "18.4px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "p",
+          "text": "No support tickets for this contact.",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "h2",
+          "text": "Tasks",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "18.4px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "p",
+          "text": "No tasks recorded.",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "h2",
+          "text": "Notes",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "18.4px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "p",
+          "text": "No notes recorded.",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span",
+          "text": "Add note",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "button.button-secondary",
+          "text": "Save note",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "h2",
+          "text": "Single-recipient reply",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "18.4px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "span",
+          "text": "Channel",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span",
+          "text": "Reply body",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "button.button-secondary",
+          "text": "Preview reply",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "h2",
+          "text": "Timeline",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "18.4px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "p",
+          "text": "No timeline activity recorded.",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "button.button-secondary",
+          "text": "Archive contact",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span",
+          "text": "One Time Mishnayos",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 13.66,
+          "font_size": "14.08px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "a",
+          "text": "Privacy",
+          "foreground": "rgb(223, 248, 255)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 18.45,
+          "font_size": "14.08px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "a",
+          "text": "Terms",
+          "foreground": "rgb(223, 248, 255)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 18.45,
+          "font_size": "14.08px",
+          "font_weight": "400"
+        }
+      ],
+      "failures": [],
+      "screenshot": "ops/evidence/contacts-contrast-20260815/before/screenshots/contacts-detail-390x844.png"
+    },
+    {
+      "viewport": "768x1024",
+      "surface": "list",
+      "theme": "dark",
+      "axe_violations": 0,
+      "horizontal_overflow": false,
+      "minimum_contrast_ratio": 3.84,
+      "samples": [
+        {
+          "selector": "p.breadcrumb",
+          "text": "One Time",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 13.66,
+          "font_size": "12.48px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "h1#page-title",
+          "text": "Contacts",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 20.38,
+          "font_size": "30px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "p",
+          "text": "Parent and adult contact review. Students remain One Time-only.",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 13.66,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span",
+          "text": "Search",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(7, 17, 23)",
+          "ratio": 12.78,
+          "font_size": "14.08px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span",
+          "text": "Type",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(7, 17, 23)",
+          "ratio": 12.78,
+          "font_size": "14.08px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span",
+          "text": "Status",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(7, 17, 23)",
+          "ratio": 12.78,
+          "font_size": "14.08px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span",
+          "text": "Sort",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(7, 17, 23)",
+          "ratio": 12.78,
+          "font_size": "14.08px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "button.button-secondary",
+          "text": "Apply",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "button.button-secondary",
+          "text": "Parent household",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "button.button-primary",
+          "text": "Add contact",
+          "foreground": "rgb(5, 5, 5)",
+          "background": "rgb(237, 229, 24)",
+          "ratio": 15.36,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "a",
+          "text": "People / Contacts",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(37, 36, 8)",
+          "ratio": 15.67,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "a",
+          "text": "Households",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "a",
+          "text": "Users",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "a",
+          "text": "Students",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "a",
+          "text": "Audit History",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "strong",
+          "text": "W12 Fictional Parent",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "span",
+          "text": "Aug 15, 2026, 9:35 PM",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "14.08px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span.semantic-chip.classification",
+          "text": "Family",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(25, 47, 54)",
+          "ratio": 14.04,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span.semantic-chip.status",
+          "text": "New",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(40, 50, 31)",
+          "ratio": 13.36,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span.semantic-chip.source",
+          "text": "Portal test lab",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span",
+          "text": "w12-parent@example.test",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "strong",
+          "text": "Test Paused Parent",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "span",
+          "text": "Aug 15, 2026, 9:35 PM",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "14.08px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span.semantic-chip.classification",
+          "text": "Family",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(25, 47, 54)",
+          "ratio": 14.04,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span.semantic-chip.status",
+          "text": "New",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(40, 50, 31)",
+          "ratio": 13.36,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span.semantic-chip.source",
+          "text": "E2e fixture",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span",
+          "text": "ot-paused-parent@example.test",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "strong",
+          "text": "Test Parent",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "span",
+          "text": "Aug 15, 2026, 9:35 PM",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "14.08px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span.semantic-chip.classification",
+          "text": "Family",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(25, 47, 54)",
+          "ratio": 14.04,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span.semantic-chip.status",
+          "text": "New",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(40, 50, 31)",
+          "ratio": 13.36,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span.semantic-chip.source",
+          "text": "E2e fixture",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span",
+          "text": "ot-parent@example.test",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "strong",
+          "text": "Contact Operations Parent",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "span",
+          "text": "Aug 15, 2026, 9:35 PM",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "14.08px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span.semantic-chip.classification",
+          "text": "Family",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(25, 47, 54)",
+          "ratio": 14.04,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span.semantic-chip.status",
+          "text": "New",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(40, 50, 31)",
+          "ratio": 13.36,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span.semantic-chip.source",
+          "text": "Contact operations e2e fixture",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span",
+          "text": "contact-operations-parent@example.test",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span",
+          "text": "One Time Mishnayos",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 13.66,
+          "font_size": "14.08px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "a",
+          "text": "Privacy",
+          "foreground": "rgb(223, 248, 255)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 18.45,
+          "font_size": "14.08px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "a",
+          "text": "Terms",
+          "foreground": "rgb(223, 248, 255)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 18.45,
+          "font_size": "14.08px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "input::placeholder",
+          "text": "Search contacts",
+          "foreground": "rgb(117, 117, 117)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 3.84,
+          "font_size": "14.08px",
+          "font_weight": "800"
+        }
+      ],
+      "failures": [
+        {
+          "selector": "input::placeholder",
+          "text": "Search contacts",
+          "foreground": "rgb(117, 117, 117)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 3.84,
+          "font_size": "14.08px",
+          "font_weight": "800"
+        }
+      ],
+      "screenshot": "ops/evidence/contacts-contrast-20260815/before/screenshots/contacts-list-768x1024.png"
+    },
+    {
+      "viewport": "768x1024",
+      "surface": "detail",
+      "theme": "dark",
+      "axe_violations": 0,
+      "horizontal_overflow": false,
+      "minimum_contrast_ratio": 11.87,
+      "samples": [
+        {
+          "selector": "p.breadcrumb",
+          "text": "One Time",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 13.66,
+          "font_size": "12.48px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "h1#page-title",
+          "text": "Test Parent",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 20.38,
+          "font_size": "30px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "p",
+          "text": "Family contact, New, last activity Aug 15, 2026, 9:35 PM.",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 13.66,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "button.button-secondary",
+          "text": "Back to CRM",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span.semantic-chip.classification",
+          "text": "Family",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(20, 39, 46)",
+          "ratio": 15.53,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span.semantic-chip.status",
+          "text": "New",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(35, 42, 23)",
+          "ratio": 14.79,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span.semantic-chip.source",
+          "text": "E2e fixture",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "button.button-secondary",
+          "text": "Communications",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "button.button-secondary",
+          "text": "Manage household",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "button.button-primary",
+          "text": "Edit contact",
+          "foreground": "rgb(5, 5, 5)",
+          "background": "rgb(237, 229, 24)",
+          "ratio": 15.36,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "a",
+          "text": "People / Contacts",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(37, 36, 8)",
+          "ratio": 15.67,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "a",
+          "text": "Households",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "a",
+          "text": "Users",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "a",
+          "text": "Students",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "a",
+          "text": "Audit History",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dt",
+          "text": "Family / School",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "13.44px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dd",
+          "text": "Family",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dt",
+          "text": "Lead status",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "13.44px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dd",
+          "text": "New",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dt",
+          "text": "Source",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "13.44px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dd",
+          "text": "E2e fixture",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dt",
+          "text": "Email",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "13.44px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dd",
+          "text": "ot-parent@example.test",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dt",
+          "text": "Phone",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "13.44px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dd",
+          "text": "Not provided",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dt",
+          "text": "Last activity",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "13.44px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dd",
+          "text": "Aug 15, 2026, 9:35 PM",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dt",
+          "text": "Consent",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "13.44px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dd",
+          "text": "Not recorded",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dt",
+          "text": "Suppression",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "13.44px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dd",
+          "text": "Active",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dt",
+          "text": "Signup provenance",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "13.44px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dd",
+          "text": "Manual CRM contact",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "h2",
+          "text": "Tags and system facts",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "18.4px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "span",
+          "text": "No custom tags",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span",
+          "text": "Lead: New",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(7, 17, 23)",
+          "ratio": 19.06,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span",
+          "text": "Source: E2e fixture",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(7, 17, 23)",
+          "ratio": 19.06,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span",
+          "text": "Parent relationship: Active",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(7, 17, 23)",
+          "ratio": 19.06,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span",
+          "text": "Activated: True",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(7, 17, 23)",
+          "ratio": 19.06,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span",
+          "text": "Subscriber: Active",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(7, 17, 23)",
+          "ratio": 19.06,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span",
+          "text": "Add tag",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "button.button-secondary",
+          "text": "Add tag",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "h2",
+          "text": "Household / relationships",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "18.4px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "p",
+          "text": "No relationships recorded.",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "h2",
+          "text": "Enrollment / access",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "18.4px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "strong",
+          "text": "Account access",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(7, 17, 23)",
+          "ratio": 19.06,
+          "font_size": "16px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "span",
+          "text": "Parent Active",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(7, 17, 23)",
+          "ratio": 12.78,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "strong",
+          "text": "Support tickets",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(7, 17, 23)",
+          "ratio": 19.06,
+          "font_size": "16px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "span",
+          "text": "None",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(7, 17, 23)",
+          "ratio": 12.78,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "h2",
+          "text": "Support tickets",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "18.4px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "p",
+          "text": "No support tickets for this contact.",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "h2",
+          "text": "Tasks",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "18.4px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "p",
+          "text": "No tasks recorded.",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "h2",
+          "text": "Notes",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "18.4px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "p",
+          "text": "No notes recorded.",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span",
+          "text": "Add note",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "button.button-secondary",
+          "text": "Save note",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "h2",
+          "text": "Single-recipient reply",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "18.4px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "span",
+          "text": "Channel",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span",
+          "text": "Reply body",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "button.button-secondary",
+          "text": "Preview reply",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "h2",
+          "text": "Timeline",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "18.4px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "p",
+          "text": "No timeline activity recorded.",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "button.button-secondary",
+          "text": "Archive contact",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span",
+          "text": "One Time Mishnayos",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 13.66,
+          "font_size": "14.08px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "a",
+          "text": "Privacy",
+          "foreground": "rgb(223, 248, 255)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 18.45,
+          "font_size": "14.08px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "a",
+          "text": "Terms",
+          "foreground": "rgb(223, 248, 255)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 18.45,
+          "font_size": "14.08px",
+          "font_weight": "400"
+        }
+      ],
+      "failures": [],
+      "screenshot": "ops/evidence/contacts-contrast-20260815/before/screenshots/contacts-detail-768x1024.png"
+    },
+    {
+      "viewport": "1440x1000",
+      "surface": "list",
+      "theme": "dark",
+      "axe_violations": 0,
+      "horizontal_overflow": false,
+      "minimum_contrast_ratio": 3.84,
+      "samples": [
+        {
+          "selector": "p.breadcrumb",
+          "text": "One Time",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 13.66,
+          "font_size": "12.48px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "h1#page-title",
+          "text": "Contacts",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 20.38,
+          "font_size": "30px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "p",
+          "text": "Parent and adult contact review. Students remain One Time-only.",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 13.66,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span",
+          "text": "Search",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(7, 17, 23)",
+          "ratio": 12.78,
+          "font_size": "14.08px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span",
+          "text": "Type",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(7, 17, 23)",
+          "ratio": 12.78,
+          "font_size": "14.08px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span",
+          "text": "Status",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(7, 17, 23)",
+          "ratio": 12.78,
+          "font_size": "14.08px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span",
+          "text": "Sort",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(7, 17, 23)",
+          "ratio": 12.78,
+          "font_size": "14.08px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "button.button-secondary",
+          "text": "Apply",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "button.button-secondary",
+          "text": "Parent household",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "button.button-primary",
+          "text": "Add contact",
+          "foreground": "rgb(5, 5, 5)",
+          "background": "rgb(237, 229, 24)",
+          "ratio": 15.36,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "a",
+          "text": "People / Contacts",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(37, 36, 8)",
+          "ratio": 15.67,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "a",
+          "text": "Households",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "a",
+          "text": "Users",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "a",
+          "text": "Students",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "a",
+          "text": "Audit History",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "th",
+          "text": "Name",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 13.66,
+          "font_size": "12.8px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "th",
+          "text": "Type",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 13.66,
+          "font_size": "12.8px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "th",
+          "text": "Contact",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 13.66,
+          "font_size": "12.8px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "th",
+          "text": "Source",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 13.66,
+          "font_size": "12.8px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "th",
+          "text": "Last activity",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 13.66,
+          "font_size": "12.8px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "strong",
+          "text": "W12 Fictional Parent",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "span.semantic-chip.classification",
+          "text": "Family",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(25, 47, 54)",
+          "ratio": 14.04,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span.semantic-chip.status",
+          "text": "New",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(40, 50, 31)",
+          "ratio": 13.36,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "td",
+          "text": "w12-parent@example.test",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span.semantic-chip.source",
+          "text": "Portal test lab",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "td",
+          "text": "Aug 15, 2026, 9:35 PM",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "strong",
+          "text": "Test Paused Parent",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "span.semantic-chip.classification",
+          "text": "Family",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(25, 47, 54)",
+          "ratio": 14.04,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span.semantic-chip.status",
+          "text": "New",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(40, 50, 31)",
+          "ratio": 13.36,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "td",
+          "text": "ot-paused-parent@example.test",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span.semantic-chip.source",
+          "text": "E2e fixture",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "td",
+          "text": "Aug 15, 2026, 9:35 PM",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "strong",
+          "text": "Test Parent",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "span.semantic-chip.classification",
+          "text": "Family",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(25, 47, 54)",
+          "ratio": 14.04,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span.semantic-chip.status",
+          "text": "New",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(40, 50, 31)",
+          "ratio": 13.36,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "td",
+          "text": "ot-parent@example.test",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span.semantic-chip.source",
+          "text": "E2e fixture",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "td",
+          "text": "Aug 15, 2026, 9:35 PM",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "strong",
+          "text": "Contact Operations Parent",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "span.semantic-chip.classification",
+          "text": "Family",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(25, 47, 54)",
+          "ratio": 14.04,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span.semantic-chip.status",
+          "text": "New",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(40, 50, 31)",
+          "ratio": 13.36,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "td",
+          "text": "contact-operations-parent@example.test",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span.semantic-chip.source",
+          "text": "Contact operations e2e fixture",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "td",
+          "text": "Aug 15, 2026, 9:35 PM",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span",
+          "text": "One Time Mishnayos",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 13.66,
+          "font_size": "14.08px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "a",
+          "text": "Privacy",
+          "foreground": "rgb(223, 248, 255)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 18.45,
+          "font_size": "14.08px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "a",
+          "text": "Terms",
+          "foreground": "rgb(223, 248, 255)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 18.45,
+          "font_size": "14.08px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "input::placeholder",
+          "text": "Search contacts",
+          "foreground": "rgb(117, 117, 117)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 3.84,
+          "font_size": "14.08px",
+          "font_weight": "800"
+        }
+      ],
+      "failures": [
+        {
+          "selector": "input::placeholder",
+          "text": "Search contacts",
+          "foreground": "rgb(117, 117, 117)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 3.84,
+          "font_size": "14.08px",
+          "font_weight": "800"
+        }
+      ],
+      "screenshot": "ops/evidence/contacts-contrast-20260815/before/screenshots/contacts-list-1440x1000.png"
+    },
+    {
+      "viewport": "1440x1000",
+      "surface": "detail",
+      "theme": "dark",
+      "axe_violations": 0,
+      "horizontal_overflow": false,
+      "minimum_contrast_ratio": 11.87,
+      "samples": [
+        {
+          "selector": "p.breadcrumb",
+          "text": "One Time",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 13.66,
+          "font_size": "12.48px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "h1#page-title",
+          "text": "Test Parent",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 20.38,
+          "font_size": "30px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "p",
+          "text": "Family contact, New, last activity Aug 15, 2026, 9:35 PM.",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 13.66,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "button.button-secondary",
+          "text": "Back to CRM",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span.semantic-chip.classification",
+          "text": "Family",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(20, 39, 46)",
+          "ratio": 15.53,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span.semantic-chip.status",
+          "text": "New",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(35, 42, 23)",
+          "ratio": 14.79,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span.semantic-chip.source",
+          "text": "E2e fixture",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "12.8px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "button.button-secondary",
+          "text": "Communications",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "button.button-secondary",
+          "text": "Manage household",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "button.button-primary",
+          "text": "Edit contact",
+          "foreground": "rgb(5, 5, 5)",
+          "background": "rgb(237, 229, 24)",
+          "ratio": 15.36,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "a",
+          "text": "People / Contacts",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(37, 36, 8)",
+          "ratio": 15.67,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "a",
+          "text": "Households",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "a",
+          "text": "Users",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "a",
+          "text": "Students",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "a",
+          "text": "Audit History",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dt",
+          "text": "Family / School",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "13.44px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dd",
+          "text": "Family",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dt",
+          "text": "Lead status",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "13.44px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dd",
+          "text": "New",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dt",
+          "text": "Source",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "13.44px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dd",
+          "text": "E2e fixture",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dt",
+          "text": "Email",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "13.44px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dd",
+          "text": "ot-parent@example.test",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dt",
+          "text": "Phone",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "13.44px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dd",
+          "text": "Not provided",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dt",
+          "text": "Last activity",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "13.44px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dd",
+          "text": "Aug 15, 2026, 9:35 PM",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dt",
+          "text": "Consent",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "13.44px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dd",
+          "text": "Not recorded",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dt",
+          "text": "Suppression",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "13.44px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dd",
+          "text": "Active",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dt",
+          "text": "Signup provenance",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "13.44px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "dd",
+          "text": "Manual CRM contact",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "h2",
+          "text": "Tags and system facts",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "18.4px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "span",
+          "text": "No custom tags",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span",
+          "text": "Lead: New",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(7, 17, 23)",
+          "ratio": 19.06,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span",
+          "text": "Source: E2e fixture",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(7, 17, 23)",
+          "ratio": 19.06,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span",
+          "text": "Parent relationship: Active",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(7, 17, 23)",
+          "ratio": 19.06,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span",
+          "text": "Activated: True",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(7, 17, 23)",
+          "ratio": 19.06,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span",
+          "text": "Subscriber: Active",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(7, 17, 23)",
+          "ratio": 19.06,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span",
+          "text": "Add tag",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "button.button-secondary",
+          "text": "Add tag",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "h2",
+          "text": "Household / relationships",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "18.4px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "p",
+          "text": "No relationships recorded.",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "h2",
+          "text": "Enrollment / access",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "18.4px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "strong",
+          "text": "Account access",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(7, 17, 23)",
+          "ratio": 19.06,
+          "font_size": "16px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "span",
+          "text": "Parent Active",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(7, 17, 23)",
+          "ratio": 12.78,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "strong",
+          "text": "Support tickets",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(7, 17, 23)",
+          "ratio": 19.06,
+          "font_size": "16px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "span",
+          "text": "None",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(7, 17, 23)",
+          "ratio": 12.78,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "h2",
+          "text": "Support tickets",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "18.4px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "p",
+          "text": "No support tickets for this contact.",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "h2",
+          "text": "Tasks",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "18.4px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "p",
+          "text": "No tasks recorded.",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "h2",
+          "text": "Notes",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "18.4px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "p",
+          "text": "No notes recorded.",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span",
+          "text": "Add note",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "button.button-secondary",
+          "text": "Save note",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "h2",
+          "text": "Single-recipient reply",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "18.4px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "span",
+          "text": "Channel",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "span",
+          "text": "Reply body",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "button.button-secondary",
+          "text": "Preview reply",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "h2",
+          "text": "Timeline",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 17.71,
+          "font_size": "18.4px",
+          "font_weight": "700"
+        },
+        {
+          "selector": "p",
+          "text": "No timeline activity recorded.",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(13, 26, 32)",
+          "ratio": 11.87,
+          "font_size": "16px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "button.button-secondary",
+          "text": "Archive contact",
+          "foreground": "rgb(255, 255, 255)",
+          "background": "rgb(18, 34, 41)",
+          "ratio": 16.32,
+          "font_size": "16px",
+          "font_weight": "800"
+        },
+        {
+          "selector": "span",
+          "text": "One Time Mishnayos",
+          "foreground": "rgb(200, 214, 217)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 13.66,
+          "font_size": "14.08px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "a",
+          "text": "Privacy",
+          "foreground": "rgb(223, 248, 255)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 18.45,
+          "font_size": "14.08px",
+          "font_weight": "400"
+        },
+        {
+          "selector": "a",
+          "text": "Terms",
+          "foreground": "rgb(223, 248, 255)",
+          "background": "rgb(5, 5, 5)",
+          "ratio": 18.45,
+          "font_size": "14.08px",
+          "font_weight": "400"
+        }
+      ],
+      "failures": [],
+      "screenshot": "ops/evidence/contacts-contrast-20260815/before/screenshots/contacts-detail-1440x1000.png"
+    }
+  ],
+  "summary": {
+    "surfaces": 6,
+    "axe_violations": 0,
+    "contrast_failures": 3,
+    "minimum_contrast_ratio": 3.84,
+    "horizontal_overflow": false
+  }
+}

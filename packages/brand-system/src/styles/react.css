@@ -148,10 +148,13 @@ button {
 .app-context,
 .app-user span,
 .page-header p,
-.contact-table small,
-.contact-card-meta,
 .app-footer {
-  color: #c8d6d9;
+  color: var(--ot-color-text-muted);
+}
+
+.contact-table small,
+.contact-card-meta {
+  color: var(--ot-color-text-secondary);
 }
 
 .app-context {
@@ -534,7 +537,7 @@ textarea:focus-visible,
   min-width: 0;
   overflow-x: auto;
   padding-bottom: 4px;
-  scrollbar-color: #66777d transparent;
+  scrollbar-color: var(--ot-color-border-strong) transparent;
 }
 
 .toolbar-filters label,
@@ -543,7 +546,7 @@ textarea:focus-visible,
   flex: 0 0 180px;
   gap: 6px;
   min-width: 180px;
-  color: #c8d6d9;
+  color: var(--ot-color-text-secondary);
   font-size: 0.88rem;
   font-weight: 800;
 }
@@ -553,7 +556,7 @@ textarea:focus-visible,
 }
 
 .toolbar-filters label.is-selected {
-  color: #ede518;
+  color: var(--ot-color-action-auth);
 }
 
 .toolbar-filters input,
@@ -562,22 +565,29 @@ textarea:focus-visible,
 .contact-form select,
 .contact-form textarea {
   width: 100%;
-  border: 1px solid #66777d;
+  border: 1px solid var(--ot-color-border-strong);
   border-radius: 8px;
-  background: #0d1a20;
-  color: #ffffff;
+  background: var(--ot-color-surface);
+  color: var(--ot-color-text-primary);
   padding: 10px 12px;
 }
 
 .toolbar-filters input:disabled {
-  border-color: #34464d;
+  border-color: var(--ot-color-border);
   background: #11191d;
-  color: #a5aea9;
+  color: var(--ot-color-text-disabled);
+}
+
+.toolbar-filters input::placeholder,
+.contact-form input::placeholder,
+.contact-form textarea::placeholder {
+  color: var(--ot-color-text-secondary);
+  opacity: 1;
 }
 
 .filter-help {
   display: block;
-  color: #c8d6d9;
+  color: var(--ot-color-text-secondary);
   font-size: 0.76rem;
   font-weight: 700;
   line-height: 1.35;
@@ -585,7 +595,7 @@ textarea:focus-visible,
 
 .toolbar-filters label.is-selected input,
 .toolbar-filters label.is-selected select {
-  border-color: #ede518;
+  border-color: var(--ot-color-action-auth);
 }
 
 .toolbar-filters button {
@@ -856,7 +866,7 @@ textarea:focus-visible,
 }
 
 .contact-table th {
-  color: #c8d6d9;
+  color: var(--ot-color-text-secondary);
   padding: 0 12px 4px;
   font-size: 0.8rem;
   text-align: left;
@@ -864,24 +874,24 @@ textarea:focus-visible,
 
 .contact-table tr[role='button'] {
   cursor: pointer;
-  background: #0d1a20;
+  background: var(--ot-color-surface);
 }
 
 .contact-table td {
-  border-block: 1px solid #34464d;
+  border-block: 1px solid var(--ot-color-border);
   padding: 14px 12px;
-  color: #ffffff;
+  color: var(--ot-color-text-primary);
   vertical-align: middle;
 }
 
 .contact-table td:first-child {
-  border-inline-start: 1px solid #34464d;
+  border-inline-start: 1px solid var(--ot-color-border);
   border-start-start-radius: 12px;
   border-end-start-radius: 12px;
 }
 
 .contact-table td:last-child {
-  border-inline-end: 1px solid #34464d;
+  border-inline-end: 1px solid var(--ot-color-border);
   border-start-end-radius: 12px;
   border-end-end-radius: 12px;
 }
@@ -890,8 +900,8 @@ textarea:focus-visible,
 .contact-table tr[role='button']:focus-visible td,
 .contact-card:hover,
 .contact-card:focus-visible {
-  border-color: #86e8ff;
-  box-shadow: 0 0 0 3px rgba(134, 232, 255, 0.22);
+  border-color: var(--ot-color-accent-auth);
+  box-shadow: var(--ot-shadow-focus);
 }
 
 .contact-table strong,
@@ -902,7 +912,7 @@ textarea:focus-visible,
 .contact-table strong,
 .contact-card strong,
 .detail-grid dd {
-  color: #ffffff;
+  color: var(--ot-color-text-primary);
 }
 
 .contact-card-list {
@@ -914,10 +924,10 @@ textarea:focus-visible,
   display: grid;
   gap: 12px;
   width: 100%;
-  border: 1px solid #34464d;
+  border: 1px solid var(--ot-color-border);
   border-radius: 12px;
-  background: #0d1a20;
-  color: #ffffff;
+  background: var(--ot-color-surface);
+  color: var(--ot-color-text-primary);
   padding: 14px;
   text-align: left;
 }
@@ -929,7 +939,7 @@ textarea:focus-visible,
 }
 
 .contact-card-heading > span {
-  color: #c8d6d9;
+  color: var(--ot-color-text-secondary);
   font-size: 0.88rem;
 }
 
@@ -937,10 +947,10 @@ textarea:focus-visible,
   display: inline-flex;
   align-items: center;
   min-height: 30px;
-  border: 1px solid #66777d;
+  border: 1px solid var(--ot-color-border-strong);
   border-radius: 999px;
   padding: 5px 9px;
-  color: #ffffff;
+  color: var(--ot-color-text-primary);
   font-size: 0.8rem;
   font-weight: 800;
   line-height: 1.2;
@@ -948,17 +958,17 @@ textarea:focus-visible,
 }
 
 .semantic-chip.classification {
-  border-color: #86e8ff;
+  border-color: var(--ot-color-accent-auth);
   background: rgba(134, 232, 255, 0.1);
 }
 
 .semantic-chip.status {
-  border-color: #ede518;
+  border-color: var(--ot-color-action-auth);
   background: rgba(237, 229, 24, 0.12);
 }
 
 .semantic-chip.source {
-  background: #122229;
+  background: var(--ot-color-surface-muted);
 }
 
 .ot-section-tabs {
@@ -1260,14 +1270,14 @@ textarea:focus-visible,
 .note-panel,
 .state-panel {
   min-width: 0;
-  border: 1px solid #34464d;
+  border: 1px solid var(--ot-color-border);
   border-radius: 12px;
-  background: #0d1a20;
+  background: var(--ot-color-surface);
   padding: 14px;
 }
 
 .detail-grid dt {
-  color: #c8d6d9;
+  color: var(--ot-color-text-secondary);
   font-size: 0.84rem;
   font-weight: 800;
 }
@@ -1285,13 +1295,13 @@ textarea:focus-visible,
 .note-panel h2,
 .contact-form-shell h2,
 .state-panel h2 {
-  color: #ffffff;
+  color: var(--ot-color-text-primary);
   font-size: 1.15rem;
 }
 
 .note-panel p,
 .state-panel p {
-  color: #c8d6d9;
+  color: var(--ot-color-text-secondary);
   line-height: 1.5;
 }
 
@@ -1314,9 +1324,9 @@ textarea:focus-visible,
 .support-ticket-list a,
 .reply-preview {
   min-width: 0;
-  border: 1px solid #34464d;
+  border: 1px solid var(--ot-color-border);
   border-radius: 8px;
-  background: #071117;
+  background: var(--ot-color-surface-raised);
   padding: 10px;
 }
 
@@ -1332,7 +1342,7 @@ textarea:focus-visible,
 .support-ticket-list a {
   display: grid;
   gap: 4px;
-  color: #f8fafb;
+  color: var(--ot-color-text-primary);
   text-decoration: none;
 }
 
@@ -1340,7 +1350,7 @@ textarea:focus-visible,
 .timeline-list span,
 .support-ticket-list span,
 .support-ticket-list small {
-  color: #c8d6d9;
+  color: var(--ot-color-text-secondary);
 }
 
 .detail-columns,
@@ -1384,11 +1394,11 @@ textarea:focus-visible,
 }
 
 .state-panel.error {
-  border-color: #ff7474;
+  border-color: var(--ot-color-danger);
 }
 
 .state-panel.empty {
-  border-color: #66777d;
+  border-color: var(--ot-color-border-strong);
 }
 
 .session-expired-state {
@@ -1404,9 +1414,9 @@ textarea:focus-visible,
   display: grid;
   grid-template-columns: 1fr;
   gap: 12px;
-  border: 1px solid #34464d;
+  border: 1px solid var(--ot-color-border);
   border-radius: 12px;
-  background: #0d1a20;
+  background: var(--ot-color-surface);
   padding: 14px;
 }
 
