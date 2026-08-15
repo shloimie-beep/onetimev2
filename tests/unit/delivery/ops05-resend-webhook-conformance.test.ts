@@ -13,6 +13,38 @@ const secret = `whsec_${Buffer.from('ops05-resend-fixture-secret').toString('bas
 const wrongSecret = `whsec_${Buffer.from('ops05-wrong-resend-secret').toString('base64')}`;
 
 describe('OPS-05 Resend Svix webhook conformance', () => {
+  it('normalizes the official signed email.suppressed shape without retaining private fields', () => {
+    const rawBody = suppressedBody();
+    const result = receive(rawBody, {
+      headers: signResendSvixFixture({
+        rawBody,
+        webhookSecret: secret,
+        id: 'msg_ops05_suppressed',
+        timestamp,
+      }),
+    });
+
+    expect(result.record).toMatchObject({
+      event_type: 'email.suppressed',
+      canonical_state: 'suppressed',
+      minimized_payload: {
+        type: 'email.suppressed',
+        has_message_ref: true,
+        has_svix_message_ref: true,
+      },
+      object_refs: {
+        message_ref_hash_present: true,
+        svix_message_ref_hash_present: true,
+      },
+    });
+    const serialized = JSON.stringify(result.record);
+    expect(serialized).not.toContain('suppressed@resend.dev');
+    expect(serialized).not.toContain('resend_msg_ops05_suppressed');
+    expect(serialized).not.toContain('Synthetic suppression fixture');
+    expect(serialized).not.toContain('OnAccountSuppressionList');
+    expect(serialized).not.toContain('account-level suppression list');
+  });
+
   it('accepts a valid raw-body Svix fixture and keeps provider refs redacted', () => {
     const ledger = new InMemoryProviderWebhookLedger();
     const rawBody = resendBody();
@@ -84,6 +116,30 @@ describe('OPS-05 Resend Svix webhook conformance', () => {
       receive(rawBody, {
         contentType: 'text/plain',
         headers,
+      }),
+    );
+
+    const missingCreatedAt = resendBody({ created_at: '' });
+    expectReject('provider_created_at_required', () =>
+      receive(missingCreatedAt, {
+        headers: signResendSvixFixture({
+          rawBody: missingCreatedAt,
+          webhookSecret: secret,
+          id: 'msg_ops05_missing_created_at',
+          timestamp,
+        }),
+      }),
+    );
+
+    const invalidCreatedAt = resendBody({ created_at: 'not-an-iso-timestamp' });
+    expectReject('provider_created_at_invalid', () =>
+      receive(invalidCreatedAt, {
+        headers: signResendSvixFixture({
+          rawBody: invalidCreatedAt,
+          webhookSecret: secret,
+          id: 'msg_ops05_invalid_created_at',
+          timestamp,
+        }),
       }),
     );
   });
@@ -186,6 +242,27 @@ function resendBody(
       message_id: 'resend_msg_ops05',
       created_at: '2026-07-17T04:00:00.000Z',
       ...overrides,
+    }),
+  );
+}
+
+function suppressedBody() {
+  return Buffer.from(
+    JSON.stringify({
+      type: 'email.suppressed',
+      created_at: '2026-07-17T04:00:00.000Z',
+      data: {
+        email_id: 'resend_msg_ops05_suppressed',
+        message_id: '<suppressed-private-message@example.test>',
+        from: 'One Time Account Security <info@onetimeonetime.com>',
+        to: ['suppressed@resend.dev'],
+        subject: 'Synthetic suppression fixture',
+        suppressed: {
+          type: 'OnAccountSuppressionList',
+          message: 'Recipient is on the account-level suppression list.',
+        },
+        tags: { category: 'account_security' },
+      },
     }),
   );
 }

@@ -161,27 +161,42 @@ async function reconcileLifecycleDelivery(client: Queryable, record: ProviderEve
         SET final_delivery_state = CASE
               WHEN $4 = 'complained' THEN 'complained'
               WHEN final_delivery_state = 'complained' THEN final_delivery_state
-              WHEN $4 IN ('bounced', 'failed') THEN $4
-              WHEN final_delivery_state IN ('bounced', 'failed') THEN final_delivery_state
+              WHEN $4 = 'suppressed' THEN 'suppressed'
+              WHEN final_delivery_state = 'suppressed' THEN final_delivery_state
+              WHEN $4 = 'bounced' THEN 'bounced'
+              WHEN final_delivery_state = 'bounced' THEN final_delivery_state
+              WHEN $4 = 'failed' THEN 'failed'
+              WHEN final_delivery_state = 'failed' THEN final_delivery_state
               WHEN $4 = 'delivered' THEN 'delivered'
               WHEN final_delivery_state = 'delivered' THEN final_delivery_state
               ELSE $4
             END,
             delivered_at = CASE
-              WHEN $4 = 'delivered' THEN COALESCE(delivered_at, $5::timestamptz)
+              WHEN $4 = 'delivered'
+                AND COALESCE(final_delivery_state, '') <> 'suppressed'
+                THEN COALESCE(delivered_at, $5::timestamptz)
               ELSE delivered_at
             END,
             final_state_at = CASE
               WHEN (
                 ($4 = 'complained' AND COALESCE(final_delivery_state, '') <> 'complained')
                 OR (
-                  $4 IN ('bounced', 'failed')
-                  AND COALESCE(final_delivery_state, '') <> 'complained'
-                  AND COALESCE(final_delivery_state, '') <> $4
+                  $4 = 'suppressed'
+                  AND COALESCE(final_delivery_state, '') NOT IN ('complained', 'suppressed')
+                )
+                OR (
+                  $4 = 'bounced'
+                  AND COALESCE(final_delivery_state, '') NOT IN ('suppressed', 'complained')
+                  AND COALESCE(final_delivery_state, '') <> 'bounced'
+                )
+                OR (
+                  $4 = 'failed'
+                  AND COALESCE(final_delivery_state, '') NOT IN (
+                    'complained', 'suppressed', 'bounced', 'failed'
+                  )
                 )
                 OR ($4 = 'delivered' AND final_delivery_state IS NULL)
               )
-                AND (final_state_at IS NULL OR final_state_at <= $5::timestamptz)
                 THEN $5::timestamptz
               ELSE final_state_at
             END,
@@ -215,6 +230,7 @@ function lifecycleDeliveryState(state: ProviderEventRecord['canonical_state']) {
     state === 'delivered' ||
     state === 'bounced' ||
     state === 'complained' ||
+    state === 'suppressed' ||
     state === 'failed'
   ) {
     return state;
