@@ -695,7 +695,7 @@ async function applyPrerequisiteBlockers(
         WHERE table_namespaces.nspname='onetime'
           AND tables.relname='canonical_state_transition_events'
           AND triggers.tgname='canonical_state_transition_apply'
-          AND triggers.tgtype=5
+          AND triggers.tgtype=(1 | 2 | 4) /* ROW | BEFORE | INSERT */
           AND triggers.tgenabled IN ('O','A')
           AND NOT triggers.tgisinternal
           AND function_namespaces.nspname='onetime'
