@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 describe('Parent welcome video framework migration', () => {
   it('creates an empty governed binding and append-only household event ledger', async () => {
     const migration = await readFile(
-      'packages/db/migrations/2284_parent_welcome_video_framework.sql',
+      'packages/db/migrations/2285_parent_welcome_video_framework.sql',
       'utf8',
     );
 
@@ -19,7 +19,7 @@ describe('Parent welcome video framework migration', () => {
 
   it('reports every adjacent Parent activation step without mutating Student truth', async () => {
     const [migration, repository, service] = await Promise.all([
-      readFile('packages/db/migrations/2284_parent_welcome_video_framework.sql', 'utf8'),
+      readFile('packages/db/migrations/2285_parent_welcome_video_framework.sql', 'utf8'),
       readFile(
         'apps/web/src/server/features/portals/parent-welcome/postgres-repository.ts',
         'utf8',

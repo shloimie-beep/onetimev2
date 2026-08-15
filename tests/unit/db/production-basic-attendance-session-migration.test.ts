@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 describe('production-basic attendance session migration', () => {
   it('binds one opaque session to exact occurrence, Student, login, and bounded lifetime', () => {
     const sql = readFileSync(
-      'packages/db/migrations/2283_production_basic_attendance_sessions.sql',
+      'packages/db/migrations/2284_production_basic_attendance_sessions.sql',
       'utf8',
     );
     expect(sql).toContain('CREATE TABLE onetime.production_basic_attendance_sessions');
