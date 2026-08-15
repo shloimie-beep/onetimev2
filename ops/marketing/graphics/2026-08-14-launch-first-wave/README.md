@@ -21,7 +21,7 @@ This bounded first wave supplies only the two current launch concepts that do no
 
 The media work order also calls for a landing handoff. The packet therefore includes one shared text-free desktop background at 1600x900 and one shared text-free mobile background at 1080x1600. They preserve live HTML headline and CTA ownership in the product lane; no landing or PR #131 source changed.
 
-Every derivative uses the approved Rabbi-only `Class Photo - Rabbi Eli Teaching - Vertical 01.jpeg`. The six social drafts also use the text-free One Time white logo. No Student image, generated person, face modification, source-file move/rename, Drive write, Canva write, product write, provider action, scheduling, publication, broadcast, boost, or spend occurred.
+Every derivative uses the approved Rabbi-only `Class Photo - Rabbi Eli Teaching - Vertical 01.jpeg`. The six social drafts also use the text-free One Time white logo. Their logos, foreground copy, CTA treatments, rules, and URLs remain at least 7% inside every applicable outer edge. No Student image, generated person, face modification, source-file move/rename, Drive write, Canva write, product write, provider action, scheduling, publication, broadcast, boost, or spend occurred.
 
 ## Locked copy
 
@@ -74,6 +74,6 @@ validation-report.json
 visual-qa.md
 ```
 
-The validator proves exact source and output checksums, dimensions, content-registry JSON Schema conformance, exact CTA/destination linkage, phone proof, a minimum contrast ratio of 4.85:1, byte-exact rerendering, zero Student-bearing derivatives, and zero external effects.
+The validator proves exact source and output checksums, dimensions, content-registry JSON Schema conformance, exact CTA/destination linkage, 7% foreground safe zones, an actual 390x844 phone-proof content viewport, a minimum contrast ratio of 4.85:1, byte-exact rerendering, zero Student-bearing derivatives, and zero external effects.
 
 Drive remains the source-media store. The repository contains only the deterministic renderer, bounded draft derivatives, proofs, provenance, registry records, and validation results.

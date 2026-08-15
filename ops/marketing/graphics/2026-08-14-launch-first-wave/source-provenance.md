@@ -35,16 +35,16 @@ All records below derive from source asset `OTM-A000001`; the six social drafts 
 
 | Asset ID      | Package                | Format             | File                                     | Dimensions | SHA-256                                                            |
 | ------------- | ---------------------- | ------------------ | ---------------------------------------- | ---------: | ------------------------------------------------------------------ |
-| `OTM-A000003` | `OTM-CP-001`           | Feed               | `OTM-CP-001-feed-1080x1350.png`          |  1080x1350 | `d408e2bdbfb8610f60dc21c6257a5bc00a53bfed8bb20a8f192816ca8025fd6e` |
-| `OTM-A000005` | `OTM-CP-001`           | Story/Reel         | `OTM-CP-001-story-reel-1080x1920.png`    |  1080x1920 | `8122f23181850f39dcb2114ccd2a9b6c37dfbd40e9d6d15b94d14c7f1b542d99` |
-| `OTM-A000007` | `OTM-CP-001`           | Social preview     | `OTM-CP-001-social-preview-1200x630.png` |   1200x630 | `e5d86e9a2fa907d58d705d139efaf065b32bacc9d82fd0ea697649b1aed793ed` |
-| `OTM-A000004` | `OTM-CP-002`           | Feed               | `OTM-CP-002-feed-1080x1350.png`          |  1080x1350 | `be0569bdcda1ac5ae5e603927ac54084838a2f10e5d76590f9654c91c2c1adfc` |
-| `OTM-A000006` | `OTM-CP-002`           | Story/Reel         | `OTM-CP-002-story-reel-1080x1920.png`    |  1080x1920 | `5b5cb4fb2a192db53fd3ff2247f158a4c8a38d4df91145a72af4a0cd4085a3f4` |
-| `OTM-A000008` | `OTM-CP-002`           | Social preview     | `OTM-CP-002-social-preview-1200x630.png` |   1200x630 | `bcccaff3d1dc3bacc38fb45a3dbc2d83f989e85f4651a3807282c1d74d266c11` |
+| `OTM-A000003` | `OTM-CP-001`           | Feed               | `OTM-CP-001-feed-1080x1350.png`          |  1080x1350 | `298ec99d40a1654205ad8447055f320bb65b111d5c1a00768c45b42d191d810d` |
+| `OTM-A000005` | `OTM-CP-001`           | Story/Reel         | `OTM-CP-001-story-reel-1080x1920.png`    |  1080x1920 | `3f14ca89837083ef1e7852b9a88198ce593ad1af2e3b71421ae95a7abd42e72b` |
+| `OTM-A000007` | `OTM-CP-001`           | Social preview     | `OTM-CP-001-social-preview-1200x630.png` |   1200x630 | `8ec571d22fa5c759dc6833a17a13dbee90f01a9d36c71d94e841143c22480958` |
+| `OTM-A000004` | `OTM-CP-002`           | Feed               | `OTM-CP-002-feed-1080x1350.png`          |  1080x1350 | `757da3865ad36f01511dc162607f91c38e87d9af64a2a18c5769f7cdee2f79ec` |
+| `OTM-A000006` | `OTM-CP-002`           | Story/Reel         | `OTM-CP-002-story-reel-1080x1920.png`    |  1080x1920 | `7207df6abec243646c04d6418593f194436e52e4a95cd64570e23192ea60a023` |
+| `OTM-A000008` | `OTM-CP-002`           | Social preview     | `OTM-CP-002-social-preview-1200x630.png` |   1200x630 | `fa282200c0f40e2c42195794b5df1904b29e23c0b29736a832f0804d2e1fa0ac` |
 | `OTM-A000009` | Shared landing handoff | Desktop background | `landing-hero-desktop-1600x900.png`      |   1600x900 | `dd899a4f9f5308f6efe18c8a45045a147d98c76cd8d1929f9023878cb123e7ea` |
 | `OTM-A000010` | Shared landing handoff | Mobile background  | `landing-hero-mobile-1080x1600.png`      |  1080x1600 | `a10e151cd30a2582c3c34fa512dd6928005a76aa0f0ff3a2b99e97789a22d238` |
 
-The machine-readable byte counts and proof-image checksums are in `render-manifest.json` and are verified byte-for-byte by `validate_launch_graphics.py`.
+The machine-readable byte counts, 7% outer-edge foreground bounds, and proof-image checksums are in `render-manifest.json` and are verified byte-for-byte by `validate_launch_graphics.py`. The six copy-bearing social renders pass the 7% rule; the two text-free landing backgrounds correctly mark that foreground rule not applicable. The phone proof records an actual 390x844 content viewport separately from its decorative device frame.
 
 ## Verified but deliberately unused
 

@@ -6,7 +6,7 @@
 
 - Original-resolution inspection of all eight deterministic PNG derivatives.
 - Combined review in `visual-proof/first-wave-contact-sheet.png`.
-- 390x844 phone-frame inspection of both 9:16 Story/Reel drafts and the mobile landing background in `visual-proof/first-wave-phone-proof.png`.
+- Exact 390x844 content-viewport inspection of both 9:16 Story/Reel drafts and the mobile landing background in `visual-proof/first-wave-phone-proof.png`; the 390x844 measurement excludes the decorative outer device frame.
 - Machine verification in `validation-report.json` and `render-manifest.json`.
 
 ## Findings
@@ -28,8 +28,9 @@
 - Altered or generated faces: zero.
 - Private data: zero.
 - CTA drift: zero.
+- Applicable logo, foreground copy, CTA, rule, and URL bounds: all inside the 7% outer-edge safe zone; the contact sheet overlays the measured guide.
 - Minimum proven foreground/background contrast: 4.85:1 against the worst-case photo-overlay background; required threshold: 4.5:1.
-- Horizontal overflow/crop loss in the 390x844 phone proof: none for the Story/Reel canvases.
+- Horizontal overflow/crop loss in the exact 390x844 content viewport: none for the Story/Reel canvases.
 - Drive, Canva, product, provider, scheduling, publication, broadcast, boost, and spend effects: zero.
 
 ## Remaining review gate

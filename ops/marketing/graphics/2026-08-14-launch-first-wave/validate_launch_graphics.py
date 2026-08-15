@@ -58,6 +58,7 @@ def proof_digest(manifest: dict[str, object]) -> dict[str, tuple[object, ...]]:
             record["height"],
             record["bytes"],
             record["sha256"],
+            json.dumps(record["safe_zone"], sort_keys=True),
         )
     for record in manifest["visual_proof"].values():
         digests[str(record["relative_path"])] = (
@@ -65,6 +66,7 @@ def proof_digest(manifest: dict[str, object]) -> dict[str, tuple[object, ...]]:
             record["height"],
             record["bytes"],
             record["sha256"],
+            json.dumps(record.get("content_viewport"), sort_keys=True),
         )
     return digests
 
@@ -96,6 +98,37 @@ def main() -> None:
             require(image.size == (width, height), f"{asset_id}: image header mismatch")
             require(image.mode == "RGB", f"{asset_id}: expected RGB PNG")
 
+        safe_zone = record.get("safe_zone")
+        require(isinstance(safe_zone, dict), f"{asset_id}: missing safe-zone proof")
+        require(safe_zone["ratio"] == 0.07, f"{asset_id}: safe-zone ratio must be 7%")
+        if concept_id is None:
+            require(
+                safe_zone["applicable"] is False,
+                f"{asset_id}: text-free landing render must mark safe zone not applicable",
+            )
+            require(
+                "foreground_bounds" not in safe_zone,
+                f"{asset_id}: unexpected foreground bounds",
+            )
+        else:
+            expected_x = (width * 7 + 99) // 100
+            expected_y = (height * 7 + 99) // 100
+            require(safe_zone["applicable"] is True, f"{asset_id}: safe zone must apply")
+            require(safe_zone["inset_x_px"] == expected_x, f"{asset_id}: horizontal inset mismatch")
+            require(safe_zone["inset_y_px"] == expected_y, f"{asset_id}: vertical inset mismatch")
+            bounds = safe_zone["foreground_bounds"]
+            require(bounds["left"] >= expected_x, f"{asset_id}: foreground exceeds left safe zone")
+            require(bounds["top"] >= expected_y, f"{asset_id}: foreground exceeds top safe zone")
+            require(
+                bounds["right"] <= width - expected_x,
+                f"{asset_id}: foreground exceeds right safe zone",
+            )
+            require(
+                bounds["bottom"] <= height - expected_y,
+                f"{asset_id}: foreground exceeds bottom safe zone",
+            )
+            require(safe_zone["pass"] is True, f"{asset_id}: safe-zone proof failed")
+
     for record in manifest["visual_proof"].values():
         path = packet_dir / record["relative_path"]
         require(path.is_file(), f"missing visual proof: {path.name}")
@@ -103,6 +136,12 @@ def main() -> None:
         require(sha256(path) == record["sha256"], f"{path.name}: checksum mismatch")
         with Image.open(path) as image:
             require(image.size == (record["width"], record["height"]), f"{path.name}: dimensions mismatch")
+
+    phone_proof = manifest["visual_proof"]["phone"]
+    require(
+        phone_proof.get("content_viewport") == {"width": 390, "height": 844},
+        "phone proof content viewport must be exactly 390x844",
+    )
 
     schema = json.loads((registry_dir / "content-asset.schema.json").read_text(encoding="utf-8"))
     validator = Draft202012Validator(schema, format_checker=FormatChecker())
@@ -186,6 +225,9 @@ def main() -> None:
         "registry_asset_count": len(assets),
         "registry_schema": "content-asset.v1",
         "minimum_contrast_ratio": contrast["minimum_measured"],
+        "safe_zone_ratio": 0.07,
+        "safe_zone_renders_passed": 6,
+        "phone_content_viewport": "390x844",
         "deterministic_rerender": "byte_exact",
         "student_bearing_derivatives": 0,
         "publication_events": 0,
@@ -194,6 +236,8 @@ def main() -> None:
             "source hashes",
             "render dimensions and checksums",
             "contact sheet and phone proof",
+            "7% foreground safe zones",
+            "exact 390x844 phone content viewport",
             "content asset JSON Schema",
             "creative manifest exact CTA and destination",
             "package registry linkage",

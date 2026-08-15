@@ -22,6 +22,21 @@ YELLOW = "#FFD21F"
 WHITE = "#FFFFFF"
 CYAN = "#059ED1"
 COOL_GREY = "#DCE4E8"
+SAFE_ZONE_RATIO = 0.07
+SAFE_ZONE_PERCENT = 7
+
+# Conservative outer bounds covering every placed logo, copy line, CTA, rule,
+# and URL. Background photography and text-free landing treatments are excluded.
+FOREGROUND_BOUNDS = {
+    "OTM-A000003": (82, 96, 500, 1248),
+    "OTM-A000004": (84, 96, 996, 1254),
+    "OTM-A000005": (84, 144, 600, 1746),
+    "OTM-A000006": (84, 144, 996, 1747),
+    "OTM-A000007": (92, 52, 570, 573),
+    "OTM-A000008": (92, 52, 600, 573),
+    "OTM-A000009": None,
+    "OTM-A000010": None,
+}
 
 SOURCE_FILES = {
     "photo": (
@@ -195,8 +210,8 @@ def render_cp001_feed(
     draw = ImageDraw.Draw(canvas)
     draw.rectangle((0, 0, 438, height), fill=NEAR_BLACK)
     canvas.alpha_composite(horizontal_gradient((245, height), 248, 0), (438, 0))
-    draw.rectangle((74, 265, 80, 718), fill=YELLOW)
-    place_logo(canvas, logo, 74, 48, 138)
+    draw.rectangle((84, 265, 90, 718), fill=YELLOW)
+    place_logo(canvas, logo, 84, 96, 100)
 
     eyebrow = font(utility_font, 21, weight=700)
     detail = font(utility_font, 27, weight=700)
@@ -223,7 +238,7 @@ def render_cp001_feed(
     draw_button(draw, (96, 787, 412, 863), "GET FREE ACCESS", button)
     draw.text((96, 896), "No card required", font=utility_small, fill=WHITE)
     draw.text((96, 928), "Free through Sept 11", font=utility_small, fill=WHITE)
-    draw.text((96, 1264), "join.onetimeonetime.com", font=utility_small, fill=COOL_GREY)
+    draw.text((96, 1218), "join.onetimeonetime.com", font=utility_small, fill=COOL_GREY)
     return canvas
 
 
@@ -241,7 +256,7 @@ def render_cp002_feed(
     # pixel therefore preserves >= 4.5:1 contrast for the cyan eyebrow.
     canvas.alpha_composite(vertical_gradient((width, 670), 226, 252), (0, 680))
     canvas.alpha_composite(horizontal_gradient((650, height), 86, 0), (0, 0))
-    place_logo(canvas, logo, 74, 42, 142)
+    place_logo(canvas, logo, 84, 96, 142)
     draw = ImageDraw.Draw(canvas)
 
     eyebrow = font(utility_font, 24, weight=700)
@@ -253,30 +268,30 @@ def render_cp002_feed(
 
     draw_spaced_text(
         draw,
-        (76, 730),
+        (84, 730),
         "ONE TIME MISHNAYOS",
         font_value=eyebrow,
         fill=CYAN,
         spacing=2,
     )
-    draw.text((72, 765), "GET FREE", font=headline, fill=WHITE)
-    draw.text((72, 864), "ACCESS", font=headline_emphasis, fill=YELLOW)
-    draw.text((76, 1013), "Live from Eretz Yisrael.", font=support, fill=WHITE)
-    draw.text((76, 1057), "One perek each class day.", font=support, fill=WHITE)
-    draw.rectangle((76, 1121, 1004, 1124), fill="#536671")
+    draw.text((84, 765), "GET FREE", font=headline, fill=WHITE)
+    draw.text((84, 864), "ACCESS", font=headline_emphasis, fill=YELLOW)
+    draw.text((84, 1013), "Live from Eretz Yisrael.", font=support, fill=WHITE)
+    draw.text((84, 1057), "One perek each class day.", font=support, fill=WHITE)
+    draw.rectangle((84, 1121, 996, 1124), fill="#536671")
     draw.text(
-        (76, 1150),
+        (84, 1150),
         "SUNDAY\u2013THURSDAY  \u00b7  7 PM ISRAEL",
         font=utility,
         fill=WHITE,
     )
     draw.text(
-        (76, 1199),
+        (84, 1199),
         "No card required  \u00b7  Free through Sept 11",
         font=utility_small,
         fill=COOL_GREY,
     )
-    draw.text((76, 1265), "join.onetimeonetime.com", font=utility_small, fill=WHITE)
+    draw.text((84, 1230), "join.onetimeonetime.com", font=utility_small, fill=WHITE)
     return canvas
 
 
@@ -295,8 +310,8 @@ def render_cp001_story(
     draw = ImageDraw.Draw(canvas)
     draw.rectangle((0, 0, 430, height), fill=NEAR_BLACK)
     canvas.alpha_composite(horizontal_gradient((260, height), 248, 0), (430, 0))
-    draw.rectangle((72, 395, 80, 1060), fill=YELLOW)
-    place_logo(canvas, logo, 72, 72, 150)
+    draw.rectangle((84, 395, 92, 1060), fill=YELLOW)
+    place_logo(canvas, logo, 84, 144, 150)
 
     eyebrow = font(utility_font, 23, weight=700)
     name = font(utility_font, 24, weight=650)
@@ -339,7 +354,7 @@ def render_cp002_story(
     )
     canvas.alpha_composite(vertical_gradient((width, 1010), 226, 253), (0, 910))
     canvas.alpha_composite(horizontal_gradient((650, height), 82, 0), (0, 0))
-    place_logo(canvas, logo, 72, 70, 150)
+    place_logo(canvas, logo, 84, 144, 150)
     draw = ImageDraw.Draw(canvas)
 
     eyebrow = font(utility_font, 25, weight=700)
@@ -351,30 +366,30 @@ def render_cp002_story(
 
     draw_spaced_text(
         draw,
-        (74, 1060),
+        (84, 1060),
         "ONE TIME MISHNAYOS",
         font_value=eyebrow,
         fill=CYAN,
         spacing=2,
     )
-    draw.text((70, 1100), "GET FREE", font=headline, fill=WHITE)
-    draw.text((70, 1215), "ACCESS", font=emphasis, fill=YELLOW)
-    draw.text((76, 1380), "Live from Eretz Yisrael.", font=support, fill=WHITE)
-    draw.text((76, 1427), "One perek each class day.", font=support, fill=WHITE)
-    draw.rectangle((76, 1497, 1004, 1501), fill="#536671")
+    draw.text((84, 1100), "GET FREE", font=headline, fill=WHITE)
+    draw.text((84, 1215), "ACCESS", font=emphasis, fill=YELLOW)
+    draw.text((84, 1380), "Live from Eretz Yisrael.", font=support, fill=WHITE)
+    draw.text((84, 1427), "One perek each class day.", font=support, fill=WHITE)
+    draw.rectangle((84, 1497, 996, 1501), fill="#536671")
     draw.text(
-        (76, 1532),
+        (84, 1532),
         "SUNDAY\u2013THURSDAY  \u00b7  7 PM ISRAEL",
         font=detail,
         fill=WHITE,
     )
     draw.text(
-        (76, 1582),
+        (84, 1582),
         "No card required  \u00b7  Free through Sept 11",
         font=small,
         fill=COOL_GREY,
     )
-    draw.text((76, 1717), "join.onetimeonetime.com", font=small, fill=WHITE)
+    draw.text((84, 1717), "join.onetimeonetime.com", font=small, fill=WHITE)
     return canvas
 
 
@@ -393,7 +408,7 @@ def render_cp001_social_preview(
     draw = ImageDraw.Draw(canvas)
     draw.rectangle((0, 0, 560, height), fill=NEAR_BLACK)
     canvas.alpha_composite(horizontal_gradient((180, height), 246, 0), (560, 0))
-    place_logo(canvas, logo, 52, 36, 102)
+    place_logo(canvas, logo, 92, 52, 102)
 
     eyebrow = font(utility_font, 18, weight=700)
     headline = font(headline_font, 62)
@@ -404,18 +419,18 @@ def render_cp001_social_preview(
 
     draw_spaced_text(
         draw,
-        (57, 170),
+        (92, 170),
         "LIVE MISHNAYOS",
         font_value=eyebrow,
         fill=CYAN,
         spacing=1,
     )
-    draw.text((54, 204), "CLASSES START", font=headline, fill=WHITE)
-    draw.text((54, 266), "SUNDAY", font=emphasis, fill=YELLOW)
-    draw.text((56, 358), "AUG 16  \u00b7  7 PM ISRAEL", font=detail, fill=WHITE)
-    draw_button(draw, (56, 416, 306, 477), "GET FREE ACCESS", button)
-    draw.text((56, 503), "No card required \u00b7 Free through Sept 11", font=small, fill=COOL_GREY)
-    draw.text((56, 568), "join.onetimeonetime.com", font=small, fill=WHITE)
+    draw.text((92, 204), "CLASSES START", font=headline, fill=WHITE)
+    draw.text((92, 266), "SUNDAY", font=emphasis, fill=YELLOW)
+    draw.text((92, 358), "AUG 16  \u00b7  7 PM ISRAEL", font=detail, fill=WHITE)
+    draw_button(draw, (92, 416, 342, 477), "GET FREE ACCESS", button)
+    draw.text((92, 503), "No card required \u00b7 Free through Sept 11", font=small, fill=COOL_GREY)
+    draw.text((92, 548), "join.onetimeonetime.com", font=small, fill=WHITE)
     return canvas
 
 
@@ -434,7 +449,7 @@ def render_cp002_social_preview(
     draw = ImageDraw.Draw(canvas)
     draw.rectangle((0, 0, 610, height), fill=NEAR_BLACK)
     canvas.alpha_composite(horizontal_gradient((190, height), 246, 0), (610, 0))
-    place_logo(canvas, logo, 52, 36, 102)
+    place_logo(canvas, logo, 92, 52, 102)
 
     eyebrow = font(utility_font, 18, weight=700)
     headline = font(headline_font, 66)
@@ -445,24 +460,24 @@ def render_cp002_social_preview(
 
     draw_spaced_text(
         draw,
-        (56, 166),
+        (92, 166),
         "ONE TIME MISHNAYOS",
         font_value=eyebrow,
         fill=CYAN,
         spacing=1,
     )
-    draw.text((52, 202), "GET FREE", font=headline, fill=WHITE)
-    draw.text((52, 267), "ACCESS", font=emphasis, fill=YELLOW)
-    draw.text((56, 358), "Live from Eretz Yisrael.", font=support, fill=WHITE)
-    draw.text((56, 392), "One perek each class day.", font=support, fill=WHITE)
+    draw.text((92, 202), "GET FREE", font=headline, fill=WHITE)
+    draw.text((92, 267), "ACCESS", font=emphasis, fill=YELLOW)
+    draw.text((92, 358), "Live from Eretz Yisrael.", font=support, fill=WHITE)
+    draw.text((92, 392), "One perek each class day.", font=support, fill=WHITE)
     draw.text(
-        (56, 450),
+        (92, 450),
         "SUNDAY\u2013THURSDAY  \u00b7  7 PM ISRAEL",
         font=detail,
         fill=WHITE,
     )
-    draw.text((56, 492), "No card required \u00b7 Free through Sept 11", font=small, fill=COOL_GREY)
-    draw.text((56, 568), "join.onetimeonetime.com", font=small, fill=WHITE)
+    draw.text((92, 492), "No card required \u00b7 Free through Sept 11", font=small, fill=COOL_GREY)
+    draw.text((92, 548), "join.onetimeonetime.com", font=small, fill=WHITE)
     return canvas
 
 
@@ -501,6 +516,36 @@ def save_png(
 ) -> dict[str, object]:
     path.parent.mkdir(parents=True, exist_ok=True)
     image.convert("RGB").save(path, format="PNG", optimize=True)
+    safe_x = (image.width * SAFE_ZONE_PERCENT + 99) // 100
+    safe_y = (image.height * SAFE_ZONE_PERCENT + 99) // 100
+    bounds = FOREGROUND_BOUNDS[asset_id]
+    safe_zone: dict[str, object]
+    if bounds is None:
+        safe_zone = {
+            "applicable": False,
+            "ratio": SAFE_ZONE_RATIO,
+            "reason": "text-free background; no logo, copy, CTA, rule, or URL",
+        }
+    else:
+        left, top, right, bottom = bounds
+        safe_zone = {
+            "applicable": True,
+            "ratio": SAFE_ZONE_RATIO,
+            "inset_x_px": safe_x,
+            "inset_y_px": safe_y,
+            "foreground_bounds": {
+                "left": left,
+                "top": top,
+                "right": right,
+                "bottom": bottom,
+            },
+            "pass": (
+                left >= safe_x
+                and top >= safe_y
+                and right <= image.width - safe_x
+                and bottom <= image.height - safe_y
+            ),
+        }
     return {
         "asset_id": asset_id,
         "concept_id": concept_id,
@@ -511,6 +556,7 @@ def save_png(
         "height": image.height,
         "bytes": path.stat().st_size,
         "sha256": sha256(path),
+        "safe_zone": safe_zone,
     }
 
 
@@ -564,6 +610,19 @@ def build_contact_sheet(
             font=detail_font,
             fill="#495761",
         )
+        if record["safe_zone"]["applicable"]:
+            inset_x = (preview.width * SAFE_ZONE_PERCENT + 99) // 100
+            inset_y = (preview.height * SAFE_ZONE_PERCENT + 99) // 100
+            draw.rectangle(
+                (
+                    px + inset_x,
+                    py + inset_y,
+                    px + preview.width - inset_x,
+                    py + preview.height - inset_y,
+                ),
+                outline="#00A7C7",
+                width=2,
+            )
     target.parent.mkdir(parents=True, exist_ok=True)
     sheet.save(target, format="PNG", optimize=True)
     return {
@@ -579,7 +638,7 @@ def build_contact_sheet(
 def build_phone_proof(
     story_paths: list[Path], landing_mobile_path: Path, target: Path, utility_font: Path
 ) -> dict[str, object]:
-    width, height = 1600, 1350
+    width, height = 1800, 1450
     sheet = Image.new("RGB", (width, height), "#E8ECEE")
     draw = ImageDraw.Draw(sheet)
     title_font = font(utility_font, 31, weight=750)
@@ -588,7 +647,7 @@ def build_phone_proof(
     draw.text((80, 50), "PHONE VISUAL PROOF", font=title_font, fill="#111820")
     draw.text(
         (80, 95),
-        "390x844 viewport simulation - key copy remains inside the central safe area",
+        "Exact 390x844 content viewport - key copy remains inside the 7% asset safe zone",
         font=detail_font,
         fill="#495761",
     )
@@ -598,11 +657,11 @@ def build_phone_proof(
         (story_paths[1], "CP-002 STORY / REEL"),
         (landing_mobile_path, "LANDING MOBILE BG"),
     ]
-    x_positions = (80, 605, 1130)
+    x_positions = (80, 680, 1280)
     for index, ((path, label), x) in enumerate(zip(previews, x_positions)):
-        outer = (x, 170, x + 390, 1080)
+        outer = (x, 170, x + 440, 1154)
         draw.rounded_rectangle(outer, radius=56, fill="#090B0D")
-        viewport_box = (x + 15, 215, x + 375, 1015)
+        viewport_box = (x + 25, 240, x + 415, 1084)
         image = Image.open(path).convert("RGB")
         viewport_size = (
             viewport_box[2] - viewport_box[0],
@@ -635,13 +694,13 @@ def build_phone_proof(
         mask_draw = ImageDraw.Draw(mask)
         mask_draw.rounded_rectangle((0, 0, *viewport.size), radius=34, fill=255)
         sheet.paste(viewport, (viewport_box[0], viewport_box[1]), mask)
-        draw.rounded_rectangle((x + 145, 184, x + 245, 198), radius=7, fill="#24282C")
-        draw.rounded_rectangle((x + 135, 1040, x + 255, 1048), radius=4, fill="#5D646A")
+        draw.rounded_rectangle((x + 170, 188, x + 270, 202), radius=7, fill="#24282C")
+        draw.rounded_rectangle((x + 160, 1112, x + 280, 1120), radius=4, fill="#5D646A")
         label_box = draw.textbbox((0, 0), label, font=label_font)
         label_width = label_box[2] - label_box[0]
-        draw.text((x + (390 - label_width) / 2, 1122), label, font=label_font, fill="#111820")
+        draw.text((x + (440 - label_width) / 2, 1195), label, font=label_font, fill="#111820")
         draw.text(
-            (x + 38, 1166),
+            (x + 58, 1238),
             "Draft only - no provider effect",
             font=detail_font,
             fill="#495761",
@@ -655,6 +714,7 @@ def build_phone_proof(
         "height": height,
         "bytes": target.stat().st_size,
         "sha256": sha256(target),
+        "content_viewport": {"width": 390, "height": 844},
     }
 
 

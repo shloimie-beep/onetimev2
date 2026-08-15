@@ -21,8 +21,21 @@
       "filename": "OTM-CP-001-feed-1080x1350.png",
       "width": 1080,
       "height": 1350,
-      "bytes": 603034,
-      "sha256": "d408e2bdbfb8610f60dc21c6257a5bc00a53bfed8bb20a8f192816ca8025fd6e"
+      "bytes": 599753,
+      "sha256": "298ec99d40a1654205ad8447055f320bb65b111d5c1a00768c45b42d191d810d",
+      "safe_zone": {
+        "applicable": true,
+        "ratio": 0.07,
+        "inset_x_px": 76,
+        "inset_y_px": 95,
+        "foreground_bounds": {
+          "left": 82,
+          "top": 96,
+          "right": 500,
+          "bottom": 1248
+        },
+        "pass": true
+      }
     },
     {
       "asset_id": "OTM-A000005",
@@ -32,8 +45,21 @@
       "filename": "OTM-CP-001-story-reel-1080x1920.png",
       "width": 1080,
       "height": 1920,
-      "bytes": 765410,
-      "sha256": "8122f23181850f39dcb2114ccd2a9b6c37dfbd40e9d6d15b94d14c7f1b542d99"
+      "bytes": 766044,
+      "sha256": "3f14ca89837083ef1e7852b9a88198ce593ad1af2e3b71421ae95a7abd42e72b",
+      "safe_zone": {
+        "applicable": true,
+        "ratio": 0.07,
+        "inset_x_px": 76,
+        "inset_y_px": 135,
+        "foreground_bounds": {
+          "left": 84,
+          "top": 144,
+          "right": 600,
+          "bottom": 1746
+        },
+        "pass": true
+      }
     },
     {
       "asset_id": "OTM-A000007",
@@ -43,8 +69,21 @@
       "filename": "OTM-CP-001-social-preview-1200x630.png",
       "width": 1200,
       "height": 630,
-      "bytes": 370860,
-      "sha256": "e5d86e9a2fa907d58d705d139efaf065b32bacc9d82fd0ea697649b1aed793ed"
+      "bytes": 370129,
+      "sha256": "8ec571d22fa5c759dc6833a17a13dbee90f01a9d36c71d94e841143c22480958",
+      "safe_zone": {
+        "applicable": true,
+        "ratio": 0.07,
+        "inset_x_px": 84,
+        "inset_y_px": 45,
+        "foreground_bounds": {
+          "left": 92,
+          "top": 52,
+          "right": 570,
+          "bottom": 573
+        },
+        "pass": true
+      }
     },
     {
       "asset_id": "OTM-A000004",
@@ -54,8 +93,21 @@
       "filename": "OTM-CP-002-feed-1080x1350.png",
       "width": 1080,
       "height": 1350,
-      "bytes": 633184,
-      "sha256": "be0569bdcda1ac5ae5e603927ac54084838a2f10e5d76590f9654c91c2c1adfc"
+      "bytes": 632154,
+      "sha256": "757da3865ad36f01511dc162607f91c38e87d9af64a2a18c5769f7cdee2f79ec",
+      "safe_zone": {
+        "applicable": true,
+        "ratio": 0.07,
+        "inset_x_px": 76,
+        "inset_y_px": 95,
+        "foreground_bounds": {
+          "left": 84,
+          "top": 96,
+          "right": 996,
+          "bottom": 1254
+        },
+        "pass": true
+      }
     },
     {
       "asset_id": "OTM-A000006",
@@ -65,8 +117,21 @@
       "filename": "OTM-CP-002-story-reel-1080x1920.png",
       "width": 1080,
       "height": 1920,
-      "bytes": 798972,
-      "sha256": "5b5cb4fb2a192db53fd3ff2247f158a4c8a38d4df91145a72af4a0cd4085a3f4"
+      "bytes": 799804,
+      "sha256": "7207df6abec243646c04d6418593f194436e52e4a95cd64570e23192ea60a023",
+      "safe_zone": {
+        "applicable": true,
+        "ratio": 0.07,
+        "inset_x_px": 76,
+        "inset_y_px": 135,
+        "foreground_bounds": {
+          "left": 84,
+          "top": 144,
+          "right": 996,
+          "bottom": 1747
+        },
+        "pass": true
+      }
     },
     {
       "asset_id": "OTM-A000008",
@@ -76,8 +141,21 @@
       "filename": "OTM-CP-002-social-preview-1200x630.png",
       "width": 1200,
       "height": 630,
-      "bytes": 348523,
-      "sha256": "bcccaff3d1dc3bacc38fb45a3dbc2d83f989e85f4651a3807282c1d74d266c11"
+      "bytes": 347703,
+      "sha256": "fa282200c0f40e2c42195794b5df1904b29e23c0b29736a832f0804d2e1fa0ac",
+      "safe_zone": {
+        "applicable": true,
+        "ratio": 0.07,
+        "inset_x_px": 84,
+        "inset_y_px": 45,
+        "foreground_bounds": {
+          "left": 92,
+          "top": 52,
+          "right": 600,
+          "bottom": 573
+        },
+        "pass": true
+      }
     },
     {
       "asset_id": "OTM-A000009",
@@ -88,7 +166,12 @@
       "width": 1600,
       "height": 900,
       "bytes": 565925,
-      "sha256": "dd899a4f9f5308f6efe18c8a45045a147d98c76cd8d1929f9023878cb123e7ea"
+      "sha256": "dd899a4f9f5308f6efe18c8a45045a147d98c76cd8d1929f9023878cb123e7ea",
+      "safe_zone": {
+        "applicable": false,
+        "ratio": 0.07,
+        "reason": "text-free background; no logo, copy, CTA, rule, or URL"
+      }
     },
     {
       "asset_id": "OTM-A000010",
@@ -99,7 +182,12 @@
       "width": 1080,
       "height": 1600,
       "bytes": 921432,
-      "sha256": "a10e151cd30a2582c3c34fa512dd6928005a76aa0f0ff3a2b99e97789a22d238"
+      "sha256": "a10e151cd30a2582c3c34fa512dd6928005a76aa0f0ff3a2b99e97789a22d238",
+      "safe_zone": {
+        "applicable": false,
+        "ratio": 0.07,
+        "reason": "text-free background; no logo, copy, CTA, rule, or URL"
+      }
     }
   ],
   "visual_proof": {
@@ -108,16 +196,20 @@
       "filename": "first-wave-contact-sheet.png",
       "width": 2460,
       "height": 2580,
-      "bytes": 1457248,
-      "sha256": "2cd4040389d94e8817f8c9fef7205dbaae2fd80a093f2b63dbe6af4fc78527d7"
+      "bytes": 1449133,
+      "sha256": "d30728cdb94c18d16383511c93a1bd6a4cd15b2d58b9e423c334077e88506c58"
     },
     "phone": {
       "relative_path": "visual-proof/first-wave-phone-proof.png",
       "filename": "first-wave-phone-proof.png",
-      "width": 1600,
-      "height": 1350,
-      "bytes": 629941,
-      "sha256": "9f4f67c1ad9ef1e604bb44cee81a9a829c60f9272c547f24e384b2184292ec09"
+      "width": 1800,
+      "height": 1450,
+      "bytes": 704195,
+      "sha256": "2d63751ce884257bb1aa6f853d7179c55d1a5a08b132df5859d4b6c24940e727",
+      "content_viewport": {
+        "width": 390,
+        "height": 844
+      }
     }
   },
   "contrast": {
