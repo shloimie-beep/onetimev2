@@ -17,6 +17,7 @@ import {
 } from '../../../packages/domain/src/accounts/lifecycle.ts';
 import { hashAuthPassword } from '../../../packages/domain/src/auth/policy.ts';
 import {
+  CONTROLLER_DUAL_ROLE_APPLY_STAGES,
   isIsolatedPostgresServerAddress,
   isNativeDisposablePostgresTarget,
   runDualRoleAdultProvision,
@@ -173,6 +174,32 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
 
       const config = nativeConfig();
       const manifest = privateManifest();
+      const beforeFailures = await cardinalities(pool);
+      for (const stage of CONTROLLER_DUAL_ROLE_APPLY_STAGES) {
+        let setupCalls = 0;
+        const failure = await runDualRoleAdultProvision({
+          manifest,
+          apply: true,
+          authorizationPhrase: AUTHORIZATION,
+          pool,
+          config,
+          now: PROVISION_AT,
+          testOnlyAllowIsolatedApply: true,
+          testOnlyFailApplyStage: stage,
+          issuePasswordReset: async () => {
+            setupCalls += 1;
+            throw new Error('Setup must not run after identity failure.');
+          },
+        });
+        expect(failure).toMatchObject({
+          status: 'blocked',
+          blockers: [`apply_identity_${stage}_failed`],
+          identity: { disposition: 'absent', adult_rows: 0 },
+          setup_delivery: { token_rows: 0, intent_rows: 0, outbox_rows: 0 },
+        });
+        expect(setupCalls).toBe(0);
+        await expect(cardinalities(pool)).resolves.toEqual(beforeFailures);
+      }
       let proofToken: string | undefined;
       const apply = () =>
         runDualRoleAdultProvision({
@@ -202,9 +229,12 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
         memberships: 2,
         households: 1,
         canonicalTransitions: 2,
+        canonicalStates: 2,
+        portalHouseholds: 1,
         accessSources: 1,
         accessProjections: 1,
         accessEvents: 1,
+        audits: 2,
         setupTokens: 1,
         setupIntents: 1,
         setupOutbox: 1,
@@ -351,7 +381,7 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
       if (ownsSchema) await pool.query('DROP SCHEMA IF EXISTS onetime CASCADE');
       await pool.end();
     }
-  }, 90_000);
+  }, 120_000);
 });
 
 function nativeConfig() {
@@ -475,9 +505,12 @@ async function cardinalities(pool: DbPool) {
     memberships: await count(pool, 'v21_human_account_role_memberships'),
     households: await count(pool, 'v21_households'),
     canonicalTransitions: await count(pool, 'canonical_state_transition_events'),
+    canonicalStates: await count(pool, 'canonical_aggregate_states'),
+    portalHouseholds: await count(pool, 'portal_households'),
     accessSources: await count(pool, 'account_access_source_states'),
     accessProjections: await count(pool, 'account_access_projections'),
     accessEvents: await count(pool, 'account_access_events'),
+    audits: await count(pool, 'account_lifecycle_audit_events'),
     setupTokens: await count(pool, 'account_lifecycle_tokens'),
     setupIntents: await count(pool, 'account_lifecycle_delivery_intents'),
     setupOutbox: await count(pool, 'account_lifecycle_delivery_outbox'),

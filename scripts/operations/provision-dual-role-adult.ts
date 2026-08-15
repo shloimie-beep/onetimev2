@@ -38,6 +38,55 @@ const SETUP_TOKEN_TTL_MINUTES = 60;
 const AUTHORIZATION_ENV = 'ONE_TIME_DUAL_ROLE_PROVISION_AUTHORIZATION';
 const SCHEMA = CONTROLLER_DUAL_ROLE_PROVISIONING_SCHEMA;
 
+export const CONTROLLER_DUAL_ROLE_APPLY_STAGES = [
+  'transaction_begin',
+  'advisory_lock',
+  'locked_preflight',
+  'adult_identity_insert',
+  'human_account_insert',
+  'role_memberships_insert',
+  'family_household_insert',
+  'credential_hash',
+  'adult_credential_insert',
+  'human_transition_insert',
+  'access_transition_insert',
+  'portal_household_insert',
+  'access_projection_apply',
+  'provision_audit_insert',
+  'transactional_readback',
+  'transaction_commit',
+] as const;
+
+export type ControllerDualRoleApplyStage = (typeof CONTROLLER_DUAL_ROLE_APPLY_STAGES)[number];
+
+const APPLY_TABLE_CONTRACT = [
+  { name: 'v21_adult_identities', update: false },
+  { name: 'v21_human_accounts', update: false },
+  { name: 'v21_human_account_role_memberships', update: false },
+  { name: 'v21_households', update: false },
+  { name: 'v21_adult_credentials', update: false },
+  { name: 'canonical_state_transition_events', update: false },
+  { name: 'canonical_aggregate_states', update: true },
+  { name: 'portal_households', update: false },
+  { name: 'account_access_source_states', update: true },
+  { name: 'account_access_projections', update: true },
+  { name: 'account_access_events', update: false },
+  { name: 'account_lifecycle_audit_events', update: false },
+  { name: 'account_lifecycle_tokens', update: true },
+  { name: 'account_lifecycle_delivery_intents', update: false },
+  { name: 'account_lifecycle_delivery_outbox', update: true },
+] as const;
+
+class ControllerDualRoleApplyStageError extends Error {
+  readonly blocker: `apply_identity_${ControllerDualRoleApplyStage}_failed`;
+
+  constructor(stage: ControllerDualRoleApplyStage) {
+    super('The controller identity transaction failed at a classified stage.');
+    this.name = 'ControllerDualRoleApplyStageError';
+    this.blocker = `apply_identity_${stage}_failed`;
+  }
+}
+
 export function isCanonicalControllerResetOrigin(value: string) {
   return value === CANONICAL_APPLICATION_ORIGIN || value === `${CANONICAL_APPLICATION_ORIGIN}/`;
 }
@@ -178,6 +227,8 @@ export type DualRoleAdultProvisionReport = {
     strict_private_manifest: true;
     exact_source_and_runtime_required: true;
     ephemeral_authorization_required_for_apply: true;
+    read_only_apply_prerequisite_check: true;
+    sanitized_stage_failure_reporting: true;
     advisory_transaction_lock: true;
     one_adult_credential: true;
     no_legacy_adult: true;
@@ -204,6 +255,8 @@ export type DualRoleAdultProvisionOptions = {
   testOnlyAllowIsolatedApply?: boolean;
   /** Tests may wrap the real lifecycle function to capture a local proof token. */
   issuePasswordReset?: typeof requestControllerDualRoleInitialPasswordSetup;
+  /** Tests only. The CLI has no failure-injection flag. */
+  testOnlyFailApplyStage?: ControllerDualRoleApplyStage;
 };
 
 type TargetKeys = ReturnType<typeof targetKeys>;
@@ -242,6 +295,13 @@ export async function runDualRoleAdultProvision(
     blockers.push(...initial.blockers);
     const initialSetup = await inspectSetup(pool, config, manifest, keys, now);
     if (initialSetup.blockers.length) blockers.push(...initialSetup.blockers);
+    const prerequisiteInspectionAllowed =
+      blockers.length === 0 ||
+      (apply &&
+        blockers.every((blocker): boolean => blocker === 'ephemeral_authorization_missing'));
+    if (prerequisiteInspectionAllowed) {
+      blockers.push(...(await applyPrerequisiteBlockers(pool, manifest, keys, initial)));
+    }
     if (blockers.length) {
       return report(now, apply, 'blocked', blockers, initial, initialSetup);
     }
@@ -258,7 +318,32 @@ export async function runDualRoleAdultProvision(
       );
     }
 
-    const created = await applyIdentity(pool, config, manifest, keys, now);
+    let created: boolean;
+    try {
+      created = await applyIdentity(
+        pool,
+        config,
+        manifest,
+        keys,
+        now,
+        isolatedSyntheticTestTarget ? options.testOnlyFailApplyStage : undefined,
+      );
+    } catch (error) {
+      const failureBlocker =
+        error instanceof ControllerDualRoleApplyStageError
+          ? error.blocker
+          : 'apply_identity_unclassified_failure';
+      return reconcileFailedIdentityApply(
+        pool,
+        config,
+        manifest,
+        keys,
+        now,
+        failureBlocker,
+        initial,
+        initialSetup,
+      );
+    }
     const identity = await inspectIdentity(pool, config, manifest, keys, now);
     if (identity.disposition !== 'exact_replay' || identity.blockers.length) {
       return report(now, true, 'blocked', identity.blockers, identity, initialSetup);
@@ -334,7 +419,8 @@ function envelopeBlockers(
       options.pool !== undefined ||
       options.config !== undefined ||
       options.issuePasswordReset !== undefined ||
-      options.testOnlyAllowIsolatedApply !== undefined)
+      options.testOnlyAllowIsolatedApply !== undefined ||
+      options.testOnlyFailApplyStage !== undefined)
   ) {
     blockers.push('production_injection_seam_forbidden');
   }
@@ -550,6 +636,217 @@ function transactionalEmailBlockers(config: AppConfig) {
   return blockers;
 }
 
+async function applyPrerequisiteBlockers(
+  pool: DbPool,
+  manifest: Manifest,
+  keys: TargetKeys,
+  initial: IdentityInspection,
+) {
+  const blockers: string[] = [];
+  try {
+    const catalog = await pool.query(
+      `/* controller_dual_role_apply_catalog_prerequisite */
+       SELECT tables.relname AS table_name,
+              pg_get_userbyid(tables.relowner) = current_user AS owned_by_runtime,
+              NOT tables.relrowsecurity AND NOT tables.relforcerowsecurity AS rls_disabled,
+              has_table_privilege(tables.oid, 'SELECT') AS can_select,
+              has_table_privilege(tables.oid, 'INSERT') AS can_insert,
+              has_table_privilege(tables.oid, 'UPDATE') AS can_update
+         FROM pg_catalog.pg_class AS tables
+         JOIN pg_catalog.pg_namespace AS namespaces
+           ON namespaces.oid=tables.relnamespace
+        WHERE namespaces.nspname='onetime'
+          AND tables.relkind IN ('r','p')
+          AND tables.relname=ANY($1::text[])`,
+      [APPLY_TABLE_CONTRACT.map((entry) => entry.name)],
+    );
+    const byName = new Map(
+      catalog.rows.map((row) => [String(row.table_name), row as Record<string, unknown>]),
+    );
+    if (
+      byName.size !== APPLY_TABLE_CONTRACT.length ||
+      APPLY_TABLE_CONTRACT.some((entry) => {
+        const row = byName.get(entry.name);
+        return !row || row.owned_by_runtime !== true || row.rls_disabled !== true;
+      })
+    ) {
+      blockers.push('apply_prerequisite_table_contract_mismatch');
+    }
+    if (
+      APPLY_TABLE_CONTRACT.some((entry) => {
+        const row = byName.get(entry.name);
+        return (
+          !row ||
+          row.can_select !== true ||
+          row.can_insert !== true ||
+          (entry.update && row.can_update !== true)
+        );
+      })
+    ) {
+      blockers.push('apply_prerequisite_privilege_contract_mismatch');
+    }
+
+    const trigger = await pool.query(
+      `/* controller_dual_role_apply_trigger_prerequisite */
+       SELECT count(*)::integer AS count
+         FROM pg_catalog.pg_trigger AS triggers
+         JOIN pg_catalog.pg_class AS tables ON tables.oid=triggers.tgrelid
+         JOIN pg_catalog.pg_namespace AS table_namespaces
+           ON table_namespaces.oid=tables.relnamespace
+         JOIN pg_catalog.pg_proc AS functions ON functions.oid=triggers.tgfoid
+         JOIN pg_catalog.pg_namespace AS function_namespaces
+           ON function_namespaces.oid=functions.pronamespace
+        WHERE table_namespaces.nspname='onetime'
+          AND tables.relname='canonical_state_transition_events'
+          AND triggers.tgname='canonical_state_transition_apply'
+          AND triggers.tgtype=(1 | 2 | 4) /* ROW | BEFORE | INSERT */
+          AND triggers.tgenabled IN ('O','A')
+          AND NOT triggers.tgisinternal
+          AND function_namespaces.nspname='onetime'
+          AND functions.proname='apply_canonical_state_transition'`,
+    );
+    if (Number(trigger.rows[0]?.count ?? 0) !== 1) {
+      blockers.push('apply_prerequisite_trigger_contract_mismatch');
+    }
+  } catch {
+    blockers.push('apply_prerequisite_catalog_unavailable');
+  }
+
+  if (initial.disposition === 'absent') {
+    try {
+      if ((await targetKeyCollisionCount(pool, manifest, keys)) !== 0) {
+        blockers.push('apply_prerequisite_target_key_collision');
+      }
+    } catch {
+      blockers.push('apply_prerequisite_key_check_unavailable');
+    }
+  }
+  return [...new Set(blockers)];
+}
+
+async function targetKeyCollisionCount(db: Queryable, manifest: Manifest, keys: TargetKeys) {
+  const counts = await Promise.all([
+    countQuery(
+      db,
+      `SELECT count(*)::integer AS count FROM onetime.v21_adult_identities
+        WHERE adult_id=$1 OR normalized_email=$2`,
+      [keys.adultId, manifest.adult.email],
+    ),
+    countQuery(
+      db,
+      `SELECT count(*)::integer AS count FROM onetime.v21_human_accounts
+        WHERE human_account_id=$1 OR adult_id=$2`,
+      [keys.humanAccountId, keys.adultId],
+    ),
+    countQuery(
+      db,
+      `SELECT count(*)::integer AS count FROM onetime.v21_human_account_role_memberships
+        WHERE human_account_id=$1`,
+      [keys.humanAccountId],
+    ),
+    countQuery(
+      db,
+      `SELECT count(*)::integer AS count FROM onetime.v21_households
+        WHERE household_id=$1 OR owner_adult_id=$2 OR owner_human_account_id=$3`,
+      [keys.householdId, keys.adultId, keys.humanAccountId],
+    ),
+    countQuery(
+      db,
+      `SELECT count(*)::integer AS count FROM onetime.v21_adult_credentials
+        WHERE human_account_id=$1 OR adult_id=$2`,
+      [keys.humanAccountId, keys.adultId],
+    ),
+    countQuery(
+      db,
+      `SELECT count(*)::integer AS count FROM onetime.canonical_state_transition_events
+        WHERE transition_key IN ($1,$2)`,
+      [keys.humanTransitionKey, keys.accessTransitionKey],
+    ),
+    countQuery(
+      db,
+      `SELECT count(*)::integer AS count FROM onetime.canonical_aggregate_states
+        WHERE (aggregate_kind='human_account' AND aggregate_key=$1)
+           OR (aggregate_kind='access' AND aggregate_key=$2)`,
+      [keys.humanAccountId, keys.householdId],
+    ),
+    countQuery(
+      db,
+      `SELECT count(*)::integer AS count FROM onetime.portal_households
+        WHERE household_key=$1
+           OR (account_key=$2 AND product_key=$3 AND household_key=$1)`,
+      [keys.householdId, manifest.scope.account_key, manifest.scope.product_key],
+    ),
+    countQuery(
+      db,
+      `SELECT count(*)::integer AS count FROM onetime.account_access_source_states
+        WHERE source_state_key=$1
+           OR (account_key=$2 AND product_key=$3 AND household_key=$4
+               AND source_slot='complimentary')
+           OR opaque_source_reference=$5`,
+      [
+        keys.accessSourceStateKey,
+        manifest.scope.account_key,
+        manifest.scope.product_key,
+        keys.householdId,
+        keys.accessSourceReference,
+      ],
+    ),
+    countQuery(
+      db,
+      `SELECT count(*)::integer AS count FROM onetime.account_access_projections
+        WHERE access_key=$1
+           OR (account_key=$2 AND product_key=$3 AND household_key=$4)
+           OR opaque_source_reference=$5`,
+      [
+        keys.accessProjectionKey,
+        manifest.scope.account_key,
+        manifest.scope.product_key,
+        keys.householdId,
+        keys.accessSourceReference,
+      ],
+    ),
+    countQuery(
+      db,
+      `SELECT count(*)::integer AS count FROM onetime.account_access_events
+        WHERE event_key=$1
+           OR (account_key=$2 AND product_key=$3 AND idempotency_key=$4)
+           OR source_reference_digest=$5`,
+      [
+        keys.accessEventKey,
+        manifest.scope.account_key,
+        manifest.scope.product_key,
+        keys.accessIdempotencyKey,
+        keys.accessSourceReferenceDigest,
+      ],
+    ),
+    countQuery(
+      db,
+      `SELECT count(*)::integer AS count FROM onetime.account_lifecycle_audit_events
+        WHERE audit_key=$1`,
+      [keys.auditKey],
+    ),
+    countQuery(
+      db,
+      `SELECT count(*)::integer AS count FROM onetime.account_lifecycle_tokens
+        WHERE token_key=$1 OR subject_human_account_id=$2 OR email_normalized=$3`,
+      [keys.setupTokenKey, keys.humanAccountId, manifest.adult.email],
+    ),
+    countQuery(
+      db,
+      `SELECT count(*)::integer AS count FROM onetime.account_lifecycle_delivery_intents
+        WHERE intent_key=$1 OR idempotency_key=$2 OR recipient_email=$3`,
+      [keys.setupIntentKey, keys.setupIdempotencyKey, manifest.adult.email],
+    ),
+    countQuery(
+      db,
+      `SELECT count(*)::integer AS count FROM onetime.account_lifecycle_delivery_outbox
+        WHERE delivery_key=$1 OR idempotency_key=$2 OR destination_ref=$3`,
+      [keys.setupDeliveryKey, keys.setupIdempotencyKey, keys.setupDestinationRef],
+    ),
+  ]);
+  return counts.reduce((total, count) => total + count, 0);
+}
+
 function targetKeys(manifest: Manifest) {
   const parts = [
     manifest.scope.account_key,
@@ -586,6 +883,8 @@ function targetKeys(manifest: Manifest) {
     normalizedEmail: manifest.adult.email,
   };
   const setupIdempotencyKey = controllerDualRoleSetupIdempotencyKey(policyScope);
+  const accessIdempotencyKey = controllerDualRoleAccessIdempotencyKey(householdId);
+  const accessSourceReference = controllerDualRoleAccessSourceReference(householdId);
   const setupTokenKey = stableKey('account_lifecycle_token', [
     manifest.scope.account_key,
     manifest.scope.product_key,
@@ -600,6 +899,25 @@ function targetKeys(manifest: Manifest) {
     accessTransitionKey: stableKey('canonical_transition', [...parts, 'access_free']),
     auditKey: controllerDualRoleProvisionAuditKey(policyScope),
     canonicalRequestHash,
+    accessIdempotencyKey,
+    accessEventKey: stableKey('account_access_event', [
+      manifest.scope.account_key,
+      manifest.scope.product_key,
+      accessIdempotencyKey,
+    ]),
+    accessSourceStateKey: stableKey('account_access_source', [
+      manifest.scope.account_key,
+      manifest.scope.product_key,
+      householdId,
+      'complimentary',
+    ]),
+    accessProjectionKey: stableKey('account_access', [
+      manifest.scope.account_key,
+      manifest.scope.product_key,
+      householdId,
+    ]),
+    accessSourceReference,
+    accessSourceReferenceDigest: sha256(accessSourceReference),
     setupIdempotencyKey,
     setupTokenKey,
     setupIntentKey: stableKey('account_lifecycle_delivery', [
@@ -1286,156 +1604,198 @@ async function applyIdentity(
   manifest: Manifest,
   keys: TargetKeys,
   now: Date,
+  testOnlyFailStage?: ControllerDualRoleApplyStage,
 ) {
-  return inTransaction(pool, async (db) => {
-    await db.query('SELECT pg_advisory_xact_lock(hashtext($1))', [
-      `dual-role-adult-provision:${manifest.adult.email}`,
-    ]);
-    const locked = await inspectIdentity(db, config, manifest, keys, now);
-    if (locked.disposition === 'exact_replay') return false;
-    if (locked.disposition !== 'absent') throw new Error('Target identity preflight changed.');
-    const scope = [
-      manifest.scope.product_key,
-      manifest.scope.runtime_tier,
-      manifest.scope.verification_environment_id,
-    ] as const;
-    const occurredAt = now.toISOString();
-    await exactlyOne(
-      db,
-      `INSERT INTO onetime.v21_adult_identities
-         (adult_id, normalized_email, display_name, state, version, product_key,
-          runtime_tier, verification_environment_id, created_at, updated_at)
-       VALUES ($1,$2,$3,'active',1,$4,$5,$6,$7,$7)`,
-      [keys.adultId, manifest.adult.email, manifest.adult.display_name, ...scope, occurredAt],
-      'adult identity',
-    );
-    await exactlyOne(
-      db,
-      `INSERT INTO onetime.v21_human_accounts
-         (human_account_id, adult_id, state, security_version, version, product_key,
-          runtime_tier, verification_environment_id, created_at, updated_at)
-       VALUES ($1,$2,'active',1,1,$3,$4,$5,$6,$6)`,
-      [keys.humanAccountId, keys.adultId, ...scope, occurredAt],
-      'HumanAccount',
-    );
-    await exactlyOne(
-      db,
-      `INSERT INTO onetime.v21_human_account_role_memberships
-         (human_account_id, role, granted_at, granted_reason, product_key,
-          runtime_tier, verification_environment_id)
-       VALUES ($1,'admin',$2,$3,$4,$5,$6),($1,'parent',$2,$3,$4,$5,$6)`,
-      [keys.humanAccountId, occurredAt, CONTROLLER_DUAL_ROLE_PROVISIONING_ACTOR, ...scope],
-      'dual-role memberships',
-      2,
-    );
-    await exactlyOne(
-      db,
-      `INSERT INTO onetime.v21_households
-         (household_id, owner_adult_id, owner_human_account_id, classification,
-          state, seat_limit, active_seat_count, access_aggregate_ref, version,
-          product_key, runtime_tier, verification_environment_id, created_at, updated_at)
-       VALUES ($1,$2,$3,'family','active',3,0,$4,1,$5,$6,$7,$8,$8)`,
-      [
-        keys.householdId,
-        keys.adultId,
-        keys.humanAccountId,
-        `access:${keys.householdId}`,
-        ...scope,
-        occurredAt,
-      ],
-      'Family household',
-    );
-    await exactlyOne(
-      db,
-      `INSERT INTO onetime.v21_adult_credentials
-         (human_account_id, adult_id, credential_kind, password_hash,
-          credential_state, credential_version, product_key, runtime_tier,
-          verification_environment_id, created_at, updated_at)
-       VALUES ($1,$2,'adult_email_password',$3,'reset_required',1,$4,$5,$6,$7,$7)`,
-      [
-        keys.humanAccountId,
-        keys.adultId,
-        hashAuthPassword(randomBytes(48).toString('base64url')),
-        ...scope,
-        occurredAt,
-      ],
-      'adult credential',
-    );
-    await insertCanonicalCreation(db, {
-      transitionKey: keys.humanTransitionKey,
-      aggregateKind: 'human_account',
-      aggregateKey: keys.humanAccountId,
-      nextState: 'active',
-      accessCause: null,
-      manifest,
-      requestHash: keys.canonicalRequestHash,
-      occurredAt,
-    });
-    await insertCanonicalCreation(db, {
-      transitionKey: keys.accessTransitionKey,
-      aggregateKind: 'access',
-      aggregateKey: keys.householdId,
-      nextState: 'free',
-      accessCause: 'free_period',
-      manifest,
-      requestHash: keys.canonicalRequestHash,
-      occurredAt,
-    });
-    await exactlyOne(
-      db,
-      `INSERT INTO onetime.portal_households
-         (household_key, account_key, product_key, display_name, status, version,
-          created_at, updated_at)
-       VALUES ($1,$2,$3,$4,'active',1,$5,$5)`,
-      [
-        keys.householdId,
-        config.accountKey,
-        config.productKey,
-        manifest.adult.household_display_name,
-        occurredAt,
-      ],
-      'portal Family household',
-    );
-    await applyHouseholdAccessStateWithClient({
-      db,
-      accountKey: config.accountKey,
-      productKey: config.productKey,
-      sourceKind: 'admin_override',
-      actorKind: 'provisioner',
-      idempotencyKey: controllerDualRoleAccessIdempotencyKey(keys.householdId),
-      now,
-      command: {
-        household_key: keys.householdId,
-        state: 'active',
-        effective_at: occurredAt,
-        expires_at: new Date(CONTROLLER_DUAL_ROLE_ACCESS_EXPIRES_AT).toISOString(),
-        opaque_source_reference: controllerDualRoleAccessSourceReference(keys.householdId),
-        source_revision: 1,
-        source_updated_at: occurredAt,
-        policy_version: CONTROLLER_DUAL_ROLE_PROVISIONING_POLICY,
-        revocation_reason: null,
-      },
-    });
-    await exactlyOne(
-      db,
-      `INSERT INTO onetime.account_lifecycle_audit_events
-         (audit_key, account_key, product_key, action_type, success, metadata, created_at)
-       VALUES ($1,$2,$3,'controller_dual_role_adult_provisioned',true,$4::jsonb,$5)`,
-      [
-        keys.auditKey,
-        config.accountKey,
-        config.productKey,
-        JSON.stringify(controllerDualRoleProvisionAuditMetadata(keys)),
-        occurredAt,
-      ],
-      'controller provisioning audit',
-    );
-    const readback = await inspectIdentity(db, config, manifest, keys, now);
-    if (readback.disposition !== 'exact_replay') {
-      throw new Error('Provisioned identity failed transactional readback.');
+  let stage: ControllerDualRoleApplyStage = 'transaction_begin';
+  const atStage = async <T>(nextStage: ControllerDualRoleApplyStage, run: () => Promise<T>) => {
+    stage = nextStage;
+    if (testOnlyFailStage === nextStage) {
+      throw new Error('TEST_ONLY_RAW_FAILURE INSERT INTO hidden@example.test database-id');
     }
-    return true;
-  });
+    return run();
+  };
+
+  try {
+    await atStage('transaction_begin', async () => undefined);
+    return await inTransaction(pool, async (db) => {
+      await atStage('advisory_lock', async () => {
+        await db.query('SELECT pg_advisory_xact_lock(hashtext($1))', [
+          `dual-role-adult-provision:${manifest.adult.email}`,
+        ]);
+      });
+      const locked = await atStage('locked_preflight', () =>
+        inspectIdentity(db, config, manifest, keys, now),
+      );
+      if (locked.disposition === 'exact_replay') {
+        await atStage('transaction_commit', async () => undefined);
+        return false;
+      }
+      if (locked.disposition !== 'absent') throw new Error('Target identity preflight changed.');
+      const scope = [
+        manifest.scope.product_key,
+        manifest.scope.runtime_tier,
+        manifest.scope.verification_environment_id,
+      ] as const;
+      const occurredAt = now.toISOString();
+      await atStage('adult_identity_insert', () =>
+        exactlyOne(
+          db,
+          `INSERT INTO onetime.v21_adult_identities
+             (adult_id, normalized_email, display_name, state, version, product_key,
+              runtime_tier, verification_environment_id, created_at, updated_at)
+           VALUES ($1,$2,$3,'active',1,$4,$5,$6,$7,$7)`,
+          [keys.adultId, manifest.adult.email, manifest.adult.display_name, ...scope, occurredAt],
+          'adult identity',
+        ),
+      );
+      await atStage('human_account_insert', () =>
+        exactlyOne(
+          db,
+          `INSERT INTO onetime.v21_human_accounts
+             (human_account_id, adult_id, state, security_version, version, product_key,
+              runtime_tier, verification_environment_id, created_at, updated_at)
+           VALUES ($1,$2,'active',1,1,$3,$4,$5,$6,$6)`,
+          [keys.humanAccountId, keys.adultId, ...scope, occurredAt],
+          'HumanAccount',
+        ),
+      );
+      await atStage('role_memberships_insert', () =>
+        exactlyOne(
+          db,
+          `INSERT INTO onetime.v21_human_account_role_memberships
+             (human_account_id, role, granted_at, granted_reason, product_key,
+              runtime_tier, verification_environment_id)
+           VALUES ($1,'admin',$2,$3,$4,$5,$6),($1,'parent',$2,$3,$4,$5,$6)`,
+          [keys.humanAccountId, occurredAt, CONTROLLER_DUAL_ROLE_PROVISIONING_ACTOR, ...scope],
+          'dual-role memberships',
+          2,
+        ),
+      );
+      await atStage('family_household_insert', () =>
+        exactlyOne(
+          db,
+          `INSERT INTO onetime.v21_households
+             (household_id, owner_adult_id, owner_human_account_id, classification,
+              state, seat_limit, active_seat_count, access_aggregate_ref, version,
+              product_key, runtime_tier, verification_environment_id, created_at, updated_at)
+           VALUES ($1,$2,$3,'family','active',3,0,$4,1,$5,$6,$7,$8,$8)`,
+          [
+            keys.householdId,
+            keys.adultId,
+            keys.humanAccountId,
+            `access:${keys.householdId}`,
+            ...scope,
+            occurredAt,
+          ],
+          'Family household',
+        ),
+      );
+      const passwordHash = await atStage('credential_hash', async () =>
+        hashAuthPassword(randomBytes(48).toString('base64url')),
+      );
+      await atStage('adult_credential_insert', () =>
+        exactlyOne(
+          db,
+          `INSERT INTO onetime.v21_adult_credentials
+             (human_account_id, adult_id, credential_kind, password_hash,
+              credential_state, credential_version, product_key, runtime_tier,
+              verification_environment_id, created_at, updated_at)
+           VALUES ($1,$2,'adult_email_password',$3,'reset_required',1,$4,$5,$6,$7,$7)`,
+          [keys.humanAccountId, keys.adultId, passwordHash, ...scope, occurredAt],
+          'adult credential',
+        ),
+      );
+      await atStage('human_transition_insert', () =>
+        insertCanonicalCreation(db, {
+          transitionKey: keys.humanTransitionKey,
+          aggregateKind: 'human_account',
+          aggregateKey: keys.humanAccountId,
+          nextState: 'active',
+          accessCause: null,
+          manifest,
+          requestHash: keys.canonicalRequestHash,
+          occurredAt,
+        }),
+      );
+      await atStage('access_transition_insert', () =>
+        insertCanonicalCreation(db, {
+          transitionKey: keys.accessTransitionKey,
+          aggregateKind: 'access',
+          aggregateKey: keys.householdId,
+          nextState: 'free',
+          accessCause: 'free_period',
+          manifest,
+          requestHash: keys.canonicalRequestHash,
+          occurredAt,
+        }),
+      );
+      await atStage('portal_household_insert', () =>
+        exactlyOne(
+          db,
+          `INSERT INTO onetime.portal_households
+             (household_key, account_key, product_key, display_name, status, version,
+              created_at, updated_at)
+           VALUES ($1,$2,$3,$4,'active',1,$5,$5)`,
+          [
+            keys.householdId,
+            config.accountKey,
+            config.productKey,
+            manifest.adult.household_display_name,
+            occurredAt,
+          ],
+          'portal Family household',
+        ),
+      );
+      await atStage('access_projection_apply', async () => {
+        await applyHouseholdAccessStateWithClient({
+          db,
+          accountKey: config.accountKey,
+          productKey: config.productKey,
+          sourceKind: 'admin_override',
+          actorKind: 'provisioner',
+          idempotencyKey: keys.accessIdempotencyKey,
+          now,
+          command: {
+            household_key: keys.householdId,
+            state: 'active',
+            effective_at: occurredAt,
+            expires_at: new Date(CONTROLLER_DUAL_ROLE_ACCESS_EXPIRES_AT).toISOString(),
+            opaque_source_reference: keys.accessSourceReference,
+            source_revision: 1,
+            source_updated_at: occurredAt,
+            policy_version: CONTROLLER_DUAL_ROLE_PROVISIONING_POLICY,
+            revocation_reason: null,
+          },
+        });
+      });
+      await atStage('provision_audit_insert', () =>
+        exactlyOne(
+          db,
+          `INSERT INTO onetime.account_lifecycle_audit_events
+             (audit_key, account_key, product_key, action_type, success, metadata, created_at)
+           VALUES ($1,$2,$3,'controller_dual_role_adult_provisioned',true,$4::jsonb,$5)`,
+          [
+            keys.auditKey,
+            config.accountKey,
+            config.productKey,
+            JSON.stringify(controllerDualRoleProvisionAuditMetadata(keys)),
+            occurredAt,
+          ],
+          'controller provisioning audit',
+        ),
+      );
+      const readback = await atStage('transactional_readback', () =>
+        inspectIdentity(db, config, manifest, keys, now),
+      );
+      if (readback.disposition !== 'exact_replay') {
+        throw new Error('Provisioned identity failed transactional readback.');
+      }
+      await atStage('transaction_commit', async () => undefined);
+      return true;
+    });
+  } catch {
+    throw new ControllerDualRoleApplyStageError(stage);
+  }
 }
 
 async function insertCanonicalCreation(
@@ -1475,6 +1835,62 @@ async function insertCanonicalCreation(
     ],
     `${input.aggregateKind} canonical transition`,
   );
+}
+
+async function reconcileFailedIdentityApply(
+  pool: DbPool,
+  config: AppConfig,
+  manifest: Manifest,
+  keys: TargetKeys,
+  now: Date,
+  failureBlocker: string,
+  initial: IdentityInspection,
+  initialSetup: SetupInspection,
+): Promise<DualRoleAdultProvisionReport> {
+  try {
+    const identity = await inspectIdentity(pool, config, manifest, keys, now);
+    const setupState = await inspectSetup(pool, config, manifest, keys, now);
+    const setupStillAbsent =
+      setupState.token_rows === 0 &&
+      setupState.intent_rows === 0 &&
+      setupState.outbox_rows === 0 &&
+      setupState.blockers.length === 0;
+    if (identity.disposition === 'absent' && !identity.blockers.length && setupStillAbsent) {
+      return report(now, true, 'blocked', [failureBlocker], identity, setupState);
+    }
+    if (identity.disposition === 'exact_replay' && !identity.blockers.length) {
+      return report(
+        now,
+        true,
+        'identity_applied_setup_pending',
+        [failureBlocker, ...setupState.blockers],
+        identity,
+        setupState,
+      );
+    }
+    return report(
+      now,
+      true,
+      'blocked',
+      [
+        failureBlocker,
+        'apply_identity_post_failure_state_not_absent',
+        ...identity.blockers,
+        ...setupState.blockers,
+      ],
+      identity,
+      setupState,
+    );
+  } catch {
+    return report(
+      now,
+      true,
+      'blocked',
+      [failureBlocker, 'apply_identity_reconciliation_unavailable'],
+      initial,
+      initialSetup,
+    );
+  }
 }
 
 async function inspectSetup(
@@ -1688,6 +2104,8 @@ function report(
       strict_private_manifest: true,
       exact_source_and_runtime_required: true,
       ephemeral_authorization_required_for_apply: true,
+      read_only_apply_prerequisite_check: true,
+      sanitized_stage_failure_reporting: true,
       advisory_transaction_lock: true,
       one_adult_credential: true,
       no_legacy_adult: true,
@@ -1760,9 +2178,20 @@ function isCliEntrypoint() {
   return process.argv[1] ? import.meta.url === pathToFileURL(process.argv[1]).href : false;
 }
 
-if (isCliEntrypoint()) {
+function requestedOutputPath(argv: string[]) {
+  const index = argv.lastIndexOf('--out');
+  const candidate = index >= 0 ? argv[index + 1] : undefined;
+  return candidate && !candidate.startsWith('--') ? candidate : undefined;
+}
+
+export async function runDualRoleAdultProvisionCli(
+  argv: string[],
+  emit: (output: string) => void = (output) => process.stdout.write(output),
+) {
+  let outputPath = requestedOutputPath(argv);
   try {
-    const args = parseArgs(process.argv.slice(2));
+    const args = parseArgs(argv);
+    outputPath = typeof args.out === 'string' ? args.out : outputPath;
     const result = await runDualRoleAdultProvision({
       ...(typeof args.manifest === 'string' ? { manifestPath: args.manifest } : {}),
       apply: args.apply === true,
@@ -1771,15 +2200,30 @@ if (isCliEntrypoint()) {
         : {}),
     });
     const output = `${JSON.stringify(result, null, 2)}\n`;
-    if (typeof args.out === 'string') await writeFile(args.out, output, 'utf8');
-    process.stdout.write(output);
+    if (outputPath) await writeFile(outputPath, output, 'utf8');
+    emit(output);
     if (result.status === 'blocked' || result.status === 'identity_applied_setup_pending') {
-      process.exitCode = 2;
+      return 2;
     }
+    return 0;
   } catch {
-    process.stdout.write(
-      `${JSON.stringify({ schema: SCHEMA, status: 'blocked', blockers: ['controller_preflight_failed'] })}\n`,
-    );
-    process.exitCode = 2;
+    const output = `${JSON.stringify({
+      schema: SCHEMA,
+      status: 'blocked',
+      blockers: ['controller_preflight_failed'],
+    })}\n`;
+    if (outputPath) {
+      try {
+        await writeFile(outputPath, output, 'utf8');
+      } catch {
+        // The result remains available on stdout without exposing the path or write failure.
+      }
+    }
+    emit(output);
+    return 2;
   }
+}
+
+if (isCliEntrypoint()) {
+  process.exitCode = await runDualRoleAdultProvisionCli(process.argv.slice(2));
 }
