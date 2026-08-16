@@ -25,12 +25,55 @@ export function createClassroomRepository(pool: DbPool): ClassroomRepository {
     isLearnerEnrolled: async (args) => {
       const result = await pool.query(
         `SELECT 1
-           FROM onetime.classroom_occurrence_learner_entitlements
-          WHERE account_key = $1
-            AND product_key = $2
-            AND occurrence_key = $3
-            AND learner_key = $4
-            AND entitlement_state = 'active'
+           FROM onetime.class_occurrences AS occurrence
+           JOIN onetime.class_series AS series
+             ON series.account_key = occurrence.account_key
+            AND series.product_key = occurrence.product_key
+            AND series.class_series_key = occurrence.class_series_key
+           JOIN onetime.portal_learners AS learner
+             ON learner.account_key = occurrence.account_key
+            AND learner.product_key = occurrence.product_key
+            AND learner.learner_key = $4
+            AND learner.learner_status = 'active'
+           LEFT JOIN onetime.classroom_occurrence_learner_entitlements AS legacy
+             ON legacy.account_key = occurrence.account_key
+            AND legacy.product_key = occurrence.product_key
+            AND legacy.occurrence_key = occurrence.occurrence_key
+            AND legacy.household_key = learner.household_key
+            AND legacy.learner_key = learner.learner_key
+            AND legacy.entitlement_state = 'active'
+           LEFT JOIN onetime.class_series_enrollments AS canonical_enrollment
+             ON canonical_enrollment.account_key = occurrence.account_key
+            AND canonical_enrollment.product_key = occurrence.product_key
+            AND canonical_enrollment.class_series_key = occurrence.class_series_key
+            AND canonical_enrollment.learner_key = learner.learner_key
+            AND series.is_canonical = true
+           LEFT JOIN onetime.account_access_projections AS account_access
+             ON account_access.account_key = learner.account_key
+            AND account_access.product_key = learner.product_key
+            AND account_access.household_key = learner.household_key
+          WHERE occurrence.account_key = $1
+            AND occurrence.product_key = $2
+            AND occurrence.occurrence_key = $3
+            AND (
+              (
+                series.is_canonical = true
+                AND canonical_enrollment.enrollment_key IS NOT NULL
+                AND canonical_enrollment.household_key = learner.household_key
+                AND canonical_enrollment.enrollment_state = 'active'
+                AND canonical_enrollment.effective_at <= now()
+                AND canonical_enrollment.revoked_at IS NULL
+                AND series.status = 'active'
+                AND series.series_state = 'active'
+                AND account_access.state IN ('active', 'grace', 'scheduled_end')
+                AND account_access.effective_at <= now()
+                AND (account_access.expires_at IS NULL OR account_access.expires_at > now())
+              )
+              OR (
+                (series.is_canonical = false OR canonical_enrollment.enrollment_key IS NULL)
+                AND legacy.occurrence_entitlement_key IS NOT NULL
+              )
+            )
           LIMIT 1`,
         [args.actor.account_key, args.actor.product_key, args.occurrence_key, args.learner_key],
       );
@@ -107,10 +150,39 @@ async function ensureDailyOccurrence(
         CLASSROOM_POLICY_VERSION,
       ],
     );
-    const occurrence = await getOccurrence(client, args.actor, occurrenceKey);
+    const occurrence = await getOccurrenceForSeriesDate(
+      client,
+      args.actor,
+      ONE_TIME_CLASS_SERIES_KEY,
+      args.window.localDate,
+    );
     if (!occurrence) throw new Error('Failed to create classroom occurrence.');
     return occurrence;
   });
+}
+
+async function getOccurrenceForSeriesDate(
+  target: DbPool | Queryable,
+  actor: Pick<PortalActorContext, 'account_key' | 'product_key'>,
+  classSeriesKey: string,
+  localClassDate: string,
+): Promise<ClassroomOccurrenceRecord | null> {
+  const result = await target.query(
+    `SELECT occurrences.*, series.title, series.timezone
+       FROM onetime.class_occurrences AS occurrences
+       JOIN onetime.class_series AS series
+         ON series.account_key = occurrences.account_key
+        AND series.product_key = occurrences.product_key
+        AND series.class_series_key = occurrences.class_series_key
+      WHERE occurrences.account_key = $1
+        AND occurrences.product_key = $2
+        AND occurrences.class_series_key = $3
+        AND occurrences.local_class_date = $4::date
+      LIMIT 1`,
+    [actor.account_key, actor.product_key, classSeriesKey, localClassDate],
+  );
+  const row = result.rows[0] as Record<string, unknown> | undefined;
+  return row ? mapOccurrence(row) : null;
 }
 
 async function getOccurrence(
@@ -145,7 +217,23 @@ async function getLearnerEligibility(
             learners.learner_key, learners.display_name, learners.learner_status,
             households.status AS household_status,
             access_state.status AS student_access_status,
-            entitlement.entitlement_state
+            CASE
+              WHEN canonical_enrollment.enrollment_key IS NOT NULL THEN
+                CASE
+                  WHEN canonical_enrollment.household_key = learners.household_key
+                   AND canonical_enrollment.enrollment_state = 'active'
+                   AND canonical_enrollment.effective_at <= now()
+                   AND canonical_enrollment.revoked_at IS NULL
+                   AND canonical_series.status = 'active'
+                   AND canonical_series.series_state = 'active'
+                   AND account_access.state IN ('active', 'grace', 'scheduled_end')
+                   AND account_access.effective_at <= now()
+                   AND (account_access.expires_at IS NULL OR account_access.expires_at > now())
+                  THEN 'active'
+                  ELSE 'revoked'
+                END
+              ELSE entitlement.entitlement_state
+            END AS entitlement_state
        FROM onetime.portal_learners AS learners
        JOIN onetime.portal_households AS households
          ON households.account_key = learners.account_key
@@ -159,6 +247,19 @@ async function getLearnerEligibility(
          ON entitlement.account_key = learners.account_key
         AND entitlement.product_key = learners.product_key
         AND entitlement.household_key = learners.household_key
+       LEFT JOIN onetime.class_series AS canonical_series
+         ON canonical_series.account_key = learners.account_key
+        AND canonical_series.product_key = learners.product_key
+        AND canonical_series.is_canonical = true
+       LEFT JOIN onetime.class_series_enrollments AS canonical_enrollment
+         ON canonical_enrollment.account_key = canonical_series.account_key
+        AND canonical_enrollment.product_key = canonical_series.product_key
+        AND canonical_enrollment.class_series_key = canonical_series.class_series_key
+        AND canonical_enrollment.learner_key = learners.learner_key
+       LEFT JOIN onetime.account_access_projections AS account_access
+         ON account_access.account_key = learners.account_key
+        AND account_access.product_key = learners.product_key
+        AND account_access.household_key = learners.household_key
       WHERE learners.account_key = $1
         AND learners.product_key = $2
         AND learners.learner_key = $3
