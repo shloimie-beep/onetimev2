@@ -5,7 +5,7 @@ Paste the block below into Kimi when the current Codex/Work Ultra session can no
 ```text
 ONE TIME — EMERGENCY LAUNCH TAKEOVER
 
-Current time is within approximately two hours of the 7:00 PM Israel class.
+The 7:00 PM Israel class is imminent.
 
 Repository:
 shloimie-beep/onetimev2
@@ -33,7 +33,7 @@ FIRST ACTIONS — MAXIMUM 10 MINUTES
    - current deployed source;
    - current active candidate/PR;
    - what is already proven;
-   - the single remaining launch blocker;
+   - the single remaining customer-facing launch blocker;
    - the exact next action you will take.
 
 DO NOT OPEN NEW WORKERS UNTIL THAT CHECKPOINT IS RETURNED.
@@ -50,11 +50,8 @@ landing
 → Parent can create child Student
 → Student login
 → Student can reach class
-→ one adult GHL contact
-→ one household lifecycle opportunity
-→ no Student GHL contact
 
-The one-time GHL launch campaign is already prepared and must remain unsent until one operator-owned live canary passes.
+The one-time GHL launch campaign is already prepared and must remain unsent until one operator-owned live customer-journey canary passes.
 
 GHL CURRENT STATE
 
@@ -102,11 +99,11 @@ PR RULES
 - Preserve rollback and exact-head verification.
 - Do not merge/deploy a stale or unreviewed candidate merely because time is short.
 
-P0 ACCEPTANCE
+HARD SEND GATE
 
 Before recommending the broad email send, prove on the exact live deployment:
 
-1. landing loads;
+1. landing loads with the correct free-access offer;
 2. signup succeeds;
 3. Parent remains authenticated;
 4. Parent reaches Parent Today/Companion;
@@ -114,22 +111,31 @@ Before recommending the broad email send, prove on the exact live deployment:
 6. Parent can create one Student;
 7. Student can sign in;
 8. Student can reach the class action;
-9. one adult GHL contact exists;
-10. one household opportunity exists in the correct Family Lifecycle stage;
-11. no Student GHL contact exists;
-12. no duplicate account/contact/opportunity/email;
-13. OT-C02 test email CTA reaches the same working journey;
-14. email reply appears in GHL Conversations without an automatic AI customer reply.
+9. no dead end, duplicate account, raw provider link, or 5xx occurs;
+10. OT-C02 test email CTA reaches the same working journey.
+
+GHL delivery/open/click tracking is already part of OT-C02. Full Family Lifecycle stage automation is preferred but is not a hard gate for the one-time campaign when the customer journey is proven and One Time durably stores the signups. If the lifecycle bridge is not ready, leave all lifecycle workflows Draft and return the reconciliation work for after the send.
+
+PREFERRED TELEMETRY PROOF
+
+Prove when possible without delaying the customer launch:
+
+- one adult GHL contact;
+- one household opportunity;
+- correct stage;
+- no Student GHL contact;
+- no duplicate contact/opportunity/email;
+- email reply in GHL Conversations with no automatic AI reply.
 
 OPERATING ORDER
 
 A. Reconcile the previous agent's checkpoint and current remote state.
-B. Finish or integrate only the one remaining launch blocker.
+B. Finish or integrate only the one remaining customer-facing blocker.
 C. Run focused tests; avoid repository-wide work unless required by current authority.
 D. Deploy/reconcile only through PR #131.
 E. Tell Shloimie exactly when to run the live operator canary.
 F. Remain available while Shloimie reports each canary result.
-G. If all P0 items pass, return the exact authorization phrase Shloimie must provide for OT-C02.
+G. If the HARD SEND GATE passes, return the exact authorization phrase Shloimie must provide for OT-C02.
 
 NO-GO / FALLBACK
 
