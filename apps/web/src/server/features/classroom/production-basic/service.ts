@@ -231,7 +231,7 @@ export function createCanonicalProductionBasicMeetingBinding(input: {
     !config.zoomRealControlMeetingId ||
     !config.zoomRealControlMeetingPasscode ||
     !verifiedBindingMatches(config, verifiedBinding, clock()) ||
-    !sameHttpsOrigin(config.publicBaseUrl, config.zoomMeetingSdkAllowedOrigin)
+    !sameHttpsOrigin(config.applicationBaseUrl, config.zoomMeetingSdkAllowedOrigin)
   ) {
     return createUnavailableProductionBasicMeetingBinding();
   }
@@ -311,12 +311,12 @@ export type ProductionBasicVerifiedBindingReceipt = {
   expires_at: string;
 };
 
-function sameHttpsOrigin(publicBaseUrl: string, allowedOrigin: string | undefined) {
+function sameHttpsOrigin(applicationBaseUrl: string, allowedOrigin: string | undefined) {
   if (!allowedOrigin) return false;
   try {
-    const publicOrigin = new URL(publicBaseUrl);
+    const applicationOrigin = new URL(applicationBaseUrl);
     const configured = new URL(allowedOrigin);
-    return configured.protocol === 'https:' && configured.origin === publicOrigin.origin;
+    return configured.protocol === 'https:' && configured.origin === applicationOrigin.origin;
   } catch {
     return false;
   }

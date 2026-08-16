@@ -29,10 +29,32 @@ const fullyConfiguredEnv: NodeJS.ProcessEnv = {
   ZOOM_REAL_CONTROL_MEETING_PASSCODE: 'meeting-passcode-fixture',
   ZOOM_CLASSROOM_CANARY_ENABLED: 'true',
   ZOOM_CLASSROOM_CANARY_LEARNER_KEY: 'full_app_preview_student_1',
-  PUBLIC_BASE_URL: 'https://isolated-pr.example.test',
+  PUBLIC_BASE_URL: 'https://join.onetimeonetime.com',
+  APP_BASE_URL: 'https://isolated-pr.example.test',
 };
 
 describe('Zoom real host-control readiness', () => {
+  it('binds host readiness to the authenticated application origin, not the public signup origin', () => {
+    const appBound = inspectZoomHostControlReadiness(loadConfig(fullyConfiguredEnv));
+    const joinBound = inspectZoomHostControlReadiness(
+      loadConfig({
+        ...fullyConfiguredEnv,
+        ZOOM_MEETING_SDK_ALLOWED_ORIGIN: fullyConfiguredEnv.PUBLIC_BASE_URL,
+      }),
+    );
+
+    expect(appBound.ready).toBe(true);
+    expect(joinBound).toMatchObject({
+      ready: false,
+      phases: {
+        sdk_app: {
+          ready: false,
+          blocker_variable_names: ['ZOOM_MEETING_SDK_ALLOWED_ORIGIN'],
+        },
+      },
+    });
+  });
+
   it.each(ZOOM_HOST_CONTROL_PROVIDER_GATE_VARIABLES)(
     'blocks before provider construction when %s is missing',
     (variableName) => {

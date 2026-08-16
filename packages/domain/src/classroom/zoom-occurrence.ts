@@ -188,7 +188,7 @@ export function createZoomClassOccurrenceProvider(
     !config.zoomMeetingSdkClientId ||
     !config.zoomMeetingSdkClientSecret ||
     !config.zoomMeetingSdkWebVersion ||
-    !hasExactSdkOriginBinding(config.publicBaseUrl, config.zoomMeetingSdkAllowedOrigin)
+    !hasExactSdkOriginBinding(config.applicationBaseUrl, config.zoomMeetingSdkAllowedOrigin)
   ) {
     return undefined;
   }
@@ -853,10 +853,10 @@ function safeProviderError(error: unknown, fallback: string) {
   };
 }
 
-function hasExactSdkOriginBinding(publicBaseUrl: string, allowedOrigin: string | undefined) {
+function hasExactSdkOriginBinding(applicationBaseUrl: string, allowedOrigin: string | undefined) {
   if (!allowedOrigin) return false;
   try {
-    const runtime = new URL(publicBaseUrl);
+    const runtime = new URL(applicationBaseUrl);
     const configured = new URL(allowedOrigin);
     return (
       runtime.origin === configured.origin &&
