@@ -18,9 +18,11 @@ import {
 import { hashAuthPassword } from '../../../packages/domain/src/auth/policy.ts';
 import {
   CONTROLLER_DUAL_ROLE_APPLY_STAGES,
+  CONTROLLER_DUAL_ROLE_COMPATIBILITY_ACCESS_HASH_SUBLEAF_CODES,
   isIsolatedPostgresServerAddress,
   isNativeDisposablePostgresTarget,
   runDualRoleAdultProvision,
+  type ControllerDualRoleCompatibilityAccessHashSubleafCode,
   type ControllerDualRoleTransactionalReadbackGroup,
 } from '../../../scripts/operations/provision-dual-role-adult.ts';
 
@@ -29,7 +31,12 @@ const enabled =
   process.env.DUAL_ROLE_PROVISION_NATIVE_POSTGRES_DISPOSABLE === 'true' && Boolean(databaseUrl);
 const SOURCE_SHA = 'b'.repeat(40);
 const AUTHORIZATION = 'native disposable dual role controller authorization';
-const PROVISION_AT = new Date('2026-08-01T12:00:00.000Z');
+const PROVISION_AT = new Date('2026-08-01T12:00:00.345Z');
+const operationNowWithFractionalMilliseconds = () => {
+  const now = new Date();
+  now.setUTCMilliseconds(345);
+  return now;
+};
 const EMAIL = 'native-dual-role-controller@example.test';
 const COMPATIBILITY_ACCESS_DIAGNOSTIC_CODES = [
   'compatibility_access_cardinality_mismatch',
@@ -292,6 +299,7 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
         });
       const reports = await Promise.all([apply(), apply()]);
       expect(reports.map((report) => report.status).sort()).toEqual(['applied', 'replayed']);
+      expect(PROVISION_AT.getUTCMilliseconds()).toBe(345);
       expect(
         reports.every(
           (report) => report.apply_execution.transactional_readback_diagnostic === null,
@@ -316,6 +324,7 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
         setupOutbox: 1,
       });
       await expect(accessEventCreatedAt(pool)).resolves.toBe(PROVISION_AT.toISOString());
+      await expect(accessRequestHashesMatch(pool)).resolves.toBe(true);
       await expect(forbiddenCardinalities(pool)).resolves.toEqual({
         legacyUsers: 0,
         contacts: 0,
@@ -492,6 +501,7 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
         name: string;
         group: ControllerDualRoleTransactionalReadbackGroup;
         blocker: string;
+        hashSubleafCodes?: ControllerDualRoleCompatibilityAccessHashSubleafCode[];
         queryIncludes: string;
         mutateRows: (rows: Record<string, unknown>[]) => Record<string, unknown>[];
       }> = [
@@ -582,6 +592,7 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
           name: 'compatibility-hash',
           group: 'compatibility_access',
           blocker: 'compatibility_access_hash_mismatch',
+          hashSubleafCodes: ['compatibility_access_hash_projection_mismatch'],
           queryIncludes: 'FROM onetime.portal_households AS portal',
           mutateRows: (rows) =>
             rows.map((row) => ({ ...row, projection_request_hash: '0'.repeat(64) })),
@@ -648,6 +659,78 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
         },
         { group: 'prohibited', queryIncludes: 'FROM onetime.family_signup_requests' },
       ];
+      const hashSubleafCases: Array<{
+        name: string;
+        queryIncludes: string;
+        mutateRows: (rows: Record<string, unknown>[]) => Record<string, unknown>[];
+        blockerCodes: string[];
+        hashSubleafCodes: ControllerDualRoleCompatibilityAccessHashSubleafCode[];
+        privateFaultValues: string[];
+        includesProvisionAuditMismatch?: boolean;
+      }> = [
+        {
+          name: 'consensus',
+          queryIncludes: 'FROM onetime.portal_households AS portal',
+          mutateRows: (rows) =>
+            rows.map((row) => ({
+              ...row,
+              projection_request_hash: '0'.repeat(64),
+              source_request_hash: '0'.repeat(64),
+              event_request_hash: '0'.repeat(64),
+            })),
+          blockerCodes: ['compatibility_access_hash_mismatch'],
+          hashSubleafCodes: ['compatibility_access_hash_consensus_mismatch'],
+          privateFaultValues: ['0'.repeat(64)],
+        },
+        {
+          name: 'source',
+          queryIncludes: 'FROM onetime.portal_households AS portal',
+          mutateRows: (rows) =>
+            rows.map((row) => ({ ...row, source_request_hash: '1'.repeat(64) })),
+          blockerCodes: ['compatibility_access_hash_mismatch'],
+          hashSubleafCodes: ['compatibility_access_hash_source_mismatch'],
+          privateFaultValues: ['1'.repeat(64)],
+        },
+        {
+          name: 'event',
+          queryIncludes: 'FROM onetime.portal_households AS portal',
+          mutateRows: (rows) => rows.map((row) => ({ ...row, event_request_hash: '2'.repeat(64) })),
+          blockerCodes: ['compatibility_access_hash_mismatch'],
+          hashSubleafCodes: ['compatibility_access_hash_event_mismatch'],
+          privateFaultValues: ['2'.repeat(64)],
+        },
+        {
+          name: 'ordered-per-field',
+          queryIncludes: 'FROM onetime.portal_households AS portal',
+          mutateRows: (rows) =>
+            rows.map((row) => ({
+              ...row,
+              projection_request_hash: '3'.repeat(64),
+              source_request_hash: '4'.repeat(64),
+              event_request_hash: '5'.repeat(64),
+            })),
+          blockerCodes: ['compatibility_access_hash_mismatch'],
+          hashSubleafCodes: [
+            'compatibility_access_hash_projection_mismatch',
+            'compatibility_access_hash_source_mismatch',
+            'compatibility_access_hash_event_mismatch',
+          ],
+          privateFaultValues: ['3'.repeat(64), '4'.repeat(64), '5'.repeat(64)],
+        },
+        {
+          name: 'expected-unavailable',
+          queryIncludes: 'FROM onetime.canonical_state_transition_events',
+          mutateRows: (rows) =>
+            rows.map((row) => ({ ...row, created_at: 'PRIVATE_INVALID_TIMESTAMP_SENTINEL' })),
+          blockerCodes: [
+            'compatibility_access_timing_mismatch',
+            'compatibility_access_hash_mismatch',
+          ],
+          hashSubleafCodes: ['compatibility_access_hash_expected_unavailable'],
+          privateFaultValues: ['PRIVATE_INVALID_TIMESTAMP_SENTINEL'],
+          includesProvisionAuditMismatch: true,
+        },
+      ];
       expect(
         mismatchCases
           .filter((testCase) => testCase.group === 'compatibility_access')
@@ -655,7 +738,7 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
       ).toEqual(COMPATIBILITY_ACCESS_DIAGNOSTIC_CODES);
 
       for (const testCase of mismatchCases) {
-        const operationNow = new Date(Math.floor(Date.now() / 1000) * 1000);
+        const operationNow = operationNowWithFractionalMilliseconds();
         const email = `native-readback-${testCase.name}@example.test`;
         await seedNativeUnrelatedEventRegistration(pool, email, operationNow);
         const before = await fullControllerCardinalities(pool);
@@ -680,7 +763,15 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
           },
         });
         const expectedDiagnostic = {
-          groups: [{ group_code: testCase.group, blocker_codes: [testCase.blocker] }],
+          groups: [
+            {
+              group_code: testCase.group,
+              blocker_codes: [testCase.blocker],
+              ...(testCase.hashSubleafCodes
+                ? { hash_subleaf_codes: testCase.hashSubleafCodes }
+                : {}),
+            },
+          ],
         };
         expect(report).toMatchObject({
           status: 'blocked',
@@ -712,8 +803,92 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
         expect(serialized).not.toContain('SELECT');
       }
 
+      expect(CONTROLLER_DUAL_ROLE_COMPATIBILITY_ACCESS_HASH_SUBLEAF_CODES).toEqual([
+        'compatibility_access_hash_expected_unavailable',
+        'compatibility_access_hash_consensus_mismatch',
+        'compatibility_access_hash_projection_mismatch',
+        'compatibility_access_hash_source_mismatch',
+        'compatibility_access_hash_event_mismatch',
+      ]);
+      for (const testCase of hashSubleafCases) {
+        const operationNow = operationNowWithFractionalMilliseconds();
+        const email = `native-readback-hash-${testCase.name}@example.test`;
+        await seedNativeUnrelatedEventRegistration(pool, email, operationNow);
+        const before = await fullControllerCardinalities(pool);
+        faultControl.faults = [
+          {
+            queryIncludes: testCase.queryIncludes,
+            mutateRows: testCase.mutateRows,
+          },
+        ];
+        let setupCalls = 0;
+        const report = await runDualRoleAdultProvision({
+          manifest: privateManifestAt(email, `native-readback-hash-${testCase.name}`, operationNow),
+          apply: true,
+          authorizationPhrase: AUTHORIZATION,
+          pool,
+          config,
+          now: operationNow,
+          testOnlyAllowIsolatedApply: true,
+          issuePasswordReset: async () => {
+            setupCalls += 1;
+            throw new Error('Setup must not run after native hash readback mismatch.');
+          },
+        });
+        const expectedDiagnostic = {
+          groups: [
+            {
+              group_code: 'compatibility_access',
+              blocker_codes: testCase.blockerCodes,
+              hash_subleaf_codes: testCase.hashSubleafCodes,
+            },
+            ...(testCase.includesProvisionAuditMismatch
+              ? [
+                  {
+                    group_code: 'provision_audit',
+                    blocker_codes: ['controller_provision_audit_mismatch'],
+                  },
+                ]
+              : []),
+          ],
+        };
+        expect(report).toMatchObject({
+          status: 'blocked',
+          blockers: ['apply_identity_transactional_readback_failed'],
+          generated_at: operationNow.toISOString(),
+          apply_execution: {
+            disposition: 'failed',
+            transaction_outcome: 'rolled_back',
+            reconciliation_outcome: 'completed',
+            final_stage: 'transactional_readback',
+            transactional_readback_diagnostic: expectedDiagnostic,
+          },
+          identity: { disposition: 'absent', adult_rows: 0 },
+          setup_delivery: { token_rows: 0, intent_rows: 0, outbox_rows: 0 },
+        });
+        expect(report.apply_execution.journal.at(-1)).toEqual({
+          sequence: report.apply_execution.journal.length,
+          stage: 'transactional_readback',
+          state: 'failed',
+          transactional_readback_diagnostic: expectedDiagnostic,
+        });
+        expect(setupCalls).toBe(0);
+        await expect(fullControllerCardinalities(pool)).resolves.toEqual(before);
+        await expect(nativeUnrelatedEventRegistrationCount(pool, email)).resolves.toBe(1);
+        const serialized = JSON.stringify(report);
+        for (const unsafe of [
+          email,
+          'Synthetic Dual Role Adult',
+          ...testCase.privateFaultValues,
+          '@',
+          'SELECT',
+        ]) {
+          expect(serialized).not.toContain(unsafe);
+        }
+      }
+
       for (const testCase of queryFailureCases) {
-        const operationNow = new Date(Math.floor(Date.now() / 1000) * 1000);
+        const operationNow = operationNowWithFractionalMilliseconds();
         const email = `native-readback-query-${testCase.group.replaceAll('_', '-')}@example.test`;
         await seedNativeUnrelatedEventRegistration(pool, email, operationNow);
         const before = await fullControllerCardinalities(pool);
@@ -1282,5 +1457,31 @@ async function accessEventCreatedAt(pool: DbPool) {
       ORDER BY event_key`,
   );
   expect(result.rowCount).toBe(1);
-  return new Date(String(result.rows[0]?.created_at)).toISOString();
+  const createdAt = result.rows[0]?.created_at;
+  return (createdAt instanceof Date ? createdAt : new Date(String(createdAt))).toISOString();
+}
+
+async function accessRequestHashesMatch(pool: DbPool) {
+  const result = await pool.query(
+    `SELECT projection.source_request_hash AS projection_request_hash,
+            source.source_request_hash, event.request_hash AS event_request_hash
+       FROM onetime.account_access_projections AS projection
+       JOIN onetime.account_access_source_states AS source
+         ON source.account_key=projection.account_key
+        AND source.product_key=projection.product_key
+        AND source.household_key=projection.household_key
+        AND source.last_event_key=projection.last_event_key
+       JOIN onetime.account_access_events AS event
+         ON event.event_key=projection.last_event_key`,
+  );
+  if (result.rowCount !== 1) return false;
+  const hashes = [
+    result.rows[0]?.projection_request_hash,
+    result.rows[0]?.source_request_hash,
+    result.rows[0]?.event_request_hash,
+  ];
+  return (
+    hashes.every((value) => typeof value === 'string' && /^[a-f0-9]{64}$/u.test(value)) &&
+    new Set(hashes).size === 1
+  );
 }

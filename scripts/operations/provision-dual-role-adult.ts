@@ -122,6 +122,15 @@ type ControllerDualRoleTransactionalReadbackBlocker =
   (typeof TRANSACTIONAL_READBACK_BLOCKERS_BY_GROUP)[ControllerDualRoleTransactionalReadbackGroup][number];
 type ControllerDualRoleCompatibilityAccessDiagnosticCode =
   (typeof TRANSACTIONAL_READBACK_BLOCKERS_BY_GROUP)['compatibility_access'][number];
+export const CONTROLLER_DUAL_ROLE_COMPATIBILITY_ACCESS_HASH_SUBLEAF_CODES = [
+  'compatibility_access_hash_expected_unavailable',
+  'compatibility_access_hash_consensus_mismatch',
+  'compatibility_access_hash_projection_mismatch',
+  'compatibility_access_hash_source_mismatch',
+  'compatibility_access_hash_event_mismatch',
+] as const;
+export type ControllerDualRoleCompatibilityAccessHashSubleafCode =
+  (typeof CONTROLLER_DUAL_ROLE_COMPATIBILITY_ACCESS_HASH_SUBLEAF_CODES)[number];
 type ControllerDualRoleTransactionalReadbackQueryFailure =
   `${ControllerDualRoleTransactionalReadbackGroup}_query_failed`;
 type ControllerDualRoleTransactionalReadbackDiagnosticCode =
@@ -134,6 +143,7 @@ export type ControllerDualRoleTransactionalReadbackDiagnostic = {
   groups: Array<{
     group_code: ControllerDualRoleTransactionalReadbackGroup;
     blocker_codes: ControllerDualRoleTransactionalReadbackDiagnosticCode[];
+    hash_subleaf_codes?: ControllerDualRoleCompatibilityAccessHashSubleafCode[];
   }>;
 };
 
@@ -418,6 +428,7 @@ type IdentityInspection = DualRoleAdultProvisionReport['identity'] & {
 type TransactionalReadbackContext = {
   activeGroup: ControllerDualRoleTransactionalReadbackGroup;
   diagnosticBlockers: ControllerDualRoleTransactionalReadbackBlocker[];
+  compatibilityHashSubleafCodes: ControllerDualRoleCompatibilityAccessHashSubleafCode[];
 };
 
 type SetupInspection = DualRoleAdultProvisionReport['setup_delivery'] & {
@@ -1213,6 +1224,7 @@ function cloneTransactionalReadbackDiagnostic(
     groups: diagnostic.groups.map((group) => ({
       group_code: group.group_code,
       blocker_codes: [...group.blocker_codes],
+      ...(group.hash_subleaf_codes ? { hash_subleaf_codes: [...group.hash_subleaf_codes] } : {}),
     })),
   };
 }
@@ -1220,15 +1232,28 @@ function cloneTransactionalReadbackDiagnostic(
 function transactionalReadbackMismatchDiagnostic(
   inspection: IdentityInspection,
   additionalBlockers: readonly ControllerDualRoleTransactionalReadbackBlocker[],
+  compatibilityHashSubleafCodes: readonly ControllerDualRoleCompatibilityAccessHashSubleafCode[],
 ): ControllerDualRoleTransactionalReadbackDiagnostic {
   const blockerSet = new Set([...inspection.blockers, ...additionalBlockers]);
+  const hashSubleafSet = new Set(compatibilityHashSubleafCodes);
   const groups: ControllerDualRoleTransactionalReadbackDiagnostic['groups'] = [];
   for (const groupCode of CONTROLLER_DUAL_ROLE_TRANSACTIONAL_READBACK_GROUPS) {
     const blockerCodes = TRANSACTIONAL_READBACK_BLOCKERS_BY_GROUP[groupCode].filter((code) =>
       blockerSet.has(code),
     );
     if (blockerCodes.length) {
-      groups.push({ group_code: groupCode, blocker_codes: [...blockerCodes] });
+      const hashSubleafCodes =
+        groupCode === 'compatibility_access' &&
+        blockerCodes.includes('compatibility_access_hash_mismatch')
+          ? CONTROLLER_DUAL_ROLE_COMPATIBILITY_ACCESS_HASH_SUBLEAF_CODES.filter((code) =>
+              hashSubleafSet.has(code),
+            )
+          : [];
+      groups.push({
+        group_code: groupCode,
+        blocker_codes: [...blockerCodes],
+        ...(hashSubleafCodes.length ? { hash_subleaf_codes: [...hashSubleafCodes] } : {}),
+      });
     }
   }
   if (inspection.disposition === 'absent') {
@@ -1487,7 +1512,7 @@ async function inspectIdentity(
       transition.product_key !== manifest.scope.product_key ||
       transition.runtime_tier !== manifest.scope.runtime_tier ||
       transition.verification_environment_id !== manifest.scope.verification_environment_id ||
-      new Date(String(transition.created_at)).getTime() > now.getTime()
+      readTimestampMillis(transition.created_at) > now.getTime()
     ) {
       blockers.push('canonical_transition_mismatch');
       break;
@@ -1560,7 +1585,7 @@ async function inspectIdentity(
   const accessTransition = transitions.rows.find(
     (transition) => transition.transition_key === keys.accessTransitionKey,
   );
-  const accessTransitionCreatedAt = new Date(String(accessTransition?.created_at)).getTime();
+  const accessTransitionCreatedAt = readTimestampMillis(accessTransition?.created_at);
   markTransactionalReadbackGroup(transactionalReadback, 'provision_audit');
   const audit = await db.query(
     `SELECT created_at
@@ -1576,7 +1601,7 @@ async function inspectIdentity(
       JSON.stringify(controllerDualRoleProvisionAuditMetadata(keys)),
     ],
   );
-  const auditCreatedAt = new Date(String(audit.rows[0]?.created_at)).getTime();
+  const auditCreatedAt = readTimestampMillis(audit.rows[0]?.created_at);
   if (
     audit.rows.length !== 1 ||
     !Number.isFinite(auditCreatedAt) ||
@@ -1604,12 +1629,10 @@ async function inspectIdentity(
         },
       })
     : null;
-  const compatibilityEffectiveAt = new Date(String(compatibilityRow?.effective_at)).getTime();
-  const compatibilityUpdatedAt = new Date(String(compatibilityRow?.source_updated_at)).getTime();
-  const compatibilityExpiresAt = new Date(String(compatibilityRow?.expires_at)).getTime();
-  const compatibilityEventCreatedAt = new Date(
-    String(compatibilityRow?.event_created_at),
-  ).getTime();
+  const compatibilityEffectiveAt = readTimestampMillis(compatibilityRow?.effective_at);
+  const compatibilityUpdatedAt = readTimestampMillis(compatibilityRow?.source_updated_at);
+  const compatibilityExpiresAt = readTimestampMillis(compatibilityRow?.expires_at);
+  const compatibilityEventCreatedAt = readTimestampMillis(compatibilityRow?.event_created_at);
   const compatibilityBlockers: ControllerDualRoleCompatibilityAccessDiagnosticCode[] = [];
   if (compatibility.rows.length !== 1 || !compatibilityRow) {
     compatibilityBlockers.push('compatibility_access_cardinality_mismatch');
@@ -1644,17 +1667,14 @@ async function inspectIdentity(
       compatibilityEffectiveAt !== accessTransitionCreatedAt ||
       !Number.isFinite(compatibilityUpdatedAt) ||
       compatibilityUpdatedAt > now.getTime() ||
-      new Date(String(compatibilityRow.source_effective_at)).getTime() !==
-        compatibilityEffectiveAt ||
-      new Date(String(compatibilityRow.source_updated_at_state)).getTime() !==
-        compatibilityUpdatedAt ||
-      new Date(String(compatibilityRow.event_source_updated_at)).getTime() !==
-        compatibilityUpdatedAt
+      readTimestampMillis(compatibilityRow.source_effective_at) !== compatibilityEffectiveAt ||
+      readTimestampMillis(compatibilityRow.source_updated_at_state) !== compatibilityUpdatedAt ||
+      readTimestampMillis(compatibilityRow.event_source_updated_at) !== compatibilityUpdatedAt
     ) {
       compatibilityBlockers.push('compatibility_access_timing_mismatch');
     }
     if (
-      new Date(String(compatibilityRow.source_expires_at)).getTime() !== compatibilityExpiresAt ||
+      readTimestampMillis(compatibilityRow.source_expires_at) !== compatibilityExpiresAt ||
       compatibilityExpiresAt !== Date.parse(CONTROLLER_DUAL_ROLE_ACCESS_EXPIRES_AT) ||
       compatibilityExpiresAt <= now.getTime()
     ) {
@@ -1687,6 +1707,9 @@ async function inspectIdentity(
       !expectedCompatibilityRequestHash
     ) {
       compatibilityBlockers.push('compatibility_access_hash_mismatch');
+      transactionalReadback?.compatibilityHashSubleafCodes.push(
+        ...compatibilityAccessHashSubleafCodes(compatibilityRow, expectedCompatibilityRequestHash),
+      );
     }
     if (compatibilityRow.source_last_event_key !== compatibilityRow.last_event_key) {
       compatibilityBlockers.push('compatibility_access_event_link_mismatch');
@@ -1746,12 +1769,17 @@ async function inspectTransactionalReadback(
   const context: TransactionalReadbackContext = {
     activeGroup: 'core_identity',
     diagnosticBlockers: [],
+    compatibilityHashSubleafCodes: [],
   };
   try {
     const inspection = await inspectIdentity(db, config, manifest, keys, now, context);
     if (inspection.disposition !== 'exact_replay') {
       throw new ControllerTransactionalReadbackError(
-        transactionalReadbackMismatchDiagnostic(inspection, context.diagnosticBlockers),
+        transactionalReadbackMismatchDiagnostic(
+          inspection,
+          context.diagnosticBlockers,
+          context.compatibilityHashSubleafCodes,
+        ),
       );
     }
     return inspection;
@@ -2529,11 +2557,11 @@ async function inspectSetup(
   const blockers: string[] = [...competingBlockers];
   if (result.rows.length !== 1) blockers.push('setup_delivery_ambiguous');
   const row = result.rows[0] as Record<string, unknown>;
-  const tokenCreatedAt = new Date(String(row.token_created_at)).getTime();
-  const tokenExpiresAt = new Date(String(row.expires_at)).getTime();
-  const intentCreatedAt = new Date(String(row.intent_created_at)).getTime();
-  const outboxCreatedAt = new Date(String(row.outbox_created_at)).getTime();
-  const encryptedPayloadExpiresAt = new Date(String(row.encrypted_payload_expires_at)).getTime();
+  const tokenCreatedAt = readTimestampMillis(row.token_created_at);
+  const tokenExpiresAt = readTimestampMillis(row.expires_at);
+  const intentCreatedAt = readTimestampMillis(row.intent_created_at);
+  const outboxCreatedAt = readTimestampMillis(row.outbox_created_at);
+  const encryptedPayloadExpiresAt = readTimestampMillis(row.encrypted_payload_expires_at);
   if (
     row.token_type !== 'password_reset' ||
     row.target_role !== 'parent' ||
@@ -2719,6 +2747,38 @@ async function exactlyOne(
 async function countQuery(db: Queryable, text: string, values: unknown[]) {
   const result = await db.query(text, values);
   return Number(result.rows[0]?.count ?? 0);
+}
+
+function readTimestampMillis(value: unknown): number {
+  return (value instanceof Date ? value : new Date(String(value))).getTime();
+}
+
+function compatibilityAccessHashSubleafCodes(
+  row: Record<string, unknown>,
+  expectedRequestHash: string | null,
+): ControllerDualRoleCompatibilityAccessHashSubleafCode[] {
+  if (!expectedRequestHash) return ['compatibility_access_hash_expected_unavailable'];
+  const projectionHash = row.projection_request_hash;
+  const sourceHash = row.source_request_hash;
+  const eventHash = row.event_request_hash;
+  if (
+    projectionHash === sourceHash &&
+    sourceHash === eventHash &&
+    projectionHash !== expectedRequestHash
+  ) {
+    return ['compatibility_access_hash_consensus_mismatch'];
+  }
+  const codes: ControllerDualRoleCompatibilityAccessHashSubleafCode[] = [];
+  if (projectionHash !== expectedRequestHash) {
+    codes.push('compatibility_access_hash_projection_mismatch');
+  }
+  if (sourceHash !== expectedRequestHash) {
+    codes.push('compatibility_access_hash_source_mismatch');
+  }
+  if (eventHash !== expectedRequestHash) {
+    codes.push('compatibility_access_hash_event_mismatch');
+  }
+  return codes;
 }
 
 function sha256(value: string) {
