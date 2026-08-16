@@ -43,8 +43,8 @@ describe('embedded classroom mounted runtime', () => {
       source('apps/web/src/client/app/student/classroom/StudentClassroomWorkspace.tsx'),
     ]);
     const classroomClient = `${api}\n${workspace}`;
-    expect(portal).toContain('studentClassroomOccurrenceFromLocation(location.pathname)');
-    expect(portal).toContain("history.replaceState({}, '', location.pathname)");
+    expect(portal).toContain('studentClassroomOccurrenceFromLocation(routeLocation.pathname)');
+    expect(portal).toContain("history.replaceState({}, '', routeLocation.pathname)");
     expect(classroomClient).not.toMatch(/localStorage|sessionStorage|URLSearchParams/u);
     expect(classroomClient).not.toMatch(
       /[?&](?:student|household|occurrence|registrant|device|session|token|signature)=/iu,
