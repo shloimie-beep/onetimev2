@@ -5,6 +5,7 @@ import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { createApp } from '../../../apps/web/src/server/app.ts';
 import { loadConfig, type AppConfig } from '../../../packages/config/src/index.ts';
+import type { PortalActorContext } from '../../../packages/contracts/src/portals/index.ts';
 import { asCanonicalUserKey } from '../../../packages/contracts/src/telegram/types.ts';
 import { createMemoryPool, runMigrations, type DbPool } from '../../../packages/db/src/index.ts';
 import { createClassroomRepository } from '../../../packages/db/src/classroom/repository.ts';
@@ -82,6 +83,313 @@ afterEach(async () => {
 });
 
 describe('OT-88 Zoom learner classroom sink mode', () => {
+  it('returns the canonical seeded same-day occurrence when its key differs from the runtime key', async () => {
+    config = loadConfig({
+      NODE_ENV: 'test',
+      ONE_TIME_RUNTIME_ENVIRONMENT: 'isolated_staging',
+      PUBLIC_BASE_URL: 'https://isolated-pr.example.test',
+      APP_VERSION: 'test',
+      COMMIT_SHA: 'test',
+      OUTBOX_TRANSPORT_MODE: 'sink',
+      ZOOM_CLASSROOM_ENABLED: 'true',
+      ZOOM_CLASSROOM_PROVIDER_MODE: 'real',
+      ZOOM_CLASSROOM_REAL_PROVIDER_ENABLED: 'true',
+      ZOOM_CLASSROOM_CANARY_ENABLED: 'false',
+      ZOOM_MEETING_SDK_CLIENT_ID: 'sdk-client-fixture',
+      ZOOM_MEETING_SDK_CLIENT_SECRET: 'sdk-secret-fixture',
+      ZOOM_MEETING_SDK_ALLOWED_ORIGIN: 'https://isolated-pr.example.test',
+      ZOOM_MEETING_SDK_WEB_VERSION: '6.2.0',
+      ZOOM_S2S_ACCOUNT_ID: 's2s-account-fixture',
+      ZOOM_S2S_CLIENT_ID: 's2s-client-fixture',
+      ZOOM_S2S_CLIENT_SECRET: 's2s-secret-fixture',
+      ZOOM_HOST_USER_ID: 'host-fixture',
+      ZOOM_REAL_CONTROL_MEETING_ID: '987654321',
+      ZOOM_REAL_CONTROL_MEETING_PASSCODE: 'meeting-passcode-fixture',
+    });
+    const window = resolveDailyClassWindow(openClassClock(), {
+      currentOccurrenceStillJoinable: true,
+    });
+    const seededOccurrenceKey = 'v21-class-occurrence-seeded-key';
+    await pool.query(
+      `INSERT INTO onetime.class_series
+         (class_series_key, account_key, product_key, title, timezone, local_start_time,
+          reminder_local_time, status, series_state, is_canonical)
+       VALUES ('class_series_one_time_daily', $1, $2, 'One Time Daily Mishnayos',
+          'Asia/Jerusalem', '19:00', '18:30', 'active', 'active', true)`,
+      [config.accountKey, config.productKey],
+    );
+    await pool.query(
+      `INSERT INTO onetime.class_occurrences
+         (occurrence_key, account_key, product_key, class_series_key, local_class_date,
+          starts_at, reminder_due_at, joinable_until, join_opens_at, scheduled_ends_at,
+          join_closes_at, duration_minutes, timezone_snapshot, classroom_policy_version,
+          occurrence_state, reminder_state, access_state)
+       VALUES ($1, $2, $3, 'class_series_one_time_daily', $4::date,
+          $5, $6, $7, $8, $9, $7, $10, 'Asia/Jerusalem',
+          'ot88-classroom-policy-v1', 'scheduled', 'pending', 'ready')`,
+      [
+        seededOccurrenceKey,
+        config.accountKey,
+        config.productKey,
+        window.localDate,
+        window.startsAt,
+        window.reminderDueAt,
+        new Date(window.startsAt.getTime() + 75 * 60_000),
+        new Date(window.startsAt.getTime() - 10 * 60_000),
+        new Date(window.startsAt.getTime() + 60 * 60_000),
+        config.zoomClassroomClassDurationMinutes,
+      ],
+    );
+
+    const occurrence = await createClassroomRepository(pool).ensureDailyOccurrence({
+      actor: { account_key: config.accountKey, product_key: config.productKey },
+      window,
+      durationMinutes: config.zoomClassroomClassDurationMinutes,
+      joinOpenOffsetMinutes: config.zoomClassroomJoinOpenOffsetMinutes,
+      joinCloseOffsetMinutes: config.zoomClassroomJoinCloseOffsetMinutes,
+    });
+
+    expect(occurrence.occurrence_key).toBe(seededOccurrenceKey);
+    expect(occurrence.local_class_date).toBe(window.localDate);
+
+    await pool.query(
+      `DELETE FROM onetime.classroom_household_entitlements
+        WHERE account_key = $1
+          AND product_key = $2
+          AND household_key = 'household_alpha'`,
+      [config.accountKey, config.productKey],
+    );
+
+    await pool.query(
+      `INSERT INTO onetime.class_series_enrollments
+         (enrollment_key, account_key, product_key, class_series_key, learner_key,
+          household_key, enrollment_state, source, effective_at, idempotency_key, audit_ref)
+       VALUES ('fresh-canonical-series-enrollment', $1, $2, 'class_series_one_time_daily',
+          'learner_alpha', 'household_alpha', 'active', 'parent_household_v21',
+          '2026-07-15T12:00:00.000Z', 'fresh-canonical-series-enrollment-idem',
+          'fresh-canonical-series-enrollment-audit')`,
+      [config.accountKey, config.productKey],
+    );
+    const repository = createClassroomRepository(pool);
+    const alphaActor: PortalActorContext = {
+      account_key: config.accountKey,
+      product_key: config.productKey,
+      actor_user_ref: studentUserKey,
+      actor_role: 'student',
+      session_key: 'fresh-canonical-student-session',
+      capabilities: ['student:dashboard:read', 'student:class:launch'],
+      authorized_households: [],
+      student_learner: {
+        learner_key: 'learner_alpha',
+        household_key: 'household_alpha',
+        access_state_key: 'access_alpha',
+      },
+    };
+    await expect(
+      repository.getLearnerEligibility({ actor: alphaActor, learner_key: 'learner_alpha' }),
+    ).resolves.toMatchObject({ entitlement_state: 'active' });
+    await expect(
+      repository.isLearnerEnrolled({
+        actor: { account_key: config.accountKey, product_key: config.productKey },
+        occurrence_key: seededOccurrenceKey,
+        learner_key: 'learner_alpha',
+      }),
+    ).resolves.toBe(true);
+
+    const server = await listenForTest(createApp({ config, pool, distDir, clock: openClassClock }));
+    try {
+      const student = await loginAs(server.baseUrl, 'student@example.test', 'StudentPass!234');
+      const dashboard = await fetch(`${server.baseUrl}/api/v1/portals/student/dashboard`, {
+        headers: { cookie: student.cookies },
+      });
+      const dashboardText = await dashboard.text();
+      expect(dashboard.status, dashboardText).toBe(200);
+      expect(JSON.parse(dashboardText).data.upcoming_classes[0]).toMatchObject({
+        class_key: seededOccurrenceKey,
+        provider_state: 'configured',
+        status: 'live',
+        launch_action: { label: 'Join class' },
+      });
+    } finally {
+      await server.close();
+    }
+
+    await expect(
+      repository.isLearnerEnrolled({
+        actor: { account_key: config.accountKey, product_key: config.productKey },
+        occurrence_key: seededOccurrenceKey,
+        learner_key: 'learner_sibling',
+      }),
+    ).resolves.toBe(false);
+
+    await pool.query(
+      `INSERT INTO onetime.class_series
+         (class_series_key, account_key, product_key, title, timezone, local_start_time,
+          reminder_local_time, status, series_state, is_canonical)
+       VALUES ('class_series_wrong_scope', $1, $2, 'Wrong scope',
+          'Asia/Jerusalem', '19:00', '18:30', 'active', 'active', false)`,
+      [config.accountKey, config.productKey],
+    );
+    await pool.query(
+      `INSERT INTO onetime.class_occurrences
+         (occurrence_key, account_key, product_key, class_series_key, local_class_date,
+          starts_at, reminder_due_at, joinable_until, join_opens_at, scheduled_ends_at,
+          join_closes_at, duration_minutes, timezone_snapshot, classroom_policy_version,
+          occurrence_state, reminder_state, access_state)
+       VALUES ('wrong-series-occurrence', $1, $2, 'class_series_wrong_scope', $3::date,
+          $4, $5, $6, $7, $8, $6, $9, 'Asia/Jerusalem',
+          'ot88-classroom-policy-v1', 'scheduled', 'pending', 'ready')`,
+      [
+        config.accountKey,
+        config.productKey,
+        window.localDate,
+        window.startsAt,
+        window.reminderDueAt,
+        new Date(window.startsAt.getTime() + 75 * 60_000),
+        new Date(window.startsAt.getTime() - 10 * 60_000),
+        new Date(window.startsAt.getTime() + 60 * 60_000),
+        config.zoomClassroomClassDurationMinutes,
+      ],
+    );
+    await expect(
+      repository.isLearnerEnrolled({
+        actor: { account_key: config.accountKey, product_key: config.productKey },
+        occurrence_key: 'wrong-series-occurrence',
+        learner_key: 'learner_alpha',
+      }),
+    ).resolves.toBe(false);
+
+    await pool.query(
+      `INSERT INTO onetime.class_series_enrollments
+         (enrollment_key, account_key, product_key, class_series_key, learner_key,
+          household_key, enrollment_state, source, effective_at, idempotency_key, audit_ref)
+       VALUES ('noncanonical-series-enrollment', $1, $2, 'class_series_wrong_scope',
+          'learner_sibling', 'household_alpha', 'active', 'parent_household_v21',
+          '2026-07-15T12:00:00.000Z', 'noncanonical-series-enrollment-idem',
+          'noncanonical-series-enrollment-audit'),
+         ('wrong-household-series-enrollment', $1, $2, 'class_series_one_time_daily',
+          'learner_beta', 'household_alpha', 'active', 'parent_household_v21',
+          '2026-07-15T12:00:00.000Z', 'wrong-household-series-enrollment-idem',
+          'wrong-household-series-enrollment-audit')`,
+      [config.accountKey, config.productKey],
+    );
+    await expect(
+      repository.getLearnerEligibility({ actor: alphaActor, learner_key: 'learner_sibling' }),
+    ).resolves.toMatchObject({ entitlement_state: null });
+    await expect(
+      repository.getLearnerEligibility({ actor: alphaActor, learner_key: 'learner_beta' }),
+    ).resolves.toMatchObject({ entitlement_state: 'revoked' });
+    await expect(
+      repository.isLearnerEnrolled({
+        actor: { account_key: config.accountKey, product_key: config.productKey },
+        occurrence_key: seededOccurrenceKey,
+        learner_key: 'learner_beta',
+      }),
+    ).resolves.toBe(false);
+
+    await pool.query(
+      `UPDATE onetime.account_access_projections
+          SET state = 'revoked',
+              revocation_reason = 'test_revocation'
+        WHERE account_key = $1
+          AND product_key = $2
+          AND household_key = 'household_alpha'`,
+      [config.accountKey, config.productKey],
+    );
+    await expect(
+      repository.getLearnerEligibility({ actor: alphaActor, learner_key: 'learner_alpha' }),
+    ).resolves.toMatchObject({ entitlement_state: 'revoked' });
+    await expect(
+      repository.isLearnerEnrolled({
+        actor: { account_key: config.accountKey, product_key: config.productKey },
+        occurrence_key: seededOccurrenceKey,
+        learner_key: 'learner_alpha',
+      }),
+    ).resolves.toBe(false);
+    await pool.query(
+      `UPDATE onetime.account_access_projections
+          SET state = 'active',
+              revocation_reason = NULL
+        WHERE account_key = $1
+          AND product_key = $2
+          AND household_key = 'household_alpha'`,
+      [config.accountKey, config.productKey],
+    );
+    await pool.query(
+      `UPDATE onetime.class_series
+          SET status = 'paused',
+              series_state = 'paused'
+        WHERE account_key = $1
+          AND product_key = $2
+          AND class_series_key = 'class_series_one_time_daily'`,
+      [config.accountKey, config.productKey],
+    );
+    await expect(
+      repository.getLearnerEligibility({ actor: alphaActor, learner_key: 'learner_alpha' }),
+    ).resolves.toMatchObject({ entitlement_state: 'revoked' });
+    await expect(
+      repository.isLearnerEnrolled({
+        actor: { account_key: config.accountKey, product_key: config.productKey },
+        occurrence_key: seededOccurrenceKey,
+        learner_key: 'learner_alpha',
+      }),
+    ).resolves.toBe(false);
+    await pool.query(
+      `UPDATE onetime.class_series
+          SET status = 'active',
+              series_state = 'active'
+        WHERE account_key = $1
+          AND product_key = $2
+          AND class_series_key = 'class_series_one_time_daily'`,
+      [config.accountKey, config.productKey],
+    );
+    await pool.query(
+      `INSERT INTO onetime.classroom_household_entitlements
+         (entitlement_key, account_key, product_key, household_key, entitlement_state)
+       VALUES ('stale-legacy-household-entitlement', $1, $2, 'household_alpha', 'active')`,
+      [config.accountKey, config.productKey],
+    );
+    await pool.query(
+      `INSERT INTO onetime.classroom_occurrence_learner_entitlements
+         (occurrence_entitlement_key, account_key, product_key, occurrence_key,
+          household_key, learner_key, entitlement_state, source)
+       VALUES ('stale-legacy-occurrence-entitlement', $1, $2, $3,
+          'household_alpha', 'learner_alpha', 'active', 'operator')`,
+      [config.accountKey, config.productKey, seededOccurrenceKey],
+    );
+    await pool.query(
+      `UPDATE onetime.class_series_enrollments
+          SET enrollment_state = 'revoked',
+              revoked_at = '2026-07-16T15:00:00.000Z'
+        WHERE enrollment_key = 'fresh-canonical-series-enrollment'`,
+    );
+    await expect(
+      repository.isLearnerEnrolled({
+        actor: { account_key: config.accountKey, product_key: config.productKey },
+        occurrence_key: seededOccurrenceKey,
+        learner_key: 'learner_alpha',
+      }),
+    ).resolves.toBe(false);
+    await expect(
+      repository.getLearnerEligibility({ actor: alphaActor, learner_key: 'learner_alpha' }),
+    ).resolves.toMatchObject({ entitlement_state: 'revoked' });
+
+    await pool.query(
+      `DELETE FROM onetime.class_series_enrollments
+        WHERE enrollment_key = 'fresh-canonical-series-enrollment'`,
+    );
+    await expect(
+      repository.isLearnerEnrolled({
+        actor: { account_key: config.accountKey, product_key: config.productKey },
+        occurrence_key: seededOccurrenceKey,
+        learner_key: 'learner_alpha',
+      }),
+    ).resolves.toBe(true);
+    await expect(
+      repository.getLearnerEligibility({ actor: alphaActor, learner_key: 'learner_alpha' }),
+    ).resolves.toMatchObject({ entitlement_state: 'active' });
+  });
+
   it('issues an opaque learner launch and bootstraps sink SDK data without raw provider URLs', async () => {
     const server = await listenForTest(createApp({ config, pool, distDir, clock: openClassClock }));
     try {
