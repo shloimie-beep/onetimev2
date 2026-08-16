@@ -1,6 +1,6 @@
 # One Time — Current Launch Handoff
 
-**Updated:** 2026-08-16 17:10 Asia/Jerusalem  
+**Updated:** 2026-08-16 17:15 Asia/Jerusalem  
 **Class time:** 2026-08-16 19:00 Asia/Jerusalem  
 **Status:** **EMERGENCY LAUNCH WINDOW — SAFE MINIMUM ONLY**  
 **Sole product integration/deployment authority:** PR #131 / `codex/one-time-complete-production-launch-20260805`
@@ -16,7 +16,7 @@ The launch email is authorized only after one operator-owned end-to-end canary p
 ## Current authority and product truth
 
 - PR #131 remains the only integration/deployment path.
-- Current PR #131 head at this checkpoint: `0cf0a3c346da7cf078010aa6cde3196a23037406`.
+- Current PR #131 head immediately before this handoff refresh: `341b35fdc6930d96f6d1632164afd6da7c6c6c29`. Re-fetch because this handoff update creates a newer docs-only head.
 - Current production remains M5 `4a5a6e2058848b9513bc53ef733c78d02fe075bb` unless a later exact deployment readback proves otherwise.
 - Current authoritative product decision: `ops/launch/2026-08-16-parent-first-learning-decision.md`.
 - Parent-first candidate behavior: successful Family signup creates and authenticates the Parent learner immediately, permits Parent classroom/library/questions under the Parent identity, and preserves up to three separate child Student accounts.
@@ -98,9 +98,9 @@ Do not migrate the old 1,377 opportunities before the launch email. The Smart Li
 - graphics/landing-image refinements that are not required for a functional signup
 - advanced Zoom Stage Host/OBS/roster features
 
-## 110-minute emergency sequence
+## 105-minute emergency sequence
 
-### T-110 to T-95 — checkpoint, do not keep expanding
+### T-105 to T-90 — checkpoint, do not keep expanding
 
 Current Codex/controller must:
 
@@ -112,7 +112,7 @@ Current Codex/controller must:
 - leave a clean remote checkpoint;
 - update this handoff if its facts changed.
 
-### T-95 to T-65 — integrate only the minimum accepted candidate
+### T-90 to T-60 — integrate only the minimum accepted candidate
 
 - Do not merge PR #208.
 - Use PR #211 or a newer reviewed successor only if exact-head review/checks and controller authority allow it.
@@ -120,7 +120,7 @@ Current Codex/controller must:
 - Do not spend the window on billing, a new sandbox, or broad refactors.
 - Deploy only after exact reconciliation and rollback are ready.
 
-### T-65 to T-45 — operator-owned end-to-end app canary
+### T-60 to T-40 — operator-owned end-to-end app canary
 
 Use one new operator-owned Family identity and one synthetic/operator-owned Student.
 
@@ -130,14 +130,14 @@ Prove:
 
 Also inspect GHL for exactly one adult contact/opportunity and zero Student contacts.
 
-### T-45 to T-30 — GHL email/reply canary
+### T-40 to T-25 — GHL email/reply canary
 
 - Send one OT-C02 test email to the operator inbox.
 - Click the CTA and repeat the live journey.
 - Reply to the email.
 - Confirm the reply in GHL Conversations.
 
-### T-30 — GO / NO-GO
+### T-25 — GO / NO-GO
 
 **GO** only when every P0 item above passes.
 
