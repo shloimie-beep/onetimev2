@@ -21,6 +21,7 @@ import {
   isIsolatedPostgresServerAddress,
   isNativeDisposablePostgresTarget,
   runDualRoleAdultProvision,
+  type ControllerDualRoleTransactionalReadbackGroup,
 } from '../../../scripts/operations/provision-dual-role-adult.ts';
 
 const databaseUrl = process.env.DUAL_ROLE_PROVISION_NATIVE_DATABASE_URL;
@@ -200,6 +201,7 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
             transaction_outcome: stage === 'transaction_begin' ? 'not_started' : 'rolled_back',
             reconciliation_outcome: 'completed',
             final_stage: stage,
+            transactional_readback_diagnostic: null,
           },
           identity: { disposition: 'absent', adult_rows: 0 },
           setup_delivery: { token_rows: 0, intent_rows: 0, outbox_rows: 0 },
@@ -240,6 +242,7 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
             transaction_outcome: 'rolled_back',
             reconciliation_outcome: 'completed',
             final_stage: stage,
+            transactional_readback_diagnostic: null,
           },
           identity: { disposition: 'absent', adult_rows: 0 },
           setup_delivery: { token_rows: 0, intent_rows: 0, outbox_rows: 0 },
@@ -273,6 +276,11 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
         });
       const reports = await Promise.all([apply(), apply()]);
       expect(reports.map((report) => report.status).sort()).toEqual(['applied', 'replayed']);
+      expect(
+        reports.every(
+          (report) => report.apply_execution.transactional_readback_diagnostic === null,
+        ),
+      ).toBe(true);
       expect(proofToken).toBeTruthy();
       await expect(cardinalities(pool)).resolves.toEqual({
         adults: 1,
@@ -438,6 +446,229 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
     }
   }, 120_000);
 
+  it('rolls back a representative mismatch and query failure for every fixed group', async () => {
+    const nativePool = new pg.Pool({ connectionString: databaseUrl!, max: 4 });
+    const faultControl: NativeTransactionalReadbackFaultControl = {};
+    const pool = nativeTransactionalReadbackFaultPool(nativePool, faultControl);
+    let ownsSchema = false;
+    try {
+      const database = await pool.query(
+        `SELECT current_database() AS database_name,
+                COALESCE(inet_server_addr()::text, 'local_socket') AS server_address`,
+      );
+      expect(
+        isNativeDisposablePostgresTarget({
+          databaseName: String(database.rows[0]?.database_name),
+          serverAddress: String(database.rows[0]?.server_address),
+        }),
+      ).toBe(true);
+      const blank = await pool.query(
+        `SELECT count(*)::integer AS table_count
+           FROM information_schema.tables
+          WHERE table_schema NOT IN ('pg_catalog','information_schema')`,
+      );
+      expect(blank.rows[0]).toEqual({ table_count: 0 });
+      ownsSchema = true;
+      await runMigrations(pool);
+      await seedCanonicalClass(pool);
+      const config = nativeConfig();
+      const mismatchCases: Array<{
+        name: string;
+        group: ControllerDualRoleTransactionalReadbackGroup;
+        blocker: string;
+        queryIncludes: string;
+        mutateRows: (rows: Record<string, unknown>[]) => Record<string, unknown>[];
+      }> = [
+        {
+          name: 'core',
+          group: 'core_identity',
+          blocker: 'canonical_adult_mismatch',
+          queryIncludes: 'WHERE normalized_email = $1',
+          mutateRows: (rows) =>
+            rows.map((row, index) =>
+              index === 0 ? { ...row, display_name: 'Native readback mismatch' } : row,
+            ),
+        },
+        {
+          name: 'canonical',
+          group: 'canonical',
+          blocker: 'canonical_transition_mismatch',
+          queryIncludes: 'FROM onetime.canonical_state_transition_events',
+          mutateRows: (rows) => rows.map((row) => ({ ...row, actor_kind: 'readback_mismatch' })),
+        },
+        {
+          name: 'compatibility',
+          group: 'compatibility_access',
+          blocker: 'compatibility_access_mismatch',
+          queryIncludes: 'FROM onetime.portal_households AS portal',
+          mutateRows: () => [],
+        },
+        {
+          name: 'audit',
+          group: 'provision_audit',
+          blocker: 'controller_provision_audit_mismatch',
+          queryIncludes: 'FROM onetime.account_lifecycle_audit_events',
+          mutateRows: () => [],
+        },
+        {
+          name: 'prohibited',
+          group: 'prohibited',
+          blocker: 'prohibited_projection_present',
+          queryIncludes: 'FROM onetime.family_signup_requests',
+          mutateRows: (rows) => rows.map((row) => ({ ...row, count: 1 })),
+        },
+      ];
+      const queryFailureCases: Array<{
+        group: ControllerDualRoleTransactionalReadbackGroup;
+        queryIncludes: string;
+      }> = [
+        { group: 'core_identity', queryIncludes: 'WHERE normalized_email = $1' },
+        { group: 'canonical', queryIncludes: 'FROM onetime.canonical_aggregate_states' },
+        {
+          group: 'compatibility_access',
+          queryIncludes: 'FROM onetime.portal_households AS portal',
+        },
+        {
+          group: 'provision_audit',
+          queryIncludes: 'FROM onetime.account_lifecycle_audit_events',
+        },
+        { group: 'prohibited', queryIncludes: 'FROM onetime.family_signup_requests' },
+      ];
+
+      for (const testCase of mismatchCases) {
+        const operationNow = new Date(Math.floor(Date.now() / 1000) * 1000);
+        const email = `native-readback-${testCase.name}@example.test`;
+        await seedNativeUnrelatedEventRegistration(pool, email, operationNow);
+        const before = await fullControllerCardinalities(pool);
+        faultControl.faults = [
+          {
+            queryIncludes: testCase.queryIncludes,
+            mutateRows: testCase.mutateRows,
+          },
+        ];
+        let setupCalls = 0;
+        const report = await runDualRoleAdultProvision({
+          manifest: privateManifestAt(email, `native-readback-${testCase.name}`, operationNow),
+          apply: true,
+          authorizationPhrase: AUTHORIZATION,
+          pool,
+          config,
+          now: operationNow,
+          testOnlyAllowIsolatedApply: true,
+          issuePasswordReset: async () => {
+            setupCalls += 1;
+            throw new Error('Setup must not run after native readback mismatch.');
+          },
+        });
+        const expectedDiagnostic = {
+          groups: [{ group_code: testCase.group, blocker_codes: [testCase.blocker] }],
+        };
+        expect(report).toMatchObject({
+          status: 'blocked',
+          blockers: ['apply_identity_transactional_readback_failed'],
+          generated_at: operationNow.toISOString(),
+          apply_execution: {
+            disposition: 'failed',
+            transaction_outcome: 'rolled_back',
+            reconciliation_outcome: 'completed',
+            final_stage: 'transactional_readback',
+            transactional_readback_diagnostic: expectedDiagnostic,
+          },
+          identity: { disposition: 'absent', adult_rows: 0 },
+          setup_delivery: { token_rows: 0, intent_rows: 0, outbox_rows: 0 },
+        });
+        expect(report.apply_execution.journal.at(-1)).toEqual({
+          sequence: report.apply_execution.journal.length,
+          stage: 'transactional_readback',
+          state: 'failed',
+          transactional_readback_diagnostic: expectedDiagnostic,
+        });
+        expect(setupCalls).toBe(0);
+        await expect(fullControllerCardinalities(pool)).resolves.toEqual(before);
+        await expect(nativeUnrelatedEventRegistrationCount(pool, email)).resolves.toBe(1);
+        const serialized = JSON.stringify(report);
+        expect(serialized).not.toContain(email);
+        expect(serialized).not.toContain('Synthetic Dual Role Adult');
+        expect(serialized).not.toContain('@');
+        expect(serialized).not.toContain('SELECT');
+      }
+
+      for (const testCase of queryFailureCases) {
+        const operationNow = new Date(Math.floor(Date.now() / 1000) * 1000);
+        const email = `native-readback-query-${testCase.group.replaceAll('_', '-')}@example.test`;
+        await seedNativeUnrelatedEventRegistration(pool, email, operationNow);
+        const before = await fullControllerCardinalities(pool);
+        faultControl.faults = [
+          {
+            queryIncludes: testCase.queryIncludes,
+            throwRawQueryError: true,
+          },
+        ];
+        let setupCalls = 0;
+        const report = await runDualRoleAdultProvision({
+          manifest: privateManifestAt(
+            email,
+            `native-readback-query-${testCase.group}`,
+            operationNow,
+          ),
+          apply: true,
+          authorizationPhrase: AUTHORIZATION,
+          pool,
+          config,
+          now: operationNow,
+          testOnlyAllowIsolatedApply: true,
+          issuePasswordReset: async () => {
+            setupCalls += 1;
+            throw new Error('Setup must not run after native readback query failure.');
+          },
+        });
+        const queryFailureCode = `${testCase.group}_query_failed`;
+        const expectedDiagnostic = {
+          groups: [{ group_code: testCase.group, blocker_codes: [queryFailureCode] }],
+        };
+        expect(report).toMatchObject({
+          status: 'blocked',
+          blockers: ['apply_identity_transactional_readback_failed'],
+          generated_at: operationNow.toISOString(),
+          apply_execution: {
+            disposition: 'failed',
+            transaction_outcome: 'rolled_back',
+            reconciliation_outcome: 'completed',
+            final_stage: 'transactional_readback',
+            transactional_readback_diagnostic: expectedDiagnostic,
+          },
+          identity: { disposition: 'absent', adult_rows: 0 },
+          setup_delivery: { token_rows: 0, intent_rows: 0, outbox_rows: 0 },
+        });
+        expect(report.apply_execution.journal.at(-1)).toEqual({
+          sequence: report.apply_execution.journal.length,
+          stage: 'transactional_readback',
+          state: 'failed',
+          transactional_readback_diagnostic: expectedDiagnostic,
+        });
+        expect(setupCalls).toBe(0);
+        await expect(fullControllerCardinalities(pool)).resolves.toEqual(before);
+        await expect(nativeUnrelatedEventRegistrationCount(pool, email)).resolves.toBe(1);
+        const serialized = JSON.stringify(report);
+        for (const unsafe of [
+          email,
+          'Synthetic Dual Role Adult',
+          'RAW_NATIVE_READBACK_FAILURE',
+          'SELECT secret FROM native_private_table',
+          'native-database-id-123',
+          'params=',
+          'native-authorization-secret',
+          '@',
+        ]) {
+          expect(serialized).not.toContain(unsafe);
+        }
+      }
+    } finally {
+      if (ownsSchema) await pool.query('DROP SCHEMA IF EXISTS onetime CASCADE');
+      await pool.end();
+    }
+  }, 180_000);
+
   it('destroys the real client on rollback and commit uncertainty without creating setup effects', async () => {
     const nativePool = new pg.Pool({ connectionString: databaseUrl!, max: 4 });
     const destroyedReleases: boolean[] = [];
@@ -575,6 +806,75 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
   }, 120_000);
 });
 
+type NativeTransactionalReadbackFaultControl = {
+  faults?: Array<{
+    queryIncludes: string;
+    mutateRows?: (rows: Record<string, unknown>[]) => Record<string, unknown>[];
+    throwRawQueryError?: boolean;
+  }>;
+};
+
+function nativeTransactionalReadbackFaultPool(
+  nativePool: pg.Pool,
+  faultControl: NativeTransactionalReadbackFaultControl,
+): DbPool {
+  return {
+    query: nativePool.query.bind(nativePool) as DbPool['query'],
+    connect: (async () => {
+      const client = await nativePool.connect();
+      const invoke = client.query.bind(client) as unknown as (
+        statement: string | { text: string },
+        values?: unknown[],
+      ) => Promise<{ rowCount: number | null; rows: Record<string, unknown>[] }>;
+      const state = { armed: false, injected: new Set<number>() };
+      return new Proxy(client, {
+        get(target, property, receiver) {
+          if (property === 'query') {
+            return async (statement: string | { text: string }, values?: unknown[]) => {
+              const text = typeof statement === 'string' ? statement : statement.text;
+              const faultIndex = state.armed
+                ? (faultControl.faults ?? []).findIndex(
+                    (fault, index) =>
+                      !state.injected.has(index) && text.includes(fault.queryIncludes),
+                  )
+                : -1;
+              if (faultIndex >= 0) {
+                const fault = faultControl.faults?.[faultIndex];
+                state.injected.add(faultIndex);
+                if (fault?.throwRawQueryError) {
+                  try {
+                    await invoke('SELECT 1 / 0');
+                  } catch {
+                    throw new Error(
+                      'RAW_NATIVE_READBACK_FAILURE SELECT secret FROM native_private_table ' +
+                        'params=native@example.test native-database-id-123 ' +
+                        'native-authorization-secret',
+                    );
+                  }
+                }
+                const result = await invoke(statement, values);
+                const rows = fault?.mutateRows?.(
+                  result.rows.map((row) => ({ ...(row as Record<string, unknown>) })),
+                );
+                if (rows) return { ...result, rowCount: rows.length, rows };
+                return result;
+              }
+              const result = await invoke(statement, values);
+              if (text.includes('INSERT INTO onetime.account_lifecycle_audit_events')) {
+                state.armed = true;
+              }
+              return result;
+            };
+          }
+          const value = Reflect.get(target, property, receiver);
+          return typeof value === 'function' ? value.bind(target) : value;
+        },
+      });
+    }) as DbPool['connect'],
+    end: nativePool.end.bind(nativePool) as DbPool['end'],
+  };
+}
+
 function observeClientDestruction(nativePool: pg.Pool, destroyedReleases: boolean[]): DbPool {
   return {
     query: nativePool.query.bind(nativePool) as DbPool['query'],
@@ -666,6 +966,14 @@ function privateManifest(email = EMAIL, operationId = 'native-dual-role-controll
   } as const;
 }
 
+function privateManifestAt(email: string, operationId: string, now: Date) {
+  return {
+    ...privateManifest(email, operationId),
+    authorized_at: now.toISOString(),
+    expires_at: new Date(now.getTime() + 60 * 60 * 1000).toISOString(),
+  };
+}
+
 function studentService(pool: DbPool, studentId: string, clock: Date) {
   return createParentHouseholdService({
     repository: createPostgresParentHouseholdRepository(pool, {
@@ -708,6 +1016,103 @@ async function seedCanonicalClass(pool: DbPool) {
      VALUES ('native-dual-role-canonical-class','one_time','one_time_mishnayos',
              'Native canonical class','Asia/Jerusalem','19:00','18:30','active','active',true)`,
   );
+}
+
+async function seedNativeUnrelatedEventRegistration(pool: DbPool, email: string, now: Date) {
+  const definition = await pool.query(
+    `SELECT event_definition_key, account_key, product_key, event_code
+       FROM onetime.event_definitions ORDER BY created_at LIMIT 1`,
+  );
+  const row = definition.rows[0] as Record<string, unknown>;
+  await pool.query(
+    `INSERT INTO onetime.event_registrations
+       (registration_key, event_definition_key, account_key, product_key, event_code,
+        email_normalized, first_name, newsletter_opt_in,
+        event_service_consent_policy_version, marketing_consent_policy_version,
+        marketing_consent_recorded_at, initial_source, latest_source,
+        first_seen_at, last_seen_at, registered_at, last_registered_at, metadata,
+        created_at, updated_at)
+     VALUES ($1,$2,$3,$4,$5,$6,'Unrelated',false,'event-service-test',NULL,NULL,
+             'historical_event','historical_event',$7,$7,$7,$7,'{}'::jsonb,$7,$7)`,
+    [
+      `native-registration-${createHash('sha256').update(email).digest('hex').slice(0, 20)}`,
+      row.event_definition_key,
+      row.account_key,
+      row.product_key,
+      row.event_code,
+      email,
+      now,
+    ],
+  );
+}
+
+async function nativeUnrelatedEventRegistrationCount(pool: DbPool, email: string) {
+  const result = await pool.query(
+    `SELECT count(*)::integer AS count
+       FROM onetime.event_registrations
+      WHERE email_normalized=$1`,
+    [email],
+  );
+  return Number(result.rows[0]?.count ?? 0);
+}
+
+const FULL_CONTROLLER_CARDINALITY_TABLES = [
+  'v21_adult_identities',
+  'v21_human_accounts',
+  'v21_adult_credentials',
+  'v21_human_account_role_memberships',
+  'v21_households',
+  'canonical_state_transition_events',
+  'canonical_aggregate_states',
+  'portal_households',
+  'account_access_source_states',
+  'account_access_projections',
+  'account_access_events',
+  'account_lifecycle_audit_events',
+  'account_lifecycle_tokens',
+  'account_lifecycle_delivery_intents',
+  'account_lifecycle_delivery_outbox',
+  'account_users',
+  'contacts',
+  'family_signup_requests',
+  'family_signup_receipts',
+  'family_signup_outbox',
+  'family_signup_consents',
+  'portal_guardian_consents',
+  'privacy_consent_event',
+  'v21_student_profiles',
+  'portal_learners',
+  'portal_student_access_state',
+  'account_learner_identity_links',
+  'adult_household_contact_links',
+  'adult_ghl_identity_link',
+  'household_provider_mapping',
+  'provider_operation_binding',
+  'ghl_identity_sync_operation',
+  'ghl_household_identity_projection',
+  'ghl_identity_review_case',
+  'v21_billing_portal_sessions',
+  'v21_provider_reassociation_intents',
+  'billing_ghl_lifecycle_intents',
+  'billing_access_episode_authority',
+  'billing_access_episode_events',
+  'billing_checkout_abandonment_intents',
+  'billing_principal_customers',
+  'billing_checkout_sessions',
+  'billing_subscription_projections',
+  'billing_invoice_summaries',
+  'billing_reconciliation_jobs',
+  'billing_entitlement_projections',
+  'billing_audit_events',
+] as const;
+
+async function fullControllerCardinalities(pool: DbPool) {
+  const entries = await Promise.all(
+    FULL_CONTROLLER_CARDINALITY_TABLES.map(
+      async (table) => [table, await count(pool, table)] as const,
+    ),
+  );
+  return Object.fromEntries(entries);
 }
 
 async function cardinalities(pool: DbPool) {

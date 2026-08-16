@@ -45,6 +45,8 @@ import {
 const SOURCE_SHA = 'a'.repeat(40);
 const AUTHORIZATION = 'test-only dual role controller authorization phrase';
 const PROVISION_AT = new Date('2026-08-01T12:00:00.000Z');
+type TransactionalReadbackDiagnosticGroup =
+  'core_identity' | 'canonical' | 'compatibility_access' | 'provision_audit' | 'prohibited';
 
 let pool: DbPool;
 let config: AppConfig;
@@ -128,6 +130,7 @@ describe('controller dual-role adult provisioning', () => {
     expect(report).toMatchObject({
       apply: false,
       status: 'dry_run_planned',
+      apply_execution: { transactional_readback_diagnostic: null, journal: [] },
       identity: { disposition: 'absent', adult_rows: 0 },
       setup_delivery: { disposition: 'planned', token_rows: 0, outbox_rows: 0 },
     });
@@ -213,12 +216,18 @@ describe('controller dual-role adult provisioning', () => {
         transaction_outcome: stage === 'transaction_begin' ? 'not_started' : 'rolled_back',
         reconciliation_outcome: 'completed',
         final_stage: stage,
+        transactional_readback_diagnostic: null,
       });
       expect(report.apply_execution.journal.at(-1)).toEqual({
         sequence: report.apply_execution.journal.length,
         stage,
         state: 'failed',
       });
+      expect(
+        report.apply_execution.journal.some(
+          (entry) => entry.transactional_readback_diagnostic !== undefined,
+        ),
+      ).toBe(false);
       expect(setupCalls).toBe(0);
       const serialized = JSON.stringify(report);
       expect(serialized).not.toContain(email);
@@ -232,6 +241,387 @@ describe('controller dual-role adult provisioning', () => {
     await expect(count(pool, 'account_lifecycle_delivery_intents')).resolves.toBe(0);
     await expect(count(pool, 'account_lifecycle_delivery_outbox')).resolves.toBe(0);
   });
+
+  it('preserves only fixed transactional-readback diagnostics through rollback and reconciliation', async () => {
+    const diagnosticMemory = createMemoryPool();
+    await runMigrations(diagnosticMemory);
+    const faultControl: TransactionalReadbackFaultControl = {};
+    const diagnosticPool = canonicalTriggerCompatiblePool(diagnosticMemory, faultControl);
+    await seedCanonicalClassSeries(diagnosticPool);
+    const mismatchCases: Array<{
+      name: string;
+      group: TransactionalReadbackDiagnosticGroup;
+      blocker: string;
+      queryIncludes: string;
+      mutateRows: (rows: Record<string, unknown>[]) => Record<string, unknown>[];
+    }> = [
+      {
+        name: 'core identity',
+        group: 'core_identity',
+        blocker: 'canonical_adult_mismatch',
+        queryIncludes: 'WHERE normalized_email = $1',
+        mutateRows: (rows) =>
+          rows.map((row, index) =>
+            index === 0 ? { ...row, display_name: 'Readback mismatch' } : row,
+          ),
+      },
+      {
+        name: 'zero adult readback',
+        group: 'core_identity',
+        blocker: 'core_identity_absent',
+        queryIncludes: 'WHERE normalized_email = $1',
+        mutateRows: () => [],
+      },
+      {
+        name: 'canonical',
+        group: 'canonical',
+        blocker: 'canonical_transition_mismatch',
+        queryIncludes: 'FROM onetime.canonical_state_transition_events',
+        mutateRows: (rows) => rows.map((row) => ({ ...row, actor_kind: 'readback_mismatch' })),
+      },
+      {
+        name: 'compatibility access',
+        group: 'compatibility_access',
+        blocker: 'compatibility_access_mismatch',
+        queryIncludes: 'FROM onetime.portal_households AS portal',
+        mutateRows: () => [],
+      },
+      {
+        name: 'provision audit',
+        group: 'provision_audit',
+        blocker: 'controller_provision_audit_mismatch',
+        queryIncludes: 'FROM onetime.account_lifecycle_audit_events',
+        mutateRows: () => [],
+      },
+      {
+        name: 'prohibited',
+        group: 'prohibited',
+        blocker: 'prohibited_projection_present',
+        queryIncludes: 'FROM onetime.family_signup_requests',
+        mutateRows: (rows) => rows.map((row) => ({ ...row, count: 1 })),
+      },
+    ];
+    const queryFailureCases: Array<{
+      group: TransactionalReadbackDiagnosticGroup;
+      queryIncludes: string;
+    }> = [
+      { group: 'core_identity', queryIncludes: 'WHERE normalized_email = $1' },
+      { group: 'canonical', queryIncludes: 'FROM onetime.canonical_aggregate_states' },
+      {
+        group: 'compatibility_access',
+        queryIncludes: 'FROM onetime.portal_households AS portal',
+      },
+      {
+        group: 'provision_audit',
+        queryIncludes: 'FROM onetime.account_lifecycle_audit_events',
+      },
+      { group: 'prohibited', queryIncludes: 'FROM onetime.family_signup_requests' },
+    ];
+    const assertNestedDiagnosticWasNotLeaked = async (
+      report: Awaited<ReturnType<typeof runDualRoleAdultProvision>>,
+      manifest: ReturnType<typeof privateManifestAt>,
+      operationNow: Date,
+    ) => {
+      faultControl.faults = [];
+      const observedReconciliationState = await runDualRoleAdultProvision({
+        manifest,
+        pool: diagnosticPool,
+        config,
+        now: operationNow,
+        testOnlyAllowIsolatedApply: true,
+      });
+      expect(observedReconciliationState.apply_execution.transactional_readback_diagnostic).toBe(
+        null,
+      );
+      const knownReconciliationBlockers = new Set(observedReconciliationState.blockers);
+      const nestedCodes =
+        report.apply_execution.transactional_readback_diagnostic?.groups.flatMap(
+          (group) => group.blocker_codes,
+        ) ?? [];
+      for (const code of [...nestedCodes, 'unclassified_mismatch']) {
+        if (!knownReconciliationBlockers.has(code)) expect(report.blockers).not.toContain(code);
+      }
+      const allowedTopLevelBlockers = new Set([
+        'apply_identity_transactional_readback_failed',
+        'apply_identity_post_failure_state_not_absent',
+        ...knownReconciliationBlockers,
+      ]);
+      expect(report.blockers.every((blocker) => allowedTopLevelBlockers.has(blocker))).toBe(true);
+    };
+
+    let cliDiagnosticReport: Awaited<ReturnType<typeof runDualRoleAdultProvision>> | undefined;
+    try {
+      for (const testCase of mismatchCases) {
+        const operationNow = new Date(Math.floor(Date.now() / 1000) * 1000);
+        const email = `readback-${testCase.name.replaceAll(' ', '-')}-${testCase.group.replaceAll('_', '-')}@example.test`;
+        const manifest = privateManifestAt(email, operationNow);
+        await seedUnrelatedEventRegistration(diagnosticPool, email);
+        let setupCalls = 0;
+        faultControl.faults = [
+          {
+            queryIncludes: testCase.queryIncludes,
+            mutateRows: testCase.mutateRows,
+          },
+        ];
+        const report = await runDualRoleAdultProvision({
+          manifest,
+          apply: true,
+          authorizationPhrase: AUTHORIZATION,
+          pool: diagnosticPool,
+          config,
+          now: operationNow,
+          testOnlyAllowIsolatedApply: true,
+          issuePasswordReset: async () => {
+            setupCalls += 1;
+            throw new Error('Setup must not run after transactional readback mismatch.');
+          },
+        });
+        expect(report).toMatchObject({
+          blockers: expect.arrayContaining(['apply_identity_transactional_readback_failed']),
+          apply_execution: {
+            disposition: 'failed',
+            transaction_outcome: 'rolled_back',
+            reconciliation_outcome: 'completed',
+            final_stage: 'transactional_readback',
+            transactional_readback_diagnostic: {
+              groups: [{ group_code: testCase.group, blocker_codes: [testCase.blocker] }],
+            },
+          },
+          setup_delivery: { token_rows: 0, intent_rows: 0, outbox_rows: 0 },
+        });
+        expect(report.apply_execution.journal.at(-1)).toEqual({
+          sequence: report.apply_execution.journal.length,
+          stage: 'transactional_readback',
+          state: 'failed',
+          transactional_readback_diagnostic: {
+            groups: [{ group_code: testCase.group, blocker_codes: [testCase.blocker] }],
+          },
+        });
+        expect(['blocked', 'identity_applied_setup_pending']).toContain(report.status);
+        expect(['absent', 'blocked', 'exact_replay']).toContain(report.identity.disposition);
+        expect(setupCalls).toBe(0);
+        expect(report.generated_at).toBe(operationNow.toISOString());
+        const serialized = JSON.stringify(report);
+        expect(serialized).not.toContain(email);
+        expect(serialized).not.toContain('Synthetic Dual Role Adult');
+        expect(serialized).not.toContain('@');
+        expect(serialized).not.toContain('SELECT');
+        await assertNestedDiagnosticWasNotLeaked(report, manifest, operationNow);
+      }
+
+      for (const testCase of queryFailureCases) {
+        const operationNow = new Date(Math.floor(Date.now() / 1000) * 1000);
+        const email = `readback-query-${testCase.group.replaceAll('_', '-')}@example.test`;
+        const manifest = privateManifestAt(email, operationNow);
+        await seedUnrelatedEventRegistration(diagnosticPool, email);
+        faultControl.faults = [
+          {
+            queryIncludes: testCase.queryIncludes,
+            throwRawError: true,
+          },
+        ];
+        const report = await runDualRoleAdultProvision({
+          manifest,
+          apply: true,
+          authorizationPhrase: AUTHORIZATION,
+          pool: diagnosticPool,
+          config,
+          now: operationNow,
+          testOnlyAllowIsolatedApply: true,
+          issuePasswordReset: async () => {
+            throw new Error('Setup must not run after transactional readback query failure.');
+          },
+        });
+        if (testCase.group === 'core_identity') cliDiagnosticReport = report;
+
+        const queryFailureCode = `${testCase.group}_query_failed`;
+        expect(report).toMatchObject({
+          blockers: expect.arrayContaining(['apply_identity_transactional_readback_failed']),
+          apply_execution: {
+            disposition: 'failed',
+            transaction_outcome: 'rolled_back',
+            reconciliation_outcome: 'completed',
+            final_stage: 'transactional_readback',
+            transactional_readback_diagnostic: {
+              groups: [{ group_code: testCase.group, blocker_codes: [queryFailureCode] }],
+            },
+          },
+          setup_delivery: { token_rows: 0, intent_rows: 0, outbox_rows: 0 },
+        });
+        expect(report.apply_execution.journal.at(-1)).toEqual({
+          sequence: report.apply_execution.journal.length,
+          stage: 'transactional_readback',
+          state: 'failed',
+          transactional_readback_diagnostic: {
+            groups: [{ group_code: testCase.group, blocker_codes: [queryFailureCode] }],
+          },
+        });
+        expect(['blocked', 'identity_applied_setup_pending']).toContain(report.status);
+        expect(['absent', 'blocked', 'exact_replay']).toContain(report.identity.disposition);
+        const serialized = JSON.stringify(report);
+        for (const unsafe of [
+          email,
+          'Synthetic Dual Role Adult',
+          'RAW_READBACK_FAILURE',
+          'SELECT secret FROM private_table',
+          'database-id-123',
+          'params=',
+          'authorization-secret',
+          '@',
+        ]) {
+          expect(serialized).not.toContain(unsafe);
+        }
+        await assertNestedDiagnosticWasNotLeaked(report, manifest, operationNow);
+      }
+
+      const operationNow = new Date(Math.floor(Date.now() / 1000) * 1000);
+      const multiEmail = 'readback-ordered-multi-code@example.test';
+      await seedUnrelatedEventRegistration(diagnosticPool, multiEmail);
+      faultControl.faults = [
+        {
+          queryIncludes: 'WHERE normalized_email = $1',
+          mutateRows: (rows) =>
+            rows.map((row, index) =>
+              index === 0 ? { ...row, display_name: 'Readback mismatch' } : row,
+            ),
+        },
+        {
+          queryIncludes: 'FROM onetime.v21_human_account_role_memberships',
+          mutateRows: (rows) => rows.slice(0, 1),
+        },
+        {
+          queryIncludes: 'FROM onetime.family_signup_requests',
+          mutateRows: (rows) => rows.map((row) => ({ ...row, count: 1 })),
+        },
+        {
+          queryIncludes: 'FROM onetime.canonical_aggregate_states',
+          mutateRows: (rows) => rows.map((row) => ({ ...row, current_state: 'mismatch' })),
+        },
+        {
+          queryIncludes: 'FROM onetime.canonical_state_transition_events',
+          mutateRows: (rows) => [
+            ...rows,
+            { ...rows[0], transition_key: 'unallowlisted-database-id', actor_kind: 'mismatch' },
+          ],
+        },
+        { queryIncludes: 'FROM onetime.portal_households AS portal', mutateRows: () => [] },
+        {
+          queryIncludes: 'FROM onetime.account_lifecycle_audit_events',
+          mutateRows: () => [],
+        },
+      ];
+      const multiManifest = privateManifestAt(multiEmail, operationNow);
+      const multiCodeReport = await runDualRoleAdultProvision({
+        manifest: multiManifest,
+        apply: true,
+        authorizationPhrase: AUTHORIZATION,
+        pool: diagnosticPool,
+        config,
+        now: operationNow,
+        testOnlyAllowIsolatedApply: true,
+        issuePasswordReset: async () => {
+          throw new Error('Setup must not run after a multi-code readback mismatch.');
+        },
+      });
+      const expectedOrderedDiagnostic = {
+        groups: [
+          {
+            group_code: 'core_identity',
+            blocker_codes: ['canonical_adult_mismatch', 'dual_role_membership_mismatch'],
+          },
+          {
+            group_code: 'canonical',
+            blocker_codes: [
+              'canonical_human_state_mismatch',
+              'canonical_access_state_mismatch',
+              'canonical_transition_mismatch',
+            ],
+          },
+          {
+            group_code: 'compatibility_access',
+            blocker_codes: ['compatibility_access_mismatch'],
+          },
+          {
+            group_code: 'provision_audit',
+            blocker_codes: ['controller_provision_audit_mismatch'],
+          },
+          { group_code: 'prohibited', blocker_codes: ['prohibited_projection_present'] },
+        ],
+      };
+      expect(multiCodeReport.apply_execution.transactional_readback_diagnostic).toEqual(
+        expectedOrderedDiagnostic,
+      );
+      expect(
+        multiCodeReport.apply_execution.journal.at(-1)?.transactional_readback_diagnostic,
+      ).toEqual(expectedOrderedDiagnostic);
+      const multiSerialized = JSON.stringify(multiCodeReport);
+      expect(multiSerialized).not.toContain(multiEmail);
+      expect(multiSerialized).not.toContain('unallowlisted-database-id');
+      await assertNestedDiagnosticWasNotLeaked(multiCodeReport, multiManifest, operationNow);
+
+      expect(cliDiagnosticReport).toBeDefined();
+      const directory = await mkdtemp(join(tmpdir(), 'dual-role-readback-diagnostic-'));
+      const outputPath = join(directory, 'result.json');
+      const emitted: string[] = [];
+      try {
+        const exitCode = await runDualRoleAdultProvisionCli(
+          ['--out', outputPath],
+          (output) => emitted.push(output),
+          { runProvision: async () => cliDiagnosticReport! },
+        );
+        expect(exitCode).toBe(2);
+        expect(emitted).toHaveLength(1);
+        const output = emitted[0]!;
+        expect(JSON.parse(output)).toMatchObject({
+          apply_execution: {
+            transactional_readback_diagnostic: {
+              groups: [
+                {
+                  group_code: 'core_identity',
+                  blocker_codes: ['core_identity_query_failed'],
+                },
+              ],
+            },
+            journal: expect.arrayContaining([
+              expect.objectContaining({
+                stage: 'transactional_readback',
+                state: 'failed',
+                transactional_readback_diagnostic: {
+                  groups: [
+                    {
+                      group_code: 'core_identity',
+                      blocker_codes: ['core_identity_query_failed'],
+                    },
+                  ],
+                },
+              }),
+            ]),
+          },
+        });
+        if (process.platform === 'win32') {
+          await expect(readFile(outputPath, 'utf8')).rejects.toThrow();
+        } else {
+          await expect(readFile(outputPath, 'utf8')).resolves.toBe(output);
+          expect((await stat(outputPath)).mode & 0o777).toBe(0o600);
+        }
+        for (const unsafe of [
+          'RAW_READBACK_FAILURE',
+          'SELECT secret FROM private_table',
+          'raw-error@example.test',
+          'database-id-123',
+          'params=',
+          'authorization-secret',
+          'Synthetic Dual Role Adult',
+        ]) {
+          expect(output).not.toContain(unsafe);
+        }
+      } finally {
+        await rm(directory, { recursive: true, force: true });
+      }
+    } finally {
+      await diagnosticPool.end();
+    }
+  }, 60_000);
 
   it('bounds every stalled identity stage, rolls back, and emits only a sanitized journal', async () => {
     const memory = createMemoryPool();
@@ -268,6 +658,7 @@ describe('controller dual-role adult provisioning', () => {
             transaction_outcome: stage === 'transaction_commit' ? 'commit_unknown' : 'rolled_back',
             reconciliation_outcome: 'completed',
             final_stage: stage,
+            transactional_readback_diagnostic: null,
           },
           setup_delivery: { token_rows: 0, intent_rows: 0, outbox_rows: 0 },
         });
@@ -277,6 +668,11 @@ describe('controller dual-role adult provisioning', () => {
           stage,
           state: 'timed_out',
         });
+        expect(
+          report.apply_execution.journal.some(
+            (entry) => entry.transactional_readback_diagnostic !== undefined,
+          ),
+        ).toBe(false);
         expect(setupCalls).toBe(0);
 
         const serialized = JSON.stringify(report);
@@ -646,6 +1042,7 @@ describe('controller dual-role adult provisioning', () => {
 
     expect(report).toMatchObject({
       status: 'applied',
+      apply_execution: { transactional_readback_diagnostic: null },
       identity: {
         disposition: 'exact_replay',
         active_memberships: ['admin', 'parent'],
@@ -1457,6 +1854,14 @@ function privateManifest(email: string) {
   } as const;
 }
 
+function privateManifestAt(email: string, now: Date) {
+  return {
+    ...privateManifest(email),
+    authorized_at: now.toISOString(),
+    expires_at: new Date(now.getTime() + 60 * 60 * 1000).toISOString(),
+  };
+}
+
 function testConfig() {
   return loadConfig({
     NODE_ENV: 'test',
@@ -1847,7 +2252,18 @@ function prerequisiteOverridePool(
   } as DbPool;
 }
 
-function canonicalTriggerCompatiblePool(memory: DbPool): DbPool {
+type TransactionalReadbackFaultControl = {
+  faults?: Array<{
+    queryIncludes: string;
+    mutateRows?: (rows: Record<string, unknown>[]) => Record<string, unknown>[];
+    throwRawError?: boolean;
+  }>;
+};
+
+function canonicalTriggerCompatiblePool(
+  memory: DbPool,
+  readbackFaultControl?: TransactionalReadbackFaultControl,
+): DbPool {
   const advisoryLocks = new Map<string, { waiters: Array<() => void> }>();
   const acquireAdvisoryLock = async (key: string) => {
     const existing = advisoryLocks.get(key);
@@ -1870,6 +2286,7 @@ function canonicalTriggerCompatiblePool(memory: DbPool): DbPool {
     query: T,
     receiver: object,
     transactionLocks?: Map<string, () => void>,
+    readbackFaultState?: { armed: boolean; injected: Set<number> },
   ): T => {
     const invoke = query.bind(receiver) as unknown as (
       statement: string | { text: string },
@@ -1915,6 +2332,29 @@ function canonicalTriggerCompatiblePool(memory: DbPool): DbPool {
           transactionLocks.set(key, await acquireAdvisoryLock(key));
         }
       }
+      const faults = readbackFaultControl?.faults ?? [];
+      const faultIndex = readbackFaultState?.armed
+        ? faults.findIndex(
+            (fault, index) =>
+              !readbackFaultState.injected.has(index) && text.includes(fault.queryIncludes),
+          )
+        : -1;
+      if (readbackFaultState && faultIndex >= 0) {
+        const fault = faults[faultIndex]!;
+        readbackFaultState.injected.add(faultIndex);
+        if (fault.throwRawError) {
+          throw new Error(
+            'RAW_READBACK_FAILURE SELECT secret FROM private_table params=' +
+              'raw-error@example.test database-id-123 authorization-secret',
+          );
+        }
+        const faultedResult = await invoke(rewritten, values);
+        const rows = fault.mutateRows?.(
+          faultedResult.rows.map((row) => ({ ...(row as Record<string, unknown>) })),
+        );
+        if (rows) return { ...faultedResult, rowCount: rows.length, rows } as never;
+        return faultedResult as never;
+      }
       let result;
       try {
         result = await invoke(rewritten, values);
@@ -1923,6 +2363,12 @@ function canonicalTriggerCompatiblePool(memory: DbPool): DbPool {
           for (const release of transactionLocks.values()) release();
           transactionLocks.clear();
         }
+      }
+      if (
+        readbackFaultState &&
+        text.includes('INSERT INTO onetime.account_lifecycle_audit_events')
+      ) {
+        readbackFaultState.armed = true;
       }
       if (
         text.includes('INSERT INTO onetime.canonical_state_transition_events') &&
@@ -1956,9 +2402,12 @@ function canonicalTriggerCompatiblePool(memory: DbPool): DbPool {
     connect: (async () => {
       const client = await memory.connect();
       const transactionLocks = new Map<string, () => void>();
+      const readbackFaultState = { armed: false, injected: new Set<number>() };
       return new Proxy(client, {
         get(target, property, receiver) {
-          if (property === 'query') return wrap(target.query, target, transactionLocks);
+          if (property === 'query') {
+            return wrap(target.query, target, transactionLocks, readbackFaultState);
+          }
           if (property === 'release') {
             return () => {
               for (const release of transactionLocks.values()) release();

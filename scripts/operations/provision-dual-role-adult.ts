@@ -68,6 +68,58 @@ export const CONTROLLER_DUAL_ROLE_APPLY_STAGES = [
 
 export type ControllerDualRoleApplyStage = (typeof CONTROLLER_DUAL_ROLE_APPLY_STAGES)[number];
 
+export const CONTROLLER_DUAL_ROLE_TRANSACTIONAL_READBACK_GROUPS = [
+  'core_identity',
+  'canonical',
+  'compatibility_access',
+  'provision_audit',
+  'prohibited',
+] as const;
+
+export type ControllerDualRoleTransactionalReadbackGroup =
+  (typeof CONTROLLER_DUAL_ROLE_TRANSACTIONAL_READBACK_GROUPS)[number];
+
+const TRANSACTIONAL_READBACK_BLOCKERS_BY_GROUP = {
+  core_identity: [
+    'legacy_identity_collision',
+    'local_contact_collision',
+    'local_contact_collision_candidate',
+    'canonical_identity_collision_candidate',
+    'legacy_identity_collision_candidate',
+    'canonical_identity_ambiguous',
+    'canonical_adult_mismatch',
+    'human_account_mismatch',
+    'dual_role_membership_mismatch',
+    'adult_credential_mismatch',
+    'family_household_mismatch',
+  ],
+  canonical: [
+    'canonical_human_state_mismatch',
+    'canonical_access_state_mismatch',
+    'canonical_transition_mismatch',
+  ],
+  compatibility_access: ['compatibility_access_mismatch'],
+  provision_audit: ['controller_provision_audit_mismatch'],
+  prohibited: ['prohibited_projection_present'],
+} as const satisfies Record<ControllerDualRoleTransactionalReadbackGroup, readonly string[]>;
+
+type ControllerDualRoleTransactionalReadbackBlocker =
+  (typeof TRANSACTIONAL_READBACK_BLOCKERS_BY_GROUP)[ControllerDualRoleTransactionalReadbackGroup][number];
+type ControllerDualRoleTransactionalReadbackQueryFailure =
+  `${ControllerDualRoleTransactionalReadbackGroup}_query_failed`;
+type ControllerDualRoleTransactionalReadbackDiagnosticCode =
+  | ControllerDualRoleTransactionalReadbackBlocker
+  | ControllerDualRoleTransactionalReadbackQueryFailure
+  | 'core_identity_absent'
+  | 'unclassified_mismatch';
+
+export type ControllerDualRoleTransactionalReadbackDiagnostic = {
+  groups: Array<{
+    group_code: ControllerDualRoleTransactionalReadbackGroup;
+    blocker_codes: ControllerDualRoleTransactionalReadbackDiagnosticCode[];
+  }>;
+};
+
 type ApplyJournalState = 'started' | 'completed' | 'failed' | 'timed_out';
 type ApplyTransactionOutcome =
   'not_started' | 'committed' | 'rolled_back' | 'rollback_unknown' | 'commit_unknown';
@@ -83,10 +135,12 @@ type ApplyExecution = {
   reconciliation_outcome: 'not_requested' | 'completed' | 'failed' | 'timed_out';
   pool_shutdown_outcome: 'caller_owned' | 'pending' | 'completed' | 'failed' | 'timed_out';
   final_stage: ControllerDualRoleApplyStage | null;
+  transactional_readback_diagnostic: ControllerDualRoleTransactionalReadbackDiagnostic | null;
   journal: Array<{
     sequence: number;
     stage: ControllerDualRoleApplyStage;
     state: ApplyJournalState;
+    transactional_readback_diagnostic?: ControllerDualRoleTransactionalReadbackDiagnostic;
   }>;
 };
 
@@ -113,26 +167,44 @@ class ControllerDualRoleApplyStageError extends Error {
     | `apply_identity_${ControllerDualRoleApplyStage}_failed`
     | `apply_identity_${ControllerDualRoleApplyStage}_timed_out`;
   readonly execution: ApplyExecution;
+  readonly transactionalReadbackDiagnostic: ControllerDualRoleTransactionalReadbackDiagnostic | null;
 
   constructor(
     stage: ControllerDualRoleApplyStage,
     state: 'failed' | 'timed_out',
     execution: ApplyExecution,
+    transactionalReadbackDiagnostic: ControllerDualRoleTransactionalReadbackDiagnostic | null,
   ) {
     super('The controller identity transaction failed at a classified stage.');
     this.name = 'ControllerDualRoleApplyStageError';
     this.blocker = `apply_identity_${stage}_${state}`;
     this.execution = execution;
+    this.transactionalReadbackDiagnostic = transactionalReadbackDiagnostic;
   }
 }
 
 class ControllerApplyStageRunError extends Error {
   readonly state: 'failed' | 'timed_out';
+  readonly transactionalReadbackDiagnostic: ControllerDualRoleTransactionalReadbackDiagnostic | null;
 
-  constructor(state: 'failed' | 'timed_out') {
+  constructor(
+    state: 'failed' | 'timed_out',
+    transactionalReadbackDiagnostic: ControllerDualRoleTransactionalReadbackDiagnostic | null = null,
+  ) {
     super('A classified controller apply stage did not complete.');
     this.name = 'ControllerApplyStageRunError';
     this.state = state;
+    this.transactionalReadbackDiagnostic = transactionalReadbackDiagnostic;
+  }
+}
+
+class ControllerTransactionalReadbackError extends Error {
+  readonly diagnostic: ControllerDualRoleTransactionalReadbackDiagnostic;
+
+  constructor(diagnostic: ControllerDualRoleTransactionalReadbackDiagnostic) {
+    super('The controller transactional readback did not match the required projection.');
+    this.name = 'ControllerTransactionalReadbackError';
+    this.diagnostic = diagnostic;
   }
 }
 
@@ -324,6 +396,10 @@ type TargetKeys = ReturnType<typeof targetKeys>;
 type IdentityInspection = DualRoleAdultProvisionReport['identity'] & {
   credentialState: 'active' | 'reset_required' | 'disabled' | null;
   blockers: string[];
+};
+
+type TransactionalReadbackContext = {
+  activeGroup: ControllerDualRoleTransactionalReadbackGroup;
 };
 
 type SetupInspection = DualRoleAdultProvisionReport['setup_delivery'] & {
@@ -1112,13 +1188,70 @@ function targetKeys(manifest: Manifest) {
   };
 }
 
+function cloneTransactionalReadbackDiagnostic(
+  diagnostic: ControllerDualRoleTransactionalReadbackDiagnostic,
+): ControllerDualRoleTransactionalReadbackDiagnostic {
+  return {
+    groups: diagnostic.groups.map((group) => ({
+      group_code: group.group_code,
+      blocker_codes: [...group.blocker_codes],
+    })),
+  };
+}
+
+function transactionalReadbackMismatchDiagnostic(
+  inspection: IdentityInspection,
+): ControllerDualRoleTransactionalReadbackDiagnostic {
+  const blockerSet = new Set(inspection.blockers);
+  const groups: ControllerDualRoleTransactionalReadbackDiagnostic['groups'] = [];
+  for (const groupCode of CONTROLLER_DUAL_ROLE_TRANSACTIONAL_READBACK_GROUPS) {
+    const blockerCodes = TRANSACTIONAL_READBACK_BLOCKERS_BY_GROUP[groupCode].filter((code) =>
+      blockerSet.has(code),
+    );
+    if (blockerCodes.length) {
+      groups.push({ group_code: groupCode, blocker_codes: [...blockerCodes] });
+    }
+  }
+  if (inspection.disposition === 'absent') {
+    const coreIdentity = groups.find((group) => group.group_code === 'core_identity');
+    if (coreIdentity) coreIdentity.blocker_codes.push('core_identity_absent');
+    else groups.unshift({ group_code: 'core_identity', blocker_codes: ['core_identity_absent'] });
+  }
+  if (!groups.length) {
+    groups.push({ group_code: 'core_identity', blocker_codes: ['unclassified_mismatch'] });
+  }
+  return { groups };
+}
+
+function transactionalReadbackQueryFailureDiagnostic(
+  groupCode: ControllerDualRoleTransactionalReadbackGroup,
+): ControllerDualRoleTransactionalReadbackDiagnostic {
+  return {
+    groups: [
+      {
+        group_code: groupCode,
+        blocker_codes: [`${groupCode}_query_failed`],
+      },
+    ],
+  };
+}
+
+function markTransactionalReadbackGroup(
+  context: TransactionalReadbackContext | undefined,
+  group: ControllerDualRoleTransactionalReadbackGroup,
+) {
+  if (context) context.activeGroup = group;
+}
+
 async function inspectIdentity(
   db: Queryable,
   config: AppConfig,
   manifest: Manifest,
   keys: TargetKeys,
   now: Date,
+  transactionalReadback?: TransactionalReadbackContext,
 ): Promise<IdentityInspection> {
+  markTransactionalReadbackGroup(transactionalReadback, 'core_identity');
   const adults = await db.query(
     `SELECT adult_id, display_name, state, product_key, runtime_tier, verification_environment_id
        FROM onetime.v21_adult_identities
@@ -1199,6 +1332,7 @@ async function inspectIdentity(
     legacy_collision_candidates: legacyCollisionCandidates,
     local_contact_collision_candidates: localContactCollisionCandidates,
   };
+  markTransactionalReadbackGroup(transactionalReadback, 'prohibited');
   const prohibited = await prohibitedCounts(db, manifest, keys);
   if (Object.values(prohibited).some((value) => value !== 0)) {
     blockers.push('prohibited_projection_present');
@@ -1211,6 +1345,7 @@ async function inspectIdentity(
       blockers,
     };
   }
+  markTransactionalReadbackGroup(transactionalReadback, 'core_identity');
   if (adults.rows.length !== 1) blockers.push('canonical_identity_ambiguous');
   const adult = adults.rows[0] as Record<string, unknown> | undefined;
   if (
@@ -1276,6 +1411,7 @@ async function inspectIdentity(
   ) {
     blockers.push('family_household_mismatch');
   }
+  markTransactionalReadbackGroup(transactionalReadback, 'canonical');
   const states = await db.query(
     `SELECT aggregate_kind, aggregate_key, current_state, version, last_transition_key,
             product_key, runtime_tier, verification_environment_id
@@ -1354,6 +1490,7 @@ async function inspectIdentity(
       break;
     }
   }
+  markTransactionalReadbackGroup(transactionalReadback, 'compatibility_access');
   const compatibility = await db.query(
     `SELECT portal.account_key AS portal_account_key,
             portal.product_key AS portal_product_key,
@@ -1405,6 +1542,7 @@ async function inspectIdentity(
     (transition) => transition.transition_key === keys.accessTransitionKey,
   );
   const accessTransitionCreatedAt = new Date(String(accessTransition?.created_at)).getTime();
+  markTransactionalReadbackGroup(transactionalReadback, 'provision_audit');
   const audit = await db.query(
     `SELECT created_at
        FROM onetime.account_lifecycle_audit_events
@@ -1428,6 +1566,7 @@ async function inspectIdentity(
   ) {
     blockers.push('controller_provision_audit_mismatch');
   }
+  markTransactionalReadbackGroup(transactionalReadback, 'compatibility_access');
   const expectedCompatibilityRequestHash = Number.isFinite(accessTransitionCreatedAt)
     ? accountAccessRequestHash({
         accountKey: config.accountKey,
@@ -1521,6 +1660,30 @@ async function inspectIdentity(
     credentialState: credentialState ?? null,
     blockers: [...new Set(blockers)],
   };
+}
+
+async function inspectTransactionalReadback(
+  db: Queryable,
+  config: AppConfig,
+  manifest: Manifest,
+  keys: TargetKeys,
+  now: Date,
+) {
+  const context: TransactionalReadbackContext = { activeGroup: 'core_identity' };
+  try {
+    const inspection = await inspectIdentity(db, config, manifest, keys, now, context);
+    if (inspection.disposition !== 'exact_replay') {
+      throw new ControllerTransactionalReadbackError(
+        transactionalReadbackMismatchDiagnostic(inspection),
+      );
+    }
+    return inspection;
+  } catch (error) {
+    if (error instanceof ControllerTransactionalReadbackError) throw error;
+    throw new ControllerTransactionalReadbackError(
+      transactionalReadbackQueryFailureDiagnostic(context.activeGroup),
+    );
+  }
 }
 
 async function prohibitedCounts(db: Queryable, manifest: Manifest, keys: TargetKeys) {
@@ -1797,6 +1960,8 @@ async function applyIdentity(
   let beginDispatched = false;
   let commitDispatched = false;
   let forceDestroyClient = false;
+  let transactionalReadbackDiagnostic: ControllerDualRoleTransactionalReadbackDiagnostic | null =
+    null;
   const snapshot = (): ApplyExecution => ({
     bounded_watchdog: true,
     stage_timeout_ms: stageTimeoutMs,
@@ -1808,10 +1973,33 @@ async function applyIdentity(
     reconciliation_outcome: 'not_requested',
     pool_shutdown_outcome: 'caller_owned',
     final_stage: journal.length ? stage : null,
-    journal: journal.map((entry) => ({ ...entry })),
+    transactional_readback_diagnostic: transactionalReadbackDiagnostic
+      ? cloneTransactionalReadbackDiagnostic(transactionalReadbackDiagnostic)
+      : null,
+    journal: journal.map((entry) => ({
+      ...entry,
+      ...(entry.transactional_readback_diagnostic
+        ? {
+            transactional_readback_diagnostic: cloneTransactionalReadbackDiagnostic(
+              entry.transactional_readback_diagnostic,
+            ),
+          }
+        : {}),
+    })),
   });
-  const appendJournal = (entryStage: ControllerDualRoleApplyStage, state: ApplyJournalState) => {
-    journal.push({ sequence: journal.length + 1, stage: entryStage, state });
+  const appendJournal = (
+    entryStage: ControllerDualRoleApplyStage,
+    state: ApplyJournalState,
+    diagnostic: ControllerDualRoleTransactionalReadbackDiagnostic | null = null,
+  ) => {
+    journal.push({
+      sequence: journal.length + 1,
+      stage: entryStage,
+      state,
+      ...(diagnostic
+        ? { transactional_readback_diagnostic: cloneTransactionalReadbackDiagnostic(diagnostic) }
+        : {}),
+    });
   };
   const atStage = async <T>(
     nextStage: ControllerDualRoleApplyStage,
@@ -1837,8 +2025,15 @@ async function applyIdentity(
       return value;
     } catch (error) {
       const state = error instanceof ControllerReferencedTimeoutError ? 'timed_out' : 'failed';
-      appendJournal(nextStage, state);
-      throw new ControllerApplyStageRunError(state);
+      const diagnostic =
+        state === 'failed' && error instanceof ControllerTransactionalReadbackError
+          ? error.diagnostic
+          : null;
+      if (diagnostic) {
+        transactionalReadbackDiagnostic = cloneTransactionalReadbackDiagnostic(diagnostic);
+      }
+      appendJournal(nextStage, state, diagnostic);
+      throw new ControllerApplyStageRunError(state, diagnostic);
     }
   };
 
@@ -2034,10 +2229,7 @@ async function applyIdentity(
         ),
       );
       await atStage('transactional_readback', async () => {
-        const readback = await inspectIdentity(db, config, manifest, keys, now);
-        if (readback.disposition !== 'exact_replay') {
-          throw new Error('Provisioned identity failed transactional readback.');
-        }
+        await inspectTransactionalReadback(db, config, manifest, keys, now);
       });
       await atStage('transaction_commit', async () => {
         commitDispatched = true;
@@ -2050,6 +2242,8 @@ async function applyIdentity(
     })();
   } catch (error) {
     const failureStage = stage as ControllerDualRoleApplyStage;
+    const failureDiagnostic =
+      error instanceof ControllerApplyStageRunError ? error.transactionalReadbackDiagnostic : null;
     const state =
       error instanceof ControllerApplyStageRunError && error.state === 'timed_out'
         ? 'timed_out'
@@ -2080,7 +2274,7 @@ async function applyIdentity(
       if (beginDispatched) transactionOutcome = 'rollback_unknown';
       forceDestroyClient = true;
     }
-    throw new ControllerDualRoleApplyStageError(failureStage, state, snapshot());
+    throw new ControllerDualRoleApplyStageError(failureStage, state, snapshot(), failureDiagnostic);
   } finally {
     if (client) {
       try {
@@ -2373,6 +2567,7 @@ function report(
     reconciliation_outcome: 'not_requested',
     pool_shutdown_outcome: 'caller_owned',
     final_stage: null,
+    transactional_readback_diagnostic: null,
     journal: [],
   },
 ): DualRoleAdultProvisionReport {
