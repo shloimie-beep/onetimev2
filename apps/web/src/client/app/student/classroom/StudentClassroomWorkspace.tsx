@@ -11,8 +11,10 @@ import {
   type ZoomParticipantJoinInput,
 } from '../../zoom-meeting-sdk-client.ts';
 import {
+  createProductionBasicStudentAttendanceController,
   readProductionBasicReadiness,
   requestProductionBasicLaunch,
+  type ProductionBasicStudentAttendanceController,
 } from '../../../classroom/production-basic-launch-client.ts';
 import {
   StudentClassroomApiError,
@@ -64,6 +66,7 @@ export function StudentClassroomWorkspace({
   const [busy, setBusy] = useState(false);
   const [productionBasicReady, setProductionBasicReady] = useState(false);
   const productionBasicActive = useRef(false);
+  const productionBasicAttendance = useRef<ProductionBasicStudentAttendanceController | null>(null);
   const lastJoinMode = useRef<'legacy' | 'production_basic'>('legacy');
   const generationRef = useRef(0);
   const requestRef = useRef<AbortController | null>(null);
@@ -79,6 +82,7 @@ export function StudentClassroomWorkspace({
 
   useEffect(() => {
     generationRef.current += 1;
+    stopProductionBasicAttendance();
     stopRuntime();
     setStatus(occurrenceId ? 'ready' : 'unavailable');
     setDenialCode(null);
@@ -91,6 +95,7 @@ export function StudentClassroomWorkspace({
       .catch(() => setProductionBasicReady(false));
     return () => {
       generationRef.current += 1;
+      stopProductionBasicAttendance();
       stopRuntime();
     };
   }, [actorFingerprint, occurrenceId]);
@@ -101,6 +106,12 @@ export function StudentClassroomWorkspace({
     if (timerRef.current !== null) clearTimer(timerRef.current);
     timerRef.current = null;
     leaseRef.current = null;
+  }
+
+  function stopProductionBasicAttendance(): void {
+    productionBasicAttendance.current?.dispose();
+    productionBasicAttendance.current = null;
+    productionBasicActive.current = false;
   }
 
   function beginRuntime(): { generation: number; controller: AbortController } {
@@ -181,7 +192,11 @@ export function StudentClassroomWorkspace({
     setBusy(true);
     const controller = new AbortController();
     try {
-      if (!productionBasicActive.current) {
+      if (productionBasicActive.current && productionBasicAttendance.current) {
+        await productionBasicAttendance.current.disconnected({ keepalive: true });
+        productionBasicAttendance.current = null;
+        productionBasicActive.current = false;
+      } else {
         await classroomApi.recordAttendance(csrfToken, 'left', controller.signal);
       }
     } catch (error) {
@@ -201,6 +216,15 @@ export function StudentClassroomWorkspace({
     setBusy(true);
     try {
       const artifact = await requestProductionBasicLaunch(csrfToken);
+      if (artifact.role !== 0 || !artifact.attendance_session_key) {
+        throw new Error('Classroom is unavailable.');
+      }
+      const attendance = createProductionBasicStudentAttendanceController({
+        csrfToken,
+        attendanceSessionKey: artifact.attendance_session_key,
+      });
+      productionBasicAttendance.current = attendance;
+      let disconnected = false;
       await joinZoomMeetingProductionBasic({
         sdkWebVersion: artifact.sdk_web_version,
         meetingNumber: artifact.meeting_number,
@@ -208,7 +232,15 @@ export function StudentClassroomWorkspace({
         meetingPassword: artifact.meeting_password,
         userName: artifact.user_name,
         leaveUrl: artifact.leave_path,
+        onMeetingStatus: (meetingStatus) => {
+          if (meetingStatus !== 3) return;
+          disconnected = true;
+          void attendance.disconnected({ keepalive: true }).catch(() => undefined);
+        },
       });
+      if (!isCurrent(generation)) return;
+      await attendance.connected();
+      if (disconnected) throw new Error('Classroom disconnected.');
       if (!isCurrent(generation)) return;
       productionBasicActive.current = true;
       setStatus('connected');
@@ -229,6 +261,7 @@ export function StudentClassroomWorkspace({
   function handleFailure(error: unknown, generation: number): void {
     if (!isCurrent(generation) || isAbortError(error)) return;
     generationRef.current += 1;
+    stopProductionBasicAttendance();
     stopRuntime();
     setBusy(false);
     setRecordingCaptureActive(false);
