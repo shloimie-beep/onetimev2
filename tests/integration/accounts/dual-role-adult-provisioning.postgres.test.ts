@@ -28,7 +28,7 @@ const enabled =
   process.env.DUAL_ROLE_PROVISION_NATIVE_POSTGRES_DISPOSABLE === 'true' && Boolean(databaseUrl);
 const SOURCE_SHA = 'b'.repeat(40);
 const AUTHORIZATION = 'native disposable dual role controller authorization';
-const PROVISION_AT = new Date('2026-08-20T12:00:00.000Z');
+const PROVISION_AT = new Date('2026-08-01T12:00:00.000Z');
 const EMAIL = 'native-dual-role-controller@example.test';
 
 describe('isolated PostgreSQL server address guard', () => {
@@ -291,6 +291,7 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
         setupIntents: 1,
         setupOutbox: 1,
       });
+      await expect(accessEventCreatedAt(pool)).resolves.toBe(PROVISION_AT.toISOString());
       await expect(forbiddenCardinalities(pool)).resolves.toEqual({
         legacyUsers: 0,
         contacts: 0,
@@ -395,6 +396,7 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
         mutation('native-positive-student-0001', beforeExpiry, 'd'),
       );
       expect(created.snapshot).toMatchObject({ active_student_count: 1, revision: 2 });
+      await expect(accessEventCreatedAt(pool)).resolves.toBe(PROVISION_AT.toISOString());
       await expect(forbiddenCardinalities(pool)).resolves.toEqual({
         legacyUsers: 1,
         contacts: 0,
@@ -421,6 +423,7 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
         message: 'The household access source is unavailable.',
       });
       await expect(count(pool, 'v21_student_profiles')).resolves.toBe(1);
+      await expect(accessEventCreatedAt(pool)).resolves.toBe(PROVISION_AT.toISOString());
       await expect(
         pool.query(
           `SELECT count(*)::integer AS count
@@ -746,4 +749,14 @@ async function forbiddenCardinalities(pool: DbPool) {
 async function count(pool: DbPool, table: string) {
   const result = await pool.query(`SELECT count(*)::integer AS count FROM onetime.${table}`);
   return Number(result.rows[0]?.count ?? 0);
+}
+
+async function accessEventCreatedAt(pool: DbPool) {
+  const result = await pool.query(
+    `SELECT created_at
+       FROM onetime.account_access_events
+      ORDER BY event_key`,
+  );
+  expect(result.rowCount).toBe(1);
+  return new Date(String(result.rows[0]?.created_at)).toISOString();
 }
