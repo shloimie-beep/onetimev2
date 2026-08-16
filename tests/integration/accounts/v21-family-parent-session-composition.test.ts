@@ -639,9 +639,7 @@ describe('I36 central Family-signup and Parent-session composition', () => {
     expect(secondLogin.status).toBe(200);
     const secondHostCookie = secondLogin.headers
       .getSetCookie()
-      .find(
-        (value) => value.startsWith('__Host-onetime-session=') && !value.includes('Max-Age=0'),
-      )
+      .find((value) => value.startsWith('__Host-onetime-session=') && !value.includes('Max-Age=0'))
       ?.split(';')[0];
     if (!secondHostCookie) throw new Error('missing second v2.1 Parent session cookie');
 
@@ -671,9 +669,7 @@ describe('I36 central Family-signup and Parent-session composition', () => {
     }
     const rotatedHostCookie = changed.headers
       .getSetCookie()
-      .find(
-        (value) => value.startsWith('__Host-onetime-session=') && !value.includes('Max-Age=0'),
-      )
+      .find((value) => value.startsWith('__Host-onetime-session=') && !value.includes('Max-Age=0'))
       ?.split(';')[0];
     if (!rotatedHostCookie) throw new Error('missing rotated v2.1 Parent session cookie');
 
@@ -790,16 +786,13 @@ describe('I36 central Family-signup and Parent-session composition', () => {
     });
     expect(fourthStudent.status).toBe(409);
 
-    const classroomLaunch = await fetch(
-      `${baseUrl}/api/v1/classroom/production-basic/launch`,
-      {
-        method: 'POST',
-        headers: {
-          cookie: rotatedHostCookie,
-          'x-csrf-token': changedBody.csrf_token,
-        },
+    const classroomLaunch = await fetch(`${baseUrl}/api/v1/classroom/production-basic/launch`, {
+      method: 'POST',
+      headers: {
+        cookie: rotatedHostCookie,
+        'x-csrf-token': changedBody.csrf_token,
       },
-    );
+    });
     expect(classroomLaunch.status).toBe(503);
     await expect(classroomLaunch.json()).resolves.toMatchObject({
       success: false,
@@ -1539,7 +1532,8 @@ function pgMemCompatiblePool(memoryPool: DbPool): DbPool {
       const result = invoke(rewritten, ...rest);
       if (result && typeof result === 'object' && 'catch' in result) {
         return Promise.resolve(result).catch((error: unknown) => {
-          lastPgMemQueryFailure = error instanceof Error ? error.stack ?? error.message : String(error);
+          lastPgMemQueryFailure =
+            error instanceof Error ? (error.stack ?? error.message) : String(error);
           throw error;
         });
       }

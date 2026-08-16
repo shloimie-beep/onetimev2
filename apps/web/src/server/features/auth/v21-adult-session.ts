@@ -316,8 +316,7 @@ export type V21AdultSessionRuntimeInput = {
   repository: V21AdultSessionRepository;
   repositoryFactory?: ((db: Queryable) => V21AdultSessionRepository) | undefined;
   passwordChanger?:
-    | ((input: ChangeV21AdultPasswordInput) => Promise<ChangedV21AdultPassword>)
-    | undefined;
+    ((input: ChangeV21AdultPasswordInput) => Promise<ChangedV21AdultPassword>) | undefined;
   hmacSecret: string;
   randomBytes?: ((size: number) => Uint8Array) | undefined;
   clock?: (() => Date) | undefined;
@@ -1053,10 +1052,7 @@ export function createV21AdultSessionRuntime(
           ...repositoryBinding(parsed.claims),
           activeRole: parsed.claims.active_role,
           sessionId: parsed.claims.session_id,
-          accessTokenDigest: domainDigest(
-            ACCESS_TOKEN_DOMAIN,
-            parsed.claims.access_material,
-          ),
+          accessTokenDigest: domainDigest(ACCESS_TOKEN_DOMAIN, parsed.claims.access_material),
           expectedCredentialVersion: Number(identity.credentialVersion),
           expectedPasswordHash: identity.passwordHash,
           replacementPasswordHash: hashAuthPassword(newPassword),
@@ -1079,7 +1075,10 @@ export function createV21AdultSessionRuntime(
 }
 
 export function createPostgresV21AdultSessionRuntime(
-  input: Omit<V21AdultSessionRuntimeInput, 'repository' | 'repositoryFactory' | 'passwordChanger'> & {
+  input: Omit<
+    V21AdultSessionRuntimeInput,
+    'repository' | 'repositoryFactory' | 'passwordChanger'
+  > & {
     db: DbPool;
   },
 ): V21AdultSessionRuntime {
