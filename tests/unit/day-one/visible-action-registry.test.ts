@@ -249,6 +249,13 @@ const EXPECTED_ACTION_BINDINGS = [
     '/api/v1/admin-directory/users',
   ],
   [
+    'admin.production_basic.end.button',
+    '/app/live-console',
+    ['admin', 'rabbi'],
+    'CLIENT',
+    'apps/web/src/client/app/live-entry.tsx',
+  ],
+  [
     'admin.production_basic.start.button',
     '/app/live-console',
     ['admin', 'rabbi'],
@@ -789,6 +796,7 @@ describe('v2.1 visible action registry', () => {
         .filter(({ external_mutation }) => external_mutation)
         .map(({ action_id }) => action_id),
     ).toEqual([
+      'admin.production_basic.end.button',
       'admin.production_basic.start.button',
       'portal.student.classroom.production_basic_join.button',
     ]);
@@ -831,6 +839,29 @@ describe('v2.1 visible action registry', () => {
     });
     expect(legacyJoin?.visibility).toBeUndefined();
     expect(legacyJoin?.request_body).toBeUndefined();
+  });
+
+  it('governs End class as provider-first with unknown-effect reconciliation and clear-only retry', () => {
+    const endClass = registry.actions.find(
+      ({ action_id }) => action_id === 'admin.production_basic.end.button',
+    );
+
+    expect(endClass).toMatchObject({
+      route: '/app/live-console',
+      roles: ['admin', 'rabbi'],
+      canonical_binding: { route: '/app/live', roles: ['admin', 'rabbi'] },
+      capability: 'admin:class:end',
+      handler: { method: 'CLIENT', path: 'apps/web/src/client/app/live-entry.tsx' },
+      idempotency: { required: false, key_source: null },
+      provider_mode: 'provider_first_unknown_effect_reconcile_then_receipt_clear',
+      external_mutation: true,
+    });
+    expect(endClass?.states.loading).toContain(
+      'provider End Class command before any local receipt clear',
+    );
+    expect(endClass?.states.error).toContain('unknown effect');
+    expect(endClass?.states.error).toContain('never send a second SDK end');
+    expect(endClass?.states.error).toContain('retry receipt clear only');
   });
 
   it('keeps non-ready routes handler-free and excludes retired surfaces and roles', () => {

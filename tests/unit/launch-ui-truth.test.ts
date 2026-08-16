@@ -9,6 +9,22 @@ describe('Sunday launch UI truth', () => {
     expect(source).toContain('Surface: Protected recurring Zoom');
     expect(source).toContain('Advanced Stage Host: deferred/off');
     expect(source).toContain('Protected recurring Zoom is ready.');
+    expect(source).toContain("'End class'");
+    expect(source).toContain('onEndProductionBasic');
+    expect(source).toContain(
+      'Zoom End outcome is unknown. Wait for confirmation and do not send End class again.',
+    );
+    expect(source).toContain('productionBasicHostCleanupPending');
+    expect(source).toContain("'Retry access cleanup'");
+    expect(source).toContain('Use Retry access');
+    expect(source).toContain('Refresh Status does not resend End class.');
+    expect(source).toContain('disabled={endAction.disabled}');
+    expect(source).toContain('onProviderEndConfirmed');
+    expect(source).toContain('onEndReconciled');
+    expect(source).toContain('setProductionBasicHostEndUnknown(false)');
+    expect(source).not.toContain('Try End class again');
+    expect(source).toContain('Participant roster controls remain deferred');
+    expect(source).toContain('Zoom identity correlation is');
   });
 
   it('keeps Buffer and Social launch-off values out of the Content overview', async () => {
