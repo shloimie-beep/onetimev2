@@ -1,7 +1,7 @@
 # One Time Mishnayos — App Almost Ready / Live Class Announcement
 
 **Decision date:** 2026-08-16  
-**Status:** Current operator-approved draft direction; no send authorized by this file  
+**Status:** Current operator-approved draft direction; one operator test permitted, no production send authorized by this file  
 **Product integration authority:** PR #131  
 **GHL production location:** `pBSnOK2nkdxp6gf9Rg3o`
 
@@ -13,11 +13,12 @@ The message should:
 
 - announce that the live daily Mishnayos class is restarting;
 - say the new app is in its final stages and expected within the next few days;
-- explain that One Time Productions is focusing on spreading a love of Mishnayos throughout Klal Yisrael;
+- explain that One Time Productions is focusing on helping boys throughout Klal Yisrael develop a love for Mishnayos;
 - invite recipients to the live class from Eretz Yisrael;
+- describe the learning as clear, visual, exciting, and engaging;
 - state that access is free through Rosh Hashanah with no credit card required;
-- avoid claiming that the app is already live when it is not;
-- avoid sending recipients into a broken signup or classroom path.
+- avoid mentioning stories, a “real Rebbe,” or recordings afterward for review in this announcement;
+- avoid claiming that the app is already live when it is not.
 
 ## Audience
 
@@ -35,22 +36,24 @@ GHL suppression, DND, unsubscribe, bounce, and complaint protections remain in f
 
 **Subject:** `One Time is starting again tonight`
 
-**Preheader:** `The new app is almost ready. Join Rabbi Scheller live from Eretz Yisrael.`
+**Preheader:** `The new app is almost ready. Join the live daily Mishnayos class from Eretz Yisrael.`
 
 ```text
 Hi {{contact.first_name}},
 
 I’m excited to share that One Time is starting again tonight.
 
-The new One Time app is in its final stages and should be ready over the next few days. Going forward, One Time Productions will be focused on one goal: helping boys throughout Klal Yisrael develop a real love for Mishnayos.
+The new One Time app is in its final stages and should be ready over the next few days.
+
+Going forward, One Time Productions will be focused on one goal: helping boys throughout Klal Yisrael develop a real love for Mishnayos.
 
 Tonight at 7:00 PM Israel time / 12:00 PM Eastern, we are restarting the live daily Mishnayos class from Eretz Yisrael.
 
-One full perek. Clear visual teaching. Stories. A real Rebbe. And recordings afterward for review.
+Each class covers one full perek in a way that is clear, visual, exciting, and engaging.
 
 The program will be free through Rosh Hashanah, with no credit card required.
 
-[PRIMARY CTA]
+[GET FREE ACCESS]
 
 I look forward to learning together.
 
@@ -59,44 +62,38 @@ One Time Mishnayos
 Mishnayos Made Memorable
 ```
 
-## CTA decision
+## CTA
 
-Use exactly one of these:
+**Label:** `GET FREE ACCESS`
 
-### A. App/signup confirmed working
-
-- Label: `GET FREE ACCESS`
-- Destination: the verified canonical join/signup URL with UTM parameters.
-
-### B. App is not ready, but a safe class-access page is confirmed
-
-- Label: `JOIN TONIGHT’S LIVE CLASS`
-- Destination: a verified first-party class-access or registration page.
-- Never use or expose a raw Zoom URL.
-
-### C. Neither app nor class-access page is safely ready
-
-Send the announcement without a button and add:
+**Exact tracked destination:**
 
 ```text
-We’ll send the access link as soon as the new app opens.
+https://join.onetimeonetime.com/?utm_source=ghl&utm_medium=email&utm_campaign=ot_launch_2026_free_access&utm_content=OT-C03-APP-ALMOST-READY-LIVE-CLASS-20260816
 ```
 
-Then send a separate app-live email when the end-to-end path is proven.
+This document authorizes only an operator-owned test of this destination. A production send still requires separate operator approval.
 
 ## GHL builder prompt
 
 ```text
-Create or update one Draft email campaign in the One Time HighLevel location.
+Create or update one Draft email campaign in the existing One Time HighLevel sub-account.
+
+Location ID:
+pBSnOK2nkdxp6gf9Rg3o
 
 Exact campaign name:
 OT-C03 App Almost Ready — Live Mishnayos Starts Again
 
-Keep it Draft, unscheduled, and unsent.
+Keep it:
+- Draft
+- Unscheduled
+- Unsent to the production audience
 
-Audience:
+Audience for later production use:
 OT | Sunday Launch Eligible | 2026-08-16
 Smart List ID: Gr4bIiGGGf0eBadxINbx
+Last verified count: 1,335
 
 Do not use every raw contact in the location. Preserve GHL DND, unsubscribe, bounce, complaint, and suppression enforcement.
 
@@ -111,23 +108,31 @@ Subject:
 One Time is starting again tonight
 
 Preheader:
-The new app is almost ready. Join Rabbi Scheller live from Eretz Yisrael.
+The new app is almost ready. Join the live daily Mishnayos class from Eretz Yisrael.
 
-Use the clean plain-text editor or text builder. Insert exactly this copy. Do not paraphrase, add emojis, images, countdowns, testimonials, stock marketing language, extra headings, or a second CTA.
+Use the clean plain-text editor or HighLevel text/AI builder.
+
+Give the builder this exact instruction:
+
+“Replace the entire email with the exact copy below. Do not paraphrase. Do not add emojis, images, countdowns, testimonials, stock marketing language, extra headings, legal commentary, stories, references to recordings for review, the phrase ‘a real Rebbe,’ or a second CTA. Use one clear button labeled GET FREE ACCESS. Preserve the first-name merge field, paragraph spacing, punctuation, and signature exactly.”
+
+Exact body:
 
 Hi {{contact.first_name}},
 
 I’m excited to share that One Time is starting again tonight.
 
-The new One Time app is in its final stages and should be ready over the next few days. Going forward, One Time Productions will be focused on one goal: helping boys throughout Klal Yisrael develop a real love for Mishnayos.
+The new One Time app is in its final stages and should be ready over the next few days.
+
+Going forward, One Time Productions will be focused on one goal: helping boys throughout Klal Yisrael develop a real love for Mishnayos.
 
 Tonight at 7:00 PM Israel time / 12:00 PM Eastern, we are restarting the live daily Mishnayos class from Eretz Yisrael.
 
-One full perek. Clear visual teaching. Stories. A real Rebbe. And recordings afterward for review.
+Each class covers one full perek in a way that is clear, visual, exciting, and engaging.
 
 The program will be free through Rosh Hashanah, with no credit card required.
 
-[PRIMARY CTA]
+[GET FREE ACCESS]
 
 I look forward to learning together.
 
@@ -135,34 +140,52 @@ Rabbi Eli Scheller
 One Time Mishnayos
 Mishnayos Made Memorable
 
-Before adding the CTA, stop and determine which verified destination exists:
+Create exactly one CTA button:
 
-1. If the full signup and Parent journey is operator-confirmed, use one button:
-   GET FREE ACCESS
-   pointing to the verified canonical join/signup URL with UTM parameters.
+Label:
+GET FREE ACCESS
 
-2. If the app is not ready but a safe first-party class-access page is confirmed, use one button:
-   JOIN TONIGHT’S LIVE CLASS
-   pointing only to that verified first-party page.
+Exact URL:
+https://join.onetimeonetime.com/?utm_source=ghl&utm_medium=email&utm_campaign=ot_launch_2026_free_access&utm_content=OT-C03-APP-ALMOST-READY-LIVE-CLASS-20260816
 
-3. If neither destination is safely ready, use no button. Replace [PRIMARY CTA] with:
-   We’ll send the access link as soon as the new app opens.
+After building the campaign:
 
-Never use a raw Zoom, Vimeo, Drive, provider, or credential-bearing link.
+1. Verify the exact subject.
+2. Verify the exact preheader.
+3. Verify From Name, From Email, and Reply-To.
+4. Verify the body contains no stories, no recording-review statement, and no “real Rebbe” wording.
+5. Verify there is exactly one CTA.
+6. Verify the complete tracked URL character-for-character.
+7. Save.
+8. Exit.
+9. Reopen and verify the saved state.
+10. Keep the campaign Draft, unscheduled, and unsent to the Smart List.
 
-Save, exit, reopen, and return:
+Then send exactly one TEST EMAIL to:
+
+sdratlr@gmail.com
+
+This is an operator-owned test only.
+
+Do not send to the 1,335-contact Smart List.
+Do not schedule the campaign.
+Do not publish or activate any workflow.
+Do not move any opportunity.
+
+Return:
 
 - campaign ID;
-- Draft/unscheduled/unsent state;
+- Draft/unscheduled/production-unsent state;
 - exact subject and preheader;
 - sender and Reply-To;
-- final body;
-- selected CTA option and destination;
-- Smart List ID and current count;
-- emails sent: 0;
-- one operator action required before send.
+- complete saved body;
+- CTA label and exact URL;
+- test recipient;
+- test delivery result;
+- production emails sent: 0;
+- one operator action required before a production send.
 ```
 
 ## Send rule
 
-This draft is deliberately honest if the app slips by one or two days. Do not turn a delayed app into a false launch claim.
+The operator test may be sent immediately to `sdratlr@gmail.com`. The full Smart List remains unsent until Shloimie reviews the test and explicitly authorizes production delivery.
