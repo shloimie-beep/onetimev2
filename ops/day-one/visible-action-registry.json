@@ -24,7 +24,7 @@
     },
     {
       "path": "apps/web/src/server/app.ts",
-      "sha256": "b9c007e8b6f89a07b3de1566df18823c10c9330660a0a6ba0e2211f4766cb5b8"
+      "sha256": "54e8efb281688775e66de9933f3127ba7dc1be1db32922add262b89d39666a1a"
     },
     {
       "path": "apps/web/src/server/communications/register.ts",
@@ -140,7 +140,7 @@
     },
     {
       "path": "apps/web/src/client/app/crm-entry.tsx",
-      "sha256": "6db80d23a0a6b83e4d050d41073088f5874fe95904e2a4643d88fe1451d90599"
+      "sha256": "7f53da86ddecf1ff4c4d2fede527bf8d57c5b88c4bdf02cbb1a54335ed2710b1"
     },
     {
       "path": "apps/web/src/client/app/live-entry.tsx",
@@ -152,7 +152,7 @@
     },
     {
       "path": "apps/web/src/client/app/portal-entry.tsx",
-      "sha256": "a1485805c5d5a606056cfde5504dc75c935f68d13d27a2462793e4ec7ed7a325"
+      "sha256": "89fa843ddc540a62a079a2e4d5562efa8f9720c96335238ff9338efac1fe23b4"
     },
     {
       "path": "apps/web/src/client/app/student/classroom/StudentClassroomWorkspace.tsx",
@@ -200,7 +200,7 @@
     },
     {
       "path": "apps/web/src/client/public/public-entry.ts",
-      "sha256": "5384ca331b5c8fbfb5295ad8881cb8df55b70047796d3fb1925035ddf448cd31"
+      "sha256": "e22329f8463b796e40f4efd2b0ea354a94fd12e7e4bc696ca79f1623d259ffe5"
     },
     {
       "path": "apps/web/src/client/public/school/model.ts",
