@@ -153,6 +153,77 @@ describe('P08 family signup service', () => {
     expect(result.provider_effects_completed_inline).toBe(0);
   });
 
+  it('rolls back every staged Family write when exact Parent session establishment fails', async () => {
+    const events: string[] = [];
+    const stagedWrites = new Set<string>();
+    const repository: FamilySignupRepository = {
+      transaction: async (run) => {
+        events.push('begin');
+        try {
+          const result = await run({
+            findRequest: async () => null,
+            readLocalState: async () => ({ identity: null, household: null }),
+            readGhlEvidence: async () => ghlEvidence(),
+            commit: async () => {
+              events.push('family_writes');
+              for (const aggregate of [
+                'identity',
+                'account',
+                'household',
+                'participant',
+                'entitlement',
+                'credential',
+                'request',
+              ]) {
+                stagedWrites.add(aggregate);
+              }
+            },
+            establishParentSession: async (sessionInput) => {
+              events.push('session_write_and_readback');
+              expect(sessionInput).toEqual({
+                scope,
+                adult_id: 'adult_1',
+                human_account_id: 'account_1',
+                household_id: 'household_1',
+                active_role: 'parent',
+                security_version: 1,
+                now: new Date('2026-09-11T14:59:59.000Z'),
+              });
+              return { established: false, safe_reason: 'session_creation_failed' };
+            },
+          });
+          events.push('commit');
+          return result;
+        } catch (error) {
+          stagedWrites.clear();
+          events.push('rollback');
+          throw error;
+        }
+      },
+    };
+    const service = createFamilySignupService({
+      repository,
+      freeAccessExpiresAt,
+      hashPassword: async () => 'argon2id-safe-hash',
+      fingerprintPasswordForIdempotency: async () => h('a'),
+      allocateIds: () => ({
+        adult_id: 'adult_1',
+        human_account_id: 'account_1',
+        household_id: 'household_1',
+      }),
+    });
+
+    await expect(
+      service.submitWithSession({
+        scope,
+        command: command(),
+        now: new Date('2026-09-11T14:59:59.000Z'),
+      }),
+    ).rejects.toThrow('family_signup_session_creation_failed');
+    expect(events).toEqual(['begin', 'family_writes', 'session_write_and_readback', 'rollback']);
+    expect(stagedWrites.size).toBe(0);
+  });
+
   it('performs no household, access, credential, outbox, or session write for any account state', async () => {
     for (const humanAccountState of ['invited', 'active', 'disabled', 'archived'] as const) {
       const counts = { ghl: 0, commit: 0, password: 0, ids: 0 };

@@ -18,13 +18,25 @@ import type {
   FamilySignupGhlEvidence,
   FamilySignupRecoveryRecord,
 } from '../../../../../../../packages/domain/src/signup/family/index.ts';
-import type { FamilySignupRepository, FamilySignupTransaction } from './service.ts';
+import type {
+  FamilySignupRepository,
+  FamilySignupSessionEstablishment,
+  FamilySignupSessionInput,
+  FamilySignupTransaction,
+} from './service.ts';
 
 type Row = Record<string, unknown>;
 
 export interface FamilySignupCrmBinding {
   accountKey: string;
   productKey: string;
+}
+
+export interface TransactionBoundFamilySignupSessionEstablisher {
+  establishInTransaction(
+    db: Queryable,
+    input: FamilySignupSessionInput,
+  ): Promise<FamilySignupSessionEstablishment>;
 }
 
 export class PostgresFamilySignupRepositoryError extends Error {
@@ -41,13 +53,16 @@ export class PostgresFamilySignupRepositoryError extends Error {
 export function createPostgresFamilySignupRepository(
   pool: DbPool,
   crmBinding: FamilySignupCrmBinding,
+  sessionEstablisher?: TransactionBoundFamilySignupSessionEstablisher,
 ): FamilySignupRepository {
   return {
     async transaction<T>(run: (tx: FamilySignupTransaction) => Promise<T>): Promise<T> {
       const client = await pool.connect();
       try {
         await client.query('BEGIN');
-        const result = await run(new PostgresFamilySignupTransaction(client, crmBinding));
+        const result = await run(
+          new PostgresFamilySignupTransaction(client, crmBinding, sessionEstablisher),
+        );
         await client.query('COMMIT');
         return result;
       } catch (error) {
@@ -72,7 +87,17 @@ class PostgresFamilySignupTransaction implements FamilySignupTransaction {
   constructor(
     private readonly db: Queryable,
     private readonly crmBinding: FamilySignupCrmBinding,
+    private readonly sessionEstablisher?: TransactionBoundFamilySignupSessionEstablisher,
   ) {}
+
+  async establishParentSession(
+    input: FamilySignupSessionInput,
+  ): Promise<FamilySignupSessionEstablishment> {
+    if (!this.sessionEstablisher) {
+      return { established: false, safe_reason: 'integration_unavailable' };
+    }
+    return this.sessionEstablisher.establishInTransaction(this.db, input);
+  }
 
   async findRequest(input: {
     scope: FamilySignupScope;

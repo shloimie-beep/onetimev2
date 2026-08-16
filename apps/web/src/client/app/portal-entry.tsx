@@ -666,6 +666,11 @@ function PortalApp() {
         currentPassword: input.currentPassword,
         newPassword: input.newPassword,
       });
+      if (session.session_model === 'v21' && result.csrf_token) {
+        const rotatedSession = { ...session, csrf_token: result.csrf_token };
+        setSession(rotatedSession);
+        setV21ParentSession(rotatedSession);
+      }
       setNotice({ kind: 'success', message: 'Password changed securely.' });
       return result;
     } catch (error) {

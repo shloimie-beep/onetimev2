@@ -2720,6 +2720,104 @@ export function createApp({
     }
     try {
       const payload = authenticatedPasswordChangePayloadSchema.parse(req.body);
+      if (session.session_model === 'v21') {
+        const rateLimit = await consumeRateLimitBudgets({
+          pool,
+          config,
+          budgets: [
+            {
+              scope: 'password_change_user',
+              subject: session.user.user_key,
+              limit: 8,
+              windowMs: config.loginRateLimitWindowMs,
+            },
+            {
+              scope: 'password_change_ip',
+              subject: req.ip ?? 'unknown',
+              limit: 24,
+              windowMs: config.loginRateLimitWindowMs,
+            },
+          ],
+        });
+        if (!rateLimit.allowed) {
+          if (rateLimit.retryAfterSeconds) {
+            res.setHeader('retry-after', String(rateLimit.retryAfterSeconds));
+          }
+          res.status(429).json({
+            success: false,
+            code: 'RATE_LIMITED',
+            message: 'Please wait before trying another password change.',
+            request_id: req.traceId,
+          });
+          return;
+        }
+
+        const changed = await v21AdultSessionRuntime.changePasswordCookieHeader({
+          cookie_header: req.header('cookie'),
+          current_password: payload.current_password,
+          new_password: payload.new_password,
+          ...(clock ? { now: clock() } : {}),
+        });
+        if (!changed.changed) {
+          if (changed.reason === 'unavailable') {
+            res
+              .status(503)
+              .json(
+                publicError(
+                  'SERVER_ERROR',
+                  'Password change is unavailable right now.',
+                  req.traceId,
+                ),
+              );
+            return;
+          }
+          const code =
+            changed.reason === 'password_reuse'
+              ? 'PASSWORD_REUSE'
+              : changed.reason === 'password_policy_failed'
+                ? 'PASSWORD_POLICY_FAILED'
+                : changed.reason === 'invalid_session'
+                  ? 'ACCOUNT_UNAVAILABLE'
+                  : 'CURRENT_PASSWORD_INVALID';
+          const status =
+            code === 'PASSWORD_REUSE' ? 409 : code === 'ACCOUNT_UNAVAILABLE' ? 403 : 400;
+          const message =
+            code === 'PASSWORD_REUSE'
+              ? 'Choose a password you have not just used.'
+              : code === 'PASSWORD_POLICY_FAILED'
+                ? 'Use 6 to 128 characters and avoid common passwords or your account details.'
+                : code === 'ACCOUNT_UNAVAILABLE'
+                  ? 'This account cannot change its password right now.'
+                  : 'The current password is not correct.';
+          res.status(status).json({
+            success: false,
+            code,
+            message,
+            request_id: req.traceId,
+          });
+          return;
+        }
+
+        const passwordChangeNow = clock ? clock().getTime() : Date.now();
+        res.append(
+          'Set-Cookie',
+          sessionCookieHeader({
+            token: changed.browser_session_token,
+            max_age_seconds: Math.max(
+              0,
+              Math.floor((Date.parse(changed.expires_at) - passwordChangeNow) / 1000),
+            ),
+          }),
+        );
+        res.status(200).json({
+          success: true,
+          password_updated_at: changed.password_updated_at,
+          sessions_invalidated: changed.sessions_invalidated,
+          current_session_preserved: true,
+          csrf_token: changed.csrf_token,
+        });
+        return;
+      }
       const result = await changeOwnPassword({
         pool,
         config,

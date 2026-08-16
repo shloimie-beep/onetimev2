@@ -12,7 +12,10 @@ import {
 import { loadConfig, type AppConfig } from '../../../packages/config/src/index.ts';
 import { createMemoryPool, runMigrations, type DbPool } from '../../../packages/db/src/index.ts';
 import type { V21AdultSessionRepository } from '../../../packages/db/src/accounts/v21-household-identity-repository.ts';
-import { createPostgresV21AdultSessionRepository } from '../../../packages/db/src/accounts/v21-household-identity-repository.ts';
+import {
+  changeV21AdultPassword,
+  createPostgresV21AdultSessionRepository,
+} from '../../../packages/db/src/accounts/v21-household-identity-repository.ts';
 import {
   completePasswordReset,
   createAccountUser,
@@ -47,6 +50,7 @@ let server: ReturnType<ReturnType<typeof createApp>['listen']>;
 let baseUrl: string;
 let now: Date;
 let repositoryUnavailable: boolean;
+let lastPgMemQueryFailure: string;
 
 beforeEach(async () => {
   config = loadConfig({
@@ -76,9 +80,19 @@ beforeEach(async () => {
   );
   now = new Date('2026-09-13T16:23:59.000Z');
   repositoryUnavailable = false;
+  lastPgMemQueryFailure = '';
   const repository = createDbBackedTestAdultSessionRepository(pool);
   const v21AdultSessionRuntime = createV21AdultSessionRuntime({
     repository: availabilityGuardedRepository(repository, () => repositoryUnavailable),
+    repositoryFactory: (db) =>
+      availabilityGuardedRepository(
+        createDbBackedTestAdultSessionRepository(db as DbPool),
+        () => repositoryUnavailable,
+      ),
+    passwordChanger: async (input) => {
+      if (repositoryUnavailable) throw new Error('simulated adult-session repository outage');
+      return changeV21AdultPassword(pool, input);
+    },
     hmacSecret: config.authCsrfSecret,
     clock: () => new Date(now),
   });
@@ -126,6 +140,51 @@ function availabilityGuardedRepository(
 }
 
 describe('I36 central Family-signup and Parent-session composition', () => {
+  it('returns no authenticated success or cookie when the transaction-bound Parent session cannot be established', async () => {
+    const bootstrapResponse = await fetch(`${baseUrl}/api/v1/signup/family/bootstrap`);
+    expect(bootstrapResponse.status).toBe(200);
+    const bootstrap = (await bootstrapResponse.json()) as {
+      idempotency_key: string;
+      csrf_token: string;
+    };
+    const csrfCookie = bootstrapResponse.headers
+      .getSetCookie()
+      .find((value) => value.startsWith('ot_family_signup_csrf='))
+      ?.split(';')[0];
+    if (!csrfCookie) throw new Error('missing failed-signup CSRF cookie');
+
+    repositoryUnavailable = true;
+    const response = await fetch(`${baseUrl}/api/v1/signup/family`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        cookie: csrfCookie,
+        origin: config.publicBaseUrl,
+        'x-csrf-token': bootstrap.csrf_token,
+      },
+      body: JSON.stringify({
+        classification: 'family',
+        idempotency_key: bootstrap.idempotency_key,
+        first_name: 'Atomic',
+        last_name: 'Rollback',
+        email: 'atomic-session-rollback@example.test',
+        password: 'correct horse battery staple',
+        password_confirmation: 'correct horse battery staple',
+        timezone: 'Asia/Jerusalem',
+        terms_accepted: true,
+        privacy_accepted: true,
+        general_marketing_consent: true,
+        parent_newsletter_consent: true,
+      }),
+    });
+    repositoryUnavailable = false;
+
+    expect(response.status).toBe(500);
+    expect(response.headers.getSetCookie()).not.toEqual(
+      expect.arrayContaining([expect.stringContaining('__Host-onetime-session=')]),
+    );
+  });
+
   it('replaces malformed host and legacy cookies after valid credentials', async () => {
     await submitFamily('stale-cookie-parent@example.test', 'Stale', 'Cookie');
     const loginPage = await fetch(`${baseUrl}/login`);
@@ -557,6 +616,229 @@ describe('I36 central Family-signup and Parent-session composition', () => {
 
     expect(denied.projection.human_account_id).not.toBe(accepted.projection.human_account_id);
   });
+
+  it('changes a fresh Family Parent to a six-character password and preserves only the rotated session', async () => {
+    const email = 'fresh-v21-password-parent@example.test';
+    const signup = await submitFamily(email, 'Fresh', 'Password');
+    const firstSessionBootstrap = await fetch(`${baseUrl}/api/v2.1/auth/session`, {
+      headers: { cookie: signup.hostCookie },
+    });
+    const firstSession = (await firstSessionBootstrap.json()) as { csrf_token: string };
+    expect(firstSessionBootstrap.status).toBe(200);
+
+    const secondLoginBinding = await loginCsrfBinding();
+    const secondLogin = await fetch(`${baseUrl}/api/v1/auth/login`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', cookie: secondLoginBinding.cookie },
+      body: JSON.stringify({
+        identifier: email,
+        password: 'correct horse battery staple',
+        csrf_token: secondLoginBinding.token,
+      }),
+    });
+    expect(secondLogin.status).toBe(200);
+    const secondHostCookie = secondLogin.headers
+      .getSetCookie()
+      .find(
+        (value) => value.startsWith('__Host-onetime-session=') && !value.includes('Max-Age=0'),
+      )
+      ?.split(';')[0];
+    if (!secondHostCookie) throw new Error('missing second v2.1 Parent session cookie');
+
+    const changed = await fetch(`${baseUrl}/api/v1/auth/password`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        cookie: signup.hostCookie,
+        'x-csrf-token': firstSession.csrf_token,
+      },
+      body: JSON.stringify({
+        current_password: 'correct horse battery staple',
+        new_password: 'Ab1234',
+      }),
+    });
+    const changedBody = (await changed.json()) as Record<string, unknown>;
+    expect(changed.status, JSON.stringify(changedBody)).toBe(200);
+    expect(changedBody).toMatchObject({
+      success: true,
+      sessions_invalidated: 1,
+      current_session_preserved: true,
+      csrf_token: expect.stringMatching(/^c1\./u),
+    });
+    expect(changedBody.csrf_token).not.toBe(firstSession.csrf_token);
+    if (typeof changedBody.csrf_token !== 'string') {
+      throw new Error('missing rotated v2.1 Parent CSRF token');
+    }
+    const rotatedHostCookie = changed.headers
+      .getSetCookie()
+      .find(
+        (value) => value.startsWith('__Host-onetime-session=') && !value.includes('Max-Age=0'),
+      )
+      ?.split(';')[0];
+    if (!rotatedHostCookie) throw new Error('missing rotated v2.1 Parent session cookie');
+
+    const persisted = await pool.query(
+      `SELECT account.security_version,
+              credential.credential_version,
+              credential.credential_state,
+              session.session_id,
+              session.security_version AS session_security_version,
+              session.revoked_at,
+              session.revoke_reason
+         FROM onetime.v21_human_accounts AS account
+         JOIN onetime.v21_adult_credentials AS credential
+           ON credential.human_account_id = account.human_account_id
+         JOIN onetime.v21_adult_sessions AS session
+           ON session.human_account_id = account.human_account_id
+        WHERE account.human_account_id = $1
+        ORDER BY session.created_at, session.session_id`,
+      [signup.projection.human_account_id],
+    );
+    expect(persisted.rows).toHaveLength(2);
+    const currentSessionId = browserSessionClaims(rotatedHostCookie).session_id;
+    const secondSessionId = browserSessionClaims(secondHostCookie).session_id;
+    expect(persisted.rows).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          security_version: 2,
+          credential_version: 2,
+          credential_state: 'active',
+          session_id: currentSessionId,
+          session_security_version: 2,
+          revoked_at: null,
+          revoke_reason: null,
+        }),
+        expect.objectContaining({
+          security_version: 2,
+          credential_version: 2,
+          credential_state: 'active',
+          session_id: secondSessionId,
+          session_security_version: 1,
+          revoked_at: expect.anything(),
+          revoke_reason: 'credential_changed',
+        }),
+      ]),
+    );
+
+    const rotatedSession = await fetch(`${baseUrl}/api/v2.1/auth/session`, {
+      headers: { cookie: rotatedHostCookie },
+    });
+    expect(rotatedSession.status).toBe(200);
+    await expectParentShell(rotatedHostCookie, '/app/parent', 200);
+
+    const learning = await fetch(`${baseUrl}/api/v1/portals/parent/learning`, {
+      headers: { cookie: rotatedHostCookie },
+    });
+    expect(learning.status, lastPgMemQueryFailure).toBe(200);
+
+    const household = await fetch(`${baseUrl}/api/app/parent/household`, {
+      headers: { cookie: rotatedHostCookie },
+    });
+    const householdBody = (await household.json()) as {
+      data?: { snapshot?: { revision?: unknown; students?: unknown[] } };
+    };
+    expect(household.status).toBe(200);
+    expect(householdBody.data?.snapshot?.students).toEqual([]);
+    let revision = householdBody.data?.snapshot?.revision;
+    if (typeof revision !== 'number') throw new Error('missing Parent household revision');
+
+    for (let index = 1; index <= 3; index += 1) {
+      const created = await fetch(`${baseUrl}/api/app/parent/students`, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          cookie: rotatedHostCookie,
+          'x-csrf-token': changedBody.csrf_token,
+          'x-idempotency-key': `rotated-parent-student-${index.toString().padStart(4, '0')}`,
+        },
+        body: JSON.stringify({
+          actual_name: `Rotated Student ${index}`,
+          display_name: null,
+          username: `rotated.student.${index}`,
+          relationship: 'dependent',
+          expected_revision: revision,
+          new_password: `00000${index}`,
+          password_confirmation: `00000${index}`,
+        }),
+      });
+      const createdBody = (await created.json()) as {
+        data?: { snapshot?: { revision?: unknown; students?: unknown[] } };
+      };
+      expect(created.status, JSON.stringify(createdBody)).toBe(201);
+      expect(createdBody.data?.snapshot?.students).toHaveLength(index);
+      revision = createdBody.data?.snapshot?.revision;
+      if (typeof revision !== 'number') throw new Error('missing updated household revision');
+    }
+
+    const fourthStudent = await fetch(`${baseUrl}/api/app/parent/students`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        cookie: rotatedHostCookie,
+        'x-csrf-token': changedBody.csrf_token,
+        'x-idempotency-key': 'rotated-parent-student-0004',
+      },
+      body: JSON.stringify({
+        actual_name: 'Rotated Student 4',
+        display_name: null,
+        username: 'rotated.student.4',
+        relationship: 'dependent',
+        expected_revision: revision,
+        new_password: '000004',
+        password_confirmation: '000004',
+      }),
+    });
+    expect(fourthStudent.status).toBe(409);
+
+    const classroomLaunch = await fetch(
+      `${baseUrl}/api/v1/classroom/production-basic/launch`,
+      {
+        method: 'POST',
+        headers: {
+          cookie: rotatedHostCookie,
+          'x-csrf-token': changedBody.csrf_token,
+        },
+      },
+    );
+    expect(classroomLaunch.status).toBe(503);
+    await expect(classroomLaunch.json()).resolves.toMatchObject({
+      success: false,
+      code: 'CLASSROOM_UNAVAILABLE',
+    });
+
+    const staleFirstSession = await fetch(`${baseUrl}/api/v2.1/auth/session`, {
+      headers: { cookie: signup.hostCookie },
+    });
+    expect(staleFirstSession.status).toBe(401);
+    const revokedSecondSession = await fetch(`${baseUrl}/api/v2.1/auth/session`, {
+      headers: { cookie: secondHostCookie },
+    });
+    expect(revokedSecondSession.status).toBe(401);
+
+    const oldPasswordBinding = await loginCsrfBinding();
+    const oldPasswordLogin = await fetch(`${baseUrl}/api/v1/auth/login`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', cookie: oldPasswordBinding.cookie },
+      body: JSON.stringify({
+        identifier: email,
+        password: 'correct horse battery staple',
+        csrf_token: oldPasswordBinding.token,
+      }),
+    });
+    expect(oldPasswordLogin.status).toBe(401);
+
+    const newPasswordBinding = await loginCsrfBinding();
+    const newPasswordLogin = await fetch(`${baseUrl}/api/v1/auth/login`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', cookie: newPasswordBinding.cookie },
+      body: JSON.stringify({
+        identifier: email,
+        password: 'Ab1234',
+        csrf_token: newPasswordBinding.token,
+      }),
+    });
+    expect(newPasswordLogin.status).toBe(200);
+  });
 });
 
 async function seedCanonicalParentLearningClass(db: DbPool, appConfig: AppConfig) {
@@ -662,11 +944,24 @@ describe.runIf(nativeProofEnabled)(
           '<!doctype html><html><body>I36_NATIVE_PARENT_SHELL</body></html>',
           'utf8',
         );
-        const productionRuntime = createPostgresV21AdultSessionRuntime({
+        const productionRuntimeBase = createPostgresV21AdultSessionRuntime({
           db: nativePool,
           hmacSecret: nativeConfig.authCsrfSecret,
           clock: () => new Date(nativeNow),
         });
+        let forceNativeTransactionalSessionFailure = false;
+        const productionRuntime = {
+          ...productionRuntimeBase,
+          establishInTransaction: (
+            ...args: Parameters<typeof productionRuntimeBase.establishInTransaction>
+          ) =>
+            forceNativeTransactionalSessionFailure
+              ? Promise.resolve({
+                  established: false as const,
+                  safe_reason: 'session_creation_failed' as const,
+                })
+              : productionRuntimeBase.establishInTransaction(...args),
+        };
         const nativeApp = createApp({
           config: nativeConfig,
           pool: nativePool,
@@ -689,7 +984,7 @@ describe.runIf(nativeProofEnabled)(
         }
         const nativeBaseUrl = `http://127.0.0.1:${nativeAddress.port}`;
 
-        const submitNativeFamily = async (email: string) => {
+        const requestNativeFamily = async (email: string) => {
           const bootstrapResponse = await fetch(`${nativeBaseUrl}/api/v1/signup/family/bootstrap`);
           const bootstrap = (await bootstrapResponse.json()) as {
             idempotency_key: string;
@@ -728,9 +1023,21 @@ describe.runIf(nativeProofEnabled)(
             .getSetCookie()
             .find((value) => value.startsWith('__Host-onetime-session='))
             ?.split(';')[0];
+          return { response, body, hostCookie };
+        };
+        const submitNativeFamily = async (email: string) => {
+          const { response, body, hostCookie } = await requestNativeFamily(email);
           if (!hostCookie) throw new Error(`missing native host cookie: ${JSON.stringify(body)}`);
           return { response, body, hostCookie };
         };
+
+        const beforeFailedSignup = await familySignupCoreRowCounts(nativePool);
+        forceNativeTransactionalSessionFailure = true;
+        const failedSignup = await requestNativeFamily('native-session-rollback@example.test');
+        forceNativeTransactionalSessionFailure = false;
+        expect(failedSignup.response.status).toBe(500);
+        expect(failedSignup.hostCookie).toBeUndefined();
+        expect(await familySignupCoreRowCounts(nativePool)).toEqual(beforeFailedSignup);
 
         const signup = await submitNativeFamily('native-parent@example.test');
         expect(signup.response.status).toBe(201);
@@ -1136,6 +1443,26 @@ async function signupProjection(normalizedEmail: string): Promise<SignupProjecti
   };
 }
 
+async function familySignupCoreRowCounts(db: DbPool = pool) {
+  const tableNames = [
+    'v21_adult_identities',
+    'v21_human_accounts',
+    'v21_households',
+    'parent_learning_participants',
+    'parent_learning_class_entitlements',
+    'v21_adult_credentials',
+    'family_signup_requests',
+  ] as const;
+  return Object.fromEntries(
+    await Promise.all(
+      tableNames.map(async (tableName) => {
+        const result = await db.query(`SELECT COUNT(*) AS count FROM onetime.${tableName}`);
+        return [tableName, Number(result.rows[0]?.count ?? -1)] as const;
+      }),
+    ),
+  );
+}
+
 async function sessionRow(humanAccountId: string) {
   const result = await pool.query(
     `SELECT session_id,
@@ -1172,6 +1499,20 @@ async function expectDigestOnlySessionPersistence(signup: SignupResult) {
   expect(persisted).not.toContain(claims.refresh_material);
 }
 
+function browserSessionClaims(cookie: string): { session_id: string; security_version: number } {
+  const encodedToken = cookie.slice(cookie.indexOf('=') + 1);
+  const payloadSegment = decodeURIComponent(encodedToken).split('.')[1];
+  if (!payloadSegment) throw new Error('missing signed Parent-session payload');
+  const claims = JSON.parse(Buffer.from(payloadSegment, 'base64url').toString('utf8')) as {
+    session_id?: unknown;
+    security_version?: unknown;
+  };
+  if (typeof claims.session_id !== 'string' || typeof claims.security_version !== 'number') {
+    throw new Error('invalid signed Parent-session payload');
+  }
+  return { session_id: claims.session_id, security_version: claims.security_version };
+}
+
 async function expectParentShell(cookie: string, route: string, expectedStatus: number) {
   const response = await fetch(`${baseUrl}${route}`, { headers: { cookie } });
   const body = await response.text();
@@ -1197,7 +1538,10 @@ function pgMemCompatiblePool(memoryPool: DbPool): DbPool {
             : statement;
       const result = invoke(rewritten, ...rest);
       if (result && typeof result === 'object' && 'catch' in result) {
-        return result;
+        return Promise.resolve(result).catch((error: unknown) => {
+          lastPgMemQueryFailure = error instanceof Error ? error.stack ?? error.message : String(error);
+          throw error;
+        });
       }
       return result;
     }) as T;
@@ -1220,7 +1564,54 @@ function pgMemCompatiblePool(memoryPool: DbPool): DbPool {
 }
 
 function rewritePgMemLockClause(statement: string): string {
+  if (statement.includes('SELECT item.content_item_key AS content_id')) {
+    // This composition seeds no content. Keep the production authorization query covered by the
+    // dedicated native Parent-playback suite while giving pg-mem the exact empty-library shape.
+    return `SELECT item.content_item_key AS content_id,
+                   item.published_revision_key AS content_version_id,
+                   item.title,
+                   item.item_type,
+                   item.published_at,
+                   NULL::bigint AS position_ms,
+                   NULL::bigint AS duration_ms,
+                   NULL::boolean AS completed,
+                   NULL::timestamptz AS progress_updated_at
+              FROM onetime.content_items AS item
+             WHERE item.account_key = $1
+               AND $2::text IS NOT NULL
+               AND $3::text IS NOT NULL
+               AND $4::text IS NOT NULL
+               AND $5::text IS NOT NULL
+               AND $6::text IS NOT NULL
+               AND $7::text IS NOT NULL
+               AND $8::text IS NULL
+               AND false`;
+  }
   return statement
     .replace('FOR SHARE OF request, receipt', 'FOR SHARE')
-    .replace('FOR UPDATE OF household', 'FOR UPDATE');
+    .replace('FOR UPDATE OF household', 'FOR UPDATE')
+    .replace(
+      /LEFT JOIN LATERAL \([\s\S]*?\n\s*\) AS next_occurrence ON true/u,
+      'LEFT JOIN onetime.class_occurrences AS next_occurrence ON false',
+    )
+    .replace(
+      /LEFT JOIN LATERAL \([\s\S]*?\n\s*\) AS progress ON true/u,
+      'LEFT JOIN onetime.parent_learning_content_progress_events AS progress ON false',
+    )
+    .replace(
+      /\(SELECT count\(DISTINCT attendance\.occurrence_id\)::int[\s\S]*?\) AS attended_occurrence_count/u,
+      '0::int AS attended_occurrence_count',
+    )
+    .replace(
+      /\(SELECT count\(DISTINCT progress\.content_id\)::int[\s\S]*?\) AS started_content_count/u,
+      '0::int AS started_content_count',
+    )
+    .replace(
+      /\(SELECT count\(DISTINCT progress\.content_id\)::int[\s\S]*?\) AS completed_content_count/u,
+      '0::int AS completed_content_count',
+    )
+    .replace(
+      /\(SELECT count\(\*\)::int[\s\S]*?\) AS submitted_question_count/u,
+      '0::int AS submitted_question_count',
+    );
 }

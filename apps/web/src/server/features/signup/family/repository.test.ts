@@ -160,6 +160,52 @@ describe('P08 PostgreSQL Family-signup repository', () => {
     expect(harness.calls.some(({ text }) => text.includes('INTO onetime.job_outbox'))).toBe(false);
   });
 
+  it('uses the exact Family transaction client and rolls back all writes on session failure', async () => {
+    const harness = recordingPool();
+    const establishInTransaction = vi.fn(async (db: unknown) => {
+      expect(db).toBe(harness.client);
+      expect(
+        harness.calls.some(({ text }) => text.includes('INTO onetime.family_signup_requests')),
+      ).toBe(true);
+      throw new Error('forced_transaction_session_failure');
+    });
+    const service = createFamilySignupService({
+      repository: createPostgresFamilySignupRepository(harness.pool, crmBinding, {
+        establishInTransaction,
+      }),
+      freeAccessExpiresAt,
+      hashPassword: async () => passwordHash,
+      fingerprintPasswordForIdempotency: async () => 'c'.repeat(64),
+      allocateIds: () => ({
+        adult_id: 'adult_1',
+        human_account_id: 'account_1',
+        household_id: 'household_1',
+      }),
+    });
+
+    await expect(
+      service.submitWithSession({
+        scope,
+        command: command(),
+        now: new Date('2026-09-11T14:59:59.000Z'),
+      }),
+    ).rejects.toThrow('forced_transaction_session_failure');
+    expect(establishInTransaction).toHaveBeenCalledTimes(1);
+    expect(harness.calls.some(({ text }) => text === 'ROLLBACK')).toBe(true);
+    expect(harness.calls.some(({ text }) => text === 'COMMIT')).toBe(false);
+    for (const table of [
+      'v21_adult_identities',
+      'v21_human_accounts',
+      'v21_households',
+      'parent_learning_participants',
+      'parent_learning_class_entitlements',
+      'v21_adult_credentials',
+      'family_signup_requests',
+    ]) {
+      expect(harness.calls.some(({ text }) => text.includes(`INTO onetime.${table}`))).toBe(true);
+    }
+  });
+
   it('persists the exact P25 standard hosted-checkout handoff at the expiry boundary', async () => {
     const harness = recordingPool();
     const service = createFamilySignupService({
@@ -304,6 +350,7 @@ describe('P08 PostgreSQL Family-signup repository', () => {
 function recordingPool(zeroRowInsertTable?: string): {
   pool: DbPool;
   calls: QueryCall[];
+  client: object;
 } {
   const calls: QueryCall[] = [];
   const query = vi.fn(async (text: string, values: readonly unknown[] = []) => {
@@ -325,6 +372,7 @@ function recordingPool(zeroRowInsertTable?: string): {
   };
   return {
     calls,
+    client,
     pool: {
       connect: async () => client as never,
       query: query as never,

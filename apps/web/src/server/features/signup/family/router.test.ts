@@ -9,11 +9,8 @@ import type {
 } from '../../../../../../../packages/contracts/src/signup/family/index.ts';
 import type { DbPool } from '../../../../../../../packages/db/src/index.ts';
 import { createApp } from '../../../app.ts';
-import {
-  createFamilySignupRouter,
-  familySignupFeatureRegistration,
-  type FamilySignupSessionEstablisher,
-} from './router.ts';
+import { createFamilySignupRouter, familySignupFeatureRegistration } from './router.ts';
+import type { EstablishedFamilySignupSession, FamilySignupSubmission } from './service.ts';
 
 const servers: Array<ReturnType<express.Express['listen']>> = [];
 const observedAt = new Date('2026-08-01T12:00:00.000Z');
@@ -79,7 +76,7 @@ describe('P08 Family-signup route security', () => {
 
   it('permits only the canonical join-to-app credentialed bootstrap and submit preflight', async () => {
     const harness = await startHarness({
-      submitter: { submit: vi.fn(async () => createdResult()) },
+      submitter: { submit: vi.fn(async () => submission(createdResult())) },
     });
     const canonicalOrigin = 'https://join.onetimeonetime.com';
     const accepted = await fetch(`${harness.baseUrl}/api/v1/signup/family`, {
@@ -135,8 +132,8 @@ describe('P08 Family-signup route security', () => {
     ]);
   });
 
-  it('requires exact same-origin CSRF proof and returns no false signed-in claim or local IDs', async () => {
-    const submit = vi.fn(async () => createdResult());
+  it('requires exact same-origin CSRF proof and returns no private local IDs', async () => {
+    const submit = vi.fn(async () => submission(createdResult()));
     const harness = await startHarness({ submitter: { submit } });
     const bootstrap = await getBootstrap(harness.baseUrl);
     const payload = command(bootstrap.idempotencyKey);
@@ -158,14 +155,14 @@ describe('P08 Family-signup route security', () => {
       origin: 'https://join.onetimeonetime.com',
     });
     const acceptedBody = (await accepted.json()) as Record<string, unknown>;
-    expect(accepted.status).toBe(202);
+    expect(accepted.status).toBe(201);
     expect(acceptedBody).toMatchObject({
       success: true,
-      code: 'SIGNUP_COMMITTED_SESSION_UNAVAILABLE',
+      code: 'FAMILY_SIGNUP_COMPLETE',
       local_commit_state: 'committed',
       local_access_state: 'free',
-      next_action: 'session_integration_pending',
-      session_established: false,
+      next_action: 'parent_overview',
+      session_established: true,
       provider_projection_state: 'readback_required',
       provider_effects_completed_inline: 0,
       message:
@@ -188,23 +185,43 @@ describe('P08 Family-signup route security', () => {
   });
 
   it('accepts the canonical authenticated app origin when the public funnel origin is join', async () => {
-    const submit = vi.fn(async () => createdResult());
+    const submit = vi.fn(async () => submission(createdResult()));
     const harness = await startHarness({ submitter: { submit } });
     const bootstrap = await getBootstrap(harness.baseUrl);
     const response = await post(harness.baseUrl, command(bootstrap.idempotencyKey), bootstrap, {
       origin: 'https://app.onetimeonetime.com',
     });
 
-    expect(response.status).toBe(202);
+    expect(response.status).toBe(201);
     expect(await response.json()).toMatchObject({
       success: true,
-      code: 'SIGNUP_COMMITTED_SESSION_UNAVAILABLE',
+      code: 'FAMILY_SIGNUP_COMPLETE',
     });
     expect(submit).toHaveBeenCalledTimes(1);
   });
 
+  it('returns no committed-success claim or Parent cookie when the atomic submitter fails', async () => {
+    const submit = vi.fn(async (): Promise<FamilySignupSubmission> => {
+      throw new Error('forced_transaction_session_failure');
+    });
+    const harness = await startHarness({ submitter: { submit } });
+    const bootstrap = await getBootstrap(harness.baseUrl);
+    const response = await post(harness.baseUrl, command(bootstrap.idempotencyKey), bootstrap, {
+      origin: 'https://join.onetimeonetime.com',
+    });
+    const body = (await response.json()) as Record<string, unknown>;
+
+    expect(response.status).toBe(500);
+    expect(response.headers.getSetCookie()).not.toEqual(
+      expect.arrayContaining([expect.stringContaining('__Host-onetime-session=')]),
+    );
+    expect(body).toMatchObject({ success: false, code: 'SERVER_ERROR' });
+    expect(body).not.toHaveProperty('local_commit_state');
+    expect(JSON.stringify(body)).not.toContain('SIGNUP_COMMITTED');
+  });
+
   it('rejects extra, hybrid, Student, card, phone, reminder, and caller-hash fields', async () => {
-    const submit = vi.fn(async () => createdResult());
+    const submit = vi.fn(async () => submission(createdResult()));
     const harness = await startHarness({ submitter: { submit } });
     const bootstrap = await getBootstrap(harness.baseUrl);
     const base = command(bootstrap.idempotencyKey);
@@ -230,7 +247,7 @@ describe('P08 Family-signup route security', () => {
   });
 
   it('returns safe field-specific errors without asking the adult to refresh', async () => {
-    const submit = vi.fn(async () => createdResult());
+    const submit = vi.fn(async () => submission(createdResult()));
     const harness = await startHarness({ submitter: { submit } });
     const bootstrap = await getBootstrap(harness.baseUrl);
     const response = await post(
@@ -266,7 +283,7 @@ describe('P08 Family-signup route security', () => {
   });
 
   it('rejects all writes before service access in production_read_only', async () => {
-    const submit = vi.fn(async () => createdResult());
+    const submit = vi.fn(async () => submission(createdResult()));
     const harness = await startHarness({
       submitter: { submit },
       productionReadOnly: true,
@@ -286,16 +303,19 @@ describe('P08 Family-signup route security', () => {
   });
 
   it('does not expose the existing-account disposition on the generic recovery path', async () => {
-    const submit = vi.fn(async (): Promise<FamilySignupResult> => ({
-      disposition: 'existing_account',
-      projection: null,
-      next_action: 'sign_in_or_reset',
-      setup_email_required: false,
-      provider_effects_completed_inline: 0,
-      outbox_intent_ids: [],
-      ghl_handoff_state: 'not_applicable',
-      checkout_handoff_state: 'not_applicable',
-      safe_message: 'Sign in or reset your password to continue.',
+    const submit = vi.fn(async (): Promise<FamilySignupSubmission> => ({
+      result: {
+        disposition: 'existing_account',
+        projection: null,
+        next_action: 'sign_in_or_reset',
+        setup_email_required: false,
+        provider_effects_completed_inline: 0,
+        outbox_intent_ids: [],
+        ghl_handoff_state: 'not_applicable',
+        checkout_handoff_state: 'not_applicable',
+        safe_message: 'Sign in or reset your password to continue.',
+      },
+      session: null,
     }));
     const harness = await startHarness({ submitter: { submit } });
     const bootstrap = await getBootstrap(harness.baseUrl);
@@ -314,21 +334,17 @@ describe('P08 Family-signup route security', () => {
     expect(body).not.toHaveProperty('disposition');
   });
 
-  it('claims immediate Parent access only after an injected session is middleware-readable', async () => {
+  it('issues the Parent cookie only from a committed atomic submission with exact readback', async () => {
     const acceptedProviderResult = createdResult();
     acceptedProviderResult.ghl_handoff_state = 'ready';
-    const sessionEstablisher: FamilySignupSessionEstablisher = {
-      establish: vi.fn(async () => ({
-        established: true as const,
-        browser_session_token: 's'.repeat(48),
-        csrf_token: 'c'.repeat(48),
-        expires_at: '2026-08-31T12:00:00.000Z',
-        middleware_readback_verified: true as const,
-      })),
-    };
+    const transactionEvents: string[] = [];
     const harness = await startHarness({
-      submitter: { submit: vi.fn(async () => acceptedProviderResult) },
-      sessionEstablisher,
+      submitter: {
+        submit: vi.fn(async () => {
+          transactionEvents.push('transaction_committed');
+          return submission(acceptedProviderResult);
+        }),
+      },
     });
     const bootstrap = await getBootstrap(harness.baseUrl);
     const response = await post(harness.baseUrl, command(bootstrap.idempotencyKey), bootstrap, {
@@ -350,24 +366,12 @@ describe('P08 Family-signup route security', () => {
       'https://join.onetimeonetime.com',
     );
     expect(response.headers.get('access-control-allow-credentials')).toBe('true');
-    expect(sessionEstablisher.establish).toHaveBeenCalledWith({
-      scope: {
-        product: 'one_time_mishnayos',
-        runtime_tier: 'isolated_staging',
-        verification_environment_id: 'ci',
-      },
-      adult_id: 'adult_private',
-      human_account_id: 'account_private',
-      household_id: 'household_private',
-      active_role: 'parent',
-      security_version: 1,
-      now: observedAt,
-    });
+    expect(transactionEvents).toEqual(['transaction_committed']);
   });
 
   it('returns a truthful queued hosted-checkout handoff without a provider URL or charge claim', async () => {
     const harness = await startHarness({
-      submitter: { submit: vi.fn(async () => checkoutResult()) },
+      submitter: { submit: vi.fn(async () => submission(checkoutResult())) },
     });
     const bootstrap = await getBootstrap(harness.baseUrl);
     const response = await post(harness.baseUrl, command(bootstrap.idempotencyKey), bootstrap, {
@@ -381,7 +385,7 @@ describe('P08 Family-signup route security', () => {
       next_action: 'checkout_handoff_queued',
       checkout_handoff_state: 'queued',
       local_access_state: 'inactive',
-      session_established: false,
+      session_established: true,
       checkout_provider: 'highlevel',
       financial_provider: 'stripe',
       direct_stripe_mutation_by_one_time: false,
@@ -399,10 +403,9 @@ async function startHarness(input: {
       scope: FamilySignupScope;
       command: FamilySignupCommand;
       now: Date;
-    }) => Promise<FamilySignupResult>;
+    }) => Promise<FamilySignupSubmission>;
   };
   productionReadOnly?: boolean;
-  sessionEstablisher?: FamilySignupSessionEstablisher;
 }) {
   const config = input.productionReadOnly
     ? loadConfig({
@@ -426,7 +429,6 @@ async function startHarness(input: {
       pool: unusedPool(),
       clock: () => new Date(observedAt),
       submitter: input.submitter,
-      ...(input.sessionEstablisher ? { sessionEstablisher: input.sessionEstablisher } : {}),
       rateLimit: false,
     }),
   );
@@ -552,6 +554,23 @@ function checkoutResult(): FamilySignupResult {
     ghl_handoff_state: 'readback_required',
     checkout_handoff_state: 'queued',
     safe_message: 'Your account is ready. Continue to checkout.',
+  };
+}
+
+function establishedSession(): EstablishedFamilySignupSession {
+  return {
+    established: true,
+    browser_session_token: 's'.repeat(48),
+    csrf_token: 'c'.repeat(48),
+    expires_at: '2026-08-31T12:00:00.000Z',
+    middleware_readback_verified: true,
+  };
+}
+
+function submission(result: FamilySignupResult): FamilySignupSubmission {
+  return {
+    result,
+    session: result.projection === null ? null : establishedSession(),
   };
 }
 

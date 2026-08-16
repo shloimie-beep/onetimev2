@@ -125,6 +125,23 @@ export interface UpgradeV21AdultCredentialInput {
   now: Date;
 }
 
+export interface ChangeV21AdultPasswordInput extends Omit<V21ParentSessionBinding, 'activeRole'> {
+  activeRole: AdultRole;
+  sessionId: string;
+  accessTokenDigest: string;
+  expectedCredentialVersion: number;
+  expectedPasswordHash: string;
+  replacementPasswordHash: string;
+  now: Date;
+}
+
+export interface ChangedV21AdultPassword {
+  securityVersion: number;
+  credentialVersion: number;
+  sessionsInvalidated: number;
+  passwordUpdatedAt: Date;
+}
+
 export interface V21AdultSessionRepository {
   create(input: CreateV21ParentSessionInput): Promise<ResolvedV21ParentSession>;
   resolve(input: ResolveV21ParentSessionInput): Promise<ResolvedV21ParentSession | null>;
@@ -164,6 +181,30 @@ export function createPostgresV21AdultSessionRepository(db: Queryable): V21Adult
     upgradeCredentialPasswordHash: (input) => upgradeV21AdultCredentialPasswordHash(db, input),
   };
 }
+
+const COMPLETE_ACTIVE_OWNED_HOUSEHOLDS_PREDICATE = `NOT EXISTS (
+  SELECT 1
+    FROM onetime.v21_households AS incomplete_household
+   WHERE incomplete_household.owner_human_account_id = account.human_account_id
+     AND incomplete_household.owner_adult_id = adult.adult_id
+     AND incomplete_household.product_key = account.product_key
+     AND incomplete_household.runtime_tier = account.runtime_tier
+     AND incomplete_household.verification_environment_id =
+         account.verification_environment_id
+     AND incomplete_household.state = 'active'
+     AND NOT EXISTS (
+       SELECT 1
+         FROM onetime.canonical_aggregate_states AS complete_access
+        WHERE complete_access.aggregate_kind = 'access'
+          AND complete_access.aggregate_key = incomplete_household.household_id
+          AND complete_access.product_key = incomplete_household.product_key
+          AND complete_access.runtime_tier = incomplete_household.runtime_tier
+          AND complete_access.verification_environment_id =
+              incomplete_household.verification_environment_id
+          AND complete_access.current_state IN ('free', 'active', 'grace', 'inactive')
+          AND complete_access.archived_at IS NULL
+     )
+)`;
 
 export async function createV21ParentSession(
   db: Queryable,
@@ -251,9 +292,10 @@ export async function createV21ParentSession(
           AND adult.adult_id = $3
           AND account.state = 'active'
           AND account.security_version = $7
-          AND account.product_key = '${ONE_TIME_PRODUCT_SCOPE}'
-          AND account.runtime_tier = $5
-          AND account.verification_environment_id = $6
+           AND account.product_key = '${ONE_TIME_PRODUCT_SCOPE}'
+           AND account.runtime_tier = $5
+           AND account.verification_environment_id = $6
+           AND ${COMPLETE_ACTIVE_OWNED_HOUSEHOLDS_PREDICATE}
      ),
      inserted AS (
        INSERT INTO onetime.v21_adult_sessions
@@ -379,9 +421,10 @@ async function createV21ParentSelectionSession(
           AND adult.adult_id = $3
           AND account.state = 'active'
           AND account.security_version = $7
-          AND account.product_key = '${ONE_TIME_PRODUCT_SCOPE}'
-          AND account.runtime_tier = $5
-          AND account.verification_environment_id = $6
+           AND account.product_key = '${ONE_TIME_PRODUCT_SCOPE}'
+           AND account.runtime_tier = $5
+           AND account.verification_environment_id = $6
+           AND ${COMPLETE_ACTIVE_OWNED_HOUSEHOLDS_PREDICATE}
      ),
      inserted AS (
        INSERT INTO onetime.v21_adult_sessions
@@ -712,10 +755,11 @@ async function resolveV21ParentSelectionSession(
               WHEN 'refresh' THEN session.refresh_token_digest = $9
               ELSE false
             END
-        AND session.revoked_at IS NULL
-        AND session.idle_expires_at > $10
-        AND session.absolute_expires_at > $10
-        AND (
+         AND session.revoked_at IS NULL
+         AND session.idle_expires_at > $10
+         AND session.absolute_expires_at > $10
+         AND ${COMPLETE_ACTIVE_OWNED_HOUSEHOLDS_PREDICATE}
+         AND (
           SELECT count(*)
             FROM onetime.v21_households AS selectable_household
             JOIN onetime.canonical_aggregate_states AS selectable_access
@@ -841,10 +885,11 @@ export async function resolveV21ParentSession(
               WHEN 'refresh' THEN session.refresh_token_digest = $9
               ELSE false
             END
-        AND session.revoked_at IS NULL
-        AND session.idle_expires_at > $10
-        AND session.absolute_expires_at > $10
-      LIMIT 1`,
+         AND session.revoked_at IS NULL
+         AND session.idle_expires_at > $10
+         AND session.absolute_expires_at > $10
+         AND ${COMPLETE_ACTIVE_OWNED_HOUSEHOLDS_PREDICATE}
+       LIMIT 1`,
     [
       input.sessionId,
       input.humanAccountId,
@@ -1338,6 +1383,200 @@ export async function upgradeV21AdultCredentialPasswordHash(
     ],
   );
   return result.rowCount === 1;
+}
+
+export async function changeV21AdultPassword(
+  pool: DbPool,
+  input: ChangeV21AdultPasswordInput,
+): Promise<ChangedV21AdultPassword> {
+  inputIdentifier(input.sessionId, 'adult session');
+  inputIdentifier(input.humanAccountId, 'HumanAccount');
+  inputIdentifier(input.adultId, 'adult');
+  assertRuntimeBinding(input.runtimeTier, input.verificationEnvironmentId);
+  assertDigest(input.accessTokenDigest, 'access');
+  if (input.activeRole !== 'admin' && input.activeRole !== 'parent') {
+    throw new HouseholdIdentityRepositoryError(
+      'invalid_session_input',
+      'The active adult role is invalid.',
+    );
+  }
+  if (
+    !Number.isSafeInteger(input.securityVersion) ||
+    input.securityVersion < 1 ||
+    !Number.isSafeInteger(input.expectedCredentialVersion) ||
+    input.expectedCredentialVersion < 1
+  ) {
+    throw new HouseholdIdentityRepositoryError(
+      'invalid_session_input',
+      'The expected security and credential versions must be positive integers.',
+    );
+  }
+  for (const [label, hash] of [
+    ['expected', input.expectedPasswordHash],
+    ['replacement', input.replacementPasswordHash],
+  ] as const) {
+    if (!hash.startsWith('argon2id') && !hash.startsWith('$argon2id')) {
+      throw new HouseholdIdentityRepositoryError(
+        'invalid_session_input',
+        `The ${label} adult credential hash is outside the bounded format.`,
+      );
+    }
+  }
+  const now = inputInstant(input.now);
+
+  return inTransaction(pool, async (db) => {
+    const credential = await db.query(
+      `UPDATE onetime.v21_adult_credentials
+          SET password_hash = $1,
+              credential_state = 'active',
+              credential_version = credential_version + 1,
+              updated_at = $2
+        WHERE human_account_id = $3
+          AND adult_id = $4
+          AND credential_kind = 'adult_email_password'
+          AND credential_state = 'active'
+          AND credential_version = $5
+          AND password_hash = $6
+          AND product_key = '${ONE_TIME_PRODUCT_SCOPE}'
+          AND runtime_tier = $7
+          AND verification_environment_id = $8
+        RETURNING credential_version`,
+      [
+        input.replacementPasswordHash,
+        now,
+        input.humanAccountId,
+        input.adultId,
+        input.expectedCredentialVersion,
+        input.expectedPasswordHash,
+        input.runtimeTier,
+        input.verificationEnvironmentId,
+      ],
+    );
+    const credentialVersion = Number(credential.rows[0]?.credential_version);
+    if (credential.rowCount !== 1 || credentialVersion !== input.expectedCredentialVersion + 1) {
+      throw new HouseholdIdentityRepositoryError(
+        'persistence_invariant',
+        'The adult credential changed before the password transaction committed.',
+      );
+    }
+
+    const account = await db.query(
+      `UPDATE onetime.v21_human_accounts
+          SET security_version = security_version + 1,
+              version = version + 1,
+              updated_at = $1
+        WHERE human_account_id = $2
+          AND adult_id = $3
+          AND state = 'active'
+          AND security_version = $4
+          AND product_key = '${ONE_TIME_PRODUCT_SCOPE}'
+          AND runtime_tier = $5
+          AND verification_environment_id = $6
+          AND EXISTS (
+            SELECT 1
+              FROM onetime.v21_adult_identities AS adult
+             WHERE adult.adult_id = $3
+               AND adult.state = 'active'
+               AND adult.product_key = '${ONE_TIME_PRODUCT_SCOPE}'
+               AND adult.runtime_tier = $5
+               AND adult.verification_environment_id = $6
+          )
+          AND EXISTS (
+            SELECT 1
+              FROM onetime.v21_human_account_role_memberships AS membership
+             WHERE membership.human_account_id = $2
+               AND membership.role = $7
+               AND membership.revoked_at IS NULL
+               AND membership.product_key = '${ONE_TIME_PRODUCT_SCOPE}'
+               AND membership.runtime_tier = $5
+               AND membership.verification_environment_id = $6
+          )
+        RETURNING security_version`,
+      [
+        now,
+        input.humanAccountId,
+        input.adultId,
+        input.securityVersion,
+        input.runtimeTier,
+        input.verificationEnvironmentId,
+        input.activeRole,
+      ],
+    );
+    const securityVersion = Number(account.rows[0]?.security_version);
+    if (account.rowCount !== 1 || securityVersion !== input.securityVersion + 1) {
+      throw new HouseholdIdentityRepositoryError(
+        'persistence_invariant',
+        'The HumanAccount security version changed before the password transaction committed.',
+      );
+    }
+
+    const currentSession = await db.query(
+      `UPDATE onetime.v21_adult_sessions
+          SET security_version = $1,
+              version = version + 1,
+              updated_at = $2
+        WHERE session_id = $3
+          AND human_account_id = $4
+          AND active_role = $5
+          AND (($6::text IS NULL AND active_household_id IS NULL) OR active_household_id = $6)
+          AND access_token_digest = $7
+          AND security_version = $8
+          AND product_key = '${ONE_TIME_PRODUCT_SCOPE}'
+          AND runtime_tier = $9
+          AND verification_environment_id = $10
+          AND revoked_at IS NULL
+          AND idle_expires_at > $2
+          AND absolute_expires_at > $2
+        RETURNING session_id`,
+      [
+        securityVersion,
+        now,
+        input.sessionId,
+        input.humanAccountId,
+        input.activeRole,
+        input.householdId,
+        input.accessTokenDigest,
+        input.securityVersion,
+        input.runtimeTier,
+        input.verificationEnvironmentId,
+      ],
+    );
+    if (currentSession.rowCount !== 1) {
+      throw new HouseholdIdentityRepositoryError(
+        'persistence_invariant',
+        'The current adult session changed before the password transaction committed.',
+      );
+    }
+
+    const revoked = await db.query(
+      `UPDATE onetime.v21_adult_sessions
+          SET revoked_at = $1,
+              revoke_reason = 'credential_changed',
+              version = version + 1,
+              updated_at = $1
+        WHERE human_account_id = $2
+          AND session_id <> $3
+          AND product_key = '${ONE_TIME_PRODUCT_SCOPE}'
+          AND runtime_tier = $4
+          AND verification_environment_id = $5
+          AND revoked_at IS NULL
+        RETURNING session_id`,
+      [
+        now,
+        input.humanAccountId,
+        input.sessionId,
+        input.runtimeTier,
+        input.verificationEnvironmentId,
+      ],
+    );
+
+    return {
+      securityVersion,
+      credentialVersion,
+      sessionsInvalidated: revoked.rowCount ?? revoked.rows.length,
+      passwordUpdatedAt: new Date(now),
+    };
+  });
 }
 
 export async function findAdultAndAccountByNormalizedEmail(
