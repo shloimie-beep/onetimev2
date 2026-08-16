@@ -34,7 +34,7 @@ export type PasswordPolicy = {
 
 export const PASSWORD_POLICIES = {
   adult: {
-    minimum_code_points: 12,
+    minimum_code_points: 6,
     maximum_code_points: 128,
     composition_rule: 'none',
     reject_common: true,

@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import pg from 'pg';
@@ -250,6 +251,61 @@ describe('P12 concrete PostgreSQL Parent household repository', () => {
     await expect(
       countWhere(pool, 'v21_student_profiles', 'household_id', fixture.householdId),
     ).resolves.toBe(3);
+  });
+
+  it('persists one legacy self profile alongside three dependent child seats', async () => {
+    const fixture = await seedParent(pool, 'legacy-self-capacity', 2);
+    const legacySelfId = await seedLegacySelfStudent(pool, fixture, 'active');
+    const service = concreteService(pool, 'student-legacy-self-third-child');
+
+    await expect(service.overview(fixture.principal)).resolves.toMatchObject({
+      active_student_count: 2,
+      available_student_seats: 1,
+      students: expect.arrayContaining([
+        expect.objectContaining({ student_id: legacySelfId, relationship: 'self' }),
+      ]),
+    });
+
+    const thirdChild = await service.createStudent(
+      fixture.principal,
+      {
+        expected_revision: 1,
+        actual_name: 'Third Dependent Child',
+        username: 'legacy.self.third.child',
+        relationship: 'dependent',
+        new_password: '000123',
+        password_confirmation: '000123',
+      },
+      mutationContext('legacy-self-third-child', '7'),
+    );
+    expect(thirdChild.snapshot).toMatchObject({
+      active_student_count: 3,
+      available_student_seats: 0,
+    });
+    expect(thirdChild.snapshot.students).toHaveLength(4);
+    await expect(householdActiveSeatCount(pool, fixture.householdId)).resolves.toBe(3);
+
+    const archivedSelf = await service.archiveStudent(
+      fixture.principal,
+      { expected_revision: 2, student_id: legacySelfId },
+      mutationContext('legacy-self-archive', '8'),
+    );
+    expect(archivedSelf.snapshot.active_student_count).toBe(3);
+    await expect(householdActiveSeatCount(pool, fixture.householdId)).resolves.toBe(3);
+
+    const restoredSelf = await service.restoreStudent(
+      fixture.principal,
+      { expected_revision: 3, student_id: legacySelfId },
+      mutationContext('legacy-self-restore', '9'),
+    );
+    expect(restoredSelf.snapshot).toMatchObject({
+      active_student_count: 3,
+      available_student_seats: 0,
+    });
+    expect(
+      restoredSelf.snapshot.students.filter((student) => student.state === 'active'),
+    ).toHaveLength(4);
+    await expect(householdActiveSeatCount(pool, fixture.householdId)).resolves.toBe(3);
   });
 
   it('rolls the Student and every evidence row back when enrollment persistence fails', async () => {
@@ -1505,6 +1561,92 @@ async function seedParent(
       session_id: sessionId,
     } satisfies ParentHouseholdPrincipal,
   };
+}
+
+async function seedLegacySelfStudent(
+  pool: DbPool,
+  fixture: Awaited<ReturnType<typeof seedParent>>,
+  state: 'active' | 'archived',
+) {
+  const studentId = `${fixture.householdId}-legacy-self`;
+  const acceptanceId = testStableId(
+    'service_acceptance',
+    fixture.householdId,
+    studentId,
+    'student-service-account-v1',
+  );
+  const enrollmentId = testStableId('student_enrollment', studentId);
+  await pool.query(
+    `INSERT INTO onetime.v21_student_profiles
+       (student_id, household_id, relationship, self_adult_id, actual_name,
+        display_name, username, normalized_username, credential_hash,
+        credential_version, credential_state, credential_history_ref,
+        relationship_history_ref, state, version, product_key, runtime_tier,
+        verification_environment_id, created_at, updated_at)
+     VALUES ($1,$2,'self',$3,'Legacy Self Learner',NULL,$4,$4,$5,1,$6,$7,$8,
+             $9,1,'one_time_mishnayos','isolated_staging','ci',$10,$10)`,
+    [
+      studentId,
+      fixture.householdId,
+      fixture.principal.adult_id,
+      `${fixture.householdId}.self`,
+      passwordHash,
+      state === 'active' ? 'active' : 'disabled',
+      `credential:${studentId}`,
+      `relationship:${studentId}`,
+      state,
+      now.toISOString(),
+    ],
+  );
+  await pool.query(
+    `INSERT INTO onetime.admin_service_account_acceptances
+       (acceptance_id, household_id, student_id, accepted_by_adult_id,
+        accepted_service_account_version, canonical_request_hash,
+        immutable_evidence_reference, accepted_at, product_key, runtime_tier,
+        verification_environment_id)
+     VALUES ($1,$2,$3,$4,'student-service-account-v1',$5,
+             'policy://student-service-account/v1',$6,
+             'one_time_mishnayos','isolated_staging','ci')`,
+    [
+      acceptanceId,
+      fixture.householdId,
+      studentId,
+      fixture.principal.adult_id,
+      'e'.repeat(64),
+      now.toISOString(),
+    ],
+  );
+  await pool.query(
+    `INSERT INTO onetime.admin_canonical_student_enrollments
+       (enrollment_id, household_id, student_id, service_account_acceptance_id,
+        state, version, updated_at, product_key, runtime_tier,
+        verification_environment_id)
+     VALUES ($1,$2,$3,$4,$5,1,$6,
+             'one_time_mishnayos','isolated_staging','ci')`,
+    [
+      enrollmentId,
+      fixture.householdId,
+      studentId,
+      acceptanceId,
+      state === 'active' ? 'active' : 'revoked',
+      now.toISOString(),
+    ],
+  );
+  return studentId;
+}
+
+async function householdActiveSeatCount(pool: DbPool, householdId: string) {
+  const result = await pool.query(
+    `SELECT active_seat_count
+       FROM onetime.v21_households
+      WHERE household_id = $1`,
+    [householdId],
+  );
+  return Number(result.rows[0]?.active_seat_count ?? -1);
+}
+
+function testStableId(prefix: string, ...parts: string[]) {
+  return `${prefix}_${createHash('sha256').update(parts.join('\0'), 'utf8').digest('hex').slice(0, 32)}`;
 }
 
 async function seedStudentAccess(

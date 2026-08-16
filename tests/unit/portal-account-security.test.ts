@@ -96,6 +96,18 @@ describe('Parent and Student portal navigation and account security', () => {
     expect(liveEntry).toContain("headers: { 'x-csrf-token': csrfToken }");
   });
 
+  it('keeps every adult password surface aligned to the six-character minimum', () => {
+    const appSource = readFileSync('apps/web/src/server/app.ts', 'utf8');
+
+    expect(appSource).toContain(".min(6, 'Use at least 6 characters.')");
+    expect(appSource).toContain(
+      "? 'Use 6 to 128 characters and avoid common passwords or your account details.'",
+    );
+    expect(appSource.match(/minlength="6" maxlength="128"/gu)).toHaveLength(4);
+    expect(appSource).not.toContain('Use at least 10 characters');
+    expect(appSource).not.toContain('Use at least one letter and one number');
+  });
+
   it('advertises mounted role-specific support routes without a learner-scoped Parent callback', () => {
     const portalEntry = readFileSync('apps/web/src/client/app/portal-entry.tsx', 'utf8');
     const portalFeatures = readFileSync(

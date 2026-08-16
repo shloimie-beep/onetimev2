@@ -55,6 +55,8 @@ export const CONTROLLER_DUAL_ROLE_APPLY_STAGES = [
   'human_account_insert',
   'role_memberships_insert',
   'family_household_insert',
+  'parent_learning_participant_insert',
+  'parent_learning_entitlement_insert',
   'credential_hash',
   'adult_credential_insert',
   'human_transition_insert',
@@ -70,6 +72,7 @@ export type ControllerDualRoleApplyStage = (typeof CONTROLLER_DUAL_ROLE_APPLY_ST
 
 export const CONTROLLER_DUAL_ROLE_TRANSACTIONAL_READBACK_GROUPS = [
   'core_identity',
+  'parent_learning',
   'canonical',
   'compatibility_access',
   'provision_audit',
@@ -92,6 +95,11 @@ const TRANSACTIONAL_READBACK_BLOCKERS_BY_GROUP = {
     'dual_role_membership_mismatch',
     'adult_credential_mismatch',
     'family_household_mismatch',
+  ],
+  parent_learning: [
+    'parent_learning_participant_mismatch',
+    'parent_learning_entitlement_mismatch',
+    'parent_learning_canonical_class_mismatch',
   ],
   canonical: [
     'canonical_human_state_mismatch',
@@ -172,21 +180,24 @@ type ApplyExecution = {
 };
 
 const APPLY_TABLE_CONTRACT = [
-  { name: 'v21_adult_identities', update: false },
-  { name: 'v21_human_accounts', update: false },
-  { name: 'v21_human_account_role_memberships', update: false },
-  { name: 'v21_households', update: false },
-  { name: 'v21_adult_credentials', update: false },
-  { name: 'canonical_state_transition_events', update: false },
-  { name: 'canonical_aggregate_states', update: true },
-  { name: 'portal_households', update: false },
-  { name: 'account_access_source_states', update: true },
-  { name: 'account_access_projections', update: true },
-  { name: 'account_access_events', update: false },
-  { name: 'account_lifecycle_audit_events', update: false },
-  { name: 'account_lifecycle_tokens', update: true },
-  { name: 'account_lifecycle_delivery_intents', update: false },
-  { name: 'account_lifecycle_delivery_outbox', update: true },
+  { name: 'v21_adult_identities', insert: true, update: false },
+  { name: 'v21_human_accounts', insert: true, update: false },
+  { name: 'v21_human_account_role_memberships', insert: true, update: false },
+  { name: 'v21_households', insert: true, update: false },
+  { name: 'parent_learning_participants', insert: true, update: false },
+  { name: 'parent_learning_class_entitlements', insert: true, update: false },
+  { name: 'class_series', insert: false, update: false },
+  { name: 'v21_adult_credentials', insert: true, update: false },
+  { name: 'canonical_state_transition_events', insert: true, update: false },
+  { name: 'canonical_aggregate_states', insert: true, update: true },
+  { name: 'portal_households', insert: true, update: false },
+  { name: 'account_access_source_states', insert: true, update: true },
+  { name: 'account_access_projections', insert: true, update: true },
+  { name: 'account_access_events', insert: true, update: false },
+  { name: 'account_lifecycle_audit_events', insert: true, update: false },
+  { name: 'account_lifecycle_tokens', insert: true, update: true },
+  { name: 'account_lifecycle_delivery_intents', insert: true, update: false },
+  { name: 'account_lifecycle_delivery_outbox', insert: true, update: true },
 ] as const;
 
 class ControllerDualRoleApplyStageError extends Error {
@@ -354,6 +365,8 @@ export type DualRoleAdultProvisionReport = {
     adult_rows: number;
     active_memberships: string[];
     family_households: number;
+    parent_learning_participants: number;
+    parent_learning_entitlements: number;
     canonical_access_state: string | null;
     compatibility_access_state: string | null;
     legacy_account_users: number;
@@ -384,6 +397,8 @@ export type DualRoleAdultProvisionReport = {
     bounded_pool_shutdown: true;
     advisory_transaction_lock: true;
     one_adult_credential: true;
+    one_parent_learning_participant: true;
+    three_child_seats_preserved: true;
     no_legacy_adult: true;
     no_contact_or_ghl_effect: true;
     no_student_effect: true;
@@ -954,7 +969,7 @@ async function applyPrerequisiteBlockers(
         return (
           !row ||
           row.can_select !== true ||
-          row.can_insert !== true ||
+          (entry.insert && row.can_insert !== true) ||
           (entry.update && row.can_update !== true)
         );
       })
@@ -986,6 +1001,21 @@ async function applyPrerequisiteBlockers(
     }
   } catch {
     blockers.push('apply_prerequisite_catalog_unavailable');
+  }
+
+  try {
+    const canonicalClass = await pool.query(
+      `SELECT class_series_key
+         FROM onetime.class_series
+        WHERE account_key=$1 AND product_key=$2
+          AND is_canonical=true AND status='active' AND series_state='active'`,
+      [manifest.scope.account_key, manifest.scope.product_key],
+    );
+    if (canonicalClass.rows.length !== 1) {
+      blockers.push('apply_prerequisite_parent_learning_class_cardinality_mismatch');
+    }
+  } catch {
+    blockers.push('apply_prerequisite_parent_learning_class_check_unavailable');
   }
 
   if (initial.disposition === 'absent') {
@@ -1025,6 +1055,19 @@ async function targetKeyCollisionCount(db: Queryable, manifest: Manifest, keys: 
       `SELECT count(*)::integer AS count FROM onetime.v21_households
         WHERE household_id=$1 OR owner_adult_id=$2 OR owner_human_account_id=$3`,
       [keys.householdId, keys.adultId, keys.humanAccountId],
+    ),
+    countQuery(
+      db,
+      `SELECT count(*)::integer AS count FROM onetime.parent_learning_participants
+        WHERE participant_id=$1 OR household_id=$2 OR adult_id=$3 OR human_account_id=$4`,
+      [keys.parentLearningParticipantId, keys.householdId, keys.adultId, keys.humanAccountId],
+    ),
+    countQuery(
+      db,
+      `SELECT count(*)::integer AS count
+         FROM onetime.parent_learning_class_entitlements
+        WHERE entitlement_id=$1 OR participant_id=$2 OR household_id=$3`,
+      [keys.parentLearningEntitlementId, keys.parentLearningParticipantId, keys.householdId],
     ),
     countQuery(
       db,
@@ -1138,6 +1181,8 @@ function targetKeys(manifest: Manifest) {
     verificationEnvironmentId: manifest.scope.verification_environment_id,
     normalizedEmail: manifest.adult.email,
   });
+  const parentLearningParticipantId = `parent:${householdId}`;
+  const parentLearningEntitlementId = `parent-entitlement:${householdId}`;
   const canonicalRequestHash = sha256(
     JSON.stringify({
       schema: SCHEMA,
@@ -1149,6 +1194,12 @@ function targetKeys(manifest: Manifest) {
       access: 'free',
       compatibility_policy: CONTROLLER_DUAL_ROLE_PROVISIONING_POLICY,
       compatibility_expires_at: CONTROLLER_DUAL_ROLE_ACCESS_EXPIRES_AT,
+      parent_learning: {
+        participant_id: parentLearningParticipantId,
+        entitlement_id: parentLearningEntitlementId,
+        learner_ordinal: 1,
+        canonical_account_key: manifest.scope.account_key,
+      },
     }),
   );
   const policyScope = {
@@ -1171,6 +1222,8 @@ function targetKeys(manifest: Manifest) {
     adultId,
     humanAccountId,
     householdId,
+    parentLearningParticipantId,
+    parentLearningEntitlementId,
     humanTransitionKey: stableKey('canonical_transition', [...parts, 'human_account_active']),
     accessTransitionKey: stableKey('canonical_transition', [...parts, 'access_free']),
     auditKey: controllerDualRoleProvisionAuditKey(policyScope),
@@ -1368,6 +1421,8 @@ async function inspectIdentity(
     adult_rows: adults.rows.length,
     active_memberships: [] as string[],
     family_households: 0,
+    parent_learning_participants: 0,
+    parent_learning_entitlements: 0,
     canonical_access_state: null as string | null,
     compatibility_access_state: null as string | null,
     legacy_account_users: legacy,
@@ -1439,7 +1494,7 @@ async function inspectIdentity(
     blockers.push('adult_credential_mismatch');
   }
   const households = await db.query(
-    `SELECT household_id, classification, state, seat_limit, owner_adult_id,
+    `SELECT household_id, classification, state, seat_limit, active_seat_count, owner_adult_id,
             owner_human_account_id, billing_account_ref
        FROM onetime.v21_households WHERE owner_human_account_id = $1`,
     [keys.humanAccountId],
@@ -1450,10 +1505,90 @@ async function inspectIdentity(
     households.rows[0]?.classification !== 'family' ||
     households.rows[0]?.state !== 'active' ||
     Number(households.rows[0]?.seat_limit) !== 3 ||
+    Number(households.rows[0]?.active_seat_count) !== 0 ||
     households.rows[0]?.owner_adult_id !== keys.adultId ||
     households.rows[0]?.billing_account_ref !== null
   ) {
     blockers.push('family_household_mismatch');
+  }
+  markTransactionalReadbackGroup(transactionalReadback, 'parent_learning');
+  const parentLearningParticipants = await db.query(
+    `SELECT participant_id, household_id, adult_id, human_account_id,
+            participant_kind, learner_ordinal, state, version, product_key,
+            runtime_tier, verification_environment_id, created_at, updated_at, archived_at
+       FROM onetime.parent_learning_participants
+      WHERE participant_id=$1 OR household_id=$2 OR adult_id=$3 OR human_account_id=$4`,
+    [keys.parentLearningParticipantId, keys.householdId, keys.adultId, keys.humanAccountId],
+  );
+  const parentLearningParticipant = parentLearningParticipants.rows[0] as
+    Record<string, unknown> | undefined;
+  const participantCreatedAt = readTimestampMillis(parentLearningParticipant?.created_at);
+  if (
+    parentLearningParticipants.rows.length !== 1 ||
+    !parentLearningParticipant ||
+    parentLearningParticipant.participant_id !== keys.parentLearningParticipantId ||
+    parentLearningParticipant.household_id !== keys.householdId ||
+    parentLearningParticipant.adult_id !== keys.adultId ||
+    parentLearningParticipant.human_account_id !== keys.humanAccountId ||
+    parentLearningParticipant.participant_kind !== 'parent' ||
+    Number(parentLearningParticipant.learner_ordinal) !== 1 ||
+    parentLearningParticipant.state !== 'active' ||
+    Number(parentLearningParticipant.version) !== 1 ||
+    parentLearningParticipant.product_key !== manifest.scope.product_key ||
+    parentLearningParticipant.runtime_tier !== manifest.scope.runtime_tier ||
+    parentLearningParticipant.verification_environment_id !==
+      manifest.scope.verification_environment_id ||
+    parentLearningParticipant.archived_at !== null ||
+    !Number.isFinite(participantCreatedAt) ||
+    participantCreatedAt > now.getTime() ||
+    readTimestampMillis(parentLearningParticipant.updated_at) !== participantCreatedAt
+  ) {
+    blockers.push('parent_learning_participant_mismatch');
+  }
+  const parentLearningEntitlements = await db.query(
+    `SELECT entitlement_id, participant_id, household_id, account_key, product_key,
+            runtime_tier, verification_environment_id, class_series_key,
+            entitlement_state, source, effective_at, revoked_at, version
+       FROM onetime.parent_learning_class_entitlements
+      WHERE entitlement_id=$1 OR participant_id=$2 OR household_id=$3`,
+    [keys.parentLearningEntitlementId, keys.parentLearningParticipantId, keys.householdId],
+  );
+  const parentLearningEntitlement = parentLearningEntitlements.rows[0] as
+    Record<string, unknown> | undefined;
+  const canonicalParentLearningClasses = await db.query(
+    `SELECT class_series_key
+       FROM onetime.class_series
+      WHERE account_key=$1 AND product_key=$2
+        AND is_canonical=true AND status='active' AND series_state='active'`,
+    [config.accountKey, config.productKey],
+  );
+  const canonicalParentLearningClassKey = canonicalParentLearningClasses.rows[0]?.class_series_key;
+  const canonicalParentLearningClassMismatch =
+    canonicalParentLearningClasses.rows.length !== 1 ||
+    typeof canonicalParentLearningClassKey !== 'string';
+  if (canonicalParentLearningClassMismatch) {
+    blockers.push('parent_learning_canonical_class_mismatch');
+  }
+  if (
+    parentLearningEntitlements.rows.length !== 1 ||
+    !parentLearningEntitlement ||
+    parentLearningEntitlement.entitlement_id !== keys.parentLearningEntitlementId ||
+    parentLearningEntitlement.participant_id !== keys.parentLearningParticipantId ||
+    parentLearningEntitlement.household_id !== keys.householdId ||
+    parentLearningEntitlement.account_key !== config.accountKey ||
+    parentLearningEntitlement.product_key !== manifest.scope.product_key ||
+    parentLearningEntitlement.runtime_tier !== manifest.scope.runtime_tier ||
+    parentLearningEntitlement.verification_environment_id !==
+      manifest.scope.verification_environment_id ||
+    (!canonicalParentLearningClassMismatch &&
+      parentLearningEntitlement.class_series_key !== canonicalParentLearningClassKey) ||
+    parentLearningEntitlement.entitlement_state !== 'active' ||
+    parentLearningEntitlement.source !== 'admin_repair' ||
+    readTimestampMillis(parentLearningEntitlement.effective_at) !== participantCreatedAt ||
+    parentLearningEntitlement.revoked_at !== null ||
+    Number(parentLearningEntitlement.version) !== 1
+  ) {
+    blockers.push('parent_learning_entitlement_mismatch');
   }
   markTransactionalReadbackGroup(transactionalReadback, 'canonical');
   const states = await db.query(
@@ -1747,6 +1882,8 @@ async function inspectIdentity(
     adult_rows: adults.rows.length,
     active_memberships: activeMemberships,
     family_households: households.rows.length,
+    parent_learning_participants: parentLearningParticipants.rows.length,
+    parent_learning_entitlements: parentLearningEntitlements.rows.length,
     canonical_access_state: accessState ? String(accessState.current_state) : null,
     compatibility_access_state: compatibilityRow ? String(compatibilityRow.state) : null,
     legacy_account_users: legacy,
@@ -2239,6 +2376,51 @@ async function applyIdentity(
           'Family household',
         ),
       );
+      await atStage('parent_learning_participant_insert', () =>
+        exactlyOne(
+          db,
+          `INSERT INTO onetime.parent_learning_participants
+             (participant_id, household_id, adult_id, human_account_id,
+              participant_kind, learner_ordinal, state, version, product_key,
+              runtime_tier, verification_environment_id, created_at, updated_at)
+           VALUES ($1,$2,$3,$4,'parent',1,'active',1,$5,$6,$7,$8,$8)`,
+          [
+            keys.parentLearningParticipantId,
+            keys.householdId,
+            keys.adultId,
+            keys.humanAccountId,
+            ...scope,
+            occurredAt,
+          ],
+          'Parent learning participant',
+        ),
+      );
+      await atStage('parent_learning_entitlement_insert', () =>
+        exactlyOne(
+          db,
+          `INSERT INTO onetime.parent_learning_class_entitlements
+             (entitlement_id, participant_id, household_id, account_key,
+              product_key, runtime_tier, verification_environment_id,
+              class_series_key, entitlement_state, source, effective_at, version)
+           SELECT $1,$2,$3,series.account_key,series.product_key,$4,$5,
+                  series.class_series_key,'active','admin_repair',$6::timestamptz,1
+             FROM onetime.class_series AS series
+            WHERE series.account_key=$7 AND series.product_key=$8
+              AND series.is_canonical=true AND series.status='active'
+              AND series.series_state='active'`,
+          [
+            keys.parentLearningEntitlementId,
+            keys.parentLearningParticipantId,
+            keys.householdId,
+            manifest.scope.runtime_tier,
+            manifest.scope.verification_environment_id,
+            occurredAt,
+            config.accountKey,
+            config.productKey,
+          ],
+          'Parent canonical-class entitlement',
+        ),
+      );
       const passwordHash = await atStage('credential_hash', async () =>
         hashAuthPassword(randomBytes(48).toString('base64url')),
       );
@@ -2681,6 +2863,8 @@ function report(
     adult_rows: identity.adult_rows,
     active_memberships: identity.active_memberships,
     family_households: identity.family_households,
+    parent_learning_participants: identity.parent_learning_participants,
+    parent_learning_entitlements: identity.parent_learning_entitlements,
     canonical_access_state: identity.canonical_access_state,
     compatibility_access_state: identity.compatibility_access_state,
     legacy_account_users: identity.legacy_account_users,
@@ -2720,6 +2904,8 @@ function report(
       bounded_pool_shutdown: true,
       advisory_transaction_lock: true,
       one_adult_credential: true,
+      one_parent_learning_participant: true,
+      three_child_seats_preserved: true,
       no_legacy_adult: true,
       no_contact_or_ghl_effect: true,
       no_student_effect: true,

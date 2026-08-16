@@ -26,7 +26,7 @@ test('signup meets local performance and layout gates', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const started = Date.now();
   await page.goto('/signup', { waitUntil: 'load' });
-  await page.getByRole('heading', { name: 'Create your Family account' }).waitFor();
+  await page.getByRole('heading', { name: 'Create Family Account' }).waitFor();
   const usableMs = Date.now() - started;
   const overflow = await page.evaluate(
     () => document.documentElement.scrollWidth > document.documentElement.clientWidth,

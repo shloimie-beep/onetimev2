@@ -66,8 +66,9 @@ export type StudentCredentialInput = {
   password_confirmation: string;
 };
 
-export type CreateParentStudentCommand = StudentProfileInput &
+export type CreateParentStudentCommand = Omit<StudentProfileInput, 'relationship'> &
   StudentCredentialInput & {
+    relationship: 'dependent';
     expected_revision: number;
   };
 

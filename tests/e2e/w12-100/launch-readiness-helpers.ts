@@ -35,7 +35,7 @@ export const publicRouteProbes: RouteProbe[] = [
     id: 'signup',
     path: '/signup',
     audience: 'public',
-    expectedHeading: 'Create your Family account',
+    expectedHeading: 'Create Family Account',
     collectionSurface: true,
   },
   { id: 'privacy', path: '/privacy', audience: 'public', expectedHeading: /Privacy/i },
@@ -139,6 +139,7 @@ export async function loginAs(
 }
 
 export async function useW12AdminSession(page: Page) {
+  await page.context().clearCookies();
   await page.context().addCookies([...W12_E2E_ADMIN_COOKIES]);
 }
 
@@ -345,6 +346,14 @@ export async function createSyntheticContact(page: Page) {
   const suffix = Date.now();
   const contactName = `W12 100 Parent ${suffix}`;
   await page.goto('/signup');
+  const testOrigin = new URL(page.url()).origin;
+  await page.route('https://app.onetimeonetime.com/app/parent', (route) =>
+    route.fulfill({
+      status: 302,
+      headers: { location: `${testOrigin}/app/parent` },
+      body: '',
+    }),
+  );
   await page.getByLabel('First name', { exact: true }).fill('W12 100 Parent');
   await page.getByLabel('Last name', { exact: true }).fill(String(suffix));
   await page.getByRole('textbox', { name: 'Adult account email' }).fill(email);
@@ -354,9 +363,8 @@ export async function createSyntheticContact(page: Page) {
   const submit = page.getByRole('button', { name: 'Create your Family account' });
   await expect(submit).toBeVisible();
   await submit.click();
-  await expect(page).toHaveURL(/\/signup\/received\?state=session_pending&email=pending$/u);
-  await expect(page.getByRole('heading', { name: 'Signup received' })).toBeVisible();
-  await expect(page.getByText('No card was charged by this signup form.')).toBeVisible();
+  await expect(page).toHaveURL(/\/app\/parent$/u);
+  await expect(page.getByRole('heading', { name: 'Today', exact: true })).toBeVisible();
   return { email, contactName };
 }
 

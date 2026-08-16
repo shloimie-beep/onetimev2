@@ -62,6 +62,8 @@ describe('F04 PostgreSQL v2.1 adult-session repository', () => {
     expect(query.text).toContain('household.owner_adult_id = adult.adult_id');
     expect(query.text).toContain('account.security_version = $7');
     expect(query.text).toContain("access.aggregate_kind = 'access'");
+    expect(query.text).toContain('FROM onetime.v21_households AS incomplete_household');
+    expect(query.text).toContain('FROM onetime.canonical_aggregate_states AS complete_access');
     expect(query.text).toContain('ON CONFLICT (session_id) DO NOTHING');
     expect(query.values?.[7]).toBe(accessDigest);
     expect(query.values?.[8]).toBe(refreshDigest);
@@ -124,6 +126,12 @@ describe('F04 PostgreSQL v2.1 adult-session repository', () => {
       household: null,
     });
     expect(createCapture.queries[0]!.text).toContain('eligible.owned_household_count > 1');
+    expect(createCapture.queries[0]!.text).toContain(
+      'FROM onetime.v21_households AS incomplete_household',
+    );
+    expect(createCapture.queries[0]!.text).toContain(
+      'FROM onetime.canonical_aggregate_states AS complete_access',
+    );
     expect(createCapture.queries[0]!.values?.[3]).toBeNull();
 
     const resolveCapture = capturingDb(() => [selectionRow]);
@@ -142,6 +150,12 @@ describe('F04 PostgreSQL v2.1 adult-session repository', () => {
     });
     expect(resolveCapture.queries[0]!.text).toContain('session.active_household_id IS NULL');
     expect(resolveCapture.queries[0]!.text).toContain('selectable_household.state');
+    expect(resolveCapture.queries[0]!.text).toContain(
+      'FROM onetime.v21_households AS incomplete_household',
+    );
+    expect(resolveCapture.queries[0]!.text).toContain(
+      'FROM onetime.canonical_aggregate_states AS complete_access',
+    );
 
     const revokeCapture = capturingDb(() => [{ session_id: binding.sessionId }]);
     await expect(
@@ -175,6 +189,8 @@ describe('F04 PostgreSQL v2.1 adult-session repository', () => {
     });
     const query = capture.queries[0]!;
     expect(query.text).toContain("session.active_role = 'parent'");
+    expect(query.text).toContain('FROM onetime.v21_households AS incomplete_household');
+    expect(query.text).toContain('FROM onetime.canonical_aggregate_states AS complete_access');
     expect(query.text).toContain('membership.revoked_at IS NULL');
     expect(query.text).toContain('session.revoked_at IS NULL');
     expect(query.text).toContain('session.idle_expires_at > $10');

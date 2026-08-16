@@ -9,6 +9,14 @@ test('synthetic Family signup commits safely on mobile', async ({ page }) => {
   const suffix = Date.now();
 
   await page.goto('/signup');
+  const testOrigin = new URL(page.url()).origin;
+  await page.route('https://app.onetimeonetime.com/app/parent', (route) =>
+    route.fulfill({
+      status: 302,
+      headers: { location: `${testOrigin}/app/parent` },
+      body: '',
+    }),
+  );
   await page.getByLabel('First name', { exact: true }).fill('CRM Browser Parent');
   await page.getByLabel('Last name', { exact: true }).fill(String(suffix));
   await page.getByRole('textbox', { name: 'Adult account email' }).fill(email);
@@ -17,9 +25,8 @@ test('synthetic Family signup commits safely on mobile', async ({ page }) => {
   await expect(page.getByLabel(/Student.*email|WhatsApp|phone|card/i)).toHaveCount(0);
   await page.getByLabel(/I agree to the Terms/).check();
   await page.getByRole('button', { name: 'Create your Family account' }).click();
-  await expect(page).toHaveURL(/\/signup\/received\?state=session_pending&email=pending$/u);
-  await expect(page.getByRole('heading', { name: 'Signup received' })).toBeVisible();
-  await expect(page.getByText('No card was charged by this signup form.')).toBeVisible();
+  await expect(page).toHaveURL(/\/app\/parent$/u);
+  await expect(page.getByRole('heading', { name: 'Today', exact: true })).toBeVisible();
 
   const overflow = await page.evaluate(
     () => document.documentElement.scrollWidth > document.documentElement.clientWidth,

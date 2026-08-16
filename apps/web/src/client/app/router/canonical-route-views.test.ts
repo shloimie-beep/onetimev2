@@ -11,14 +11,14 @@ import {
 import { CANONICAL_V21_ROUTES, resolveCurrentClientRoute } from './registry.ts';
 
 describe('v2.1 canonical route views', () => {
-  it('projects all 93 locked routes without promoting isolated or missing behavior', () => {
-    expect(CANONICAL_V21_ROUTES).toHaveLength(93);
+  it('projects all current routes without promoting isolated or missing behavior', () => {
+    expect(CANONICAL_V21_ROUTES).toHaveLength(96);
     expect(Object.keys(CANONICAL_ROUTE_VIEW_BINDINGS).sort()).toEqual(
       CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'ready')
         .map(({ routeId }) => routeId)
         .sort(),
     );
-    expect(new Set(CANONICAL_V21_ROUTES.map(({ routeId }) => routeId)).size).toBe(93);
+    expect(new Set(CANONICAL_V21_ROUTES.map(({ routeId }) => routeId)).size).toBe(96);
     expect(
       CANONICAL_V21_ROUTES.filter(({ routeId }) => routeId.startsWith('RT-PUB-')),
     ).toHaveLength(10);
@@ -30,11 +30,11 @@ describe('v2.1 canonical route views', () => {
     ).toHaveLength(41);
     expect(
       CANONICAL_V21_ROUTES.filter(({ routeId }) => routeId.startsWith('RT-PAR-')),
-    ).toHaveLength(17);
+    ).toHaveLength(20);
     expect(
       CANONICAL_V21_ROUTES.filter(({ routeId }) => routeId.startsWith('RT-STU-')),
     ).toHaveLength(17);
-    expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'ready')).toHaveLength(93);
+    expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'ready')).toHaveLength(96);
     expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'isolated')).toHaveLength(
       0,
     );
@@ -77,6 +77,25 @@ describe('v2.1 canonical route views', () => {
       routeId: 'RT-STU-012',
       title: 'Embedded classroom',
       handler: 'student.rt-stu-012',
+    });
+  });
+
+  it('registers Parent-first learner routes without creating a Parent Student alias', () => {
+    expect(resolveCurrentClientRoute('/app/parent', 'parent')).toMatchObject({
+      routeId: 'RT-PAR-001',
+      title: 'Today',
+    });
+    expect(resolveCurrentClientRoute('/app/parent/classroom', 'parent')).toMatchObject({
+      routeId: 'RT-PAR-005',
+      title: 'Classroom',
+    });
+    expect(resolveCurrentClientRoute('/app/parent/library', 'parent')).toMatchObject({
+      routeId: 'RT-PAR-006',
+      title: 'Library',
+    });
+    expect(resolveCurrentClientRoute('/app/parent/questions', 'parent')).toMatchObject({
+      routeId: 'RT-PAR-007',
+      title: 'Questions',
     });
   });
 

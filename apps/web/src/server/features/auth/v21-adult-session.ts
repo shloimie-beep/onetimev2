@@ -12,10 +12,20 @@ import {
   type VerificationEnvironmentId,
 } from '../../../../../../packages/contracts/src/state/index.ts';
 import {
+  changeV21AdultPassword,
   createPostgresV21AdultSessionRepository,
+  type ChangeV21AdultPasswordInput,
+  type ChangedV21AdultPassword,
   type V21AdultSessionRepository,
 } from '../../../../../../packages/db/src/accounts/v21-household-identity-repository.ts';
-import { verifyAuthPasswordWithUpgrade } from '../../../../../../packages/domain/src/auth/policy.ts';
+import type { DbPool, Queryable } from '../../../../../../packages/db/src/index.ts';
+import {
+  COMMON_AUTH_PASSWORDS,
+  evaluatePassword,
+  hashAuthPassword,
+  verifyAuthPassword,
+  verifyAuthPasswordWithUpgrade,
+} from '../../../../../../packages/domain/src/auth/policy.ts';
 import { normalizeAdultEmail } from '../../../../../../packages/domain/src/accounts/v21-household-identity.ts';
 
 const BROWSER_TOKEN_VERSION = 'v1';
@@ -176,6 +186,26 @@ export type V21SessionBootstrapOutcome =
   | { status: 'invalid' }
   | { status: 'unavailable' };
 
+export type V21AdultPasswordChangeOutcome =
+  | {
+      changed: true;
+      browser_session_token: string;
+      csrf_token: string;
+      expires_at: string;
+      password_updated_at: string;
+      sessions_invalidated: number;
+      current_session_preserved: true;
+    }
+  | {
+      changed: false;
+      reason:
+        | 'invalid_session'
+        | 'invalid_current_password'
+        | 'password_policy_failed'
+        | 'password_reuse'
+        | 'unavailable';
+    };
+
 export type V21HouseholdContextOutcome =
   | {
       status: 'resolved';
@@ -203,6 +233,10 @@ export type V21HouseholdSwitchOutcome =
 
 export interface V21AdultSessionRuntime {
   establish(input: V21ParentSessionEstablishmentInput): Promise<V21ParentSessionEstablishment>;
+  establishInTransaction(
+    db: Queryable,
+    input: V21ParentSessionEstablishmentInput,
+  ): Promise<V21ParentSessionEstablishment>;
   recognizedLoginEmail(input: {
     scope: V21ParentSessionEstablishmentInput['scope'];
     email: string;
@@ -270,10 +304,19 @@ export interface V21AdultSessionRuntime {
     csrf_token?: string | null | undefined;
     now?: Date | undefined;
   }): Promise<V21ParentSessionContext | null>;
+  changePasswordCookieHeader(input: {
+    cookie_header?: string | null | undefined;
+    current_password: string;
+    new_password: string;
+    now?: Date | undefined;
+  }): Promise<V21AdultPasswordChangeOutcome>;
 }
 
 export type V21AdultSessionRuntimeInput = {
   repository: V21AdultSessionRepository;
+  repositoryFactory?: ((db: Queryable) => V21AdultSessionRepository) | undefined;
+  passwordChanger?:
+    ((input: ChangeV21AdultPasswordInput) => Promise<ChangedV21AdultPassword>) | undefined;
   hmacSecret: string;
   randomBytes?: ((size: number) => Uint8Array) | undefined;
   clock?: (() => Date) | undefined;
@@ -294,10 +337,11 @@ export function createV21AdultSessionRuntime(
   const resolveEnvelope = async (
     parsed: ParsedBrowserEnvelope,
     now: Date,
+    repository: V21AdultSessionRepository = input.repository,
   ): Promise<V21SessionResolutionOutcome> => {
     if (!validInstant(now)) return { status: 'invalid' };
     try {
-      const resolved = await input.repository.resolve({
+      const resolved = await repository.resolve({
         ...repositoryBinding(parsed.claims),
         tokenKind: 'access',
         tokenDigest: domainDigest(ACCESS_TOKEN_DOMAIN, parsed.claims.access_material),
@@ -311,7 +355,8 @@ export function createV21AdultSessionRuntime(
     }
   };
 
-  const establish = async (
+  const establishWithRepository = async (
+    repository: V21AdultSessionRepository,
     establishmentInput: V21ParentSessionEstablishmentInput,
   ): Promise<V21ParentSessionEstablishment> => {
     let createAttempted = false;
@@ -340,7 +385,7 @@ export function createV21AdultSessionRuntime(
         refresh_material: material[2],
       });
       createAttempted = true;
-      const createdSession = await input.repository.create({
+      const createdSession = await repository.create({
         ...repositoryBinding(claims),
         accessTokenDigest: domainDigest(ACCESS_TOKEN_DOMAIN, claims.access_material),
         refreshTokenDigest: domainDigest(REFRESH_TOKEN_DOMAIN, claims.refresh_material),
@@ -357,7 +402,11 @@ export function createV21AdultSessionRuntime(
       if (!parsedReadback) {
         throw new Error('Issued adult session was not readable through the host-cookie parser.');
       }
-      const middlewareReadback = await resolveEnvelope(parsedReadback, establishmentInput.now);
+      const middlewareReadback = await resolveEnvelope(
+        parsedReadback,
+        establishmentInput.now,
+        repository,
+      );
       if (middlewareReadback.status !== 'resolved') {
         throw new Error('Issued adult session failed middleware repository readback.');
       }
@@ -374,7 +423,7 @@ export function createV21AdultSessionRuntime(
       };
     } catch {
       if (createAttempted && claims) {
-        await bestEffortRevoke(input.repository, claims, establishmentInput.now);
+        await bestEffortRevoke(repository, claims, establishmentInput.now);
       }
       return {
         established: false,
@@ -382,6 +431,9 @@ export function createV21AdultSessionRuntime(
       };
     }
   };
+
+  const establish = (establishmentInput: V21ParentSessionEstablishmentInput) =>
+    establishWithRepository(input.repository, establishmentInput);
 
   const exactRevoke = async (
     parsed: ParsedBrowserEnvelope,
@@ -426,6 +478,12 @@ export function createV21AdultSessionRuntime(
 
   return {
     establish,
+    establishInTransaction: async (db, establishmentInput) => {
+      if (!input.repositoryFactory) {
+        return { established: false, safe_reason: 'integration_unavailable' };
+      }
+      return establishWithRepository(input.repositoryFactory(db), establishmentInput);
+    },
 
     recognizedLoginEmail: async ({ scope, email }) => {
       const normalizedEmail = canonicalAdultEmail(email);
@@ -911,16 +969,123 @@ export function createV21AdultSessionRuntime(
       const resolution = await resolveEnvelope(parsed, now);
       return resolution.status === 'resolved' ? resolution.context : null;
     },
+
+    changePasswordCookieHeader: async ({
+      cookie_header: cookieHeader,
+      current_password: currentPassword,
+      new_password: newPassword,
+      now = clock(),
+    }): Promise<V21AdultPasswordChangeOutcome> => {
+      const parsed = parseCookie(cookieHeader);
+      if (!parsed || !validInstant(now)) return { changed: false, reason: 'invalid_session' };
+      const resolution = await resolveEnvelope(parsed, now);
+      if (resolution.status === 'invalid') return { changed: false, reason: 'invalid_session' };
+      if (resolution.status === 'unavailable' || !input.passwordChanger) {
+        return { changed: false, reason: 'unavailable' };
+      }
+
+      try {
+        const context = resolution.context;
+        const identity = await input.repository.findLoginIdentity({
+          normalizedEmail: context.normalizedEmail,
+          runtimeTier: context.session.runtimeTier,
+          verificationEnvironmentId: context.session.verificationEnvironmentId,
+        });
+        if (
+          !identity ||
+          identity.adultId !== context.adultId ||
+          identity.humanAccountId !== context.session.humanAccountId ||
+          identity.accountState !== 'active' ||
+          identity.securityVersion !== context.session.securityVersion ||
+          !identity.memberships.includes(context.session.activeRole) ||
+          identity.credentialState !== 'active' ||
+          typeof identity.passwordHash !== 'string' ||
+          !Number.isSafeInteger(identity.credentialVersion) ||
+          Number(identity.credentialVersion) < 1
+        ) {
+          return { changed: false, reason: 'invalid_session' };
+        }
+
+        const currentVerification = verifyAuthPasswordWithUpgrade(
+          currentPassword,
+          identity.passwordHash,
+        );
+        if (!currentVerification.valid) {
+          return { changed: false, reason: 'invalid_current_password' };
+        }
+        const passwordEvaluation = evaluatePassword({
+          role: 'parent',
+          password: newPassword,
+          email: identity.normalizedEmail,
+          names: [identity.ownerDisplayName],
+          common_passwords: COMMON_AUTH_PASSWORDS,
+        });
+        if (!passwordEvaluation.accepted) {
+          return { changed: false, reason: 'password_policy_failed' };
+        }
+        if (verifyAuthPassword(newPassword, identity.passwordHash)) {
+          return { changed: false, reason: 'password_reuse' };
+        }
+
+        const nextSecurityVersion = context.session.securityVersion + 1;
+        const nextClaims = browserEnvelopeSchema.parse({
+          ...parsed.claims,
+          security_version: nextSecurityVersion,
+        });
+        const nextBrowserToken = signBrowserEnvelope(nextClaims, input.hmacSecret);
+        const nextParsed = parseCookie(
+          `${AUTH_SESSION_COOKIE.name}=${encodeURIComponent(nextBrowserToken)}`,
+        );
+        if (!nextParsed) return { changed: false, reason: 'unavailable' };
+        // Complete every fallible token/clock operation before the database commit. Once the
+        // credential transaction succeeds, the response can be assembled without stranding the
+        // Parent behind a rotated security version and no usable cookie/CSRF pair.
+        const nextCsrfToken = signCsrf(
+          nextParsed.payloadSegment,
+          randomMaterial(randomSource),
+          input.hmacSecret,
+        );
+        const expiresAt = currentExpiry(context);
+        const passwordUpdatedAt = now.toISOString();
+
+        const changed = await input.passwordChanger({
+          ...repositoryBinding(parsed.claims),
+          activeRole: parsed.claims.active_role,
+          sessionId: parsed.claims.session_id,
+          accessTokenDigest: domainDigest(ACCESS_TOKEN_DOMAIN, parsed.claims.access_material),
+          expectedCredentialVersion: Number(identity.credentialVersion),
+          expectedPasswordHash: identity.passwordHash,
+          replacementPasswordHash: hashAuthPassword(newPassword),
+          now,
+        });
+        return {
+          changed: true,
+          browser_session_token: nextBrowserToken,
+          csrf_token: nextCsrfToken,
+          expires_at: expiresAt,
+          password_updated_at: passwordUpdatedAt,
+          sessions_invalidated: changed.sessionsInvalidated,
+          current_session_preserved: true,
+        };
+      } catch {
+        return { changed: false, reason: 'unavailable' };
+      }
+    },
   };
 }
 
 export function createPostgresV21AdultSessionRuntime(
-  input: Omit<V21AdultSessionRuntimeInput, 'repository'> & {
-    db: Parameters<typeof createPostgresV21AdultSessionRepository>[0];
+  input: Omit<
+    V21AdultSessionRuntimeInput,
+    'repository' | 'repositoryFactory' | 'passwordChanger'
+  > & {
+    db: DbPool;
   },
 ): V21AdultSessionRuntime {
   return createV21AdultSessionRuntime({
     repository: createPostgresV21AdultSessionRepository(input.db),
+    repositoryFactory: createPostgresV21AdultSessionRepository,
+    passwordChanger: (changeInput) => changeV21AdultPassword(input.db, changeInput),
     hmacSecret: input.hmacSecret,
     ...(input.randomBytes ? { randomBytes: input.randomBytes } : {}),
     ...(input.clock ? { clock: input.clock } : {}),

@@ -29,7 +29,7 @@ const idempotencyKeySchema = z.string().trim().min(8).max(160);
 const lifecycleEmailSchema = z.string().trim().email().max(254);
 const lifecycleNameSchema = z.string().trim().min(1).max(180);
 const lifecycleOpaqueIdSchema = z.string().trim().min(3).max(180);
-const passwordSchema = z.string().min(8).max(256);
+const passwordSchema = z.string().min(6).max(128);
 
 export const ownerAdminInvitationPayloadSchema = z.object({
   idempotency_key: idempotencyKeySchema,
@@ -88,7 +88,7 @@ export type PasswordResetRequestPayload = z.infer<typeof passwordResetRequestPay
 const lifecycleTokenSchema = z.string().trim().min(32).max(240);
 const studentPinSchema = z.string().regex(/^[0-9]{6}$/u);
 
-/** Adult token completion keeps the existing 8–256 credential bounds. */
+/** Adult token completion follows the shared six-to-128-character adult password bounds. */
 export const tokenCompletionPayloadSchema = z.object({
   token: lifecycleTokenSchema,
   password: passwordSchema,

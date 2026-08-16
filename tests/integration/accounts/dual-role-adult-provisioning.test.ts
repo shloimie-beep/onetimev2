@@ -53,7 +53,12 @@ const operationNowWithFractionalMilliseconds = () => {
   return now;
 };
 type TransactionalReadbackDiagnosticGroup =
-  'core_identity' | 'canonical' | 'compatibility_access' | 'provision_audit' | 'prohibited';
+  | 'core_identity'
+  | 'parent_learning'
+  | 'canonical'
+  | 'compatibility_access'
+  | 'provision_audit'
+  | 'prohibited';
 const COMPATIBILITY_ACCESS_DIAGNOSTIC_CODES = [
   'compatibility_access_cardinality_mismatch',
   'compatibility_access_portal_mismatch',
@@ -162,6 +167,22 @@ describe('controller dual-role adult provisioning', () => {
     expect(serialized).not.toContain('dual-role-dry-run@example.test');
     expect(serialized).not.toContain('Synthetic Dual Role Adult');
     expect(serialized).not.toContain('@');
+    const privateKeys = controllerDualRoleProvisioningIdentityKeys({
+      accountKey: config.accountKey,
+      productKey: config.productKey,
+      runtimeTier: config.oneTimeRuntimeTier,
+      verificationEnvironmentId: config.oneTimeVerificationEnvironmentId,
+      normalizedEmail: manifest.adult.email,
+    });
+    for (const privateId of [
+      privateKeys.adultId,
+      privateKeys.humanAccountId,
+      privateKeys.householdId,
+      `parent:${privateKeys.householdId}`,
+      `parent-entitlement:${privateKeys.householdId}`,
+    ]) {
+      expect(serialized).not.toContain(privateId);
+    }
 
     await expect(
       runDualRoleAdultProvision({
@@ -304,6 +325,27 @@ describe('controller dual-role adult provisioning', () => {
         mutateRows: (rows) => rows.map((row) => ({ ...row, actor_kind: 'readback_mismatch' })),
       },
       {
+        name: 'parent learning participant',
+        group: 'parent_learning',
+        blocker: 'parent_learning_participant_mismatch',
+        queryIncludes: 'FROM onetime.parent_learning_participants',
+        mutateRows: (rows) => rows.map((row) => ({ ...row, learner_ordinal: 2 })),
+      },
+      {
+        name: 'parent learning entitlement',
+        group: 'parent_learning',
+        blocker: 'parent_learning_entitlement_mismatch',
+        queryIncludes: 'FROM onetime.parent_learning_class_entitlements',
+        mutateRows: (rows) => rows.map((row) => ({ ...row, source: 'PRIVATE_SOURCE_VALUE' })),
+      },
+      {
+        name: 'parent learning canonical class',
+        group: 'parent_learning',
+        blocker: 'parent_learning_canonical_class_mismatch',
+        queryIncludes: "AND is_canonical=true AND status='active' AND series_state='active'",
+        mutateRows: () => [],
+      },
+      {
         name: 'compatibility access cardinality',
         group: 'compatibility_access',
         blocker: 'compatibility_access_cardinality_mismatch',
@@ -427,6 +469,10 @@ describe('controller dual-role adult provisioning', () => {
       queryIncludes: string;
     }> = [
       { group: 'core_identity', queryIncludes: 'WHERE normalized_email = $1' },
+      {
+        group: 'parent_learning',
+        queryIncludes: 'FROM onetime.parent_learning_participants',
+      },
       { group: 'canonical', queryIncludes: 'FROM onetime.canonical_aggregate_states' },
       {
         group: 'compatibility_access',
@@ -623,6 +669,7 @@ describe('controller dual-role adult provisioning', () => {
         const serialized = JSON.stringify(report);
         expect(serialized).not.toContain(email);
         expect(serialized).not.toContain('Synthetic Dual Role Adult');
+        expect(serialized).not.toContain('PRIVATE_SOURCE_VALUE');
         expect(serialized).not.toContain('@');
         expect(serialized).not.toContain('SELECT');
         await assertNestedDiagnosticWasNotLeaked(report, manifest, operationNow);
@@ -1188,6 +1235,28 @@ describe('controller dual-role adult provisioning', () => {
           : rows,
     },
     {
+      name: 'missing Parent learner insert privilege',
+      blocker: 'apply_prerequisite_privilege_contract_mismatch',
+      override: (kind: 'catalog' | 'trigger', rows: Record<string, unknown>[]) =>
+        kind === 'catalog'
+          ? rows.map((row) =>
+              row.table_name === 'parent_learning_participants'
+                ? { ...row, can_insert: false }
+                : row,
+            )
+          : rows,
+    },
+    {
+      name: 'missing canonical class read privilege',
+      blocker: 'apply_prerequisite_privilege_contract_mismatch',
+      override: (kind: 'catalog' | 'trigger', rows: Record<string, unknown>[]) =>
+        kind === 'catalog'
+          ? rows.map((row) =>
+              row.table_name === 'class_series' ? { ...row, can_select: false } : row,
+            )
+          : rows,
+    },
+    {
       name: 'missing canonical transition trigger',
       blocker: 'apply_prerequisite_trigger_contract_mismatch',
       override: (kind: 'catalog' | 'trigger', rows: Record<string, unknown>[]) =>
@@ -1252,6 +1321,34 @@ describe('controller dual-role adult provisioning', () => {
       identity: { disposition: 'absent', adult_rows: 0 },
       setup_delivery: { token_rows: 0, intent_rows: 0, outbox_rows: 0 },
     });
+  });
+
+  it('requires exactly one active canonical Parent-learning class before any write', async () => {
+    await pool.query(
+      `DELETE FROM onetime.class_series
+        WHERE account_key='one_time' AND product_key='one_time_mishnayos'`,
+    );
+    const before = await protectedCounts(pool);
+    const report = await runDualRoleAdultProvision({
+      manifest: privateManifest('dual-role-no-parent-class@example.test'),
+      apply: true,
+      authorizationPhrase: AUTHORIZATION,
+      pool,
+      config,
+      now: PROVISION_AT,
+      testOnlyAllowIsolatedApply: true,
+    });
+    expect(report).toMatchObject({
+      status: 'blocked',
+      blockers: ['apply_prerequisite_parent_learning_class_cardinality_mismatch'],
+      apply_execution: { disposition: 'not_started', journal: [] },
+      identity: {
+        disposition: 'absent',
+        parent_learning_participants: 0,
+        parent_learning_entitlements: 0,
+      },
+    });
+    expect(await protectedCounts(pool)).toEqual(before);
   });
 
   it('blocks an orphan deterministic key before applying any identity write', async () => {
@@ -1369,6 +1466,8 @@ describe('controller dual-role adult provisioning', () => {
         disposition: 'exact_replay',
         active_memberships: ['admin', 'parent'],
         family_households: 1,
+        parent_learning_participants: 1,
+        parent_learning_entitlements: 1,
         canonical_access_state: 'free',
         compatibility_access_state: 'active',
         legacy_account_users: 0,
@@ -1390,6 +1489,24 @@ describe('controller dual-role adult provisioning', () => {
     await expect(count(pool, 'v21_adult_credentials')).resolves.toBe(1);
     await expect(count(pool, 'v21_human_account_role_memberships')).resolves.toBe(2);
     await expect(count(pool, 'v21_households')).resolves.toBe(1);
+    await expect(count(pool, 'parent_learning_participants')).resolves.toBe(1);
+    await expect(count(pool, 'parent_learning_class_entitlements')).resolves.toBe(1);
+    await expect(parentLearningProjection(pool, email)).resolves.toMatchObject({
+      participant_kind: 'parent',
+      learner_ordinal: 1,
+      participant_state: 'active',
+      participant_version: 1,
+      account_key: 'one_time',
+      product_key: 'one_time_mishnayos',
+      runtime_tier: 'isolated_staging',
+      verification_environment_id: 'ci',
+      entitlement_state: 'active',
+      entitlement_source: 'admin_repair',
+      entitlement_version: 1,
+      is_canonical: true,
+      class_status: 'active',
+      class_series_state: 'active',
+    });
     await expect(count(pool, 'portal_households')).resolves.toBe(1);
     await expect(count(pool, 'account_access_source_states')).resolves.toBe(1);
     await expect(count(pool, 'account_access_projections')).resolves.toBe(1);
@@ -1423,6 +1540,8 @@ describe('controller dual-role adult provisioning', () => {
     expect(replay.status).toBe('replayed');
     expect(replay.setup_delivery.disposition).toBe('already_queued');
     expect(issueCalls).toBe(1);
+    await expect(count(pool, 'parent_learning_participants')).resolves.toBe(1);
+    await expect(count(pool, 'parent_learning_class_entitlements')).resolves.toBe(1);
     await expect(accessRequestHashesMatch(pool)).resolves.toBe(true);
     await expect(accessEventCreatedAt(pool)).resolves.toBe(PROVISION_AT.toISOString());
     await expect(count(pool, 'account_lifecycle_delivery_outbox')).resolves.toBe(1);
@@ -2264,11 +2383,41 @@ async function protectedCounts(db: DbPool) {
     adults: await count(db, 'v21_adult_identities'),
     accounts: await count(db, 'v21_human_accounts'),
     households: await count(db, 'v21_households'),
+    parentLearningParticipants: await count(db, 'parent_learning_participants'),
+    parentLearningEntitlements: await count(db, 'parent_learning_class_entitlements'),
     legacyUsers: await count(db, 'account_users'),
     contacts: await count(db, 'contacts'),
     lifecycleTokens: await count(db, 'account_lifecycle_tokens'),
     outbox: await count(db, 'account_lifecycle_delivery_outbox'),
   };
+}
+
+async function parentLearningProjection(db: DbPool, email: string) {
+  const result = await db.query(
+    `SELECT participant.participant_kind, participant.learner_ordinal,
+            participant.state AS participant_state,
+            participant.version AS participant_version,
+            entitlement.account_key, entitlement.product_key,
+            entitlement.runtime_tier, entitlement.verification_environment_id,
+            entitlement.entitlement_state,
+            entitlement.source AS entitlement_source,
+            entitlement.version AS entitlement_version,
+            series.is_canonical, series.status AS class_status,
+            series.series_state AS class_series_state
+       FROM onetime.v21_adult_identities AS adult
+       JOIN onetime.parent_learning_participants AS participant
+         ON participant.adult_id=adult.adult_id
+       JOIN onetime.parent_learning_class_entitlements AS entitlement
+         ON entitlement.participant_id=participant.participant_id
+       JOIN onetime.class_series AS series
+         ON series.account_key=entitlement.account_key
+        AND series.product_key=entitlement.product_key
+        AND series.class_series_key=entitlement.class_series_key
+      WHERE adult.normalized_email=$1`,
+    [email],
+  );
+  expect(result.rowCount).toBe(1);
+  return result.rows[0];
 }
 
 async function seedUnrelatedEventRegistration(db: DbPool, email: string) {

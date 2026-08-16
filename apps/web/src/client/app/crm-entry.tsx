@@ -1776,8 +1776,7 @@ function OperationsPanel({
   const [confirmPassword, setConfirmPassword] = useState('');
   const [savingPassword, setSavingPassword] = useState(false);
   const [passwordNotice, setPasswordNotice] = useState<Notice | null>(null);
-  const passwordReady =
-    newPassword.length >= 10 && /[A-Za-z]/u.test(newPassword) && /[0-9]/u.test(newPassword);
+  const passwordReady = newPassword.length >= 6 && newPassword.length <= 128;
   const passwordMatches = newPassword === confirmPassword;
   const canChangePassword =
     !savingPassword &&
@@ -1889,7 +1888,7 @@ function OperationsPanel({
               autoComplete="current-password"
               value={currentPassword}
               required
-              maxLength={256}
+              maxLength={128}
               onChange={(event) => setCurrentPassword(event.currentTarget.value)}
             />
           </label>
@@ -1900,8 +1899,8 @@ function OperationsPanel({
               autoComplete="new-password"
               value={newPassword}
               required
-              minLength={10}
-              maxLength={256}
+              minLength={6}
+              maxLength={128}
               aria-describedby="admin-password-help"
               onChange={(event) => setNewPassword(event.currentTarget.value)}
             />
@@ -1913,13 +1912,13 @@ function OperationsPanel({
               autoComplete="new-password"
               value={confirmPassword}
               required
-              minLength={10}
-              maxLength={256}
+              minLength={6}
+              maxLength={128}
               onChange={(event) => setConfirmPassword(event.currentTarget.value)}
             />
           </label>
           <p id="admin-password-help">
-            Use at least 10 characters with at least one letter and one number.
+            Use at least 6 characters.
             {confirmPassword && !passwordMatches ? ' The new passwords do not match.' : ''}
           </p>
           {passwordNotice && <NoticeBanner notice={passwordNotice} />}

@@ -24,7 +24,7 @@
     },
     {
       "path": "apps/web/src/server/app.ts",
-      "sha256": "6bae0791066c0b666a9176f66848589d0166573d0dafc5e993091218fc6b1b19"
+      "sha256": "b9c007e8b6f89a07b3de1566df18823c10c9330660a0a6ba0e2211f4766cb5b8"
     },
     {
       "path": "apps/web/src/server/communications/register.ts",
@@ -52,7 +52,7 @@
     },
     {
       "path": "apps/web/src/server/features/auth/v21-adult-session.ts",
-      "sha256": "255a9572844cacef74c637e662116c589104ba915a2ff89299ed8502bbc7cc03"
+      "sha256": "99c3162abbe5dcb269b39c32893b97ef30f439a923b656a9335997adf597698b"
     },
     {
       "path": "apps/web/src/server/features/classroom/embedded/adapters.ts",
@@ -76,7 +76,7 @@
     },
     {
       "path": "apps/web/src/server/features/classroom/production-basic/service.ts",
-      "sha256": "9f5e85c2fcdd3d112dc97fbe3b34f4cfdce38a62f4e35dcad27a3af4c221c33d"
+      "sha256": "71c50addcf4800f31af397c21dd1c1d17665affd33fa4c761875ff9f8b98229a"
     },
     {
       "path": "apps/web/src/server/features/learning/router.ts",
@@ -140,7 +140,7 @@
     },
     {
       "path": "apps/web/src/client/app/crm-entry.tsx",
-      "sha256": "71ebc2e626fe0f56ad659007bc1f0b03b4c3808501ebe78260df8625374742af"
+      "sha256": "6db80d23a0a6b83e4d050d41073088f5874fe95904e2a4643d88fe1451d90599"
     },
     {
       "path": "apps/web/src/client/app/live-entry.tsx",
@@ -152,7 +152,7 @@
     },
     {
       "path": "apps/web/src/client/app/portal-entry.tsx",
-      "sha256": "51abb405df29443dfd38dce2f188f8340058612424d172380d12dfc35d875650"
+      "sha256": "a1485805c5d5a606056cfde5504dc75c935f68d13d27a2462793e4ec7ed7a325"
     },
     {
       "path": "apps/web/src/client/app/student/classroom/StudentClassroomWorkspace.tsx",
@@ -184,7 +184,7 @@
     },
     {
       "path": "apps/web/src/client/app/router/registry.ts",
-      "sha256": "36430c5b10322b342219cc69ee6e043c881a395cfd514b249619a0f59dd5b106"
+      "sha256": "ea2f527d6f96d1e48b0d78fd064b904f9df76f4f0d56f6f60d4306fdf995a717"
     },
     {
       "path": "apps/web/src/client/app/router/canonical-route-views.ts",
@@ -200,7 +200,7 @@
     },
     {
       "path": "apps/web/src/client/public/public-entry.ts",
-      "sha256": "ec0aef3bced6f71e54281c14ea938bc5ef17ec1b1fab066229cac20161192567"
+      "sha256": "5384ca331b5c8fbfb5295ad8881cb8df55b70047796d3fb1925035ddf448cd31"
     },
     {
       "path": "apps/web/src/client/public/school/model.ts",
@@ -244,7 +244,7 @@
     },
     {
       "path": "scripts/build-public-pages.ts",
-      "sha256": "edc485c7e06ffd99a19baa3183075fe5bb21327d3b4b39c1ce311b66bb34622b"
+      "sha256": "06e1533c8d1bb6d3015fbf05f06252cccb5a5f7ca8855ef75dc214f679fa61ee"
     },
     {
       "path": "scripts/highlevel/workflow-registry-source.ts",
@@ -260,7 +260,7 @@
     },
     {
       "path": "packages/domain/src/landing/content.ts",
-      "sha256": "0ce24fe69630ef9c6ad32508de7cd7176176a87087470c25e2e2fa4a4c83142c"
+      "sha256": "02127fa30666fb6ef96262148809d7da5c5f4ad6ff0395f12d3042e70d57fd77"
     },
     {
       "path": "packages/domain/src/legal/content.ts",
@@ -780,6 +780,30 @@
       "path": "/app/parent/students/:studentId",
       "roles": ["parent"],
       "handler": "parent.rt-par-004",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
+    },
+    {
+      "route_id": "RT-PAR-005",
+      "path": "/app/parent/classroom",
+      "roles": ["parent"],
+      "handler": "parent.rt-par-005",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
+    },
+    {
+      "route_id": "RT-PAR-006",
+      "path": "/app/parent/library",
+      "roles": ["parent"],
+      "handler": "parent.rt-par-006",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
+    },
+    {
+      "route_id": "RT-PAR-007",
+      "path": "/app/parent/questions",
+      "roles": ["parent"],
+      "handler": "parent.rt-par-007",
       "readiness_state": "ready",
       "handler_disposition": "mounted"
     },
@@ -2488,6 +2512,60 @@
       ]
     },
     {
+      "action_id": "portal.parent.classroom.production_basic_join.button",
+      "label": "Join class",
+      "surface": "button",
+      "route": "/app/parent/classroom",
+      "roles": ["parent"],
+      "capability": "parent:class:launch",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/classroom/production-basic/launch"
+      },
+      "visibility": {
+        "mode": "server_derived",
+        "handler": {
+          "method": "GET",
+          "path": "/api/v1/classroom/production-basic/status"
+        },
+        "required_response": {
+          "success": true,
+          "data": {
+            "mode": "production_basic",
+            "available": true
+          }
+        }
+      },
+      "request_body": {
+        "mode": "none",
+        "client_controlled_fields": []
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "none",
+        "event": "production_basic_parent_launch_ephemeral_not_persisted"
+      },
+      "states": {
+        "loading": "Re-authorizing the exact signed-in Parent learner and active canonical-class entitlement.",
+        "success": "The explicit click joins the verified recurring Zoom classroom with short-lived SDK material and no reusable provider URL.",
+        "error": "Production-basic remains unavailable without a legacy fallback or an automatic retry.",
+        "permission": "Only the entitled signed-in Parent learner may see and use Join class.",
+        "offline": "Participant launch material is never cached or queued offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "verified_binding_explicit_sdk_click",
+      "external_mutation": true,
+      "test_evidence": [
+        "apps/web/src/server/features/classroom/production-basic/production-basic.test.ts",
+        "apps/web/src/client/app/parent/learning/api.test.ts",
+        "apps/web/src/client/app/parent/learning/classroom-launch.test.ts",
+        "apps/web/src/client/app/parent/learning/ParentLearningWorkspace.test.tsx"
+      ]
+    },
+    {
       "action_id": "portal.parent.learner.select.button",
       "label": "Select learner",
       "surface": "button",
@@ -2517,6 +2595,78 @@
       "provider_mode": "not_provider_dependent",
       "external_mutation": false,
       "test_evidence": ["tests/ot-52/portal-ui.test.ts"]
+    },
+    {
+      "action_id": "portal.parent.library.entitled_content_open.button",
+      "label": "Open entitled content",
+      "surface": "button",
+      "route": "/app/parent/library",
+      "roles": ["parent"],
+      "capability": "parent:library:playback",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/portals/parent/learning/content/:contentId/open"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "none",
+        "event": "parent_entitled_content_open_authorized_not_persisted"
+      },
+      "states": {
+        "loading": "Rechecking the Parent learner and exact content entitlement.",
+        "success": "The entitled first-party content destination opens without exposing a provider locator.",
+        "error": "No content opens and the Parent library remains fail closed.",
+        "permission": "Only the owning, active Parent learner with the exact content entitlement may open it.",
+        "offline": "Protected content authorization is never cached or queued offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/server/features/portals/parent-learning/router.test.ts",
+        "apps/web/src/server/features/portals/parent-learning/service.test.ts",
+        "apps/web/src/client/app/parent/learning/api.test.ts",
+        "apps/web/src/client/app/parent/learning/ParentLearningWorkspace.test.tsx"
+      ]
+    },
+    {
+      "action_id": "portal.parent.private_question.submit.form",
+      "label": "Send private question",
+      "surface": "form",
+      "route": "/app/parent/questions",
+      "roles": ["parent"],
+      "capability": "parent:question:create",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/portals/parent/learning/questions"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "client-generated x-idempotency-key"
+      },
+      "audit": {
+        "mode": "local_write",
+        "event": "parent_private_question_submitted"
+      },
+      "states": {
+        "loading": "Submitting the question under the Parent learner identity.",
+        "success": "The private question is durably recorded for Rabbi Eli without using a child identity.",
+        "error": "The question is not retried automatically and a bounded error is shown.",
+        "permission": "Only the owning, active Parent learner with the canonical class entitlement may submit.",
+        "offline": "Private questions are never cached or queued offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "apps/web/src/server/features/portals/parent-learning/router.test.ts",
+        "apps/web/src/server/features/portals/parent-learning/postgres-repository.test.ts",
+        "apps/web/src/client/app/parent/learning/api.test.ts",
+        "apps/web/src/client/app/parent/learning/ParentLearningWorkspace.test.tsx"
+      ]
     },
     {
       "action_id": "portal.parent.student_access.reset.button",

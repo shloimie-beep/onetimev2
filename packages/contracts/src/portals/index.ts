@@ -530,3 +530,7 @@ export function hasPortalCapability(
 export function normalizeStudentUsername(value: string) {
   return value.trim().toLowerCase();
 }
+
+export * from './parent-summary/index.ts';
+export * from './parent-welcome/index.ts';
+export * from './parent-learning/index.ts';

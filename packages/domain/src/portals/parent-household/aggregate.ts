@@ -21,7 +21,7 @@ export function buildParentHouseholdSnapshot(input: {
   household: ParentHouseholdRecord;
 }): ParentHouseholdSnapshot {
   assertOwnedHousehold(input.principal, input.household);
-  const active = input.household.students.filter((student) => student.state === 'active').length;
+  const active = activeDependentStudentCount(input.household);
   const studentAllowance = effectiveStudentAllowance(input.household);
   return {
     contract_version: PARENT_HOUSEHOLD_CONTRACT_VERSION,
@@ -50,6 +50,9 @@ export function createParentStudent(input: {
   password_confirmation: string;
 }): { next: ParentHouseholdRecord; result: ParentHouseholdMutation } {
   assertMutable(input.principal, input.household, input.expected_revision);
+  if (input.relationship !== 'dependent') {
+    invalid('New Student accounts must be dependents.');
+  }
   assertSeatAvailable(input.household);
   const profile = validateProfile(input);
   validatePassword(input.new_password, input.password_confirmation);
@@ -138,7 +141,9 @@ export function restoreParentStudent(input: {
       'This Student is already active.',
     );
   }
-  assertSeatAvailable(input.household);
+  if (current.relationship === 'dependent') {
+    assertSeatAvailable(input.household);
+  }
   const student = { ...current, state: 'active' as const, version: current.version + 1 };
   const next = replaceStudent(input.household, student);
   return mutation(input.principal, next, student, 'student_restored', {
@@ -215,7 +220,7 @@ function assertMutable(
 }
 
 function assertSeatAvailable(household: ParentHouseholdRecord) {
-  const active = household.students.filter((student) => student.state === 'active').length;
+  const active = activeDependentStudentCount(household);
   const studentAllowance = effectiveStudentAllowance(household);
   if (active >= studentAllowance) {
     throw new ParentHouseholdError(
@@ -223,6 +228,12 @@ function assertSeatAvailable(household: ParentHouseholdRecord) {
       `This household already uses all ${studentAllowance} active Student seats.`,
     );
   }
+}
+
+function activeDependentStudentCount(household: ParentHouseholdRecord) {
+  return household.students.filter(
+    (student) => student.state === 'active' && student.relationship === 'dependent',
+  ).length;
 }
 
 function effectiveStudentAllowance(household: ParentHouseholdRecord) {

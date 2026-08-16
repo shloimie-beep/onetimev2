@@ -124,6 +124,7 @@ export async function changeOwnPassword(input: {
     password_updated_at: string;
     sessions_invalidated: number;
     current_session_preserved: true;
+    csrf_token?: string;
   }>('/api/v1/auth/password', {
     method: 'POST',
     headers: { 'content-type': 'application/json', 'x-csrf-token': input.csrfToken },

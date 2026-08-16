@@ -1,5 +1,156 @@
 @import '../../../../../packages/brand-system/src/styles/react.css';
 
+.parent-learning-workspace {
+  display: grid;
+  gap: var(--ot-space-4);
+  min-width: 0;
+}
+
+.parent-learning-workspace__hero {
+  display: grid;
+  gap: var(--ot-space-2);
+  border: 1px solid var(--ot-color-border);
+  border-radius: var(--ot-radius-panel);
+  background: var(--ot-color-surface-raised);
+  padding: clamp(var(--ot-space-4), 4vw, var(--ot-space-6));
+}
+
+.parent-learning-workspace__hero h1,
+.parent-learning-workspace__hero p {
+  margin: 0;
+}
+
+.parent-learning-workspace__capacity {
+  color: var(--ot-color-text-muted);
+  font-weight: 700;
+}
+
+.parent-learning-workspace__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ot-space-2);
+  margin-top: var(--ot-space-2);
+}
+
+.parent-learning-workspace__actions > * {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: min(100%, 11rem);
+}
+
+.parent-learning-workspace__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: var(--ot-space-3);
+}
+
+.parent-learning-workspace__activity {
+  display: grid;
+  gap: var(--ot-space-2);
+  margin: 0;
+}
+
+.parent-learning-workspace__activity > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--ot-space-2);
+}
+
+.parent-learning-workspace__activity dd {
+  margin: 0;
+  font-weight: 800;
+}
+
+.parent-learning-workspace__question {
+  display: grid;
+  gap: var(--ot-space-2);
+  margin-top: var(--ot-space-3);
+}
+
+.parent-learning-workspace__question textarea {
+  width: 100%;
+  min-height: 8rem;
+  resize: vertical;
+}
+
+.parent-learning-workspace__welcome-video {
+  display: grid;
+  gap: var(--ot-space-2);
+  min-width: 0;
+}
+
+.parent-learning-workspace__welcome-video h2,
+.parent-learning-workspace__welcome-video p {
+  margin: 0;
+}
+
+.parent-learning-workspace__welcome-video video {
+  display: block;
+  width: 100%;
+  max-width: 48rem;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--ot-radius-panel);
+  background: var(--ot-color-surface-raised);
+}
+
+.parent-learning-workspace__classroom-sdk {
+  min-width: 0;
+}
+
+.parent-learning-workspace__classroom-sdk:empty {
+  display: none;
+}
+
+.parent-learning-workspace__library {
+  display: grid;
+  gap: var(--ot-space-3);
+  margin: var(--ot-space-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.parent-learning-workspace__library > li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--ot-space-3);
+  min-width: 0;
+  border-top: 1px solid var(--ot-color-border);
+  padding-top: var(--ot-space-3);
+}
+
+.parent-learning-workspace__library > li:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.parent-learning-workspace__library > li > div {
+  display: grid;
+  gap: var(--ot-space-1);
+  min-width: 0;
+}
+
+.parent-learning-workspace__library h3,
+.parent-learning-workspace__library p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 32rem) {
+  .parent-learning-workspace__library > li {
+    align-items: stretch;
+    display: grid;
+  }
+
+  .parent-learning-workspace__library button {
+    width: 100%;
+  }
+}
+
 .parent-student-workspace,
 .parent-student-form,
 .parent-student-management {

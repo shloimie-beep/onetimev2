@@ -33,6 +33,23 @@ export type PasswordEvaluationInput = PasswordIdentityContext & {
   is_compromised?: (password: string) => boolean;
 };
 
+export const COMMON_AUTH_PASSWORDS: ReadonlySet<string> = new Set([
+  '000000',
+  '111111',
+  '123456',
+  '1234567',
+  '12345678',
+  '123456789',
+  'abc123',
+  'letmein',
+  'letmein123',
+  'password',
+  'password1',
+  'password123',
+  'qwerty',
+  'qwerty123',
+]);
+
 export function normalizeAuthIdentifier(value: string): string {
   return value.normalize('NFKC').trim().toLocaleLowerCase('en-US');
 }

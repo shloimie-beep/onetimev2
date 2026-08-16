@@ -110,6 +110,56 @@ export function createProductionBasicHostLiveMarker(pool: DbPool): ProductionBas
       );
       return (result.rowCount ?? 0) === 1;
     },
+    async currentForParent({
+      scope,
+      participant_id,
+      household_id,
+      meeting_ref_digest,
+      observed_at,
+    }) {
+      const result = await pool.query(
+        `SELECT 1
+           FROM onetime.class_occurrences AS occurrence
+           JOIN onetime.class_series AS series
+             ON series.account_key = occurrence.account_key
+            AND series.product_key = occurrence.product_key
+            AND series.class_series_key = occurrence.class_series_key
+           JOIN onetime.parent_learning_class_entitlements AS entitlement
+             ON entitlement.account_key = occurrence.account_key
+            AND entitlement.product_key = occurrence.product_key
+            AND entitlement.class_series_key = occurrence.class_series_key
+           JOIN onetime.parent_learning_participants AS participant
+             ON participant.participant_id = entitlement.participant_id
+            AND participant.household_id = entitlement.household_id
+            AND participant.product_key = entitlement.product_key
+            AND participant.state = 'active'
+          WHERE occurrence.account_key = $1
+            AND occurrence.product_key = $2
+            AND entitlement.participant_id = $3
+            AND entitlement.household_id = $4
+            AND entitlement.entitlement_state = 'active'
+            AND entitlement.effective_at <= $6
+            AND series.is_canonical = true
+            AND series.status = 'active'
+            AND series.series_state = 'active'
+            AND occurrence.occurrence_state IN ('scheduled', 'preparing', 'ready', 'live')
+            AND occurrence.production_basic_meeting_ref_digest = $5
+            AND occurrence.production_basic_live_confirmed_at <= $6
+            AND occurrence.production_basic_live_expires_at > $6
+            AND occurrence.production_basic_live_expires_at
+              <= occurrence.production_basic_live_confirmed_at + interval '2 hours'
+          LIMIT 1`,
+        [
+          scope.account_key,
+          scope.product_key,
+          participant_id,
+          household_id,
+          meeting_ref_digest,
+          observed_at,
+        ],
+      );
+      return (result.rowCount ?? 0) === 1;
+    },
     async clear({ scope, meeting_ref_digest, cleared_at }) {
       const localClassDate = jerusalemLocalDate(cleared_at);
       await pool.query(

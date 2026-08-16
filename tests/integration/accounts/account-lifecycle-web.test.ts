@@ -114,18 +114,18 @@ describe('OPS-03B email step-up account lifecycle web flow', () => {
     });
     expect(JSON.stringify(status.json)).not.toContain(token);
 
-    const studentPinRejectedForAdult = await postJson(
+    const tooShortPasswordRejectedForAdult = await postJson(
       '/api/v1/account-lifecycle/activate',
-      { token, password: '000123', csrf_token: activationPage.token },
+      { token, password: '12345', csrf_token: activationPage.token },
       activationPage.cookies,
     );
-    expect(studentPinRejectedForAdult.response.status).toBe(400);
+    expect(tooShortPasswordRejectedForAdult.response.status).toBe(400);
 
     const activated = await postJson(
       '/api/v1/account-lifecycle/activate',
       {
         token,
-        password: 'AdminWebPass!234',
+        password: 'Ab1234',
         csrf_token: activationPage.token,
       },
       activationPage.cookies,

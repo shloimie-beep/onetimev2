@@ -155,7 +155,7 @@ export const CANONICAL_COPY_CATALOG: readonly CanonicalCopyMessage[] = [
     sender: 'brand',
     audience: 'parent_account_owner',
     subject: 'Add your Student accounts',
-    body: 'Hi {{contact.first_name}},\n\nYour Parent account is active.\n\nAdd up to three Student accounts. Each Student gets a separate username and password for the live class and recording library. If you also want to learn, you may use one of those three Student seats with separate Student credentials.\n\nAll active Students are automatically added to the daily 7:00 p.m. Jerusalem-time class.',
+    body: 'Hi {{contact.first_name}},\n\nYour Parent account is active.\n\nYou can learn immediately from your Parent account without using any of the three Student accounts. You can still add up to three Student accounts, each with a separate username and password for the live class and recording library.\n\nAll active Students are automatically added to the daily 7:00 p.m. Jerusalem-time class.',
     ctaLabel: 'Open Parent Dashboard',
     requiresApproval: false,
     requiresCurrentConsent: false,

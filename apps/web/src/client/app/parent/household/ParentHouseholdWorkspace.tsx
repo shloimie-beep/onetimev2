@@ -4,7 +4,6 @@ import {
   STUDENT_PIN_LENGTH,
   isStudentPin,
   type ParentHouseholdSnapshot,
-  type ParentStudentRelationship,
   type StudentCredentialHandoff,
 } from '../../../../../../../packages/contracts/src/portals/parent-household/index.ts';
 import {
@@ -19,14 +18,12 @@ export type ParentHouseholdView =
 export function ParentHouseholdWorkspace({
   snapshot: initialSnapshot,
   csrfToken: initialCsrfToken = null,
-  relationship: initialRelationship = 'dependent',
   credentialHandoff: initialCredentialHandoff = null,
   view = { kind: 'overview' },
   api: suppliedApi,
 }: {
   snapshot?: ParentHouseholdSnapshot;
   csrfToken?: string | null;
-  relationship?: ParentStudentRelationship;
   credentialHandoff?: StudentCredentialHandoff | null;
   view?: ParentHouseholdView;
   api?: ParentHouseholdApi;
@@ -34,7 +31,6 @@ export function ParentHouseholdWorkspace({
   const api = useMemo(() => suppliedApi ?? createParentHouseholdApi(), [suppliedApi]);
   const [snapshot, setSnapshot] = useState<ParentHouseholdSnapshot | null>(initialSnapshot ?? null);
   const [csrfToken, setCsrfToken] = useState(initialCsrfToken);
-  const [relationship, setRelationship] = useState<ParentStudentRelationship>(initialRelationship);
   const [credentialHandoff, setCredentialHandoff] = useState(initialCredentialHandoff);
   const [pending, setPending] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -98,12 +94,15 @@ export function ParentHouseholdWorkspace({
       ? (snapshot.students.find((student) => student.student_id === view.student_id) ?? null)
       : null;
   const effectiveView = snapshot.can_manage_students ? view : ({ kind: 'overview' } as const);
+  const childStudents = snapshot.students.filter((student) => student.relationship === 'dependent');
+  const legacySelfStudents = snapshot.students.filter((student) => student.relationship === 'self');
 
   return (
     <section className="parent-student-workspace" aria-labelledby="parent-household-heading">
       <h1 id="parent-household-heading">{snapshot.display_name}</h1>
       <p className="parent-student-workspace__seat-summary">
-        {snapshot.active_student_count} of {snapshot.student_allowance} active Student seats used
+        Parent learner + {snapshot.active_student_count} of {snapshot.student_allowance} child
+        learners
       </p>
       {snapshot.can_manage_students ? (
         snapshot.available_student_seats === 0 ? (
@@ -112,7 +111,7 @@ export function ParentHouseholdWorkspace({
               Add Student
             </button>
             <p id="student-seat-capacity" role="status">
-              All {snapshot.student_allowance} Student seats are in use.
+              All {snapshot.student_allowance} child learner seats are in use.
             </p>
           </>
         ) : (
@@ -145,8 +144,6 @@ export function ParentHouseholdWorkspace({
           disabled={
             pending || !snapshot.can_manage_students || snapshot.available_student_seats === 0
           }
-          relationship={relationship}
-          setRelationship={setRelationship}
           onSubmit={(form) =>
             mutate(
               (csrf) =>
@@ -156,7 +153,7 @@ export function ParentHouseholdWorkspace({
                     actual_name: form.actualName,
                     ...(form.displayName ? { display_name: form.displayName } : {}),
                     username: form.username,
-                    relationship,
+                    relationship: 'dependent',
                     new_password: form.password,
                     password_confirmation: form.passwordConfirmation,
                   },
@@ -232,30 +229,26 @@ export function ParentHouseholdWorkspace({
         )
       ) : null}
 
-      {effectiveView.kind === 'overview' && snapshot.can_manage_students ? (
-        <>
-          <h2>Who is this learner?</h2>
-          <p>{STUDENT_ACTUAL_NAME_INSTRUCTIONS[relationship]}</p>
-        </>
-      ) : null}
-
       {snapshot.can_manage_students ? (
         <>
-          <h2>Students</h2>
-          {snapshot.students.length === 0 ? (
-            <p>No Students yet.</p>
+          <h2>Child learners</h2>
+          {effectiveView.kind === 'overview' ? (
+            <p>{STUDENT_ACTUAL_NAME_INSTRUCTIONS.dependent}</p>
+          ) : null}
+          {childStudents.length === 0 ? (
+            <p>No child learners yet.</p>
           ) : (
-            <ul>
-              {snapshot.students.map((student) => (
-                <li key={student.student_id}>
-                  <a href={`/app/parent/students/${student.student_id}`}>
-                    {student.display_name ?? student.actual_name}
-                  </a>{' '}
-                  <span>{student.state}</span> <span>@{student.username}</span>
-                </li>
-              ))}
-            </ul>
+            <StudentList students={childStudents} />
           )}
+          {legacySelfStudents.length > 0 ? (
+            <>
+              <h2>
+                Legacy self-managed {legacySelfStudents.length === 1 ? 'profile' : 'profiles'}
+              </h2>
+              <p>Kept for account management. It does not use a child learner seat.</p>
+              <StudentList students={legacySelfStudents} />
+            </>
+          ) : null}
           {credentialHandoff ? <CredentialHandoff handoff={credentialHandoff} /> : null}
         </>
       ) : null}
@@ -263,15 +256,26 @@ export function ParentHouseholdWorkspace({
   );
 }
 
+function StudentList({ students }: { students: ParentHouseholdSnapshot['students'] }) {
+  return (
+    <ul>
+      {students.map((student) => (
+        <li key={student.student_id}>
+          <a href={`/app/parent/students/${student.student_id}`}>
+            {student.display_name ?? student.actual_name}
+          </a>{' '}
+          <span>{student.state}</span> <span>@{student.username}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 function CreateStudentForm({
   disabled,
-  relationship,
-  setRelationship,
   onSubmit,
 }: {
   disabled: boolean;
-  relationship: ParentStudentRelationship;
-  setRelationship: (relationship: ParentStudentRelationship) => void;
   onSubmit: (form: ProfileForm & CredentialForm) => void;
 }) {
   const passwordId = useId();
@@ -308,22 +312,10 @@ function CreateStudentForm({
     >
       <h2 id="create-student-heading">Add Student</h2>
       <div className="parent-student-form__fields">
-        <label>
-          Who is this learner?
-          <select
-            name="relationship"
-            value={relationship}
-            disabled={disabled}
-            onChange={(event) =>
-              setRelationship(event.currentTarget.value as ParentStudentRelationship)
-            }
-          >
-            <option value="dependent">Someone I manage</option>
-            <option value="self">Myself</option>
-          </select>
-        </label>
         <p className="parent-student-form__guidance">
-          {STUDENT_ACTUAL_NAME_INSTRUCTIONS[relationship]}
+          <strong>Someone I manage</strong>
+          <br />
+          {STUDENT_ACTUAL_NAME_INSTRUCTIONS.dependent}
         </p>
         <ProfileFields disabled={disabled} />
         <CredentialFields

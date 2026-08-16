@@ -58,6 +58,29 @@ const input = (now: string, signupCommand = command()): PlanFamilySignupInput =>
 };
 
 describe('P08 family signup policy', () => {
+  it('accepts a six-character adult password and rejects five characters', () => {
+    const accepted = command();
+    accepted.password = 'Abcdef';
+    accepted.password_confirmation = 'Abcdef';
+    expect(planFamilySignup(input('2026-09-11T00:00:00.000Z', accepted)).result.disposition).toBe(
+      'created',
+    );
+
+    const rejected = command();
+    rejected.password = 'Abcde';
+    rejected.password_confirmation = 'Abcde';
+    expect(() => planFamilySignup(input('2026-09-11T00:00:00.000Z', rejected))).toThrow(
+      'invalid_password',
+    );
+
+    const common = command();
+    common.password = 'qwerty';
+    common.password_confirmation = 'qwerty';
+    expect(() => planFamilySignup(input('2026-09-11T00:00:00.000Z', common))).toThrow(
+      'invalid_password',
+    );
+  });
+
   it('grants cardless free access only before the configured expiry', () => {
     const before = planFamilySignup(input('2026-09-11T14:59:59.000Z'));
     expect(before.result.projection).toMatchObject({
