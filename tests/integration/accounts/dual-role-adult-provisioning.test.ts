@@ -44,7 +44,7 @@ import {
 
 const SOURCE_SHA = 'a'.repeat(40);
 const AUTHORIZATION = 'test-only dual role controller authorization phrase';
-const PROVISION_AT = new Date('2026-08-20T12:00:00.000Z');
+const PROVISION_AT = new Date('2026-08-01T12:00:00.000Z');
 
 let pool: DbPool;
 let config: AppConfig;
@@ -674,6 +674,7 @@ describe('controller dual-role adult provisioning', () => {
     await expect(count(pool, 'account_access_source_states')).resolves.toBe(1);
     await expect(count(pool, 'account_access_projections')).resolves.toBe(1);
     await expect(count(pool, 'account_access_events')).resolves.toBe(1);
+    await expect(accessEventCreatedAt(pool)).resolves.toBe(PROVISION_AT.toISOString());
     await expect(count(pool, 'account_lifecycle_tokens')).resolves.toBe(1);
     await expect(count(pool, 'account_lifecycle_delivery_intents')).resolves.toBe(1);
     await expect(count(pool, 'account_lifecycle_delivery_outbox')).resolves.toBe(1);
@@ -701,6 +702,7 @@ describe('controller dual-role adult provisioning', () => {
     expect(replay.status).toBe('replayed');
     expect(replay.setup_delivery.disposition).toBe('already_queued');
     expect(issueCalls).toBe(1);
+    await expect(accessEventCreatedAt(pool)).resolves.toBe(PROVISION_AT.toISOString());
     await expect(count(pool, 'account_lifecycle_delivery_outbox')).resolves.toBe(1);
     const dryRunReplay = await runDualRoleAdultProvision({
       manifest,
@@ -1589,6 +1591,16 @@ async function unrelatedRegistration(db: DbPool, email: string) {
 async function count(db: DbPool, table: string) {
   const result = await db.query(`SELECT count(*)::integer AS count FROM onetime.${table}`);
   return Number(result.rows[0]?.count ?? 0);
+}
+
+async function accessEventCreatedAt(db: DbPool) {
+  const result = await db.query(
+    `SELECT created_at
+       FROM onetime.account_access_events
+      ORDER BY event_key`,
+  );
+  expect(result.rowCount).toBe(1);
+  return new Date(String(result.rows[0]?.created_at)).toISOString();
 }
 
 async function countWhere(db: DbPool, table: string, column: string, value: string) {
