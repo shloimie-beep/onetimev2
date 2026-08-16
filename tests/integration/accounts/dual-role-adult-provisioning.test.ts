@@ -47,6 +47,22 @@ const AUTHORIZATION = 'test-only dual role controller authorization phrase';
 const PROVISION_AT = new Date('2026-08-01T12:00:00.000Z');
 type TransactionalReadbackDiagnosticGroup =
   'core_identity' | 'canonical' | 'compatibility_access' | 'provision_audit' | 'prohibited';
+const COMPATIBILITY_ACCESS_DIAGNOSTIC_CODES = [
+  'compatibility_access_cardinality_mismatch',
+  'compatibility_access_portal_mismatch',
+  'compatibility_access_projection_mismatch',
+  'compatibility_access_source_mismatch',
+  'compatibility_access_timing_mismatch',
+  'compatibility_access_expiry_mismatch',
+  'compatibility_access_revision_mismatch',
+  'compatibility_access_policy_mismatch',
+  'compatibility_access_reference_mismatch',
+  'compatibility_access_hash_mismatch',
+  'compatibility_access_event_link_mismatch',
+  'compatibility_access_event_body_mismatch',
+  'compatibility_access_event_created_mismatch',
+  'compatibility_access_idempotency_mismatch',
+] as const;
 
 let pool: DbPool;
 let config: AppConfig;
@@ -280,11 +296,107 @@ describe('controller dual-role adult provisioning', () => {
         mutateRows: (rows) => rows.map((row) => ({ ...row, actor_kind: 'readback_mismatch' })),
       },
       {
-        name: 'compatibility access',
+        name: 'compatibility access cardinality',
         group: 'compatibility_access',
-        blocker: 'compatibility_access_mismatch',
+        blocker: 'compatibility_access_cardinality_mismatch',
         queryIncludes: 'FROM onetime.portal_households AS portal',
         mutateRows: () => [],
+      },
+      {
+        name: 'compatibility access portal',
+        group: 'compatibility_access',
+        blocker: 'compatibility_access_portal_mismatch',
+        queryIncludes: 'FROM onetime.portal_households AS portal',
+        mutateRows: (rows) => rows.map((row) => ({ ...row, portal_version: 2 })),
+      },
+      {
+        name: 'compatibility access projection',
+        group: 'compatibility_access',
+        blocker: 'compatibility_access_projection_mismatch',
+        queryIncludes: 'FROM onetime.portal_households AS portal',
+        mutateRows: (rows) => rows.map((row) => ({ ...row, state: 'readback_mismatch' })),
+      },
+      {
+        name: 'compatibility access source',
+        group: 'compatibility_access',
+        blocker: 'compatibility_access_source_mismatch',
+        queryIncludes: 'FROM onetime.portal_households AS portal',
+        mutateRows: (rows) => rows.map((row) => ({ ...row, source_state: 'readback_mismatch' })),
+      },
+      {
+        name: 'compatibility access timing',
+        group: 'compatibility_access',
+        blocker: 'compatibility_access_timing_mismatch',
+        queryIncludes: 'FROM onetime.portal_households AS portal',
+        mutateRows: (rows) =>
+          rows.map((row) => ({ ...row, source_updated_at: '2999-01-01T00:00:00.000Z' })),
+      },
+      {
+        name: 'compatibility access expiry',
+        group: 'compatibility_access',
+        blocker: 'compatibility_access_expiry_mismatch',
+        queryIncludes: 'FROM onetime.portal_households AS portal',
+        mutateRows: (rows) => rows.map((row) => ({ ...row, expires_at: null })),
+      },
+      {
+        name: 'compatibility access revision',
+        group: 'compatibility_access',
+        blocker: 'compatibility_access_revision_mismatch',
+        queryIncludes: 'FROM onetime.portal_households AS portal',
+        mutateRows: (rows) => rows.map((row) => ({ ...row, event_source_revision: 2 })),
+      },
+      {
+        name: 'compatibility access policy',
+        group: 'compatibility_access',
+        blocker: 'compatibility_access_policy_mismatch',
+        queryIncludes: 'FROM onetime.portal_households AS portal',
+        mutateRows: (rows) => rows.map((row) => ({ ...row, policy_version: 'readback_mismatch' })),
+      },
+      {
+        name: 'compatibility access reference',
+        group: 'compatibility_access',
+        blocker: 'compatibility_access_reference_mismatch',
+        queryIncludes: 'FROM onetime.portal_households AS portal',
+        mutateRows: (rows) =>
+          rows.map((row) => ({ ...row, opaque_source_reference: 'readback_mismatch' })),
+      },
+      {
+        name: 'compatibility access hash',
+        group: 'compatibility_access',
+        blocker: 'compatibility_access_hash_mismatch',
+        queryIncludes: 'FROM onetime.portal_households AS portal',
+        mutateRows: (rows) =>
+          rows.map((row) => ({ ...row, projection_request_hash: '0'.repeat(64) })),
+      },
+      {
+        name: 'compatibility access event link',
+        group: 'compatibility_access',
+        blocker: 'compatibility_access_event_link_mismatch',
+        queryIncludes: 'FROM onetime.portal_households AS portal',
+        mutateRows: (rows) =>
+          rows.map((row) => ({ ...row, source_last_event_key: 'readback_mismatch' })),
+      },
+      {
+        name: 'compatibility access event body',
+        group: 'compatibility_access',
+        blocker: 'compatibility_access_event_body_mismatch',
+        queryIncludes: 'FROM onetime.portal_households AS portal',
+        mutateRows: (rows) => rows.map((row) => ({ ...row, actor_kind: 'readback_mismatch' })),
+      },
+      {
+        name: 'compatibility access event created',
+        group: 'compatibility_access',
+        blocker: 'compatibility_access_event_created_mismatch',
+        queryIncludes: 'FROM onetime.portal_households AS portal',
+        mutateRows: (rows) =>
+          rows.map((row) => ({ ...row, event_created_at: '2999-01-01T00:00:00.000Z' })),
+      },
+      {
+        name: 'compatibility access idempotency',
+        group: 'compatibility_access',
+        blocker: 'compatibility_access_idempotency_mismatch',
+        queryIncludes: 'FROM onetime.portal_households AS portal',
+        mutateRows: (rows) => rows.map((row) => ({ ...row, idempotency_key: 'readback_mismatch' })),
       },
       {
         name: 'provision audit',
@@ -317,11 +429,18 @@ describe('controller dual-role adult provisioning', () => {
       },
       { group: 'prohibited', queryIncludes: 'FROM onetime.family_signup_requests' },
     ];
+    expect(
+      mismatchCases
+        .filter((testCase) => testCase.group === 'compatibility_access')
+        .map((testCase) => testCase.blocker),
+    ).toEqual(COMPATIBILITY_ACCESS_DIAGNOSTIC_CODES);
     const assertNestedDiagnosticWasNotLeaked = async (
       report: Awaited<ReturnType<typeof runDualRoleAdultProvision>>,
       manifest: ReturnType<typeof privateManifestAt>,
       operationNow: Date,
     ) => {
+      // pg-mem can retain a partial multi-table transaction after rollback. This second read-only
+      // inspection identifies that known test-double shape; native PostgreSQL proves physical zero.
       faultControl.faults = [];
       const observedReconciliationState = await runDualRoleAdultProvision({
         manifest,
@@ -334,6 +453,10 @@ describe('controller dual-role adult provisioning', () => {
         null,
       );
       const knownReconciliationBlockers = new Set(observedReconciliationState.blockers);
+      for (const code of COMPATIBILITY_ACCESS_DIAGNOSTIC_CODES) {
+        expect(observedReconciliationState.blockers).not.toContain(code);
+        expect(report.blockers).not.toContain(code);
+      }
       const nestedCodes =
         report.apply_execution.transactional_readback_diagnostic?.groups.flatMap(
           (group) => group.blocker_codes,
@@ -504,7 +627,29 @@ describe('controller dual-role adult provisioning', () => {
             { ...rows[0], transition_key: 'unallowlisted-database-id', actor_kind: 'mismatch' },
           ],
         },
-        { queryIncludes: 'FROM onetime.portal_households AS portal', mutateRows: () => [] },
+        {
+          queryIncludes: 'FROM onetime.portal_households AS portal',
+          mutateRows: (rows) =>
+            rows.map((row) => ({
+              ...row,
+              portal_account_key: 'readback_mismatch',
+              portal_version: 2,
+              state: 'readback_mismatch',
+              revocation_reason: 'readback_mismatch',
+              source_slot: 'readback_mismatch',
+              source_state: 'readback_mismatch',
+              source_updated_at: '2999-01-01T00:00:00.000Z',
+              expires_at: null,
+              event_source_revision: 2,
+              policy_version: 'readback_mismatch',
+              opaque_source_reference: 'readback_mismatch',
+              projection_request_hash: '0'.repeat(64),
+              source_last_event_key: 'readback_mismatch',
+              actor_kind: 'readback_mismatch',
+              event_created_at: '2999-01-01T00:00:00.000Z',
+              idempotency_key: 'readback_mismatch',
+            })),
+        },
         {
           queryIncludes: 'FROM onetime.account_lifecycle_audit_events',
           mutateRows: () => [],
@@ -539,7 +684,7 @@ describe('controller dual-role adult provisioning', () => {
           },
           {
             group_code: 'compatibility_access',
-            blocker_codes: ['compatibility_access_mismatch'],
+            blocker_codes: COMPATIBILITY_ACCESS_DIAGNOSTIC_CODES.slice(1),
           },
           {
             group_code: 'provision_audit',
