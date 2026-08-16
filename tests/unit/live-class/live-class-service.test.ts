@@ -36,6 +36,7 @@ const realZoomHostEnv = {
   ZOOM_REAL_CONTROL_MEETING_PASSCODE: 'passcode_test',
   ZOOM_CLASSROOM_CANARY_ENABLED: 'true',
   ZOOM_CLASSROOM_CANARY_LEARNER_KEY: 'full_app_preview_student_1',
+  APP_BASE_URL: 'https://isolated-pr.example.test',
 } as const;
 
 beforeEach(async () => {
@@ -255,7 +256,8 @@ describe('live class question lifecycle', () => {
     });
     const providerOffConfig = loadConfig({
       NODE_ENV: 'test',
-      PUBLIC_BASE_URL: 'https://isolated-pr.example.test',
+      PUBLIC_BASE_URL: 'https://join.onetimeonetime.com',
+      APP_BASE_URL: 'https://isolated-pr.example.test',
       ONE_TIME_RUNTIME_ENVIRONMENT: 'isolated_staging',
       ZOOM_CLASSROOM_ENABLED: 'true',
       ZOOM_CLASSROOM_PROVIDER_MODE: 'real',
@@ -380,7 +382,7 @@ describe('live class question lifecycle', () => {
     );
     const realConfig = loadConfig({
       NODE_ENV: 'test',
-      PUBLIC_BASE_URL: 'https://isolated-pr.example.test',
+      PUBLIC_BASE_URL: 'https://join.onetimeonetime.com',
       ...realZoomHostEnv,
     });
     const realService = createLiveClassService({
@@ -451,7 +453,7 @@ describe('live class question lifecycle', () => {
   it('refuses Admin-minted learner join material for every fictional Student', async () => {
     const realConfig = loadConfig({
       NODE_ENV: 'test',
-      PUBLIC_BASE_URL: 'https://isolated-pr.example.test',
+      PUBLIC_BASE_URL: 'https://join.onetimeonetime.com',
       LIVE_CLASS_FAKE_ADAPTER_ENABLED: 'true',
       ...realZoomHostEnv,
     });

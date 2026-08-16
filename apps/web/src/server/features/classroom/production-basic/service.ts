@@ -316,7 +316,15 @@ function sameHttpsOrigin(applicationBaseUrl: string, allowedOrigin: string | und
   try {
     const applicationOrigin = new URL(applicationBaseUrl);
     const configured = new URL(allowedOrigin);
-    return configured.protocol === 'https:' && configured.origin === applicationOrigin.origin;
+    return (
+      configured.protocol === 'https:' &&
+      configured.username === '' &&
+      configured.password === '' &&
+      configured.pathname === '/' &&
+      configured.search === '' &&
+      configured.hash === '' &&
+      configured.origin === applicationOrigin.origin
+    );
   } catch {
     return false;
   }

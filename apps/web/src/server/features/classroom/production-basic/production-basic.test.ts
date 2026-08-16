@@ -351,35 +351,27 @@ describe('production-basic Meeting SDK launch', () => {
       verified_binding: receipt,
       clock: () => now,
     });
-    const joinBound = createCanonicalProductionBasicMeetingBinding({
-      config: {
-        ...canonicalConfig(meetingId),
-        zoomMeetingSdkAllowedOrigin: 'https://join.onetimeonetime.com',
-      },
-      verified_binding: receipt,
-      clock: () => now,
-    });
-    const insecureApp = createCanonicalProductionBasicMeetingBinding({
-      config: {
-        ...canonicalConfig(meetingId),
-        zoomMeetingSdkAllowedOrigin: 'http://app.onetimeonetime.com',
-      },
-      verified_binding: receipt,
-      clock: () => now,
-    });
-    const evilOrigin = createCanonicalProductionBasicMeetingBinding({
-      config: {
-        ...canonicalConfig(meetingId),
-        zoomMeetingSdkAllowedOrigin: 'https://evil.example.test',
-      },
-      verified_binding: receipt,
-      clock: () => now,
-    });
 
     await expect(appBound.ready()).resolves.toBe(true);
-    await expect(joinBound.ready()).resolves.toBe(false);
-    await expect(insecureApp.ready()).resolves.toBe(false);
-    await expect(evilOrigin.ready()).resolves.toBe(false);
+    for (const rejectedOrigin of [
+      'https://join.onetimeonetime.com',
+      'https://evil.example.test',
+      'http://app.onetimeonetime.com',
+      'https://user:password@app.onetimeonetime.com',
+      'https://app.onetimeonetime.com/not-an-origin',
+      'https://app.onetimeonetime.com?not=an-origin',
+      'https://app.onetimeonetime.com#not-an-origin',
+    ]) {
+      const rejected = createCanonicalProductionBasicMeetingBinding({
+        config: {
+          ...canonicalConfig(meetingId),
+          zoomMeetingSdkAllowedOrigin: rejectedOrigin,
+        },
+        verified_binding: receipt,
+        clock: () => now,
+      });
+      await expect(rejected.ready(), rejectedOrigin).resolves.toBe(false);
+    }
   });
 
   it('rejects non-recurring, future, stale, and overly long verification receipts', async () => {

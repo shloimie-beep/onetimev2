@@ -76,7 +76,7 @@
     },
     {
       "path": "apps/web/src/server/features/classroom/production-basic/service.ts",
-      "sha256": "71c50addcf4800f31af397c21dd1c1d17665affd33fa4c761875ff9f8b98229a"
+      "sha256": "2a8378aba0ca4fc58e90d43ad2316348e410e215d33e97e5a556b332198d5b9b"
     },
     {
       "path": "apps/web/src/server/features/learning/router.ts",

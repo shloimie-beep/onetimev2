@@ -1658,7 +1658,8 @@ function productionBasicConfig() {
   return loadConfig(
     {
       NODE_ENV: 'test',
-      PUBLIC_BASE_URL: 'https://app.onetimeonetime.com',
+      PUBLIC_BASE_URL: 'https://join.onetimeonetime.com',
+      APP_BASE_URL: 'https://app.onetimeonetime.com',
       APP_VERSION: 'test',
       COMMIT_SHA: 'test',
       OUTBOX_TRANSPORT_MODE: 'sink',
