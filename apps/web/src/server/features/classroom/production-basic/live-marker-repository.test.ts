@@ -115,7 +115,12 @@ describe('production-basic live-class receipt', () => {
       }),
     ).resolves.toBe(true);
     const [sql, parameters] = query.mock.calls[0] as [string, unknown[]];
-    expect(sql).toContain("entitlement.entitlement_state = 'active'");
+    expect(sql).toContain('onetime.class_series_enrollments AS canonical_enrollment');
+    expect(sql).toContain("canonical_enrollment.enrollment_state = 'active'");
+    expect(sql).toContain('canonical_enrollment.revoked_at IS NULL');
+    expect(sql).toContain("account_access.state IN ('active', 'grace', 'scheduled_end')");
+    expect(sql).toContain('canonical_enrollment.enrollment_key IS NULL');
+    expect(sql).toContain('legacy_entitlement.occurrence_entitlement_key IS NOT NULL');
     expect(sql).toContain("learner.learner_status = 'active'");
     expect(sql).toContain('series.is_canonical = true');
     expect(sql).toContain('occurrence.production_basic_meeting_ref_digest = $4');
@@ -188,7 +193,10 @@ describe('production-basic live-class receipt', () => {
       [expect.objectContaining({ class_key: OCCURRENCE_KEY, status: 'live', launch_action: null })],
     );
     const [sql, parameters] = query.mock.calls[0] as [string, unknown[]];
-    expect(sql).toContain("entitlement.entitlement_state = 'active'");
+    expect(sql).toContain("canonical_enrollment.enrollment_state = 'active'");
+    expect(sql).toContain('canonical_enrollment.revoked_at IS NULL');
+    expect(sql).toContain("account_access.state IN ('active', 'grace', 'scheduled_end')");
+    expect(sql).toContain('legacy_entitlement.occurrence_entitlement_key IS NOT NULL');
     expect(sql).toContain('occurrence.production_basic_meeting_ref_digest = $5');
     expect(sql).toContain('occurrence.production_basic_live_expires_at > $6');
     expect(parameters).toEqual([
@@ -249,7 +257,11 @@ describe('production-basic live-class receipt', () => {
     expect(sql).toContain('series.title');
     expect(sql).toContain('occurrence.starts_at');
     expect(sql).not.toContain('joinable_until');
-    expect(sql).toContain("entitlement.entitlement_state = 'active'");
+    expect(sql).toContain("canonical_enrollment.enrollment_state = 'active'");
+    expect(sql).toContain('canonical_enrollment.revoked_at IS NULL');
+    expect(sql).toContain("account_access.state IN ('active', 'grace', 'scheduled_end')");
+    expect(sql).toContain('canonical_enrollment.enrollment_key IS NULL');
+    expect(sql).toContain('legacy_entitlement.occurrence_entitlement_key IS NOT NULL');
     expect(sql).toContain("learner.learner_status = 'active'");
     expect(sql).toContain('series.is_canonical = true');
     expect(sql).toContain('occurrence.production_basic_meeting_ref_digest = $5');
