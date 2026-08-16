@@ -24,7 +24,7 @@
     },
     {
       "path": "apps/web/src/server/app.ts",
-      "sha256": "00669c95419778ea6c6e9fca8fae7587c1ac84a5365589c28701cc02b3960af1"
+      "sha256": "b9c007e8b6f89a07b3de1566df18823c10c9330660a0a6ba0e2211f4766cb5b8"
     },
     {
       "path": "apps/web/src/server/communications/register.ts",
@@ -52,7 +52,7 @@
     },
     {
       "path": "apps/web/src/server/features/auth/v21-adult-session.ts",
-      "sha256": "255a9572844cacef74c637e662116c589104ba915a2ff89299ed8502bbc7cc03"
+      "sha256": "99c3162abbe5dcb269b39c32893b97ef30f439a923b656a9335997adf597698b"
     },
     {
       "path": "apps/web/src/server/features/classroom/embedded/adapters.ts",
@@ -152,7 +152,7 @@
     },
     {
       "path": "apps/web/src/client/app/portal-entry.tsx",
-      "sha256": "69ba766e2f641b6aa224a4f4a336dd01386818ceb486e900c11acbdedf1cd348"
+      "sha256": "a1485805c5d5a606056cfde5504dc75c935f68d13d27a2462793e4ec7ed7a325"
     },
     {
       "path": "apps/web/src/client/app/student/classroom/StudentClassroomWorkspace.tsx",
