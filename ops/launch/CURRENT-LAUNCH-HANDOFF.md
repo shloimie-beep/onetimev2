@@ -1,6 +1,6 @@
 # One Time — Current Launch Handoff
 
-**Updated:** 2026-08-16 17:15 Asia/Jerusalem  
+**Updated:** 2026-08-16 17:20 Asia/Jerusalem  
 **Class time:** 2026-08-16 19:00 Asia/Jerusalem  
 **Status:** **EMERGENCY LAUNCH WINDOW — SAFE MINIMUM ONLY**  
 **Sole product integration/deployment authority:** PR #131 / `codex/one-time-complete-production-launch-20260805`
@@ -9,14 +9,14 @@ This is the durable starting point for Codex, Kimi, or any replacement agent. Re
 
 ## Immediate goal
 
-Launch the public Family signup as soon as it is safe, send the already-prepared one-time GHL email to the approved adult Smart List, and hold the 7:00 PM class without exposing users to a broken account/classroom path.
+Launch the public Family signup as soon as the customer-facing journey is safe, send the already-prepared one-time GHL email to the approved adult Smart List, and hold the 7:00 PM class without exposing users to a broken account/classroom path.
 
-The launch email is authorized only after one operator-owned end-to-end canary proves the exact live journey.
+The one-time campaign may launch before the full Family Lifecycle automation is enabled, provided the hard customer journey passes, the campaign test link is correct, GHL delivery/open/click tracking works, and signups are durably stored in One Time for later reconciliation. Do not publish unproven lifecycle workflows merely to meet the clock.
 
 ## Current authority and product truth
 
 - PR #131 remains the only integration/deployment path.
-- Current PR #131 head immediately before this handoff refresh: `341b35fdc6930d96f6d1632164afd6da7c6c6c29`. Re-fetch because this handoff update creates a newer docs-only head.
+- Always re-fetch the current PR #131 head; this file is updated during the launch window.
 - Current production remains M5 `4a5a6e2058848b9513bc53ef733c78d02fe075bb` unless a later exact deployment readback proves otherwise.
 - Current authoritative product decision: `ops/launch/2026-08-16-parent-first-learning-decision.md`.
 - Parent-first candidate behavior: successful Family signup creates and authenticates the Parent learner immediately, permits Parent classroom/library/questions under the Parent identity, and preserves up to three separate child Student accounts.
@@ -68,24 +68,33 @@ Workflow state:
 
 Do not migrate the old 1,377 opportunities before the launch email. The Smart List is sufficient for the one-time campaign.
 
-## Launch-day scope
+## Launch-day gates
 
-### P0 — must work before the 1,335-recipient send
+### HARD GO GATE — required before the 1,335-recipient send
 
-1. Landing page loads without stale/pre-register language.
+1. Landing page loads with the current free-access offer.
 2. Family signup submits successfully.
 3. Parent remains authenticated and reaches Parent Today/Parent Companion.
-4. Parent can open the protected learning/classroom action or the exact truthful current class-access path.
+4. Parent can open the truthful current protected learning/class action.
 5. Parent can create at least one child Student.
 6. Student can sign in.
 7. Student can reach the current class action.
-8. One adult GHL contact is created/updated.
-9. Exactly one household opportunity exists in `One Time | Family Lifecycle`.
-10. Correct first stage is applied.
-11. `OT-01` sends exactly once when enabled for the canary.
-12. No Student GHL contact is created.
-13. OT-C02 test email arrives with correct sender, copy, CTA, and UTM link.
-14. A reply returns to the same adult contact in GHL Conversations with no automatic AI customer reply.
+8. No dead end, duplicate account, raw provider link, or 5xx occurs.
+9. OT-C02 test email arrives with correct sender, copy, CTA, and UTM link.
+10. Clicking the test CTA reaches the same working live journey.
+
+If these pass, Shloimie may authorize the one-time campaign even when the full GHL lifecycle bridge is not yet enabled. GHL will still record campaign delivery/open/click, and One Time must preserve the actual Family signups for later reconciliation.
+
+### PREFERRED TELEMETRY GATE — prove now when possible, but do not publish unsafe workflows
+
+1. One adult GHL contact is created/updated.
+2. Exactly one household opportunity exists in `One Time | Family Lifecycle`.
+3. Correct first stage is applied.
+4. `OT-01` sends exactly once in an operator canary.
+5. No Student GHL contact is created.
+6. A reply returns to the same adult contact in GHL Conversations with no automatic AI customer reply.
+
+If this telemetry gate is not ready, keep all lifecycle workflows Draft. Do not block the one-time campaign solely to finish nonessential automation when the customer journey is proven and signup data is durable.
 
 ### Deferred today
 
@@ -98,21 +107,21 @@ Do not migrate the old 1,377 opportunities before the launch email. The Smart Li
 - graphics/landing-image refinements that are not required for a functional signup
 - advanced Zoom Stage Host/OBS/roster features
 
-## 105-minute emergency sequence
+## Emergency sequence
 
-### T-105 to T-90 — checkpoint, do not keep expanding
+### Immediate — checkpoint, do not keep expanding
 
 Current Codex/controller must:
 
 - stop starting new branches/workers;
 - push every current commit;
 - report exact current branch/PR/deployed source;
-- report one remaining launch blocker only;
+- report one remaining customer-facing launch blocker only;
 - name any open change that must merge/deploy;
 - leave a clean remote checkpoint;
 - update this handoff if its facts changed.
 
-### T-90 to T-60 — integrate only the minimum accepted candidate
+### Integrate only the minimum accepted candidate
 
 - Do not merge PR #208.
 - Use PR #211 or a newer reviewed successor only if exact-head review/checks and controller authority allow it.
@@ -120,7 +129,7 @@ Current Codex/controller must:
 - Do not spend the window on billing, a new sandbox, or broad refactors.
 - Deploy only after exact reconciliation and rollback are ready.
 
-### T-60 to T-40 — operator-owned end-to-end app canary
+### Operator-owned live canary
 
 Use one new operator-owned Family identity and one synthetic/operator-owned Student.
 
@@ -128,18 +137,11 @@ Prove:
 
 `landing → signup → Parent authenticated → Parent experience → Add Student → Student login → class action`
 
-Also inspect GHL for exactly one adult contact/opportunity and zero Student contacts.
+Then send one OT-C02 test email, click the CTA, and repeat the journey.
 
-### T-40 to T-25 — GHL email/reply canary
+### GO / NO-GO
 
-- Send one OT-C02 test email to the operator inbox.
-- Click the CTA and repeat the live journey.
-- Reply to the email.
-- Confirm the reply in GHL Conversations.
-
-### T-25 — GO / NO-GO
-
-**GO** only when every P0 item above passes.
+**GO** when the HARD GO GATE passes.
 
 Then Shloimie may explicitly authorize only the one-time campaign:
 
@@ -147,16 +149,14 @@ Then Shloimie may explicitly authorize only the one-time campaign:
 
 That does not authorize publishing the 18 lifecycle workflows or migrating historical opportunities.
 
-**NO-GO** if any of these remain:
+**NO-GO** if any hard customer-facing gate remains:
 
 - signup fails or loops;
 - Parent is not authenticated;
 - Parent/Student reaches a dead end;
 - class action is unavailable or exposes a raw provider link;
-- duplicate account/contact/opportunity/email occurs;
-- app-to-GHL projection remains disabled;
-- OT-C02 test CTA is wrong;
-- reply routing fails.
+- duplicate account occurs;
+- OT-C02 test CTA is wrong.
 
 If NO-GO, hold the 1,335-recipient blast. Run the 7:00 PM class for existing/known participants through the current already-working operator-approved class path, and send the public campaign as soon as the app journey is stable. Do not damage the launch by sending a broken signup path.
 
@@ -168,7 +168,7 @@ It must:
 
 - ingest current remote state;
 - preserve current work;
-- identify the single critical path;
+- identify the single customer-facing critical path;
 - finish, integrate, deploy, and prove only the minimum launch journey;
 - checkpoint continuously in this file and PR #131 comments;
 - return one operator action at a time.
