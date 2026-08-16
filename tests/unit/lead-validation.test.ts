@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto';
+import { readFile } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
 import { leadPayloadSchema } from '../../packages/contracts/src/index.ts';
 import {
@@ -24,6 +26,9 @@ const basePayload = {
   reminder_consent: true,
   idempotency_key: 'unit-key-123',
 };
+
+const approvedStudentLearningSourceSha256 =
+  'c8b067d20016d7df59ce2d0f4ee9e3184170693f2cfd2e23f9ce60a52ccd2576';
 
 describe('lead validation and content contracts', () => {
   it('requires phone for WhatsApp channels', () => {
@@ -125,11 +130,23 @@ describe('lead validation and content contracts', () => {
     expect(landingContent.gain).not.toHaveProperty('intro');
   });
 
-  it('keeps the corrected Family journey copy and the existing third-step image', () => {
+  it('keeps the corrected Family journey copy and approved third-step image provenance aligned', async () => {
     expect(landingContent.how.flows[2]).toMatchObject({
       title: 'Your child learns at his own pace',
       image: '/assets/how-it-works/student-learning-mishnayos-1254.webp',
     });
+    const [source, provenance] = await Promise.all([
+      readFile('apps/web/public/assets/how-it-works/student-learning-mishnayos-source.png'),
+      readFile('apps/web/public/assets/how-it-works/PROVENANCE.md', 'utf8'),
+    ]);
+    expect(createHash('sha256').update(source).digest('hex')).toBe(
+      approvedStudentLearningSourceSha256,
+    );
+    expect(provenance).toContain(approvedStudentLearningSourceSha256);
+    expect(provenance).toContain('ChatGPT Image Aug 16, 2026, 04_54_23 PM.png');
+    expect(provenance).not.toContain(
+      'f420735890925430e1c9064cb5b35119cd75a32e864c89b326eafca9e7c99c29',
+    );
     expect(landingContent.footer.signupLinks).toEqual([
       ['Privacy Notice', '/privacy'],
       ['Terms', '/terms'],
