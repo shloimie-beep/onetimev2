@@ -108,7 +108,10 @@ export function createParentHouseholdRouter(input: {
         return;
       }
       const snapshot = await input.summaryService.overview(principalFrom(bootstrap.context));
-      res.status(200).json({ success: true, data: { snapshot } });
+      res.status(200).json({
+        success: true,
+        data: { snapshot, csrf_token: bootstrap.csrf_token },
+      });
     }),
   );
 

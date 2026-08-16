@@ -3,6 +3,8 @@ import { STUDENT_PIN_PATTERN } from '../identity/auth/index.ts';
 import { z } from 'zod';
 
 export * from './parent-household/index.ts';
+export * from './parent-summary/index.ts';
+export * from './parent-welcome/index.ts';
 import { gamificationSummarySchema } from '../gamification/index.ts';
 import { contentFactoryPortalProjectionSchema } from '../content/content-factory.ts';
 import { protectedVimeoPortalProjectionSchema } from '../content/existing-vimeo-adoption.ts';
