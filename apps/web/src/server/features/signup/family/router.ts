@@ -271,8 +271,7 @@ export function createFamilySignupRouter(input: FamilySignupRouterInput): expres
                 ? { field_errors: { password_confirmation: 'Passwords must match.' } }
                 : {
                     field_errors: {
-                      password:
-                        'Use 6 to 128 characters and avoid common passwords or your name or email.',
+                      password: 'Choose a different password with at least 6 characters.',
                     },
                   };
           res.status(conflict ? 409 : 400).json({
@@ -334,9 +333,9 @@ function familySignupFieldErrors(error: ZodError): Record<string, string> {
     if (field === 'password' || field === 'password_confirmation') {
       fieldErrors[field] =
         issue.code === 'too_small'
-          ? 'Use at least 6 characters.'
+          ? 'At least 6 characters.'
           : issue.code === 'too_big'
-            ? 'Use no more than 128 characters.'
+            ? 'Choose a shorter password.'
             : 'Check this password field.';
       continue;
     }

@@ -1,3 +1,4 @@
+import { AxeBuilder } from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
 test.skip(
@@ -29,8 +30,75 @@ test('P12 mounted Parent Create and Reset Student credential guards never dispat
     };
   });
   expect(householdReadback.status, JSON.stringify(householdReadback)).toBe(200);
+
+  await page.addInitScript(() => {
+    const frames: Array<{ title: string; navigation: string }> = [];
+    (
+      window as typeof window & {
+        __parentShellFrames?: Array<{ title: string; navigation: string }>;
+      }
+    ).__parentShellFrames = frames;
+    const capture = () => {
+      if (!location.pathname.startsWith('/app/parent')) return;
+      const title = document.querySelector('#page-title')?.textContent?.trim() ?? '';
+      const navigation = document.querySelector('.shell-nav')?.textContent?.trim() ?? '';
+      if (!title && !navigation) return;
+      const previous = frames.at(-1);
+      if (previous?.title === title && previous.navigation === navigation) return;
+      frames.push({ title, navigation });
+    };
+    const observer = new MutationObserver(capture);
+    observer.observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    });
+    queueMicrotask(capture);
+  });
   await page.goto('/app/parent/students/new');
-  await expect(page.getByRole('heading', { name: 'Add Student' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Add Student' })).toBeVisible();
+  await expect(page.locator('h1')).toHaveCount(1);
+  const shellFrames = await page.evaluate(
+    () =>
+      (
+        window as typeof window & {
+          __parentShellFrames?: Array<{ title: string; navigation: string }>;
+        }
+      ).__parentShellFrames ?? [],
+  );
+  expect(shellFrames.map((frame) => frame.title)).not.toContain('Parent Portal');
+  expect(shellFrames.map((frame) => frame.navigation).join(' ')).not.toMatch(
+    /Classes & materials|Progress & rewards|Billing/u,
+  );
+
+  for (const viewport of [
+    { width: 360, height: 800 },
+    { width: 390, height: 844 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await expect(page.getByRole('heading', { level: 1, name: 'Add Student' })).toBeVisible();
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth),
+    ).toBeLessThanOrEqual(1);
+  }
+  const axe = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+  expect(
+    axe.violations.filter(
+      (violation) => violation.impact === 'serious' || violation.impact === 'critical',
+    ),
+  ).toEqual([]);
+
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.locator('.app-sidebar').getByRole('link', { name: 'Library' }).click();
+  await expect(page).toHaveURL(/\/app\/parent\/library$/u);
+  await expect(page.getByRole('heading', { level: 1, name: 'Library' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Parent learning' })).toBeVisible();
+  await page.locator('.app-sidebar').getByRole('link', { name: 'Students' }).click();
+  await expect(page).toHaveURL(/\/app\/parent\/students$/u);
+  await expect(page.getByRole('heading', { name: 'Child learners' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Parent learning' })).toHaveCount(0);
+  await page.getByRole('link', { name: 'Add Student' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Add Student' })).toBeVisible();
 
   const createForm = page.locator('form[aria-labelledby="create-student-heading"]');
   await createForm.getByLabel('Actual name').fill('Mounted Test Student');
@@ -81,6 +149,14 @@ test('P12 mounted Parent Create and Reset Student credential guards never dispat
   await expect(
     page.getByRole('status').filter({ hasText: 'Student created and enrolled' }),
   ).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Save credentials for Mounted Test Student' }),
+  ).toBeVisible();
+  await expect(createForm.getByLabel('Actual name')).toHaveValue('');
+  await expect(createForm.getByLabel('Display name (optional)')).toHaveValue('');
+  await expect(createForm.getByLabel('Username')).toHaveValue('');
+  await expect(createForm.getByLabel('New six-digit Student PIN', { exact: true })).toHaveValue('');
+  await expect(createForm.getByLabel('Confirm Student PIN', { exact: true })).toHaveValue('');
 
   await page.getByRole('link', { name: 'Mounted Test Student' }).click();
   await page.locator('details summary').click();

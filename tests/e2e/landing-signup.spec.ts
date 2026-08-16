@@ -1034,7 +1034,7 @@ test('the real Parent bundle loads the Parent learner without legacy household r
   await expect.poll(() => parentDocumentPaths.length).toBe(documentsBeforeClassroom + 1);
   expect(parentDocumentPaths.at(-1)).toBe('/app/parent/classroom');
   expect(classroomShellCsp).toContain("script-src 'self' https://source.zoom.us");
-  await expect(page.getByRole('heading', { name: 'Your classroom' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Next class' })).toBeVisible();
   await expect(page.getByText('Today\u2019s Mishnayos')).toBeVisible();
   await page.getByRole('button', { name: 'Join class' }).evaluate((button) => {
     (button as HTMLButtonElement).click();
@@ -1098,7 +1098,7 @@ test('the real Parent bundle loads the Parent learner without legacy household r
   await expect(page.getByRole('heading', { name: /Bundle Parent/ })).toBeVisible();
 
   await page.goto('/app/parent/library');
-  await expect(page.getByRole('heading', { name: 'Your library' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Lessons' })).toBeVisible();
   await expect(page.getByText('Berachos 1:1 review')).toBeVisible();
   await expect(page.getByText('1m 30s of 5m')).toHaveCount(0);
   await page.getByRole('button', { name: 'Continue lesson' }).click();

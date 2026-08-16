@@ -3,7 +3,61 @@
 .parent-learning-workspace {
   display: grid;
   gap: var(--ot-space-4);
+  width: 100%;
   min-width: 0;
+  padding: clamp(var(--ot-space-3), 3vw, var(--ot-space-5));
+}
+
+.parent-portal-loading-skeleton {
+  display: grid;
+  gap: var(--ot-space-4);
+  width: 100%;
+  min-width: 0;
+  padding: clamp(var(--ot-space-3), 3vw, var(--ot-space-5));
+}
+
+.parent-portal-loading-skeleton > p {
+  margin: 0;
+  color: var(--ot-color-text-muted);
+  font-weight: 700;
+}
+
+.parent-portal-loading-skeleton__panel,
+.parent-portal-loading-skeleton__cards > span {
+  border: 1px solid var(--ot-color-border);
+  border-radius: var(--ot-radius-panel);
+  background: var(--ot-color-surface-raised);
+}
+
+.parent-portal-loading-skeleton__panel {
+  display: grid;
+  gap: var(--ot-space-3);
+  min-height: 12rem;
+  padding: var(--ot-space-5);
+}
+
+.parent-portal-loading-skeleton__panel > span {
+  display: block;
+  width: min(100%, 28rem);
+  height: 1rem;
+  border-radius: 999px;
+  background: var(--ot-color-surface-muted);
+}
+
+.parent-portal-loading-skeleton__panel > span:first-child {
+  width: min(72%, 20rem);
+  height: 1.75rem;
+  background: color-mix(in srgb, var(--ot-color-action-auth) 28%, var(--ot-color-surface-muted));
+}
+
+.parent-portal-loading-skeleton__cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ot-space-3);
+}
+
+.parent-portal-loading-skeleton__cards > span {
+  min-height: 9rem;
 }
 
 .parent-learning-workspace__hero {
@@ -15,7 +69,7 @@
   padding: clamp(var(--ot-space-4), 4vw, var(--ot-space-6));
 }
 
-.parent-learning-workspace__hero h1,
+.parent-learning-workspace__hero h2,
 .parent-learning-workspace__hero p {
   margin: 0;
 }
@@ -160,6 +214,11 @@
   min-width: 0;
 }
 
+.parent-student-workspace {
+  width: min(100%, 50rem);
+  padding: clamp(var(--ot-space-3), 3vw, var(--ot-space-5));
+}
+
 .parent-student-workspace > section,
 .parent-student-workspace > details,
 .parent-student-workspace > ul {
@@ -235,6 +294,11 @@
 .parent-student-form select {
   width: 100%;
   min-height: var(--ot-size-touch-target);
+  border: 1px solid var(--ot-color-border-strong);
+  border-radius: var(--ot-radius-control);
+  background: var(--ot-color-surface-muted);
+  color: var(--ot-color-text);
+  padding: var(--ot-space-2) var(--ot-space-3);
 }
 
 .parent-student-form__field-error {
@@ -318,6 +382,10 @@
 }
 
 @media (max-width: 680px) {
+  .parent-portal-loading-skeleton__cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .parent-student-workspace,
   .parent-student-form,
   .parent-student-management {
@@ -343,6 +411,11 @@
   .parent-student-form__guidance,
   .parent-student-form__field-error {
     grid-column: auto;
+  }
+
+  .parent-student-form > .button-primary,
+  .parent-student-workspace > .button-primary {
+    width: 100%;
   }
 }
 

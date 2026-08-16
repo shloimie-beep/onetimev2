@@ -96,7 +96,7 @@ export function ParentLearningWorkspace({
   if (!bootstrap) {
     return (
       <section className="parent-learning-workspace" aria-live="polite">
-        <h1>Parent learning</h1>
+        <h2>Parent learning</h2>
         <p>{error || 'Loading your One Time learning...'} </p>
         {error ? (
           <Button
@@ -118,41 +118,43 @@ export function ParentLearningWorkspace({
 
   const { snapshot, csrf_token: csrfToken } = bootstrap;
   return (
-    <section className="parent-learning-workspace" aria-labelledby="parent-learning-heading">
-      <header className="parent-learning-workspace__hero">
-        <p className="ot-kicker">Parent learning</p>
-        <h1 id="parent-learning-heading">
-          Hi, <span dir="auto">{snapshot.display_name}</span>
-        </h1>
-        <p className="parent-learning-workspace__capacity">
-          {parentLearnerCapacityLabel(snapshot.capacity)}
-        </p>
-        <div className="parent-learning-workspace__actions" aria-label="Parent learning actions">
-          <a className="button-primary" href={parentLearningPrimaryHref(snapshot)}>
-            See One Time now
-          </a>
-          {snapshot.capacity.available_child_student_seats > 0 ? (
-            <a
-              className="button-secondary"
-              href="/app/parent/students/new"
-              onClick={() =>
-                addStudentEvents.clicked(
-                  welcomeVideo.status === 'ready' ? welcomeVideo.video_version_id : null,
-                )
-              }
-            >
-              Add Student
+    <section className="parent-learning-workspace" aria-label="Parent learning">
+      {view === 'today' ? (
+        <header className="parent-learning-workspace__hero">
+          <p className="ot-kicker">Parent learning</p>
+          <h2>
+            Hi, <span dir="auto">{snapshot.display_name}</span>
+          </h2>
+          <p className="parent-learning-workspace__capacity">
+            {parentLearnerCapacityLabel(snapshot.capacity)}
+          </p>
+          <div className="parent-learning-workspace__actions" aria-label="Parent learning actions">
+            <a className="button-primary" href={parentLearningPrimaryHref(snapshot)}>
+              See One Time now
             </a>
-          ) : (
-            <button type="button" className="button-secondary" disabled>
-              Add Student
-            </button>
-          )}
-        </div>
-        {snapshot.capacity.available_child_student_seats === 0 ? (
-          <p role="status">All 3 child learner spots are in use.</p>
-        ) : null}
-      </header>
+            {snapshot.capacity.available_child_student_seats > 0 ? (
+              <a
+                className="button-secondary"
+                href="/app/parent/students/new"
+                onClick={() =>
+                  addStudentEvents.clicked(
+                    welcomeVideo.status === 'ready' ? welcomeVideo.video_version_id : null,
+                  )
+                }
+              >
+                Add Student
+              </a>
+            ) : (
+              <button type="button" className="button-secondary" disabled>
+                Add Student
+              </button>
+            )}
+          </div>
+          {snapshot.capacity.available_child_student_seats === 0 ? (
+            <p role="status">All 3 child learner spots are in use.</p>
+          ) : null}
+        </header>
+      ) : null}
 
       {view === 'today' ? (
         <ParentToday
@@ -273,7 +275,7 @@ function ParentClassroom({
   return (
     <Card>
       <p className="ot-kicker">Parent learner</p>
-      <h2>Your classroom</h2>
+      <h2>Next class</h2>
       {snapshot.next_class ? (
         <>
           <h3>{snapshot.next_class.title}</h3>
@@ -354,7 +356,7 @@ function ParentLibrary({
   return (
     <Card>
       <p className="ot-kicker">Parent learner</p>
-      <h2>Your library</h2>
+      <h2>Lessons</h2>
       {snapshot.library_items.length === 0 ? (
         <p>No entitled lessons are available yet.</p>
       ) : (
@@ -393,7 +395,7 @@ function ParentQuestions({
   return (
     <Card>
       <p className="ot-kicker">Parent learner</p>
-      <h2>Questions for Rabbi Eli</h2>
+      <h2>Ask Rabbi Eli</h2>
       <p>Questions sent here belong to your Parent learner profile.</p>
       <form
         className="parent-learning-workspace__question"

@@ -121,9 +121,9 @@ describe('Parent-first learning workspace', () => {
 
   it('renders bounded Parent views without borrowing Student identity copy', () => {
     for (const [view, heading] of [
-      ['classroom', 'Your classroom'],
-      ['library', 'Your library'],
-      ['questions', 'Questions for Rabbi Eli'],
+      ['classroom', 'Next class'],
+      ['library', 'Lessons'],
+      ['questions', 'Ask Rabbi Eli'],
     ] as const) {
       const html = renderToStaticMarkup(
         <ParentLearningWorkspace view={view} initial={{ snapshot, csrf_token: 'csrf-parent' }} />,

@@ -635,9 +635,15 @@ if (form) {
       } else if (control.validity.typeMismatch && control.type === 'email') {
         message = 'Enter a valid email address.';
       } else if (control.validity.tooShort) {
-        message = `Use at least ${control.minLength} characters.`;
+        message =
+          control.type === 'password'
+            ? 'At least 6 characters.'
+            : `Use at least ${control.minLength} characters.`;
       } else if (control.validity.tooLong) {
-        message = `Use no more than ${control.maxLength} characters.`;
+        message =
+          control.type === 'password'
+            ? 'Choose a shorter password.'
+            : `Use no more than ${control.maxLength} characters.`;
       } else if (control.name === 'timezone' && !isIanaTimeZone(control.value.trim())) {
         message = 'Enter a valid time zone, such as America/New_York.';
       }

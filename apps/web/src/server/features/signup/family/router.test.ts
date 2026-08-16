@@ -272,8 +272,8 @@ describe('P08 Family-signup route security', () => {
       field_errors: {
         first_name: 'This field is required.',
         email: 'Enter a valid email address.',
-        password: 'Use at least 6 characters.',
-        password_confirmation: 'Use at least 6 characters.',
+        password: 'At least 6 characters.',
+        password_confirmation: 'At least 6 characters.',
         timezone: 'This field is required.',
         terms_accepted: 'This field is required.',
       },
