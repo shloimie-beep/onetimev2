@@ -21,7 +21,7 @@ const cases = [
     heading: 'Worldwide Mishnah Learning / Live from Eretz Yisrael',
     role: 'anonymous',
   },
-  { id: 'signup', path: '/signup', heading: 'Create your Family account', role: 'anonymous' },
+  { id: 'signup', path: '/signup', heading: 'Create Family Account', role: 'anonymous' },
   { id: 'login', path: '/login', button: 'Login', role: 'anonymous' },
   { id: 'crm', path: '/app/crm', heading: 'CRM', role: 'admin' },
   { id: 'dashboard', path: '/app/dashboard', heading: 'Dashboard', role: 'admin' },

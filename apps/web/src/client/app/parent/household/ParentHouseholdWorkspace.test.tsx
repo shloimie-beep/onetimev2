@@ -119,10 +119,8 @@ describe('P12 persisted Parent household client workspace', () => {
   });
 
   it('shows owned-seat state and exact actual-name guidance without a stored password', () => {
-    const html = renderToStaticMarkup(
-      <ParentHouseholdWorkspace snapshot={snapshot} relationship="dependent" />,
-    );
-    expect(html).toContain('1 of 3 active Student seats used');
+    const html = renderToStaticMarkup(<ParentHouseholdWorkspace snapshot={snapshot} />);
+    expect(html).toContain('Parent learner + 1 of 3 child learners');
     expect(html).toContain('Live classes run Sunday–Thursday');
     expect(html).toContain('href="/forgot-password"');
     expect(html).toContain(STUDENT_ACTUAL_NAME_INSTRUCTIONS.dependent);
@@ -140,7 +138,6 @@ describe('P12 persisted Parent household client workspace', () => {
     );
     expect(html).toContain('name="actual_name"');
     expect(html).toContain('name="display_name"');
-    expect(html).toContain('name="relationship"');
     expect(html).toContain('name="username"');
     expect(html).toContain('name="new_password"');
     expect(html).toContain('minLength="6"');
@@ -148,7 +145,8 @@ describe('P12 persisted Parent household client workspace', () => {
     expect(html).toContain('inputMode="numeric"');
     expect(html).toContain('pattern="[0-9]{6}"');
     expect(html).toContain('Someone I manage');
-    expect(html).toContain('Myself');
+    expect(html).not.toContain('Myself');
+    expect(html).not.toContain('name="relationship"');
     expect(html).toContain(STUDENT_ACTUAL_NAME_INSTRUCTIONS.dependent);
     expect(html).toContain('Creating a Student adds them to the recurring 7:00 PM class.');
     expect(html).toContain('noValidate=""');
@@ -176,7 +174,6 @@ describe('P12 persisted Parent household client workspace', () => {
     const html = renderToStaticMarkup(
       <ParentHouseholdWorkspace
         snapshot={snapshot}
-        relationship="self"
         credentialHandoff={{
           student_id: 'student-1',
           student_label: 'Student One',
@@ -188,17 +185,38 @@ describe('P12 persisted Parent household client workspace', () => {
         }}
       />,
     );
-    expect(html).toContain(STUDENT_ACTUAL_NAME_INSTRUCTIONS.self);
     expect(html).toContain('one-time-visible');
     expect(html).toContain('shown only now');
     expect(html).toContain('Credentials are not emailed');
+  });
+
+  it('keeps an existing self Student manageable without offering another fake Myself profile', () => {
+    const sourceStudent = snapshot.students[0]!;
+    const legacySelf = {
+      ...sourceStudent,
+      student_id: 'student-self-legacy',
+      actual_name: 'Ari Levi',
+      username: 'ari.legacy',
+      relationship: 'self' as const,
+    };
+    const html = renderToStaticMarkup(
+      <ParentHouseholdWorkspace
+        snapshot={{ ...snapshot, students: [legacySelf] }}
+        csrfToken="csrf-token"
+        view={{ kind: 'student', student_id: legacySelf.student_id }}
+      />,
+    );
+
+    expect(html).toContain('Manage Ari Levi');
+    expect(html).toContain('ari.legacy');
+    expect(html).not.toContain('Myself');
+    expect(html).not.toMatch(/convert|delete.*profile/i);
   });
 
   it('retains only the status overview for inactive access and removes fourth-seat creation', () => {
     const inactive = renderToStaticMarkup(
       <ParentHouseholdWorkspace
         snapshot={{ ...snapshot, access_state: 'inactive', can_manage_students: false }}
-        relationship="dependent"
         view={{ kind: 'create' }}
       />,
     );
@@ -212,7 +230,6 @@ describe('P12 persisted Parent household client workspace', () => {
     const full = renderToStaticMarkup(
       <ParentHouseholdWorkspace
         snapshot={{ ...snapshot, active_student_count: 3, available_student_seats: 0 }}
-        relationship="dependent"
       />,
     );
     expect(full).toContain(

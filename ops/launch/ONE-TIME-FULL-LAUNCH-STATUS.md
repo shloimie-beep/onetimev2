@@ -2,6 +2,12 @@
 
 Snapshot: 2026-08-11 (Asia/Jerusalem)
 
+## Current Parent-first decision (2026-08-16)
+
+The 2026-08-11 snapshot below is retained as historical status. For the active candidate, the operator has superseded the old Parent-as-nonlearner rule: a successful Family signup must immediately establish one Parent learner under the Parent login, plus capacity for three separate child Students. Parent classroom, entitled-library, progress, and private-question facts are separately attributed and never borrow a child identity or seat. The exact authority and acceptance boundary is [2026-08-16-parent-first-learning-decision.md](./2026-08-16-parent-first-learning-decision.md).
+
+Current capability state: `BUILT` while local integration and release gates are still running. Current production is M5 `4a5a6e2058848b9513bc53ef733c78d02fe075bb`; web deployment `d83d0a70…` and worker deployment `81cec56c…` were reconciled `SUCCESS/RUNNING` on that exact source before this candidate began. Production remains unchanged until a reviewed immutable successor is merged and deployed. The approved Parent welcome asset is grounded privately but is not uploaded or bound yet.
+
 ## Current source
 
 - Repository/branch: `shloimie-beep/onetimev2` / `codex/one-time-complete-production-launch-20260805`
@@ -49,6 +55,6 @@ The immediate teaching loop is private Rabbi-moderated prompts, one worksheet ro
 - BNA task management and Telegram monitoring are outside the initial-launch critical path.
 - Admin Content currently has a false `content.view` denial and unrelated CRM controls; this is a documented application defect, not an authorization to change CRM or providers in this reconciliation.
 - Buffer/Social is OFF.
-- Student credentials are locked to an exactly six-digit numeric PIN; adult password rules are unchanged. The current application validator mismatch is an unimplemented, separately scoped application blocker.
+- Student credentials remain locked to an exactly six-digit numeric PIN. The active Parent-first candidate aligns adult password surfaces to 6–128 characters with no composition rule; production retains its prior validator until the reviewed candidate is deployed.
 - No points economy, rewards, public/class leaderboard, parent goals, editable badge rules, extra launch levels, Student-to-Student chat, or launch month grid.
 - A deployed surface or provider configuration is never `OPERATOR ACCEPTED` without its real journey on this exact source.

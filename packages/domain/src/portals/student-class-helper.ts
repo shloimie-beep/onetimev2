@@ -98,7 +98,7 @@ export function createScopedKnowledgeHelperAdapter(
           scope_label: 'Class Helper',
         };
       }
-      if (!(await hasActiveAccess(deps.pool, actor, learner))) {
+      if (!(await hasActiveAccess(deps.pool, actor, learner, clock()))) {
         return {
           available: false,
           reason: 'Class Helper becomes available with active class access.',
@@ -150,7 +150,7 @@ export function createScopedKnowledgeHelperAdapter(
         correlationId,
       );
 
-      if (!(await hasActiveAccess(deps.pool, actor, learner))) {
+      if (!(await hasActiveAccess(deps.pool, actor, learner, now))) {
         await recordHelperAudit(deps.pool, {
           tenantId,
           principalId,
@@ -221,7 +221,7 @@ export function createScopedKnowledgeHelperAdapter(
 
       if (
         !(await currentPrincipalCanAccessLearner(deps.pool, actor, learner)) ||
-        !(await hasActiveAccess(deps.pool, actor, learner))
+        !(await hasActiveAccess(deps.pool, actor, learner, clock()))
       ) {
         await recordHelperAudit(deps.pool, {
           tenantId,
@@ -475,12 +475,18 @@ async function listEntitledApprovedContentIds(
   return result.rows.map((row) => String(row.content_item_key));
 }
 
-async function hasActiveAccess(pool: DbPool, actor: PortalActorContext, learner: LearnerProfile) {
+async function hasActiveAccess(
+  pool: DbPool,
+  actor: PortalActorContext,
+  learner: LearnerProfile,
+  now: Date,
+) {
   return householdHasLearningAccess({
     pool,
     accountKey: actor.account_key,
     productKey: actor.product_key,
     householdKey: learner.household_key,
+    now,
   });
 }
 

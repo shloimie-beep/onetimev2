@@ -35,7 +35,7 @@ export const publicRouteProbes: RouteProbe[] = [
     id: 'signup',
     path: '/signup',
     audience: 'public',
-    expectedHeading: 'Create your Family account',
+    expectedHeading: 'Create Family Account',
     collectionSurface: true,
   },
   { id: 'privacy', path: '/privacy', audience: 'public', expectedHeading: /Privacy/i },

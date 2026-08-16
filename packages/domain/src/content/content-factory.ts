@@ -689,8 +689,10 @@ export async function getContentFactoryPlayback(input: {
 }) {
   const result = await input.pool.query(
     `SELECT item.source_key, item.factory_state, item.draft_json, item.provider_video_id,
+            item.prepared_duration_ms,
             item.processing_mode, item.normalized_transcript, item.captions_active,
             item.progress_state,
+            published_item.published_revision_key AS content_version_id,
             COALESCE(
               item.occurrence_key,
               CASE
@@ -788,41 +790,67 @@ export async function getContentFactoryPlayback(input: {
       if (householdKeys.length > 0) {
         const entitlement = await input.pool.query(
           `SELECT 1
-             FROM onetime.portal_learners AS learner
-             JOIN onetime.account_access_projections AS access
-               ON access.account_key = learner.account_key
-              AND access.product_key = learner.product_key
-              AND access.household_key = learner.household_key
-              AND access.state IN ('active', 'grace', 'scheduled_end')
-              AND access.effective_at <= now()
-              AND (access.expires_at IS NULL OR access.expires_at > now())
+             FROM onetime.parent_learning_participants AS participant
+             JOIN onetime.v21_households AS household
+               ON household.household_id = participant.household_id
+              AND household.owner_adult_id = participant.adult_id
+              AND household.owner_human_account_id = participant.human_account_id
+              AND household.product_key = participant.product_key
+              AND household.runtime_tier = participant.runtime_tier
+              AND household.verification_environment_id = participant.verification_environment_id
+              AND household.classification = 'family'
+              AND household.state = 'active'
+              AND household.archived_at IS NULL
+             JOIN onetime.canonical_aggregate_states AS access
+               ON access.aggregate_kind = 'access'
+              AND access.aggregate_key = participant.household_id
+              AND access.product_key = participant.product_key
+              AND access.runtime_tier = participant.runtime_tier
+              AND access.verification_environment_id = participant.verification_environment_id
+              AND access.current_state IN ('free', 'active', 'grace')
+              AND access.archived_at IS NULL
+             JOIN onetime.parent_learning_class_entitlements AS parent_entitlement
+               ON parent_entitlement.participant_id = participant.participant_id
+              AND parent_entitlement.household_id = participant.household_id
+              AND parent_entitlement.account_key = $1
+              AND parent_entitlement.product_key = participant.product_key
+              AND parent_entitlement.runtime_tier = participant.runtime_tier
+              AND parent_entitlement.verification_environment_id = participant.verification_environment_id
+              AND parent_entitlement.entitlement_state = 'active'
+              AND parent_entitlement.effective_at <= now()
+              AND parent_entitlement.revoked_at IS NULL
+             JOIN onetime.class_series AS series
+               ON series.account_key = parent_entitlement.account_key
+              AND series.product_key = parent_entitlement.product_key
+              AND series.class_series_key = parent_entitlement.class_series_key
+              AND series.is_canonical = true
+              AND series.status = 'active'
+              AND series.series_state = 'active'
+             JOIN onetime.class_occurrences AS occurrence
+               ON occurrence.account_key = series.account_key
+              AND occurrence.product_key = series.product_key
+              AND occurrence.class_series_key = series.class_series_key
+              AND occurrence.occurrence_key = $5
              JOIN onetime.content_item_entitlements AS content_access
-               ON content_access.account_key = learner.account_key
-              AND content_access.product_key = learner.product_key
+               ON content_access.account_key = parent_entitlement.account_key
+              AND content_access.product_key = parent_entitlement.product_key
               AND content_access.content_item_key = $3
               AND content_access.entitlement_state = 'active'
+              AND content_access.revoked_at IS NULL
               AND (
                 content_access.audience = 'all_active_learners'
                 OR (
                   content_access.audience = 'household'
-                  AND content_access.household_key = learner.household_key
-                )
-                OR (
-                  content_access.audience = 'learner'
-                  AND content_access.learner_key = learner.learner_key
+                  AND content_access.household_key = participant.household_id
                 )
               )
-             JOIN onetime.classroom_occurrence_learner_entitlements AS enrollment
-               ON enrollment.account_key = learner.account_key
-              AND enrollment.product_key = learner.product_key
-              AND enrollment.household_key = learner.household_key
-              AND enrollment.learner_key = learner.learner_key
-              AND enrollment.occurrence_key = $5
-              AND enrollment.entitlement_state = 'active'
-            WHERE learner.account_key = $1
-              AND learner.product_key = $2
-              AND learner.household_key = ANY($4)
-              AND learner.learner_status = 'active'
+            WHERE participant.product_key = $2
+              AND participant.household_id = ANY($4)
+              AND participant.human_account_id = $6
+              AND participant.participant_kind = 'parent'
+              AND participant.learner_ordinal = 1
+              AND participant.state = 'active'
+              AND participant.archived_at IS NULL
             LIMIT 1`,
           [
             input.config.accountKey,
@@ -830,6 +858,7 @@ export async function getContentFactoryPlayback(input: {
             input.sourceKey,
             householdKeys,
             occurrenceKey,
+            input.actor.actor_user_ref,
           ],
         );
         entitled = Boolean(entitlement.rows[0]);
@@ -842,6 +871,17 @@ export async function getContentFactoryPlayback(input: {
   const draft = contentFactoryDraftSchema.parse(row.draft_json);
   const isDemo = isContentFactoryDemoSource(String(row.source_key));
   const isSynthetic = isDemo || row.processing_mode === 'synthetic';
+  const contentVersionId =
+    typeof row.content_version_id === 'string' && row.content_version_id
+      ? row.content_version_id
+      : null;
+  const durationMs = Number(row.prepared_duration_ms);
+  if (
+    input.actor.actor_role === 'parent' &&
+    (!contentVersionId || !Number.isSafeInteger(durationMs) || durationMs < 1)
+  ) {
+    throw new ContentFactoryError('NOT_FOUND', 'Content was not found.');
+  }
   if (isSynthetic && !isContentFactorySyntheticPlaybackEnabled(input.config)) {
     throw new ContentFactoryError(
       'PLAYBACK_UNAVAILABLE',
@@ -850,6 +890,7 @@ export async function getContentFactoryPlayback(input: {
   }
   return {
     sourceKey: String(row.source_key),
+    contentVersionId,
     title: draft.title,
     summary: draft.short_description,
     reviewQuestions: draft.review_questions,
@@ -858,12 +899,14 @@ export async function getContentFactoryPlayback(input: {
     classDate: asDate(row.local_class_date).toISOString().slice(0, 10),
     captionsActive: true as const,
     progressState: String(row.progress_state) as 'not_started' | 'in_progress' | 'completed',
+    durationMs,
     playbackRoute: `/api/v1/content/factory/${encodeURIComponent(String(row.source_key))}/embed`,
     privateProviderAssetId: isSynthetic ? null : String(row.provider_video_id),
     processingMode: (isSynthetic ? 'synthetic' : 'vimeo') as 'synthetic' | 'vimeo',
     syntheticCaptionText: isSynthetic ? String(row.normalized_transcript) : null,
     isDemo: isSynthetic,
     rawProviderUrlPresent: false as const,
+    parentProgressEnabled: input.actor.actor_role === 'parent',
   };
 }
 

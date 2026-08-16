@@ -135,7 +135,7 @@ describe('Parent privacy router', () => {
     const allowedResponse = await send(allowed.app, '/api/app/parent/privacy/requests', {
       method: 'POST',
       headers: validHeaders('privacy-rights-0002'),
-      body: { kind: 'export', current_password: 'current-password-123' },
+      body: { kind: 'export', current_password: 'Abc123' },
     });
     expect(allowedResponse.status).toBe(202);
     expect(allowed.service.createRightsRequest).toHaveBeenCalledWith(

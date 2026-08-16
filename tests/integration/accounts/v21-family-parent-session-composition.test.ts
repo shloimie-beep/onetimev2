@@ -65,6 +65,7 @@ beforeEach(async () => {
   });
   const memoryPool = createMemoryPool();
   await runMigrations(memoryPool);
+  await seedCanonicalParentLearningClass(memoryPool, config);
   pool = pgMemCompatiblePool(memoryPool);
   distDir = await mkdtemp(path.join(tmpdir(), 'v21-family-parent-composition-'));
   await mkdir(path.join(distDir, 'app'), { recursive: true });
@@ -558,6 +559,17 @@ describe('I36 central Family-signup and Parent-session composition', () => {
   });
 });
 
+async function seedCanonicalParentLearningClass(db: DbPool, appConfig: AppConfig) {
+  await db.query(
+    `INSERT INTO onetime.class_series
+       (class_series_key, account_key, product_key, title, timezone, local_start_time,
+        reminder_local_time, status, series_state, is_canonical)
+     VALUES ('parent_learning_canonical_class', $1, $2, 'Parent learning canonical class',
+        'Asia/Jerusalem', '19:00', '18:30', 'active', 'active', true)`,
+    [appConfig.accountKey, appConfig.productKey],
+  );
+}
+
 async function loginCsrfBinding() {
   const loginPage = await fetch(`${baseUrl}/login`);
   const cookie = loginPage.headers
@@ -641,6 +653,7 @@ describe.runIf(nativeProofEnabled)(
           AUTH_CSRF_SECRET: 'i36-native-parent-session-test-secret',
           ONE_TIME_FREE_ACCESS_EXPIRES_AT: '2026-09-13T16:24:00.000Z',
         });
+        await seedCanonicalParentLearningClass(nativePool, nativeConfig);
         let nativeNow = new Date('2026-09-13T16:23:59.000Z');
         nativeDistDir = await mkdtemp(path.join(tmpdir(), 'i36-native-parent-session-'));
         await mkdir(path.join(nativeDistDir, 'app'), { recursive: true });
@@ -706,8 +719,8 @@ describe.runIf(nativeProofEnabled)(
               timezone: 'Asia/Jerusalem',
               terms_accepted: true,
               privacy_accepted: true,
-              general_marketing_consent: false,
-              parent_newsletter_consent: false,
+              general_marketing_consent: true,
+              parent_newsletter_consent: true,
             }),
           });
           const body = (await response.json()) as Record<string, unknown>;

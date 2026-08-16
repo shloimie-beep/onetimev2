@@ -109,7 +109,7 @@ describe('P12 Parent household server service', () => {
         actual_name: 'Student Name',
         display_name: null,
         username: 'student.name',
-        relationship: 'self',
+        relationship: 'dependent',
         new_password: '000123',
         password_confirmation: '000123',
       },

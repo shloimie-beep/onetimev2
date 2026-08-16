@@ -51,6 +51,9 @@ export function createParentStudent(input: {
 }): { next: ParentHouseholdRecord; result: ParentHouseholdMutation } {
   assertMutable(input.principal, input.household, input.expected_revision);
   assertSeatAvailable(input.household);
+  if (input.relationship !== 'dependent') {
+    invalid('New Student accounts must be dependents.');
+  }
   const profile = validateProfile(input);
   validatePassword(input.new_password, input.password_confirmation);
   const student: ParentManagedStudent = {

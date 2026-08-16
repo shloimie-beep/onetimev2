@@ -22,7 +22,12 @@ import { inTransaction } from '../../../db/src/index.ts';
 import { householdHasLearningAccess } from '../access/service.ts';
 import { normalizeEmail, stableKey } from '../lead/normalize.ts';
 import { consumeRateLimitBudgets } from '../security/rate-limit.ts';
-import { evaluatePassword, normalizeLegacyAuthRole, verifyAuthPassword } from './policy.ts';
+import {
+  COMMON_AUTH_PASSWORDS,
+  evaluatePassword,
+  normalizeLegacyAuthRole,
+  verifyAuthPassword,
+} from './policy.ts';
 
 const ARGON2_MEMORY_KIB = 19_456;
 const ARGON2_PASSES = 2;
@@ -46,15 +51,6 @@ const EMAIL_CHALLENGE_DELIVERY_KEY_VERSION = 1;
 const EMAIL_CHALLENGE_DELIVERY_BATCH_SIZE = 10;
 const EMAIL_CHALLENGE_DELIVERY_LEASE_MS = 120_000;
 const TRANSACTIONAL_AUTH_EMAIL_SENDER = 'info@onetimeonetime.com';
-const COMMON_AUTH_PASSWORDS = new Set([
-  '12345678',
-  '123456789',
-  'password',
-  'password123',
-  'qwerty123',
-  'letmein123',
-]);
-
 type AssuranceMethod =
   'password' | 'totp' | 'recovery_code' | 'email_challenge' | 'email_link' | 'trusted_device';
 

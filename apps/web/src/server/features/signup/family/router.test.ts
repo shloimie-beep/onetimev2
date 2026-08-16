@@ -77,6 +77,64 @@ describe('P08 Family-signup route security', () => {
     expect(submit).not.toHaveBeenCalled();
   });
 
+  it('permits only the canonical join-to-app credentialed bootstrap and submit preflight', async () => {
+    const harness = await startHarness({
+      submitter: { submit: vi.fn(async () => createdResult()) },
+    });
+    const canonicalOrigin = 'https://join.onetimeonetime.com';
+    const accepted = await fetch(`${harness.baseUrl}/api/v1/signup/family`, {
+      method: 'OPTIONS',
+      headers: {
+        origin: canonicalOrigin,
+        'access-control-request-method': 'POST',
+        'access-control-request-headers': 'content-type,x-csrf-token',
+      },
+    });
+    expect(accepted.status).toBe(204);
+    expect(accepted.headers.get('access-control-allow-origin')).toBe(canonicalOrigin);
+    expect(accepted.headers.get('access-control-allow-credentials')).toBe('true');
+    expect(accepted.headers.get('access-control-allow-methods')).toBe('GET, POST, OPTIONS');
+    expect(accepted.headers.get('access-control-allow-headers')).toContain('X-CSRF-Token');
+    expect(accepted.headers.get('vary')).toContain('Origin');
+
+    for (const headers of [
+      {
+        origin: 'https://evil.example',
+        'access-control-request-method': 'POST',
+        'access-control-request-headers': 'content-type,x-csrf-token',
+      },
+      {
+        origin: canonicalOrigin,
+        'access-control-request-method': 'DELETE',
+        'access-control-request-headers': 'content-type,x-csrf-token',
+      },
+      {
+        origin: canonicalOrigin,
+        'access-control-request-method': 'POST',
+        'access-control-request-headers': 'authorization,content-type,x-csrf-token',
+      },
+    ]) {
+      const denied = await fetch(`${harness.baseUrl}/api/v1/signup/family`, {
+        method: 'OPTIONS',
+        headers,
+      });
+      expect(denied.status).toBe(403);
+      expect(denied.headers.get('access-control-allow-origin')).toBe(
+        headers.origin === canonicalOrigin ? canonicalOrigin : null,
+      );
+    }
+
+    const bootstrap = await fetch(`${harness.baseUrl}/api/v1/signup/family/bootstrap`, {
+      headers: { origin: canonicalOrigin, 'sec-fetch-site': 'same-site' },
+    });
+    expect(bootstrap.status).toBe(200);
+    expect(bootstrap.headers.get('access-control-allow-origin')).toBe(canonicalOrigin);
+    expect(bootstrap.headers.get('access-control-allow-credentials')).toBe('true');
+    expect(bootstrap.headers.getSetCookie()).toEqual([
+      expect.stringContaining('ot_family_signup_csrf='),
+    ]);
+  });
+
   it('requires exact same-origin CSRF proof and returns no false signed-in claim or local IDs', async () => {
     const submit = vi.fn(async () => createdResult());
     const harness = await startHarness({ submitter: { submit } });
@@ -92,7 +150,9 @@ describe('P08 Family-signup route security', () => {
       origin: 'https://join.onetimeonetime.com',
     });
     expect(mismatchedProof.status).toBe(403);
-    expect(await mismatchedProof.json()).toMatchObject({ code: 'CSRF_REQUIRED' });
+    const mismatchedProofBody = (await mismatchedProof.json()) as Record<string, unknown>;
+    expect(mismatchedProofBody).toMatchObject({ code: 'CSRF_REQUIRED' });
+    expect(String(mismatchedProofBody.message)).not.toMatch(/refresh/iu);
 
     const accepted = await post(harness.baseUrl, payload, bootstrap, {
       origin: 'https://join.onetimeonetime.com',
@@ -156,6 +216,7 @@ describe('P08 Family-signup route security', () => {
       { ...base, reminder_preference: 'whatsapp' },
       { ...base, canonical_request_hash: 'a'.repeat(64) },
       { ...base, normalized_email_hash: 'b'.repeat(64) },
+      { ...base, password: 'Abcde', password_confirmation: 'Abcde' },
     ];
 
     for (const payload of hostilePayloads) {
@@ -165,6 +226,42 @@ describe('P08 Family-signup route security', () => {
       expect(response.status).toBe(400);
       expect(await response.json()).toMatchObject({ code: 'VALIDATION_ERROR' });
     }
+    expect(submit).not.toHaveBeenCalled();
+  });
+
+  it('returns safe field-specific errors without asking the adult to refresh', async () => {
+    const submit = vi.fn(async () => createdResult());
+    const harness = await startHarness({ submitter: { submit } });
+    const bootstrap = await getBootstrap(harness.baseUrl);
+    const response = await post(
+      harness.baseUrl,
+      {
+        ...command(bootstrap.idempotencyKey),
+        first_name: '',
+        email: 'not-an-email',
+        password: 'Ab123',
+        password_confirmation: 'Ab123',
+        timezone: '',
+        terms_accepted: false,
+      },
+      bootstrap,
+      { origin: 'https://join.onetimeonetime.com' },
+    );
+    const body = (await response.json()) as Record<string, unknown>;
+
+    expect(response.status).toBe(400);
+    expect(body).toMatchObject({
+      code: 'VALIDATION_ERROR',
+      field_errors: {
+        first_name: 'This field is required.',
+        email: 'Enter a valid email address.',
+        password: 'Use at least 6 characters.',
+        password_confirmation: 'Use at least 6 characters.',
+        timezone: 'This field is required.',
+        terms_accepted: 'This field is required.',
+      },
+    });
+    expect(String(body.message)).not.toMatch(/refresh/iu);
     expect(submit).not.toHaveBeenCalled();
   });
 
@@ -179,6 +276,7 @@ describe('P08 Family-signup route security', () => {
 
     const response = await post(harness.baseUrl, command(bootstrap.idempotencyKey), bootstrap, {
       origin: 'https://join.onetimeonetime.com',
+      'sec-fetch-site': 'same-site',
     });
     expect(response.status).toBe(403);
     expect(await response.json()).toMatchObject({
@@ -248,6 +346,10 @@ describe('P08 Family-signup route security', () => {
       message: 'Your Family account is ready, and we sent your confirmation email.',
     });
     expect(response.headers.get('set-cookie')).toContain('__Host-onetime-session=');
+    expect(response.headers.get('access-control-allow-origin')).toBe(
+      'https://join.onetimeonetime.com',
+    );
+    expect(response.headers.get('access-control-allow-credentials')).toBe('true');
     expect(sessionEstablisher.establish).toHaveBeenCalledWith({
       scope: {
         product: 'one_time_mishnayos',

@@ -24,7 +24,7 @@ import {
   type CanonicalState,
 } from '../../../../contracts/src/state/index.ts';
 import { normalizeAdultEmail } from '../../accounts/v21-household-identity.ts';
-import { evaluatePassword } from '../../auth/policy.ts';
+import { COMMON_AUTH_PASSWORDS, evaluatePassword } from '../../auth/policy.ts';
 import {
   createFamilySignupProjection,
   freePeriodConfiguration,
@@ -191,6 +191,7 @@ export function assertFamilySignupPassword(command: FamilySignupCommand): void {
     password: command.password,
     email: command.email,
     names: [command.first_name, command.last_name],
+    common_passwords: COMMON_AUTH_PASSWORDS,
   });
   if (!password.accepted) throw new FamilySignupError('invalid_password');
 }

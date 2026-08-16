@@ -673,4 +673,6 @@ export {
 export * from './learning/engagement.ts';
 export * from './classroom/embedded/index.ts';
 export * from './portals/parent-household/index.ts';
+export * from './portals/parent-welcome/index.ts';
+export * from './portals/parent-learning/index.ts';
 export * from './signup/school/index.ts';

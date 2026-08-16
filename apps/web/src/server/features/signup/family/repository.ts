@@ -388,6 +388,50 @@ class PostgresFamilySignupTransaction implements FamilySignupTransaction {
       ],
       'Family household',
     );
+    const parentParticipantId = `parent:${projection.household_id}`;
+    await insertExactlyOne(
+      this.db,
+      `INSERT INTO onetime.parent_learning_participants
+         (participant_id, household_id, adult_id, human_account_id,
+          participant_kind, learner_ordinal, state, version, product_key,
+          runtime_tier, verification_environment_id, created_at, updated_at)
+       VALUES ($1,$2,$3,$4,'parent',1,'active',1,$5,$6,$7,$8,$8)`,
+      [
+        parentParticipantId,
+        projection.household_id,
+        projection.adult_id,
+        projection.human_account_id,
+        ...scopeValues,
+        input.committed_at,
+      ],
+      'Parent learning participant',
+    );
+    await insertExactlyOne(
+      this.db,
+      `INSERT INTO onetime.parent_learning_class_entitlements
+         (entitlement_id, participant_id, household_id, account_key,
+          product_key, runtime_tier, verification_environment_id,
+          class_series_key, entitlement_state, source, effective_at, version)
+       SELECT $1,$2,$3,series.account_key,series.product_key,$4,$5,
+              series.class_series_key,'active','public_family_signup',$6::timestamptz,1
+         FROM onetime.class_series AS series
+        WHERE series.account_key = $7
+          AND series.product_key = $8
+          AND series.is_canonical = true
+          AND series.status = 'active'
+          AND series.series_state = 'active'`,
+      [
+        `parent-entitlement:${projection.household_id}`,
+        parentParticipantId,
+        projection.household_id,
+        binding.scope.runtime_tier,
+        binding.scope.verification_environment_id,
+        input.committed_at,
+        this.crmBinding.accountKey,
+        binding.scope.product,
+      ],
+      'Parent canonical-class entitlement',
+    );
     await insertExactlyOne(
       this.db,
       `INSERT INTO onetime.v21_adult_credentials

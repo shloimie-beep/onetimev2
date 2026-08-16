@@ -41,12 +41,7 @@ test.describe('OPS-07 visual matrix', () => {
         await captureRoute(page, `landing-${viewport.name}`, '/', 'MISHNAYOS MADE MEMORABLE'),
       );
       results.push(
-        await captureRoute(
-          page,
-          `signup-${viewport.name}`,
-          '/signup',
-          'Create your Family account',
-        ),
+        await captureRoute(page, `signup-${viewport.name}`, '/signup', 'Create Family Account'),
       );
     }
 

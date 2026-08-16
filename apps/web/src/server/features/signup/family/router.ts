@@ -42,6 +42,13 @@ const CSRF_DOMAIN = 'one-time-family-signup-csrf-v1';
 const PASSWORD_FINGERPRINT_DOMAIN = 'one-time-family-signup-password-idempotency-fingerprint-v1';
 const CSRF_TTL_MS = 20 * 60 * 1000;
 const BASE64URL_32_BYTES = /^[A-Za-z0-9_-]{43}$/u;
+const FAMILY_SIGNUP_CORS_METHODS = 'GET, POST, OPTIONS';
+const FAMILY_SIGNUP_CORS_HEADERS = 'Accept, Cache-Control, Content-Type, Pragma, X-CSRF-Token';
+const FAMILY_SIGNUP_CORS_REQUEST_HEADERS = new Set(
+  FAMILY_SIGNUP_CORS_HEADERS.toLowerCase()
+    .split(',')
+    .map((header) => header.trim()),
+);
 
 const familySignupPayloadSchema = z
   .object({
@@ -53,9 +60,9 @@ const familySignupPayloadSchema = z
       .regex(/^[A-Za-z0-9_-]+$/u),
     first_name: z.string().min(1).max(100),
     last_name: z.string().min(1).max(100),
-    email: z.string().max(254),
-    password: z.string().min(1).max(256),
-    password_confirmation: z.string().min(1).max(256),
+    email: z.string().trim().email().max(254),
+    password: z.string().min(6).max(128),
+    password_confirmation: z.string().min(6).max(128),
     timezone: z.string().min(1).max(100),
     terms_accepted: z.literal(true),
     privacy_accepted: z.literal(true),
@@ -120,6 +127,47 @@ export function createFamilySignupRouter(input: FamilySignupRouterInput): expres
       ? (_req: Request, _res: Response, next: NextFunction) => next()
       : (input.rateLimit ?? leadRateLimit(input.config, input.pool));
 
+  router.use((req: RequestWithTrace, res, next) => {
+    const publicOrigin = new URL(input.config.publicBaseUrl).origin;
+    const origin = req.header('origin');
+    const isCanonicalPublicToApplicationRequest =
+      origin === publicOrigin && publicOrigin !== CANONICAL_APPLICATION_ORIGIN;
+    if (isCanonicalPublicToApplicationRequest) {
+      res.setHeader('Access-Control-Allow-Origin', publicOrigin);
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+      res.append('Vary', 'Origin');
+    }
+    if (req.method !== 'OPTIONS') {
+      next();
+      return;
+    }
+    const requestedMethod = req.header('access-control-request-method')?.toUpperCase();
+    const requestedHeaders = (req.header('access-control-request-headers') ?? '')
+      .split(',')
+      .map((header) => header.trim().toLowerCase())
+      .filter(Boolean);
+    if (
+      !isCanonicalPublicToApplicationRequest ||
+      (requestedMethod !== 'GET' && requestedMethod !== 'POST') ||
+      requestedHeaders.some((header) => !FAMILY_SIGNUP_CORS_REQUEST_HEADERS.has(header))
+    ) {
+      res
+        .status(403)
+        .json(
+          publicError(
+            'CROSS_ORIGIN_REQUIRED',
+            'We could not verify this request. Please try again.',
+            req.traceId,
+          ),
+        );
+      return;
+    }
+    res.setHeader('Access-Control-Allow-Methods', FAMILY_SIGNUP_CORS_METHODS);
+    res.setHeader('Access-Control-Allow-Headers', FAMILY_SIGNUP_CORS_HEADERS);
+    res.setHeader('Access-Control-Max-Age', '300');
+    res.status(204).end();
+  });
+
   router.use((_req, res, next) => {
     setNoStore(res);
     next();
@@ -173,7 +221,11 @@ export function createFamilySignupRouter(input: FamilySignupRouterInput): expres
           res
             .status(403)
             .json(
-              publicError('SAME_ORIGIN_REQUIRED', 'Refresh the page and try again.', req.traceId),
+              publicError(
+                'SAME_ORIGIN_REQUIRED',
+                'We could not verify this request. Please try again.',
+                req.traceId,
+              ),
             );
           return;
         }
@@ -192,18 +244,23 @@ export function createFamilySignupRouter(input: FamilySignupRouterInput): expres
         ) {
           res
             .status(403)
-            .json(publicError('CSRF_REQUIRED', 'Refresh the page and try again.', req.traceId));
+            .json(
+              publicError(
+                'CSRF_REQUIRED',
+                'We could not verify this request. Please try again.',
+                req.traceId,
+              ),
+            );
           return;
         }
         res.locals.familySignupCommand = command;
         next();
       } catch (error) {
         if (error instanceof ZodError) {
-          res
-            .status(400)
-            .json(
-              publicError('VALIDATION_ERROR', 'Please check the Family signup form.', req.traceId),
-            );
+          res.status(400).json({
+            ...publicError('VALIDATION_ERROR', 'Please check the Family signup form.', req.traceId),
+            field_errors: familySignupFieldErrors(error),
+          });
           return;
         }
         next(error);
@@ -229,17 +286,28 @@ export function createFamilySignupRouter(input: FamilySignupRouterInput): expres
       } catch (error) {
         if (error instanceof FamilySignupError) {
           const conflict = error.code === 'idempotency_conflict';
-          res
-            .status(conflict ? 409 : 400)
-            .json(
-              publicError(
-                conflict ? 'IDEMPOTENCY_CONFLICT' : 'VALIDATION_ERROR',
-                conflict
-                  ? 'This request key was already used. Refresh and try again.'
-                  : 'Please check the Family signup form.',
-                req.traceId,
-              ),
-            );
+          const command = res.locals.familySignupCommand as FamilySignupCommand;
+          const passwordFieldErrors =
+            error.code !== 'invalid_password'
+              ? {}
+              : command.password !== command.password_confirmation
+                ? { field_errors: { password_confirmation: 'Passwords must match.' } }
+                : {
+                    field_errors: {
+                      password:
+                        'Use 6 to 128 characters and avoid common passwords or your name or email.',
+                    },
+                  };
+          res.status(conflict ? 409 : 400).json({
+            ...publicError(
+              conflict ? 'IDEMPOTENCY_CONFLICT' : 'VALIDATION_ERROR',
+              conflict
+                ? 'We could not verify this request. Please try again.'
+                : 'Please check the Family signup form.',
+              req.traceId,
+            ),
+            ...passwordFieldErrors,
+          });
           return;
         }
         if (
@@ -278,6 +346,39 @@ export const familySignupFeatureRegistration = defineServerFeature({
       ...(clock ? { clock } : {}),
     }),
 });
+
+function familySignupFieldErrors(error: ZodError): Record<string, string> {
+  const fieldErrors: Record<string, string> = {};
+
+  for (const issue of error.issues) {
+    const field = issue.path[0];
+    if (typeof field !== 'string' || field in fieldErrors) continue;
+
+    if (field === 'password' || field === 'password_confirmation') {
+      fieldErrors[field] =
+        issue.code === 'too_small'
+          ? 'Use at least 6 characters.'
+          : issue.code === 'too_big'
+            ? 'Use no more than 128 characters.'
+            : 'Check this password field.';
+      continue;
+    }
+    if (field === 'email') {
+      fieldErrors[field] = 'Enter a valid email address.';
+      continue;
+    }
+    if (
+      field === 'first_name' ||
+      field === 'last_name' ||
+      field === 'timezone' ||
+      field === 'terms_accepted'
+    ) {
+      fieldErrors[field] = 'This field is required.';
+    }
+  }
+
+  return fieldErrors;
+}
 
 function defaultSubmitter(config: AppConfig, pool: DbPool): FamilySignupSubmitter {
   return createFamilySignupService({
@@ -559,7 +660,7 @@ function exactRandomKey(value: string): string {
 
 function isSameOrigin(req: Request, config: AppConfig): boolean {
   const fetchSite = req.header('sec-fetch-site');
-  if (fetchSite && fetchSite !== 'same-origin') return false;
+  if (fetchSite && fetchSite !== 'same-origin' && fetchSite !== 'same-site') return false;
   const source = req.header('origin') ?? req.header('referer');
   if (!source) return false;
   try {

@@ -19,6 +19,11 @@ import {
 } from '../features/portals/PortalFeatures.js';
 import { ParentClientRoot, StudentClientRoot, resolveCurrentClientRoute } from './router/index.js';
 import { ParentHouseholdWorkspace, type ParentHouseholdView } from './parent/household/index.js';
+import {
+  ParentLearningWorkspace,
+  parentClassroomDocumentNavigationRequired,
+  type ParentLearningView,
+} from './parent/learning/index.js';
 import { ParentSummaryWorkspace, type ParentSummaryView } from './parent/summary/index.js';
 import { ParentBillingContainer } from './parent/billing/index.js';
 import { ParentPreferencesWorkspace } from './parent/preferences/index.js';
@@ -740,6 +745,30 @@ function PortalApp() {
     if (v21ParentSession) {
       return [
         {
+          id: 'v21-parent-today',
+          label: 'Today',
+          href: '/app/parent',
+          current: location.pathname === '/app/parent',
+        },
+        {
+          id: 'v21-parent-classroom',
+          label: 'Classroom',
+          href: '/app/parent/classroom',
+          current: location.pathname === '/app/parent/classroom',
+        },
+        {
+          id: 'v21-parent-library',
+          label: 'Library',
+          href: '/app/parent/library',
+          current: location.pathname === '/app/parent/library',
+        },
+        {
+          id: 'v21-parent-questions',
+          label: 'Questions',
+          href: '/app/parent/questions',
+          current: location.pathname === '/app/parent/questions',
+        },
+        {
           id: 'v21-parent-students',
           label: 'Students',
           href: '/app/parent/students',
@@ -896,11 +925,15 @@ function PortalApp() {
     studentPrivacyView,
     v21ParentSession,
   ]);
-  const title = classroomRoute
-    ? 'Classroom'
-    : portalRole === 'parent'
-      ? 'Parent Portal'
-      : 'Student Portal';
+  const title = supportRoute
+    ? 'Support'
+    : classroomRoute
+      ? 'Classroom'
+      : portalRole === 'parent'
+        ? v21ParentSession
+          ? v21ParentPageTitle(v21ParentView)
+          : 'Parent Portal'
+        : 'Student Portal';
   const description = classroomRoute
     ? 'Protected Student classroom'
     : portalRole === 'parent'
@@ -924,6 +957,14 @@ function PortalApp() {
           return;
         }
         const target = new URL(href, location.origin);
+        if (
+          v21ParentSession &&
+          target.origin === location.origin &&
+          parentClassroomDocumentNavigationRequired(location.pathname, target.pathname)
+        ) {
+          window.location.assign(target.href);
+          return;
+        }
         const section = target.searchParams.get('section');
         if (
           target.pathname === location.pathname &&
@@ -962,7 +1003,9 @@ function PortalApp() {
         />
       ) : portalRole === 'parent' ? (
         v21ParentSession ? (
-          v21ParentView.kind === 'summary' ? (
+          v21ParentView.kind === 'learning' ? (
+            <ParentLearningWorkspace view={v21ParentView.view} />
+          ) : v21ParentView.kind === 'summary' ? (
             <ParentSummaryWorkspace view={v21ParentView.view} />
           ) : v21ParentView.kind === 'billing' ? (
             <ParentBillingContainer />
@@ -1305,8 +1348,7 @@ function AccountSecurityPanel({
   const [confirmPassword, setConfirmPassword] = useState('');
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<{ kind: 'success' | 'error'; message: string } | null>(null);
-  const passwordReady =
-    newPassword.length >= 10 && /[A-Za-z]/u.test(newPassword) && /[0-9]/u.test(newPassword);
+  const passwordReady = newPassword.length >= 6 && newPassword.length <= 128;
   const canSubmit =
     !saving &&
     currentPassword.length > 0 &&
@@ -1402,7 +1444,7 @@ function AccountSecurityPanel({
             value={currentPassword}
             autoComplete="current-password"
             required
-            maxLength={256}
+            maxLength={128}
             onChange={(event) => setCurrentPassword(event.currentTarget.value)}
           />
         </label>
@@ -1413,14 +1455,14 @@ function AccountSecurityPanel({
             value={newPassword}
             autoComplete="new-password"
             required
-            minLength={10}
-            maxLength={256}
+            minLength={6}
+            maxLength={128}
             aria-describedby="new-password-help"
             onChange={(event) => setNewPassword(event.currentTarget.value)}
           />
         </label>
         <p id="new-password-help" className="ot-muted">
-          Use at least 10 characters with at least one letter and one number.
+          Use at least 6 characters.
         </p>
         <label className="ot-field">
           <span>Confirm new password</span>
@@ -1429,8 +1471,8 @@ function AccountSecurityPanel({
             value={confirmPassword}
             autoComplete="new-password"
             required
-            minLength={10}
-            maxLength={256}
+            minLength={6}
+            maxLength={128}
             onChange={(event) => setConfirmPassword(event.currentTarget.value)}
           />
         </label>
@@ -1948,6 +1990,7 @@ function parentHouseholdViewFromLocation(pathname: string): ParentHouseholdView 
 }
 
 type V21ParentRouteView =
+  | { kind: 'learning'; view: ParentLearningView }
   | { kind: 'household'; view: ParentHouseholdView }
   | { kind: 'summary'; view: ParentSummaryView }
   | { kind: 'billing' }
@@ -1956,6 +1999,10 @@ type V21ParentRouteView =
   | { kind: 'account' };
 
 function v21ParentRouteViewFromLocation(pathname: string): V21ParentRouteView {
+  if (pathname === '/app/parent') return { kind: 'learning', view: 'today' };
+  if (pathname === '/app/parent/classroom') return { kind: 'learning', view: 'classroom' };
+  if (pathname === '/app/parent/library') return { kind: 'learning', view: 'library' };
+  if (pathname === '/app/parent/questions') return { kind: 'learning', view: 'questions' };
   const classMatch = /^\/app\/parent\/classes\/([^/]+)$/u.exec(pathname);
   if (classMatch?.[1]) {
     return {
@@ -1988,6 +2035,25 @@ function v21ParentRouteViewFromLocation(pathname: string): V21ParentRouteView {
   if (pathname === '/app/parent/data-rights') return { kind: 'privacy', view: 'data-rights' };
   if (pathname === '/app/parent/account') return { kind: 'account' };
   return { kind: 'household', view: parentHouseholdViewFromLocation(pathname) };
+}
+
+function v21ParentPageTitle(view: V21ParentRouteView) {
+  if (view.kind === 'learning') {
+    if (view.view === 'today') return 'Today';
+    if (view.view === 'classroom') return 'Classroom';
+    if (view.view === 'library') return 'Library';
+    return 'Questions';
+  }
+  if (view.kind === 'household') return 'Students';
+  if (view.kind === 'summary') {
+    if (view.view.kind === 'calendar' || view.view.kind === 'class') return 'Calendar';
+    if (view.view.kind === 'progress') return 'Progress';
+    return 'Updates';
+  }
+  if (view.kind === 'billing') return 'Billing';
+  if (view.kind === 'preferences') return 'Preferences';
+  if (view.kind === 'privacy' || view.kind === 'account') return 'Account';
+  return 'Parent Portal';
 }
 
 function portalClassKeyFromLocation(pathname: string, role: 'parent' | 'student'): string | null {

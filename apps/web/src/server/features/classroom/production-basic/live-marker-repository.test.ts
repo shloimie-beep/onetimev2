@@ -129,6 +129,37 @@ describe('production-basic live-class receipt', () => {
     ]);
   });
 
+  it('reads Parent live state only through the active owned participant entitlement', async () => {
+    const query = vi.fn().mockResolvedValue({ rowCount: 1, rows: [{ '?column?': 1 }] });
+    const marker = createProductionBasicHostLiveMarker({ query } as unknown as DbPool);
+    await expect(
+      marker.currentForParent({
+        scope: { account_key: STUDENT.account_key, product_key: STUDENT.product_key },
+        participant_id: 'parent_participant_live',
+        household_id: LEARNER.household_key,
+        meeting_ref_digest: MEETING_DIGEST,
+        observed_at: NOW,
+      }),
+    ).resolves.toBe(true);
+    const [sql, parameters] = query.mock.calls[0] as [string, unknown[]];
+    expect(sql).toContain('onetime.parent_learning_class_entitlements');
+    expect(sql).toContain('onetime.parent_learning_participants');
+    expect(sql).toContain("participant.state = 'active'");
+    expect(sql).toContain("entitlement.entitlement_state = 'active'");
+    expect(sql).toContain('entitlement.effective_at <= $6');
+    expect(sql).toContain('series.is_canonical = true');
+    expect(sql).toContain('occurrence.production_basic_meeting_ref_digest = $5');
+    expect(sql).toContain('occurrence.production_basic_live_expires_at > $6');
+    expect(parameters).toEqual([
+      STUDENT.account_key,
+      STUDENT.product_key,
+      'parent_participant_live',
+      LEARNER.household_key,
+      MEETING_DIGEST,
+      NOW,
+    ]);
+  });
+
   it('promotes only the matching entitled Student occurrence while the receipt is current', async () => {
     const query = vi.fn().mockResolvedValue({
       rowCount: 1,

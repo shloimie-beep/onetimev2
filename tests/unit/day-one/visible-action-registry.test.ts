@@ -376,11 +376,32 @@ const EXPECTED_ACTION_BINDINGS = [
     '/api/app/parent/summary',
   ],
   [
+    'portal.parent.classroom.production_basic_join.button',
+    '/app/parent/classroom',
+    ['parent'],
+    'POST',
+    '/api/v1/classroom/production-basic/launch',
+  ],
+  [
     'portal.parent.learner.select.button',
     '/app/parent/students',
     ['parent'],
     'CLIENT',
     'apps/web/src/client/features/portals/PortalFeatures.tsx',
+  ],
+  [
+    'portal.parent.library.entitled_content_open.button',
+    '/app/parent/library',
+    ['parent'],
+    'GET',
+    '/api/v1/portals/parent/learning/content/:contentId/open',
+  ],
+  [
+    'portal.parent.private_question.submit.form',
+    '/app/parent/questions',
+    ['parent'],
+    'POST',
+    '/api/v1/portals/parent/learning/questions',
   ],
   [
     'portal.parent.student_access.reset.button',
@@ -721,16 +742,23 @@ describe('v2.1 visible action registry', () => {
         handler_disposition: route.handlerDisposition,
       })),
     );
-    expect(registry.canonical_routes).toHaveLength(93);
+    expect(registry.canonical_routes).toHaveLength(96);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'ready'),
-    ).toHaveLength(93);
+    ).toHaveLength(96);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'isolated'),
     ).toHaveLength(0);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'missing'),
     ).toHaveLength(0);
+    expect(registry.canonical_routes.map(({ path }) => path)).toEqual(
+      expect.arrayContaining([
+        '/app/parent/classroom',
+        '/app/parent/library',
+        '/app/parent/questions',
+      ]),
+    );
     expect(sourceText.endsWith('\n')).toBe(true);
   });
 
@@ -740,6 +768,7 @@ describe('v2.1 visible action registry', () => {
     );
     const actionIds = registry.actions.map(({ action_id }) => action_id);
     const sourcePaths = new Set(registry.source_inputs.map(({ path }) => path));
+    expect(registry.actions).toHaveLength(97);
     expect(actionIds).toEqual([...actionIds].sort());
     expect(new Set(actionIds).size).toBe(actionIds.length);
     expect(actionIds).not.toContain('admin.directory.student.setup.form');
@@ -790,6 +819,7 @@ describe('v2.1 visible action registry', () => {
         .map(({ action_id }) => action_id),
     ).toEqual([
       'admin.production_basic.start.button',
+      'portal.parent.classroom.production_basic_join.button',
       'portal.student.classroom.production_basic_join.button',
     ]);
   });
@@ -823,6 +853,11 @@ describe('v2.1 visible action registry', () => {
       route: '/app/student/class/:occurrenceId',
       roles: ['student'],
     });
+    expect(byId.get('portal.parent.classroom.production_basic_join.button')).toMatchObject({
+      ...conditionalLaunch,
+      route: '/app/parent/classroom',
+      roles: ['parent'],
+    });
 
     const legacyJoin = byId.get('portal.student.classroom.join.button');
     expect(legacyJoin).toMatchObject({
@@ -831,6 +866,36 @@ describe('v2.1 visible action registry', () => {
     });
     expect(legacyJoin?.visibility).toBeUndefined();
     expect(legacyJoin?.request_body).toBeUndefined();
+  });
+
+  it('governs Parent learner content and private questions without provider locators', () => {
+    const byId = new Map(registry.actions.map((action) => [action.action_id, action]));
+
+    expect(byId.get('portal.parent.library.entitled_content_open.button')).toMatchObject({
+      route: '/app/parent/library',
+      roles: ['parent'],
+      capability: 'parent:library:playback',
+      handler: {
+        method: 'GET',
+        path: '/api/v1/portals/parent/learning/content/:contentId/open',
+      },
+      external_mutation: false,
+    });
+    expect(byId.get('portal.parent.private_question.submit.form')).toMatchObject({
+      route: '/app/parent/questions',
+      roles: ['parent'],
+      capability: 'parent:question:create',
+      handler: { method: 'POST', path: '/api/v1/portals/parent/learning/questions' },
+      idempotency: { required: true, key_source: 'client-generated x-idempotency-key' },
+      external_mutation: false,
+    });
+
+    const parentActions = registry.actions.filter(({ action_id }) =>
+      action_id.startsWith('portal.parent.'),
+    );
+    expect(JSON.stringify(parentActions)).not.toMatch(
+      /(?:https?:\/\/|zoom\.us|vimeo\.com|meeting_password|signature|launch_token_ref)/iu,
+    );
   });
 
   it('keeps non-ready routes handler-free and excludes retired surfaces and roles', () => {

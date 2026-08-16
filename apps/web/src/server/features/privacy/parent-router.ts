@@ -38,7 +38,7 @@ const consentSchema = z
 const rightsSchema = z
   .object({
     kind: z.enum(['export', 'correction', 'closure', 'erasure']),
-    current_password: z.string().min(12).max(128),
+    current_password: z.string().min(6).max(128),
   })
   .strict();
 const IDEMPOTENCY_KEY = /^[A-Za-z0-9][A-Za-z0-9._:-]{7,159}$/u;

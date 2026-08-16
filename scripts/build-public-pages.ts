@@ -311,32 +311,27 @@ function signupPage() {
     'Create Your Family Account | One Time Mishnayos',
     `${header()}<main class="signup-page">
   <section class="signup-intro">
-    <h1>Create your Family account</h1>
-    <p>Create one adult-managed Family account, then add up to three Students without supplying Student email addresses.</p>
-    <p>Free access ends Friday, September 11, 2026 at 6:00 PM Asia/Jerusalem. No card is collected and there is no automatic charge.</p>
+    <h1>Create Family Account</h1>
   </section>
   <section class="signup-shell">
     <noscript><div class="noscript-panel" role="status"><strong>JavaScript is required for secure signup submission.</strong><span>Please use a browser with JavaScript enabled or use the Support path. Do not send Student names or other Student information through this public form.</span></div></noscript>
     <form class="signup-form" action="/api/v1/signup/family" method="post" data-signup-form data-access-boundary="${freeAccessExpiresAtPlaceholder}" data-consent-policy-version="${escapeHtml(legalPolicyMetadata.consentPolicyVersion)}" novalidate>
-      <section data-family-fields aria-labelledby="family-fields-heading">
-        <h2 id="family-fields-heading">Create the adult Family account</h2>
-        <p class="section-note">One adult account can manage up to three separate learner seats. An adult who wants to learn as a Student must use a separate Student seat. Student email is not required.</p>
+      <section data-family-fields aria-label="Family account details">
         <div class="field-grid">
-          <div class="field"><label for="first_name">First name</label><input id="first_name" name="first_name" autocomplete="given-name" required><p tabindex="-1" class="error" data-error-for="first_name"></p></div>
-          <div class="field"><label for="last_name">Last name</label><input id="last_name" name="last_name" autocomplete="family-name" required><p tabindex="-1" class="error" data-error-for="last_name"></p></div>
+          <div class="field"><label for="first_name">First name</label><input id="first_name" name="first_name" autocomplete="given-name" required aria-invalid="false" aria-describedby="first_name-error"><p id="first_name-error" tabindex="-1" class="error" data-error-for="first_name" aria-live="polite"></p></div>
+          <div class="field"><label for="last_name">Last name</label><input id="last_name" name="last_name" autocomplete="family-name" required aria-invalid="false" aria-describedby="last_name-error"><p id="last_name-error" tabindex="-1" class="error" data-error-for="last_name" aria-live="polite"></p></div>
         </div>
-        <div class="field"><label for="email">Adult account email</label><input id="email" name="email" type="email" autocomplete="email" inputmode="email" required><p tabindex="-1" class="error" data-error-for="email"></p></div>
-        <div class="field"><label for="timezone">Time zone</label><input id="timezone" name="timezone" autocomplete="off" placeholder="America/New_York" required><small>Use an IANA time zone. Your browser suggestion remains editable.</small><p tabindex="-1" class="error" data-error-for="timezone"></p></div>
+        <div class="field"><label for="email">Adult account email</label><input id="email" name="email" type="email" autocomplete="email" inputmode="email" required aria-invalid="false" aria-describedby="email-error"><p id="email-error" tabindex="-1" class="error" data-error-for="email" aria-live="polite"></p></div>
+        <div class="field"><label for="timezone">Time zone</label><input id="timezone" name="timezone" autocomplete="off" placeholder="America/New_York" required aria-invalid="false" aria-describedby="timezone-help timezone-error"><small id="timezone-help">Use an IANA time zone. Your browser suggestion remains editable.</small><p id="timezone-error" tabindex="-1" class="error" data-error-for="timezone" aria-live="polite"></p></div>
         <div class="field-grid">
-          <div class="field"><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="new-password" minlength="12" required><p tabindex="-1" class="error" data-error-for="password"></p></div>
-          <div class="field"><label for="password_confirmation">Confirm password</label><input id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" minlength="12" required><p tabindex="-1" class="error" data-error-for="password_confirmation"></p></div>
+          <div class="field"><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="new-password" minlength="6" maxlength="128" required aria-invalid="false" aria-describedby="password-error"><p id="password-error" tabindex="-1" class="error" data-error-for="password" aria-live="polite"></p></div>
+          <div class="field"><label for="password_confirmation">Confirm password</label><input id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" minlength="6" maxlength="128" required aria-invalid="false" aria-describedby="password_confirmation-error"><p id="password_confirmation-error" tabindex="-1" class="error" data-error-for="password_confirmation" aria-live="polite"></p></div>
         </div>
         <fieldset class="required-acceptances"><legend>Agreement</legend>
-          <label><input id="terms_accepted" name="terms_accepted" type="checkbox" required><span>I agree to the <a href="/terms">Terms of Use</a>, <a href="/privacy">Privacy Notice</a>, <a href="/student-data">Student Data Notice</a>, and <a href="/cancellation-refund">Cancellation and Refund Policy</a>.</span></label>
+          <label><input id="terms_accepted" name="terms_accepted" type="checkbox" required aria-invalid="false" aria-describedby="terms_accepted-error"><span>I agree to the <a href="/terms">Terms of Use</a>, <a href="/privacy">Privacy Notice</a>, <a href="/student-data">Student Data Notice</a>, and <a href="/cancellation-refund">Cancellation and Refund Policy</a>.</span></label>
+          <p id="terms_accepted-error" tabindex="-1" class="error" data-error-for="terms_accepted" aria-live="polite"></p>
           <p class="section-note">This single agreement covers service communications, One Time updates, general marketing, and the Parent newsletter. Unsubscribe, DND, complaint, and suppression requests remain controlling.</p>
         </fieldset>
-        <div class="signup-access-state" data-before-expiry hidden><p data-signup-helper>No credit card required. Free access ends September 11, 2026 at 6:00 PM Asia/Jerusalem.</p></div>
-        <div class="signup-access-state" data-at-or-after-expiry><p>$67/month after account creation through secure hosted checkout. No charge is made by this form.</p></div>
       </section>
       <button class="button button-primary" type="submit" data-enhanced-submit hidden>Create your Family account</button>
       <p class="form-status" role="status" data-form-status></p>

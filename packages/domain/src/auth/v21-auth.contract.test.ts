@@ -20,6 +20,7 @@ import {
 } from '../../../../apps/web/src/server/features/auth/http-security.ts';
 import {
   ARGON2ID_POLICY_VERSION,
+  COMMON_AUTH_PASSWORDS,
   authPasswordHashNeedsUpgrade,
   evaluatePassword,
   hashAuthPassword,
@@ -45,6 +46,43 @@ describe('One Time v2.1 authentication contract', () => {
     expect(normalizeLegacyAuthRole('owner')).toBe('admin');
     expect(normalizeLegacyAuthRole('rabbi')).toBe('admin');
     expect(normalizeLegacyAuthRole('parent')).toBe('parent');
+  });
+
+  it('uses a six-character minimum for adult passwords without imposing the Student PIN format', () => {
+    expect(PASSWORD_POLICIES.adult).toMatchObject({
+      minimum_code_points: 6,
+      maximum_code_points: 128,
+      composition_rule: 'none',
+      reject_common: true,
+      reject_compromised: true,
+      reject_identity_equivalent: true,
+    });
+    expect(evaluatePassword({ role: 'parent', password: 'Abcdef' })).toEqual({ accepted: true });
+    expect(evaluatePassword({ role: 'parent', password: 'Abcde' })).toEqual({
+      accepted: false,
+      reason: 'too_short',
+    });
+    expect(
+      evaluatePassword({
+        role: 'parent',
+        password: 'Abcdef',
+        common_passwords: new Set(['abcdef']),
+      }),
+    ).toEqual({ accepted: false, reason: 'common' });
+    expect(
+      evaluatePassword({ role: 'parent', password: 'Abcdef', is_compromised: () => true }),
+    ).toEqual({ accepted: false, reason: 'compromised' });
+    expect(evaluatePassword({ role: 'parent', password: 'Abcdef', names: ['abcdef'] })).toEqual({
+      accepted: false,
+      reason: 'identity_equivalent',
+    });
+    expect(
+      evaluatePassword({
+        role: 'parent',
+        password: 'qwerty',
+        common_passwords: COMMON_AUTH_PASSWORDS,
+      }),
+    ).toEqual({ accepted: false, reason: 'common' });
   });
 
   it('OTV2-AUTH-248-STUDENT-PIN defines an exactly six-digit Student PIN without email', () => {

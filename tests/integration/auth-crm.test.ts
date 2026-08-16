@@ -158,7 +158,7 @@ describe('standalone CRM authentication', () => {
       headers: { cookie: cookies, 'content-type': 'application/json' },
       body: JSON.stringify({
         current_password: 'ViewerPass!234',
-        new_password: 'ViewerChanged!567',
+        new_password: 'Ab1234',
       }),
     });
     expect(missingCsrf.status).toBe(403);
@@ -172,7 +172,7 @@ describe('standalone CRM authentication', () => {
       },
       body: JSON.stringify({
         current_password: 'NotThePassword!9',
-        new_password: 'ViewerChanged!567',
+        new_password: 'Ab1234',
       }),
     });
     expect(wrongCurrent.status).toBe(400);
@@ -187,7 +187,7 @@ describe('standalone CRM authentication', () => {
       },
       body: JSON.stringify({
         current_password: 'ViewerPass!234',
-        new_password: 'ViewerChanged!567',
+        new_password: 'Ab1234',
       }),
     });
     expect(changed.status).toBe(200);
@@ -202,7 +202,7 @@ describe('standalone CRM authentication', () => {
     expect(currentSession.status).toBe(200);
     const oldPassword = await authenticateDirect('viewer@example.test', 'ViewerPass!234');
     expect(oldPassword.status).toBe(401);
-    const newPassword = await authenticateDirect('viewer@example.test', 'ViewerChanged!567');
+    const newPassword = await authenticateDirect('viewer@example.test', 'Ab1234');
     expect(newPassword.status).toBe(200);
   });
 

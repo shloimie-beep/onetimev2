@@ -22,6 +22,14 @@ const STUDENT: ProductionBasicActor = {
   display_name: 'Student',
   entitled: true,
 };
+const PARENT: ProductionBasicActor = {
+  kind: 'parent',
+  scope: STUDENT.scope,
+  participant_id: 'parent-participant-derived',
+  household_id: 'household-derived',
+  display_name: 'Parent',
+  entitled: true,
+};
 
 afterEach(async () => {
   vi.restoreAllMocks();
@@ -78,6 +86,37 @@ describe('production-basic Meeting SDK launch', () => {
     });
     expect(injected.status).toBe(400);
     expect(issue).toHaveBeenCalledTimes(1);
+  });
+
+  it('derives the Parent learner scope server-side and issues a participant launch only while live', async () => {
+    const currentForParent = vi
+      .fn<ProductionBasicHostLiveMarker['currentForParent']>()
+      .mockResolvedValue(true);
+    const issue = vi.fn(async (input: { actor: ProductionBasicActor; role: 0 | 1 }) =>
+      artifact(input.role, '/app/parent'),
+    );
+    const baseUrl = await start({ actor: PARENT, issue, currentForParent });
+
+    const status = await fetch(`${baseUrl}/status`);
+    await expect(status.json()).resolves.toEqual({
+      success: true,
+      data: { mode: 'production_basic', available: true },
+    });
+    const response = await post(baseUrl, '/launch');
+    expect(response.status).toBe(200);
+    expect(issue).toHaveBeenCalledWith(expect.objectContaining({ actor: PARENT, role: 0 }));
+    expect(currentForParent).toHaveBeenCalledWith({
+      scope: PARENT.scope,
+      participant_id: PARENT.participant_id,
+      household_id: PARENT.household_id,
+      meeting_ref_digest: expect.stringMatching(/^[a-f0-9]{64}$/u),
+      observed_at: new Date('2026-08-12T10:00:00.000Z'),
+    });
+    expect((await response.json()).data.launch_artifact).toMatchObject({
+      role: 0,
+      leave_path: '/app/parent',
+      raw_join_url_present: false,
+    });
   });
 
   it('confirms a bounded live marker only for an authorized host and is retry-safe', async () => {
@@ -197,6 +236,7 @@ describe('production-basic Meeting SDK launch', () => {
 
   it.each<ProductionBasicActor>([
     { ...STUDENT, entitled: false },
+    { ...PARENT, entitled: false },
     {
       kind: 'admin',
       scope: STUDENT.scope,
@@ -386,6 +426,7 @@ async function start(input: {
   }) => Promise<ProductionBasicLaunchArtifact>;
   confirm?: ProductionBasicHostLiveMarker['confirm'];
   current?: ProductionBasicHostLiveMarker['currentForStudent'];
+  currentForParent?: ProductionBasicHostLiveMarker['currentForParent'];
   clear?: ProductionBasicHostLiveMarker['clear'];
   onLaunchFailure?: ((event: ProductionBasicLaunchFailureEvent) => void) | undefined;
 }) {
@@ -405,6 +446,7 @@ async function start(input: {
           hostLiveMarker: {
             confirm: input.confirm ?? (async () => true),
             currentForStudent: input.current ?? (async () => true),
+            currentForParent: input.currentForParent ?? (async () => true),
             clear: input.clear ?? (async () => undefined),
           },
         }
@@ -431,7 +473,12 @@ async function start(input: {
   return `http://127.0.0.1:${address.port}`;
 }
 
-function artifact(role: 0 | 1): ProductionBasicLaunchArtifact {
+function artifact(
+  role: 0 | 1,
+  leavePath: ProductionBasicLaunchArtifact['leave_path'] = role === 0
+    ? '/app/student'
+    : '/app/live-console',
+): ProductionBasicLaunchArtifact {
   return {
     mode: 'production_basic',
     role,
@@ -440,7 +487,7 @@ function artifact(role: 0 | 1): ProductionBasicLaunchArtifact {
     meeting_password: 'short-lived-password',
     signature: 'short-lived-signature',
     user_name: role === 0 ? 'Student' : 'Admin',
-    leave_path: role === 0 ? '/app/student' : '/app/live-console',
+    leave_path: leavePath,
     issued_at: '2026-08-12T09:59:00.000Z',
     expires_at: '2026-08-12T10:15:00.000Z',
     ...(role === 1 ? { zak: 'short-lived-zak' } : {}),

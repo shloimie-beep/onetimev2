@@ -257,7 +257,7 @@ describe.runIf(nativeProofEnabled)('OT-P0 native PostgreSQL owner Admin session'
       const parentPortal = await fetch(`${baseUrl}/api/v1/portals/parent/dashboard`, {
         headers: { cookie: parentCookie },
       });
-      expect(parentPortal.status).toBe(403);
+      expect(parentPortal.status).toBe(404);
 
       const adminSwitch = await fetch(`${baseUrl}/api/v2.1/account-context/role`, {
         method: 'POST',

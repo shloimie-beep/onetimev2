@@ -95,6 +95,59 @@ jobs:
           npx vitest run --config vitest.integration.config.ts \
             tests/integration/accounts/dual-role-adult-provisioning.postgres.test.ts
 
+      - name: Run native Parent welcome digest and one-use authorization proof
+        env:
+          PARENT_WELCOME_NATIVE_POSTGRES_DISPOSABLE: 'true'
+          PGHOST: 127.0.0.1
+          PGPORT: 5432
+          PGDATABASE: postgres
+          PGUSER: postgres
+          PGPASSWORD: postgres
+        run: |
+          createdb onetime_parent_welcome_digest_ci_18
+          trap 'dropdb --if-exists onetime_parent_welcome_digest_ci_18' EXIT
+          printf -v PARENT_WELCOME_NATIVE_DATABASE_URL '%s://%s:%s@%s:%s/%s' \
+            postgresql "$PGUSER" "$PGPASSWORD" "$PGHOST" "$PGPORT" \
+            onetime_parent_welcome_digest_ci_18
+          export PARENT_WELCOME_NATIVE_DATABASE_URL
+          npx vitest run --config vitest.integration.config.ts \
+            tests/integration/content/parent-welcome-existing-reviewed-digest.postgres.test.ts
+
+      - name: Run native Parent protected playback progress proof
+        env:
+          PARENT_PLAYBACK_NATIVE_POSTGRES_DISPOSABLE: 'true'
+          PGHOST: 127.0.0.1
+          PGPORT: 5432
+          PGDATABASE: postgres
+          PGUSER: postgres
+          PGPASSWORD: postgres
+        run: |
+          createdb onetime_parent_playback_progress_ci_18
+          trap 'dropdb --if-exists onetime_parent_playback_progress_ci_18' EXIT
+          printf -v PARENT_PLAYBACK_NATIVE_DATABASE_URL '%s://%s:%s@%s:%s/%s' \
+            postgresql "$PGUSER" "$PGPASSWORD" "$PGHOST" "$PGPORT" \
+            onetime_parent_playback_progress_ci_18
+          export PARENT_PLAYBACK_NATIVE_DATABASE_URL
+          npx vitest run --config vitest.integration.config.ts \
+            tests/integration/content/parent-protected-content-playback.postgres.test.ts
+
+      - name: Run native Parent-session signup and immediate-access proof
+        env:
+          I36_NATIVE_POSTGRES_DISPOSABLE: 'true'
+          PGHOST: 127.0.0.1
+          PGPORT: 5432
+          PGDATABASE: postgres
+          PGUSER: postgres
+          PGPASSWORD: postgres
+        run: |
+          createdb ot_i36
+          trap 'dropdb --if-exists ot_i36' EXIT
+          printf -v I36_NATIVE_DATABASE_URL '%s://%s:%s@%s:%s/%s' \
+            postgresql "$PGUSER" "$PGPASSWORD" "$PGHOST" "$PGPORT" ot_i36
+          export I36_NATIVE_DATABASE_URL
+          npx vitest run --config vitest.integration.config.ts \
+            tests/integration/accounts/v21-family-parent-session-composition.test.ts
+
       - name: Run candidate-bound PostgreSQL 18.4 proof
         if: github.event_name == 'workflow_dispatch'
         env:
@@ -151,6 +204,9 @@ jobs:
           npx prettier --check
           .github/workflows/ops11-postgres-18-assurance.yml
           tests/integration/accounts/dual-role-adult-provisioning.postgres.test.ts
+          tests/integration/accounts/v21-family-parent-session-composition.test.ts
+          tests/integration/content/parent-protected-content-playback.postgres.test.ts
+          tests/integration/content/parent-welcome-existing-reviewed-digest.postgres.test.ts
           scripts/postgres-assurance/candidate-pg18-proof.ts
           scripts/postgres-assurance/ops11-pg18-restore-clone.ts
           ops/evidence/ops-11/pg18/latest-postgres-assurance-report.json

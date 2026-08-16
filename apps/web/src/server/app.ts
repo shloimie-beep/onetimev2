@@ -5,6 +5,7 @@ import path from 'node:path';
 import express, { type Request, type Response } from 'express';
 import helmet from 'helmet';
 import { z, ZodError } from 'zod';
+import { S3Client } from '@aws-sdk/client-s3';
 import type { AppConfig } from '../../../../packages/config/src/index.ts';
 import { createProductionBasicRouter } from './features/classroom/production-basic/router.ts';
 import {
@@ -347,6 +348,7 @@ import {
 } from './features/v21-canonical-routes/router.ts';
 import { createSchoolSignupService } from './features/signup/school/service.ts';
 import {
+  CANONICAL_APPLICATION_ORIGIN,
   classifyDomain,
   classifyDomainTransitionPath,
   domainTransitionFeatureRegistration,
@@ -361,6 +363,19 @@ import {
   createParentSummaryService,
   createPostgresParentSummaryRepository,
 } from './features/portals/parent-summary/index.ts';
+import {
+  createParentLearningRouter,
+  createParentLearningService,
+  createPostgresParentLearningRepository,
+  parentLearningPrincipalFromContext,
+} from './features/portals/parent-learning/index.ts';
+import {
+  createParentWelcomeRouter,
+  createParentWelcomeS3AssetRuntime,
+  createParentWelcomeService,
+  createPostgresParentWelcomeRepository,
+  type ParentWelcomeAssetRuntime,
+} from './features/portals/parent-welcome/index.ts';
 import {
   createParentPreferencesRouter,
   createPostgresParentPreferencesRepository,
@@ -424,6 +439,7 @@ type AppDeps = {
     nativePostgresSchemaProven: boolean;
   };
   embeddedClassroomRuntime?: EmbeddedClassroomCandidateRuntime;
+  parentWelcomeAssetRuntime?: ParentWelcomeAssetRuntime;
   contentMediaRuntime?: {
     ingest?: ContentIngestRuntime | undefined;
     publication?:
@@ -479,13 +495,7 @@ const resetPasswordApiPayloadSchema = tokenCompletionPayloadSchema.extend({
 const authenticatedPasswordChangePayloadSchema = z
   .object({
     current_password: z.string().min(1).max(256),
-    new_password: z
-      .string()
-      .min(10, 'Use at least 10 characters.')
-      .max(256)
-      .refine((value) => /[A-Za-z]/u.test(value) && /[0-9]/u.test(value), {
-        message: 'Use at least one letter and one number.',
-      }),
+    new_password: z.string().min(6, 'Use at least 6 characters.').max(128),
   })
   .strict();
 const crmNotePayloadSchema = z.object({
@@ -530,6 +540,7 @@ export function createApp({
   v21AdultSessionRuntime: injectedV21AdultSessionRuntime,
   learningRuntime,
   embeddedClassroomRuntime,
+  parentWelcomeAssetRuntime: injectedParentWelcomeAssetRuntime,
   contentMediaRuntime,
 }: AppDeps) {
   const v21AdultSessionRuntime =
@@ -600,6 +611,19 @@ export function createApp({
       v21AdultSessionRuntime,
       ...(clock ? { clock } : {}),
     });
+  // This consumes only the previously verified recurring meeting binding. It
+  // is created before Parent route composition so both Parent and Student
+  // learning surfaces resolve the same fail-closed runtime.
+  const productionBasicMeetingBinding = createCanonicalProductionBasicMeetingBinding({
+    config,
+    verified_binding: config.zoomProductionBasicVerifiedBinding,
+    ...(clock ? { clock } : {}),
+  });
+  const productionBasicClassroomService = createProductionBasicLaunchService({
+    binding: productionBasicMeetingBinding,
+    hostLiveMarker: createProductionBasicHostLiveMarker(pool),
+    ...(clock ? { clock } : {}),
+  });
   const productionBasicAdminReadyForRequest = async (req: Request) => {
     const actor = await resolvePortalActor(req);
     if (!actor || (actor.actor_role !== 'admin' && actor.actor_role !== 'rabbi')) return false;
@@ -752,7 +776,11 @@ export function createApp({
           imgSrc: ["'self'", 'data:'],
           scriptSrc: ["'self'"],
           styleSrc: ["'self'"],
-          connectSrc: ["'self'", ...contentMediaConnectSources(config)],
+          connectSrc: [
+            "'self'",
+            CANONICAL_APPLICATION_ORIGIN,
+            ...contentMediaConnectSources(config),
+          ],
           objectSrc: ["'none'"],
           baseUri: ["'self'"],
           frameAncestors: ["'none'"],
@@ -1142,6 +1170,76 @@ export function createApp({
   const parentStudentServiceAccountVersion = config.parentStudentServiceAccountVersion;
   const parentStudentServiceAccountEvidenceReference =
     config.parentStudentServiceAccountEvidenceReference;
+  const parentLearningRepository = createPostgresParentLearningRepository(pool, {
+    accountKey: config.accountKey,
+    productionBasicMeetingRefDigest: productionBasicMeetingBinding.referenceDigest(),
+    ...(clock ? { clock } : {}),
+  });
+  const parentLearningService = createParentLearningService({
+    repository: parentLearningRepository,
+  });
+  const resolveParentProductionBasicActor = async (req: Request, requireCsrf: boolean) => {
+    try {
+      const context = requireCsrf
+        ? await v21AdultSessionRuntime.verifyCsrf({
+            cookie_header: req.header('cookie'),
+            csrf_token: req.header('x-csrf-token'),
+            ...(clock ? { now: clock() } : {}),
+          })
+        : await v21AdultSessionRuntime
+            .bootstrapCookieHeader({
+              cookie_header: req.header('cookie'),
+              ...(clock ? { now: clock() } : {}),
+            })
+            .then((bootstrap) => (bootstrap.status === 'resolved' ? bootstrap.context : null));
+      if (context?.session.activeRole !== 'parent') return null;
+      return parentLearningService.productionBasicActor(
+        parentLearningPrincipalFromContext(context),
+      );
+    } catch {
+      return null;
+    }
+  };
+  const productionBasicParentReadyForRequest = async (req: Request) => {
+    const actor = await resolveParentProductionBasicActor(req, false);
+    return actor ? productionBasicClassroomService.ready(actor) : false;
+  };
+  app.use(
+    '/api/v1/portals/parent',
+    createParentLearningRouter({
+      service: parentLearningService,
+      sessions: v21AdultSessionRuntime,
+      ...(clock ? { clock } : {}),
+    }),
+  );
+  const parentWelcomeRepository = createPostgresParentWelcomeRepository(pool, {
+    accountKey: config.accountKey,
+    runtimeTier: config.oneTimeRuntimeTier,
+    verificationEnvironmentId: config.oneTimeVerificationEnvironmentId,
+  });
+  const parentWelcomeAssetRuntime =
+    injectedParentWelcomeAssetRuntime ??
+    (config.contentS3Bucket && config.contentAwsRegion
+      ? createParentWelcomeS3AssetRuntime({
+          resolver: parentWelcomeRepository,
+          s3Client: new S3Client({ region: config.contentAwsRegion }),
+          expectedBucketRef: config.contentS3Bucket,
+        })
+      : undefined);
+  const parentWelcomeService = createParentWelcomeService({
+    repository: parentWelcomeRepository,
+    playbackRuntimeAvailable: parentWelcomeAssetRuntime !== undefined,
+    ...(clock ? { clock } : {}),
+  });
+  app.use(
+    '/api/app/parent/welcome-video',
+    createParentWelcomeRouter({
+      service: parentWelcomeService,
+      sessions: v21AdultSessionRuntime,
+      ...(parentWelcomeAssetRuntime ? { assetRuntime: parentWelcomeAssetRuntime } : {}),
+      ...(clock ? { clock } : {}),
+    }),
+  );
   app.use(
     '/api/app/parent',
     createParentPreferencesRouter({
@@ -1388,6 +1486,7 @@ export function createApp({
         accountKey: config.accountKey,
         ...(clock ? { clock } : {}),
       }),
+      welcome: parentWelcomeService,
     });
     app.use(
       '/api/app/parent',
@@ -2085,6 +2184,9 @@ export function createApp({
   });
 
   const serveParentAppShell = async (req: RequestWithTrace, res: Response) => {
+    if (req.path === '/app/parent/classroom' && (await productionBasicParentReadyForRequest(req))) {
+      setProductionBasicZoomShellHeaders(res);
+    }
     await serveV21CompatibleParentAppShell(req, res, {
       pool,
       config,
@@ -2645,7 +2747,7 @@ export function createApp({
             : result.code === 'PASSWORD_REUSE'
               ? 'Choose a password you have not just used.'
               : result.code === 'PASSWORD_POLICY_FAILED'
-                ? 'Use at least 10 characters with at least one letter and one number.'
+                ? 'Use 6 to 128 characters and avoid common passwords or your account details.'
                 : result.code === 'ACCOUNT_UNAVAILABLE'
                   ? 'This account cannot change its password right now.'
                   : 'The current password is not correct.';
@@ -3188,19 +3290,6 @@ export function createApp({
     ...classroomZoomPorts,
     ...(clock ? { clock } : {}),
   });
-  // This is intentionally not connected to the canary/occurrence/registrant
-  // runtime. The later provider authorization binds one opaque recurring
-  // meeting here; until then every request fails closed without a provider call.
-  const productionBasicMeetingBinding = createCanonicalProductionBasicMeetingBinding({
-    config,
-    verified_binding: config.zoomProductionBasicVerifiedBinding,
-    ...(clock ? { clock } : {}),
-  });
-  const productionBasicClassroomService = createProductionBasicLaunchService({
-    binding: productionBasicMeetingBinding,
-    hostLiveMarker: createProductionBasicHostLiveMarker(pool),
-    ...(clock ? { clock } : {}),
-  });
   const liveClassService = createLiveClassService({
     config,
     repository: liveClassRepository,
@@ -3475,6 +3564,10 @@ export function createApp({
       },
       identities: {
         resolve: async (req) => {
+          const parentActor = await resolveParentProductionBasicActor(req, req.method !== 'GET');
+          if (parentActor) {
+            return { csrf_verified: true, actor: parentActor };
+          }
           const actor = await resolvePortalActor(req);
           if (!actor) return null;
           const csrf_verified = req.method === 'GET' ? true : await verifyPortalCsrf(req, actor);
@@ -4890,6 +4983,7 @@ export function createApp({
         if (playback.isDemo || playback.processingMode === 'synthetic') {
           throw new ContentFactoryError('NOT_FOUND', 'Content was not found.');
         }
+        setProtectedVimeoPlayerHeaders(res);
         res.status(200).type('html').send(contentFactoryPlayerHtml(playback));
         return;
       } catch (error) {
@@ -4918,7 +5012,7 @@ export function createApp({
     setPrivateNoStore(res);
     const session = await requireApiSession(req, res, pool, config);
     if (!session) return;
-    if (!['owner', 'admin', 'rabbi', 'student'].includes(session.user.role)) {
+    if (!['owner', 'admin', 'rabbi', 'parent', 'student'].includes(session.user.role)) {
       res.status(404).type('text').send('Content is unavailable.');
       return;
     }
@@ -4968,6 +5062,7 @@ export function createApp({
       if (!playback.privateProviderAssetId) {
         throw new ContentFactoryError('PLAYBACK_UNAVAILABLE', 'Protected playback is unavailable.');
       }
+      res.setHeader('Referrer-Policy', 'origin');
       res.redirect(
         302,
         `https://player.vimeo.com/video/${encodeURIComponent(playback.privateProviderAssetId)}`,
@@ -6620,7 +6715,9 @@ async function portalActorFromRequest(req: Request, input: ApiSessionResolutionI
   const session = resolution.session;
   const [authorizedHouseholds, studentLearner] = await Promise.all([
     session.user.role === 'parent'
-      ? parentHouseholdSubjects(input.pool, input.config, session.user.user_key)
+      ? session.session_model === 'v21'
+        ? v21ParentHouseholdSubjects(req.header('cookie'), input)
+        : parentHouseholdSubjects(input.pool, input.config, session.user.user_key)
       : Promise.resolve([]),
     session.user.role === 'student'
       ? studentLearnerSubject(input.pool, input.config, session.user.user_key)
@@ -6636,6 +6733,36 @@ async function portalActorFromRequest(req: Request, input: ApiSessionResolutionI
     authorized_households: authorizedHouseholds,
     student_learner: studentLearner,
   } satisfies PortalActorContext;
+}
+
+export async function v21ParentHouseholdSubjects(
+  cookieHeader: string | null | undefined,
+  input: ApiSessionResolutionInput,
+): Promise<PortalActorContext['authorized_households']> {
+  const resolution = await input.v21AdultSessionRuntime.resolveCookieHeader({
+    cookie_header: cookieHeader,
+    ...(input.clock ? { now: input.clock() } : {}),
+  });
+  if (resolution.status !== 'resolved') return [];
+  const context = resolution.context;
+  const household = context.household;
+  if (
+    context.session.activeRole !== 'parent' ||
+    !household ||
+    context.session.activeHouseholdId !== household.householdId ||
+    household.classification !== 'family' ||
+    household.ownerRelationship !== 'account_owner'
+  ) {
+    return [];
+  }
+  return [
+    {
+      household_key: household.householdId,
+      relationship_key: 'v21_account_owner',
+      relationship_label: 'Parent',
+      authority: 'primary_guardian',
+    },
+  ];
 }
 
 function createBillingRuntime(config: AppConfig, pool: DbPool) {
@@ -8099,12 +8226,12 @@ function activationPageHtml(csrfToken: string) {
         <input type="hidden" name="csrf_token" value="${escapeHtml(csrfToken)}">
         <div class="field">
           <label for="activation_password" data-activation-password-label>Password</label>
-          <input id="activation_password" name="password" type="password" autocomplete="new-password" required minlength="8">
+          <input id="activation_password" name="password" type="password" autocomplete="new-password" required minlength="6" maxlength="128">
           <p tabindex="-1" class="error" data-error-for="password"></p>
         </div>
         <div class="field">
           <label for="activation_password_confirm" data-activation-confirm-label>Confirm password</label>
-          <input id="activation_password_confirm" name="password_confirm" type="password" autocomplete="new-password" required minlength="8">
+          <input id="activation_password_confirm" name="password_confirm" type="password" autocomplete="new-password" required minlength="6" maxlength="128">
           <p tabindex="-1" class="error" data-error-for="password_confirm"></p>
         </div>
         <button class="button button-primary" type="submit" data-activation-submit>Activate account</button>
@@ -8182,12 +8309,12 @@ function resetPasswordPageHtml(csrfToken: string) {
         <input type="hidden" name="csrf_token" value="${escapeHtml(csrfToken)}">
         <div class="field">
           <label for="reset_password">Password</label>
-          <input id="reset_password" name="password" type="password" autocomplete="new-password" required minlength="8">
+          <input id="reset_password" name="password" type="password" autocomplete="new-password" required minlength="6" maxlength="128">
           <p tabindex="-1" class="error" data-error-for="password"></p>
         </div>
         <div class="field">
           <label for="reset_password_confirm">Confirm password</label>
-          <input id="reset_password_confirm" name="password_confirm" type="password" autocomplete="new-password" required minlength="8">
+          <input id="reset_password_confirm" name="password_confirm" type="password" autocomplete="new-password" required minlength="6" maxlength="128">
           <p tabindex="-1" class="error" data-error-for="password_confirm"></p>
         </div>
         <button class="button button-primary" type="submit">Reset password</button>
@@ -8259,13 +8386,15 @@ function contentFactoryPlayerHtml(playback: Awaited<ReturnType<typeof getContent
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
-  <meta name="referrer" content="no-referrer">
+  <meta name="referrer" content="origin">
   <meta name="theme-color" content="#050505">
   <title>${escapeHtml(playback.title)} | One Time Mishnayos</title>
   <link rel="stylesheet" href="/assets/app-crm.css">
 </head>
 <body>
-  <main class="app-workspace learning-player-page" data-protected-player="true">
+  <main class="app-workspace learning-player-page" data-protected-player="true"${parentContentProgressDataAttributes(
+    playback,
+  )}>
     <section class="state-panel learning-player-shell" aria-labelledby="learning-player-title">
       <p class="eyebrow">${playback.isDemo ? 'Protected synthetic demo lesson' : 'Protected One Time lesson'}</p>
       <h1 id="learning-player-title">${escapeHtml(playback.title)}</h1>
@@ -8273,9 +8402,11 @@ function contentFactoryPlayerHtml(playback: Awaited<ReturnType<typeof getContent
       <p>${escapeHtml(playback.summary)}</p>
       <div class="protected-player-frame">
         <iframe
+          data-protected-content-frame
           src="${escapeHtml(playback.playbackRoute)}"
           title="${escapeHtml(playback.title)}"
           allow="autoplay; fullscreen; picture-in-picture"
+          referrerpolicy="origin"
           allowfullscreen
           loading="eager"
         ></iframe>
@@ -8295,6 +8426,7 @@ function contentFactoryPlayerHtml(playback: Awaited<ReturnType<typeof getContent
       }</p>
     </section>
   </main>
+  <script type="module" src="/assets/app-protected-content-player.js"></script>
 </body>
 </html>`;
 }
@@ -8314,15 +8446,19 @@ function existingPrivateVimeoPlayerHtml(
   <link rel="stylesheet" href="/assets/app-crm.css">
 </head>
 <body>
-  <main class="app-workspace learning-player-page" data-protected-player="true">
+  <main class="app-workspace learning-player-page" data-protected-player="true"${parentContentProgressDataAttributes(
+    playback,
+  )}>
     <section class="state-panel learning-player-shell" aria-labelledby="learning-player-title">
       <p class="eyebrow">Protected One Time lesson</p>
       <h1 id="learning-player-title">${escapeHtml(playback.title)}</h1>
       <div class="protected-player-frame">
         <iframe
+          data-protected-content-frame
           src="${escapeHtml(playback.playbackRoute)}"
           title="${escapeHtml(playback.title)}"
           allow="autoplay; fullscreen; picture-in-picture"
+          referrerpolicy="origin"
           allowfullscreen
           loading="eager"
         ></iframe>
@@ -8333,8 +8469,33 @@ function existingPrivateVimeoPlayerHtml(
       <p class="ot-guardrail-note">Protected embed-only playback. No raw Vimeo link is displayed.</p>
     </section>
   </main>
+  <script type="module" src="/assets/app-protected-content-player.js"></script>
 </body>
 </html>`;
+}
+
+function parentContentProgressDataAttributes(input: {
+  sourceKey?: string;
+  itemKey?: string;
+  contentVersionId: string | null;
+  durationMs: number;
+  parentProgressEnabled: boolean;
+}) {
+  const contentId = input.sourceKey ?? input.itemKey;
+  if (
+    !input.parentProgressEnabled ||
+    !contentId ||
+    !input.contentVersionId ||
+    !Number.isSafeInteger(input.durationMs) ||
+    input.durationMs < 1
+  ) {
+    return '';
+  }
+  return ` data-parent-content-progress="enabled" data-content-id="${escapeHtml(
+    contentId,
+  )}" data-content-version-id="${escapeHtml(
+    input.contentVersionId,
+  )}" data-content-duration-ms="${input.durationMs}"`;
 }
 
 function zoomHostHtml() {

@@ -598,7 +598,12 @@ export async function getExistingPrivateVimeoPlayback(input: {
   itemKey: string;
   actor: Pick<
     PortalActorContext,
-    'actor_role' | 'student_learner' | 'authorized_households' | 'account_key' | 'product_key'
+    | 'actor_role'
+    | 'actor_user_ref'
+    | 'student_learner'
+    | 'authorized_households'
+    | 'account_key'
+    | 'product_key'
   >;
   now?: Date;
 }) {
@@ -608,11 +613,12 @@ export async function getExistingPrivateVimeoPlayback(input: {
   ) {
     throw unavailablePlayback();
   }
-  if (!['owner', 'admin', 'rabbi', 'student'].includes(input.actor.actor_role)) {
+  if (!['owner', 'admin', 'rabbi', 'parent', 'student'].includes(input.actor.actor_role)) {
     throw unavailablePlayback();
   }
   const result = await input.pool.query(
-    `SELECT item.title, item.metadata, source.provider_video_id, source.duration_ms,
+    `SELECT item.title, item.metadata, item.published_revision_key AS content_version_id,
+            source.provider_video_id, source.duration_ms,
             source.processing_state, source.privacy_state, source.sanitized_metadata_json
        FROM onetime.content_items AS item
        JOIN onetime.ot104r_vimeo_sources AS source
@@ -620,9 +626,11 @@ export async function getExistingPrivateVimeoPlayback(input: {
         AND source.account_key = $4
         AND source.product_key = $5
       WHERE item.account_key = $1 AND item.product_key = $2
-        AND item.content_item_key = $3
-        AND item.lifecycle_state = 'published'
+         AND item.content_item_key = $3
+         AND item.lifecycle_state = 'published'
+        AND item.retention_state = 'active'
         AND item.published_revision_key IS NOT NULL
+        AND item.published_at IS NOT NULL
         AND source.processing_state IN ('available','transcript_ready')
         AND source.privacy_state = 'private'
       LIMIT 1`,
@@ -646,17 +654,23 @@ export async function getExistingPrivateVimeoPlayback(input: {
   ) {
     throw unavailablePlayback();
   }
+  const durationMs = Number(row.duration_ms);
+  if (!Number.isSafeInteger(durationMs) || durationMs < 1) {
+    throw unavailablePlayback();
+  }
   if (!['owner', 'admin', 'rabbi'].includes(input.actor.actor_role)) {
     const entitled = await currentPlaybackEntitlement(input, input.actor);
     if (!entitled) throw unavailablePlayback();
   }
   return {
     itemKey: input.itemKey,
+    contentVersionId: String(row.content_version_id),
     title: String(row.title),
     providerVideoId: String(row.provider_video_id),
-    durationMs: Number(row.duration_ms ?? metadata.duration_ms),
+    durationMs,
     captionsActive: metadata.captions_active === true,
     playbackRoute: `/api/v1/content/vimeo/${encodeURIComponent(input.itemKey)}/playback`,
+    parentProgressEnabled: input.actor.actor_role === 'parent',
   };
 }
 
@@ -757,8 +771,14 @@ function validatedRegistrationAdapter(
 
 async function currentPlaybackEntitlement(
   input: { pool: DbPool; config: AppConfig; itemKey: string; now?: Date },
-  actor: Pick<PortalActorContext, 'actor_role' | 'student_learner' | 'authorized_households'>,
+  actor: Pick<
+    PortalActorContext,
+    'actor_role' | 'actor_user_ref' | 'student_learner' | 'authorized_households'
+  >,
 ) {
+  if (actor.actor_role === 'parent') {
+    return currentParentPlaybackEntitlement(input, actor);
+  }
   const householdKeys =
     actor.actor_role === 'student' && actor.student_learner
       ? [actor.student_learner.household_key]
@@ -796,6 +816,86 @@ async function currentPlaybackEntitlement(
       activeHouseholds.has(householdKeys[0]!)
     );
   });
+}
+
+async function currentParentPlaybackEntitlement(
+  input: { pool: DbPool; config: AppConfig; itemKey: string; now?: Date },
+  actor: Pick<PortalActorContext, 'actor_user_ref' | 'authorized_households'>,
+) {
+  const householdKeys = [
+    ...new Set(actor.authorized_households.map((entry) => entry.household_key)),
+  ];
+  if (householdKeys.length < 1) return false;
+  const now = input.now ?? new Date();
+  const entitlement = await input.pool.query(
+    `SELECT 1 AS entitled
+       FROM onetime.parent_learning_participants AS participant
+       JOIN onetime.v21_households AS household
+         ON household.household_id = participant.household_id
+        AND household.owner_adult_id = participant.adult_id
+        AND household.owner_human_account_id = participant.human_account_id
+        AND household.product_key = participant.product_key
+        AND household.runtime_tier = participant.runtime_tier
+        AND household.verification_environment_id = participant.verification_environment_id
+        AND household.classification = 'family'
+        AND household.state = 'active'
+        AND household.archived_at IS NULL
+       JOIN onetime.canonical_aggregate_states AS access
+         ON access.aggregate_kind = 'access'
+        AND access.aggregate_key = participant.household_id
+        AND access.product_key = participant.product_key
+        AND access.runtime_tier = participant.runtime_tier
+        AND access.verification_environment_id = participant.verification_environment_id
+        AND access.current_state IN ('free', 'active', 'grace')
+        AND access.archived_at IS NULL
+       JOIN onetime.parent_learning_class_entitlements AS parent_entitlement
+         ON parent_entitlement.participant_id = participant.participant_id
+        AND parent_entitlement.household_id = participant.household_id
+        AND parent_entitlement.account_key = $1
+        AND parent_entitlement.product_key = participant.product_key
+        AND parent_entitlement.runtime_tier = participant.runtime_tier
+        AND parent_entitlement.verification_environment_id = participant.verification_environment_id
+        AND parent_entitlement.entitlement_state = 'active'
+        AND parent_entitlement.effective_at <= $6::timestamptz
+        AND parent_entitlement.revoked_at IS NULL
+       JOIN onetime.class_series AS series
+         ON series.account_key = parent_entitlement.account_key
+        AND series.product_key = parent_entitlement.product_key
+        AND series.class_series_key = parent_entitlement.class_series_key
+        AND series.is_canonical = true
+        AND series.status = 'active'
+        AND series.series_state = 'active'
+       JOIN onetime.content_item_entitlements AS content_access
+         ON content_access.account_key = parent_entitlement.account_key
+        AND content_access.product_key = parent_entitlement.product_key
+        AND content_access.content_item_key = $3
+        AND content_access.entitlement_state = 'active'
+        AND content_access.revoked_at IS NULL
+        AND (
+          content_access.audience = 'all_active_learners'
+          OR (
+            content_access.audience = 'household'
+            AND content_access.household_key = participant.household_id
+          )
+        )
+      WHERE participant.product_key = $2
+        AND participant.household_id = ANY($4::text[])
+        AND participant.human_account_id = $5
+        AND participant.participant_kind = 'parent'
+        AND participant.learner_ordinal = 1
+        AND participant.state = 'active'
+        AND participant.archived_at IS NULL
+      LIMIT 1`,
+    [
+      input.config.accountKey,
+      input.config.productKey,
+      input.itemKey,
+      householdKeys,
+      actor.actor_user_ref,
+      now,
+    ],
+  );
+  return Boolean(entitlement.rows[0]);
 }
 
 async function recordLibraryAudit(

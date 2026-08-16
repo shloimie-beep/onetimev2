@@ -37,7 +37,7 @@ const credentialSchema = z
   .strict();
 const createSchema = profileSchema
   .extend({
-    relationship: z.enum(['self', 'dependent']),
+    relationship: z.literal('dependent'),
     expected_revision: revisionSchema,
     new_password: credentialSchema.shape.new_password,
     password_confirmation: credentialSchema.shape.password_confirmation,

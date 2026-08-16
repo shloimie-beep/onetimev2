@@ -70,8 +70,10 @@ export function ParentPrivacyWorkspace({
   }
 
   function createRequest(kind: PrivacyRequestView['kind']) {
-    if (currentPassword.length < 12) {
-      setError('Enter your current Parent password to verify this data-rights request.');
+    if (currentPassword.length < 6 || currentPassword.length > 128) {
+      setError(
+        'Enter your current Parent password using between 6 and 128 characters to verify this data-rights request.',
+      );
       return;
     }
     void run(
@@ -125,6 +127,8 @@ export function ParentPrivacyWorkspace({
           <input
             type="password"
             autoComplete="current-password"
+            minLength={6}
+            maxLength={128}
             value={currentPassword}
             onChange={(event) => setCurrentPassword(event.currentTarget.value)}
           />

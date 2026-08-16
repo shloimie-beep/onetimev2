@@ -10,6 +10,7 @@ import { runMigrations, type DbPool } from '../../../packages/db/src/index.ts';
 import {
   CONTROLLER_DUAL_ROLE_ACCESS_EXPIRES_AT,
   CONTROLLER_DUAL_ROLE_PROVISIONING_POLICY,
+  controllerDualRoleProvisioningIdentityKeys,
 } from '../../../packages/domain/src/accounts/controller-dual-role-provisioning-policy.ts';
 import {
   completePasswordReset,
@@ -305,6 +306,31 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
           (report) => report.apply_execution.transactional_readback_diagnostic === null,
         ),
       ).toBe(true);
+      expect(
+        reports.every(
+          (report) =>
+            report.identity.parent_learning_participants === 1 &&
+            report.identity.parent_learning_entitlements === 1,
+        ),
+      ).toBe(true);
+      const privateKeys = controllerDualRoleProvisioningIdentityKeys({
+        accountKey: config.accountKey,
+        productKey: config.productKey,
+        runtimeTier: config.oneTimeRuntimeTier,
+        verificationEnvironmentId: config.oneTimeVerificationEnvironmentId,
+        normalizedEmail: EMAIL,
+      });
+      const serializedReports = JSON.stringify(reports);
+      for (const privateValue of [
+        EMAIL,
+        privateKeys.adultId,
+        privateKeys.humanAccountId,
+        privateKeys.householdId,
+        `parent:${privateKeys.householdId}`,
+        `parent-entitlement:${privateKeys.householdId}`,
+      ]) {
+        expect(serializedReports).not.toContain(privateValue);
+      }
       expect(proofToken).toBeTruthy();
       await expect(cardinalities(pool)).resolves.toEqual({
         adults: 1,
@@ -312,6 +338,8 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
         credentials: 1,
         memberships: 2,
         households: 1,
+        parentLearningParticipants: 1,
+        parentLearningEntitlements: 1,
         canonicalTransitions: 2,
         canonicalStates: 2,
         portalHouseholds: 1,
@@ -322,6 +350,22 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
         setupTokens: 1,
         setupIntents: 1,
         setupOutbox: 1,
+      });
+      await expect(parentLearningProjection(pool, EMAIL)).resolves.toMatchObject({
+        participant_kind: 'parent',
+        learner_ordinal: 1,
+        participant_state: 'active',
+        participant_version: '1',
+        account_key: 'one_time',
+        product_key: 'one_time_mishnayos',
+        runtime_tier: 'isolated_staging',
+        verification_environment_id: 'ci',
+        entitlement_state: 'active',
+        entitlement_source: 'admin_repair',
+        entitlement_version: '1',
+        is_canonical: true,
+        class_status: 'active',
+        class_series_state: 'active',
       });
       await expect(accessEventCreatedAt(pool)).resolves.toBe(PROVISION_AT.toISOString());
       await expect(accessRequestHashesMatch(pool)).resolves.toBe(true);
@@ -523,6 +567,27 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
           mutateRows: (rows) => rows.map((row) => ({ ...row, actor_kind: 'readback_mismatch' })),
         },
         {
+          name: 'parent-learning-participant',
+          group: 'parent_learning',
+          blocker: 'parent_learning_participant_mismatch',
+          queryIncludes: 'FROM onetime.parent_learning_participants',
+          mutateRows: (rows) => rows.map((row) => ({ ...row, learner_ordinal: 2 })),
+        },
+        {
+          name: 'parent-learning-entitlement',
+          group: 'parent_learning',
+          blocker: 'parent_learning_entitlement_mismatch',
+          queryIncludes: 'FROM onetime.parent_learning_class_entitlements',
+          mutateRows: (rows) => rows.map((row) => ({ ...row, source: 'PRIVATE_SOURCE_VALUE' })),
+        },
+        {
+          name: 'parent-learning-canonical-class',
+          group: 'parent_learning',
+          blocker: 'parent_learning_canonical_class_mismatch',
+          queryIncludes: "AND is_canonical=true AND status='active' AND series_state='active'",
+          mutateRows: () => [],
+        },
+        {
           name: 'compatibility-cardinality',
           group: 'compatibility_access',
           blocker: 'compatibility_access_cardinality_mismatch',
@@ -648,6 +713,10 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
         queryIncludes: string;
       }> = [
         { group: 'core_identity', queryIncludes: 'WHERE normalized_email = $1' },
+        {
+          group: 'parent_learning',
+          queryIncludes: 'FROM onetime.parent_learning_participants',
+        },
         { group: 'canonical', queryIncludes: 'FROM onetime.canonical_aggregate_states' },
         {
           group: 'compatibility_access',
@@ -799,6 +868,7 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
         const serialized = JSON.stringify(report);
         expect(serialized).not.toContain(email);
         expect(serialized).not.toContain('Synthetic Dual Role Adult');
+        expect(serialized).not.toContain('PRIVATE_SOURCE_VALUE');
         expect(serialized).not.toContain('@');
         expect(serialized).not.toContain('SELECT');
       }
@@ -1069,6 +1139,8 @@ describe.runIf(enabled)('controller dual-role provisioning on native PostgreSQL'
         credentials: 1,
         memberships: 2,
         households: 1,
+        parentLearningParticipants: 1,
+        parentLearningEntitlements: 1,
         canonicalTransitions: 2,
         canonicalStates: 2,
         portalHouseholds: 1,
@@ -1356,6 +1428,8 @@ const FULL_CONTROLLER_CARDINALITY_TABLES = [
   'v21_adult_credentials',
   'v21_human_account_role_memberships',
   'v21_households',
+  'parent_learning_participants',
+  'parent_learning_class_entitlements',
   'canonical_state_transition_events',
   'canonical_aggregate_states',
   'portal_households',
@@ -1416,6 +1490,8 @@ async function cardinalities(pool: DbPool) {
     credentials: await count(pool, 'v21_adult_credentials'),
     memberships: await count(pool, 'v21_human_account_role_memberships'),
     households: await count(pool, 'v21_households'),
+    parentLearningParticipants: await count(pool, 'parent_learning_participants'),
+    parentLearningEntitlements: await count(pool, 'parent_learning_class_entitlements'),
     canonicalTransitions: await count(pool, 'canonical_state_transition_events'),
     canonicalStates: await count(pool, 'canonical_aggregate_states'),
     portalHouseholds: await count(pool, 'portal_households'),
@@ -1427,6 +1503,34 @@ async function cardinalities(pool: DbPool) {
     setupIntents: await count(pool, 'account_lifecycle_delivery_intents'),
     setupOutbox: await count(pool, 'account_lifecycle_delivery_outbox'),
   };
+}
+
+async function parentLearningProjection(pool: DbPool, email: string) {
+  const result = await pool.query(
+    `SELECT participant.participant_kind, participant.learner_ordinal,
+            participant.state AS participant_state,
+            participant.version::text AS participant_version,
+            entitlement.account_key, entitlement.product_key,
+            entitlement.runtime_tier, entitlement.verification_environment_id,
+            entitlement.entitlement_state,
+            entitlement.source AS entitlement_source,
+            entitlement.version::text AS entitlement_version,
+            series.is_canonical, series.status AS class_status,
+            series.series_state AS class_series_state
+       FROM onetime.v21_adult_identities AS adult
+       JOIN onetime.parent_learning_participants AS participant
+         ON participant.adult_id=adult.adult_id
+       JOIN onetime.parent_learning_class_entitlements AS entitlement
+         ON entitlement.participant_id=participant.participant_id
+       JOIN onetime.class_series AS series
+         ON series.account_key=entitlement.account_key
+        AND series.product_key=entitlement.product_key
+        AND series.class_series_key=entitlement.class_series_key
+      WHERE adult.normalized_email=$1`,
+    [email],
+  );
+  expect(result.rowCount).toBe(1);
+  return result.rows[0];
 }
 
 async function forbiddenCardinalities(pool: DbPool) {

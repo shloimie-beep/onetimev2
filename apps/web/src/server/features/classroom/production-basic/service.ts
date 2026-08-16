@@ -30,6 +30,14 @@ export type ProductionBasicActor =
       entitled: boolean;
     }
   | {
+      kind: 'parent';
+      scope: ProductionBasicScope;
+      participant_id: string;
+      household_id: string;
+      display_name: string;
+      entitled: boolean;
+    }
+  | {
       kind: 'admin' | 'rabbi';
       scope: ProductionBasicScope;
       actor_user_ref: string;
@@ -45,7 +53,7 @@ export type ProductionBasicLaunchArtifact = {
   meeting_password: string;
   signature: string;
   user_name: string;
-  leave_path: '/app/student' | '/app/live-console';
+  leave_path: '/app/student' | '/app/parent' | '/app/live-console';
   issued_at: string;
   expires_at: string;
   /** Present only for a host Start; it is never persisted or put in a URL. */
@@ -77,6 +85,13 @@ export interface ProductionBasicHostLiveMarker {
     meeting_ref_digest: string;
     observed_at: Date;
   }): Promise<boolean>;
+  currentForParent(input: {
+    scope: ProductionBasicScope;
+    participant_id: string;
+    household_id: string;
+    meeting_ref_digest: string;
+    observed_at: Date;
+  }): Promise<boolean>;
   clear(input: {
     scope: ProductionBasicScope;
     meeting_ref_digest: string;
@@ -101,8 +116,9 @@ export function createProductionBasicLaunchService(input: {
   return {
     async ready(actor: ProductionBasicActor) {
       if (!actorMayLaunch(actor) || !(await input.binding.ready())) return false;
-      if (actor.kind !== 'student') return true;
-      return studentLiveMarkerCurrent(input, actor, clock());
+      if (actor.kind === 'student') return studentLiveMarkerCurrent(input, actor, clock());
+      if (actor.kind === 'parent') return parentLiveMarkerCurrent(input, actor, clock());
+      return true;
     },
     async request(actor: ProductionBasicActor): Promise<ProductionBasicLaunchResult> {
       if (!actorMayLaunch(actor)) return { disposition: 'denied' };
@@ -110,7 +126,11 @@ export function createProductionBasicLaunchService(input: {
       if (actor.kind === 'student' && !(await studentLiveMarkerCurrent(input, actor, clock()))) {
         return { disposition: 'unavailable' };
       }
-      const role = actor.kind === 'student' ? (0 as const) : (1 as const);
+      if (actor.kind === 'parent' && !(await parentLiveMarkerCurrent(input, actor, clock()))) {
+        return { disposition: 'unavailable' };
+      }
+      const role =
+        actor.kind === 'student' || actor.kind === 'parent' ? (0 as const) : (1 as const);
       const artifact = await input.binding.issue({ scope: actor.scope, actor, role, now: clock() });
       if (!artifact || !validArtifact(artifact, role, clock()))
         return { disposition: 'unavailable' };
@@ -160,6 +180,25 @@ async function studentLiveMarkerCurrent(
   return input.hostLiveMarker.currentForStudent({
     scope: actor.scope,
     learner_key: actor.learner_key,
+    meeting_ref_digest: meetingRefDigest,
+    observed_at: observedAt,
+  });
+}
+
+async function parentLiveMarkerCurrent(
+  input: {
+    binding: ProductionBasicMeetingBinding;
+    hostLiveMarker?: ProductionBasicHostLiveMarker | undefined;
+  },
+  actor: Extract<ProductionBasicActor, { kind: 'parent' }>,
+  observedAt: Date,
+) {
+  const meetingRefDigest = input.binding.referenceDigest();
+  if (!meetingRefDigest || !input.hostLiveMarker) return false;
+  return input.hostLiveMarker.currentForParent({
+    scope: actor.scope,
+    participant_id: actor.participant_id,
+    household_id: actor.household_id,
     meeting_ref_digest: meetingRefDigest,
     observed_at: observedAt,
   });
@@ -239,7 +278,12 @@ export function createCanonicalProductionBasicMeetingBinding(input: {
                 ttlSeconds: 30 * 60,
               }),
         user_name: actor.display_name,
-        leave_path: role === 0 ? ('/app/student' as const) : ('/app/live-console' as const),
+        leave_path:
+          role === 1
+            ? ('/app/live-console' as const)
+            : actor.kind === 'parent'
+              ? ('/app/parent' as const)
+              : ('/app/student' as const),
         issued_at: now.toISOString(),
         expires_at: expiresAt.toISOString(),
         raw_join_url_present: false as const,
@@ -279,7 +323,9 @@ function sameHttpsOrigin(publicBaseUrl: string, allowedOrigin: string | undefine
 }
 
 function actorMayLaunch(actor: ProductionBasicActor) {
-  return actor.kind === 'student' ? actor.entitled : actor.authorized_to_start;
+  return actor.kind === 'student' || actor.kind === 'parent'
+    ? actor.entitled
+    : actor.authorized_to_start;
 }
 
 function verifiedBindingMatches(

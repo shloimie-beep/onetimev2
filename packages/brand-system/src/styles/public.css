@@ -2301,35 +2301,39 @@ body:has(.landing-page) .button-primary:focus-visible {
 
 @media (max-width: 520px) {
   .site-header {
-    min-height: 66px;
-    gap: 4px;
-    padding: 8px 6px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 44px;
+    min-height: 0;
+    gap: 8px 10px;
+    padding: 8px 12px 10px;
   }
 
   .brand-lockup {
-    grid-template-columns: 60px minmax(72px, 96px);
-    gap: 5px;
+    grid-column: 1;
+    grid-row: 1;
+    grid-template-columns: 52px minmax(0, 1fr);
+    gap: 8px;
   }
 
   .brand-lockup img {
-    width: 60px;
-    height: 60px;
+    width: 52px;
+    height: 52px;
   }
 
   .brand-lockup strong {
-    font-size: 0.72rem;
+    font-size: 0.82rem;
     white-space: normal;
-    line-height: 1.05;
+    line-height: 1.1;
   }
 
   .brand-lockup small {
-    font-size: 0.56rem;
-    line-height: 1.05;
+    font-size: 0.64rem;
+    line-height: 1.1;
     white-space: normal;
   }
 
   .header-actions {
-    gap: 4px;
+    display: contents;
   }
 
   .text-link {
@@ -2338,8 +2342,18 @@ body:has(.landing-page) .button-primary:focus-visible {
 
   .button {
     min-height: 44px;
-    padding: 0 8px;
-    font-size: 0.72rem;
+    padding: 0 12px;
+    font-size: 0.9rem;
+  }
+
+  .header-actions > .button-primary {
+    width: 100%;
+    min-height: 48px;
+    grid-column: 1 / -1;
+    grid-row: 2;
+    padding: 0 16px;
+    font-size: 1rem;
+    white-space: normal;
   }
 
   .icon-button {
@@ -2347,12 +2361,19 @@ body:has(.landing-page) .button-primary:focus-visible {
     height: 44px;
   }
 
+  .header-actions > .icon-button {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center;
+  }
+
   .hero {
     min-height: 0;
   }
 
   .hero-inner {
-    padding: 38px 18px 42px;
+    width: 100%;
+    padding: 38px 16px 42px;
   }
 
   .hero h1 {
@@ -2375,9 +2396,13 @@ body:has(.landing-page) .button-primary:focus-visible {
   }
 
   .hero-cta {
-    min-width: 190px;
-    min-height: 48px;
+    width: 100%;
+    min-width: 0;
+    min-height: 52px;
     margin-top: 14px;
+    padding: 0 16px;
+    font-size: 1rem;
+    white-space: normal;
   }
 
   .hero-note {
@@ -2386,7 +2411,32 @@ body:has(.landing-page) .button-primary:focus-visible {
   }
 
   .section {
+    width: min(1180px, calc(100vw - 24px));
     padding: 54px 0;
+  }
+
+  .final-cta,
+  .signup-intro,
+  .simple-page {
+    width: calc(100vw - 24px);
+  }
+
+  .final-cta .button-primary,
+  .signup-form > .button-primary {
+    width: 100%;
+    min-height: 52px;
+    padding: 0 16px;
+    font-size: 1rem;
+    white-space: normal;
+  }
+
+  .signup-intro {
+    padding: 38px 0 22px;
+  }
+
+  .signup-shell {
+    width: calc(100vw - 24px);
+    margin-bottom: 48px;
   }
 
   .section h2,
