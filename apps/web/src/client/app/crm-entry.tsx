@@ -1918,7 +1918,7 @@ function OperationsPanel({
             />
           </label>
           <p id="admin-password-help">
-            Use at least 6 characters.
+            At least 6 characters.
             {confirmPassword && !passwordMatches ? ' The new passwords do not match.' : ''}
           </p>
           {passwordNotice && <NoticeBanner notice={passwordNotice} />}

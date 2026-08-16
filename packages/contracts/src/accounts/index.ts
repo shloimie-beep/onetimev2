@@ -29,7 +29,10 @@ const idempotencyKeySchema = z.string().trim().min(8).max(160);
 const lifecycleEmailSchema = z.string().trim().email().max(254);
 const lifecycleNameSchema = z.string().trim().min(1).max(180);
 const lifecycleOpaqueIdSchema = z.string().trim().min(3).max(180);
-const passwordSchema = z.string().min(6).max(128);
+const passwordSchema = z
+  .string()
+  .min(6, 'At least 6 characters.')
+  .max(128, 'Choose a shorter password.');
 
 export const ownerAdminInvitationPayloadSchema = z.object({
   idempotency_key: idempotencyKeySchema,

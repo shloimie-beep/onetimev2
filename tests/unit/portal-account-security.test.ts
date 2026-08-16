@@ -99,10 +99,8 @@ describe('Parent and Student portal navigation and account security', () => {
   it('keeps every adult password surface aligned to the six-character minimum', () => {
     const appSource = readFileSync('apps/web/src/server/app.ts', 'utf8');
 
-    expect(appSource).toContain(".min(6, 'Use at least 6 characters.')");
-    expect(appSource).toContain(
-      "? 'Use 6 to 128 characters and avoid common passwords or your account details.'",
-    );
+    expect(appSource).toContain(".min(6, 'At least 6 characters.')");
+    expect(appSource).toContain("? 'Choose a different password with at least 6 characters.'");
     expect(appSource.match(/minlength="6" maxlength="128"/gu)).toHaveLength(4);
     expect(appSource).not.toContain('Use at least 10 characters');
     expect(appSource).not.toContain('Use at least one letter and one number');

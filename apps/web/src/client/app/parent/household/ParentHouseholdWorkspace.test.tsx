@@ -150,7 +150,10 @@ describe('P12 persisted Parent household client workspace', () => {
     expect(html).toContain(STUDENT_ACTUAL_NAME_INSTRUCTIONS.dependent);
     expect(html).toContain('Creating a Student adds them to the recurring 7:00 PM class.');
     expect(html).toContain('noValidate=""');
-    expect(html).toContain('<button type="submit">Create Student</button>');
+    expect(html).toContain('<button type="submit" class="button-primary">Create Student</button>');
+    expect(html).not.toContain('Program schedule');
+    expect(html).not.toContain('Parent account access');
+    expect(html).not.toContain('<h1');
     expect(html).not.toMatch(/name="(?:hebrew_name|grade_label|date_of_birth|age|email)"/u);
   });
 
@@ -240,7 +243,7 @@ describe('P12 persisted Parent household client workspace', () => {
         view={{ kind: 'create' }}
       />,
     );
-    expect(inactive).toContain('Our household');
+    expect(inactive).toContain('Parent learner + 1 of 3 child learners');
     expect(inactive).not.toContain('/app/parent/students/new');
     expect(inactive).toContain('management is unavailable');
     expect(inactive).not.toContain('name="actual_name"');
@@ -253,7 +256,7 @@ describe('P12 persisted Parent household client workspace', () => {
       />,
     );
     expect(full).toContain(
-      '<button type="button" disabled="" aria-describedby="student-seat-capacity">',
+      '<button type="button" class="button-secondary" disabled="" aria-describedby="student-seat-capacity">',
     );
     expect(full).toContain('All 3 child learner seats are in use.');
     expect(full).not.toContain('href="/app/parent/students/new"');

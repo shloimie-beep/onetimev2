@@ -63,7 +63,7 @@ export function ParentHouseholdWorkspace({
   ) {
     if (!csrfToken) {
       setError('Refresh the Parent portal and try again.');
-      return;
+      return false;
     }
     setPending(true);
     setError(null);
@@ -73,8 +73,10 @@ export function ParentHouseholdWorkspace({
       setSnapshot(result.snapshot);
       setCredentialHandoff(result.credential_handoff);
       setMessage(success);
+      return true;
     } catch (cause) {
       setError(safeError(cause));
+      return false;
     } finally {
       setPending(false);
     }
@@ -82,8 +84,7 @@ export function ParentHouseholdWorkspace({
 
   if (!snapshot) {
     return (
-      <section aria-live="polite">
-        <h1>Parent household</h1>
+      <section aria-live="polite" aria-label="Student accounts">
         <p>{error ?? 'Loading household…'}</p>
       </section>
     );
@@ -98,8 +99,7 @@ export function ParentHouseholdWorkspace({
   const legacySelfStudents = snapshot.students.filter((student) => student.relationship === 'self');
 
   return (
-    <section className="parent-student-workspace" aria-labelledby="parent-household-heading">
-      <h1 id="parent-household-heading">{snapshot.display_name}</h1>
+    <section className="parent-student-workspace" aria-label="Student accounts">
       <p className="parent-student-workspace__seat-summary">
         Parent learner + {snapshot.active_student_count} of {snapshot.student_allowance} child
         learners
@@ -107,15 +107,22 @@ export function ParentHouseholdWorkspace({
       {snapshot.can_manage_students ? (
         snapshot.available_student_seats === 0 ? (
           <>
-            <button type="button" disabled aria-describedby="student-seat-capacity">
+            <button
+              type="button"
+              className="button-secondary"
+              disabled
+              aria-describedby="student-seat-capacity"
+            >
               Add Student
             </button>
             <p id="student-seat-capacity" role="status">
               All {snapshot.student_allowance} child learner seats are in use.
             </p>
           </>
-        ) : (
-          <a href="/app/parent/students/new">Add Student</a>
+        ) : effectiveView.kind === 'create' ? null : (
+          <a className="button-primary" href="/app/parent/students/new">
+            Add Student
+          </a>
         )
       ) : (
         <p role="status">Student management is unavailable while household access is inactive.</p>
@@ -124,20 +131,25 @@ export function ParentHouseholdWorkspace({
       {message ? <p role="status">{message}</p> : null}
       {error ? <p role="alert">{error}</p> : null}
 
-      <section id="parent-program-schedule" aria-labelledby="parent-program-schedule-heading">
-        <h2 id="parent-program-schedule-heading">Program schedule</h2>
-        <p>
-          Live classes run Sunday–Thursday, with the protected lesson library available anytime.
-        </p>
-        <p>Students sign in with the separate username and six-digit PIN managed below.</p>
-      </section>
+      {effectiveView.kind === 'overview' ? (
+        <>
+          <section id="parent-program-schedule" aria-labelledby="parent-program-schedule-heading">
+            <h2 id="parent-program-schedule-heading">Program schedule</h2>
+            <p>
+              Live classes run Sunday–Thursday, with the protected lesson library available anytime.
+            </p>
+            <p>Students sign in with the separate username and six-digit PIN managed below.</p>
+          </section>
 
-      <section aria-labelledby="parent-account-access-heading">
-        <h2 id="parent-account-access-heading">Parent account access</h2>
-        <p>
-          Need a new Parent password? <a href="/forgot-password">Use secure account recovery</a>.
-        </p>
-      </section>
+          <section aria-labelledby="parent-account-access-heading">
+            <h2 id="parent-account-access-heading">Parent account access</h2>
+            <p>
+              Need a new Parent password? <a href="/forgot-password">Use secure account recovery</a>
+              .
+            </p>
+          </section>
+        </>
+      ) : null}
 
       {effectiveView.kind === 'create' ? (
         <CreateStudentForm
@@ -276,7 +288,7 @@ function CreateStudentForm({
   onSubmit,
 }: {
   disabled: boolean;
-  onSubmit: (form: ProfileForm & CredentialForm) => void;
+  onSubmit: (form: ProfileForm & CredentialForm) => Promise<boolean>;
 }) {
   const passwordId = useId();
   const confirmationId = useId();
@@ -293,8 +305,9 @@ function CreateStudentForm({
       className="parent-student-form"
       aria-labelledby="create-student-heading"
       noValidate
-      onSubmit={(event) => {
+      onSubmit={async (event) => {
         event.preventDefault();
+        const formElement = event.currentTarget;
         if (
           !submitStudentCredentials({
             password,
@@ -305,12 +318,16 @@ function CreateStudentForm({
         ) {
           return;
         }
-        if (!event.currentTarget.reportValidity()) return;
-        const data = new FormData(event.currentTarget);
-        onSubmit({ ...profileForm(data), ...credentialForm(data) });
+        if (!formElement.reportValidity()) return;
+        const data = new FormData(formElement);
+        const committed = await onSubmit({ ...profileForm(data), ...credentialForm(data) });
+        if (!committed) return;
+        formElement.reset();
+        setPassword('');
+        setPasswordConfirmation('');
       }}
     >
-      <h2 id="create-student-heading">Add Student</h2>
+      <h2 id="create-student-heading">Student details</h2>
       <div className="parent-student-form__fields">
         <p className="parent-student-form__guidance">
           <strong>Someone I manage</strong>
@@ -337,7 +354,7 @@ function CreateStudentForm({
       <p className="parent-student-form__enrollment" role="status">
         Creating a Student adds them to the recurring 7:00 PM class.
       </p>
-      <button type="submit" disabled={disabled}>
+      <button type="submit" className="button-primary" disabled={disabled}>
         Create Student
       </button>
     </form>

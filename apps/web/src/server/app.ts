@@ -495,7 +495,10 @@ const resetPasswordApiPayloadSchema = tokenCompletionPayloadSchema.extend({
 const authenticatedPasswordChangePayloadSchema = z
   .object({
     current_password: z.string().min(1).max(256),
-    new_password: z.string().min(6, 'Use at least 6 characters.').max(128),
+    new_password: z
+      .string()
+      .min(6, 'At least 6 characters.')
+      .max(128, 'Choose a shorter password.'),
   })
   .strict();
 const crmNotePayloadSchema = z.object({
@@ -2785,7 +2788,7 @@ export function createApp({
             code === 'PASSWORD_REUSE'
               ? 'Choose a password you have not just used.'
               : code === 'PASSWORD_POLICY_FAILED'
-                ? 'Use 6 to 128 characters and avoid common passwords or your account details.'
+                ? 'Choose a different password with at least 6 characters.'
                 : code === 'ACCOUNT_UNAVAILABLE'
                   ? 'This account cannot change its password right now.'
                   : 'The current password is not correct.';
@@ -2845,7 +2848,7 @@ export function createApp({
             : result.code === 'PASSWORD_REUSE'
               ? 'Choose a password you have not just used.'
               : result.code === 'PASSWORD_POLICY_FAILED'
-                ? 'Use 6 to 128 characters and avoid common passwords or your account details.'
+                ? 'Choose a different password with at least 6 characters.'
                 : result.code === 'ACCOUNT_UNAVAILABLE'
                   ? 'This account cannot change its password right now.'
                   : 'The current password is not correct.';

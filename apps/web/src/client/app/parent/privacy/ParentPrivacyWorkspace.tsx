@@ -71,9 +71,7 @@ export function ParentPrivacyWorkspace({
 
   function createRequest(kind: PrivacyRequestView['kind']) {
     if (currentPassword.length < 6 || currentPassword.length > 128) {
-      setError(
-        'Enter your current Parent password using between 6 and 128 characters to verify this data-rights request.',
-      );
+      setError('Enter your current Parent password to continue.');
       return;
     }
     void run(
