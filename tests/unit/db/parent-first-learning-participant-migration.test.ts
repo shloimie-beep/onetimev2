@@ -48,4 +48,14 @@ describe('parent-first learning-participant migration', () => {
       'active Parent learning participant lacks one canonical class entitlement',
     );
   });
+
+  it('normalizes only Family child-seat counts around preserved legacy self profiles', () => {
+    expect(sql).toContain('UPDATE onetime.v21_households AS household');
+    expect(sql).toContain("WHERE household.classification = 'family'");
+    expect(sql).toContain("child_student.relationship = 'dependent'");
+    expect(sql).toContain("child_student.state = 'active'");
+    expect(sql).toContain('version = household.version + 1');
+    expect(sql).toContain('Family active seat count does not match active dependent Students');
+    expect(sql).not.toMatch(/WHERE household\.classification = 'school'[\s\S]*active_seat_count/u);
+  });
 });

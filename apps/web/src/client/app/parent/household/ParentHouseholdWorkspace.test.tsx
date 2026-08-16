@@ -255,7 +255,7 @@ describe('P12 persisted Parent household client workspace', () => {
     expect(full).toContain(
       '<button type="button" disabled="" aria-describedby="student-seat-capacity">',
     );
-    expect(full).toContain('All 3 Student seats are in use.');
+    expect(full).toContain('All 3 child learner seats are in use.');
     expect(full).not.toContain('href="/app/parent/students/new"');
   });
 

@@ -69,6 +69,8 @@ describe('lead validation and content contracts', () => {
     ).toBeNull();
     expect(landingContent.hero.eyebrow).toBe('LIVE, ONLINE + ON-DEMAND');
     expect(landingContent.hero.headline).toBe('Help your son love learning Mishnayos.');
+    expect(landingContent.hero.subheadline).toBe('Classes begin today. Sign up now.');
+    expect(landingContent.hero.cta.label).toBe('Create Family Account');
     expect(landingContent).not.toHaveProperty('whatsappAssistant');
     expect(publicCopy).not.toMatch(/September 13|2026-09-13|LIVE EVERY DAY/i);
   });
@@ -117,9 +119,24 @@ describe('lead validation and content contracts', () => {
       'Clarity',
       'Retention',
       'Progress',
-      'A Love of Learning',
     ]);
     expect(landingContent.gain.cards.some((card) => card.image?.includes('lakewood'))).toBe(false);
+    expect(landingContent.gain).not.toHaveProperty('heading');
+    expect(landingContent.gain).not.toHaveProperty('intro');
+  });
+
+  it('keeps the corrected Family journey copy and the existing third-step image', () => {
+    expect(landingContent.how.flows[2]).toMatchObject({
+      title: 'Your child learns at his own pace',
+      image: '/assets/how-it-works/student-learning-mishnayos-1254.webp',
+    });
+    expect(landingContent.footer.signupLinks).toEqual([
+      ['Privacy Notice', '/privacy'],
+      ['Terms', '/terms'],
+      ['Cancellation and refunds', '/cancellation-refund'],
+      ['Student Data Notice', '/student-data'],
+      ['Support', '/support'],
+    ]);
   });
 
   it('ships launch legal content with the current data categories and no live billing claim', () => {

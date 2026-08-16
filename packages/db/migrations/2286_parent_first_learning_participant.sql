@@ -414,6 +414,56 @@ CREATE TRIGGER parent_learning_question_append_only
 BEFORE UPDATE OR DELETE ON onetime.parent_learning_questions
 FOR EACH ROW EXECUTE FUNCTION onetime.reject_parent_learning_fact_mutation();
 
+UPDATE onetime.v21_households AS household
+   SET active_seat_count = (
+         SELECT count(*)::int
+           FROM onetime.v21_student_profiles AS child_student
+          WHERE child_student.household_id = household.household_id
+            AND child_student.product_key = household.product_key
+            AND child_student.runtime_tier = household.runtime_tier
+            AND child_student.verification_environment_id =
+                household.verification_environment_id
+            AND child_student.relationship = 'dependent'
+            AND child_student.state = 'active'
+       ),
+       version = household.version + 1,
+       updated_at = statement_timestamp()
+ WHERE household.classification = 'family'
+   AND household.active_seat_count IS DISTINCT FROM (
+         SELECT count(*)::int
+           FROM onetime.v21_student_profiles AS child_student
+          WHERE child_student.household_id = household.household_id
+            AND child_student.product_key = household.product_key
+            AND child_student.runtime_tier = household.runtime_tier
+            AND child_student.verification_environment_id =
+                household.verification_environment_id
+            AND child_student.relationship = 'dependent'
+            AND child_student.state = 'active'
+       );
+
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+      FROM onetime.v21_households AS household
+     WHERE household.classification = 'family'
+       AND household.active_seat_count <> (
+         SELECT count(*)::int
+           FROM onetime.v21_student_profiles AS child_student
+          WHERE child_student.household_id = household.household_id
+            AND child_student.product_key = household.product_key
+            AND child_student.runtime_tier = household.runtime_tier
+            AND child_student.verification_environment_id =
+                household.verification_environment_id
+            AND child_student.relationship = 'dependent'
+            AND child_student.state = 'active'
+       )
+  ) THEN
+    RAISE EXCEPTION 'Family active seat count does not match active dependent Students';
+  END IF;
+END;
+$$;
+
 INSERT INTO onetime.parent_learning_participants
   (participant_id, household_id, adult_id, human_account_id,
    participant_kind, learner_ordinal, state, version, product_key,

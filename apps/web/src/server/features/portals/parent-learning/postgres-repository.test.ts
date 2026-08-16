@@ -97,6 +97,10 @@ describe('PostgreSQL Parent learning repository', () => {
     expect(sql).toContain('parent_learning_attendance_events');
     expect(sql).toContain('parent_learning_content_progress_events');
     expect(sql).toContain('parent_learning_questions');
+    expect(sql).toContain('FROM onetime.v21_student_profiles AS child_student');
+    expect(sql).toContain("child_student.relationship = 'dependent'");
+    expect(sql).toContain("child_student.state = 'active'");
+    expect(sql).not.toContain('household.active_seat_count');
     expect(sql).not.toMatch(/student_content|classroom_attendance_projection_v21/u);
     expect(query.mock.calls[0]?.[1]).toEqual([
       'one_time',

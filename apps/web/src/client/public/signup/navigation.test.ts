@@ -14,6 +14,8 @@ describe('Parent-first Family signup navigation', () => {
     expect(publicPages).toContain('<label for="first_name">First name</label>');
     expect(publicPages).toContain('<fieldset class="required-acceptances">');
     expect(publicPages).toContain('type="submit"');
+    expect(publicPages).toContain('footer(landingContent.footer.signupLinks)');
+    expect(publicPages).not.toContain('<section class="signup-intro">\n    <p');
     for (const removedCopy of [
       'Create one adult-managed Family account, then add up to three Students',
       'Free access ends Friday, September 11, 2026',

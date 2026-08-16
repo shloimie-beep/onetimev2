@@ -61,7 +61,15 @@ export function createPostgresParentLearningRepository(
                 participant.state AS participant_state,
                 participant.learner_ordinal,
                 adult.display_name,
-                household.active_seat_count,
+                (SELECT count(*)::int
+                   FROM onetime.v21_student_profiles AS child_student
+                  WHERE child_student.household_id = household.household_id
+                    AND child_student.product_key = household.product_key
+                    AND child_student.runtime_tier = household.runtime_tier
+                    AND child_student.verification_environment_id =
+                        household.verification_environment_id
+                    AND child_student.relationship = 'dependent'
+                    AND child_student.state = 'active') AS active_seat_count,
                 entitlement.account_key,
                 entitlement.class_series_key,
                 entitlement.effective_at,

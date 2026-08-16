@@ -34,13 +34,13 @@ test('public landing implements the bounded product-repair contract', async ({ p
     ),
   ).toHaveCount(0);
   await expect(page.locator('.hero-eyebrow')).toHaveText('LIVE, ONLINE + ON-DEMAND');
-  await expect(page.locator('.hero-subheadline')).toHaveText('Classes start August 16.');
+  await expect(page.locator('.hero-subheadline')).toHaveText('Classes begin today. Sign up now.');
   await expect(page.locator('.hero-access-detail')).toHaveText(
     'Try One Time free through September 11. No card required.',
   );
   await expect(page.locator('.hero-supporting, .hero .schedule, .hero-note')).toHaveCount(0);
   const heroCta = page.locator('.hero .hero-cta');
-  await expect(heroCta).toHaveText('Create your Family account');
+  await expect(heroCta).toHaveText('Create Family Account');
   await expect(heroCta).toHaveAttribute('href', '/signup');
   await expect(page.locator('.hero .hero-cta')).toHaveCount(1);
   await expect(heroCta).toHaveCSS('background-color', 'rgb(255, 212, 0)');
@@ -61,7 +61,15 @@ test('public landing implements the bounded product-repair contract', async ({ p
   await expect(page.getByRole('link', { name: 'Pricing', exact: true })).toHaveCount(0);
   await expect(page.getByText(/adult may learn as a Student/i)).toBeVisible();
   await expect(page.getByRole('heading', { name: 'How It Works' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Seen Across the Jewish World' })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'As seen across the Jewish world.' }),
+  ).toBeVisible();
+  await expect(page.getByRole('heading', { name: /What he['’]ll gain/i })).toHaveCount(0);
+  for (const outcome of ['Clarity', 'Retention', 'Progress']) {
+    await expect(page.getByRole('heading', { name: outcome, exact: true })).toBeVisible();
+  }
+  await expect(page.locator('#gain .benefit-card')).toHaveCount(3);
+  await expect(page.locator('#gain > .section-intro')).toHaveCount(0);
   await expect(
     page.getByRole('heading', { name: 'Rabbi Eli Teaching Around the World' }),
   ).toBeVisible();
@@ -96,7 +104,11 @@ test('public landing implements the bounded product-repair contract', async ({ p
     'Add your Student accounts',
   );
   await expect(page.locator('.how-flow').nth(2).locator('strong')).toHaveText(
-    'Your child learns in his own space',
+    'Your child learns at his own pace',
+  );
+  await expect(page.locator('.how-flow').nth(2).locator('img')).toHaveAttribute(
+    'src',
+    '/assets/how-it-works/student-learning-mishnayos-1254.webp',
   );
   await expect(page.getByText(/pre-register|portal is ready|we.?ll email you/i)).toHaveCount(0);
   await expect(page.getByRole('link', { name: 'Terms', exact: true })).toBeVisible();
@@ -181,6 +193,8 @@ test('canonical launch timing controls the animated ribbon boundary', async ({ p
 
   await page.goto('/signup');
   await expect(page.getByRole('heading', { name: 'Create Family Account' })).toBeVisible();
+  await expect(page.locator('.signup-intro')).toHaveText('Create Family Account');
+  await expect(page.locator('.signup-intro > *')).toHaveCount(1);
   for (const repetitiveCopy of [
     'Create one adult-managed Family account, then add up to three Students without supplying Student email addresses.',
     'Free access ends Friday, September 11, 2026 at 6:00 PM Asia/Jerusalem. No card is collected and there is no automatic charge.',
@@ -196,6 +210,20 @@ test('canonical launch timing controls the animated ribbon boundary', async ({ p
   await expect(page.locator('[data-family-fields]')).toBeVisible();
   await expect(page.getByRole('group', { name: 'Agreement' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Create your Family account' })).toBeVisible();
+  expect(
+    await page.locator('.site-footer nav a').evaluateAll((links) =>
+      links.map((link) => ({
+        label: link.textContent?.trim(),
+        href: link.getAttribute('href'),
+      })),
+    ),
+  ).toEqual([
+    { label: 'Privacy Notice', href: '/privacy' },
+    { label: 'Terms', href: '/terms' },
+    { label: 'Cancellation and refunds', href: '/cancellation-refund' },
+    { label: 'Student Data Notice', href: '/student-data' },
+    { label: 'Support', href: '/support' },
+  ]);
 });
 
 test('Family submission uses the canonical bootstrap and exact cardless adult payload', async ({
@@ -1162,6 +1190,12 @@ test('campaign remains useful without JavaScript and honors reduced motion and m
     const heroCtaBox = await heroCta.boundingBox();
     expect(heroCtaBox?.height).toBeGreaterThanOrEqual(48);
     if (viewport.width <= 520) {
+      await expect(page.locator('.hero-photo')).toBeHidden();
+      await expect(page.locator('.hero')).toHaveCSS(
+        'background-image',
+        /linear-gradient\(rgba\(5, 5, 5, 0\.62\), rgba\(5, 5, 5, 0\.9\)\), url\(.*hero-classroom-background\.webp.*\)/u,
+      );
+      await expect(page.locator('.hero h1')).toHaveCSS('color', 'rgb(248, 250, 247)');
       const heroContentWidth = await page.locator('.hero-inner').evaluate((element) => {
         const style = getComputedStyle(element);
         return (
@@ -1175,6 +1209,16 @@ test('campaign remains useful without JavaScript and honors reduced motion and m
       const headerCtaBox = await headerCta.boundingBox();
       expect(headerCtaBox?.height).toBeGreaterThanOrEqual(48);
       await expect(headerCta).toHaveCSS('font-size', '16px');
+      expect(
+        await heroCta.evaluate((element) => {
+          const rect = element.getBoundingClientRect();
+          const hit = document.elementFromPoint(
+            rect.left + rect.width / 2,
+            rect.top + rect.height / 2,
+          );
+          return hit === element || element.contains(hit);
+        }),
+      ).toBe(true);
     }
     await expect(heroCta).toHaveCSS('font-size', /^(?:1[4-9]|[2-9][0-9])(?:\.\d+)?px$/u);
   }
@@ -1229,6 +1273,11 @@ test('landing and Family signup pass automated accessibility checks at all requi
         ),
         `${route} at ${viewport.width}x${viewport.height} must not overflow horizontally`,
       ).toBe(false);
+      if (route === '/signup') {
+        for (const link of await page.locator('.site-footer nav a').all()) {
+          expect((await link.boundingBox())?.height).toBeGreaterThanOrEqual(44);
+        }
+      }
     }
   }
 });

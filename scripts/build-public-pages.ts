@@ -129,8 +129,8 @@ function header() {
   return renderPublicHeader(sharedNav);
 }
 
-function footer() {
-  return renderPublicFooter(landingContent.footer.links, landingContent.footer.line);
+function footer(links: Parameters<typeof renderPublicFooter>[0] = landingContent.footer.links) {
+  return renderPublicFooter(links, landingContent.footer.line);
 }
 
 function ticker() {
@@ -169,7 +169,7 @@ function landingPage() {
             : `<div class="asset-blocker" role="img" aria-label="${escapeHtml(visualCard.assetBlocker ?? 'Missing assigned asset')}">Missing approved asset</div>`;
       return `<article class="benefit-card" data-benefit="${escapeHtml(card.title)}" data-scroll-reveal>
         <div class="benefit-visual">${visual}</div>
-        <h3>${escapeHtml(card.title)}</h3>
+        <h2>${escapeHtml(card.title)}</h2>
         <p>${escapeHtml(card.body)}</p>
         ${card.provisionalCopy ? `<small>${escapeHtml(card.provisionalCopy)}</small>` : ''}
       </article>`;
@@ -230,7 +230,7 @@ function landingPage() {
     </div>
   </section>`;
   const pressSection = `<section class="section press-section">
-    <h2 id="press-heading">Seen Across the Jewish World</h2>
+    <h2 id="press-heading">As seen across the Jewish world.</h2>
     <div class="press-strip" data-press-carousel role="region" aria-roledescription="carousel" aria-label="Torah media and publication logos" tabindex="0"><div data-press-track>${press}</div></div>
     <p class="sr-only" aria-live="polite" data-press-status>Showing TorahAnytime</p>
   </section>`;
@@ -250,8 +250,6 @@ function landingPage() {
     <figure class="hero-photo"><img src="${landingContent.hero.image}" alt="${escapeHtml(landingContent.hero.imageAlt)}"${mediaSizeAttributes(landingContent.hero.image)} decoding="async" fetchpriority="high"></figure>
   </section>
   <section class="section" id="gain">
-    <h2>${escapeHtml(landingContent.gain.heading)}</h2>
-    <p class="section-intro">${escapeHtml(landingContent.gain.intro)}</p>
     <div class="benefit-grid">${gainCards}</div>
   </section>
   <section class="section receive" id="receive">
@@ -342,7 +340,7 @@ function signupPage() {
       <a class="button button-primary" href="/parent" data-success-continue>Go to Parent dashboard</a>
     </div>
   </section>
-</main>${footer()}`,
+</main>${footer(landingContent.footer.signupLinks)}`,
     {
       canonicalPath: '/signup',
       description:

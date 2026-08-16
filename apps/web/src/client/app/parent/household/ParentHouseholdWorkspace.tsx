@@ -111,7 +111,7 @@ export function ParentHouseholdWorkspace({
               Add Student
             </button>
             <p id="student-seat-capacity" role="status">
-              All {snapshot.student_allowance} Student seats are in use.
+              All {snapshot.student_allowance} child learner seats are in use.
             </p>
           </>
         ) : (

@@ -1593,6 +1593,10 @@ function rewritePgMemLockClause(statement: string): string {
       'LEFT JOIN onetime.parent_learning_content_progress_events AS progress ON false',
     )
     .replace(
+      /\(SELECT count\(\*\)::int\s+FROM onetime\.v21_student_profiles AS child_student[\s\S]*?child_student\.state = 'active'\) AS active_seat_count/u,
+      'household.active_seat_count AS active_seat_count',
+    )
+    .replace(
       /\(SELECT count\(DISTINCT attendance\.occurrence_id\)::int[\s\S]*?\) AS attended_occurrence_count/u,
       '0::int AS attended_occurrence_count',
     )

@@ -17,10 +17,10 @@ export const landingContent = {
   hero: {
     eyebrow: 'LIVE, ONLINE + ON-DEMAND',
     headline: 'Help your son love learning Mishnayos.',
-    subheadline: 'Classes start August 16.',
+    subheadline: 'Classes begin today. Sign up now.',
     accessDetail: 'Try One Time free through September 11. No card required.',
     cta: {
-      label: 'Create your Family account',
+      label: 'Create Family Account',
       href: '/signup',
       analyticsEvent: 'landing.signup.cta.clicked',
       analyticsPlacement: 'hero',
@@ -63,8 +63,6 @@ export const landingContent = {
     ],
   },
   gain: {
-    heading: "What He'll Gain",
-    intro: 'Real understanding. Stronger memory. Steady progress. A genuine love for learning.',
     cards: [
       {
         title: 'Clarity',
@@ -90,14 +88,6 @@ export const landingContent = {
         body: 'A clear Sunday-through-Thursday rhythm gives him confidence, consistent progress, and something real to build on.',
         image: '/assets/outcomes/accomplishment-toronto-class.jpg',
         alt: 'Rabbi Scheller smiling with boys after a Toronto One Time Torah class',
-        assetBlocker: null,
-        provisionalCopy: null,
-      },
-      {
-        title: 'A Love of Learning',
-        body: "Rabbi Scheller's energy and personal connection make Torah learning something he looks forward to.",
-        image: '/assets/outcomes/excitement-learning-torah.webp',
-        alt: 'Boys engaged in Torah learning',
         assetBlocker: null,
         provisionalCopy: null,
       },
@@ -130,7 +120,7 @@ export const landingContent = {
         alt: 'A parent creating a separate One Time Student login',
       },
       {
-        title: 'Your child learns in his own space',
+        title: 'Your child learns at his own pace',
         body: 'Each Student signs in separately to join live class, watch replays, review, and ask questions.',
         image: '/assets/how-it-works/student-learning-mishnayos-1254.webp',
         srcset:
@@ -213,6 +203,13 @@ export const landingContent = {
       ['Cancellation and refunds', '/cancellation-refund'],
       ['Student Data Notice', '/student-data'],
       ['Member Login', 'https://app.onetimeonetime.com/login'],
+      ['Support', '/support'],
+    ],
+    signupLinks: [
+      ['Privacy Notice', '/privacy'],
+      ['Terms', '/terms'],
+      ['Cancellation and refunds', '/cancellation-refund'],
+      ['Student Data Notice', '/student-data'],
       ['Support', '/support'],
     ],
   },
