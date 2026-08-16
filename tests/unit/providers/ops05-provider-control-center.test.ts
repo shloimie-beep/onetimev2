@@ -194,7 +194,8 @@ describe('OPS-05 provider control center projection', () => {
       ZOOM_REAL_CONTROL_MEETING_PASSCODE: 'meeting-passcode-control-center-fixture',
       ZOOM_CLASSROOM_CANARY_ENABLED: 'true',
       ZOOM_CLASSROOM_CANARY_LEARNER_KEY: 'full_app_preview_student_1',
-      PUBLIC_BASE_URL: 'https://isolated-pr.example.test',
+      PUBLIC_BASE_URL: 'https://join.onetimeonetime.com',
+      APP_BASE_URL: 'https://isolated-pr.example.test',
     };
     const matrix = buildProviderControlCenter({ config: loadConfig(env), env, now });
     const zoom = matrix.providers.find((provider) => provider.provider === 'zoom_classroom');
@@ -230,7 +231,8 @@ describe('OPS-05 provider control center projection', () => {
       ZOOM_REAL_CONTROL_MEETING_PASSCODE: 'meeting-passcode-fixture',
       ZOOM_CLASSROOM_CANARY_ENABLED: 'true',
       ZOOM_CLASSROOM_CANARY_LEARNER_KEY: 'full_app_preview_student_1',
-      PUBLIC_BASE_URL: 'https://isolated-pr.example.test',
+      PUBLIC_BASE_URL: 'https://join.onetimeonetime.com',
+      APP_BASE_URL: 'https://isolated-pr.example.test',
     };
     const zoom = buildProviderControlCenter({ config: loadConfig(env), env, now }).providers.find(
       (provider) => provider.provider === 'zoom_classroom',

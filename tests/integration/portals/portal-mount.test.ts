@@ -272,7 +272,7 @@ describe('OT-71 mounted parent and student portals', () => {
     }
   });
 
-  it('requires the exact active Student enrollment, not another household or sibling enrollment', async () => {
+  it('launches a fresh canonical Student only after host-live and denies stale legacy fallback after revocation', async () => {
     await seedCanonicalClass();
     await seedCurrentProductionBasicOccurrence();
     const server = await listenForTest(
@@ -283,12 +283,14 @@ describe('OT-71 mounted parent and student portals', () => {
 
       await seedClassEnrollment('learner_beta', 'household_beta', 'cross-household');
       await expectProductionBasicStatus(server.baseUrl, student.cookies, false);
+      await expectProductionBasicLaunchStatus(server.baseUrl, student, 403);
 
       await seedClassEnrollment('learner_sibling', 'household_alpha', 'same-household-sibling');
       await expectProductionBasicStatus(server.baseUrl, student.cookies, false);
 
       await seedClassEnrollment('learner_alpha', 'household_alpha', 'signed-in-student');
       await expectProductionBasicStatus(server.baseUrl, student.cookies, false);
+      await expectProductionBasicLaunchStatus(server.baseUrl, student, 503);
 
       const admin = await loginAs(server.baseUrl, 'admin@example.test', 'AdminPass!234');
       const hostLive = await fetch(
@@ -304,6 +306,43 @@ describe('OT-71 mounted parent and student portals', () => {
         data: { state: 'live' },
       });
       await expectProductionBasicStatus(server.baseUrl, student.cookies, true);
+      const studentLaunch = await fetch(
+        `${server.baseUrl}/api/v1/classroom/production-basic/launch`,
+        {
+          method: 'POST',
+          headers: { cookie: student.cookies, 'x-csrf-token': student.json.csrf_token },
+        },
+      );
+      expect(studentLaunch.status).toBe(200);
+      await expect(studentLaunch.json()).resolves.toMatchObject({
+        success: true,
+        data: {
+          launch_artifact: {
+            mode: 'production_basic',
+            role: 0,
+            leave_path: '/app/student',
+            raw_join_url_present: false,
+          },
+        },
+      });
+
+      await seedLegacyOccurrenceEntitlement();
+      await pool.query(
+        `UPDATE onetime.class_series_enrollments
+            SET enrollment_state = 'revoked',
+                revoked_at = $4
+          WHERE account_key = $1
+            AND product_key = $2
+            AND enrollment_key = $3`,
+        [
+          config.accountKey,
+          config.productKey,
+          'production-basic-enrollment-signed-in-student',
+          productionBasicNow(),
+        ],
+      );
+      await expectProductionBasicStatus(server.baseUrl, student.cookies, false);
+      await expectProductionBasicLaunchStatus(server.baseUrl, student, 403);
 
       const liveVersion = await productionBasicOccurrenceVersion();
       const hostEnded = await fetch(
@@ -1658,7 +1697,8 @@ function productionBasicConfig() {
   return loadConfig(
     {
       NODE_ENV: 'test',
-      PUBLIC_BASE_URL: 'https://app.onetimeonetime.com',
+      PUBLIC_BASE_URL: 'https://join.onetimeonetime.com',
+      APP_BASE_URL: 'https://app.onetimeonetime.com',
       APP_VERSION: 'test',
       COMMIT_SHA: 'test',
       OUTBOX_TRANSPORT_MODE: 'sink',
@@ -1737,6 +1777,9 @@ async function seedCurrentProductionBasicOccurrence() {
              '2026-08-12T17:15:00.000Z', '2026-08-12T17:00:00.000Z')`,
     [config.accountKey, config.productKey],
   );
+}
+
+async function seedLegacyOccurrenceEntitlement() {
   await pool.query(
     `INSERT INTO onetime.classroom_occurrence_learner_entitlements
        (occurrence_entitlement_key, account_key, product_key, occurrence_key, household_key,
@@ -1778,6 +1821,23 @@ async function expectProductionBasicStatus(baseUrl: string, cookies: string, ava
   const csp = shell.headers.get('content-security-policy');
   if (available) expect(csp).toContain("script-src 'self' https://source.zoom.us");
   else expect(csp).not.toContain('source.zoom.us');
+}
+
+async function expectProductionBasicLaunchStatus(
+  baseUrl: string,
+  session: { cookies: string; json: { csrf_token: string } },
+  expectedStatus: 403 | 503,
+) {
+  const response = await fetch(`${baseUrl}/api/v1/classroom/production-basic/launch`, {
+    method: 'POST',
+    headers: { cookie: session.cookies, 'x-csrf-token': session.json.csrf_token },
+  });
+  expect(response.status).toBe(expectedStatus);
+  await expect(response.json()).resolves.toEqual({
+    success: false,
+    code: 'CLASSROOM_UNAVAILABLE',
+    message: 'Classroom access is unavailable.',
+  });
 }
 
 async function writePortalShells(targetDir: string) {

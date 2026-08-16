@@ -287,7 +287,8 @@ describe('production-basic Meeting SDK launch', () => {
         zoomRealControlMeetingId: 'recurring-meeting',
         zoomRealControlMeetingPasscode: 'passcode',
         zoomMeetingSdkAllowedOrigin: 'https://app.onetimeonetime.com',
-        publicBaseUrl: 'https://app.onetimeonetime.com',
+        publicBaseUrl: 'https://join.onetimeonetime.com',
+        applicationBaseUrl: 'https://app.onetimeonetime.com',
         oneTimeRuntimeEnvironment: 'production',
       } as AppConfig,
     });
@@ -312,7 +313,8 @@ describe('production-basic Meeting SDK launch', () => {
         zoomRealControlMeetingId: meetingId,
         zoomRealControlMeetingPasscode: 'passcode',
         zoomMeetingSdkAllowedOrigin: 'https://app.onetimeonetime.com',
-        publicBaseUrl: 'https://app.onetimeonetime.com',
+        publicBaseUrl: 'https://join.onetimeonetime.com',
+        applicationBaseUrl: 'https://app.onetimeonetime.com',
         oneTimeRuntimeEnvironment: 'production',
       } as AppConfig,
       verified_binding: {
@@ -338,6 +340,38 @@ describe('production-basic Meeting SDK launch', () => {
     now = new Date('2026-08-12T10:30:00.000Z');
     await expect(binding.ready()).resolves.toBe(false);
     expect(providerFetch).not.toHaveBeenCalled();
+  });
+
+  it('binds the recurring Meeting SDK to APP_BASE_URL and rejects the public signup origin', async () => {
+    const now = new Date('2026-08-12T10:00:00.000Z');
+    const meetingId = 'recurring-meeting';
+    const receipt = verifiedReceipt(meetingId);
+    const appBound = createCanonicalProductionBasicMeetingBinding({
+      config: canonicalConfig(meetingId),
+      verified_binding: receipt,
+      clock: () => now,
+    });
+
+    await expect(appBound.ready()).resolves.toBe(true);
+    for (const rejectedOrigin of [
+      'https://join.onetimeonetime.com',
+      'https://evil.example.test',
+      'http://app.onetimeonetime.com',
+      'https://user:password@app.onetimeonetime.com',
+      'https://app.onetimeonetime.com/not-an-origin',
+      'https://app.onetimeonetime.com?not=an-origin',
+      'https://app.onetimeonetime.com#not-an-origin',
+    ]) {
+      const rejected = createCanonicalProductionBasicMeetingBinding({
+        config: {
+          ...canonicalConfig(meetingId),
+          zoomMeetingSdkAllowedOrigin: rejectedOrigin,
+        },
+        verified_binding: receipt,
+        clock: () => now,
+      });
+      await expect(rejected.ready(), rejectedOrigin).resolves.toBe(false);
+    }
   });
 
   it('rejects non-recurring, future, stale, and overly long verification receipts', async () => {
@@ -412,9 +446,30 @@ function canonicalConfig(meetingId: string) {
     zoomRealControlMeetingId: meetingId,
     zoomRealControlMeetingPasscode: 'passcode',
     zoomMeetingSdkAllowedOrigin: 'https://app.onetimeonetime.com',
-    publicBaseUrl: 'https://app.onetimeonetime.com',
+    publicBaseUrl: 'https://join.onetimeonetime.com',
+    applicationBaseUrl: 'https://app.onetimeonetime.com',
     oneTimeRuntimeEnvironment: 'production',
   } as AppConfig;
+}
+
+function verifiedReceipt(meetingId: string) {
+  return {
+    account_matches: true as const,
+    host_matches: true as const,
+    registration_required: false as const,
+    meeting_is_recurring: true as const,
+    timezone: 'Asia/Jerusalem' as const,
+    weekly_days: [1, 2, 3, 4, 5] as const,
+    first_occurrence_at: '2026-08-16T19:00:00+03:00' as const,
+    join_before_host: false as const,
+    participant_video: false as const,
+    auto_recording: 'none' as const,
+    meeting_ref_digest: createHash('sha256')
+      .update(`production-basic-meeting-v1\0${meetingId}`)
+      .digest('hex'),
+    checked_at: '2026-08-12T09:00:00.000Z',
+    expires_at: '2026-08-12T10:30:00.000Z',
+  };
 }
 
 async function start(input: {

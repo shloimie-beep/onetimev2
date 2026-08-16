@@ -82,23 +82,48 @@ export function createProductionBasicHostLiveMarker(pool: DbPool): ProductionBas
              ON series.account_key = occurrence.account_key
             AND series.product_key = occurrence.product_key
             AND series.class_series_key = occurrence.class_series_key
-           JOIN onetime.classroom_occurrence_learner_entitlements AS entitlement
-             ON entitlement.account_key = occurrence.account_key
-            AND entitlement.product_key = occurrence.product_key
-            AND entitlement.occurrence_key = occurrence.occurrence_key
            JOIN onetime.portal_learners AS learner
-             ON learner.account_key = entitlement.account_key
-            AND learner.product_key = entitlement.product_key
-            AND learner.household_key = entitlement.household_key
-            AND learner.learner_key = entitlement.learner_key
+             ON learner.account_key = occurrence.account_key
+            AND learner.product_key = occurrence.product_key
+            AND learner.learner_key = $3
             AND learner.learner_status = 'active'
+           LEFT JOIN onetime.classroom_occurrence_learner_entitlements AS legacy_entitlement
+             ON legacy_entitlement.account_key = occurrence.account_key
+            AND legacy_entitlement.product_key = occurrence.product_key
+            AND legacy_entitlement.occurrence_key = occurrence.occurrence_key
+            AND legacy_entitlement.household_key = learner.household_key
+            AND legacy_entitlement.learner_key = learner.learner_key
+            AND legacy_entitlement.entitlement_state = 'active'
+           LEFT JOIN onetime.class_series_enrollments AS canonical_enrollment
+             ON canonical_enrollment.account_key = occurrence.account_key
+            AND canonical_enrollment.product_key = occurrence.product_key
+            AND canonical_enrollment.class_series_key = occurrence.class_series_key
+            AND canonical_enrollment.learner_key = learner.learner_key
+           LEFT JOIN onetime.account_access_projections AS account_access
+             ON account_access.account_key = learner.account_key
+            AND account_access.product_key = learner.product_key
+            AND account_access.household_key = learner.household_key
           WHERE occurrence.account_key = $1
             AND occurrence.product_key = $2
-            AND entitlement.learner_key = $3
-            AND entitlement.entitlement_state = 'active'
             AND series.is_canonical = true
             AND series.status = 'active'
             AND series.series_state = 'active'
+            AND (
+              (
+                canonical_enrollment.enrollment_key IS NOT NULL
+                AND canonical_enrollment.household_key = learner.household_key
+                AND canonical_enrollment.enrollment_state = 'active'
+                AND canonical_enrollment.effective_at <= $5
+                AND canonical_enrollment.revoked_at IS NULL
+                AND account_access.state IN ('active', 'grace', 'scheduled_end')
+                AND account_access.effective_at <= $5
+                AND (account_access.expires_at IS NULL OR account_access.expires_at > $5)
+              )
+              OR (
+                canonical_enrollment.enrollment_key IS NULL
+                AND legacy_entitlement.occurrence_entitlement_key IS NOT NULL
+              )
+            )
             AND occurrence.occurrence_state IN ('scheduled', 'preparing', 'ready', 'live')
             AND occurrence.production_basic_meeting_ref_digest = $4
             AND occurrence.production_basic_live_confirmed_at <= $5
@@ -246,24 +271,49 @@ export function createProductionBasicLiveClassAccessAdapter(input: {
              ON series.account_key = occurrence.account_key
             AND series.product_key = occurrence.product_key
             AND series.class_series_key = occurrence.class_series_key
-           JOIN onetime.classroom_occurrence_learner_entitlements AS entitlement
-             ON entitlement.account_key = occurrence.account_key
-            AND entitlement.product_key = occurrence.product_key
-            AND entitlement.occurrence_key = occurrence.occurrence_key
            JOIN onetime.portal_learners AS learner
-             ON learner.account_key = entitlement.account_key
-            AND learner.product_key = entitlement.product_key
-            AND learner.household_key = entitlement.household_key
-            AND learner.learner_key = entitlement.learner_key
+             ON learner.account_key = occurrence.account_key
+            AND learner.product_key = occurrence.product_key
+            AND learner.household_key = $3
+            AND learner.learner_key = $4
             AND learner.learner_status = 'active'
+           LEFT JOIN onetime.classroom_occurrence_learner_entitlements AS legacy_entitlement
+             ON legacy_entitlement.account_key = occurrence.account_key
+            AND legacy_entitlement.product_key = occurrence.product_key
+            AND legacy_entitlement.occurrence_key = occurrence.occurrence_key
+            AND legacy_entitlement.household_key = learner.household_key
+            AND legacy_entitlement.learner_key = learner.learner_key
+            AND legacy_entitlement.entitlement_state = 'active'
+           LEFT JOIN onetime.class_series_enrollments AS canonical_enrollment
+             ON canonical_enrollment.account_key = occurrence.account_key
+            AND canonical_enrollment.product_key = occurrence.product_key
+            AND canonical_enrollment.class_series_key = occurrence.class_series_key
+            AND canonical_enrollment.learner_key = learner.learner_key
+           LEFT JOIN onetime.account_access_projections AS account_access
+             ON account_access.account_key = learner.account_key
+            AND account_access.product_key = learner.product_key
+            AND account_access.household_key = learner.household_key
           WHERE occurrence.account_key = $1
             AND occurrence.product_key = $2
-            AND entitlement.household_key = $3
-            AND entitlement.learner_key = $4
-            AND entitlement.entitlement_state = 'active'
             AND series.is_canonical = true
             AND series.status = 'active'
             AND series.series_state = 'active'
+            AND (
+              (
+                canonical_enrollment.enrollment_key IS NOT NULL
+                AND canonical_enrollment.household_key = learner.household_key
+                AND canonical_enrollment.enrollment_state = 'active'
+                AND canonical_enrollment.effective_at <= $6
+                AND canonical_enrollment.revoked_at IS NULL
+                AND account_access.state IN ('active', 'grace', 'scheduled_end')
+                AND account_access.effective_at <= $6
+                AND (account_access.expires_at IS NULL OR account_access.expires_at > $6)
+              )
+              OR (
+                canonical_enrollment.enrollment_key IS NULL
+                AND legacy_entitlement.occurrence_entitlement_key IS NOT NULL
+              )
+            )
             AND occurrence.occurrence_state IN ('scheduled', 'preparing', 'ready', 'live')
             AND occurrence.production_basic_meeting_ref_digest = $5
             AND occurrence.production_basic_live_confirmed_at <= $6
