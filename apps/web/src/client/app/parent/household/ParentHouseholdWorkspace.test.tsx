@@ -199,18 +199,38 @@ describe('P12 persisted Parent household client workspace', () => {
       username: 'ari.legacy',
       relationship: 'self' as const,
     };
-    const html = renderToStaticMarkup(
+    const overview = renderToStaticMarkup(
       <ParentHouseholdWorkspace
-        snapshot={{ ...snapshot, students: [legacySelf] }}
+        snapshot={{
+          ...snapshot,
+          active_student_count: 1,
+          available_student_seats: 2,
+          students: [sourceStudent, legacySelf],
+        }}
+      />,
+    );
+    expect(overview).toContain('Parent learner + 1 of 3 child learners');
+    expect(overview).toContain('Child learners');
+    expect(overview).toContain('Legacy self-managed profile');
+    expect(overview).toContain('does not use a child learner seat');
+
+    const management = renderToStaticMarkup(
+      <ParentHouseholdWorkspace
+        snapshot={{
+          ...snapshot,
+          active_student_count: 0,
+          available_student_seats: 3,
+          students: [legacySelf],
+        }}
         csrfToken="csrf-token"
         view={{ kind: 'student', student_id: legacySelf.student_id }}
       />,
     );
 
-    expect(html).toContain('Manage Ari Levi');
-    expect(html).toContain('ari.legacy');
-    expect(html).not.toContain('Myself');
-    expect(html).not.toMatch(/convert|delete.*profile/i);
+    expect(management).toContain('Manage Ari Levi');
+    expect(management).toContain('ari.legacy');
+    expect(management).not.toContain('Myself');
+    expect(management).not.toMatch(/convert|delete.*profile/i);
   });
 
   it('retains only the status overview for inactive access and removes fourth-seat creation', () => {

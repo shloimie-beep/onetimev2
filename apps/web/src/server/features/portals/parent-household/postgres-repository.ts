@@ -237,9 +237,7 @@ export function createPostgresParentHouseholdRepository(
           });
         }
 
-        const activeSeatCount = input.next.students.filter(
-          (student) => student.state === 'active',
-        ).length;
+        const activeSeatCount = activeDependentSeatCount(input.next.students);
         const householdUpdate = await client.query(
           `UPDATE onetime.v21_households
               SET active_seat_count = $1,
@@ -471,7 +469,7 @@ function validateMutation(
   }
   const target = requiredTarget(input.next, input.audit.student_id);
   const previous = current.students.find((student) => student.student_id === target.student_id);
-  const activeSeats = input.next.students.filter((student) => student.state === 'active').length;
+  const activeSeats = activeDependentSeatCount(input.next.students);
   if (
     activeSeats > STANDARD_FAMILY_STUDENT_ALLOWANCE ||
     activeSeats > scope.seatLimit ||
@@ -489,10 +487,10 @@ function validateMutation(
     case 'student_created':
       if (
         previous ||
+        target.relationship !== 'dependent' ||
         target.state !== 'active' ||
         input.next.students.length !== current.students.length + 1 ||
-        activeSeats !==
-          current.students.filter((student) => student.state === 'active').length + 1 ||
+        activeSeats !== activeDependentSeatCount(current.students) + 1 ||
         !input.password_hash_factory ||
         input.revoke_student_sessions ||
         input.canonical_enrollment !== 'enroll'
@@ -549,6 +547,12 @@ function validateMutation(
       }
       break;
   }
+}
+
+function activeDependentSeatCount(students: readonly ParentManagedStudent[]) {
+  return students.filter(
+    (student) => student.state === 'active' && student.relationship === 'dependent',
+  ).length;
 }
 
 function validatePasswordHash(passwordHash: string | null) {

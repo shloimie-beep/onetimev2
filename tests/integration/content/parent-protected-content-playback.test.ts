@@ -46,6 +46,7 @@ beforeEach(async () => {
   );
   const sessions = createV21AdultSessionRuntime({
     repository: createDbBackedTestAdultSessionRepository(pool),
+    repositoryFactory: (db) => createDbBackedTestAdultSessionRepository(db as DbPool),
     hmacSecret: config.authCsrfSecret,
     clock: () => new Date(observedAt),
   });

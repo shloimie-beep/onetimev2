@@ -100,11 +100,69 @@ describe('P12 Parent household aggregate', () => {
     ).toThrowError(/all 3 active Student seats/);
   });
 
-  it('rejects creating a new self Student while preserving legacy self records', () => {
+  it('keeps a legacy self Student outside the three child seats and rejects creating another self', () => {
+    const legacySelf = {
+      student_id: 'student-self-legacy',
+      household_id: 'household-1',
+      actual_name: 'Parent Learner',
+      display_name: null,
+      username: 'parent.learner',
+      relationship: 'self' as const,
+      state: 'active' as const,
+      credential_version: 2,
+      version: 3,
+    };
+    const withLegacySelf = {
+      ...household(2),
+      students: [...household(2).students, legacySelf],
+    };
+
+    expect(buildParentHouseholdSnapshot({ principal, household: withLegacySelf })).toMatchObject({
+      active_student_count: 2,
+      available_student_seats: 1,
+    });
+
+    const thirdChild = createParentStudent({
+      principal,
+      household: withLegacySelf,
+      expected_revision: 7,
+      student_id: 'student-3',
+      actual_name: 'Third Child',
+      username: 'student.3',
+      relationship: 'dependent',
+      new_password: '123456',
+      password_confirmation: '123456',
+    });
+    expect(thirdChild.result.snapshot).toMatchObject({
+      active_student_count: 3,
+      available_student_seats: 0,
+    });
+    expect(thirdChild.next.students).toHaveLength(4);
+
+    const archivedSelf = archiveParentStudent({
+      principal,
+      household: thirdChild.next,
+      expected_revision: 8,
+      student_id: legacySelf.student_id,
+    });
+    const restoredSelf = restoreParentStudent({
+      principal,
+      household: archivedSelf.next,
+      expected_revision: 9,
+      student_id: legacySelf.student_id,
+    });
+    expect(restoredSelf.result.snapshot).toMatchObject({
+      active_student_count: 3,
+      available_student_seats: 0,
+    });
+    expect(restoredSelf.next.students.filter((student) => student.state === 'active')).toHaveLength(
+      4,
+    );
+
     expect(() =>
       createParentStudent({
         principal,
-        household: household(),
+        household: household(3),
         expected_revision: 7,
         student_id: 'student-self',
         actual_name: 'Parent Learner',

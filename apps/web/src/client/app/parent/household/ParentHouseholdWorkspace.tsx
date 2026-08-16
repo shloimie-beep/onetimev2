@@ -94,6 +94,8 @@ export function ParentHouseholdWorkspace({
       ? (snapshot.students.find((student) => student.student_id === view.student_id) ?? null)
       : null;
   const effectiveView = snapshot.can_manage_students ? view : ({ kind: 'overview' } as const);
+  const childStudents = snapshot.students.filter((student) => student.relationship === 'dependent');
+  const legacySelfStudents = snapshot.students.filter((student) => student.relationship === 'self');
 
   return (
     <section className="parent-student-workspace" aria-labelledby="parent-household-heading">
@@ -227,34 +229,45 @@ export function ParentHouseholdWorkspace({
         )
       ) : null}
 
-      {effectiveView.kind === 'overview' && snapshot.can_manage_students ? (
-        <>
-          <h2>Child learners</h2>
-          <p>{STUDENT_ACTUAL_NAME_INSTRUCTIONS.dependent}</p>
-        </>
-      ) : null}
-
       {snapshot.can_manage_students ? (
         <>
-          <h2>Students</h2>
-          {snapshot.students.length === 0 ? (
-            <p>No Students yet.</p>
+          <h2>Child learners</h2>
+          {effectiveView.kind === 'overview' ? (
+            <p>{STUDENT_ACTUAL_NAME_INSTRUCTIONS.dependent}</p>
+          ) : null}
+          {childStudents.length === 0 ? (
+            <p>No child learners yet.</p>
           ) : (
-            <ul>
-              {snapshot.students.map((student) => (
-                <li key={student.student_id}>
-                  <a href={`/app/parent/students/${student.student_id}`}>
-                    {student.display_name ?? student.actual_name}
-                  </a>{' '}
-                  <span>{student.state}</span> <span>@{student.username}</span>
-                </li>
-              ))}
-            </ul>
+            <StudentList students={childStudents} />
           )}
+          {legacySelfStudents.length > 0 ? (
+            <>
+              <h2>
+                Legacy self-managed {legacySelfStudents.length === 1 ? 'profile' : 'profiles'}
+              </h2>
+              <p>Kept for account management. It does not use a child learner seat.</p>
+              <StudentList students={legacySelfStudents} />
+            </>
+          ) : null}
           {credentialHandoff ? <CredentialHandoff handoff={credentialHandoff} /> : null}
         </>
       ) : null}
     </section>
+  );
+}
+
+function StudentList({ students }: { students: ParentHouseholdSnapshot['students'] }) {
+  return (
+    <ul>
+      {students.map((student) => (
+        <li key={student.student_id}>
+          <a href={`/app/parent/students/${student.student_id}`}>
+            {student.display_name ?? student.actual_name}
+          </a>{' '}
+          <span>{student.state}</span> <span>@{student.username}</span>
+        </li>
+      ))}
+    </ul>
   );
 }
 
