@@ -149,7 +149,7 @@ export const landingContent = {
       },
       {
         lead: 'ADULT LEARNERS',
-        body: 'An adult may learn as a Student by creating a separate Student seat inside the Family account.',
+        body: 'A Parent can learn directly from the Parent account without using any of the three child learner seats.',
       },
     ],
   },

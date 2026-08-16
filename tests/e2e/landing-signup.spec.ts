@@ -59,7 +59,11 @@ test('public landing implements the bounded product-repair contract', async ({ p
   ).toHaveCount(0);
   await expect(page.getByRole('link', { name: 'Experience', exact: true })).toHaveCount(0);
   await expect(page.getByRole('link', { name: 'Pricing', exact: true })).toHaveCount(0);
-  await expect(page.getByText(/adult may learn as a Student/i)).toBeVisible();
+  await expect(
+    page.getByText(
+      'A Parent can learn directly from the Parent account without using any of the three child learner seats.',
+    ),
+  ).toBeVisible();
   await expect(page.getByRole('heading', { name: 'How It Works' })).toBeVisible();
   await expect(
     page.getByRole('heading', { name: 'As seen across the Jewish world.' }),

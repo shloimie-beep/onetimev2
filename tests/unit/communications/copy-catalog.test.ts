@@ -135,6 +135,11 @@ describe('canonical launch copy', () => {
     expect(receipt.body).toContain('no card was collected');
     expect(receipt.body).toContain('there is no automatic charge');
 
+    const parentActivated = findCanonicalCopy('ghl.parent_portal_activated.v1')!;
+    expect(parentActivated.body).toContain('learn immediately from your Parent account');
+    expect(parentActivated.body).toContain('add up to three Student accounts');
+    expect(parentActivated.body).not.toMatch(/use one of those three Student seats/iu);
+
     const campaignText = messages
       .map(({ subject, preheader, body }) => `${subject}\n${preheader ?? ''}\n${body}`)
       .join('\n');
