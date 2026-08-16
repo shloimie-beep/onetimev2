@@ -36,15 +36,22 @@ import { hashAuthPassword } from '../../../packages/domain/src/auth/policy.ts';
 import { createDbBackedTestAdultSessionRepository } from '../../support/pgmem-v21-parent-session-repository.ts';
 import { writePrivateControllerResult } from '../../../scripts/operations/controller-private-result.ts';
 import {
+  CONTROLLER_DUAL_ROLE_COMPATIBILITY_ACCESS_HASH_SUBLEAF_CODES,
   CONTROLLER_DUAL_ROLE_APPLY_STAGES,
   isCanonicalControllerResetOrigin,
   runDualRoleAdultProvision,
   runDualRoleAdultProvisionCli,
+  type ControllerDualRoleCompatibilityAccessHashSubleafCode,
 } from '../../../scripts/operations/provision-dual-role-adult.ts';
 
 const SOURCE_SHA = 'a'.repeat(40);
 const AUTHORIZATION = 'test-only dual role controller authorization phrase';
-const PROVISION_AT = new Date('2026-08-01T12:00:00.000Z');
+const PROVISION_AT = new Date('2026-08-01T12:00:00.345Z');
+const operationNowWithFractionalMilliseconds = () => {
+  const now = new Date();
+  now.setUTCMilliseconds(345);
+  return now;
+};
 type TransactionalReadbackDiagnosticGroup =
   'core_identity' | 'canonical' | 'compatibility_access' | 'provision_audit' | 'prohibited';
 const COMPATIBILITY_ACCESS_DIAGNOSTIC_CODES = [
@@ -268,6 +275,7 @@ describe('controller dual-role adult provisioning', () => {
       name: string;
       group: TransactionalReadbackDiagnosticGroup;
       blocker: string;
+      hashSubleafCodes?: ControllerDualRoleCompatibilityAccessHashSubleafCode[];
       queryIncludes: string;
       mutateRows: (rows: Record<string, unknown>[]) => Record<string, unknown>[];
     }> = [
@@ -364,6 +372,7 @@ describe('controller dual-role adult provisioning', () => {
         name: 'compatibility access hash',
         group: 'compatibility_access',
         blocker: 'compatibility_access_hash_mismatch',
+        hashSubleafCodes: ['compatibility_access_hash_projection_mismatch'],
         queryIncludes: 'FROM onetime.portal_households AS portal',
         mutateRows: (rows) =>
           rows.map((row) => ({ ...row, projection_request_hash: '0'.repeat(64) })),
@@ -429,6 +438,77 @@ describe('controller dual-role adult provisioning', () => {
       },
       { group: 'prohibited', queryIncludes: 'FROM onetime.family_signup_requests' },
     ];
+    const hashSubleafCases: Array<{
+      name: string;
+      queryIncludes: string;
+      mutateRows: (rows: Record<string, unknown>[]) => Record<string, unknown>[];
+      blockerCodes: string[];
+      hashSubleafCodes: ControllerDualRoleCompatibilityAccessHashSubleafCode[];
+      privateFaultValues: string[];
+      includesProvisionAuditMismatch?: boolean;
+    }> = [
+      {
+        name: 'consensus',
+        queryIncludes: 'FROM onetime.portal_households AS portal',
+        mutateRows: (rows) =>
+          rows.map((row) => ({
+            ...row,
+            projection_request_hash: '0'.repeat(64),
+            source_request_hash: '0'.repeat(64),
+            event_request_hash: '0'.repeat(64),
+          })),
+        blockerCodes: ['compatibility_access_hash_mismatch'],
+        hashSubleafCodes: ['compatibility_access_hash_consensus_mismatch'],
+        privateFaultValues: ['0'.repeat(64)],
+      },
+      {
+        name: 'source',
+        queryIncludes: 'FROM onetime.portal_households AS portal',
+        mutateRows: (rows) => rows.map((row) => ({ ...row, source_request_hash: '1'.repeat(64) })),
+        blockerCodes: ['compatibility_access_hash_mismatch'],
+        hashSubleafCodes: ['compatibility_access_hash_source_mismatch'],
+        privateFaultValues: ['1'.repeat(64)],
+      },
+      {
+        name: 'event',
+        queryIncludes: 'FROM onetime.portal_households AS portal',
+        mutateRows: (rows) => rows.map((row) => ({ ...row, event_request_hash: '2'.repeat(64) })),
+        blockerCodes: ['compatibility_access_hash_mismatch'],
+        hashSubleafCodes: ['compatibility_access_hash_event_mismatch'],
+        privateFaultValues: ['2'.repeat(64)],
+      },
+      {
+        name: 'ordered-per-field',
+        queryIncludes: 'FROM onetime.portal_households AS portal',
+        mutateRows: (rows) =>
+          rows.map((row) => ({
+            ...row,
+            projection_request_hash: '3'.repeat(64),
+            source_request_hash: '4'.repeat(64),
+            event_request_hash: '5'.repeat(64),
+          })),
+        blockerCodes: ['compatibility_access_hash_mismatch'],
+        hashSubleafCodes: [
+          'compatibility_access_hash_projection_mismatch',
+          'compatibility_access_hash_source_mismatch',
+          'compatibility_access_hash_event_mismatch',
+        ],
+        privateFaultValues: ['3'.repeat(64), '4'.repeat(64), '5'.repeat(64)],
+      },
+      {
+        name: 'expected-unavailable',
+        queryIncludes: 'FROM onetime.canonical_state_transition_events',
+        mutateRows: (rows) =>
+          rows.map((row) => ({ ...row, created_at: 'PRIVATE_INVALID_TIMESTAMP_SENTINEL' })),
+        blockerCodes: [
+          'compatibility_access_timing_mismatch',
+          'compatibility_access_hash_mismatch',
+        ],
+        hashSubleafCodes: ['compatibility_access_hash_expected_unavailable'],
+        privateFaultValues: ['PRIVATE_INVALID_TIMESTAMP_SENTINEL'],
+        includesProvisionAuditMismatch: true,
+      },
+    ];
     expect(
       mismatchCases
         .filter((testCase) => testCase.group === 'compatibility_access')
@@ -461,7 +541,16 @@ describe('controller dual-role adult provisioning', () => {
         report.apply_execution.transactional_readback_diagnostic?.groups.flatMap(
           (group) => group.blocker_codes,
         ) ?? [];
-      for (const code of [...nestedCodes, 'unclassified_mismatch']) {
+      const nestedHashSubleafCodes =
+        report.apply_execution.transactional_readback_diagnostic?.groups.flatMap(
+          (group) => group.hash_subleaf_codes ?? [],
+        ) ?? [];
+      for (const code of [
+        ...nestedCodes,
+        ...nestedHashSubleafCodes,
+        ...CONTROLLER_DUAL_ROLE_COMPATIBILITY_ACCESS_HASH_SUBLEAF_CODES,
+        'unclassified_mismatch',
+      ]) {
         if (!knownReconciliationBlockers.has(code)) expect(report.blockers).not.toContain(code);
       }
       const allowedTopLevelBlockers = new Set([
@@ -475,7 +564,7 @@ describe('controller dual-role adult provisioning', () => {
     let cliDiagnosticReport: Awaited<ReturnType<typeof runDualRoleAdultProvision>> | undefined;
     try {
       for (const testCase of mismatchCases) {
-        const operationNow = new Date(Math.floor(Date.now() / 1000) * 1000);
+        const operationNow = operationNowWithFractionalMilliseconds();
         const email = `readback-${testCase.name.replaceAll(' ', '-')}-${testCase.group.replaceAll('_', '-')}@example.test`;
         const manifest = privateManifestAt(email, operationNow);
         await seedUnrelatedEventRegistration(diagnosticPool, email);
@@ -499,6 +588,17 @@ describe('controller dual-role adult provisioning', () => {
             throw new Error('Setup must not run after transactional readback mismatch.');
           },
         });
+        const expectedDiagnostic = {
+          groups: [
+            {
+              group_code: testCase.group,
+              blocker_codes: [testCase.blocker],
+              ...(testCase.hashSubleafCodes
+                ? { hash_subleaf_codes: testCase.hashSubleafCodes }
+                : {}),
+            },
+          ],
+        };
         expect(report).toMatchObject({
           blockers: expect.arrayContaining(['apply_identity_transactional_readback_failed']),
           apply_execution: {
@@ -506,9 +606,7 @@ describe('controller dual-role adult provisioning', () => {
             transaction_outcome: 'rolled_back',
             reconciliation_outcome: 'completed',
             final_stage: 'transactional_readback',
-            transactional_readback_diagnostic: {
-              groups: [{ group_code: testCase.group, blocker_codes: [testCase.blocker] }],
-            },
+            transactional_readback_diagnostic: expectedDiagnostic,
           },
           setup_delivery: { token_rows: 0, intent_rows: 0, outbox_rows: 0 },
         });
@@ -516,9 +614,7 @@ describe('controller dual-role adult provisioning', () => {
           sequence: report.apply_execution.journal.length,
           stage: 'transactional_readback',
           state: 'failed',
-          transactional_readback_diagnostic: {
-            groups: [{ group_code: testCase.group, blocker_codes: [testCase.blocker] }],
-          },
+          transactional_readback_diagnostic: expectedDiagnostic,
         });
         expect(['blocked', 'identity_applied_setup_pending']).toContain(report.status);
         expect(['absent', 'blocked', 'exact_replay']).toContain(report.identity.disposition);
@@ -532,8 +628,88 @@ describe('controller dual-role adult provisioning', () => {
         await assertNestedDiagnosticWasNotLeaked(report, manifest, operationNow);
       }
 
+      expect(CONTROLLER_DUAL_ROLE_COMPATIBILITY_ACCESS_HASH_SUBLEAF_CODES).toEqual([
+        'compatibility_access_hash_expected_unavailable',
+        'compatibility_access_hash_consensus_mismatch',
+        'compatibility_access_hash_projection_mismatch',
+        'compatibility_access_hash_source_mismatch',
+        'compatibility_access_hash_event_mismatch',
+      ]);
+      for (const testCase of hashSubleafCases) {
+        const operationNow = operationNowWithFractionalMilliseconds();
+        const email = `readback-hash-${testCase.name}@example.test`;
+        const manifest = privateManifestAt(email, operationNow);
+        await seedUnrelatedEventRegistration(diagnosticPool, email);
+        faultControl.faults = [
+          {
+            queryIncludes: testCase.queryIncludes,
+            mutateRows: testCase.mutateRows,
+          },
+        ];
+        let setupCalls = 0;
+        const report = await runDualRoleAdultProvision({
+          manifest,
+          apply: true,
+          authorizationPhrase: AUTHORIZATION,
+          pool: diagnosticPool,
+          config,
+          now: operationNow,
+          testOnlyAllowIsolatedApply: true,
+          issuePasswordReset: async () => {
+            setupCalls += 1;
+            throw new Error('Setup must not run after a hash readback mismatch.');
+          },
+        });
+        const expectedDiagnostic = {
+          groups: [
+            {
+              group_code: 'compatibility_access',
+              blocker_codes: testCase.blockerCodes,
+              hash_subleaf_codes: testCase.hashSubleafCodes,
+            },
+            ...(testCase.includesProvisionAuditMismatch
+              ? [
+                  {
+                    group_code: 'provision_audit',
+                    blocker_codes: ['controller_provision_audit_mismatch'],
+                  },
+                ]
+              : []),
+          ],
+        };
+        expect(report).toMatchObject({
+          blockers: expect.arrayContaining(['apply_identity_transactional_readback_failed']),
+          apply_execution: {
+            disposition: 'failed',
+            transaction_outcome: 'rolled_back',
+            reconciliation_outcome: 'completed',
+            final_stage: 'transactional_readback',
+            transactional_readback_diagnostic: expectedDiagnostic,
+          },
+          setup_delivery: { token_rows: 0, intent_rows: 0, outbox_rows: 0 },
+        });
+        expect(report.apply_execution.journal.at(-1)).toEqual({
+          sequence: report.apply_execution.journal.length,
+          stage: 'transactional_readback',
+          state: 'failed',
+          transactional_readback_diagnostic: expectedDiagnostic,
+        });
+        expect(setupCalls).toBe(0);
+        const serialized = JSON.stringify(report);
+        for (const unsafe of [
+          email,
+          'Synthetic Dual Role Adult',
+          ...testCase.privateFaultValues,
+          '@',
+          'SELECT',
+        ]) {
+          expect(serialized).not.toContain(unsafe);
+        }
+        await assertNestedDiagnosticWasNotLeaked(report, manifest, operationNow);
+      }
+
       for (const testCase of queryFailureCases) {
-        const operationNow = new Date(Math.floor(Date.now() / 1000) * 1000);
+        const operationNow = operationNowWithFractionalMilliseconds();
         const email = `readback-query-${testCase.group.replaceAll('_', '-')}@example.test`;
         const manifest = privateManifestAt(email, operationNow);
         await seedUnrelatedEventRegistration(diagnosticPool, email);
@@ -597,7 +773,7 @@ describe('controller dual-role adult provisioning', () => {
         await assertNestedDiagnosticWasNotLeaked(report, manifest, operationNow);
       }
 
-      const operationNow = new Date(Math.floor(Date.now() / 1000) * 1000);
+      const operationNow = operationNowWithFractionalMilliseconds();
       const multiEmail = 'readback-ordered-multi-code@example.test';
       await seedUnrelatedEventRegistration(diagnosticPool, multiEmail);
       faultControl.faults = [
@@ -685,6 +861,7 @@ describe('controller dual-role adult provisioning', () => {
           {
             group_code: 'compatibility_access',
             blocker_codes: COMPATIBILITY_ACCESS_DIAGNOSTIC_CODES.slice(1),
+            hash_subleaf_codes: ['compatibility_access_hash_projection_mismatch'],
           },
           {
             group_code: 'provision_audit',
@@ -1205,6 +1382,7 @@ describe('controller dual-role adult provisioning', () => {
         external_send_performed_inline: false,
       },
     });
+    expect(PROVISION_AT.getUTCMilliseconds()).toBe(345);
     expect(issueCalls).toBe(1);
     expect(proofToken).toBeTruthy();
     await expect(count(pool, 'v21_adult_identities')).resolves.toBe(1);
@@ -1216,6 +1394,7 @@ describe('controller dual-role adult provisioning', () => {
     await expect(count(pool, 'account_access_source_states')).resolves.toBe(1);
     await expect(count(pool, 'account_access_projections')).resolves.toBe(1);
     await expect(count(pool, 'account_access_events')).resolves.toBe(1);
+    await expect(accessRequestHashesMatch(pool)).resolves.toBe(true);
     await expect(accessEventCreatedAt(pool)).resolves.toBe(PROVISION_AT.toISOString());
     await expect(count(pool, 'account_lifecycle_tokens')).resolves.toBe(1);
     await expect(count(pool, 'account_lifecycle_delivery_intents')).resolves.toBe(1);
@@ -1244,6 +1423,7 @@ describe('controller dual-role adult provisioning', () => {
     expect(replay.status).toBe('replayed');
     expect(replay.setup_delivery.disposition).toBe('already_queued');
     expect(issueCalls).toBe(1);
+    await expect(accessRequestHashesMatch(pool)).resolves.toBe(true);
     await expect(accessEventCreatedAt(pool)).resolves.toBe(PROVISION_AT.toISOString());
     await expect(count(pool, 'account_lifecycle_delivery_outbox')).resolves.toBe(1);
     const dryRunReplay = await runDualRoleAdultProvision({
@@ -2150,7 +2330,33 @@ async function accessEventCreatedAt(db: DbPool) {
       ORDER BY event_key`,
   );
   expect(result.rowCount).toBe(1);
-  return new Date(String(result.rows[0]?.created_at)).toISOString();
+  const createdAt = result.rows[0]?.created_at;
+  return (createdAt instanceof Date ? createdAt : new Date(String(createdAt))).toISOString();
+}
+
+async function accessRequestHashesMatch(db: DbPool) {
+  const result = await db.query(
+    `SELECT projection.source_request_hash AS projection_request_hash,
+            source.source_request_hash, event.request_hash AS event_request_hash
+       FROM onetime.account_access_projections AS projection
+       JOIN onetime.account_access_source_states AS source
+         ON source.account_key=projection.account_key
+        AND source.product_key=projection.product_key
+        AND source.household_key=projection.household_key
+        AND source.last_event_key=projection.last_event_key
+       JOIN onetime.account_access_events AS event
+         ON event.event_key=projection.last_event_key`,
+  );
+  if (result.rowCount !== 1) return false;
+  const hashes = [
+    result.rows[0]?.projection_request_hash,
+    result.rows[0]?.source_request_hash,
+    result.rows[0]?.event_request_hash,
+  ];
+  return (
+    hashes.every((value) => typeof value === 'string' && /^[a-f0-9]{64}$/u.test(value)) &&
+    new Set(hashes).size === 1
+  );
 }
 
 async function countWhere(db: DbPool, table: string, column: string, value: string) {
