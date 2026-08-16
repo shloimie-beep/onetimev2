@@ -98,13 +98,30 @@ const TRANSACTIONAL_READBACK_BLOCKERS_BY_GROUP = {
     'canonical_access_state_mismatch',
     'canonical_transition_mismatch',
   ],
-  compatibility_access: ['compatibility_access_mismatch'],
+  compatibility_access: [
+    'compatibility_access_cardinality_mismatch',
+    'compatibility_access_portal_mismatch',
+    'compatibility_access_projection_mismatch',
+    'compatibility_access_source_mismatch',
+    'compatibility_access_timing_mismatch',
+    'compatibility_access_expiry_mismatch',
+    'compatibility_access_revision_mismatch',
+    'compatibility_access_policy_mismatch',
+    'compatibility_access_reference_mismatch',
+    'compatibility_access_hash_mismatch',
+    'compatibility_access_event_link_mismatch',
+    'compatibility_access_event_body_mismatch',
+    'compatibility_access_event_created_mismatch',
+    'compatibility_access_idempotency_mismatch',
+  ],
   provision_audit: ['controller_provision_audit_mismatch'],
   prohibited: ['prohibited_projection_present'],
 } as const satisfies Record<ControllerDualRoleTransactionalReadbackGroup, readonly string[]>;
 
 type ControllerDualRoleTransactionalReadbackBlocker =
   (typeof TRANSACTIONAL_READBACK_BLOCKERS_BY_GROUP)[ControllerDualRoleTransactionalReadbackGroup][number];
+type ControllerDualRoleCompatibilityAccessDiagnosticCode =
+  (typeof TRANSACTIONAL_READBACK_BLOCKERS_BY_GROUP)['compatibility_access'][number];
 type ControllerDualRoleTransactionalReadbackQueryFailure =
   `${ControllerDualRoleTransactionalReadbackGroup}_query_failed`;
 type ControllerDualRoleTransactionalReadbackDiagnosticCode =
@@ -400,6 +417,7 @@ type IdentityInspection = DualRoleAdultProvisionReport['identity'] & {
 
 type TransactionalReadbackContext = {
   activeGroup: ControllerDualRoleTransactionalReadbackGroup;
+  diagnosticBlockers: ControllerDualRoleTransactionalReadbackBlocker[];
 };
 
 type SetupInspection = DualRoleAdultProvisionReport['setup_delivery'] & {
@@ -1201,8 +1219,9 @@ function cloneTransactionalReadbackDiagnostic(
 
 function transactionalReadbackMismatchDiagnostic(
   inspection: IdentityInspection,
+  additionalBlockers: readonly ControllerDualRoleTransactionalReadbackBlocker[],
 ): ControllerDualRoleTransactionalReadbackDiagnostic {
-  const blockerSet = new Set(inspection.blockers);
+  const blockerSet = new Set([...inspection.blockers, ...additionalBlockers]);
   const groups: ControllerDualRoleTransactionalReadbackDiagnostic['groups'] = [];
   for (const groupCode of CONTROLLER_DUAL_ROLE_TRANSACTIONAL_READBACK_GROUPS) {
     const blockerCodes = TRANSACTIONAL_READBACK_BLOCKERS_BY_GROUP[groupCode].filter((code) =>
@@ -1591,59 +1610,114 @@ async function inspectIdentity(
   const compatibilityEventCreatedAt = new Date(
     String(compatibilityRow?.event_created_at),
   ).getTime();
-  if (
-    compatibility.rows.length !== 1 ||
-    compatibilityRow?.portal_account_key !== config.accountKey ||
-    compatibilityRow.portal_product_key !== config.productKey ||
-    compatibilityRow.portal_display_name !== manifest.adult.household_display_name ||
-    compatibilityRow.portal_status !== 'active' ||
-    Number(compatibilityRow.portal_version) !== 1 ||
-    compatibilityRow?.state !== 'active' ||
-    compatibilityRow.source_kind !== 'admin_override' ||
-    !Number.isFinite(compatibilityEffectiveAt) ||
-    compatibilityEffectiveAt > now.getTime() ||
-    compatibilityEffectiveAt !== accessTransitionCreatedAt ||
-    !Number.isFinite(compatibilityUpdatedAt) ||
-    compatibilityUpdatedAt > now.getTime() ||
-    compatibilityRow.source_slot !== 'complimentary' ||
-    compatibilityRow.source_kind_state !== compatibilityRow.source_kind ||
-    compatibilityRow.source_state !== 'active' ||
-    new Date(String(compatibilityRow.source_effective_at)).getTime() !== compatibilityEffectiveAt ||
-    new Date(String(compatibilityRow.source_expires_at)).getTime() !== compatibilityExpiresAt ||
-    new Date(String(compatibilityRow.source_updated_at_state)).getTime() !==
-      compatibilityUpdatedAt ||
-    compatibilityExpiresAt !== Date.parse(CONTROLLER_DUAL_ROLE_ACCESS_EXPIRES_AT) ||
-    compatibilityExpiresAt <= now.getTime() ||
-    Number(compatibilityRow.source_revision) !== 1 ||
-    Number(compatibilityRow.source_revision_state) !== 1 ||
-    compatibilityRow.policy_version !== CONTROLLER_DUAL_ROLE_PROVISIONING_POLICY ||
-    compatibilityRow.source_policy_version !== CONTROLLER_DUAL_ROLE_PROVISIONING_POLICY ||
-    compatibilityRow.opaque_source_reference !== expectedCompatibilityReference ||
-    compatibilityRow.source_reference_state !== expectedCompatibilityReference ||
-    compatibilityRow.revocation_reason !== null ||
-    compatibilityRow.source_revocation_reason !== null ||
-    compatibilityRow.projection_request_hash !== expectedCompatibilityRequestHash ||
-    compatibilityRow.source_request_hash !== expectedCompatibilityRequestHash ||
-    compatibilityRow.source_last_event_key !== compatibilityRow.last_event_key ||
-    compatibilityRow.event_account_key !== config.accountKey ||
-    compatibilityRow.event_product_key !== config.productKey ||
-    compatibilityRow.event_household_key !== keys.householdId ||
-    compatibilityRow.actor_kind !== 'provisioner' ||
-    compatibilityRow.decision !== 'applied' ||
-    compatibilityRow.event_request_hash !== expectedCompatibilityRequestHash ||
-    compatibilityRow.event_source_kind !== 'admin_override' ||
-    compatibilityRow.source_reference_digest !== sha256(expectedCompatibilityReference) ||
-    Number(compatibilityRow.event_source_revision) !== 1 ||
-    new Date(String(compatibilityRow.event_source_updated_at)).getTime() !==
-      compatibilityUpdatedAt ||
-    compatibilityRow.previous_state !== null ||
-    compatibilityRow.next_state !== 'active' ||
-    !Number.isFinite(compatibilityEventCreatedAt) ||
-    compatibilityEventCreatedAt > now.getTime() ||
-    compatibilityRow.idempotency_key !== controllerDualRoleAccessIdempotencyKey(keys.householdId) ||
-    !expectedCompatibilityRequestHash
-  ) {
+  const compatibilityBlockers: ControllerDualRoleCompatibilityAccessDiagnosticCode[] = [];
+  if (compatibility.rows.length !== 1 || !compatibilityRow) {
+    compatibilityBlockers.push('compatibility_access_cardinality_mismatch');
+  } else {
+    if (
+      compatibilityRow.portal_account_key !== config.accountKey ||
+      compatibilityRow.portal_product_key !== config.productKey ||
+      compatibilityRow.portal_display_name !== manifest.adult.household_display_name ||
+      compatibilityRow.portal_status !== 'active' ||
+      Number(compatibilityRow.portal_version) !== 1
+    ) {
+      compatibilityBlockers.push('compatibility_access_portal_mismatch');
+    }
+    if (
+      compatibilityRow.state !== 'active' ||
+      compatibilityRow.source_kind !== 'admin_override' ||
+      compatibilityRow.revocation_reason !== null
+    ) {
+      compatibilityBlockers.push('compatibility_access_projection_mismatch');
+    }
+    if (
+      compatibilityRow.source_slot !== 'complimentary' ||
+      compatibilityRow.source_kind_state !== compatibilityRow.source_kind ||
+      compatibilityRow.source_state !== 'active' ||
+      compatibilityRow.source_revocation_reason !== null
+    ) {
+      compatibilityBlockers.push('compatibility_access_source_mismatch');
+    }
+    if (
+      !Number.isFinite(compatibilityEffectiveAt) ||
+      compatibilityEffectiveAt > now.getTime() ||
+      compatibilityEffectiveAt !== accessTransitionCreatedAt ||
+      !Number.isFinite(compatibilityUpdatedAt) ||
+      compatibilityUpdatedAt > now.getTime() ||
+      new Date(String(compatibilityRow.source_effective_at)).getTime() !==
+        compatibilityEffectiveAt ||
+      new Date(String(compatibilityRow.source_updated_at_state)).getTime() !==
+        compatibilityUpdatedAt ||
+      new Date(String(compatibilityRow.event_source_updated_at)).getTime() !==
+        compatibilityUpdatedAt
+    ) {
+      compatibilityBlockers.push('compatibility_access_timing_mismatch');
+    }
+    if (
+      new Date(String(compatibilityRow.source_expires_at)).getTime() !== compatibilityExpiresAt ||
+      compatibilityExpiresAt !== Date.parse(CONTROLLER_DUAL_ROLE_ACCESS_EXPIRES_AT) ||
+      compatibilityExpiresAt <= now.getTime()
+    ) {
+      compatibilityBlockers.push('compatibility_access_expiry_mismatch');
+    }
+    if (
+      Number(compatibilityRow.source_revision) !== 1 ||
+      Number(compatibilityRow.source_revision_state) !== 1 ||
+      Number(compatibilityRow.event_source_revision) !== 1
+    ) {
+      compatibilityBlockers.push('compatibility_access_revision_mismatch');
+    }
+    if (
+      compatibilityRow.policy_version !== CONTROLLER_DUAL_ROLE_PROVISIONING_POLICY ||
+      compatibilityRow.source_policy_version !== CONTROLLER_DUAL_ROLE_PROVISIONING_POLICY
+    ) {
+      compatibilityBlockers.push('compatibility_access_policy_mismatch');
+    }
+    if (
+      compatibilityRow.opaque_source_reference !== expectedCompatibilityReference ||
+      compatibilityRow.source_reference_state !== expectedCompatibilityReference ||
+      compatibilityRow.source_reference_digest !== sha256(expectedCompatibilityReference)
+    ) {
+      compatibilityBlockers.push('compatibility_access_reference_mismatch');
+    }
+    if (
+      compatibilityRow.projection_request_hash !== expectedCompatibilityRequestHash ||
+      compatibilityRow.source_request_hash !== expectedCompatibilityRequestHash ||
+      compatibilityRow.event_request_hash !== expectedCompatibilityRequestHash ||
+      !expectedCompatibilityRequestHash
+    ) {
+      compatibilityBlockers.push('compatibility_access_hash_mismatch');
+    }
+    if (compatibilityRow.source_last_event_key !== compatibilityRow.last_event_key) {
+      compatibilityBlockers.push('compatibility_access_event_link_mismatch');
+    }
+    if (
+      compatibilityRow.event_account_key !== config.accountKey ||
+      compatibilityRow.event_product_key !== config.productKey ||
+      compatibilityRow.event_household_key !== keys.householdId ||
+      compatibilityRow.actor_kind !== 'provisioner' ||
+      compatibilityRow.decision !== 'applied' ||
+      compatibilityRow.event_source_kind !== 'admin_override' ||
+      compatibilityRow.previous_state !== null ||
+      compatibilityRow.next_state !== 'active'
+    ) {
+      compatibilityBlockers.push('compatibility_access_event_body_mismatch');
+    }
+    if (
+      !Number.isFinite(compatibilityEventCreatedAt) ||
+      compatibilityEventCreatedAt > now.getTime()
+    ) {
+      compatibilityBlockers.push('compatibility_access_event_created_mismatch');
+    }
+    if (
+      compatibilityRow.idempotency_key !== controllerDualRoleAccessIdempotencyKey(keys.householdId)
+    ) {
+      compatibilityBlockers.push('compatibility_access_idempotency_mismatch');
+    }
+  }
+  if (compatibilityBlockers.length) {
     blockers.push('compatibility_access_mismatch');
+    transactionalReadback?.diagnosticBlockers.push(...compatibilityBlockers);
   }
   return {
     disposition: blockers.length ? 'blocked' : 'exact_replay',
@@ -1669,12 +1743,15 @@ async function inspectTransactionalReadback(
   keys: TargetKeys,
   now: Date,
 ) {
-  const context: TransactionalReadbackContext = { activeGroup: 'core_identity' };
+  const context: TransactionalReadbackContext = {
+    activeGroup: 'core_identity',
+    diagnosticBlockers: [],
+  };
   try {
     const inspection = await inspectIdentity(db, config, manifest, keys, now, context);
     if (inspection.disposition !== 'exact_replay') {
       throw new ControllerTransactionalReadbackError(
-        transactionalReadbackMismatchDiagnostic(inspection),
+        transactionalReadbackMismatchDiagnostic(inspection, context.diagnosticBlockers),
       );
     }
     return inspection;
