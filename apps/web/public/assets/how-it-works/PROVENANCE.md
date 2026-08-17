@@ -17,14 +17,14 @@ square composition; no crop or upscaling is applied.
 
 The following files are supplied for the landing correction lane. The first
 source was present in the operator's Downloads folder; the second was available
-only from the prompt's packaged reference fallback; the third is the approved
-output from the parallel image lane. No Drive provenance is asserted for these
-assets.
+only from the prompt's packaged reference fallback; the third was superseded by
+the operator-approved launch-day replacement on 2026-08-16. No Drive provenance
+is asserted for these assets.
 
-| Public source file                      | Provenance                          | Original filename                                    |  Dimensions | SHA-256                                                            |
-| --------------------------------------- | ----------------------------------- | ---------------------------------------------------- | ----------: | ------------------------------------------------------------------ |
-| `family-learning-overview.png`          | Packaged prompt reference fallback  | `family-learning-overview.png`                       | 1122 x 1402 | `52185ec4c7b7987cef5a003b3694d33af3916e8f178ccf3270c6c5a33477a171` |
-| `student-learning-mishnayos-source.png` | Approved parallel image lane output | `how-it-works-step-3-student-learning-mishnayos.png` | 1254 x 1254 | `f420735890925430e1c9064cb5b35119cd75a32e864c89b326eafca9e7c99c29` |
+| Public source file                      | Provenance                               | Original filename                             |  Dimensions | SHA-256                                                            |
+| --------------------------------------- | ---------------------------------------- | --------------------------------------------- | ----------: | ------------------------------------------------------------------ |
+| `family-learning-overview.png`          | Packaged prompt reference fallback       | `family-learning-overview.png`                | 1122 x 1402 | `52185ec4c7b7987cef5a003b3694d33af3916e8f178ccf3270c6c5a33477a171` |
+| `student-learning-mishnayos-source.png` | Operator-approved launch-day replacement | `ChatGPT Image Aug 16, 2026, 04_54_23 PM.png` | 1254 x 1254 | `c8b067d20016d7df59ce2d0f4ee9e3184170693f2cfd2e23f9ce60a52ccd2576` |
 
 The corresponding 480px, 800px, and 1254px WebP derivatives use Sharp 0.35.3
 at `quality: 82` and `effort: 6`, without upscaling. The landing social image
