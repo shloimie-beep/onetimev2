@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "status": "pass",
+  "render_count": 8,
+  "creative_count": 6,
+  "registry_asset_count": 10,
+  "registry_schema": "content-asset.v1",
+  "minimum_contrast_ratio": 4.85,
+  "safe_zone_ratio": 0.07,
+  "safe_zone_renders_passed": 6,
+  "pillow_geometry_items_asserted": 63,
+  "cp002_feed_url_bottom_buffer_px": 8,
+  "phone_content_viewport": "390x844",
+  "deterministic_rerender": "byte_exact",
+  "student_bearing_derivatives": 0,
+  "publication_events": 0,
+  "provider_writes": 0,
+  "checks": [
+    "source hashes",
+    "render dimensions and checksums",
+    "contact sheet and phone proof",
+    "7% foreground safe zones",
+    "Pillow-derived logo/glyph/CTA/rule geometry and exact unions",
+    "CP002 feed URL bottom buffer beyond 7% inset",
+    "exact 390x844 phone content viewport",
+    "content asset JSON Schema",
+    "creative manifest exact CTA and destination",
+    "package registry linkage",
+    "WCAG 2.2 AA contrast",
+    "byte-exact deterministic rerender",
+    "zero external effects"
+  ]
+}

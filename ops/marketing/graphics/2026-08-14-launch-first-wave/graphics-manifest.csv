@@ -1,0 +1,7 @@
+creative_id,asset_id,package_id,hook,format,filename,workflow_state,contains_student,contains_rabbi,source_asset_id,cta,destination,operator_approval
+OTM-CR-202608-001-V01,OTM-A000003,OTM-CP-001,Classes Start Sunday,feed_4x5,OTM-CP-001-feed-1080x1350.png,final_review,false,true,OTM-A000001,GET FREE ACCESS,https://join.onetimeonetime.com,pending
+OTM-CR-202608-001-V02,OTM-A000005,OTM-CP-001,Classes Start Sunday,story_reel_9x16,OTM-CP-001-story-reel-1080x1920.png,final_review,false,true,OTM-A000001,GET FREE ACCESS,https://join.onetimeonetime.com,pending
+OTM-CR-202608-001-V03,OTM-A000007,OTM-CP-001,Classes Start Sunday,social_preview_1200x630,OTM-CP-001-social-preview-1200x630.png,final_review,false,true,OTM-A000001,GET FREE ACCESS,https://join.onetimeonetime.com,pending
+OTM-CR-202608-002-V01,OTM-A000004,OTM-CP-002,Get Free Access,feed_4x5,OTM-CP-002-feed-1080x1350.png,final_review,false,true,OTM-A000001,GET FREE ACCESS,https://join.onetimeonetime.com,pending
+OTM-CR-202608-002-V02,OTM-A000006,OTM-CP-002,Get Free Access,story_reel_9x16,OTM-CP-002-story-reel-1080x1920.png,final_review,false,true,OTM-A000001,GET FREE ACCESS,https://join.onetimeonetime.com,pending
+OTM-CR-202608-002-V03,OTM-A000008,OTM-CP-002,Get Free Access,social_preview_1200x630,OTM-CP-002-social-preview-1200x630.png,final_review,false,true,OTM-A000001,GET FREE ACCESS,https://join.onetimeonetime.com,pending
