@@ -103,6 +103,7 @@ describe('Parent protected-content list, player, and progress journey', () => {
     await expect(
       createPostgresParentLearningRepository(pool, {
         accountKey: config.accountKey,
+        clock: () => new Date(observedAt),
       }).loadOwnedParticipant({
         role: 'parent',
         adult_id: first.adultId,
