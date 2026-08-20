@@ -1,157 +1,155 @@
-# One Time Agent Operating Guide
+# One Time Repository Guide
 
-## Complete production launch authority — 2026-08-05
+## Purpose and boundaries
 
-The active root goal and the single integration branch
-`codex/one-time-complete-production-launch-20260805` own the complete One Time
-launch through production acceptance. The authoritative launch brief is
-`C:\Users\User\Downloads\ONE-TIME-FULL-PRODUCTION-LAUNCH-CODEX-GOAL.md`.
-It supersedes the old Ready/claim/lease/control-tower process and any conflicting
-date, copy, provider, or activation restriction below. Historical ledgers remain
-read-only evidence and are not release gates.
+One Time is the standalone application for households, parents, students, Rabbi-led
+learning, and the supporting adult operations needed to run it. BNA is a separate
+workspace and application. Platform Console is a later, separate control plane.
 
-Legacy governance compatibility remains pointer-only through
-`ops/goals/CURRENT.yaml` and `ops/goals/OT-LAUNCH-01/BOARD.yaml`; those files are
-read-only coordination evidence, not product authority. HighLevel desired state
-continues to resolve through
-`integrations/highlevel/registry/workflow-registry.yaml`.
+This repository owns application identity, households, child privacy, enrollment,
+classroom access, moderated learning, worksheets, badges, library entitlement, and
+the read-only in-app transactional delivery history. It does not make One Time a
+BNA surface or a replacement for a future Platform Console.
 
-Product paths and real user journeys take priority over control metadata. No
-Ready entry, claim file, lease renewal, terminal packet, steward request, or
-copied chat report is required. Focused safety verification, migration
-integrity, provider idempotency, adult consent and suppression, child-data
-boundaries, rollback, and final production acceptance remain mandatory.
+HighLevel (GHL) owns adult CRM, adult email/conversations, pipelines,
+opportunities, suppression, and staff follow-up. Students never become GHL contacts.
+Zoom and Vimeo are providers, never identity or entitlement authorities. Resend owns
+security email. Billing and external providers remain safety-sensitive boundaries.
 
-The standing operator authority in the launch brief permits bounded repository,
-Railway, HighLevel, Resend, Stripe, Zoom, Vimeo, Drive, DNS, Forward Email, and
-Telegram work, progressive deployments, and operator-owned canaries. It never
-permits exposing secrets or child data, creating Student contacts in HighLevel,
-uncontrolled sends, unintended charges, changing existing Stripe/Replit
-subscribers, or retrying an unknown external effect before reconciliation.
+## Authority order
 
-Locked launch replacements are: first class
-`2026-08-16T19:00:00+03:00`; free access ends
-`2026-09-11T18:00:00+03:00`; public Rabbi identity
-`Rabbi Eli Scheller <rabbielischeller@onetimeonetime.com>`; operational identity
-`info@onetimeonetime.com`; no WhatsApp lead assistant, Buffer, Class Helper,
-demo/test-lab/preview product surface; and Tisha B'Av assets remain an archived,
-inactive reusable template.
+Use the first applicable source in this order:
 
-# One Time v2.1 current authority
+1. Explicit operator authorization in the current task or GitHub issue.
+2. The relevant current OpenSpec capability in openspec/specs/.
+3. This stable repository guide and DESIGN.md.
+4. The linked GitHub Issue, Project item, or PR for execution state and review.
+5. Code, tests, and generated artifacts for implementation evidence.
 
-The sole current product repository is `shloimie-beep/onetimev2`.
+ops/launch/ONE-TIME-AUTHORITY-INDEX.md identifies historical records. Historical
+Boards, packets, emergency handoffs, snapshots, runbooks, and deployed-source claims
+are evidence only unless a current OpenSpec change or GitHub task explicitly adopts a
+bounded fact from them.
 
-For One Time v2.1, authority is ordered:
+## Required read order
 
-1. `ops/v2.1-execution/source-spec/03-DECISION-REGISTER-v2.1.md`;
-2. the remaining locked documents in `ops/v2.1-execution/source-spec/`, with
-   `02-ACCEPTANCE-CONTRACT-v2.1.yaml` defining acceptance;
-3. `ops/v2.1-execution/PACKAGE-LOCK.yaml` and `EXECUTION-CONTRACT.md`;
-4. the assigned task packet and checksum-bound task context;
-5. candidate-bound result records for status only.
+Before material work, read:
 
-The old launch Board, old acceptance IDs, old goal/current files, v2.0 drafts,
-preview/demo/test-lane definitions, and historical handoffs are evidence only.
-They may not define product behavior, completion status, or work priority.
+1. This file.
+2. README.md and DESIGN.md when the task touches orientation or UI.
+3. The relevant openspec/specs/<track>/spec.md capability.
+4. The linked GitHub Issue/Project/PR and its exact remote head.
+5. Only the narrow source, test, result, or historical evidence needed for the
+   unresolved delta.
 
-The reviewed implementation baseline is commit `73dda293079f602c83929d1bbccb8dd5b9d1a455` on
-`codex/one-time-launch-convergence-20260727` (PR #130). Do not branch v2.1 work from default `main` and
-do not use a synthetic PR merge SHA. Every later task starts from the exact SHA
-authorized on remote `codex/v21-control` in
-`ops/v2.1-execution/control/READY-QUEUE.yaml`; never trust a stale worktree copy
-of that queue.
+For a material One Time action, classify an operator statement as VISION,
+LAUNCH DECISION, LATER, OFF, QUESTION, or AUTHORIZED ACTION. Brainstorming is never
+authorization to change code, production, providers, accounts, or data.
 
-Every Codex task is `START_OR_RESUME`. Its remote branch and committed files
-under `ops/v2.1-execution/runtime/<TASK-ID>/` are durable memory. If their
-digests match, resume `next_action`; do not repeat a repository-wide audit or
-reconsider locked v2.1 decisions.
+## Track routing
 
-The root launch goal owns shared hotspots, migrations, generated registries,
-provider contracts, integration, deployments, and final proof. Bounded lanes
-change only their assigned non-overlapping scopes.
+Route work to one primary OpenSpec track:
 
-No task is complete because code exists or a branch check passed. Release
-completion requires every release-blocking acceptance case to pass against the
-same immutable candidate. Each case must run only in one of its own allowed
-environments from `ACCEPTANCE-ENVIRONMENT-MATRIX.yaml`; there is deliberately
-no requirement that all cases share one environment. Release also requires zero
-stale evidence, unexpected effects, unauthorized waivers, fictional fixtures,
-exposed child data, raw Zoom or Vimeo bearers, Student GHL contacts, or
-failed/untested/placeholder controls.
+| Track                    | Owns                                                    |
+| ------------------------ | ------------------------------------------------------- |
+| product                  | product boundary and launch scope                       |
+| ui-shell                 | cross-role navigation and visual shells                 |
+| parent-experience        | Parent learning and household journeys                  |
+| student-experience       | Student learning and safe support journeys              |
+| identity-access          | account, household, privacy, and entitlement boundaries |
+| classroom-zoom           | recurring class and provider boundary                   |
+| content-media            | library and protected media boundary                    |
+| communications           | app history and adult GHL coordination                  |
+| billing-access           | billing and access policy                               |
+| operations-control-plane | repository operations and execution hygiene             |
 
-## Architecture Invariants
+Create an OpenSpec change for a material behavior or interface decision. Use a small
+source-only task for documentation, test repair, and operating-system maintenance
+when it does not alter product behavior.
 
-- This repository is standalone. Do not copy BNA `server.js`, Operations shell,
-  generated Operations assets, provider runtime, Studio, agents, memory,
-  secrets, or broad migrations.
-- Stack: Node.js 24, TypeScript, Express 5, Vite, PostgreSQL through `pg`,
-  parameterized SQL, forward-only checksummed migrations, and transactional
-  outbox.
-- Public and authenticated bundles are separate. Public routes must not import
-  React or the future CRM bundle.
-- Public pages are static Vite-built HTML plus minimal enhancement; no React
-  hydration on landing or signup.
-- Authenticated application routes may use route-chunked React after a future
-  CRM implementation packet.
-- No runtime schema creation in the web process. Use `npm run db:migrate`.
+## Branch and PR policy
 
-## Brand And Product
+- Never work directly on main; it is an old foundation, not the current
+  integration base.
+- Start from the exact remote base named by the linked GitHub task or PR. Re-fetch
+  that head before editing; do not substitute a synthetic merge SHA.
+- Use a descriptive topic branch and one focused Draft PR per coherent change.
+- Do not push directly to main, force-push, or create a second competing
+  controller, Board, packet graph, claim/lease system, or task board.
+- Inspect git status and diffs before staging. In the contaminated Windows
+  checkout, never use git add -A, git add ., or git add --all; stage only
+  explicit intended paths.
+- Never stage .secrets, credentials, local artifacts, generated output, or
+  unrelated user changes. Do not reset, clean, overwrite, or discard another
+  worktree's changes.
+- A merge changes BUILT to MERGED; a deployment changes MERGED to
+  DEPLOYED; only a real operator journey can establish OPERATOR ACCEPTED.
 
-- One Time brand is black + yellow with restrained ice/cyan accents.
-- BNA cream/navy/teal styling is out of scope.
-- Customer-facing UI calls Shloimie `Admin`; internal architecture may refer to
-  Rabbi as account owner.
-- Do not expose `View as Rabbi`, BNA workspace keys, Operations diagnostics, or
-  Super Admin controls in customer UI.
-- Canonical brand rules live in `packages/brand-system/manifest/one-time-brand.v1.json`
-  and `packages/brand-system/manifest/one-time-brand.schema.json`.
-- Static public pages use `@onetime/brand-system/static`; authenticated React
-  surfaces use `@onetime/brand-system/react`.
-- Canonical primitives and shell pieces live under
-  `packages/brand-system/src/primitives/`, `packages/brand-system/src/shells/`,
-  and `packages/brand-system/src/styles/`.
-- Route-to-shell assignments live in `packages/brand-system/src/route-branding.ts`.
-- Run `npm run brand:check` before changing visible UI. Raw colors, font-family
-  declarations, route-wide runtime style injection, and route-local core
-  component definitions require exact checked exceptions in
-  `packages/brand-system/src/styles/exceptions.json`.
-- Do not create route-local Header, Footer, Button, Toolbar, Drawer, Dialog,
-  Card, form-control, table, badge, alert, or state primitives when the
-  canonical package can be composed instead.
+## Product and provider safety
 
-## Repository Integration Guidance
+- One Time is parent-first: the Parent learns under the Parent identity and does
+  not consume one of the three child Student accounts.
+- The immediate class is one recurring Sunday–Thursday 7:00 PM Asia/Jerusalem
+  class, presented as Next Class rather than a launch-month grid.
+- Bind one pre-created recurring Zoom meeting. Do not create per-occurrence
+  meetings or Student registrants. Keep authorization, questions, attendance,
+  recordings, and audit occurrence-scoped in One Time.
+- Keep Rabbi-moderated private prompts, one worksheet round trip, and three fixed
+  launch badges. Points, reward catalogs, public/class leaderboards, parent goals,
+  editable badge rules, and extra badge levels are later or off.
+- GHL work must be adult-only, provider-scoped, and covered by an exact authorized
+  GHL job. Default to no send, no publish, no activation, and no enrollment.
+- Do not create Student GHL contacts. Do not send credentials to GHL. Keep adult
+  suppression and reply routing intact.
+- Do not deploy, mutate providers, send messages, charge cards, or retry an
+  unknown external effect without explicit authorization and exact reconciliation.
+- Keep secrets, cookies, tokens, child-private data, raw provider links, and
+  replayable provider values out of source, logs, evidence, PRs, and chat.
 
-- HighLevel automation desired state is edited only in
-  `integrations/highlevel/registry/workflow-registry.yaml`. Its
-  `integrations/highlevel/workflows.yaml`,
-  `integrations/highlevel/registry/current.json`, and
-  `integrations/highlevel/registry/WORKFLOW-CONTROL-REPORT.md` projections are
-  generated and read-only.
+## Design and implementation rules
 
-## Safety
+- DESIGN.md is the durable visual contract derived from the brand manifest.
+  Keep the manifest as the implementation source until a separately authorized
+  migration replaces it.
+- Use @onetime/brand-system primitives and shells. Do not add route-local core
+  controls, raw palettes, browser-default gray selects, or old-shell flashes.
+- Respect accessible focus, reduced motion, responsive layouts, offline/permission
+  states, and the 44px touch target where applicable.
+- Keep public and authenticated bundles separate. Server-side scope is authoritative;
+  browser payloads never choose account or product scope.
+- Use forward-only, checksummed migrations and parameterized SQL. Do not create
+  runtime schema in the web process.
 
-- No BNA session or cookie is shared.
-- Server derives account/product scope. Browser payloads cannot choose scope.
-- Production and provider work must stay within the standing launch authority,
-  use exact reconciliation and idempotent effects, and keep secret values out of
-  source, logs, evidence, and chat.
-- Sender/reply-to and owner-test destinations come only from protected
-  configuration.
-- Public repeat submissions must not reveal whether another person exists.
+## Standard verification
 
-## Verification
+Run the smallest valid check while iterating, then the applicable final gate:
 
-- Run focused tests before committing.
-- Landing/signup visual work must be checked at 360x800, 390x844, tablet, and
-  desktop.
-- Performance gates use visible/user-centered marks, LCP <= 2.5s, CLS <= 0.1,
-  no horizontal overflow, and public bundle separation from the future CRM
-  bundle.
+    npm run source-truth:check
+    npm run openspec:validate
+    npm run design:lint
+    npm run secret:scan
+    npm run format
+    npm run lint
+    npm run typecheck
+    npm run integration
+    npm run build
 
-## One Time product-lead control
+For auth, privacy, mutation, or provider boundaries, include one focused negative
+test. Run browser suites only when the changed files require them. Reconcile every
+external effect before retrying. A green test is evidence, not operator acceptance.
 
-Before a material One Time action, read the current launch STATUS/EXECPLAN and only the relevant locked decision, acceptance case, result, and exact merged/deployed source. Classify natural-language statements as `VISION`, `LAUNCH DECISION`, `LATER`, `OFF`, `QUESTION`, or `AUTHORIZED ACTION`; brainstorming is not authorization to change code, providers, accounts, deployment, or production. Update the compact map before implementation, choose risk-sized verification, preserve the complete endgame, and present at most one operator action. Use the discoverable `one-time-product-lead` skill for this workflow. Do not repeat broad provider or architecture audits.
+## Reporting
 
-The current Initial Launch Scope Lock requires basic protected Zoom classroom entry and one real protected library video. Stage Host and OBS controls remain later enhancements; BNA task management and Telegram monitoring remain outside the initial-launch critical path. Buffer/Social is OFF. Do not broaden or restore deferred capability without a newer explicit OT-CTRL decision.
+Use concise, operator-visible updates:
 
-Family signup displays one required, initially unchecked agreement control. Record precise backend agreement/consent facts from that one action; never add a second marketing checkbox, send passwords to GHL, create Student GHL contacts, or treat marketing withdrawal as service/account/class withdrawal.
+    [OT-CTRL]
+    Current launch stage:
+    What changed:
+    What is proven:
+    What remains:
+    Agents working (max 3):
+    Your action (zero or one):
+    Source-of-truth state updated:
+
+Do not claim completion from code volume, a merge, a deployment, or a provider
+toggle. Record the exact source and the real operator-visible journey that passed.

@@ -1,5 +1,11 @@
 # One Time — Current Launch Handoff
 
+> **Historical emergency handoff — superseded on 2026-08-20.** Current work starts
+> with [ONE-TIME-AUTHORITY-INDEX.md](./ONE-TIME-AUTHORITY-INDEX.md), then the
+> relevant OpenSpec capability and GitHub Issue/PR. The body below is retained as
+> evidence only: it grants no current deployment, provider, send, launch-clock, or
+> worker-routing authority.
+
 **Updated:** 2026-08-16 17:20 Asia/Jerusalem  
 **Class time:** 2026-08-16 19:00 Asia/Jerusalem  
 **Status:** **EMERGENCY LAUNCH WINDOW — SAFE MINIMUM ONLY**  

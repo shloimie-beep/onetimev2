@@ -1,11 +1,17 @@
 node_modules/
 dist/
+.next/
 coverage/
 playwright-report/
 test-results/
+.tmp-lighthouse/
+lighthouse-report/
+lighthouse-results/
+tsconfig.tsbuildinfo
 .env
 .env.*
 !.env.example
+.secrets/
 .DS_Store
 *.log
 tmp/

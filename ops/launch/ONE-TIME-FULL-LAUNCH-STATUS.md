@@ -1,5 +1,10 @@
 # One Time Launch Status
 
+> **Historical status snapshot — superseded on 2026-08-20.** For current authority,
+> use [ONE-TIME-AUTHORITY-INDEX.md](./ONE-TIME-AUTHORITY-INDEX.md), OpenSpec, and
+> the linked GitHub Issue/PR. The retained body below is not current deployment,
+> provider, acceptance, or task-routing truth.
+
 Snapshot: 2026-08-11 (Asia/Jerusalem)
 
 ## Current Parent-first decision (2026-08-16)

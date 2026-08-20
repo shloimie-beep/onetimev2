@@ -1,0 +1,27 @@
+schema: spec-driven
+
+context: |
+  Language: en.
+  Current source of truth is the capability set in openspec/specs/.
+  GitHub Issues/Projects and PRs hold task and execution state.
+  Historical Boards, packets, emergency launch handoffs, and deployment snapshots
+  are evidence only unless a current task explicitly adopts a bounded fact.
+  OpenSpec telemetry is disabled for repository commands through
+  scripts/ops/run-openspec.mjs.
+
+rules:
+  spec:
+    - Preserve locked One Time boundaries and label later/off work explicitly.
+    - Do not introduce a new editable task board, claim/lease mechanism, or control tower.
+  proposal:
+    - State the user outcome, scope, non-goals, verification, and operator-visible acceptance.
+  tasks:
+    - Keep one primary track and list only executable, reviewable work.
+operations:
+  apply:
+    guidance:
+      - Re-fetch the linked remote base before editing and use focused verification.
+      - Do not deploy or mutate providers without explicit authorization.
+  archive:
+    guidance:
+      - Record the exact merged source and operator-visible acceptance separately.
