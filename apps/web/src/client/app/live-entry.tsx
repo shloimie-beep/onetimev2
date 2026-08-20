@@ -17,8 +17,8 @@ import { WorkspaceTabs } from './shell/WorkspaceTabs.js';
 import './crm.css';
 import { startZoomMeetingProductionBasic } from './zoom-meeting-sdk-client.ts';
 import {
-  readProductionBasicReadiness,
-  requestProductionBasicLaunch,
+  readHostProductionBasicReadiness,
+  requestHostProductionBasicLaunch,
   startAndConfirmProductionBasicHostLive,
 } from '../classroom/production-basic-launch-client.ts';
 
@@ -94,7 +94,7 @@ function LiveConsole() {
 
   useEffect(() => {
     if (!session) return;
-    void readProductionBasicReadiness(session.csrf_token)
+    void readHostProductionBasicReadiness(session.csrf_token)
       .then(setProductionBasicReady)
       .catch(() => setProductionBasicReady(false));
   }, [session?.csrf_token]);
@@ -102,8 +102,7 @@ function LiveConsole() {
   async function startProductionBasic() {
     if (!session) return;
     try {
-      const artifact = await requestProductionBasicLaunch(session.csrf_token);
-      if (artifact.role !== 1 || !artifact.zak) throw new Error('Classroom is unavailable.');
+      const artifact = await requestHostProductionBasicLaunch(session.csrf_token);
       await startAndConfirmProductionBasicHostLive({
         csrfToken: session.csrf_token,
         startMeeting: (onMeetingStatus) =>

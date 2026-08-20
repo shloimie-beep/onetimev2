@@ -11,8 +11,8 @@ import {
   type ZoomParticipantJoinInput,
 } from '../../zoom-meeting-sdk-client.ts';
 import {
-  readProductionBasicReadiness,
-  requestProductionBasicLaunch,
+  readStudentProductionBasicReadiness,
+  requestStudentProductionBasicLaunch,
 } from '../../../classroom/production-basic-launch-client.ts';
 import {
   StudentClassroomApiError,
@@ -86,7 +86,7 @@ export function StudentClassroomWorkspace({
     setBusy(false);
     productionBasicActive.current = false;
     lastJoinMode.current = 'legacy';
-    void readProductionBasicReadiness(csrfToken)
+    void readStudentProductionBasicReadiness(csrfToken)
       .then(setProductionBasicReady)
       .catch(() => setProductionBasicReady(false));
     return () => {
@@ -200,7 +200,7 @@ export function StudentClassroomWorkspace({
     setStatus('joining');
     setBusy(true);
     try {
-      const artifact = await requestProductionBasicLaunch(csrfToken);
+      const artifact = await requestStudentProductionBasicLaunch(csrfToken);
       await joinZoomMeetingProductionBasic({
         sdkWebVersion: artifact.sdk_web_version,
         meetingNumber: artifact.meeting_number,

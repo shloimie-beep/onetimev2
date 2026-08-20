@@ -55,6 +55,7 @@ export type ParentProductionBasicLaunchArtifact = {
   signature: string;
   user_name: string;
   leave_path: '/app/parent';
+  zak?: never;
   issued_at: string;
   expires_at: string;
   raw_join_url_present: false;
@@ -274,7 +275,7 @@ function requireClassLaunchAction(action: ParentLearningActionDescriptor) {
   if (
     action.kind !== 'class_launch' ||
     action.method !== 'POST' ||
-    action.href !== '/api/v1/classroom/production-basic/launch'
+    action.href !== '/api/v1/portals/parent/classroom/production-basic/launch'
   ) {
     throw invalidAction();
   }
@@ -298,6 +299,7 @@ function requireParentLaunchArtifact(value: ParentProductionBasicLaunchArtifact)
     value.mode !== 'production_basic' ||
     value.role !== 0 ||
     value.leave_path !== '/app/parent' ||
+    'zak' in value ||
     value.raw_join_url_present !== false ||
     value.video_start_model !== 'PARTICIPANT_CONSENT' ||
     !hasNonEmptyStrings(value, [

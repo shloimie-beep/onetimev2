@@ -2,7 +2,12 @@ import type { AddressInfo } from 'node:net';
 import { createHash } from 'node:crypto';
 import express from 'express';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { createProductionBasicRouter, type ProductionBasicLaunchFailureEvent } from './router.ts';
+import {
+  createAdminProductionBasicRouter,
+  createParentProductionBasicRouter,
+  createStudentProductionBasicRouter,
+  type ProductionBasicLaunchFailureEvent,
+} from './router.ts';
 import {
   createCanonicalProductionBasicMeetingBinding,
   createProductionBasicLaunchService,
@@ -148,6 +153,7 @@ describe('production-basic Meeting SDK launch', () => {
       .mockResolvedValue(true);
     const studentBaseUrl = await start({
       actor: STUDENT,
+      boundary: 'host',
       issue: async () => artifact(0),
       confirm: studentConfirm,
     });
@@ -180,6 +186,7 @@ describe('production-basic Meeting SDK launch', () => {
       .mockResolvedValue(undefined);
     const studentBaseUrl = await start({
       actor: STUDENT,
+      boundary: 'host',
       issue: async () => artifact(0),
       clear: studentClear,
     });
@@ -272,6 +279,33 @@ describe('production-basic Meeting SDK launch', () => {
       expect((await post(baseUrl, '/launch')).status).toBe(403);
       expect(issue).not.toHaveBeenCalled();
     }
+  });
+
+  it('fails a dual-session conflict before artifact, ZAK, provider, or live-marker work', async () => {
+    const issue = vi.fn(async () => artifact(1));
+    const confirm = vi.fn<ProductionBasicHostLiveMarker['confirm']>().mockResolvedValue(true);
+    const clear = vi.fn<ProductionBasicHostLiveMarker['clear']>().mockResolvedValue(undefined);
+    const baseUrl = await start({
+      actor: null,
+      boundary: 'host',
+      identityStatus: 'session_context_conflict',
+      issue,
+      confirm,
+      clear,
+    });
+
+    for (const path of ['/launch', '/host-live', '/host-ended']) {
+      const response = await post(baseUrl, path);
+      expect(response.status).toBe(409);
+      await expect(response.json()).resolves.toEqual({
+        success: false,
+        code: 'SESSION_CONTEXT_CONFLICT',
+        message: 'Your session context changed. Please sign in again.',
+      });
+    }
+    expect(issue).not.toHaveBeenCalled();
+    expect(confirm).not.toHaveBeenCalled();
+    expect(clear).not.toHaveBeenCalled();
   });
 
   it('requires an injected, current read-only verification receipt even when canonical config exists', async () => {
@@ -474,6 +508,8 @@ function verifiedReceipt(meetingId: string) {
 
 async function start(input: {
   actor: ProductionBasicActor | null;
+  boundary?: 'student' | 'parent' | 'host';
+  identityStatus?: 'session_context_conflict';
   csrfVerified?: boolean;
   issue?: (input: {
     actor: ProductionBasicActor;
@@ -510,14 +546,25 @@ async function start(input: {
   });
   const app = express();
   app.use(
-    createProductionBasicRouter({
+    (input.boundary === 'parent' || (!input.boundary && input.actor?.kind === 'parent')
+      ? createParentProductionBasicRouter
+      : input.boundary === 'host' ||
+          (!input.boundary && (input.actor?.kind === 'admin' || input.actor?.kind === 'rabbi'))
+        ? createAdminProductionBasicRouter
+        : createStudentProductionBasicRouter)({
       service,
       onLaunchFailure: input.onLaunchFailure,
       identities: {
         resolve: async () =>
-          input.actor === null
-            ? null
-            : { actor: input.actor, csrf_verified: input.csrfVerified ?? true },
+          input.identityStatus
+            ? { status: input.identityStatus }
+            : input.actor === null
+              ? { status: 'missing' as const }
+              : {
+                  status: 'resolved' as const,
+                  actor: input.actor,
+                  csrf_verified: input.csrfVerified ?? true,
+                },
       },
     }),
   );
@@ -534,21 +581,24 @@ function artifact(
     ? '/app/student'
     : '/app/live-console',
 ): ProductionBasicLaunchArtifact {
-  return {
+  const shared = {
     mode: 'production_basic',
-    role,
     sdk_web_version: '3.13.2',
     meeting_number: '12345678901',
     meeting_password: 'short-lived-password',
     signature: 'short-lived-signature',
     user_name: role === 0 ? 'Student' : 'Admin',
-    leave_path: leavePath,
     issued_at: '2026-08-12T09:59:00.000Z',
     expires_at: '2026-08-12T10:15:00.000Z',
-    ...(role === 1 ? { zak: 'short-lived-zak' } : {}),
     raw_join_url_present: false,
     video_start_model: 'PARTICIPANT_CONSENT',
-  };
+  } as const;
+  if (role === 1) {
+    return { ...shared, role: 1, leave_path: '/app/live-console', zak: 'short-lived-zak' };
+  }
+  return leavePath === '/app/parent'
+    ? { ...shared, role: 0, leave_path: '/app/parent' }
+    : { ...shared, role: 0, leave_path: '/app/student' };
 }
 
 async function post(baseUrl: string, path: string, body?: unknown) {

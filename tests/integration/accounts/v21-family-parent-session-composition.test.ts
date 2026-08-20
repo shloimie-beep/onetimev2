@@ -786,13 +786,16 @@ describe('I36 central Family-signup and Parent-session composition', () => {
     });
     expect(fourthStudent.status).toBe(409);
 
-    const classroomLaunch = await fetch(`${baseUrl}/api/v1/classroom/production-basic/launch`, {
-      method: 'POST',
-      headers: {
-        cookie: rotatedHostCookie,
-        'x-csrf-token': changedBody.csrf_token,
+    const classroomLaunch = await fetch(
+      `${baseUrl}/api/v1/portals/parent/classroom/production-basic/launch`,
+      {
+        method: 'POST',
+        headers: {
+          cookie: rotatedHostCookie,
+          'x-csrf-token': changedBody.csrf_token,
+        },
       },
-    });
+    );
     expect(classroomLaunch.status).toBe(503);
     await expect(classroomLaunch.json()).resolves.toMatchObject({
       success: false,

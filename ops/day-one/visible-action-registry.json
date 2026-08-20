@@ -24,7 +24,7 @@
     },
     {
       "path": "apps/web/src/server/app.ts",
-      "sha256": "54e8efb281688775e66de9933f3127ba7dc1be1db32922add262b89d39666a1a"
+      "sha256": "36de99fb7739397c8c0c5e8b4906c9563847cf975e31276e7312760f56e31f55"
     },
     {
       "path": "apps/web/src/server/communications/register.ts",
@@ -72,11 +72,11 @@
     },
     {
       "path": "apps/web/src/server/features/classroom/production-basic/router.ts",
-      "sha256": "f68a719a3554e96c4698a35a56f6cc854015fa628ce4a9906c3747e7c157ae99"
+      "sha256": "8b554737a6b789d362f8d32f02429c49c9d34afa772a8f22f2a1c3c49ab3af01"
     },
     {
       "path": "apps/web/src/server/features/classroom/production-basic/service.ts",
-      "sha256": "2a8378aba0ca4fc58e90d43ad2316348e410e215d33e97e5a556b332198d5b9b"
+      "sha256": "eceb4ce538c1a6111acaa2ec0e8820ebec3dec7cd5aed10e84d2849b313cf920"
     },
     {
       "path": "apps/web/src/server/features/learning/router.ts",
@@ -144,7 +144,7 @@
     },
     {
       "path": "apps/web/src/client/app/live-entry.tsx",
-      "sha256": "82d45278b09fb141120c33dd1ee8e19ba90b87f799c8867da3fc8d51ef22ac1c"
+      "sha256": "78d5a2d1af5cc586b29f00246fe18933b63a030b3b506d30263262f01f216f4c"
     },
     {
       "path": "apps/web/src/client/app/zoom-meeting-sdk-client.ts",
@@ -156,7 +156,7 @@
     },
     {
       "path": "apps/web/src/client/app/student/classroom/StudentClassroomWorkspace.tsx",
-      "sha256": "a5c9e859d6a536535a6080d357b37b0b7615af658de3b54fe97d7d20b1549303"
+      "sha256": "749fcb0b82593e0d884a056a90bfc1ed5a7cf79cca10a1d47f491641a3dbb925"
     },
     {
       "path": "apps/web/src/client/app/student/classroom/api.ts",
@@ -176,7 +176,7 @@
     },
     {
       "path": "apps/web/src/client/classroom/production-basic-launch-client.ts",
-      "sha256": "1e3c414ba1c551dfd6b32afda06823ab4ec2d24cc78c97f1eb88512ebc2afca6"
+      "sha256": "734ddbd2c2a61120822beb9d0fadd8285551873efd05e37cc364f096446d11a4"
     },
     {
       "path": "apps/web/src/client/features/portals/PortalFeatures.tsx",
@@ -1682,13 +1682,13 @@
       "capability": "admin:class:start",
       "handler": {
         "method": "POST",
-        "path": "/api/v1/classroom/production-basic/launch"
+        "path": "/api/v1/admin/classroom/production-basic/launch"
       },
       "visibility": {
         "mode": "server_derived",
         "handler": {
           "method": "GET",
-          "path": "/api/v1/classroom/production-basic/status"
+          "path": "/api/v1/admin/classroom/production-basic/status"
         },
         "required_response": {
           "success": true,
@@ -2520,13 +2520,13 @@
       "capability": "parent:class:launch",
       "handler": {
         "method": "POST",
-        "path": "/api/v1/classroom/production-basic/launch"
+        "path": "/api/v1/portals/parent/classroom/production-basic/launch"
       },
       "visibility": {
         "mode": "server_derived",
         "handler": {
           "method": "GET",
-          "path": "/api/v1/classroom/production-basic/status"
+          "path": "/api/v1/portals/parent/classroom/production-basic/status"
         },
         "required_response": {
           "success": true,
@@ -2907,13 +2907,13 @@
       "capability": "student:class:launch",
       "handler": {
         "method": "POST",
-        "path": "/api/v1/classroom/production-basic/launch"
+        "path": "/api/v1/portals/student/classroom/production-basic/launch"
       },
       "visibility": {
         "mode": "server_derived",
         "handler": {
           "method": "GET",
-          "path": "/api/v1/classroom/production-basic/status"
+          "path": "/api/v1/portals/student/classroom/production-basic/status"
         },
         "required_response": {
           "success": true,
