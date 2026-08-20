@@ -26,7 +26,7 @@ test('synthetic Family signup commits safely on mobile', async ({ page }) => {
   await page.getByLabel(/I agree to the Terms/).check();
   await page.getByRole('button', { name: 'Create your Family account' }).click();
   await expect(page).toHaveURL(/\/app\/parent$/u);
-  await expect(page.getByRole('heading', { name: 'Today', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Parent Portal', exact: true })).toBeVisible();
 
   const overflow = await page.evaluate(
     () => document.documentElement.scrollWidth > document.documentElement.clientWidth,

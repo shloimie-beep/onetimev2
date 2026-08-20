@@ -1036,7 +1036,7 @@ test('the real Parent bundle loads the Parent learner without legacy household r
   await page.goto('/app/parent');
 
   const documentsBeforeClassroom = parentDocumentPaths.length;
-  await page.getByRole('link', { name: 'Classroom', exact: true }).click();
+  await page.getByLabel('Primary navigation').getByRole('link', { name: 'Learning' }).click();
   await expect.poll(() => parentDocumentPaths.length).toBe(documentsBeforeClassroom + 1);
   expect(parentDocumentPaths.at(-1)).toBe('/app/parent/classroom');
   expect(classroomShellCsp).toContain("script-src 'self' https://source.zoom.us");
