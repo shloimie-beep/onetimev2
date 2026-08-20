@@ -244,7 +244,7 @@
     },
     {
       "path": "scripts/build-public-pages.ts",
-      "sha256": "06e1533c8d1bb6d3015fbf05f06252cccb5a5f7ca8855ef75dc214f679fa61ee"
+      "sha256": "812ed0c0548f73c53e4fc4074cb7b0c0de93c07de31af83d2ded43c6a7e815ff"
     },
     {
       "path": "scripts/highlevel/workflow-registry-source.ts",
@@ -260,7 +260,7 @@
     },
     {
       "path": "packages/domain/src/landing/content.ts",
-      "sha256": "02127fa30666fb6ef96262148809d7da5c5f4ad6ff0395f12d3042e70d57fd77"
+      "sha256": "0048b2858fa6e861ef0347a019d7916aa2aafd853749dc90dabb241556d2f7e8"
     },
     {
       "path": "packages/domain/src/legal/content.ts",
