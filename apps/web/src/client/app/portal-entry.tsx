@@ -49,6 +49,7 @@ import type {
 } from '../../../../../packages/contracts/src/notifications/student/index.ts';
 import { SupportFeature } from './support/SupportFeature.js';
 import { AppShell, type ShellNavItem, type ShellUser } from './shell/AppShell.js';
+import { SectionTabs } from '@onetime/brand-system/react';
 import {
   PortalApiError,
   changeOwnPassword,
@@ -132,6 +133,7 @@ function PortalApp() {
     portalRole === 'student' && routeLocation.pathname === '/app/student/notifications';
   const studentAccountRoute =
     portalRole === 'student' && routeLocation.pathname === '/app/student/account';
+  const accountTab = new URLSearchParams(routeLocation.search).get('tab') ?? 'profile';
   const studentPrivacyView =
     portalRole !== 'student'
       ? null
@@ -742,206 +744,18 @@ function PortalApp() {
     }
   }
 
-  const navItems = useMemo<ShellNavItem[]>(() => {
-    if (classroomRoute) {
-      return [
-        {
-          id: 'student-portal',
-          label: 'Student Portal',
-          href: '/app/student',
-          current: false,
-        },
-        {
-          id: 'student-classroom',
-          label: 'Classroom',
-          href: classroomOccurrenceId
-            ? `/app/student/class/${encodeURIComponent(classroomOccurrenceId)}`
-            : '/app/student',
-          current: true,
-        },
-      ];
-    }
-    if (v21ParentChrome) {
-      return [
-        {
-          id: 'v21-parent-today',
-          label: 'Today',
-          href: '/app/parent',
-          current: routeLocation.pathname === '/app/parent',
-        },
-        {
-          id: 'v21-parent-classroom',
-          label: 'Classroom',
-          href: '/app/parent/classroom',
-          current: routeLocation.pathname === '/app/parent/classroom',
-        },
-        {
-          id: 'v21-parent-library',
-          label: 'Library',
-          href: '/app/parent/library',
-          current: routeLocation.pathname === '/app/parent/library',
-        },
-        {
-          id: 'v21-parent-questions',
-          label: 'Questions',
-          href: '/app/parent/questions',
-          current: routeLocation.pathname === '/app/parent/questions',
-        },
-        {
-          id: 'v21-parent-students',
-          label: 'Students',
-          href: '/app/parent/students',
-          current: routeLocation.pathname.startsWith('/app/parent/students'),
-        },
-        {
-          id: 'v21-parent-calendar',
-          label: 'Calendar',
-          href: '/app/parent/calendar',
-          current:
-            routeLocation.pathname === '/app/parent/calendar' ||
-            routeLocation.pathname.startsWith('/app/parent/classes/'),
-        },
-        {
-          id: 'v21-parent-progress',
-          label: 'Progress',
-          href: '/app/parent/progress',
-          current: routeLocation.pathname.startsWith('/app/parent/progress'),
-        },
-        {
-          id: 'v21-parent-updates',
-          label: 'Updates',
-          href: '/app/parent/updates',
-          current:
-            routeLocation.pathname === '/app/parent/updates' ||
-            routeLocation.pathname === '/app/parent/newsletter',
-        },
-        {
-          id: 'v21-parent-preferences',
-          label: 'Preferences',
-          href: '/app/parent/preferences',
-          current: routeLocation.pathname === '/app/parent/preferences',
-        },
-        {
-          id: 'v21-parent-support',
-          label: 'Support',
-          href: '/app/parent/support',
-          current: routeLocation.pathname.startsWith('/app/parent/support'),
-        },
-        {
-          id: 'v21-parent-account',
-          label: 'Account',
-          href: '/app/parent/account',
-          current:
-            routeLocation.pathname === '/app/parent/account' ||
-            routeLocation.pathname === '/app/parent/privacy' ||
-            routeLocation.pathname === '/app/parent/data-rights',
-        },
-      ];
-    }
-    if (portalRole === 'parent') {
-      return [
-        {
-          id: 'parent-students',
-          label: 'Students',
-          href: '/app/parent/students',
-          current: activeSection === 'learners',
-        },
-        {
-          id: 'parent-classes',
-          label: 'Classes & materials',
-          href: '/app/parent?section=classes',
-          current: activeSection === 'classes',
-        },
-        {
-          id: 'parent-progress',
-          label: 'Progress & rewards',
-          href: '/app/parent?section=progress',
-          current: activeSection === 'progress',
-        },
-        {
-          id: 'parent-updates',
-          label: 'Updates',
-          href: '/app/parent?section=updates',
-          current: activeSection === 'updates',
-        },
-      ];
-    }
-    return [
-      {
-        id: 'student-today',
-        label: 'Today',
-        href: '/app/student',
-        current: routeLocation.pathname === '/app/student',
-      },
-      {
-        id: 'student-calendar',
-        label: 'Calendar',
-        href: '/app/student/calendar',
-        current: studentCalendarRoute || routeLocation.pathname.startsWith('/app/student/classes/'),
-      },
-      {
-        id: 'student-library',
-        label: 'Library',
-        href: '/app/student/library',
-        current: activeSection === 'library',
-      },
-      {
-        id: 'student-progress',
-        label: 'Progress',
-        href: '/app/student/progress',
-        current: activeSection === 'progress',
-      },
-      {
-        id: 'student-questions',
-        label: 'Questions',
-        href: '/app/student/questions',
-        current: activeSection === 'questions',
-      },
-      {
-        id: 'student-updates',
-        label: 'Updates',
-        href: '/app/student/updates',
-        current: activeSection === 'updates',
-      },
-      {
-        id: 'student-notifications',
-        label: 'Notifications',
-        href: '/app/student/notifications',
-        current: studentNotificationsRoute,
-      },
-      {
-        id: 'student-support',
-        label: 'Support',
-        href: '/app/student/support',
-        current: routeLocation.pathname.startsWith('/app/student/support'),
-      },
-      {
-        id: 'student-account',
-        label: 'Account',
-        href: '/app/student/account',
-        current: studentAccountRoute || studentPrivacyView !== null,
-      },
-    ];
-  }, [
-    activeSection,
-    classroomRoute,
-    portalRole,
-    studentAccountRoute,
-    studentCalendarRoute,
-    studentNotificationsRoute,
-    studentPrivacyView,
-    routeLocation.pathname,
-    v21ParentChrome,
-  ]);
-  const title = supportRoute
-    ? 'Support'
-    : classroomRoute
-      ? 'Classroom'
-      : portalRole === 'parent'
-        ? v21ParentChrome
-          ? v21ParentPageTitle(v21ParentView)
-          : 'Parent Portal'
-        : 'Student Portal';
+  const navigation = useMemo(
+    () =>
+      portalNavigationFor({
+        role: portalRole,
+        pathname: routeLocation.pathname,
+        search: routeLocation.search,
+        billingEnabled: parentDashboard?.billing.enabled === true,
+      }),
+    [parentDashboard?.billing.enabled, portalRole, routeLocation.pathname, routeLocation.search],
+  );
+  const navItems = navigation.primary;
+  const title = portalRole === 'parent' ? 'Parent Portal' : 'Student Portal';
   const description = classroomRoute
     ? 'Protected Student classroom'
     : portalRole === 'parent'
@@ -950,52 +764,66 @@ function PortalApp() {
         (v21ParentChrome ? 'Family learning' : 'Household'))
       : (studentDashboard?.learner.display_name ?? 'Learner');
 
+  function navigatePortal(href: string) {
+    if (href.startsWith('#')) {
+      history.pushState({}, '', href);
+      setRouteLocation(readPortalLocation());
+      document.querySelector(href)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+    const target = new URL(href, location.origin);
+    if (
+      v21ParentSession &&
+      target.origin === location.origin &&
+      parentClassroomDocumentNavigationRequired(routeLocation.pathname, target.pathname)
+    ) {
+      window.location.assign(target.href);
+      return;
+    }
+    const section = target.searchParams.get('section');
+    if (
+      target.pathname === routeLocation.pathname &&
+      section &&
+      isPortalSection(portalRole, section)
+    ) {
+      history.pushState({}, '', target);
+      setRouteLocation(readPortalLocation());
+      setActiveSection(section);
+      return;
+    }
+    history.pushState({}, '', href);
+    const nextLocation = readPortalLocation();
+    const nextRole = portalRoleFromLocation(nextLocation.pathname);
+    setRouteLocation(nextLocation);
+    setActiveSection(portalSectionFromLocation(nextRole, nextLocation));
+    if (v21ParentSession) {
+      window.setTimeout(() => document.getElementById('app-main')?.focus(), 0);
+      return;
+    }
+    void load();
+  }
+
   return (
     <AppShell
       user={session ? shellUserFromSession(session.user) : null}
       navItems={navItems}
       title={title}
       description={description}
+      toolbar={
+        navigation.subcategories.length > 0 ? (
+          <SectionTabs
+            tabs={navigation.subcategories}
+            currentId={navigation.activeSubcategory}
+            label={`${navigation.activePrimary} navigation`}
+            onSelect={(tab) => {
+              if (tab.href) navigatePortal(tab.href);
+            }}
+          />
+        ) : undefined
+      }
       workspaceClassName="app-workspace--portal"
       notice={notice ? <NoticeBanner notice={notice} /> : undefined}
-      onNavigate={(href) => {
-        if (href.startsWith('#')) {
-          history.pushState({}, '', href);
-          setRouteLocation(readPortalLocation());
-          document.querySelector(href)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          return;
-        }
-        const target = new URL(href, location.origin);
-        if (
-          v21ParentSession &&
-          target.origin === location.origin &&
-          parentClassroomDocumentNavigationRequired(routeLocation.pathname, target.pathname)
-        ) {
-          window.location.assign(target.href);
-          return;
-        }
-        const section = target.searchParams.get('section');
-        if (
-          target.pathname === routeLocation.pathname &&
-          section &&
-          isPortalSection(portalRole, section)
-        ) {
-          history.pushState({}, '', target);
-          setRouteLocation(readPortalLocation());
-          setActiveSection(section);
-          return;
-        }
-        history.pushState({}, '', href);
-        const nextLocation = readPortalLocation();
-        const nextRole = portalRoleFromLocation(nextLocation.pathname);
-        setRouteLocation(nextLocation);
-        setActiveSection(portalSectionFromLocation(nextRole, nextLocation));
-        if (v21ParentSession) {
-          window.setTimeout(() => document.getElementById('app-main')?.focus(), 0);
-          return;
-        }
-        void load();
-      }}
+      onNavigate={navigatePortal}
       onLogout={() => void logout()}
       sessionExpired={sessionExpired}
       onSignIn={signIn}
@@ -1012,14 +840,18 @@ function PortalApp() {
       {parentShellBooting ? (
         <ParentPortalLoadingSkeleton title={v21ParentPageTitle(v21ParentView)} />
       ) : supportRoute ? (
-        <SupportFeature
-          receiptId={supportRoute[1] ? decodeURIComponent(supportRoute[1]) : undefined}
-          basePath={portalRole === 'parent' ? '/app/parent/support' : '/app/student/support'}
-          onProtectedStateCleared={() => {
-            setSessionExpired(true);
-            setSession(null);
-          }}
-        />
+        portalRole === 'student' ? (
+          <StudentParentSupportBoundary />
+        ) : (
+          <SupportFeature
+            receiptId={supportRoute[1] ? decodeURIComponent(supportRoute[1]) : undefined}
+            basePath="/app/parent/support"
+            onProtectedStateCleared={() => {
+              setSessionExpired(true);
+              setSession(null);
+            }}
+          />
+        )
       ) : portalRole === 'parent' ? (
         v21ParentSession ? (
           v21ParentView.kind === 'learning' ? (
@@ -1054,6 +886,13 @@ function PortalApp() {
           ) : (
             <ParentHouseholdWorkspace view={v21ParentView.view} />
           )
+        ) : routeLocation.pathname === '/app/parent/account' ? (
+          <PortalAccountPanel
+            role="parent"
+            tab={accountTab}
+            user={session?.user ?? null}
+            onChangePassword={handlePasswordChange}
+          />
         ) : parentAccessShell?.mode === 'paused' ? (
           <ParentPausedShell
             displayName={parentAccessShell.display_name}
@@ -1167,20 +1006,12 @@ function PortalApp() {
       ) : studentPrivacyView ? (
         <StudentPrivacyWorkspace initialView={studentPrivacyView} />
       ) : studentAccountRoute ? (
-        <section className="ot-portal-feature" aria-labelledby="student-account-heading">
-          <div className="ot-panel">
-            <p className="ot-eyebrow">Student account</p>
-            <h2 id="student-account-heading">Account and security</h2>
-            {session ? (
-              <AccountSecurityPanel
-                identifier={session.user.email}
-                role={session.user.role}
-                roleLabel={session.user.role_label}
-                onChangePassword={handlePasswordChange}
-              />
-            ) : null}
-          </div>
-        </section>
+        <PortalAccountPanel
+          role="student"
+          tab={accountTab}
+          user={session?.user ?? null}
+          onChangePassword={handlePasswordChange}
+        />
       ) : (
         <StudentClientRoot
           viewState={viewState}
@@ -1973,9 +1804,16 @@ function portalSectionFromLocation(
   }
   if (
     current.pathname === '/app/parent/calendar' ||
-    current.pathname.startsWith('/app/parent/classes/')
+    current.pathname.startsWith('/app/parent/classes/') ||
+    current.pathname === '/app/parent/classroom' ||
+    current.pathname === '/app/parent/library'
   )
     return 'classes';
+  if (current.pathname === '/app/parent/progress') return 'progress';
+  if (current.pathname === '/app/parent/updates' || current.pathname === '/app/parent/newsletter') {
+    return 'updates';
+  }
+  if (current.pathname === '/app/parent/billing') return 'billing';
   return role === 'parent' ? 'learners' : 'today';
 }
 
@@ -2129,7 +1967,248 @@ function isPortalSection(
   return sections.some((section) => section.id === value);
 }
 
-const root = document.getElementById('portal-root');
-if (root) {
-  createRoot(root).render(<PortalApp />);
+function StudentParentSupportBoundary() {
+  return (
+    <section className="ot-portal-feature" aria-labelledby="student-parent-support-title">
+      <div className="ot-panel">
+        <p className="ot-eyebrow">Technical help</p>
+        <h2 id="student-parent-support-title">Ask your Parent for help</h2>
+        <p>
+          Technical help is handled by your Parent. Ask them to open Parent Portal and contact
+          support; this Student account cannot send technical-support requests.
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function PortalAccountPanel({
+  role,
+  tab,
+  user,
+  onChangePassword,
+}: {
+  role: 'parent' | 'student';
+  tab: string;
+  user: SessionUser | null;
+  onChangePassword: (input: {
+    currentPassword: string;
+    newPassword: string;
+  }) => Promise<{ sessions_invalidated: number }>;
+}) {
+  const security = tab === 'security';
+  return (
+    <section className="ot-portal-feature" aria-labelledby={`${role}-account-heading`}>
+      <div className="ot-panel">
+        <p className="ot-eyebrow">{role === 'parent' ? 'Parent' : 'Student'} account</p>
+        <h2 id={`${role}-account-heading`}>{security ? 'Sign-in & Security' : 'Profile'}</h2>
+        {security && user ? (
+          <AccountSecurityPanel
+            identifier={user.email}
+            role={user.role}
+            roleLabel={user.role_label}
+            onChangePassword={onChangePassword}
+          />
+        ) : (
+          <dl className="ot-stats">
+            <div>
+              <dt>Name</dt>
+              <dd>{user?.display_name ?? 'Protected account'}</dd>
+            </div>
+            <div>
+              <dt>Account</dt>
+              <dd>{user?.email ?? 'Loading profile'}</dd>
+            </div>
+          </dl>
+        )}
+      </div>
+    </section>
+  );
+}
+
+type PortalPrimaryCategory = 'Today' | 'Learning' | 'Family' | 'Updates' | 'Account';
+
+type PortalNavigation = {
+  primary: ShellNavItem[];
+  activePrimary: PortalPrimaryCategory;
+  activeSubcategory: string;
+  subcategories: Array<{ id: string; label: string; href: string }>;
+};
+
+export function portalNavigationFor({
+  role,
+  pathname,
+  search,
+  billingEnabled,
+}: {
+  role: 'parent' | 'student';
+  pathname: string;
+  search: string;
+  billingEnabled: boolean;
+}): PortalNavigation {
+  const querySelection =
+    new URLSearchParams(search).get('tab') ?? new URLSearchParams(search).get('scope');
+  const isParent = role === 'parent';
+  const category: PortalPrimaryCategory = isParent
+    ? parentCategoryForPath(pathname, search)
+    : studentCategoryForPath(pathname);
+  const primaryLabels: PortalPrimaryCategory[] = isParent
+    ? ['Today', 'Learning', 'Family', 'Updates', 'Account']
+    : ['Today', 'Learning', 'Updates', 'Account'];
+  const primary = primaryLabels.map((label) => ({
+    id: `${role}-${label.toLowerCase()}`,
+    label,
+    href: primaryHref(role, label),
+    current: category === label,
+  }));
+  const subcategories = subcategoriesFor({ role, category, billingEnabled });
+  const activeSubcategory =
+    subcategories.find((item) => subcategoryMatches(item.id, pathname, querySelection))?.id ??
+    subcategories[0]?.id ??
+    '';
+  return { primary, activePrimary: category, activeSubcategory, subcategories };
+}
+
+function primaryHref(role: 'parent' | 'student', category: PortalPrimaryCategory): string {
+  if (category === 'Today') return `/app/${role}`;
+  if (category === 'Learning')
+    return role === 'parent' ? '/app/parent/classroom' : '/app/student/calendar';
+  if (category === 'Family') return '/app/parent/students';
+  if (category === 'Updates') return `/app/${role}/updates`;
+  return `/app/${role}/account?tab=profile`;
+}
+
+function parentCategoryForPath(pathname: string, search: string): PortalPrimaryCategory {
+  if (
+    pathname === '/app/parent/progress' &&
+    new URLSearchParams(search).get('scope') === 'students'
+  ) {
+    return 'Family';
+  }
+  if (pathname.startsWith('/app/parent/students') || pathname.startsWith('/app/parent/progress/')) {
+    return 'Family';
+  }
+  if (
+    pathname === '/app/parent/classroom' ||
+    pathname === '/app/parent/library' ||
+    pathname === '/app/parent/questions' ||
+    pathname === '/app/parent/progress' ||
+    pathname === '/app/parent/calendar' ||
+    pathname.startsWith('/app/parent/classes/')
+  ) {
+    return 'Learning';
+  }
+  if (pathname === '/app/parent/updates' || pathname === '/app/parent/newsletter') return 'Updates';
+  if (
+    pathname === '/app/parent/account' ||
+    pathname === '/app/parent/privacy' ||
+    pathname === '/app/parent/data-rights' ||
+    pathname === '/app/parent/billing' ||
+    pathname === '/app/parent/preferences' ||
+    pathname.startsWith('/app/parent/support')
+  ) {
+    return 'Account';
+  }
+  return 'Today';
+}
+
+function studentCategoryForPath(pathname: string): PortalPrimaryCategory {
+  if (
+    pathname === '/app/student/calendar' ||
+    pathname.startsWith('/app/student/classes/') ||
+    pathname.startsWith('/app/student/class/') ||
+    pathname === '/app/student/library' ||
+    pathname.startsWith('/app/student/library/') ||
+    pathname === '/app/student/progress' ||
+    pathname.startsWith('/app/student/questions')
+  ) {
+    return 'Learning';
+  }
+  if (pathname === '/app/student/updates' || pathname === '/app/student/notifications')
+    return 'Updates';
+  if (
+    pathname === '/app/student/account' ||
+    pathname === '/app/student/privacy' ||
+    pathname === '/app/student/data-rights' ||
+    pathname.startsWith('/app/student/support')
+  ) {
+    return 'Account';
+  }
+  return 'Today';
+}
+
+function subcategoriesFor({
+  role,
+  category,
+  billingEnabled,
+}: {
+  role: 'parent' | 'student';
+  category: PortalPrimaryCategory;
+  billingEnabled: boolean;
+}): Array<{ id: string; label: string; href: string }> {
+  if (category === 'Learning') {
+    return role === 'parent'
+      ? [
+          { id: 'classroom', label: 'Classroom', href: '/app/parent/classroom' },
+          { id: 'library', label: 'Library', href: '/app/parent/library' },
+          { id: 'progress', label: 'Progress', href: '/app/parent/progress' },
+          { id: 'questions', label: 'Questions', href: '/app/parent/questions' },
+        ]
+      : [
+          { id: 'classroom', label: 'Classroom', href: '/app/student/calendar' },
+          { id: 'library', label: 'Library', href: '/app/student/library' },
+          { id: 'progress', label: 'Progress', href: '/app/student/progress' },
+          { id: 'questions', label: 'Questions', href: '/app/student/questions' },
+        ];
+  }
+  if (role === 'parent' && category === 'Family') {
+    return [
+      { id: 'students', label: 'Students', href: '/app/parent/students' },
+      {
+        id: 'student-progress',
+        label: 'Student Progress',
+        href: '/app/parent/progress?scope=students',
+      },
+    ];
+  }
+  if (category === 'Account') {
+    const account = [
+      { id: 'profile', label: 'Profile', href: `/app/${role}/account?tab=profile` },
+      { id: 'security', label: 'Sign-in & Security', href: `/app/${role}/account?tab=security` },
+      { id: 'privacy', label: 'Privacy', href: `/app/${role}/privacy` },
+    ];
+    if (role === 'parent') {
+      if (billingEnabled)
+        account.push({ id: 'billing', label: 'Billing', href: '/app/parent/billing' });
+      account.push({ id: 'preferences', label: 'Preferences', href: '/app/parent/preferences' });
+    }
+    return account;
+  }
+  return [];
+}
+
+function subcategoryMatches(id: string, pathname: string, accountTab: string | null): boolean {
+  if (id === 'classroom')
+    return /\/app\/(?:parent|student)\/(?:classroom|calendar|classes\/|class\/)/u.test(pathname);
+  if (id === 'library') return pathname.includes('/library');
+  if (id === 'progress')
+    return pathname === '/app/parent/progress' || pathname === '/app/student/progress';
+  if (id === 'student-progress')
+    return pathname === '/app/parent/progress' && accountTab === 'students';
+  if (id === 'questions') return pathname.includes('/questions');
+  if (id === 'students') return pathname.startsWith('/app/parent/students');
+  if (id === 'privacy')
+    return (
+      pathname === '/app/parent/privacy' ||
+      pathname === '/app/student/privacy' ||
+      pathname.includes('/data-rights')
+    );
+  if (id === 'billing') return pathname === '/app/parent/billing';
+  if (id === 'preferences') return pathname === '/app/parent/preferences';
+  return accountTab === id || (id === 'profile' && accountTab === null);
+}
+
+if (typeof document !== 'undefined') {
+  const root = document.getElementById('portal-root');
+  if (root) createRoot(root).render(<PortalApp />);
 }

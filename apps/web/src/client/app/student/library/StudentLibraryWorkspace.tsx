@@ -166,7 +166,13 @@ export function StudentLibraryWorkspace({
         />
       ) : (
         <>
-          {!loading && !error && <p role="status">{view.resultCountLabel}</p>}
+          {!loading && !error && (
+            <p role="status">
+              {view.items.length === 0
+                ? 'The class library is being migrated. Recordings and review materials will begin appearing soon.'
+                : view.resultCountLabel}
+            </p>
+          )}
           <div>
             {view.items.map((item) => (
               <Card key={item.contentId}>

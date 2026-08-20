@@ -949,7 +949,7 @@
       "roles": ["student"],
       "handler": "student.rt-stu-020",
       "readiness_state": "ready",
-      "handler_disposition": "bounded-alias"
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-STU-021",

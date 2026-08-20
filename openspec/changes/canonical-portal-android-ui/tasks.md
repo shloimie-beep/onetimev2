@@ -3,14 +3,14 @@
 - [x] 1.1 Verify the controller SHA and reproduce W12-03 on the accepted base.
 - [x] 1.2 Identify the expired W12 complimentary-access fixture as the immediate
       root cause of the paused Parent shell.
-- [ ] 1.3 Inventory canonical Parent and Student paths, aliases, titles, and
+- [x] 1.3 Inventory canonical Parent and Student paths, aliases, titles, and
       navigation ownership.
 
 ## 2. Implementation
 
 - [x] 2.1 Repair W12 fixture access without changing production billing behavior.
-- [ ] 2.2 Implement the shared role-aware shell, mobile drawer, and contextual tabs.
-- [ ] 2.3 Converge Parent and Student navigation and protected readiness behavior.
+- [x] 2.2 Implement the shared role-aware shell, mobile drawer, and contextual tabs.
+- [x] 2.3 Converge Parent and Student navigation and protected readiness behavior.
 - [ ] 2.4 Add focused role, route, accessibility, and W12 regression coverage.
 
 ## 3. Verification
