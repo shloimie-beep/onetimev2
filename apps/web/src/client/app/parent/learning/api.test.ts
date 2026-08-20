@@ -231,7 +231,7 @@ describe('Parent learning client API', () => {
           label: 'Join class',
           kind: 'class_launch',
           method: 'POST',
-          href: '/api/v1/classroom/production-basic/launch',
+          href: '/api/v1/portals/parent/classroom/production-basic/launch',
           launch_token_ref: null,
           expires_at: '2026-08-16T16:35:00.000Z',
         },
@@ -240,7 +240,7 @@ describe('Parent learning client API', () => {
     ).resolves.toMatchObject({ mode: 'production_basic', leave_path: '/app/parent' });
 
     const [url, request] = fetcher.mock.calls[0] as [string, RequestInit];
-    expect(url).toBe('/api/v1/classroom/production-basic/launch');
+    expect(url).toBe('/api/v1/portals/parent/classroom/production-basic/launch');
     expect(fetcher).toHaveBeenCalledOnce();
     expect(request).toMatchObject({
       method: 'POST',
@@ -252,6 +252,49 @@ describe('Parent learning client API', () => {
       },
     });
     expect(request.body).toBeUndefined();
+  });
+
+  it('rejects a hostile role-1 or ZAK-bearing Parent launch artifact', async () => {
+    const fetcher = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          success: true,
+          data: {
+            launch_artifact: {
+              mode: 'production_basic',
+              role: 1,
+              sdk_web_version: '3.11.2',
+              meeting_number: '12345678901',
+              meeting_password: 'meeting-password',
+              signature: 'header.payload.signature',
+              user_name: 'Admin',
+              leave_path: '/app/live-console',
+              zak: 'host-only',
+              issued_at: '2026-08-16T15:55:00.000Z',
+              expires_at: '2026-08-16T16:35:00.000Z',
+              raw_join_url_present: false,
+              video_start_model: 'PARTICIPANT_CONSENT',
+            },
+          },
+        }),
+        { status: 200, headers: { 'content-type': 'application/json' } },
+      ),
+    );
+    const api = createParentLearningApi({ fetcher });
+    await expect(
+      api.launchClass(
+        {
+          action_key: 'class-launch-hostile',
+          label: 'Join class',
+          kind: 'class_launch',
+          method: 'POST',
+          href: '/api/v1/portals/parent/classroom/production-basic/launch',
+          launch_token_ref: null,
+          expires_at: '2026-08-16T16:35:00.000Z',
+        },
+        'csrf-parent',
+      ),
+    ).rejects.toThrow();
   });
 
   it('rejects non-canonical or cross-origin server actions before making a request', async () => {

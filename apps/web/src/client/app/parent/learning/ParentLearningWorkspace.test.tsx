@@ -41,7 +41,7 @@ const snapshot: ParentLearningSnapshot = {
       label: 'Join class',
       kind: 'class_launch',
       method: 'POST',
-      href: '/api/v1/classroom/production-basic/launch',
+      href: '/api/v1/portals/parent/classroom/production-basic/launch',
       launch_token_ref: null,
       expires_at: '2026-08-16T16:35:00.000Z',
     },

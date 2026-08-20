@@ -45,22 +45,42 @@ export type ProductionBasicActor =
       authorized_to_start: boolean;
     };
 
-export type ProductionBasicLaunchArtifact = {
+type ProductionBasicLaunchArtifactBase = {
   mode: 'production_basic';
-  role: 0 | 1;
   sdk_web_version: string;
   meeting_number: string;
   meeting_password: string;
   signature: string;
   user_name: string;
-  leave_path: '/app/student' | '/app/parent' | '/app/live-console';
   issued_at: string;
   expires_at: string;
-  /** Present only for a host Start; it is never persisted or put in a URL. */
-  zak?: string;
   raw_join_url_present: false;
   video_start_model: 'PARTICIPANT_CONSENT';
 };
+
+export type StudentProductionBasicLaunchArtifact = ProductionBasicLaunchArtifactBase & {
+  role: 0;
+  leave_path: '/app/student';
+  zak?: never;
+};
+
+export type ParentProductionBasicLaunchArtifact = ProductionBasicLaunchArtifactBase & {
+  role: 0;
+  leave_path: '/app/parent';
+  zak?: never;
+};
+
+export type HostProductionBasicLaunchArtifact = ProductionBasicLaunchArtifactBase & {
+  role: 1;
+  leave_path: '/app/live-console';
+  /** Host-only and ephemeral; it is never persisted or put in a URL. */
+  zak: string;
+};
+
+export type ProductionBasicLaunchArtifact =
+  | StudentProductionBasicLaunchArtifact
+  | ParentProductionBasicLaunchArtifact
+  | HostProductionBasicLaunchArtifact;
 
 export interface ProductionBasicMeetingBinding {
   ready(): Promise<boolean>;
@@ -132,7 +152,7 @@ export function createProductionBasicLaunchService(input: {
       const role =
         actor.kind === 'student' || actor.kind === 'parent' ? (0 as const) : (1 as const);
       const artifact = await input.binding.issue({ scope: actor.scope, actor, role, now: clock() });
-      if (!artifact || !validArtifact(artifact, role, clock()))
+      if (!artifact || !validArtifactForActor(artifact, actor, clock()))
         return { disposition: 'unavailable' };
       return { disposition: 'ready', artifact };
     },
@@ -253,7 +273,6 @@ export function createCanonicalProductionBasicMeetingBinding(input: {
       const expiresAt = new Date(now.getTime() + 30 * 60_000);
       const shared = {
         mode: 'production_basic' as const,
-        role,
         sdk_web_version: config.zoomMeetingSdkWebVersion!,
         meeting_number: config.zoomRealControlMeetingId!,
         meeting_password: config.zoomRealControlMeetingPasscode!,
@@ -278,18 +297,22 @@ export function createCanonicalProductionBasicMeetingBinding(input: {
                 ttlSeconds: 30 * 60,
               }),
         user_name: actor.display_name,
-        leave_path:
-          role === 1
-            ? ('/app/live-console' as const)
-            : actor.kind === 'parent'
-              ? ('/app/parent' as const)
-              : ('/app/student' as const),
         issued_at: now.toISOString(),
         expires_at: expiresAt.toISOString(),
         raw_join_url_present: false as const,
         video_start_model: 'PARTICIPANT_CONSENT' as const,
       };
-      return role === 1 ? { ...shared, zak: await hostZak.getHostZakToken() } : shared;
+      if (role === 1) {
+        return {
+          ...shared,
+          role: 1,
+          leave_path: '/app/live-console',
+          zak: await hostZak.getHostZakToken(),
+        };
+      }
+      return actor.kind === 'parent'
+        ? { ...shared, role: 0, leave_path: '/app/parent' }
+        : { ...shared, role: 0, leave_path: '/app/student' };
     },
   };
 }
@@ -379,12 +402,59 @@ export function productionBasicMeetingRefDigest(meetingId: string) {
   return createHash('sha256').update(`production-basic-meeting-v1\0${meetingId}`).digest('hex');
 }
 
-function validArtifact(artifact: ProductionBasicLaunchArtifact, expectedRole: 0 | 1, now: Date) {
+export function isStudentProductionBasicLaunchArtifact(
+  artifact: ProductionBasicLaunchArtifact,
+  now: Date,
+): artifact is StudentProductionBasicLaunchArtifact {
+  return (
+    validArtifactBase(artifact, now) &&
+    artifact.role === 0 &&
+    artifact.leave_path === '/app/student' &&
+    !('zak' in artifact)
+  );
+}
+
+export function isParentProductionBasicLaunchArtifact(
+  artifact: ProductionBasicLaunchArtifact,
+  now: Date,
+): artifact is ParentProductionBasicLaunchArtifact {
+  return (
+    validArtifactBase(artifact, now) &&
+    artifact.role === 0 &&
+    artifact.leave_path === '/app/parent' &&
+    !('zak' in artifact)
+  );
+}
+
+export function isHostProductionBasicLaunchArtifact(
+  artifact: ProductionBasicLaunchArtifact,
+  now: Date,
+): artifact is HostProductionBasicLaunchArtifact {
+  return (
+    validArtifactBase(artifact, now) &&
+    artifact.role === 1 &&
+    artifact.leave_path === '/app/live-console' &&
+    typeof artifact.zak === 'string' &&
+    artifact.zak.trim().length > 0
+  );
+}
+
+function validArtifactForActor(
+  artifact: ProductionBasicLaunchArtifact,
+  actor: ProductionBasicActor,
+  now: Date,
+) {
+  if (actor.kind === 'student') return isStudentProductionBasicLaunchArtifact(artifact, now);
+  if (actor.kind === 'parent') return isParentProductionBasicLaunchArtifact(artifact, now);
+  return isHostProductionBasicLaunchArtifact(artifact, now);
+}
+
+function validArtifactBase(artifact: ProductionBasicLaunchArtifact, now: Date) {
   return (
     artifact.mode === 'production_basic' &&
-    artifact.role === expectedRole &&
     artifact.raw_join_url_present === false &&
     artifact.video_start_model === 'PARTICIPANT_CONSENT' &&
+    artifact.user_name.trim().length > 0 &&
     artifact.meeting_number.trim().length > 0 &&
     artifact.meeting_password.trim().length > 0 &&
     artifact.signature.trim().length > 0 &&

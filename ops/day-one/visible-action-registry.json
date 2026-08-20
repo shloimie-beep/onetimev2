@@ -1682,13 +1682,13 @@
       "capability": "admin:class:start",
       "handler": {
         "method": "POST",
-        "path": "/api/v1/classroom/production-basic/launch"
+        "path": "/api/v1/admin/classroom/production-basic/launch"
       },
       "visibility": {
         "mode": "server_derived",
         "handler": {
           "method": "GET",
-          "path": "/api/v1/classroom/production-basic/status"
+          "path": "/api/v1/admin/classroom/production-basic/status"
         },
         "required_response": {
           "success": true,
@@ -2520,13 +2520,13 @@
       "capability": "parent:class:launch",
       "handler": {
         "method": "POST",
-        "path": "/api/v1/classroom/production-basic/launch"
+        "path": "/api/v1/portals/parent/classroom/production-basic/launch"
       },
       "visibility": {
         "mode": "server_derived",
         "handler": {
           "method": "GET",
-          "path": "/api/v1/classroom/production-basic/status"
+          "path": "/api/v1/portals/parent/classroom/production-basic/status"
         },
         "required_response": {
           "success": true,
@@ -2907,13 +2907,13 @@
       "capability": "student:class:launch",
       "handler": {
         "method": "POST",
-        "path": "/api/v1/classroom/production-basic/launch"
+        "path": "/api/v1/portals/student/classroom/production-basic/launch"
       },
       "visibility": {
         "mode": "server_derived",
         "handler": {
           "method": "GET",
-          "path": "/api/v1/classroom/production-basic/status"
+          "path": "/api/v1/portals/student/classroom/production-basic/status"
         },
         "required_response": {
           "success": true,

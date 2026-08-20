@@ -80,7 +80,7 @@ describe('PostgreSQL Parent learning repository', () => {
         state: 'live',
         launch_action: {
           method: 'POST',
-          href: '/api/v1/classroom/production-basic/launch',
+          href: '/api/v1/portals/parent/classroom/production-basic/launch',
           launch_token_ref: null,
         },
       },

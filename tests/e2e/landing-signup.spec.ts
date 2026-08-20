@@ -694,7 +694,8 @@ test('the real Parent bundle loads the Parent learner without legacy household r
     if (
       pathname === '/api/v1/auth/session' ||
       (pathname.startsWith('/api/v1/portals/parent/') &&
-        !pathname.startsWith('/api/v1/portals/parent/learning')) ||
+        !pathname.startsWith('/api/v1/portals/parent/learning') &&
+        !pathname.startsWith('/api/v1/portals/parent/classroom')) ||
       pathname.startsWith('/api/v1/contact-operations/')
     ) {
       legacyRequests.push(pathname);
@@ -803,7 +804,7 @@ test('the real Parent bundle loads the Parent learner without legacy household r
                 label: 'Join class',
                 kind: 'class_launch',
                 method: 'POST',
-                href: '/api/v1/classroom/production-basic/launch',
+                href: '/api/v1/portals/parent/classroom/production-basic/launch',
                 launch_token_ref: null,
                 expires_at: '2026-08-16T16:35:00.000Z',
               },
@@ -844,7 +845,7 @@ test('the real Parent bundle loads the Parent learner without legacy household r
       }),
     }),
   );
-  await page.route('**/api/v1/classroom/production-basic/launch', async (route) => {
+  await page.route('**/api/v1/portals/parent/classroom/production-basic/launch', async (route) => {
     classLaunchCalls += 1;
     expect(route.request().method()).toBe('POST');
     expect(route.request().postData()).toBeNull();
@@ -867,7 +868,7 @@ test('the real Parent bundle loads the Parent learner without legacy household r
             user_name: 'Bundle Parent',
             leave_path: '/app/parent',
             issued_at: '2026-08-16T15:55:00.000Z',
-            expires_at: '2026-08-16T16:35:00.000Z',
+            expires_at: '2099-08-16T16:35:00.000Z',
             raw_join_url_present: false,
             video_start_model: 'PARTICIPANT_CONSENT',
           },
