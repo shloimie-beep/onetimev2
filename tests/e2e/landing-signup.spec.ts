@@ -35,14 +35,14 @@ test('public landing implements the bounded product-repair contract', async ({ p
   ).toHaveCount(0);
   await expect(page.locator('.hero-eyebrow')).toHaveText('LIVE, ONLINE');
   await expect(page.locator('.hero-subheadline')).toHaveText(
-    'Live Mishnayos is underway. Create your Family account and join the next class.',
+    'Create a free Family account and add up to three Student accounts.',
   );
   await expect(page.locator('.hero-access-detail')).toHaveText(
-    'Try One Time free through September 11. No card required.',
+    'Free through September 11. No credit card required.',
   );
   await expect(page.locator('.hero-supporting, .hero .schedule, .hero-note')).toHaveCount(0);
   const heroCta = page.locator('.hero .hero-cta');
-  await expect(heroCta).toHaveText('Create Family Account');
+  await expect(heroCta).toHaveText('Create Your Free Family Account');
   await expect(heroCta).toHaveAttribute('href', '/signup');
   await expect(page.locator('.hero .hero-cta')).toHaveCount(1);
   await expect(heroCta).toHaveCSS('background-color', 'rgb(255, 212, 0)');
@@ -1197,25 +1197,22 @@ test('campaign remains useful without JavaScript and honors reduced motion and m
     const heroCtaBox = await heroCta.boundingBox();
     expect(heroCtaBox?.height).toBeGreaterThanOrEqual(48);
     if (viewport.width <= 520) {
-      await expect(page.locator('.hero-photo')).toBeHidden();
-      await expect(page.locator('.hero')).toHaveCSS(
-        'background-image',
-        /linear-gradient\(rgba\(5, 5, 5, 0\.62\), rgba\(5, 5, 5, 0\.9\)\), url\(.*hero-classroom-background\.webp.*\)/u,
-      );
+      await expect(page.locator('.hero-photo')).toBeVisible();
+      await expect(page.locator('.hero-photo img')).toBeVisible();
+      await expect(page.locator('.site-header .button-primary')).toBeHidden();
       await expect(page.locator('.hero h1')).toHaveCSS('color', 'rgb(248, 250, 247)');
-      const heroContentWidth = await page.locator('.hero-inner').evaluate((element) => {
-        const style = getComputedStyle(element);
-        return (
-          element.getBoundingClientRect().width -
-          Number.parseFloat(style.paddingLeft) -
-          Number.parseFloat(style.paddingRight)
-        );
-      });
-      expect(heroCtaBox?.width).toBeGreaterThanOrEqual(heroContentWidth - 1);
-      const headerCta = page.locator('.site-header .button-primary');
-      const headerCtaBox = await headerCta.boundingBox();
-      expect(headerCtaBox?.height).toBeGreaterThanOrEqual(48);
-      await expect(headerCta).toHaveCSS('font-size', '16px');
+      await expect(page.locator('.hero-subheadline')).toBeVisible();
+      await expect(page.locator('.hero-access-detail')).toBeVisible();
+      expect(heroCtaBox?.width).toBeLessThan(viewport.width - 24);
+      await expect(heroCta).toHaveCSS('position', 'static');
+      const heroImage = await page.locator('.hero-photo img').evaluate((element) => ({
+        naturalWidth: (element as HTMLImageElement).naturalWidth,
+        naturalHeight: (element as HTMLImageElement).naturalHeight,
+        renderedWidth: element.getBoundingClientRect().width,
+      }));
+      expect(heroImage.naturalWidth).toBe(1680);
+      expect(heroImage.naturalHeight).toBe(944);
+      expect(heroImage.renderedWidth).toBeLessThanOrEqual(viewport.width);
       expect(
         await heroCta.evaluate((element) => {
           const rect = element.getBoundingClientRect();

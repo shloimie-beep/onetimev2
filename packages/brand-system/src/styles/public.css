@@ -2369,6 +2369,10 @@ body:has(.landing-page) .button-primary:focus-visible {
     white-space: normal;
   }
 
+  body:has(.landing-page) .header-actions > .button-primary {
+    display: none;
+  }
+
   .icon-button {
     width: 44px;
     height: 44px;
@@ -2380,22 +2384,19 @@ body:has(.landing-page) .button-primary:focus-visible {
     align-self: center;
   }
 
-  .hero {
-    background:
-      linear-gradient(rgba(5, 5, 5, 0.62), rgba(5, 5, 5, 0.9)),
-      url('/assets/hero/hero-classroom-background.webp') 54% 42% / cover no-repeat;
+  .landing-page .hero {
+    background: none;
   }
 
-  .hero-inner {
-    width: 100%;
-    min-height: 520px;
-    display: grid;
-    align-content: center;
-    padding: 38px 16px 42px;
+  .landing-page .hero-inner {
+    min-height: 0;
+    min-width: 0;
+    padding: 32px 16px 28px;
   }
 
-  .hero h1 {
+  .landing-page .hero h1 {
     font-size: clamp(2.05rem, 9vw, 2.4rem);
+    line-height: 1.02;
   }
 
   .hero-eyebrow {
@@ -2404,23 +2405,25 @@ body:has(.landing-page) .button-primary:focus-visible {
     letter-spacing: 0.11em;
   }
 
-  .hero-photo {
-    display: none;
-  }
-
   .schedule {
     margin-top: 10px;
     font-size: 0.96rem;
   }
 
-  .hero-cta {
-    width: 100%;
-    min-width: 0;
+  .landing-page .hero-photo {
+    display: block;
+    min-height: 0;
+  }
+
+  .landing-page .hero-photo img {
+    height: auto;
+  }
+
+  .landing-page .hero-cta {
+    width: fit-content;
     min-height: 52px;
-    margin-top: 14px;
-    padding: 0 16px;
+    margin-top: 22px;
     font-size: 1rem;
-    white-space: normal;
   }
 
   .hero-note {

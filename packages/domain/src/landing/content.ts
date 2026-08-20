@@ -17,10 +17,10 @@ export const landingContent = {
   hero: {
     eyebrow: 'LIVE, ONLINE',
     headline: 'Help your son love learning Mishnayos.',
-    subheadline: 'Live Mishnayos is underway. Create your Family account and join the next class.',
-    accessDetail: 'Try One Time free through September 11. No card required.',
+    subheadline: 'Create a free Family account and add up to three Student accounts.',
+    accessDetail: 'Free through September 11. No credit card required.',
     cta: {
-      label: 'Create Family Account',
+      label: 'Create Your Free Family Account',
       href: '/signup',
       analyticsEvent: 'landing.signup.cta.clicked',
       analyticsPlacement: 'hero',

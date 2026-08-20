@@ -75,9 +75,12 @@ describe('lead validation and content contracts', () => {
     expect(landingContent.hero.eyebrow).toBe('LIVE, ONLINE');
     expect(landingContent.hero.headline).toBe('Help your son love learning Mishnayos.');
     expect(landingContent.hero.subheadline).toBe(
-      'Live Mishnayos is underway. Create your Family account and join the next class.',
+      'Create a free Family account and add up to three Student accounts.',
     );
-    expect(landingContent.hero.cta.label).toBe('Create Family Account');
+    expect(landingContent.hero.accessDetail).toBe(
+      'Free through September 11. No credit card required.',
+    );
+    expect(landingContent.hero.cta.label).toBe('Create Your Free Family Account');
     expect(landingContent).not.toHaveProperty('whatsappAssistant');
     expect(publicCopy).not.toMatch(/September 13|2026-09-13|LIVE EVERY DAY/i);
   });

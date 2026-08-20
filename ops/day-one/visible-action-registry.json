@@ -260,7 +260,7 @@
     },
     {
       "path": "packages/domain/src/landing/content.ts",
-      "sha256": "0048b2858fa6e861ef0347a019d7916aa2aafd853749dc90dabb241556d2f7e8"
+      "sha256": "4d09243a5b90ef04bddc3488c8c166ad3a7032680055e4f65046e46404af2759"
     },
     {
       "path": "packages/domain/src/legal/content.ts",
