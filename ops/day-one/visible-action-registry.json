@@ -152,7 +152,7 @@
     },
     {
       "path": "apps/web/src/client/app/portal-entry.tsx",
-      "sha256": "89fa843ddc540a62a079a2e4d5562efa8f9720c96335238ff9338efac1fe23b4"
+      "sha256": "73d741675c87e540d569aafd6bb6232f5d287d8cad11a515584dffd8eb2ea449"
     },
     {
       "path": "apps/web/src/client/app/student/classroom/StudentClassroomWorkspace.tsx",
@@ -164,7 +164,7 @@
     },
     {
       "path": "apps/web/src/client/app/student/library/StudentLibraryWorkspace.tsx",
-      "sha256": "5a662ecb28e677d50fb00e164cf848ee86b187fa0db6a0a5989c560101b82627"
+      "sha256": "28ba52fccb106368d60dbfc5fe1f1277cda433f314352f4a957cf28129d83db2"
     },
     {
       "path": "apps/web/src/client/app/student/privacy/StudentPrivacyWorkspace.tsx",
@@ -180,15 +180,15 @@
     },
     {
       "path": "apps/web/src/client/features/portals/PortalFeatures.tsx",
-      "sha256": "0c96e56f9a30cd505befeb34397f106a9c783a366a1112e35aa36e421ea431ae"
+      "sha256": "53f2eacb6e138e0ff6a99243836a83fa9e08547f962756f1779cefb519c52056"
     },
     {
       "path": "apps/web/src/client/app/router/registry.ts",
-      "sha256": "ea2f527d6f96d1e48b0d78fd064b904f9df76f4f0d56f6f60d4306fdf995a717"
+      "sha256": "a849ae4186b569d3570e07e9a20c1b3fecc3bed73bd75c2448107056a3a19b52"
     },
     {
       "path": "apps/web/src/client/app/router/canonical-route-views.ts",
-      "sha256": "625050fe9136b00b12e1df9e8283b3ab2c5a99d84e9d4fe308a7389f4fd08dca"
+      "sha256": "7cabe2ce4e248009a644823742e1c94bd81b13c45b9dd474578f5011a8b522c5"
     },
     {
       "path": "apps/web/src/client/app/shell/AppShell.tsx",
