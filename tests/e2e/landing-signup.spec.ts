@@ -654,6 +654,9 @@ test('the real Parent bundle loads the Parent learner without legacy household r
   const parentDocumentPaths: string[] = [];
   const zoomSdkRequests: string[] = [];
   let classroomShellCsp = '';
+  const parentClassroomFixtureNow = Date.now();
+  const parentClassroomIssuedAt = new Date(parentClassroomFixtureNow - 60_000).toISOString();
+  const parentClassroomExpiresAt = new Date(parentClassroomFixtureNow + 30 * 60_000).toISOString();
   await page.route('https://source.zoom.us/**', async (route) => {
     const pathname = new URL(route.request().url()).pathname;
     zoomSdkRequests.push(pathname);
@@ -806,7 +809,7 @@ test('the real Parent bundle loads the Parent learner without legacy household r
                 method: 'POST',
                 href: '/api/v1/portals/parent/classroom/production-basic/launch',
                 launch_token_ref: null,
-                expires_at: '2026-08-16T16:35:00.000Z',
+                expires_at: parentClassroomExpiresAt,
               },
             },
             library_items: [
@@ -867,8 +870,8 @@ test('the real Parent bundle loads the Parent learner without legacy household r
             signature: 'header.payload.signature',
             user_name: 'Bundle Parent',
             leave_path: '/app/parent',
-            issued_at: '2026-08-16T15:55:00.000Z',
-            expires_at: '2099-08-16T16:35:00.000Z',
+            issued_at: parentClassroomIssuedAt,
+            expires_at: parentClassroomExpiresAt,
             raw_join_url_present: false,
             video_start_model: 'PARTICIPANT_CONSENT',
           },
