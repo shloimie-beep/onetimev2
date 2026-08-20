@@ -33,8 +33,10 @@ test('public landing implements the bounded product-repair contract', async ({ p
       /world-renowned|Master Shas|daily reminders|daily rhythm|daily Torah-learning routine|daily learning community/i,
     ),
   ).toHaveCount(0);
-  await expect(page.locator('.hero-eyebrow')).toHaveText('LIVE, ONLINE + ON-DEMAND');
-  await expect(page.locator('.hero-subheadline')).toHaveText('Classes begin today. Sign up now.');
+  await expect(page.locator('.hero-eyebrow')).toHaveText('LIVE, ONLINE');
+  await expect(page.locator('.hero-subheadline')).toHaveText(
+    'Live Mishnayos is underway. Create your Family account and join the next class.',
+  );
   await expect(page.locator('.hero-access-detail')).toHaveText(
     'Try One Time free through September 11. No card required.',
   );
@@ -61,7 +63,7 @@ test('public landing implements the bounded product-repair contract', async ({ p
   await expect(page.getByRole('link', { name: 'Pricing', exact: true })).toHaveCount(0);
   await expect(
     page.getByText(
-      'A Parent can learn directly from the Parent account without using any of the three child learner seats.',
+      'A Parent can learn directly through the Parent account without using one of the three child Student accounts.',
     ),
   ).toBeVisible();
   await expect(page.getByRole('heading', { name: 'How It Works' })).toBeVisible();
@@ -172,7 +174,7 @@ test('canonical launch timing controls the animated ribbon boundary', async ({ p
   await expect(page.locator('.campaign-ticker-shell')).toBeVisible();
   await expect(page.locator('.campaign-ticker')).toHaveAttribute(
     'aria-label',
-    'CLASSES START AUG 16 · 7 PM · FREE ACCESS THROUGH SEP 11 · 6 PM · JERUSALEM TIME',
+    'LIVE SUNDAY–THURSDAY · 7:00 PM · FREE ACCESS THROUGH SEP 11 · 6 PM · JERUSALEM TIME',
   );
   await expect(page.locator('.campaign-ticker-track')).toHaveCSS(
     'animation-name',
@@ -643,6 +645,7 @@ test('verified Family signup opens authenticated Parent Today immediately', asyn
 test('the real Parent bundle loads the Parent learner without legacy household reads', async ({
   page,
 }) => {
+  const liveClassExpiresAt = new Date(Date.now() + 60_000).toISOString();
   const legacyRequests: string[] = [];
   const welcomeAssetRequests: string[] = [];
   let bootstrapCalls = 0;
@@ -805,7 +808,7 @@ test('the real Parent bundle loads the Parent learner without legacy household r
                 method: 'POST',
                 href: '/api/v1/classroom/production-basic/launch',
                 launch_token_ref: null,
-                expires_at: '2026-08-16T16:35:00.000Z',
+                expires_at: liveClassExpiresAt,
               },
             },
             library_items: [
@@ -867,7 +870,7 @@ test('the real Parent bundle loads the Parent learner without legacy household r
             user_name: 'Bundle Parent',
             leave_path: '/app/parent',
             issued_at: '2026-08-16T15:55:00.000Z',
-            expires_at: '2026-08-16T16:35:00.000Z',
+            expires_at: liveClassExpiresAt,
             raw_join_url_present: false,
             video_start_model: 'PARTICIPANT_CONSENT',
           },
@@ -1237,7 +1240,7 @@ test('campaign remains useful without JavaScript and honors reduced motion and m
   await expect(
     noJsPage.getByRole('heading', { name: 'Help your son love learning Mishnayos.' }),
   ).toBeVisible();
-  await expect(noJsPage.getByText(/CLASSES START AUG 16/)).toHaveCount(6);
+  await expect(noJsPage.getByText(/LIVE SUNDAY–THURSDAY · 7:00 PM/)).toHaveCount(6);
   await expect(noJsPage.getByText(/September 13, 2026/)).toHaveCount(0);
   await noJsPage.goto('/signup');
   await expect(noJsPage.locator('noscript > .noscript-panel')).toContainText(

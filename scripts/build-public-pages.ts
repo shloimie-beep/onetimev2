@@ -135,7 +135,7 @@ function footer(links: Parameters<typeof renderPublicFooter>[0] = landingContent
 
 function ticker() {
   return renderCampaignTicker(
-    'CLASSES START AUG 16 · 7 PM · FREE ACCESS THROUGH SEP 11 · 6 PM · JERUSALEM TIME',
+    'LIVE SUNDAY–THURSDAY · 7:00 PM · FREE ACCESS THROUGH SEP 11 · 6 PM · JERUSALEM TIME',
     freeAccessExpiresAtPlaceholder,
   ).replace('class="campaign-ticker-shell"', 'class="campaign-ticker-shell" hidden');
 }
