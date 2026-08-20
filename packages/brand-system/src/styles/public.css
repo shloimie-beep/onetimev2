@@ -2421,9 +2421,9 @@ body:has(.landing-page) .button-primary:focus-visible {
 
   .landing-page .hero-cta {
     width: fit-content;
+    max-width: 90%;
     min-height: 52px;
-    margin-top: 22px;
-    font-size: 1rem;
+    white-space: normal;
   }
 
   .hero-note {
