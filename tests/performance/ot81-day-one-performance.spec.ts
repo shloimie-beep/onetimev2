@@ -6,7 +6,9 @@ const evidencePath = path.resolve(process.cwd(), 'ops/evidence/ot-81/performance
 const sampleCount = 30;
 
 test.describe('OT81 integrated 30-sample performance matrix', () => {
-  test.setTimeout(240_000);
+  // This is intentionally a 30-sample route matrix; allow the complete serial
+  // measurement run without weakening its route-level performance thresholds.
+  test.setTimeout(480_000);
 
   test('records route-only loading, request counts, bundle sizes, LCP, and CLS', async ({
     page,

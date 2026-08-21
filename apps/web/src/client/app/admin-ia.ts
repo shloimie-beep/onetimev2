@@ -100,7 +100,9 @@ export function dashboardSectionFromPath(_pathname: string): DashboardSectionId 
 }
 
 export function contactsSectionFromPath(pathname: string): ContactsSectionId {
-  if (pathname === '/app/crm') return 'people';
+  if (pathname === '/app/crm' || /^\/app\/crm\/contacts(?:\/|$)/u.test(pathname)) {
+    return 'people';
+  }
   if (pathname === '/app/people/access') return 'access';
   if (
     pathname === '/app/people/audit' ||

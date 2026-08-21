@@ -44,6 +44,8 @@ describe('Admin information architecture', () => {
     ]);
     expect(contactsSectionFromPath('/app/households')).toBe('households');
     expect(contactsSectionFromPath('/app/crm/households')).toBe('households');
+    expect(contactsSectionFromPath('/app/crm/contacts')).toBe('people');
+    expect(contactsSectionFromPath('/app/crm/contacts/contact-1')).toBe('people');
     expect(contactsSectionFromPath('/app/users')).toBe('users');
     expect(contactsSectionFromPath('/app/students')).toBe('learners');
     expect(contactsSectionFromPath('/app/audit')).toBe('audit');

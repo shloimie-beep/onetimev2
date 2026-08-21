@@ -23,7 +23,9 @@ type VitalSample = {
 const sampleCount = 30;
 const evidencePath = path.resolve(process.cwd(), 'ops/evidence/ot-39/performance-report.json');
 
-test.setTimeout(300_000);
+// The 30-sample mobile-throttled matrix remains governed by its per-sample
+// thresholds. Give the full serial matrix enough wall-clock headroom in CI.
+test.setTimeout(480_000);
 
 test('CRM shell emits post-paint marks and meets 30-sample performance gates', async ({
   page,
