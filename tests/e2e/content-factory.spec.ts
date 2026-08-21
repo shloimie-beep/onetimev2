@@ -166,7 +166,7 @@ test('Admin unpublish immediately revokes the entitled Student route', async ({ 
       .filter({ hasText: 'Browser-published occurrence lesson' }),
   ).toHaveCount(0);
   const response = await page.goto(publishedPlaybackPath);
-  expect(response?.status()).toBe(404);
+  expect(response?.status()).toBe(403);
   expect(await page.locator('body').innerText()).not.toContain(
     'Browser-published occurrence lesson',
   );
