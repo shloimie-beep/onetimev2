@@ -77,7 +77,7 @@ describe('OT-LAUNCH-01 Admin information architecture', () => {
     expect(contactsSectionFromPath('/app/crm/users')).toBe('users');
     expect(contactsSectionFromPath('/app/crm/audit')).toBe('audit');
     expect(contactsSectionFromPath('/app/crm/learners')).toBe('learners');
-    expect(contactsSectionFromPath('/app/crm/contacts/contact-1')).toBe('households');
+    expect(contactsSectionFromPath('/app/crm/contacts/contact-1')).toBe('people');
     expect(contentSectionFromPath('/app/content/create')).toBe('studio');
     expect(contentSectionFromPath('/app/content/social')).toBe('studio');
     expect(contentSectionFromPath('/app/content/processing')).toBe('library');

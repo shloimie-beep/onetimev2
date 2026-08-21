@@ -112,7 +112,7 @@
     },
     {
       "path": "apps/web/src/client/app/admin-ia.ts",
-      "sha256": "24a0f3c597f1aed8d9a403726e72af4bbccc3a082b66edab773e9595d33358f1"
+      "sha256": "df79360ff2e784e62d3447b99d5d7216fc772d5c9a7078f235b1ea471dafca9e"
     },
     {
       "path": "apps/web/src/client/app/admin-directory/AdminDirectoryPanel.tsx",
