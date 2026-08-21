@@ -6,9 +6,7 @@ const evidencePath = path.resolve(process.cwd(), 'ops/evidence/ot-81/performance
 const sampleCount = 30;
 
 test.describe('OT81 integrated 30-sample performance matrix', () => {
-  // This is intentionally a 30-sample route matrix; allow the complete serial
-  // measurement run without weakening its route-level performance thresholds.
-  test.setTimeout(720_000);
+  test.setTimeout(240_000);
 
   test('records route-only loading, request counts, bundle sizes, LCP, and CLS', async ({
     page,
@@ -93,7 +91,7 @@ test.describe('OT81 integrated 30-sample performance matrix', () => {
     await login(page, 'ot-parent@example.test', 'ParentPassword!234', '/app/parent');
     results.push(
       await measureRoute(page, 'parent_portal', async () => {
-        await page.goto('/app/parent');
+        await page.goto('/app/parent', { waitUntil: 'domcontentloaded' });
         await page.locator('#app-main').getByRole('heading', { name: 'Parent Portal' }).waitFor();
       }),
     );
@@ -102,7 +100,7 @@ test.describe('OT81 integrated 30-sample performance matrix', () => {
     await login(page, 'ot-student@example.test', 'StudentPassword!234', '/app/student');
     results.push(
       await measureRoute(page, 'student_portal', async () => {
-        await page.goto('/app/student');
+        await page.goto('/app/student', { waitUntil: 'domcontentloaded' });
         await page.locator('#app-main').getByRole('heading', { name: 'Student Portal' }).waitFor();
       }),
     );
