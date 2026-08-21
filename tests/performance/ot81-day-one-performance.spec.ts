@@ -6,9 +6,7 @@ const evidencePath = path.resolve(process.cwd(), 'ops/evidence/ot-81/performance
 const sampleCount = 30;
 
 test.describe('OT81 integrated 30-sample performance matrix', () => {
-  // Eight routes are sampled 30 times each; this is a harness ceiling, not a
-  // performance budget. The per-route p95 assertions below remain the gate.
-  test.setTimeout(600_000);
+  test.setTimeout(240_000);
 
   test('records route-only loading, request counts, bundle sizes, LCP, and CLS', async ({
     page,
@@ -94,7 +92,7 @@ test.describe('OT81 integrated 30-sample performance matrix', () => {
     results.push(
       await measureRoute(page, 'parent_portal', async () => {
         await page.goto('/app/parent', { waitUntil: 'domcontentloaded' });
-        await page.locator('#app-main').getByRole('heading', { name: 'Parent Portal' }).waitFor();
+        await page.locator('[data-portal-role="parent"][data-state="ready"]').waitFor();
       }),
     );
 
@@ -103,7 +101,7 @@ test.describe('OT81 integrated 30-sample performance matrix', () => {
     results.push(
       await measureRoute(page, 'student_portal', async () => {
         await page.goto('/app/student', { waitUntil: 'domcontentloaded' });
-        await page.locator('#app-main').getByRole('heading', { name: 'Student Portal' }).waitFor();
+        await page.locator('[data-portal-role="student"][data-state="ready"]').waitFor();
       }),
     );
 
