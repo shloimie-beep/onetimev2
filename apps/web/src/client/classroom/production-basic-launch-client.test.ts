@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   clearProductionBasicHostLive,
   confirmProductionBasicHostLive,
+  createProductionBasicHostEndController,
   readStudentProductionBasicReadiness,
   requestHostProductionBasicLaunch,
   requestStudentProductionBasicLaunch,
@@ -178,6 +179,49 @@ describe('production-basic launch client', () => {
     await Promise.resolve();
     expect(clear).toHaveBeenCalledOnce();
     expect(clear).toHaveBeenCalledWith('csrf-derived');
+  });
+
+  it('keeps the receipt on an unknown provider end and permits only status-confirmed cleanup', async () => {
+    const endMeetingForAll = vi.fn(async () => {
+      throw new Error('interrupted');
+    });
+    const clear = vi.fn(async () => undefined);
+    const controller = createProductionBasicHostEndController({
+      csrfToken: 'csrf-derived',
+      endMeetingForAll,
+      clear,
+    });
+    await controller.markLive();
+    await controller.requestEnd();
+    await controller.requestEnd();
+    expect(controller.state).toBe('unknown_effect');
+    expect(endMeetingForAll).toHaveBeenCalledOnce();
+    expect(clear).not.toHaveBeenCalled();
+
+    await controller.observeMeetingStatus(3);
+    expect(controller.state).toBe('ended');
+    expect(clear).toHaveBeenCalledOnce();
+  });
+
+  it('retries cleanup only after a provider-confirmed end and never calls provider end twice', async () => {
+    const endMeetingForAll = vi.fn(async () => undefined);
+    const clear = vi
+      .fn<(csrfToken: string) => Promise<void>>()
+      .mockRejectedValueOnce(new Error('local transient'))
+      .mockResolvedValueOnce(undefined);
+    const controller = createProductionBasicHostEndController({
+      csrfToken: 'csrf-derived',
+      endMeetingForAll,
+      clear,
+    });
+    await controller.markLive();
+    await controller.requestEnd();
+    await controller.observeMeetingStatus(3);
+    expect(controller.state).toBe('cleanup_pending');
+    await controller.retryAccessCleanup();
+    expect(controller.state).toBe('ended');
+    expect(endMeetingForAll).toHaveBeenCalledOnce();
+    expect(clear).toHaveBeenCalledTimes(2);
   });
 });
 

@@ -68,23 +68,19 @@ test('ordinary Admin application removes preview and launch-status surfaces in e
     const page = await context.newPage();
 
     await page.goto(`${runtime.baseUrl}/app/dashboard`);
-    await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Today' })).toBeVisible();
     const session = await page.request.get(`${runtime.baseUrl}/api/v1/auth/session`);
     const sessionBody = (await session.json()) as {
       capabilities: { operator_experience: { live_console: boolean } };
     };
     const primaryLabels = [
-      'Dashboard',
-      'Contacts',
-      'Content',
-      'Classroom',
+      'Today',
+      'Learning',
+      'People',
       'Communications',
-      'Billing & Access',
       'Operations',
+      'Account',
     ];
-    if (sessionBody.capabilities.operator_experience.live_console) {
-      primaryLabels.push('Live Console');
-    }
     await expect(
       page.getByLabel('One Time app').getByRole('link').allTextContents(),
     ).resolves.toEqual(primaryLabels);

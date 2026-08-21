@@ -97,7 +97,7 @@ export function CommunicationsFeature({ contactId, onProtectedStateCleared }: Pr
           <h1 id="communications-heading">Communications</h1>
           <p>
             {lifecycleOnly
-              ? 'Active One Time accounts and their redacted login, setup, password-reset, and PIN delivery history. Message content and secure credentials are never shown.'
+              ? 'One Time account-email delivery history from info@. This read-only list covers setup, password reset, and Student credentials; general adult communication lives in GHL, and Students never become GHL contacts.'
               : 'Read-only local communication history for this existing One Time record.'}
           </p>
         </div>
@@ -105,10 +105,8 @@ export function CommunicationsFeature({ contactId, onProtectedStateCleared }: Pr
 
       {data && (
         <section className="communications-truth" aria-label="Communications source truth">
-          <span>
-            {lifecycleOnly ? 'Active One Time accounts only' : 'Existing One Time record'}
-          </span>
-          <span>{lifecycleOnly ? 'Setup, reset, and PIN delivery' : 'Local history'}</span>
+          <span>{lifecycleOnly ? 'One Time account email only' : 'Existing One Time record'}</span>
+          <span>{lifecycleOnly ? 'Read-only info@ delivery history' : 'Local history'}</span>
           <span>Redacted and read-only</span>
         </section>
       )}
@@ -277,11 +275,8 @@ export function CommunicationsFeature({ contactId, onProtectedStateCleared }: Pr
             <thead>
               <tr>
                 <th scope="col">{lifecycleOnly ? 'Account and destination' : 'Recipient'}</th>
-                <th scope="col">{lifecycleOnly ? 'Delivery' : 'Thread'}</th>
-                <th scope="col">Channel</th>
-                <th scope="col">Direction</th>
-                <th scope="col">Truth status</th>
-                <th scope="col">Source</th>
+                <th scope="col">{lifecycleOnly ? 'Account email' : 'Thread'}</th>
+                <th scope="col">Delivery state</th>
                 <th scope="col">Time</th>
                 <th scope="col">State time</th>
                 {!lifecycleOnly && <th scope="col">Contact</th>}
@@ -336,10 +331,7 @@ function CommunicationRow({ item, lifecycleOnly }: { item: Item; lifecycleOnly: 
         <strong>{item.thread_label}</strong>
         <span>{item.preview_redacted}</span>
       </td>
-      <td>{labelChannel(item.channel)}</td>
-      <td>{labelDirection(item.direction)}</td>
       <td>{item.state_label}</td>
-      <td>{item.source_label}</td>
       <td>{formatDate(item.occurred_at)}</td>
       <td>{item.state_at ? formatDate(item.state_at) : 'Unavailable'}</td>
       {!lifecycleOnly && (
@@ -506,36 +498,28 @@ function emptyUnavailableResponse(): CommunicationsListResponse {
       provider_acceptance: false,
       provider_delivery: false,
       inbound_import: false,
-      replies: true,
-      threads: true,
+      replies: false,
+      threads: false,
       subject_body_access: false,
       attachments: false,
       reminder_execution: false,
-      compose: true,
-      draft_only_replies: true,
+      compose: false,
+      draft_only_replies: false,
       transport_send: false,
       resend: false,
       campaigns: false,
       templates: false,
       integration_settings: false,
-      historical_backfill_dry_run: true,
+      historical_backfill_dry_run: false,
       provider_history_complete: false,
-      stored_webhooks: true,
-      channels: ['email', 'whatsapp', 'internal_email'] satisfies CommunicationsChannel[],
-      directions: ['inbound', 'outbound', 'internal'],
+      stored_webhooks: false,
+      channels: ['email'] satisfies CommunicationsChannel[],
+      directions: ['outbound'],
       intent_types: [
-        'family_signup_email_ack',
-        'family_signup_whatsapp_confirmation',
-        'internal_lead_alert',
-        'single_recipient_reply',
         'password_reset',
         'account_activation',
         'student_pin_setup',
         'student_pin_reset',
-        'whatsapp_inbound_message',
-        'whatsapp_provider_event',
-        'historical_import_event',
-        'history_unavailable',
       ] satisfies CommunicationsIntentType[],
       local_states: [
         'queued',
@@ -560,16 +544,7 @@ function emptyUnavailableResponse(): CommunicationsListResponse {
         'cleared',
         'history_unavailable',
       ] satisfies CommunicationsLocalState[],
-      sources: [
-        'canonical_history_event',
-        'local_outbox_intent',
-        'crm_reply_draft',
-        'stored_whatsapp_webhook',
-        'stored_provider_delivery_event',
-        'account_lifecycle_outbox',
-        'historical_import',
-        'provider_history_unavailable',
-      ],
+      sources: ['account_lifecycle_outbox'],
     },
     applied_filters: {
       from: daysAgo(30).toISOString(),

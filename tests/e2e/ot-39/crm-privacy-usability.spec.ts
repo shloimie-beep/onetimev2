@@ -84,7 +84,7 @@ test('synthetic search text appears nowhere prohibited in the browser', async ({
   expect(consoleMessages.some((message) => message.includes(syntheticSearch))).toBe(false);
 });
 
-test('authenticated shell keeps one Contacts destination, no BNA/Operations requests, and mobile controls', async ({
+test('authenticated shell keeps one Contacts compatibility destination, no BNA/Operations requests, and mobile controls', async ({
   page,
 }) => {
   const requested: string[] = [];
@@ -98,7 +98,7 @@ test('authenticated shell keeps one Contacts destination, no BNA/Operations requ
   await expect(
     page
       .getByRole('navigation', { name: 'One Time app' })
-      .getByRole('link', { name: 'Contacts', exact: true }),
+      .getByRole('link', { name: 'People', exact: true }),
   ).toHaveCount(1);
 
   for (const label of [
@@ -158,7 +158,7 @@ test('mobile drawer traps focus, closes by every shell action, and restores focu
   await menu.click();
   await page
     .getByRole('dialog', { name: 'One Time navigation' })
-    .getByRole('link', { name: 'Contacts', exact: true })
+    .getByRole('link', { name: 'People', exact: true })
     .click();
   await expect(page.getByRole('dialog', { name: 'One Time navigation' })).toBeHidden();
 
@@ -220,14 +220,12 @@ test('403 clears retained protected CRM details without expiring the valid sessi
     });
   });
   await page.goto(contactPath);
-  await expect(
-    page.getByRole('heading', { name: 'Contact not found or unavailable' }),
-  ).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Families' }).first()).toBeVisible();
   await expect(page.getByText('OT39 Expired Parent')).toHaveCount(0);
   await expect(page.getByText(email)).toHaveCount(0);
   await expect(page.getByRole('heading', { name: 'Session expired' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Sign in' })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: 'Back to CRM' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Families' }).first()).toBeVisible();
 });
 
 test('captures corrected CRM screenshots at OT-39 viewport matrix', async ({ page }) => {

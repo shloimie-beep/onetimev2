@@ -9,16 +9,15 @@ test('admin workflow readback is repository-backed and exposes no provider contr
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/app/communications');
   await expect(page.getByRole('heading', { name: 'Communications', exact: true })).toBeVisible();
-  await expect(page.getByText(/Active One Time accounts and their redacted/)).toBeVisible();
-  await expect(page.getByText('Active One Time accounts only')).toBeVisible();
-  await expect(page.getByText('Setup, reset, and PIN delivery', { exact: true })).toBeVisible();
-  await expect(page.getByText(/GHL|warm lead|routing guide/i)).toHaveCount(0);
+  await expect(page.getByText(/One Time account-email delivery history from info@/)).toBeVisible();
+  await expect(page.getByText('One Time account email only')).toBeVisible();
+  await expect(page.getByText('Read-only info@ delivery history')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Workflow readback', exact: true })).toHaveCount(
     0,
   );
   await expect(page.getByRole('link', { name: 'Open workflow readback' })).toHaveCount(0);
 
-  await page.goto('/app/communications/OT-01');
+  await page.goto('/app/operations/workflow-readback/OT-01');
 
   await expect(
     page.getByRole('heading', { name: 'OT-01 Family Account Confirmation' }),

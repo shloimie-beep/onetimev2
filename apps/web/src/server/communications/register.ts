@@ -83,22 +83,8 @@ export function registerCommunicationsRoutes({
 
   app.get('/app/communications/:workflowId', async (req, res) => {
     setProtectedNoStore(res);
-    const resolution = await sessionPort.resolve(req);
-    const returnTo = `/app/communications/${encodeURIComponent(String(req.params.workflowId))}`;
-    if (resolution.status === 'unavailable') {
-      res.status(503).type('html').send('Communications access is temporarily unavailable.');
-      return;
-    }
-    if (resolution.status !== 'resolved') {
-      res.redirect(302, `/login?return_to=${encodeURIComponent(returnTo)}`);
-      return;
-    }
-    const { session } = resolution;
-    if (!canReadCommunications(session.role)) {
-      res.status(403).type('html').send('Forbidden');
-      return;
-    }
-    res.sendFile(path.join(distDir, 'app', 'crm.html'));
+    const workflowId = encodeURIComponent(String(req.params.workflowId));
+    res.redirect(302, `/app/operations/workflow-readback/${workflowId}`);
   });
 
   app.get('/api/v1/communications/workflows/:workflowId', async (req: RequestWithTrace, res) => {

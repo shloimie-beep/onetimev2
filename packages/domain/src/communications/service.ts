@@ -132,6 +132,12 @@ export type BuildCommunicationsListInput = {
 const MAX_RANGE_MS = 90 * 24 * 60 * 60 * 1000;
 const DEFAULT_RANGE_MS = 30 * 24 * 60 * 60 * 1000;
 const CURSOR_TTL_MS = 30 * 60 * 1000;
+const ACCOUNT_EMAIL_INTENT_TYPES = new Set<CommunicationsIntentType>([
+  'password_reset',
+  'account_activation',
+  'student_pin_setup',
+  'student_pin_reset',
+]);
 
 export function canReadCommunications(role: unknown) {
   return role === 'owner' || role === 'admin' || role === 'rabbi';
@@ -149,6 +155,16 @@ export async function buildCommunicationsListResponse({
   if (!canReadCommunications(session.role)) throw new CommunicationsAuthorizationError(403);
 
   const requestedFilters = parseCommunicationsFilters(query, now);
+  if (
+    mode.kind === 'global' &&
+    requestedFilters.intent_type &&
+    !ACCOUNT_EMAIL_INTENT_TYPES.has(requestedFilters.intent_type)
+  ) {
+    throw new CommunicationsValidationError(
+      'ACCOUNT_EMAIL_INTENT_FORBIDDEN',
+      'Only One Time account-email history is available here.',
+    );
+  }
   const filters: CommunicationsFilters =
     mode.kind === 'global'
       ? {

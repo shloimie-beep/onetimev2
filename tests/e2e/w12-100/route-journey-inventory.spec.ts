@@ -61,7 +61,7 @@ test('authenticated owner routes cover dashboard, CRM detail, communications, cl
   const synthetic = await createSyntheticContact(page);
   await useW12AdminSession(page);
   await page.goto('/app/dashboard');
-  await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Today' })).toBeVisible();
 
   for (const viewport of [mobileViewport, desktopViewport]) {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });

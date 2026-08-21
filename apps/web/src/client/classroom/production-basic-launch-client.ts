@@ -77,6 +77,79 @@ export async function clearProductionBasicHostLive(csrfToken: string): Promise<v
   }
 }
 
+export type ProductionBasicHostEndState =
+  'starting' | 'live' | 'ending' | 'unknown_effect' | 'cleanup_pending' | 'ended';
+
+/**
+ * Keeps the provider-first End Class operation bounded to one SDK call. The
+ * durable receipt is cleared only after status 3 confirms the provider ended.
+ */
+export function createProductionBasicHostEndController(input: {
+  endMeetingForAll: () => Promise<void>;
+  clear?: ((csrfToken: string) => Promise<void>) | undefined;
+  csrfToken: string;
+  onStateChange?: ((state: ProductionBasicHostEndState) => void) | undefined;
+}) {
+  const clear = input.clear ?? clearProductionBasicHostLive;
+  let state: ProductionBasicHostEndState = 'starting';
+  let providerEndRequested = false;
+  let providerEnded = false;
+  let cleanupRunning = false;
+
+  const setState = (next: ProductionBasicHostEndState) => {
+    state = next;
+    input.onStateChange?.(next);
+  };
+  const clearAfterProviderConfirmation = async () => {
+    if (!providerEnded || cleanupRunning || state === 'starting' || state === 'ended') return;
+    cleanupRunning = true;
+    try {
+      await clear(input.csrfToken);
+      setState('ended');
+    } catch {
+      setState('cleanup_pending');
+    } finally {
+      cleanupRunning = false;
+    }
+  };
+
+  return {
+    get state() {
+      return state;
+    },
+    async markLive() {
+      if (state !== 'starting') return;
+      setState('live');
+      await clearAfterProviderConfirmation();
+    },
+    async requestEnd() {
+      if (state !== 'live') return;
+      providerEndRequested = true;
+      setState('ending');
+      try {
+        await input.endMeetingForAll();
+      } catch {
+        setState('unknown_effect');
+      }
+    },
+    async observeMeetingStatus(status: 1 | 2 | 3 | 4) {
+      if (status !== 3) return;
+      providerEnded = true;
+      await clearAfterProviderConfirmation();
+    },
+    async retryAccessCleanup() {
+      if (state !== 'cleanup_pending') return;
+      await clearAfterProviderConfirmation();
+    },
+    reconcileProviderEnded() {
+      return providerEnded;
+    },
+    providerEndRequested() {
+      return providerEndRequested;
+    },
+  };
+}
+
 export function isStudentProductionBasicLaunchArtifact(
   value: unknown,
 ): value is StudentProductionBasicLaunchArtifact {

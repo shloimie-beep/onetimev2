@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import type {
   LiveClassConsoleSnapshot,
@@ -10,16 +10,22 @@ import type {
 import {
   LIVE_CONSOLE_SECTIONS,
   adminPrimaryNav,
+  rabbiPrimaryNav,
   liveConsoleSectionFromSearch,
 } from './admin-ia.js';
 import { AppShell, type ShellNavItem, type ShellUser } from './shell/AppShell.js';
 import { WorkspaceTabs } from './shell/WorkspaceTabs.js';
 import './crm.css';
-import { startZoomMeetingProductionBasic } from './zoom-meeting-sdk-client.ts';
 import {
+  endActiveZoomMeetingForAll,
+  startZoomMeetingProductionBasic,
+} from './zoom-meeting-sdk-client.ts';
+import {
+  confirmProductionBasicHostLive,
+  createProductionBasicHostEndController,
   readHostProductionBasicReadiness,
   requestHostProductionBasicLaunch,
-  startAndConfirmProductionBasicHostLive,
+  type ProductionBasicHostEndState,
 } from '../classroom/production-basic-launch-client.ts';
 
 type ConsoleData = LiveClassConsoleSnapshot['data'];
@@ -55,6 +61,10 @@ function LiveConsole() {
   const [notice, setNotice] = useState<Notice | null>(null);
   const [loading, setLoading] = useState(true);
   const [productionBasicReady, setProductionBasicReady] = useState(false);
+  const [hostEndState, setHostEndState] = useState<ProductionBasicHostEndState>('starting');
+  const hostEndController = useRef<ReturnType<
+    typeof createProductionBasicHostEndController
+  > | null>(null);
   const occurrenceKey = useMemo(() => {
     const routeMatch = /^\/app\/live\/([^/]+)$/u.exec(location.pathname);
     return routeMatch?.[1]
@@ -103,24 +113,43 @@ function LiveConsole() {
     if (!session) return;
     try {
       const artifact = await requestHostProductionBasicLaunch(session.csrf_token);
-      await startAndConfirmProductionBasicHostLive({
+      const controller = createProductionBasicHostEndController({
         csrfToken: session.csrf_token,
-        startMeeting: (onMeetingStatus) =>
-          startZoomMeetingProductionBasic({
-            sdkWebVersion: artifact.sdk_web_version,
-            meetingNumber: artifact.meeting_number,
-            signature: artifact.signature,
-            meetingPassword: artifact.meeting_password,
-            userName: artifact.user_name,
-            leaveUrl: artifact.leave_path,
-            zak: requireHostZak(artifact.zak),
-            onMeetingStatus,
-          }),
+        endMeetingForAll: endActiveZoomMeetingForAll,
+        onStateChange: setHostEndState,
       });
+      hostEndController.current = controller;
+      await startZoomMeetingProductionBasic({
+        sdkWebVersion: artifact.sdk_web_version,
+        meetingNumber: artifact.meeting_number,
+        signature: artifact.signature,
+        meetingPassword: artifact.meeting_password,
+        userName: artifact.user_name,
+        leaveUrl: artifact.leave_path,
+        zak: requireHostZak(artifact.zak),
+        onMeetingStatus: (status) => void controller.observeMeetingStatus(status),
+      });
+      await confirmProductionBasicHostLive(session.csrf_token);
+      await controller.markLive();
       setNotice({ kind: 'success', message: 'Protected class started.' });
     } catch {
       setNotice({ kind: 'error', message: 'Classroom is unavailable.' });
     }
+  }
+
+  async function endProductionBasic() {
+    await hostEndController.current?.requestEnd();
+    if (hostEndController.current?.state === 'unknown_effect') {
+      setNotice({
+        kind: 'error',
+        message:
+          'End status is unknown. Refresh Status or wait for Zoom status confirmation; do not try End again.',
+      });
+    }
+  }
+
+  async function retryAccessCleanup() {
+    await hostEndController.current?.retryAccessCleanup();
   }
 
   async function postControl(path: string, body: Record<string, unknown>, label: string) {
@@ -139,7 +168,10 @@ function LiveConsole() {
   }
 
   const liveConsoleReady = session?.capabilities?.operator_experience?.live_console === true;
-  const navItems: ShellNavItem[] = adminPrimaryNav('live-console', liveConsoleReady);
+  const navItems: ShellNavItem[] =
+    session?.user.role === 'rabbi'
+      ? rabbiPrimaryNav('today', liveConsoleReady)
+      : adminPrimaryNav('today', liveConsoleReady);
   const utilityItems: ShellNavItem[] = [];
   const selected = data?.selected_question ?? null;
 
@@ -317,6 +349,9 @@ function LiveConsole() {
               occurrenceKey={occurrenceKey}
               productionBasicReady={productionBasicReady}
               onStartProductionBasic={() => void startProductionBasic()}
+              hostEndState={hostEndState}
+              onEndProductionBasic={() => void endProductionBasic()}
+              onRetryAccessCleanup={() => void retryAccessCleanup()}
               onRefresh={() => void load()}
               onOpenClassroom={() =>
                 occurrenceKey &&
@@ -546,6 +581,9 @@ function ZoomHealth({
   onChooseOccurrence,
   productionBasicReady,
   onStartProductionBasic,
+  hostEndState,
+  onEndProductionBasic,
+  onRetryAccessCleanup,
 }: {
   data: ConsoleData | null;
   occurrenceKey: string | null;
@@ -554,6 +592,9 @@ function ZoomHealth({
   onChooseOccurrence: () => void;
   productionBasicReady: boolean;
   onStartProductionBasic: () => void;
+  hostEndState: ProductionBasicHostEndState;
+  onEndProductionBasic: () => void;
+  onRetryAccessCleanup: () => void;
 }) {
   const legacyHostControlsReady = occurrenceKey && data?.zoom.host_control_configured;
   return (
@@ -575,7 +616,15 @@ function ZoomHealth({
       )}
       <p role="status">
         {productionBasicReady
-          ? 'Protected recurring Zoom is ready. Start class only when the Rabbi is ready to begin.'
+          ? hostEndState === 'live'
+            ? 'Class is live. Continue in the protected Meeting SDK or end the class for everyone.'
+            : hostEndState === 'cleanup_pending'
+              ? 'Zoom ended. Local access cleanup is pending.'
+              : hostEndState === 'unknown_effect'
+                ? 'Zoom end status is unknown. Reconcile status before any other action.'
+                : hostEndState === 'ended'
+                  ? 'Class ended. The next recurring class remains available.'
+                  : 'Protected recurring Zoom is ready. Start class only when the Rabbi is ready to begin.'
           : occurrenceKey
             ? data?.zoom.host_control_configured
               ? 'Secure host controls are ready for this class occurrence.'
@@ -587,9 +636,23 @@ function ZoomHealth({
           Refresh Status
         </button>
         {productionBasicReady ? (
-          <button type="button" className="ot-button" onClick={onStartProductionBasic}>
-            Start class
-          </button>
+          hostEndState === 'live' ? (
+            <button type="button" className="ot-button" onClick={onEndProductionBasic}>
+              End Class
+            </button>
+          ) : hostEndState === 'cleanup_pending' ? (
+            <button type="button" className="ot-button" onClick={onRetryAccessCleanup}>
+              Retry access cleanup
+            </button>
+          ) : hostEndState === 'unknown_effect' ? (
+            <button type="button" className="ot-button secondary" onClick={onRefresh}>
+              Reconcile / Refresh Status
+            </button>
+          ) : hostEndState === 'ended' ? null : (
+            <button type="button" className="ot-button" onClick={onStartProductionBasic}>
+              Start Class
+            </button>
+          )
         ) : occurrenceKey && data?.zoom.host_control_configured ? (
           <button type="button" className="ot-button" onClick={onOpenClassroom}>
             Open Secure One Time Classroom

@@ -25,7 +25,9 @@ import {
   CLASSROOM_SECTIONS,
   CONTACTS_SECTIONS,
   DASHBOARD_SECTIONS,
+  ACCOUNT_SECTIONS,
   adminPrimaryNav,
+  rabbiPrimaryNav,
   classroomHref,
   classroomOccurrenceFromLocation,
   classroomSectionFromPath,
@@ -150,7 +152,15 @@ type AdminSupportRoute = {
   ticketId: string | null;
 };
 type OwnerSurface =
-  'dashboard' | 'crm' | 'search' | 'classes' | 'content' | 'billing' | 'support' | 'operations';
+  | 'dashboard'
+  | 'crm'
+  | 'search'
+  | 'classes'
+  | 'content'
+  | 'billing'
+  | 'support'
+  | 'operations'
+  | 'account';
 type AsyncPanelState = {
   loading: boolean;
   error: string;
@@ -371,6 +381,22 @@ function CrmApp() {
       setListLoading(false);
       return;
     }
+    const workflowReadbackMatch = routePath.match(
+      /^\/app\/operations\/workflow-readback\/([^/]+)$/,
+    );
+    if (workflowReadbackMatch?.[1]) {
+      setContactOperationsMode(false);
+      setSurface('operations');
+      setCommunicationsMode({
+        kind: 'workflow',
+        workflowId: decodeURIComponent(workflowReadbackMatch[1]),
+      });
+      setSelected(null);
+      setEditing(false);
+      setCreating(false);
+      setListLoading(false);
+      return;
+    }
     const ownerSurface = ownerSurfaceFromPath(routePath);
     if (ownerSurface && ownerSurface !== 'crm') {
       setContactOperationsMode(false);
@@ -410,20 +436,6 @@ function CrmApp() {
         setContentRoutePath(routePath);
         if (isRabbi) await loadTeachingContent();
       }
-      return;
-    }
-    const workflowReadbackMatch = routePath.match(/^\/app\/communications\/([^/]+)$/);
-    if (workflowReadbackMatch?.[1]) {
-      setContactOperationsMode(false);
-      setSurface('crm');
-      setCommunicationsMode({
-        kind: 'workflow',
-        workflowId: decodeURIComponent(workflowReadbackMatch[1]),
-      });
-      setSelected(null);
-      setEditing(false);
-      setCreating(false);
-      setListLoading(false);
       return;
     }
     if (routePath === communicationsRouteDescriptor.path) {
@@ -929,22 +941,26 @@ function CrmApp() {
   const adminCurrentArea = communicationsMode
     ? 'communications'
     : surface === 'dashboard'
-      ? 'dashboard'
+      ? 'today'
       : surface === 'crm'
-        ? 'contacts'
+        ? 'people'
         : surface === 'billing'
-          ? 'billing-access'
+          ? 'people'
           : surface === 'operations'
             ? 'operations'
             : surface === 'content'
-              ? 'content'
+              ? 'learning'
               : surface === 'classes'
-                ? 'classroom'
-                : null;
+                ? 'learning'
+                : surface === 'account'
+                  ? 'account'
+                  : null;
   const liveConsoleReady =
     isRabbi || session?.capabilities?.operator_experience?.live_console === true;
   const navItems: ShellNavItem[] = canReadOwnerShell
-    ? adminPrimaryNav(adminCurrentArea, liveConsoleReady)
+    ? isRabbi
+      ? rabbiPrimaryNav(adminCurrentArea, liveConsoleReady)
+      : adminPrimaryNav(adminCurrentArea, liveConsoleReady)
     : canReadCrm
       ? [{ id: 'contacts', label: 'Contacts', href: '/app/crm', current: true }]
       : [];
@@ -967,55 +983,56 @@ function CrmApp() {
       ? adminSupportRoute.mode === 'detail'
         ? 'Support ticket'
         : 'Tickets'
-      : surface !== 'crm'
-        ? ownerSurfaceTitle(surface)
-        : communicationsMode
-          ? communicationsMode.kind === 'workflow'
-            ? 'Workflow readback'
-            : 'Communications'
-          : contactOperationsMode
-            ? 'Parent household'
-            : contactsSection !== 'people'
-              ? (CONTACTS_SECTIONS.find((item) => item.id === contactsSection)?.label ?? 'Contacts')
-              : creating
-                ? 'Add contact'
-                : editing
-                  ? 'Edit contact'
-                  : selected
-                    ? selected.display_name
-                    : 'Contacts';
+      : communicationsMode?.kind === 'workflow'
+        ? 'Workflow readback'
+        : surface !== 'crm'
+          ? ownerSurfaceTitle(surface)
+          : communicationsMode
+            ? 'Communications'
+            : contactOperationsMode
+              ? 'Parent household'
+              : contactsSection !== 'people'
+                ? (CONTACTS_SECTIONS.find((item) => item.id === contactsSection)?.label ??
+                  'Contacts')
+                : creating
+                  ? 'Add contact'
+                  : editing
+                    ? 'Edit contact'
+                    : selected
+                      ? selected.display_name
+                      : 'Contacts';
   const pageDescription =
     surface === 'support' && adminSupportRoute.mode !== 'workspace'
       ? adminSupportRoute.mode === 'detail'
         ? 'Review and update one durable One Time support conversation.'
         : 'Review the durable One Time support queue.'
-      : surface !== 'crm'
-        ? ownerSurfaceDescription(surface)
-        : communicationsMode
-          ? communicationsMode.kind === 'contact'
-            ? 'Communication history and draft activity for this contact.'
-            : communicationsMode.kind === 'workflow'
-              ? 'Read-only repository contract and observed HighLevel delivery status.'
+      : communicationsMode?.kind === 'workflow'
+        ? 'Read-only workflow diagnostics for technical operations. One Time does not publish or control GHL workflows here.'
+        : surface !== 'crm'
+          ? ownerSurfaceDescription(surface)
+          : communicationsMode
+            ? communicationsMode.kind === 'contact'
+              ? 'Communication history and draft activity for this contact.'
               : 'Active One Time accounts with redacted setup, reset, and PIN delivery status.'
-          : contactOperationsMode
-            ? 'Invite a Parent, create local-only Students, and manage access and adult-only GHL sync.'
-            : contactsSection !== 'people'
-              ? contactsSection === 'households'
-                ? 'Create and maintain family records, guardians, access, and account setup.'
-                : contactsSection === 'users'
-                  ? 'Manage secure account setup, roles, password reset, and access state.'
-                  : contactsSection === 'learners'
-                    ? 'Manage local learners, Student setup, status, and the three-active-learner limit.'
-                    : 'Review timestamped local CRM and account administration activity.'
-              : creating
-                ? 'Create a One Time contact without sending messages or granting access.'
-                : editing
-                  ? 'Update CRM fields backed by the One Time contact API.'
-                  : selected
-                    ? contactSummary(selected)
-                    : 'Parent and adult contact review. Students remain One Time-only.';
+            : contactOperationsMode
+              ? 'Invite a Parent, create local-only Students, and manage access and adult-only GHL sync.'
+              : contactsSection !== 'people'
+                ? contactsSection === 'households'
+                  ? 'Create and maintain family records, guardians, access, and account setup.'
+                  : contactsSection === 'users'
+                    ? 'Manage secure account setup, roles, password reset, and access state.'
+                    : contactsSection === 'learners'
+                      ? 'Manage local learners, Student setup, status, and the three-active-learner limit.'
+                      : 'Review timestamped local CRM and account administration activity.'
+                : creating
+                  ? 'Create a One Time contact without sending messages or granting access.'
+                  : editing
+                    ? 'Update CRM fields backed by the One Time contact API.'
+                    : selected
+                      ? contactSummary(selected)
+                      : 'Parent and adult contact review. Students remain One Time-only.';
   const toolbar = communicationsMode ? null : surface === 'dashboard' &&
-    dashboardSection === 'overview' ? (
+    dashboardSection === 'today' ? (
     <ReadOnlyToolbar
       label="Refresh dashboard"
       actionId="dashboard.refresh.button"
@@ -1234,21 +1251,43 @@ function CrmApp() {
           onRetry={() => void loadDashboard()}
         />
       )}
-      {surface === 'operations' && (
-        <OperationsPanel
-          csrfToken={session?.csrf_token ?? ''}
-          dashboard={dashboard}
-          loading={dashboardState.loading}
-          error={dashboardState.error}
-          onNavigate={(href) => {
-            const nextSurface = ownerSurfaceFromPath(href);
-            if (nextSurface && nextSurface !== 'crm') {
-              openOwnerSurface(nextSurface, href);
-              return;
+      {surface === 'operations' &&
+        (communicationsMode?.kind === 'workflow' ? (
+          <Suspense
+            fallback={
+              <p className="state-panel" role="status">
+                Loading workflow readback...
+              </p>
             }
-            window.location.assign(href);
-          }}
-          onRetry={() => void loadDashboard()}
+          >
+            <WorkflowReadbackPanel
+              workflowId={communicationsMode.workflowId}
+              onProtectedStateCleared={clearProtectedState}
+            />
+          </Suspense>
+        ) : (
+          <OperationsPanel
+            csrfToken={session?.csrf_token ?? ''}
+            dashboard={dashboard}
+            loading={dashboardState.loading}
+            error={dashboardState.error}
+            onNavigate={(href) => {
+              const nextSurface = ownerSurfaceFromPath(href);
+              if (nextSurface && nextSurface !== 'crm') {
+                openOwnerSurface(nextSurface, href);
+                return;
+              }
+              window.location.assign(href);
+            }}
+            onRetry={() => void loadDashboard()}
+          />
+        ))}
+      {surface === 'account' && (
+        <AccountPanel
+          section={accountSectionFromPath(location.pathname)}
+          user={session?.user ?? null}
+          csrfToken={session?.csrf_token ?? ''}
+          onNavigate={(href) => openOwnerSurface('account', href)}
         />
       )}
       {surface === 'support' && (
@@ -1270,12 +1309,7 @@ function CrmApp() {
             </p>
           }
         >
-          {communicationsMode.kind === 'workflow' ? (
-            <WorkflowReadbackPanel
-              workflowId={communicationsMode.workflowId}
-              onProtectedStateCleared={clearProtectedState}
-            />
-          ) : (
+          {communicationsMode.kind !== 'workflow' && (
             <CommunicationsPanel
               contactId={
                 communicationsMode.kind === 'contact' ? communicationsMode.contactId : undefined
@@ -1305,7 +1339,7 @@ function CrmApp() {
             }
           >
             <AdminDirectoryPanel
-              mode={contactsSection}
+              mode={contactsSection === 'access' ? 'users' : contactsSection}
               csrfToken={session?.csrf_token ?? ''}
               selectedRecordId={
                 contactsSection === 'users'
@@ -1580,19 +1614,15 @@ function ReadOnlyToolbar({
 function RabbiDashboardPanel() {
   const destinations = [
     {
-      title: 'Classroom and schedule',
-      detail: 'Review upcoming classes, learner questions, attendance, and progress.',
-      href: '/app/classes',
+      title: 'Today’s canonical class',
+      detail:
+        'Sunday–Thursday at 7:00 PM Asia/Jerusalem. Start, continue, or end from the protected classroom control.',
+      href: '/app/live',
     },
     {
-      title: 'Teaching content',
-      detail: 'Open the current read-only lesson and media library.',
-      href: '/app/content',
-    },
-    {
-      title: 'Live Console',
-      detail: 'Run the current class, learner questions, and approved Zoom controls.',
-      href: '/app/live-console',
+      title: 'Learning',
+      detail: 'Review classroom, library, questions, attendance, and recordings.',
+      href: '/app/learning/classroom',
     },
   ];
   return (
@@ -1724,6 +1754,35 @@ function DashboardPanel({
         />
       ) : (
         <>
+          <Card className="dashboard-overview-card" data-usable="canonical-class-card">
+            <h2>One Time recurring class</h2>
+            <p>Sunday–Thursday at 7:00 PM Asia/Jerusalem.</p>
+            <dl className="dashboard-overview-list">
+              <div>
+                <dt>Class state</dt>
+                <dd>Check protected readiness before starting.</dd>
+              </div>
+              <div>
+                <dt>Membership</dt>
+                <dd>
+                  Active entitled Parent learners and Students are resolved from app access; no
+                  manual enrollment is required for the daily flow.
+                </dd>
+              </div>
+              <div>
+                <dt>Attendance and recordings</dt>
+                <dd>Available from the current occurrence when recorded.</dd>
+              </div>
+            </dl>
+            <div className="form-actions">
+              <Button type="button" variant="primary" onClick={() => onNavigate('/app/live')}>
+                Check readiness
+              </Button>
+              <Button type="button" onClick={() => onNavigate('/app/learning/classroom')}>
+                Open Classroom
+              </Button>
+            </div>
+          </Card>
           <Card className="dashboard-overview-card">
             <h2>Workspace overview</h2>
             <ul className="dashboard-overview-list">
@@ -1751,6 +1810,154 @@ function DashboardPanel({
             </ul>
           </Card>
         </>
+      )}
+    </section>
+  );
+}
+
+function AccountPanel({
+  section,
+  user,
+  csrfToken,
+  onNavigate,
+}: {
+  section: 'profile' | 'security' | 'privacy';
+  user: SessionUser | null;
+  csrfToken: string;
+  onNavigate: (href: string) => void;
+}) {
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [notice, setNotice] = useState<Notice | null>(null);
+  const passwordValid =
+    currentPassword.length > 0 &&
+    newPassword.length >= 6 &&
+    newPassword.length <= 128 &&
+    newPassword === confirmPassword &&
+    newPassword !== currentPassword;
+
+  return (
+    <section className="dashboard-surface" aria-label="Account">
+      <WorkspaceTabs
+        tabs={ACCOUNT_SECTIONS}
+        currentId={section}
+        label="Account area"
+        onNavigate={onNavigate}
+      />
+      {section === 'profile' ? (
+        <Card className="dashboard-overview-card">
+          <h2>Profile</h2>
+          <p>Your secure One Time account identity.</p>
+          <dl className="dashboard-overview-list">
+            <div>
+              <dt>Name</dt>
+              <dd>{user?.display_name ?? 'Loading account'}</dd>
+            </div>
+            <div>
+              <dt>Email</dt>
+              <dd>{user?.email ?? 'Loading account'}</dd>
+            </div>
+            <div>
+              <dt>Role</dt>
+              <dd>{user ? roleLabel(user) : 'Loading account'}</dd>
+            </div>
+          </dl>
+        </Card>
+      ) : section === 'privacy' ? (
+        <Card className="dashboard-overview-card">
+          <h2>Privacy</h2>
+          <p>
+            One Time displays only the account data necessary for your authorized workspace. Student
+            identities remain local to One Time and are never created as GHL contacts.
+          </p>
+          <p>
+            <a href="/privacy">Read the privacy notice</a>
+          </p>
+        </Card>
+      ) : (
+        <Card className="dashboard-overview-card">
+          <h2>Sign-in &amp; Security</h2>
+          <p>
+            Change the password for this signed-in account. This never displays a credential or
+            reset token.
+          </p>
+          <form
+            className="contact-form"
+            onSubmit={(event) => {
+              event.preventDefault();
+              if (!passwordValid || saving) return;
+              setSaving(true);
+              setNotice(null);
+              void changeOwnPassword({ csrfToken, currentPassword, newPassword })
+                .then((result) => {
+                  setCurrentPassword('');
+                  setNewPassword('');
+                  setConfirmPassword('');
+                  setNotice({
+                    kind: 'success',
+                    message:
+                      result.sessions_invalidated > 0
+                        ? `Password changed. ${result.sessions_invalidated} other session${result.sessions_invalidated === 1 ? '' : 's'} signed out.`
+                        : 'Password changed. This session remains signed in.',
+                  });
+                })
+                .catch((caught) =>
+                  setNotice({
+                    kind: 'error',
+                    message: errorMessage(caught, 'Password was not changed.'),
+                  }),
+                )
+                .finally(() => setSaving(false));
+            }}
+          >
+            <label>
+              <span>Current password</span>
+              <input
+                type="password"
+                autoComplete="current-password"
+                value={currentPassword}
+                required
+                maxLength={128}
+                onChange={(event) => setCurrentPassword(event.currentTarget.value)}
+              />
+            </label>
+            <label>
+              <span>New password</span>
+              <input
+                type="password"
+                autoComplete="new-password"
+                value={newPassword}
+                required
+                minLength={6}
+                maxLength={128}
+                onChange={(event) => setNewPassword(event.currentTarget.value)}
+              />
+            </label>
+            <label>
+              <span>Confirm new password</span>
+              <input
+                type="password"
+                autoComplete="new-password"
+                value={confirmPassword}
+                required
+                minLength={6}
+                maxLength={128}
+                onChange={(event) => setConfirmPassword(event.currentTarget.value)}
+              />
+            </label>
+            {notice && <NoticeBanner notice={notice} />}
+            <div className="form-actions">
+              <Button type="submit" variant="primary" disabled={!passwordValid || saving}>
+                {saving ? 'Changing password' : 'Change password'}
+              </Button>
+            </div>
+          </form>
+          <p>
+            Cannot use the current password? <a href="/forgot-password">Request a secure reset</a>.
+          </p>
+        </Card>
       )}
     </section>
   );
@@ -2004,9 +2211,7 @@ function ClassesPanel({
     <section className="classroom-workspace" aria-busy={loading || detailLoading}>
       <WorkspaceTabs
         tabs={CLASSROOM_SECTIONS.filter(
-          (item) =>
-            (item.id !== 'live-console' || liveConsoleReady) &&
-            (!teachingOnly || teachingSections.includes(item.id)),
+          (item) => !teachingOnly || teachingSections.includes(item.id),
         ).map((item) => ({
           ...item,
           href: classroomHref(item.id, selectedClass?.occurrence_key),
@@ -2059,6 +2264,7 @@ function ClassesPanel({
         <ClassManagementWorkspace
           csrfToken={csrfToken}
           section={section}
+          dailyFlow={location.pathname.startsWith('/app/learning')}
           selectedSeriesKey={selectedSeriesKey}
           occurrences={classes}
           selectedOccurrenceKey={selectedClass?.occurrence_key ?? null}
@@ -3422,9 +3628,13 @@ function sourceLabel(value: string) {
 }
 
 function ownerSurfaceFromPath(pathname: string): OwnerSurface | null {
+  if (pathname === '/app/today' || pathname.startsWith('/app/today/')) return 'dashboard';
+  if (pathname === '/app/learning' || pathname.startsWith('/app/learning/')) return 'classes';
+  if (pathname === '/app/people' || pathname.startsWith('/app/people/')) return 'crm';
   if (pathname === '/app/dashboard' || pathname.startsWith('/app/dashboard/')) return 'dashboard';
   if (pathname === '/app/search') return 'search';
   if (pathname === '/app/operations') return 'operations';
+  if (pathname === '/app/account' || pathname.startsWith('/app/account/')) return 'account';
   if (pathname === '/app/classes' || pathname.startsWith('/app/classes/')) return 'classes';
   if (pathname === '/app/content' || pathname.startsWith('/app/content/')) return 'content';
   if (pathname === '/app/billing') return 'billing';
@@ -3433,7 +3643,7 @@ function ownerSurfaceFromPath(pathname: string): OwnerSurface | null {
     return 'support';
   }
   if (pathname === '/app/tickets' || pathname.startsWith('/app/tickets/')) return 'support';
-  if (pathname === '/app/crm') return 'crm';
+  if (pathname === '/app/crm' || pathname.startsWith('/app/crm/')) return 'crm';
   return null;
 }
 
@@ -3443,19 +3653,20 @@ function ownerSurfacePath(surface: Exclude<OwnerSurface, 'crm'>) {
 }
 
 function ownerSurfaceTitle(surface: OwnerSurface) {
-  if (surface === 'dashboard') return 'Dashboard';
+  if (surface === 'dashboard') return 'Today';
   if (surface === 'search') return 'Global search';
   if (surface === 'operations') return 'Operations';
   if (surface === 'classes') return 'Classroom';
   if (surface === 'content') return 'Content';
   if (surface === 'billing') return 'Household Access';
   if (surface === 'support') return 'Support';
+  if (surface === 'account') return 'Account';
   return 'Contacts';
 }
 
 function ownerSurfaceDescription(surface: OwnerSurface) {
   if (surface === 'dashboard') {
-    return 'A focused overview of the One Time workspace.';
+    return 'One canonical Sunday–Thursday class at 7:00 PM Asia/Jerusalem.';
   }
   if (surface === 'search') {
     return 'Search authorized operational records without placing private terms in the URL.';
@@ -3472,7 +3683,15 @@ function ownerSurfaceDescription(surface: OwnerSurface) {
     return 'Current household learning access; payment history remains in GHL.';
   }
   if (surface === 'support') return 'Subscriber-only technical support inside the One Time shell.';
+  if (surface === 'account')
+    return 'Profile, secure sign-in, and privacy information for this account.';
   return 'Parent and adult contact review.';
+}
+
+function accountSectionFromPath(pathname: string): 'profile' | 'security' | 'privacy' {
+  if (pathname === '/app/account/security') return 'security';
+  if (pathname === '/app/account/privacy') return 'privacy';
+  return 'profile';
 }
 
 function productStateLabel(value: string) {

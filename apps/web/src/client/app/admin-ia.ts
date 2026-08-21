@@ -1,31 +1,35 @@
 export const ADMIN_PRIMARY_AREAS = [
-  { id: 'dashboard', label: 'Dashboard', href: '/app/dashboard' },
-  { id: 'contacts', label: 'Contacts', href: '/app/contacts' },
-  { id: 'content', label: 'Content', href: '/app/content' },
-  { id: 'classroom', label: 'Classroom', href: '/app/classroom/classes' },
+  { id: 'today', label: 'Today', href: '/app/today' },
+  { id: 'learning', label: 'Learning', href: '/app/learning/classroom' },
+  { id: 'people', label: 'People', href: '/app/people/families' },
   { id: 'communications', label: 'Communications', href: '/app/communications' },
-  { id: 'billing-access', label: 'Billing & Access', href: '/app/billing-access' },
   { id: 'operations', label: 'Operations', href: '/app/operations' },
-  { id: 'live-console', label: 'Live Console', href: '/app/live' },
+  { id: 'account', label: 'Account', href: '/app/account/profile' },
 ] as const;
 
-export type AdminPrimaryAreaId = (typeof ADMIN_PRIMARY_AREAS)[number]['id'];
+/** Legacy ids remain accepted by route compatibility code while visible navigation is canonical. */
+export type AdminPrimaryAreaId =
+  | (typeof ADMIN_PRIMARY_AREAS)[number]['id']
+  | 'dashboard'
+  | 'contacts'
+  | 'content'
+  | 'classroom'
+  | 'billing-access'
+  | 'live-console';
 
-export const DASHBOARD_SECTIONS = [
-  { id: 'overview', label: 'Overview', href: '/app/dashboard' },
-] as const;
+export const DASHBOARD_SECTIONS = [{ id: 'today', label: 'Today', href: '/app/today' }] as const;
 
 export type DashboardSectionId = (typeof DASHBOARD_SECTIONS)[number]['id'];
 
 export const CONTACTS_SECTIONS = [
-  { id: 'people', label: 'People / Contacts', href: '/app/contacts' },
-  { id: 'households', label: 'Households', href: '/app/households' },
-  { id: 'users', label: 'Users', href: '/app/users' },
-  { id: 'learners', label: 'Students', href: '/app/students' },
-  { id: 'audit', label: 'Audit History', href: '/app/audit' },
+  { id: 'households', label: 'Families', href: '/app/people/families' },
+  { id: 'users', label: 'Parents', href: '/app/people/parents' },
+  { id: 'learners', label: 'Students', href: '/app/people/students' },
+  { id: 'access', label: 'Access', href: '/app/people/access' },
+  { id: 'audit', label: 'Audit', href: '/app/people/audit' },
 ] as const;
 
-export type ContactsSectionId = 'people' | 'households' | 'users' | 'learners' | 'audit';
+export type ContactsSectionId = 'people' | 'households' | 'users' | 'learners' | 'access' | 'audit';
 
 export const CONTENT_SECTIONS = [
   { id: 'library', label: 'Library', href: '/app/library' },
@@ -37,14 +41,11 @@ export type ContentSectionId =
   'library' | 'publication' | 'factory' | 'studio' | 'knowledge' | 'prompts';
 
 export const CLASSROOM_SECTIONS = [
-  { id: 'classes', label: 'Classes', href: '/app/classroom/classes' },
-  { id: 'occurrences', label: 'Occurrences', href: '/app/classroom/occurrences' },
-  { id: 'enrollments', label: 'Enrollments', href: '/app/classroom/enrollments' },
+  { id: 'classes', label: 'Classroom', href: '/app/learning/classroom' },
+  { id: 'occurrences', label: 'Library', href: '/app/learning/library' },
+  { id: 'questions', label: 'Questions', href: '/app/learning/questions' },
   { id: 'attendance', label: 'Attendance', href: '/app/classroom/attendance' },
   { id: 'recordings', label: 'Recordings', href: '/app/classroom/recordings' },
-  { id: 'access', label: 'Access', href: '/app/classroom/access' },
-  { id: 'questions', label: 'Questions', href: '/app/classroom/questions' },
-  { id: 'live-console', label: 'Zoom Live Console', href: '/app/live-console?section=zoom' },
 ] as const;
 
 export type ClassroomSectionId =
@@ -72,35 +73,54 @@ export const LIVE_CONSOLE_SECTIONS = [
   { id: 'zoom', label: 'Zoom', href: '/app/live?section=zoom' },
 ] as const;
 
+export const COMMUNICATIONS_SECTIONS = [
+  { id: 'account-emails', label: 'Account Emails', href: '/app/communications' },
+] as const;
+
+export const ACCOUNT_SECTIONS = [
+  { id: 'profile', label: 'Profile', href: '/app/account/profile' },
+  { id: 'security', label: 'Sign-in & Security', href: '/app/account/security' },
+  { id: 'privacy', label: 'Privacy', href: '/app/account/privacy' },
+] as const;
+
 export type LiveConsoleSectionId = (typeof LIVE_CONSOLE_SECTIONS)[number]['id'];
 
-export function adminPrimaryNav(currentId: AdminPrimaryAreaId | null, liveConsoleReady: boolean) {
-  return ADMIN_PRIMARY_AREAS.filter((item) => item.id !== 'live-console' || liveConsoleReady).map(
-    (item) => ({
-      ...item,
-      current: item.id === currentId,
-    }),
-  );
+export function adminPrimaryNav(currentId: AdminPrimaryAreaId | null, _liveConsoleReady = false) {
+  return ADMIN_PRIMARY_AREAS.map((item) => ({ ...item, current: item.id === currentId }));
 }
 
-export function rabbiPrimaryNav(currentId: AdminPrimaryAreaId | null, liveConsoleReady: boolean) {
-  return ADMIN_PRIMARY_AREAS.filter(
-    (item) =>
-      ['dashboard', 'content', 'classroom'].includes(item.id) ||
-      (item.id === 'live-console' && liveConsoleReady),
+export function rabbiPrimaryNav(currentId: AdminPrimaryAreaId | null, _liveConsoleReady = false) {
+  return ADMIN_PRIMARY_AREAS.filter((item) =>
+    ['today', 'learning', 'account'].includes(item.id),
   ).map((item) => ({ ...item, current: item.id === currentId }));
 }
 
 export function dashboardSectionFromPath(_pathname: string): DashboardSectionId {
-  return 'overview';
+  return 'today';
 }
 
 export function contactsSectionFromPath(pathname: string): ContactsSectionId {
-  if (pathname === '/app/households' || pathname === '/app/crm/households') return 'households';
-  if (pathname === '/app/users' || pathname === '/app/crm/users') return 'users';
-  if (pathname === '/app/students' || pathname === '/app/crm/learners') return 'learners';
-  if (pathname === '/app/audit' || pathname === '/app/crm/audit') return 'audit';
-  return 'people';
+  if (pathname === '/app/crm') return 'people';
+  if (pathname === '/app/people/access') return 'access';
+  if (
+    pathname === '/app/people/audit' ||
+    pathname === '/app/audit' ||
+    pathname === '/app/crm/audit'
+  )
+    return 'audit';
+  if (
+    pathname === '/app/people/students' ||
+    pathname === '/app/students' ||
+    pathname === '/app/crm/learners'
+  )
+    return 'learners';
+  if (
+    pathname === '/app/people/parents' ||
+    pathname === '/app/users' ||
+    pathname === '/app/crm/users'
+  )
+    return 'users';
+  return 'households';
 }
 
 export function contentSectionFromPath(pathname: string): ContentSectionId {
@@ -116,6 +136,14 @@ export function contentSectionFromPath(pathname: string): ContentSectionId {
 
 export function classroomSectionFromPath(pathname: string): ClassroomSectionId {
   if (pathname === '/app/rewards') return 'rewards';
+  if (pathname.startsWith('/app/learning')) {
+    const section = pathSegments(pathname, '/app/learning')[0] ?? 'classroom';
+    if (section === 'library') return 'occurrences';
+    if (section === 'questions') return 'questions';
+    if (section === 'attendance') return 'attendance';
+    if (section === 'recordings') return 'recordings';
+    return 'classes';
+  }
   const prefix = pathname.startsWith('/app/classroom') ? '/app/classroom' : '/app/classes';
   const first = pathSegments(pathname, prefix)[0] ?? '';
   if (first === 'schedule' || first === 'calendar' || first === 'occurrences') {
@@ -141,6 +169,7 @@ export function classroomOccurrenceFromLocation(pathname: string, search: string
     }
     return null;
   }
+  if (pathname.startsWith('/app/learning')) return null;
   const segments = pathSegments(pathname, '/app/classes');
   const first = segments[0] ?? '';
   return [
@@ -165,6 +194,9 @@ export function classroomSeriesFromLocation(pathname: string, search: string) {
 }
 
 export function classroomHref(section: ClassroomSectionId, occurrenceKey?: string | null) {
+  if (section === 'live-console') {
+    return liveConsoleHref('zoom', occurrenceKey);
+  }
   const base =
     CLASSROOM_SECTIONS.find((item) => item.id === section)?.href ?? '/app/classroom/classes';
   if (!occurrenceKey) return base;

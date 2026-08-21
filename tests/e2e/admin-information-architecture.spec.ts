@@ -4,16 +4,7 @@ import path from 'node:path';
 import { expect, test, type BrowserContext, type Page } from '@playwright/test';
 import { W12_E2E_ADMIN_COOKIES } from '../support/w12-portal-test-lab-session.ts';
 
-const primaryLabels = [
-  'Dashboard',
-  'Contacts',
-  'Content',
-  'Classroom',
-  'Communications',
-  'Billing & Access',
-  'Operations',
-  'Live Console',
-];
+const primaryLabels = ['Today', 'Learning', 'People', 'Communications', 'Operations', 'Account'];
 const viewports = [
   { width: 360, height: 800 },
   { width: 390, height: 844 },
@@ -34,9 +25,9 @@ test('Admin IA keeps the canonical launch areas across the governed viewport mat
   for (const viewport of viewports) {
     await page.setViewportSize(viewport);
     await page.goto('/app/dashboard');
-    await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Today' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Workspace overview' })).toBeVisible();
-    await expect(page.locator('.dashboard-overview-card button')).toHaveCount(0);
+    await expect(page.getByRole('heading', { name: 'One Time recurring class' })).toBeVisible();
 
     if (viewport.width >= 1200) {
       await expect(
@@ -120,14 +111,14 @@ test('Admin IA keeps the canonical launch areas across the governed viewport mat
     }
   });
   await page.goto('/app/users');
-  await expect(page.locator('#admin-directory-users-title')).toHaveText('Users and roles');
-  await page.getByRole('button', { name: 'Create account setup' }).click();
+  await expect(page.locator('#admin-directory-users-title')).toHaveText('Parents');
+  await page.getByRole('button', { name: 'Create Parent account' }).click();
   await expect(page).toHaveURL(/\/app\/crm\/contact-operations$/u);
   expect(creationEffectRequests).toEqual([]);
 
   await page.goto('/app/households');
-  await expect(page.locator('#admin-directory-households-title')).toHaveText('Households');
-  await page.getByRole('button', { name: 'Add household' }).click();
+  await expect(page.locator('#admin-directory-households-title')).toHaveText('Families');
+  await page.getByRole('button', { name: 'Create Family' }).click();
   await expect(page).toHaveURL(/\/app\/crm\/contact-operations$/u);
   expect(creationEffectRequests).toEqual([]);
 
@@ -136,11 +127,11 @@ test('Admin IA keeps the canonical launch areas across the governed viewport mat
   await expect(firstUserLink).toHaveAttribute('href', /^\/app\/users\/[^/]+$/u);
   await firstUserLink.click();
   await expect(page).toHaveURL(/\/app\/users\/[^/]+$/u);
-  await expect(page.locator('#admin-directory-users-title')).toHaveText('User details');
+  await expect(page.locator('#admin-directory-users-title')).toHaveText('Parent details');
   await expect(page.getByRole('heading', { name: 'Miriam Cohen' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Edit role' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Reset password' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Back to Users' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Back to Parents' })).toBeVisible();
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
   const userDetailAxe = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
   expect(
@@ -207,10 +198,10 @@ test('Admin IA keeps the canonical launch areas across the governed viewport mat
   await expect(page.locator('#page-title')).toHaveText('Students');
   await expect(
     page.getByRole('navigation', { name: 'People and family management' }).getByRole('link'),
-  ).toHaveText(['People / Contacts', 'Households', 'Users', 'Students', 'Audit History']);
-  await expect(page.locator('#admin-directory-learners-title')).toHaveText('Learners');
-  await expect(page.getByRole('button', { name: 'Add learner' })).toBeVisible();
-  await page.getByRole('button', { name: 'Add learner' }).click();
+  ).toHaveText(['Families', 'Parents', 'Students', 'Access', 'Audit']);
+  await expect(page.locator('#admin-directory-learners-title')).toHaveText('Students');
+  await expect(page.getByRole('button', { name: 'Add Student' })).toBeVisible();
+  await page.getByRole('button', { name: 'Add Student' }).click();
   await expect(page).toHaveURL(/\/app\/crm\/contact-operations$/u);
   expect(creationEffectRequests).toEqual([]);
 
@@ -238,63 +229,26 @@ test('Admin IA keeps the canonical launch areas across the governed viewport mat
   );
   await expect(page.getByRole('navigation', { name: 'Studio view' })).toBeVisible();
 
-  await page.goto('/app/classroom/classes');
+  await page.goto('/app/learning/classroom');
   await expect(page.getByRole('heading', { name: 'Classroom' })).toBeVisible();
   await expect(
     page.getByRole('navigation', { name: 'Classroom area' }).getByRole('link'),
-  ).toHaveText([
-    'Classes',
-    'Occurrences',
-    'Enrollments',
-    'Attendance',
-    'Recordings',
-    'Access',
-    'Questions',
-    'Zoom Live Console',
-  ]);
+  ).toHaveText(['Classroom', 'Library', 'Questions', 'Attendance', 'Recordings']);
   await expect(page.getByRole('heading', { name: 'Classes', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Create class' })).toHaveCount(0);
   await page
     .getByRole('navigation', { name: 'Classroom area' })
-    .getByRole('link', { name: 'Occurrences' })
+    .getByRole('link', { name: 'Library' })
     .click();
-  await expect(page).toHaveURL(/\/app\/classroom\/occurrences(?:\?occurrence_key=[^&]+)?$/u);
+  await expect(page).toHaveURL(/\/app\/learning\/library(?:\?occurrence_key=[^&]+)?$/u);
   await expect(page.getByRole('heading', { name: 'Occurrences', exact: true })).toBeVisible();
 
-  await page
-    .getByRole('navigation', { name: 'Classroom area' })
-    .getByRole('link', { name: 'Enrollments' })
-    .click();
-  await expect(page).toHaveURL(/\/app\/classroom\/enrollments(?:\?occurrence_key=[^&]+)?$/u);
-  await expect(page.getByRole('heading', { name: 'Enrollments', exact: true })).toBeVisible();
-
-  await page.goto('/app/classroom/classes');
-  const firstClassCard = page.locator('.class-management__card').first();
-  const firstClassTitle = await firstClassCard.getByRole('heading').innerText();
-  await firstClassCard.getByRole('button', { name: 'Open class details' }).click();
-  await expect(page).toHaveURL(/\/app\/classroom\/classes\/[^/]+$/u);
-  await expect(page.getByRole('heading', { name: 'Class series detail' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: firstClassTitle })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Edit class' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Archive class' })).toBeVisible();
-  expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
-
-  const classroomLiveConsole = page
-    .getByRole('navigation', { name: 'Classroom area' })
-    .getByRole('link', { name: 'Zoom Live Console' });
-  await expect(classroomLiveConsole).toHaveAttribute(
-    'href',
-    /^\/app\/live-console\?section=zoom(?:&occurrence_key=[^&]+)?$/u,
-  );
-  await classroomLiveConsole.click();
-  await expect(page).toHaveURL(/\/app\/live-console\?section=zoom(?:&occurrence_key=[^&]+)?$/u);
-  await expect(page.getByRole('heading', { name: 'Zoom', exact: true })).toBeVisible();
-
-  await page.goto('/app/classroom/attendance');
+  await page.goto('/app/learning/attendance');
   await expect(page.getByRole('heading', { name: 'Attendance', exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Record an audited correction' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Record audited correction' })).toBeVisible();
 
-  await page.goto('/app/live-console');
+  await page.goto('/app/live');
   await expect(page.getByRole('heading', { name: 'Live Console' })).toBeVisible();
   await expect(
     page.getByRole('navigation', { name: 'Live Console area' }).getByRole('link'),

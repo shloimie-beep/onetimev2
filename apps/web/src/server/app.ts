@@ -2091,7 +2091,7 @@ export function createApp({
   }
 
   app.get(
-    /^\/app\/(?:dashboard|classes|content|billing|communications|rewards|support|operations)(?:\/.*)?$/,
+    /^\/app\/(?:today|learning|people|account|dashboard|classes|content|billing|communications|rewards|support|operations)(?:\/.*)?$/,
     async (req: RequestWithTrace, res) => {
       const session = await resolveOwnerAdminShellSession(req, res, '/app/dashboard');
       if (!session) return;
@@ -7947,7 +7947,12 @@ function canUseOwnerDashboard(role: string) {
 function canUseRabbiTeachingSurface(role: string, path: string) {
   return (
     role === 'rabbi' &&
-    (path === '/app/dashboard' ||
+    (path === '/app/today' ||
+      path === '/app/account' ||
+      path.startsWith('/app/account/') ||
+      path === '/app/learning' ||
+      path.startsWith('/app/learning/') ||
+      path === '/app/dashboard' ||
       path === '/app/content' ||
       path === '/app/classes' ||
       path.startsWith('/app/classes/'))
@@ -8245,8 +8250,8 @@ function handleLifecycleRouteError(
 }
 
 function defaultRouteForRole(role: string) {
-  if (role === 'owner' || role === 'admin') return '/app/dashboard';
-  if (role === 'rabbi') return '/app/dashboard';
+  if (role === 'owner' || role === 'admin') return '/app/today';
+  if (role === 'rabbi') return '/app/today';
   if (role === 'parent') return '/app/parent';
   if (role === 'student') return '/app/student';
   return '/app/crm';

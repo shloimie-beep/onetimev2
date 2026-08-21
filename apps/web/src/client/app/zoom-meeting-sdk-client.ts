@@ -4,6 +4,7 @@ export type ZoomMeetingSdkApi = Record<
   'setZoomJSLib' | 'preLoadWasm' | 'prepareWebSDK' | 'inMeetingServiceListener' | 'init' | 'join',
   (...args: unknown[]) => unknown
 > & {
+  endMeeting?: (...args: unknown[]) => unknown;
   removeInMeetingServiceListener?: (...args: unknown[]) => unknown;
 };
 
@@ -31,6 +32,7 @@ export type ZoomParticipantJoinInput = {
 export type ZoomMeetingStatus = 1 | 2 | 3 | 4;
 
 const meetingSdkByVersion = new Map<string, Promise<ZoomMeetingSdkApi>>();
+let activeHostMeetingSdk: ZoomMeetingSdkApi | null = null;
 
 export async function joinZoomMeetingParticipant(input: ZoomParticipantJoinInput) {
   const zoom = await loadMeetingSdk(input.sdkWebVersion);
@@ -67,6 +69,7 @@ export function joinZoomMeetingParticipantWithApi(
     const settleConnected = () => {
       if (settled) return;
       connected = true;
+      if (input.zak) activeHostMeetingSdk = zoom;
       settled = true;
       clearConnectionTimeout();
       if (!input.onMeetingStatus) cleanupListener();
@@ -98,6 +101,7 @@ export function joinZoomMeetingParticipantWithApi(
         settleError(new Error('Meeting SDK disconnected before the meeting was connected.'));
       } else if (status === 3) {
         notifyMeetingStatus(status);
+        if (activeHostMeetingSdk === zoom) activeHostMeetingSdk = null;
         cleanupListener();
       } else {
         notifyMeetingStatus(status);
@@ -153,6 +157,23 @@ export function joinZoomMeetingParticipantWithApi(
       });
     } catch (error) {
       settleError(new Error(`Meeting SDK setup failed (${sdkErrorSummary(error)}).`));
+    }
+  });
+}
+
+/** Calls the Meeting SDK host control only for the active host session. */
+export async function endActiveZoomMeetingForAll() {
+  const zoom = activeHostMeetingSdk;
+  if (!zoom?.endMeeting) throw new Error('Protected class end is unavailable.');
+  const endMeeting = zoom.endMeeting;
+  await new Promise<void>((resolve, reject) => {
+    try {
+      endMeeting({
+        success: () => resolve(),
+        error: () => reject(new Error('Protected class end was not confirmed.')),
+      });
+    } catch {
+      reject(new Error('Protected class end was not confirmed.'));
     }
   });
 }

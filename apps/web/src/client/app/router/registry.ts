@@ -67,6 +67,7 @@ const BOUNDED_ALIAS_ROUTE_IDS = new Set<CanonicalRouteId>([
   'RT-ADM-043',
   'RT-ADM-050',
   'RT-ADM-051',
+  'RT-ADM-061',
   'RT-ADM-062',
   'RT-ADM-063',
   'RT-ADM-064',
@@ -139,6 +140,20 @@ const app = (
     shell,
     roles: shell === 'live' ? ['admin', 'rabbi'] : [shell],
     handler: `${shell}.${routeId.toLowerCase()}`,
+  });
+
+const teaching = (
+  routeId: CanonicalRouteId,
+  pathname: `/${string}`,
+  title: string,
+): ClientRouteDefinition =>
+  route({
+    routeId,
+    pathname,
+    title,
+    shell: 'admin',
+    roles: ['admin', 'rabbi'],
+    handler: `admin.${routeId.toLowerCase()}`,
   });
 
 /**
@@ -221,6 +236,21 @@ export const CANONICAL_V21_ROUTES = [
   app('RT-ADM-067', '/app/audit', 'Audit', 'admin'),
   app('RT-ADM-068', '/app/support', 'Admin support', 'admin'),
   app('RT-ADM-069', '/app/account', 'Admin account', 'admin'),
+  teaching('RT-ADM-070', '/app/today', 'Today'),
+  teaching('RT-ADM-071', '/app/learning/classroom', 'Classroom'),
+  teaching('RT-ADM-072', '/app/learning/library', 'Library'),
+  teaching('RT-ADM-073', '/app/learning/questions', 'Questions'),
+  teaching('RT-ADM-074', '/app/learning/attendance', 'Attendance'),
+  teaching('RT-ADM-075', '/app/learning/recordings', 'Recordings'),
+  app('RT-ADM-076', '/app/people/families', 'Families', 'admin'),
+  app('RT-ADM-077', '/app/people/parents', 'Parents', 'admin'),
+  app('RT-ADM-078', '/app/people/students', 'Students', 'admin'),
+  app('RT-ADM-079', '/app/people/access', 'Access', 'admin'),
+  app('RT-ADM-080', '/app/people/audit', 'People audit', 'admin'),
+  teaching('RT-ADM-081', '/app/account/profile', 'Account profile'),
+  teaching('RT-ADM-082', '/app/account/security', 'Sign-in and security'),
+  teaching('RT-ADM-083', '/app/account/privacy', 'Account privacy'),
+  app('RT-ADM-084', '/app/operations/workflow-readback/:workflowId', 'Workflow readback', 'admin'),
 
   app('RT-PAR-001', '/app/parent', 'Today', 'parent'),
   app('RT-PAR-002', '/app/parent/students', 'Students', 'parent'),

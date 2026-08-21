@@ -79,12 +79,14 @@ const EXPECTED_SOURCE_INPUT_PATHS = [
   'apps/web/src/server/features/signup/school/router.ts',
   'apps/web/src/server/features/v21-canonical-routes/router.ts',
   'apps/web/src/client/app/admin-ia.ts',
+  'apps/web/src/client/app/admin-directory/AdminDirectoryPanel.tsx',
   'apps/web/src/client/app/admin/learning/AdminLearningWorkspace.tsx',
   'apps/web/src/client/app/admin/search/AdminGlobalSearch.tsx',
   'apps/web/src/client/app/admin/support/AdminSupportWorkspace.tsx',
   'apps/web/src/client/app/communications/CommunicationsFeature.tsx',
   'apps/web/src/client/app/communications/WorkflowReadbackFeature.tsx',
   'apps/web/src/client/app/crm-api.ts',
+  'apps/web/src/client/app/classes/ClassManagementWorkspace.tsx',
   'apps/web/src/client/app/crm-entry.tsx',
   'apps/web/src/client/app/live-entry.tsx',
   'apps/web/src/client/app/zoom-meeting-sdk-client.ts',
@@ -145,7 +147,7 @@ const EXPECTED_ACTION_BINDINGS = [
   ],
   [
     'admin.communications.workflow_readback.view.route',
-    '/app/communications/:workflowId',
+    '/app/operations/workflow-readback/:workflowId',
     ['admin'],
     'GET',
     '/api/v1/communications/workflows/:workflowId',
@@ -254,6 +256,27 @@ const EXPECTED_ACTION_BINDINGS = [
     ['admin', 'rabbi'],
     'POST',
     '/api/v1/admin/classroom/production-basic/launch',
+  ],
+  [
+    'admin.production_basic.start.button.end',
+    '/app/live',
+    ['admin', 'rabbi'],
+    'CLIENT',
+    'apps/web/src/client/app/live-entry.tsx',
+  ],
+  [
+    'admin.production_basic.start.button.reconcile_status',
+    '/app/live',
+    ['admin', 'rabbi'],
+    'GET',
+    '/api/v1/admin/classroom/production-basic/status',
+  ],
+  [
+    'admin.production_basic.start.button.retry_access_cleanup',
+    '/app/live',
+    ['admin', 'rabbi'],
+    'POST',
+    '/api/v1/admin/classroom/production-basic/host-ended',
   ],
   [
     'admin.question_moderation.transition.form',
@@ -742,10 +765,10 @@ describe('v2.1 visible action registry', () => {
         handler_disposition: route.handlerDisposition,
       })),
     );
-    expect(registry.canonical_routes).toHaveLength(96);
+    expect(registry.canonical_routes).toHaveLength(111);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'ready'),
-    ).toHaveLength(96);
+    ).toHaveLength(111);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'isolated'),
     ).toHaveLength(0);
@@ -768,7 +791,7 @@ describe('v2.1 visible action registry', () => {
     );
     const actionIds = registry.actions.map(({ action_id }) => action_id);
     const sourcePaths = new Set(registry.source_inputs.map(({ path }) => path));
-    expect(registry.actions).toHaveLength(97);
+    expect(registry.actions).toHaveLength(100);
     expect(actionIds).toEqual([...actionIds].sort());
     expect(new Set(actionIds).size).toBe(actionIds.length);
     expect(actionIds).not.toContain('admin.directory.student.setup.form');
@@ -819,6 +842,7 @@ describe('v2.1 visible action registry', () => {
         .map(({ action_id }) => action_id),
     ).toEqual([
       'admin.production_basic.start.button',
+      'admin.production_basic.start.button.end',
       'portal.parent.classroom.production_basic_join.button',
       'portal.student.classroom.production_basic_join.button',
     ]);
