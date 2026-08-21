@@ -115,7 +115,7 @@ describe('OT-71 mounted parent and student portals', () => {
         '/app/support',
       );
       expect(admin.status).toBe(200);
-      expect(admin.json.return_to).toBe('/app/dashboard');
+      expect(admin.json.return_to).toBe('/app/today');
     } finally {
       await server.close();
     }
@@ -1181,7 +1181,7 @@ describe('OT-71 mounted parent and student portals', () => {
       expect(switchBackToAdmin.status).toBe(200);
       await expect(switchBackToAdmin.json()).resolves.toMatchObject({
         active_role: 'admin',
-        return_to: '/app/dashboard',
+        return_to: '/app/today',
       });
       const rotatedAdminCookie = switchBackToAdmin.headers
         .getSetCookie()

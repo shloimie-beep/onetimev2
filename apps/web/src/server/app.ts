@@ -2091,7 +2091,7 @@ export function createApp({
   }
 
   app.get(
-    /^\/app\/(?:today|learning|people|account|dashboard|classes|content|billing|communications|rewards|support|operations)(?:\/.*)?$/,
+    /^\/app\/(?:today|learning(?!\/items\/)|people|account|dashboard|classes|content|billing|communications|rewards|support|operations)(?:\/.*)?$/,
     async (req: RequestWithTrace, res) => {
       const session = await resolveOwnerAdminShellSession(req, res, '/app/dashboard');
       if (!session) return;
