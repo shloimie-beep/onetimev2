@@ -36,7 +36,7 @@ describe('OT-LAUNCH-01 Admin IA client contract', () => {
     expect(content).toContain('tabs={studioViews}');
     expect(content).toContain('Activity moved to item history');
     expect(crm).toContain('CLASSROOM_SECTIONS.filter');
-    expect(crm).toContain("!teachingOnly || teachingSections.includes(item.id)");
+    expect(crm).toContain('!teachingOnly || teachingSections.includes(item.id)');
     expect(crm).toContain('className="classroom-occurrence-selector"');
     expect(crm).not.toContain('Open class details');
     for (const label of [
