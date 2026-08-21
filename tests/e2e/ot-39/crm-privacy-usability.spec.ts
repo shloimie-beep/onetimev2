@@ -220,12 +220,12 @@ test('403 clears retained protected CRM details without expiring the valid sessi
     });
   });
   await page.goto(contactPath);
-  await expect(page.getByRole('heading', { name: 'Families' }).first()).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Contacts' }).first()).toBeVisible();
   await expect(page.getByText('OT39 Expired Parent')).toHaveCount(0);
   await expect(page.getByText(email)).toHaveCount(0);
   await expect(page.getByRole('heading', { name: 'Session expired' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Sign in' })).toHaveCount(0);
-  await expect(page.getByRole('heading', { name: 'Families' }).first()).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Contacts' }).first()).toBeVisible();
 });
 
 test('captures corrected CRM screenshots at OT-39 viewport matrix', async ({ page }) => {
