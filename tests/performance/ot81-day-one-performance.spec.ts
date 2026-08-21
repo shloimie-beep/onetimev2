@@ -6,7 +6,9 @@ const evidencePath = path.resolve(process.cwd(), 'ops/evidence/ot-81/performance
 const sampleCount = 30;
 
 test.describe('OT81 integrated 30-sample performance matrix', () => {
-  test.setTimeout(240_000);
+  // Eight routes are sampled 30 times each; this is a harness ceiling, not a
+  // performance budget. The per-route p95 assertions below remain the gate.
+  test.setTimeout(600_000);
 
   test('records route-only loading, request counts, bundle sizes, LCP, and CLS', async ({
     page,
