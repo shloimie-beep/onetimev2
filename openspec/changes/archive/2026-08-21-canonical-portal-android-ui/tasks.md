@@ -11,10 +11,10 @@
 - [x] 2.1 Repair W12 fixture access without changing production billing behavior.
 - [x] 2.2 Implement the shared role-aware shell, mobile drawer, and contextual tabs.
 - [x] 2.3 Converge Parent and Student navigation and protected readiness behavior.
-- [ ] 2.4 Add focused role, route, accessibility, and W12 regression coverage.
+- [x] 2.4 Add focused role, route, accessibility, and W12 regression coverage.
 
 ## 3. Verification
 
 - [x] 3.1 Run focused W12 browser checks repeatedly.
-- [ ] 3.2 Reconcile visible actions/governed hashes if governed inputs change.
-- [ ] 3.3 Run required final local gates and open the authorized Draft PR.
+- [x] 3.2 Reconcile visible actions/governed hashes if governed inputs change.
+- [x] 3.3 Run required final local gates and open the authorized Draft PR.

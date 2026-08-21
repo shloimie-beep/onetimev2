@@ -25,3 +25,14 @@ live-class launch path.
 
 - **WHEN** migration, transcription, or content intelligence is proposed
 - **THEN** it is planned as later work and does not block the live-class path.
+
+### Requirement: Truthful library migration state
+
+Normal Parent and Student Library states SHALL state that class-library migration
+is in progress when no real approved material is available.
+
+#### Scenario: No production material is published
+
+- **WHEN** an entitled learner opens Library without published material
+- **THEN** the page says that recordings and review materials will begin appearing
+  soon and does not claim that a provider library is live.
