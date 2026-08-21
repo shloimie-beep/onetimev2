@@ -1174,7 +1174,6 @@ function CrmApp() {
         <ClassesPanel
           csrfToken={session?.csrf_token ?? ''}
           section={classroomSection}
-          liveConsoleReady={liveConsoleReady}
           selectedSeriesKey={classroomSeriesFromLocation(
             classroomPath.pathname,
             classroomPath.search,
@@ -2146,7 +2145,6 @@ function OperationsPanel({
 function ClassesPanel({
   csrfToken,
   section,
-  liveConsoleReady,
   selectedSeriesKey,
   teachingOnly,
   classes,
@@ -2171,7 +2169,6 @@ function ClassesPanel({
 }: {
   csrfToken: string;
   section: ClassroomSectionId;
-  liveConsoleReady: boolean;
   selectedSeriesKey: string | null;
   teachingOnly: boolean;
   classes: ClassOccurrenceSummary[];

@@ -69,10 +69,6 @@ test('ordinary Admin application removes preview and launch-status surfaces in e
 
     await page.goto(`${runtime.baseUrl}/app/dashboard`);
     await expect(page.getByRole('heading', { name: 'Today' })).toBeVisible();
-    const session = await page.request.get(`${runtime.baseUrl}/api/v1/auth/session`);
-    const sessionBody = (await session.json()) as {
-      capabilities: { operator_experience: { live_console: boolean } };
-    };
     const primaryLabels = [
       'Today',
       'Learning',
