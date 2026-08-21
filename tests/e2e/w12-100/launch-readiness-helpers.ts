@@ -364,7 +364,7 @@ export async function createSyntheticContact(page: Page) {
   await expect(submit).toBeVisible();
   await submit.click();
   await expect(page).toHaveURL(/\/app\/parent$/u);
-  await expect(page.getByRole('heading', { name: 'Today', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Parent Portal', exact: true })).toBeVisible();
   return { email, contactName };
 }
 

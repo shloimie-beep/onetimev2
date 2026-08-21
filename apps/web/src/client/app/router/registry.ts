@@ -73,7 +73,6 @@ const BOUNDED_ALIAS_ROUTE_IDS = new Set<CanonicalRouteId>([
   'RT-ADM-065',
   'RT-ADM-067',
   'RT-ADM-069',
-  'RT-STU-020',
   'RT-STU-041',
   'RT-STU-042',
 ]);

@@ -225,6 +225,7 @@ describe('v2.1 canonical route views', () => {
       readiness: 'ready',
       handlerDisposition: 'mounted',
     });
+    expect(CANONICAL_ROUTE_COMPATIBILITY_PATHS['RT-STU-020']).toBeUndefined();
     expect(CANONICAL_ROUTE_COMPATIBILITY_PATHS['RT-STU-041']).toBe('/app/student/questions');
     expect(CANONICAL_ROUTE_COMPATIBILITY_PATHS['RT-ADM-066']).toBeUndefined();
     expect(CANONICAL_ROUTE_COMPATIBILITY_PATHS['RT-PAR-011']).toBeUndefined();

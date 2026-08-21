@@ -358,7 +358,10 @@ function ParentLibrary({
       <p className="ot-kicker">Parent learner</p>
       <h2>Lessons</h2>
       {snapshot.library_items.length === 0 ? (
-        <p>No entitled lessons are available yet.</p>
+        <p>
+          The class library is being migrated. Recordings and review materials will begin appearing
+          soon.
+        </p>
       ) : (
         <ul className="parent-learning-workspace__library">
           {snapshot.library_items.map((item) => (
@@ -397,6 +400,9 @@ function ParentQuestions({
       <p className="ot-kicker">Parent learner</p>
       <h2>Ask Rabbi Eli</h2>
       <p>Questions sent here belong to your Parent learner profile.</p>
+      <p>
+        Need technical help instead? <a href="/app/parent/support">Contact Parent support</a>.
+      </p>
       <form
         className="parent-learning-workspace__question"
         onSubmit={(event) => {

@@ -172,6 +172,8 @@ describe('Parent-first learning workspace', () => {
       />,
     );
     expect(classroom).toContain('No upcoming Parent class is scheduled yet.');
-    expect(library).toContain('No entitled lessons are available yet.');
+    expect(library).toContain(
+      'The class library is being migrated. Recordings and review materials will begin appearing soon.',
+    );
   });
 });

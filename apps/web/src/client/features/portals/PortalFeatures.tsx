@@ -1229,7 +1229,12 @@ function ContentList({
 }) {
   const visibleItems = items.filter((item) => !item.content_factory?.is_demo);
   if (visibleItems.length === 0) {
-    return <p className="ot-muted">Published materials will appear here.</p>;
+    return (
+      <p className="ot-muted">
+        The class library is being migrated. Recordings and review materials will begin appearing
+        soon.
+      </p>
+    );
   }
   return (
     <div className="ot-stack">
