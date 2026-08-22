@@ -165,7 +165,10 @@ export async function buildCommunicationsListResponse({
   if (!canReadAccountEmailHistory(session.role)) throw new CommunicationsAuthorizationError(403);
 
   const requestedFilters = parseCommunicationsFilters(query, now);
-  if (requestedFilters.intent_type && !ACCOUNT_EMAIL_INTENT_TYPES.has(requestedFilters.intent_type)) {
+  if (
+    requestedFilters.intent_type &&
+    !ACCOUNT_EMAIL_INTENT_TYPES.has(requestedFilters.intent_type)
+  ) {
     throw new CommunicationsValidationError(
       'ACCOUNT_EMAIL_INTENT_FORBIDDEN',
       'Only One Time account-email history is available here.',

@@ -236,7 +236,9 @@ export function createProductionBasicLaunchService(input: {
           cleared_at: lifecycle.now,
         });
         const ended = await input.hostLifecycle!.finishCleanup(lifecycle);
-        return ended ? { disposition: 'ready' as const, state: ended } : { disposition: 'unavailable' as const };
+        return ended
+          ? { disposition: 'ready' as const, state: ended }
+          : { disposition: 'unavailable' as const };
       } catch {
         await input.hostLifecycle!.markCleanupPending(lifecycle);
         return { disposition: 'unavailable' as const, state: 'cleanup_pending' as const };

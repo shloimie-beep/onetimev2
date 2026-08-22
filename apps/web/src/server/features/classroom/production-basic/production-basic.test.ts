@@ -200,7 +200,8 @@ describe('production-basic Meeting SDK launch', () => {
     const clear = vi.fn<ProductionBasicHostLiveMarker['clear']>().mockResolvedValue(undefined);
     const baseUrl = await start({ actor: admin, issue: async () => artifact(1), clear });
     const live = await post(baseUrl, '/host-live');
-    const context = (await live.json() as { data: { lifecycle_context: string } }).data.lifecycle_context;
+    const context = ((await live.json()) as { data: { lifecycle_context: string } }).data
+      .lifecycle_context;
     const headers = { 'x-ot-production-basic-lifecycle': context };
 
     expect((await post(baseUrl, '/host-ended')).status).toBe(409);
@@ -546,12 +547,8 @@ async function start(input: {
   onLaunchFailure?: ((event: ProductionBasicLaunchFailureEvent) => void) | undefined;
 }) {
   let lifecycleState:
-    | 'live'
-    | 'end_requested'
-    | 'unknown_effect'
-    | 'provider_ended'
-    | 'cleanup_pending'
-    | 'ended' = 'live';
+    'live' | 'end_requested' | 'unknown_effect' | 'provider_ended' | 'cleanup_pending' | 'ended' =
+    'live';
   const lifecycleContext = 'test-lifecycle-context';
   const service = createProductionBasicLaunchService({
     binding: input.issue

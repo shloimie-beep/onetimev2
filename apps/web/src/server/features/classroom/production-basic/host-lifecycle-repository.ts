@@ -6,12 +6,7 @@ import type { ProductionBasicScope } from './service.ts';
 export const PRODUCTION_BASIC_HOST_LIFECYCLE_TTL_MS = 2 * 60 * 60_000;
 
 export type ProductionBasicHostLifecycleState =
-  | 'live'
-  | 'end_requested'
-  | 'unknown_effect'
-  | 'provider_ended'
-  | 'cleanup_pending'
-  | 'ended';
+  'live' | 'end_requested' | 'unknown_effect' | 'provider_ended' | 'cleanup_pending' | 'ended';
 
 export type ProductionBasicHostLifecycle = {
   state: ProductionBasicHostLifecycleState;
@@ -42,7 +37,9 @@ type LifecycleInput = {
   now: Date;
 };
 
-export function createProductionBasicHostLifecycleStore(pool: DbPool): ProductionBasicHostLifecycleStore {
+export function createProductionBasicHostLifecycleStore(
+  pool: DbPool,
+): ProductionBasicHostLifecycleStore {
   const actorDigest = (actorUserRef: string) => digest(`actor-v1\0${actorUserRef}`);
   const contextDigest = (context: string) => digest(`context-v1\0${context}`);
 
@@ -75,7 +72,9 @@ export function createProductionBasicHostLifecycleStore(pool: DbPool): Productio
         from,
       ],
     );
-    return (result.rows[0]?.lifecycle_state as ProductionBasicHostLifecycleState | undefined) ?? null;
+    return (
+      (result.rows[0]?.lifecycle_state as ProductionBasicHostLifecycleState | undefined) ?? null
+    );
   }
 
   return {
@@ -152,7 +151,8 @@ export function createProductionBasicHostLifecycleStore(pool: DbPool): Productio
           input.now,
         ],
       );
-      const state = result.rows[0]?.lifecycle_state as ProductionBasicHostLifecycleState | undefined;
+      const state = result.rows[0]?.lifecycle_state as
+        ProductionBasicHostLifecycleState | undefined;
       if (!state) return null;
       // A restored host session gets a fresh opaque context. The database keeps
       // only its digest and binds it again to this actor, account, meeting, and
@@ -182,7 +182,8 @@ export function createProductionBasicHostLifecycleStore(pool: DbPool): Productio
       );
       return refreshed.rows[0] ? { state, context } : null;
     },
-    beginCleanup: (input) => transition(input, ['provider_ended', 'cleanup_pending'], 'cleanup_pending'),
+    beginCleanup: (input) =>
+      transition(input, ['provider_ended', 'cleanup_pending'], 'cleanup_pending'),
     finishCleanup: (input) => transition(input, ['cleanup_pending'], 'ended'),
     markCleanupPending: (input) => transition(input, ['cleanup_pending'], 'cleanup_pending'),
   };

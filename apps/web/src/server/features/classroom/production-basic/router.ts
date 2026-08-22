@@ -26,11 +26,23 @@ type ProductionBasicRouterInput = {
     ready(actor: ProductionBasicActor): Promise<boolean>;
     request(actor: ProductionBasicActor): Promise<ProductionBasicLaunchResult>;
     confirmHostLive(actor: ProductionBasicActor): Promise<ProductionBasicHostLiveResult>;
-    beginHostEnd(actor: ProductionBasicActor, lifecycleContext: string): Promise<ProductionBasicHostLiveResult>;
-    markHostEndUnknown(actor: ProductionBasicActor, lifecycleContext: string): Promise<ProductionBasicHostLiveResult>;
-    confirmHostEnded(actor: ProductionBasicActor, lifecycleContext: string): Promise<ProductionBasicHostLiveResult>;
+    beginHostEnd(
+      actor: ProductionBasicActor,
+      lifecycleContext: string,
+    ): Promise<ProductionBasicHostLiveResult>;
+    markHostEndUnknown(
+      actor: ProductionBasicActor,
+      lifecycleContext: string,
+    ): Promise<ProductionBasicHostLiveResult>;
+    confirmHostEnded(
+      actor: ProductionBasicActor,
+      lifecycleContext: string,
+    ): Promise<ProductionBasicHostLiveResult>;
     hostEndStatus(actor: ProductionBasicActor): Promise<ProductionBasicHostLiveResult>;
-    cleanupHostEnd(actor: ProductionBasicActor, lifecycleContext: string): Promise<ProductionBasicHostLiveResult>;
+    cleanupHostEnd(
+      actor: ProductionBasicActor,
+      lifecycleContext: string,
+    ): Promise<ProductionBasicHostLiveResult>;
   };
   onLaunchFailure?: ((event: ProductionBasicLaunchFailureEvent) => void) | undefined;
 };
@@ -98,7 +110,9 @@ function createRoleBoundProductionBasicRouter(
     router.post('/host-end-confirmed', (request, response) =>
       handleHostLifecycle(input, request, response, 'confirmed'),
     );
-    router.get('/host-end-status', (request, response) => handleHostEndStatus(input, request, response));
+    router.get('/host-end-status', (request, response) =>
+      handleHostEndStatus(input, request, response),
+    );
     // Compatibility route is cleanup-only; a naked request cannot clear the receipt.
     router.post('/host-ended', (request, response) =>
       handleHostLifecycle(input, request, response, 'cleanup'),
@@ -151,7 +165,10 @@ async function handleHostMarker(
   }
   response.json({
     success: true,
-    data: { state: 'live' as const, ...(result.lifecycle_context ? { lifecycle_context: result.lifecycle_context } : {}) },
+    data: {
+      state: 'live' as const,
+      ...(result.lifecycle_context ? { lifecycle_context: result.lifecycle_context } : {}),
+    },
   });
 }
 
@@ -182,7 +199,10 @@ async function handleHostLifecycle(
   }
   response.json({
     success: true,
-    data: { state: result.state, ...(result.lifecycle_context ? { lifecycle_context: result.lifecycle_context } : {}) },
+    data: {
+      state: result.state,
+      ...(result.lifecycle_context ? { lifecycle_context: result.lifecycle_context } : {}),
+    },
   });
 }
 
@@ -203,7 +223,10 @@ async function handleHostEndStatus(
   }
   response.json({
     success: true,
-    data: { state: result.state, ...(result.lifecycle_context ? { lifecycle_context: result.lifecycle_context } : {}) },
+    data: {
+      state: result.state,
+      ...(result.lifecycle_context ? { lifecycle_context: result.lifecycle_context } : {}),
+    },
   });
 }
 

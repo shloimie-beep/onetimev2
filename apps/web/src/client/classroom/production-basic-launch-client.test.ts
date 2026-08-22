@@ -116,7 +116,10 @@ describe('production-basic launch client', () => {
     const fetchMock = vi.fn(
       async () =>
         new Response(
-          JSON.stringify({ success: true, data: { state: 'live', lifecycle_context: 'opaque-context' } }),
+          JSON.stringify({
+            success: true,
+            data: { state: 'live', lifecycle_context: 'opaque-context' },
+          }),
           { status: 200 },
         ),
     );

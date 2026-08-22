@@ -699,7 +699,6 @@ function CrmApp() {
     setListLoading(false);
   }
 
-
   function openOwnerSurface(
     nextSurface: Exclude<OwnerSurface, 'crm'>,
     href = ownerSurfacePath(nextSurface),

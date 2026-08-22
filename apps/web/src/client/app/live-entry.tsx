@@ -147,7 +147,8 @@ function LiveConsole() {
         leaveUrl: artifact.leave_path,
         zak: requireHostZak(artifact.zak),
         onMeetingStatus: (status) => {
-          if (hostEndController.current) void hostEndController.current.observeMeetingStatus(status);
+          if (hostEndController.current)
+            void hostEndController.current.observeMeetingStatus(status);
           else deferredStatus = status;
         },
       });
@@ -187,9 +188,15 @@ function LiveConsole() {
     try {
       const status = await readProductionBasicHostEndStatus(session.csrf_token);
       restoreProductionBasicEndController(status);
-      setNotice({ kind: 'info', message: 'Class end status reconciled without sending another End command.' });
+      setNotice({
+        kind: 'info',
+        message: 'Class end status reconciled without sending another End command.',
+      });
     } catch {
-      setNotice({ kind: 'error', message: 'Class end status is unavailable; no End retry was sent.' });
+      setNotice({
+        kind: 'error',
+        message: 'Class end status is unavailable; no End retry was sent.',
+      });
     }
   }
 
@@ -663,11 +670,11 @@ function ZoomHealth({
               ? 'Zoom ended. Local access cleanup is pending.'
               : hostEndState === 'provider_ended'
                 ? 'Zoom ended. Confirm local access cleanup now.'
-              : hostEndState === 'unknown_effect'
-                ? 'Zoom end status is unknown. Reconcile status before any other action.'
-                : hostEndState === 'ended'
-                  ? 'Class ended. The next recurring class remains available.'
-                  : 'Protected recurring Zoom is ready. Start class only when the Rabbi is ready to begin.'
+                : hostEndState === 'unknown_effect'
+                  ? 'Zoom end status is unknown. Reconcile status before any other action.'
+                  : hostEndState === 'ended'
+                    ? 'Class ended. The next recurring class remains available.'
+                    : 'Protected recurring Zoom is ready. Start class only when the Rabbi is ready to begin.'
           : occurrenceKey
             ? data?.zoom.host_control_configured
               ? 'Secure host controls are ready for this class occurrence.'

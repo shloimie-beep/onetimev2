@@ -88,19 +88,22 @@ export function registerCommunicationsRoutes({
     res.redirect(302, `/app/operations/workflow-readback/${workflowId}`);
   });
 
-  app.get('/api/v1/operations/workflow-readback/:workflowId', async (req: RequestWithTrace, res) => {
-    setProtectedNoStore(res);
-    try {
-      const session = await resolvedSession(sessionPort, req);
-      if (!session) throw new CommunicationsAuthorizationError(401);
-      if (!canReadCommunications(session.role)) throw new CommunicationsAuthorizationError(403);
-      const workflow = workflowReadbackReader.find(String(req.params.workflowId));
-      if (!workflow) throw new CommunicationsNotFoundError('Workflow was not found.');
-      res.status(200).json(workflow);
-    } catch (error) {
-      handleCommunicationsError(error, req, res);
-    }
-  });
+  app.get(
+    '/api/v1/operations/workflow-readback/:workflowId',
+    async (req: RequestWithTrace, res) => {
+      setProtectedNoStore(res);
+      try {
+        const session = await resolvedSession(sessionPort, req);
+        if (!session) throw new CommunicationsAuthorizationError(401);
+        if (!canReadCommunications(session.role)) throw new CommunicationsAuthorizationError(403);
+        const workflow = workflowReadbackReader.find(String(req.params.workflowId));
+        if (!workflow) throw new CommunicationsNotFoundError('Workflow was not found.');
+        res.status(200).json(workflow);
+      } catch (error) {
+        handleCommunicationsError(error, req, res);
+      }
+    },
+  );
 
   app.get('/api/v1/operations/workflow-readback', async (req: RequestWithTrace, res) => {
     setProtectedNoStore(res);

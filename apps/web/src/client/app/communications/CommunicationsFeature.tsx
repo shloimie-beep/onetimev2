@@ -171,7 +171,8 @@ export function CommunicationsFeature({ onProtectedStateCleared }: Props) {
       )}
       {state.kind === 'empty' && (
         <StatePanel title="No matching account delivery history">
-          No setup, reset, or PIN delivery records for active One Time accounts matched these filters.
+          No setup, reset, or PIN delivery records for active One Time accounts matched these
+          filters.
         </StatePanel>
       )}
       {state.kind === 'unavailable' && (
@@ -204,10 +205,7 @@ export function CommunicationsFeature({ onProtectedStateCleared }: Props) {
             </thead>
             <tbody>
               {data.items.map((item, index) => (
-                <CommunicationRow
-                  item={item}
-                  key={`${item.queued_at}-${index}`}
-                />
+                <CommunicationRow item={item} key={`${item.queued_at}-${index}`} />
               ))}
             </tbody>
           </table>

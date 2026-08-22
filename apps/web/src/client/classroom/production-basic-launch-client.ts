@@ -61,8 +61,14 @@ export async function confirmProductionBasicHostLive(csrfToken: string): Promise
     headers: { 'x-csrf-token': csrfToken },
   });
   const payload = (await response.json()) as
-    { success: true; data: { state: 'live'; lifecycle_context?: string } } | { success: false; message?: string };
-  if (!response.ok || payload.success !== true || payload.data.state !== 'live' || !payload.data.lifecycle_context) {
+    | { success: true; data: { state: 'live'; lifecycle_context?: string } }
+    | { success: false; message?: string };
+  if (
+    !response.ok ||
+    payload.success !== true ||
+    payload.data.state !== 'live' ||
+    !payload.data.lifecycle_context
+  ) {
     throw new Error('Live class status could not be confirmed.');
   }
   return payload.data.lifecycle_context;
@@ -104,8 +110,12 @@ async function postHostEndState(
     credentials: 'same-origin',
     headers: { 'x-csrf-token': csrfToken, 'x-ot-production-basic-lifecycle': lifecycleContext },
   });
-  const payload = (await response.json()) as { success?: boolean; data?: { state?: ProductionBasicHostEndState } };
-  if (!response.ok || payload.success !== true || !payload.data?.state) throw new Error('Class end state could not be saved.');
+  const payload = (await response.json()) as {
+    success?: boolean;
+    data?: { state?: ProductionBasicHostEndState };
+  };
+  if (!response.ok || payload.success !== true || !payload.data?.state)
+    throw new Error('Class end state could not be saved.');
   return payload.data.state;
 }
 
@@ -127,17 +137,29 @@ export function createProductionBasicHostEndController(input: {
   endMeetingForAll: () => Promise<void>;
   csrfToken: string;
   lifecycleContext: string;
-  beginEnd?: ((csrfToken: string, lifecycleContext: string) => Promise<ProductionBasicHostEndState>) | undefined;
-  markUnknown?: ((csrfToken: string, lifecycleContext: string) => Promise<ProductionBasicHostEndState>) | undefined;
-  confirmEnded?: ((csrfToken: string, lifecycleContext: string) => Promise<ProductionBasicHostEndState>) | undefined;
-  clear?: ((csrfToken: string, lifecycleContext: string) => Promise<ProductionBasicHostEndState>) | undefined;
+  beginEnd?:
+    | ((csrfToken: string, lifecycleContext: string) => Promise<ProductionBasicHostEndState>)
+    | undefined;
+  markUnknown?:
+    | ((csrfToken: string, lifecycleContext: string) => Promise<ProductionBasicHostEndState>)
+    | undefined;
+  confirmEnded?:
+    | ((csrfToken: string, lifecycleContext: string) => Promise<ProductionBasicHostEndState>)
+    | undefined;
+  clear?:
+    | ((csrfToken: string, lifecycleContext: string) => Promise<ProductionBasicHostEndState>)
+    | undefined;
   schedule?: ((callback: () => void, delay: number) => ReturnType<typeof setTimeout>) | undefined;
   cancel?: ((timer: ReturnType<typeof setTimeout>) => void) | undefined;
   onStateChange?: ((state: ProductionBasicHostEndState) => void) | undefined;
 }) {
-  const beginEnd = input.beginEnd ?? ((csrf, context) => postHostEndState(csrf, context, 'host-end-attempt'));
-  const markUnknown = input.markUnknown ?? ((csrf, context) => postHostEndState(csrf, context, 'host-end-unknown'));
-  const confirmEnded = input.confirmEnded ?? ((csrf, context) => postHostEndState(csrf, context, 'host-end-confirmed'));
+  const beginEnd =
+    input.beginEnd ?? ((csrf, context) => postHostEndState(csrf, context, 'host-end-attempt'));
+  const markUnknown =
+    input.markUnknown ?? ((csrf, context) => postHostEndState(csrf, context, 'host-end-unknown'));
+  const confirmEnded =
+    input.confirmEnded ??
+    ((csrf, context) => postHostEndState(csrf, context, 'host-end-confirmed'));
   const clear = input.clear ?? ((csrf, context) => postHostEndState(csrf, context, 'host-ended'));
   const schedule = input.schedule ?? ((callback, delay) => setTimeout(callback, delay));
   const cancel = input.cancel ?? ((timer) => clearTimeout(timer));
