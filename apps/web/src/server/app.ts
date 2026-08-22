@@ -22,6 +22,7 @@ import {
   createProductionBasicLiveClassAccessAdapter,
 } from './features/classroom/production-basic/live-marker-repository.ts';
 import { createProductionBasicHostLifecycleStore } from './features/classroom/production-basic/host-lifecycle-repository.ts';
+import { receiveProductionBasicZoomWebhook } from './features/classroom/production-basic/zoom-provider-proof.ts';
 import {
   decideProductionBasicSessionContext,
   sanitizeStudentZoomDisplayName,
@@ -632,10 +633,12 @@ export function createApp({
     verified_binding: config.zoomProductionBasicVerifiedBinding,
     ...(clock ? { clock } : {}),
   });
+  const productionBasicHostLiveMarker = createProductionBasicHostLiveMarker(pool);
+  const productionBasicHostLifecycle = createProductionBasicHostLifecycleStore(pool);
   const productionBasicClassroomService = createProductionBasicLaunchService({
     binding: productionBasicMeetingBinding,
-    hostLiveMarker: createProductionBasicHostLiveMarker(pool),
-    hostLifecycle: createProductionBasicHostLifecycleStore(pool),
+    hostLiveMarker: productionBasicHostLiveMarker,
+    hostLifecycle: productionBasicHostLifecycle,
     ...(clock ? { clock } : {}),
   });
   const productionBasicAdminReadyForRequest = async (req: Request) => {
@@ -645,6 +648,7 @@ export function createApp({
       kind: actor.actor_role,
       scope: { account_key: actor.account_key, product_key: actor.product_key },
       actor_user_ref: actor.actor_user_ref,
+      session_ref: actor.session_key,
       display_name: actor.actor_role === 'rabbi' ? 'Rabbi' : 'Admin',
       authorized_to_start: true,
     });
@@ -825,6 +829,26 @@ export function createApp({
   app.use(
     '/api/v1/delivery/resend',
     createResendWebhookRouter({ config, pool, ...(clock ? { clock } : {}) }),
+  );
+
+  app.post(
+    '/api/v1/providers/zoom/events',
+    express.raw({ type: 'application/json', limit: '64kb' }),
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const result = await receiveProductionBasicZoomWebhook({
+        config,
+        lifecycle: productionBasicHostLifecycle,
+        liveMarker: productionBasicHostLiveMarker,
+        rawBody: req.body,
+        contentType: req.header('content-type'),
+        timestampHeader: req.header('x-zm-request-timestamp'),
+        signatureHeader: req.header('x-zm-signature'),
+        requestId: req.header('x-zm-trackingid'),
+        ...(clock ? { clock } : {}),
+      });
+      res.status(result.status).json(result.body);
+    },
   );
 
   app.post(
@@ -3781,6 +3805,7 @@ export function createApp({
             kind: 'admin',
             scope: { account_key: config.accountKey, product_key: config.productKey },
             actor_user_ref: adultContext.session.humanAccountId,
+            session_ref: adultContext.session.sessionId,
             display_name: 'Admin',
             authorized_to_start: true,
           },
@@ -3836,6 +3861,7 @@ export function createApp({
           kind: legacyActor.actor_role,
           scope: { account_key: config.accountKey, product_key: config.productKey },
           actor_user_ref: legacyActor.actor_user_ref,
+          session_ref: legacyActor.session_key,
           display_name: legacyActor.actor_role === 'rabbi' ? 'Rabbi' : 'Admin',
           authorized_to_start: true,
         },

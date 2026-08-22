@@ -24,7 +24,7 @@
     },
     {
       "path": "apps/web/src/server/app.ts",
-      "sha256": "5cf1c17629b4ebacb5a24e68365d8453af75eca733185e0a8834b154a621edb3"
+      "sha256": "c93b432ee16f59978b9b8aad423a8ef8e1b6d86803080e9f6ee88961fd77a7cd"
     },
     {
       "path": "apps/web/src/server/communications/register.ts",
@@ -72,11 +72,11 @@
     },
     {
       "path": "apps/web/src/server/features/classroom/production-basic/router.ts",
-      "sha256": "8de5d831f5eafee29b834e759218fa12143a5d541c3de81150abcee72b185ad4"
+      "sha256": "e6d08067e4beffbf2adc750d07b572827f4a00513f8b86fd3452ee8c6a1a6a3b"
     },
     {
       "path": "apps/web/src/server/features/classroom/production-basic/service.ts",
-      "sha256": "9324ae759e25c8ac2e77f208f2eae3cb22be9a32f2c848bd74cf38cd35d624fa"
+      "sha256": "91c8d4e1f627704ae828a6e5af6365904cf8d45a119cb8f4f3504276308d37f6"
     },
     {
       "path": "apps/web/src/server/features/learning/router.ts",
@@ -152,7 +152,7 @@
     },
     {
       "path": "apps/web/src/client/app/live-entry.tsx",
-      "sha256": "056488a7782ac85068a851838fe354648258da302a871cc97d66d2bc49bcba15"
+      "sha256": "2e671542906231116e5054ee50c9946c3ad5fa2528c962840cccc3b44499f8af"
     },
     {
       "path": "apps/web/src/client/app/zoom-meeting-sdk-client.ts",
@@ -184,7 +184,7 @@
     },
     {
       "path": "apps/web/src/client/classroom/production-basic-launch-client.ts",
-      "sha256": "06ff0293c64e3c143b4d27fb73b6f6fb35630571ab5f5a569e969b13a3a29781"
+      "sha256": "73b8508c90c925fee31f24934a02cc01a263a8b1b852dc97245b8a49895d1b02"
     },
     {
       "path": "apps/web/src/client/features/portals/PortalFeatures.tsx",
@@ -1887,22 +1887,26 @@
       "roles": ["admin", "rabbi"],
       "capability": "admin:class:readiness",
       "handler": {
-        "method": "GET",
-        "path": "/api/v1/admin/classroom/production-basic/host-end-status"
+        "method": "POST",
+        "path": "/api/v1/admin/classroom/production-basic/host-end-reconcile"
       },
       "idempotency": { "required": false, "key_source": null },
-      "audit": { "mode": "local_read", "event": "production_basic_host_status_read" },
+      "audit": { "mode": "local_read", "event": "production_basic_host_proof_reconcile" },
       "states": {
-        "loading": "Reading durable class end state without sending an End command.",
-        "success": "The safe durable end state is visible.",
+        "loading": "Reconciling verified provider proof without sending an End command.",
+        "success": "The safe provider-proof lifecycle state is visible.",
         "error": "Class end state is unavailable; no End retry was sent.",
         "permission": "Only an authorized Admin or Rabbi may read host end state.",
         "offline": "Class end state is unavailable offline."
       },
       "readiness_state": "ready",
-      "provider_mode": "read_only_durable_lifecycle",
+      "provider_mode": "server_side_verified_proof_reconciliation",
       "external_mutation": false,
-      "test_evidence": ["apps/web/src/client/classroom/production-basic-launch-client.test.ts"]
+      "test_evidence": [
+        "apps/web/src/client/classroom/production-basic-launch-client.test.ts",
+        "tests/integration/portals/portal-mount.test.ts",
+        "tests/integration/classroom/production-basic-provider-proof-correlation.test.ts"
+      ]
     },
     {
       "action_id": "admin.production_basic.start.button.retry_access_cleanup",
@@ -1930,7 +1934,10 @@
       "readiness_state": "ready",
       "provider_mode": "local_receipt_clear_only_after_provider_confirmation",
       "external_mutation": false,
-      "test_evidence": ["apps/web/src/client/classroom/production-basic-launch-client.test.ts"]
+      "test_evidence": [
+        "apps/web/src/client/classroom/production-basic-launch-client.test.ts",
+        "tests/integration/portals/portal-mount.test.ts"
+      ]
     },
     {
       "action_id": "admin.question_moderation.transition.form",

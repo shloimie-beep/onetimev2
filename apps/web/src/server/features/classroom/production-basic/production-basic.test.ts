@@ -129,6 +129,7 @@ describe('production-basic Meeting SDK launch', () => {
       kind: 'admin',
       scope: STUDENT.scope,
       actor_user_ref: 'admin-derived',
+      session_ref: 'admin-session-one',
       display_name: 'Admin',
       authorized_to_start: true,
     };
@@ -166,6 +167,7 @@ describe('production-basic Meeting SDK launch', () => {
       kind: 'admin',
       scope: STUDENT.scope,
       actor_user_ref: 'admin-derived',
+      session_ref: 'admin-session-one',
       display_name: 'Admin',
       authorized_to_start: true,
     };
@@ -194,6 +196,7 @@ describe('production-basic Meeting SDK launch', () => {
       kind: 'admin',
       scope: STUDENT.scope,
       actor_user_ref: 'admin-derived',
+      session_ref: 'admin-session-one',
       display_name: 'Admin',
       authorized_to_start: true,
     };
@@ -206,12 +209,13 @@ describe('production-basic Meeting SDK launch', () => {
 
     expect((await post(baseUrl, '/host-ended')).status).toBe(409);
     expect((await post(baseUrl, '/host-end-attempt', undefined, headers)).status).toBe(200);
-    expect((await post(baseUrl, '/host-end-confirmed', undefined, headers)).status).toBe(200);
-    expect(clear).not.toHaveBeenCalled();
-    expect((await post(baseUrl, '/host-ended', undefined, headers)).status).toBe(200);
+    expect((await post(baseUrl, '/host-end-confirmed', undefined, headers)).status).toBe(409);
+    expect((await post(baseUrl, '/host-end-reconcile', undefined, headers)).status).toBe(200);
+    expect(clear).toHaveBeenCalledOnce();
+    expect((await post(baseUrl, '/host-ended', undefined, headers)).status).toBe(409);
     expect(clear).toHaveBeenCalledOnce();
 
-    const status = await fetch(`${baseUrl}/host-end-status`);
+    const status = await fetch(`${baseUrl}/host-end-status`, { headers });
     expect(status.status).toBe(200);
     await expect(status.json()).resolves.toMatchObject({
       success: true,
@@ -273,6 +277,7 @@ describe('production-basic Meeting SDK launch', () => {
       kind: 'admin',
       scope: STUDENT.scope,
       actor_user_ref: 'admin-derived',
+      session_ref: 'admin-session-one',
       display_name: 'Admin',
       authorized_to_start: false,
     },
@@ -575,14 +580,23 @@ async function start(input: {
       createLive: async () => ({ state: 'live', context: lifecycleContext }),
       beginEnd: async () => (lifecycleState = 'end_requested'),
       markUnknown: async () => (lifecycleState = 'unknown_effect'),
-      confirmEnded: async () => (lifecycleState = 'provider_ended'),
+      reconcile: async () => (lifecycleState = 'provider_ended'),
       read: async () => ({ state: lifecycleState, context: lifecycleContext }),
       beginCleanup: async () =>
         lifecycleState === 'provider_ended' || lifecycleState === 'cleanup_pending'
-          ? (lifecycleState = 'cleanup_pending')
+          ? {
+              scope: STUDENT.scope,
+              occurrenceKey: 'production-basic-current',
+              meetingRefDigest: 'a'.repeat(64),
+              meetingInstanceDigest: 'b'.repeat(64),
+              clearedAt: new Date('2026-08-12T10:00:00.000Z'),
+            }
           : null,
       finishCleanup: async () => (lifecycleState = 'ended'),
       markCleanupPending: async () => (lifecycleState = 'cleanup_pending'),
+      recordVerifiedProviderEvent: async () => ({ duplicate: false, cleanupTarget: null }),
+      beginProviderCleanup: async (target) => target,
+      finishProviderCleanup: async () => undefined,
     },
     clock: () => new Date('2026-08-12T10:00:00.000Z'),
   });

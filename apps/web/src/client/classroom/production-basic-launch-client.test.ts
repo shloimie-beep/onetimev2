@@ -138,11 +138,15 @@ describe('production-basic launch client', () => {
     expect(requestInit).not.toHaveProperty('body');
   });
 
-  it('keeps the receipt on an unknown provider end and permits only status-confirmed cleanup', async () => {
+  it('treats SDK status 3 as a reconciliation hint and waits for exact provider proof', async () => {
     const endMeetingForAll = vi.fn(async () => {
       throw new Error('interrupted');
     });
     const clear = vi.fn(async () => 'ended' as const);
+    const reconcile = vi
+      .fn<() => Promise<'unknown_effect' | 'ended'>>()
+      .mockResolvedValueOnce('unknown_effect')
+      .mockResolvedValueOnce('ended');
     const controller = createProductionBasicHostEndController({
       csrfToken: 'csrf-derived',
       lifecycleContext: 'lifecycle-context',
@@ -150,6 +154,7 @@ describe('production-basic launch client', () => {
       clear,
       beginEnd: async () => 'end_requested',
       markUnknown: async () => 'unknown_effect',
+      reconcile,
     });
     await controller.markLive();
     await controller.requestEnd();
@@ -160,8 +165,13 @@ describe('production-basic launch client', () => {
     expect(clear).not.toHaveBeenCalled();
 
     await controller.observeMeetingStatus(3);
+    expect(controller.state).toBe('unknown_effect');
+    expect(clear).not.toHaveBeenCalled();
+
+    await controller.observeMeetingStatus(3);
     expect(controller.state).toBe('ended');
-    expect(clear).toHaveBeenCalledOnce();
+    expect(clear).not.toHaveBeenCalled();
+    expect(reconcile).toHaveBeenCalledTimes(2);
   });
 
   it('retries cleanup only after a provider-confirmed end and never calls provider end twice', async () => {
@@ -176,13 +186,12 @@ describe('production-basic launch client', () => {
       endMeetingForAll,
       clear,
     });
-    await controller.markLive();
-    await controller.requestEnd();
-    await controller.observeMeetingStatus(3);
+    controller.restore('provider_ended');
+    await controller.retryAccessCleanup();
     expect(controller.state).toBe('cleanup_pending');
     await controller.retryAccessCleanup();
     expect(controller.state).toBe('ended');
-    expect(endMeetingForAll).toHaveBeenCalledOnce();
+    expect(endMeetingForAll).not.toHaveBeenCalled();
     expect(clear).toHaveBeenCalledTimes(2);
   });
 

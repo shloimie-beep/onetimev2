@@ -45,6 +45,8 @@ export type ProductionBasicActor =
       kind: 'admin' | 'rabbi';
       scope: ProductionBasicScope;
       actor_user_ref: string;
+      /** Server-only exact authenticated session reference; never serialized or logged. */
+      session_ref: string;
       display_name: string;
       authorized_to_start: boolean;
     };
@@ -119,6 +121,7 @@ export interface ProductionBasicHostLiveMarker {
   clear(input: {
     scope: ProductionBasicScope;
     meeting_ref_digest: string;
+    occurrence_key?: string | undefined;
     cleared_at: Date;
   }): Promise<void>;
 }
@@ -169,20 +172,28 @@ export function createProductionBasicLaunchService(input: {
       }
       if (!(await input.binding.ready())) return { disposition: 'unavailable' };
       const meetingRefDigest = input.binding.referenceDigest();
-      if (!meetingRefDigest || !input.hostLiveMarker) return { disposition: 'unavailable' };
+      if (!meetingRefDigest || !input.hostLiveMarker || !input.hostLifecycle) {
+        return { disposition: 'unavailable' };
+      }
+      const lifecycle = await input.hostLifecycle.createLive({
+        scope: actor.scope,
+        meetingRefDigest,
+        actorUserRef: actor.actor_user_ref,
+        sessionRef: actor.session_ref,
+        now: clock(),
+      });
+      if (
+        !lifecycle?.context ||
+        !['live', 'end_requested', 'unknown_effect'].includes(lifecycle.state)
+      ) {
+        return { disposition: 'unavailable' };
+      }
       const confirmed = await input.hostLiveMarker.confirm({
         scope: actor.scope,
         meeting_ref_digest: meetingRefDigest,
         confirmed_at: clock(),
       });
-      if (!confirmed || !input.hostLifecycle) return { disposition: 'unavailable' };
-      const lifecycle = await input.hostLifecycle.createLive({
-        scope: actor.scope,
-        meetingRefDigest,
-        actorUserRef: actor.actor_user_ref,
-        now: clock(),
-      });
-      return lifecycle && lifecycle.context
+      return confirmed
         ? { disposition: 'ready', lifecycle_context: lifecycle.context, state: lifecycle.state }
         : { disposition: 'unavailable' };
     },
@@ -198,22 +209,30 @@ export function createProductionBasicLaunchService(input: {
       const state = await input.hostLifecycle!.markUnknown(lifecycle);
       return state ? { disposition: 'ready' as const, state } : { disposition: 'denied' as const };
     },
-    async confirmHostEnded(actor: ProductionBasicActor, lifecycleContext: string) {
+    async reconcileHostEnd(actor: ProductionBasicActor, lifecycleContext: string) {
       const lifecycle = await authorizeLifecycle(input, actor, lifecycleContext, clock());
       if (!lifecycle) return { disposition: 'denied' as const };
-      const state = await input.hostLifecycle!.confirmEnded(lifecycle);
-      return state ? { disposition: 'ready' as const, state } : { disposition: 'denied' as const };
+      const state = await input.hostLifecycle!.reconcile(lifecycle);
+      if (!state) return { disposition: 'denied' as const };
+      if (state !== 'provider_ended' && state !== 'cleanup_pending') {
+        return { disposition: 'ready' as const, state };
+      }
+      return cleanupAuthorizedLifecycle(input, lifecycle);
     },
-    async hostEndStatus(actor: ProductionBasicActor) {
+    async hostEndStatus(actor: ProductionBasicActor, lifecycleContext: string) {
       if ((actor.kind !== 'admin' && actor.kind !== 'rabbi') || !actor.authorized_to_start) {
         return { disposition: 'denied' as const };
       }
       const meetingRefDigest = input.binding.referenceDigest();
-      if (!meetingRefDigest || !input.hostLifecycle) return { disposition: 'unavailable' as const };
+      if (!meetingRefDigest || !input.hostLifecycle || !lifecycleContext) {
+        return { disposition: 'unavailable' as const };
+      }
       const lifecycle = await input.hostLifecycle.read({
         scope: actor.scope,
         meetingRefDigest,
         actorUserRef: actor.actor_user_ref,
+        sessionRef: actor.session_ref,
+        context: lifecycleContext,
         now: clock(),
       });
       return lifecycle
@@ -226,23 +245,8 @@ export function createProductionBasicLaunchService(input: {
     },
     async cleanupHostEnd(actor: ProductionBasicActor, lifecycleContext: string) {
       const lifecycle = await authorizeLifecycle(input, actor, lifecycleContext, clock());
-      if (!lifecycle || !input.hostLiveMarker) return { disposition: 'denied' as const };
-      const state = await input.hostLifecycle!.beginCleanup(lifecycle);
-      if (!state) return { disposition: 'denied' as const };
-      try {
-        await input.hostLiveMarker.clear({
-          scope: actor.scope,
-          meeting_ref_digest: lifecycle.meetingRefDigest,
-          cleared_at: lifecycle.now,
-        });
-        const ended = await input.hostLifecycle!.finishCleanup(lifecycle);
-        return ended
-          ? { disposition: 'ready' as const, state: ended }
-          : { disposition: 'unavailable' as const };
-      } catch {
-        await input.hostLifecycle!.markCleanupPending(lifecycle);
-        return { disposition: 'unavailable' as const, state: 'cleanup_pending' as const };
-      }
+      if (!lifecycle) return { disposition: 'denied' as const };
+      return cleanupAuthorizedLifecycle(input, lifecycle);
     },
   };
 }
@@ -271,9 +275,46 @@ async function authorizeLifecycle(
     scope: actor.scope,
     meetingRefDigest,
     actorUserRef: actor.actor_user_ref,
+    sessionRef: actor.session_ref,
     context: lifecycleContext,
     now,
   };
+}
+
+async function cleanupAuthorizedLifecycle(
+  input: {
+    hostLiveMarker?: ProductionBasicHostLiveMarker | undefined;
+    hostLifecycle?: ProductionBasicHostLifecycleStore | undefined;
+  },
+  lifecycle: {
+    scope: ProductionBasicScope;
+    meetingRefDigest: string;
+    actorUserRef: string;
+    sessionRef: string;
+    context: string;
+    now: Date;
+  },
+) {
+  if (!input.hostLiveMarker || !input.hostLifecycle) {
+    return { disposition: 'unavailable' as const };
+  }
+  const target = await input.hostLifecycle.beginCleanup(lifecycle);
+  if (!target) return { disposition: 'denied' as const };
+  try {
+    await input.hostLiveMarker.clear({
+      scope: target.scope,
+      meeting_ref_digest: target.meetingRefDigest,
+      occurrence_key: target.occurrenceKey,
+      cleared_at: target.clearedAt,
+    });
+    const ended = await input.hostLifecycle.finishCleanup(lifecycle);
+    return ended
+      ? { disposition: 'ready' as const, state: ended }
+      : { disposition: 'unavailable' as const };
+  } catch {
+    await input.hostLifecycle.markCleanupPending(lifecycle);
+    return { disposition: 'ready' as const, state: 'cleanup_pending' as const };
+  }
 }
 
 async function studentLiveMarkerCurrent(

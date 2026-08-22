@@ -268,8 +268,8 @@ const EXPECTED_ACTION_BINDINGS = [
     'admin.production_basic.start.button.reconcile_status',
     '/app/live',
     ['admin', 'rabbi'],
-    'GET',
-    '/api/v1/admin/classroom/production-basic/host-end-status',
+    'POST',
+    '/api/v1/admin/classroom/production-basic/host-end-reconcile',
   ],
   [
     'admin.production_basic.start.button.retry_access_cleanup',

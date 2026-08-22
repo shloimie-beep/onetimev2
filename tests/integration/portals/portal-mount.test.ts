@@ -1,5 +1,5 @@
 import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
-import { createHash } from 'node:crypto';
+import { createHash, createHmac } from 'node:crypto';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -279,6 +279,33 @@ describe('OT-71 mounted parent and student portals', () => {
       createApp({ config: productionBasicConfig(), pool, distDir, clock: productionBasicNow }),
     );
     try {
+      const challengeTimestamp = String(Math.floor(productionBasicNow().getTime() / 1000));
+      const challengeBody = JSON.stringify({
+        event: 'endpoint.url_validation',
+        payload: { plainToken: 'synthetic-route-validation-token' },
+      });
+      const challengeSignature = `v0=${createHmac(
+        'sha256',
+        'synthetic_production_basic_webhook_secret',
+      )
+        .update(`v0:${challengeTimestamp}:${challengeBody}`)
+        .digest('hex')}`;
+      const challenge = await fetch(`${server.baseUrl}/api/v1/providers/zoom/events`, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          'x-zm-request-timestamp': challengeTimestamp,
+          'x-zm-signature': challengeSignature,
+        },
+        body: challengeBody,
+      });
+      expect(challenge.status).toBe(200);
+      await expect(challenge.json()).resolves.toEqual({
+        plainToken: 'synthetic-route-validation-token',
+        encryptedToken: createHmac('sha256', 'synthetic_production_basic_webhook_secret')
+          .update('synthetic-route-validation-token')
+          .digest('hex'),
+      });
       for (const path of ['/launch', '/host-live', '/host-ended']) {
         const retired = await fetch(`${server.baseUrl}/api/v1/classroom/production-basic${path}`, {
           method: 'POST',
@@ -313,6 +340,76 @@ describe('OT-71 mounted parent and student portals', () => {
       };
       expect(hostLivePayload).toMatchObject({ success: true, data: { state: 'live' } });
       expect(hostLivePayload.data.lifecycle_context).toEqual(expect.any(String));
+      const initialLifecycleContext = hostLivePayload.data.lifecycle_context;
+      const sameSessionRefresh = await fetch(
+        `${server.baseUrl}/api/v1/admin/classroom/production-basic/host-live`,
+        {
+          method: 'POST',
+          headers: { cookie: admin.cookies, 'x-csrf-token': admin.json.csrf_token },
+        },
+      );
+      expect(sameSessionRefresh.status).toBe(200);
+      const lifecycleContext = (
+        (await sameSessionRefresh.json()) as { data: { lifecycle_context: string } }
+      ).data.lifecycle_context;
+      expect(lifecycleContext).not.toBe(initialLifecycleContext);
+      const staleContextReconcile = await fetch(
+        `${server.baseUrl}/api/v1/admin/classroom/production-basic/host-end-reconcile`,
+        {
+          method: 'POST',
+          headers: {
+            cookie: admin.cookies,
+            'x-csrf-token': admin.json.csrf_token,
+            'x-ot-production-basic-lifecycle': initialLifecycleContext,
+          },
+        },
+      );
+      expect(staleContextReconcile.status).toBe(409);
+      const secondAdmin = await loginAs(server.baseUrl, 'admin@example.test', 'AdminPass!234');
+      const secondSessionHostLive = await fetch(
+        `${server.baseUrl}/api/v1/admin/classroom/production-basic/host-live`,
+        {
+          method: 'POST',
+          headers: {
+            cookie: secondAdmin.cookies,
+            'x-csrf-token': secondAdmin.json.csrf_token,
+          },
+        },
+      );
+      expect(secondSessionHostLive.status).toBe(503);
+      const secondSessionStatus = await fetch(
+        `${server.baseUrl}/api/v1/admin/classroom/production-basic/host-end-status`,
+        { headers: { cookie: secondAdmin.cookies } },
+      );
+      expect(secondSessionStatus.status).toBe(503);
+      const secondSessionReconcile = await fetch(
+        `${server.baseUrl}/api/v1/admin/classroom/production-basic/host-end-reconcile`,
+        {
+          method: 'POST',
+          headers: {
+            cookie: secondAdmin.cookies,
+            'x-csrf-token': secondAdmin.json.csrf_token,
+            'x-ot-production-basic-lifecycle': lifecycleContext,
+          },
+        },
+      );
+      expect(secondSessionReconcile.status).toBe(409);
+      const lifecycleVersionBeforeStatus = await productionBasicHostLifecycleVersion();
+      const exactSessionStatus = await fetch(
+        `${server.baseUrl}/api/v1/admin/classroom/production-basic/host-end-status`,
+        {
+          headers: {
+            cookie: admin.cookies,
+            'x-ot-production-basic-lifecycle': lifecycleContext,
+          },
+        },
+      );
+      expect(exactSessionStatus.status).toBe(200);
+      await expect(exactSessionStatus.json()).resolves.toMatchObject({
+        success: true,
+        data: { state: 'live', lifecycle_context: lifecycleContext },
+      });
+      expect(await productionBasicHostLifecycleVersion()).toBe(lifecycleVersionBeforeStatus);
       await expectProductionBasicStatus(server.baseUrl, student.cookies, true);
       const studentLaunch = await fetch(
         `${server.baseUrl}/api/v1/portals/student/classroom/production-basic/launch`,
@@ -357,7 +454,7 @@ describe('OT-71 mounted parent and student portals', () => {
       const lifecycleHeaders = {
         cookie: admin.cookies,
         'x-csrf-token': admin.json.csrf_token,
-        'x-ot-production-basic-lifecycle': hostLivePayload.data.lifecycle_context,
+        'x-ot-production-basic-lifecycle': lifecycleContext,
       };
       const hostEndAttempt = await fetch(
         `${server.baseUrl}/api/v1/admin/classroom/production-basic/host-end-attempt`,
@@ -368,9 +465,10 @@ describe('OT-71 mounted parent and student portals', () => {
         `${server.baseUrl}/api/v1/admin/classroom/production-basic/host-end-confirmed`,
         { method: 'POST', headers: lifecycleHeaders },
       );
-      expect(hostEndConfirmed.status).toBe(200);
+      expect(hostEndConfirmed.status).toBe(409);
+      await seedVerifiedProductionBasicZoomEndProof();
       const hostEnded = await fetch(
-        `${server.baseUrl}/api/v1/admin/classroom/production-basic/host-ended`,
+        `${server.baseUrl}/api/v1/admin/classroom/production-basic/host-end-reconcile`,
         {
           method: 'POST',
           headers: lifecycleHeaders,
@@ -1963,6 +2061,7 @@ function productionBasicConfig() {
       ZOOM_HOST_USER_ID: 'host-user',
       ZOOM_REAL_CONTROL_MEETING_ID: meetingId,
       ZOOM_REAL_CONTROL_MEETING_PASSCODE: 'meeting-passcode',
+      ZOOM_WEBHOOK_SECRET_TOKEN: 'synthetic_production_basic_webhook_secret',
       ZOOM_PRODUCTION_BASIC_BINDING_ACCOUNT_MATCHES: 'true',
       ZOOM_PRODUCTION_BASIC_BINDING_HOST_MATCHES: 'true',
       ZOOM_PRODUCTION_BASIC_BINDING_REGISTRATION_REQUIRED: 'false',
@@ -2052,6 +2151,56 @@ async function productionBasicOccurrenceVersion() {
   const version = result.rows[0]?.version;
   if (typeof version !== 'number') throw new Error('production-basic occurrence version missing');
   return version;
+}
+
+async function productionBasicHostLifecycleVersion() {
+  const result = await pool.query<{ version: number }>(
+    `SELECT version
+       FROM onetime.production_basic_host_lifecycles
+      WHERE account_key = $1
+        AND product_key = $2
+        AND occurrence_key = 'production-basic-current'`,
+    [config.accountKey, config.productKey],
+  );
+  const version = result.rows[0]?.version;
+  if (typeof version !== 'number') throw new Error('production-basic lifecycle version missing');
+  return version;
+}
+
+async function seedVerifiedProductionBasicZoomEndProof() {
+  const meetingDigest = createHash('sha256')
+    .update('production-basic-meeting-v1\0production-basic-recurring-meeting')
+    .digest('hex');
+  const instanceDigest = createHash('sha256')
+    .update('zoom-meeting-instance-v1\0synthetic-exact-instance')
+    .digest('hex');
+  const accountDigest = createHash('sha256').update('zoom-account-v1\0zoom-account').digest('hex');
+  const hostDigest = createHash('sha256').update('zoom-host-v1\0host-user').digest('hex');
+  for (const eventType of ['meeting_started', 'meeting_ended'] as const) {
+    await pool.query(
+      `INSERT INTO onetime.production_basic_zoom_lifecycle_events
+         (provider_event_key_digest, account_key, product_key,
+          provider_account_ref_digest, provider_host_ref_digest, meeting_ref_digest,
+          meeting_instance_digest, occurrence_key, event_type, provider_event_at,
+          meeting_started_at, meeting_ended_at, correlation_state, received_at)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,'production-basic-current',$8,$9,
+               '2026-08-12T16:00:00.000Z',$10,'pending',$9)`,
+      [
+        createHash('sha256').update(`synthetic-provider-event\0${eventType}`).digest('hex'),
+        config.accountKey,
+        config.productKey,
+        accountDigest,
+        hostDigest,
+        meetingDigest,
+        instanceDigest,
+        eventType,
+        eventType === 'meeting_started'
+          ? new Date('2026-08-12T16:00:00.000Z')
+          : new Date('2026-08-12T16:30:00.000Z'),
+        eventType === 'meeting_ended' ? new Date('2026-08-12T16:30:00.000Z') : null,
+      ],
+    );
+  }
 }
 
 async function expectProductionBasicStatus(baseUrl: string, cookies: string, available: boolean) {

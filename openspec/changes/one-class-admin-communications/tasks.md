@@ -7,6 +7,9 @@
 
 - [ ] 2.1 Implement and test canonical class readiness and automatic entitled membership presentation.
 - [x] 2.2 Implement and test Start, bounded provider End, durable unknown-effect reconciliation, proof-bound cleanup, and cleanup-only retry.
+- [x] 2.4 Bind host lifecycle authorization to the exact authenticated session.
+- [x] 2.5 Add verified raw-body Zoom proof, exact instance correlation, and browser-status hint semantics.
+- [x] 2.6 Add proof-bound exact-occurrence cleanup, provider-off behavior, and the manual setup runbook.
 - [ ] 2.3 Preserve occurrence-scoped attendance and Parent/Student identity separation in focused tests.
 
 ## 3. People and communications boundaries
@@ -17,5 +20,5 @@
 
 ## 4. Governance and verification
 
-- [ ] 4.1 Reconcile visible actions and governed hashes; pass deterministic registry validation.
-- [ ] 4.2 Run source, OpenSpec, static, unit, integration, build, browser, accessibility, performance, and regression gates.
+- [x] 4.1 Reconcile visible actions and governed hashes; pass deterministic registry validation.
+- [x] 4.2 Run source, OpenSpec, static, unit, integration, build, browser, accessibility, performance, and regression gates.
