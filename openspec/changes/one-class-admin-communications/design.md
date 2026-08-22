@@ -19,7 +19,8 @@ The accepted controller already isolates Meeting SDK artifacts by role and brows
 
 - The canonical Today route is `/app/today`; legacy Admin routes remain only as semantic redirects or advanced technical entry points. This removes duplicate primary navigation without breaking secure direct links.
 - The host client owns the single SDK End Meeting for All call. A status-3 event is the definitive confirmation; only then can the server clear the receipt. A rejected or interrupted end is an unknown effect, so the UI offers refresh, not another provider end.
-- Existing entitlement projections remain authoritative. The canonical class resolves eligible Parent and Student identities at access time, avoiding a new migration and avoiding duplicate attendance/CRM identities.
+- Existing entitlement projections remain authoritative. The canonical class resolves eligible Parent and Student identities at access time, avoiding duplicate attendance/CRM identities.
+- Migration 2288 persists the host lifecycle by account, product, and canonical occurrence. It stores SHA-256 digests of the meeting reference, authorized actor, and a rotating opaque browser context; it never stores a provider meeting ID, token, signature, or raw context.
 - Communications uses an allow-list of app account lifecycle email sources/intents at its global endpoint. Workflow readback remains read-only but is surfaced only through Operations technical navigation.
 
 ## Risks / Trade-offs
@@ -30,4 +31,4 @@ The accepted controller already isolates Meeting SDK artifacts by role and brows
 
 ## Migration Plan
 
-No schema migration is required: canonical access is derived from existing account/product-scoped entitlement projections. Rollback is a source rollback; no external or durable provider effect is introduced.
+Apply migration 2288 before enabling the host lifecycle. It is additive and retains expired lifecycle rows only as normal durable history; application rollback leaves those harmless opaque digests unread. No external or provider effect is introduced by the migration.

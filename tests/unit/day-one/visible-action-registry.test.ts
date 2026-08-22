@@ -150,7 +150,7 @@ const EXPECTED_ACTION_BINDINGS = [
     '/app/operations/workflow-readback/:workflowId',
     ['admin'],
     'GET',
-    '/api/v1/communications/workflows/:workflowId',
+    '/api/v1/operations/workflow-readback/:workflowId',
   ],
   [
     'admin.content.review.artifact_approve.button',
@@ -269,7 +269,7 @@ const EXPECTED_ACTION_BINDINGS = [
     '/app/live',
     ['admin', 'rabbi'],
     'GET',
-    '/api/v1/admin/classroom/production-basic/status',
+    '/api/v1/admin/classroom/production-basic/host-end-status',
   ],
   [
     'admin.production_basic.start.button.retry_access_cleanup',

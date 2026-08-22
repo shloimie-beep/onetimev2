@@ -6,14 +6,14 @@
 ## 2. Canonical class operation
 
 - [ ] 2.1 Implement and test canonical class readiness and automatic entitled membership presentation.
-- [ ] 2.2 Implement and test Start, provider-confirmed End, unknown-effect reconciliation, and cleanup-only retry.
+- [x] 2.2 Implement and test Start, bounded provider End, durable unknown-effect reconciliation, proof-bound cleanup, and cleanup-only retry.
 - [ ] 2.3 Preserve occurrence-scoped attendance and Parent/Student identity separation in focused tests.
 
 ## 3. People and communications boundaries
 
 - [ ] 3.1 Converge People labels and subcategories while retaining only gated technical details.
-- [ ] 3.2 Enforce account-email source/intent filtering server-side and render safe responsive read-only history.
-- [ ] 3.3 Relocate workflow readback behind Operations technical navigation and test the boundary.
+- [x] 3.2 Enforce account-email source/intent filtering server-side, retire direct contact history, and render safe responsive read-only history.
+- [x] 3.3 Relocate workflow readback behind Operations technical navigation and test the boundary.
 
 ## 4. Governance and verification
 

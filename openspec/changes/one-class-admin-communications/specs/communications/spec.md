@@ -8,3 +8,8 @@ One Time Communications SHALL show only safe, read-only info@ account lifecycle 
 
 - **WHEN** an authorized Admin opens Communications
 - **THEN** only allowed transactional email records with masked destinations and safe delivery state are returned.
+
+#### Scenario: A Rabbi or direct contact route requests history
+
+- **WHEN** a Rabbi requests account-email history or a caller requests a contact communications route
+- **THEN** the Rabbi is denied and the contact route is absent; neither path reads broad communications history.

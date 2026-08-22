@@ -23,6 +23,7 @@ import {
 import {
   confirmProductionBasicHostLive,
   createProductionBasicHostEndController,
+  readProductionBasicHostEndStatus,
   readHostProductionBasicReadiness,
   requestHostProductionBasicLaunch,
   type ProductionBasicHostEndState,
@@ -109,16 +110,34 @@ function LiveConsole() {
       .catch(() => setProductionBasicReady(false));
   }, [session?.csrf_token]);
 
+  useEffect(() => {
+    if (!session) return;
+    // This is a durable, read-only reconciliation. It never calls the provider
+    // End operation, and restores a fresh server-bound cleanup context on reload.
+    void readProductionBasicHostEndStatus(session.csrf_token)
+      .then((status) => restoreProductionBasicEndController(status))
+      .catch(() => undefined);
+  }, [session?.csrf_token]);
+
+  function restoreProductionBasicEndController(status: {
+    state: ProductionBasicHostEndState;
+    lifecycleContext: string;
+  }) {
+    const controller = createProductionBasicHostEndController({
+      csrfToken: session?.csrf_token ?? '',
+      lifecycleContext: status.lifecycleContext,
+      endMeetingForAll: endActiveZoomMeetingForAll,
+      onStateChange: setHostEndState,
+    });
+    controller.restore(status.state);
+    hostEndController.current = controller;
+  }
+
   async function startProductionBasic() {
     if (!session) return;
     try {
       const artifact = await requestHostProductionBasicLaunch(session.csrf_token);
-      const controller = createProductionBasicHostEndController({
-        csrfToken: session.csrf_token,
-        endMeetingForAll: endActiveZoomMeetingForAll,
-        onStateChange: setHostEndState,
-      });
-      hostEndController.current = controller;
+      let deferredStatus: 1 | 2 | 3 | 4 | null = null;
       await startZoomMeetingProductionBasic({
         sdkWebVersion: artifact.sdk_web_version,
         meetingNumber: artifact.meeting_number,
@@ -127,10 +146,21 @@ function LiveConsole() {
         userName: artifact.user_name,
         leaveUrl: artifact.leave_path,
         zak: requireHostZak(artifact.zak),
-        onMeetingStatus: (status) => void controller.observeMeetingStatus(status),
+        onMeetingStatus: (status) => {
+          if (hostEndController.current) void hostEndController.current.observeMeetingStatus(status);
+          else deferredStatus = status;
+        },
       });
-      await confirmProductionBasicHostLive(session.csrf_token);
+      const lifecycleContext = await confirmProductionBasicHostLive(session.csrf_token);
+      const controller = createProductionBasicHostEndController({
+        csrfToken: session.csrf_token,
+        lifecycleContext,
+        endMeetingForAll: endActiveZoomMeetingForAll,
+        onStateChange: setHostEndState,
+      });
+      hostEndController.current = controller;
       await controller.markLive();
+      if (deferredStatus === 3) await controller.observeMeetingStatus(3);
       setNotice({ kind: 'success', message: 'Protected class started.' });
     } catch {
       setNotice({ kind: 'error', message: 'Classroom is unavailable.' });
@@ -150,6 +180,17 @@ function LiveConsole() {
 
   async function retryAccessCleanup() {
     await hostEndController.current?.retryAccessCleanup();
+  }
+
+  async function reconcileProductionBasicEnd() {
+    if (!session) return;
+    try {
+      const status = await readProductionBasicHostEndStatus(session.csrf_token);
+      restoreProductionBasicEndController(status);
+      setNotice({ kind: 'info', message: 'Class end status reconciled without sending another End command.' });
+    } catch {
+      setNotice({ kind: 'error', message: 'Class end status is unavailable; no End retry was sent.' });
+    }
   }
 
   async function postControl(path: string, body: Record<string, unknown>, label: string) {
@@ -352,7 +393,7 @@ function LiveConsole() {
               hostEndState={hostEndState}
               onEndProductionBasic={() => void endProductionBasic()}
               onRetryAccessCleanup={() => void retryAccessCleanup()}
-              onRefresh={() => void load()}
+              onRefresh={() => void reconcileProductionBasicEnd()}
               onOpenClassroom={() =>
                 occurrenceKey &&
                 window.location.assign(
@@ -620,6 +661,8 @@ function ZoomHealth({
             ? 'Class is live. Continue in the protected Meeting SDK or end the class for everyone.'
             : hostEndState === 'cleanup_pending'
               ? 'Zoom ended. Local access cleanup is pending.'
+              : hostEndState === 'provider_ended'
+                ? 'Zoom ended. Confirm local access cleanup now.'
               : hostEndState === 'unknown_effect'
                 ? 'Zoom end status is unknown. Reconcile status before any other action.'
                 : hostEndState === 'ended'
@@ -640,7 +683,7 @@ function ZoomHealth({
             <button type="button" className="ot-button" onClick={onEndProductionBasic}>
               End Class
             </button>
-          ) : hostEndState === 'cleanup_pending' ? (
+          ) : hostEndState === 'cleanup_pending' || hostEndState === 'provider_ended' ? (
             <button type="button" className="ot-button" onClick={onRetryAccessCleanup}>
               Retry access cleanup
             </button>

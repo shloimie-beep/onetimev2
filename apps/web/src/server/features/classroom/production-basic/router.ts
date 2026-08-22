@@ -26,7 +26,11 @@ type ProductionBasicRouterInput = {
     ready(actor: ProductionBasicActor): Promise<boolean>;
     request(actor: ProductionBasicActor): Promise<ProductionBasicLaunchResult>;
     confirmHostLive(actor: ProductionBasicActor): Promise<ProductionBasicHostLiveResult>;
-    clearHostLive(actor: ProductionBasicActor): Promise<ProductionBasicHostLiveResult>;
+    beginHostEnd(actor: ProductionBasicActor, lifecycleContext: string): Promise<ProductionBasicHostLiveResult>;
+    markHostEndUnknown(actor: ProductionBasicActor, lifecycleContext: string): Promise<ProductionBasicHostLiveResult>;
+    confirmHostEnded(actor: ProductionBasicActor, lifecycleContext: string): Promise<ProductionBasicHostLiveResult>;
+    hostEndStatus(actor: ProductionBasicActor): Promise<ProductionBasicHostLiveResult>;
+    cleanupHostEnd(actor: ProductionBasicActor, lifecycleContext: string): Promise<ProductionBasicHostLiveResult>;
   };
   onLaunchFailure?: ((event: ProductionBasicLaunchFailureEvent) => void) | undefined;
 };
@@ -84,11 +88,23 @@ function createRoleBoundProductionBasicRouter(
     response.json({ success: true, data: { launch_artifact: result.artifact } });
   });
   if (boundary === 'host') {
-    router.post('/host-live', (request, response) =>
-      handleHostMarker(input, request, response, 'live'),
+    router.post('/host-live', (request, response) => handleHostMarker(input, request, response));
+    router.post('/host-end-attempt', (request, response) =>
+      handleHostLifecycle(input, request, response, 'begin'),
     );
+    router.post('/host-end-unknown', (request, response) =>
+      handleHostLifecycle(input, request, response, 'unknown'),
+    );
+    router.post('/host-end-confirmed', (request, response) =>
+      handleHostLifecycle(input, request, response, 'confirmed'),
+    );
+    router.get('/host-end-status', (request, response) => handleHostEndStatus(input, request, response));
+    // Compatibility route is cleanup-only; a naked request cannot clear the receipt.
     router.post('/host-ended', (request, response) =>
-      handleHostMarker(input, request, response, 'ended'),
+      handleHostLifecycle(input, request, response, 'cleanup'),
+    );
+    router.post('/host-end-cleanup', (request, response) =>
+      handleHostLifecycle(input, request, response, 'cleanup'),
     );
   }
   router.get('/status', async (request, response) => {
@@ -111,7 +127,6 @@ async function handleHostMarker(
   input: ProductionBasicRouterInput,
   request: Request,
   response: Response,
-  marker: 'live' | 'ended',
 ) {
   if (requestHasBody(request)) {
     response.status(400).json(unavailable());
@@ -124,10 +139,7 @@ async function handleHostMarker(
   }
   let result: ProductionBasicHostLiveResult;
   try {
-    result =
-      marker === 'live'
-        ? await input.service.confirmHostLive(identity.actor)
-        : await input.service.clearHostLive(identity.actor);
+    result = await input.service.confirmHostLive(identity.actor);
   } catch (error) {
     reportLaunchFailure(input.onLaunchFailure, classifyLaunchFailure(error));
     response.status(503).json(unavailable());
@@ -139,7 +151,59 @@ async function handleHostMarker(
   }
   response.json({
     success: true,
-    data: { state: marker === 'live' ? ('live' as const) : ('scheduled' as const) },
+    data: { state: 'live' as const, ...(result.lifecycle_context ? { lifecycle_context: result.lifecycle_context } : {}) },
+  });
+}
+
+async function handleHostLifecycle(
+  input: ProductionBasicRouterInput,
+  request: Request,
+  response: Response,
+  operation: 'begin' | 'unknown' | 'confirmed' | 'cleanup',
+) {
+  if (requestHasBody(request)) return void response.status(400).json(unavailable());
+  const context = request.header('x-ot-production-basic-lifecycle') ?? '';
+  const identity = await input.identities.resolve(request, response);
+  if (!resolvedForBoundary(identity, 'host') || !identity.csrf_verified) {
+    respondForIdentityFailure(response, identity);
+    return;
+  }
+  const result =
+    operation === 'begin'
+      ? await input.service.beginHostEnd(identity.actor, context)
+      : operation === 'unknown'
+        ? await input.service.markHostEndUnknown(identity.actor, context)
+        : operation === 'confirmed'
+          ? await input.service.confirmHostEnded(identity.actor, context)
+          : await input.service.cleanupHostEnd(identity.actor, context);
+  if (result.disposition !== 'ready') {
+    response.status(result.disposition === 'denied' ? 409 : 503).json(unavailable());
+    return;
+  }
+  response.json({
+    success: true,
+    data: { state: result.state, ...(result.lifecycle_context ? { lifecycle_context: result.lifecycle_context } : {}) },
+  });
+}
+
+async function handleHostEndStatus(
+  input: ProductionBasicRouterInput,
+  request: Request,
+  response: Response,
+) {
+  const identity = await input.identities.resolve(request, response);
+  if (!resolvedForBoundary(identity, 'host') || !identity.csrf_verified) {
+    respondForIdentityFailure(response, identity);
+    return;
+  }
+  const result = await input.service.hostEndStatus(identity.actor);
+  if (result.disposition !== 'ready') {
+    response.status(result.disposition === 'denied' ? 403 : 503).json(unavailable());
+    return;
+  }
+  response.json({
+    success: true,
+    data: { state: result.state, ...(result.lifecycle_context ? { lifecycle_context: result.lifecycle_context } : {}) },
   });
 }
 

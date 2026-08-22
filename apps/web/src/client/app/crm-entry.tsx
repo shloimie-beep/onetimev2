@@ -37,10 +37,7 @@ import {
   type DashboardSectionId,
   type ClassroomSectionId,
 } from './admin-ia.js';
-import {
-  communicationsRouteDescriptor,
-  contactCommunicationsTabDescriptor,
-} from './communications/route-descriptor.js';
+import { communicationsRouteDescriptor } from './communications/route-descriptor.js';
 import { AppShell, type ShellNavItem, type ShellUser } from './shell/AppShell.js';
 import { WorkspaceTabs } from './shell/WorkspaceTabs.js';
 import { GamificationAdminPanel } from './gamification-admin/GamificationAdminPanel.js';
@@ -143,10 +140,7 @@ type Notice = {
   message: string;
 };
 
-type CommunicationsMode =
-  | { kind: 'global' }
-  | { kind: 'contact'; contactId: string }
-  | { kind: 'workflow'; workflowId: string };
+type CommunicationsMode = { kind: 'global' } | { kind: 'workflow'; workflowId: string };
 type AdminSupportRoute = {
   mode: 'workspace' | 'queue' | 'detail';
   ticketId: string | null;
@@ -448,20 +442,11 @@ function CrmApp() {
       setListLoading(false);
       return;
     }
-    const contactCommunicationsMatch = routePath.match(
+    const retiredContactCommunicationsMatch = routePath.match(
       /^\/app\/crm\/contacts\/([^/]+)\/communications$/,
     );
-    if (contactCommunicationsMatch?.[1]) {
-      setContactOperationsMode(false);
-      setSurface('crm');
-      setCommunicationsMode({
-        kind: 'contact',
-        contactId: decodeURIComponent(contactCommunicationsMatch[1]),
-      });
-      setSelected(null);
-      setEditing(false);
-      setCreating(false);
-      setListLoading(false);
+    if (retiredContactCommunicationsMatch?.[1]) {
+      window.location.replace(`/app/people/parents`);
       return;
     }
     if (routePath === '/app/crm/contact-operations') {
@@ -714,23 +699,6 @@ function CrmApp() {
     setListLoading(false);
   }
 
-  function openContactCommunications(contactId: string) {
-    setContactOperationsMode(false);
-    setContactOperationsHouseholdKey(null);
-    history.pushState(
-      {},
-      '',
-      `/app/crm/contacts/${encodeURIComponent(contactId)}/${contactCommunicationsTabDescriptor.id}`,
-    );
-    setSurface('crm');
-    setContactsRoutePath('/app/crm');
-    setCommunicationsMode({ kind: 'contact', contactId });
-    setAdminSupportRoute({ mode: 'workspace', ticketId: null });
-    setSelected(null);
-    setEditing(false);
-    setCreating(false);
-    setListLoading(false);
-  }
 
   function openOwnerSurface(
     nextSurface: Exclude<OwnerSurface, 'crm'>,
@@ -1011,9 +979,7 @@ function CrmApp() {
         : surface !== 'crm'
           ? ownerSurfaceDescription(surface)
           : communicationsMode
-            ? communicationsMode.kind === 'contact'
-              ? 'Communication history and draft activity for this contact.'
-              : 'Active One Time accounts with redacted setup, reset, and PIN delivery status.'
+            ? 'Active One Time accounts with redacted setup, reset, and PIN delivery status.'
             : contactOperationsMode
               ? 'Invite a Parent, create local-only Students, and manage access and adult-only GHL sync.'
               : contactsSection !== 'people'
@@ -1063,10 +1029,8 @@ function CrmApp() {
     <DetailToolbar
       contact={selected}
       canEdit={canEdit && selected.lead_status !== 'archived'}
-      canReadCommunications={canReadCommunications}
       onBack={backToList}
       onEdit={() => setEditing(true)}
-      onCommunications={() => openContactCommunications(selected.contact_id)}
       onManageHousehold={
         selected.managed_household
           ? () => startContactOperations(selected.managed_household?.household_key)
@@ -1309,12 +1273,7 @@ function CrmApp() {
           }
         >
           {communicationsMode.kind !== 'workflow' && (
-            <CommunicationsPanel
-              contactId={
-                communicationsMode.kind === 'contact' ? communicationsMode.contactId : undefined
-              }
-              onProtectedStateCleared={clearProtectedState}
-            />
+            <CommunicationsPanel onProtectedStateCleared={clearProtectedState} />
           )}
         </Suspense>
       )}
@@ -2680,18 +2639,14 @@ function ListToolbar({
 function DetailToolbar({
   contact,
   canEdit,
-  canReadCommunications,
   onBack,
   onEdit,
-  onCommunications,
   onManageHousehold,
 }: {
   contact: ContactDetail;
   canEdit: boolean;
-  canReadCommunications: boolean;
   onBack: () => void;
   onEdit: () => void;
-  onCommunications: () => void;
   onManageHousehold?: (() => void) | undefined;
 }) {
   return (
@@ -2704,11 +2659,6 @@ function DetailToolbar({
         <Chip label={labelStatus(contact.lead_status)} tone="status" />
         <Chip label={sourceLabel(contact.source)} tone="source" />
       </div>
-      {canReadCommunications && (
-        <button type="button" className="button-secondary" onClick={onCommunications}>
-          Communications
-        </button>
-      )}
       {onManageHousehold && (
         <button type="button" className="button-secondary" onClick={onManageHousehold}>
           Manage household

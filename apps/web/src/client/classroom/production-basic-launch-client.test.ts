@@ -1,12 +1,10 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
-  clearProductionBasicHostLive,
   confirmProductionBasicHostLive,
   createProductionBasicHostEndController,
   readStudentProductionBasicReadiness,
   requestHostProductionBasicLaunch,
   requestStudentProductionBasicLaunch,
-  startAndConfirmProductionBasicHostLive,
 } from './production-basic-launch-client.ts';
 
 describe('production-basic launch client', () => {
@@ -117,11 +115,14 @@ describe('production-basic launch client', () => {
   it('confirms live state with one body-less request after the host join succeeds', async () => {
     const fetchMock = vi.fn(
       async () =>
-        new Response(JSON.stringify({ success: true, data: { state: 'live' } }), { status: 200 }),
+        new Response(
+          JSON.stringify({ success: true, data: { state: 'live', lifecycle_context: 'opaque-context' } }),
+          { status: 200 },
+        ),
     );
     vi.stubGlobal('fetch', fetchMock);
 
-    await expect(confirmProductionBasicHostLive('csrf-derived')).resolves.toBeUndefined();
+    await expect(confirmProductionBasicHostLive('csrf-derived')).resolves.toBe('opaque-context');
     expect(fetchMock).toHaveBeenCalledWith(
       '/api/v1/admin/classroom/production-basic/host-live',
       expect.objectContaining({
@@ -134,66 +135,23 @@ describe('production-basic launch client', () => {
     expect(requestInit).not.toHaveProperty('body');
   });
 
-  it('clears live state with one body-less request', async () => {
-    const fetchMock = vi.fn(
-      async () =>
-        new Response(JSON.stringify({ success: true, data: { state: 'scheduled' } }), {
-          status: 200,
-        }),
-    );
-    vi.stubGlobal('fetch', fetchMock);
-
-    await expect(clearProductionBasicHostLive('csrf-derived')).resolves.toBeUndefined();
-    expect(fetchMock).toHaveBeenCalledWith(
-      '/api/v1/admin/classroom/production-basic/host-ended',
-      expect.objectContaining({
-        method: 'POST',
-        credentials: 'same-origin',
-        headers: { 'x-csrf-token': 'csrf-derived' },
-      }),
-    );
-    const [, requestInit] = (fetchMock.mock.calls as unknown as Array<[string, RequestInit]>)[0]!;
-    expect(requestInit).not.toHaveProperty('body');
-  });
-
-  it('confirms only after status 2 and clears once on a later status 3', async () => {
-    let emitStatus: ((status: 1 | 2 | 3 | 4) => void) | undefined;
-    const confirm = vi.fn(async () => undefined);
-    const clear = vi.fn(async () => undefined);
-
-    await startAndConfirmProductionBasicHostLive({
-      csrfToken: 'csrf-derived',
-      startMeeting: async (onMeetingStatus) => {
-        emitStatus = onMeetingStatus;
-        onMeetingStatus(2);
-      },
-      confirm,
-      clear,
-    });
-    expect(confirm).toHaveBeenCalledOnce();
-    expect(clear).not.toHaveBeenCalled();
-
-    emitStatus?.(4);
-    emitStatus?.(3);
-    emitStatus?.(3);
-    await Promise.resolve();
-    expect(clear).toHaveBeenCalledOnce();
-    expect(clear).toHaveBeenCalledWith('csrf-derived');
-  });
-
   it('keeps the receipt on an unknown provider end and permits only status-confirmed cleanup', async () => {
     const endMeetingForAll = vi.fn(async () => {
       throw new Error('interrupted');
     });
-    const clear = vi.fn(async () => undefined);
+    const clear = vi.fn(async () => 'ended' as const);
     const controller = createProductionBasicHostEndController({
       csrfToken: 'csrf-derived',
+      lifecycleContext: 'lifecycle-context',
       endMeetingForAll,
       clear,
+      beginEnd: async () => 'end_requested',
+      markUnknown: async () => 'unknown_effect',
     });
     await controller.markLive();
     await controller.requestEnd();
     await controller.requestEnd();
+    await Promise.resolve();
     expect(controller.state).toBe('unknown_effect');
     expect(endMeetingForAll).toHaveBeenCalledOnce();
     expect(clear).not.toHaveBeenCalled();
@@ -206,11 +164,12 @@ describe('production-basic launch client', () => {
   it('retries cleanup only after a provider-confirmed end and never calls provider end twice', async () => {
     const endMeetingForAll = vi.fn(async () => undefined);
     const clear = vi
-      .fn<(csrfToken: string) => Promise<void>>()
+      .fn<(csrfToken: string, lifecycleContext: string) => Promise<'ended'>>()
       .mockRejectedValueOnce(new Error('local transient'))
-      .mockResolvedValueOnce(undefined);
+      .mockResolvedValueOnce('ended');
     const controller = createProductionBasicHostEndController({
       csrfToken: 'csrf-derived',
+      lifecycleContext: 'lifecycle-context',
       endMeetingForAll,
       clear,
     });
@@ -222,6 +181,53 @@ describe('production-basic launch client', () => {
     expect(controller.state).toBe('ended');
     expect(endMeetingForAll).toHaveBeenCalledOnce();
     expect(clear).toHaveBeenCalledTimes(2);
+  });
+
+  it('converges a missing SDK callback to unknown effect at the injected command deadline', async () => {
+    const timers: Array<() => void> = [];
+    const endMeetingForAll = vi.fn(() => new Promise<void>(() => undefined));
+    const markUnknown = vi.fn(async () => 'unknown_effect' as const);
+    const controller = createProductionBasicHostEndController({
+      csrfToken: 'csrf-derived',
+      lifecycleContext: 'lifecycle-context',
+      endMeetingForAll,
+      beginEnd: async () => 'end_requested',
+      markUnknown,
+      schedule: (callback) => {
+        timers.push(callback);
+        return 1 as unknown as ReturnType<typeof setTimeout>;
+      },
+      cancel: () => undefined,
+    });
+    await controller.markLive();
+    void controller.requestEnd();
+    await Promise.resolve();
+    timers[0]!();
+    await Promise.resolve();
+    expect(controller.state).toBe('unknown_effect');
+    expect(endMeetingForAll).toHaveBeenCalledOnce();
+    expect(markUnknown).toHaveBeenCalledOnce();
+  });
+
+  it('converges a successful SDK callback without status 3 to unknown effect at confirmation deadline', async () => {
+    const timers: Array<() => void> = [];
+    const controller = createProductionBasicHostEndController({
+      csrfToken: 'csrf-derived',
+      lifecycleContext: 'lifecycle-context',
+      endMeetingForAll: async () => undefined,
+      beginEnd: async () => 'end_requested',
+      markUnknown: async () => 'unknown_effect',
+      schedule: (callback) => {
+        timers.push(callback);
+        return 1 as unknown as ReturnType<typeof setTimeout>;
+      },
+      cancel: () => undefined,
+    });
+    await controller.markLive();
+    await controller.requestEnd();
+    timers.at(-1)!();
+    await Promise.resolve();
+    expect(controller.state).toBe('unknown_effect');
   });
 });
 

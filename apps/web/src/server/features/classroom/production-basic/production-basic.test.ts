@@ -161,7 +161,7 @@ describe('production-basic Meeting SDK launch', () => {
     expect(studentConfirm).not.toHaveBeenCalled();
   });
 
-  it('clears the live marker idempotently when the authorized host disconnects', async () => {
+  it('rejects naked legacy cleanup before provider-ended proof', async () => {
     const admin: ProductionBasicActor = {
       kind: 'admin',
       scope: STUDENT.scope,
@@ -172,14 +172,9 @@ describe('production-basic Meeting SDK launch', () => {
     const clear = vi.fn<ProductionBasicHostLiveMarker['clear']>().mockResolvedValue(undefined);
     const baseUrl = await start({ actor: admin, issue: async () => artifact(1), clear });
 
-    expect((await post(baseUrl, '/host-ended')).status).toBe(200);
-    expect((await post(baseUrl, '/host-ended')).status).toBe(200);
-    expect(clear).toHaveBeenCalledTimes(2);
-    expect(clear).toHaveBeenNthCalledWith(1, {
-      scope: STUDENT.scope,
-      meeting_ref_digest: expect.stringMatching(/^[a-f0-9]{64}$/u),
-      cleared_at: new Date('2026-08-12T10:00:00.000Z'),
-    });
+    expect((await post(baseUrl, '/host-ended')).status).toBe(409);
+    expect((await post(baseUrl, '/host-ended')).status).toBe(409);
+    expect(clear).not.toHaveBeenCalled();
 
     const studentClear = vi
       .fn<ProductionBasicHostLiveMarker['clear']>()
@@ -192,6 +187,35 @@ describe('production-basic Meeting SDK launch', () => {
     });
     expect((await post(studentBaseUrl, '/host-ended')).status).toBe(403);
     expect(studentClear).not.toHaveBeenCalled();
+  });
+
+  it('cleans up only after the durable provider-ended transition and accepts a replay-safe status read', async () => {
+    const admin: ProductionBasicActor = {
+      kind: 'admin',
+      scope: STUDENT.scope,
+      actor_user_ref: 'admin-derived',
+      display_name: 'Admin',
+      authorized_to_start: true,
+    };
+    const clear = vi.fn<ProductionBasicHostLiveMarker['clear']>().mockResolvedValue(undefined);
+    const baseUrl = await start({ actor: admin, issue: async () => artifact(1), clear });
+    const live = await post(baseUrl, '/host-live');
+    const context = (await live.json() as { data: { lifecycle_context: string } }).data.lifecycle_context;
+    const headers = { 'x-ot-production-basic-lifecycle': context };
+
+    expect((await post(baseUrl, '/host-ended')).status).toBe(409);
+    expect((await post(baseUrl, '/host-end-attempt', undefined, headers)).status).toBe(200);
+    expect((await post(baseUrl, '/host-end-confirmed', undefined, headers)).status).toBe(200);
+    expect(clear).not.toHaveBeenCalled();
+    expect((await post(baseUrl, '/host-ended', undefined, headers)).status).toBe(200);
+    expect(clear).toHaveBeenCalledOnce();
+
+    const status = await fetch(`${baseUrl}/host-end-status`);
+    expect(status.status).toBe(200);
+    await expect(status.json()).resolves.toMatchObject({
+      success: true,
+      data: { state: 'ended', lifecycle_context: expect.any(String) },
+    });
   });
 
   it('keeps Student readiness and launch unavailable until the host live receipt is current', async () => {
@@ -521,6 +545,14 @@ async function start(input: {
   clear?: ProductionBasicHostLiveMarker['clear'];
   onLaunchFailure?: ((event: ProductionBasicLaunchFailureEvent) => void) | undefined;
 }) {
+  let lifecycleState:
+    | 'live'
+    | 'end_requested'
+    | 'unknown_effect'
+    | 'provider_ended'
+    | 'cleanup_pending'
+    | 'ended' = 'live';
+  const lifecycleContext = 'test-lifecycle-context';
   const service = createProductionBasicLaunchService({
     binding: input.issue
       ? {
@@ -542,6 +574,19 @@ async function start(input: {
           },
         }
       : {}),
+    hostLifecycle: {
+      createLive: async () => ({ state: 'live', context: lifecycleContext }),
+      beginEnd: async () => (lifecycleState = 'end_requested'),
+      markUnknown: async () => (lifecycleState = 'unknown_effect'),
+      confirmEnded: async () => (lifecycleState = 'provider_ended'),
+      read: async () => ({ state: lifecycleState, context: lifecycleContext }),
+      beginCleanup: async () =>
+        lifecycleState === 'provider_ended' || lifecycleState === 'cleanup_pending'
+          ? (lifecycleState = 'cleanup_pending')
+          : null,
+      finishCleanup: async () => (lifecycleState = 'ended'),
+      markCleanupPending: async () => (lifecycleState = 'cleanup_pending'),
+    },
     clock: () => new Date('2026-08-12T10:00:00.000Z'),
   });
   const app = express();
@@ -601,11 +646,15 @@ function artifact(
     : { ...shared, role: 0, leave_path: '/app/student' };
 }
 
-async function post(baseUrl: string, path: string, body?: unknown) {
+async function post(
+  baseUrl: string,
+  path: string,
+  body?: unknown,
+  headers: Record<string, string> = {},
+) {
   return fetch(`${baseUrl}${path}`, {
     method: 'POST',
-    ...(body === undefined
-      ? {}
-      : { headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }),
+    headers: { ...headers, ...(body === undefined ? {} : { 'content-type': 'application/json' }) },
+    ...(body === undefined ? {} : { body: JSON.stringify(body) }),
   });
 }

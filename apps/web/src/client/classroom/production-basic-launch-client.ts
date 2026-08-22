@@ -23,6 +23,9 @@ export type HostProductionBasicLaunchArtifact = ProductionBasicArtifactBase & {
   zak: string;
 };
 
+export const PRODUCTION_BASIC_END_COMMAND_DEADLINE_MS = 10_000;
+export const PRODUCTION_BASIC_END_CONFIRMATION_DEADLINE_MS = 30_000;
+
 const STUDENT_ENDPOINT = '/api/v1/portals/student/classroom/production-basic' as const;
 const HOST_ENDPOINT = '/api/v1/admin/classroom/production-basic' as const;
 
@@ -51,34 +54,70 @@ export async function requestHostProductionBasicLaunch(
 }
 
 /** Confirm only after the host Meeting SDK join promise has resolved. */
-export async function confirmProductionBasicHostLive(csrfToken: string): Promise<void> {
+export async function confirmProductionBasicHostLive(csrfToken: string): Promise<string> {
   const response = await fetch(`${HOST_ENDPOINT}/host-live`, {
     method: 'POST',
     credentials: 'same-origin',
     headers: { 'x-csrf-token': csrfToken },
   });
   const payload = (await response.json()) as
-    { success: true; data: { state: 'live' } } | { success: false; message?: string };
-  if (!response.ok || payload.success !== true || payload.data.state !== 'live') {
+    { success: true; data: { state: 'live'; lifecycle_context?: string } } | { success: false; message?: string };
+  if (!response.ok || payload.success !== true || payload.data.state !== 'live' || !payload.data.lifecycle_context) {
     throw new Error('Live class status could not be confirmed.');
   }
+  return payload.data.lifecycle_context;
 }
 
-export async function clearProductionBasicHostLive(csrfToken: string): Promise<void> {
-  const response = await fetch(`${HOST_ENDPOINT}/host-ended`, {
-    method: 'POST',
+export async function readProductionBasicHostEndStatus(csrfToken: string): Promise<{
+  state: ProductionBasicHostEndState;
+  lifecycleContext: string;
+}> {
+  const response = await fetch(`${HOST_ENDPOINT}/host-end-status`, {
     credentials: 'same-origin',
     headers: { 'x-csrf-token': csrfToken },
   });
-  const payload = (await response.json()) as
-    { success: true; data: { state: 'scheduled' } } | { success: false; message?: string };
-  if (!response.ok || payload.success !== true || payload.data.state !== 'scheduled') {
-    throw new Error('Live class status could not be cleared.');
+  const payload = (await response.json()) as {
+    success?: boolean;
+    data?: { state?: ProductionBasicHostEndState; lifecycle_context?: string };
+  };
+  if (
+    !response.ok ||
+    payload.success !== true ||
+    !payload.data?.state ||
+    !payload.data.lifecycle_context
+  ) {
+    throw new Error('Class end status is unavailable.');
   }
+  return {
+    state: payload.data.state === 'end_requested' ? 'ending' : payload.data.state,
+    lifecycleContext: payload.data.lifecycle_context,
+  };
+}
+
+async function postHostEndState(
+  csrfToken: string,
+  lifecycleContext: string,
+  path: 'host-end-attempt' | 'host-end-unknown' | 'host-end-confirmed' | 'host-ended',
+) {
+  const response = await fetch(`${HOST_ENDPOINT}/${path}`, {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: { 'x-csrf-token': csrfToken, 'x-ot-production-basic-lifecycle': lifecycleContext },
+  });
+  const payload = (await response.json()) as { success?: boolean; data?: { state?: ProductionBasicHostEndState } };
+  if (!response.ok || payload.success !== true || !payload.data?.state) throw new Error('Class end state could not be saved.');
+  return payload.data.state;
 }
 
 export type ProductionBasicHostEndState =
-  'starting' | 'live' | 'ending' | 'unknown_effect' | 'cleanup_pending' | 'ended';
+  | 'starting'
+  | 'live'
+  | 'end_requested'
+  | 'ending'
+  | 'unknown_effect'
+  | 'provider_ended'
+  | 'cleanup_pending'
+  | 'ended';
 
 /**
  * Keeps the provider-first End Class operation bounded to one SDK call. The
@@ -86,15 +125,44 @@ export type ProductionBasicHostEndState =
  */
 export function createProductionBasicHostEndController(input: {
   endMeetingForAll: () => Promise<void>;
-  clear?: ((csrfToken: string) => Promise<void>) | undefined;
   csrfToken: string;
+  lifecycleContext: string;
+  beginEnd?: ((csrfToken: string, lifecycleContext: string) => Promise<ProductionBasicHostEndState>) | undefined;
+  markUnknown?: ((csrfToken: string, lifecycleContext: string) => Promise<ProductionBasicHostEndState>) | undefined;
+  confirmEnded?: ((csrfToken: string, lifecycleContext: string) => Promise<ProductionBasicHostEndState>) | undefined;
+  clear?: ((csrfToken: string, lifecycleContext: string) => Promise<ProductionBasicHostEndState>) | undefined;
+  schedule?: ((callback: () => void, delay: number) => ReturnType<typeof setTimeout>) | undefined;
+  cancel?: ((timer: ReturnType<typeof setTimeout>) => void) | undefined;
   onStateChange?: ((state: ProductionBasicHostEndState) => void) | undefined;
 }) {
-  const clear = input.clear ?? clearProductionBasicHostLive;
+  const beginEnd = input.beginEnd ?? ((csrf, context) => postHostEndState(csrf, context, 'host-end-attempt'));
+  const markUnknown = input.markUnknown ?? ((csrf, context) => postHostEndState(csrf, context, 'host-end-unknown'));
+  const confirmEnded = input.confirmEnded ?? ((csrf, context) => postHostEndState(csrf, context, 'host-end-confirmed'));
+  const clear = input.clear ?? ((csrf, context) => postHostEndState(csrf, context, 'host-ended'));
+  const schedule = input.schedule ?? ((callback, delay) => setTimeout(callback, delay));
+  const cancel = input.cancel ?? ((timer) => clearTimeout(timer));
   let state: ProductionBasicHostEndState = 'starting';
   let providerEndRequested = false;
   let providerEnded = false;
   let cleanupRunning = false;
+  let commandTimer: ReturnType<typeof setTimeout> | null = null;
+  let confirmationTimer: ReturnType<typeof setTimeout> | null = null;
+
+  const clearTimers = () => {
+    if (commandTimer) cancel(commandTimer);
+    if (confirmationTimer) cancel(confirmationTimer);
+    commandTimer = null;
+    confirmationTimer = null;
+  };
+  const unknown = async () => {
+    if (state === 'ended' || state === 'cleanup_pending' || state === 'provider_ended') return;
+    clearTimers();
+    try {
+      await markUnknown(input.csrfToken, input.lifecycleContext);
+    } finally {
+      setState('unknown_effect');
+    }
+  };
 
   const setState = (next: ProductionBasicHostEndState) => {
     state = next;
@@ -104,7 +172,7 @@ export function createProductionBasicHostEndController(input: {
     if (!providerEnded || cleanupRunning || state === 'starting' || state === 'ended') return;
     cleanupRunning = true;
     try {
-      await clear(input.csrfToken);
+      await clear(input.csrfToken, input.lifecycleContext);
       setState('ended');
     } catch {
       setState('cleanup_pending');
@@ -122,23 +190,53 @@ export function createProductionBasicHostEndController(input: {
       setState('live');
       await clearAfterProviderConfirmation();
     },
+    restore(restored: ProductionBasicHostEndState) {
+      if (state !== 'starting') return;
+      providerEnded =
+        restored === 'provider_ended' || restored === 'cleanup_pending' || restored === 'ended';
+      setState(restored);
+    },
     async requestEnd() {
       if (state !== 'live') return;
       providerEndRequested = true;
       setState('ending');
       try {
-        await input.endMeetingForAll();
+        await beginEnd(input.csrfToken, input.lifecycleContext);
       } catch {
-        setState('unknown_effect');
+        await unknown();
+        return;
       }
+      commandTimer = schedule(() => void unknown(), PRODUCTION_BASIC_END_COMMAND_DEADLINE_MS);
+      void input
+        .endMeetingForAll()
+        .then(() => {
+          // A status 3 callback can arrive before the SDK resolves its End
+          // callback. Once that proof has arrived, no deadline may overwrite it.
+          if (state !== 'ending' || providerEnded) return;
+          if (commandTimer) cancel(commandTimer);
+          commandTimer = null;
+          confirmationTimer = schedule(
+            () => void unknown(),
+            PRODUCTION_BASIC_END_CONFIRMATION_DEADLINE_MS,
+          );
+        })
+        .catch(() => void unknown());
     },
     async observeMeetingStatus(status: 1 | 2 | 3 | 4) {
       if (status !== 3) return;
+      clearTimers();
       providerEnded = true;
+      try {
+        await confirmEnded(input.csrfToken, input.lifecycleContext);
+      } catch {
+        await unknown();
+        return;
+      }
+      setState('provider_ended');
       await clearAfterProviderConfirmation();
     },
     async retryAccessCleanup() {
-      if (state !== 'cleanup_pending') return;
+      if (state !== 'provider_ended' && state !== 'cleanup_pending') return;
       await clearAfterProviderConfirmation();
     },
     reconcileProviderEnded() {
@@ -217,38 +315,4 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function invalidLaunchResponse() {
   return new Error('Classroom launch response is invalid.');
-}
-
-/** Couples the durable live receipt to the real Meeting SDK lifecycle. */
-export async function startAndConfirmProductionBasicHostLive(input: {
-  csrfToken: string;
-  startMeeting: (onMeetingStatus: (status: 1 | 2 | 3 | 4) => void) => Promise<void>;
-  confirm?: ((csrfToken: string) => Promise<void>) | undefined;
-  clear?: ((csrfToken: string) => Promise<void>) | undefined;
-}): Promise<void> {
-  const confirm = input.confirm ?? confirmProductionBasicHostLive;
-  const clear = input.clear ?? clearProductionBasicHostLive;
-  let confirmed = false;
-  let disconnected = false;
-  let clearPromise: Promise<void> | null = null;
-
-  const clearConfirmedReceipt = () => {
-    if (!confirmed || clearPromise) return;
-    clearPromise = clear(input.csrfToken).catch(() => undefined);
-  };
-
-  await input.startMeeting((status) => {
-    if (status !== 3) return;
-    disconnected = true;
-    clearConfirmedReceipt();
-  });
-  if (disconnected) throw new Error('Meeting disconnected before live status was confirmed.');
-
-  await confirm(input.csrfToken);
-  confirmed = true;
-  if (disconnected) {
-    clearConfirmedReceipt();
-    await clearPromise;
-    throw new Error('Meeting disconnected while live status was being confirmed.');
-  }
 }

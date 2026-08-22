@@ -28,7 +28,7 @@ test('admin workflow readback is repository-backed and exposes no provider contr
   await expect(page.locator('.communications-surface').getByRole('button')).toHaveCount(0);
   await expect(page.locator('.communications-surface a[href^="http"]')).toHaveCount(0);
 
-  const api = await page.request.get('/api/v1/communications/workflows/OT-01');
+  const api = await page.request.get('/api/v1/operations/workflow-readback/OT-01');
   expect(api.status()).toBe(200);
   expect(await api.json()).toMatchObject({
     workflow: { workflow_key: 'OT-01', observed_status: 'DRAFT_SHELL' },

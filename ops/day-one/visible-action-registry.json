@@ -24,11 +24,11 @@
     },
     {
       "path": "apps/web/src/server/app.ts",
-      "sha256": "5a4186a6257974939138b1192942d57c1fda9072a5fd4c993e1d1003ad3cd1ad"
+      "sha256": "5cf1c17629b4ebacb5a24e68365d8453af75eca733185e0a8834b154a621edb3"
     },
     {
       "path": "apps/web/src/server/communications/register.ts",
-      "sha256": "5045e0d7c28cb74b1c70f95b424201b2ebfb1fd0e79f01836ad352d3433ecee4"
+      "sha256": "a01768f5579c40adb694cf3646f47d2d84b755c32a64ef499f917a0166c21a9f"
     },
     {
       "path": "apps/web/src/server/communications/workflow-readback.ts",
@@ -72,11 +72,11 @@
     },
     {
       "path": "apps/web/src/server/features/classroom/production-basic/router.ts",
-      "sha256": "8b554737a6b789d362f8d32f02429c49c9d34afa772a8f22f2a1c3c49ab3af01"
+      "sha256": "3455bbc789444a216509baf2e489d6e3bb03ae8d4ac867947fe2259d82b1098e"
     },
     {
       "path": "apps/web/src/server/features/classroom/production-basic/service.ts",
-      "sha256": "eceb4ce538c1a6111acaa2ec0e8820ebec3dec7cd5aed10e84d2849b313cf920"
+      "sha256": "affe09fcf5b66d131d9b0ba92274357cad394054fce3aa3a28aef65e791f90b2"
     },
     {
       "path": "apps/web/src/server/features/learning/router.ts",
@@ -132,11 +132,11 @@
     },
     {
       "path": "apps/web/src/client/app/communications/CommunicationsFeature.tsx",
-      "sha256": "a4ebb354529e6e4cb46dea67fb7be3435b6457cb7034f7182d0fe6527ec52b38"
+      "sha256": "8dbfea2c24137acd740f17dc59a7b32d996f531b473170cf8571fa05c2717ff9"
     },
     {
       "path": "apps/web/src/client/app/communications/WorkflowReadbackFeature.tsx",
-      "sha256": "4aaea28080adaf5fecb7dbec3af69414cc55da9f6f6803754e536285c1f2922f"
+      "sha256": "884d9cf9a9eae0f0acc2a1ad4e3d9cbce7f1445f9af4b130991b7715daf9a8f1"
     },
     {
       "path": "apps/web/src/client/app/crm-api.ts",
@@ -148,11 +148,11 @@
     },
     {
       "path": "apps/web/src/client/app/crm-entry.tsx",
-      "sha256": "40d0d5232851ac2bb9abdbaf3f641a7e9958dc794701a4b5c9a2b231fbdd2cd6"
+      "sha256": "dcd0dee85a91e2fb83b44014db5790a82ce078d72c4e77f52e8105afbcb12cf0"
     },
     {
       "path": "apps/web/src/client/app/live-entry.tsx",
-      "sha256": "efe7590667f0ad9af159b700da0844d4c70d3e13b2d5cc26fa24631a24d53869"
+      "sha256": "7ed1f78177f7f439e6932300e91195eaa42eac768e6700aaecfc095909af9baf"
     },
     {
       "path": "apps/web/src/client/app/zoom-meeting-sdk-client.ts",
@@ -184,7 +184,7 @@
     },
     {
       "path": "apps/web/src/client/classroom/production-basic-launch-client.ts",
-      "sha256": "05f7c04b376b53ad3b39280be546cceb716c2d455acfb521e7998f0d588ca12a"
+      "sha256": "901ce932e46b3712e5038ccfe958492edeb5b1def16c9e706ba24c96615e4ebc"
     },
     {
       "path": "apps/web/src/client/features/portals/PortalFeatures.tsx",
@@ -1288,7 +1288,7 @@
       "capability": "admin:communications:workflow-read",
       "handler": {
         "method": "GET",
-        "path": "/api/v1/communications/workflows/:workflowId"
+        "path": "/api/v1/operations/workflow-readback/:workflowId"
       },
       "idempotency": {
         "required": false,
@@ -1886,18 +1886,18 @@
       "route": "/app/live",
       "roles": ["admin", "rabbi"],
       "capability": "admin:class:readiness",
-      "handler": { "method": "GET", "path": "/api/v1/admin/classroom/production-basic/status" },
+      "handler": { "method": "GET", "path": "/api/v1/admin/classroom/production-basic/host-end-status" },
       "idempotency": { "required": false, "key_source": null },
       "audit": { "mode": "local_read", "event": "production_basic_host_status_read" },
       "states": {
-        "loading": "Refreshing protected class readiness.",
-        "success": "The current safe readiness state is visible.",
-        "error": "Protected class status is unavailable.",
-        "permission": "Only an authorized Admin or Rabbi may read host readiness.",
-        "offline": "Class readiness is unavailable offline."
+        "loading": "Reading durable class end state without sending an End command.",
+        "success": "The safe durable end state is visible.",
+        "error": "Class end state is unavailable; no End retry was sent.",
+        "permission": "Only an authorized Admin or Rabbi may read host end state.",
+        "offline": "Class end state is unavailable offline."
       },
       "readiness_state": "ready",
-      "provider_mode": "read_only_configuration",
+      "provider_mode": "read_only_durable_lifecycle",
       "external_mutation": false,
       "test_evidence": ["apps/web/src/client/classroom/production-basic-launch-client.test.ts"]
     },
@@ -1912,7 +1912,7 @@
         "method": "POST",
         "path": "/api/v1/admin/classroom/production-basic/host-ended"
       },
-      "idempotency": { "required": true, "key_source": "in-memory confirmed cleanup state" },
+      "idempotency": { "required": true, "key_source": "server-bound provider-ended lifecycle context" },
       "audit": { "mode": "none", "event": "production_basic_host_receipt_cleanup_retry" },
       "states": {
         "loading": "Clearing confirmed local learner access.",
@@ -1922,7 +1922,7 @@
         "offline": "Local access cleanup is unavailable offline."
       },
       "readiness_state": "ready",
-      "provider_mode": "local_receipt_clear_only",
+      "provider_mode": "local_receipt_clear_only_after_provider_confirmation",
       "external_mutation": false,
       "test_evidence": ["apps/web/src/client/classroom/production-basic-launch-client.test.ts"]
     },

@@ -28,4 +28,4 @@ None.
 
 ## Impact
 
-Admin/Rabbi client routes, production-basic host lifecycle, class/access projection, communications contracts and route, brand styles, governed action registry, and focused verification. No provider, production data, GHL, email, billing, or deployment mutation is in scope.
+Admin/Rabbi client routes, production-basic host lifecycle, class/access projection, communications contracts and route, brand styles, governed action registry, and focused verification. Migration `2288_production_basic_host_lifecycle.sql` stores only account/product/occurrence-scoped lifecycle state plus hashed meeting, actor, and opaque-context references. No provider, production data, GHL, email, billing, or deployment mutation is in scope.
