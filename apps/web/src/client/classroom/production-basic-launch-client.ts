@@ -74,13 +74,19 @@ export async function confirmProductionBasicHostLive(csrfToken: string): Promise
   return payload.data.lifecycle_context;
 }
 
-export async function readProductionBasicHostEndStatus(csrfToken: string): Promise<{
+export async function readProductionBasicHostEndStatus(
+  csrfToken: string,
+  lifecycleContext: string,
+): Promise<{
   state: ProductionBasicHostEndState;
   lifecycleContext: string;
 }> {
   const response = await fetch(`${HOST_ENDPOINT}/host-end-status`, {
     credentials: 'same-origin',
-    headers: { 'x-csrf-token': csrfToken },
+    headers: {
+      'x-csrf-token': csrfToken,
+      'x-ot-production-basic-lifecycle': lifecycleContext,
+    },
   });
   const payload = (await response.json()) as {
     success?: boolean;
@@ -100,10 +106,17 @@ export async function readProductionBasicHostEndStatus(csrfToken: string): Promi
   };
 }
 
+export async function reconcileProductionBasicHostEnd(
+  csrfToken: string,
+  lifecycleContext: string,
+): Promise<ProductionBasicHostEndState> {
+  return postHostEndState(csrfToken, lifecycleContext, 'host-end-reconcile');
+}
+
 async function postHostEndState(
   csrfToken: string,
   lifecycleContext: string,
-  path: 'host-end-attempt' | 'host-end-unknown' | 'host-end-confirmed' | 'host-ended',
+  path: 'host-end-attempt' | 'host-end-unknown' | 'host-end-reconcile' | 'host-ended',
 ) {
   const response = await fetch(`${HOST_ENDPOINT}/${path}`, {
     method: 'POST',
@@ -131,7 +144,7 @@ export type ProductionBasicHostEndState =
 
 /**
  * Keeps the provider-first End Class operation bounded to one SDK call. The
- * durable receipt is cleared only after status 3 confirms the provider ended.
+ * durable receipt is cleared only after the server correlates verified provider proof.
  */
 export function createProductionBasicHostEndController(input: {
   endMeetingForAll: () => Promise<void>;
@@ -143,7 +156,7 @@ export function createProductionBasicHostEndController(input: {
   markUnknown?:
     | ((csrfToken: string, lifecycleContext: string) => Promise<ProductionBasicHostEndState>)
     | undefined;
-  confirmEnded?:
+  reconcile?:
     | ((csrfToken: string, lifecycleContext: string) => Promise<ProductionBasicHostEndState>)
     | undefined;
   clear?:
@@ -157,9 +170,7 @@ export function createProductionBasicHostEndController(input: {
     input.beginEnd ?? ((csrf, context) => postHostEndState(csrf, context, 'host-end-attempt'));
   const markUnknown =
     input.markUnknown ?? ((csrf, context) => postHostEndState(csrf, context, 'host-end-unknown'));
-  const confirmEnded =
-    input.confirmEnded ??
-    ((csrf, context) => postHostEndState(csrf, context, 'host-end-confirmed'));
+  const reconcile = input.reconcile ?? reconcileProductionBasicHostEnd;
   const clear = input.clear ?? ((csrf, context) => postHostEndState(csrf, context, 'host-ended'));
   const schedule = input.schedule ?? ((callback, delay) => setTimeout(callback, delay));
   const cancel = input.cancel ?? ((timer) => clearTimeout(timer));
@@ -246,16 +257,18 @@ export function createProductionBasicHostEndController(input: {
     },
     async observeMeetingStatus(status: 1 | 2 | 3 | 4) {
       if (status !== 3) return;
-      clearTimers();
-      providerEnded = true;
       try {
-        await confirmEnded(input.csrfToken, input.lifecycleContext);
+        const reconciled = await reconcile(input.csrfToken, input.lifecycleContext);
+        providerEnded =
+          reconciled === 'provider_ended' ||
+          reconciled === 'cleanup_pending' ||
+          reconciled === 'ended';
+        if (providerEnded) clearTimers();
+        setState(reconciled === 'end_requested' ? 'ending' : reconciled);
       } catch {
-        await unknown();
+        if (providerEndRequested) await unknown();
         return;
       }
-      setState('provider_ended');
-      await clearAfterProviderConfirmation();
     },
     async retryAccessCleanup() {
       if (state !== 'provider_ended' && state !== 'cleanup_pending') return;
@@ -263,6 +276,16 @@ export function createProductionBasicHostEndController(input: {
     },
     reconcileProviderEnded() {
       return providerEnded;
+    },
+    async reconcileProviderProof() {
+      const reconciled = await reconcile(input.csrfToken, input.lifecycleContext);
+      providerEnded =
+        reconciled === 'provider_ended' ||
+        reconciled === 'cleanup_pending' ||
+        reconciled === 'ended';
+      if (providerEnded) clearTimers();
+      setState(reconciled === 'end_requested' ? 'ending' : reconciled);
+      return state;
     },
     providerEndRequested() {
       return providerEndRequested;

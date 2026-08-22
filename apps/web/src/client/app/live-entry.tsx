@@ -45,6 +45,9 @@ type ApiSession = {
 
 type Notice = { kind: 'info' | 'success' | 'error'; message: string };
 
+const PRODUCTION_BASIC_HOST_LIFECYCLE_STORAGE_KEY =
+  'onetime.production-basic.host-lifecycle-context.v1';
+
 function LiveApp() {
   const stageSession = stageSessionFromPath(location.pathname);
   if (stageSession) return <LiveStage stageSession={stageSession} />;
@@ -112,9 +115,11 @@ function LiveConsole() {
 
   useEffect(() => {
     if (!session) return;
-    // This is a durable, read-only reconciliation. It never calls the provider
-    // End operation, and restores a fresh server-bound cleanup context on reload.
-    void readProductionBasicHostEndStatus(session.csrf_token)
+    const lifecycleContext = readStoredProductionBasicLifecycleContext();
+    if (!lifecycleContext) return;
+    // This GET is read-only and reuses the browser-held opaque context. The
+    // server still binds it to the exact authenticated session digest.
+    void readProductionBasicHostEndStatus(session.csrf_token, lifecycleContext)
       .then((status) => restoreProductionBasicEndController(status))
       .catch(() => undefined);
   }, [session?.csrf_token]);
@@ -127,7 +132,7 @@ function LiveConsole() {
       csrfToken: session?.csrf_token ?? '',
       lifecycleContext: status.lifecycleContext,
       endMeetingForAll: endActiveZoomMeetingForAll,
-      onStateChange: setHostEndState,
+      onStateChange: updateHostEndState,
     });
     controller.restore(status.state);
     hostEndController.current = controller;
@@ -153,11 +158,12 @@ function LiveConsole() {
         },
       });
       const lifecycleContext = await confirmProductionBasicHostLive(session.csrf_token);
+      storeProductionBasicLifecycleContext(lifecycleContext);
       const controller = createProductionBasicHostEndController({
         csrfToken: session.csrf_token,
         lifecycleContext,
         endMeetingForAll: endActiveZoomMeetingForAll,
-        onStateChange: setHostEndState,
+        onStateChange: updateHostEndState,
       });
       hostEndController.current = controller;
       await controller.markLive();
@@ -186,11 +192,27 @@ function LiveConsole() {
   async function reconcileProductionBasicEnd() {
     if (!session) return;
     try {
-      const status = await readProductionBasicHostEndStatus(session.csrf_token);
-      restoreProductionBasicEndController(status);
+      if (!hostEndController.current) {
+        const lifecycleContext = readStoredProductionBasicLifecycleContext();
+        if (!lifecycleContext) {
+          setNotice({
+            kind: 'error',
+            message: 'This browser session has no exact class lifecycle context to reconcile.',
+          });
+          return;
+        }
+        const status = await readProductionBasicHostEndStatus(session.csrf_token, lifecycleContext);
+        restoreProductionBasicEndController(status);
+      }
+      const state = await hostEndController.current?.reconcileProviderProof();
       setNotice({
         kind: 'info',
-        message: 'Class end status reconciled without sending another End command.',
+        message:
+          state === 'ended'
+            ? 'Verified Zoom end proof was reconciled and local access was cleared.'
+            : state === 'cleanup_pending'
+              ? 'Verified Zoom end proof was found; local access cleanup is pending.'
+              : 'No exact Zoom end proof is available yet. No End command was sent.',
       });
     } catch {
       setNotice({
@@ -198,6 +220,11 @@ function LiveConsole() {
         message: 'Class end status is unavailable; no End retry was sent.',
       });
     }
+  }
+
+  function updateHostEndState(state: ProductionBasicHostEndState) {
+    setHostEndState(state);
+    if (state === 'ended') clearStoredProductionBasicLifecycleContext();
   }
 
   async function postControl(path: string, body: Record<string, unknown>, label: string) {
@@ -830,6 +857,31 @@ function shellUserFromSession(user: SessionUser): ShellUser {
 function stageSessionFromPath(pathname: string) {
   const match = pathname.match(/^\/app\/live-stage\/([^/]+)/);
   return match ? decodeURIComponent(match[1] ?? '') : null;
+}
+
+function readStoredProductionBasicLifecycleContext() {
+  try {
+    const context = window.sessionStorage.getItem(PRODUCTION_BASIC_HOST_LIFECYCLE_STORAGE_KEY);
+    return context && context.length <= 200 ? context : null;
+  } catch {
+    return null;
+  }
+}
+
+function storeProductionBasicLifecycleContext(context: string) {
+  try {
+    window.sessionStorage.setItem(PRODUCTION_BASIC_HOST_LIFECYCLE_STORAGE_KEY, context);
+  } catch {
+    // The in-memory controller still retains the exact context for this page.
+  }
+}
+
+function clearStoredProductionBasicLifecycleContext() {
+  try {
+    window.sessionStorage.removeItem(PRODUCTION_BASIC_HOST_LIFECYCLE_STORAGE_KEY);
+  } catch {
+    // Storage may be unavailable in hardened browser contexts.
+  }
 }
 
 function idempotencyKey(label: string) {

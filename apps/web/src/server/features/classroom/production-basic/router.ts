@@ -34,11 +34,14 @@ type ProductionBasicRouterInput = {
       actor: ProductionBasicActor,
       lifecycleContext: string,
     ): Promise<ProductionBasicHostLiveResult>;
-    confirmHostEnded(
+    reconcileHostEnd(
       actor: ProductionBasicActor,
       lifecycleContext: string,
     ): Promise<ProductionBasicHostLiveResult>;
-    hostEndStatus(actor: ProductionBasicActor): Promise<ProductionBasicHostLiveResult>;
+    hostEndStatus(
+      actor: ProductionBasicActor,
+      lifecycleContext: string,
+    ): Promise<ProductionBasicHostLiveResult>;
     cleanupHostEnd(
       actor: ProductionBasicActor,
       lifecycleContext: string,
@@ -107,8 +110,13 @@ function createRoleBoundProductionBasicRouter(
     router.post('/host-end-unknown', (request, response) =>
       handleHostLifecycle(input, request, response, 'unknown'),
     );
+    // A browser assertion is never provider proof. Keep the old route as an
+    // authenticated fail-closed tombstone for stale clients.
     router.post('/host-end-confirmed', (request, response) =>
-      handleHostLifecycle(input, request, response, 'confirmed'),
+      handleRetiredHostConfirmation(input, request, response),
+    );
+    router.post('/host-end-reconcile', (request, response) =>
+      handleHostLifecycle(input, request, response, 'reconcile'),
     );
     router.get('/host-end-status', (request, response) =>
       handleHostEndStatus(input, request, response),
@@ -176,7 +184,7 @@ async function handleHostLifecycle(
   input: ProductionBasicRouterInput,
   request: Request,
   response: Response,
-  operation: 'begin' | 'unknown' | 'confirmed' | 'cleanup',
+  operation: 'begin' | 'unknown' | 'reconcile' | 'cleanup',
 ) {
   if (requestHasBody(request)) return void response.status(400).json(unavailable());
   const context = request.header('x-ot-production-basic-lifecycle') ?? '';
@@ -190,8 +198,8 @@ async function handleHostLifecycle(
       ? await input.service.beginHostEnd(identity.actor, context)
       : operation === 'unknown'
         ? await input.service.markHostEndUnknown(identity.actor, context)
-        : operation === 'confirmed'
-          ? await input.service.confirmHostEnded(identity.actor, context)
+        : operation === 'reconcile'
+          ? await input.service.reconcileHostEnd(identity.actor, context)
           : await input.service.cleanupHostEnd(identity.actor, context);
   if (result.disposition !== 'ready') {
     response.status(result.disposition === 'denied' ? 409 : 503).json(unavailable());
@@ -206,6 +214,20 @@ async function handleHostLifecycle(
   });
 }
 
+async function handleRetiredHostConfirmation(
+  input: ProductionBasicRouterInput,
+  request: Request,
+  response: Response,
+) {
+  if (requestHasBody(request)) return void response.status(400).json(unavailable());
+  const identity = await input.identities.resolve(request, response);
+  if (!resolvedForBoundary(identity, 'host') || !identity.csrf_verified) {
+    respondForIdentityFailure(response, identity);
+    return;
+  }
+  response.status(409).json(unavailable());
+}
+
 async function handleHostEndStatus(
   input: ProductionBasicRouterInput,
   request: Request,
@@ -216,7 +238,10 @@ async function handleHostEndStatus(
     respondForIdentityFailure(response, identity);
     return;
   }
-  const result = await input.service.hostEndStatus(identity.actor);
+  const result = await input.service.hostEndStatus(
+    identity.actor,
+    request.header('x-ot-production-basic-lifecycle') ?? '',
+  );
   if (result.disposition !== 'ready') {
     response.status(result.disposition === 'denied' ? 403 : 503).json(unavailable());
     return;

@@ -362,6 +362,7 @@ const envSchema = z.object({
   ZOOM_HOST_USER_ID: z.string().optional(),
   ZOOM_REAL_CONTROL_MEETING_ID: z.string().optional(),
   ZOOM_REAL_CONTROL_MEETING_PASSCODE: z.string().optional(),
+  ZOOM_WEBHOOK_SECRET_TOKEN: optionalTrimmedString(16, 400),
   // Digest-only receipt from a separately authorized, read-only provider inspection.
   // It never contains the recurring meeting reference or a join URL.
   ZOOM_PRODUCTION_BASIC_BINDING_ACCOUNT_MATCHES: optionalReceiptBoolean,
@@ -1057,6 +1058,7 @@ export function loadConfig(source: NodeJS.ProcessEnv, options: { now?: Date } = 
     zoomHostUserId: parsed.ZOOM_HOST_USER_ID,
     zoomRealControlMeetingId: parsed.ZOOM_REAL_CONTROL_MEETING_ID,
     zoomRealControlMeetingPasscode: parsed.ZOOM_REAL_CONTROL_MEETING_PASSCODE,
+    zoomWebhookSecretToken: parsed.ZOOM_WEBHOOK_SECRET_TOKEN,
     zoomProductionBasicVerifiedBinding,
     zoomS2sAccountIdConfigured: Boolean(canonicalZoomS2sAccountId),
     zoomS2sClientIdConfigured: Boolean(parsed.ZOOM_S2S_CLIENT_ID),

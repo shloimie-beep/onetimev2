@@ -22,7 +22,18 @@ const receipt = {
 
 describe('Zoom production-basic verified binding receipt configuration', () => {
   it('is absent by default and therefore cannot activate the binding', () => {
-    expect(loadConfig({ NODE_ENV: 'test' }).zoomProductionBasicVerifiedBinding).toBeUndefined();
+    const config = loadConfig({ NODE_ENV: 'test' });
+    expect(config.zoomProductionBasicVerifiedBinding).toBeUndefined();
+    expect(config.zoomWebhookSecretToken).toBeUndefined();
+  });
+
+  it('accepts an isolated synthetic webhook secret without exposing a configured-value flag', () => {
+    const config = loadConfig({
+      NODE_ENV: 'test',
+      ZOOM_WEBHOOK_SECRET_TOKEN: 'synthetic_zoom_webhook_secret_token',
+    });
+    expect(config.zoomWebhookSecretToken).toBe('synthetic_zoom_webhook_secret_token');
+    expect(JSON.stringify(config)).not.toContain('ZOOM_WEBHOOK_SECRET_TOKEN');
   });
 
   it('parses only a complete digest-only, registration-off verification receipt', () => {
