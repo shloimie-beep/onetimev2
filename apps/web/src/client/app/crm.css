@@ -569,6 +569,31 @@
   min-width: 0;
 }
 
+html:fullscreen,
+html:fullscreen body,
+html:fullscreen #portal-root {
+  width: 100%;
+  height: 100%;
+  min-height: 100dvh;
+  margin: 0;
+  overflow: hidden;
+  background: #000;
+}
+
+@media (orientation: landscape) and (max-width: 1024px) {
+  html:fullscreen .student-classroom-sdk {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 2147483000 !important;
+    width: 100vw !important;
+    max-width: none !important;
+    height: 100dvh !important;
+    max-height: none !important;
+    margin: 0 !important;
+    background: #000;
+  }
+}
+
 .dashboard-overview-card {
   display: grid;
   gap: var(--ot-space-3);

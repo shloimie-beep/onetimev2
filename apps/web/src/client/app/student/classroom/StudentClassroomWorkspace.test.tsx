@@ -7,6 +7,7 @@ import { createStudentClassroomViewModel } from './view-model.ts';
 import {
   StudentClassroomSurface,
   classroomHeartbeatDelay,
+  requestStudentClassroomFullscreen,
   toZoomParticipantJoinInput,
 } from './StudentClassroomWorkspace.tsx';
 
@@ -102,6 +103,73 @@ describe('P18 Student classroom workspace', () => {
     expect(source).not.toMatch(/console\.(?:log|info|warn|error)/u);
     expect(workspaceSource).toContain("lastJoinMode.current === 'production_basic'");
     expect(workspaceSource).toContain('void joinProductionBasic();');
+  });
+
+  it('starts the fullscreen request before either Student join crosses an async boundary', async () => {
+    const workspaceSource = await readFile(
+      'apps/web/src/client/app/student/classroom/StudentClassroomWorkspace.tsx',
+      'utf8',
+    );
+    const legacyJoin = workspaceSource.slice(
+      workspaceSource.indexOf('async function join(): Promise<void>'),
+      workspaceSource.indexOf('async function leave(): Promise<void>'),
+    );
+    const productionJoin = workspaceSource.slice(
+      workspaceSource.indexOf('async function joinProductionBasic(): Promise<void>'),
+      workspaceSource.indexOf('function retry(): void'),
+    );
+    expect(legacyJoin.indexOf('requestStudentClassroomFullscreen()')).toBeLessThan(
+      legacyJoin.indexOf('await classroomApi.bootstrap'),
+    );
+    expect(productionJoin.indexOf('requestStudentClassroomFullscreen()')).toBeLessThan(
+      productionJoin.indexOf('await requestStudentProductionBasicLaunch'),
+    );
+  });
+
+  it('fills the dynamic landscape viewport only while browser fullscreen is active', async () => {
+    const css = await readFile('apps/web/src/client/app/crm.css', 'utf8');
+    expect(css).toContain('@media (orientation: landscape) and (max-width: 1024px)');
+    expect(css).toContain('html:fullscreen .student-classroom-sdk');
+    expect(css).toContain('height: 100dvh !important');
+  });
+
+  it('requests browser-native fullscreen with hidden navigation on a mobile Join gesture', async () => {
+    const requestFullscreen = vi.fn().mockResolvedValue(undefined);
+    await expect(
+      requestStudentClassroomFullscreen(
+        { fullscreenElement: null, documentElement: { requestFullscreen } },
+        { matchMedia: vi.fn(() => ({ matches: true })) },
+      ),
+    ).resolves.toBe('active');
+    expect(requestFullscreen).toHaveBeenCalledWith({ navigationUI: 'hide' });
+  });
+
+  it('keeps class entry available when fullscreen is unsupported or denied', async () => {
+    await expect(
+      requestStudentClassroomFullscreen(
+        { fullscreenElement: null, documentElement: {} },
+        { matchMedia: vi.fn(() => ({ matches: true })) },
+      ),
+    ).resolves.toBe('unavailable');
+
+    const requestFullscreen = vi.fn().mockRejectedValue(new Error('browser denied fullscreen'));
+    await expect(
+      requestStudentClassroomFullscreen(
+        { fullscreenElement: null, documentElement: { requestFullscreen } },
+        { matchMedia: vi.fn(() => ({ matches: true })) },
+      ),
+    ).resolves.toBe('unavailable');
+  });
+
+  it('does not force fullscreen on a desktop viewport', async () => {
+    const requestFullscreen = vi.fn().mockResolvedValue(undefined);
+    await expect(
+      requestStudentClassroomFullscreen(
+        { fullscreenElement: null, documentElement: { requestFullscreen } },
+        { matchMedia: vi.fn(() => ({ matches: false })) },
+      ),
+    ).resolves.toBe('unavailable');
+    expect(requestFullscreen).not.toHaveBeenCalled();
   });
 });
 

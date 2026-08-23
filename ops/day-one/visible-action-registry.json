@@ -156,7 +156,7 @@
     },
     {
       "path": "apps/web/src/client/app/zoom-meeting-sdk-client.ts",
-      "sha256": "d3bdcb245b4651ee8c49ac3cb5f4c979e0bb0ff8355f7f926685c27a345d57db"
+      "sha256": "cf589e2b8700ca93403685b75ff00ef07fe5554a6eade48bda257825c533e052"
     },
     {
       "path": "apps/web/src/client/app/portal-entry.tsx",
@@ -164,7 +164,7 @@
     },
     {
       "path": "apps/web/src/client/app/student/classroom/StudentClassroomWorkspace.tsx",
-      "sha256": "749fcb0b82593e0d884a056a90bfc1ed5a7cf79cca10a1d47f491641a3dbb925"
+      "sha256": "8ae97007161c8949f5c99e002e951dd0dd13a24bf01bd3c9e313bfb68beddd22"
     },
     {
       "path": "apps/web/src/client/app/student/classroom/api.ts",
