@@ -9,7 +9,7 @@ describe('Rabbi Telegram executable readiness', () => {
     expect(result).toMatchObject({
       started: false,
       readiness: {
-        status: 'provider_off',
+        status: 'source_blocked',
         customerDeliveryStatus: 'provider_off',
         customerDeliveryAuthorized: false,
       },
@@ -53,7 +53,11 @@ describe('Rabbi Telegram executable readiness', () => {
     );
     expect(ready).toMatchObject({
       ready: true,
-      status: 'ready',
+      status: 'source_ready',
+      sourceReady: true,
+      commandConsumerMounted: false,
+      localAgentConsumerMounted: false,
+      providerDeliveryMounted: false,
       botKey: 'one_time_rabbi_torah_console',
       customerDeliveryStatus: 'provider_off',
       customerDeliveryAuthorized: false,

@@ -19,6 +19,15 @@ export const rabbiCommunicationCapabilities = [
   'internal_task.list',
   'internal_task.create',
   'internal_task.update',
+  'operation.class.status',
+  'operation.content.status',
+  'operation.vimeo.status',
+  'operation.support.list',
+  'operation.support.read',
+  'operation.login_issues.list',
+  'operation.readiness',
+  'agent_task.list',
+  'agent_task.read',
 ] as const;
 
 export type RabbiCommunicationCapability = (typeof rabbiCommunicationCapabilities)[number];
@@ -42,12 +51,107 @@ export type RabbiCommunicationActor = {
   securityVersion: number;
 };
 
+export const rabbiIssueCategories = [
+  'login_access',
+  'support_incident',
+  'class_readiness',
+  'content_processing',
+] as const;
+export type RabbiIssueCategory = (typeof rabbiIssueCategories)[number];
+
+export const rabbiDiagnosticCapabilities = [
+  'login_access_summary',
+  'class_readiness_summary',
+  'content_processing_summary',
+  'vimeo_processing_summary',
+  'support_incident_summary',
+] as const;
+export type RabbiDiagnosticCapability = (typeof rabbiDiagnosticCapabilities)[number];
+
+export const rabbiAgentTaskStatuses = [
+  'queued',
+  'in_progress',
+  'blocked',
+  'completed',
+  'cancelled',
+  'dead_letter',
+] as const;
+export type RabbiAgentTaskStatus = (typeof rabbiAgentTaskStatuses)[number];
+
+export type RabbiRiskClass = 'R0' | 'R1';
+export type RabbiTaskPriority = 'low' | 'normal' | 'high';
+export type RabbiRedactedSubjectRef = {
+  kind: 'parent' | 'student' | 'account';
+  ref: string;
+};
+
 export type RabbiReadRequest =
   | { capability: 'conversation.parent.list' }
   | { capability: 'conversation.parent.read_redacted'; conversationKey: string }
   | { capability: 'student.question.list' }
   | { capability: 'student.question.read'; questionKey: string }
-  | { capability: 'internal_task.list' };
+  | { capability: 'internal_task.list' }
+  | { capability: 'operation.class.status' }
+  | { capability: 'operation.content.status' }
+  | { capability: 'operation.vimeo.status' }
+  | { capability: 'operation.support.list' }
+  | { capability: 'operation.support.read'; incidentKey: string }
+  | { capability: 'operation.login_issues.list' }
+  | { capability: 'operation.readiness' }
+  | { capability: 'agent_task.list' }
+  | { capability: 'agent_task.read'; taskKey: string };
+
+export type RabbiInternalTaskCreateRequest =
+  | {
+      capability: 'internal_task.create';
+      title: string;
+      detail: string;
+      priority: RabbiTaskPriority;
+    }
+  | {
+      capability: 'internal_task.create';
+      priority: RabbiTaskPriority;
+      supportIncident: {
+        subject: RabbiRedactedSubjectRef;
+        issueCategory: RabbiIssueCategory;
+      };
+    }
+  | {
+      capability: 'internal_task.create';
+      priority: RabbiTaskPriority;
+      agentTask: {
+        subject: RabbiRedactedSubjectRef;
+        issueCategory: RabbiIssueCategory;
+        diagnosticCapability: RabbiDiagnosticCapability;
+        riskClass: RabbiRiskClass;
+      };
+    };
+
+export type RabbiInternalTaskUpdateRequest =
+  | {
+      capability: 'internal_task.update';
+      taskKey: string;
+      status: RabbiAgentTaskStatus;
+      title?: string;
+    }
+  | {
+      capability: 'internal_task.update';
+      taskKey: string;
+      supportIncident: {
+        action: 'assign' | 'request_diagnostic' | 'add_note' | 'resolve' | 'block';
+        diagnosticCapability?: RabbiDiagnosticCapability;
+        note?: string;
+      };
+    }
+  | {
+      capability: 'internal_task.update';
+      taskKey: string;
+      agentTask: {
+        status: RabbiAgentTaskStatus;
+        branchPrRef?: string;
+        resultSummary?: string;
+      };
+    };
 
 export type RabbiPreviewRequest =
   | {
@@ -61,18 +165,8 @@ export type RabbiPreviewRequest =
       answerText: string;
     }
   | { capability: 'student.question.close'; questionKey: string }
-  | {
-      capability: 'internal_task.create';
-      title: string;
-      detail: string;
-      priority: 'low' | 'normal' | 'high';
-    }
-  | {
-      capability: 'internal_task.update';
-      taskKey: string;
-      status: 'queued' | 'in_progress' | 'blocked' | 'completed' | 'cancelled';
-      title?: string;
-    };
+  | RabbiInternalTaskCreateRequest
+  | RabbiInternalTaskUpdateRequest;
 
 export type RabbiConfirmationPayload = RabbiPreviewRequest;
 

@@ -357,8 +357,11 @@ export class TelegramSqlConsumerLeaseRepository implements ConsumerLeaseReposito
         ],
       );
       return { acquired: true as const, generation };
-    } catch {
-      return { acquired: false as const, reason: 'already_owned' as const };
+    } catch (error) {
+      if (error && typeof error === 'object' && 'code' in error && String(error.code) === '23505') {
+        return { acquired: false as const, reason: 'already_owned' as const };
+      }
+      throw error;
     }
   }
 
