@@ -102,7 +102,7 @@ async function ensureLiveSession(
           CLASSROOM_POLICY_VERSION,
         ],
       );
-      occurrence = await getOccurrence(client, args.actor, occurrenceKey);
+      occurrence = await getOccurrenceForLocalDate(client, args.actor, localDate);
     }
     if (!occurrence && args.occurrence_key) {
       throw new PortalServiceError('NOT_FOUND', 'The live class occurrence was not found.');
@@ -801,6 +801,29 @@ async function getOccurrence(
         AND occurrences.occurrence_key = $3
       LIMIT 1`,
     [actor.account_key, actor.product_key, occurrenceKey],
+  );
+  const row = result.rows[0] as Record<string, unknown> | undefined;
+  return row ? { occurrence_key: String(row.occurrence_key), title: String(row.title) } : null;
+}
+
+async function getOccurrenceForLocalDate(
+  target: Queryable,
+  actor: { account_key: string; product_key: string },
+  localClassDate: string,
+) {
+  const result = await target.query(
+    `SELECT occurrences.occurrence_key, series.title
+       FROM onetime.class_occurrences AS occurrences
+       JOIN onetime.class_series AS series
+         ON series.account_key = occurrences.account_key
+        AND series.product_key = occurrences.product_key
+        AND series.class_series_key = occurrences.class_series_key
+      WHERE occurrences.account_key = $1
+        AND occurrences.product_key = $2
+        AND occurrences.class_series_key = $3
+        AND occurrences.local_class_date = $4::date
+      LIMIT 1`,
+    [actor.account_key, actor.product_key, ONE_TIME_CLASS_SERIES_KEY, localClassDate],
   );
   const row = result.rows[0] as Record<string, unknown> | undefined;
   return row ? { occurrence_key: String(row.occurrence_key), title: String(row.title) } : null;

@@ -16,6 +16,7 @@ describe('Admin information architecture', () => {
     expect(ADMIN_PRIMARY_AREAS.map(({ id }) => id)).toEqual([
       'today',
       'learning',
+      'live-console',
       'people',
       'communications',
       'operations',
@@ -27,6 +28,7 @@ describe('Admin information architecture', () => {
     expect(adminPrimaryNav(null, false).map(({ label }) => label)).toEqual([
       'Today',
       'Learning',
+      'Live Console',
       'People',
       'Communications',
       'Operations',
@@ -69,7 +71,7 @@ describe('Admin information architecture', () => {
     expect(classroomOccurrenceFromLocation(canonicalOccurrencePath, '')).toBe('occurrence/one');
     expect(classroomOccurrenceFromLocation('/app/classroom/enrollments', '')).toBeNull();
     const liveConsoleUrl = classroomHref('live-console', 'occurrence/one');
-    expect(liveConsoleUrl).toBe('/app/live?section=zoom&occurrence_key=occurrence%2Fone');
+    expect(liveConsoleUrl).toBe('/app/live-console?section=zoom&occurrence_key=occurrence%2Fone');
   });
 
   it('resolves canonical and compatibility Class Series detail locations', () => {

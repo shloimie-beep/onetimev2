@@ -10,6 +10,7 @@ import type {
 import {
   LIVE_CONSOLE_SECTIONS,
   adminPrimaryNav,
+  liveConsoleHref,
   rabbiPrimaryNav,
   liveConsoleSectionFromSearch,
 } from './admin-ia.js';
@@ -66,7 +67,7 @@ function LiveConsole() {
   const section = liveConsoleSectionFromSearch(location.search);
   const liveConsoleSections = LIVE_CONSOLE_SECTIONS.map((item) => ({
     ...item,
-    href: `${occurrenceKey ? `/app/live/${encodeURIComponent(occurrenceKey)}` : '/app/live'}?section=${encodeURIComponent(item.id)}`,
+    href: liveConsoleHref(item.id, occurrenceKey),
   }));
 
   async function load() {
@@ -158,8 +159,8 @@ function LiveConsole() {
   const liveConsoleReady = session?.capabilities?.operator_experience?.live_console === true;
   const navItems: ShellNavItem[] =
     session?.user.role === 'rabbi'
-      ? rabbiPrimaryNav('today', liveConsoleReady)
-      : adminPrimaryNav('today', liveConsoleReady);
+      ? rabbiPrimaryNav('live-console', liveConsoleReady)
+      : adminPrimaryNav('live-console', liveConsoleReady);
   const utilityItems: ShellNavItem[] = [];
   const selected = data?.selected_question ?? null;
 

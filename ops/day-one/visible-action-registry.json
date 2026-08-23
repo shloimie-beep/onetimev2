@@ -24,7 +24,7 @@
     },
     {
       "path": "apps/web/src/server/app.ts",
-      "sha256": "5a4186a6257974939138b1192942d57c1fda9072a5fd4c993e1d1003ad3cd1ad"
+      "sha256": "1e5b54172c9ea77f0fcb83e06c62694fe47f450d4496b6ce98dd876a50c44628"
     },
     {
       "path": "apps/web/src/server/communications/register.ts",
@@ -112,7 +112,7 @@
     },
     {
       "path": "apps/web/src/client/app/admin-ia.ts",
-      "sha256": "df79360ff2e784e62d3447b99d5d7216fc772d5c9a7078f235b1ea471dafca9e"
+      "sha256": "e2d25c35bd90bea530f76ee523e45361b76a7c5a9fd06415ced91cea8129516e"
     },
     {
       "path": "apps/web/src/client/app/admin-directory/AdminDirectoryPanel.tsx",
@@ -152,7 +152,7 @@
     },
     {
       "path": "apps/web/src/client/app/live-entry.tsx",
-      "sha256": "bcf098718739a784c6862ff2ef89bd1b75598159eca2482e0f84933b8de23304"
+      "sha256": "8f8e531a5c5c091c6277418bee750bda04eaef6178fab02f0a1e70a965648863"
     },
     {
       "path": "apps/web/src/client/app/zoom-meeting-sdk-client.ts",

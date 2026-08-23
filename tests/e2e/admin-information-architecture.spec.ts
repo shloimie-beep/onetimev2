@@ -4,7 +4,15 @@ import path from 'node:path';
 import { expect, test, type BrowserContext, type Page } from '@playwright/test';
 import { W12_E2E_ADMIN_COOKIES } from '../support/w12-portal-test-lab-session.ts';
 
-const primaryLabels = ['Today', 'Learning', 'People', 'Communications', 'Operations', 'Account'];
+const primaryLabels = [
+  'Today',
+  'Learning',
+  'Live Console',
+  'People',
+  'Communications',
+  'Operations',
+  'Account',
+];
 const viewports = [
   { width: 360, height: 800 },
   { width: 390, height: 844 },
@@ -39,6 +47,10 @@ test('Admin IA keeps the canonical launch areas across the governed viewport mat
       await expect(
         drawer.getByLabel('One Time app').getByRole('link').allTextContents(),
       ).resolves.toEqual(primaryLabels);
+      await expect(drawer.getByRole('link', { name: 'Live Console' })).toHaveAttribute(
+        'href',
+        '/app/live-console?section=zoom',
+      );
       await drawer.getByRole('button', { name: 'Close navigation' }).click();
     }
 
@@ -248,7 +260,7 @@ test('Admin IA keeps the canonical launch areas across the governed viewport mat
   await expect(page.getByRole('heading', { name: 'Record an audited correction' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Record audited correction' })).toBeVisible();
 
-  await page.goto('/app/live');
+  await page.goto('/app/live-console');
   await expect(page.getByRole('heading', { name: 'Live Console' })).toBeVisible();
   await expect(
     page.getByRole('navigation', { name: 'Live Console area' }).getByRole('link'),

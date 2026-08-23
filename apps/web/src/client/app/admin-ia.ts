@@ -1,6 +1,7 @@
 export const ADMIN_PRIMARY_AREAS = [
   { id: 'today', label: 'Today', href: '/app/today' },
   { id: 'learning', label: 'Learning', href: '/app/learning/classroom' },
+  { id: 'live-console', label: 'Live Console', href: '/app/live-console?section=zoom' },
   { id: 'people', label: 'People', href: '/app/people/families' },
   { id: 'communications', label: 'Communications', href: '/app/communications' },
   { id: 'operations', label: 'Operations', href: '/app/operations' },
@@ -14,8 +15,7 @@ export type AdminPrimaryAreaId =
   | 'contacts'
   | 'content'
   | 'classroom'
-  | 'billing-access'
-  | 'live-console';
+  | 'billing-access';
 
 export const DASHBOARD_SECTIONS = [{ id: 'today', label: 'Today', href: '/app/today' }] as const;
 
@@ -63,14 +63,14 @@ export const LIVE_CONSOLE_SECTIONS = [
   {
     id: 'current-class',
     label: 'Current Class',
-    href: '/app/live?section=current-class',
+    href: '/app/live-console?section=current-class',
   },
   {
     id: 'questions',
     label: 'Questions',
-    href: '/app/live?section=questions',
+    href: '/app/live-console?section=questions',
   },
-  { id: 'zoom', label: 'Zoom', href: '/app/live?section=zoom' },
+  { id: 'zoom', label: 'Zoom', href: '/app/live-console?section=zoom' },
 ] as const;
 
 export const COMMUNICATIONS_SECTIONS = [
@@ -91,7 +91,7 @@ export function adminPrimaryNav(currentId: AdminPrimaryAreaId | null, _liveConso
 
 export function rabbiPrimaryNav(currentId: AdminPrimaryAreaId | null, _liveConsoleReady = false) {
   return ADMIN_PRIMARY_AREAS.filter((item) =>
-    ['today', 'learning', 'account'].includes(item.id),
+    ['today', 'learning', 'live-console', 'account'].includes(item.id),
   ).map((item) => ({ ...item, current: item.id === currentId }));
 }
 
@@ -214,7 +214,7 @@ export function liveConsoleSectionFromSearch(search: string): LiveConsoleSection
 export function liveConsoleHref(section: LiveConsoleSectionId, occurrenceKey?: string | null) {
   const params = new URLSearchParams({ section });
   if (occurrenceKey) params.set('occurrence_key', occurrenceKey);
-  return `/app/live?${params.toString()}`;
+  return `/app/live-console?${params.toString()}`;
 }
 
 function pathSegments(pathname: string, prefix: string) {

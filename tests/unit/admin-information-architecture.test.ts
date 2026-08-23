@@ -19,10 +19,15 @@ import {
 } from '../../apps/web/src/client/app/admin-ia.ts';
 
 describe('OT-LAUNCH-01 Admin information architecture', () => {
-  it('keeps the canonical Admin and Rabbi areas without a standalone Live Console', () => {
+  it('keeps Live Console directly reachable in the canonical Admin and Rabbi areas', () => {
     expect(ADMIN_PRIMARY_AREAS).toEqual([
       { id: 'today', label: 'Today', href: '/app/today' },
       { id: 'learning', label: 'Learning', href: '/app/learning/classroom' },
+      {
+        id: 'live-console',
+        label: 'Live Console',
+        href: '/app/live-console?section=zoom',
+      },
       { id: 'people', label: 'People', href: '/app/people/families' },
       { id: 'communications', label: 'Communications', href: '/app/communications' },
       { id: 'operations', label: 'Operations', href: '/app/operations' },
@@ -34,6 +39,7 @@ describe('OT-LAUNCH-01 Admin information architecture', () => {
     expect(adminPrimaryNav('learning', false).map((item) => item.label)).toEqual([
       'Today',
       'Learning',
+      'Live Console',
       'People',
       'Communications',
       'Operations',
@@ -42,6 +48,7 @@ describe('OT-LAUNCH-01 Admin information architecture', () => {
     expect(rabbiPrimaryNav('learning', true).map((item) => item.label)).toEqual([
       'Today',
       'Learning',
+      'Live Console',
       'Account',
     ]);
     expect(rabbiPrimaryNav('learning', true).some((item) => item.id === 'people')).toBe(false);
@@ -100,7 +107,7 @@ describe('OT-LAUNCH-01 Admin information architecture', () => {
     expect(liveConsoleSectionFromSearch('?section=zoom')).toBe('zoom');
     expect(liveConsoleSectionFromSearch('?section=unknown')).toBe('current-class');
     expect(liveConsoleHref('questions', 'occurrence / 2')).toBe(
-      '/app/live?section=questions&occurrence_key=occurrence+%2F+2',
+      '/app/live-console?section=questions&occurrence_key=occurrence+%2F+2',
     );
   });
 });
