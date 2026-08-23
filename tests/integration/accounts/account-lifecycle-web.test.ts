@@ -134,7 +134,7 @@ describe('OPS-03B email step-up account lifecycle web flow', () => {
     expect(activated.json).toMatchObject({
       success: true,
       mfa_required: false,
-      return_to: '/app/dashboard',
+      return_to: '/app/today',
     });
     const cookies = mergeCookies(activationPage.cookies, cookieHeader(activated.response.headers));
     expect(cookies).toContain('otcrm_session=');

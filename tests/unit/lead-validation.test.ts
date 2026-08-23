@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto';
+import { readFile } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
 import { leadPayloadSchema } from '../../packages/contracts/src/index.ts';
 import {
@@ -24,6 +26,9 @@ const basePayload = {
   reminder_consent: true,
   idempotency_key: 'unit-key-123',
 };
+
+const approvedStudentLearningSourceSha256 =
+  'c8b067d20016d7df59ce2d0f4ee9e3184170693f2cfd2e23f9ce60a52ccd2576';
 
 describe('lead validation and content contracts', () => {
   it('requires phone for WhatsApp channels', () => {
@@ -67,10 +72,15 @@ describe('lead validation and content contracts', () => {
     expect(
       campaignTicker(new Date('2026-09-11T18:00:00+03:00'), '2026-09-11T18:00:00+03:00'),
     ).toBeNull();
-    expect(landingContent.hero.eyebrow).toBe('LIVE, ONLINE + ON-DEMAND');
+    expect(landingContent.hero.eyebrow).toBe('LIVE, ONLINE');
     expect(landingContent.hero.headline).toBe('Help your son love learning Mishnayos.');
-    expect(landingContent.hero.subheadline).toBe('Classes begin today. Sign up now.');
-    expect(landingContent.hero.cta.label).toBe('Create Family Account');
+    expect(landingContent.hero.subheadline).toBe(
+      'Create a free Family account and add up to three Student accounts.',
+    );
+    expect(landingContent.hero.accessDetail).toBe(
+      'Free through September 11. No credit card required.',
+    );
+    expect(landingContent.hero.cta.label).toBe('Create Your Free Family Account');
     expect(landingContent).not.toHaveProperty('whatsappAssistant');
     expect(publicCopy).not.toMatch(/September 13|2026-09-13|LIVE EVERY DAY/i);
   });
@@ -79,10 +89,13 @@ describe('lead validation and content contracts', () => {
     expect(landingContent.receive.heading).toBe(
       'Everything He Needs to Learn, Review, and Remember',
     );
+    expect(landingContent.receive.detailLine).toBe(
+      'Live Sunday–Thursday at 7:00 p.m. Israel time.',
+    );
     expect(landingContent.receive.title).toBe('Live Mishnayos—plus the tools to make it stick.');
     expect(landingContent.receive.bullets.map((bullet) => bullet.lead)).toEqual([
       'LIVE SUNDAY–THURSDAY',
-      'REVIEW ANYTIME',
+      'CLASS LIBRARY',
       'REMEMBER THE LEARNING',
       'STAY ON TRACK',
       'STUDENT PORTAL',
@@ -125,11 +138,32 @@ describe('lead validation and content contracts', () => {
     expect(landingContent.gain).not.toHaveProperty('intro');
   });
 
-  it('keeps the corrected Family journey copy and the existing third-step image', () => {
+  it('keeps the corrected Family journey copy and approved third-step image provenance aligned', async () => {
     expect(landingContent.how.flows[2]).toMatchObject({
       title: 'Your child learns at his own pace',
       image: '/assets/how-it-works/student-learning-mishnayos-1254.webp',
     });
+    expect(landingContent.who.audiences.at(-1)?.body).toBe(
+      'A Parent can learn directly through the Parent account without using one of the three child Student accounts.',
+    );
+    expect(landingContent.receive.bullets[1]?.body).toBe(
+      'The class library is being migrated. Recordings and review materials will begin appearing soon.',
+    );
+    expect(JSON.stringify(landingContent)).not.toMatch(
+      /classes? begin today|classes? begin August 16|watch replays|online class library|LIVE, ONLINE \+ ON-DEMAND/i,
+    );
+    const [source, provenance] = await Promise.all([
+      readFile('apps/web/public/assets/how-it-works/student-learning-mishnayos-source.png'),
+      readFile('apps/web/public/assets/how-it-works/PROVENANCE.md', 'utf8'),
+    ]);
+    expect(createHash('sha256').update(source).digest('hex')).toBe(
+      approvedStudentLearningSourceSha256,
+    );
+    expect(provenance).toContain(approvedStudentLearningSourceSha256);
+    expect(provenance).toContain('ChatGPT Image Aug 16, 2026, 04_54_23 PM.png');
+    expect(provenance).not.toContain(
+      'f420735890925430e1c9064cb5b35119cd75a32e864c89b326eafca9e7c99c29',
+    );
     expect(landingContent.footer.signupLinks).toEqual([
       ['Privacy Notice', '/privacy'],
       ['Terms', '/terms'],

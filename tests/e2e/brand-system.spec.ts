@@ -20,16 +20,25 @@ test('OT82 canonical public shell, ticker, and mobile invariant', async ({ page 
     await page.goto('/');
     await page.evaluate(() => document.fonts.ready.then(() => true));
     await expect(page.locator('[data-ot-shell="public-marketing"]')).toBeVisible();
-    await expect(page.locator('[data-ot-primitive="Button"]').first()).toBeVisible();
+    if (viewport.width <= 520) {
+      await expect(page.locator('.hero .hero-cta')).toBeVisible();
+    } else {
+      await expect(page.locator('[data-ot-primitive="Button"]').first()).toBeVisible();
+    }
     await expect(page.locator('.campaign-ticker')).toHaveCount(1);
     await expect(page.locator('.campaign-ticker')).toHaveAttribute('href', '/signup');
     await expect(page.locator('.campaign-ticker')).toHaveAttribute(
       'aria-label',
-      'CLASSES START AUG 16 · 7 PM · FREE ACCESS THROUGH SEP 11 · 6 PM · JERUSALEM TIME',
+      'LIVE SUNDAY–THURSDAY · 7:00 PM · FREE ACCESS THROUGH SEP 11 · 6 PM · JERUSALEM TIME',
     );
-    await expect(
-      page.getByLabel('Primary').getByRole('link', { name: 'Create your Family account' }),
-    ).toBeVisible();
+    const headerCta = page.getByLabel('Primary').getByRole('link', {
+      name: 'Create your Family account',
+    });
+    if (viewport.width <= 520) {
+      await expect(headerCta).toBeHidden();
+    } else {
+      await expect(headerCta).toBeVisible();
+    }
     await expect(page.locator('.brand-lockup img')).toBeVisible();
     await expect(page.locator('.site-header')).toBeVisible();
     await expectNoHorizontalOverflow(page);

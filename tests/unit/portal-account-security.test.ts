@@ -106,21 +106,22 @@ describe('Parent and Student portal navigation and account security', () => {
     expect(appSource).not.toContain('Use at least one letter and one number');
   });
 
-  it('advertises mounted role-specific support routes without a learner-scoped Parent callback', () => {
+  it('keeps technical support Parent-scoped and removes Student submission', () => {
     const portalEntry = readFileSync('apps/web/src/client/app/portal-entry.tsx', 'utf8');
     const portalFeatures = readFileSync(
       'apps/web/src/client/features/portals/PortalFeatures.tsx',
       'utf8',
     );
 
-    expect(portalEntry).toContain("window.location.assign('/app/student/support')");
-    expect(portalEntry).toContain(
-      "basePath={portalRole === 'parent' ? '/app/parent/support' : '/app/student/support'}",
-    );
-    expect(portalEntry).toContain("href: '/app/parent/support'");
+    expect(portalEntry).toContain('<StudentParentSupportBoundary />');
+    expect(portalEntry).toContain('Ask your Parent for help');
+    expect(portalEntry).toContain('basePath="/app/parent/support"');
+    expect(portalEntry).not.toContain('basePath="/app/student/support"');
     expect(portalEntry).not.toContain("window.location.assign('/app/support')");
-    expect(portalEntry).toContain("href: '/app/student/questions'");
-    expect(portalEntry).toContain("href: '/app/student/updates'");
+    expect(portalEntry).toContain(
+      "{ id: 'questions', label: 'Questions', href: '/app/student/questions' }",
+    );
+    expect(portalEntry).toContain("if (category === 'Updates') return `/app/${role}/updates`;");
     expect(portalEntry).not.toContain('Support remains available while learning access is paused.');
     expect(portalFeatures).not.toContain('onPreviewSupport(selectedLearner.learner_key)');
   });

@@ -289,7 +289,7 @@ function exactProductionBasicLaunchAction(
 ): ParentLearningActionDescriptor {
   const safe = safeAction(action, 'class_launch', 'POST');
   if (
-    safe.href !== '/api/v1/classroom/production-basic/launch' ||
+    safe.href !== '/api/v1/portals/parent/classroom/production-basic/launch' ||
     safe.launch_token_ref !== null ||
     safe.expires_at === null
   ) {

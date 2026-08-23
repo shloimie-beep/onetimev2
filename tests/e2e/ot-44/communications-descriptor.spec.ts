@@ -1,16 +1,10 @@
 import { expect, test } from '@playwright/test';
-import {
-  communicationsRouteDescriptor,
-  contactCommunicationsTabDescriptor,
-} from '../../../apps/web/src/client/app/communications/route-descriptor.ts';
+import { communicationsRouteDescriptor } from '../../../apps/web/src/client/app/communications/route-descriptor.ts';
 
-test('Communications descriptors are lazy and Rabbi/Admin scoped', async () => {
+test('Communications descriptor is lazy and owner/Admin scoped', async () => {
   expect(communicationsRouteDescriptor.path).toBe('/app/communications');
-  expect(communicationsRouteDescriptor.allowedRoles).toEqual(['owner', 'admin', 'rabbi']);
-  expect(contactCommunicationsTabDescriptor.allowedRoles).toEqual(['owner', 'admin', 'rabbi']);
+  expect(communicationsRouteDescriptor.allowedRoles).toEqual(['owner', 'admin']);
   expect(typeof communicationsRouteDescriptor.load).toBe('function');
-  expect(typeof contactCommunicationsTabDescriptor.load).toBe('function');
-  expect(communicationsRouteDescriptor.load).toBe(contactCommunicationsTabDescriptor.load);
 });
 
 test('CRM overview does not request Communications without explicit descriptor load', async ({

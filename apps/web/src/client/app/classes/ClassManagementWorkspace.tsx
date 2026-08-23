@@ -56,6 +56,7 @@ type Props = {
   onSelectOccurrence: (occurrenceKey: string) => void;
   onRefreshOccurrences: (preferredOccurrenceKey?: string | null) => Promise<void> | void;
   onNavigate: (href: string) => void;
+  dailyFlow?: boolean;
 };
 
 type SeriesFormState = {
@@ -107,6 +108,7 @@ export function ClassManagementWorkspace({
   onSelectOccurrence,
   onRefreshOccurrences,
   onNavigate,
+  dailyFlow = false,
 }: Props) {
   const [series, setSeries] = useState<ClassSeries[]>([]);
   const [managedOccurrence, setManagedOccurrence] = useState<ManagedClassOccurrence | null>(null);
@@ -496,6 +498,7 @@ export function ClassManagementWorkspace({
       {selector}
       {section === 'classes' && (
         <ClassesSection
+          dailyFlow={dailyFlow}
           series={series}
           selectedSeriesKey={selectedSeriesKey}
           form={seriesForm}
@@ -537,6 +540,7 @@ export function ClassManagementWorkspace({
           <LoadingState label="Loading occurrence details" />
         ) : (
           <OccurrencesSection
+            dailyFlow={dailyFlow}
             series={activeSeries}
             occurrence={managedOccurrence}
             form={occurrenceForm}
@@ -620,6 +624,7 @@ export function ClassManagementWorkspace({
 }
 
 function ClassesSection({
+  dailyFlow,
   series,
   selectedSeriesKey,
   form,
@@ -635,6 +640,7 @@ function ClassesSection({
   onOpen,
   onBack,
 }: {
+  dailyFlow: boolean;
   series: ClassSeries[];
   selectedSeriesKey: string | null;
   form: SeriesFormState;
@@ -668,7 +674,7 @@ function ClassesSection({
           <Button type="button" onClick={onBack}>
             Back to Classes
           </Button>
-        ) : !showForm ? (
+        ) : !showForm && !dailyFlow ? (
           <Button type="button" variant="primary" onClick={onShowCreate}>
             Create class
           </Button>
@@ -852,6 +858,7 @@ function ClassesSection({
 }
 
 function OccurrencesSection({
+  dailyFlow,
   series,
   occurrence,
   form,
@@ -868,6 +875,7 @@ function OccurrencesSection({
   onRefreshZoom,
   onGoToClasses,
 }: {
+  dailyFlow: boolean;
   series: ClassSeries[];
   occurrence: ManagedClassOccurrence | null;
   form: OccurrenceFormState;
@@ -904,7 +912,7 @@ function OccurrencesSection({
           <h2>Occurrences</h2>
           <p>Schedule, reschedule, complete, or cancel one exact class meeting.</p>
         </div>
-        {!showCreate && (
+        {!showCreate && !dailyFlow && (
           <Button type="button" variant="primary" onClick={onShowCreate}>
             Create occurrence
           </Button>

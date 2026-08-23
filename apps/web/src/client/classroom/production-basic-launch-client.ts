@@ -1,50 +1,58 @@
-export type ProductionBasicLaunchArtifact = {
+type ProductionBasicArtifactBase = {
   mode: 'production_basic';
-  role: 0 | 1;
   sdk_web_version: string;
   meeting_number: string;
   meeting_password: string;
   signature: string;
   user_name: string;
-  leave_path: '/app/student' | '/app/live-console';
   issued_at: string;
   expires_at: string;
-  zak?: string;
   raw_join_url_present: false;
   video_start_model: 'PARTICIPANT_CONSENT';
 };
 
-export async function readProductionBasicReadiness(csrfToken: string): Promise<boolean> {
-  const response = await fetch('/api/v1/classroom/production-basic/status', {
-    credentials: 'same-origin',
-    headers: { 'x-csrf-token': csrfToken },
-  });
-  const payload = (await response.json()) as { success?: boolean; data?: { available?: boolean } };
-  return response.ok && payload.success === true && payload.data?.available === true;
+export type StudentProductionBasicLaunchArtifact = ProductionBasicArtifactBase & {
+  role: 0;
+  leave_path: '/app/student';
+  zak?: never;
+};
+
+export type HostProductionBasicLaunchArtifact = ProductionBasicArtifactBase & {
+  role: 1;
+  leave_path: '/app/live-console';
+  zak: string;
+};
+
+const STUDENT_ENDPOINT = '/api/v1/portals/student/classroom/production-basic' as const;
+const HOST_ENDPOINT = '/api/v1/admin/classroom/production-basic' as const;
+
+export async function readStudentProductionBasicReadiness(csrfToken: string): Promise<boolean> {
+  return readReadiness(`${STUDENT_ENDPOINT}/status`, csrfToken);
 }
 
-/** Call only from an explicit Join or Start control. It never runs on navigation. */
-export async function requestProductionBasicLaunch(csrfToken: string) {
-  const response = await fetch('/api/v1/classroom/production-basic/launch', {
-    method: 'POST',
-    credentials: 'same-origin',
-    headers: { 'x-csrf-token': csrfToken },
-  });
-  const payload = (await response.json()) as
-    | { success: true; data: { launch_artifact: ProductionBasicLaunchArtifact } }
-    | { success: false; message?: string };
-  if (!response.ok || payload.success !== true) {
-    throw new Error('Classroom is unavailable.');
-  }
-  if (payload.data.launch_artifact.raw_join_url_present) {
-    throw new Error('Classroom launch response is invalid.');
-  }
-  return payload.data.launch_artifact;
+export async function readHostProductionBasicReadiness(csrfToken: string): Promise<boolean> {
+  return readReadiness(`${HOST_ENDPOINT}/status`, csrfToken);
+}
+
+export async function requestStudentProductionBasicLaunch(
+  csrfToken: string,
+): Promise<StudentProductionBasicLaunchArtifact> {
+  const artifact = await requestArtifact(`${STUDENT_ENDPOINT}/launch`, csrfToken);
+  if (!isStudentProductionBasicLaunchArtifact(artifact)) throw invalidLaunchResponse();
+  return artifact;
+}
+
+export async function requestHostProductionBasicLaunch(
+  csrfToken: string,
+): Promise<HostProductionBasicLaunchArtifact> {
+  const artifact = await requestArtifact(`${HOST_ENDPOINT}/launch`, csrfToken);
+  if (!isHostProductionBasicLaunchArtifact(artifact)) throw invalidLaunchResponse();
+  return artifact;
 }
 
 /** Confirm only after the host Meeting SDK join promise has resolved. */
 export async function confirmProductionBasicHostLive(csrfToken: string): Promise<void> {
-  const response = await fetch('/api/v1/classroom/production-basic/host-live', {
+  const response = await fetch(`${HOST_ENDPOINT}/host-live`, {
     method: 'POST',
     credentials: 'same-origin',
     headers: { 'x-csrf-token': csrfToken },
@@ -56,49 +64,71 @@ export async function confirmProductionBasicHostLive(csrfToken: string): Promise
   }
 }
 
-export async function clearProductionBasicHostLive(csrfToken: string): Promise<void> {
-  const response = await fetch('/api/v1/classroom/production-basic/host-ended', {
+export function isStudentProductionBasicLaunchArtifact(
+  value: unknown,
+): value is StudentProductionBasicLaunchArtifact {
+  return (
+    validBase(value) && value.role === 0 && value.leave_path === '/app/student' && !('zak' in value)
+  );
+}
+
+export function isHostProductionBasicLaunchArtifact(
+  value: unknown,
+): value is HostProductionBasicLaunchArtifact {
+  return (
+    validBase(value) &&
+    value.role === 1 &&
+    value.leave_path === '/app/live-console' &&
+    typeof value.zak === 'string' &&
+    value.zak.trim().length > 0
+  );
+}
+
+async function readReadiness(endpoint: string, csrfToken: string) {
+  const response = await fetch(endpoint, {
+    credentials: 'same-origin',
+    headers: { 'x-csrf-token': csrfToken },
+  });
+  const payload = (await response.json()) as { success?: boolean; data?: { available?: boolean } };
+  return response.ok && payload.success === true && payload.data?.available === true;
+}
+
+async function requestArtifact(endpoint: string, csrfToken: string): Promise<unknown> {
+  const response = await fetch(endpoint, {
     method: 'POST',
     credentials: 'same-origin',
     headers: { 'x-csrf-token': csrfToken },
   });
   const payload = (await response.json()) as
-    { success: true; data: { state: 'scheduled' } } | { success: false; message?: string };
-  if (!response.ok || payload.success !== true || payload.data.state !== 'scheduled') {
-    throw new Error('Live class status could not be cleared.');
-  }
+    { success: true; data: { launch_artifact: unknown } } | { success: false; message?: string };
+  if (!response.ok || payload.success !== true) throw new Error('Classroom is unavailable.');
+  return payload.data.launch_artifact;
 }
 
-/** Couples the durable live receipt to the real Meeting SDK lifecycle. */
-export async function startAndConfirmProductionBasicHostLive(input: {
-  csrfToken: string;
-  startMeeting: (onMeetingStatus: (status: 1 | 2 | 3 | 4) => void) => Promise<void>;
-  confirm?: ((csrfToken: string) => Promise<void>) | undefined;
-  clear?: ((csrfToken: string) => Promise<void>) | undefined;
-}): Promise<void> {
-  const confirm = input.confirm ?? confirmProductionBasicHostLive;
-  const clear = input.clear ?? clearProductionBasicHostLive;
-  let confirmed = false;
-  let disconnected = false;
-  let clearPromise: Promise<void> | null = null;
-
-  const clearConfirmedReceipt = () => {
-    if (!confirmed || clearPromise) return;
-    clearPromise = clear(input.csrfToken).catch(() => undefined);
-  };
-
-  await input.startMeeting((status) => {
-    if (status !== 3) return;
-    disconnected = true;
-    clearConfirmedReceipt();
-  });
-  if (disconnected) throw new Error('Meeting disconnected before live status was confirmed.');
-
-  await confirm(input.csrfToken);
-  confirmed = true;
-  if (disconnected) {
-    clearConfirmedReceipt();
-    await clearPromise;
-    throw new Error('Meeting disconnected while live status was being confirmed.');
+function validBase(value: unknown): value is ProductionBasicArtifactBase & Record<string, unknown> {
+  if (!isRecord(value)) return false;
+  if (
+    value.mode !== 'production_basic' ||
+    value.raw_join_url_present !== false ||
+    value.video_start_model !== 'PARTICIPANT_CONSENT'
+  ) {
+    return false;
   }
+  return [
+    'sdk_web_version',
+    'meeting_number',
+    'meeting_password',
+    'signature',
+    'user_name',
+    'issued_at',
+    'expires_at',
+  ].every((key) => typeof value[key] === 'string' && value[key].trim().length > 0);
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+}
+
+function invalidLaunchResponse() {
+  return new Error('Classroom launch response is invalid.');
 }

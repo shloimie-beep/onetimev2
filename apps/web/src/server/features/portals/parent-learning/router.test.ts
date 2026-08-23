@@ -42,7 +42,7 @@ const snapshot: ParentLearningSnapshot = {
       label: 'Join class',
       kind: 'class_launch',
       method: 'POST',
-      href: '/api/v1/classroom/production-basic/launch',
+      href: '/api/v1/portals/parent/classroom/production-basic/launch',
       launch_token_ref: null,
       expires_at: '2026-08-16T13:15:00.000Z',
     },
@@ -244,7 +244,7 @@ describe('Parent learning router', () => {
     );
     expect(snapshot.next_class?.launch_action).toMatchObject({
       method: 'POST',
-      href: '/api/v1/classroom/production-basic/launch',
+      href: '/api/v1/portals/parent/classroom/production-basic/launch',
       launch_token_ref: null,
     });
   });

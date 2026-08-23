@@ -15,12 +15,12 @@ export const landingContent = {
       'A fast-paced live-streamed class with Rabbi Eli Scheller. One perek each class day, with clear explanations and review.',
   },
   hero: {
-    eyebrow: 'LIVE, ONLINE + ON-DEMAND',
+    eyebrow: 'LIVE, ONLINE',
     headline: 'Help your son love learning Mishnayos.',
-    subheadline: 'Classes begin today. Sign up now.',
-    accessDetail: 'Try One Time free through September 11. No card required.',
+    subheadline: 'Create a free Family account and add up to three Student accounts.',
+    accessDetail: 'Free through September 11. No credit card required.',
     cta: {
-      label: 'Create Family Account',
+      label: 'Create Your Free Family Account',
       href: '/signup',
       analyticsEvent: 'landing.signup.cta.clicked',
       analyticsPlacement: 'hero',
@@ -30,8 +30,7 @@ export const landingContent = {
   },
   receive: {
     heading: 'Everything He Needs to Learn, Review, and Remember',
-    detailLine:
-      'Classes begin August 16. Live Sunday–Thursday at 7:00 p.m. Israel time, completing one perek each class day.',
+    detailLine: 'Live Sunday–Thursday at 7:00 p.m. Israel time.',
     eyebrow: 'A COMPLETE DIGITAL TORAH-LEARNING EXPERIENCE',
     iconLabel: 'Live class',
     title: 'Live Mishnayos—plus the tools to make it stick.',
@@ -41,8 +40,8 @@ export const landingContent = {
         body: 'Join Rabbi Scheller for a clear, engaging Mishnayos class.',
       },
       {
-        lead: 'REVIEW ANYTIME',
-        body: 'Catch up or review through the online class library.',
+        lead: 'CLASS LIBRARY',
+        body: 'The class library is being migrated. Recordings and review materials will begin appearing soon.',
       },
       {
         lead: 'REMEMBER THE LEARNING',
@@ -74,7 +73,7 @@ export const landingContent = {
       },
       {
         title: 'Retention',
-        body: 'Replays and review sheets help him remember the learning and return to the key ideas with confidence.',
+        body: 'Review materials will begin appearing soon as the class library is migrated.',
         image: '/assets/outcomes/retention-review-class-720.webp',
         srcset:
           '/assets/outcomes/retention-review-class-480.webp 480w, /assets/outcomes/retention-review-class-720.webp 720w, /assets/outcomes/retention-review-class-945.webp 945w',
@@ -121,7 +120,7 @@ export const landingContent = {
       },
       {
         title: 'Your child learns at his own pace',
-        body: 'Each Student signs in separately to join live class, watch replays, review, and ask questions.',
+        body: 'Each Student signs in separately to join live class and ask questions.',
         image: '/assets/how-it-works/student-learning-mishnayos-1254.webp',
         srcset:
           '/assets/how-it-works/student-learning-mishnayos-480.webp 480w, /assets/how-it-works/student-learning-mishnayos-800.webp 800w, /assets/how-it-works/student-learning-mishnayos-1254.webp 1254w',
@@ -149,7 +148,7 @@ export const landingContent = {
       },
       {
         lead: 'ADULT LEARNERS',
-        body: 'A Parent can learn directly from the Parent account without using any of the three child learner seats.',
+        body: 'A Parent can learn directly through the Parent account without using one of the three child Student accounts.',
       },
     ],
   },

@@ -2,7 +2,7 @@ import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createApp } from '../../../apps/web/src/server/app.ts';
 import { resolveCurrentClientRoute } from '../../../apps/web/src/client/app/router/registry.ts';
 import { loadConfig, type AppConfig } from '../../../packages/config/src/index.ts';
@@ -115,7 +115,7 @@ describe('OT-71 mounted parent and student portals', () => {
         '/app/support',
       );
       expect(admin.status).toBe(200);
-      expect(admin.json.return_to).toBe('/app/dashboard');
+      expect(admin.json.return_to).toBe('/app/today');
     } finally {
       await server.close();
     }
@@ -279,6 +279,12 @@ describe('OT-71 mounted parent and student portals', () => {
       createApp({ config: productionBasicConfig(), pool, distDir, clock: productionBasicNow }),
     );
     try {
+      for (const path of ['/launch', '/host-live', '/host-ended']) {
+        const retired = await fetch(`${server.baseUrl}/api/v1/classroom/production-basic${path}`, {
+          method: 'POST',
+        });
+        expect(retired.status, path).toBe(404);
+      }
       const student = await loginAs(server.baseUrl, 'student@example.test', 'StudentPass!234');
 
       await seedClassEnrollment('learner_beta', 'household_beta', 'cross-household');
@@ -294,20 +300,18 @@ describe('OT-71 mounted parent and student portals', () => {
 
       const admin = await loginAs(server.baseUrl, 'admin@example.test', 'AdminPass!234');
       const hostLive = await fetch(
-        `${server.baseUrl}/api/v1/classroom/production-basic/host-live`,
+        `${server.baseUrl}/api/v1/admin/classroom/production-basic/host-live`,
         {
           method: 'POST',
           headers: { cookie: admin.cookies, 'x-csrf-token': admin.json.csrf_token },
         },
       );
       expect(hostLive.status).toBe(200);
-      await expect(hostLive.json()).resolves.toEqual({
-        success: true,
-        data: { state: 'live' },
-      });
+      const hostLivePayload = (await hostLive.json()) as { success: true; data: { state: 'live' } };
+      expect(hostLivePayload).toMatchObject({ success: true, data: { state: 'live' } });
       await expectProductionBasicStatus(server.baseUrl, student.cookies, true);
       const studentLaunch = await fetch(
-        `${server.baseUrl}/api/v1/classroom/production-basic/launch`,
+        `${server.baseUrl}/api/v1/portals/student/classroom/production-basic/launch`,
         {
           method: 'POST',
           headers: { cookie: student.cookies, 'x-csrf-token': student.json.csrf_token },
@@ -321,6 +325,7 @@ describe('OT-71 mounted parent and student portals', () => {
             mode: 'production_basic',
             role: 0,
             leave_path: '/app/student',
+            user_name: 'Alpha Learner',
             raw_join_url_present: false,
           },
         },
@@ -344,36 +349,225 @@ describe('OT-71 mounted parent and student portals', () => {
       await expectProductionBasicStatus(server.baseUrl, student.cookies, false);
       await expectProductionBasicLaunchStatus(server.baseUrl, student, 403);
 
-      const liveVersion = await productionBasicOccurrenceVersion();
-      const hostEnded = await fetch(
-        `${server.baseUrl}/api/v1/classroom/production-basic/host-ended`,
-        {
-          method: 'POST',
-          headers: { cookie: admin.cookies, 'x-csrf-token': admin.json.csrf_token },
-        },
-      );
-      expect(hostEnded.status).toBe(200);
-      await expect(hostEnded.json()).resolves.toEqual({
-        success: true,
-        data: { state: 'scheduled' },
-      });
-      await expectProductionBasicStatus(server.baseUrl, student.cookies, false);
+      for (const path of [
+        'host-end-attempt',
+        'host-end-unknown',
+        'host-end-confirmed',
+        'host-end-status',
+        'host-end-cleanup',
+        'host-ended',
+      ]) {
+        const response = await fetch(
+          `${server.baseUrl}/api/v1/admin/classroom/production-basic/${path}`,
+          {
+            method: path === 'host-end-status' ? 'GET' : 'POST',
+            headers: { cookie: admin.cookies },
+          },
+        );
+        expect(response.status, path).toBe(404);
+      }
+    } finally {
+      await server.close();
+    }
+  });
 
-      const clearedVersion = await productionBasicOccurrenceVersion();
-      expect(clearedVersion).toBe(liveVersion + 1);
-      const hostEndedRetry = await fetch(
-        `${server.baseUrl}/api/v1/classroom/production-basic/host-ended`,
+  it('revokes and clears conflicting valid Student and Admin browser contexts before launch', async () => {
+    const authServer = await listenForTest(createApp({ config, pool, distDir }));
+    const student = await loginAs(authServer.baseUrl, 'student@example.test', 'StudentPass!234');
+    await authServer.close();
+
+    const adminContext = {
+      adultId: 'adult-conflicting-admin',
+      normalizedEmail: 'admin@example.test',
+      ownerDisplayName: 'Admin User',
+      ownedHouseholdCount: 0,
+      memberships: ['admin'] as const,
+      session: {
+        sessionId: 'adult-session-conflict',
+        product: 'one_time_mishnayos',
+        runtimeTier: 'isolated_staging',
+        verificationEnvironmentId: 'ci',
+        humanAccountId: 'human-conflicting-admin',
+        activeRole: 'admin' as const,
+        activeHouseholdId: null,
+        securityVersion: 1,
+        version: 1,
+        idleExpiresAt: '2026-08-20T18:00:00.000Z',
+        absoluteExpiresAt: '2026-08-21T18:00:00.000Z',
+        revokedAt: null,
+        revocationReason: null,
+        createdAt: '2026-08-20T10:00:00.000Z',
+        updatedAt: '2026-08-20T10:00:00.000Z',
+      },
+      household: null,
+    };
+    const rotateCookieHeader = vi.fn(async () => ({ revoked: true as const }));
+    const v21AdultSessionRuntime = {
+      resolveCookieHeader: async () => ({ status: 'resolved' as const, context: adminContext }),
+      rotateCookieHeader,
+    } as never;
+    const server = await listenForTest(
+      createApp({
+        config: productionBasicConfig(),
+        pool,
+        distDir,
+        clock: productionBasicNow,
+        v21AdultSessionRuntime,
+      }),
+    );
+    try {
+      const response = await fetch(
+        `${server.baseUrl}/api/v1/portals/student/classroom/production-basic/launch`,
         {
           method: 'POST',
-          headers: { cookie: admin.cookies, 'x-csrf-token': admin.json.csrf_token },
+          headers: {
+            cookie: `${student.cookies}; __Host-onetime-session=admin-v21`,
+            'x-csrf-token': student.json.csrf_token,
+          },
         },
       );
-      expect(hostEndedRetry.status).toBe(200);
-      await expect(hostEndedRetry.json()).resolves.toEqual({
-        success: true,
-        data: { state: 'scheduled' },
+      expect(response.status).toBe(409);
+      await expect(response.json()).resolves.toEqual({
+        success: false,
+        code: 'SESSION_CONTEXT_CONFLICT',
+        message: 'Your session context changed. Please sign in again.',
       });
-      expect(await productionBasicOccurrenceVersion()).toBe(clearedVersion);
+      expect(response.headers.getSetCookie()).toEqual(
+        expect.arrayContaining([
+          expect.stringContaining('__Host-onetime-session='),
+          expect.stringContaining('otcrm_session='),
+        ]),
+      );
+      expect(rotateCookieHeader).toHaveBeenCalledOnce();
+      const legacyReadback = await pool.query(
+        `SELECT revoked_at
+           FROM onetime.user_sessions
+          WHERE account_key = $1
+            AND product_key = $2
+            AND user_key = $3
+          ORDER BY created_at DESC
+          LIMIT 1`,
+        [config.accountKey, config.productKey, studentUserKey],
+      );
+      expect(legacyReadback.rows[0]?.revoked_at).toBeInstanceOf(Date);
+    } finally {
+      await server.close();
+    }
+  });
+
+  it('revokes the adult context when a Student successfully signs in', async () => {
+    const rotateCookieHeader = vi.fn(async () => ({ revoked: true as const }));
+    const v21AdultSessionRuntime = {
+      resolveCookieHeader: async () => ({
+        status: 'resolved' as const,
+        context: conflictingAdminContext(),
+      }),
+      recognizedLoginEmail: async () => ({ status: 'unrecognized' as const }),
+      rotateCookieHeader,
+    } as never;
+    const server = await listenForTest(
+      createApp({ config, pool, distDir, v21AdultSessionRuntime }),
+    );
+    try {
+      const csrf = await getLoginCsrf(server.baseUrl);
+      const response = await fetch(`${server.baseUrl}/api/v1/auth/login`, {
+        method: 'POST',
+        headers: {
+          cookie: `${csrf.cookies}; __Host-onetime-session=admin-v21`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          identifier: 'student@example.test',
+          password: 'StudentPass!234',
+          csrf_token: csrf.token,
+        }),
+      });
+      expect(response.status).toBe(200);
+      await expect(response.json()).resolves.toMatchObject({
+        success: true,
+        user: { role: 'student' },
+      });
+      expect(rotateCookieHeader).toHaveBeenCalledOnce();
+      expect(response.headers.getSetCookie()).toEqual(
+        expect.arrayContaining([
+          expect.stringContaining('__Host-onetime-session='),
+          expect.stringContaining('otcrm_session='),
+        ]),
+      );
+    } finally {
+      await server.close();
+    }
+  });
+
+  it('revokes the Student context when an Admin successfully signs in', async () => {
+    const authServer = await listenForTest(createApp({ config, pool, distDir }));
+    const student = await loginAs(authServer.baseUrl, 'student@example.test', 'StudentPass!234');
+    await authServer.close();
+
+    const v21AdultSessionRuntime = {
+      recognizedLoginEmail: async () => ({
+        status: 'recognized' as const,
+        normalized_email: 'v21-admin-only@example.test',
+      }),
+      login: async () => ({
+        handled: true as const,
+        authenticated: true as const,
+        browser_session_token: 'new-admin-browser-token',
+        csrf_token: `c1.${'a'.repeat(43)}.${'b'.repeat(43)}`,
+        expires_at: '2026-08-21T18:00:00.000Z',
+        user: {
+          adult_id: 'adult_portal_admin',
+          human_account_id: 'human_portal_admin',
+          email: 'v21-admin-only@example.test',
+          display_name: 'Admin User',
+        },
+        household: null,
+        memberships: ['admin'] as const,
+        active_role: 'admin' as const,
+        role_selection_required: false,
+        household_selection_required: false,
+      }),
+    } as never;
+    const server = await listenForTest(
+      createApp({ config, pool, distDir, v21AdultSessionRuntime }),
+    );
+    try {
+      const csrf = await getLoginCsrf(server.baseUrl);
+      const response = await fetch(`${server.baseUrl}/api/v1/auth/login`, {
+        method: 'POST',
+        headers: {
+          cookie: mergeCookies(student.cookies, csrf.cookies),
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          identifier: 'v21-admin-only@example.test',
+          password: 'valid-admin-password',
+          csrf_token: csrf.token,
+        }),
+      });
+      expect(response.status).toBe(200);
+      await expect(response.json()).resolves.toMatchObject({
+        success: true,
+        session_model: 'v21',
+        user: { role: 'admin' },
+      });
+      const legacyReadback = await pool.query(
+        `SELECT revoked_at
+           FROM onetime.user_sessions
+          WHERE account_key = $1
+            AND product_key = $2
+            AND user_key = $3
+          ORDER BY created_at DESC
+          LIMIT 1`,
+        [config.accountKey, config.productKey, studentUserKey],
+      );
+      expect(legacyReadback.rows[0]?.revoked_at).toBeInstanceOf(Date);
+      expect(response.headers.getSetCookie()).toEqual(
+        expect.arrayContaining([
+          expect.stringContaining('__Host-onetime-session='),
+          expect.stringContaining('otcrm_session='),
+        ]),
+      );
     } finally {
       await server.close();
     }
@@ -972,7 +1166,7 @@ describe('OT-71 mounted parent and student portals', () => {
       expect(switchBackToAdmin.status).toBe(200);
       await expect(switchBackToAdmin.json()).resolves.toMatchObject({
         active_role: 'admin',
-        return_to: '/app/dashboard',
+        return_to: '/app/today',
       });
       const rotatedAdminCookie = switchBackToAdmin.headers
         .getSetCookie()
@@ -1692,6 +1886,34 @@ async function seedPortalRecords() {
 
 const productionBasicNow = () => new Date('2026-08-12T10:30:00.000Z');
 
+function conflictingAdminContext() {
+  return {
+    adultId: 'adult-conflicting-admin',
+    normalizedEmail: 'admin@example.test',
+    ownerDisplayName: 'Admin User',
+    ownedHouseholdCount: 0,
+    memberships: ['admin'] as const,
+    session: {
+      sessionId: 'adult-session-conflict',
+      product: 'one_time_mishnayos' as const,
+      runtimeTier: 'isolated_staging' as const,
+      verificationEnvironmentId: 'ci' as const,
+      humanAccountId: 'human-conflicting-admin',
+      activeRole: 'admin' as const,
+      activeHouseholdId: null,
+      securityVersion: 1,
+      version: 1,
+      idleExpiresAt: '2026-08-20T18:00:00.000Z',
+      absoluteExpiresAt: '2026-08-21T18:00:00.000Z',
+      revokedAt: null,
+      revocationReason: null,
+      createdAt: '2026-08-20T10:00:00.000Z',
+      updatedAt: '2026-08-20T10:00:00.000Z',
+    },
+    household: null,
+  };
+}
+
 function productionBasicConfig() {
   const meetingId = 'production-basic-recurring-meeting';
   return loadConfig(
@@ -1790,24 +2012,13 @@ async function seedLegacyOccurrenceEntitlement() {
   );
 }
 
-async function productionBasicOccurrenceVersion() {
-  const result = await pool.query<{ version: number }>(
-    `SELECT version
-       FROM onetime.class_occurrences
-      WHERE account_key = $1
-        AND product_key = $2
-        AND occurrence_key = 'production-basic-current'`,
-    [config.accountKey, config.productKey],
-  );
-  const version = result.rows[0]?.version;
-  if (typeof version !== 'number') throw new Error('production-basic occurrence version missing');
-  return version;
-}
-
 async function expectProductionBasicStatus(baseUrl: string, cookies: string, available: boolean) {
-  const response = await fetch(`${baseUrl}/api/v1/classroom/production-basic/status`, {
-    headers: { cookie: cookies },
-  });
+  const response = await fetch(
+    `${baseUrl}/api/v1/portals/student/classroom/production-basic/status`,
+    {
+      headers: { cookie: cookies },
+    },
+  );
   expect(response.status).toBe(200);
   await expect(response.json()).resolves.toEqual({
     success: true,
@@ -1828,10 +2039,13 @@ async function expectProductionBasicLaunchStatus(
   session: { cookies: string; json: { csrf_token: string } },
   expectedStatus: 403 | 503,
 ) {
-  const response = await fetch(`${baseUrl}/api/v1/classroom/production-basic/launch`, {
-    method: 'POST',
-    headers: { cookie: session.cookies, 'x-csrf-token': session.json.csrf_token },
-  });
+  const response = await fetch(
+    `${baseUrl}/api/v1/portals/student/classroom/production-basic/launch`,
+    {
+      method: 'POST',
+      headers: { cookie: session.cookies, 'x-csrf-token': session.json.csrf_token },
+    },
+  );
   expect(response.status).toBe(expectedStatus);
   await expect(response.json()).resolves.toEqual({
     success: false,

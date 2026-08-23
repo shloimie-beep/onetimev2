@@ -99,7 +99,7 @@ test('W12-03 parent and three separate learners complete portal journeys', async
   await expect(parentPage.getByText('3 active learners')).toBeVisible();
   await expect(parentPage.getByRole('link', { name: 'Billing' })).toHaveCount(0);
   await expect(parentPage.getByRole('heading', { name: 'Learning access' })).toHaveCount(0);
-  await parentPage.getByLabel('Primary navigation').getByRole('link', { name: 'Students' }).click();
+  await parentPage.getByLabel('Primary navigation').getByRole('link', { name: 'Family' }).click();
   await parentPage.getByRole('button', { name: /W12 Learner One/i }).click();
 
   await parentPage.getByRole('button', { name: 'Reset' }).click();
@@ -117,7 +117,7 @@ test('W12-03 parent and three separate learners complete portal journeys', async
   await dialog.getByRole('button', { name: 'Restore' }).click();
   await expect(parentPage.getByText('Status: Active')).toBeVisible();
 
-  await parentPage.getByRole('link', { name: 'Classes & materials' }).click();
+  await parentPage.getByLabel('Primary navigation').getByRole('link', { name: 'Learning' }).click();
   const parentMaterials = parentPage.getByRole('region', { name: 'Classes & materials' });
   await expect(parentMaterials.getByText('W12 Fictional Recording')).toBeVisible();
   await expect(parentMaterials.getByText('W12 Fictional Review Sheet')).toBeVisible();
@@ -128,9 +128,9 @@ test('W12-03 parent and three separate learners complete portal journeys', async
   await expect(parentPage.getByRole('button', { name: /join|open class/i })).toHaveCount(0);
   await parentPage.getByRole('link', { name: 'Back to calendar' }).click();
   await expect(parentPage.getByRole('heading', { name: 'Upcoming classes' })).toBeVisible();
-  await parentPage.getByRole('link', { name: 'Students' }).click();
+  await parentPage.getByLabel('Primary navigation').getByRole('link', { name: 'Family' }).click();
   await parentPage.getByRole('button', { name: /W12 Learner Two/i }).click();
-  await parentPage.getByRole('link', { name: 'Classes & materials' }).click();
+  await parentPage.getByLabel('Primary navigation').getByRole('link', { name: 'Learning' }).click();
   await expect(parentMaterials.getByText('W12 Fictional Recording')).toBeVisible();
 
   const parentLaunch = await samePagePostJson(
@@ -165,7 +165,14 @@ test('W12-03 parent and three separate learners complete portal journeys', async
     await expect(studentPage.getByRole('button', { name: /open class|join class/i })).toBeVisible();
     await studentPage.getByRole('link', { name: 'Back to calendar' }).click();
     await expect(studentPage.getByRole('heading', { name: 'Calendar' })).toBeVisible();
-    await studentPage.getByRole('link', { name: 'Library' }).click();
+    await studentPage
+      .getByLabel('Primary navigation')
+      .getByRole('link', { name: 'Learning' })
+      .click();
+    await studentPage
+      .getByLabel('Learning navigation')
+      .getByRole('link', { name: 'Library' })
+      .click();
     const studentLibrary = studentPage.getByRole('region', { name: 'Library' });
     await expect(studentLibrary.getByText('W12 Fictional Recording')).toBeVisible();
     await expect(studentLibrary.getByText('W12 Fictional Review Sheet')).toBeVisible();

@@ -1,51 +1,59 @@
-# One Time One Time
+# One Time
 
-Standalone One Time Mishnayos runtime.
+One Time is a standalone Mishnayos learning application for Parents, Students, and
+Rabbi-led classroom operations. It is not the BNA workspace, and it does not include
+the later Platform Console control plane.
 
-The application is a Node.js 24 + TypeScript modular monolith with Express 5,
-Vite-built public assets, PostgreSQL through `pg`, forward-only migrations, and
-a transactional outbox worker.
+The runtime is a Node.js 24 + TypeScript modular monolith: Express 5, Vite-built
+public assets, PostgreSQL through pg, checksummed forward-only migrations, and a
+transactional outbox worker. Public and authenticated application bundles are kept
+separate.
 
-## Canonical Control Plane
+## Start here
 
-- Read `AGENTS.md`, then `ops/goals/CURRENT.yaml` and the goal files it
-  references.
-- `ops/goals/OT-LAUNCH-01/BOARD.yaml` is the only current status map.
-- `integrations/highlevel/registry/workflow-registry.yaml` is the single
-  editable HighLevel automation inventory.
-- `integrations/highlevel/workflows.yaml`,
-  `integrations/highlevel/registry/current.json`, and
-  `integrations/highlevel/registry/WORKFLOW-CONTROL-REPORT.md` are generated
-  projections and must not be edited as status.
+- [Repository guide](AGENTS.md) defines stable boundaries, safety, branch, and
+  verification rules.
+- [OpenSpec capabilities](openspec/specs/) are the current product truth. Each
+  material behavior change belongs to one track and, when needed, one change folder.
+- [DESIGN.md](DESIGN.md) is the durable visual contract derived from the existing
+  brand manifest.
+- [Authority index](ops/launch/ONE-TIME-AUTHORITY-INDEX.md) distinguishes current
+  authority from preserved historical launch evidence.
+- GitHub Issues/Projects and PRs are the execution record: use the linked task and
+  exact remote head to choose an integration base.
 
-This README is repository orientation only. Do not infer current readiness,
-deployment state, or provider authority from historical PRs or evidence files.
+Historical BOARD.yaml files are evidence, not the current status map or task board.
+Do not reactivate a Markdown/YAML Board for execution tracking.
 
-## Local Workflow
+## Local setup
 
-```bash
-npm install
-npm run build
-npm run db:migrate
-npm run dev
-```
+    npm install
+    npm run build
+    npm run db:migrate
+    npm run dev
 
-Use `DATABASE_URL` for a local or test PostgreSQL database. Tests use an
-in-memory PostgreSQL-compatible harness and still exercise the SQL migrations
-and repository transaction boundaries.
+Use DATABASE_URL for a local or test PostgreSQL database. The test suites use an
+in-memory PostgreSQL-compatible harness while still exercising migrations and
+repository transaction boundaries.
 
 ## Verification
 
-```bash
-npm run secret:scan
-npm run format
-npm run lint
-npm run typecheck
-npm run unit
-npm run integration
-npm run e2e
-npm run accessibility
-npm run performance
-```
+    npm run source-truth:check
+    npm run openspec:validate
+    npm run design:lint
+    npm run secret:scan
+    npm run format
+    npm run lint
+    npm run typecheck
+    npm run integration
+    npm run build
 
-`npm run verify` runs the full local gate.
+npm run verify is the broader local gate. Run focused tests during iteration and
+add browser checks only when the touched surface requires them.
+
+## Canonical integration path
+
+Re-fetch the GitHub task's exact base, create a focused topic branch, and open one
+Draft PR to the named integration branch. Do not branch feature work from main,
+push to main, force-push, or use a synthetic merge SHA. Stage explicit paths only;
+the Windows checkout must never use git add -A.

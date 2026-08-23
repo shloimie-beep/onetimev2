@@ -1,10 +1,9 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
-  clearProductionBasicHostLive,
   confirmProductionBasicHostLive,
-  readProductionBasicReadiness,
-  requestProductionBasicLaunch,
-  startAndConfirmProductionBasicHostLive,
+  readStudentProductionBasicReadiness,
+  requestHostProductionBasicLaunch,
+  requestStudentProductionBasicLaunch,
 } from './production-basic-launch-client.ts';
 
 describe('production-basic launch client', () => {
@@ -38,10 +37,10 @@ describe('production-basic launch client', () => {
     );
     vi.stubGlobal('fetch', fetchMock);
     expect(fetchMock).not.toHaveBeenCalled();
-    await requestProductionBasicLaunch('csrf-derived');
+    await requestStudentProductionBasicLaunch('csrf-derived');
     expect(fetchMock).toHaveBeenCalledOnce();
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/v1/classroom/production-basic/launch',
+      '/api/v1/portals/student/classroom/production-basic/launch',
       expect.objectContaining({
         method: 'POST',
         headers: { 'x-csrf-token': 'csrf-derived' },
@@ -66,10 +65,36 @@ describe('production-basic launch client', () => {
           ),
       ),
     );
-    await expect(requestProductionBasicLaunch('csrf-derived')).rejects.toThrow(
+    await expect(requestStudentProductionBasicLaunch('csrf-derived')).rejects.toThrow(
       'Classroom launch response is invalid.',
     );
   });
+
+  it('rejects a hostile HTTP-200 role-1 artifact in the Student client', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => artifactResponse({ role: 1, leave_path: '/app/live-console', zak: 'zak' })),
+    );
+    await expect(requestStudentProductionBasicLaunch('csrf-derived')).rejects.toThrow(
+      'Classroom launch response is invalid.',
+    );
+  });
+
+  it.each([
+    { role: 0, leave_path: '/app/student' },
+    { role: 1, leave_path: '/app/live-console' },
+  ])(
+    'rejects a hostile participant or missing-ZAK artifact in the Host client',
+    async (hostile) => {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn(async () => artifactResponse(hostile)),
+      );
+      await expect(requestHostProductionBasicLaunch('csrf-derived')).rejects.toThrow(
+        'Classroom launch response is invalid.',
+      );
+    },
+  );
 
   it('reads only neutral server readiness during navigation and never launches', async () => {
     const fetchMock = vi.fn(
@@ -79,9 +104,9 @@ describe('production-basic launch client', () => {
         ),
     );
     vi.stubGlobal('fetch', fetchMock);
-    await expect(readProductionBasicReadiness('csrf-derived')).resolves.toBe(false);
+    await expect(readStudentProductionBasicReadiness('csrf-derived')).resolves.toBe(false);
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/v1/classroom/production-basic/status',
+      '/api/v1/portals/student/classroom/production-basic/status',
       expect.objectContaining({ credentials: 'same-origin' }),
     );
   });
@@ -89,13 +114,19 @@ describe('production-basic launch client', () => {
   it('confirms live state with one body-less request after the host join succeeds', async () => {
     const fetchMock = vi.fn(
       async () =>
-        new Response(JSON.stringify({ success: true, data: { state: 'live' } }), { status: 200 }),
+        new Response(
+          JSON.stringify({
+            success: true,
+            data: { state: 'live' },
+          }),
+          { status: 200 },
+        ),
     );
     vi.stubGlobal('fetch', fetchMock);
 
     await expect(confirmProductionBasicHostLive('csrf-derived')).resolves.toBeUndefined();
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/v1/classroom/production-basic/host-live',
+      '/api/v1/admin/classroom/production-basic/host-live',
       expect.objectContaining({
         method: 'POST',
         credentials: 'same-origin',
@@ -104,52 +135,31 @@ describe('production-basic launch client', () => {
     );
     const [, requestInit] = (fetchMock.mock.calls as unknown as Array<[string, RequestInit]>)[0]!;
     expect(requestInit).not.toHaveProperty('body');
-  });
-
-  it('clears live state with one body-less request', async () => {
-    const fetchMock = vi.fn(
-      async () =>
-        new Response(JSON.stringify({ success: true, data: { state: 'scheduled' } }), {
-          status: 200,
-        }),
-    );
-    vi.stubGlobal('fetch', fetchMock);
-
-    await expect(clearProductionBasicHostLive('csrf-derived')).resolves.toBeUndefined();
-    expect(fetchMock).toHaveBeenCalledWith(
-      '/api/v1/classroom/production-basic/host-ended',
-      expect.objectContaining({
-        method: 'POST',
-        credentials: 'same-origin',
-        headers: { 'x-csrf-token': 'csrf-derived' },
-      }),
-    );
-    const [, requestInit] = (fetchMock.mock.calls as unknown as Array<[string, RequestInit]>)[0]!;
-    expect(requestInit).not.toHaveProperty('body');
-  });
-
-  it('confirms only after status 2 and clears once on a later status 3', async () => {
-    let emitStatus: ((status: 1 | 2 | 3 | 4) => void) | undefined;
-    const confirm = vi.fn(async () => undefined);
-    const clear = vi.fn(async () => undefined);
-
-    await startAndConfirmProductionBasicHostLive({
-      csrfToken: 'csrf-derived',
-      startMeeting: async (onMeetingStatus) => {
-        emitStatus = onMeetingStatus;
-        onMeetingStatus(2);
-      },
-      confirm,
-      clear,
-    });
-    expect(confirm).toHaveBeenCalledOnce();
-    expect(clear).not.toHaveBeenCalled();
-
-    emitStatus?.(4);
-    emitStatus?.(3);
-    emitStatus?.(3);
-    await Promise.resolve();
-    expect(clear).toHaveBeenCalledOnce();
-    expect(clear).toHaveBeenCalledWith('csrf-derived');
   });
 });
+
+function artifactResponse(overrides: Record<string, unknown>) {
+  return new Response(
+    JSON.stringify({
+      success: true,
+      data: {
+        launch_artifact: {
+          mode: 'production_basic',
+          role: 0,
+          sdk_web_version: '3.13.2',
+          meeting_number: '123',
+          meeting_password: 'pass',
+          signature: 'signature',
+          user_name: 'Student',
+          leave_path: '/app/student',
+          issued_at: '2026-08-12T10:00:00.000Z',
+          expires_at: '2026-08-12T10:15:00.000Z',
+          raw_join_url_present: false,
+          video_start_model: 'PARTICIPANT_CONSENT',
+          ...overrides,
+        },
+      },
+    }),
+    { status: 200 },
+  );
+}

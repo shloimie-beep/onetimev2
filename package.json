@@ -22,7 +22,7 @@
     "start:rabbi-telegram": "node --import tsx apps/telegram-bot/src/main.ts",
     "typecheck": "tsc --noEmit -p tsconfig.typecheck.json",
     "lint": "eslint .",
-    "format": "prettier --check .",
+    "format": "npm run openspec:generated:check && prettier --check .",
     "format:write": "prettier --write .",
     "brand:check": "tsx scripts/brand-system/check.ts",
     "brand:fixtures": "tsx scripts/brand-system/write-visual-fixture.ts",
@@ -33,7 +33,7 @@
     "test": "npm run unit && npm run integration",
     "e2e": "npm run build && playwright test tests/e2e",
     "accessibility": "npm run build && playwright test tests/accessibility",
-    "performance": "npm run build && playwright test tests/performance && tsx scripts/check-bundles.ts",
+    "performance": "npm run build && playwright test tests/performance --workers=1 && tsx scripts/check-bundles.ts",
     "verify": "npm run secret:scan && npm run format && npm run brand:check && npm run lint && npm run typecheck && npm run test && npm run e2e && npm run accessibility && npm run performance",
     "db:migrate": "tsx scripts/migrate.ts",
     "db:verify": "tsx scripts/verify-migrations.ts",
@@ -77,6 +77,10 @@
     "goal:pointer:sync": "tsx scripts/ops/validate-ot-launch-governance.ts --write-pointer",
     "goal:launch-status:check": "tsx scripts/ops/generate-operator-launch-status.ts --check",
     "goal:launch-status:sync": "tsx scripts/ops/generate-operator-launch-status.ts --write",
+    "source-truth:check": "node scripts/ops/check-repository-authority.mjs",
+    "openspec:generated:check": "node scripts/ops/check-openspec-generated.mjs",
+    "openspec:validate": "node scripts/ops/run-openspec.mjs validate --all --strict --no-interactive",
+    "design:lint": "node node_modules/@google/design.md/dist/index.js lint DESIGN.md",
     "highlevel:assets:reconcile": "tsx scripts/highlevel/reconcile-api-schema.ts",
     "highlevel:replit:apply-tags": "tsx scripts/highlevel/apply-replit-tags.ts",
     "highlevel:replit:reconcile": "tsx scripts/highlevel/reconcile-replit-subscribers.ts",
@@ -106,6 +110,8 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.10.2",
     "@eslint/js": "^9.31.0",
+    "@fission-ai/openspec": "1.10.0",
+    "@google/design.md": "0.4.0",
     "@playwright/test": "^1.54.1",
     "@types/express": "^5.0.3",
     "@types/node": "^24.0.14",
@@ -122,5 +128,10 @@
     "typescript-eslint": "^8.37.0",
     "vite": "^7.0.4",
     "vitest": "^3.2.4"
+  },
+  "overrides": {
+    "@fission-ai/openspec": {
+      "zod": "4.4.2"
+    }
   }
 }

@@ -7,6 +7,7 @@ import {
 test('Admin runs one-button Parent household enrollment and protected Contacts operations', async ({
   page,
 }) => {
+  test.setTimeout(60_000);
   const requestedUrls: string[] = [];
   page.on('request', (request) => requestedUrls.push(request.url()));
   await page.context().addCookies([

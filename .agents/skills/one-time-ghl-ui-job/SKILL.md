@@ -9,7 +9,8 @@ Agent Mode may change GHL only under an exact authorized job. GitHub is the cano
 
 ## Before opening or changing GHL
 
-1. Read the canonical GHL registry and the exact job specification referenced by the conductor.
+1. Read the canonical GHL registry and the exact provider-scoped job specification
+   linked by the current GitHub Issue or PR.
    `registry/workflow-registry.yaml` is the single editable automation inventory; also inspect its
    source-hashed generated `integrations/highlevel/workflows.yaml`/`registry/current.json` projections
    and generated `registry/WORKFLOW-CONTROL-REPORT.md`.

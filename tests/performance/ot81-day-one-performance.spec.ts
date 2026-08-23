@@ -91,8 +91,8 @@ test.describe('OT81 integrated 30-sample performance matrix', () => {
     await login(page, 'ot-parent@example.test', 'ParentPassword!234', '/app/parent');
     results.push(
       await measureRoute(page, 'parent_portal', async () => {
-        await page.goto('/app/parent');
-        await page.locator('#app-main').getByRole('heading', { name: 'Parent Portal' }).waitFor();
+        await page.goto('/app/parent', { waitUntil: 'domcontentloaded' });
+        await page.locator('[data-portal-role="parent"][data-state="ready"]').waitFor();
       }),
     );
 
@@ -100,8 +100,8 @@ test.describe('OT81 integrated 30-sample performance matrix', () => {
     await login(page, 'ot-student@example.test', 'StudentPassword!234', '/app/student');
     results.push(
       await measureRoute(page, 'student_portal', async () => {
-        await page.goto('/app/student');
-        await page.locator('#app-main').getByRole('heading', { name: 'Student Portal' }).waitFor();
+        await page.goto('/app/student', { waitUntil: 'domcontentloaded' });
+        await page.locator('[data-portal-role="student"][data-state="ready"]').waitFor();
       }),
     );
 

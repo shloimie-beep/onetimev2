@@ -24,11 +24,11 @@
     },
     {
       "path": "apps/web/src/server/app.ts",
-      "sha256": "54e8efb281688775e66de9933f3127ba7dc1be1db32922add262b89d39666a1a"
+      "sha256": "5a4186a6257974939138b1192942d57c1fda9072a5fd4c993e1d1003ad3cd1ad"
     },
     {
       "path": "apps/web/src/server/communications/register.ts",
-      "sha256": "978c8655c3cf2036cd09401f65cc7b6b40d875f2efa9824444525667987c97f3"
+      "sha256": "0e293e916a9927cf201c0669d157c832cab58b55cf2fc264ad1b44778de95642"
     },
     {
       "path": "apps/web/src/server/communications/workflow-readback.ts",
@@ -72,11 +72,11 @@
     },
     {
       "path": "apps/web/src/server/features/classroom/production-basic/router.ts",
-      "sha256": "f68a719a3554e96c4698a35a56f6cc854015fa628ce4a9906c3747e7c157ae99"
+      "sha256": "f2c19d80d209a7cbcb26839d094ce969d2052590fc6706f7859af771485545e9"
     },
     {
       "path": "apps/web/src/server/features/classroom/production-basic/service.ts",
-      "sha256": "2a8378aba0ca4fc58e90d43ad2316348e410e215d33e97e5a556b332198d5b9b"
+      "sha256": "d66bbce55380eec23096b17f62f8d3ae66ca2c85cb44d8a490b1cc740e1c905e"
     },
     {
       "path": "apps/web/src/server/features/learning/router.ts",
@@ -112,7 +112,11 @@
     },
     {
       "path": "apps/web/src/client/app/admin-ia.ts",
-      "sha256": "efe31b630d8283c7670e1451740fdf8f4c608386d6d7545f4dfda228e6da68bc"
+      "sha256": "df79360ff2e784e62d3447b99d5d7216fc772d5c9a7078f235b1ea471dafca9e"
+    },
+    {
+      "path": "apps/web/src/client/app/admin-directory/AdminDirectoryPanel.tsx",
+      "sha256": "b35049f676d742041729c1358f73d702eb4201c6421d679bfa771ae10593641d"
     },
     {
       "path": "apps/web/src/client/app/admin/learning/AdminLearningWorkspace.tsx",
@@ -128,35 +132,39 @@
     },
     {
       "path": "apps/web/src/client/app/communications/CommunicationsFeature.tsx",
-      "sha256": "6452c4765a6aa685101923b1c69386318a9c0fc24a46718fc3eac4fadcb61044"
+      "sha256": "2e27da6344a580e99da67ef8fce4cbe5973c4780a52ae2043c302b8570ab2784"
     },
     {
       "path": "apps/web/src/client/app/communications/WorkflowReadbackFeature.tsx",
-      "sha256": "4aaea28080adaf5fecb7dbec3af69414cc55da9f6f6803754e536285c1f2922f"
+      "sha256": "884d9cf9a9eae0f0acc2a1ad4e3d9cbce7f1445f9af4b130991b7715daf9a8f1"
     },
     {
       "path": "apps/web/src/client/app/crm-api.ts",
       "sha256": "85f238c61c912b2edd4134de5eb739c75519c68330c1652f173dd41cd39d7a39"
     },
     {
+      "path": "apps/web/src/client/app/classes/ClassManagementWorkspace.tsx",
+      "sha256": "003259a2e9f8948a424f39fd26f29d58caa5a73455bdd0797ea4a16663203c0a"
+    },
+    {
       "path": "apps/web/src/client/app/crm-entry.tsx",
-      "sha256": "7f53da86ddecf1ff4c4d2fede527bf8d57c5b88c4bdf02cbb1a54335ed2710b1"
+      "sha256": "b70dd61e70abac2ceceb36c7b99d7ccb64c845c850a6771b5519c459e8b95c00"
     },
     {
       "path": "apps/web/src/client/app/live-entry.tsx",
-      "sha256": "82d45278b09fb141120c33dd1ee8e19ba90b87f799c8867da3fc8d51ef22ac1c"
+      "sha256": "bcf098718739a784c6862ff2ef89bd1b75598159eca2482e0f84933b8de23304"
     },
     {
       "path": "apps/web/src/client/app/zoom-meeting-sdk-client.ts",
-      "sha256": "4b0dbe9a43093db1508c069c4d2ac07a5b92987e2f6f91b634c486a4f6c8733e"
+      "sha256": "d3bdcb245b4651ee8c49ac3cb5f4c979e0bb0ff8355f7f926685c27a345d57db"
     },
     {
       "path": "apps/web/src/client/app/portal-entry.tsx",
-      "sha256": "89fa843ddc540a62a079a2e4d5562efa8f9720c96335238ff9338efac1fe23b4"
+      "sha256": "73d741675c87e540d569aafd6bb6232f5d287d8cad11a515584dffd8eb2ea449"
     },
     {
       "path": "apps/web/src/client/app/student/classroom/StudentClassroomWorkspace.tsx",
-      "sha256": "a5c9e859d6a536535a6080d357b37b0b7615af658de3b54fe97d7d20b1549303"
+      "sha256": "749fcb0b82593e0d884a056a90bfc1ed5a7cf79cca10a1d47f491641a3dbb925"
     },
     {
       "path": "apps/web/src/client/app/student/classroom/api.ts",
@@ -164,7 +172,7 @@
     },
     {
       "path": "apps/web/src/client/app/student/library/StudentLibraryWorkspace.tsx",
-      "sha256": "5a662ecb28e677d50fb00e164cf848ee86b187fa0db6a0a5989c560101b82627"
+      "sha256": "28ba52fccb106368d60dbfc5fe1f1277cda433f314352f4a957cf28129d83db2"
     },
     {
       "path": "apps/web/src/client/app/student/privacy/StudentPrivacyWorkspace.tsx",
@@ -176,19 +184,19 @@
     },
     {
       "path": "apps/web/src/client/classroom/production-basic-launch-client.ts",
-      "sha256": "1e3c414ba1c551dfd6b32afda06823ab4ec2d24cc78c97f1eb88512ebc2afca6"
+      "sha256": "df19cba26052c6a13814323a00bc3965859e55915af08e58f79c7a496f76d1a3"
     },
     {
       "path": "apps/web/src/client/features/portals/PortalFeatures.tsx",
-      "sha256": "0c96e56f9a30cd505befeb34397f106a9c783a366a1112e35aa36e421ea431ae"
+      "sha256": "53f2eacb6e138e0ff6a99243836a83fa9e08547f962756f1779cefb519c52056"
     },
     {
       "path": "apps/web/src/client/app/router/registry.ts",
-      "sha256": "ea2f527d6f96d1e48b0d78fd064b904f9df76f4f0d56f6f60d4306fdf995a717"
+      "sha256": "016eca69db0b0787c4b05db9616f1917ea8f287208812a14ce203f6bcbccc8cc"
     },
     {
       "path": "apps/web/src/client/app/router/canonical-route-views.ts",
-      "sha256": "625050fe9136b00b12e1df9e8283b3ab2c5a99d84e9d4fe308a7389f4fd08dca"
+      "sha256": "cb63bccd337f8c42db99e66af27c18c82108a3b2690181f8348cd74e65dba0f3"
     },
     {
       "path": "apps/web/src/client/app/shell/AppShell.tsx",
@@ -208,7 +216,7 @@
     },
     {
       "path": "packages/brand-system/src/styles/communications.css",
-      "sha256": "634268790d495313234b013cfc6f43c308980fc087c116d29a947cb00e3f5fc6"
+      "sha256": "8cb6e232c0f120f349f2600c006f2276d997a0a8241e5d70135bee674aaf6fce"
     },
     {
       "path": "packages/brand-system/src/styles/react.css",
@@ -224,7 +232,7 @@
     },
     {
       "path": "packages/contracts/src/communications/index.ts",
-      "sha256": "176123e967c245764bd47115b4e8af656e72b6c0ea0538bd92417e242c329fa8"
+      "sha256": "3626b9005109644f73b2e01db4493c8e8b4e9f31c1b87563643770bde71747bf"
     },
     {
       "path": "packages/contracts/src/classroom/embedded/index.ts",
@@ -244,7 +252,7 @@
     },
     {
       "path": "scripts/build-public-pages.ts",
-      "sha256": "06e1533c8d1bb6d3015fbf05f06252cccb5a5f7ca8855ef75dc214f679fa61ee"
+      "sha256": "812ed0c0548f73c53e4fc4074cb7b0c0de93c07de31af83d2ded43c6a7e815ff"
     },
     {
       "path": "scripts/highlevel/workflow-registry-source.ts",
@@ -260,7 +268,7 @@
     },
     {
       "path": "packages/domain/src/landing/content.ts",
-      "sha256": "02127fa30666fb6ef96262148809d7da5c5f4ad6ff0395f12d3042e70d57fd77"
+      "sha256": "4d09243a5b90ef04bddc3488c8c166ad3a7032680055e4f65046e46404af2759"
     },
     {
       "path": "packages/domain/src/legal/content.ts",
@@ -685,7 +693,7 @@
       "roles": ["admin"],
       "handler": "admin.rt-adm-061",
       "readiness_state": "ready",
-      "handler_disposition": "mounted"
+      "handler_disposition": "bounded-alias"
     },
     {
       "route_id": "RT-ADM-062",
@@ -750,6 +758,126 @@
       "handler": "admin.rt-adm-069",
       "readiness_state": "ready",
       "handler_disposition": "bounded-alias"
+    },
+    {
+      "route_id": "RT-ADM-070",
+      "path": "/app/today",
+      "roles": ["admin", "rabbi"],
+      "handler": "admin.rt-adm-070",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
+    },
+    {
+      "route_id": "RT-ADM-071",
+      "path": "/app/learning/classroom",
+      "roles": ["admin", "rabbi"],
+      "handler": "admin.rt-adm-071",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
+    },
+    {
+      "route_id": "RT-ADM-072",
+      "path": "/app/learning/library",
+      "roles": ["admin", "rabbi"],
+      "handler": "admin.rt-adm-072",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
+    },
+    {
+      "route_id": "RT-ADM-073",
+      "path": "/app/learning/questions",
+      "roles": ["admin", "rabbi"],
+      "handler": "admin.rt-adm-073",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
+    },
+    {
+      "route_id": "RT-ADM-074",
+      "path": "/app/learning/attendance",
+      "roles": ["admin", "rabbi"],
+      "handler": "admin.rt-adm-074",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
+    },
+    {
+      "route_id": "RT-ADM-075",
+      "path": "/app/learning/recordings",
+      "roles": ["admin", "rabbi"],
+      "handler": "admin.rt-adm-075",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
+    },
+    {
+      "route_id": "RT-ADM-076",
+      "path": "/app/people/families",
+      "roles": ["admin"],
+      "handler": "admin.rt-adm-076",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
+    },
+    {
+      "route_id": "RT-ADM-077",
+      "path": "/app/people/parents",
+      "roles": ["admin"],
+      "handler": "admin.rt-adm-077",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
+    },
+    {
+      "route_id": "RT-ADM-078",
+      "path": "/app/people/students",
+      "roles": ["admin"],
+      "handler": "admin.rt-adm-078",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
+    },
+    {
+      "route_id": "RT-ADM-079",
+      "path": "/app/people/access",
+      "roles": ["admin"],
+      "handler": "admin.rt-adm-079",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
+    },
+    {
+      "route_id": "RT-ADM-080",
+      "path": "/app/people/audit",
+      "roles": ["admin"],
+      "handler": "admin.rt-adm-080",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
+    },
+    {
+      "route_id": "RT-ADM-081",
+      "path": "/app/account/profile",
+      "roles": ["admin", "rabbi"],
+      "handler": "admin.rt-adm-081",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
+    },
+    {
+      "route_id": "RT-ADM-082",
+      "path": "/app/account/security",
+      "roles": ["admin", "rabbi"],
+      "handler": "admin.rt-adm-082",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
+    },
+    {
+      "route_id": "RT-ADM-083",
+      "path": "/app/account/privacy",
+      "roles": ["admin", "rabbi"],
+      "handler": "admin.rt-adm-083",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
+    },
+    {
+      "route_id": "RT-ADM-084",
+      "path": "/app/operations/workflow-readback/:workflowId",
+      "roles": ["admin"],
+      "handler": "admin.rt-adm-084",
+      "readiness_state": "ready",
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-PAR-001",
@@ -949,7 +1077,7 @@
       "roles": ["student"],
       "handler": "student.rt-stu-020",
       "readiness_state": "ready",
-      "handler_disposition": "bounded-alias"
+      "handler_disposition": "mounted"
     },
     {
       "route_id": "RT-STU-021",
@@ -1155,12 +1283,12 @@
       "action_id": "admin.communications.workflow_readback.view.route",
       "label": "Workflow readback",
       "surface": "route",
-      "route": "/app/communications/:workflowId",
+      "route": "/app/operations/workflow-readback/:workflowId",
       "roles": ["admin"],
       "capability": "admin:communications:workflow-read",
       "handler": {
         "method": "GET",
-        "path": "/api/v1/communications/workflows/:workflowId"
+        "path": "/api/v1/operations/workflow-readback/:workflowId"
       },
       "idempotency": {
         "required": false,
@@ -1682,13 +1810,13 @@
       "capability": "admin:class:start",
       "handler": {
         "method": "POST",
-        "path": "/api/v1/classroom/production-basic/launch"
+        "path": "/api/v1/admin/classroom/production-basic/launch"
       },
       "visibility": {
         "mode": "server_derived",
         "handler": {
           "method": "GET",
-          "path": "/api/v1/classroom/production-basic/status"
+          "path": "/api/v1/admin/classroom/production-basic/status"
         },
         "required_response": {
           "success": true,
@@ -2520,13 +2648,13 @@
       "capability": "parent:class:launch",
       "handler": {
         "method": "POST",
-        "path": "/api/v1/classroom/production-basic/launch"
+        "path": "/api/v1/portals/parent/classroom/production-basic/launch"
       },
       "visibility": {
         "mode": "server_derived",
         "handler": {
           "method": "GET",
-          "path": "/api/v1/classroom/production-basic/status"
+          "path": "/api/v1/portals/parent/classroom/production-basic/status"
         },
         "required_response": {
           "success": true,
@@ -2907,13 +3035,13 @@
       "capability": "student:class:launch",
       "handler": {
         "method": "POST",
-        "path": "/api/v1/classroom/production-basic/launch"
+        "path": "/api/v1/portals/student/classroom/production-basic/launch"
       },
       "visibility": {
         "mode": "server_derived",
         "handler": {
           "method": "GET",
-          "path": "/api/v1/classroom/production-basic/status"
+          "path": "/api/v1/portals/student/classroom/production-basic/status"
         },
         "required_response": {
           "success": true,

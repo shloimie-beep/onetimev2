@@ -7,7 +7,12 @@ import helmet from 'helmet';
 import { z, ZodError } from 'zod';
 import { S3Client } from '@aws-sdk/client-s3';
 import type { AppConfig } from '../../../../packages/config/src/index.ts';
-import { createProductionBasicRouter } from './features/classroom/production-basic/router.ts';
+import {
+  createAdminProductionBasicRouter,
+  createParentProductionBasicRouter,
+  createStudentProductionBasicRouter,
+  type ProductionBasicIdentityResolution,
+} from './features/classroom/production-basic/router.ts';
 import {
   createProductionBasicLaunchService,
   createCanonicalProductionBasicMeetingBinding,
@@ -16,6 +21,10 @@ import {
   createProductionBasicHostLiveMarker,
   createProductionBasicLiveClassAccessAdapter,
 } from './features/classroom/production-basic/live-marker-repository.ts';
+import {
+  decideProductionBasicSessionContext,
+  sanitizeStudentZoomDisplayName,
+} from './features/classroom/production-basic/session-context.ts';
 import { asBotKey } from '../../../../packages/contracts/src/telegram/types.ts';
 import { inTransaction, type DbPool, type Queryable } from '../../../../packages/db/src/index.ts';
 import { createPostgresBillingRepositories } from '../../../../packages/db/src/billing/repository.ts';
@@ -2082,7 +2091,7 @@ export function createApp({
   }
 
   app.get(
-    /^\/app\/(?:dashboard|classes|content|billing|communications|rewards|support|operations)(?:\/.*)?$/,
+    /^\/app\/(?:today|learning(?!\/items\/)|people|account|dashboard|classes|content|billing|communications|rewards|support|operations)(?:\/.*)?$/,
     async (req: RequestWithTrace, res) => {
       const session = await resolveOwnerAdminShellSession(req, res, '/app/dashboard');
       if (!session) return;
@@ -3650,64 +3659,207 @@ export function createApp({
     res.status(200).type('html').send(classroomLaunchHtml());
   });
 
-  app.use(
-    '/api/v1/classroom/production-basic',
-    createProductionBasicRouter({
-      service: productionBasicClassroomService,
-      onLaunchFailure: (failure) => {
-        logger.error(
-          {
-            failure_category: failure.category,
-            safe_error_code: failure.safe_error_code,
-          },
-          'production_basic_launch_failed',
-        );
+  const observeProductionBasicFailure = (failure: {
+    category: 'zoom_provider' | 'unexpected';
+    safe_error_code: string;
+  }) => {
+    logger.error(
+      {
+        failure_category: failure.category,
+        safe_error_code: failure.safe_error_code,
       },
-      identities: {
-        resolve: async (req) => {
-          const parentActor = await resolveParentProductionBasicActor(req, req.method !== 'GET');
-          if (parentActor) {
-            return { csrf_verified: true, actor: parentActor };
+      'production_basic_launch_failed',
+    );
+  };
+  const resolveRoleBoundProductionBasicIdentity = async (
+    req: Request,
+    res: Response,
+    boundary: 'student' | 'parent' | 'host',
+  ): Promise<ProductionBasicIdentityResolution> => {
+    const cookieHeader = req.header('cookie');
+    const adultCookiePresent = cookieHeaderHasName(cookieHeader, AUTH_SESSION_COOKIE.name);
+    const legacyCookie = readCookie(req, SESSION_COOKIE);
+    const legacyCookiePresent = legacyCookie.status !== 'absent';
+    let adultResolution: Awaited<ReturnType<V21AdultSessionRuntime['resolveCookieHeader']>> | null =
+      null;
+    let legacySession: Awaited<ReturnType<typeof sessionFromRequest>> = null;
+    try {
+      adultResolution = adultCookiePresent
+        ? await v21AdultSessionRuntime.resolveCookieHeader({
+            cookie_header: cookieHeader,
+            ...(clock ? { now: clock() } : {}),
+          })
+        : null;
+      if (adultResolution?.status === 'unavailable') return { status: 'unavailable' };
+      legacySession = legacyCookiePresent ? await sessionFromRequest(req, pool, config) : null;
+    } catch {
+      return { status: 'unavailable' };
+    }
+    const adultContext = adultResolution?.status === 'resolved' ? adultResolution.context : null;
+    const decision = decideProductionBasicSessionContext({
+      adult_cookie_present: adultCookiePresent,
+      legacy_cookie_present: legacyCookiePresent,
+      adult: adultContext
+        ? {
+            source: 'adult',
+            principal_id: adultContext.session.humanAccountId,
+            role: adultContext.session.activeRole,
           }
-          const actor = await resolvePortalActor(req);
-          if (!actor) return null;
-          const csrf_verified = req.method === 'GET' ? true : await verifyPortalCsrf(req, actor);
-          if (actor.actor_role === 'student' && actor.student_learner) {
-            const entitled = await studentHasProductionBasicClassAccess({
-              pool,
-              accountKey: actor.account_key,
-              productKey: actor.product_key,
-              learnerKey: actor.student_learner.learner_key,
-              householdKey: actor.student_learner.household_key,
+        : null,
+      legacy: legacySession
+        ? {
+            source: 'legacy',
+            principal_id: legacySession.user.user_key,
+            role: legacySession.user.role,
+          }
+        : null,
+    });
+    if (decision.status === 'session_context_conflict') {
+      await Promise.allSettled([
+        adultContext
+          ? v21AdultSessionRuntime.rotateCookieHeader({
+              cookie_header: cookieHeader,
               ...(clock ? { now: clock() } : {}),
-            });
-            return {
-              csrf_verified,
-              actor: {
-                kind: 'student' as const,
-                scope: { account_key: actor.account_key, product_key: actor.product_key },
-                learner_key: actor.student_learner.learner_key,
-                display_name: 'Student',
-                entitled,
-              },
-            };
-          }
-          if (actor.actor_role === 'admin' || actor.actor_role === 'rabbi') {
-            return {
-              csrf_verified,
-              actor: {
-                kind: actor.actor_role,
-                scope: { account_key: actor.account_key, product_key: actor.product_key },
-                actor_user_ref: actor.actor_user_ref,
-                display_name: 'Admin',
-                authorized_to_start: true,
-              },
-            };
-          }
-          return null;
+            })
+          : Promise.resolve(),
+        legacySession
+          ? revokePresentedLegacySession(req, pool, config, 'session_context_conflict')
+          : Promise.resolve(),
+      ]);
+      clearAuthCookies(res, config);
+      return { status: 'session_context_conflict' };
+    }
+    if (decision.clear_stale === 'adult') {
+      res.append('Set-Cookie', clearSessionCookieHeader());
+    } else if (decision.clear_stale === 'legacy') {
+      if (legacySession) {
+        try {
+          await revokePresentedLegacySession(req, pool, config, 'session_context_conflict');
+        } catch {
+          clearAuthCookies(res, config);
+          return { status: 'unavailable' };
+        }
+      }
+      clearLegacyAuthCookies(res, config);
+    } else if (decision.clear_stale === 'both') {
+      clearAuthCookies(res, config);
+    }
+    if (decision.status === 'missing') return { status: 'missing' };
+
+    if (decision.principal.source === 'adult') {
+      if (!adultContext) return { status: 'missing' };
+      const csrfVerified =
+        req.method === 'GET'
+          ? true
+          : Boolean(
+              await v21AdultSessionRuntime.verifyCsrf({
+                cookie_header: cookieHeader,
+                csrf_token: req.header('x-csrf-token'),
+                ...(clock ? { now: clock() } : {}),
+              }),
+            );
+      if (boundary === 'parent' && adultContext.session.activeRole === 'parent') {
+        try {
+          return {
+            status: 'resolved',
+            csrf_verified: csrfVerified,
+            actor: await parentLearningService.productionBasicActor(
+              parentLearningPrincipalFromContext(adultContext),
+            ),
+          };
+        } catch {
+          return { status: 'missing' };
+        }
+      }
+      if (boundary === 'host' && adultContext.session.activeRole === 'admin') {
+        return {
+          status: 'resolved',
+          csrf_verified: csrfVerified,
+          actor: {
+            kind: 'admin',
+            scope: { account_key: config.accountKey, product_key: config.productKey },
+            actor_user_ref: adultContext.session.humanAccountId,
+            display_name: 'Admin',
+            authorized_to_start: true,
+          },
+        };
+      }
+      return { status: 'missing' };
+    }
+
+    if (!legacySession) return { status: 'missing' };
+    const learner =
+      legacySession.user.role === 'student'
+        ? await studentLearnerSubject(pool, config, legacySession.user.user_key)
+        : null;
+    const legacyActor = {
+      account_key: config.accountKey,
+      product_key: config.productKey,
+      actor_user_ref: legacySession.user.user_key,
+      actor_role: legacySession.user.role,
+      session_key: legacySession.session_key,
+      capabilities: capabilitiesForPortalRole(legacySession.user.role),
+      authorized_households: [],
+      student_learner: learner,
+    } satisfies PortalActorContext;
+    const csrfVerified = req.method === 'GET' ? true : await verifyPortalCsrf(req, legacyActor);
+    if (boundary === 'student' && legacyActor.actor_role === 'student' && learner) {
+      return {
+        status: 'resolved',
+        csrf_verified: csrfVerified,
+        actor: {
+          kind: 'student',
+          scope: { account_key: config.accountKey, product_key: config.productKey },
+          learner_key: learner.learner_key,
+          display_name: sanitizeStudentZoomDisplayName(learner.display_name),
+          entitled: await studentHasProductionBasicClassAccess({
+            pool,
+            accountKey: config.accountKey,
+            productKey: config.productKey,
+            learnerKey: learner.learner_key,
+            householdKey: learner.household_key,
+            ...(clock ? { now: clock() } : {}),
+          }),
         },
-      },
-    }),
+      };
+    }
+    if (
+      boundary === 'host' &&
+      (legacyActor.actor_role === 'admin' || legacyActor.actor_role === 'rabbi')
+    ) {
+      return {
+        status: 'resolved',
+        csrf_verified: csrfVerified,
+        actor: {
+          kind: legacyActor.actor_role,
+          scope: { account_key: config.accountKey, product_key: config.productKey },
+          actor_user_ref: legacyActor.actor_user_ref,
+          display_name: legacyActor.actor_role === 'rabbi' ? 'Rabbi' : 'Admin',
+          authorized_to_start: true,
+        },
+      };
+    }
+    return { status: 'missing' };
+  };
+  const productionBasicRouterInput = (boundary: 'student' | 'parent' | 'host') => ({
+    service: productionBasicClassroomService,
+    onLaunchFailure: observeProductionBasicFailure,
+    identities: {
+      resolve: (req: Request, res: Response) =>
+        resolveRoleBoundProductionBasicIdentity(req, res, boundary),
+    },
+  });
+  app.use(
+    '/api/v1/portals/student/classroom/production-basic',
+    createStudentProductionBasicRouter(productionBasicRouterInput('student')),
+  );
+  app.use(
+    '/api/v1/portals/parent/classroom/production-basic',
+    createParentProductionBasicRouter(productionBasicRouterInput('parent')),
+  );
+  app.use(
+    '/api/v1/admin/classroom/production-basic',
+    createAdminProductionBasicRouter(productionBasicRouterInput('host')),
   );
 
   app.post('/api/v1/classroom/launch/bootstrap', async (req: RequestWithTrace, res) => {
@@ -7090,6 +7242,7 @@ async function parentHouseholdSubjects(pool: DbPool, config: AppConfig, userKey:
 async function studentLearnerSubject(pool: DbPool, config: AppConfig, userKey: string) {
   const result = await pool.query(
     `SELECT links.learner_key, links.household_key, access_state.access_state_key,
+            learners.display_name,
             account_access.state AS account_access_state
        FROM onetime.account_learner_identity_links AS links
        JOIN onetime.portal_student_access_state AS access_state
@@ -7125,6 +7278,9 @@ async function studentLearnerSubject(pool: DbPool, config: AppConfig, userKey: s
     learner_key: String(row.learner_key),
     household_key: String(row.household_key),
     access_state_key: String(row.access_state_key),
+    display_name: sanitizeStudentZoomDisplayName(
+      typeof row.display_name === 'string' ? row.display_name : null,
+    ),
     access_state:
       String(row.account_access_state) === 'grace' ? ('grace' as const) : ('active' as const),
   };
@@ -7791,7 +7947,12 @@ function canUseOwnerDashboard(role: string) {
 function canUseRabbiTeachingSurface(role: string, path: string) {
   return (
     role === 'rabbi' &&
-    (path === '/app/dashboard' ||
+    (path === '/app/today' ||
+      path === '/app/account' ||
+      path.startsWith('/app/account/') ||
+      path === '/app/learning' ||
+      path.startsWith('/app/learning/') ||
+      path === '/app/dashboard' ||
       path === '/app/content' ||
       path === '/app/classes' ||
       path.startsWith('/app/classes/'))
@@ -7853,7 +8014,7 @@ async function revokePresentedLegacySession(
   req: Request,
   pool: DbPool,
   config: AppConfig,
-  reason: 'login_rotation' | 'logout',
+  reason: 'login_rotation' | 'logout' | 'session_context_conflict',
 ) {
   const presented = readCookie(req, SESSION_COOKIE);
   if (presented.status === 'invalid') return true;
@@ -7918,6 +8079,11 @@ function setCsrfCookie(res: Response, config: AppConfig, csrfToken: string) {
 }
 
 function clearAuthCookies(res: Response, config: AppConfig) {
+  clearLegacyAuthCookies(res, config);
+  res.append('Set-Cookie', clearSessionCookieHeader());
+}
+
+function clearLegacyAuthCookies(res: Response, config: AppConfig) {
   res.clearCookie(SESSION_COOKIE, {
     httpOnly: true,
     secure: config.runtime.requiresSecureCookies,
@@ -7930,7 +8096,6 @@ function clearAuthCookies(res: Response, config: AppConfig) {
     sameSite: 'strict',
     path: '/',
   });
-  res.append('Set-Cookie', clearSessionCookieHeader());
 }
 
 function setPrivateNoStore(res: Response) {
@@ -8085,8 +8250,8 @@ function handleLifecycleRouteError(
 }
 
 function defaultRouteForRole(role: string) {
-  if (role === 'owner' || role === 'admin') return '/app/dashboard';
-  if (role === 'rabbi') return '/app/dashboard';
+  if (role === 'owner' || role === 'admin') return '/app/today';
+  if (role === 'rabbi') return '/app/today';
   if (role === 'parent') return '/app/parent';
   if (role === 'student') return '/app/student';
   return '/app/crm';

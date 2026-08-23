@@ -1,5 +1,10 @@
 # One Time Immediate Launch ExecPlan
 
+> **Historical emergency execplan — superseded on 2026-08-20.** Current work is
+> governed by [ONE-TIME-AUTHORITY-INDEX.md](./ONE-TIME-AUTHORITY-INDEX.md), the
+> relevant OpenSpec capability, and the linked GitHub Issue/PR. The retained body
+> below must not be used as active deployment, provider, task, or launch authority.
+
 ## 2026-08-16 Parent-first supersession
 
 The active release plan is governed by [2026-08-16-parent-first-learning-decision.md](./2026-08-16-parent-first-learning-decision.md): the Family form must create an authenticated Parent learner immediately, the Parent learns under the Parent identity, and the household may additionally create three child Students. This supersedes the historical Parent-as-nonlearner assumption in the retained v2.1 source package without editing its historical source files or checksum artifacts.

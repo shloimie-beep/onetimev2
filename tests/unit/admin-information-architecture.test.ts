@@ -19,57 +19,50 @@ import {
 } from '../../apps/web/src/client/app/admin-ia.ts';
 
 describe('OT-LAUNCH-01 Admin information architecture', () => {
-  it('keeps eight canonical Admin areas and gates Live Console by server readiness', () => {
+  it('keeps the canonical Admin and Rabbi areas without a standalone Live Console', () => {
     expect(ADMIN_PRIMARY_AREAS).toEqual([
-      { id: 'dashboard', label: 'Dashboard', href: '/app/dashboard' },
-      { id: 'contacts', label: 'Contacts', href: '/app/contacts' },
-      { id: 'content', label: 'Content', href: '/app/content' },
-      { id: 'classroom', label: 'Classroom', href: '/app/classroom/classes' },
+      { id: 'today', label: 'Today', href: '/app/today' },
+      { id: 'learning', label: 'Learning', href: '/app/learning/classroom' },
+      { id: 'people', label: 'People', href: '/app/people/families' },
       { id: 'communications', label: 'Communications', href: '/app/communications' },
-      { id: 'billing-access', label: 'Billing & Access', href: '/app/billing-access' },
       { id: 'operations', label: 'Operations', href: '/app/operations' },
-      { id: 'live-console', label: 'Live Console', href: '/app/live' },
+      { id: 'account', label: 'Account', href: '/app/account/profile' },
     ]);
-    expect(adminPrimaryNav('content', true).filter((item) => item.current)).toEqual([
-      { id: 'content', label: 'Content', href: '/app/content', current: true },
+    expect(adminPrimaryNav('learning', true).filter((item) => item.current)).toEqual([
+      { id: 'learning', label: 'Learning', href: '/app/learning/classroom', current: true },
     ]);
-    expect(adminPrimaryNav('content', false).map((item) => item.label)).toEqual([
-      'Dashboard',
-      'Contacts',
-      'Content',
-      'Classroom',
+    expect(adminPrimaryNav('learning', false).map((item) => item.label)).toEqual([
+      'Today',
+      'Learning',
+      'People',
       'Communications',
-      'Billing & Access',
       'Operations',
+      'Account',
     ]);
-    expect(rabbiPrimaryNav('classroom', true).map((item) => item.label)).toEqual([
-      'Dashboard',
-      'Content',
-      'Classroom',
-      'Live Console',
+    expect(rabbiPrimaryNav('learning', true).map((item) => item.label)).toEqual([
+      'Today',
+      'Learning',
+      'Account',
     ]);
-    expect(rabbiPrimaryNav('classroom', true).some((item) => item.id === 'contacts')).toBe(false);
+    expect(rabbiPrimaryNav('learning', true).some((item) => item.id === 'people')).toBe(false);
   });
 
   it('defines one canonical section model for each focused workspace', () => {
-    expect(DASHBOARD_SECTIONS.map((item) => item.label)).toEqual(['Overview']);
+    expect(DASHBOARD_SECTIONS.map((item) => item.label)).toEqual(['Today']);
     expect(CONTACTS_SECTIONS.map((item) => item.label)).toEqual([
-      'People / Contacts',
-      'Households',
-      'Users',
+      'Families',
+      'Parents',
       'Students',
-      'Audit History',
+      'Access',
+      'Audit',
     ]);
     expect(CONTENT_SECTIONS.map((item) => item.label)).toEqual(['Library', 'Pipeline', 'Upload']);
     expect(CLASSROOM_SECTIONS.map((item) => item.label)).toEqual([
-      'Classes',
-      'Occurrences',
-      'Enrollments',
+      'Classroom',
+      'Library',
+      'Questions',
       'Attendance',
       'Recordings',
-      'Access',
-      'Questions',
-      'Zoom Live Console',
     ]);
     expect(LIVE_CONSOLE_SECTIONS.map((item) => item.label)).toEqual([
       'Current Class',
@@ -79,7 +72,7 @@ describe('OT-LAUNCH-01 Admin information architecture', () => {
   });
 
   it('maps legacy and deep URLs into safe focused destinations', () => {
-    expect(dashboardSectionFromPath('/app/dashboard/internal-tasks')).toBe('overview');
+    expect(dashboardSectionFromPath('/app/dashboard/internal-tasks')).toBe('today');
     expect(contactsSectionFromPath('/app/crm/households')).toBe('households');
     expect(contactsSectionFromPath('/app/crm/users')).toBe('users');
     expect(contactsSectionFromPath('/app/crm/audit')).toBe('audit');

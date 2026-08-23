@@ -12,13 +12,13 @@ import { CANONICAL_V21_ROUTES, resolveCurrentClientRoute } from './registry.ts';
 
 describe('v2.1 canonical route views', () => {
   it('projects all current routes without promoting isolated or missing behavior', () => {
-    expect(CANONICAL_V21_ROUTES).toHaveLength(96);
+    expect(CANONICAL_V21_ROUTES).toHaveLength(111);
     expect(Object.keys(CANONICAL_ROUTE_VIEW_BINDINGS).sort()).toEqual(
       CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'ready')
         .map(({ routeId }) => routeId)
         .sort(),
     );
-    expect(new Set(CANONICAL_V21_ROUTES.map(({ routeId }) => routeId)).size).toBe(96);
+    expect(new Set(CANONICAL_V21_ROUTES.map(({ routeId }) => routeId)).size).toBe(111);
     expect(
       CANONICAL_V21_ROUTES.filter(({ routeId }) => routeId.startsWith('RT-PUB-')),
     ).toHaveLength(10);
@@ -27,14 +27,14 @@ describe('v2.1 canonical route views', () => {
     ).toHaveLength(8);
     expect(
       CANONICAL_V21_ROUTES.filter(({ routeId }) => routeId.startsWith('RT-ADM-')),
-    ).toHaveLength(41);
+    ).toHaveLength(56);
     expect(
       CANONICAL_V21_ROUTES.filter(({ routeId }) => routeId.startsWith('RT-PAR-')),
     ).toHaveLength(20);
     expect(
       CANONICAL_V21_ROUTES.filter(({ routeId }) => routeId.startsWith('RT-STU-')),
     ).toHaveLength(17);
-    expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'ready')).toHaveLength(96);
+    expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'ready')).toHaveLength(111);
     expect(CANONICAL_V21_ROUTES.filter(({ readiness }) => readiness === 'isolated')).toHaveLength(
       0,
     );
@@ -225,6 +225,7 @@ describe('v2.1 canonical route views', () => {
       readiness: 'ready',
       handlerDisposition: 'mounted',
     });
+    expect(CANONICAL_ROUTE_COMPATIBILITY_PATHS['RT-STU-020']).toBeUndefined();
     expect(CANONICAL_ROUTE_COMPATIBILITY_PATHS['RT-STU-041']).toBe('/app/student/questions');
     expect(CANONICAL_ROUTE_COMPATIBILITY_PATHS['RT-ADM-066']).toBeUndefined();
     expect(CANONICAL_ROUTE_COMPATIBILITY_PATHS['RT-PAR-011']).toBeUndefined();

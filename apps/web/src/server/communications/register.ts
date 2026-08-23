@@ -8,6 +8,7 @@ import {
   CommunicationsNotFoundError,
   CommunicationsValidationError,
   buildCommunicationsListResponse,
+  canReadAccountEmailHistory,
   canReadCommunications,
   type CommunicationsReadRepository,
   type CommunicationsMode,
@@ -63,7 +64,7 @@ export function registerCommunicationsRoutes({
       return;
     }
     const { session } = resolution;
-    if (!canReadCommunications(session.role)) {
+    if (!canReadAccountEmailHistory(session.role)) {
       res.status(403).type('html').send('Forbidden');
       return;
     }
@@ -83,39 +84,28 @@ export function registerCommunicationsRoutes({
 
   app.get('/app/communications/:workflowId', async (req, res) => {
     setProtectedNoStore(res);
-    const resolution = await sessionPort.resolve(req);
-    const returnTo = `/app/communications/${encodeURIComponent(String(req.params.workflowId))}`;
-    if (resolution.status === 'unavailable') {
-      res.status(503).type('html').send('Communications access is temporarily unavailable.');
-      return;
-    }
-    if (resolution.status !== 'resolved') {
-      res.redirect(302, `/login?return_to=${encodeURIComponent(returnTo)}`);
-      return;
-    }
-    const { session } = resolution;
-    if (!canReadCommunications(session.role)) {
-      res.status(403).type('html').send('Forbidden');
-      return;
-    }
-    res.sendFile(path.join(distDir, 'app', 'crm.html'));
+    const workflowId = encodeURIComponent(String(req.params.workflowId));
+    res.redirect(302, `/app/operations/workflow-readback/${workflowId}`);
   });
 
-  app.get('/api/v1/communications/workflows/:workflowId', async (req: RequestWithTrace, res) => {
-    setProtectedNoStore(res);
-    try {
-      const session = await resolvedSession(sessionPort, req);
-      if (!session) throw new CommunicationsAuthorizationError(401);
-      if (!canReadCommunications(session.role)) throw new CommunicationsAuthorizationError(403);
-      const workflow = workflowReadbackReader.find(String(req.params.workflowId));
-      if (!workflow) throw new CommunicationsNotFoundError('Workflow was not found.');
-      res.status(200).json(workflow);
-    } catch (error) {
-      handleCommunicationsError(error, req, res);
-    }
-  });
+  app.get(
+    '/api/v1/operations/workflow-readback/:workflowId',
+    async (req: RequestWithTrace, res) => {
+      setProtectedNoStore(res);
+      try {
+        const session = await resolvedSession(sessionPort, req);
+        if (!session) throw new CommunicationsAuthorizationError(401);
+        if (!canReadCommunications(session.role)) throw new CommunicationsAuthorizationError(403);
+        const workflow = workflowReadbackReader.find(String(req.params.workflowId));
+        if (!workflow) throw new CommunicationsNotFoundError('Workflow was not found.');
+        res.status(200).json(workflow);
+      } catch (error) {
+        handleCommunicationsError(error, req, res);
+      }
+    },
+  );
 
-  app.get('/api/v1/communications/workflows', async (req: RequestWithTrace, res) => {
+  app.get('/api/v1/operations/workflow-readback', async (req: RequestWithTrace, res) => {
     setProtectedNoStore(res);
     try {
       const session = await resolvedSession(sessionPort, req);
@@ -125,17 +115,6 @@ export function registerCommunicationsRoutes({
     } catch (error) {
       handleCommunicationsError(error, req, res);
     }
-  });
-
-  app.get('/api/v1/crm/contacts/:contactId/communications', async (req: RequestWithTrace, res) => {
-    await handleList({
-      req,
-      res,
-      mode: { kind: 'contact', contactId: String(req.params.contactId) },
-      sessionPort,
-      repository,
-      cursorSecret,
-    });
   });
 
   void config;

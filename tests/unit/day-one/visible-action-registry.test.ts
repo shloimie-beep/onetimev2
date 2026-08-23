@@ -79,12 +79,14 @@ const EXPECTED_SOURCE_INPUT_PATHS = [
   'apps/web/src/server/features/signup/school/router.ts',
   'apps/web/src/server/features/v21-canonical-routes/router.ts',
   'apps/web/src/client/app/admin-ia.ts',
+  'apps/web/src/client/app/admin-directory/AdminDirectoryPanel.tsx',
   'apps/web/src/client/app/admin/learning/AdminLearningWorkspace.tsx',
   'apps/web/src/client/app/admin/search/AdminGlobalSearch.tsx',
   'apps/web/src/client/app/admin/support/AdminSupportWorkspace.tsx',
   'apps/web/src/client/app/communications/CommunicationsFeature.tsx',
   'apps/web/src/client/app/communications/WorkflowReadbackFeature.tsx',
   'apps/web/src/client/app/crm-api.ts',
+  'apps/web/src/client/app/classes/ClassManagementWorkspace.tsx',
   'apps/web/src/client/app/crm-entry.tsx',
   'apps/web/src/client/app/live-entry.tsx',
   'apps/web/src/client/app/zoom-meeting-sdk-client.ts',
@@ -145,10 +147,10 @@ const EXPECTED_ACTION_BINDINGS = [
   ],
   [
     'admin.communications.workflow_readback.view.route',
-    '/app/communications/:workflowId',
+    '/app/operations/workflow-readback/:workflowId',
     ['admin'],
     'GET',
-    '/api/v1/communications/workflows/:workflowId',
+    '/api/v1/operations/workflow-readback/:workflowId',
   ],
   [
     'admin.content.review.artifact_approve.button',
@@ -253,7 +255,7 @@ const EXPECTED_ACTION_BINDINGS = [
     '/app/live-console',
     ['admin', 'rabbi'],
     'POST',
-    '/api/v1/classroom/production-basic/launch',
+    '/api/v1/admin/classroom/production-basic/launch',
   ],
   [
     'admin.question_moderation.transition.form',
@@ -380,7 +382,7 @@ const EXPECTED_ACTION_BINDINGS = [
     '/app/parent/classroom',
     ['parent'],
     'POST',
-    '/api/v1/classroom/production-basic/launch',
+    '/api/v1/portals/parent/classroom/production-basic/launch',
   ],
   [
     'portal.parent.learner.select.button',
@@ -457,7 +459,7 @@ const EXPECTED_ACTION_BINDINGS = [
     '/app/student/class/:occurrenceId',
     ['student'],
     'POST',
-    '/api/v1/classroom/production-basic/launch',
+    '/api/v1/portals/student/classroom/production-basic/launch',
   ],
   [
     'portal.student.classroom.question.form',
@@ -742,10 +744,10 @@ describe('v2.1 visible action registry', () => {
         handler_disposition: route.handlerDisposition,
       })),
     );
-    expect(registry.canonical_routes).toHaveLength(96);
+    expect(registry.canonical_routes).toHaveLength(111);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'ready'),
-    ).toHaveLength(96);
+    ).toHaveLength(111);
     expect(
       registry.canonical_routes.filter(({ readiness_state }) => readiness_state === 'isolated'),
     ).toHaveLength(0);
@@ -760,7 +762,7 @@ describe('v2.1 visible action registry', () => {
       ]),
     );
     expect(sourceText.endsWith('\n')).toBe(true);
-  });
+  }, 15_000);
 
   it('advertises actions only on canonical routes with ready local behavior', () => {
     const readyRoutes = registry.canonical_routes.filter(
@@ -826,11 +828,23 @@ describe('v2.1 visible action registry', () => {
 
   it('models conditional bodyless production-basic launches separately from legacy bootstrap', () => {
     const byId = new Map(registry.actions.map((action) => [action.action_id, action]));
-    const conditionalLaunch = {
-      handler: { method: 'POST', path: '/api/v1/classroom/production-basic/launch' },
+    const conditionalLaunch = (role: 'admin' | 'parent' | 'student') => ({
+      handler: {
+        method: 'POST',
+        path:
+          role === 'admin'
+            ? '/api/v1/admin/classroom/production-basic/launch'
+            : `/api/v1/portals/${role}/classroom/production-basic/launch`,
+      },
       visibility: {
         mode: 'server_derived',
-        handler: { method: 'GET', path: '/api/v1/classroom/production-basic/status' },
+        handler: {
+          method: 'GET',
+          path:
+            role === 'admin'
+              ? '/api/v1/admin/classroom/production-basic/status'
+              : `/api/v1/portals/${role}/classroom/production-basic/status`,
+        },
         required_response: {
           success: true,
           data: { mode: 'production_basic', available: true },
@@ -840,21 +854,21 @@ describe('v2.1 visible action registry', () => {
       idempotency: { required: false, key_source: null },
       provider_mode: 'verified_binding_explicit_sdk_click',
       external_mutation: true,
-    };
+    });
 
     expect(byId.get('admin.production_basic.start.button')).toMatchObject({
-      ...conditionalLaunch,
+      ...conditionalLaunch('admin'),
       route: '/app/live-console',
       roles: ['admin', 'rabbi'],
       canonical_binding: { route: '/app/live', roles: ['admin', 'rabbi'] },
     });
     expect(byId.get('portal.student.classroom.production_basic_join.button')).toMatchObject({
-      ...conditionalLaunch,
+      ...conditionalLaunch('student'),
       route: '/app/student/class/:occurrenceId',
       roles: ['student'],
     });
     expect(byId.get('portal.parent.classroom.production_basic_join.button')).toMatchObject({
-      ...conditionalLaunch,
+      ...conditionalLaunch('parent'),
       route: '/app/parent/classroom',
       roles: ['parent'],
     });

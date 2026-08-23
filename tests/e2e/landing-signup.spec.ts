@@ -33,14 +33,16 @@ test('public landing implements the bounded product-repair contract', async ({ p
       /world-renowned|Master Shas|daily reminders|daily rhythm|daily Torah-learning routine|daily learning community/i,
     ),
   ).toHaveCount(0);
-  await expect(page.locator('.hero-eyebrow')).toHaveText('LIVE, ONLINE + ON-DEMAND');
-  await expect(page.locator('.hero-subheadline')).toHaveText('Classes begin today. Sign up now.');
+  await expect(page.locator('.hero-eyebrow')).toHaveText('LIVE, ONLINE');
+  await expect(page.locator('.hero-subheadline')).toHaveText(
+    'Create a free Family account and add up to three Student accounts.',
+  );
   await expect(page.locator('.hero-access-detail')).toHaveText(
-    'Try One Time free through September 11. No card required.',
+    'Free through September 11. No credit card required.',
   );
   await expect(page.locator('.hero-supporting, .hero .schedule, .hero-note')).toHaveCount(0);
   const heroCta = page.locator('.hero .hero-cta');
-  await expect(heroCta).toHaveText('Create Family Account');
+  await expect(heroCta).toHaveText('Create Your Free Family Account');
   await expect(heroCta).toHaveAttribute('href', '/signup');
   await expect(page.locator('.hero .hero-cta')).toHaveCount(1);
   await expect(heroCta).toHaveCSS('background-color', 'rgb(255, 212, 0)');
@@ -61,7 +63,7 @@ test('public landing implements the bounded product-repair contract', async ({ p
   await expect(page.getByRole('link', { name: 'Pricing', exact: true })).toHaveCount(0);
   await expect(
     page.getByText(
-      'A Parent can learn directly from the Parent account without using any of the three child learner seats.',
+      'A Parent can learn directly through the Parent account without using one of the three child Student accounts.',
     ),
   ).toBeVisible();
   await expect(page.getByRole('heading', { name: 'How It Works' })).toBeVisible();
@@ -172,7 +174,7 @@ test('canonical launch timing controls the animated ribbon boundary', async ({ p
   await expect(page.locator('.campaign-ticker-shell')).toBeVisible();
   await expect(page.locator('.campaign-ticker')).toHaveAttribute(
     'aria-label',
-    'CLASSES START AUG 16 · 7 PM · FREE ACCESS THROUGH SEP 11 · 6 PM · JERUSALEM TIME',
+    'LIVE SUNDAY–THURSDAY · 7:00 PM · FREE ACCESS THROUGH SEP 11 · 6 PM · JERUSALEM TIME',
   );
   await expect(page.locator('.campaign-ticker-track')).toHaveCSS(
     'animation-name',
@@ -654,6 +656,9 @@ test('the real Parent bundle loads the Parent learner without legacy household r
   const parentDocumentPaths: string[] = [];
   const zoomSdkRequests: string[] = [];
   let classroomShellCsp = '';
+  const parentClassroomFixtureNow = Date.now();
+  const parentClassroomIssuedAt = new Date(parentClassroomFixtureNow - 60_000).toISOString();
+  const parentClassroomExpiresAt = new Date(parentClassroomFixtureNow + 30 * 60_000).toISOString();
   await page.route('https://source.zoom.us/**', async (route) => {
     const pathname = new URL(route.request().url()).pathname;
     zoomSdkRequests.push(pathname);
@@ -694,7 +699,8 @@ test('the real Parent bundle loads the Parent learner without legacy household r
     if (
       pathname === '/api/v1/auth/session' ||
       (pathname.startsWith('/api/v1/portals/parent/') &&
-        !pathname.startsWith('/api/v1/portals/parent/learning')) ||
+        !pathname.startsWith('/api/v1/portals/parent/learning') &&
+        !pathname.startsWith('/api/v1/portals/parent/classroom')) ||
       pathname.startsWith('/api/v1/contact-operations/')
     ) {
       legacyRequests.push(pathname);
@@ -803,9 +809,9 @@ test('the real Parent bundle loads the Parent learner without legacy household r
                 label: 'Join class',
                 kind: 'class_launch',
                 method: 'POST',
-                href: '/api/v1/classroom/production-basic/launch',
+                href: '/api/v1/portals/parent/classroom/production-basic/launch',
                 launch_token_ref: null,
-                expires_at: '2026-08-16T16:35:00.000Z',
+                expires_at: parentClassroomExpiresAt,
               },
             },
             library_items: [
@@ -844,7 +850,7 @@ test('the real Parent bundle loads the Parent learner without legacy household r
       }),
     }),
   );
-  await page.route('**/api/v1/classroom/production-basic/launch', async (route) => {
+  await page.route('**/api/v1/portals/parent/classroom/production-basic/launch', async (route) => {
     classLaunchCalls += 1;
     expect(route.request().method()).toBe('POST');
     expect(route.request().postData()).toBeNull();
@@ -866,8 +872,8 @@ test('the real Parent bundle loads the Parent learner without legacy household r
             signature: 'header.payload.signature',
             user_name: 'Bundle Parent',
             leave_path: '/app/parent',
-            issued_at: '2026-08-16T15:55:00.000Z',
-            expires_at: '2026-08-16T16:35:00.000Z',
+            issued_at: parentClassroomIssuedAt,
+            expires_at: parentClassroomExpiresAt,
             raw_join_url_present: false,
             video_start_model: 'PARTICIPANT_CONSENT',
           },
@@ -1030,7 +1036,7 @@ test('the real Parent bundle loads the Parent learner without legacy household r
   await page.goto('/app/parent');
 
   const documentsBeforeClassroom = parentDocumentPaths.length;
-  await page.getByRole('link', { name: 'Classroom', exact: true }).click();
+  await page.getByLabel('Primary navigation').getByRole('link', { name: 'Learning' }).click();
   await expect.poll(() => parentDocumentPaths.length).toBe(documentsBeforeClassroom + 1);
   expect(parentDocumentPaths.at(-1)).toBe('/app/parent/classroom');
   expect(classroomShellCsp).toContain("script-src 'self' https://source.zoom.us");
@@ -1194,25 +1200,22 @@ test('campaign remains useful without JavaScript and honors reduced motion and m
     const heroCtaBox = await heroCta.boundingBox();
     expect(heroCtaBox?.height).toBeGreaterThanOrEqual(48);
     if (viewport.width <= 520) {
-      await expect(page.locator('.hero-photo')).toBeHidden();
-      await expect(page.locator('.hero')).toHaveCSS(
-        'background-image',
-        /linear-gradient\(rgba\(5, 5, 5, 0\.62\), rgba\(5, 5, 5, 0\.9\)\), url\(.*hero-classroom-background\.webp.*\)/u,
-      );
+      await expect(page.locator('.hero-photo')).toBeVisible();
+      await expect(page.locator('.hero-photo img')).toBeVisible();
+      await expect(page.locator('.site-header .button-primary')).toBeHidden();
       await expect(page.locator('.hero h1')).toHaveCSS('color', 'rgb(248, 250, 247)');
-      const heroContentWidth = await page.locator('.hero-inner').evaluate((element) => {
-        const style = getComputedStyle(element);
-        return (
-          element.getBoundingClientRect().width -
-          Number.parseFloat(style.paddingLeft) -
-          Number.parseFloat(style.paddingRight)
-        );
-      });
-      expect(heroCtaBox?.width).toBeGreaterThanOrEqual(heroContentWidth - 1);
-      const headerCta = page.locator('.site-header .button-primary');
-      const headerCtaBox = await headerCta.boundingBox();
-      expect(headerCtaBox?.height).toBeGreaterThanOrEqual(48);
-      await expect(headerCta).toHaveCSS('font-size', '16px');
+      await expect(page.locator('.hero-subheadline')).toBeVisible();
+      await expect(page.locator('.hero-access-detail')).toBeVisible();
+      expect(heroCtaBox?.width).toBeLessThan(viewport.width - 24);
+      await expect(heroCta).toHaveCSS('position', 'static');
+      const heroImage = await page.locator('.hero-photo img').evaluate((element) => ({
+        naturalWidth: (element as HTMLImageElement).naturalWidth,
+        naturalHeight: (element as HTMLImageElement).naturalHeight,
+        renderedWidth: element.getBoundingClientRect().width,
+      }));
+      expect(heroImage.naturalWidth).toBe(1680);
+      expect(heroImage.naturalHeight).toBe(944);
+      expect(heroImage.renderedWidth).toBeLessThanOrEqual(viewport.width);
       expect(
         await heroCta.evaluate((element) => {
           const rect = element.getBoundingClientRect();
@@ -1237,7 +1240,7 @@ test('campaign remains useful without JavaScript and honors reduced motion and m
   await expect(
     noJsPage.getByRole('heading', { name: 'Help your son love learning Mishnayos.' }),
   ).toBeVisible();
-  await expect(noJsPage.getByText(/CLASSES START AUG 16/)).toHaveCount(6);
+  await expect(noJsPage.getByText(/LIVE SUNDAY–THURSDAY · 7:00 PM/)).toHaveCount(6);
   await expect(noJsPage.getByText(/September 13, 2026/)).toHaveCount(0);
   await noJsPage.goto('/signup');
   await expect(noJsPage.locator('noscript > .noscript-panel')).toContainText(

@@ -56,7 +56,7 @@ test('P12 mounted Parent Create and Reset Student credential guards never dispat
     queueMicrotask(capture);
   });
   await page.goto('/app/parent/students/new');
-  await expect(page.getByRole('heading', { level: 1, name: 'Add Student' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Parent Portal' })).toBeVisible();
   await expect(page.locator('h1')).toHaveCount(1);
   const shellFrames = await page.evaluate(
     () =>
@@ -66,7 +66,6 @@ test('P12 mounted Parent Create and Reset Student credential guards never dispat
         }
       ).__parentShellFrames ?? [],
   );
-  expect(shellFrames.map((frame) => frame.title)).not.toContain('Parent Portal');
   expect(shellFrames.map((frame) => frame.navigation).join(' ')).not.toMatch(
     /Classes & materials|Progress & rewards|Billing/u,
   );
@@ -76,7 +75,7 @@ test('P12 mounted Parent Create and Reset Student credential guards never dispat
     { width: 390, height: 844 },
   ]) {
     await page.setViewportSize(viewport);
-    await expect(page.getByRole('heading', { level: 1, name: 'Add Student' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Parent Portal' })).toBeVisible();
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth),
     ).toBeLessThanOrEqual(1);
@@ -88,19 +87,7 @@ test('P12 mounted Parent Create and Reset Student credential guards never dispat
     ),
   ).toEqual([]);
 
-  await page.setViewportSize({ width: 1280, height: 800 });
-  await page.locator('.app-sidebar').getByRole('link', { name: 'Library' }).click();
-  await expect(page).toHaveURL(/\/app\/parent\/library$/u);
-  await expect(page.getByRole('heading', { level: 1, name: 'Library' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Parent learning' })).toBeVisible();
-  await page.locator('.app-sidebar').getByRole('link', { name: 'Students' }).click();
-  await expect(page).toHaveURL(/\/app\/parent\/students$/u);
-  await expect(page.getByRole('heading', { name: 'Child learners' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Parent learning' })).toHaveCount(0);
-  await page.getByRole('link', { name: 'Add Student' }).click();
-  await expect(page.getByRole('heading', { level: 1, name: 'Add Student' })).toBeVisible();
-
-  const createForm = page.locator('form[aria-labelledby="create-student-heading"]');
+  const createForm = page.getByRole('form', { name: 'Student details' });
   await createForm.getByLabel('Actual name').fill('Mounted Test Student');
   await createForm.getByLabel('Username').fill('mounted.student');
 

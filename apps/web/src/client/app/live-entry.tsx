@@ -10,6 +10,7 @@ import type {
 import {
   LIVE_CONSOLE_SECTIONS,
   adminPrimaryNav,
+  rabbiPrimaryNav,
   liveConsoleSectionFromSearch,
 } from './admin-ia.js';
 import { AppShell, type ShellNavItem, type ShellUser } from './shell/AppShell.js';
@@ -17,9 +18,9 @@ import { WorkspaceTabs } from './shell/WorkspaceTabs.js';
 import './crm.css';
 import { startZoomMeetingProductionBasic } from './zoom-meeting-sdk-client.ts';
 import {
-  readProductionBasicReadiness,
-  requestProductionBasicLaunch,
-  startAndConfirmProductionBasicHostLive,
+  confirmProductionBasicHostLive,
+  readHostProductionBasicReadiness,
+  requestHostProductionBasicLaunch,
 } from '../classroom/production-basic-launch-client.ts';
 
 type ConsoleData = LiveClassConsoleSnapshot['data'];
@@ -55,6 +56,7 @@ function LiveConsole() {
   const [notice, setNotice] = useState<Notice | null>(null);
   const [loading, setLoading] = useState(true);
   const [productionBasicReady, setProductionBasicReady] = useState(false);
+  const [hostClassState, setHostClassState] = useState<'ready' | 'live' | 'zoom_ended'>('ready');
   const occurrenceKey = useMemo(() => {
     const routeMatch = /^\/app\/live\/([^/]+)$/u.exec(location.pathname);
     return routeMatch?.[1]
@@ -94,7 +96,7 @@ function LiveConsole() {
 
   useEffect(() => {
     if (!session) return;
-    void readProductionBasicReadiness(session.csrf_token)
+    void readHostProductionBasicReadiness(session.csrf_token)
       .then(setProductionBasicReady)
       .catch(() => setProductionBasicReady(false));
   }, [session?.csrf_token]);
@@ -102,23 +104,37 @@ function LiveConsole() {
   async function startProductionBasic() {
     if (!session) return;
     try {
-      const artifact = await requestProductionBasicLaunch(session.csrf_token);
-      if (artifact.role !== 1 || !artifact.zak) throw new Error('Classroom is unavailable.');
-      await startAndConfirmProductionBasicHostLive({
-        csrfToken: session.csrf_token,
-        startMeeting: (onMeetingStatus) =>
-          startZoomMeetingProductionBasic({
-            sdkWebVersion: artifact.sdk_web_version,
-            meetingNumber: artifact.meeting_number,
-            signature: artifact.signature,
-            meetingPassword: artifact.meeting_password,
-            userName: artifact.user_name,
-            leaveUrl: artifact.leave_path,
-            zak: requireHostZak(artifact.zak),
-            onMeetingStatus,
-          }),
+      const artifact = await requestHostProductionBasicLaunch(session.csrf_token);
+      let zoomEnded = false;
+      await startZoomMeetingProductionBasic({
+        sdkWebVersion: artifact.sdk_web_version,
+        meetingNumber: artifact.meeting_number,
+        signature: artifact.signature,
+        meetingPassword: artifact.meeting_password,
+        userName: artifact.user_name,
+        leaveUrl: artifact.leave_path,
+        zak: requireHostZak(artifact.zak),
+        onMeetingStatus: (status) => {
+          if (status === 3) {
+            zoomEnded = true;
+            setHostClassState('zoom_ended');
+            setNotice({
+              kind: 'info',
+              message: 'Zoom ended. One Time access will close automatically.',
+            });
+          }
+        },
       });
-      setNotice({ kind: 'success', message: 'Protected class started.' });
+      await confirmProductionBasicHostLive(session.csrf_token);
+      if (zoomEnded) {
+        setNotice({
+          kind: 'info',
+          message: 'Zoom ended. One Time access will close automatically.',
+        });
+      } else {
+        setHostClassState('live');
+        setNotice({ kind: 'success', message: 'Protected class started.' });
+      }
     } catch {
       setNotice({ kind: 'error', message: 'Classroom is unavailable.' });
     }
@@ -140,7 +156,10 @@ function LiveConsole() {
   }
 
   const liveConsoleReady = session?.capabilities?.operator_experience?.live_console === true;
-  const navItems: ShellNavItem[] = adminPrimaryNav('live-console', liveConsoleReady);
+  const navItems: ShellNavItem[] =
+    session?.user.role === 'rabbi'
+      ? rabbiPrimaryNav('today', liveConsoleReady)
+      : adminPrimaryNav('today', liveConsoleReady);
   const utilityItems: ShellNavItem[] = [];
   const selected = data?.selected_question ?? null;
 
@@ -318,7 +337,7 @@ function LiveConsole() {
               occurrenceKey={occurrenceKey}
               productionBasicReady={productionBasicReady}
               onStartProductionBasic={() => void startProductionBasic()}
-              onRefresh={() => void load()}
+              hostClassState={hostClassState}
               onOpenClassroom={() =>
                 occurrenceKey &&
                 window.location.assign(
@@ -542,19 +561,19 @@ function ObsHealth({ data }: { data: ConsoleData | null }) {
 function ZoomHealth({
   data,
   occurrenceKey,
-  onRefresh,
   onOpenClassroom,
   onChooseOccurrence,
   productionBasicReady,
   onStartProductionBasic,
+  hostClassState,
 }: {
   data: ConsoleData | null;
   occurrenceKey: string | null;
-  onRefresh: () => void;
   onOpenClassroom: () => void;
   onChooseOccurrence: () => void;
   productionBasicReady: boolean;
   onStartProductionBasic: () => void;
+  hostClassState: 'ready' | 'live' | 'zoom_ended';
 }) {
   const legacyHostControlsReady = occurrenceKey && data?.zoom.host_control_configured;
   return (
@@ -576,7 +595,11 @@ function ZoomHealth({
       )}
       <p role="status">
         {productionBasicReady
-          ? 'Protected recurring Zoom is ready. Start class only when the Rabbi is ready to begin.'
+          ? hostClassState === 'live'
+            ? 'Class is live. Continue in Zoom’s native host controls.'
+            : hostClassState === 'zoom_ended'
+              ? 'Zoom ended. One Time access will close automatically.'
+              : 'Protected recurring Zoom is ready. Start class only when the Rabbi is ready to begin.'
           : occurrenceKey
             ? data?.zoom.host_control_configured
               ? 'Secure host controls are ready for this class occurrence.'
@@ -584,13 +607,20 @@ function ZoomHealth({
             : 'Choose a class occurrence before opening the Zoom classroom.'}
       </p>
       <div className="live-action-grid" aria-label="Zoom classroom actions">
-        <button type="button" className="ot-button secondary" onClick={onRefresh}>
-          Refresh Status
-        </button>
         {productionBasicReady ? (
-          <button type="button" className="ot-button" onClick={onStartProductionBasic}>
-            Start class
-          </button>
+          hostClassState === 'live' ? (
+            <button
+              type="button"
+              className="ot-button"
+              onClick={() => document.getElementById('zmmtg-root')?.scrollIntoView()}
+            >
+              Continue Class
+            </button>
+          ) : hostClassState === 'zoom_ended' ? null : (
+            <button type="button" className="ot-button" onClick={onStartProductionBasic}>
+              Start Class
+            </button>
+          )
         ) : occurrenceKey && data?.zoom.host_control_configured ? (
           <button type="button" className="ot-button" onClick={onOpenClassroom}>
             Open Secure One Time Classroom
@@ -606,8 +636,8 @@ function ZoomHealth({
       ) : null}
       {productionBasicReady ? (
         <p>
-          Students join from their own protected Student portal. The Admin session starts the
-          meeting only when explicitly selected.
+          End the meeting using Zoom’s End Meeting for All control. One Time access closes
+          automatically within the existing two-hour safety window.
         </p>
       ) : legacyHostControlsReady ? (
         <p>

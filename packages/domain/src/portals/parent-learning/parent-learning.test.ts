@@ -46,7 +46,7 @@ const record: ParentLearningRecord = {
       label: 'Join class',
       kind: 'class_launch',
       method: 'POST',
-      href: '/api/v1/classroom/production-basic/launch',
+      href: '/api/v1/portals/parent/classroom/production-basic/launch',
       launch_token_ref: null,
       expires_at: '2026-08-16T13:15:00.000Z',
     },
@@ -95,7 +95,7 @@ describe('Parent-first learning policy', () => {
       next_class: {
         occurrence_id: 'occurrence-1',
         launch_action: {
-          href: '/api/v1/classroom/production-basic/launch',
+          href: '/api/v1/portals/parent/classroom/production-basic/launch',
         },
       },
       library_items: [

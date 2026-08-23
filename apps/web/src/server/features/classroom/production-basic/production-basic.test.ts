@@ -2,7 +2,12 @@ import type { AddressInfo } from 'node:net';
 import { createHash } from 'node:crypto';
 import express from 'express';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { createProductionBasicRouter, type ProductionBasicLaunchFailureEvent } from './router.ts';
+import {
+  createAdminProductionBasicRouter,
+  createParentProductionBasicRouter,
+  createStudentProductionBasicRouter,
+  type ProductionBasicLaunchFailureEvent,
+} from './router.ts';
 import {
   createCanonicalProductionBasicMeetingBinding,
   createProductionBasicLaunchService,
@@ -148,6 +153,7 @@ describe('production-basic Meeting SDK launch', () => {
       .mockResolvedValue(true);
     const studentBaseUrl = await start({
       actor: STUDENT,
+      boundary: 'host',
       issue: async () => artifact(0),
       confirm: studentConfirm,
     });
@@ -155,7 +161,7 @@ describe('production-basic Meeting SDK launch', () => {
     expect(studentConfirm).not.toHaveBeenCalled();
   });
 
-  it('clears the live marker idempotently when the authorized host disconnects', async () => {
+  it('retires every app-managed host end, status, and cleanup route', async () => {
     const admin: ProductionBasicActor = {
       kind: 'admin',
       scope: STUDENT.scope,
@@ -163,28 +169,19 @@ describe('production-basic Meeting SDK launch', () => {
       display_name: 'Admin',
       authorized_to_start: true,
     };
-    const clear = vi.fn<ProductionBasicHostLiveMarker['clear']>().mockResolvedValue(undefined);
-    const baseUrl = await start({ actor: admin, issue: async () => artifact(1), clear });
-
-    expect((await post(baseUrl, '/host-ended')).status).toBe(200);
-    expect((await post(baseUrl, '/host-ended')).status).toBe(200);
-    expect(clear).toHaveBeenCalledTimes(2);
-    expect(clear).toHaveBeenNthCalledWith(1, {
-      scope: STUDENT.scope,
-      meeting_ref_digest: expect.stringMatching(/^[a-f0-9]{64}$/u),
-      cleared_at: new Date('2026-08-12T10:00:00.000Z'),
-    });
-
-    const studentClear = vi
-      .fn<ProductionBasicHostLiveMarker['clear']>()
-      .mockResolvedValue(undefined);
-    const studentBaseUrl = await start({
-      actor: STUDENT,
-      issue: async () => artifact(0),
-      clear: studentClear,
-    });
-    expect((await post(studentBaseUrl, '/host-ended')).status).toBe(403);
-    expect(studentClear).not.toHaveBeenCalled();
+    const baseUrl = await start({ actor: admin, issue: async () => artifact(1) });
+    for (const path of [
+      '/host-end-attempt',
+      '/host-end-unknown',
+      '/host-end-confirmed',
+      '/host-end-status',
+      '/host-end-cleanup',
+      '/host-ended',
+    ]) {
+      const response =
+        path === '/host-end-status' ? await fetch(`${baseUrl}${path}`) : await post(baseUrl, path);
+      expect(response.status).toBe(404);
+    }
   });
 
   it('keeps Student readiness and launch unavailable until the host live receipt is current', async () => {
@@ -272,6 +269,30 @@ describe('production-basic Meeting SDK launch', () => {
       expect((await post(baseUrl, '/launch')).status).toBe(403);
       expect(issue).not.toHaveBeenCalled();
     }
+  });
+
+  it('fails a dual-session conflict before artifact, ZAK, provider, or live-marker work', async () => {
+    const issue = vi.fn(async () => artifact(1));
+    const confirm = vi.fn<ProductionBasicHostLiveMarker['confirm']>().mockResolvedValue(true);
+    const baseUrl = await start({
+      actor: null,
+      boundary: 'host',
+      identityStatus: 'session_context_conflict',
+      issue,
+      confirm,
+    });
+
+    for (const path of ['/launch', '/host-live']) {
+      const response = await post(baseUrl, path);
+      expect(response.status).toBe(409);
+      await expect(response.json()).resolves.toEqual({
+        success: false,
+        code: 'SESSION_CONTEXT_CONFLICT',
+        message: 'Your session context changed. Please sign in again.',
+      });
+    }
+    expect(issue).not.toHaveBeenCalled();
+    expect(confirm).not.toHaveBeenCalled();
   });
 
   it('requires an injected, current read-only verification receipt even when canonical config exists', async () => {
@@ -474,6 +495,8 @@ function verifiedReceipt(meetingId: string) {
 
 async function start(input: {
   actor: ProductionBasicActor | null;
+  boundary?: 'student' | 'parent' | 'host';
+  identityStatus?: 'session_context_conflict';
   csrfVerified?: boolean;
   issue?: (input: {
     actor: ProductionBasicActor;
@@ -482,7 +505,6 @@ async function start(input: {
   confirm?: ProductionBasicHostLiveMarker['confirm'];
   current?: ProductionBasicHostLiveMarker['currentForStudent'];
   currentForParent?: ProductionBasicHostLiveMarker['currentForParent'];
-  clear?: ProductionBasicHostLiveMarker['clear'];
   onLaunchFailure?: ((event: ProductionBasicLaunchFailureEvent) => void) | undefined;
 }) {
   const service = createProductionBasicLaunchService({
@@ -496,13 +518,12 @@ async function start(input: {
           issue: async (launch) => input.issue!({ actor: launch.actor, role: launch.role }),
         }
       : createUnavailableProductionBasicMeetingBinding(),
-    ...(input.issue || input.confirm || input.current || input.clear
+    ...(input.issue || input.confirm || input.current
       ? {
           hostLiveMarker: {
             confirm: input.confirm ?? (async () => true),
             currentForStudent: input.current ?? (async () => true),
             currentForParent: input.currentForParent ?? (async () => true),
-            clear: input.clear ?? (async () => undefined),
           },
         }
       : {}),
@@ -510,14 +531,25 @@ async function start(input: {
   });
   const app = express();
   app.use(
-    createProductionBasicRouter({
+    (input.boundary === 'parent' || (!input.boundary && input.actor?.kind === 'parent')
+      ? createParentProductionBasicRouter
+      : input.boundary === 'host' ||
+          (!input.boundary && (input.actor?.kind === 'admin' || input.actor?.kind === 'rabbi'))
+        ? createAdminProductionBasicRouter
+        : createStudentProductionBasicRouter)({
       service,
       onLaunchFailure: input.onLaunchFailure,
       identities: {
         resolve: async () =>
-          input.actor === null
-            ? null
-            : { actor: input.actor, csrf_verified: input.csrfVerified ?? true },
+          input.identityStatus
+            ? { status: input.identityStatus }
+            : input.actor === null
+              ? { status: 'missing' as const }
+              : {
+                  status: 'resolved' as const,
+                  actor: input.actor,
+                  csrf_verified: input.csrfVerified ?? true,
+                },
       },
     }),
   );
@@ -534,28 +566,35 @@ function artifact(
     ? '/app/student'
     : '/app/live-console',
 ): ProductionBasicLaunchArtifact {
-  return {
+  const shared = {
     mode: 'production_basic',
-    role,
     sdk_web_version: '3.13.2',
     meeting_number: '12345678901',
     meeting_password: 'short-lived-password',
     signature: 'short-lived-signature',
     user_name: role === 0 ? 'Student' : 'Admin',
-    leave_path: leavePath,
     issued_at: '2026-08-12T09:59:00.000Z',
     expires_at: '2026-08-12T10:15:00.000Z',
-    ...(role === 1 ? { zak: 'short-lived-zak' } : {}),
     raw_join_url_present: false,
     video_start_model: 'PARTICIPANT_CONSENT',
-  };
+  } as const;
+  if (role === 1) {
+    return { ...shared, role: 1, leave_path: '/app/live-console', zak: 'short-lived-zak' };
+  }
+  return leavePath === '/app/parent'
+    ? { ...shared, role: 0, leave_path: '/app/parent' }
+    : { ...shared, role: 0, leave_path: '/app/student' };
 }
 
-async function post(baseUrl: string, path: string, body?: unknown) {
+async function post(
+  baseUrl: string,
+  path: string,
+  body?: unknown,
+  headers: Record<string, string> = {},
+) {
   return fetch(`${baseUrl}${path}`, {
     method: 'POST',
-    ...(body === undefined
-      ? {}
-      : { headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }),
+    headers: { ...headers, ...(body === undefined ? {} : { 'content-type': 'application/json' }) },
+    ...(body === undefined ? {} : { body: JSON.stringify(body) }),
   });
 }

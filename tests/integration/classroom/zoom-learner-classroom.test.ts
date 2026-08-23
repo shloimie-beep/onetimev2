@@ -87,7 +87,8 @@ describe('OT-88 Zoom learner classroom sink mode', () => {
     config = loadConfig({
       NODE_ENV: 'test',
       ONE_TIME_RUNTIME_ENVIRONMENT: 'isolated_staging',
-      PUBLIC_BASE_URL: 'https://isolated-pr.example.test',
+      PUBLIC_BASE_URL: 'https://join.onetimeonetime.com',
+      APP_BASE_URL: 'https://isolated-pr.example.test',
       APP_VERSION: 'test',
       COMMIT_SHA: 'test',
       OUTBOX_TRANSPORT_MODE: 'sink',

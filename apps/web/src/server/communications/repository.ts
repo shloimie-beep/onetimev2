@@ -1,6 +1,5 @@
 import type { DbPool } from '../../../../../packages/db/src/index.ts';
 import type {
-  CommunicationContactLookupInput,
   CommunicationIntentListInput,
   CommunicationIntentListResult,
   CommunicationIntentRow,
@@ -11,19 +10,6 @@ type SqlRow = Record<string, unknown>;
 
 export class PostgresCommunicationsReadRepository implements CommunicationsReadRepository {
   constructor(private readonly pool: DbPool) {}
-
-  async contactExists(input: CommunicationContactLookupInput): Promise<boolean> {
-    const result = await this.pool.query(
-      `SELECT 1
-         FROM onetime.contacts
-        WHERE account_key = $1
-          AND product_key = $2
-          AND contact_key = $3
-        LIMIT 1`,
-      [input.scope.accountKey, input.scope.productKey, input.contactId],
-    );
-    return result.rows.length > 0;
-  }
 
   async list(input: CommunicationIntentListInput): Promise<CommunicationIntentListResult> {
     const params: unknown[] = [
@@ -38,10 +24,6 @@ export class PostgresCommunicationsReadRepository implements CommunicationsReadR
       'history.occurred_at >= $3::timestamptz',
       'history.occurred_at < $4::timestamptz',
     ];
-    if (input.mode.kind === 'contact') {
-      params.push(input.mode.contactId);
-      where.push(`history.contact_key = $${params.length}`);
-    }
     if (input.filters.channel) {
       params.push(input.filters.channel);
       where.push(`history.channel = $${params.length}`);
